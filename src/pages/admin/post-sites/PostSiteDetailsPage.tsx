@@ -1,23 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, Link, useLocation } from 'react-router-dom';
-import PostSiteLayout from '@/layouts/PostSiteLayout';
-import { postSiteService, setTenantId as setGlobalTenantId } from '@/lib/api/postSiteService';
-import { Loader2, AlertTriangle, MapPinOff } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
-import { EmptyState } from '@/components/kit';
-import Overview from './components/PostsiteOverview/Overview';
-import Profile from './components/PostsiteProfile/Profile';
-import Contacts from './components/PostsiteContacts/Contacts';
-import KPIs from './components/PostSiteKPIs/PostSiteKPIs';
-import Notes from './components/PostsiteNotes/Notes';
-import AssignGuards from './components/PostsiteAssignGuards/AssignGuards';
-import Stations from './components/PostsiteStations/Stations';
-import Incidents from './components/PostsiteIncidents/Incidents';
-import SiteTours from './components/PostsiteSiteTours/SiteTours';
-import Inventory from './components/PostsiteInventory/Inventory';
-import OperationSetupAlert from './components/OperationSetup/OperationSetupAlert';
+import React, { useEffect, useState } from "react";
+import { useParams, useLocation } from "react-router-dom";
+import { Loader2, AlertTriangle, MapPinOff } from "lucide-react";
+import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+
+import Overview from "./components/PostsiteOverview/Overview";
+import Profile from "./components/PostsiteProfile/Profile";
+import Contacts from "./components/PostsiteContacts/Contacts";
+import KPIs from "./components/PostSiteKPIs/PostSiteKPIs";
+import Notes from "./components/PostsiteNotes/Notes";
+import AssignGuards from "./components/PostsiteAssignGuards/AssignGuards";
+import Stations from "./components/PostsiteStations/Stations";
+import Incidents from "./components/PostsiteIncidents/Incidents";
+import SiteTours from "./components/PostsiteSiteTours/SiteTours";
+import Inventory from "./components/PostsiteInventory/Inventory";
+import OperationSetupAlert from "./components/OperationSetup/OperationSetupAlert";
+
+import { EmptyState } from "@/components/kit";
+import {
+  postSiteService,
+  setTenantId as setGlobalTenantId,
+} from "@/lib/api/postSiteService";
+import PostSiteLayout from "@/layouts/PostSiteLayout";
 
 export default function PostSiteDetailsPage() {
   const { t } = useTranslation();
@@ -26,12 +30,13 @@ export default function PostSiteDetailsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const location = useLocation();
-  const parts = location.pathname.split('/').filter(Boolean);
-  const currentTab = parts[2] || 'overview';
+  const parts = location.pathname.split("/").filter(Boolean);
+  const currentTab = parts[2] || "overview";
 
   useEffect(() => {
     if (!id) return;
     let mounted = true;
+
     // Clear the previous site so switching :id A→B never shows A under B's URL.
     setSite(null);
     const load = async () => {
@@ -39,11 +44,17 @@ export default function PostSiteDetailsPage() {
       setError(null);
       try {
         const data = await postSiteService.get(id);
+
         if (!mounted) return;
         setSite(data);
         // Ensure tenantId is available globally for components that rely on localStorage fallback
         try {
-          const tid = data?.tenantId || (data?.tenant && typeof data.tenant === "object" && (data.tenant.id || data.tenant.tenantId));
+          const tid =
+            data?.tenantId ||
+            (data?.tenant &&
+              typeof data.tenant === "object" &&
+              (data.tenant.id || data.tenant.tenantId));
+
           if (tid) {
             setGlobalTenantId(tid);
           }
@@ -52,47 +63,62 @@ export default function PostSiteDetailsPage() {
         if (!mounted) return;
         console.error(e);
         setSite(null);
-        setError(e?.message || `${t('postsite.Details.unexpected', 'Ocurrió un error inesperado')}`);
-        toast.error(`${t('postsite.Details.unexpected', 'Ocurrió un error inesperado')}`);
+        setError(
+          e?.message ||
+            `${t("postsite.Details.unexpected", "Ocurrió un error inesperado")}`,
+        );
+        toast.error(
+          `${t("postsite.Details.unexpected", "Ocurrió un error inesperado")}`,
+        );
       } finally {
         if (mounted) setLoading(false);
       }
     };
+
     load();
-    return () => { mounted = false; };
+
+    return () => {
+      mounted = false;
+    };
   }, [id]);
 
   const renderTab = () => {
     switch (currentTab) {
-      case 'overview':
+      case "overview":
         return <Overview site={site} />;
-      case 'profile':
+      case "profile":
         return <Profile site={site} />;
-      case 'contacts':
+      case "contacts":
         return <Contacts site={site} />;
-      case 'kpis':
+      case "kpis":
         return <KPIs site={site} />;
-      case 'notes':
+      case "notes":
         return <Notes site={site} />;
-      case 'assign-guards':
+      case "assign-guards":
         return <AssignGuards site={site} />;
-      case 'stations':
+      case "stations":
         return <Stations site={site} />;
-      case 'incidents':
+      case "incidents":
         return <Incidents site={site} />;
-      case 'site-tours':
+      case "site-tours":
         return <SiteTours site={site} />;
-      case 'inventory':
+      case "inventory":
         return <Inventory site={site} />;
       default:
         return <Overview site={site} />;
     }
   };
 
-  
-
   return (
-    <PostSiteLayout title={site?.businessName || site?.companyName || site?.name || t('postSites.Details.title', '-')} site={site}>
+    <PostSiteLayout
+      site={site}
+      title={
+        site?.businessName ||
+        site?.companyName ||
+        site?.name ||
+        t("postSites.Details.title", "-")
+      }
+    >
       <div className="p-4">
         {loading ? (
           <div className="flex items-center justify-center py-12">
@@ -100,9 +126,12 @@ export default function PostSiteDetailsPage() {
           </div>
         ) : error ? (
           <EmptyState
-            icon={<AlertTriangle />}
-            title={t('postSites.Details.errorTitle', 'No se pudo cargar la sede')}
             description={error}
+            icon={<AlertTriangle />}
+            title={t(
+              "postSites.Details.errorTitle",
+              "No se pudo cargar la sede",
+            )}
           />
         ) : site ? (
           <div className="space-y-4 animate-fade-up">
@@ -116,7 +145,10 @@ export default function PostSiteDetailsPage() {
         ) : (
           <EmptyState
             icon={<MapPinOff />}
-            title={t('postSites.Details.notfoundpostsite', 'No se encontró la sede')}
+            title={t(
+              "postSites.Details.notfoundpostsite",
+              "No se encontró la sede",
+            )}
           />
         )}
       </div>

@@ -1,5 +1,6 @@
-import { useMemo } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useMemo } from "react";
+
+import { useAuth } from "@/contexts/AuthContext";
 
 /**
  * El país en el que opera la empresa que ha iniciado sesión.
@@ -27,26 +28,36 @@ export function usePaisDeLaEmpresa(): string {
   const { user } = useAuth() as { user: any };
 
   return useMemo(() => {
-    if (!user) return '';
+    if (!user) return "";
 
     // La misma forma de elegir tenant que usa `extractPermissionsFromUser`: el
     // de `localStorage` si está entre los del usuario, y si no el primero.
     let tenantId: string | null = null;
-    try { tenantId = localStorage.getItem('tenantId'); } catch { /* sin storage */ }
+
+    try {
+      tenantId = localStorage.getItem("tenantId");
+    } catch {
+      /* sin storage */
+    }
 
     const lista: any[] = Array.isArray(user.tenants) ? user.tenants : [];
     let entrada: any = null;
+
     if (lista.length) {
       if (tenantId) {
         entrada = lista.find(
-          (t: any) => t?.tenantId === tenantId || (t?.tenant && (t.tenant.id === tenantId || t.tenant.tenantId === tenantId)),
+          (t: any) =>
+            t?.tenantId === tenantId ||
+            (t?.tenant &&
+              (t.tenant.id === tenantId || t.tenant.tenantId === tenantId)),
         );
       }
       if (!entrada) entrada = lista[0];
     }
 
     const tenant = entrada?.tenant ?? entrada ?? user.tenant ?? null;
-    return (tenant?.country || '').toString().trim();
+
+    return (tenant?.country || "").toString().trim();
   }, [user]);
 }
 

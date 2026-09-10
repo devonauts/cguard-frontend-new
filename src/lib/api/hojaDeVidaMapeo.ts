@@ -1,5 +1,8 @@
 import {
-  BLOOD_TYPES, GENDER_OPTIONS, MARITAL_STATUS_OPTIONS, ACADEMIC_INSTRUCTION_OPTIONS,
+  BLOOD_TYPES,
+  GENDER_OPTIONS,
+  MARITAL_STATUS_OPTIONS,
+  ACADEMIC_INSTRUCTION_OPTIONS,
 } from "@/lib/validators/create-profile.schema";
 
 /**
@@ -52,37 +55,55 @@ export interface LecturaHojaDeVida {
 }
 
 const limpia = (v: string | null | undefined): string =>
-  String(v ?? "").trim().toLowerCase()
+  String(v ?? "")
+    .trim()
+    .toLowerCase()
     // Sin tildes: «Unión libre» y «union libre» son lo mismo, y un CV escrito
     // en un teclado sin acentos no debería perder el dato por eso.
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
 
 /** Masculino / Femenino, o vacío. */
-export function mapeaGenero(v: string | null): typeof GENDER_OPTIONS[number] | undefined {
+export function mapeaGenero(
+  v: string | null,
+): (typeof GENDER_OPTIONS)[number] | undefined {
   const s = limpia(v);
+
   if (!s) return undefined;
   if (/^(m|masculino|hombre|male|varon)$/.test(s)) return "Masculino";
   if (/^(f|femenino|mujer|female)$/.test(s)) return "Femenino";
+
   return undefined;
 }
 
-export function mapeaEstadoCivil(v: string | null): typeof MARITAL_STATUS_OPTIONS[number] | undefined {
+export function mapeaEstadoCivil(
+  v: string | null,
+): (typeof MARITAL_STATUS_OPTIONS)[number] | undefined {
   const s = limpia(v);
+
   if (!s) return undefined;
   // `includes` y no igualdad: un CV pone «Casado, 2 hijos» o «Estado civil:
   // soltero» y ninguno de los dos es una opción exacta.
-  if (s.includes("union libre") || s.includes("convivien")) return "Unión libre";
+  if (s.includes("union libre") || s.includes("convivien"))
+    return "Unión libre";
   if (s.includes("divorciad")) return "Divorciado";
   if (s.includes("casad")) return "Casado";
   if (s.includes("solter")) return "Soltero";
+
   return undefined;
 }
 
-export function mapeaTipoSangre(v: string | null): typeof BLOOD_TYPES[number] | undefined {
-  const s = String(v ?? "").toUpperCase().replace(/\s|RH/g, "");
+export function mapeaTipoSangre(
+  v: string | null,
+): (typeof BLOOD_TYPES)[number] | undefined {
+  const s = String(v ?? "")
+    .toUpperCase()
+    .replace(/\s|RH/g, "");
   const m = /^(A|B|AB|O)([+-])$/.exec(s);
+
   if (!m) return undefined;
-  return `${m[1]}${m[2]}` as typeof BLOOD_TYPES[number];
+
+  return `${m[1]}${m[2]}` as (typeof BLOOD_TYPES)[number];
 }
 
 /**
@@ -91,13 +112,18 @@ export function mapeaTipoSangre(v: string | null): typeof BLOOD_TYPES[number] | 
  * formulario quiere UNA palabra. Se busca el nivel MÁS ALTO mencionado, que es
  * el que interesa, y ante la duda se deja vacío.
  */
-export function mapeaInstruccion(v: string | null): typeof ACADEMIC_INSTRUCTION_OPTIONS[number] | undefined {
+export function mapeaInstruccion(
+  v: string | null,
+): (typeof ACADEMIC_INSTRUCTION_OPTIONS)[number] | undefined {
   const s = limpia(v);
+
   if (!s) return undefined;
-  if (/universi|tecnolog|ingenier|licenciad|superior|posgrado|maestr/.test(s)) return "Universitaria";
+  if (/universi|tecnolog|ingenier|licenciad|superior|posgrado|maestr/.test(s))
+    return "Universitaria";
   if (/secundar|bachiller|colegio|preparator/.test(s)) return "Secundaria";
   if (/primaria|basica|escuela/.test(s)) return "Primaria";
   if (/especial/.test(s)) return "Especial";
+
   return undefined;
 }
 
@@ -110,13 +136,28 @@ export function mapeaInstruccion(v: string | null): typeof ACADEMIC_INSTRUCTION_
  * formulario que se ve y se corrige, no directo a la base.
  */
 export function parteNombre(completo: string | null): {
-  firstName: string; middleName: string; lastName: string;
+  firstName: string;
+  middleName: string;
+  lastName: string;
 } {
-  const partes = String(completo ?? "").trim().split(/\s+/).filter(Boolean);
-  if (partes.length === 0) return { firstName: "", middleName: "", lastName: "" };
-  if (partes.length === 1) return { firstName: partes[0], middleName: "", lastName: "" };
-  if (partes.length === 2) return { firstName: partes[0], middleName: "", lastName: partes[1] };
-  if (partes.length === 3) return { firstName: partes[0], middleName: "", lastName: partes.slice(1).join(" ") };
+  const partes = String(completo ?? "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (partes.length === 0)
+    return { firstName: "", middleName: "", lastName: "" };
+  if (partes.length === 1)
+    return { firstName: partes[0], middleName: "", lastName: "" };
+  if (partes.length === 2)
+    return { firstName: partes[0], middleName: "", lastName: partes[1] };
+  if (partes.length === 3)
+    return {
+      firstName: partes[0],
+      middleName: "",
+      lastName: partes.slice(1).join(" "),
+    };
+
   return {
     firstName: partes[0],
     middleName: partes[1],
@@ -126,15 +167,19 @@ export function parteNombre(completo: string | null): {
 
 /** Los valores listos para volcar en el formulario de «Crear perfil». */
 export interface CamposFormulario {
-  firstName: string; middleName: string; lastName: string;
+  firstName: string;
+  middleName: string;
+  lastName: string;
   identificationNumber: string;
-  birthDate: string; birthPlace: string;
-  gender?: typeof GENDER_OPTIONS[number];
-  maritalStatus?: typeof MARITAL_STATUS_OPTIONS[number];
-  bloodType?: typeof BLOOD_TYPES[number];
-  academicInstruction?: typeof ACADEMIC_INSTRUCTION_OPTIONS[number];
+  birthDate: string;
+  birthPlace: string;
+  gender?: (typeof GENDER_OPTIONS)[number];
+  maritalStatus?: (typeof MARITAL_STATUS_OPTIONS)[number];
+  bloodType?: (typeof BLOOD_TYPES)[number];
+  academicInstruction?: (typeof ACADEMIC_INSTRUCTION_OPTIONS)[number];
   guardCredentials: string;
-  email: string; phone: string;
+  email: string;
+  phone: string;
   homeAddress: string;
 }
 
@@ -149,6 +194,7 @@ export interface CamposFormulario {
 export function aCamposDelFormulario(d: DatosHojaDeVida): CamposFormulario {
   const nombre = parteNombre(d.fullName);
   const extras: string[] = [];
+
   if (d.guardCredentials) extras.push(d.guardCredentials);
   if (d.skills?.length) extras.push(`Habilidades: ${d.skills.join(", ")}`);
   if (d.languages?.length) extras.push(`Idiomas: ${d.languages.join(", ")}`);
@@ -168,4 +214,3 @@ export function aCamposDelFormulario(d: DatosHojaDeVida): CamposFormulario {
     homeAddress: d.address || "",
   };
 }
-

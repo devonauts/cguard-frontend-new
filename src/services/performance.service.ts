@@ -1,8 +1,10 @@
-import { ApiService } from './api/apiService';
+import { ApiService } from "./api/apiService";
 
 function getTenantId(): string {
-  const t = localStorage.getItem('tenantId');
-  if (!t) throw new Error('Tenant not available');
+  const t = localStorage.getItem("tenantId");
+
+  if (!t) throw new Error("Tenant not available");
+
   return t;
 }
 
@@ -15,16 +17,18 @@ const PerformanceService = {
   // --- Scores ---
   async getGuard(securityGuardId: string, period = 30) {
     const tenantId = getTenantId();
+
     return ApiService.get(
       `/tenant/${tenantId}/security-guard/${securityGuardId}/performance?period=${period}&_=${Date.now()}`,
-      { headers: { 'Cache-Control': 'no-cache' } },
+      { headers: { "Cache-Control": "no-cache" } },
     );
   },
   async getSupervisor(userId: string, period = 30) {
     const tenantId = getTenantId();
+
     return ApiService.get(
       `/tenant/${tenantId}/supervisor/${userId}/performance?period=${period}&_=${Date.now()}`,
-      { headers: { 'Cache-Control': 'no-cache' } },
+      { headers: { "Cache-Control": "no-cache" } },
     );
   },
 
@@ -37,10 +41,12 @@ const PerformanceService = {
    */
   async getSubject(userId: string) {
     const tenantId = getTenantId();
+
     return ApiService.get(`/tenant/${tenantId}/performance/subject/${userId}`);
   },
   async setSubject(userId: string, enabled: boolean) {
     const tenantId = getTenantId();
+
     return ApiService.put(`/tenant/${tenantId}/performance/subject/${userId}`, {
       enabled,
     });
@@ -49,6 +55,7 @@ const PerformanceService = {
   // --- Uniform inspections ---
   async uniformHistory(securityGuardId: string) {
     const tenantId = getTenantId();
+
     return ApiService.get(
       `/tenant/${tenantId}/security-guard/${securityGuardId}/uniform-inspections`,
     );
@@ -64,16 +71,19 @@ const PerformanceService = {
     inspectionDate?: string;
   }) {
     const tenantId = getTenantId();
+
     return ApiService.post(`/tenant/${tenantId}/uniform-inspection`, payload);
   },
 
   // --- Quiz bank (station-scoped) ---
   async getQuizBank(stationId: string) {
     const tenantId = getTenantId();
+
     return ApiService.get(`/tenant/${tenantId}/station/${stationId}/quiz-bank`);
   },
   async saveQuizBank(stationId: string, payload: any) {
     const tenantId = getTenantId();
+
     return ApiService.put(
       `/tenant/${tenantId}/station/${stationId}/quiz-bank`,
       payload,
@@ -81,6 +91,7 @@ const PerformanceService = {
   },
   async createQuestion(bankId: string, payload: any) {
     const tenantId = getTenantId();
+
     return ApiService.post(
       `/tenant/${tenantId}/quiz-bank/${bankId}/questions`,
       payload,
@@ -88,6 +99,7 @@ const PerformanceService = {
   },
   async updateQuestion(bankId: string, questionId: string, payload: any) {
     const tenantId = getTenantId();
+
     return ApiService.put(
       `/tenant/${tenantId}/quiz-bank/${bankId}/questions/${questionId}`,
       payload,
@@ -95,24 +107,31 @@ const PerformanceService = {
   },
   async deleteQuestion(bankId: string, questionId: string) {
     const tenantId = getTenantId();
+
     return ApiService.delete(
       `/tenant/${tenantId}/quiz-bank/${bankId}/questions/${questionId}`,
     );
   },
 
   // --- Backup events ---
-  async backupEvents(status = 'offered') {
+  async backupEvents(status = "offered") {
     const tenantId = getTenantId();
+
     return ApiService.get(
       `/tenant/${tenantId}/backup-event?status=${encodeURIComponent(status)}`,
     );
   },
   async confirmBackup(id: string) {
     const tenantId = getTenantId();
-    return ApiService.post(`/tenant/${tenantId}/backup-event/${id}/confirm`, {});
+
+    return ApiService.post(
+      `/tenant/${tenantId}/backup-event/${id}/confirm`,
+      {},
+    );
   },
   async rejectBackup(id: string) {
     const tenantId = getTenantId();
+
     return ApiService.post(`/tenant/${tenantId}/backup-event/${id}/reject`, {});
   },
 };

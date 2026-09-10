@@ -5,7 +5,7 @@
 // NOTE: fields are optional/loose where the API response varies (rows vs bare
 // arrays, association objects that may or may not be included).
 
-import type { GuardUser } from '@/types/securityGuard';
+import type { GuardUser } from "@/types/securityGuard";
 
 /** A stored file descriptor (avatar, license image, note attachment). */
 export interface FileDescriptor {
@@ -58,8 +58,16 @@ export interface GuardDetail {
   isOnDuty?: boolean;
   hasPassword?: boolean;
   photoUrl?: string | null;
-  profileImage?: Array<{ downloadUrl?: string; publicUrl?: string; privateUrl?: string }> | { downloadUrl?: string; publicUrl?: string } | null;
-  availability?: Array<{ day: string; available?: boolean; start?: string; end?: string }>;
+  profileImage?:
+    | Array<{ downloadUrl?: string; publicUrl?: string; privateUrl?: string }>
+    | { downloadUrl?: string; publicUrl?: string }
+    | null;
+  availability?: Array<{
+    day: string;
+    available?: boolean;
+    start?: string;
+    end?: string;
+  }>;
   tenantId?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -77,7 +85,7 @@ export interface GuardDetail {
  */
 export interface Kpi {
   id: string;
-  scope?: 'guard' | 'postSite' | string;
+  scope?: "guard" | "postSite" | string;
   guardId?: string;
   postSiteId?: string;
   frequency?: string;
@@ -153,14 +161,14 @@ export interface GuardNote {
 /** One factor in the 8-factor performance score. */
 export interface PerformanceComponent {
   key:
-    | 'punctuality'
-    | 'uniform'
-    | 'inventory'
-    | 'consignas'
-    | 'rondas'
-    | 'quiz'
-    | 'training'
-    | 'clientRating';
+    | "punctuality"
+    | "uniform"
+    | "inventory"
+    | "consignas"
+    | "rondas"
+    | "quiz"
+    | "training"
+    | "clientRating";
   score: number;
   weight: number;
   /** Cuánto puede restar este factor de los 100 como máximo. */
@@ -198,7 +206,7 @@ export interface GuardPerformance {
   /** ¿Se le mide el desempeño a esta persona? */
   enabled?: boolean;
   /** Qué interruptor lo apagó, si alguno. */
-  disabledBy?: 'tenant' | 'subject' | null;
+  disabledBy?: "tenant" | "subject" | null;
   /** El usuario puntuado — con él se escribe el interruptor de la persona. */
   subjectUserId?: string | null;
   /** De dónde parte la nota (100). */

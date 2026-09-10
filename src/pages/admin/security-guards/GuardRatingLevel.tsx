@@ -13,19 +13,20 @@
  * —bueno/regular/malo— porque una nota baja tiene que leerse roja aunque el
  * usuario elija rojo como acento.
  */
-import { Star } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { StatusBadge } from '@/components/kit';
+import { Star } from "lucide-react";
+import { useTranslation } from "react-i18next";
+
+import { StatusBadge } from "@/components/kit";
 
 /** Nota → papel del sistema: bueno / regular / malo. */
-const toneFor = (avg: number) => (avg >= 4 ? 'ok' : avg >= 3 ? 'warn' : 'bad');
+const toneFor = (avg: number) => (avg >= 4 ? "ok" : avg >= 3 ? "warn" : "bad");
 
 export default function GuardRatingLevel({
   average,
   count,
   onClick,
   showEmpty = false,
-  className = '',
+  className = "",
 }: {
   average?: number | null;
   count?: number | null;
@@ -34,12 +35,15 @@ export default function GuardRatingLevel({
   className?: string;
 }) {
   const { t } = useTranslation();
-  const has = typeof average === 'number' && (count ?? 0) > 0;
+  const has = typeof average === "number" && (count ?? 0) > 0;
+
   if (!has) {
     if (!showEmpty) return null;
+
     return (
-      <StatusBadge tone="neutral" dot={false} className={className}>
-        <Star className="h-3 w-3" /> {t('ui.GuardRatingLevel.sinResenas', 'Sin reseñas')}
+      <StatusBadge className={className} dot={false} tone="neutral">
+        <Star className="h-3 w-3" />{" "}
+        {t("ui.GuardRatingLevel.sinResenas", "Sin reseñas")}
       </StatusBadge>
     );
   }
@@ -56,18 +60,32 @@ export default function GuardRatingLevel({
   if (onClick) {
     return (
       <button
-        type="button"
-        onClick={(e) => { e.stopPropagation(); onClick(); }}
         className="cg-focus rounded-full transition hover:brightness-95"
-        title={t("ui.GuardRatingLevel.verResenasDelVigilante", "Ver reseñas del vigilante")}
+        title={t(
+          "ui.GuardRatingLevel.verResenasDelVigilante",
+          "Ver reseñas del vigilante",
+        )}
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick();
+        }}
       >
-        <StatusBadge tone={tone} dot={false} className={className}>{inner}</StatusBadge>
+        <StatusBadge className={className} dot={false} tone={tone}>
+          {inner}
+        </StatusBadge>
       </button>
     );
   }
+
   return (
-    <StatusBadge tone={tone} dot={false} className={className}>
-      <span title={`${avg.toFixed(2)} de 5 · ${count} reseña(s)`} className="inline-flex items-center gap-1">{inner}</span>
+    <StatusBadge className={className} dot={false} tone={tone}>
+      <span
+        className="inline-flex items-center gap-1"
+        title={`${avg.toFixed(2)} de 5 · ${count} reseña(s)`}
+      >
+        {inner}
+      </span>
     </StatusBadge>
   );
 }

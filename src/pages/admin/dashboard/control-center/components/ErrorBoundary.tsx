@@ -1,5 +1,6 @@
 import { Component, type ReactNode } from "react";
 import { AlertTriangle, RotateCcw } from "lucide-react";
+
 import { IconTile } from "@/components/kit";
 import i18n from "@/i18n";
 
@@ -11,25 +12,39 @@ export class DashboardErrorBoundary extends Component<
   { error: Error | null }
 > {
   state = { error: null as Error | null };
-  static getDerivedStateFromError(error: Error) { return { error }; }
-  componentDidCatch(error: Error) { console.error("[ControlCenter] render error:", error); }
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+  componentDidCatch(error: Error) {
+    console.error("[ControlCenter] render error:", error);
+  }
 
   render() {
     if (this.state.error) {
       return (
         <div className="glass m-6 flex flex-col items-center p-8 text-center">
-          <IconTile tone="bad" size="lg" className="mb-4"><AlertTriangle /></IconTile>
-          <p className="font-display text-base font-semibold">{i18n.t("controlCenter.errorBoundary.title", "No se pudo cargar el centro de mando")}</p>
-          <p className="mt-1 text-sm" style={{ color: "var(--ink-soft)" }}>{this.state.error.message}</p>
+          <IconTile className="mb-4" size="lg" tone="bad">
+            <AlertTriangle />
+          </IconTile>
+          <p className="font-display text-base font-semibold">
+            {i18n.t(
+              "controlCenter.errorBoundary.title",
+              "No se pudo cargar el centro de mando",
+            )}
+          </p>
+          <p className="mt-1 text-sm" style={{ color: "var(--ink-soft)" }}>
+            {this.state.error.message}
+          </p>
           <button
-            onClick={() => location.reload()}
             className="cg-btn-brand cg-focus mt-5 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
+            onClick={() => location.reload()}
           >
             <RotateCcw className="size-4" /> Reintentar
           </button>
         </div>
       );
     }
+
     return this.props.children;
   }
 }

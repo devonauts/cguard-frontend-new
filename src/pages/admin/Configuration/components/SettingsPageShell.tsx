@@ -18,10 +18,11 @@
  * Es la decisión que hace que 62 páginas no parezcan 62 productos.
  * ════════════════════════════════════════════════════════════════════════════
  */
-import * as React from 'react';
-import AppLayout from '@/layouts/app-layout';
-import SettingsLayout from '@/layouts/SettingsLayout';
-import { PageContainer, PageHeader } from '@/components/kit';
+import * as React from "react";
+
+import AppLayout from "@/layouts/app-layout";
+import SettingsLayout from "@/layouts/SettingsLayout";
+import { PageContainer, PageHeader } from "@/components/kit";
 
 export function SettingsPageShell({
   title,
@@ -31,7 +32,7 @@ export function SettingsPageShell({
   badges,
   /** Título de la barra lateral de Configuración. Por defecto, el de la página. */
   navTitle,
-  kind = 'form',
+  kind = "form",
   children,
 }: {
   title: string;
@@ -40,19 +41,19 @@ export function SettingsPageShell({
   actions?: React.ReactNode;
   badges?: React.ReactNode;
   navTitle?: string;
-  kind?: 'form' | 'table';
+  kind?: "form" | "table";
   children: React.ReactNode;
 }) {
   return (
     <AppLayout>
       <SettingsLayout navKey="configuracion" title={navTitle ?? title}>
-        <PageContainer width={kind === 'table' ? 'wide' : 'default'}>
+        <PageContainer width={kind === "table" ? "wide" : "default"}>
           <PageHeader
-            icon={icon}
-            title={title}
-            subtitle={subtitle}
             actions={actions}
             badges={badges}
+            icon={icon}
+            subtitle={subtitle}
+            title={title}
           />
           {children}
         </PageContainer>

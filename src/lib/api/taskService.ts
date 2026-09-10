@@ -7,23 +7,32 @@ import api from "../api";
 
 const getTenantId = (): string => {
   const t = localStorage.getItem("tenantId");
-  if (!t) throw new Error("No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.");
+
+  if (!t)
+    throw new Error(
+      "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+    );
+
   return t;
 };
 
 const buildQuery = (params?: Record<string, unknown>): string => {
   if (!params) return "";
   const p = new URLSearchParams();
+
   for (const k of Object.keys(params)) {
     const v = params[k];
+
     if (v === undefined || v === null || String(v).trim() === "") continue;
     p.append(k, String(v));
   }
   const s = p.toString();
+
   return s ? `?${s}` : "";
 };
 
-const unwrap = (resp: any) => (resp && resp.data !== undefined ? resp.data : resp);
+const unwrap = (resp: any) =>
+  resp && resp.data !== undefined ? resp.data : resp;
 
 export type TaskStatus =
   | "pending_approval"
@@ -65,17 +74,31 @@ const taskService = {
    * `from`/`to` (ISO) acotan `createdAt` EN EL SERVIDOR — el informe de tareas
    * los manda para no depender de "las N más recientes".
    */
-  async byStatus(params?: { status?: TaskStatus | "all"; from?: string; to?: string; limit?: number }) {
+  async byStatus(params?: {
+    status?: TaskStatus | "all";
+    from?: string;
+    to?: string;
+    limit?: number;
+  }) {
     const t = getTenantId();
-    return unwrap(await api.get(`/tenant/${t}/task/approvals${buildQuery(params)}`));
+
+    return unwrap(
+      await api.get(`/tenant/${t}/task/approvals${buildQuery(params)}`),
+    );
   },
   async approve(id: string, notes?: string) {
     const t = getTenantId();
-    return unwrap(await api.post(`/tenant/${t}/task/${id}/approve`, { data: { notes } }));
+
+    return unwrap(
+      await api.post(`/tenant/${t}/task/${id}/approve`, { data: { notes } }),
+    );
   },
   async reject(id: string, notes?: string) {
     const t = getTenantId();
-    return unwrap(await api.post(`/tenant/${t}/task/${id}/reject`, { data: { notes } }));
+
+    return unwrap(
+      await api.post(`/tenant/${t}/task/${id}/reject`, { data: { notes } }),
+    );
   },
   /** Staff create — auto-approved by the backend. */
   async create(data: {
@@ -85,13 +108,17 @@ const taskService = {
     priority?: "alta" | "media" | "baja";
   }) {
     const t = getTenantId();
+
     return unwrap(await api.post(`/tenant/${t}/task`, { data }));
   },
   /** Station options for the staff "new task" picker. */
   async stations(query = "") {
     const t = getTenantId();
+
     return unwrap(
-      await api.get(`/tenant/${t}/station/autocomplete${buildQuery({ query, limit: 50 })}`),
+      await api.get(
+        `/tenant/${t}/station/autocomplete${buildQuery({ query, limit: 50 })}`,
+      ),
     );
   },
 };

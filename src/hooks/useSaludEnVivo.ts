@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import { crearSocket, cerrarSocket } from "@/lib/socket";
 import { getAuthToken } from "@/lib/api";
 
@@ -34,11 +35,13 @@ export function useSaludEnVivo(): EstadoEnVivo {
 
   useEffect(() => {
     const tid = tenantId();
+
     if (!tid) return;
     const socket = crearSocket(getAuthToken() || "", tid);
 
     // El servidor manda la salud al conectar y en cada cambio del adaptador.
-    const alSalud = (p: any) => setEstado(p?.degraded ? "degradado" : "conectado");
+    const alSalud = (p: any) =>
+      setEstado(p?.degraded ? "degradado" : "conectado");
     const alConectar = () => setEstado("conectado");
     const alCaer = () => setEstado("reconectando");
 

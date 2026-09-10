@@ -1,11 +1,16 @@
 "use client";
 
-import PhoneInput from 'react-phone-number-input';
-import 'react-phone-number-input/style.css';
-import './PhoneField.css';
-import { parsePhoneNumberFromString, getCountries, getCountryCallingCode } from 'libphonenumber-js';
-import { useTranslation } from 'react-i18next';
-import { getTenantCountry } from '@/utils/tenantLocation';
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
+import "./PhoneField.css";
+import {
+  parsePhoneNumberFromString,
+  getCountries,
+  getCountryCallingCode,
+} from "libphonenumber-js";
+import { useTranslation } from "react-i18next";
+
+import { getTenantCountry } from "@/utils/tenantLocation";
 
 /**
  * País con el que arranca el selector cuando el número está vacío.
@@ -17,16 +22,21 @@ import { getTenantCountry } from '@/utils/tenantLocation';
  */
 function paisPorDefecto(): ReturnType<typeof getCountries>[number] | undefined {
   const paises = getCountries();
-  const guardado = (getTenantCountry() || '').trim().toUpperCase();
+  const guardado = (getTenantCountry() || "").trim().toUpperCase();
   const delGuardado = paises.find((c) => c === guardado);
+
   if (delGuardado) return delGuardado;
 
   try {
-    const region = (navigator?.language || '').match(/[-_]([A-Za-z]{2})\b/)?.[1]?.toUpperCase();
+    const region = (navigator?.language || "")
+      .match(/[-_]([A-Za-z]{2})\b/)?.[1]
+      ?.toUpperCase();
+
     if (region) return paises.find((c) => c === region);
   } catch {
     /* navegador sin `navigator.language` */
   }
+
   return undefined;
 }
 
@@ -51,6 +61,7 @@ export default function PhoneField({
   const derivedCountry = (() => {
     try {
       const p = parsePhoneNumberFromString(fullNumber);
+
       if (p && p.country) return p.country;
       // if no country returned, fallthrough to fallback below
     } catch (e) {
@@ -60,9 +71,11 @@ export default function PhoneField({
     // fallback: try derive from phone code prop (e.g. +1 -> US)
     try {
       const match = String(code).match(/\+(\d+)/);
+
       if (match) {
         const callingCode = match[1];
         const countries = getCountries();
+
         for (const c of countries) {
           try {
             if (getCountryCallingCode(c) === callingCode) return c;
@@ -74,6 +87,7 @@ export default function PhoneField({
     } catch (err) {
       // ignore
     }
+
     return undefined;
   })();
 
@@ -81,13 +95,15 @@ export default function PhoneField({
     if (!value) {
       // Vaciar el campo tiene que VACIARLO. Antes se reponía '+593' y el
       // administrador extranjero veía reaparecer el prefijo de Ecuador.
-      onCodeChange('');
-      onNumberChange('');
+      onCodeChange("");
+      onNumberChange("");
+
       return;
     }
 
     // Extraer el código de país y el número
     const match = value.match(/^(\+\d{1,4})(.*)$/);
+
     if (match) {
       onCodeChange(match[1]);
       onNumberChange(match[2]);
@@ -97,13 +113,13 @@ export default function PhoneField({
   return (
     <div className="phone-input-container">
       <PhoneInput
+        defaultCountry={paisPorDefecto()}
+        placeholder={t('settings.phoneField.enterPhonePlaceholder', { defaultValue: 'Ingresa número de teléfono' })}
+        value={fullNumber}
+        onChange={handleChange}
         international
         // prefer derived country so the UI shows the correct flag
         country={derivedCountry}
-        defaultCountry={paisPorDefecto()}
-        value={fullNumber}
-        onChange={handleChange}
-        placeholder={t('settings.phoneField.enterPhonePlaceholder', { defaultValue: 'Ingresa número de teléfono' })}
       />
     </div>
   );

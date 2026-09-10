@@ -18,18 +18,32 @@
  * cae al nombre de reserva si la cabecera no llega.
  * ════════════════════════════════════════════════════════════════════════════
  */
-import api from '../api';
-import { downloadBlob, EXPORT_EXT, fileSafe, type ExportFormat } from './reportExport';
+import api from "../api";
+
+import {
+  downloadBlob,
+  EXPORT_EXT,
+  fileSafe,
+  type ExportFormat,
+} from "./reportExport";
 
 /** El `filename="…"` de la cabecera, incluida la forma `filename*=UTF-8''…`. */
-export function nombreDeContentDisposition(cabecera: string | null | undefined): string | null {
+export function nombreDeContentDisposition(
+  cabecera: string | null | undefined,
+): string | null {
   if (!cabecera) return null;
   // `filename*` va primero: es la que lleva los acentos sin destrozar.
   const utf8 = /filename\*\s*=\s*UTF-8''([^;]+)/i.exec(cabecera);
+
   if (utf8?.[1]) {
-    try { return decodeURIComponent(utf8[1].trim()); } catch { /* sigue abajo */ }
+    try {
+      return decodeURIComponent(utf8[1].trim());
+    } catch {
+      /* sigue abajo */
+    }
   }
   const simple = /filename\s*=\s*"?([^";]+)"?/i.exec(cabecera);
+
   return simple?.[1]?.trim() || null;
 }
 
@@ -44,13 +58,16 @@ export async function descargarInforme(
   url: string,
   opciones: { format: ExportFormat; nombreBase: string },
 ): Promise<void> {
-  const resp = await api.get<Blob>(url, { responseType: 'blob' } as never);
-  const blob: Blob = (resp as { data?: Blob })?.data ?? (resp as unknown as Blob);
+  const resp = await api.get<Blob>(url, { responseType: "blob" } as never);
+  const blob: Blob =
+    (resp as { data?: Blob })?.data ?? (resp as unknown as Blob);
 
-  const cabeceras = (resp as { headers?: Record<string, string> })?.headers || {};
+  const cabeceras =
+    (resp as { headers?: Record<string, string> })?.headers || {};
   const nombre =
-    nombreDeContentDisposition(cabeceras['content-disposition'] || cabeceras['Content-Disposition']) ||
-    `${fileSafe(opciones.nombreBase)}.${EXPORT_EXT[opciones.format]}`;
+    nombreDeContentDisposition(
+      cabeceras["content-disposition"] || cabeceras["Content-Disposition"],
+    ) || `${fileSafe(opciones.nombreBase)}.${EXPORT_EXT[opciones.format]}`;
 
   downloadBlob(nombre, blob);
 }

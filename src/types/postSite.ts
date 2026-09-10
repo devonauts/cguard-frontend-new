@@ -10,7 +10,7 @@ export interface PostSite {
   fax?: string;
   categoryId?: string;
   category?: { id: string; name: string };
-  status: 'active' | 'inactive';
+  status: "active" | "inactive";
   createdAt?: string;
   updatedAt?: string;
   // Extended backend fields

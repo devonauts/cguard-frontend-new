@@ -13,10 +13,11 @@
  * marco del sistema, así que hereda el cristal, el acento y los dos temas.
  * ════════════════════════════════════════════════════════════════════════════
  */
-import { ReactNode } from 'react';
-import { CalendarClock, ClipboardCheck, MapPin } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import AuthShell from '@/pages/auth/AuthShell';
+import { ReactNode } from "react";
+import { CalendarClock, ClipboardCheck, MapPin } from "lucide-react";
+import { useTranslation } from "react-i18next";
+
+import AuthShell from "@/pages/auth/AuthShell";
 
 export default function GuardInviteLayout({
   children,
@@ -32,26 +33,26 @@ export default function GuardInviteLayout({
   subtitle?: string;
 }) {
   const { t } = useTranslation();
-  const empresa = (tenantName || '').trim();
+  const empresa = (tenantName || "").trim();
 
   return (
     <AuthShell
-      title={title}
-      subtitle={subtitle}
       brandName={empresa || undefined}
-      logoUrl={tenantLogoUrl || undefined}
-      eyebrow={t('invite.eyebrow_guard', 'Invitación · Equipo de seguridad')}
-      /* El formulario del vigilante es largo (documento, fechas, contactos):
-         la columna estrecha lo convertiría en una tira interminable. */
-      width="lg"
-      /* Ya venimos de cargar la invitación por red — una cortina de 2,5 s
-         encima sólo retrasa un formulario que el usuario ya está esperando. */
-      splash={false}
       features={[
         { icon: MapPin, label: t('invite.guard.feature_geo', 'Entrada y salida con geolocalización') },
         { icon: ClipboardCheck, label: t('invite.guard.feature_reports', 'Reportes, rondas y novedades') },
         { icon: CalendarClock, label: t('invite.guard.feature_shifts', 'Tus turnos siempre a la mano') },
       ]}
+      logoUrl={tenantLogoUrl || undefined}
+      splash={false}
+      eyebrow={t('invite.eyebrow_guard', 'Invitación · Equipo de seguridad')}
+      /* El formulario del vigilante es largo (documento, fechas, contactos):
+         la columna estrecha lo convertiría en una tira interminable. */
+      width="lg"
+      subtitle={subtitle}
+      /* Ya venimos de cargar la invitación por red — una cortina de 2,5 s
+         encima sólo retrasa un formulario que el usuario ya está esperando. */
+      title={title}
     >
       {children}
     </AuthShell>

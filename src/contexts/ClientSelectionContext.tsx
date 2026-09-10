@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, useState } from 'react';
+import React, { createContext, useContext, useMemo, useState } from "react";
 
 export type SelectedClient = {
   id: string;
@@ -11,14 +11,22 @@ interface ClientSelectionContextProps {
   setSelectedClient: (client: SelectedClient) => void;
 }
 
-const ClientSelectionContext = createContext<ClientSelectionContextProps | undefined>(undefined);
+const ClientSelectionContext = createContext<
+  ClientSelectionContextProps | undefined
+>(undefined);
 
-export const ClientSelectionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const ClientSelectionProvider: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
   const [selectedClient, setSelectedClient] = useState<SelectedClient>(null);
   // Memoize so consumers only re-render when the selection actually changes
   // (setSelectedClient is a stable setter). Prevents broad re-renders across
   // client pages on every provider render.
-  const value = useMemo(() => ({ selectedClient, setSelectedClient }), [selectedClient]);
+  const value = useMemo(
+    () => ({ selectedClient, setSelectedClient }),
+    [selectedClient],
+  );
+
   return (
     <ClientSelectionContext.Provider value={value}>
       {children}
@@ -28,6 +36,11 @@ export const ClientSelectionProvider: React.FC<{ children: React.ReactNode }> = 
 
 export function useClientSelection() {
   const ctx = useContext(ClientSelectionContext);
-  if (!ctx) throw new Error('useClientSelection must be used within ClientSelectionProvider');
+
+  if (!ctx)
+    throw new Error(
+      "useClientSelection must be used within ClientSelectionProvider",
+    );
+
   return ctx;
 }

@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
-import { loadGoogleMaps } from '@/utils/loadGoogleMaps';
+import { useState, useEffect } from "react";
+
+import { loadGoogleMaps } from "@/utils/loadGoogleMaps";
 
 declare global {
   interface Window {
@@ -18,8 +19,10 @@ export function useGoogleMaps() {
 
   useEffect(() => {
     const apiKey = (import.meta as any).env?.VITE_GOOGLE_MAPS_API_KEY;
-    if (!apiKey || apiKey === 'YOUR_API_KEY_HERE') {
-      setLoadError(new Error('Google Maps API key not configured'));
+
+    if (!apiKey || apiKey === "YOUR_API_KEY_HERE") {
+      setLoadError(new Error("Google Maps API key not configured"));
+
       return;
     }
 

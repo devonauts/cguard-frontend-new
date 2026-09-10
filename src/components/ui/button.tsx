@@ -1,8 +1,8 @@
-import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
+import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
   // Píldora + escala al pulsar. El radio grande es lo que separa el lenguaje
@@ -24,7 +24,8 @@ const buttonVariants = cva(
         // `variant="ghost" style={{ color: 'var(--bad-text)' }}` a mano: la
         // acción destructiva de bajo peso (quitar una fila, revocar un acceso)
         // que no merece el relleno rojo de `destructive`.
-        "danger-ghost": "cg-btn-ghost text-[color:var(--bad-text)] hover:text-[color:var(--bad-text)]",
+        "danger-ghost":
+          "cg-btn-ghost text-[color:var(--bad-text)] hover:text-[color:var(--bad-text)]",
         link: "underline-offset-4 hover:underline cg-btn-link",
       },
       size: {
@@ -37,26 +38,27 @@ const buttonVariants = cva(
       },
     },
     defaultVariants: { variant: "default", size: "default" },
-  }
-)
+  },
+);
 const Button = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean
-  }
+    VariantProps<typeof buttonVariants> & {
+      asChild?: boolean;
+    }
 >(({ className, variant, size, asChild = false, ...props }, ref) => {
-  const Comp = asChild ? Slot : "button"
+  const Comp = asChild ? Slot : "button";
 
   return (
     <Comp
-      data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
       ref={ref}
+      className={cn(buttonVariants({ variant, size, className }))}
+      data-slot="button"
       {...props}
     />
-  )
-})
-Button.displayName = "Button"
+  );
+});
 
-export { Button, buttonVariants }
+Button.displayName = "Button";
+
+export { Button, buttonVariants };

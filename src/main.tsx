@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 // import { BrowserRouter } from "react-router-dom";
 
 import App from "./App.tsx";
+
 // import { Provider } from "./provider.tsx";
 // Tipografía AUTOALOJADA (empaquetada — sin depender del CDN de Google, que puede
 // caerse o estar bloqueado). Dos familias variables, una sola petición cada una:
@@ -38,11 +39,14 @@ import "@/styles/tokens.css";
 import "@/styles/globals.css";
 import "@/styles/glass.css";
 import { Toaster } from "sonner";
+
 import OfflineBanner from "@/components/OfflineBanner";
 import { startCachePersistence } from "@/lib/offline/persistCache";
+
 // Registra los replayers de la cola offline (efecto secundario, una vez).
 import "@/lib/offline/replayers";
 import { registerSW } from "virtual:pwa-register";
+
 // Puente escritorio/SO (efecto secundario: registra el manejador de deep links
 // cguardpro:// cuando corremos dentro de la app de escritorio).
 import "@/lib/desktop";
@@ -74,10 +78,17 @@ if (!(window as any).cguardDesktop) {
     // nueva aparezca sola en ~1 min sin tener que cerrar nada.
     onRegisteredSW(_swUrl, r) {
       if (!r) return;
-      const check = () => { r.update().catch(() => { /* sin red: se reintenta luego */ }); };
+      const check = () => {
+        r.update().catch(() => {
+          /* sin red: se reintenta luego */
+        });
+      };
+
       setInterval(check, 60_000);
       window.addEventListener("focus", check);
-      document.addEventListener("visibilitychange", () => { if (!document.hidden) check(); });
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) check();
+      });
     },
   });
 }
@@ -85,6 +96,7 @@ startCachePersistence();
 
 window.addEventListener("vite:preloadError", (event) => {
   const last = Number(sessionStorage.getItem("chunkReloadAt") || 0);
+
   if (Date.now() - last < 10_000) return; // already retried — let it surface
   sessionStorage.setItem("chunkReloadAt", String(Date.now()));
   event.preventDefault();
@@ -94,26 +106,26 @@ window.addEventListener("vite:preloadError", (event) => {
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     {/* <BrowserRouter> */}
-        <App />
-        {/* Estado de red global: solo visible sin conexión / reconectando /
+    <App />
+    {/* Estado de red global: solo visible sin conexión / reconectando /
             con escrituras encoladas. */}
-        <OfflineBanner />
-        {/* Platform-styled confirm() replacement (see confirmDialog.tsx). */}
-        <ConfirmHost />
-        <PromptHost />
-        {/* Notifications must sit at the very top of the stacking context so the
+    <OfflineBanner />
+    {/* Platform-styled confirm() replacement (see confirmDialog.tsx). */}
+    <ConfirmHost />
+    <PromptHost />
+    {/* Notifications must sit at the very top of the stacking context so the
             live alert is never hidden behind a dialog/overlay. */}
-        {/* Sin `richColors`: pintaba la caja entera de verde/rojo con la paleta
+    {/* Sin `richColors`: pintaba la caja entera de verde/rojo con la paleta
             propia de sonner, que ni es cristal ni conoce el acento elegido. El
             tono ahora lo lleva la placa del icono (ver glass.css › AVISOS
             FLOTANTES), con los colores de estado FIJOS de tokens.css. */}
-        <Toaster
-          expand
-          position="top-center"
-          duration={8000}
-          style={{ zIndex: 2147483647 }}
-          toastOptions={{ style: { zIndex: 2147483647 } }}
-        />
+    <Toaster
+      expand
+      duration={8000}
+      position="top-center"
+      style={{ zIndex: 2147483647 }}
+      toastOptions={{ style: { zIndex: 2147483647 } }}
+    />
     {/* </BrowserRouter> */}
   </React.StrictMode>,
 );

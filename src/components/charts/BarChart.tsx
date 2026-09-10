@@ -1,10 +1,11 @@
-import { useMemo, useState } from 'react';
-import { resolveColor, toneColor, type ChartTone } from '@/lib/chartColors';
-import { useElementWidth, useSvgId, topRoundedRect, clamp } from './internals';
-import { useSeriesColor } from './useSeriesColor';
-import ChartTooltip from './ChartTooltip';
+import { useMemo, useState } from "react";
 
-import { localeActual } from '@/lib/localeActual'
+import { useElementWidth, useSvgId, topRoundedRect, clamp } from "./internals";
+import { useSeriesColor } from "./useSeriesColor";
+import ChartTooltip from "./ChartTooltip";
+
+import { resolveColor, toneColor, type ChartTone } from "@/lib/chartColors";
+import { localeActual } from "@/lib/localeActual";
 export interface BarDatum {
   /** Etiqueta de la categoría — es lo que sale en el globo. */
   label: string;
@@ -51,7 +52,7 @@ export interface BarChartProps {
 export default function BarChart({
   data,
   height = 96,
-  tone = 'brand',
+  tone = "brand",
   color,
   gridLines = 3,
   formatValue = (v) => v.toLocaleString(localeActual()),
@@ -61,12 +62,19 @@ export default function BarChart({
 }: BarChartProps) {
   const [c, paleta] = useSeriesColor(color, tone);
   const [ref, w] = useElementWidth<HTMLDivElement>(320);
-  const gradId = useSvgId('bars');
+  const gradId = useSvgId("bars");
 
   /* Un degradado por color DISTINTO, no uno por barra: en un gráfico de 30
      categorías con tres severidades eso son 3 `<defs>` en vez de 30. */
   const colores = useMemo(
-    () => data.map((d) => (d.color ? resolveColor(d.color) : d.tone ? toneColor(paleta, d.tone) : c)),
+    () =>
+      data.map((d) =>
+        d.color
+          ? resolveColor(d.color)
+          : d.tone
+            ? toneColor(paleta, d.tone)
+            : c,
+      ),
     [data, paleta, c],
   );
   const unicos = useMemo(() => Array.from(new Set(colores)), [colores]);
@@ -75,26 +83,36 @@ export default function BarChart({
 
   const n = data.length || 1;
   const paso = w / n;
-  const hueco = clamp(paso * 0.18, 1, 6);          // 2px de superficie entre barras
+  const hueco = clamp(paso * 0.18, 1, 6); // 2px de superficie entre barras
   const ancho = Math.max(1, paso - hueco);
   const radio = Math.min(4, ancho / 2);
 
-  if (!data.length) return <div ref={ref} className={className} style={{ height }} />;
+  if (!data.length)
+    return <div ref={ref} className={className} style={{ height }} />;
 
   return (
-    <div ref={ref} className={className} style={{ position: 'relative' }}>
+    <div ref={ref} className={className} style={{ position: "relative" }}>
       <svg
-        width={w}
-        height={height}
-        viewBox={`0 0 ${w} ${height}`}
+        aria-label={
+          ariaLabel ?? `${data.length} valores, máximo ${formatValue(max)}`
+        }
         className="block"
+        height={height}
         role="img"
-        aria-label={ariaLabel ?? `${data.length} valores, máximo ${formatValue(max)}`}
+        viewBox={`0 0 ${w} ${height}`}
+        width={w}
         onPointerLeave={() => setActivo(null)}
       >
         <defs>
           {unicos.map((col, k) => (
-            <linearGradient key={k} id={`${gradId}-${k}`} x1="0" y1="0" x2="0" y2="1">
+            <linearGradient
+              key={k}
+              id={`${gradId}-${k}`}
+              x1="0"
+              x2="0"
+              y1="0"
+              y2="1"
+            >
               <stop offset="0%" stopColor={col} stopOpacity={1} />
               <stop offset="100%" stopColor={col} stopOpacity={0.42} />
             </linearGradient>
@@ -104,7 +122,18 @@ export default function BarChart({
         {/* Rejilla acromática, por detrás de los datos y sin llamar la atención. */}
         {Array.from({ length: gridLines }).map((_, i) => {
           const y = ((i + 1) / (gridLines + 1)) * height;
-          return <line key={i} x1={0} x2={w} y1={y} y2={y} stroke={paleta.grid} strokeWidth={1} />;
+
+          return (
+            <line
+              key={i}
+              stroke={paleta.grid}
+              strokeWidth={1}
+              x1={0}
+              x2={w}
+              y1={y}
+              y2={y}
+            />
+          );
         })}
 
         {data.map((d, i) => {
@@ -112,15 +141,16 @@ export default function BarChart({
           const x = i * paso + hueco / 2;
           const y = height - h;
           const resaltado = activo === i;
+
           return (
             <g key={`${d.label}-${i}`}>
               {/* Zona sensible del ancho completo: apuntar a una barra de 3px es imposible. */}
               <rect
+                fill="transparent"
+                height={height}
+                width={paso}
                 x={i * paso}
                 y={0}
-                width={paso}
-                height={height}
-                fill="transparent"
                 onPointerEnter={() => setActivo(i)}
               />
               {h > 0 && (
@@ -128,7 +158,10 @@ export default function BarChart({
                   d={topRoundedRect(x, y, ancho, Math.max(h, radio), radio)}
                   fill={`url(#${gradId}-${unicos.indexOf(colores[i])})`}
                   opacity={activo === null || resaltado ? 1 : 0.45}
-                  style={{ transition: 'opacity 0.15s var(--ease)', pointerEvents: 'none' }}
+                  style={{
+                    transition: "opacity 0.15s var(--ease)",
+                    pointerEvents: "none",
+                  }}
                 />
               )}
             </g>
@@ -138,10 +171,10 @@ export default function BarChart({
 
       {activo !== null && data[activo] && (
         <ChartTooltip
+          title={formatValue(data[activo].value)}
           x={clamp(activo * paso + paso / 2, 40, Math.max(40, w - 40))}
           // Una barra al tope deja el globo fuera de la tarjeta: se frena en 24px.
           y={Math.max(24, height - (data[activo].value / max) * height)}
-          title={formatValue(data[activo].value)}
         >
           {data[activo].label}
         </ChartTooltip>

@@ -14,7 +14,12 @@ import { ApiService } from "@/services/api/apiService";
 
 const tenantId = (): string => {
   const t = localStorage.getItem("tenantId");
-  if (!t) throw new Error("No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.");
+
+  if (!t)
+    throw new Error(
+      "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+    );
+
   return t;
 };
 
@@ -158,11 +163,13 @@ export interface LogsFilters {
 
 function buildQuery(filters: LogsFilters): string {
   const entries: [string, string][] = [];
+
   Object.entries(filters).forEach(([k, v]) => {
     if (v === undefined || v === null || v === "") return;
     entries.push([k, String(v)]);
   });
   const qs = new URLSearchParams(entries).toString();
+
   return qs ? `?${qs}` : "";
 }
 
@@ -185,9 +192,12 @@ export const communicationService = {
 
   /** Stripe Checkout top-up — resolves with the hosted checkout URL. */
   rechargeWallet(amountCents: number): Promise<{ url: string; id: string }> {
-    return ApiService.post(`/tenant/${tenantId()}/communications/wallet/recharge`, {
-      data: { amountCents },
-    });
+    return ApiService.post(
+      `/tenant/${tenantId()}/communications/wallet/recharge`,
+      {
+        data: { amountCents },
+      },
+    );
   },
 
   getLogs(filters: LogsFilters = {}): Promise<LogsResult> {
@@ -201,7 +211,9 @@ export const communicationService = {
   // public app id + config id and posts back the one-time auth code.
 
   whatsappStatus(): Promise<WhatsAppStatus> {
-    return ApiService.get(`/tenant/${tenantId()}/communications/whatsapp/status`);
+    return ApiService.get(
+      `/tenant/${tenantId()}/communications/whatsapp/status`,
+    );
   },
 
   whatsappConnect(): Promise<WhatsAppEmbeddedConfig> {

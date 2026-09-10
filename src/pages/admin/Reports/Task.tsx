@@ -1,13 +1,19 @@
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { CheckSquare } from "lucide-react";
+
 import DataReport, { type ReportColumn } from "./DataReport";
-import { formatDate, rangeBounds, REPORT_ROW_LIMIT, warnIfCapped } from "./reportFormat";
+import {
+  formatDate,
+  rangeBounds,
+  REPORT_ROW_LIMIT,
+  warnIfCapped,
+} from "./reportFormat";
+
 import taskService, { type TaskRow } from "@/lib/api/taskService";
 // `columns` es de módulo: no hay `useTranslation` que valga. Se entra por la
 // instancia de i18next y SIEMPRE dentro de `value()`, nunca en el cuerpo del
 // módulo. Precedente: src/components/AppErrorBoundary.tsx
 import i18n from "@/i18n";
-
 
 /**
  * Mapas de módulo: guardan la CLAVE junto al texto español. Un `t()` aquí se
@@ -33,44 +39,98 @@ const PRIORITY: Record<string, Etiqueta> = {
   baja: { label: "Baja", labelKey: "comun.baja" },
 };
 /** Traduce una entrada del mapa AL PINTAR, nunca al construirlo. */
-const etiqueta = (mapa: Record<string, Etiqueta>, bruto: unknown): string | null => {
+const etiqueta = (
+  mapa: Record<string, Etiqueta>,
+  bruto: unknown,
+): string | null => {
   const e = mapa[String(bruto ?? "")];
+
   return e ? i18n.t(e.labelKey, e.label) : null;
 };
 
 const columns: ReportColumn<TaskRow>[] = [
-  { key: "created", label: "Creada", labelKey: "reports.col.task.created", value: (r) => formatDate(r.createdAt) },
-  { key: "task", label: "Tarea", labelKey: "reports.col.task.task", value: (r) => (r.taskToDo ? (r.taskToDo.length > 70 ? r.taskToDo.slice(0, 70) + "…" : r.taskToDo) : "—") },
-  { key: "station", label: "Puesto", labelKey: "reports.col.task.station", value: (r) => r.taskBelongsToStation?.stationName || "—" },
-  { key: "source", label: "Origen", labelKey: "reports.col.task.source", value: (r) => etiqueta(SOURCE, r.source) || r.source || "—" },
-  { key: "priority", label: "Prioridad", labelKey: "reports.col.task.priority", value: (r) => etiqueta(PRIORITY, r.priority) || r.priority || "—", align: "center" },
-  { key: "due", label: "Para", labelKey: "reports.col.task.due", value: (r) => formatDate(r.dateToDoTheTask) },
-  { key: "done", label: "Realizada", labelKey: "reports.col.task.done", value: (r) => (r.wasItDone ? "Sí" : "No"), align: "center" },
-  { key: "status", label: "Estado", labelKey: "reports.col.task.status", value: (r) => etiqueta(STATUS, r.status) || r.status || "—" },
+  {
+    key: "created",
+    label: "Creada",
+    labelKey: "reports.col.task.created",
+    value: (r) => formatDate(r.createdAt),
+  },
+  {
+    key: "task",
+    label: "Tarea",
+    labelKey: "reports.col.task.task",
+    value: (r) =>
+      r.taskToDo
+        ? r.taskToDo.length > 70
+          ? r.taskToDo.slice(0, 70) + "…"
+          : r.taskToDo
+        : "—",
+  },
+  {
+    key: "station",
+    label: "Puesto",
+    labelKey: "reports.col.task.station",
+    value: (r) => r.taskBelongsToStation?.stationName || "—",
+  },
+  {
+    key: "source",
+    label: "Origen",
+    labelKey: "reports.col.task.source",
+    value: (r) => etiqueta(SOURCE, r.source) || r.source || "—",
+  },
+  {
+    key: "priority",
+    label: "Prioridad",
+    labelKey: "reports.col.task.priority",
+    value: (r) => etiqueta(PRIORITY, r.priority) || r.priority || "—",
+    align: "center",
+  },
+  {
+    key: "due",
+    label: "Para",
+    labelKey: "reports.col.task.due",
+    value: (r) => formatDate(r.dateToDoTheTask),
+  },
+  {
+    key: "done",
+    label: "Realizada",
+    labelKey: "reports.col.task.done",
+    value: (r) => (r.wasItDone ? "Sí" : "No"),
+    align: "center",
+  },
+  {
+    key: "status",
+    label: "Estado",
+    labelKey: "reports.col.task.status",
+    value: (r) => etiqueta(STATUS, r.status) || r.status || "—",
+  },
 ];
 
 export default function Task() {
   const { t } = useTranslation();
+
   return (
     <DataReport<TaskRow>
-      title={t('ui.Task.informeDeTareas', 'Informe de Tareas')}
+      columns={columns}
       description="Tareas de cliente/personal aprobadas y ejecutadas por los vigilantes en turno."
       icon={CheckSquare}
-      columns={columns}
       load={async ({ from, to }) => {
         // El rango (`createdAt`) va EN LA CONSULTA. Antes se pedían las 2000
         // tareas más recientes y se recortaba aquí: un rango antiguo se
         // exportaba vacío.
         const { start, end } = rangeBounds(from, to);
-        const res: TaskRow[] | { rows?: TaskRow[] } = await taskService.byStatus({
-          status: "all",
-          from: start,
-          to: end,
-          limit: REPORT_ROW_LIMIT,
-        });
+        const res: TaskRow[] | { rows?: TaskRow[] } =
+          await taskService.byStatus({
+            status: "all",
+            from: start,
+            to: end,
+            limit: REPORT_ROW_LIMIT,
+          });
         const rows: TaskRow[] = Array.isArray(res) ? res : res?.rows || [];
+
         return warnIfCapped(rows);
       }}
+      title={t("ui.Task.informeDeTareas", "Informe de Tareas")}
     />
   );
 }

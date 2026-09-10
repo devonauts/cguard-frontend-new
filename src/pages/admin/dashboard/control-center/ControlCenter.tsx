@@ -32,21 +32,41 @@
  * ════════════════════════════════════════════════════════════════════════════
  */
 import { useEffect, useMemo, useState } from "react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
+
 import {
-  User, Shield, UserCog, AlertTriangle, Building2, Timer, Route, ShieldCheck,
-  LayoutDashboard, Boxes, type LucideIcon,
-} from "lucide-react";
-import { EmptyState, GlassPanel, SkeletonCards, Stagger } from "@/components/kit";
-import AppLayout from "@/layouts/app-layout";
-import { usePageTitle } from "@/hooks/usePageTitle";
-import { useAuth } from "@/contexts/AuthContext";
+  EmptyState,
+  GlassPanel,
+  SkeletonCards,
+  Stagger,
+} from "@/components/kit";
+
 import "./control-center.css";
-import { useControlCenter } from "./useControlCenter";
-import { useDemoData } from "./demoData";
-import { loadPrefs, savePrefs, hidratarDesdeLaCuenta, type DashboardPrefs } from "./prefs";
-import { KPI_ROUTES } from "./navigation";
 import type { Kpi } from "./types";
+
+import {
+  User,
+  Shield,
+  UserCog,
+  AlertTriangle,
+  Building2,
+  Timer,
+  Route,
+  ShieldCheck,
+  LayoutDashboard,
+  Boxes,
+  type LucideIcon,
+} from "lucide-react";
+
+import { KPI_ROUTES } from "./navigation";
+import {
+  loadPrefs,
+  savePrefs,
+  hidratarDesdeLaCuenta,
+  type DashboardPrefs,
+} from "./prefs";
+import { useDemoData } from "./demoData";
+import { useControlCenter } from "./useControlCenter";
 import { CommandBar } from "./components/CommandBar";
 import { MetricHero } from "./components/MetricHero";
 import { MapPanel } from "./components/MapPanel";
@@ -61,57 +81,97 @@ import { DashboardErrorBoundary } from "./components/ErrorBoundary";
 import { MobileCommandCenter } from "./components/MobileCommandCenter";
 import { useEsMovil } from "./useMovil";
 
+import { useAuth } from "@/contexts/AuthContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
+import AppLayout from "@/layouts/app-layout";
+
 const KPI_ICON: Record<string, LucideIcon> = {
-  onDuty: User, stations: Shield, supervisors: UserCog, openIncidents: AlertTriangle,
-  clients: Building2, response: Timer, patrolsToday: Route, coverage: ShieldCheck,
+  onDuty: User,
+  stations: Shield,
+  supervisors: UserCog,
+  openIncidents: AlertTriangle,
+  clients: Building2,
+  response: Timer,
+  patrolsToday: Route,
+  coverage: ShieldCheck,
 };
 
 /** Signos vitales, en el orden en que se preguntan. */
-const VITALES = ["onDuty", "coverage", "openIncidents", "patrolsToday"] as const;
+const VITALES = [
+  "onDuty",
+  "coverage",
+  "openIncidents",
+  "patrolsToday",
+] as const;
 /** Recursos — se consultan, no se vigilan. */
 const RECURSOS = ["stations", "supervisors", "response", "clients"] as const;
 
-function nombreDe(user?: { firstName?: string; lastName?: string; email?: string } | null): string {
+function nombreDe(
+  user?: { firstName?: string; lastName?: string; email?: string } | null,
+): string {
   const nombre = user?.firstName?.trim();
+
   if (nombre) return nombre;
   const apellido = user?.lastName?.trim();
+
   if (apellido) return apellido;
   const correo = user?.email || "";
+
   return correo.split("@")[0] || "operador";
 }
 
 export default function ControlCenter() {
   const { t } = useTranslation();
+
   usePageTitle(t("dashboard.pageTitle"));
   const { user } = useAuth();
   const esMovil = useEsMovil();
   // Se pinta con la caché del navegador y, en cuanto responde la cuenta, manda
   // lo guardado ahí: así el tablero se ve igual desde cualquier computadora.
   const [prefs, setPrefs] = useState<DashboardPrefs>(() => loadPrefs());
+
   useEffect(() => {
     let vivo = true;
+
     void hidratarDesdeLaCuenta().then((deLaCuenta) => {
       if (vivo && deLaCuenta) setPrefs(deLaCuenta);
     });
-    return () => { vivo = false; };
+
+    return () => {
+      vivo = false;
+    };
   }, []);
   const [customizeOpen, setCustomizeOpen] = useState(false);
   const [demo, setDemo] = useState<boolean>(() => {
-    try { return localStorage.getItem("cc_demo") === "1"; } catch { return false; }
+    try {
+      return localStorage.getItem("cc_demo") === "1";
+    } catch {
+      return false;
+    }
   });
   const toggleDemo = (v: boolean) => {
     setDemo(v);
-    try { localStorage.setItem("cc_demo", v ? "1" : "0"); } catch { /* ignore */ }
+    try {
+      localStorage.setItem("cc_demo", v ? "1" : "0");
+    } catch {
+      /* ignore */
+    }
   };
 
-  const live = useControlCenter(prefs.liveTracking ? prefs.locationIntervalSec : 3600);
+  const live = useControlCenter(
+    prefs.liveTracking ? prefs.locationIntervalSec : 3600,
+  );
   const demoData = useDemoData(demo);
   // En modo demo se muestra la muestra poblada para que un negocio nuevo pueda
   // ver el panel en operación. El refresco sigue siendo el real.
   const data = demo ? { ...demoData, refresh: live.refresh } : live;
 
   const openFullMap = () =>
-    window.open(`${window.location.origin}/dashboard/operations-map`, "_blank", "noopener,noreferrer");
+    window.open(
+      `${window.location.origin}/dashboard/operations-map`,
+      "_blank",
+      "noopener,noreferrer",
+    );
 
   // Reparto de los KPIs por papel. Lo que el hook devuelva y no esté en ninguna
   // de las dos listas se añade al riel: así una métrica nueva del backend
@@ -121,10 +181,11 @@ export default function ControlCenter() {
     const usadas = new Set<string>([...VITALES, ...RECURSOS]);
     const v = VITALES.map((k) => porClave.get(k)).filter(Boolean) as Kpi[];
     const r = [
-      ...RECURSOS.map((k) => porClave.get(k)).filter(Boolean) as Kpi[],
+      ...(RECURSOS.map((k) => porClave.get(k)).filter(Boolean) as Kpi[]),
       ...data.kpis.filter((k) => !usadas.has(k.key)),
     ];
     const cob = porClave.get("coverage");
+
     return {
       vitales: v,
       recursos: r,
@@ -139,7 +200,11 @@ export default function ControlCenter() {
     t("dashboard.sub.incidents", { count: c.openIncidents ?? 0 }),
   ].join(" · ");
 
-  const railItems: RailItem[] = recursos.map((k) => ({ kpi: k, icon: KPI_ICON[k.key], to: k.to ?? KPI_ROUTES[k.key] }));
+  const railItems: RailItem[] = recursos.map((k) => ({
+    kpi: k,
+    icon: KPI_ICON[k.key],
+    to: k.to ?? KPI_ROUTES[k.key],
+  }));
   const cargando = data.loading && data.kpis.length === 0;
 
   // Teléfono: el mapa es la pantalla. Se decide con una consulta de medios en
@@ -150,24 +215,28 @@ export default function ControlCenter() {
       <AppLayout>
         <DashboardErrorBoundary>
           <MobileCommandCenter
-            data={data}
-            prefs={prefs}
-            demo={demo}
-            onDemo={toggleDemo}
-            onCustomize={() => setCustomizeOpen(true)}
-            onFullMap={openFullMap}
+            cargando={cargando}
             cifras={[...vitales, ...recursos]}
-            railItems={railItems}
             cobertura={cobertura}
+            data={data}
+            demo={demo}
+            prefs={prefs}
+            railItems={railItems}
             resumen={resumen}
             userName={nombreDe(user)}
-            cargando={cargando}
+            onCustomize={() => setCustomizeOpen(true)}
+            onDemo={toggleDemo}
+            onFullMap={openFullMap}
           />
           <CustomizePanel
             open={customizeOpen}
             value={prefs}
             onClose={() => setCustomizeOpen(false)}
-            onSave={(p) => { setPrefs(p); savePrefs(p); setCustomizeOpen(false); }}
+            onSave={(p) => {
+              setPrefs(p);
+              savePrefs(p);
+              setCustomizeOpen(false);
+            }}
           />
         </DashboardErrorBoundary>
       </AppLayout>
@@ -179,33 +248,41 @@ export default function ControlCenter() {
       <DashboardErrorBoundary>
         <div className="cc-root cmd-shell mx-auto w-full max-w-[1680px] space-y-5 p-4 pb-16 sm:p-6">
           <CommandBar
-            userName={nombreDe(user)}
-            sseConnected={data.health.sseConnected}
-            lastSync={data.health.lastSync}
             demo={demo}
-            onDemo={toggleDemo}
-            onRefresh={data.refresh}
-            onCustomize={() => setCustomizeOpen(true)}
-            onFullMap={openFullMap}
+            lastSync={data.health.lastSync}
             resumen={resumen}
+            sseConnected={data.health.sseConnected}
+            userName={nombreDe(user)}
+            onCustomize={() => setCustomizeOpen(true)}
+            onDemo={toggleDemo}
+            onFullMap={openFullMap}
+            onRefresh={data.refresh}
           />
 
           {data.error === "no-tenant" ? (
             <GlassPanel className="p-4">
               <EmptyState
+                description={t("comun.eligeUnNegocioParaVer")}
                 icon={<LayoutDashboard />}
-                title={t('comun.seleccionaUnNegocio')}
-                description={t('comun.eligeUnNegocioParaVer')}
+                title={t("comun.seleccionaUnNegocio")}
               />
             </GlassPanel>
           ) : cargando ? (
-            <SkeletonCards count={4} className="lg:grid-cols-4" />
+            <SkeletonCards className="lg:grid-cols-4" count={4} />
           ) : (
             <>
               {/* ── 1. SIGNOS VITALES ─────────────────────────────────────── */}
-              <Stagger className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4" gap={0.05}>
+              <Stagger
+                className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+                gap={0.05}
+              >
                 {vitales.map((k) => (
-                  <MetricHero key={k.key} kpi={k} icon={KPI_ICON[k.key]} to={k.to ?? KPI_ROUTES[k.key]} />
+                  <MetricHero
+                    key={k.key}
+                    icon={KPI_ICON[k.key]}
+                    kpi={k}
+                    to={k.to ?? KPI_ROUTES[k.key]}
+                  />
                 ))}
               </Stagger>
 
@@ -213,29 +290,40 @@ export default function ControlCenter() {
               <div className="grid gap-5 xl:grid-cols-12">
                 <MapPanel
                   className="xl:col-span-8"
-                  entities={data.entities}
-                  prefs={prefs}
                   defaultCenter={data.defaultCenter}
+                  entities={data.entities}
                   live={data.health.sseConnected}
+                  prefs={prefs}
                   onFull={openFullMap}
                 />
 
                 <div className="flex flex-col gap-5 xl:col-span-4">
                   <Panel
-                    icon={<ShieldCheck />}
-                    title={t("dashboard.coverage.title")}
-                    subtitle={t('comun.ahoraMismoSobreElTerreno')}
-                    action={<PanelLink to="/live-tracking">{t("dashboard.viewLive")}</PanelLink>}
+                    action={
+                      <PanelLink to="/live-tracking">
+                        {t("dashboard.viewLive")}
+                      </PanelLink>
+                    }
                     bodyClassName="pt-1"
+                    icon={<ShieldCheck />}
+                    subtitle={t("comun.ahoraMismoSobreElTerreno")}
+                    title={t("dashboard.coverage.title")}
                   >
-                    <CoverageGauge coverage={cobertura} onDuty={c.onDuty ?? 0} stations={c.stations ?? 0} />
+                    <CoverageGauge
+                      coverage={cobertura}
+                      stations={c.stations ?? 0}
+                      onDuty={c.onDuty ?? 0}
+                    />
                   </Panel>
 
                   <StatRail
                     icon={<Boxes />}
-                    title={t("ui.ControlCenter.recursosDeLaOperacion", "Recursos de la operación")}
-                    subtitle={t("dashboard.resources.sub")}
                     items={railItems}
+                    subtitle={t("dashboard.resources.sub")}
+                    title={t(
+                      "ui.ControlCenter.recursosDeLaOperacion",
+                      "Recursos de la operación",
+                    )}
                   />
                 </div>
               </div>
@@ -243,10 +331,10 @@ export default function ControlCenter() {
               {/* ── 3. TENDENCIA + NOVEDADES ──────────────────────────────── */}
               <div className="grid gap-5 xl:grid-cols-12">
                 <TrendPanel
+                  acquisition={data.acquisitionTrend}
                   className="xl:col-span-7"
                   incidents={data.incidentsTrend}
                   response={data.responseTrend}
-                  acquisition={data.acquisitionTrend}
                 />
                 <ActivityStream
                   className="xl:col-span-5"
@@ -257,10 +345,10 @@ export default function ControlCenter() {
 
               {/* ── 4. BANDA DE ESTADO ────────────────────────────────────── */}
               <SystemStatus
-                sseConnected={data.health.sseConnected}
-                onlineDevices={data.health.onlineDevices}
-                stations={c.stations ?? 0}
                 clients={c.clients ?? 0}
+                onlineDevices={data.health.onlineDevices}
+                sseConnected={data.health.sseConnected}
+                stations={c.stations ?? 0}
                 team={c.team ?? 0}
               />
             </>
@@ -271,7 +359,11 @@ export default function ControlCenter() {
           open={customizeOpen}
           value={prefs}
           onClose={() => setCustomizeOpen(false)}
-          onSave={(p) => { setPrefs(p); savePrefs(p); setCustomizeOpen(false); }}
+          onSave={(p) => {
+            setPrefs(p);
+            savePrefs(p);
+            setCustomizeOpen(false);
+          }}
         />
       </DashboardErrorBoundary>
     </AppLayout>

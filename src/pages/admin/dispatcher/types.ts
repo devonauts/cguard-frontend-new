@@ -103,7 +103,12 @@ export interface DispatchComment {
   body?: string;
   message?: string;
   createdAt?: string;
-  author?: { id?: string; name?: string; fullName?: string; username?: string } | null;
+  author?: {
+    id?: string;
+    name?: string;
+    fullName?: string;
+    username?: string;
+  } | null;
   attachment?: CommentAttachment | null;
 }
 

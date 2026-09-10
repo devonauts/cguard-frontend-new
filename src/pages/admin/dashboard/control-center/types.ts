@@ -2,9 +2,20 @@
  *  (the /dashboard/stats handler returns plain objects), these mirror it. */
 import type { MapCenter } from "./defaultCenter";
 
-export type EntityKind = "tenant" | "station" | "supervisor" | "guard" | "incident" | "client";
+export type EntityKind =
+  | "tenant"
+  | "station"
+  | "supervisor"
+  | "guard"
+  | "incident"
+  | "client";
 export type LiveStatus =
-  | "online" | "offline" | "patrol" | "incident" | "delayed" | "emergency";
+  | "online"
+  | "offline"
+  | "patrol"
+  | "incident"
+  | "delayed"
+  | "emergency";
 
 /**
  * Lo que el mapa de operaciones necesita saber de una entidad MÁS ALLÁ de su
@@ -71,7 +82,10 @@ export interface MapEntity {
   meta?: MapEntityMeta;
 }
 
-export interface MonthPoint { month: string; value: number; }
+export interface MonthPoint {
+  month: string;
+  value: number;
+}
 
 export interface Kpi {
   key: string;
@@ -121,8 +135,16 @@ export interface DashboardStats {
   clientPortfolio?: Array<{ type: string; count: number }>;
   serviceRevenue?: Array<{ service?: string; revenue: number }>;
   guardPerformance?: Record<string, unknown>;
-  securityPerformance?: Array<{ month: string; incidents: number; responseTime: number }>;
-  customerSatisfaction?: Array<{ month: string; satisfaction: number; quality: number }>;
+  securityPerformance?: Array<{
+    month: string;
+    incidents: number;
+    responseTime: number;
+  }>;
+  customerSatisfaction?: Array<{
+    month: string;
+    satisfaction: number;
+    quality: number;
+  }>;
 }
 
 export interface ControlCenterData {

@@ -7,7 +7,7 @@ import {
   useState,
   ReactNode,
 } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+
 import OnboardingWizard from "./OnboardingWizard";
 import OnboardingBanner from "./OnboardingBanner";
 import {
@@ -17,18 +17,24 @@ import {
   OnboardingTenant,
 } from "./onboardingUtils";
 
+import { useAuth } from "@/contexts/AuthContext";
+
 interface OnboardingContextValue {
   tenant: OnboardingTenant | null;
   openWizard: () => void;
 }
 
-const OnboardingContext = createContext<OnboardingContextValue | undefined>(undefined);
+const OnboardingContext = createContext<OnboardingContextValue | undefined>(
+  undefined,
+);
 
 export const useOnboarding = () => {
   const ctx = useContext(OnboardingContext);
+
   if (!ctx) {
     return { tenant: null, openWizard: () => {} } as OnboardingContextValue;
   }
+
   return ctx;
 };
 
@@ -38,14 +44,27 @@ function userIsSuperadmin(u: any): boolean {
   if (u.isSuperadmin === true) return true;
   const normalize = (r: any) => {
     if (!r) return [];
-    if (Array.isArray(r)) return r.map((it) => (typeof it === "string" ? it : it?.name || it?.key || it?.slug || "")).filter(Boolean);
+    if (Array.isArray(r))
+      return r
+        .map((it) =>
+          typeof it === "string" ? it : it?.name || it?.key || it?.slug || "",
+        )
+        .filter(Boolean);
     if (typeof r === "string") return [r];
+
     return [];
   };
   const global = normalize(u.roles ?? u.role ?? []);
-  const tenants = Array.isArray(u.tenants) ? u.tenants.flatMap((t: any) => normalize(t.roles ?? t.role ?? [])) : [];
-  const single = u.tenant ? normalize(u.tenant.roles ?? u.tenant.role ?? []) : [];
-  return [...global, ...tenants, ...single].some((n) => (n || "").toString().toLowerCase().includes("superadmin"));
+  const tenants = Array.isArray(u.tenants)
+    ? u.tenants.flatMap((t: any) => normalize(t.roles ?? t.role ?? []))
+    : [];
+  const single = u.tenant
+    ? normalize(u.tenant.roles ?? u.tenant.role ?? [])
+    : [];
+
+  return [...global, ...tenants, ...single].some((n) =>
+    (n || "").toString().toLowerCase().includes("superadmin"),
+  );
 }
 
 /**
@@ -73,6 +92,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     if (!incomplete) return;
 
     let snoozed = false;
+
     try {
       snoozed = localStorage.getItem(snoozeKey(tenant.id)) === "1";
     } catch {}
@@ -95,8 +115,8 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     <OnboardingContext.Provider value={value}>
       {!isSuper && tenant?.id && (
         <OnboardingBanner
-          tenant={tenant}
           isSuperadmin={isSuper}
+          tenant={tenant}
           onOpenWizard={() => setWizardOpen(true)}
           onRefresh={refreshProfile}
         />
@@ -104,11 +124,11 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       {children}
       {!isSuper && tenant?.id && (
         <OnboardingWizard
-          open={wizardOpen}
-          onOpenChange={setWizardOpen}
-          tenant={tenant}
-          onRefresh={refreshProfile}
           defaultEmail={user?.email}
+          open={wizardOpen}
+          tenant={tenant}
+          onOpenChange={setWizardOpen}
+          onRefresh={refreshProfile}
         />
       )}
     </OnboardingContext.Provider>

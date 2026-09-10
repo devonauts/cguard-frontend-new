@@ -1,15 +1,25 @@
 import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import { Lock, CalendarDays, Clock, Timer, UserX } from "lucide-react";
+
 import AppLayout from "@/layouts/app-layout";
 import { DataTable, type Column } from "@/components/table/DataTable";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import { confirmDialog } from "@/components/ui/confirmDialog";
-import { Lock, CalendarDays, Clock, Timer, UserX } from "lucide-react";
 import ExportMenu from "@/components/reports/ExportMenu";
 import { exportMatrix, type ExportFormat } from "@/lib/export/reportExport";
 import attendanceService from "@/lib/api/attendanceService";
-import { PageContainer, PageHeader, Section, MetricTile, Stagger, Toolbar, StatusBadge, EmptyState } from "@/components/kit";
+import {
+  PageContainer,
+  PageHeader,
+  Section,
+  MetricTile,
+  Stagger,
+  Toolbar,
+  StatusBadge,
+  EmptyState,
+} from "@/components/kit";
 
 interface SummaryRow {
   id: string;
@@ -49,11 +59,21 @@ interface HoursSummaryResponse {
 
 /** Cifra de nómina: alineada a la derecha y en cifras de ancho fijo, para que
  *  las columnas se puedan comparar de un vistazo. */
-function Num({ v, strong, tone }: { v: React.ReactNode; strong?: boolean; tone?: "warn" | "bad" }) {
+function Num({
+  v,
+  strong,
+  tone,
+}: {
+  v: React.ReactNode;
+  strong?: boolean;
+  tone?: "warn" | "bad";
+}) {
   return (
     <span
       className={`block text-right tabular-nums ${strong ? "font-semibold" : ""}`}
-      style={tone ? { color: `var(--${tone}-text)`, fontWeight: 600 } : undefined}
+      style={
+        tone ? { color: `var(--${tone}-text)`, fontWeight: 600 } : undefined
+      }
     >
       {v}
     </span>
@@ -68,7 +88,11 @@ export default function NominaHoursSummary() {
   // informe, así que dos empresas con periodos distintos veían lo mismo.
   const [from, setFrom] = useState(isoDay(new Date(Date.now() - 14 * 864e5)));
   const [to, setTo] = useState(isoDay(new Date()));
-  const [periodo, setPeriodo] = useState<{ label: string; from: string; to: string } | null>(null);
+  const [periodo, setPeriodo] = useState<{
+    label: string;
+    from: string;
+    to: string;
+  } | null>(null);
   const [rows, setRows] = useState<SummaryRow[]>([]);
   const [totals, setTotals] = useState<HoursTotals | null>(null);
   const [loading, setLoading] = useState(false);
@@ -79,7 +103,12 @@ export default function NominaHoursSummary() {
     attendanceService
       .payrollSummary({ from: `${from}T00:00:00`, to: `${to}T23:59:59` })
       .then((d: HoursSummaryResponse) => {
-        setRows((d.rows || []).map((r: SummaryRow) => ({ ...r, id: r.id ?? r.guardId })));
+        setRows(
+          (d.rows || []).map((r: SummaryRow) => ({
+            ...r,
+            id: r.id ?? r.guardId,
+          })),
+        );
         setTotals(d.totals || null);
       })
       .catch((e) => toast.error(e?.message || "Error al generar el resumen"))
@@ -91,6 +120,7 @@ export default function NominaHoursSummary() {
   // días — un informe con el rango equivocado es mejor que ninguno.
   useEffect(() => {
     let vivo = true;
+
     attendanceService
       .currentPeriod()
       .then((p) => {
@@ -102,6 +132,7 @@ export default function NominaHoursSummary() {
       .catch(() => {
         /* se conserva el rango por defecto */
       });
+
     return () => {
       vivo = false;
     };
@@ -110,13 +141,26 @@ export default function NominaHoursSummary() {
   useEffect(load, [from, to]);
 
   const closePeriod = async () => {
-    if (!(await confirmDialog({ title: 'Cerrar periodo', message: `Cerrar el periodo hasta ${to}? Los registros quedarán bloqueados (solo lectura).`, confirmText: 'Cerrar periodo', tone: 'danger' }))) return;
+    if (
+      !(await confirmDialog({
+        title: "Cerrar periodo",
+        message: `Cerrar el periodo hasta ${to}? Los registros quedarán bloqueados (solo lectura).`,
+        confirmText: "Cerrar periodo",
+        tone: "danger",
+      }))
+    )
+      return;
     setClosing(true);
     try {
       const r = await attendanceService.closePeriod(`${to}T23:59:59`);
-      toast.success(`Periodo cerrado · ${r.lockedCount} registro(s) bloqueado(s)`);
+
+      toast.success(
+        `Periodo cerrado · ${r.lockedCount} registro(s) bloqueado(s)`,
+      );
     } catch (e) {
-      toast.error((e as { message?: string })?.message || "Error al cerrar el periodo");
+      toast.error(
+        (e as { message?: string })?.message || "Error al cerrar el periodo",
+      );
     } finally {
       setClosing(false);
     }
@@ -130,7 +174,10 @@ export default function NominaHoursSummary() {
    * no, así que el mismo periodo daba dos informes con distinto número de
    * columnas. Ahora la lista es una, y los tres archivos dicen lo mismo.
    */
-  const COLUMNAS_EXPORT: { label: string; get: (r: SummaryRow) => string | number }[] = [
+  const COLUMNAS_EXPORT: {
+    label: string;
+    get: (r: SummaryRow) => string | number;
+  }[] = [
     { label: "Vigilante", get: (r) => r.guardName },
     { label: "Días trabajados", get: (r) => r.daysWorked ?? 0 },
     { label: "Turnos", get: (r) => r.shifts },
@@ -151,18 +198,18 @@ export default function NominaHoursSummary() {
         COLUMNAS_EXPORT.map((c) => c.label),
         rows.map((r) => COLUMNAS_EXPORT.map((c) => c.get(r))),
         {
-          title: t('ui.NominaHoursSummary.resumenDeHoras', 'Resumen de horas'),
+          title: t("ui.NominaHoursSummary.resumenDeHoras", "Resumen de horas"),
           subtitle: `${from} a ${to} \u00b7 ${rows.length} persona(s)`,
           fileBase: `horas-trabajadas-${from}_${to}`,
         },
         // Todo lo que no sea el nombre es un número: alineado a la derecha se
         // compara de un vistazo columna abajo.
-        COLUMNAS_EXPORT.map((_, i) => (i === 0 ? 'left' : 'right')),
+        COLUMNAS_EXPORT.map((_, i) => (i === 0 ? "left" : "right")),
       );
       toast.success(`${rows.length} fila(s) exportada(s)`);
     } catch (e) {
-      console.error('export horas', e);
-      toast.error('No se pudo generar el archivo');
+      console.error("export horas", e);
+      toast.error("No se pudo generar el archivo");
     }
   };
 
@@ -173,32 +220,81 @@ export default function NominaHoursSummary() {
       render: (_v, r) => (
         <span className="inline-flex items-center gap-1.5">
           {r.guardName}
-          {r.role === "supervisor" && <StatusBadge tone="warn" dot={false}>Supervisor</StatusBadge>}
-          {r.role === "administrative" && <StatusBadge tone="info" dot={false}>Administrativo</StatusBadge>}
+          {r.role === "supervisor" && (
+            <StatusBadge dot={false} tone="warn">
+              Supervisor
+            </StatusBadge>
+          )}
+          {r.role === "administrative" && (
+            <StatusBadge dot={false} tone="info">
+              Administrativo
+            </StatusBadge>
+          )}
         </span>
       ),
     },
-    { key: "daysWorked", header: "Días trabajados", render: (_v, r) => <Num v={r.daysWorked ?? 0} strong /> },
-    { key: "shifts", header: "Turnos", render: (_v, r) => <Num v={r.shifts} /> },
-    { key: "regularHours", header: "H. regulares", render: (_v, r) => <Num v={r.regularHours.toFixed(2)} /> },
-    { key: "overtimeHours", header: "H. extra", render: (_v, r) => <Num v={r.overtimeHours.toFixed(2)} tone={r.overtimeHours > 0 ? "warn" : undefined} /> },
-    { key: "totalHours", header: "H. totales", render: (_v, r) => <Num v={r.totalHours.toFixed(2)} strong /> },
-    { key: "lateCount", header: "Tardanzas", render: (_v, r) => <Num v={r.lateCount} tone={r.lateCount > 0 ? "warn" : undefined} /> },
-    { key: "noShows", header: "Inasistencias", render: (_v, r) => <Num v={r.noShows} tone={r.noShows > 0 ? "bad" : undefined} /> },
-    { key: "approvedCorrections", header: "Correcciones", render: (_v, r) => <Num v={r.approvedCorrections} /> },
+    {
+      key: "daysWorked",
+      header: "Días trabajados",
+      render: (_v, r) => <Num strong v={r.daysWorked ?? 0} />,
+    },
+    {
+      key: "shifts",
+      header: "Turnos",
+      render: (_v, r) => <Num v={r.shifts} />,
+    },
+    {
+      key: "regularHours",
+      header: "H. regulares",
+      render: (_v, r) => <Num v={r.regularHours.toFixed(2)} />,
+    },
+    {
+      key: "overtimeHours",
+      header: "H. extra",
+      render: (_v, r) => (
+        <Num
+          tone={r.overtimeHours > 0 ? "warn" : undefined}
+          v={r.overtimeHours.toFixed(2)}
+        />
+      ),
+    },
+    {
+      key: "totalHours",
+      header: "H. totales",
+      render: (_v, r) => <Num strong v={r.totalHours.toFixed(2)} />,
+    },
+    {
+      key: "lateCount",
+      header: "Tardanzas",
+      render: (_v, r) => (
+        <Num tone={r.lateCount > 0 ? "warn" : undefined} v={r.lateCount} />
+      ),
+    },
+    {
+      key: "noShows",
+      header: "Inasistencias",
+      render: (_v, r) => (
+        <Num tone={r.noShows > 0 ? "bad" : undefined} v={r.noShows} />
+      ),
+    },
+    {
+      key: "approvedCorrections",
+      header: "Correcciones",
+      render: (_v, r) => <Num v={r.approvedCorrections} />,
+    },
   ];
 
   return (
     <AppLayout>
-      <PageContainer width="wide" className="p-4 sm:p-6">
+      <PageContainer className="p-4 sm:p-6" width="wide">
         <PageHeader
           icon={<Clock />}
-          title={t('ui.NominaHoursSummary.resumenDeHoras', 'Resumen de horas')}
           subtitle={
             periodo
               ? `Días trabajados y horas por persona · periodo ${periodo.label.toLowerCase()}`
               : "Días trabajados y horas por persona en el periodo"
           }
+          title={t("ui.NominaHoursSummary.resumenDeHoras", "Resumen de horas")}
         />
 
         {/* Barra: rango de fechas (izquierda) · exportar y acciones (derecha) */}
@@ -206,13 +302,23 @@ export default function NominaHoursSummary() {
           <div className="flex flex-wrap items-end gap-2">
             <label className="cg-eyebrow">
               Desde
-              <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="cg-input cg-focus mt-1 block px-3 py-1.5 text-sm tabular-nums" />
+              <input
+                className="cg-input cg-focus mt-1 block px-3 py-1.5 text-sm tabular-nums"
+                type="date"
+                value={from}
+                onChange={(e) => setFrom(e.target.value)}
+              />
             </label>
             <label className="cg-eyebrow">
               Hasta
-              <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="cg-input cg-focus mt-1 block px-3 py-1.5 text-sm tabular-nums" />
+              <input
+                className="cg-input cg-focus mt-1 block px-3 py-1.5 text-sm tabular-nums"
+                type="date"
+                value={to}
+                onChange={(e) => setTo(e.target.value)}
+              />
             </label>
-            <Button variant="brand" onClick={load} disabled={loading}>
+            <Button disabled={loading} variant="brand" onClick={load}>
               {loading ? "Generando…" : "Generar"}
             </Button>
             {/* El periodo que la empresa configuró. Antes esta pantalla abría
@@ -221,10 +327,13 @@ export default function NominaHoursSummary() {
                 mirar otras fechas. */}
             {periodo && (from !== periodo.from || to !== periodo.to) && (
               <Button
-                variant="ghost"
                 size="sm"
-                onClick={() => { setFrom(periodo.from); setTo(periodo.to); }}
                 title={`${periodo.from} → ${periodo.to}`}
+                variant="ghost"
+                onClick={() => {
+                  setFrom(periodo.from);
+                  setTo(periodo.to);
+                }}
               >
                 Volver al periodo {periodo.label.toLowerCase()}
               </Button>
@@ -234,45 +343,72 @@ export default function NominaHoursSummary() {
             {/* Tres botones seguidos ocupaban toda la barra en un teléfono y
                 empujaban «Cerrar periodo» a una línea suya. Uno solo, y el
                 formato se elige dentro. */}
-            <ExportMenu onExport={exportar} disabled={!rows.length} size="sm" />
-            <Button variant="destructive" size="sm" onClick={closePeriod} disabled={closing}>
-              <Lock className="mr-1.5 h-4 w-4" /> {closing ? "Cerrando…" : "Cerrar periodo"}
+            <ExportMenu disabled={!rows.length} size="sm" onExport={exportar} />
+            <Button
+              disabled={closing}
+              size="sm"
+              variant="destructive"
+              onClick={closePeriod}
+            >
+              <Lock className="mr-1.5 h-4 w-4" />{" "}
+              {closing ? "Cerrando…" : "Cerrar periodo"}
             </Button>
           </div>
         </Toolbar>
 
         {totals && (
           <Stagger className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            <MetricTile icon={<CalendarDays />} label="Turnos" value={totals.shifts} hint="Turnos con marcación en el periodo" />
-            <MetricTile icon={<Clock />} label="Horas totales" value={Number(totals.totalHours).toFixed(2)} hint="Suma de horas trabajadas" />
             <MetricTile
+              hint="Turnos con marcación en el periodo"
+              icon={<CalendarDays />}
+              label="Turnos"
+              value={totals.shifts}
+            />
+            <MetricTile
+              hint="Suma de horas trabajadas"
+              icon={<Clock />}
+              label="Horas totales"
+              value={Number(totals.totalHours).toFixed(2)}
+            />
+            <MetricTile
+              delta={
+                totals.totalHours > 0
+                  ? {
+                      value: `${((totals.overtimeHours / totals.totalHours) * 100).toFixed(1)} %`,
+                      direction: totals.overtimeHours > 0 ? "up" : "flat",
+                    }
+                  : undefined
+              }
+              hint="Sobre el total de horas"
               icon={<Timer />}
               label="Horas extra"
               value={Number(totals.overtimeHours).toFixed(2)}
-              delta={totals.totalHours > 0
-                ? { value: `${((totals.overtimeHours / totals.totalHours) * 100).toFixed(1)} %`, direction: totals.overtimeHours > 0 ? "up" : "flat" }
-                : undefined}
-              hint="Sobre el total de horas"
             />
             <MetricTile
+              hint="Incidencias de puntualidad"
               icon={<UserX />}
               label="Tardanzas / Inasist."
               value={`${totals.lateCount} / ${totals.noShows}`}
-              hint="Incidencias de puntualidad"
             />
           </Stagger>
         )}
 
-        <Section title="Detalle por persona" icon={<Clock />}>
+        <Section icon={<Clock />} title="Detalle por persona">
           <div className="overflow-x-auto">
             <DataTable
               columns={columns}
               data={rows}
               emptyState={
                 <EmptyState
+                  description={t(
+                    "ui.NominaHoursSummary.eligeOtroRangoDeFechas",
+                    "Elige otro rango de fechas y vuelve a generar el resumen.",
+                  )}
                   icon={<Clock />}
-                  title={t('ui.NominaHoursSummary.sinDatosEnElRango', 'Sin datos en el rango')}
-                  description={t('ui.NominaHoursSummary.eligeOtroRangoDeFechas', 'Elige otro rango de fechas y vuelve a generar el resumen.')}
+                  title={t(
+                    "ui.NominaHoursSummary.sinDatosEnElRango",
+                    "Sin datos en el rango",
+                  )}
                 />
               }
             />

@@ -1,28 +1,52 @@
+import type { KeyboardEvent } from "react";
+import type { Kpi } from "../types";
+
 import { memo } from "react";
 /**
  * El riel de recursos: las métricas que no son signos vitales pero que se
  * consultan a diario (puestos, supervisores, respuesta, cartera). Van como
  * filas y no como tarjetas para que la columna respire al lado del dial.
  */
-import type { KeyboardEvent } from "react";
 import { ChevronRight, type LucideIcon } from "lucide-react";
-import { IconTile } from "@/components/kit";
-import type { Kpi } from "../types";
-import { fmtValue, toneFill, toneOf } from "../tone";
-import { Panel } from "./Panel";
 import { useNavigate } from "react-router-dom";
 
-export interface RailItem { kpi: Kpi; icon?: LucideIcon; to?: string }
+import { fmtValue, toneFill, toneOf } from "../tone";
 
-function StatRailBase({ title, subtitle, icon, items }: {
-  title: string; subtitle?: string; icon?: React.ReactNode; items: RailItem[];
+import { Panel } from "./Panel";
+
+import { IconTile } from "@/components/kit";
+
+export interface RailItem {
+  kpi: Kpi;
+  icon?: LucideIcon;
+  to?: string;
+}
+
+function StatRailBase({
+  title,
+  subtitle,
+  icon,
+  items,
+}: {
+  title: string;
+  subtitle?: string;
+  icon?: React.ReactNode;
+  items: RailItem[];
 }) {
   const navigate = useNavigate();
+
   return (
-    <Panel title={title} subtitle={subtitle} icon={icon} bodyClassName="p-2" halo={false}>
+    <Panel
+      bodyClassName="p-2"
+      halo={false}
+      icon={icon}
+      subtitle={subtitle}
+      title={title}
+    >
       {items.map(({ kpi, icon: Icon, to }) => {
         const tone = toneOf(kpi.status);
         const ir = to ? () => navigate(to) : undefined;
+
         return (
           <div
             key={kpi.key}
@@ -35,21 +59,49 @@ function StatRailBase({ title, subtitle, icon, items }: {
                   "aria-label": `Ver ${String(kpi.label)}`,
                   onClick: ir,
                   onKeyDown: (e: KeyboardEvent) => {
-                    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); ir(); }
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      ir();
+                    }
                   },
                 }
               : {})}
           >
-            {Icon && <IconTile tone={tone} size="sm"><Icon /></IconTile>}
+            {Icon && (
+              <IconTile size="sm" tone={tone}>
+                <Icon />
+              </IconTile>
+            )}
             <div className="min-w-0 flex-1">
               <div className="truncate text-sm font-medium">{kpi.label}</div>
-              {kpi.sub && <div className="truncate text-xs" style={{ color: "var(--ink-faint)" }}>{kpi.sub}</div>}
+              {kpi.sub && (
+                <div
+                  className="truncate text-xs"
+                  style={{ color: "var(--ink-faint)" }}
+                >
+                  {kpi.sub}
+                </div>
+              )}
             </div>
             <div className="flex items-baseline gap-1">
-              <span className="font-display text-lg font-bold tabular-nums">{fmtValue(kpi.value)}</span>
-              {kpi.unit && <span className="text-[11px]" style={{ color: "var(--ink-faint)" }}>{kpi.unit}</span>}
+              <span className="font-display text-lg font-bold tabular-nums">
+                {fmtValue(kpi.value)}
+              </span>
+              {kpi.unit && (
+                <span
+                  className="text-[11px]"
+                  style={{ color: "var(--ink-faint)" }}
+                >
+                  {kpi.unit}
+                </span>
+              )}
             </div>
-            {ir && <ChevronRight className="size-4 shrink-0" style={{ color: "var(--ink-faint)" }} />}
+            {ir && (
+              <ChevronRight
+                className="size-4 shrink-0"
+                style={{ color: "var(--ink-faint)" }}
+              />
+            )}
           </div>
         );
       })}

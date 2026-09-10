@@ -13,14 +13,22 @@
 // SÓLO TIPOS. Se borran al compilar, así que este import no arrastra nada en
 // tiempo de ejecución. La clase se carga bajo demanda en `doConnect` — ver ahí
 // el porqué.
-import type { VoiceChannel, VoiceMember, VoiceSpeaker, VoiceState } from "./voiceChannel";
-import i18n from "@/i18n";
+import type {
+  VoiceChannel,
+  VoiceMember,
+  VoiceSpeaker,
+  VoiceState,
+} from "./voiceChannel";
+
 import { getAuthToken } from "./api";
+
+import i18n from "@/i18n";
 
 const API_URL = (import.meta.env.VITE_API_URL as string | undefined) || "";
 const socketOrigin = () => {
   try {
-    return new URL(API_URL || window.location.origin, window.location.origin).origin;
+    return new URL(API_URL || window.location.origin, window.location.origin)
+      .origin;
   } catch {
     return window.location.origin;
   }
@@ -52,8 +60,15 @@ let gestureCleanup: (() => void) | null = null;
 // which is why the guard app hears fine but the web didn't.)
 function installGestureResume() {
   if (gestureCleanup || typeof window === "undefined") return;
-  const h = () => { try { vc?.resume(); } catch { /* ignore */ } };
+  const h = () => {
+    try {
+      vc?.resume();
+    } catch {
+      /* ignore */
+    }
+  };
   const opts: any = { capture: true, passive: true };
+
   window.addEventListener("pointerdown", h, opts);
   window.addEventListener("touchstart", h, opts);
   window.addEventListener("keydown", h, opts);
@@ -71,15 +86,29 @@ function installGestureResume() {
 // radio está ON; el navegador lo suelta al ocultar la pestaña, así que se
 // re-pide al volver. API estándar; si el navegador no la soporta, no pasa nada.
 let wakeLock: any = null;
+
 async function pedirWakeLock() {
   try {
-    if (wakeLock || typeof navigator === "undefined" || !(navigator as any).wakeLock) return;
+    if (
+      wakeLock ||
+      typeof navigator === "undefined" ||
+      !(navigator as any).wakeLock
+    )
+      return;
     wakeLock = await (navigator as any).wakeLock.request("screen");
-    wakeLock.addEventListener?.("release", () => { wakeLock = null; });
-  } catch { wakeLock = null; }
+    wakeLock.addEventListener?.("release", () => {
+      wakeLock = null;
+    });
+  } catch {
+    wakeLock = null;
+  }
 }
 function soltarWakeLock() {
-  try { wakeLock?.release?.(); } catch { /* ignore */ }
+  try {
+    wakeLock?.release?.();
+  } catch {
+    /* ignore */
+  }
   wakeLock = null;
 }
 function onVisibilidadRadio() {
@@ -90,28 +119,50 @@ function onVisibilidadRadio() {
 // El despachador puede tener el CRM en otra pestaña o detrás de otra ventana.
 // Un aviso del navegador (con permiso) lo alerta de una transmisión entrante.
 let ultimoHablante: string | null = null;
+
 function pedirPermisoNotif() {
   try {
-    if (typeof Notification !== "undefined" && Notification.permission === "default") {
+    if (
+      typeof Notification !== "undefined" &&
+      Notification.permission === "default"
+    ) {
       void Notification.requestPermission();
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 function avisarTransmision(sp: { userId: string; name: string } | null) {
   try {
     const id = sp?.userId || null;
+
     // Solo en el flanco (nuevo hablante), no self, y solo si el CRM no está a la vista.
     if (id && id !== ultimoHablante && id !== selfId && document.hidden) {
-      if (typeof Notification !== "undefined" && Notification.permission === "granted") {
+      if (
+        typeof Notification !== "undefined" &&
+        Notification.permission === "granted"
+      ) {
         const n = new Notification("Radio · transmisión entrante", {
           body: `${sp?.name || "Un vigilante"} está hablando en el canal.`,
-          tag: "radio-tx", renotify: false, silent: false,
+          tag: "radio-tx",
+          renotify: false,
+          silent: false,
         } as any);
-        n.onclick = () => { try { window.focus(); } catch { /* ignore */ } n.close(); };
+
+        n.onclick = () => {
+          try {
+            window.focus();
+          } catch {
+            /* ignore */
+          }
+          n.close();
+        };
       }
     }
     ultimoHablante = id;
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 let snap: RadioVoiceSnapshot = {
@@ -126,9 +177,16 @@ let snap: RadioVoiceSnapshot = {
 };
 
 const listeners = new Set<() => void>();
+
 function emit() {
   snap = { ...snap };
-  listeners.forEach((l) => { try { l(); } catch { /* ignore */ } });
+  listeners.forEach((l) => {
+    try {
+      l();
+    } catch {
+      /* ignore */
+    }
+  });
 }
 function set(p: Partial<RadioVoiceSnapshot>) {
   Object.assign(snap, p);
@@ -137,7 +195,10 @@ function set(p: Partial<RadioVoiceSnapshot>) {
 
 export function subscribeRadio(l: () => void): () => void {
   listeners.add(l);
-  return () => { listeners.delete(l); };
+
+  return () => {
+    listeners.delete(l);
+  };
 }
 export function getRadioSnapshot(): RadioVoiceSnapshot {
   return snap;
@@ -179,6 +240,7 @@ async function doConnect() {
   set({ state: "connecting", hint: null });
 
   let VoiceChannelCtor: typeof import("./voiceChannel").VoiceChannel;
+
   try {
     ({ VoiceChannel: VoiceChannelCtor } = await import("./voiceChannel"));
   } catch {
@@ -186,8 +248,12 @@ async function doConnect() {
     set({
       state: "error",
       // Se traduce AQUÍ (en tiempo de llamada), no al cargar el módulo.
-      hint: i18n.t("radio.voiceModuleLoadError", "No se pudo cargar el módulo de voz."),
+      hint: i18n.t(
+        "radio.voiceModuleLoadError",
+        "No se pudo cargar el módulo de voz.",
+      ),
     });
+
     return;
   }
   connectPending = false;
@@ -197,13 +263,23 @@ async function doConnect() {
 
   const tenantId = localStorage.getItem("tenantId") || "";
   const v = new VoiceChannelCtor();
+
   vc = v;
   v.connect(
-    { url: socketOrigin(), path: "/api/socket.io", token: getAuthToken() || "", tenantId, selfId },
+    {
+      url: socketOrigin(),
+      path: "/api/socket.io",
+      token: getAuthToken() || "",
+      tenantId,
+      selfId,
+    },
     {
       onState: (s) => set({ state: s }),
       onPresence: (r) => set({ roster: r }),
-      onSpeaker: (sp) => { set({ speaker: sp }); avisarTransmision(sp); },
+      onSpeaker: (sp) => {
+        set({ speaker: sp });
+        avisarTransmision(sp);
+      },
       onError: (m) => set({ hint: m }),
     },
   );
@@ -221,10 +297,16 @@ async function doConnect() {
   // PTT disabled. We reconcile both directions so a drop/reconnect re-syncs too.
   if (joinTimer) clearInterval(joinTimer);
   joinTimer = setInterval(async () => {
-    if (!vc) { clearInterval(joinTimer); joinTimer = null; return; }
+    if (!vc) {
+      clearInterval(joinTimer);
+      joinTimer = null;
+
+      return;
+    }
     if (vc.joined && !snap.joined) {
       try {
         const r = await vc.join(); // roster snapshot (LiveKit: connect already subscribed)
+
         set({ joined: true, roster: r.roster, speaker: r.speaker, hint: null });
       } catch {
         set({ joined: true, hint: null }); // joined; roster fills via presence events
@@ -239,20 +321,42 @@ function doDisconnect() {
   // Si aún se está descargando el SDK, `doConnect` verá `snap.on === false` al
   // terminar y se retirará solo.
   connectPending = false;
-  if (joinTimer) { clearInterval(joinTimer); joinTimer = null; }
+  if (joinTimer) {
+    clearInterval(joinTimer);
+    joinTimer = null;
+  }
   gestureCleanup?.();
   soltarWakeLock();
   document.removeEventListener("visibilitychange", onVisibilidadRadio);
   ultimoHablante = null;
-  try { vc?.disconnect(); } catch { /* ignore */ }
+  try {
+    vc?.disconnect();
+  } catch {
+    /* ignore */
+  }
   vc = null;
-  set({ state: "idle", joined: false, roster: [], speaker: null, talking: false, hint: null });
+  set({
+    state: "idle",
+    joined: false,
+    roster: [],
+    speaker: null,
+    talking: false,
+    hint: null,
+  });
 }
 
 /** Turn the radio on/off. Persists across reloads. */
 export function setRadioOn(on: boolean) {
-  try { localStorage.setItem(ON_KEY, on ? "1" : "0"); } catch { /* ignore */ }
-  if (on === snap.on && (on ? vc : !vc)) { set({ on }); return; }
+  try {
+    localStorage.setItem(ON_KEY, on ? "1" : "0");
+  } catch {
+    /* ignore */
+  }
+  if (on === snap.on && (on ? vc : !vc)) {
+    set({ on });
+
+    return;
+  }
   set({ on });
   if (on) doConnect();
   else doDisconnect();
@@ -261,26 +365,45 @@ export function setRadioOn(on: boolean) {
 /** Restore the on-state after a reload / first mount (best-effort). */
 export function restoreRadio() {
   let was = false;
-  try { was = localStorage.getItem(ON_KEY) === "1"; } catch { /* ignore */ }
+
+  try {
+    was = localStorage.getItem(ON_KEY) === "1";
+  } catch {
+    /* ignore */
+  }
   if (was && !snap.on) setRadioOn(true);
 }
 
 /** Resume audio playback within a user gesture (browser autoplay policy). */
 export function radioResume() {
-  try { vc?.resume(); } catch { /* ignore */ }
+  try {
+    vc?.resume();
+  } catch {
+    /* ignore */
+  }
 }
 
-export async function radioStartTalk(): Promise<{ ok: boolean; busyWith?: string; error?: string }> {
+export async function radioStartTalk(): Promise<{
+  ok: boolean;
+  busyWith?: string;
+  error?: string;
+}> {
   if (!vc) return { ok: false, error: "off" };
   try {
     const r = await vc.startTalk();
+
     if ((r as any)?.ok) set({ talking: true });
+
     return r as any;
   } catch (e: any) {
     return { ok: false, error: e?.message || "mic" };
   }
 }
 export function radioStopTalk() {
-  try { vc?.stopTalk(); } catch { /* ignore */ }
+  try {
+    vc?.stopTalk();
+  } catch {
+    /* ignore */
+  }
   set({ talking: false });
 }

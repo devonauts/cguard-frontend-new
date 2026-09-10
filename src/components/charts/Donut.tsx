@@ -1,5 +1,11 @@
-import type { ReactNode } from 'react';
-import { useChartColors, toneColor, resolveColor, type ChartTone } from '@/lib/chartColors';
+import type { ReactNode } from "react";
+
+import {
+  useChartColors,
+  toneColor,
+  resolveColor,
+  type ChartTone,
+} from "@/lib/chartColors";
 
 export interface DonutSegment {
   value: number;
@@ -56,38 +62,55 @@ export default function Donut({
   let offset = 0;
 
   return (
-    <div className={className} style={{ position: 'relative', width: size, height: size, flexShrink: 0 }}>
+    <div
+      className={className}
+      style={{ position: "relative", width: size, height: size, flexShrink: 0 }}
+    >
       <svg
-        width={size}
-        height={size}
-        viewBox={`0 0 ${size} ${size}`}
+        aria-label={
+          ariaLabel ??
+          validos.map((s) => `${s.label ?? ""} ${s.value}`).join(", ")
+        }
         className="block -rotate-90"
+        height={size}
         role="img"
-        aria-label={ariaLabel ?? validos.map((s) => `${s.label ?? ''} ${s.value}`).join(', ')}
+        viewBox={`0 0 ${size} ${size}`}
+        width={size}
       >
-        <circle cx={centro} cy={centro} r={r} fill="none" stroke={paleta.track} strokeWidth={thickness} />
+        <circle
+          cx={centro}
+          cy={centro}
+          fill="none"
+          r={r}
+          stroke={paleta.track}
+          strokeWidth={thickness}
+        />
         {validos.map((s, i) => {
           const largo = (s.value / suma) * C;
           const dibujado = Math.max(0.5, largo - hueco);
           const color = s.color
             ? resolveColor(s.color)
-            : s.tone ? toneColor(paleta, s.tone) : paleta.series[i % paleta.series.length];
+            : s.tone
+              ? toneColor(paleta, s.tone)
+              : paleta.series[i % paleta.series.length];
           const el = (
             <circle
               key={i}
               cx={centro}
               cy={centro}
-              r={r}
               fill="none"
+              r={r}
               stroke={color}
-              strokeWidth={thickness}
               strokeDasharray={`${dibujado} ${C - dibujado}`}
               strokeDashoffset={-offset}
+              strokeWidth={thickness}
             >
               {s.label && <title>{`${s.label}: ${s.value}`}</title>}
             </circle>
           );
+
           offset += largo;
+
           return el;
         })}
       </svg>
@@ -95,11 +118,18 @@ export default function Donut({
       {(centerTop != null || centerBottom != null) && (
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
           {centerTop != null && (
-            <span className="font-display font-bold leading-none text-foreground" style={{ fontSize: Math.round(size * 0.17) }}>
+            <span
+              className="font-display font-bold leading-none text-foreground"
+              style={{ fontSize: Math.round(size * 0.17) }}
+            >
               {centerTop}
             </span>
           )}
-          {centerBottom != null && <span className="mt-0.5 text-[11px] text-muted-foreground">{centerBottom}</span>}
+          {centerBottom != null && (
+            <span className="mt-0.5 text-[11px] text-muted-foreground">
+              {centerBottom}
+            </span>
+          )}
         </div>
       )}
     </div>

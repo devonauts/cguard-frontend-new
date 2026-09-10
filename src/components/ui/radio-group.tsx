@@ -1,8 +1,8 @@
-import * as React from "react"
-import * as RadioGroupPrimitive from "@radix-ui/react-radio-group"
-import { Circle } from "lucide-react"
+import * as React from "react";
+import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
+import { Circle } from "lucide-react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 const RadioGroup = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Root>,
@@ -14,9 +14,10 @@ const RadioGroup = React.forwardRef<
       {...props}
       ref={ref}
     />
-  )
-})
-RadioGroup.displayName = RadioGroupPrimitive.Root.displayName
+  );
+});
+
+RadioGroup.displayName = RadioGroupPrimitive.Root.displayName;
 
 const RadioGroupItem = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Item>,
@@ -29,7 +30,7 @@ const RadioGroupItem = React.forwardRef<
         "cg-focus aspect-square h-4 w-4 rounded-full border transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none",
         "border-[color:var(--hairline)] bg-[var(--glass-sunken)]",
         "data-[state=checked]:border-[color:var(--brand)] data-[state=checked]:bg-[var(--brand-wash)] data-[state=checked]:shadow-[0_0_14px_-4px_var(--brand-glow)]",
-        className
+        className,
       )}
       {...props}
     >
@@ -37,8 +38,9 @@ const RadioGroupItem = React.forwardRef<
         <Circle className="h-2 w-2 fill-[var(--brand)] text-[color:var(--brand)]" />
       </RadioGroupPrimitive.Indicator>
     </RadioGroupPrimitive.Item>
-  )
-})
-RadioGroupItem.displayName = RadioGroupPrimitive.Item.displayName
+  );
+});
 
-export { RadioGroup, RadioGroupItem }
+RadioGroupItem.displayName = RadioGroupPrimitive.Item.displayName;
+
+export { RadioGroup, RadioGroupItem };

@@ -1,10 +1,12 @@
-import { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import AppLayout from '@/layouts/app-layout';
-import Breadcrumb from '@/components/ui/breadcrumb';
-import { PageContainer, PageHeader } from '@/components/kit';
-import { Route as RouteIcon } from 'lucide-react';
-import RouteForm from './RouteForm';
+import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Route as RouteIcon } from "lucide-react";
+
+import RouteForm from "./RouteForm";
+
+import AppLayout from "@/layouts/app-layout";
+import Breadcrumb from "@/components/ui/breadcrumb";
+import { PageContainer, PageHeader } from "@/components/kit";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -32,7 +34,7 @@ export default function NewRoutePage() {
   useEffect(() => {
     if (!params?.tenantId) return;
     try {
-      localStorage.setItem('tenantId', params.tenantId);
+      localStorage.setItem("tenantId", params.tenantId);
     } catch (error) {
       console.error(error);
     }
@@ -42,20 +44,22 @@ export default function NewRoutePage() {
     <AppLayout>
       <Breadcrumb
         items={[
-          { label: 'Panel de control', path: '/dashboard' },
-          { label: 'Rutas', path: '/vehicle-patrol/routes' },
-          { label: 'Nueva ruta' },
+          { label: "Panel de control", path: "/dashboard" },
+          { label: "Rutas", path: "/vehicle-patrol/routes" },
+          { label: "Nueva ruta" },
         ]}
       />
-      <PageContainer width="wide" className="p-6">
+      <PageContainer className="p-6" width="wide">
         <PageHeader
           icon={<RouteIcon />}
-          title="Nueva ruta"
           subtitle="Define las paradas del recorrido, quién lo hace y con qué vehículo."
+          title="Nueva ruta"
         />
         <RouteForm
           mode="create"
-          onSuccess={() => navigate('/vehicle-patrol/routes', { replace: true })}
+          onSuccess={() =>
+            navigate("/vehicle-patrol/routes", { replace: true })
+          }
         />
       </PageContainer>
     </AppLayout>

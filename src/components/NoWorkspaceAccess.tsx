@@ -1,5 +1,6 @@
-import { useTranslation } from "react-i18next"
-import { useAuth } from "@/contexts/AuthContext"
+import { useTranslation } from "react-i18next";
+
+import { useAuth } from "@/contexts/AuthContext";
 
 /**
  * Full-screen, non-dismissible modal shown when a user is authenticated but has
@@ -15,9 +16,9 @@ import { useAuth } from "@/contexts/AuthContext"
  * was not attached to any workspace.
  */
 export default function NoWorkspaceAccess() {
-  const { t } = useTranslation()
-  const { user, signOut } = useAuth()
-  const email = user?.email || ""
+  const { t } = useTranslation();
+  const { user, signOut } = useAuth();
+  const email = user?.email || "";
 
   return (
     // El lienzo del sistema (`.app-shell`) trae sus halos de acento detrás, que
@@ -32,23 +33,27 @@ export default function NoWorkspaceAccess() {
       style={{ position: "fixed" }}
     >
       <div
-        role="alertdialog"
-        aria-modal="true"
         aria-labelledby="no-workspace-title"
+        aria-modal="true"
         className="glass-raised w-full max-w-md p-7"
+        role="alertdialog"
       >
         <div
           className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full border"
-          style={{ background: "var(--brand-wash)", borderColor: "var(--brand-line)", color: "var(--brand-text)" }}
+          style={{
+            background: "var(--brand-wash)",
+            borderColor: "var(--brand-line)",
+            color: "var(--brand-text)",
+          }}
         >
           <svg
             className="h-7 w-7"
-            viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="1.8"
             strokeLinecap="round"
             strokeLinejoin="round"
+            strokeWidth="1.8"
+            viewBox="0 0 24 24"
           >
             <path d="M12 9v4" />
             <path d="M12 17h.01" />
@@ -57,41 +62,55 @@ export default function NoWorkspaceAccess() {
         </div>
 
         <h2
-          id="no-workspace-title"
           className="font-display text-center text-lg font-semibold"
+          id="no-workspace-title"
           style={{ color: "var(--ink)" }}
         >
-          {t('ui.NoWorkspaceAccess.sinAccesoAUnEspacioDeTrabajo', 'Sin acceso a un espacio de trabajo')}
+          {t(
+            "ui.NoWorkspaceAccess.sinAccesoAUnEspacioDeTrabajo",
+            "Sin acceso a un espacio de trabajo",
+          )}
         </h2>
 
-        <p className="mt-3 text-center text-sm leading-relaxed" style={{ color: "var(--ink-soft)" }}>
-          Tu cuenta no está asociada a ninguna empresa. Pídele a un administrador
-          que te asigne a un espacio de trabajo para poder ingresar.
+        <p
+          className="mt-3 text-center text-sm leading-relaxed"
+          style={{ color: "var(--ink-soft)" }}
+        >
+          Tu cuenta no está asociada a ninguna empresa. Pídele a un
+          administrador que te asigne a un espacio de trabajo para poder
+          ingresar.
         </p>
 
         {email && (
-          <p className="mt-2 text-center text-xs" style={{ color: "var(--ink-faint)" }}>
-            {t('ui.NoWorkspaceAccess.sesionIniciadaComo', 'Sesión iniciada como')} <span className="font-medium">{email}</span>
+          <p
+            className="mt-2 text-center text-xs"
+            style={{ color: "var(--ink-faint)" }}
+          >
+            {t(
+              "ui.NoWorkspaceAccess.sesionIniciadaComo",
+              "Sesión iniciada como",
+            )}{" "}
+            <span className="font-medium">{email}</span>
           </p>
         )}
 
         <div className="mt-6 flex flex-col gap-2">
           <button
+            className="cg-btn-brand cg-focus w-full rounded-full px-4 py-2.5 text-sm font-semibold transition-[filter] hover:brightness-110"
             type="button"
             onClick={() => signOut()}
-            className="cg-btn-brand cg-focus w-full rounded-full px-4 py-2.5 text-sm font-semibold transition-[filter] hover:brightness-110"
           >
-            {t('header.logout', 'Cerrar sesión')}
+            {t("header.logout", "Cerrar sesión")}
           </button>
           <button
+            className="cg-btn-glass cg-focus w-full rounded-full px-4 py-2.5 text-sm font-medium"
             type="button"
             onClick={() => window.location.reload()}
-            className="cg-btn-glass cg-focus w-full rounded-full px-4 py-2.5 text-sm font-medium"
           >
             Reintentar
           </button>
         </div>
       </div>
     </div>
-  )
+  );
 }

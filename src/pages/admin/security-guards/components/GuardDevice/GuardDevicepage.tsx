@@ -1,33 +1,52 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { Smartphone, ShieldCheck, AlertTriangle, RotateCcw, Loader2, BellRing, Clock } from 'lucide-react';
-import AppLayout from '@/layouts/app-layout';
-import GuardsLayout from '@/layouts/GuardsLayout';
-import { toast } from 'sonner';
-import guardDeviceService, { GuardDevice } from '@/lib/api/guardDeviceService';
-import type { GuardDetail } from '../../guardDetailTypes';
+import type { GuardDetail } from "../../guardDetailTypes";
+
+import React, { useEffect, useState, useCallback } from "react";
+import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
-  PageContainer, PageHeader, Section, IconTile, StatusBadge, EmptyState, SkeletonCards,
-} from '@/components/kit';
-import { Button } from '@/components/ui/button';
+  Smartphone,
+  ShieldCheck,
+  AlertTriangle,
+  RotateCcw,
+  Loader2,
+  BellRing,
+  Clock,
+} from "lucide-react";
+import { toast } from "sonner";
+
+import AppLayout from "@/layouts/app-layout";
+import GuardsLayout from "@/layouts/GuardsLayout";
+import guardDeviceService, { GuardDevice } from "@/lib/api/guardDeviceService";
+import {
+  PageContainer,
+  PageHeader,
+  Section,
+  IconTile,
+  StatusBadge,
+  EmptyState,
+  SkeletonCards,
+} from "@/components/kit";
+import { Button } from "@/components/ui/button";
 
 // navKey/title default to the guard layout; a supervisor route can override them
 // to render the same device screen under the supervisor sidebar (the device
 // endpoint is user-keyed, so it works for any user id).
 type Props = { guard?: GuardDetail; navKey?: string; title?: string };
 
-
 function fmt(dt: string | null): string {
-  if (!dt) return '—';
+  if (!dt) return "—";
   try {
     return new Date(dt).toLocaleString();
   } catch {
-    return '—';
+    return "—";
   }
 }
 
-export default function GuardDevicePage({ guard, navKey = 'keep-safe', title = 'guards.nav.dispositivo' }: Props) {
+export default function GuardDevicePage({
+  guard,
+  navKey = "keep-safe",
+  title = "guards.nav.dispositivo",
+}: Props) {
   const { id } = useParams();
   const { t } = useTranslation();
   const userId = guard?.userId || guard?.user?.id || (id as string);
@@ -42,7 +61,7 @@ export default function GuardDevicePage({ guard, navKey = 'keep-safe', title = '
     try {
       setDevices(await guardDeviceService.list(userId));
     } catch (e) {
-      console.error('load guard devices', e);
+      console.error("load guard devices", e);
     } finally {
       setLoading(false);
     }
@@ -57,13 +76,18 @@ export default function GuardDevicePage({ guard, navKey = 'keep-safe', title = '
     try {
       await guardDeviceService.resetBinding(d.id);
       toast.success(
-        t('guards.device.resetDone', {
-          defaultValue: 'Vínculo restablecido. El próximo dispositivo del vigilante quedará vinculado.',
+        t("guards.device.resetDone", {
+          defaultValue:
+            "Vínculo restablecido. El próximo dispositivo del vigilante quedará vinculado.",
         }),
       );
       await load();
     } catch (e) {
-      toast.error(t('guards.device.resetError', { defaultValue: 'No se pudo restablecer el vínculo.' }));
+      toast.error(
+        t("guards.device.resetError", {
+          defaultValue: "No se pudo restablecer el vínculo.",
+        }),
+      );
     } finally {
       setResetting(null);
     }
@@ -78,44 +102,51 @@ export default function GuardDevicePage({ guard, navKey = 'keep-safe', title = '
       <GuardsLayout navKey={navKey} title={title}>
         <PageContainer>
           <PageHeader
+            badges={
+              devices.length > 0 || flaggedCount > 0 ? (
+                <>
+                  {devices.length > 0 && (
+                    <StatusBadge dot={false} tone="neutral">
+                      <Smartphone className="h-3 w-3" />
+                      {t("guards.device.deviceCount", {
+                        defaultValue: "{{n}} dispositivo(s)",
+                        n: devices.length,
+                      })}
+                    </StatusBadge>
+                  )}
+                  {flaggedCount > 0 && (
+                    <StatusBadge tone="bad">
+                      {t("guards.device.flaggedBadge", {
+                        defaultValue: "{{n}} no reconocido(s)",
+                        n: flaggedCount,
+                      })}
+                    </StatusBadge>
+                  )}
+                </>
+              ) : undefined
+            }
             icon={<Smartphone />}
-            title={t('guards.device.title', { defaultValue: 'Dispositivo del vigilante' })}
-            subtitle={t('guards.device.subtitle', {
+            subtitle={t("guards.device.subtitle", {
               defaultValue:
-                'El primer dispositivo desde el que el vigilante inicia sesión queda vinculado. Si aparece otro dispositivo, se marca como no reconocido (no se bloquea). Restablece el vínculo si el vigilante cambió de teléfono.',
+                "El primer dispositivo desde el que el vigilante inicia sesión queda vinculado. Si aparece otro dispositivo, se marca como no reconocido (no se bloquea). Restablece el vínculo si el vigilante cambió de teléfono.",
             })}
-            badges={(devices.length > 0 || flaggedCount > 0) ? (
-              <>
-                {devices.length > 0 && (
-                  <StatusBadge tone="neutral" dot={false}>
-                    <Smartphone className="h-3 w-3" />
-                    {t('guards.device.deviceCount', {
-                      defaultValue: '{{n}} dispositivo(s)',
-                      n: devices.length,
-                    })}
-                  </StatusBadge>
-                )}
-                {flaggedCount > 0 && (
-                  <StatusBadge tone="bad">
-                    {t('guards.device.flaggedBadge', {
-                      defaultValue: '{{n}} no reconocido(s)',
-                      n: flaggedCount,
-                    })}
-                  </StatusBadge>
-                )}
-              </>
-            ) : undefined}
+            title={t("guards.device.title", {
+              defaultValue: "Dispositivo del vigilante",
+            })}
           />
 
           {/* ── BODY ─────────────────────────────────────────────────────────── */}
           {loading ? (
-            <SkeletonCards count={2} className="sm:grid-cols-1" />
+            <SkeletonCards className="sm:grid-cols-1" count={2} />
           ) : devices.length === 0 ? (
             <EmptyState
+              description={t("guards.device.empty", {
+                defaultValue:
+                  "Aún no se ha registrado ningún dispositivo para este vigilante.",
+              })}
               icon={<Smartphone />}
-              title={t('guards.device.emptyTitle', { defaultValue: 'Sin dispositivos todavía' })}
-              description={t('guards.device.empty', {
-                defaultValue: 'Aún no se ha registrado ningún dispositivo para este vigilante.',
+              title={t("guards.device.emptyTitle", {
+                defaultValue: "Sin dispositivos todavía",
               })}
             />
           ) : (
@@ -123,22 +154,37 @@ export default function GuardDevicePage({ guard, navKey = 'keep-safe', title = '
               {/* Bound device */}
               {bound && (
                 <Section
-                  title={t('guards.device.boundDevice', { defaultValue: 'Dispositivo vinculado' })}
                   icon={<ShieldCheck className="w-4 h-4" />}
+                  title={t("guards.device.boundDevice", {
+                    defaultValue: "Dispositivo vinculado",
+                  })}
                 >
-                  <DeviceCard device={bound} onReset={reset} resetting={resetting === bound.id} t={t} />
+                  <DeviceCard
+                    device={bound}
+                    resetting={resetting === bound.id}
+                    t={t}
+                    onReset={reset}
+                  />
                 </Section>
               )}
 
               {/* Other (unrecognized) devices */}
               {others.length > 0 && (
                 <Section
-                  title={t('guards.device.otherDevices', { defaultValue: 'Otros dispositivos' })}
                   icon={<Smartphone className="w-4 h-4" />}
+                  title={t("guards.device.otherDevices", {
+                    defaultValue: "Otros dispositivos",
+                  })}
                 >
                   <div className="space-y-3">
                     {others.map((d) => (
-                      <DeviceCard key={d.id} device={d} onReset={reset} resetting={resetting === d.id} t={t} />
+                      <DeviceCard
+                        key={d.id}
+                        device={d}
+                        resetting={resetting === d.id}
+                        t={t}
+                        onReset={reset}
+                      />
                     ))}
                   </div>
                 </Section>
@@ -163,9 +209,11 @@ function DeviceCard({
   t: any;
 }) {
   const name =
-    [device.manufacturer, device.model].filter(Boolean).join(' ') ||
+    [device.manufacturer, device.model].filter(Boolean).join(" ") ||
     device.platform ||
-    t('guards.device.unknownDevice', { defaultValue: 'Dispositivo desconocido' });
+    t("guards.device.unknownDevice", {
+      defaultValue: "Dispositivo desconocido",
+    });
 
   return (
     /* Puede repetirse (varios dispositivos) → cristal plano, sin desenfoque. */
@@ -173,58 +221,91 @@ function DeviceCard({
       className="glass-flat p-4 transition"
       style={
         device.flagged
-          ? { borderColor: 'color-mix(in oklab, var(--bad) 32%, transparent)', background: 'color-mix(in oklab, var(--bad) 6%, transparent)' }
+          ? {
+              borderColor: "color-mix(in oklab, var(--bad) 32%, transparent)",
+              background: "color-mix(in oklab, var(--bad) 6%, transparent)",
+            }
           : device.isBound
-            ? { borderColor: 'color-mix(in oklab, var(--ok) 32%, transparent)', background: 'color-mix(in oklab, var(--ok) 6%, transparent)' }
+            ? {
+                borderColor: "color-mix(in oklab, var(--ok) 32%, transparent)",
+                background: "color-mix(in oklab, var(--ok) 6%, transparent)",
+              }
             : undefined
       }
     >
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <IconTile tone={device.isBound ? 'ok' : 'neutral'} size="sm"><Smartphone /></IconTile>
+            <IconTile size="sm" tone={device.isBound ? "ok" : "neutral"}>
+              <Smartphone />
+            </IconTile>
             <span className="font-semibold text-sm truncate">{name}</span>
             {device.isBound && (
-              <StatusBadge tone="ok">{t('guards.device.bound', { defaultValue: 'Vinculado' })}</StatusBadge>
+              <StatusBadge tone="ok">
+                {t("guards.device.bound", { defaultValue: "Vinculado" })}
+              </StatusBadge>
             )}
             {device.flagged && (
-              <StatusBadge tone="bad" dot={false}>
+              <StatusBadge dot={false} tone="bad">
                 <AlertTriangle className="h-3 w-3" />
-                {t('guards.device.unrecognized', { defaultValue: 'No reconocido' })}
+                {t("guards.device.unrecognized", {
+                  defaultValue: "No reconocido",
+                })}
               </StatusBadge>
             )}
             {device.hasPush && (
-              <StatusBadge tone="neutral" dot={false}>
+              <StatusBadge dot={false} tone="neutral">
                 <BellRing className="h-3 w-3" />
                 Notificaciones
               </StatusBadge>
             )}
           </div>
           <dl className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-2.5">
-            <Field label={t('guards.device.platform', { defaultValue: 'Plataforma' })} value={device.platform} />
-            <Field label={t('guards.device.os', { defaultValue: 'Sistema' })} value={device.osVersion} />
-            <Field label={t('guards.device.appVersion', { defaultValue: 'Versión app' })} value={device.appVersion} />
             <Field
-              label={t('guards.device.lastSeen', { defaultValue: 'Visto' })}
-              value={fmt(device.lastSeenAt)}
+              label={t("guards.device.platform", {
+                defaultValue: "Plataforma",
+              })}
+              value={device.platform}
+            />
+            <Field
+              label={t("guards.device.os", { defaultValue: "Sistema" })}
+              value={device.osVersion}
+            />
+            <Field
+              label={t("guards.device.appVersion", {
+                defaultValue: "Versión app",
+              })}
+              value={device.appVersion}
+            />
+            <Field
               icon={<Clock className="h-3 w-3 opacity-60" />}
+              label={t("guards.device.lastSeen", { defaultValue: "Visto" })}
+              value={fmt(device.lastSeenAt)}
             />
             {device.flagged && (
               <Field
-                label={t('guards.device.lastMismatch', { defaultValue: 'Última anomalía' })}
+                label={t("guards.device.lastMismatch", {
+                  defaultValue: "Última anomalía",
+                })}
                 value={fmt(device.lastMismatchAt)}
               />
             )}
-            <Field label="ID" value={device.deviceId} mono />
+            <Field mono label="ID" value={device.deviceId} />
           </dl>
         </div>
-        <Button variant="outline" size="sm" onClick={() => onReset(device)} disabled={resetting} className="shrink-0">
+        <Button
+          className="shrink-0"
+          disabled={resetting}
+          size="sm"
+          variant="outline"
+          onClick={() => onReset(device)}
+        >
           {resetting ? (
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
           ) : (
             <RotateCcw className="h-3.5 w-3.5" />
           )}
-          {t('guards.device.reset', { defaultValue: 'Restablecer vínculo' })}
+          {t("guards.device.reset", { defaultValue: "Restablecer vínculo" })}
         </Button>
       </div>
     </div>
@@ -245,9 +326,11 @@ function Field({
   return (
     <div className="min-w-0">
       <dt className="cg-eyebrow mb-0.5">{label}</dt>
-      <dd className={`flex items-center gap-1 truncate text-sm font-medium ${mono ? 'font-mono text-[12px]' : ''}`}>
+      <dd
+        className={`flex items-center gap-1 truncate text-sm font-medium ${mono ? "font-mono text-[12px]" : ""}`}
+      >
         {icon}
-        <span className="truncate">{value || '—'}</span>
+        <span className="truncate">{value || "—"}</span>
       </dd>
     </div>
   );

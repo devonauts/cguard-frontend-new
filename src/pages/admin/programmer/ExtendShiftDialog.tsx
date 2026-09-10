@@ -1,14 +1,19 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+import { useEffect, useMemo, useState } from "react";
+import { Clock3 } from "lucide-react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import {
-  Select, SelectTrigger, SelectContent, SelectItem, SelectValue,
-} from '@/components/ui/select';
-import { Modal } from '@/components/kit';
-import { Clock3 } from 'lucide-react';
-import { toast } from 'sonner';
-import { coverageService, coverageErrorCode } from '@/lib/api/coverageService';
-import { ApiService } from '@/services/api/apiService';
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
+import { Modal } from "@/components/kit";
+import { coverageService, coverageErrorCode } from "@/lib/api/coverageService";
+import { ApiService } from "@/services/api/apiService";
 
 /**
  * «Extender turno» desde el Horario: el vigilante que ya cubrió el día se queda
@@ -42,20 +47,21 @@ export interface ExtendTarget {
 }
 
 const MOTIVOS: { v: string; label: string }[] = [
-  { v: 'no_call_no_show', label: 'El relevo no llegó ni avisó' },
-  { v: 'enfermedad', label: 'El relevo se reportó enfermo' },
-  { v: 'permiso_con_sueldo', label: 'El relevo tenía permiso' },
-  { v: 'calamidad_domestica', label: 'Calamidad doméstica del relevo' },
-  { v: 'transporte', label: 'Problema de transporte' },
-  { v: 'refuerzo_cliente', label: 'El cliente pidió horas adicionales' },
-  { v: 'otro', label: 'Otro motivo' },
+  { v: "no_call_no_show", label: "El relevo no llegó ni avisó" },
+  { v: "enfermedad", label: "El relevo se reportó enfermo" },
+  { v: "permiso_con_sueldo", label: "El relevo tenía permiso" },
+  { v: "calamidad_domestica", label: "Calamidad doméstica del relevo" },
+  { v: "transporte", label: "Problema de transporte" },
+  { v: "refuerzo_cliente", label: "El cliente pidió horas adicionales" },
+  { v: "otro", label: "Otro motivo" },
 ];
 
-const SIN_AUSENTE = '__nadie__';
+const SIN_AUSENTE = "__nadie__";
 
 /** `Date` → valor de un `<input type="datetime-local">`, en hora local. */
 function paraInput(d: Date): string {
-  const p = (n: number) => String(n).padStart(2, '0');
+  const p = (n: number) => String(n).padStart(2, "0");
+
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
 }
 
@@ -71,38 +77,60 @@ export default function ExtendShiftDialog({
   // Doce horas más allá de donde termina lo suyo: es lo que dura el turno que
   // va a cubrir. Se puede cambiar.
   const inicial = useMemo(() => {
-    const base = target?.scheduledEnd ? new Date(target.scheduledEnd) : new Date();
+    const base = target?.scheduledEnd
+      ? new Date(target.scheduledEnd)
+      : new Date();
     const d = Number.isNaN(base.getTime()) ? new Date() : base;
+
     return paraInput(new Date(d.getTime() + 12 * 3600000));
   }, [target?.scheduledEnd]);
 
   const [hasta, setHasta] = useState(inicial);
-  const [motivo, setMotivo] = useState('no_call_no_show');
-  const [nota, setNota] = useState('');
+  const [motivo, setMotivo] = useState("no_call_no_show");
+  const [nota, setNota] = useState("");
   const [ausenteId, setAusenteId] = useState(SIN_AUSENTE);
   const [avisarCliente, setAvisarCliente] = useState(false);
   const [guardando, setGuardando] = useState(false);
-  const [companeros, setCompaneros] = useState<{ id: string; label: string }[]>([]);
+  const [companeros, setCompaneros] = useState<{ id: string; label: string }[]>(
+    [],
+  );
 
-  useEffect(() => { setHasta(inicial); }, [inicial]);
+  useEffect(() => {
+    setHasta(inicial);
+  }, [inicial]);
 
   // Quién faltó es OPCIONAL: a veces no falta nadie (el cliente pidió horas de
   // más). La lista es una comodidad, no un requisito.
   useEffect(() => {
     if (!target) return;
     let vivo = true;
-    ApiService.get(`/tenant/${localStorage.getItem('tenantId') || ''}/security-guard/autocomplete?limit=200`)
+
+    ApiService.get(
+      `/tenant/${localStorage.getItem("tenantId") || ""}/security-guard/autocomplete?limit=200`,
+    )
       .then((r: any) => {
         if (!vivo) return;
         const filas = Array.isArray(r) ? r : r?.rows || r?.data || [];
+
         setCompaneros(
           filas
-            .map((g: any) => ({ id: g.guardId || g.userId || g.id, label: g.label || g.fullName || g.name }))
-            .filter((g: any) => g.id && g.label && String(g.id) !== String(target.guardId)),
+            .map((g: any) => ({
+              id: g.guardId || g.userId || g.id,
+              label: g.label || g.fullName || g.name,
+            }))
+            .filter(
+              (g: any) =>
+                g.id && g.label && String(g.id) !== String(target.guardId),
+            ),
         );
       })
-      .catch(() => { /* sin lista, el campo simplemente no se ofrece */ });
-    return () => { vivo = false; };
+      .catch(() => {
+        /* sin lista, el campo simplemente no se ofrece */
+      });
+
+    return () => {
+      vivo = false;
+    };
   }, [target]);
 
   // Desde dónde empalma el tramo nuevo: el fin de su turno cuando se conoce.
@@ -110,15 +138,19 @@ export default function ExtendShiftDialog({
   // está mirando la casilla exacta.
   const desde = useMemo(() => {
     const raw = target?.scheduledStart || target?.scheduledEnd;
+
     if (!raw) return null;
     const d = new Date(raw);
+
     return Number.isNaN(d.getTime()) ? null : d;
   }, [target?.scheduledStart, target?.scheduledEnd]);
 
   // Las consecuencias, en vivo mientras se mueve la hora. No impiden nada.
   const horas = useMemo(() => {
     const fin = new Date(hasta);
+
     if (Number.isNaN(fin.getTime()) || !desde) return null;
+
     return (fin.getTime() - desde.getTime()) / 3600000;
   }, [hasta, desde]);
 
@@ -127,16 +159,35 @@ export default function ExtendShiftDialog({
   // veces se autorizó una jornada de 24 h».
   const avisos = useMemo(() => {
     const out: { code: string; text: string }[] = [];
-    if (horas != null && horas > 0) out.push({ code: 'horas_extra', text: `Son ${Math.round(horas)} h más de las previstas.` });
-    if (horas != null && horas >= 12) out.push({ code: 'jornada_24h', text: 'Contando su turno, quedarían cerca de 24 h seguidas.' });
-    if (horas != null && horas <= 0) out.push({ code: 'fin_antes_del_inicio', text: 'La hora de fin es anterior al inicio del tramo.' });
+
+    if (horas != null && horas > 0)
+      out.push({
+        code: "horas_extra",
+        text: `Son ${Math.round(horas)} h más de las previstas.`,
+      });
+    if (horas != null && horas >= 12)
+      out.push({
+        code: "jornada_24h",
+        text: "Contando su turno, quedarían cerca de 24 h seguidas.",
+      });
+    if (horas != null && horas <= 0)
+      out.push({
+        code: "fin_antes_del_inicio",
+        text: "La hora de fin es anterior al inicio del tramo.",
+      });
+
     return out;
   }, [horas]);
 
   const guardar = async () => {
     if (!target) return;
     const fin = new Date(hasta);
-    if (Number.isNaN(fin.getTime())) { toast.error('Revisa la hora de fin.'); return; }
+
+    if (Number.isNaN(fin.getTime())) {
+      toast.error("Revisa la hora de fin.");
+
+      return;
+    }
     setGuardando(true);
     try {
       await coverageService.extension({
@@ -154,17 +205,18 @@ export default function ExtendShiftDialog({
       });
       toast.success(
         `${target.guardName} queda cubriendo hasta las ` +
-        `${fin.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
+          `${fin.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`,
       );
       onDone?.();
       onClose();
     } catch (e: any) {
       const codigo = coverageErrorCode(e);
+
       toast.error(
         e?.response?.data?.message ||
-        (codigo === 'post_ya_cubierto'
-          ? 'Ese puesto ya tiene a otro vigilante en esa franja.'
-          : 'No se pudo registrar la extensión.'),
+          (codigo === "post_ya_cubierto"
+            ? "Ese puesto ya tiene a otro vigilante en esa franja."
+            : "No se pudo registrar la extensión."),
       );
     } finally {
       setGuardando(false);
@@ -173,72 +225,93 @@ export default function ExtendShiftDialog({
 
   return (
     <Modal
-      open={!!target}
-      onOpenChange={(o) => !o && onClose()}
-      title="Extender turno"
       description={
-        `${target?.guardName || ''}` +
-        `${target?.stationName ? ` · ${target.stationName}` : ''}` +
+        `${target?.guardName || ""}` +
+        `${target?.stationName ? ` · ${target.stationName}` : ""}` +
         (desde
-          ? ` · el tramo nuevo empieza a las ${desde.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
-          : ' · se crea el tramo en el horario desde donde terminó el suyo')
+          ? ` · el tramo nuevo empieza a las ${desde.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+          : " · se crea el tramo en el horario desde donde terminó el suyo")
       }
-      icon={<Clock3 />}
       footer={
         <>
-          <Button variant="outline" onClick={onClose} disabled={guardando}>Cancelar</Button>
-          <Button onClick={() => void guardar()} disabled={guardando}>
-            {guardando ? 'Registrando…' : 'Autorizar'}
+          <Button disabled={guardando} variant="outline" onClick={onClose}>
+            Cancelar
+          </Button>
+          <Button disabled={guardando} onClick={() => void guardar()}>
+            {guardando ? "Registrando…" : "Autorizar"}
           </Button>
         </>
       }
+      icon={<Clock3 />}
+      open={!!target}
+      title="Extender turno"
+      onOpenChange={(o) => !o && onClose()}
     >
       <div className="space-y-4">
         <div>
-          <label className="cg-eyebrow mb-1.5 block" htmlFor="ext-hasta">Se queda hasta</label>
+          <label className="cg-eyebrow mb-1.5 block" htmlFor="ext-hasta">
+            Se queda hasta
+          </label>
           <input
+            className="cg-input w-full px-3 py-2 text-sm"
             id="ext-hasta"
             type="datetime-local"
             value={hasta}
             onChange={(e) => setHasta(e.target.value)}
-            className="cg-input w-full px-3 py-2 text-sm"
           />
         </div>
 
         <div>
           <label className="cg-eyebrow mb-1.5 block">Motivo</label>
           <Select value={motivo} onValueChange={setMotivo}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
             <SelectContent>
-              {MOTIVOS.map((m) => <SelectItem key={m.v} value={m.v}>{m.label}</SelectItem>)}
+              {MOTIVOS.map((m) => (
+                <SelectItem key={m.v} value={m.v}>
+                  {m.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
 
         {companeros.length > 0 && (
           <div>
-            <label className="cg-eyebrow mb-1.5 block">¿Quién faltó? (opcional)</label>
+            <label className="cg-eyebrow mb-1.5 block">
+              ¿Quién faltó? (opcional)
+            </label>
             <Select value={ausenteId} onValueChange={setAusenteId}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value={SIN_AUSENTE}>Nadie / no aplica</SelectItem>
-                {companeros.map((c) => <SelectItem key={c.id} value={String(c.id)}>{c.label}</SelectItem>)}
+                {companeros.map((c) => (
+                  <SelectItem key={c.id} value={String(c.id)}>
+                    {c.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <p className="mt-1 text-xs text-muted-foreground">
-              Si lo indicas, su turno de esa noche se marca como falta y queda en su historial.
+              Si lo indicas, su turno de esa noche se marca como falta y queda
+              en su historial.
             </p>
           </div>
         )}
 
         <div>
-          <label className="cg-eyebrow mb-1.5 block" htmlFor="ext-nota">Qué gestión se hizo (opcional)</label>
+          <label className="cg-eyebrow mb-1.5 block" htmlFor="ext-nota">
+            Qué gestión se hizo (opcional)
+          </label>
           <Textarea
             id="ext-nota"
+            placeholder="Se llamó a tres vigilantes, ninguno pudo cubrir…"
             rows={2}
             value={nota}
             onChange={(e) => setNota(e.target.value)}
-            placeholder="Se llamó a tres vigilantes, ninguno pudo cubrir…"
           />
         </div>
 
@@ -247,36 +320,49 @@ export default function ExtendShiftDialog({
             mensaje habla de la COBERTURA, nunca del problema interno. */}
         <label className="glass-flat flex cursor-pointer items-start gap-3 rounded-lg p-3">
           <input
-            type="checkbox"
             checked={avisarCliente}
-            onChange={(e) => setAvisarCliente(e.target.checked)}
             className="mt-0.5"
+            type="checkbox"
+            onChange={(e) => setAvisarCliente(e.target.checked)}
           />
           <span className="text-sm">
             <span className="font-medium">Avisar al cliente</span>
             <span className="block text-xs text-muted-foreground">
-              Se le informa de que su puesto queda cubierto y hasta qué hora. No se le
-              dice quién faltó ni por qué.
+              Se le informa de que su puesto queda cubierto y hasta qué hora. No
+              se le dice quién faltó ni por qué.
             </span>
           </span>
         </label>
 
         {avisos.length > 0 && (
-          <div className="rounded-lg p-3" style={{ background: 'color-mix(in oklab, var(--warn) 12%, transparent)' }}>
-            <p className="cg-eyebrow" style={{ color: 'var(--warn-text)' }}>Antes de confirmar</p>
+          <div
+            className="rounded-lg p-3"
+            style={{
+              background: "color-mix(in oklab, var(--warn) 12%, transparent)",
+            }}
+          >
+            <p className="cg-eyebrow" style={{ color: "var(--warn-text)" }}>
+              Antes de confirmar
+            </p>
             <ul className="mt-1 space-y-0.5">
               {avisos.map((a) => (
-                <li key={a.code} className="text-xs" style={{ color: 'var(--warn-text)' }}>· {a.text}</li>
+                <li
+                  key={a.code}
+                  className="text-xs"
+                  style={{ color: "var(--warn-text)" }}
+                >
+                  · {a.text}
+                </li>
               ))}
             </ul>
           </div>
         )}
 
         <p className="text-xs text-muted-foreground">
-          El turno del día <strong>no se toca</strong>. Se añade el tramo nuevo al horario
-          en ámbar, marcado <strong>2×</strong>, y el vigilante ya puede fichar en él. Las
-          horas entran a su rol como <strong>tiempo extra autorizado</strong>, con este
-          motivo y tu nombre.
+          El turno del día <strong>no se toca</strong>. Se añade el tramo nuevo
+          al horario en ámbar, marcado <strong>2×</strong>, y el vigilante ya
+          puede fichar en él. Las horas entran a su rol como{" "}
+          <strong>tiempo extra autorizado</strong>, con este motivo y tu nombre.
         </p>
       </div>
     </Modal>

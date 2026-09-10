@@ -1,4 +1,4 @@
-import { io, type Socket } from 'socket.io-client';
+import { io, type Socket } from "socket.io-client";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -12,13 +12,15 @@ import { io, type Socket } from 'socket.io-client';
  */
 
 /** El socket viaja bajo /api para cruzar el mismo proxy que el resto de la API. */
-export const SOCKET_PATH = '/api/socket.io';
+export const SOCKET_PATH = "/api/socket.io";
 
 /** El origen del backend, deducido de la URL de la API. */
 export function socketOrigin(): string {
-  const apiUrl = (import.meta.env.VITE_API_URL as string | undefined) || '';
+  const apiUrl = (import.meta.env.VITE_API_URL as string | undefined) || "";
+
   try {
-    return new URL(apiUrl || window.location.origin, window.location.origin).origin;
+    return new URL(apiUrl || window.location.origin, window.location.origin)
+      .origin;
   } catch {
     return window.location.origin;
   }
@@ -69,7 +71,10 @@ let compartido: Compartido | null = null;
    apunta lo que registra CADA llamante y lo retira exactamente al soltar. Para
    quien lo usa es transparente —sigue siendo el socket de siempre— y los
    `off` explícitos que ya existen siguen funcionando igual. */
-const registrados = new WeakMap<object, Array<[string, (...a: any[]) => void]>>();
+const registrados = new WeakMap<
+  object,
+  Array<[string, (...a: any[]) => void]>
+>();
 
 function envolver(socket: Socket): Socket {
   const propios: Array<[string, (...a: any[]) => void]> = [];
@@ -78,48 +83,62 @@ function envolver(socket: Socket): Socket {
       // Marca para que `cerrarSocket` pueda llegar al socket de verdad: el
       // envoltorio nunca es === al compartido, y sin esto el recuento no casaba
       // y volvíamos a cerrar en cada baja.
-      if (prop === '__target') return destino;
-      if (prop === 'on' || prop === 'once') {
+      if (prop === "__target") return destino;
+      if (prop === "on" || prop === "once") {
         return (evento: string, fn: (...a: any[]) => void) => {
           propios.push([evento, fn]);
+
           return (destino[prop] as any).call(destino, evento, fn);
         };
       }
-      if (prop === 'off') {
+      if (prop === "off") {
         return (evento?: string, fn?: (...a: any[]) => void) => {
           if (evento && fn) {
             const i = propios.findIndex(([e, f]) => e === evento && f === fn);
+
             if (i >= 0) propios.splice(i, 1);
           }
+
           return (destino.off as any).call(destino, evento, fn);
         };
       }
       const v = destino[prop];
-      return typeof v === 'function' ? v.bind(destino) : v;
+
+      return typeof v === "function" ? v.bind(destino) : v;
     },
   }) as Socket;
+
   registrados.set(proxy, propios);
+
   return proxy;
 }
 
 /** Retira SÓLO lo que registró este llamante. */
 function soltarOyentes(handle: Socket): void {
   const propios = registrados.get(handle as unknown as object);
+
   if (!propios) return;
   /* Se COPIA antes de iterar: `off` del envoltorio quita la entrada de este
      mismo array, y recorrer un array del que se va borrando se salta la mitad
      — que es exactamente lo que hacía esta función antes de la prueba. */
   const copia = propios.slice();
+
   propios.length = 0;
   const real: any = (handle as any).__target || handle;
+
   for (const [evento, fn] of copia) {
-    try { real.off(evento, fn); } catch { /* ya retirado */ }
+    try {
+      real.off(evento, fn);
+    } catch {
+      /* ya retirado */
+    }
   }
 }
 
 /** Abre la conexión en vivo del tenant. El servidor sólo acepta websocket. */
 export function crearSocket(token: string, tenantId: string): Socket {
   const clave = `${tenantId}::${token}`;
+
   /* ── `active`, NO `disconnected` ─────────────────────────────────────────
      `disconnected` es literalmente `!connected` (socket.io-client 4.8,
      socket.js:144), y `connected` sólo pasa a true cuando TERMINA el saludo.
@@ -142,20 +161,27 @@ export function crearSocket(token: string, tenantId: string): Socket {
      «¿está conectado en este instante?». */
   if (compartido && compartido.clave === clave && compartido.socket.active) {
     compartido.usos++;
+
     return envolver(compartido.socket);
   }
   // Identidad distinta (o el anterior murió): el viejo se suelta entero.
   if (compartido) {
-    try { cerrarDeVerdad(compartido.socket); } catch { /* ya estaba cerrado */ }
+    try {
+      cerrarDeVerdad(compartido.socket);
+    } catch {
+      /* ya estaba cerrado */
+    }
     compartido = null;
   }
   const socket = io(socketOrigin(), {
     path: SOCKET_PATH,
-    transports: ['websocket'],
+    transports: ["websocket"],
     withCredentials: true,
     auth: { token, tenantId },
   });
+
   compartido = { socket, clave, usos: 1, salaMapa: 0, reengancheMapa: null };
+
   return envolver(socket);
 }
 
@@ -178,31 +204,44 @@ export function crearSocket(token: string, tenantId: string): Socket {
 export function entrarEnSalaDelMapa(handle: Socket): () => void {
   const real: any = (handle as any).__target || handle;
   const c = compartido;
+
   // Un socket que no es el compartido (o que ya se soltó) se apaña solo: sin
   // recuento que llevar, pide y suelta directamente.
   if (!c || (c.socket !== handle && c.socket !== real)) {
-    real.emit('map:subscribe');
+    real.emit("map:subscribe");
     let fuera = false;
-    return () => { if (!fuera) { fuera = true; real.emit('map:unsubscribe'); } };
+
+    return () => {
+      if (!fuera) {
+        fuera = true;
+        real.emit("map:unsubscribe");
+      }
+    };
   }
 
   c.salaMapa++;
   if (c.salaMapa === 1) {
-    real.emit('map:subscribe');
-    c.reengancheMapa = () => { if (compartido && compartido.salaMapa > 0) real.emit('map:subscribe'); };
-    real.on('connect', c.reengancheMapa);
+    real.emit("map:subscribe");
+    c.reengancheMapa = () => {
+      if (compartido && compartido.salaMapa > 0) real.emit("map:subscribe");
+    };
+    real.on("connect", c.reengancheMapa);
   }
 
   let soltado = false;
+
   return () => {
-    if (soltado) return;      // desmontar dos veces no descuenta dos veces
+    if (soltado) return; // desmontar dos veces no descuenta dos veces
     soltado = true;
     if (!compartido || compartido !== c) return; // el socket ya se cerró entero
     c.salaMapa--;
     if (c.salaMapa > 0) return;
     c.salaMapa = 0;
-    real.emit('map:unsubscribe');
-    if (c.reengancheMapa) { real.off('connect', c.reengancheMapa); c.reengancheMapa = null; }
+    real.emit("map:unsubscribe");
+    if (c.reengancheMapa) {
+      real.off("connect", c.reengancheMapa);
+      c.reengancheMapa = null;
+    }
   };
 }
 
@@ -225,7 +264,10 @@ export function entrarEnSalaDelMapa(handle: Socket): () => void {
  * tope de tiempo, porque un servidor que no contesta ni una cosa ni la otra
  * dejaría el socket abierto para siempre.
  */
-export function cerrarSocket(socket: Socket | null | undefined, esperaMaxMs = 8000): void {
+export function cerrarSocket(
+  socket: Socket | null | undefined,
+  esperaMaxMs = 8000,
+): void {
   if (!socket) return;
 
   /* ── SOLTAR NO ES CERRAR ─────────────────────────────────────────────────
@@ -241,7 +283,11 @@ export function cerrarSocket(socket: Socket | null | undefined, esperaMaxMs = 80
   soltarOyentes(socket);
 
   const real: Socket = (socket as any).__target || socket;
-  if (compartido && (compartido.socket === socket || compartido.socket === real)) {
+
+  if (
+    compartido &&
+    (compartido.socket === socket || compartido.socket === real)
+  ) {
     compartido.usos--;
     if (compartido.usos > 0) return;
     compartido = null;
@@ -256,6 +302,7 @@ function cerrarDeVerdad(socket: Socket, esperaMaxMs = 8000): void {
 
   if (socket.connected) {
     socket.disconnect();
+
     return;
   }
 
@@ -264,14 +311,15 @@ function cerrarDeVerdad(socket: Socket, esperaMaxMs = 8000): void {
     if (cerrado) return;
     cerrado = true;
     clearTimeout(temporizador);
-    socket.off('connect', cerrar);
-    socket.off('connect_error', cerrar);
+    socket.off("connect", cerrar);
+    socket.off("connect_error", cerrar);
     socket.disconnect();
   };
 
   // El tope va primero para que `cerrar` pueda cancelarlo sin leer una variable
   // aún sin asignar.
   const temporizador = setTimeout(cerrar, esperaMaxMs);
-  socket.once('connect', cerrar);
-  socket.once('connect_error', cerrar);
+
+  socket.once("connect", cerrar);
+  socket.once("connect_error", cerrar);
 }

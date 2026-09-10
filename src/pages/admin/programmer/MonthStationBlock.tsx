@@ -1,12 +1,28 @@
-import React, { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-import { AlertTriangle, Clock, Plus, Shield, Sun, X } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { nombreDeVigilante } from '@/lib/guardName';
-import { type Tone, tonePill, toneCard, CODE_LABEL, codePill, columnRules } from './codeTones';
-import { COL_W } from './gridBand';
-import type { StationPosition, GuardAssignment, Station, ScheduleOverride, StationAlert } from '@/types';
+import type { LucideIcon } from "lucide-react";
+import type {
+  StationPosition,
+  GuardAssignment,
+  Station,
+  ScheduleOverride,
+  StationAlert,
+} from "@/types";
+
+import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { AlertTriangle, Clock, Plus, Shield, Sun, X } from "lucide-react";
+
+import {
+  type Tone,
+  tonePill,
+  toneCard,
+  CODE_LABEL,
+  codePill,
+  columnRules,
+} from "./codeTones";
+import { COL_W } from "./gridBand";
+
+import { Button } from "@/components/ui/button";
+import { nombreDeVigilante } from "@/lib/guardName";
 
 /**
  * ────────────────────────────────────────────────────────────────────────────
@@ -52,17 +68,44 @@ export type MonthGridHandlers = {
   addPosition: (stationId: string) => void;
   editPosition: (station: Station, pos: StationPosition) => void;
   deletePosition: (stationId: string, positionId: string) => void;
-  openAssignForm: (stationId: string, positionId: string, dateStr?: string) => void;
+  openAssignForm: (
+    stationId: string,
+    positionId: string,
+    dateStr?: string,
+  ) => void;
   removeAssignment: (assignmentId: string) => void;
-  onGuardDragStart: (e: React.DragEvent, guardId: string, fromAssignment?: GuardAssignment) => void;
-  handleDrop: (e: React.DragEvent, stationId: string, positionId: string, dateStr?: string) => void;
+  onGuardDragStart: (
+    e: React.DragEvent,
+    guardId: string,
+    fromAssignment?: GuardAssignment,
+  ) => void;
+  handleDrop: (
+    e: React.DragEvent,
+    stationId: string,
+    positionId: string,
+    dateStr?: string,
+  ) => void;
   /** Arrastrar una tarjeta de cobertura para moverla de día o de puesto. */
   onCoverageDragStart: (e: React.DragEvent, shiftId: string) => void;
-  openCellCtx: (e: React.MouseEvent, station: Station, pos: StationPosition, posAssignments: GuardAssignment[], dateStr: string) => void;
-  setOverrideTarget: (t: { guardId: string; guardName: string; date: string; assignmentId?: string }) => void;
+  openCellCtx: (
+    e: React.MouseEvent,
+    station: Station,
+    pos: StationPosition,
+    posAssignments: GuardAssignment[],
+    dateStr: string,
+  ) => void;
+  setOverrideTarget: (t: {
+    guardId: string;
+    guardName: string;
+    date: string;
+    assignmentId?: string;
+  }) => void;
   startCellSelect: (rowKey: string, c: number, shift: boolean) => void;
   hoverCellSelect: (rowKey: string, c: number) => void;
-  isWorkDay: (assignment: GuardAssignment, date: Date) => 'day' | 'night' | 'rest';
+  isWorkDay: (
+    assignment: GuardAssignment,
+    date: Date,
+  ) => "day" | "night" | "rest";
   /** Elegir UNA de las tarjetas apiladas en un casillero (dos personas en la
    *  misma plaza). Se llama en el mousedown de la tarjeta, ANTES de que la
    *  celda abra la selección. */
@@ -73,20 +116,27 @@ const EMPTY_ASG: GuardAssignment[] = [];
 
 /** Una persona cubriendo algo en una estación un día, tal y como la resume
  *  `sfStationCoverage`. `code` es su mitad (D o N) según su hora de entrada. */
-type CoberturaDia = { id: string; guardId: string; name: string; fullName: string; code: 'D' | 'N'; ext?: boolean };
+type CoberturaDia = {
+  id: string;
+  guardId: string;
+  name: string;
+  fullName: string;
+  code: "D" | "N";
+  ext?: boolean;
+};
 
 /** Códigos que dejan el puesto SIN esa persona — los que abren un hueco que
  *  alguien viene a cubrir. `D`, `N` y `24` no: esos son trabajo. */
-const ABSENCE_CODES = new Set(['V', 'PM', 'F', 'L']);
+const ABSENCE_CODES = new Set(["V", "PM", "F", "L"]);
 
 /* Copia literal de los de la hoja a propósito: son el TINTE de la rejilla y
    tienen que valer lo mismo en los dos sitios. */
-const TINT_TODAY = 'color-mix(in oklab, var(--brand) 8%, transparent)';
-const TINT_SUNDAY = 'color-mix(in oklab, var(--bad) 5%, transparent)';
+const TINT_TODAY = "color-mix(in oklab, var(--brand) 8%, transparent)";
+const TINT_SUNDAY = "color-mix(in oklab, var(--bad) 5%, transparent)";
 
 const POSITION_TONE: Record<string, { tone: Tone; icon: LucideIcon }> = {
-  fijo: { tone: 'warn', icon: Sun },
-  sacafranco: { tone: 'ok', icon: Shield },
+  fijo: { tone: "warn", icon: Sun },
+  sacafranco: { tone: "ok", icon: Shield },
 };
 
 // Día/Noche letter for a WORKING cell — misma regla que el backend
@@ -95,7 +145,7 @@ const POSITION_TONE: Record<string, { tone: Tone; icon: LucideIcon }> = {
 function dnCode(
   scheduleType: string | null | undefined,
   posStartTime: string | null | undefined,
-  status: 'day' | 'night',
+  status: "day" | "night",
   /**
    * ¿Los fijos de este puesto tienen HORAS DISTINTAS entre sí? Entonces cada uno
    * es dueño de su mitad y la letra sale de SU horario, no de la fase.
@@ -108,16 +158,18 @@ function dnCode(
    * el motor genera de verdad.
    */
   hoursDecideHalf?: boolean,
-): 'D' | 'N' {
+): "D" | "N" {
   if (hoursDecideHalf) {
-    const hp = parseInt(String(posStartTime || '').split(':')[0], 10);
-    if (!Number.isNaN(hp)) return hp >= 18 || hp < 6 ? 'N' : 'D';
+    const hp = parseInt(String(posStartTime || "").split(":")[0], 10);
+
+    if (!Number.isNaN(hp)) return hp >= 18 || hp < 6 ? "N" : "D";
   }
-  if (scheduleType === '24h') return status === 'night' ? 'N' : 'D';
-  if (scheduleType === '12h-night') return 'N';
-  if (scheduleType === '12h-day') return 'D';
-  const h = parseInt(String(posStartTime || '').split(':')[0], 10);
-  return !Number.isNaN(h) && (h >= 18 || h < 6) ? 'N' : 'D';
+  if (scheduleType === "24h") return status === "night" ? "N" : "D";
+  if (scheduleType === "12h-night") return "N";
+  if (scheduleType === "12h-day") return "D";
+  const h = parseInt(String(posStartTime || "").split(":")[0], 10);
+
+  return !Number.isNaN(h) && (h >= 18 || h < 6) ? "N" : "D";
 }
 
 export type MonthStationBlockProps = {
@@ -126,7 +178,17 @@ export type MonthStationBlockProps = {
   stationAlert: StationAlert | undefined;
   assignmentsByPosition: Map<string, GuardAssignment[]>;
   overrideByGuardDate: Map<string, ScheduleOverride>;
-  sfStationCoverage: Map<string, { id: string; guardId: string; name: string; fullName: string; code: 'D' | 'N'; ext?: boolean }[]>;
+  sfStationCoverage: Map<
+    string,
+    {
+      id: string;
+      guardId: string;
+      name: string;
+      fullName: string;
+      code: "D" | "N";
+      ext?: boolean;
+    }[]
+  >;
   guardColorMap: Record<string, string>;
   monthDays: Date[];
   monthDayStrs: string[];
@@ -166,7 +228,12 @@ function MonthStationBlockInner({
   /* Horas distintas entre los fijos ⇒ cada fila es dueña de su mitad (diurno
      fijo / nocturno fijo). Iguales ⇒ se turnan por fase, como siempre. */
   const horasDecidenMitad = useMemo(
-    () => new Set(stationPositions.filter(p => p.type === 'fijo').map(p => String(p.startTime || '07:00'))).size > 1,
+    () =>
+      new Set(
+        stationPositions
+          .filter((p) => p.type === "fijo")
+          .map((p) => String(p.startTime || "07:00")),
+      ).size > 1,
     [stationPositions],
   );
 
@@ -175,10 +242,11 @@ function MonthStationBlockInner({
      siempre. `ring-primary`/`bg-primary` son los tokens puente de shadcn: se
      repintan solos cuando el usuario cambia el acento. */
   const cellSelCls = (rowKey: string, c: number): string => {
-    if (!sel || c < sel.c1 || c > sel.c2 || !sel.keys.has(rowKey)) return '';
+    if (!sel || c < sel.c1 || c > sel.c2 || !sel.keys.has(rowKey)) return "";
+
     return rowKey === sel.focusKey && c === sel.fc
-      ? ' ring-2 ring-inset ring-primary bg-primary/10'
-      : ' ring-1 ring-inset ring-primary/40 bg-primary/5';
+      ? " ring-2 ring-inset ring-primary bg-primary/10"
+      : " ring-1 ring-inset ring-primary/40 bg-primary/5";
   };
 
   /* ── A QUÉ HUECO PERTENECE CADA COBERTURA ──────────────────────────────
@@ -202,47 +270,68 @@ function MonthStationBlockInner({
 
      El caché es por render: las celdas preguntan por fila y por día, y sin él
      este reparto se recalcularía una vez por cada casilla. */
-  const cacheReparto = new Map<string, { por: Map<string, CoberturaDia[]>; sobrantes: CoberturaDia[] }>();
+  const cacheReparto = new Map<
+    string,
+    { por: Map<string, CoberturaDia[]>; sobrantes: CoberturaDia[] }
+  >();
   const repartoDelDia = (dateStr: string, day: Date) => {
     const guardado = cacheReparto.get(dateStr);
+
     if (guardado) return guardado;
     const lista = sfStationCoverage.get(`${station.id}-${dateStr}`) || [];
     const por = new Map<string, CoberturaDia[]>();
     const sobrantes: CoberturaDia[] = [];
+
     if (!lista.length) {
       const vacio = { por, sobrantes };
+
       cacheReparto.set(dateStr, vacio);
+
       return vacio;
     }
 
-    const huecos: { key: string; half: 'D' | 'N' | null }[] = [];
+    const huecos: { key: string; half: "D" | "N" | null }[] = [];
+
     for (const p of stationPositions) {
       for (const a of assignmentsByPosition.get(p.id) || EMPTY_ASG) {
         const ov = overrideByGuardDate.get(`${a.guardId}|${dateStr}`);
         const estado = h.isWorkDay(a, day);
+
         if (ov && ABSENCE_CODES.has(String(ov.type))) {
           // Falta, y además le TOCABA trabajar: hay que taparle su mitad. Si ese
           // día libraba igualmente, no deja ningún hueco que cubrir.
-          if (estado !== 'rest') huecos.push({ key: a.id, half: estado === 'night' ? 'N' : 'D' });
+          if (estado !== "rest")
+            huecos.push({ key: a.id, half: estado === "night" ? "N" : "D" });
           continue;
         }
         if (ov) continue; // D/N/24 escrito a mano: esa persona trabaja.
-        if (estado === 'rest') huecos.push({ key: a.id, half: null });
+        if (estado === "rest") huecos.push({ key: a.id, half: null });
       }
     }
 
     const usados = new Set<number>();
+
     for (const c of lista) {
-      let i = huecos.findIndex((x, idx) => !usados.has(idx) && x.half === c.code);
-      if (i < 0) i = huecos.findIndex((x, idx) => !usados.has(idx) && x.half === null);
-      if (i < 0) { sobrantes.push(c); continue; }
+      let i = huecos.findIndex(
+        (x, idx) => !usados.has(idx) && x.half === c.code,
+      );
+
+      if (i < 0)
+        i = huecos.findIndex((x, idx) => !usados.has(idx) && x.half === null);
+      if (i < 0) {
+        sobrantes.push(c);
+        continue;
+      }
       usados.add(i);
       const enEsaFila = por.get(huecos[i].key) || [];
+
       enEsaFila.push(c);
       por.set(huecos[i].key, enEsaFila);
     }
     const listo = { por, sobrantes };
+
     cacheReparto.set(dateStr, listo);
+
     return listo;
   };
 
@@ -263,29 +352,49 @@ function MonthStationBlockInner({
    *
    * Ahora se apilan todas. Cada una arrastra y abre SU hoja del día.
    */
-  const pildorasCobertura = (lista: CoberturaDia[], dateStr: string) => lista.map(c => (
-    // Una EXTENSIÓN (alguien doblando porque su relevo no llegó) va en ámbar,
-    // no en verde: el verde dice «cubierto y en orden», y esto está cubierto
-    // pero NO está en orden — hay una persona encadenando dos turnos.
-    <div
-      key={c.id}
-      className="flex min-h-[16px] flex-1 cursor-grab flex-col items-center justify-center rounded active:cursor-grabbing"
-      style={toneCard(c.ext ? 'warn' : 'ok', c.ext ? 18 : 12, c.ext ? 34 : 22)}
-      title={c.ext
-        ? `${c.fullName} DOBLA turno (${CODE_LABEL[c.code] ?? c.code})`
-        : `Cubre ${c.fullName} — ${CODE_LABEL[c.code] ?? c.code} · arrastra para moverlo · doble clic para editar el día`}
-      draggable
-      onDragStart={e => h.onCoverageDragStart(e, c.id)}
-      /* La cobertura también es la hoja de asistencia de alguien: se abre igual
+  const pildorasCobertura = (lista: CoberturaDia[], dateStr: string) =>
+    lista.map((c) => (
+      // Una EXTENSIÓN (alguien doblando porque su relevo no llegó) va en ámbar,
+      // no en verde: el verde dice «cubierto y en orden», y esto está cubierto
+      // pero NO está en orden — hay una persona encadenando dos turnos.
+      <div
+        key={c.id}
+        draggable
+        className="flex min-h-[16px] flex-1 cursor-grab flex-col items-center justify-center rounded active:cursor-grabbing"
+        style={toneCard(
+          c.ext ? "warn" : "ok",
+          c.ext ? 18 : 12,
+          c.ext ? 34 : 22,
+        )}
+        title={
+          c.ext
+            ? `${c.fullName} DOBLA turno (${CODE_LABEL[c.code] ?? c.code})`
+            : `Cubre ${c.fullName} — ${CODE_LABEL[c.code] ?? c.code} · arrastra para moverlo · doble clic para editar el día`
+        }
+        onDragStart={(e) => h.onCoverageDragStart(e, c.id)}
+        /* La cobertura también es la hoja de asistencia de alguien: se abre igual
          que cualquier otro casillero. Antes sólo se podía arrastrar. */
-      onDoubleClick={() => h.setOverrideTarget({ guardId: c.guardId, guardName: c.fullName, date: dateStr })}
-    >
-      <span className="text-[10px] font-bold leading-none">{c.ext ? '2×' : c.code}</span>
-      <span className="text-[8px] leading-none opacity-80">{c.name}</span>
-    </div>
-  ));
+        onDoubleClick={() =>
+          h.setOverrideTarget({
+            guardId: c.guardId,
+            guardName: c.fullName,
+            date: dateStr,
+          })
+        }
+      >
+        <span className="text-[10px] font-bold leading-none">
+          {c.ext ? "2×" : c.code}
+        </span>
+        <span className="text-[8px] leading-none opacity-80">{c.name}</span>
+      </div>
+    ));
 
-  const renderFijoCell = (pos: StationPosition, posAssignments: GuardAssignment[], day: Date, dayIdx: number) => {
+  const renderFijoCell = (
+    pos: StationPosition,
+    posAssignments: GuardAssignment[],
+    day: Date,
+    dayIdx: number,
+  ) => {
     const dateStr = monthDayStrs[dayIdx];
     const isToday = dateStr === todayStr;
     const isSunday = monthDaySunday[dayIdx];
@@ -297,11 +406,6 @@ function MonthStationBlockInner({
     return (
       <div
         key={dayIdx}
-        id={`hc-${pos.id}-${dayIdx}`}
-        /* Celda de rejilla: estilos PLANOS, jamás `backdrop-filter`. Este nodo
-           se pinta una vez por puesto y por día — un mes de un turno grande son
-           miles. */
-        className={`flex min-h-[36px] px-0.5 py-0.5${selCls}`}
         style={{
           borderRight: '1px solid var(--hairline)',
           background: selCls
@@ -310,11 +414,16 @@ function MonthStationBlockInner({
               ? TINT_TODAY
               : isSunday ? TINT_SUNDAY : undefined,
         }}
-        onMouseDown={e => { if (e.button === 0) h.startCellSelect(pos.id, dayIdx, e.shiftKey); }}
-        onMouseEnter={() => h.hoverCellSelect(pos.id, dayIdx)}
+        onContextMenu={e => h.openCellCtx(e, station, pos, posAssignments, dateStr)}
         onDragOver={e => e.preventDefault()}
         onDrop={e => h.handleDrop(e, station.id, pos.id, dateStr)}
-        onContextMenu={e => h.openCellCtx(e, station, pos, posAssignments, dateStr)}
+        onMouseDown={e => { if (e.button === 0) h.startCellSelect(pos.id, dayIdx, e.shiftKey); }}
+        onMouseEnter={() => h.hoverCellSelect(pos.id, dayIdx)}
+        id={`hc-${pos.id}-${dayIdx}`}
+        /* Celda de rejilla: estilos PLANOS, jamás `backdrop-filter`. Este nodo
+           se pinta una vez por puesto y por día — un mes de un turno grande son
+           miles. */
+        className={`flex min-h-[36px] px-0.5 py-0.5${selCls}`}
       >
         {posAssignments.length === 0 ? (
           // SIN VIGILANTE = SIN ROTACIÓN. Aquí se pintaba D/N/L a partir del
@@ -326,25 +435,48 @@ function MonthStationBlockInner({
           // se tapa día a día, y ése es justo el caso en el que la cobertura no
           // tiene ninguna «L» donde pintarse (ver `repartoDelDia`).
           (() => {
-            const sueltas = pos.id === primeraFilaId ? repartoDelDia(dateStr, day).sobrantes : [];
-            if (sueltas.length) return <div className="flex flex-1 flex-col gap-0.5">{pildorasCobertura(sueltas, dateStr)}</div>;
+            const sueltas =
+              pos.id === primeraFilaId
+                ? repartoDelDia(dateStr, day).sobrantes
+                : [];
+
+            if (sueltas.length)
+              return (
+                <div className="flex flex-1 flex-col gap-0.5">
+                  {pildorasCobertura(sueltas, dateStr)}
+                </div>
+              );
+
             return (
               <div
                 className="flex flex-1 cursor-pointer items-center justify-center rounded border border-dashed"
-                style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
-                title={t('ui.Schedule.puestoSinVigilanteDobleClic')}
-                onDoubleClick={() => h.openAssignForm(station.id, pos.id, dateStr)}
+                style={{
+                  borderColor: "var(--hairline)",
+                  background: "var(--glass-sunken)",
+                }}
+                title={t("ui.Schedule.puestoSinVigilanteDobleClic")}
+                onDoubleClick={() =>
+                  h.openAssignForm(station.id, pos.id, dateStr)
+                }
               >
-                <span className="text-[10px] font-bold" style={{ color: 'var(--ink-faint)' }}>·</span>
+                <span
+                  className="text-[10px] font-bold"
+                  style={{ color: "var(--ink-faint)" }}
+                >
+                  ·
+                </span>
               </div>
             );
           })()
         ) : (
           <div className="flex-1 flex flex-col gap-0.5">
-            {posAssignments.map(assignment => {
-              const guardName = nombreDeVigilante(assignment.guard, '?');
-              const color = guardColorMap[assignment.guardId] || 'var(--ink-faint)';
-              const override = overrideByGuardDate.get(`${assignment.guardId}|${dateStr}`);
+            {posAssignments.map((assignment) => {
+              const guardName = nombreDeVigilante(assignment.guard, "?");
+              const color =
+                guardColorMap[assignment.guardId] || "var(--ink-faint)";
+              const override = overrideByGuardDate.get(
+                `${assignment.guardId}|${dateStr}`,
+              );
               /* Sólo hay algo que elegir cuando el casillero apila más de una
                  persona; con una sola, el anillo sería ruido. */
               const apiladas = posAssignments.length > 1;
@@ -352,29 +484,45 @@ function MonthStationBlockInner({
               const cartaProps = apiladas
                 ? { onMouseDown: () => h.pickAssignment(assignment.id) }
                 : {};
-              const anillo = elegida ? ' ring-2 ring-inset ring-primary' : '';
+              const anillo = elegida ? " ring-2 ring-inset ring-primary" : "";
 
               // If there's an override, show it instead of calculated rotation
               if (override) {
                 const oType = override.type;
                 // Quien viene a tapar ESTE hueco se apila en la MISMA celda,
                 // debajo de la V: el puesto que se cubre es éste.
-                const relevos = repartoDelDia(dateStr, day).por.get(assignment.id) || [];
+                const relevos =
+                  repartoDelDia(dateStr, day).por.get(assignment.id) || [];
                 const tarjetaNovedad = (
                   <div
                     key={assignment.id}
                     {...cartaProps}
                     className={`flex min-h-[18px] flex-1 cursor-pointer items-center justify-center rounded${anillo}`}
-                    style={{ ...codePill(oType), borderLeft: `2px solid ${color}` }}
-                    title={`${guardName} — ${CODE_LABEL[oType] ?? oType}${override.note ? ': ' + override.note : ''} (doble clic para editar)`}
-                    onDoubleClick={() => h.setOverrideTarget({ guardId: assignment.guardId, guardName, date: dateStr, assignmentId: assignment.id })}
+                    style={{
+                      ...codePill(oType),
+                      borderLeft: `2px solid ${color}`,
+                    }}
+                    title={`${guardName} — ${CODE_LABEL[oType] ?? oType}${override.note ? ": " + override.note : ""} (doble clic para editar)`}
+                    onDoubleClick={() =>
+                      h.setOverrideTarget({
+                        guardId: assignment.guardId,
+                        guardName,
+                        date: dateStr,
+                        assignmentId: assignment.id,
+                      })
+                    }
                   >
                     <span className="text-[10px] font-bold">{oType}</span>
                   </div>
                 );
+
                 if (!relevos.length) return tarjetaNovedad;
+
                 return (
-                  <div key={assignment.id} className="flex flex-1 flex-col gap-0.5">
+                  <div
+                    key={assignment.id}
+                    className="flex flex-1 flex-col gap-0.5"
+                  >
                     {tarjetaNovedad}
                     {pildorasCobertura(relevos, dateStr)}
                   </div>
@@ -383,19 +531,26 @@ function MonthStationBlockInner({
 
               const workStatus = h.isWorkDay(assignment, day);
 
-              if (workStatus === 'rest') {
-                const coveringSfs = repartoDelDia(dateStr, day).por.get(assignment.id) || [];
+              if (workStatus === "rest") {
+                const coveringSfs =
+                  repartoDelDia(dateStr, day).por.get(assignment.id) || [];
+
                 /* Cubierto: los relevos que tapan ESTE hueco (ver
                    `repartoDelDia`). Antes esta celda enseñaba `coveringSfs[0]`
                    —el segundo relevo era invisible— y después, al apilarlos
                    todos sin repartir, el del día salía además en la noche. */
                 if (coveringSfs.length) {
                   return (
-                    <div key={assignment.id} {...cartaProps} className={`flex flex-1 flex-col gap-0.5${anillo}`}>
+                    <div
+                      key={assignment.id}
+                      {...cartaProps}
+                      className={`flex flex-1 flex-col gap-0.5${anillo}`}
+                    >
                       {pildorasCobertura(coveringSfs, dateStr)}
                     </div>
                   );
                 }
+
                 // Sin nadie que lo cubra: la «L» pelada. No hay nada que
                 // arrastrar aquí — lo arrastrable es la cobertura, y no la hay.
                 return (
@@ -403,23 +558,41 @@ function MonthStationBlockInner({
                     key={assignment.id}
                     {...cartaProps}
                     className={`relative flex min-h-[18px] flex-1 cursor-pointer items-center justify-center rounded${anillo}`}
-                    style={{ background: 'var(--glass-sunken)' }}
+                    style={{ background: "var(--glass-sunken)" }}
                     title={`${guardName} — Libre (clic derecho: cubrir este día)`}
-                    onDoubleClick={() => h.setOverrideTarget({ guardId: assignment.guardId, guardName, date: dateStr, assignmentId: assignment.id })}
+                    onDoubleClick={() =>
+                      h.setOverrideTarget({
+                        guardId: assignment.guardId,
+                        guardName,
+                        date: dateStr,
+                        assignmentId: assignment.id,
+                      })
+                    }
                   >
-                    <span className="text-[10px] font-bold" style={{ color: 'var(--ink-faint)' }}>L</span>
+                    <span
+                      className="text-[10px] font-bold"
+                      style={{ color: "var(--ink-faint)" }}
+                    >
+                      L
+                    </span>
                   </div>
                 );
               }
 
-              const esAprendiz = (assignment as any).role === 'shadow';
-              const code = dnCode(station.scheduleType, pos.startTime, workStatus as 'day' | 'night', horasDecidenMitad);
+              const esAprendiz = (assignment as any).role === "shadow";
+              const code = dnCode(
+                station.scheduleType,
+                pos.startTime,
+                workStatus as "day" | "night",
+                horasDecidenMitad,
+              );
               // El color sale del MISMO mapa que la leyenda; el 24 h se pinta con
               // su propio código, que ya es el más denso de la rejilla. Un puesto
               // partido en dos mitades NO es un 24 h para quien lo trabaja: son
               // 12 h: la píldora '24' ahí mentiría sobre la jornada.
-              const is24h = station.scheduleType === '24h' && !horasDecidenMitad;
-              const pillCode = is24h && code !== 'N' ? '24' : code;
+              const is24h =
+                station.scheduleType === "24h" && !horasDecidenMitad;
+              const pillCode = is24h && code !== "N" ? "24" : code;
 
               return (
                 <div
@@ -432,23 +605,44 @@ function MonthStationBlockInner({
                     // El aprendiz se distingue del titular de un vistazo: misma
                     // letra —trabaja el mismo día— pero apagado y punteado,
                     // porque esa plaza NO está cubierta por él.
-                    ...(esAprendiz ? { opacity: 0.55, borderStyle: 'dashed', borderWidth: '1px' } : null),
+                    ...(esAprendiz
+                      ? {
+                          opacity: 0.55,
+                          borderStyle: "dashed",
+                          borderWidth: "1px",
+                        }
+                      : null),
                   }}
-                  title={esAprendiz
-                    ? `${guardName} — aprendiz en acompañamiento (no cuenta como cobertura)`
-                    : `${guardName} — ${CODE_LABEL[code] ?? code}${is24h ? ' · 24 h' : ''} (doble clic para novedad)`}
-                  onDoubleClick={() => h.setOverrideTarget({ guardId: assignment.guardId, guardName, date: dateStr, assignmentId: assignment.id })}
+                  title={
+                    esAprendiz
+                      ? `${guardName} — aprendiz en acompañamiento (no cuenta como cobertura)`
+                      : `${guardName} — ${CODE_LABEL[code] ?? code}${is24h ? " · 24 h" : ""} (doble clic para novedad)`
+                  }
+                  onDoubleClick={() =>
+                    h.setOverrideTarget({
+                      guardId: assignment.guardId,
+                      guardName,
+                      date: dateStr,
+                      assignmentId: assignment.id,
+                    })
+                  }
                 >
-                  <span className="text-[10px] font-bold">{esAprendiz ? `${code}·a` : code}</span>
+                  <span className="text-[10px] font-bold">
+                    {esAprendiz ? `${code}·a` : code}
+                  </span>
                 </div>
               );
             })}
             {/* El fijo TRABAJA y además vino alguien a cubrir: su píldora se
                 apila debajo en vez de quedar invisible detrás de la D/N. */}
-            {pos.id === primeraFilaId && (() => {
-              const sueltas = repartoDelDia(dateStr, day).sobrantes;
-              return sueltas.length ? <>{pildorasCobertura(sueltas, dateStr)}</> : null;
-            })()}
+            {pos.id === primeraFilaId &&
+              (() => {
+                const sueltas = repartoDelDia(dateStr, day).sobrantes;
+
+                return sueltas.length ? (
+                  <>{pildorasCobertura(sueltas, dateStr)}</>
+                ) : null;
+              })()}
           </div>
         )}
       </div>
@@ -456,42 +650,70 @@ function MonthStationBlockInner({
   };
 
   return (
-    <div className="last:border-b-0" style={{ borderBottom: '1px solid var(--hairline)' }}>
+    <div
+      className="last:border-b-0"
+      style={{ borderBottom: "1px solid var(--hairline)" }}
+    >
       {/* Station header */}
-      <div className="grid" style={{ gridTemplateColumns: gridCols, background: 'var(--glass-sunken)' }}>
+      <div
+        className="grid"
+        style={{
+          gridTemplateColumns: gridCols,
+          background: "var(--glass-sunken)",
+        }}
+      >
         <div
           className="sticky left-0 z-20 flex items-center gap-2 px-4 py-2"
-          style={{ background: 'var(--glass-solid)', borderRight: '1px solid var(--hairline)' }}
+          style={{
+            background: "var(--glass-solid)",
+            borderRight: "1px solid var(--hairline)",
+          }}
         >
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5 min-w-0">
               {/* Nominativo: several puestos share a name, so
                   the name alone identifies nothing. */}
               {station.nickname && (
-                <span className="glass-sunken shrink-0 px-1.5 py-0.5 font-mono text-[10px] font-bold" style={{ color: 'var(--ink-soft)' }}>
+                <span
+                  className="glass-sunken shrink-0 px-1.5 py-0.5 font-mono text-[10px] font-bold"
+                  style={{ color: "var(--ink-soft)" }}
+                >
                   {station.nickname}
                 </span>
               )}
-              <div className="truncate text-sm font-semibold">{station.stationName}</div>
+              <div className="truncate text-sm font-semibold">
+                {station.stationName}
+              </div>
             </div>
             <button
-              onClick={() => h.configureStation(station)}
               className="cg-focus text-[11px] transition-colors hover:underline"
-              style={{ color: 'var(--ink-soft)' }}
-              title={t("ui.Schedule.cambiarTipoDeHorarioRotacion", "Cambiar tipo de horario / rotación")}
+              style={{ color: "var(--ink-soft)" }}
+              title={t(
+                "ui.Schedule.cambiarTipoDeHorarioRotacion",
+                "Cambiar tipo de horario / rotación",
+              )}
+              onClick={() => h.configureStation(station)}
             >
-              {station.scheduleType ? station.scheduleType.replace('-', ' ').toUpperCase() : 'Sin configurar'}
+              {station.scheduleType
+                ? station.scheduleType.replace("-", " ").toUpperCase()
+                : "Sin configurar"}
             </button>
             {stationAlert && (
               <div className="mt-1 flex items-center gap-1 flex-wrap">
                 {stationAlert.missingFijoCount > 0 && (
-                  <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[9px] font-semibold tabular-nums" style={toneCard('bad')}>
+                  <span
+                    className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[9px] font-semibold tabular-nums"
+                    style={toneCard("bad")}
+                  >
                     <AlertTriangle size={9} />
                     {stationAlert.missingFijoCount} fijo(s) faltan
                   </span>
                 )}
                 {stationAlert.sfUncoveredDays > 0 && (
-                  <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[9px] font-semibold tabular-nums" style={toneCard('warn')}>
+                  <span
+                    className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[9px] font-semibold tabular-nums"
+                    style={toneCard("warn")}
+                  >
                     <AlertTriangle size={9} />
                     {stationAlert.sfUncoveredDays} L sin SF
                   </span>
@@ -500,23 +722,31 @@ function MonthStationBlockInner({
             )}
           </div>
           {!hasPositions && (
-            <Button size="sm" variant="outline" className="text-xs h-7" onClick={() => h.configureStation(station)}>
+            <Button
+              className="text-xs h-7"
+              size="sm"
+              variant="outline"
+              onClick={() => h.configureStation(station)}
+            >
               Configurar
             </Button>
           )}
           {hasPositions && (
             <div className="flex items-center gap-1">
               <button
-                onClick={() => h.configureStation(station)}
                 className="cg-btn-ghost cg-focus rounded p-1 transition-colors"
-                title={t("ui.Schedule.reconfigurarElPuestoTipoDe", "Reconfigurar el puesto (tipo de horario y rotación)")}
+                title={t(
+                  "ui.Schedule.reconfigurarElPuestoTipoDe",
+                  "Reconfigurar el puesto (tipo de horario y rotación)",
+                )}
+                onClick={() => h.configureStation(station)}
               >
                 <Clock size={14} />
               </button>
               <button
-                onClick={() => h.addPosition(station.id)}
                 className="cg-btn-ghost cg-focus rounded p-1 transition-colors"
                 title="Agregar un puesto a esta estación (fijo o sacafranco)"
+                onClick={() => h.addPosition(station.id)}
               >
                 <Plus size={14} />
               </button>
@@ -524,73 +754,101 @@ function MonthStationBlockInner({
           )}
         </div>
         {/* Un solo nodo para las 365 rayitas — ver `columnRules`. */}
-        <div style={{ gridColumn: '2 / -1', ...columnRules(COL_W) }} />
+        <div style={{ gridColumn: "2 / -1", ...columnRules(COL_W) }} />
       </div>
 
       {/* Position rows */}
-      {stationPositions.map(pos => {
+      {stationPositions.map((pos) => {
         const posAssignments = assignmentsByPosition.get(pos.id) || EMPTY_ASG;
         const meta = POSITION_TONE[pos.type] || POSITION_TONE.fijo;
         const Icon = meta.icon;
 
         return (
-          <div key={pos.id} className="grid" style={{ gridTemplateColumns: gridCols, borderTop: '1px solid var(--hairline)' }}>
+          <div
+            key={pos.id}
+            className="grid"
+            style={{
+              gridTemplateColumns: gridCols,
+              borderTop: "1px solid var(--hairline)",
+            }}
+          >
             {/* Nombre del puesto */}
             <div
-              id={`hr-${pos.id}`}
               className="sticky left-0 z-20 flex items-center gap-2 px-4 py-2"
-              style={{ background: 'var(--glass-solid)', borderRight: '1px solid var(--hairline)' }}
-              onDragOver={e => e.preventDefault()}
-              onDrop={e => h.handleDrop(e, station.id, pos.id)}
+              id={`hr-${pos.id}`}
+              style={{
+                background: "var(--glass-solid)",
+                borderRight: "1px solid var(--hairline)",
+              }}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => h.handleDrop(e, station.id, pos.id)}
             >
-              <div className="flex h-6 w-6 items-center justify-center rounded" style={tonePill(meta.tone, 14)}>
+              <div
+                className="flex h-6 w-6 items-center justify-center rounded"
+                style={tonePill(meta.tone, 14)}
+              >
                 <Icon size={12} />
               </div>
               <div className="min-w-0 flex-1">
                 <button
-                  type="button"
-                  onClick={() => h.editPosition(station, pos)}
                   className="cg-focus block max-w-full truncate text-left text-xs font-semibold hover:underline"
                   title="Editar el puesto (nombre, horas, plazas) sin rehacer la estación"
+                  type="button"
+                  onClick={() => h.editPosition(station, pos)}
                 >
                   {pos.name}
                 </button>
-                <div className="text-[10px] tabular-nums" style={{ color: 'var(--ink-soft)' }}>
+                <div
+                  className="text-[10px] tabular-nums"
+                  style={{ color: "var(--ink-soft)" }}
+                >
                   {(() => {
                     // Real hours come from the POSITION (custom blocks carry
                     // their own window; start==end wraps the full day).
                     // A 24h STATION is covered by two fijos doing 12h each,
                     // swapping day/night — label the fijo, not the station.
-                    if (station.scheduleType === '24h' && !horasDecidenMitad) return 'Turnos de 12h · D/N rotativo';
-                    const st5 = (pos.startTime || '').slice(0, 5);
-                    const en5 = (pos.endTime || '').slice(0, 5);
-                    if (st5 && en5) return st5 === en5 ? `${st5} → ${en5} · 24h` : `${st5} – ${en5}`;
-                    return station.scheduleType === '12h-night' ? '19:00 – 07:00' : '07:00 – 19:00';
+                    if (station.scheduleType === "24h" && !horasDecidenMitad)
+                      return "Turnos de 12h · D/N rotativo";
+                    const st5 = (pos.startTime || "").slice(0, 5);
+                    const en5 = (pos.endTime || "").slice(0, 5);
+
+                    if (st5 && en5)
+                      return st5 === en5
+                        ? `${st5} → ${en5} · 24h`
+                        : `${st5} – ${en5}`;
+
+                    return station.scheduleType === "12h-night"
+                      ? "19:00 – 07:00"
+                      : "07:00 – 19:00";
                   })()}
                 </div>
               </div>
               {/* Assigned guard names — draggable to MOVE to another puesto */}
               {posAssignments.length > 0 && (
                 <div className="flex flex-col gap-0.5">
-                  {posAssignments.map(a => {
-                    const name = a.guard ? nombreDeVigilante(a.guard).split(' ')[0] : '?';
-                    const color = guardColorMap[a.guardId] || 'var(--ink-faint)';
+                  {posAssignments.map((a) => {
+                    const name = a.guard
+                      ? nombreDeVigilante(a.guard).split(" ")[0]
+                      : "?";
+                    const color =
+                      guardColorMap[a.guardId] || "var(--ink-faint)";
+
                     return (
                       <button
                         key={a.id}
                         draggable
-                        onDragStart={e => h.onGuardDragStart(e, a.guardId, a)}
-                        onClick={() => h.removeAssignment(a.id)}
-                        /* Ficha arrastrable: el color de identidad
-                           va en el filo, no en la tinta — a ese
-                           tamaño el texto necesita `--ink`. */
-                        className="cg-focus cursor-grab rounded px-1.5 py-0.5 text-[9px] font-semibold active:cursor-grabbing"
                         style={{
                           background: `color-mix(in oklab, ${color} 16%, transparent)`,
                           borderLeft: `2px solid ${color}`,
                           color: 'var(--ink)',
                         }}
                         title={`${nombreDeVigilante(a.guard, 'Vigilante')} — Arrastra para mover · Clic para remover`}
+                        onDragStart={e => h.onGuardDragStart(e, a.guardId, a)}
+                        onClick={() => h.removeAssignment(a.id)}
+                        /* Ficha arrastrable: el color de identidad
+                           va en el filo, no en la tinta — a ese
+                           tamaño el texto necesita `--ink`. */
+                        className="cg-focus cursor-grab rounded px-1.5 py-0.5 text-[9px] font-semibold active:cursor-grabbing"
                       >
                         {name} ×
                       </button>
@@ -601,18 +859,21 @@ function MonthStationBlockInner({
               {posAssignments.length === 0 && (
                 <div className="flex items-center gap-1">
                   <button
-                    onClick={() => h.openAssignForm(station.id, pos.id)}
                     className="cg-focus rounded-md p-1 transition-colors"
-                    style={tonePill('brand', 14)}
-                    title={t('comun.asignarVigilante')}
+                    style={tonePill("brand", 14)}
+                    title={t("comun.asignarVigilante")}
+                    onClick={() => h.openAssignForm(station.id, pos.id)}
                   >
                     <Plus size={12} />
                   </button>
                   <button
-                    onClick={() => h.deletePosition(station.id, pos.id)}
                     className="cg-focus rounded-md p-1 transition-colors hover:bg-[color-mix(in_oklab,var(--bad)_12%,transparent)]"
-                    style={{ color: 'var(--ink-faint)' }}
-                    title={t("ui.Schedule.eliminarPosicion", "Eliminar posición")}
+                    style={{ color: "var(--ink-faint)" }}
+                    title={t(
+                      "ui.Schedule.eliminarPosicion",
+                      "Eliminar posición",
+                    )}
+                    onClick={() => h.deletePosition(station.id, pos.id)}
                   >
                     <X size={11} />
                   </button>
@@ -622,7 +883,11 @@ function MonthStationBlockInner({
 
             {/* Day cells */}
             <div />
-            {monthDays.slice(colA, colB).map((day, k) => renderFijoCell(pos, posAssignments, day, colA + k))}
+            {monthDays
+              .slice(colA, colB)
+              .map((day, k) =>
+                renderFijoCell(pos, posAssignments, day, colA + k),
+              )}
             <div />
           </div>
         );
@@ -630,10 +895,23 @@ function MonthStationBlockInner({
 
       {/* No positions configured */}
       {!hasPositions && (
-        <div className="grid" style={{ gridTemplateColumns: gridCols, borderTop: '1px solid var(--hairline)' }}>
+        <div
+          className="grid"
+          style={{
+            gridTemplateColumns: gridCols,
+            borderTop: "1px solid var(--hairline)",
+          }}
+        >
           <div className="col-span-full px-4 py-4 text-center">
-            <p className="mb-2 text-xs" style={{ color: 'var(--ink-soft)' }}>{t('ui.Schedule.estePuestoNoTienePosiciones')}</p>
-            <Button size="sm" variant="outline" className="text-xs" onClick={() => h.configureStation(station)}>
+            <p className="mb-2 text-xs" style={{ color: "var(--ink-soft)" }}>
+              {t("ui.Schedule.estePuestoNoTienePosiciones")}
+            </p>
+            <Button
+              className="text-xs"
+              size="sm"
+              variant="outline"
+              onClick={() => h.configureStation(station)}
+            >
               Configurar posiciones
             </Button>
           </div>
@@ -648,4 +926,5 @@ function MonthStationBlockInner({
    `sel` vale `null` —siempre el mismo valor— en los puestos que la selección no
    toca, que son todos menos uno mientras se arrastra. */
 const MonthStationBlock = React.memo(MonthStationBlockInner);
+
 export default MonthStationBlock;

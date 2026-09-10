@@ -18,8 +18,9 @@
  *  - El cierre pasa por el MISMO signOut del menú: limpia todo lo que ya
  *    limpia, sin inventar un segundo camino de salida.
  */
-import { toast } from 'sonner';
-import api from '@/lib/api';
+import { toast } from "sonner";
+
+import api from "@/lib/api";
 
 const CHECK_MS = 30_000;
 const THROTTLE_MS = 5_000;
@@ -33,6 +34,7 @@ let listeners: Array<[string, EventListener]> = [];
 
 function marcarActividad() {
   const now = Date.now();
+
   if (now - lastMark < THROTTLE_MS) return;
   lastMark = now;
   lastActivity = now;
@@ -50,43 +52,78 @@ export function stopIdleLogout() {
  * Arranca (o re-arranca) el vigilante de inactividad leyendo la política del
  * tenant. Llamar de nuevo es seguro: se reinicia limpio.
  */
-export async function startIdleLogout(signOut: () => Promise<void>): Promise<void> {
+export async function startIdleLogout(
+  signOut: () => Promise<void>,
+): Promise<void> {
   stopIdleLogout();
   try {
-    const tenantId = localStorage.getItem('tenantId');
-    if (!tenantId || !localStorage.getItem('authToken')) return;
+    const tenantId = localStorage.getItem("tenantId");
 
-    const { data } = await api.get(`/tenant/${tenantId}/settings`, { toast: { silentError: true } } as any);
+    if (!tenantId || !localStorage.getItem("authToken")) return;
+
+    const { data } = await api.get(`/tenant/${tenantId}/settings`, {
+      toast: { silentError: true },
+    } as any);
     const pol = (data && data.sessionPolicy) || {};
     const idleMin = Number(pol.idleTimeoutMinutes) || 0;
+
     if (idleMin <= 0) return; // apagado — el comportamiento de siempre
 
     const warn = pol.warnBeforeLogout !== false;
+
     lastActivity = Date.now();
     avisado = false;
 
-    for (const ev of ['pointerdown', 'keydown', 'wheel', 'touchstart', 'visibilitychange'] as const) {
+    for (const ev of [
+      "pointerdown",
+      "keydown",
+      "wheel",
+      "touchstart",
+      "visibilitychange",
+    ] as const) {
       const fn = () => {
-        if (ev !== 'visibilitychange' || document.visibilityState === 'visible') marcarActividad();
+        if (ev !== "visibilitychange" || document.visibilityState === "visible")
+          marcarActividad();
       };
+
       window.addEventListener(ev, fn, { passive: true });
       listeners.push([ev, fn]);
     }
 
     const limiteMs = idleMin * 60_000;
+
     timer = setInterval(async () => {
-      if (!localStorage.getItem('authToken')) { stopIdleLogout(); return; }
+      if (!localStorage.getItem("authToken")) {
+        stopIdleLogout();
+
+        return;
+      }
       const idleMs = Date.now() - lastActivity;
 
-      if (warn && !avisado && idleMs >= limiteMs - AVISO_MS && idleMs < limiteMs) {
+      if (
+        warn &&
+        !avisado &&
+        idleMs >= limiteMs - AVISO_MS &&
+        idleMs < limiteMs
+      ) {
         avisado = true;
-        toast.warning('Tu sesión se cerrará en 2 minutos por inactividad. Mueve el ratón para seguir dentro.', { duration: 110_000 });
+        toast.warning(
+          "Tu sesión se cerrará en 2 minutos por inactividad. Mueve el ratón para seguir dentro.",
+          { duration: 110_000 },
+        );
+
         return;
       }
       if (idleMs >= limiteMs) {
         stopIdleLogout();
-        try { await signOut(); } catch { /* el 401 posterior termina el trabajo */ }
-        toast.info('Cerramos tu sesión por inactividad. Vuelve a entrar cuando quieras.');
+        try {
+          await signOut();
+        } catch {
+          /* el 401 posterior termina el trabajo */
+        }
+        toast.info(
+          "Cerramos tu sesión por inactividad. Vuelve a entrar cuando quieras.",
+        );
       }
     }, CHECK_MS);
   } catch {

@@ -52,7 +52,9 @@ export function ensureNotificationPermission(): void {
       permissionAsked = true;
       void Notification.requestPermission();
     }
-  } catch { /* sin soporte */ }
+  } catch {
+    /* sin soporte */
+  }
 }
 
 /**
@@ -61,11 +63,21 @@ export function ensureNotificationPermission(): void {
  * chime y el toast; duplicarlos en el centro de notificaciones es ruido.
  * Al tocarlo, trae la ventana al frente y navega a `path` si se indicó.
  */
-export function notifyNative(title: string, body?: string, path?: string, eventId?: string): void {
+export function notifyNative(
+  title: string,
+  body?: string,
+  path?: string,
+  eventId?: string,
+): void {
   try {
     if (typeof Notification === "undefined") return;
     if (Notification.permission !== "granted") return;
-    if (typeof document !== "undefined" && document.visibilityState === "visible" && document.hasFocus()) return;
+    if (
+      typeof document !== "undefined" &&
+      document.visibilityState === "visible" &&
+      document.hasFocus()
+    )
+      return;
     const n = new Notification(title, {
       body: body || undefined,
       // El tag colapsa DUPLICADOS DEL MISMO EVENTO (dos montajes del stream, o
@@ -75,15 +87,26 @@ export function notifyNative(title: string, body?: string, path?: string, eventI
       tag: eventId ? `cguard-${eventId}` : undefined,
       icon: "/assets/logo/c-guard-app-logo.png",
     });
+
     n.onclick = () => {
       // En Electron, window.focus() no des-esconde una ventana en bandeja —
       // hay que pedírselo al proceso principal.
-      try { window.cguardDesktop?.focusWindow?.(); } catch { /* ignore */ }
-      try { window.focus(); } catch { /* ignore */ }
+      try {
+        window.cguardDesktop?.focusWindow?.();
+      } catch {
+        /* ignore */
+      }
+      try {
+        window.focus();
+      } catch {
+        /* ignore */
+      }
       if (path) navigateInApp(path);
       n.close();
     };
-  } catch { /* best-effort — un aviso perdido no puede romper nada */ }
+  } catch {
+    /* best-effort — un aviso perdido no puede romper nada */
+  }
 }
 
 /* ── Contador en el icono ───────────────────────────────────────────────── */
@@ -93,8 +116,11 @@ export function notifyNative(title: string, body?: string, path?: string, eventI
 function drawBadgeOverlay(n: number): string | undefined {
   try {
     const c = document.createElement("canvas");
-    c.width = 32; c.height = 32;
+
+    c.width = 32;
+    c.height = 32;
     const ctx = c.getContext("2d");
+
     if (!ctx) return undefined;
     ctx.beginPath();
     ctx.arc(16, 16, 15, 0, Math.PI * 2);
@@ -105,6 +131,7 @@ function drawBadgeOverlay(n: number): string | undefined {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(n > 99 ? "99+" : String(n), 16, 17);
+
     return c.toDataURL("image/png");
   } catch {
     return undefined;
@@ -113,17 +140,25 @@ function drawBadgeOverlay(n: number): string | undefined {
 
 export function setAppBadge(count: number): void {
   const n = Math.max(0, Math.floor(count) || 0);
+
   // Electron (dock / barra de tareas) — el preload habla con el main process.
   // El overlay dibujado solo lo usa Windows; en macOS basta el número.
-  try { window.cguardDesktop?.setBadge(n, n > 0 ? drawBadgeOverlay(n) : undefined); } catch { /* ignore */ }
+  try {
+    window.cguardDesktop?.setBadge(n, n > 0 ? drawBadgeOverlay(n) : undefined);
+  } catch {
+    /* ignore */
+  }
   // PWA instalada (Badging API — Chrome/Edge).
   try {
     const nav: any = navigator;
+
     if (typeof nav?.setAppBadge === "function") {
       if (n > 0) void nav.setAppBadge(n);
       else void nav.clearAppBadge?.();
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 /* ── Deep links (cguardpro://…) ─────────────────────────────────────────── */
@@ -133,14 +168,21 @@ export function setAppBadge(count: number): void {
 export function navigateInApp(path: string): void {
   try {
     const clean = path.startsWith("/") ? path : `/${path}`;
+
     window.history.pushState({}, "", clean);
     window.dispatchEvent(new PopStateEvent("popstate"));
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 /** Suscribirse a los enlaces cguardpro:// que abren la app desde fuera. */
 export function onDeepLink(cb: (path: string) => void): void {
-  try { window.cguardDesktop?.onDeepLink(cb); } catch { /* ignore */ }
+  try {
+    window.cguardDesktop?.onDeepLink(cb);
+  } catch {
+    /* ignore */
+  }
 }
 
 /**
@@ -153,14 +195,22 @@ export function onDeepLink(cb: (path: string) => void): void {
 function mapDeepLink(raw: string): string {
   const clean = raw.startsWith("/") ? raw.slice(1) : raw;
   const [entity, id] = clean.split("/");
+
   switch (entity) {
-    case "incidents": return id ? `/dispatch-tickets/${id}` : "/dispatch-tickets";
-    case "visitors": return "/visitors";           // la bitácora es la vista de detalle
-    case "tasks": return "/tasks";
-    case "messages": return "/messenger";
-    case "shifts": return "/nomina/time-clock";     // el punch vive en el reloj de nómina
-    case "rondas": return "/dashboard";             // sin detalle propio en el CRM aún
-    default: return `/${clean}`;                     // ruta ya-CRM (p.ej. /dispatch-tickets/x)
+    case "incidents":
+      return id ? `/dispatch-tickets/${id}` : "/dispatch-tickets";
+    case "visitors":
+      return "/visitors"; // la bitácora es la vista de detalle
+    case "tasks":
+      return "/tasks";
+    case "messages":
+      return "/messenger";
+    case "shifts":
+      return "/nomina/time-clock"; // el punch vive en el reloj de nómina
+    case "rondas":
+      return "/dashboard"; // sin detalle propio en el CRM aún
+    default:
+      return `/${clean}`; // ruta ya-CRM (p.ej. /dispatch-tickets/x)
   }
 }
 

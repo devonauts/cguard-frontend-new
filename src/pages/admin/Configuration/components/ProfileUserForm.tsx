@@ -1,22 +1,32 @@
 import { useEffect, useRef, useState } from "react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { Mail, Phone, Globe, UserRound, Languages } from "lucide-react";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
+import { useNavigate } from "react-router-dom";
+
+import AvatarUploader from "./profile/AvatarUploader";
+import PhoneField from "./profile/PhoneField";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Mail, Phone, Globe, UserRound, Languages } from "lucide-react";
 import AccountService, { ProfilePayload } from "@/services/accountService";
 import { useAuth } from "@/contexts/AuthContext";
-import { parsePhoneNumberFromString } from 'libphonenumber-js';
-import AvatarUploader from "./profile/AvatarUploader";
-import PhoneField from "./profile/PhoneField";
 import { useLanguage, LANGUAGES } from "@/contexts/LanguageContext";
-import { useNavigate } from "react-router-dom";
-import { Section, Modal, Stagger, StatusBadge, SkeletonCards } from "@/components/kit";
+import {
+  Section,
+  Modal,
+  Stagger,
+  StatusBadge,
+  SkeletonCards,
+} from "@/components/kit";
 
 type MeTenantSetting = { theme?: string; logoUrl?: string | null };
 type MeTenant = { name?: string; phone?: string; settings?: MeTenantSetting[] };
-type MeAvatar = { downloadUrl?: string; privateUrl?: string; url?: string; src?: string } | string;
+type MeAvatar =
+  | { downloadUrl?: string; privateUrl?: string; url?: string; src?: string }
+  | string;
 
 type MeResponse = {
   id: string;
@@ -37,11 +47,15 @@ type MeResponse = {
 type MeRaw = Partial<MeResponse> & { user?: MeRaw; data?: MeRaw };
 
 // Shape of the errors thrown by the API layer (axios-style response envelope).
-type ApiError = { response?: { data?: { message?: string } }; message?: string };
+type ApiError = {
+  response?: { data?: { message?: string } };
+  message?: string;
+};
 
 function pickAvatarUrl(avatars?: MeAvatar[] | null): string | null {
   if (!avatars || avatars.length === 0) return null;
   const a = avatars[0];
+
   if (typeof a === "string") return a;
   // Prefer the token-based download URL the backend attaches (fillDownloadUrl).
   if (a.downloadUrl) return String(a.downloadUrl);
@@ -51,13 +65,16 @@ function pickAvatarUrl(avatars?: MeAvatar[] | null): string | null {
   // remains until the backend guarantees a downloadUrl on every avatar object.
   if (a.privateUrl) {
     const privateUrl = String(a.privateUrl);
+
     // If it's already an absolute URL, return it; otherwise construct download path
     if (/^https?:\/\//i.test(privateUrl)) return privateUrl;
+
     return `/file/download?privateUrl=${encodeURIComponent(privateUrl)}`;
   }
   // Fallback to other common fields
   if (a.url) return String(a.url);
   if (a.src) return String(a.src);
+
   return null;
 }
 
@@ -70,6 +87,7 @@ function normalizeMe(raw: MeRaw | null | undefined): MeResponse {
   const phoneNumber = base?.phoneNumber ?? "";
   const language = base?.language ?? "es";
   let avatarUrl = base?.avatarUrl ?? pickAvatarUrl(base?.avatars) ?? null;
+
   // Do not fallback to tenant logo here — user avatar must come from `avatarUrl`/`avatars`.
   if (avatarUrl) {
     try {
@@ -99,13 +117,16 @@ function normalizeMe(raw: MeRaw | null | undefined): MeResponse {
 
 function splitFullName(name: string): { firstName: string; lastName: string } {
   const trimmed = name.trim();
+
   if (!trimmed) {
     return { firstName: "", lastName: "" };
   }
   const parts = trimmed.split(/\s+/);
+
   if (parts.length === 1) {
     return { firstName: parts[0], lastName: "" };
   }
+
   return {
     firstName: parts[0],
     lastName: parts.slice(1).join(" "),
@@ -141,8 +162,10 @@ export default function ProfileUserForm() {
   const [showPhoneVerifyModal, setShowPhoneVerifyModal] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
   const { loading: authLoading } = useAuth();
+
   useEffect(() => {
     let mounted = true;
+
     // Wait until auth provider finished initializing to avoid calling without token
     if (authLoading) {
       // we will re-run when authLoading changes
@@ -154,41 +177,66 @@ export default function ProfileUserForm() {
         const res = await AccountService.getMe();
         const raw = res?.user ?? res?.data ?? res;
         const me = normalizeMe(res);
-        if (import.meta.env.DEV) console.log('[ProfileUserForm] /auth/me response raw:', raw, 'normalized:', me);
+
+        if (import.meta.env.DEV)
+          console.log(
+            "[ProfileUserForm] /auth/me response raw:",
+            raw,
+            "normalized:",
+            me,
+          );
         setCurrentUserId(raw?.id ?? null);
-        const tid = raw?.tenants && raw.tenants.length ? raw.tenants[0].tenant?.id : localStorage.getItem('tenantId');
+        const tid =
+          raw?.tenants && raw.tenants.length
+            ? raw.tenants[0].tenant?.id
+            : localStorage.getItem("tenantId");
+
         setCurrentTenantId(tid ?? null);
         if (!mounted) return;
 
         // Prefer explicit fullName (non-empty), otherwise try first/last, otherwise fallback to email
-        const resolvedFullName = (me.fullName && String(me.fullName).trim())
-          ? String(me.fullName).trim()
-          : ((me.firstName || me.lastName)
-              ? `${me.firstName ?? ''} ${me.lastName ?? ''}`.trim()
-              : (me.email ?? ""));
+        const resolvedFullName =
+          me.fullName && String(me.fullName).trim()
+            ? String(me.fullName).trim()
+            : me.firstName || me.lastName
+              ? `${me.firstName ?? ""} ${me.lastName ?? ""}`.trim()
+              : (me.email ?? "");
+
         setFullName(resolvedFullName);
         setEmail(me.email ?? "");
         setEmailVerified(me.emailVerified ?? false);
         setAvatar(me.avatarUrl ?? null);
 
         // phoneNumber may be stored on the user or on the tenant object
-        const tenantPhone = (me.tenants && Array.isArray(me.tenants) && me.tenants[0] && me.tenants[0].tenant && me.tenants[0].tenant.phone)
-          ? me.tenants[0].tenant.phone
-          : null;
-        // Treat empty string as absent: prefer explicit non-empty user phone, otherwise tenant phone
-        const phoneSource = (me.phoneNumber && String(me.phoneNumber).trim() !== "")
-          ? me.phoneNumber
-          : (tenantPhone && String(tenantPhone).trim() !== "")
-            ? tenantPhone
+        const tenantPhone =
+          me.tenants &&
+          Array.isArray(me.tenants) &&
+          me.tenants[0] &&
+          me.tenants[0].tenant &&
+          me.tenants[0].tenant.phone
+            ? me.tenants[0].tenant.phone
             : null;
+        // Treat empty string as absent: prefer explicit non-empty user phone, otherwise tenant phone
+        const phoneSource =
+          me.phoneNumber && String(me.phoneNumber).trim() !== ""
+            ? me.phoneNumber
+            : tenantPhone && String(tenantPhone).trim() !== ""
+              ? tenantPhone
+              : null;
+
         if (phoneSource) {
           try {
             const parsed = parsePhoneNumberFromString(String(phoneSource));
+
             if (parsed && parsed.country) {
               setPhoneCode(`+${parsed.countryCallingCode}`);
-              setPhoneNumber(parsed.nationalNumber ?? String(phoneSource).replace(/\s+/g, ""));
+              setPhoneNumber(
+                parsed.nationalNumber ??
+                  String(phoneSource).replace(/\s+/g, ""),
+              );
             } else {
               const match = String(phoneSource).match(/^(\+\d{1,3})\s*(.*)$/);
+
               if (match) {
                 setPhoneCode(match[1]);
                 setPhoneNumber(match[2].replace(/\s+/g, ""));
@@ -198,6 +246,7 @@ export default function ProfileUserForm() {
             }
           } catch (err) {
             const match = String(phoneSource).match(/^(\+\d{1,3})\s*(.*)$/);
+
             if (match) {
               setPhoneCode(match[1]);
               setPhoneNumber(match[2].replace(/\s+/g, ""));
@@ -207,7 +256,7 @@ export default function ProfileUserForm() {
           }
         }
       } catch {
-        toast.error(t('ui.ProfileUserForm.noSePudoCargarTu'));
+        toast.error(t("ui.ProfileUserForm.noSePudoCargarTu"));
       } finally {
         if (mounted) setLoading(false);
       }
@@ -227,6 +276,7 @@ export default function ProfileUserForm() {
     }
     if (file) {
       const objectUrl = URL.createObjectURL(file);
+
       avatarObjectUrlRef.current = objectUrl;
       setAvatar(objectUrl);
     } else {
@@ -252,23 +302,30 @@ export default function ProfileUserForm() {
       // Build payload only with non-empty values to avoid overwriting DB with empty strings
       const payload: ProfilePayload = {};
       const trimmedFull = fullName.trim();
+
       if (trimmedFull) payload.fullName = trimmedFull;
-      if (firstName && String(firstName).trim() !== "") payload.firstName = firstName;
-      if (lastName && String(lastName).trim() !== "") payload.lastName = lastName;
+      if (firstName && String(firstName).trim() !== "")
+        payload.firstName = firstName;
+      if (lastName && String(lastName).trim() !== "")
+        payload.lastName = lastName;
 
       // Normalize phone to E.164 when possible before sending
       let phoneToSend = `${phoneCode} ${phoneNumber}`.trim();
+
       try {
         const parsedSend = parsePhoneNumberFromString(phoneToSend);
+
         if (parsedSend && parsedSend.isValid()) {
           phoneToSend = parsedSend.number; // E.164
         }
       } catch (err) {
         // keep raw value
       }
-      if (phoneToSend && String(phoneToSend).trim() !== "") payload.phoneNumber = phoneToSend;
+      if (phoneToSend && String(phoneToSend).trim() !== "")
+        payload.phoneNumber = phoneToSend;
 
       let didUpdate = false;
+
       if (Object.keys(payload).length > 0) {
         await AccountService.updateProfile(payload);
         didUpdate = true;
@@ -277,19 +334,31 @@ export default function ProfileUserForm() {
         try {
           // Convert file to data URL and send as avatars payload so backend
           // can handle base64 upload the same way as settings logos.
-          const toDataUrl = (file: File) => new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(String(reader.result));
-            reader.onerror = (e) => reject(e);
-            reader.readAsDataURL(file);
-          });
+          const toDataUrl = (file: File) =>
+            new Promise<string>((resolve, reject) => {
+              const reader = new FileReader();
+
+              reader.onload = () => resolve(String(reader.result));
+              reader.onerror = (e) => reject(e);
+              reader.readAsDataURL(file);
+            });
 
           const dataUrl = await toDataUrl(avatarFile);
 
-          await AccountService.updateProfile({ avatars: [{ data: dataUrl, name: avatarFile.name, sizeInBytes: avatarFile.size, mimeType: avatarFile.type }] });
+          await AccountService.updateProfile({
+            avatars: [
+              {
+                data: dataUrl,
+                name: avatarFile.name,
+                sizeInBytes: avatarFile.size,
+                mimeType: avatarFile.type,
+              },
+            ],
+          });
 
           const refreshed = await AccountService.getMe();
           const refreshedMe = normalizeMe(refreshed);
+
           // The server now has the avatar; drop the local blob preview URL.
           if (avatarObjectUrlRef.current) {
             URL.revokeObjectURL(avatarObjectUrlRef.current);
@@ -298,17 +367,20 @@ export default function ProfileUserForm() {
           setAvatar(refreshedMe.avatarUrl ?? null);
           didUpdate = true;
         } catch (err) {
-          console.error('Avatar upload failed', err);
-          toast.error(t('ui.ProfileUserForm.noSePudoSubirEl'));
+          console.error("Avatar upload failed", err);
+          toast.error(t("ui.ProfileUserForm.noSePudoSubirEl"));
         }
       }
       if (didUpdate) {
         toast.success("Perfil actualizado correctamente.");
       } else {
-        toast.success(t('ui.ProfileUserForm.noHuboCambiosParaGuardar'));
+        toast.success(t("ui.ProfileUserForm.noHuboCambiosParaGuardar"));
       }
     } catch (e) {
-      toast.error((e as ApiError)?.response?.data?.message ?? t("settings.profile.errors.save", "Error al guardar el perfil."));
+      toast.error(
+        (e as ApiError)?.response?.data?.message ??
+          t("settings.profile.errors.save", "Error al guardar el perfil."),
+      );
     } finally {
       setSaving(false);
     }
@@ -327,52 +399,71 @@ export default function ProfileUserForm() {
   const handleVerifyEmail = async () => {
     try {
       await AccountService.sendVerifyEmail(email);
-      toast.success(t('ui.ProfileUserForm.seEnvioUnCorreoDe'));
+      toast.success(t("ui.ProfileUserForm.seEnvioUnCorreoDe"));
     } catch {
-      toast.error(t('ui.ProfileUserForm.noSePudoEnviarEl'));
+      toast.error(t("ui.ProfileUserForm.noSePudoEnviarEl"));
     }
   };
 
   const handleChangeEmail = async () => {
     if (!password || !newEmail) {
-      toast.error(t('ui.ProfileUserForm.porFavorCompletaTodosLos'));
+      toast.error(t("ui.ProfileUserForm.porFavorCompletaTodosLos"));
+
       return;
     }
 
     try {
       await AccountService.changeEmail({ password, newEmail });
-      toast.success(t('ui.ProfileUserForm.correoActualizadoCorrectamenteVerificaTu'));
+      toast.success(
+        t("ui.ProfileUserForm.correoActualizadoCorrectamenteVerificaTu"),
+      );
       setEmail(newEmail);
       setEmailVerified(false);
       setShowEmailModal(false);
       setPassword("");
       setNewEmail("");
     } catch (e) {
-      toast.error((e as ApiError)?.response?.data?.message ?? t("settings.profile.errors.changeEmail", "Error al cambiar el correo."));
+      toast.error(
+        (e as ApiError)?.response?.data?.message ??
+          t(
+            "settings.profile.errors.changeEmail",
+            "Error al cambiar el correo.",
+          ),
+      );
     }
   };
 
   const handleVerifyPhone = async () => {
     if (!verificationCode) {
-      toast.error(t('ui.ProfileUserForm.porFavorIngresaElCodigo'));
+      toast.error(t("ui.ProfileUserForm.porFavorIngresaElCodigo"));
+
       return;
     }
 
     try {
-      toast.success(t('ui.ProfileUserForm.numeroVerificadoCorrectamente'));
+      toast.success(t("ui.ProfileUserForm.numeroVerificadoCorrectamente"));
       setShowPhoneVerifyModal(false);
       setVerificationCode("");
     } catch (e) {
-      toast.error((e as ApiError)?.response?.data?.message ?? t("settings.profile.errors.verifyPhone", "Error al verificar el número."));
+      toast.error(
+        (e as ApiError)?.response?.data?.message ??
+          t(
+            "settings.profile.errors.verifyPhone",
+            "Error al verificar el número.",
+          ),
+      );
     }
   };
 
   const handleSendVerificationCode = async () => {
     try {
-      toast.success(t('ui.ProfileUserForm.codigoDeVerificacionEnviado'));
+      toast.success(t("ui.ProfileUserForm.codigoDeVerificacionEnviado"));
       setShowPhoneVerifyModal(true);
     } catch (e) {
-      toast.error((e as ApiError)?.response?.data?.message ?? t("settings.profile.errors.sendCode", "Error al enviar el código."));
+      toast.error(
+        (e as ApiError)?.response?.data?.message ??
+          t("settings.profile.errors.sendCode", "Error al enviar el código."),
+      );
     }
   };
 
@@ -382,7 +473,7 @@ export default function ProfileUserForm() {
         <div className="flex justify-center">
           <div className="cg-skeleton h-32 w-32 rounded-2xl" />
         </div>
-        <SkeletonCards count={2} className="sm:grid-cols-1" />
+        <SkeletonCards className="sm:grid-cols-1" count={2} />
       </div>
     );
   }
@@ -391,45 +482,62 @@ export default function ProfileUserForm() {
     <>
       <Stagger className="space-y-6">
         {/* ── Identidad ─────────────────────────────────────────────── */}
-        <Section title="Identidad" icon={<UserRound />} contentClassName="space-y-6">
+        <Section
+          contentClassName="space-y-6"
+          icon={<UserRound />}
+          title="Identidad"
+        >
           <div className="flex justify-center">
-            <AvatarUploader src={avatar ?? undefined} onChange={handleAvatarChange} size={128} />
+            <AvatarUploader
+              size={128}
+              src={avatar ?? undefined}
+              onChange={handleAvatarChange}
+            />
           </div>
 
           <div className="space-y-2">
-            <Label>{t('profile.name')}</Label>
-            <Input value={fullName} onChange={(e) => setFullName(e.target.value)} />
-            <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>
+            <Label>{t("profile.name")}</Label>
+            <Input
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+            />
+            <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
               Es el nombre con el que te ve el resto del equipo.
             </p>
           </div>
         </Section>
 
         {/* ── Contacto ──────────────────────────────────────────────── */}
-        <Section title={t('ui.ProfileUserForm.contacto')} icon={<Mail />} contentClassName="grid gap-6 md:grid-cols-2">
+        <Section
+          contentClassName="grid gap-6 md:grid-cols-2"
+          icon={<Mail />}
+          title={t("ui.ProfileUserForm.contacto")}
+        >
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">
-              <Label className="mb-0">{t('profile.email')}</Label>
-              <StatusBadge tone={emailVerified ? 'ok' : 'warn'}>
-                {emailVerified ? 'Verificado' : 'Sin verificar'}
+              <Label className="mb-0">{t("profile.email")}</Label>
+              <StatusBadge tone={emailVerified ? "ok" : "warn"}>
+                {emailVerified ? "Verificado" : "Sin verificar"}
               </StatusBadge>
             </div>
-            <Input value={email} disabled className="cursor-not-allowed" />
+            <Input disabled className="cursor-not-allowed" value={email} />
             <div className="flex justify-end">
               <Button
+                className="h-auto p-0 text-xs"
+                style={{ color: "var(--brand-text)" }}
                 type="button"
                 variant="link"
-                className="h-auto p-0 text-xs"
-                style={{ color: 'var(--brand-text)' }}
                 onClick={handleEmailAction}
               >
-                {emailVerified ? t('profile.changeEmail') : t('profile.verifyEmail')}
+                {emailVerified
+                  ? t("profile.changeEmail")
+                  : t("profile.verifyEmail")}
               </Button>
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label>{t('profile.phone')}</Label>
+            <Label>{t("profile.phone")}</Label>
             <PhoneField
               code={phoneCode}
               number={phoneNumber}
@@ -437,15 +545,17 @@ export default function ProfileUserForm() {
               onNumberChange={setPhoneNumber}
             />
             <div className="flex items-center justify-between gap-2">
-              <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>{t('profile.phoneExample')}</p>
+              <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
+                {t("profile.phoneExample")}
+              </p>
               <Button
+                className="h-auto p-0 text-xs"
+                style={{ color: "var(--brand-text)" }}
                 type="button"
                 variant="link"
-                className="h-auto p-0 text-xs"
-                style={{ color: 'var(--brand-text)' }}
                 onClick={handleSendVerificationCode}
               >
-                {t('profile.confirmNumber')}
+                {t("profile.confirmNumber")}
               </Button>
             </div>
           </div>
@@ -456,112 +566,134 @@ export default function ProfileUserForm() {
             permite volver a «Automático». Aquí sólo se muestra en cuál estás y
             se lleva allí: dos selectores para lo mismo es la vía rápida a que
             uno de los dos se quede atrás. */}
-        <Section title={t('profile.preferencesSection', { defaultValue: 'Preferencias' })} icon={<Languages />} contentClassName="grid gap-6 md:grid-cols-2">
+        <Section
+          contentClassName="grid gap-6 md:grid-cols-2"
+          icon={<Languages />}
+          title={t("profile.preferencesSection", {
+            defaultValue: "Preferencias",
+          })}
+        >
           <div className="space-y-2">
-            <Label>{t('profile.selectLanguage')}</Label>
+            <Label>{t("profile.selectLanguage")}</Label>
             <div className="glass-sunken flex items-center justify-between gap-3 rounded-2xl p-3">
-              <span className="flex items-center gap-2 text-sm" style={{ color: 'var(--ink)' }}>
+              <span
+                className="flex items-center gap-2 text-sm"
+                style={{ color: "var(--ink)" }}
+              >
                 <span aria-hidden>{LANGUAGES[language].flag}</span>
                 {LANGUAGES[language].name}
-                {choice === 'auto' && (
-                  <StatusBadge tone="neutral" dot={false}>
-                    {t('profile.languageAutoBadge', { defaultValue: 'Automático' })}
+                {choice === "auto" && (
+                  <StatusBadge dot={false} tone="neutral">
+                    {t("profile.languageAutoBadge", {
+                      defaultValue: "Automático",
+                    })}
                   </StatusBadge>
                 )}
               </span>
               <Button
+                className="h-auto p-0 text-xs"
+                style={{ color: "var(--brand-text)" }}
                 type="button"
                 variant="link"
-                className="h-auto p-0 text-xs"
-                style={{ color: 'var(--brand-text)' }}
-                onClick={() => navigate('/setting/idioma')}
+                onClick={() => navigate("/setting/idioma")}
               >
-                {t('profile.languageChange', { defaultValue: 'Cambiar' })}
+                {t("profile.languageChange", { defaultValue: "Cambiar" })}
               </Button>
             </div>
           </div>
 
           <div className="glass-sunken flex items-start gap-3 p-4">
-            <Globe className="mt-0.5 h-4 w-4 shrink-0" style={{ color: 'var(--ink-faint)' }} />
-            <p className="text-xs leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
-              {t('profile.languageScopeHint', { defaultValue: 'El idioma se aplica sólo a tu cuenta. Cada persona del equipo elige el suyo.' })}
+            <Globe
+              className="mt-0.5 h-4 w-4 shrink-0"
+              style={{ color: "var(--ink-faint)" }}
+            />
+            <p
+              className="text-xs leading-relaxed"
+              style={{ color: "var(--ink-soft)" }}
+            >
+              {t("profile.languageScopeHint", {
+                defaultValue:
+                  "El idioma se aplica sólo a tu cuenta. Cada persona del equipo elige el suyo.",
+              })}
             </p>
           </div>
         </Section>
 
         <div className="flex justify-end">
           <Button
-            type="button"
-            variant="brand"
             className="px-6"
             disabled={saving}
+            type="button"
+            variant="brand"
             onClick={handleSave}
           >
-            {saving ? t('profile.saving') : t('profile.save')}
+            {saving ? t("profile.saving") : t("profile.save")}
           </Button>
         </div>
       </Stagger>
 
       <Modal
-        open={showEmailModal}
-        onOpenChange={setShowEmailModal}
-        icon={<Mail />}
-        title={t('profile.changeEmailTitle')}
-        description={t('profile.changeEmailDesc')}
+        description={t("profile.changeEmailDesc")}
         footer={
           <Button variant="brand" onClick={handleChangeEmail}>
             Guardar
           </Button>
         }
+        icon={<Mail />}
+        open={showEmailModal}
+        title={t("profile.changeEmailTitle")}
+        onOpenChange={setShowEmailModal}
       >
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="password">{t('profile.password')}</Label>
+            <Label htmlFor="password">{t("profile.password")}</Label>
             <Input
               id="password"
-              type="password"
               placeholder="••••••••••••"
+              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="newEmail">{t('profile.newEmail')}</Label>
+            <Label htmlFor="newEmail">{t("profile.newEmail")}</Label>
             <Input
               id="newEmail"
+              placeholder={t("ui.ProfileUserForm.nuevoCorreoCom")}
               type="email"
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
-              placeholder={t('ui.ProfileUserForm.nuevoCorreoCom')}
             />
           </div>
         </div>
       </Modal>
 
       <Modal
-        open={showPhoneVerifyModal}
-        onOpenChange={setShowPhoneVerifyModal}
-        icon={<Phone />}
-        title={t('profile.verifyNumberTitle')}
-        description={t('profile.verifyNumberDesc')}
+        description={t("profile.verifyNumberDesc")}
         footer={
           <Button
-            onClick={handleVerifyPhone}
             className="text-muted-foreground hover:text-foreground/70"
             variant="ghost"
+            onClick={handleVerifyPhone}
           >
-            {t('profile.send')}
+            {t("profile.send")}
           </Button>
         }
+        icon={<Phone />}
+        open={showPhoneVerifyModal}
+        title={t("profile.verifyNumberTitle")}
+        onOpenChange={setShowPhoneVerifyModal}
       >
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="verificationCode">{t('profile.enterVerificationCode')}</Label>
+            <Label htmlFor="verificationCode">
+              {t("profile.enterVerificationCode")}
+            </Label>
             <Input
               id="verificationCode"
-              type="text"
               placeholder="123456"
+              type="text"
               value={verificationCode}
               onChange={(e) => setVerificationCode(e.target.value)}
             />

@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
-import { ApiService } from '@/services/api/apiService';
+import { useEffect, useState } from "react";
+
+import { ApiService } from "@/services/api/apiService";
 
 /**
  * El catálogo de permisos, pedido al servidor.
@@ -22,13 +23,19 @@ export function usePermissionCatalog(): { ids: string[]; cargando: boolean } {
   useEffect(() => {
     if (cache) return;
     let vivo = true;
-    const tenantId = localStorage.getItem('tenantId');
-    if (!tenantId) { setCargando(false); return; }
+    const tenantId = localStorage.getItem("tenantId");
+
+    if (!tenantId) {
+      setCargando(false);
+
+      return;
+    }
 
     ApiService.get(`/tenant/${tenantId}/permission-catalog`)
       .then((res: any) => {
         if (!vivo) return;
         const lista = (res && (res.ids || res.data?.ids)) || [];
+
         if (Array.isArray(lista) && lista.length) {
           cache = lista;
           setIds(lista);
@@ -39,7 +46,9 @@ export function usePermissionCatalog(): { ids: string[]; cargando: boolean } {
       .catch(() => undefined)
       .finally(() => vivo && setCargando(false));
 
-    return () => { vivo = false; };
+    return () => {
+      vivo = false;
+    };
   }, []);
 
   return { ids, cargando };

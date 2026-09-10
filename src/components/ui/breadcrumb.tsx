@@ -34,12 +34,13 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className }) => {
       <ol className="flex flex-wrap items-center text-sm">
         {generatedItems.map((item, index) => {
           const isLast = index === generatedItems.length - 1;
+
           return (
             <li key={index} className="flex items-center">
               {!isLast ? (
                 <Link
-                  to={item.path || "#"}
                   className="cg-focus rounded-full px-1 font-medium text-[color:var(--ink-soft)] transition-colors duration-200 hover:text-[color:var(--brand-text)] motion-reduce:transition-none"
+                  to={item.path || "#"}
                 >
                   {item.label}
                 </Link>

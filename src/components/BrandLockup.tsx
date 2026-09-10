@@ -1,5 +1,5 @@
-import { useCallback, useLayoutEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useCallback, useLayoutEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Bloque de marca: el ojo + «C-GUARD» como imagen, y el lema como TEXTO.
@@ -18,7 +18,7 @@ import { useTranslation } from 'react-i18next';
  * `dark:brightness-0 dark:invert` que usaba el logo negro ya no sirve.
  */
 export default function BrandLockup({
-  className = '',
+  className = "",
   animated = true,
   showTagline = true,
 }: {
@@ -27,7 +27,7 @@ export default function BrandLockup({
   showTagline?: boolean;
 }) {
   const { t } = useTranslation();
-  const tagline = t('brand.tagline', { defaultValue: 'Seguridad Inteligente' });
+  const tagline = t("brand.tagline", { defaultValue: "Seguridad Inteligente" });
   const slotRef = useRef<HTMLSpanElement>(null);
   const textRef = useRef<HTMLSpanElement>(null);
 
@@ -42,11 +42,13 @@ export default function BrandLockup({
   const fit = useCallback(() => {
     const slot = slotRef.current;
     const text = textRef.current;
+
     if (!slot || !text) return;
-    text.style.letterSpacing = '0px';
+    text.style.letterSpacing = "0px";
     const box = slot.getBoundingClientRect().width;
     const own = text.getBoundingClientRect().width;
     const gaps = (text.textContent?.length ?? 1) - 1;
+
     if (box > 0 && own > 0 && gaps > 0) {
       // El tracking se aplica también DESPUÉS del último carácter, así que el
       // reparto va entre los huecos + ese sobrante: si no, el lema se pasa de
@@ -61,28 +63,33 @@ export default function BrandLockup({
     // se vuelve a medir, el lema se queda con el ancho de la fuente de reserva.
     document.fonts?.ready.then(fit).catch(() => {});
     const slot = slotRef.current;
-    if (!slot || typeof ResizeObserver === 'undefined') return;
+
+    if (!slot || typeof ResizeObserver === "undefined") return;
     const ro = new ResizeObserver(fit);
+
     ro.observe(slot);
+
     return () => ro.disconnect();
   }, [fit, tagline]);
 
   return (
-    <span className={`cg-lockup ${animated ? 'is-animated' : ''} ${className}`.trim()}>
+    <span
+      className={`cg-lockup ${animated ? "is-animated" : ""} ${className}`.trim()}
+    >
       <img
-        src="/assets/logo/c-guard-lockup-light.png"
-        alt={t('auth.landing.logo_alt', { defaultValue: 'C-Guard Pro' })}
+        alt={t("auth.landing.logo_alt", { defaultValue: "C-Guard Pro" })}
         className="cg-lockup__mark cg-lockup__mark--light"
+        src="/assets/logo/c-guard-lockup-light.png"
       />
       <img
-        src="/assets/logo/c-guard-lockup-dark.png"
-        alt=""
         aria-hidden
+        alt=""
         className="cg-lockup__mark cg-lockup__mark--dark"
+        src="/assets/logo/c-guard-lockup-dark.png"
       />
       {showTagline && (
-        <span className="cg-lockup__slot" ref={slotRef} aria-hidden>
-          <span className="cg-lockup__tagline" ref={textRef}>
+        <span ref={slotRef} aria-hidden className="cg-lockup__slot">
+          <span ref={textRef} className="cg-lockup__tagline">
             {tagline}
           </span>
         </span>

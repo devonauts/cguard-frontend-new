@@ -13,6 +13,7 @@
 import { FC } from "react";
 import { Moon, Sun } from "lucide-react";
 import clsx from "clsx";
+
 import { useThemeContext } from "@/contexts/ThemeContext";
 
 export interface ThemeSwitchProps {
@@ -21,7 +22,10 @@ export interface ThemeSwitchProps {
   compact?: boolean;
 }
 
-export const ThemeSwitch: FC<ThemeSwitchProps> = ({ className, compact = false }) => {
+export const ThemeSwitch: FC<ThemeSwitchProps> = ({
+  className,
+  compact = false,
+}) => {
   const { theme, toggleTheme } = useThemeContext();
   const oscuro = theme === "dark";
   const etiqueta = oscuro ? "Cambiar a modo claro" : "Cambiar a modo oscuro";
@@ -29,33 +33,40 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({ className, compact = false }
   if (compact) {
     return (
       <button
-        type="button"
-        role="switch"
         aria-checked={oscuro}
         aria-label={etiqueta}
-        title={etiqueta}
-        onClick={toggleTheme}
         className={clsx(
           "cg-focus cg-btn-glass grid h-9 w-9 shrink-0 place-items-center transition-all duration-200 active:scale-95",
           className,
         )}
+        role="switch"
         style={{ borderRadius: 9999, color: "var(--ink-soft)" }}
+        title={etiqueta}
+        type="button"
+        onClick={toggleTheme}
       >
-        {oscuro ? <Moon className="h-[18px] w-[18px]" /> : <Sun className="h-[18px] w-[18px]" />}
+        {oscuro ? (
+          <Moon className="h-[18px] w-[18px]" />
+        ) : (
+          <Sun className="h-[18px] w-[18px]" />
+        )}
       </button>
     );
   }
 
   return (
     <button
-      type="button"
-      role="switch"
       aria-checked={oscuro}
       aria-label={etiqueta}
-      title={etiqueta}
-      onClick={toggleTheme}
-      className={clsx("glass-sunken cg-focus relative h-9 w-[62px] shrink-0 p-1 transition-colors", className)}
+      className={clsx(
+        "glass-sunken cg-focus relative h-9 w-[62px] shrink-0 p-1 transition-colors",
+        className,
+      )}
+      role="switch"
       style={{ borderRadius: 9999 }}
+      title={etiqueta}
+      type="button"
+      onClick={toggleTheme}
     >
       {/* El botón que se desliza. Lleva el relleno del acento, así que el
           conmutador cambia de color con el acento elegido sin tocar nada. */}
@@ -67,17 +78,31 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({ className, compact = false }
           borderRadius: 9999,
           background: "var(--brand)",
           color: "var(--brand-ink)",
-          boxShadow: "0 0 16px -4px var(--brand-glow), inset 0 1px 0 0 oklch(1 0 0 / 0.25)",
+          boxShadow:
+            "0 0 16px -4px var(--brand-glow), inset 0 1px 0 0 oklch(1 0 0 / 0.25)",
           transitionTimingFunction: "var(--ease)",
         }}
       >
-        {oscuro ? <Moon className="h-3.5 w-3.5" /> : <Sun className="h-3.5 w-3.5" />}
+        {oscuro ? (
+          <Moon className="h-3.5 w-3.5" />
+        ) : (
+          <Sun className="h-3.5 w-3.5" />
+        )}
       </span>
 
       {/* Los dos destinos, en tinta tenue: marcan a dónde va el botón. */}
-      <span aria-hidden className="relative flex h-7 items-center justify-between px-[7px]">
-        <Sun className="h-3.5 w-3.5" style={{ color: oscuro ? "var(--ink-faint)" : "transparent" }} />
-        <Moon className="h-3.5 w-3.5" style={{ color: oscuro ? "transparent" : "var(--ink-faint)" }} />
+      <span
+        aria-hidden
+        className="relative flex h-7 items-center justify-between px-[7px]"
+      >
+        <Sun
+          className="h-3.5 w-3.5"
+          style={{ color: oscuro ? "var(--ink-faint)" : "transparent" }}
+        />
+        <Moon
+          className="h-3.5 w-3.5"
+          style={{ color: oscuro ? "transparent" : "var(--ink-faint)" }}
+        />
       </span>
     </button>
   );

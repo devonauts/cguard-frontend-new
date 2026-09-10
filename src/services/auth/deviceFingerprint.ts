@@ -18,32 +18,35 @@
  * so that a blocked/failed fingerprint NEVER delays or breaks a login.
  */
 
-const CACHE_KEY = 'cg.deviceId'
+const CACHE_KEY = "cg.deviceId";
 /** Never let fingerprinting hold up a login by more than this. */
-const TIMEOUT_MS = 1500
+const TIMEOUT_MS = 1500;
 
 export interface DeviceSignals {
-  deviceId?: string
-  clientTimezone?: string
-  clientLocale?: string
+  deviceId?: string;
+  clientTimezone?: string;
+  clientLocale?: string;
 }
 
-let inFlight: Promise<string | null> | null = null
+let inFlight: Promise<string | null> | null = null;
 
 /** The browser's own timezone/locale — free, synchronous, never fails. */
 function localeSignals(): DeviceSignals {
-  const out: DeviceSignals = {}
+  const out: DeviceSignals = {};
+
   try {
-    out.clientTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || undefined
+    out.clientTimezone =
+      Intl.DateTimeFormat().resolvedOptions().timeZone || undefined;
   } catch {
     /* older browsers */
   }
   try {
-    out.clientLocale = navigator.language || undefined
+    out.clientLocale = navigator.language || undefined;
   } catch {
     /* ignore */
   }
-  return out
+
+  return out;
 }
 
 /**
@@ -52,29 +55,33 @@ function localeSignals(): DeviceSignals {
  */
 async function resolveDeviceId(): Promise<string | null> {
   try {
-    const cached = localStorage.getItem(CACHE_KEY)
-    if (cached) return cached
+    const cached = localStorage.getItem(CACHE_KEY);
+
+    if (cached) return cached;
   } catch {
     /* storage disabled — fall through and compute it fresh */
   }
 
   if (!inFlight) {
     inFlight = (async () => {
-      const FingerprintJS = await import('@fingerprintjs/fingerprintjs')
-      const agent = await FingerprintJS.load()
-      const result = await agent.get()
-      const id = result?.visitorId || null
+      const FingerprintJS = await import("@fingerprintjs/fingerprintjs");
+      const agent = await FingerprintJS.load();
+      const result = await agent.get();
+      const id = result?.visitorId || null;
+
       if (id) {
         try {
-          localStorage.setItem(CACHE_KEY, id)
+          localStorage.setItem(CACHE_KEY, id);
         } catch {
           /* ignore */
         }
       }
-      return id
-    })().catch(() => null)
+
+      return id;
+    })().catch(() => null);
   }
-  return inFlight
+
+  return inFlight;
 }
 
 /**
@@ -82,14 +89,18 @@ async function resolveDeviceId(): Promise<string | null> {
  * matter what — on timeout you still get the timezone/locale, just no id.
  */
 export async function deviceSignals(): Promise<DeviceSignals> {
-  const base = localeSignals()
+  const base = localeSignals();
+
   try {
     const deviceId = await Promise.race<string | null>([
       resolveDeviceId(),
-      new Promise<null>((resolve) => setTimeout(() => resolve(null), TIMEOUT_MS)),
-    ])
-    return deviceId ? { ...base, deviceId } : base
+      new Promise<null>((resolve) =>
+        setTimeout(() => resolve(null), TIMEOUT_MS),
+      ),
+    ]);
+
+    return deviceId ? { ...base, deviceId } : base;
   } catch {
-    return base
+    return base;
   }
 }

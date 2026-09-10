@@ -1,7 +1,8 @@
-import api from '@/lib/api';
-import { cachedFetch, invalidateEntity } from '@/lib/queryClient';
-import { PostSiteInput } from '@/lib/validators/post-site';
-import type { GuardAssignment } from '@/types';
+import type { GuardAssignment } from "@/types";
+
+import api from "@/lib/api";
+import { cachedFetch, invalidateEntity } from "@/lib/queryClient";
+import { PostSiteInput } from "@/lib/validators/post-site";
 
 export interface PostSite {
   id: string;
@@ -14,7 +15,7 @@ export interface PostSite {
   fax?: string;
   categoryId?: string;
   category?: { id: string; name: string };
-  status: 'active' | 'inactive';
+  status: "active" | "inactive";
   createdAt?: string;
   updatedAt?: string;
   // station fields
@@ -39,7 +40,7 @@ export interface PostSiteFilters {
   phoneNumber?: string;
   city?: string;
   country?: string;
-  status?: 'active' | 'inactive';
+  status?: "active" | "inactive";
   active?: boolean;
   serviceType?: string;
 }
@@ -56,7 +57,12 @@ export interface RawStationRow {
   companyName?: string;
   description?: string;
   client?: { id: string; name: string };
-  clientAccount?: { id: string; name: string; lastName?: string; commercialName?: string };
+  clientAccount?: {
+    id: string;
+    name: string;
+    lastName?: string;
+    commercialName?: string;
+  };
   clientAccountId?: string;
   clientId?: string;
   address?: string;
@@ -99,50 +105,70 @@ export interface PostSiteListResponse {
 }
 
 let globalTenantId: string | null = null;
+
 export const setTenantId = (id: string) => {
   globalTenantId = id;
-  localStorage.setItem('tenantId', id);
+  localStorage.setItem("tenantId", id);
 };
 
 const getTenantId = (): string => {
   if (globalTenantId) return globalTenantId;
-  const local = localStorage.getItem('tenantId');
+  const local = localStorage.getItem("tenantId");
+
   if (local) {
     globalTenantId = local;
+
     return local;
   }
   try {
     const w = window as unknown as {
       __APP_AUTH?: {
         tenantId?: string;
-        user?: { tenants?: Array<{ tenantId?: string; tenant?: { id?: string; tenantId?: string } }> };
+        user?: {
+          tenants?: Array<{
+            tenantId?: string;
+            tenant?: { id?: string; tenantId?: string };
+          }>;
+        };
       };
     };
     const info = w.__APP_AUTH;
+
     if (info) {
       if (info.tenantId) {
         globalTenantId = info.tenantId;
-        try { localStorage.setItem('tenantId', info.tenantId); } catch {}
+        try {
+          localStorage.setItem("tenantId", info.tenantId);
+        } catch {}
+
         return info.tenantId;
       }
       const u = info.user;
+
       if (u && Array.isArray(u.tenants) && u.tenants.length > 0) {
         const t = u.tenants[0];
-        const tid = t.tenantId || (t.tenant && (t.tenant.id || t.tenant.tenantId));
+        const tid =
+          t.tenantId || (t.tenant && (t.tenant.id || t.tenant.tenantId));
+
         if (tid) {
           globalTenantId = tid;
-          try { localStorage.setItem('tenantId', tid); } catch {}
+          try {
+            localStorage.setItem("tenantId", tid);
+          } catch {}
+
           return tid;
         }
       }
     }
   } catch (e) {}
-  throw new Error('El usuario debe estar vinculado a una empresa para continuar.');
+  throw new Error(
+    "El usuario debe estar vinculado a una empresa para continuar.",
+  );
 };
 
 export interface StationCard {
   id: string;
-  nickname: string | null;      // el «nominativo» — título de la tarjeta
+  nickname: string | null; // el «nominativo» — título de la tarjeta
   stationName: string;
   postSiteId: string | null;
   postSiteName: string | null;
@@ -161,16 +187,9 @@ export interface StationCard {
    * `idle`      no hay nadie esperado ahora: fuera de turno
    * `null`      no se pudo calcular (la tarjeta no pinta insignia)
    */
-  coverageStatus: 'covered' | 'at_risk' | 'uncovered' | 'idle' | null;
+  coverageStatus: "covered" | "at_risk" | "uncovered" | "idle" | null;
   /** Cuántos hay fichados AHORA. */
   onDutyCount: number;
-  /**
-   * QUIÉN está fichado ahora, por nombre. La insignia enseña el nombre en vez
-   * de «Vigilante en puesto», que es lo que ya dice el color verde.
-   * Vacío = no se pudo resolver el nombre; la insignia vuelve al texto genérico
-   * en lugar de quedarse en blanco.
-   */
-  onDutyNames: string[];
   /** Cuántos se esperan según el horario. */
   expectedCount: number;
   /** Próxima entrada planificada (24 h) — «Entra 19:00». */
@@ -210,72 +229,107 @@ const stationService = {
       `/tenant/${tenantId}/station/cards`,
       { toast: { silentError: true } },
     );
+
     return Array.isArray(data) ? data : (data?.data ?? []);
   },
 
-  async list(filters: PostSiteFilters = {}, options: PaginationOptions = { limit: 25, offset: 0 }): Promise<PostSiteListResponse> {
+  async list(
+    filters: PostSiteFilters = {},
+    options: PaginationOptions = { limit: 25, offset: 0 },
+  ): Promise<PostSiteListResponse> {
     const tenantId = getTenantId();
+
     // Read-through cache shared by the ~10 pages that list post-sites/stations.
     return cachedFetch(["stations", tenantId, filters, options], async () => {
-    const params = new URLSearchParams();
-    if (filters.name) params.append('filter[name]', filters.name);
-    if (filters.clientId) params.append('filter[clientId]', filters.clientId);
-    // allow filtering stations by postSite id (station repository expects filter.postSite)
-    const filtersExt = filters as PostSiteFilters & { postSite?: string; postSiteId?: string };
-    const postSiteId = filtersExt.postSite || filtersExt.postSiteId || undefined;
-    if (postSiteId) params.append('filter[postSite]', postSiteId);
-    const categoryToUse = filters.categoryId ?? filters.category;
-    if (categoryToUse) params.append('filter[categoryIds]', categoryToUse);
-    if (filters.email) {
-      params.append('filter[email]', filters.email);
-      params.append('filter[contactEmail]', filters.email);
-    }
-    const phoneToUse = filters.phone ?? filters.phoneNumber;
-    if (phoneToUse) {
-      params.append('filter[phone]', phoneToUse);
-      params.append('filter[contactPhone]', phoneToUse);
-    }
-    if (filters.city) params.append('filter[city]', filters.city);
-    if (filters.country) params.append('filter[country]', filters.country);
-    if (typeof filters.status === 'string') {
-      params.append('filter[active]', filters.status === 'active' ? 'true' : 'false');
-    } else if (typeof filters.active === 'boolean') {
-      params.append('filter[active]', filters.active.toString());
-    }
-    params.append('limit', options.limit.toString());
-    params.append('offset', options.offset.toString());
-    // If caller asked for stations linked to a postSite, call the stations endpoint
-    const useStationsEndpoint = !!postSiteId;
-    const endpoint = useStationsEndpoint ? 'stations' : 'post-site';
-    const { data } = await api.get<{ rows?: RawStationRow[]; count: number }>(`/tenant/${tenantId}/${endpoint}?${params.toString()}`, { toast: { silentError: true } });
-    const mappedRows = (data.rows || []).map((r: RawStationRow) => ({
-      id: r.id,
-      name: r.stationName ?? r.name ?? '',
-      companyName: r.stationName ?? r.companyName ?? undefined,
-      description: r.description ?? undefined,
-      client: r.client ?? r.clientAccount ?? undefined,
-      clientId: r.clientAccountId ?? r.clientId ?? undefined,
-      address: r.address ?? '',
-      postalCode: r.postalCode ?? r.zipCode ?? undefined,
-      city: r.city ?? undefined,
-      country: r.country ?? undefined,
-      email: r.contactEmail ?? r.email ?? undefined,
-      phone: r.contactPhone ?? r.phone ?? undefined,
-      fax: r.fax ?? undefined,
-      categoryId: Array.isArray(r.categoryIds) && r.categoryIds.length > 0 ? r.categoryIds[0] : undefined,
-      categoryIds: Array.isArray(r.categoryIds) ? r.categoryIds : [],
-      status: typeof r.active === 'boolean' ? (r.active ? 'active' : 'inactive') : ((r.status as 'active' | 'inactive') ?? 'inactive'),
-      latitud: r.latitud ?? r.latitude ?? undefined,
-      longitud: r.longitud ?? r.longitude ?? undefined,
-      stationSchedule: r.stationSchedule ?? undefined,
-      startingTimeInDay: r.startingTimeInDay ?? undefined,
-      finishTimeInDay: r.finishTimeInDay ?? undefined,
-      assignedGuards: Array.isArray(r.assignedGuards) ? r.assignedGuards : undefined,
-      guardsCount: typeof r.guardsCount === 'number' ? r.guardsCount : (Array.isArray(r.assignedGuards) ? r.assignedGuards.length : undefined),
-      numberOfGuardsInStation: r.numberOfGuardsInStation ?? undefined,
-      serviceType: r.serviceType ?? undefined,
-    }));
-    return { rows: mappedRows as unknown as PostSite[], count: data.count };
+      const params = new URLSearchParams();
+
+      if (filters.name) params.append("filter[name]", filters.name);
+      if (filters.clientId) params.append("filter[clientId]", filters.clientId);
+      // allow filtering stations by postSite id (station repository expects filter.postSite)
+      const filtersExt = filters as PostSiteFilters & {
+        postSite?: string;
+        postSiteId?: string;
+      };
+      const postSiteId =
+        filtersExt.postSite || filtersExt.postSiteId || undefined;
+
+      if (postSiteId) params.append("filter[postSite]", postSiteId);
+      const categoryToUse = filters.categoryId ?? filters.category;
+
+      if (categoryToUse) params.append("filter[categoryIds]", categoryToUse);
+      if (filters.email) {
+        params.append("filter[email]", filters.email);
+        params.append("filter[contactEmail]", filters.email);
+      }
+      const phoneToUse = filters.phone ?? filters.phoneNumber;
+
+      if (phoneToUse) {
+        params.append("filter[phone]", phoneToUse);
+        params.append("filter[contactPhone]", phoneToUse);
+      }
+      if (filters.city) params.append("filter[city]", filters.city);
+      if (filters.country) params.append("filter[country]", filters.country);
+      if (typeof filters.status === "string") {
+        params.append(
+          "filter[active]",
+          filters.status === "active" ? "true" : "false",
+        );
+      } else if (typeof filters.active === "boolean") {
+        params.append("filter[active]", filters.active.toString());
+      }
+      params.append("limit", options.limit.toString());
+      params.append("offset", options.offset.toString());
+      // If caller asked for stations linked to a postSite, call the stations endpoint
+      const useStationsEndpoint = !!postSiteId;
+      const endpoint = useStationsEndpoint ? "stations" : "post-site";
+      const { data } = await api.get<{ rows?: RawStationRow[]; count: number }>(
+        `/tenant/${tenantId}/${endpoint}?${params.toString()}`,
+        { toast: { silentError: true } },
+      );
+      const mappedRows = (data.rows || []).map((r: RawStationRow) => ({
+        id: r.id,
+        name: r.stationName ?? r.name ?? "",
+        companyName: r.stationName ?? r.companyName ?? undefined,
+        description: r.description ?? undefined,
+        client: r.client ?? r.clientAccount ?? undefined,
+        clientId: r.clientAccountId ?? r.clientId ?? undefined,
+        address: r.address ?? "",
+        postalCode: r.postalCode ?? r.zipCode ?? undefined,
+        city: r.city ?? undefined,
+        country: r.country ?? undefined,
+        email: r.contactEmail ?? r.email ?? undefined,
+        phone: r.contactPhone ?? r.phone ?? undefined,
+        fax: r.fax ?? undefined,
+        categoryId:
+          Array.isArray(r.categoryIds) && r.categoryIds.length > 0
+            ? r.categoryIds[0]
+            : undefined,
+        categoryIds: Array.isArray(r.categoryIds) ? r.categoryIds : [],
+        status:
+          typeof r.active === "boolean"
+            ? r.active
+              ? "active"
+              : "inactive"
+            : ((r.status as "active" | "inactive") ?? "inactive"),
+        latitud: r.latitud ?? r.latitude ?? undefined,
+        longitud: r.longitud ?? r.longitude ?? undefined,
+        stationSchedule: r.stationSchedule ?? undefined,
+        startingTimeInDay: r.startingTimeInDay ?? undefined,
+        finishTimeInDay: r.finishTimeInDay ?? undefined,
+        assignedGuards: Array.isArray(r.assignedGuards)
+          ? r.assignedGuards
+          : undefined,
+        guardsCount:
+          typeof r.guardsCount === "number"
+            ? r.guardsCount
+            : Array.isArray(r.assignedGuards)
+              ? r.assignedGuards.length
+              : undefined,
+        numberOfGuardsInStation: r.numberOfGuardsInStation ?? undefined,
+        serviceType: r.serviceType ?? undefined,
+      }));
+
+      return { rows: mappedRows as unknown as PostSite[], count: data.count };
     });
   },
 
@@ -285,7 +339,10 @@ const stationService = {
     // previously attempted `/stations/:id` first which produced noisy 404s
     // for valid post-site resources; remove that fallback.
     const postSiteUrl = `/tenant/${tenantId}/post-site/${id}`;
-    const { data } = await api.get<RawStationRow>(postSiteUrl, { toast: { silentError: true } });
+    const { data } = await api.get<RawStationRow>(postSiteUrl, {
+      toast: { silentError: true },
+    });
+
     return data;
   },
 
@@ -293,7 +350,11 @@ const stationService = {
     const tenantId = getTenantId();
     // The form schema lacks `companyName` and legacy `latitude`/`longitude`;
     // widen access for those.
-    const p = payload as PostSiteInput & { companyName?: string; latitude?: string; longitude?: string };
+    const p = payload as PostSiteInput & {
+      companyName?: string;
+      latitude?: string;
+      longitude?: string;
+    };
     const body = {
       stationName: p.name ?? undefined,
       // backend requires companyName for post-site creation
@@ -309,7 +370,7 @@ const stationService = {
       contactPhone: p.phone ?? undefined,
       fax: p.fax ?? undefined,
       categoryIds: p.categoryId ? [p.categoryId] : [],
-      active: typeof p.status === 'string' ? p.status === 'active' : true,
+      active: typeof p.status === "string" ? p.status === "active" : true,
       latitud: p.latitud ?? p.latitude ?? undefined,
       longitud: p.longitud ?? p.longitude ?? undefined,
       stationSchedule: p.stationSchedule ?? undefined,
@@ -319,7 +380,9 @@ const stationService = {
       serviceConfig: p.serviceConfig ?? undefined,
     };
     const { data } = await api.post(`/tenant/${tenantId}/post-site`, body);
+
     invalidateEntity("stations");
+
     return data;
   },
 
@@ -330,37 +393,61 @@ const stationService = {
     // attempt a direct `/post-site/:id` GET as a last resort and proceed with
     // an empty fallback object so update still attempts to submit.
     let existing: RawStationRow = {};
+
     try {
       existing = await stationService.get(id);
     } catch (err) {
-      console.error(`stationService.update: failed to load existing station/post-site ${id}`, err);
+      console.error(
+        `stationService.update: failed to load existing station/post-site ${id}`,
+        err,
+      );
       try {
-        const res = await api.get<RawStationRow>(`/tenant/${tenantId}/post-site/${id}`, { toast: { silentError: true } });
+        const res = await api.get<RawStationRow>(
+          `/tenant/${tenantId}/post-site/${id}`,
+          { toast: { silentError: true } },
+        );
+
         existing = res.data || {};
       } catch (e) {
-        console.error(`stationService.update: fallback direct post-site GET also failed for ${id}`, e);
+        console.error(
+          `stationService.update: fallback direct post-site GET also failed for ${id}`,
+          e,
+        );
         existing = {};
       }
     }
-    const p = payload as Partial<PostSiteInput> & { companyName?: string; latitude?: string; longitude?: string };
+    const p = payload as Partial<PostSiteInput> & {
+      companyName?: string;
+      latitude?: string;
+      longitude?: string;
+    };
     const body = {
       stationName: p.name ?? existing.stationName ?? existing.name,
       // include companyName for backend compatibility
-      companyName: p.companyName ?? p.name ?? existing.companyName ?? existing.stationName ?? existing.name,
-      clientAccountId: p.clientId ?? existing.clientAccountId ?? existing.clientId,
+      companyName:
+        p.companyName ??
+        p.name ??
+        existing.companyName ??
+        existing.stationName ??
+        existing.name,
+      clientAccountId:
+        p.clientId ?? existing.clientAccountId ?? existing.clientId,
       address: p.address ?? existing.address,
-      secondAddress: p.addressLine2 ?? existing.secondAddress ?? existing.addressLine2,
+      secondAddress:
+        p.addressLine2 ?? existing.secondAddress ?? existing.addressLine2,
       postalCode: p.postalCode ?? existing.postalCode ?? existing.zipCode,
       city: p.city ?? existing.city,
       country: p.country ?? existing.country,
       description: p.description ?? existing.description,
       contactPhone: p.phone ?? existing.contactPhone ?? existing.phone,
       fax: p.fax ?? existing.fax,
-      categoryIds: p.categoryId ? [p.categoryId] : (existing.categoryIds || []),
+      categoryIds: p.categoryId ? [p.categoryId] : existing.categoryIds || [],
       contactEmail: p.email ?? existing.contactEmail ?? existing.email,
-      active: typeof p.status === 'string' ? p.status === 'active' : existing.active,
+      active:
+        typeof p.status === "string" ? p.status === "active" : existing.active,
       latitud: p.latitud ?? p.latitude ?? existing.latitud ?? existing.latitude,
-      longitud: p.longitud ?? p.longitude ?? existing.longitud ?? existing.longitude,
+      longitud:
+        p.longitud ?? p.longitude ?? existing.longitud ?? existing.longitude,
       stationSchedule: p.stationSchedule ?? existing.stationSchedule,
       startingTimeInDay: p.startingTimeInDay ?? existing.startingTimeInDay,
       finishTimeInDay: p.finishTimeInDay ?? existing.finishTimeInDay,
@@ -368,12 +455,15 @@ const stationService = {
       serviceConfig: p.serviceConfig ?? existing.serviceConfig ?? undefined,
     };
     const { data } = await api.put(`/tenant/${tenantId}/post-site/${id}`, body);
+
     invalidateEntity("stations");
+
     return data;
   },
 
   async delete(ids: string[]): Promise<void> {
     const tenantId = getTenantId();
+
     await api.delete(`/tenant/${tenantId}/post-site`, { data: { ids } });
     invalidateEntity("stations");
   },
@@ -381,54 +471,86 @@ const stationService = {
   async exportPDF(filters: PostSiteFilters = {}): Promise<Blob> {
     const tenantId = getTenantId();
     const params = new URLSearchParams();
-    if (filters.name) params.append('filter[name]', filters.name);
-    if (filters.clientId) params.append('filter[clientId]', filters.clientId);
+
+    if (filters.name) params.append("filter[name]", filters.name);
+    if (filters.clientId) params.append("filter[clientId]", filters.clientId);
     const categoryToUse = filters.categoryId ?? filters.category;
-    if (categoryToUse) params.append('filter[categoryIds]', categoryToUse);
+
+    if (categoryToUse) params.append("filter[categoryIds]", categoryToUse);
     if (filters.email) {
-      params.append('filter[email]', filters.email);
-      params.append('filter[contactEmail]', filters.email);
+      params.append("filter[email]", filters.email);
+      params.append("filter[contactEmail]", filters.email);
     }
     const phoneToUse = filters.phone ?? filters.phoneNumber;
+
     if (phoneToUse) {
-      params.append('filter[phone]', phoneToUse);
-      params.append('filter[contactPhone]', phoneToUse);
+      params.append("filter[phone]", phoneToUse);
+      params.append("filter[contactPhone]", phoneToUse);
     }
-    if (typeof filters.status === 'string') params.append('filter[active]', filters.status === 'active' ? 'true' : 'false');
-    else if (typeof filters.active === 'boolean') params.append('filter[active]', filters.active.toString());
-    params.append('format', 'pdf');
-    const { data } = await api.get(`/tenant/${tenantId}/post-site/export?${params.toString()}`, { responseType: 'blob' });
+    if (typeof filters.status === "string")
+      params.append(
+        "filter[active]",
+        filters.status === "active" ? "true" : "false",
+      );
+    else if (typeof filters.active === "boolean")
+      params.append("filter[active]", filters.active.toString());
+    params.append("format", "pdf");
+    const { data } = await api.get(
+      `/tenant/${tenantId}/post-site/export?${params.toString()}`,
+      { responseType: "blob" },
+    );
+
     return data;
   },
 
   async exportExcel(filters: PostSiteFilters = {}): Promise<Blob> {
     const tenantId = getTenantId();
     const params = new URLSearchParams();
-    if (filters.name) params.append('filter[name]', filters.name);
-    if (filters.clientId) params.append('filter[clientId]', filters.clientId);
+
+    if (filters.name) params.append("filter[name]", filters.name);
+    if (filters.clientId) params.append("filter[clientId]", filters.clientId);
     const categoryToUse = filters.categoryId ?? filters.category;
-    if (categoryToUse) params.append('filter[categoryIds]', categoryToUse);
+
+    if (categoryToUse) params.append("filter[categoryIds]", categoryToUse);
     if (filters.email) {
-      params.append('filter[email]', filters.email);
-      params.append('filter[contactEmail]', filters.email);
+      params.append("filter[email]", filters.email);
+      params.append("filter[contactEmail]", filters.email);
     }
     const phoneToUse = filters.phone ?? filters.phoneNumber;
+
     if (phoneToUse) {
-      params.append('filter[phone]', phoneToUse);
-      params.append('filter[contactPhone]', phoneToUse);
+      params.append("filter[phone]", phoneToUse);
+      params.append("filter[contactPhone]", phoneToUse);
     }
-    if (typeof filters.status === 'string') params.append('filter[active]', filters.status === 'active' ? 'true' : 'false');
-    else if (typeof filters.active === 'boolean') params.append('filter[active]', filters.active.toString());
-    params.append('format', 'excel');
-    const { data } = await api.get(`/tenant/${tenantId}/post-site/export?${params.toString()}`, { responseType: 'blob' });
+    if (typeof filters.status === "string")
+      params.append(
+        "filter[active]",
+        filters.status === "active" ? "true" : "false",
+      );
+    else if (typeof filters.active === "boolean")
+      params.append("filter[active]", filters.active.toString());
+    params.append("format", "excel");
+    const { data } = await api.get(
+      `/tenant/${tenantId}/post-site/export?${params.toString()}`,
+      { responseType: "blob" },
+    );
+
     return data;
   },
 
-  async import(file: File): Promise<{ success: number; failed: number; errors: any[] }> {
+  async import(
+    file: File,
+  ): Promise<{ success: number; failed: number; errors: any[] }> {
     const tenantId = getTenantId();
     const formData = new FormData();
-    formData.append('file', file);
-    const { data } = await api.post(`/tenant/${tenantId}/post-site/import`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+
+    formData.append("file", file);
+    const { data } = await api.post(
+      `/tenant/${tenantId}/post-site/import`,
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } },
+    );
+
     return data;
   },
 
@@ -439,16 +561,34 @@ const stationService = {
       latitud?: string;
       longitud?: string;
       isActive: boolean;
-      activeGuards: Array<{ id: string; securityGuardId: string; fullName: string; isOnDuty: boolean; photoUrl: string | null }>;
-      nextShift: { startTime: string; endTime: string; guard: { fullName: string; photoUrl: string | null } | null } | null;
+      activeGuards: Array<{
+        id: string;
+        securityGuardId: string;
+        fullName: string;
+        isOnDuty: boolean;
+        photoUrl: string | null;
+      }>;
+      nextShift: {
+        startTime: string;
+        endTime: string;
+        guard: { fullName: string; photoUrl: string | null } | null;
+      } | null;
     }>;
   }> {
     const tenantId = getTenantId();
-    const { data } = await api.get(`/tenant/${tenantId}/post-site/${postSiteId}/active-status`, { toast: { silentError: true } });
+    const { data } = await api.get(
+      `/tenant/${tenantId}/post-site/${postSiteId}/active-status`,
+      { toast: { silentError: true } },
+    );
+
     return data;
   },
 
-  async coverageGaps(postSiteId: string, from: string, to: string): Promise<{
+  async coverageGaps(
+    postSiteId: string,
+    from: string,
+    to: string,
+  ): Promise<{
     from: string;
     to: string;
     stations: Array<{
@@ -460,16 +600,26 @@ const stationService = {
       is24h: boolean;
       requiredHoursPerDay: number;
       coverageScore: number;
-      gaps: Array<{ day: string; startTime: string; endTime: string; hoursUncovered: number }>;
-      coveredPeriods: Array<{ day: string; startTime: string; endTime: string }>;
+      gaps: Array<{
+        day: string;
+        startTime: string;
+        endTime: string;
+        hoursUncovered: number;
+      }>;
+      coveredPeriods: Array<{
+        day: string;
+        startTime: string;
+        endTime: string;
+      }>;
     }>;
   }> {
     const tenantId = getTenantId();
     const params = new URLSearchParams({ from, to });
     const { data } = await api.get(
       `/tenant/${tenantId}/post-site/${postSiteId}/coverage-gaps?${params}`,
-      { toast: { silentError: true } }
+      { toast: { silentError: true } },
     );
+
     return data;
   },
 };

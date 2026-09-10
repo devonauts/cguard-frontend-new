@@ -1,12 +1,20 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { MapContainer, TileLayer, Marker, Circle, useMapEvents, useMap } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import { useChartColors } from '@/lib/chartColors';
-import { metrosEntre } from '@/utils/mapMotion';
-import { formatearCoord, formatearDistancia } from '@/utils/geoMedidas';
-import '@/styles/map.css';
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Circle,
+  useMapEvents,
+  useMap,
+} from "react-leaflet";
+import L from "leaflet";
+
+import "leaflet/dist/leaflet.css";
+import { useChartColors } from "@/lib/chartColors";
+import { metrosEntre } from "@/utils/mapMotion";
+import { formatearCoord, formatearDistancia } from "@/utils/geoMedidas";
+import "@/styles/map.css";
 
 // Quito fallback when nothing is set yet.
 const FALLBACK: [number, number] = [-0.2295, -78.5236];
@@ -31,7 +39,7 @@ const FALLBACK: [number, number] = [-0.2295, -78.5236];
  */
 function crearPin(color: string) {
   return L.divIcon({
-    className: 'cp-pin',
+    className: "cp-pin",
     html:
       `<svg width="30" height="42" viewBox="0 0 24 36" xmlns="http://www.w3.org/2000/svg"` +
       ` style="transition:transform .16s ease, filter .16s ease;transform-origin:50% 100%">` +
@@ -42,17 +50,24 @@ function crearPin(color: string) {
   });
 }
 
-function ClickToPlace({ onPick }: { onPick: (lat: number, lng: number) => void }) {
+function ClickToPlace({
+  onPick,
+}: {
+  onPick: (lat: number, lng: number) => void;
+}) {
   useMapEvents({ click: (e) => onPick(e.latlng.lat, e.latlng.lng) });
+
   return null;
 }
 
 function Recenter({ lat, lng }: { lat: number | null; lng: number | null }) {
   const map = useMap();
+
   useEffect(() => {
-    if (lat != null && lng != null) map.setView([lat, lng], map.getZoom(), { animate: true });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (lat != null && lng != null)
+      map.setView([lat, lng], map.getZoom(), { animate: true });
   }, [lat, lng]);
+
   return null;
 }
 
@@ -68,25 +83,30 @@ function Recenter({ lat, lng }: { lat: number | null; lng: number | null }) {
 function juzgarRadio(radio: number): { texto: string; color: string } {
   if (radio < 20) {
     return {
-      texto: 'Radio por debajo del error normal del GPS: puede rechazar escaneos válidos.',
-      color: 'var(--bad-text)',
+      texto:
+        "Radio por debajo del error normal del GPS: puede rechazar escaneos válidos.",
+      color: "var(--bad-text)",
     };
   }
   if (radio < 30) {
     return {
-      texto: 'Radio justo: con GPS flojo o bajo techo puede fallar algún escaneo.',
-      color: 'var(--warn-text)',
+      texto:
+        "Radio justo: con GPS flojo o bajo techo puede fallar algún escaneo.",
+      color: "var(--warn-text)",
     };
   }
   if (radio > 150) {
     return {
-      texto: 'Radio muy amplio: daría por válido un escaneo desde fuera del edificio.',
-      color: 'var(--warn-text)',
+      texto:
+        "Radio muy amplio: daría por válido un escaneo desde fuera del edificio.",
+      color: "var(--warn-text)",
     };
   }
+
   return {
-    texto: 'Radio adecuado: absorbe el error del GPS sin dar por válido lo que está lejos.',
-    color: 'var(--ok-text)',
+    texto:
+      "Radio adecuado: absorbe el error del GPS sin dar por válido lo que está lejos.",
+    color: "var(--ok-text)",
   };
 }
 
@@ -108,7 +128,9 @@ export default function CheckpointLocationPicker({
 }) {
   const { t } = useTranslation();
   const hasPin = lat != null && lng != null;
-  const center: [number, number] = hasPin ? [lat as number, lng as number] : FALLBACK;
+  const center: [number, number] = hasPin
+    ? [lat as number, lng as number]
+    : FALLBACK;
 
   // Paleta viva: se vuelve a leer sola al cambiar el tema o el acento.
   const paleta = useChartColors();
@@ -122,9 +144,14 @@ export default function CheckpointLocationPicker({
 
   useEffect(() => () => cancelAnimationFrame(cuadroRef.current), []);
 
-  const punto = viva ?? (hasPin ? { lat: lat as number, lng: lng as number } : null);
+  const punto =
+    viva ?? (hasPin ? { lat: lat as number, lng: lng as number } : null);
   const refValida =
-    reference && Number.isFinite(reference.lat) && Number.isFinite(reference.lng) ? reference : null;
+    reference &&
+    Number.isFinite(reference.lat) &&
+    Number.isFinite(reference.lng)
+      ? reference
+      : null;
   const separacion = punto && refValida ? metrosEntre(refValida, punto) : null;
 
   const veredicto = juzgarRadio(radius);
@@ -133,21 +160,27 @@ export default function CheckpointLocationPicker({
    *  en una pantalla táctil. Se toca el SVG y no el nodo del marcador porque
    *  Leaflet reescribe el `transform` del marcador en cada fotograma. */
   const levantar = (marcador: L.Marker, activo: boolean) => {
-    const svg = marcador.getElement()?.querySelector('svg') as SVGElement | null;
+    const svg = marcador
+      .getElement()
+      ?.querySelector("svg") as SVGElement | null;
+
     if (!svg) return;
-    svg.style.transform = activo ? 'translateY(-7px) scale(1.1)' : '';
-    svg.style.filter = activo ? 'drop-shadow(0 9px 10px rgba(0,0,0,.35))' : '';
+    svg.style.transform = activo ? "translateY(-7px) scale(1.1)" : "";
+    svg.style.filter = activo ? "drop-shadow(0 9px 10px rgba(0,0,0,.35))" : "";
   };
 
   return (
     <div className="space-y-2">
-      <div className="cc-map-frame rounded-xl border" style={{ height: 320, borderColor: 'var(--hairline)' }}>
+      <div
+        className="cc-map-frame rounded-xl border"
+        style={{ height: 320, borderColor: "var(--hairline)" }}
+      >
         <MapContainer
-          center={center}
-          zoom={hasPin ? 17 : 13}
           scrollWheelZoom
+          center={center}
           className="cc-map-canvas"
-          style={{ height: '100%', width: '100%' }}
+          style={{ height: "100%", width: "100%" }}
+          zoom={hasPin ? 17 : 13}
         >
           {/* Las teselas de OpenStreetMap sólo existen en claro. En tema oscuro
               se invierten y se les devuelve el tono para que el mapa no sea el
@@ -155,8 +188,8 @@ export default function CheckpointLocationPicker({
               porque las hojas de estilo del mapa son territorio de otro. */}
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             className="dark:[filter:invert(1)_hue-rotate(180deg)_brightness(0.92)_contrast(0.88)]"
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           <ClickToPlace onPick={(la, ln) => onChange(la, ln, radius)} />
           <Recenter lat={lat} lng={lng} />
@@ -165,17 +198,21 @@ export default function CheckpointLocationPicker({
           {refValida && (
             <Circle
               center={[refValida.lat, refValida.lng]}
+              pathOptions={{
+                color: paleta.brand,
+                weight: 2,
+                fillColor: paleta.brand,
+                fillOpacity: 0.5,
+                dashArray: "2 4",
+              }}
               radius={6}
-              pathOptions={{ color: paleta.brand, weight: 2, fillColor: paleta.brand, fillOpacity: 0.5, dashArray: '2 4' }}
             />
           )}
 
           {punto && (
             <>
               <Marker
-                position={[punto.lat, punto.lng]}
                 draggable
-                icon={pinIcon}
                 eventHandlers={{
                   dragstart: (e) => {
                     setArrastrando(true);
@@ -183,24 +220,35 @@ export default function CheckpointLocationPicker({
                   },
                   drag: (e) => {
                     const p = (e.target as L.Marker).getLatLng();
+
                     cancelAnimationFrame(cuadroRef.current);
-                    cuadroRef.current = requestAnimationFrame(() => setViva({ lat: p.lat, lng: p.lng }));
+                    cuadroRef.current = requestAnimationFrame(() =>
+                      setViva({ lat: p.lat, lng: p.lng }),
+                    );
                   },
                   dragend: (e) => {
                     cancelAnimationFrame(cuadroRef.current);
                     setArrastrando(false);
                     levantar(e.target as L.Marker, false);
                     const p = (e.target as L.Marker).getLatLng();
+
                     setViva(null);
                     onChange(p.lat, p.lng, radius);
                   },
                 }}
+                icon={pinIcon}
+                position={[punto.lat, punto.lng]}
               />
               {radius > 0 && (
                 <Circle
                   center={[punto.lat, punto.lng]}
+                  pathOptions={{
+                    color: paleta.brand,
+                    weight: 1.5,
+                    fillColor: paleta.brand,
+                    fillOpacity: 0.12,
+                  }}
                   radius={radius}
-                  pathOptions={{ color: paleta.brand, weight: 1.5, fillColor: paleta.brand, fillOpacity: 0.12 }}
                 />
               )}
             </>
@@ -212,60 +260,98 @@ export default function CheckpointLocationPicker({
         <div className="cc-map-hud" style={{ left: 10, right: 10, bottom: 10 }}>
           <div className="cc-map-card px-2.5 py-2">
             <div className="cc-map-eyebrow">
-              {arrastrando ? t('maps.checkpointPicker.dropToPin', 'Suelta para fijar el punto') : punto ? 'Punto de control' : 'Sin ubicación'}
+              {arrastrando
+                ? t(
+                    "maps.checkpointPicker.dropToPin",
+                    "Suelta para fijar el punto",
+                  )
+                : punto
+                  ? "Punto de control"
+                  : "Sin ubicación"}
             </div>
             {punto ? (
               <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px]">
-                <span className="font-mono tabular-nums" style={{ color: 'var(--ink-soft)' }}>
+                <span
+                  className="font-mono tabular-nums"
+                  style={{ color: "var(--ink-soft)" }}
+                >
                   {formatearCoord(punto.lat, punto.lng)}
                 </span>
                 {separacion != null && (
                   <span
                     className="font-semibold"
-                    style={{ color: separacion > 500 ? 'var(--warn-text)' : 'var(--ink)' }}
+                    style={{
+                      color:
+                        separacion > 500 ? "var(--warn-text)" : "var(--ink)",
+                    }}
                   >
-                    · a {formatearDistancia(separacion)} {reference?.label ? `de ${reference.label}` : 'del puesto'}
+                    · a {formatearDistancia(separacion)}{" "}
+                    {reference?.label ? `de ${reference.label}` : "del puesto"}
                   </span>
                 )}
               </div>
             ) : (
-              <div className="mt-0.5 text-[11px]" style={{ color: 'var(--ink-soft)' }}>
-                {t('ui.CheckpointLocationPicker.tocaElMapaParaColocarlo', 'Toca el mapa para colocarlo.')}
+              <div
+                className="mt-0.5 text-[11px]"
+                style={{ color: "var(--ink-soft)" }}
+              >
+                {t(
+                  "ui.CheckpointLocationPicker.tocaElMapaParaColocarlo",
+                  "Toca el mapa para colocarlo.",
+                )}
               </div>
             )}
           </div>
         </div>
       </div>
 
-      <p className="text-[11px]" style={{ color: 'var(--ink-faint)' }}>
+      <p className="text-[11px]" style={{ color: "var(--ink-faint)" }}>
         Toca el mapa o arrastra el pin para fijar la ubicación exacta del punto.
       </p>
 
       {separacion != null && separacion > 500 && (
-        <p className="text-[11px]" style={{ color: 'var(--warn-text)' }}>
-          Este punto está a {formatearDistancia(separacion)} del puesto. Revisa que pertenezca a esta ronda.
+        <p className="text-[11px]" style={{ color: "var(--warn-text)" }}>
+          Este punto está a {formatearDistancia(separacion)} del puesto. Revisa
+          que pertenezca a esta ronda.
         </p>
       )}
 
       {/* Coverage radius */}
       <div className="glass-sunken p-3">
         <div className="mb-1 flex items-center justify-between text-sm">
-          <span className="font-medium" style={{ color: 'var(--ink)' }}>{t('ui.CheckpointLocationPicker.radioDeCobertura', 'Radio de cobertura')}</span>
-          <span className="font-mono tabular-nums" style={{ color: 'var(--brand-text)' }}>{radius} m</span>
+          <span className="font-medium" style={{ color: "var(--ink)" }}>
+            {t(
+              "ui.CheckpointLocationPicker.radioDeCobertura",
+              "Radio de cobertura",
+            )}
+          </span>
+          <span
+            className="font-mono tabular-nums"
+            style={{ color: "var(--brand-text)" }}
+          >
+            {radius} m
+          </span>
         </div>
         <input
-          type="range"
-          min={10}
-          max={300}
-          step={5}
-          value={radius}
-          onChange={(e) => onChange(lat ?? FALLBACK[0], lng ?? FALLBACK[1], Number(e.target.value))}
           className="cg-focus w-full"
-          style={{ accentColor: 'var(--brand)' }}
           disabled={!hasPin}
+          max={300}
+          min={10}
+          step={5}
+          style={{ accentColor: "var(--brand)" }}
+          type="range"
+          value={radius}
+          onChange={(e) =>
+            onChange(
+              lat ?? FALLBACK[0],
+              lng ?? FALLBACK[1],
+              Number(e.target.value),
+            )
+          }
         />
-        <p className="mt-1 text-[11px]" style={{ color: 'var(--ink-faint)' }}>
-          El vigilante debe estar dentro de este radio para que el escaneo cuente como válido.
+        <p className="mt-1 text-[11px]" style={{ color: "var(--ink-faint)" }}>
+          El vigilante debe estar dentro de este radio para que el escaneo
+          cuente como válido.
         </p>
         <p className="mt-1 text-[11px]" style={{ color: veredicto.color }}>
           {veredicto.texto}

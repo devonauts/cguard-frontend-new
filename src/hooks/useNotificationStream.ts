@@ -8,15 +8,21 @@
  * Returns the list of recent notifications and the live unread count.
  */
 
-import { useEffect, useRef, useState, useCallback } from 'react';
-import { type Socket } from 'socket.io-client';
-import { getAuthToken } from '@/lib/api';
-import { playNotificationChime } from '@/lib/notificationSound';
-import { notifyNative, setAppBadge, ensureNotificationPermission } from '@/lib/desktop';
-import { crearSocket, cerrarSocket } from '@/lib/socket';
-import { notifyMessagesChanged } from './useMessagesUnread';
+import { useEffect, useRef, useState, useCallback } from "react";
+import { type Socket } from "socket.io-client";
 
-const API_URL = (import.meta.env.VITE_API_URL as string | undefined) || '';
+import { notifyMessagesChanged } from "./useMessagesUnread";
+
+import { getAuthToken } from "@/lib/api";
+import { playNotificationChime } from "@/lib/notificationSound";
+import {
+  notifyNative,
+  setAppBadge,
+  ensureNotificationPermission,
+} from "@/lib/desktop";
+import { crearSocket, cerrarSocket } from "@/lib/socket";
+
+const API_URL = (import.meta.env.VITE_API_URL as string | undefined) || "";
 
 export interface PlatformNotification {
   id: string;
@@ -52,12 +58,15 @@ export function useNotificationStream(
   tenantId: string | null | undefined,
   onLive?: (n: PlatformNotification) => void,
 ): UseNotificationStreamResult {
-  const [notifications, setNotifications] = useState<PlatformNotification[]>([]);
+  const [notifications, setNotifications] = useState<PlatformNotification[]>(
+    [],
+  );
   const [connected, setConnected] = useState(false);
   const socketRef = useRef<Socket | null>(null);
   // Keep the latest callback in a ref so changing it doesn't re-create the
   // socket connection (the effect depends only on tenantId).
   const onLiveRef = useRef(onLive);
+
   onLiveRef.current = onLive;
   // Event ids already alerted in this session. The backend emits one event to
   // several rooms the socket belongs to (tenant `:all` + each target role room
@@ -66,35 +75,49 @@ export function useNotificationStream(
   // each unique event fires exactly one chime + one toast.
   const alertedRef = useRef<Set<string>>(new Set());
 
-  const addNotification = useCallback((n: PlatformNotification, read = false) => {
-    setNotifications((prev) => {
-      if (prev.some((x) => x.id === n.id)) return prev;
-      // Always keep the list sorted NEWEST-FIRST by createdAt. Insertion order can't be
-      // trusted: the REST backlog is seeded one-by-one (each prepended) from an API that
-      // already returns newest-first, which would otherwise REVERSE it to oldest-first.
-      return [{ ...n, read }, ...prev]
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-        .slice(0, MAX_STORED);
-    });
-  }, []);
+  const addNotification = useCallback(
+    (n: PlatformNotification, read = false) => {
+      setNotifications((prev) => {
+        if (prev.some((x) => x.id === n.id)) return prev;
 
-  const markRead = useCallback((id: string) => {
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
-    if (!tenantId) return;
-    const token = getAuthToken();
-    fetch(`${API_URL}/${tenantId}/events/${id}/read`, {
-      method: 'POST',
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    }).catch(() => {});
-  }, [tenantId]);
+        // Always keep the list sorted NEWEST-FIRST by createdAt. Insertion order can't be
+        // trusted: the REST backlog is seeded one-by-one (each prepended) from an API that
+        // already returns newest-first, which would otherwise REVERSE it to oldest-first.
+        return [{ ...n, read }, ...prev]
+          .sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          )
+          .slice(0, MAX_STORED);
+      });
+    },
+    [],
+  );
+
+  const markRead = useCallback(
+    (id: string) => {
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
+      );
+      if (!tenantId) return;
+      const token = getAuthToken();
+
+      fetch(`${API_URL}/${tenantId}/events/${id}/read`, {
+        method: "POST",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      }).catch(() => {});
+    },
+    [tenantId],
+  );
 
   const markAllRead = useCallback(() => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     if (!tenantId) return;
     const token = getAuthToken();
+
     // Persist to the DB so cleared notifications don't reappear on refresh.
     fetch(`${API_URL}/${tenantId}/events/read-all`, {
-      method: 'POST',
+      method: "POST",
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     }).catch(() => {});
   }, [tenantId]);
@@ -102,6 +125,7 @@ export function useNotificationStream(
   useEffect(() => {
     if (!tenantId) return;
     const token = getAuthToken();
+
     if (!token) return;
 
     let destroyed = false;
@@ -114,6 +138,7 @@ export function useNotificationStream(
       .then((data) => {
         if (destroyed) return;
         const rows: any[] = data?.rows || [];
+
         for (const ev of rows) {
           addNotification(
             {
@@ -126,22 +151,23 @@ export function useNotificationStream(
               sourceEntityId: ev.sourceEntityId,
               createdAt: ev.createdAt,
             },
-            ev.deliveryStatus === 'read',
+            ev.deliveryStatus === "read",
           );
         }
       })
       .catch(() => {});
 
     const socket = crearSocket(token, tenantId);
+
     socketRef.current = socket;
 
-    socket.on('connect', () => {
+    socket.on("connect", () => {
       if (!destroyed) setConnected(true);
     });
-    socket.on('disconnect', () => {
+    socket.on("disconnect", () => {
       if (!destroyed) setConnected(false);
     });
-    socket.on('connect_error', () => {
+    socket.on("connect_error", () => {
       if (!destroyed) setConnected(false);
     });
     // Single active session: a newer WEB sign-in on this account supersedes
@@ -150,21 +176,37 @@ export function useNotificationStream(
     // auth.sessionSuperseded → clear token + land on /login immediately,
     // instead of waiting for the user's next click. A same-tab/new-tab login
     // shares localStorage, so the fetch succeeds there and nothing happens.
-    socket.on('session:superseded', (p: { channel?: string } | undefined) => {
-      if (destroyed || !p || p.channel !== 'web') return;
+    socket.on("session:superseded", (p: { channel?: string } | undefined) => {
+      if (destroyed || !p || p.channel !== "web") return;
       const tok = getAuthToken();
+
       if (!tok) return;
-      fetch(`${API_URL}/auth/me`, { headers: { Authorization: `Bearer ${tok}` } })
+      fetch(`${API_URL}/auth/me`, {
+        headers: { Authorization: `Bearer ${tok}` },
+      })
         .then((r) => {
-          if (r.status === 401 && !window.location.pathname.startsWith('/login')) {
-            try { window.localStorage.removeItem('authToken'); } catch { /* ignore */ }
-            try { window.location.replace('/login'); } catch { /* ignore */ }
+          if (
+            r.status === 401 &&
+            !window.location.pathname.startsWith("/login")
+          ) {
+            try {
+              window.localStorage.removeItem("authToken");
+            } catch {
+              /* ignore */
+            }
+            try {
+              window.location.replace("/login");
+            } catch {
+              /* ignore */
+            }
           }
         })
-        .catch(() => { /* transient network error — the 401-on-next-request path still applies */ });
+        .catch(() => {
+          /* transient network error — the 401-on-next-request path still applies */
+        });
     });
 
-    socket.on('notification', (n: PlatformNotification) => {
+    socket.on("notification", (n: PlatformNotification) => {
       if (destroyed || !n || !n.id) return;
       addNotification(n, false); // list dedups by id internally
 
@@ -173,7 +215,7 @@ export function useNotificationStream(
       // Va ANTES del corte por duplicados de abajo a propósito: es idempotente
       // (sólo provoca una relectura del contador) y así también reacciona en
       // pestañas donde nadie escucha `onLive`.
-      if (n.eventType === 'message.new') notifyMessagesChanged();
+      if (n.eventType === "message.new") notifyMessagesChanged();
 
       // Only the first delivery of a given event id raises an alert; duplicate
       // room copies from the backend are ignored. The chime + toast fire only
@@ -182,7 +224,9 @@ export function useNotificationStream(
       if (alertedRef.current.has(n.id) || !onLiveRef.current) return;
       alertedRef.current.add(n.id);
       if (alertedRef.current.size > 1000) {
-        alertedRef.current = new Set(Array.from(alertedRef.current).slice(-500));
+        alertedRef.current = new Set(
+          Array.from(alertedRef.current).slice(-500),
+        );
       }
       // Chime + aviso nativo UNA sola vez por evento en toda la app (ver
       // globallyAlerted arriba) — sin importar cuántos consumidores del stream
@@ -191,6 +235,7 @@ export function useNotificationStream(
         globallyAlerted.add(n.id);
         if (globallyAlerted.size > 1000) {
           const keep = Array.from(globallyAlerted).slice(-500);
+
           globallyAlerted.clear();
           keep.forEach((id) => globallyAlerted.add(id));
         }
@@ -233,7 +278,11 @@ export function useNotificationStream(
   // de solo-datos no compiten por el badge. Idempotente y best-effort.
   useEffect(() => {
     if (!onLiveRef.current) return;
-    try { setAppBadge(unreadCount); } catch { /* ignore */ }
+    try {
+      setAppBadge(unreadCount);
+    } catch {
+      /* ignore */
+    }
   }, [unreadCount]);
 
   // El permiso de avisos se pide una vez, desde un montaje real del stream

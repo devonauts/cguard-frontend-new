@@ -1,29 +1,52 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Search, Plus, X, Paperclip, Eye, FileDown, Trash, Pencil, IdCard, ShieldCheck } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import GuardsLayout from '@/layouts/GuardsLayout';
-import AppLayout from '@/layouts/app-layout';
-import { useParams, useNavigate } from 'react-router-dom';
-import securityGuardService from '@/lib/api/securityGuardService';
-import licenseTypeService from '@/lib/api/licenseTypeService';
-import LicenseTypeDialog from '@/pages/admin/Configuration/types-licenses/LicensesTypeDialog';
-import { useAuth } from '@/contexts/AuthContext';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import type {
+  GuardDetail,
+  GuardLicense,
+  LicenseTypeOption,
+  FileDescriptor,
+} from "../../guardDetailTypes";
+
+import React, { useState, useRef, useEffect } from "react";
 import {
-  PageContainer, PageHeader, Field, StatusBadge, EmptyState, SkeletonCards, IconTile,
-} from '@/components/kit';
+  Search,
+  Plus,
+  X,
+  Paperclip,
+  Eye,
+  FileDown,
+  Trash,
+  Pencil,
+  IdCard,
+  ShieldCheck,
+} from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { useParams, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+
+import GuardsLayout from "@/layouts/GuardsLayout";
+import AppLayout from "@/layouts/app-layout";
+import securityGuardService from "@/lib/api/securityGuardService";
+import licenseTypeService from "@/lib/api/licenseTypeService";
+import LicenseTypeDialog from "@/pages/admin/Configuration/types-licenses/LicensesTypeDialog";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  PageContainer,
+  PageHeader,
+  Field,
+  StatusBadge,
+  EmptyState,
+  SkeletonCards,
+  IconTile,
+} from "@/components/kit";
 import {
   Select,
   SelectTrigger,
   SelectContent,
   SelectItem,
   SelectValue,
-} from '@/components/ui/select';
-import type { GuardDetail, GuardLicense, LicenseTypeOption, FileDescriptor } from '../../guardDetailTypes';
-
-import { localeActual } from '@/lib/localeActual'
+} from "@/components/ui/select";
+import { localeActual } from "@/lib/localeActual";
 /** Payload for creating/updating a guard license. */
 type LicensePayload = {
   licenseTypeId?: string;
@@ -57,42 +80,80 @@ type Props = {
   licensesApi?: LicensesApi;
 };
 
-
 // ── Estado de vencimiento ────────────────────────────────────────────────────
 // Vigente / Por vencer / Vencida son estados semánticos: verde, ámbar y rojo
 // fijos, que no siguen al acento elegido (una licencia vencida sigue siendo roja).
-function expiryStatus(expiryDate: string | Date | null | undefined, t: (k: string, o?: Record<string, unknown>) => string): { txt: string; tone: 'ok' | 'warn' | 'bad' | 'neutral' } {
+function expiryStatus(
+  expiryDate: string | Date | null | undefined,
+  t: (k: string, o?: Record<string, unknown>) => string,
+): { txt: string; tone: "ok" | "warn" | "bad" | "neutral" } {
   if (!expiryDate) {
-    return { txt: t('guards.licenses.status.noExpiry', { defaultValue: 'Sin vencimiento' }), tone: 'neutral' };
+    return {
+      txt: t("guards.licenses.status.noExpiry", {
+        defaultValue: "Sin vencimiento",
+      }),
+      tone: "neutral",
+    };
   }
   const exp = new Date(expiryDate);
   const now = new Date();
   const days = Math.ceil((exp.getTime() - now.getTime()) / 86400000);
+
   if (days < 0) {
-    return { txt: t('guards.licenses.status.expired', { defaultValue: 'Vencida' }), tone: 'bad' };
+    return {
+      txt: t("guards.licenses.status.expired", { defaultValue: "Vencida" }),
+      tone: "bad",
+    };
   }
   if (days <= 30) {
-    return { txt: t('guards.licenses.status.soon', { defaultValue: 'Por vencer' }), tone: 'warn' };
+    return {
+      txt: t("guards.licenses.status.soon", { defaultValue: "Por vencer" }),
+      tone: "warn",
+    };
   }
-  return { txt: t('guards.licenses.status.valid', { defaultValue: 'Vigente' }), tone: 'ok' };
+
+  return {
+    txt: t("guards.licenses.status.valid", { defaultValue: "Vigente" }),
+    tone: "ok",
+  };
 }
 
-export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'guards.nav.licencias', licensesApi }: Props) {
+export default function GuardLicenses({
+  guard,
+  navKey = "keep-safe",
+  title = "guards.nav.licencias",
+  licensesApi,
+}: Props) {
   const { id } = useParams();
   const { t } = useTranslation();
   // Default (guard) API binds the route id; supervisor injects its own.
   const api: LicensesApi = licensesApi ?? {
-    get: (licenseId) => securityGuardService.getSecurityGuardLicense(id as string, licenseId),
-    list: (pg) => securityGuardService.getSecurityGuardLicenses(id as string, pg),
-    create: (payload) => securityGuardService.createSecurityGuardLicense(id as string, payload),
-    update: (licenseId, payload) => securityGuardService.updateSecurityGuardLicense(id as string, licenseId, payload),
-    remove: (ids) => securityGuardService.destroySecurityGuardLicenses(id as string, ids),
-    download: (licenseId) => securityGuardService.downloadSecurityGuardLicenseReport(id as string, licenseId),
+    get: (licenseId) =>
+      securityGuardService.getSecurityGuardLicense(id as string, licenseId),
+    list: (pg) =>
+      securityGuardService.getSecurityGuardLicenses(id as string, pg),
+    create: (payload) =>
+      securityGuardService.createSecurityGuardLicense(id as string, payload),
+    update: (licenseId, payload) =>
+      securityGuardService.updateSecurityGuardLicense(
+        id as string,
+        licenseId,
+        payload,
+      ),
+    remove: (ids) =>
+      securityGuardService.destroySecurityGuardLicenses(id as string, ids),
+    download: (licenseId) =>
+      securityGuardService.downloadSecurityGuardLicenseReport(
+        id as string,
+        licenseId,
+      ),
   };
   const actionRef = useRef<HTMLDivElement>(null);
   const [actionOpen, setActionOpen] = useState(false);
-  const [actionSelection, setActionSelection] = useState<string>(() => t('guards.licenses.action.default', { defaultValue: 'Action' }));
-  const [searchQuery, setSearchQuery] = useState('');
+  const [actionSelection, setActionSelection] = useState<string>(() =>
+    t("guards.licenses.action.default", { defaultValue: "Action" }),
+  );
+  const [searchQuery, setSearchQuery] = useState("");
   const [licenseData, setLicenseData] = useState<GuardLicense[]>([]); // Vacío inicialmente
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -104,7 +165,7 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
   const [sortDir, setSortDir] = useState<"asc" | "desc" | null>(null);
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-  const [currentLicense, setCurrentLicense] = useState('');
+  const [currentLicense, setCurrentLicense] = useState("");
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [detailsData, setDetailsData] = useState<GuardLicense | null>(null);
@@ -119,10 +180,10 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
     frontImage: File | FileDescriptor | null;
     backImage: File | FileDescriptor | null;
   }>({
-    licenseType: '',
-    customLicenseName: '',
-    licenseNumber: '',
-    expiryDate: '',
+    licenseType: "",
+    customLicenseName: "",
+    licenseNumber: "",
+    expiryDate: "",
     frontImage: null,
     backImage: null,
   });
@@ -134,14 +195,14 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
   const handleAddLicense = () => {
     setShowModal(true);
     setFormData({
-      licenseType: '',
-      customLicenseName: '',
-      licenseNumber: '',
-      expiryDate: '',
+      licenseType: "",
+      customLicenseName: "",
+      licenseNumber: "",
+      expiryDate: "",
       frontImage: null,
       backImage: null,
     });
-    setCurrentLicense('');
+    setCurrentLicense("");
   };
 
   const handleCloseModal = () => {
@@ -154,10 +215,15 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
     setDetailsLoading(true);
     try {
       const data = await api.get(licenseId);
+
       setDetailsData(data || null);
     } catch (err) {
-      console.error('Error loading license details', err);
-      toast.error(t('guards.licenses.toasts.loadError', { defaultValue: 'Could not load licenses' }));
+      console.error("Error loading license details", err);
+      toast.error(
+        t("guards.licenses.toasts.loadError", {
+          defaultValue: "Could not load licenses",
+        }),
+      );
       setDetailsData(null);
     } finally {
       setDetailsLoading(false);
@@ -172,15 +238,19 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
   // Cerrar dropdown al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (actionRef.current && !actionRef.current.contains(event.target as Node)) {
+      if (
+        actionRef.current &&
+        !actionRef.current.contains(event.target as Node)
+      ) {
         setActionOpen(false);
       }
     };
 
     if (actionOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
+
       return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener("mousedown", handleClickOutside);
       };
     }
   }, [actionOpen]);
@@ -188,6 +258,7 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
   useEffect(() => {
     if (!id) return;
     let mounted = true;
+
     setLoading(true);
     api
       .list({ limit, offset: (page - 1) * limit })
@@ -197,15 +268,21 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
         setTotalCount(data.count || 0);
       })
       .catch((err: any) => {
-        console.error('Error loading licenses', err);
-        toast.error(t('guards.licenses.toasts.loadError', { defaultValue: 'Could not load licenses' }));
+        console.error("Error loading licenses", err);
+        toast.error(
+          t("guards.licenses.toasts.loadError", {
+            defaultValue: "Could not load licenses",
+          }),
+        );
       })
       .finally(() => {
         if (!mounted) return;
         setLoading(false);
       });
 
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [id, page, limit]);
 
   // Extracted loader so we can refresh after creating
@@ -213,12 +290,20 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
     if (!id) return;
     setLoading(true);
     try {
-      const data: LicenseList = await api.list({ limit: limitToUse, offset: (pageToUse - 1) * limitToUse });
+      const data: LicenseList = await api.list({
+        limit: limitToUse,
+        offset: (pageToUse - 1) * limitToUse,
+      });
+
       setLicenseData(data.rows || []);
       setTotalCount(data.count || 0);
     } catch (err: any) {
-      console.error('Error loading licenses', err);
-      toast.error(t('guards.licenses.toasts.loadError', { defaultValue: 'Could not load licenses' }));
+      console.error("Error loading licenses", err);
+      toast.error(
+        t("guards.licenses.toasts.loadError", {
+          defaultValue: "Could not load licenses",
+        }),
+      );
     } finally {
       setLoading(false);
     }
@@ -231,23 +316,37 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
   // load license types for tenant to populate select
   useEffect(() => {
     let mounted = true;
+
     licenseTypeService
       .list({ limit: "100" })
-      .then((data: { rows?: LicenseTypeOption[]; data?: LicenseTypeOption[] } | LicenseTypeOption[]) => {
-        if (!mounted) return;
-        // backend returns { rows, count }
-        const rows = Array.isArray(data) ? data : (data?.rows ?? data?.data ?? []);
-        setLicenseTypes(rows);
-      })
+      .then(
+        (
+          data:
+            | { rows?: LicenseTypeOption[]; data?: LicenseTypeOption[] }
+            | LicenseTypeOption[],
+        ) => {
+          if (!mounted) return;
+          // backend returns { rows, count }
+          const rows = Array.isArray(data)
+            ? data
+            : (data?.rows ?? data?.data ?? []);
+
+          setLicenseTypes(rows);
+        },
+      )
       .catch((err) => {
-        console.error('Error loading license types', err);
+        console.error("Error loading license types", err);
       });
 
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const onSelectOne = (selId: string, checked: boolean) => {
-    setSelectedIds((prev) => (checked ? [...prev, selId] : prev.filter((x) => x !== selId)));
+    setSelectedIds((prev) =>
+      checked ? [...prev, selId] : prev.filter((x) => x !== selId),
+    );
   };
 
   const onSelectAll = (checked: boolean) => {
@@ -258,30 +357,42 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
   const startEdit = (row: GuardLicense) => {
     setCurrentLicense(row.id);
     setFormData({
-      licenseType: row.licenseType?.id ?? (row.customName ? 'other' : ''),
-      customLicenseName: row.customName || '',
-      licenseNumber: row.number || '',
-      expiryDate: row.expiryDate ? new Date(row.expiryDate).toISOString().slice(0, 10) : '',
-      frontImage: row.frontImage && row.frontImage.length ? row.frontImage[0] : null,
-      backImage: row.backImage && row.backImage.length ? row.backImage[0] : null,
+      licenseType: row.licenseType?.id ?? (row.customName ? "other" : ""),
+      customLicenseName: row.customName || "",
+      licenseNumber: row.number || "",
+      expiryDate: row.expiryDate
+        ? new Date(row.expiryDate).toISOString().slice(0, 10)
+        : "",
+      frontImage:
+        row.frontImage && row.frontImage.length ? row.frontImage[0] : null,
+      backImage:
+        row.backImage && row.backImage.length ? row.backImage[0] : null,
     });
     setShowModal(true);
   };
 
   const downloadRow = async (row: GuardLicense) => {
     try {
-      if (row.frontImage?.[0]?.privateUrl) window.open(row.frontImage[0].privateUrl);
-      else if (row.frontImage?.[0]?.publicUrl) window.open(row.frontImage[0].publicUrl);
+      if (row.frontImage?.[0]?.privateUrl)
+        window.open(row.frontImage[0].privateUrl);
+      else if (row.frontImage?.[0]?.publicUrl)
+        window.open(row.frontImage[0].publicUrl);
     } catch {}
   };
 
   const deleteRow = async (row: GuardLicense) => {
     try {
       await api.remove([row.id]);
-      toast.success(t('guards.licenses.toasts.deleted', { defaultValue: 'Deleted' }));
+      toast.success(
+        t("guards.licenses.toasts.deleted", { defaultValue: "Deleted" }),
+      );
       await loadLicenses(1, limit);
     } catch {
-      toast.error(t('guards.licenses.toasts.deleteError', { defaultValue: 'Could not delete' }));
+      toast.error(
+        t("guards.licenses.toasts.deleteError", {
+          defaultValue: "Could not delete",
+        }),
+      );
     }
   };
 
@@ -289,21 +400,28 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
     if (selectedIds.length === 0) return;
     try {
       await api.remove(selectedIds);
-      toast.success(t('guards.licenses.toasts.deletedBulk', { defaultValue: 'Deleted' }));
+      toast.success(
+        t("guards.licenses.toasts.deletedBulk", { defaultValue: "Deleted" }),
+      );
       setSelectedIds([]);
       await loadLicenses(1, limit);
     } catch (err) {
-      toast.error(t('guards.licenses.toasts.deleteError', { defaultValue: 'Could not delete' }));
+      toast.error(
+        t("guards.licenses.toasts.deleteError", {
+          defaultValue: "Could not delete",
+        }),
+      );
     }
   };
 
   const handleSubmitLicense = async () => {
     try {
       const payload: LicensePayload = {};
+
       // If user selected an existing license type, send its id. If 'other', send custom name.
-      if (formData.licenseType && formData.licenseType !== 'other') {
+      if (formData.licenseType && formData.licenseType !== "other") {
         payload.licenseTypeId = formData.licenseType;
-      } else if (formData.licenseType === 'other') {
+      } else if (formData.licenseType === "other") {
         payload.customName = formData.customLicenseName;
       } else {
         payload.customName = formData.customLicenseName || null;
@@ -314,7 +432,10 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
       // Images: if user provided a File, upload; if existing descriptor (has id), pass through
       if (formData.frontImage) {
         if (formData.frontImage instanceof File) {
-          const front = await securityGuardService.uploadGuardLicenseImage(formData.frontImage);
+          const front = await securityGuardService.uploadGuardLicenseImage(
+            formData.frontImage,
+          );
+
           payload.frontImage = [front];
         } else if (formData.frontImage.id) {
           payload.frontImage = [formData.frontImage];
@@ -323,7 +444,10 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
 
       if (formData.backImage) {
         if (formData.backImage instanceof File) {
-          const back = await securityGuardService.uploadGuardLicenseImage(formData.backImage);
+          const back = await securityGuardService.uploadGuardLicenseImage(
+            formData.backImage,
+          );
+
           payload.backImage = [back];
         } else if (formData.backImage.id) {
           payload.backImage = [formData.backImage];
@@ -332,20 +456,32 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
 
       if (currentLicense) {
         await api.update(currentLicense, payload);
-        toast.success(t('guards.licenses.toasts.updated', { defaultValue: 'License updated' }));
+        toast.success(
+          t("guards.licenses.toasts.updated", {
+            defaultValue: "License updated",
+          }),
+        );
       } else {
         await api.create(payload);
-        toast.success(t('guards.licenses.toasts.created', { defaultValue: 'License created' }));
+        toast.success(
+          t("guards.licenses.toasts.created", {
+            defaultValue: "License created",
+          }),
+        );
       }
-      setCurrentLicense('');
+      setCurrentLicense("");
       setShowModal(false);
       setSelectedIds([]);
       // refresh list and go to first page to show the new item
       setPage(1);
       await loadLicenses(1, limit);
     } catch (err: any) {
-      console.error('Error creating license', err);
-      toast.error(t('guards.licenses.toasts.createError', { defaultValue: 'Could not create license' }));
+      console.error("Error creating license", err);
+      toast.error(
+        t("guards.licenses.toasts.createError", {
+          defaultValue: "Could not create license",
+        }),
+      );
     }
   };
 
@@ -353,8 +489,9 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
   const visibleLicenses = licenseData.filter((lic: GuardLicense) => {
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
-    const name = (lic.licenseType?.name || lic.customName || '').toLowerCase();
-    const num = (lic.number || '').toLowerCase();
+    const name = (lic.licenseType?.name || lic.customName || "").toLowerCase();
+    const num = (lic.number || "").toLowerCase();
+
     return name.includes(q) || num.includes(q);
   });
 
@@ -367,41 +504,65 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
         <PageContainer>
           {/* ── HEADER / TOOLBAR ──────────────────────────────────────────────── */}
           <PageHeader
-            icon={<IdCard />}
-            title={t('guards.nav.licencias') || 'Licencias'}
-            subtitle={t('guards.licenses.subtitle', { defaultValue: 'Documentos y credenciales del vigilante' })}
             actions={
               <>
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: 'var(--ink-faint)' }} />
+                  <Search
+                    className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
+                    style={{ color: "var(--ink-faint)" }}
+                  />
                   <Input
-                    placeholder={t('guards.licenses.searchPlaceholder', { defaultValue: 'Search license' })}
                     className="h-9 w-full pl-9 text-sm sm:w-56"
+                    placeholder={t("guards.licenses.searchPlaceholder", {
+                      defaultValue: "Search license",
+                    })}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
-                <Button variant="brand" onClick={handleAddLicense} className="whitespace-nowrap">
+                <Button
+                  className="whitespace-nowrap"
+                  variant="brand"
+                  onClick={handleAddLicense}
+                >
                   <Plus size={16} />
-                  {t('guards.licenses.newLicense', { defaultValue: 'New License' })}
+                  {t("guards.licenses.newLicense", {
+                    defaultValue: "New License",
+                  })}
                 </Button>
               </>
             }
+            icon={<IdCard />}
+            subtitle={t("guards.licenses.subtitle", {
+              defaultValue: "Documentos y credenciales del vigilante",
+            })}
+            title={t("guards.nav.licencias") || "Licencias"}
           />
 
           {/* ── BULK ACTION BAR (shown only with a selection) ─────────────────── */}
           {selectedIds.length > 0 && (
             <div className="glass-sunken flex items-center justify-between gap-3 px-4 py-2.5">
               <span className="text-sm font-medium">
-                {selectedIds.length} {t('guards.licenses.selected', { defaultValue: 'seleccionadas' })}
+                {selectedIds.length}{" "}
+                {t("guards.licenses.selected", {
+                  defaultValue: "seleccionadas",
+                })}
               </span>
               <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={() => setSelectedIds([])}>
-                  {t('actions.cancel', { defaultValue: 'Cancelar' })}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setSelectedIds([])}
+                >
+                  {t("actions.cancel", { defaultValue: "Cancelar" })}
                 </Button>
-                <Button variant="destructive" size="sm" onClick={handleBulkDelete}>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={handleBulkDelete}
+                >
                   <Trash className="h-4 w-4" />
-                  {t('actions.delete', { defaultValue: 'Eliminar' })}
+                  {t("actions.delete", { defaultValue: "Eliminar" })}
                 </Button>
               </div>
             </div>
@@ -412,79 +573,141 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
             <SkeletonCards count={4} />
           ) : visibleLicenses.length === 0 ? (
             <EmptyState
-              icon={<IdCard />}
-              title={t('guards.licenses.empty.title')}
-              description={<span dangerouslySetInnerHTML={{ __html: t('guards.licenses.empty.description') }} />}
               action={
                 <Button variant="brand" onClick={handleAddLicense}>
                   <Plus size={16} />
-                  {t('guards.licenses.newLicense', { defaultValue: 'New License' })}
+                  {t("guards.licenses.newLicense", {
+                    defaultValue: "New License",
+                  })}
                 </Button>
               }
+              description={
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: t("guards.licenses.empty.description"),
+                  }}
+                />
+              }
+              icon={<IdCard />}
+              title={t("guards.licenses.empty.title")}
             />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {visibleLicenses.map((lic: GuardLicense) => {
                 const status = expiryStatus(lic.expiryDate, t);
                 const selected = selectedIds.includes(lic.id);
-                const typeName = lic.licenseType?.name || lic.customName || t('guards.licenses.untitled', { defaultValue: 'Licencia' });
+                const typeName =
+                  lic.licenseType?.name ||
+                  lic.customName ||
+                  t("guards.licenses.untitled", { defaultValue: "Licencia" });
+
                 return (
                   /* Se repite por licencia → cristal plano, sin desenfoque. */
                   <div
                     key={lic.id}
-                    className={`glass-flat glass-hover cg-focus group relative cursor-pointer p-5 ${selected ? 'glass-brand' : ''}`}
+                    className={`glass-flat glass-hover cg-focus group relative cursor-pointer p-5 ${selected ? "glass-brand" : ""}`}
                     onClick={() => openDetails(lic.id)}
                   >
                     {/* casilla de selección */}
                     <input
-                      type="checkbox"
                       checked={selected}
-                      onClick={(e) => e.stopPropagation()}
-                      onChange={(e) => onSelectOne(lic.id, e.target.checked)}
                       className="absolute right-4 top-4 h-4 w-4 cursor-pointer rounded opacity-0 transition checked:opacity-100 group-hover:opacity-100"
-                      style={{ accentColor: 'var(--brand)' }}
+                      style={{ accentColor: "var(--brand)" }}
+                      type="checkbox"
+                      onChange={(e) => onSelectOne(lic.id, e.target.checked)}
+                      onClick={(e) => e.stopPropagation()}
                     />
 
                     <div className="flex items-start gap-3 pr-6">
-                      <IconTile tone="brand"><IdCard /></IconTile>
+                      <IconTile tone="brand">
+                        <IdCard />
+                      </IconTile>
                       <div className="min-w-0 flex-1">
-                        <div className="truncate text-sm font-semibold tracking-tight">{typeName}</div>
-                        <div className="truncate text-xs" style={{ color: 'var(--ink-soft)' }}>
-                          {lic.number || t('guards.licenses.noNumber', { defaultValue: 'Sin número' })}
+                        <div className="truncate text-sm font-semibold tracking-tight">
+                          {typeName}
+                        </div>
+                        <div
+                          className="truncate text-xs"
+                          style={{ color: "var(--ink-soft)" }}
+                        >
+                          {lic.number ||
+                            t("guards.licenses.noNumber", {
+                              defaultValue: "Sin número",
+                            })}
                         </div>
                       </div>
                     </div>
 
                     <div className="mt-4 grid grid-cols-2 gap-3">
                       <Field
-                        label={t('guards.licenses.form.issueDate', { defaultValue: 'Emitida' })}
-                        value={lic.issueDate ? new Date(lic.issueDate).toLocaleDateString(localeActual()) : null}
+                        label={t("guards.licenses.form.issueDate", {
+                          defaultValue: "Emitida",
+                        })}
+                        value={
+                          lic.issueDate
+                            ? new Date(lic.issueDate).toLocaleDateString(
+                                localeActual(),
+                              )
+                            : null
+                        }
                       />
                       <Field
-                        label={t('guards.licenses.table.expires', { defaultValue: 'Expires On' })}
-                        value={lic.expiryDate ? new Date(lic.expiryDate).toLocaleDateString(localeActual()) : null}
+                        label={t("guards.licenses.table.expires", {
+                          defaultValue: "Expires On",
+                        })}
+                        value={
+                          lic.expiryDate
+                            ? new Date(lic.expiryDate).toLocaleDateString(
+                                localeActual(),
+                              )
+                            : null
+                        }
                       />
                     </div>
 
                     <div className="mt-4 flex items-center justify-between gap-2">
                       <StatusBadge tone={status.tone}>{status.txt}</StatusBadge>
 
-                      <div className="flex items-center gap-1 opacity-0 transition group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
-                        <Button variant="ghost" size="icon-sm" title={t('actions.viewDetails', { defaultValue: 'View' })} onClick={() => openDetails(lic.id)}>
+                      <div
+                        className="flex items-center gap-1 opacity-0 transition group-hover:opacity-100"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Button
+                          size="icon-sm"
+                          title={t("actions.viewDetails", {
+                            defaultValue: "View",
+                          })}
+                          variant="ghost"
+                          onClick={() => openDetails(lic.id)}
+                        >
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon-sm" title={t('actions.edit', { defaultValue: 'Editar' })} onClick={() => startEdit(lic)}>
+                        <Button
+                          size="icon-sm"
+                          title={t("actions.edit", { defaultValue: "Editar" })}
+                          variant="ghost"
+                          onClick={() => startEdit(lic)}
+                        >
                           <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon-sm" title={t('actions.download', { defaultValue: 'Download' })} onClick={() => downloadRow(lic)}>
+                        <Button
+                          size="icon-sm"
+                          title={t("actions.download", {
+                            defaultValue: "Download",
+                          })}
+                          variant="ghost"
+                          onClick={() => downloadRow(lic)}
+                        >
                           <FileDown className="h-4 w-4" />
                         </Button>
                         <Button
-                          variant="ghost"
-                          size="icon-sm"
-                          title={t('actions.delete', { defaultValue: 'Delete' })}
-                          onClick={() => deleteRow(lic)}
                           className="hover:[color:var(--bad-text)]"
+                          size="icon-sm"
+                          title={t("actions.delete", {
+                            defaultValue: "Delete",
+                          })}
+                          variant="ghost"
+                          onClick={() => deleteRow(lic)}
                         >
                           <Trash className="h-4 w-4" />
                         </Button>
@@ -498,11 +721,22 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
 
           {/* ── PAGINATION ────────────────────────────────────────────────────── */}
           {!loading && visibleLicenses.length > 0 && (
-            <div className="glass flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm" style={{ color: 'var(--ink-soft)' }}>
+            <div
+              className="glass flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm"
+              style={{ color: "var(--ink-soft)" }}
+            >
               <div className="flex flex-wrap items-center gap-2">
-                <span>{t('clients.pagination.itemsPerPage')}</span>
-                <Select value={String(limit)} onValueChange={(v) => { setLimit(Number(v)); setPage(1); }}>
-                  <SelectTrigger className="h-8 w-20"><SelectValue /></SelectTrigger>
+                <span>{t("clients.pagination.itemsPerPage")}</span>
+                <Select
+                  value={String(limit)}
+                  onValueChange={(v) => {
+                    setLimit(Number(v));
+                    setPage(1);
+                  }}
+                >
+                  <SelectTrigger className="h-8 w-20">
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="10">10</SelectItem>
                     <SelectItem value="25">25</SelectItem>
@@ -511,11 +745,27 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
                 </Select>
               </div>
 
-              <div>{page} – {totalPages}</div>
+              <div>
+                {page} – {totalPages}
+              </div>
 
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" disabled={page === 1 || loading} onClick={() => setPage((p) => p - 1)}>{t('clients.pagination.prev')}</Button>
-                <Button variant="outline" size="sm" disabled={page * limit >= totalCount || loading} onClick={() => setPage((p) => p + 1)}>{t('clients.pagination.next')}</Button>
+                <Button
+                  disabled={page === 1 || loading}
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setPage((p) => p - 1)}
+                >
+                  {t("clients.pagination.prev")}
+                </Button>
+                <Button
+                  disabled={page * limit >= totalCount || loading}
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setPage((p) => p + 1)}
+                >
+                  {t("clients.pagination.next")}
+                </Button>
               </div>
             </div>
           )}
@@ -527,23 +777,38 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
               onClick={handleCloseModal}
             >
               <div
-                className="glass-raised fixed bottom-0 right-0 top-0 w-full max-w-md overflow-y-auto rounded-l-3xl rounded-r-none" style={{ position: 'fixed' }}
+                className="glass-raised fixed bottom-0 right-0 top-0 w-full max-w-md overflow-y-auto rounded-l-3xl rounded-r-none"
+                style={{ position: "fixed" }}
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Cabecera */}
                 <div
                   className="sticky top-0 z-10 flex items-center justify-between border-b px-6 py-5"
-                  style={{ borderColor: 'var(--hairline)', background: 'var(--glass-solid)' }}
+                  style={{
+                    borderColor: "var(--hairline)",
+                    background: "var(--glass-solid)",
+                  }}
                 >
                   <div className="flex items-center gap-2.5">
-                    <IconTile tone="brand" size="sm"><ShieldCheck /></IconTile>
+                    <IconTile size="sm" tone="brand">
+                      <ShieldCheck />
+                    </IconTile>
                     <h2 className="text-base font-semibold tracking-tight">
                       {isEditing
-                        ? t('guards.licenses.modal.editTitle', { defaultValue: 'Editar licencia' })
-                        : t('guards.licenses.modal.title', { defaultValue: 'Add New License' })}
+                        ? t("guards.licenses.modal.editTitle", {
+                            defaultValue: "Editar licencia",
+                          })
+                        : t("guards.licenses.modal.title", {
+                            defaultValue: "Add New License",
+                          })}
                     </h2>
                   </div>
-                  <Button variant="ghost" size="icon-sm" onClick={handleCloseModal} aria-label={t('actions.close')}>
+                  <Button
+                    aria-label={t("actions.close")}
+                    size="icon-sm"
+                    variant="ghost"
+                    onClick={handleCloseModal}
+                  >
                     <X className="h-5 w-5" />
                   </Button>
                 </div>
@@ -553,93 +818,231 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
                   <form className="space-y-5">
                     <div>
                       <label className="cg-eyebrow mb-1.5 block">
-                        {t('guards.licenses.form.licenseType', { defaultValue: 'Tipo de licencia' })} <span style={{ color: 'var(--bad-text)' }}>*</span>
+                        {t("guards.licenses.form.licenseType", {
+                          defaultValue: "Tipo de licencia",
+                        })}{" "}
+                        <span style={{ color: "var(--bad-text)" }}>*</span>
                       </label>
                       <Select
                         value={formData.licenseType}
                         onValueChange={(v) => {
                           // placeholder token
-                          if (v === '__empty') {
-                            setFormData({ ...formData, licenseType: '', customLicenseName: '' });
+                          if (v === "__empty") {
+                            setFormData({
+                              ...formData,
+                              licenseType: "",
+                              customLicenseName: "",
+                            });
+
                             return;
                           }
                           // if user chose to create a new license type
-                          if (v === 'other') {
+                          if (v === "other") {
                             // check permission
-                            if (!hasPermission('licenseTypeCreate')) {
-                              toast.error(t('guards.licenses.toasts.noPermissionCreateType', { defaultValue: 'No tiene permiso para crear tipos de licencia' }));
+                            if (!hasPermission("licenseTypeCreate")) {
+                              toast.error(
+                                t(
+                                  "guards.licenses.toasts.noPermissionCreateType",
+                                  {
+                                    defaultValue:
+                                      "No tiene permiso para crear tipos de licencia",
+                                  },
+                                ),
+                              );
+
                               return;
                             }
                             // open dialog to create new type
                             setShowCreateLicenseType(true);
+
                             return;
                           }
-                          setFormData({ ...formData, licenseType: v, customLicenseName: '' });
+                          setFormData({
+                            ...formData,
+                            licenseType: v,
+                            customLicenseName: "",
+                          });
                         }}
                       >
                         <SelectTrigger className="h-9 text-sm">
-                          <SelectValue placeholder={t('guards.licenses.form.selectLicenseType', { defaultValue: 'Selecciona tipo' })} />
+                          <SelectValue
+                            placeholder={t(
+                              "guards.licenses.form.selectLicenseType",
+                              { defaultValue: "Selecciona tipo" },
+                            )}
+                          />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="__empty">{t('guards.licenses.form.selectLicenseType', { defaultValue: 'Selecciona tipo' })}</SelectItem>
+                          <SelectItem value="__empty">
+                            {t("guards.licenses.form.selectLicenseType", {
+                              defaultValue: "Selecciona tipo",
+                            })}
+                          </SelectItem>
                           {licenseTypes.map((lt: LicenseTypeOption) => (
-                            <SelectItem key={lt.id} value={lt.id}>{lt.name}</SelectItem>
+                            <SelectItem key={lt.id} value={lt.id}>
+                              {lt.name}
+                            </SelectItem>
                           ))}
-                          <SelectItem value="other">{t('guards.licenses.form.option.other', { defaultValue: 'Other' })}</SelectItem>
+                          <SelectItem value="other">
+                            {t("guards.licenses.form.option.other", {
+                              defaultValue: "Other",
+                            })}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
 
                     <div>
-                      <label className="cg-eyebrow mb-1.5 block">{t('guards.licenses.form.licenseNumber', { defaultValue: 'Número de licencia' })} <span style={{ color: 'var(--bad-text)' }}>*</span></label>
+                      <label className="cg-eyebrow mb-1.5 block">
+                        {t("guards.licenses.form.licenseNumber", {
+                          defaultValue: "Número de licencia",
+                        })}{" "}
+                        <span style={{ color: "var(--bad-text)" }}>*</span>
+                      </label>
                       <Input
+                        className="h-9 text-sm"
+                        placeholder={t(
+                          "guards.licenses.form.licenseNumberPlaceholder",
+                          { defaultValue: "Ingresa número" },
+                        )}
                         type="text"
                         value={formData.licenseNumber}
-                        onChange={(e) => setFormData({ ...formData, licenseNumber: e.target.value })}
-                        placeholder={t('guards.licenses.form.licenseNumberPlaceholder', { defaultValue: 'Ingresa número' })}
-                        className="h-9 text-sm"
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            licenseNumber: e.target.value,
+                          })
+                        }
                       />
                     </div>
 
                     <div>
-                      <label className="cg-eyebrow mb-1.5 block">{t('guards.licenses.form.expiryDate', { defaultValue: 'Vence el' })}</label>
+                      <label className="cg-eyebrow mb-1.5 block">
+                        {t("guards.licenses.form.expiryDate", {
+                          defaultValue: "Vence el",
+                        })}
+                      </label>
                       <Input
+                        className="h-9 text-sm cursor-pointer"
                         type="date"
                         value={formData.expiryDate}
-                        onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
-                        className="h-9 text-sm cursor-pointer"
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            expiryDate: e.target.value,
+                          })
+                        }
                       />
                     </div>
 
-                    {(formData.licenseType === 'other' || !formData.licenseType) && (
+                    {(formData.licenseType === "other" ||
+                      !formData.licenseType) && (
                       <div>
-                        <label className="cg-eyebrow mb-1.5 block">{t('guards.licenses.form.customLicenseName', { defaultValue: 'Nombre personalizado' })}</label>
+                        <label className="cg-eyebrow mb-1.5 block">
+                          {t("guards.licenses.form.customLicenseName", {
+                            defaultValue: "Nombre personalizado",
+                          })}
+                        </label>
                         <Input
+                          className="h-9 text-sm"
+                          placeholder={t(
+                            "guards.licenses.form.customLicensePlaceholder",
+                            { defaultValue: "Nombre (si aplica)" },
+                          )}
                           type="text"
                           value={formData.customLicenseName}
-                          onChange={(e) => setFormData({ ...formData, customLicenseName: e.target.value })}
-                          placeholder={t('guards.licenses.form.customLicensePlaceholder', { defaultValue: 'Nombre (si aplica)' })}
-                          className="h-9 text-sm"
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              customLicenseName: e.target.value,
+                            })
+                          }
                         />
                       </div>
                     )}
 
                     <div className="grid grid-cols-1 gap-4">
                       <div>
-                        <label className="cg-eyebrow mb-1.5 block">{t('guards.licenses.form.frontImageLabel', { defaultValue: 'Imagen frontal' })}</label>
-                        <input type="file" accept="image/*" id="frontImage" className="hidden" onChange={(e) => setFormData({ ...formData, frontImage: e.target.files?.[0] || null })} />
-                        <label htmlFor="frontImage" className="cg-input flex h-9 cursor-pointer items-center gap-2 px-3 text-sm transition">
-                          <Paperclip className="h-4 w-4 shrink-0" style={{ color: 'var(--ink-faint)' }} />
-                          <span className="truncate text-sm" style={{ color: 'var(--ink-soft)' }}>{formData.frontImage ? (formData.frontImage.name || t('guards.licenses.form.fileSelected', { defaultValue: 'Archivo seleccionado' })) : t('guards.licenses.form.chooseFile', { defaultValue: 'Seleccionar archivo' })}</span>
+                        <label className="cg-eyebrow mb-1.5 block">
+                          {t("guards.licenses.form.frontImageLabel", {
+                            defaultValue: "Imagen frontal",
+                          })}
+                        </label>
+                        <input
+                          accept="image/*"
+                          className="hidden"
+                          id="frontImage"
+                          type="file"
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              frontImage: e.target.files?.[0] || null,
+                            })
+                          }
+                        />
+                        <label
+                          className="cg-input flex h-9 cursor-pointer items-center gap-2 px-3 text-sm transition"
+                          htmlFor="frontImage"
+                        >
+                          <Paperclip
+                            className="h-4 w-4 shrink-0"
+                            style={{ color: "var(--ink-faint)" }}
+                          />
+                          <span
+                            className="truncate text-sm"
+                            style={{ color: "var(--ink-soft)" }}
+                          >
+                            {formData.frontImage
+                              ? formData.frontImage.name ||
+                                t("guards.licenses.form.fileSelected", {
+                                  defaultValue: "Archivo seleccionado",
+                                })
+                              : t("guards.licenses.form.chooseFile", {
+                                  defaultValue: "Seleccionar archivo",
+                                })}
+                          </span>
                         </label>
                       </div>
 
                       <div>
-                        <label className="cg-eyebrow mb-1.5 block">{t('guards.licenses.form.backImageLabel', { defaultValue: 'Imagen trasera' })}</label>
-                        <input type="file" accept="image/*" id="backImage" className="hidden" onChange={(e) => setFormData({ ...formData, backImage: e.target.files?.[0] || null })} />
-                        <label htmlFor="backImage" className="cg-input flex h-9 cursor-pointer items-center gap-2 px-3 text-sm transition">
-                          <Paperclip className="h-4 w-4 shrink-0" style={{ color: 'var(--ink-faint)' }} />
-                          <span className="truncate text-sm" style={{ color: 'var(--ink-soft)' }}>{formData.backImage ? (formData.backImage.name || t('guards.licenses.form.fileSelected', { defaultValue: 'Archivo seleccionado' })) : t('guards.licenses.form.chooseFile', { defaultValue: 'Seleccionar archivo' })}</span>
+                        <label className="cg-eyebrow mb-1.5 block">
+                          {t("guards.licenses.form.backImageLabel", {
+                            defaultValue: "Imagen trasera",
+                          })}
+                        </label>
+                        <input
+                          accept="image/*"
+                          className="hidden"
+                          id="backImage"
+                          type="file"
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              backImage: e.target.files?.[0] || null,
+                            })
+                          }
+                        />
+                        <label
+                          className="cg-input flex h-9 cursor-pointer items-center gap-2 px-3 text-sm transition"
+                          htmlFor="backImage"
+                        >
+                          <Paperclip
+                            className="h-4 w-4 shrink-0"
+                            style={{ color: "var(--ink-faint)" }}
+                          />
+                          <span
+                            className="truncate text-sm"
+                            style={{ color: "var(--ink-soft)" }}
+                          >
+                            {formData.backImage
+                              ? formData.backImage.name ||
+                                t("guards.licenses.form.fileSelected", {
+                                  defaultValue: "Archivo seleccionado",
+                                })
+                              : t("guards.licenses.form.chooseFile", {
+                                  defaultValue: "Seleccionar archivo",
+                                })}
+                          </span>
                         </label>
                       </div>
                     </div>
@@ -649,10 +1052,21 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
                 {/* Pie */}
                 <div
                   className="sticky bottom-0 flex items-center justify-end gap-3 border-t px-6 py-4"
-                  style={{ borderColor: 'var(--hairline)', background: 'var(--glass-solid)' }}
+                  style={{
+                    borderColor: "var(--hairline)",
+                    background: "var(--glass-solid)",
+                  }}
                 >
-                  <Button variant="outline" onClick={handleCloseModal}>{t('guards.licenses.modal.cancel', { defaultValue: 'Cancelar' })}</Button>
-                  <Button variant="brand" onClick={handleSubmitLicense}>{t('guards.licenses.modal.save', { defaultValue: 'Guardar' })}</Button>
+                  <Button variant="outline" onClick={handleCloseModal}>
+                    {t("guards.licenses.modal.cancel", {
+                      defaultValue: "Cancelar",
+                    })}
+                  </Button>
+                  <Button variant="brand" onClick={handleSubmitLicense}>
+                    {t("guards.licenses.modal.save", {
+                      defaultValue: "Guardar",
+                    })}
+                  </Button>
                 </div>
               </div>
             </div>
@@ -664,98 +1078,267 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
           onOpenChange={(v) => setShowCreateLicenseType(v)}
           onSubmit={async (values) => {
             try {
-              const created = await licenseTypeService.create({ name: values.name });
-              const newType = created && (created.data ?? created) ? (created.data ?? created) : created;
+              const created = await licenseTypeService.create({
+                name: values.name,
+              });
+              const newType =
+                created && (created.data ?? created)
+                  ? (created.data ?? created)
+                  : created;
               const added = Array.isArray(newType) ? newType[0] : newType;
-                if (added) {
+
+              if (added) {
                 setLicenseTypes((prev) => [...prev, added]);
                 setFormData((f) => ({ ...f, licenseType: String(added.id) }));
               }
               setShowCreateLicenseType(false);
             } catch (err) {
-              console.error('Error creating license type', err);
-              toast.error(t('licenseTypes.dialog.createError', { defaultValue: 'Could not create license type' }));
+              console.error("Error creating license type", err);
+              toast.error(
+                t("licenseTypes.dialog.createError", {
+                  defaultValue: "Could not create license type",
+                }),
+              );
             }
           }}
         />
 
         {/* Details modal */}
         {detailsOpen && (
-          <div className="glass-scrim fixed inset-0 z-50" onClick={closeDetails}>
-            <div className="glass-raised fixed bottom-0 right-0 top-0 w-full max-w-md overflow-y-auto rounded-l-3xl rounded-r-none" style={{ position: 'fixed' }} onClick={(e) => e.stopPropagation()}>
-              <div className="sticky top-0 z-10 flex items-center justify-between border-b px-6 py-5" style={{ borderColor: 'var(--hairline)', background: 'var(--glass-solid)' }}>
+          <div
+            className="glass-scrim fixed inset-0 z-50"
+            onClick={closeDetails}
+          >
+            <div
+              className="glass-raised fixed bottom-0 right-0 top-0 w-full max-w-md overflow-y-auto rounded-l-3xl rounded-r-none"
+              style={{ position: "fixed" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div
+                className="sticky top-0 z-10 flex items-center justify-between border-b px-6 py-5"
+                style={{
+                  borderColor: "var(--hairline)",
+                  background: "var(--glass-solid)",
+                }}
+              >
                 <div className="flex items-center gap-2.5">
-                  <IconTile tone="brand" size="sm"><IdCard /></IconTile>
-                  <h2 className="text-base font-semibold tracking-tight">{t('guards.licenses.details.title', { defaultValue: 'License details' })}</h2>
+                  <IconTile size="sm" tone="brand">
+                    <IdCard />
+                  </IconTile>
+                  <h2 className="text-base font-semibold tracking-tight">
+                    {t("guards.licenses.details.title", {
+                      defaultValue: "License details",
+                    })}
+                  </h2>
                 </div>
                 <div className="flex items-center gap-1">
-                  <button onClick={() => {
-                    // Prefill form and open edit modal
-                    if (!detailsData) return;
-                    setCurrentLicense(detailsData.id);
-                    setFormData({
-                      licenseType: detailsData.licenseType?.id ?? (detailsData.customName ? 'other' : ''),
-                      customLicenseName: detailsData.customName || '',
-                      licenseNumber: detailsData.number || '',
-                      expiryDate: detailsData.expiryDate ? new Date(detailsData.expiryDate).toISOString().slice(0,10) : '',
-                      frontImage: detailsData.frontImage && detailsData.frontImage.length ? detailsData.frontImage[0] : null,
-                      backImage: detailsData.backImage && detailsData.backImage.length ? detailsData.backImage[0] : null,
-                    });
-                    setDetailsOpen(false);
-                    setShowModal(true);
-                  }} className="cg-btn-ghost cg-focus inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition">
+                  <button
+                    className="cg-btn-ghost cg-focus inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition"
+                    onClick={() => {
+                      // Prefill form and open edit modal
+                      if (!detailsData) return;
+                      setCurrentLicense(detailsData.id);
+                      setFormData({
+                        licenseType:
+                          detailsData.licenseType?.id ??
+                          (detailsData.customName ? "other" : ""),
+                        customLicenseName: detailsData.customName || "",
+                        licenseNumber: detailsData.number || "",
+                        expiryDate: detailsData.expiryDate
+                          ? new Date(detailsData.expiryDate)
+                              .toISOString()
+                              .slice(0, 10)
+                          : "",
+                        frontImage:
+                          detailsData.frontImage &&
+                          detailsData.frontImage.length
+                            ? detailsData.frontImage[0]
+                            : null,
+                        backImage:
+                          detailsData.backImage && detailsData.backImage.length
+                            ? detailsData.backImage[0]
+                            : null,
+                      });
+                      setDetailsOpen(false);
+                      setShowModal(true);
+                    }}
+                  >
                     <Pencil className="h-4 w-4" />
-                    {t('guards.licenses.details.edit', { defaultValue: 'Editar' })}
+                    {t("guards.licenses.details.edit", {
+                      defaultValue: "Editar",
+                    })}
                   </button>
-                  <Button variant="ghost" size="icon-sm" onClick={closeDetails} aria-label={t('actions.close')}><X className="h-5 w-5" /></Button>
+                  <Button
+                    aria-label={t("actions.close")}
+                    size="icon-sm"
+                    variant="ghost"
+                    onClick={closeDetails}
+                  >
+                    <X className="h-5 w-5" />
+                  </Button>
                 </div>
               </div>
 
               <div className="p-6">
-                {detailsLoading && <div className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t('loading', { defaultValue: 'Loading...' })}</div>}
+                {detailsLoading && (
+                  <div className="text-sm" style={{ color: "var(--ink-soft)" }}>
+                    {t("loading", { defaultValue: "Loading..." })}
+                  </div>
+                )}
                 {!detailsLoading && !detailsData && (
-                  <div className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t('guards.licenses.details.notFound', { defaultValue: 'Details not available' })}</div>
+                  <div className="text-sm" style={{ color: "var(--ink-soft)" }}>
+                    {t("guards.licenses.details.notFound", {
+                      defaultValue: "Details not available",
+                    })}
+                  </div>
                 )}
 
                 {!detailsLoading && detailsData && (
                   <div className="space-y-5">
                     {(() => {
                       const status = expiryStatus(detailsData.expiryDate, t);
-                      return <StatusBadge tone={status.tone}>{status.txt}</StatusBadge>;
+
+                      return (
+                        <StatusBadge tone={status.tone}>
+                          {status.txt}
+                        </StatusBadge>
+                      );
                     })()}
 
                     <div className="grid grid-cols-2 gap-4">
-                      <Field label={t('guards.licenses.table.type', { defaultValue: 'License Type' })} value={detailsData.licenseType?.name || detailsData.customName} />
-                      <Field label={t('guards.licenses.form.licenseNumber', { defaultValue: 'Número de licencia' })} value={detailsData.number} />
-                      <Field label={t('guards.licenses.form.issueDate', { defaultValue: 'Issued' })} value={detailsData.issueDate ? new Date(detailsData.issueDate).toLocaleDateString(localeActual()) : null} />
-                      <Field label={t('guards.licenses.form.expiryDate', { defaultValue: 'Vence el' })} value={detailsData.expiryDate ? new Date(detailsData.expiryDate).toLocaleDateString(localeActual()) : null} />
-                      <Field label={t('guards.licenses.table.addedBy', { defaultValue: 'Added By' })} value={detailsData.createdBy?.fullName || detailsData.createdBy?.email} />
+                      <Field
+                        label={t("guards.licenses.table.type", {
+                          defaultValue: "License Type",
+                        })}
+                        value={
+                          detailsData.licenseType?.name ||
+                          detailsData.customName
+                        }
+                      />
+                      <Field
+                        label={t("guards.licenses.form.licenseNumber", {
+                          defaultValue: "Número de licencia",
+                        })}
+                        value={detailsData.number}
+                      />
+                      <Field
+                        label={t("guards.licenses.form.issueDate", {
+                          defaultValue: "Issued",
+                        })}
+                        value={
+                          detailsData.issueDate
+                            ? new Date(
+                                detailsData.issueDate,
+                              ).toLocaleDateString(localeActual())
+                            : null
+                        }
+                      />
+                      <Field
+                        label={t("guards.licenses.form.expiryDate", {
+                          defaultValue: "Vence el",
+                        })}
+                        value={
+                          detailsData.expiryDate
+                            ? new Date(
+                                detailsData.expiryDate,
+                              ).toLocaleDateString(localeActual())
+                            : null
+                        }
+                      />
+                      <Field
+                        label={t("guards.licenses.table.addedBy", {
+                          defaultValue: "Added By",
+                        })}
+                        value={
+                          detailsData.createdBy?.fullName ||
+                          detailsData.createdBy?.email
+                        }
+                      />
                     </div>
 
-                    <div className="grid grid-cols-1 gap-4 border-t pt-4" style={{ borderColor: 'var(--hairline)' }}>
+                    <div
+                      className="grid grid-cols-1 gap-4 border-t pt-4"
+                      style={{ borderColor: "var(--hairline)" }}
+                    >
                       <div>
-                        <div className="cg-eyebrow mb-1.5">{t('guards.licenses.form.frontImageLabel', { defaultValue: 'Imagen frontal' })}</div>
+                        <div className="cg-eyebrow mb-1.5">
+                          {t("guards.licenses.form.frontImageLabel", {
+                            defaultValue: "Imagen frontal",
+                          })}
+                        </div>
                         <div className="flex flex-wrap gap-2">
-                          {detailsData.frontImage?.map((f: FileDescriptor, idx: number) => (
-                            <a key={idx} href={f.privateUrl ?? f.publicUrl ?? undefined} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition hover:[border-color:var(--brand-line)]" style={{ background: 'var(--glass-sunken)', borderColor: 'var(--hairline)' }}>
-                              <Paperclip className="h-3.5 w-3.5" />
-                              {f.name || (f.publicUrl ? t('actions.view', { defaultValue: 'Ver' }) : t('actions.download', { defaultValue: 'Descargar' }))}
-                            </a>
-                          ))}
-                          {!detailsData.frontImage?.length && <div className="text-sm" style={{ color: 'var(--ink-faint)' }}>—</div>}
+                          {detailsData.frontImage?.map(
+                            (f: FileDescriptor, idx: number) => (
+                              <a
+                                key={idx}
+                                className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition hover:[border-color:var(--brand-line)]"
+                                href={f.privateUrl ?? f.publicUrl ?? undefined}
+                                rel="noreferrer"
+                                style={{
+                                  background: "var(--glass-sunken)",
+                                  borderColor: "var(--hairline)",
+                                }}
+                                target="_blank"
+                              >
+                                <Paperclip className="h-3.5 w-3.5" />
+                                {f.name ||
+                                  (f.publicUrl
+                                    ? t("actions.view", { defaultValue: "Ver" })
+                                    : t("actions.download", {
+                                        defaultValue: "Descargar",
+                                      }))}
+                              </a>
+                            ),
+                          )}
+                          {!detailsData.frontImage?.length && (
+                            <div
+                              className="text-sm"
+                              style={{ color: "var(--ink-faint)" }}
+                            >
+                              —
+                            </div>
+                          )}
                         </div>
                       </div>
 
                       <div>
-                        <div className="cg-eyebrow mb-1.5">{t('guards.licenses.form.backImageLabel', { defaultValue: 'Imagen trasera' })}</div>
+                        <div className="cg-eyebrow mb-1.5">
+                          {t("guards.licenses.form.backImageLabel", {
+                            defaultValue: "Imagen trasera",
+                          })}
+                        </div>
                         <div className="flex flex-wrap gap-2">
-                          {detailsData.backImage?.map((f: FileDescriptor, idx: number) => (
-                            <a key={idx} href={f.privateUrl ?? f.publicUrl ?? undefined} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition hover:[border-color:var(--brand-line)]" style={{ background: 'var(--glass-sunken)', borderColor: 'var(--hairline)' }}>
-                              <Paperclip className="h-3.5 w-3.5" />
-                              {f.name || (f.publicUrl ? t('actions.view', { defaultValue: 'Ver' }) : t('actions.download', { defaultValue: 'Descargar' }))}
-                            </a>
-                          ))}
-                          {!detailsData.backImage?.length && <div className="text-sm" style={{ color: 'var(--ink-faint)' }}>—</div>}
+                          {detailsData.backImage?.map(
+                            (f: FileDescriptor, idx: number) => (
+                              <a
+                                key={idx}
+                                className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition hover:[border-color:var(--brand-line)]"
+                                href={f.privateUrl ?? f.publicUrl ?? undefined}
+                                rel="noreferrer"
+                                style={{
+                                  background: "var(--glass-sunken)",
+                                  borderColor: "var(--hairline)",
+                                }}
+                                target="_blank"
+                              >
+                                <Paperclip className="h-3.5 w-3.5" />
+                                {f.name ||
+                                  (f.publicUrl
+                                    ? t("actions.view", { defaultValue: "Ver" })
+                                    : t("actions.download", {
+                                        defaultValue: "Descargar",
+                                      }))}
+                              </a>
+                            ),
+                          )}
+                          {!detailsData.backImage?.length && (
+                            <div
+                              className="text-sm"
+                              style={{ color: "var(--ink-faint)" }}
+                            >
+                              —
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -763,28 +1346,48 @@ export default function GuardLicenses({ guard, navKey = 'keep-safe', title = 'gu
                 )}
               </div>
 
-              <div className="sticky bottom-0 flex items-center justify-end gap-3 border-t px-6 py-4" style={{ borderColor: 'var(--hairline)', background: 'var(--glass-solid)' }}>
-                <button onClick={async () => {
-                  if (!detailsData) return;
-                  try {
-                    const blob = await api.download(detailsData.id);
-                    const url = window.URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `license-${detailsData.id}.pdf`;
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
-                    window.URL.revokeObjectURL(url);
-                  } catch (err) {
-                    console.error('Error downloading report', err);
-                    toast.error(t('guards.licenses.toasts.downloadError', { defaultValue: 'Could not download report' }));
-                  }
-                }} className="cg-btn-glass cg-focus inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition">
+              <div
+                className="sticky bottom-0 flex items-center justify-end gap-3 border-t px-6 py-4"
+                style={{
+                  borderColor: "var(--hairline)",
+                  background: "var(--glass-solid)",
+                }}
+              >
+                <button
+                  className="cg-btn-glass cg-focus inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition"
+                  onClick={async () => {
+                    if (!detailsData) return;
+                    try {
+                      const blob = await api.download(detailsData.id);
+                      const url = window.URL.createObjectURL(
+                        new Blob([blob], { type: "application/pdf" }),
+                      );
+                      const a = document.createElement("a");
+
+                      a.href = url;
+                      a.download = `license-${detailsData.id}.pdf`;
+                      document.body.appendChild(a);
+                      a.click();
+                      a.remove();
+                      window.URL.revokeObjectURL(url);
+                    } catch (err) {
+                      console.error("Error downloading report", err);
+                      toast.error(
+                        t("guards.licenses.toasts.downloadError", {
+                          defaultValue: "Could not download report",
+                        }),
+                      );
+                    }
+                  }}
+                >
                   <FileDown className="h-4 w-4" />
-                  {t('guards.licenses.details.download', { defaultValue: 'Descargar' })}
+                  {t("guards.licenses.details.download", {
+                    defaultValue: "Descargar",
+                  })}
                 </button>
-                <Button variant="outline" onClick={closeDetails}>{t('guards.licenses.modal.close', { defaultValue: 'Cerrar' })}</Button>
+                <Button variant="outline" onClick={closeDetails}>
+                  {t("guards.licenses.modal.close", { defaultValue: "Cerrar" })}
+                </Button>
               </div>
             </div>
           </div>

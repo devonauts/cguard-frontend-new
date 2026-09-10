@@ -1,6 +1,6 @@
-import { ApiService } from '@/services/api/apiService';
+import { ApiService } from "@/services/api/apiService";
 
-const tid = () => localStorage.getItem('tenantId') || '';
+const tid = () => localStorage.getItem("tenantId") || "";
 
 /** Station "consignas específicas" — recurring standing orders for a station. */
 export const stationOrderService = {
@@ -9,7 +9,9 @@ export const stationOrderService = {
   create: (stationId: string, data: Record<string, unknown>) =>
     ApiService.post(`/tenant/${tid()}/station/${stationId}/orders`, { data }),
   update: (stationId: string, id: string, data: Record<string, unknown>) =>
-    ApiService.put(`/tenant/${tid()}/station/${stationId}/orders/${id}`, { data }),
+    ApiService.put(`/tenant/${tid()}/station/${stationId}/orders/${id}`, {
+      data,
+    }),
   remove: (stationId: string, id: string) =>
     ApiService.delete(`/tenant/${tid()}/station/${stationId}/orders/${id}`),
   /** Activity log: guard completions of this station's consignas (with evidence). */

@@ -19,7 +19,9 @@
  * como UNA petición.
  */
 
-const KEY = (import.meta as any).env?.VITE_GOOGLE_MAPS_API_KEY as string | undefined;
+const KEY = (import.meta as any).env?.VITE_GOOGLE_MAPS_API_KEY as
+  | string
+  | undefined;
 
 /** Máximo que acepta la API por lado (antes de `scale`). */
 const MAX_LADO = 640;
@@ -28,7 +30,7 @@ export interface StaticMapOptions {
   zoom?: number;
   width?: number;
   height?: number;
-  mapType?: 'roadmap' | 'satellite' | 'hybrid' | 'terrain';
+  mapType?: "roadmap" | "satellite" | "hybrid" | "terrain";
   /** Color del pin en formato `0xRRGGBB`. */
   markerColor?: string;
   /** Polígono a dibujar (geocerca). */
@@ -38,7 +40,7 @@ export interface StaticMapOptions {
 }
 
 function redondear(n: number): string {
-  return n.toFixed(6).replace(/\.?0+$/, '');
+  return n.toFixed(6).replace(/\.?0+$/, "");
 }
 
 /**
@@ -56,15 +58,19 @@ function circuloComoPoligono(
   vertices = 24,
 ): Array<{ lat: number; lng: number }> {
   const gradosPorMetroLat = 1 / 111_320;
-  const gradosPorMetroLng = 1 / (111_320 * Math.cos((lat * Math.PI) / 180) || 1);
+  const gradosPorMetroLng =
+    1 / (111_320 * Math.cos((lat * Math.PI) / 180) || 1);
   const puntos: Array<{ lat: number; lng: number }> = [];
+
   for (let i = 0; i < vertices; i++) {
     const ang = (i / vertices) * 2 * Math.PI;
+
     puntos.push({
       lat: lat + metros * gradosPorMetroLat * Math.sin(ang),
       lng: lng + metros * gradosPorMetroLng * Math.cos(ang),
     });
   }
+
   return puntos;
 }
 
@@ -84,6 +90,7 @@ export function staticMapUrl(
 ): string | null {
   const la = Number(lat);
   const ln = Number(lng);
+
   if (!KEY) return null;
   if (!Number.isFinite(la) || !Number.isFinite(ln)) return null;
   if (la === 0 && ln === 0) return null;
@@ -92,8 +99,8 @@ export function staticMapUrl(
     zoom = 15,
     width = 640,
     height = 320,
-    mapType = 'roadmap',
-    markerColor = '0xC8860A',
+    mapType = "roadmap",
+    markerColor = "0xC8860A",
     polygon = null,
     radiusMeters = null,
   } = opts;
@@ -106,7 +113,7 @@ export function staticMapUrl(
     center: centro,
     zoom: String(zoom),
     size: `${w}x${h}`,
-    scale: '2',
+    scale: "2",
     maptype: mapType,
     key: KEY,
   });
@@ -114,6 +121,7 @@ export function staticMapUrl(
   // `markers` y `path` se añaden a mano porque llevan `|`, que URLSearchParams
   // escaparía a `%7C`; la API lo acepta, pero deja la URL ilegible al depurar.
   let url = `https://maps.googleapis.com/maps/api/staticmap?${params.toString()}`;
+
   url += `&markers=color:${markerColor}%7C${centro}`;
 
   const trazo =
@@ -127,10 +135,11 @@ export function staticMapUrl(
     const puntos = trazo
       .filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lng))
       .map((p) => `${redondear(p.lat)},${redondear(p.lng)}`);
+
     if (puntos.length >= 3) {
       // Se cierra el contorno explícitamente: la API no lo hace sola.
       puntos.push(puntos[0]);
-      url += `&path=color:${markerColor}%7Cweight:2%7Cfillcolor:0x00000022%7C${puntos.join('%7C')}`;
+      url += `&path=color:${markerColor}%7Cweight:2%7Cfillcolor:0x00000022%7C${puntos.join("%7C")}`;
     }
   }
 
@@ -158,7 +167,7 @@ export interface StaticMapPoint {
  */
 export function staticMapUrlMulti(
   points: StaticMapPoint[],
-  opts: Omit<StaticMapOptions, 'polygon' | 'radiusMeters'> = {},
+  opts: Omit<StaticMapOptions, "polygon" | "radiusMeters"> = {},
 ): string | null {
   if (!KEY) return null;
 
@@ -172,13 +181,14 @@ export function staticMapUrlMulti(
     );
 
   if (validos.length === 0) return null;
-  if (validos.length === 1) return staticMapUrl(validos[0].lat, validos[0].lng, opts);
+  if (validos.length === 1)
+    return staticMapUrl(validos[0].lat, validos[0].lng, opts);
 
   const {
     width = 640,
     height = 320,
-    mapType = 'roadmap',
-    markerColor = '0xC8860A',
+    mapType = "roadmap",
+    markerColor = "0xC8860A",
   } = opts;
 
   const w = Math.min(Math.round(width), MAX_LADO);
@@ -186,14 +196,14 @@ export function staticMapUrlMulti(
 
   const params = new URLSearchParams({
     size: `${w}x${h}`,
-    scale: '2',
+    scale: "2",
     maptype: mapType,
     key: KEY,
   });
 
   const chinchetas = validos
     .map((p) => `${redondear(p.lat)},${redondear(p.lng)}`)
-    .join('%7C');
+    .join("%7C");
 
   return (
     `https://maps.googleapis.com/maps/api/staticmap?${params.toString()}` +

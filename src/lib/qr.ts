@@ -23,7 +23,7 @@
  * y el nivel de corrección lo elegimos nosotros.
  * ════════════════════════════════════════════════════════════════════════════
  */
-import QRCode from 'qrcode';
+import QRCode from "qrcode";
 
 /**
  * Nivel de corrección de errores ALTO (~30% del código recuperable).
@@ -35,7 +35,7 @@ import QRCode from 'qrcode';
  * con alta, sigue leyendo. El precio es un QR algo más denso, que a 240 px de
  * impresión no se nota.
  */
-const CORRECCION = 'H' as const;
+const CORRECCION = "H" as const;
 
 export interface OpcionesQR {
   /** Lado en píxeles de la imagen generada. */
@@ -52,12 +52,15 @@ export interface OpcionesQR {
  * otra. Con data URI la imagen viaja dentro del HTML y la ventana imprime sola,
  * sin esperar a ninguna carga — que es lo que antes producía hojas en blanco.
  */
-export async function qrDataUrl(codigo: string, opts: OpcionesQR = {}): Promise<string> {
+export async function qrDataUrl(
+  codigo: string,
+  opts: OpcionesQR = {},
+): Promise<string> {
   return QRCode.toDataURL(String(codigo), {
     errorCorrectionLevel: CORRECCION,
     width: opts.size ?? 600,
     margin: opts.margin ?? 2,
-    color: { dark: '#000000', light: '#FFFFFF' },
+    color: { dark: "#000000", light: "#FFFFFF" },
   });
 }
 
@@ -67,17 +70,19 @@ export async function qrDataUrl(codigo: string, opts: OpcionesQR = {}): Promise<
  * Un fallo puntual devuelve `null` en su hueco en vez de tumbar la hoja entera:
  * es mejor imprimir once etiquetas y ver que falta una que no imprimir nada.
  */
-export async function qrDataUrls(codigos: string[], opts: OpcionesQR = {}): Promise<Array<string | null>> {
-  return Promise.all(
-    codigos.map((c) => qrDataUrl(c, opts).catch(() => null)),
-  );
+export async function qrDataUrls(
+  codigos: string[],
+  opts: OpcionesQR = {},
+): Promise<Array<string | null>> {
+  return Promise.all(codigos.map((c) => qrDataUrl(c, opts).catch(() => null)));
 }
 
 /** Descargar un QR suelto como PNG, con nombre legible. */
 export function descargarQr(dataUrl: string, nombreArchivo: string): void {
-  const a = document.createElement('a');
+  const a = document.createElement("a");
+
   a.href = dataUrl;
-  a.download = `${nombreArchivo.replace(/[^a-zA-Z0-9._-]+/g, '-').slice(0, 60)}.png`;
+  a.download = `${nombreArchivo.replace(/[^a-zA-Z0-9._-]+/g, "-").slice(0, 60)}.png`;
   document.body.appendChild(a);
   a.click();
   a.remove();

@@ -30,11 +30,17 @@ const AccountService = {
   },
 
   async changePassword(oldPassword: string, newPassword: string) {
-    return ApiService.put("/auth/change-password", { oldPassword, newPassword });
+    return ApiService.put("/auth/change-password", {
+      oldPassword,
+      newPassword,
+    });
   },
 
   async sendVerifyEmail(email: string, tenantId?: string) {
-    return ApiService.post("/auth/send-email-address-verification-email", { email, tenantId });
+    return ApiService.post("/auth/send-email-address-verification-email", {
+      email,
+      tenantId,
+    });
   },
 
   async changeEmail(payload: ChangeEmailPayload) {
@@ -58,19 +64,22 @@ const AccountService = {
     );
 
     const uploadUrl = creds.uploadCredentials?.url;
-    if (!uploadUrl) throw new Error('Upload URL not available');
+
+    if (!uploadUrl) throw new Error("Upload URL not available");
 
     const form = new FormData();
-    form.append('filename', filename);
-    form.append('file', file);
+
+    form.append("filename", filename);
+    form.append("file", file);
 
     const uploadResp = await fetch(uploadUrl, {
-      method: 'POST',
+      method: "POST",
       body: form,
     });
 
     if (!uploadResp.ok) {
       const text = await uploadResp.text().catch(() => null);
+
       throw new Error(`Upload failed: ${uploadResp.status} ${text}`);
     }
 
@@ -82,7 +91,7 @@ const AccountService = {
       publicUrl: creds.uploadCredentials?.publicUrl ?? null,
     };
 
-    return ApiService.put('/auth/profile', { data: { avatars: [fileObj] } });
+    return ApiService.put("/auth/profile", { data: { avatars: [fileObj] } });
   },
 };
 

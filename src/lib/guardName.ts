@@ -30,7 +30,7 @@ export interface ConNombre {
   email?: string | null;
 }
 
-const limpio = (v: unknown): string => (typeof v === 'string' ? v.trim() : '');
+const limpio = (v: unknown): string => (typeof v === "string" ? v.trim() : "");
 
 /**
  * El nombre para mostrar, probando las formas en orden de preferencia.
@@ -39,28 +39,41 @@ const limpio = (v: unknown): string => (typeof v === 'string' ? v.trim() : '');
  * ('Vigilante', 'Sacafranco', '?') en vez de quedar vacío, porque una celda en
  * blanco en el Horario significa «nadie asignado».
  */
-export function nombreDeVigilante(g: ConNombre | null | undefined, respaldo = ''): string {
+export function nombreDeVigilante(
+  g: ConNombre | null | undefined,
+  respaldo = "",
+): string {
   if (!g) return respaldo;
 
   const completo = limpio(g.fullName) || limpio(g.name);
+
   if (completo) return completo;
 
-  const compuesto = [limpio(g.firstName), limpio(g.lastName)].filter(Boolean).join(' ');
+  const compuesto = [limpio(g.firstName), limpio(g.lastName)]
+    .filter(Boolean)
+    .join(" ");
+
   if (compuesto) return compuesto;
 
   // El correo es feo, pero identifica. Mejor «jcevallos@…» que un hueco.
   const correo = limpio(g.email);
+
   if (correo) return correo;
 
   return respaldo;
 }
 
 /** Sólo el nombre de pila, para las celdas estrechas de la rejilla. */
-export function primerNombre(g: ConNombre | null | undefined, respaldo = '?'): string {
-  const n = nombreDeVigilante(g, '');
+export function primerNombre(
+  g: ConNombre | null | undefined,
+  respaldo = "?",
+): string {
+  const n = nombreDeVigilante(g, "");
+
   if (!n) return respaldo;
   // Un correo no se parte por espacios; se corta en la arroba.
-  if (n.includes('@') && !n.includes(' ')) return n.split('@')[0];
+  if (n.includes("@") && !n.includes(" ")) return n.split("@")[0];
+
   return n.split(/\s+/)[0] || respaldo;
 }
 
@@ -70,14 +83,20 @@ export function primerNombre(g: ConNombre | null | undefined, respaldo = '?'): s
  * Con un solo nombre se toman sus dos primeras letras en vez de una: una inicial
  * suelta se confunde con los códigos de novedad de la rejilla (V, F, L…).
  */
-export function inicialesDeVigilante(g: ConNombre | null | undefined, respaldo = '?'): string {
-  const n = nombreDeVigilante(g, '');
+export function inicialesDeVigilante(
+  g: ConNombre | null | undefined,
+  respaldo = "?",
+): string {
+  const n = nombreDeVigilante(g, "");
+
   if (!n) return respaldo;
 
   const partes = n.split(/\s+/).filter(Boolean);
+
   if (partes.length >= 2) {
     return (partes[0][0] + partes[1][0]).toUpperCase();
   }
+
   return partes[0].slice(0, 2).toUpperCase() || respaldo;
 }
 

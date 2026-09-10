@@ -2,7 +2,12 @@ import { ApiService } from "@/services/api/apiService";
 
 const tenantId = (): string => {
   const t = localStorage.getItem("tenantId");
-  if (!t) throw new Error("No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.");
+
+  if (!t)
+    throw new Error(
+      "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+    );
+
   return t;
 };
 
@@ -28,7 +33,12 @@ export interface PlanResolution {
 
 export interface BillingSummary {
   status: string; // trialing | active | past_due | trial_expired | canceled
-  trial: { endsAt: string | null; daysLeft: number; active: boolean; expired: boolean };
+  trial: {
+    endsAt: string | null;
+    daysLeft: number;
+    active: boolean;
+    expired: boolean;
+  };
   seats: number;
   implementationPaid: boolean;
   hasSubscription: boolean;

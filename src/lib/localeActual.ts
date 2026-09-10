@@ -1,4 +1,4 @@
-import i18n from '@/i18n'
+import i18n from "@/i18n";
 
 /**
  * Locale que deben usar las fechas y los números de la interfaz.
@@ -15,11 +15,14 @@ import i18n from '@/i18n'
  * secas y el navegador aplica la convención que corresponde.
  */
 export function localeActual(): string {
-  const l = String(i18n.language || 'es').slice(0, 2).toLowerCase()
-  return l === 'es' ? 'es-EC' : l
+  const l = String(i18n.language || "es")
+    .slice(0, 2)
+    .toLowerCase();
+
+  return l === "es" ? "es-EC" : l;
 }
 
 /** Igual, pero para quien necesita la lista que acepta `Intl`. */
 export function localesActual(): string[] {
-  return [localeActual()]
+  return [localeActual()];
 }

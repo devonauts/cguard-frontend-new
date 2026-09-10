@@ -38,18 +38,25 @@ function persistedTenantId(): string | null {
 export function currentTenantEntry(user: any): any | null {
   if (!user) return null;
   const list: any[] = Array.isArray(user.tenants) ? user.tenants : [];
+
   if (list.length) {
     const tid = persistedTenantId();
+
     if (tid) {
       const match = list.find(
-        (t) => t.tenantId === tid || (t.tenant && (t.tenant.id === tid || t.tenant.tenantId === tid)),
+        (t) =>
+          t.tenantId === tid ||
+          (t.tenant && (t.tenant.id === tid || t.tenant.tenantId === tid)),
       );
+
       if (match) return match;
     }
+
     return list[0];
   }
   // Single-tenant shape.
   if (user.tenant) return user.tenant;
+
   return null;
 }
 
@@ -57,13 +64,16 @@ export function currentTenantEntry(user: any): any | null {
 export function getPlanFeatures(user: any): string[] | null {
   const entry = currentTenantEntry(user);
   const feats = entry?.planFeatures;
+
   return Array.isArray(feats) ? feats : null;
 }
 
 /** Whether the current tenant is entitled to a feature. Fail-open on unknown. */
 export function hasFeature(user: any, key: string): boolean {
   const feats = getPlanFeatures(user);
+
   if (!feats || feats.length === 0) return true; // fail open
+
   return feats.includes(key);
 }
 
@@ -75,6 +85,7 @@ export interface BillingState {
 /** The current tenant's billing/suspension state for the lockout gate. */
 export function getBillingState(user: any): BillingState {
   const entry = currentTenantEntry(user);
+
   return {
     billingStatus: entry?.billingStatus ?? null,
     suspendedAt: entry?.suspendedAt ?? null,

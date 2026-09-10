@@ -1,16 +1,18 @@
-import { useEffect } from "react"
-import { useAuth } from "@/contexts/AuthContext"
-import { Navigate, useLocation } from "react-router-dom"
-import NoWorkspaceAccess from "./NoWorkspaceAccess"
-import VerifyEmailGate from "./VerifyEmailGate"
-import SubscriptionLockedScreen from "./SubscriptionLockedScreen"
-import { getBillingState } from "@/lib/entitlements"
-import { canAccessCrm } from "@/lib/access"
-import AppAccessPending from "@/pages/auth/AppAccessPending"
+import { useEffect } from "react";
+import { Navigate, useLocation } from "react-router-dom";
+
+import NoWorkspaceAccess from "./NoWorkspaceAccess";
+import VerifyEmailGate from "./VerifyEmailGate";
+import SubscriptionLockedScreen from "./SubscriptionLockedScreen";
+
+import { useAuth } from "@/contexts/AuthContext";
+import { getBillingState } from "@/lib/entitlements";
+import { canAccessCrm } from "@/lib/access";
+import AppAccessPending from "@/pages/auth/AppAccessPending";
 
 interface ProtectedRouteProps {
-  children: React.ReactNode
-  requireVerified?: boolean
+  children: React.ReactNode;
+  requireVerified?: boolean;
 }
 
 /**
@@ -20,25 +22,30 @@ interface ProtectedRouteProps {
  */
 function hasNoWorkspace(user: any): boolean {
   try {
-    const persisted = localStorage.getItem("tenantId")
-    if (persisted) return false
+    const persisted = localStorage.getItem("tenantId");
+
+    if (persisted) return false;
   } catch {
     /* ignore */
   }
-  return !(Array.isArray(user?.tenants) && user.tenants.length > 0)
+
+  return !(Array.isArray(user?.tenants) && user.tenants.length > 0);
 }
 
 /** Platform superadmins are intentionally tenantless on the client (their tenant
  *  associations are stripped in AuthContext); they belong in the superadmin area,
  *  not blocked by the no-workspace modal. */
 function isPlatformSuperadmin(user: any): boolean {
-  if (!user) return false
-  if (user.isSuperadmin === true) return true
-  const raw = user.roles ?? user.role ?? []
-  const arr = Array.isArray(raw) ? raw : [raw]
+  if (!user) return false;
+  if (user.isSuperadmin === true) return true;
+  const raw = user.roles ?? user.role ?? [];
+  const arr = Array.isArray(raw) ? raw : [raw];
+
   return arr
-    .map((r: any) => (typeof r === "string" ? r : r?.name || r?.key || r?.slug || ""))
-    .some((n: string) => n.toString().toLowerCase().includes("superadmin"))
+    .map((r: any) =>
+      typeof r === "string" ? r : r?.name || r?.key || r?.slug || "",
+    )
+    .some((n: string) => n.toString().toLowerCase().includes("superadmin"));
 }
 
 /**
@@ -69,28 +76,30 @@ function isPlatformSuperadmin(user: any): boolean {
  */
 function RedirectToSuperadminApp() {
   useEffect(() => {
-    window.location.replace("/superadmin/")
-  }, [])
-  return <LoadingScreen />
+    window.location.replace("/superadmin/");
+  }, []);
+
+  return <LoadingScreen />;
 }
 
 function LoadingScreen() {
-  let tenantLogo: string | null = null
+  let tenantLogo: string | null = null;
+
   try {
-    tenantLogo = localStorage.getItem("tenantLogoUrl")
+    tenantLogo = localStorage.getItem("tenantLogoUrl");
   } catch {
-    tenantLogo = null
+    tenantLogo = null;
   }
 
   return (
     <div className="flex h-screen flex-col items-center justify-center gap-6 bg-[#F8F7F4] dark:bg-[#0A0A0A]">
       {tenantLogo && (
         <img
-          src={tenantLogo}
           alt="Logo"
           className="h-14 max-w-[200px] object-contain"
+          src={tenantLogo}
           onError={(e) => {
-            e.currentTarget.style.display = "none"
+            e.currentTarget.style.display = "none";
           }}
         />
       )}
@@ -99,24 +108,24 @@ function LoadingScreen() {
         <p className="text-sm text-muted-foreground">Cargando…</p>
       </div>
     </div>
-  )
+  );
 }
 
-export default function ProtectedRoute({ 
-  children, 
-  requireVerified = false 
+export default function ProtectedRoute({
+  children,
+  requireVerified = false,
 }: ProtectedRouteProps) {
-  const { isAuthenticated, user, loading } = useAuth()
-  const location = useLocation()
+  const { isAuthenticated, user, loading } = useAuth();
+  const location = useLocation();
 
   // Mostrar loading mientras verifica autenticación
   if (loading) {
-    return <LoadingScreen />
+    return <LoadingScreen />;
   }
 
   // Si no está autenticado, redirigir a login
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />
+    return <Navigate replace state={{ from: location }} to="/login" />;
   }
 
   // Sin espacio de trabajo: el usuario está autenticado pero no pertenece a
@@ -129,11 +138,13 @@ export default function ProtectedRoute({
     // área (gestión de tenants) en vez de mostrar el modal de "sin acceso".
     if (isPlatformSuperadmin(user)) {
       if (location.pathname.startsWith("/superadmin")) {
-        return <>{children}</>
+        return <>{children}</>;
       }
-      return <RedirectToSuperadminApp />
+
+      return <RedirectToSuperadminApp />;
     }
-    return <NoWorkspaceAccess />
+
+    return <NoWorkspaceAccess />;
   }
 
   // Verificación de correo OBLIGATORIA: el backend rechaza (403) toda escritura
@@ -145,7 +156,7 @@ export default function ProtectedRoute({
     (user as any).emailVerified === false &&
     !isPlatformSuperadmin(user)
   ) {
-    return <VerifyEmailGate />
+    return <VerifyEmailGate />;
   }
 
   // Bloqueo duro por suscripción (no aplica a superadmins de plataforma).
@@ -155,16 +166,18 @@ export default function ProtectedRoute({
   // Fail-open: sólo bloquea con un estado explícito (sesiones viejas sin estos
   // campos nunca se bloquean).
   if (!isPlatformSuperadmin(user)) {
-    const { billingStatus, suspendedAt } = getBillingState(user)
+    const { billingStatus, suspendedAt } = getBillingState(user);
+
     if (suspendedAt) {
-      return <SubscriptionLockedScreen variant="suspended" />
+      return <SubscriptionLockedScreen variant="suspended" />;
     }
     if (billingStatus === "canceled") {
       const onBilling =
         location.pathname.startsWith("/setting/billing") ||
-        location.pathname.startsWith("/billing")
+        location.pathname.startsWith("/billing");
+
       if (!onBilling) {
-        return <SubscriptionLockedScreen variant="canceled" />
+        return <SubscriptionLockedScreen variant="canceled" />;
       }
     }
   }
@@ -174,56 +187,84 @@ export default function ProtectedRoute({
   // los guía a la app, no el panel. El backend también lo bloquea (403/401);
   // esto es defensa en profundidad + una salida amable en vez de un error.
   if (!canAccessCrm(user)) {
-    return <AppAccessPending />
+    return <AppAccessPending />;
   }
 
   // Si todo está bien, mostrar el contenido protegido
-  return <>{children}</>
+  return <>{children}</>;
 }
 
 // Variante para rutas públicas (solo accesibles si NO estás autenticado).
 // `redirectByRole`: usuarios guardia-solo van a /guard en vez de /dashboard
 // (usado en la ruta raíz "/").
-export function PublicOnlyRoute({ children, redirectByRole = false }: { children: React.ReactNode; redirectByRole?: boolean }) {
-  const { isAuthenticated, loading, user } = useAuth()
-  const location = useLocation()
+export function PublicOnlyRoute({
+  children,
+  redirectByRole = false,
+}: {
+  children: React.ReactNode;
+  redirectByRole?: boolean;
+}) {
+  const { isAuthenticated, loading, user } = useAuth();
+  const location = useLocation();
 
   if (loading) {
-    return <LoadingScreen />
+    return <LoadingScreen />;
   }
 
   // Permitir acceso si hay un token de invitación en la URL (flujo de registro)
-  const searchParams = new URLSearchParams(location.search)
-  const hasInviteToken = searchParams.has('token') || searchParams.has('invitationToken') || searchParams.has('invite')
-  const isInvitationFlow = location.pathname.includes('/invitation') || 
-                           location.pathname.includes('/registration') ||
-                           searchParams.get('inviteType') === 'guard' ||
-                           searchParams.get('inviteType') === 'client'
+  const searchParams = new URLSearchParams(location.search);
+  const hasInviteToken =
+    searchParams.has("token") ||
+    searchParams.has("invitationToken") ||
+    searchParams.has("invite");
+  const isInvitationFlow =
+    location.pathname.includes("/invitation") ||
+    location.pathname.includes("/registration") ||
+    searchParams.get("inviteType") === "guard" ||
+    searchParams.get("inviteType") === "client";
 
   // Si hay un token de invitación o es flujo de registro, permitir acceso sin importar autenticación
   if (hasInviteToken || isInvitationFlow) {
-    return <>{children}</>
+    return <>{children}</>;
   }
 
   // Si ya está autenticado y NO es flujo de invitación, redirigir al dashboard
   if (isAuthenticated) {
     if (redirectByRole) {
-      const raw = (user as any)?.roles ?? (user as any)?.role ?? []
-      const arr = Array.isArray(raw) ? raw : [raw]
+      const raw = (user as any)?.roles ?? (user as any)?.role ?? [];
+      const arr = Array.isArray(raw) ? raw : [raw];
       const tenantRoles: string[] = Array.isArray((user as any)?.tenants)
         ? (user as any).tenants.flatMap((t: any) => {
-            const tr = t.roles ?? t.role ?? []
-            return Array.isArray(tr) ? tr : [tr]
+            const tr = t.roles ?? t.role ?? [];
+
+            return Array.isArray(tr) ? tr : [tr];
           })
-        : []
-      const roles = [...arr, ...tenantRoles].map((x: any) => String(x || '').toLowerCase()).filter(Boolean)
-      const adminRoles = ['admin', 'superadmin', 'operationsmanager', 'securitysupervisor', 'hrmanager', 'dispatcher', 'clientaccountmanager', 'administrativesupervisor', 'administrativeassistant', 'secretary']
-      const isGuardOnly = roles.includes('securityguard') && !roles.some((r) => adminRoles.includes(r))
-      if (isGuardOnly) return <Navigate to="/guard" replace />
+        : [];
+      const roles = [...arr, ...tenantRoles]
+        .map((x: any) => String(x || "").toLowerCase())
+        .filter(Boolean);
+      const adminRoles = [
+        "admin",
+        "superadmin",
+        "operationsmanager",
+        "securitysupervisor",
+        "hrmanager",
+        "dispatcher",
+        "clientaccountmanager",
+        "administrativesupervisor",
+        "administrativeassistant",
+        "secretary",
+      ];
+      const isGuardOnly =
+        roles.includes("securityguard") &&
+        !roles.some((r) => adminRoles.includes(r));
+
+      if (isGuardOnly) return <Navigate replace to="/guard" />;
     }
-    const from = (location.state as any)?.from?.pathname || "/dashboard"
-    return <Navigate to={from} replace />
+    const from = (location.state as any)?.from?.pathname || "/dashboard";
+
+    return <Navigate replace to={from} />;
   }
 
-  return <>{children}</>
+  return <>{children}</>;
 }

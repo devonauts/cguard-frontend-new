@@ -1,6 +1,7 @@
-import i18n from 'i18next'
-import { initReactI18next } from 'react-i18next'
-import es from './locales/es.json'
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
+
+import es from "./locales/es.json";
 
 /**
  * Sólo el español entra en el bundle de arranque.
@@ -16,28 +17,28 @@ import es from './locales/es.json'
  */
 i18n.use(initReactI18next).init({
   resources: { es: { translation: es } },
-  lng: 'es',
-  fallbackLng: 'es',
+  lng: "es",
+  fallbackLng: "es",
   interpolation: { escapeValue: false },
   react: { useSuspense: false },
-})
+});
 
 /** Los idiomas que se descargan cuando se piden. `es` no está: ya viene dentro. */
 const CARGADORES: Record<string, () => Promise<any>> = {
-  en: () => import('./locales/en.json'),
+  en: () => import("./locales/en.json"),
   // `pt` apuntaba a `pt_fixed.json`, que estaba INCOMPLETO: 6.270 de 7.828
   // claves. Lo que faltaba salía en español a un usuario brasileño. Ese archivo
   // ya no existe: se quedó atrás cuando esto pasó a `pt.json` y siguió siendo
   // lo que medía el gate de paridad y lo que escribía `scripts/i18n/apply.mjs`
   // —una roja permanente por claves que no le faltaban a nadie, y portugués
   // nuevo cayendo en un archivo que nadie carga—. Sólo hay un diccionario pt.
-  pt: () => import('./locales/pt.json'),
-  de: () => import('./locales/de.json'),
-  fr: () => import('./locales/fr.json'),
-  it: () => import('./locales/it.json'),
-  pl: () => import('./locales/pl.json'),
-  nl: () => import('./locales/nl.json'),
-}
+  pt: () => import("./locales/pt.json"),
+  de: () => import("./locales/de.json"),
+  fr: () => import("./locales/fr.json"),
+  it: () => import("./locales/it.json"),
+  pl: () => import("./locales/pl.json"),
+  nl: () => import("./locales/nl.json"),
+};
 
 /**
  * Cambia el idioma, descargando su diccionario si aún no está registrado.
@@ -50,20 +51,30 @@ const CARGADORES: Record<string, () => Promise<any>> = {
  * dejar la interfaz a medio traducir.
  */
 export async function setAppLanguage(code: string): Promise<void> {
-  const lang = String(code || 'es').slice(0, 2).toLowerCase()
+  const lang = String(code || "es")
+    .slice(0, 2)
+    .toLowerCase();
 
-  if (!i18n.hasResourceBundle(lang, 'translation')) {
-    const cargar = CARGADORES[lang]
-    if (!cargar) return // idioma desconocido: no se toca nada
+  if (!i18n.hasResourceBundle(lang, "translation")) {
+    const cargar = CARGADORES[lang];
+
+    if (!cargar) return; // idioma desconocido: no se toca nada
     try {
-      const mod = await cargar()
-      i18n.addResourceBundle(lang, 'translation', (mod as any).default ?? mod, true, true)
+      const mod = await cargar();
+
+      i18n.addResourceBundle(
+        lang,
+        "translation",
+        (mod as any).default ?? mod,
+        true,
+        true,
+      );
     } catch {
-      return
+      return;
     }
   }
 
-  await i18n.changeLanguage(lang)
+  await i18n.changeLanguage(lang);
 }
 
-export default i18n
+export default i18n;

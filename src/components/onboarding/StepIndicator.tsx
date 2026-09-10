@@ -1,5 +1,6 @@
 import { Check } from "lucide-react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
+
 import { cn } from "@/lib/utils";
 
 export interface StepIndicatorStep {
@@ -31,8 +32,15 @@ export default function StepIndicator({
   className,
 }: StepIndicatorProps) {
   const { t } = useTranslation();
+
   return (
-    <nav aria-label={t("ui.StepIndicator.progresoDeConfiguracion", "Progreso de configuración")} className={cn("w-full", className)}>
+    <nav
+      aria-label={t(
+        "ui.StepIndicator.progresoDeConfiguracion",
+        "Progreso de configuración",
+      )}
+      className={cn("w-full", className)}
+    >
       <ol className="flex items-center">
         {steps.map((step, i) => {
           const isCompleted = i < current;
@@ -46,31 +54,54 @@ export default function StepIndicator({
               className={cn("flex items-center", !isLast && "flex-1")}
             >
               <button
-                type="button"
-                disabled={!clickable}
-                onClick={() => clickable && onStepClick?.(i)}
                 aria-current={isActive ? "step" : undefined}
                 aria-label={`Paso ${i + 1}: ${step.label}`}
                 className={cn(
                   "cg-focus group flex items-center gap-2.5 rounded-full",
                   clickable ? "cursor-pointer" : "cursor-default",
                 )}
+                disabled={!clickable}
+                type="button"
+                onClick={() => clickable && onStepClick?.(i)}
               >
                 <span
                   className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 text-sm font-semibold tabular-nums transition-all duration-300"
                   style={
                     isActive
-                      ? { borderColor: "var(--brand)", background: "var(--brand)", color: "var(--brand-ink)", boxShadow: "0 0 0 4px var(--brand-glow)" }
+                      ? {
+                          borderColor: "var(--brand)",
+                          background: "var(--brand)",
+                          color: "var(--brand-ink)",
+                          boxShadow: "0 0 0 4px var(--brand-glow)",
+                        }
                       : isCompleted
-                        ? { borderColor: "var(--brand-line)", background: "var(--brand-wash)", color: "var(--brand-text)" }
-                        : { borderColor: "var(--hairline)", background: "var(--glass-sunken)", color: "var(--ink-faint)" }
+                        ? {
+                            borderColor: "var(--brand-line)",
+                            background: "var(--brand-wash)",
+                            color: "var(--brand-text)",
+                          }
+                        : {
+                            borderColor: "var(--hairline)",
+                            background: "var(--glass-sunken)",
+                            color: "var(--ink-faint)",
+                          }
                   }
                 >
-                  {isCompleted ? <Check className="h-4 w-4" strokeWidth={3} /> : i + 1}
+                  {isCompleted ? (
+                    <Check className="h-4 w-4" strokeWidth={3} />
+                  ) : (
+                    i + 1
+                  )}
                 </span>
                 <span
                   className="hidden text-sm font-medium transition-colors sm:inline-block"
-                  style={{ color: isActive ? "var(--ink)" : isCompleted ? "var(--ink-soft)" : "var(--ink-faint)" }}
+                  style={{
+                    color: isActive
+                      ? "var(--ink)"
+                      : isCompleted
+                        ? "var(--ink-soft)"
+                        : "var(--ink-faint)",
+                  }}
                 >
                   {step.label}
                 </span>

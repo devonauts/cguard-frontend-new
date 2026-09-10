@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import {
@@ -15,8 +15,14 @@ import {
   Wifi,
   WifiOff,
 } from "lucide-react";
-import VideoGatewayModal from "@/components/video/VideoGatewayModal";
 
+import {
+  DeviceStatusBadge,
+  healthTone,
+  type DeviceHealth,
+} from "./deviceStatus";
+
+import VideoGatewayModal from "@/components/video/VideoGatewayModal";
 import AppLayout from "@/layouts/app-layout";
 import {
   PageContainer,
@@ -29,7 +35,6 @@ import {
   IconTile,
   StatusBadge,
 } from "@/components/kit";
-import { DeviceStatusBadge, healthTone, type DeviceHealth } from "./deviceStatus";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -59,7 +64,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-
 import {
   videoService,
   type Device,
@@ -147,14 +151,26 @@ const DEVICE_HEALTH: Record<
   DeviceStatus | "unknown",
   { health: DeviceHealth; label: string; labelKey?: string }
 > = {
-  online: { health: "up", label: "En línea", labelKey: "ui.VideoDevices.enLinea" },
+  online: {
+    health: "up",
+    label: "En línea",
+    labelKey: "ui.VideoDevices.enLinea",
+  },
   offline: { health: "down", label: "Sin conexión" },
   auth_failed: { health: "auth", label: "Credenciales" },
-  unreachable: { health: "unreachable", label: "Sin stream", labelKey: "ui.VideoDevices.sinStream" },
+  unreachable: {
+    health: "unreachable",
+    label: "Sin stream",
+    labelKey: "ui.VideoDevices.sinStream",
+  },
   unknown: { health: "unknown", label: "Desconocido" },
 };
 
-function deviceHealth(status?: DeviceStatus): { health: DeviceHealth; label: string; labelKey?: string } {
+function deviceHealth(status?: DeviceStatus): {
+  health: DeviceHealth;
+  label: string;
+  labelKey?: string;
+} {
   return DEVICE_HEALTH[status ?? "unknown"] ?? DEVICE_HEALTH.unknown;
 }
 
@@ -176,11 +192,16 @@ export default function VideoDevices() {
   /** El texto del estado se traduce aquí, no en el mapa de módulo. */
   const healthProps = (status?: DeviceStatus) => {
     const h = deviceHealth(status);
-    return { health: h.health, label: h.labelKey ? t(h.labelKey, h.label) : h.label };
+
+    return {
+      health: h.health,
+      label: h.labelKey ? t(h.labelKey, h.label) : h.label,
+    };
   };
   /** Igual con el tipo de equipo: la traducción ocurre al pintar. */
   const typeLabel = (type: DeviceType) => {
     const e = TYPE_LABELS[type] ?? TYPE_LABELS.dvr;
+
     return t(e.labelKey, e.label);
   };
   const [devices, setDevices] = useState<Device[]>([]);
@@ -191,7 +212,9 @@ export default function VideoDevices() {
   const [form, setForm] = useState<DeviceForm>(emptyForm());
   const [saving, setSaving] = useState(false);
 
-  const [busy, setBusy] = useState<Record<string, "test" | "sync" | undefined>>({});
+  const [busy, setBusy] = useState<Record<string, "test" | "sync" | undefined>>(
+    {},
+  );
   const [deleteTarget, setDeleteTarget] = useState<Device | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [gatewayTarget, setGatewayTarget] = useState<Device | null>(null);
@@ -201,9 +224,16 @@ export default function VideoDevices() {
     setLoading(true);
     try {
       const list = await videoService.devices();
+
       setDevices(Array.isArray(list) ? list : []);
     } catch (e) {
-      toast.error((e as Error)?.message || t("ui.VideoDevices.errorCargar", "No se pudieron cargar los dispositivos"));
+      toast.error(
+        (e as Error)?.message ||
+          t(
+            "ui.VideoDevices.errorCargar",
+            "No se pudieron cargar los dispositivos",
+          ),
+      );
     } finally {
       setLoading(false);
     }
@@ -211,7 +241,10 @@ export default function VideoDevices() {
 
   useEffect(() => {
     load();
-    videoService.relaySites().then(setRelaySites).catch(() => {});
+    videoService
+      .relaySites()
+      .then(setRelaySites)
+      .catch(() => {});
   }, []);
 
   const openCreate = () => {
@@ -232,6 +265,7 @@ export default function VideoDevices() {
   const buildPayload = () => {
     const num = (s: string, fb: number | null) => {
       const n = parseInt(s, 10);
+
       return Number.isFinite(n) ? n : fb;
     };
     const payload: Partial<Device> & { password?: string } = {
@@ -249,17 +283,21 @@ export default function VideoDevices() {
       stationId: form.stationId.trim() || null,
       notes: form.notes.trim() || null,
       connectionMode: form.connectionMode,
-      relaySiteId: form.connectionMode === "relay" ? form.relaySiteId || null : null,
+      relaySiteId:
+        form.connectionMode === "relay" ? form.relaySiteId || null : null,
     };
+
     // Only send password when provided (never overwrite with empty on edit).
     if (form.password) payload.password = form.password;
+
     return payload;
   };
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim()) {
-      toast.error(t('comun.elNombreEsObligatorio'));
+      toast.error(t("comun.elNombreEsObligatorio"));
+
       return;
     }
     setSaving(true);
@@ -274,7 +312,13 @@ export default function VideoDevices() {
       setDialogOpen(false);
       await load();
     } catch (err) {
-      toast.error((err as Error)?.message || t("ui.VideoDevices.errorGuardar", "No se pudo guardar el dispositivo"));
+      toast.error(
+        (err as Error)?.message ||
+          t(
+            "ui.VideoDevices.errorGuardar",
+            "No se pudo guardar el dispositivo",
+          ),
+      );
     } finally {
       setSaving(false);
     }
@@ -283,23 +327,42 @@ export default function VideoDevices() {
   const onTest = async (d: Device) => {
     setBusy((b) => ({ ...b, [d.id]: "test" }));
     try {
-      const res = await videoService.testDevice(d.id) as { status?: string; message?: string };
+      const res = (await videoService.testDevice(d.id)) as {
+        status?: string;
+        message?: string;
+      };
       const status = (res?.status as DeviceStatus) ?? "unknown";
       const message = res?.message as string | undefined;
+
       setDevices((prev) =>
         prev.map((x) =>
           x.id === d.id
-            ? { ...x, status, lastSeenAt: status === "online" ? new Date().toISOString() : x.lastSeenAt }
-            : x
-        )
+            ? {
+                ...x,
+                status,
+                lastSeenAt:
+                  status === "online" ? new Date().toISOString() : x.lastSeenAt,
+              }
+            : x,
+        ),
       );
       if (status === "online") toast.success(`${d.name}: stream OK`);
-      else if (status === "auth_failed") toast.error(`${d.name}: ${message || "credenciales incorrectas"}`, { duration: 9000 });
-      else if (status === "unreachable") toast.error(`${d.name}: ${message || "no se pudo leer el stream"}`, { duration: 9000 });
-      else if (status === "offline") toast.error(`${d.name}: ${message || "sin conexión"}`);
+      else if (status === "auth_failed")
+        toast.error(`${d.name}: ${message || "credenciales incorrectas"}`, {
+          duration: 9000,
+        });
+      else if (status === "unreachable")
+        toast.error(`${d.name}: ${message || "no se pudo leer el stream"}`, {
+          duration: 9000,
+        });
+      else if (status === "offline")
+        toast.error(`${d.name}: ${message || "sin conexión"}`);
       else toast(`${d.name}: estado desconocido`);
     } catch (e) {
-      toast.error((e as Error)?.message || t("ui.VideoDevices.falloPrueba", "Falló la prueba de conexión"));
+      toast.error(
+        (e as Error)?.message ||
+          t("ui.VideoDevices.falloPrueba", "Falló la prueba de conexión"),
+      );
     } finally {
       setBusy((b) => ({ ...b, [d.id]: undefined }));
     }
@@ -310,9 +373,16 @@ export default function VideoDevices() {
     try {
       const cams = await videoService.syncCameras(d.id);
       const n = Array.isArray(cams) ? cams.length : 0;
+
       toast.success(`${d.name}: ${n} cámara(s) sincronizada(s)`);
     } catch (e) {
-      toast.error((e as Error)?.message || t("ui.VideoDevices.errorSincronizar", "No se pudieron sincronizar las cámaras"));
+      toast.error(
+        (e as Error)?.message ||
+          t(
+            "ui.VideoDevices.errorSincronizar",
+            "No se pudieron sincronizar las cámaras",
+          ),
+      );
     } finally {
       setBusy((b) => ({ ...b, [d.id]: undefined }));
     }
@@ -327,7 +397,13 @@ export default function VideoDevices() {
       setDevices((prev) => prev.filter((x) => x.id !== deleteTarget.id));
       setDeleteTarget(null);
     } catch (e) {
-      toast.error((e as Error)?.message || t("ui.VideoDevices.errorEliminar", "No se pudo eliminar el dispositivo"));
+      toast.error(
+        (e as Error)?.message ||
+          t(
+            "ui.VideoDevices.errorEliminar",
+            "No se pudo eliminar el dispositivo",
+          ),
+      );
     } finally {
       setDeleting(false);
     }
@@ -335,11 +411,15 @@ export default function VideoDevices() {
 
   const counts = useMemo(() => {
     const c = { online: 0, offline: 0, unknown: 0 };
+
     for (const d of devices) {
       const s = (d.status as DeviceStatus) ?? "unknown";
-      const key = s === "online" ? "online" : s === "offline" ? "offline" : "unknown";
+      const key =
+        s === "online" ? "online" : s === "offline" ? "offline" : "unknown";
+
       c[key] += 1;
     }
+
     return c;
   }, [devices]);
 
@@ -348,9 +428,6 @@ export default function VideoDevices() {
       <PageContainer width="wide">
         {/* Header */}
         <PageHeader
-          icon={<Video />}
-          title={t("ui.VideoDevices.dispositivosDeVideo", "Dispositivos de video")}
-          subtitle={t('ui.VideoDevices.conectaYAdministraTusDvr')}
           actions={
             <>
               <Button asChild variant="outline">
@@ -362,14 +439,40 @@ export default function VideoDevices() {
               </Button>
             </>
           }
+          icon={<Video />}
+          subtitle={t("ui.VideoDevices.conectaYAdministraTusDvr")}
+          title={t(
+            "ui.VideoDevices.dispositivosDeVideo",
+            "Dispositivos de video",
+          )}
         />
 
         {/* Summary */}
         <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <StatCard label={t('comun.total')} value={devices.length} icon={<Video />} accent="primary" />
-          <StatCard label={t("ui.VideoDevices.enLinea", "En línea")} value={counts.online} icon={<Wifi />} accent="ok" />
-          <StatCard label={t("ui.VideoDevices.sinConexion", "Sin conexión")} value={counts.offline} icon={<WifiOff />} accent="bad" />
-          <StatCard label="Desconocido" value={counts.unknown} icon={<Server />} accent="neutral" />
+          <StatCard
+            accent="primary"
+            icon={<Video />}
+            label={t("comun.total")}
+            value={devices.length}
+          />
+          <StatCard
+            accent="ok"
+            icon={<Wifi />}
+            label={t("ui.VideoDevices.enLinea", "En línea")}
+            value={counts.online}
+          />
+          <StatCard
+            accent="bad"
+            icon={<WifiOff />}
+            label={t("ui.VideoDevices.sinConexion", "Sin conexión")}
+            value={counts.offline}
+          />
+          <StatCard
+            accent="neutral"
+            icon={<Server />}
+            label="Desconocido"
+            value={counts.unknown}
+          />
         </Stagger>
 
         {/* List */}
@@ -377,20 +480,21 @@ export default function VideoDevices() {
           <SkeletonCards count={4} />
         ) : devices.length === 0 ? (
           <EmptyState
-            icon={<Video />}
-            title={t('ui.VideoDevices.noHayDispositivos')}
-            description={t('ui.VideoDevices.agregaTuPrimerDvrNvr')}
             action={
               <Button variant="brand" onClick={openCreate}>
                 <Plus className="mr-1.5 h-4 w-4" />
                 Agregar dispositivo
               </Button>
             }
+            description={t("ui.VideoDevices.agregaTuPrimerDvrNvr")}
+            icon={<Video />}
+            title={t("ui.VideoDevices.noHayDispositivos")}
           />
         ) : (
           <Stagger className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             {devices.map((d) => {
               const b = busy[d.id];
+
               return (
                 /* `flat`: estas fichas se repiten en rejilla y el desenfoque de
                    `.glass` por ficha se paga en cada fotograma al desplazar. */
@@ -400,37 +504,51 @@ export default function VideoDevices() {
                       {/* El tono del equipo y el de su píldora salen de la MISMA función: iban
                           por separado y un equipo con las credenciales caídas mostraba
                           la píldora en ámbar y el icono en el acento de marca. */}
-                      <IconTile tone={healthTone(deviceHealth(d.status as DeviceStatus).health)}>
+                      <IconTile
+                        tone={healthTone(
+                          deviceHealth(d.status as DeviceStatus).health,
+                        )}
+                      >
                         <TypeIcon type={d.type as DeviceType} />
                       </IconTile>
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="truncate font-semibold">{d.name}</span>
+                          <span className="truncate font-semibold">
+                            {d.name}
+                          </span>
                           {/* Chip de clasificación, no de estado: neutro y con la
                               misma pieza que usan las pantallas hermanas. */}
-                          <StatusBadge tone="neutral" dot={false}>
+                          <StatusBadge dot={false} tone="neutral">
                             {typeLabel((d.type as DeviceType) ?? "dvr")}
                           </StatusBadge>
                         </div>
                         <div className="mt-0.5 truncate text-sm text-muted-foreground">
-                          {[d.brand, d.model].filter(Boolean).join(" · ") || t("ui.VideoDevices.sinMarcaModelo", "Sin marca/modelo")}
+                          {[d.brand, d.model].filter(Boolean).join(" · ") ||
+                            t(
+                              "ui.VideoDevices.sinMarcaModelo",
+                              "Sin marca/modelo",
+                            )}
                         </div>
                         <div className="mt-1 truncate font-mono text-xs text-muted-foreground">
                           {d.host || "—"}
                           {d.host ? `:${d.port ?? 554}` : ""}
                           {d.protocol ? ` · ${d.protocol.toUpperCase()}` : ""}
-                          {d.channels != null ? ` · ${d.channels} canal(es)` : ""}
+                          {d.channels != null
+                            ? ` · ${d.channels} canal(es)`
+                            : ""}
                         </div>
                       </div>
                     </div>
-                    <DeviceStatusBadge {...healthProps(d.status as DeviceStatus)} />
+                    <DeviceStatusBadge
+                      {...healthProps(d.status as DeviceStatus)}
+                    />
                   </div>
 
                   <div className="mt-4 flex flex-wrap items-center gap-2">
                     <Button
+                      disabled={!!b}
                       size="sm"
                       variant="outline"
-                      disabled={!!b}
                       onClick={() => onTest(d)}
                     >
                       {b === "test" ? (
@@ -441,9 +559,9 @@ export default function VideoDevices() {
                       Probar conexión
                     </Button>
                     <Button
+                      disabled={!!b}
                       size="sm"
                       variant="outline"
-                      disabled={!!b}
                       onClick={() => onSync(d)}
                     >
                       {b === "sync" ? (
@@ -453,24 +571,28 @@ export default function VideoDevices() {
                       )}
                       Sincronizar cámaras
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => setGatewayTarget(d)}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setGatewayTarget(d)}
+                    >
                       <Server className="mr-1.5 h-3.5 w-3.5" />
                       Gateway
                     </Button>
                     <div className="ml-auto flex items-center gap-1">
                       <Button
                         size="icon"
+                        title={t("actions.edit")}
                         variant="ghost"
-                        title={t('actions.edit')}
                         onClick={() => openEdit(d)}
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>
                       <Button
                         size="icon"
+                        style={{ color: "var(--bad-text)" }}
+                        title={t("actions.delete")}
                         variant="ghost"
-                        title={t('actions.delete')}
-                        style={{ color: 'var(--bad-text)' }}
                         onClick={() => setDeleteTarget(d)}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -492,42 +614,75 @@ export default function VideoDevices() {
               {editing ? "Editar dispositivo" : "Agregar dispositivo"}
             </DialogTitle>
             <DialogDescription>
-              {t("ui.VideoDevices.configuraLosDatosDeConexion", "Configura los datos de conexión del DVR/NVR o cámara.")}
+              {t(
+                "ui.VideoDevices.configuraLosDatosDeConexion",
+                "Configura los datos de conexión del DVR/NVR o cámara.",
+              )}
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={onSubmit} className="space-y-4">
+          <form className="space-y-4" onSubmit={onSubmit}>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
-                <Label htmlFor="vd-name">{t('comun.nombreReq')}</Label>
+                <Label htmlFor="vd-name">{t("comun.nombreReq")}</Label>
                 <Input
+                  required
                   id="vd-name"
+                  placeholder={t(
+                    "ui.VideoDevices.dvrRecepcion",
+                    "DVR Recepción",
+                  )}
                   value={form.name}
                   onChange={(e) => set("name", e.target.value)}
-                  placeholder={t("ui.VideoDevices.dvrRecepcion", "DVR Recepción")}
-                  required
                 />
               </div>
 
               {/* Connection: direct (same LAN) vs relay (remote site behind NAT) */}
-              <div className={form.connectionMode === "relay" ? "" : "sm:col-span-2"}>
-                <Label htmlFor="vd-conn">{t("ui.VideoDevices.conexion", "Conexión")}</Label>
-                <Select value={form.connectionMode} onValueChange={(v) => set("connectionMode", v as "direct" | "relay")}>
-                  <SelectTrigger id="vd-conn"><SelectValue /></SelectTrigger>
+              <div
+                className={
+                  form.connectionMode === "relay" ? "" : "sm:col-span-2"
+                }
+              >
+                <Label htmlFor="vd-conn">
+                  {t("ui.VideoDevices.conexion", "Conexión")}
+                </Label>
+                <Select
+                  value={form.connectionMode}
+                  onValueChange={(v) =>
+                    set("connectionMode", v as "direct" | "relay")
+                  }
+                >
+                  <SelectTrigger id="vd-conn">
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="direct">Directa (misma red / accesible)</SelectItem>
-                    <SelectItem value="relay">{t("ui.VideoDevices.remotaViaRelayOtraRed", "Remota — vía relay (otra red/país)")}</SelectItem>
+                    <SelectItem value="direct">
+                      Directa (misma red / accesible)
+                    </SelectItem>
+                    <SelectItem value="relay">
+                      {t(
+                        "ui.VideoDevices.remotaViaRelayOtraRed",
+                        "Remota — vía relay (otra red/país)",
+                      )}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               {form.connectionMode === "relay" && (
                 <div>
                   <Label htmlFor="vd-relay">Sitio relay</Label>
-                  <Select value={form.relaySiteId} onValueChange={(v) => set("relaySiteId", v)}>
-                    <SelectTrigger id="vd-relay"><SelectValue placeholder={t('comun.seleccionaUnSitio')} /></SelectTrigger>
+                  <Select
+                    value={form.relaySiteId}
+                    onValueChange={(v) => set("relaySiteId", v)}
+                  >
+                    <SelectTrigger id="vd-relay">
+                      <SelectValue placeholder={t("comun.seleccionaUnSitio")} />
+                    </SelectTrigger>
                     <SelectContent>
                       {relaySites.map((s) => (
-                        <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                        <SelectItem key={s.id} value={s.id}>
+                          {s.name}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -535,14 +690,18 @@ export default function VideoDevices() {
               )}
               {form.connectionMode === "relay" && (
                 <p className="sm:col-span-2 -mt-2 text-xs text-muted-foreground">
-                  La IP/host de abajo es la del DVR en la red local del sitio. El equipo relay instalado
-                  en el sitio se encarga de enviar el video a C-Guard Pro.
+                  La IP/host de abajo es la del DVR en la red local del sitio.
+                  El equipo relay instalado en el sitio se encarga de enviar el
+                  video a C-Guard Pro.
                 </p>
               )}
 
               <div>
-                <Label htmlFor="vd-type">{t('comun.tipo')}</Label>
-                <Select value={form.type} onValueChange={(v) => set("type", v as DeviceType)}>
+                <Label htmlFor="vd-type">{t("comun.tipo")}</Label>
+                <Select
+                  value={form.type}
+                  onValueChange={(v) => set("type", v as DeviceType)}
+                >
                   <SelectTrigger id="vd-type">
                     <SelectValue />
                   </SelectTrigger>
@@ -579,9 +738,9 @@ export default function VideoDevices() {
                 <Label htmlFor="vd-brand">Marca</Label>
                 <Input
                   id="vd-brand"
+                  placeholder="Hikvision"
                   value={form.brand}
                   onChange={(e) => set("brand", e.target.value)}
-                  placeholder="Hikvision"
                 />
               </div>
 
@@ -589,9 +748,9 @@ export default function VideoDevices() {
                 <Label htmlFor="vd-model">Modelo</Label>
                 <Input
                   id="vd-model"
+                  placeholder="DS-7608NI"
                   value={form.model}
                   onChange={(e) => set("model", e.target.value)}
-                  placeholder="DS-7608NI"
                 />
               </div>
 
@@ -599,9 +758,9 @@ export default function VideoDevices() {
                 <Label htmlFor="vd-host">Host / IP</Label>
                 <Input
                   id="vd-host"
+                  placeholder="192.168.1.100"
                   value={form.host}
                   onChange={(e) => set("host", e.target.value)}
-                  placeholder="192.168.1.100"
                 />
               </div>
 
@@ -609,10 +768,10 @@ export default function VideoDevices() {
                 <Label htmlFor="vd-port">Puerto RTSP</Label>
                 <Input
                   id="vd-port"
+                  placeholder="554"
                   type="number"
                   value={form.port}
                   onChange={(e) => set("port", e.target.value)}
-                  placeholder="554"
                 />
               </div>
 
@@ -620,33 +779,42 @@ export default function VideoDevices() {
                 <Label htmlFor="vd-httpPort">Puerto HTTP</Label>
                 <Input
                   id="vd-httpPort"
+                  placeholder="80"
                   type="number"
                   value={form.httpPort}
                   onChange={(e) => set("httpPort", e.target.value)}
-                  placeholder="80"
                 />
               </div>
 
               <div>
-                <Label htmlFor="vd-username">{t('comun.usuario')}</Label>
+                <Label htmlFor="vd-username">{t("comun.usuario")}</Label>
                 <Input
+                  autoComplete="off"
                   id="vd-username"
+                  placeholder="admin"
                   value={form.username}
                   onChange={(e) => set("username", e.target.value)}
-                  autoComplete="off"
-                  placeholder="admin"
                 />
               </div>
 
               <div>
-                <Label htmlFor="vd-password">{t("ui.VideoDevices.contrasena", "Contraseña")}</Label>
+                <Label htmlFor="vd-password">
+                  {t("ui.VideoDevices.contrasena", "Contraseña")}
+                </Label>
                 <Input
+                  autoComplete="new-password"
                   id="vd-password"
+                  placeholder={
+                    editing
+                      ? t(
+                          "ui.VideoDevices.dejarEnBlanco",
+                          "Dejar en blanco para conservar",
+                        )
+                      : "••••••••"
+                  }
                   type="password"
                   value={form.password}
                   onChange={(e) => set("password", e.target.value)}
-                  autoComplete="new-password"
-                  placeholder={editing ? t("ui.VideoDevices.dejarEnBlanco", "Dejar en blanco para conservar") : "••••••••"}
                 />
               </div>
 
@@ -654,56 +822,72 @@ export default function VideoDevices() {
                 <Label htmlFor="vd-channels">Canales</Label>
                 <Input
                   id="vd-channels"
-                  type="number"
                   min={1}
+                  placeholder="8"
+                  type="number"
                   value={form.channels}
                   onChange={(e) => set("channels", e.target.value)}
-                  placeholder="8"
                 />
               </div>
 
               <div className="hidden sm:block" />
 
               <div>
-                <Label htmlFor="vd-postSite">{t("ui.VideoDevices.puntoDeServicioOpcional", "Punto de servicio (opcional)")}</Label>
+                <Label htmlFor="vd-postSite">
+                  {t(
+                    "ui.VideoDevices.puntoDeServicioOpcional",
+                    "Punto de servicio (opcional)",
+                  )}
+                </Label>
                 <Input
                   id="vd-postSite"
+                  placeholder={t("comun.idDelPuntoDeServicio")}
                   value={form.postSiteId}
                   onChange={(e) => set("postSiteId", e.target.value)}
-                  placeholder={t('comun.idDelPuntoDeServicio')}
                 />
               </div>
 
               <div>
-                <Label htmlFor="vd-station">{t("ui.VideoDevices.estacionOpcional", "Estación (opcional)")}</Label>
+                <Label htmlFor="vd-station">
+                  {t("ui.VideoDevices.estacionOpcional", "Estación (opcional)")}
+                </Label>
                 <Input
                   id="vd-station"
+                  placeholder={t(
+                    "ui.VideoDevices.idDeLaEstacion",
+                    "ID de la estación",
+                  )}
                   value={form.stationId}
                   onChange={(e) => set("stationId", e.target.value)}
-                  placeholder={t("ui.VideoDevices.idDeLaEstacion", "ID de la estación")}
                 />
               </div>
 
               <div className="sm:col-span-2">
-                <Label htmlFor="vd-notes">{t('comun.notas')}</Label>
+                <Label htmlFor="vd-notes">{t("comun.notas")}</Label>
                 <Textarea
                   id="vd-notes"
+                  placeholder={t(
+                    "ui.VideoDevices.ubicacionObservaciones",
+                    "Ubicación, observaciones...",
+                  )}
+                  rows={2}
                   value={form.notes}
                   onChange={(e) => set("notes", e.target.value)}
-                  rows={2}
-                  placeholder={t("ui.VideoDevices.ubicacionObservaciones", "Ubicación, observaciones...")}
                 />
               </div>
             </div>
 
             <DialogFooter>
               <Button
+                disabled={saving}
                 type="button"
                 variant="outline"
                 onClick={() => setDialogOpen(false)}
-                disabled={saving}
-              >{" "}{t('actions.cancel')}{" "}</Button>
-              <Button type="submit" variant="brand" disabled={saving}>
+              >
+                {" "}
+                {t("actions.cancel")}{" "}
+              </Button>
+              <Button disabled={saving} type="submit" variant="brand">
                 {saving && <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />}
                 {editing ? "Guardar cambios" : "Agregar dispositivo"}
               </Button>
@@ -719,22 +903,26 @@ export default function VideoDevices() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('ui.VideoDevices.eliminarDispositivo')}</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t("ui.VideoDevices.eliminarDispositivo")}
+            </AlertDialogTitle>
             <AlertDialogDescription>
               ¿Seguro que deseas eliminar{" "}
-              <span className="font-semibold">{deleteTarget?.name}</span>? Esta acción no
-              se puede deshacer.
+              <span className="font-semibold">{deleteTarget?.name}</span>? Esta
+              acción no se puede deshacer.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleting}>{t('actions.cancel')}</AlertDialogCancel>
+            <AlertDialogCancel disabled={deleting}>
+              {t("actions.cancel")}
+            </AlertDialogCancel>
             <AlertDialogAction
+              className="cg-btn-bad"
+              disabled={deleting}
               onClick={(e) => {
                 e.preventDefault();
                 onDelete();
               }}
-              disabled={deleting}
-              className="cg-btn-bad"
             >
               {deleting && <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />}
               Eliminar

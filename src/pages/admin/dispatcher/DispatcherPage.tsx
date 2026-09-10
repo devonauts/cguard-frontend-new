@@ -1,11 +1,39 @@
-import { loadXlsx } from '../../../lib/lazyXlsx';
-import { useMemo, useState, useEffect, useRef, type MouseEvent as ReactMouseEvent } from "react";
-import { clientDisplayName } from '@/lib/clientName';
-import { getStoredTenantBranding } from '@/lib/tenantBranding';
+import type { DispatchRow, DirectoryOption, DispatchApiError } from "./types";
+
+import {
+  useMemo,
+  useState,
+  useEffect,
+  useRef,
+  type MouseEvent as ReactMouseEvent,
+} from "react";
 import { Link, useNavigate } from "react-router-dom";
+import {
+  EllipsisVertical,
+  Filter as FilterIcon,
+  FileDown,
+  FileSpreadsheet,
+  Printer,
+  Mail,
+  Search,
+  Eye,
+  ExternalLink,
+  Link as LinkIcon,
+  Edit,
+  X,
+  Trash,
+  Siren,
+  FileText,
+} from "lucide-react";
+import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+
+import { loadXlsx } from "../../../lib/lazyXlsx";
+
+import { clientDisplayName } from "@/lib/clientName";
+import { getStoredTenantBranding } from "@/lib/tenantBranding";
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -47,31 +75,15 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetDescription,
   SheetTrigger,
 } from "@/components/ui/sheet";
-
 import {
-  EllipsisVertical,
-  Filter as FilterIcon,
-  FileDown,
-  FileSpreadsheet,
-  Printer,
-  Mail,
-  Search,
-  Eye,
-  Tag,
-  Archive,
-  ExternalLink,
-  Link as LinkIcon,
-  Edit,
-  X,
-  Trash,
-  Siren,
-  FileText,
-} from "lucide-react";
-import { PageContainer, PageHeader, EmptyState, StatusBadge, Toolbar, SkeletonCards } from "@/components/kit";
-import { toast } from "sonner";
+  PageContainer,
+  PageHeader,
+  EmptyState,
+  StatusBadge,
+  SkeletonCards,
+} from "@/components/kit";
 
 // Validaciones (zod) y tipos
 import {
@@ -81,11 +93,8 @@ import {
 } from "@/lib/validators/dispatcher-filters";
 import { clientService } from "@/lib/api/clientService";
 import { postSiteService } from "@/lib/api/postSiteService";
-import { ApiService } from "@/services/api/apiService";
-import { usePermissions } from '@/hooks/usePermissions';
-import { useTranslation } from 'react-i18next';
+import { usePermissions } from "@/hooks/usePermissions";
 import api from "@/lib/api";
-import type { DispatchRow, DirectoryOption, DispatchApiError } from "./types";
 
 // The list is paginated client-side over what we load. The backend hard-caps a
 // no-limit /request query at 1000 rows, which silently truncated tenants past
@@ -94,11 +103,11 @@ import type { DispatchRow, DirectoryOption, DispatchApiError } from "./types";
 // this would warrant true server-side pagination.)
 const DISPATCH_FETCH_LIMIT = 5000;
 
-
 /** Asunto por defecto del envío de despachos, con el nombre de LA empresa en sesión. */
 function asuntoPorDefecto(): string {
   const empresa = getStoredTenantBranding().name;
-  return empresa ? `Despachos | ${empresa}` : 'Despachos';
+
+  return empresa ? `Despachos | ${empresa}` : "Despachos";
 }
 
 export default function DispatcherPage() {
@@ -107,6 +116,7 @@ export default function DispatcherPage() {
     if (!msg) return null;
     const s = String(msg);
     const translated = t(s);
+
     return translated && translated !== s ? translated : s;
   };
   const [openFilter, setOpenFilter] = useState(false);
@@ -115,7 +125,7 @@ export default function DispatcherPage() {
   // Estado local de filtros (validado con zod al aplicar)
   const [filters, setFilters] = useState<DispatcherFilters>(
     // default to show only 'abierto' tickets in the dispatcher view
-    { ...defaultDispatcherFilters, status: 'abierto' }
+    { ...defaultDispatcherFilters, status: "abierto" },
   );
 
   // Tabla: datos cargados desde backend
@@ -126,7 +136,9 @@ export default function DispatcherPage() {
   const [stationFilter, setStationFilter] = useState("");
   const stationInputRef = useRef<HTMLInputElement | null>(null);
   const [allClients, setAllClients] = useState<DirectoryOption[] | null>(null);
-  const [allPostSites, setAllPostSites] = useState<DirectoryOption[] | null>(null);
+  const [allPostSites, setAllPostSites] = useState<DirectoryOption[] | null>(
+    null,
+  );
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [page, setPage] = useState(1);
@@ -135,7 +147,7 @@ export default function DispatcherPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [forbiddenRead, setForbiddenRead] = useState(false);
   const [forbiddenMessage, setForbiddenMessage] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Shared monotonic guard across ALL row-loading paths (initial load, apply
   // filters, clear filters, search, refresh). Each captures a ticket before its
@@ -145,80 +157,105 @@ export default function DispatcherPage() {
   // Share modal state
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [shareTargetId, setShareTargetId] = useState<string | null>(null);
-  const [shareExpiry, setShareExpiry] = useState<'1h' | '24h' | '7d' | 'never'>('24h');
+  const [shareExpiry, setShareExpiry] = useState<"1h" | "24h" | "7d" | "never">(
+    "24h",
+  );
   const [shareLoading, setShareLoading] = useState(false);
   const shareDialogRef = useRef<HTMLDivElement | null>(null);
 
   // Action select state so we can reset after use
-  const [actionSelectValue, setActionSelectValue] = useState<string>('');
+  const [actionSelectValue, setActionSelectValue] = useState<string>("");
 
   // Send-email dialog state
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
-  const [emailFormat, setEmailFormat] = useState<'pdf' | 'xlsx'>('pdf');
+  const [emailFormat, setEmailFormat] = useState<"pdf" | "xlsx">("pdf");
   // El REMITENTE ya no lo elige el navegador: lo pone el servidor con la
   // identidad de la empresa (nombre visible + dirección verificada). Lo que
   // queda editable es a dónde van las RESPUESTAS, que sí se puede cambiar sin
   // romper la autenticación del correo.
-  const [emailReplyTo, setEmailReplyTo] = useState('');
-  const [emailTo, setEmailTo] = useState('');
+  const [emailReplyTo, setEmailReplyTo] = useState("");
+  const [emailTo, setEmailTo] = useState("");
   // El asunto por defecto llevaba pegado el nombre de OTRA empresa
   // («Seguridad BAS»), así que cada tenant mandaba despachos rotulados con un
   // cliente que no era el suyo. Sale del nombre real de la empresa en sesión.
   const [emailSubject, setEmailSubject] = useState(() => asuntoPorDefecto());
-  const [emailMessage, setEmailMessage] = useState('');
+  const [emailMessage, setEmailMessage] = useState("");
   const [sendingEmail, setSendingEmail] = useState(false);
 
   // Resolve the backend origin from VITE_API_URL. In production (non-DEV) builds we
   // do NOT fall back to a hardcoded localhost origin to avoid pointing prod at a dev host.
   const getApiOrigin = (): string | null => {
     try {
-      const configured = (import.meta as unknown as { env?: { VITE_API_URL?: string } }).env?.VITE_API_URL;
-      if (configured) return configured.replace(/\/$/, '');
-    } catch (e) { /* ignore */ }
-    return import.meta.env.DEV ? 'http://localhost:3001' : null;
+      const configured = (
+        import.meta as unknown as { env?: { VITE_API_URL?: string } }
+      ).env?.VITE_API_URL;
+
+      if (configured) return configured.replace(/\/$/, "");
+    } catch (e) {
+      /* ignore */
+    }
+
+    return import.meta.env.DEV ? "http://localhost:3001" : null;
   };
 
   // Single place to read the bearer token (JWT in localStorage is XSS-exfiltratable;
   // centralizing keeps these raw-fetch paths consistent with the rest of the app).
   const getAuthHeaders = (): Record<string, string> => {
-    const token = localStorage.getItem('token') || localStorage.getItem('accessToken') || localStorage.getItem('authToken') || localStorage.getItem('idToken');
+    const token =
+      localStorage.getItem("token") ||
+      localStorage.getItem("accessToken") ||
+      localStorage.getItem("authToken") ||
+      localStorage.getItem("idToken");
+
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
 
   // close share dialog when clicking outside its content
   const { hasPermission } = usePermissions();
-  const canCreate = hasPermission('requestCreate');
+  const canCreate = hasPermission("requestCreate");
 
   useEffect(() => {
     if (!shareDialogOpen) return;
     const handleOutsideClick = (e: MouseEvent) => {
-      if (shareDialogRef.current && !shareDialogRef.current.contains(e.target as Node)) {
+      if (
+        shareDialogRef.current &&
+        !shareDialogRef.current.contains(e.target as Node)
+      ) {
         setShareDialogOpen(false);
         setShareTargetId(null);
       }
     };
-    document.addEventListener('mousedown', handleOutsideClick);
-    return () => document.removeEventListener('mousedown', handleOutsideClick);
-  }, [shareDialogOpen]);
 
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [shareDialogOpen]);
 
   useEffect(() => {
     // options (clients/postSites) will be derived from loaded `rows`
 
     const loadRows = async () => {
       const mine = ++loadSeqRef.current;
+
       setLoading(true);
       try {
-        const tenantId = localStorage.getItem('tenantId');
+        const tenantId = localStorage.getItem("tenantId");
+
         if (!tenantId) return;
-        const api = (await import('@/lib/api')).default;
+        const api = (await import("@/lib/api")).default;
         // Send status filter when present (skip 'todo' which means all)
         let url = `/tenant/${tenantId}/request`;
-        if (filters && filters.status && String(filters.status).toLowerCase() !== 'todo') {
+
+        if (
+          filters &&
+          filters.status &&
+          String(filters.status).toLowerCase() !== "todo"
+        ) {
           url += `?status=${encodeURIComponent(String(filters.status))}`;
         }
-        url += `${url.includes('?') ? '&' : '?'}limit=${DISPATCH_FETCH_LIMIT}`;
+        url += `${url.includes("?") ? "&" : "?"}limit=${DISPATCH_FETCH_LIMIT}`;
         const resp = await api.get(url);
+
         if (mine !== loadSeqRef.current) return; // superseded
         const payload = resp && resp.data ? resp.data : resp;
 
@@ -239,15 +276,27 @@ export default function DispatcherPage() {
         setTotalCount(count);
       } catch (e) {
         if (mine !== loadSeqRef.current) return;
-        console.error('Error cargando Incidentes:', e);
+        console.error("Error cargando Incidentes:", e);
         // detect 403 forbidden and surface a friendly UI state
         const err = e as DispatchApiError;
-        const status = err?.status || err?.response?.status || err?.data?.status || err?.statusCode;
+        const status =
+          err?.status ||
+          err?.response?.status ||
+          err?.data?.status ||
+          err?.statusCode;
+
         if (status === 403) {
           setForbiddenRead(true);
           const serverMsg = err?.response?.data?.message || err?.message;
+
           setForbiddenMessage(serverMsg || null);
-          try { toast.error(serverMsg ? resolveServerMessage(serverMsg) : t('dispatcher.noPermissionViewToast')); } catch (err) {}
+          try {
+            toast.error(
+              serverMsg
+                ? resolveServerMessage(serverMsg)
+                : t("dispatcher.noPermissionViewToast"),
+            );
+          } catch (err) {}
         } else {
           setRows([]);
           setTotalCount(0);
@@ -262,7 +311,12 @@ export default function DispatcherPage() {
 
   // Clear the search debounce on unmount so its callback can't setState after
   // the page is gone.
-  useEffect(() => () => { if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current); }, []);
+  useEffect(
+    () => () => {
+      if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    },
+    [],
+  );
 
   // Fetch all requests once (no status) to derive full list of clients/sites
   useEffect(() => {
@@ -276,6 +330,7 @@ export default function DispatcherPage() {
 
         const clientRows = (clientsResp as { rows?: DirectoryOption[] })?.rows;
         const siteRows = (sitesResp as { rows?: DirectoryOption[] })?.rows;
+
         if (clientsResp && Array.isArray(clientRows)) {
           setAllClients(clientRows);
         }
@@ -285,18 +340,23 @@ export default function DispatcherPage() {
 
         return;
       } catch (e) {
-        console.warn('No se pudieron obtener clientes/sitios desde servicios (fallback a requests):', e);
+        console.warn(
+          "No se pudieron obtener clientes/sitios desde servicios (fallback a requests):",
+          e,
+        );
         // fallback to deriving from all requests
       }
 
       try {
-        const tenantId = localStorage.getItem('tenantId');
+        const tenantId = localStorage.getItem("tenantId");
+
         if (!tenantId) return;
-        const api = (await import('@/lib/api')).default;
+        const api = (await import("@/lib/api")).default;
         const resp = await api.get(`/tenant/${tenantId}/request`);
         const payload = resp && resp.data ? resp.data : resp;
 
         let rowsData: DispatchRow[] = [];
+
         if (payload && Array.isArray(payload.rows)) {
           rowsData = payload.rows;
         } else if (Array.isArray(payload)) {
@@ -309,9 +369,10 @@ export default function DispatcherPage() {
         for (const r of rowsData) {
           let cid: string | undefined;
           let cname: string | undefined;
-          if (r.client && typeof r.client === 'object') {
+
+          if (r.client && typeof r.client === "object") {
             cid = r.client.id || r.client.clientId || r.clientId;
-            cname = clientDisplayName(r.client, '') || undefined;
+            cname = clientDisplayName(r.client, "") || undefined;
           } else if (r.clientId) {
             cid = String(r.clientId);
             cname = r.client || undefined;
@@ -324,7 +385,8 @@ export default function DispatcherPage() {
 
           let sid: string | undefined;
           let sname: string | undefined;
-          if (r.site && typeof r.site === 'object') {
+
+          if (r.site && typeof r.site === "object") {
             sid = r.site.id || r.site.siteId || r.siteId;
             sname = r.site.name || r.site.companyName || r.site.address;
           } else if (r.siteId) {
@@ -341,7 +403,7 @@ export default function DispatcherPage() {
         setAllClients(Array.from(clientMap.values()));
         setAllPostSites(Array.from(siteMap.values()));
       } catch (e) {
-        console.error('Error cargando todas las opciones de request:', e);
+        console.error("Error cargando todas las opciones de request:", e);
         setAllClients([]);
         setAllPostSites([]);
       }
@@ -360,7 +422,8 @@ export default function DispatcherPage() {
         // client id/name can be in multiple shapes
         let cid: string | undefined;
         let cname: string | undefined;
-        if (r.client && typeof r.client === 'object') {
+
+        if (r.client && typeof r.client === "object") {
           cid = r.client.id || r.client.clientId || r.clientId;
           cname = r.client.name || r.client.fullName || r.client.displayName;
         } else if (r.clientId) {
@@ -378,7 +441,8 @@ export default function DispatcherPage() {
         // site
         let sid: string | undefined;
         let sname: string | undefined;
-        if (r.site && typeof r.site === 'object') {
+
+        if (r.site && typeof r.site === "object") {
           sid = r.site.id || r.site.siteId || r.siteId;
           sname = r.site.name || r.site.companyName || r.site.address;
         } else if (r.siteId) {
@@ -397,7 +461,7 @@ export default function DispatcherPage() {
       setClients(Array.from(clientMap.values()));
       setPostSites(Array.from(siteMap.values()));
     } catch (e) {
-      console.error('Error deriving clients/sites from requests', e);
+      console.error("Error deriving clients/sites from requests", e);
       setClients([]);
       setPostSites([]);
     }
@@ -405,20 +469,31 @@ export default function DispatcherPage() {
 
   // Post sites to display depend on selected client. Prefer full list when available.
   const displayedPostSites = useMemo(() => {
-    const list = (allPostSites && allPostSites.length > 0 ? allPostSites : postSites) || [];
+    const list =
+      (allPostSites && allPostSites.length > 0 ? allPostSites : postSites) ||
+      [];
+
     // Until a client is selected, do not show any post sites
     if (!filters || !filters.clientId) return [];
     const cid = String(filters.clientId);
+
     return list.filter((s: DirectoryOption) => {
       if (!s) return false;
       // support various shapes: s.clientId, s.client?.id, s.client?.clientId
       if (s.clientId && String(s.clientId) === cid) return true;
-      if (s.client && typeof s.client === 'object') {
+      if (s.client && typeof s.client === "object") {
         if (s.client.id && String(s.client.id) === cid) return true;
-        if ((s.client.clientId && String(s.client.clientId) === cid)) return true;
+        if (s.client.clientId && String(s.client.clientId) === cid) return true;
       }
       // also allow if site has a clientAccount or clientAccountId
-      if ((s.clientAccountId && String(s.clientAccountId) === cid) || (s.clientAccount && s.clientAccount.id && String(s.clientAccount.id) === cid)) return true;
+      if (
+        (s.clientAccountId && String(s.clientAccountId) === cid) ||
+        (s.clientAccount &&
+          s.clientAccount.id &&
+          String(s.clientAccount.id) === cid)
+      )
+        return true;
+
       return false;
     });
   }, [allPostSites, postSites, filters]);
@@ -427,13 +502,13 @@ export default function DispatcherPage() {
   useEffect(() => {
     try {
       const sid = filters.siteId;
+
       fetchStationsFor(sid);
       // clear station filter when site changes
       setFilters((s) => ({ ...s, stationId: undefined }));
     } catch (e) {
       // ignore
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters.siteId]);
 
   // Apply filters by fetching rows according to current `filters`
@@ -441,31 +516,39 @@ export default function DispatcherPage() {
     const usedFilters = filtersParam ?? filters;
     // Validate with zod but allow fetching even when validation fails (log and warn)
     const parse = dispatcherFiltersSchema.safeParse(usedFilters);
+
     if (!parse.success) {
-      console.error('Errores de validación:', parse.error.flatten());
+      console.error("Errores de validación:", parse.error.flatten());
     }
 
     setOpenFilter(false);
     const mine = ++loadSeqRef.current;
+
     setLoading(true);
     try {
-      const tenantId = localStorage.getItem('tenantId');
+      const tenantId = localStorage.getItem("tenantId");
+
       if (!tenantId) return;
-      const api = (await import('@/lib/api')).default;
+      const api = (await import("@/lib/api")).default;
 
       const params = new URLSearchParams();
+
       // status as top-level param (backend expects ?status=... as used elsewhere)
-      if (usedFilters && usedFilters.status && String(usedFilters.status).toLowerCase() !== 'todo') {
-        params.append('status', String(usedFilters.status));
+      if (
+        usedFilters &&
+        usedFilters.status &&
+        String(usedFilters.status).toLowerCase() !== "todo"
+      ) {
+        params.append("status", String(usedFilters.status));
       }
       if (usedFilters && usedFilters.clientId) {
-        params.append('filter[clientId]', String(usedFilters.clientId));
+        params.append("filter[clientId]", String(usedFilters.clientId));
       }
       if (usedFilters && usedFilters.siteId) {
-        params.append('filter[siteId]', String(usedFilters.siteId));
+        params.append("filter[siteId]", String(usedFilters.siteId));
       }
       if (filters && filters.stationId) {
-        params.append('filter[stationId]', String(filters.stationId));
+        params.append("filter[stationId]", String(filters.stationId));
       }
       // single-date filters -> convert to ranges backend expects
       if (filters && filters.createdDate) {
@@ -473,11 +556,12 @@ export default function DispatcherPage() {
           const d = filters.createdDate;
           const start = new Date(`${d}T00:00:00`).toISOString();
           const end = new Date(`${d}T23:59:59`).toISOString();
+
           // append twice so backend receives an array: filter[createdAtRange]=start&filter[createdAtRange]=end
-          params.append('filter[createdAtRange][]', start);
-          params.append('filter[createdAtRange][]', end);
+          params.append("filter[createdAtRange][]", start);
+          params.append("filter[createdAtRange][]", end);
         } catch (e) {
-          console.warn('Invalid createdDate format', filters.createdDate);
+          console.warn("Invalid createdDate format", filters.createdDate);
         }
       }
 
@@ -486,20 +570,23 @@ export default function DispatcherPage() {
           const d = filters.incidentDate;
           const start = new Date(`${d}T00:00:00`).toISOString();
           const end = new Date(`${d}T23:59:59`).toISOString();
+
           // append twice so backend receives an array: filter[dateTimeRange]=start&filter[dateTimeRange]=end
-          params.append('filter[dateTimeRange][]', start);
-          params.append('filter[dateTimeRange][]', end);
+          params.append("filter[dateTimeRange][]", start);
+          params.append("filter[dateTimeRange][]", end);
         } catch (e) {
-          console.warn('Invalid incidentDate format', filters.incidentDate);
+          console.warn("Invalid incidentDate format", filters.incidentDate);
         }
       }
 
-      params.append('limit', String(DISPATCH_FETCH_LIMIT));
+      params.append("limit", String(DISPATCH_FETCH_LIMIT));
       let url = `/tenant/${tenantId}/request`;
       const qs = params.toString();
+
       if (qs) url += `?${qs}`;
 
       const resp = await api.get(url);
+
       if (mine !== loadSeqRef.current) return; // superseded
       const payload = resp && resp.data ? resp.data : resp;
 
@@ -519,7 +606,7 @@ export default function DispatcherPage() {
       setPage(1);
     } catch (err) {
       if (mine !== loadSeqRef.current) return;
-      console.error('Error aplicando filtros:', err);
+      console.error("Error aplicando filtros:", err);
     } finally {
       if (mine === loadSeqRef.current) setLoading(false);
     }
@@ -530,9 +617,11 @@ export default function DispatcherPage() {
     try {
       if (!siteToLoad) {
         setStations([]);
+
         return;
       }
-      const tenantId = localStorage.getItem('tenantId');
+      const tenantId = localStorage.getItem("tenantId");
+
       if (!tenantId) return;
 
       // Try preferred stations endpoint with postSite/postSiteId query
@@ -541,6 +630,7 @@ export default function DispatcherPage() {
         const res = await api.get(url, { toast: { silentError: true } });
         const body = res && (res.data ?? res);
         let rows: any[] = [];
+
         if (Array.isArray(body)) rows = body;
         else if (body && Array.isArray(body.rows)) rows = body.rows;
         else if (body && Array.isArray(body.data)) rows = body.data;
@@ -549,13 +639,33 @@ export default function DispatcherPage() {
           // must run BEFORE mapping to {id,name}, or the reference is lost and the
           // filter becomes a no-op (kept every station regardless of site).
           const filtered = rows.filter((s: any) => {
-            const pid = (s && (s.postSiteId || s.post_site_id || (s.postSite && (s.postSite.id || s.postSite)) || s.post_site)) || null;
+            const pid =
+              (s &&
+                (s.postSiteId ||
+                  s.post_site_id ||
+                  (s.postSite && (s.postSite.id || s.postSite)) ||
+                  s.post_site)) ||
+              null;
+
             if (!pid) return true; // can't determine, keep
+
             return String(pid) === String(siteToLoad);
           });
           const source = filtered.length ? filtered : rows;
-          const mapped = source.map((s: any) => ({ id: s.id || s.stationId || s.uuid || s, name: s.name || s.stationName || s.displayName || s.label || s.address || (s.postSite && (s.postSite.businessName || s.postSite.name)) || String(s.id) }));
+          const mapped = source.map((s: any) => ({
+            id: s.id || s.stationId || s.uuid || s,
+            name:
+              s.name ||
+              s.stationName ||
+              s.displayName ||
+              s.label ||
+              s.address ||
+              (s.postSite && (s.postSite.businessName || s.postSite.name)) ||
+              String(s.id),
+          }));
+
           setStations(mapped);
+
           return;
         }
       } catch (e) {
@@ -563,59 +673,103 @@ export default function DispatcherPage() {
       }
 
       try {
-        const res2 = await api.get(`/tenant/${tenantId}/post-site/${siteToLoad}/stations`, { toast: { silentError: true } });
+        const res2 = await api.get(
+          `/tenant/${tenantId}/post-site/${siteToLoad}/stations`,
+          { toast: { silentError: true } },
+        );
         const body2 = res2 && (res2.data ?? res2);
         let rows2: any[] = [];
+
         if (Array.isArray(body2)) rows2 = body2;
         else if (body2 && Array.isArray(body2.rows)) rows2 = body2.rows;
         else if (body2 && Array.isArray(body2.data)) rows2 = body2.data;
-        const mapped2 = rows2.map((s: any) => ({ id: s.id || s.stationId || s.uuid || s, name: s.name || s.stationName || s.displayName || s.label || s.address || String(s.id) }));
+        const mapped2 = rows2.map((s: any) => ({
+          id: s.id || s.stationId || s.uuid || s,
+          name:
+            s.name ||
+            s.stationName ||
+            s.displayName ||
+            s.label ||
+            s.address ||
+            String(s.id),
+        }));
+
         setStations(mapped2);
+
         return;
       } catch (e2) {
         // fallback
       }
 
       try {
-        const res3 = await api.get(`/tenant/${tenantId}/stations?postSite=${encodeURIComponent(String(siteToLoad))}&postSiteId=${encodeURIComponent(String(siteToLoad))}`, { toast: { silentError: true } });
+        const res3 = await api.get(
+          `/tenant/${tenantId}/stations?postSite=${encodeURIComponent(String(siteToLoad))}&postSiteId=${encodeURIComponent(String(siteToLoad))}`,
+          { toast: { silentError: true } },
+        );
         const body3 = res3 && (res3.data ?? res3);
         let rows3: any[] = [];
+
         if (Array.isArray(body3)) rows3 = body3;
         else if (body3 && Array.isArray(body3.rows)) rows3 = body3.rows;
         else if (body3 && Array.isArray(body3.data)) rows3 = body3.data;
-        const mapped3 = rows3.map((s: any) => ({ id: s.id || s.stationId || s.uuid || s, name: s.name || s.stationName || s.displayName || s.label || s.address || String(s.id) }));
+        const mapped3 = rows3.map((s: any) => ({
+          id: s.id || s.stationId || s.uuid || s,
+          name:
+            s.name ||
+            s.stationName ||
+            s.displayName ||
+            s.label ||
+            s.address ||
+            String(s.id),
+        }));
+
         setStations(mapped3);
+
         return;
       } catch (e3) {
-        console.warn('Failed to load stations for post-site', siteToLoad, e3);
+        console.warn("Failed to load stations for post-site", siteToLoad, e3);
         setStations([]);
+
         return;
       }
     } catch (e) {
-      console.error('Error loading stations', e);
+      console.error("Error loading stations", e);
       setStations([]);
+
       return;
     }
   };
 
   // Clear filters to defaults (keep default status 'abierto') and reload
   const clearFilters = async () => {
-    const newFilters: DispatcherFilters = { ...defaultDispatcherFilters, status: 'abierto' };
+    const newFilters: DispatcherFilters = {
+      ...defaultDispatcherFilters,
+      status: "abierto",
+    };
+
     setFilters(newFilters);
     const mine = ++loadSeqRef.current;
+
     setLoading(true);
     try {
-      const tenantId = localStorage.getItem('tenantId');
+      const tenantId = localStorage.getItem("tenantId");
+
       if (!tenantId) return;
-      const api = (await import('@/lib/api')).default;
+      const api = (await import("@/lib/api")).default;
 
       let url = `/tenant/${tenantId}/request`;
-      if (newFilters && newFilters.status && String(newFilters.status).toLowerCase() !== 'todo') {
+
+      if (
+        newFilters &&
+        newFilters.status &&
+        String(newFilters.status).toLowerCase() !== "todo"
+      ) {
         url += `?status=${encodeURIComponent(String(newFilters.status))}`;
       }
-      url += `${url.includes('?') ? '&' : '?'}limit=${DISPATCH_FETCH_LIMIT}`;
+      url += `${url.includes("?") ? "&" : "?"}limit=${DISPATCH_FETCH_LIMIT}`;
 
       const resp = await api.get(url);
+
       if (mine !== loadSeqRef.current) return; // superseded
       const payload = resp && resp.data ? resp.data : resp;
 
@@ -635,7 +789,7 @@ export default function DispatcherPage() {
       setPage(1);
     } catch (err) {
       if (mine !== loadSeqRef.current) return;
-      console.error('Error limpiando filtros:', err);
+      console.error("Error limpiando filtros:", err);
     } finally {
       if (mine === loadSeqRef.current) setLoading(false);
     }
@@ -645,92 +799,131 @@ export default function DispatcherPage() {
   useEffect(() => {
     if (!rows || !rows.length) {
       setSelectedIds([]);
+
       return;
     }
 
-    setSelectedIds((prev) => prev.filter((id) => rows.some((r) => r.id === id)));
+    setSelectedIds((prev) =>
+      prev.filter((id) => rows.some((r) => r.id === id)),
+    );
   }, [rows]);
 
   // remove automatic totalCount from rows; totalCount is set from API response
 
   const visibleRows = useMemo(() => {
     const start = (page - 1) * limit;
+
     return rows.slice(start, start + limit);
   }, [rows, page, limit]);
 
   // Helper to resolve a client's display name from various shapes
   const getClientDisplay = (r: DispatchRow) => {
     try {
-      if (!r) return '-';
+      if (!r) return "-";
       // If client is an object with an explicit name, prefer that
-      if (r.client && typeof r.client === 'object') {
-        return r.client.name || r.client.fullName || r.client.displayName || String(r.client.id || '-') || '-';
+      if (r.client && typeof r.client === "object") {
+        return (
+          r.client.name ||
+          r.client.fullName ||
+          r.client.displayName ||
+          String(r.client.id || "-") ||
+          "-"
+        );
       }
 
       // Collect candidate client id strings from multiple possible fields
       const candidates: string[] = [];
+
       if (r.clientId) candidates.push(String(r.clientId));
-      if (r.client && typeof r.client === 'string') candidates.push(String(r.client));
+      if (r.client && typeof r.client === "string")
+        candidates.push(String(r.client));
       if (r.clientAccountId) candidates.push(String(r.clientAccountId));
-      if (r.clientAccount && (r.clientAccount.id || r.clientAccount.clientId)) candidates.push(String(r.clientAccount.id || r.clientAccount.clientId));
+      if (r.clientAccount && (r.clientAccount.id || r.clientAccount.clientId))
+        candidates.push(String(r.clientAccount.id || r.clientAccount.clientId));
 
       // Also consider callerName or clientName fields that may already contain display name
-      if (r.callerName && typeof r.callerName === 'string') return r.callerName;
-      if (r.clientName && typeof r.clientName === 'string') return r.clientName;
+      if (r.callerName && typeof r.callerName === "string") return r.callerName;
+      if (r.clientName && typeof r.clientName === "string") return r.clientName;
 
-      const list = (allClients && allClients.length > 0 ? allClients : clients) || [];
+      const list =
+        (allClients && allClients.length > 0 ? allClients : clients) || [];
+
       for (const cid of candidates) {
         if (!cid) continue;
         const found = list.find((c: DirectoryOption) => {
           try {
             if (!c) return false;
-            const keys = [c.id, c.clientId, c.clientAccountId, c.uuid, c._id, c.externalId, c.code];
-            return keys.some((k) => typeof k !== 'undefined' && String(k) === String(cid));
+            const keys = [
+              c.id,
+              c.clientId,
+              c.clientAccountId,
+              c.uuid,
+              c._id,
+              c.externalId,
+              c.code,
+            ];
+
+            return keys.some(
+              (k) => typeof k !== "undefined" && String(k) === String(cid),
+            );
           } catch (e) {
             return false;
           }
         });
-        if (found) return found.name || found.fullName || found.displayName || found.businessName || String(found.id);
+
+        if (found)
+          return (
+            found.name ||
+            found.fullName ||
+            found.displayName ||
+            found.businessName ||
+            String(found.id)
+          );
       }
 
       // Fallbacks: use primitive client field if present, or display callerName
-      if (r.client && typeof r.client === 'string') return String(r.client);
-      return '-';
+      if (r.client && typeof r.client === "string") return String(r.client);
+
+      return "-";
     } catch (e) {
-      return '-';
+      return "-";
     }
   };
 
   // (Removed combined date-time range) separate created/incident dates used below
 
-
-
   const handleConfirmDelete = async () => {
     try {
-      const tenantId = localStorage.getItem('tenantId');
+      const tenantId = localStorage.getItem("tenantId");
+
       if (!tenantId) return;
       setShowDeleteConfirm(false);
 
-      const api = (await import('@/lib/api')).default;
+      const api = (await import("@/lib/api")).default;
 
       let lastSuccessMessage: string | null = null;
       let lastErrorMessage: string | null = null;
+
       try {
-        const resp = await api.delete(
-          `/tenant/${tenantId}/request`,
-          { params: { ids: selectedIds } },
-        );
+        const resp = await api.delete(`/tenant/${tenantId}/request`, {
+          params: { ids: selectedIds },
+        });
         const r = resp && resp.data ? resp.data : resp;
+
         if (r && r.message) lastSuccessMessage = String(r.message);
       } catch (err) {
-        lastErrorMessage = (err as DispatchApiError)?.response?.data?.message || (err as DispatchApiError)?.message || null;
-        console.error('Error deleting ids', selectedIds, err);
+        lastErrorMessage =
+          (err as DispatchApiError)?.response?.data?.message ||
+          (err as DispatchApiError)?.message ||
+          null;
+        console.error("Error deleting ids", selectedIds, err);
       }
 
       setSelectedIds([]);
 
       // refresh rows using same logic as initial load
       const mine = ++loadSeqRef.current;
+
       try {
         const resp = await api.get(`/tenant/${tenantId}/request`);
         const payload = resp && resp.data ? resp.data : resp;
@@ -753,20 +946,29 @@ export default function DispatcherPage() {
           setTotalCount(count);
         }
       } catch (e) {
-        console.error('Error recargando Incidentes:', e);
+        console.error("Error recargando Incidentes:", e);
       }
 
       if (lastErrorMessage) {
-        toast.error(resolveServerMessage(lastErrorMessage) || t('dispatcher.deleted_error'));
+        toast.error(
+          resolveServerMessage(lastErrorMessage) ||
+            t("dispatcher.deleted_error"),
+        );
       } else if (lastSuccessMessage) {
-        toast.success(resolveServerMessage(lastSuccessMessage) || t('dispatcher.deleted_success'));
+        toast.success(
+          resolveServerMessage(lastSuccessMessage) ||
+            t("dispatcher.deleted_success"),
+        );
       } else {
-        toast.success(t('dispatcher.deleted_success'));
+        toast.success(t("dispatcher.deleted_success"));
       }
     } catch (e) {
-      console.error('Error eliminando Incidentes:', e);
-      const msg = (e as DispatchApiError)?.response?.data?.message || (e as DispatchApiError)?.message;
-      toast.error(msg || t('dispatcher.deleted_error'));
+      console.error("Error eliminando Incidentes:", e);
+      const msg =
+        (e as DispatchApiError)?.response?.data?.message ||
+        (e as DispatchApiError)?.message;
+
+      toast.error(msg || t("dispatcher.deleted_error"));
     }
   };
 
@@ -774,294 +976,414 @@ export default function DispatcherPage() {
   const handleCreateShare = async () => {
     if (!shareTargetId) return;
     try {
-      const tenantId = localStorage.getItem('tenantId');
-      if (!tenantId) { toast.error(t('dispatcher.tenantUnavailable')); return; }
+      const tenantId = localStorage.getItem("tenantId");
+
+      if (!tenantId) {
+        toast.error(t("dispatcher.tenantUnavailable"));
+
+        return;
+      }
       setShareLoading(true);
 
-      const api = (await import('@/lib/api')).default;
+      const api = (await import("@/lib/api")).default;
 
       const now = Date.now();
       let expiresAt: string | null = null;
-      if (shareExpiry === '1h') expiresAt = new Date(now + 1 * 60 * 60 * 1000).toISOString();
-      else if (shareExpiry === '24h') expiresAt = new Date(now + 24 * 60 * 60 * 1000).toISOString();
-      else if (shareExpiry === '7d') expiresAt = new Date(now + 7 * 24 * 60 * 60 * 1000).toISOString();
+
+      if (shareExpiry === "1h")
+        expiresAt = new Date(now + 1 * 60 * 60 * 1000).toISOString();
+      else if (shareExpiry === "24h")
+        expiresAt = new Date(now + 24 * 60 * 60 * 1000).toISOString();
+      else if (shareExpiry === "7d")
+        expiresAt = new Date(now + 7 * 24 * 60 * 60 * 1000).toISOString();
       else expiresAt = null;
 
       // backend pattern in this file uses { data: { ... } }
       // Some backends may expect expiresAt at root instead of inside `data`.
       // Send both to maximize compatibility so the value reaches the server/db.
-      const payloadBody: { data: Record<string, string>; expiresAt?: string } = { data: {} };
+      const payloadBody: { data: Record<string, string>; expiresAt?: string } =
+        { data: {} };
+
       if (expiresAt) {
         payloadBody.data.expiresAt = expiresAt;
         payloadBody.expiresAt = expiresAt;
       }
 
-      const resp = await api.post(`/tenant/${tenantId}/request/${shareTargetId}/share`, payloadBody);
+      const resp = await api.post(
+        `/tenant/${tenantId}/request/${shareTargetId}/share`,
+        payloadBody,
+      );
       const payload = resp && resp.data ? resp.data : resp;
 
-      const url = payload && payload.token
-        ? `${window.location.origin}/public/dispatch/${payload.token}`
-        : (payload && payload.url ? payload.url : null);
+      const url =
+        payload && payload.token
+          ? `${window.location.origin}/public/dispatch/${payload.token}`
+          : payload && payload.url
+            ? payload.url
+            : null;
 
       // Prefer server-provided message when available
       if (url) {
-        try { await navigator.clipboard.writeText(url); } catch (e) { }
-        try { window.open(url, '_blank'); } catch (e) { }
-        if (payload && payload.message) toast.success(resolveServerMessage(payload.message) || t('dispatcher.share_link_copied'));
-        else toast.success(t('dispatcher.share_link_copied'));
+        try {
+          await navigator.clipboard.writeText(url);
+        } catch (e) {}
+        try {
+          window.open(url, "_blank");
+        } catch (e) {}
+        if (payload && payload.message)
+          toast.success(
+            resolveServerMessage(payload.message) ||
+              t("dispatcher.share_link_copied"),
+          );
+        else toast.success(t("dispatcher.share_link_copied"));
         setShareDialogOpen(false);
         setShareTargetId(null);
       } else {
         const serverMsg = payload && payload.message ? payload.message : null;
-        toast.error(serverMsg ? resolveServerMessage(serverMsg) : t('dispatcher.share_link_failed'));
+
+        toast.error(
+          serverMsg
+            ? resolveServerMessage(serverMsg)
+            : t("dispatcher.share_link_failed"),
+        );
       }
-      } catch (err) {
+    } catch (err) {
       console.error(err);
-      toast.error(t('dispatcher.share_error'));
+      toast.error(t("dispatcher.share_error"));
     } finally {
       setShareLoading(false);
     }
   };
 
-    // Export selected dispatches to Excel (.xlsx)
-    const handleExportExcel = async () => {
-      try {
-        if (!selectedIds || selectedIds.length === 0) {
-          toast.error(t('dispatcher.select_at_least_one_export'));
-          return;
-        }
-
-        const tenantId = localStorage.getItem('tenantId');
-        if (!tenantId) { toast.error(t('dispatcher.tenantUnavailable')); return; }
-        const api = (await import('@/lib/api')).default;
-
-        // Fetch full details for each selected id to ensure all fields are present.
-        // Batched (not one big Promise.all) so selecting many tickets doesn't fire
-        // hundreds of simultaneous requests and trip the per-token rate limiter.
-        const BATCH = 8;
-        const responses: any[] = [];
-        for (let i = 0; i < selectedIds.length; i += BATCH) {
-          const chunk = selectedIds.slice(i, i + BATCH);
-          const settled = await Promise.all(chunk.map((id) => api.get(`/tenant/${tenantId}/request/${id}`)));
-          responses.push(...settled);
-        }
-        const records = responses.map((r) => (r && r.data ? r.data : r));
-
-        const rows = records.map((r: any) => ({
-          'Client Name': getClientDisplay(r),
-          'Post Site': r.site?.name || r.site?.companyName || (typeof r.site === 'string' ? r.site : '') || '',
-          'Caller Type': r.callerType || '',
-          'Caller Name': r.callerName || (r.guardName && (r.guardName.fullName || r.guardName.name)) || '',
-          'Incident Type': (r.incidentType && (r.incidentType.name || r.incidentType)) || r.incidentTypeId || '',
-          'Incident Details': r.content || r.description || '',
-          'Incident Location': r.location || '',
-          'Notes': r.internalNotes || r.notes || '',
-          'Priority': r.priority || '',
-          'Dispatch Status': r.status || '',
-        }));
-
-        // json_to_sheet defaults to starting at A1; avoid passing unsupported 'origin' option
-        const XLSX = await loadXlsx();
-        const ws = XLSX.utils.json_to_sheet(rows);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Incidentes');
-
-        const buf = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-        const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Incidentes_${new Date().toISOString().slice(0,10)}.xlsx`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-      } catch (err) {
-        console.error('Export Excel error', err);
-        toast.error(t('dispatcher.export_excel_error'));
-      }
-    };
-
-    // Print selected dispatches as PDF without opening a new window/tab
-    const handlePrintSelected = async () => {
-      try {
-        if (!selectedIds || selectedIds.length === 0) {
-          toast.error(t('dispatcher.select_at_least_one_print'));
-          return;
-        }
-
-        const tenantId = localStorage.getItem('tenantId');
-        if (!tenantId) { toast.error(t('dispatcher.tenantUnavailable')); return; }
-
-        // Determine backend origin from VITE_API_URL (no prod localhost fallback)
-        const apiOrigin = getApiOrigin();
-        if (!apiOrigin) { toast.error(t('dispatcher.pdf_generate_failed')); return; }
-
-        const apiPrefix = apiOrigin.endsWith('/api') ? '' : '/api';
-        const id = selectedIds[0];
-        const idsParam = selectedIds.join(',');
-        const url = `${apiOrigin}${apiPrefix}/tenant/${tenantId}/request/${id}/export/pdf?ids=${encodeURIComponent(idsParam)}`;
-
-        const headers = getAuthHeaders();
-
-        const resp = await fetch(url, { method: 'GET', credentials: 'include', headers });
-        if (!resp.ok) {
-          const text = await resp.text().catch(() => null);
-          console.error('Export PDF failed', text || resp.statusText);
-          toast.error(t('dispatcher.pdf_generate_failed'));
-          return;
-        }
-
-        const contentType = resp.headers.get('content-type') || '';
-        if (!contentType.includes('application/pdf')) {
-          const text = await resp.text().catch(() => null);
-          console.error('Expected PDF, got:', contentType, text);
-          toast.error(t('dispatcher.pdf_invalid_response'));
-          return;
-        }
-
-        const blob = await resp.blob();
-        const blobUrl = URL.createObjectURL(blob);
-
-        // Create an off-screen iframe so the PDF can render, then call print()
-        const iframe = document.createElement('iframe');
-        // Use visibility + off-screen positioning so the PDF renderer has space to initialize
-        iframe.style.visibility = 'hidden';
-        iframe.style.position = 'fixed';
-        iframe.style.left = '-10000px';
-        iframe.style.top = '0';
-        iframe.style.width = '1px';
-        iframe.style.height = '1px';
-        iframe.style.border = '0';
-        iframe.src = blobUrl;
-        document.body.appendChild(iframe);
-
-        const cleanup = () => {
-          try { if (iframe.parentNode) iframe.parentNode.removeChild(iframe); } catch (_) { }
-          try { URL.revokeObjectURL(blobUrl); } catch (_) { }
-        };
-
-        // Wait for load then give the PDF renderer a short moment before printing.
-        // Some browsers need a delay for the PDF plugin to render; keep iframe for longer.
-        iframe.onload = () => {
-          // delay to allow rendering (500-800ms tends to work reliably)
-          setTimeout(() => {
-            try {
-              iframe.contentWindow?.focus();
-              iframe.contentWindow?.print();
-            } catch (e) {
-              console.error('Print failed, opening blob in new tab as fallback', e);
-              try { window.open(blobUrl, '_blank'); } catch (_) { }
-            }
-          }, 700);
-
-          // Cleanup after a longer timeout to avoid closing the frame immediately
-          setTimeout(cleanup, 15000);
-        };
-      } catch (err) {
-        console.error('Print PDF error', err);
-        toast.error(t('dispatcher.print_error'));
-      }
-    };
-
-    // Open send-email dialog to collect details and send via backend
-    const handleSendEmail = async () => {
+  // Export selected dispatches to Excel (.xlsx)
+  const handleExportExcel = async () => {
+    try {
       if (!selectedIds || selectedIds.length === 0) {
-        toast.error(t('dispatcher.select_at_least_one_send'));
+        toast.error(t("dispatcher.select_at_least_one_export"));
+
         return;
       }
-      // Se propone el correo del propio operador como «responder a»: quien
-      // conteste el despacho llega a quien lo mandó. Se puede borrar o cambiar.
-      const suyo = localStorage.getItem('userEmail') || localStorage.getItem('email') || '';
-      setEmailReplyTo(suyo);
-      // default To empty
-      setEmailTo('');
-      setEmailSubject(asuntoPorDefecto());
-      setEmailMessage('');
-      setSendDialogOpen(true);
-    };
 
-      // Perform sending email using backend API
-      const performSend = async () => {
-        if (!selectedIds || selectedIds.length === 0) {
-          toast.error(t('dispatcher.select_at_least_one_send'));
-          return;
-        }
+      const tenantId = localStorage.getItem("tenantId");
 
-        setSendingEmail(true);
+      if (!tenantId) {
+        toast.error(t("dispatcher.tenantUnavailable"));
+
+        return;
+      }
+      const api = (await import("@/lib/api")).default;
+
+      // Fetch full details for each selected id to ensure all fields are present.
+      // Batched (not one big Promise.all) so selecting many tickets doesn't fire
+      // hundreds of simultaneous requests and trip the per-token rate limiter.
+      const BATCH = 8;
+      const responses: any[] = [];
+
+      for (let i = 0; i < selectedIds.length; i += BATCH) {
+        const chunk = selectedIds.slice(i, i + BATCH);
+        const settled = await Promise.all(
+          chunk.map((id) => api.get(`/tenant/${tenantId}/request/${id}`)),
+        );
+
+        responses.push(...settled);
+      }
+      const records = responses.map((r) => (r && r.data ? r.data : r));
+
+      const rows = records.map((r: any) => ({
+        "Client Name": getClientDisplay(r),
+        "Post Site":
+          r.site?.name ||
+          r.site?.companyName ||
+          (typeof r.site === "string" ? r.site : "") ||
+          "",
+        "Caller Type": r.callerType || "",
+        "Caller Name":
+          r.callerName ||
+          (r.guardName && (r.guardName.fullName || r.guardName.name)) ||
+          "",
+        "Incident Type":
+          (r.incidentType && (r.incidentType.name || r.incidentType)) ||
+          r.incidentTypeId ||
+          "",
+        "Incident Details": r.content || r.description || "",
+        "Incident Location": r.location || "",
+        Notes: r.internalNotes || r.notes || "",
+        Priority: r.priority || "",
+        "Dispatch Status": r.status || "",
+      }));
+
+      // json_to_sheet defaults to starting at A1; avoid passing unsupported 'origin' option
+      const XLSX = await loadXlsx();
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+
+      XLSX.utils.book_append_sheet(wb, ws, "Incidentes");
+
+      const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+      const blob = new Blob([buf], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+
+      a.href = url;
+      a.download = `Incidentes_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Export Excel error", err);
+      toast.error(t("dispatcher.export_excel_error"));
+    }
+  };
+
+  // Print selected dispatches as PDF without opening a new window/tab
+  const handlePrintSelected = async () => {
+    try {
+      if (!selectedIds || selectedIds.length === 0) {
+        toast.error(t("dispatcher.select_at_least_one_print"));
+
+        return;
+      }
+
+      const tenantId = localStorage.getItem("tenantId");
+
+      if (!tenantId) {
+        toast.error(t("dispatcher.tenantUnavailable"));
+
+        return;
+      }
+
+      // Determine backend origin from VITE_API_URL (no prod localhost fallback)
+      const apiOrigin = getApiOrigin();
+
+      if (!apiOrigin) {
+        toast.error(t("dispatcher.pdf_generate_failed"));
+
+        return;
+      }
+
+      const apiPrefix = apiOrigin.endsWith("/api") ? "" : "/api";
+      const id = selectedIds[0];
+      const idsParam = selectedIds.join(",");
+      const url = `${apiOrigin}${apiPrefix}/tenant/${tenantId}/request/${id}/export/pdf?ids=${encodeURIComponent(idsParam)}`;
+
+      const headers = getAuthHeaders();
+
+      const resp = await fetch(url, {
+        method: "GET",
+        credentials: "include",
+        headers,
+      });
+
+      if (!resp.ok) {
+        const text = await resp.text().catch(() => null);
+
+        console.error("Export PDF failed", text || resp.statusText);
+        toast.error(t("dispatcher.pdf_generate_failed"));
+
+        return;
+      }
+
+      const contentType = resp.headers.get("content-type") || "";
+
+      if (!contentType.includes("application/pdf")) {
+        const text = await resp.text().catch(() => null);
+
+        console.error("Expected PDF, got:", contentType, text);
+        toast.error(t("dispatcher.pdf_invalid_response"));
+
+        return;
+      }
+
+      const blob = await resp.blob();
+      const blobUrl = URL.createObjectURL(blob);
+
+      // Create an off-screen iframe so the PDF can render, then call print()
+      const iframe = document.createElement("iframe");
+
+      // Use visibility + off-screen positioning so the PDF renderer has space to initialize
+      iframe.style.visibility = "hidden";
+      iframe.style.position = "fixed";
+      iframe.style.left = "-10000px";
+      iframe.style.top = "0";
+      iframe.style.width = "1px";
+      iframe.style.height = "1px";
+      iframe.style.border = "0";
+      iframe.src = blobUrl;
+      document.body.appendChild(iframe);
+
+      const cleanup = () => {
         try {
-          const tenantId = localStorage.getItem('tenantId');
-          if (!tenantId) { toast.error('Tenant no disponible'); return; }
-
-          const api = (await import('@/lib/api')).default;
-
-          const toList = emailTo ? emailTo.split(',').map((s) => s.trim()).filter(Boolean) : [];
-
-          const payload = {
-            data: {
-              ids: selectedIds,
-              format: emailFormat,
-              replyTo: emailReplyTo,
-              to: toList,
-              subject: emailSubject,
-              message: emailMessage,
-            },
-          };
-
-          const resp = await api.post(`/tenant/${tenantId}/request/email`, payload);
-          const result = resp && resp.data ? resp.data : resp;
-          if (result && result.message) toast.success(resolveServerMessage(result.message) || t('dispatcher.email_sent'));
-          else toast.success(t('dispatcher.email_sent'));
-          setSendDialogOpen(false);
-        } catch (err) {
-          console.error('Error enviando correo:', err);
-          const serverMsg = (err as DispatchApiError)?.response?.data?.message || (err as DispatchApiError)?.message;
-          toast.error(serverMsg ? resolveServerMessage(serverMsg) : t('dispatcher.email_send_error'));
-        } finally {
-          setSendingEmail(false);
-        }
+          if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+        } catch (_) {}
+        try {
+          URL.revokeObjectURL(blobUrl);
+        } catch (_) {}
       };
+
+      // Wait for load then give the PDF renderer a short moment before printing.
+      // Some browsers need a delay for the PDF plugin to render; keep iframe for longer.
+      iframe.onload = () => {
+        // delay to allow rendering (500-800ms tends to work reliably)
+        setTimeout(() => {
+          try {
+            iframe.contentWindow?.focus();
+            iframe.contentWindow?.print();
+          } catch (e) {
+            console.error(
+              "Print failed, opening blob in new tab as fallback",
+              e,
+            );
+            try {
+              window.open(blobUrl, "_blank");
+            } catch (_) {}
+          }
+        }, 700);
+
+        // Cleanup after a longer timeout to avoid closing the frame immediately
+        setTimeout(cleanup, 15000);
+      };
+    } catch (err) {
+      console.error("Print PDF error", err);
+      toast.error(t("dispatcher.print_error"));
+    }
+  };
+
+  // Open send-email dialog to collect details and send via backend
+  const handleSendEmail = async () => {
+    if (!selectedIds || selectedIds.length === 0) {
+      toast.error(t("dispatcher.select_at_least_one_send"));
+
+      return;
+    }
+    // Se propone el correo del propio operador como «responder a»: quien
+    // conteste el despacho llega a quien lo mandó. Se puede borrar o cambiar.
+    const suyo =
+      localStorage.getItem("userEmail") || localStorage.getItem("email") || "";
+
+    setEmailReplyTo(suyo);
+    // default To empty
+    setEmailTo("");
+    setEmailSubject(asuntoPorDefecto());
+    setEmailMessage("");
+    setSendDialogOpen(true);
+  };
+
+  // Perform sending email using backend API
+  const performSend = async () => {
+    if (!selectedIds || selectedIds.length === 0) {
+      toast.error(t("dispatcher.select_at_least_one_send"));
+
+      return;
+    }
+
+    setSendingEmail(true);
+    try {
+      const tenantId = localStorage.getItem("tenantId");
+
+      if (!tenantId) {
+        toast.error("Tenant no disponible");
+
+        return;
+      }
+
+      const api = (await import("@/lib/api")).default;
+
+      const toList = emailTo
+        ? emailTo
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : [];
+
+      const payload = {
+        data: {
+          ids: selectedIds,
+          format: emailFormat,
+          replyTo: emailReplyTo,
+          to: toList,
+          subject: emailSubject,
+          message: emailMessage,
+        },
+      };
+
+      const resp = await api.post(`/tenant/${tenantId}/request/email`, payload);
+      const result = resp && resp.data ? resp.data : resp;
+
+      if (result && result.message)
+        toast.success(
+          resolveServerMessage(result.message) || t("dispatcher.email_sent"),
+        );
+      else toast.success(t("dispatcher.email_sent"));
+      setSendDialogOpen(false);
+    } catch (err) {
+      console.error("Error enviando correo:", err);
+      const serverMsg =
+        (err as DispatchApiError)?.response?.data?.message ||
+        (err as DispatchApiError)?.message;
+
+      toast.error(
+        serverMsg
+          ? resolveServerMessage(serverMsg)
+          : t("dispatcher.email_send_error"),
+      );
+    } finally {
+      setSendingEmail(false);
+    }
+  };
 
   return (
     <AppLayout>
       <Breadcrumb
         items={[
-          { label: t('dispatcher.breadcrumbDashboard'), path: '/dashboard' },
-          { label: t('dispatcher.breadcrumbList') },
+          { label: t("dispatcher.breadcrumbDashboard"), path: "/dashboard" },
+          { label: t("dispatcher.breadcrumbList") },
         ]}
       />
 
-      <PageContainer width="wide" className="p-6">
+      <PageContainer className="p-6" width="wide">
         <PageHeader
           icon={<Siren />}
-          title={t('dispatcher.breadcrumbList')}
-          subtitle={t('dispatcher.subtitle') || 'Gestiona y da seguimiento a los despachos de tu operación.'}
+          subtitle={
+            t("dispatcher.subtitle") ||
+            "Gestiona y da seguimiento a los despachos de tu operación."
+          }
+          title={t("dispatcher.breadcrumbList")}
         />
         {/* Acciones superiores */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           {/* Acción (izquierda) */}
           <div className="flex items-center gap-2">
-            <Select value={actionSelectValue} onValueChange={(v) => {
-              setActionSelectValue(v);
-              if (v === 'eliminar') {
-                if (!selectedIds || selectedIds.length === 0) {
-                  // no items selected
-                  toast.error(t('dispatcher.select_at_least_one_delete'));
-                  // reset select after showing message
-                  setActionSelectValue('');
+            <Select
+              value={actionSelectValue}
+              onValueChange={(v) => {
+                setActionSelectValue(v);
+                if (v === "eliminar") {
+                  if (!selectedIds || selectedIds.length === 0) {
+                    // no items selected
+                    toast.error(t("dispatcher.select_at_least_one_delete"));
+                    // reset select after showing message
+                    setActionSelectValue("");
+
+                    return;
+                  }
+                  setShowDeleteConfirm(true);
+                  // reset select so it returns to placeholder
+                  setActionSelectValue("");
+
                   return;
                 }
-                setShowDeleteConfirm(true);
-                // reset select so it returns to placeholder
-                setActionSelectValue('');
-                return;
-              }
-            }}>
-                <SelectTrigger className="w-40">
-                <SelectValue placeholder={t('dispatcher.actionPlaceholder')} />
+              }}
+            >
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder={t("dispatcher.actionPlaceholder")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="eliminar">{t('dispatcher.action_delete')}</SelectItem>
+                <SelectItem value="eliminar">
+                  {t("dispatcher.action_delete")}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -1072,10 +1394,11 @@ export default function DispatcherPage() {
               <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 className="w-full pl-9 sm:w-72"
-                placeholder={t('dispatcher.searchPlaceholder')}
+                placeholder={t("dispatcher.searchPlaceholder")}
                 value={searchTerm}
                 onChange={(e) => {
                   const v = e.target.value;
+
                   setSearchTerm(v);
 
                   // debounce search
@@ -1084,24 +1407,34 @@ export default function DispatcherPage() {
                   }
                   searchTimeoutRef.current = setTimeout(async () => {
                     const mine = ++loadSeqRef.current;
+
                     try {
-                      const tenantId = localStorage.getItem('tenantId');
+                      const tenantId = localStorage.getItem("tenantId");
+
                       if (!tenantId) return;
                       setLoading(true);
-                      const api = (await import('@/lib/api')).default;
+                      const api = (await import("@/lib/api")).default;
 
                       const params = new URLSearchParams();
+
                       // main query
-                      if (v) params.append('query', String(v));
+                      if (v) params.append("query", String(v));
                       // include active filters so search respects them
-                      if (filters && filters.status && String(filters.status).toLowerCase() !== 'todo') {
-                        params.append('status', String(filters.status));
+                      if (
+                        filters &&
+                        filters.status &&
+                        String(filters.status).toLowerCase() !== "todo"
+                      ) {
+                        params.append("status", String(filters.status));
                       }
                       if (filters && filters.clientId) {
-                        params.append('filter[clientId]', String(filters.clientId));
+                        params.append(
+                          "filter[clientId]",
+                          String(filters.clientId),
+                        );
                       }
                       if (filters && filters.siteId) {
-                        params.append('filter[siteId]', String(filters.siteId));
+                        params.append("filter[siteId]", String(filters.siteId));
                       }
 
                       if (filters && filters.createdDate) {
@@ -1109,10 +1442,14 @@ export default function DispatcherPage() {
                           const d = filters.createdDate;
                           const start = new Date(`${d}T00:00:00`).toISOString();
                           const end = new Date(`${d}T23:59:59`).toISOString();
-                          params.append('filter[createdAtRange][]', start);
-                          params.append('filter[createdAtRange][]', end);
+
+                          params.append("filter[createdAtRange][]", start);
+                          params.append("filter[createdAtRange][]", end);
                         } catch (e) {
-                          console.warn('Invalid createdDate format', filters.createdDate);
+                          console.warn(
+                            "Invalid createdDate format",
+                            filters.createdDate,
+                          );
                         }
                       }
 
@@ -1121,24 +1458,30 @@ export default function DispatcherPage() {
                           const d = filters.incidentDate;
                           const start = new Date(`${d}T00:00:00`).toISOString();
                           const end = new Date(`${d}T23:59:59`).toISOString();
-                          params.append('filter[dateTimeRange][]', start);
-                          params.append('filter[dateTimeRange][]', end);
+
+                          params.append("filter[dateTimeRange][]", start);
+                          params.append("filter[dateTimeRange][]", end);
                         } catch (e) {
-                          console.warn('Invalid incidentDate format', filters.incidentDate);
+                          console.warn(
+                            "Invalid incidentDate format",
+                            filters.incidentDate,
+                          );
                         }
                       }
 
                       // archived
                       if (filters && filters.includeArchived) {
-                        params.append('filter[archived]', 'true');
+                        params.append("filter[archived]", "true");
                       }
 
-                      params.append('limit', String(DISPATCH_FETCH_LIMIT));
+                      params.append("limit", String(DISPATCH_FETCH_LIMIT));
                       let url = `/tenant/${tenantId}/request`;
                       const qs = params.toString();
+
                       if (qs) url += `?${qs}`;
 
                       const resp = await api.get(url);
+
                       if (mine !== loadSeqRef.current) return; // superseded
                       const payload = resp && resp.data ? resp.data : resp;
 
@@ -1158,7 +1501,7 @@ export default function DispatcherPage() {
                       setPage(1);
                     } catch (err) {
                       if (mine !== loadSeqRef.current) return;
-                      console.error('Error buscando Incidentes:', err);
+                      console.error("Error buscando Incidentes:", err);
                     } finally {
                       if (mine === loadSeqRef.current) setLoading(false);
                     }
@@ -1168,60 +1511,88 @@ export default function DispatcherPage() {
             </div>
 
             {canCreate ? (
-              <Button variant="brand" asChild>
-                <Link to="/dispatch-tickets/new">{t('dispatcher.newDispatch')}</Link>
+              <Button asChild variant="brand">
+                <Link to="/dispatch-tickets/new">
+                  {t("dispatcher.newDispatch")}
+                </Link>
               </Button>
             ) : (
               <Button
-                variant="brand"
-                className="cursor-not-allowed"
                 disabled
-                onClick={() => toast.error(t('dispatcher.no_permission_create'))}
-                title={t('dispatcher.no_permission_create')}
+                className="cursor-not-allowed"
+                title={t("dispatcher.no_permission_create")}
+                variant="brand"
+                onClick={() =>
+                  toast.error(t("dispatcher.no_permission_create"))
+                }
               >
-                {t('dispatcher.newDispatch')}
+                {t("dispatcher.newDispatch")}
               </Button>
             )}
 
             {/* Filtros */}
             <Sheet open={openFilter} onOpenChange={setOpenFilter}>
               <SheetTrigger asChild>
-                <Button variant="outline" style={{ borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}>
+                <Button
+                  style={{
+                    borderColor: "var(--brand-line)",
+                    color: "var(--brand-text)",
+                  }}
+                  variant="outline"
+                >
                   <FilterIcon className="mr-2 h-4 w-4" />
-                  {t('dispatcher.filters')}
+                  {t("dispatcher.filters")}
                 </Button>
               </SheetTrigger>
 
-              <SheetContent side="right" className="w-full overflow-y-auto sm:w-[460px]">
+              <SheetContent
+                className="w-full overflow-y-auto sm:w-[460px]"
+                side="right"
+              >
                 <SheetHeader>
-                  <SheetTitle>{t('dispatcher.filters')}</SheetTitle>
+                  <SheetTitle>{t("dispatcher.filters")}</SheetTitle>
                 </SheetHeader>
 
                 <div className="mt-6 space-y-5">
                   {/* Cliente */}
                   <div className="space-y-2">
-                    <Label>{t('dispatcher.client')}</Label>
+                    <Label>{t("dispatcher.client")}</Label>
                     <Select
                       value={filters.clientId ?? ""}
                       onValueChange={(v) => {
-                        const newFilters = { ...filters, clientId: v ? v : undefined, siteId: undefined };
+                        const newFilters = {
+                          ...filters,
+                          clientId: v ? v : undefined,
+                          siteId: undefined,
+                        };
+
                         setFilters(newFilters);
                         void aplicarFiltros(newFilters);
                       }}
                     >
-                        <SelectTrigger>
-                        <SelectValue placeholder={t('dispatcher.select_client')} />
+                      <SelectTrigger>
+                        <SelectValue
+                          placeholder={t("dispatcher.select_client")}
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         {/* Cargar clientes desde backend */}
-                        {(allClients && allClients.length > 0 ? allClients : clients).length > 0 ? (
-                          (allClients && allClients.length > 0 ? allClients : clients).map((c) => (
+                        {(allClients && allClients.length > 0
+                          ? allClients
+                          : clients
+                        ).length > 0 ? (
+                          (allClients && allClients.length > 0
+                            ? allClients
+                            : clients
+                          ).map((c) => (
                             <SelectItem key={c.id} value={c.id}>
                               {clientDisplayName(c, c.name)}
                             </SelectItem>
                           ))
                         ) : (
-                          <SelectItem value="__no_clients" disabled>{t('dispatcher.no_clients')}</SelectItem>
+                          <SelectItem disabled value="__no_clients">
+                            {t("dispatcher.no_clients")}
+                          </SelectItem>
                         )}
                       </SelectContent>
                     </Select>
@@ -1229,17 +1600,24 @@ export default function DispatcherPage() {
 
                   {/* Puesto de seguridad */}
                   <div className="space-y-2">
-                    <Label>{t('dispatcher.post_site')}</Label>
+                    <Label>{t("dispatcher.post_site")}</Label>
                     <Select
                       value={filters.siteId ?? ""}
                       onValueChange={(v) => {
-                        const newFilters = { ...filters, siteId: v, stationId: undefined };
+                        const newFilters = {
+                          ...filters,
+                          siteId: v,
+                          stationId: undefined,
+                        };
+
                         setFilters(newFilters);
                         void aplicarFiltros(newFilters);
                       }}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder={t('dispatcher.select_site')} />
+                        <SelectValue
+                          placeholder={t("dispatcher.select_site")}
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         {displayedPostSites && displayedPostSites.length > 0 ? (
@@ -1249,7 +1627,9 @@ export default function DispatcherPage() {
                             </SelectItem>
                           ))
                         ) : (
-                          <SelectItem value="__no_sites" disabled>{t('dispatcher.no_sites')}</SelectItem>
+                          <SelectItem disabled value="__no_sites">
+                            {t("dispatcher.no_sites")}
+                          </SelectItem>
                         )}
                       </SelectContent>
                     </Select>
@@ -1257,34 +1637,74 @@ export default function DispatcherPage() {
 
                   {/* Estación (filtrado por puesto seleccionado) */}
                   <div className="space-y-2">
-                    <Label>{t('dispatcher.station')}</Label>
+                    <Label>{t("dispatcher.station")}</Label>
                     <Select
                       value={filters.stationId ?? ""}
-                      onValueChange={(v) => setFilters((s) => ({ ...s, stationId: v }))}
                       onOpenChange={(open) => {
-                        if (open) setTimeout(() => stationInputRef.current?.focus(), 50);
+                        if (open)
+                          setTimeout(
+                            () => stationInputRef.current?.focus(),
+                            50,
+                          );
                         else setStationFilter("");
                       }}
+                      onValueChange={(v) =>
+                        setFilters((s) => ({ ...s, stationId: v }))
+                      }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder={t('dispatcher.select_station') || 'Seleccionar estación'} />
+                        <SelectValue
+                          placeholder={
+                            t("dispatcher.select_station") ||
+                            "Seleccionar estación"
+                          }
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         <div className="px-2 py-2">
                           <Input
                             ref={(el) => (stationInputRef.current = el)}
-                            placeholder={t('dispatcher.search_station') || 'Buscar estación...'}
+                            disabled={!filters.siteId}
+                            placeholder={
+                              t("dispatcher.search_station") ||
+                              "Buscar estación..."
+                            }
                             value={stationFilter}
                             onChange={(e) => setStationFilter(e.target.value)}
-                            disabled={!filters.siteId}
                           />
                         </div>
-                        {stations && stations.length > 0 ? stations
-                          .filter((s: DirectoryOption) => String((s.name || s.stationName || s.businessName || s.id) || '').toLowerCase().includes(stationFilter.trim().toLowerCase()))
-                          .map((s: DirectoryOption) => (
-                            <SelectItem key={s.id} value={s.id}>{s.name || s.stationName || s.businessName || s.id}</SelectItem>
-                          )) : (
-                            <SelectItem key="__no_stations" value="__no_stations" disabled>{filters.siteId ? t('dispatcher.no_stations') || 'Sin estaciones' : t('dispatcher.select_site_first') || 'Seleccione un puesto primero'}</SelectItem>
+                        {stations && stations.length > 0 ? (
+                          stations
+                            .filter((s: DirectoryOption) =>
+                              String(
+                                s.name ||
+                                  s.stationName ||
+                                  s.businessName ||
+                                  s.id ||
+                                  "",
+                              )
+                                .toLowerCase()
+                                .includes(stationFilter.trim().toLowerCase()),
+                            )
+                            .map((s: DirectoryOption) => (
+                              <SelectItem key={s.id} value={s.id}>
+                                {s.name ||
+                                  s.stationName ||
+                                  s.businessName ||
+                                  s.id}
+                              </SelectItem>
+                            ))
+                        ) : (
+                          <SelectItem
+                            key="__no_stations"
+                            disabled
+                            value="__no_stations"
+                          >
+                            {filters.siteId
+                              ? t("dispatcher.no_stations") || "Sin estaciones"
+                              : t("dispatcher.select_site_first") ||
+                                "Seleccione un puesto primero"}
+                          </SelectItem>
                         )}
                       </SelectContent>
                     </Select>
@@ -1292,7 +1712,7 @@ export default function DispatcherPage() {
 
                   {/* Estado */}
                   <div className="space-y-2">
-                    <Label>{t('dispatcher.status')}</Label>
+                    <Label>{t("dispatcher.status")}</Label>
                     <Select
                       value={filters.status}
                       onValueChange={(v) =>
@@ -1302,13 +1722,19 @@ export default function DispatcherPage() {
                         }))
                       }
                     >
-                        <SelectTrigger>
-                        <SelectValue placeholder={t('dispatcher.status_all')} />
+                      <SelectTrigger>
+                        <SelectValue placeholder={t("dispatcher.status_all")} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="todo">{t('dispatcher.status_all')}</SelectItem>
-                        <SelectItem value="abierto">{t('dispatcher.status_open')}</SelectItem>
-                        <SelectItem value="cerrado">{t('dispatcher.status_closed')}</SelectItem>
+                        <SelectItem value="todo">
+                          {t("dispatcher.status_all")}
+                        </SelectItem>
+                        <SelectItem value="abierto">
+                          {t("dispatcher.status_open")}
+                        </SelectItem>
+                        <SelectItem value="cerrado">
+                          {t("dispatcher.status_closed")}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -1316,23 +1742,29 @@ export default function DispatcherPage() {
                   {/* Fechas separadas: fecha de creación y fecha del incidente */}
                   <div className="grid grid-cols-1 gap-3">
                     <div className="space-y-2">
-                      <Label>{t('dispatcher.created_date')}</Label>
+                      <Label>{t("dispatcher.created_date")}</Label>
                       <Input
                         type="date"
                         value={filters.createdDate ?? ""}
                         onChange={(e) =>
-                          setFilters((s) => ({ ...s, createdDate: e.target.value }))
+                          setFilters((s) => ({
+                            ...s,
+                            createdDate: e.target.value,
+                          }))
                         }
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label>{t('dispatcher.incident_date')}</Label>
+                      <Label>{t("dispatcher.incident_date")}</Label>
                       <Input
                         type="date"
                         value={filters.incidentDate ?? ""}
                         onChange={(e) =>
-                          setFilters((s) => ({ ...s, incidentDate: e.target.value }))
+                          setFilters((s) => ({
+                            ...s,
+                            incidentDate: e.target.value,
+                          }))
                         }
                       />
                     </div>
@@ -1344,8 +1776,8 @@ export default function DispatcherPage() {
                   {/* Archivados */}
                   <div className="flex items-center gap-2 pt-1">
                     <Checkbox
-                      id="archived"
                       checked={filters.includeArchived}
+                      id="archived"
                       onCheckedChange={(v) =>
                         setFilters((s) => ({
                           ...s,
@@ -1353,8 +1785,8 @@ export default function DispatcherPage() {
                         }))
                       }
                     />
-                    <Label htmlFor="archived" className="cursor-pointer">
-                      {t('dispatcher.show_archived')}
+                    <Label className="cursor-pointer" htmlFor="archived">
+                      {t("dispatcher.show_archived")}
                     </Label>
                   </div>
 
@@ -1363,11 +1795,19 @@ export default function DispatcherPage() {
                       / `--brand-ink`, que se recalculan solos al cambiar el
                       acento. Pintarlos con utilidades sueltas se salta esa
                       derivación y deja el borde y la sombra de cristal fuera. */}
-                  <Button variant="brand" className="w-full" onClick={() => void aplicarFiltros()}>
-                    {t('dispatcher.apply_filters')}
+                  <Button
+                    className="w-full"
+                    variant="brand"
+                    onClick={() => void aplicarFiltros()}
+                  >
+                    {t("dispatcher.apply_filters")}
                   </Button>
-                  <Button variant="outline" className="w-full" onClick={clearFilters}>
-                    {t('dispatcher.clear_filters')}
+                  <Button
+                    className="w-full"
+                    variant="outline"
+                    onClick={clearFilters}
+                  >
+                    {t("dispatcher.clear_filters")}
                   </Button>
                 </div>
               </SheetContent>
@@ -1376,77 +1816,111 @@ export default function DispatcherPage() {
             {/* Menú superior (exportar / imprimir / enviar) */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label={t("ui.Dispatcher.masAcciones", "Más acciones")}>
+                <Button
+                  aria-label={t("ui.Dispatcher.masAcciones", "Más acciones")}
+                  size="icon"
+                  variant="ghost"
+                >
                   <EllipsisVertical className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-60">
-                <DropdownMenuItem onClick={async () => {
-                  try {
-                    // require exactly one selected id
-                    if (!selectedIds || selectedIds.length === 0) {
-                      toast.error(t('dispatcher.select_at_least_one_export'));
-                      return;
+                <DropdownMenuItem
+                  onClick={async () => {
+                    try {
+                      // require exactly one selected id
+                      if (!selectedIds || selectedIds.length === 0) {
+                        toast.error(t("dispatcher.select_at_least_one_export"));
+
+                        return;
+                      }
+                      // allow exporting multiple selected ids; backend will render one page per id
+                      const id = selectedIds[0];
+                      const idsParam = selectedIds.join(",");
+                      const tenantId = localStorage.getItem("tenantId");
+
+                      if (!tenantId) {
+                        toast.error(t("dispatcher.tenantUnavailable"));
+
+                        return;
+                      }
+
+                      // Determine backend origin from VITE_API_URL (no prod localhost fallback)
+                      const apiOrigin = getApiOrigin();
+
+                      if (!apiOrigin) {
+                        toast.error(t("dispatcher.pdf_generate_failed"));
+
+                        return;
+                      }
+
+                      // If `apiOrigin` already contains the `/api` prefix, avoid doubling it
+                      const apiPrefix = apiOrigin.endsWith("/api")
+                        ? ""
+                        : "/api";
+                      const url = `${apiOrigin}${apiPrefix}/tenant/${tenantId}/request/${id}/export/pdf?ids=${encodeURIComponent(idsParam)}`;
+
+                      // Always fetch the PDF with credentials to ensure auth cookies or CORS credentials are sent.
+                      // This avoids relying on `window.open(url)` which cannot attach Authorization headers.
+                      const headers = getAuthHeaders();
+
+                      const resp = await fetch(url, {
+                        method: "GET",
+                        credentials: "include",
+                        headers,
+                      });
+
+                      if (!resp.ok) {
+                        const text = await resp.text().catch(() => null);
+
+                        console.error(
+                          "Export PDF failed",
+                          text || resp.statusText,
+                        );
+                        toast.error(t("dispatcher.pdf_generate_failed"));
+
+                        return;
+                      }
+
+                      const contentType =
+                        resp.headers.get("content-type") || "";
+
+                      if (!contentType.includes("application/pdf")) {
+                        const text = await resp.text().catch(() => null);
+
+                        console.error("Expected PDF, got:", contentType, text);
+                        toast.error(t("dispatcher.pdf_invalid_response"));
+
+                        return;
+                      }
+
+                      const blob = await resp.blob();
+                      const blobUrl = URL.createObjectURL(blob);
+
+                      // open in new tab
+                      window.open(blobUrl, "_blank");
+                      // revoke after a delay
+                      setTimeout(() => URL.revokeObjectURL(blobUrl), 60 * 1000);
+                    } catch (err) {
+                      console.error("Export PDF error", err);
+                      toast.error(t("dispatcher.pdf_generate_failed"));
                     }
-                    // allow exporting multiple selected ids; backend will render one page per id
-                    const id = selectedIds[0];
-                    const idsParam = selectedIds.join(',');
-                    const tenantId = localStorage.getItem('tenantId');
-                    if (!tenantId) { toast.error(t('dispatcher.tenantUnavailable')); return; }
-
-                    // Determine backend origin from VITE_API_URL (no prod localhost fallback)
-                    const apiOrigin = getApiOrigin();
-                    if (!apiOrigin) { toast.error(t('dispatcher.pdf_generate_failed')); return; }
-
-                    // If `apiOrigin` already contains the `/api` prefix, avoid doubling it
-                    const apiPrefix = apiOrigin.endsWith('/api') ? '' : '/api';
-                    const url = `${apiOrigin}${apiPrefix}/tenant/${tenantId}/request/${id}/export/pdf?ids=${encodeURIComponent(idsParam)}`;
-
-                    // Always fetch the PDF with credentials to ensure auth cookies or CORS credentials are sent.
-                    // This avoids relying on `window.open(url)` which cannot attach Authorization headers.
-                    const headers = getAuthHeaders();
-
-                    const resp = await fetch(url, { method: 'GET', credentials: 'include', headers });
-                    if (!resp.ok) {
-                      const text = await resp.text().catch(() => null);
-                      console.error('Export PDF failed', text || resp.statusText);
-                      toast.error(t('dispatcher.pdf_generate_failed'));
-                      return;
-                    }
-
-                    const contentType = resp.headers.get('content-type') || '';
-                    if (!contentType.includes('application/pdf')) {
-                      const text = await resp.text().catch(() => null);
-                      console.error('Expected PDF, got:', contentType, text);
-                      toast.error(t('dispatcher.pdf_invalid_response'));
-                      return;
-                    }
-
-                    const blob = await resp.blob();
-                    const blobUrl = URL.createObjectURL(blob);
-                    // open in new tab
-                    window.open(blobUrl, '_blank');
-                    // revoke after a delay
-                    setTimeout(() => URL.revokeObjectURL(blobUrl), 60 * 1000);
-                  } catch (err) {
-                    console.error('Export PDF error', err);
-                    toast.error(t('dispatcher.pdf_generate_failed'));
-                  }
-                }}>
+                  }}
+                >
                   <FileDown className="mr-2 h-4 w-4" />
-                  {t('dispatcher.export_pdf')}
+                  {t("dispatcher.export_pdf")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleExportExcel}>
                   <FileSpreadsheet className="mr-2 h-4 w-4" />
-                  {t('dispatcher.export_excel')}
+                  {t("dispatcher.export_excel")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handlePrintSelected}>
                   <Printer className="mr-2 h-4 w-4" />
-                  {t('dispatcher.print')}
+                  {t("dispatcher.print")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleSendEmail}>
                   <Mail className="mr-2 h-4 w-4" />
-                  {t('dispatcher.send_report_email')}
+                  {t("dispatcher.send_report_email")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -1458,215 +1932,325 @@ export default function DispatcherPage() {
           <div
             className="mb-4 rounded-xl border p-3 text-sm"
             style={{
-              background: 'color-mix(in oklab, var(--bad) 12%, transparent)',
-              borderColor: 'color-mix(in oklab, var(--bad) 30%, transparent)',
-              color: 'var(--bad-text)',
+              background: "color-mix(in oklab, var(--bad) 12%, transparent)",
+              borderColor: "color-mix(in oklab, var(--bad) 30%, transparent)",
+              color: "var(--bad-text)",
             }}
           >
-            {forbiddenMessage ? resolveServerMessage(forbiddenMessage) : t('dispatcher.noPermissionViewBanner')}
+            {forbiddenMessage
+              ? resolveServerMessage(forbiddenMessage)
+              : t("dispatcher.noPermissionViewBanner")}
           </div>
         )}
         <div className="mt-4 overflow-hidden rounded-lg border">
           <div className="overflow-x-auto">
-          <table className="w-full min-w-[1000px] border-collapse text-left text-sm">
-            <thead className="bg-muted/30">
-              <tr className="border-b">
-                <th className="px-4 py-3">
-                  <Checkbox
-                    // Selects ALL filtered tickets (every loaded row), not just the
-                    // current page — otherwise Export/Print silently ships only the
-                    // ≤50 visible rows when the user believes they picked everything.
-                    checked={rows.length > 0 && rows.every((r) => selectedIds.includes(r.id))}
-                    onCheckedChange={(v) => {
-                      const checked = Boolean(v);
-                      if (checked) {
-                        setSelectedIds((prev) => {
-                          const ids = new Set(prev);
-                          rows.forEach((r) => ids.add(r.id));
-                          return Array.from(ids);
-                        });
-                      } else {
-                        setSelectedIds((prev) => prev.filter((id) => !rows.some((r) => r.id === id)));
+            <table className="w-full min-w-[1000px] border-collapse text-left text-sm">
+              <thead className="bg-muted/30">
+                <tr className="border-b">
+                  <th className="px-4 py-3">
+                    <Checkbox
+                      // Selects ALL filtered tickets (every loaded row), not just the
+                      // current page — otherwise Export/Print silently ships only the
+                      // ≤50 visible rows when the user believes they picked everything.
+                      checked={
+                        rows.length > 0 &&
+                        rows.every((r) => selectedIds.includes(r.id))
                       }
-                    }}
-                  />
-                </th>
-                <th className="px-4 py-3 font-semibold">{t('dispatcher.header_ticket_id')}</th>
-                <th className="px-4 py-3 font-semibold">{t('dispatcher.header_datetime')}</th>
-                <th className="px-4 py-3 font-semibold">{t('dispatcher.header_client')}</th>
-                <th className="px-4 py-3 font-semibold">{t('dispatcher.header_post_site')}</th>
-                <th className="px-4 py-3 font-semibold">{t('dispatcher.header_caller_type')}</th>
-                <th className="px-4 py-3 font-semibold">{t('dispatcher.header_incident_type')}</th>
-                <th className="px-4 py-3 font-semibold">{t('dispatcher.header_status')}</th>
-                <th className="px-4 py-3" />
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr><td colSpan={9} className="p-4"><SkeletonCards count={4} /></td></tr>
-              ) : rows.length === 0 ? (
-                <tr>
-                  {/* Antes había aquí una imagen «sin datos» servida desde un
+                      onCheckedChange={(v) => {
+                        const checked = Boolean(v);
+
+                        if (checked) {
+                          setSelectedIds((prev) => {
+                            const ids = new Set(prev);
+
+                            rows.forEach((r) => ids.add(r.id));
+
+                            return Array.from(ids);
+                          });
+                        } else {
+                          setSelectedIds((prev) =>
+                            prev.filter((id) => !rows.some((r) => r.id === id)),
+                          );
+                        }
+                      }}
+                    />
+                  </th>
+                  <th className="px-4 py-3 font-semibold">
+                    {t("dispatcher.header_ticket_id")}
+                  </th>
+                  <th className="px-4 py-3 font-semibold">
+                    {t("dispatcher.header_datetime")}
+                  </th>
+                  <th className="px-4 py-3 font-semibold">
+                    {t("dispatcher.header_client")}
+                  </th>
+                  <th className="px-4 py-3 font-semibold">
+                    {t("dispatcher.header_post_site")}
+                  </th>
+                  <th className="px-4 py-3 font-semibold">
+                    {t("dispatcher.header_caller_type")}
+                  </th>
+                  <th className="px-4 py-3 font-semibold">
+                    {t("dispatcher.header_incident_type")}
+                  </th>
+                  <th className="px-4 py-3 font-semibold">
+                    {t("dispatcher.header_status")}
+                  </th>
+                  <th className="px-4 py-3" />
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td className="p-4" colSpan={9}>
+                      <SkeletonCards count={4} />
+                    </td>
+                  </tr>
+                ) : rows.length === 0 ? (
+                  <tr>
+                    {/* Antes había aquí una imagen «sin datos» servida desde un
                       dominio externo: si ese servidor no responde, la tabla
                       vacía se queda con un icono roto. El vacío lo dibuja el
                       sistema. */}
-                  <td colSpan={9} className="py-10">
-                    <EmptyState
-                      icon={<FileText />}
-                      title={t('dispatcher.no_results_title')}
-                      description={t('dispatcher.no_results_subtitle')}
-                      className="border-0"
-                    />
-                  </td>
-                </tr>
-              ) : (
-                visibleRows.map((r) => (
-                  <tr key={r.id} className="border-b">
-                    <td className="px-4 py-3">
-                      <Checkbox
-                        checked={selectedIds.includes(r.id)}
-                        onCheckedChange={(v) => {
-                          const checked = Boolean(v);
-                          setSelectedIds((prev) => {
-                            if (checked) {
-                              if (prev.includes(r.id)) return prev;
-                              return [...prev, r.id];
-                            }
-                            return prev.filter((id) => id !== r.id);
-                          });
-                        }}
+                    <td className="py-10" colSpan={9}>
+                      <EmptyState
+                        className="border-0"
+                        description={t("dispatcher.no_results_subtitle")}
+                        icon={<FileText />}
+                        title={t("dispatcher.no_results_title")}
                       />
                     </td>
-                    <td className="px-4 py-3" title={r.id}>{r.id ? String(r.id).substring(0, 8) : '-'}</td>
-                    <td className="px-4 py-3">
-                      {
-                        (() => {
+                  </tr>
+                ) : (
+                  visibleRows.map((r) => (
+                    <tr key={r.id} className="border-b">
+                      <td className="px-4 py-3">
+                        <Checkbox
+                          checked={selectedIds.includes(r.id)}
+                          onCheckedChange={(v) => {
+                            const checked = Boolean(v);
+
+                            setSelectedIds((prev) => {
+                              if (checked) {
+                                if (prev.includes(r.id)) return prev;
+
+                                return [...prev, r.id];
+                              }
+
+                              return prev.filter((id) => id !== r.id);
+                            });
+                          }}
+                        />
+                      </td>
+                      <td className="px-4 py-3" title={r.id}>
+                        {r.id ? String(r.id).substring(0, 8) : "-"}
+                      </td>
+                      <td className="px-4 py-3">
+                        {(() => {
                           const dateValue = r.dateTime || r.incidentAt;
-                          if (!dateValue) return '-';
+
+                          if (!dateValue) return "-";
                           const d = new Date(dateValue);
-                          return isNaN(d.getTime()) ? '-' : d.toLocaleString();
-                        })()
-                      }
-                    </td>
-                    <td className="px-4 py-3">{getClientDisplay(r)}</td>
-                    <td className="px-4 py-3">{(r.site && typeof r.site === 'object') ? (r.site.name || r.site.companyName || r.site.address || String(r.site.id || '')) : (r.site || r.siteId || '-')}</td>
-                    <td className="px-4 py-3">{(r.callerType && typeof r.callerType === 'object') ? (r.callerType.name || r.callerType.id || '-') : (r.callerType || r.guardName?.fullName || r.guardName?.name || '-')}</td>
-                    <td className="px-4 py-3">{(r.incidentType && typeof r.incidentType === 'object') ? (r.incidentType.name || r.incidentType.id || '-') : (r.incidentType || r.incidentTypeId || '-')}</td>
-                    <td className="px-4 py-3">
-                      {
-                        (() => {
-                          const s = (r.status || '').toString().toLowerCase();
-                          if (s === 'cerrado' || s === 'closed') {
-                            return <StatusBadge tone="ok">{t('comun.cerrado')}</StatusBadge>;
+
+                          return isNaN(d.getTime()) ? "-" : d.toLocaleString();
+                        })()}
+                      </td>
+                      <td className="px-4 py-3">{getClientDisplay(r)}</td>
+                      <td className="px-4 py-3">
+                        {r.site && typeof r.site === "object"
+                          ? r.site.name ||
+                            r.site.companyName ||
+                            r.site.address ||
+                            String(r.site.id || "")
+                          : r.site || r.siteId || "-"}
+                      </td>
+                      <td className="px-4 py-3">
+                        {r.callerType && typeof r.callerType === "object"
+                          ? r.callerType.name || r.callerType.id || "-"
+                          : r.callerType ||
+                            r.guardName?.fullName ||
+                            r.guardName?.name ||
+                            "-"}
+                      </td>
+                      <td className="px-4 py-3">
+                        {r.incidentType && typeof r.incidentType === "object"
+                          ? r.incidentType.name || r.incidentType.id || "-"
+                          : r.incidentType || r.incidentTypeId || "-"}
+                      </td>
+                      <td className="px-4 py-3">
+                        {(() => {
+                          const s = (r.status || "").toString().toLowerCase();
+
+                          if (s === "cerrado" || s === "closed") {
+                            return (
+                              <StatusBadge tone="ok">
+                                {t("comun.cerrado")}
+                              </StatusBadge>
+                            );
                           }
 
-                          if (s === 'abierto' || s === 'open') {
+                          if (s === "abierto" || s === "open") {
                             // Un despacho abierto es trabajo PENDIENTE, no un
                             // fallo. Iba en `--bad`, el mismo rojo que un
                             // pánico: si todo lo normal es rojo, el rojo deja
                             // de avisar de nada.
-                            return <StatusBadge tone="warn">{t('comun.abierto')}</StatusBadge>;
+                            return (
+                              <StatusBadge tone="warn">
+                                {t("comun.abierto")}
+                              </StatusBadge>
+                            );
                           }
 
                           // Estado desconocido: píldora neutra con el valor tal cual.
-                          return <StatusBadge tone="neutral" dot={false}>{r.status || '-'}</StatusBadge>;
-                        })()
-                      }
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" aria-label={t("ui.Dispatcher.masAcciones", "Más acciones")}>
-                            <EllipsisVertical className="h-5 w-5" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-56">
-                          <DropdownMenuItem onClick={() => navigate(`/dispatch-tickets/${r.id}`)}>
-                            <div className="flex items-center w-full">
-                              <Eye className="mr-2 h-4 w-4" />
-                              {t('dispatcher.view_details')}
-                            </div>
-                          </DropdownMenuItem>
-
-                          <DropdownMenuItem onClick={() => window.open(`${window.location.origin}/dispatch-tickets/${r.id}`, '_blank')}>
-                            <div className="flex items-center">
-                              <ExternalLink className="mr-2 h-4 w-4" />
-                              {t('dispatcher.open_new_tab')}
-                            </div>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={(e: ReactMouseEvent) => {
-                            // open modal to choose expiry before creating share
-                            try { e?.preventDefault(); e?.stopPropagation(); } catch (_) { }
-                            setShareTargetId(r.id);
-                            setShareExpiry('24h');
-                            setShareDialogOpen(true);
-                          }}>
-                              <div className="flex items-center">
-                              <LinkIcon className="mr-2 h-4 w-4" />
-                              {t('dispatcher.generate_share_link')}
-                            </div>
-                          </DropdownMenuItem>
-
-                          <DropdownMenuItem>
-                            <Link to={`/dispatch-tickets/${r.id}/edit`} className="flex items-center w-full">
-                              <Edit className="mr-2 h-4 w-4" />
-                              {t('dispatcher.edit')}
-                            </Link>
-                          </DropdownMenuItem>
-
-                          <DropdownMenuItem onClick={async () => {
-                            try {
-                              const tenantId = localStorage.getItem('tenantId');
-                              if (!tenantId) return;
-                              const api = (await import('@/lib/api')).default;
-                              // Use PATCH for partial updates so unspecified fields are not nulled
-                              await api.patch(`/tenant/${tenantId}/request/${r.id}`, { data: { status: 'cerrado' } });
-                              toast.success(t('dispatcher.ticket_closed'));
-
-                              // Refresh the page so the UI state and any other views update
-                              try {
-                                // small delay so the success toast is visible before reload
-                                setTimeout(() => window.location.reload(), 400);
-                              } catch (e) {
-                                console.warn('Reload failed:', e);
+                          return (
+                            <StatusBadge dot={false} tone="neutral">
+                              {r.status || "-"}
+                            </StatusBadge>
+                          );
+                        })()}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              aria-label={t(
+                                "ui.Dispatcher.masAcciones",
+                                "Más acciones",
+                              )}
+                              size="icon"
+                              variant="ghost"
+                            >
+                              <EllipsisVertical className="h-5 w-5" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-56">
+                            <DropdownMenuItem
+                              onClick={() =>
+                                navigate(`/dispatch-tickets/${r.id}`)
                               }
-                            } catch (err) {
-                              console.error('Error cerrando ticket:', err);
-                              toast.error(t('dispatcher.ticket_close_failed'));
-                            }
-                          }}>
-                            <div className="flex items-center">
-                              <X className="mr-2 h-4 w-4" />
-                              {t('dispatcher.close_ticket')}
-                            </div>
-                          </DropdownMenuItem>
+                            >
+                              <div className="flex items-center w-full">
+                                <Eye className="mr-2 h-4 w-4" />
+                                {t("dispatcher.view_details")}
+                              </div>
+                            </DropdownMenuItem>
 
-                          <DropdownMenuItem onClick={() => {
-                            // Reuse the shared delete modal: set the selected id and open the confirmation dialog
-                            setSelectedIds([r.id]);
-                            setShowDeleteConfirm(true);
-                          }}>
+                            <DropdownMenuItem
+                              onClick={() =>
+                                window.open(
+                                  `${window.location.origin}/dispatch-tickets/${r.id}`,
+                                  "_blank",
+                                )
+                              }
+                            >
                               <div className="flex items-center">
-                              <Trash className="mr-2 h-4 w-4" />
-                              {t('dispatcher.action_delete_label')}
-                            </div>
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </td>
-                  </tr>
-                ))
-              )}
-              {/* Aquí mapear filas cuando haya datos */}
-            </tbody>
-          </table>
+                                <ExternalLink className="mr-2 h-4 w-4" />
+                                {t("dispatcher.open_new_tab")}
+                              </div>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={(e: ReactMouseEvent) => {
+                                // open modal to choose expiry before creating share
+                                try {
+                                  e?.preventDefault();
+                                  e?.stopPropagation();
+                                } catch (_) {}
+                                setShareTargetId(r.id);
+                                setShareExpiry("24h");
+                                setShareDialogOpen(true);
+                              }}
+                            >
+                              <div className="flex items-center">
+                                <LinkIcon className="mr-2 h-4 w-4" />
+                                {t("dispatcher.generate_share_link")}
+                              </div>
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem>
+                              <Link
+                                className="flex items-center w-full"
+                                to={`/dispatch-tickets/${r.id}/edit`}
+                              >
+                                <Edit className="mr-2 h-4 w-4" />
+                                {t("dispatcher.edit")}
+                              </Link>
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem
+                              onClick={async () => {
+                                try {
+                                  const tenantId =
+                                    localStorage.getItem("tenantId");
+
+                                  if (!tenantId) return;
+                                  const api = (await import("@/lib/api"))
+                                    .default;
+
+                                  // Use PATCH for partial updates so unspecified fields are not nulled
+                                  await api.patch(
+                                    `/tenant/${tenantId}/request/${r.id}`,
+                                    { data: { status: "cerrado" } },
+                                  );
+                                  toast.success(t("dispatcher.ticket_closed"));
+
+                                  // Refresh the page so the UI state and any other views update
+                                  try {
+                                    // small delay so the success toast is visible before reload
+                                    setTimeout(
+                                      () => window.location.reload(),
+                                      400,
+                                    );
+                                  } catch (e) {
+                                    console.warn("Reload failed:", e);
+                                  }
+                                } catch (err) {
+                                  console.error("Error cerrando ticket:", err);
+                                  toast.error(
+                                    t("dispatcher.ticket_close_failed"),
+                                  );
+                                }
+                              }}
+                            >
+                              <div className="flex items-center">
+                                <X className="mr-2 h-4 w-4" />
+                                {t("dispatcher.close_ticket")}
+                              </div>
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem
+                              onClick={() => {
+                                // Reuse the shared delete modal: set the selected id and open the confirmation dialog
+                                setSelectedIds([r.id]);
+                                setShowDeleteConfirm(true);
+                              }}
+                            >
+                              <div className="flex items-center">
+                                <Trash className="mr-2 h-4 w-4" />
+                                {t("dispatcher.action_delete_label")}
+                              </div>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </td>
+                    </tr>
+                  ))
+                )}
+                {/* Aquí mapear filas cuando haya datos */}
+              </tbody>
+            </table>
           </div>
 
           {/* Footer de tabla */}
           <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm text-foreground/70 bg-muted/30 border-x border-b rounded-b-lg">
             <div className="flex items-center gap-2">
-              <span>{t('dispatcher.items_per_page')}</span>
-              <Select value={String(limit)} onValueChange={(v) => { setLimit(Number(v)); setPage(1); }}>
+              <span>{t("dispatcher.items_per_page")}</span>
+              <Select
+                value={String(limit)}
+                onValueChange={(v) => {
+                  setLimit(Number(v));
+                  setPage(1);
+                }}
+              >
                 <SelectTrigger className="h-8 w-20">
                   <SelectValue />
                 </SelectTrigger>
@@ -1684,20 +2268,20 @@ export default function DispatcherPage() {
 
             <div className="flex gap-2">
               <Button
-                variant="outline"
-                size="sm"
                 disabled={page === 1 || loading}
+                size="sm"
+                variant="outline"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
               >
-                {t('dispatcher.prev')}
+                {t("dispatcher.prev")}
               </Button>
               <Button
-                variant="outline"
-                size="sm"
                 disabled={page * limit >= totalCount || loading}
+                size="sm"
+                variant="outline"
                 onClick={() => setPage((p) => p + 1)}
               >
-                {t('dispatcher.next')}
+                {t("dispatcher.next")}
               </Button>
             </div>
           </div>
@@ -1707,15 +2291,22 @@ export default function DispatcherPage() {
         <Dialog open={sendDialogOpen} onOpenChange={setSendDialogOpen}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>{t('dispatcher.send_report_title')}</DialogTitle>
-              <DialogDescription>{t('dispatcher.send_report_desc')}</DialogDescription>
+              <DialogTitle>{t("dispatcher.send_report_title")}</DialogTitle>
+              <DialogDescription>
+                {t("dispatcher.send_report_desc")}
+              </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-3 mt-4">
               <div>
                 <Label>Formato</Label>
-                <Select value={emailFormat} onValueChange={(v) => setEmailFormat(v as 'pdf' | 'xlsx')}>
-                  <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                <Select
+                  value={emailFormat}
+                  onValueChange={(v) => setEmailFormat(v as "pdf" | "xlsx")}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="pdf">PDF</SelectItem>
                     <SelectItem value="xlsx">Excel</SelectItem>
@@ -1725,83 +2316,157 @@ export default function DispatcherPage() {
 
               <div>
                 <Label>Responder a (opcional)</Label>
-                <Input value={emailReplyTo} onChange={(e) => setEmailReplyTo(e.target.value)} placeholder={t('ui.DispatcherPage.porDefectoElCorreoDe')} />
+                <Input
+                  placeholder={t("ui.DispatcherPage.porDefectoElCorreoDe")}
+                  value={emailReplyTo}
+                  onChange={(e) => setEmailReplyTo(e.target.value)}
+                />
               </div>
 
               <div>
-                <Label>{t('ui.DispatcherPage.para')}</Label>
-                <Input value={emailTo} onChange={(e) => setEmailTo(e.target.value)} placeholder={t('ui.DispatcherPage.correoEmpresaComSeparaVarios')} />
+                <Label>{t("ui.DispatcherPage.para")}</Label>
+                <Input
+                  placeholder={t(
+                    "ui.DispatcherPage.correoEmpresaComSeparaVarios",
+                  )}
+                  value={emailTo}
+                  onChange={(e) => setEmailTo(e.target.value)}
+                />
               </div>
 
               <div>
                 <Label>Asunto</Label>
-                <Input value={emailSubject} onChange={(e) => setEmailSubject(e.target.value)} />
+                <Input
+                  value={emailSubject}
+                  onChange={(e) => setEmailSubject(e.target.value)}
+                />
               </div>
 
               <div>
                 <Label>Mensaje</Label>
-                <Textarea value={emailMessage} onChange={(e) => setEmailMessage(e.target.value)} />
+                <Textarea
+                  value={emailMessage}
+                  onChange={(e) => setEmailMessage(e.target.value)}
+                />
               </div>
             </div>
 
             <DialogFooter className="mt-4 flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setSendDialogOpen(false)}>{t('dispatcher.cancel')}</Button>
-              <Button variant="brand" onClick={performSend} disabled={sendingEmail}>{sendingEmail ? t('dispatcher.sending') : t('common.send')}</Button>
+              <Button
+                variant="outline"
+                onClick={() => setSendDialogOpen(false)}
+              >
+                {t("dispatcher.cancel")}
+              </Button>
+              <Button
+                disabled={sendingEmail}
+                variant="brand"
+                onClick={performSend}
+              >
+                {sendingEmail ? t("dispatcher.sending") : t("common.send")}
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
 
         {/* Share expiration dialog */}
-        <AlertDialog open={shareDialogOpen} onOpenChange={(v) => { setShareDialogOpen(v); if (!v) setShareTargetId(null); }}>
+        <AlertDialog
+          open={shareDialogOpen}
+          onOpenChange={(v) => {
+            setShareDialogOpen(v);
+            if (!v) setShareTargetId(null);
+          }}
+        >
           <AlertDialogContent>
             <div ref={shareDialogRef} onClick={(e) => e.stopPropagation()}>
               <AlertDialogHeader className="text-center">
-                <AlertDialogTitle className="text-center text-lg font-semibold">Generar enlace compartible</AlertDialogTitle>
+                <AlertDialogTitle className="text-center text-lg font-semibold">
+                  Generar enlace compartible
+                </AlertDialogTitle>
                 <AlertDialogDescription className="text-left">
-                  Seleccione el período de validez del enlace compartible. "Nunca" dejará el enlace sin expiración.
+                  Seleccione el período de validez del enlace compartible.
+                  "Nunca" dejará el enlace sin expiración.
                 </AlertDialogDescription>
               </AlertDialogHeader>
 
               <div className="mt-4 space-y-3 px-4">
                 <label className="flex items-center gap-2">
-                  <input type="radio" name="shareExpiry" checked={shareExpiry === '1h'} onChange={() => setShareExpiry('1h')} />
+                  <input
+                    checked={shareExpiry === "1h"}
+                    name="shareExpiry"
+                    type="radio"
+                    onChange={() => setShareExpiry("1h")}
+                  />
                   <span>1 hora</span>
                 </label>
                 <label className="flex items-center gap-2">
-                  <input type="radio" name="shareExpiry" checked={shareExpiry === '24h'} onChange={() => setShareExpiry('24h')} />
+                  <input
+                    checked={shareExpiry === "24h"}
+                    name="shareExpiry"
+                    type="radio"
+                    onChange={() => setShareExpiry("24h")}
+                  />
                   <span>24 horas</span>
                 </label>
                 <label className="flex items-center gap-2">
-                  <input type="radio" name="shareExpiry" checked={shareExpiry === '7d'} onChange={() => setShareExpiry('7d')} />
+                  <input
+                    checked={shareExpiry === "7d"}
+                    name="shareExpiry"
+                    type="radio"
+                    onChange={() => setShareExpiry("7d")}
+                  />
                   <span>{t("ui.Dispatcher.7Dias", "7 días")}</span>
                 </label>
                 <label className="flex items-center gap-2">
-                  <input type="radio" name="shareExpiry" checked={shareExpiry === 'never'} onChange={() => setShareExpiry('never')} />
+                  <input
+                    checked={shareExpiry === "never"}
+                    name="shareExpiry"
+                    type="radio"
+                    onChange={() => setShareExpiry("never")}
+                  />
                   <span>Nunca</span>
                 </label>
               </div>
 
               <AlertDialogFooter>
-                <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>
-                <AlertDialogAction className="cg-btn-brand" onClick={handleCreateShare} disabled={shareLoading}>
-                  {shareLoading ? 'Creando...' : 'Generar y copiar'}
+                <AlertDialogCancel>{t("actions.cancel")}</AlertDialogCancel>
+                <AlertDialogAction
+                  className="cg-btn-brand"
+                  disabled={shareLoading}
+                  onClick={handleCreateShare}
+                >
+                  {shareLoading ? "Creando..." : "Generar y copiar"}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </div>
           </AlertDialogContent>
         </AlertDialog>
 
-        <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialog
+          open={showDeleteConfirm}
+          onOpenChange={setShowDeleteConfirm}
+        >
           <AlertDialogContent>
             <AlertDialogHeader className="text-center">
-              <AlertDialogTitle className="text-center text-lg font-semibold">{t("ui.Dispatcher.confirmarEliminacion", "Confirmar eliminación")}</AlertDialogTitle>
+              <AlertDialogTitle className="text-center text-lg font-semibold">
+                {t(
+                  "ui.Dispatcher.confirmarEliminacion",
+                  "Confirmar eliminación",
+                )}
+              </AlertDialogTitle>
               <AlertDialogDescription className="text-left">
-                ¿Está seguro de eliminar {selectedIds.length} Incidente(s)? Esta acción no se puede deshacer.
+                ¿Está seguro de eliminar {selectedIds.length} Incidente(s)? Esta
+                acción no se puede deshacer.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>
-              <AlertDialogAction className="cg-btn-bad" onClick={handleConfirmDelete}>{t('actions.delete')}</AlertDialogAction>
+              <AlertDialogCancel>{t("actions.cancel")}</AlertDialogCancel>
+              <AlertDialogAction
+                className="cg-btn-bad"
+                onClick={handleConfirmDelete}
+              >
+                {t("actions.delete")}
+              </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

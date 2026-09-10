@@ -20,22 +20,29 @@
 
 /** Minutos desde medianoche de un "HH:MM" (0 si no se puede leer). */
 export function aMinutos(hhmm: string): number {
-  const [h, m] = String(hhmm || '').split(':').map((n) => parseInt(n, 10));
+  const [h, m] = String(hhmm || "")
+    .split(":")
+    .map((n) => parseInt(n, 10));
+
   if (!Number.isFinite(h)) return 0;
+
   return ((h % 24) * 60 + ((Number.isFinite(m) ? m : 0) % 60) + 1440) % 1440;
 }
 
 /** "HH:MM" a partir de minutos desde medianoche (envuelve a las 24 h). */
 export function aHHMM(min: number): string {
   const v = ((Math.round(min) % 1440) + 1440) % 1440;
-  return `${String(Math.floor(v / 60)).padStart(2, '0')}:${String(v % 60).padStart(2, '0')}`;
+
+  return `${String(Math.floor(v / 60)).padStart(2, "0")}:${String(v % 60).padStart(2, "0")}`;
 }
 
 /** Cómo llama la gente al tramo que EMPIEZA a esa hora. */
-export function nombreDeTramo(hhmm: string): 'mañana' | 'tarde' | 'noche' {
+export function nombreDeTramo(hhmm: string): "mañana" | "tarde" | "noche" {
   const h = Math.floor(aMinutos(hhmm) / 60);
-  if (h >= 18 || h < 6) return 'noche';
-  return h >= 12 ? 'tarde' : 'mañana';
+
+  if (h >= 18 || h < 6) return "noche";
+
+  return h >= 12 ? "tarde" : "mañana";
 }
 
 /** Las ventanas de los `bloques` tramos en que se parte una cobertura. */
@@ -46,9 +53,15 @@ export function ventanasDeBloques(
 ): { start: string; end: string; nombre: string }[] {
   if (!inicio || minutosPorBloque <= 0 || bloques <= 0) return [];
   const base = aMinutos(inicio);
+
   return Array.from({ length: bloques }, (_, i) => {
     const start = aHHMM(base + i * minutosPorBloque);
-    return { start, end: aHHMM(base + (i + 1) * minutosPorBloque), nombre: nombreDeTramo(start) };
+
+    return {
+      start,
+      end: aHHMM(base + (i + 1) * minutosPorBloque),
+      nombre: nombreDeTramo(start),
+    };
   });
 }
 
@@ -65,9 +78,10 @@ export function etiquetaSegundoTramo(
   minutosPorBloque: number,
   bloques: number,
 ): string {
-  if (bloques < 2) return 'noche';
+  if (bloques < 2) return "noche";
   const vs = ventanasDeBloques(inicio, minutosPorBloque, bloques);
-  return vs[1]?.nombre || 'noche';
+
+  return vs[1]?.nombre || "noche";
 }
 
 /** El nombre del PRIMER tramo. Con un solo bloque no hay tramos que nombrar. */
@@ -76,6 +90,9 @@ export function etiquetaPrimerTramo(
   minutosPorBloque: number,
   bloques: number,
 ): string {
-  if (bloques < 2) return 'día';
-  return ventanasDeBloques(inicio, minutosPorBloque, bloques)[0]?.nombre || 'día';
+  if (bloques < 2) return "día";
+
+  return (
+    ventanasDeBloques(inicio, minutosPorBloque, bloques)[0]?.nombre || "día"
+  );
 }

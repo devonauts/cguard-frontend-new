@@ -1,3 +1,5 @@
+import type { ActivityItem } from "../types";
+
 import { memo } from "react";
 /**
  * El parte de novedades: lo que está pasando en la operación, en orden. Cada
@@ -8,86 +10,136 @@ import { memo } from "react";
  * fondo en cada fotograma y aquí hay hasta 30 filas que además se desplazan
  * (ver la nota de coste en glass.css).
  */
-import { AlertTriangle, LogIn, Route, Siren, Activity as ActivityIcon, Radio } from "lucide-react";
+import {
+  AlertTriangle,
+  LogIn,
+  Route,
+  Siren,
+  Activity as ActivityIcon,
+  Radio,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { EmptyState, IconTile } from "@/components/kit";
-import type { ActivityItem } from "../types";
+
 import { activityRoute } from "../navigation";
 import { clockOf, timeAgo, toneFill, toneOf } from "../tone";
+
 import { Panel, PanelLink, TonePill } from "./Panel";
 
+import { EmptyState, IconTile } from "@/components/kit";
+
 const ICON = {
-  incident: AlertTriangle, checkin: LogIn, patrol: Route, alert: Siren, system: Radio, event: ActivityIcon,
+  incident: AlertTriangle,
+  checkin: LogIn,
+  patrol: Route,
+  alert: Siren,
+  system: Radio,
+  event: ActivityIcon,
 } as const;
 
 const KIND_LABEL: Record<ActivityItem["kind"], string> = {
-  incident: "Incidente", checkin: "Fichaje", patrol: "Ronda",
-  alert: "Alerta", system: "Sistema", event: "Novedad",
+  incident: "Incidente",
+  checkin: "Fichaje",
+  patrol: "Ronda",
+  alert: "Alerta",
+  system: "Sistema",
+  event: "Novedad",
 };
 
-function ActivityStreamBase({ items, live, className }: { items: ActivityItem[]; live?: boolean; className?: string }) {
+function ActivityStreamBase({
+  items,
+  live,
+  className,
+}: {
+  items: ActivityItem[];
+  live?: boolean;
+  className?: string;
+}) {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
   return (
     <Panel
-      className={className}
-      icon={<ActivityIcon />}
-      title={t('ui.ActivityStream.parteDeNovedades', 'Parte de novedades')}
-      subtitle={items.length ? `${items.length} eventos recientes` : "Sin eventos todavía"}
-      live={live}
       action={<PanelLink to="/activities" />}
       bodyClassName="p-2"
+      className={className}
+      icon={<ActivityIcon />}
+      live={live}
+      subtitle={
+        items.length
+          ? `${items.length} eventos recientes`
+          : "Sin eventos todavía"
+      }
+      title={t("ui.ActivityStream.parteDeNovedades", "Parte de novedades")}
     >
       {items.length === 0 ? (
         <EmptyState
           className="m-3 border-0"
-          icon={<ActivityIcon />}
-          title={t('ui.Coverage.sinNovedades', 'Sin novedades')}
           description="Fichajes, rondas, incidentes y alertas aparecerán aquí conforme ocurran."
+          icon={<ActivityIcon />}
+          title={t("ui.Coverage.sinNovedades", "Sin novedades")}
         />
       ) : (
         <div className="cmd-scroll cmd-fade-b max-h-[26rem] px-1">
           {items.map((it) => {
             const Icon = ICON[it.kind] || ActivityIcon;
             const tone = toneOf(it.status);
-            const urgente = it.status === "emergency" || it.status === "incident";
+            const urgente =
+              it.status === "emergency" || it.status === "incident";
             const to = activityRoute(it);
+
             return (
               <div
                 key={it.id}
-                role="button"
-                tabIndex={0}
                 aria-label={it.title}
+                className="cmd-row cg-focus flex cursor-pointer items-center gap-3 px-3 py-2.5"
+                role="button"
+                style={{ ["--cmd-tone" as string]: toneFill(tone) }}
+                tabIndex={0}
                 onClick={() => navigate(to)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate(to); }
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    navigate(to);
+                  }
                 }}
-                className="cmd-row cg-focus flex cursor-pointer items-center gap-3 px-3 py-2.5"
-                style={{ ["--cmd-tone" as string]: toneFill(tone) }}
               >
-                <IconTile tone={tone} size="sm" className="relative">
+                <IconTile className="relative" size="sm" tone={tone}>
                   <Icon />
                   {urgente && (
-                    <span className="cc-dot absolute -right-0.5 -top-0.5" style={{ background: toneFill(tone) }} />
+                    <span
+                      className="cc-dot absolute -right-0.5 -top-0.5"
+                      style={{ background: toneFill(tone) }}
+                    />
                   )}
                 </IconTile>
 
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{it.title}</p>
                   {it.sub && (
-                    <p className="truncate text-xs" style={{ color: "var(--ink-faint)" }}>{it.sub}</p>
+                    <p
+                      className="truncate text-xs"
+                      style={{ color: "var(--ink-faint)" }}
+                    >
+                      {it.sub}
+                    </p>
                   )}
                 </div>
 
-                <TonePill tone={tone} className="hidden sm:inline-flex">
+                <TonePill className="hidden sm:inline-flex" tone={tone}>
                   {KIND_LABEL[it.kind]}
                 </TonePill>
 
                 <div className="w-20 shrink-0 text-right">
-                  <div className="text-xs font-semibold tabular-nums">{timeAgo(it.at)}</div>
-                  <div className="text-[10px] tabular-nums" style={{ color: "var(--ink-faint)" }}>{clockOf(it.at)}</div>
+                  <div className="text-xs font-semibold tabular-nums">
+                    {timeAgo(it.at)}
+                  </div>
+                  <div
+                    className="text-[10px] tabular-nums"
+                    style={{ color: "var(--ink-faint)" }}
+                  >
+                    {clockOf(it.at)}
+                  </div>
                 </div>
               </div>
             );

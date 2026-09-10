@@ -1,30 +1,31 @@
-import { ApiService } from '../api/apiService'
-import { deviceSignals } from './deviceFingerprint'
+import { ApiService } from "../api/apiService";
+
+import { deviceSignals } from "./deviceFingerprint";
 
 export interface LoginCredentials {
-  email: string
-  password: string
+  email: string;
+  password: string;
 }
 
 export interface SignUpData {
-  email: string
-  password: string
-  name: string
+  email: string;
+  password: string;
+  name: string;
   /** Formato internacional, tal como lo entrega `PhoneInput`: +593987654321. */
-  phoneNumber: string
-  invitationToken?: string
-  tenantId?: string
+  phoneNumber: string;
+  invitationToken?: string;
+  tenantId?: string;
   /** Token del captcha. Ausente cuando la plataforma no lo tiene configurado. */
-  captchaToken?: string
+  captchaToken?: string;
   /** Campo trampa: SIEMPRE vacío en un envío humano (va oculto por CSS). */
-  companyWebsite?: string
+  companyWebsite?: string;
   /** Milisegundos entre pintar el formulario y enviarlo. */
-  elapsedMs?: number
+  elapsedMs?: number;
 }
 
 export interface AuthResponse {
-  token: string
-  user?: any
+  token: string;
+  user?: any;
 }
 
 export class AuthService {
@@ -37,13 +38,14 @@ export class AuthService {
       // request so the superadmin panel can tell "same person, new account" from
       // "different person". Best-effort: never blocks the login. See
       // deviceFingerprint.ts — review signal only, not an auth input.
-      const signals = await deviceSignals()
+      const signals = await deviceSignals();
       const response = await ApiService.post(
-        '/auth/sign-in',
-        { ...credentials, ...signals, app: 'web' },
-        { skipAuth: true }
-      )
-      return response
+        "/auth/sign-in",
+        { ...credentials, ...signals, app: "web" },
+        { skipAuth: true },
+      );
+
+      return response;
     } catch (err: any) {
       // AQUÍ NO SE REENVÍA NADA. Esto llamaba a
       // `/auth/send-email-address-verification-email` en cada intento fallido,
@@ -56,7 +58,7 @@ export class AuthService {
       // con el enlace para crear la contraseña de quien nunca la puso.
       // (Además la comparación estaba rota: `err.message` trae el texto ya
       // traducido, nunca el código, así que este bloque no llegó a ejecutarse.)
-      throw err
+      throw err;
     }
   }
 
@@ -64,14 +66,16 @@ export class AuthService {
     // Some backends expect `fullName` or `firstName` instead of `name`.
     // Include both to improve compatibility with different schemas.
     // split name into firstName and lastName
-    const rawName = (data as any).name ? String((data as any).name).trim() : ''
-    let firstName: string | undefined = undefined
-    let lastName: string | undefined = undefined
+    const rawName = (data as any).name ? String((data as any).name).trim() : "";
+    let firstName: string | undefined = undefined;
+    let lastName: string | undefined = undefined;
+
     if (rawName) {
-      const parts = rawName.split(/\s+/)
-      firstName = parts[0]
+      const parts = rawName.split(/\s+/);
+
+      firstName = parts[0];
       if (parts.length > 1) {
-        lastName = parts.slice(1).join(' ')
+        lastName = parts.slice(1).join(" ");
       }
     }
 
@@ -84,14 +88,17 @@ export class AuthService {
       // El servidor lo normaliza y lo exige; se manda tal cual lo dejó el
       // componente, en formato internacional.
       phoneNumber: (data as any).phoneNumber || undefined,
-    }
+    };
     // NOTE: never log `payload`/`response` here — they contain the plaintext password.
-    const response = await ApiService.post('/auth/sign-up', payload, { skipAuth: true })
-    return response
+    const response = await ApiService.post("/auth/sign-up", payload, {
+      skipAuth: true,
+    });
+
+    return response;
   }
 
   static async getProfile(): Promise<any> {
-    return ApiService.get('/auth/me')
+    return ApiService.get("/auth/me");
   }
 
   static async signOut(): Promise<void> {
@@ -108,18 +115,29 @@ export class AuthService {
     // Best-effort: si falla, la sesión se cierra igual. Nunca puede dejar a
     // alguien atrapado dentro del CRM.
     try {
-      await ApiService.post('/auth/sign-out', {})
+      await ApiService.post("/auth/sign-out", {});
     } catch {
       /* sin red o token ya caducado: la sesión se cierra igual */
     }
   }
 
   static async sendPasswordResetEmail(email: string): Promise<void> {
-    return ApiService.post('/auth/send-password-reset-email', { email }, { skipAuth: true })
+    return ApiService.post(
+      "/auth/send-password-reset-email",
+      { email },
+      { skipAuth: true },
+    );
   }
 
-  static async resetPassword(token: string, newPassword: string): Promise<void> {
+  static async resetPassword(
+    token: string,
+    newPassword: string,
+  ): Promise<void> {
     // Backend expects PUT /auth/password-reset with { token, password }
-    return ApiService.put('/auth/password-reset', { token, password: newPassword }, { skipAuth: true })
+    return ApiService.put(
+      "/auth/password-reset",
+      { token, password: newPassword },
+      { skipAuth: true },
+    );
   }
 }

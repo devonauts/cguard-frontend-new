@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { radioDenied, playTalkPermit, playRoger } from "@/lib/radioTones";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { Mic, Loader2, Users, Radio, LogOut, Volume2 } from "lucide-react";
+
+import { radioDenied, playTalkPermit, playRoger } from "@/lib/radioTones";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   subscribeRadio,
@@ -32,10 +33,18 @@ export default function RadioLiveChannelPanel() {
   const [localHint, setLocalHint] = useState<string | null>(null);
   const pressedRef = useRef(false);
 
-  useEffect(() => { setRadioSelf(myId); }, [myId]);
+  useEffect(() => {
+    setRadioSelf(myId);
+  }, [myId]);
 
-  const join = () => { setRadioSelf(myId); radioResume(); setRadioOn(true); };
-  const leave = () => { setRadioOn(false); };
+  const join = () => {
+    setRadioSelf(myId);
+    radioResume();
+    setRadioOn(true);
+  };
+  const leave = () => {
+    setRadioOn(false);
+  };
 
   const someoneElseTalking = !!speaker && speaker.userId !== myId;
 
@@ -44,8 +53,18 @@ export default function RadioLiveChannelPanel() {
 
   const beginTalk = async () => {
     const r = await radioStartTalk();
-    if (!pressedRef.current) { radioStopTalk(); return; } // released mid-acquire
-    if (r?.ok) { transmitiRef.current = true; playTalkPermit(); return; }
+
+    if (!pressedRef.current) {
+      radioStopTalk();
+
+      return;
+    } // released mid-acquire
+    if (r?.ok) {
+      transmitiRef.current = true;
+      playTalkPermit();
+
+      return;
+    }
     transmitiRef.current = false;
     radioDenied();
     if (r?.error && r.error !== "off") setLocalHint(r.error);
@@ -59,22 +78,36 @@ export default function RadioLiveChannelPanel() {
   const onPttDown = (e: React.PointerEvent) => {
     if (someoneElseTalking) {
       radioDenied();
-      setLocalHint(`${speaker?.name || t('ui.radio.alguien', 'Alguien')} ${t('ui.radio.estaHablando', 'está hablando')}`);
+      setLocalHint(
+        `${speaker?.name || t("ui.radio.alguien", "Alguien")} ${t("ui.radio.estaHablando", "está hablando")}`,
+      );
+
       return;
     }
-    try { (e.currentTarget as any).setPointerCapture?.(e.pointerId); } catch { /* ignore */ }
+    try {
+      (e.currentTarget as any).setPointerCapture?.(e.pointerId);
+    } catch {
+      /* ignore */
+    }
     pressedRef.current = true;
     setLocalHint(null);
     radioResume();
     void beginTalk();
   };
   const onPttUp = (e: React.PointerEvent) => {
-    try { (e.currentTarget as any).releasePointerCapture?.(e.pointerId); } catch { /* ignore */ }
+    try {
+      (e.currentTarget as any).releasePointerCapture?.(e.pointerId);
+    } catch {
+      /* ignore */
+    }
     pressedRef.current = false;
     radioStopTalk();
     // El «terminé» sólo si de verdad se transmitió: sonarlo tras un rebote
     // diría que se envió algo que nadie oyó.
-    if (transmitiRef.current) { transmitiRef.current = false; playRoger(); }
+    if (transmitiRef.current) {
+      transmitiRef.current = false;
+      playRoger();
+    }
   };
 
   const shownHint = hint || localHint;
@@ -85,80 +118,160 @@ export default function RadioLiveChannelPanel() {
     <div className="glass p-4">
       <div className="mb-3 flex items-center gap-2">
         <Radio size={16} style={{ color: "var(--brand-text)" }} />
-        <h2 className="flex-1 text-sm font-semibold">{t('ui.RadioLiveChannelPanel.canalAbiertoVozEnVivo')}</h2>
+        <h2 className="flex-1 text-sm font-semibold">
+          {t("ui.RadioLiveChannelPanel.canalAbiertoVozEnVivo")}
+        </h2>
         {joined && (
           <span
             className="flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px]"
-            style={{ background: "var(--glass-sunken)", color: "var(--ink-soft)" }}
-          ><Users size={12} /> {roster.length}</span>
+            style={{
+              background: "var(--glass-sunken)",
+              color: "var(--ink-soft)",
+            }}
+          >
+            <Users size={12} /> {roster.length}
+          </span>
         )}
       </div>
 
       {!joined ? (
         <div className="flex flex-col items-center gap-3 py-4 text-center">
           <Volume2 size={28} style={{ color: "var(--ink-faint)" }} />
-          <p className="text-xs" style={{ color: "var(--ink-soft)" }}>{t("ui.RadioLiveChannelPanel.uneteParaEscucharYHablar", "Únete para escuchar y hablar con los vigilantes en tiempo real (push-to-talk).")}</p>
+          <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
+            {t(
+              "ui.RadioLiveChannelPanel.uneteParaEscucharYHablar",
+              "Únete para escuchar y hablar con los vigilantes en tiempo real (push-to-talk).",
+            )}
+          </p>
           <button
-            onClick={join}
-            disabled={busy}
             className="cg-btn-brand cg-focus flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-[filter] hover:brightness-105 disabled:opacity-50"
+            disabled={busy}
+            onClick={join}
           >
-            {busy ? <Loader2 size={15} className="animate-spin" /> : <Radio size={15} />} Unirse al canal
+            {busy ? (
+              <Loader2 className="animate-spin" size={15} />
+            ) : (
+              <Radio size={15} />
+            )}{" "}
+            Unirse al canal
           </button>
-          {shownHint && <p className="text-[11px]" style={{ color: "var(--bad-text)" }}>{shownHint}</p>}
+          {shownHint && (
+            <p className="text-[11px]" style={{ color: "var(--bad-text)" }}>
+              {shownHint}
+            </p>
+          )}
         </div>
       ) : (
         <div className="space-y-3">
           <div
             className="rounded-lg px-3 py-2 text-center text-sm font-semibold"
-            style={speaker
-              ? { background: "var(--brand-wash)", color: "var(--brand-text)", boxShadow: "inset 0 0 0 1px var(--brand-line)" }
-              : { background: "var(--glass-sunken)", color: "var(--ink-soft)" }}
+            style={
+              speaker
+                ? {
+                    background: "var(--brand-wash)",
+                    color: "var(--brand-text)",
+                    boxShadow: "inset 0 0 0 1px var(--brand-line)",
+                  }
+                : {
+                    background: "var(--glass-sunken)",
+                    color: "var(--ink-soft)",
+                  }
+            }
           >
-            {speaker ? `${speaker.userId === myId ? "Estás hablando" : `${speaker.name} está hablando`}…` : (state === "connected" ? "Canal libre" : "Conectando…")}
+            {speaker
+              ? `${speaker.userId === myId ? "Estás hablando" : `${speaker.name} está hablando`}…`
+              : state === "connected"
+                ? "Canal libre"
+                : "Conectando…"}
           </div>
 
           <div className="flex items-center justify-center gap-3 py-1">
             <button
+              className="cg-focus flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-[filter] hover:brightness-105"
+              style={
+                {
+                  touchAction: "none",
+                  WebkitUserSelect: "none",
+                  userSelect: "none",
+                  ...(talking
+                    ? {
+                        background: "var(--bad)",
+                        color: "oklch(1 0 0)",
+                        boxShadow:
+                          "0 0 26px -6px color-mix(in oklab, var(--bad) 55%, transparent)",
+                      }
+                    : {
+                        background: "var(--brand)",
+                        color: "var(--brand-ink)",
+                        boxShadow: "0 6px 20px -8px var(--brand-glow)",
+                      }),
+                } as any
+              }
+              onContextMenu={(e) => e.preventDefault()}
+              onPointerCancel={onPttUp}
               onPointerDown={onPttDown}
               onPointerUp={onPttUp}
-              onPointerCancel={onPttUp}
-              onContextMenu={(e) => e.preventDefault()}
-              style={{
-                touchAction: "none",
-                WebkitUserSelect: "none",
-                userSelect: "none",
-                ...(talking
-                  ? { background: "var(--bad)", color: "oklch(1 0 0)", boxShadow: "0 0 26px -6px color-mix(in oklab, var(--bad) 55%, transparent)" }
-                  : { background: "var(--brand)", color: "var(--brand-ink)", boxShadow: "0 6px 20px -8px var(--brand-glow)" }),
-              } as any}
-              className="cg-focus flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-[filter] hover:brightness-105"
             >
-              <Mic size={18} /> {talking ? "Transmitiendo…" : "Mantén para hablar"}
+              <Mic size={18} />{" "}
+              {talking ? "Transmitiendo…" : "Mantén para hablar"}
             </button>
             <button
-              onClick={leave}
               className="cg-btn-glass cg-focus rounded-lg p-2.5"
-              title={t('ui.RadioLiveChannelPanel.salirDelCanal')}
-            ><LogOut size={16} /></button>
+              title={t("ui.RadioLiveChannelPanel.salirDelCanal")}
+              onClick={leave}
+            >
+              <LogOut size={16} />
+            </button>
           </div>
 
           {roster.length > 0 && (
-            <div className="divide-y rounded-lg border" style={{ borderColor: "var(--hairline)" }}>
+            <div
+              className="divide-y rounded-lg border"
+              style={{ borderColor: "var(--hairline)" }}
+            >
               {roster.map((m) => (
-                <div key={m.userId} className="flex items-center gap-2 px-3 py-2 text-sm" style={{ borderColor: "var(--hairline)" }}>
+                <div
+                  key={m.userId}
+                  className="flex items-center gap-2 px-3 py-2 text-sm"
+                  style={{ borderColor: "var(--hairline)" }}
+                >
                   <span
-                    className={speaker?.userId === m.userId ? "cc-dot" : "h-2 w-2 rounded-full"}
-                    style={{ background: speaker?.userId === m.userId ? "var(--brand)" : "var(--ok)" }}
+                    className={
+                      speaker?.userId === m.userId
+                        ? "cc-dot"
+                        : "h-2 w-2 rounded-full"
+                    }
+                    style={{
+                      background:
+                        speaker?.userId === m.userId
+                          ? "var(--brand)"
+                          : "var(--ok)",
+                    }}
                   />
-                  <span className="flex-1 truncate">{m.name}{m.userId === myId ? " (tú)" : ""}</span>
-                  {speaker?.userId === m.userId && <Mic size={13} style={{ color: "var(--brand-text)" }} />}
+                  <span className="flex-1 truncate">
+                    {m.name}
+                    {m.userId === myId ? " (tú)" : ""}
+                  </span>
+                  {speaker?.userId === m.userId && (
+                    <Mic size={13} style={{ color: "var(--brand-text)" }} />
+                  )}
                 </div>
               ))}
             </div>
           )}
-          {someoneElseTalking && <p className="text-center text-[11px]" style={{ color: "var(--ink-soft)" }}>{t('ui.RadioLiveChannelPanel.puedesHablarCuandoQuierasEl')}</p>}
-          {shownHint && <p className="text-[11px]" style={{ color: "var(--bad-text)" }}>{shownHint}</p>}
+          {someoneElseTalking && (
+            <p
+              className="text-center text-[11px]"
+              style={{ color: "var(--ink-soft)" }}
+            >
+              {t("ui.RadioLiveChannelPanel.puedesHablarCuandoQuierasEl")}
+            </p>
+          )}
+          {shownHint && (
+            <p className="text-[11px]" style={{ color: "var(--bad-text)" }}>
+              {shownHint}
+            </p>
+          )}
         </div>
       )}
     </div>

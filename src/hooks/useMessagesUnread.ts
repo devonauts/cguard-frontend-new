@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import { messageService } from "@/lib/api/messageService";
 import { crearSocket, cerrarSocket } from "@/lib/socket";
 import { getAuthToken } from "@/lib/api";
@@ -63,6 +64,7 @@ async function consultar() {
   try {
     const r: any = await messageService.unreadCount();
     const n = Number(r?.count ?? 0);
+
     publicar(Number.isFinite(n) && n > 0 ? n : 0);
   } catch {
     // Sin empresa seleccionada, sin permiso de mensajería o sin red: el punto
@@ -75,20 +77,27 @@ async function consultar() {
 const visible = () =>
   typeof document === "undefined" || document.visibilityState !== "hidden";
 
-const tick = () => { if (visible()) void consultar(); };
+const tick = () => {
+  if (visible()) void consultar();
+};
 
 const alVolver = () => {
   // Volver a la pestaña: se pide una vez de golpe y se rearma el reloj, que
   // pudo quedar parado mientras estaba oculta.
-  if (visible()) { void consultar(); arrancarTimer(); }
-  else pararTimer();
+  if (visible()) {
+    void consultar();
+    arrancarTimer();
+  } else pararTimer();
 };
 
 function arrancarTimer() {
   if (timer == null) timer = window.setInterval(tick, INTERVALO_MS);
 }
 function pararTimer() {
-  if (timer != null) { window.clearInterval(timer); timer = null; }
+  if (timer != null) {
+    window.clearInterval(timer);
+    timer = null;
+  }
 }
 
 /* El socket es la vía rápida: `message:changed` llega en cuanto alguien manda
@@ -103,12 +112,15 @@ function arrancar() {
   document.addEventListener("visibilitychange", alVolver);
   try {
     const tid = localStorage.getItem("tenantId") || "";
+
     if (tid) {
       socketContador = crearSocket(getAuthToken() || "", tid);
       socketContador.on("message:changed", tick);
       socketContador.on("connect", tick);
     }
-  } catch { /* sin socket, el reloj sigue cubriendo */ }
+  } catch {
+    /* sin socket, el reloj sigue cubriendo */
+  }
   arrancarTimer();
   void consultar();
 }
@@ -131,9 +143,14 @@ export function useMessagesUnread(enabled = true): number {
   const [count, setCount] = useState(enabled ? valor : 0);
 
   useEffect(() => {
-    if (!enabled) { setCount(0); return; }
+    if (!enabled) {
+      setCount(0);
+
+      return;
+    }
     // El primero que monta arranca; el último que se va, para.
     const primero = suscriptores.size === 0;
+
     suscriptores.add(setCount);
     if (primero) arrancar();
     else setCount(valor); // los siguientes heredan el último valor conocido

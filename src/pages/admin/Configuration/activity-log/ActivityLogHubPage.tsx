@@ -16,7 +16,13 @@ import { History, KeyRound, FileClock, ChevronRight, Info } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
 import SettingsLayout from "@/layouts/SettingsLayout";
-import { PageContainer, PageHeader, IconTile, InfoNote, Stagger } from "@/components/kit";
+import {
+  PageContainer,
+  PageHeader,
+  IconTile,
+  InfoNote,
+  Stagger,
+} from "@/components/kit";
 
 export default function ActivityLogHubPage() {
   const { t } = useTranslation();
@@ -25,39 +31,64 @@ export default function ActivityLogHubPage() {
     {
       to: "/security/audit",
       icon: <History />,
-      titulo: t('settings.activityLog.auditTitle', { defaultValue: 'Quién cambió qué' }),
-      desc: t('settings.activityLog.auditDesc', { defaultValue: 'Altas, modificaciones y borrados sobre clientes, puestos, vigilantes y ajustes, con el autor y la fecha.' }),
+      titulo: t("settings.activityLog.auditTitle", {
+        defaultValue: "Quién cambió qué",
+      }),
+      desc: t("settings.activityLog.auditDesc", {
+        defaultValue:
+          "Altas, modificaciones y borrados sobre clientes, puestos, vigilantes y ajustes, con el autor y la fecha.",
+      }),
     },
     {
       to: "/historial-inicio-sesion",
       icon: <KeyRound />,
-      titulo: t('settings.activityLog.accessTitle', { defaultValue: 'Accesos a la plataforma' }),
-      desc: t('settings.activityLog.accessDesc', { defaultValue: 'Inicios y cierres de sesión, intentos fallidos y desde qué dispositivo se entró.' }),
+      titulo: t("settings.activityLog.accessTitle", {
+        defaultValue: "Accesos a la plataforma",
+      }),
+      desc: t("settings.activityLog.accessDesc", {
+        defaultValue:
+          "Inicios y cierres de sesión, intentos fallidos y desde qué dispositivo se entró.",
+      }),
     },
     {
       to: "/registros-sistema",
       icon: <FileClock />,
-      titulo: t('settings.activityLog.systemTitle', { defaultValue: 'Eventos del sistema' }),
-      desc: t('settings.activityLog.systemDesc', { defaultValue: 'Lo que la plataforma hizo sola: barridos, avisos automáticos y trabajos programados.' }),
+      titulo: t("settings.activityLog.systemTitle", {
+        defaultValue: "Eventos del sistema",
+      }),
+      desc: t("settings.activityLog.systemDesc", {
+        defaultValue:
+          "Lo que la plataforma hizo sola: barridos, avisos automáticos y trabajos programados.",
+      }),
     },
   ];
 
   return (
     <AppLayout>
-      <SettingsLayout navKey="configuracion" title={t('settings.activityLog.pageTitle', { defaultValue: 'Registro de actividad' })}>
+      <SettingsLayout
+        navKey="configuracion"
+        title={t("settings.activityLog.pageTitle", {
+          defaultValue: "Registro de actividad",
+        })}
+      >
         <PageContainer width="narrow">
           <PageHeader
             icon={<History />}
-            title={t('settings.activityLog.pageTitle', { defaultValue: 'Registro de actividad' })}
-            subtitle={t('settings.activityLog.pageSubtitle', { defaultValue: 'Qué pasó, quién lo hizo y cuándo. Es lo primero que pide una auditoría.' })}
+            subtitle={t("settings.activityLog.pageSubtitle", {
+              defaultValue:
+                "Qué pasó, quién lo hizo y cuándo. Es lo primero que pide una auditoría.",
+            })}
+            title={t("settings.activityLog.pageTitle", {
+              defaultValue: "Registro de actividad",
+            })}
           />
 
           <Stagger className="space-y-3">
             {REGISTROS.map((r) => (
               <Link
                 key={r.to}
-                to={r.to}
                 className="glass-flat glass-hover cg-focus group flex items-start gap-3 p-4"
+                to={r.to}
               >
                 <IconTile size="sm">{r.icon}</IconTile>
                 <div className="min-w-0 flex-1">
@@ -68,7 +99,10 @@ export default function ActivityLogHubPage() {
                       style={{ color: "var(--ink-faint)" }}
                     />
                   </div>
-                  <p className="mt-0.5 text-xs" style={{ color: "var(--ink-soft)" }}>
+                  <p
+                    className="mt-0.5 text-xs"
+                    style={{ color: "var(--ink-soft)" }}
+                  >
                     {r.desc}
                   </p>
                 </div>
@@ -88,16 +122,39 @@ export default function ActivityLogHubPage() {
               tercer aviso de que un texto que describe lo que la plataforma
               «todavía no hace» caduca solo — si vuelve a hacer falta uno, que
               enlace a la pantalla en vez de afirmar lo que existe. */}
-          <InfoNote tone="neutral" icon={<Info />} className="mt-5">
-            {t('settings.activityLog.retentionNoteLead', { defaultValue: 'La' })}{' '}
-            <strong>{t('settings.activityLog.changeLogLabel', { defaultValue: 'bitácora de cambios' })}</strong>{' '}
-            {t('settings.activityLog.retentionNoteMid1', { defaultValue: 'y el' })}{' '}
-            <strong>{t('settings.activityLog.accessHistoryLabel', { defaultValue: 'historial de accesos' })}</strong>{' '}
-            {t('settings.activityLog.retentionNoteMid2', { defaultValue: 'se borran según los plazos que fijes en' })}{' '}
-            <Link to="/setting/retencion" className="underline" style={{ color: 'var(--brand-text)' }}>
-              {t('settings.activityLog.retentionLinkLabel', { defaultValue: 'Retención de datos' })}
+          <InfoNote className="mt-5" icon={<Info />} tone="neutral">
+            {t("settings.activityLog.retentionNoteLead", {
+              defaultValue: "La",
+            })}{" "}
+            <strong>
+              {t("settings.activityLog.changeLogLabel", {
+                defaultValue: "bitácora de cambios",
+              })}
+            </strong>{" "}
+            {t("settings.activityLog.retentionNoteMid1", {
+              defaultValue: "y el",
+            })}{" "}
+            <strong>
+              {t("settings.activityLog.accessHistoryLabel", {
+                defaultValue: "historial de accesos",
+              })}
+            </strong>{" "}
+            {t("settings.activityLog.retentionNoteMid2", {
+              defaultValue: "se borran según los plazos que fijes en",
+            })}{" "}
+            <Link
+              className="underline"
+              style={{ color: "var(--brand-text)" }}
+              to="/setting/retencion"
+            >
+              {t("settings.activityLog.retentionLinkLabel", {
+                defaultValue: "Retención de datos",
+              })}
             </Link>
-            {t('settings.activityLog.retentionNoteTail', { defaultValue: '. Los dos vienen sin plazo, o sea que se conservan hasta que decidas otra cosa. Puedes descargarlos en CSV desde su pantalla.' })}
+            {t("settings.activityLog.retentionNoteTail", {
+              defaultValue:
+                ". Los dos vienen sin plazo, o sea que se conservan hasta que decidas otra cosa. Puedes descargarlos en CSV desde su pantalla.",
+            })}
           </InfoNote>
         </PageContainer>
       </SettingsLayout>

@@ -1,10 +1,37 @@
+import type { LucideIcon } from "lucide-react";
+
 import {
-  FileText, AlertTriangle, ClipboardList, Clock, DollarSign, ScrollText,
-  LogIn, Route, CheckSquare, Activity, Car, ListChecks, BarChart3, Gauge,
-  Siren, MapPin, TriangleAlert, IdCard, Package, Video, PauseCircle, FileCheck,
-  ShieldAlert, Flame, Footprints, Eye, Building2, Users, Wrench, Boxes,
-} from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+  FileText,
+  AlertTriangle,
+  ClipboardList,
+  Clock,
+  DollarSign,
+  ScrollText,
+  LogIn,
+  Route,
+  CheckSquare,
+  Activity,
+  Car,
+  ListChecks,
+  BarChart3,
+  Gauge,
+  Siren,
+  MapPin,
+  TriangleAlert,
+  IdCard,
+  Package,
+  Video,
+  PauseCircle,
+  FileCheck,
+  ShieldAlert,
+  Flame,
+  Footprints,
+  Eye,
+  Building2,
+  Users,
+  Wrench,
+  Boxes,
+} from "lucide-react";
 
 /**
  * Tono de cada familia de informes.
@@ -16,15 +43,18 @@ import type { LucideIcon } from 'lucide-react';
  *   · `bad`    → incidentes, que SÍ son severidad y por eso van en rojo fijo.
  * El resto de la distinción la hace el icono, no el color.
  */
-export type ReportTone = 'brand' | 'neutral' | 'ok' | 'warn' | 'bad' | 'info';
+export type ReportTone = "brand" | "neutral" | "ok" | "warn" | "bad" | "info";
 
-export const SECTION_THEME: Record<string, { icon: LucideIcon; tone: ReportTone }> = {
-  general:  { icon: FileText,      tone: 'brand' },
-  incidents:{ icon: AlertTriangle, tone: 'bad' },
-  standard: { icon: ClipboardList, tone: 'brand' },
-  timecard: { icon: Clock,         tone: 'brand' },
-  payroll:  { icon: DollarSign,    tone: 'brand' },
-  logs:     { icon: ScrollText,    tone: 'brand' },
+export const SECTION_THEME: Record<
+  string,
+  { icon: LucideIcon; tone: ReportTone }
+> = {
+  general: { icon: FileText, tone: "brand" },
+  incidents: { icon: AlertTriangle, tone: "bad" },
+  standard: { icon: ClipboardList, tone: "brand" },
+  timecard: { icon: Clock, tone: "brand" },
+  payroll: { icon: DollarSign, tone: "brand" },
+  logs: { icon: ScrollText, tone: "brand" },
 };
 
 /**
@@ -32,7 +62,8 @@ export const SECTION_THEME: Record<string, { icon: LucideIcon; tone: ReportTone 
  * éstos se pintan en `--bad`: la severidad no es decoración, y si todo fuera
  * rojo el rojo dejaría de significar nada.
  */
-const DANGER_ID = /panic|pánico|panico|fire|incendio|break-in|robo|vandalism|trespass|police|fall|caída|caida|suspicious|incident/;
+const DANGER_ID =
+  /panic|pánico|panico|fire|incendio|break-in|robo|vandalism|trespass|police|fall|caída|caida|suspicious|incident/;
 
 const ID_ICON: Array<[RegExp, LucideIcon]> = [
   [/entry-exit|check.?in|check.?out/, LogIn],
@@ -72,11 +103,13 @@ const ID_ICON: Array<[RegExp, LucideIcon]> = [
 
 export function iconForReport(id: string, sectionId: string): LucideIcon {
   for (const [re, icon] of ID_ICON) if (re.test(id)) return icon;
+
   return SECTION_THEME[sectionId]?.icon || FileText;
 }
 
 /** Tono de la ficha de un informe: rojo sólo si el informe trata un peligro. */
 export function toneForReport(id: string, sectionId: string): ReportTone {
-  if (DANGER_ID.test(id) || sectionId === 'incidents') return 'bad';
-  return 'neutral';
+  if (DANGER_ID.test(id) || sectionId === "incidents") return "bad";
+
+  return "neutral";
 }

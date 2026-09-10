@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
+
 import api from "./api";
 
-const API_BASE = (import.meta.env.VITE_API_URL ?? "http://localhost:3001/api").replace(
-  /\/+$/,
-  "",
-);
+const API_BASE = (
+  import.meta.env.VITE_API_URL ?? "http://localhost:3001/api"
+).replace(/\/+$/, "");
 
 /**
  * Build a displayable URL for a stored private file (e.g. the clock-in selfie).
@@ -27,17 +27,22 @@ const API_BASE = (import.meta.env.VITE_API_URL ?? "http://localhost:3001/api").r
 export function fileUrlFromPrivate(privateUrl?: string | null): string | null {
   if (!privateUrl) return null;
   const u = String(privateUrl);
+
   if (/^https?:\/\//i.test(u)) return u;
+
   return `${API_BASE}/file/download?privateUrl=${encodeURIComponent(u)}`;
 }
 
 /** A serialized file object as returned by the backend (FileRepository). */
-export type FileLike = {
-  /** Token-based, ready-to-use download URL (preferred). */
-  downloadUrl?: string | null;
-  /** Raw, guessable private URL (legacy / being phased out). */
-  privateUrl?: string | null;
-} | null | undefined;
+export type FileLike =
+  | {
+      /** Token-based, ready-to-use download URL (preferred). */
+      downloadUrl?: string | null;
+      /** Raw, guessable private URL (legacy / being phased out). */
+      privateUrl?: string | null;
+    }
+  | null
+  | undefined;
 
 /**
  * Preferred, synchronous resolver: returns the object's token-based
@@ -46,6 +51,7 @@ export type FileLike = {
  */
 export function fileUrlFromFile(obj: FileLike): string | null {
   if (obj?.downloadUrl) return obj.downloadUrl;
+
   return fileUrlFromPrivate(obj?.privateUrl);
 }
 
@@ -65,11 +71,14 @@ const inflight = new Map<string, Promise<string | null>>();
 
 async function fetchTokenUrl(rawPrivateUrl: string): Promise<string | null> {
   const cached = tokenUrlCache.get(rawPrivateUrl);
+
   if (cached) return cached;
   const pending = inflight.get(rawPrivateUrl);
+
   if (pending) return pending;
 
   const tenantId = getTenantId();
+
   if (!tenantId) return null;
 
   const p = (async () => {
@@ -79,7 +88,9 @@ async function fetchTokenUrl(rawPrivateUrl: string): Promise<string | null> {
       );
       const body = resp?.data?.data !== undefined ? resp.data.data : resp?.data;
       const downloadUrl: string | null = body?.downloadUrl ?? null;
+
       if (downloadUrl) tokenUrlCache.set(rawPrivateUrl, downloadUrl);
+
       return downloadUrl;
     } catch {
       return null;
@@ -87,7 +98,9 @@ async function fetchTokenUrl(rawPrivateUrl: string): Promise<string | null> {
       inflight.delete(rawPrivateUrl);
     }
   })();
+
   inflight.set(rawPrivateUrl, p);
+
   return p;
 }
 
@@ -135,18 +148,24 @@ export function useFileUrl(source: FileLike | string): string | null {
   // antes de cambiar al token. Se arranca en `null` (el consumidor muestra su
   // placeholder) y se pasa a la URL real cuando el token está listo. Si ya
   // teníamos un token cacheado, se usa de una.
-  const startWith = rawPrivateUrl ? (tokenUrlCache.get(rawPrivateUrl) ?? null) : immediate;
+  const startWith = rawPrivateUrl
+    ? (tokenUrlCache.get(rawPrivateUrl) ?? null)
+    : immediate;
   const [resolved, setResolved] = useState<string | null>(startWith);
 
   useEffect(() => {
     let active = true;
+
     if (!rawPrivateUrl) {
       setResolved(immediate);
+
       return;
     }
     const cached = tokenUrlCache.get(rawPrivateUrl);
+
     if (cached) {
       setResolved(cached);
+
       return;
     }
     // Sin token todavía: placeholder (null), no la URL cruda que da 403.
@@ -154,10 +173,10 @@ export function useFileUrl(source: FileLike | string): string | null {
     fetchTokenUrl(rawPrivateUrl).then((url) => {
       if (active && url) setResolved(url);
     });
+
     return () => {
       active = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawPrivateUrl, immediate]);
 
   return resolved;

@@ -4,13 +4,32 @@
  * del puesto, el cliente y cuántos vigilantes tiene asignados — con clic directo
  * al detalle de la estación. Los datos llegan en lote desde /station/cards.
  */
-import { useTranslation } from "react-i18next";
-import { RadioTower, Building2, Users, MapPin, ShieldCheck, ShieldAlert, ShieldX, Moon, Clock, Route, QrCode } from "lucide-react";
-import { StatusBadge, SkeletonCards, EmptyState, GlassPanel, SmartImage } from "@/components/kit";
 import type { StationCard } from "@/lib/api/stationService";
-import { getTenantTimezone } from "@/utils/tenantLocation";
 
-import { localeActual } from '@/lib/localeActual'
+import { useTranslation } from "react-i18next";
+import {
+  RadioTower,
+  Building2,
+  Users,
+  MapPin,
+  ShieldCheck,
+  ShieldAlert,
+  ShieldX,
+  Moon,
+  Clock,
+  Route,
+  QrCode,
+} from "lucide-react";
+
+import {
+  StatusBadge,
+  SkeletonCards,
+  EmptyState,
+  GlassPanel,
+  SmartImage,
+} from "@/components/kit";
+import { getTenantTimezone } from "@/utils/tenantLocation";
+import { localeActual } from "@/lib/localeActual";
 /**
  * ════════════════════════════════════════════════════════════════════════════
  * «CON COBERTURA» NO QUERÍA DECIR LO QUE PARECÍA
@@ -39,35 +58,29 @@ function horaCorta(iso?: string | null): string | null {
   if (!iso) return null;
   try {
     const tz = getTenantTimezone();
+
     return new Date(iso).toLocaleTimeString(localeActual(), {
-      hour: "2-digit", minute: "2-digit", hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
       ...(tz ? { timeZone: tz } : {}),
     });
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 
-type Insignia = { tone: "ok" | "warn" | "bad" | "neutral"; icon: JSX.Element; label: string; hint?: string | null };
+type Insignia = {
+  tone: "ok" | "warn" | "bad" | "neutral";
+  icon: JSX.Element;
+  label: string;
+  hint?: string | null;
+};
 
-/**
- * El nombre que se enseña en la insignia verde.
- *
- * SE ACORTA A NOMBRE + PRIMER APELLIDO. La insignia mide lo que mide, y
- * «Rubén Castillo Hernández» la desborda o la trunca a mitad de palabra, que
- * es peor que acortar bien. Dos palabras es además como se refiere a alguien
- * quien mira el tablero.
- *
- * Devuelve `null` si no hay nombre, para que quien llama elija el texto de
- * reserva en vez de pintar una insignia vacía.
- */
-function nombreEnPuesto(s: StationCard): string | null {
-  const nombres = Array.isArray(s.onDutyNames) ? s.onDutyNames.filter(Boolean) : [];
-  if (!nombres.length) return null;
-  const corto = nombres[0].trim().split(/\s+/).slice(0, 2).join(" ");
-  if (!corto) return null;
-  return nombres.length > 1 ? `${corto} +${nombres.length - 1}` : corto;
-}
-
-function insigniaDeCobertura(s: StationCard, t: (k: string, o?: any) => string): Insignia | null {
+function insigniaDeCobertura(
+  s: StationCard,
+  t: (k: string, o?: any) => string,
+): Insignia | null {
   // Sin estado calculado no se inventa nada: antes que una insignia falsa,
   // ninguna.
   if (!s.coverageStatus) return null;
@@ -78,17 +91,16 @@ function insigniaDeCobertura(s: StationCard, t: (k: string, o?: any) => string):
       return {
         tone: "ok",
         icon: <ShieldCheck className="h-3 w-3" />,
-        // EL NOMBRE, no «Vigilante en puesto». Que hay alguien ya lo dice el
-        // verde; la pregunta que sigue —y la única que importa a esa hora— es
-        // quién. Con dos o más se enseña el primero y «+N»: dos nombres
-        // completos no caben en la insignia y la tarjeta se rompe. Sin nombre
-        // resuelto se vuelve al texto de siempre; una insignia en blanco se
-        // lee como que el puesto está vacío.
+        // El número importa: un puesto de dos con dos no es lo mismo que con uno.
         label:
-          nombreEnPuesto(s) ??
-          (s.onDutyCount > 1
-            ? t("stations.coverage.onDutyN", { count: s.onDutyCount, defaultValue: "{{count}} en puesto" })
-            : t("stations.coverage.onDuty", { defaultValue: "Vigilante en puesto" })),
+          s.onDutyCount > 1
+            ? t("stations.coverage.onDutyN", {
+                count: s.onDutyCount,
+                defaultValue: "{{count}} en puesto",
+              })
+            : t("stations.coverage.onDuty", {
+                defaultValue: "Vigilante en puesto",
+              }),
       };
     case "at_risk":
       return {
@@ -96,20 +108,29 @@ function insigniaDeCobertura(s: StationCard, t: (k: string, o?: any) => string):
         icon: <ShieldAlert className="h-3 w-3" />,
         // Con alguien dentro pero incompleto, el problema es otro: falta parte
         // del relevo, no el relevo entero.
-        label: s.onDutyCount > 0
-          ? t("stations.coverage.partial", {
-              on: s.onDutyCount, exp: s.expectedCount,
-              defaultValue: "Relevo incompleto ({{on}}/{{exp}})",
-            })
-          : t("stations.coverage.awaiting", { defaultValue: "Esperando vigilante" }),
+        label:
+          s.onDutyCount > 0
+            ? t("stations.coverage.partial", {
+                on: s.onDutyCount,
+                exp: s.expectedCount,
+                defaultValue: "Relevo incompleto ({{on}}/{{exp}})",
+              })
+            : t("stations.coverage.awaiting", {
+                defaultValue: "Esperando vigilante",
+              }),
       };
     case "uncovered":
       return {
         tone: "bad",
         icon: <ShieldX className="h-3 w-3" />,
-        label: s.openGaps > 0
-          ? t("stations.coverage.gapDeclared", { defaultValue: "Hueco declarado" })
-          : t("stations.coverage.uncovered", { defaultValue: "Puesto sin cubrir" }),
+        label:
+          s.openGaps > 0
+            ? t("stations.coverage.gapDeclared", {
+                defaultValue: "Hueco declarado",
+              })
+            : t("stations.coverage.uncovered", {
+                defaultValue: "Puesto sin cubrir",
+              }),
       };
     default:
       // Fuera de turno. Y si el puesto NO tiene turnos hoy, eso es otra cosa —
@@ -119,14 +140,28 @@ function insigniaDeCobertura(s: StationCard, t: (k: string, o?: any) => string):
         ? {
             tone: "neutral",
             icon: <Moon className="h-3 w-3" />,
-            label: t("stations.coverage.offHours", { defaultValue: "Fuera de turno" }),
-            hint: entra ? t("stations.coverage.nextAt", { time: entra, defaultValue: "Entra {{time}}" }) : null,
+            label: t("stations.coverage.offHours", {
+              defaultValue: "Fuera de turno",
+            }),
+            hint: entra
+              ? t("stations.coverage.nextAt", {
+                  time: entra,
+                  defaultValue: "Entra {{time}}",
+                })
+              : null,
           }
         : {
             tone: "neutral",
             icon: <Clock className="h-3 w-3" />,
-            label: t("stations.coverage.noShifts", { defaultValue: "Sin turnos hoy" }),
-            hint: entra ? t("stations.coverage.nextAt", { time: entra, defaultValue: "Entra {{time}}" }) : null,
+            label: t("stations.coverage.noShifts", {
+              defaultValue: "Sin turnos hoy",
+            }),
+            hint: entra
+              ? t("stations.coverage.nextAt", {
+                  time: entra,
+                  defaultValue: "Entra {{time}}",
+                })
+              : null,
           };
   }
 }
@@ -136,20 +171,48 @@ function insigniaDeCobertura(s: StationCard, t: (k: string, o?: any) => string):
  * que es lo que se viene a mirar — verde corre normal, ámbar termina en menos
  * de una hora, rojo venció y nadie relevó, neutro no hay nadie fichado.
  */
-function insigniaDeTurno(s: StationCard, t: (k: string, o?: any) => string): Insignia | null {
+function insigniaDeTurno(
+  s: StationCard,
+  t: (k: string, o?: any) => string,
+): Insignia | null {
   const sh = s.shift;
+
   if (!sh) return null;
   const letra = t(`stations.shift.${sh.code}`, { defaultValue: sh.code });
   let hint: string | null = null;
-  if (sh.vacant) hint = t("stations.shift.vacant", { defaultValue: "sin vigilante" });
-  else if (sh.overdue) hint = t("stations.shift.overdue", { time: sh.end ?? "", defaultValue: "sin relevo desde {{time}}" });
-  else if (sh.endsSoon) hint = t("stations.shift.reliefSoon", { time: sh.end ?? "", defaultValue: "relevo {{time}}" });
-  else if (sh.end) hint = t("stations.shift.until", { time: sh.end, defaultValue: "hasta {{time}}" });
-  const tone: Insignia["tone"] = sh.vacant ? "neutral" : sh.overdue ? "bad" : sh.endsSoon ? "warn" : "ok";
+
+  if (sh.vacant)
+    hint = t("stations.shift.vacant", { defaultValue: "sin vigilante" });
+  else if (sh.overdue)
+    hint = t("stations.shift.overdue", {
+      time: sh.end ?? "",
+      defaultValue: "sin relevo desde {{time}}",
+    });
+  else if (sh.endsSoon)
+    hint = t("stations.shift.reliefSoon", {
+      time: sh.end ?? "",
+      defaultValue: "relevo {{time}}",
+    });
+  else if (sh.end)
+    hint = t("stations.shift.until", {
+      time: sh.end,
+      defaultValue: "hasta {{time}}",
+    });
+  const tone: Insignia["tone"] = sh.vacant
+    ? "neutral"
+    : sh.overdue
+      ? "bad"
+      : sh.endsSoon
+        ? "warn"
+        : "ok";
+
   return {
     tone,
     icon: <Clock className="h-3 w-3" />,
-    label: t("stations.shift.label", { code: letra, defaultValue: "Turno {{code}}" }),
+    label: t("stations.shift.label", {
+      code: letra,
+      defaultValue: "Turno {{code}}",
+    }),
     hint,
   };
 }
@@ -168,13 +231,21 @@ export default function StationCardsGrid({
 }) {
   const { t } = useTranslation();
 
-  if (loading) return <SkeletonCards count={8} className="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" />;
+  if (loading)
+    return (
+      <SkeletonCards
+        className="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        count={8}
+      />
+    );
   if (!stations.length) {
     return (
       <EmptyState
+        description={t("stations.empty.description", {
+          defaultValue: "Las estaciones se crean dentro de cada puesto.",
+        })}
         icon={<RadioTower />}
         title={t("stations.empty.title", { defaultValue: "Sin estaciones" })}
-        description={t("stations.empty.description", { defaultValue: "Las estaciones se crean dentro de cada puesto." })}
       />
     );
   }
@@ -186,65 +257,102 @@ export default function StationCardsGrid({
         const title = s.nickname || s.stationName || "?";
         const subtitle = s.nickname ? s.stationName : null;
         const initial = (s.clientName || title || "?").charAt(0).toUpperCase();
+
         return (
           <GlassPanel
             key={s.id}
             flat
             hover
+            className="cg-focus group flex cursor-pointer flex-col p-4 animate-in fade-in slide-in-from-bottom-2"
             role="button"
+            style={{
+              animationDelay: `${Math.min(i, 12) * 30}ms`,
+              animationFillMode: "backwards",
+            }}
             tabIndex={0}
             onClick={() => onOpen(s)}
-            onKeyDown={(e) => { if (e.key === "Enter") onOpen(s); }}
-            className="cg-focus group flex cursor-pointer flex-col p-4 animate-in fade-in slide-in-from-bottom-2"
-            style={{ animationDelay: `${Math.min(i, 12) * 30}ms`, animationFillMode: "backwards" }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") onOpen(s);
+            }}
           >
             <div className="flex items-start gap-3">
               <SmartImage
-                src={s.clientLogoUrl}
                 alt=""
-                rounded="rounded-xl"
-                fit="contain"
                 className="h-12 w-12 shrink-0 border"
-                style={{ background: "oklch(1 0 0)", borderColor: "var(--hairline)" }}
                 fallback={
                   <span
                     className="grid h-full w-full place-items-center text-lg font-bold"
-                    style={{ background: "var(--brand-wash)", color: "var(--brand-text)" }}
+                    style={{
+                      background: "var(--brand-wash)",
+                      color: "var(--brand-text)",
+                    }}
                   >
                     {initial}
                   </span>
                 }
+                fit="contain"
+                rounded="rounded-xl"
+                src={s.clientLogoUrl}
+                style={{
+                  background: "oklch(1 0 0)",
+                  borderColor: "var(--hairline)",
+                }}
               />
               <div className="min-w-0 flex-1">
-                <p className="truncate font-semibold leading-tight" title={title}>{title}</p>
+                <p
+                  className="truncate font-semibold leading-tight"
+                  title={title}
+                >
+                  {title}
+                </p>
                 {subtitle && (
-                  <p className="truncate text-sm leading-tight" style={{ color: "var(--ink-soft)" }} title={subtitle}>{subtitle}</p>
+                  <p
+                    className="truncate text-sm leading-tight"
+                    style={{ color: "var(--ink-soft)" }}
+                    title={subtitle}
+                  >
+                    {subtitle}
+                  </p>
                 )}
                 <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
                   {(() => {
                     const ins = insigniaDeCobertura(s, t);
+
                     if (!ins) return null;
+
                     return (
                       <>
-                        <StatusBadge tone={ins.tone} dot={false}>
+                        <StatusBadge dot={false} tone={ins.tone}>
                           {ins.icon} {ins.label}
                         </StatusBadge>
                         {ins.hint && (
-                          <span className="text-xs" style={{ color: "var(--ink-faint)" }}>{ins.hint}</span>
+                          <span
+                            className="text-xs"
+                            style={{ color: "var(--ink-faint)" }}
+                          >
+                            {ins.hint}
+                          </span>
                         )}
                       </>
                     );
                   })()}
                   {(() => {
                     const turno = insigniaDeTurno(s, t);
+
                     if (!turno) return null;
+
                     return (
                       <>
-                        <StatusBadge tone={turno.tone} dot={false}>
+                        <StatusBadge dot={false} tone={turno.tone}>
                           {turno.icon} <strong>{turno.label}</strong>
                         </StatusBadge>
                         {turno.hint && (
-                          <span className="text-xs" style={{ color: "var(--ink-faint)" }}>{turno.hint}</span>
+                          <span
+                            className="text-xs"
+                            style={{ color: "var(--ink-faint)" }}
+                          >
+                            {turno.hint}
+                          </span>
                         )}
                       </>
                     );
@@ -252,15 +360,20 @@ export default function StationCardsGrid({
                   {/* Un puesto sin NADIE asignado en el contrato es un problema
                       distinto —y previo— al de la cobertura de esta noche. */}
                   {s.guardCount === 0 && (
-                    <StatusBadge tone="warn" dot={false}>
-                      {t("stations.noGuardsAssigned", { defaultValue: "Sin vigilantes asignados" })}
+                    <StatusBadge dot={false} tone="warn">
+                      {t("stations.noGuardsAssigned", {
+                        defaultValue: "Sin vigilantes asignados",
+                      })}
                     </StatusBadge>
                   )}
                 </div>
               </div>
             </div>
 
-            <div className="mt-3 space-y-1 text-sm" style={{ color: "var(--ink-soft)" }}>
+            <div
+              className="mt-3 space-y-1 text-sm"
+              style={{ color: "var(--ink-soft)" }}
+            >
               {s.clientName && (
                 <p className="flex items-center gap-1.5 truncate">
                   <Building2 className="h-3.5 w-3.5 shrink-0" />
@@ -277,12 +390,22 @@ export default function StationCardsGrid({
 
             <div
               className="mt-3 flex items-center gap-4 border-t pt-3 text-sm"
-              style={{ borderColor: "var(--hairline)", color: "var(--ink-soft)" }}
+              style={{
+                borderColor: "var(--hairline)",
+                color: "var(--ink-soft)",
+              }}
             >
               <span className="flex items-center gap-1.5">
-                <Users className="h-4 w-4" style={{ color: "var(--brand-text)" }} />
-                <span className="font-semibold text-foreground">{s.guardCount}</span>{" "}
-                {t("stations.guardsAssignedLabel", { defaultValue: "asignado(s)" })}
+                <Users
+                  className="h-4 w-4"
+                  style={{ color: "var(--brand-text)" }}
+                />
+                <span className="font-semibold text-foreground">
+                  {s.guardCount}
+                </span>{" "}
+                {t("stations.guardsAssignedLabel", {
+                  defaultValue: "asignado(s)",
+                })}
               </span>
 
               {/* ── ATAJOS AL TRABAJO REAL DEL PUESTO ────────────────────────
@@ -293,20 +416,42 @@ export default function StationCardsGrid({
               {onOpenTab && (
                 <span className="ml-auto flex items-center gap-1">
                   <button
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); onOpenTab(s, "site-tours"); }}
-                    title={t("stations.openRondas", { defaultValue: "Rondas del puesto" }) as string}
-                    aria-label={t("stations.openRondas", { defaultValue: "Rondas del puesto" }) as string}
+                    aria-label={
+                      t("stations.openRondas", {
+                        defaultValue: "Rondas del puesto",
+                      }) as string
+                    }
                     className="cg-focus cg-btn-glass grid h-7 w-7 place-items-center rounded-md"
+                    title={
+                      t("stations.openRondas", {
+                        defaultValue: "Rondas del puesto",
+                      }) as string
+                    }
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onOpenTab(s, "site-tours");
+                    }}
                   >
                     <Route className="h-3.5 w-3.5" />
                   </button>
                   <button
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); onOpenTab(s, "etiquetas"); }}
-                    title={t("stations.openQr", { defaultValue: "Códigos QR" }) as string}
-                    aria-label={t("stations.openQr", { defaultValue: "Códigos QR" }) as string}
+                    aria-label={
+                      t("stations.openQr", {
+                        defaultValue: "Códigos QR",
+                      }) as string
+                    }
                     className="cg-focus cg-btn-glass grid h-7 w-7 place-items-center rounded-md"
+                    title={
+                      t("stations.openQr", {
+                        defaultValue: "Códigos QR",
+                      }) as string
+                    }
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onOpenTab(s, "etiquetas");
+                    }}
                   >
                     <QrCode className="h-3.5 w-3.5" />
                   </button>

@@ -2,7 +2,12 @@ import { ApiService } from "@/services/api/apiService";
 
 const tenantId = (): string => {
   const t = localStorage.getItem("tenantId");
-  if (!t) throw new Error("No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.");
+
+  if (!t)
+    throw new Error(
+      "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+    );
+
   return t;
 };
 
@@ -31,7 +36,10 @@ export interface RondaSettings {
 export const rondaSettingsService = {
   /** Effective settings (tenant default, or per-post override if postSiteId given). */
   get(postSiteId?: string): Promise<RondaSettings> {
-    const qs = postSiteId ? `?postSiteId=${encodeURIComponent(postSiteId)}` : "";
+    const qs = postSiteId
+      ? `?postSiteId=${encodeURIComponent(postSiteId)}`
+      : "";
+
     return ApiService.get(`/tenant/${tenantId()}/ronda-settings${qs}`);
   },
 

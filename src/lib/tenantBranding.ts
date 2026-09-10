@@ -18,25 +18,30 @@ export interface TenantBranding {
   logo: string | null;
 }
 
-const LOGO_KEY = 'tenantLogoUrl';
-const NAME_KEY = 'tenantName';
+const LOGO_KEY = "tenantLogoUrl";
+const NAME_KEY = "tenantName";
 
 let memoryCache: TenantBranding | null = null;
 
 /** In-memory branding for this tenant if already loaded this session, else null. */
-export function getCachedTenantBranding(tenantId: string): TenantBranding | null {
+export function getCachedTenantBranding(
+  tenantId: string,
+): TenantBranding | null {
   return memoryCache && memoryCache.tenantId === tenantId ? memoryCache : null;
 }
 
 /** Synchronous best-effort branding from localStorage (used to seed initial UI state). */
-export function getStoredTenantBranding(): { name: string; logo: string | null } {
+export function getStoredTenantBranding(): {
+  name: string;
+  logo: string | null;
+} {
   try {
     return {
-      name: localStorage.getItem(NAME_KEY) || '',
+      name: localStorage.getItem(NAME_KEY) || "",
       logo: localStorage.getItem(LOGO_KEY) || null,
     };
   } catch {
-    return { name: '', logo: null };
+    return { name: "", logo: null };
   }
 }
 

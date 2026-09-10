@@ -1,7 +1,9 @@
-import type { ReactNode } from 'react';
-import { alphaVar, type ChartTone } from '@/lib/chartColors';
-import { useSvgId, clamp } from './internals';
-import { useSeriesColor } from './useSeriesColor';
+import type { ReactNode } from "react";
+
+import { useSvgId, clamp } from "./internals";
+import { useSeriesColor } from "./useSeriesColor";
+
+import { alphaVar, type ChartTone } from "@/lib/chartColors";
 
 export interface ProgressRingProps {
   /** Valor actual. Se acota a [0, max]. */
@@ -39,7 +41,7 @@ export default function ProgressRing({
   max = 100,
   size = 132,
   thickness = 12,
-  tone = 'brand',
+  tone = "brand",
   color,
   centerLabel,
   caption,
@@ -48,7 +50,7 @@ export default function ProgressRing({
   ariaLabel,
 }: ProgressRingProps) {
   const [c, paleta] = useSeriesColor(color, tone);
-  const gradId = useSvgId('ring');
+  const gradId = useSvgId("ring");
 
   const tope = max > 0 ? max : 1;
   const v = clamp(value, 0, tope);
@@ -57,7 +59,7 @@ export default function ProgressRing({
 
   // Sólo el acento tiene segundo escalón propio; los semánticos van planos para
   // no inventarles una variación que no existe en el sistema.
-  const c2 = color || tone !== 'brand' ? c : paleta.chart2; // eslint-disable-line no-mixed-operators
+  const c2 = color || tone !== "brand" ? c : paleta.chart2;
 
   const r = (size - thickness) / 2;
   const centro = size / 2;
@@ -65,51 +67,68 @@ export default function ProgressRing({
   const arco = C * frac;
 
   return (
-    <div className={className} style={{ position: 'relative', width: size, height: size }}>
+    <div
+      className={className}
+      style={{ position: "relative", width: size, height: size }}
+    >
       <svg
-        width={size}
-        height={size}
-        viewBox={`0 0 ${size} ${size}`}
-        className="block"
-        role="img"
         aria-label={ariaLabel ?? `${pct}%`}
+        className="block"
+        height={size}
+        role="img"
+        viewBox={`0 0 ${size} ${size}`}
+        width={size}
       >
         <defs>
-          <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="1">
+          <linearGradient id={gradId} x1="0" x2="1" y1="0" y2="1">
             <stop offset="0%" stopColor={c} />
             <stop offset="100%" stopColor={c2} />
           </linearGradient>
         </defs>
 
         {/* Canal: el todo contra el que se lee la parte. */}
-        <circle cx={centro} cy={centro} r={r} fill="none" stroke={paleta.track} strokeWidth={thickness} />
+        <circle
+          cx={centro}
+          cy={centro}
+          fill="none"
+          r={r}
+          stroke={paleta.track}
+          strokeWidth={thickness}
+        />
 
         {/* Arco. Empieza arriba (-90°) porque es donde el ojo busca el origen. */}
         {frac > 0 && (
           <circle
             cx={centro}
             cy={centro}
-            r={r}
             fill="none"
+            r={r}
             stroke={`url(#${gradId})`}
-            strokeWidth={thickness}
-            strokeLinecap="round"
             strokeDasharray={`${arco} ${C - arco}`}
-            transform={`rotate(-90 ${centro} ${centro})`}
+            strokeLinecap="round"
+            strokeWidth={thickness}
             style={{
-              filter: glow ? `drop-shadow(0 0 8px ${alphaVar(c, 45)})` : undefined,
-              transition: 'stroke-dasharray 0.6s var(--ease)',
+              filter: glow
+                ? `drop-shadow(0 0 8px ${alphaVar(c, 45)})`
+                : undefined,
+              transition: "stroke-dasharray 0.6s var(--ease)",
             }}
+            transform={`rotate(-90 ${centro} ${centro})`}
           />
         )}
       </svg>
 
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-        <span className="font-display font-bold leading-none text-foreground" style={{ fontSize: Math.round(size * 0.24) }}>
+        <span
+          className="font-display font-bold leading-none text-foreground"
+          style={{ fontSize: Math.round(size * 0.24) }}
+        >
           {centerLabel ?? `${pct}%`}
         </span>
         {caption != null && (
-          <span className="mt-1 px-2 text-[11px] leading-tight text-muted-foreground">{caption}</span>
+          <span className="mt-1 px-2 text-[11px] leading-tight text-muted-foreground">
+            {caption}
+          </span>
         )}
       </div>
     </div>

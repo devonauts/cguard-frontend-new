@@ -19,10 +19,18 @@
  * los tres usos pasan a `<Section flat …>`.
  * ════════════════════════════════════════════════════════════════════════════
  */
-import * as React from 'react';
-import { cn } from '@/lib/utils';
+import * as React from "react";
 
-export function ListSection({ title, icon, action, children, className, contentClassName }: {
+import { cn } from "@/lib/utils";
+
+export function ListSection({
+  title,
+  icon,
+  action,
+  children,
+  className,
+  contentClassName,
+}: {
   title?: React.ReactNode;
   icon?: React.ReactNode;
   action?: React.ReactNode;
@@ -31,12 +39,23 @@ export function ListSection({ title, icon, action, children, className, contentC
   contentClassName?: string;
 }) {
   return (
-    <div className={cn('glass-flat p-5', className)}>
+    <div className={cn("glass-flat p-5", className)}>
       {(title || action) && (
         <div className="mb-4 flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2">
-            {icon && <span className="[&_svg]:size-4" style={{ color: 'var(--brand-text)' }}>{icon}</span>}
-            {title && <h3 className="truncate text-sm font-semibold tracking-tight">{title}</h3>}
+            {icon && (
+              <span
+                className="[&_svg]:size-4"
+                style={{ color: "var(--brand-text)" }}
+              >
+                {icon}
+              </span>
+            )}
+            {title && (
+              <h3 className="truncate text-sm font-semibold tracking-tight">
+                {title}
+              </h3>
+            )}
           </div>
           {action}
         </div>

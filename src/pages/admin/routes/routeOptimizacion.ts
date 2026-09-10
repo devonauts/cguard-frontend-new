@@ -1,5 +1,4 @@
-
-import { localeActual } from '@/lib/localeActual'
+import { localeActual } from "@/lib/localeActual";
 /**
  * ════════════════════════════════════════════════════════════════════════════
  * OPTIMIZACIÓN DE RUTAS — lo que el CRM sabe leer del servidor
@@ -31,11 +30,13 @@ export interface Coord {
  */
 export function parseCoord(v: unknown): number | null {
   if (v == null) return null;
-  if (typeof v === 'number') return Number.isFinite(v) ? v : null;
-  const s = String(v).trim().replace(/,/g, '.');
+  if (typeof v === "number") return Number.isFinite(v) ? v : null;
+  const s = String(v).trim().replace(/,/g, ".");
   const m = s.match(/-?[0-9]+\.?[0-9]*/);
+
   if (!m) return null;
   const num = Number(m[0]);
+
   return Number.isFinite(num) ? num : null;
 }
 
@@ -43,8 +44,10 @@ export function parseCoord(v: unknown): number | null {
 export function aCoord(lat: unknown, lng: unknown): Coord | null {
   const la = parseCoord(lat);
   const ln = parseCoord(lng);
+
   if (la == null || ln == null) return null;
   if (la < -90 || la > 90 || ln < -180 || ln > 180) return null;
+
   return { lat: la, lng: ln };
 }
 
@@ -68,6 +71,7 @@ export function decodePolyline(encoded: string): Coord[] {
     let b: number;
     let shift = 0;
     let result = 0;
+
     do {
       b = encoded.charCodeAt(i++) - 63;
       result |= (b & 0x1f) << shift;
@@ -86,6 +90,7 @@ export function decodePolyline(encoded: string): Coord[] {
 
     pts.push({ lat: lat * 1e-5, lng: lng * 1e-5 });
   }
+
   return pts;
 }
 
@@ -99,20 +104,29 @@ export function leerTrazado(raw: unknown): Coord[] | null {
 
   if (Array.isArray(raw)) {
     const pts = raw
-      .map((p: any) => (Array.isArray(p) ? aCoord(p[0], p[1]) : aCoord(p?.lat, p?.lng)))
+      .map((p: any) =>
+        Array.isArray(p) ? aCoord(p[0], p[1]) : aCoord(p?.lat, p?.lng),
+      )
       .filter((p): p is Coord => p != null);
+
     return pts.length > 1 ? pts : null;
   }
 
   const s = String(raw).trim();
+
   if (!s) return null;
 
-  if (s.startsWith('[') || s.startsWith('{')) {
+  if (s.startsWith("[") || s.startsWith("{")) {
     try {
       const parsed = JSON.parse(s);
-      const lista = Array.isArray(parsed) ? parsed : parsed?.points ?? parsed?.path ?? parsed?.coordinates;
+      const lista = Array.isArray(parsed)
+        ? parsed
+        : (parsed?.points ?? parsed?.path ?? parsed?.coordinates);
+
       if (Array.isArray(lista)) return leerTrazado(lista);
-      if (typeof parsed?.polyline === 'string') return leerTrazado(parsed.polyline);
+      if (typeof parsed?.polyline === "string")
+        return leerTrazado(parsed.polyline);
+
       return null;
     } catch {
       return null;
@@ -121,6 +135,7 @@ export function leerTrazado(raw: unknown): Coord[] | null {
 
   try {
     const pts = decodePolyline(s);
+
     return pts.length > 1 ? pts : null;
   } catch {
     return null;
@@ -158,9 +173,11 @@ export interface AhorroRuta {
 function primerNum(...cands: unknown[]): number | null {
   for (const c of cands) {
     if (c == null) continue;
-    const n = typeof c === 'number' ? c : Number(String(c).replace(',', '.'));
+    const n = typeof c === "number" ? c : Number(String(c).replace(",", "."));
+
     if (Number.isFinite(n)) return n;
   }
+
   return null;
 }
 
@@ -168,6 +185,7 @@ function primerNum(...cands: unknown[]): number | null {
 function aKm(km: number | null, metros: number | null): number | null {
   if (km != null) return km;
   if (metros != null) return metros / 1000;
+
   return null;
 }
 
@@ -175,6 +193,7 @@ function aKm(km: number | null, metros: number | null): number | null {
 function aMin(min: number | null, segundos: number | null): number | null {
   if (min != null) return min;
   if (segundos != null) return segundos / 60;
+
   return null;
 }
 
@@ -186,35 +205,97 @@ export function leerAhorro(raw: unknown): AhorroRuta | null {
   if (!raw) return null;
 
   let meta: any = raw;
-  if (typeof meta === 'string') {
+
+  if (typeof meta === "string") {
     try {
       meta = JSON.parse(meta);
     } catch {
       return null;
     }
   }
-  if (typeof meta !== 'object') return null;
+  if (typeof meta !== "object") return null;
 
   // La respuesta de optimizar puede venir envuelta en la ruta entera.
   const m: any = meta.optimizedMeta ?? meta.meta ?? meta;
   const antes: any = m.before ?? m.antes ?? m.previous ?? {};
-  const despues: any = m.after ?? m.despues ?? m['después'] ?? m.optimized ?? {};
+  const despues: any =
+    m.after ?? m.despues ?? m["después"] ?? m.optimized ?? {};
 
   const kmAntes = aKm(
-    primerNum(antes.km, antes.kilometers, antes.distanceKm, m.beforeKm, m.kmBefore, m.kmAntes, m.distanceBeforeKm),
-    primerNum(antes.meters, antes.distance, antes.metros, m.beforeMeters, m.distanceBefore, m.metrosAntes),
+    primerNum(
+      antes.km,
+      antes.kilometers,
+      antes.distanceKm,
+      m.beforeKm,
+      m.kmBefore,
+      m.kmAntes,
+      m.distanceBeforeKm,
+    ),
+    primerNum(
+      antes.meters,
+      antes.distance,
+      antes.metros,
+      m.beforeMeters,
+      m.distanceBefore,
+      m.metrosAntes,
+    ),
   );
   const kmDespues = aKm(
-    primerNum(despues.km, despues.kilometers, despues.distanceKm, m.afterKm, m.kmAfter, m.kmDespues, m.distanceAfterKm),
-    primerNum(despues.meters, despues.distance, despues.metros, m.afterMeters, m.distanceAfter, m.metrosDespues),
+    primerNum(
+      despues.km,
+      despues.kilometers,
+      despues.distanceKm,
+      m.afterKm,
+      m.kmAfter,
+      m.kmDespues,
+      m.distanceAfterKm,
+    ),
+    primerNum(
+      despues.meters,
+      despues.distance,
+      despues.metros,
+      m.afterMeters,
+      m.distanceAfter,
+      m.metrosDespues,
+    ),
   );
   const minAntes = aMin(
-    primerNum(antes.min, antes.minutes, antes.minutos, antes.durationMin, m.beforeMin, m.minBefore, m.minAntes, m.durationBeforeMin),
-    primerNum(antes.seconds, antes.duration, antes.segundos, m.beforeSeconds, m.durationBefore),
+    primerNum(
+      antes.min,
+      antes.minutes,
+      antes.minutos,
+      antes.durationMin,
+      m.beforeMin,
+      m.minBefore,
+      m.minAntes,
+      m.durationBeforeMin,
+    ),
+    primerNum(
+      antes.seconds,
+      antes.duration,
+      antes.segundos,
+      m.beforeSeconds,
+      m.durationBefore,
+    ),
   );
   const minDespues = aMin(
-    primerNum(despues.min, despues.minutes, despues.minutos, despues.durationMin, m.afterMin, m.minAfter, m.minDespues, m.durationAfterMin),
-    primerNum(despues.seconds, despues.duration, despues.segundos, m.afterSeconds, m.durationAfter),
+    primerNum(
+      despues.min,
+      despues.minutes,
+      despues.minutos,
+      despues.durationMin,
+      m.afterMin,
+      m.minAfter,
+      m.minDespues,
+      m.durationAfterMin,
+    ),
+    primerNum(
+      despues.seconds,
+      despues.duration,
+      despues.segundos,
+      m.afterSeconds,
+      m.durationAfter,
+    ),
   );
 
   // El ahorro viene ya calculado en `savings`. Se prefiere el explícito: es el
@@ -222,18 +303,38 @@ export function leerAhorro(raw: unknown): AhorroRuta | null {
   // discrepar en el último decimal y enseñar dos cifras distintas del mismo dato.
   const ahorroDe: any = m.savings ?? m.saved ?? m.ahorro ?? {};
   const kmDirecto = aKm(
-    primerNum(ahorroDe.km, ahorroDe.kilometers, m.savedKm, m.ahorroKm, m.savingsKm, m.deltaKm),
+    primerNum(
+      ahorroDe.km,
+      ahorroDe.kilometers,
+      m.savedKm,
+      m.ahorroKm,
+      m.savingsKm,
+      m.deltaKm,
+    ),
     primerNum(ahorroDe.meters, ahorroDe.metros, m.savedMeters, m.ahorroMetros),
   );
   const minDirecto = aMin(
-    primerNum(ahorroDe.minutes, ahorroDe.min, ahorroDe.minutos, m.savedMin, m.ahorroMin, m.savingsMin, m.deltaMin),
+    primerNum(
+      ahorroDe.minutes,
+      ahorroDe.min,
+      ahorroDe.minutos,
+      m.savedMin,
+      m.ahorroMin,
+      m.savingsMin,
+      m.deltaMin,
+    ),
     primerNum(ahorroDe.seconds, ahorroDe.segundos, m.savedSeconds),
   );
 
-  const km = kmDirecto ?? (kmAntes != null && kmDespues != null ? kmAntes - kmDespues : null);
-  const min = minDirecto ?? (minAntes != null && minDespues != null ? minAntes - minDespues : null);
+  const km =
+    kmDirecto ??
+    (kmAntes != null && kmDespues != null ? kmAntes - kmDespues : null);
+  const min =
+    minDirecto ??
+    (minAntes != null && minDespues != null ? minAntes - minDespues : null);
 
-  if (km == null && min == null && kmDespues == null && minDespues == null) return null;
+  if (km == null && min == null && kmDespues == null && minDespues == null)
+    return null;
 
   return {
     kmAntes,
@@ -252,22 +353,29 @@ export function leerAhorro(raw: unknown): AhorroRuta | null {
   };
 }
 
-const nf = (dec: number) => new Intl.NumberFormat(localeActual(), { minimumFractionDigits: dec, maximumFractionDigits: dec });
+const nf = (dec: number) =>
+  new Intl.NumberFormat(localeActual(), {
+    minimumFractionDigits: dec,
+    maximumFractionDigits: dec,
+  });
 
 /** «8,4 km» · «14 km». */
 export function km(v: number | null | undefined): string {
-  if (v == null || !Number.isFinite(v)) return '—';
+  if (v == null || !Number.isFinite(v)) return "—";
   const abs = Math.abs(v);
+
   return `${nf(abs < 10 ? 1 : 0).format(abs)} km`;
 }
 
 /** «22 min» · «1 h 10 min». */
 export function minutos(v: number | null | undefined): string {
-  if (v == null || !Number.isFinite(v)) return '—';
+  if (v == null || !Number.isFinite(v)) return "—";
   const m = Math.round(Math.abs(v));
+
   if (m < 60) return `${m} min`;
   const h = Math.floor(m / 60);
   const r = m % 60;
+
   return r ? `${h} h ${r} min` : `${h} h`;
 }
 
@@ -280,18 +388,27 @@ export function minutos(v: number | null | undefined): string {
 export function fraseAhorro(a: AhorroRuta | null): string | null {
   if (!a || !a.hayAhorro) return null;
   const trozos: string[] = [];
+
   if (a.km != null && a.km >= 0.05) trozos.push(`-${km(a.km)}`);
   if (a.min != null && a.min >= 0.5) trozos.push(`-${minutos(a.min)}`);
   if (!trozos.length) return null;
-  return `${trozos.join(' · ')} frente al orden manual`;
+
+  return `${trozos.join(" · ")} frente al orden manual`;
 }
 
 /** «12 de agosto, 14:30» — cuándo se optimizó. */
 export function fechaOptimizacion(iso: unknown): string | null {
   if (!iso) return null;
   const d = new Date(String(iso));
+
   if (Number.isNaN(d.getTime())) return null;
-  return d.toLocaleString(localeActual(), { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
+
+  return d.toLocaleString(localeActual(), {
+    day: "numeric",
+    month: "long",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 /* ── Origen y destino ────────────────────────────────────────────────────── */
@@ -310,10 +427,16 @@ export interface ExtremoRuta {
  * que pasan por `parseCoord` igual que las de los puestos. Compararlas como
  * texto sería el error clásico: `'-0.36'` y `-0.36` son el mismo sitio.
  */
-export function leerExtremo(lat: unknown, lng: unknown, label: unknown): ExtremoRuta | null {
+export function leerExtremo(
+  lat: unknown,
+  lng: unknown,
+  label: unknown,
+): ExtremoRuta | null {
   const c = aCoord(lat, lng);
+
   if (!c) return null;
-  const texto = String(label ?? '').trim();
+  const texto = String(label ?? "").trim();
+
   return { ...c, label: texto || `${c.lat.toFixed(5)}, ${c.lng.toFixed(5)}` };
 }
 
@@ -322,9 +445,13 @@ export function leerExtremo(lat: unknown, lng: unknown, label: unknown): Extremo
  * mismo origen escrito de otra forma no debe apagar la marca de optimizada.
  * Cinco decimales ≈ un metro, de sobra para dos direcciones distintas.
  */
-export function mismoExtremo(a: ExtremoRuta | null, b: ExtremoRuta | null): boolean {
+export function mismoExtremo(
+  a: ExtremoRuta | null,
+  b: ExtremoRuta | null,
+): boolean {
   if (!a && !b) return true;
   if (!a || !b) return false;
+
   return Math.abs(a.lat - b.lat) < 1e-5 && Math.abs(a.lng - b.lng) < 1e-5;
 }
 
@@ -337,9 +464,9 @@ export function mismoExtremo(a: ExtremoRuta | null, b: ExtremoRuta | null): bool
  */
 export function valorExtremo(e: ExtremoRuta | null) {
   return {
-    lat: e ? e.lat : '',
-    lng: e ? e.lng : '',
-    label: e ? e.label : '',
+    lat: e ? e.lat : "",
+    lng: e ? e.lng : "",
+    label: e ? e.label : "",
   };
 }
 
@@ -348,15 +475,22 @@ export function valorExtremo(e: ExtremoRuta | null) {
  * `polyline: null` con su motivo, y la pantalla sigue con la línea recta.
  */
 export function motivoTrazado(reason: unknown): string {
-  const r = String(reason ?? '').trim();
+  const r = String(reason ?? "").trim();
   const clave = r.toLowerCase();
-  if (clave.includes('key') || clave.includes('clave')) {
-    return 'El servicio de mapas no está configurado, así que el recorrido se sigue mostrando en línea recta.';
+
+  if (clave.includes("key") || clave.includes("clave")) {
+    return "El servicio de mapas no está configurado, así que el recorrido se sigue mostrando en línea recta.";
   }
-  if (clave.includes('stop') || clave.includes('many') || clave.includes('limit') || clave.includes('parada')) {
-    return 'La ruta tiene demasiadas paradas para trazarla por calles. Se sigue mostrando en línea recta.';
+  if (
+    clave.includes("stop") ||
+    clave.includes("many") ||
+    clave.includes("limit") ||
+    clave.includes("parada")
+  ) {
+    return "La ruta tiene demasiadas paradas para trazarla por calles. Se sigue mostrando en línea recta.";
   }
   // Si vino una frase de verdad, se enseña tal cual antes que taparla.
   if (r && /\s/.test(r)) return r;
-  return 'No se pudo trazar el recorrido por calles. Se sigue mostrando en línea recta.';
+
+  return "No se pudo trazar el recorrido por calles. Se sigue mostrando en línea recta.";
 }

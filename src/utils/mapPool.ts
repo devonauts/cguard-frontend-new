@@ -43,17 +43,19 @@ const idle = new Map<string, Idle[]>();
 const MAX_IDLE_PER_KEY = 3;
 
 function poolEnabled(): boolean {
-  return (import.meta as any).env?.VITE_MAP_POOL !== '0';
+  return (import.meta as any).env?.VITE_MAP_POOL !== "0";
 }
 
 function groupKey(options: any): string {
-  return String(options?.mapId ?? '__none__');
+  return String(options?.mapId ?? "__none__");
 }
 
 function makeHost(): HTMLDivElement {
-  const host = document.createElement('div');
-  host.style.width = '100%';
-  host.style.height = '100%';
+  const host = document.createElement("div");
+
+  host.style.width = "100%";
+  host.style.height = "100%";
+
   return host;
 }
 
@@ -71,43 +73,66 @@ export function acquireMap(container: HTMLElement, options: any): PooledMap {
   if (poolEnabled()) {
     const libres = idle.get(key);
     const reutilizado = libres && libres.pop();
+
     if (reutilizado) {
       try {
         container.appendChild(reutilizado.host);
         // `setOptions` no acepta `mapId` (es inmutable) y pasarlo sólo genera un
         // aviso en consola; se quita porque el grupo ya garantiza que coincide.
         const { mapId, ...resto } = options || {};
+
         reutilizado.map.setOptions(resto);
         // Re-fijar el centro fuerza el repintado tras volver a engancharse.
         if (resto.center) reutilizado.map.setCenter(resto.center);
-        return { map: reutilizado.map, release: () => giveBack(key, reutilizado) };
+
+        return {
+          map: reutilizado.map,
+          release: () => giveBack(key, reutilizado),
+        };
       } catch (err) {
-        console.warn('[mapPool] no se pudo reutilizar el mapa; se construye uno nuevo', err);
-        try { reutilizado.host.remove(); } catch { /* ignorar */ }
+        console.warn(
+          "[mapPool] no se pudo reutilizar el mapa; se construye uno nuevo",
+          err,
+        );
+        try {
+          reutilizado.host.remove();
+        } catch {
+          /* ignorar */
+        }
       }
     }
   }
 
   const host = makeHost();
+
   container.appendChild(host);
   const map = new google.maps.Map(host, options);
   const entry: Idle = { host, map };
+
   return { map, release: () => giveBack(key, entry) };
 }
 
 function giveBack(key: string, entry: Idle): void {
   try {
     const google = (window as any).google;
+
     // Los oyentes los pone quien lo usa; se limpian aquí para que el siguiente
     // no herede reacciones ajenas (un `click` de la geocerca anterior, p. ej.).
     google?.maps?.event?.clearInstanceListeners?.(entry.map);
-  } catch { /* ignorar */ }
+  } catch {
+    /* ignorar */
+  }
 
-  try { entry.host.remove(); } catch { /* ignorar */ }
+  try {
+    entry.host.remove();
+  } catch {
+    /* ignorar */
+  }
 
   if (!poolEnabled()) return;
 
   const libres = idle.get(key) || [];
+
   if (libres.length >= MAX_IDLE_PER_KEY) return; // se deja morir; el GC lo recoge
   libres.push(entry);
   idle.set(key, libres);

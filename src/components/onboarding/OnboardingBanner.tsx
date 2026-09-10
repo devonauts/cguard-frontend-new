@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState } from "react";
-import { useTranslation } from 'react-i18next';
+import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Sparkles, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import onboardingService from "@/lib/api/onboardingService";
+
 import {
   OnboardingTenant,
   getMissingFields,
@@ -10,6 +9,9 @@ import {
   trialDaysLeft,
   isTrialing,
 } from "./onboardingUtils";
+
+import { Button } from "@/components/ui/button";
+import onboardingService from "@/lib/api/onboardingService";
 
 interface OnboardingBannerProps {
   tenant: OnboardingTenant | null;
@@ -61,7 +63,9 @@ export default function OnboardingBanner({
   if (completed || setUp) return null;
 
   const missing = getMissingFields(tenant).slice(0, 3);
-  const days = isTrialing(tenant.billingStatus) ? trialDaysLeft(tenant.trialEndsAt) : null;
+  const days = isTrialing(tenant.billingStatus)
+    ? trialDaysLeft(tenant.trialEndsAt)
+    : null;
 
   return (
     // El degradado ámbar fijo se sustituye por un lavado del ACENTO: este banner
@@ -71,33 +75,58 @@ export default function OnboardingBanner({
       className="flex flex-col gap-2 border-b px-4 py-2.5 text-sm sm:flex-row sm:items-center sm:justify-between"
       style={{
         borderColor: "var(--brand-line)",
-        background: "linear-gradient(90deg, var(--brand-wash) 0%, transparent 100%)",
+        background:
+          "linear-gradient(90deg, var(--brand-wash) 0%, transparent 100%)",
       }}
     >
       <div className="flex items-start gap-2.5 sm:items-center">
         <span
           className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border"
-          style={{ background: "var(--brand-wash)", borderColor: "var(--brand-line)", color: "var(--brand-text)" }}
+          style={{
+            background: "var(--brand-wash)",
+            borderColor: "var(--brand-line)",
+            color: "var(--brand-text)",
+          }}
         >
           <Sparkles className="h-4 w-4" />
         </span>
         <div className="min-w-0">
-          <span className="font-semibold" style={{ color: "var(--ink)" }}>{t("ui.OnboardingBanner.completaLaConfiguracionDeTu", "Completa la configuración de tu empresa")}</span>
+          <span className="font-semibold" style={{ color: "var(--ink)" }}>
+            {t(
+              "ui.OnboardingBanner.completaLaConfiguracionDeTu",
+              "Completa la configuración de tu empresa",
+            )}
+          </span>
           {missing.length > 0 && (
             <span style={{ color: "var(--ink-soft)" }}>
-              {" "}— falta: {missing.join(", ")}
+              {" "}
+              — falta: {missing.join(", ")}
               {getMissingFields(tenant).length > 3 ? "…" : ""}
             </span>
           )}
           {days != null && (
-            <span className="ml-1 font-medium" style={{ color: "var(--brand-text)" }}>
-              · {days > 0 ? `Te quedan ${days} día${days === 1 ? "" : "s"} de prueba` : "Tu prueba termina hoy"}
+            <span
+              className="ml-1 font-medium"
+              style={{ color: "var(--brand-text)" }}
+            >
+              ·{" "}
+              {days > 0
+                ? `Te quedan ${days} día${days === 1 ? "" : "s"} de prueba`
+                : "Tu prueba termina hoy"}
             </span>
           )}
         </div>
       </div>
-      <Button size="sm" onClick={onOpenWizard} className="shrink-0 self-start sm:self-auto">
-        {t('ui.OnboardingBanner.continuarConfiguracion', 'Continuar configuración')} <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+      <Button
+        className="shrink-0 self-start sm:self-auto"
+        size="sm"
+        onClick={onOpenWizard}
+      >
+        {t(
+          "ui.OnboardingBanner.continuarConfiguracion",
+          "Continuar configuración",
+        )}{" "}
+        <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
       </Button>
     </div>
   );

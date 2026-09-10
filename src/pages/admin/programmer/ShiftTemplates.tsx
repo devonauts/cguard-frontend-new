@@ -1,5 +1,18 @@
 import { useState, useEffect, useCallback } from "react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
+import {
+  Search,
+  Filter,
+  EllipsisVertical,
+  X,
+  Edit,
+  Trash2,
+  Loader2,
+  LayoutTemplate,
+  Plus,
+} from "lucide-react";
+import { toast } from "sonner";
+
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,10 +47,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Search, Filter, EllipsisVertical, X, Edit, Trash2, Loader2, LayoutTemplate, Plus } from "lucide-react";
 import Breadcrumb from "@/components/ui/breadcrumb";
-import { PageContainer, PageHeader, Section, EmptyState, Toolbar } from "@/components/kit";
-import { toast } from "sonner";
+import {
+  PageContainer,
+  PageHeader,
+  Section,
+  EmptyState,
+  Toolbar,
+} from "@/components/kit";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import shiftTemplateService, {
   type ShiftTemplate,
@@ -83,7 +100,9 @@ export default function ShiftTemplates() {
   const [saving, setSaving] = useState(false);
 
   const [guards, setGuards] = useState<{ id: string; name: string }[]>([]);
-  const [postSites, setPostSites] = useState<{ id: string; name: string }[]>([]);
+  const [postSites, setPostSites] = useState<{ id: string; name: string }[]>(
+    [],
+  );
   const [departments, setDepartments] = useState<string[]>([]);
 
   // Real department catalog (Settings › Departamentos). The template column
@@ -91,7 +110,9 @@ export default function ShiftTemplates() {
   useEffect(() => {
     departmentService
       .list()
-      .then((r) => setDepartments(r.rows.filter((d) => d.active).map((d) => d.name)))
+      .then((r) =>
+        setDepartments(r.rows.filter((d) => d.active).map((d) => d.name)),
+      )
       .catch(() => {});
   }, []);
 
@@ -107,6 +128,7 @@ export default function ShiftTemplates() {
       .catch((e) => toast.error(e?.message || "Error al cargar plantillas"))
       .finally(() => setLoading(false));
   }, [filters.category]);
+
   useEffect(loadTemplates, [loadTemplates]);
 
   // Guards + post sites for the dropdowns and for resolving names in the table.
@@ -114,12 +136,20 @@ export default function ShiftTemplates() {
     securityGuardService
       .list({ limit: "500" })
       .then((res) => {
-        const rows = Array.isArray(res) ? res : res?.rows ?? [];
+        const rows = Array.isArray(res) ? res : (res?.rows ?? []);
+
         setGuards(
-          rows.map((g: { id: string; fullName?: string; name?: string; email?: string }) => ({
-            id: g.id,
-            name: g.fullName || g.name || g.email || "—",
-          })),
+          rows.map(
+            (g: {
+              id: string;
+              fullName?: string;
+              name?: string;
+              email?: string;
+            }) => ({
+              id: g.id,
+              name: g.fullName || g.name || g.email || "—",
+            }),
+          ),
         );
       })
       .catch(() => {});
@@ -127,13 +157,16 @@ export default function ShiftTemplates() {
       .list({}, { limit: 500, offset: 0 })
       .then((res) => {
         const rows = res?.rows ?? [];
+
         setPostSites(rows.map((p) => ({ id: p.id, name: p.name })));
       })
       .catch(() => {});
   }, []);
 
-  const guardName = (id: string | null) => guards.find((g) => g.id === id)?.name || "—";
-  const postSiteName = (id: string | null) => postSites.find((p) => p.id === id)?.name || "—";
+  const guardName = (id: string | null) =>
+    guards.find((g) => g.id === id)?.name || "—";
+  const postSiteName = (id: string | null) =>
+    postSites.find((p) => p.id === id)?.name || "—";
 
   // ── form handlers ──────────────────────────────────────────────────────────
   const openNew = () => {
@@ -163,7 +196,8 @@ export default function ShiftTemplates() {
 
   const handleSave = async () => {
     if (!form.templateName.trim() || !form.startTime || !form.endTime) {
-      toast.error(t('ui.ShiftTemplates.tituloHoraDeInicioY'));
+      toast.error(t("ui.ShiftTemplates.tituloHoraDeInicioY"));
+
       return;
     }
     const payload: ShiftTemplateInput = {
@@ -180,6 +214,7 @@ export default function ShiftTemplates() {
       note: form.note || null,
       category: form.category || null,
     };
+
     setSaving(true);
     try {
       if (editingId) {
@@ -194,14 +229,25 @@ export default function ShiftTemplates() {
       setEditingId(null);
       loadTemplates();
     } catch (e: any) {
-      toast.error(e?.message || t('ui.ShiftTemplates.saveError', "Error al guardar la plantilla"));
+      toast.error(
+        e?.message ||
+          t("ui.ShiftTemplates.saveError", "Error al guardar la plantilla"),
+      );
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!(await confirmDialog({ title: "Eliminar plantilla", message: "¿Eliminar esta plantilla de turno?", confirmText: "Eliminar", tone: "danger" }))) return;
+    if (
+      !(await confirmDialog({
+        title: "Eliminar plantilla",
+        message: "¿Eliminar esta plantilla de turno?",
+        confirmText: "Eliminar",
+        tone: "danger",
+      }))
+    )
+      return;
     try {
       await shiftTemplateService.remove(id);
       toast.success("Plantilla eliminada");
@@ -211,8 +257,10 @@ export default function ShiftTemplates() {
     }
   };
 
-  const filteredTemplates = templates.filter((t) =>
-    !searchQuery || t.templateName.toLowerCase().includes(searchQuery.toLowerCase()),
+  const filteredTemplates = templates.filter(
+    (t) =>
+      !searchQuery ||
+      t.templateName.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -220,24 +268,34 @@ export default function ShiftTemplates() {
       <Breadcrumb
         items={[
           { label: "Panel de control", path: "/dashboard" },
-          { label: t('ui.ShiftTemplates.plantillasDeTurno', "Plantillas de turno") },
+          {
+            label: t(
+              "ui.ShiftTemplates.plantillasDeTurno",
+              "Plantillas de turno",
+            ),
+          },
         ]}
       />
-      <PageContainer width="wide" className="px-4 lg:px-6">
+      <PageContainer className="px-4 lg:px-6" width="wide">
         <PageHeader
           icon={<LayoutTemplate />}
-          title={t('ui.ShiftTemplates.plantillasDeTurno')}
-          subtitle={t('ui.ShiftTemplates.definePlantillasReutilizablesParaCrear')}
+          subtitle={t(
+            "ui.ShiftTemplates.definePlantillasReutilizablesParaCrear",
+          )}
+          title={t("ui.ShiftTemplates.plantillasDeTurno")}
         />
 
         {/* Barra de filtros */}
         <Toolbar className="justify-between gap-4">
           <div className="flex w-full flex-col items-center gap-4 md:flex-row">
             <div className="relative w-full md:w-80">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: "var(--ink-faint)" }} />
+              <Search
+                className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
+                style={{ color: "var(--ink-faint)" }}
+              />
               <Input
-                placeholder={t('ui.ShiftTemplates.buscarPlantillaDeTurno')}
                 className="pl-9"
+                placeholder={t("ui.ShiftTemplates.buscarPlantillaDeTurno")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -253,12 +311,20 @@ export default function ShiftTemplates() {
                 <SheetContent className="w-full sm:w-[540px] overflow-y-auto">
                   <SheetHeader className="relative">
                     <SheetTitle>
-                      {editingId ? t('ui.ShiftTemplates.editTemplateTitle', "Editar plantilla de turno") : t('ui.ShiftTemplates.newTemplateTitle', "Nueva plantilla de turno")}
+                      {editingId
+                        ? t(
+                            "ui.ShiftTemplates.editTemplateTitle",
+                            "Editar plantilla de turno",
+                          )
+                        : t(
+                            "ui.ShiftTemplates.newTemplateTitle",
+                            "Nueva plantilla de turno",
+                          )}
                     </SheetTitle>
                     <Button
-                      variant="ghost"
-                      size="icon"
                       className="absolute right-0 top-0"
+                      size="icon"
+                      variant="ghost"
                       onClick={() => setIsFormOpen(false)}
                     >
                       <X className="h-4 w-4" />
@@ -266,37 +332,57 @@ export default function ShiftTemplates() {
                   </SheetHeader>
                   <div className="space-y-6 py-4">
                     <div className="grid gap-2">
-                      <Label>{t("ui.ShiftTemplates.tituloDelTurno", "Título del turno*")}</Label>
+                      <Label>
+                        {t(
+                          "ui.ShiftTemplates.tituloDelTurno",
+                          "Título del turno*",
+                        )}
+                      </Label>
                       <Input
                         value={form.templateName}
-                        onChange={(e) => setForm({ ...form, templateName: e.target.value })}
+                        onChange={(e) =>
+                          setForm({ ...form, templateName: e.target.value })
+                        }
                       />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2">
-                        <Label>{t('ui.ShiftTemplates.horaDeInicio')}</Label>
+                        <Label>{t("ui.ShiftTemplates.horaDeInicio")}</Label>
                         <Input
                           type="time"
                           value={form.startTime}
-                          onChange={(e) => setForm({ ...form, startTime: e.target.value })}
+                          onChange={(e) =>
+                            setForm({ ...form, startTime: e.target.value })
+                          }
                         />
                       </div>
                       <div className="grid gap-2">
-                        <Label>{t('ui.ShiftTemplates.horaDeFin')}</Label>
+                        <Label>{t("ui.ShiftTemplates.horaDeFin")}</Label>
                         <Input
                           type="time"
                           value={form.endTime}
-                          onChange={(e) => setForm({ ...form, endTime: e.target.value })}
+                          onChange={(e) =>
+                            setForm({ ...form, endTime: e.target.value })
+                          }
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2">
-                        <Label>{t('ui.ShiftTemplates.repetirTurno')}</Label>
-                        <Select value={form.repeatShift} onValueChange={(v) => setForm({ ...form, repeatShift: v })}>
-                          <SelectTrigger><SelectValue placeholder={t('kit.select.placeholder')} /></SelectTrigger>
+                        <Label>{t("ui.ShiftTemplates.repetirTurno")}</Label>
+                        <Select
+                          value={form.repeatShift}
+                          onValueChange={(v) =>
+                            setForm({ ...form, repeatShift: v })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue
+                              placeholder={t("kit.select.placeholder")}
+                            />
+                          </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="daily">Diario</SelectItem>
                             <SelectItem value="weekly">Semanal</SelectItem>
@@ -305,11 +391,22 @@ export default function ShiftTemplates() {
                         </Select>
                       </div>
                       <div className="grid gap-2">
-                        <Label>{t('ui.ShiftTemplates.repetirPor')}</Label>
-                        <Select value={form.repeatBy} onValueChange={(v) => setForm({ ...form, repeatBy: v })}>
-                          <SelectTrigger><SelectValue placeholder={t('kit.select.placeholder')} /></SelectTrigger>
+                        <Label>{t("ui.ShiftTemplates.repetirPor")}</Label>
+                        <Select
+                          value={form.repeatBy}
+                          onValueChange={(v) =>
+                            setForm({ ...form, repeatBy: v })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue
+                              placeholder={t("kit.select.placeholder")}
+                            />
+                          </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="day">{t("ui.ShiftTemplates.dia", "Día")}</SelectItem>
+                            <SelectItem value="day">
+                              {t("ui.ShiftTemplates.dia", "Día")}
+                            </SelectItem>
                             <SelectItem value="week">Semana</SelectItem>
                             <SelectItem value="month">Mes</SelectItem>
                           </SelectContent>
@@ -318,16 +415,26 @@ export default function ShiftTemplates() {
                     </div>
 
                     <div className="grid gap-2">
-                      <Label>{t('comun.puestoDeSeguridad')}</Label>
+                      <Label>{t("comun.puestoDeSeguridad")}</Label>
                       <Select
                         value={form.postSiteId || NONE}
-                        onValueChange={(v) => setForm({ ...form, postSiteId: v === NONE ? "" : v })}
+                        onValueChange={(v) =>
+                          setForm({ ...form, postSiteId: v === NONE ? "" : v })
+                        }
                       >
-                        <SelectTrigger><SelectValue placeholder={t('kit.select.placeholder')} /></SelectTrigger>
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={t("kit.select.placeholder")}
+                          />
+                        </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value={NONE}>{t('comun.sinAsignar')}</SelectItem>
+                          <SelectItem value={NONE}>
+                            {t("comun.sinAsignar")}
+                          </SelectItem>
                           {postSites.map((p) => (
-                            <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                            <SelectItem key={p.id} value={p.id}>
+                              {p.name}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -335,10 +442,19 @@ export default function ShiftTemplates() {
 
                     <div className="grid gap-2">
                       <Label>Nivel requerido</Label>
-                      <Select value={form.skillSet} onValueChange={(v) => setForm({ ...form, skillSet: v })}>
-                        <SelectTrigger><SelectValue placeholder={t('kit.select.placeholder')} /></SelectTrigger>
+                      <Select
+                        value={form.skillSet}
+                        onValueChange={(v) => setForm({ ...form, skillSet: v })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={t("kit.select.placeholder")}
+                          />
+                        </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="basic">{t("ui.ShiftTemplates.basico", "Básico")}</SelectItem>
+                          <SelectItem value="basic">
+                            {t("ui.ShiftTemplates.basico", "Básico")}
+                          </SelectItem>
                           <SelectItem value="advanced">Avanzado</SelectItem>
                         </SelectContent>
                       </Select>
@@ -348,36 +464,58 @@ export default function ShiftTemplates() {
                       <Label>Departamento</Label>
                       <Select
                         value={form.department || NONE}
-                        onValueChange={(v) => setForm({ ...form, department: v === NONE ? "" : v })}
+                        onValueChange={(v) =>
+                          setForm({ ...form, department: v === NONE ? "" : v })
+                        }
                       >
-                        <SelectTrigger><SelectValue placeholder={t('kit.select.placeholder')} /></SelectTrigger>
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={t("kit.select.placeholder")}
+                          />
+                        </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value={NONE}>{t('comun.sinDepartamento')}</SelectItem>
+                          <SelectItem value={NONE}>
+                            {t("comun.sinDepartamento")}
+                          </SelectItem>
                           {departments.map((name) => (
-                            <SelectItem key={name} value={name}>{name}</SelectItem>
+                            <SelectItem key={name} value={name}>
+                              {name}
+                            </SelectItem>
                           ))}
                           {/* Keep the stored value selectable if it's a legacy
                               id or a department later renamed/removed. */}
-                          {form.department && !departments.includes(form.department) && (
-                            <SelectItem value={form.department}>
-                              {LEGACY_DEPARTMENTS[form.department] || form.department}
-                            </SelectItem>
-                          )}
+                          {form.department &&
+                            !departments.includes(form.department) && (
+                              <SelectItem value={form.department}>
+                                {LEGACY_DEPARTMENTS[form.department] ||
+                                  form.department}
+                              </SelectItem>
+                            )}
                         </SelectContent>
                       </Select>
                     </div>
 
                     <div className="grid gap-2">
-                      <Label>{t('comun.vigilante')}</Label>
+                      <Label>{t("comun.vigilante")}</Label>
                       <Select
                         value={form.guardId || NONE}
-                        onValueChange={(v) => setForm({ ...form, guardId: v === NONE ? "" : v })}
+                        onValueChange={(v) =>
+                          setForm({ ...form, guardId: v === NONE ? "" : v })
+                        }
                       >
-                        <SelectTrigger><SelectValue placeholder={t('kit.select.placeholder')} /></SelectTrigger>
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={t("kit.select.placeholder")}
+                          />
+                        </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value={NONE}>{t('comun.sinAsignar')}</SelectItem>
+                          <SelectItem value={NONE}>
+                            {t("comun.sinAsignar")}
+                          </SelectItem>
                           {guards.map((g) => (
-                            <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>
+                            <SelectItem key={g.id} value={g.id}>
+                              {g.name}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -385,8 +523,17 @@ export default function ShiftTemplates() {
 
                     <div className="grid gap-2">
                       <Label>Descansos</Label>
-                      <Select value={form.breakDuration} onValueChange={(v) => setForm({ ...form, breakDuration: v })}>
-                        <SelectTrigger><SelectValue placeholder={t('kit.select.placeholder')} /></SelectTrigger>
+                      <Select
+                        value={form.breakDuration}
+                        onValueChange={(v) =>
+                          setForm({ ...form, breakDuration: v })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={t("kit.select.placeholder")}
+                          />
+                        </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="30min">30 minutos</SelectItem>
                           <SelectItem value="1hour">1 hora</SelectItem>
@@ -397,16 +544,27 @@ export default function ShiftTemplates() {
                     <div className="grid gap-2">
                       <Label>Nota</Label>
                       <Textarea
-                        value={form.note}
-                        onChange={(e) => setForm({ ...form, note: e.target.value })}
                         rows={3}
+                        value={form.note}
+                        onChange={(e) =>
+                          setForm({ ...form, note: e.target.value })
+                        }
                       />
                     </div>
 
                     <div className="grid gap-2">
-                      <Label>{t("ui.ShiftTemplates.categoria", "Categoría")}</Label>
-                      <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
-                        <SelectTrigger><SelectValue placeholder={t('kit.select.placeholder')} /></SelectTrigger>
+                      <Label>
+                        {t("ui.ShiftTemplates.categoria", "Categoría")}
+                      </Label>
+                      <Select
+                        value={form.category}
+                        onValueChange={(v) => setForm({ ...form, category: v })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={t("kit.select.placeholder")}
+                          />
+                        </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="regular">Regular</SelectItem>
                           <SelectItem value="special">Especial</SelectItem>
@@ -416,19 +574,25 @@ export default function ShiftTemplates() {
 
                     <div className="flex gap-2 pt-4">
                       <Button
-                        variant="brand"
                         className="flex-1"
-                        onClick={handleSave}
                         disabled={saving}
+                        variant="brand"
+                        onClick={handleSave}
                       >
-                        {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                        {saving ? "Guardando…" : editingId ? "Actualizar" : "Guardar"}
+                        {saving ? (
+                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        ) : null}
+                        {saving
+                          ? "Guardando…"
+                          : editingId
+                            ? "Actualizar"
+                            : "Guardar"}
                       </Button>
                       <Button
-                        variant="outline"
                         className="flex-1"
-                        onClick={() => setIsFormOpen(false)}
                         disabled={saving}
+                        variant="outline"
+                        onClick={() => setIsFormOpen(false)}
                       >
                         Cancelar
                       </Button>
@@ -447,9 +611,9 @@ export default function ShiftTemplates() {
                   <SheetHeader className="relative">
                     <SheetTitle>Filtros</SheetTitle>
                     <Button
-                      variant="ghost"
-                      size="icon"
                       className="absolute right-0 top-0"
+                      size="icon"
+                      variant="ghost"
                       onClick={() => setIsFiltersOpen(false)}
                     >
                       <X className="h-4 w-4" />
@@ -457,14 +621,27 @@ export default function ShiftTemplates() {
                   </SheetHeader>
                   <div className="space-y-6 py-4">
                     <div className="grid gap-2">
-                      <Label>{t("ui.ShiftTemplates.categoria2", "Categoría")}</Label>
+                      <Label>
+                        {t("ui.ShiftTemplates.categoria2", "Categoría")}
+                      </Label>
                       <Select
                         value={filters.category || NONE}
-                        onValueChange={(v) => setFilters({ ...filters, category: v === NONE ? "" : v })}
+                        onValueChange={(v) =>
+                          setFilters({
+                            ...filters,
+                            category: v === NONE ? "" : v,
+                          })
+                        }
                       >
-                        <SelectTrigger><SelectValue placeholder={t('ui.ShiftTemplates.todas')} /></SelectTrigger>
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={t("ui.ShiftTemplates.todas")}
+                          />
+                        </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value={NONE}>{t('ui.ShiftTemplates.todas')}</SelectItem>
+                          <SelectItem value={NONE}>
+                            {t("ui.ShiftTemplates.todas")}
+                          </SelectItem>
                           <SelectItem value="regular">Regular</SelectItem>
                           <SelectItem value="special">Especial</SelectItem>
                         </SelectContent>
@@ -478,63 +655,107 @@ export default function ShiftTemplates() {
         </Toolbar>
 
         {/* Tabla */}
-        <Section title="Plantillas" icon={<LayoutTemplate />} contentClassName="overflow-x-auto -mx-1">
+        <Section
+          contentClassName="overflow-x-auto -mx-1"
+          icon={<LayoutTemplate />}
+          title="Plantillas"
+        >
           <Table>
             <TableHeader style={{ background: "var(--glass-sunken)" }}>
               <TableRow>
-                <TableHead className="w-[50px]"><Checkbox /></TableHead>
-                <TableHead className="cg-eyebrow">{t('ui.ShiftTemplates.nombreDeLaPlantilla')}</TableHead>
-                <TableHead className="cg-eyebrow">{t('comun.horaDeInicio')}</TableHead>
-                <TableHead className="cg-eyebrow">{t('comun.horaDeFin')}</TableHead>
-                <TableHead className="cg-eyebrow">{t('comun.puestoDeSeguridad')}</TableHead>
-                <TableHead className="cg-eyebrow">{t('comun.vigilante')}</TableHead>
-                <TableHead className="w-[50px]"></TableHead>
+                <TableHead className="w-[50px]">
+                  <Checkbox />
+                </TableHead>
+                <TableHead className="cg-eyebrow">
+                  {t("ui.ShiftTemplates.nombreDeLaPlantilla")}
+                </TableHead>
+                <TableHead className="cg-eyebrow">
+                  {t("comun.horaDeInicio")}
+                </TableHead>
+                <TableHead className="cg-eyebrow">
+                  {t("comun.horaDeFin")}
+                </TableHead>
+                <TableHead className="cg-eyebrow">
+                  {t("comun.puestoDeSeguridad")}
+                </TableHead>
+                <TableHead className="cg-eyebrow">
+                  {t("comun.vigilante")}
+                </TableHead>
+                <TableHead className="w-[50px]" />
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="h-[300px] text-center">
-                    <div className="flex flex-col items-center justify-center gap-3" style={{ color: "var(--ink-soft)" }}>
-                      <Loader2 className="h-8 w-8 animate-spin" style={{ color: "var(--brand-text)" }} />
-                      <p className="text-sm">{t('ui.ShiftTemplates.cargandoPlantillas')}</p>
+                  <TableCell className="h-[300px] text-center" colSpan={7}>
+                    <div
+                      className="flex flex-col items-center justify-center gap-3"
+                      style={{ color: "var(--ink-soft)" }}
+                    >
+                      <Loader2
+                        className="h-8 w-8 animate-spin"
+                        style={{ color: "var(--brand-text)" }}
+                      />
+                      <p className="text-sm">
+                        {t("ui.ShiftTemplates.cargandoPlantillas")}
+                      </p>
                     </div>
                   </TableCell>
                 </TableRow>
               ) : filteredTemplates.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="h-[300px] text-center">
+                  <TableCell className="h-[300px] text-center" colSpan={7}>
                     <EmptyState
-                      icon={<LayoutTemplate />}
-                      title={t('ui.ShiftTemplates.noHayPlantillas')}
-                      description={t('ui.ShiftTemplates.creaTuPrimeraPlantillaDe')}
                       className="border-0 py-2"
+                      description={t(
+                        "ui.ShiftTemplates.creaTuPrimeraPlantillaDe",
+                      )}
+                      icon={<LayoutTemplate />}
+                      title={t("ui.ShiftTemplates.noHayPlantillas")}
                     />
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredTemplates.map((template) => (
-                  <TableRow key={template.id} className="cursor-pointer" onClick={() => openEdit(template)}>
+                  <TableRow
+                    key={template.id}
+                    className="cursor-pointer"
+                    onClick={() => openEdit(template)}
+                  >
                     <TableCell onClick={(e) => e.stopPropagation()}>
                       <Checkbox />
                     </TableCell>
-                    <TableCell className="font-semibold" style={{ color: "var(--brand-text)" }}>{template.templateName}</TableCell>
-                    <TableCell className="tabular-nums">{template.startTime}</TableCell>
-                    <TableCell className="tabular-nums">{template.endTime}</TableCell>
+                    <TableCell
+                      className="font-semibold"
+                      style={{ color: "var(--brand-text)" }}
+                    >
+                      {template.templateName}
+                    </TableCell>
+                    <TableCell className="tabular-nums">
+                      {template.startTime}
+                    </TableCell>
+                    <TableCell className="tabular-nums">
+                      {template.endTime}
+                    </TableCell>
                     <TableCell>{postSiteName(template.postSiteId)}</TableCell>
                     <TableCell>{guardName(template.guardId)}</TableCell>
                     <TableCell onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <EllipsisVertical className="h-4 w-4" style={{ color: "var(--ink-soft)" }} />
+                          <Button size="icon" variant="ghost">
+                            <EllipsisVertical
+                              className="h-4 w-4"
+                              style={{ color: "var(--ink-soft)" }}
+                            />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => openEdit(template)}>
                             <Edit className="mr-2 h-4 w-4" /> Editar
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleDelete(template.id)}>
+                          <DropdownMenuItem
+                            onClick={() => handleDelete(template.id)}
+                          >
                             <Trash2 className="mr-2 h-4 w-4" /> Eliminar
                           </DropdownMenuItem>
                         </DropdownMenuContent>

@@ -1,4 +1,5 @@
 import api from "../api";
+
 import { tablaDeEtiquetas } from "@/lib/i18nLabel";
 
 // Station labels live in one place — the nominativo is what disambiguates
@@ -15,18 +16,27 @@ export { stationLabel } from "../stationName";
 
 const getTenantId = (): string => {
   const t = localStorage.getItem("tenantId");
-  if (!t) throw new Error("No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.");
+
+  if (!t)
+    throw new Error(
+      "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+    );
+
   return t;
 };
 
 const buildQuery = (params?: Record<string, unknown>): string => {
   if (!params) return "";
   const p = new URLSearchParams();
+
   for (const k of Object.keys(params)) {
     const v = params[k];
-    if (v !== undefined && v !== null && String(v).trim() !== "") p.append(k, String(v));
+
+    if (v !== undefined && v !== null && String(v).trim() !== "")
+      p.append(k, String(v));
   }
   const s = p.toString();
+
   return s ? `?${s}` : "";
 };
 
@@ -40,9 +50,24 @@ export interface StationCoverage {
   nickname: string | null;
   postSiteId: string | null;
   status: CoverageStatus;
-  expected: Array<{ guardId: string; fullName: string | null; startTime: string; endTime: string; shiftId: string }>;
-  present: Array<{ guardId: string; fullName: string | null; punchInTime: string }>;
-  openEvents: Array<{ id: string; reason: string; absentGuardId: string | null; minutesOpen: number }>;
+  expected: Array<{
+    guardId: string;
+    fullName: string | null;
+    startTime: string;
+    endTime: string;
+    shiftId: string;
+  }>;
+  present: Array<{
+    guardId: string;
+    fullName: string | null;
+    punchInTime: string;
+  }>;
+  openEvents: Array<{
+    id: string;
+    reason: string;
+    absentGuardId: string | null;
+    minutesOpen: number;
+  }>;
   minutesSinceStart: number | null;
 }
 
@@ -66,8 +91,16 @@ export interface CoverageEvent {
   countsAgainstGuard: boolean;
   absentGuard?: { id: string; firstName?: string; lastName?: string } | null;
   coveringGuard?: { id: string; firstName?: string; lastName?: string } | null;
-  originStation?: { id: string; stationName?: string; nickname?: string | null } | null;
-  targetStation?: { id: string; stationName?: string; nickname?: string | null } | null;
+  originStation?: {
+    id: string;
+    stationName?: string;
+    nickname?: string | null;
+  } | null;
+  targetStation?: {
+    id: string;
+    stationName?: string;
+    nickname?: string | null;
+  } | null;
 }
 
 /**
@@ -127,18 +160,44 @@ export function coverageErrorCode(e: any): string | null {
 export const coverageService = {
   live: (stationIds?: string[]): Promise<LiveCoverage> =>
     api
-      .get(`/tenant/${getTenantId()}/coverage/live${buildQuery({ stationIds: stationIds?.join(",") })}`)
+      .get(
+        `/tenant/${getTenantId()}/coverage/live${buildQuery({ stationIds: stationIds?.join(",") })}`,
+      )
       .then((r) => r.data?.data ?? r.data),
 
-  events: (params?: { from?: string; to?: string; status?: string; kind?: string; stationId?: string; guardId?: string }) =>
+  events: (params?: {
+    from?: string;
+    to?: string;
+    status?: string;
+    kind?: string;
+    stationId?: string;
+    guardId?: string;
+  }) =>
     api
       .get(`/tenant/${getTenantId()}/coverage/events${buildQuery(params)}`)
-      .then((r) => (r.data?.data ?? r.data) as { rows: CoverageEvent[]; count: number }),
+      .then(
+        (r) =>
+          (r.data?.data ?? r.data) as { rows: CoverageEvent[]; count: number },
+      ),
 
-  candidates: (params: { eventId?: string; stationId?: string; windowStart?: string; windowEnd?: string; excludeGuardId?: string }) =>
+  candidates: (params: {
+    eventId?: string;
+    stationId?: string;
+    windowStart?: string;
+    windowEnd?: string;
+    excludeGuardId?: string;
+  }) =>
     api
       .get(`/tenant/${getTenantId()}/coverage/candidates${buildQuery(params)}`)
-      .then((r) => (r.data?.data ?? r.data) as Array<{ guardId: string; fullName: string | null; reason: string; score: number }>),
+      .then(
+        (r) =>
+          (r.data?.data ?? r.data) as Array<{
+            guardId: string;
+            fullName: string | null;
+            reason: string;
+            score: number;
+          }>,
+      ),
 
   reportAbsence: (body: {
     guardId: string;
@@ -147,7 +206,10 @@ export const coverageService = {
     shiftId?: string;
     stationId?: string;
     paid?: boolean;
-  }) => api.post(`/tenant/${getTenantId()}/coverage/absence`, body).then((r) => r.data?.data ?? r.data),
+  }) =>
+    api
+      .post(`/tenant/${getTenantId()}/coverage/absence`, body)
+      .then((r) => r.data?.data ?? r.data),
 
   transfer: (body: {
     guardId: string;
@@ -163,7 +225,10 @@ export const coverageService = {
     reason?: CoverageReason;
     reasonNote?: string;
     allowRestDay?: boolean;
-  }) => api.post(`/tenant/${getTenantId()}/coverage/transfer`, body).then((r) => r.data?.data ?? r.data),
+  }) =>
+    api
+      .post(`/tenant/${getTenantId()}/coverage/transfer`, body)
+      .then((r) => r.data?.data ?? r.data),
 
   /**
    * EXTENDER TURNO: el vigilante que ya cubrió el día se queda además con la
@@ -186,7 +251,10 @@ export const coverageService = {
     acknowledgedWarnings?: string[];
     /** El fichaje abierto que se alarga, si se conoce. */
     guardShiftId?: string;
-  }) => api.post(`/tenant/${getTenantId()}/coverage/extension`, body).then((r) => r.data?.data ?? r.data),
+  }) =>
+    api
+      .post(`/tenant/${getTenantId()}/coverage/extension`, body)
+      .then((r) => r.data?.data ?? r.data),
 
   /** Reemplazo por vacaciones/permiso: X sale por un rango, Y cubre todo el
    *  periodo en una acción. El servidor marca la ausencia, deja a Y con los
@@ -200,7 +268,10 @@ export const coverageService = {
     stationId?: string;
     reasonNote?: string;
     allowDoubleShift?: boolean;
-  }) => api.post(`/tenant/${getTenantId()}/coverage/replacement`, body).then((r) => r.data?.data ?? r.data),
+  }) =>
+    api
+      .post(`/tenant/${getTenantId()}/coverage/replacement`, body)
+      .then((r) => r.data?.data ?? r.data),
 
   /** `flags` carries the operator's confirmations (descanso, doblar turno). */
   cover: (
@@ -209,11 +280,16 @@ export const coverageService = {
     flags: { allowRestDay?: boolean; allowDoubleShift?: boolean } = {},
   ) =>
     api
-      .post(`/tenant/${getTenantId()}/coverage/events/${eventId}/cover`, { coveringGuardId, ...flags })
+      .post(`/tenant/${getTenantId()}/coverage/events/${eventId}/cover`, {
+        coveringGuardId,
+        ...flags,
+      })
       .then((r) => r.data?.data ?? r.data),
 
   cancel: (eventId: string) =>
-    api.post(`/tenant/${getTenantId()}/coverage/events/${eventId}/cancel`, {}).then((r) => r.data?.data ?? r.data),
+    api
+      .post(`/tenant/${getTenantId()}/coverage/events/${eventId}/cancel`, {})
+      .then((r) => r.data?.data ?? r.data),
 };
 
 export default coverageService;

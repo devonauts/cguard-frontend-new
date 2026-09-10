@@ -1,15 +1,29 @@
 import { useEffect } from "react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Building2 } from "lucide-react";
+
 import { Modal } from "@/components/kit";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const NONE = "__none__";
 
@@ -59,86 +73,103 @@ export default function DepartmentDialog({
 
   return (
     <Modal
-      open={open}
-      onOpenChange={onOpenChange}
-      title={title}
-      description={t('ui.DepartmentDialog.losDepartamentosOrganizanATu')}
+      description={t("ui.DepartmentDialog.losDepartamentosOrganizanATu")}
       icon={<Building2 />}
+      open={open}
+      title={title}
+      onOpenChange={onOpenChange}
     >
-        <Form {...form}>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('comun.nombreReq')}</FormLabel>
+      <Form {...form}>
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("comun.nombreReq")}</FormLabel>
+                <FormControl>
+                  <Input placeholder="Ej. Operaciones" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t("ui.DepartmentDialog.descripcion", "Descripción")}
+                </FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder={t(
+                      "ui.DepartmentDialog.queHaceEsteDepartamentoOpcional",
+                      "Qué hace este departamento (opcional)",
+                    )}
+                    rows={4}
+                    {...field}
+                    value={field.value ?? ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="managerId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Responsable (opcional)</FormLabel>
+                <Select
+                  value={field.value ?? NONE}
+                  onValueChange={(v) => field.onChange(v === NONE ? null : v)}
+                >
                   <FormControl>
-                    <Input placeholder="Ej. Operaciones" {...field} />
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={t("ui.DepartmentDialog.sinResponsable")}
+                      />
+                    </SelectTrigger>
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("ui.DepartmentDialog.descripcion", "Descripción")}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder={t("ui.DepartmentDialog.queHaceEsteDepartamentoOpcional", "Qué hace este departamento (opcional)")}
-                      rows={4}
-                      {...field}
-                      value={field.value ?? ""}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="managerId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Responsable (opcional)</FormLabel>
-                  <Select
-                    onValueChange={(v) => field.onChange(v === NONE ? null : v)}
-                    value={field.value ?? NONE}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={t('ui.DepartmentDialog.sinResponsable')} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value={NONE}>{t('ui.DepartmentDialog.sinResponsable')}</SelectItem>
-                      {managers.map((m) => (
-                        <SelectItem key={m.id} value={m.id}>
-                          {m.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
-                    Persona a cargo del departamento; recibirá escalamientos y aprobaciones en futuras versiones.
-                  </p>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex justify-end gap-2 border-t pt-4" style={{ borderColor: "var(--hairline)" }}>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                Cancelar
-              </Button>
-              <Button type="submit" variant="brand" disabled={saving}>
-                {saving ? "Guardando…" : "Guardar"}
-              </Button>
-            </div>
-          </form>
-        </Form>
+                  <SelectContent>
+                    <SelectItem value={NONE}>
+                      {t("ui.DepartmentDialog.sinResponsable")}
+                    </SelectItem>
+                    {managers.map((m) => (
+                      <SelectItem key={m.id} value={m.id}>
+                        {m.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
+                  Persona a cargo del departamento; recibirá escalamientos y
+                  aprobaciones en futuras versiones.
+                </p>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div
+            className="flex justify-end gap-2 border-t pt-4"
+            style={{ borderColor: "var(--hairline)" }}
+          >
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
+              Cancelar
+            </Button>
+            <Button disabled={saving} type="submit" variant="brand">
+              {saving ? "Guardando…" : "Guardar"}
+            </Button>
+          </div>
+        </form>
+      </Form>
     </Modal>
   );
 }

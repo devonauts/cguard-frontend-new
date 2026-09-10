@@ -1,13 +1,20 @@
 import { useEffect, useMemo, useState } from "react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { RefreshCw, BarChart3, AlertTriangle } from "lucide-react";
+
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, BarChart3, AlertTriangle } from "lucide-react";
 import { analyticsService, OpsAnalytics } from "@/lib/api/analyticsService";
 import {
-  PageContainer, PageHeader, SkeletonCards, Segmented, IconTile,
-  Section as KitSection, Stagger, StatCard,
+  PageContainer,
+  PageHeader,
+  SkeletonCards,
+  Segmented,
+  IconTile,
+  Section as KitSection,
+  Stagger,
+  StatCard,
 } from "@/components/kit";
 import { BarChart, MeterBar } from "@/components/charts";
 import { CHART_VARS, alphaVar } from "@/lib/chartColors";
@@ -23,18 +30,29 @@ import i18n from "@/i18n";
  * se volvía ilegible justo al pasar el ratón por encima, que es cuando hay que
  * poder leerlo.
  */
-const ENLACE = "font-medium text-foreground hover:text-[var(--brand-text)] hover:underline";
+const ENLACE =
+  "font-medium text-foreground hover:text-[var(--brand-text)] hover:underline";
 
 /** Link a site name to its post-site detail page. */
 export function SiteLink({ id, name }: { id?: string; name: string }) {
   if (!id) return <span className="font-medium text-foreground">{name}</span>;
-  return <Link to={`/post-sites/${id}`} className={ENLACE}>{name}</Link>;
+
+  return (
+    <Link className={ENLACE} to={`/post-sites/${id}`}>
+      {name}
+    </Link>
+  );
 }
 
 /** Link a guard name to their performance/indicators page. */
 export function GuardLink({ id, name }: { id?: string; name: string }) {
   if (!id) return <span className="font-medium text-foreground">{name}</span>;
-  return <Link to={`/guards/${id}/indicadores`} className={ENLACE}>{name}</Link>;
+
+  return (
+    <Link className={ENLACE} to={`/guards/${id}/indicadores`}>
+      {name}
+    </Link>
+  );
 }
 
 /**
@@ -81,7 +99,8 @@ const INK_OF: Record<string, string> = {
  *  comporta exactamente como antes. */
 export const toneInk = (fill: string) => INK_OF[fill] ?? fill;
 
-const fmtDate = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const fmtDate = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
 /** Constante de módulo: guarda la CLAVE, no el texto traducido. Llamar a `t()`
  *  aquí lo congelaría en el idioma de arranque. Se traduce en AnalyticsShell. */
@@ -102,60 +121,115 @@ export function useOpsAnalytics(initialDays = 30) {
   const range = useMemo(() => {
     const end = new Date();
     const start = new Date(end.getTime() - (days - 1) * 86400000);
+
     return { startDate: fmtDate(start), endDate: fmtDate(end) };
   }, [days]);
 
   const load = async () => {
-    setLoading(true); setError(null);
-    try { setData(await analyticsService.operations(range)); }
-    catch (e) { setError((e as Error)?.message || t('analytics.loadError', "No se pudieron cargar las analíticas")); }
-    finally { setLoading(false); }
+    setLoading(true);
+    setError(null);
+    try {
+      setData(await analyticsService.operations(range));
+    } catch (e) {
+      setError(
+        (e as Error)?.message ||
+          t("analytics.loadError", "No se pudieron cargar las analíticas"),
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
-  useEffect(() => { load(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [days]);
+  useEffect(() => {
+    load();
+  }, [days]);
+
   return { days, setDays, data, loading, error, reload: load };
 }
 
 /** Page chrome: CRM layout shell + header (title, range presets, refresh) + states. */
 export function AnalyticsShell({
-  title, subtitle, days, setDays, loading, error, reload, children,
+  title,
+  subtitle,
+  days,
+  setDays,
+  loading,
+  error,
+  reload,
+  children,
 }: {
-  title: string; subtitle: string; days: number; setDays: (n: number) => void;
-  loading: boolean; error: string | null; reload: () => void; children: React.ReactNode;
+  title: string;
+  subtitle: string;
+  days: number;
+  setDays: (n: number) => void;
+  loading: boolean;
+  error: string | null;
+  reload: () => void;
+  children: React.ReactNode;
 }) {
   const { t } = useTranslation();
+
   return (
     <AppLayout>
-      <PageContainer width="wide" className="p-4 sm:p-6">
+      <PageContainer className="p-4 sm:p-6" width="wide">
         <PageHeader
-          icon={<BarChart3 />}
-          title={title}
-          subtitle={subtitle}
           actions={
             <>
               <Segmented
+                options={PRESETS.map((p) => ({
+                  value: String(p.days),
+                  label: t(p.labelKey, p.label),
+                }))}
                 value={String(days)}
                 onChange={(v) => setDays(Number(v))}
-                options={PRESETS.map((p) => ({ value: String(p.days), label: t(p.labelKey, p.label) }))}
               />
-              <Button variant="outline" size="icon" onClick={reload} title="Actualizar" aria-label="Actualizar">
-                <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
+              <Button
+                aria-label="Actualizar"
+                size="icon"
+                title="Actualizar"
+                variant="outline"
+                onClick={reload}
+              >
+                <RefreshCw
+                  className={loading ? "animate-spin" : ""}
+                  size={15}
+                />
               </Button>
             </>
           }
+          icon={<BarChart3 />}
+          subtitle={subtitle}
+          title={title}
         />
 
         {loading ? (
-          <SkeletonCards count={6} className="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6" />
+          <SkeletonCards
+            className="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6"
+            count={6}
+          />
         ) : error ? (
           // Un fallo de carga es un ESTADO malo, no el acento de la página.
           <div className="glass flex flex-col items-start gap-3 p-6 sm:flex-row sm:items-center">
-            <IconTile tone="bad"><AlertTriangle /></IconTile>
+            <IconTile tone="bad">
+              <AlertTriangle />
+            </IconTile>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold">{i18n.t('ui.shared.noSePudieronCargarLos')}</p>
-              <p className="mt-0.5 text-sm" style={{ color: "var(--ink-soft)" }}>{error}</p>
+              <p className="text-sm font-semibold">
+                {i18n.t("ui.shared.noSePudieronCargarLos")}
+              </p>
+              <p
+                className="mt-0.5 text-sm"
+                style={{ color: "var(--ink-soft)" }}
+              >
+                {error}
+              </p>
             </div>
-            <Button variant="outline" size="sm" className="gap-2 sm:shrink-0" onClick={reload}>
+            <Button
+              className="gap-2 sm:shrink-0"
+              size="sm"
+              variant="outline"
+              onClick={reload}
+            >
               <RefreshCw size={14} /> Reintentar
             </Button>
           </div>
@@ -167,11 +241,24 @@ export function AnalyticsShell({
   );
 }
 
-export function MetricCard({ icon, value, label, sub, accent, pct }: {
-  icon: React.ReactNode; value: string | number; label: string; sub?: string; accent: string; pct?: number;
+export function MetricCard({
+  icon,
+  value,
+  label,
+  sub,
+  accent,
+  pct,
+}: {
+  icon: React.ReactNode;
+  value: string | number;
+  label: string;
+  sub?: string;
+  accent: string;
+  pct?: number;
 }) {
   // El relleno pinta la baldosa y la barra; la TINTA pinta el icono y la cifra.
   const ink = toneInk(accent);
+
   return (
     <div className="glass glass-hover flex h-full flex-col p-4">
       <div className="flex items-center justify-between gap-2">
@@ -179,44 +266,80 @@ export function MetricCard({ icon, value, label, sub, accent, pct }: {
             funciona con hexadecimales, y estos colores ya son `var(--…)`. */}
         <span
           className="flex h-9 w-9 items-center justify-center rounded-xl border"
-          style={{ background: alphaVar(accent, 14), borderColor: alphaVar(accent, 30), color: ink }}
+          style={{
+            background: alphaVar(accent, 14),
+            borderColor: alphaVar(accent, 30),
+            color: ink,
+          }}
         >
           {icon}
         </span>
         {typeof pct === "number" && (
-          <span className="text-xs font-semibold tabular-nums" style={{ color: ink }}>{pct}%</span>
+          <span
+            className="text-xs font-semibold tabular-nums"
+            style={{ color: ink }}
+          >
+            {pct}%
+          </span>
         )}
       </div>
-      <p className="font-display mt-3 text-3xl font-bold leading-none tabular-nums">{value}</p>
+      <p className="font-display mt-3 text-3xl font-bold leading-none tabular-nums">
+        {value}
+      </p>
       <p className="mt-1.5 text-sm font-medium">{label}</p>
-      {sub && <p className="mt-0.5 text-xs" style={{ color: "var(--ink-faint)" }}>{sub}</p>}
+      {sub && (
+        <p className="mt-0.5 text-xs" style={{ color: "var(--ink-faint)" }}>
+          {sub}
+        </p>
+      )}
       {typeof pct === "number" && (
-        <MeterBar className="mt-2.5" height={6} pct={pct} color={accent} ariaLabel={label} />
+        <MeterBar
+          ariaLabel={label}
+          className="mt-2.5"
+          color={accent}
+          height={6}
+          pct={pct}
+        />
       )}
     </div>
   );
 }
 
 /** Daily bars from arbitrary points. */
-export function DayBars({ title, points, color }: { title: string; points: { k: string; v: number }[]; color: string }) {
+export function DayBars({
+  title,
+  points,
+  color,
+}: {
+  title: string;
+  points: { k: string; v: number }[];
+  color: string;
+}) {
   const total = points.reduce((s, p) => s + p.v, 0);
+
   return (
     <div className="glass p-4">
       <div className="flex items-baseline justify-between gap-3">
         <p className="text-sm font-semibold">{title}</p>
         <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
-          <span className="font-semibold tabular-nums text-foreground">{total}</span> total
+          <span className="font-semibold tabular-nums text-foreground">
+            {total}
+          </span>{" "}
+          total
         </p>
       </div>
       {/* La etiqueta del globo lleva la fecha COMPLETA; abajo sólo caben los extremos. */}
       <BarChart
-        className="mt-3"
-        height={96}
-        color={color}
         ariaLabel={title}
+        className="mt-3"
+        color={color}
         data={points.map((p) => ({ label: p.k, value: p.v }))}
+        height={96}
       />
-      <div className="mt-1.5 flex justify-between text-[10px]" style={{ color: "var(--ink-faint)" }}>
+      <div
+        className="mt-1.5 flex justify-between text-[10px]"
+        style={{ color: "var(--ink-faint)" }}
+      >
         <span>{points[0]?.k.slice(5)}</span>
         <span>{points[points.length - 1]?.k.slice(5)}</span>
       </div>
@@ -224,16 +347,44 @@ export function DayBars({ title, points, color }: { title: string; points: { k: 
   );
 }
 
-export function HBars({ items, color, empty }: { items: { label: string; count: number }[]; color: string; empty: string }) {
-  if (!items.length) return <p className="py-4 text-sm" style={{ color: "var(--ink-soft)" }}>{empty}</p>;
+export function HBars({
+  items,
+  color,
+  empty,
+}: {
+  items: { label: string; count: number }[];
+  color: string;
+  empty: string;
+}) {
+  if (!items.length)
+    return (
+      <p className="py-4 text-sm" style={{ color: "var(--ink-soft)" }}>
+        {empty}
+      </p>
+    );
   const max = Math.max(1, ...items.map((i) => i.count));
+
   return (
     <div className="space-y-2">
       {items.map((it, i) => (
         <div key={i} className="flex items-center gap-2">
-          <span className="w-32 shrink-0 truncate text-xs" style={{ color: "var(--ink-soft)" }} title={it.label}>{it.label}</span>
-          <MeterBar className="flex-1" height={16} color={color} pct={(it.count / max) * 100} ariaLabel={it.label} />
-          <span className="w-8 shrink-0 text-right text-xs font-semibold tabular-nums">{it.count}</span>
+          <span
+            className="w-32 shrink-0 truncate text-xs"
+            style={{ color: "var(--ink-soft)" }}
+            title={it.label}
+          >
+            {it.label}
+          </span>
+          <MeterBar
+            ariaLabel={it.label}
+            className="flex-1"
+            color={color}
+            height={16}
+            pct={(it.count / max) * 100}
+          />
+          <span className="w-8 shrink-0 text-right text-xs font-semibold tabular-nums">
+            {it.count}
+          </span>
         </div>
       ))}
     </div>
@@ -242,8 +393,20 @@ export function HBars({ items, color, empty }: { items: { label: string; count: 
 
 /** Panel de cristal del kit. Se conservan el nombre y la firma porque lo importan
  *  estos paneles y el de alarmas. */
-export function Section({ title, icon, children }: { title: string; icon?: React.ReactNode; children: React.ReactNode }) {
-  return <KitSection title={title} icon={icon}>{children}</KitSection>;
+export function Section({
+  title,
+  icon,
+  children,
+}: {
+  title: string;
+  icon?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <KitSection icon={icon} title={title}>
+      {children}
+    </KitSection>
+  );
 }
 
 /**
@@ -252,7 +415,8 @@ export function Section({ title, icon, children }: { title: string; icon?: React
  * el color que elija. Devuelve una variable CSS, no una clase, porque no existe
  * —ni debe existir— una utilidad de Tailwind que apunte a estos tokens.
  */
-export const pctColor = (p: number) => (p >= 90 ? "var(--ok-text)" : p >= 70 ? "var(--warn-text)" : "var(--bad-text)");
+export const pctColor = (p: number) =>
+  p >= 90 ? "var(--ok-text)" : p >= 70 ? "var(--warn-text)" : "var(--bad-text)";
 
 /**
  * Resumen por sitio de servicio.
@@ -262,13 +426,18 @@ export const pctColor = (p: number) => (p >= 90 ? "var(--ok-text)" : p >= 70 ? "
  * dicen lo mismo tienen que alinearse igual, así que ahora es una con la
  * columna opcional.
  */
-export function PerSiteTable({ rows, showShifts = false, limit }: {
+export function PerSiteTable({
+  rows,
+  showShifts = false,
+  limit,
+}: {
   rows: OpsAnalytics["perSite"];
   showShifts?: boolean;
   limit?: number;
 }) {
   const { t } = useTranslation();
   const visibles = limit ? rows.slice(0, limit) : rows;
+
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full text-sm">
@@ -276,25 +445,47 @@ export function PerSiteTable({ rows, showShifts = false, limit }: {
           <tr>
             <th className="px-3 py-2 text-left font-semibold">Sitio</th>
             <th className="px-3 py-2 text-right font-semibold">Vigilantes</th>
-            {showShifts && <th className="px-3 py-2 text-right font-semibold">Turnos</th>}
+            {showShifts && (
+              <th className="px-3 py-2 text-right font-semibold">Turnos</th>
+            )}
             <th className="px-3 py-2 text-right font-semibold">Cobertura</th>
             <th className="px-3 py-2 text-right font-semibold">Rondas</th>
-            <th className="px-3 py-2 text-right font-semibold">{t("ui.shared.ubicacion", "Ubicación")}</th>
+            <th className="px-3 py-2 text-right font-semibold">
+              {t("ui.shared.ubicacion", "Ubicación")}
+            </th>
             <th className="px-3 py-2 text-right font-semibold">Incidentes</th>
           </tr>
         </thead>
         <tbody className="divide-y">
           {visibles.map((s, i) => (
             <tr key={i} className="hover:bg-[var(--glass-sunken)]">
-              <td className="px-3 py-2"><SiteLink id={s.id} name={s.site} /></td>
-              <td className="px-3 py-2 text-right tabular-nums text-muted-foreground">{s.guards}</td>
+              <td className="px-3 py-2">
+                <SiteLink id={s.id} name={s.site} />
+              </td>
+              <td className="px-3 py-2 text-right tabular-nums text-muted-foreground">
+                {s.guards}
+              </td>
               {showShifts && (
-                <td className="px-3 py-2 text-right tabular-nums text-muted-foreground">{s.shiftsCovered}/{s.shiftsTotal}</td>
+                <td className="px-3 py-2 text-right tabular-nums text-muted-foreground">
+                  {s.shiftsCovered}/{s.shiftsTotal}
+                </td>
               )}
-              <td className="px-3 py-2 text-right tabular-nums"><span style={{ color: pctColor(s.coveragePct) }}>{s.coveragePct}%</span></td>
-              <td className="px-3 py-2 text-right tabular-nums text-muted-foreground">{s.rondasCompleted}</td>
-              <td className="px-3 py-2 text-right tabular-nums"><span style={{ color: pctColor(s.locationCompliancePct) }}>{s.locationCompliancePct}%</span></td>
-              <td className="px-3 py-2 text-right font-semibold tabular-nums text-foreground">{s.incidents}</td>
+              <td className="px-3 py-2 text-right tabular-nums">
+                <span style={{ color: pctColor(s.coveragePct) }}>
+                  {s.coveragePct}%
+                </span>
+              </td>
+              <td className="px-3 py-2 text-right tabular-nums text-muted-foreground">
+                {s.rondasCompleted}
+              </td>
+              <td className="px-3 py-2 text-right tabular-nums">
+                <span style={{ color: pctColor(s.locationCompliancePct) }}>
+                  {s.locationCompliancePct}%
+                </span>
+              </td>
+              <td className="px-3 py-2 text-right font-semibold tabular-nums text-foreground">
+                {s.incidents}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -304,20 +495,48 @@ export function PerSiteTable({ rows, showShifts = false, limit }: {
 }
 
 /** Las cuatro cifras de asistencia. Idénticas en Operaciones y en Vigilantes. */
-export function AttendanceTiles({ attendance, className }: {
+export function AttendanceTiles({
+  attendance,
+  className,
+}: {
   attendance: OpsAnalytics["attendance"];
   className?: string;
 }) {
   const { t } = useTranslation();
+
   return (
     <Stagger className={className ?? "grid grid-cols-2 gap-3"}>
       {[
-        { label: t('guards.summary.stats.metrics.hoursWorked', "Horas trabajadas"), value: attendance.hoursWorked, accent: "info" },
-        { label: t('analytics.attendance.late', "Tardanzas"), value: attendance.late, accent: "warn" },
-        { label: t('analytics.attendance.earlyDeparture', "Salidas tempranas"), value: attendance.earlyDeparture, accent: "warn" },
-        { label: t('nomina.excepcion.outside_geofence', "Fuera de geocerca"), value: attendance.geofenceViolations, accent: "bad" },
+        {
+          label: t(
+            "guards.summary.stats.metrics.hoursWorked",
+            "Horas trabajadas",
+          ),
+          value: attendance.hoursWorked,
+          accent: "info",
+        },
+        {
+          label: t("analytics.attendance.late", "Tardanzas"),
+          value: attendance.late,
+          accent: "warn",
+        },
+        {
+          label: t("analytics.attendance.earlyDeparture", "Salidas tempranas"),
+          value: attendance.earlyDeparture,
+          accent: "warn",
+        },
+        {
+          label: t("nomina.excepcion.outside_geofence", "Fuera de geocerca"),
+          value: attendance.geofenceViolations,
+          accent: "bad",
+        },
       ].map((c) => (
-        <StatCard key={c.label} accent={c.accent} label={c.label} value={c.value} />
+        <StatCard
+          key={c.label}
+          accent={c.accent}
+          label={c.label}
+          value={c.value}
+        />
       ))}
     </Stagger>
   );
@@ -326,7 +545,8 @@ export function AttendanceTiles({ attendance, className }: {
 export function RangeFooter({ data }: { data: OpsAnalytics }) {
   return (
     <p className="text-center text-xs" style={{ color: "var(--ink-faint)" }}>
-      Período: {data.range.start.slice(0, 10)} → {data.range.end.slice(0, 10)} · {data.range.days} días
+      Período: {data.range.start.slice(0, 10)} → {data.range.end.slice(0, 10)} ·{" "}
+      {data.range.days} días
     </p>
   );
 }

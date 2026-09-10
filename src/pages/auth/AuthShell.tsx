@@ -22,12 +22,13 @@
  * el acento y funciona igual en claro y en oscuro sin escribir dos temas.
  * ════════════════════════════════════════════════════════════════════════════
  */
-import { ReactNode, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { AlertTriangle, BarChart3, Clock, MapPin, Shield } from 'lucide-react';
-import SplashScreen from '@/components/SplashScreen';
-import BrandLockup from '@/components/BrandLockup';
-import { FadeIn } from '@/components/kit';
+import { ReactNode, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { AlertTriangle, BarChart3, Clock, MapPin, Shield } from "lucide-react";
+
+import SplashScreen from "@/components/SplashScreen";
+import BrandLockup from "@/components/BrandLockup";
+import { FadeIn } from "@/components/kit";
 
 interface AuthShellProps {
   children: ReactNode;
@@ -37,7 +38,7 @@ interface AuthShellProps {
    * 'field' es la variante de la app de vigilantes (el correo de recuperación
    * del móvil llega aquí): mensajes de campo, no de plataforma.
    */
-  variant?: 'admin' | 'field';
+  variant?: "admin" | "field";
   /** Texto bajo el título. Si no se pasa, el de la variante. */
   subtitle?: string;
   /** Píldora sobre el título. Si no se pasa, la de la variante. */
@@ -52,11 +53,17 @@ interface AuthShellProps {
    * Pastillas propias, cuando el flujo promete otra cosa que la plataforma —
    * una invitación de vigilante habla de marcaje y rondas, no de analítica.
    */
-  features?: Array<{ icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>; label: string }>;
+  features?: Array<{
+    icon: React.ComponentType<{
+      className?: string;
+      style?: React.CSSProperties;
+    }>;
+    label: string;
+  }>;
   /** La cortina de bienvenida. Las páginas que ya cargan datos la apagan. */
   splash?: boolean;
   /** `lg` para formularios largos (activación de cuenta). */
-  width?: 'md' | 'lg';
+  width?: "md" | "lg";
 }
 
 /** Dos iniciales del nombre de la organización, para cuando no hay logotipo. */
@@ -66,16 +73,16 @@ function iniciales(nombre: string): string {
       .trim()
       .split(/\s+/)
       .slice(0, 2)
-      .map((p) => p[0] ?? '')
-      .join('')
-      .toUpperCase() || '•'
+      .map((p) => p[0] ?? "")
+      .join("")
+      .toUpperCase() || "•"
   );
 }
 
 export default function AuthShell({
   children,
   title,
-  variant = 'admin',
+  variant = "admin",
   subtitle,
   eyebrow,
   logoUrl,
@@ -83,7 +90,7 @@ export default function AuthShell({
   showFeatures = true,
   features,
   splash = true,
-  width = 'md',
+  width = "md",
 }: AuthShellProps) {
   const { t } = useTranslation();
   const [cargando, setCargando] = useState(splash);
@@ -91,38 +98,57 @@ export default function AuthShell({
   useEffect(() => {
     if (!splash) return;
     const timer = setTimeout(() => setCargando(false), 2500);
+
     return () => clearTimeout(timer);
   }, [splash]);
 
   if (cargando) return <SplashScreen />;
 
-  const esCampo = variant === 'field';
+  const esCampo = variant === "field";
 
-  const pastillas = features ?? (esCampo
-    ? [
-        { icon: Clock, label: t('auth.fieldLanding.tag_clock', { defaultValue: 'Entradas y salidas' }) },
-        { icon: MapPin, label: t('auth.fieldLanding.tag_patrol', { defaultValue: 'Rondas y patrullajes' }) },
-        { icon: AlertTriangle, label: t('auth.fieldLanding.tag_incidents', { defaultValue: 'Reporte de incidentes' }) },
-      ]
-    : [
-        { icon: Shield, label: t('auth.landing.tag_cloud') },
-        { icon: Clock, label: t('auth.landing.tag_realtime') },
-        { icon: BarChart3, label: t('auth.landing.tag_analytics') },
-      ]);
+  const pastillas =
+    features ??
+    (esCampo
+      ? [
+          {
+            icon: Clock,
+            label: t("auth.fieldLanding.tag_clock", {
+              defaultValue: "Entradas y salidas",
+            }),
+          },
+          {
+            icon: MapPin,
+            label: t("auth.fieldLanding.tag_patrol", {
+              defaultValue: "Rondas y patrullajes",
+            }),
+          },
+          {
+            icon: AlertTriangle,
+            label: t("auth.fieldLanding.tag_incidents", {
+              defaultValue: "Reporte de incidentes",
+            }),
+          },
+        ]
+      : [
+          { icon: Shield, label: t("auth.landing.tag_cloud") },
+          { icon: Clock, label: t("auth.landing.tag_realtime") },
+          { icon: BarChart3, label: t("auth.landing.tag_analytics") },
+        ]);
 
   const cintillo =
     eyebrow ??
     (esCampo
-      ? t('auth.fieldLanding.eyebrow', { defaultValue: 'App para vigilantes' })
-      : t('auth.landing.eyebrow', { defaultValue: 'Plataforma de seguridad' }));
+      ? t("auth.fieldLanding.eyebrow", { defaultValue: "App para vigilantes" })
+      : t("auth.landing.eyebrow", { defaultValue: "Plataforma de seguridad" }));
 
   const bajada =
     subtitle ??
     (esCampo
-      ? t('auth.fieldLanding.desc', {
-          defaultValue: 'Vuelve a entrar a la app C-Guard Pro con tu nueva contraseña.',
+      ? t("auth.fieldLanding.desc", {
+          defaultValue:
+            "Vuelve a entrar a la app C-Guard Pro con tu nueva contraseña.",
         })
-      : t('auth.landing.desc', { product: 'C-GUARD' }));
+      : t("auth.landing.desc", { product: "C-GUARD" }));
 
   return (
     <div className="app-shell relative flex min-h-screen flex-col items-center justify-center px-4 py-10 sm:px-6">
@@ -131,22 +157,34 @@ export default function AuthShell({
       <div
         aria-hidden
         className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[36rem] w-[36rem] -translate-x-1/2 -translate-y-[58%] rounded-full blur-3xl"
-        style={{ background: 'radial-gradient(circle, var(--brand) 0%, transparent 65%)', opacity: 0.14 }}
+        style={{
+          background:
+            "radial-gradient(circle, var(--brand) 0%, transparent 65%)",
+          opacity: 0.14,
+        }}
       />
 
-      <FadeIn className={`w-full ${width === 'lg' ? 'max-w-lg' : 'max-w-md'}`}>
+      <FadeIn className={`w-full ${width === "lg" ? "max-w-lg" : "max-w-md"}`}>
         {/* ── Marca ──────────────────────────────────────────────────────── */}
         <div className="mb-7 flex flex-col items-center text-center">
           {logoUrl ? (
-            <img src={logoUrl} alt={brandName || 'Logotipo'} className="mb-5 h-14 max-w-[220px] object-contain" />
+            <img
+              alt={brandName || "Logotipo"}
+              className="mb-5 h-14 max-w-[220px] object-contain"
+              src={logoUrl}
+            />
           ) : brandName ? (
             /* La organización que invita no tiene logotipo. Sus iniciales, NO el
                logotipo de la plataforma: quien recibe la invitación tiene que
                reconocer a la empresa que le contrata. */
             <div
-              className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border text-lg font-bold"
-              style={{ background: 'var(--brand-wash)', borderColor: 'var(--brand-line)', color: 'var(--brand-text)' }}
               aria-hidden
+              className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border text-lg font-bold"
+              style={{
+                background: "var(--brand-wash)",
+                borderColor: "var(--brand-line)",
+                color: "var(--brand-text)",
+              }}
             >
               {iniciales(brandName)}
             </div>
@@ -157,12 +195,12 @@ export default function AuthShell({
           <span
             className="mb-5 inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em]"
             style={{
-              background: 'var(--brand-wash)',
-              borderColor: 'var(--brand-line)',
-              color: 'var(--brand-text)',
+              background: "var(--brand-wash)",
+              borderColor: "var(--brand-line)",
+              color: "var(--brand-text)",
             }}
           >
-            <span className="cc-dot" style={{ background: 'var(--brand)' }} />
+            <span className="cc-dot" style={{ background: "var(--brand)" }} />
             {brandName || cintillo}
           </span>
 
@@ -170,7 +208,10 @@ export default function AuthShell({
             {title}
           </h1>
           {bajada && (
-            <p className="mt-2 max-w-sm text-sm leading-relaxed" style={{ color: 'var(--ink-soft)' }}>
+            <p
+              className="mt-2 max-w-sm text-sm leading-relaxed"
+              style={{ color: "var(--ink-soft)" }}
+            >
               {bajada}
             </p>
           )}
@@ -187,21 +228,28 @@ export default function AuthShell({
                 key={label}
                 className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-medium"
                 style={{
-                  background: 'var(--glass-sunken)',
-                  borderColor: 'var(--hairline)',
-                  color: 'var(--ink-soft)',
+                  background: "var(--glass-sunken)",
+                  borderColor: "var(--hairline)",
+                  color: "var(--ink-soft)",
                 }}
               >
-                <Icono className="h-3.5 w-3.5" style={{ color: 'var(--brand-text)' }} />
+                <Icono
+                  className="h-3.5 w-3.5"
+                  style={{ color: "var(--brand-text)" }}
+                />
                 {label}
               </span>
             ))}
           </div>
         )}
 
-        <p className="mt-7 text-center text-xs" style={{ color: 'var(--ink-faint)' }}>
-          {t('auth.landing.copyright', {
-            defaultValue: '© 2025-{{year}} C-GUARD. Todos los derechos reservados.',
+        <p
+          className="mt-7 text-center text-xs"
+          style={{ color: "var(--ink-faint)" }}
+        >
+          {t("auth.landing.copyright", {
+            defaultValue:
+              "© 2025-{{year}} C-GUARD. Todos los derechos reservados.",
             year: new Date().getFullYear(),
           })}
         </p>
@@ -217,19 +265,27 @@ export default function AuthShell({
 
 /** Campo hundido. `pl-11` cuando lleva icono a la izquierda. */
 export const CAMPO =
-  'cg-input h-12 w-full px-4 text-sm disabled:cursor-not-allowed disabled:opacity-50';
+  "cg-input h-12 w-full px-4 text-sm disabled:cursor-not-allowed disabled:opacity-50";
 export const CAMPO_ICONO = `${CAMPO} pl-11`;
 
 /** Botón principal: píldora de marca con brillo. */
 export const BOTON_PRINCIPAL =
-  'cg-btn-brand cg-focus flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-60';
+  "cg-btn-brand cg-focus flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-60";
 
 /** Etiqueta de campo. */
-export function Etiqueta({ htmlFor, children, requerido = true }: { htmlFor?: string; children: ReactNode; requerido?: boolean }) {
+export function Etiqueta({
+  htmlFor,
+  children,
+  requerido = true,
+}: {
+  htmlFor?: string;
+  children: ReactNode;
+  requerido?: boolean;
+}) {
   return (
-    <label htmlFor={htmlFor} className="mb-2 block text-sm font-medium">
+    <label className="mb-2 block text-sm font-medium" htmlFor={htmlFor}>
       {children}
-      {requerido && <span style={{ color: 'var(--brand-text)' }}> *</span>}
+      {requerido && <span style={{ color: "var(--brand-text)" }}> *</span>}
     </label>
   );
 }
@@ -238,11 +294,14 @@ export function Etiqueta({ htmlFor, children, requerido = true }: { htmlFor?: st
 export function Separador({ children }: { children: ReactNode }) {
   return (
     <div className="flex items-center gap-3">
-      <div className="h-px flex-1" style={{ background: 'var(--hairline)' }} />
-      <span className="text-xs font-medium uppercase tracking-widest" style={{ color: 'var(--ink-faint)' }}>
+      <div className="h-px flex-1" style={{ background: "var(--hairline)" }} />
+      <span
+        className="text-xs font-medium uppercase tracking-widest"
+        style={{ color: "var(--ink-faint)" }}
+      >
         {children}
       </span>
-      <div className="h-px flex-1" style={{ background: 'var(--hairline)' }} />
+      <div className="h-px flex-1" style={{ background: "var(--hairline)" }} />
     </div>
   );
 }
@@ -253,9 +312,9 @@ export function AvisoError({ children }: { children: ReactNode }) {
     <div
       className="flex items-start gap-2 rounded-xl border px-4 py-3 text-sm"
       style={{
-        background: 'color-mix(in oklab, var(--bad) 12%, transparent)',
-        borderColor: 'color-mix(in oklab, var(--bad) 30%, transparent)',
-        color: 'var(--bad-text)',
+        background: "color-mix(in oklab, var(--bad) 12%, transparent)",
+        borderColor: "color-mix(in oklab, var(--bad) 30%, transparent)",
+        color: "var(--bad-text)",
       }}
     >
       {children}

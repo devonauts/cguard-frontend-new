@@ -1,20 +1,36 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import ShiftAssignModal from './ShiftAssignModal';
-import SacafrancoAssignModal from './SacafrancoAssignModal';
-import AsignacionEditModal from './AsignacionEditModal';
-import StationRoster from './StationRoster';
-import { confirmDialog } from '@/components/ui/confirmDialog';
-import { useTranslation } from 'react-i18next';
-import { Loader2, Plus, ChevronLeft, ChevronRight, User, Calendar, AlertTriangle, CheckCircle2, Sun, Moon, Trash2, Pencil } from 'lucide-react';
-import { ApiService } from '@/services/api/apiService';
-import { toast } from 'sonner';
-import { getTenantTimezone } from '@/utils/tenantLocation';
-import { Button } from '@/components/ui/button';
-import { Segmented, IconTile, EmptyState } from '@/components/kit';
-import type { Station } from '@/types';
+import type { Station } from "@/types";
 
-import { localeActual } from '@/lib/localeActual'
-interface StationDetail extends Station { stationSchedule?: string | null }
+import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  Loader2,
+  Plus,
+  ChevronLeft,
+  ChevronRight,
+  Calendar,
+  AlertTriangle,
+  CheckCircle2,
+  Sun,
+  Moon,
+  Trash2,
+  Pencil,
+} from "lucide-react";
+import { toast } from "sonner";
+
+import ShiftAssignModal from "./ShiftAssignModal";
+import SacafrancoAssignModal from "./SacafrancoAssignModal";
+import AsignacionEditModal from "./AsignacionEditModal";
+import StationRoster from "./StationRoster";
+
+import { confirmDialog } from "@/components/ui/confirmDialog";
+import { ApiService } from "@/services/api/apiService";
+import { getTenantTimezone } from "@/utils/tenantLocation";
+import { Button } from "@/components/ui/button";
+import { Segmented, IconTile, EmptyState } from "@/components/kit";
+import { localeActual } from "@/lib/localeActual";
+interface StationDetail extends Station {
+  stationSchedule?: string | null;
+}
 
 // Minutes-of-day of a UTC instant rendered in the tenant timezone. Shift times
 // are stored as UTC; the jornada window is the station's local wall-clock. We
@@ -22,11 +38,15 @@ interface StationDetail extends Station { stationSchedule?: string | null }
 // whose device isn't in the tenant's timezone.
 function minutesInTenantTz(d: Date): number {
   try {
-    const parts = new Intl.DateTimeFormat('en-US', {
-      timeZone: getTenantTimezone(), hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: getTenantTimezone(),
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
     }).formatToParts(d);
-    const h = Number(parts.find(p => p.type === 'hour')?.value || 0);
-    const m = Number(parts.find(p => p.type === 'minute')?.value || 0);
+    const h = Number(parts.find((p) => p.type === "hour")?.value || 0);
+    const m = Number(parts.find((p) => p.type === "minute")?.value || 0);
+
     return h * 60 + m;
   } catch {
     return d.getHours() * 60 + d.getMinutes();
@@ -44,9 +64,14 @@ type Props = { station: StationDetail; stationId: string; postSiteId: string };
 const GUARD_HUE_STEPS = [0, 200, 45, 250, 100, 310, 155, 25];
 
 function guardColor(i: number): GuardColor {
-  const paso = GUARD_HUE_STEPS[((i % GUARD_HUE_STEPS.length) + GUARD_HUE_STEPS.length) % GUARD_HUE_STEPS.length];
+  const paso =
+    GUARD_HUE_STEPS[
+      ((i % GUARD_HUE_STEPS.length) + GUARD_HUE_STEPS.length) %
+        GUARD_HUE_STEPS.length
+    ];
   const relleno = `oklch(from var(--brand) l c calc(h + ${paso}))`;
   const tinta = `oklch(from var(--brand-text) l c calc(h + ${paso}))`;
+
   return {
     bg: `color-mix(in oklab, ${relleno} 14%, transparent)`,
     accent: relleno,
@@ -57,11 +82,24 @@ function guardColor(i: number): GuardColor {
 /** Tinte por defecto cuando un turno no tiene vigilante identificado. */
 const GUARD_FALLBACK: GuardColor = guardColor(0);
 
-const DAYS_ES = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-const MONTHS_ES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+const DAYS_ES = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+const MONTHS_ES = [
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
+];
 
 // Map JS getDay() (0=Sun) to our day keys
-const DAY_INDEX_MAP = ['dom', 'lun', 'mar', 'mie', 'jue', 'vie', 'sab'];
+const DAY_INDEX_MAP = ["dom", "lun", "mar", "mie", "jue", "vie", "sab"];
 
 // Local-date key (YYYY-MM-DD). Do NOT use toISOString() for this: on a Date that
 // carries a time-of-day, toISOString() converts to UTC first, so in negative-UTC
@@ -70,12 +108,13 @@ const DAY_INDEX_MAP = ['dom', 'lun', 'mar', 'mie', 'jue', 'vie', 'sab'];
 // created turnos rendered on the wrong day or vanished from the visible week.
 const dateKey = (d: Date) => {
   const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+
   return `${y}-${m}-${day}`;
 };
 
-type ViewMode = 'day' | 'week' | 'month';
+type ViewMode = "day" | "week" | "month";
 
 interface Jornada {
   tipo: string;
@@ -103,16 +142,31 @@ interface ShiftEvent {
   guardId: string;
   start: Date;
   end: Date;
-  status: 'active' | 'upcoming' | 'completed' | 'novedad';
+  status: "active" | "upcoming" | "completed" | "novedad";
   raw: ShiftRow;
 }
 // Aggregated coverage for a single calendar date.
-interface DayCoverage { slots: ScheduleSlot[]; allCovered: boolean; uncoveredCount: number }
+interface DayCoverage {
+  slots: ScheduleSlot[];
+  allCovered: boolean;
+  uncoveredCount: number;
+}
 // A scheduler position row from `/station/:id/positions`.
-interface PositionRow { type?: string; startTime?: string; endTime?: string }
+interface PositionRow {
+  type?: string;
+  startTime?: string;
+  endTime?: string;
+}
 // A raw shift row from `/shift` — nested guard may live under several keys and
 // times under several aliases, so this stays intentionally permissive.
-interface ShiftGuardRef { id?: string; fullName?: string; name?: string; firstName?: string; lastName?: string; email?: string }
+interface ShiftGuardRef {
+  id?: string;
+  fullName?: string;
+  name?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+}
 interface ShiftRow {
   id?: string;
   guard?: ShiftGuardRef | null;
@@ -120,9 +174,12 @@ interface ShiftRow {
   user?: ShiftGuardRef | null;
   guardId?: string;
   guardName?: string;
-  startTime?: string; endTime?: string;
-  punchInTime?: string; punchOutTime?: string;
-  start?: string; end?: string;
+  startTime?: string;
+  endTime?: string;
+  punchInTime?: string;
+  punchOutTime?: string;
+  start?: string;
+  end?: string;
   guardAssignmentId?: string;
   status?: string | null;
   /** Lo adjunta el servidor cuando el turno lo anuló una novedad (ver shiftRepository). */
@@ -135,25 +192,31 @@ interface ShiftRow {
   } | null;
 }
 
-export default function StationShifts({ station, stationId, postSiteId }: Props) {
+export default function StationShifts({
+  station,
+  stationId,
+  postSiteId,
+}: Props) {
   const { t } = useTranslation();
   const [rows, setRows] = useState<ShiftRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<ViewMode>('week');
+  const [viewMode, setViewMode] = useState<ViewMode>("week");
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedShift, setSelectedShift] = useState<ShiftEvent | null>(null);
   /* La asignación que se está editando. Pulsar sobre un vigilante sólo ofrecía
      QUITARLO, así que corregirle la plaza o la fecha de inicio —la que decide
      en qué día cae su descanso— obligaba a borrarlo y volverlo a crear. */
-  const [editandoAsignacion, setEditandoAsignacion] = useState<string | null>(null);
+  const [editandoAsignacion, setEditandoAsignacion] = useState<string | null>(
+    null,
+  );
 
   // Assignment is handled entirely by <ShiftAssignModal/> (self-contained).
   const [showForm, setShowForm] = useState(false);
   const [showSacafranco, setShowSacafranco] = useState(false);
 
-  const tenantId = localStorage.getItem('tenantId') || '';
+  const tenantId = localStorage.getItem("tenantId") || "";
 
   const loadShifts = async () => {
     if (!stationId) return;
@@ -161,7 +224,7 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
     setError(null);
     try {
       const res: any = await ApiService.get(
-        `/tenant/${tenantId}/shift?filter[station]=${encodeURIComponent(stationId)}&limit=999`
+        `/tenant/${tenantId}/shift?filter[station]=${encodeURIComponent(stationId)}&limit=999`,
       );
       const list = Array.isArray(res) ? res : (res?.rows ?? []);
       /* ── UN TURNO ANULADO NO ES UN TURNO ────────────────────────────────
@@ -191,10 +254,15 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
          Torres estaba programado, ni que se le cambió a libre, ni quién lo
          hizo. Ahora la fila se queda, marcada como lo que es, con su motivo y
          su autor (`novedad`, que adjunta el servidor). */
-      const DESAPARECIDOS = ['cancelled', 'transferred_out'];
-      setRows(list.filter((r: any) => !DESAPARECIDOS.includes(String(r?.status || 'planned'))));
+      const DESAPARECIDOS = ["cancelled", "transferred_out"];
+
+      setRows(
+        list.filter(
+          (r: any) => !DESAPARECIDOS.includes(String(r?.status || "planned")),
+        ),
+      );
     } catch (e: any) {
-      setError(e?.message || 'Error al cargar turnos');
+      setError(e?.message || "Error al cargar turnos");
     } finally {
       setLoading(false);
     }
@@ -206,12 +274,19 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
   const loadPositions = useCallback(() => {
     if (!stationId || !tenantId) return;
     ApiService.get(`/tenant/${tenantId}/station/${stationId}/positions`)
-      .then((res: any) => { setPositions(Array.isArray(res) ? res : (res?.rows ?? [])); })
+      .then((res: any) => {
+        setPositions(Array.isArray(res) ? res : (res?.rows ?? []));
+      })
       .catch(() => {});
   }, [stationId, tenantId]);
-  useEffect(() => { loadPositions(); }, [loadPositions]);
 
-  useEffect(() => { loadShifts(); }, [stationId]);
+  useEffect(() => {
+    loadPositions();
+  }, [loadPositions]);
+
+  useEffect(() => {
+    loadShifts();
+  }, [stationId]);
 
   // Auto-refresh the sketch when the horario/turnos of THIS station change
   // (the editor broadcasts after /auto-positions succeeds) — no manual reload,
@@ -219,14 +294,17 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
   useEffect(() => {
     const onChanged = (e: Event) => {
       const changedId = (e as CustomEvent)?.detail?.stationId;
+
       if (!changedId || String(changedId) === String(stationId)) {
         loadPositions();
         loadShifts();
       }
     };
-    window.addEventListener('station-horario-changed', onChanged);
-    return () => window.removeEventListener('station-horario-changed', onChanged);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    window.addEventListener("station-horario-changed", onChanged);
+
+    return () =>
+      window.removeEventListener("station-horario-changed", onChanged);
   }, [stationId, loadPositions]);
 
   // Jornadas = the TURNO the user defined on the station (its schedule). That is
@@ -234,8 +312,10 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
   // staffing used to cover it. So we read the station schedule FIRST and only
   // fall back to positions when no explicit schedule exists.
   const jornadas: Jornada[] = useMemo(() => {
-    const ALL_DAYS = ['lun', 'mar', 'mie', 'jue', 'vie', 'sab', 'dom'];
-    const fijos = positions.filter((p: PositionRow) => (p.type || 'fijo') !== 'sacafranco');
+    const ALL_DAYS = ["lun", "mar", "mie", "jue", "vie", "sab", "dom"];
+    const fijos = positions.filter(
+      (p: PositionRow) => (p.type || "fijo") !== "sacafranco",
+    );
 
     // UNIVERSAL SOURCE OF TRUTH = the station's fijo POSITIONS, grouped by their
     // block (startTime|endTime). Each DISTINCT block is one required jornada
@@ -246,59 +326,93 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
     // sketch matches whatever horario the tenant configured — any hours, any
     // number of guards, with or without sacafranco.
     const blockLabel = (start: string, end: string): string => {
-      const sh = parseInt(String(start).split(':')[0], 10) || 0;
-      const eh = parseInt(String(end).split(':')[0], 10) || 0;
-      let span = (eh - sh + 24) % 24; if (span === 0) span = 24;
-      if (span >= 23) return '24 horas';
-      return sh >= 18 || sh < 6 ? 'Nocturno' : 'Diurno';
+      const sh = parseInt(String(start).split(":")[0], 10) || 0;
+      const eh = parseInt(String(end).split(":")[0], 10) || 0;
+      let span = (eh - sh + 24) % 24;
+
+      if (span === 0) span = 24;
+      if (span >= 23) return "24 horas";
+
+      return sh >= 18 || sh < 6 ? "Nocturno" : "Diurno";
     };
+
     if (fijos.length > 0) {
       const blocks = new Map<string, { startTime: string; endTime: string }>();
+
       for (const p of fijos) {
-        const startTime = p.startTime || '07:00';
-        const endTime = p.endTime || '19:00';
+        const startTime = p.startTime || "07:00";
+        const endTime = p.endTime || "19:00";
+
         blocks.set(`${startTime}|${endTime}`, { startTime, endTime });
       }
+
       return Array.from(blocks.values())
         .sort((a, b) => a.startTime.localeCompare(b.startTime))
-        .map((b) => ({
-          tipo: blockLabel(b.startTime, b.endTime),
-          startTime: b.startTime,
-          endTime: b.endTime,
-          guardsCount: 1,
-          days: ALL_DAYS,
-        }) as any);
+        .map(
+          (b) =>
+            ({
+              tipo: blockLabel(b.startTime, b.endTime),
+              startTime: b.startTime,
+              endTime: b.endTime,
+              guardsCount: 1,
+              days: ALL_DAYS,
+            }) as any,
+        );
     }
 
     // No positions yet: fall back to the station's scheduleType so an
     // un-staffed station still shows its intended coverage.
     const st = (station as any)?.scheduleType as string | undefined;
-    if (st === '24h') {
+
+    if (st === "24h") {
       return [
-        { tipo: 'Diurno', startTime: '07:00', endTime: '19:00', guardsCount: 1, days: ALL_DAYS } as any,
-        { tipo: 'Nocturno', startTime: '19:00', endTime: '07:00', guardsCount: 1, days: ALL_DAYS } as any,
+        {
+          tipo: "Diurno",
+          startTime: "07:00",
+          endTime: "19:00",
+          guardsCount: 1,
+          days: ALL_DAYS,
+        } as any,
+        {
+          tipo: "Nocturno",
+          startTime: "19:00",
+          endTime: "07:00",
+          guardsCount: 1,
+          days: ALL_DAYS,
+        } as any,
       ];
     }
-    if (st === '12h-day' || st === '12h-night') {
-      const isNight = st === '12h-night';
-      return [{
-        tipo: isNight ? 'Nocturno' : 'Diurno',
-        startTime: isNight ? '19:00' : '07:00',
-        endTime: isNight ? '07:00' : '19:00',
-        guardsCount: 1,
-        days: ALL_DAYS,
-      } as any];
+    if (st === "12h-day" || st === "12h-night") {
+      const isNight = st === "12h-night";
+
+      return [
+        {
+          tipo: isNight ? "Nocturno" : "Diurno",
+          startTime: isNight ? "19:00" : "07:00",
+          endTime: isNight ? "07:00" : "19:00",
+          guardsCount: 1,
+          days: ALL_DAYS,
+        } as any,
+      ];
     }
     // Legacy custom: explicit hand-edited stationSchedule JSON.
     let parsed: any[] = [];
+
     try {
       const raw = station?.stationSchedule;
+
       if (Array.isArray(raw)) parsed = raw;
-      else if (raw && typeof raw === 'string' && raw.trim().startsWith('[')) parsed = JSON.parse(raw);
+      else if (raw && typeof raw === "string" && raw.trim().startsWith("["))
+        parsed = JSON.parse(raw);
     } catch {}
     if (parsed.length > 0) {
-      return parsed.map(j => ({ ...j, days: j.days || ALL_DAYS, guardsCount: j.guardsCount || 1 }));
+      return parsed.map((j) => ({
+        ...j,
+        days: j.days || ALL_DAYS,
+        guardsCount: j.guardsCount || 1,
+      }));
     }
+
     return [];
   }, [station, positions]);
 
@@ -306,14 +420,17 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
   const guardColorMap = useMemo(() => {
     const map: Record<string, GuardColor> = {};
     let idx = 0;
+
     rows.forEach((r: any) => {
       const g = r.guard || r.securityGuard || r.user || {};
-      const guardId = g.id || r.guardId || r.guard || 'unknown';
+      const guardId = g.id || r.guardId || r.guard || "unknown";
+
       if (!map[guardId]) {
         map[guardId] = guardColor(idx);
         idx++;
       }
     });
+
     return map;
   }, [rows]);
 
@@ -321,17 +438,27 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
   const events = useMemo<ShiftEvent[]>(() => {
     return rows.map((r: any) => {
       const g = r.guard || r.securityGuard || r.user || {};
-      const guardName = g.fullName || g.name || `${g.firstName || ''} ${g.lastName || ''}`.trim() || r.guardName || 'Sin asignar';
-      const guardId = g.id || r.guardId || r.guard || 'unknown';
+      const guardName =
+        g.fullName ||
+        g.name ||
+        `${g.firstName || ""} ${g.lastName || ""}`.trim() ||
+        r.guardName ||
+        "Sin asignar";
+      const guardId = g.id || r.guardId || r.guard || "unknown";
       const start = new Date(r.startTime || r.punchInTime || r.start);
       const end = new Date(r.endTime || r.punchOutTime || r.end);
       const now = Date.now();
       /* Una novedad manda sobre el reloj: alguien a quien se le dio el día
          libre no está «en servicio» a las 22:00 porque el reloj diga que sí. */
-      const status: ShiftEvent['status'] = String(r.status || '') === 'absent'
-        ? 'novedad'
-        : now >= start.getTime() && now <= end.getTime() ? 'active'
-        : now < start.getTime() ? 'upcoming' : 'completed';
+      const status: ShiftEvent["status"] =
+        String(r.status || "") === "absent"
+          ? "novedad"
+          : now >= start.getTime() && now <= end.getTime()
+            ? "active"
+            : now < start.getTime()
+              ? "upcoming"
+              : "completed";
+
       return { id: r.id, guardName, guardId, start, end, status, raw: r };
     });
   }, [rows]);
@@ -341,24 +468,32 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
   // Events per date
   const eventsByDate = useMemo(() => {
     const map: Record<string, typeof events> = {};
-    events.forEach(ev => {
+
+    events.forEach((ev) => {
       const cursor = new Date(ev.start);
+
       cursor.setHours(0, 0, 0, 0);
       const endDay = new Date(ev.end);
+
       endDay.setHours(0, 0, 0, 0);
       while (cursor <= endDay) {
         const key = toDateKey(cursor);
+
         if (!map[key]) map[key] = [];
         map[key].push(ev);
         cursor.setDate(cursor.getDate() + 1);
       }
     });
+
     return map;
   }, [events]);
 
   // Schedule coverage per date: check if jornada requirements are met
   const coverageByDate = useMemo(() => {
-    const map: Record<string, { slots: ScheduleSlot[]; allCovered: boolean; uncoveredCount: number }> = {};
+    const map: Record<
+      string,
+      { slots: ScheduleSlot[]; allCovered: boolean; uncoveredCount: number }
+    > = {};
 
     // Helper: check if a date's day-of-week matches a jornada's days
     const getDayKey = (d: Date) => DAY_INDEX_MAP[d.getDay()];
@@ -366,12 +501,12 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
     // Generate coverage for all visible dates
     const generateForDate = (dateStr: string) => {
       if (map[dateStr]) return map[dateStr];
-      const date = new Date(dateStr + 'T12:00:00');
+      const date = new Date(dateStr + "T12:00:00");
       const dayKey = getDayKey(date);
       const dayEvents = eventsByDate[dateStr] || [];
       const slots: ScheduleSlot[] = [];
 
-      jornadas.forEach(jornada => {
+      jornadas.forEach((jornada) => {
         if (!jornada.days.includes(dayKey)) return; // not an operating day for this jornada
         const guardsNeeded = parseInt(String(jornada.guardsCount)) || 1;
 
@@ -380,16 +515,21 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
         // start; otherwise match the shift's start half (day/night) to the
         // block's — robust for night shifts that cross midnight (19:00→07:00),
         // which naive time-overlap missed.
-        const jStartH = parseInt(String(jornada.startTime || '07:00').split(':')[0], 10) || 0;
-        const jEndH = parseInt(String(jornada.endTime || '19:00').split(':')[0], 10) || 0;
-        let jSpan = (jEndH - jStartH + 24) % 24; if (jSpan === 0) jSpan = 24;
+        const jStartH =
+          parseInt(String(jornada.startTime || "07:00").split(":")[0], 10) || 0;
+        const jEndH =
+          parseInt(String(jornada.endTime || "19:00").split(":")[0], 10) || 0;
+        let jSpan = (jEndH - jStartH + 24) % 24;
+
+        if (jSpan === 0) jSpan = 24;
         const isFullDay = jSpan >= 23;
         const jornadaNight = jStartH >= 18 || jStartH < 6;
-        const guardsAssigned = dayEvents.filter(ev => {
+        const guardsAssigned = dayEvents.filter((ev) => {
           if (dateKey(ev.start) !== dateStr) return false; // attribute to its start day
           if (isFullDay) return true; // a 24h block is covered by any shift that day
           const startMin = minutesInTenantTz(ev.start);
           const evNight = startMin >= 18 * 60 || startMin < 6 * 60; // evening/pre-dawn start = night
+
           return jornadaNight ? evNight : !evNight;
         }).length;
 
@@ -404,15 +544,23 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
         });
       });
 
-      const uncoveredCount = slots.filter(s => !s.isCovered).length;
-      map[dateStr] = { slots, allCovered: uncoveredCount === 0, uncoveredCount };
+      const uncoveredCount = slots.filter((s) => !s.isCovered).length;
+
+      map[dateStr] = {
+        slots,
+        allCovered: uncoveredCount === 0,
+        uncoveredCount,
+      };
+
       return map[dateStr];
     };
 
     // Pre-generate for next 60 days
     const now = new Date();
+
     for (let i = -7; i < 60; i++) {
       const d = new Date(now);
+
       d.setDate(d.getDate() + i);
       generateForDate(toDateKey(d));
     }
@@ -426,12 +574,17 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
   // inflated this to an alarming, non-actionable number.
   const futureUncovered = useMemo(() => {
     const today = toDateKey(new Date());
-    const h = new Date(); h.setDate(h.getDate() + 14);
+    const h = new Date();
+
+    h.setDate(h.getDate() + 14);
     const horizonKey = toDateKey(h);
     let count = 0;
+
     Object.entries(coverageByDate).forEach(([dateStr, cov]) => {
-      if (dateStr >= today && dateStr <= horizonKey) count += cov.uncoveredCount;
+      if (dateStr >= today && dateStr <= horizonKey)
+        count += cov.uncoveredCount;
     });
+
     return count;
   }, [coverageByDate]);
 
@@ -439,26 +592,37 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
   // sacafranco needs to cover. Fed to the sacafranco card to match availability.
   const gapDates = useMemo(() => {
     const today = toDateKey(new Date());
-    const h = new Date(); h.setDate(h.getDate() + 14);
+    const h = new Date();
+
+    h.setDate(h.getDate() + 14);
     const horizonKey = toDateKey(h);
+
     return Object.entries(coverageByDate)
-      .filter(([dateStr, cov]) => dateStr >= today && dateStr <= horizonKey && cov.uncoveredCount > 0)
+      .filter(
+        ([dateStr, cov]) =>
+          dateStr >= today && dateStr <= horizonKey && cov.uncoveredCount > 0,
+      )
       .map(([dateStr]) => dateStr)
       .sort();
   }, [coverageByDate]);
 
   // Navigation
-  const navigate = useCallback((dir: number) => {
-    setCurrentDate(prev => {
-      const d = new Date(prev);
-      if (viewMode === 'day') d.setDate(d.getDate() + dir);
-      else if (viewMode === 'week') d.setDate(d.getDate() + dir * 7);
-      else d.setMonth(d.getMonth() + dir);
-      return d;
-    });
-    setSelectedDate(null);
-    setSelectedShift(null);
-  }, [viewMode]);
+  const navigate = useCallback(
+    (dir: number) => {
+      setCurrentDate((prev) => {
+        const d = new Date(prev);
+
+        if (viewMode === "day") d.setDate(d.getDate() + dir);
+        else if (viewMode === "week") d.setDate(d.getDate() + dir * 7);
+        else d.setMonth(d.getMonth() + dir);
+
+        return d;
+      });
+      setSelectedDate(null);
+      setSelectedShift(null);
+    },
+    [viewMode],
+  );
 
   const goToday = () => {
     setCurrentDate(new Date());
@@ -470,9 +634,15 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
     const d = new Date(currentDate);
     const day = d.getDay();
     const diff = day === 0 ? -6 : 1 - day;
+
     d.setDate(d.getDate() + diff);
     const days: Date[] = [];
-    for (let i = 0; i < 7; i++) { days.push(new Date(d)); d.setDate(d.getDate() + 1); }
+
+    for (let i = 0; i < 7; i++) {
+      days.push(new Date(d));
+      d.setDate(d.getDate() + 1);
+    }
+
     return days;
   }, [currentDate]);
 
@@ -483,39 +653,68 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
     const lastDay = new Date(year, month + 1, 0);
     const startOffset = (firstDay.getDay() + 6) % 7;
     const days: (Date | null)[] = [];
+
     for (let i = 0; i < startOffset; i++) days.push(null);
-    for (let i = 1; i <= lastDay.getDate(); i++) days.push(new Date(year, month, i));
+    for (let i = 1; i <= lastDay.getDate(); i++)
+      days.push(new Date(year, month, i));
     while (days.length % 7 !== 0) days.push(null);
+
     return days;
   }, [currentDate]);
 
   // Only shifts that START on the selected day — a night shift (19:00→07:00) spans
   // two days and eventsByDate lists it on both, which double-listed the night guard.
   const selectedDayEvents = selectedDate
-    ? (eventsByDate[selectedDate] || []).filter((ev: ShiftEvent) => dateKey(ev.start) === selectedDate)
+    ? (eventsByDate[selectedDate] || []).filter(
+        (ev: ShiftEvent) => dateKey(ev.start) === selectedDate,
+      )
     : [];
-  const selectedDayCoverage = selectedDate ? coverageByDate[selectedDate] : null;
+  const selectedDayCoverage = selectedDate
+    ? coverageByDate[selectedDate]
+    : null;
 
-  const fmtTime = (d: Date) => d.toLocaleTimeString(localeActual(), { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: getTenantTimezone() });
-  const fmtDate = (d: Date) => d.toLocaleDateString(localeActual(), { weekday: 'long', day: 'numeric', month: 'long' });
+  const fmtTime = (d: Date) =>
+    d.toLocaleTimeString(localeActual(), {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+      timeZone: getTenantTimezone(),
+    });
+  const fmtDate = (d: Date) =>
+    d.toLocaleDateString(localeActual(), {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+    });
 
   // Guard currently assigned to this station (the predominant guard across its
   // existing shifts) — used to pre-select the dropdown when creating a turno.
   const stationGuardId = useMemo(() => {
     const counts: Record<string, number> = {};
+
     rows.forEach((r: any) => {
       const g = r.guard || r.securityGuard || r.user || {};
       const id = g.id || r.guardId;
+
       if (id) counts[id] = (counts[id] || 0) + 1;
     });
-    let best = '';
+    let best = "";
     let bestN = 0;
-    Object.entries(counts).forEach(([id, n]) => { if (n > bestN) { best = id; bestN = n; } });
+
+    Object.entries(counts).forEach(([id, n]) => {
+      if (n > bestN) {
+        best = id;
+        bestN = n;
+      }
+    });
+
     return best;
   }, [rows]);
 
   // The assign modal (ShiftAssignModal) initializes itself on open.
-  const openForm = (_dateStr?: string) => { setShowForm(true); };
+  const openForm = (_dateStr?: string) => {
+    setShowForm(true);
+  };
 
   // Remove a guard from this station: end their ACTIVE rotation assignment (the
   // backend cascades and deletes future shifts). Falls back to deleting the single
@@ -528,45 +727,83 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
       const res: any = await ApiService.get(
         `/tenant/${tenantId}/guard-assignments?stationId=${encodeURIComponent(stationId)}&status=active`,
       );
-      const list = Array.isArray(res) ? res : (res?.rows || res?.data || []);
-      const match = list.find((a: any) => String(a.guardId) === String(ev.guardId));
+      const list = Array.isArray(res) ? res : res?.rows || res?.data || [];
+      const match = list.find(
+        (a: any) => String(a.guardId) === String(ev.guardId),
+      );
+
       return match?.id ? String(match.id) : null;
-    } catch { return null; }
+    } catch {
+      return null;
+    }
   };
 
   const editarTurno = async (ev: ShiftEvent) => {
     const id = await asignacionDe(ev);
+
     if (!id) {
-      toast.info('Este turno no viene de una rotación: bórralo y vuelve a crearlo desde «Asignar vigilante».');
+      toast.info(
+        "Este turno no viene de una rotación: bórralo y vuelve a crearlo desde «Asignar vigilante».",
+      );
+
       return;
     }
     setEditandoAsignacion(id);
   };
 
   const removeGuard = async (ev: ShiftEvent) => {
-    if (!(await confirmDialog({ title: 'Quitar vigilante', message: `¿Quitar a ${ev.guardName} de este puesto? Sus turnos futuros se anulan; los ya trabajados se conservan en el historial.`, confirmText: 'Quitar', tone: 'danger' }))) return;
+    if (
+      !(await confirmDialog({
+        title: "Quitar vigilante",
+        message: `¿Quitar a ${ev.guardName} de este puesto? Sus turnos futuros se anulan; los ya trabajados se conservan en el historial.`,
+        confirmText: "Quitar",
+        tone: "danger",
+      }))
+    )
+      return;
     try {
       const assignmentId: string | null = await asignacionDe(ev);
+
       if (assignmentId) {
-        await ApiService.delete(`/tenant/${tenantId}/guard-assignment/${encodeURIComponent(assignmentId)}`);
+        await ApiService.delete(
+          `/tenant/${tenantId}/guard-assignment/${encodeURIComponent(assignmentId)}`,
+        );
       } else if (ev.id) {
-        await ApiService.delete(`/tenant/${tenantId}/shift?ids=${encodeURIComponent(ev.id)}`);
+        await ApiService.delete(
+          `/tenant/${tenantId}/shift?ids=${encodeURIComponent(ev.id)}`,
+        );
       }
-      toast.success(t('ui.StationShifts.vigilanteRemovidoDelPuesto'));
+      toast.success(t("ui.StationShifts.vigilanteRemovidoDelPuesto"));
       setSelectedShift(null);
       loadShifts();
     } catch (e: any) {
-      toast.error(e?.message || t('station.shifts.removeGuardError', 'No se pudo quitar al vigilante'));
+      toast.error(
+        e?.message ||
+          t(
+            "station.shifts.removeGuardError",
+            "No se pudo quitar al vigilante",
+          ),
+      );
     }
   };
 
-
   const title = useMemo(() => {
-    if (viewMode === 'day') return currentDate.toLocaleDateString(localeActual(), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-    if (viewMode === 'month') return `${MONTHS_ES[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+    if (viewMode === "day")
+      return currentDate.toLocaleDateString(localeActual(), {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+    if (viewMode === "month")
+      return `${MONTHS_ES[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
     const days = getWeekDays();
-    const first = days[0], last = days[6];
-    if (first.getMonth() === last.getMonth()) return `${first.getDate()} \u2013 ${last.getDate()} ${MONTHS_ES[first.getMonth()]} ${first.getFullYear()}`;
+    const first = days[0],
+      last = days[6];
+
+    if (first.getMonth() === last.getMonth())
+      return `${first.getDate()} \u2013 ${last.getDate()} ${MONTHS_ES[first.getMonth()]} ${first.getFullYear()}`;
+
     return `${first.getDate()} ${MONTHS_ES[first.getMonth()].slice(0, 3)} \u2013 ${last.getDate()} ${MONTHS_ES[last.getMonth()].slice(0, 3)} ${last.getFullYear()}`;
   }, [currentDate, viewMode, getWeekDays]);
 
@@ -577,30 +814,41 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
         <div
           className="glass-flat flex flex-wrap items-center gap-3 px-4 py-3 animate-in fade-in slide-in-from-top-2 duration-300"
           style={{
-            background: 'color-mix(in oklab, var(--bad) 10%, transparent)',
-            borderColor: 'color-mix(in oklab, var(--bad) 28%, transparent)',
+            background: "color-mix(in oklab, var(--bad) 10%, transparent)",
+            borderColor: "color-mix(in oklab, var(--bad) 28%, transparent)",
           }}
         >
-          <IconTile tone="bad" size="sm"><AlertTriangle /></IconTile>
+          <IconTile size="sm" tone="bad">
+            <AlertTriangle />
+          </IconTile>
           <div className="min-w-48 flex-1">
-            <p className="text-sm font-semibold" style={{ color: 'var(--bad-text)' }}>
-              {futureUncovered} turno{futureUncovered > 1 ? 's' : ''} por cubrir (próximos 14 días)
+            <p
+              className="text-sm font-semibold"
+              style={{ color: "var(--bad-text)" }}
+            >
+              {futureUncovered} turno{futureUncovered > 1 ? "s" : ""} por cubrir
+              (próximos 14 días)
             </p>
-            <p className="mt-0.5 text-xs" style={{ color: 'var(--ink-soft)' }}>
-              {t('ui.StationShifts.completaLosFijosDelPuesto', 'Completa los fijos del puesto y asigna un')} <strong>sacafranco</strong> (relevo) para cubrir sus días de descanso — 2 fijos no alcanzan a cubrir 24/7.
+            <p className="mt-0.5 text-xs" style={{ color: "var(--ink-soft)" }}>
+              {t(
+                "ui.StationShifts.completaLosFijosDelPuesto",
+                "Completa los fijos del puesto y asigna un",
+              )}{" "}
+              <strong>sacafranco</strong> (relevo) para cubrir sus días de
+              descanso — 2 fijos no alcanzan a cubrir 24/7.
             </p>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
-              onClick={() => setShowSacafranco(true)}
               className="cg-focus rounded-lg px-3 py-1.5 text-xs font-semibold transition-all"
-              style={{ background: 'var(--ok)', color: 'var(--brand-ink)' }}
+              style={{ background: "var(--ok)", color: "var(--brand-ink)" }}
+              onClick={() => setShowSacafranco(true)}
             >
               Asignar sacafranco
             </button>
             <button
-              onClick={() => openForm()}
               className="cg-btn-bad cg-focus rounded-lg px-3 py-1.5 text-xs font-semibold transition-all"
+              onClick={() => openForm()}
             >
               Asignar fijo
             </button>
@@ -611,42 +859,61 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
       {/* `glass-flat` = cristal SIN desenfoque. El desenfoque que había aquí no
           se veía (el fondo es opaco) pero sí se rasterizaba en cada fotograma,
           justo debajo de una rejilla que se desplaza. */}
-      <div className="glass-flat overflow-hidden" style={{ borderRadius: 'var(--r-xl)' }}>
+      <div
+        className="glass-flat overflow-hidden"
+        style={{ borderRadius: "var(--r-xl)" }}
+      >
         {/* Top Bar */}
         {/* Vista + navegación + «Nuevo turno» suman ~640 px. El contenedor
             recorta (`overflow-hidden`), así que sin envolver el botón de crear
             turno quedaba fuera de alcance en un teléfono. */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b px-5 py-3" style={{ borderColor: 'var(--hairline)' }}>
+        <div
+          className="flex flex-wrap items-center justify-between gap-3 border-b px-5 py-3"
+          style={{ borderColor: "var(--hairline)" }}
+        >
           <div className="flex items-center gap-2">
             <Segmented
+              options={[
+                { value: "day", label: "Día" },
+                { value: "week", label: "Semana" },
+                { value: "month", label: "Mes" },
+              ]}
               value={viewMode}
               onChange={(v) => setViewMode(v)}
-              options={[
-                { value: 'day', label: 'Día' },
-                { value: 'week', label: 'Semana' },
-                { value: 'month', label: 'Mes' },
-              ]}
             />
-            <button onClick={goToday} className="cg-btn-glass cg-focus rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all">
+            <button
+              className="cg-btn-glass cg-focus rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all"
+              onClick={goToday}
+            >
               Hoy
             </button>
           </div>
 
           <div className="flex items-center gap-1">
-            <button onClick={() => navigate(-1)} aria-label={t('ui.StationShifts.periodoAnterior')} className="cg-btn-ghost cg-focus rounded-lg p-1.5 transition-colors">
+            <button
+              aria-label={t("ui.StationShifts.periodoAnterior")}
+              className="cg-btn-ghost cg-focus rounded-lg p-1.5 transition-colors"
+              onClick={() => navigate(-1)}
+            >
               <ChevronLeft size={16} />
             </button>
-            <h3 className="select-none text-center text-sm font-semibold sm:min-w-[200px]">{title}</h3>
-            <button onClick={() => navigate(1)} aria-label={t('ui.StationShifts.periodoSiguiente')} className="cg-btn-ghost cg-focus rounded-lg p-1.5 transition-colors">
+            <h3 className="select-none text-center text-sm font-semibold sm:min-w-[200px]">
+              {title}
+            </h3>
+            <button
+              aria-label={t("ui.StationShifts.periodoSiguiente")}
+              className="cg-btn-ghost cg-focus rounded-lg p-1.5 transition-colors"
+              onClick={() => navigate(1)}
+            >
               <ChevronRight size={16} />
             </button>
           </div>
 
           <Button
-            variant="brand"
-            size="sm"
-            onClick={() => openForm(selectedDate || undefined)}
             className="gap-1.5 active:scale-95"
+            size="sm"
+            variant="brand"
+            onClick={() => openForm(selectedDate || undefined)}
           >
             <Plus size={13} strokeWidth={2.5} /> Nuevo turno
           </Button>
@@ -655,257 +922,416 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
         {/* Calendar Body */}
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="animate-spin" size={24} style={{ color: 'var(--brand-text)' }} />
+            <Loader2
+              className="animate-spin"
+              size={24}
+              style={{ color: "var(--brand-text)" }}
+            />
           </div>
         ) : error ? (
-          <div className="p-6 text-sm" style={{ color: 'var(--bad-text)' }}>{error}</div>
+          <div className="p-6 text-sm" style={{ color: "var(--bad-text)" }}>
+            {error}
+          </div>
         ) : (
           <div className="flex flex-col">
-          <div className="px-3 pt-3">
-            <StationRoster stationId={stationId} tenantId={tenantId} events={events} guardColorMap={guardColorMap} />
-          </div>
-          <div className="flex flex-col lg:flex-row min-h-[420px]">
-            {/* Calendar grid */}
-            <div className="flex-1 min-w-0 overflow-hidden">
-              {viewMode === 'day' ? (
-                <DayView
-                  date={currentDate}
-                  coverage={coverageByDate[dateKey(currentDate)]}
-                  dayEvents={eventsByDate[dateKey(currentDate)] || []}
-                  guardColorMap={guardColorMap}
-                  onAssign={(d) => { setSelectedDate(d); setSelectedShift(null); openForm(d); }}
-                />
-              ) : viewMode === 'week' ? (
-                <WeekView
-                  days={getWeekDays()}
-                  eventsByDate={eventsByDate}
-                  coverageByDate={coverageByDate}
-                  guardColorMap={guardColorMap}
-                  selectedDate={selectedDate}
-                  onSelectDate={(d) => { setSelectedDate(d); setSelectedShift(null); }}
-                  onAssign={(d) => { setSelectedDate(d); setSelectedShift(null); openForm(d); }}
-                  station={station}
-                  jornadas={jornadas}
-                />
-              ) : (
-                <MonthView
-                  days={getMonthGrid()}
-                  eventsByDate={eventsByDate}
-                  coverageByDate={coverageByDate}
-                  guardColorMap={guardColorMap}
-                  selectedDate={selectedDate}
-                  onSelectDate={(d) => { setSelectedDate(d); setSelectedShift(null); }}
-                  currentMonth={currentDate.getMonth()}
-                />
-              )}
+            <div className="px-3 pt-3">
+              <StationRoster
+                events={events}
+                guardColorMap={guardColorMap}
+                stationId={stationId}
+                tenantId={tenantId}
+              />
             </div>
+            <div className="flex flex-col lg:flex-row min-h-[420px]">
+              {/* Calendar grid */}
+              <div className="flex-1 min-w-0 overflow-hidden">
+                {viewMode === "day" ? (
+                  <DayView
+                    coverage={coverageByDate[dateKey(currentDate)]}
+                    date={currentDate}
+                    dayEvents={eventsByDate[dateKey(currentDate)] || []}
+                    guardColorMap={guardColorMap}
+                    onAssign={(d) => {
+                      setSelectedDate(d);
+                      setSelectedShift(null);
+                      openForm(d);
+                    }}
+                  />
+                ) : viewMode === "week" ? (
+                  <WeekView
+                    coverageByDate={coverageByDate}
+                    days={getWeekDays()}
+                    eventsByDate={eventsByDate}
+                    guardColorMap={guardColorMap}
+                    jornadas={jornadas}
+                    selectedDate={selectedDate}
+                    station={station}
+                    onAssign={(d) => {
+                      setSelectedDate(d);
+                      setSelectedShift(null);
+                      openForm(d);
+                    }}
+                    onSelectDate={(d) => {
+                      setSelectedDate(d);
+                      setSelectedShift(null);
+                    }}
+                  />
+                ) : (
+                  <MonthView
+                    coverageByDate={coverageByDate}
+                    currentMonth={currentDate.getMonth()}
+                    days={getMonthGrid()}
+                    eventsByDate={eventsByDate}
+                    guardColorMap={guardColorMap}
+                    selectedDate={selectedDate}
+                    onSelectDate={(d) => {
+                      setSelectedDate(d);
+                      setSelectedShift(null);
+                    }}
+                  />
+                )}
+              </div>
 
-            {/* Side detail panel — hidden in Día view (DayView is self-contained) */}
-            {viewMode !== 'day' && (
-            <div className="border-t lg:w-[300px] lg:border-l lg:border-t-0" style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}>
-              {selectedDate ? (
-                <div className="p-4 space-y-3">
-                  <h4 className="cg-eyebrow">
-                    {fmtDate(new Date(selectedDate + 'T12:00:00'))}
-                  </h4>
+              {/* Side detail panel — hidden in Día view (DayView is self-contained) */}
+              {viewMode !== "day" && (
+                <div
+                  className="border-t lg:w-[300px] lg:border-l lg:border-t-0"
+                  style={{
+                    borderColor: "var(--hairline)",
+                    background: "var(--glass-sunken)",
+                  }}
+                >
+                  {selectedDate ? (
+                    <div className="p-4 space-y-3">
+                      <h4 className="cg-eyebrow">
+                        {fmtDate(new Date(selectedDate + "T12:00:00"))}
+                      </h4>
 
-                  {/* Schedule slots coverage */}
-                  {selectedDayCoverage && selectedDayCoverage.slots.length > 0 && (
-                    <div className="space-y-2">
-                      {selectedDayCoverage.slots.map((slot, i) => {
-                        const tono = slot.isCovered ? 'var(--ok)' : 'var(--bad)';
-                        const tinta = slot.isCovered ? 'var(--ok-text)' : 'var(--bad-text)';
-                        return (
-                        <div
-                          key={i}
-                          className="rounded-xl border p-3 transition-all"
-                          style={{
-                            background: `color-mix(in oklab, ${tono} 9%, transparent)`,
-                            borderColor: `color-mix(in oklab, ${tono} 26%, transparent)`,
-                          }}
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              {slot.isCovered ? (
-                                <CheckCircle2 size={14} style={{ color: tinta }} />
-                              ) : (
-                                <AlertTriangle size={14} style={{ color: tinta }} />
-                              )}
-                              <span className="text-xs font-semibold">{slot.jornada.tipo}</span>
-                            </div>
-                            <span
-                              className="rounded-full px-2 py-0.5 text-[10px] font-bold tabular-nums"
-                              style={{ background: `color-mix(in oklab, ${tono} 16%, transparent)`, color: tinta }}
-                            >
-                              {slot.guardsAssigned}/{slot.guardsNeeded}
-                            </span>
-                          </div>
-                          <div className="mt-1 font-mono text-[11px]" style={{ color: 'var(--ink-soft)' }}>
-                            {slot.startTime} – {slot.endTime}
-                          </div>
-                          {!slot.isCovered && (
-                            <button
-                              onClick={() => openForm(selectedDate)}
-                              className="cg-focus mt-2 flex items-center gap-1 rounded text-[10px] font-semibold"
-                              style={{ color: 'var(--bad-text)' }}
-                            >
-                              <Plus size={10} />{" "}{t('comun.asignarVigilante')}{" "}</button>
-                          )}
-                        </div>
-                        );
-                      })}
-                    </div>
-                  )}
+                      {/* Schedule slots coverage */}
+                      {selectedDayCoverage &&
+                        selectedDayCoverage.slots.length > 0 && (
+                          <div className="space-y-2">
+                            {selectedDayCoverage.slots.map((slot, i) => {
+                              const tono = slot.isCovered
+                                ? "var(--ok)"
+                                : "var(--bad)";
+                              const tinta = slot.isCovered
+                                ? "var(--ok-text)"
+                                : "var(--bad-text)";
 
-                  {/* Assigned shifts */}
-                  {selectedDayEvents.length > 0 && (
-                    <div className="space-y-1.5 pt-1">
-                      <h5 className="cg-eyebrow">Vigilantes asignados</h5>
-                      {selectedDayEvents.map((ev, i) => {
-                        const color = guardColorMap[ev.guardId] || GUARD_FALLBACK;
-                        const isSelected = selectedShift?.id === ev.id;
-                        const esNovedad = ev.status === 'novedad';
-                        const nov = ev.raw?.novedad || null;
-                        const estadoTono = esNovedad ? 'var(--warn)' : ev.status === 'active' ? 'var(--ok)' : ev.status === 'upcoming' ? 'var(--info)' : 'var(--ink-faint)';
-                        const estadoTinta = esNovedad ? 'var(--warn-text)' : ev.status === 'active' ? 'var(--ok-text)' : ev.status === 'upcoming' ? 'var(--info-text)' : 'var(--ink-soft)';
-                        return (
-                          <button
-                            key={ev.id || i}
-                            onClick={() => setSelectedShift(isSelected ? null : ev)}
-                            className="cg-focus w-full rounded-xl border p-2.5 text-left transition-all duration-200"
-                            style={{ backgroundColor: color.bg, borderColor: isSelected ? 'var(--brand-line)' : 'transparent' }}
-                          >
-                            <div className="flex items-center gap-2">
-                              <div className="h-8 w-[3px] flex-shrink-0 rounded-full" style={{ backgroundColor: color.accent }} />
-                              <div className="min-w-0 flex-1">
-                                <p
-                                  className="truncate text-[12px] font-medium"
-                                  style={esNovedad ? { textDecoration: 'line-through', color: 'var(--ink-soft)' } : undefined}
+                              return (
+                                <div
+                                  key={i}
+                                  className="rounded-xl border p-3 transition-all"
+                                  style={{
+                                    background: `color-mix(in oklab, ${tono} 9%, transparent)`,
+                                    borderColor: `color-mix(in oklab, ${tono} 26%, transparent)`,
+                                  }}
                                 >
-                                  {ev.guardName}
-                                </p>
-                                <p className="text-[10px]" style={{ color: 'var(--ink-soft)' }}>
-                                  {toDateKey(ev.start) === toDateKey(ev.end)
-                                    ? `${fmtTime(ev.start)} – ${fmtTime(ev.end)}`
-                                    : `${ev.start.toLocaleDateString(localeActual(), { day: 'numeric', month: 'short' })} ${fmtTime(ev.start)} – ${ev.end.toLocaleDateString(localeActual(), { day: 'numeric', month: 'short' })} ${fmtTime(ev.end)}`
-                                  }
-                                </p>
-                                {/* ── LO QUE PASÓ, Y QUIÉN LO DECIDIÓ ─────────────────
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      {slot.isCovered ? (
+                                        <CheckCircle2
+                                          size={14}
+                                          style={{ color: tinta }}
+                                        />
+                                      ) : (
+                                        <AlertTriangle
+                                          size={14}
+                                          style={{ color: tinta }}
+                                        />
+                                      )}
+                                      <span className="text-xs font-semibold">
+                                        {slot.jornada.tipo}
+                                      </span>
+                                    </div>
+                                    <span
+                                      className="rounded-full px-2 py-0.5 text-[10px] font-bold tabular-nums"
+                                      style={{
+                                        background: `color-mix(in oklab, ${tono} 16%, transparent)`,
+                                        color: tinta,
+                                      }}
+                                    >
+                                      {slot.guardsAssigned}/{slot.guardsNeeded}
+                                    </span>
+                                  </div>
+                                  <div
+                                    className="mt-1 font-mono text-[11px]"
+                                    style={{ color: "var(--ink-soft)" }}
+                                  >
+                                    {slot.startTime} – {slot.endTime}
+                                  </div>
+                                  {!slot.isCovered && (
+                                    <button
+                                      className="cg-focus mt-2 flex items-center gap-1 rounded text-[10px] font-semibold"
+                                      style={{ color: "var(--bad-text)" }}
+                                      onClick={() => openForm(selectedDate)}
+                                    >
+                                      <Plus size={10} />{" "}
+                                      {t("comun.asignarVigilante")}{" "}
+                                    </button>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+
+                      {/* Assigned shifts */}
+                      {selectedDayEvents.length > 0 && (
+                        <div className="space-y-1.5 pt-1">
+                          <h5 className="cg-eyebrow">Vigilantes asignados</h5>
+                          {selectedDayEvents.map((ev, i) => {
+                            const color =
+                              guardColorMap[ev.guardId] || GUARD_FALLBACK;
+                            const isSelected = selectedShift?.id === ev.id;
+                            const esNovedad = ev.status === "novedad";
+                            const nov = ev.raw?.novedad || null;
+                            const estadoTono = esNovedad
+                              ? "var(--warn)"
+                              : ev.status === "active"
+                                ? "var(--ok)"
+                                : ev.status === "upcoming"
+                                  ? "var(--info)"
+                                  : "var(--ink-faint)";
+                            const estadoTinta = esNovedad
+                              ? "var(--warn-text)"
+                              : ev.status === "active"
+                                ? "var(--ok-text)"
+                                : ev.status === "upcoming"
+                                  ? "var(--info-text)"
+                                  : "var(--ink-soft)";
+
+                            return (
+                              <button
+                                key={ev.id || i}
+                                className="cg-focus w-full rounded-xl border p-2.5 text-left transition-all duration-200"
+                                style={{
+                                  backgroundColor: color.bg,
+                                  borderColor: isSelected
+                                    ? "var(--brand-line)"
+                                    : "transparent",
+                                }}
+                                onClick={() =>
+                                  setSelectedShift(isSelected ? null : ev)
+                                }
+                              >
+                                <div className="flex items-center gap-2">
+                                  <div
+                                    className="h-8 w-[3px] flex-shrink-0 rounded-full"
+                                    style={{ backgroundColor: color.accent }}
+                                  />
+                                  <div className="min-w-0 flex-1">
+                                    <p
+                                      className="truncate text-[12px] font-medium"
+                                      style={
+                                        esNovedad
+                                          ? {
+                                              textDecoration: "line-through",
+                                              color: "var(--ink-soft)",
+                                            }
+                                          : undefined
+                                      }
+                                    >
+                                      {ev.guardName}
+                                    </p>
+                                    <p
+                                      className="text-[10px]"
+                                      style={{ color: "var(--ink-soft)" }}
+                                    >
+                                      {toDateKey(ev.start) === toDateKey(ev.end)
+                                        ? `${fmtTime(ev.start)} – ${fmtTime(ev.end)}`
+                                        : `${ev.start.toLocaleDateString(localeActual(), { day: "numeric", month: "short" })} ${fmtTime(ev.start)} – ${ev.end.toLocaleDateString(localeActual(), { day: "numeric", month: "short" })} ${fmtTime(ev.end)}`}
+                                    </p>
+                                    {/* ── LO QUE PASÓ, Y QUIÉN LO DECIDIÓ ─────────────────
                                     El turno tachado dice que no viene; esta línea dice
                                     por qué y de quién fue la decisión. Sin el autor la
                                     anotación no sirve para lo único que se le pide a un
                                     historial: responder «¿quién hizo esto?». */}
-                                {esNovedad && nov && (
-                                  <p className="mt-0.5 text-[10px]" style={{ color: 'var(--warn-text)' }}>
-                                    {nov.etiqueta}
-                                    {nov.registradaPor ? ` — lo registró ${nov.registradaPor}` : ''}
-                                    {nov.registradaEl
-                                      ? ` el ${new Date(nov.registradaEl).toLocaleDateString(localeActual(), { day: 'numeric', month: 'short' })}`
-                                      : ''}
-                                    {nov.nota ? ` · ${nov.nota}` : ''}
-                                  </p>
-                                )}
-                              </div>
-                              {ev.status === 'active' && (
-                                <span className="cc-dot flex-shrink-0" style={{ background: 'var(--ok)' }} />
-                              )}
-                            </div>
-                            {isSelected && (
-                              <div className="mt-2 flex items-center gap-2 border-t pt-2" style={{ borderColor: 'var(--hairline)' }}>
-                                <span
-                                  className="inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-semibold"
-                                  style={{ background: `color-mix(in oklab, ${estadoTono} 16%, transparent)`, color: estadoTinta }}
-                                >
-                                  {esNovedad
-                                    ? `No se presenta — ${nov?.etiqueta || 'novedad'}`
-                                    : ev.status === 'active' ? 'En servicio' : ev.status === 'upcoming' ? 'Programado' : 'Completado'}
-                                </span>
-                                <span className="text-[9px]" style={{ color: 'var(--ink-soft)' }}>
-                                  {Math.round((ev.end.getTime() - ev.start.getTime()) / (1000 * 60 * 60))}h
-                                </span>
-                                {/* Pulsar sobre el vigilante sólo dejaba QUITARLO. Corregirle
+                                    {esNovedad && nov && (
+                                      <p
+                                        className="mt-0.5 text-[10px]"
+                                        style={{ color: "var(--warn-text)" }}
+                                      >
+                                        {nov.etiqueta}
+                                        {nov.registradaPor
+                                          ? ` — lo registró ${nov.registradaPor}`
+                                          : ""}
+                                        {nov.registradaEl
+                                          ? ` el ${new Date(nov.registradaEl).toLocaleDateString(localeActual(), { day: "numeric", month: "short" })}`
+                                          : ""}
+                                        {nov.nota ? ` · ${nov.nota}` : ""}
+                                      </p>
+                                    )}
+                                  </div>
+                                  {ev.status === "active" && (
+                                    <span
+                                      className="cc-dot flex-shrink-0"
+                                      style={{ background: "var(--ok)" }}
+                                    />
+                                  )}
+                                </div>
+                                {isSelected && (
+                                  <div
+                                    className="mt-2 flex items-center gap-2 border-t pt-2"
+                                    style={{ borderColor: "var(--hairline)" }}
+                                  >
+                                    <span
+                                      className="inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-semibold"
+                                      style={{
+                                        background: `color-mix(in oklab, ${estadoTono} 16%, transparent)`,
+                                        color: estadoTinta,
+                                      }}
+                                    >
+                                      {esNovedad
+                                        ? `No se presenta — ${nov?.etiqueta || "novedad"}`
+                                        : ev.status === "active"
+                                          ? "En servicio"
+                                          : ev.status === "upcoming"
+                                            ? "Programado"
+                                            : "Completado"}
+                                    </span>
+                                    <span
+                                      className="text-[9px]"
+                                      style={{ color: "var(--ink-soft)" }}
+                                    >
+                                      {Math.round(
+                                        (ev.end.getTime() -
+                                          ev.start.getTime()) /
+                                          (1000 * 60 * 60),
+                                      )}
+                                      h
+                                    </span>
+                                    {/* Pulsar sobre el vigilante sólo dejaba QUITARLO. Corregirle
                                     la plaza, la secuencia o la fecha de inicio —la que decide
                                     en qué día libra— pedía borrarlo y volverlo a crear, y eso
                                     re-fasea el puesto entero. Ahora se edita. */}
-                                <div
-                                  role="button"
-                                  tabIndex={0}
-                                  onClick={(e) => { e.stopPropagation(); void editarTurno(ev); }}
-                                  className="ml-auto inline-flex cursor-pointer items-center gap-1 rounded-md border px-2 py-0.5 text-[9px] font-semibold transition-colors"
-                                  style={{ borderColor: 'var(--hairline)', color: 'var(--ink-soft)' }}
-                                >
-                                  <Pencil size={10} /> Editar turno
-                                </div>
-                                <div
-                                  role="button"
-                                  tabIndex={0}
-                                  onClick={(e) => { e.stopPropagation(); removeGuard(ev); }}
-                                  className="inline-flex cursor-pointer items-center gap-1 rounded-md border px-2 py-0.5 text-[9px] font-semibold transition-colors"
-                                  style={{
-                                    background: 'color-mix(in oklab, var(--bad) 12%, transparent)',
-                                    borderColor: 'color-mix(in oklab, var(--bad) 28%, transparent)',
-                                    color: 'var(--bad-text)',
-                                  }}
-                                >
-                                  <Trash2 size={10} /> {t('guards.assignSites.actions.removeFromPost', 'Quitar del puesto')}
-                                </div>
-                              </div>
-                            )}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
+                                    <div
+                                      className="ml-auto inline-flex cursor-pointer items-center gap-1 rounded-md border px-2 py-0.5 text-[9px] font-semibold transition-colors"
+                                      role="button"
+                                      style={{
+                                        borderColor: "var(--hairline)",
+                                        color: "var(--ink-soft)",
+                                      }}
+                                      tabIndex={0}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        void editarTurno(ev);
+                                      }}
+                                    >
+                                      <Pencil size={10} /> Editar turno
+                                    </div>
+                                    <div
+                                      className="inline-flex cursor-pointer items-center gap-1 rounded-md border px-2 py-0.5 text-[9px] font-semibold transition-colors"
+                                      role="button"
+                                      style={{
+                                        background:
+                                          "color-mix(in oklab, var(--bad) 12%, transparent)",
+                                        borderColor:
+                                          "color-mix(in oklab, var(--bad) 28%, transparent)",
+                                        color: "var(--bad-text)",
+                                      }}
+                                      tabIndex={0}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        removeGuard(ev);
+                                      }}
+                                    >
+                                      <Trash2 size={10} />{" "}
+                                      {t(
+                                        "guards.assignSites.actions.removeFromPost",
+                                        "Quitar del puesto",
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
 
-                  {/* Empty state */}
-                  {selectedDayEvents.length === 0 && (!selectedDayCoverage || selectedDayCoverage.slots.length === 0) && (
-                    <div className="py-8 text-center">
-                      <p className="text-xs" style={{ color: 'var(--ink-faint)' }}>{t("ui.StationShifts.diaLibreSinHorarioProgramado", "Día libre – sin horario programado")}</p>
+                      {/* Empty state */}
+                      {selectedDayEvents.length === 0 &&
+                        (!selectedDayCoverage ||
+                          selectedDayCoverage.slots.length === 0) && (
+                          <div className="py-8 text-center">
+                            <p
+                              className="text-xs"
+                              style={{ color: "var(--ink-faint)" }}
+                            >
+                              {t(
+                                "ui.StationShifts.diaLibreSinHorarioProgramado",
+                                "Día libre – sin horario programado",
+                              )}
+                            </p>
+                          </div>
+                        )}
+                    </div>
+                  ) : (
+                    <div className="flex h-full flex-col items-center justify-center px-4 py-16 text-center">
+                      <div className="mb-3">
+                        <IconTile tone="neutral">
+                          <Calendar />
+                        </IconTile>
+                      </div>
+                      <p
+                        className="text-[11px]"
+                        style={{ color: "var(--ink-faint)" }}
+                      >
+                        {t(
+                          "ui.StationShifts.seleccionaUnDia",
+                          "Selecciona un día",
+                        )}
+                      </p>
                     </div>
                   )}
-                </div>
-              ) : (
-                <div className="flex h-full flex-col items-center justify-center px-4 py-16 text-center">
-                  <div className="mb-3"><IconTile tone="neutral"><Calendar /></IconTile></div>
-                  <p className="text-[11px]" style={{ color: 'var(--ink-faint)' }}>{t("ui.StationShifts.seleccionaUnDia", "Selecciona un día")}</p>
                 </div>
               )}
             </div>
-            )}
-          </div>
           </div>
         )}
 
         {/* Create Form Modal */}
         <ShiftAssignModal
           open={showForm}
-          onClose={() => setShowForm(false)}
-          onSaved={(d) => { setShowForm(false); loadShifts(); if (d) { setCurrentDate(new Date(d)); setSelectedDate(dateKey(d)); } }}
-          station={station}
-          stationId={stationId}
           postSiteId={postSiteId}
           presetGuardId={stationGuardId}
+          station={station}
+          stationId={stationId}
+          onClose={() => setShowForm(false)}
+          onSaved={(d) => {
+            setShowForm(false);
+            loadShifts();
+            if (d) {
+              setCurrentDate(new Date(d));
+              setSelectedDate(dateKey(d));
+            }
+          }}
         />
 
         {/* Editar la rotación del vigilante ya asignado (plaza, secuencia, fechas) */}
         <AsignacionEditModal
-          open={!!editandoAsignacion}
-          onClose={() => setEditandoAsignacion(null)}
-          onSaved={() => { setSelectedShift(null); loadShifts(); }}
-          tenantId={tenantId}
-          stationId={stationId}
           assignmentId={editandoAsignacion}
+          open={!!editandoAsignacion}
+          stationId={stationId}
           stationRotationStyleId={(station as any)?.rotationStyleId || null}
+          tenantId={tenantId}
+          onClose={() => setEditandoAsignacion(null)}
+          onSaved={() => {
+            setSelectedShift(null);
+            loadShifts();
+          }}
         />
 
         {/* Sacafranco (relief) availability + assign */}
         <SacafrancoAssignModal
+          gapDates={gapDates}
           open={showSacafranco}
-          onClose={() => setShowSacafranco(false)}
           stationId={stationId}
           tenantId={tenantId}
-          gapDates={gapDates}
           onAssigned={() => loadShifts()}
+          onClose={() => setShowSacafranco(false)}
         />
       </div>
     </div>
@@ -914,7 +1340,17 @@ export default function StationShifts({ station, stationId, postSiteId }: Props)
 
 // ── WEEK VIEW ────────────────────────────────────────────────────────────────
 
-function WeekView({ days, eventsByDate, coverageByDate, guardColorMap, selectedDate, onSelectDate, onAssign, station, jornadas }: {
+function WeekView({
+  days,
+  eventsByDate,
+  coverageByDate,
+  guardColorMap,
+  selectedDate,
+  onSelectDate,
+  onAssign,
+  station,
+  jornadas,
+}: {
   days: Date[];
   eventsByDate: Record<string, ShiftEvent[]>;
   coverageByDate: Record<string, DayCoverage>;
@@ -926,7 +1362,9 @@ function WeekView({ days, eventsByDate, coverageByDate, guardColorMap, selectedD
   jornadas: Jornada[];
 }) {
   const { t } = useTranslation();
-  void station; void jornadas;
+
+  void station;
+  void jornadas;
   const toDateKey = dateKey;
   const isToday = (d: Date) => toDateKey(d) === toDateKey(new Date());
   // Guards covering a slot, matched by the day/night class of the shift's start
@@ -939,6 +1377,7 @@ function WeekView({ days, eventsByDate, coverageByDate, guardColorMap, selectedD
       if (toDateKey(ev.start) !== key) return false;
       const startMin = minutesInTenantTz(ev.start);
       const evNight = startMin >= 18 * 60 || startMin < 6 * 60;
+
       return isNight ? evNight : !evNight;
     });
 
@@ -952,7 +1391,10 @@ function WeekView({ days, eventsByDate, coverageByDate, guardColorMap, selectedD
             arrastre. */}
         <div
           className="grid grid-cols-[48px_repeat(7,1fr)] sticky top-0 z-10"
-          style={{ background: 'var(--glass-solid)', borderBottom: '1px solid var(--hairline)' }}
+          style={{
+            background: "var(--glass-solid)",
+            borderBottom: "1px solid var(--hairline)",
+          }}
         >
           <div />
           {days.map((d, i) => {
@@ -961,24 +1403,31 @@ function WeekView({ days, eventsByDate, coverageByDate, guardColorMap, selectedD
             const hasEvents = (eventsByDate[key]?.length || 0) > 0;
             const isScheduledDay = coverage && coverage.slots.length > 0;
             const allCovered = coverage?.allCovered;
+
             return (
               <button
                 key={i}
-                onClick={() => onSelectDate(key)}
                 className="group relative py-2.5 text-center transition-all"
-                style={selectedDate === key ? { background: 'var(--brand-wash)' } : undefined}
+                style={
+                  selectedDate === key
+                    ? { background: "var(--brand-wash)" }
+                    : undefined
+                }
+                onClick={() => onSelectDate(key)}
               >
-                <div className="cg-eyebrow transition-colors">
-                  {DAYS_ES[i]}
-                </div>
+                <div className="cg-eyebrow transition-colors">{DAYS_ES[i]}</div>
                 <div
                   className="mx-auto mt-1 flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold tabular-nums transition-all"
                   style={
                     isToday(d)
-                      ? { background: 'var(--brand)', color: 'var(--brand-ink)', boxShadow: '0 0 18px -6px var(--brand-glow)' }
+                      ? {
+                          background: "var(--brand)",
+                          color: "var(--brand-ink)",
+                          boxShadow: "0 0 18px -6px var(--brand-glow)",
+                        }
                       : selectedDate === key
-                      ? { background: 'var(--glass-sunken)' }
-                      : undefined
+                        ? { background: "var(--glass-sunken)" }
+                        : undefined
                   }
                 >
                   {d.getDate()}
@@ -986,12 +1435,17 @@ function WeekView({ days, eventsByDate, coverageByDate, guardColorMap, selectedD
                 {/* Coverage indicator dot */}
                 {isScheduledDay && (
                   <div
-                    className={`mx-auto mt-1 h-1 w-4 rounded-full transition-all ${allCovered ? '' : 'animate-pulse'}`}
-                    style={{ background: allCovered ? 'var(--ok)' : 'var(--bad)' }}
+                    className={`mx-auto mt-1 h-1 w-4 rounded-full transition-all ${allCovered ? "" : "animate-pulse"}`}
+                    style={{
+                      background: allCovered ? "var(--ok)" : "var(--bad)",
+                    }}
                   />
                 )}
                 {!isScheduledDay && hasEvents && (
-                  <div className="mx-auto mt-1 h-1.5 w-1.5 rounded-full" style={{ background: 'var(--brand)' }} />
+                  <div
+                    className="mx-auto mt-1 h-1.5 w-1.5 rounded-full"
+                    style={{ background: "var(--brand)" }}
+                  />
                 )}
               </button>
             );
@@ -1007,98 +1461,164 @@ function WeekView({ days, eventsByDate, coverageByDate, guardColorMap, selectedD
             const key = toDateKey(day);
             const coverage = coverageByDate[key];
             const slots: ScheduleSlot[] = coverage?.slots || [];
+
             return (
               <div
                 key={dayIdx}
                 className="flex min-h-[220px] flex-col gap-1.5 border-l p-1.5 transition-colors"
                 style={{
-                  borderColor: 'var(--hairline)',
-                  background: selectedDate === key ? 'var(--brand-wash)' : undefined,
+                  borderColor: "var(--hairline)",
+                  background:
+                    selectedDate === key ? "var(--brand-wash)" : undefined,
                 }}
               >
                 {slots.length === 0 ? (
                   <button
-                    onClick={() => onSelectDate(key)}
                     className="flex flex-1 items-center justify-center text-[10px]"
-                    style={{ color: 'var(--ink-faint)' }}
+                    style={{ color: "var(--ink-faint)" }}
+                    onClick={() => onSelectDate(key)}
                   >
-                    {t('ui.Scheduling.sinTurnos', 'Sin turnos')}
+                    {t("ui.Scheduling.sinTurnos", "Sin turnos")}
                   </button>
-                ) : slots.map((slot, si) => {
-                  const isNight = String(slot.jornada.tipo || '').toLowerCase().includes('noct');
-                  const guards = coveringGuards(key, isNight);
-                  const tono = slot.isCovered ? 'var(--ok)' : 'var(--bad)';
-                  const tinta = slot.isCovered ? 'var(--ok-text)' : 'var(--bad-text)';
-                  return (
-                    <div
-                      key={si}
-                      onClick={() => onSelectDate(key)}
-                      className="cursor-pointer rounded-lg border p-2 transition-all hover:brightness-110"
-                      style={{
-                        background: `color-mix(in oklab, ${tono} 6%, transparent)`,
-                        borderColor: `color-mix(in oklab, ${tono} 26%, transparent)`,
-                      }}
-                    >
-                      <div className="flex items-center justify-between gap-1">
-                        <span className="flex items-center gap-1 text-[11px] font-semibold">
-                          {isNight ? <Moon size={11} style={{ color: 'var(--info-text)' }} /> : <Sun size={11} style={{ color: 'var(--warn-text)' }} />}
-                          {slot.jornada.tipo}
-                        </span>
-                        <span
-                          className="rounded-full px-1.5 py-0.5 text-[9px] font-bold tabular-nums"
-                          style={{ background: `color-mix(in oklab, ${tono} 16%, transparent)`, color: tinta }}
-                        >
-                          {slot.guardsAssigned}/{slot.guardsNeeded}
-                        </span>
-                      </div>
-                      <div className="mt-0.5 font-mono text-[9px]" style={{ color: 'var(--ink-faint)' }}>
-                        {slot.startTime} – {slot.endTime}
-                      </div>
+                ) : (
+                  slots.map((slot, si) => {
+                    const isNight = String(slot.jornada.tipo || "")
+                      .toLowerCase()
+                      .includes("noct");
+                    const guards = coveringGuards(key, isNight);
+                    const tono = slot.isCovered ? "var(--ok)" : "var(--bad)";
+                    const tinta = slot.isCovered
+                      ? "var(--ok-text)"
+                      : "var(--bad-text)";
 
-                      {guards.length > 0 && (
-                        <div className="mt-1 space-y-0.5">
-                          {guards.slice(0, 3).map((ev: ShiftEvent, gi: number) => {
-                            const color = guardColorMap[ev.guardId] || GUARD_FALLBACK;
-                            return (
-                              <div
-                                key={ev.id || gi}
-                                className="flex items-center gap-1 rounded px-1 py-0.5"
-                                style={{ backgroundColor: color.bg, opacity: ev.status === 'novedad' ? 0.55 : undefined }}
-                                title={ev.status === 'novedad' ? `${ev.raw?.novedad?.etiqueta || 'Novedad'} — no se presenta` : undefined}
-                              >
-                                <div className="h-3 w-[3px] flex-shrink-0 rounded-full" style={{ backgroundColor: color.accent }} />
-                                <span
-                                  className="truncate text-[10px] font-medium"
-                                  style={{ color: color.text, textDecoration: ev.status === 'novedad' ? 'line-through' : undefined }}
-                                >
-                                  {ev.guardName.split(' ').slice(0, 2).join(' ')}
-                                </span>
-                                {ev.status === 'active' && <div className="ml-auto h-1.5 w-1.5 flex-shrink-0 animate-pulse rounded-full" style={{ background: 'var(--ok)' }} />}
-                              </div>
-                            );
-                          })}
-                          {guards.length > 3 && (
-                            <div className="text-[9px]" style={{ color: 'var(--ink-faint)' }}>+{guards.length - 3} más</div>
-                          )}
+                    return (
+                      <div
+                        key={si}
+                        className="cursor-pointer rounded-lg border p-2 transition-all hover:brightness-110"
+                        style={{
+                          background: `color-mix(in oklab, ${tono} 6%, transparent)`,
+                          borderColor: `color-mix(in oklab, ${tono} 26%, transparent)`,
+                        }}
+                        onClick={() => onSelectDate(key)}
+                      >
+                        <div className="flex items-center justify-between gap-1">
+                          <span className="flex items-center gap-1 text-[11px] font-semibold">
+                            {isNight ? (
+                              <Moon
+                                size={11}
+                                style={{ color: "var(--info-text)" }}
+                              />
+                            ) : (
+                              <Sun
+                                size={11}
+                                style={{ color: "var(--warn-text)" }}
+                              />
+                            )}
+                            {slot.jornada.tipo}
+                          </span>
+                          <span
+                            className="rounded-full px-1.5 py-0.5 text-[9px] font-bold tabular-nums"
+                            style={{
+                              background: `color-mix(in oklab, ${tono} 16%, transparent)`,
+                              color: tinta,
+                            }}
+                          >
+                            {slot.guardsAssigned}/{slot.guardsNeeded}
+                          </span>
                         </div>
-                      )}
-
-                      {!slot.isCovered && (
-                        <button
-                          onClick={(e) => { e.stopPropagation(); onAssign(key); }}
-                          className="cg-focus mt-1 flex w-full items-center justify-center gap-1 rounded-md border py-1 text-[10px] font-semibold transition-colors"
-                          style={{
-                            background: 'color-mix(in oklab, var(--bad) 8%, transparent)',
-                            borderColor: 'color-mix(in oklab, var(--bad) 24%, transparent)',
-                            color: 'var(--bad-text)',
-                          }}
+                        <div
+                          className="mt-0.5 font-mono text-[9px]"
+                          style={{ color: "var(--ink-faint)" }}
                         >
-                          <Plus size={10} /> Asignar
-                        </button>
-                      )}
-                    </div>
-                  );
-                })}
+                          {slot.startTime} – {slot.endTime}
+                        </div>
+
+                        {guards.length > 0 && (
+                          <div className="mt-1 space-y-0.5">
+                            {guards
+                              .slice(0, 3)
+                              .map((ev: ShiftEvent, gi: number) => {
+                                const color =
+                                  guardColorMap[ev.guardId] || GUARD_FALLBACK;
+
+                                return (
+                                  <div
+                                    key={ev.id || gi}
+                                    className="flex items-center gap-1 rounded px-1 py-0.5"
+                                    style={{
+                                      backgroundColor: color.bg,
+                                      opacity:
+                                        ev.status === "novedad"
+                                          ? 0.55
+                                          : undefined,
+                                    }}
+                                    title={
+                                      ev.status === "novedad"
+                                        ? `${ev.raw?.novedad?.etiqueta || "Novedad"} — no se presenta`
+                                        : undefined
+                                    }
+                                  >
+                                    <div
+                                      className="h-3 w-[3px] flex-shrink-0 rounded-full"
+                                      style={{ backgroundColor: color.accent }}
+                                    />
+                                    <span
+                                      className="truncate text-[10px] font-medium"
+                                      style={{
+                                        color: color.text,
+                                        textDecoration:
+                                          ev.status === "novedad"
+                                            ? "line-through"
+                                            : undefined,
+                                      }}
+                                    >
+                                      {ev.guardName
+                                        .split(" ")
+                                        .slice(0, 2)
+                                        .join(" ")}
+                                    </span>
+                                    {ev.status === "active" && (
+                                      <div
+                                        className="ml-auto h-1.5 w-1.5 flex-shrink-0 animate-pulse rounded-full"
+                                        style={{ background: "var(--ok)" }}
+                                      />
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            {guards.length > 3 && (
+                              <div
+                                className="text-[9px]"
+                                style={{ color: "var(--ink-faint)" }}
+                              >
+                                +{guards.length - 3} más
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {!slot.isCovered && (
+                          <button
+                            className="cg-focus mt-1 flex w-full items-center justify-center gap-1 rounded-md border py-1 text-[10px] font-semibold transition-colors"
+                            style={{
+                              background:
+                                "color-mix(in oklab, var(--bad) 8%, transparent)",
+                              borderColor:
+                                "color-mix(in oklab, var(--bad) 24%, transparent)",
+                              color: "var(--bad-text)",
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onAssign(key);
+                            }}
+                          >
+                            <Plus size={10} /> Asignar
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
               </div>
             );
           })}
@@ -1111,7 +1631,13 @@ function WeekView({ days, eventsByDate, coverageByDate, guardColorMap, selectedD
 // ── MONTH VIEW ───────────────────────────────────────────────────────────────
 
 // ── Day view: a 24-hour vertical timeline of the day's coverage ───────────────
-function DayView({ date, coverage, dayEvents, guardColorMap, onAssign }: {
+function DayView({
+  date,
+  coverage,
+  dayEvents,
+  guardColorMap,
+  onAssign,
+}: {
   date: Date;
   coverage: DayCoverage | undefined;
   dayEvents: ShiftEvent[]; // events OVERLAPPING this day (incl. a night shift from the day before)
@@ -1119,12 +1645,18 @@ function DayView({ date, coverage, dayEvents, guardColorMap, onAssign }: {
   onAssign: (d: string) => void;
 }) {
   const { t } = useTranslation();
-  const ROW = 30;          // px per hour
-  const H = 24 * ROW;      // full-day height
+  const ROW = 30; // px per hour
+  const H = 24 * ROW; // full-day height
   const dayK = dateKey(date);
   const slots: ScheduleSlot[] = coverage?.slots || [];
   const covered = slots.filter((s) => s.isCovered).length;
-  const fmtT = (d: Date) => d.toLocaleTimeString(localeActual(), { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: getTenantTimezone() });
+  const fmtT = (d: Date) =>
+    d.toLocaleTimeString(localeActual(), {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+      timeZone: getTenantTimezone(),
+    });
 
   // An event's [startH,endH] on THIS day's 0–24 axis (clamped across midnight).
   const eventSeg = (ev: ShiftEvent) => {
@@ -1132,7 +1664,9 @@ function DayView({ date, coverage, dayEvents, guardColorMap, onAssign }: {
     const endAfter = dateKey(ev.end) > dayK;
     const startH = startBefore ? 0 : minutesInTenantTz(ev.start) / 60;
     let endH = endAfter ? 24 : minutesInTenantTz(ev.end) / 60;
+
     if (endH <= startH) endH = 24;
+
     return { startH, endH, startBefore, endAfter };
   };
 
@@ -1149,81 +1683,141 @@ function DayView({ date, coverage, dayEvents, guardColorMap, onAssign }: {
           <div
             className="grid h-11 w-11 place-items-center rounded-2xl text-base font-bold tabular-nums"
             style={{
-              background: `color-mix(in oklab, ${covered === slots.length ? 'var(--ok)' : 'var(--bad)'} 16%, transparent)`,
-              color: covered === slots.length ? 'var(--ok-text)' : 'var(--bad-text)',
+              background: `color-mix(in oklab, ${covered === slots.length ? "var(--ok)" : "var(--bad)"} 16%, transparent)`,
+              color:
+                covered === slots.length ? "var(--ok-text)" : "var(--bad-text)",
             }}
           >
             {covered}/{slots.length}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold">{covered === slots.length ? 'Cobertura completa' : `${slots.length - covered} turno(s) sin cubrir`}</p>
-            <p className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>{t("ui.StationShifts.lineaDeTiempo24H", "Línea de tiempo · 24 h")}</p>
+            <p className="text-sm font-semibold">
+              {covered === slots.length
+                ? "Cobertura completa"
+                : `${slots.length - covered} turno(s) sin cubrir`}
+            </p>
+            <p className="text-[11px]" style={{ color: "var(--ink-soft)" }}>
+              {t("ui.StationShifts.lineaDeTiempo24H", "Línea de tiempo · 24 h")}
+            </p>
           </div>
-          <div className="hidden items-center gap-3 text-[10px] sm:flex" style={{ color: 'var(--ink-soft)' }}>
-            <span className="inline-flex items-center gap-1"><Sun size={11} style={{ color: 'var(--warn-text)' }} />{" "}{t("ui.StationShifts.dia", "Día")}</span>
-            <span className="inline-flex items-center gap-1"><Moon size={11} style={{ color: 'var(--info-text)' }} /> Noche</span>
+          <div
+            className="hidden items-center gap-3 text-[10px] sm:flex"
+            style={{ color: "var(--ink-soft)" }}
+          >
+            <span className="inline-flex items-center gap-1">
+              <Sun size={11} style={{ color: "var(--warn-text)" }} />{" "}
+              {t("ui.StationShifts.dia", "Día")}
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <Moon size={11} style={{ color: "var(--info-text)" }} /> Noche
+            </span>
           </div>
         </div>
       )}
 
       {slots.length === 0 && dayEvents.length === 0 ? (
-        <EmptyState icon={<Calendar />} title={t("ui.StationShifts.diaLibre", "Día libre")} description={t('ui.StationShifts.sinHorarioProgramadoParaEsta')} />
+        <EmptyState
+          description={t("ui.StationShifts.sinHorarioProgramadoParaEsta")}
+          icon={<Calendar />}
+          title={t("ui.StationShifts.diaLibre", "Día libre")}
+        />
       ) : (
         <div className="max-h-[600px] overflow-y-auto pr-1">
           <div className="relative flex" style={{ height: H }}>
             {/* Hour axis */}
             <div className="relative w-12 shrink-0">
               {hours.map((h) => (
-                <div key={h} className="absolute right-2 -translate-y-1/2 text-[10px] font-medium tabular-nums" style={{ top: (h / 24) * H, color: 'var(--ink-faint)' }}>
-                  {String(h % 24).padStart(2, '0')}:00
+                <div
+                  key={h}
+                  className="absolute right-2 -translate-y-1/2 text-[10px] font-medium tabular-nums"
+                  style={{ top: (h / 24) * H, color: "var(--ink-faint)" }}
+                >
+                  {String(h % 24).padStart(2, "0")}:00
                 </div>
               ))}
             </div>
 
             {/* Lane */}
-            <div className="glass-sunken relative flex-1 overflow-hidden" style={{ borderRadius: 'var(--r-lg)' }}>
+            <div
+              className="glass-sunken relative flex-1 overflow-hidden"
+              style={{ borderRadius: "var(--r-lg)" }}
+            >
               {/* gridlines */}
               {hours.map((h) => (
-                <div key={h} className="absolute inset-x-0 border-t" style={{ top: (h / 24) * H, borderColor: 'var(--hairline)' }} />
+                <div
+                  key={h}
+                  className="absolute inset-x-0 border-t"
+                  style={{ top: (h / 24) * H, borderColor: "var(--hairline)" }}
+                />
               ))}
 
               {/* now indicator */}
               {isToday && nowH > 0 && nowH < 24 && (
-                <div className="absolute inset-x-0 z-30 flex items-center" style={{ top: (nowH / 24) * H }}>
-                  <div className="-ml-[3px] h-2 w-2 rounded-full" style={{ background: 'var(--bad)' }} />
-                  <div className="h-px flex-1" style={{ background: 'color-mix(in oklab, var(--bad) 60%, transparent)' }} />
+                <div
+                  className="absolute inset-x-0 z-30 flex items-center"
+                  style={{ top: (nowH / 24) * H }}
+                >
+                  <div
+                    className="-ml-[3px] h-2 w-2 rounded-full"
+                    style={{ background: "var(--bad)" }}
+                  />
+                  <div
+                    className="h-px flex-1"
+                    style={{
+                      background:
+                        "color-mix(in oklab, var(--bad) 60%, transparent)",
+                    }}
+                  />
                 </div>
               )}
 
               {/* Uncovered turno blocks (anchored at the turno's start on this day) */}
-              {slots.filter((s) => !s.isCovered).map((slot, si) => {
-                const isNight = String(slot.jornada.tipo || '').toLowerCase().includes('noct');
-                const [sH, sM] = slot.startTime.split(':').map(Number);
-                const [eH, eM] = slot.endTime.split(':').map(Number);
-                const s = sH + (sM || 0) / 60;
-                const e = eH + (eM || 0) / 60;
-                const endH = e > s ? e : 24; // night wraps → show the part on this day
-                const top = (s / 24) * H;
-                const height = ((endH - s) / 24) * H;
-                return (
-                  <button
-                    key={`u-${si}`}
-                    onClick={() => onAssign(dayK)}
-                    className="cg-focus absolute inset-x-1 z-10 flex flex-col justify-center gap-0.5 rounded-lg border border-dashed px-2 text-left transition-colors"
-                    style={{
-                      top,
-                      height,
-                      background: 'color-mix(in oklab, var(--bad) 8%, transparent)',
-                      borderColor: 'color-mix(in oklab, var(--bad) 40%, transparent)',
-                    }}
-                  >
-                    <span className="flex items-center gap-1 text-[11px] font-semibold" style={{ color: 'var(--bad-text)' }}>
-                      {isNight ? <Moon size={11} /> : <Sun size={11} />} {slot.jornada.tipo} · sin asignar
-                    </span>
-                    {height > 36 && <span className="inline-flex items-center gap-1 text-[10px] font-medium" style={{ color: 'var(--bad-text)' }}><Plus size={10} />{" "}{t('comun.asignarVigilante')}</span>}
-                  </button>
-                );
-              })}
+              {slots
+                .filter((s) => !s.isCovered)
+                .map((slot, si) => {
+                  const isNight = String(slot.jornada.tipo || "")
+                    .toLowerCase()
+                    .includes("noct");
+                  const [sH, sM] = slot.startTime.split(":").map(Number);
+                  const [eH, eM] = slot.endTime.split(":").map(Number);
+                  const s = sH + (sM || 0) / 60;
+                  const e = eH + (eM || 0) / 60;
+                  const endH = e > s ? e : 24; // night wraps → show the part on this day
+                  const top = (s / 24) * H;
+                  const height = ((endH - s) / 24) * H;
+
+                  return (
+                    <button
+                      key={`u-${si}`}
+                      className="cg-focus absolute inset-x-1 z-10 flex flex-col justify-center gap-0.5 rounded-lg border border-dashed px-2 text-left transition-colors"
+                      style={{
+                        top,
+                        height,
+                        background:
+                          "color-mix(in oklab, var(--bad) 8%, transparent)",
+                        borderColor:
+                          "color-mix(in oklab, var(--bad) 40%, transparent)",
+                      }}
+                      onClick={() => onAssign(dayK)}
+                    >
+                      <span
+                        className="flex items-center gap-1 text-[11px] font-semibold"
+                        style={{ color: "var(--bad-text)" }}
+                      >
+                        {isNight ? <Moon size={11} /> : <Sun size={11} />}{" "}
+                        {slot.jornada.tipo} · sin asignar
+                      </span>
+                      {height > 36 && (
+                        <span
+                          className="inline-flex items-center gap-1 text-[10px] font-medium"
+                          style={{ color: "var(--bad-text)" }}
+                        >
+                          <Plus size={10} /> {t("comun.asignarVigilante")}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
 
               {/* Covering guard blocks (actual shifts, clamped to the day) */}
               {dayEvents.map((ev: ShiftEvent, i: number) => {
@@ -1231,28 +1825,65 @@ function DayView({ date, coverage, dayEvents, guardColorMap, onAssign }: {
                 const top = (startH / 24) * H;
                 const height = Math.max(((endH - startH) / 24) * H, 24);
                 const color = guardColorMap[ev.guardId] || GUARD_FALLBACK;
+
                 return (
                   <div
                     key={ev.id || i}
                     className="absolute inset-x-1 z-20 overflow-hidden rounded-lg px-2 py-1 shadow-sm"
-                    style={{ top, height, backgroundColor: color.bg, borderLeft: `3px solid ${color.accent}`, opacity: ev.status === 'novedad' ? 0.55 : undefined }}
-                    title={ev.status === 'novedad' ? `${ev.raw?.novedad?.etiqueta || 'Novedad'} — no se presenta` : undefined}
+                    style={{
+                      top,
+                      height,
+                      backgroundColor: color.bg,
+                      borderLeft: `3px solid ${color.accent}`,
+                      opacity: ev.status === "novedad" ? 0.55 : undefined,
+                    }}
+                    title={
+                      ev.status === "novedad"
+                        ? `${ev.raw?.novedad?.etiqueta || "Novedad"} — no se presenta`
+                        : undefined
+                    }
                   >
                     <div className="flex items-center gap-1.5">
-                      <div className="grid h-5 w-5 shrink-0 place-items-center rounded-full text-[8px] font-bold" style={{ background: color.accent, color: 'var(--brand-ink)' }}>
-                        {ev.guardName.split(' ').map((w: string) => w[0]).slice(0, 2).join('')}
+                      <div
+                        className="grid h-5 w-5 shrink-0 place-items-center rounded-full text-[8px] font-bold"
+                        style={{
+                          background: color.accent,
+                          color: "var(--brand-ink)",
+                        }}
+                      >
+                        {ev.guardName
+                          .split(" ")
+                          .map((w: string) => w[0])
+                          .slice(0, 2)
+                          .join("")}
                       </div>
                       <span
                         className="truncate text-[11px] font-semibold"
-                        style={{ color: color.text, textDecoration: ev.status === 'novedad' ? 'line-through' : undefined }}
+                        style={{
+                          color: color.text,
+                          textDecoration:
+                            ev.status === "novedad"
+                              ? "line-through"
+                              : undefined,
+                        }}
                       >
                         {ev.guardName}
                       </span>
-                      {ev.status === 'active' && <span className="ml-auto h-1.5 w-1.5 shrink-0 animate-pulse rounded-full" style={{ background: 'var(--ok)' }} />}
+                      {ev.status === "active" && (
+                        <span
+                          className="ml-auto h-1.5 w-1.5 shrink-0 animate-pulse rounded-full"
+                          style={{ background: "var(--ok)" }}
+                        />
+                      )}
                     </div>
                     {height > 36 && (
-                      <p className="mt-0.5 truncate text-[9px]" style={{ color: 'var(--ink-soft)' }}>
-                        {startBefore ? '↑ ' : ''}{fmtT(ev.start)} – {fmtT(ev.end)}{endAfter ? ' ↓' : ''}
+                      <p
+                        className="mt-0.5 truncate text-[9px]"
+                        style={{ color: "var(--ink-soft)" }}
+                      >
+                        {startBefore ? "↑ " : ""}
+                        {fmtT(ev.start)} – {fmtT(ev.end)}
+                        {endAfter ? " ↓" : ""}
                       </p>
                     )}
                   </div>
@@ -1266,7 +1897,15 @@ function DayView({ date, coverage, dayEvents, guardColorMap, onAssign }: {
   );
 }
 
-function MonthView({ days, eventsByDate, coverageByDate, guardColorMap, selectedDate, onSelectDate, currentMonth }: {
+function MonthView({
+  days,
+  eventsByDate,
+  coverageByDate,
+  guardColorMap,
+  selectedDate,
+  onSelectDate,
+  currentMonth,
+}: {
   days: (Date | null)[];
   eventsByDate: Record<string, ShiftEvent[]>;
   coverageByDate: Record<string, DayCoverage>;
@@ -1278,13 +1917,16 @@ function MonthView({ days, eventsByDate, coverageByDate, guardColorMap, selected
   const toDateKey = dateKey;
   const isToday = (d: Date) => toDateKey(d) === toDateKey(new Date());
   const weeks: (Date | null)[][] = [];
+
   for (let i = 0; i < days.length; i += 7) weeks.push(days.slice(i, i + 7));
 
   return (
     <div className="p-3">
       <div className="grid grid-cols-7 mb-2">
-        {DAYS_ES.map(d => (
-          <div key={d} className="cg-eyebrow py-2 text-center">{d}</div>
+        {DAYS_ES.map((d) => (
+          <div key={d} className="cg-eyebrow py-2 text-center">
+            {d}
+          </div>
         ))}
       </div>
       <div className="space-y-1">
@@ -1297,21 +1939,33 @@ function MonthView({ days, eventsByDate, coverageByDate, guardColorMap, selected
               const coverage = coverageByDate[key];
               const isScheduledDay = coverage && coverage.slots.length > 0;
               const isCurrentMonth = day.getMonth() === currentMonth;
+
               return (
                 <button
                   key={di}
+                  className={`group relative flex min-h-[62px] flex-col items-center rounded-xl p-1 transition-all duration-150 ${!isCurrentMonth ? "opacity-25" : ""}`}
+                  style={
+                    selectedDate === key
+                      ? {
+                          background: "var(--brand-wash)",
+                          boxShadow: "inset 0 0 0 1px var(--brand-line)",
+                        }
+                      : undefined
+                  }
                   onClick={() => onSelectDate(key)}
-                  className={`group relative flex min-h-[62px] flex-col items-center rounded-xl p-1 transition-all duration-150 ${!isCurrentMonth ? 'opacity-25' : ''}`}
-                  style={selectedDate === key ? { background: 'var(--brand-wash)', boxShadow: 'inset 0 0 0 1px var(--brand-line)' } : undefined}
                 >
                   <span
                     className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium tabular-nums transition-all"
                     style={
                       isToday(day)
-                        ? { background: 'var(--brand)', color: 'var(--brand-ink)', boxShadow: '0 0 18px -6px var(--brand-glow)' }
+                        ? {
+                            background: "var(--brand)",
+                            color: "var(--brand-ink)",
+                            boxShadow: "0 0 18px -6px var(--brand-glow)",
+                          }
                         : selectedDate === key
-                        ? { color: 'var(--brand-text)', fontWeight: 600 }
-                        : undefined
+                          ? { color: "var(--brand-text)", fontWeight: 600 }
+                          : undefined
                     }
                   >
                     {day.getDate()}
@@ -1320,16 +1974,26 @@ function MonthView({ days, eventsByDate, coverageByDate, guardColorMap, selected
                   {isScheduledDay ? (
                     <div className="mt-auto w-full space-y-[2px] px-0.5 pb-0.5">
                       {coverage.slots.map((slot: ScheduleSlot, i: number) => {
-                        const isNight = String(slot.jornada.tipo || '').toLowerCase().includes('noct');
-                        const tono = !slot.isCovered ? 'var(--bad)' : isNight ? 'var(--info)' : 'var(--warn)';
+                        const isNight = String(slot.jornada.tipo || "")
+                          .toLowerCase()
+                          .includes("noct");
+                        const tono = !slot.isCovered
+                          ? "var(--bad)"
+                          : isNight
+                            ? "var(--info)"
+                            : "var(--warn)";
+
                         return (
                           <div
                             key={i}
-                            title={`${slot.jornada.tipo}: ${slot.guardsAssigned}/${slot.guardsNeeded}`}
                             className="flex h-[8px] items-center justify-center rounded-full text-[6px] font-bold leading-none"
-                            style={{ background: tono, color: 'var(--brand-ink)' }}
+                            style={{
+                              background: tono,
+                              color: "var(--brand-ink)",
+                            }}
+                            title={`${slot.jornada.tipo}: ${slot.guardsAssigned}/${slot.guardsNeeded}`}
                           >
-                            {isNight ? 'N' : 'D'}
+                            {isNight ? "N" : "D"}
                           </div>
                         );
                       })}
@@ -1337,8 +2001,16 @@ function MonthView({ days, eventsByDate, coverageByDate, guardColorMap, selected
                   ) : dayEvents.length > 0 ? (
                     <div className="flex items-center gap-[3px] mt-auto mb-0.5">
                       {dayEvents.slice(0, 3).map((ev, i) => {
-                        const color = guardColorMap[ev.guardId] || GUARD_FALLBACK;
-                        return <div key={i} className="w-[5px] h-[5px] rounded-full" style={{ backgroundColor: color.accent }} />;
+                        const color =
+                          guardColorMap[ev.guardId] || GUARD_FALLBACK;
+
+                        return (
+                          <div
+                            key={i}
+                            className="w-[5px] h-[5px] rounded-full"
+                            style={{ backgroundColor: color.accent }}
+                          />
+                        );
                       })}
                     </div>
                   ) : null}

@@ -1,9 +1,12 @@
+import type { LucideIcon } from "lucide-react";
+import type { ReportTone } from "./reportIcons";
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import type { LucideIcon } from "lucide-react";
 import { toast } from "sonner";
+
 import ReportPageShell from "./ReportPageShell";
-import type { ReportTone } from "./reportIcons";
+
 import { Segmented } from "@/components/kit";
 import { exportColumns, type ExportFormat } from "@/lib/export/reportExport";
 
@@ -69,7 +72,9 @@ function ymd(d: Date): string {
 
 function daysAgo(n: number): string {
   const d = new Date();
+
   d.setDate(d.getDate() - n);
+
   return ymd(d);
 }
 
@@ -90,27 +95,49 @@ const PRESETS = [7, 30, 90] as const;
  * columna del vigilante.
  */
 export default function DataReport<T>({
-  title, description, icon, tone, columns: columnsProp, load, searchable = true, defaultDays = 30, emptyMessage, rowTone, onRowClick, reloadRef,
+  title,
+  description,
+  icon,
+  tone,
+  columns: columnsProp,
+  load,
+  searchable = true,
+  defaultDays = 30,
+  emptyMessage,
+  rowTone,
+  onRowClick,
+  reloadRef,
 }: DataReportProps<T>) {
   const { t } = useTranslation();
-  const rotulo = (c: ReportColumn<T>) => (c.labelKey ? t(c.labelKey, c.label) : c.label);
+  const rotulo = (c: ReportColumn<T>) =>
+    c.labelKey ? t(c.labelKey, c.label) : c.label;
   // «Ocultar nombre del vigilante» (Configuración › Informes) también rige lo
   // que se arma en el navegador. Falla abierto: sin ajuste legible, se muestra
   // todo — igual que siempre.
   const [ocultarVigilante, setOcultarVigilante] = useState(false);
+
   useEffect(() => {
     (async () => {
       try {
         const tenantId = localStorage.getItem("tenantId");
+
         if (!tenantId) return;
         const api = (await import("@/lib/api")).default;
-        const { data } = await api.get(`/tenant/${tenantId}/settings`, { toast: { silentError: true } } as any);
+        const { data } = await api.get(`/tenant/${tenantId}/settings`, {
+          toast: { silentError: true },
+        } as any);
+
         setOcultarVigilante(!!data?.reportSettings?.hideGuardName);
-      } catch { /* sin ajuste → todo visible */ }
+      } catch {
+        /* sin ajuste → todo visible */
+      }
     })();
   }, []);
   const columns = useMemo(
-    () => (ocultarVigilante ? columnsProp.filter((c) => c.privacy !== "guardName") : columnsProp),
+    () =>
+      ocultarVigilante
+        ? columnsProp.filter((c) => c.privacy !== "guardName")
+        : columnsProp,
     [columnsProp, ocultarVigilante],
   );
   const today = useMemo(() => new Date(), []);
@@ -125,23 +152,36 @@ export default function DataReport<T>({
     setLoading(true);
     load({ from, to })
       .then((r) => setRows(Array.isArray(r) ? r : []))
-      .catch(() => { setRows([]); toast.error(t("ui.DataReport.errorCargarInforme", "No se pudo cargar el informe")); })
+      .catch(() => {
+        setRows([]);
+        toast.error(
+          t("ui.DataReport.errorCargarInforme", "No se pudo cargar el informe"),
+        );
+      })
       .finally(() => setLoading(false));
   }, [from, to, load]);
 
-  useEffect(() => { fetchRows(); /* eslint-disable-next-line */ }, [from, to]);
+  useEffect(() => {
+    fetchRows();
+  }, [from, to]);
 
   // El mando a distancia del informe, para quien lo haya pedido.
   useEffect(() => {
     if (!reloadRef) return;
     reloadRef.current = fetchRows;
-    return () => { reloadRef.current = null; };
+
+    return () => {
+      reloadRef.current = null;
+    };
   }, [reloadRef, fetchRows]);
 
   const filtered = useMemo(() => {
     if (!searchable || !search.trim()) return rows;
     const q = search.toLowerCase();
-    return rows.filter((row) => columns.some((c) => c.value(row).toLowerCase().includes(q)));
+
+    return rows.filter((row) =>
+      columns.some((c) => c.value(row).toLowerCase().includes(q)),
+    );
   }, [rows, search, columns, searchable]);
 
   /* ── Paginación (en cliente) ──────────────────────────────────────────────
@@ -155,7 +195,9 @@ export default function DataReport<T>({
   // Cualquier cosa que cambie el conjunto devuelve a la primera página: quedarse
   // en la 40 después de buscar un texto que sólo tiene 3 resultados se ve como
   // un informe vacío.
-  useEffect(() => { setPage(1); }, [search, rows]);
+  useEffect(() => {
+    setPage(1);
+  }, [search, rows]);
 
   const lastPage = Math.max(1, Math.ceil(filtered.length / pageSize));
   // Se recorta en el render además del efecto: entre el cambio de conjunto y el
@@ -172,6 +214,7 @@ export default function DataReport<T>({
   const activePreset = useMemo(() => {
     if (to !== ymd(new Date())) return "";
     const hit = PRESETS.find((d) => daysAgo(d) === from);
+
     return hit ? String(hit) : "";
   }, [from, to]);
 
@@ -181,7 +224,10 @@ export default function DataReport<T>({
   };
 
   const rangeLabel = `${from} a ${to}`;
-  const fileBase = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const fileBase = title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 
   /**
    * Exporta lo que se está VIENDO (`filtered`), no lo que se cargó: si el
@@ -192,14 +238,24 @@ export default function DataReport<T>({
   const [exportando, setExportando] = useState(false);
   const exportar = async (format: ExportFormat) => {
     if (!filtered.length) {
-      toast.info(t("ui.DataReport.sinFilasParaExportar", "No hay registros que exportar"));
+      toast.info(
+        t(
+          "ui.DataReport.sinFilasParaExportar",
+          "No hay registros que exportar",
+        ),
+      );
+
       return;
     }
     setExportando(true);
     try {
       await exportColumns(
         format,
-        columns.map((c) => ({ label: rotulo(c), value: c.value, align: c.align })),
+        columns.map((c) => ({
+          label: rotulo(c),
+          value: c.value,
+          align: c.align,
+        })),
         filtered,
         {
           title,
@@ -213,7 +269,9 @@ export default function DataReport<T>({
       );
     } catch (e) {
       console.error("export failed", e);
-      toast.error(t("ui.DataReport.errorExportar", "No se pudo generar el archivo"));
+      toast.error(
+        t("ui.DataReport.errorExportar", "No se pudo generar el archivo"),
+      );
     } finally {
       setExportando(false);
     }
@@ -223,10 +281,16 @@ export default function DataReport<T>({
   // así que sus neutros van escritos en oklch (los mismos valores acromáticos
   // del sistema) en vez de un azul marino a mano.
   const printableHtml = () => {
-    const head = columns.map((c) => `<th>${escapeHtml(rotulo(c))}</th>`).join("");
-    const body = filtered
-      .map((row) => `<tr>${columns.map((c) => `<td>${escapeHtml(c.value(row))}</td>`).join("")}</tr>`)
+    const head = columns
+      .map((c) => `<th>${escapeHtml(rotulo(c))}</th>`)
       .join("");
+    const body = filtered
+      .map(
+        (row) =>
+          `<tr>${columns.map((c) => `<td>${escapeHtml(c.value(row))}</td>`).join("")}</tr>`,
+      )
+      .join("");
+
     return `<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>
       <style>
         body{font-family:'Inter Variable','Inter','Segoe UI',Arial,sans-serif;color:oklch(0.17 0 0);margin:28px}
@@ -246,26 +310,57 @@ export default function DataReport<T>({
 
   const openPrint = (autoPrint: boolean) => {
     const w = window.open("", "_blank");
-    if (!w) { toast.error(t("ui.DataReport.habilitaVentanasEmergentes", "Habilita las ventanas emergentes para exportar")); return; }
+
+    if (!w) {
+      toast.error(
+        t(
+          "ui.DataReport.habilitaVentanasEmergentes",
+          "Habilita las ventanas emergentes para exportar",
+        ),
+      );
+
+      return;
+    }
     w.document.write(printableHtml());
     w.document.close();
-    if (autoPrint) { w.focus(); setTimeout(() => w.print(), 300); }
+    if (autoPrint) {
+      w.focus();
+      setTimeout(() => w.print(), 300);
+    }
   };
 
   return (
     <ReportPageShell
-      title={title}
-      description={description}
-      icon={icon}
-      tone={tone}
       count={filtered.length}
-      loading={loading}
-      search={searchable ? search : undefined}
-      onSearchChange={searchable ? setSearch : undefined}
-      onExport={exportar}
-      exporting={exportando}
-      onPrint={() => openPrint(true)}
+      description={description}
       empty={{ message: emptyMessage }}
+      exporting={exportando}
+      filters={
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <label className="cg-eyebrow">Desde</label>
+            <input
+              className="cg-input w-full px-3 py-2 text-sm"
+              max={to}
+              type="date"
+              value={from}
+              onChange={(e) => setFrom(e.target.value)}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label className="cg-eyebrow">Hasta</label>
+            <input
+              className="cg-input w-full px-3 py-2 text-sm"
+              min={from}
+              type="date"
+              value={to}
+              onChange={(e) => setTo(e.target.value)}
+            />
+          </div>
+        </div>
+      }
+      icon={icon}
+      loading={loading}
       pagination={{
         page: currentPage,
         pageSize,
@@ -273,30 +368,28 @@ export default function DataReport<T>({
         onPageChange: setPage,
         // Cambiar el tamaño de página desde la 7 dejaría al usuario en un sitio
         // que ya no existe: se vuelve al principio.
-        onPageSizeChange: (n) => { setPageSize(n); setPage(1); },
+        onPageSizeChange: (n) => {
+          setPageSize(n);
+          setPage(1);
+        },
       }}
-      onApplyFilters={fetchRows}
       rangeControl={
         <Segmented
+          options={PRESETS.map((d) => ({
+            value: String(d),
+            label: `${d} días`,
+          }))}
           value={activePreset}
           onChange={applyPreset}
-          options={PRESETS.map((d) => ({ value: String(d), label: `${d} días` }))}
         />
       }
-      filters={
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-1.5">
-            <label className="cg-eyebrow">Desde</label>
-            <input type="date" value={from} max={to} onChange={(e) => setFrom(e.target.value)}
-              className="cg-input w-full px-3 py-2 text-sm" />
-          </div>
-          <div className="space-y-1.5">
-            <label className="cg-eyebrow">Hasta</label>
-            <input type="date" value={to} min={from} onChange={(e) => setTo(e.target.value)}
-              className="cg-input w-full px-3 py-2 text-sm" />
-          </div>
-        </div>
-      }
+      search={searchable ? search : undefined}
+      title={title}
+      tone={tone}
+      onApplyFilters={fetchRows}
+      onExport={exportar}
+      onPrint={() => openPrint(true)}
+      onSearchChange={searchable ? setSearch : undefined}
     >
       {loading || filtered.length === 0 ? null : (
         <div ref={tableRef} className="overflow-x-auto">
@@ -304,16 +397,25 @@ export default function DataReport<T>({
             <thead>
               <tr
                 className="cg-eyebrow border-b text-left"
-                style={{ borderColor: "var(--hairline)", background: "var(--glass-sunken)" }}
+                style={{
+                  borderColor: "var(--hairline)",
+                  background: "var(--glass-sunken)",
+                }}
               >
                 {columns.map((c) => (
-                  <th key={c.key} className={`px-4 py-3 ${c.align === "right" ? "text-right" : c.align === "center" ? "text-center" : ""}`}>{rotulo(c)}</th>
+                  <th
+                    key={c.key}
+                    className={`px-4 py-3 ${c.align === "right" ? "text-right" : c.align === "center" ? "text-center" : ""}`}
+                  >
+                    {rotulo(c)}
+                  </th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {pageRows.map((row, i) => {
                 const t = rowTone?.(row);
+
                 return (
                   <tr
                     key={(currentPage - 1) * pageSize + i}
@@ -322,18 +424,27 @@ export default function DataReport<T>({
                     // también con el teclado. Un informe que sólo se puede
                     // auditar con ratón no se puede auditar.
                     role={onRowClick ? "button" : undefined}
-                    tabIndex={onRowClick ? 0 : undefined}
-                    onClick={onRowClick ? () => onRowClick(row) : undefined}
-                    onKeyDown={onRowClick ? (e) => {
-                      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onRowClick(row); }
-                    } : undefined}
                     style={{
                       cursor: onRowClick ? "pointer" : undefined,
                       borderColor: "var(--hairline)",
                       // La fila crítica se tiñe con su semántico, nunca con el
                       // acento: un pánico es rojo aunque la empresa elija verde.
-                      background: t ? `color-mix(in oklab, var(--${t}) 7%, transparent)` : undefined,
+                      background: t
+                        ? `color-mix(in oklab, var(--${t}) 7%, transparent)`
+                        : undefined,
                     }}
+                    tabIndex={onRowClick ? 0 : undefined}
+                    onClick={onRowClick ? () => onRowClick(row) : undefined}
+                    onKeyDown={
+                      onRowClick
+                        ? (e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              onRowClick(row);
+                            }
+                          }
+                        : undefined
+                    }
                   >
                     {columns.map((c, ci) => (
                       <td
@@ -366,6 +477,9 @@ export default function DataReport<T>({
 
 function escapeHtml(s: string): string {
   return String(s ?? "")
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }

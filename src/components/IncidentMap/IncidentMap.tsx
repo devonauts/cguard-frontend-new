@@ -1,5 +1,5 @@
-import GoogleMapEmbed from '@/components/GoogleMap/GoogleMapEmbed';
-import StaticMapImage from '@/components/maps/StaticMapImage';
+import GoogleMapEmbed from "@/components/GoogleMap/GoogleMapEmbed";
+import StaticMapImage from "@/components/maps/StaticMapImage";
 
 /**
  * Miniatura de "dónde pasó esto".
@@ -21,20 +21,34 @@ import StaticMapImage from '@/components/maps/StaticMapImage';
  *
  * Las props no cambian: ninguna de las ocho pantallas necesita tocarse.
  */
-export default function IncidentMap({ lat, lng, label }: { lat?: number; lng?: number; label?: string }) {
+export default function IncidentMap({
+  lat,
+  lng,
+  label,
+}: {
+  lat?: number;
+  lng?: number;
+  label?: string;
+}) {
   if (!lat || !lng) return null;
 
   return (
     <div className="w-full h-64 rounded-md overflow-hidden mb-4">
       <StaticMapImage
+        alt={label ? `Mapa de ${label}` : "Mapa de la ubicación"}
+        className="h-full w-full"
+        height="100%"
         lat={lat}
         lng={lng}
         zoom={15}
-        height="100%"
-        alt={label ? `Mapa de ${label}` : 'Mapa de la ubicación'}
-        className="h-full w-full"
       >
-        <GoogleMapEmbed lat={lat} lng={lng} zoom={15} mapType="roadmap" draggable={false} />
+        <GoogleMapEmbed
+          draggable={false}
+          lat={lat}
+          lng={lng}
+          mapType="roadmap"
+          zoom={15}
+        />
       </StaticMapImage>
     </div>
   );

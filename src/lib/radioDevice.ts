@@ -25,9 +25,14 @@ const CLAVE = "radio.deviceId";
 function base(): string {
   try {
     const guardado = localStorage.getItem(CLAVE);
+
     if (guardado) return guardado;
-    const nuevo = Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+    const nuevo =
+      Math.random().toString(36).slice(2, 10) +
+      Date.now().toString(36).slice(-4);
+
     localStorage.setItem(CLAVE, nuevo);
+
     return nuevo;
   } catch {
     // Sin almacenamiento (modo privado, cuota): uno por sesión. Peor —cada
@@ -46,8 +51,11 @@ export function radioDeviceId(superficie: "w" | "n" = "w"): string {
  * que se compara con la plantilla son PERSONAS, no conexiones.
  * Tolera las identidades antiguas (sin `#`).
  */
-export function usuarioDeIdentidad(identity: string | null | undefined): string {
+export function usuarioDeIdentidad(
+  identity: string | null | undefined,
+): string {
   const s = String(identity || "");
   const i = s.indexOf("#");
+
   return i === -1 ? s : s.slice(0, i);
 }

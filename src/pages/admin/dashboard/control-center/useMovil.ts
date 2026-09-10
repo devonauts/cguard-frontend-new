@@ -14,23 +14,36 @@ const CONSULTA = "(max-width: 767.98px)";
 export function useEsMovil(): boolean {
   const [esMovil, setEsMovil] = useState<boolean>(() => {
     if (typeof window === "undefined" || !window.matchMedia) return false;
+
     return window.matchMedia(CONSULTA).matches;
   });
 
   useEffect(() => {
     if (typeof window === "undefined" || !window.matchMedia) return;
     const mq = window.matchMedia(CONSULTA);
-    const alCambiar = (e: MediaQueryListEvent | MediaQueryList) => setEsMovil(e.matches);
+    const alCambiar = (e: MediaQueryListEvent | MediaQueryList) =>
+      setEsMovil(e.matches);
+
     // Sincroniza por si el ancho cambió entre el primer render y el efecto
     // (rotar el teléfono durante la carga, abrir las herramientas del navegador).
     setEsMovil(mq.matches);
     if (mq.addEventListener) {
-      mq.addEventListener("change", alCambiar as (e: MediaQueryListEvent) => void);
-      return () => mq.removeEventListener("change", alCambiar as (e: MediaQueryListEvent) => void);
+      mq.addEventListener(
+        "change",
+        alCambiar as (e: MediaQueryListEvent) => void,
+      );
+
+      return () =>
+        mq.removeEventListener(
+          "change",
+          alCambiar as (e: MediaQueryListEvent) => void,
+        );
     }
     // Safari antiguo: sólo tiene la API obsoleta.
     mq.addListener(alCambiar as (e: MediaQueryListEvent) => void);
-    return () => mq.removeListener(alCambiar as (e: MediaQueryListEvent) => void);
+
+    return () =>
+      mq.removeListener(alCambiar as (e: MediaQueryListEvent) => void);
   }, []);
 
   return esMovil;

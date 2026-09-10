@@ -2,7 +2,12 @@ import { ApiService } from "@/services/api/apiService";
 
 const tenantId = (): string => {
   const t = localStorage.getItem("tenantId");
-  if (!t) throw new Error("No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.");
+
+  if (!t)
+    throw new Error(
+      "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+    );
+
   return t;
 };
 
@@ -35,7 +40,9 @@ export const smsAccountService = {
     return ApiService.get(`/tenant/${tenantId()}/sms-account`);
   },
   transactions(limit = 100): Promise<{ transactions: SmsTransaction[] }> {
-    return ApiService.get(`/tenant/${tenantId()}/sms-account/transactions?limit=${limit}`);
+    return ApiService.get(
+      `/tenant/${tenantId()}/sms-account/transactions?limit=${limit}`,
+    );
   },
   provision(): Promise<{ account: SmsAccount }> {
     return ApiService.post(`/tenant/${tenantId()}/sms-account/provision`, {});
@@ -43,14 +50,21 @@ export const smsAccountService = {
   // recharge() removed: the legacy per-tenant SMS wallet is retired.
   // Balance + Stripe recharge now live in the unified communications wallet
   // (communicationService.rechargeWallet, /setting/comunicaciones).
-  availableNumbers(params: { country?: string; areaCode?: string; contains?: string } = {}): Promise<{ numbers: AvailableNumber[] }> {
+  availableNumbers(
+    params: { country?: string; areaCode?: string; contains?: string } = {},
+  ): Promise<{ numbers: AvailableNumber[] }> {
     const qs = new URLSearchParams(
       Object.entries(params).filter(([, v]) => !!v) as [string, string][],
     ).toString();
-    return ApiService.get(`/tenant/${tenantId()}/sms-account/available-numbers${qs ? `?${qs}` : ""}`);
+
+    return ApiService.get(
+      `/tenant/${tenantId()}/sms-account/available-numbers${qs ? `?${qs}` : ""}`,
+    );
   },
   buyNumber(phoneNumber: string): Promise<{ account: SmsAccount }> {
-    return ApiService.post(`/tenant/${tenantId()}/sms-account/buy-number`, { data: { phoneNumber } });
+    return ApiService.post(`/tenant/${tenantId()}/sms-account/buy-number`, {
+      data: { phoneNumber },
+    });
   },
 };
 

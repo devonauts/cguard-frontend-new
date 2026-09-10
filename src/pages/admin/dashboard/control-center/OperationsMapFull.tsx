@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Maximize, X, Radio } from "lucide-react";
-import { StatusBadge } from "@/components/kit";
+
 import { useControlCenter } from "./useControlCenter";
 import { useDemoData } from "./demoData";
 import { loadPrefs } from "./prefs";
 import { OperationsMap } from "./components/OperationsMap";
+
+import { StatusBadge } from "@/components/kit";
 import "./control-center.css";
 
 /**
@@ -15,33 +17,54 @@ import "./control-center.css";
 export default function OperationsMapFull() {
   const prefs = useMemo(() => loadPrefs(), []);
   const demo = useMemo(() => {
-    try { return localStorage.getItem("cc_demo") === "1"; } catch { return false; }
+    try {
+      return localStorage.getItem("cc_demo") === "1";
+    } catch {
+      return false;
+    }
   }, []);
 
-  const live = useControlCenter(prefs.liveTracking ? prefs.locationIntervalSec : 3600);
+  const live = useControlCenter(
+    prefs.liveTracking ? prefs.locationIntervalSec : 3600,
+  );
   const demoData = useDemoData(demo);
   const data = demo ? demoData : live;
 
-  const [h, setH] = useState(() => (typeof window !== "undefined" ? window.innerHeight : 800));
+  const [h, setH] = useState(() =>
+    typeof window !== "undefined" ? window.innerHeight : 800,
+  );
+
   useEffect(() => {
     document.title = "Operaciones en tiempo real · CGuardPro";
     const onResize = () => setH(window.innerHeight);
+
     window.addEventListener("resize", onResize);
+
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
   const goFullscreen = () => {
     try {
-      const el = document.documentElement as HTMLElement & { webkitRequestFullscreen?: () => void };
+      const el = document.documentElement as HTMLElement & {
+        webkitRequestFullscreen?: () => void;
+      };
+
       if (document.fullscreenElement) document.exitFullscreen?.();
       else (el.requestFullscreen || el.webkitRequestFullscreen)?.call(el);
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   };
 
   return (
     <div
       className="cc-root relative"
-      style={{ ["--cc-accent" as any]: prefs.accent, height: "100vh", width: "100vw", overflow: "hidden" }}
+      style={{
+        ["--cc-accent" as any]: prefs.accent,
+        height: "100vh",
+        width: "100vw",
+        overflow: "hidden",
+      }}
     >
       {/* ── Barra flotante ──────────────────────────────────────────────────
           Antes era tinta blanca sobre un azul-negro escrito a mano: se veía
@@ -57,8 +80,15 @@ export default function OperationsMapFull() {
             <Radio className="size-4" style={{ color: "var(--ok-text)" }} />
             Operaciones en tiempo real
           </span>
-          {demo && <StatusBadge tone="brand" dot={false}>Demo</StatusBadge>}
-          <span className="hidden h-5 w-px sm:block" style={{ background: "var(--hairline)" }} />
+          {demo && (
+            <StatusBadge dot={false} tone="brand">
+              Demo
+            </StatusBadge>
+          )}
+          <span
+            className="hidden h-5 w-px sm:block"
+            style={{ background: "var(--hairline)" }}
+          />
           <span className="text-[11px]" style={{ color: "var(--ink-soft)" }}>
             {data.entities.length} elementos · filtros y leyenda sobre el mapa
           </span>
@@ -72,25 +102,30 @@ export default function OperationsMapFull() {
         </div>
         <div className="pointer-events-auto flex items-center gap-2">
           <button
-            onClick={goFullscreen}
-            title="Pantalla completa"
             aria-label="Pantalla completa"
             className="cg-btn-glass cg-focus grid size-9 place-items-center rounded-full transition active:scale-95"
+            title="Pantalla completa"
+            onClick={goFullscreen}
           >
             <Maximize className="size-4" />
           </button>
           <button
-            onClick={() => window.close()}
-            title="Cerrar"
             aria-label="Cerrar"
             className="cg-btn-glass cg-focus grid size-9 place-items-center rounded-full transition active:scale-95"
+            title="Cerrar"
+            onClick={() => window.close()}
           >
             <X className="size-4" />
           </button>
         </div>
       </div>
 
-      <OperationsMap entities={data.entities} prefs={prefs} height={h} defaultCenter={data.defaultCenter} />
+      <OperationsMap
+        defaultCenter={data.defaultCenter}
+        entities={data.entities}
+        height={h}
+        prefs={prefs}
+      />
     </div>
   );
 }

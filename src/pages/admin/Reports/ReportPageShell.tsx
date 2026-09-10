@@ -1,19 +1,31 @@
+import type { LucideIcon } from "lucide-react";
+import type { ExportFormat } from "@/lib/export/reportExport";
+import type { ReportTone } from "./reportIcons";
+
 import { useState, type ReactNode } from "react";
 import { Search, Filter, Inbox } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import {
-  Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
 } from "@/components/ui/sheet";
 import ExportMenu from "@/components/reports/ExportMenu";
-import type { ExportFormat } from "@/lib/export/reportExport";
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
 import {
-  PageContainer, PageHeader, Section, EmptyState, Toolbar, StatusBadge, SkeletonBlock,
+  PageContainer,
+  PageHeader,
+  Section,
+  EmptyState,
+  Toolbar,
+  StatusBadge,
+  SkeletonBlock,
   Pagination,
 } from "@/components/kit";
-import type { ReportTone } from "./reportIcons";
 
 /** Estado de paginación que el informe cede al armazón: el armazón dibuja el
  *  pie, pero quien tiene las filas —y por tanto quien puede cortarlas— es el
@@ -55,10 +67,24 @@ function TableSkeleton({ rows = 8 }: { rows?: number }) {
  * `--bad`, independientemente del acento que la empresa haya elegido.
  */
 export default function ReportPageShell({
-  title, breadcrumb, description, icon: Icon, tone = "brand",
-  filters, onApplyFilters, rangeControl, children, empty, count = 0, loading = false,
-  search: searchProp, onSearchChange,
-  onExport, onPrint, onEmail, exporting,
+  title,
+  breadcrumb,
+  description,
+  icon: Icon,
+  tone = "brand",
+  filters,
+  onApplyFilters,
+  rangeControl,
+  children,
+  empty,
+  count = 0,
+  loading = false,
+  search: searchProp,
+  onSearchChange,
+  onExport,
+  onPrint,
+  onEmail,
+  exporting,
   pagination,
 }: {
   title: string;
@@ -101,7 +127,8 @@ export default function ReportPageShell({
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [localSearch, setLocalSearch] = useState("");
   const search = searchProp !== undefined ? searchProp : localSearch;
-  const setSearch = (v: string) => (onSearchChange ? onSearchChange(v) : setLocalSearch(v));
+  const setSearch = (v: string) =>
+    onSearchChange ? onSearchChange(v) : setLocalSearch(v);
   const hasExport = !!(onExport || onPrint || onEmail);
   const hasFilters = !!filters;
   /* El buscador sólo se dibuja si alguien lo consume: en una página sin datos
@@ -111,7 +138,8 @@ export default function ReportPageShell({
   const showToolbar = showSearch || !!rangeControl || hasFilters || hasExport;
   /* `null` en vez de un booleano suelto: así el propio `pagination` queda
      estrechado dentro del bloque y no hace falta un `!` para leerlo. */
-  const footerPager = pagination && !loading && pagination.total > 0 ? pagination : null;
+  const footerPager =
+    pagination && !loading && pagination.total > 0 ? pagination : null;
 
   return (
     <AppLayout>
@@ -126,22 +154,22 @@ export default function ReportPageShell({
       <PageContainer width="wide">
         {/* ── Cabecera ── */}
         <PageHeader
-          title={title}
-          subtitle={description}
-          icon={Icon ? <Icon /> : undefined}
           badges={
             !loading ? (
-              <StatusBadge tone={count > 0 ? tone : "neutral"} dot={false}>
+              <StatusBadge dot={false} tone={count > 0 ? tone : "neutral"}>
                 {count === 1 ? "1 registro" : `${count} registros`}
               </StatusBadge>
             ) : undefined
           }
+          icon={Icon ? <Icon /> : undefined}
+          subtitle={description}
+          title={title}
         />
 
         {/* ── Barra de herramientas ── */}
         {showToolbar && (
-        <Toolbar>
-          {/* ── POR QUÉ EL BUSCADOR OCUPA LA FILA ENTERA EN UN TELÉFONO ──────
+          <Toolbar>
+            {/* ── POR QUÉ EL BUSCADOR OCUPA LA FILA ENTERA EN UN TELÉFONO ──────
               Tenía `flex-1` sin ancho base, así que a 390 px competía en la
               MISMA línea con el conmutador de rango y el botón de exportar, y
               perdía: se encogía hasta quedar en un círculo con la lupa dentro
@@ -150,70 +178,75 @@ export default function ReportPageShell({
               obliga a los otros dos a envolver a la segunda, donde sí caben
               (conmutador ~200 px + botón ~120 px). De `sm` en adelante vuelve a
               ser la caja estrecha de siempre a la izquierda de la barra. */}
-          {showSearch && (
-            <div className="relative w-full min-w-0 sm:w-auto sm:flex-1 sm:max-w-xs">
-              <Search
-                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
-                style={{ color: "var(--ink-faint)" }}
-              />
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Buscar…"
-                className="cg-input w-full py-2 pl-9 pr-3 text-sm"
-              />
-            </div>
-          )}
+            {showSearch && (
+              <div className="relative w-full min-w-0 sm:w-auto sm:flex-1 sm:max-w-xs">
+                <Search
+                  className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
+                  style={{ color: "var(--ink-faint)" }}
+                />
+                <input
+                  className="cg-input w-full py-2 pl-9 pr-3 text-sm"
+                  placeholder="Buscar…"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </div>
+            )}
 
-          {rangeControl}
+            {rangeControl}
 
-          <div className="ml-auto flex items-center gap-2">
-            {/* `ml-auto` sigue valiendo en las dos filas: en el teléfono empuja
+            <div className="ml-auto flex items-center gap-2">
+              {/* `ml-auto` sigue valiendo en las dos filas: en el teléfono empuja
                 los botones al borde derecho de la segunda línea, que es donde
                 el pulgar los alcanza. */}
-            {hasFilters && (
-              <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
-                <SheetTrigger asChild>
-                  <Button variant="outline" className="gap-2">
-                    <Filter className="h-4 w-4" /> Filtros
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="right" className="w-full max-w-[400px] overflow-y-auto sm:max-w-[440px]">
-                  <SheetHeader><SheetTitle>Filtros</SheetTitle></SheetHeader>
-                  <div className="mt-6 space-y-5">
-                    {filters}
-                    <Button
-                      variant="brand"
-                      className="w-full"
-                      onClick={() => {
-                        onApplyFilters?.();
-                        setFiltersOpen(false);
-                      }}
-                    >
-                      {onApplyFilters ? "Aplicar filtros" : "Listo"}
+              {hasFilters && (
+                <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
+                  <SheetTrigger asChild>
+                    <Button className="gap-2" variant="outline">
+                      <Filter className="h-4 w-4" /> Filtros
                     </Button>
-                  </div>
-                </SheetContent>
-              </Sheet>
-            )}
+                  </SheetTrigger>
+                  <SheetContent
+                    className="w-full max-w-[400px] overflow-y-auto sm:max-w-[440px]"
+                    side="right"
+                  >
+                    <SheetHeader>
+                      <SheetTitle>Filtros</SheetTitle>
+                    </SheetHeader>
+                    <div className="mt-6 space-y-5">
+                      {filters}
+                      <Button
+                        className="w-full"
+                        variant="brand"
+                        onClick={() => {
+                          onApplyFilters?.();
+                          setFiltersOpen(false);
+                        }}
+                      >
+                        {onApplyFilters ? "Aplicar filtros" : "Listo"}
+                      </Button>
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              )}
 
-            {hasExport && (
-              <ExportMenu
-                /* Un informe puede ofrecer sólo imprimir o sólo enviar: en ese
+              {hasExport && (
+                <ExportMenu
+                  /* Un informe puede ofrecer sólo imprimir o sólo enviar: en ese
                    caso `formats={[]}` deja el menú sin descargas en vez de
                    pintar tres opciones que nadie sabe atender. */
-                onExport={onExport || (() => {})}
-                formats={onExport ? undefined : []}
-                onPrint={onPrint}
-                onEmail={onEmail}
-                busy={exporting}
-                /* Sin filas no hay archivo que bajar: mejor un botón apagado
+                  formats={onExport ? undefined : []}
+                  onEmail={onEmail}
+                  onExport={onExport || (() => {})}
+                  onPrint={onPrint}
+                  busy={exporting}
+                  /* Sin filas no hay archivo que bajar: mejor un botón apagado
                    que un Excel de cero registros en la carpeta de descargas. */
-                disabled={loading || count === 0}
-              />
-            )}
-          </div>
-        </Toolbar>
+                  disabled={loading || count === 0}
+                />
+              )}
+            </div>
+          </Toolbar>
         )}
 
         {/* ── Marco de contenido ── */}
@@ -225,22 +258,26 @@ export default function ReportPageShell({
           ) : (
             <div className="px-6 py-16">
               <EmptyState
+                action={
+                  hasFilters ? (
+                    <Button
+                      className="gap-2"
+                      variant="outline"
+                      onClick={() => setFiltersOpen(true)}
+                    >
+                      <Filter className="h-4 w-4" /> Configurar filtros
+                    </Button>
+                  ) : undefined
+                }
                 className="border-0 py-0"
-                icon={<Inbox />}
-                title={empty?.title || "Sin datos para mostrar"}
                 description={
                   empty?.message ||
                   (hasFilters
                     ? "Ajusta los filtros o el rango de fechas para ver resultados en este informe."
                     : "Este informe todavía no tiene datos que mostrar.")
                 }
-                action={
-                  hasFilters ? (
-                    <Button onClick={() => setFiltersOpen(true)} variant="outline" className="gap-2">
-                      <Filter className="h-4 w-4" /> Configurar filtros
-                    </Button>
-                  ) : undefined
-                }
+                icon={<Inbox />}
+                title={empty?.title || "Sin datos para mostrar"}
               />
             </div>
           )}
@@ -250,15 +287,18 @@ export default function ReportPageShell({
               una tabla que pintaba las 2000 filas de golpe y con las dos flechas
               clavadas en `disabled`. */}
           {footerPager && (
-            <div className="border-t px-4 py-3" style={{ borderColor: "var(--hairline)" }}>
+            <div
+              className="border-t px-4 py-3"
+              style={{ borderColor: "var(--hairline)" }}
+            >
               <Pagination
+                numbered
+                noun="registros"
                 page={footerPager.page}
                 pageSize={footerPager.pageSize}
                 total={footerPager.total}
                 onPageChange={footerPager.onPageChange}
                 onPageSizeChange={footerPager.onPageSizeChange}
-                numbered
-                noun="registros"
               />
             </div>
           )}

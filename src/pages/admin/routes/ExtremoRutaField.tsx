@@ -1,10 +1,14 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/ui/button';
-import { Modal } from '@/components/kit';
-import { Home, Flag, X, MapPin, Pencil } from 'lucide-react';
-import AddressAutocomplete, { type AddressComponents } from '@/components/maps/AddressAutocomplete';
-import type { ExtremoRuta } from './routeOptimizacion';
+import type { ExtremoRuta } from "./routeOptimizacion";
+
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Home, Flag, X, MapPin, Pencil } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Modal } from "@/components/kit";
+import AddressAutocomplete, {
+  type AddressComponents,
+} from "@/components/maps/AddressAutocomplete";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -25,7 +29,7 @@ import type { ExtremoRuta } from './routeOptimizacion';
  */
 
 interface Props {
-  clase: 'origen' | 'destino';
+  clase: "origen" | "destino";
   valor: ExtremoRuta | null;
   onChange: (v: ExtremoRuta | null) => void;
   /** Sólo lectura — en la ficha de consulta no se edita. */
@@ -37,34 +41,41 @@ interface Props {
    ocurre abajo, dentro del componente. */
 const COPIA = {
   origen: {
-    titulo: 'Origen',
-    tituloKey: 'ui.ExtremoRutaField.origen.titulo',
+    titulo: "Origen",
+    tituloKey: "ui.ExtremoRutaField.origen.titulo",
     icono: <Home />,
-    vacio: 'Sin origen definido: la ruta empieza en la primera parada.',
-    vacioKey: 'ui.ExtremoRutaField.origen.vacio',
-    accion: 'Definir origen',
-    accionKey: 'ui.ExtremoRutaField.origen.accion',
-    modal: 'Origen del recorrido',
-    modalKey: 'ui.ExtremoRutaField.origen.modal',
-    ayuda: 'Desde dónde arranca el supervisor. Si lo dejas vacío, la ruta empieza en la primera parada.',
-    ayudaKey: 'ui.ExtremoRutaField.origen.ayuda',
+    vacio: "Sin origen definido: la ruta empieza en la primera parada.",
+    vacioKey: "ui.ExtremoRutaField.origen.vacio",
+    accion: "Definir origen",
+    accionKey: "ui.ExtremoRutaField.origen.accion",
+    modal: "Origen del recorrido",
+    modalKey: "ui.ExtremoRutaField.origen.modal",
+    ayuda:
+      "Desde dónde arranca el supervisor. Si lo dejas vacío, la ruta empieza en la primera parada.",
+    ayudaKey: "ui.ExtremoRutaField.origen.ayuda",
   },
   destino: {
-    titulo: 'Destino',
-    tituloKey: 'ui.ExtremoRutaField.destino.titulo',
+    titulo: "Destino",
+    tituloKey: "ui.ExtremoRutaField.destino.titulo",
     icono: <Flag />,
-    vacio: 'Sin destino definido: la ruta termina en la última parada.',
-    vacioKey: 'ui.ExtremoRutaField.destino.vacio',
-    accion: 'Definir destino',
-    accionKey: 'ui.ExtremoRutaField.destino.accion',
-    modal: 'Destino del recorrido',
-    modalKey: 'ui.ExtremoRutaField.destino.modal',
-    ayuda: 'Dónde termina el recorrido. Si lo dejas vacío, la ruta termina en la última parada.',
-    ayudaKey: 'ui.ExtremoRutaField.destino.ayuda',
+    vacio: "Sin destino definido: la ruta termina en la última parada.",
+    vacioKey: "ui.ExtremoRutaField.destino.vacio",
+    accion: "Definir destino",
+    accionKey: "ui.ExtremoRutaField.destino.accion",
+    modal: "Destino del recorrido",
+    modalKey: "ui.ExtremoRutaField.destino.modal",
+    ayuda:
+      "Dónde termina el recorrido. Si lo dejas vacío, la ruta termina en la última parada.",
+    ayudaKey: "ui.ExtremoRutaField.destino.ayuda",
   },
 } as const;
 
-export default function ExtremoRutaField({ clase, valor, onChange, soloLectura = false }: Props) {
+export default function ExtremoRutaField({
+  clase,
+  valor,
+  onChange,
+  soloLectura = false,
+}: Props) {
   const [abierto, setAbierto] = useState(false);
   const [borrador, setBorrador] = useState<ExtremoRuta | null>(null);
   const { t } = useTranslation();
@@ -81,7 +92,9 @@ export default function ExtremoRutaField({ clase, valor, onChange, soloLectura =
     setBorrador({
       lat: a.latitude,
       lng: a.longitude,
-      label: (a.address || '').trim() || `${a.latitude.toFixed(5)}, ${a.longitude.toFixed(5)}`,
+      label:
+        (a.address || "").trim() ||
+        `${a.latitude.toFixed(5)}, ${a.longitude.toFixed(5)}`,
     });
   };
 
@@ -93,11 +106,11 @@ export default function ExtremoRutaField({ clase, valor, onChange, soloLectura =
   return (
     <div>
       <div className="mb-2 flex items-center gap-2">
-        <span className="[&_svg]:size-4" style={{ color: 'var(--brand-text)' }}>
+        <span className="[&_svg]:size-4" style={{ color: "var(--brand-text)" }}>
           {c.icono}
         </span>
         <span className="text-sm font-semibold">{titulo}</span>
-        <span className="text-xs" style={{ color: 'var(--ink-faint)' }}>
+        <span className="text-xs" style={{ color: "var(--ink-faint)" }}>
           Opcional
         </span>
       </div>
@@ -105,25 +118,33 @@ export default function ExtremoRutaField({ clase, valor, onChange, soloLectura =
       {valor ? (
         <div
           className="flex flex-wrap items-center gap-3 rounded-xl border px-4 py-3"
-          style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)' }}
+          style={{
+            borderColor: "var(--hairline)",
+            background: "var(--glass-sunken)",
+          }}
         >
           <div className="min-w-0 flex-1">
-            <div className="truncate text-sm font-medium text-foreground">{valor.label}</div>
-            <div className="mt-0.5 text-xs tabular-nums" style={{ color: 'var(--ink-faint)' }}>
+            <div className="truncate text-sm font-medium text-foreground">
+              {valor.label}
+            </div>
+            <div
+              className="mt-0.5 text-xs tabular-nums"
+              style={{ color: "var(--ink-faint)" }}
+            >
               {valor.lat.toFixed(5)}, {valor.lng.toFixed(5)}
             </div>
           </div>
           {!soloLectura && (
             <div className="flex shrink-0 items-center gap-2">
-              <Button type="button" variant="outline" size="lg" onClick={abrir}>
+              <Button size="lg" type="button" variant="outline" onClick={abrir}>
                 <Pencil className="size-4" /> Cambiar
               </Button>
               <Button
+                aria-label={`Quitar ${titulo.toLowerCase()}`}
+                size="lg"
                 type="button"
                 variant="danger-ghost"
-                size="lg"
                 onClick={() => onChange(null)}
-                aria-label={`Quitar ${titulo.toLowerCase()}`}
               >
                 <X className="size-4" /> Quitar
               </Button>
@@ -133,13 +154,16 @@ export default function ExtremoRutaField({ clase, valor, onChange, soloLectura =
       ) : (
         <div
           className="flex flex-wrap items-center gap-3 rounded-xl border border-dashed px-4 py-3"
-          style={{ borderColor: 'var(--hairline)' }}
+          style={{ borderColor: "var(--hairline)" }}
         >
-          <p className="min-w-0 flex-1 text-sm" style={{ color: 'var(--ink-soft)' }}>
+          <p
+            className="min-w-0 flex-1 text-sm"
+            style={{ color: "var(--ink-soft)" }}
+          >
             {t(c.vacioKey, c.vacio)}
           </p>
           {!soloLectura && (
-            <Button type="button" variant="outline" size="lg" onClick={abrir}>
+            <Button size="lg" type="button" variant="outline" onClick={abrir}>
               <MapPin className="size-4" /> {t(c.accionKey, c.accion)}
             </Button>
           )}
@@ -147,39 +171,61 @@ export default function ExtremoRutaField({ clase, valor, onChange, soloLectura =
       )}
 
       <Modal
-        open={abierto}
-        onOpenChange={setAbierto}
-        size="lg"
-        icon={c.icono}
-        title={t(c.modalKey, c.modal)}
         description={t(c.ayudaKey, c.ayuda)}
         footer={
           <div className="flex w-full flex-wrap justify-end gap-2">
-            <Button type="button" variant="outline" size="lg" onClick={() => setAbierto(false)}>
+            <Button
+              size="lg"
+              type="button"
+              variant="outline"
+              onClick={() => setAbierto(false)}
+            >
               Cancelar
             </Button>
-            <Button type="button" variant="brand" size="lg" disabled={!borrador} onClick={confirmar}>
-              {t('ui.ExtremoRutaField.usarEstaUbicacion', 'Usar esta ubicación')}
+            <Button
+              disabled={!borrador}
+              size="lg"
+              type="button"
+              variant="brand"
+              onClick={confirmar}
+            >
+              {t(
+                "ui.ExtremoRutaField.usarEstaUbicacion",
+                "Usar esta ubicación",
+              )}
             </Button>
           </div>
         }
+        icon={c.icono}
+        open={abierto}
+        size="lg"
+        title={t(c.modalKey, c.modal)}
+        onOpenChange={setAbierto}
       >
         {/* Sólo se monta cuando el modal está abierto: un mapa que nadie ve
             sigue siendo un mapa facturado. */}
         {abierto && (
           <div className="space-y-3">
             <AddressAutocomplete
-              onAddressSelect={recoger}
-              onGeocodeResult={recoger}
-              defaultValue={valor?.label || ''}
+              defaultValue={valor?.label || ""}
               initialLat={valor?.lat}
               initialLng={valor?.lng}
-              placeholder={clase === 'origen' ? 'Buscar el punto de partida…' : 'Buscar el punto final…'}
               mapHeight="280px"
+              placeholder={
+                clase === "origen"
+                  ? "Buscar el punto de partida…"
+                  : "Buscar el punto final…"
+              }
+              onAddressSelect={recoger}
+              onGeocodeResult={recoger}
             />
             {borrador && (
-              <p className="text-xs tabular-nums" style={{ color: 'var(--ink-soft)' }}>
-                Se guardará: {borrador.label} ({borrador.lat.toFixed(5)}, {borrador.lng.toFixed(5)})
+              <p
+                className="text-xs tabular-nums"
+                style={{ color: "var(--ink-soft)" }}
+              >
+                Se guardará: {borrador.label} ({borrador.lat.toFixed(5)},{" "}
+                {borrador.lng.toFixed(5)})
               </p>
             )}
           </div>

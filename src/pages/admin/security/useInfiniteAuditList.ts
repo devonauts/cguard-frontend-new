@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+
 import { ApiService } from "@/services/api/apiService";
 
 type BuildParams = (offset: number, limit: number) => URLSearchParams;
@@ -46,6 +47,7 @@ export function useInfiniteAuditList<T>(opts: Options<T>): Result<T> {
 
   // Keep the latest buildParams without forcing `load` to change identity.
   const buildParamsRef = useRef(buildParams);
+
   buildParamsRef.current = buildParams;
 
   const load = useCallback(
@@ -61,18 +63,25 @@ export function useInfiniteAuditList<T>(opts: Options<T>): Result<T> {
 
       try {
         const r: any = await ApiService.get(`${endpoint}?${params.toString()}`);
+
         if (reqId !== reqIdRef.current) return; // a newer request superseded this one
         const rows: T[] = Array.isArray(r) ? r : (r?.rows ?? []);
-        const count: number = typeof r?.count === "number" ? r.count : rows.length;
+        const count: number =
+          typeof r?.count === "number" ? r.count : rows.length;
+
         setTotal(count);
         setItems((prev) => {
           const next = reset ? rows : [...prev, ...rows];
+
           itemsRef.current = next;
+
           return next;
         });
       } catch {
         if (reqId === reqIdRef.current && reset) {
-          setItems([]); itemsRef.current = []; setTotal(0);
+          setItems([]);
+          itemsRef.current = [];
+          setTotal(0);
         }
       } finally {
         // Only the CURRENT request may clear the shared flags — a superseded
@@ -99,12 +108,12 @@ export function useInfiniteAuditList<T>(opts: Options<T>): Result<T> {
     reqIdRef.current++;
     loadingRef.current = false;
     load(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 
   // Infinite scroll: load the next page when the sentinel comes into view.
   useEffect(() => {
     const el = sentinelRef.current;
+
     if (!el) return;
     const io = new IntersectionObserver(
       (entries) => {
@@ -112,9 +121,10 @@ export function useInfiniteAuditList<T>(opts: Options<T>): Result<T> {
       },
       { rootMargin: "300px" },
     );
+
     io.observe(el);
+
     return () => io.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [total]);
 
   const hasMore = items.length < total;

@@ -2,15 +2,23 @@ import { useEffect } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { useTranslation } from 'react-i18next';
-import { Modal } from "@/components/kit";
+import { useTranslation } from "react-i18next";
 import { IdCard } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Modal } from "@/components/kit";
+
 const schema = z.object({
-  name: z.string().min(1, 'Requerido'),
+  name: z.string().min(1, "Requerido"),
 });
 
 export type LicenseTypeDialogValues = z.infer<typeof schema>;
@@ -23,7 +31,13 @@ type Props = {
   onSubmit: (values: LicenseTypeDialogValues) => Promise<void> | void;
 };
 
-export default function LicenseTypeDialog({ open, onOpenChange, title, defaultValues, onSubmit }: Props) {
+export default function LicenseTypeDialog({
+  open,
+  onOpenChange,
+  title,
+  defaultValues,
+  onSubmit,
+}: Props) {
   const { t } = useTranslation();
   const form = useForm<LicenseTypeDialogValues>({
     resolver: zodResolver(schema),
@@ -41,32 +55,54 @@ export default function LicenseTypeDialog({ open, onOpenChange, title, defaultVa
 
   return (
     <Modal
-      open={open}
-      onOpenChange={onOpenChange}
+      description={t("licenseTypes.dialog.description", {
+        defaultValue: "Formulario para crear o editar un tipo de licencia.",
+      })}
       icon={<IdCard />}
-      title={title ?? t('licenseTypes.dialog.title.create', 'Nuevo Tipo de Licencia')}
-      description={t('licenseTypes.dialog.description', { defaultValue: 'Formulario para crear o editar un tipo de licencia.' })}
+      open={open}
+      title={
+        title ?? t("licenseTypes.dialog.title.create", "Nuevo Tipo de Licencia")
+      }
+      onOpenChange={onOpenChange}
     >
       <Form {...form}>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <FormField
             control={form.control}
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('licenseTypes.dialog.form.nameLabel', { defaultValue: 'Nombre del Tipo de Licencia' })}</FormLabel>
+                <FormLabel>
+                  {t("licenseTypes.dialog.form.nameLabel", {
+                    defaultValue: "Nombre del Tipo de Licencia",
+                  })}
+                </FormLabel>
                 <FormControl>
-                  <Input placeholder={t('licenseTypes.dialog.form.namePlaceholder', { defaultValue: 'Escribe un nombre' })} {...field} />
+                  <Input
+                    placeholder={t("licenseTypes.dialog.form.namePlaceholder", {
+                      defaultValue: "Escribe un nombre",
+                    })}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <div className="flex items-center justify-end gap-2 border-t pt-4" style={{ borderColor: 'var(--hairline)' }}>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              {t('licenseTypes.dialog.cancel', { defaultValue: 'Cancelar' })}
+          <div
+            className="flex items-center justify-end gap-2 border-t pt-4"
+            style={{ borderColor: "var(--hairline)" }}
+          >
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
+              {t("licenseTypes.dialog.cancel", { defaultValue: "Cancelar" })}
             </Button>
-            <Button type="submit" variant="brand" className="px-8">{t('licenseTypes.dialog.save', { defaultValue: 'Guardar' })}</Button>
+            <Button className="px-8" type="submit" variant="brand">
+              {t("licenseTypes.dialog.save", { defaultValue: "Guardar" })}
+            </Button>
           </div>
         </form>
       </Form>

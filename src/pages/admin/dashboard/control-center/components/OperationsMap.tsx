@@ -1,27 +1,59 @@
+import type { MapEntity, EntityKind } from "../types";
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import i18n from '@/i18n';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { AlertTriangle, Building2, Crosshair, Home, Shield, User, UserCog, X } from "lucide-react";
+import {
+  AlertTriangle,
+  Building2,
+  Crosshair,
+  Home,
+  Shield,
+  User,
+  UserCog,
+  X,
+} from "lucide-react";
+
+import { DEFAULT_PREFS, type DashboardPrefs } from "../prefs";
+import { iconInnerSvg } from "../iconRegistry";
+
+import {
+  agruparPorRejilla,
+  calcularCobertura,
+  radioDe,
+  type Cobertura,
+  type PuestoEstado,
+  type Racimo,
+} from "./OperationsMapCoverage";
+import {
+  globoDe,
+  globoDeRacimo,
+  pedirRastro,
+  telemetriaDe,
+  type MandoGlobo,
+  type Rastro,
+} from "./OperationsMapPopup";
+
+import i18n from "@/i18n";
 import { loadGoogleMaps } from "@/utils/loadGoogleMaps";
-import { estiloMapa, huella, pielDe, useMapPalette, type MapPalette } from "@/utils/mapTheme";
+import {
+  estiloMapa,
+  huella,
+  pielDe,
+  useMapPalette,
+  type MapPalette,
+} from "@/utils/mapTheme";
 import { chipPin, iconoDe, orbPin } from "@/utils/mapPins";
 import { crearMotorMapa, type MotorMapa } from "@/utils/mapMotion";
 import { useMapPopup } from "@/components/maps/MapPopup";
 import { useValorConRitmo } from "@/hooks/useValorConRitmo";
-import type { MapEntity, EntityKind } from "../types";
-import { DEFAULT_PREFS, type DashboardPrefs } from "../prefs";
-import { iconInnerSvg } from "../iconRegistry";
-import {
-  agruparPorRejilla, calcularCobertura, radioDe,
-  type Cobertura, type PuestoEstado, type Racimo,
-} from "./OperationsMapCoverage";
-import {
-  globoDe, globoDeRacimo, pedirRastro, telemetriaDe,
-  type MandoGlobo, type Rastro,
-} from "./OperationsMapPopup";
+
 import "@/styles/map.css";
-import { guardarBloqueDeEmpresa, leerBloqueDeEmpresa, cambioLocalReciente } from "@/lib/appearanceSync";
+import {
+  guardarBloqueDeEmpresa,
+  leerBloqueDeEmpresa,
+  cambioLocalReciente,
+} from "@/lib/appearanceSync";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -68,7 +100,14 @@ const TOPE_GEOCERCAS = 250;
 
 /* ── Capas ────────────────────────────────────────────────────────────────── */
 
-const ORDEN_CAPAS: EntityKind[] = ["station", "guard", "supervisor", "client", "incident", "tenant"];
+const ORDEN_CAPAS: EntityKind[] = [
+  "station",
+  "guard",
+  "supervisor",
+  "client",
+  "incident",
+  "tenant",
+];
 
 const CAPA_LABEL: Record<EntityKind, string> = {
   station: "Puestos",
@@ -89,16 +128,26 @@ const CAPA_ICONO: Record<EntityKind, typeof Shield> = {
 };
 
 type Capas = Record<EntityKind, boolean>;
-const CAPAS_TODAS: Capas = { station: true, guard: true, supervisor: true, client: true, incident: true, tenant: true };
+const CAPAS_TODAS: Capas = {
+  station: true,
+  guard: true,
+  supervisor: true,
+  client: true,
+  incident: true,
+  tenant: true,
+};
 
 // Caché de pintado; la verdad son las capas guardadas en la cuenta
 // (`users.appearance.mapLayers[tenantId]`), que te siguen a otro navegador.
-const CLAVE_CAPAS = () => `cc.mapaCapas.${localStorage.getItem("tenantId") || "default"}`;
+const CLAVE_CAPAS = () =>
+  `cc.mapaCapas.${localStorage.getItem("tenantId") || "default"}`;
 
 function leerCapas(): Capas {
   try {
     const raw = localStorage.getItem(CLAVE_CAPAS());
+
     if (!raw) return { ...CAPAS_TODAS };
+
     return { ...CAPAS_TODAS, ...(JSON.parse(raw) as Partial<Capas>) };
   } catch {
     return { ...CAPAS_TODAS };
@@ -110,17 +159,28 @@ function leerCapas(): Capas {
 /** Color de la cobertura — semántico, nunca el acento: un puesto sin cubrir no
  *  puede cambiar de color porque alguien eligió otro acento. */
 function colorCobertura(c: Cobertura, p: MapPalette): string {
-  return c === "cubierto" ? p.ok : c === "riesgo" ? p.warn : c === "sinCubrir" ? p.bad : p.inkFaint;
+  return c === "cubierto"
+    ? p.ok
+    : c === "riesgo"
+      ? p.warn
+      : c === "sinCubrir"
+        ? p.bad
+        : p.inkFaint;
 }
 
 function colorEstado(s: MapEntity["status"], p: MapPalette): string {
   switch (s) {
-    case "online": return p.ok;
-    case "patrol": return p.brand;
-    case "delayed": return p.warn;
+    case "online":
+      return p.ok;
+    case "patrol":
+      return p.brand;
+    case "delayed":
+      return p.warn;
     case "incident":
-    case "emergency": return p.bad;
-    default: return p.inkFaint;
+    case "emergency":
+      return p.bad;
+    default:
+      return p.inkFaint;
   }
 }
 
@@ -132,30 +192,47 @@ function colorEstado(s: MapEntity["status"], p: MapPalette): string {
  *      y, si se respetaran, el mapa seguiría ignorando el acento del CRM,
  *   3. el token del sistema (semántico o acento).
  */
-function colorEntidad(e: MapEntity, prefs: DashboardPrefs, pal: MapPalette, cob?: Cobertura): string {
+function colorEntidad(
+  e: MapEntity,
+  prefs: DashboardPrefs,
+  pal: MapPalette,
+  cob?: Cobertura,
+): string {
   const propio = e.meta?.color;
+
   if (typeof propio === "string" && propio.trim()) return propio;
 
   const porTipo = prefs.pinColors?.[e.kind];
+
   if (porTipo && porTipo !== DEFAULT_PREFS.pinColors[e.kind]) return porTipo;
 
   const porEstado = prefs.statusColors?.[e.status];
-  if (porEstado && porEstado !== DEFAULT_PREFS.statusColors[e.status]) return porEstado;
+
+  if (porEstado && porEstado !== DEFAULT_PREFS.statusColors[e.status])
+    return porEstado;
 
   if (e.kind === "station") return colorCobertura(cob ?? "sinDatos", pal);
   if (e.kind === "tenant") return pal.brand;
   // Un cliente es CONTEXTO: si llevara verde o rojo competiría con la cobertura
   // de los puestos, que es lo único que de verdad hay que mirar.
   if (e.kind === "client") return pal.inkSoft;
-  if (e.kind === "supervisor") return e.status === "patrol" || e.status === "online" ? pal.info : colorEstado(e.status, pal);
+  if (e.kind === "supervisor")
+    return e.status === "patrol" || e.status === "online"
+      ? pal.info
+      : colorEstado(e.status, pal);
   if (e.kind === "incident") return pal.bad;
+
   return colorEstado(e.status, pal);
 }
 
 /** Estilo del mapa. «Estándar» en claro conserva las teselas de Google — es lo
  *  que el usuario pidió al elegirlo; el resto usa el estilo acromático propio. */
-function estiloPara(pal: MapPalette, mapTheme: DashboardPrefs["mapTheme"]): any[] | undefined {
+function estiloPara(
+  pal: MapPalette,
+  mapTheme: DashboardPrefs["mapTheme"],
+): any[] | undefined {
   if (mapTheme === "roadmap" && !pal.oscuro) return undefined;
+
   return estiloMapa(pal);
 }
 
@@ -177,15 +254,24 @@ const VIVO = (k: EntityKind) => k === "guard" || k === "supervisor";
 function senalViva(e: MapEntity, umbralMin: number): boolean {
   if (e.status === "offline") return false;
   const iso = e.meta?.lastSeenAt || e.meta?.punchInTime;
+
   if (!iso) return false;
   const min = (Date.now() - new Date(iso).getTime()) / 60000;
+
   return Number.isFinite(min) && min <= Math.max(2, umbralMin);
 }
 
 export function OperationsMap({
-  entities, prefs, height = 460, onSelect, defaultCenter, hud = true,
+  entities,
+  prefs,
+  height = 460,
+  onSelect,
+  defaultCenter,
+  hud = true,
 }: {
-  entities: MapEntity[]; prefs: DashboardPrefs; height?: number;
+  entities: MapEntity[];
+  prefs: DashboardPrefs;
+  height?: number;
   onSelect?: (e: MapEntity) => void;
   defaultCenter?: { lat: number; lng: number; zoom?: number };
   /** Paneles de cristal flotantes (estado en vivo + leyenda). */
@@ -212,7 +298,10 @@ export function OperationsMap({
   const [seguido, setSeguido] = useState<string | null>(null);
   const [rastroDe, setRastroDe] = useState<string | null>(null);
   const seguidoRef = useRef<string | null>(null);
-  useEffect(() => { seguidoRef.current = seguido; }, [seguido]);
+
+  useEffect(() => {
+    seguidoRef.current = seguido;
+  }, [seguido]);
 
   const pal = useMapPalette(prefs.mapTheme === "night" ? "noche" : "auto");
   const piel = useMemo(() => pielDe(pal), [pal]);
@@ -220,7 +309,9 @@ export function OperationsMap({
   // `useMapPopup` devuelve un objeto nuevo en cada render; se desestructura para
   // quedarse con `open`, que SÍ es estable. Si el objeto entero entrara en las
   // dependencias del efecto, abrir un globo volvería a montar los marcadores.
-  const { open: abrirPop, portal: portalGlobo } = useMapPopup(() => mapRef.current);
+  const { open: abrirPop, portal: portalGlobo } = useMapPopup(
+    () => mapRef.current,
+  );
 
   /* ── LA COBERTURA NO NECESITA IR A 33 Hz ──────────────────────────────────
      `calcularCobertura` es O(puestos × personas) con haversine o
@@ -248,16 +339,29 @@ export function OperationsMap({
 
   const porTipo = useMemo(() => {
     const m = {} as Record<EntityKind, number>;
-    ORDEN_CAPAS.forEach((k) => { m[k] = 0; });
-    entities.forEach((e) => { m[e.kind] = (m[e.kind] ?? 0) + 1; });
+
+    ORDEN_CAPAS.forEach((k) => {
+      m[k] = 0;
+    });
+    entities.forEach((e) => {
+      m[e.kind] = (m[e.kind] ?? 0) + 1;
+    });
+
     return m;
   }, [entities]);
 
-  const visibles = useMemo(() => entities.filter((e) => capas[e.kind] !== false), [entities, capas]);
+  const visibles = useMemo(
+    () => entities.filter((e) => capas[e.kind] !== false),
+    [entities, capas],
+  );
 
   /** Las sedes de cliente se agrupan cuando se pisan; el resto va suelto. */
   const racimos = useMemo(
-    () => agruparPorRejilla(visibles.filter((e) => e.kind === "client"), zoom),
+    () =>
+      agruparPorRejilla(
+        visibles.filter((e) => e.kind === "client"),
+        zoom,
+      ),
     [visibles, zoom],
   );
 
@@ -266,9 +370,12 @@ export function OperationsMap({
     /* Sobre la MISMA foto que la cobertura: contar los puestos de `entities` y
        los cubiertos de una cobertura de hace medio segundo mezclaría dos
        instantes, y el porcentaje podría pasar de 100 %. */
-    const puestos = entidadesParaCobertura.filter((e) => e.kind === "station").length;
+    const puestos = entidadesParaCobertura.filter(
+      (e) => e.kind === "station",
+    ).length;
     let cubiertos = 0;
     let sinDatos = 0;
+
     cobertura.forEach((c) => {
       if (c.estado === "cubierto" || c.estado === "riesgo") cubiertos += 1;
       if (c.estado === "sinDatos") sinDatos += 1;
@@ -277,31 +384,44 @@ export function OperationsMap({
     // afirmar que no hay nadie en ningún puesto, y lo cierto es que no se sabe.
     const medible = puestos - sinDatos;
     const pct = medible > 0 ? Math.round((cubiertos / medible) * 100) : null;
+
     return {
       puestos,
       vigilantes: porTipo.guard ?? 0,
       supervisores: porTipo.supervisor ?? 0,
       incidentes: porTipo.incident ?? 0,
-      cubiertos, sinDatos, pct,
+      cubiertos,
+      sinDatos,
+      pct,
     };
   }, [entidadesParaCobertura, cobertura, porTipo]);
 
   // Las capas guardadas en la cuenta ganan a la caché de este navegador.
   useEffect(() => {
     let vivo = true;
+
     if (cambioLocalReciente()) return; // ver appearanceSync
     void leerBloqueDeEmpresa("mapLayers").then((guardadas) => {
       if (!vivo || !guardadas) return;
       setCapas({ ...CAPAS_TODAS, ...(guardadas as Partial<Capas>) });
     });
-    return () => { vivo = false; };
+
+    return () => {
+      vivo = false;
+    };
   }, []);
 
   const alternarCapa = useCallback((k: EntityKind) => {
     setCapas((prev) => {
       const next = { ...prev, [k]: !prev[k] };
-      try { localStorage.setItem(CLAVE_CAPAS(), JSON.stringify(next)); } catch { /* almacenamiento lleno */ }
+
+      try {
+        localStorage.setItem(CLAVE_CAPAS(), JSON.stringify(next));
+      } catch {
+        /* almacenamiento lleno */
+      }
       void guardarBloqueDeEmpresa("mapLayers", next);
+
       return next;
     });
   }, []);
@@ -310,108 +430,169 @@ export function OperationsMap({
 
   /** Sólo borra la polilínea del mapa; el estado lo lleva quien llama. */
   const quitarLinea = useCallback(() => {
-    try { rastroLineaRef.current?.setMap(null); } catch { /* ya no existe */ }
+    try {
+      rastroLineaRef.current?.setMap(null);
+    } catch {
+      /* ya no existe */
+    }
     rastroLineaRef.current = null;
   }, []);
 
-  const limpiarRastro = useCallback(() => { quitarLinea(); setRastroDe(null); }, [quitarLinea]);
+  const limpiarRastro = useCallback(() => {
+    quitarLinea();
+    setRastroDe(null);
+  }, [quitarLinea]);
 
-  const mando: MandoGlobo = useMemo(() => ({
-    irA: (ruta) => navigate(ruta),
-    centrar: (e) => motorRef.current?.camara.volarA({ lat: e.lat, lng: e.lng }, { zoom: Math.max(zoom, 16) }),
-    seguir: (e) => {
-      setSeguido((prev) => (prev === e.id ? null : e.id));
-      motorRef.current?.camara.volarA({ lat: e.lat, lng: e.lng }, { zoom: Math.max(zoom, 16) });
-    },
-    verRastro: (e) => {
-      const id = e.meta?.entityId || e.id;
-      pedirRastro(String(id), cacheRastroRef.current).then((r) => {
-        const g = (window as any).google;
-        if (!g || !mapRef.current) return;
-        const puntos = (r?.puntos ?? []).map((p) => ({ lat: p.lat, lng: p.lng }));
-        quitarLinea();
-        if (puntos.length < 2) { setRastroDe(null); return; }
-        rastroLineaRef.current = new g.maps.Polyline({
-          map: mapRef.current,
-          path: puntos,
-          // El rastro es una RUTA, no un estado: va en el acento, que es el color
-          // con el que el CRM dibuja recorridos, y por debajo de las chinchetas.
-          strokeColor: pal.brand,
-          strokeOpacity: 0.9,
-          strokeWeight: 3,
-          zIndex: 50,
+  const mando: MandoGlobo = useMemo(
+    () => ({
+      irA: (ruta) => navigate(ruta),
+      centrar: (e) =>
+        motorRef.current?.camara.volarA(
+          { lat: e.lat, lng: e.lng },
+          { zoom: Math.max(zoom, 16) },
+        ),
+      seguir: (e) => {
+        setSeguido((prev) => (prev === e.id ? null : e.id));
+        motorRef.current?.camara.volarA(
+          { lat: e.lat, lng: e.lng },
+          { zoom: Math.max(zoom, 16) },
+        );
+      },
+      verRastro: (e) => {
+        const id = e.meta?.entityId || e.id;
+
+        pedirRastro(String(id), cacheRastroRef.current).then((r) => {
+          const g = (window as any).google;
+
+          if (!g || !mapRef.current) return;
+          const puntos = (r?.puntos ?? []).map((p) => ({
+            lat: p.lat,
+            lng: p.lng,
+          }));
+
+          quitarLinea();
+          if (puntos.length < 2) {
+            setRastroDe(null);
+
+            return;
+          }
+          rastroLineaRef.current = new g.maps.Polyline({
+            map: mapRef.current,
+            path: puntos,
+            // El rastro es una RUTA, no un estado: va en el acento, que es el color
+            // con el que el CRM dibuja recorridos, y por debajo de las chinchetas.
+            strokeColor: pal.brand,
+            strokeOpacity: 0.9,
+            strokeWeight: 3,
+            zIndex: 50,
+          });
+          setRastroDe(e.id);
+          motorRef.current?.camara.encuadrar(puntos, {
+            padding: 72,
+            zoomMax: 17,
+          });
         });
-        setRastroDe(e.id);
-        motorRef.current?.camara.encuadrar(puntos, { padding: 72, zoomMax: 17 });
-      });
-    },
-    abrirRacimo: (r) => motorRef.current?.camara.encuadrar(
-      r.miembros.map((m) => ({ lat: m.lat, lng: m.lng })),
-      { padding: 80, zoomMax: 17 },
-    ),
-    siguiendoId: seguido,
-  }), [navigate, zoom, seguido, pal.brand, quitarLinea]);
+      },
+      abrirRacimo: (r) =>
+        motorRef.current?.camara.encuadrar(
+          r.miembros.map((m) => ({ lat: m.lat, lng: m.lng })),
+          { padding: 80, zoomMax: 17 },
+        ),
+      siguiendoId: seguido,
+    }),
+    [navigate, zoom, seguido, pal.brand, quitarLinea],
+  );
 
-  const abrirGlobo = useCallback((e: MapEntity, marcador: any, cob?: PuestoEstado) => {
-    const base = globoDe(e, cob, mando);
-    // El detalle de un vigilante (batería, velocidad, precisión reales) se pide
-    // AL PULSAR, nunca en el sondeo: es una consulta por clic, no por segundo.
-    // Nada de esto se le pide al servidor en modo demostración: sus
-    // identificadores no existen y sólo generarían 404 al abrir cada globo.
-    const idCrudo = e.id.startsWith("demo-") ? null : e.meta?.entityId;
-    const cargador = e.kind === "guard" && idCrudo
-      ? async () => telemetriaDe(await pedirRastro(String(idCrudo), cacheRastroRef.current), base)
-      : undefined;
-    abrirPop(marcador, base, cargador);
-    onSelect?.(e);
-  }, [mando, onSelect, abrirPop]);
+  const abrirGlobo = useCallback(
+    (e: MapEntity, marcador: any, cob?: PuestoEstado) => {
+      const base = globoDe(e, cob, mando);
+      // El detalle de un vigilante (batería, velocidad, precisión reales) se pide
+      // AL PULSAR, nunca en el sondeo: es una consulta por clic, no por segundo.
+      // Nada de esto se le pide al servidor en modo demostración: sus
+      // identificadores no existen y sólo generarían 404 al abrir cada globo.
+      const idCrudo = e.id.startsWith("demo-") ? null : e.meta?.entityId;
+      const cargador =
+        e.kind === "guard" && idCrudo
+          ? async () =>
+              telemetriaDe(
+                await pedirRastro(String(idCrudo), cacheRastroRef.current),
+                base,
+              )
+          : undefined;
+
+      abrirPop(marcador, base, cargador);
+      onSelect?.(e);
+    },
+    [mando, onSelect, abrirPop],
+  );
 
   /* ── Arranque del mapa ─────────────────────────────────────────────────── */
 
   useEffect(() => {
     let cancelled = false;
-    loadGoogleMaps().then(() => {
-      if (cancelled || !ref.current) return;
-      const g = (window as any).google;
-      const first = entities[0];
-      // Default center priority: resolved company/IP center → first entity → fallback.
-      const initCenter = defaultCenter
-        ? { lat: defaultCenter.lat, lng: defaultCenter.lng }
-        : first ? { lat: first.lat, lng: first.lng } : { lat: -0.18, lng: -78.46 };
-      if (defaultCenter) appliedCenterRef.current = `${defaultCenter.lat},${defaultCenter.lng},${defaultCenter.zoom ?? 12}`;
-      mapRef.current = new g.maps.Map(ref.current, {
-        center: initCenter,
-        zoom: defaultCenter?.zoom ?? 12, disableDefaultUI: true, gestureHandling: "greedy", clickableIcons: false,
-        styles: estiloPara(pal, prefs.mapTheme),
-        backgroundColor: pal.tierra,
-      });
-      motorRef.current = crearMotorMapa(mapRef.current);
 
-      // El zoom SÓLO se publica a React cuando cambia de entero: con el valor
-      // continuo, cada muesca de la rueda volvería a montar los marcadores.
-      const revisarZoom = () => {
-        const z = Math.round(mapRef.current?.getZoom?.() ?? 12);
-        setZoom((previo) => (previo === z ? previo : z));
-      };
-      mapRef.current.addListener("idle", revisarZoom);
-      // Arrastrar es tomar el mando: seguir a alguien y que la cámara te pelee
-      // el gesto es la forma más rápida de que el mapa se sienta roto.
-      mapRef.current.addListener("dragstart", () => {
-        motorRef.current?.camara.detener();
-        if (seguidoRef.current) setSeguido(null);
-      });
-      revisarZoom();
-      setReady(true);
-    }).catch((e) => setErr(e?.message || "No se pudo cargar el mapa"));
-    return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    loadGoogleMaps()
+      .then(() => {
+        if (cancelled || !ref.current) return;
+        const g = (window as any).google;
+        const first = entities[0];
+        // Default center priority: resolved company/IP center → first entity → fallback.
+        const initCenter = defaultCenter
+          ? { lat: defaultCenter.lat, lng: defaultCenter.lng }
+          : first
+            ? { lat: first.lat, lng: first.lng }
+            : { lat: -0.18, lng: -78.46 };
+
+        if (defaultCenter)
+          appliedCenterRef.current = `${defaultCenter.lat},${defaultCenter.lng},${defaultCenter.zoom ?? 12}`;
+        mapRef.current = new g.maps.Map(ref.current, {
+          center: initCenter,
+          zoom: defaultCenter?.zoom ?? 12,
+          disableDefaultUI: true,
+          gestureHandling: "greedy",
+          clickableIcons: false,
+          styles: estiloPara(pal, prefs.mapTheme),
+          backgroundColor: pal.tierra,
+        });
+        motorRef.current = crearMotorMapa(mapRef.current);
+
+        // El zoom SÓLO se publica a React cuando cambia de entero: con el valor
+        // continuo, cada muesca de la rueda volvería a montar los marcadores.
+        const revisarZoom = () => {
+          const z = Math.round(mapRef.current?.getZoom?.() ?? 12);
+
+          setZoom((previo) => (previo === z ? previo : z));
+        };
+
+        mapRef.current.addListener("idle", revisarZoom);
+        // Arrastrar es tomar el mando: seguir a alguien y que la cámara te pelee
+        // el gesto es la forma más rápida de que el mapa se sienta roto.
+        mapRef.current.addListener("dragstart", () => {
+          motorRef.current?.camara.detener();
+          if (seguidoRef.current) setSeguido(null);
+        });
+        revisarZoom();
+        setReady(true);
+      })
+      .catch((e) => setErr(e?.message || "No se pudo cargar el mapa"));
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Al desmontar: el motor baja sus animaciones y sus capas con él.
-  useEffect(() => () => {
-    try { motorRef.current?.destruir(); } catch { /* el mapa ya se fue */ }
-    motorRef.current = null;
-  }, []);
+  useEffect(
+    () => () => {
+      try {
+        motorRef.current?.destruir();
+      } catch {
+        /* el mapa ya se fue */
+      }
+      motorRef.current = null;
+    },
+    [],
+  );
 
   // Re-estilar en vivo cuando cambia el tema, el acento o el ajuste del usuario.
   useEffect(() => {
@@ -429,9 +610,13 @@ export function OperationsMap({
     if (!ready || !mapRef.current || !defaultCenter) return;
     if ((mapRef.current as any).__fitted) return;
     const sig = `${defaultCenter.lat},${defaultCenter.lng},${defaultCenter.zoom ?? 12}`;
+
     if (appliedCenterRef.current === sig) return;
     appliedCenterRef.current = sig;
-    mapRef.current.setCenter({ lat: defaultCenter.lat, lng: defaultCenter.lng });
+    mapRef.current.setCenter({
+      lat: defaultCenter.lat,
+      lng: defaultCenter.lng,
+    });
     if (defaultCenter.zoom) mapRef.current.setZoom(defaultCenter.zoom);
   }, [defaultCenter, ready]);
 
@@ -463,32 +648,57 @@ export function OperationsMap({
 
       // El latido de un vigilante lo pone el motor (DOM, con tope): si además
       // lo llevara el SVG habría dos halos sobre la misma chincheta.
-      const late = !enMovimiento && (cob?.estado === "riesgo" || e.status === "emergency" || e.status === "incident");
+      const late =
+        !enMovimiento &&
+        (cob?.estado === "riesgo" ||
+          e.status === "emergency" ||
+          e.status === "incident");
 
       const asset = conFicha
         ? chipPin({
             etiqueta: e.label,
-            cifra: e.kind === "station" ? cob?.n ?? 0 : undefined,
-            color, glifo, vivo: late, piel, version,
+            cifra: e.kind === "station" ? (cob?.n ?? 0) : undefined,
+            color,
+            glifo,
+            vivo: late,
+            piel,
+            version,
           })
         : orbPin({
-            color, glifo, vivo: late, piel, version,
+            color,
+            glifo,
+            vivo: late,
+            piel,
+            version,
             tamano: e.kind === "guard" || e.kind === "client" ? "sm" : "md",
             rumbo: enMovimiento ? rumbosRef.current[e.id] : undefined,
           });
 
       const icon = iconoDe(g, asset);
-      const zIndex = e.kind === "incident" ? 900
-        : e.kind === "supervisor" ? 700
-        : e.kind === "guard" ? 600
-        : e.kind === "tenant" ? 500
-        : e.kind === "station" ? 400
-        : 200;
+      const zIndex =
+        e.kind === "incident"
+          ? 900
+          : e.kind === "supervisor"
+            ? 700
+            : e.kind === "guard"
+              ? 600
+              : e.kind === "tenant"
+                ? 500
+                : e.kind === "station"
+                  ? 400
+                  : 200;
 
       let m = markersRef.current[e.id];
       const nuevo = !m;
+
       if (!m) {
-        m = new g.maps.Marker({ map: mapRef.current, position: { lat: e.lat, lng: e.lng }, icon, title: e.label, zIndex });
+        m = new g.maps.Marker({
+          map: mapRef.current,
+          position: { lat: e.lat, lng: e.lng },
+          icon,
+          title: e.label,
+          zIndex,
+        });
         markersRef.current[e.id] = m;
       } else {
         m.setIcon(icon);
@@ -500,41 +710,66 @@ export function OperationsMap({
       // entre ping y ping. Dos manos escribiendo la misma posición dan tirones.
       if (enMovimiento && motor) {
         vivos.add(e.id);
-        motor.seguir(e.id, m, { lat: e.lat, lng: e.lng }, {
-          duracion: "auto",
-          rumbo: true,
-          // Por debajo de esto el GPS es temblor, no marcha: sin el umbral la
-          // proa gira sola con el vigilante parado en la garita.
-          minMetrosRumbo: 4,
-          saltar: nuevo,
-          alRumbo: (grados) => {
-            rumbosRef.current[e.id] = grados;
-            // El rumbo llega cuantizado a 15°: pedir el icono aquí es barato
-            // (24 variantes, todas cacheadas en `mapPins`), no por fotograma.
-            if (zoom < ZOOM_FICHA_PERSONA || e.kind === "guard") {
-              m.setIcon(iconoDe(g, orbPin({
-                color, glifo, vivo: false, piel, version,
-                tamano: e.kind === "guard" ? "sm" : "md",
-                rumbo: grados,
-              })));
-            }
+        motor.seguir(
+          e.id,
+          m,
+          { lat: e.lat, lng: e.lng },
+          {
+            duracion: "auto",
+            rumbo: true,
+            // Por debajo de esto el GPS es temblor, no marcha: sin el umbral la
+            // proa gira sola con el vigilante parado en la garita.
+            minMetrosRumbo: 4,
+            saltar: nuevo,
+            alRumbo: (grados) => {
+              rumbosRef.current[e.id] = grados;
+              // El rumbo llega cuantizado a 15°: pedir el icono aquí es barato
+              // (24 variantes, todas cacheadas en `mapPins`), no por fotograma.
+              if (zoom < ZOOM_FICHA_PERSONA || e.kind === "guard") {
+                m.setIcon(
+                  iconoDe(
+                    g,
+                    orbPin({
+                      color,
+                      glifo,
+                      vivo: false,
+                      piel,
+                      version,
+                      tamano: e.kind === "guard" ? "sm" : "md",
+                      rumbo: grados,
+                    }),
+                  ),
+                );
+              }
+            },
           },
-        });
+        );
         // El latido SÓLO por señal fresca (ver `senalViva`): quien lleva media
         // hora mudo se queda quieto, y así el que late significa algo.
-        motor.latido(e.id, { lat: e.lat, lng: e.lng }, {
-          activo: senalViva(e, prefs.offlineDeviceWarningMin),
-          tono: e.status === "emergency" || e.status === "incident" ? "malo"
-            : e.status === "delayed" ? "aviso"
-            : e.kind === "supervisor" ? "info" : "bien",
-        });
+        motor.latido(
+          e.id,
+          { lat: e.lat, lng: e.lng },
+          {
+            activo: senalViva(e, prefs.offlineDeviceWarningMin),
+            tono:
+              e.status === "emergency" || e.status === "incident"
+                ? "malo"
+                : e.status === "delayed"
+                  ? "aviso"
+                  : e.kind === "supervisor"
+                    ? "info"
+                    : "bien",
+          },
+        );
       } else {
         m.setPosition({ lat: e.lat, lng: e.lng });
       }
 
       // Una emergencia o un incidente NUEVO merecen una onda: es un evento, y
       // se anuncia UNA vez (el conjunto recuerda cuáles ya sonaron).
-      const gritar = e.status === "emergency" || (e.kind === "incident" && nuevo);
+      const gritar =
+        e.status === "emergency" || (e.kind === "incident" && nuevo);
+
       if (gritar && motor && !anunciadosRef.current.has(e.id)) {
         anunciadosRef.current.add(e.id);
         motor.onda({ lat: e.lat, lng: e.lng }, { tono: "malo", anillos: 2 });
@@ -549,21 +784,43 @@ export function OperationsMap({
       any = true;
     };
 
-    visibles.forEach((e) => { if (e.kind !== "client") pintar(e); });
+    visibles.forEach((e) => {
+      if (e.kind !== "client") pintar(e);
+    });
 
     // ── Sedes de cliente: sueltas o agrupadas ──
     racimos.forEach((r: Racimo) => {
-      if (r.miembros.length === 1) { pintar(r.miembros[0]); return; }
+      if (r.miembros.length === 1) {
+        pintar(r.miembros[0]);
+
+        return;
+      }
       seen.add(r.id);
       const color = pal.inkSoft;
       const asset = chipPin({
-        etiqueta: i18n.t('controlCenter.map.sedes', { count: r.miembros.length, defaultValue: '{{count}} sedes' }),
+        etiqueta: i18n.t("controlCenter.map.sedes", {
+          count: r.miembros.length,
+          defaultValue: "{{count}} sedes",
+        }),
         cifra: r.miembros.length,
-        color, glifo: iconInnerSvg(prefs.pinIcons.client), piel, version,
+        color,
+        glifo: iconInnerSvg(prefs.pinIcons.client),
+        piel,
+        version,
       });
       let m = markersRef.current[r.id];
+
       if (!m) {
-        m = new g.maps.Marker({ map: mapRef.current, position: { lat: r.lat, lng: r.lng }, icon: iconoDe(g, asset), title: i18n.t('controlCenter.map.sedes', { count: r.miembros.length, defaultValue: '{{count}} sedes' }), zIndex: 180 });
+        m = new g.maps.Marker({
+          map: mapRef.current,
+          position: { lat: r.lat, lng: r.lng },
+          icon: iconoDe(g, asset),
+          title: i18n.t("controlCenter.map.sedes", {
+            count: r.miembros.length,
+            defaultValue: "{{count}} sedes",
+          }),
+          zIndex: 180,
+        });
         markersRef.current[r.id] = m;
       } else {
         m.setPosition({ lat: r.lat, lng: r.lng });
@@ -579,6 +836,7 @@ export function OperationsMap({
     // Se dibujan sólo con zoom suficiente: a escala de ciudad son manchas que
     // tapan la geografía y no dicen nada.
     const cercasVivas = new Set<string>();
+
     if (geocercas && zoom >= ZOOM_GEOCERCA) {
       visibles
         .filter((e) => e.kind === "station" && !e.meta?.isMobile)
@@ -588,26 +846,49 @@ export function OperationsMap({
           const color = colorCobertura(cob?.estado ?? "sinDatos", pal);
           const poly = e.meta?.geofencePolygon;
           const clave = `${e.id}:${poly ? "p" : "c"}`;
+
           cercasVivas.add(clave);
           let c = cercasRef.current[clave];
           const opciones = {
-            strokeColor: color, strokeOpacity: 0.55, strokeWeight: 1.25,
-            fillColor: color, fillOpacity: 0.1, clickable: false, zIndex: 1,
+            strokeColor: color,
+            strokeOpacity: 0.55,
+            strokeWeight: 1.25,
+            fillColor: color,
+            fillOpacity: 0.1,
+            clickable: false,
+            zIndex: 1,
           };
+
           if (!c) {
             c = poly
-              ? new g.maps.Polygon({ ...opciones, map: mapRef.current, paths: poly })
-              : new g.maps.Circle({ ...opciones, map: mapRef.current, center: { lat: e.lat, lng: e.lng }, radius: radioDe(e) });
+              ? new g.maps.Polygon({
+                  ...opciones,
+                  map: mapRef.current,
+                  paths: poly,
+                })
+              : new g.maps.Circle({
+                  ...opciones,
+                  map: mapRef.current,
+                  center: { lat: e.lat, lng: e.lng },
+                  radius: radioDe(e),
+                });
             cercasRef.current[clave] = c;
           } else {
             c.setOptions(opciones);
-            if (!poly) { c.setCenter({ lat: e.lat, lng: e.lng }); c.setRadius(radioDe(e)); }
+            if (!poly) {
+              c.setCenter({ lat: e.lat, lng: e.lng });
+              c.setRadius(radioDe(e));
+            }
           }
         });
     }
     Object.keys(cercasRef.current).forEach((k) => {
       if (cercasVivas.has(k)) return;
-      try { cercasRef.current[k].setMap(null); } catch { /* ya desmontada */ }
+      try {
+        cercasRef.current[k].setMap(null);
+      } catch {
+        /* ya desmontada */
+      }
       delete cercasRef.current[k];
     });
 
@@ -630,7 +911,10 @@ export function OperationsMap({
     if (any && !(mapRef.current as any).__fitted) {
       if (visibles.length > 1) {
         motor
-          ? motor.camara.encuadrar(visibles.map((e) => ({ lat: e.lat, lng: e.lng })), { padding: 64, zoomMax: 16 })
+          ? motor.camara.encuadrar(
+              visibles.map((e) => ({ lat: e.lat, lng: e.lng })),
+              { padding: 64, zoomMax: 16 },
+            )
           : mapRef.current.fitBounds(bounds, 64);
       } else {
         mapRef.current.setCenter(bounds.getCenter());
@@ -638,30 +922,55 @@ export function OperationsMap({
       }
       (mapRef.current as any).__fitted = true;
     }
-  }, [visibles, racimos, prefs, ready, pal, piel, version, zoom, cobertura, geocercas, abrirGlobo, abrirPop, mando]);
+  }, [
+    visibles,
+    racimos,
+    prefs,
+    ready,
+    pal,
+    piel,
+    version,
+    zoom,
+    cobertura,
+    geocercas,
+    abrirGlobo,
+    abrirPop,
+    mando,
+  ]);
 
   /* ── Seguimiento ───────────────────────────────────────────────────────── */
 
   useEffect(() => {
     if (!seguido || !motorRef.current) return;
     const e = entities.find((x) => x.id === seguido);
+
     // Si a quien se seguía deja de llegar (fichó salida), se suelta el mando en
     // vez de dejar la cámara clavada en su última posición.
-    if (!e) { setSeguido(null); return; }
+    if (!e) {
+      setSeguido(null);
+
+      return;
+    }
     motorRef.current.camara.volarA({ lat: e.lat, lng: e.lng });
   }, [entities, seguido]);
 
   const seguidoNombre = useMemo(
-    () => (seguido ? entities.find((e) => e.id === seguido)?.label ?? null : null),
+    () =>
+      seguido ? (entities.find((e) => e.id === seguido)?.label ?? null) : null,
     [entities, seguido],
   );
 
   if (err) {
     return (
-      <div className="grid place-items-center text-center text-sm text-muted-foreground" style={{ height }}>
+      <div
+        className="grid place-items-center text-center text-sm text-muted-foreground"
+        style={{ height }}
+      >
         <div>
           <p>{err}</p>
-          <p className="mt-1 text-xs">Verifica <code>VITE_GOOGLE_MAPS_API_KEY</code>.</p>
+          <p className="mt-1 text-xs">
+            Verifica <code>VITE_GOOGLE_MAPS_API_KEY</code>.
+          </p>
         </div>
       </div>
     );
@@ -680,79 +989,115 @@ export function OperationsMap({
           Con el mapa vacío no se pinta: un riel de un solo botón sobre un mapa
           sin nada que filtrar es un mando que no manda nada. */}
       {entities.length > 0 && (
-      <div className="cc-map-hud" style={{ left: 12, top: "50%", transform: "translateY(-50%)" }}>
-        <div className="cg-tarjeta-mapa flex flex-col gap-0.5 p-1">
-          {ORDEN_CAPAS.filter((k) => (porTipo[k] ?? 0) > 0).map((k) => {
-            const Icono = CAPA_ICONO[k];
-            const on = capas[k] !== false;
-            return (
+        <div
+          className="cc-map-hud"
+          style={{ left: 12, top: "50%", transform: "translateY(-50%)" }}
+        >
+          <div className="cg-tarjeta-mapa flex flex-col gap-0.5 p-1">
+            {ORDEN_CAPAS.filter((k) => (porTipo[k] ?? 0) > 0).map((k) => {
+              const Icono = CAPA_ICONO[k];
+              const on = capas[k] !== false;
+
+              return (
+                <button
+                  key={k}
+                  aria-label={`${on ? "Ocultar" : "Mostrar"} ${CAPA_LABEL[k]}`}
+                  aria-pressed={on}
+                  className="cg-focus grid size-9 place-items-center transition"
+                  style={{
+                    borderRadius: "var(--r-md)",
+                    color: on ? "var(--ink)" : "var(--ink-faint)",
+                    background: on ? "var(--glass-sunken)" : "transparent",
+                    opacity: on ? 1 : 0.55,
+                  }}
+                  title={`${CAPA_LABEL[k]} (${porTipo[k]})`}
+                  type="button"
+                  onClick={() => alternarCapa(k)}
+                >
+                  <Icono className="size-4" />
+                  <span className="sr-only">{CAPA_LABEL[k]}</span>
+                </button>
+              );
+            })}
+
+            <span
+              className="my-0.5 h-px w-full"
+              style={{ background: "var(--hairline)" }}
+            />
+
+            <button
+              aria-label={geocercas ? "Ocultar geocercas" : "Mostrar geocercas"}
+              aria-pressed={geocercas}
+              className="cg-focus grid size-9 place-items-center transition"
+              style={{
+                borderRadius: "var(--r-md)",
+                color: geocercas ? "var(--brand-text)" : "var(--ink-faint)",
+                background: geocercas ? "var(--brand-wash)" : "transparent",
+              }}
+              title={geocercas ? "Ocultar geocercas" : "Mostrar geocercas"}
+              type="button"
+              onClick={() => setGeocercas((v) => !v)}
+            >
+              <Crosshair className="size-4" />
+            </button>
+
+            {(seguido || rastroDe) && (
               <button
-                key={k}
-                type="button"
-                aria-pressed={on}
-                title={`${CAPA_LABEL[k]} (${porTipo[k]})`}
-                aria-label={`${on ? "Ocultar" : "Mostrar"} ${CAPA_LABEL[k]}`}
-                onClick={() => alternarCapa(k)}
+                aria-label={
+                  seguidoNombre
+                    ? `Dejar de seguir a ${seguidoNombre}`
+                    : "Quitar el recorrido"
+                }
                 className="cg-focus grid size-9 place-items-center transition"
                 style={{
                   borderRadius: "var(--r-md)",
-                  color: on ? "var(--ink)" : "var(--ink-faint)",
-                  background: on ? "var(--glass-sunken)" : "transparent",
-                  opacity: on ? 1 : 0.55,
+                  color: "var(--warn-text)",
+                  background:
+                    "color-mix(in oklab, var(--warn) 14%, transparent)",
+                }}
+                title={
+                  seguidoNombre
+                    ? `Dejar de seguir a ${seguidoNombre}`
+                    : "Quitar el recorrido"
+                }
+                type="button"
+                onClick={() => {
+                  setSeguido(null);
+                  limpiarRastro();
                 }}
               >
-                <Icono className="size-4" />
-                <span className="sr-only">{CAPA_LABEL[k]}</span>
+                <X className="size-4" />
               </button>
-            );
-          })}
-
-          <span className="my-0.5 h-px w-full" style={{ background: "var(--hairline)" }} />
-
-          <button
-            type="button"
-            aria-pressed={geocercas}
-            title={geocercas ? "Ocultar geocercas" : "Mostrar geocercas"}
-            aria-label={geocercas ? "Ocultar geocercas" : "Mostrar geocercas"}
-            onClick={() => setGeocercas((v) => !v)}
-            className="cg-focus grid size-9 place-items-center transition"
-            style={{
-              borderRadius: "var(--r-md)",
-              color: geocercas ? "var(--brand-text)" : "var(--ink-faint)",
-              background: geocercas ? "var(--brand-wash)" : "transparent",
-            }}
-          >
-            <Crosshair className="size-4" />
-          </button>
-
-          {(seguido || rastroDe) && (
-            <button
-              type="button"
-              title={seguidoNombre ? `Dejar de seguir a ${seguidoNombre}` : "Quitar el recorrido"}
-              aria-label={seguidoNombre ? `Dejar de seguir a ${seguidoNombre}` : "Quitar el recorrido"}
-              onClick={() => { setSeguido(null); limpiarRastro(); }}
-              className="cg-focus grid size-9 place-items-center transition"
-              style={{ borderRadius: "var(--r-md)", color: "var(--warn-text)", background: "color-mix(in oklab, var(--warn) 14%, transparent)" }}
-            >
-              <X className="size-4" />
-            </button>
-          )}
+            )}
+          </div>
         </div>
-      </div>
       )}
 
       {/* Quién se está siguiendo, en palabras. Sólo aparece cuando pasa. */}
       {seguidoNombre && (
-        <div className="cc-map-hud" style={{ left: 60, top: "50%", transform: "translateY(-50%)", maxWidth: "min(60%, 16rem)" }}>
+        <div
+          className="cc-map-hud"
+          style={{
+            left: 60,
+            top: "50%",
+            transform: "translateY(-50%)",
+            maxWidth: "min(60%, 16rem)",
+          }}
+        >
           <div className="cg-tarjeta-mapa flex items-center gap-2 px-2.5 py-1.5">
             <span className="cc-dot" style={{ background: "var(--brand)" }} />
-            <span className="truncate text-[11px] font-semibold">Siguiendo a {seguidoNombre}</span>
+            <span className="truncate text-[11px] font-semibold">
+              Siguiendo a {seguidoNombre}
+            </span>
           </div>
         </div>
       )}
 
       {hud && (
-        <div className="cc-map-hud" style={{ left: 12, bottom: 30, maxWidth: "min(92%, 30rem)" }}>
+        <div
+          className="cc-map-hud"
+          style={{ left: 12, bottom: 30, maxWidth: "min(92%, 30rem)" }}
+        >
           <div className="cc-map-card px-3 py-2.5">
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
               {/* Anillo de cobertura — la métrica que manda en un puesto de mando. */}
@@ -761,9 +1106,14 @@ export function OperationsMap({
                   className="cc-map-ring"
                   style={{
                     ["--pct" as any]: resumen.pct ?? 0,
-                    ["--anillo" as any]: resumen.pct == null ? "var(--ink-faint)"
-                      : resumen.pct >= 80 ? "var(--ok)"
-                      : resumen.pct >= 50 ? "var(--warn)" : "var(--bad)",
+                    ["--anillo" as any]:
+                      resumen.pct == null
+                        ? "var(--ink-faint)"
+                        : resumen.pct >= 80
+                          ? "var(--ok)"
+                          : resumen.pct >= 50
+                            ? "var(--warn)"
+                            : "var(--bad)",
                   }}
                 />
                 <span>{resumen.pct == null ? "—" : `${resumen.pct}%`}</span>
@@ -773,19 +1123,28 @@ export function OperationsMap({
                 <div className="cc-map-eyebrow">Cobertura</div>
                 <div className="cc-map-metric">
                   {resumen.cubiertos}
-                  <span style={{ color: "var(--ink-faint)", fontWeight: 600 }}>/{resumen.puestos}</span>
+                  <span style={{ color: "var(--ink-faint)", fontWeight: 600 }}>
+                    /{resumen.puestos}
+                  </span>
                 </div>
               </div>
 
               <div className="hidden sm:block">
                 <div className="cc-map-eyebrow">En servicio</div>
-                <div className="cc-map-metric">{resumen.vigilantes + resumen.supervisores}</div>
+                <div className="cc-map-metric">
+                  {resumen.vigilantes + resumen.supervisores}
+                </div>
               </div>
 
               {resumen.incidentes > 0 && (
                 <div>
                   <div className="cc-map-eyebrow">Incidentes</div>
-                  <div className="cc-map-metric" style={{ color: "var(--bad-text)" }}>{resumen.incidentes}</div>
+                  <div
+                    className="cc-map-metric"
+                    style={{ color: "var(--bad-text)" }}
+                  >
+                    {resumen.incidentes}
+                  </div>
                 </div>
               )}
 
@@ -795,17 +1154,42 @@ export function OperationsMap({
               </div>
             </div>
 
-            <div className="mt-2 hidden flex-wrap items-center gap-x-3 gap-y-1 border-t pt-2 sm:flex" style={{ borderColor: "var(--hairline)" }}>
-              <span className="cc-map-key"><i style={{ color: "var(--ok)" }} />Cubierto</span>
-              <span className="cc-map-key"><i style={{ color: "var(--warn)" }} />En riesgo</span>
-              <span className="cc-map-key"><i style={{ color: "var(--bad)" }} />{t('comun.sinCubrir')}</span>
+            <div
+              className="mt-2 hidden flex-wrap items-center gap-x-3 gap-y-1 border-t pt-2 sm:flex"
+              style={{ borderColor: "var(--hairline)" }}
+            >
+              <span className="cc-map-key">
+                <i style={{ color: "var(--ok)" }} />
+                Cubierto
+              </span>
+              <span className="cc-map-key">
+                <i style={{ color: "var(--warn)" }} />
+                En riesgo
+              </span>
+              <span className="cc-map-key">
+                <i style={{ color: "var(--bad)" }} />
+                {t("comun.sinCubrir")}
+              </span>
               {resumen.sinDatos > 0 && (
-                <span className="cc-map-key" title={t("ui.OperationsMap.puestosSinNingunaPosicionDe", "Puestos sin ninguna posición de GPS para confirmar cobertura")}>
-                  <i style={{ color: "var(--ink-faint)" }} />Sin datos ({resumen.sinDatos})
+                <span
+                  className="cc-map-key"
+                  title={t(
+                    "ui.OperationsMap.puestosSinNingunaPosicionDe",
+                    "Puestos sin ninguna posición de GPS para confirmar cobertura",
+                  )}
+                >
+                  <i style={{ color: "var(--ink-faint)" }} />
+                  Sin datos ({resumen.sinDatos})
                 </span>
               )}
-              <span className="cc-map-key"><i style={{ color: "var(--info)" }} />{t('comun.supervisor')}</span>
-              <span className="cc-map-key"><i style={{ color: "var(--brand)" }} />Sede</span>
+              <span className="cc-map-key">
+                <i style={{ color: "var(--info)" }} />
+                {t("comun.supervisor")}
+              </span>
+              <span className="cc-map-key">
+                <i style={{ color: "var(--brand)" }} />
+                Sede
+              </span>
             </div>
           </div>
         </div>

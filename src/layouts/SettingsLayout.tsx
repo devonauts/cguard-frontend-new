@@ -40,7 +40,8 @@ export default function SettingsLayout({
 }) {
   const { t } = useTranslation();
   const { pathname } = useLocation();
-  const secciones = (NAVS as Record<string, { sections: Section[] }>).configuracion.sections;
+  const secciones = (NAVS as Record<string, { sections: Section[] }>)
+    .configuracion.sections;
 
   return (
     /* ── POR QUÉ AQUÍ YA NO SE MIDE LA VENTANA ────────────────────────────
@@ -59,14 +60,16 @@ export default function SettingsLayout({
     <div className="relative flex items-start">
       {/* ── Índice lateral ─────────────────────────────────────────────────── */}
       <nav
-        aria-label={t("settings.index", { defaultValue: "Índice de configuración" })}
+        aria-label={t("settings.index", {
+          defaultValue: "Índice de configuración",
+        })}
         className="hidden w-60 shrink-0 border-r px-3 py-4 lg:block lg:sticky lg:top-0 lg:max-h-[calc(100vh_-_3.5rem_-_env(safe-area-inset-top))] lg:overflow-y-auto lg:supports-[height:100dvh]:max-h-[calc(100dvh_-_3.5rem_-_env(safe-area-inset-top))]"
         style={{ borderColor: "var(--hairline)" }}
       >
         <Link
-          to="/setting"
           className="cg-focus mb-4 inline-flex items-center gap-1.5 px-2 text-[13px] font-medium transition-colors"
           style={{ color: "var(--ink-soft)" }}
+          to="/setting"
         >
           <ArrowLeft className="h-4 w-4" />
           {t("settings.back", { defaultValue: "Configuración" })}
@@ -74,30 +77,50 @@ export default function SettingsLayout({
 
         {secciones.map((sec) => (
           <div key={sec.id || sec.label} className="mb-4">
-            <p className="cg-eyebrow px-2 pb-1.5">{sec.id ? t(`settings.section.${sec.id}`, { defaultValue: sec.label }) : sec.label}</p>
+            <p className="cg-eyebrow px-2 pb-1.5">
+              {sec.id
+                ? t(`settings.section.${sec.id}`, { defaultValue: sec.label })
+                : sec.label}
+            </p>
             <ul className="space-y-0.5">
               {sec.items.map((item) => {
                 // `startsWith` y no igualdad: varias páginas de ajustes tienen
                 // subrutas y el índice debe seguir marcando su sección.
-                const activo = pathname === item.path || pathname.startsWith(`${item.path}/`);
+                const activo =
+                  pathname === item.path ||
+                  pathname.startsWith(`${item.path}/`);
                 const Icon = settingsIcon(item.icon);
+
                 return (
                   <li key={item.id}>
                     <Link
-                      to={item.path}
                       aria-current={activo ? "page" : undefined}
                       className="cg-focus flex items-center gap-2 rounded-lg px-2 py-1.5 text-[13px] transition-colors"
                       style={
                         activo
-                          ? { background: "var(--brand-wash)", color: "var(--ink)", fontWeight: 600 }
+                          ? {
+                              background: "var(--brand-wash)",
+                              color: "var(--ink)",
+                              fontWeight: 600,
+                            }
                           : { color: "var(--ink-soft)" }
                       }
+                      to={item.path}
                     >
-                      <span className="[&_svg]:size-3.5 shrink-0" style={{ color: activo ? "var(--brand-text)" : "var(--ink-faint)" }}>
+                      <span
+                        className="[&_svg]:size-3.5 shrink-0"
+                        style={{
+                          color: activo
+                            ? "var(--brand-text)"
+                            : "var(--ink-faint)",
+                        }}
+                      >
                         <Icon />
                       </span>
                       <span className="truncate">
-                        {t(`settings.configuracion.${item.id}`, { defaultValue: item.label })}
+                        {t(`settings.configuracion.${item.id}`, {
+                          defaultValue: item.label,
+                        })}
                       </span>
                     </Link>
                   </li>
@@ -113,21 +136,32 @@ export default function SettingsLayout({
         {/* En pantallas anchas el índice ya dice dónde estás, así que la barra
             superior sólo lleva el título. Por debajo de `lg` recupera el botón
             de volver, que ahí sí es la única salida. */}
-        <div className="sticky top-0 z-10" style={{ background: "var(--glass-solid)" }}>
+        <div
+          className="sticky top-0 z-10"
+          style={{ background: "var(--glass-solid)" }}
+        >
           <div
             className="flex h-12 items-center gap-2 border-b px-4"
             style={{ borderColor: "var(--hairline)" }}
           >
             <Link
-              to="/setting"
+              aria-label={t("settings.backToSettings", {
+                defaultValue: "Volver a Configuración",
+              })}
               className="cg-focus -ml-2 inline-flex items-center gap-1.5 rounded-md px-2 py-1.5 text-[13px] font-medium transition-colors lg:hidden"
               style={{ color: "var(--ink-soft)" }}
-              aria-label={t("settings.backToSettings", { defaultValue: "Volver a Configuración" })}
+              to="/setting"
             >
               <ArrowLeft className="h-4 w-4" />
               {t("settings.back", { defaultValue: "Configuración" })}
             </Link>
-            <span className="select-none lg:hidden" style={{ color: "var(--hairline)" }} aria-hidden="true">/</span>
+            <span
+              aria-hidden="true"
+              className="select-none lg:hidden"
+              style={{ color: "var(--hairline)" }}
+            >
+              /
+            </span>
             <div className="truncate text-[15px] font-medium">{title}</div>
           </div>
         </div>

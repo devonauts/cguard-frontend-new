@@ -1,8 +1,10 @@
 import { z } from "zod";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ShieldCheck } from "lucide-react";
+import { useEffect } from "react";
+
 import { Modal } from "@/components/kit";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +17,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useEffect } from "react";
 
 const schema = z.object({
   name: z
@@ -50,20 +51,22 @@ export default function UserRoleDialog({
   onSubmit,
 }: Props) {
   const { t } = useTranslation();
+
   useEffect(() => {
-    console.debug('[UserRoleDialog] mount/open state', open);
+    console.debug("[UserRoleDialog] mount/open state", open);
   }, [open]);
   const form = useForm<UserRoleDialogValues>({
     resolver: zodResolver(schema),
-    defaultValues: defaultValues ?? { name: "", description: "", permissions: [] },
+    defaultValues: defaultValues ?? {
+      name: "",
+      description: "",
+      permissions: [],
+    },
     values: defaultValues ?? { name: "", description: "", permissions: [] },
     mode: "onBlur",
   });
 
   const submitting = form.formState.isSubmitting;
-
-
-
 
   const submit = form.handleSubmit(async (values) => {
     await onSubmit(values);
@@ -72,66 +75,71 @@ export default function UserRoleDialog({
 
   return (
     <Modal
-      open={open}
-      onOpenChange={onOpenChange}
-      title={title}
-      description={t('ui.UserRoleDialog.proporcioneUnNombreYOpcionalmente')}
+      description={t("ui.UserRoleDialog.proporcioneUnNombreYOpcionalmente")}
       icon={<ShieldCheck />}
+      open={open}
+      title={title}
+      onOpenChange={onOpenChange}
     >
-        <Form {...form}>
-          <form onSubmit={submit} className="grid gap-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Rol <span style={{ color: 'var(--bad-text)' }}>*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t('ui.UserRoleDialog.nombreDelRol')}
-                      {...field}
-                      aria-invalid={!!form.formState.errors.name}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+      <Form {...form}>
+        <form className="grid gap-4" onSubmit={submit}>
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Rol <span style={{ color: "var(--bad-text)" }}>*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t("ui.UserRoleDialog.nombreDelRol")}
+                    {...field}
+                    aria-invalid={!!form.formState.errors.name}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("ui.UserRoleDialog.descripcion", "Descripción")}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      rows={5}
-                      placeholder={t('ui.UserRoleDialog.describeElRolOpcional')}
-                      {...field}
-                      aria-invalid={!!form.formState.errors.description}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex justify-end gap-2 border-t pt-4" style={{ borderColor: 'var(--hairline)' }}>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                Cancelar
-              </Button>
-              <Button
-                variant="brand"
-                type="submit"
-                disabled={submitting}
-              >
-                {submitting ? "Guardando…" : "Guardar"}
-              </Button>
-            </div>
-          </form>
-        </Form>
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t("ui.UserRoleDialog.descripcion", "Descripción")}
+                </FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder={t("ui.UserRoleDialog.describeElRolOpcional")}
+                    rows={5}
+                    {...field}
+                    aria-invalid={!!form.formState.errors.description}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div
+            className="flex justify-end gap-2 border-t pt-4"
+            style={{ borderColor: "var(--hairline)" }}
+          >
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
+              Cancelar
+            </Button>
+            <Button disabled={submitting} type="submit" variant="brand">
+              {submitting ? "Guardando…" : "Guardar"}
+            </Button>
+          </div>
+        </form>
+      </Form>
     </Modal>
   );
 }

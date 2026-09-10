@@ -15,14 +15,23 @@
 
 export type NetStatus = "online" | "offline" | "reconnecting";
 
-let status: NetStatus = typeof navigator !== "undefined" && navigator.onLine === false ? "offline" : "online";
+let status: NetStatus =
+  typeof navigator !== "undefined" && navigator.onLine === false
+    ? "offline"
+    : "online";
 let failStreak = 0;
 const subs = new Set<(s: NetStatus) => void>();
 
 function setStatus(next: NetStatus): void {
   if (next === status) return;
   status = next;
-  subs.forEach((f) => { try { f(next); } catch { /* ignore */ } });
+  subs.forEach((f) => {
+    try {
+      f(next);
+    } catch {
+      /* ignore */
+    }
+  });
 }
 
 export function getNetworkStatus(): NetStatus {
@@ -31,7 +40,10 @@ export function getNetworkStatus(): NetStatus {
 
 export function subscribeNetworkStatus(f: (s: NetStatus) => void): () => void {
   subs.add(f);
-  return () => { subs.delete(f); };
+
+  return () => {
+    subs.delete(f);
+  };
 }
 
 /** Una petición llegó al servidor (da igual el código HTTP: hubo RED). */
@@ -49,7 +61,10 @@ export function reportNetworkFailure(): void {
 
 if (typeof window !== "undefined") {
   window.addEventListener("online", () => setStatus("reconnecting"));
-  window.addEventListener("offline", () => { failStreak = 2; setStatus("offline"); });
+  window.addEventListener("offline", () => {
+    failStreak = 2;
+    setStatus("offline");
+  });
 }
 
 /**
@@ -65,5 +80,6 @@ export function isNetworkFailure(err: any): boolean {
   if (err instanceof TypeError) return true;
   // Formas propias del CRM (ApiError con status numérico).
   if (typeof err.status === "number") return err.status === 0;
+
   return false;
 }

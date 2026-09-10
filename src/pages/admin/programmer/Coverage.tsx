@@ -1,29 +1,61 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
+import {
+  ShieldAlert,
+  ShieldCheck,
+  Clock,
+  UserPlus,
+  UserCheck,
+  ArrowRightLeft,
+  RefreshCw,
+  Undo2,
+  CalendarRange,
+} from "lucide-react";
+import { toast } from "sonner";
+
+import GuardTypeahead, { GuardPick } from "./GuardTypeahead";
+
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import {
-  Select, SelectTrigger, SelectContent, SelectItem, SelectValue,
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  PageContainer, PageHeader, Section, MetricTile, EmptyState, SkeletonCards, Modal, Stagger,
-  StatusBadge, Segmented, GlassPanel, IconTile, InfoNote,
+  PageContainer,
+  PageHeader,
+  Section,
+  MetricTile,
+  EmptyState,
+  SkeletonCards,
+  Modal,
+  Stagger,
+  StatusBadge,
+  Segmented,
+  GlassPanel,
+  IconTile,
+  InfoNote,
 } from "@/components/kit";
-import {
-  ShieldAlert, ShieldCheck, Clock, UserPlus, UserCheck, ArrowRightLeft, RefreshCw, Undo2, CalendarRange } from "lucide-react";
-import { toast } from "sonner";
-import GuardTypeahead, { GuardPick } from "./GuardTypeahead";
 import { confirmDialog } from "@/components/ui/confirmDialog";
-import { localeActual } from '@/lib/localeActual'
+import { localeActual } from "@/lib/localeActual";
 import attendanceService from "@/lib/api/attendanceService";
 import { crearSocket, cerrarSocket } from "@/lib/socket";
 import { getAuthToken } from "@/lib/api";
 import coverageService, {
-  COVERAGE_REASONS, REASON_LABEL, STATUS_LABEL, coverageErrorCode,
+  COVERAGE_REASONS,
+  REASON_LABEL,
+  STATUS_LABEL,
+  coverageErrorCode,
   stationLabel,
-  type LiveCoverage, type StationCoverage, type CoverageEvent, type CoverageReason,
+  type LiveCoverage,
+  type StationCoverage,
+  type CoverageEvent,
+  type CoverageReason,
 } from "@/lib/api/coverageService";
 
 /**
@@ -48,7 +80,10 @@ const STATUS_TONE: Record<string, "bad" | "warn" | "ok" | "neutral"> = {
 type ConfirmFlags = { allowRestDay: boolean; allowDoubleShift: boolean };
 
 const fmtTime = (iso: string) =>
-  new Date(iso).toLocaleTimeString(localeActual(), { hour: "2-digit", minute: "2-digit" });
+  new Date(iso).toLocaleTimeString(localeActual(), {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
 
@@ -102,10 +137,11 @@ export default function Coverage() {
         // puede equivaler a esconderlo — es justo el que hay que poder mirar.
         coverageService.events({ status: "open,covered,resolved" }),
       ]);
+
       setLive(l);
       setEvents(e?.rows || []);
     } catch {
-      toast.error(t('comun.noSePudoCargarLa'));
+      toast.error(t("comun.noSePudoCargarLa"));
     } finally {
       setLoading(false);
     }
@@ -125,7 +161,13 @@ export default function Coverage() {
     /* Agrupado: un cambio de turno emite decenas de eventos y cada recarga
        pide /coverage/live, que son diez consultas secuenciales. */
     let agrup: ReturnType<typeof setTimeout> | null = null;
-    const alCambiar = () => { if (agrup) clearTimeout(agrup); agrup = setTimeout(() => { void load(); }, 700); };
+    const alCambiar = () => {
+      if (agrup) clearTimeout(agrup);
+      agrup = setTimeout(() => {
+        void load();
+      }, 700);
+    };
+
     if (tid) {
       socket = crearSocket(getAuthToken() || "", tid);
       socket.on("coverage:changed", alCambiar);
@@ -135,9 +177,22 @@ export default function Coverage() {
 
     let iv: ReturnType<typeof setInterval> | null = null;
     const visible = () => document.visibilityState !== "hidden";
-    const arrancar = () => { if (!iv && visible()) iv = setInterval(load, 30_000); };
-    const parar = () => { if (iv) { clearInterval(iv); iv = null; } };
-    const alVerse = () => { if (visible()) { void load(); arrancar(); } else parar(); };
+    const arrancar = () => {
+      if (!iv && visible()) iv = setInterval(load, 30_000);
+    };
+    const parar = () => {
+      if (iv) {
+        clearInterval(iv);
+        iv = null;
+      }
+    };
+    const alVerse = () => {
+      if (visible()) {
+        void load();
+        arrancar();
+      } else parar();
+    };
+
     arrancar();
     document.addEventListener("visibilitychange", alVerse);
 
@@ -158,7 +213,10 @@ export default function Coverage() {
    * `rest_day` is the server asking for confirmation of a real decision, not a
    * failure — re-issue with the confirmation instead of dead-ending the user.
    */
-  const runWithConfirm = async (call: (flags: ConfirmFlags) => Promise<any>, okMsg: string) => {
+  const runWithConfirm = async (
+    call: (flags: ConfirmFlags) => Promise<any>,
+    okMsg: string,
+  ) => {
     setBusy(true);
     try {
       // Two refusals are operational decisions rather than errors — the guard is
@@ -166,28 +224,50 @@ export default function Coverage() {
       // which is exactly what happens when the relief does not show). Ask, then
       // repeat with the confirmation. Each is asked at most once so a genuine
       // failure surfaces instead of looping.
-      const flags: ConfirmFlags = { allowRestDay: false, allowDoubleShift: false };
+      const flags: ConfirmFlags = {
+        allowRestDay: false,
+        allowDoubleShift: false,
+      };
       const asked = { rest_day: false, double_booking: false };
+
       for (;;) {
         try {
           await call(flags);
           break;
         } catch (e: any) {
           const code = coverageErrorCode(e);
+
           if (code === "rest_day" && !asked.rest_day) {
             asked.rest_day = true;
-            if (!await confirmDialog("Ese vigilante está en descanso ese día. ¿Asignarlo de todos modos?")) return;
+            if (
+              !(await confirmDialog(
+                "Ese vigilante está en descanso ese día. ¿Asignarlo de todos modos?",
+              ))
+            )
+              return;
             flags.allowRestDay = true;
             continue;
           }
           if (code === "double_booking" && !asked.double_booking) {
             asked.double_booking = true;
-            if (!await confirmDialog("Ya tiene otro turno que se cruza con ese horario. ¿Doblar turno?")) return;
+            if (
+              !(await confirmDialog(
+                "Ya tiene otro turno que se cruza con ese horario. ¿Doblar turno?",
+              ))
+            )
+              return;
             flags.allowDoubleShift = true;
             continue;
           }
           if (code) {
-            toast.error(e?.response?.data?.message || t("ui.Coverage.noSePudoCompletarLa", "No se pudo completar la acción"));
+            toast.error(
+              e?.response?.data?.message ||
+                t(
+                  "ui.Coverage.noSePudoCompletarLa",
+                  "No se pudo completar la acción",
+                ),
+            );
+
             return;
           }
           throw e;
@@ -195,9 +275,10 @@ export default function Coverage() {
       }
       toast.success(okMsg);
       await load();
+
       return true;
     } catch {
-      toast.error(t('ui.Coverage.noSePudoCompletarLa'));
+      toast.error(t("ui.Coverage.noSePudoCompletarLa"));
     } finally {
       setBusy(false);
     }
@@ -206,6 +287,7 @@ export default function Coverage() {
   /** Registrar la entrada de alguien que ESTÁ en el puesto y no pudo fichar. */
   const registrarEntradaManual = async () => {
     const row = entradaManualFor;
+
     if (!row || motivoManual.trim().length < 10) return;
     setBusy(true);
     try {
@@ -214,6 +296,7 @@ export default function Coverage() {
         stationId: row.stationId,
         reason: motivoManual.trim(),
       });
+
       if (!r.ok) {
         // El servidor no lanza error cuando la razón es operativa (ya está en
         // turno, el fichaje lo rechazó una puerta): lo dice, y aquí se cuenta.
@@ -222,9 +305,12 @@ export default function Coverage() {
             ? "Ya tiene un turno abierto — no se abre un segundo."
             : r.detalle || "No se pudo registrar la entrada",
         );
+
         return;
       }
-      toast.success(`Entrada registrada para ${r.vigilante || "el vigilante"} — queda en espera de revisión`);
+      toast.success(
+        `Entrada registrada para ${r.vigilante || "el vigilante"} — queda en espera de revisión`,
+      );
       setEntradaManualFor(null);
       setMotivoManual("");
       load();
@@ -237,6 +323,7 @@ export default function Coverage() {
 
   const submitAbsence = async () => {
     const row = absenceFor;
+
     if (!row) return;
     const ok = await runWithConfirm(
       () =>
@@ -249,22 +336,36 @@ export default function Coverage() {
         }),
       "Novedad registrada",
     );
-    if (ok) { setAbsenceFor(null); setNote(""); }
+
+    if (ok) {
+      setAbsenceFor(null);
+      setNote("");
+    }
   };
 
   const submitReplacement = async () => {
     if (!repOut || !repIn || !repFrom || !repTo) return;
     const ok = await runWithConfirm(
-      (flags) => coverageService.replacement({
-        absentGuardId: repOut.guardId,
-        replacementGuardId: repIn.guardId,
-        dateFrom: repFrom, dateTo: repTo,
-        reason: repReason,
-        allowDoubleShift: flags.allowDoubleShift,
-      }),
+      (flags) =>
+        coverageService.replacement({
+          absentGuardId: repOut.guardId,
+          replacementGuardId: repIn.guardId,
+          dateFrom: repFrom,
+          dateTo: repTo,
+          reason: repReason,
+          allowDoubleShift: flags.allowDoubleShift,
+        }),
       "Reemplazo aplicado",
     );
-    if (ok) { setRepOpen(false); setRepOut(null); setRepIn(null); setRepFrom(""); setRepTo(""); setRepReason("vacaciones"); }
+
+    if (ok) {
+      setRepOpen(false);
+      setRepOut(null);
+      setRepIn(null);
+      setRepFrom("");
+      setRepTo("");
+      setRepReason("vacaciones");
+    }
   };
 
   const openReplacement = () => {
@@ -286,8 +387,9 @@ export default function Coverage() {
   /** Today in the TENANT's calendar, so the date input matches the operation. */
   const tenantToday = () => {
     try {
-      return new Intl.DateTimeFormat("en-CA", { timeZone: live?.tz || "America/Mexico_City" })
-        .format(new Date());
+      return new Intl.DateTimeFormat("en-CA", {
+        timeZone: live?.tz || "America/Mexico_City",
+      }).format(new Date());
     } catch {
       return new Date().toISOString().slice(0, 10);
     }
@@ -295,6 +397,7 @@ export default function Coverage() {
 
   const submitTransfer = async () => {
     const row = transferFor;
+
     if (!row || !toStationId) return;
     const range = transferMode === "range" && transferUntil;
     const ok = await runWithConfirm(
@@ -313,19 +416,30 @@ export default function Coverage() {
         }),
       range ? `Trasladado hasta el ${transferUntil}` : "Vigilante trasladado",
     );
-    if (ok) { setTransferFor(null); setToStationId(""); setNote(""); setTransferMode("shift"); setTransferUntil(""); }
+
+    if (ok) {
+      setTransferFor(null);
+      setToStationId("");
+      setNote("");
+      setTransferMode("shift");
+      setTransferUntil("");
+    }
   };
 
   const summary = live?.summary || {};
   const problems = (summary.uncovered || 0) + (summary.at_risk || 0);
 
-  const openEvents = useMemo(() => events.filter((e) => e.status === "open"), [events]);
+  const openEvents = useMemo(
+    () => events.filter((e) => e.status === "open"),
+    [events],
+  );
 
   // Reparto de los puestos entre cubiertos / en riesgo / sin cubrir, para que
   // cada KPI diga qué porción del total representa.
   const totalPuestos =
     (summary.uncovered || 0) + (summary.at_risk || 0) + (summary.covered || 0);
-  const pct = (n: number) => (totalPuestos > 0 ? Math.round((n / totalPuestos) * 100) : 0);
+  const pct = (n: number) =>
+    totalPuestos > 0 ? Math.round((n / totalPuestos) * 100) : 0;
 
   const StationRow = ({ st }: { st: StationCoverage }) => (
     /* `glass-flat` y no `glass`: esta tarjeta se repite por cada puesto y un
@@ -345,7 +459,10 @@ export default function Coverage() {
             <span className="truncate">{st.stationName || "—"}</span>
           </p>
           {st.minutesSinceStart != null && st.status !== "covered" && (
-            <p className="mt-0.5 text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>
+            <p
+              className="mt-0.5 text-xs tabular-nums"
+              style={{ color: "var(--ink-soft)" }}
+            >
               {st.minutesSinceStart} min desde el inicio del turno
             </p>
           )}
@@ -359,22 +476,47 @@ export default function Coverage() {
         <div className="mt-3 space-y-1.5">
           {st.expected.map((e) => {
             const here = st.present.some((p) => p.guardId === e.guardId);
+
             return (
-              <div key={e.shiftId} className="glass-sunken flex items-center gap-2 px-3 py-2">
+              <div
+                key={e.shiftId}
+                className="glass-sunken flex items-center gap-2 px-3 py-2"
+              >
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">{e.fullName || "Vigilante"}</p>
-                  <p className="text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>
+                  <p className="truncate text-sm font-medium">
+                    {e.fullName || "Vigilante"}
+                  </p>
+                  <p
+                    className="text-xs tabular-nums"
+                    style={{ color: "var(--ink-soft)" }}
+                  >
                     {fmtTime(e.startTime)}–{fmtTime(e.endTime)} ·{" "}
-                    <span className="font-semibold" style={{ color: here ? "var(--ok-text)" : "var(--bad-text)" }}>
-                      {here ? t("ui.Coverage.enElPuesto", "En el puesto") : t("ui.Coverage.sinMarcarEntrada", "Sin marcar entrada")}
+                    <span
+                      className="font-semibold"
+                      style={{
+                        color: here ? "var(--ok-text)" : "var(--bad-text)",
+                      }}
+                    >
+                      {here
+                        ? t("ui.Coverage.enElPuesto", "En el puesto")
+                        : t(
+                            "ui.Coverage.sinMarcarEntrada",
+                            "Sin marcar entrada",
+                          )}
                     </span>
                   </p>
                 </div>
                 <Button
-                  size="sm" variant="outline"
+                  size="sm"
+                  variant="outline"
                   onClick={() => {
-                    setTransferFor({ ...e, stationId: st.stationId, stationName: st.stationName });
-                    setToStationId(""); setNote("");
+                    setTransferFor({
+                      ...e,
+                      stationId: st.stationId,
+                      stationName: st.stationName,
+                    });
+                    setToStationId("");
+                    setNote("");
                   }}
                 >
                   <ArrowRightLeft className="mr-1 size-3.5" /> Trasladar
@@ -384,17 +526,27 @@ export default function Coverage() {
                     <Button
                       size="sm"
                       onClick={() => {
-                        setEntradaManualFor({ ...e, stationId: st.stationId, stationName: st.stationName });
+                        setEntradaManualFor({
+                          ...e,
+                          stationId: st.stationId,
+                          stationName: st.stationName,
+                        });
                         setMotivoManual("");
                       }}
                     >
                       <UserCheck className="mr-1 size-3.5" /> Registrar entrada
                     </Button>
                     <Button
-                      size="sm" variant="destructive"
+                      size="sm"
+                      variant="destructive"
                       onClick={() => {
-                        setAbsenceFor({ ...e, stationId: st.stationId, stationName: st.stationName });
-                        setReason("permiso_con_sueldo"); setNote("");
+                        setAbsenceFor({
+                          ...e,
+                          stationId: st.stationId,
+                          stationName: st.stationName,
+                        });
+                        setReason("permiso_con_sueldo");
+                        setNote("");
                       }}
                     >
                       Novedad
@@ -416,12 +568,23 @@ export default function Coverage() {
             background: "color-mix(in oklab, var(--bad) 10%, transparent)",
           }}
         >
-          <ShieldAlert className="size-4 shrink-0" style={{ color: "var(--bad-text)" }} />
+          <ShieldAlert
+            className="size-4 shrink-0"
+            style={{ color: "var(--bad-text)" }}
+          />
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold" style={{ color: "var(--bad-text)" }}>
+            <p
+              className="truncate text-sm font-semibold"
+              style={{ color: "var(--bad-text)" }}
+            >
               {REASON_LABEL[ev.reason] || ev.reason}
             </p>
-            <p className="text-xs tabular-nums" style={{ color: "var(--ink-soft)" }}>Puesto vacío hace {ev.minutesOpen} min</p>
+            <p
+              className="text-xs tabular-nums"
+              style={{ color: "var(--ink-soft)" }}
+            >
+              Puesto vacío hace {ev.minutesOpen} min
+            </p>
           </div>
           <Button size="sm" onClick={() => openCover(ev)}>
             <UserPlus className="mr-1 size-3.5" /> Cubrir
@@ -435,127 +598,208 @@ export default function Coverage() {
     <AppLayout>
       {/* Mismo ancho y mismos márgenes que sus cinco páginas hermanas: sin
           esto, pasar de Cobertura a Turnos abiertos daba un salto de anchura. */}
-      <Breadcrumb items={[{ label: "Programador", path: "/admin/programmer/schedule" }, { label: "Cobertura" }]} />
-      <PageContainer width="wide" className="px-4 lg:px-6">
+      <Breadcrumb
+        items={[
+          { label: "Programador", path: "/admin/programmer/schedule" },
+          { label: "Cobertura" },
+        ]}
+      />
+      <PageContainer className="px-4 lg:px-6" width="wide">
         <PageHeader
-          title="Cobertura en vivo"
-          subtitle={
-            problems > 0
-              ? `${problems} puesto(s) requieren atención`
-              : "Todos los puestos cubiertos"
-          }
-          icon={<ShieldCheck />}
           actions={
             <div className="flex flex-wrap items-center gap-2">
               <Button onClick={openReplacement}>
                 <UserPlus className="mr-1.5 size-4" /> Reemplazo por vacaciones
               </Button>
-              <Button variant="outline" onClick={load} disabled={busy}>
+              <Button disabled={busy} variant="outline" onClick={load}>
                 <RefreshCw className="mr-1.5 size-4" /> Actualizar
               </Button>
             </div>
           }
+          icon={<ShieldCheck />}
+          subtitle={
+            problems > 0
+              ? `${problems} puesto(s) requieren atención`
+              : "Todos los puestos cubiertos"
+          }
+          title="Cobertura en vivo"
         />
 
         <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <MetricTile
-            label={t('comun.sinCubrir')}
-            value={summary.uncovered || 0}
+            delta={
+              totalPuestos > 0
+                ? {
+                    value: `${pct(summary.uncovered || 0)} %`,
+                    direction: (summary.uncovered || 0) > 0 ? "down" : "flat",
+                  }
+                : undefined
+            }
+            hint={t("ui.Coverage.puestosSinNadiePresente")}
             icon={<ShieldAlert />}
-            delta={totalPuestos > 0 ? { value: `${pct(summary.uncovered || 0)} %`, direction: (summary.uncovered || 0) > 0 ? "down" : "flat" } : undefined}
-            hint={t('ui.Coverage.puestosSinNadiePresente')}
+            label={t("comun.sinCubrir")}
+            value={summary.uncovered || 0}
           />
           <MetricTile
+            delta={
+              totalPuestos > 0
+                ? {
+                    value: `${pct(summary.at_risk || 0)} %`,
+                    direction: (summary.at_risk || 0) > 0 ? "down" : "flat",
+                  }
+                : undefined
+            }
+            hint={t("ui.Coverage.elTurnoEmpezoYNo")}
+            icon={<Clock />}
             label="En riesgo"
             value={summary.at_risk || 0}
-            icon={<Clock />}
-            delta={totalPuestos > 0 ? { value: `${pct(summary.at_risk || 0)} %`, direction: (summary.at_risk || 0) > 0 ? "down" : "flat" } : undefined}
-            hint={t('ui.Coverage.elTurnoEmpezoYNo')}
           />
           <MetricTile
+            delta={
+              totalPuestos > 0
+                ? { value: `${pct(summary.covered || 0)} %`, direction: "up" }
+                : undefined
+            }
+            hint={t("ui.Coverage.vigilantePresenteEnElPuesto")}
+            icon={<ShieldCheck />}
             label="Cubiertos"
             value={summary.covered || 0}
-            icon={<ShieldCheck />}
-            delta={totalPuestos > 0 ? { value: `${pct(summary.covered || 0)} %`, direction: "up" } : undefined}
-            hint={t('ui.Coverage.vigilantePresenteEnElPuesto')}
           />
           <MetricTile
+            hint={t("ui.Coverage.ausenciasAunSinReemplazo")}
+            icon={<ArrowRightLeft />}
             label="Novedades abiertas"
             value={openEvents.length}
-            icon={<ArrowRightLeft />}
-            hint={t('ui.Coverage.ausenciasAunSinReemplazo')}
           />
         </Stagger>
 
         <Segmented<"board" | "events">
-          value={tab}
-          onChange={setTab}
           options={[
             { value: "board", label: "Puestos" },
             { value: "events", label: `Novedades (${events.length})` },
           ]}
+          value={tab}
+          onChange={setTab}
         />
 
         {loading ? (
           <SkeletonCards />
         ) : tab === "board" ? (
-          <Section title={t('ui.Coverage.estadoDeLosPuestos')}>
+          <Section title={t("ui.Coverage.estadoDeLosPuestos")}>
             {!live?.stations.length ? (
-              <EmptyState icon={<ShieldCheck />} title={t('comun.sinPuestos')} description={t("ui.Coverage.todaviaNoHayPuestosConfigurados", "Todavía no hay puestos configurados.")} />
+              <EmptyState
+                description={t(
+                  "ui.Coverage.todaviaNoHayPuestosConfigurados",
+                  "Todavía no hay puestos configurados.",
+                )}
+                icon={<ShieldCheck />}
+                title={t("comun.sinPuestos")}
+              />
             ) : (
               <Stagger className="grid gap-3 lg:grid-cols-2">
-                {live.stations.map((st) => <StationRow key={st.stationId} st={st} />)}
+                {live.stations.map((st) => (
+                  <StationRow key={st.stationId} st={st} />
+                ))}
               </Stagger>
             )}
           </Section>
         ) : (
           <Section title="Novedades registradas">
             {!events.length ? (
-              <EmptyState icon={<ShieldCheck />} title={t('ui.Coverage.sinNovedades')} description={t("ui.Coverage.noSeHanRegistradoNovedades", "No se han registrado novedades en el período.")} />
+              <EmptyState
+                description={t(
+                  "ui.Coverage.noSeHanRegistradoNovedades",
+                  "No se han registrado novedades en el período.",
+                )}
+                icon={<ShieldCheck />}
+                title={t("ui.Coverage.sinNovedades")}
+              />
             ) : (
               <div className="space-y-2">
                 {events.map((ev) => (
-                  <div key={ev.id} className="glass-flat flex flex-wrap items-center gap-3 p-3">
+                  <div
+                    key={ev.id}
+                    className="glass-flat flex flex-wrap items-center gap-3 p-3"
+                  >
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold">
-                        {[ev.absentGuard?.firstName, ev.absentGuard?.lastName].filter(Boolean).join(" ") || "Vigilante"}
+                        {[ev.absentGuard?.firstName, ev.absentGuard?.lastName]
+                          .filter(Boolean)
+                          .join(" ") || "Vigilante"}
                         {" · "}
-                        <span className="font-normal" style={{ color: "var(--ink-soft)" }}>
+                        <span
+                          className="font-normal"
+                          style={{ color: "var(--ink-soft)" }}
+                        >
                           {REASON_LABEL[ev.reason] || ev.reason}
                         </span>
                       </p>
-                      <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
+                      <p
+                        className="text-xs"
+                        style={{ color: "var(--ink-soft)" }}
+                      >
                         {stationLabel(ev.originStation)}
-                        {ev.targetStation ? ` → ${stationLabel(ev.targetStation)}` : ""}
+                        {ev.targetStation
+                          ? ` → ${stationLabel(ev.targetStation)}`
+                          : ""}
                         {" · "}
-                        {new Date(ev.windowStart).toLocaleDateString(localeActual())}
+                        {new Date(ev.windowStart).toLocaleDateString(
+                          localeActual(),
+                        )}
                         {/* Same day start/end reads as one turno; otherwise show
                             the span so a multi-day traslado is legible. */}
-                        {new Date(ev.windowEnd).toLocaleDateString(localeActual()) !==
-                          new Date(ev.windowStart).toLocaleDateString(localeActual()) &&
+                        {new Date(ev.windowEnd).toLocaleDateString(
+                          localeActual(),
+                        ) !==
+                          new Date(ev.windowStart).toLocaleDateString(
+                            localeActual(),
+                          ) &&
                           ` – ${new Date(ev.windowEnd).toLocaleDateString(localeActual())}`}
-                        {ev.coveringGuard && ` · Cubre ${[ev.coveringGuard.firstName, ev.coveringGuard.lastName].filter(Boolean).join(" ")}`}
+                        {ev.coveringGuard &&
+                          ` · Cubre ${[ev.coveringGuard.firstName, ev.coveringGuard.lastName].filter(Boolean).join(" ")}`}
                       </p>
                       {/* A traslado expires on its own — say where they go back
                           to, so nobody goes looking for a button to undo it. */}
-                      {ev.kind === "transfer" && ev.status !== "cancelled" && ev.originStation && (
-                        <p className="mt-0.5 text-[11px] font-medium" style={{ color: "var(--brand-text)" }}>
-                          Vuelve a {stationLabel(ev.originStation)} después del{" "}
-                          {new Date(ev.windowEnd).toLocaleDateString(localeActual())}
-                        </p>
-                      )}
+                      {ev.kind === "transfer" &&
+                        ev.status !== "cancelled" &&
+                        ev.originStation && (
+                          <p
+                            className="mt-0.5 text-[11px] font-medium"
+                            style={{ color: "var(--brand-text)" }}
+                          >
+                            Vuelve a {stationLabel(ev.originStation)} después
+                            del{" "}
+                            {new Date(ev.windowEnd).toLocaleDateString(
+                              localeActual(),
+                            )}
+                          </p>
+                        )}
                     </div>
                     {/* Payroll/discipline consequences, visible where they are decided. */}
-                    {ev.countsAgainstGuard && <StatusBadge tone="bad">Falta grave</StatusBadge>}
-                    <StatusBadge tone="neutral" dot={false}>{ev.paid ? t("ui.Coverage.conSueldo", "Con sueldo") : t("ui.Coverage.sinSueldo", "Sin sueldo")}</StatusBadge>
-                    <StatusBadge tone={ev.status === "open" ? "bad" : ev.status === "resolved" ? "warn" : "ok"}>
+                    {ev.countsAgainstGuard && (
+                      <StatusBadge tone="bad">Falta grave</StatusBadge>
+                    )}
+                    <StatusBadge dot={false} tone="neutral">
+                      {ev.paid
+                        ? t("ui.Coverage.conSueldo", "Con sueldo")
+                        : t("ui.Coverage.sinSueldo", "Sin sueldo")}
+                    </StatusBadge>
+                    <StatusBadge
+                      tone={
+                        ev.status === "open"
+                          ? "bad"
+                          : ev.status === "resolved"
+                            ? "warn"
+                            : "ok"
+                      }
+                    >
                       {ev.status === "open"
                         ? "Sin cubrir"
                         : ev.status === "covered"
                           ? "Cubierto"
-                          // Ya pasó y nadie lo cubrió. No lleva botón «Cubrir»
-                          // porque no hay nada que cubrir: la noche fue y vino.
-                          : ev.status === "resolved"
+                          : // Ya pasó y nadie lo cubrió. No lleva botón «Cubrir»
+                            // porque no hay nada que cubrir: la noche fue y vino.
+                            ev.status === "resolved"
                             ? "Quedó sin cubrir"
                             : ev.status}
                     </StatusBadge>
@@ -566,9 +810,19 @@ export default function Coverage() {
                     )}
                     {ev.status !== "cancelled" && (
                       <Button
-                        size="sm" variant="ghost" disabled={busy}
-                        title={t("ui.Coverage.anularLaNovedadYDevolver", "Anular la novedad y devolver el turno a la rotación")}
-                        onClick={() => runWithConfirm(() => coverageService.cancel(ev.id), "Novedad anulada")}
+                        disabled={busy}
+                        size="sm"
+                        title={t(
+                          "ui.Coverage.anularLaNovedadYDevolver",
+                          "Anular la novedad y devolver el turno a la rotación",
+                        )}
+                        variant="ghost"
+                        onClick={() =>
+                          runWithConfirm(
+                            () => coverageService.cancel(ev.id),
+                            "Novedad anulada",
+                          )
+                        }
                       >
                         <Undo2 className="size-3.5" />
                       </Button>
@@ -583,54 +837,99 @@ export default function Coverage() {
         {/* ── Report a novedad ─────────────────────────────────────────────── */}
         {/* ── Reemplazo por vacaciones/permiso ─────────────────────────────── */}
         <Modal
-          open={repOpen}
-          onOpenChange={(o) => { if (!o) setRepOpen(false); }}
-          title={t('ui.Coverage.reemplazoPorVacacionesOPermiso')}
-          description={t('ui.Coverage.elTitularSalePorUn')}
-          icon={<CalendarRange />}
+          description={t("ui.Coverage.elTitularSalePorUn")}
           footer={
             <>
-              <Button variant="outline" onClick={() => setRepOpen(false)}>{t('actions.cancel')}</Button>
-              <Button onClick={submitReplacement} disabled={busy || !repOut || !repIn || !repFrom || !repTo}>
+              <Button variant="outline" onClick={() => setRepOpen(false)}>
+                {t("actions.cancel")}
+              </Button>
+              <Button
+                disabled={busy || !repOut || !repIn || !repFrom || !repTo}
+                onClick={submitReplacement}
+              >
                 <UserPlus className="mr-1.5 size-4" /> Aplicar reemplazo
               </Button>
             </>
           }
+          icon={<CalendarRange />}
+          open={repOpen}
+          title={t("ui.Coverage.reemplazoPorVacacionesOPermiso")}
+          onOpenChange={(o) => {
+            if (!o) setRepOpen(false);
+          }}
         >
           <div className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="cg-eyebrow mb-1.5 block">{t('ui.Coverage.vigilanteQueSale')}</label>
-                <GuardTypeahead value={repOut} onSelect={setRepOut}
-                  excludeGuardId={repIn?.guardId} placeholder={t("ui.Coverage.quienTomaVacacionesPermiso", "Quién toma vacaciones/permiso")} />
+                <label className="cg-eyebrow mb-1.5 block">
+                  {t("ui.Coverage.vigilanteQueSale")}
+                </label>
+                <GuardTypeahead
+                  excludeGuardId={repIn?.guardId}
+                  placeholder={t(
+                    "ui.Coverage.quienTomaVacacionesPermiso",
+                    "Quién toma vacaciones/permiso",
+                  )}
+                  value={repOut}
+                  onSelect={setRepOut}
+                />
               </div>
               <div>
                 <label className="cg-eyebrow mb-1.5 block">Reemplazo</label>
-                <GuardTypeahead value={repIn} onSelect={setRepIn}
-                  excludeGuardId={repOut?.guardId} placeholder={t("ui.Coverage.quienLoCubre", "Quién lo cubre")} />
+                <GuardTypeahead
+                  excludeGuardId={repOut?.guardId}
+                  placeholder={t("ui.Coverage.quienLoCubre", "Quién lo cubre")}
+                  value={repIn}
+                  onSelect={setRepIn}
+                />
               </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
               <div>
-                <label className="cg-eyebrow mb-1.5 block">{t('comun.desde')}</label>
-                <input type="date" value={repFrom} max={repTo || undefined}
+                <label className="cg-eyebrow mb-1.5 block">
+                  {t("comun.desde")}
+                </label>
+                <input
+                  className="w-full rounded-xl border border-[var(--hairline)] bg-[var(--glass-sunken)] px-3 py-2 text-sm text-[var(--ink)] outline-none"
+                  max={repTo || undefined}
+                  type="date"
+                  value={repFrom}
                   onChange={(e) => setRepFrom(e.target.value)}
-                  className="w-full rounded-xl border border-[var(--hairline)] bg-[var(--glass-sunken)] px-3 py-2 text-sm text-[var(--ink)] outline-none" />
+                />
               </div>
               <div>
-                <label className="cg-eyebrow mb-1.5 block">{t('comun.hasta')}</label>
-                <input type="date" value={repTo} min={repFrom || undefined}
+                <label className="cg-eyebrow mb-1.5 block">
+                  {t("comun.hasta")}
+                </label>
+                <input
+                  className="w-full rounded-xl border border-[var(--hairline)] bg-[var(--glass-sunken)] px-3 py-2 text-sm text-[var(--ink)] outline-none"
+                  min={repFrom || undefined}
+                  type="date"
+                  value={repTo}
                   onChange={(e) => setRepTo(e.target.value)}
-                  className="w-full rounded-xl border border-[var(--hairline)] bg-[var(--glass-sunken)] px-3 py-2 text-sm text-[var(--ink)] outline-none" />
+                />
               </div>
               <div>
-                <label className="cg-eyebrow mb-1.5 block">{t('comun.motivo')}</label>
-                <Select value={repReason} onValueChange={(v) => setRepReason(v as CoverageReason)}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                <label className="cg-eyebrow mb-1.5 block">
+                  {t("comun.motivo")}
+                </label>
+                <Select
+                  value={repReason}
+                  onValueChange={(v) => setRepReason(v as CoverageReason)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
-                    {["vacaciones", "permiso_con_sueldo", "permiso_sin_sueldo"].map((r) => (
-                      <SelectItem key={r} value={r}>{REASON_LABEL[r] || r}</SelectItem>
+                    {[
+                      "vacaciones",
+                      "permiso_con_sueldo",
+                      "permiso_sin_sueldo",
+                    ].map((r) => (
+                      <SelectItem key={r} value={r}>
+                        {REASON_LABEL[r] || r}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -639,12 +938,25 @@ export default function Coverage() {
 
             {/* Resumen en vivo: lo que va a pasar, en una frase clara. */}
             {repOut && repIn && repFrom && repTo && (
-              <GlassPanel className="p-3 text-sm" style={{ color: "var(--ink-soft)" }}>
-                <span className="font-semibold text-[var(--ink)]">{repIn.label}</span> reemplaza a{" "}
-                <span className="font-semibold text-[var(--ink)]">{repOut.label}</span> del{" "}
-                <span className="font-semibold text-[var(--ink)]">{repFrom}</span> al{" "}
-                <span className="font-semibold text-[var(--ink)]">{repTo}</span>. Toma sus turnos del puesto,
-                figura en la estación y puede fichar. Al terminar, la rotación del titular regresa sola.
+              <GlassPanel
+                className="p-3 text-sm"
+                style={{ color: "var(--ink-soft)" }}
+              >
+                <span className="font-semibold text-[var(--ink)]">
+                  {repIn.label}
+                </span>{" "}
+                reemplaza a{" "}
+                <span className="font-semibold text-[var(--ink)]">
+                  {repOut.label}
+                </span>{" "}
+                del{" "}
+                <span className="font-semibold text-[var(--ink)]">
+                  {repFrom}
+                </span>{" "}
+                al{" "}
+                <span className="font-semibold text-[var(--ink)]">{repTo}</span>
+                . Toma sus turnos del puesto, figura en la estación y puede
+                fichar. Al terminar, la rotación del titular regresa sola.
               </GlassPanel>
             )}
           </div>
@@ -652,35 +964,47 @@ export default function Coverage() {
 
         {/* ── Registrar la entrada a nombre del vigilante ──────────────────── */}
         <Modal
-          open={!!entradaManualFor}
-          onOpenChange={(o) => !o && setEntradaManualFor(null)}
-          title="Registrar entrada a nombre del vigilante"
           description={`${entradaManualFor?.fullName || "Vigilante"} · ${entradaManualFor?.stationName || ""}`}
-          icon={<UserCheck />}
           footer={
             <>
-              <Button variant="outline" onClick={() => setEntradaManualFor(null)}>{t('actions.cancel')}</Button>
-              <Button onClick={registrarEntradaManual} disabled={busy || motivoManual.trim().length < 10}>
+              <Button
+                variant="outline"
+                onClick={() => setEntradaManualFor(null)}
+              >
+                {t("actions.cancel")}
+              </Button>
+              <Button
+                disabled={busy || motivoManual.trim().length < 10}
+                onClick={registrarEntradaManual}
+              >
                 Registrar entrada
               </Button>
             </>
           }
+          icon={<UserCheck />}
+          open={!!entradaManualFor}
+          title="Registrar entrada a nombre del vigilante"
+          onOpenChange={(o) => !o && setEntradaManualFor(null)}
         >
           <div className="space-y-3">
             <InfoNote tone="warn">
-              Úsalo sólo cuando la persona <b>está en el puesto</b> y no puede fichar. El turno se
-              registra <b>sin ubicación</b> —nadie marcó con GPS, y no lo inventamos— y queda en{" "}
-              <b>espera de revisión</b> con tu nombre y el motivo en la bitácora de la tarjeta.
+              Úsalo sólo cuando la persona <b>está en el puesto</b> y no puede
+              fichar. El turno se registra <b>sin ubicación</b> —nadie marcó con
+              GPS, y no lo inventamos— y queda en <b>espera de revisión</b> con
+              tu nombre y el motivo en la bitácora de la tarjeta.
             </InfoNote>
             <label className="block">
               <span className="cg-eyebrow mb-1 block">Motivo *</span>
               <input
                 className="cg-input cg-focus w-full px-3 py-2 text-sm"
+                placeholder="Ej.: se le dañó el teléfono camino al puesto; reportó por radio a la central"
                 value={motivoManual}
                 onChange={(e) => setMotivoManual(e.target.value)}
-                placeholder="Ej.: se le dañó el teléfono camino al puesto; reportó por radio a la central"
               />
-              <span className="mt-1 block text-[10px]" style={{ color: "var(--ink-faint)" }}>
+              <span
+                className="mt-1 block text-[10px]"
+                style={{ color: "var(--ink-faint)" }}
+              >
                 {motivoManual.trim().length < 10
                   ? "Escribe al menos 10 caracteres: dentro de un mes alguien va a leer esto para entender por qué se pagó un turno sin fichaje."
                   : "Queda en la bitácora, junto a quién lo autorizó."}
@@ -690,75 +1014,116 @@ export default function Coverage() {
         </Modal>
 
         <Modal
-          open={!!absenceFor}
-          onOpenChange={(o) => !o && setAbsenceFor(null)}
-          title="Marcar novedad"
           description={`${absenceFor?.fullName || "Vigilante"} · ${absenceFor?.stationName || ""}`}
-          icon={<ShieldAlert />}
           footer={
             <>
-              <Button variant="outline" onClick={() => setAbsenceFor(null)}>{t('actions.cancel')}</Button>
-              <Button onClick={submitAbsence} disabled={busy}>Registrar</Button>
+              <Button variant="outline" onClick={() => setAbsenceFor(null)}>
+                {t("actions.cancel")}
+              </Button>
+              <Button disabled={busy} onClick={submitAbsence}>
+                Registrar
+              </Button>
             </>
           }
+          icon={<ShieldAlert />}
+          open={!!absenceFor}
+          title="Marcar novedad"
+          onOpenChange={(o) => !o && setAbsenceFor(null)}
         >
           <div className="space-y-4">
             <div>
-              <label className="cg-eyebrow mb-1.5 block">{t('comun.motivo')}</label>
-              <Select value={reason} onValueChange={(v) => setReason(v as CoverageReason)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+              <label className="cg-eyebrow mb-1.5 block">
+                {t("comun.motivo")}
+              </label>
+              <Select
+                value={reason}
+                onValueChange={(v) => setReason(v as CoverageReason)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   {COVERAGE_REASONS.map((r) => (
-                    <SelectItem key={r} value={r}>{REASON_LABEL[r]}</SelectItem>
+                    <SelectItem key={r} value={r}>
+                      {REASON_LABEL[r]}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               {/* The reason is not a label: it decides pay and discipline. */}
-              <p className="mt-1.5 text-xs" style={{ color: "var(--ink-soft)" }}>
-                El motivo define si la ausencia es remunerada y si afecta el récord del vigilante.
+              <p
+                className="mt-1.5 text-xs"
+                style={{ color: "var(--ink-soft)" }}
+              >
+                El motivo define si la ausencia es remunerada y si afecta el
+                récord del vigilante.
               </p>
             </div>
             <div>
-              <label className="cg-eyebrow mb-1.5 block">{t('ui.Coverage.detalleOpcional')}</label>
-              <Textarea value={note} onChange={(e) => setNote(e.target.value)} rows={3}
-                placeholder={t("ui.Coverage.ejLlamoSeLeDano", "Ej.: llamó, se le dañó la moto en la vía")} />
+              <label className="cg-eyebrow mb-1.5 block">
+                {t("ui.Coverage.detalleOpcional")}
+              </label>
+              <Textarea
+                placeholder={t(
+                  "ui.Coverage.ejLlamoSeLeDano",
+                  "Ej.: llamó, se le dañó la moto en la vía",
+                )}
+                rows={3}
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+              />
             </div>
           </div>
         </Modal>
 
         {/* ── Cover an empty post ──────────────────────────────────────────── */}
         <Modal
-          open={!!coverFor}
-          onOpenChange={(o) => !o && setCoverFor(null)}
-          title={t("ui.Coverage.quienCubreElPuesto", "¿Quién cubre el puesto?")}
           icon={<UserPlus />}
+          open={!!coverFor}
+          title={t("ui.Coverage.quienCubreElPuesto", "¿Quién cubre el puesto?")}
+          onOpenChange={(o) => !o && setCoverFor(null)}
         >
           <div className="space-y-2">
             {candidates == null ? (
               <SkeletonCards />
             ) : !candidates.length ? (
-              <EmptyState icon={<UserPlus />} title={t('comun.sinVigilantesDisponibles')} description={t("ui.Coverage.nadieEstaLibreEnEse", "Nadie está libre en ese horario.")} />
+              <EmptyState
+                description={t(
+                  "ui.Coverage.nadieEstaLibreEnEse",
+                  "Nadie está libre en ese horario.",
+                )}
+                icon={<UserPlus />}
+                title={t("comun.sinVigilantesDisponibles")}
+              />
             ) : (
               candidates.map((c) => (
                 <button
                   key={c.guardId}
-                  type="button"
-                  disabled={busy}
                   className="glass-flat glass-hover cg-focus flex w-full items-center gap-3 p-3 text-left"
+                  disabled={busy}
+                  type="button"
                   onClick={async () => {
                     const ok = await runWithConfirm(
-                      (flags) => coverageService.cover(coverFor.id, c.guardId, flags),
+                      (flags) =>
+                        coverageService.cover(coverFor.id, c.guardId, flags),
                       "Puesto cubierto",
                     );
+
                     if (ok) setCoverFor(null);
                   }}
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">{c.fullName || "Vigilante"}</p>
+                    <p className="truncate text-sm font-medium">
+                      {c.fullName || "Vigilante"}
+                    </p>
                     {/* Why the system suggests them — the operator can overrule it. */}
-                    <p className="text-xs" style={{ color: "var(--ink-soft)" }}>{c.reason}</p>
+                    <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
+                      {c.reason}
+                    </p>
                   </div>
-                  <IconTile size="sm"><UserPlus /></IconTile>
+                  <IconTile size="sm">
+                    <UserPlus />
+                  </IconTile>
                 </button>
               ))
             )}
@@ -767,28 +1132,39 @@ export default function Coverage() {
 
         {/* ── Temporary transfer ───────────────────────────────────────────── */}
         <Modal
-          open={!!transferFor}
-          onOpenChange={(o) => !o && setTransferFor(null)}
-          title="Traslado temporal"
           description={`${transferFor?.fullName || "Vigilante"} · desde ${transferFor?.stationName || ""}`}
-          icon={<ArrowRightLeft />}
           footer={
             <>
-              <Button variant="outline" onClick={() => setTransferFor(null)}>{t('actions.cancel')}</Button>
-              <Button onClick={submitTransfer} disabled={busy || !toStationId}>Trasladar</Button>
+              <Button variant="outline" onClick={() => setTransferFor(null)}>
+                {t("actions.cancel")}
+              </Button>
+              <Button disabled={busy || !toStationId} onClick={submitTransfer}>
+                Trasladar
+              </Button>
             </>
           }
+          icon={<ArrowRightLeft />}
+          open={!!transferFor}
+          title="Traslado temporal"
+          onOpenChange={(o) => !o && setTransferFor(null)}
         >
           <div className="space-y-4">
             <div>
-              <label className="cg-eyebrow mb-1.5 block">{t('comun.puestoDestino')}</label>
+              <label className="cg-eyebrow mb-1.5 block">
+                {t("comun.puestoDestino")}
+              </label>
               <Select value={toStationId} onValueChange={setToStationId}>
-                <SelectTrigger><SelectValue placeholder={t('comun.eligeUnPuesto')} /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue placeholder={t("comun.eligeUnPuesto")} />
+                </SelectTrigger>
                 <SelectContent>
                   {/* The live payload already carries every station the caller
                       may see, correctly tenant-scoped — no second fetch needed. */}
                   {(live?.stations || [])
-                    .filter((s) => String(s.stationId) !== String(transferFor?.stationId))
+                    .filter(
+                      (s) =>
+                        String(s.stationId) !== String(transferFor?.stationId),
+                    )
                     .map((s) => (
                       <SelectItem key={s.stationId} value={String(s.stationId)}>
                         {stationLabel(s)}
@@ -798,32 +1174,41 @@ export default function Coverage() {
               </Select>
             </div>
             <div>
-              <label className="cg-eyebrow mb-1.5 block">{t("ui.Coverage.duracion", "Duración")}</label>
+              <label className="cg-eyebrow mb-1.5 block">
+                {t("ui.Coverage.duracion", "Duración")}
+              </label>
               <Segmented<"shift" | "range">
-                value={transferMode}
-                onChange={(v) => {
-                  setTransferMode(v);
-                  if (v === "range" && !transferUntil) setTransferUntil(tenantToday());
-                }}
                 options={[
                   { value: "shift", label: "Solo este turno" },
                   { value: "range", label: "Hasta una fecha" },
                 ]}
+                value={transferMode}
+                onChange={(v) => {
+                  setTransferMode(v);
+                  if (v === "range" && !transferUntil)
+                    setTransferUntil(tenantToday());
+                }}
               />
               {transferMode === "range" && (
                 <input
+                  className="cg-input cg-focus mt-2 w-full px-3 py-2 text-sm tabular-nums"
+                  min={tenantToday()}
                   type="date"
                   value={transferUntil}
-                  min={tenantToday()}
                   onChange={(e) => setTransferUntil(e.target.value)}
-                  className="cg-input cg-focus mt-2 w-full px-3 py-2 text-sm tabular-nums"
                 />
               )}
             </div>
             <div>
-              <label className="cg-eyebrow mb-1.5 block">{t('comun.motivoOpcional')}</label>
-              <Textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2}
-                placeholder={t('ui.Coverage.ejRefuerzoPorEventoEn')} />
+              <label className="cg-eyebrow mb-1.5 block">
+                {t("comun.motivoOpcional")}
+              </label>
+              <Textarea
+                placeholder={t("ui.Coverage.ejRefuerzoPorEventoEn")}
+                rows={2}
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+              />
             </div>
             {/* The single most important thing to state plainly: the traslado
                 ENDS BY ITSELF. It moves only the turnos in the range, so the
@@ -835,14 +1220,20 @@ export default function Coverage() {
                   : "Cubre el destino solo en este turno."}
               </p>
               <p className="mt-1" style={{ color: "var(--ink-soft)" }}>
-                {t('ui.Coverage.despuesVuelveAutomaticamenteA', 'Después vuelve automáticamente a')} <strong>{transferFor?.stationName || "su puesto"}</strong>.
-                No hace falta revertirlo: solo se trasladan los turnos del rango.
+                {t(
+                  "ui.Coverage.despuesVuelveAutomaticamenteA",
+                  "Después vuelve automáticamente a",
+                )}{" "}
+                <strong>{transferFor?.stationName || "su puesto"}</strong>. No
+                hace falta revertirlo: solo se trasladan los turnos del rango.
               </p>
             </div>
             <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
-              El vigilante podrá marcar entrada en el puesto destino y recibirá sus
-              recordatorios de turno allí, como cualquier turno normal. El puesto que deja
-              queda visible como <strong>{t('ui.Coverage.sinCubrir')}</strong> hasta que se asigne un reemplazo.
+              El vigilante podrá marcar entrada en el puesto destino y recibirá
+              sus recordatorios de turno allí, como cualquier turno normal. El
+              puesto que deja queda visible como{" "}
+              <strong>{t("ui.Coverage.sinCubrir")}</strong> hasta que se asigne
+              un reemplazo.
             </p>
           </div>
         </Modal>

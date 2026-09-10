@@ -1,5 +1,5 @@
-import api from '@/lib/api';
-import { PostSiteInput } from '@/lib/validators/post-site';
+import api from "@/lib/api";
+import { PostSiteInput } from "@/lib/validators/post-site";
 
 export interface PostSite {
   id: string;
@@ -12,7 +12,7 @@ export interface PostSite {
   fax?: string;
   categoryId?: string;
   category?: { id: string; name: string };
-  status: 'active' | 'inactive';
+  status: "active" | "inactive";
   createdAt?: string;
   updatedAt?: string;
   // Extended backend fields
@@ -44,7 +44,12 @@ export interface RawBusinessInfoRow {
   clientAccountId?: string;
   clientId?: string;
   client?: { id: string; name: string };
-  clientAccount?: { id: string; name: string; lastName?: string; commercialName?: string };
+  clientAccount?: {
+    id: string;
+    name: string;
+    lastName?: string;
+    commercialName?: string;
+  };
   clientAccountName?: string;
   address?: string;
   secondAddress?: string;
@@ -97,7 +102,7 @@ export interface PostSiteFilters {
   city?: string;
   country?: string;
   // support both `status` (string) and `active` (boolean) used in different pages
-  status?: 'active' | 'inactive';
+  status?: "active" | "inactive";
   active?: boolean;
 }
 
@@ -122,8 +127,10 @@ export const setTenantId = (id: string) => {
 const getTenantId = (): string => {
   if (globalTenantId) return globalTenantId;
   const local = localStorage.getItem("tenantId");
+
   if (local) {
     globalTenantId = local;
+
     return local;
   }
 
@@ -132,30 +139,47 @@ const getTenantId = (): string => {
     const w = window as unknown as {
       __APP_AUTH?: {
         tenantId?: string;
-        user?: { tenants?: Array<{ tenantId?: string; tenant?: { id?: string; tenantId?: string } }> };
+        user?: {
+          tenants?: Array<{
+            tenantId?: string;
+            tenant?: { id?: string; tenantId?: string };
+          }>;
+        };
       };
     };
     const info = w.__APP_AUTH;
+
     if (info) {
       if (info.tenantId) {
         globalTenantId = info.tenantId;
-        try { localStorage.setItem('tenantId', info.tenantId); } catch {}
+        try {
+          localStorage.setItem("tenantId", info.tenantId);
+        } catch {}
+
         return info.tenantId;
       }
       const u = info.user;
+
       if (u && Array.isArray(u.tenants) && u.tenants.length > 0) {
         const t = u.tenants[0];
-        const tid = t.tenantId || (t.tenant && (t.tenant.id || t.tenant.tenantId));
+        const tid =
+          t.tenantId || (t.tenant && (t.tenant.id || t.tenant.tenantId));
+
         if (tid) {
           globalTenantId = tid;
-          try { localStorage.setItem('tenantId', tid); } catch {}
+          try {
+            localStorage.setItem("tenantId", tid);
+          } catch {}
+
           return tid;
         }
       }
     }
   } catch (e) {}
 
-  throw new Error("El usuario debe estar vinculado a una empresa para continuar.");
+  throw new Error(
+    "El usuario debe estar vinculado a una empresa para continuar.",
+  );
 };
 
 const postSiteService = {
@@ -164,52 +188,62 @@ const postSiteService = {
    */
   async list(
     filters: PostSiteFilters = {},
-    options: PaginationOptions = { limit: 25, offset: 0 }
+    options: PaginationOptions = { limit: 25, offset: 0 },
   ): Promise<PostSiteListResponse> {
     try {
       const tenantId = getTenantId();
       const params = new URLSearchParams();
-      
-      if (filters.name) params.append('filter[name]', filters.name);
-      if (filters.clientId) params.append('filter[clientId]', filters.clientId);
+
+      if (filters.name) params.append("filter[name]", filters.name);
+      if (filters.clientId) params.append("filter[clientId]", filters.clientId);
 
       // category may be provided as `category` or `categoryId`
       const categoryToUse = filters.categoryId ?? filters.category;
+
       if (categoryToUse) {
         // Only send `categoryIds` to avoid ambiguous column errors
-        params.append('filter[categoryIds]', categoryToUse);
+        params.append("filter[categoryIds]", categoryToUse);
       }
 
       // email / phone filters - include common backend field variants
       if (filters.email) {
-        params.append('filter[email]', filters.email);
-        params.append('filter[contactEmail]', filters.email);
+        params.append("filter[email]", filters.email);
+        params.append("filter[contactEmail]", filters.email);
       }
       const phoneToUse = filters.phone ?? filters.phoneNumber;
+
       if (phoneToUse) {
-        params.append('filter[phone]', phoneToUse);
-        params.append('filter[contactPhone]', phoneToUse);
+        params.append("filter[phone]", phoneToUse);
+        params.append("filter[contactPhone]", phoneToUse);
       }
 
-      if (filters.city) params.append('filter[city]', filters.city);
-      if (filters.country) params.append('filter[country]', filters.country);
+      if (filters.city) params.append("filter[city]", filters.city);
+      if (filters.country) params.append("filter[country]", filters.country);
 
       // status can be provided as a string `status` or boolean `active`.
       // Normalize to `filter[active]=true|false` which the backend accepts.
-      if (typeof filters.status === 'string') {
-        params.append('filter[active]', filters.status === 'active' ? 'true' : 'false');
-      } else if (typeof filters.active === 'boolean') {
-        params.append('filter[active]', filters.active.toString());
+      if (typeof filters.status === "string") {
+        params.append(
+          "filter[active]",
+          filters.status === "active" ? "true" : "false",
+        );
+      } else if (typeof filters.active === "boolean") {
+        params.append("filter[active]", filters.active.toString());
       }
-      
-      params.append('limit', options.limit.toString());
-      params.append('offset', options.offset.toString());
 
-      if (typeof window !== 'undefined') {
+      params.append("limit", options.limit.toString());
+      params.append("offset", options.offset.toString());
+
+      if (typeof window !== "undefined") {
         // eslint-disable-next-line no-console
-        console.debug('[postSiteService] list params ->', params.toString());
+        console.debug("[postSiteService] list params ->", params.toString());
       }
-      const { data } = await api.get<{ rows?: RawBusinessInfoRow[]; count: number }>(`/tenant/${tenantId}/business-info?${params.toString()}`, { toast: { silentError: true } });
+      const { data } = await api.get<{
+        rows?: RawBusinessInfoRow[];
+        count: number;
+      }>(`/tenant/${tenantId}/business-info?${params.toString()}`, {
+        toast: { silentError: true },
+      });
 
       // Map backend `business-info` shape to frontend `PostSite` shape
       const mappedRows = (data.rows || []).map((r: RawBusinessInfoRow) => ({
@@ -231,22 +265,38 @@ const postSiteService = {
         phone: r.contactPhone ?? r.phone ?? undefined,
         contactPhone: r.contactPhone ?? r.phone ?? undefined,
         fax: r.fax ?? undefined,
-        categoryId: Array.isArray(r.categoryIds) && r.categoryIds.length > 0 ? r.categoryIds[0] : undefined,
+        categoryId:
+          Array.isArray(r.categoryIds) && r.categoryIds.length > 0
+            ? r.categoryIds[0]
+            : undefined,
         category: undefined,
         categoryIds: Array.isArray(r.categoryIds) ? r.categoryIds : [],
-        status: typeof r.active === 'boolean' ? (r.active ? 'active' : 'inactive') : ((r.status as 'active' | 'inactive') ?? 'inactive'),
+        status:
+          typeof r.active === "boolean"
+            ? r.active
+              ? "active"
+              : "inactive"
+            : ((r.status as "active" | "inactive") ?? "inactive"),
         // station-specific fields (backend uses business-info for post-sites)
         latitud: r.latitud ?? r.latitude ?? undefined,
         longitud: r.longitud ?? r.longitude ?? undefined,
         stationSchedule: r.stationSchedule ?? undefined,
         startingTimeInDay: r.startingTimeInDay ?? undefined,
         finishTimeInDay: r.finishTimeInDay ?? undefined,
-        assignedGuards: Array.isArray(r.assignedGuards) ? r.assignedGuards : undefined,
-        guardsCount: typeof r.guardsCount === 'number' ? r.guardsCount : (Array.isArray(r.assignedGuards) ? r.assignedGuards.length : undefined),
+        assignedGuards: Array.isArray(r.assignedGuards)
+          ? r.assignedGuards
+          : undefined,
+        guardsCount:
+          typeof r.guardsCount === "number"
+            ? r.guardsCount
+            : Array.isArray(r.assignedGuards)
+              ? r.assignedGuards.length
+              : undefined,
       }));
+
       return { rows: mappedRows as unknown as PostSite[], count: data.count };
     } catch (error) {
-      console.error('Error fetching post sites:', error);
+      console.error("Error fetching post sites:", error);
       throw error;
     }
   },
@@ -257,15 +307,20 @@ const postSiteService = {
   async get(id: string): Promise<RawBusinessInfoRow> {
     try {
       const tenantId = getTenantId();
-      const { data } = await api.get<RawBusinessInfoRow>(`/tenant/${tenantId}/business-info/${id}`, {
-        // Prevent global interceptor from showing duplicate toasts for not-found errors.
-        toast: { silentError: true },
-      });
+      const { data } = await api.get<RawBusinessInfoRow>(
+        `/tenant/${tenantId}/business-info/${id}`,
+        {
+          // Prevent global interceptor from showing duplicate toasts for not-found errors.
+          toast: { silentError: true },
+        },
+      );
+
       // Return raw backend object so callers can access fields like companyName, categoryIds, latitud, longitud, etc.
-      console.debug('Fetched post site:', data);
+      console.debug("Fetched post site:", data);
+
       return data;
     } catch (error) {
-      console.error('Error fetching post site:', error);
+      console.error("Error fetching post site:", error);
       throw error;
     }
   },
@@ -275,7 +330,10 @@ const postSiteService = {
       const tenantId = getTenantId();
       // The form schema uses `latitud`/`longitud`; older callers may still pass
       // `latitude`/`longitude`, so widen for those legacy fallbacks.
-      const p = payload as PostSiteInput & { latitude?: string; longitude?: string };
+      const p = payload as PostSiteInput & {
+        latitude?: string;
+        longitude?: string;
+      };
       const body = {
         companyName: p.name ?? undefined,
         clientId: p.clientId ?? undefined,
@@ -291,9 +349,7 @@ const postSiteService = {
         categoryIds: p.categoryId ? [p.categoryId] : [],
         contactEmail: p.email ?? undefined,
         // Ensure new records default to active = true when status not provided
-        active: typeof p.status === 'string'
-          ? p.status === 'active'
-          : true,
+        active: typeof p.status === "string" ? p.status === "active" : true,
         latitud: p.latitud ?? p.latitude ?? undefined,
         longitud: p.longitud ?? p.longitude ?? undefined,
         // allow creating with schedule and times if provided
@@ -303,15 +359,19 @@ const postSiteService = {
       };
 
       // Debug log to inspect payload sent to backend (helps diagnose 400s for missing fields)
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         // eslint-disable-next-line no-console
-        console.debug('[postSiteService] create body ->', body);
+        console.debug("[postSiteService] create body ->", body);
       }
 
-      const { data } = await api.post(`/tenant/${tenantId}/business-info`, body);
+      const { data } = await api.post(
+        `/tenant/${tenantId}/business-info`,
+        body,
+      );
+
       return data;
     } catch (error) {
-      console.error('Error creating post site:', error);
+      console.error("Error creating post site:", error);
       throw error;
     }
   },
@@ -323,45 +383,65 @@ const postSiteService = {
     try {
       const tenantId = getTenantId();
       // Fetch existing record so we can preserve backend-expected fields
-      const existingRes = await api.get<RawBusinessInfoRow>(`/tenant/${tenantId}/business-info/${id}`);
+      const existingRes = await api.get<RawBusinessInfoRow>(
+        `/tenant/${tenantId}/business-info/${id}`,
+      );
       const existing: RawBusinessInfoRow = existingRes.data || {};
 
       // `chargeRate`/`payRate` and `latitude`/`longitude` are legacy/extra
       // fields not on the form schema; widen the access type for them.
-      const p = payload as Partial<PostSiteInput> & { latitude?: string; longitude?: string; chargeRate?: number; payRate?: number };
+      const p = payload as Partial<PostSiteInput> & {
+        latitude?: string;
+        longitude?: string;
+        chargeRate?: number;
+        payRate?: number;
+      };
       const body = {
         // preserve or override
         companyName: p.name ?? existing.companyName ?? existing.name,
         // backend expects clientAccountId in some endpoints
-        clientAccountId: p.clientId ?? existing.clientAccountId ?? existing.clientId,
+        clientAccountId:
+          p.clientId ?? existing.clientAccountId ?? existing.clientId,
         address: p.address ?? existing.address,
-        secondAddress: p.addressLine2 ?? existing.secondAddress ?? existing.addressLine2,
+        secondAddress:
+          p.addressLine2 ?? existing.secondAddress ?? existing.addressLine2,
         postalCode: p.postalCode ?? existing.postalCode ?? existing.zipCode,
         city: p.city ?? existing.city,
         country: p.country ?? existing.country,
         description: p.description ?? existing.description,
         contactPhone: p.phone ?? existing.contactPhone ?? existing.phone,
         fax: p.fax ?? existing.fax,
-        categoryIds: p.categoryId ? [p.categoryId] : (existing.categoryIds || []),
+        categoryIds: p.categoryId ? [p.categoryId] : existing.categoryIds || [],
         contactEmail: p.email ?? existing.contactEmail ?? existing.email,
         // For updates, only change active when status provided
-        active: typeof p.status === 'string'
-          ? p.status === 'active'
-          : existing.active,
-        latitud: p.latitud ?? p.latitude ?? existing.latitud ?? existing.latitude,
-        longitud: p.longitud ?? p.longitude ?? existing.longitud ?? existing.longitude,
+        active:
+          typeof p.status === "string"
+            ? p.status === "active"
+            : existing.active,
+        latitud:
+          p.latitud ?? p.latitude ?? existing.latitud ?? existing.latitude,
+        longitud:
+          p.longitud ?? p.longitude ?? existing.longitud ?? existing.longitude,
         // preserve or update schedule/times if provided
         stationSchedule: p.stationSchedule ?? existing.stationSchedule,
         startingTimeInDay: p.startingTimeInDay ?? existing.startingTimeInDay,
         finishTimeInDay: p.finishTimeInDay ?? existing.finishTimeInDay,
-        chargeRate: p.chargeRate !== undefined ? p.chargeRate : (existing.chargeRate ?? undefined),
-        payRate: p.payRate !== undefined ? p.payRate : (existing.payRate ?? undefined),
+        chargeRate:
+          p.chargeRate !== undefined
+            ? p.chargeRate
+            : (existing.chargeRate ?? undefined),
+        payRate:
+          p.payRate !== undefined ? p.payRate : (existing.payRate ?? undefined),
       };
 
-      const { data } = await api.patch(`/tenant/${tenantId}/business-info/${id}`, body);
+      const { data } = await api.patch(
+        `/tenant/${tenantId}/business-info/${id}`,
+        body,
+      );
+
       return data;
     } catch (error) {
-      console.error('Error updating post site:', error);
+      console.error("Error updating post site:", error);
       throw error;
     }
   },
@@ -372,9 +452,10 @@ const postSiteService = {
   async delete(ids: string[]): Promise<void> {
     try {
       const tenantId = getTenantId();
+
       await api.delete(`/tenant/${tenantId}/business-info`, { data: { ids } });
     } catch (error) {
-      console.error('Error deleting post sites:', error);
+      console.error("Error deleting post sites:", error);
       throw error;
     }
   },
@@ -386,39 +467,51 @@ const postSiteService = {
     try {
       const tenantId = getTenantId();
       const params = new URLSearchParams();
-      
-      if (filters.name) params.append('filter[name]', filters.name);
-      if (filters.clientId) params.append('filter[clientId]', filters.clientId);
+
+      if (filters.name) params.append("filter[name]", filters.name);
+      if (filters.clientId) params.append("filter[clientId]", filters.clientId);
       const categoryToUse = filters.categoryId ?? filters.category;
+
       if (categoryToUse) {
-        params.append('filter[categoryIds]', categoryToUse);
+        params.append("filter[categoryIds]", categoryToUse);
       }
       if (filters.email) {
-        params.append('filter[email]', filters.email);
-        params.append('filter[contactEmail]', filters.email);
+        params.append("filter[email]", filters.email);
+        params.append("filter[contactEmail]", filters.email);
       }
       const phoneToUse = filters.phone ?? filters.phoneNumber;
-      if (phoneToUse) {
-        params.append('filter[phone]', phoneToUse);
-        params.append('filter[contactPhone]', phoneToUse);
-      }
-      if (typeof filters.status === 'string') {
-        params.append('filter[active]', filters.status === 'active' ? 'true' : 'false');
-      } else if (typeof filters.active === 'boolean') {
-        params.append('filter[active]', filters.active.toString());
-      }
-      params.append('format', 'pdf');
 
-      if (typeof window !== 'undefined') {
-        // eslint-disable-next-line no-console
-        console.debug('[postSiteService] exportPDF params ->', params.toString());
+      if (phoneToUse) {
+        params.append("filter[phone]", phoneToUse);
+        params.append("filter[contactPhone]", phoneToUse);
       }
-      const { data } = await api.get(`/tenant/${tenantId}/business-info/export?${params.toString()}`, {
-        responseType: 'blob',
-      });
+      if (typeof filters.status === "string") {
+        params.append(
+          "filter[active]",
+          filters.status === "active" ? "true" : "false",
+        );
+      } else if (typeof filters.active === "boolean") {
+        params.append("filter[active]", filters.active.toString());
+      }
+      params.append("format", "pdf");
+
+      if (typeof window !== "undefined") {
+        // eslint-disable-next-line no-console
+        console.debug(
+          "[postSiteService] exportPDF params ->",
+          params.toString(),
+        );
+      }
+      const { data } = await api.get(
+        `/tenant/${tenantId}/business-info/export?${params.toString()}`,
+        {
+          responseType: "blob",
+        },
+      );
+
       return data;
     } catch (error) {
-      console.error('Error exporting PDF:', error);
+      console.error("Error exporting PDF:", error);
       throw error;
     }
   },
@@ -430,39 +523,51 @@ const postSiteService = {
     try {
       const tenantId = getTenantId();
       const params = new URLSearchParams();
-      
-      if (filters.name) params.append('filter[name]', filters.name);
-      if (filters.clientId) params.append('filter[clientId]', filters.clientId);
+
+      if (filters.name) params.append("filter[name]", filters.name);
+      if (filters.clientId) params.append("filter[clientId]", filters.clientId);
       const categoryExcel = filters.categoryId ?? filters.category;
+
       if (categoryExcel) {
-        params.append('filter[categoryIds]', categoryExcel);
+        params.append("filter[categoryIds]", categoryExcel);
       }
       if (filters.email) {
-        params.append('filter[email]', filters.email);
-        params.append('filter[contactEmail]', filters.email);
+        params.append("filter[email]", filters.email);
+        params.append("filter[contactEmail]", filters.email);
       }
       const phoneExcel = filters.phone ?? filters.phoneNumber;
-      if (phoneExcel) {
-        params.append('filter[phone]', phoneExcel);
-        params.append('filter[contactPhone]', phoneExcel);
-      }
-      if (typeof filters.status === 'string') {
-        params.append('filter[active]', filters.status === 'active' ? 'true' : 'false');
-      } else if (typeof filters.active === 'boolean') {
-        params.append('filter[active]', filters.active.toString());
-      }
-      params.append('format', 'excel');
 
-      if (typeof window !== 'undefined') {
-        // eslint-disable-next-line no-console
-        console.debug('[postSiteService] exportExcel params ->', params.toString());
+      if (phoneExcel) {
+        params.append("filter[phone]", phoneExcel);
+        params.append("filter[contactPhone]", phoneExcel);
       }
-      const { data } = await api.get(`/tenant/${tenantId}/business-info/export?${params.toString()}`, {
-        responseType: 'blob',
-      });
+      if (typeof filters.status === "string") {
+        params.append(
+          "filter[active]",
+          filters.status === "active" ? "true" : "false",
+        );
+      } else if (typeof filters.active === "boolean") {
+        params.append("filter[active]", filters.active.toString());
+      }
+      params.append("format", "excel");
+
+      if (typeof window !== "undefined") {
+        // eslint-disable-next-line no-console
+        console.debug(
+          "[postSiteService] exportExcel params ->",
+          params.toString(),
+        );
+      }
+      const { data } = await api.get(
+        `/tenant/${tenantId}/business-info/export?${params.toString()}`,
+        {
+          responseType: "blob",
+        },
+      );
+
       return data;
     } catch (error) {
-      console.error('Error exporting Excel:', error);
+      console.error("Error exporting Excel:", error);
       throw error;
     }
   },
@@ -470,16 +575,23 @@ const postSiteService = {
   /**
    * Import post sites from CSV/Excel
    */
-  async import(file: File): Promise<{ success: number; failed: number; errors: any[] }> {
+  async import(
+    file: File,
+  ): Promise<{ success: number; failed: number; errors: any[] }> {
     try {
       const tenantId = getTenantId();
       const formData = new FormData();
-      formData.append('file', file);
 
-      const { data } = await api.post(`/tenant/${tenantId}/business-info/import-file`, formData);
+      formData.append("file", file);
+
+      const { data } = await api.post(
+        `/tenant/${tenantId}/business-info/import-file`,
+        formData,
+      );
+
       return data;
     } catch (error) {
-      console.error('Error importing post sites:', error);
+      console.error("Error importing post sites:", error);
       throw error;
     }
   },
@@ -490,57 +602,96 @@ const postSiteService = {
   async autocomplete(query: string): Promise<PostSite[]> {
     try {
       const tenantId = getTenantId();
-      const { data } = await api.get(`/tenant/${tenantId}/business-info/autocomplete`, {
-        params: { query },
-      });
+      const { data } = await api.get(
+        `/tenant/${tenantId}/business-info/autocomplete`,
+        {
+          params: { query },
+        },
+      );
+
       return data;
     } catch (error) {
-      console.error('Error fetching autocomplete:', error);
+      console.error("Error fetching autocomplete:", error);
       throw error;
     }
   },
 
   // Notes CRUD
-  async getPostSiteNotes(postSiteId: string, pagination: { limit?: number; offset?: number } = { limit: 25, offset: 0 }) {
+  async getPostSiteNotes(
+    postSiteId: string,
+    pagination: { limit?: number; offset?: number } = { limit: 25, offset: 0 },
+  ) {
     const tenantId = getTenantId();
     const params = new URLSearchParams();
-    if (pagination.limit !== undefined) params.append('limit', String(pagination.limit));
-    if (pagination.offset !== undefined) params.append('offset', String(pagination.offset));
 
-    const { data } = await api.get<any>(`/tenant/${tenantId}/post-site/${postSiteId}/notes?${params.toString()}`);
+    if (pagination.limit !== undefined)
+      params.append("limit", String(pagination.limit));
+    if (pagination.offset !== undefined)
+      params.append("offset", String(pagination.offset));
+
+    const { data } = await api.get<any>(
+      `/tenant/${tenantId}/post-site/${postSiteId}/notes?${params.toString()}`,
+    );
+
     return data;
   },
 
-  async createPostSiteNote(postSiteId: string, payload: Record<string, unknown>) {
+  async createPostSiteNote(
+    postSiteId: string,
+    payload: Record<string, unknown>,
+  ) {
     const tenantId = getTenantId();
-    const { data } = await api.post<any>(`/tenant/${tenantId}/post-site/${postSiteId}/notes`, payload);
+    const { data } = await api.post<any>(
+      `/tenant/${tenantId}/post-site/${postSiteId}/notes`,
+      payload,
+    );
+
     return data;
   },
 
-  async updatePostSiteNote(postSiteId: string, noteId: string, payload: Record<string, unknown>) {
+  async updatePostSiteNote(
+    postSiteId: string,
+    noteId: string,
+    payload: Record<string, unknown>,
+  ) {
     const tenantId = getTenantId();
-    const { data } = await api.put<any>(`/tenant/${tenantId}/post-site/${postSiteId}/notes/${noteId}`, payload);
+    const { data } = await api.put<any>(
+      `/tenant/${tenantId}/post-site/${postSiteId}/notes/${noteId}`,
+      payload,
+    );
+
     return data;
   },
 
   async destroyPostSiteNote(postSiteId: string, noteId: string) {
     const tenantId = getTenantId();
-    const { data } = await api.delete<any>(`/tenant/${tenantId}/post-site/${postSiteId}/notes/${noteId}`);
+    const { data } = await api.delete<any>(
+      `/tenant/${tenantId}/post-site/${postSiteId}/notes/${noteId}`,
+    );
+
     return data;
   },
 
   // Contacts listing for a post site
-  async getPostSiteContacts(postSiteId: string, pagination: { limit?: number; offset?: number } = { limit: 25, offset: 0 }) {
+  async getPostSiteContacts(
+    postSiteId: string,
+    pagination: { limit?: number; offset?: number } = { limit: 25, offset: 0 },
+  ) {
     const tenantId = getTenantId();
     const params = new URLSearchParams();
-    if (pagination.limit !== undefined) params.append('limit', String(pagination.limit));
-    if (pagination.offset !== undefined) params.append('offset', String(pagination.offset));
 
-    const { data } = await api.get<any>(`/tenant/${tenantId}/post-site/${postSiteId}/contacts?${params.toString()}`, { toast: { silentError: true } });
+    if (pagination.limit !== undefined)
+      params.append("limit", String(pagination.limit));
+    if (pagination.offset !== undefined)
+      params.append("offset", String(pagination.offset));
+
+    const { data } = await api.get<any>(
+      `/tenant/${tenantId}/post-site/${postSiteId}/contacts?${params.toString()}`,
+      { toast: { silentError: true } },
+    );
+
     return data;
   },
-
-
 };
 
 export { postSiteService };

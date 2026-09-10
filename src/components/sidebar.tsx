@@ -31,13 +31,41 @@ import { useTranslation } from "react-i18next";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
-  Shield, ChevronRight, Gauge, Activity, Users, BarChart3, MapPin,
-  MessageSquare, Clock, FileText, Calendar, DollarSign, Receipt, Car,
-  UserPlus, SquareParking, UserCog, Building2, Briefcase, Package, Cctv,
-  Siren, Radio, GraduationCap, Star, Search, X, Sun, Moon, LayoutGrid,
+  Shield,
+  ChevronRight,
+  Gauge,
+  Activity,
+  Users,
+  BarChart3,
+  MapPin,
+  MessageSquare,
+  Clock,
+  FileText,
+  Calendar,
+  DollarSign,
+  Receipt,
+  Car,
+  UserPlus,
+  SquareParking,
+  UserCog,
+  Building2,
+  Briefcase,
+  Package,
+  Cctv,
+  Siren,
+  Radio,
+  GraduationCap,
+  Star,
+  Search,
+  X,
+  Sun,
+  Moon,
+  LayoutGrid,
   type LucideIcon,
 } from "lucide-react";
+
 import sidebarMenuData from "../data/sidebar-menu.json";
+
 import { useAuth } from "@/contexts/AuthContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { useMessagesUnread } from "@/hooks/useMessagesUnread";
@@ -50,17 +78,43 @@ import {
 
 type SubMenuItem = { id: string; name: string; path: string };
 type MenuItem = {
-  id: string; name: string; icon: LucideIcon; path?: string;
-  active?: boolean; expandable?: boolean; subItems?: SubMenuItem[];
+  id: string;
+  name: string;
+  icon: LucideIcon;
+  path?: string;
+  active?: boolean;
+  expandable?: boolean;
+  subItems?: SubMenuItem[];
   // optional allowedRoles controls visibility for global roles (e.g. ['superadmin'])
   allowedRoles?: string[];
 };
 
 // Mapa de nombres de iconos a componentes de iconos
 const iconMap: Record<string, LucideIcon> = {
-  Shield, Gauge, Activity, Users, BarChart3, MapPin,
-  MessageSquare, Clock, FileText, Calendar, DollarSign, Receipt, Car,
-  UserPlus, SquareParking, UserCog, Building2, Briefcase, Package, Cctv, Siren, Radio, GraduationCap, Star
+  Shield,
+  Gauge,
+  Activity,
+  Users,
+  BarChart3,
+  MapPin,
+  MessageSquare,
+  Clock,
+  FileText,
+  Calendar,
+  DollarSign,
+  Receipt,
+  Car,
+  UserPlus,
+  SquareParking,
+  UserCog,
+  Building2,
+  Briefcase,
+  Package,
+  Cctv,
+  Siren,
+  Radio,
+  GraduationCap,
+  Star,
 };
 
 /* ── GRUPOS DEL MENÚ ──────────────────────────────────────────────────────────
@@ -74,12 +128,54 @@ const GROUPS: GroupDef[] = [
   // OJO: esta lista es la que MANDA. Añadir un destino en `sidebar-menu.json`
   // sin añadir su id aquí lo deja caer al grupo «Otros» del fondo — que es
   // exactamente lo que le pasó a esta entrada al moverla.
-  { id: "resumen",   label: "Resumen",   icon: Gauge,      ids: ["panel", "actividad", "emergencias", "estaciones"] },
-  { id: "operacion", label: "Operación", icon: Siren,      ids: ["despachador", "monitoreo-alarmas", "videovigilancia", "patrulla", "radio", "inventario"] },
-  { id: "personal",  label: "Personal",  icon: Users,      ids: ["equipo", "programador", "nomina", "tareas", "entrenamiento"] },
-  { id: "clientes",  label: "Clientes",  icon: Briefcase,  ids: ["clientes", "solicitudes-clientes", "control-de-calidad", "mensajeria"] },
-  { id: "analisis",  label: "Análisis",  icon: BarChart3,  ids: ["analiticas", "informes"] },
-  { id: "sistema",   label: "Sistema",   icon: UserCog,    ids: ["seguridad-auditoria", "superadmin"] },
+  {
+    id: "resumen",
+    label: "Resumen",
+    icon: Gauge,
+    ids: ["panel", "actividad", "emergencias", "estaciones"],
+  },
+  {
+    id: "operacion",
+    label: "Operación",
+    icon: Siren,
+    ids: [
+      "despachador",
+      "monitoreo-alarmas",
+      "videovigilancia",
+      "patrulla",
+      "radio",
+      "inventario",
+    ],
+  },
+  {
+    id: "personal",
+    label: "Personal",
+    icon: Users,
+    ids: ["equipo", "programador", "nomina", "tareas", "entrenamiento"],
+  },
+  {
+    id: "clientes",
+    label: "Clientes",
+    icon: Briefcase,
+    ids: [
+      "clientes",
+      "solicitudes-clientes",
+      "control-de-calidad",
+      "mensajeria",
+    ],
+  },
+  {
+    id: "analisis",
+    label: "Análisis",
+    icon: BarChart3,
+    ids: ["analiticas", "informes"],
+  },
+  {
+    id: "sistema",
+    label: "Sistema",
+    icon: UserCog,
+    ids: ["seguridad-auditoria", "superadmin"],
+  },
 ];
 
 /* ── ESTILOS PRIVADOS ─────────────────────────────────────────────────────── */
@@ -376,7 +472,9 @@ function ensureCgsbStyles() {
   // Se REESCRIBE si ya existe en vez de salirse: en desarrollo el módulo se
   // reevalúa con cada guardado, y saltarse la actualización dejaría la hoja
   // vieja pegada hasta recargar la página entera.
-  const el = document.getElementById("cgsb-styles") || document.createElement("style");
+  const el =
+    document.getElementById("cgsb-styles") || document.createElement("style");
+
   if (el.textContent !== CGSB_CSS) el.textContent = CGSB_CSS;
   if (!el.isConnected) {
     el.id = "cgsb-styles";
@@ -387,19 +485,26 @@ ensureCgsbStyles();
 
 /* ── Utilidades ───────────────────────────────────────────────────────────── */
 const fold = (s: string) =>
-  (s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  (s || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
 
 function displayName(user: any) {
   const first = user?.firstName?.trim();
   const last = user?.lastName?.trim();
+
   if (first || last) return [first, last].filter(Boolean).join(" ");
   const email = user?.email || "";
+
   return email.split("@")[0] || "Usuario";
 }
 function initials(text: string) {
   const parts = (text || "").trim().split(/\s+/).filter(Boolean);
+
   if (!parts.length) return "U";
   if (parts.length === 1) return parts[0].slice(0, 1).toUpperCase();
+
   return (parts[0][0] + parts[1][0]).toUpperCase();
 }
 
@@ -418,7 +523,10 @@ type RenderGroup = {
   entries: Array<{ item: MenuItem; forcedSubs?: SubMenuItem[] }>;
 };
 
-export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps) {
+export default function Sidebar({
+  collapsed = false,
+  onNavigate,
+}: SidebarProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { theme, toggleTheme } = useThemeContext();
@@ -427,45 +535,64 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
   const reduceMotion = useReducedMotion();
   const dur = reduceMotion ? 0 : 0.22;
 
-  const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({});
+  const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>(
+    {},
+  );
   const [query, setQuery] = useState("");
   /** Submenú flotante del modo colapsado: qué destino y a qué altura. */
-  const [flyout, setFlyout] = useState<{ id: string; top: number } | null>(null);
+  const [flyout, setFlyout] = useState<{ id: string; top: number } | null>(
+    null,
+  );
   const rootRef = useRef<HTMLElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
-  const toggleMenu = (menu: string) => setExpandedMenus(prev => ({ ...prev, [menu]: !prev[menu] }));
+  const toggleMenu = (menu: string) =>
+    setExpandedMenus((prev) => ({ ...prev, [menu]: !prev[menu] }));
 
   // Tenant branding — seeded synchronously from the stored cache so it renders
   // instantly (no "CG / CGuard" placeholder flash) when AppLayout re-mounts on
   // navigation. We only hit the API once per tenant per session.
-  const [tenantName, setTenantName] = useState<string>(() => getStoredTenantBranding().name);
-  const [tenantLogo, setTenantLogo] = useState<string | null>(() => getStoredTenantBranding().logo);
+  const [tenantName, setTenantName] = useState<string>(
+    () => getStoredTenantBranding().name,
+  );
+  const [tenantLogo, setTenantLogo] = useState<string | null>(
+    () => getStoredTenantBranding().logo,
+  );
 
   useEffect(() => {
-    const tenantId = typeof window !== 'undefined' ? localStorage.getItem('tenantId') : null;
+    const tenantId =
+      typeof window !== "undefined" ? localStorage.getItem("tenantId") : null;
+
     if (!tenantId) return;
 
     // Already resolved this tenant this session -> use the cache, do NOT refetch.
     const cached = getCachedTenantBranding(tenantId);
+
     if (cached) {
       setTenantName(cached.name);
       setTenantLogo(cached.logo);
+
       return;
     }
 
     let cancelled = false;
+
     (async () => {
       try {
         const res: any = await tenantService.findById(tenantId);
+
         if (cancelled) return;
-        const t = (res && (res.data || res.tenant)) ? (res.data || res.tenant) : res;
-        const name = t?.name || '';
+        const t =
+          res && (res.data || res.tenant) ? res.data || res.tenant : res;
+        const name = t?.name || "";
         const logoUrl =
           t?.logoUrl ||
-          (Array.isArray(t?.settings) ? t.settings[0]?.logoUrl : t?.settings?.logoUrl || t?.settings?.logos?.[0]?.publicUrl) ||
+          (Array.isArray(t?.settings)
+            ? t.settings[0]?.logoUrl
+            : t?.settings?.logoUrl || t?.settings?.logos?.[0]?.publicUrl) ||
           t?.logo?.downloadUrl ||
           null;
+
         if (name) setTenantName(name);
         setTenantLogo(logoUrl);
         // Persist to the memory + localStorage cache so subsequent re-mounts
@@ -475,19 +602,29 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
         // silently ignore — fall back to cached/initials
       }
     })();
-    return () => { cancelled = true; };
+
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
   // Convertir los datos JSON a objetos MenuItem con los componentes de iconos correctos
   const menuItems: MenuItem[] = useMemo(
-    () => sidebarMenuData.map(item => ({ ...item, icon: iconMap[item.icon as string] || UserCog })),
-    []
+    () =>
+      sidebarMenuData.map((item) => ({
+        ...item,
+        icon: iconMap[item.icon as string] || UserCog,
+      })),
+    [],
   );
 
-  const tenantIdFromStorage = typeof window !== 'undefined' ? localStorage.getItem('tenantId') : null;
+  const tenantIdFromStorage =
+    typeof window !== "undefined" ? localStorage.getItem("tenantId") : null;
   const hasTenant = Boolean(
     tenantIdFromStorage ||
-    (user && (user.tenant || (Array.isArray(user.tenants) && user.tenants.length > 0)))
+      (user &&
+        (user.tenant ||
+          (Array.isArray(user.tenants) && user.tenants.length > 0))),
   );
 
   // Determine whether the current user has a global admin role (not tenant-scoped)
@@ -495,44 +632,85 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
     if (!user) return false;
     const raw = user.roles ?? user.role ?? [];
     const arr = Array.isArray(raw) ? raw : [raw];
-    const normalized = arr.map((r: any) => (typeof r === 'string' ? r.toLowerCase() : (r && (r.name || r.role) ? String(r.name || r.role).toLowerCase() : ''))).filter(Boolean);
-    return normalized.includes('admin') || normalized.includes('superadmin') || normalized.includes('super admin');
+    const normalized = arr
+      .map((r: any) =>
+        typeof r === "string"
+          ? r.toLowerCase()
+          : r && (r.name || r.role)
+            ? String(r.name || r.role).toLowerCase()
+            : "",
+      )
+      .filter(Boolean);
+
+    return (
+      normalized.includes("admin") ||
+      normalized.includes("superadmin") ||
+      normalized.includes("super admin")
+    );
   }, [user]);
 
   // Visibilidad por rol — misma regla que antes, sin cambios de permisos.
-  const visibleItems = useMemo(() => menuItems.filter(item => {
-    if ((item as any).disabled) return false;
-    if (!item.allowedRoles || item.allowedRoles.length === 0) return true;
-    if (item.allowedRoles.includes('superadmin')) return isGlobalAdmin;
-    const raw = user?.roles ?? user?.role ?? [];
-    const arr = Array.isArray(raw) ? raw : [raw];
-    const normalized = arr.map((r: any) => (typeof r === 'string' ? r.toLowerCase() : (r && (r.name || r.role) ? String(r.name || r.role).toLowerCase() : ''))).filter(Boolean);
-    return item.allowedRoles.some((ar: string) => normalized.includes(ar.toLowerCase()));
-  }), [menuItems, user, isGlobalAdmin]);
+  const visibleItems = useMemo(
+    () =>
+      menuItems.filter((item) => {
+        if ((item as any).disabled) return false;
+        if (!item.allowedRoles || item.allowedRoles.length === 0) return true;
+        if (item.allowedRoles.includes("superadmin")) return isGlobalAdmin;
+        const raw = user?.roles ?? user?.role ?? [];
+        const arr = Array.isArray(raw) ? raw : [raw];
+        const normalized = arr
+          .map((r: any) =>
+            typeof r === "string"
+              ? r.toLowerCase()
+              : r && (r.name || r.role)
+                ? String(r.name || r.role).toLowerCase()
+                : "",
+          )
+          .filter(Boolean);
+
+        return item.allowedRoles.some((ar: string) =>
+          normalized.includes(ar.toLowerCase()),
+        );
+      }),
+    [menuItems, user, isGlobalAdmin],
+  );
 
   // Etiquetas i18n — mismo orden de resolución que la versión anterior.
   const labelOf = (item: MenuItem) =>
-    t(`sidebar.${item.id}.label`, { defaultValue: '' }) ||
-    t(`sidebar.${item.id}`, { defaultValue: '' }) ||
+    t(`sidebar.${item.id}.label`, { defaultValue: "" }) ||
+    t(`sidebar.${item.id}`, { defaultValue: "" }) ||
     item.name;
   const subLabelOf = (item: MenuItem, sub: SubMenuItem) =>
-    t(`sidebar.${item.id}.${sub.id}`, { defaultValue: '' }) ||
-    t(`sidebar.${sub.id}`, { defaultValue: '' }) ||
+    t(`sidebar.${item.id}.${sub.id}`, { defaultValue: "" }) ||
+    t(`sidebar.${sub.id}`, { defaultValue: "" }) ||
     sub.name;
 
   // Agrupación. Lo que no esté mapeado cae en «Otros»: un id nuevo en el JSON
   // aparece igual, nunca se pierde.
   const groups = useMemo(() => {
-    const byId = new Map(visibleItems.map(i => [i.id, i]));
+    const byId = new Map(visibleItems.map((i) => [i.id, i]));
     const used = new Set<string>();
     const out: Array<GroupDef & { items: MenuItem[] }> = [];
+
     for (const g of GROUPS) {
-      const items = g.ids.map(id => byId.get(id)).filter(Boolean) as MenuItem[];
-      items.forEach(i => used.add(i.id));
+      const items = g.ids
+        .map((id) => byId.get(id))
+        .filter(Boolean) as MenuItem[];
+
+      items.forEach((i) => used.add(i.id));
       if (items.length) out.push({ ...g, items });
     }
-    const rest = visibleItems.filter(i => !used.has(i.id));
-    if (rest.length) out.push({ id: 'otros', label: 'Otros', icon: LayoutGrid, ids: [], items: rest });
+    const rest = visibleItems.filter((i) => !used.has(i.id));
+
+    if (rest.length)
+      out.push({
+        id: "otros",
+        label: "Otros",
+        icon: LayoutGrid,
+        ids: [],
+        items: rest,
+      });
+
     return out;
   }, [visibleItems]);
 
@@ -544,80 +722,121 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
     let bestItem: string | null = null;
     let bestSub: string | null = null;
     let bestLen = -1;
+
     for (const it of visibleItems) {
       const candidates: Array<{ path: string; sub: string | null }> = [];
+
       if (it.path) candidates.push({ path: it.path, sub: null });
-      (it.subItems || []).forEach(s => candidates.push({ path: s.path, sub: s.path }));
+      (it.subItems || []).forEach((s) =>
+        candidates.push({ path: s.path, sub: s.path }),
+      );
       for (const c of candidates) {
-        if (p === c.path || p.startsWith(c.path + '/')) {
-          if (c.path.length > bestLen) { bestLen = c.path.length; bestItem = it.id; bestSub = c.sub; }
+        if (p === c.path || p.startsWith(c.path + "/")) {
+          if (c.path.length > bestLen) {
+            bestLen = c.path.length;
+            bestItem = it.id;
+            bestSub = c.sub;
+          }
         }
       }
     }
+
     return { itemId: bestItem, subPath: bestSub };
   }, [location.pathname, visibleItems]);
 
   // Abrir el desplegable que contiene la ruta actual.
   useEffect(() => {
     if (!active.itemId) return;
-    const item = visibleItems.find(i => i.id === active.itemId);
-    if (item?.expandable) setExpandedMenus(prev => (prev[item.id] ? prev : { ...prev, [item.id]: true }));
+    const item = visibleItems.find((i) => i.id === active.itemId);
+
+    if (item?.expandable)
+      setExpandedMenus((prev) =>
+        prev[item.id] ? prev : { ...prev, [item.id]: true },
+      );
   }, [active.itemId, visibleItems]);
 
   // Buscador — atraviesa TODOS los grupos e ignora tildes.
   const q = fold(query.trim());
   const renderGroups: RenderGroup[] = useMemo(() => {
     if (!q) {
-      return groups.map(g => ({ id: g.id, label: g.label, entries: g.items.map(item => ({ item })) }));
+      return groups.map((g) => ({
+        id: g.id,
+        label: g.label,
+        entries: g.items.map((item) => ({ item })),
+      }));
     }
+
     return groups
-      .map(g => ({
+      .map((g) => ({
         id: g.id,
         label: g.label,
         entries: g.items
-          .map(item => {
+          .map((item) => {
             const hitItem = fold(labelOf(item)).includes(q);
-            const subs = (item.subItems || []).filter(s => fold(subLabelOf(item, s)).includes(q));
+            const subs = (item.subItems || []).filter((s) =>
+              fold(subLabelOf(item, s)).includes(q),
+            );
+
             if (!hitItem && !subs.length) return null;
+
             // Si coincide el destino entero se enseñan todos sus subitems; si
             // sólo coinciden algunos, se enseñan esos.
-            return { item, forcedSubs: hitItem ? (item.subItems || undefined) : subs };
+            return {
+              item,
+              forcedSubs: hitItem ? item.subItems || undefined : subs,
+            };
           })
-          .filter(Boolean) as RenderGroup['entries'],
+          .filter(Boolean) as RenderGroup["entries"],
       }))
-      .filter(g => g.entries.length > 0);
+      .filter((g) => g.entries.length > 0);
   }, [q, groups, t]);
 
   const firstResultPath = useMemo(() => {
     const first = renderGroups[0]?.entries[0];
+
     if (!first) return undefined;
-    return first.item.path ?? first.forcedSubs?.[0]?.path ?? first.item.subItems?.[0]?.path;
+
+    return (
+      first.item.path ??
+      first.forcedSubs?.[0]?.path ??
+      first.item.subItems?.[0]?.path
+    );
   }, [renderGroups]);
 
   // Cerrar el submenú flotante al pulsar fuera / con Escape / al expandirse.
   useEffect(() => {
     if (!flyout) return;
     const onDown = (e: MouseEvent) => {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setFlyout(null);
+      if (rootRef.current && !rootRef.current.contains(e.target as Node))
+        setFlyout(null);
     };
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setFlyout(null); };
-    document.addEventListener('mousedown', onDown);
-    document.addEventListener('keydown', onKey);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setFlyout(null);
+    };
+
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+
     return () => {
-      document.removeEventListener('mousedown', onDown);
-      document.removeEventListener('keydown', onKey);
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
     };
   }, [flyout]);
 
-  useEffect(() => { if (!collapsed) setFlyout(null); }, [collapsed]);
-  useEffect(() => { setFlyout(null); }, [location.pathname]);
+  useEffect(() => {
+    if (!collapsed) setFlyout(null);
+  }, [collapsed]);
+  useEffect(() => {
+    setFlyout(null);
+  }, [location.pathname]);
 
   // Con los 20 destinos en una sola columna, el activo puede quedar fuera de
   // vista al entrar. `nearest` no mueve nada si ya se ve.
   useEffect(() => {
     if (collapsed || q) return;
-    const el = scrollRef.current?.querySelector('.cgsb-item.is-active');
-    (el as HTMLElement | null)?.scrollIntoView({ block: 'nearest' });
+    const el = scrollRef.current?.querySelector(".cgsb-item.is-active");
+
+    (el as HTMLElement | null)?.scrollIntoView({ block: "nearest" });
   }, [active.itemId, collapsed, q]);
 
   const go = (path?: string) => {
@@ -628,16 +847,21 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
   };
 
   const userName = displayName(user);
-  const userEmail = user?.email ?? '';
-  const avatar: string | undefined = (user as any)?.avatar || (user as any)?.photoURL || undefined;
+  const userEmail = user?.email ?? "";
+  const avatar: string | undefined =
+    (user as any)?.avatar || (user as any)?.photoURL || undefined;
 
   /* Mensajes sin leer del buzón del CRM → punto en «Mensajería». Se refresca
      solo cuando entra un mensaje (la campana lo avisa) o al leer un hilo. */
   const mensajesSinLeer = useMessagesUnread(hasTenant);
-  const insigniaDe = (itemId: string) => (itemId === 'mensajeria' ? mensajesSinLeer : 0);
+  const insigniaDe = (itemId: string) =>
+    itemId === "mensajeria" ? mensajesSinLeer : 0;
 
   /* ── Un destino del menú (hoja o desplegable) ───────────────────────────── */
-  const renderItem = (item: MenuItem, opts?: { forcedSubs?: SubMenuItem[] }) => {
+  const renderItem = (
+    item: MenuItem,
+    opts?: { forcedSubs?: SubMenuItem[] },
+  ) => {
     const isExpandable = !!item.expandable;
     const isDisabled = !hasTenant && item.path !== "/dashboard";
     const isActive = active.itemId === item.id;
@@ -653,16 +877,22 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
         <span className="cgsb-item-label">{label}</span>
         {sinLeer > 0 && (
           <span
+            aria-label={t("sidebar.unreadMessages", {
+              count: sinLeer,
+              defaultValue: "{{count}} mensajes sin leer",
+            })}
             className="cgsb-count"
-            aria-label={t('sidebar.unreadMessages', { count: sinLeer, defaultValue: '{{count}} mensajes sin leer' })}
           >
-            {sinLeer > 99 ? '99+' : sinLeer}
+            {sinLeer > 99 ? "99+" : sinLeer}
           </span>
         )}
         {isExpandable && (
           <ChevronRight
             className="h-3.5 w-3.5 shrink-0 transition-transform duration-200"
-            style={{ opacity: 0.55, transform: isOpen ? 'rotate(90deg)' : 'none' }}
+            style={{
+              opacity: 0.55,
+              transform: isOpen ? "rotate(90deg)" : "none",
+            }}
           />
         )}
       </>
@@ -671,23 +901,28 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
     return (
       <div key={item.id}>
         {isDisabled ? (
-          <div className="cgsb-item is-disabled" aria-disabled title={label}>{inner}</div>
+          <div aria-disabled className="cgsb-item is-disabled" title={label}>
+            {inner}
+          </div>
         ) : isExpandable ? (
           <button
-            type="button"
-            className={`cgsb-item cg-focus ${isActive ? 'is-active' : ''}`}
-            onClick={() => toggleMenu(item.id)}
             aria-expanded={isOpen}
+            className={`cgsb-item cg-focus ${isActive ? "is-active" : ""}`}
             title={label}
+            type="button"
+            onClick={() => toggleMenu(item.id)}
           >
             {inner}
           </button>
         ) : (
           <NavLink
-            to={item.path || '/dashboard'}
-            className={`cgsb-item cg-focus ${isActive ? 'is-active' : ''}`}
-            onClick={() => { setFlyout(null); onNavigate?.(); }}
+            className={`cgsb-item cg-focus ${isActive ? "is-active" : ""}`}
             title={label}
+            to={item.path || "/dashboard"}
+            onClick={() => {
+              setFlyout(null);
+              onNavigate?.();
+            }}
           >
             {inner}
           </NavLink>
@@ -697,20 +932,23 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
           {isExpandable && isOpen && subs.length > 0 && hasTenant && (
             <motion.div
               key="subs"
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
+              animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
+              initial={{ height: 0, opacity: 0 }}
+              style={{ overflow: "hidden" }}
               transition={{ duration: dur, ease: [0.22, 1, 0.36, 1] }}
-              style={{ overflow: 'hidden' }}
             >
               <div className="cgsb-subs">
-                {subs.map(sub => (
+                {subs.map((sub) => (
                   <NavLink
                     key={sub.id}
-                    to={sub.path}
-                    className={`cgsb-sub cg-focus ${active.subPath === sub.path ? 'is-active' : ''}`}
-                    onClick={() => { setFlyout(null); onNavigate?.(); }}
+                    className={`cgsb-sub cg-focus ${active.subPath === sub.path ? "is-active" : ""}`}
                     title={subLabelOf(item, sub)}
+                    to={sub.path}
+                    onClick={() => {
+                      setFlyout(null);
+                      onNavigate?.();
+                    }}
                   >
                     {subLabelOf(item, sub)}
                   </NavLink>
@@ -734,8 +972,11 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
         <item.icon className="h-[18px] w-[18px]" />
         {sinLeer > 0 && (
           <span
+            aria-label={t("sidebar.unreadMessages", {
+              count: sinLeer,
+              defaultValue: "{{count}} mensajes sin leer",
+            })}
             className="cgsb-orb-dot"
-            aria-label={t('sidebar.unreadMessages', { count: sinLeer, defaultValue: '{{count}} mensajes sin leer' })}
           />
         )}
       </>
@@ -743,37 +984,53 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
 
     if (isDisabled) {
       return (
-        <div key={item.id} className="cgsb-orb is-disabled" aria-disabled title={label}>{icon}</div>
+        <div
+          key={item.id}
+          aria-disabled
+          className="cgsb-orb is-disabled"
+          title={label}
+        >
+          {icon}
+        </div>
       );
     }
     if (item.expandable) {
       return (
         <button
           key={item.id}
-          type="button"
-          className={`cgsb-orb cg-focus ${isActive || flyout?.id === item.id ? 'is-on' : ''}`}
-          title={label}
-          aria-label={label}
+          aria-current={isActive ? "true" : undefined}
           aria-expanded={flyout?.id === item.id}
-          aria-current={isActive ? 'true' : undefined}
+          aria-label={label}
+          className={`cgsb-orb cg-focus ${isActive || flyout?.id === item.id ? "is-on" : ""}`}
+          title={label}
+          type="button"
           onClick={(e) => {
-            const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-            setFlyout(prev => (prev?.id === item.id ? null : { id: item.id, top: rect.top }));
+            const rect = (
+              e.currentTarget as HTMLElement
+            ).getBoundingClientRect();
+
+            setFlyout((prev) =>
+              prev?.id === item.id ? null : { id: item.id, top: rect.top },
+            );
           }}
         >
           {icon}
         </button>
       );
     }
+
     return (
       <NavLink
         key={item.id}
-        to={item.path || '/dashboard'}
-        className={`cgsb-orb cg-focus ${isActive ? 'is-on' : ''}`}
-        title={label}
+        aria-current={isActive ? "true" : undefined}
         aria-label={label}
-        aria-current={isActive ? 'true' : undefined}
-        onClick={() => { setFlyout(null); onNavigate?.(); }}
+        className={`cgsb-orb cg-focus ${isActive ? "is-on" : ""}`}
+        title={label}
+        to={item.path || "/dashboard"}
+        onClick={() => {
+          setFlyout(null);
+          onNavigate?.();
+        }}
       >
         {icon}
       </NavLink>
@@ -782,9 +1039,13 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
 
   const brandTile = (
     <span className="cgsb-logo">
-      {tenantLogo
-        ? <img src={tenantLogo} alt={tenantName || 'Logo'} />
-        : <span>{tenantName ? tenantName.substring(0, 2).toUpperCase() : 'CG'}</span>}
+      {tenantLogo ? (
+        <img alt={tenantName || "Logo"} src={tenantLogo} />
+      ) : (
+        <span>
+          {tenantName ? tenantName.substring(0, 2).toUpperCase() : "CG"}
+        </span>
+      )}
     </span>
   );
 
@@ -794,43 +1055,67 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
       {/* Cabecera: logo del tenant + nombre */}
       <div className="cgsb-head">
         <button
-          type="button"
           className="cgsb-brand cg-focus"
-          onClick={() => go('/dashboard')}
-          title={`${tenantName || 'CGuard'} · ${t('sidebar.brandTooltip')}`}
+          title={`${tenantName || "CGuard"} · ${t("sidebar.brandTooltip")}`}
+          type="button"
+          onClick={() => go("/dashboard")}
         >
           {brandTile}
           <span className="min-w-0 flex-1">
-            <span className="block truncate text-[13.5px] font-semibold leading-tight" style={{ color: 'var(--ink)' }}>
-              {tenantName || 'CGuard'}
+            <span
+              className="block truncate text-[13.5px] font-semibold leading-tight"
+              style={{ color: "var(--ink)" }}
+            >
+              {tenantName || "CGuard"}
             </span>
-            <span className="cg-eyebrow mt-1 block truncate" style={{ fontSize: 9.5 }}>{t('sidebar.commandCenter', { defaultValue: 'Centro de mando' })}</span>
+            <span
+              className="cg-eyebrow mt-1 block truncate"
+              style={{ fontSize: 9.5 }}
+            >
+              {t("sidebar.commandCenter", { defaultValue: "Centro de mando" })}
+            </span>
           </span>
         </button>
       </div>
 
       {/* Buscador de cristal */}
       <div className="cgsb-search glass-sunken">
-        <Search className="h-3.5 w-3.5 shrink-0" style={{ color: 'var(--ink-faint)' }} />
+        <Search
+          className="h-3.5 w-3.5 shrink-0"
+          style={{ color: "var(--ink-faint)" }}
+        />
         <input
+          aria-label={t("sidebar.searchPlaceholder", {
+            defaultValue: "Buscar en el menú…",
+          })}
+          autoComplete="off"
+          placeholder={t("sidebar.searchPlaceholder", {
+            defaultValue: "Buscar en el menú…",
+          })}
+          spellCheck={false}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Escape') { setQuery(''); return; }
-            if (e.key === 'Enter' && firstResultPath) { setQuery(''); go(firstResultPath); }
+            if (e.key === "Escape") {
+              setQuery("");
+
+              return;
+            }
+            if (e.key === "Enter" && firstResultPath) {
+              setQuery("");
+              go(firstResultPath);
+            }
           }}
-          placeholder={t('sidebar.searchPlaceholder', { defaultValue: 'Buscar en el menú…' })}
-          aria-label={t('sidebar.searchPlaceholder', { defaultValue: 'Buscar en el menú…' })}
-          autoComplete="off"
-          spellCheck={false}
         />
         {query && (
           <button
-            type="button"
-            onClick={() => setQuery('')}
+            aria-label={t("sidebar.clearSearch", {
+              defaultValue: "Limpiar búsqueda",
+            })}
             className="cg-focus shrink-0 rounded-full"
-            style={{ color: 'var(--ink-faint)' }}
-            aria-label={t('sidebar.clearSearch', { defaultValue: 'Limpiar búsqueda' })}
+            style={{ color: "var(--ink-faint)" }}
+            type="button"
+            onClick={() => setQuery("")}
           >
             <X className="h-3.5 w-3.5" />
           </button>
@@ -838,17 +1123,31 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
       </div>
 
       {/* Los seis grupos, uno detrás de otro: UN solo menú */}
-      <nav className="cgsb-scroll" ref={scrollRef} aria-label={t('sidebar.mainNav', { defaultValue: 'Navegación principal' })}>
+      <nav
+        ref={scrollRef}
+        aria-label={t("sidebar.mainNav", {
+          defaultValue: "Navegación principal",
+        })}
+        className="cgsb-scroll"
+      >
         {q && renderGroups.length === 0 ? (
-          <p className="px-1 py-6 text-center text-xs" style={{ color: 'var(--ink-faint)' }}>
-            {t('sidebar.noResults', { defaultValue: 'Sin coincidencias' })}
+          <p
+            className="px-1 py-6 text-center text-xs"
+            style={{ color: "var(--ink-faint)" }}
+          >
+            {t("sidebar.noResults", { defaultValue: "Sin coincidencias" })}
           </p>
         ) : (
-          renderGroups.map(group => (
+          renderGroups.map((group) => (
             <div key={group.id} className="cgsb-group">
-              <div className="cg-eyebrow cgsb-group-label">{t(`sidebar.group.${group.id}`, { defaultValue: group.label })}</div>
+              <div className="cg-eyebrow cgsb-group-label">
+                {t(`sidebar.group.${group.id}`, { defaultValue: group.label })}
+              </div>
               {group.entries.map(({ item, forcedSubs }) =>
-                renderItem(item, forcedSubs?.length ? { forcedSubs } : undefined)
+                renderItem(
+                  item,
+                  forcedSubs?.length ? { forcedSubs } : undefined,
+                ),
               )}
             </div>
           ))
@@ -859,31 +1158,49 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
       <div className="cgsb-foot">
         <div className="cgsb-user glass-flat">
           <NavLink
-            to="/setting"
             className="cgsb-user-link cg-focus"
+            title={t("sidebar.accountSettings")}
+            to="/setting"
             onClick={() => onNavigate?.()}
-            title={t('sidebar.accountSettings')}
           >
             <span className="cgsb-avatar">
-              {avatar ? <img src={avatar} alt={userName} /> : initials(userName)}
+              {avatar ? (
+                <img alt={userName} src={avatar} />
+              ) : (
+                initials(userName)
+              )}
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-[12.5px] font-semibold leading-tight" style={{ color: 'var(--ink)' }}>
+              <span
+                className="block truncate text-[12.5px] font-semibold leading-tight"
+                style={{ color: "var(--ink)" }}
+              >
                 {userName}
               </span>
-              <span className="block truncate text-[10.5px] leading-tight" style={{ color: 'var(--ink-faint)' }}>
+              <span
+                className="block truncate text-[10.5px] leading-tight"
+                style={{ color: "var(--ink-faint)" }}
+              >
                 {userEmail}
               </span>
             </span>
           </NavLink>
           <button
-            type="button"
+            aria-label={t("sidebar.themeToggle")}
             className="cgsb-ghost cg-focus"
+            title={
+              theme === "dark"
+                ? t("sidebar.themeToLight")
+                : t("sidebar.themeToDark")
+            }
+            type="button"
             onClick={toggleTheme}
-            title={theme === 'dark' ? t('sidebar.themeToLight') : t('sidebar.themeToDark')}
-            aria-label={t('sidebar.themeToggle')}
           >
-            {theme === 'dark' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+            {theme === "dark" ? (
+              <Moon className="h-4 w-4" />
+            ) : (
+              <Sun className="h-4 w-4" />
+            )}
           </button>
         </div>
       </div>
@@ -894,24 +1211,32 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
   const rail = (
     <div className="cgsb-rail">
       <button
+        aria-label={t("sidebar.goToDashboard")}
+        className={`cgsb-orb cg-focus ${tenantLogo ? "cgsb-orb-avatar" : "cgsb-orb-brand"}`}
+        title={`${tenantName || "C-GUARD PRO"} · ${t("sidebar.brandTooltip")}`}
         type="button"
-        className={`cgsb-orb cg-focus ${tenantLogo ? 'cgsb-orb-avatar' : 'cgsb-orb-brand'}`}
-        onClick={() => go('/dashboard')}
-        title={`${tenantName || 'C-GUARD PRO'} · ${t('sidebar.brandTooltip')}`}
-        aria-label={t('sidebar.goToDashboard')}
+        onClick={() => go("/dashboard")}
       >
-        {tenantLogo
-          ? <img src={tenantLogo} alt={tenantName || 'Logo'} />
-          : <Shield className="h-[18px] w-[18px]" />}
+        {tenantLogo ? (
+          <img alt={tenantName || "Logo"} src={tenantLogo} />
+        ) : (
+          <Shield className="h-[18px] w-[18px]" />
+        )}
       </button>
       <div className="cgsb-sep" />
 
       {/* Al desplazar la columna el submenú flotante se quedaría colgado a la
           altura vieja: se cierra en cuanto la lista se mueve. */}
-      <nav className="cgsb-rail-list" aria-label={t("ui.sidebar.navegacionPrincipal", "Navegación principal")} onScroll={() => setFlyout(null)}>
+      <nav
+        aria-label={t("ui.sidebar.navegacionPrincipal", "Navegación principal")}
+        className="cgsb-rail-list"
+        onScroll={() => setFlyout(null)}
+      >
         {groups.map((g, gi) => (
           <div key={g.id} className="contents">
-            {gi > 0 && <div className="cgsb-sep" role="separator" aria-hidden />}
+            {gi > 0 && (
+              <div aria-hidden className="cgsb-sep" role="separator" />
+            )}
             {g.items.map(renderOrb)}
           </div>
         ))}
@@ -919,32 +1244,58 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
 
       <div className="cgsb-sep" />
       <button
-        type="button"
+        aria-label={t("sidebar.themeToggle")}
         className="cgsb-orb cg-focus"
+        title={
+          theme === "dark"
+            ? t("sidebar.themeToLight")
+            : t("sidebar.themeToDark")
+        }
+        type="button"
         onClick={toggleTheme}
-        title={theme === 'dark' ? t('sidebar.themeToLight') : t('sidebar.themeToDark')}
-        aria-label={t('sidebar.themeToggle')}
       >
-        {theme === 'dark' ? <Moon className="h-[17px] w-[17px]" /> : <Sun className="h-[17px] w-[17px]" />}
+        {theme === "dark" ? (
+          <Moon className="h-[17px] w-[17px]" />
+        ) : (
+          <Sun className="h-[17px] w-[17px]" />
+        )}
       </button>
       <NavLink
-        to="/setting"
+        aria-label={userName}
         className="cgsb-orb cgsb-orb-avatar cg-focus"
         title={userName}
-        aria-label={userName}
-        onClick={() => { setFlyout(null); onNavigate?.(); }}
+        to="/setting"
+        onClick={() => {
+          setFlyout(null);
+          onNavigate?.();
+        }}
       >
-        {avatar
-          ? <img src={avatar} alt={userName} />
-          : <span className="text-[11px] font-bold" style={{ color: 'var(--brand-text)' }}>{initials(userName)}</span>}
+        {avatar ? (
+          <img alt={userName} src={avatar} />
+        ) : (
+          <span
+            className="text-[11px] font-bold"
+            style={{ color: "var(--brand-text)" }}
+          >
+            {initials(userName)}
+          </span>
+        )}
       </NavLink>
     </div>
   );
 
-  const flyoutItem = flyout ? visibleItems.find(i => i.id === flyout.id) : undefined;
+  const flyoutItem = flyout
+    ? visibleItems.find((i) => i.id === flyout.id)
+    : undefined;
   // Que no se salga por abajo cuando el destino está al final de la columna.
   const flyoutTop = flyout
-    ? Math.max(8, Math.min(flyout.top, (typeof window !== 'undefined' ? window.innerHeight : 800) - 260))
+    ? Math.max(
+        8,
+        Math.min(
+          flyout.top,
+          (typeof window !== "undefined" ? window.innerHeight : 800) - 260,
+        ),
+      )
     : 0;
 
   return (
@@ -956,22 +1307,29 @@ export default function Sidebar({ collapsed = false, onNavigate }: SidebarProps)
         {collapsed && flyoutItem && hasTenant && (
           <motion.div
             key={flyoutItem.id}
-            className="cgsb-flyout glass-raised"
-            style={{ position: 'fixed', top: flyoutTop, left: 72 }}
-            initial={reduceMotion ? false : { opacity: 0, x: -8, scale: 0.98 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, x: -8, scale: 0.98 }}
+            className="cgsb-flyout glass-raised"
+            exit={
+              reduceMotion ? { opacity: 0 } : { opacity: 0, x: -8, scale: 0.98 }
+            }
+            initial={reduceMotion ? false : { opacity: 0, x: -8, scale: 0.98 }}
+            style={{ position: "fixed", top: flyoutTop, left: 72 }}
             transition={{ duration: dur, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="cg-eyebrow cgsb-group-label">{labelOf(flyoutItem)}</div>
+            <div className="cg-eyebrow cgsb-group-label">
+              {labelOf(flyoutItem)}
+            </div>
             <div className="cgsb-subs">
-              {(flyoutItem.subItems || []).map(sub => (
+              {(flyoutItem.subItems || []).map((sub) => (
                 <NavLink
                   key={sub.id}
-                  to={sub.path}
-                  className={`cgsb-sub cg-focus ${active.subPath === sub.path ? 'is-active' : ''}`}
-                  onClick={() => { setFlyout(null); onNavigate?.(); }}
+                  className={`cgsb-sub cg-focus ${active.subPath === sub.path ? "is-active" : ""}`}
                   title={subLabelOf(flyoutItem, sub)}
+                  to={sub.path}
+                  onClick={() => {
+                    setFlyout(null);
+                    onNavigate?.();
+                  }}
                 >
                   {subLabelOf(flyoutItem, sub)}
                 </NavLink>

@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Lock, Ban } from "lucide-react";
+
 import { useAuth } from "@/contexts/AuthContext";
 
 /**
@@ -39,15 +40,28 @@ export default function SubscriptionLockedScreen({
       </div>
 
       <div className="max-w-md space-y-2">
-        <h1 className="font-display text-xl font-semibold" style={{ color: "var(--ink)" }}>
+        <h1
+          className="font-display text-xl font-semibold"
+          style={{ color: "var(--ink)" }}
+        >
           {suspended
-            ? t("billing.lockedSuspendedTitle", { defaultValue: "Cuenta suspendida" })
-            : t("billing.lockedCanceledTitle", { defaultValue: "Suscripción cancelada" })}
+            ? t("billing.lockedSuspendedTitle", {
+                defaultValue: "Cuenta suspendida",
+              })
+            : t("billing.lockedCanceledTitle", {
+                defaultValue: "Suscripción cancelada",
+              })}
         </h1>
         <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
           {suspended
-            ? t("billing.lockedSuspendedMsg", { defaultValue: "El acceso a esta cuenta fue suspendido por el administrador de la plataforma. Contacta a soporte para reactivarla." })
-            : t("billing.lockedCanceledMsg", { defaultValue: "Tu suscripción fue cancelada. Reactívala para volver a usar la plataforma." })}
+            ? t("billing.lockedSuspendedMsg", {
+                defaultValue:
+                  "El acceso a esta cuenta fue suspendido por el administrador de la plataforma. Contacta a soporte para reactivarla.",
+              })
+            : t("billing.lockedCanceledMsg", {
+                defaultValue:
+                  "Tu suscripción fue cancelada. Reactívala para volver a usar la plataforma.",
+              })}
         </p>
       </div>
 
@@ -56,13 +70,16 @@ export default function SubscriptionLockedScreen({
           // Reactivar es la acción principal: relleno de marca y tinta
           // `--brand-ink`. El coral `#f36a6d` de antes no salía de ningún sitio.
           <button
-            onClick={() => navigate("/setting/billing")}
             className="cg-btn-brand cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-[filter] hover:brightness-105"
+            onClick={() => navigate("/setting/billing")}
           >
-            {t("billing.lockedReactivate", { defaultValue: "Reactivar suscripción" })}
+            {t("billing.lockedReactivate", {
+              defaultValue: "Reactivar suscripción",
+            })}
           </button>
         )}
         <button
+          className="cg-btn-glass cg-focus rounded-full px-4 py-2 text-sm font-medium"
           onClick={() => {
             try {
               signOut?.();
@@ -70,7 +87,6 @@ export default function SubscriptionLockedScreen({
               /* ignore */
             }
           }}
-          className="cg-btn-glass cg-focus rounded-full px-4 py-2 text-sm font-medium"
         >
           {t("billing.lockedSignOut", { defaultValue: "Cerrar sesión" })}
         </button>

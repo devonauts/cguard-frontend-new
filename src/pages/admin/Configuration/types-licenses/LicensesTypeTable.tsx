@@ -1,6 +1,8 @@
 import { useTranslation } from "react-i18next";
-import { StatusBadge } from "@/components/kit";
+
 import { CatalogTable, type CatalogColumn } from "../components/CatalogTable";
+
+import { StatusBadge } from "@/components/kit";
 
 export type LicenseTypeRow = {
   id: string;
@@ -25,15 +27,29 @@ type Props = {
 };
 
 export default function LicenseTypesTable({
-  rows, total, page, pageSize, loading, query,
-  onQueryChange, onPageChange, onPageSizeChange,
-  onEdit, onToggleStatus, onBulkDelete,
+  rows,
+  total,
+  page,
+  pageSize,
+  loading,
+  query,
+  onQueryChange,
+  onPageChange,
+  onPageSizeChange,
+  onEdit,
+  onToggleStatus,
+  onBulkDelete,
 }: Props) {
   const { t } = useTranslation();
 
   // Las columnas se arman dentro porque sus cabeceras están traducidas.
   const columns: CatalogColumn<LicenseTypeRow>[] = [
-    { key: "name", header: t("licenseTypes.table.column.name", { defaultValue: "Tipo de licencia" }) },
+    {
+      key: "name",
+      header: t("licenseTypes.table.column.name", {
+        defaultValue: "Tipo de licencia",
+      }),
+    },
     {
       key: "status",
       header: t("licenseTypes.table.column.status", { defaultValue: "Estado" }),
@@ -41,7 +57,9 @@ export default function LicenseTypesTable({
         <StatusBadge tone={v === "active" ? "ok" : "neutral"}>
           {v === "active"
             ? t("licenseTypes.table.status.active", { defaultValue: "Activo" })
-            : t("licenseTypes.table.status.inactive", { defaultValue: "Inactivo" })}
+            : t("licenseTypes.table.status.inactive", {
+                defaultValue: "Inactivo",
+              })}
         </StatusBadge>
       ),
     },
@@ -49,34 +67,52 @@ export default function LicenseTypesTable({
 
   return (
     <CatalogTable<LicenseTypeRow>
-      rows={rows}
-      columns={columns}
-      loading={loading}
-      query={query}
-      onQueryChange={onQueryChange}
-      searchPlaceholder={t("licenseTypes.table.searchPlaceholder", { defaultValue: "Buscar tipo de licencia" })}
-      page={page}
-      pageSize={pageSize}
-      total={total}
-      onPageChange={onPageChange}
-      onPageSizeChange={onPageSizeChange}
-      rowActions={(r) => [
-        { label: t("licenseTypes.table.actions.edit", { defaultValue: "Editar" }), onClick: () => onEdit(r) },
-        {
-          label: r.status === "active"
-            ? t("licenseTypes.table.actions.deactivate", { defaultValue: "Desactivar" })
-            : t("licenseTypes.table.actions.activate", { defaultValue: "Activar" }),
-          onClick: () => onToggleStatus(r),
-        },
-      ]}
       bulkActions={[
         {
-          label: t("licenseTypes.table.bulkDelete", { defaultValue: "Eliminar" }),
+          label: t("licenseTypes.table.bulkDelete", {
+            defaultValue: "Eliminar",
+          }),
           destructive: true,
           onRun: onBulkDelete,
         },
       ]}
-      empty={{ title: t("licenseTypes.table.noResults", { defaultValue: "No se encontraron resultados" }) }}
+      columns={columns}
+      empty={{
+        title: t("licenseTypes.table.noResults", {
+          defaultValue: "No se encontraron resultados",
+        }),
+      }}
+      loading={loading}
+      page={page}
+      pageSize={pageSize}
+      query={query}
+      rowActions={(r) => [
+        {
+          label: t("licenseTypes.table.actions.edit", {
+            defaultValue: "Editar",
+          }),
+          onClick: () => onEdit(r),
+        },
+        {
+          label:
+            r.status === "active"
+              ? t("licenseTypes.table.actions.deactivate", {
+                  defaultValue: "Desactivar",
+                })
+              : t("licenseTypes.table.actions.activate", {
+                  defaultValue: "Activar",
+                }),
+          onClick: () => onToggleStatus(r),
+        },
+      ]}
+      rows={rows}
+      searchPlaceholder={t("licenseTypes.table.searchPlaceholder", {
+        defaultValue: "Buscar tipo de licencia",
+      })}
+      total={total}
+      onPageChange={onPageChange}
+      onPageSizeChange={onPageSizeChange}
+      onQueryChange={onQueryChange}
     />
   );
 }

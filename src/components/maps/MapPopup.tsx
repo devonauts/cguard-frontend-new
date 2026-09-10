@@ -69,18 +69,41 @@
  */
 
 import {
-  useCallback, useEffect, useMemo, useRef, useState,
-  type MouseEvent, type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MouseEvent,
+  type ReactNode,
 } from "react";
 import { createPortal, flushSync } from "react-dom";
+
 // `mapPopupActions` son funciones sueltas, no componentes: el traductor entra
 // por la instancia de i18next (los hooks aquí no valen).
-import i18n from '@/i18n';
-import { tablaDeEtiquetas } from "@/lib/i18nLabel";
 import {
-  AlertTriangle, Briefcase, Building2, Car, Crosshair, ExternalLink, Eye, Flag,
-  Locate, MapPin, Navigation, Phone, Radio, Route, Shield, User, UserCog, X,
+  AlertTriangle,
+  Briefcase,
+  Building2,
+  Car,
+  Crosshair,
+  ExternalLink,
+  Eye,
+  Flag,
+  Locate,
+  MapPin,
+  Navigation,
+  Phone,
+  Radio,
+  Route,
+  Shield,
+  User,
+  UserCog,
+  X,
 } from "lucide-react";
+
+import i18n from "@/i18n";
+import { tablaDeEtiquetas } from "@/lib/i18nLabel";
 import "@/styles/map.css";
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -95,17 +118,17 @@ export type MapPopupTone = "brand" | "ok" | "warn" | "bad" | "info" | "neutral";
 
 /** Qué se pulsó. Decide el icono de la cabecera y la etiqueta por defecto. */
 export type MapPopupKind =
-  | "site"        // sede de la empresa
-  | "station"     // puesto / post site
-  | "client"      // cliente
-  | "guard"       // vigilante
-  | "supervisor"  // supervisor
-  | "incident"    // incidente / novedad
-  | "vehicle"     // vehículo de patrullaje
-  | "checkpoint"  // punto de control (NFC/QR)
-  | "route"       // ronda / recorrido
-  | "zone"        // zona o geocerca
-  | "point";      // punto genérico (hito de un recorrido, etc.)
+  | "site" // sede de la empresa
+  | "station" // puesto / post site
+  | "client" // cliente
+  | "guard" // vigilante
+  | "supervisor" // supervisor
+  | "incident" // incidente / novedad
+  | "vehicle" // vehículo de patrullaje
+  | "checkpoint" // punto de control (NFC/QR)
+  | "route" // ronda / recorrido
+  | "zone" // zona o geocerca
+  | "point"; // punto genérico (hito de un recorrido, etc.)
 
 /** Un dato del cuerpo: etiqueta arriba en versalitas, valor debajo. */
 export interface MapPopupField {
@@ -206,7 +229,11 @@ export type MapPopupAnchor = any | { lat: number; lng: number };
 
 export interface MapPopupController {
   /** Abre el globo. Con `load`, arranca en carga y se rellena al resolver. */
-  open: (anchor: MapPopupAnchor, data: MapPopupData, load?: MapPopupLoader) => void;
+  open: (
+    anchor: MapPopupAnchor,
+    data: MapPopupData,
+    load?: MapPopupLoader,
+  ) => void;
   /** Parchea el globo abierto (posición nueva, estado en vivo…). */
   update: (patch: Partial<MapPopupData>) => void;
   close: () => void;
@@ -224,19 +251,20 @@ export interface MapPopupController {
 // Se resuelven AL LEERLAS (ver lib/i18nLabel): esta tabla la importan otros
 // módulos y se evalúa al cargarlos, mucho antes de saber en qué idioma lee
 // quien va a abrir el mapa.
-export const MAP_POPUP_KIND_LABEL: Record<MapPopupKind, string> = tablaDeEtiquetas({
-  site: "maps.kind.site",
-  station: "maps.kind.station",
-  client: "maps.kind.client",
-  guard: "maps.kind.guard",
-  supervisor: "maps.kind.supervisor",
-  incident: "maps.kind.incident",
-  vehicle: "maps.kind.vehicle",
-  checkpoint: "maps.kind.checkpoint",
-  route: "maps.kind.route",
-  zone: "maps.kind.zone",
-  point: "maps.kind.point",
-});
+export const MAP_POPUP_KIND_LABEL: Record<MapPopupKind, string> =
+  tablaDeEtiquetas({
+    site: "maps.kind.site",
+    station: "maps.kind.station",
+    client: "maps.kind.client",
+    guard: "maps.kind.guard",
+    supervisor: "maps.kind.supervisor",
+    incident: "maps.kind.incident",
+    vehicle: "maps.kind.vehicle",
+    checkpoint: "maps.kind.checkpoint",
+    route: "maps.kind.route",
+    zone: "maps.kind.zone",
+    point: "maps.kind.point",
+  });
 
 const KIND_ICON: Record<MapPopupKind, ReactNode> = {
   site: <Building2 />,
@@ -274,19 +302,43 @@ const KIND_TONE: Record<MapPopupKind, MapPopupTone> = {
  */
 export function toneForStatus(status?: string | null): MapPopupTone {
   switch (String(status ?? "").toLowerCase()) {
-    case "online": case "activo": case "cubierto": case "completada":
-    case "presente": case "ok": case "baja":
+    case "online":
+    case "activo":
+    case "cubierto":
+    case "completada":
+    case "presente":
+    case "ok":
+    case "baja":
       return "ok";
-    case "patrol": case "patrulla": case "en patrulla": case "ruta":
+    case "patrol":
+    case "patrulla":
+    case "en patrulla":
+    case "ruta":
       return "brand";
-    case "delayed": case "retraso": case "riesgo": case "pendiente":
-    case "warn": case "media": case "advertencia":
+    case "delayed":
+    case "retraso":
+    case "riesgo":
+    case "pendiente":
+    case "warn":
+    case "media":
+    case "advertencia":
       return "warn";
-    case "incident": case "emergency": case "incidente": case "emergencia":
-    case "sincubrir": case "sin cubrir": case "critica": case "crítica":
-    case "alta": case "bad": case "panico": case "pánico":
+    case "incident":
+    case "emergency":
+    case "incidente":
+    case "emergencia":
+    case "sincubrir":
+    case "sin cubrir":
+    case "critica":
+    case "crítica":
+    case "alta":
+    case "bad":
+    case "panico":
+    case "pánico":
       return "bad";
-    case "supervisor": case "info": case "aviso":
+    case "supervisor":
+    case "info":
+    case "aviso":
       return "info";
     default:
       return "neutral";
@@ -296,9 +348,11 @@ export function toneForStatus(status?: string | null): MapPopupTone {
 /** Nombre de la variable del tono — puente con `mapTheme.ts` para las chinchetas:
  *  `tokenHex(toneToken("bad"))` da el mismo rojo que pinta el globo. */
 export function toneToken(tone: MapPopupTone): string {
-  return tone === "brand" ? "--brand"
-    : tone === "neutral" ? "--ink-faint"
-    : `--${tone}`;
+  return tone === "brand"
+    ? "--brand"
+    : tone === "neutral"
+      ? "--ink-faint"
+      : `--${tone}`;
 }
 
 /** El mismo tono listo para un `style` de React: `color: toneVar("warn")`. */
@@ -324,38 +378,70 @@ export function toneVar(tone: MapPopupTone): string {
  * TypeScript de este proyecto, y las listas de `MapPopupData` son estrictas
  * para que se puedan releer.
  */
-export function mapPopupItems<T>(...items: Array<T | null | undefined | false>): T[] {
+export function mapPopupItems<T>(
+  ...items: Array<T | null | undefined | false>
+): T[] {
   return items.filter(Boolean) as T[];
 }
 
 export const mapPopupActions = {
   /** Ir a la ficha. Pásale `onClick: () => navigate(ruta)` (router del CRM). */
-  detail(onClick: (ev: MouseEvent<HTMLElement>) => void, label = i18n.t("map.actions.verFicha", "Ver ficha")): MapPopupAction {
+  detail(
+    onClick: (ev: MouseEvent<HTMLElement>) => void,
+    label = i18n.t("map.actions.verFicha", "Ver ficha"),
+  ): MapPopupAction {
     return { id: "detail", label, icon: <Eye />, onClick, variant: "primary" };
   },
   /** Llamar. Devuelve `null` si no hay teléfono, para poder encadenar con filter. */
-  call(phone?: string | null, label = i18n.t("map.actions.llamar", "Llamar")): MapPopupAction | null {
+  call(
+    phone?: string | null,
+    label = i18n.t("map.actions.llamar", "Llamar"),
+  ): MapPopupAction | null {
     const limpio = String(phone ?? "").replace(/[^\d+]/g, "");
+
     if (limpio.length < 6) return null;
-    return { id: "call", label, icon: <Phone />, href: `tel:${limpio}`, hint: String(phone) };
+
+    return {
+      id: "call",
+      label,
+      icon: <Phone />,
+      href: `tel:${limpio}`,
+      hint: String(phone),
+    };
   },
   /** Centrar el mapa en el elemento. */
-  center(onClick: (ev: MouseEvent<HTMLElement>) => void, label = i18n.t("map.actions.centrar", "Centrar")): MapPopupAction {
+  center(
+    onClick: (ev: MouseEvent<HTMLElement>) => void,
+    label = i18n.t("map.actions.centrar", "Centrar"),
+  ): MapPopupAction {
     return { id: "center", label, icon: <Locate />, onClick };
   },
   /** Cómo llegar — abre Google Maps en otra pestaña. */
-  directions(lat: number, lng: number, label = i18n.t("map.actions.comoLlegar", "Cómo llegar")): MapPopupAction {
+  directions(
+    lat: number,
+    lng: number,
+    label = i18n.t("map.actions.comoLlegar", "Cómo llegar"),
+  ): MapPopupAction {
     return {
-      id: "directions", label, icon: <Navigation />, external: true,
+      id: "directions",
+      label,
+      icon: <Navigation />,
+      external: true,
       href: `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
     };
   },
   /** Ver la ronda / el recorrido. */
-  tour(onClick: (ev: MouseEvent<HTMLElement>) => void, label = i18n.t("map.actions.verRonda", "Ver ronda")): MapPopupAction {
+  tour(
+    onClick: (ev: MouseEvent<HTMLElement>) => void,
+    label = i18n.t("map.actions.verRonda", "Ver ronda"),
+  ): MapPopupAction {
     return { id: "tour", label, icon: <Route />, onClick };
   },
   /** Radio / pase de novedades. */
-  radio(onClick: (ev: MouseEvent<HTMLElement>) => void, label = i18n.t("map.actions.radio", "Radio")): MapPopupAction {
+  radio(
+    onClick: (ev: MouseEvent<HTMLElement>) => void,
+    label = i18n.t("map.actions.radio", "Radio"),
+  ): MapPopupAction {
     return { id: "radio", label, icon: <Radio />, onClick };
   },
 };
@@ -372,7 +458,11 @@ export interface MapPopupProps {
 }
 
 function tonoDe(data: MapPopupData): MapPopupTone {
-  return data.tone ?? data.status?.tone ?? (data.kind ? KIND_TONE[data.kind] : "neutral");
+  return (
+    data.tone ??
+    data.status?.tone ??
+    (data.kind ? KIND_TONE[data.kind] : "neutral")
+  );
 }
 
 /**
@@ -389,26 +479,35 @@ export function MapPopup({ data, onClose, className }: MapPopupProps) {
 
   return (
     <div
-      className={`cc-mpop${className ? ` ${className}` : ""}`}
-      data-tone={tono}
-      data-kind={data.kind || "point"}
-      role="dialog"
       aria-label={data.title}
+      className={`cc-mpop${className ? ` ${className}` : ""}`}
+      data-kind={data.kind || "point"}
+      data-tone={tono}
+      role="dialog"
     >
       {onClose && (
-        <button type="button" className="cc-mpop-x" onClick={onClose} aria-label="Cerrar">
+        <button
+          aria-label="Cerrar"
+          className="cc-mpop-x"
+          type="button"
+          onClick={onClose}
+        >
           <X aria-hidden />
         </button>
       )}
 
       <div className="cc-mpop-head">
-        <span className="cc-mpop-tile" aria-hidden>{icono}</span>
+        <span aria-hidden className="cc-mpop-tile">
+          {icono}
+        </span>
         <div className="cc-mpop-htext">
-          <div className="cc-mpop-t" title={data.title}>{data.title}</div>
+          <div className="cc-mpop-t" title={data.title}>
+            {data.title}
+          </div>
           {data.subtitle && <div className="cc-mpop-s">{data.subtitle}</div>}
           {data.status && (
             <span className="cc-mpop-pill" data-tone={data.status.tone ?? tono}>
-              {data.status.live && <i className="cc-mpop-live" aria-hidden />}
+              {data.status.live && <i aria-hidden className="cc-mpop-live" />}
               {data.status.label}
             </span>
           )}
@@ -418,9 +517,16 @@ export function MapPopup({ data, onClose, className }: MapPopupProps) {
       {metricas.length > 0 && (
         <div className="cc-mpop-metrics">
           {metricas.map((m, i) => (
-            <div key={`${m.label}-${i}`} className="cc-mpop-m" data-tone={m.tone ?? undefined}>
+            <div
+              key={`${m.label}-${i}`}
+              className="cc-mpop-m"
+              data-tone={m.tone ?? undefined}
+            >
               <div className="cc-mpop-ml">{m.label}</div>
-              <div className="cc-mpop-mv" style={m.tone ? { color: "var(--tono-text)" } : undefined}>
+              <div
+                className="cc-mpop-mv"
+                style={m.tone ? { color: "var(--tono-text)" } : undefined}
+              >
                 {m.value}
               </div>
             </div>
@@ -428,7 +534,12 @@ export function MapPopup({ data, onClose, className }: MapPopupProps) {
         </div>
       )}
 
-      {(campos.length > 0 || data.loading || data.error || data.note || data.tags?.length || data.footer) && (
+      {(campos.length > 0 ||
+        data.loading ||
+        data.error ||
+        data.note ||
+        data.tags?.length ||
+        data.footer) && (
         <div className="cc-mpop-body">
           {campos.length > 0 && (
             <div className="cc-mpop-grid">
@@ -443,7 +554,9 @@ export function MapPopup({ data, onClose, className }: MapPopupProps) {
                     className={`cc-mpop-fv${f.mono ? " cc-mpop-fv--num" : ""}`}
                     style={f.tone ? { color: "var(--tono-text)" } : undefined}
                   >
-                    {f.value === null || f.value === undefined || f.value === "" ? "—" : f.value}
+                    {f.value === null || f.value === undefined || f.value === ""
+                      ? "—"
+                      : f.value}
                   </div>
                 </div>
               ))}
@@ -453,7 +566,10 @@ export function MapPopup({ data, onClose, className }: MapPopupProps) {
           {/* Carga: el esqueleto va DEBAJO de lo que ya se sabe, nunca lo tapa —
               la cabecera de la chincheta se lee desde el primer fotograma. */}
           {data.loading && !data.error && (
-            <div className={`cc-mpop-load${campos.length ? " cc-mpop-load--sep" : ""}`} aria-label="Cargando detalle">
+            <div
+              aria-label="Cargando detalle"
+              className={`cc-mpop-load${campos.length ? " cc-mpop-load--sep" : ""}`}
+            >
               <span className="cc-mpop-sk" style={{ width: "62%" }} />
               <span className="cc-mpop-sk" style={{ width: "88%" }} />
               <span className="cc-mpop-sk" style={{ width: "45%" }} />
@@ -464,7 +580,11 @@ export function MapPopup({ data, onClose, className }: MapPopupProps) {
 
           {data.tags && data.tags.length > 0 && (
             <div className="cc-mpop-tags">
-              {data.tags.map((t, i) => <span key={`${t}-${i}`} className="cc-mpop-tag">{t}</span>)}
+              {data.tags.map((t, i) => (
+                <span key={`${t}-${i}`} className="cc-mpop-tag">
+                  {t}
+                </span>
+              ))}
             </div>
           )}
 
@@ -476,7 +596,12 @@ export function MapPopup({ data, onClose, className }: MapPopupProps) {
       {acciones.length > 0 && (
         <div className="cc-mpop-acts">
           {acciones.map((a, i) => (
-            <Accion key={a.id || i} accion={a} primaria={i === 0} onClose={onClose} />
+            <Accion
+              key={a.id || i}
+              accion={a}
+              primaria={i === 0}
+              onClose={onClose}
+            />
           ))}
         </div>
       )}
@@ -484,7 +609,11 @@ export function MapPopup({ data, onClose, className }: MapPopupProps) {
   );
 }
 
-function Accion({ accion, primaria, onClose }: {
+function Accion({
+  accion,
+  primaria,
+  onClose,
+}: {
   accion: MapPopupAction;
   primaria: boolean;
   onClose?: () => void;
@@ -494,18 +623,28 @@ function Accion({ accion, primaria, onClose }: {
   const bloqueado = accion.disabled || accion.busy;
 
   const alPulsar = (ev: MouseEvent<HTMLElement>) => {
-    if (bloqueado) { ev.preventDefault(); return; }
+    if (bloqueado) {
+      ev.preventDefault();
+
+      return;
+    }
     accion.onClick?.(ev);
     if (accion.closeOnClick) onClose?.();
   };
 
   const dentro = (
     <>
-      {accion.busy
-        ? <i className="cc-mpop-spin" aria-hidden />
-        : accion.icon && <span className="cc-mpop-ai" aria-hidden>{accion.icon}</span>}
+      {accion.busy ? (
+        <i aria-hidden className="cc-mpop-spin" />
+      ) : (
+        accion.icon && (
+          <span aria-hidden className="cc-mpop-ai">
+            {accion.icon}
+          </span>
+        )
+      )}
       <span className="cc-mpop-al">{accion.label}</span>
-      {accion.external && <ExternalLink className="cc-mpop-ax" aria-hidden />}
+      {accion.external && <ExternalLink aria-hidden className="cc-mpop-ax" />}
     </>
   );
 
@@ -515,9 +654,9 @@ function Accion({ accion, primaria, onClose }: {
         className={clase}
         data-tone={accion.tone ?? undefined}
         href={accion.href}
-        title={accion.hint || accion.label}
-        target={accion.external ? "_blank" : undefined}
         rel={accion.external ? "noreferrer noopener" : undefined}
+        target={accion.external ? "_blank" : undefined}
+        title={accion.hint || accion.label}
         onClick={alPulsar}
       >
         {dentro}
@@ -527,11 +666,11 @@ function Accion({ accion, primaria, onClose }: {
 
   return (
     <button
-      type="button"
       className={clase}
       data-tone={accion.tone ?? undefined}
-      title={accion.hint || accion.label}
       disabled={bloqueado}
+      title={accion.hint || accion.label}
+      type="button"
       onClick={alPulsar}
     >
       {dentro}
@@ -556,11 +695,17 @@ export interface UseMapPopupOptions {
 }
 
 function esPosicion(a: any): a is { lat: number; lng: number } {
-  return !!a && typeof a === "object" && typeof a.lat === "number" && typeof a.lng === "number";
+  return (
+    !!a &&
+    typeof a === "object" &&
+    typeof a.lat === "number" &&
+    typeof a.lng === "number"
+  );
 }
 
 function mensajeError(e: any): string {
   const m = e?.response?.data?.message || e?.message;
+
   return typeof m === "string" && m.trim() ? m : i18n.t("maps.popup.loadError");
 }
 
@@ -575,11 +720,18 @@ function mensajeError(e: any): string {
  *    hace que el paso «cargando → cargado» no deje el pico descolocado);
  *  · ESC y pulsar el mapa cierran; el chrome de Google se apaga por CSS.
  */
-export function useMapPopup(map: MapPopupMapRef, options?: UseMapPopupOptions): MapPopupController {
-  const [estado, setEstado] = useState<{ data: MapPopupData; token: number } | null>(null);
+export function useMapPopup(
+  map: MapPopupMapRef,
+  options?: UseMapPopupOptions,
+): MapPopupController {
+  const [estado, setEstado] = useState<{
+    data: MapPopupData;
+    token: number;
+  } | null>(null);
 
   const contenedor = useMemo(
-    () => (typeof document === "undefined" ? null : document.createElement("div")),
+    () =>
+      typeof document === "undefined" ? null : document.createElement("div"),
     [],
   );
   const ventanaRef = useRef<any>(null);
@@ -589,84 +741,132 @@ export function useMapPopup(map: MapPopupMapRef, options?: UseMapPopupOptions): 
   const fuenteRef = useRef<MapPopupMapRef>(map);
   const opcionesRef = useRef<UseMapPopupOptions | undefined>(options);
 
-  useEffect(() => { fuenteRef.current = map; opcionesRef.current = options; });
-  useEffect(() => { abiertoRef.current = !!estado; }, [estado]);
+  useEffect(() => {
+    fuenteRef.current = map;
+    opcionesRef.current = options;
+  });
+  useEffect(() => {
+    abiertoRef.current = !!estado;
+  }, [estado]);
 
   const obtenerMapa = useCallback(() => {
     const f = fuenteRef.current;
+
     return typeof f === "function" ? (f as () => any)() : f;
   }, []);
 
   /** Pintar SÍNCRONO: Google mide el contenido en el momento de abrir. */
-  const pintar = useCallback((v: { data: MapPopupData; token: number } | null) => {
-    try { flushSync(() => setEstado(v)); } catch { setEstado(v); }
-  }, []);
+  const pintar = useCallback(
+    (v: { data: MapPopupData; token: number } | null) => {
+      try {
+        flushSync(() => setEstado(v));
+      } catch {
+        setEstado(v);
+      }
+    },
+    [],
+  );
 
-  const abrirVentana = useCallback((mapa: any, ancla: MapPopupAnchor, foco: boolean) => {
-    const v = ventanaRef.current;
-    if (!v || !mapa) return;
-    const o: any = { map: mapa };
-    if (esPosicion(ancla)) o.position = ancla; else o.anchor = ancla;
-    if (!foco) o.shouldFocus = false;
-    v.open(o);
-  }, []);
+  const abrirVentana = useCallback(
+    (mapa: any, ancla: MapPopupAnchor, foco: boolean) => {
+      const v = ventanaRef.current;
+
+      if (!v || !mapa) return;
+      const o: any = { map: mapa };
+
+      if (esPosicion(ancla)) o.position = ancla;
+      else o.anchor = ancla;
+      if (!foco) o.shouldFocus = false;
+      v.open(o);
+    },
+    [],
+  );
 
   const close = useCallback(() => {
     tokenRef.current += 1;
     abiertoRef.current = false;
-    try { ventanaRef.current?.close(); } catch { /* la ventana ya no existe */ }
+    try {
+      ventanaRef.current?.close();
+    } catch {
+      /* la ventana ya no existe */
+    }
     setEstado(null);
     opcionesRef.current?.onClose?.();
   }, []);
 
-  const open = useCallback((anchor: MapPopupAnchor, data: MapPopupData, load?: MapPopupLoader) => {
-    const mapa = obtenerMapa();
-    const g = (window as any).google;
-    if (!mapa || !g?.maps || !contenedor) return;
+  const open = useCallback(
+    (anchor: MapPopupAnchor, data: MapPopupData, load?: MapPopupLoader) => {
+      const mapa = obtenerMapa();
+      const g = (window as any).google;
 
-    if (!ventanaRef.current) {
-      ventanaRef.current = new g.maps.InfoWindow({
-        maxWidth: opcionesRef.current?.maxWidth ?? 340,
-        // El globo trae su propio botón de cerrar (44 px, táctil). `headerDisabled`
-        // es de las versiones nuevas de la API; en las viejas se ignora y el CSS
-        // esconde igualmente la cabecera de Google.
-        headerDisabled: true,
+      if (!mapa || !g?.maps || !contenedor) return;
+
+      if (!ventanaRef.current) {
+        ventanaRef.current = new g.maps.InfoWindow({
+          maxWidth: opcionesRef.current?.maxWidth ?? 340,
+          // El globo trae su propio botón de cerrar (44 px, táctil). `headerDisabled`
+          // es de las versiones nuevas de la API; en las viejas se ignora y el CSS
+          // esconde igualmente la cabecera de Google.
+          headerDisabled: true,
+        });
+        ventanaRef.current.addListener("closeclick", () => close());
+        ventanaRef.current.setContent(contenedor);
+      }
+
+      const token = ++tokenRef.current;
+
+      abiertoRef.current = true;
+      anclaRef.current = anchor;
+      // La altura de la chincheta la sabe el mapa que la dibujó, no el globo.
+      ventanaRef.current.setOptions({
+        pixelOffset: new g.maps.Size(data.offsetX ?? 0, data.offsetY ?? 0),
       });
-      ventanaRef.current.addListener("closeclick", () => close());
-      ventanaRef.current.setContent(contenedor);
-    }
-
-    const token = ++tokenRef.current;
-    abiertoRef.current = true;
-    anclaRef.current = anchor;
-    // La altura de la chincheta la sabe el mapa que la dibujó, no el globo.
-    ventanaRef.current.setOptions({
-      pixelOffset: new g.maps.Size(data.offsetX ?? 0, data.offsetY ?? 0),
-    });
-    pintar({ data: { ...data, loading: data.loading ?? !!load, error: data.error ?? null }, token });
-    abrirVentana(mapa, anchor, true);
-
-    if (!load) return;
-    Promise.resolve()
-      .then(load)
-      .then(
-        (parche) => {
-          if (tokenRef.current !== token) return; // se cerró o se abrió otro
-          setEstado((prev) => (prev && prev.token === token
-            ? { ...prev, data: { ...prev.data, ...parche, loading: false } }
-            : prev));
+      pintar({
+        data: {
+          ...data,
+          loading: data.loading ?? !!load,
+          error: data.error ?? null,
         },
-        (e) => {
-          if (tokenRef.current !== token) return;
-          setEstado((prev) => (prev && prev.token === token
-            ? { ...prev, data: { ...prev.data, loading: false, error: mensajeError(e) } }
-            : prev));
-        },
-      );
-  }, [abrirVentana, close, contenedor, obtenerMapa, pintar]);
+        token,
+      });
+      abrirVentana(mapa, anchor, true);
+
+      if (!load) return;
+      Promise.resolve()
+        .then(load)
+        .then(
+          (parche) => {
+            if (tokenRef.current !== token) return; // se cerró o se abrió otro
+            setEstado((prev) =>
+              prev && prev.token === token
+                ? { ...prev, data: { ...prev.data, ...parche, loading: false } }
+                : prev,
+            );
+          },
+          (e) => {
+            if (tokenRef.current !== token) return;
+            setEstado((prev) =>
+              prev && prev.token === token
+                ? {
+                    ...prev,
+                    data: {
+                      ...prev.data,
+                      loading: false,
+                      error: mensajeError(e),
+                    },
+                  }
+                : prev,
+            );
+          },
+        );
+    },
+    [abrirVentana, close, contenedor, obtenerMapa, pintar],
+  );
 
   const update = useCallback((patch: Partial<MapPopupData>) => {
-    setEstado((prev) => (prev ? { ...prev, data: { ...prev.data, ...patch } } : prev));
+    setEstado((prev) =>
+      prev ? { ...prev, data: { ...prev.data, ...patch } } : prev,
+    );
   }, []);
 
   /* El globo crece cuando llega el detalle. Un `InfoWindow` mide su contenido al
@@ -682,41 +882,67 @@ export function useMapPopup(map: MapPopupMapRef, options?: UseMapPopupOptions): 
       pendiente = requestAnimationFrame(() => {
         if (!abiertoRef.current || !anclaRef.current) return;
         const alto = Math.round(contenedor.getBoundingClientRect().height);
+
         if (!alto || alto === ultimo) return;
         ultimo = alto;
         abrirVentana(obtenerMapa(), anclaRef.current, false);
       });
     });
+
     ro.observe(contenedor);
-    return () => { ro.disconnect(); cancelAnimationFrame(pendiente); };
+
+    return () => {
+      ro.disconnect();
+      cancelAnimationFrame(pendiente);
+    };
   }, [abrirVentana, contenedor, obtenerMapa]);
 
   /* ESC y pulsar el mapa cierran. Se registran sólo mientras hay globo. */
   useEffect(() => {
     if (!estado) return;
-    const alTeclado = (e: KeyboardEvent) => { if (e.key === "Escape") close(); };
+    const alTeclado = (e: KeyboardEvent) => {
+      if (e.key === "Escape") close();
+    };
+
     document.addEventListener("keydown", alTeclado);
 
     let escucha: any = null;
     const mapa = obtenerMapa();
+
     if (mapa && (opcionesRef.current?.closeOnMapClick ?? true)) {
       escucha = mapa.addListener?.("click", () => close());
     }
+
     return () => {
       document.removeEventListener("keydown", alTeclado);
-      try { escucha?.remove?.(); } catch { /* el mapa ya se destruyó */ }
+      try {
+        escucha?.remove?.();
+      } catch {
+        /* el mapa ya se destruyó */
+      }
     };
   }, [close, estado, obtenerMapa]);
 
   /* Al desmontar el mapa, la ventana se va con él. */
-  useEffect(() => () => {
-    try { ventanaRef.current?.close(); } catch { /* nada que cerrar */ }
-    ventanaRef.current = null;
-  }, []);
+  useEffect(
+    () => () => {
+      try {
+        ventanaRef.current?.close();
+      } catch {
+        /* nada que cerrar */
+      }
+      ventanaRef.current = null;
+    },
+    [],
+  );
 
-  const portal = contenedor && estado
-    ? createPortal(<MapPopup data={estado.data} onClose={close} />, contenedor)
-    : null;
+  const portal =
+    contenedor && estado
+      ? createPortal(
+          <MapPopup data={estado.data} onClose={close} />,
+          contenedor,
+        )
+      : null;
 
   return {
     open,

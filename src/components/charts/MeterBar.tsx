@@ -1,5 +1,10 @@
-import { statusVar, alphaVar, seriesVar, type ChartTone } from '@/lib/chartColors';
-import { cn } from '@/lib/utils';
+import {
+  statusVar,
+  alphaVar,
+  seriesVar,
+  type ChartTone,
+} from "@/lib/chartColors";
+import { cn } from "@/lib/utils";
 
 export interface MeterBarProps {
   /** Porcentaje de llenado, 0-100. */
@@ -27,7 +32,7 @@ export interface MeterBarProps {
  */
 export default function MeterBar({
   pct,
-  tone = 'brand',
+  tone = "brand",
   color,
   series,
   height = 8,
@@ -41,13 +46,13 @@ export default function MeterBar({
 
   return (
     <div
-      className={cn('w-full overflow-hidden rounded-full', className)}
-      style={{ height, background: 'var(--glass-sunken)' }}
-      role="meter"
-      aria-valuenow={Math.round(v)}
-      aria-valuemin={0}
-      aria-valuemax={100}
       aria-label={ariaLabel}
+      aria-valuemax={100}
+      aria-valuemin={0}
+      aria-valuenow={Math.round(v)}
+      className={cn("w-full overflow-hidden rounded-full", className)}
+      role="meter"
+      style={{ height, background: "var(--glass-sunken)" }}
     >
       <div
         className="h-full rounded-full"
@@ -56,7 +61,7 @@ export default function MeterBar({
           // Del color a una versión más tenue: la punta —el borde que se lee— queda densa.
           background: `linear-gradient(90deg, ${alphaVar(base, 62)}, ${base})`,
           boxShadow: `0 0 10px -2px ${alphaVar(base, 55)}`,
-          transition: 'width 0.5s var(--ease)',
+          transition: "width 0.5s var(--ease)",
         }}
       />
     </div>

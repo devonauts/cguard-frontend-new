@@ -1,9 +1,10 @@
-import * as React from 'react';
-import { cn } from '@/lib/utils';
+import * as React from "react";
+
+import { cn } from "@/lib/utils";
 
 /** `useLayoutEffect` avisa en un render de servidor; ahí `useEffect` basta. */
 const useIsomorphicLayoutEffect =
-  typeof window !== 'undefined' ? React.useLayoutEffect : React.useEffect;
+  typeof window !== "undefined" ? React.useLayoutEffect : React.useEffect;
 
 /**
  * ────────────────────────────────────────────────────────────────────────────
@@ -27,11 +28,11 @@ const useIsomorphicLayoutEffect =
  */
 export function SmartImage({
   src,
-  alt = '',
+  alt = "",
   className,
   fallback,
-  rounded = 'rounded-lg',
-  fit = 'cover',
+  rounded = "rounded-lg",
+  fit = "cover",
   style,
   onClick,
   ...rest
@@ -45,12 +46,15 @@ export function SmartImage({
   rounded?: string;
   /** `cover` recorta para llenar (avatares/thumbnails); `contain` no recorta
    *  (logos que deben verse enteros). */
-  fit?: 'cover' | 'contain';
+  fit?: "cover" | "contain";
   /** Estilo del MARCO (borde, fondo…). Va al recuadro, no al `<img>` interno. */
   style?: React.CSSProperties;
   /** Click sobre TODA la caja (también sobre el fallback), no solo la imagen. */
   onClick?: React.MouseEventHandler<HTMLSpanElement>;
-} & Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'src' | 'className' | 'style' | 'onClick'>) {
+} & Omit<
+  React.ImgHTMLAttributes<HTMLImageElement>,
+  "src" | "className" | "style" | "onClick"
+>) {
   const [loaded, setLoaded] = React.useState(false);
   const [errored, setErrored] = React.useState(false);
   const imgRef = React.useRef<HTMLImageElement | null>(null);
@@ -78,6 +82,7 @@ export function SmartImage({
     setLoaded(false);
     setErrored(false);
     const el = imgRef.current;
+
     if (!el || !src) return;
     if (el.complete) {
       if (el.naturalWidth > 0) setLoaded(true);
@@ -92,7 +97,7 @@ export function SmartImage({
   // va al `<img>` interno.
   return (
     <span
-      className={cn('relative block overflow-hidden', rounded, className)}
+      className={cn("relative block overflow-hidden", rounded, className)}
       style={style}
       onClick={onClick}
     >
@@ -101,24 +106,31 @@ export function SmartImage({
         <span
           aria-hidden
           className="absolute inset-0 animate-pulse"
-          style={{ background: 'var(--glass-sunken)' }}
+          style={{ background: "var(--glass-sunken)" }}
         />
       )}
 
       {showFallback ? (
-        <span className="absolute inset-0 grid place-items-center" style={{ background: 'var(--glass-sunken)' }}>
+        <span
+          className="absolute inset-0 grid place-items-center"
+          style={{ background: "var(--glass-sunken)" }}
+        >
           {fallback}
         </span>
       ) : (
         <img
           ref={imgRef}
-          src={src as string}
           alt={alt}
-          loading="lazy"
+          className={cn(
+            "h-full w-full transition-opacity duration-300 motion-reduce:transition-none",
+            fit === "contain" ? "object-contain" : "object-cover",
+            loaded ? "opacity-100" : "opacity-0",
+          )}
           decoding="async"
-          onLoad={() => setLoaded(true)}
+          loading="lazy"
+          src={src as string}
           onError={() => setErrored(true)}
-          className={cn('h-full w-full transition-opacity duration-300 motion-reduce:transition-none', fit === 'contain' ? 'object-contain' : 'object-cover', loaded ? 'opacity-100' : 'opacity-0')}
+          onLoad={() => setLoaded(true)}
           {...rest}
         />
       )}

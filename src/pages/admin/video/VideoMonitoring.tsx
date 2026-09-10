@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
   Video,
@@ -38,7 +38,6 @@ import {
 } from "@/components/video/VideoActionModals";
 import i18n from "@/i18n";
 
-
 type ModalKind = "trim" | "incident" | "dispatch" | null;
 
 /* ------------------------------------------------------------------ */
@@ -53,10 +52,19 @@ type ModalKind = "trim" | "incident" | "dispatch" | null;
  */
 function StatusDot({ status }: { status?: string }) {
   const enLinea = status === "online";
-  const tono = enLinea ? "var(--ok)" : status === "offline" ? "var(--bad)" : "var(--ink-faint)";
-  const label = enLinea ? "En línea" : status === "offline" ? "Fuera de línea" : "Estado desconocido";
+  const tono = enLinea
+    ? "var(--ok)"
+    : status === "offline"
+      ? "var(--bad)"
+      : "var(--ink-faint)";
+  const label = enLinea
+    ? "En línea"
+    : status === "offline"
+      ? "Fuera de línea"
+      : "Estado desconocido";
+
   return (
-    <span className="inline-flex items-center" title={label} aria-label={label}>
+    <span aria-label={label} className="inline-flex items-center" title={label}>
       <span
         className={cn("h-2 w-2 rounded-full", enLinea && "cc-dot")}
         style={{ background: tono }}
@@ -85,9 +93,10 @@ function TileButton({
 }) {
   return (
     <button
+      style={{ background: 'var(--glass-raised)', borderColor: 'var(--hairline)', color: 'var(--ink)' }}
+      title={label}
       type="button"
       onClick={onClick}
-      title={label}
       aria-label={label}
       /* SIN `cg-btn-glass`: lleva `backdrop-filter`, y aquí se instancian
          CUATRO por cámara ENCIMA de un <video> decodificando. Cada capa obliga
@@ -95,7 +104,6 @@ function TileButton({
          cluster ya se apoya en una superficie `--glass-sunken`, que es la que
          da el aspecto esmerilado; los botones sólo necesitan su propio filo. */
       className="cg-focus grid size-9 place-items-center rounded-full border transition-all duration-200 hover:-translate-y-0.5 sm:size-8"
-      style={{ background: 'var(--glass-raised)', borderColor: 'var(--hairline)', color: 'var(--ink)' }}
     >
       {icon}
     </button>
@@ -116,18 +124,23 @@ function CameraTile({
 
   const handleSnapshot = async () => {
     const video = videoElRef.current;
+
     // 1) Try to grab a frame from the live <video> element via canvas.
     if (video && video.readyState >= 2 && video.videoWidth > 0) {
       try {
         const canvas = document.createElement("canvas");
+
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         const ctx = canvas.getContext("2d");
+
         if (ctx) {
           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
           const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
+
           downloadDataUrl(dataUrl, `snapshot-${slug(camera.name)}.jpg`);
           toast.success("Captura descargada");
+
           return;
         }
       } catch {
@@ -136,12 +149,14 @@ function CameraTile({
     }
     // 2) Fall back to the configured snapshot URL.
     const snap = streamRef.current?.snapshotUrl || camera.snapshotUrl;
+
     if (snap && /^https?:\/\//i.test(snap)) {
       window.open(snap, "_blank", "noopener,noreferrer");
-      toast.success(i18n.t('ui.VideoMonitoring.capturaAbiertaEnUnaPestana'));
+      toast.success(i18n.t("ui.VideoMonitoring.capturaAbiertaEnUnaPestana"));
+
       return;
     }
-    toast.error(i18n.t('ui.VideoMonitoring.noHayCapturaDisponiblePara'));
+    toast.error(i18n.t("ui.VideoMonitoring.noHayCapturaDisponiblePara"));
   };
 
   return (
@@ -161,7 +176,7 @@ function CameraTile({
             hay puntero) y al acercarse o tabular en escritorio. */}
         <div
           className="absolute right-2 top-2 z-30 flex items-center gap-1.5 rounded-full p-1 opacity-100 transition-opacity duration-200 sm:opacity-0 sm:group-hover/tile:opacity-100 sm:group-focus-within/tile:opacity-100"
-          style={{ background: 'var(--glass-sunken)' }}
+          style={{ background: "var(--glass-sunken)" }}
         >
           <TileButton
             icon={<Scissors className="size-3.5" />}
@@ -170,7 +185,7 @@ function CameraTile({
           />
           <TileButton
             icon={<AlertTriangle className="size-3.5" />}
-            label={i18n.t('comun.crearIncidente')}
+            label={i18n.t("comun.crearIncidente")}
             onClick={() => onAction("incident", camera)}
           />
           <TileButton
@@ -193,7 +208,10 @@ function CameraTile({
             {camera.name || `Cámara ${camera.channel ?? ""}`}
           </h3>
           {deviceName ? (
-            <p className="mt-0.5 truncate text-xs" style={{ color: 'var(--ink-faint)' }}>
+            <p
+              className="mt-0.5 truncate text-xs"
+              style={{ color: "var(--ink-faint)" }}
+            >
               {deviceName}
               {camera.channel ? ` · Canal ${camera.channel}` : ""}
             </p>
@@ -219,6 +237,7 @@ function slug(name?: string | null): string {
 
 function downloadDataUrl(dataUrl: string, filename: string) {
   const a = document.createElement("a");
+
   a.href = dataUrl;
   a.download = filename;
   document.body.appendChild(a);
@@ -253,12 +272,16 @@ export default function VideoMonitoring() {
         videoService.cameras(),
         videoService.devices().catch(() => [] as Device[]),
       ]);
+
       setCameras(Array.isArray(cams) ? cams : []);
       setDevices(Array.isArray(devs) ? devs : []);
     } catch (e) {
       const err = e as { data?: { message?: string }; message?: string };
+
       setError(
-        err?.data?.message || err?.message || "No se pudieron cargar las cámaras"
+        err?.data?.message ||
+          err?.message ||
+          "No se pudieron cargar las cámaras",
       );
     } finally {
       setLoading(false);
@@ -273,15 +296,18 @@ export default function VideoMonitoring() {
     (id?: string | null) => {
       if (!id) return undefined;
       const d = devices.find((x) => x.id === id);
+
       return d?.name;
     },
-    [devices]
+    [devices],
   );
 
   // Distinct post-site ids present among cameras (for the site filter).
   const siteOptions = React.useMemo(() => {
     const set = new Set<string>();
+
     for (const c of cameras) if (c.postSiteId) set.add(c.postSiteId);
+
     return Array.from(set);
   }, [cameras]);
 
@@ -294,7 +320,7 @@ export default function VideoMonitoring() {
 
   const enLinea = React.useMemo(
     () => visible.filter((c) => c.status === "online").length,
-    [visible]
+    [visible],
   );
 
   const openAction = (kind: Exclude<ModalKind, null>, camera: Camera) => {
@@ -305,40 +331,47 @@ export default function VideoMonitoring() {
 
   return (
     <AppLayout>
-      <PageContainer width="wide" className="max-w-[1600px]">
+      <PageContainer className="max-w-[1600px]" width="wide">
         {/* Header */}
         <PageHeader
-          icon={<MonitorPlay />}
-          title={t('ui.VideoMonitoring.monitoreoDeVideo', 'Monitoreo de video')}
-          subtitle={t('ui.VideoMonitoring.vigilanciaEnVivoDeTodas')}
+          actions={
+            <Button disabled={loading} variant="outline" onClick={load}>
+              <RefreshCw className={cn("size-4", loading && "animate-spin")} />
+              <span className="hidden sm:inline">Actualizar</span>
+            </Button>
+          }
           badges={
             loading ? null : enLinea > 0 ? (
               /* Misma píldora que el kit ya calcula; estaba pintada a mano sólo
                  en esta rama y con `StatusBadge` en la contraria. */
               <StatusBadge tone="ok">
-                {enLinea === 1 ? "1 cámara transmitiendo" : `${enLinea} cámaras transmitiendo`}
+                {enLinea === 1
+                  ? "1 cámara transmitiendo"
+                  : `${enLinea} cámaras transmitiendo`}
               </StatusBadge>
             ) : (
-              <StatusBadge tone="neutral">{t("ui.VideoMonitoring.ningunaCamaraTransmitiendo", "Ninguna cámara transmitiendo")}</StatusBadge>
+              <StatusBadge tone="neutral">
+                {t(
+                  "ui.VideoMonitoring.ningunaCamaraTransmitiendo",
+                  "Ninguna cámara transmitiendo",
+                )}
+              </StatusBadge>
             )
           }
-          actions={
-            <Button variant="outline" onClick={load} disabled={loading}>
-              <RefreshCw className={cn("size-4", loading && "animate-spin")} />
-              <span className="hidden sm:inline">Actualizar</span>
-            </Button>
-          }
+          icon={<MonitorPlay />}
+          subtitle={t("ui.VideoMonitoring.vigilanciaEnVivoDeTodas")}
+          title={t("ui.VideoMonitoring.monitoreoDeVideo", "Monitoreo de video")}
         />
 
         {/* Filtros */}
         <Toolbar>
           <select
+            aria-label={t("ui.VideoMonitoring.filtrarPorEquipoGrabador")}
             className={selectClass}
             value={deviceFilter}
             onChange={(e) => setDeviceFilter(e.target.value)}
-            aria-label={t('ui.VideoMonitoring.filtrarPorEquipoGrabador')}
           >
-            <option value="">{t('ui.VideoMonitoring.todosLosEquipos')}</option>
+            <option value="">{t("ui.VideoMonitoring.todosLosEquipos")}</option>
             {devices.map((d) => (
               <option key={d.id} value={d.id}>
                 {d.name}
@@ -348,12 +381,14 @@ export default function VideoMonitoring() {
 
           {siteOptions.length > 0 ? (
             <select
+              aria-label={t("ui.VideoMonitoring.filtrarPorPuesto")}
               className={selectClass}
               value={siteFilter}
               onChange={(e) => setSiteFilter(e.target.value)}
-              aria-label={t('ui.VideoMonitoring.filtrarPorPuesto')}
             >
-              <option value="">{t('ui.VideoMonitoring.todosLosPuestos')}</option>
+              <option value="">
+                {t("ui.VideoMonitoring.todosLosPuestos")}
+              </option>
               {siteOptions.map((s) => (
                 <option key={s} value={s}>
                   Puesto {s.slice(0, 8)}
@@ -363,7 +398,10 @@ export default function VideoMonitoring() {
           ) : null}
 
           {!loading && !error && visible.length > 0 ? (
-            <span className="ml-auto flex items-center gap-1.5 pr-2 text-xs" style={{ color: 'var(--ink-faint)' }}>
+            <span
+              className="ml-auto flex items-center gap-1.5 pr-2 text-xs"
+              style={{ color: "var(--ink-faint)" }}
+            >
               <Video className="size-3.5" />
               {visible.length} cámara{visible.length === 1 ? "" : "s"} en vista
             </span>
@@ -372,31 +410,40 @@ export default function VideoMonitoring() {
 
         {/* Body */}
         {loading ? (
-          <SkeletonCards count={6} className="md:grid-cols-2 xl:grid-cols-3" />
+          <SkeletonCards className="md:grid-cols-2 xl:grid-cols-3" count={6} />
         ) : error ? (
           <EmptyState
-            icon={<AlertTriangle />}
-            title={t("ui.VideoMonitoring.noSePudieronCargarLas", "No se pudieron cargar las cámaras")}
-            description={error}
             action={
               <Button variant="brand" onClick={load}>
                 <RefreshCw className="size-4" />
                 Reintentar
               </Button>
             }
+            description={error}
+            icon={<AlertTriangle />}
+            title={t(
+              "ui.VideoMonitoring.noSePudieronCargarLas",
+              "No se pudieron cargar las cámaras",
+            )}
           />
         ) : visible.length === 0 ? (
           <EmptyState
-            icon={<CameraIcon />}
-            title={
-              cameras.length === 0
-                ? t("video.monitoring.empty.noCameras", "Aún no hay cámaras configuradas")
-                : t("video.monitoring.empty.noMatches", "Ninguna cámara coincide con los filtros")
-            }
             description={
               cameras.length === 0
                 ? "Agrega un dispositivo y sincroniza sus cámaras para comenzar."
                 : "Ajusta los filtros para ver más cámaras."
+            }
+            icon={<CameraIcon />}
+            title={
+              cameras.length === 0
+                ? t(
+                    "video.monitoring.empty.noCameras",
+                    "Aún no hay cámaras configuradas",
+                  )
+                : t(
+                    "video.monitoring.empty.noMatches",
+                    "Ninguna cámara coincide con los filtros",
+                  )
             }
           />
         ) : (

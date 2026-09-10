@@ -17,23 +17,25 @@
  * por el cliente y la avería no.
  * ════════════════════════════════════════════════════════════════════════════
  */
-import type { ReactNode } from 'react';
-import { Wifi, WifiOff, ShieldAlert, HelpCircle } from 'lucide-react';
-import { StatusBadge } from '@/components/kit';
+import type { ReactNode } from "react";
 
-export type DeviceTone = 'ok' | 'warn' | 'bad' | 'neutral';
+import { Wifi, WifiOff, ShieldAlert, HelpCircle } from "lucide-react";
+
+import { StatusBadge } from "@/components/kit";
+
+export type DeviceTone = "ok" | "warn" | "bad" | "neutral";
 
 /** Los cinco estados en los que puede estar cualquier equipo del sistema. */
-export type DeviceHealth = 'up' | 'down' | 'auth' | 'unreachable' | 'unknown';
+export type DeviceHealth = "up" | "down" | "auth" | "unreachable" | "unknown";
 
 const HEALTH: Record<DeviceHealth, { tone: DeviceTone; icon: ReactNode }> = {
   // «Está dando servicio»: el punto LATE, que es lo que distingue de un vistazo
   // un equipo transmitiendo ahora de uno meramente dado de alta.
-  up: { tone: 'ok', icon: <Wifi /> },
-  down: { tone: 'bad', icon: <WifiOff /> },
-  auth: { tone: 'warn', icon: <ShieldAlert /> },
-  unreachable: { tone: 'warn', icon: <WifiOff /> },
-  unknown: { tone: 'neutral', icon: <HelpCircle /> },
+  up: { tone: "ok", icon: <Wifi /> },
+  down: { tone: "bad", icon: <WifiOff /> },
+  auth: { tone: "warn", icon: <ShieldAlert /> },
+  unreachable: { tone: "warn", icon: <WifiOff /> },
+  unknown: { tone: "neutral", icon: <HelpCircle /> },
 };
 
 export function healthTone(health: DeviceHealth): DeviceTone {
@@ -45,11 +47,18 @@ export function healthTone(health: DeviceHealth): DeviceTone {
  * el punto que late lo pone la propia píldora del kit cuando el equipo está
  * arriba, y el icono lo pone el estado.
  */
-export function DeviceStatusBadge({ health, label }: { health: DeviceHealth; label: string }) {
+export function DeviceStatusBadge({
+  health,
+  label,
+}: {
+  health: DeviceHealth;
+  label: string;
+}) {
   const h = HEALTH[health];
+
   return (
-    <StatusBadge tone={h.tone} dot={health === 'up'}>
-      {health !== 'up' && <span className="[&_svg]:size-3">{h.icon}</span>}
+    <StatusBadge dot={health === "up"} tone={h.tone}>
+      {health !== "up" && <span className="[&_svg]:size-3">{h.icon}</span>}
       {label}
     </StatusBadge>
   );
@@ -66,8 +75,9 @@ export function FaultRail() {
       aria-hidden
       className="absolute left-0 top-1/2 h-3/5 w-[3px] -translate-y-1/2 rounded-full"
       style={{
-        background: 'var(--bad)',
-        boxShadow: '0 0 12px 0 color-mix(in oklab, var(--bad) 45%, transparent)',
+        background: "var(--bad)",
+        boxShadow:
+          "0 0 12px 0 color-mix(in oklab, var(--bad) 45%, transparent)",
       }}
     />
   );

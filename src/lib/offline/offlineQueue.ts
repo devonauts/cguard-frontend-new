@@ -42,6 +42,7 @@ function load(): QueuedMutation[] {
   try {
     const raw = localStorage.getItem(KEY);
     const arr = raw ? JSON.parse(raw) : [];
+
     return Array.isArray(arr) ? arr : [];
   } catch {
     return [];
@@ -49,19 +50,37 @@ function load(): QueuedMutation[] {
 }
 
 function save(q: QueuedMutation[]): void {
-  try { localStorage.setItem(KEY, JSON.stringify(q)); } catch { /* quota */ }
+  try {
+    localStorage.setItem(KEY, JSON.stringify(q));
+  } catch {
+    /* quota */
+  }
   notify(q.length);
 }
 
 /* ---- suscripción al contador (para el banner) ---- */
 const subs = new Set<(n: number) => void>();
+
 function notify(n: number): void {
-  subs.forEach((cb) => { try { cb(n); } catch { /* ignore */ } });
+  subs.forEach((cb) => {
+    try {
+      cb(n);
+    } catch {
+      /* ignore */
+    }
+  });
 }
 export function subscribePending(cb: (n: number) => void): () => void {
   subs.add(cb);
-  try { cb(load().length); } catch { /* ignore */ }
-  return () => { subs.delete(cb); };
+  try {
+    cb(load().length);
+  } catch {
+    /* ignore */
+  }
+
+  return () => {
+    subs.delete(cb);
+  };
 }
 export function pendingCount(): number {
   return load().length;
@@ -73,19 +92,37 @@ export function pendingItems(): QueuedMutation[] {
 function makeId(): string {
   try {
     const c = (globalThis as any).crypto;
+
     if (c?.randomUUID) return c.randomUUID();
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
+
   return `q_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
 /** Encola una mutación. Devuelve su id. */
 export function enqueue(kind: string, payload: any, label?: string): string {
   let tenantId: string | undefined;
-  try { tenantId = localStorage.getItem("tenantId") || undefined; } catch { /* ignore */ }
-  const item: QueuedMutation = { id: makeId(), kind, payload, createdAt: Date.now(), label, tenantId };
+
+  try {
+    tenantId = localStorage.getItem("tenantId") || undefined;
+  } catch {
+    /* ignore */
+  }
+  const item: QueuedMutation = {
+    id: makeId(),
+    kind,
+    payload,
+    createdAt: Date.now(),
+    label,
+    tenantId,
+  };
   const q = load();
+
   q.push(item);
   save(q);
+
   return item.id;
 }
 
@@ -104,13 +141,24 @@ const lockToken = `${Date.now().toString(36)}_${Math.random().toString(36).slice
 function acquireLock(): boolean {
   try {
     const raw = localStorage.getItem(LOCK_KEY);
+
     if (raw) {
       const cur = JSON.parse(raw);
-      if (cur && cur.token !== lockToken && Date.now() - (cur.at || 0) < LOCK_TTL_MS) return false;
+
+      if (
+        cur &&
+        cur.token !== lockToken &&
+        Date.now() - (cur.at || 0) < LOCK_TTL_MS
+      )
+        return false;
     }
-    localStorage.setItem(LOCK_KEY, JSON.stringify({ token: lockToken, at: Date.now() }));
+    localStorage.setItem(
+      LOCK_KEY,
+      JSON.stringify({ token: lockToken, at: Date.now() }),
+    );
     // Releer: si dos pestañas escribieron a la vez, gana la última escritura.
     const check = JSON.parse(localStorage.getItem(LOCK_KEY) || "null");
+
     return check?.token === lockToken;
   } catch {
     return true; // sin localStorage no hay segunda pestaña que proteger
@@ -119,13 +167,17 @@ function acquireLock(): boolean {
 function releaseLock(): void {
   try {
     const cur = JSON.parse(localStorage.getItem(LOCK_KEY) || "null");
+
     if (cur?.token === lockToken) localStorage.removeItem(LOCK_KEY);
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 /** Quita UN item de la cola persistida (lectura fresca, conserva lo demás). */
 function removeItem(id: string): void {
   const cur = load();
+
   save(cur.filter((it) => it.id !== id));
 }
 
@@ -139,12 +191,14 @@ export async function flush(): Promise<void> {
   if (flushing) return;
   if (typeof navigator !== "undefined" && navigator.onLine === false) return;
   const q = load();
+
   if (!q.length) return;
   if (!acquireLock()) return; // otra pestaña está reproduciendo
   flushing = true;
   try {
     for (const it of q) {
       const fn = replayers[it.kind];
+
       if (!fn) continue; // kind desconocido (build viejo) — conservar en cola
       try {
         await fn(it.payload, it.tenantId);
@@ -185,9 +239,11 @@ export async function runOrQueue<T>(
   }
   try {
     const result = await doIt();
+
     return { queued: false, result };
   } catch (e: any) {
     const timeout = e?.status === 408 || e?.code === "ECONNABORTED";
+
     if (isNetworkFailure(e) || (timeout && opts?.queueTimeouts)) {
       return { queued: true, id: enqueue(kind, payload, label) };
     }
@@ -204,6 +260,10 @@ export function clearQueue(): void {
 // nunca dispara 'online' — p. ej. proxy que volvió — igual termina enviando).
 if (typeof window !== "undefined" && !(window as any).__crmQueueListeners) {
   (window as any).__crmQueueListeners = true;
-  window.addEventListener("online", () => { void flush(); });
-  setInterval(() => { void flush(); }, 45_000);
+  window.addEventListener("online", () => {
+    void flush();
+  });
+  setInterval(() => {
+    void flush();
+  }, 45_000);
 }

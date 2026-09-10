@@ -21,8 +21,8 @@
  *     autoTable(doc, { head, body });
  */
 type PdfKit = {
-  jsPDF: typeof import('jspdf').jsPDF;
-  autoTable: typeof import('jspdf-autotable').default;
+  jsPDF: typeof import("jspdf").jsPDF;
+  autoTable: typeof import("jspdf-autotable").default;
 };
 
 let cached: PdfKit | null = null;
@@ -32,10 +32,11 @@ export async function loadPdf(): Promise<PdfKit> {
   if (cached) return cached;
   // Promesa compartida: dos clics seguidos no descargan el módulo dos veces.
   if (!pending) {
-    pending = Promise.all([import('jspdf'), import('jspdf-autotable')])
+    pending = Promise.all([import("jspdf"), import("jspdf-autotable")])
       .then(([core, table]) => {
         cached = { jsPDF: core.jsPDF, autoTable: table.default };
         pending = null;
+
         return cached;
       })
       .catch((e) => {
@@ -43,5 +44,6 @@ export async function loadPdf(): Promise<PdfKit> {
         throw e;
       });
   }
+
   return pending;
 }

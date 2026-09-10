@@ -1,4 +1,5 @@
 import { useParams } from "react-router-dom";
+
 import GuardLicenses from "@/pages/admin/security-guards/components/GuardLicenses/GuardLicensespage";
 import api from "@/lib/api";
 
@@ -14,17 +15,37 @@ export default function SupervisorLicensesPage() {
 
   const licensesApi = {
     list: (pg: { limit?: number; offset?: number }) =>
-      api.get(`${base}?limit=${pg?.limit ?? 25}&offset=${pg?.offset ?? 0}`).then((r) => r.data),
+      api
+        .get(`${base}?limit=${pg?.limit ?? 25}&offset=${pg?.offset ?? 0}`)
+        .then((r) => r.data),
     // No single-GET endpoint — derive from the list (rows already carry images).
     get: (licenseId: string) =>
-      api.get(base).then((r) => (r.data?.rows || []).find((x: { id: string }) => x.id === licenseId) || null),
-    create: (payload: unknown) => api.post(base, payload).then((r) => r.data?.data ?? r.data),
+      api
+        .get(base)
+        .then(
+          (r) =>
+            (r.data?.rows || []).find(
+              (x: { id: string }) => x.id === licenseId,
+            ) || null,
+        ),
+    create: (payload: unknown) =>
+      api.post(base, payload).then((r) => r.data?.data ?? r.data),
     update: (licenseId: string, payload: unknown) =>
-      api.put(`${base}/${licenseId}`, payload).then((r) => r.data?.data ?? r.data),
-    remove: (ids: string[]) => Promise.all((ids || []).map((lid) => api.delete(`${base}/${lid}`))),
+      api
+        .put(`${base}/${licenseId}`, payload)
+        .then((r) => r.data?.data ?? r.data),
+    remove: (ids: string[]) =>
+      Promise.all((ids || []).map((lid) => api.delete(`${base}/${lid}`))),
     // No PDF report for supervisors (yet).
-    download: (_licenseId: string) => Promise.reject(new Error("Reporte no disponible")),
+    download: (_licenseId: string) =>
+      Promise.reject(new Error("Reporte no disponible")),
   };
 
-  return <GuardLicenses navKey="supervisors" title="Licencias" licensesApi={licensesApi} />;
+  return (
+    <GuardLicenses
+      licensesApi={licensesApi}
+      navKey="supervisors"
+      title="Licencias"
+    />
+  );
 }

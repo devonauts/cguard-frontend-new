@@ -38,11 +38,18 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { CalendarClock, BedDouble, Ban, Loader2, Save } from "lucide-react";
 
+import { ToggleRow } from "../components/SettingsForm";
+
 import AppLayout from "@/layouts/app-layout";
 import SettingsLayout from "@/layouts/SettingsLayout";
-import { PageContainer, PageHeader, Section, SkeletonCards, InfoNote } from "@/components/kit";
+import {
+  PageContainer,
+  PageHeader,
+  Section,
+  SkeletonCards,
+  InfoNote,
+} from "@/components/kit";
 import { Button } from "@/components/ui/button";
-import { ToggleRow } from "../components/SettingsForm";
 import { usePermissions } from "@/hooks/usePermissions";
 import api from "@/lib/api";
 
@@ -67,29 +74,53 @@ const tenantId = () => localStorage.getItem("tenantId") || "";
 
 /** Campo numérico con su unidad y su explicación. */
 function NumRow({
-  label, hint, value, onChange, min, max, suffix, disabled, apagadoEn0,
+  label,
+  hint,
+  value,
+  onChange,
+  min,
+  max,
+  suffix,
+  disabled,
+  apagadoEn0,
 }: {
-  label: string; hint: string; value: number; onChange: (v: number) => void;
-  min: number; max: number; suffix: string; disabled?: boolean; apagadoEn0?: boolean;
+  label: string;
+  hint: string;
+  value: number;
+  onChange: (v: number) => void;
+  min: number;
+  max: number;
+  suffix: string;
+  disabled?: boolean;
+  apagadoEn0?: boolean;
 }) {
   const { t } = useTranslation();
+
   return (
     <label className="block py-3.5">
       <span className="text-sm font-medium">{label}</span>
-      <p className="mt-0.5 text-xs" style={{ color: "var(--ink-faint)" }}>{hint}</p>
+      <p className="mt-0.5 text-xs" style={{ color: "var(--ink-faint)" }}>
+        {hint}
+      </p>
       <div className="mt-2 flex items-center gap-2">
         <input
-          type="number"
-          min={min}
-          max={max}
-          value={value}
-          disabled={disabled}
-          onChange={(e) => onChange(Number(e.target.value))}
           className="cg-input cg-focus w-28 px-3 py-2 text-sm"
+          disabled={disabled}
+          max={max}
+          min={min}
+          type="number"
+          value={value}
+          onChange={(e) => onChange(Number(e.target.value))}
         />
-        <span className="text-sm" style={{ color: "var(--ink-soft)" }}>{suffix}</span>
+        <span className="text-sm" style={{ color: "var(--ink-soft)" }}>
+          {suffix}
+        </span>
         {apagadoEn0 && value === 0 && (
-          <span className="text-xs" style={{ color: "var(--ink-faint)" }}>{t('settings.jornada.reglaDesactivada', { defaultValue: '· regla desactivada' })}</span>
+          <span className="text-xs" style={{ color: "var(--ink-faint)" }}>
+            {t("settings.jornada.reglaDesactivada", {
+              defaultValue: "· regla desactivada",
+            })}
+          </span>
         )}
       </div>
     </label>
@@ -110,17 +141,23 @@ export default function JornadaPage() {
     (async () => {
       try {
         const { data } = await api.get(`/tenant/${tenantId()}/settings`);
+
         setRow(data || {});
         setJ({ ...DEFAULTS, ...((data && data.schedulingSettings) || {}) });
       } catch {
-        toast.error(t('settings.jornada.loadError', { defaultValue: 'No se pudo cargar la política de jornada.' }));
+        toast.error(
+          t("settings.jornada.loadError", {
+            defaultValue: "No se pudo cargar la política de jornada.",
+          }),
+        );
       } finally {
         setLoading(false);
       }
     })();
   }, []);
 
-  const set = <K extends keyof Jornada>(k: K, v: Jornada[K]) => setJ((p) => ({ ...p, [k]: v }));
+  const set = <K extends keyof Jornada>(k: K, v: Jornada[K]) =>
+    setJ((p) => ({ ...p, [k]: v }));
 
   const save = async () => {
     setSaving(true);
@@ -135,9 +172,18 @@ export default function JornadaPage() {
           schedulingSettings: j,
         },
       });
-      toast.success(t('settings.jornada.saveSuccess', { defaultValue: 'Política de jornada guardada.' }));
+      toast.success(
+        t("settings.jornada.saveSuccess", {
+          defaultValue: "Política de jornada guardada.",
+        }),
+      );
     } catch (e: any) {
-      toast.error(e?.response?.data?.message || t('settings.jornada.saveError', { defaultValue: 'No se pudo guardar.' }));
+      toast.error(
+        e?.response?.data?.message ||
+          t("settings.jornada.saveError", {
+            defaultValue: "No se pudo guardar.",
+          }),
+      );
     } finally {
       setSaving(false);
     }
@@ -145,12 +191,22 @@ export default function JornadaPage() {
 
   return (
     <AppLayout>
-      <SettingsLayout navKey="configuracion" title={t('settings.jornada.navTitle', { defaultValue: 'Jornada y descanso' })}>
+      <SettingsLayout
+        navKey="configuracion"
+        title={t("settings.jornada.navTitle", {
+          defaultValue: "Jornada y descanso",
+        })}
+      >
         <PageContainer width="narrow">
           <PageHeader
             icon={<CalendarClock />}
-            title={t('settings.jornada.pageTitle', { defaultValue: 'Jornada y descanso' })}
-            subtitle={t('settings.jornada.pageSubtitle', { defaultValue: 'Las reglas laborales que el planificador comprueba antes de que publiques un horario.' })}
+            subtitle={t("settings.jornada.pageSubtitle", {
+              defaultValue:
+                "Las reglas laborales que el planificador comprueba antes de que publiques un horario.",
+            })}
+            title={t("settings.jornada.pageTitle", {
+              defaultValue: "Jornada y descanso",
+            })}
           />
 
           {loading ? (
@@ -158,62 +214,146 @@ export default function JornadaPage() {
           ) : (
             <div className="space-y-5">
               <InfoNote tone="info">
-                {t('settings.jornada.infoNote1', { defaultValue: 'Estas reglas ' })}
-                <strong>{t('settings.jornada.infoNoteAvisan', { defaultValue: 'avisan' })}</strong>
-                {t('settings.jornada.infoNote2', { defaultValue: ' al publicar el horario; los dos interruptores de abajo sí ' })}
-                <strong>{t('settings.jornada.infoNoteBloquean', { defaultValue: 'bloquean' })}</strong>
-                {t('settings.jornada.infoNote3', { defaultValue: ' al cubrir un puesto. Cambian por país y por contrato colectivo, así que aquí no hay un valor «correcto»: pon el de tu convenio.' })}
+                {t("settings.jornada.infoNote1", {
+                  defaultValue: "Estas reglas ",
+                })}
+                <strong>
+                  {t("settings.jornada.infoNoteAvisan", {
+                    defaultValue: "avisan",
+                  })}
+                </strong>
+                {t("settings.jornada.infoNote2", {
+                  defaultValue:
+                    " al publicar el horario; los dos interruptores de abajo sí ",
+                })}
+                <strong>
+                  {t("settings.jornada.infoNoteBloquean", {
+                    defaultValue: "bloquean",
+                  })}
+                </strong>
+                {t("settings.jornada.infoNote3", {
+                  defaultValue:
+                    " al cubrir un puesto. Cambian por país y por contrato colectivo, así que aquí no hay un valor «correcto»: pon el de tu convenio.",
+                })}
               </InfoNote>
 
-              <Section title={t('settings.jornada.sectionDescanso', { defaultValue: 'Descanso' })} icon={<BedDouble />}>
-                <div className="divide-y" style={{ borderColor: "var(--hairline)" }}>
+              <Section
+                icon={<BedDouble />}
+                title={t("settings.jornada.sectionDescanso", {
+                  defaultValue: "Descanso",
+                })}
+              >
+                <div
+                  className="divide-y"
+                  style={{ borderColor: "var(--hairline)" }}
+                >
                   <NumRow
-                    label={t('settings.jornada.maxConsecutiveDaysLabel', { defaultValue: 'Máximo de días seguidos de trabajo' })}
-                    hint={t('settings.jornada.maxConsecutiveDaysHint', { defaultValue: 'Pasado ese número sin un día libre, el planificador lo señala antes de publicar.' })}
+                    disabled={!canEdit}
+                    hint={t("settings.jornada.maxConsecutiveDaysHint", {
+                      defaultValue:
+                        "Pasado ese número sin un día libre, el planificador lo señala antes de publicar.",
+                    })}
+                    label={t("settings.jornada.maxConsecutiveDaysLabel", {
+                      defaultValue: "Máximo de días seguidos de trabajo",
+                    })}
+                    max={31}
+                    min={1}
+                    suffix={t("settings.jornada.suffixDias", {
+                      defaultValue: "días",
+                    })}
                     value={j.maxConsecutiveDays}
                     onChange={(v) => set("maxConsecutiveDays", v)}
-                    min={1} max={31} suffix={t('settings.jornada.suffixDias', { defaultValue: 'días' })} disabled={!canEdit}
                   />
                   <NumRow
-                    label={t('settings.jornada.minRestLabel', { defaultValue: 'Descanso mínimo entre turnos' })}
-                    hint={t('settings.jornada.minRestHint', { defaultValue: 'Horas que deben pasar entre la salida de un turno y la entrada al siguiente. Sin esto, un vigilante puede salir a las 07:00 y entrar a las 08:00 sin que nada lo señale.' })}
+                    apagadoEn0
+                    disabled={!canEdit}
+                    hint={t("settings.jornada.minRestHint", {
+                      defaultValue:
+                        "Horas que deben pasar entre la salida de un turno y la entrada al siguiente. Sin esto, un vigilante puede salir a las 07:00 y entrar a las 08:00 sin que nada lo señale.",
+                    })}
+                    label={t("settings.jornada.minRestLabel", {
+                      defaultValue: "Descanso mínimo entre turnos",
+                    })}
+                    max={24}
+                    min={0}
+                    suffix={t("settings.jornada.suffixHoras", {
+                      defaultValue: "horas",
+                    })}
                     value={j.minRestHoursBetweenShifts}
                     onChange={(v) => set("minRestHoursBetweenShifts", v)}
-                    min={0} max={24} suffix={t('settings.jornada.suffixHoras', { defaultValue: 'horas' })} disabled={!canEdit} apagadoEn0
                   />
                   <NumRow
-                    label={t('settings.jornada.maxWeeklyLabel', { defaultValue: 'Máximo de horas por semana' })}
-                    hint={t('settings.jornada.maxWeeklyHint', { defaultValue: 'Tope por vigilante. Se cuenta de lunes a domingo.' })}
+                    apagadoEn0
+                    disabled={!canEdit}
+                    hint={t("settings.jornada.maxWeeklyHint", {
+                      defaultValue:
+                        "Tope por vigilante. Se cuenta de lunes a domingo.",
+                    })}
+                    label={t("settings.jornada.maxWeeklyLabel", {
+                      defaultValue: "Máximo de horas por semana",
+                    })}
+                    max={168}
+                    min={0}
+                    suffix={t("settings.jornada.suffixHoras", {
+                      defaultValue: "horas",
+                    })}
                     value={j.maxWeeklyHours}
                     onChange={(v) => set("maxWeeklyHours", v)}
-                    min={0} max={168} suffix={t('settings.jornada.suffixHoras', { defaultValue: 'horas' })} disabled={!canEdit} apagadoEn0
                   />
                 </div>
               </Section>
 
-              <Section title={t('settings.jornada.sectionCubrir', { defaultValue: 'Qué se puede hacer al cubrir un puesto' })} icon={<Ban />}>
-                <div className="divide-y" style={{ borderColor: "var(--hairline)" }}>
+              <Section
+                icon={<Ban />}
+                title={t("settings.jornada.sectionCubrir", {
+                  defaultValue: "Qué se puede hacer al cubrir un puesto",
+                })}
+              >
+                <div
+                  className="divide-y"
+                  style={{ borderColor: "var(--hairline)" }}
+                >
                   <ToggleRow
-                    label={t('settings.jornada.allowDoubleLabel', { defaultValue: 'Permitir doblar turno' })}
-                    hint={t('settings.jornada.allowDoubleHint', { defaultValue: 'Asignar a alguien que ya tiene otro turno cruzado en ese horario. Si lo apagas, deja de ser posible aunque se confirme.' })}
                     checked={j.allowDoubleShift}
-                    onCheckedChange={(v) => set("allowDoubleShift", v)}
                     disabled={!canEdit}
+                    hint={t("settings.jornada.allowDoubleHint", {
+                      defaultValue:
+                        "Asignar a alguien que ya tiene otro turno cruzado en ese horario. Si lo apagas, deja de ser posible aunque se confirme.",
+                    })}
+                    label={t("settings.jornada.allowDoubleLabel", {
+                      defaultValue: "Permitir doblar turno",
+                    })}
+                    onCheckedChange={(v) => set("allowDoubleShift", v)}
                   />
                   <ToggleRow
-                    label={t('settings.jornada.allowRestLabel', { defaultValue: 'Permitir asignar en día de descanso' })}
-                    hint={t('settings.jornada.allowRestHint', { defaultValue: 'Cubrir un hueco con alguien que ese día libra. Si lo apagas, deja de ser posible aunque se confirme.' })}
                     checked={j.allowRestDayAssignment}
-                    onCheckedChange={(v) => set("allowRestDayAssignment", v)}
                     disabled={!canEdit}
+                    hint={t("settings.jornada.allowRestHint", {
+                      defaultValue:
+                        "Cubrir un hueco con alguien que ese día libra. Si lo apagas, deja de ser posible aunque se confirme.",
+                    })}
+                    label={t("settings.jornada.allowRestLabel", {
+                      defaultValue: "Permitir asignar en día de descanso",
+                    })}
+                    onCheckedChange={(v) => set("allowRestDayAssignment", v)}
                   />
                 </div>
               </Section>
 
               <div className="flex justify-end">
-                <Button variant="brand" onClick={save} disabled={!canEdit || saving}>
-                  {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                  {t('settings.jornada.saveBtn', { defaultValue: 'Guardar política' })}
+                <Button
+                  disabled={!canEdit || saving}
+                  variant="brand"
+                  onClick={save}
+                >
+                  {saving ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Save className="mr-2 h-4 w-4" />
+                  )}
+                  {t("settings.jornada.saveBtn", {
+                    defaultValue: "Guardar política",
+                  })}
                 </Button>
               </div>
             </div>

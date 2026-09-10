@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, useState, type DependencyList } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type DependencyList,
+} from "react";
 
 /**
  * One place for the load/race/unmount/debounce handling that every CRM list &
@@ -60,8 +66,10 @@ export function useAsyncList<T>(
   // Read the latest fetcher/onError from refs so an inline closure doesn't force
   // extra reloads — reload cadence is driven only by `deps`/enabled/refetch.
   const fetcherRef = useRef(fetcher);
+
   fetcherRef.current = fetcher;
   const onErrorRef = useRef(onError);
+
   onErrorRef.current = onError;
 
   const seqRef = useRef(0);
@@ -70,7 +78,10 @@ export function useAsyncList<T>(
 
   useEffect(() => {
     mountedRef.current = true;
-    return () => { mountedRef.current = false; };
+
+    return () => {
+      mountedRef.current = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -78,6 +89,7 @@ export function useAsyncList<T>(
 
     const run = () => {
       const mine = ++seqRef.current;
+
       setLoading(true);
       setError(null);
       // Promise.resolve().then so a fetcher that throws synchronously is caught.
@@ -98,11 +110,12 @@ export function useAsyncList<T>(
 
     if (debounceMs > 0) {
       const t = setTimeout(run, debounceMs);
+
       return () => clearTimeout(t); // fast dep change cancels the pending fetch
     }
     run();
+
     return undefined;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [...deps, enabled, debounceMs, nonce]);
 
   const refetch = useCallback(() => setNonce((n) => n + 1), []);

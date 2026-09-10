@@ -1,7 +1,9 @@
-import { useMemo } from 'react';
-import { alphaVar, type ChartTone } from '@/lib/chartColors';
-import { useElementWidth, useSvgId, clamp } from './internals';
-import { useSeriesColor } from './useSeriesColor';
+import { useMemo } from "react";
+
+import { useElementWidth, useSvgId, clamp } from "./internals";
+import { useSeriesColor } from "./useSeriesColor";
+
+import { alphaVar, type ChartTone } from "@/lib/chartColors";
 
 export interface SparklineProps {
   /** La serie, en orden cronológico. Con menos de 2 puntos no se dibuja nada. */
@@ -35,7 +37,7 @@ export interface SparklineProps {
  */
 export default function Sparkline({
   data,
-  tone = 'brand',
+  tone = "brand",
   color,
   height = 32,
   area = true,
@@ -46,7 +48,7 @@ export default function Sparkline({
 }: SparklineProps) {
   const [c, paleta] = useSeriesColor(color, tone);
   const [ref, w] = useElementWidth<HTMLDivElement>(120);
-  const gradId = useSvgId('spark');
+  const gradId = useSvgId("spark");
 
   const geo = useMemo(() => {
     if (!data || data.length < 2) return null;
@@ -57,10 +59,16 @@ export default function Sparkline({
     const h = height;
     const px = (i: number) => pad + (i / (data.length - 1)) * (w - pad * 2);
     // Serie plana → línea a media altura, no pegada al borde inferior.
-    const py = (v: number) => (max === min ? h / 2 : h - pad - ((v - min) / rango) * (h - pad * 2));
+    const py = (v: number) =>
+      max === min ? h / 2 : h - pad - ((v - min) / rango) * (h - pad * 2);
     const puntos = data.map((v, i) => [px(i), py(v)] as const);
-    const linea = puntos.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(2)},${y.toFixed(2)}`).join(' ');
+    const linea = puntos
+      .map(
+        ([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(2)},${y.toFixed(2)}`,
+      )
+      .join(" ");
     const relleno = `${linea} L${px(data.length - 1).toFixed(2)},${h} L${pad.toFixed(2)},${h} Z`;
+
     return { linea, relleno, fin: puntos[puntos.length - 1] };
   }, [data, w, height, strokeWidth, showEnd]);
 
@@ -69,19 +77,19 @@ export default function Sparkline({
   return (
     <div ref={ref} className={className} style={{ height }}>
       <svg
-        width={w}
-        height={height}
-        viewBox={`0 0 ${w} ${height}`}
-        className="block overflow-visible"
-        role={ariaLabel ? 'img' : 'presentation'}
-        aria-label={ariaLabel}
         aria-hidden={ariaLabel ? undefined : true}
+        aria-label={ariaLabel}
+        className="block overflow-visible"
+        height={height}
+        role={ariaLabel ? "img" : "presentation"}
+        viewBox={`0 0 ${w} ${height}`}
+        width={w}
       >
         {area && (
           <defs>
             {/* Del color a transparente: el relleno da masa sin robarle peso a la línea. */}
-            <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={c} stopOpacity={0.30} />
+            <linearGradient id={gradId} x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stopColor={c} stopOpacity={0.3} />
               <stop offset="100%" stopColor={c} stopOpacity={0} />
             </linearGradient>
           </defs>
@@ -91,16 +99,26 @@ export default function Sparkline({
           d={geo.linea}
           fill="none"
           stroke={c}
-          strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeLinejoin="round"
+          strokeWidth={strokeWidth}
         />
         {showEnd && (
           <>
             {/* Anillo del color del lienzo: separa el punto de la línea al cruzarla. */}
-            <circle cx={geo.fin[0]} cy={geo.fin[1]} r={clamp(strokeWidth + 1.4, 2.6, 4)} fill={paleta.surface} />
-            <circle cx={geo.fin[0]} cy={geo.fin[1]} r={clamp(strokeWidth, 1.8, 3)} fill={c}
-              style={{ filter: `drop-shadow(0 0 5px ${alphaVar(c, 55)})` }} />
+            <circle
+              cx={geo.fin[0]}
+              cy={geo.fin[1]}
+              fill={paleta.surface}
+              r={clamp(strokeWidth + 1.4, 2.6, 4)}
+            />
+            <circle
+              cx={geo.fin[0]}
+              cy={geo.fin[1]}
+              fill={c}
+              r={clamp(strokeWidth, 1.8, 3)}
+              style={{ filter: `drop-shadow(0 0 5px ${alphaVar(c, 55)})` }}
+            />
           </>
         )}
       </svg>

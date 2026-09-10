@@ -14,14 +14,23 @@
  */
 import { useTranslation } from "react-i18next";
 import { Languages, Check, Wand2, Monitor, Mail } from "lucide-react";
+import { toast } from "sonner";
 
 import AppLayout from "@/layouts/app-layout";
 import SettingsLayout from "@/layouts/SettingsLayout";
 import {
-  PageContainer, PageHeader, Section, StatusBadge, IconTile, FadeIn,
+  PageContainer,
+  PageHeader,
+  Section,
+  StatusBadge,
+  IconTile,
+  FadeIn,
 } from "@/components/kit";
-import { useLanguage, LANGUAGES, type LanguageChoice } from "@/contexts/LanguageContext";
-import { toast } from "sonner";
+import {
+  useLanguage,
+  LANGUAGES,
+  type LanguageChoice,
+} from "@/contexts/LanguageContext";
 
 export default function LanguagePage() {
   const { t } = useTranslation();
@@ -32,12 +41,17 @@ export default function LanguagePage() {
   // nuevo obligaba a tocar este archivo y el fallo era un error de tipos.
   const bandera = (l: keyof typeof LANGUAGES) => LANGUAGES[l].flag;
 
-  const opciones: { id: LanguageChoice; titulo: string; pie: string; icono: React.ReactNode }[] = [
+  const opciones: {
+    id: LanguageChoice;
+    titulo: string;
+    pie: string;
+    icono: React.ReactNode;
+  }[] = [
     {
       id: "auto",
-      titulo: t('settings.language.autoTitle', { defaultValue: 'Automático' }),
-      pie: t('settings.language.autoDesc', {
-        defaultValue: 'El que use tu navegador. Ahora mismo: {{idioma}}',
+      titulo: t("settings.language.autoTitle", { defaultValue: "Automático" }),
+      pie: t("settings.language.autoDesc", {
+        defaultValue: "El que use tu navegador. Ahora mismo: {{idioma}}",
         idioma: nombre(detected),
       }),
       icono: <Wand2 />,
@@ -46,7 +60,9 @@ export default function LanguagePage() {
     ...(Object.keys(LANGUAGES) as (keyof typeof LANGUAGES)[]).map((l) => ({
       id: l as LanguageChoice,
       titulo: `${bandera(l)} ${nombre(l)}`,
-      pie: t('settings.language.fixedDesc', { defaultValue: 'Siempre en este idioma, use lo que use tu navegador.' }),
+      pie: t("settings.language.fixedDesc", {
+        defaultValue: "Siempre en este idioma, use lo que use tu navegador.",
+      }),
       icono: <Languages />,
     })),
   ];
@@ -54,63 +70,103 @@ export default function LanguagePage() {
   const elegir = (id: LanguageChoice) => {
     if (id === choice) return;
     setChoice(id);
-    toast.success(t('settings.language.saved', { defaultValue: 'Idioma guardado' }));
+    toast.success(
+      t("settings.language.saved", { defaultValue: "Idioma guardado" }),
+    );
   };
 
   return (
     <AppLayout>
-      <SettingsLayout navKey="configuracion" title={t('settings.language.layoutTitle', { defaultValue: 'Idioma' })}>
+      <SettingsLayout
+        navKey="configuracion"
+        title={t("settings.language.layoutTitle", { defaultValue: "Idioma" })}
+      >
         <PageContainer width="wide">
           <PageHeader
-            icon={<Languages />}
-            title={t('settings.language.pageTitle', { defaultValue: 'Idioma' })}
-            subtitle={t('settings.language.pageSubtitle', {
-              defaultValue: 'En qué idioma quieres ver el C-Guard Pro. Normalmente lo decide tu navegador, pero aquí puedes fijarlo tú. El cambio se aplica al instante y se guarda en tu cuenta, así que lo verás igual desde cualquier computadora.',
-            })}
             badges={
               <>
-                <StatusBadge tone="brand">{bandera(language)} {nombre(language)}</StatusBadge>
-                <StatusBadge tone="neutral" dot={false}>
+                <StatusBadge tone="brand">
+                  {bandera(language)} {nombre(language)}
+                </StatusBadge>
+                <StatusBadge dot={false} tone="neutral">
                   {choice === "auto"
-                    ? t('settings.language.badgeAuto', { defaultValue: 'Automático' })
-                    : t('settings.language.badgeFixed', { defaultValue: 'Elegido por ti' })}
+                    ? t("settings.language.badgeAuto", {
+                        defaultValue: "Automático",
+                      })
+                    : t("settings.language.badgeFixed", {
+                        defaultValue: "Elegido por ti",
+                      })}
                 </StatusBadge>
               </>
             }
+            icon={<Languages />}
+            subtitle={t("settings.language.pageSubtitle", {
+              defaultValue:
+                "En qué idioma quieres ver el C-Guard Pro. Normalmente lo decide tu navegador, pero aquí puedes fijarlo tú. El cambio se aplica al instante y se guarda en tu cuenta, así que lo verás igual desde cualquier computadora.",
+            })}
+            title={t("settings.language.pageTitle", { defaultValue: "Idioma" })}
           />
 
           {/* ── LA ELECCIÓN ───────────────────────────────────────────────── */}
           <Section
-            title={t('settings.language.chooseSection', { defaultValue: 'Elige el idioma' })}
             icon={<Languages />}
+            title={t("settings.language.chooseSection", {
+              defaultValue: "Elige el idioma",
+            })}
           >
-            <p className="mb-4 text-xs leading-relaxed" style={{ color: "var(--ink-soft)" }}>
-              {t('settings.language.chooseIntro', {
-                defaultValue: 'Se aplica sólo a tu cuenta: cada persona del equipo elige el suyo, y nadie ve el CRM distinto por lo que tú elijas aquí.',
+            <p
+              className="mb-4 text-xs leading-relaxed"
+              style={{ color: "var(--ink-soft)" }}
+            >
+              {t("settings.language.chooseIntro", {
+                defaultValue:
+                  "Se aplica sólo a tu cuenta: cada persona del equipo elige el suyo, y nadie ve el CRM distinto por lo que tú elijas aquí.",
               })}
             </p>
             <div className="grid gap-3 sm:grid-cols-2">
               {opciones.map((o) => {
                 const activo = o.id === choice;
+
                 return (
                   <button
                     key={o.id}
-                    type="button"
-                    onClick={() => elegir(o.id)}
                     aria-pressed={activo}
                     className="cg-focus flex items-center gap-3 rounded-2xl border p-4 text-left transition-all duration-200 hover:-translate-y-0.5"
                     style={{
                       borderColor: activo ? "var(--brand)" : "var(--hairline)",
-                      background: activo ? "var(--brand-wash)" : "var(--glass-sunken)",
-                      boxShadow: activo ? "0 0 28px -10px var(--brand-glow)" : "none",
+                      background: activo
+                        ? "var(--brand-wash)"
+                        : "var(--glass-sunken)",
+                      boxShadow: activo
+                        ? "0 0 28px -10px var(--brand-glow)"
+                        : "none",
                     }}
+                    type="button"
+                    onClick={() => elegir(o.id)}
                   >
-                    <IconTile tone={activo ? "brand" : "neutral"}>{o.icono}</IconTile>
+                    <IconTile tone={activo ? "brand" : "neutral"}>
+                      {o.icono}
+                    </IconTile>
                     <span className="min-w-0 flex-1">
-                      <span className="block text-sm font-semibold" style={{ color: "var(--ink)" }}>{o.titulo}</span>
-                      <span className="block text-xs" style={{ color: "var(--ink-faint)" }}>{o.pie}</span>
+                      <span
+                        className="block text-sm font-semibold"
+                        style={{ color: "var(--ink)" }}
+                      >
+                        {o.titulo}
+                      </span>
+                      <span
+                        className="block text-xs"
+                        style={{ color: "var(--ink-faint)" }}
+                      >
+                        {o.pie}
+                      </span>
                     </span>
-                    {activo && <Check className="h-4 w-4 shrink-0" style={{ color: "var(--brand-text)" }} />}
+                    {activo && (
+                      <Check
+                        className="h-4 w-4 shrink-0"
+                        style={{ color: "var(--brand-text)" }}
+                      />
+                    )}
                   </button>
                 );
               })}
@@ -119,26 +175,42 @@ export default function LanguagePage() {
 
           {/* ── QUÉ ALCANZA EL CAMBIO ─────────────────────────────────────── */}
           <Section
-            title={t('settings.language.reachSection', { defaultValue: 'Hasta dónde llega' })}
             icon={<Mail />}
+            title={t("settings.language.reachSection", {
+              defaultValue: "Hasta dónde llega",
+            })}
           >
             <div className="grid gap-3 sm:grid-cols-2">
               <FadeIn>
                 <div className="glass-sunken flex items-start gap-3 rounded-2xl p-4">
-                  <Monitor className="mt-0.5 h-4 w-4 shrink-0" style={{ color: "var(--ink-faint)" }} />
-                  <p className="text-xs leading-relaxed" style={{ color: "var(--ink-soft)" }}>
-                    {t('settings.language.reachScreen', {
-                      defaultValue: 'Todo lo que ves en pantalla: menús, botones, avisos y los nombres de las secciones.',
+                  <Monitor
+                    className="mt-0.5 h-4 w-4 shrink-0"
+                    style={{ color: "var(--ink-faint)" }}
+                  />
+                  <p
+                    className="text-xs leading-relaxed"
+                    style={{ color: "var(--ink-soft)" }}
+                  >
+                    {t("settings.language.reachScreen", {
+                      defaultValue:
+                        "Todo lo que ves en pantalla: menús, botones, avisos y los nombres de las secciones.",
                     })}
                   </p>
                 </div>
               </FadeIn>
               <FadeIn>
                 <div className="glass-sunken flex items-start gap-3 rounded-2xl p-4">
-                  <Mail className="mt-0.5 h-4 w-4 shrink-0" style={{ color: "var(--ink-faint)" }} />
-                  <p className="text-xs leading-relaxed" style={{ color: "var(--ink-soft)" }}>
-                    {t('settings.language.reachMail', {
-                      defaultValue: 'Y también los correos y avisos que te enviamos: se escriben en el idioma que elijas aquí.',
+                  <Mail
+                    className="mt-0.5 h-4 w-4 shrink-0"
+                    style={{ color: "var(--ink-faint)" }}
+                  />
+                  <p
+                    className="text-xs leading-relaxed"
+                    style={{ color: "var(--ink-soft)" }}
+                  >
+                    {t("settings.language.reachMail", {
+                      defaultValue:
+                        "Y también los correos y avisos que te enviamos: se escriben en el idioma que elijas aquí.",
                     })}
                   </p>
                 </div>

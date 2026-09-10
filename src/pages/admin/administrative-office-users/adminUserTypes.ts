@@ -3,7 +3,7 @@
 // index signature, so arbitrary field probing stays safe); these helpers add
 // precise shapes for the parts these pages actually branch on.
 
-import type { UserCurrent, TenantUser } from '@/types/api';
+import type { UserCurrent, TenantUser } from "@/types/api";
 
 export type AdminUser = UserCurrent;
 export type { TenantUser };

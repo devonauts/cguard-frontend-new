@@ -1,8 +1,18 @@
 import { Building2, AlertTriangle, ClipboardCheck, MapPin } from "lucide-react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
+
 import {
-  useOpsAnalytics, AnalyticsShell, MetricCard, HBars, Section, GOLD, TONES, RangeFooter, PerSiteTable,
+  useOpsAnalytics,
+  AnalyticsShell,
+  MetricCard,
+  HBars,
+  Section,
+  GOLD,
+  TONES,
+  RangeFooter,
+  PerSiteTable,
 } from "./_shared";
+
 import { Stagger, EmptyState } from "@/components/kit";
 
 export default function PostSite() {
@@ -12,28 +22,93 @@ export default function PostSite() {
 
   return (
     <AnalyticsShell
-      title={t("ui.PostSite.analiticasPorSitioDeServicio", "Analíticas por Sitio de Servicio")}
-      subtitle={t('ui.PostSite.desempenoOperativoDeCadaSitio')}
-      days={days} setDays={setDays} loading={loading} error={error} reload={reload}
+      days={days}
+      error={error}
+      loading={loading}
+      reload={reload}
+      setDays={setDays}
+      subtitle={t("ui.PostSite.desempenoOperativoDeCadaSitio")}
+      title={t(
+        "ui.PostSite.analiticasPorSitioDeServicio",
+        "Analíticas por Sitio de Servicio",
+      )}
     >
       {data && k && (
         <>
           <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <MetricCard icon={<Building2 size={16} />} accent={GOLD} value={data.perSite.length} label={t('ui.PostSite.sitiosConActividad')} sub={t("ui.PostSite.enElPeriodo", "en el período")} />
-            <MetricCard icon={<ClipboardCheck size={16} />} accent={TONES.info} value={`${k.coveragePct}%`} label="Cobertura promedio" sub={`${k.shiftsCovered}/${k.shiftsTotal}`} pct={k.coveragePct} />
-            <MetricCard icon={<MapPin size={16} />} accent={TONES.serie2} value={`${k.locationCompliancePct}%`} label={t("ui.PostSite.cumplimientoDeUbicacion", "Cumplimiento de ubicación")} sub={`${k.scansValid}/${k.scansTotal} escaneos`} pct={k.locationCompliancePct} />
-            <MetricCard icon={<AlertTriangle size={16} />} accent={TONES.bad} value={k.incidentsTotal} label="Incidentes" sub={`${k.incidentsOpen} abiertos`} />
+            <MetricCard
+              accent={GOLD}
+              icon={<Building2 size={16} />}
+              label={t("ui.PostSite.sitiosConActividad")}
+              sub={t("ui.PostSite.enElPeriodo", "en el período")}
+              value={data.perSite.length}
+            />
+            <MetricCard
+              accent={TONES.info}
+              icon={<ClipboardCheck size={16} />}
+              label="Cobertura promedio"
+              pct={k.coveragePct}
+              sub={`${k.shiftsCovered}/${k.shiftsTotal}`}
+              value={`${k.coveragePct}%`}
+            />
+            <MetricCard
+              accent={TONES.serie2}
+              icon={<MapPin size={16} />}
+              label={t(
+                "ui.PostSite.cumplimientoDeUbicacion",
+                "Cumplimiento de ubicación",
+              )}
+              pct={k.locationCompliancePct}
+              sub={`${k.scansValid}/${k.scansTotal} escaneos`}
+              value={`${k.locationCompliancePct}%`}
+            />
+            <MetricCard
+              accent={TONES.bad}
+              icon={<AlertTriangle size={16} />}
+              label="Incidentes"
+              sub={`${k.incidentsOpen} abiertos`}
+              value={k.incidentsTotal}
+            />
           </Stagger>
 
-          <Section title={t("ui.PostSite.sitiosConMasIncidentes", "Sitios con más incidentes")} icon={<AlertTriangle size={16} />}>
-            <HBars items={data.topIncidentSites.map((s) => ({ label: s.site, count: s.count }))} color={TONES.bad} empty={t("ui.PostSite.sinIncidentesEnElPeriodo", "Sin incidentes en el período.")} />
+          <Section
+            icon={<AlertTriangle size={16} />}
+            title={t(
+              "ui.PostSite.sitiosConMasIncidentes",
+              "Sitios con más incidentes",
+            )}
+          >
+            <HBars
+              color={TONES.bad}
+              empty={t(
+                "ui.PostSite.sinIncidentesEnElPeriodo",
+                "Sin incidentes en el período.",
+              )}
+              items={data.topIncidentSites.map((s) => ({
+                label: s.site,
+                count: s.count,
+              }))}
+            />
           </Section>
 
-          <Section title={t("ui.PostSite.desempenoPorSitioDeServicio", "Desempeño por sitio de servicio")} icon={<Building2 size={16} />}>
+          <Section
+            icon={<Building2 size={16} />}
+            title={t(
+              "ui.PostSite.desempenoPorSitioDeServicio",
+              "Desempeño por sitio de servicio",
+            )}
+          >
             {data.perSite.length === 0 ? (
-              <EmptyState icon={<Building2 />} title={t('comun.sinActividad')} description={t("ui.PostSite.sinActividadRegistradaEnEl", "Sin actividad registrada en el período.")} />
+              <EmptyState
+                description={t(
+                  "ui.PostSite.sinActividadRegistradaEnEl",
+                  "Sin actividad registrada en el período.",
+                )}
+                icon={<Building2 />}
+                title={t("comun.sinActividad")}
+              />
             ) : (
-              <PerSiteTable rows={data.perSite} showShifts />
+              <PerSiteTable showShifts rows={data.perSite} />
             )}
           </Section>
 

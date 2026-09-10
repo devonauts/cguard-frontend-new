@@ -1,6 +1,6 @@
-import * as React from 'react';
+import * as React from "react";
 
-import { localeActual } from '@/lib/localeActual'
+import { localeActual } from "@/lib/localeActual";
 /**
  * ════════════════════════════════════════════════════════════════════════════
  * MOVIMIENTO QUE INFORMA
@@ -10,8 +10,8 @@ import { localeActual } from '@/lib/localeActual'
  */
 
 const CALMA = () =>
-  typeof window !== 'undefined' &&
-  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  typeof window !== "undefined" &&
+  window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
 /**
  * Una cifra que TRANSICIONA cuando cambia, y que no se mueve al aparecer.
@@ -45,10 +45,16 @@ export function Cifra({
       primeraVez.current = false;
       anterior.current = valor;
       setMostrado(valor);
+
       return;
     }
     if (valor === anterior.current) return;
-    if (CALMA()) { anterior.current = valor; setMostrado(valor); return; }
+    if (CALMA()) {
+      anterior.current = valor;
+      setMostrado(valor);
+
+      return;
+    }
 
     const desde = anterior.current;
     const delta = valor - desde;
@@ -61,16 +67,24 @@ export function Cifra({
       const p = Math.min(1, (t - inicio) / DURACION);
       // easeOutCubic: rápido al principio, se posa al final. Sin rebote.
       const e = 1 - Math.pow(1 - p, 3);
+
       setMostrado(desde + delta * e);
       if (p < 1) requestAnimationFrame(paso);
       else anterior.current = valor;
     };
     const id = requestAnimationFrame(paso);
-    return () => { vivo = false; cancelAnimationFrame(id); };
+
+    return () => {
+      vivo = false;
+      cancelAnimationFrame(id);
+    };
   }, [valor]);
 
   return (
-    <span className={className} style={{ fontVariantNumeric: 'tabular-nums', ...style }}>
+    <span
+      className={className}
+      style={{ fontVariantNumeric: "tabular-nums", ...style }}
+    >
       {mostrado.toLocaleString(localeActual(), {
         minimumFractionDigits: decimales,
         maximumFractionDigits: decimales,
@@ -102,7 +116,11 @@ export function AlCambiar({
   const primeraVez = React.useRef(true);
 
   React.useEffect(() => {
-    if (primeraVez.current) { primeraVez.current = false; return; }
+    if (primeraVez.current) {
+      primeraVez.current = false;
+
+      return;
+    }
     setMarca((n) => n + 1);
   }, [clave]);
 
@@ -110,7 +128,12 @@ export function AlCambiar({
     // `key` fuerza a React a recrear el nodo, que es lo que reinicia la
     // animación CSS. Sin eso, un segundo cambio dentro de la misma animación no
     // se vería: el navegador no relanza una animación que ya está corriendo.
-    <div key={marca} className={[marca > 0 ? 'cg-changed' : '', className].filter(Boolean).join(' ')}>
+    <div
+      key={marca}
+      className={[marca > 0 ? "cg-changed" : "", className]
+        .filter(Boolean)
+        .join(" ")}
+    >
       {children}
     </div>
   );
@@ -126,10 +149,13 @@ export function AlCambiar({
  */
 export function ProgresoDeRuta({ retrasoMs = 180 }: { retrasoMs?: number }) {
   const [visible, setVisible] = React.useState(false);
+
   React.useEffect(() => {
     const id = setTimeout(() => setVisible(true), retrasoMs);
+
     return () => clearTimeout(id);
   }, [retrasoMs]);
   if (!visible) return null;
-  return <div className="cg-route-progress" aria-hidden />;
+
+  return <div aria-hidden className="cg-route-progress" />;
 }

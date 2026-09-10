@@ -19,37 +19,47 @@
  * es una deuda con el cliente que la abre.
  */
 import { Plug, Info } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
-import { useTranslation } from 'react-i18next';
 import AppLayout from "@/layouts/app-layout";
 import SettingsLayout from "@/layouts/SettingsLayout";
-import { PageContainer, PageHeader, EmptyState, InfoNote } from "@/components/kit";
+import {
+  PageContainer,
+  PageHeader,
+  EmptyState,
+  InfoNote,
+} from "@/components/kit";
 
 export default function IntegrationsList() {
   const { t } = useTranslation();
+
   return (
     <AppLayout>
       <SettingsLayout navKey="configuracion" title="Conexiones y API">
         <PageContainer width="narrow">
           <PageHeader
             icon={<Plug />}
+            subtitle={t("ui.IntegrationsList.conectarCGuardProCon")}
             title="Conexiones y API"
-            subtitle={t('ui.IntegrationsList.conectarCGuardProCon')}
           />
-
 
           <EmptyState
-            icon={<Plug />}
-            title={t('ui.IntegrationsList.buscasConectarOtroSistema', '¿Buscas conectar otro sistema?')}
             description="Las integraciones con catálogo aparecerán aquí cuando existan. Si necesitas conectar uno concreto hoy, dínoslo — saber cuál decide en qué orden se construyen."
+            icon={<Plug />}
+            title={t(
+              "ui.IntegrationsList.buscasConectarOtroSistema",
+              "¿Buscas conectar otro sistema?",
+            )}
           />
 
-          <InfoNote tone="info" icon={<Info />} className="mt-5">
-            ¿Necesitas mover datos hoy? Los informes de <strong>{t("ui.IntegrationsList.operacion", "Operación")}</strong> y los
-            del portal de tu cliente se exportan en CSV y PDF, y el detalle de qué
-            incluyen se configura en <strong>Datos y conexiones › Informes</strong>.
-            Si tienes un sistema concreto con el que necesitas integrarte, dínoslo:
-            saber cuál es lo que decide en qué orden se construyen.
+          <InfoNote className="mt-5" icon={<Info />} tone="info">
+            ¿Necesitas mover datos hoy? Los informes de{" "}
+            <strong>{t("ui.IntegrationsList.operacion", "Operación")}</strong> y
+            los del portal de tu cliente se exportan en CSV y PDF, y el detalle
+            de qué incluyen se configura en{" "}
+            <strong>Datos y conexiones › Informes</strong>. Si tienes un sistema
+            concreto con el que necesitas integrarte, dínoslo: saber cuál es lo
+            que decide en qué orden se construyen.
           </InfoNote>
         </PageContainer>
       </SettingsLayout>

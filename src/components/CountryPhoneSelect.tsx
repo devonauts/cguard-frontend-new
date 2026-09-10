@@ -1,6 +1,7 @@
 import * as React from "react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,13 +12,17 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 export type CountryPhoneSelectValue = {
-  code: string;      // "EC"
-  dialCode: string;  // "+593"
-  name: string;      // "Ecuador"
-  flag?: string;     // "🇪🇨"
+  code: string; // "EC"
+  dialCode: string; // "+593"
+  name: string; // "Ecuador"
+  flag?: string; // "🇪🇨"
 };
 
 type FetchedCountry = {
@@ -35,17 +40,21 @@ type Props = {
   apiUrl?: string;
 };
 
-function buildDialCode(root?: string | null, suffixes?: string[] | null): string {
+function buildDialCode(
+  root?: string | null,
+  suffixes?: string[] | null,
+): string {
   const r = (root || "").trim();
+
   if (!r) return "";
-  
+
   // Si no hay sufijos o el array está vacío, devolver solo el root
   if (!suffixes || suffixes.length === 0) return r;
-  
+
   // Si hay múltiples sufijos, tomar el primero (más común)
   // Por ejemplo: USA tiene root="+1" y suffixes=[""], Canada también
   const firstSuffix = suffixes[0] || "";
-  
+
   return r + firstSuffix;
 }
 
@@ -60,7 +69,9 @@ export default function CountryPhoneSelect({
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
-  const [countries, setCountries] = React.useState<CountryPhoneSelectValue[]>([]);
+  const [countries, setCountries] = React.useState<CountryPhoneSelectValue[]>(
+    [],
+  );
 
   React.useEffect(() => {
     let active = true;
@@ -70,7 +81,11 @@ export default function CountryPhoneSelect({
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(apiUrl, { signal: ctrl.signal, cache: "force-cache" });
+        const res = await fetch(apiUrl, {
+          signal: ctrl.signal,
+          cache: "force-cache",
+        });
+
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data: FetchedCountry[] = await res.json();
 
@@ -80,9 +95,9 @@ export default function CountryPhoneSelect({
             const code = (c?.cca2 || "").toUpperCase();
             const flag = c?.flag || "🏳️";
             const dialCode = buildDialCode(c?.idd?.root, c?.idd?.suffixes);
-            
+
             if (!name || !code || !dialCode) return null;
-            
+
             return { name, code, dialCode, flag } as CountryPhoneSelectValue;
           })
           .filter(Boolean) as CountryPhoneSelectValue[];
@@ -92,13 +107,21 @@ export default function CountryPhoneSelect({
 
         if (active) setCountries(normalized);
       } catch (e: any) {
-        if (active) setError(e?.message || t("ui.CountryPhoneSelect.noSePudoCargarPaises", "No se pudo cargar la lista de países"));
+        if (active)
+          setError(
+            e?.message ||
+              t(
+                "ui.CountryPhoneSelect.noSePudoCargarPaises",
+                "No se pudo cargar la lista de países",
+              ),
+          );
       } finally {
         if (active) setLoading(false);
       }
     }
 
     load();
+
     return () => {
       active = false;
       ctrl.abort();
@@ -107,6 +130,7 @@ export default function CountryPhoneSelect({
 
   const current = React.useMemo(() => {
     if (!value) return undefined;
+
     return (
       countries.find((c) => c.code === value.code) || {
         name: value.name,
@@ -126,11 +150,11 @@ export default function CountryPhoneSelect({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
-          role="combobox"
           aria-expanded={open}
           className={cn("w-48 justify-between", className)}
           disabled={loading || !!error}
+          role="combobox"
+          variant="outline"
         >
           {loading ? (
             <span className="inline-flex items-center gap-2 text-muted-foreground">
@@ -143,7 +167,10 @@ export default function CountryPhoneSelect({
               <span className="text-sm font-medium">{current.dialCode}</span>
             </span>
           ) : (
-            <span className="text-muted-foreground">{placeholder ?? t("ui.CountryPhoneSelect.seleccionarPais", "Seleccionar país…")}</span>
+            <span className="text-muted-foreground">
+              {placeholder ??
+                t("ui.CountryPhoneSelect.seleccionarPais", "Seleccionar país…")}
+            </span>
           )}
           <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
         </Button>
@@ -154,16 +181,23 @@ export default function CountryPhoneSelect({
           <div className="p-3 text-sm text-red-600">{error}</div>
         ) : (
           <Command>
-            <CommandInput placeholder={t("ui.CountryPhoneSelect.buscarPaisOCodigo", "Buscar país o código…")} />
+            <CommandInput
+              placeholder={t(
+                "ui.CountryPhoneSelect.buscarPaisOCodigo",
+                "Buscar país o código…",
+              )}
+            />
             <CommandList className="max-h-80">
-              <CommandEmpty>{t('ui.CountryPhoneSelect.noSeEncontraronResultados')}</CommandEmpty>
+              <CommandEmpty>
+                {t("ui.CountryPhoneSelect.noSeEncontraronResultados")}
+              </CommandEmpty>
               <CommandGroup>
                 {countries.map((c) => (
                   <CommandItem
                     key={c.code}
+                    className="flex items-center gap-2"
                     value={`${c.name} ${c.dialCode} ${c.code}`}
                     onSelect={() => handleSelect(c)}
-                    className="flex items-center gap-2"
                   >
                     <span className="text-lg">{c.flag}</span>
                     <span className="flex-1 text-sm">{c.name}</span>
@@ -173,7 +207,7 @@ export default function CountryPhoneSelect({
                     <Check
                       className={cn(
                         "h-4 w-4",
-                        value?.code === c.code ? "opacity-100" : "opacity-0"
+                        value?.code === c.code ? "opacity-100" : "opacity-0",
                       )}
                     />
                   </CommandItem>

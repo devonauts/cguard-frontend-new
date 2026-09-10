@@ -61,8 +61,7 @@ export const REPORT_SECTIONS: ReportSection[] = [
         id: "dar",
         title: "Informe DAR",
         titleKey: "reports.card.dar.title",
-        description:
-          "Ver actividad diaria de los vigilantes de seguridad",
+        description: "Ver actividad diaria de los vigilantes de seguridad",
         descriptionKey: "reports.card.dar.desc",
         href: "/reports/dar",
       },
@@ -123,8 +122,7 @@ export const REPORT_SECTIONS: ReportSection[] = [
       {
         id: "parking-violation",
         title: "Parking Violation",
-        description:
-          "This report is used to check the parking violation.",
+        description: "This report is used to check the parking violation.",
         href: "/reports/incidents/parking-violation",
       },
       {
@@ -136,8 +134,7 @@ export const REPORT_SECTIONS: ReportSection[] = [
       {
         id: "fire-alarm",
         title: "Fire Alarm",
-        description:
-          "This report is created to address fire alarm.",
+        description: "This report is created to address fire alarm.",
         href: "/reports/incidents/fire-alarm",
       },
       {
@@ -209,8 +206,7 @@ export const REPORT_SECTIONS: ReportSection[] = [
         id: "timecard-post",
         title: "Horas de Tarjeta de Tiempo por Puesto de seguridad",
         titleKey: "reports.card.timecardPost.title",
-        description:
-          "Ver horas de tarjeta de tiempo por puesto de seguridad",
+        description: "Ver horas de tarjeta de tiempo por puesto de seguridad",
         descriptionKey: "reports.card.timecardPost.desc",
         href: "/reports/timecard/by-post",
       },
@@ -218,8 +214,7 @@ export const REPORT_SECTIONS: ReportSection[] = [
         id: "timecard-guard",
         title: "Horas de Tarjeta de Tiempo por Vigilante",
         titleKey: "reports.card.timecardGuard.title",
-        description:
-          "Ver horas de tarjeta de tiempo por vigilante",
+        description: "Ver horas de tarjeta de tiempo por vigilante",
         descriptionKey: "reports.card.timecardGuard.desc",
         href: "/reports/timecard/by-guard",
       },
@@ -242,8 +237,7 @@ export const REPORT_SECTIONS: ReportSection[] = [
         id: "payroll-post",
         title: "Horas Trabajadas por Puesto de seguridad",
         titleKey: "reports.card.payrollPost.title",
-        description:
-          "Ver horas trabajadas por puesto de seguridad",
+        description: "Ver horas trabajadas por puesto de seguridad",
         descriptionKey: "reports.card.payrollPost.desc",
         href: "/reports/payroll/by-post",
       },
@@ -251,8 +245,7 @@ export const REPORT_SECTIONS: ReportSection[] = [
         id: "payroll-department",
         title: "Horas Trabajadas por Departamento",
         titleKey: "reports.card.payrollDepartment.title",
-        description:
-          "Ver horas de nómina por departamento",
+        description: "Ver horas de nómina por departamento",
         descriptionKey: "reports.card.payrollDepartment.desc",
         href: "/reports/payroll/by-department",
       },
@@ -267,8 +260,7 @@ export const REPORT_SECTIONS: ReportSection[] = [
         id: "delivery-logs",
         title: "Registros de Entrega",
         titleKey: "ui.Passdown.registrosDeEntrega",
-        description:
-          "Ver entregas compartidas por vigilantes de seguridad",
+        description: "Ver entregas compartidas por vigilantes de seguridad",
         descriptionKey: "reports.card.deliveryLogs.desc",
         href: "/reports/passdown",
       },
@@ -312,8 +304,7 @@ export const REPORT_SECTIONS: ReportSection[] = [
         id: "geofence-logs",
         title: "Registros de Geo Vallas",
         titleKey: "ui.GeoFenceLog.registrosDeGeoVallas",
-        description:
-          "Ver registros de geovalla de los vigilantes de seguridad",
+        description: "Ver registros de geovalla de los vigilantes de seguridad",
         descriptionKey: "reports.card.geofenceLogs.desc",
         href: "/reports/geo-fence-log",
       },
@@ -330,8 +321,7 @@ export const REPORT_SECTIONS: ReportSection[] = [
         id: "order-ack-logs",
         title: "Reconocimiento de Órdenes de Publicación",
         titleKey: "ui.PostOrderAck.reconocimientoDeOrdenesDePublicacion",
-        description:
-          "Reconocimiento de Órdenes de Publicación",
+        description: "Reconocimiento de Órdenes de Publicación",
         descriptionKey: "ui.PostOrderAck.reconocimientoDeOrdenesDePublicacion",
         href: "/reports/post-order-ack",
       },
@@ -339,8 +329,7 @@ export const REPORT_SECTIONS: ReportSection[] = [
         id: "document-ack-logs",
         title: "Reconocimiento de Documentos y Políticas",
         titleKey: "ui.DocPolicyAck.reconocimientoDeDocumentosYPoliticas",
-        description:
-          "Reconocimiento de Documentos y Políticas",
+        description: "Reconocimiento de Documentos y Políticas",
         descriptionKey: "ui.DocPolicyAck.reconocimientoDeDocumentosYPoliticas",
         href: "/reports/doc-policy-ack",
       },
@@ -348,8 +337,7 @@ export const REPORT_SECTIONS: ReportSection[] = [
         id: "license-logs",
         title: "Registro de Licencias",
         titleKey: "ui.License.registroDeLicencias",
-        description:
-          "Ver registro de licencias de los vigilantes",
+        description: "Ver registro de licencias de los vigilantes",
         descriptionKey: "reports.card.licenseLogs.desc",
         href: "/reports/license",
       },

@@ -1,8 +1,22 @@
-import { toast } from 'sonner';
-import { LogIn, LogOut, AlertTriangle, Route, CalendarClock, UserCheck, Siren, Bell, X, MessageSquare, ClipboardList } from 'lucide-react';
-import { useFileUrl } from '@/lib/fileUrl';
-import { SmartImage } from '@/components/kit';
-import type { PlatformNotification } from '@/hooks/useNotificationStream';
+import type { PlatformNotification } from "@/hooks/useNotificationStream";
+
+import { toast } from "sonner";
+import {
+  LogIn,
+  LogOut,
+  AlertTriangle,
+  Route,
+  CalendarClock,
+  UserCheck,
+  Siren,
+  Bell,
+  X,
+  MessageSquare,
+  ClipboardList,
+} from "lucide-react";
+
+import { useFileUrl } from "@/lib/fileUrl";
+import { SmartImage } from "@/components/kit";
 
 /**
  * Tono del aviso. Eran diez hexadecimales sueltos (verde, ámbar, morado, rosa…):
@@ -16,32 +30,39 @@ import type { PlatformNotification } from '@/hooks/useNotificationStream';
  * es una variable distinta porque el color de relleno usado como tinta no
  * contrasta (ver la medición en la cabecera de tokens.css).
  */
-export type ToastTone = 'brand' | 'ok' | 'warn' | 'bad' | 'info' | 'neutral';
+export type ToastTone = "brand" | "ok" | "warn" | "bad" | "info" | "neutral";
 
 export const TONE_INK: Record<ToastTone, { fill: string; ink: string }> = {
-  brand:   { fill: 'var(--brand)',     ink: 'var(--brand-text)' },
-  ok:      { fill: 'var(--ok)',        ink: 'var(--ok-text)' },
-  warn:    { fill: 'var(--warn)',      ink: 'var(--warn-text)' },
-  bad:     { fill: 'var(--bad)',       ink: 'var(--bad-text)' },
-  info:    { fill: 'var(--info)',      ink: 'var(--info-text)' },
-  neutral: { fill: 'var(--ink-faint)', ink: 'var(--ink-soft)' },
+  brand: { fill: "var(--brand)", ink: "var(--brand-text)" },
+  ok: { fill: "var(--ok)", ink: "var(--ok-text)" },
+  warn: { fill: "var(--warn)", ink: "var(--warn-text)" },
+  bad: { fill: "var(--bad)", ink: "var(--bad-text)" },
+  info: { fill: "var(--info)", ink: "var(--info-text)" },
+  neutral: { fill: "var(--ink-faint)", ink: "var(--ink-soft)" },
 };
 
-export function iconFor(eventType: string): { Icon: typeof Bell; tone: ToastTone } {
-  const t = (eventType || '').toLowerCase();
-  if (t === 'guard.checkin') return { Icon: LogIn, tone: 'ok' };
-  if (t === 'guard.checkout') return { Icon: LogOut, tone: 'neutral' };
-  if (t === 'attendance.clockout_requested') return { Icon: LogOut, tone: 'warn' };
+export function iconFor(eventType: string): {
+  Icon: typeof Bell;
+  tone: ToastTone;
+} {
+  const t = (eventType || "").toLowerCase();
+
+  if (t === "guard.checkin") return { Icon: LogIn, tone: "ok" };
+  if (t === "guard.checkout") return { Icon: LogOut, tone: "neutral" };
+  if (t === "attendance.clockout_requested")
+    return { Icon: LogOut, tone: "warn" };
   // Incidentes y despachos son SIEMPRE rojos, pase lo que pase con el acento:
   // `--bad` es fijo en tokens.css justamente por esto.
-  if (t.startsWith('incident')) return { Icon: AlertTriangle, tone: 'bad' };
-  if (t.startsWith('dispatch')) return { Icon: Siren, tone: 'bad' };
-  if (t.startsWith('patrol')) return { Icon: Route, tone: 'info' };
-  if (t.startsWith('shift') || t.startsWith('timeoff')) return { Icon: CalendarClock, tone: 'brand' };
-  if (t.startsWith('visitor')) return { Icon: UserCheck, tone: 'info' };
-  if (t.startsWith('message')) return { Icon: MessageSquare, tone: 'brand' };
-  if (t.startsWith('task')) return { Icon: ClipboardList, tone: 'warn' };
-  return { Icon: Bell, tone: 'info' };
+  if (t.startsWith("incident")) return { Icon: AlertTriangle, tone: "bad" };
+  if (t.startsWith("dispatch")) return { Icon: Siren, tone: "bad" };
+  if (t.startsWith("patrol")) return { Icon: Route, tone: "info" };
+  if (t.startsWith("shift") || t.startsWith("timeoff"))
+    return { Icon: CalendarClock, tone: "brand" };
+  if (t.startsWith("visitor")) return { Icon: UserCheck, tone: "info" };
+  if (t.startsWith("message")) return { Icon: MessageSquare, tone: "brand" };
+  if (t.startsWith("task")) return { Icon: ClipboardList, tone: "warn" };
+
+  return { Icon: Bell, tone: "info" };
 }
 
 /**
@@ -60,19 +81,26 @@ export function iconFor(eventType: string): { Icon: typeof Bell; tone: ToastTone
  * sucio para siempre.
  */
 export function tituloLimpio(texto: string | null | undefined): string {
-  if (!texto) return '';
-  return String(texto)
-    // Emojis y símbolos al PRINCIPIO, con su posible selector de variación y
-    // los espacios que arrastran. Sólo al principio: un emoji que alguien
-    // escribió dentro de un mensaje es suyo y no se toca.
-    .replace(/^(?:[\u2190-\u2BFF\u2600-\u27BF\uFE0F\u{1F000}-\u{1FAFF}]|\u200D)+\s*/u, '')
-    .trim();
+  if (!texto) return "";
+
+  return (
+    String(texto)
+      // Emojis y símbolos al PRINCIPIO, con su posible selector de variación y
+      // los espacios que arrastran. Sólo al principio: un emoji que alguien
+      // escribió dentro de un mensaje es suyo y no se toca.
+      .replace(
+        /^(?:[\u2190-\u2BFF\u2600-\u27BF\uFE0F\u{1F000}-\u{1FAFF}]|\u200D)+\s*/u,
+        "",
+      )
+      .trim()
+  );
 }
 
 function localDay(dateStr: string): string {
   const d = new Date(dateStr);
-  const mo = String(d.getMonth() + 1).padStart(2, '0');
-  const da = String(d.getDate()).padStart(2, '0');
+  const mo = String(d.getMonth() + 1).padStart(2, "0");
+  const da = String(d.getDate()).padStart(2, "0");
+
   return `${d.getFullYear()}-${mo}-${da}`;
 }
 
@@ -82,7 +110,7 @@ function localDay(dateStr: string): string {
  * feed is the catch-all, focused on the event.
  */
 export function targetForNotification(n: PlatformNotification): string {
-  const type = (n.eventType || '').toLowerCase();
+  const type = (n.eventType || "").toLowerCase();
   const id = n.sourceEntityId;
   const p: any = n.payload || {};
 
@@ -101,33 +129,48 @@ export function targetForNotification(n: PlatformNotification): string {
    * se abre el Centro de Emergencias, donde el caso está y donde SÍ se puede
    * actuar. Nunca un informe.
    */
-  if (type === 'panic.alert' || type.startsWith('alarm') || type.startsWith('sos')) {
-    return p.caseId ? `/alarm/case/${p.caseId}` : '/alarm/queue';
+  if (
+    type === "panic.alert" ||
+    type.startsWith("alarm") ||
+    type.startsWith("sos")
+  ) {
+    return p.caseId ? `/alarm/case/${p.caseId}` : "/alarm/queue";
   }
 
   // ── Things that need a supervisor DECISION → the right approvals queue, focused.
   if (
-    type === 'attendance.clockin_requested' ||
-    type === 'attendance.clockout_requested' ||
-    type === 'attendance.approval_required' ||
-    type === 'attendance.correction_submitted'
+    type === "attendance.clockin_requested" ||
+    type === "attendance.clockout_requested" ||
+    type === "attendance.approval_required" ||
+    type === "attendance.correction_submitted"
   ) {
-    return id ? `/nomina/approvals?focus=${id}` : '/nomina/approvals';
+    return id ? `/nomina/approvals?focus=${id}` : "/nomina/approvals";
   }
-  if (type === 'task.pending_approval') {
-    return id ? `/tasks/approvals?focus=${id}` : '/tasks/approvals';
+  if (type === "task.pending_approval") {
+    return id ? `/tasks/approvals?focus=${id}` : "/tasks/approvals";
   }
 
   // ── Rutas de supervisión (ejecución guiada) → la ejecución en el CRM, que
   // es el puesto de mando si sigue abierta y la reconstrucción si ya cerró.
   // Si el aviso no trae la ejecución, el tablero de patrulla.
-  if (type.startsWith('supervisor.route') || type.startsWith('supervisor.stop') || type.startsWith('supervisor.finding')) {
-    const runId = p.runId || p.routeRunId || (String((n as any).sourceEntityType || '').toLowerCase() === 'routerun' ? id : null);
-    return runId ? `/vehicle-patrol/runs/${runId}` : '/vehicle-patrol';
+  if (
+    type.startsWith("supervisor.route") ||
+    type.startsWith("supervisor.stop") ||
+    type.startsWith("supervisor.finding")
+  ) {
+    const runId =
+      p.runId ||
+      p.routeRunId ||
+      (String((n as any).sourceEntityType || "").toLowerCase() === "routerun"
+        ? id
+        : null);
+
+    return runId ? `/vehicle-patrol/runs/${runId}` : "/vehicle-patrol";
   }
 
   // ── Incidents → the incident report detail.
-  if (type.startsWith('incident')) return id ? `/reports/incident/${id}` : '/activities';
+  if (type.startsWith("incident"))
+    return id ? `/reports/incident/${id}` : "/activities";
 
   // ── Clock-in/out + every attendance event (late, no-show, geofence, etc.) → the
   // Nómina attendance records, focused on that day's row.
@@ -139,18 +182,21 @@ export function targetForNotification(n: PlatformNotification): string {
   // asistencia de ESE turno — donde se corrige la hora de salida y se anota lo
   // que pasó — y el identificador del turno ya viajaba en el aviso.
   if (
-    type === 'guard.checkin' ||
-    type === 'guard.checkout' ||
-    type === 'guard.forced_clockout' ||
-    type === 'guard.late' ||
-    type.startsWith('attendance')
+    type === "guard.checkin" ||
+    type === "guard.checkout" ||
+    type === "guard.forced_clockout" ||
+    type === "guard.late" ||
+    type.startsWith("attendance")
   ) {
     // El día del TURNO, no el del aviso: un turno nocturno que empieza el 26 a
     // las 19:00 se cierra a la fuerza el 27 a las 07:00, y su fila vive en el
     // 26. Abrir el 27 dejaría la lista sin la fila que se venía a ver. El
     // servidor lo manda ya resuelto en la zona de la empresa; si no viene (un
     // aviso anterior a esto), se cae al día del aviso, que es lo de siempre.
-    const dia = typeof p.shiftDay === 'string' && p.shiftDay ? p.shiftDay : localDay(n.createdAt);
+    const dia =
+      typeof p.shiftDay === "string" && p.shiftDay
+        ? p.shiftDay
+        : localDay(n.createdAt);
     const params = new URLSearchParams({ date: dia });
     /**
      * ── `sourceEntityId` NO SIEMPRE ES UN REGISTRO DE ASISTENCIA ────────────
@@ -163,27 +209,37 @@ export function targetForNotification(n: PlatformNotification): string {
      * El turno se coge de donde de verdad está: `payload.guardShiftId`. Sólo se
      * usa `sourceEntityId` cuando el propio evento dice que ES un turno.
      */
-    const esTurno = String(n.sourceEntityType || '').toLowerCase() === 'guardshift';
+    const esTurno =
+      String(n.sourceEntityType || "").toLowerCase() === "guardshift";
     const filaDelTurno = p.guardShiftId || (esTurno ? id : null);
-    if (filaDelTurno) params.set('focus', String(filaDelTurno));
+
+    if (filaDelTurno) params.set("focus", String(filaDelTurno));
+
     return `/nomina/records?${params.toString()}`;
   }
 
   // ── Messages → the conversation.
-  if (type.startsWith('message')) {
-    return p.conversationId ? `/messenger?conversation=${p.conversationId}` : '/messenger';
+  if (type.startsWith("message")) {
+    return p.conversationId
+      ? `/messenger?conversation=${p.conversationId}`
+      : "/messenger";
   }
 
   // ── Guard-centric (ratings, device mismatch, profile) → the guard's profile.
   // These carry the guard id in the payload (sourceEntityId is the rating/device id).
-  if (type === 'guard.rated' || type.startsWith('device') || type === 'profile.updated') {
+  if (
+    type === "guard.rated" ||
+    type.startsWith("device") ||
+    type === "profile.updated"
+  ) {
     const gid = p.guardId || p.securityGuardId;
-    return gid ? `/guards/${gid}/perfil` : '/security-guards';
+
+    return gid ? `/guards/${gid}/perfil` : "/security-guards";
   }
-  if (type.startsWith('guard')) return '/security-guards';
+  if (type.startsWith("guard")) return "/security-guards";
 
   // ── Visitors.
-  if (type.startsWith('visitor')) return '/visitors';
+  if (type.startsWith("visitor")) return "/visitors";
 
   // ── Patrols / rounds. VEHICLE patrols are namespaced `patrol.vehicle_*`; every
   // other patrol.* event (started/completed/missed) is a guard FOOT round (ronda /
@@ -202,40 +258,48 @@ export function targetForNotification(n: PlatformNotification): string {
   // El informe sigue existiendo para lo que sólo él puede hacer —cruzar
   // puestos y fechas, y exportar— y es el respaldo de los avisos viejos, que no
   // llevan estos campos.
-  if (type.startsWith('patrol')) {
-    if (type.startsWith('patrol.vehicle')) return '/vehicle-patrol';
+  if (type.startsWith("patrol")) {
+    if (type.startsWith("patrol.vehicle")) return "/vehicle-patrol";
     const puesto = p.postSiteId;
     const estacion = p.stationId;
+
     if (puesto && estacion) {
-      const qs = p.assignmentId ? `?ronda=${encodeURIComponent(p.assignmentId)}` : '';
+      const qs = p.assignmentId
+        ? `?ronda=${encodeURIComponent(p.assignmentId)}`
+        : "";
+
       return `/post-sites/${puesto}/stations/${estacion}/tag-scans${qs}`;
     }
-    return '/reports/site-tour';
+
+    return "/reports/site-tour";
   }
 
   // ── Shifts / scheduling. Exchange requests → the exchange board; unassigned/open
   // shifts → the open-shifts board; anything else → the schedule.
-  if (type.startsWith('shift.exchange')) return '/shift-exchange';
-  if (type === 'shift.unassigned') return '/open-shifts';
-  if (type.startsWith('shift')) return '/schedule';
+  if (type.startsWith("shift.exchange")) return "/shift-exchange";
+  if (type === "shift.unassigned") return "/open-shifts";
+  if (type.startsWith("shift")) return "/schedule";
 
   // ── Time-off (requests + decisions) → the time-off board.
-  if (type.startsWith('timeoff')) return '/time-off';
+  if (type.startsWith("timeoff")) return "/time-off";
 
   // ── Memos → the memos board.
-  if (type.startsWith('memo')) return '/memos';
+  if (type.startsWith("memo")) return "/memos";
 
   // ── Dispatch tickets → the ticket detail.
-  if (type.startsWith('dispatch')) return id ? `/dispatch-tickets/${id}` : '/dispatch-tickets';
+  if (type.startsWith("dispatch"))
+    return id ? `/dispatch-tickets/${id}` : "/dispatch-tickets";
 
   // ── Tasks (non-approval) → the tracking list, focused.
-  if (type.startsWith('task')) return id ? `/tasks?focus=${id}` : '/tasks';
+  if (type.startsWith("task")) return id ? `/tasks?focus=${id}` : "/tasks";
 
   // ── Fallback → the Actividad feed, focused on this event.
   const params = new URLSearchParams();
-  if (id) params.set('focus', id);
+
+  if (id) params.set("focus", id);
   const qs = params.toString();
-  return qs ? `/activities?${qs}` : '/activities';
+
+  return qs ? `/activities?${qs}` : "/activities";
 }
 
 /**
@@ -253,30 +317,40 @@ export function showNotificationToast(
   toast.custom(
     (id) => (
       <div
+        className="glass-raised glass-hover flex w-[360px] max-w-[88vw] cursor-pointer items-start gap-3 p-3"
         role="button"
         tabIndex={0}
         onClick={() => {
           if (target && navigate) navigate(target);
           toast.dismiss(id);
         }}
-        className="glass-raised glass-hover flex w-[360px] max-w-[88vw] cursor-pointer items-start gap-3 p-3"
       >
-        <NotifPhoto n={n} fill={fill} ink={ink} Icon={Icon} />
+        <NotifPhoto Icon={Icon} fill={fill} ink={ink} n={n} />
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold leading-snug" style={{ color: 'var(--ink)' }}>{tituloLimpio(n.title)}</p>
+          <p
+            className="text-sm font-semibold leading-snug"
+            style={{ color: "var(--ink)" }}
+          >
+            {tituloLimpio(n.title)}
+          </p>
           {n.body && (
-            <p className="mt-0.5 line-clamp-3 text-xs" style={{ color: 'var(--ink-soft)' }}>{n.body}</p>
+            <p
+              className="mt-0.5 line-clamp-3 text-xs"
+              style={{ color: "var(--ink-soft)" }}
+            >
+              {n.body}
+            </p>
           )}
           <p className="cg-eyebrow mt-1.5">Ahora</p>
         </div>
         <button
           aria-label="Cerrar"
+          className="cg-focus -m-1 grid size-9 shrink-0 place-items-center rounded-full transition-colors"
+          style={{ color: "var(--ink-faint)" }}
           onClick={(e) => {
             e.stopPropagation();
             toast.dismiss(id);
           }}
-          className="cg-focus -m-1 grid size-9 shrink-0 place-items-center rounded-full transition-colors"
-          style={{ color: 'var(--ink-faint)' }}
         >
           <X size={16} />
         </button>
@@ -306,12 +380,13 @@ function NotifPhoto({
   ink: string;
   Icon: typeof Bell;
 }) {
-  const photoUrl = useFileUrl(n.payload?.photoUrl || n.payload?.selfieUrl || '');
+  const photoUrl = useFileUrl(
+    n.payload?.photoUrl || n.payload?.selfieUrl || "",
+  );
+
   return (
     <SmartImage
-      src={photoUrl}
       alt=""
-      rounded="rounded-lg"
       className="h-12 w-12 shrink-0 border border-[color:var(--hairline)]"
       fallback={
         <span
@@ -324,6 +399,8 @@ function NotifPhoto({
           <Icon size={20} />
         </span>
       }
+      rounded="rounded-lg"
+      src={photoUrl}
     />
   );
 }

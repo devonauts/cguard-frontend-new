@@ -1,13 +1,22 @@
-import api from '@/lib/api';
+import api from "@/lib/api";
 
 const tenantId = (): string => {
-  const t = localStorage.getItem('tenantId');
-  if (!t) throw new Error('No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.');
+  const t = localStorage.getItem("tenantId");
+
+  if (!t)
+    throw new Error(
+      "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+    );
+
   return t;
 };
 
-export type GeofenceEnforcement = 'strict' | 'warning' | 'disabled';
-export type ClientNotifyMode = 'per_visit' | 'route_completion' | 'daily' | 'never';
+export type GeofenceEnforcement = "strict" | "warning" | "disabled";
+export type ClientNotifyMode =
+  | "per_visit"
+  | "route_completion"
+  | "daily"
+  | "never";
 
 /** Espejo de `PatrolSettings` del servidor (patrolSettingsService.ts). */
 export interface PatrolSettings {
@@ -25,8 +34,13 @@ export interface PatrolSettings {
   requireClockInToStart: boolean;
   allowSupervisorReorder: boolean;
   notifyOps: {
-    routeStart: boolean; routeCompletion: boolean; stopSkipped: boolean; criticalFinding: boolean;
-    lateRoute: boolean; missedStop: boolean; routeAborted: boolean;
+    routeStart: boolean;
+    routeCompletion: boolean;
+    stopSkipped: boolean;
+    criticalFinding: boolean;
+    lateRoute: boolean;
+    missedStop: boolean;
+    routeAborted: boolean;
   };
   clientNotify: ClientNotifyMode;
   clientVisiblePhotosDefault: boolean;
@@ -34,7 +48,7 @@ export interface PatrolSettings {
 }
 
 export const PATROL_DEFAULTS: PatrolSettings = {
-  geofenceEnforcement: 'warning',
+  geofenceEnforcement: "warning",
   allowGeofenceOverride: true,
   requireOverrideReason: true,
   arrivalRadiusM: 250,
@@ -47,8 +61,16 @@ export const PATROL_DEFAULTS: PatrolSettings = {
   criticalDelayMin: 45,
   requireClockInToStart: true,
   allowSupervisorReorder: false,
-  notifyOps: { routeStart: true, routeCompletion: true, stopSkipped: true, criticalFinding: true, lateRoute: true, missedStop: true, routeAborted: true },
-  clientNotify: 'per_visit',
+  notifyOps: {
+    routeStart: true,
+    routeCompletion: true,
+    stopSkipped: true,
+    criticalFinding: true,
+    lateRoute: true,
+    missedStop: true,
+    routeAborted: true,
+  },
+  clientNotify: "per_visit",
   clientVisiblePhotosDefault: true,
   clientVisibleInspectionDefault: true,
 };
@@ -62,13 +84,33 @@ export const patrolSettingsService = {
   async get(): Promise<{ row: any; patrol: PatrolSettings }> {
     const { data } = await api.get<any>(`/tenant/${tenantId()}/settings`);
     const raw = data?.patrol;
-    const parsed = typeof raw === 'string' ? (() => { try { return JSON.parse(raw); } catch { return {}; } })() : raw || {};
-    return { row: data || {}, patrol: { ...PATROL_DEFAULTS, ...parsed, notifyOps: { ...PATROL_DEFAULTS.notifyOps, ...(parsed?.notifyOps || {}) } } };
+    const parsed =
+      typeof raw === "string"
+        ? (() => {
+            try {
+              return JSON.parse(raw);
+            } catch {
+              return {};
+            }
+          })()
+        : raw || {};
+
+    return {
+      row: data || {},
+      patrol: {
+        ...PATROL_DEFAULTS,
+        ...parsed,
+        notifyOps: {
+          ...PATROL_DEFAULTS.notifyOps,
+          ...(parsed?.notifyOps || {}),
+        },
+      },
+    };
   },
   async save(row: any, patrol: PatrolSettings): Promise<void> {
     await api.put(`/tenant/${tenantId()}/settings`, {
       settings: {
-        theme: row?.theme || 'default',
+        theme: row?.theme || "default",
         logos: row?.logos || [],
         backgroundImages: row?.backgroundImages || [],
         patrol,

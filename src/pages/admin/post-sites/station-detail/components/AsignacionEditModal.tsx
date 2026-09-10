@@ -1,18 +1,37 @@
-import { useEffect, useMemo, useState } from 'react';
-import { toast } from 'sonner';
-import { CalendarRange, Loader2, Moon, Pencil, Trash2 } from 'lucide-react';
-import { ApiService } from '@/services/api/apiService';
-import { Modal } from '@/components/kit';
-import { Button } from '@/components/ui/button';
-import { confirmDialog } from '@/components/ui/confirmDialog';
-import { FIELD_CLS_LG, LabeledField } from '@/pages/admin/clientes/components/_shared/tab-kit';
-import SecuenciaPropiaSelect from '@/components/schedule/SecuenciaPropiaSelect';
-import { nombreDeTramo } from '@/components/schedule/tramos';
-import { localeActual } from '@/lib/localeActual';
-import { nextRestDates, rotationDseOf, shortRestLabel, weeklyRestWeekday, type RotationCycle } from '@/lib/utils';
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import { CalendarRange, Loader2, Moon, Pencil, Trash2 } from "lucide-react";
 
-interface PositionRow { id: string; type?: string; sortOrder?: number; startTime?: string | null; endTime?: string | null }
-interface RotationStyleRow extends RotationCycle { id: string; name?: string }
+import { ApiService } from "@/services/api/apiService";
+import { Modal } from "@/components/kit";
+import { Button } from "@/components/ui/button";
+import { confirmDialog } from "@/components/ui/confirmDialog";
+import {
+  FIELD_CLS_LG,
+  LabeledField,
+} from "@/pages/admin/clientes/components/_shared/tab-kit";
+import SecuenciaPropiaSelect from "@/components/schedule/SecuenciaPropiaSelect";
+import { nombreDeTramo } from "@/components/schedule/tramos";
+import { localeActual } from "@/lib/localeActual";
+import {
+  nextRestDates,
+  rotationDseOf,
+  shortRestLabel,
+  weeklyRestWeekday,
+  type RotationCycle,
+} from "@/lib/utils";
+
+interface PositionRow {
+  id: string;
+  type?: string;
+  sortOrder?: number;
+  startTime?: string | null;
+  endTime?: string | null;
+}
+interface RotationStyleRow extends RotationCycle {
+  id: string;
+  name?: string;
+}
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -31,7 +50,13 @@ interface RotationStyleRow extends RotationCycle { id: string; name?: string }
  * ════════════════════════════════════════════════════════════════════════════
  */
 export default function AsignacionEditModal({
-  open, onClose, onSaved, tenantId, stationId, assignmentId, stationRotationStyleId,
+  open,
+  onClose,
+  onSaved,
+  tenantId,
+  stationId,
+  assignmentId,
+  stationRotationStyleId,
 }: {
   open: boolean;
   onClose: () => void;
@@ -48,67 +73,99 @@ export default function AsignacionEditModal({
   const [estilos, setEstilos] = useState<RotationStyleRow[]>([]);
   const [ocupadas, setOcupadas] = useState<Set<string>>(new Set());
 
-  const [positionId, setPositionId] = useState('');
-  const [secuencia, setSecuencia] = useState('');
-  const [inicio, setInicio] = useState('');
-  const [fin, setFin] = useState('');
+  const [positionId, setPositionId] = useState("");
+  const [secuencia, setSecuencia] = useState("");
+  const [inicio, setInicio] = useState("");
+  const [fin, setFin] = useState("");
 
   useEffect(() => {
     if (!open || !assignmentId) return;
     let vivo = true;
+
     setCargando(true);
     (async () => {
       try {
         const [aRes, pRes, rRes]: any[] = await Promise.all([
-          ApiService.get(`/tenant/${tenantId}/guard-assignments?stationId=${encodeURIComponent(stationId)}&status=active&_=${Date.now()}`),
-          ApiService.get(`/tenant/${tenantId}/station/${encodeURIComponent(stationId)}/positions`),
+          ApiService.get(
+            `/tenant/${tenantId}/guard-assignments?stationId=${encodeURIComponent(stationId)}&status=active&_=${Date.now()}`,
+          ),
+          ApiService.get(
+            `/tenant/${tenantId}/station/${encodeURIComponent(stationId)}/positions`,
+          ),
           ApiService.get(`/tenant/${tenantId}/rotation-styles`),
         ]);
+
         if (!vivo) return;
         const filas = Array.isArray(aRes) ? aRes : (aRes?.rows ?? []);
-        const mia = filas.find((a: any) => String(a.id) === String(assignmentId)) || null;
+        const mia =
+          filas.find((a: any) => String(a.id) === String(assignmentId)) || null;
+
         setAsignacion(mia);
         setPositions(Array.isArray(pRes) ? pRes : (pRes?.rows ?? []));
         setEstilos(Array.isArray(rRes) ? rRes : (rRes?.rows ?? []));
         // Una plaza ocupada por OTRO no se puede elegir: dos titulares en la
         // misma plaza es cobertura que el detector cuenta y que no existe.
-        setOcupadas(new Set(filas
-          .filter((a: any) => a.positionId && String(a.id) !== String(assignmentId) && (a.role || 'holder') === 'holder')
-          .map((a: any) => String(a.positionId))));
-        setPositionId(mia?.positionId ? String(mia.positionId) : '');
-        setSecuencia(mia?.rotationStyleId ? String(mia.rotationStyleId) : '');
-        setInicio(String(mia?.startDate || '').slice(0, 10));
-        setFin(String(mia?.endDate || '').slice(0, 10));
+        setOcupadas(
+          new Set(
+            filas
+              .filter(
+                (a: any) =>
+                  a.positionId &&
+                  String(a.id) !== String(assignmentId) &&
+                  (a.role || "holder") === "holder",
+              )
+              .map((a: any) => String(a.positionId)),
+          ),
+        );
+        setPositionId(mia?.positionId ? String(mia.positionId) : "");
+        setSecuencia(mia?.rotationStyleId ? String(mia.rotationStyleId) : "");
+        setInicio(String(mia?.startDate || "").slice(0, 10));
+        setFin(String(mia?.endDate || "").slice(0, 10));
       } catch (e: any) {
-        toast.error(e?.message || 'No se pudo cargar la asignación');
-      } finally { if (vivo) setCargando(false); }
+        toast.error(e?.message || "No se pudo cargar la asignación");
+      } finally {
+        if (vivo) setCargando(false);
+      }
     })();
-    return () => { vivo = false; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    return () => {
+      vivo = false;
+    };
   }, [open, assignmentId, stationId]);
 
-  const esRelevo = !!asignacion?.isRelief || (positions.find((p) => p.id === positionId)?.type === 'sacafranco');
+  const esRelevo =
+    !!asignacion?.isRelief ||
+    positions.find((p) => p.id === positionId)?.type === "sacafranco";
 
   /* Las plazas se llamaban «Vigilante 1/2» y nada más; en una estación partida
      en tramos eso no dice cuál es la de la mañana. Se enseñan las horas. */
   const opcionesPlaza = useMemo(() => {
-    const hhmm = (v?: string | null) => String(v || '').slice(0, 5);
-    const fijos = positions.filter((p) => (p.type || 'fijo') !== 'sacafranco');
-    const sacas = positions.filter((p) => (p.type || 'fijo') === 'sacafranco');
-    const variasVentanas = new Set(fijos.map((p) => `${hhmm(p.startTime)}|${hhmm(p.endTime)}`)).size > 1;
+    const hhmm = (v?: string | null) => String(v || "").slice(0, 5);
+    const fijos = positions.filter((p) => (p.type || "fijo") !== "sacafranco");
+    const sacas = positions.filter((p) => (p.type || "fijo") === "sacafranco");
+    const variasVentanas =
+      new Set(fijos.map((p) => `${hhmm(p.startTime)}|${hhmm(p.endTime)}`))
+        .size > 1;
+
     return [
       ...fijos.map((p, i) => ({
         id: String(p.id),
         label: `Vigilante ${i + 1}`,
-        horas: hhmm(p.startTime) && hhmm(p.endTime) ? `${hhmm(p.startTime)}–${hhmm(p.endTime)}` : '',
-        tramo: variasVentanas && hhmm(p.startTime) ? nombreDeTramo(hhmm(p.startTime)) : '',
+        horas:
+          hhmm(p.startTime) && hhmm(p.endTime)
+            ? `${hhmm(p.startTime)}–${hhmm(p.endTime)}`
+            : "",
+        tramo:
+          variasVentanas && hhmm(p.startTime)
+            ? nombreDeTramo(hhmm(p.startTime))
+            : "",
         ocupada: ocupadas.has(String(p.id)),
       })),
       ...sacas.map((p, i) => ({
         id: String(p.id),
-        label: sacas.length > 1 ? `Sacafranco ${i + 1}` : 'Sacafranco',
-        horas: '',
-        tramo: '',
+        label: sacas.length > 1 ? `Sacafranco ${i + 1}` : "Sacafranco",
+        horas: "",
+        tramo: "",
         ocupada: ocupadas.has(String(p.id)),
       })),
     ];
@@ -118,29 +175,39 @@ export default function AsignacionEditModal({
      siguiente. En un puesto de 24 h el segundo es la noche; en 07:00–15:00 +
      15:00–23:00 es la tarde, y llamarla noche hacía irreconocible el ciclo. */
   const bloques = useMemo(() => {
-    const hhmm = (v?: string | null) => String(v || '').slice(0, 5);
+    const hhmm = (v?: string | null) => String(v || "").slice(0, 5);
     const vistos = new Map<string, string>();
-    for (const f of positions.filter((p) => (p.type || 'fijo') !== 'sacafranco')) {
-      const ini = hhmm(f.startTime); const fn = hhmm(f.endTime);
+
+    for (const f of positions.filter(
+      (p) => (p.type || "fijo") !== "sacafranco",
+    )) {
+      const ini = hhmm(f.startTime);
+      const fn = hhmm(f.endTime);
+
       if (ini && fn) vistos.set(`${ini}|${fn}`, ini);
     }
+
     return Array.from(vistos.values()).sort();
   }, [positions]);
   const etiquetaPrimerBloque = useMemo(() => {
-    if (bloques.length < 2) return 'día';
+    if (bloques.length < 2) return "día";
     const p = positions.find((x) => String(x.id) === positionId);
+
     return nombreDeTramo(String(p?.startTime || bloques[0]).slice(0, 5));
   }, [bloques, positions, positionId]);
   const etiquetaSegundoBloque = useMemo(() => {
-    if (bloques.length < 2) return 'noche';
+    if (bloques.length < 2) return "noche";
     const p = positions.find((x) => String(x.id) === positionId);
     const mio = String(p?.startTime || bloques[0]).slice(0, 5);
     const i = bloques.indexOf(mio);
+
     return nombreDeTramo(bloques[((i < 0 ? 0 : i) + 1) % bloques.length]);
   }, [bloques, positions, positionId]);
 
   const patronDeLaEstacion = useMemo(
-    () => estilos.find((s) => String(s.id) === String(stationRotationStyleId))?.name || null,
+    () =>
+      estilos.find((s) => String(s.id) === String(stationRotationStyleId))
+        ?.name || null,
     [estilos, stationRotationStyleId],
   );
 
@@ -148,90 +215,141 @@ export default function AsignacionEditModal({
      si se eligió uno, si no el de la estación. La fase es la fecha de inicio. */
   const vistaDescanso = useMemo(() => {
     if (esRelevo) return null;
-    const estilo = estilos.find((s) => String(s.id) === String(secuencia || stationRotationStyleId));
+    const estilo = estilos.find(
+      (s) => String(s.id) === String(secuencia || stationRotationStyleId),
+    );
+
     if (!estilo || !inicio) return null;
-    const ciclo = (estilo.dayShifts || 0) + (estilo.nightShifts || 0) + (estilo.restDays || 0);
+    const ciclo =
+      (estilo.dayShifts || 0) +
+      (estilo.nightShifts || 0) +
+      (estilo.restDays || 0);
+
     if (ciclo <= 0) return null;
     const d = new Date(`${inicio}T12:00:00`);
+
     if (isNaN(d.getTime())) return null;
     const fase = ((rotationDseOf(d) % ciclo) + ciclo) % ciclo;
+
     return {
       weekday: weeklyRestWeekday(estilo, fase),
       dates: nextRestDates(estilo, fase, d, estilo.restDays >= 2 ? 2 : 1),
-      startWeekday: d.toLocaleDateString(localeActual(), { weekday: 'long', day: 'numeric', month: 'short' }),
+      startWeekday: d.toLocaleDateString(localeActual(), {
+        weekday: "long",
+        day: "numeric",
+        month: "short",
+      }),
     };
   }, [estilos, secuencia, stationRotationStyleId, inicio, esRelevo]);
 
   const g = asignacion?.guard || asignacion?.user || {};
-  const nombre = g.fullName || `${g.firstName || ''} ${g.lastName || ''}`.trim() || g.email || 'este vigilante';
+  const nombre =
+    g.fullName ||
+    `${g.firstName || ""} ${g.lastName || ""}`.trim() ||
+    g.email ||
+    "este vigilante";
 
   const guardar = async () => {
     if (!assignmentId) return;
-    if (!inicio) { toast.error('Pon la fecha de inicio del turno'); return; }
+    if (!inicio) {
+      toast.error("Pon la fecha de inicio del turno");
+
+      return;
+    }
     setGuardando(true);
     try {
-      await ApiService.put(`/tenant/${tenantId}/guard-assignment/${encodeURIComponent(assignmentId)}`, {
-        data: {
-          positionId: positionId || null,
-          // Vacío = «la de la estación», que es una elección explícita y no un
-          // «no dije nada»: el backend distingue las dos.
-          rotationStyleId: secuencia || null,
-          startDate: inicio,
-          endDate: fin || null,
+      await ApiService.put(
+        `/tenant/${tenantId}/guard-assignment/${encodeURIComponent(assignmentId)}`,
+        {
+          data: {
+            positionId: positionId || null,
+            // Vacío = «la de la estación», que es una elección explícita y no un
+            // «no dije nada»: el backend distingue las dos.
+            rotationStyleId: secuencia || null,
+            startDate: inicio,
+            endDate: fin || null,
+          },
         },
-      });
-      toast.success('Turno actualizado — el cuadrante se rehizo con el cambio');
+      );
+      toast.success("Turno actualizado — el cuadrante se rehizo con el cambio");
       onSaved();
       onClose();
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || 'No se pudo guardar el cambio');
-    } finally { setGuardando(false); }
+      toast.error(
+        e?.data?.message || e?.message || "No se pudo guardar el cambio",
+      );
+    } finally {
+      setGuardando(false);
+    }
   };
 
   const quitar = async () => {
     if (!assignmentId) return;
-    if (!(await confirmDialog({
-      title: 'Quitar vigilante',
-      message: `¿Quitar a ${nombre} de este puesto? Sus turnos futuros se anulan; los ya trabajados se conservan en el historial.`,
-      confirmText: 'Quitar',
-      tone: 'danger',
-    }))) return;
+    if (
+      !(await confirmDialog({
+        title: "Quitar vigilante",
+        message: `¿Quitar a ${nombre} de este puesto? Sus turnos futuros se anulan; los ya trabajados se conservan en el historial.`,
+        confirmText: "Quitar",
+        tone: "danger",
+      }))
+    )
+      return;
     setGuardando(true);
     try {
-      await ApiService.delete(`/tenant/${tenantId}/guard-assignment/${encodeURIComponent(assignmentId)}`);
-      toast.success('Vigilante quitado del puesto — su historial se conserva');
+      await ApiService.delete(
+        `/tenant/${tenantId}/guard-assignment/${encodeURIComponent(assignmentId)}`,
+      );
+      toast.success("Vigilante quitado del puesto — su historial se conserva");
       onSaved();
       onClose();
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || 'No se pudo quitar');
-    } finally { setGuardando(false); }
+      toast.error(e?.data?.message || e?.message || "No se pudo quitar");
+    } finally {
+      setGuardando(false);
+    }
   };
 
   return (
     <Modal
-      open={open}
-      onOpenChange={(o) => { if (!o) onClose(); }}
-      size="md"
-      icon={<Pencil className="h-5 w-5" />}
-      title="Editar turno"
-      description={asignacion ? `Rotación de ${nombre} en este puesto` : 'Rotación del vigilante en este puesto'}
+      description={
+        asignacion
+          ? `Rotación de ${nombre} en este puesto`
+          : "Rotación del vigilante en este puesto"
+      }
       footer={
         <>
-          <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button onClick={guardar} disabled={guardando || cargando || !asignacion}>
-            {guardando ? <Loader2 size={14} className="animate-spin" /> : <Pencil size={14} />} Guardar cambios
+          <Button variant="outline" onClick={onClose}>
+            Cancelar
+          </Button>
+          <Button
+            disabled={guardando || cargando || !asignacion}
+            onClick={guardar}
+          >
+            {guardando ? (
+              <Loader2 className="animate-spin" size={14} />
+            ) : (
+              <Pencil size={14} />
+            )}{" "}
+            Guardar cambios
           </Button>
         </>
       }
+      icon={<Pencil className="h-5 w-5" />}
+      open={open}
+      size="md"
+      title="Editar turno"
+      onOpenChange={(o) => {
+        if (!o) onClose();
+      }}
     >
       {cargando ? (
         <div className="flex items-center gap-2 py-8 text-xs text-muted-foreground">
-          <Loader2 size={13} className="animate-spin" /> Cargando la asignación…
+          <Loader2 className="animate-spin" size={13} /> Cargando la asignación…
         </div>
       ) : !asignacion ? (
-        <p className="py-6 text-sm" style={{ color: 'var(--warn-text)' }}>
-          Este turno no viene de una rotación, así que no hay asignación que editar. Bórralo y vuelve
-          a crearlo desde «Asignar vigilante».
+        <p className="py-6 text-sm" style={{ color: "var(--warn-text)" }}>
+          Este turno no viene de una rotación, así que no hay asignación que
+          editar. Bórralo y vuelve a crearlo desde «Asignar vigilante».
         </p>
       ) : (
         <div className="space-y-4">
@@ -240,22 +358,42 @@ export default function AsignacionEditModal({
               {opcionesPlaza.map((p) => (
                 <button
                   key={p.id}
-                  type="button"
-                  disabled={p.ocupada}
-                  onClick={() => setPositionId(p.id)}
-                  title={p.ocupada ? 'Puesto ocupado por otro vigilante' : (p.horas || undefined)}
                   className="cg-focus rounded-xl border px-3 py-2 text-left text-sm font-medium transition-all disabled:cursor-not-allowed"
-                  style={p.ocupada
-                    ? { borderColor: 'var(--hairline)', color: 'var(--ink-faint)', opacity: 0.5 }
-                    : positionId === p.id
-                      ? { borderColor: 'var(--brand-line)', background: 'var(--brand-wash)', color: 'var(--brand-text)' }
-                      : { borderColor: 'var(--hairline)', color: 'var(--ink-soft)' }}
+                  disabled={p.ocupada}
+                  style={
+                    p.ocupada
+                      ? {
+                          borderColor: "var(--hairline)",
+                          color: "var(--ink-faint)",
+                          opacity: 0.5,
+                        }
+                      : positionId === p.id
+                        ? {
+                            borderColor: "var(--brand-line)",
+                            background: "var(--brand-wash)",
+                            color: "var(--brand-text)",
+                          }
+                        : {
+                            borderColor: "var(--hairline)",
+                            color: "var(--ink-soft)",
+                          }
+                  }
+                  title={
+                    p.ocupada
+                      ? "Puesto ocupado por otro vigilante"
+                      : p.horas || undefined
+                  }
+                  type="button"
+                  onClick={() => setPositionId(p.id)}
                 >
-                  <span className={p.ocupada ? 'line-through' : undefined}>{p.label}</span>
-                  {p.ocupada ? ' · ocupado' : ''}
+                  <span className={p.ocupada ? "line-through" : undefined}>
+                    {p.label}
+                  </span>
+                  {p.ocupada ? " · ocupado" : ""}
                   {p.horas && (
                     <span className="mt-0.5 block text-[10px] font-normal tabular-nums opacity-80">
-                      {p.horas}{p.tramo ? ` · ${p.tramo}` : ''}
+                      {p.horas}
+                      {p.tramo ? ` · ${p.tramo}` : ""}
                     </span>
                   )}
                 </button>
@@ -266,58 +404,96 @@ export default function AsignacionEditModal({
           {!esRelevo && (
             <LabeledField label="Secuencia de este vigilante">
               <SecuenciaPropiaSelect
-                tenantId={tenantId}
-                value={secuencia}
-                onChange={setSecuencia}
                 etiquetaPrimerBloque={etiquetaPrimerBloque}
                 etiquetaSegundoBloque={etiquetaSegundoBloque}
                 patronDeLaEstacion={patronDeLaEstacion}
+                tenantId={tenantId}
+                value={secuencia}
+                onChange={setSecuencia}
               />
               <p className="mt-1 text-[10px] text-muted-foreground/70">
-                Déjalo en «la de la estación» salvo que este vigilante tenga un ciclo distinto al de
-                sus compañeros{bloques.length > 1 ? ` (por ejemplo 2 de ${etiquetaPrimerBloque} y 3 de ${etiquetaSegundoBloque})` : ''}.
+                Déjalo en «la de la estación» salvo que este vigilante tenga un
+                ciclo distinto al de sus compañeros
+                {bloques.length > 1
+                  ? ` (por ejemplo 2 de ${etiquetaPrimerBloque} y 3 de ${etiquetaSegundoBloque})`
+                  : ""}
+                .
               </p>
             </LabeledField>
           )}
 
           <LabeledField label="Fecha de inicio del turno">
-            <input type="date" value={inicio} onChange={(e) => setInicio(e.target.value)} className={FIELD_CLS_LG} />
+            <input
+              className={FIELD_CLS_LG}
+              type="date"
+              value={inicio}
+              onChange={(e) => setInicio(e.target.value)}
+            />
             {vistaDescanso && (
-              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border px-3 py-2" style={{ borderColor: 'var(--brand-line)', background: 'var(--brand-wash)' }}>
+              <div
+                className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border px-3 py-2"
+                style={{
+                  borderColor: "var(--brand-line)",
+                  background: "var(--brand-wash)",
+                }}
+              >
                 <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <CalendarRange size={13} className="brand-text" /> Empieza <span className="font-medium capitalize text-foreground">{vistaDescanso.startWeekday}</span>
+                  <CalendarRange className="brand-text" size={13} /> Empieza{" "}
+                  <span className="font-medium capitalize text-foreground">
+                    {vistaDescanso.startWeekday}
+                  </span>
                 </span>
                 <span className="flex items-center gap-1.5 text-xs">
-                  <Moon size={13} className="brand-text" />
-                  {vistaDescanso.weekday
-                    ? <span className="text-muted-foreground">Descansa: <span className="font-semibold capitalize brand-text">{vistaDescanso.weekday}</span></span>
-                    : <span className="capitalize text-muted-foreground">Descanso: {vistaDescanso.dates.map(shortRestLabel).join(' · ')}</span>}
+                  <Moon className="brand-text" size={13} />
+                  {vistaDescanso.weekday ? (
+                    <span className="text-muted-foreground">
+                      Descansa:{" "}
+                      <span className="font-semibold capitalize brand-text">
+                        {vistaDescanso.weekday}
+                      </span>
+                    </span>
+                  ) : (
+                    <span className="capitalize text-muted-foreground">
+                      Descanso:{" "}
+                      {vistaDescanso.dates.map(shortRestLabel).join(" · ")}
+                    </span>
+                  )}
                 </span>
               </div>
             )}
             <p className="mt-1 text-[10px] text-muted-foreground/70">
-              La fecha de inicio es el día 0 del ciclo — muévela para correr el día de descanso.
+              La fecha de inicio es el día 0 del ciclo — muévela para correr el
+              día de descanso.
             </p>
           </LabeledField>
 
           <LabeledField label="Hasta (opcional)">
-            <input type="date" value={fin} min={inicio} onChange={(e) => setFin(e.target.value)} className={FIELD_CLS_LG} />
+            <input
+              className={FIELD_CLS_LG}
+              min={inicio}
+              type="date"
+              value={fin}
+              onChange={(e) => setFin(e.target.value)}
+            />
             <p className="mt-1 text-[10px] text-muted-foreground/70">
               Vacío = asignación indefinida; con fecha, una cobertura temporal.
             </p>
           </LabeledField>
 
-          <div className="flex justify-end border-t pt-3" style={{ borderColor: 'var(--hairline)' }}>
+          <div
+            className="flex justify-end border-t pt-3"
+            style={{ borderColor: "var(--hairline)" }}
+          >
             <button
+              className="cg-focus inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold disabled:opacity-50"
+              disabled={guardando}
+              style={{
+                background: "color-mix(in oklab, var(--bad) 12%, transparent)",
+                borderColor: "color-mix(in oklab, var(--bad) 28%, transparent)",
+                color: "var(--bad-text)",
+              }}
               type="button"
               onClick={() => void quitar()}
-              disabled={guardando}
-              className="cg-focus inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold disabled:opacity-50"
-              style={{
-                background: 'color-mix(in oklab, var(--bad) 12%, transparent)',
-                borderColor: 'color-mix(in oklab, var(--bad) 28%, transparent)',
-                color: 'var(--bad-text)',
-              }}
             >
               <Trash2 size={12} /> Quitar del puesto
             </button>

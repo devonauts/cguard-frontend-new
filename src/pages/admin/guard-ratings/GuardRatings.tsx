@@ -1,6 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import {
+  Search,
+  Star,
+  Loader2,
+  RotateCcw,
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,11 +29,12 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
-import { Search, Star, Loader2, RotateCcw, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import Breadcrumb from "@/components/ui/breadcrumb";
-import guardRatingService, { GuardRatingRecord } from "@/lib/api/guardRatingService";
+import guardRatingService, {
+  GuardRatingRecord,
+} from "@/lib/api/guardRatingService";
 import { securityGuardService } from "@/lib/api/securityGuardService";
-import { localeActual } from '@/lib/localeActual'
+import { localeActual } from "@/lib/localeActual";
 import {
   PageContainer,
   PageHeader,
@@ -37,6 +48,7 @@ import {
 
 function formatDate(iso: string | null) {
   if (!iso) return "—";
+
   return new Date(iso).toLocaleDateString(localeActual(), {
     day: "2-digit",
     month: "short",
@@ -51,15 +63,18 @@ function formatDate(iso: string | null) {
  */
 function Stars({ value }: { value: number }) {
   return (
-    <span className="inline-flex items-center gap-0.5" aria-label={`${value} de 5`}>
+    <span
+      aria-label={`${value} de 5`}
+      className="inline-flex items-center gap-0.5"
+    >
       {[1, 2, 3, 4, 5].map((i) => (
         <Star
           key={i}
           className="h-4 w-4"
           style={
             i <= value
-              ? { fill: 'var(--warn)', color: 'var(--warn)' }
-              : { color: 'var(--ink-faint)', opacity: 0.5 }
+              ? { fill: "var(--warn)", color: "var(--warn)" }
+              : { color: "var(--ink-faint)", opacity: 0.5 }
           }
         />
       ))}
@@ -67,9 +82,16 @@ function Stars({ value }: { value: number }) {
   );
 }
 
-interface GuardOption { id: string; fullName: string; }
+interface GuardOption {
+  id: string;
+  fullName: string;
+}
 // Loose shape of a securityGuard row from securityGuardService.list().
-interface RawGuardListRow { id?: string | number; fullName?: string; guard?: { fullName?: string } }
+interface RawGuardListRow {
+  id?: string | number;
+  fullName?: string;
+  guard?: { fullName?: string };
+}
 
 // ── component ────────────────────────────────────────────────────────────────
 
@@ -96,6 +118,7 @@ export default function GuardRatings() {
         guardId: guardFilter !== "all" ? guardFilter : undefined,
         limit: 500,
       });
+
       setRecords(result.rows || []);
       setAverage(result.average);
       setCount(result.count);
@@ -107,21 +130,30 @@ export default function GuardRatings() {
     }
   }, [guardFilter]);
 
-  useEffect(() => { fetchRecords(); }, [fetchRecords]);
+  useEffect(() => {
+    fetchRecords();
+  }, [fetchRecords]);
 
   // Load guards for the filter dropdown (guardRating.guardId = securityGuard.id PK).
   useEffect(() => {
     (async () => {
       try {
-        const resp: unknown = await securityGuardService.list({ limit: 500, offset: 0 });
-        const items: RawGuardListRow[] = Array.isArray(resp) ? resp : ((resp as { rows?: RawGuardListRow[] })?.rows ?? []);
+        const resp: unknown = await securityGuardService.list({
+          limit: 500,
+          offset: 0,
+        });
+        const items: RawGuardListRow[] = Array.isArray(resp)
+          ? resp
+          : ((resp as { rows?: RawGuardListRow[] })?.rows ?? []);
         const opts: GuardOption[] = items
           .map((item) => {
             const id = item.id ?? null;
             const fullName = item.fullName ?? item.guard?.fullName ?? "";
+
             return id ? { id: String(id), fullName } : null;
           })
           .filter(Boolean) as GuardOption[];
+
         setGuards(opts);
       } catch (e) {
         console.error("Failed to load guards", e);
@@ -133,6 +165,7 @@ export default function GuardRatings() {
   const q = searchQuery.toLowerCase().trim();
   const filtered = records.filter((r) => {
     if (!q) return true;
+
     return (
       (r.guardName ?? "").toLowerCase().includes(q) ||
       (r.clientName ?? "").toLowerCase().includes(q) ||
@@ -149,32 +182,38 @@ export default function GuardRatings() {
       <Breadcrumb
         items={[
           { label: "Panel de control", path: "/dashboard" },
-          { label: t('sidebar.control-de-calidad', 'Control de Calidad') },
+          { label: t("sidebar.control-de-calidad", "Control de Calidad") },
         ]}
       />
-      <PageContainer width="wide" className="p-6">
+      <PageContainer className="p-6" width="wide">
         <PageHeader
           icon={<Star />}
-          title={t('sidebar.control-de-calidad', 'Control de Calidad')}
-          subtitle={t('ui.GuardRatings.calificacionesDeLosClientesHacia')}
+          subtitle={t("ui.GuardRatings.calificacionesDeLosClientesHacia")}
+          title={t("sidebar.control-de-calidad", "Control de Calidad")}
         />
 
         {/* Stats */}
         <Stagger className="grid grid-cols-2 gap-4">
           <StatCard
-            icon={<Star />}
             accent="orange"
-            label={guardFilter === "all" ? "Promedio general" : "Promedio del vigilante"}
-            value={average != null ? average.toFixed(2) : "—"}
             hint={
               average != null ? (
-                <span className="inline-flex"><Stars value={Math.round(average)} /></span>
+                <span className="inline-flex">
+                  <Stars value={Math.round(average)} />
+                </span>
               ) : undefined
             }
+            icon={<Star />}
+            label={
+              guardFilter === "all"
+                ? "Promedio general"
+                : "Promedio del vigilante"
+            }
+            value={average != null ? average.toFixed(2) : "—"}
           />
           <StatCard
-            icon={<Star />}
             accent="primary"
+            icon={<Star />}
             label="Calificaciones"
             value={count}
           />
@@ -183,14 +222,24 @@ export default function GuardRatings() {
         {/* Toolbar */}
         <div className="flex flex-col md:flex-row justify-between gap-4">
           <div className="w-full md:w-64">
-            <Select value={guardFilter} onValueChange={(v) => { setGuardFilter(v); setPage(1); }}>
+            <Select
+              value={guardFilter}
+              onValueChange={(v) => {
+                setGuardFilter(v);
+                setPage(1);
+              }}
+            >
               <SelectTrigger>
-                <SelectValue placeholder={t('comun.todosLosVigilantes')} />
+                <SelectValue placeholder={t("comun.todosLosVigilantes")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t('comun.todosLosVigilantes')}</SelectItem>
+                <SelectItem value="all">
+                  {t("comun.todosLosVigilantes")}
+                </SelectItem>
                 {guards.map((g) => (
-                  <SelectItem key={g.id} value={g.id}>{g.fullName}</SelectItem>
+                  <SelectItem key={g.id} value={g.id}>
+                    {g.fullName}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -199,10 +248,13 @@ export default function GuardRatings() {
           <div className="relative w-full md:w-80">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              placeholder={t('ui.GuardRatings.buscarPorVigilanteClienteO')}
               className="pl-9"
+              placeholder={t("ui.GuardRatings.buscarPorVigilanteClienteO")}
               value={searchQuery}
-              onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setPage(1);
+              }}
             />
           </div>
         </div>
@@ -210,49 +262,66 @@ export default function GuardRatings() {
         {/* Table — Calificaciones a personal (las reseñas son hacia cada
             vigilante, no hacia la empresa). Cada fila abre el perfil del
             vigilante › Reseñas. */}
-        <Section title="Calificaciones a personal" icon={<Star />} contentClassName="overflow-hidden rounded-2xl" >
+        <Section
+          contentClassName="overflow-hidden rounded-2xl"
+          icon={<Star />}
+          title="Calificaciones a personal"
+        >
           <Table>
-            <TableHeader style={{ background: 'var(--glass-sunken)' }}>
+            <TableHeader style={{ background: "var(--glass-sunken)" }}>
               <TableRow>
-                <TableHead className="cg-eyebrow">{t('comun.fecha')}</TableHead>
-                <TableHead className="cg-eyebrow">{t('comun.vigilante')}</TableHead>
-                <TableHead className="cg-eyebrow">{t('comun.cliente')}</TableHead>
-                <TableHead className="cg-eyebrow">{t("ui.GuardRatings.estacion", "Estación")}</TableHead>
-                <TableHead className="cg-eyebrow">{t("ui.GuardRatings.calificacion", "Calificación")}</TableHead>
+                <TableHead className="cg-eyebrow">{t("comun.fecha")}</TableHead>
+                <TableHead className="cg-eyebrow">
+                  {t("comun.vigilante")}
+                </TableHead>
+                <TableHead className="cg-eyebrow">
+                  {t("comun.cliente")}
+                </TableHead>
+                <TableHead className="cg-eyebrow">
+                  {t("ui.GuardRatings.estacion", "Estación")}
+                </TableHead>
+                <TableHead className="cg-eyebrow">
+                  {t("ui.GuardRatings.calificacion", "Calificación")}
+                </TableHead>
                 <TableHead className="cg-eyebrow">Comentario</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="h-[200px] text-center">
+                  <TableCell className="h-[200px] text-center" colSpan={6}>
                     <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
                   </TableCell>
                 </TableRow>
               ) : error ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="p-0">
+                  <TableCell className="p-0" colSpan={6}>
                     <EmptyState
-                      icon={<AlertCircle />}
-                      title={t("ui.GuardRatings.noSePudoCargarLa", "No se pudo cargar la información")}
-                      description={t('ui.GuardRatings.ocurrioUnErrorAlObtener')}
-                      className="border-0"
                       action={
                         <Button variant="outline" onClick={fetchRecords}>
                           <RotateCcw className="h-4 w-4 mr-2" /> Reintentar
                         </Button>
                       }
+                      className="border-0"
+                      description={t("ui.GuardRatings.ocurrioUnErrorAlObtener")}
+                      icon={<AlertCircle />}
+                      title={t(
+                        "ui.GuardRatings.noSePudoCargarLa",
+                        "No se pudo cargar la información",
+                      )}
                     />
                   </TableCell>
                 </TableRow>
               ) : paginated.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="p-0">
+                  <TableCell className="p-0" colSpan={6}>
                     <EmptyState
-                      icon={<Star />}
-                      title={t('ui.GuardRatings.noHayCalificaciones')}
-                      description={t('ui.GuardRatings.lasCalificacionesEnviadasPorLos')}
                       className="border-0"
+                      description={t(
+                        "ui.GuardRatings.lasCalificacionesEnviadasPorLos",
+                      )}
+                      icon={<Star />}
+                      title={t("ui.GuardRatings.noHayCalificaciones")}
                     />
                   </TableCell>
                 </TableRow>
@@ -261,15 +330,36 @@ export default function GuardRatings() {
                   <TableRow
                     key={rec.id}
                     className={rec.guardId ? "cursor-pointer" : undefined}
-                    onClick={() => rec.guardId && navigate(`/guards/${rec.guardId}/reviews`)}
-                    title={rec.guardId ? t("ui.GuardRatingLevel.verResenasDelVigilante", "Ver reseñas del vigilante") : undefined}
+                    title={
+                      rec.guardId
+                        ? t(
+                            "ui.GuardRatingLevel.verResenasDelVigilante",
+                            "Ver reseñas del vigilante",
+                          )
+                        : undefined
+                    }
+                    onClick={() =>
+                      rec.guardId && navigate(`/guards/${rec.guardId}/reviews`)
+                    }
                   >
-                    <TableCell className="whitespace-nowrap">{formatDate(rec.createdAt)}</TableCell>
-                    <TableCell className="font-medium hover:underline" style={{ color: 'var(--brand-text)' }}>{rec.guardName ?? "—"}</TableCell>
+                    <TableCell className="whitespace-nowrap">
+                      {formatDate(rec.createdAt)}
+                    </TableCell>
+                    <TableCell
+                      className="font-medium hover:underline"
+                      style={{ color: "var(--brand-text)" }}
+                    >
+                      {rec.guardName ?? "—"}
+                    </TableCell>
                     <TableCell>{rec.clientName ?? "—"}</TableCell>
                     <TableCell>{rec.stationName ?? "—"}</TableCell>
-                    <TableCell><Stars value={rec.rating} /></TableCell>
-                    <TableCell className="max-w-[320px] truncate text-muted-foreground" title={rec.comment ?? undefined}>
+                    <TableCell>
+                      <Stars value={rec.rating} />
+                    </TableCell>
+                    <TableCell
+                      className="max-w-[320px] truncate text-muted-foreground"
+                      title={rec.comment ?? undefined}
+                    >
                       {rec.comment ?? "—"}
                     </TableCell>
                   </TableRow>
@@ -281,9 +371,19 @@ export default function GuardRatings() {
 
         {/* Pagination */}
         <div className="flex flex-wrap items-center justify-end gap-2 py-2">
-          <div className="text-sm text-muted-foreground">{t("ui.GuardRatings.elementosPorPagina", "Elementos por página")}</div>
-          <Select value={String(pageSize)} onValueChange={(v) => { setPageSize(Number(v)); setPage(1); }}>
-            <SelectTrigger className="w-[70px]"><SelectValue /></SelectTrigger>
+          <div className="text-sm text-muted-foreground">
+            {t("ui.GuardRatings.elementosPorPagina", "Elementos por página")}
+          </div>
+          <Select
+            value={String(pageSize)}
+            onValueChange={(v) => {
+              setPageSize(Number(v));
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-[70px]">
+              <SelectValue />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="25">25</SelectItem>
               <SelectItem value="50">50</SelectItem>
@@ -296,12 +396,28 @@ export default function GuardRatings() {
               : `${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, filtered.length)} de ${filtered.length}`}
           </div>
           <div className="flex items-center space-x-2">
-            <Button variant="outline" size="icon" className="rounded-xl" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
-              <span className="sr-only">{t("ui.GuardRatings.paginaAnterior", "Página anterior")}</span>
+            <Button
+              className="rounded-xl"
+              disabled={page <= 1}
+              size="icon"
+              variant="outline"
+              onClick={() => setPage((p) => p - 1)}
+            >
+              <span className="sr-only">
+                {t("ui.GuardRatings.paginaAnterior", "Página anterior")}
+              </span>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="icon" className="rounded-xl" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>
-              <span className="sr-only">{t("ui.GuardRatings.paginaSiguiente", "Página siguiente")}</span>
+            <Button
+              className="rounded-xl"
+              disabled={page >= totalPages}
+              size="icon"
+              variant="outline"
+              onClick={() => setPage((p) => p + 1)}
+            >
+              <span className="sr-only">
+                {t("ui.GuardRatings.paginaSiguiente", "Página siguiente")}
+              </span>
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>

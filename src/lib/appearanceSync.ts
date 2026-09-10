@@ -16,10 +16,13 @@
  *  · La escritura va con retardo. Arrastrar el deslizador del tono dispara
  *    decenas de cambios por segundo; sin agrupar, serían decenas de PUT.
  */
-import api from '@/lib/api';
+import api from "@/lib/api";
 
-export type UiTheme = 'light' | 'dark';
-export interface UiAccent { h: number; c: number }
+export type UiTheme = "light" | "dark";
+export interface UiAccent {
+  h: number;
+  c: number;
+}
 export interface UiAppearance {
   theme?: UiTheme;
   accent?: UiAccent | null;
@@ -36,7 +39,11 @@ export interface UiAppearance {
 /** La empresa activa. Las preferencias del tablero se guardan por empresa: la
  *  misma persona puede llevar dos y no querer el mismo tablero en ambas. */
 export function empresaActiva(): string {
-  try { return localStorage.getItem('tenantId') || 'default'; } catch { return 'default'; }
+  try {
+    return localStorage.getItem("tenantId") || "default";
+  } catch {
+    return "default";
+  }
 }
 
 /**
@@ -53,24 +60,35 @@ export function empresaActiva(): string {
  * esté fresco, lo local gana y se vuelve a empujar a la cuenta. La ventana es
  * más ancha que el TTL, con margen.
  */
-const CLAVE_SELLO = 'cguard-appearance-ts';
+const CLAVE_SELLO = "cguard-appearance-ts";
 const VENTANA_ECO_MS = 45_000;
 
 function marcarCambioLocal() {
-  try { localStorage.setItem(CLAVE_SELLO, String(Date.now())); } catch { /* nada */ }
+  try {
+    localStorage.setItem(CLAVE_SELLO, String(Date.now()));
+  } catch {
+    /* nada */
+  }
 }
 
 /** ¿Cambió algo en este navegador hace tan poco que la cuenta puede ir atrasada? */
 export function cambioLocalReciente(): boolean {
   try {
     const t = Number(localStorage.getItem(CLAVE_SELLO) || 0);
+
     return Number.isFinite(t) && t > 0 && Date.now() - t < VENTANA_ECO_MS;
-  } catch { return false; }
+  } catch {
+    return false;
+  }
 }
 
 /** Sesión iniciada = hay token. En el login no hay a quién preguntarle. */
 export function haySesion(): boolean {
-  try { return !!localStorage.getItem('authToken'); } catch { return false; }
+  try {
+    return !!localStorage.getItem("authToken");
+  } catch {
+    return false;
+  }
 }
 
 let pendiente: Promise<UiAppearance | null> | null = null;
@@ -85,12 +103,20 @@ export function leerAparienciaDeLaCuenta(): Promise<UiAppearance | null> {
   if (!haySesion()) return Promise.resolve(null);
 
   pendiente = api
-    .get('/auth/me', { toast: { silentError: true } } as any)
+    .get("/auth/me", { toast: { silentError: true } } as any)
     .then((resp: any) => {
       const d = resp && resp.data !== undefined ? resp.data : resp;
       let a = d?.appearance ?? null;
-      if (typeof a === 'string') { try { a = JSON.parse(a); } catch { a = null; } }
-      return a && typeof a === 'object' ? (a as UiAppearance) : null;
+
+      if (typeof a === "string") {
+        try {
+          a = JSON.parse(a);
+        } catch {
+          a = null;
+        }
+      }
+
+      return a && typeof a === "object" ? (a as UiAppearance) : null;
     })
     .catch(() => null);
 
@@ -116,23 +142,35 @@ export function guardarApariencia(parcial: UiAppearance) {
     ...parcial,
     // Los mapas por empresa se FUSIONAN: mandar sólo la empresa activa borraría
     // del servidor la personalización que la persona tenga en las otras.
-    ...(parcial.dashboards ? { dashboards: { ...acumulado.dashboards, ...parcial.dashboards } } : {}),
-    ...(parcial.mapLayers ? { mapLayers: { ...acumulado.mapLayers, ...parcial.mapLayers } } : {}),
+    ...(parcial.dashboards
+      ? { dashboards: { ...acumulado.dashboards, ...parcial.dashboards } }
+      : {}),
+    ...(parcial.mapLayers
+      ? { mapLayers: { ...acumulado.mapLayers, ...parcial.mapLayers } }
+      : {}),
     // Igual que los mapas por empresa: el Horario manda `{view}` sola al cambiar
     // de estilo, y pisar el bloque entero borraría `panel` y `sf` antes incluso
     // de llegar al servidor.
-    ...(parcial.scheduler ? { scheduler: { ...acumulado.scheduler, ...parcial.scheduler } } : {}),
+    ...(parcial.scheduler
+      ? { scheduler: { ...acumulado.scheduler, ...parcial.scheduler } }
+      : {}),
   };
   if (!haySesion()) return;
 
   if (temporizador) clearTimeout(temporizador);
   temporizador = setTimeout(() => {
     const carga = acumulado;
+
     acumulado = {};
     temporizador = null;
     api
-      .put('/auth/profile', { data: { appearance: carga }, toast: { silentError: true } } as any)
-      .catch(() => { /* mejor esfuerzo: la caché local ya tiene el valor */ });
+      .put("/auth/profile", {
+        data: { appearance: carga },
+        toast: { silentError: true },
+      } as any)
+      .catch(() => {
+        /* mejor esfuerzo: la caché local ya tiene el valor */
+      });
   }, RETARDO_MS);
 }
 
@@ -141,28 +179,40 @@ export function guardarApariencia(parcial: UiAppearance) {
  * demás: primero se lee lo que la cuenta ya tiene y se fusiona.
  */
 export async function guardarBloqueDeEmpresa(
-  campo: 'dashboards' | 'mapLayers',
+  campo: "dashboards" | "mapLayers",
   bloque: any,
 ): Promise<void> {
   if (!haySesion()) return;
   const actual = (await leerAparienciaDeLaCuenta()) || {};
   const previos = (actual as any)[campo] || {};
   const fusionado = { ...previos, [empresaActiva()]: bloque };
+
   // La caché memorizada tiene que reflejarlo ya: si el usuario cambia dos veces
   // seguidas, la segunda debe fusionar sobre la primera, no sobre lo viejo.
-  pendiente = Promise.resolve({ ...(actual as UiAppearance), [campo]: fusionado });
+  pendiente = Promise.resolve({
+    ...(actual as UiAppearance),
+    [campo]: fusionado,
+  });
   guardarApariencia({ [campo]: fusionado } as UiAppearance);
 }
 
 /** El bloque de la empresa activa guardado en la cuenta, o null. */
-export async function leerBloqueDeEmpresa(campo: 'dashboards' | 'mapLayers'): Promise<any | null> {
+export async function leerBloqueDeEmpresa(
+  campo: "dashboards" | "mapLayers",
+): Promise<any | null> {
   const a = await leerAparienciaDeLaCuenta();
   const mapa = a && (a as any)[campo];
   const b = mapa && mapa[empresaActiva()];
-  return b && typeof b === 'object' ? b : null;
+
+  return b && typeof b === "object" ? b : null;
 }
 
 export default {
-  leerAparienciaDeLaCuenta, guardarApariencia, olvidarApariencia, haySesion,
-  guardarBloqueDeEmpresa, leerBloqueDeEmpresa, empresaActiva,
+  leerAparienciaDeLaCuenta,
+  guardarApariencia,
+  olvidarApariencia,
+  haySesion,
+  guardarBloqueDeEmpresa,
+  leerBloqueDeEmpresa,
+  empresaActiva,
 };

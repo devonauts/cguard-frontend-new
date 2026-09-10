@@ -16,7 +16,20 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Send, X, Loader2, Check, Ban, Hand, MessageSquarePlus, History, ArrowLeft, Trash2, Paperclip } from "lucide-react";
+import {
+  Send,
+  X,
+  Loader2,
+  Check,
+  Ban,
+  Hand,
+  MessageSquarePlus,
+  History,
+  ArrowLeft,
+  Trash2,
+  Paperclip,
+} from "lucide-react";
+
 import api from "@/lib/api";
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
@@ -36,14 +49,35 @@ function nuevoHiloId(): string {
 function cargarHilo(): { msgs: Msg[]; id: string } {
   try {
     const raw = sessionStorage.getItem(HILO_KEY);
+
     if (!raw) return { msgs: [], id: nuevoHiloId() };
     const { ts, tid, msgs, hid } = JSON.parse(raw);
-    if (Date.now() - ts > HILO_TTL_MS || tid !== tenantId()) return { msgs: [], id: nuevoHiloId() };
-    return { msgs: Array.isArray(msgs) ? msgs.slice(-24) : [], id: hid || nuevoHiloId() };
-  } catch { return { msgs: [], id: nuevoHiloId() }; }
+
+    if (Date.now() - ts > HILO_TTL_MS || tid !== tenantId())
+      return { msgs: [], id: nuevoHiloId() };
+
+    return {
+      msgs: Array.isArray(msgs) ? msgs.slice(-24) : [],
+      id: hid || nuevoHiloId(),
+    };
+  } catch {
+    return { msgs: [], id: nuevoHiloId() };
+  }
 }
 function guardarHilo(msgs: Msg[], hid: string) {
-  try { sessionStorage.setItem(HILO_KEY, JSON.stringify({ ts: Date.now(), tid: tenantId(), hid, msgs: msgs.slice(-24) })); } catch { /* privado */ }
+  try {
+    sessionStorage.setItem(
+      HILO_KEY,
+      JSON.stringify({
+        ts: Date.now(),
+        tid: tenantId(),
+        hid,
+        msgs: msgs.slice(-24),
+      }),
+    );
+  } catch {
+    /* privado */
+  }
 }
 
 /** El historial de conversaciones cerradas: hasta 10, viven 7 días, por
@@ -51,22 +85,43 @@ function guardarHilo(msgs: Msg[], hid: string) {
 const CONVOS_KEY = "vigia_convos";
 const CONVOS_MAX = 10;
 const CONVOS_TTL_MS = 7 * 24 * 60 * 60 * 1000;
-interface Convo { id: string; titulo: string; ts: number; msgs: Msg[] }
+
+interface Convo {
+  id: string;
+  titulo: string;
+  ts: number;
+  msgs: Msg[];
+}
 
 function cargarConvos(): Convo[] {
   try {
     const raw = localStorage.getItem(CONVOS_KEY);
+
     if (!raw) return [];
     const { tid, lista } = JSON.parse(raw);
+
     if (tid !== tenantId() || !Array.isArray(lista)) return [];
-    return lista.filter((c: Convo) => Date.now() - c.ts < CONVOS_TTL_MS).slice(0, CONVOS_MAX);
-  } catch { return []; }
+
+    return lista
+      .filter((c: Convo) => Date.now() - c.ts < CONVOS_TTL_MS)
+      .slice(0, CONVOS_MAX);
+  } catch {
+    return [];
+  }
 }
 function guardarConvos(lista: Convo[]) {
-  try { localStorage.setItem(CONVOS_KEY, JSON.stringify({ tid: tenantId(), lista: lista.slice(0, CONVOS_MAX) })); } catch { /* privado */ }
+  try {
+    localStorage.setItem(
+      CONVOS_KEY,
+      JSON.stringify({ tid: tenantId(), lista: lista.slice(0, CONVOS_MAX) }),
+    );
+  } catch {
+    /* privado */
+  }
 }
 function tituloDeConvo(msgs: Msg[]): string {
   const primero = msgs.find((m) => m.role === "user")?.content || "";
+
   return primero.slice(0, 60) || "";
 }
 
@@ -81,15 +136,35 @@ function sinMarkdown(t: string): string {
     .replace(/^\s*[-*]\s+/gm, "• ");
 }
 
-interface Msg { role: "user" | "assistant"; content: string }
-interface Propuesta { tool: string; args: any; resumen: string; firma: string; exp: number }
+interface Msg {
+  role: "user" | "assistant";
+  content: string;
+}
+interface Propuesta {
+  tool: string;
+  args: any;
+  resumen: string;
+  firma: string;
+  exp: number;
+}
 
 /** El logo: un escudo con el pulso del vigía. Inline para no cargar assets. */
 function LogoVigia({ size = 18 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-      <path d="M7.5 12h2l1.5-3 2 6 1.5-3h2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    <svg aria-hidden fill="none" height={size} viewBox="0 0 24 24" width={size}>
+      <path
+        d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3z"
+        stroke="currentColor"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+      <path
+        d="M7.5 12h2l1.5-3 2 6 1.5-3h2"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.6"
+      />
     </svg>
   );
 }
@@ -114,11 +189,18 @@ export default function VigiaWidget() {
   const archivarActual = (mensajes: Msg[]): Convo[] => {
     if (!mensajes.length) return convos;
     const lista = [
-      { id: hiloId, titulo: tituloDeConvo(mensajes), ts: Date.now(), msgs: mensajes.slice(-24) },
+      {
+        id: hiloId,
+        titulo: tituloDeConvo(mensajes),
+        ts: Date.now(),
+        msgs: mensajes.slice(-24),
+      },
       ...convos,
     ].slice(0, CONVOS_MAX);
+
     setConvos(lista);
     guardarConvos(lista);
+
     return lista;
   };
 
@@ -130,7 +212,11 @@ export default function VigiaWidget() {
     setPropuesta(null);
     setAviso(null);
     setTexto("");
-    try { sessionStorage.removeItem(HILO_KEY); } catch { /* privado */ }
+    try {
+      sessionStorage.removeItem(HILO_KEY);
+    } catch {
+      /* privado */
+    }
   };
 
   /** Guarda la actual en el historial y abre una en limpio. */
@@ -143,7 +229,12 @@ export default function VigiaWidget() {
 
   /** La X: con conversación viva, primero pregunta. */
   const pedirCierre = () => {
-    if (!msgs.length) { setOpen(false); setVista("chat"); return; }
+    if (!msgs.length) {
+      setOpen(false);
+      setVista("chat");
+
+      return;
+    }
     setConfirmarCierre(true);
   };
   const cerrarConversacion = () => {
@@ -153,11 +244,15 @@ export default function VigiaWidget() {
     setVista("chat");
     setOpen(false);
   };
-  const soloMinimizar = () => { setConfirmarCierre(false); setOpen(false); };
+  const soloMinimizar = () => {
+    setConfirmarCierre(false);
+    setOpen(false);
+  };
 
   /** Reabre una conversación pasada (la actual, si hay, se guarda antes). */
   const reabrirConvo = (c: Convo) => {
     const lista = archivarActual(msgs).filter((x) => x.id !== c.id);
+
     setConvos(lista);
     guardarConvos(lista);
     setMsgs(c.msgs);
@@ -171,6 +266,7 @@ export default function VigiaWidget() {
   };
   const borrarConvo = (id: string) => {
     const lista = convos.filter((x) => x.id !== id);
+
     setConvos(lista);
     guardarConvos(lista);
   };
@@ -196,18 +292,30 @@ export default function VigiaWidget() {
   useEffect(() => {
     if (!open) return;
     const hoy = new Date().toISOString().slice(0, 10);
+
     if (localStorage.getItem("vigia_parte") === hoy) return;
     localStorage.setItem("vigia_parte", hoy);
     (async () => {
       try {
-        const resp: any = await api.get(`/tenant/${tenantId()}/assistant/brief`, { toast: { silentError: true } } as any);
+        const resp: any = await api.get(
+          `/tenant/${tenantId()}/assistant/brief`,
+          { toast: { silentError: true } } as any,
+        );
         const d = resp && resp.data !== undefined ? resp.data : resp;
+
         if (d?.lineas?.length) {
-          setMsgs((m) => [...m, { role: "assistant", content: `${d.titulo}\n${d.lineas.map((l: string) => `• ${l}`).join("\n")}` }]);
+          setMsgs((m) => [
+            ...m,
+            {
+              role: "assistant",
+              content: `${d.titulo}\n${d.lineas.map((l: string) => `• ${l}`).join("\n")}`,
+            },
+          ]);
         }
-      } catch { /* sin parte no pasa nada */ }
+      } catch {
+        /* sin parte no pasa nada */
+      }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   // Cualquier parte del CRM puede abrir a VigIA con un primer mensaje sembrado:
@@ -216,19 +324,28 @@ export default function VigiaWidget() {
     const abrir = (e: any) => {
       setOpen(true);
       const mensaje = e?.detail?.mensaje;
+
       // Se siembra AUNQUE haya hilo: una alerta conversable llega en mitad del
       // día, no solo en el estreno del chat.
-      if (mensaje) setMsgs((m) => [...m, { role: "assistant", content: String(mensaje) }]);
+      if (mensaje)
+        setMsgs((m) => [...m, { role: "assistant", content: String(mensaje) }]);
       const escribir = e?.detail?.escribir;
+
       if (escribir) setTexto(String(escribir));
     };
+
     window.addEventListener("vigia:abrir", abrir as any);
+
     return () => window.removeEventListener("vigia:abrir", abrir as any);
   }, []);
 
   useEffect(() => {
-    const esc = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    const esc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+
     window.addEventListener("keydown", esc);
+
     return () => window.removeEventListener("keydown", esc);
   }, []);
 
@@ -236,14 +353,22 @@ export default function VigiaWidget() {
 
   // Lo último que se leyó de una hoja de vida, a la espera de que alguien lo
   // abra en el formulario de alta.
-  const [cvPendiente, setCvPendiente] = useState<{ campos: any; archivo: File } | null>(null);
+  const [cvPendiente, setCvPendiente] = useState<{
+    campos: any;
+    archivo: File;
+  } | null>(null);
   const cvInput = useRef<HTMLInputElement>(null);
 
   const llamar = async (body: any): Promise<any> => {
     // 60s: un turno con varias consultas tarda más que los 15s globales de
     // axios — y abortar en el cliente mientras el servidor sigue era el modo
     // de fallo más caro (reintento = pagar el turno dos veces).
-    const resp: any = await api.post(`/tenant/${tenantId()}/assistant/chat`, body, { timeout: 60000, toast: { silentError: true } } as any);
+    const resp: any = await api.post(
+      `/tenant/${tenantId()}/assistant/chat`,
+      body,
+      { timeout: 60000, toast: { silentError: true } } as any,
+    );
+
     return resp && resp.data !== undefined ? resp.data : resp;
   };
 
@@ -259,13 +384,18 @@ export default function VigiaWidget() {
     if (ocupado) return;
     setAviso(null);
     setPropuesta(null);
-    setMsgs((m) => [...m, {
-      role: "user",
-      content: t("vigia.cvSent", "Hoja de vida: {{n}}", { n: archivo.name }),
-    }]);
+    setMsgs((m) => [
+      ...m,
+      {
+        role: "user",
+        content: t("vigia.cvSent", "Hoja de vida: {{n}}", { n: archivo.name }),
+      },
+    ]);
     setOcupado(true);
     try {
-      const { hojaDeVidaService, aCamposDelFormulario } = await import("@/lib/api/hojaDeVidaService");
+      const { hojaDeVidaService, aCamposDelFormulario } = await import(
+        "@/lib/api/hojaDeVidaService"
+      );
       const r = await hojaDeVidaService.leer(archivo);
       const campos = aCamposDelFormulario(r.datos);
       const leidos = Object.values(r.datos).filter(
@@ -273,31 +403,57 @@ export default function VigiaWidget() {
       ).length;
 
       if (!leidos) {
-        setMsgs((m) => [...m, { role: "assistant", content: t("vigia.cvEmpty",
-          "No pude sacar datos de ese archivo. Comprueba que se lea bien, o llena la ficha a mano.") }]);
+        setMsgs((m) => [
+          ...m,
+          {
+            role: "assistant",
+            content: t(
+              "vigia.cvEmpty",
+              "No pude sacar datos de ese archivo. Comprueba que se lea bien, o llena la ficha a mano.",
+            ),
+          },
+        ]);
+
         return;
       }
 
       const resumen = [
-        campos.firstName || campos.lastName ? `Nombre: ${[campos.firstName, campos.middleName, campos.lastName].filter(Boolean).join(" ")}` : null,
-        campos.identificationNumber ? `Documento: ${campos.identificationNumber}` : null,
+        campos.firstName || campos.lastName
+          ? `Nombre: ${[campos.firstName, campos.middleName, campos.lastName].filter(Boolean).join(" ")}`
+          : null,
+        campos.identificationNumber
+          ? `Documento: ${campos.identificationNumber}`
+          : null,
         campos.birthDate ? `Nacimiento: ${campos.birthDate}` : null,
         campos.email ? `Correo: ${campos.email}` : null,
         campos.phone ? `Teléfono: ${campos.phone}` : null,
-      ].filter(Boolean).join("\n");
+      ]
+        .filter(Boolean)
+        .join("\n");
 
-      setMsgs((m) => [...m, { role: "assistant", content:
-        `${t("vigia.cvRead", "Esto es lo que leí:")}\n\n${resumen}\n\n` +
-        (r.faltantes.includes("contacto")
-          ? t("vigia.cvNoContact", "No encontré correo ni teléfono: sin uno de los dos no se le puede invitar.")
-          : t("vigia.cvReview", "Ábrelo para revisarlo y guardarlo.")) }]);
+      setMsgs((m) => [
+        ...m,
+        {
+          role: "assistant",
+          content:
+            `${t("vigia.cvRead", "Esto es lo que leí:")}\n\n${resumen}\n\n` +
+            (r.faltantes.includes("contacto")
+              ? t(
+                  "vigia.cvNoContact",
+                  "No encontré correo ni teléfono: sin uno de los dos no se le puede invitar.",
+                )
+              : t("vigia.cvReview", "Ábrelo para revisarlo y guardarlo.")),
+        },
+      ]);
 
       // Los datos viajan en memoria hasta la pantalla de alta: no se guardan en
       // ningún sitio mientras tanto, que es dato personal de alguien que
       // todavía no es empleado.
       setCvPendiente({ campos, archivo });
     } catch (e: any) {
-      setAviso(e?.message || t("vigia.cvError", "No pudimos leer la hoja de vida."));
+      setAviso(
+        e?.message || t("vigia.cvError", "No pudimos leer la hoja de vida."),
+      );
     } finally {
       setOcupado(false);
     }
@@ -305,22 +461,42 @@ export default function VigiaWidget() {
 
   const enviar = async () => {
     const contenido = texto.trim();
+
     if (!contenido || ocupado) return;
     setTexto("");
     setAviso(null);
     setPropuesta(null);
     // El servidor solo mira los últimos 16: mandar más es ancho de banda.
-    const historia: Msg[] = [...msgs, { role: "user" as const, content: contenido }].slice(-16);
+    const historia: Msg[] = [
+      ...msgs,
+      { role: "user" as const, content: contenido },
+    ].slice(-16);
+
     setMsgs(historia);
     setOcupado(true);
     try {
       const d = await llamar({ messages: historia, conversationId: hiloId });
-      if (d?.error) { setAviso(d.error); return; }
-      if (d?.reply) setMsgs((m) => [...m, { role: "assistant", content: d.reply }]);
+
+      if (d?.error) {
+        setAviso(d.error);
+
+        return;
+      }
+      if (d?.reply)
+        setMsgs((m) => [...m, { role: "assistant", content: d.reply }]);
       if (d?.proposal) setPropuesta(d.proposal);
-      if (d?.navigate) { navigate(d.navigate); if (!d?.proposal) setOpen(false); }
+      if (d?.navigate) {
+        navigate(d.navigate);
+        if (!d?.proposal) setOpen(false);
+      }
     } catch (e: any) {
-      setAviso(e?.message || t("vigia.netError", "No pudimos hablar con VigIA. Inténtalo de nuevo."));
+      setAviso(
+        e?.message ||
+          t(
+            "vigia.netError",
+            "No pudimos hablar con VigIA. Inténtalo de nuevo.",
+          ),
+      );
     } finally {
       setOcupado(false);
     }
@@ -329,9 +505,17 @@ export default function VigiaWidget() {
   const confirmar = async (si: boolean) => {
     if (!propuesta || ocupado) return;
     const p = propuesta;
+
     if (!si) {
       setPropuesta(null);
-      setMsgs((m) => [...m, { role: "assistant", content: t("vigia.cancelled", "Entendido, no lo hago. ¿Algo más?") }]);
+      setMsgs((m) => [
+        ...m,
+        {
+          role: "assistant",
+          content: t("vigia.cancelled", "Entendido, no lo hago. ¿Algo más?"),
+        },
+      ]);
+
       return;
     }
     setOcupado(true);
@@ -339,15 +523,32 @@ export default function VigiaWidget() {
       // La firma viaja de vuelta: el servidor solo ejecuta propuestas que ÉL
       // emitió, frescas y una sola vez — reintentar con la misma firma devuelve
       // el mismo resultado en vez de ejecutar dos veces.
-      const d = await llamar({ messages: msgs.slice(-16), conversationId: hiloId, confirm: { tool: p.tool, args: p.args, firma: p.firma, exp: p.exp } });
-      if (d?.error) { setAviso(d.error); setPropuesta(null); return; }
+      const d = await llamar({
+        messages: msgs.slice(-16),
+        conversationId: hiloId,
+        confirm: { tool: p.tool, args: p.args, firma: p.firma, exp: p.exp },
+      });
+
+      if (d?.error) {
+        setAviso(d.error);
+        setPropuesta(null);
+
+        return;
+      }
       setPropuesta(d?.proposal || null);
-      if (d?.reply) setMsgs((m) => [...m, { role: "assistant", content: d.reply }]);
+      if (d?.reply)
+        setMsgs((m) => [...m, { role: "assistant", content: d.reply }]);
       if (d?.navigate) navigate(d.navigate);
     } catch (e: any) {
       // La tarjeta SIGUE AHÍ: si fue un corte de red, reintentar con la misma
       // firma es seguro (idempotente en el servidor).
-      setAviso(e?.message || t("vigia.confirmError", "No se pudo confirmar (¿se cortó la señal?). Vuelve a pulsar Confirmar: es seguro."));
+      setAviso(
+        e?.message ||
+          t(
+            "vigia.confirmError",
+            "No se pudo confirmar (¿se cortó la señal?). Vuelve a pulsar Confirmar: es seguro.",
+          ),
+      );
     } finally {
       setOcupado(false);
     }
@@ -358,18 +559,22 @@ export default function VigiaWidget() {
       {/* ── La burbuja ──────────────────────────────────────────────────── */}
       {!open && (
         <button
-          onClick={() => setOpen(true)}
+          aria-expanded={open}
           aria-label={t("vigia.openAria", "Abrir VigIA, el asistente")}
           className="cg-focus transition-transform hover:scale-105"
-          aria-expanded={open}
           style={{
             // z-45: los diálogos del sistema (z-50) tapan la burbuja, no al
             // revés. La botonera de guardar de algunas páginas vive en
             // bottom-6 right-6 — la burbuja se levanta por encima de ella.
-            position: "fixed", right: "clamp(1rem, 4vw, 1.75rem)", bottom: "calc(4.75rem + env(safe-area-inset-bottom, 0px))", zIndex: 45,
+            position: "fixed",
+            right: "clamp(1rem, 4vw, 1.75rem)",
+            bottom: "calc(4.75rem + env(safe-area-inset-bottom, 0px))",
+            zIndex: 45,
             // drop-shadow y no box-shadow: la sombra sigue la silueta del escudo.
-            background: "transparent", filter: "drop-shadow(0 6px 14px rgba(0,0,0,0.30))",
+            background: "transparent",
+            filter: "drop-shadow(0 6px 14px rgba(0,0,0,0.30))",
           }}
+          onClick={() => setOpen(true)}
         >
           {/* La animación vive aquí y no en glass.css: es exclusiva del widget. */}
           <style>{`
@@ -380,20 +585,48 @@ export default function VigiaWidget() {
             @media (prefers-reduced-motion: reduce) { .vigia-wave, .vigia-online { animation: none } }
           `}</style>
           <span className="relative block">
-            <svg width={74} height={83} viewBox="0 0 48 54" aria-hidden>
-              <path d="M24 2 6 8.5v11.5c0 10.8 7.2 20 18 23 10.8-3 18-12.2 18-23V8.5L24 2z" fill="var(--brand)" />
-              <text x="24" y="23" textAnchor="middle" fontSize="11" fontWeight="800" fill="var(--brand-ink)" style={{ fontFamily: "Saira, Inter, sans-serif" }}>VigIA</text>
-              <path d="M13 33h5l3-6 4 12 3-6h7" stroke="var(--brand-ink)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+            <svg aria-hidden height={83} viewBox="0 0 48 54" width={74}>
+              <path
+                d="M24 2 6 8.5v11.5c0 10.8 7.2 20 18 23 10.8-3 18-12.2 18-23V8.5L24 2z"
+                fill="var(--brand)"
+              />
+              <text
+                fill="var(--brand-ink)"
+                fontSize="11"
+                fontWeight="800"
+                style={{ fontFamily: "Saira, Inter, sans-serif" }}
+                textAnchor="middle"
+                x="24"
+                y="23"
+              >
+                VigIA
+              </text>
+              <path
+                d="M13 33h5l3-6 4 12 3-6h7"
+                fill="none"
+                stroke="var(--brand-ink)"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2.4"
+              />
             </svg>
             {/* En línea y listo: la manita saluda dentro de un anillo de presencia. */}
             <span
               className="vigia-online absolute grid place-items-center rounded-full border"
               style={{
-                top: -4, right: -6, width: 28, height: 28,
-                background: "var(--float)", borderColor: "var(--hairline)",
+                top: -4,
+                right: -6,
+                width: 28,
+                height: 28,
+                background: "var(--float)",
+                borderColor: "var(--hairline)",
               }}
             >
-              <Hand size={15} className="vigia-wave" style={{ color: "var(--brand-text)" }} />
+              <Hand
+                className="vigia-wave"
+                size={15}
+                style={{ color: "var(--brand-text)" }}
+              />
             </span>
           </span>
         </button>
@@ -404,296 +637,505 @@ export default function VigiaWidget() {
         <div
           className="flex flex-col"
           style={{
-            position: "fixed", right: "clamp(1rem, 4vw, 1.75rem)", bottom: "calc(clamp(1rem, 3vh, 1.5rem) + env(safe-area-inset-bottom, 0px))", zIndex: 45,
+            position: "fixed",
+            right: "clamp(1rem, 4vw, 1.75rem)",
+            bottom:
+              "calc(clamp(1rem, 3vh, 1.5rem) + env(safe-area-inset-bottom, 0px))",
+            zIndex: 45,
             // 100dvh y no 100vh: con la barra de Safari desplegada, la fila de
             // entrada quedaba fuera de pantalla.
-            width: "min(24rem, calc(100vw - 2 * clamp(1rem, 4vw, 1.75rem)))", height: "min(34rem, calc(100dvh - 6.5rem))",
+            width: "min(24rem, calc(100vw - 2 * clamp(1rem, 4vw, 1.75rem)))",
+            height: "min(34rem, calc(100dvh - 6.5rem))",
           }}
         >
-        <div
-          role="dialog"
-          aria-label={t("vigia.dialogAria", "VigIA, asistente de la operación")}
-          className="flex min-h-0 flex-1 flex-col overflow-hidden border shadow-2xl"
-          style={{
-            // La silueta del escudo: esquinas superiores de tarjeta, base que
-            // se afila hacia la punta central (el tip vive justo debajo).
-            borderRadius: "1.25rem 1.25rem 2.75rem 2.75rem",
-            background: "var(--float)", borderColor: "var(--hairline)",
-            // La receta de .glass-raised: --float sin blur transparenta el
-            // dashboard de atrás (números fantasma dentro del chat).
-            backdropFilter: "blur(calc(var(--blur) * 1.4)) saturate(200%)",
-            WebkitBackdropFilter: "blur(calc(var(--blur) * 1.4)) saturate(200%)",
-          }}
-        >
-          {/* Cabecera */}
-          <div className="flex items-center justify-between px-4 py-3" style={{ background: "var(--brand)", color: "var(--brand-ink)" }}>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setVista(vista === "historial" ? "chat" : "historial")}
-                aria-label={t("vigia.history", "Conversaciones pasadas")}
-                title={t("vigia.history", "Conversaciones pasadas")}
-                className="cg-focus rounded p-1 opacity-80 hover:opacity-100"
-              >
-                {vista === "historial" ? <ArrowLeft size={16} /> : <History size={16} />}
-              </button>
-              <LogoVigia />
-              <div>
-                <p className="text-sm font-bold leading-none" style={{ fontFamily: "Saira, Inter, sans-serif" }}>VigIA</p>
-                <p className="text-[11px] opacity-80">
-                  {vista === "historial" ? t("vigia.history", "Conversaciones pasadas") : t("vigia.tagline", "El vigía de tu operación")}
-                </p>
+          <div
+            aria-label={t(
+              "vigia.dialogAria",
+              "VigIA, asistente de la operación",
+            )}
+            className="flex min-h-0 flex-1 flex-col overflow-hidden border shadow-2xl"
+            role="dialog"
+            style={{
+              // La silueta del escudo: esquinas superiores de tarjeta, base que
+              // se afila hacia la punta central (el tip vive justo debajo).
+              borderRadius: "1.25rem 1.25rem 2.75rem 2.75rem",
+              background: "var(--float)",
+              borderColor: "var(--hairline)",
+              // La receta de .glass-raised: --float sin blur transparenta el
+              // dashboard de atrás (números fantasma dentro del chat).
+              backdropFilter: "blur(calc(var(--blur) * 1.4)) saturate(200%)",
+              WebkitBackdropFilter:
+                "blur(calc(var(--blur) * 1.4)) saturate(200%)",
+            }}
+          >
+            {/* Cabecera */}
+            <div
+              className="flex items-center justify-between px-4 py-3"
+              style={{ background: "var(--brand)", color: "var(--brand-ink)" }}
+            >
+              <div className="flex items-center gap-2">
+                <button
+                  aria-label={t("vigia.history", "Conversaciones pasadas")}
+                  className="cg-focus rounded p-1 opacity-80 hover:opacity-100"
+                  title={t("vigia.history", "Conversaciones pasadas")}
+                  onClick={() =>
+                    setVista(vista === "historial" ? "chat" : "historial")
+                  }
+                >
+                  {vista === "historial" ? (
+                    <ArrowLeft size={16} />
+                  ) : (
+                    <History size={16} />
+                  )}
+                </button>
+                <LogoVigia />
+                <div>
+                  <p
+                    className="text-sm font-bold leading-none"
+                    style={{ fontFamily: "Saira, Inter, sans-serif" }}
+                  >
+                    VigIA
+                  </p>
+                  <p className="text-[11px] opacity-80">
+                    {vista === "historial"
+                      ? t("vigia.history", "Conversaciones pasadas")
+                      : t("vigia.tagline", "El vigía de tu operación")}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  aria-label={t("vigia.newChat", "Conversación nueva")}
+                  className="cg-focus rounded p-1 opacity-80 hover:opacity-100"
+                  title={t("vigia.newChat", "Conversación nueva")}
+                  onClick={nuevaConversacion}
+                >
+                  <MessageSquarePlus size={16} />
+                </button>
+                <button
+                  aria-label={t("actions.close", "Cerrar")}
+                  className="cg-focus rounded p-1 opacity-80 hover:opacity-100"
+                  onClick={pedirCierre}
+                >
+                  <X size={16} />
+                </button>
               </div>
             </div>
-            <div className="flex items-center gap-1">
-              <button
-                onClick={nuevaConversacion}
-                aria-label={t("vigia.newChat", "Conversación nueva")}
-                title={t("vigia.newChat", "Conversación nueva")}
-                className="cg-focus rounded p-1 opacity-80 hover:opacity-100"
+
+            {/* ¿Cerrar la conversación? La X pregunta antes de tirar el hilo. */}
+            {confirmarCierre && (
+              <div
+                className="border-b px-4 py-3"
+                style={{
+                  borderColor: "var(--hairline)",
+                  background:
+                    "color-mix(in oklab, var(--brand) 10%, transparent)",
+                }}
               >
-                <MessageSquarePlus size={16} />
-              </button>
-              <button onClick={pedirCierre} aria-label={t("actions.close", "Cerrar")} className="cg-focus rounded p-1 opacity-80 hover:opacity-100">
-                <X size={16} />
-              </button>
-            </div>
-          </div>
-
-          {/* ¿Cerrar la conversación? La X pregunta antes de tirar el hilo. */}
-          {confirmarCierre && (
-            <div className="border-b px-4 py-3" style={{ borderColor: "var(--hairline)", background: "color-mix(in oklab, var(--brand) 10%, transparent)" }}>
-              <p className="mb-2 text-sm font-semibold">{t("vigia.confirmClose", "¿Cerrar esta conversación?")}</p>
-              <p className="mb-3 text-xs" style={{ color: "var(--ink-soft)" }}>
-                {t("vigia.confirmCloseHint", "Se guarda en tu historial y puedes reabrirla desde el menú.")}
-              </p>
-              <div className="flex gap-2">
-                <button onClick={cerrarConversacion} className="cg-focus flex-1 rounded-xl py-1.5 text-sm font-bold transition-[filter] hover:brightness-110" style={{ background: "var(--brand)", color: "var(--brand-ink)" }}>
-                  {t("vigia.closeConvo", "Cerrar y guardar")}
-                </button>
-                <button onClick={soloMinimizar} className="cg-focus flex-1 rounded-xl border py-1.5 text-sm font-semibold" style={{ borderColor: "var(--hairline)" }}>
-                  {t("vigia.minimize", "Solo minimizar")}
-                </button>
-                <button onClick={() => setConfirmarCierre(false)} aria-label={t("actions.cancel", "Cancelar")} className="cg-focus rounded p-1 opacity-70 hover:opacity-100">
-                  <X size={14} />
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* El historial: conversaciones cerradas, listas para reabrir. */}
-          {vista === "historial" && (
-            <div className="flex-1 space-y-2 overflow-y-auto px-3 py-3">
-              {convos.length === 0 && (
-                <p className="px-2 py-6 text-center text-sm" style={{ color: "var(--ink-soft)" }}>
-                  {t("vigia.historyEmpty", "Aún no hay conversaciones guardadas. Al cerrar una con la X, queda aquí 7 días.")}
+                <p className="mb-2 text-sm font-semibold">
+                  {t("vigia.confirmClose", "¿Cerrar esta conversación?")}
                 </p>
-              )}
-              {convos.map((c) => (
-                <div key={c.id} className="flex items-center gap-2 rounded-xl border px-3 py-2" style={{ borderColor: "var(--hairline)", background: "var(--glass-raised)" }}>
-                  <button onClick={() => reabrirConvo(c)} className="cg-focus min-w-0 flex-1 text-left">
-                    <p className="truncate text-sm" style={{ color: "var(--ink)" }}>
-                      {c.titulo || t("vigia.untitled", "Conversación")}
-                    </p>
-                    <p className="text-[11px]" style={{ color: "var(--ink-faint)" }}>
-                      {new Date(c.ts).toLocaleString(undefined, { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })} · {c.msgs.length} {t("vigia.messages", "mensajes")}
-                    </p>
+                <p
+                  className="mb-3 text-xs"
+                  style={{ color: "var(--ink-soft)" }}
+                >
+                  {t(
+                    "vigia.confirmCloseHint",
+                    "Se guarda en tu historial y puedes reabrirla desde el menú.",
+                  )}
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    className="cg-focus flex-1 rounded-xl py-1.5 text-sm font-bold transition-[filter] hover:brightness-110"
+                    style={{
+                      background: "var(--brand)",
+                      color: "var(--brand-ink)",
+                    }}
+                    onClick={cerrarConversacion}
+                  >
+                    {t("vigia.closeConvo", "Cerrar y guardar")}
                   </button>
-                  <button onClick={() => borrarConvo(c.id)} aria-label={t("vigia.deleteConvo", "Borrar conversación")} title={t("vigia.deleteConvo", "Borrar conversación")} className="cg-focus rounded p-1 opacity-60 hover:opacity-100">
-                    <Trash2 size={14} />
+                  <button
+                    className="cg-focus flex-1 rounded-xl border py-1.5 text-sm font-semibold"
+                    style={{ borderColor: "var(--hairline)" }}
+                    onClick={soloMinimizar}
+                  >
+                    {t("vigia.minimize", "Solo minimizar")}
+                  </button>
+                  <button
+                    aria-label={t("actions.cancel", "Cancelar")}
+                    className="cg-focus rounded p-1 opacity-70 hover:opacity-100"
+                    onClick={() => setConfirmarCierre(false)}
+                  >
+                    <X size={14} />
                   </button>
                 </div>
-              ))}
-            </div>
-          )}
-
-          {/* Mensajes */}
-          {vista === "chat" && (
-          <div ref={fondo} role="log" aria-live="polite" className="flex-1 space-y-3 overflow-y-auto px-3 py-3">
-            {msgs.length === 0 && (
-              <div className="px-2 py-4 text-sm" style={{ color: "var(--ink-soft)" }}>
-                <p className="mb-2 font-semibold" style={{ color: "var(--ink)" }}>{t("vigia.emptyTitle", "¿En qué te ayudo?")}</p>
-                <p>{t("vigia.emptyHint", "Puedo, por ejemplo:")}</p>
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {[
-                    "¿Cómo va la cobertura ahora?",
-                    "¿Qué incidentes hubo hoy?",
-                    "Agrega un vigilante nuevo",
-                    "Llévame al horario",
-                  ].map((ej) => (
-                    <button
-                      key={ej}
-                      onClick={() => { setTexto(ej); setTimeout(() => entrada.current?.focus(), 0); }}
-                      className="cg-focus rounded-full border px-2.5 py-1 text-xs transition-[filter] hover:brightness-110"
-                      style={{ borderColor: "var(--hairline)", color: "var(--ink)" }}
-                    >
-                      {ej}
-                    </button>
-                  ))}
-                </div>
-                <p className="mt-2 text-xs" style={{ color: "var(--ink-faint)" }}>
-                  {t("vigia.emptyNote", "Toda acción te la muestro antes y la ejecuto solo si confirmas.")}
-                </p>
               </div>
             )}
-            {msgs.map((m, i) => (
-              <div key={i} className={m.role === "user" ? "flex justify-end" : "flex justify-start"}>
-                <div
-                  className="max-w-[85%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-sm"
-                  style={m.role === "user"
-                    ? { background: "color-mix(in oklab, var(--brand) 16%, transparent)", color: "var(--ink)" }
-                    : { background: "var(--glass-raised)", color: "var(--ink)" }}
-                >
-                  {m.role === "assistant" ? sinMarkdown(m.content) : m.content}
-                </div>
-              </div>
-            ))}
 
-            {/* Tarjeta de propuesta: el modelo propone, la persona decide. */}
-            {/* Lo leído de una hoja de vida, con la única acción que tiene
+            {/* El historial: conversaciones cerradas, listas para reabrir. */}
+            {vista === "historial" && (
+              <div className="flex-1 space-y-2 overflow-y-auto px-3 py-3">
+                {convos.length === 0 && (
+                  <p
+                    className="px-2 py-6 text-center text-sm"
+                    style={{ color: "var(--ink-soft)" }}
+                  >
+                    {t(
+                      "vigia.historyEmpty",
+                      "Aún no hay conversaciones guardadas. Al cerrar una con la X, queda aquí 7 días.",
+                    )}
+                  </p>
+                )}
+                {convos.map((c) => (
+                  <div
+                    key={c.id}
+                    className="flex items-center gap-2 rounded-xl border px-3 py-2"
+                    style={{
+                      borderColor: "var(--hairline)",
+                      background: "var(--glass-raised)",
+                    }}
+                  >
+                    <button
+                      className="cg-focus min-w-0 flex-1 text-left"
+                      onClick={() => reabrirConvo(c)}
+                    >
+                      <p
+                        className="truncate text-sm"
+                        style={{ color: "var(--ink)" }}
+                      >
+                        {c.titulo || t("vigia.untitled", "Conversación")}
+                      </p>
+                      <p
+                        className="text-[11px]"
+                        style={{ color: "var(--ink-faint)" }}
+                      >
+                        {new Date(c.ts).toLocaleString(undefined, {
+                          day: "2-digit",
+                          month: "short",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}{" "}
+                        · {c.msgs.length} {t("vigia.messages", "mensajes")}
+                      </p>
+                    </button>
+                    <button
+                      aria-label={t("vigia.deleteConvo", "Borrar conversación")}
+                      className="cg-focus rounded p-1 opacity-60 hover:opacity-100"
+                      title={t("vigia.deleteConvo", "Borrar conversación")}
+                      onClick={() => borrarConvo(c.id)}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Mensajes */}
+            {vista === "chat" && (
+              <div
+                ref={fondo}
+                aria-live="polite"
+                className="flex-1 space-y-3 overflow-y-auto px-3 py-3"
+                role="log"
+              >
+                {msgs.length === 0 && (
+                  <div
+                    className="px-2 py-4 text-sm"
+                    style={{ color: "var(--ink-soft)" }}
+                  >
+                    <p
+                      className="mb-2 font-semibold"
+                      style={{ color: "var(--ink)" }}
+                    >
+                      {t("vigia.emptyTitle", "¿En qué te ayudo?")}
+                    </p>
+                    <p>{t("vigia.emptyHint", "Puedo, por ejemplo:")}</p>
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {[
+                        "¿Cómo va la cobertura ahora?",
+                        "¿Qué incidentes hubo hoy?",
+                        "Agrega un vigilante nuevo",
+                        "Llévame al horario",
+                      ].map((ej) => (
+                        <button
+                          key={ej}
+                          className="cg-focus rounded-full border px-2.5 py-1 text-xs transition-[filter] hover:brightness-110"
+                          style={{
+                            borderColor: "var(--hairline)",
+                            color: "var(--ink)",
+                          }}
+                          onClick={() => {
+                            setTexto(ej);
+                            setTimeout(() => entrada.current?.focus(), 0);
+                          }}
+                        >
+                          {ej}
+                        </button>
+                      ))}
+                    </div>
+                    <p
+                      className="mt-2 text-xs"
+                      style={{ color: "var(--ink-faint)" }}
+                    >
+                      {t(
+                        "vigia.emptyNote",
+                        "Toda acción te la muestro antes y la ejecuto solo si confirmas.",
+                      )}
+                    </p>
+                  </div>
+                )}
+                {msgs.map((m, i) => (
+                  <div
+                    key={i}
+                    className={
+                      m.role === "user"
+                        ? "flex justify-end"
+                        : "flex justify-start"
+                    }
+                  >
+                    <div
+                      className="max-w-[85%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-sm"
+                      style={
+                        m.role === "user"
+                          ? {
+                              background:
+                                "color-mix(in oklab, var(--brand) 16%, transparent)",
+                              color: "var(--ink)",
+                            }
+                          : {
+                              background: "var(--glass-raised)",
+                              color: "var(--ink)",
+                            }
+                      }
+                    >
+                      {m.role === "assistant"
+                        ? sinMarkdown(m.content)
+                        : m.content}
+                    </div>
+                  </div>
+                ))}
+
+                {/* Tarjeta de propuesta: el modelo propone, la persona decide. */}
+                {/* Lo leído de una hoja de vida, con la única acción que tiene
                 sentido: abrirlo en el formulario donde se revisa y se guarda.
                 Deliberadamente NO hay un «crear» aquí — el alta tiene reglas
                 (cliente, puesto, tipo de vigilante) que este panel no pregunta. */}
-            {cvPendiente && (
-              <div className="rounded-2xl border px-3 py-3" style={{ borderColor: "var(--brand)", background: "color-mix(in oklab, var(--brand) 8%, transparent)" }}>
-                <p className="mb-2 text-xs font-bold uppercase tracking-wide" style={{ color: "var(--brand-text)" }}>
-                  {t("vigia.cvTitle", "Hoja de vida leída")}
-                </p>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => {
-                      const pendiente = cvPendiente;
-                      setCvPendiente(null);
-                      setOpen(false);
-                      navigate("/security-guards/new", {
-                        state: { hojaDeVida: pendiente.campos, hojaDeVidaArchivo: pendiente.archivo },
-                      });
+                {cvPendiente && (
+                  <div
+                    className="rounded-2xl border px-3 py-3"
+                    style={{
+                      borderColor: "var(--brand)",
+                      background:
+                        "color-mix(in oklab, var(--brand) 8%, transparent)",
                     }}
-                    className="cg-focus flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2 text-sm font-bold transition-[filter] hover:brightness-110"
-                    style={{ background: "var(--brand)", color: "var(--brand-ink)" }}
                   >
-                    <Check size={15} />
-                    {t("vigia.cvOpen", "Abrir el alta con estos datos")}
-                  </button>
-                  <button
-                    onClick={() => setCvPendiente(null)}
-                    className="cg-focus rounded-xl px-3 py-2 text-sm"
-                    style={{ color: "var(--muted-foreground)" }}
+                    <p
+                      className="mb-2 text-xs font-bold uppercase tracking-wide"
+                      style={{ color: "var(--brand-text)" }}
+                    >
+                      {t("vigia.cvTitle", "Hoja de vida leída")}
+                    </p>
+                    <div className="flex gap-2">
+                      <button
+                        className="cg-focus flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2 text-sm font-bold transition-[filter] hover:brightness-110"
+                        style={{
+                          background: "var(--brand)",
+                          color: "var(--brand-ink)",
+                        }}
+                        onClick={() => {
+                          const pendiente = cvPendiente;
+
+                          setCvPendiente(null);
+                          setOpen(false);
+                          navigate("/security-guards/new", {
+                            state: {
+                              hojaDeVida: pendiente.campos,
+                              hojaDeVidaArchivo: pendiente.archivo,
+                            },
+                          });
+                        }}
+                      >
+                        <Check size={15} />
+                        {t("vigia.cvOpen", "Abrir el alta con estos datos")}
+                      </button>
+                      <button
+                        className="cg-focus rounded-xl px-3 py-2 text-sm"
+                        style={{ color: "var(--muted-foreground)" }}
+                        onClick={() => setCvPendiente(null)}
+                      >
+                        {t("actions.discard", "Descartar")}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {propuesta && (
+                  <div
+                    className="rounded-2xl border px-3 py-3"
+                    style={{
+                      borderColor: "var(--brand)",
+                      background:
+                        "color-mix(in oklab, var(--brand) 8%, transparent)",
+                    }}
                   >
-                    {t("actions.discard", "Descartar")}
-                  </button>
-                </div>
+                    <p
+                      className="mb-2 text-xs font-bold uppercase tracking-wide"
+                      style={{ color: "var(--brand-text)" }}
+                    >
+                      {t("vigia.proposalTitle", "Acción por confirmar")}
+                    </p>
+                    <p className="mb-3 text-sm">{propuesta.resumen}</p>
+                    <div className="flex gap-2">
+                      <button
+                        ref={botonConfirmar}
+                        className="cg-focus flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2 text-sm font-bold transition-[filter] hover:brightness-110 disabled:opacity-50"
+                        disabled={ocupado}
+                        style={{
+                          background: "var(--brand)",
+                          color: "var(--brand-ink)",
+                        }}
+                        onClick={() => confirmar(true)}
+                      >
+                        <Check size={15} /> {t("actions.confirm", "Confirmar")}
+                      </button>
+                      <button
+                        className="cg-focus flex flex-1 items-center justify-center gap-1.5 rounded-xl border py-2 text-sm font-semibold disabled:opacity-50"
+                        disabled={ocupado}
+                        style={{
+                          borderColor: "var(--hairline)",
+                          color: "var(--ink)",
+                        }}
+                        onClick={() => confirmar(false)}
+                      >
+                        <Ban size={15} /> {t("actions.cancel", "Cancelar")}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {ocupado && (
+                  <div
+                    className="flex items-center gap-2 px-2 text-xs"
+                    role="status"
+                    style={{ color: "var(--ink-soft)" }}
+                  >
+                    <Loader2 className="animate-spin" size={13} />{" "}
+                    {t("vigia.working", "VigIA está trabajando…")}
+                  </div>
+                )}
+                {aviso && (
+                  <div
+                    className="rounded-xl px-3 py-2 text-xs"
+                    style={{
+                      background:
+                        "color-mix(in oklab, var(--warn) 14%, transparent)",
+                      color: "var(--warn-text, var(--ink))",
+                    }}
+                  >
+                    {aviso}
+                  </div>
+                )}
               </div>
             )}
 
-            {propuesta && (
-              <div className="rounded-2xl border px-3 py-3" style={{ borderColor: "var(--brand)", background: "color-mix(in oklab, var(--brand) 8%, transparent)" }}>
-                <p className="mb-2 text-xs font-bold uppercase tracking-wide" style={{ color: "var(--brand-text)" }}>
-                  {t("vigia.proposalTitle", "Acción por confirmar")}
-                </p>
-                <p className="mb-3 text-sm">{propuesta.resumen}</p>
-                <div className="flex gap-2">
-                  <button
-                    ref={botonConfirmar}
-                    onClick={() => confirmar(true)}
-                    disabled={ocupado}
-                    className="cg-focus flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2 text-sm font-bold transition-[filter] hover:brightness-110 disabled:opacity-50"
-                    style={{ background: "var(--brand)", color: "var(--brand-ink)" }}
-                  >
-                    <Check size={15} /> {t("actions.confirm", "Confirmar")}
-                  </button>
-                  <button
-                    onClick={() => confirmar(false)}
-                    disabled={ocupado}
-                    className="cg-focus flex flex-1 items-center justify-center gap-1.5 rounded-xl border py-2 text-sm font-semibold disabled:opacity-50"
-                    style={{ borderColor: "var(--hairline)", color: "var(--ink)" }}
-                  >
-                    <Ban size={15} /> {t("actions.cancel", "Cancelar")}
-                  </button>
-                </div>
-              </div>
-            )}
+            {/* Entrada */}
+            {vista === "chat" && (
+              <div
+                className="flex items-center gap-2 border-t px-4 pb-3 pt-2"
+                style={{ borderColor: "var(--hairline)" }}
+              >
+                <textarea
+                  ref={entrada}
+                  aria-label={t("vigia.inputAria", "Mensaje para VigIA")}
+                  className="cg-input max-h-28 flex-1 resize-none px-3 py-2 text-sm"
+                  disabled={ocupado}
+                  placeholder={t("vigia.placeholder", "Escríbele a VigIA…")}
+                  rows={1}
+                  value={texto}
+                  onChange={(e) => {
+                    setTexto(e.target.value);
+                    e.target.style.height = "auto";
+                    e.target.style.height =
+                      Math.min(112, e.target.scrollHeight) + "px";
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      enviar();
+                    }
+                  }}
+                />
+                <input
+                  ref={cvInput}
+                  accept=".pdf,image/*"
+                  className="hidden"
+                  type="file"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
 
-            {ocupado && (
-              <div role="status" className="flex items-center gap-2 px-2 text-xs" style={{ color: "var(--ink-soft)" }}>
-                <Loader2 size={13} className="animate-spin" /> {t("vigia.working", "VigIA está trabajando…")}
-              </div>
-            )}
-            {aviso && (
-              <div className="rounded-xl px-3 py-2 text-xs" style={{ background: "color-mix(in oklab, var(--warn) 14%, transparent)", color: "var(--warn-text, var(--ink))" }}>
-                {aviso}
+                    e.target.value = ""; // permite volver a elegir el mismo archivo
+                    if (f) void adjuntarHojaDeVida(f);
+                  }}
+                />
+                <button
+                  aria-label={t("vigia.attachCv", "Adjuntar hoja de vida")}
+                  className="cg-focus rounded-xl p-2 transition-colors hover:bg-[var(--glass-hover)] disabled:opacity-40"
+                  disabled={ocupado}
+                  style={{ color: "var(--muted-foreground)" }}
+                  title={t("vigia.attachCv", "Adjuntar hoja de vida")}
+                  onClick={() => cvInput.current?.click()}
+                >
+                  <Paperclip size={16} />
+                </button>
+                <button
+                  aria-label={t("actions.send", "Enviar")}
+                  className="cg-focus rounded-xl p-2 transition-[filter] hover:brightness-110 disabled:opacity-40"
+                  disabled={ocupado || !texto.trim()}
+                  style={{
+                    background: "var(--brand)",
+                    color: "var(--brand-ink)",
+                  }}
+                  onClick={enviar}
+                >
+                  <Send size={16} />
+                </button>
               </div>
             )}
           </div>
-          )}
-
-          {/* Entrada */}
-          {vista === "chat" && (
-          <div className="flex items-center gap-2 border-t px-4 pb-3 pt-2" style={{ borderColor: "var(--hairline)" }}>
-            <textarea
-              ref={entrada}
-              rows={1}
-              className="cg-input max-h-28 flex-1 resize-none px-3 py-2 text-sm"
-              placeholder={t("vigia.placeholder", "Escríbele a VigIA…")}
-              value={texto}
-              onChange={(e) => {
-                setTexto(e.target.value);
-                e.target.style.height = "auto";
-                e.target.style.height = Math.min(112, e.target.scrollHeight) + "px";
-              }}
-              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); enviar(); } }}
-              disabled={ocupado}
-              aria-label={t("vigia.inputAria", "Mensaje para VigIA")}
-            />
-            <input
-              ref={cvInput}
-              type="file"
-              accept=".pdf,image/*"
-              className="hidden"
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                e.target.value = "";   // permite volver a elegir el mismo archivo
-                if (f) void adjuntarHojaDeVida(f);
-              }}
-            />
-            <button
-              onClick={() => cvInput.current?.click()}
-              disabled={ocupado}
-              aria-label={t("vigia.attachCv", "Adjuntar hoja de vida")}
-              title={t("vigia.attachCv", "Adjuntar hoja de vida")}
-              className="cg-focus rounded-xl p-2 transition-colors hover:bg-[var(--glass-hover)] disabled:opacity-40"
-              style={{ color: "var(--muted-foreground)" }}
-            >
-              <Paperclip size={16} />
-            </button>
-            <button
-              onClick={enviar}
-              disabled={ocupado || !texto.trim()}
-              aria-label={t("actions.send", "Enviar")}
-              className="cg-focus rounded-xl p-2 transition-[filter] hover:brightness-110 disabled:opacity-40"
-              style={{ background: "var(--brand)", color: "var(--brand-ink)" }}
-            >
-              <Send size={16} />
-            </button>
-          </div>
-          )}
-        </div>
-        {/* La punta del escudo: remata la silueta bajo el panel. El relleno es
+          {/* La punta del escudo: remata la silueta bajo el panel. El relleno es
             un div recortado (clip-path) para poder llevar el MISMO blur del
             panel — un fill de SVG no desenfoca lo que tiene detrás. */}
-        <div aria-hidden className="relative mx-auto shrink-0" style={{ width: 48, height: 14, marginTop: -1.5 }}>
           <div
-            className="absolute inset-0"
-            style={{
-              clipPath: 'path("M1 0 C10 2 19 5 24 13 C29 5 38 2 47 0 Z")',
-              background: "var(--float)",
-              backdropFilter: "blur(calc(var(--blur) * 1.4)) saturate(200%)",
-              WebkitBackdropFilter: "blur(calc(var(--blur) * 1.4)) saturate(200%)",
-            }}
-          />
-          <svg width={48} height={14} viewBox="0 0 48 14" className="absolute inset-0">
-            <path d="M1 0 C10 2 19 5 24 13 C29 5 38 2 47 0" stroke="var(--hairline)" strokeWidth="1" fill="none" />
-          </svg>
-        </div>
+            aria-hidden
+            className="relative mx-auto shrink-0"
+            style={{ width: 48, height: 14, marginTop: -1.5 }}
+          >
+            <div
+              className="absolute inset-0"
+              style={{
+                clipPath: 'path("M1 0 C10 2 19 5 24 13 C29 5 38 2 47 0 Z")',
+                background: "var(--float)",
+                backdropFilter: "blur(calc(var(--blur) * 1.4)) saturate(200%)",
+                WebkitBackdropFilter:
+                  "blur(calc(var(--blur) * 1.4)) saturate(200%)",
+              }}
+            />
+            <svg
+              className="absolute inset-0"
+              height={14}
+              viewBox="0 0 48 14"
+              width={48}
+            >
+              <path
+                d="M1 0 C10 2 19 5 24 13 C29 5 38 2 47 0"
+                fill="none"
+                stroke="var(--hairline)"
+                strokeWidth="1"
+              />
+            </svg>
+          </div>
         </div>
       )}
     </>

@@ -1,8 +1,12 @@
-import { toast } from "sonner";
 import i18n from "@/i18n";
-import { reportRequestOk, reportNetworkFailure } from "@/lib/offline/networkStatus";
+import {
+  reportRequestOk,
+  reportNetworkFailure,
+} from "@/lib/offline/networkStatus";
 import { autoInvalidateForMutation } from "@/lib/queryClient";
-const API_BASE_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:3001/api").replace(/\/+$/, "");
+const API_BASE_URL = (
+  import.meta.env.VITE_API_URL ?? "http://localhost:3001/api"
+).replace(/\/+$/, "");
 
 export class ApiError extends Error {
   status: number;
@@ -21,10 +25,17 @@ export class ApiService {
     // When backend returns 429 we set this so subsequent immediate requests
     // fail fast until the pause expires (prevents request storms).
     // Keep as property on the class to persist across HMR reloads.
-    if ((this as any)._rateLimitPausedUntil === undefined) (this as any)._rateLimitPausedUntil = 0;
-    const rateLimitPausedUntil: number = (this as any)._rateLimitPausedUntil || 0;
+    if ((this as any)._rateLimitPausedUntil === undefined)
+      (this as any)._rateLimitPausedUntil = 0;
+    const rateLimitPausedUntil: number =
+      (this as any)._rateLimitPausedUntil || 0;
+
     if (Date.now() < rateLimitPausedUntil) {
-      throw new ApiError('Client rate-limited: temporarily paused requests', 429, { pausedUntil: rateLimitPausedUntil });
+      throw new ApiError(
+        "Client rate-limited: temporarily paused requests",
+        429,
+        { pausedUntil: rateLimitPausedUntil },
+      );
     }
     const token = localStorage.getItem("authToken");
 
@@ -35,6 +46,7 @@ export class ApiService {
     };
 
     const isFormData = options.body instanceof FormData;
+
     if (isFormData) delete headers["Content-Type"];
 
     if (token && !options.skipAuth) {
@@ -60,17 +72,41 @@ export class ApiService {
 
     let response!: Response;
     let data: any = null;
+
     for (let attempt = 1; ; attempt++) {
       try {
         // Ensure credentials (cookies) are sent so backend session auth works
-        response = await fetch(url, { ...options, headers, credentials: 'include', cache: options.cache ?? 'no-store' });
+        response = await fetch(url, {
+          ...options,
+          headers,
+          credentials: "include",
+          cache: options.cache ?? "no-store",
+        });
         // Señal de red viva para el modo offline (banner + flush de la cola):
         // llegó UNA respuesta, del código que sea → hay red.
-        try { reportRequestOk(); } catch { /* ignore */ }
+        try {
+          reportRequestOk();
+        } catch {
+          /* ignore */
+        }
       } catch {
-        if (idempotent && attempt < maxAttempts) { await sleep(250 * attempt); continue; }
-        try { reportNetworkFailure(); } catch { /* ignore */ }
-        throw new ApiError(i18n.t("errores.sinConexionServidor", "No se pudo conectar con el servidor."), 0, null);
+        if (idempotent && attempt < maxAttempts) {
+          await sleep(250 * attempt);
+          continue;
+        }
+        try {
+          reportNetworkFailure();
+        } catch {
+          /* ignore */
+        }
+        throw new ApiError(
+          i18n.t(
+            "errores.sinConexionServidor",
+            "No se pudo conectar con el servidor.",
+          ),
+          0,
+          null,
+        );
       }
 
       const contentType = response.headers.get("content-type") || "";
@@ -81,6 +117,7 @@ export class ApiService {
         if (response.status === 204 || response.status === 304) data = null;
         else if (isJson) {
           const text = await response.text();
+
           data = text ? JSON.parse(text) : null;
         } else {
           data = await response.text().catch(() => null);
@@ -89,7 +126,11 @@ export class ApiService {
         data = null;
       }
 
-      if (idempotent && attempt < maxAttempts && [502, 503, 504].includes(response.status)) {
+      if (
+        idempotent &&
+        attempt < maxAttempts &&
+        [502, 503, 504].includes(response.status)
+      ) {
         await sleep(250 * attempt);
         continue;
       }
@@ -99,27 +140,36 @@ export class ApiService {
     if (!response.ok && response.status !== 304) {
       // If server replied with 429, set client-side pause to avoid immediate retry storms.
       if (response.status === 429) {
-        const retryAfter = response.headers.get('retry-after');
+        const retryAfter = response.headers.get("retry-after");
         let pauseMs = 5000; // default 5s
+
         if (retryAfter) {
           const asInt = parseInt(retryAfter, 10);
+
           if (!Number.isNaN(asInt)) pauseMs = asInt * 1000;
           else {
             const parsed = Date.parse(retryAfter);
-            if (!Number.isNaN(parsed)) pauseMs = Math.max(1000, parsed - Date.now());
+
+            if (!Number.isNaN(parsed))
+              pauseMs = Math.max(1000, parsed - Date.now());
           }
         }
         // Exponential safety: if there's already a pause, extend it a bit
         const current = (this as any)._rateLimitPausedUntil || 0;
         const nextUntil = Math.max(current, Date.now() + pauseMs);
+
         (this as any)._rateLimitPausedUntil = nextUntil;
       }
       // Build a concise message. If the response is non-JSON and looks like an HTML error page,
       // avoid including the full HTML body in logs and thrown errors.
-      let msgRaw = (data && (data.message || data.error || data.detail)) || (typeof data === "string" && data) || `Error: ${response.status} ${response.statusText}`;
+      let msgRaw =
+        (data && (data.message || data.error || data.detail)) ||
+        (typeof data === "string" && data) ||
+        `Error: ${response.status} ${response.statusText}`;
 
       let msg = msgRaw;
       let fullResponse = data;
+
       if (typeof data === "string" && /<\s*!?doctype|<html/i.test(data)) {
         msg = `Error: ${response.status} ${response.statusText}`;
         fullResponse = null; // avoid logging large HTML blobs
@@ -127,17 +177,29 @@ export class ApiService {
       // An authenticated request rejected with 401 → the token is no longer valid
       // (e.g. this session was ended by a login on another device — single active
       // session). Clear it and return to the login screen.
-      if (response.status === 401 && token && !window.location.pathname.startsWith('/login')) {
+      if (
+        response.status === 401 &&
+        token &&
+        !window.location.pathname.startsWith("/login")
+      ) {
         // POR QUÉ se cerró la sesión. Sin esto, al centralista que ficha salida
         // le aparecía la pantalla de login sin explicación y parecía una avería.
         // `sessionStorage`: vale para este arranque y no sobrevive al navegador.
-        try { sessionStorage.setItem('authExitReason', String(msg || '')); } catch {}
-        try { localStorage.removeItem('authToken'); } catch {}
+        try {
+          sessionStorage.setItem("authExitReason", String(msg || ""));
+        } catch {}
+        try {
+          localStorage.removeItem("authToken");
+        } catch {}
         // El perfil cacheado para la sesión offline pertenece a la sesión que
         // acaba de morir — sin esto, el próximo arranque sin red restauraría a
         // un usuario cuyo token ya fue invalidado (auditoría 2026-08-18).
-        try { localStorage.removeItem('authUserCache'); } catch {}
-        try { window.location.replace('/login'); } catch {}
+        try {
+          localStorage.removeItem("authUserCache");
+        } catch {}
+        try {
+          window.location.replace("/login");
+        } catch {}
       }
       // Lanzar ApiError para que la UI decida mostrar toast
       throw new ApiError(msg, response.status, fullResponse);
@@ -146,7 +208,11 @@ export class ApiService {
     // A successful mutation refreshes every cached list its URL touches so
     // schedule/station/client edits never serve a stale copy.
     if (!idempotent) {
-      try { autoInvalidateForMutation(method, endpoint); } catch { /* never break the response */ }
+      try {
+        autoInvalidateForMutation(method, endpoint);
+      } catch {
+        /* never break the response */
+      }
     }
 
     return data;
@@ -156,15 +222,29 @@ export class ApiService {
     return this.request(endpoint, { ...options, method: "GET" });
   }
   static post(endpoint: string, body?: any, options = {}) {
-    const payload = body instanceof FormData ? body : JSON.stringify(body ?? {});
-    return this.request(endpoint, { ...options, method: "POST", body: payload }); 
+    const payload =
+      body instanceof FormData ? body : JSON.stringify(body ?? {});
+
+    return this.request(endpoint, {
+      ...options,
+      method: "POST",
+      body: payload,
+    });
   }
   static patch(endpoint: string, body?: any, options = {}) {
-    const payload = body instanceof FormData ? body : JSON.stringify(body ?? {});
-    return this.request(endpoint, { ...options, method: "PATCH", body: payload });
+    const payload =
+      body instanceof FormData ? body : JSON.stringify(body ?? {});
+
+    return this.request(endpoint, {
+      ...options,
+      method: "PATCH",
+      body: payload,
+    });
   }
   static put(endpoint: string, body?: any, options = {}) {
-    const payload = body instanceof FormData ? body : JSON.stringify(body ?? {});
+    const payload =
+      body instanceof FormData ? body : JSON.stringify(body ?? {});
+
     return this.request(endpoint, { ...options, method: "PUT", body: payload });
   }
   static delete(endpoint: string, options = {}) {
@@ -185,24 +265,46 @@ export class ApiService {
     const url = `${API_BASE_URL}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
 
     let response: Response;
+
     try {
-      response = await fetch(url, { ...options, method: 'GET', headers, credentials: 'include' });
+      response = await fetch(url, {
+        ...options,
+        method: "GET",
+        headers,
+        credentials: "include",
+      });
     } catch {
-      throw new ApiError(i18n.t("errores.sinConexionServidor", "No se pudo conectar con el servidor."), 0, null);
+      throw new ApiError(
+        i18n.t(
+          "errores.sinConexionServidor",
+          "No se pudo conectar con el servidor.",
+        ),
+        0,
+        null,
+      );
     }
 
     if (!response.ok) {
       const text = await response.text().catch(() => null);
       let data = null;
-      try { data = text ? JSON.parse(text) : null; } catch { data = text; }
-      let msg = (data && (data.message || data.error)) || `Error: ${response.status} ${response.statusText}`;
-      if (typeof text === 'string' && /<\s*!?doctype|<html/i.test(text)) {
+
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch {
+        data = text;
+      }
+      let msg =
+        (data && (data.message || data.error)) ||
+        `Error: ${response.status} ${response.statusText}`;
+
+      if (typeof text === "string" && /<\s*!?doctype|<html/i.test(text)) {
         msg = `Error: ${response.status} ${response.statusText}`;
       }
       throw new ApiError(msg, response.status, data);
     }
 
     const blob = await response.blob();
+
     return blob;
   }
 }

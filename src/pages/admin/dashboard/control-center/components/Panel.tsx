@@ -1,44 +1,78 @@
-import { useTranslation } from 'react-i18next';
+import type { ReactNode } from "react";
+
+import { useTranslation } from "react-i18next";
 /**
  * Panel de cristal del centro de mando: cabecera (icono + título + subtítulo +
  * acción «Ver todo») y un halo del acento POR DETRÁS del cristal — es lo que el
  * desenfoque difumina para que la superficie tenga profundidad en vez de
  * parecer un rectángulo con opacidad.
  */
-import type { ReactNode } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { IconTile } from "@/components/kit";
-import { cn } from "@/lib/utils";
+
 import { toneFill, toneInk, toneWash, type Tone } from "../tone";
 
+import { IconTile } from "@/components/kit";
+import { cn } from "@/lib/utils";
+
 export function Panel({
-  title, subtitle, icon, action, live, tone = "brand", halo = true,
-  className, bodyClassName, children,
+  title,
+  subtitle,
+  icon,
+  action,
+  live,
+  tone = "brand",
+  halo = true,
+  className,
+  bodyClassName,
+  children,
 }: {
-  title: ReactNode; subtitle?: ReactNode; icon?: ReactNode; action?: ReactNode;
-  live?: boolean; tone?: Tone; halo?: boolean;
-  className?: string; bodyClassName?: string; children: ReactNode;
+  title: ReactNode;
+  subtitle?: ReactNode;
+  icon?: ReactNode;
+  action?: ReactNode;
+  live?: boolean;
+  tone?: Tone;
+  halo?: boolean;
+  className?: string;
+  bodyClassName?: string;
+  children: ReactNode;
 }) {
   return (
-    <section className={cn("glass relative flex flex-col overflow-hidden", className)}>
+    <section
+      className={cn("glass relative flex flex-col overflow-hidden", className)}
+    >
       {halo && (
         <div
           aria-hidden
           className="pointer-events-none absolute -right-24 -top-28 h-64 w-64 rounded-full blur-3xl"
-          style={{ background: `radial-gradient(circle, ${toneFill(tone)} 0%, transparent 70%)`, opacity: 0.15 }}
+          style={{
+            background: `radial-gradient(circle, ${toneFill(tone)} 0%, transparent 70%)`,
+            opacity: 0.15,
+          }}
         />
       )}
       <header className="relative flex items-start justify-between gap-3 px-5 pb-3 pt-4">
         <div className="flex min-w-0 items-center gap-3">
-          {icon && <IconTile tone={tone} size="sm">{icon}</IconTile>}
+          {icon && (
+            <IconTile size="sm" tone={tone}>
+              {icon}
+            </IconTile>
+          )}
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <h2 className="font-display truncate text-sm font-semibold tracking-tight">{title}</h2>
+              <h2 className="font-display truncate text-sm font-semibold tracking-tight">
+                {title}
+              </h2>
               {live && <LivePip />}
             </div>
             {subtitle && (
-              <p className="truncate text-xs" style={{ color: "var(--ink-faint)" }}>{subtitle}</p>
+              <p
+                className="truncate text-xs"
+                style={{ color: "var(--ink-faint)" }}
+              >
+                {subtitle}
+              </p>
             )}
           </div>
         </div>
@@ -51,14 +85,27 @@ export function Panel({
 }
 
 /** La acción de cabecera: «Ver todo» con la flecha en diagonal. */
-export function PanelLink({ to, children = "Ver todo", onClick }: { to?: string; children?: ReactNode; onClick?: () => void }) {
+export function PanelLink({
+  to,
+  children = "Ver todo",
+  onClick,
+}: {
+  to?: string;
+  children?: ReactNode;
+  onClick?: () => void;
+}) {
   const navigate = useNavigate();
+
   return (
     <button
+      className="cg-focus group inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-colors"
+      style={{
+        borderColor: "var(--hairline)",
+        color: "var(--brand-text)",
+        background: "var(--glass-sunken)",
+      }}
       type="button"
       onClick={onClick ?? (to ? () => navigate(to) : undefined)}
-      className="cg-focus group inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-colors"
-      style={{ borderColor: "var(--hairline)", color: "var(--brand-text)", background: "var(--glass-sunken)" }}
     >
       {children}
       <ArrowUpRight className="size-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -79,8 +126,16 @@ export function PanelLink({ to, children = "Ver todo", onClick }: { to?: string;
  * cuando la píldora va suelta sobre el lienzo.
  */
 export function TonePill({
-  children, tone = "neutral" as Tone, pulse = false, className,
-}: { children: ReactNode; tone?: Tone; pulse?: boolean; className?: string }) {
+  children,
+  tone = "neutral" as Tone,
+  pulse = false,
+  className,
+}: {
+  children: ReactNode;
+  tone?: Tone;
+  pulse?: boolean;
+  className?: string;
+}) {
   return (
     <span
       className={cn(
@@ -89,19 +144,40 @@ export function TonePill({
       )}
       style={{ background: toneWash(tone, 13), color: toneInk(tone) }}
     >
-      {pulse && <span className="cc-dot" style={{ background: toneFill(tone), width: 6, height: 6 }} />}
+      {pulse && (
+        <span
+          className="cc-dot"
+          style={{ background: toneFill(tone), width: 6, height: 6 }}
+        />
+      )}
       {children}
     </span>
   );
 }
 
 /** Indicador de «esto se actualiza solo». El punto late; el texto no. */
-export function LivePip({ label, tone = "ok" as Tone }: { label?: string; tone?: Tone }) {
+export function LivePip({
+  label,
+  tone = "ok" as Tone,
+}: {
+  label?: string;
+  tone?: Tone;
+}) {
   const { t } = useTranslation();
-  return <TonePill tone={tone} pulse>{label ?? t("dashboard.live")}</TonePill>;
+
+  return (
+    <TonePill pulse tone={tone}>
+      {label ?? t("dashboard.live")}
+    </TonePill>
+  );
 }
 
 /** Punto de estado sin animación — para listas donde 20 latidos serían ruido. */
 export function Dot({ tone }: { tone: Tone }) {
-  return <span className="inline-block size-2 shrink-0 rounded-full" style={{ background: toneFill(tone) }} />;
+  return (
+    <span
+      className="inline-block size-2 shrink-0 rounded-full"
+      style={{ background: toneFill(tone) }}
+    />
+  );
 }

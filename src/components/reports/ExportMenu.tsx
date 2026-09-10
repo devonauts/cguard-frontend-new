@@ -21,15 +21,34 @@
  * móvil ofrezca una exportación que el escritorio no tenga.
  * ════════════════════════════════════════════════════════════════════════════
  */
+import type { ExportFormat } from "@/lib/export/reportExport";
+
 import { useState, type ReactNode } from "react";
-import { Download, FileSpreadsheet, FileText, FileType2, Loader2, Mail, Printer } from "lucide-react";
+import {
+  Download,
+  FileSpreadsheet,
+  FileText,
+  FileType2,
+  Loader2,
+  Mail,
+  Printer,
+} from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
-  DropdownMenuSeparator, DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import type { ExportFormat } from "@/lib/export/reportExport";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 interface Accion {
   key: string;
@@ -59,10 +78,25 @@ export interface ExportMenuProps {
   className?: string;
 }
 
-const META: Record<ExportFormat, { label: string; hint: string; icon: ReactNode }> = {
-  excel: { label: "Excel", hint: "Hoja de cálculo .xlsx", icon: <FileSpreadsheet className="h-4 w-4" /> },
-  pdf: { label: "PDF", hint: "Documento .pdf listo para enviar", icon: <FileType2 className="h-4 w-4" /> },
-  csv: { label: "CSV", hint: "Texto plano .csv para otros sistemas", icon: <FileText className="h-4 w-4" /> },
+const META: Record<
+  ExportFormat,
+  { label: string; hint: string; icon: ReactNode }
+> = {
+  excel: {
+    label: "Excel",
+    hint: "Hoja de cálculo .xlsx",
+    icon: <FileSpreadsheet className="h-4 w-4" />,
+  },
+  pdf: {
+    label: "PDF",
+    hint: "Documento .pdf listo para enviar",
+    icon: <FileType2 className="h-4 w-4" />,
+  },
+  csv: {
+    label: "CSV",
+    hint: "Texto plano .csv para otros sistemas",
+    icon: <FileText className="h-4 w-4" />,
+  },
 };
 
 /* Excel primero a propósito: es el que pide el 90 % de la gente, y hasta ahora
@@ -70,8 +104,16 @@ const META: Record<ExportFormat, { label: string; hint: string; icon: ReactNode 
 const ORDEN: ExportFormat[] = ["excel", "pdf", "csv"];
 
 export default function ExportMenu({
-  onExport, formats, onPrint, onEmail, disabled = false, busy = false,
-  size = "default", showLabel = true, label = "Exportar", className,
+  onExport,
+  formats,
+  onPrint,
+  onEmail,
+  disabled = false,
+  busy = false,
+  size = "default",
+  showLabel = true,
+  label = "Exportar",
+  className,
 }: ExportMenuProps) {
   const [hojaAbierta, setHojaAbierta] = useState(false);
   const [trabajando, setTrabajando] = useState(false);
@@ -91,22 +133,28 @@ export default function ExportMenu({
   // sólo ofrece imprimir o enviar): tratarlo como «por defecto» ofrecía
   // descargas que el llamador no sabe generar.
   const elegidos = formats === undefined ? ORDEN : formats;
-  const acciones: Accion[] = ORDEN.filter((f) => elegidos.includes(f)).map((f) => ({
-    key: f,
-    label: META[f].label,
-    hint: META[f].hint,
-    icon: META[f].icon,
-    run: () => void lanzar(f),
-  }));
+  const acciones: Accion[] = ORDEN.filter((f) => elegidos.includes(f)).map(
+    (f) => ({
+      key: f,
+      label: META[f].label,
+      hint: META[f].hint,
+      icon: META[f].icon,
+      run: () => void lanzar(f),
+    }),
+  );
 
   const extras: Accion[] = [];
+
   if (onPrint) {
     extras.push({
       key: "print",
       label: "Imprimir",
       hint: "Abre la vista de impresión del navegador",
       icon: <Printer className="h-4 w-4" />,
-      run: () => { setHojaAbierta(false); onPrint(); },
+      run: () => {
+        setHojaAbierta(false);
+        onPrint();
+      },
     });
   }
   if (onEmail) {
@@ -115,24 +163,29 @@ export default function ExportMenu({
       label: "Enviar por correo",
       hint: "Manda el informe a un destinatario",
       icon: <Mail className="h-4 w-4" />,
-      run: () => { setHojaAbierta(false); onEmail(); },
+      run: () => {
+        setHojaAbierta(false);
+        onEmail();
+      },
     });
   }
 
-  const icono = ocupado
-    ? <Loader2 className="h-4 w-4 animate-spin" />
-    : <Download className="h-4 w-4" />;
+  const icono = ocupado ? (
+    <Loader2 className="h-4 w-4 animate-spin" />
+  ) : (
+    <Download className="h-4 w-4" />
+  );
 
   const disparador = (onClick?: () => void) => (
     <Button
-      variant="outline"
-      size={showLabel ? size : size === "sm" ? "icon-sm" : "icon"}
+      className={className}
       disabled={disabled || ocupado}
+      size={showLabel ? size : size === "sm" ? "icon-sm" : "icon"}
+      title={label}
+      variant="outline"
       onClick={onClick}
       // Con rótulo el nombre accesible ya lo da el texto; sin rótulo hay que darlo.
       aria-label={showLabel ? undefined : label}
-      title={label}
-      className={className}
     >
       {icono}
       {showLabel && <span>{ocupado ? "Exportando…" : label}</span>}
@@ -145,7 +198,10 @@ export default function ExportMenu({
       <div className="sm:hidden">
         {disparador(() => setHojaAbierta(true))}
         <Sheet open={hojaAbierta} onOpenChange={setHojaAbierta}>
-          <SheetContent side="bottom" className="pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <SheetContent
+            className="pb-[max(1rem,env(safe-area-inset-bottom))]"
+            side="bottom"
+          >
             <SheetHeader className="text-left">
               <SheetTitle>{label}</SheetTitle>
             </SheetHeader>
@@ -153,21 +209,29 @@ export default function ExportMenu({
               {[...acciones, ...extras].map((a) => (
                 <button
                   key={a.key}
+                  style={{ background: "var(--glass-sunken)" }}
                   type="button"
                   onClick={a.run}
                   // 56 px de alto: el mínimo táctil cómodo, no el mínimo legal.
                   className="cg-focus flex min-h-14 w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-left transition-colors active:scale-[0.99]"
-                  style={{ background: "var(--glass-sunken)" }}
                 >
                   <span
                     className="flex size-10 shrink-0 items-center justify-center rounded-xl"
-                    style={{ background: "var(--glass)", color: "var(--brand)" }}
+                    style={{
+                      background: "var(--glass)",
+                      color: "var(--brand)",
+                    }}
                   >
                     {a.icon}
                   </span>
                   <span className="min-w-0">
-                    <span className="block text-sm font-semibold">{a.label}</span>
-                    <span className="block truncate text-xs" style={{ color: "var(--ink-faint)" }}>
+                    <span className="block text-sm font-semibold">
+                      {a.label}
+                    </span>
+                    <span
+                      className="block truncate text-xs"
+                      style={{ color: "var(--ink-faint)" }}
+                    >
                       {a.hint}
                     </span>
                   </span>
@@ -183,14 +247,20 @@ export default function ExportMenu({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>{disparador()}</DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-60">
-            <DropdownMenuLabel className="text-xs" style={{ color: "var(--ink-faint)" }}>
+            <DropdownMenuLabel
+              className="text-xs"
+              style={{ color: "var(--ink-faint)" }}
+            >
               Descargar como
             </DropdownMenuLabel>
             {acciones.map((a) => (
               <DropdownMenuItem key={a.key} className="gap-2" onSelect={a.run}>
                 {a.icon}
                 <span className="flex-1">{a.label}</span>
-                <span className="text-[11px] uppercase" style={{ color: "var(--ink-faint)" }}>
+                <span
+                  className="text-[11px] uppercase"
+                  style={{ color: "var(--ink-faint)" }}
+                >
                   {a.key === "excel" ? "xlsx" : a.key}
                 </span>
               </DropdownMenuItem>

@@ -14,10 +14,10 @@
  *
  * Vive fuera de React para que los servicios puedan leerlo sin un hook.
  */
-import { FIELD_ONLY_ROLES } from './access';
+import { FIELD_ONLY_ROLES } from "./access";
 
-const ACTIVE_KEY = 'tenantId';
-const LIST_KEY = 'tenants.available.v1';
+const ACTIVE_KEY = "tenantId";
+const LIST_KEY = "tenants.available.v1";
 
 export interface AvailableTenant {
   tenantId: string;
@@ -27,7 +27,8 @@ export interface AvailableTenant {
 
 let list: AvailableTenant[] = (() => {
   try {
-    const raw = JSON.parse(localStorage.getItem(LIST_KEY) || '[]');
+    const raw = JSON.parse(localStorage.getItem(LIST_KEY) || "[]");
+
     return Array.isArray(raw) ? raw.filter((t) => t && t.tenantId) : [];
   } catch {
     return [];
@@ -35,17 +36,31 @@ let list: AvailableTenant[] = (() => {
 })();
 
 const subs = new Set<() => void>();
+
 function emit(): void {
-  subs.forEach((f) => { try { f(); } catch { /* ignore */ } });
+  subs.forEach((f) => {
+    try {
+      f();
+    } catch {
+      /* ignore */
+    }
+  });
 }
 
 export function subscribeActiveTenant(f: () => void): () => void {
   subs.add(f);
-  return () => { subs.delete(f); };
+
+  return () => {
+    subs.delete(f);
+  };
 }
 
 export function getActiveTenantId(): string | null {
-  try { return localStorage.getItem(ACTIVE_KEY); } catch { return null; }
+  try {
+    return localStorage.getItem(ACTIVE_KEY);
+  } catch {
+    return null;
+  }
 }
 
 export function getAvailableTenants(): AvailableTenant[] {
@@ -54,6 +69,7 @@ export function getAvailableTenants(): AvailableTenant[] {
 
 export function getActiveTenant(): AvailableTenant | null {
   const id = getActiveTenantId();
+
   return list.find((t) => t.tenantId === id) || null;
 }
 
@@ -64,9 +80,17 @@ export function isMultiTenant(): boolean {
 
 function rolesDe(t: any): string[] {
   let r = t?.roles ?? t?.role ?? [];
-  if (typeof r === 'string') { try { r = JSON.parse(r); } catch { r = [r]; } }
+
+  if (typeof r === "string") {
+    try {
+      r = JSON.parse(r);
+    } catch {
+      r = [r];
+    }
+  }
+
   return (Array.isArray(r) ? r : [r])
-    .map((x: any) => String(x?.name || x?.slug || x || '').toLowerCase())
+    .map((x: any) => String(x?.name || x?.slug || x || "").toLowerCase())
     .filter(Boolean);
 }
 
@@ -88,19 +112,27 @@ function rolesDe(t: any): string[] {
  */
 export function syncTenantsFromProfile(user: any): void {
   const next: AvailableTenant[] = [];
-  const entries = Array.isArray(user?.tenants) ? user.tenants : user?.tenant ? [user.tenant] : [];
+  const entries = Array.isArray(user?.tenants)
+    ? user.tenants
+    : user?.tenant
+      ? [user.tenant]
+      : [];
 
   for (const t of entries) {
     const tenantId = t?.tenantId || t?.tenant?.id || null;
+
     if (!tenantId) continue;
-    const status = String(t?.status || '').toLowerCase();
-    if (status && status !== 'active') continue;
+    const status = String(t?.status || "").toLowerCase();
+
+    if (status && status !== "active") continue;
     const slugs = rolesDe(t);
+
     // Sin roles = se acepta (payloads viejos/lean); con roles, alguno de oficina.
-    if (slugs.length && !slugs.some((r) => !FIELD_ONLY_ROLES.includes(r))) continue;
+    if (slugs.length && !slugs.some((r) => !FIELD_ONLY_ROLES.includes(r)))
+      continue;
     next.push({
       tenantId,
-      name: t?.tenant?.name || 'Mi empresa',
+      name: t?.tenant?.name || "Mi empresa",
       logoUrl: t?.tenant?.logoUrl || null,
     });
   }
@@ -109,19 +141,30 @@ export function syncTenantsFromProfile(user: any): void {
   // se completa con ella — es la vista del servidor.
   if (Array.isArray(user?.availableTenants) && user.availableTenants.length) {
     const porId = new Map(next.map((t) => [t.tenantId, t]));
+
     for (const t of user.availableTenants) {
       if (t?.tenantId && !porId.has(t.tenantId)) {
-        next.push({ tenantId: t.tenantId, name: t.name || 'Mi empresa', logoUrl: t.logoUrl || null });
+        next.push({
+          tenantId: t.tenantId,
+          name: t.name || "Mi empresa",
+          logoUrl: t.logoUrl || null,
+        });
       }
     }
   }
 
   list = next;
-  try { localStorage.setItem(LIST_KEY, JSON.stringify(list)); } catch { /* ignore */ }
+  try {
+    localStorage.setItem(LIST_KEY, JSON.stringify(list));
+  } catch {
+    /* ignore */
+  }
 
   const activa = getActiveTenantId();
+
   if (list.length && !list.some((t) => t.tenantId === activa)) {
     setActiveTenantId(list[0].tenantId);
+
     return; // setActiveTenantId ya emitió
   }
   emit();
@@ -138,16 +181,22 @@ export function syncTenantsFromProfile(user: any): void {
 export function resolveActiveTenantId(user: any): string | null {
   syncTenantsFromProfile(user);
   const activa = getActiveTenantId();
+
   if (activa && list.some((t) => t.tenantId === activa)) return activa;
   if (list.length) return list[0].tenantId;
   // Sin elegibles, el comportamiento histórico: la primera membresía que haya.
   const t0 = Array.isArray(user?.tenants) ? user.tenants[0] : null;
+
   return (t0 && (t0.tenantId || t0.tenant?.id)) || null;
 }
 
 export function setActiveTenantId(tenantId: string): void {
   if (getActiveTenantId() === tenantId) return;
-  try { localStorage.setItem(ACTIVE_KEY, tenantId); } catch { /* ignore */ }
+  try {
+    localStorage.setItem(ACTIVE_KEY, tenantId);
+  } catch {
+    /* ignore */
+  }
   emit();
 }
 
@@ -157,6 +206,8 @@ export function clearTenants(): void {
   try {
     localStorage.removeItem(LIST_KEY);
     localStorage.removeItem(ACTIVE_KEY);
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   emit();
 }

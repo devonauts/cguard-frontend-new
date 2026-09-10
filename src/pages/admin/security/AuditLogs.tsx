@@ -1,25 +1,46 @@
+import type { ExportFormat } from "@/lib/export/reportExport";
+
 import { useEffect, useState } from "react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { ShieldCheck, AlertTriangle, RefreshCw, Inbox } from "lucide-react";
+
+import {
+  AuditRow as AuditTr,
+  AuditSearch,
+  AuditSkeleton,
+  AuditTable,
+  SeverityRail,
+  fmtStamp,
+  metaFor,
+} from "./shared";
+
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import {
-  PageContainer, PageHeader, Section, Toolbar, StatusBadge, EmptyState,
+  PageContainer,
+  PageHeader,
+  Section,
+  Toolbar,
+  StatusBadge,
+  EmptyState,
 } from "@/components/kit";
 import { ApiService } from "@/services/api/apiService";
 import ExportMenu from "@/components/reports/ExportMenu";
 import { descargarInforme } from "@/lib/export/serverDownload";
-import type { ExportFormat } from "@/lib/export/reportExport";
-import {
-  AuditRow as AuditTr, AuditSearch, AuditSkeleton, AuditTable, SeverityRail,
-  fmtStamp, metaFor,
-} from "./shared";
 
 type AuditRow = {
-  id: string; event: string; outcome?: string | null; email?: string | null;
-  ip?: string | null; userAgent?: string | null; deviceId?: string | null;
-  platform?: string | null; detail?: string | null; at: string; userId?: string | null;
+  id: string;
+  event: string;
+  outcome?: string | null;
+  email?: string | null;
+  ip?: string | null;
+  userAgent?: string | null;
+  deviceId?: string | null;
+  platform?: string | null;
+  detail?: string | null;
+  at: string;
+  userId?: string | null;
 };
 
 export default function AuditLogs() {
@@ -48,13 +69,17 @@ export default function AuditLogs() {
     setBajando(true);
     try {
       const params = new URLSearchParams({ format });
+
       if (q.trim()) params.set("search", q.trim());
       await descargarInforme(
         `/tenant/${tid()}/security/audit-logs/export?${params.toString()}`,
-        { format, nombreBase: `bitacora-accesos-${new Date().toISOString().slice(0, 10)}` },
+        {
+          format,
+          nombreBase: `bitacora-accesos-${new Date().toISOString().slice(0, 10)}`,
+        },
       );
     } catch {
-      toast.error(t('ui.AuditLogs.noSePudoDescargarEl'));
+      toast.error(t("ui.AuditLogs.noSePudoDescargarEl"));
     } finally {
       setBajando(false);
     }
@@ -68,11 +93,16 @@ export default function AuditLogs() {
       .catch(() => setError(true))
       .finally(() => setLoading(false));
   };
-  useEffect(() => { load(); }, []);
+
+  useEffect(() => {
+    load();
+  }, []);
 
   const filtered = rows.filter((r) => {
     if (!q.trim()) return true;
-    const blob = `${r.event} ${r.email || ""} ${r.ip || ""} ${r.platform || ""} ${r.detail || ""}`.toLowerCase();
+    const blob =
+      `${r.event} ${r.email || ""} ${r.ip || ""} ${r.platform || ""} ${r.detail || ""}`.toLowerCase();
+
     return blob.includes(q.toLowerCase());
   });
 
@@ -81,39 +111,55 @@ export default function AuditLogs() {
 
   return (
     <AppLayout>
-      <PageContainer width="wide" className="px-4 pt-4 sm:px-6 sm:pt-6">
+      <PageContainer className="px-4 pt-4 sm:px-6 sm:pt-6" width="wide">
         <PageHeader
-          icon={<ShieldCheck />}
-          title={t('ui.AuditLogs.registroDeSeguridad', 'Registro de seguridad')}
-          subtitle={t('ui.AuditLogs.iniciosYCierresDeSesion')}
           badges={
             !loading && !error ? (
               <>
-                <StatusBadge tone="neutral" dot={false}>
-                  {filtered.length === 1 ? "1 evento" : `${filtered.length} eventos`}
+                <StatusBadge dot={false} tone="neutral">
+                  {filtered.length === 1
+                    ? "1 evento"
+                    : `${filtered.length} eventos`}
                 </StatusBadge>
                 {fallidos > 0 && (
                   <StatusBadge tone="bad">
-                    {fallidos === 1 ? "1 intento fallido" : `${fallidos} intentos fallidos`}
+                    {fallidos === 1
+                      ? "1 intento fallido"
+                      : `${fallidos} intentos fallidos`}
                   </StatusBadge>
                 )}
               </>
             ) : undefined
           }
+          icon={<ShieldCheck />}
+          subtitle={t("ui.AuditLogs.iniciosYCierresDeSesion")}
+          title={t("ui.AuditLogs.registroDeSeguridad", "Registro de seguridad")}
         />
 
         <Toolbar>
-          <AuditSearch value={q} onChange={setQ} placeholder={t("ui.AuditLogs.buscarPorUsuarioDireccionO", "Buscar por usuario, dirección o dispositivo…")} />
+          <AuditSearch
+            placeholder={t(
+              "ui.AuditLogs.buscarPorUsuarioDireccionO",
+              "Buscar por usuario, dirección o dispositivo…",
+            )}
+            value={q}
+            onChange={setQ}
+          />
           <div className="ml-auto">
             <ExportMenu
-              onExport={exportar}
               busy={bajando}
               disabled={loading}
               label={t("ui.AuditLogs.descargar", "Descargar")}
+              onExport={exportar}
             />
           </div>
-          <Button variant="outline" size="icon" onClick={load} title="Recargar" aria-label="Recargar">
-
+          <Button
+            aria-label="Recargar"
+            size="icon"
+            title="Recargar"
+            variant="outline"
+            onClick={load}
+          >
             <RefreshCw className={`size-4 ${loading ? "animate-spin" : ""}`} />
           </Button>
         </Toolbar>
@@ -124,24 +170,28 @@ export default function AuditLogs() {
           ) : error ? (
             <div className="p-6">
               <EmptyState
-                className="border-0"
-                icon={<AlertTriangle />}
-                title={t('ui.AuditLogs.noSePudoCargarEl')}
-                description="Vuelve a intentarlo en unos segundos."
                 action={
-                  <Button variant="outline" className="gap-2" onClick={load}>
+                  <Button className="gap-2" variant="outline" onClick={load}>
                     <RefreshCw className="size-4" /> Reintentar
                   </Button>
                 }
+                className="border-0"
+                description="Vuelve a intentarlo en unos segundos."
+                icon={<AlertTriangle />}
+                title={t("ui.AuditLogs.noSePudoCargarEl")}
               />
             </div>
           ) : filtered.length === 0 ? (
             <div className="p-6">
               <EmptyState
                 className="border-0"
+                description={
+                  q.trim()
+                    ? `Ningún evento coincide con “${q}”.`
+                    : "Todavía no hay eventos de seguridad."
+                }
                 icon={<Inbox />}
-                title={t('comun.sinRegistros')}
-                description={q.trim() ? `Ningún evento coincide con “${q}”.` : "Todavía no hay eventos de seguridad."}
+                title={t("comun.sinRegistros")}
               />
             </div>
           ) : (
@@ -150,27 +200,59 @@ export default function AuditLogs() {
               head={
                 <>
                   <th className="px-4 py-3">Evento</th>
-                  <th className="px-3 py-3">{t('comun.usuario')}</th>
-                  <th className="px-3 py-3">{t("ui.AuditLogs.direccion", "Dirección")}</th>
+                  <th className="px-3 py-3">{t("comun.usuario")}</th>
+                  <th className="px-3 py-3">
+                    {t("ui.AuditLogs.direccion", "Dirección")}
+                  </th>
                   <th className="px-3 py-3">Plataforma</th>
-                  <th className="px-3 py-3">{t('comun.detalle')}</th>
-                  <th className="px-3 py-3 text-right">{t('comun.fecha')}</th>
+                  <th className="px-3 py-3">{t("comun.detalle")}</th>
+                  <th className="px-3 py-3 text-right">{t("comun.fecha")}</th>
                 </>
               }
             >
               {filtered.map((r) => {
                 const m = metaFor(r.event);
+
                 return (
                   <AuditTr key={r.id} tone={m.tone}>
                     <td className="relative px-4 py-2.5">
                       <SeverityRail tone={m.tone} />
-                      <StatusBadge tone={m.tone} dot={false}>{m.icon}{m.label}</StatusBadge>
+                      <StatusBadge dot={false} tone={m.tone}>
+                        {m.icon}
+                        {m.label}
+                      </StatusBadge>
                     </td>
-                    <td className="px-3 py-2.5" style={{ color: "var(--ink-soft)" }}>{r.email || "—"}</td>
-                    <td className="px-3 py-2.5 font-mono text-xs" style={{ color: "var(--ink-soft)" }}>{r.ip || "—"}</td>
-                    <td className="px-3 py-2.5" style={{ color: "var(--ink-soft)" }}>{r.platform || "—"}</td>
-                    <td className="px-3 py-2.5 text-xs" style={{ color: "var(--ink-faint)" }} title={r.detail || ""}>{(r.detail || "").slice(0, 60)}</td>
-                    <td className="px-3 py-2.5 text-right text-xs tabular-nums" style={{ color: "var(--ink-faint)" }}>{fmtStamp(r.at)}</td>
+                    <td
+                      className="px-3 py-2.5"
+                      style={{ color: "var(--ink-soft)" }}
+                    >
+                      {r.email || "—"}
+                    </td>
+                    <td
+                      className="px-3 py-2.5 font-mono text-xs"
+                      style={{ color: "var(--ink-soft)" }}
+                    >
+                      {r.ip || "—"}
+                    </td>
+                    <td
+                      className="px-3 py-2.5"
+                      style={{ color: "var(--ink-soft)" }}
+                    >
+                      {r.platform || "—"}
+                    </td>
+                    <td
+                      className="px-3 py-2.5 text-xs"
+                      style={{ color: "var(--ink-faint)" }}
+                      title={r.detail || ""}
+                    >
+                      {(r.detail || "").slice(0, 60)}
+                    </td>
+                    <td
+                      className="px-3 py-2.5 text-right text-xs tabular-nums"
+                      style={{ color: "var(--ink-faint)" }}
+                    >
+                      {fmtStamp(r.at)}
+                    </td>
                   </AuditTr>
                 );
               })}

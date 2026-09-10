@@ -1,17 +1,47 @@
-import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import type { Client } from '@/types/client';
-import { Plus, Pencil, Trash2, CheckCircle2, EllipsisVertical } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { toast } from 'sonner';
-import { projectService, type ClientProject } from '@/lib/api/projectService';
-import { ProjectTypeBadge, ProjectStatusBadge } from '@/components/projects/ProjectBadge';
-import ProjectForm from '@/pages/admin/projects/ProjectForm';
-import { Section, EmptyState, SkeletonCards } from '@/components/kit';
-import { FolderKanban } from 'lucide-react';
+import type { Client } from "@/types/client";
+
+import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  CheckCircle2,
+  EllipsisVertical,
+} from "lucide-react";
+import { toast } from "sonner";
+import { FolderKanban } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { projectService, type ClientProject } from "@/lib/api/projectService";
+import {
+  ProjectTypeBadge,
+  ProjectStatusBadge,
+} from "@/components/projects/ProjectBadge";
+import ProjectForm from "@/pages/admin/projects/ProjectForm";
+import { Section, EmptyState, SkeletonCards } from "@/components/kit";
 
 interface Props {
   client: Client;
@@ -27,13 +57,16 @@ export default function ClientProjects({ client }: Props) {
   const [editingId, setEditingId] = useState<string | undefined>(undefined);
 
   // Delete dialog
-  const [deleteTargetId, setDeleteTargetId] = useState<string | undefined>(undefined);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | undefined>(
+    undefined,
+  );
 
   const loadProjects = async () => {
     if (!client?.id) return;
     setLoading(true);
     try {
       const { rows } = await projectService.listByClient(client.id);
+
       setProjects(rows);
     } catch (e) {
       console.error(e);
@@ -42,60 +75,72 @@ export default function ClientProjects({ client }: Props) {
     }
   };
 
-  useEffect(() => { loadProjects(); }, [client?.id]);
+  useEffect(() => {
+    loadProjects();
+  }, [client?.id]);
 
   const handleDelete = async () => {
     if (!deleteTargetId) return;
     try {
       await projectService.delete([deleteTargetId]);
-      toast.success('Proyecto eliminado');
+      toast.success("Proyecto eliminado");
       setDeleteTargetId(undefined);
       loadProjects();
     } catch {
-      toast.error(t('ui.ClientProjects.errorAlEliminar'));
+      toast.error(t("ui.ClientProjects.errorAlEliminar"));
     }
   };
 
   const handleMarkComplete = async (id: string) => {
     try {
-      await projectService.update(id, { status: 'completed' });
-      toast.success('Proyecto marcado como completado');
+      await projectService.update(id, { status: "completed" });
+      toast.success("Proyecto marcado como completado");
       loadProjects();
     } catch {
-      toast.error('Error al actualizar');
+      toast.error("Error al actualizar");
     }
   };
 
   return (
     <div className="p-4">
       <Section
-        icon={<FolderKanban />}
-        title="Proyectos"
         action={
           <Button
-            variant="brand"
             size="sm"
-            onClick={() => { setEditingId(undefined); setOpenForm(true); }}
+            variant="brand"
+            onClick={() => {
+              setEditingId(undefined);
+              setOpenForm(true);
+            }}
           >
             <Plus className="h-4 w-4 mr-1" />
             Nuevo proyecto
           </Button>
         }
         contentClassName="-mx-1"
+        icon={<FolderKanban />}
+        title="Proyectos"
       >
         {/* List */}
         {loading ? (
           <SkeletonCards count={4} />
         ) : projects.length === 0 ? (
           <EmptyState
-            icon={<FolderKanban />}
-            title={t('ui.ClientProjects.sinProyectos')}
-            description={t('ui.ClientProjects.noHayProyectosParaEste')}
             action={
-              <Button variant="brand" size="sm" onClick={() => { setEditingId(undefined); setOpenForm(true); }}>
+              <Button
+                size="sm"
+                variant="brand"
+                onClick={() => {
+                  setEditingId(undefined);
+                  setOpenForm(true);
+                }}
+              >
                 <Plus className="h-4 w-4 mr-1" /> Nuevo proyecto
               </Button>
             }
+            description={t("ui.ClientProjects.noHayProyectosParaEste")}
+            icon={<FolderKanban />}
+            title={t("ui.ClientProjects.sinProyectos")}
           />
         ) : (
           <div className="border rounded-xl overflow-x-auto">
@@ -103,27 +148,36 @@ export default function ClientProjects({ client }: Props) {
               <thead>
                 <tr className="border-b">
                   <th className="cg-eyebrow px-2 py-2">Proyecto</th>
-                  <th className="cg-eyebrow px-2 py-2">{t('comun.tipo')}</th>
+                  <th className="cg-eyebrow px-2 py-2">{t("comun.tipo")}</th>
                   <th className="cg-eyebrow px-2 py-2">Inicio</th>
                   <th className="cg-eyebrow px-2 py-2">Fin</th>
-                  <th className="cg-eyebrow px-2 py-2">{t('comun.estado')}</th>
+                  <th className="cg-eyebrow px-2 py-2">{t("comun.estado")}</th>
                   <th className="cg-eyebrow px-2 py-2 text-right">Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {projects.map((p) => (
-                  <tr key={p.id} className="border-b hover:bg-muted/40 transition-colors">
+                  <tr
+                    key={p.id}
+                    className="border-b hover:bg-muted/40 transition-colors"
+                  >
                     <td className="px-2 py-2.5 font-medium">
                       <div>{p.name}</div>
                       {p.location && (
-                        <div className="text-xs text-muted-foreground mt-0.5">{p.location}</div>
+                        <div className="text-xs text-muted-foreground mt-0.5">
+                          {p.location}
+                        </div>
                       )}
                     </td>
                     <td className="px-2 py-2.5">
                       <ProjectTypeBadge value={p.type} />
                     </td>
-                    <td className="px-2 py-2.5 text-foreground/70">{p.startDate ?? '-'}</td>
-                    <td className="px-2 py-2.5 text-foreground/70">{p.endDate ?? '-'}</td>
+                    <td className="px-2 py-2.5 text-foreground/70">
+                      {p.startDate ?? "-"}
+                    </td>
+                    <td className="px-2 py-2.5 text-foreground/70">
+                      {p.endDate ?? "-"}
+                    </td>
                     <td className="px-2 py-2.5">
                       <ProjectStatusBadge value={p.status} />
                     </td>
@@ -135,16 +189,27 @@ export default function ClientProjects({ client }: Props) {
                           </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-44">
-                          <DropdownMenuItem onClick={() => { setEditingId(p.id); setOpenForm(true); }}>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setEditingId(p.id);
+                              setOpenForm(true);
+                            }}
+                          >
                             <Pencil className="mr-2 h-4 w-4" /> Editar
                           </DropdownMenuItem>
-                          {p.status !== 'completed' && (
-                            <DropdownMenuItem onClick={() => handleMarkComplete(p.id)}>
-                              <CheckCircle2 className="mr-2 h-4 w-4" style={{ color: 'var(--ok-text)' }} /> Marcar completado
+                          {p.status !== "completed" && (
+                            <DropdownMenuItem
+                              onClick={() => handleMarkComplete(p.id)}
+                            >
+                              <CheckCircle2
+                                className="mr-2 h-4 w-4"
+                                style={{ color: "var(--ok-text)" }}
+                              />{" "}
+                              Marcar completado
                             </DropdownMenuItem>
                           )}
                           <DropdownMenuItem
-                            style={{ color: 'var(--bad-text)' }}
+                            style={{ color: "var(--bad-text)" }}
                             onClick={() => setDeleteTargetId(p.id)}
                           >
                             <Trash2 className="mr-2 h-4 w-4" /> Eliminar
@@ -164,14 +229,19 @@ export default function ClientProjects({ client }: Props) {
       <Dialog open={openForm} onOpenChange={setOpenForm}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editingId ? 'Editar proyecto' : 'Nuevo proyecto'}</DialogTitle>
+            <DialogTitle>
+              {editingId ? "Editar proyecto" : "Nuevo proyecto"}
+            </DialogTitle>
           </DialogHeader>
           <ProjectForm
-            mode={editingId ? 'edit' : 'create'}
-            projectId={editingId}
             defaultClientId={client?.id}
-            onSaved={() => { setOpenForm(false); loadProjects(); }}
+            mode={editingId ? "edit" : "create"}
+            projectId={editingId}
             onCancel={() => setOpenForm(false)}
+            onSaved={() => {
+              setOpenForm(false);
+              loadProjects();
+            }}
           />
         </DialogContent>
       </Dialog>
@@ -183,11 +253,21 @@ export default function ClientProjects({ client }: Props) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t("ui.ClientProjects.eliminarEsteProyecto", "¿Eliminar este proyecto?")}</AlertDialogTitle>
-            <AlertDialogDescription>{t("ui.ClientProjects.estaAccionNoSePuede", "Esta acción no se puede deshacer.")}</AlertDialogDescription>
+            <AlertDialogTitle>
+              {t(
+                "ui.ClientProjects.eliminarEsteProyecto",
+                "¿Eliminar este proyecto?",
+              )}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t(
+                "ui.ClientProjects.estaAccionNoSePuede",
+                "Esta acción no se puede deshacer.",
+              )}
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>
+            <AlertDialogCancel>{t("actions.cancel")}</AlertDialogCancel>
             <AlertDialogAction className="cg-btn-bad" onClick={handleDelete}>
               Eliminar
             </AlertDialogAction>

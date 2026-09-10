@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { AlertTriangle, HelpCircle } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { AlertTriangle, HelpCircle } from "lucide-react";
 
 /**
  * Imperative, platform-styled replacement for window.confirm().
@@ -11,7 +11,7 @@ import { AlertTriangle, HelpCircle } from 'lucide-react';
  * A single <ConfirmHost/> (mounted once in App) renders the modal. No provider/hook
  * needed at the call site — just await the function.
  */
-type Tone = 'default' | 'danger';
+type Tone = "default" | "danger";
 
 export interface ConfirmOptions {
   title?: string;
@@ -32,9 +32,11 @@ let seq = 0;
 const emit = () => listeners.forEach((l) => l(current));
 
 export function confirmDialog(opts: ConfirmOptions | string): Promise<boolean> {
-  const options: ConfirmOptions = typeof opts === 'string' ? { message: opts } : opts;
+  const options: ConfirmOptions =
+    typeof opts === "string" ? { message: opts } : opts;
+
   return new Promise<boolean>((resolve) => {
-    current = { id: ++seq, tone: 'default', ...options, resolve };
+    current = { id: ++seq, tone: "default", ...options, resolve };
     emit();
   });
 }
@@ -45,8 +47,12 @@ export function ConfirmHost() {
 
   useEffect(() => {
     const l = (s: DialogState | null) => setState(s);
+
     listeners.push(l);
-    return () => { listeners = listeners.filter((x) => x !== l); };
+
+    return () => {
+      listeners = listeners.filter((x) => x !== l);
+    };
   }, []);
 
   const close = (val: boolean) => {
@@ -58,15 +64,17 @@ export function ConfirmHost() {
   useEffect(() => {
     if (!state) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') close(false);
-      else if (e.key === 'Enter') close(true);
+      if (e.key === "Escape") close(false);
+      else if (e.key === "Enter") close(true);
     };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+
+    window.addEventListener("keydown", onKey);
+
+    return () => window.removeEventListener("keydown", onKey);
   }, [state]);
 
   if (!state) return null;
-  const danger = state.tone === 'danger';
+  const danger = state.tone === "danger";
 
   return (
     // Mismo velo que <Dialog>: tinta del lienzo al 30% + desenfoque, para que el
@@ -76,26 +84,31 @@ export function ConfirmHost() {
       onClick={() => close(false)}
     >
       <div
-        role="alertdialog"
         aria-modal="true"
         className="glass-raised max-h-[90dvh] w-full max-w-sm overflow-y-auto p-5 animate-in zoom-in-95 duration-150 motion-reduce:animate-none!"
+        role="alertdialog"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex gap-3">
           <div
             className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--r-md)] ${
               danger
-                ? 'bg-[color-mix(in_oklab,var(--bad)_16%,transparent)] text-[color:var(--bad-text)]'
-                : 'bg-[var(--brand-wash)] text-[color:var(--brand-text)]'
+                ? "bg-[color-mix(in_oklab,var(--bad)_16%,transparent)] text-[color:var(--bad-text)]"
+                : "bg-[var(--brand-wash)] text-[color:var(--brand-text)]"
             }`}
           >
             {danger ? <AlertTriangle size={20} /> : <HelpCircle size={20} />}
           </div>
           <div className="min-w-0 flex-1 pt-0.5">
             <h3 className="text-base font-semibold tracking-[-0.01em] text-[color:var(--ink)]">
-              {state.title || (danger
-                ? t('kit.dialog.confirmTitle', { defaultValue: 'Confirmar acción' })
-                : t('kit.dialog.sureTitle', { defaultValue: '¿Estás seguro?' }))}
+              {state.title ||
+                (danger
+                  ? t("kit.dialog.confirmTitle", {
+                      defaultValue: "Confirmar acción",
+                    })
+                  : t("kit.dialog.sureTitle", {
+                      defaultValue: "¿Estás seguro?",
+                    }))}
             </h3>
             <p className="mt-1 whitespace-pre-line text-sm text-[color:var(--ink-soft)]">
               {state.message}
@@ -104,19 +117,21 @@ export function ConfirmHost() {
         </div>
         <div className="mt-5 flex justify-end gap-2">
           <button
-            onClick={() => close(false)}
             className="cg-btn-glass cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 motion-reduce:transition-none"
+            onClick={() => close(false)}
           >
-            {state.cancelText || t('kit.dialog.cancel', { defaultValue: 'Cancelar' })}
+            {state.cancelText ||
+              t("kit.dialog.cancel", { defaultValue: "Cancelar" })}
           </button>
           <button
             autoFocus
-            onClick={() => close(true)}
             className={`cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 active:scale-[0.97] motion-reduce:transition-none ${
-              danger ? 'cg-btn-bad' : 'cg-btn-brand'
+              danger ? "cg-btn-bad" : "cg-btn-brand"
             }`}
+            onClick={() => close(true)}
           >
-            {state.confirmText || t('kit.dialog.confirm', { defaultValue: 'Confirmar' })}
+            {state.confirmText ||
+              t("kit.dialog.confirm", { defaultValue: "Confirmar" })}
           </button>
         </div>
       </div>

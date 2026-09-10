@@ -1,10 +1,10 @@
-import * as React from "react"
-import * as AccordionPrimitive from "@radix-ui/react-accordion"
-import { ChevronDown } from "lucide-react"
+import * as React from "react";
+import * as AccordionPrimitive from "@radix-ui/react-accordion";
+import { ChevronDown } from "lucide-react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-const Accordion = AccordionPrimitive.Root
+const Accordion = AccordionPrimitive.Root;
 
 const AccordionItem = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Item>,
@@ -15,8 +15,9 @@ const AccordionItem = React.forwardRef<
     className={cn("border-b border-[color:var(--hairline)]", className)}
     {...props}
   />
-))
-AccordionItem.displayName = "AccordionItem"
+));
+
+AccordionItem.displayName = "AccordionItem";
 
 /* Sin subrayado al pasar: el aviso de «esto se puede abrir» lo da la tinta del
    acento y el galón que gira. Un subrayado dentro de una superficie de cristal
@@ -30,7 +31,7 @@ const AccordionTrigger = React.forwardRef<
       ref={ref}
       className={cn(
         "cg-focus flex flex-1 items-center justify-between gap-3 py-4 text-left text-sm font-semibold text-[color:var(--ink)] transition-colors duration-200 hover:text-[color:var(--brand-text)] motion-reduce:transition-none [&[data-state=open]>svg]:rotate-180 [&[data-state=open]]:text-[color:var(--brand-text)]",
-        className
+        className,
       )}
       {...props}
     >
@@ -38,8 +39,9 @@ const AccordionTrigger = React.forwardRef<
       <ChevronDown className="h-4 w-4 shrink-0 text-[color:var(--ink-faint)] transition-transform duration-200 motion-reduce:transition-none" />
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
-))
-AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName
+));
+
+AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName;
 
 const AccordionContent = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Content>,
@@ -52,7 +54,8 @@ const AccordionContent = React.forwardRef<
   >
     <div className={cn("pb-4 pt-0", className)}>{children}</div>
   </AccordionPrimitive.Content>
-))
-AccordionContent.displayName = AccordionPrimitive.Content.displayName
+));
 
-export { Accordion, AccordionItem, AccordionTrigger, AccordionContent }
+AccordionContent.displayName = AccordionPrimitive.Content.displayName;
+
+export { Accordion, AccordionItem, AccordionTrigger, AccordionContent };

@@ -1,6 +1,8 @@
-import api from "../api";
-import { descargarInforme } from "@/lib/export/serverDownload";
 import type { ExportFormat } from "@/lib/export/reportExport";
+
+import api from "../api";
+
+import { descargarInforme } from "@/lib/export/serverDownload";
 
 /**
  * Nómina / Time & Attendance API client. Tenant-scoped; mirrors shiftService.
@@ -9,23 +11,32 @@ import type { ExportFormat } from "@/lib/export/reportExport";
 
 const getTenantId = (): string => {
   const t = localStorage.getItem("tenantId");
-  if (!t) throw new Error("No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.");
+
+  if (!t)
+    throw new Error(
+      "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+    );
+
   return t;
 };
 
 const buildQuery = (params?: Record<string, unknown>): string => {
   if (!params) return "";
   const p = new URLSearchParams();
+
   for (const k of Object.keys(params)) {
     const v = params[k];
+
     if (v === undefined || v === null || String(v).trim() === "") continue;
     p.append(k, String(v));
   }
   const s = p.toString();
+
   return s ? `?${s}` : "";
 };
 
-const unwrap = (resp: any) => (resp && resp.data !== undefined ? resp.data : resp);
+const unwrap = (resp: any) =>
+  resp && resp.data !== undefined ? resp.data : resp;
 
 export interface AttendanceRecord {
   id: string;
@@ -56,14 +67,27 @@ export interface AttendanceRecord {
   punchOutLatitude?: number | null;
   punchOutLongitude?: number | null;
   guardName?: { id: string; fullName?: string; governmentId?: string } | null;
-  stationName?: { id: string; stationName?: string; latitud?: string; longitud?: string; geofenceRadius?: number; geofencePolygon?: { lat: number; lng: number }[] | null } | null;
+  stationName?: {
+    id: string;
+    stationName?: string;
+    latitud?: string;
+    longitud?: string;
+    geofenceRadius?: number;
+    geofencePolygon?: { lat: number; lng: number }[] | null;
+  } | null;
   /** 'supervisor' for a supervisorShift folded into the list; else guard. */
   role?: "guard" | "supervisor" | "administrative";
   /**
    * El camino de la tarjeta hasta el pago. `null` = no es una tarjeta de tiempo
    * (un día de vacaciones o una falta se informa, no se aprueba ni se paga).
    */
-  payrollStatus?: "pending_review" | "reviewed" | "approved" | "paid" | "rejected" | null;
+  payrollStatus?:
+    | "pending_review"
+    | "reviewed"
+    | "approved"
+    | "paid"
+    | "rejected"
+    | null;
   payrollStatusAt?: string | null;
   payrollStatusNotes?: string | null;
   /** Descansos y almuerzo: `[{start,end,kind}]`. El último sin `end` = en curso. */
@@ -87,16 +111,25 @@ export interface TimesheetEvent {
 const attendanceService = {
   async dashboard(params?: Record<string, unknown>) {
     const t = getTenantId();
-    return unwrap(await api.get(`/tenant/${t}/attendance/dashboard${buildQuery(params)}`));
+
+    return unwrap(
+      await api.get(`/tenant/${t}/attendance/dashboard${buildQuery(params)}`),
+    );
   },
 
-  async list(params?: Record<string, unknown>): Promise<{ rows: AttendanceRecord[]; count: number }> {
+  async list(
+    params?: Record<string, unknown>,
+  ): Promise<{ rows: AttendanceRecord[]; count: number }> {
     const t = getTenantId();
-    return unwrap(await api.get(`/tenant/${t}/attendance${buildQuery(params)}`));
+
+    return unwrap(
+      await api.get(`/tenant/${t}/attendance${buildQuery(params)}`),
+    );
   },
 
   async find(id: string): Promise<AttendanceRecord> {
     const t = getTenantId();
+
     return unwrap(await api.get(`/tenant/${t}/attendance/${id}`));
   },
 
@@ -115,8 +148,11 @@ const attendanceService = {
   async findSilent(id: string): Promise<AttendanceRecord | null> {
     try {
       const t = getTenantId();
+
       return unwrap(
-        await api.get(`/tenant/${t}/attendance/${id}`, { toast: { silentError: true } }),
+        await api.get(`/tenant/${t}/attendance/${id}`, {
+          toast: { silentError: true },
+        }),
       );
     } catch {
       return null;
@@ -126,25 +162,52 @@ const attendanceService = {
   /** Mover UNA tarjeta por el ciclo de nómina. */
   async setStatus(id: string, status: string, notes?: string) {
     const t = getTenantId();
-    return unwrap(await api.patch(`/tenant/${t}/attendance/${id}/status`, { data: { status, notes } }));
+
+    return unwrap(
+      await api.patch(`/tenant/${t}/attendance/${id}/status`, {
+        data: { status, notes },
+      }),
+    );
   },
 
   /** Lo mismo para una selección; devuelve cuántas se movieron y cuáles no. */
-  async bulkSetStatus(ids: string[], status: string, notes?: string): Promise<{ actualizadas: number; fallidas: { id: string; motivo: string }[] }> {
+  async bulkSetStatus(
+    ids: string[],
+    status: string,
+    notes?: string,
+  ): Promise<{
+    actualizadas: number;
+    fallidas: { id: string; motivo: string }[];
+  }> {
     const t = getTenantId();
-    return unwrap(await api.post(`/tenant/${t}/attendance/bulk-status`, { data: { ids, status, notes } }));
+
+    return unwrap(
+      await api.post(`/tenant/${t}/attendance/bulk-status`, {
+        data: { ids, status, notes },
+      }),
+    );
   },
 
   /** Corregir a mano entrada, salida, descansos y observaciones. */
-  async editTimes(id: string, data: {
-    punchInTime?: string | null;
-    punchOutTime?: string | null;
-    breaks?: Array<{ start: string; end?: string | null; kind?: string }> | null;
-    observations?: string | null;
-    reason?: string | null;
-  }): Promise<AttendanceRecord> {
+  async editTimes(
+    id: string,
+    data: {
+      punchInTime?: string | null;
+      punchOutTime?: string | null;
+      breaks?: Array<{
+        start: string;
+        end?: string | null;
+        kind?: string;
+      }> | null;
+      observations?: string | null;
+      reason?: string | null;
+    },
+  ): Promise<AttendanceRecord> {
     const t = getTenantId();
-    return unwrap(await api.patch(`/tenant/${t}/attendance/${id}/times`, { data }));
+
+    return unwrap(
+      await api.patch(`/tenant/${t}/attendance/${id}/times`, { data }),
+    );
   },
 
   /**
@@ -155,17 +218,29 @@ const attendanceService = {
    * arrastra todo lo de un fichaje real. No se inventa ubicación: el registro
    * sale sin GPS —que es la verdad— y por eso el motivo es obligatorio.
    */
-  async manualClockIn(data: { guardId: string; stationId: string; reason: string }): Promise<{
-    ok: boolean; guardShiftId?: string; vigilante?: string; motivo?: string;
-    detalle?: string; turnoAbiertoDesde?: string;
+  async manualClockIn(data: {
+    guardId: string;
+    stationId: string;
+    reason: string;
+  }): Promise<{
+    ok: boolean;
+    guardShiftId?: string;
+    vigilante?: string;
+    motivo?: string;
+    detalle?: string;
+    turnoAbiertoDesde?: string;
   }> {
     const t = getTenantId();
-    return unwrap(await api.post(`/tenant/${t}/attendance/manual-clock-in`, { data }));
+
+    return unwrap(
+      await api.post(`/tenant/${t}/attendance/manual-clock-in`, { data }),
+    );
   },
 
   /** Quién tocó esta tarjeta, qué hizo y cuándo. */
   async history(id: string): Promise<{ rows: TimesheetEvent[] }> {
     const t = getTenantId();
+
     return unwrap(await api.get(`/tenant/${t}/attendance/${id}/history`));
   },
 
@@ -185,16 +260,28 @@ const attendanceService = {
   async exportRecords(params: Record<string, unknown>): Promise<void> {
     const t = getTenantId();
     const fmt = String(params.format || "csv");
-    const format: ExportFormat = fmt === "excel" || fmt === "xlsx" ? "excel" : fmt === "pdf" ? "pdf" : "csv";
-    await descargarInforme(`/tenant/${t}/attendance/export${buildQuery(params)}`, {
-      format,
-      nombreBase: `asistencia_${new Date().toISOString().slice(0, 10)}`,
-    });
+    const format: ExportFormat =
+      fmt === "excel" || fmt === "xlsx"
+        ? "excel"
+        : fmt === "pdf"
+          ? "pdf"
+          : "csv";
+
+    await descargarInforme(
+      `/tenant/${t}/attendance/export${buildQuery(params)}`,
+      {
+        format,
+        nombreBase: `asistencia_${new Date().toISOString().slice(0, 10)}`,
+      },
+    );
   },
 
   async exceptions(params?: Record<string, unknown>) {
     const t = getTenantId();
-    return unwrap(await api.get(`/tenant/${t}/attendance/exceptions${buildQuery(params)}`));
+
+    return unwrap(
+      await api.get(`/tenant/${t}/attendance/exceptions${buildQuery(params)}`),
+    );
   },
 
   /**
@@ -202,31 +289,63 @@ const attendanceService = {
    * cuántas filas alcanzaría — es lo que la pantalla enseña ANTES de confirmar.
    * Pide nivel de dirección: la app del supervisor no tiene esta ruta.
    */
-  async bulkResolveExceptions(data: { before: string; type?: string; resolutionNotes?: string; preview?: boolean }) {
+  async bulkResolveExceptions(data: {
+    before: string;
+    type?: string;
+    resolutionNotes?: string;
+    preview?: boolean;
+  }) {
     const t = getTenantId();
-    return unwrap(await api.post(`/tenant/${t}/attendance/exceptions/bulk-resolve`, { data }));
+
+    return unwrap(
+      await api.post(`/tenant/${t}/attendance/exceptions/bulk-resolve`, {
+        data,
+      }),
+    );
   },
 
-  async resolveException(id: string, data: { status?: string; resolutionNotes?: string }) {
+  async resolveException(
+    id: string,
+    data: { status?: string; resolutionNotes?: string },
+  ) {
     const t = getTenantId();
-    return unwrap(await api.patch(`/tenant/${t}/attendance/exceptions/${id}/resolve`, { data }));
+
+    return unwrap(
+      await api.patch(`/tenant/${t}/attendance/exceptions/${id}/resolve`, {
+        data,
+      }),
+    );
   },
 
   async corrections(params?: Record<string, unknown>) {
     const t = getTenantId();
-    return unwrap(await api.get(`/tenant/${t}/attendance/corrections${buildQuery(params)}`));
+
+    return unwrap(
+      await api.get(`/tenant/${t}/attendance/corrections${buildQuery(params)}`),
+    );
   },
 
-  async approveCorrection(id: string, data: { decision: "approved" | "rejected"; notes?: string }) {
+  async approveCorrection(
+    id: string,
+    data: { decision: "approved" | "rejected"; notes?: string },
+  ) {
     const t = getTenantId();
-    return unwrap(await api.patch(`/tenant/${t}/attendance/corrections/${id}/approve`, { data }));
+
+    return unwrap(
+      await api.patch(`/tenant/${t}/attendance/corrections/${id}/approve`, {
+        data,
+      }),
+    );
   },
 
   // ── Early clock-out approval requests ──────────────────────────────────────
   async clockOutRequests(params?: Record<string, unknown>) {
     const t = getTenantId();
+
     return unwrap(
-      await api.get(`/tenant/${t}/attendance/clock-out-requests${buildQuery(params)}`),
+      await api.get(
+        `/tenant/${t}/attendance/clock-out-requests${buildQuery(params)}`,
+      ),
     );
   },
 
@@ -235,14 +354,22 @@ const attendanceService = {
     data: { status: "approved" | "rejected"; notes?: string },
   ) {
     const t = getTenantId();
-    return unwrap(await api.patch(`/tenant/${t}/attendance/clock-out-requests/${id}`, { data }));
+
+    return unwrap(
+      await api.patch(`/tenant/${t}/attendance/clock-out-requests/${id}`, {
+        data,
+      }),
+    );
   },
 
   // ── Late clock-in approval requests ────────────────────────────────────────
   async clockInRequests(params?: Record<string, unknown>) {
     const t = getTenantId();
+
     return unwrap(
-      await api.get(`/tenant/${t}/attendance/clock-in-requests${buildQuery(params)}`),
+      await api.get(
+        `/tenant/${t}/attendance/clock-in-requests${buildQuery(params)}`,
+      ),
     );
   },
 
@@ -251,24 +378,44 @@ const attendanceService = {
     data: { status: "approved" | "rejected"; notes?: string },
   ) {
     const t = getTenantId();
+
     return unwrap(
-      await api.post(`/tenant/${t}/attendance/clock-in-requests/${id}/decision`, { data }),
+      await api.post(
+        `/tenant/${t}/attendance/clock-in-requests/${id}/decision`,
+        { data },
+      ),
     );
   },
 
   async approve(id: string, notes?: string) {
     const t = getTenantId();
-    return unwrap(await api.patch(`/tenant/${t}/attendance/${id}/approve`, { data: { notes } }));
+
+    return unwrap(
+      await api.patch(`/tenant/${t}/attendance/${id}/approve`, {
+        data: { notes },
+      }),
+    );
   },
 
   async reject(id: string, notes?: string) {
     const t = getTenantId();
-    return unwrap(await api.patch(`/tenant/${t}/attendance/${id}/reject`, { data: { notes } }));
+
+    return unwrap(
+      await api.patch(`/tenant/${t}/attendance/${id}/reject`, {
+        data: { notes },
+      }),
+    );
   },
 
-  async correct(id: string, data: { field: string; correctedValue: unknown; reason: string }) {
+  async correct(
+    id: string,
+    data: { field: string; correctedValue: unknown; reason: string },
+  ) {
     const t = getTenantId();
-    return unwrap(await api.post(`/tenant/${t}/attendance/${id}/correct`, { data }));
+
+    return unwrap(
+      await api.post(`/tenant/${t}/attendance/${id}/correct`, { data }),
+    );
   },
 
   /**
@@ -278,25 +425,41 @@ const attendanceService = {
    * quincenal / mensual» de Configuración no cambiaba una sola cifra: se
    * guardaba y no lo leía nadie.
    */
-  async currentPeriod(): Promise<{ periodType: string; label: string; from: string; to: string }> {
+  async currentPeriod(): Promise<{
+    periodType: string;
+    label: string;
+    from: string;
+    to: string;
+  }> {
     const t = getTenantId();
+
     return unwrap(await api.get(`/tenant/${t}/attendance/current-period`));
   },
 
   async payrollSummary(params?: Record<string, unknown>) {
     const t = getTenantId();
-    return unwrap(await api.get(`/tenant/${t}/attendance/payroll-summary${buildQuery(params)}`));
+
+    return unwrap(
+      await api.get(
+        `/tenant/${t}/attendance/payroll-summary${buildQuery(params)}`,
+      ),
+    );
   },
 
   async closePeriod(cutoff: string) {
     const t = getTenantId();
-    return unwrap(await api.post(`/tenant/${t}/attendance/close-period`, { data: { cutoff } }));
-  },
 
+    return unwrap(
+      await api.post(`/tenant/${t}/attendance/close-period`, {
+        data: { cutoff },
+      }),
+    );
+  },
 
   /** Current guard's clock status + assigned stations (worker-app endpoint). */
   async myStatus() {
     const t = getTenantId();
+
     return unwrap(await api.get(`/tenant/${t}/guard/me`));
   },
 
@@ -317,13 +480,17 @@ const attendanceService = {
     );
     const d = creds?.data ?? creds;
     const uploadUrl = d?.uploadCredentials?.url;
+
     if (!uploadUrl) throw new Error("No se pudo preparar la subida de la foto");
 
     const form = new FormData();
+
     form.append("filename", filename);
     form.append("file", file);
     const resp = await fetch(uploadUrl, { method: "POST", body: form });
+
     if (!resp.ok) throw new Error("No se pudo subir la foto");
+
     return d?.privateUrl as string;
   },
 
@@ -334,11 +501,17 @@ const attendanceService = {
     selfiePhoto?: string;
   }) {
     const t = getTenantId();
-    return unwrap(await api.post(`/tenant/${t}/guard/me/clock-in`, { data: { ...data, platform: "web" } }));
+
+    return unwrap(
+      await api.post(`/tenant/${t}/guard/me/clock-in`, {
+        data: { ...data, platform: "web" },
+      }),
+    );
   },
 
   async clockOut(data: { latitude?: number; longitude?: number }) {
     const t = getTenantId();
+
     return unwrap(await api.post(`/tenant/${t}/guard/me/clock-out`, { data }));
   },
 
@@ -347,24 +520,39 @@ const attendanceService = {
   /** Staff clock status + optional office-geofence config. */
   async staffStatus() {
     const t = getTenantId();
+
     return unwrap(await api.get(`/tenant/${t}/staff/me`));
   },
-  async staffClockIn(data: { latitude?: number; longitude?: number; selfiePhoto?: string; address?: string; battery?: number }) {
+  async staffClockIn(data: {
+    latitude?: number;
+    longitude?: number;
+    selfiePhoto?: string;
+    address?: string;
+    battery?: number;
+  }) {
     const t = getTenantId();
+
     return unwrap(await api.post(`/tenant/${t}/staff/me/clock-in`, { data }));
   },
-  async staffClockOut(data: { latitude?: number; longitude?: number; observations?: string }) {
+  async staffClockOut(data: {
+    latitude?: number;
+    longitude?: number;
+    observations?: string;
+  }) {
     const t = getTenantId();
+
     return unwrap(await api.post(`/tenant/${t}/staff/me/clock-out`, { data }));
   },
 
   async getSettings() {
     const t = getTenantId();
+
     return unwrap(await api.get(`/tenant/${t}/attendance/settings`));
   },
 
   async saveSettings(data: Record<string, unknown>) {
     const t = getTenantId();
+
     return unwrap(await api.put(`/tenant/${t}/attendance/settings`, { data }));
   },
 };

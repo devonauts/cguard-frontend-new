@@ -1,8 +1,9 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { MoreVertical, Search, ChevronDown, ChevronRight } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
-import { usePermissions } from '@/hooks/usePermissions';
+import { usePermissions } from "@/hooks/usePermissions";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -78,7 +79,8 @@ export default function UserRolesTable({
   pageLabel,
 }: Props) {
   const selectableRows = rows.filter((r) => !r.isDefault);
-  const allChecked = selectableRows.length > 0 && selectableRows.every((r) => checked[r.id]);
+  const allChecked =
+    selectableRows.length > 0 && selectableRows.every((r) => checked[r.id]);
   const anyDeletableSelected = rows.some((r) => !r.isDefault && checked[r.id]);
 
   const { hasPermission } = usePermissions();
@@ -89,22 +91,37 @@ export default function UserRolesTable({
       <Toolbar>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="min-w-[130px] justify-between">
-              {t('settings.userRoles.actionBtn', { defaultValue: 'Acción' })} <ChevronDown className="ml-2 h-4 w-4" />
+            <Button
+              className="min-w-[130px] justify-between"
+              size="sm"
+              variant="outline"
+            >
+              {t("settings.userRoles.actionBtn", { defaultValue: "Acción" })}{" "}
+              <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
-            <DropdownMenuItem onClick={onBulkDelete} disabled={!anyDeletableSelected}>
-              {t('settings.userRoles.deleteAction', { defaultValue: 'Eliminar' })}
+            <DropdownMenuItem
+              disabled={!anyDeletableSelected}
+              onClick={onBulkDelete}
+            >
+              {t("settings.userRoles.deleteAction", {
+                defaultValue: "Eliminar",
+              })}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
         <div className="relative min-w-[200px] flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: 'var(--ink-faint)' }} />
+          <Search
+            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4"
+            style={{ color: "var(--ink-faint)" }}
+          />
           <Input
             className="pl-9"
-            placeholder={t('settings.userRoles.searchPlaceholder', { defaultValue: 'Buscar rol de usuario' })}
+            placeholder={t("settings.userRoles.searchPlaceholder", {
+              defaultValue: "Buscar rol de usuario",
+            })}
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
           />
@@ -116,10 +133,19 @@ export default function UserRolesTable({
           <TableHeader>
             <TableRow>
               <TableHead className="w-[44px]">
-                <Checkbox checked={allChecked} onCheckedChange={(v) => onCheckAll(Boolean(v))} />
+                <Checkbox
+                  checked={allChecked}
+                  onCheckedChange={(v) => onCheckAll(Boolean(v))}
+                />
               </TableHead>
-              <TableHead>{t('settings.userRoles.colRole', { defaultValue: 'Rol' })}</TableHead>
-              <TableHead>{t('settings.userRoles.colDescription', { defaultValue: 'Descripción' })}</TableHead>
+              <TableHead>
+                {t("settings.userRoles.colRole", { defaultValue: "Rol" })}
+              </TableHead>
+              <TableHead>
+                {t("settings.userRoles.colDescription", {
+                  defaultValue: "Descripción",
+                })}
+              </TableHead>
               <TableHead className="w-[56px]" />
             </TableRow>
           </TableHeader>
@@ -128,10 +154,14 @@ export default function UserRolesTable({
               <TableRow>
                 <TableCell colSpan={4}>
                   <EmptyState
-                    icon={<Search />}
-                    title={t('settings.userRoles.emptyTitle', { defaultValue: 'No se encontraron resultados' })}
-                    description={t('settings.userRoles.emptyDescription', { defaultValue: 'Sin datos para mostrar' })}
                     className="border-0 py-12"
+                    description={t("settings.userRoles.emptyDescription", {
+                      defaultValue: "Sin datos para mostrar",
+                    })}
+                    icon={<Search />}
+                    title={t("settings.userRoles.emptyTitle", {
+                      defaultValue: "No se encontraron resultados",
+                    })}
                   />
                 </TableCell>
               </TableRow>
@@ -147,41 +177,83 @@ export default function UserRolesTable({
                       />
                     </TableCell>
                     <TableCell
+                      aria-expanded={expandedRoleId === r.id}
                       className="cg-focus cursor-pointer font-medium"
                       role="button"
                       tabIndex={0}
-                      aria-expanded={expandedRoleId === r.id}
                       onClick={() => onToggleExpand && onToggleExpand(r)}
                       onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") onToggleExpand && onToggleExpand(r);
+                        if (e.key === "Enter" || e.key === " ")
+                          onToggleExpand && onToggleExpand(r);
                       }}
                     >
                       <span className="inline-flex items-center gap-2">
                         {expandedRoleId === r.id ? (
-                          <ChevronDown className="h-4 w-4" style={{ color: 'var(--brand-text)' }} />
+                          <ChevronDown
+                            className="h-4 w-4"
+                            style={{ color: "var(--brand-text)" }}
+                          />
                         ) : (
-                          <ChevronRight className="h-4 w-4" style={{ color: 'var(--ink-faint)' }} />
+                          <ChevronRight
+                            className="h-4 w-4"
+                            style={{ color: "var(--ink-faint)" }}
+                          />
                         )}
                         <span>{r.name}</span>
-                        {r.isDefault && <StatusBadge tone="brand">{t('settings.userRoles.defaultBadge', { defaultValue: 'Predeterminado' })}</StatusBadge>}
+                        {r.isDefault && (
+                          <StatusBadge tone="brand">
+                            {t("settings.userRoles.defaultBadge", {
+                              defaultValue: "Predeterminado",
+                            })}
+                          </StatusBadge>
+                        )}
                       </span>
                     </TableCell>
-                    <TableCell style={{ color: 'var(--ink-soft)' }}>{r.description}</TableCell>
+                    <TableCell style={{ color: "var(--ink-soft)" }}>
+                      {r.description}
+                    </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
+                          <Button size="icon" variant="ghost">
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-40">
-                          <DropdownMenuItem disabled={!hasPermission('settingsEdit') || !!r.isDefault} onClick={() => { if (!hasPermission('settingsEdit') || !!r.isDefault) return; onEdit(r); }}>{t('settings.userRoles.editAction', { defaultValue: 'Editar' })}</DropdownMenuItem>
+                          <DropdownMenuItem
+                            disabled={
+                              !hasPermission("settingsEdit") || !!r.isDefault
+                            }
+                            onClick={() => {
+                              if (
+                                !hasPermission("settingsEdit") ||
+                                !!r.isDefault
+                              )
+                                return;
+                              onEdit(r);
+                            }}
+                          >
+                            {t("settings.userRoles.editAction", {
+                              defaultValue: "Editar",
+                            })}
+                          </DropdownMenuItem>
                           <DropdownMenuItem
                             className="text-destructive focus:text-destructive"
-                            disabled={!hasPermission('settingsEdit') || !!r.isDefault}
-                            onClick={() => { if (!hasPermission('settingsEdit') || !!r.isDefault) return; onDelete(r); }}
+                            disabled={
+                              !hasPermission("settingsEdit") || !!r.isDefault
+                            }
+                            onClick={() => {
+                              if (
+                                !hasPermission("settingsEdit") ||
+                                !!r.isDefault
+                              )
+                                return;
+                              onDelete(r);
+                            }}
                           >
-                            {t('settings.userRoles.deleteAction', { defaultValue: 'Eliminar' })}
+                            {t("settings.userRoles.deleteAction", {
+                              defaultValue: "Eliminar",
+                            })}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -189,8 +261,10 @@ export default function UserRolesTable({
                   </TableRow>
                   {expandedRoleId === r.id && (
                     <TableRow key={`${r.id}-expanded`}>
-                      <TableCell colSpan={4} className="p-3">
-                        <div className="glass-sunken p-4">{expandedContent}</div>
+                      <TableCell className="p-3" colSpan={4}>
+                        <div className="glass-sunken p-4">
+                          {expandedContent}
+                        </div>
                       </TableCell>
                     </TableRow>
                   )}
@@ -201,8 +275,15 @@ export default function UserRolesTable({
         </Table>
       </GlassPanel>
 
-      <div className="flex items-center justify-end gap-4 text-sm" style={{ color: 'var(--ink-soft)' }}>
-        <div>{t('settings.userRoles.perPageLabel', { defaultValue: 'Elementos por página' })}</div>
+      <div
+        className="flex items-center justify-end gap-4 text-sm"
+        style={{ color: "var(--ink-soft)" }}
+      >
+        <div>
+          {t("settings.userRoles.perPageLabel", {
+            defaultValue: "Elementos por página",
+          })}
+        </div>
         <Select value={pageSize} onValueChange={onPageSize}>
           <SelectTrigger className="w-[90px]">
             <SelectValue />

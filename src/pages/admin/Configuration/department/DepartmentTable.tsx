@@ -1,6 +1,11 @@
 import { Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { CatalogTable, ActiveBadge, type CatalogColumn } from "../components/CatalogTable";
+
+import {
+  CatalogTable,
+  ActiveBadge,
+  type CatalogColumn,
+} from "../components/CatalogTable";
 
 export type DepartmentRow = {
   id: string;
@@ -40,7 +45,12 @@ const columns: CatalogColumn<DepartmentRow>[] = [
       <>
         <div className="font-medium">{r.name}</div>
         {r.description ? (
-          <div className="line-clamp-1 text-xs" style={{ color: "var(--ink-soft)" }}>{r.description}</div>
+          <div
+            className="line-clamp-1 text-xs"
+            style={{ color: "var(--ink-soft)" }}
+          >
+            {r.description}
+          </div>
         ) : null}
       </>
     ),
@@ -64,35 +74,55 @@ const columns: CatalogColumn<DepartmentRow>[] = [
 ];
 
 export default function DepartmentsTable({
-  rows, total, page, pageSize, loading, query,
-  onQueryChange, onPageChange, onPageSizeChange,
-  onEdit, onToggleStatus, onDelete, onBulkDelete, canEdit = true,
+  rows,
+  total,
+  page,
+  pageSize,
+  loading,
+  query,
+  onQueryChange,
+  onPageChange,
+  onPageSizeChange,
+  onEdit,
+  onToggleStatus,
+  onDelete,
+  onBulkDelete,
+  canEdit = true,
 }: Props) {
   const { t } = useTranslation();
+
   return (
     <CatalogTable<DepartmentRow>
-      rows={rows}
-      columns={columns}
-      loading={loading}
+      bulkActions={[
+        { label: "Eliminar", destructive: true, onRun: onBulkDelete },
+      ]}
       canEdit={canEdit}
-      query={query}
-      onQueryChange={onQueryChange}
-      searchPlaceholder="Buscar departamento"
+      columns={columns}
+      empty={{
+        title: t("settings.departments.emptyTitle", "Sin departamentos"),
+        description: t(
+          "settings.departments.emptyDesc",
+          'Crea el primero con "Nuevo Departamento" — por ejemplo Operaciones, Talento Humano o Nómina.',
+        ),
+      }}
+      loading={loading}
       page={page}
       pageSize={pageSize}
+      query={query}
+      rowActions={(r) => [
+        { label: "Editar", onClick: () => onEdit(r) },
+        {
+          label: r.status === "inactive" ? "Activar" : "Desactivar",
+          onClick: () => onToggleStatus(r),
+        },
+        { label: "Eliminar", destructive: true, onClick: () => onDelete(r) },
+      ]}
+      rows={rows}
+      searchPlaceholder="Buscar departamento"
       total={total}
       onPageChange={onPageChange}
       onPageSizeChange={onPageSizeChange}
-      rowActions={(r) => [
-        { label: "Editar", onClick: () => onEdit(r) },
-        { label: r.status === "inactive" ? "Activar" : "Desactivar", onClick: () => onToggleStatus(r) },
-        { label: "Eliminar", destructive: true, onClick: () => onDelete(r) },
-      ]}
-      bulkActions={[{ label: "Eliminar", destructive: true, onRun: onBulkDelete }]}
-      empty={{
-        title: t("settings.departments.emptyTitle", "Sin departamentos"),
-        description: t("settings.departments.emptyDesc", 'Crea el primero con "Nuevo Departamento" — por ejemplo Operaciones, Talento Humano o Nómina.'),
-      }}
+      onQueryChange={onQueryChange}
     />
   );
 }

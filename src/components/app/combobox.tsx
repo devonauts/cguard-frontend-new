@@ -1,10 +1,22 @@
 "use client";
 import * as React from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import i18n from "@/i18n";
 
 type Option = { value: string; label: string };
@@ -21,7 +33,15 @@ type Props = {
   "aria-label"?: string;
 };
 
-export function Combobox({ value, onChange, placeholder = i18n.t("kit.select.placeholder"), options, empty = i18n.t("kit.select.empty"), disabled = false, ...aria }: Props) {
+export function Combobox({
+  value,
+  onChange,
+  placeholder = i18n.t("kit.select.placeholder"),
+  options,
+  empty = i18n.t("kit.select.empty"),
+  disabled = false,
+  ...aria
+}: Props) {
   const [open, setOpen] = React.useState(false);
   const selected = options.find((o) => o.value === value)?.label ?? "";
 
@@ -35,7 +55,14 @@ export function Combobox({ value, onChange, placeholder = i18n.t("kit.select.pla
   return (
     <Popover open={open && !disabled} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" role="combobox" aria-expanded={open} disabled={disabled} className="w-full justify-between" {...aria}>
+        <Button
+          aria-expanded={open}
+          className="w-full justify-between"
+          disabled={disabled}
+          role="combobox"
+          variant="outline"
+          {...aria}
+        >
           {selected || placeholder}
           <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
         </Button>
@@ -47,8 +74,19 @@ export function Combobox({ value, onChange, placeholder = i18n.t("kit.select.pla
             <CommandEmpty>{empty}</CommandEmpty>
             <CommandGroup>
               {options.map((o) => (
-                <CommandItem key={o.value} onSelect={() => { onChange(o.value); setOpen(false); }}>
-                  <Check className={cn("mr-2 h-4 w-4", o.value === value ? "opacity-100" : "opacity-0")} />
+                <CommandItem
+                  key={o.value}
+                  onSelect={() => {
+                    onChange(o.value);
+                    setOpen(false);
+                  }}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      o.value === value ? "opacity-100" : "opacity-0",
+                    )}
+                  />
                   {o.label}
                 </CommandItem>
               ))}

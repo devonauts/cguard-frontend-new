@@ -1,9 +1,12 @@
-import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-import { MapPin } from 'lucide-react';
-import GoogleMapEmbed, { type MapEmbedMarker } from '@/components/GoogleMap/GoogleMapEmbed';
-import StaticMapImage from '@/components/maps/StaticMapImage';
-import { mapPopupActions, mapPopupItems } from '@/components/maps/MapPopup';
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { MapPin } from "lucide-react";
+
+import GoogleMapEmbed, {
+  type MapEmbedMarker,
+} from "@/components/GoogleMap/GoogleMapEmbed";
+import StaticMapImage from "@/components/maps/StaticMapImage";
+import { mapPopupActions, mapPopupItems } from "@/components/maps/MapPopup";
 
 /**
  * Todas las sedes de un cliente sobre un mapa.
@@ -44,7 +47,11 @@ interface Props {
   /** Dirección del propio cliente. Es el plan B cuando NINGUNA sede tiene
    *  coordenadas todavía — mejor enseñar dónde está el cliente que un hueco,
    *  pero se dice claramente que eso es lo que se está viendo. */
-  clienteFallback?: { lat?: number | null; lng?: number | null; label?: string } | null;
+  clienteFallback?: {
+    lat?: number | null;
+    lng?: number | null;
+    label?: string;
+  } | null;
   height?: string;
   /** Ir a la sede desde el globo. */
   onSedeClick?: (id: string) => void;
@@ -54,13 +61,14 @@ interface Props {
 
 const num = (v: unknown): number | null => {
   const n = Number(v);
+
   return Number.isFinite(n) && n !== 0 ? n : null;
 };
 
 export default function SitesMap({
   sedes,
   clienteFallback,
-  height = '300px',
+  height = "300px",
   onSedeClick,
   textoVacio,
 }: Props) {
@@ -71,7 +79,10 @@ export default function SitesMap({
     () =>
       (sedes || [])
         .map((s) => ({ s, lat: num(s.lat), lng: num(s.lng) }))
-        .filter((r): r is { s: SedeEnMapa; lat: number; lng: number } => r.lat !== null && r.lng !== null),
+        .filter(
+          (r): r is { s: SedeEnMapa; lat: number; lng: number } =>
+            r.lat !== null && r.lng !== null,
+        ),
     [sedes],
   );
 
@@ -82,24 +93,35 @@ export default function SitesMap({
         lat,
         lng,
         label: s.name,
-        kind: 'site' as const,
-        subtitle: [s.address, s.city].filter(Boolean).join(' · ') || undefined,
+        kind: "site" as const,
+        subtitle: [s.address, s.city].filter(Boolean).join(" · ") || undefined,
         // Sede sin vigilantes = chincheta apagada. Es la misma lectura que la
         // tabla de "Estado de sedes" de debajo, para que no se contradigan.
-        role: (s.guards ?? 0) > 0 ? undefined : 'muted',
+        role: (s.guards ?? 0) > 0 ? undefined : "muted",
         status:
           (s.guards ?? 0) > 0
-            ? { label: t('clients.overview.status.operativa', 'Operativa'), tone: 'ok' as const }
-            : { label: t('clients.overview.status.sinOp', 'Sin operación'), tone: 'neutral' as const },
+            ? {
+                label: t("clients.overview.status.operativa", "Operativa"),
+                tone: "ok" as const,
+              }
+            : {
+                label: t("clients.overview.status.sinOp", "Sin operación"),
+                tone: "neutral" as const,
+              },
       })),
     [conCoords, t],
   );
 
-  const puntos = useMemo(() => conCoords.map(({ lat, lng }) => ({ lat, lng })), [conCoords]);
+  const puntos = useMemo(
+    () => conCoords.map(({ lat, lng }) => ({ lat, lng })),
+    [conCoords],
+  );
 
   const porId = useMemo(() => {
     const m = new Map<string, SedeEnMapa>();
+
     conCoords.forEach(({ s }) => m.set(String(s.id), s));
+
     return m;
   }, [conCoords]);
 
@@ -111,9 +133,15 @@ export default function SitesMap({
     return (
       <div
         className="flex flex-col items-center justify-center gap-1 rounded-xl border border-dashed text-sm"
-        style={{ height, borderColor: 'var(--hairline)', background: 'var(--glass-sunken)', color: 'var(--ink-soft)' }}
+        style={{
+          height,
+          borderColor: "var(--hairline)",
+          background: "var(--glass-sunken)",
+          color: "var(--ink-soft)",
+        }}
       >
-        <MapPin className="h-5 w-5 opacity-50" /> {textoVacio ?? t('maps.sites.noLocation', 'Sin ubicación registrada')}
+        <MapPin className="h-5 w-5 opacity-50" />{" "}
+        {textoVacio ?? t("maps.sites.noLocation", "Sin ubicación registrada")}
       </div>
     );
   }
@@ -121,15 +149,35 @@ export default function SitesMap({
   // ── Plan B: ninguna sede geolocalizada, se enseña al cliente ───────────────
   if (markers.length === 0) {
     return (
-      <div className="relative overflow-hidden rounded-xl border" style={{ borderColor: 'var(--hairline)' }}>
-        <StaticMapImage lat={fbLat} lng={fbLng} zoom={14} height={height} alt="Mapa del cliente" className="w-full">
+      <div
+        className="relative overflow-hidden rounded-xl border"
+        style={{ borderColor: "var(--hairline)" }}
+      >
+        <StaticMapImage
+          alt="Mapa del cliente"
+          className="w-full"
+          height={height}
+          lat={fbLat}
+          lng={fbLng}
+          zoom={14}
+        >
           <div style={{ height }}>
-            <GoogleMapEmbed lat={fbLat!} lng={fbLng!} zoom={14} mapType="roadmap" draggable={false} />
+            <GoogleMapEmbed
+              draggable={false}
+              lat={fbLat!}
+              lng={fbLng!}
+              mapType="roadmap"
+              zoom={14}
+            />
           </div>
         </StaticMapImage>
         <span
           className="pointer-events-none absolute left-2 top-2 rounded-md px-2 py-1 text-[11px] font-medium"
-          style={{ background: 'var(--float)', color: 'var(--ink-soft)', border: '1px solid var(--hairline)' }}
+          style={{
+            background: "var(--float)",
+            color: "var(--ink-soft)",
+            border: "1px solid var(--hairline)",
+          }}
         >
           Dirección del cliente · las sedes aún no tienen ubicación
         </span>
@@ -139,34 +187,53 @@ export default function SitesMap({
 
   // ── Lo normal: las sedes ───────────────────────────────────────────────────
   return (
-    <div className="overflow-hidden rounded-xl border" style={{ borderColor: 'var(--hairline)' }}>
-      <StaticMapImage points={puntos} height={height} alt="Mapa de las sedes del cliente" className="w-full">
+    <div
+      className="overflow-hidden rounded-xl border"
+      style={{ borderColor: "var(--hairline)" }}
+    >
+      <StaticMapImage
+        alt="Mapa de las sedes del cliente"
+        className="w-full"
+        height={height}
+        points={puntos}
+      >
         <div style={{ height }}>
           <GoogleMapEmbed
-            markers={markers}
             fitMarkers
-            zoom={14}
-            mapType="roadmap"
             draggable={false}
+            mapType="roadmap"
             markerPopup={(m) => {
               const s = porId.get(m.id);
+
               if (!s) return null;
+
               return {
                 fields: mapPopupItems(
                   s.address || s.city
-                    ? { label: t('clients.columns.address', 'Dirección'), value: [s.address, s.city].filter(Boolean).join(', '), wide: true }
+                    ? {
+                        label: t("clients.columns.address", "Dirección"),
+                        value: [s.address, s.city].filter(Boolean).join(", "),
+                        wide: true,
+                      }
                     : null,
                 ),
                 metrics: [
-                  { label: 'Estaciones', value: s.stations ?? 0 },
-                  { label: 'Vigilantes', value: s.guards ?? 0 },
+                  { label: "Estaciones", value: s.stations ?? 0 },
+                  { label: "Vigilantes", value: s.guards ?? 0 },
                 ],
                 actions: mapPopupItems(
-                  onSedeClick ? mapPopupActions.detail(() => onSedeClick(String(s.id)), 'Ver sede') : null,
+                  onSedeClick
+                    ? mapPopupActions.detail(
+                        () => onSedeClick(String(s.id)),
+                        "Ver sede",
+                      )
+                    : null,
                   mapPopupActions.directions(m.lat, m.lng),
                 ),
               };
             }}
+            markers={markers}
+            zoom={14}
           />
         </div>
       </StaticMapImage>

@@ -18,12 +18,15 @@
  * ════════════════════════════════════════════════════════════════════════════
  */
 import type { KeyboardEvent } from "react";
+import type { Kpi } from "../types";
+
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+
+import { deltaDirection, fmtDelta, fmtValue, toneFill, toneOf } from "../tone";
+
 import { Cifra, DeltaPill } from "@/components/kit";
 import { tablaDeEtiquetas } from "@/lib/i18nLabel";
-import type { Kpi } from "../types";
-import { deltaDirection, fmtDelta, fmtValue, toneFill, toneOf } from "../tone";
 
 /**
  * Etiqueta corta para una tarjeta de 160 px. «Vigilantes en servicio» no cabe,
@@ -45,8 +48,13 @@ const CORTO: Record<string, string> = tablaDeEtiquetas({
   clients: "dashboard.kpiCorto.clients",
 });
 
-export function StatCarousel({ items }: { items: Array<{ kpi: Kpi; to?: string }> }) {
+export function StatCarousel({
+  items,
+}: {
+  items: Array<{ kpi: Kpi; to?: string }>;
+}) {
   if (!items.length) return null;
+
   return (
     <div className="cg-carrusel" style={{ pointerEvents: "none" }}>
       {items.map(({ kpi, to }) => (
@@ -75,14 +83,22 @@ function TarjetaCifra({ kpi, to }: { kpi: Kpi; to?: string }) {
             "aria-label": `${String(kpi.label)}: ${fmtValue(kpi.value)}${kpi.unit || ""}`,
             onClick: ir,
             onKeyDown: (e: KeyboardEvent) => {
-              if (e.key === "Enter" || e.key === " ") { e.preventDefault(); ir(); }
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                ir();
+              }
             },
           }
         : {})}
     >
       <div className="flex items-center gap-1.5">
-        <span className="size-1.5 shrink-0 rounded-full" style={{ background: toneFill(tone) }} />
-        <span className="cg-eyebrow truncate">{CORTO[kpi.key] || kpi.label}</span>
+        <span
+          className="size-1.5 shrink-0 rounded-full"
+          style={{ background: toneFill(tone) }}
+        />
+        <span className="cg-eyebrow truncate">
+          {CORTO[kpi.key] || kpi.label}
+        </span>
       </div>
 
       <div className="mt-1 flex items-baseline gap-1">
@@ -90,15 +106,25 @@ function TarjetaCifra({ kpi, to }: { kpi: Kpi; to?: string }) {
           {numero ? <Cifra valor={kpi.value as number} /> : fmtValue(kpi.value)}
         </span>
         {kpi.unit && (
-          <span className="text-sm font-semibold" style={{ color: "var(--ink-faint)" }}>{kpi.unit}</span>
+          <span
+            className="text-sm font-semibold"
+            style={{ color: "var(--ink-faint)" }}
+          >
+            {kpi.unit}
+          </span>
         )}
       </div>
 
       <div className="mt-1.5 min-h-[22px]">
         {kpi.trend != null && dir !== "flat" ? (
-          <DeltaPill direction={dir} className="px-2 py-0.5 text-[11px]">{fmtDelta(kpi.trend)}</DeltaPill>
+          <DeltaPill className="px-2 py-0.5 text-[11px]" direction={dir}>
+            {fmtDelta(kpi.trend)}
+          </DeltaPill>
         ) : (
-          <span className="block truncate text-[11px]" style={{ color: "var(--ink-faint)" }}>
+          <span
+            className="block truncate text-[11px]"
+            style={{ color: "var(--ink-faint)" }}
+          >
             {kpi.fallback ? t("comun.sinDatos", "Sin datos") : kpi.sub}
           </span>
         )}

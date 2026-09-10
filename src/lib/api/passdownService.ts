@@ -7,23 +7,32 @@ import api from "../api";
 
 const getTenantId = (): string => {
   const t = localStorage.getItem("tenantId");
-  if (!t) throw new Error("No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.");
+
+  if (!t)
+    throw new Error(
+      "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+    );
+
   return t;
 };
 
 const buildQuery = (params?: Record<string, unknown>): string => {
   if (!params) return "";
   const p = new URLSearchParams();
+
   for (const k of Object.keys(params)) {
     const v = params[k];
+
     if (v === undefined || v === null || String(v).trim() === "") continue;
     p.append(k, String(v));
   }
   const s = p.toString();
+
   return s ? `?${s}` : "";
 };
 
-const unwrap = (resp: any) => (resp && resp.data !== undefined ? resp.data : resp);
+const unwrap = (resp: any) =>
+  resp && resp.data !== undefined ? resp.data : resp;
 
 export type PassdownStatus = "open" | "received";
 export type PassdownSchedule = "Diurno" | "Nocturno" | null;
@@ -81,11 +90,13 @@ const passdownService = {
     offset?: number;
   }): Promise<{ rows: Passdown[]; count: number }> {
     const t = getTenantId();
+
     return unwrap(await api.get(`/tenant/${t}/passdown${buildQuery(params)}`));
   },
   /** Full passdown detail (adds the instructions list). */
   async get(id: string): Promise<{ passdown: PassdownDetail }> {
     const t = getTenantId();
+
     return unwrap(await api.get(`/tenant/${t}/passdown/${id}`));
   },
 };

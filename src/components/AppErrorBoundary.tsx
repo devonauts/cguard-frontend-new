@@ -1,5 +1,6 @@
 import { Component, type ReactNode } from "react";
 import { AlertTriangle, RotateCcw, ArrowLeft } from "lucide-react";
+
 // Es un componente de CLASE: los hooks no valen aquí, así que el traductor
 // entra por la instancia de i18next, siempre dentro de render (nunca en el
 // cuerpo del módulo, donde se congelaría en el idioma de arranque).
@@ -62,6 +63,7 @@ export class AppErrorBoundary extends Component<Props, State> {
 
   render() {
     const { error } = this.state;
+
     if (!error) {
       return <div key={this.state.resetKey}>{this.props.children}</div>;
     }
@@ -73,27 +75,34 @@ export class AppErrorBoundary extends Component<Props, State> {
             <AlertTriangle className="size-6 text-red-500" />
           </div>
           <h2 className="mt-4 text-lg font-semibold text-foreground">
-            {i18n.t("ui.AppErrorBoundary.estaSeccionNoSePudoMostrar", "Esta sección no se pudo mostrar")}
+            {i18n.t(
+              "ui.AppErrorBoundary.estaSeccionNoSePudoMostrar",
+              "Esta sección no se pudo mostrar",
+            )}
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            El resto de la plataforma sigue funcionando. Puedes reintentar o volver a la
-            pantalla anterior.
+            El resto de la plataforma sigue funcionando. Puedes reintentar o
+            volver a la pantalla anterior.
           </p>
           {/* El mensaje técnico se muestra pero sin protagonismo: le sirve a quien
               reporta el problema y no le dice nada a quien sólo quiere seguir. */}
           <p className="mt-3 break-words rounded-lg bg-muted/40 px-3 py-2 text-left font-mono text-xs text-muted-foreground">
-            {error.message || i18n.t("ui.AppErrorBoundary.errorDeRenderizado", "Error de renderizado")}
+            {error.message ||
+              i18n.t(
+                "ui.AppErrorBoundary.errorDeRenderizado",
+                "Error de renderizado",
+              )}
           </p>
           <div className="mt-5 flex justify-center gap-2">
             <button
-              onClick={this.retry}
               className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
+              onClick={this.retry}
             >
               <RotateCcw className="size-4" /> Reintentar
             </button>
             <button
-              onClick={() => window.history.back()}
               className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-muted/50"
+              onClick={() => window.history.back()}
             >
               <ArrowLeft className="size-4" /> Volver
             </button>

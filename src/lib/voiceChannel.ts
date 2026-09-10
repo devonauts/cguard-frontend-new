@@ -14,7 +14,6 @@
  * WebRTC + getUserMedia, so it needs NO permission beyond RECORD_AUDIO (already
  * granted) and rides the Phase-1 microphone foreground service for background.
  */
-import i18n from "@/i18n";
 import {
   Room,
   RoomEvent,
@@ -24,14 +23,21 @@ import {
   type RemoteTrack,
   type Participant,
 } from "livekit-client";
+
 import { radioDeviceId, usuarioDeIdentidad } from "./radioDevice";
+
+import i18n from "@/i18n";
 
 // Quiet the LiveKit SDK's default `info` chatter (it narrates every connection
 // state change / signal connect / "connected to Livekit Server" — ~5 lines per
 // connect). We only want real warnings/errors in the console. This is cosmetic:
 // the radio connects exactly once (VoiceChannel is a singleton, guarded by
 // `if (vc) return`), so the volume was verbosity, not duplicate connections.
-try { setLogLevel("warn"); } catch { /* older SDKs: no-op */ }
+try {
+  setLogLevel("warn");
+} catch {
+  /* older SDKs: no-op */
+}
 
 export type VoiceMember = { userId: string; name: string; role: string };
 export type VoiceSpeaker = { userId: string; name: string } | null;
@@ -85,7 +91,14 @@ export class VoiceChannel {
    * unchanged; `path` is now ignored.)
    */
   connect(
-    opts: { url: string; path?: string; token: string; tenantId: string; selfId?: string; channel?: string },
+    opts: {
+      url: string;
+      path?: string;
+      token: string;
+      tenantId: string;
+      selfId?: string;
+      channel?: string;
+    },
     cb: VoiceCallbacks,
   ): void {
     this.cb = cb || {};
@@ -94,25 +107,38 @@ export class VoiceChannel {
     void this.start(opts);
   }
 
-  private async start(opts: { url: string; token: string; tenantId: string; channel?: string }): Promise<void> {
+  private async start(opts: {
+    url: string;
+    token: string;
+    tenantId: string;
+    channel?: string;
+  }): Promise<void> {
     this.disposed = false;
     try {
       const base = opts.url.replace(/\/+$/, "");
-      const resp = await fetch(`${base}/api/tenant/${opts.tenantId}/radio/token`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${opts.token}` },
-        body: JSON.stringify({
-          channel: opts.channel || "general",
-          // Sin esto la identidad de sala es el userId pelado, y LiveKit
-          // EXPULSA a la misma persona abierta en otra superficie.
-          deviceId: radioDeviceId("w"),
-        }),
-      });
+      const resp = await fetch(
+        `${base}/api/tenant/${opts.tenantId}/radio/token`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${opts.token}`,
+          },
+          body: JSON.stringify({
+            channel: opts.channel || "general",
+            // Sin esto la identidad de sala es el userId pelado, y LiveKit
+            // EXPULSA a la misma persona abierta en otra superficie.
+            deviceId: radioDeviceId("w"),
+          }),
+        },
+      );
+
       if (!resp.ok) throw new Error(`radio token ${resp.status}`);
       const data: any = await resp.json();
       const url: string = data?.url;
       const token: string = data?.token;
       const iceServers = Array.isArray(data?.iceServers) ? data.iceServers : [];
+
       if (!url || !token) throw new Error("radio token payload");
       if (this.disposed) return; // se desconectó mientras se pedía el token
 
@@ -120,9 +146,14 @@ export class VoiceChannel {
         adaptiveStream: false,
         dynacast: false,
         // Comms-grade capture (matches a real radio — AEC/NS/AGC).
-        audioCaptureDefaults: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+        audioCaptureDefaults: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
         ...(iceServers.length ? { rtcConfig: { iceServers } } : {}),
       });
+
       this.room = room;
 
       room
@@ -151,8 +182,10 @@ export class VoiceChannel {
         })
         .on(RoomEvent.TrackSubscribed, (track: RemoteTrack) => {
           const sid = track.sid;
+
           if (track.kind === Track.Kind.Audio && sid) {
             const el = track.attach();
+
             el.style.display = "none";
             document.body.appendChild(el);
             this.attached.set(sid, el);
@@ -161,13 +194,20 @@ export class VoiceChannel {
         .on(RoomEvent.TrackUnsubscribed, (track: RemoteTrack) => {
           const sid = track.sid;
           const el = sid ? this.attached.get(sid) : undefined;
+
           if (el && sid) {
-            try { track.detach(el); el.remove(); } catch { /* ignore */ }
+            try {
+              track.detach(el);
+              el.remove();
+            } catch {
+              /* ignore */
+            }
             this.attached.delete(sid);
           }
         })
         .on(RoomEvent.ActiveSpeakersChanged, (speakers: Participant[]) => {
           const s = speakers[0];
+
           this.setSpeaker(s || null);
         })
         .on(RoomEvent.TrackMuted, (_pub: any, p: Participant) => {
@@ -176,22 +216,36 @@ export class VoiceChannel {
           if (p && p.identity === this.speakerId) this.setSpeaker(null);
         });
 
-      if (this.disposed) { void room.disconnect(); return; }
+      if (this.disposed) {
+        void room.disconnect();
+
+        return;
+      }
       await room.connect(url, token, { autoSubscribe: true });
-      if (this.disposed) { void room.disconnect(); return; }
+      if (this.disposed) {
+        void room.disconnect();
+
+        return;
+      }
       // Pre-grant the mic permission now (join is a user gesture) so the FIRST
       // push-to-talk publishes instantly instead of the permission prompt
       // interrupting the hold. Best-effort; the track is released immediately —
       // the mic only actually publishes on startTalk().
       try {
         const s = await navigator.mediaDevices.getUserMedia({ audio: true });
+
         s.getTracks().forEach((t) => t.stop());
-      } catch { /* user can still grant on first PTT */ }
+      } catch {
+        /* user can still grant on first PTT */
+      }
     } catch (e: any) {
       this.cb.onState?.("error");
       // Dentro del método (no en el cuerpo del módulo): se resuelve al fallar,
       // con el idioma que esté activo entonces.
-      this.cb.onError?.(e?.message || i18n.t("radio.voice.connectError", "No se pudo conectar la radio"));
+      this.cb.onError?.(
+        e?.message ||
+          i18n.t("radio.voice.connectError", "No se pudo conectar la radio"),
+      );
     }
   }
 
@@ -204,7 +258,10 @@ export class VoiceChannel {
    */
   private setSpeaker(p: { identity: string; name?: string } | null): void {
     this.speakerId = p ? p.identity : null;
-    const sp: VoiceSpeaker = p ? { userId: usuarioDeIdentidad(p.identity), name: p.name || "—" } : null;
+    const sp: VoiceSpeaker = p
+      ? { userId: usuarioDeIdentidad(p.identity), name: p.name || "—" }
+      : null;
+
     this.cb.onSpeaker?.(sp);
     this.armSpeakerWatch();
   }
@@ -216,31 +273,58 @@ export class VoiceChannel {
    * audio sonando y fuera de `activeSpeakers`, se libera el canal.
    */
   private armSpeakerWatch(): void {
-    if (this.speakerWatch) { clearInterval(this.speakerWatch); this.speakerWatch = null; }
+    if (this.speakerWatch) {
+      clearInterval(this.speakerWatch);
+      this.speakerWatch = null;
+    }
     const id = this.speakerId;
     const room = this.room;
+
     if (!id || !room) return;
     if (id === room.localParticipant?.identity) return; // lo mío lo limpia TrackMuted
     this.speakerWatch = setInterval(() => {
       const r = this.room;
       const sid = this.speakerId;
-      if (!r || !sid) { if (this.speakerWatch) { clearInterval(this.speakerWatch); this.speakerWatch = null; } return; }
+
+      if (!r || !sid) {
+        if (this.speakerWatch) {
+          clearInterval(this.speakerWatch);
+          this.speakerWatch = null;
+        }
+
+        return;
+      }
       const p = r.remoteParticipants.get(sid);
-      if (!p) { this.setSpeaker(null); return; } // se fue de la sala
+
+      if (!p) {
+        this.setSpeaker(null);
+
+        return;
+      } // se fue de la sala
       const active = (r.activeSpeakers || []).some((s) => s.identity === sid);
       let liveAudio = false;
-      p.audioTrackPublications.forEach((pub: any) => { if (pub?.track && !pub.isMuted) liveAudio = true; });
+
+      p.audioTrackPublications.forEach((pub: any) => {
+        if (pub?.track && !pub.isMuted) liveAudio = true;
+      });
       if (!active && !liveAudio) this.setSpeaker(null); // presente pero callado
     }, 2000);
   }
 
   private emitRoster(): void {
     const room = this.room;
+
     if (!room) return;
     const roster: VoiceMember[] = [];
     const push = (p: Participant | undefined | null) => {
-      if (p) roster.push({ userId: usuarioDeIdentidad(p.identity), name: p.name || "—", role: "" });
+      if (p)
+        roster.push({
+          userId: usuarioDeIdentidad(p.identity),
+          name: p.name || "—",
+          role: "",
+        });
     };
+
     push(room.localParticipant);
     room.remoteParticipants.forEach((p) => push(p));
     this.cb.onPresence?.(roster);
@@ -252,7 +336,8 @@ export class VoiceChannel {
    * make its backoff loop retry.
    */
   async join(): Promise<{ roster: VoiceMember[]; speaker: VoiceSpeaker }> {
-    if (!this.room || !this.connected || !this.joined) throw new Error("not connected");
+    if (!this.room || !this.connected || !this.joined)
+      throw new Error("not connected");
     const room = this.room;
     // Una PERSONA por fila, no una conexión: quien tenga el CRM y el
     // teléfono en el canal es uno solo, y verse duplicado en la plantilla
@@ -260,30 +345,54 @@ export class VoiceChannel {
     const porPersona = new Map<string, VoiceMember>();
     const anota = (identity: string, name?: string) => {
       const userId = usuarioDeIdentidad(identity);
-      if (!porPersona.has(userId)) porPersona.set(userId, { userId, name: name || "—", role: "" });
+
+      if (!porPersona.has(userId))
+        porPersona.set(userId, { userId, name: name || "—", role: "" });
     };
+
     anota(room.localParticipant.identity, room.localParticipant.name);
     room.remoteParticipants.forEach((p) => anota(p.identity, p.name));
+
     return { roster: Array.from(porPersona.values()), speaker: null };
   }
 
-  async startTalk(): Promise<{ ok: boolean; busyWith?: string; error?: string }> {
-    if (!this.room || !this.connected) return { ok: false, error: i18n.t("radio.voice.notConnected", "Radio no conectada") };
+  async startTalk(): Promise<{
+    ok: boolean;
+    busyWith?: string;
+    error?: string;
+  }> {
+    if (!this.room || !this.connected)
+      return {
+        ok: false,
+        error: i18n.t("radio.voice.notConnected", "Radio no conectada"),
+      };
     try {
       await this.room.localParticipant.setMicrophoneEnabled(true);
+
       return { ok: true };
     } catch (e: any) {
-      return { ok: false, error: e?.message || "No se pudo acceder al micrófono" };
+      return {
+        ok: false,
+        error: e?.message || "No se pudo acceder al micrófono",
+      };
     }
   }
 
   stopTalk(): void {
-    try { void this.room?.localParticipant.setMicrophoneEnabled(false); } catch { /* ignore */ }
+    try {
+      void this.room?.localParticipant.setMicrophoneEnabled(false);
+    } catch {
+      /* ignore */
+    }
   }
 
   /** Foreground/gesture: unlock audio playback (WebViews suspend it in background). */
   resume(): void {
-    try { void this.room?.startAudio(); } catch { /* ignore */ }
+    try {
+      void this.room?.startAudio();
+    } catch {
+      /* ignore */
+    }
   }
 
   leave(): void {
@@ -293,13 +402,24 @@ export class VoiceChannel {
   disconnect(): void {
     this.disposed = true;
     this.joined = false;
-    if (this.speakerWatch) { clearInterval(this.speakerWatch); this.speakerWatch = null; }
+    if (this.speakerWatch) {
+      clearInterval(this.speakerWatch);
+      this.speakerWatch = null;
+    }
     this.speakerId = null;
     try {
-      this.attached.forEach((el) => { try { el.remove(); } catch { /* ignore */ } });
+      this.attached.forEach((el) => {
+        try {
+          el.remove();
+        } catch {
+          /* ignore */
+        }
+      });
       this.attached.clear();
       void this.room?.disconnect();
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     this.room = null;
   }
 }

@@ -1,4 +1,4 @@
-import i18n from '@/i18n';
+import i18n from "@/i18n";
 
 /**
  * Etiquetas traducidas dentro de CONSTANTES de módulo.
@@ -27,8 +27,11 @@ import i18n from '@/i18n';
  *   };
  *   STATUS_META.queued.label   // → «En cola» / «Queued» / «Na fila»
  */
-export function conEtiqueta<T extends object>(clave: string, resto: T): T & { label: string } {
-  return Object.defineProperty({ ...resto }, 'label', {
+export function conEtiqueta<T extends object>(
+  clave: string,
+  resto: T,
+): T & { label: string } {
+  return Object.defineProperty({ ...resto }, "label", {
     get: () => i18n.t(clave),
     enumerable: true,
     configurable: true,
@@ -36,8 +39,11 @@ export function conEtiqueta<T extends object>(clave: string, resto: T): T & { la
 }
 
 /** Igual, para tablas que son sólo `clave → texto`, sin campos extra. */
-export function tablaDeEtiquetas<K extends string>(claves: Record<K, string>): Record<K, string> {
+export function tablaDeEtiquetas<K extends string>(
+  claves: Record<K, string>,
+): Record<K, string> {
   const salida = {} as Record<K, string>;
+
   for (const k of Object.keys(claves) as K[]) {
     Object.defineProperty(salida, k, {
       get: () => i18n.t(claves[k]),
@@ -45,5 +51,6 @@ export function tablaDeEtiquetas<K extends string>(claves: Record<K, string>): R
       configurable: true,
     });
   }
+
   return salida;
 }

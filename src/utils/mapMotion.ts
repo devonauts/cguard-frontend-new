@@ -91,11 +91,15 @@
  */
 
 import { useEffect, useRef, useState } from "react";
+
 import { tokenHex } from "./mapTheme";
 
 /* ── Tipos públicos ──────────────────────────────────────────────────────── */
 
-export interface Punto { lat: number; lng: number }
+export interface Punto {
+  lat: number;
+  lng: number;
+}
 
 /**
  * El rumbo se CUANTIZA a escalones de 15°.
@@ -135,12 +139,14 @@ const TOKEN_TONO: Record<Tono, [string, string]> = {
 export function colorDeTono(tono: Tono = "info", explicito?: string): string {
   if (explicito && explicito.trim()) return explicito;
   const [token, respaldo] = TOKEN_TONO[tono] ?? TOKEN_TONO.info;
+
   return tokenHex(token, respaldo);
 }
 
 /* ── La regla de calma ───────────────────────────────────────────────────── */
 
 let mq: MediaQueryList | null | undefined;
+
 /**
  * `true` si el usuario pidió movimiento reducido. Se consulta en el momento (no
  * se cachea el booleano) para que cambiar la preferencia del sistema surta
@@ -148,7 +154,9 @@ let mq: MediaQueryList | null | undefined;
  */
 export function calma(): boolean {
   try {
-    if (mq === undefined) mq = window.matchMedia?.("(prefers-reduced-motion: reduce)") ?? null;
+    if (mq === undefined)
+      mq = window.matchMedia?.("(prefers-reduced-motion: reduce)") ?? null;
+
     return !!mq?.matches;
   } catch {
     return false;
@@ -202,7 +210,10 @@ export function metrosEntre(a: Punto, b: Punto): number {
   const dLng = (b.lng - a.lng) * RAD;
   const la1 = a.lat * RAD;
   const la2 = b.lat * RAD;
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(la1) * Math.cos(la2) * Math.sin(dLng / 2) ** 2;
+  const h =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(la1) * Math.cos(la2) * Math.sin(dLng / 2) ** 2;
+
   return 2 * R_TIERRA * Math.asin(Math.min(1, Math.sqrt(h)));
 }
 
@@ -212,21 +223,27 @@ export function rumboEntre(a: Punto, b: Punto): number {
   const la2 = b.lat * RAD;
   const dLng = (b.lng - a.lng) * RAD;
   const y = Math.sin(dLng) * Math.cos(la2);
-  const x = Math.cos(la1) * Math.sin(la2) - Math.sin(la1) * Math.cos(la2) * Math.cos(dLng);
+  const x =
+    Math.cos(la1) * Math.sin(la2) -
+    Math.sin(la1) * Math.cos(la2) * Math.cos(dLng);
+
   return (Math.atan2(y, x) * GRA + 360) % 360;
 }
 
 /** Interpola dos ángulos por el camino CORTO (de 350° a 10° son 20°, no 340°). */
 function acercarAngulo(desde: number, hasta: number, k: number): number {
   const d = ((hasta - desde + 540) % 360) - 180;
+
   return (desde + d * k + 360) % 360;
 }
 
 /* Mercator del mundo a 256 px — para la cámara. No se usa `map.getProjection()`
    porque no existe hasta que el mapa está quieto, y la cámara se pide antes. */
 const MUNDO = 256;
+
 function aMundo(p: Punto): { x: number; y: number } {
   const s = Math.min(0.9999, Math.max(-0.9999, Math.sin(p.lat * RAD)));
+
   return {
     x: MUNDO * (0.5 + p.lng / 360),
     y: MUNDO * (0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)),
@@ -235,22 +252,27 @@ function aMundo(p: Punto): { x: number; y: number } {
 function deMundo(x: number, y: number): Punto {
   const lng = (x / MUNDO - 0.5) * 360;
   const n = Math.PI * (1 - (2 * y) / MUNDO);
+
   return { lat: Math.atan(Math.sinh(n)) * GRA, lng };
 }
 
-const acotar = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n));
+const acotar = (n: number, min: number, max: number) =>
+  Math.min(max, Math.max(min, n));
 
 /* ── Escritura de posición ───────────────────────────────────────────────── */
 
 function escribirPos(m: Movible, lat: number, lng: number): void {
   const p = { lat, lng };
+
   try {
     if (typeof m === "function") return m(p);
     const any = m as any;
+
     if (typeof any.setPosition === "function") return any.setPosition(p);
     if (typeof any.setCenter === "function") return any.setCenter(p);
     if ("position" in any) {
       any.position = p;
+
       return;
     }
   } catch {
@@ -285,11 +307,14 @@ interface Capa {
  */
 function crearCapa(map: any): Capa | null {
   const g = (window as any).google;
+
   if (!g?.maps?.OverlayView) return null;
 
   const raiz = document.createElement("div");
+
   raiz.setAttribute("aria-hidden", "true");
-  raiz.style.cssText = "position:absolute;left:0;top:0;width:0;height:0;pointer-events:none";
+  raiz.style.cssText =
+    "position:absolute;left:0;top:0;width:0;height:0;pointer-events:none";
 
   const items = new Map<number, Efecto>();
   let siguienteId = 1;
@@ -298,7 +323,12 @@ function crearCapa(map: any): Capa | null {
 
   ov.onAdd = function () {
     const panes = this.getPanes?.();
-    (panes?.overlayLayer || panes?.overlayMouseTarget || panes?.floatPane)?.appendChild(raiz);
+
+    (
+      panes?.overlayLayer ||
+      panes?.overlayMouseTarget ||
+      panes?.floatPane
+    )?.appendChild(raiz);
   };
   ov.onRemove = function () {
     raiz.parentNode?.removeChild(raiz);
@@ -306,6 +336,7 @@ function crearCapa(map: any): Capa | null {
   /** Google la llama en CADA fotograma de desplazamiento y zoom. */
   ov.draw = function () {
     const proj = this.getProjection?.();
+
     if (!proj) return;
     items.forEach((it) => colocar(proj, it));
   };
@@ -313,6 +344,7 @@ function crearCapa(map: any): Capa | null {
 
   function colocar(proj: any, it: Efecto) {
     const p = proj.fromLatLngToDivPixel(it.punto);
+
     if (!p) return;
     // `translate3d` y no `left/top`: la posición se resuelve en el compositor y
     // no obliga a recalcular el diseño de la página en cada fotograma.
@@ -323,6 +355,7 @@ function crearCapa(map: any): Capa | null {
     agregar(el, lat, lng) {
       const id = siguienteId++;
       const it: Efecto = { el, punto: new g.maps.LatLng(lat, lng), lat, lng };
+
       items.set(id, it);
       el.style.position = "absolute";
       el.style.left = "0";
@@ -330,23 +363,29 @@ function crearCapa(map: any): Capa | null {
       el.style.willChange = "transform";
       raiz.appendChild(el);
       const proj = ov.getProjection?.();
+
       if (proj) colocar(proj, it);
+
       return id;
     },
     mover(id, lat, lng) {
       const it = items.get(id);
+
       if (!it) return;
       // Medio metro de umbral: seguir a un GPS quieto no debe costar una
       // proyección por fotograma.
-      if (Math.abs(it.lat - lat) < 4e-6 && Math.abs(it.lng - lng) < 4e-6) return;
+      if (Math.abs(it.lat - lat) < 4e-6 && Math.abs(it.lng - lng) < 4e-6)
+        return;
       it.lat = lat;
       it.lng = lng;
       it.punto = new g.maps.LatLng(lat, lng);
       const proj = ov.getProjection?.();
+
       if (proj) colocar(proj, it);
     },
     quitar(id) {
       const it = items.get(id);
+
       if (!it) return;
       items.delete(id);
       it.el.parentNode?.removeChild(it.el);
@@ -391,9 +430,12 @@ export interface OpcionesSeguir {
 
 interface Pista {
   marcador: Movible;
-  deLat: number; deLng: number;
-  aLat: number; aLng: number;
-  curLat: number; curLng: number;
+  deLat: number;
+  deLng: number;
+  aLat: number;
+  aLng: number;
+  curLat: number;
+  curLng: number;
   t0: number;
   dur: number;
   ultimoPing: number;
@@ -465,7 +507,12 @@ export interface OpcionesLatido {
 
 export interface MotorMapa {
   /** Registra/actualiza el destino de un marcador. Ver `OpcionesSeguir`. */
-  seguir: (id: string, marcador: Movible, destino: Punto, opts?: OpcionesSeguir) => void;
+  seguir: (
+    id: string,
+    marcador: Movible,
+    destino: Punto,
+    opts?: OpcionesSeguir,
+  ) => void;
   /** Da de baja una pista y todo lo que colgaba de ella. */
   soltar: (id: string) => void;
   /** Baja todas las pistas cuyo id NO esté en la lista. El barrido de siempre. */
@@ -490,6 +537,7 @@ const motores = new WeakMap<object, MotorMapa>();
  */
 export function crearMotorMapa(map: any): MotorMapa {
   const previo = map && motores.get(map);
+
   if (previo) return previo;
 
   const pistas = new Map<string, Pista>();
@@ -499,6 +547,7 @@ export function crearMotorMapa(map: any): MotorMapa {
 
   function laCapa(): Capa | null {
     if (capa === undefined) capa = crearCapa(map);
+
     return capa;
   }
 
@@ -509,13 +558,16 @@ export function crearMotorMapa(map: any): MotorMapa {
 
     // La caja de la vista se pide UNA vez por fotograma, no una por marcador.
     let caja: { n: number; s: number; e: number; o: number } | null = null;
+
     try {
       const b = map?.getBounds?.();
+
       if (b) {
         const j = b.toJSON();
         // 15 % de margen: un marcador que va a entrar en pantalla ya viene
         // deslizándose, no aparece de golpe en el borde.
         const mLat = (j.north - j.south) * 0.15;
+
         caja = { n: j.north + mLat, s: j.south - mLat, e: j.east, o: j.west };
       }
     } catch {
@@ -538,6 +590,7 @@ export function crearMotorMapa(map: any): MotorMapa {
         // conocidos es lo que de verdad se lee como «va andando».
         const lat = p.deLat + (p.aLat - p.deLat) * t;
         const lng = p.deLng + (p.aLng - p.deLng) * t;
+
         p.curLat = lat;
         p.curLng = lng;
 
@@ -545,6 +598,7 @@ export function crearMotorMapa(map: any): MotorMapa {
         // terminar. Con trescientos vigilantes y una ciudad en pantalla, la
         // mayoría de los fotogramas se los ahorra esta línea.
         const dentro = !caja || enCaja(lat, lng, caja);
+
         if (dentro || t >= 1) escribirPos(p.marcador, lat, lng);
         if (p.latido != null && dentro) laCapa()?.mover(p.latido, lat, lng);
 
@@ -556,8 +610,11 @@ export function crearMotorMapa(map: any): MotorMapa {
       // hace que la proa vaya siempre mirando a donde YA estuvo.
       if (p.quiereRumbo && p.rumboDur > 0) {
         const k = Math.min(1, (ahora - p.rumboT0) / p.rumboDur);
+
         p.rumbo = acercarAngulo(p.rumboDe, p.rumboA, 1 - Math.pow(1 - k, 3));
-        const cubo = Math.round(p.rumbo / PASO_RUMBO) % Math.round(360 / PASO_RUMBO);
+        const cubo =
+          Math.round(p.rumbo / PASO_RUMBO) % Math.round(360 / PASO_RUMBO);
+
         if (cubo !== p.cubo) {
           p.cubo = cubo;
           try {
@@ -574,16 +631,31 @@ export function crearMotorMapa(map: any): MotorMapa {
     if (!queda) desabonar(paso);
   };
 
-  function enCaja(lat: number, lng: number, c: { n: number; s: number; e: number; o: number }): boolean {
+  function enCaja(
+    lat: number,
+    lng: number,
+    c: { n: number; s: number; e: number; o: number },
+  ): boolean {
     if (lat < c.s || lat > c.n) return false;
+
     // Con el antimeridiano de por medio la caja viene «del revés».
     return c.o <= c.e ? lng >= c.o && lng <= c.e : lng >= c.o || lng <= c.e;
   }
 
   /* ── seguir ───────────────────────────────────────────────────────────── */
 
-  function seguir(id: string, marcador: Movible, destino: Punto, opts: OpcionesSeguir = {}) {
-    if (!vivo || !Number.isFinite(destino?.lat) || !Number.isFinite(destino?.lng)) return;
+  function seguir(
+    id: string,
+    marcador: Movible,
+    destino: Punto,
+    opts: OpcionesSeguir = {},
+  ) {
+    if (
+      !vivo ||
+      !Number.isFinite(destino?.lat) ||
+      !Number.isFinite(destino?.lng)
+    )
+      return;
     const ahora = performance.now();
     const previa = pistas.get(id);
 
@@ -595,33 +667,47 @@ export function crearMotorMapa(map: any): MotorMapa {
     if (nueva) {
       const p: Pista = {
         marcador,
-        deLat: destino.lat, deLng: destino.lng,
-        aLat: destino.lat, aLng: destino.lng,
-        curLat: destino.lat, curLng: destino.lng,
-        t0: ahora, dur: 0, ultimoPing: ahora,
+        deLat: destino.lat,
+        deLng: destino.lng,
+        aLat: destino.lat,
+        aLng: destino.lng,
+        curLat: destino.lat,
+        curLng: destino.lng,
+        t0: ahora,
+        dur: 0,
+        ultimoPing: ahora,
         viva: false,
         quiereRumbo: !!opts.rumbo,
         minMetros: opts.minMetrosRumbo ?? 4,
         alRumbo: opts.alRumbo,
-        rumbo: 0, rumboDe: 0, rumboA: 0, rumboT0: ahora, rumboDur: 0,
+        rumbo: 0,
+        rumboDe: 0,
+        rumboA: 0,
+        rumboT0: ahora,
+        rumboDur: 0,
         cubo: -1,
         latido: previa?.latido,
       };
+
       pistas.set(id, p);
       escribirPos(marcador, destino.lat, destino.lng);
+
       return;
     }
 
     const p = previa!;
+
     p.quiereRumbo = !!opts.rumbo;
     p.minMetros = opts.minMetrosRumbo ?? p.minMetros;
     if (opts.alRumbo) p.alRumbo = opts.alRumbo;
 
     const movido = metrosEntre({ lat: p.aLat, lng: p.aLng }, destino);
+
     if (movido < 0.4) {
       // El GPS repitió la misma coordenada: no hay nada que animar y desde luego
       // no hay rumbo nuevo que calcular.
       p.ultimoPing = ahora;
+
       return;
     }
 
@@ -635,7 +721,8 @@ export function crearMotorMapa(map: any): MotorMapa {
         // Primer rumbo conocido: se adopta entero, sin girar desde el norte.
         p.rumbo = p.rumboDe = p.rumboA;
         p.rumboDur = 1;
-        p.cubo = Math.round(p.rumbo / PASO_RUMBO) % Math.round(360 / PASO_RUMBO);
+        p.cubo =
+          Math.round(p.rumbo / PASO_RUMBO) % Math.round(360 / PASO_RUMBO);
         try {
           p.alRumbo?.(p.cubo * PASO_RUMBO);
         } catch {
@@ -652,6 +739,7 @@ export function crearMotorMapa(map: any): MotorMapa {
       p.ultimoPing = ahora;
       escribirPos(marcador, destino.lat, destino.lng);
       if (p.latido != null) laCapa()?.mover(p.latido, destino.lat, destino.lng);
+
       return;
     }
 
@@ -679,6 +767,7 @@ export function crearMotorMapa(map: any): MotorMapa {
 
   function onda(pos: Punto, opts: OpcionesOnda = {}) {
     const c = laCapa();
+
     if (!c || !Number.isFinite(pos?.lat)) return;
 
     const color = colorDeTono(opts.tono ?? "info", opts.color);
@@ -688,16 +777,19 @@ export function crearMotorMapa(map: any): MotorMapa {
     const quieto = calma();
 
     const caja = document.createElement("div");
+
     caja.style.cssText = "position:absolute;pointer-events:none";
     const id = c.agregar(caja, pos.lat, pos.lng);
 
     const anillo = (borde: number, relleno: string) => {
       const el = document.createElement("div");
+
       el.style.cssText =
         `position:absolute;left:${-radio}px;top:${-radio}px;width:${radio * 2}px;height:${radio * 2}px;` +
         `border-radius:9999px;border:${borde}px solid ${color};background:${relleno};` +
         `box-shadow:0 0 ${Math.round(radio / 3)}px 0 ${color}`;
       caja.appendChild(el);
+
       return el;
     };
 
@@ -706,25 +798,35 @@ export function crearMotorMapa(map: any): MotorMapa {
       // retira solo. Sin escalar y sin desvanecer: la noticia llega igual y
       // nadie se marea.
       const el = anillo(2, "transparent");
+
       el.style.opacity = "0.55";
       el.style.transform = "scale(0.62)";
       window.setTimeout(() => c.quitar(id), 1200);
+
       return;
     }
 
     const suave = "cubic-bezier(0.22, 1, 0.36, 1)";
+
     for (let i = 0; i < anillos; i++) {
       const el = anillo(i === 0 ? 2.5 : 1.5, "transparent");
+
       el.animate(
         [
           { transform: "scale(0.18)", opacity: 0.95 },
           { transform: "scale(1)", opacity: 0 },
         ],
-        { duration: dur, delay: i * Math.round(dur * 0.22), easing: suave, fill: "both" },
+        {
+          duration: dur,
+          delay: i * Math.round(dur * 0.22),
+          easing: suave,
+          fill: "both",
+        },
       );
     }
     // Un disco tenue detrás: el anillo solo se pierde sobre teselas oscuras.
     const disco = anillo(0, color);
+
     disco.style.opacity = "0";
     disco.animate(
       [
@@ -734,12 +836,15 @@ export function crearMotorMapa(map: any): MotorMapa {
       { duration: Math.round(dur * 0.8), easing: suave, fill: "both" },
     );
 
-    window.setTimeout(() => c.quitar(id), dur + anillos * Math.round(dur * 0.22) + 120);
+    window.setTimeout(
+      () => c.quitar(id),
+      dur + anillos * Math.round(dur * 0.22) + 120,
+    );
   }
 
   function latido(id: string, pos: Punto, opts: OpcionesLatido) {
     const previo = latidos.get(id);
-    const c = opts.activo ? laCapa() : capa ?? null;
+    const c = opts.activo ? laCapa() : (capa ?? null);
     const color = colorDeTono(opts.tono ?? "bien", opts.color);
 
     if (!opts.activo || !c) {
@@ -747,8 +852,10 @@ export function crearMotorMapa(map: any): MotorMapa {
         (capa ?? null)?.quitar(previo.id);
         latidos.delete(id);
         const p = pistas.get(id);
+
         if (p) p.latido = undefined;
       }
+
       return;
     }
 
@@ -759,6 +866,7 @@ export function crearMotorMapa(map: any): MotorMapa {
         latidos.delete(id);
       } else {
         c.mover(previo.id, pos.lat, pos.lng);
+
         return;
       }
     }
@@ -769,13 +877,16 @@ export function crearMotorMapa(map: any): MotorMapa {
 
     const radio = opts.radio ?? 26;
     const caja = document.createElement("div");
+
     caja.style.cssText = "position:absolute;pointer-events:none";
     const idEfecto = c.agregar(caja, pos.lat, pos.lng);
 
     const quieto = calma();
     const n = quieto ? 1 : 2;
+
     for (let i = 0; i < n; i++) {
       const el = document.createElement("div");
+
       el.style.cssText =
         `position:absolute;left:${-radio}px;top:${-radio}px;width:${radio * 2}px;height:${radio * 2}px;` +
         `border-radius:9999px;border:1.5px solid ${color}`;
@@ -791,13 +902,19 @@ export function crearMotorMapa(map: any): MotorMapa {
             { transform: "scale(0.42)", opacity: 0.5 },
             { transform: "scale(1)", opacity: 0 },
           ],
-          { duration: 2200, delay: i * 1100, easing: "cubic-bezier(0.4, 0, 0.6, 1)", iterations: Infinity },
+          {
+            duration: 2200,
+            delay: i * 1100,
+            easing: "cubic-bezier(0.4, 0, 0.6, 1)",
+            iterations: Infinity,
+          },
         );
       }
     }
 
     latidos.set(id, { id: idEfecto, color });
     const p = pistas.get(id);
+
     if (p) p.latido = idEfecto;
   }
 
@@ -829,6 +946,7 @@ export function crearMotorMapa(map: any): MotorMapa {
       if (lis) g?.maps?.event?.removeListener(lis);
       lis = null;
     };
+
     try {
       lis = g.maps.event.addListenerOnce(map, "idle", disparar);
     } catch {
@@ -844,6 +962,7 @@ export function crearMotorMapa(map: any): MotorMapa {
 
   function tras(ms: number, cb: () => void) {
     const t = window.setTimeout(cb, ms);
+
     pendientes.push({ cancelar: () => window.clearTimeout(t) });
   }
 
@@ -852,6 +971,7 @@ export function crearMotorMapa(map: any): MotorMapa {
     try {
       if (typeof map?.moveCamera !== "function") return false;
       const frac = map.get?.("isFractionalZoomEnabled");
+
       return frac === true || !!map.get?.("mapId");
     } catch {
       return false;
@@ -859,9 +979,15 @@ export function crearMotorMapa(map: any): MotorMapa {
   }
 
   let vuelo: {
-    t0: number; dur: number;
-    x0: number; y0: number; x1: number; y1: number;
-    z0: number; z1: number; zBaja: number;
+    t0: number;
+    dur: number;
+    x0: number;
+    y0: number;
+    x1: number;
+    y1: number;
+    z0: number;
+    z1: number;
+    zBaja: number;
     alLlegar?: () => void;
     token: number;
   } | null = null;
@@ -875,6 +1001,7 @@ export function crearMotorMapa(map: any): MotorMapa {
     if (!vuelo || !vivo) return desabonar(pasoCamara);
     if (vuelo.token !== vueloToken) {
       vuelo = null;
+
       return desabonar(pasoCamara);
     }
     const t = Math.min(1, (ahora - vuelo.t0) / vuelo.dur);
@@ -884,6 +1011,7 @@ export function crearMotorMapa(map: any): MotorMapa {
     const recto = vuelo.z0 + (vuelo.z1 - vuelo.z0) * e;
     const hundido = Math.min(vuelo.z0, vuelo.z1, vuelo.zBaja);
     const arco = Math.sin(Math.PI * t) * Math.max(0, recto - hundido);
+
     try {
       map.moveCamera({ center: deMundo(x, y), zoom: recto - arco });
     } catch {
@@ -891,6 +1019,7 @@ export function crearMotorMapa(map: any): MotorMapa {
     }
     if (t >= 1) {
       const fin = vuelo.alLlegar;
+
       vuelo = null;
       desabonar(pasoCamara);
       fin?.();
@@ -900,7 +1029,9 @@ export function crearMotorMapa(map: any): MotorMapa {
   function centroActual(): Punto | null {
     try {
       const c = map?.getCenter?.();
+
       if (!c) return null;
+
       return { lat: c.lat(), lng: c.lng() };
     } catch {
       return null;
@@ -909,13 +1040,20 @@ export function crearMotorMapa(map: any): MotorMapa {
 
   function tamanoVista(): { w: number; h: number } {
     const div = map?.getDiv?.();
+
     return { w: div?.offsetWidth || 800, h: div?.offsetHeight || 500 };
   }
 
   /** Zoom al que dos puntos del mundo caben a la vez en la vista. */
-  function zoomQueContiene(a: { x: number; y: number }, b: { x: number; y: number }, w: number, h: number): number {
+  function zoomQueContiene(
+    a: { x: number; y: number },
+    b: { x: number; y: number },
+    w: number,
+    h: number,
+  ): number {
     const dx = Math.max(1e-6, Math.abs(b.x - a.x) * 1.6);
     const dy = Math.max(1e-6, Math.abs(b.y - a.y) * 1.6);
+
     return Math.log2(Math.min(w / dx, h / dy));
   }
 
@@ -936,6 +1074,7 @@ export function crearMotorMapa(map: any): MotorMapa {
         /* mapa muerto */
       }
       opts.alLlegar?.();
+
       return;
     }
 
@@ -946,20 +1085,28 @@ export function crearMotorMapa(map: any): MotorMapa {
     const dx = Math.abs(b.x - a.x) * esc;
     const dy = Math.abs(b.y - a.y) * esc;
     const cerca = dx <= w * 0.85 && dy <= h * 0.85;
-    const zBaja = Math.floor(acotar(zoomQueContiene(a, b, w, h), 2, Math.min(zActual, zDestino)));
+    const zBaja = Math.floor(
+      acotar(zoomQueContiene(a, b, w, h), 2, Math.min(zActual, zDestino)),
+    );
 
     if (camaraContinua()) {
       const lejania = Math.max(0, Math.min(zActual, zDestino) - zBaja);
+
       vuelo = {
         t0: performance.now(),
         dur: opts.duracion ?? acotar(520 + lejania * 130, 420, 1600),
-        x0: a.x, y0: a.y, x1: b.x, y1: b.y,
-        z0: zActual, z1: zDestino,
+        x0: a.x,
+        y0: a.y,
+        x1: b.x,
+        y1: b.y,
+        z0: zActual,
+        z1: zDestino,
         zBaja: cerca ? Math.min(zActual, zDestino) : zBaja,
         alLlegar: opts.alLlegar,
         token,
       };
       abonar(pasoCamara);
+
       return;
     }
 
@@ -974,8 +1121,10 @@ export function crearMotorMapa(map: any): MotorMapa {
       } catch {
         /* mapa muerto */
       }
-      if (zDestino !== zActual) tras(280, () => escalera(zActual, zDestino, token, opts.alLlegar));
+      if (zDestino !== zActual)
+        tras(280, () => escalera(zActual, zDestino, token, opts.alLlegar));
       else tras(320, () => opts.alLlegar?.());
+
       return;
     }
 
@@ -989,7 +1138,12 @@ export function crearMotorMapa(map: any): MotorMapa {
       }
       alQuedarQuieto(() => {
         if (token !== vueloToken) return;
-        escalera(Number(map.getZoom?.() ?? zBaja), zDestino, token, opts.alLlegar);
+        escalera(
+          Number(map.getZoom?.() ?? zBaja),
+          zDestino,
+          token,
+          opts.alLlegar,
+        );
       }, 900);
     };
 
@@ -1006,16 +1160,27 @@ export function crearMotorMapa(map: any): MotorMapa {
   }
 
   /** Acerca de escalón en escalón: cada `setZoom` lo anima Google. */
-  function escalera(desde: number, hasta: number, token: number, alLlegar?: () => void) {
+  function escalera(
+    desde: number,
+    hasta: number,
+    token: number,
+    alLlegar?: () => void,
+  ) {
     const d = Math.round(desde);
     const objetivo = Math.round(hasta);
+
     if (token !== vueloToken || d === objetivo) {
       alLlegar?.();
+
       return;
     }
     // Más de seis escalones de un solo nivel se hace largo: se agrupan de dos.
     const salto = Math.abs(objetivo - d) > 6 ? 2 : 1;
-    const siguiente = d < objetivo ? Math.min(objetivo, d + salto) : Math.max(objetivo, d - salto);
+    const siguiente =
+      d < objetivo
+        ? Math.min(objetivo, d + salto)
+        : Math.max(objetivo, d - salto);
+
     try {
       map.setZoom(siguiente);
     } catch {
@@ -1025,21 +1190,32 @@ export function crearMotorMapa(map: any): MotorMapa {
   }
 
   function encuadrar(puntos: Punto[], opts: OpcionesEncuadre = {}) {
-    const validos = (puntos || []).filter((p) => p && Number.isFinite(p.lat) && Number.isFinite(p.lng));
+    const validos = (puntos || []).filter(
+      (p) => p && Number.isFinite(p.lat) && Number.isFinite(p.lng),
+    );
+
     if (!validos.length) return;
     const zMax = opts.zoomMax ?? 16;
     const zMin = opts.zoomMin ?? 2;
 
     if (validos.length === 1) {
       volarA(validos[0], { zoom: Math.min(zMax, 15), alLlegar: opts.alLlegar });
+
       return;
     }
 
-    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    let minX = Infinity,
+      maxX = -Infinity,
+      minY = Infinity,
+      maxY = -Infinity;
+
     validos.forEach((p) => {
       const m = aMundo(p);
-      minX = Math.min(minX, m.x); maxX = Math.max(maxX, m.x);
-      minY = Math.min(minY, m.y); maxY = Math.max(maxY, m.y);
+
+      minX = Math.min(minX, m.x);
+      maxX = Math.max(maxX, m.x);
+      minY = Math.min(minY, m.y);
+      maxY = Math.max(maxY, m.y);
     });
 
     const { w, h } = tamanoVista();
@@ -1048,15 +1224,27 @@ export function crearMotorMapa(map: any): MotorMapa {
     const dispH = Math.max(80, h - pad * 2);
     const dx = Math.max(1e-6, maxX - minX);
     const dy = Math.max(1e-6, maxY - minY);
-    const zoom = acotar(Math.floor(Math.log2(Math.min(dispW / dx, dispH / dy))), zMin, zMax);
+    const zoom = acotar(
+      Math.floor(Math.log2(Math.min(dispW / dx, dispH / dy))),
+      zMin,
+      zMax,
+    );
 
-    volarA(deMundo((minX + maxX) / 2, (minY + maxY) / 2), { zoom, alLlegar: opts.alLlegar });
+    volarA(deMundo((minX + maxX) / 2, (minY + maxY) / 2), {
+      zoom,
+      alLlegar: opts.alLlegar,
+    });
   }
 
   // Si el usuario agarra el mapa, manda él: cualquier vuelo pendiente se corta.
   let lisArrastre: any = null;
+
   try {
-    lisArrastre = (window as any).google?.maps?.event?.addListener(map, "dragstart", detenerVuelo);
+    lisArrastre = (window as any).google?.maps?.event?.addListener(
+      map,
+      "dragstart",
+      detenerVuelo,
+    );
   } catch {
     /* sin eventos */
   }
@@ -1065,6 +1253,7 @@ export function crearMotorMapa(map: any): MotorMapa {
 
   function soltar(id: string) {
     const l = latidos.get(id);
+
     if (l) {
       capa?.quitar(l.id);
       latidos.delete(id);
@@ -1075,6 +1264,7 @@ export function crearMotorMapa(map: any): MotorMapa {
 
   function conservar(ids: Iterable<string>) {
     const vivos = ids instanceof Set ? ids : new Set(ids);
+
     Array.from(pistas.keys()).forEach((id) => {
       if (!vivos.has(id)) soltar(id);
     });
@@ -1089,10 +1279,12 @@ export function crearMotorMapa(map: any): MotorMapa {
     conservar,
     posicionDe(id) {
       const p = pistas.get(id);
+
       return p ? { lat: p.curLat, lng: p.curLng } : null;
     },
     rumboDe(id) {
       const p = pistas.get(id);
+
       return p && p.cubo >= 0 ? p.rumbo : null;
     },
     onda,
@@ -1107,7 +1299,8 @@ export function crearMotorMapa(map: any): MotorMapa {
       capa?.destruir();
       capa = undefined;
       try {
-        if (lisArrastre) (window as any).google?.maps?.event?.removeListener(lisArrastre);
+        if (lisArrastre)
+          (window as any).google?.maps?.event?.removeListener(lisArrastre);
       } catch {
         /* ya no hay API */
       }
@@ -1116,6 +1309,7 @@ export function crearMotorMapa(map: any): MotorMapa {
   };
 
   if (map) motores.set(map, motor);
+
   return motor;
 }
 
@@ -1138,8 +1332,10 @@ export function useMotorMapa(map: any, listo = true): MotorMapa | null {
   useEffect(() => {
     if (!listo || !map) return;
     const m = crearMotorMapa(map);
+
     ref.current = m;
     setMotor(m);
+
     return () => {
       ref.current = null;
       setMotor(null);

@@ -10,6 +10,7 @@
  *   queryClient.invalidateQueries({ queryKey: qk.categories("clientAccount") })
  */
 import { useQuery } from "@tanstack/react-query";
+
 import { categoryService } from "@/lib/api/categoryService";
 import { clientService } from "@/lib/api/clientService";
 
@@ -19,7 +20,8 @@ export const qk = {
   categories: (module: string) => ["categories", tenantId(), module] as const,
   clients: (filters?: unknown, pagination?: unknown) =>
     ["clients", tenantId(), filters ?? null, pagination ?? null] as const,
-  stations: (params?: unknown) => ["stations", tenantId(), params ?? null] as const,
+  stations: (params?: unknown) =>
+    ["stations", tenantId(), params ?? null] as const,
 };
 
 /** Category list for a module (e.g. "clientAccount"), cached per tenant. */
@@ -27,7 +29,11 @@ export function useCategories(module: string, enabled = true) {
   return useQuery({
     queryKey: qk.categories(module),
     queryFn: async () => {
-      const data = await categoryService.list({ filter: { module }, limit: 1000 });
+      const data = await categoryService.list({
+        filter: { module },
+        limit: 1000,
+      });
+
       return (data?.rows || []) as any[];
     },
     enabled: enabled && !!tenantId(),
@@ -37,10 +43,18 @@ export function useCategories(module: string, enabled = true) {
 }
 
 /** Paginated client list, cached by (filters, pagination). */
-export function useClients(filters?: Record<string, any>, pagination?: Record<string, any>, enabled = true) {
+export function useClients(
+  filters?: Record<string, any>,
+  pagination?: Record<string, any>,
+  enabled = true,
+) {
   return useQuery({
     queryKey: qk.clients(filters, pagination),
-    queryFn: () => clientService.getClients((filters || {}) as any, (pagination || {}) as any),
+    queryFn: () =>
+      clientService.getClients(
+        (filters || {}) as any,
+        (pagination || {}) as any,
+      ),
     enabled: enabled && !!tenantId(),
   });
 }

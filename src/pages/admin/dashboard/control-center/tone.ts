@@ -12,7 +12,7 @@
  */
 import type { LiveStatus } from "./types";
 
-import { localeActual } from '@/lib/localeActual'
+import { localeActual } from "@/lib/localeActual";
 export type Tone = "brand" | "neutral" | "ok" | "warn" | "bad" | "info";
 
 /**
@@ -39,6 +39,7 @@ const STATUS_TONE: Record<LiveStatus, Tone> = {
 
 export function toneOf(status?: LiveStatus | "neutral" | null): Tone {
   if (!status || status === "neutral") return "neutral";
+
   return STATUS_TONE[status] ?? "neutral";
 }
 
@@ -46,6 +47,7 @@ export function toneOf(status?: LiveStatus | "neutral" | null): Tone {
 export function toneFill(t: Tone): string {
   if (t === "brand") return "var(--brand)";
   if (t === "neutral") return "var(--ink-faint)";
+
   return `var(--${t})`;
 }
 
@@ -53,6 +55,7 @@ export function toneFill(t: Tone): string {
 export function toneInk(t: Tone): string {
   if (t === "brand") return "var(--brand-text)";
   if (t === "neutral") return "var(--ink-soft)";
+
   return `var(--${t}-text)`;
 }
 
@@ -72,6 +75,7 @@ const NUM = new Intl.NumberFormat(localeActual(), { maximumFractionDigits: 1 });
 
 export function fmtValue(v: number | string): string {
   if (typeof v === "number") return Number.isFinite(v) ? NUM.format(v) : "—";
+
   return v === "" ? "—" : v;
 }
 
@@ -84,28 +88,38 @@ export function deltaDirection(trend?: number | null): "up" | "down" | "flat" {
   if (trend == null) return "flat";
   if (trend > 0.02) return "up";
   if (trend < -0.02) return "down";
+
   return "flat";
 }
 
 export function timeAgo(iso: string): string {
   const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+
   if (!Number.isFinite(s)) return "—";
   if (s < 60) return "ahora";
   if (s < 3600) return `hace ${Math.floor(s / 60)} min`;
   if (s < 86400) return `hace ${Math.floor(s / 3600)} h`;
+
   return `hace ${Math.floor(s / 86400)} d`;
 }
 
 export function clockOf(iso: string): string {
   const d = new Date(iso);
+
   if (Number.isNaN(d.getTime())) return "";
-  return d.toLocaleTimeString(localeActual(), { hour: "2-digit", minute: "2-digit" });
+
+  return d.toLocaleTimeString(localeActual(), {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 /** Iniciales para el avatar de una fila de actividad. */
 export function initialsOf(text: string): string {
   const parts = (text || "").trim().split(/\s+/).filter(Boolean);
+
   if (!parts.length) return "··";
   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+
   return (parts[0][0] + parts[1][0]).toUpperCase();
 }

@@ -1,9 +1,15 @@
-import api from '@/lib/api';
-import { ItemCondition, InventoryItem } from './inventoryItemService';
+import { ItemCondition, InventoryItem } from "./inventoryItemService";
+
+import api from "@/lib/api";
 
 const getTenantId = (): string => {
-  const t = localStorage.getItem('tenantId');
-  if (!t) throw new Error("No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.");
+  const t = localStorage.getItem("tenantId");
+
+  if (!t)
+    throw new Error(
+      "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+    );
+
   return t;
 };
 
@@ -15,7 +21,13 @@ export interface InventoryAssignment {
   station?: { id: string; stationName?: string; name?: string };
   postSiteId?: string;
   assignedToUserId?: string;
-  assignedTo?: { id: string; fullName?: string; firstName?: string; lastName?: string; governmentId?: string };
+  assignedTo?: {
+    id: string;
+    fullName?: string;
+    firstName?: string;
+    lastName?: string;
+    governmentId?: string;
+  };
   assignedAt: string;
   returnedAt?: string;
   conditionAtCheckout?: ItemCondition;
@@ -39,52 +51,82 @@ export interface InventoryAssignmentInput {
 }
 
 const inventoryAssignmentService = {
-  async list(params: {
-    filter?: Record<string, unknown>;
-    limit?: number;
-    offset?: number;
-  } = {}): Promise<{ rows: InventoryAssignment[]; count: number }> {
+  async list(
+    params: {
+      filter?: Record<string, unknown>;
+      limit?: number;
+      offset?: number;
+    } = {},
+  ): Promise<{ rows: InventoryAssignment[]; count: number }> {
     const tenantId = getTenantId();
     const query = new URLSearchParams();
-    if (params.limit != null) query.append('limit', String(params.limit));
-    if (params.offset != null) query.append('offset', String(params.offset));
+
+    if (params.limit != null) query.append("limit", String(params.limit));
+    if (params.offset != null) query.append("offset", String(params.offset));
     const f = params.filter || {};
+
     Object.entries(f).forEach(([k, v]) => {
-      if (v != null && v !== '') query.append(`filter[${k}]`, String(v));
+      if (v != null && v !== "") query.append(`filter[${k}]`, String(v));
     });
-    const { data } = await api.get(`/tenant/${tenantId}/inventory-assignment?${query.toString()}`);
+    const { data } = await api.get(
+      `/tenant/${tenantId}/inventory-assignment?${query.toString()}`,
+    );
+
     return data;
   },
 
-  async create(payload: InventoryAssignmentInput): Promise<InventoryAssignment> {
+  async create(
+    payload: InventoryAssignmentInput,
+  ): Promise<InventoryAssignment> {
     const tenantId = getTenantId();
-    const { data } = await api.post(`/tenant/${tenantId}/inventory-assignment`, { data: payload });
+    const { data } = await api.post(
+      `/tenant/${tenantId}/inventory-assignment`,
+      { data: payload },
+    );
+
     return data;
   },
 
-  async update(id: string, payload: Partial<InventoryAssignmentInput>): Promise<InventoryAssignment> {
+  async update(
+    id: string,
+    payload: Partial<InventoryAssignmentInput>,
+  ): Promise<InventoryAssignment> {
     const tenantId = getTenantId();
-    const { data } = await api.put(`/tenant/${tenantId}/inventory-assignment/${id}`, { data: payload });
+    const { data } = await api.put(
+      `/tenant/${tenantId}/inventory-assignment/${id}`,
+      { data: payload },
+    );
+
     return data;
   },
 
   async delete(ids: string[]): Promise<void> {
     const tenantId = getTenantId();
-    await api.delete(`/tenant/${tenantId}/inventory-assignment`, { data: { ids } });
+
+    await api.delete(`/tenant/${tenantId}/inventory-assignment`, {
+      data: { ids },
+    });
   },
 
-  async returnItem(id: string, payload: {
-    returnedAt?: string;
-    conditionAtReturn?: ItemCondition;
-    returnNotes?: string;
-  }): Promise<InventoryAssignment> {
+  async returnItem(
+    id: string,
+    payload: {
+      returnedAt?: string;
+      conditionAtReturn?: ItemCondition;
+      returnNotes?: string;
+    },
+  ): Promise<InventoryAssignment> {
     const tenantId = getTenantId();
-    const { data } = await api.patch(`/tenant/${tenantId}/inventory-assignment/${id}`, {
-      data: {
-        ...payload,
-        returnedAt: payload.returnedAt || new Date().toISOString(),
+    const { data } = await api.patch(
+      `/tenant/${tenantId}/inventory-assignment/${id}`,
+      {
+        data: {
+          ...payload,
+          returnedAt: payload.returnedAt || new Date().toISOString(),
+        },
       },
-    });
+    );
+
     return data;
   },
 };

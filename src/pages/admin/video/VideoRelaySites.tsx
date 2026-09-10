@@ -1,10 +1,23 @@
 import { useEffect, useState } from "react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Loader2, Plus, Trash2, Download, RefreshCw, KeyRound, Server } from "lucide-react";
+import {
+  Loader2,
+  Plus,
+  Trash2,
+  Download,
+  RefreshCw,
+  KeyRound,
+  Server,
+} from "lucide-react";
+
+import {
+  DeviceStatusBadge,
+  healthTone,
+  type DeviceHealth,
+} from "./deviceStatus";
 
 import AppLayout from "@/layouts/app-layout";
-import { DeviceStatusBadge, healthTone, type DeviceHealth } from "./deviceStatus";
 import { Button } from "@/components/ui/button";
 import {
   PageContainer,
@@ -13,21 +26,34 @@ import {
   Stagger,
   GlassPanel,
   IconTile,
-  StatusBadge,
   SkeletonCards,
 } from "@/components/kit";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { videoService, type RelaySite, type RelayBundle } from "@/lib/api/videoService";
-
+import {
+  videoService,
+  type RelaySite,
+  type RelayBundle,
+} from "@/lib/api/videoService";
 
 /**
  * Semánticos fijos: transmitir o no transmitir no depende del color de marca.
@@ -37,10 +63,25 @@ import { videoService, type RelaySite, type RelayBundle } from "@/lib/api/videoS
  * El texto guarda la CLAVE junto al español: el objeto se construye al importar
  * el módulo, antes de que i18next sepa el idioma, así que se traduce al pintar.
  */
-const STATUS: Record<string, { health: DeviceHealth; label: string; labelKey: string }> = {
-  publishing: { health: "up", label: "Transmitiendo", labelKey: "video.relay.status.publishing" },
-  offline: { health: "down", label: "Sin conexión", labelKey: "video.relay.status.offline" },
-  unknown: { health: "unknown", label: "Sin activar", labelKey: "video.relay.status.unknown" },
+const STATUS: Record<
+  string,
+  { health: DeviceHealth; label: string; labelKey: string }
+> = {
+  publishing: {
+    health: "up",
+    label: "Transmitiendo",
+    labelKey: "video.relay.status.publishing",
+  },
+  offline: {
+    health: "down",
+    label: "Sin conexión",
+    labelKey: "video.relay.status.offline",
+  },
+  unknown: {
+    health: "unknown",
+    label: "Sin activar",
+    labelKey: "video.relay.status.unknown",
+  },
 };
 
 export default function VideoRelaySites() {
@@ -61,23 +102,41 @@ export default function VideoRelaySites() {
   const load = () => {
     setLoading(true);
     setError(null);
-    videoService.relaySites()
+    videoService
+      .relaySites()
       .then(setSites)
-      .catch((e) => setError((e as Error)?.message || "No se pudieron cargar los sitios relay"))
+      .catch((e) =>
+        setError(
+          (e as Error)?.message || "No se pudieron cargar los sitios relay",
+        ),
+      )
       .finally(() => setLoading(false));
   };
+
   useEffect(load, []);
 
   const create = async () => {
-    if (!name.trim()) { toast.error(t('comun.elNombreEsObligatorio')); return; }
+    if (!name.trim()) {
+      toast.error(t("comun.elNombreEsObligatorio"));
+
+      return;
+    }
     setSaving(true);
     try {
-      await videoService.createRelaySite({ name: name.trim(), notes: notes.trim() || undefined });
+      await videoService.createRelaySite({
+        name: name.trim(),
+        notes: notes.trim() || undefined,
+      });
       toast.success("Sitio relay creado");
-      setNewOpen(false); setName(""); setNotes("");
+      setNewOpen(false);
+      setName("");
+      setNotes("");
       load();
     } catch (e) {
-      toast.error((e as Error)?.message || t("video.relay.createSiteError", "No se pudo crear el sitio"));
+      toast.error(
+        (e as Error)?.message ||
+          t("video.relay.createSiteError", "No se pudo crear el sitio"),
+      );
     } finally {
       setSaving(false);
     }
@@ -89,7 +148,10 @@ export default function VideoRelaySites() {
     try {
       setBundle(await videoService.relayBundle(s.id));
     } catch (e) {
-      toast.error((e as Error)?.message || t("video.relay.generateError", "No se pudo generar el relay"));
+      toast.error(
+        (e as Error)?.message ||
+          t("video.relay.generateError", "No se pudo generar el relay"),
+      );
       setBundleSite(null);
     }
   };
@@ -99,19 +161,28 @@ export default function VideoRelaySites() {
     const blob = new Blob([bundle.compose], { type: "text/yaml" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
+
     a.href = url;
     a.download = `docker-compose.${bundle.siteKey}.yml`;
-    document.body.appendChild(a); a.click(); a.remove();
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
     URL.revokeObjectURL(url);
   };
 
   const regenToken = async (s: RelaySite) => {
     try {
       await videoService.updateRelaySite(s.id, { regenToken: true });
-      toast.success(t('ui.VideoRelaySites.tokenRegeneradoVuelveADescargar'));
+      toast.success(t("ui.VideoRelaySites.tokenRegeneradoVuelveADescargar"));
       load();
     } catch (e) {
-      toast.error((e as Error)?.message || t("video.relay.regenerateTokenError", "No se pudo regenerar el token"));
+      toast.error(
+        (e as Error)?.message ||
+          t(
+            "video.relay.regenerateTokenError",
+            "No se pudo regenerar el token",
+          ),
+      );
     }
   };
 
@@ -123,7 +194,10 @@ export default function VideoRelaySites() {
       setDeleteTarget(null);
       load();
     } catch (e) {
-      toast.error((e as Error)?.message || t("station.orders.deleteError", "No se pudo eliminar"));
+      toast.error(
+        (e as Error)?.message ||
+          t("station.orders.deleteError", "No se pudo eliminar"),
+      );
     }
   };
 
@@ -131,59 +205,105 @@ export default function VideoRelaySites() {
     <AppLayout>
       <PageContainer width="wide">
         <PageHeader
-          icon={<Server />}
-          title="Sitios remotos (Relay)"
-          subtitle={t('ui.VideoRelaySites.paraDvrNvrDetrasDe')}
           actions={
-            <Button onClick={() => setNewOpen(true)} variant="brand">
-              <Plus className="mr-2 h-4 w-4" />{" "}{t('ui.VideoRelaySites.nuevoSitioRelay')}{" "}</Button>
+            <Button variant="brand" onClick={() => setNewOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />{" "}
+              {t("ui.VideoRelaySites.nuevoSitioRelay")}{" "}
+            </Button>
           }
+          icon={<Server />}
+          subtitle={t("ui.VideoRelaySites.paraDvrNvrDetrasDe")}
+          title="Sitios remotos (Relay)"
         />
 
         {loading ? (
-          <SkeletonCards count={4} className="lg:grid-cols-2" />
+          <SkeletonCards className="lg:grid-cols-2" count={4} />
         ) : error ? (
           <EmptyState
-            icon={<RefreshCw />}
-            title={t('ui.VideoRelaySites.noSePudieronCargarLos')}
-            description={error}
             action={
               <Button variant="outline" onClick={load}>
-                <RefreshCw className="mr-2 h-4 w-4" />Reintentar
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Reintentar
               </Button>
             }
+            description={error}
+            icon={<RefreshCw />}
+            title={t("ui.VideoRelaySites.noSePudieronCargarLos")}
           />
         ) : sites.length === 0 ? (
           <EmptyState
+            description={t("ui.VideoRelaySites.creaUnSitioDescargaSu")}
             icon={<Server />}
-            title={t("ui.VideoRelaySites.aunNoHaySitiosRemotos", "Aún no hay sitios remotos")}
-            description={t('ui.VideoRelaySites.creaUnSitioDescargaSu')}
+            title={t(
+              "ui.VideoRelaySites.aunNoHaySitiosRemotos",
+              "Aún no hay sitios remotos",
+            )}
           />
         ) : (
           <Stagger className="grid gap-3 lg:grid-cols-2">
             {sites.map((s) => {
               const badge = STATUS[s.status || "unknown"] || STATUS.unknown;
+
               return (
-                <GlassPanel key={s.id} flat hover className="flex items-start gap-3 p-4">
-                  <IconTile tone={healthTone(badge.health)}><Server /></IconTile>
+                <GlassPanel
+                  key={s.id}
+                  flat
+                  hover
+                  className="flex items-start gap-3 p-4"
+                >
+                  <IconTile tone={healthTone(badge.health)}>
+                    <Server />
+                  </IconTile>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="truncate font-semibold text-foreground">{s.name}</p>
-                      <DeviceStatusBadge health={badge.health} label={t(badge.labelKey, badge.label)} />
+                      <p className="truncate font-semibold text-foreground">
+                        {s.name}
+                      </p>
+                      <DeviceStatusBadge
+                        health={badge.health}
+                        label={t(badge.labelKey, badge.label)}
+                      />
                     </div>
-                    <p className="mt-0.5 truncate text-xs" style={{ color: 'var(--ink-soft)' }}>
-                      {t('ui.VideoRelaySites.claveDelSitio', 'Clave del sitio:')} <code>{s.siteKey}</code> · {String(s.ingestProtocol || "rtmps").toUpperCase()}
-                      {s.publishTokenConfigured ? " · clave de envío lista" : " · sin clave de envío"}
+                    <p
+                      className="mt-0.5 truncate text-xs"
+                      style={{ color: "var(--ink-soft)" }}
+                    >
+                      {t(
+                        "ui.VideoRelaySites.claveDelSitio",
+                        "Clave del sitio:",
+                      )}{" "}
+                      <code>{s.siteKey}</code> ·{" "}
+                      {String(s.ingestProtocol || "rtmps").toUpperCase()}
+                      {s.publishTokenConfigured
+                        ? " · clave de envío lista"
+                        : " · sin clave de envío"}
                     </p>
                     <div className="mt-2.5 flex flex-wrap gap-2">
-                      <Button size="sm" variant="outline" onClick={() => openBundle(s)}>
-                        <Download className="mr-1.5 h-3.5 w-3.5" />Descargar enlace
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => openBundle(s)}
+                      >
+                        <Download className="mr-1.5 h-3.5 w-3.5" />
+                        Descargar enlace
                       </Button>
-                      <Button size="sm" variant="outline" onClick={() => regenToken(s)}>
-                        <KeyRound className="mr-1.5 h-3.5 w-3.5" />Regenerar clave
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => regenToken(s)}
+                      >
+                        <KeyRound className="mr-1.5 h-3.5 w-3.5" />
+                        Regenerar clave
                       </Button>
-                      <Button size="sm" variant="ghost" style={{ color: 'var(--bad-text)' }} onClick={() => setDeleteTarget(s)}>
-                        <Trash2 className="mr-1.5 h-3.5 w-3.5" />{t('actions.delete')}{" "}</Button>
+                      <Button
+                        size="sm"
+                        style={{ color: "var(--bad-text)" }}
+                        variant="ghost"
+                        onClick={() => setDeleteTarget(s)}
+                      >
+                        <Trash2 className="mr-1.5 h-3.5 w-3.5" />
+                        {t("actions.delete")}{" "}
+                      </Button>
                     </div>
                   </div>
                 </GlassPanel>
@@ -194,25 +314,55 @@ export default function VideoRelaySites() {
       </PageContainer>
 
       {/* New site */}
-      <Dialog open={newOpen} onOpenChange={(o) => { if (!saving) { setNewOpen(o); if (!o) { setName(""); setNotes(""); } } }}>
+      <Dialog
+        open={newOpen}
+        onOpenChange={(o) => {
+          if (!saving) {
+            setNewOpen(o);
+            if (!o) {
+              setName("");
+              setNotes("");
+            }
+          }
+        }}
+      >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{t('ui.VideoRelaySites.nuevoSitioRelay')}</DialogTitle>
-            <DialogDescription>{t("ui.VideoRelaySites.seGeneraraUnaClaveDe", "Se generará una clave de sitio y un token de publicación (cifrado).")}</DialogDescription>
+            <DialogTitle>{t("ui.VideoRelaySites.nuevoSitioRelay")}</DialogTitle>
+            <DialogDescription>
+              {t(
+                "ui.VideoRelaySites.seGeneraraUnaClaveDe",
+                "Se generará una clave de sitio y un token de publicación (cifrado).",
+              )}
+            </DialogDescription>
           </DialogHeader>
           <div className="grid gap-3 py-2">
             <div className="grid gap-1.5">
-              <Label>{t('comun.nombreReq')}</Label>
-              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="BAS - Guayaquil" />
+              <Label>{t("comun.nombreReq")}</Label>
+              <Input
+                placeholder="BAS - Guayaquil"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
             </div>
             <div className="grid gap-1.5">
-              <Label>{t('comun.notas')}</Label>
-              <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} />
+              <Label>{t("comun.notas")}</Label>
+              <Textarea
+                rows={2}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+              />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" disabled={saving} onClick={() => setNewOpen(false)}>{t('actions.cancel')}</Button>
-            <Button disabled={saving} onClick={create} variant="brand">
+            <Button
+              disabled={saving}
+              variant="outline"
+              onClick={() => setNewOpen(false)}
+            >
+              {t("actions.cancel")}
+            </Button>
+            <Button disabled={saving} variant="brand" onClick={create}>
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Crear
             </Button>
           </DialogFooter>
@@ -220,44 +370,75 @@ export default function VideoRelaySites() {
       </Dialog>
 
       {/* Bundle viewer */}
-      <Dialog open={!!bundleSite} onOpenChange={(o) => !o && (setBundleSite(null), setBundle(null))}>
+      <Dialog
+        open={!!bundleSite}
+        onOpenChange={(o) => !o && (setBundleSite(null), setBundle(null))}
+      >
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>Relay para “{bundleSite?.name}”</DialogTitle>
             <DialogDescription>
-              Ejecuta esto en un equipo siempre encendido del sitio del DVR: <code>docker compose up -d</code>.
-              Empuja cada canal hacia la nube (salida; no requiere abrir puertos).
+              Ejecuta esto en un equipo siempre encendido del sitio del DVR:{" "}
+              <code>docker compose up -d</code>. Empuja cada canal hacia la nube
+              (salida; no requiere abrir puertos).
             </DialogDescription>
           </DialogHeader>
           {!bundle ? (
-            <div className="flex items-center justify-center gap-2 py-10 text-sm" style={{ color: 'var(--ink-soft)' }}>
-              <Loader2 className="h-5 w-5 animate-spin" />Generando…
+            <div
+              className="flex items-center justify-center gap-2 py-10 text-sm"
+              style={{ color: "var(--ink-soft)" }}
+            >
+              <Loader2 className="h-5 w-5 animate-spin" />
+              Generando…
             </div>
           ) : (
             <>
               <div className="glass-sunken grid grid-cols-2 gap-2 p-3 text-sm">
-                <div><span style={{ color: 'var(--ink-faint)' }}>{t("ui.VideoRelaySites.direccionDeRecepcion", "Dirección de recepción:")}</span> <code>{bundle.ingest}</code></div>
-                <div><span style={{ color: 'var(--ink-faint)' }}>Canales:</span> {bundle.channelCount}</div>
+                <div>
+                  <span style={{ color: "var(--ink-faint)" }}>
+                    {t(
+                      "ui.VideoRelaySites.direccionDeRecepcion",
+                      "Dirección de recepción:",
+                    )}
+                  </span>{" "}
+                  <code>{bundle.ingest}</code>
+                </div>
+                <div>
+                  <span style={{ color: "var(--ink-faint)" }}>Canales:</span>{" "}
+                  {bundle.channelCount}
+                </div>
               </div>
               {bundle.ingest.includes("INGEST_HOST") && (
                 <div
                   className="rounded-xl border p-2.5 text-xs"
                   style={{
-                    background: 'color-mix(in oklab, var(--warn) 12%, transparent)',
-                    borderColor: 'color-mix(in oklab, var(--warn) 30%, transparent)',
-                    color: 'var(--warn-text)',
+                    background:
+                      "color-mix(in oklab, var(--warn) 12%, transparent)",
+                    borderColor:
+                      "color-mix(in oklab, var(--warn) 30%, transparent)",
+                    color: "var(--warn-text)",
                   }}
                 >
-                  La dirección de recepción aún no está configurada. El enlace empezará a transmitir en cuanto lo esté.
+                  La dirección de recepción aún no está configurada. El enlace
+                  empezará a transmitir en cuanto lo esté.
                 </div>
               )}
-              <pre className="glass-sunken max-h-72 overflow-auto p-3 text-xs">{bundle.compose}</pre>
+              <pre className="glass-sunken max-h-72 overflow-auto p-3 text-xs">
+                {bundle.compose}
+              </pre>
               <DialogFooter>
-                <Button variant="outline" onClick={() => { navigator.clipboard?.writeText(bundle.compose); toast.success("Copiado"); }}>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    navigator.clipboard?.writeText(bundle.compose);
+                    toast.success("Copiado");
+                  }}
+                >
                   Copiar
                 </Button>
-                <Button onClick={downloadCompose} variant="brand">
-                  <Download className="mr-2 h-4 w-4" />Descargar docker-compose
+                <Button variant="brand" onClick={downloadCompose}>
+                  <Download className="mr-2 h-4 w-4" />
+                  Descargar docker-compose
                 </Button>
               </DialogFooter>
             </>
@@ -266,17 +447,25 @@ export default function VideoRelaySites() {
       </Dialog>
 
       {/* Delete confirm */}
-      <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
+      <AlertDialog
+        open={!!deleteTarget}
+        onOpenChange={(o) => !o && setDeleteTarget(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('ui.VideoRelaySites.eliminarSitioRelay')}</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t("ui.VideoRelaySites.eliminarSitioRelay")}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              ¿Eliminar “{deleteTarget?.name}”? Los dispositivos que lo usen dejarán de transmitir.
+              ¿Eliminar “{deleteTarget?.name}”? Los dispositivos que lo usen
+              dejarán de transmitir.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="cg-btn-bad">{t('actions.delete')}</AlertDialogAction>
+            <AlertDialogCancel>{t("actions.cancel")}</AlertDialogCancel>
+            <AlertDialogAction className="cg-btn-bad" onClick={confirmDelete}>
+              {t("actions.delete")}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

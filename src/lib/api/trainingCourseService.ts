@@ -1,8 +1,17 @@
-import api from '@/lib/api';
+import api from "@/lib/api";
 
-export type TrainingCategory = 'security' | 'compliance' | 'skills' | 'safety' | 'other';
-export type TrainingLevel = 'beginner' | 'intermediate' | 'advanced';
-export type EnrollmentStatus = 'assigned' | 'in_progress' | 'completed' | 'expired';
+export type TrainingCategory =
+  | "security"
+  | "compliance"
+  | "skills"
+  | "safety"
+  | "other";
+export type TrainingLevel = "beginner" | "intermediate" | "advanced";
+export type EnrollmentStatus =
+  | "assigned"
+  | "in_progress"
+  | "completed"
+  | "expired";
 
 export interface TrainingResource {
   name: string;
@@ -103,15 +112,19 @@ export interface CourseListResponse {
 }
 
 let globalTenantId: string | null = null;
+
 export const setTrainingTenantId = (id: string) => {
   globalTenantId = id;
 };
 
 const getTenantId = (): string => {
   if (globalTenantId) return globalTenantId;
-  const local = localStorage.getItem('tenantId');
+  const local = localStorage.getItem("tenantId");
+
   if (local) return local;
-  throw new Error('El usuario debe estar vinculado a una empresa para continuar.');
+  throw new Error(
+    "El usuario debe estar vinculado a una empresa para continuar.",
+  );
 };
 
 const base = () => `/tenant/${getTenantId()}/training`;
@@ -122,13 +135,18 @@ export const trainingCourseService = {
     options: ListOptions = { limit: 25, offset: 0 },
   ): Promise<CourseListResponse> {
     const params = new URLSearchParams();
-    if (filters.category) params.append('category', filters.category);
-    if (typeof filters.published === 'boolean') params.append('published', String(filters.published));
-    if (options.limit !== undefined) params.append('limit', String(options.limit));
-    if (options.offset !== undefined) params.append('offset', String(options.offset));
+
+    if (filters.category) params.append("category", filters.category);
+    if (typeof filters.published === "boolean")
+      params.append("published", String(filters.published));
+    if (options.limit !== undefined)
+      params.append("limit", String(options.limit));
+    if (options.offset !== undefined)
+      params.append("offset", String(options.offset));
     const { data } = await api.get(`${base()}/courses?${params.toString()}`, {
       toast: { silentError: true },
     });
+
     return { rows: data.rows ?? [], count: data.count ?? 0 };
   },
 
@@ -136,16 +154,22 @@ export const trainingCourseService = {
     const { data } = await api.get(`${base()}/courses/${id}`, {
       toast: { silentError: true },
     });
+
     return data;
   },
 
   async create(input: TrainingCourseInput): Promise<TrainingCourse> {
     const { data } = await api.post(`${base()}/courses`, { data: input });
+
     return data;
   },
 
-  async update(id: string, input: Partial<TrainingCourseInput>): Promise<TrainingCourse> {
+  async update(
+    id: string,
+    input: Partial<TrainingCourseInput>,
+  ): Promise<TrainingCourse> {
     const { data } = await api.put(`${base()}/courses/${id}`, { data: input });
+
     return data;
   },
 
@@ -158,16 +182,29 @@ export const trainingCourseService = {
     const { data } = await api.get(`${base()}/courses/${courseId}/lessons`, {
       toast: { silentError: true },
     });
+
     return data.rows ?? [];
   },
 
-  async createLesson(courseId: string, input: TrainingLessonInput): Promise<TrainingLesson> {
-    const { data } = await api.post(`${base()}/courses/${courseId}/lessons`, { data: input });
+  async createLesson(
+    courseId: string,
+    input: TrainingLessonInput,
+  ): Promise<TrainingLesson> {
+    const { data } = await api.post(`${base()}/courses/${courseId}/lessons`, {
+      data: input,
+    });
+
     return data;
   },
 
-  async updateLesson(lessonId: string, input: Partial<TrainingLessonInput>): Promise<TrainingLesson> {
-    const { data } = await api.put(`${base()}/lessons/${lessonId}`, { data: input });
+  async updateLesson(
+    lessonId: string,
+    input: Partial<TrainingLessonInput>,
+  ): Promise<TrainingLesson> {
+    const { data } = await api.put(`${base()}/lessons/${lessonId}`, {
+      data: input,
+    });
+
     return data;
   },
 
@@ -176,8 +213,14 @@ export const trainingCourseService = {
   },
 
   // ---- Quiz ----
-  async saveQuiz(courseId: string, input: TrainingQuizInput): Promise<{ id: string; bankId: string; courseName: string }> {
-    const { data } = await api.post(`${base()}/courses/${courseId}/quiz`, { data: input });
+  async saveQuiz(
+    courseId: string,
+    input: TrainingQuizInput,
+  ): Promise<{ id: string; bankId: string; courseName: string }> {
+    const { data } = await api.post(`${base()}/courses/${courseId}/quiz`, {
+      data: input,
+    });
+
     return data;
   },
 };

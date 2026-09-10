@@ -1,6 +1,6 @@
 /* Piezas internas compartidas por los gráficos. No se exportan al resto del CRM. */
 
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from "react";
 
 /**
  * Ancho real del contenedor en píxeles.
@@ -18,12 +18,20 @@ export function useElementWidth<T extends HTMLElement>(fallback = 320) {
 
   useEffect(() => {
     const el = ref.current;
+
     if (!el) return;
-    const medir = () => { const w = el.clientWidth; if (w > 0) setWidth(w); };
+    const medir = () => {
+      const w = el.clientWidth;
+
+      if (w > 0) setWidth(w);
+    };
+
     medir();
-    if (typeof ResizeObserver === 'undefined') return;
+    if (typeof ResizeObserver === "undefined") return;
     const ro = new ResizeObserver(medir);
+
     ro.observe(el);
+
     return () => ro.disconnect();
   }, []);
 
@@ -39,15 +47,24 @@ export function useElementWidth<T extends HTMLElement>(fallback = 320) {
  * es frágil en algunos motores.
  */
 export function useSvgId(prefix: string): string {
-  return `${prefix}-${useId().replace(/:/g, '')}`;
+  return `${prefix}-${useId().replace(/:/g, "")}`;
 }
 
 /** Rectángulo con SÓLO las esquinas de arriba redondeadas — la punta de la barra. */
-export function topRoundedRect(x: number, y: number, w: number, h: number, r: number): string {
+export function topRoundedRect(
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number,
+): string {
   const rr = Math.max(0, Math.min(r, w / 2, h));
-  if (h <= 0) return '';
+
+  if (h <= 0) return "";
+
   return `M${x},${y + h} L${x},${y + rr} Q${x},${y} ${x + rr},${y} L${x + w - rr},${y} Q${x + w},${y} ${x + w},${y + rr} L${x + w},${y + h} Z`;
 }
 
 /** Acota un número. */
-export const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n));
+export const clamp = (n: number, min: number, max: number) =>
+  Math.min(max, Math.max(min, n));

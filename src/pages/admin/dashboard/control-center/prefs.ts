@@ -10,16 +10,21 @@
  * un instante después con lo que diga la cuenta y gana. */
 
 import type { EntityKind, LiveStatus } from "./types";
-import { guardarBloqueDeEmpresa, leerBloqueDeEmpresa, cambioLocalReciente } from "@/lib/appearanceSync";
+
+import {
+  guardarBloqueDeEmpresa,
+  leerBloqueDeEmpresa,
+  cambioLocalReciente,
+} from "@/lib/appearanceSync";
 
 export interface DashboardPrefs {
-  accent: string;                                   // dashboard accent (hex)
+  accent: string; // dashboard accent (hex)
   mapTheme: "dark" | "night" | "roadmap";
   pinColors: Record<EntityKind, string>;
-  pinIcons: Record<EntityKind, string>;             // lucide icon name
+  pinIcons: Record<EntityKind, string>; // lucide icon name
   statusColors: Record<LiveStatus, string>;
   liveTracking: boolean;
-  locationIntervalSec: number;                       // map refresh interval
+  locationIntervalSec: number; // map refresh interval
   // security operations (mirror ronda-settings where backend supports it)
   requirePhotoCheckpoint: boolean;
   requireGpsCheckpoint: boolean;
@@ -70,19 +75,25 @@ export const DEFAULT_PREFS: DashboardPrefs = {
   emergencyAutoNotify: true,
 };
 
-const keyFor = () => `cc.dashboardPrefs.${localStorage.getItem("tenantId") || "default"}`;
+const keyFor = () =>
+  `cc.dashboardPrefs.${localStorage.getItem("tenantId") || "default"}`;
 
 export function loadPrefs(): DashboardPrefs {
   try {
     const raw = localStorage.getItem(keyFor());
+
     if (!raw) return { ...DEFAULT_PREFS };
     const parsed = JSON.parse(raw);
+
     return {
       ...DEFAULT_PREFS,
       ...parsed,
       pinColors: { ...DEFAULT_PREFS.pinColors, ...(parsed.pinColors || {}) },
       pinIcons: { ...DEFAULT_PREFS.pinIcons, ...(parsed.pinIcons || {}) },
-      statusColors: { ...DEFAULT_PREFS.statusColors, ...(parsed.statusColors || {}) },
+      statusColors: {
+        ...DEFAULT_PREFS.statusColors,
+        ...(parsed.statusColors || {}),
+      },
     };
   } catch {
     return { ...DEFAULT_PREFS };
@@ -109,16 +120,26 @@ export async function hidratarDesdeLaCuenta(): Promise<DashboardPrefs | null> {
     // Cambio recién hecho aquí: la cuenta puede ir atrasada (ver appearanceSync).
     if (cambioLocalReciente()) return null;
     const guardado: any = await leerBloqueDeEmpresa("dashboards");
+
     if (!guardado) return null;
     const fusionado: DashboardPrefs = {
       ...DEFAULT_PREFS,
       ...guardado,
       pinColors: { ...DEFAULT_PREFS.pinColors, ...(guardado.pinColors || {}) },
       pinIcons: { ...DEFAULT_PREFS.pinIcons, ...(guardado.pinIcons || {}) },
-      statusColors: { ...DEFAULT_PREFS.statusColors, ...(guardado.statusColors || {}) },
+      statusColors: {
+        ...DEFAULT_PREFS.statusColors,
+        ...(guardado.statusColors || {}),
+      },
     };
+
     // Que la caché de este navegador quede al día para el próximo arranque.
-    try { localStorage.setItem(keyFor(), JSON.stringify(fusionado)); } catch { /* nada */ }
+    try {
+      localStorage.setItem(keyFor(), JSON.stringify(fusionado));
+    } catch {
+      /* nada */
+    }
+
     return fusionado;
   } catch {
     return null;

@@ -23,8 +23,7 @@
  */
 
 import { metrosEntre, type Punto } from "@/utils/mapMotion";
-
-import { localeActual } from '@/lib/localeActual'
+import { localeActual } from "@/lib/localeActual";
 export type Coord = Punto;
 
 const R_TIERRA = 6_371_008.8; // radio medio de la Tierra, en metros (IUGG)
@@ -33,6 +32,7 @@ const RAD = Math.PI / 180;
 /** ¿Es una coordenada usable? Filtra cadenas, NaN y el (0,0) del océano. */
 export function coordValida(c: unknown): c is Coord {
   const p = c as Coord | null;
+
   return (
     !!p &&
     typeof p.lat === "number" &&
@@ -50,6 +50,7 @@ export function aCoord(lat: unknown, lng: unknown): Coord | null {
   const la = typeof lat === "string" ? parseFloat(lat) : (lat as number);
   const ln = typeof lng === "string" ? parseFloat(lng) : (lng as number);
   const c = { lat: la, lng: ln };
+
   return coordValida(c) ? c : null;
 }
 
@@ -64,32 +65,42 @@ export function aCoord(lat: unknown, lng: unknown): Coord | null {
  */
 export function areaPoligono(pts: Coord[]): number {
   const p = (pts || []).filter(coordValida);
+
   if (p.length < 3) return 0;
   let suma = 0;
+
   for (let i = 0; i < p.length; i++) {
     const a = p[i];
     const b = p[(i + 1) % p.length];
     let dLng = (b.lng - a.lng) * RAD;
+
     if (dLng > Math.PI) dLng -= 2 * Math.PI;
     if (dLng < -Math.PI) dLng += 2 * Math.PI;
     suma += dLng * (2 + Math.sin(a.lat * RAD) + Math.sin(b.lat * RAD));
   }
+
   return Math.abs((suma * R_TIERRA * R_TIERRA) / 2);
 }
 
 /** Perímetro del polígono cerrado, en metros. */
 export function perimetroPoligono(pts: Coord[]): number {
   const p = (pts || []).filter(coordValida);
+
   if (p.length < 2) return 0;
   let total = 0;
-  for (let i = 0; i < p.length; i++) total += metrosEntre(p[i], p[(i + 1) % p.length]);
+
+  for (let i = 0; i < p.length; i++)
+    total += metrosEntre(p[i], p[(i + 1) % p.length]);
+
   return total;
 }
 
 /** Centro del polígono — media de los vértices, suficiente para encuadrar. */
 export function centroide(pts: Coord[]): Coord | null {
   const p = (pts || []).filter(coordValida);
+
   if (!p.length) return null;
+
   return {
     lat: p.reduce((s, c) => s + c.lat, 0) / p.length,
     lng: p.reduce((s, c) => s + c.lng, 0) / p.length,
@@ -108,20 +119,28 @@ export function radioEquivalente(areaM2: number): number {
 /** Distancia del vértice más lejano al centro — el «alcance» real del recinto. */
 export function radioMaximo(pts: Coord[]): number {
   const c = centroide(pts);
+
   if (!c) return 0;
-  return pts.filter(coordValida).reduce((m, p) => Math.max(m, metrosEntre(c, p)), 0);
+
+  return pts
+    .filter(coordValida)
+    .reduce((m, p) => Math.max(m, metrosEntre(c, p)), 0);
 }
 
 /* ── Presentación ────────────────────────────────────────────────────────── */
 
 const nf = (dec: number) =>
-  new Intl.NumberFormat(localeActual(), { minimumFractionDigits: dec, maximumFractionDigits: dec });
+  new Intl.NumberFormat(localeActual(), {
+    minimumFractionDigits: dec,
+    maximumFractionDigits: dec,
+  });
 
 /** «34 m», «780 m», «1,2 km», «14 km». */
 export function formatearDistancia(metros: number): string {
   if (!Number.isFinite(metros)) return "—";
   if (metros < 1000) return `${Math.round(metros)} m`;
   const km = metros / 1000;
+
   return `${nf(km < 10 ? 1 : 0).format(km)} km`;
 }
 
@@ -130,12 +149,14 @@ export function formatearArea(m2: number): string {
   if (!Number.isFinite(m2) || m2 <= 0) return "—";
   if (m2 < 10_000) return `${nf(0).format(Math.round(m2))} m²`;
   const ha = m2 / 10_000;
+
   return `${nf(ha < 10 ? 1 : 0).format(ha)} ha`;
 }
 
 /** Coordenada con seis decimales — poco más de 10 cm, el límite útil de un GPS. */
 export function formatearCoord(lat: number, lng: number): string {
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return "—";
+
   return `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
 }
 
@@ -143,9 +164,11 @@ export function formatearCoord(lat: number, lng: number): string {
 export function formatearMinutos(min: number): string {
   if (!Number.isFinite(min) || min <= 0) return "—";
   const m = Math.max(1, Math.round(min));
+
   if (m < 60) return `${m} min`;
   const h = Math.floor(m / 60);
   const r = m % 60;
+
   return r ? `${h} h ${r} min` : `${h} h`;
 }
 
@@ -164,5 +187,6 @@ export function formatearMinutos(min: number): string {
  */
 export function estimarMinutos(metros: number, kmhMedia = 26): number {
   if (!Number.isFinite(metros) || metros < 0) return NaN;
+
   return 2 + ((metros * 1.35) / 1000 / kmhMedia) * 60;
 }

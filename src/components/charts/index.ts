@@ -15,22 +15,22 @@
    y unas barras no enseñan la evolución de una sola cifra.
    ════════════════════════════════════════════════════════════════════════════ */
 
-export { default as ProgressRing } from './ProgressRing';
-export type { ProgressRingProps } from './ProgressRing';
+export { default as ProgressRing } from "./ProgressRing";
+export type { ProgressRingProps } from "./ProgressRing";
 
-export { default as Sparkline } from './Sparkline';
-export type { SparklineProps } from './Sparkline';
+export { default as Sparkline } from "./Sparkline";
+export type { SparklineProps } from "./Sparkline";
 
-export { default as Donut } from './Donut';
-export type { DonutProps, DonutSegment } from './Donut';
+export { default as Donut } from "./Donut";
+export type { DonutProps, DonutSegment } from "./Donut";
 
-export { default as BarChart } from './BarChart';
-export type { BarChartProps, BarDatum } from './BarChart';
+export { default as BarChart } from "./BarChart";
+export type { BarChartProps, BarDatum } from "./BarChart";
 
-export { default as MeterBar } from './MeterBar';
-export type { MeterBarProps } from './MeterBar';
+export { default as MeterBar } from "./MeterBar";
+export type { MeterBarProps } from "./MeterBar";
 
-export { default as AreaChart } from './AreaChart';
-export type { AreaChartProps, AreaPoint } from './AreaChart';
+export { default as AreaChart } from "./AreaChart";
+export type { AreaChartProps, AreaPoint } from "./AreaChart";
 
-export { default as ChartTooltip, ChartSwatch } from './ChartTooltip';
+export { default as ChartTooltip, ChartSwatch } from "./ChartTooltip";

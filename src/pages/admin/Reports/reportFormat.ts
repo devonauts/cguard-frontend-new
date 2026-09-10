@@ -14,6 +14,7 @@
  * ════════════════════════════════════════════════════════════════════════════
  */
 import { toast } from "sonner";
+
 import { getTenantTimezone } from "@/utils/tenantLocation";
 
 const LOCALE = "es-EC";
@@ -22,8 +23,11 @@ const LOCALE = "es-EC";
 export const formatDateTime = (iso?: string | null) =>
   iso
     ? new Date(iso).toLocaleString(LOCALE, {
-        day: "2-digit", month: "2-digit", year: "numeric",
-        hour: "2-digit", minute: "2-digit",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
         // La hora del informe es la hora DE LA EMPRESA. Quien lo mira desde otra
         // zona (o desde un móvil mal configurado) leía la ronda de las 21:09 como
         // las 03:09, y no cuadraba con lo que dice la app del vigilante.
@@ -34,11 +38,16 @@ export const formatDateTime = (iso?: string | null) =>
 /** Sólo la fecha — para lo que se mide en días (vencimientos, tareas). */
 export const formatDate = (iso?: string | null) =>
   iso
-    ? new Date(iso).toLocaleDateString(LOCALE, { day: "2-digit", month: "2-digit", year: "numeric" })
+    ? new Date(iso).toLocaleDateString(LOCALE, {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
     : "—";
 
 /** Distancia en metros, redondeada. */
-export const formatMeters = (m?: number | null) => (m == null ? "—" : `${Math.round(m)} m`);
+export const formatMeters = (m?: number | null) =>
+  m == null ? "—" : `${Math.round(m)} m`;
 
 /**
  * Recorta un texto largo para que quepa en una celda. El límite se pasa porque
@@ -47,6 +56,7 @@ export const formatMeters = (m?: number | null) => (m == null ? "—" : `${Math.
  */
 export const truncate = (text?: string | null, max = 70) => {
   if (!text) return "—";
+
   return text.length > max ? `${text.slice(0, max)}…` : text;
 };
 
@@ -85,16 +95,25 @@ export const truncate = (text?: string | null, max = 70) => {
 /** Desfase de una zona IANA respecto a UTC, en minutos, para un instante dado. */
 function desfaseZona(fecha: Date, zona: string): number {
   // Truco estándar: formatear el mismo instante en la zona y en UTC y restar.
-  const enZona = new Date(fecha.toLocaleString('en-US', { timeZone: zona }));
-  const enUtc = new Date(fecha.toLocaleString('en-US', { timeZone: 'UTC' }));
+  const enZona = new Date(fecha.toLocaleString("en-US", { timeZone: zona }));
+  const enUtc = new Date(fecha.toLocaleString("en-US", { timeZone: "UTC" }));
+
   return (enZona.getTime() - enUtc.getTime()) / 60000;
 }
 
 /** El instante UTC de una hora local (`YYYY-MM-DD` + h:m:s) en una zona. */
-function instanteLocal(dia: string, h: number, m: number, s: number, ms: number, zona?: string): Date {
-  const [a, mes, d] = dia.split('-').map(Number);
+function instanteLocal(
+  dia: string,
+  h: number,
+  m: number,
+  s: number,
+  ms: number,
+  zona?: string,
+): Date {
+  const [a, mes, d] = dia.split("-").map(Number);
   // Punto de partida: esa hora interpretada como UTC.
   const tentativo = new Date(Date.UTC(a, (mes || 1) - 1, d || 1, h, m, s, ms));
+
   if (!zona) {
     // Sin zona de empresa: la del dispositivo (constructor local).
     return new Date(a, (mes || 1) - 1, d || 1, h, m, s, ms);
@@ -102,11 +121,16 @@ function instanteLocal(dia: string, h: number, m: number, s: number, ms: number,
   // Se corrige por el desfase de la zona en ESE instante (así el horario de
   // verano se aplica con la regla del día que se está consultando, no la de hoy).
   const off = desfaseZona(tentativo, zona);
+
   return new Date(tentativo.getTime() - off * 60000);
 }
 
-export function rangeBounds(from: string, to: string): { start: string; end: string } {
+export function rangeBounds(
+  from: string,
+  to: string,
+): { start: string; end: string } {
   const zona = getTenantTimezone();
+
   return {
     start: instanteLocal(from, 0, 0, 0, 0, zona).toISOString(),
     end: instanteLocal(to, 23, 59, 59, 999, zona).toISOString(),
@@ -132,12 +156,16 @@ export const REPORT_ROW_LIMIT = 5000;
  * que miente. Si se alcanza el tope, el usuario se entera y puede estrechar el
  * rango.
  */
-export function warnIfCapped<T>(rows: T[], limit: number = REPORT_ROW_LIMIT): T[] {
+export function warnIfCapped<T>(
+  rows: T[],
+  limit: number = REPORT_ROW_LIMIT,
+): T[] {
   if (rows.length >= limit) {
     toast.warning(
       `Se alcanzó el máximo de ${limit.toLocaleString(LOCALE)} registros: el informe puede estar incompleto. Reduce el rango de fechas.`,
       { duration: 8000 },
     );
   }
+
   return rows;
 }

@@ -1,12 +1,20 @@
-import { lazy, Suspense, useEffect, useState, type CSSProperties, type ReactNode } from "react";
-import { useTranslation } from 'react-i18next';
-import { createPortal } from "react-dom";
-import { Siren, Phone, MapPin, User, Building2, Clock } from "lucide-react";
-import { startPanicAlarm, stopPanicAlarm } from "@/lib/notificationSound";
-import { ApiService } from "@/services/api/apiService";
 import type { PlatformNotification } from "@/hooks/useNotificationStream";
 
-import { localeActual } from '@/lib/localeActual'
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
+import { useTranslation } from "react-i18next";
+import { createPortal } from "react-dom";
+import { Siren, Phone, MapPin, User, Building2, Clock } from "lucide-react";
+
+import { startPanicAlarm, stopPanicAlarm } from "@/lib/notificationSound";
+import { ApiService } from "@/services/api/apiService";
+import { localeActual } from "@/lib/localeActual";
 /**
  * AHORRO · El mapa llega SÓLO cuando hay un pánico en pantalla.
  *
@@ -19,7 +27,9 @@ import { localeActual } from '@/lib/localeActual'
  * necesita acercarse a ver el portal exacto. Una imagen fija ahorraría más y
  * serviría de mucho menos, que es justo el sitio donde el ahorro no toca.
  */
-const GoogleMapEmbed = lazy(() => import("@/components/GoogleMap/GoogleMapEmbed"));
+const GoogleMapEmbed = lazy(
+  () => import("@/components/GoogleMap/GoogleMapEmbed"),
+);
 
 /**
  * Centered, backdropped, IMPOSSIBLE-TO-MISS modal shown when an SOS / panic fires
@@ -58,8 +68,18 @@ function comoTexto(v: unknown): string | null {
   if (typeof v === "number" || typeof v === "boolean") return String(v);
   if (typeof v === "object") {
     const o = v as any;
-    return o.fullName || o.name || o.stationName || o.companyName || o.title || o.label || null;
+
+    return (
+      o.fullName ||
+      o.name ||
+      o.stationName ||
+      o.companyName ||
+      o.title ||
+      o.label ||
+      null
+    );
   }
+
   return String(v);
 }
 
@@ -80,11 +100,26 @@ const PANIC_VARS = {
  * el historial del caso, en el idioma que el operador está viendo).
  */
 const QUICK_ACTIONS: Array<{ label: string; labelKey: string }> = [
-  { label: "Contacté al vigilante en sitio", labelKey: "panic.overlay.quickAction.contactGuard" },
-  { label: "Despaché supervisor / móvil", labelKey: "panic.overlay.quickAction.dispatchSupervisor" },
-  { label: "Llamé a la policía", labelKey: "panic.overlay.quickAction.calledPolice" },
-  { label: "Contacté al cliente", labelKey: "panic.overlay.quickAction.contactClient" },
-  { label: "Falsa alarma / prueba", labelKey: "panic.overlay.quickAction.falseAlarm" },
+  {
+    label: "Contacté al vigilante en sitio",
+    labelKey: "panic.overlay.quickAction.contactGuard",
+  },
+  {
+    label: "Despaché supervisor / móvil",
+    labelKey: "panic.overlay.quickAction.dispatchSupervisor",
+  },
+  {
+    label: "Llamé a la policía",
+    labelKey: "panic.overlay.quickAction.calledPolice",
+  },
+  {
+    label: "Contacté al cliente",
+    labelKey: "panic.overlay.quickAction.contactClient",
+  },
+  {
+    label: "Falsa alarma / prueba",
+    labelKey: "panic.overlay.quickAction.falseAlarm",
+  },
 ];
 
 export function PanicAlertOverlay({
@@ -93,7 +128,10 @@ export function PanicAlertOverlay({
 }: {
   alerts: PlatformNotification[];
   /** Records the action + acknowledges the alarm case, then removes the alert. */
-  onAcknowledge: (alert: PlatformNotification, action: string) => Promise<void> | void;
+  onAcknowledge: (
+    alert: PlatformNotification,
+    action: string,
+  ) => Promise<void> | void;
 }) {
   const { t } = useTranslation();
   const active = alerts.length > 0;
@@ -107,15 +145,21 @@ export function PanicAlertOverlay({
   // return null`, así que al abrirse un pánico React veía «más hooks que en el
   // render anterior» (#310) y el overlay reventaba —lo que, sin boundary,
   // ponía el CRM entero en blanco—. Regla de hooks: nunca tras un return.
-  const [contactos, setContactos] = useState<Array<{
-    nombre: string; telefono: string; rol: string; pideClave?: boolean;
-  }>>([]);
+  const [contactos, setContactos] = useState<
+    Array<{
+      nombre: string;
+      telefono: string;
+      rol: string;
+      pideClave?: boolean;
+    }>
+  >([]);
   const latest = alerts[0];
 
   // Siren wails while any panic is on screen; stops when the last is acknowledged.
   useEffect(() => {
     if (!active) return;
     const stop = startPanicAlarm();
+
     return () => {
       stop();
       stopPanicAlarm();
@@ -134,19 +178,33 @@ export function PanicAlertOverlay({
   // de hooks; los ids se sacan de `latest.payload` porque aún no se ha
   // desestructurado `p` (eso ocurre después del return de abajo).
   useEffect(() => {
-    if (!latest) { setContactos([]); return; }
+    if (!latest) {
+      setContactos([]);
+
+      return;
+    }
     const pp: any = latest.payload || {};
     let vivo = true;
     const qs = new URLSearchParams();
+
     if (pp.stationId) qs.set("stationId", String(pp.stationId));
     if (pp.postSiteId) qs.set("postSiteId", String(pp.postSiteId));
-    if (pp.clientAccountId) qs.set("clientAccountId", String(pp.clientAccountId));
+    if (pp.clientAccountId)
+      qs.set("clientAccountId", String(pp.clientAccountId));
 
-    ApiService.get(`/tenant/${localStorage.getItem("tenantId")}/emergency/call-list?${qs}`)
-      .then((r: any) => { if (vivo) setContactos(r?.contacts || r?.data?.contacts || []); })
-      .catch(() => { if (vivo) setContactos([]); });
+    ApiService.get(
+      `/tenant/${localStorage.getItem("tenantId")}/emergency/call-list?${qs}`,
+    )
+      .then((r: any) => {
+        if (vivo) setContactos(r?.contacts || r?.data?.contacts || []);
+      })
+      .catch(() => {
+        if (vivo) setContactos([]);
+      });
 
-    return () => { vivo = false; };
+    return () => {
+      vivo = false;
+    };
   }, [latest?.id]);
 
   if (!active) return null;
@@ -182,14 +240,30 @@ export function PanicAlertOverlay({
     }
   };
 
-  const Row = ({ icon, label, value }: { icon: ReactNode; label: string; value?: unknown }) => {
+  const Row = ({
+    icon,
+    label,
+    value,
+  }: {
+    icon: ReactNode;
+    label: string;
+    value?: unknown;
+  }) => {
     const texto = comoTexto(value);
+
     return texto ? (
       <div className="flex items-start gap-2.5">
-        <span className="mt-0.5 shrink-0" style={{ color: "var(--bad-text)" }}>{icon}</span>
+        <span className="mt-0.5 shrink-0" style={{ color: "var(--bad-text)" }}>
+          {icon}
+        </span>
         <div className="min-w-0">
           <div className="cg-eyebrow">{comoTexto(label)}</div>
-          <div className="break-words text-sm font-semibold" style={{ color: "var(--ink)" }}>{texto}</div>
+          <div
+            className="break-words text-sm font-semibold"
+            style={{ color: "var(--ink)" }}
+          >
+            {texto}
+          </div>
         </div>
       </div>
     ) : null;
@@ -219,7 +293,10 @@ export function PanicAlertOverlay({
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 animate-pulse"
-        style={{ boxShadow: "inset 0 0 0 5px var(--panic), inset 0 0 60px -10px var(--panic)" }}
+        style={{
+          boxShadow:
+            "inset 0 0 0 5px var(--panic), inset 0 0 60px -10px var(--panic)",
+        }}
       />
 
       {/* `glass-raised` aporta el filo iluminado y el desenfoque; el fondo se
@@ -238,21 +315,35 @@ export function PanicAlertOverlay({
           className="relative flex shrink-0 items-center gap-3 px-4 py-4 sm:px-6"
           style={{ background: "var(--panic-fill)", color: "var(--panic-ink)" }}
         >
-          <Siren size={36} className="shrink-0 animate-pulse" />
+          <Siren className="shrink-0 animate-pulse" size={36} />
           <div className="min-w-0">
             <div className="text-lg font-black leading-none tracking-tight sm:text-xl">
               {isClient ? "ALERTA SOS — CLIENTE" : "ALERTA DE PÁNICO"}
             </div>
-            <div className="mt-1 text-sm" style={{ color: "color-mix(in oklab, var(--panic-ink) 84%, transparent)" }}>
+            <div
+              className="mt-1 text-sm"
+              style={{
+                color: "color-mix(in oklab, var(--panic-ink) 84%, transparent)",
+              }}
+            >
               {isClient
-                ? t("panic.overlay.subtitleClient", "Un cliente activó el botón de SOS")
-                : t("panic.overlay.subtitleGuard", "Un vigilante activó el botón de emergencia")}
+                ? t(
+                    "panic.overlay.subtitleClient",
+                    "Un cliente activó el botón de SOS",
+                  )
+                : t(
+                    "panic.overlay.subtitleGuard",
+                    "Un vigilante activó el botón de emergencia",
+                  )}
             </div>
           </div>
           {alerts.length > 1 && (
             <span
               className="ml-auto shrink-0 rounded-full px-3 py-1 text-sm font-bold"
-              style={{ background: "var(--panic-ink)", color: "var(--panic-fill)" }}
+              style={{
+                background: "var(--panic-ink)",
+                color: "var(--panic-fill)",
+              }}
             >
               +{alerts.length - 1}
             </span>
@@ -263,40 +354,78 @@ export function PanicAlertOverlay({
         <div className="space-y-4 overflow-y-auto p-5">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-3">
-              <Row icon={<Building2 size={18} />} label={t('comun.puesto')} value={p.stationName || p.siteName} />
-              <Row icon={<MapPin size={18} />} label={t("ui.PanicAlertOverlay.ubicacion", "Ubicación")} value={p.address || p.location} />
-              <Row icon={<User size={18} />} label={isClient ? "Cliente" : "Vigilante"} value={isClient ? (p.clientName || p.guardName) : p.guardName} />
-              <Row icon={<Phone size={18} />} label={t("ui.PanicAlertOverlay.telefonoDelSitio", "Teléfono del sitio")} value={p.phone} />
-              <Row icon={<Clock size={18} />} label={t('comun.hora')} value={when} />
+              <Row
+                icon={<Building2 size={18} />}
+                label={t("comun.puesto")}
+                value={p.stationName || p.siteName}
+              />
+              <Row
+                icon={<MapPin size={18} />}
+                label={t("ui.PanicAlertOverlay.ubicacion", "Ubicación")}
+                value={p.address || p.location}
+              />
+              <Row
+                icon={<User size={18} />}
+                label={isClient ? "Cliente" : "Vigilante"}
+                value={isClient ? p.clientName || p.guardName : p.guardName}
+              />
+              <Row
+                icon={<Phone size={18} />}
+                label={t(
+                  "ui.PanicAlertOverlay.telefonoDelSitio",
+                  "Teléfono del sitio",
+                )}
+                value={p.phone}
+              />
+              <Row
+                icon={<Clock size={18} />}
+                label={t("comun.hora")}
+                value={when}
+              />
               {/* La cadena de llamadas, en el orden en que se llamaría. Antes
                   este espacio estaba vacío en todo pánico de persona. */}
               {contactos.filter((c) => c.rol !== "Emergencias").length > 0 && (
                 <div className="pt-1">
-                  <p className="cg-eyebrow mb-1.5">{t("ui.PanicAlertOverlay.aQuienLlamar", "A quién llamar")}</p>
+                  <p className="cg-eyebrow mb-1.5">
+                    {t("ui.PanicAlertOverlay.aQuienLlamar", "A quién llamar")}
+                  </p>
                   <div className="space-y-1">
                     {contactos
                       .filter((c) => c.rol !== "Emergencias")
                       .map((c, i) => (
                         <a
                           key={`${c.telefono}-${i}`}
-                          href={`tel:${String(c.telefono).replace(/[^+\d]/g, "")}`}
                           className="flex items-center justify-between gap-3 rounded-lg px-2.5 py-1.5 text-sm transition-colors hover:brightness-110"
-                          style={{ background: "color-mix(in oklab, var(--panic) 8%, transparent)" }}
+                          href={`tel:${String(c.telefono).replace(/[^+\d]/g, "")}`}
+                          style={{
+                            background:
+                              "color-mix(in oklab, var(--panic) 8%, transparent)",
+                          }}
                         >
                           <span className="min-w-0 flex-1 truncate">
-                            <span className="font-semibold">{comoTexto(c.nombre)}</span>
-                            <span className="ml-2 text-xs" style={{ color: "var(--ink-faint)" }}>
+                            <span className="font-semibold">
+                              {comoTexto(c.nombre)}
+                            </span>
+                            <span
+                              className="ml-2 text-xs"
+                              style={{ color: "var(--ink-faint)" }}
+                            >
                               {comoTexto(c.rol)}
                             </span>
                             {/* La clave verbal NO viaja; sólo el aviso de que hay
                                 que pedirla, que es lo que la hace útil. */}
                             {c.pideClave && (
-                              <span className="ml-2 text-xs font-semibold" style={{ color: "var(--warn-text)" }}>
+                              <span
+                                className="ml-2 text-xs font-semibold"
+                                style={{ color: "var(--warn-text)" }}
+                              >
                                 pide clave
                               </span>
                             )}
                           </span>
-                          <span className="shrink-0 font-mono text-xs">{comoTexto(c.telefono)}</span>
+                          <span className="shrink-0 font-mono text-xs">
+                            {comoTexto(c.telefono)}
+                          </span>
                         </a>
                       ))}
                   </div>
@@ -311,11 +440,15 @@ export function PanicAlertOverlay({
                 {(() => {
                   const emerg = contactos.find((c) => c.rol === "Emergencias");
                   const numero = emerg?.telefono || "911";
+
                   return (
                     <a
-                      href={`tel:${numero}`}
                       className="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold transition-[filter] hover:brightness-110"
-                      style={{ background: "var(--panic-fill)", color: "var(--panic-ink)" }}
+                      href={`tel:${numero}`}
+                      style={{
+                        background: "var(--panic-fill)",
+                        color: "var(--panic-ink)",
+                      }}
                     >
                       <Phone size={16} /> Llamar {numero}
                     </a>
@@ -323,11 +456,13 @@ export function PanicAlertOverlay({
                 })()}
                 {phoneTel && (
                   <a
-                    href={`tel:${phoneTel}`}
                     className="flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold"
+                    href={`tel:${phoneTel}`}
                     style={{
-                      borderColor: "color-mix(in oklab, var(--panic) 45%, transparent)",
-                      background: "color-mix(in oklab, var(--panic) 10%, transparent)",
+                      borderColor:
+                        "color-mix(in oklab, var(--panic) 45%, transparent)",
+                      background:
+                        "color-mix(in oklab, var(--panic) 10%, transparent)",
                       color: "var(--bad-text)",
                     }}
                   >
@@ -347,18 +482,30 @@ export function PanicAlertOverlay({
                   fallback={
                     <div
                       className="flex h-full min-h-[220px] items-center justify-center text-sm"
-                      style={{ background: "var(--glass-sunken)", color: "var(--ink-soft)" }}
+                      style={{
+                        background: "var(--glass-sunken)",
+                        color: "var(--ink-soft)",
+                      }}
                     >
                       Abriendo el mapa…
                     </div>
                   }
                 >
-                  <GoogleMapEmbed lat={lat} lng={lng} zoom={16} className="h-full w-full" height="100%" />
+                  <GoogleMapEmbed
+                    className="h-full w-full"
+                    height="100%"
+                    lat={lat}
+                    lng={lng}
+                    zoom={16}
+                  />
                 </Suspense>
               ) : (
                 <div
                   className="flex h-full min-h-[220px] items-center justify-center text-sm"
-                  style={{ background: "var(--glass-sunken)", color: "var(--ink-soft)" }}
+                  style={{
+                    background: "var(--glass-sunken)",
+                    color: "var(--ink-soft)",
+                  }}
                 >
                   {t("ui.PanicAlertOverlay.sinCoordenadas", "Sin coordenadas")}
                 </div>
@@ -368,28 +515,37 @@ export function PanicAlertOverlay({
 
           {/* Action — REQUIRED to silence. Logged to the case history. */}
           <div className="glass-sunken p-3">
-            <div className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
-              {t("ui.PanicAlertOverlay.accionTomada", "Acción tomada")} <span style={{ color: "var(--bad-text)" }}>*</span>
+            <div
+              className="text-sm font-semibold"
+              style={{ color: "var(--ink)" }}
+            >
+              {t("ui.PanicAlertOverlay.accionTomada", "Acción tomada")}{" "}
+              <span style={{ color: "var(--bad-text)" }}>*</span>
             </div>
             <div className="mt-2 flex flex-wrap gap-2">
               {QUICK_ACTIONS.map((a) => {
                 const texto = t(a.labelKey, a.label);
                 const elegida = action === texto;
+
                 return (
                   <button
                     key={a.labelKey}
-                    type="button"
-                    onClick={() => setAction(texto)}
                     className="cg-focus inline-flex min-h-9 items-center rounded-full border px-3 py-1 text-xs font-medium transition-colors"
                     style={
                       elegida
                         ? {
                             borderColor: "var(--panic)",
-                            background: "color-mix(in oklab, var(--panic) 16%, transparent)",
+                            background:
+                              "color-mix(in oklab, var(--panic) 16%, transparent)",
                             color: "var(--bad-text)",
                           }
-                        : { borderColor: "var(--hairline)", color: "var(--ink-soft)" }
+                        : {
+                            borderColor: "var(--hairline)",
+                            color: "var(--ink-soft)",
+                          }
                     }
+                    type="button"
+                    onClick={() => setAction(texto)}
                   >
                     {texto}
                   </button>
@@ -397,13 +553,12 @@ export function PanicAlertOverlay({
               })}
             </div>
             <textarea
-              value={action}
-              onChange={(e) => setAction(e.target.value)}
-              onFocus={() => setFieldFocused(true)}
-              onBlur={() => setFieldFocused(false)}
-              rows={2}
-              placeholder={t("ui.PanicAlertOverlay.describeLaAccionTomadaPara", "Describe la acción tomada para atender el SOS…")}
               className="mt-2 w-full resize-none p-2 text-sm outline-none"
+              placeholder={t(
+                "ui.PanicAlertOverlay.describeLaAccionTomadaPara",
+                "Describe la acción tomada para atender el SOS…",
+              )}
+              rows={2}
               style={{
                 background: "var(--glass-solid)",
                 color: "var(--ink)",
@@ -413,27 +568,44 @@ export function PanicAlertOverlay({
                   ? "0 0 0 3px color-mix(in oklab, var(--panic) 30%, transparent)"
                   : "none",
               }}
+              value={action}
+              onBlur={() => setFieldFocused(false)}
+              onChange={(e) => setAction(e.target.value)}
+              onFocus={() => setFieldFocused(true)}
             />
           </div>
         </div>
 
         {/* Footer — acknowledge (disabled until an action is recorded). */}
-        <div className="shrink-0 border-t p-4" style={{ borderColor: "var(--hairline)", background: "var(--glass-sunken)" }}>
+        <div
+          className="shrink-0 border-t p-4"
+          style={{
+            borderColor: "var(--hairline)",
+            background: "var(--glass-sunken)",
+          }}
+        >
           <button
-            onClick={handleAck}
-            disabled={!action.trim() || saving}
             className="cg-focus flex w-full items-center justify-center gap-2 rounded-full py-3 text-lg font-bold transition-[filter] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={!action.trim() || saving}
             style={{
               background: "var(--panic-fill)",
               color: "var(--panic-ink)",
-              boxShadow: "0 8px 26px -10px color-mix(in oklab, var(--panic) 60%, transparent)",
+              boxShadow:
+                "0 8px 26px -10px color-mix(in oklab, var(--panic) 60%, transparent)",
             }}
+            onClick={handleAck}
           >
             {saving ? "Registrando…" : "RECONOCER Y SILENCIAR"}
           </button>
           {!action.trim() && (
-            <p className="mt-1.5 text-center text-xs" style={{ color: "var(--ink-soft)" }}>
-              {t("ui.PanicAlertOverlay.registraLaAccionTomadaParaPoderSilenciarLaAlarma", "Registra la acción tomada para poder silenciar la alarma.")}
+            <p
+              className="mt-1.5 text-center text-xs"
+              style={{ color: "var(--ink-soft)" }}
+            >
+              {t(
+                "ui.PanicAlertOverlay.registraLaAccionTomadaParaPoderSilenciarLaAlarma",
+                "Registra la acción tomada para poder silenciar la alarma.",
+              )}
             </p>
           )}
         </div>

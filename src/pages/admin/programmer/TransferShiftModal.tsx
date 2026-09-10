@@ -1,14 +1,22 @@
 import { useState } from "react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
+import { ArrowRightLeft } from "lucide-react";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Select, SelectTrigger, SelectContent, SelectItem, SelectValue,
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
 } from "@/components/ui/select";
 import { Modal, Segmented } from "@/components/kit";
-import { ArrowRightLeft } from "lucide-react";
-import { toast } from "sonner";
-import coverageService, { coverageErrorCode, stationLabel } from "@/lib/api/coverageService";
+import coverageService, {
+  coverageErrorCode,
+  stationLabel,
+} from "@/lib/api/coverageService";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 
 /**
@@ -38,7 +46,11 @@ export default function TransferShiftModal({
   onDone,
 }: {
   target: TransferTarget | null;
-  stations: Array<{ id: string; stationName: string; nickname?: string | null }>;
+  stations: Array<{
+    id: string;
+    stationName: string;
+    nickname?: string | null;
+  }>;
   onClose: () => void;
   onDone: () => void;
 }) {
@@ -50,7 +62,10 @@ export default function TransferShiftModal({
   const [busy, setBusy] = useState(false);
 
   const close = () => {
-    setToStationId(""); setMode("shift"); setUntil(""); setNote("");
+    setToStationId("");
+    setMode("shift");
+    setUntil("");
+    setNote("");
     onClose();
   };
 
@@ -84,19 +99,31 @@ export default function TransferShiftModal({
           break;
         } catch (e: any) {
           const code = coverageErrorCode(e);
+
           if (code === "rest_day" && !asked.rest_day) {
             asked.rest_day = true;
-            if (!await confirmDialog("Ese vigilante está en descanso ese día. ¿Asignarlo de todos modos?")) return;
+            if (
+              !(await confirmDialog(
+                "Ese vigilante está en descanso ese día. ¿Asignarlo de todos modos?",
+              ))
+            )
+              return;
             flags.allowRestDay = true;
             continue;
           }
           if (code === "double_booking" && !asked.double_booking) {
             asked.double_booking = true;
-            if (!await confirmDialog("Ya tiene otro turno que se cruza con ese horario. ¿Doblar turno?")) return;
+            if (
+              !(await confirmDialog(
+                "Ya tiene otro turno que se cruza con ese horario. ¿Doblar turno?",
+              ))
+            )
+              return;
             flags.allowDoubleShift = true;
             continue;
           }
           toast.error(e?.response?.data?.message || "No se pudo trasladar");
+
           return;
         }
       }
@@ -117,61 +144,91 @@ export default function TransferShiftModal({
 
   return (
     <Modal
-      open={!!target}
-      onOpenChange={(o) => !o && close()}
-      title={t('ui.TransferShiftModal.trasladarAOtroPuesto')}
       description={`${target?.guardName || ""}${target?.stationName ? ` · desde ${target.stationName}` : ""}`}
-      icon={<ArrowRightLeft />}
       footer={
         <>
-          <Button variant="outline" onClick={close}>{t('actions.cancel')}</Button>
-          <Button onClick={submit} disabled={busy || !toStationId}>Trasladar</Button>
+          <Button variant="outline" onClick={close}>
+            {t("actions.cancel")}
+          </Button>
+          <Button disabled={busy || !toStationId} onClick={submit}>
+            Trasladar
+          </Button>
         </>
       }
+      icon={<ArrowRightLeft />}
+      open={!!target}
+      title={t("ui.TransferShiftModal.trasladarAOtroPuesto")}
+      onOpenChange={(o) => !o && close()}
     >
       <div className="space-y-4">
         <div>
-          <label className="cg-eyebrow mb-1.5 block">{t('comun.puestoDestino')}</label>
+          <label className="cg-eyebrow mb-1.5 block">
+            {t("comun.puestoDestino")}
+          </label>
           <Select value={toStationId} onValueChange={setToStationId}>
-            <SelectTrigger><SelectValue placeholder={t('comun.eligeUnPuesto')} /></SelectTrigger>
+            <SelectTrigger>
+              <SelectValue placeholder={t("comun.eligeUnPuesto")} />
+            </SelectTrigger>
             <SelectContent>
               {stations
                 .filter((s) => String(s.id) !== String(target?.stationId))
                 .map((s) => (
-                  <SelectItem key={s.id} value={String(s.id)}>{stationLabel(s)}</SelectItem>
+                  <SelectItem key={s.id} value={String(s.id)}>
+                    {stationLabel(s)}
+                  </SelectItem>
                 ))}
             </SelectContent>
           </Select>
         </div>
 
         <div>
-          <label className="cg-eyebrow mb-1.5 block">{t("ui.TransferShiftModal.duracion", "Duración")}</label>
+          <label className="cg-eyebrow mb-1.5 block">
+            {t("ui.TransferShiftModal.duracion", "Duración")}
+          </label>
           <Segmented<"shift" | "range">
+            options={[
+              {
+                value: "shift",
+                label: t(
+                  "ui.TransferShiftModal.soloEsteTurno",
+                  "Solo este turno",
+                ),
+              },
+              {
+                value: "range",
+                label: t(
+                  "ui.TransferShiftModal.hastaUnaFecha",
+                  "Hasta una fecha",
+                ),
+              },
+            ]}
             value={mode}
             onChange={(v) => {
               setMode(v);
               if (v === "range" && !until) setUntil(target?.dateStr || "");
             }}
-            options={[
-              { value: "shift", label: t("ui.TransferShiftModal.soloEsteTurno", "Solo este turno") },
-              { value: "range", label: t("ui.TransferShiftModal.hastaUnaFecha", "Hasta una fecha") },
-            ]}
           />
           {mode === "range" && (
             <input
+              className="cg-input cg-focus mt-2 w-full px-3 py-2 text-sm tabular-nums"
+              min={target?.dateStr}
               type="date"
               value={until}
-              min={target?.dateStr}
               onChange={(e) => setUntil(e.target.value)}
-              className="cg-input cg-focus mt-2 w-full px-3 py-2 text-sm tabular-nums"
             />
           )}
         </div>
 
         <div>
-          <label className="cg-eyebrow mb-1.5 block">{t('comun.motivoOpcional')}</label>
-          <Textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2}
-            placeholder={t('ui.TransferShiftModal.ejCubreFaltaEnEl')} />
+          <label className="cg-eyebrow mb-1.5 block">
+            {t("comun.motivoOpcional")}
+          </label>
+          <Textarea
+            placeholder={t("ui.TransferShiftModal.ejCubreFaltaEnEl")}
+            rows={2}
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+          />
         </div>
 
         {/* The traslado ends by itself — say so, or the natural assumption is
@@ -183,8 +240,12 @@ export default function TransferShiftModal({
               : `Cubre ${dest ? stationLabel(dest) : "el destino"} solo en este turno.`}
           </p>
           <p className="mt-1" style={{ color: "var(--ink-soft)" }}>
-            {t("ui.TransferShiftModal.despuesVuelveAutomaticamenteA", "Después vuelve automáticamente a")} <strong>{target?.stationName || "su puesto"}</strong>.
-            Podrá marcar entrada en el destino como en cualquier turno normal.
+            {t(
+              "ui.TransferShiftModal.despuesVuelveAutomaticamenteA",
+              "Después vuelve automáticamente a",
+            )}{" "}
+            <strong>{target?.stationName || "su puesto"}</strong>. Podrá marcar
+            entrada en el destino como en cualquier turno normal.
           </p>
         </div>
       </div>

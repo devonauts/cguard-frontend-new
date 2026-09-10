@@ -1,5 +1,10 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { leerAparienciaDeLaCuenta, guardarApariencia, cambioLocalReciente } from "@/lib/appearanceSync";
+
+import {
+  leerAparienciaDeLaCuenta,
+  guardarApariencia,
+  cambioLocalReciente,
+} from "@/lib/appearanceSync";
 
 /**
  * Claro u oscuro, guardado en la CUENTA (`users.appearance.theme`) para que te
@@ -26,13 +31,16 @@ function getInitialTheme(): Theme {
   try {
     // Our own key takes priority
     const stored = localStorage.getItem("cguard-theme");
+
     if (stored === "dark" || stored === "light") return stored;
 
     // Migrate legacy HeroUI key (synchronously, before first render)
     const legacy = localStorage.getItem("heroui-theme");
+
     if (legacy === "dark" || legacy === "light") {
       localStorage.setItem("cguard-theme", legacy);
       localStorage.removeItem("heroui-theme");
+
       return legacy;
     }
 
@@ -40,8 +48,10 @@ function getInitialTheme(): Theme {
     if (document.documentElement.classList.contains("dark")) return "dark";
 
     // System preference
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches)
+      return "dark";
   } catch {}
+
   return "light";
 }
 
@@ -50,6 +60,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const applyTheme = (t: Theme) => {
     const root = document.documentElement;
+
     if (t === "dark") {
       root.classList.add("dark");
     } else {
@@ -63,26 +74,36 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   // On mount: clean up any remaining heroui key
   useEffect(() => {
-    try { localStorage.removeItem("heroui-theme"); } catch {}
+    try {
+      localStorage.removeItem("heroui-theme");
+    } catch {}
   }, []);
 
   // Al arrancar: el modo guardado en la cuenta gana sobre el de este navegador.
   useEffect(() => {
     let vivo = true;
+
     leerAparienciaDeLaCuenta().then((a) => {
       if (!vivo) return;
       if (cambioLocalReciente()) return; // la cuenta puede ir atrasada — ver appearanceSync
       if (a?.theme === "light" || a?.theme === "dark") {
         setThemeState(a.theme);
-        try { localStorage.setItem("cguard-theme", a.theme); } catch {}
+        try {
+          localStorage.setItem("cguard-theme", a.theme);
+        } catch {}
       }
     });
-    return () => { vivo = false; };
+
+    return () => {
+      vivo = false;
+    };
   }, []);
 
   const setTheme = (t: Theme) => {
     setThemeState(t);
-    try { localStorage.setItem("cguard-theme", t); } catch {}
+    try {
+      localStorage.setItem("cguard-theme", t);
+    } catch {}
     guardarApariencia({ theme: t });
   };
 

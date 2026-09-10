@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
-import { useEntitlement } from "@/hooks/useEntitlement";
 import type { FeatureKey } from "@/lib/entitlements";
+
+import { useEntitlement } from "@/hooks/useEntitlement";
 
 /**
  * Renders children only when the current tenant's plan includes `feature`.
@@ -26,5 +27,6 @@ export default function FeatureGate({
   fallback?: ReactNode;
 }) {
   const allowed = useEntitlement(feature);
+
   return <>{allowed ? children : fallback}</>;
 }

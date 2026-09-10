@@ -15,8 +15,9 @@
  * pinta en tinta apagada.
  * ════════════════════════════════════════════════════════════════════════════
  */
-import { metrosEntre, type Punto } from "@/utils/mapMotion";
 import type { MapEntity } from "../types";
+
+import { metrosEntre, type Punto } from "@/utils/mapMotion";
 
 /** Cobertura de un puesto — el eje semántico de su chincheta. */
 export type Cobertura = "cubierto" | "riesgo" | "sinCubrir" | "sinDatos";
@@ -27,7 +28,10 @@ export type Cobertura = "cubierto" | "riesgo" | "sinCubrir" | "sinDatos";
  * de que i18next sepa el idioma. Se traduce donde se pinta (`OperationsMapPopup`),
  * nunca aquí.
  */
-export const COBERTURA_LABEL: Record<Cobertura, { label: string; labelKey: string }> = {
+export const COBERTURA_LABEL: Record<
+  Cobertura,
+  { label: string; labelKey: string }
+> = {
   cubierto: { label: "Cubierto", labelKey: "coverage.status.covered" },
   riesgo: { label: "En riesgo", labelKey: "coverage.status.at_risk" },
   sinCubrir: { label: "Sin cubrir", labelKey: "coverage.status.uncovered" },
@@ -52,26 +56,38 @@ const RADIO_MINIMO = 120;
 /** ¿Está el punto dentro del polígono? Lanzamiento de rayo, el de toda la vida. */
 export function dentroDePoligono(p: Punto, poly: Punto[]): boolean {
   let dentro = false;
+
   for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-    const a = poly[i], b = poly[j];
+    const a = poly[i],
+      b = poly[j];
     const cruza = a.lng > p.lng !== b.lng > p.lng;
+
     if (!cruza) continue;
     const x = ((b.lat - a.lat) * (p.lng - a.lng)) / (b.lng - a.lng) + a.lat;
+
     if (p.lat < x) dentro = !dentro;
   }
+
   return dentro;
 }
 
 /** Radio efectivo de un puesto, en metros. */
 export function radioDe(e: MapEntity): number {
-  return Math.max(RADIO_MINIMO, Number(e.meta?.geofenceRadius) || RADIO_POR_DEFECTO);
+  return Math.max(
+    RADIO_MINIMO,
+    Number(e.meta?.geofenceRadius) || RADIO_POR_DEFECTO,
+  );
 }
 
 /** ¿Cae `p` dentro de la geocerca del puesto? Manda el polígono si lo hay. */
 function cubre(puesto: MapEntity, p: Punto): boolean {
   const poly = puesto.meta?.geofencePolygon;
+
   if (poly && poly.length >= 3) return dentroDePoligono(p, poly);
-  return metrosEntre({ lat: puesto.lat, lng: puesto.lng }, p) <= radioDe(puesto);
+
+  return (
+    metrosEntre({ lat: puesto.lat, lng: puesto.lng }, p) <= radioDe(puesto)
+  );
 }
 
 /**
@@ -80,9 +96,13 @@ function cubre(puesto: MapEntity, p: Punto): boolean {
  * El criterio es la geocerca real, no el nombre del sitio: dos puestos del mismo
  * cliente comparten `postSiteName` y contarían el doble.
  */
-export function calcularCobertura(entities: MapEntity[]): Map<string, PuestoEstado> {
+export function calcularCobertura(
+  entities: MapEntity[],
+): Map<string, PuestoEstado> {
   const puestos = entities.filter((e) => e.kind === "station");
-  const vigilantes = entities.filter((e) => e.kind === "guard" || e.kind === "supervisor");
+  const vigilantes = entities.filter(
+    (e) => e.kind === "guard" || e.kind === "supervisor",
+  );
   const incidentes = entities.filter((e) => e.kind === "incident");
   const hayPosiciones = vigilantes.length > 0;
   const salida = new Map<string, PuestoEstado>();
@@ -94,18 +114,26 @@ export function calcularCobertura(entities: MapEntity[]): Map<string, PuestoEsta
     vigilantes.forEach((v) => {
       if (!cubre(p, { lat: v.lat, lng: v.lng })) return;
       dentro.push(v);
-      if (v.status === "delayed" || v.status === "incident" || v.status === "emergency" || v.status === "offline") alerta = true;
+      if (
+        v.status === "delayed" ||
+        v.status === "incident" ||
+        v.status === "emergency" ||
+        v.status === "offline"
+      )
+        alerta = true;
     });
-    if (!alerta) alerta = incidentes.some((i) => cubre(p, { lat: i.lat, lng: i.lng }));
+    if (!alerta)
+      alerta = incidentes.some((i) => cubre(p, { lat: i.lat, lng: i.lng }));
 
     const n = dentro.length;
     const estado: Cobertura = !hayPosiciones
       ? "sinDatos"
       : n === 0
-      ? "sinCubrir"
-      : alerta
-      ? "riesgo"
-      : "cubierto";
+        ? "sinCubrir"
+        : alerta
+          ? "riesgo"
+          : "cubierto";
+
     salida.set(p.id, { n, estado, radio: radioDe(p), dentro });
   });
 
@@ -131,9 +159,18 @@ export interface Racimo {
  * `360 / (256 · 2^zoom)` grados de longitud, así que la celda se deriva del zoom
  * y el racimo se deshace solo al acercarse.
  */
-export function agruparPorRejilla(items: MapEntity[], zoom: number, px = 76): Racimo[] {
+export function agruparPorRejilla(
+  items: MapEntity[],
+  zoom: number,
+  px = 76,
+): Racimo[] {
   if (items.length <= 1) {
-    return items.map((e) => ({ id: e.id, lat: e.lat, lng: e.lng, miembros: [e] }));
+    return items.map((e) => ({
+      id: e.id,
+      lat: e.lat,
+      lng: e.lng,
+      miembros: [e],
+    }));
   }
   const paso = (px * 360) / (256 * Math.pow(2, Math.max(1, zoom)));
   const celdas = new Map<string, MapEntity[]>();
@@ -141,21 +178,30 @@ export function agruparPorRejilla(items: MapEntity[], zoom: number, px = 76): Ra
   items.forEach((e) => {
     const clave = `${Math.floor(e.lat / paso)}:${Math.floor(e.lng / paso)}`;
     const lista = celdas.get(clave);
+
     if (lista) lista.push(e);
     else celdas.set(clave, [e]);
   });
 
   const salida: Racimo[] = [];
+
   celdas.forEach((miembros, clave) => {
     if (miembros.length === 1) {
       const e = miembros[0];
+
       salida.push({ id: e.id, lat: e.lat, lng: e.lng, miembros });
+
       return;
     }
     // El centro del racimo es el centroide de lo que agrupa: colocarlo en el
     // centro de la celda haría que la ficha saltara al cruzar una frontera.
-    let lat = 0, lng = 0;
-    miembros.forEach((m) => { lat += m.lat; lng += m.lng; });
+    let lat = 0,
+      lng = 0;
+
+    miembros.forEach((m) => {
+      lat += m.lat;
+      lng += m.lng;
+    });
     salida.push({
       id: `racimo:${clave}`,
       lat: lat / miembros.length,

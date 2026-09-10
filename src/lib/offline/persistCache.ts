@@ -21,6 +21,7 @@
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { get, set, del } from "idb-keyval";
+
 import { queryClient } from "@/lib/queryClient";
 
 const IDB_KEY = "crm.queryCache.v1";
@@ -68,6 +69,14 @@ export function startCachePersistence(): void {
 /** Borra el caché persistido Y el de memoria. Cableado en el cierre de sesión:
  *  en una máquina compartida, el siguiente usuario no hereda datos del anterior. */
 export async function clearPersistedCache(): Promise<void> {
-  try { queryClient.clear(); } catch { /* ignore */ }
-  try { await del(IDB_KEY); } catch { /* ignore */ }
+  try {
+    queryClient.clear();
+  } catch {
+    /* ignore */
+  }
+  try {
+    await del(IDB_KEY);
+  } catch {
+    /* ignore */
+  }
 }

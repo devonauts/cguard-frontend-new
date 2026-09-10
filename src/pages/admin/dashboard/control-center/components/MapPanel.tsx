@@ -6,41 +6,67 @@
  * SIN LEYENDA PROPIA: el mapa dibuja la suya encima del lienzo. Dos leyendas
  * con nombres distintos para los mismos pines es peor que ninguna.
  */
-import { Maximize2, Map as MapIcon } from "lucide-react";
-import { useTranslation } from 'react-i18next';
 import type { MapEntity } from "../types";
 import type { DashboardPrefs } from "../prefs";
 import type { MapCenter } from "../defaultCenter";
+
+import { useTranslation } from "react-i18next";
+import { Maximize2, Map as MapIcon } from "lucide-react";
+
 import { OperationsMap } from "./OperationsMap";
 import { Panel } from "./Panel";
 
-export function MapPanel({ entities, prefs, defaultCenter, live, onFull, height = 560, className }: {
-  entities: MapEntity[]; prefs: DashboardPrefs; defaultCenter?: MapCenter;
-  live?: boolean; onFull: () => void; height?: number; className?: string;
+export function MapPanel({
+  entities,
+  prefs,
+  defaultCenter,
+  live,
+  onFull,
+  height = 560,
+  className,
+}: {
+  entities: MapEntity[];
+  prefs: DashboardPrefs;
+  defaultCenter?: MapCenter;
+  live?: boolean;
+  onFull: () => void;
+  height?: number;
+  className?: string;
 }) {
   const { t } = useTranslation();
   const enMapa = entities.length;
+
   return (
     <Panel
-      className={className}
-      icon={<MapIcon />}
-      title={t("dashboard.map.title")}
-      subtitle={enMapa ? t("dashboard.map.items", { count: enMapa }) : t("dashboard.map.waiting")}
-      live={live}
       action={
         <button
+          aria-label={t("ui.MapPanel.abrirElMapaEnPantalla")}
+          className="cg-btn-glass cg-focus grid size-8 place-items-center rounded-full"
+          title={t(
+            "ui.MapPanel.abrirEnPantallaCompletaNueva",
+            "Abrir en pantalla completa (nueva pestaña)",
+          )}
           type="button"
           onClick={onFull}
-          title={t("ui.MapPanel.abrirEnPantallaCompletaNueva", "Abrir en pantalla completa (nueva pestaña)")}
-          aria-label={t('ui.MapPanel.abrirElMapaEnPantalla')}
-          className="cg-btn-glass cg-focus grid size-8 place-items-center rounded-full"
         >
           <Maximize2 className="size-3.5" />
         </button>
       }
       bodyClassName="flex flex-col"
+      className={className}
+      icon={<MapIcon />}
+      live={live}
+      subtitle={
+        enMapa
+          ? t("dashboard.map.items", { count: enMapa })
+          : t("dashboard.map.waiting")
+      }
+      title={t("dashboard.map.title")}
     >
-      <div className="relative flex-1 overflow-hidden pt-3" style={{ minHeight: height }}>
+      <div
+        className="relative flex-1 overflow-hidden pt-3"
+        style={{ minHeight: height }}
+      >
         {/* El mapa se sirve con una altura fija en píxeles, pero esta columna la
             estira la rejilla: sin este envoltorio quedaba una franja muerta bajo
             el mapa cada vez que la columna de al lado crecía. El `!h-full` pisa
@@ -48,7 +74,12 @@ export function MapPanel({ entities, prefs, defaultCenter, live, onFull, height 
             hoja de estilos gana a un `style=` normal). Si el mapa cambiara de
             estructura, simplemente vuelve a su alto fijo: no se rompe nada. */}
         <div className="absolute inset-x-0 bottom-0 top-3 [&>div]:!h-full">
-          <OperationsMap entities={entities} prefs={prefs} height={height} defaultCenter={defaultCenter} />
+          <OperationsMap
+            defaultCenter={defaultCenter}
+            entities={entities}
+            height={height}
+            prefs={prefs}
+          />
         </div>
         {/* ── POR QUÉ AQUÍ NO HAY UNA CAPA QUE LO TAPE TODO ──────────────────
             Antes, la vista previa entera era un botón a pantalla completa: se

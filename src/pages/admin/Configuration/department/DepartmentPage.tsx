@@ -2,6 +2,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Building2, Plus } from "lucide-react";
 import { toast } from "sonner";
+
+import DepartmentsTable, { DepartmentRow } from "./DepartmentTable";
+import DepartmentDialog, { DepartmentDialogValues } from "./DepartmentDialog";
+
 import AppLayout from "@/layouts/app-layout";
 import SettingsLayout from "@/layouts/SettingsLayout";
 import { Button } from "@/components/ui/button";
@@ -9,13 +13,14 @@ import { PageContainer, PageHeader, StatusBadge } from "@/components/kit";
 import { usePermissions } from "@/hooks/usePermissions";
 import departmentService, { Department } from "@/lib/api/departmentService";
 import { userService } from "@/lib/api/userService";
-import DepartmentsTable, { DepartmentRow } from "./DepartmentTable";
-import DepartmentDialog, { DepartmentDialogValues } from "./DepartmentDialog";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 
 const errMsg = (e: unknown, fallback: string): string => {
-  const err = e as { response?: { data?: { message?: string } | string }; message?: string } | undefined;
+  const err = e as
+    | { response?: { data?: { message?: string } | string }; message?: string }
+    | undefined;
   const data = err?.response?.data;
+
   return (
     (data && typeof data === "object" ? data.message : undefined) ||
     (typeof data === "string" ? data : undefined) ||
@@ -43,9 +48,18 @@ export default function DepartmentPage() {
     try {
       setLoading(true);
       const { rows } = await departmentService.list();
+
       setAll(rows);
     } catch (e: any) {
-      toast.error(errMsg(e, t("settings.departments.errors.load", "No se pudieron cargar los departamentos")));
+      toast.error(
+        errMsg(
+          e,
+          t(
+            "settings.departments.errors.load",
+            "No se pudieron cargar los departamentos",
+          ),
+        ),
+      );
     } finally {
       setLoading(false);
     }
@@ -77,7 +91,9 @@ export default function DepartmentPage() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
+
     if (!q) return all;
+
     return all.filter(
       (d) =>
         d.name.toLowerCase().includes(q) ||
@@ -109,6 +125,7 @@ export default function DepartmentPage() {
         description: values.description?.trim() || null,
         managerId: values.managerId || null,
       };
+
       if (edit) {
         await departmentService.update(edit.id, payload);
         toast.success("Departamento actualizado");
@@ -120,7 +137,15 @@ export default function DepartmentPage() {
       setEdit(null);
       await load();
     } catch (e: any) {
-      toast.error(errMsg(e, t("settings.departments.errors.save", "No se pudo guardar el departamento")));
+      toast.error(
+        errMsg(
+          e,
+          t(
+            "settings.departments.errors.save",
+            "No se pudo guardar el departamento",
+          ),
+        ),
+      );
     } finally {
       setSaving(false);
     }
@@ -128,36 +153,79 @@ export default function DepartmentPage() {
 
   const handleToggle = async (row: DepartmentRow) => {
     try {
-      await departmentService.update(row.id, { active: row.status === "inactive" });
-      toast.success(row.status === "inactive" ? "Departamento activado" : "Departamento desactivado");
+      await departmentService.update(row.id, {
+        active: row.status === "inactive",
+      });
+      toast.success(
+        row.status === "inactive"
+          ? "Departamento activado"
+          : "Departamento desactivado",
+      );
       await load();
     } catch (e: any) {
-      toast.error(errMsg(e, t("settings.departments.errors.toggle", "No se pudo cambiar el estado")));
+      toast.error(
+        errMsg(
+          e,
+          t(
+            "settings.departments.errors.toggle",
+            "No se pudo cambiar el estado",
+          ),
+        ),
+      );
     }
   };
 
   const handleDelete = async (row: DepartmentRow) => {
-    if (!await confirmDialog({ message: `¿Eliminar el departamento "${row.name}"?`, tone: 'danger' })) return;
+    if (
+      !(await confirmDialog({
+        message: `¿Eliminar el departamento "${row.name}"?`,
+        tone: "danger",
+      }))
+    )
+      return;
     try {
       await departmentService.destroy(row.id);
       toast.success("Departamento eliminado");
       await load();
     } catch (e: any) {
       // Backend blocks deletion while the department still has members.
-      toast.error(errMsg(e, t("settings.departments.errors.delete", "No se pudo eliminar el departamento")));
+      toast.error(
+        errMsg(
+          e,
+          t(
+            "settings.departments.errors.delete",
+            "No se pudo eliminar el departamento",
+          ),
+        ),
+      );
     }
   };
 
   const handleBulkDelete = async (ids: string[]) => {
     if (ids.length === 0) return;
-    if (!await confirmDialog({ message: `¿Eliminar ${ids.length} departamento(s)?`, tone: 'danger' })) return;
+    if (
+      !(await confirmDialog({
+        message: `¿Eliminar ${ids.length} departamento(s)?`,
+        tone: "danger",
+      }))
+    )
+      return;
     let ok = 0;
+
     for (const id of ids) {
       try {
         await departmentService.destroy(id);
         ok++;
       } catch (e: any) {
-        toast.error(errMsg(e, t("settings.departments.errors.deleteOne", "No se pudo eliminar un departamento")));
+        toast.error(
+          errMsg(
+            e,
+            t(
+              "settings.departments.errors.deleteOne",
+              "No se pudo eliminar un departamento",
+            ),
+          ),
+        );
       }
     }
     if (ok > 0) toast.success(`${ok} departamento(s) eliminado(s)`);
@@ -169,20 +237,10 @@ export default function DepartmentPage() {
       <SettingsLayout navKey="configuracion" title="Departamentos">
         <PageContainer width="wide">
           <PageHeader
-            icon={<Building2 />}
-            title="Departamentos"
-            subtitle="Organiza tu equipo interno en departamentos (Operaciones, Talento Humano, Nómina…) y asigna un responsable a cada uno."
-            badges={
-              !loading && all.length > 0 ? (
-                <StatusBadge tone="neutral">
-                  {all.length} {all.length === 1 ? "departamento" : "departamentos"}
-                </StatusBadge>
-              ) : undefined
-            }
             actions={
               <Button
-                variant="brand"
                 disabled={!canEdit}
+                variant="brand"
                 onClick={() => {
                   setEdit(null);
                   setOpen(true);
@@ -192,39 +250,44 @@ export default function DepartmentPage() {
                 Nuevo departamento
               </Button>
             }
+            badges={
+              !loading && all.length > 0 ? (
+                <StatusBadge tone="neutral">
+                  {all.length}{" "}
+                  {all.length === 1 ? "departamento" : "departamentos"}
+                </StatusBadge>
+              ) : undefined
+            }
+            icon={<Building2 />}
+            subtitle="Organiza tu equipo interno en departamentos (Operaciones, Talento Humano, Nómina…) y asigna un responsable a cada uno."
+            title="Departamentos"
           />
           <DepartmentsTable
-            rows={rows}
-            total={filtered.length}
+            canEdit={canEdit}
+            loading={loading}
             page={page}
             pageSize={pageSize}
-            loading={loading}
             query={query}
-            onQueryChange={(v) => {
-              setQuery(v);
-              setPage(1);
+            rows={rows}
+            total={filtered.length}
+            onBulkDelete={handleBulkDelete}
+            onDelete={handleDelete}
+            onEdit={(r) => {
+              setEdit(r);
+              setOpen(true);
             }}
             onPageChange={setPage}
             onPageSizeChange={(v) => {
               setPageSize(v);
               setPage(1);
             }}
-            onEdit={(r) => {
-              setEdit(r);
-              setOpen(true);
+            onQueryChange={(v) => {
+              setQuery(v);
+              setPage(1);
             }}
             onToggleStatus={handleToggle}
-            onDelete={handleDelete}
-            onBulkDelete={handleBulkDelete}
-            canEdit={canEdit}
           />
           <DepartmentDialog
-            open={open}
-            onOpenChange={(v) => {
-              setOpen(v);
-              if (!v) setEdit(null);
-            }}
-            title={edit ? "Editar Departamento" : "Nuevo Departamento"}
             defaultValues={
               edit
                 ? {
@@ -235,7 +298,13 @@ export default function DepartmentPage() {
                 : null
             }
             managers={managers}
+            open={open}
             saving={saving}
+            title={edit ? "Editar Departamento" : "Nuevo Departamento"}
+            onOpenChange={(v) => {
+              setOpen(v);
+              if (!v) setEdit(null);
+            }}
             onSubmit={handleSubmit}
           />
         </PageContainer>

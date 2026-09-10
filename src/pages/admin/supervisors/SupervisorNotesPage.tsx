@@ -1,4 +1,5 @@
 import { useParams } from "react-router-dom";
+
 import GuardNotes from "@/pages/admin/security-guards/components/GuardNotes/GuardNotespage";
 import api from "@/lib/api";
 
@@ -12,8 +13,20 @@ export default function SupervisorNotesPage() {
   const { id = "" } = useParams();
   const tid = localStorage.getItem("tenantId") || "";
   const notesApi = {
-    list: (uid: string) => api.get(`/tenant/${tid}/supervisors/${uid}/notes`).then((r) => r.data),
-    create: (uid: string, payload: unknown) => api.post(`/tenant/${tid}/supervisors/${uid}/notes`, payload).then((r) => r.data),
+    list: (uid: string) =>
+      api.get(`/tenant/${tid}/supervisors/${uid}/notes`).then((r) => r.data),
+    create: (uid: string, payload: unknown) =>
+      api
+        .post(`/tenant/${tid}/supervisors/${uid}/notes`, payload)
+        .then((r) => r.data),
   };
-  return <GuardNotes navKey="supervisors" title="Notas" entityId={id} notesApi={notesApi} />;
+
+  return (
+    <GuardNotes
+      entityId={id}
+      navKey="supervisors"
+      notesApi={notesApi}
+      title="Notas"
+    />
+  );
 }

@@ -1,7 +1,14 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { useTranslation } from "react-i18next";
-import i18n from "@/i18n";
 
+import i18n from "@/i18n";
 import { loadGoogleMaps } from "@/utils/loadGoogleMaps";
 import { getTenantLocation } from "@/utils/tenantLocation";
 import { useMapPalette, type MapPalette } from "@/utils/mapTheme";
@@ -44,40 +51,55 @@ type AddressDetails = Record<string, any> | undefined;
 /** Papel de la chincheta → token semántico. Nunca un color literal. */
 function colorRol(rol: string | undefined, pal: MapPalette): string {
   switch (rol) {
-    case "supervisor": return pal.info;
-    case "warn": return pal.warn;
-    case "crit": return pal.bad;
-    case "muted": return pal.inkFaint;
-    default: return pal.ok;
+    case "supervisor":
+      return pal.info;
+    case "warn":
+      return pal.warn;
+    case "crit":
+      return pal.bad;
+    case "muted":
+      return pal.inkFaint;
+    default:
+      return pal.ok;
   }
 }
 
 /** Tono semántico → variable de TEXTO. Nunca un color escrito a mano. */
 function colorTono(t: MapPopupTone): string {
-  return t === "brand" ? "var(--brand-text)"
-    : t === "neutral" ? "var(--ink-faint)"
-    : `var(--${t}-text)`;
+  return t === "brand"
+    ? "var(--brand-text)"
+    : t === "neutral"
+      ? "var(--ink-faint)"
+      : `var(--${t}-text)`;
 }
 
 /** El mismo papel, en el eje de tonos del globo. */
 function tonoRol(rol: string | undefined): MapPopupTone {
   switch (rol) {
-    case "supervisor": return "info";
-    case "warn": return "warn";
-    case "crit": return "bad";
-    case "muted": return "neutral";
-    default: return "ok";
+    case "supervisor":
+      return "info";
+    case "warn":
+      return "warn";
+    case "crit":
+      return "bad";
+    case "muted":
+      return "neutral";
+    default:
+      return "ok";
   }
 }
 
 /** La chincheta de cristal en DOM — sólo posible aquí, ver la nota de arriba. */
 function contenidoPin(color: string, etiqueta?: string): HTMLElement {
   const el = document.createElement("div");
+
   el.className = etiqueta ? "cc-map-pin" : "cc-map-pin is-sin-texto";
   el.style.setProperty("--pin", color);
   const punto = document.createElement("i");
+
   el.appendChild(punto);
   if (etiqueta) el.appendChild(document.createTextNode(etiqueta));
+
   return el;
 }
 
@@ -93,8 +115,10 @@ function repintarPin(el: HTMLElement, color: string, etiqueta?: string): void {
   el.className = etiqueta ? "cc-map-pin" : "cc-map-pin is-sin-texto";
   el.style.setProperty("--pin", color);
   const texto = el.lastChild;
+
   if (etiqueta) {
-    if (texto && texto.nodeType === Node.TEXT_NODE) texto.textContent = etiqueta;
+    if (texto && texto.nodeType === Node.TEXT_NODE)
+      texto.textContent = etiqueta;
     else el.appendChild(document.createTextNode(etiqueta));
   } else if (texto && texto.nodeType === Node.TEXT_NODE) {
     el.removeChild(texto);
@@ -110,22 +134,43 @@ function alPulsarMarcador(mk: any, cb: () => void): void {
   let ultimo = 0;
   const disparar = (ev?: any) => {
     const ahora = Date.now();
+
     if (ahora - ultimo < 80) return;
     ultimo = ahora;
-    try { ev?.stop?.(); } catch { /* evento sin stop */ }
+    try {
+      ev?.stop?.();
+    } catch {
+      /* evento sin stop */
+    }
     cb();
   };
-  try { mk.gmpClickable = true; } catch { /* versión sin la propiedad */ }
-  try { mk.addListener("gmp-click", disparar); } catch { /* versión sin el evento */ }
-  try { mk.addListener("click", disparar); } catch { /* versión sin el evento */ }
+
+  try {
+    mk.gmpClickable = true;
+  } catch {
+    /* versión sin la propiedad */
+  }
+  try {
+    mk.addListener("gmp-click", disparar);
+  } catch {
+    /* versión sin el evento */
+  }
+  try {
+    mk.addListener("click", disparar);
+  } catch {
+    /* versión sin el evento */
+  }
   try {
     const nodo: HTMLElement | undefined = mk.content;
+
     nodo?.addEventListener?.("click", (e: Event) => {
       e.stopPropagation();
       disparar();
     });
     if (nodo) nodo.style.cursor = "pointer";
-  } catch { /* contenido no es DOM (PinElement de la API) */ }
+  } catch {
+    /* contenido no es DOM (PinElement de la API) */
+  }
 }
 
 function parsePlaceAddress(place: any) {
@@ -141,7 +186,11 @@ function parsePlaceAddress(place: any) {
   return components;
 }
 
-interface GradoPrecision { texto: string; textoKey: string; tono: MapPopupTone }
+interface GradoPrecision {
+  texto: string;
+  textoKey: string;
+  tono: MapPopupTone;
+}
 
 /**
  * Qué tan fina es la dirección que devolvió Google. Es la única medida de
@@ -152,10 +201,26 @@ interface GradoPrecision { texto: string; textoKey: string; tono: MapPopupTone }
 // PUBLICAR la lectura (ya en ejecución). Llamar a t() en esta constante la
 // congelaría en el idioma con el que arrancó la sesión.
 const PRECISION: Record<string, GradoPrecision> = {
-  ROOFTOP:             { texto: "Exacta · portal",          textoKey: "maps.precision.rooftop",           tono: "ok" },
-  RANGE_INTERPOLATED:  { texto: "Interpolada en la calle",  textoKey: "maps.precision.rangeInterpolated", tono: "ok" },
-  GEOMETRIC_CENTER:    { texto: "Centro de la manzana",     textoKey: "maps.precision.geometricCenter",   tono: "warn" },
-  APPROXIMATE:         { texto: "Aproximada",               textoKey: "maps.precision.approximate",       tono: "warn" },
+  ROOFTOP: {
+    texto: "Exacta · portal",
+    textoKey: "maps.precision.rooftop",
+    tono: "ok",
+  },
+  RANGE_INTERPOLATED: {
+    texto: "Interpolada en la calle",
+    textoKey: "maps.precision.rangeInterpolated",
+    tono: "ok",
+  },
+  GEOMETRIC_CENTER: {
+    texto: "Centro de la manzana",
+    textoKey: "maps.precision.geometricCenter",
+    tono: "warn",
+  },
+  APPROXIMATE: {
+    texto: "Aproximada",
+    textoKey: "maps.precision.approximate",
+    tono: "warn",
+  },
 };
 
 /**
@@ -166,12 +231,15 @@ const PRECISION: Record<string, GradoPrecision> = {
  * `onMarkerMove` lee `locality`, `postal_code`, `country`… así que la traducción
  * se hace AQUÍ, en un solo sitio: el contrato del componente no cambia.
  */
-function componentesDeNominatim(a: Record<string, any> | undefined): Record<string, string> {
+function componentesDeNominatim(
+  a: Record<string, any> | undefined,
+): Record<string, string> {
   if (!a) return {};
   const fuera: Record<string, string> = {};
   const poner = (clave: string, valor: unknown) => {
     if (valor != null && String(valor).trim()) fuera[clave] = String(valor);
   };
+
   poner("street_number", a.house_number);
   poner("route", a.road);
   poner("sublocality_level_1", a.suburb || a.neighbourhood);
@@ -180,6 +248,7 @@ function componentesDeNominatim(a: Record<string, any> | undefined): Record<stri
   poner("administrative_area_level_1", a.state);
   poner("postal_code", a.postcode);
   poner("country", a.country);
+
   return fuera;
 }
 
@@ -194,12 +263,32 @@ function componentesDeNominatim(a: Record<string, any> | undefined): Record<stri
 function precisionDeNominatim(r: any): GradoPrecision | undefined {
   const a = r?.address || {};
   const tipo = String(r?.addresstype || r?.type || "");
+
   if (a.house_number || tipo === "building" || tipo === "house") {
-    return { texto: "Exacta · portal", textoKey: "maps.precision.rooftop", tono: "ok" };
+    return {
+      texto: "Exacta · portal",
+      textoKey: "maps.precision.rooftop",
+      tono: "ok",
+    };
   }
-  if (a.road || tipo === "road") return { texto: "Nivel de calle", textoKey: "maps.precision.streetLevel", tono: "ok" };
-  if (a.suburb || a.neighbourhood) return { texto: "Centro del barrio", textoKey: "maps.precision.neighbourhoodCenter", tono: "warn" };
-  return { texto: "Aproximada", textoKey: "maps.precision.approximate", tono: "warn" };
+  if (a.road || tipo === "road")
+    return {
+      texto: "Nivel de calle",
+      textoKey: "maps.precision.streetLevel",
+      tono: "ok",
+    };
+  if (a.suburb || a.neighbourhood)
+    return {
+      texto: "Centro del barrio",
+      textoKey: "maps.precision.neighbourhoodCenter",
+      tono: "warn",
+    };
+
+  return {
+    texto: "Aproximada",
+    textoKey: "maps.precision.approximate",
+    tono: "warn",
+  };
 }
 
 interface EstadoPin {
@@ -232,13 +321,20 @@ export interface MapEmbedMarker {
 }
 
 /** Papel de la chincheta → tono del motor de movimiento (ondas y latidos). */
-function tonoMotor(rol: string | undefined): "bien" | "aviso" | "malo" | "info" | "marca" | "tenue" {
+function tonoMotor(
+  rol: string | undefined,
+): "bien" | "aviso" | "malo" | "info" | "marca" | "tenue" {
   switch (rol) {
-    case "supervisor": return "info";
-    case "warn": return "aviso";
-    case "crit": return "malo";
-    case "muted": return "tenue";
-    default: return "bien";
+    case "supervisor":
+      return "info";
+    case "warn":
+      return "aviso";
+    case "crit":
+      return "malo";
+    case "muted":
+      return "tenue";
+    default:
+      return "bien";
   }
 }
 
@@ -321,42 +417,57 @@ export default function GoogleMapEmbed({
   // Paleta viva: cambia con el tema Y con el acento configurable del CRM.
   const pal = useMapPalette();
   const palRef = useRef(pal);
+
   palRef.current = pal;
 
   // El globo compartido de todos los mapas del CRM. Se le pasa un GETTER porque
   // el mapa nace dentro de un `await` y no provoca re-render.
   const pop = useMapPopup(() => mapInstance.current);
   const popRef = useRef(pop);
+
   popRef.current = pop;
 
   // El motor de movimiento compartido: cámara con transición, ondas de evento.
   // `ready` es la señal de que ya hay mapa al que atarlo.
   const motor = useMotorMapa(mapInstance.current, ready);
   const motorRef = useRef(motor);
+
   motorRef.current = motor;
 
   /** Centrar es una transición, no un corte. */
-  const volar = useCallback((destino: { lat: number; lng: number }, zoom?: number) => {
-    motorRef.current?.camara.volarA(destino, zoom != null ? { zoom } : undefined);
-  }, []);
+  const volar = useCallback(
+    (destino: { lat: number; lng: number }, zoom?: number) => {
+      motorRef.current?.camara.volarA(
+        destino,
+        zoom != null ? { zoom } : undefined,
+      );
+    },
+    [],
+  );
 
   // Lo que el operador tiene que VER mientras coloca el pin: dónde cayó, qué
   // dirección resolvió y cómo de fina es esa dirección.
   const [pin, setPin] = useState<EstadoPin | null>(null);
   const pinRef = useRef<EstadoPin | null>(null);
+
   pinRef.current = pin;
 
   // Las escuchas se registran UNA vez, así que leen los props por referencia.
   const markersDatos = useRef<Record<string, MapEmbedMarker>>({});
   const popupRef = useRef(markerPopup);
+
   popupRef.current = markerPopup;
   const clickRef = useRef(onMarkerClick);
+
   clickRef.current = onMarkerClick;
   const moveRef = useRef(onMarkerMove);
+
   moveRef.current = onMarkerMove;
   const mapClickRef = useRef(onMapClick);
+
   mapClickRef.current = onMapClick;
   const clickToSetRef = useRef(enableClickToSet);
+
   clickToSetRef.current = enableClickToSet;
 
   /** Globo de un marcador de la lista: lo básico + lo que añada el consumidor. */
@@ -379,25 +490,38 @@ export default function GoogleMapEmbed({
         mapPopupActions.directions(m.lat, m.lng),
         mapPopupActions.center(() => {
           const cerca = Math.max(mapInstance.current?.getZoom?.() ?? 0, 17);
-          motorRef.current?.camara.volarA({ lat: m.lat, lng: m.lng }, { zoom: cerca });
+
+          motorRef.current?.camara.volarA(
+            { lat: m.lat, lng: m.lng },
+            { zoom: cerca },
+          );
           motorRef.current?.onda({ lat: m.lat, lng: m.lng }, { tono: "marca" });
         }),
         mapPopupActions.call(m.phone),
       ),
     };
-    popRef.current.open(mk, { ...base, ...extra, title: extra.title ?? base.title });
+
+    popRef.current.open(mk, {
+      ...base,
+      ...extra,
+      title: extra.title ?? base.title,
+    });
     clickRef.current?.(m);
   }, []);
 
   // Draw/update the polygon geofence when provided.
   useEffect(() => {
     const google = (window as any).google;
+
     if (!ready || !google?.maps || !mapInstance.current) return;
     if (polygonRef.current) {
       polygonRef.current.setMap(null);
       polygonRef.current = null;
     }
-    const pts = (polygon || []).filter((p) => p && !isNaN(p.lat) && !isNaN(p.lng));
+    const pts = (polygon || []).filter(
+      (p) => p && !isNaN(p.lat) && !isNaN(p.lng),
+    );
+
     if (pts.length >= 3) {
       polygonRef.current = new google.maps.Polygon({
         paths: pts,
@@ -415,7 +539,10 @@ export default function GoogleMapEmbed({
   // colores distintos (rojo y dorado) para el mismo concepto.
   useEffect(() => {
     if (!circleRef.current) return;
-    circleRef.current.setOptions({ strokeColor: pal.brand, fillColor: pal.brand });
+    circleRef.current.setOptions({
+      strokeColor: pal.brand,
+      fillColor: pal.brand,
+    });
   }, [pal]);
 
   // La cruz del cursor entra y sale con el modo, y va en la OPCIÓN del mapa —
@@ -449,10 +576,12 @@ export default function GoogleMapEmbed({
    */
   useEffect(() => {
     const nodo = mapRef.current;
+
     if (!nodo || aLaVista) return;
 
     if (typeof IntersectionObserver !== "function") {
       setALaVista(true);
+
       return;
     }
 
@@ -465,12 +594,15 @@ export default function GoogleMapEmbed({
       },
       { rootMargin: "250px" },
     );
+
     obs.observe(nodo);
+
     return () => obs.disconnect();
   }, [aLaVista]);
 
   useEffect(() => {
     let mounted = true;
+
     if (!aLaVista || mapInstance.current) return;
 
     async function init() {
@@ -524,9 +656,13 @@ export default function GoogleMapEmbed({
               const loc = results?.[0]?.geometry?.location;
 
               if (loc) {
-                const la = typeof loc.lat === "function" ? loc.lat() : Number(loc.lat);
-                const ln = typeof loc.lng === "function" ? loc.lng() : Number(loc.lng);
-                if (Number.isFinite(la) && Number.isFinite(ln)) return { lat: la, lng: ln, zoom: 15 };
+                const la =
+                  typeof loc.lat === "function" ? loc.lat() : Number(loc.lat);
+                const ln =
+                  typeof loc.lng === "function" ? loc.lng() : Number(loc.lng);
+
+                if (Number.isFinite(la) && Number.isFinite(ln))
+                  return { lat: la, lng: ln, zoom: 15 };
               }
             } catch (e) {
               // ignore and continue to next fallback
@@ -640,7 +776,8 @@ export default function GoogleMapEmbed({
             if (circleRef.current) circleRef.current.setCenter({ lat, lng });
             motorRef.current?.onda({ lat, lng }, { tono: "marca" });
             anunciarPin(lat, lng);
-            if (typeof mapClickRef.current === "function") mapClickRef.current(lat, lng);
+            if (typeof mapClickRef.current === "function")
+              mapClickRef.current(lat, lng);
           } catch (err) {
             console.warn("Map click handler error", err);
           }
@@ -670,10 +807,14 @@ export default function GoogleMapEmbed({
         if (draggable && markerRef.current) {
           const leerPos = () => {
             const pos = markerRef.current?.position as any;
+
             if (!pos) return null;
+
             return {
-              lat: typeof pos.lat === "function" ? pos.lat() : (pos.lat as number),
-              lng: typeof pos.lng === "function" ? pos.lng() : (pos.lng as number),
+              lat:
+                typeof pos.lat === "function" ? pos.lat() : (pos.lat as number),
+              lng:
+                typeof pos.lng === "function" ? pos.lng() : (pos.lng as number),
             };
           };
 
@@ -687,8 +828,10 @@ export default function GoogleMapEmbed({
           // React en cada uno tiraría la fluidez del propio arrastre, así que la
           // lectura de coordenadas se refresca a ritmo de pantalla.
           let pendiente = 0;
+
           markerRef.current.addListener("gmp-drag", () => {
             const ll = leerPos();
+
             if (!ll) return;
             if (circleRef.current) circleRef.current.setCenter(ll);
             cancelAnimationFrame(pendiente);
@@ -709,6 +852,7 @@ export default function GoogleMapEmbed({
             cancelAnimationFrame(pendiente);
             marcarNodo(markerRef.current, false);
             const latLng = leerPos();
+
             if (!latLng) return;
             if (circleRef.current) circleRef.current.setCenter(latLng);
             anunciarPin(latLng.lat, latLng.lng);
@@ -759,7 +903,9 @@ export default function GoogleMapEmbed({
           try {
             if (typeof mk?.setMap === "function") mk.setMap(null);
             else if (mk) mk.map = null;
-          } catch { /* ya desmontado */ }
+          } catch {
+            /* ya desmontado */
+          }
         });
         markersRef.current = {};
         markersDatos.current = {};
@@ -771,14 +917,17 @@ export default function GoogleMapEmbed({
           polygonRef.current.setMap(null);
           polygonRef.current = null;
         }
-        try { pooledRef.current?.release(); } catch { /* ya devuelto */ }
+        try {
+          pooledRef.current?.release();
+        } catch {
+          /* ya devuelto */
+        }
         pooledRef.current = null;
         mapInstance.current = null;
       } catch {}
     };
     // `aLaVista` es la única dependencia: el mapa se construye cuando el hueco
     // se asoma, y una sola vez (el guardia de arriba corta si ya existe).
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [aLaVista]);
 
   /** La gota del acento. Es la chincheta que se ARRASTRA: la punta señala la
@@ -791,8 +940,11 @@ export default function GoogleMapEmbed({
         glyphColor: p.brandInk,
         scale: 1.1,
       }).element as HTMLElement;
-      el.style.transition = "transform .16s var(--ease, ease), filter .16s var(--ease, ease)";
+
+      el.style.transition =
+        "transform .16s var(--ease, ease), filter .16s var(--ease, ease)";
       el.style.transformOrigin = "50% 100%";
+
       return el;
     } catch {
       return undefined;
@@ -810,9 +962,12 @@ export default function GoogleMapEmbed({
   function marcarNodo(mk: any, activo: boolean): void {
     try {
       const nodo: HTMLElement | undefined = mk?.content;
+
       if (!nodo?.style) return;
       nodo.style.transform = activo ? "translateY(-8px) scale(1.08)" : "";
-      nodo.style.filter = activo ? "drop-shadow(0 10px 12px rgba(0,0,0,.32))" : "";
+      nodo.style.filter = activo
+        ? "drop-shadow(0 10px 12px rgba(0,0,0,.32))"
+        : "";
     } catch {
       /* contenido sin DOM */
     }
@@ -838,6 +993,7 @@ export default function GoogleMapEmbed({
    */
   const anunciarPin = useCallback((la: number, ln: number) => {
     const resolver = typeof moveRef.current === "function";
+
     setPin({
       lat: la,
       lng: ln,
@@ -865,27 +1021,36 @@ export default function GoogleMapEmbed({
             }
           : p,
       );
-      if (typeof moveRef.current === "function") moveRef.current(la, ln, formatted, detalles);
+      if (typeof moveRef.current === "function")
+        moveRef.current(la, ln, formatted, detalles);
     };
 
     reverseGeocode(la, ln, { addressdetails: 1 })
       .then((r: any) => {
         if (!r || !r.display_name) throw new Error("sin dirección");
-        publicar(String(r.display_name), componentesDeNominatim(r.address), precisionDeNominatim(r));
+        publicar(
+          String(r.display_name),
+          componentesDeNominatim(r.address),
+          precisionDeNominatim(r),
+        );
       })
       .catch(() => {
         // Respaldo: el geocodificador del navegador. Se paga, pero sólo cuando el
         // camino gratuito ha fallado — y antes se pagaba SIEMPRE.
         const google = (window as any).google;
+
         if (!google?.maps?.Geocoder) {
           setPin((p) => (p ? { ...p, resolviendo: false } : p));
+
           return;
         }
         try {
           new google.maps.Geocoder().geocode(
             { location: { lat: la, lng: ln } },
             (results: any[], status: string) => {
-              const primero = status === "OK" && results && results[0] ? results[0] : null;
+              const primero =
+                status === "OK" && results && results[0] ? results[0] : null;
+
               publicar(
                 primero?.formatted_address || "",
                 parsePlaceAddress(primero),
@@ -906,7 +1071,9 @@ export default function GoogleMapEmbed({
     const p = pinRef.current;
     const la = p?.lat ?? (typeof lat === "number" ? lat : undefined);
     const ln = p?.lng ?? (typeof lng === "number" ? lng : undefined);
-    if (!Number.isFinite(la as number) || !Number.isFinite(ln as number)) return;
+
+    if (!Number.isFinite(la as number) || !Number.isFinite(ln as number))
+      return;
     const laN = la as number;
     const lnN = ln as number;
 
@@ -916,8 +1083,17 @@ export default function GoogleMapEmbed({
       title: p?.direccion || address || "Ubicación seleccionada",
       subtitle: draggable ? "Arrastra la chincheta para ajustarla" : undefined,
       tone: "brand",
-      status: p?.precision ? { label: p.precision, tone: p.tonoPrecision } : undefined,
-      fields: [{ label: "Coordenadas", value: formatearCoord(laN, lnN), mono: true, wide: true }],
+      status: p?.precision
+        ? { label: p.precision, tone: p.tonoPrecision }
+        : undefined,
+      fields: [
+        {
+          label: "Coordenadas",
+          value: formatearCoord(laN, lnN),
+          mono: true,
+          wide: true,
+        },
+      ],
       actions: [mapPopupActions.directions(laN, lnN)],
     });
   }, [address, draggable, lat, lng]);
@@ -984,7 +1160,9 @@ export default function GoogleMapEmbed({
         // pueden haber cambiado, pero la escucha de pulsación tiene que seguir viva.
         try {
           const nodo: HTMLElement | undefined = existing[m.id].content;
-          if (nodo?.classList?.contains("cc-map-pin")) repintarPin(nodo, color, m.label);
+
+          if (nodo?.classList?.contains("cc-map-pin"))
+            repintarPin(nodo, color, m.label);
         } catch {}
       } else {
         // create marker
@@ -995,8 +1173,10 @@ export default function GoogleMapEmbed({
             title: m.label || m.id,
             content: contenidoPin(color, m.label),
           });
+
           alPulsarMarcador(mk, () => {
             const dato = markersDatos.current[m.id];
+
             if (dato) abrirGloboMarcador(mk, dato);
           });
           markersRef.current[m.id] = mk;
@@ -1038,26 +1218,34 @@ export default function GoogleMapEmbed({
     if (!fitMarkers || !ready) return;
     const google = (window as any).google;
     const mapa = mapInstance.current;
+
     if (!google?.maps || !mapa) return;
 
     const puntos = (markers || []).filter(
       (m) => m && Number.isFinite(m.lat) && Number.isFinite(m.lng),
     );
+
     if (puntos.length === 0) return;
 
     if (puntos.length === 1) {
       try {
         mapa.setCenter({ lat: puntos[0].lat, lng: puntos[0].lng });
         mapa.setZoom(zoom);
-      } catch { /* mapa aún montándose */ }
+      } catch {
+        /* mapa aún montándose */
+      }
+
       return;
     }
 
     try {
       const limites = new google.maps.LatLngBounds();
+
       puntos.forEach((m) => limites.extend({ lat: m.lat, lng: m.lng }));
       mapa.fitBounds(limites, 48);
-    } catch { /* mapa aún montándose */ }
+    } catch {
+      /* mapa aún montándose */
+    }
   }, [fitMarkers, markers, ready, zoom]);
 
   // Latido de lo que está VIVO. Se mantiene aparte del efecto de marcadores
@@ -1066,10 +1254,14 @@ export default function GoogleMapEmbed({
     if (!motor) return;
     (markers || []).forEach((m) => {
       if (!m || typeof m.lat !== "number" || typeof m.lng !== "number") return;
-      motor.latido(`hb-${m.id}`, { lat: m.lat, lng: m.lng }, {
-        activo: !!m.pulse,
-        tono: tonoMotor(m.role),
-      });
+      motor.latido(
+        `hb-${m.id}`,
+        { lat: m.lat, lng: m.lng },
+        {
+          activo: !!m.pulse,
+          tono: tonoMotor(m.role),
+        },
+      );
     });
   }, [markers, motor]);
 
@@ -1079,14 +1271,15 @@ export default function GoogleMapEmbed({
     if (!focusMarker?.id) return;
     const mk = markersRef.current[focusMarker.id];
     const dato = markersDatos.current[focusMarker.id];
+
     if (!mk || !dato) return;
     const destino = { lat: dato.lat, lng: dato.lng };
+
     volar(destino, Math.max(mapInstance.current?.getZoom?.() ?? 0, 16));
     motorRef.current?.onda(destino, { tono: tonoMotor(dato.role) });
     abrirGloboMarcador(mk, dato);
     // Sólo el `nonce` dispara: pulsar dos veces el mismo de la lista tiene que
     // volver a llevarte allí aunque el id no haya cambiado.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusMarker?.nonce]);
 
   // Resaltar lo que está abierto: el resto de chinchetas se apagan un poco para
@@ -1094,14 +1287,18 @@ export default function GoogleMapEmbed({
   // de apilado — nada de color, que el papel de cada chincheta ya lo lleva.
   useEffect(() => {
     const abierto = pop.openId;
+
     Object.entries(markersRef.current || {}).forEach(([id, mk]) => {
       try {
         const nodo: HTMLElement | undefined = mk?.content;
+
         if (!nodo?.style) return;
         const apagada = !!abierto && id !== abierto;
+
         nodo.style.transition = "opacity .18s var(--ease, ease)";
         nodo.style.opacity = apagada ? "0.42" : "1";
-        if (typeof mk.zIndex !== "undefined") mk.zIndex = abierto && id === abierto ? 9000 : undefined;
+        if (typeof mk.zIndex !== "undefined")
+          mk.zIndex = abierto && id === abierto ? 9000 : undefined;
       } catch {
         /* marcador sin DOM */
       }
@@ -1139,7 +1336,9 @@ export default function GoogleMapEmbed({
     // un centro aquí lo desharía en el mismo fotograma (este efecto se declara
     // después, así que gana). Sin coordenadas propias ese centro sería además
     // la ubicación de la empresa, que no es donde están las chinchetas.
-    const encuadrandoLista = fitMarkers && Array.isArray(markers) && markers.length > 0;
+    const encuadrandoLista =
+      fitMarkers && Array.isArray(markers) && markers.length > 0;
+
     if (!encuadrandoLista) volar(center, zoom);
     map.setMapTypeId(mapType === "satellite" ? "satellite" : "roadmap");
 
@@ -1213,14 +1412,17 @@ export default function GoogleMapEmbed({
       // Acercar sólo si el foco pedido está MÁS cerca que lo que ya se ve: si el
       // operador se había acercado a mano, alejarle sería quitarle el trabajo.
       const destino =
-        typeof focusZoom === "number" && actual < focusZoom ? focusZoom : undefined;
+        typeof focusZoom === "number" && actual < focusZoom
+          ? focusZoom
+          : undefined;
 
       volar(center, destino);
       // Un toque para que el ojo encuentre el sitio nuevo sin buscarlo: es un
       // evento (te acabo de llevar aquí), así que suena una vez y se apaga.
       motorRef.current?.onda(center, { tono: "marca" });
       if (markerRef.current) markerRef.current.position = center;
-      if (showGeofence && circleRef.current) circleRef.current.setCenter(center);
+      if (showGeofence && circleRef.current)
+        circleRef.current.setCenter(center);
     } catch (err) {
       console.warn("Failed to pan map on centerRequest", err);
     }
@@ -1231,6 +1433,7 @@ export default function GoogleMapEmbed({
   const lectura = useMemo(() => {
     if (!draggable && !enableClickToSet) return null;
     if (!pin) return null;
+
     return pin;
   }, [draggable, enableClickToSet, pin]);
 
@@ -1283,7 +1486,9 @@ export default function GoogleMapEmbed({
               title={lectura.direccion || undefined}
             >
               {lectura.direccion ||
-                (lectura.resolviendo ? "…" : t("maps.pin.noKnownAddress", "Sin dirección conocida"))}
+                (lectura.resolviendo
+                  ? "…"
+                  : t("maps.pin.noKnownAddress", "Sin dirección conocida"))}
             </div>
             <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5">
               <span

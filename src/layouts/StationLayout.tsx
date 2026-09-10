@@ -5,14 +5,25 @@
  * mismo lenguaje visual de la plataforma (tarjetas redondeadas + dorado),
  * contenido a ancho completo.
  */
-import React, { ReactNode, useEffect, useRef } from 'react';
-import AppLayout from '@/layouts/app-layout';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import React, { ReactNode, useEffect, useRef } from "react";
+import { Link, useLocation, useParams } from "react-router-dom";
 import {
-  ChevronRight, LayoutDashboard, DoorOpen, Users, CalendarClock,
-  ClipboardList, Route, QrCode, History, Package, Car, AlertTriangle,
-} from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+  ChevronRight,
+  LayoutDashboard,
+  DoorOpen,
+  Users,
+  CalendarClock,
+  ClipboardList,
+  Route,
+  QrCode,
+  History,
+  Package,
+  Car,
+  AlertTriangle,
+} from "lucide-react";
+import { useTranslation } from "react-i18next";
+
+import AppLayout from "@/layouts/app-layout";
 
 type Props = { title?: string; children: ReactNode; station?: any };
 
@@ -22,24 +33,79 @@ export default function StationLayout({ title, children, station }: Props) {
   const { postSiteId, stationId } = useParams();
   const navRef = useRef<HTMLDivElement | null>(null);
 
-  const base = `/post-sites/${postSiteId || ':postSiteId'}/stations/${stationId || ':stationId'}`;
+  const base = `/post-sites/${postSiteId || ":postSiteId"}/stations/${stationId || ":stationId"}`;
 
   const items = [
-    { id: 'overview',   label: t('station.details.overview',   'Vista General'),        icon: LayoutDashboard, path: `${base}/overview` },
-    { id: 'visitors',   label: t('station.details.visitors',   'Visitantes'),           icon: DoorOpen,        path: `${base}/visitors` },
-    { id: 'guards',     label: t('station.details.guards',     'Vigilantes'),           icon: Users,           path: `${base}/guards` },
-    { id: 'shifts',     label: t('station.details.shifts',     'Turnos'),               icon: CalendarClock,   path: `${base}/shifts` },
-    { id: 'orders',     label: t('station.details.orders',     'Consignas'),            icon: ClipboardList,   path: `${base}/orders` },
-    { id: 'site-tours', label: t('station.details.siteTours',  'Rondas'),               icon: Route,           path: `${base}/site-tours` },
-    { id: 'etiquetas',  label: t('station.details.patrolQr',   'QR de Rondas'),         icon: QrCode,          path: `${base}/etiquetas` },
-    { id: 'tag-scans',  label: t('station.details.rondaHistory', 'Historial'),          icon: History,         path: `${base}/tag-scans` },
-    { id: 'inventory',  label: t('station.details.inventory',  'Inventario'),           icon: Package,         path: `${base}/inventory` },
-    { id: 'parking',    label: t('station.details.parking',    'Control vehicular'),              icon: Car,             path: `${base}/parking` },
-    { id: 'incidents',  label: t('station.details.incidents',  'Incidencias'),          icon: AlertTriangle,   path: `${base}/incidents` },
+    {
+      id: "overview",
+      label: t("station.details.overview", "Vista General"),
+      icon: LayoutDashboard,
+      path: `${base}/overview`,
+    },
+    {
+      id: "visitors",
+      label: t("station.details.visitors", "Visitantes"),
+      icon: DoorOpen,
+      path: `${base}/visitors`,
+    },
+    {
+      id: "guards",
+      label: t("station.details.guards", "Vigilantes"),
+      icon: Users,
+      path: `${base}/guards`,
+    },
+    {
+      id: "shifts",
+      label: t("station.details.shifts", "Turnos"),
+      icon: CalendarClock,
+      path: `${base}/shifts`,
+    },
+    {
+      id: "orders",
+      label: t("station.details.orders", "Consignas"),
+      icon: ClipboardList,
+      path: `${base}/orders`,
+    },
+    {
+      id: "site-tours",
+      label: t("station.details.siteTours", "Rondas"),
+      icon: Route,
+      path: `${base}/site-tours`,
+    },
+    {
+      id: "etiquetas",
+      label: t("station.details.patrolQr", "QR de Rondas"),
+      icon: QrCode,
+      path: `${base}/etiquetas`,
+    },
+    {
+      id: "tag-scans",
+      label: t("station.details.rondaHistory", "Historial"),
+      icon: History,
+      path: `${base}/tag-scans`,
+    },
+    {
+      id: "inventory",
+      label: t("station.details.inventory", "Inventario"),
+      icon: Package,
+      path: `${base}/inventory`,
+    },
+    {
+      id: "parking",
+      label: t("station.details.parking", "Control vehicular"),
+      icon: Car,
+      path: `${base}/parking`,
+    },
+    {
+      id: "incidents",
+      label: t("station.details.incidents", "Incidencias"),
+      icon: AlertTriangle,
+      path: `${base}/incidents`,
+    },
   ];
 
   const isActive = (path: string) =>
-    location.pathname === path || location.pathname.startsWith(path + '/');
+    location.pathname === path || location.pathname.startsWith(path + "/");
 
   // Breadcrumb chain — Clientes › {Cliente} › {Sede} › {Estación} › {Pestaña}.
   // The owning client comes from the sede (postSite.clientAccount); stationOrigin
@@ -47,18 +113,31 @@ export default function StationLayout({ title, children, station }: Props) {
   const site = station?.postSite;
   const client = site?.clientAccount || station?.stationOrigin;
   const clientId = client?.id || site?.clientAccountId || null;
-  const clientName = client?.commercialName || client?.name || client?.companyName || null;
-  const siteName = site?.businessName || site?.companyName || site?.name || t('postSites.postsite', 'Sede');
-  const stationName = station?.stationName || station?.name || t('station.details.station', 'Estación');
+  const clientName =
+    client?.commercialName || client?.name || client?.companyName || null;
+  const siteName =
+    site?.businessName ||
+    site?.companyName ||
+    site?.name ||
+    t("postSites.postsite", "Sede");
+  const stationName =
+    station?.stationName ||
+    station?.name ||
+    t("station.details.station", "Estación");
   const activeItem = items.find((it) => isActive(it.path)) || items[0];
-  const showTabCrumb = activeItem.id !== 'overview';
+  const showTabCrumb = activeItem.id !== "overview";
 
   // Keep the active card visible when landing deep in the list.
   useEffect(() => {
     try {
-      const el = navRef.current?.querySelector('[data-active="true"]') as HTMLElement | null;
-      el?.scrollIntoView({ block: 'nearest', inline: 'center' });
-    } catch { /* ignore */ }
+      const el = navRef.current?.querySelector(
+        '[data-active="true"]',
+      ) as HTMLElement | null;
+
+      el?.scrollIntoView({ block: "nearest", inline: "center" });
+    } catch {
+      /* ignore */
+    }
   }, [location.pathname]);
 
   return (
@@ -72,24 +151,51 @@ export default function StationLayout({ title, children, station }: Props) {
         <div className="shrink-0 px-4 pt-3">
           {/* Breadcrumb: Clientes › Cliente › Sede › Estación › Pestaña */}
           <div className="mb-2 flex min-w-0 items-center gap-1.5 text-sm text-muted-foreground">
-            <Link to="/clients" className="shrink-0 hover:text-primary">{t('clients.nav.title', 'Clientes')}</Link>
+            <Link className="shrink-0 hover:text-primary" to="/clients">
+              {t("clients.nav.title", "Clientes")}
+            </Link>
             <ChevronRight className="h-3.5 w-3.5 shrink-0" />
             {clientId && clientName && (
               <>
-                <Link to={`/clients/${clientId}/overview`} className="max-w-[130px] truncate hover:text-primary sm:max-w-[190px]" title={clientName}>{clientName}</Link>
+                <Link
+                  className="max-w-[130px] truncate hover:text-primary sm:max-w-[190px]"
+                  title={clientName}
+                  to={`/clients/${clientId}/overview`}
+                >
+                  {clientName}
+                </Link>
                 <ChevronRight className="h-3.5 w-3.5 shrink-0" />
               </>
             )}
-            <Link to={`/post-sites/${postSiteId}/overview`} className="max-w-[130px] truncate hover:text-primary sm:max-w-[190px]" title={siteName}>{siteName}</Link>
+            <Link
+              className="max-w-[130px] truncate hover:text-primary sm:max-w-[190px]"
+              title={siteName}
+              to={`/post-sites/${postSiteId}/overview`}
+            >
+              {siteName}
+            </Link>
             <ChevronRight className="h-3.5 w-3.5 shrink-0" />
             {showTabCrumb ? (
               <>
-                <Link to={`${base}/overview`} className="max-w-[130px] truncate hover:text-primary sm:max-w-[190px]" title={stationName}>{stationName}</Link>
+                <Link
+                  className="max-w-[130px] truncate hover:text-primary sm:max-w-[190px]"
+                  title={stationName}
+                  to={`${base}/overview`}
+                >
+                  {stationName}
+                </Link>
                 <ChevronRight className="h-3.5 w-3.5 shrink-0" />
-                <span className="shrink-0 font-medium text-foreground">{activeItem.label}</span>
+                <span className="shrink-0 font-medium text-foreground">
+                  {activeItem.label}
+                </span>
               </>
             ) : (
-              <span className="max-w-[160px] truncate font-medium text-foreground sm:max-w-[220px]" title={stationName}>{stationName}</span>
+              <span
+                className="max-w-[160px] truncate font-medium text-foreground sm:max-w-[220px]"
+                title={stationName}
+              >
+                {stationName}
+              </span>
             )}
           </div>
           <div className="flex items-center gap-2">
@@ -100,18 +206,19 @@ export default function StationLayout({ title, children, station }: Props) {
               {items.map((it) => {
                 const active = isActive(it.path);
                 const Icon = it.icon;
+
                 return (
                   <Link
                     key={it.id}
-                    to={it.path}
-                    data-active={active ? 'true' : undefined}
                     className={`flex shrink-0 items-center gap-2 rounded-xl border px-3.5 py-2.5 text-sm font-medium transition-all ${
                       active
-                        ? 'border-primary/50 bg-primary/10 text-primary shadow-sm'
-                        : 'border-border bg-card text-muted-foreground hover:-translate-y-px hover:border-primary/30 hover:text-foreground'
+                        ? "border-primary/50 bg-primary/10 text-primary shadow-sm"
+                        : "border-border bg-card text-muted-foreground hover:-translate-y-px hover:border-primary/30 hover:text-foreground"
                     }`}
+                    data-active={active ? "true" : undefined}
+                    to={it.path}
                   >
-                    <Icon size={15} className={active ? '' : 'opacity-70'} />
+                    <Icon className={active ? "" : "opacity-70"} size={15} />
                     {it.label}
                   </Link>
                 );

@@ -12,14 +12,23 @@
  * `tenantId` llega sellado desde el momento de encolar (multi-empresa: el
  * replay va contra la empresa donde se capturó, no la activa al reconectar).
  */
+import { registerReplayer } from "./offlineQueue";
+
 import api from "@/lib/api";
 import i18n from "@/i18n";
-import { registerReplayer } from "./offlineQueue";
 import { invalidateEntity } from "@/lib/queryClient";
 
 const tid = (sealed?: string): string => {
   const t = sealed || localStorage.getItem("tenantId");
-  if (!t) throw new Error(i18n.t("offline.replay.noTenant", "Sin empresa para reproducir la mutación"));
+
+  if (!t)
+    throw new Error(
+      i18n.t(
+        "offline.replay.noTenant",
+        "Sin empresa para reproducir la mutación",
+      ),
+    );
+
   return t;
 };
 
@@ -30,12 +39,19 @@ const tid = (sealed?: string): string => {
 registerReplayer("incident.create", async (payload: any, tenantId?: string) => {
   // silentError: el replay corre en segundo plano — un rechazo no debe disparar
   // toasts sin contexto ni la redirección del interceptor 402 a facturación.
-  await api.post(`/tenant/${tid(tenantId)}/incident`, { data: payload }, { toast: { silentError: true } } as any);
+  await api.post(`/tenant/${tid(tenantId)}/incident`, { data: payload }, {
+    toast: { silentError: true },
+  } as any);
   invalidateEntity("incidents");
 });
 
 /** Visita registrada sin red (bitácora de recepción). */
-registerReplayer("visitorLog.create", async (payload: any, tenantId?: string) => {
-  await api.post(`/tenant/${tid(tenantId)}/visitor-log`, { data: payload }, { toast: { silentError: true } } as any);
-  invalidateEntity("visitors");
-});
+registerReplayer(
+  "visitorLog.create",
+  async (payload: any, tenantId?: string) => {
+    await api.post(`/tenant/${tid(tenantId)}/visitor-log`, { data: payload }, {
+      toast: { silentError: true },
+    } as any);
+    invalidateEntity("visitors");
+  },
+);

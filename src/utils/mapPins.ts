@@ -76,7 +76,8 @@ export interface PinSkin {
  * sistema y se mide con esa MISMA pila — medir con Poppins daría anchos que no
  * corresponden a lo que se acaba dibujando.
  */
-const PILA = 'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+const PILA =
+  'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
 
 let ctx: CanvasRenderingContext2D | null | undefined;
 const cacheMedidas = new Map<string, number>();
@@ -84,10 +85,13 @@ const cacheMedidas = new Map<string, number>();
 function medir(texto: string, fuente: string): number {
   const clave = `${fuente}|${texto}`;
   const previo = cacheMedidas.get(clave);
+
   if (previo != null) return previo;
   let ancho = texto.length * 6.4; // respaldo si no hay canvas
+
   try {
-    if (ctx === undefined) ctx = document.createElement("canvas").getContext("2d");
+    if (ctx === undefined)
+      ctx = document.createElement("canvas").getContext("2d");
     if (ctx) {
       ctx.font = fuente;
       ancho = ctx.measureText(texto).width;
@@ -100,20 +104,31 @@ function medir(texto: string, fuente: string): number {
      falta hace. Se me pasó este segundo caché al arreglar el primero. */
   if (cacheMedidas.size >= 500) {
     const masVieja = cacheMedidas.keys().next().value;
+
     if (masVieja !== undefined) cacheMedidas.delete(masVieja);
   }
   cacheMedidas.set(clave, ancho);
+
   return ancho;
 }
 
 export function escaparXml(s: string): string {
-  return String(s ?? "").replace(/[&<>"']/g, (c) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" }[c] as string),
+  return String(s ?? "").replace(
+    /[&<>"']/g,
+    (c) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&apos;",
+      })[c] as string,
   );
 }
 
 function recortar(s: string, max: number): string {
   const t = String(s ?? "").trim();
+
   return t.length > max ? `${t.slice(0, max - 1)}…` : t;
 }
 
@@ -150,18 +165,23 @@ const TOPE_CACHE = 1200;
 
 function memo(clave: string, construir: () => PinAsset): PinAsset {
   const previo = cacheAssets.get(clave);
+
   if (previo) {
     // Reinsertar lo mueve al final: lo que se usa sobrevive al desalojo.
     cacheAssets.delete(clave);
     cacheAssets.set(clave, previo);
+
     return previo;
   }
   const a = construir();
+
   if (cacheAssets.size >= TOPE_CACHE) {
     const masVieja = cacheAssets.keys().next().value;
+
     if (masVieja !== undefined) cacheAssets.delete(masVieja);
   }
   cacheAssets.set(clave, a);
+
   return a;
 }
 
@@ -174,7 +194,14 @@ function memo(clave: string, construir: () => PinAsset): PinAsset {
  * tiene señal en vivo de verdad. Si late todo, no informa nada. Con movimiento
  * reducido queda el halo quieto — la misma lectura, sin pulso.
  */
-function tallo(x: number, arriba: number, y: number, color: string, filo: string, vivo: boolean): string {
+function tallo(
+  x: number,
+  arriba: number,
+  y: number,
+  color: string,
+  filo: string,
+  vivo: boolean,
+): string {
   const latido = !vivo
     ? ""
     : calma()
@@ -183,6 +210,7 @@ function tallo(x: number, arriba: number, y: number, color: string, filo: string
            <animate attributeName="r" values="6;13" dur="1.9s" repeatCount="indefinite"/>
            <animate attributeName="opacity" values="0.45;0" dur="1.9s" repeatCount="indefinite"/>
          </circle>`;
+
   return `
     <line x1="${x}" y1="${arriba}" x2="${x}" y2="${y - 4}" stroke="${color}" stroke-width="1.5" opacity="0.75"/>
     ${latido}
@@ -190,7 +218,14 @@ function tallo(x: number, arriba: number, y: number, color: string, filo: string
 }
 
 /** El cuadrado de color con el icono dentro — el `IconTile` del kit, en SVG. */
-function baldosa(x: number, y: number, lado: number, color: string, glifo?: string, texto?: string): string {
+function baldosa(
+  x: number,
+  y: number,
+  lado: number,
+  color: string,
+  glifo?: string,
+  texto?: string,
+): string {
   const r = Math.round(lado * 0.32);
   const escala = (lado * 0.62) / 24;
   const dentro = glifo
@@ -198,6 +233,7 @@ function baldosa(x: number, y: number, lado: number, color: string, glifo?: stri
           fill="none" stroke="${color}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${glifo}</g>`
     : `<text x="${x + lado / 2}" y="${y + lado / 2}" text-anchor="middle" dominant-baseline="central"
              font-family='${PILA}' font-size="${Math.round(lado * 0.5)}" font-weight="700" fill="${color}">${escaparXml(texto || "")}</text>`;
+
   return `
     <rect x="${x}" y="${y}" width="${lado}" height="${lado}" rx="${r}"
           fill="${color}" fill-opacity="0.18" stroke="${color}" stroke-opacity="0.45" stroke-width="1"/>
@@ -216,6 +252,7 @@ function baldosa(x: number, y: number, lado: number, color: string, glifo?: stri
 function placa(w: number, h: number, s: PinSkin, color: string): string {
   const alfa = s.oscuro ? 0.9 : 0.86;
   const r = 12;
+
   return `
     <rect x="1.5" y="3" width="${w - 3}" height="${h - 1}" rx="${r}" fill="#000000" opacity="${s.oscuro ? 0.45 : 0.14}"/>
     <rect x="1" y="0.5" width="${w - 2}" height="${h - 1}" rx="${r}" fill="${s.placa}" fill-opacity="${alfa}"
@@ -265,7 +302,8 @@ export function chipPin(o: ChipOpts): PinAsset {
   return memo(clave, () => {
     const anchoEtiqueta = Math.ceil(medir(etiqueta, F_ETIQUETA));
     const anchoCifra = cifra ? Math.ceil(medir(cifra, F_CIFRA)) : 0;
-    const w = 8 + BALDOSA + 8 + anchoEtiqueta + (cifra ? 10 + anchoCifra : 0) + 11;
+    const w =
+      8 + BALDOSA + 8 + anchoEtiqueta + (cifra ? 10 + anchoCifra : 0) + 11;
     const h = CHIP_ALTO;
     const total = h + CHIP_CAIDA + 14;
     const puntoY = h + CHIP_CAIDA;
@@ -277,13 +315,21 @@ export function chipPin(o: ChipOpts): PinAsset {
       ${baldosa(8, (h - BALDOSA) / 2, BALDOSA, o.color, o.glifo, o.insignia)}
       <text x="${8 + BALDOSA + 8}" y="${h / 2}" dominant-baseline="central" font-family='${PILA}'
             font-size="11.5" font-weight="600" fill="${o.piel.tinta}">${escaparXml(etiqueta)}</text>
-      ${cifra
-        ? `<text x="${w - 11}" y="${h / 2}" text-anchor="end" dominant-baseline="central" font-family='${PILA}'
+      ${
+        cifra
+          ? `<text x="${w - 11}" y="${h / 2}" text-anchor="end" dominant-baseline="central" font-family='${PILA}'
                  font-size="15" font-weight="700" fill="${o.color}">${escaparXml(cifra)}</text>`
-        : ""}
+          : ""
+      }
     </svg>`;
 
-    return { url: url(svg), width: w, height: total, anchorX: cx, anchorY: puntoY };
+    return {
+      url: url(svg),
+      width: w,
+      height: total,
+      anchorX: cx,
+      anchorY: puntoY,
+    };
   });
 }
 
@@ -321,9 +367,10 @@ export interface OrbOpts {
  */
 export function orbPin(o: OrbOpts): PinAsset {
   const chico = o.tamano === "sm";
-  const rumbo = o.rumbo == null || !Number.isFinite(o.rumbo)
-    ? null
-    : ((Math.round(o.rumbo / PASO_RUMBO) * PASO_RUMBO) % 360 + 360) % 360;
+  const rumbo =
+    o.rumbo == null || !Number.isFinite(o.rumbo)
+      ? null
+      : (((Math.round(o.rumbo / PASO_RUMBO) * PASO_RUMBO) % 360) + 360) % 360;
   const clave = `orb|${o.color}|${o.glifo ? "g" : o.insignia || ""}|${o.vivo ? 1 : 0}|${chico ? "s" : "m"}|${o.version || ""}|${o.piel.oscuro ? "d" : "l"}|${calma() ? "q" : "m"}|${rumbo ?? "-"}`;
 
   return memo(clave, () => {
@@ -346,9 +393,10 @@ export function orbPin(o: OrbOpts): PinAsset {
 
     // La proa: dibujada apuntando al NORTE y rotada al rumbo pedido. Va pegada
     // al filo del halo, fuera del disco, para no comerse el icono.
-    const proa = rumbo == null
-      ? ""
-      : `<g transform="rotate(${rumbo} ${c} ${c})">
+    const proa =
+      rumbo == null
+        ? ""
+        : `<g transform="rotate(${rumbo} ${c} ${c})">
            <path d="M ${c} ${c - rHalo - 6.6} L ${c + 5.2} ${c - rHalo + 1.4} L ${c} ${c - rHalo - 0.6} L ${c - 5.2} ${c - rHalo + 1.4} Z"
                  fill="${o.color}" stroke="${o.piel.filo}" stroke-width="0.75" stroke-linejoin="round"/>
          </g>`;

@@ -25,7 +25,14 @@
  * sitio.
  * ════════════════════════════════════════════════════════════════════════════
  */
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { useTranslation } from "react-i18next";
 
 export type PasoHoja = 0 | 1 | 2;
@@ -38,9 +45,12 @@ const VELOCIDAD_IMPULSO = 0.55; // px/ms
 /** El anclaje: a cuál de las tres alturas se ha soltado la hoja más cerca. */
 function masCercano(puntos: [number, number, number], px: number): PasoHoja {
   let mejor: PasoHoja = 0;
+
   for (let i = 1; i < 3; i += 1) {
-    if (Math.abs(puntos[i] - px) < Math.abs(puntos[mejor] - px)) mejor = i as PasoHoja;
+    if (Math.abs(puntos[i] - px) < Math.abs(puntos[mejor] - px))
+      mejor = i as PasoHoja;
   }
+
   return mejor;
 }
 
@@ -69,7 +79,12 @@ export function BottomSheet({
   const cabeceraRef = useRef<HTMLDivElement | null>(null);
   const cuerpoRef = useRef<HTMLDivElement | null>(null);
   const arrastreRef = useRef<number | null>(null);
-  const gestoRef = useRef<{ y0: number; alto0: number; t0: number; movido: boolean } | null>(null);
+  const gestoRef = useRef<{
+    y0: number;
+    alto0: number;
+    t0: number;
+    movido: boolean;
+  } | null>(null);
 
   const [paso, setPaso] = useState<PasoHoja>(0);
   const [cabeceraH, setCabeceraH] = useState(84);
@@ -79,12 +94,17 @@ export function BottomSheet({
   // mismo en un teléfono que en el navegador de un escritorio.
   useLayoutEffect(() => {
     const el = cabeceraRef.current;
+
     if (!el) return;
-    const medir = () => setCabeceraH(Math.round(el.getBoundingClientRect().height) || 84);
+    const medir = () =>
+      setCabeceraH(Math.round(el.getBoundingClientRect().height) || 84);
+
     medir();
     if (typeof ResizeObserver === "undefined") return;
     const ro = new ResizeObserver(medir);
+
     ro.observe(el);
+
     return () => ro.disconnect();
   }, []);
 
@@ -105,6 +125,7 @@ export function BottomSheet({
     (px: number, arrastrando: boolean) => {
       const hoja = hojaRef.current;
       const cuerpo = cuerpoRef.current;
+
       if (hoja) {
         hoja.style.transform = `translateY(${MAX - px}px)`;
         hoja.style.transition = arrastrando ? "none" : "";
@@ -119,7 +140,6 @@ export function BottomSheet({
   useEffect(() => {
     if (arrastreRef.current != null) return;
     pintar(PUNTOS[paso], false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paso, PUNTOS[0], PUNTOS[1], PUNTOS[2], pintar]);
 
   const irA = (p: PasoHoja) => setPaso(p);
@@ -131,77 +151,113 @@ export function BottomSheet({
     // La captura no es imprescindible —sólo evita perder el gesto si el dedo se
     // sale de la cabecera—, así que un navegador que la rechace no puede
     // llevarse por delante el arrastre entero.
-    try { (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId); } catch { /* sin captura */ }
-    gestoRef.current = { y0: e.clientY, alto0: PUNTOS[paso], t0: performance.now(), movido: false };
+    try {
+      (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+    } catch {
+      /* sin captura */
+    }
+    gestoRef.current = {
+      y0: e.clientY,
+      alto0: PUNTOS[paso],
+      t0: performance.now(),
+      movido: false,
+    };
     arrastreRef.current = PUNTOS[paso];
   };
 
   const alMover = (e: React.PointerEvent) => {
     const g = gestoRef.current;
+
     if (!g) return;
     const dy = g.y0 - e.clientY;
+
     if (!g.movido && Math.abs(dy) > UMBRAL_TOQUE) g.movido = true;
     // Un poco por debajo del punto recogido y un poco por encima del máximo:
     // el tope duro se siente como que la hoja se ha roto.
     const px = Math.min(MAX, Math.max(PUNTOS[0] - 24, g.alto0 + dy));
+
     arrastreRef.current = px;
     pintar(px, true);
   };
 
   const alSoltar = (e: React.PointerEvent) => {
     const g = gestoRef.current;
+
     if (!g) return;
-    try { (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId); } catch { /* nunca se capturó */ }
+    try {
+      (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
+    } catch {
+      /* nunca se capturó */
+    }
     gestoRef.current = null;
     const px = arrastreRef.current ?? PUNTOS[paso];
+
     arrastreRef.current = null;
 
     if (!g.movido) {
       // Toque limpio sobre el tirador: a la siguiente altura.
       pintar(PUNTOS[((paso + 1) % 3) as PasoHoja], false);
       siguiente();
+
       return;
     }
 
     const dy = g.y0 - e.clientY;
     const v = Math.abs(dy) / Math.max(1, performance.now() - g.t0);
-    const destino: PasoHoja = v > VELOCIDAD_IMPULSO
-      // Impulso: un escalón en la dirección del gesto, se haya recorrido lo que
-      // se haya recorrido. Es lo que espera el pulgar cuando lanza la hoja.
-      ? (Math.min(2, Math.max(0, masCercano(PUNTOS, g.alto0) + (dy > 0 ? 1 : -1))) as PasoHoja)
-      : masCercano(PUNTOS, px);
+    const destino: PasoHoja =
+      v > VELOCIDAD_IMPULSO
+        ? // Impulso: un escalón en la dirección del gesto, se haya recorrido lo que
+          // se haya recorrido. Es lo que espera el pulgar cuando lanza la hoja.
+          (Math.min(
+            2,
+            Math.max(0, masCercano(PUNTOS, g.alto0) + (dy > 0 ? 1 : -1)),
+          ) as PasoHoja)
+        : masCercano(PUNTOS, px);
+
     pintar(PUNTOS[destino], false);
     irA(destino);
   };
 
   const alTeclado = (e: React.KeyboardEvent) => {
-    if (e.key === "ArrowUp") { e.preventDefault(); setPaso(Math.min(2, paso + 1) as PasoHoja); }
-    else if (e.key === "ArrowDown") { e.preventDefault(); setPaso(Math.max(0, paso - 1) as PasoHoja); }
-    else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); siguiente(); }
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setPaso(Math.min(2, paso + 1) as PasoHoja);
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setPaso(Math.max(0, paso - 1) as PasoHoja);
+    } else if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      siguiente();
+    }
   };
 
   return (
     <section
       ref={hojaRef}
+      aria-label={
+        etiqueta ?? t("controlCenter.sheet.label", "Detalle de la operación")
+      }
       className="cg-hoja cc-hoja"
       style={{ height: MAX, transform: `translateY(${MAX - altoActual}px)` }}
-      aria-label={etiqueta ?? t("controlCenter.sheet.label", "Detalle de la operación")}
     >
       <div
         ref={cabeceraRef}
         className="cc-hoja-cabecera"
+        onPointerCancel={alSoltar}
         onPointerDown={alBajar}
         onPointerMove={alMover}
         onPointerUp={alSoltar}
-        onPointerCancel={alSoltar}
       >
         <div
+          aria-expanded={paso > 0}
+          aria-label={t(
+            "ui.BottomSheet.ajustarLaAlturaDelPanel",
+            "Ajustar la altura del panel",
+          )}
+          className="cg-hoja-tirador cg-focus"
           role="button"
           tabIndex={0}
-          aria-label={t('ui.BottomSheet.ajustarLaAlturaDelPanel', 'Ajustar la altura del panel')}
-          aria-expanded={paso > 0}
           onKeyDown={alTeclado}
-          className="cg-hoja-tirador cg-focus"
         />
         <div className="cc-hoja-resumen">{resumen}</div>
       </div>
@@ -215,7 +271,9 @@ export function BottomSheet({
         ref={cuerpoRef}
         className="cmd-scroll cc-hoja-cuerpo"
         style={{ height: Math.max(0, altoActual - cabeceraH) }}
-        onFocusCapture={() => { if (paso === 0) setPaso(1); }}
+        onFocusCapture={() => {
+          if (paso === 0) setPaso(1);
+        }}
       >
         <div className="space-y-4 px-3 pb-6">{children}</div>
       </div>

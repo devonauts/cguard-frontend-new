@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Gift } from "lucide-react";
+
 import { useAuth } from "@/contexts/AuthContext";
 import {
   extractOnboardingTenant,
@@ -23,29 +24,39 @@ export default function TrialDaysBadge() {
   if (!tenant || !isTrialing(tenant.billingStatus)) return null;
 
   const days = trialDaysLeft(tenant.trialEndsAt);
+
   if (days == null) return null;
 
   const urgent = days <= 3;
   const label =
     days > 0
-      ? t("billing.trialBadge", { defaultValue: "Prueba: {{n}} día(s)", n: days })
+      ? t("billing.trialBadge", {
+          defaultValue: "Prueba: {{n}} día(s)",
+          n: days,
+        })
       : t("billing.trialBadgeToday", { defaultValue: "Prueba: termina hoy" });
 
   return (
     <button
-      type="button"
-      onClick={() => navigate("/setting/billing")}
-      title={t("billing.trialBadgeTitle", { defaultValue: "Ver detalles de tu prueba y suscripción" })}
       className={[
         "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-colors",
         urgent
           ? "border-red-300 bg-red-500/10 text-red-600 hover:bg-red-500/15 dark:border-red-900"
           : "border-primary/30 bg-primary/10 text-primary hover:bg-primary/15",
       ].join(" ")}
+      title={t("billing.trialBadgeTitle", {
+        defaultValue: "Ver detalles de tu prueba y suscripción",
+      })}
+      type="button"
+      onClick={() => navigate("/setting/billing")}
     >
       <Gift className="h-3.5 w-3.5" />
       <span className="hidden sm:inline">{label}</span>
-      <span className="sm:hidden">{days > 0 ? `${days}d` : t("billing.trialBadgeShortToday", { defaultValue: "hoy" })}</span>
+      <span className="sm:hidden">
+        {days > 0
+          ? `${days}d`
+          : t("billing.trialBadgeShortToday", { defaultValue: "hoy" })}
+      </span>
     </button>
   );
 }

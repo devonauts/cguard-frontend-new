@@ -4,7 +4,12 @@ const tid = (): string => localStorage.getItem("tenantId") || "";
 
 export type DeviceType = "dvr" | "nvr" | "camera" | "cloud";
 export type DeviceProtocol = "rtsp" | "onvif" | "hls" | "webrtc";
-export type DeviceStatus = "online" | "offline" | "unknown" | "auth_failed" | "unreachable";
+export type DeviceStatus =
+  | "online"
+  | "offline"
+  | "unknown"
+  | "auth_failed"
+  | "unreachable";
 
 export interface Device {
   id: string;
@@ -82,7 +87,12 @@ export interface Camera {
   updatedAt?: string;
 }
 
-export type VideoEventType = "motion" | "alarm" | "manual" | "offline" | "tamper";
+export type VideoEventType =
+  | "motion"
+  | "alarm"
+  | "manual"
+  | "offline"
+  | "tamper";
 export type VideoEventSeverity = "low" | "medium" | "high" | "critical";
 export type VideoEventStatus = "new" | "ack" | "resolved";
 
@@ -152,10 +162,12 @@ export interface ShareResult {
 const qstr = (params?: Record<string, string | undefined>): string => {
   if (!params) return "";
   const qs = new URLSearchParams();
+
   for (const [k, v] of Object.entries(params)) {
     if (v !== undefined && v !== null && v !== "") qs.set(k, v);
   }
   const s = qs.toString();
+
   return s ? `?${s}` : "";
 };
 
@@ -164,8 +176,9 @@ export const videoService = {
   devices(): Promise<Device[]> {
     // The endpoint returns { rows, count }, not a bare array — unwrap it (mirrors
     // relaySites). Without this the list was always empty, so saved devices "vanished".
-    return ApiService.get(`/tenant/${tid()}/video/devices`).then((r: Device[] | { rows?: Device[] }) =>
-      Array.isArray(r) ? r : r?.rows ?? [],
+    return ApiService.get(`/tenant/${tid()}/video/devices`).then(
+      (r: Device[] | { rows?: Device[] }) =>
+        Array.isArray(r) ? r : (r?.rows ?? []),
     );
   },
   device(id: string): Promise<Device> {
@@ -174,7 +187,10 @@ export const videoService = {
   createDevice(body: Partial<Device> & { password?: string }): Promise<Device> {
     return ApiService.post(`/tenant/${tid()}/video/device`, body);
   },
-  updateDevice(id: string, body: Partial<Device> & { password?: string }): Promise<Device> {
+  updateDevice(
+    id: string,
+    body: Partial<Device> & { password?: string },
+  ): Promise<Device> {
     return ApiService.put(`/tenant/${tid()}/video/device/${id}`, body);
   },
   deleteDevice(id: string): Promise<void> {
@@ -186,23 +202,40 @@ export const videoService = {
   syncCameras(id: string): Promise<Camera[]> {
     return ApiService.post(`/tenant/${tid()}/video/device/${id}/cameras`);
   },
-  setGateway(id: string, body: { streamGatewayBase: string; streamFormat?: "hls" | "webrtc" }): Promise<void> {
+  setGateway(
+    id: string,
+    body: { streamGatewayBase: string; streamFormat?: "hls" | "webrtc" },
+  ): Promise<void> {
     return ApiService.put(`/tenant/${tid()}/video/device/${id}/gateway`, body);
   },
-  gatewayConfig(id: string): Promise<{ deviceName: string; cameraCount: number; gatewayBase: string | null; format: string; yaml: string }> {
+  gatewayConfig(id: string): Promise<{
+    deviceName: string;
+    cameraCount: number;
+    gatewayBase: string | null;
+    format: string;
+    yaml: string;
+  }> {
     return ApiService.get(`/tenant/${tid()}/video/device/${id}/gateway-config`);
   },
 
   // --- Relay sites (remote cameras) ---
   relaySites(): Promise<RelaySite[]> {
-    return ApiService.get(`/tenant/${tid()}/video/relay-sites`).then((r: RelaySite[] | { rows?: RelaySite[] }) =>
-      Array.isArray(r) ? r : r?.rows ?? [],
+    return ApiService.get(`/tenant/${tid()}/video/relay-sites`).then(
+      (r: RelaySite[] | { rows?: RelaySite[] }) =>
+        Array.isArray(r) ? r : (r?.rows ?? []),
     );
   },
-  createRelaySite(body: { name: string; ingestProtocol?: string; notes?: string }): Promise<RelaySite> {
+  createRelaySite(body: {
+    name: string;
+    ingestProtocol?: string;
+    notes?: string;
+  }): Promise<RelaySite> {
     return ApiService.post(`/tenant/${tid()}/video/relay-site`, body);
   },
-  updateRelaySite(id: string, body: Partial<RelaySite> & { regenToken?: boolean }): Promise<RelaySite> {
+  updateRelaySite(
+    id: string,
+    body: Partial<RelaySite> & { regenToken?: boolean },
+  ): Promise<RelaySite> {
     return ApiService.put(`/tenant/${tid()}/video/relay-site/${id}`, body);
   },
   deleteRelaySite(id: string): Promise<void> {
@@ -213,7 +246,11 @@ export const videoService = {
   },
 
   // --- Cameras ---
-  cameras(params?: { deviceId?: string; postSiteId?: string; stationId?: string }): Promise<Camera[]> {
+  cameras(params?: {
+    deviceId?: string;
+    postSiteId?: string;
+    stationId?: string;
+  }): Promise<Camera[]> {
     return ApiService.get(`/tenant/${tid()}/video/cameras${qstr(params)}`);
   },
   camera(id: string): Promise<Camera> {
@@ -226,13 +263,25 @@ export const videoService = {
     return ApiService.get(`/tenant/${tid()}/video/camera/${cameraId}/stream`);
   },
   /** PTZ control via ONVIF. velocities -1..1; { stop: true } halts motion. */
-  ptz(cameraId: string, body: { pan?: number; tilt?: number; zoom?: number; stop?: boolean }): Promise<{ ok: boolean }> {
-    return ApiService.post(`/tenant/${tid()}/video/camera/${cameraId}/ptz`, body);
+  ptz(
+    cameraId: string,
+    body: { pan?: number; tilt?: number; zoom?: number; stop?: boolean },
+  ): Promise<{ ok: boolean }> {
+    return ApiService.post(
+      `/tenant/${tid()}/video/camera/${cameraId}/ptz`,
+      body,
+    );
   },
 
   // --- Events ---
-  events(params?: { status?: string; cameraId?: string }): Promise<VideoEvent[]> {
-    return ApiService.get(`/tenant/${tid()}/video/events${qstr(params)}`).then((r: VideoEvent[] | { rows?: VideoEvent[] }) => (Array.isArray(r) ? r : r?.rows ?? []));
+  events(params?: {
+    status?: string;
+    cameraId?: string;
+  }): Promise<VideoEvent[]> {
+    return ApiService.get(`/tenant/${tid()}/video/events${qstr(params)}`).then(
+      (r: VideoEvent[] | { rows?: VideoEvent[] }) =>
+        Array.isArray(r) ? r : (r?.rows ?? []),
+    );
   },
   createEvent(body: Partial<VideoEvent>): Promise<VideoEvent> {
     return ApiService.post(`/tenant/${tid()}/video/event`, body);
@@ -240,15 +289,26 @@ export const videoService = {
   updateEvent(id: string, body: Partial<VideoEvent>): Promise<VideoEvent> {
     return ApiService.patch(`/tenant/${tid()}/video/event/${id}`, body);
   },
-  eventToIncident(id: string, body: Record<string, unknown>): Promise<{ id?: string; incidentId?: string }> {
+  eventToIncident(
+    id: string,
+    body: Record<string, unknown>,
+  ): Promise<{ id?: string; incidentId?: string }> {
     return ApiService.post(`/tenant/${tid()}/video/event/${id}/incident`, body);
   },
 
   // --- Clips ---
   clips(params?: { cameraId?: string }): Promise<Clip[]> {
-    return ApiService.get(`/tenant/${tid()}/video/clips${qstr(params)}`).then((r: Clip[] | { rows?: Clip[] }) => (Array.isArray(r) ? r : r?.rows ?? []));
+    return ApiService.get(`/tenant/${tid()}/video/clips${qstr(params)}`).then(
+      (r: Clip[] | { rows?: Clip[] }) =>
+        Array.isArray(r) ? r : (r?.rows ?? []),
+    );
   },
-  createClip(body: { videoCameraId: string; startAt: string; endAt: string; label?: string }): Promise<Clip> {
+  createClip(body: {
+    videoCameraId: string;
+    startAt: string;
+    endAt: string;
+    label?: string;
+  }): Promise<Clip> {
     return ApiService.post(`/tenant/${tid()}/video/clip`, body);
   },
   deleteClip(id: string): Promise<void> {
@@ -257,12 +317,19 @@ export const videoService = {
   shareClip(id: string): Promise<ShareResult> {
     return ApiService.post(`/tenant/${tid()}/video/clip/${id}/share`);
   },
-  clipToIncident(id: string, body: Record<string, unknown>): Promise<{ id?: string; incidentId?: string }> {
+  clipToIncident(
+    id: string,
+    body: Record<string, unknown>,
+  ): Promise<{ id?: string; incidentId?: string }> {
     return ApiService.post(`/tenant/${tid()}/video/clip/${id}/incident`, body);
   },
 
   // --- Dispatch ---
-  dispatch(body: { cameraId?: string; eventId?: string; note?: string }): Promise<any> {
+  dispatch(body: {
+    cameraId?: string;
+    eventId?: string;
+    note?: string;
+  }): Promise<any> {
     return ApiService.post(`/tenant/${tid()}/video/dispatch`, body);
   },
 };

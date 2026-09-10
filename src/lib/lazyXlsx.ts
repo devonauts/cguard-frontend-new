@@ -14,22 +14,26 @@
  *     const XLSX = await loadXlsx();
  *     const ws = XLSX.utils.json_to_sheet(filas);
  */
-let cached: typeof import('xlsx') | null = null;
-let pending: Promise<typeof import('xlsx')> | null = null;
+let cached: typeof import("xlsx") | null = null;
+let pending: Promise<typeof import("xlsx")> | null = null;
 
-export async function loadXlsx(): Promise<typeof import('xlsx')> {
+export async function loadXlsx(): Promise<typeof import("xlsx")> {
   if (cached) return cached;
   // Se comparte la promesa en vuelo: dos clics seguidos en Exportar no deben
   // lanzar dos descargas del mismo módulo.
   if (!pending) {
-    pending = import('xlsx').then((mod) => {
-      cached = mod;
-      pending = null;
-      return mod;
-    }).catch((e) => {
-      pending = null;
-      throw e;
-    });
+    pending = import("xlsx")
+      .then((mod) => {
+        cached = mod;
+        pending = null;
+
+        return mod;
+      })
+      .catch((e) => {
+        pending = null;
+        throw e;
+      });
   }
+
   return pending;
 }

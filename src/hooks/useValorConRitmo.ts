@@ -46,6 +46,7 @@ export function useValorConRitmo<T>(valor: T, periodoMs = 500): T {
     if (desdeLaUltima >= periodoMs) {
       ultimaRef.current = ahora;
       setLento(valor);
+
       return;
     }
     // Ya hay una publicación en cola: cuando le toque se llevará el valor más
@@ -60,9 +61,12 @@ export function useValorConRitmo<T>(valor: T, periodoMs = 500): T {
 
   // El temporizador pendiente se cancela al desmontar; si no, publicaría estado
   // sobre un componente que ya no está.
-  useEffect(() => () => {
-    if (temporizadorRef.current) clearTimeout(temporizadorRef.current);
-  }, []);
+  useEffect(
+    () => () => {
+      if (temporizadorRef.current) clearTimeout(temporizadorRef.current);
+    },
+    [],
+  );
 
   return lento;
 }

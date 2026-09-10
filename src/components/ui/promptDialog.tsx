@@ -20,16 +20,25 @@ export interface PromptOptions {
   cancelText?: string;
 }
 
-interface State extends PromptOptions { id: number; resolve: (v: string | null) => void }
+interface State extends PromptOptions {
+  id: number;
+  resolve: (v: string | null) => void;
+}
 
 let listeners: Array<(s: State | null) => void> = [];
 let current: State | null = null;
 let seq = 0;
 const emit = () => listeners.forEach((l) => l(current));
 
-export function promptDialog(opts: PromptOptions | string): Promise<string | null> {
+export function promptDialog(
+  opts: PromptOptions | string,
+): Promise<string | null> {
   const o: PromptOptions = typeof opts === "string" ? { title: opts } : opts;
-  return new Promise((resolve) => { current = { id: ++seq, ...o, resolve }; emit(); });
+
+  return new Promise((resolve) => {
+    current = { id: ++seq, ...o, resolve };
+    emit();
+  });
 }
 
 export function PromptHost() {
@@ -38,22 +47,38 @@ export function PromptHost() {
   const [val, setVal] = useState("");
 
   useEffect(() => {
-    const l = (s: State | null) => { setState(s); setVal(s?.defaultValue || ""); };
+    const l = (s: State | null) => {
+      setState(s);
+      setVal(s?.defaultValue || "");
+    };
+
     listeners.push(l);
-    return () => { listeners = listeners.filter((x) => x !== l); };
+
+    return () => {
+      listeners = listeners.filter((x) => x !== l);
+    };
   }, []);
 
-  const close = (v: string | null) => { if (current) current.resolve(v); current = null; emit(); };
+  const close = (v: string | null) => {
+    if (current) current.resolve(v);
+    current = null;
+    emit();
+  };
 
   useEffect(() => {
     if (!state) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") close(null);
-      else if (e.key === "Enter" && (e.target as HTMLElement)?.tagName !== "TEXTAREA") close(val);
+      else if (
+        e.key === "Enter" &&
+        (e.target as HTMLElement)?.tagName !== "TEXTAREA"
+      )
+        close(val);
     };
+
     window.addEventListener("keydown", onKey);
+
     return () => window.removeEventListener("keydown", onKey);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, val]);
 
   if (!state) return null;
@@ -64,8 +89,9 @@ export function PromptHost() {
       onClick={() => close(null)}
     >
       <div
-        role="dialog" aria-modal="true"
+        aria-modal="true"
         className="glass-raised max-h-[90dvh] w-full max-w-sm overflow-y-auto p-5 animate-in zoom-in-95 duration-150 motion-reduce:animate-none!"
+        role="dialog"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex gap-3">
@@ -73,29 +99,40 @@ export function PromptHost() {
             <MessageSquareText size={20} />
           </div>
           <div className="min-w-0 flex-1 pt-0.5">
-            <h3 className="text-base font-semibold tracking-[-0.01em] text-[color:var(--ink)]">{state.title || t('kit.dialog.promptTitle', { defaultValue: 'Escribe un valor' })}</h3>
-            {state.message && <p className="mt-1 whitespace-pre-line text-sm text-[color:var(--ink-soft)]">{state.message}</p>}
+            <h3 className="text-base font-semibold tracking-[-0.01em] text-[color:var(--ink)]">
+              {state.title ||
+                t("kit.dialog.promptTitle", {
+                  defaultValue: "Escribe un valor",
+                })}
+            </h3>
+            {state.message && (
+              <p className="mt-1 whitespace-pre-line text-sm text-[color:var(--ink-soft)]">
+                {state.message}
+              </p>
+            )}
           </div>
         </div>
         <input
           autoFocus
+          className="cg-input mt-4 w-full rounded-[var(--r-md)] px-3 py-2 text-sm"
+          placeholder={state.placeholder}
           value={val}
           onChange={(e) => setVal(e.target.value)}
-          placeholder={state.placeholder}
-          className="cg-input mt-4 w-full rounded-[var(--r-md)] px-3 py-2 text-sm"
         />
         <div className="mt-4 flex justify-end gap-2">
           <button
-            onClick={() => close(null)}
             className="cg-btn-glass cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 motion-reduce:transition-none"
+            onClick={() => close(null)}
           >
-            {state.cancelText || t('kit.dialog.cancel', { defaultValue: 'Cancelar' })}
+            {state.cancelText ||
+              t("kit.dialog.cancel", { defaultValue: "Cancelar" })}
           </button>
           <button
-            onClick={() => close(val)}
             className="cg-btn-brand cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 active:scale-[0.97] motion-reduce:transition-none"
+            onClick={() => close(val)}
           >
-            {state.confirmText || t('kit.dialog.accept', { defaultValue: 'Aceptar' })}
+            {state.confirmText ||
+              t("kit.dialog.accept", { defaultValue: "Aceptar" })}
           </button>
         </div>
       </div>

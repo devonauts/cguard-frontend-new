@@ -1,10 +1,16 @@
 import { Siren } from "lucide-react";
-import i18n from "@/i18n";
-import { useTranslation } from 'react-i18next';
-import DataReport, { type ReportColumn } from "./DataReport";
-import { formatDateTime, rangeBounds, REPORT_ROW_LIMIT, warnIfCapped } from "./reportFormat";
-import { alarmService, type AlarmCase } from "@/lib/api/alarmService";
+import { useTranslation } from "react-i18next";
 
+import DataReport, { type ReportColumn } from "./DataReport";
+import {
+  formatDateTime,
+  rangeBounds,
+  REPORT_ROW_LIMIT,
+  warnIfCapped,
+} from "./reportFormat";
+
+import i18n from "@/i18n";
+import { alarmService, type AlarmCase } from "@/lib/api/alarmService";
 
 // Clave i18n + texto en español. La traducción se hace al PINTAR (dentro de
 // `value`, ya en ejecución); poner t() en la constante congelaría el idioma de
@@ -12,7 +18,10 @@ import { alarmService, type AlarmCase } from "@/lib/api/alarmService";
 const ORIGIN: Record<string, [key: string, es: string]> = {
   alarm_panel: ["reports.panicLog.origin.alarmPanel", "Panel de alarma"],
   client_app: ["reports.panicLog.origin.clientApp", "App cliente (SOS)"],
-  worker_app: ["reports.panicLog.origin.workerApp", "Botón de pánico (vigilante)"],
+  worker_app: [
+    "reports.panicLog.origin.workerApp",
+    "Botón de pánico (vigilante)",
+  ],
   manual: ["reports.panicLog.origin.manual", "Manual"],
 };
 
@@ -36,56 +45,70 @@ const PRIORITY: Record<number, [key: string, es: string]> = {
 };
 
 const columns: ReportColumn<AlarmCase>[] = [
-  { key: "created", label: "Fecha", labelKey: "reports.col.panicButtonLog.created", value: (r) => formatDateTime(r.createdAt) },
-  { key: "title", label: "Título", labelKey: "reports.col.panicButtonLog.title", value: (r) => r.title || "Alerta de pánico" },
+  {
+    key: "created",
+    label: "Fecha",
+    labelKey: "reports.col.panicButtonLog.created",
+    value: (r) => formatDateTime(r.createdAt),
+  },
+  {
+    key: "title",
+    label: "Título",
+    labelKey: "reports.col.panicButtonLog.title",
+    value: (r) => r.title || "Alerta de pánico",
+  },
   {
     key: "origin",
-    label: "Origen", labelKey: "reports.col.panicButtonLog.origin",
+    label: "Origen",
+    labelKey: "reports.col.panicButtonLog.origin",
     value: (r) => {
       const o = ORIGIN[String(r.source || "")];
+
       return o ? i18n.t(o[0], o[1]) : r.source || "—";
     },
   },
   {
     key: "priority",
-    label: "Prioridad", labelKey: "reports.col.panicButtonLog.priority",
+    label: "Prioridad",
+    labelKey: "reports.col.panicButtonLog.priority",
     value: (r) => {
       if (r.priority == null) return "—";
       const p = PRIORITY[r.priority];
+
       return p ? i18n.t(p[0], p[1]) : String(r.priority);
     },
     align: "center",
   },
   {
     key: "status",
-    label: "Estado", labelKey: "reports.col.panicButtonLog.status",
+    label: "Estado",
+    labelKey: "reports.col.panicButtonLog.status",
     value: (r) => {
       const st = STATUS[String(r.status || "")];
+
       return st ? i18n.t(st[0], st[1]) : r.status || "—";
     },
   },
-  { key: "ack", label: "Reconocido", labelKey: "reports.col.panicButtonLog.ack", value: (r) => formatDateTime(r.ackAt) },
-  { key: "resolved", label: "Resuelto", labelKey: "reports.col.panicButtonLog.resolved", value: (r) => formatDateTime(r.resolvedAt) },
+  {
+    key: "ack",
+    label: "Reconocido",
+    labelKey: "reports.col.panicButtonLog.ack",
+    value: (r) => formatDateTime(r.ackAt),
+  },
+  {
+    key: "resolved",
+    label: "Resuelto",
+    labelKey: "reports.col.panicButtonLog.resolved",
+    value: (r) => formatDateTime(r.resolvedAt),
+  },
 ];
 
 export default function PanicButtonLog() {
   const { t } = useTranslation();
+
   return (
     <DataReport<AlarmCase>
-      title={t("ui.PanicButtonLog.registrosDelBotonDePanico", "Registros del Botón de Pánico")}
       description={t('ui.PanicButtonLog.alertasDePanicoYSos')}
-      icon={Siren}
-      // Un pánico va en `--bad` SIEMPRE, elija la empresa el acento que elija.
-      tone="bad"
-      columns={columns}
-      // Crítica/Alta sin cerrar → regla roja en el canto de la fila. Una vez
-      // resuelto deja de ser una emergencia y baja a aviso.
-      rowTone={(r) => {
-        const grave = (r.priority ?? 3) <= 2;
-        if (!grave) return undefined;
-        const cerrado = r.status === "resolved" || r.status === "closed";
-        return cerrado ? "warn" : "bad";
-      }}
       load={async ({ from, to }) => {
         // Rango y categoría van EN LA CONSULTA. Antes se pedían los casos más
         // recientes y se recortaba aquí: un rango antiguo se exportaba vacío.
@@ -101,6 +124,19 @@ export default function PanicButtonLog() {
         // categorías y convertiría este informe en la cola de alarmas entera.
         return warnIfCapped((cases || []).filter((c) => c.category === "panic"));
       }}
+      rowTone={(r) => {
+        const grave = (r.priority ?? 3) <= 2;
+        if (!grave) return undefined;
+        const cerrado = r.status === "resolved" || r.status === "closed";
+        return cerrado ? "warn" : "bad";
+      }}
+      columns={columns}
+      // Crítica/Alta sin cerrar → regla roja en el canto de la fila. Una vez
+      // resuelto deja de ser una emergencia y baja a aviso.
+      title={t("ui.PanicButtonLog.registrosDelBotonDePanico", "Registros del Botón de Pánico")}
+      icon={Siren}
+      // Un pánico va en `--bad` SIEMPRE, elija la empresa el acento que elija.
+      tone="bad"
     />
   );
 }

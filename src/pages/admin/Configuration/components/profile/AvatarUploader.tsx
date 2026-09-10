@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { Camera, UserRound } from "lucide-react";
 
 type Props = {
@@ -26,19 +26,10 @@ export default function AvatarUploader({ src, onChange, size = 128 }: Props) {
     <div className="flex flex-col items-center gap-2">
       <div className="relative" style={{ width: size, height: size }}>
         <button
-          type="button"
-          onClick={() => inputRef.current?.click()}
-          onDragOver={(e) => {
-            e.preventDefault();
-            setDragging(true);
-          }}
-          onDragLeave={() => setDragging(false)}
-          onDrop={(e) => {
-            e.preventDefault();
-            setDragging(false);
-            take(e.dataTransfer.files?.[0]);
-          }}
-          aria-label={t("ui.AvatarUploader.cambiarFotoDePerfil", "Cambiar foto de perfil")}
+          aria-label={t(
+            "ui.AvatarUploader.cambiarFotoDePerfil",
+            "Cambiar foto de perfil",
+          )}
           className="glass-sunken cg-focus group grid h-full w-full place-items-center overflow-hidden transition-colors"
           style={{
             borderStyle: "dashed",
@@ -46,16 +37,36 @@ export default function AvatarUploader({ src, onChange, size = 128 }: Props) {
             background: dragging ? "var(--brand-wash)" : undefined,
             borderRadius: "var(--r-lg)",
           }}
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          onDragLeave={() => setDragging(false)}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragging(true);
+          }}
+          onDrop={(e) => {
+            e.preventDefault();
+            setDragging(false);
+            take(e.dataTransfer.files?.[0]);
+          }}
         >
           {src ? (
-            <img src={src} alt="Foto de perfil" className="h-full w-full object-cover" />
+            <img
+              alt="Foto de perfil"
+              className="h-full w-full object-cover"
+              src={src}
+            />
           ) : (
             <span
               className="flex flex-col items-center gap-1.5 px-2 text-center [&_svg]:size-9"
-              style={{ color: dragging ? "var(--brand-text)" : "var(--ink-faint)" }}
+              style={{
+                color: dragging ? "var(--brand-text)" : "var(--ink-faint)",
+              }}
             >
               <UserRound />
-              <span className="text-[11px] font-medium leading-tight">{t("ui.AvatarUploader.anadirFoto", "Añadir foto")}</span>
+              <span className="text-[11px] font-medium leading-tight">
+                {t("ui.AvatarUploader.anadirFoto", "Añadir foto")}
+              </span>
             </span>
           )}
         </button>
@@ -75,9 +86,9 @@ export default function AvatarUploader({ src, onChange, size = 128 }: Props) {
 
         <input
           ref={inputRef}
-          type="file"
           accept="image/*"
           className="hidden"
+          type="file"
           onChange={(e) => {
             take(e.target.files?.[0]);
             e.target.value = "";
@@ -85,7 +96,10 @@ export default function AvatarUploader({ src, onChange, size = 128 }: Props) {
         />
       </div>
       <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
-        {t("ui.AvatarUploader.hazClicOArrastraUnaImagen", "Haz clic o arrastra una imagen")}
+        {t(
+          "ui.AvatarUploader.hazClicOArrastraUnaImagen",
+          "Haz clic o arrastra una imagen",
+        )}
       </p>
     </div>
   );

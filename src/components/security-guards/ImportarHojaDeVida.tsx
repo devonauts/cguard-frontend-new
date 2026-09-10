@@ -2,9 +2,12 @@ import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FileUp, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import {
-  hojaDeVidaService, aCamposDelFormulario, type CamposFormulario,
+  hojaDeVidaService,
+  aCamposDelFormulario,
+  type CamposFormulario,
 } from "@/lib/api/hojaDeVidaService";
 
 /**
@@ -39,6 +42,7 @@ export function ImportarHojaDeVida({
 
   const alElegir = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const archivo = e.target.files?.[0];
+
     // El valor se limpia SIEMPRE: sin esto, elegir el mismo archivo dos veces
     // seguidas no dispara `change` y el botón parece muerto.
     e.target.value = "";
@@ -47,6 +51,7 @@ export function ImportarHojaDeVida({
     setLeyendo(true);
     try {
       const r = await hojaDeVidaService.leer(archivo);
+
       onDatos(aCamposDelFormulario(r.datos));
       onArchivo?.(archivo);
 
@@ -68,11 +73,16 @@ export function ImportarHojaDeVida({
         });
       } else {
         toast.success(`Leímos ${leidos} datos de la hoja de vida`, {
-          description: t("ui.ImportarHojaDeVida.revisalosAntesDeGuardar", "Revísalos antes de guardar."),
+          description: t(
+            "ui.ImportarHojaDeVida.revisalosAntesDeGuardar",
+            "Revísalos antes de guardar.",
+          ),
         });
       }
     } catch (err: any) {
-      toast.error(err?.message || t("vigia.cvError", "No pudimos leer la hoja de vida."));
+      toast.error(
+        err?.message || t("vigia.cvError", "No pudimos leer la hoja de vida."),
+      );
     } finally {
       setLeyendo(false);
     }
@@ -90,20 +100,24 @@ export function ImportarHojaDeVida({
         onChange={alElegir}
       />
       <Button
+        className="gap-2"
+        disabled={leyendo}
         type="button"
         variant="outline"
-        disabled={leyendo}
         onClick={() => input.current?.click()}
-        className="gap-2"
       >
-        {leyendo ? <Loader2 className="size-4 animate-spin" /> : <FileUp className="size-4" />}
+        {leyendo ? (
+          <Loader2 className="size-4 animate-spin" />
+        ) : (
+          <FileUp className="size-4" />
+        )}
         {leyendo ? "Leyendo la hoja de vida…" : "Importar hoja de vida"}
         {!leyendo && <Sparkles className="size-3.5 opacity-60" />}
       </Button>
       <p className="mt-1.5 text-xs text-muted-foreground">
         {leyendo
-          // Un escaneo tarda de verdad. Decir cuánto evita que se pulse otra vez.
-          ? "Puede tardar hasta un minuto si es un escaneo."
+          ? // Un escaneo tarda de verdad. Decir cuánto evita que se pulse otra vez.
+            "Puede tardar hasta un minuto si es un escaneo."
           : "PDF o foto. Rellena el formulario; nada se guarda hasta que tú lo guardes."}
       </p>
     </div>

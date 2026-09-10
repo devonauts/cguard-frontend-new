@@ -15,44 +15,81 @@
  */
 import { ListChecks, Building2, IdCard, Network } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { EmptyState, Section, Stagger } from "@/components/kit";
+
 import SettingsPageShell from "../components/SettingsPageShell";
 import { SettingsLinkCard, SettingsLinkGrid } from "../components/SettingsForm";
 
+import { EmptyState, Section, Stagger } from "@/components/kit";
+
 export default function ProfileFieldsPage() {
   const { t } = useTranslation();
+
   return (
     <SettingsPageShell
       icon={<ListChecks />}
-      title={t('settings.profileFields.pageTitle', { defaultValue: "Campos de Perfil" })}
-      subtitle={t('settings.profileFields.pageSubtitle', { defaultValue: "Datos propios de tu empresa en las fichas de clientes, puestos, vigilantes y personal." })}
+      subtitle={t("settings.profileFields.pageSubtitle", {
+        defaultValue:
+          "Datos propios de tu empresa en las fichas de clientes, puestos, vigilantes y personal.",
+      })}
+      title={t("settings.profileFields.pageTitle", {
+        defaultValue: "Campos de Perfil",
+      })}
     >
       <Stagger className="space-y-6">
         <EmptyState
+          description={t("settings.profileFields.emptyDescription", {
+            defaultValue:
+              "Añadir campos propios a las fichas aún no se puede configurar: no habría dónde guardarlos. En cuanto la función exista, se administrará desde aquí.",
+          })}
           icon={<ListChecks />}
-          title={t('settings.profileFields.emptyTitle', { defaultValue: "Los campos personalizados todavía no están disponibles" })}
-          description={t('settings.profileFields.emptyDescription', { defaultValue: "Añadir campos propios a las fichas aún no se puede configurar: no habría dónde guardarlos. En cuanto la función exista, se administrará desde aquí." })}
+          title={t("settings.profileFields.emptyTitle", {
+            defaultValue:
+              "Los campos personalizados todavía no están disponibles",
+          })}
         />
 
-        <Section title={t('settings.profileFields.meanwhileTitle', { defaultValue: "Mientras tanto" })} icon={<IdCard />}>
+        <Section
+          icon={<IdCard />}
+          title={t("settings.profileFields.meanwhileTitle", {
+            defaultValue: "Mientras tanto",
+          })}
+        >
           <SettingsLinkGrid>
             <SettingsLinkCard
-              to="/setting/tipos-licencias"
+              description={t("settings.profileFields.licenseTypesDescription", {
+                defaultValue:
+                  "Licencias y certificaciones que se registran en la ficha de cada vigilante.",
+              })}
               icon={<IdCard className="h-4 w-4" />}
-              title={t('settings.profileFields.licenseTypesTitle', { defaultValue: "Tipos de Licencias" })}
-              description={t('settings.profileFields.licenseTypesDescription', { defaultValue: "Licencias y certificaciones que se registran en la ficha de cada vigilante." })}
+              title={t("settings.profileFields.licenseTypesTitle", {
+                defaultValue: "Tipos de Licencias",
+              })}
+              to="/setting/tipos-licencias"
             />
             <SettingsLinkCard
-              to="/setting/Departamentos"
+              description={t("settings.profileFields.departmentsDescription", {
+                defaultValue:
+                  "Clasifica al personal por área sin tocar la ficha.",
+              })}
               icon={<Network className="h-4 w-4" />}
-              title={t('settings.profileFields.departmentsTitle', { defaultValue: "Departamentos" })}
-              description={t('settings.profileFields.departmentsDescription', { defaultValue: "Clasifica al personal por área sin tocar la ficha." })}
+              title={t("settings.profileFields.departmentsTitle", {
+                defaultValue: "Departamentos",
+              })}
+              to="/setting/Departamentos"
             />
             <SettingsLinkCard
-              to="/setting/company-profile"
+              description={t(
+                "settings.profileFields.companyProfileDescription",
+                {
+                  defaultValue:
+                    "Los datos de la empresa que salen en informes y comunicaciones.",
+                },
+              )}
               icon={<Building2 className="h-4 w-4" />}
-              title={t('settings.profileFields.companyProfileTitle', { defaultValue: "Perfil de la Empresa" })}
-              description={t('settings.profileFields.companyProfileDescription', { defaultValue: "Los datos de la empresa que salen en informes y comunicaciones." })}
+              title={t("settings.profileFields.companyProfileTitle", {
+                defaultValue: "Perfil de la Empresa",
+              })}
+              to="/setting/company-profile"
             />
           </SettingsLinkGrid>
         </Section>

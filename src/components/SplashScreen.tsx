@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import BrandLockup from "./BrandLockup";
 
 export default function SplashScreen() {
@@ -7,6 +8,7 @@ export default function SplashScreen() {
   useEffect(() => {
     // Oculta el splash después de 2.5 segundos
     const timer = setTimeout(() => setFadeOut(true), 3000);
+
     return () => clearTimeout(timer);
   }, []);
 

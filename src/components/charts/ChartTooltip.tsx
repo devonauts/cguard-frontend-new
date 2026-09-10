@@ -1,5 +1,6 @@
-import type { ReactNode } from 'react';
-import { cn } from '@/lib/utils';
+import type { ReactNode } from "react";
+
+import { cn } from "@/lib/utils";
 
 /**
  * Globo de datos en cristal.
@@ -11,7 +12,11 @@ import { cn } from '@/lib/utils';
  * parpadea.
  */
 export default function ChartTooltip({
-  x, y, title, children, className,
+  x,
+  y,
+  title,
+  children,
+  className,
 }: {
   /** Coordenadas en píxeles relativas al contenedor del gráfico. */
   x: number;
@@ -22,25 +27,36 @@ export default function ChartTooltip({
 }) {
   return (
     <div
-      role="tooltip"
       className={cn(
-        'glass-raised pointer-events-none absolute z-20 -translate-x-1/2 -translate-y-full',
-        'whitespace-nowrap px-2.5 py-1.5 text-xs leading-tight text-foreground',
+        "glass-raised pointer-events-none absolute z-20 -translate-x-1/2 -translate-y-full",
+        "whitespace-nowrap px-2.5 py-1.5 text-xs leading-tight text-foreground",
         className,
       )}
-      style={{ left: x, top: y - 10, borderRadius: 'var(--r-md)' }}
+      role="tooltip"
+      style={{ left: x, top: y - 10, borderRadius: "var(--r-md)" }}
     >
       {title != null && <div className="font-semibold">{title}</div>}
-      {children != null && <div className="text-muted-foreground">{children}</div>}
+      {children != null && (
+        <div className="text-muted-foreground">{children}</div>
+      )}
     </div>
   );
 }
 
 /** Cuadradito de color + etiqueta, para el globo y para las leyendas. */
-export function ChartSwatch({ color, children }: { color: string; children?: ReactNode }) {
+export function ChartSwatch({
+  color,
+  children,
+}: {
+  color: string;
+  children?: ReactNode;
+}) {
   return (
     <span className="inline-flex items-center gap-1.5">
-      <span className="h-2 w-2 shrink-0 rounded-[3px]" style={{ background: color }} />
+      <span
+        className="h-2 w-2 shrink-0 rounded-[3px]"
+        style={{ background: color }}
+      />
       {children}
     </span>
   );

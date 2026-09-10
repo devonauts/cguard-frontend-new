@@ -43,7 +43,11 @@ export const queryClient = new QueryClient({
  *   async list(f, p) { return cachedFetch(["clients", tid(), f, p], () => rawList(f, p)); }
  *   async create(x)  { const r = await rawCreate(x); invalidateEntity("clients"); return r; }
  */
-export function cachedFetch<T>(queryKey: unknown[], queryFn: () => Promise<T>, staleTime = 20_000): Promise<T> {
+export function cachedFetch<T>(
+  queryKey: unknown[],
+  queryFn: () => Promise<T>,
+  staleTime = 20_000,
+): Promise<T> {
   // retry:false so a wrapped read behaves exactly like the raw call on error
   // (the axios/fetch layer already handles transient retries + 401/402 redirects).
   return queryClient.fetchQuery({ queryKey, queryFn, staleTime, retry: false });
@@ -66,14 +70,22 @@ export function invalidateEntity(entity: string): void {
 const URL_ENTITY_MAP: Array<[RegExp, string[]]> = [
   // Anything that reshapes stations, turnos, or coverage → stations cache
   // (the ["stations", …] keys back post-site AND station lists via stationService).
-  [/\/(station|stations|post-site|business-info|auto-positions|positions|guard-assignment|guard-assignments|shift|shifts|shift-template|shift-exchange|schedule-overrides?|rotation-styles?|scheduler)(\/|\?|$)/, ['stations']],
-  [/\/client-account(s)?(\/|\?|$)/, ['clients']],
-  [/\/category(\/|\?|$)/, ['categories']],
+  [
+    /\/(station|stations|post-site|business-info|auto-positions|positions|guard-assignment|guard-assignments|shift|shifts|shift-template|shift-exchange|schedule-overrides?|rotation-styles?|scheduler)(\/|\?|$)/,
+    ["stations"],
+  ],
+  [/\/client-account(s)?(\/|\?|$)/, ["clients"]],
+  [/\/category(\/|\?|$)/, ["categories"]],
 ];
-const MUTATING = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
-export function autoInvalidateForMutation(method?: string | null, url?: string | null): void {
-  if (!MUTATING.has(String(method || '').toUpperCase())) return;
-  const u = String(url || '');
+const MUTATING = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+
+export function autoInvalidateForMutation(
+  method?: string | null,
+  url?: string | null,
+): void {
+  if (!MUTATING.has(String(method || "").toUpperCase())) return;
+  const u = String(url || "");
+
   for (const [re, entities] of URL_ENTITY_MAP) {
     if (re.test(u)) {
       for (const e of entities) invalidateEntity(e);

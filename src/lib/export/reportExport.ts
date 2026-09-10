@@ -40,16 +40,16 @@
  * las mismas tres extensiones a propósito.
  * ════════════════════════════════════════════════════════════════════════════
  */
-import { loadXlsx } from '../lazyXlsx';
-import { loadPdf } from '../lazyPdf';
+import { loadXlsx } from "../lazyXlsx";
+import { loadPdf } from "../lazyPdf";
 
-export type ExportFormat = 'csv' | 'excel' | 'pdf';
+export type ExportFormat = "csv" | "excel" | "pdf";
 
 /** Una columna, tal como se exporta: rótulo ya traducido y valor ya formateado. */
 export interface ExportColumn<T> {
   label: string;
   value: (row: T) => string | number | null | undefined;
-  align?: 'left' | 'right' | 'center';
+  align?: "left" | "right" | "center";
 }
 
 export interface ExportMeta {
@@ -65,26 +65,29 @@ export interface ExportMeta {
 
 /* ── Utilidades comunes ──────────────────────────────────────────────────── */
 
-const texto = (v: unknown): string => (v == null ? '' : String(v));
+const texto = (v: unknown): string => (v == null ? "" : String(v));
 
 /** Nombre de archivo seguro: sin acentos, sin barras, sin espacios. */
 export function fileSafe(s: string): string {
-  return (s || 'informe')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 80) || 'informe';
+  return (
+    (s || "informe")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 80) || "informe"
+  );
 }
 
 /** Dispara la descarga de un blob. La única copia de este truco en el CRM. */
 export function downloadBlob(filename: string, blob: Blob): void {
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  const a = document.createElement("a");
+
   a.href = url;
   a.download = filename;
-  a.style.display = 'none';
+  a.style.display = "none";
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -103,20 +106,27 @@ export function downloadBlob(filename: string, blob: Blob): void {
  * color de reserva, en vez de pintar un negro accidental.
  */
 export function cssColorToRgb(css: string): [number, number, number] | null {
-  const v = (css || '').trim();
+  const v = (css || "").trim();
+
   if (!v) return null;
   try {
-    const canvas = document.createElement('canvas');
+    const canvas = document.createElement("canvas");
+
     canvas.width = canvas.height = 1;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
+
     if (!ctx) return null;
-    const centinela = '#010203';
+    const centinela = "#010203";
+
     ctx.fillStyle = centinela;
     ctx.fillStyle = v;
-    if (ctx.fillStyle === centinela && v.toLowerCase() !== centinela) return null;
+    if (ctx.fillStyle === centinela && v.toLowerCase() !== centinela)
+      return null;
     ctx.fillRect(0, 0, 1, 1);
     const d = ctx.getImageData(0, 0, 1, 1).data;
+
     if (!d[3]) return null;
+
     return [d[0], d[1], d[2]];
   } catch {
     return null;
@@ -124,14 +134,19 @@ export function cssColorToRgb(css: string): [number, number, number] | null {
 }
 
 /** El acento vivo de la empresa, en RGB, para la cabecera del PDF. */
-function colorDeMarca(): { brand: [number, number, number]; ink: [number, number, number] } {
+function colorDeMarca(): {
+  brand: [number, number, number];
+  ink: [number, number, number];
+} {
   const fallbackBrand: [number, number, number] = [30, 41, 59];
   const fallbackInk: [number, number, number] = [255, 255, 255];
+
   try {
     const css = getComputedStyle(document.documentElement);
+
     return {
-      brand: cssColorToRgb(css.getPropertyValue('--brand')) || fallbackBrand,
-      ink: cssColorToRgb(css.getPropertyValue('--brand-ink')) || fallbackInk,
+      brand: cssColorToRgb(css.getPropertyValue("--brand")) || fallbackBrand,
+      ink: cssColorToRgb(css.getPropertyValue("--brand-ink")) || fallbackInk,
     };
   } catch {
     return { brand: fallbackBrand, ink: fallbackInk };
@@ -143,16 +158,24 @@ function colorDeMarca(): { brand: [number, number, number]; ink: [number, number
 /** Una celda CSV según RFC-4180: se entrecomilla sólo si hace falta. */
 export function csvCell(v: unknown): string {
   const s = texto(v);
+
   return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
-export function buildCsv(headers: string[], body: (string | number | null | undefined)[][]): Blob {
-  const lineas = [headers.map(csvCell).join(',')];
-  for (const fila of body) lineas.push(fila.map(csvCell).join(','));
+export function buildCsv(
+  headers: string[],
+  body: (string | number | null | undefined)[][],
+): Blob {
+  const lineas = [headers.map(csvCell).join(",")];
+
+  for (const fila of body) lineas.push(fila.map(csvCell).join(","));
+
   // BOM UTF-8: sin él, Excel abre el archivo en Latin-1 y destroza cada acento
   // y cada ñ. Es la diferencia entre un archivo que se usa y uno que devuelven
   // diciendo «está mal».
-  return new Blob(['﻿' + lineas.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+  return new Blob(["﻿" + lineas.join("\r\n")], {
+    type: "text/csv;charset=utf-8;",
+  });
 }
 
 /* ── Excel ───────────────────────────────────────────────────────────────── */
@@ -176,23 +199,28 @@ async function buildXlsxBlob(
   const XLSX = await loadXlsx();
 
   const filas: (string | number | null)[][] = [];
+
   filas.push([meta.title]);
   if (meta.subtitle) filas.push([meta.subtitle]);
   filas.push([]);
   const filaCabecera = filas.length; // índice 0-based de la cabecera
+
   filas.push(headers);
   for (const f of body) {
     filas.push(
       f.map((c) => {
-        if (c == null || c === '') return '';
-        if (typeof c === 'number') return c;
+        if (c == null || c === "") return "";
+        if (typeof c === "number") return c;
         // Un texto que es exactamente un número entra como número: si no, la
         // columna «Horas» no se puede sumar en la propia hoja.
         const s = String(c).trim();
+
         if (/^-?\d+(\.\d+)?$/.test(s)) {
           const n = Number(s);
+
           if (Number.isFinite(n)) return n;
         }
+
         return s;
       }),
     );
@@ -202,20 +230,25 @@ async function buildXlsxBlob(
 
   // Ancho por columna: el del contenido más largo, con tope para que una
   // descripción de 400 caracteres no empuje al resto fuera de la pantalla.
-  ws['!cols'] = headers.map((h, i) => {
+  ws["!cols"] = headers.map((h, i) => {
     let max = String(h).length;
+
     for (const f of body) {
       const len = texto(f[i]).length;
+
       if (len > max) max = len;
     }
+
     return { wch: Math.min(60, Math.max(10, max + 2)) };
   });
 
   // El título ocupa el ancho de la tabla en vez de desbordar la celda A1.
   if (headers.length > 1) {
-    ws['!merges'] = [
+    ws["!merges"] = [
       { s: { r: 0, c: 0 }, e: { r: 0, c: headers.length - 1 } },
-      ...(meta.subtitle ? [{ s: { r: 1, c: 0 }, e: { r: 1, c: headers.length - 1 } }] : []),
+      ...(meta.subtitle
+        ? [{ s: { r: 1, c: 0 }, e: { r: 1, c: headers.length - 1 } }]
+        : []),
     ];
   }
 
@@ -228,17 +261,23 @@ async function buildXlsxBlob(
   // no prometerlo. El Excel del SERVIDOR sí lo lleva, porque exceljs sí puede.
   if (body.length) {
     const primera = XLSX.utils.encode_cell({ r: filaCabecera, c: 0 });
-    const ultima = XLSX.utils.encode_cell({ r: filaCabecera + body.length, c: headers.length - 1 });
-    ws['!autofilter'] = { ref: `${primera}:${ultima}` };
+    const ultima = XLSX.utils.encode_cell({
+      r: filaCabecera + body.length,
+      c: headers.length - 1,
+    });
+
+    ws["!autofilter"] = { ref: `${primera}:${ultima}` };
   }
 
   const wb = XLSX.utils.book_new();
+
   // El nombre de la hoja tiene tope duro de 31 caracteres en el formato; pasarse
   // genera un archivo que Excel se niega a abrir.
-  XLSX.utils.book_append_sheet(wb, ws, meta.title.slice(0, 31) || 'Informe');
-  const out = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+  XLSX.utils.book_append_sheet(wb, ws, meta.title.slice(0, 31) || "Informe");
+  const out = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+
   return new Blob([out], {
-    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   });
 }
 
@@ -255,21 +294,25 @@ async function buildPdfBlob(
   headers: string[],
   body: (string | number | null | undefined)[][],
   meta: ExportMeta,
-  aligns: ('left' | 'right' | 'center')[],
+  aligns: ("left" | "right" | "center")[],
 ): Promise<Blob> {
   const { jsPDF, autoTable } = await loadPdf();
   const apaisado = headers.length > 6;
-  const doc = new jsPDF({ orientation: apaisado ? 'landscape' : 'portrait', unit: 'pt', format: 'a4' });
+  const doc = new jsPDF({
+    orientation: apaisado ? "landscape" : "portrait",
+    unit: "pt",
+    format: "a4",
+  });
   const { brand, ink } = colorDeMarca();
   const anchoPagina = doc.internal.pageSize.getWidth();
   const altoPagina = doc.internal.pageSize.getHeight();
 
-  doc.setFont('helvetica', 'bold');
+  doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
   doc.setTextColor(20, 20, 20);
   doc.text(meta.title, 32, 40);
   if (meta.subtitle) {
-    doc.setFont('helvetica', 'normal');
+    doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
     doc.setTextColor(110, 110, 110);
     doc.text(meta.subtitle, 32, 56);
@@ -280,32 +323,50 @@ async function buildPdfBlob(
     body: body.map((f) => f.map(texto)),
     startY: meta.subtitle ? 70 : 54,
     margin: { left: 32, right: 32, bottom: 34 },
-    styles: { font: 'helvetica', fontSize: 7.5, cellPadding: 4, overflow: 'linebreak', valign: 'middle' },
+    styles: {
+      font: "helvetica",
+      fontSize: 7.5,
+      cellPadding: 4,
+      overflow: "linebreak",
+      valign: "middle",
+    },
     // La cabecera lleva el acento que la empresa haya elegido: si cambió el
     // color del CRM, el PDF cambia con él.
-    headStyles: { fillColor: brand, textColor: ink, fontStyle: 'bold', fontSize: 7.5 },
+    headStyles: {
+      fillColor: brand,
+      textColor: ink,
+      fontStyle: "bold",
+      fontSize: 7.5,
+    },
     alternateRowStyles: { fillColor: [246, 246, 247] },
     columnStyles: Object.fromEntries(aligns.map((a, i) => [i, { halign: a }])),
     // `repeat` y no `firstPage`: sin esto, la página 2 es una lista de valores
     // sin nombre de columna y el informe deja de poder auditarse.
-    showHead: 'everyPage',
+    showHead: "everyPage",
     didDrawPage: () => {
       const pagina = doc.getNumberOfPages();
-      doc.setFont('helvetica', 'normal');
+
+      doc.setFont("helvetica", "normal");
       doc.setFontSize(7.5);
       doc.setTextColor(140, 140, 140);
-      doc.text(meta.footer || 'Generado por CGuardPro', 32, altoPagina - 16);
-      doc.text(String(pagina), anchoPagina - 32, altoPagina - 16, { align: 'right' });
+      doc.text(meta.footer || "Generado por CGuardPro", 32, altoPagina - 16);
+      doc.text(String(pagina), anchoPagina - 32, altoPagina - 16, {
+        align: "right",
+      });
     },
   });
 
   if (!body.length) {
     doc.setFontSize(10);
     doc.setTextColor(140, 140, 140);
-    doc.text('Sin datos en el rango seleccionado.', 32, (meta.subtitle ? 70 : 54) + 40);
+    doc.text(
+      "Sin datos en el rango seleccionado.",
+      32,
+      (meta.subtitle ? 70 : 54) + 40,
+    );
   }
 
-  return doc.output('blob');
+  return doc.output("blob");
 }
 
 /* ── La puerta de entrada ────────────────────────────────────────────────── */
@@ -319,16 +380,22 @@ export async function exportMatrix(
   headers: string[],
   body: (string | number | null | undefined)[][],
   meta: ExportMeta,
-  aligns?: ('left' | 'right' | 'center')[],
+  aligns?: ("left" | "right" | "center")[],
 ): Promise<void> {
   const base = fileSafe(meta.fileBase);
-  const cols = aligns && aligns.length === headers.length ? aligns : headers.map(() => 'left' as const);
-  if (format === 'csv') {
+  const cols =
+    aligns && aligns.length === headers.length
+      ? aligns
+      : headers.map(() => "left" as const);
+
+  if (format === "csv") {
     downloadBlob(`${base}.csv`, buildCsv(headers, body));
+
     return;
   }
-  if (format === 'excel') {
+  if (format === "excel") {
     downloadBlob(`${base}.xlsx`, await buildXlsxBlob(headers, body, meta));
+
     return;
   }
   downloadBlob(`${base}.pdf`, await buildPdfBlob(headers, body, meta, cols));
@@ -348,9 +415,14 @@ export async function exportColumns<T>(
 ): Promise<void> {
   const headers = columns.map((c) => c.label);
   const body = rows.map((r) => columns.map((c) => c.value(r)));
-  const aligns = columns.map((c) => c.align || 'left');
+  const aligns = columns.map((c) => c.align || "left");
+
   await exportMatrix(format, headers, body, meta, aligns);
 }
 
 /** Extensión que producirá cada formato — para mensajes y rótulos. */
-export const EXPORT_EXT: Record<ExportFormat, string> = { csv: 'csv', excel: 'xlsx', pdf: 'pdf' };
+export const EXPORT_EXT: Record<ExportFormat, string> = {
+  csv: "csv",
+  excel: "xlsx",
+  pdf: "pdf",
+};

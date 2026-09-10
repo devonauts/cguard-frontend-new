@@ -2,15 +2,39 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
-  AlertTriangle, LogIn, LogOut, UserCheck, Route, CalendarClock, CalendarDays,
-  CheckSquare, Megaphone, Siren, Activity as ActivityIcon, Search, CheckCheck,
-  RefreshCw, Inbox, Radio, Loader2,
+  AlertTriangle,
+  LogIn,
+  LogOut,
+  UserCheck,
+  Route,
+  CalendarClock,
+  CalendarDays,
+  CheckSquare,
+  Megaphone,
+  Siren,
+  Activity as ActivityIcon,
+  Search,
+  CheckCheck,
+  RefreshCw,
+  Inbox,
+  Radio,
+  Loader2,
 } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { PageContainer, PageHeader, StatusBadge, GlassPanel, IconTile, EmptyState, Toolbar, Segmented, SmartImage } from "@/components/kit";
+import {
+  PageContainer,
+  PageHeader,
+  StatusBadge,
+  GlassPanel,
+  IconTile,
+  EmptyState,
+  Toolbar,
+  Segmented,
+  SmartImage,
+} from "@/components/kit";
 import api from "@/lib/api";
 import { useFileUrl } from "@/lib/fileUrl";
 import { useNotificationStream } from "@/hooks/useNotificationStream";
@@ -25,7 +49,13 @@ import { targetForNotification } from "@/components/notifications/notificationTo
    notification templates, so we only translate the page chrome here.
    ───────────────────────────────────────────────────────────────────────── */
 
-type Category = "incident" | "checkin" | "visitor" | "patrol" | "shift" | "other";
+type Category =
+  | "incident"
+  | "checkin"
+  | "visitor"
+  | "patrol"
+  | "shift"
+  | "other";
 
 interface ActivityEvent {
   id: string;
@@ -51,23 +81,51 @@ interface ActivityEvent {
  */
 type Tone = "brand" | "neutral" | "ok" | "warn" | "bad" | "info";
 
-function visualFor(eventType: string): { Icon: typeof ActivityIcon; tone: Tone; cat: Category } {
+function visualFor(eventType: string): {
+  Icon: typeof ActivityIcon;
+  tone: Tone;
+  cat: Category;
+} {
   const t = (eventType || "").toLowerCase();
-  if (t.startsWith("incident")) return { Icon: AlertTriangle, tone: "bad", cat: "incident" };
-  if (t === "guard.late") return { Icon: AlertTriangle, tone: "warn", cat: "incident" };
-  if (t === "guard.checkin" || t === "supervisor.checkin") return { Icon: LogIn, tone: "ok", cat: "checkin" };
-  if (t === "guard.checkout" || t === "supervisor.checkout") return { Icon: LogOut, tone: "neutral", cat: "checkin" };
-  if (t.startsWith("visitor")) return { Icon: UserCheck, tone: "info", cat: "visitor" };
-  if (t.startsWith("patrol")) return { Icon: Route, tone: t.includes("missed") ? "warn" : "brand", cat: "patrol" };
-  if (t.startsWith("shift")) return { Icon: CalendarClock, tone: "info", cat: "shift" };
-  if (t.startsWith("timeoff")) return { Icon: CalendarDays, tone: "info", cat: "shift" };
-  if (t.startsWith("task")) return { Icon: CheckSquare, tone: "ok", cat: "other" };
-  if (t.startsWith("memo")) return { Icon: Megaphone, tone: "brand", cat: "other" };
-  if (t.startsWith("dispatch")) return { Icon: Siren, tone: "bad", cat: "other" };
+
+  if (t.startsWith("incident"))
+    return { Icon: AlertTriangle, tone: "bad", cat: "incident" };
+  if (t === "guard.late")
+    return { Icon: AlertTriangle, tone: "warn", cat: "incident" };
+  if (t === "guard.checkin" || t === "supervisor.checkin")
+    return { Icon: LogIn, tone: "ok", cat: "checkin" };
+  if (t === "guard.checkout" || t === "supervisor.checkout")
+    return { Icon: LogOut, tone: "neutral", cat: "checkin" };
+  if (t.startsWith("visitor"))
+    return { Icon: UserCheck, tone: "info", cat: "visitor" };
+  if (t.startsWith("patrol"))
+    return {
+      Icon: Route,
+      tone: t.includes("missed") ? "warn" : "brand",
+      cat: "patrol",
+    };
+  if (t.startsWith("shift"))
+    return { Icon: CalendarClock, tone: "info", cat: "shift" };
+  if (t.startsWith("timeoff"))
+    return { Icon: CalendarDays, tone: "info", cat: "shift" };
+  if (t.startsWith("task"))
+    return { Icon: CheckSquare, tone: "ok", cat: "other" };
+  if (t.startsWith("memo"))
+    return { Icon: Megaphone, tone: "brand", cat: "other" };
+  if (t.startsWith("dispatch"))
+    return { Icon: Siren, tone: "bad", cat: "other" };
+
   return { Icon: ActivityIcon, tone: "neutral", cat: "other" };
 }
 
-const FILTERS: Category[] = ["incident", "checkin", "visitor", "patrol", "shift", "other"];
+const FILTERS: Category[] = [
+  "incident",
+  "checkin",
+  "visitor",
+  "patrol",
+  "shift",
+  "other",
+];
 
 /**
  * El `payload` del evento llega como objeto por el canal en vivo (el servidor ya
@@ -77,14 +135,22 @@ const FILTERS: Category[] = ["incident", "checkin", "visitor", "patrol", "shift"
  */
 function parsePayload(raw: any): any {
   if (typeof raw !== "string") return raw;
-  try { return JSON.parse(raw); } catch { return undefined; }
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return undefined;
+  }
 }
 
 export default function ActivitiesPage() {
   const { t, i18n } = useTranslation();
   const tenantId = localStorage.getItem("tenantId") || "";
 
-  const { notifications: live, markRead: persistRead, connected } = useNotificationStream(tenantId);
+  const {
+    notifications: live,
+    markRead: persistRead,
+    connected,
+  } = useNotificationStream(tenantId);
   const [history, setHistory] = useState<ActivityEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -103,7 +169,11 @@ export default function ActivitiesPage() {
   const focusId = searchParams.get("focus");
 
   const load = useCallback(async () => {
-    if (!tenantId) { setLoading(false); return; }
+    if (!tenantId) {
+      setLoading(false);
+
+      return;
+    }
     setLoading(true);
     setError(false);
     try {
@@ -112,17 +182,20 @@ export default function ActivitiesPage() {
         toast: { silentError: true },
       } as any);
       const rows = (res.data?.rows ?? []) as any[];
-      setHistory(rows.map((e) => ({
-        id: e.id,
-        eventType: e.eventType,
-        title: e.title || e.eventType || "Evento",
-        body: e.body,
-        createdAt: e.createdAt,
-        read: e.deliveryStatus === "read",
-        payload: parsePayload(e.payload),
-        sourceEntityType: e.sourceEntityType,
-        sourceEntityId: e.sourceEntityId,
-      })));
+
+      setHistory(
+        rows.map((e) => ({
+          id: e.id,
+          eventType: e.eventType,
+          title: e.title || e.eventType || "Evento",
+          body: e.body,
+          createdAt: e.createdAt,
+          read: e.deliveryStatus === "read",
+          payload: parsePayload(e.payload),
+          sourceEntityType: e.sourceEntityType,
+          sourceEntityId: e.sourceEntityId,
+        })),
+      );
     } catch {
       setError(true);
     } finally {
@@ -130,39 +203,58 @@ export default function ActivitiesPage() {
     }
   }, [tenantId]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   // merge live SSE events with fetched history, de-duplicated by id, newest first
   const events = useMemo<ActivityEvent[]>(() => {
     const map = new Map<string, ActivityEvent>();
+
     history.forEach((e) => map.set(e.id, e));
-    live.forEach((n) => map.set(n.id, {
-      id: n.id,
-      eventType: n.eventType,
-      title: n.title || n.eventType || "Evento",
-      body: n.body,
-      createdAt: n.createdAt,
-      read: !!n.read,
-      payload: parsePayload((n as any).payload),
-      sourceEntityType: n.sourceEntityType,
-      sourceEntityId: n.sourceEntityId,
-    }));
+    live.forEach((n) =>
+      map.set(n.id, {
+        id: n.id,
+        eventType: n.eventType,
+        title: n.title || n.eventType || "Evento",
+        body: n.body,
+        createdAt: n.createdAt,
+        read: !!n.read,
+        payload: parsePayload((n as any).payload),
+        sourceEntityType: n.sourceEntityType,
+        sourceEntityId: n.sourceEntityId,
+      }),
+    );
+
     return Array.from(map.values()).sort(
       (a, b) => +new Date(b.createdAt) - +new Date(a.createdAt),
     );
   }, [history, live]);
 
-  const isRead = useCallback((e: ActivityEvent) => e.read || readIds.has(e.id), [readIds]);
+  const isRead = useCallback(
+    (e: ActivityEvent) => e.read || readIds.has(e.id),
+    [readIds],
+  );
 
-  const markRead = useCallback((id: string) => {
-    setReadIds((s) => new Set(s).add(id));
-    persistRead(id); // POSTs to the server
-  }, [persistRead]);
+  const markRead = useCallback(
+    (id: string) => {
+      setReadIds((s) => new Set(s).add(id));
+      persistRead(id); // POSTs to the server
+    },
+    [persistRead],
+  );
 
   const markAllRead = useCallback(() => {
     const unread = events.filter((e) => !isRead(e)).map((e) => e.id);
+
     if (!unread.length) return;
-    setReadIds((s) => { const n = new Set(s); unread.forEach((id) => n.add(id)); return n; });
+    setReadIds((s) => {
+      const n = new Set(s);
+
+      unread.forEach((id) => n.add(id));
+
+      return n;
+    });
     unread.forEach((id) => persistRead(id));
   }, [events, isRead, persistRead]);
 
@@ -173,76 +265,122 @@ export default function ActivitiesPage() {
    * al mismo sitio al que lleva el aviso emergente y la campana, con el mismo
    * mapa de destinos (`targetForNotification`), y de paso lo marca leído.
    */
-  const openEvent = useCallback((e: ActivityEvent) => {
-    if (!isRead(e)) markRead(e.id);
-    const destino = targetForNotification({
-      id: e.id,
-      eventType: e.eventType,
-      title: e.title,
-      body: e.body || "",
-      payload: e.payload,
-      sourceEntityType: e.sourceEntityType,
-      sourceEntityId: e.sourceEntityId,
-      createdAt: e.createdAt,
-    });
-    // El respaldo de ese mapa es esta misma página: navegar a ella recargaría la
-    // lista para dejarte donde ya estás. En ese caso basta con quedarse y que el
-    // resaltado de `?focus=` haga su trabajo.
-    if (destino.startsWith("/activities")) return;
-    navigate(destino);
-  }, [isRead, markRead, navigate]);
+  const openEvent = useCallback(
+    (e: ActivityEvent) => {
+      if (!isRead(e)) markRead(e.id);
+      const destino = targetForNotification({
+        id: e.id,
+        eventType: e.eventType,
+        title: e.title,
+        body: e.body || "",
+        payload: e.payload,
+        sourceEntityType: e.sourceEntityType,
+        sourceEntityId: e.sourceEntityId,
+        createdAt: e.createdAt,
+      });
 
-  const unreadCount = useMemo(() => events.filter((e) => !isRead(e)).length, [events, isRead]);
+      // El respaldo de ese mapa es esta misma página: navegar a ella recargaría la
+      // lista para dejarte donde ya estás. En ese caso basta con quedarse y que el
+      // resaltado de `?focus=` haga su trabajo.
+      if (destino.startsWith("/activities")) return;
+      navigate(destino);
+    },
+    [isRead, markRead, navigate],
+  );
+
+  const unreadCount = useMemo(
+    () => events.filter((e) => !isRead(e)).length,
+    [events, isRead],
+  );
 
   // apply search + category + unread filters
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
+
     return events.filter((e) => {
       if (cat !== "all" && visualFor(e.eventType).cat !== cat) return false;
       if (unreadOnly && isRead(e)) return false;
-      if (q && !(`${e.title} ${e.body ?? ""}`.toLowerCase().includes(q))) return false;
+      if (q && !`${e.title} ${e.body ?? ""}`.toLowerCase().includes(q))
+        return false;
+
       return true;
     });
   }, [events, query, cat, unreadOnly, isRead]);
 
   // group filtered events by day bucket (today / yesterday / explicit date)
   const groups = useMemo(() => {
-    const locale = i18n.language?.startsWith("en") ? "en-US" : i18n.language?.startsWith("pt") ? "pt-BR" : "es-ES";
-    const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+    const locale = i18n.language?.startsWith("en")
+      ? "en-US"
+      : i18n.language?.startsWith("pt")
+        ? "pt-BR"
+        : "es-ES";
+    const startOfDay = (d: Date) =>
+      new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
     const now = new Date();
     const out: { key: string; label: string; items: ActivityEvent[] }[] = [];
     const byKey = new Map<string, { label: string; items: ActivityEvent[] }>();
+
     for (const e of filtered) {
       const d = new Date(e.createdAt);
       const diff = Math.round((startOfDay(now) - startOfDay(d)) / 86_400_000);
       let key: string, label: string;
-      if (diff <= 0) { key = "today"; label = t("activity.group.today"); }
-      else if (diff === 1) { key = "yesterday"; label = t("activity.group.yesterday"); }
-      else {
+
+      if (diff <= 0) {
+        key = "today";
+        label = t("activity.group.today");
+      } else if (diff === 1) {
+        key = "yesterday";
+        label = t("activity.group.yesterday");
+      } else {
         label = d.toLocaleDateString(locale, {
-          day: "numeric", month: "long",
+          day: "numeric",
+          month: "long",
           ...(d.getFullYear() !== now.getFullYear() ? { year: "numeric" } : {}),
         });
         key = label;
       }
-      if (!byKey.has(key)) { const g = { label, items: [] as ActivityEvent[] }; byKey.set(key, g); out.push({ key, ...g }); }
+      if (!byKey.has(key)) {
+        const g = { label, items: [] as ActivityEvent[] };
+
+        byKey.set(key, g);
+        out.push({ key, ...g });
+      }
       byKey.get(key)!.items.push(e);
     }
+
     return out;
   }, [filtered, t, i18n.language]);
 
-  const timeAgo = useCallback((iso: string) => {
-    const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
-    if (s < 60) return t("activity.time.now");
-    if (s < 3600) return t("activity.time.minsAgo", { n: Math.floor(s / 60) });
-    if (s < 86400) return t("activity.time.hoursAgo", { n: Math.floor(s / 3600) });
-    return t("activity.time.daysAgo", { n: Math.floor(s / 86400) });
-  }, [t]);
+  const timeAgo = useCallback(
+    (iso: string) => {
+      const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
 
-  const absoluteTime = useCallback((iso: string) => {
-    const locale = i18n.language?.startsWith("en") ? "en-US" : i18n.language?.startsWith("pt") ? "pt-BR" : "es-ES";
-    return new Date(iso).toLocaleString(locale, { dateStyle: "medium", timeStyle: "short" });
-  }, [i18n.language]);
+      if (s < 60) return t("activity.time.now");
+      if (s < 3600)
+        return t("activity.time.minsAgo", { n: Math.floor(s / 60) });
+      if (s < 86400)
+        return t("activity.time.hoursAgo", { n: Math.floor(s / 3600) });
+
+      return t("activity.time.daysAgo", { n: Math.floor(s / 86400) });
+    },
+    [t],
+  );
+
+  const absoluteTime = useCallback(
+    (iso: string) => {
+      const locale = i18n.language?.startsWith("en")
+        ? "en-US"
+        : i18n.language?.startsWith("pt")
+          ? "pt-BR"
+          : "es-ES";
+
+      return new Date(iso).toLocaleString(locale, {
+        dateStyle: "medium",
+        timeStyle: "short",
+      });
+    },
+    [i18n.language],
+  );
 
   return (
     <AppLayout>
@@ -255,135 +393,165 @@ export default function ActivitiesPage() {
 
       <div className="p-4 sm:p-6">
         <PageContainer width="wide">
-        {/* ── Header ───────────────────────────────────────────────────────── */}
-        <PageHeader
-          icon={<ActivityIcon />}
-          title={t("activity.title")}
-          subtitle={t("activity.subtitle")}
-          badges={
-            <>
-              <StatusBadge tone={connected ? "ok" : "neutral"}>
-                <Radio size={12} className={connected ? "animate-pulse" : ""} />
-                {connected ? t("activity.live") : t("activity.offline")}
-              </StatusBadge>
-              {unreadCount > 0 && (
-                <StatusBadge tone="brand" dot={false}>
-                  {t("activity.unreadCount", { count: unreadCount })}
+          {/* ── Header ───────────────────────────────────────────────────────── */}
+          <PageHeader
+            actions={
+              <>
+                <Button
+                  disabled={loading}
+                  size="sm"
+                  variant="outline"
+                  onClick={load}
+                >
+                  <RefreshCw
+                    className={[
+                      "mr-2 h-4 w-4",
+                      loading ? "animate-spin" : "",
+                    ].join(" ")}
+                  />
+                  {t("activity.refresh")}
+                </Button>
+                <Button
+                  disabled={unreadCount === 0}
+                  size="sm"
+                  variant="outline"
+                  onClick={markAllRead}
+                >
+                  <CheckCheck className="mr-2 h-4 w-4" />
+                  {t("activity.markAllRead")}
+                </Button>
+              </>
+            }
+            badges={
+              <>
+                <StatusBadge tone={connected ? "ok" : "neutral"}>
+                  <Radio
+                    className={connected ? "animate-pulse" : ""}
+                    size={12}
+                  />
+                  {connected ? t("activity.live") : t("activity.offline")}
                 </StatusBadge>
-              )}
-            </>
-          }
-          actions={
-            <>
-              <Button variant="outline" size="sm" onClick={load} disabled={loading}>
-                <RefreshCw className={["mr-2 h-4 w-4", loading ? "animate-spin" : ""].join(" ")} />
-                {t("activity.refresh")}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={markAllRead}
-                disabled={unreadCount === 0}
-              >
-                <CheckCheck className="mr-2 h-4 w-4" />
-                {t("activity.markAllRead")}
-              </Button>
-            </>
-          }
-        />
+                {unreadCount > 0 && (
+                  <StatusBadge dot={false} tone="brand">
+                    {t("activity.unreadCount", { count: unreadCount })}
+                  </StatusBadge>
+                )}
+              </>
+            }
+            icon={<ActivityIcon />}
+            subtitle={t("activity.subtitle")}
+            title={t("activity.title")}
+          />
 
-        {/* ── Barra: búsqueda + categorías + solo sin leer ──────────────────── */}
-        <Toolbar className="gap-3">
-          <div className="relative w-full max-w-xs">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: "var(--ink-faint)" }} />
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={t("activity.search")}
-              className="cg-input cg-focus h-9 w-full pl-9 pr-3 text-sm"
-            />
-          </div>
+          {/* ── Barra: búsqueda + categorías + solo sin leer ──────────────────── */}
+          <Toolbar className="gap-3">
+            <div className="relative w-full max-w-xs">
+              <Search
+                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
+                style={{ color: "var(--ink-faint)" }}
+              />
+              <input
+                className="cg-input cg-focus h-9 w-full pl-9 pr-3 text-sm"
+                placeholder={t("activity.search")}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+            </div>
 
-          {/* Elegir UNA categoría es exactamente lo que hace `Segmented`; la
+            {/* Elegir UNA categoría es exactamente lo que hace `Segmented`; la
               copia local iba 2px más estrecha y con otro fondo inactivo, así que
               cambiar el conmutador del kit rompía la paridad sólo aquí. */}
-          <div className="flex flex-1 flex-wrap items-center gap-1.5">
-            <Segmented<Category | "all">
-              value={cat}
-              onChange={setCat}
-              options={[
-                { value: "all", label: t("activity.filters.all") },
-                ...FILTERS.map((c) => ({ value: c, label: t(`activity.filters.${c}`) })),
-              ]}
-            />
-          </div>
+            <div className="flex flex-1 flex-wrap items-center gap-1.5">
+              <Segmented<Category | "all">
+                options={[
+                  { value: "all", label: t("activity.filters.all") },
+                  ...FILTERS.map((c) => ({
+                    value: c,
+                    label: t(`activity.filters.${c}`),
+                  })),
+                ]}
+                value={cat}
+                onChange={setCat}
+              />
+            </div>
 
-          <Chip active={unreadOnly} onClick={() => setUnreadOnly((v) => !v)}>
-            {t("activity.unreadOnly")}
-          </Chip>
-        </Toolbar>
+            <Chip active={unreadOnly} onClick={() => setUnreadOnly((v) => !v)}>
+              {t("activity.unreadOnly")}
+            </Chip>
+          </Toolbar>
 
-        {/* ── Body ─────────────────────────────────────────────────────────── */}
-        <GlassPanel className="overflow-hidden">
-          {loading ? (
-            <SkeletonList />
-          ) : error ? (
-            <div className="p-5">
-              <EmptyState
-                icon={<AlertTriangle />}
-                title={t("activity.loadError")}
-                action={<Button variant="outline" size="sm" onClick={load}><RefreshCw className="mr-2 h-4 w-4" />{t("activity.refresh")}</Button>}
-                className="border-none"
-              />
-            </div>
-          ) : events.length === 0 ? (
-            <div className="p-5">
-              <EmptyState
-                icon={<Inbox />}
-                title={t("activity.empty.title")}
-                description={t("activity.empty.description")}
-                className="border-none"
-              />
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="p-5">
-              <EmptyState
-                icon={<Search />}
-                title={t("activity.noResults.title")}
-                description={t("activity.noResults.description")}
-                className="border-none"
-              />
-            </div>
-          ) : (
-            <div className="divide-y" style={{ borderColor: "var(--hairline)" }}>
-              {groups.map((g) => (
-                <div key={g.key}>
-                  {/* Cabecera de día pegajosa: fondo OPACO y sin desenfoque. Un
+          {/* ── Body ─────────────────────────────────────────────────────────── */}
+          <GlassPanel className="overflow-hidden">
+            {loading ? (
+              <SkeletonList />
+            ) : error ? (
+              <div className="p-5">
+                <EmptyState
+                  action={
+                    <Button size="sm" variant="outline" onClick={load}>
+                      <RefreshCw className="mr-2 h-4 w-4" />
+                      {t("activity.refresh")}
+                    </Button>
+                  }
+                  className="border-none"
+                  icon={<AlertTriangle />}
+                  title={t("activity.loadError")}
+                />
+              </div>
+            ) : events.length === 0 ? (
+              <div className="p-5">
+                <EmptyState
+                  className="border-none"
+                  description={t("activity.empty.description")}
+                  icon={<Inbox />}
+                  title={t("activity.empty.title")}
+                />
+              </div>
+            ) : filtered.length === 0 ? (
+              <div className="p-5">
+                <EmptyState
+                  className="border-none"
+                  description={t("activity.noResults.description")}
+                  icon={<Search />}
+                  title={t("activity.noResults.title")}
+                />
+              </div>
+            ) : (
+              <div
+                className="divide-y"
+                style={{ borderColor: "var(--hairline)" }}
+              >
+                {groups.map((g) => (
+                  <div key={g.key}>
+                    {/* Cabecera de día pegajosa: fondo OPACO y sin desenfoque. Un
                       `backdrop-filter` aquí se repite por cada grupo y el
                       navegador tendría que rasterizar la lista entera en cada
                       fotograma del desplazamiento. */}
-                  <div
-                    className="cg-eyebrow sticky top-0 z-10 px-4 py-2"
-                    style={{ background: "var(--glass-solid)", borderBottom: "1px solid var(--hairline)" }}
-                  >
-                    {g.label}
+                    <div
+                      className="cg-eyebrow sticky top-0 z-10 px-4 py-2"
+                      style={{
+                        background: "var(--glass-solid)",
+                        borderBottom: "1px solid var(--hairline)",
+                      }}
+                    >
+                      {g.label}
+                    </div>
+                    {g.items.map((e) => (
+                      <ActivityRow
+                        key={e.id}
+                        absoluteTime={absoluteTime}
+                        event={e}
+                        focused={e.id === focusId}
+                        read={isRead(e)}
+                        timeAgo={timeAgo}
+                        onOpen={openEvent}
+                      />
+                    ))}
                   </div>
-                  {g.items.map((e) => (
-                    <ActivityRow
-                      key={e.id}
-                      event={e}
-                      read={isRead(e)}
-                      focused={e.id === focusId}
-                      onOpen={openEvent}
-                      timeAgo={timeAgo}
-                      absoluteTime={absoluteTime}
-                    />
-                  ))}
-                </div>
-              ))}
-            </div>
-          )}
-        </GlassPanel>
+                ))}
+              </div>
+            )}
+          </GlassPanel>
         </PageContainer>
       </div>
     </AppLayout>
@@ -422,10 +590,13 @@ function ActivityRow({
   const { Icon, tone } = visualFor(e.eventType);
   // Los eventos con foto la traen en `photoUrl` (fichaje, incidente, tarea,
   // visita); el aviso al cliente la llama `selfieUrl`. Se aceptan las dos.
-  const photoUrl = useFileUrl(e.payload?.photoUrl || e.payload?.selfieUrl || "");
+  const photoUrl = useFileUrl(
+    e.payload?.photoUrl || e.payload?.selfieUrl || "",
+  );
 
   // Llegar desde un aviso a la fila correcta: se desplaza hasta ella al montar.
   const ref = useRef<HTMLButtonElement | null>(null);
+
   useEffect(() => {
     if (focused && ref.current) {
       ref.current.scrollIntoView({ block: "center", behavior: "smooth" });
@@ -435,41 +606,61 @@ function ActivityRow({
   return (
     <button
       ref={ref}
-      onClick={() => onOpen(e)}
       className="cg-focus group flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-[var(--glass-sunken)]!"
       style={{
         ...(read ? {} : { background: "var(--brand-wash)" }),
         ...(focused ? { boxShadow: "inset 0 0 0 2px var(--brand)" } : {}),
       }}
+      onClick={() => onOpen(e)}
     >
       {/* punto de «sin leer» */}
       <span
         className="mt-1.5 h-2 w-2 shrink-0 rounded-full"
-        style={read ? undefined : { background: "var(--brand)", boxShadow: "0 0 10px 0 var(--brand-glow)" }}
+        style={
+          read
+            ? undefined
+            : {
+                background: "var(--brand)",
+                boxShadow: "0 0 10px 0 var(--brand-glow)",
+              }
+        }
       />
-      <IconTile tone={tone} size="sm" className="mt-0.5">
+      <IconTile className="mt-0.5" size="sm" tone={tone}>
         <Icon />
       </IconTile>
       <div className="min-w-0 flex-1">
         <p
-          className={["truncate text-sm", read ? "" : "font-semibold"].join(" ")}
+          className={["truncate text-sm", read ? "" : "font-semibold"].join(
+            " ",
+          )}
           style={{ color: read ? "var(--ink-soft)" : "var(--ink)" }}
         >
           {e.title}
         </p>
-        {e.body && <p className="mt-0.5 line-clamp-2 text-xs" style={{ color: "var(--ink-soft)" }}>{e.body}</p>}
+        {e.body && (
+          <p
+            className="mt-0.5 line-clamp-2 text-xs"
+            style={{ color: "var(--ink-soft)" }}
+          >
+            {e.body}
+          </p>
+        )}
         {photoUrl && (
           <SmartImage
-            src={photoUrl}
             alt=""
+            className="mt-2 h-24 w-24"
             fit="cover"
             rounded="rounded-xl"
-            className="mt-2 h-24 w-24"
+            src={photoUrl}
             style={{ border: "1px solid var(--hairline)" }}
           />
         )}
       </div>
-      <span className="shrink-0 text-[11px] tabular-nums" style={{ color: "var(--ink-faint)" }} title={absoluteTime(e.createdAt)}>
+      <span
+        className="shrink-0 text-[11px] tabular-nums"
+        style={{ color: "var(--ink-faint)" }}
+        title={absoluteTime(e.createdAt)}
+      >
         {timeAgo(e.createdAt)}
       </span>
     </button>
@@ -479,18 +670,30 @@ function ActivityRow({
 /* Conmutador de DOS estados (encendido/apagado), que no es lo mismo que elegir
    uno de varios: por eso no es `Segmented`. Las medidas sí son las suyas, para
    que los dos controles de la misma barra tengan la misma altura. */
-function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+function Chip({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <button
-      type="button"
-      onClick={onClick}
       aria-pressed={active}
       className="cg-focus rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all duration-200"
       style={
         active
-          ? { background: "var(--brand)", color: "var(--brand-ink)", boxShadow: "0 0 18px -6px var(--brand-glow)" }
+          ? {
+              background: "var(--brand)",
+              color: "var(--brand-ink)",
+              boxShadow: "0 0 18px -6px var(--brand-glow)",
+            }
           : { background: "var(--glass-sunken)", color: "var(--ink-soft)" }
       }
+      type="button"
+      onClick={onClick}
     >
       {children}
     </button>
@@ -500,7 +703,10 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
 function SkeletonList() {
   return (
     <div className="divide-y" style={{ borderColor: "var(--hairline)" }}>
-      <div className="flex items-center gap-2 px-4 py-6 text-sm" style={{ color: "var(--ink-faint)" }}>
+      <div
+        className="flex items-center gap-2 px-4 py-6 text-sm"
+        style={{ color: "var(--ink-faint)" }}
+      >
         <Loader2 className="h-4 w-4 animate-spin" />
       </div>
       {Array.from({ length: 6 }).map((_, i) => (

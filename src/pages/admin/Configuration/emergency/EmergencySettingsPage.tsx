@@ -19,9 +19,11 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Siren, Mail, RotateCw } from "lucide-react";
-import { SkeletonCards } from "@/components/kit";
+
 import SettingsPageShell from "../components/SettingsPageShell";
 import { SaveBar } from "../components/SettingsForm";
+
+import { SkeletonCards } from "@/components/kit";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -68,7 +70,9 @@ export default function EmergencySettingsPage() {
   const [row, setRow] = useState<any>(null);
   const [cfg, setCfg] = useState<PanicCfg>(DEFAULTS);
   const [emailsTexto, setEmailsTexto] = useState("");
-  const [rolesDisponibles, setRolesDisponibles] = useState<Array<{ slug: string; label: string }>>([]);
+  const [rolesDisponibles, setRolesDisponibles] = useState<
+    Array<{ slug: string; label: string }>
+  >([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -79,31 +83,46 @@ export default function EmergencySettingsPage() {
           api.get(`/tenant/${tenantId()}/settings`),
           api.get(`/tenant/${tenantId()}/role`).catch(() => null),
         ]);
+
         setRow(data || {});
         const p = { ...DEFAULTS, ...((data && data.panicSettings) || {}) };
+
         setCfg(p);
         setEmailsTexto((p.extraEmails || []).join(", "));
 
         // Roles del tenant (sistema + propios). Se excluyen los de campo puro:
         // un pánico no se enruta a otros vigilantes.
         const crudo: any = resRoles?.data ?? resRoles ?? [];
-        const filas = Array.isArray(crudo) ? crudo : crudo?.rows || crudo?.data?.rows || [];
+        const filas = Array.isArray(crudo)
+          ? crudo
+          : crudo?.rows || crudo?.data?.rows || [];
         const vistos = new Set<string>();
         const lista: Array<{ slug: string; label: string }> = [];
+
         for (const r of filas) {
           const slug = String(r.slug || r.name || r.id || "").trim();
+
           if (!slug || vistos.has(slug)) continue;
-          if (["securityGuard", "customer", "superadmin"].includes(slug)) continue;
+          if (["securityGuard", "customer", "superadmin"].includes(slug))
+            continue;
           vistos.add(slug);
-          lista.push({ slug, label: ETIQUETA_ROL[slug] || r.label || r.name || slug });
+          lista.push({
+            slug,
+            label: ETIQUETA_ROL[slug] || r.label || r.name || slug,
+          });
         }
         // Si el endpoint de roles falla, al menos los del sistema.
         if (!lista.length) {
-          for (const slug of Object.keys(ETIQUETA_ROL)) lista.push({ slug, label: ETIQUETA_ROL[slug] });
+          for (const slug of Object.keys(ETIQUETA_ROL))
+            lista.push({ slug, label: ETIQUETA_ROL[slug] });
         }
         setRolesDisponibles(lista);
       } catch {
-        toast.error(t('settings.emergency.loadError', { defaultValue: 'No se pudo cargar la configuración de emergencias.' }));
+        toast.error(
+          t("settings.emergency.loadError", {
+            defaultValue: "No se pudo cargar la configuración de emergencias.",
+          }),
+        );
       } finally {
         setLoading(false);
       }
@@ -111,7 +130,12 @@ export default function EmergencySettingsPage() {
   }, []);
 
   const toggleRol = (slug: string, on: boolean) =>
-    setCfg((c) => ({ ...c, roles: on ? [...new Set([...c.roles, slug])] : c.roles.filter((r) => r !== slug) }));
+    setCfg((c) => ({
+      ...c,
+      roles: on
+        ? [...new Set([...c.roles, slug])]
+        : c.roles.filter((r) => r !== slug),
+    }));
 
   const save = async () => {
     setSaving(true);
@@ -120,6 +144,7 @@ export default function EmergencySettingsPage() {
         .split(/[,;\s]+/)
         .map((e) => e.trim())
         .filter(Boolean);
+
       await api.put(`/tenant/${tenantId()}/settings`, {
         settings: {
           theme: row?.theme || "default",
@@ -128,9 +153,19 @@ export default function EmergencySettingsPage() {
           panicSettings: { ...cfg, extraEmails },
         },
       });
-      toast.success(t('settings.emergency.saveSuccess', { defaultValue: 'Guardado. Aplica al próximo pánico, sin reiniciar nada.' }));
+      toast.success(
+        t("settings.emergency.saveSuccess", {
+          defaultValue:
+            "Guardado. Aplica al próximo pánico, sin reiniciar nada.",
+        }),
+      );
     } catch (e: any) {
-      toast.error(e?.response?.data?.message || t('settings.emergency.saveError', { defaultValue: 'No se pudo guardar.' }));
+      toast.error(
+        e?.response?.data?.message ||
+          t("settings.emergency.saveError", {
+            defaultValue: "No se pudo guardar.",
+          }),
+      );
     } finally {
       setSaving(false);
     }
@@ -141,70 +176,147 @@ export default function EmergencySettingsPage() {
   return (
     <SettingsPageShell
       icon={<Siren />}
-      title={t('settings.emergency.pageTitle', { defaultValue: 'Emergencias y pánico' })}
-      subtitle={t('settings.emergency.pageSubtitle', { defaultValue: 'A quién le llega un pánico y con qué insistencia escala.' })}
+      subtitle={t("settings.emergency.pageSubtitle", {
+        defaultValue:
+          "A quién le llega un pánico y con qué insistencia escala.",
+      })}
+      title={t("settings.emergency.pageTitle", {
+        defaultValue: "Emergencias y pánico",
+      })}
     >
       {loading ? (
-        <SkeletonCards count={3} className="sm:grid-cols-1" />
+        <SkeletonCards className="sm:grid-cols-1" count={3} />
       ) : (
         <div className="space-y-6">
           <section className="glass-flat rounded-2xl p-5">
-            <h3 className="mb-1 text-sm font-semibold">{t('settings.emergency.whoReceivesTitle', { defaultValue: 'Quién recibe un pánico' })}</h3>
+            <h3 className="mb-1 text-sm font-semibold">
+              {t("settings.emergency.whoReceivesTitle", {
+                defaultValue: "Quién recibe un pánico",
+              })}
+            </h3>
             <p className="mb-3 text-xs" style={{ color: "var(--ink-soft)" }}>
-              {t('settings.emergency.whoReceivesDesc', { defaultValue: 'Push, campana, alerta a pantalla completa y correo. La misma lista gobierna el escalado. Incluye tus roles propios — una central de monitoreo puede recibirlo todo.' })}
+              {t("settings.emergency.whoReceivesDesc", {
+                defaultValue:
+                  "Push, campana, alerta a pantalla completa y correo. La misma lista gobierna el escalado. Incluye tus roles propios — una central de monitoreo puede recibirlo todo.",
+              })}
             </p>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {rolesDisponibles.map((r) => (
                 <label key={r.slug} className="flex items-center gap-2 text-sm">
                   <Checkbox
                     checked={cfg.roles.includes(r.slug)}
-                    onCheckedChange={(v) => toggleRol(r.slug, v === true)}
                     disabled={disabled}
+                    onCheckedChange={(v) => toggleRol(r.slug, v === true)}
                   />
-                  {t(`settings.emergency.role_${r.slug}`, { defaultValue: r.label })}
+                  {t(`settings.emergency.role_${r.slug}`, {
+                    defaultValue: r.label,
+                  })}
                 </label>
               ))}
             </div>
           </section>
 
           <section className="glass-flat rounded-2xl p-5">
-            <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold"><Mail size={15} /> {t('settings.emergency.extraEmailsTitle', { defaultValue: 'Correos adicionales' })}</h3>
+            <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold">
+              <Mail size={15} />{" "}
+              {t("settings.emergency.extraEmailsTitle", {
+                defaultValue: "Correos adicionales",
+              })}
+            </h3>
             <p className="mb-3 text-xs" style={{ color: "var(--ink-soft)" }}>
-              {t('settings.emergency.extraEmailsDesc', { defaultValue: 'Destinos fijos fuera de la plantilla (tu central externa, un contratista). Separados por coma.' })}
+              {t("settings.emergency.extraEmailsDesc", {
+                defaultValue:
+                  "Destinos fijos fuera de la plantilla (tu central externa, un contratista). Separados por coma.",
+              })}
             </p>
             <Input
+              disabled={disabled}
+              placeholder={t("settings.emergency.emailsPlaceholder", {
+                defaultValue: "central@tuempresa.com, monitoreo@externo.com",
+              })}
               value={emailsTexto}
               onChange={(e) => setEmailsTexto(e.target.value)}
-              placeholder={t('settings.emergency.emailsPlaceholder', { defaultValue: 'central@tuempresa.com, monitoreo@externo.com' })}
-              disabled={disabled}
             />
           </section>
 
           <section className="glass-flat rounded-2xl p-5">
-            <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold"><RotateCw size={15} /> {t('settings.emergency.escaladoTitle', { defaultValue: 'Escalado' })}</h3>
+            <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold">
+              <RotateCw size={15} />{" "}
+              {t("settings.emergency.escaladoTitle", {
+                defaultValue: "Escalado",
+              })}
+            </h3>
             <p className="mb-3 text-xs" style={{ color: "var(--ink-soft)" }}>
-              {t('settings.emergency.escaladoDesc', { defaultValue: 'Un pánico que nadie reconoce vuelve a avisar hasta que alguien lo atienda o se agote el plazo.' })}
+              {t("settings.emergency.escaladoDesc", {
+                defaultValue:
+                  "Un pánico que nadie reconoce vuelve a avisar hasta que alguien lo atienda o se agote el plazo.",
+              })}
             </p>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div>
-                <Label className="text-xs">{t('settings.emergency.escalateAfterLabel', { defaultValue: 'Escalar a los (min)' })}</Label>
-                <Input type="number" min={1} max={60} value={cfg.escalateAfterMin}
-                  onChange={(e) => setCfg((c) => ({ ...c, escalateAfterMin: Number(e.target.value) }))} disabled={disabled} />
+                <Label className="text-xs">
+                  {t("settings.emergency.escalateAfterLabel", {
+                    defaultValue: "Escalar a los (min)",
+                  })}
+                </Label>
+                <Input
+                  disabled={disabled}
+                  max={60}
+                  min={1}
+                  type="number"
+                  value={cfg.escalateAfterMin}
+                  onChange={(e) =>
+                    setCfg((c) => ({
+                      ...c,
+                      escalateAfterMin: Number(e.target.value),
+                    }))
+                  }
+                />
               </div>
               <div>
-                <Label className="text-xs">{t('settings.emergency.repeatEveryLabel', { defaultValue: 'Repetir cada (min, 0 = no repetir)' })}</Label>
-                <Input type="number" min={0} max={60} value={cfg.repeatEveryMin}
-                  onChange={(e) => setCfg((c) => ({ ...c, repeatEveryMin: Number(e.target.value) }))} disabled={disabled} />
+                <Label className="text-xs">
+                  {t("settings.emergency.repeatEveryLabel", {
+                    defaultValue: "Repetir cada (min, 0 = no repetir)",
+                  })}
+                </Label>
+                <Input
+                  disabled={disabled}
+                  max={60}
+                  min={0}
+                  type="number"
+                  value={cfg.repeatEveryMin}
+                  onChange={(e) =>
+                    setCfg((c) => ({
+                      ...c,
+                      repeatEveryMin: Number(e.target.value),
+                    }))
+                  }
+                />
               </div>
               <div>
-                <Label className="text-xs">{t('settings.emergency.stopAfterLabel', { defaultValue: 'Dejar de insistir a los (min)' })}</Label>
-                <Input type="number" min={5} max={720} value={cfg.stopAfterMin}
-                  onChange={(e) => setCfg((c) => ({ ...c, stopAfterMin: Number(e.target.value) }))} disabled={disabled} />
+                <Label className="text-xs">
+                  {t("settings.emergency.stopAfterLabel", {
+                    defaultValue: "Dejar de insistir a los (min)",
+                  })}
+                </Label>
+                <Input
+                  disabled={disabled}
+                  max={720}
+                  min={5}
+                  type="number"
+                  value={cfg.stopAfterMin}
+                  onChange={(e) =>
+                    setCfg((c) => ({
+                      ...c,
+                      stopAfterMin: Number(e.target.value),
+                    }))
+                  }
+                />
               </div>
             </div>
           </section>
 
-          <SaveBar saving={saving} disabled={disabled} onSave={save} />
+          <SaveBar disabled={disabled} saving={saving} onSave={save} />
         </div>
       )}
     </SettingsPageShell>

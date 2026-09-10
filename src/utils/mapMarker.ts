@@ -29,11 +29,17 @@ export interface MapMarkerOptions {
 
 /** The configured Map ID, or undefined. Pass to `new google.maps.Map({ mapId })`. */
 export function mapIdIfConfigured(): string | undefined {
-  const id = (import.meta as any).env?.VITE_GOOGLE_MAPS_MAP_ID as string | undefined;
+  const id = (import.meta as any).env?.VITE_GOOGLE_MAPS_MAP_ID as
+    | string
+    | undefined;
+
   return id && String(id).trim() ? String(id).trim() : undefined;
 }
 
-export function createMapMarker(map: any, opts: MapMarkerOptions): MapMarkerHandle {
+export function createMapMarker(
+  map: any,
+  opts: MapMarkerOptions,
+): MapMarkerHandle {
   const g = (window as any).google;
   const AdvancedMarkerElement = g?.maps?.marker?.AdvancedMarkerElement;
   const PinElement = g?.maps?.marker?.PinElement;
@@ -61,7 +67,12 @@ export function createMapMarker(map: any, opts: MapMarkerOptions): MapMarkerHand
         title: opts.title,
         content: pin.element,
       });
-      return { remove: () => { m.map = null; } };
+
+      return {
+        remove: () => {
+          m.map = null;
+        },
+      };
     } catch {
       /* fall through to legacy marker */
     }
@@ -80,5 +91,6 @@ export function createMapMarker(map: any, opts: MapMarkerOptions): MapMarkerHand
       strokeWeight: 2,
     },
   });
+
   return { remove: () => marker.setMap(null) };
 }

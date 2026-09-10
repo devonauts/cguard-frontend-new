@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import {
@@ -21,8 +21,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { videoService, type Camera } from "@/lib/api/videoService";
 import i18n from "@/i18n";
-
-import { localeActual } from '@/lib/localeActual'
+import { localeActual } from "@/lib/localeActual";
 /* ------------------------------------------------------------------ */
 /* Shared shell                                                        */
 /* ------------------------------------------------------------------ */
@@ -36,15 +35,25 @@ type ModalShellProps = {
   footer?: React.ReactNode;
 };
 
-function ModalShell({ open, onClose, title, icon, children, footer }: ModalShellProps) {
+function ModalShell({
+  open,
+  onClose,
+  title,
+  icon,
+  children,
+  footer,
+}: ModalShellProps) {
   React.useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
+
     document.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
+
     document.body.style.overflow = "hidden";
+
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = prev;
@@ -55,10 +64,10 @@ function ModalShell({ open, onClose, title, icon, children, footer }: ModalShell
 
   return createPortal(
     <div
+      aria-label={title}
+      aria-modal="true"
       className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
       role="dialog"
-      aria-modal="true"
-      aria-label={title}
     >
       {/* Velo del diálogo: negro en los dos temas a propósito. Un token
           acromático se invertiría y en claro dejaría el modal sobre un gris
@@ -69,37 +78,52 @@ function ModalShell({ open, onClose, title, icon, children, footer }: ModalShell
         onClick={onClose}
       />
       <div className="glass-raised relative z-10 flex max-h-[92vh] w-full max-w-lg flex-col overflow-hidden">
-        <div className="flex shrink-0 items-center justify-between gap-3 border-b px-5 py-4" style={{ borderColor: "var(--hairline)" }}>
+        <div
+          className="flex shrink-0 items-center justify-between gap-3 border-b px-5 py-4"
+          style={{ borderColor: "var(--hairline)" }}
+        >
           <div className="flex items-center gap-2.5">
             <span
               className="flex size-8 items-center justify-center rounded-lg border"
-              style={{ background: "var(--brand-wash)", borderColor: "var(--brand-line)", color: "var(--brand-text)" }}
+              style={{
+                background: "var(--brand-wash)",
+                borderColor: "var(--brand-line)",
+                color: "var(--brand-text)",
+              }}
             >
               {icon}
             </span>
             <h2 className="font-display text-base font-semibold">{title}</h2>
           </div>
           <button
-            type="button"
-            onClick={onClose}
+            aria-label={i18n.t("actions.close")}
             className="cg-focus rounded-full p-1 transition-colors hover:bg-[var(--glass-sunken)]"
             style={{ color: "var(--ink-faint)" }}
-            aria-label={i18n.t('actions.close')}
+            type="button"
+            onClick={onClose}
           >
             <X className="size-5" />
           </button>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">{children}</div>
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+          {children}
+        </div>
 
         {footer ? (
-          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 border-t px-5 py-4" style={{ borderColor: "var(--hairline)", background: "var(--glass-sunken)" }}>
+          <div
+            className="flex shrink-0 flex-wrap items-center justify-end gap-2 border-t px-5 py-4"
+            style={{
+              borderColor: "var(--hairline)",
+              background: "var(--glass-sunken)",
+            }}
+          >
             {footer}
           </div>
         ) : null}
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }
 
@@ -111,15 +135,16 @@ function ModalShell({ open, onClose, title, icon, children, footer }: ModalShell
  * nombre porque lo usan una docena de sitios de este archivo.
  */
 function GoldButton(
-  props: React.ComponentProps<typeof Button> & { busy?: boolean }
+  props: React.ComponentProps<typeof Button> & { busy?: boolean },
 ) {
   const { busy, children, disabled, ...rest } = props;
+
   return (
     <Button
       {...rest}
-      variant="brand"
-      disabled={disabled || busy}
       className={cn(props.className)}
+      disabled={disabled || busy}
+      variant="brand"
     >
       {busy ? <Loader2 className="size-4 animate-spin" /> : null}
       {children}
@@ -135,8 +160,9 @@ const selectClass =
 function localNow(offsetMinutes = 0): string {
   const d = new Date(Date.now() + offsetMinutes * 60_000);
   const pad = (n: number) => String(n).padStart(2, "0");
+
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
-    d.getHours()
+    d.getHours(),
   )}:${pad(d.getMinutes())}`;
 }
 
@@ -148,7 +174,11 @@ export type TrimShareModalProps = {
   camera?: Camera | null;
   open: boolean;
   onClose: () => void;
-  onShared?: (result: { token: string; url: string; expiresAt: string }) => void;
+  onShared?: (result: {
+    token: string;
+    url: string;
+    expiresAt: string;
+  }) => void;
 };
 
 export function TrimShareModal({
@@ -165,7 +195,9 @@ export function TrimShareModal({
   const [shareUrl, setShareUrl] = React.useState<string | null>(null);
   const [expiresAt, setExpiresAt] = React.useState<string | null>(null);
   const [copied, setCopied] = React.useState(false);
-  const copyTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const copyTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   // Clear any pending "copied" reset timer on unmount.
   React.useEffect(() => {
@@ -188,15 +220,18 @@ export function TrimShareModal({
 
   const handleCreate = async () => {
     if (!camera?.id) {
-      toast.error(i18n.t('ui.VideoActionModals.noHayCamaraSeleccionada'));
+      toast.error(i18n.t("ui.VideoActionModals.noHayCamaraSeleccionada"));
+
       return;
     }
     if (!startAt || !endAt) {
-      toast.error(i18n.t('ui.VideoActionModals.indiqueInicioYFinDel'));
+      toast.error(i18n.t("ui.VideoActionModals.indiqueInicioYFinDel"));
+
       return;
     }
     if (new Date(endAt) <= new Date(startAt)) {
-      toast.error(i18n.t('comun.elFinDebeSerPosterior'));
+      toast.error(i18n.t("comun.elFinDebeSerPosterior"));
+
       return;
     }
     setBusy(true);
@@ -208,12 +243,17 @@ export function TrimShareModal({
         label: label || undefined,
       });
       const share = await videoService.shareClip(clip.id);
+
       setShareUrl(share.url);
       setExpiresAt(share.expiresAt);
-      toast.success(i18n.t('ui.VideoActionModals.enlaceParaElClienteGenerado'));
+      toast.success(i18n.t("ui.VideoActionModals.enlaceParaElClienteGenerado"));
       onShared?.(share);
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || t("video.actions.clipError", "No se pudo generar el clip"));
+      toast.error(
+        e?.data?.message ||
+          e?.message ||
+          t("video.actions.clipError", "No se pudo generar el clip"),
+      );
     } finally {
       setBusy(false);
     }
@@ -228,22 +268,21 @@ export function TrimShareModal({
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
       copyTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error(i18n.t('comun.noSePudoCopiarEl'));
+      toast.error(i18n.t("comun.noSePudoCopiarEl"));
     }
   };
 
   return (
     <ModalShell
-      open={open}
-      onClose={onClose}
-      title="Recortar y compartir clip"
-      icon={<Scissors className="size-4" />}
       footer={
         shareUrl ? (
-          <Button variant="outline" onClick={onClose}>{" "}{i18n.t('actions.close')}{" "}</Button>
+          <Button variant="outline" onClick={onClose}>
+            {" "}
+            {i18n.t("actions.close")}{" "}
+          </Button>
         ) : (
           <>
-            <Button variant="outline" onClick={onClose} disabled={busy}>
+            <Button disabled={busy} variant="outline" onClick={onClose}>
               Cancelar
             </Button>
             <GoldButton busy={busy} onClick={handleCreate}>
@@ -253,10 +292,15 @@ export function TrimShareModal({
           </>
         )
       }
+      icon={<Scissors className="size-4" />}
+      open={open}
+      title="Recortar y compartir clip"
+      onClose={onClose}
     >
       {camera?.name ? (
         <p className="mb-4 text-sm text-muted-foreground">
-          Cámara: <span className="font-medium text-foreground">{camera.name}</span>
+          Cámara:{" "}
+          <span className="font-medium text-foreground">{camera.name}</span>
         </p>
       ) : null}
 
@@ -266,7 +310,9 @@ export function TrimShareModal({
             <Label htmlFor="clip-label">Etiqueta</Label>
             <Input
               id="clip-label"
-              placeholder={i18n.t('ui.VideoActionModals.ejIncidenteEnAccesoPrincipal')}
+              placeholder={i18n.t(
+                "ui.VideoActionModals.ejIncidenteEnAccesoPrincipal",
+              )}
               value={label}
               onChange={(e) => setLabel(e.target.value)}
             />
@@ -296,21 +342,26 @@ export function TrimShareModal({
         <div className="space-y-3">
           <div
             className="flex items-start gap-2 rounded-lg border p-3"
-            style={{ borderColor: "var(--brand-line)", background: "var(--brand-wash)" }}
+            style={{
+              borderColor: "var(--brand-line)",
+              background: "var(--brand-wash)",
+            }}
           >
-            <LinkIcon className="mt-0.5 size-4 shrink-0" style={{ color: "var(--brand-text)" }} />
+            <LinkIcon
+              className="mt-0.5 size-4 shrink-0"
+              style={{ color: "var(--brand-text)" }}
+            />
             <div className="min-w-0 flex-1">
               <p className="text-xs font-medium text-muted-foreground">
-                {t('ui.VideoActionModals.enlaceParaElCliente', 'Enlace para el cliente')}
+                {t(
+                  "ui.VideoActionModals.enlaceParaElCliente",
+                  "Enlace para el cliente",
+                )}
               </p>
               <p className="mt-0.5 break-all text-sm font-medium">{shareUrl}</p>
             </div>
           </div>
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={handleCopy}
-          >
+          <Button className="w-full" variant="outline" onClick={handleCopy}>
             {copied ? (
               <Check className="size-4" style={{ color: "var(--ok-text)" }} />
             ) : (
@@ -369,7 +420,8 @@ export function CreateIncidentModal({
 
   const handleCreate = async () => {
     if (!title.trim()) {
-      toast.error(t('ui.VideoActionModals.indiqueUnTituloParaEl'));
+      toast.error(t("ui.VideoActionModals.indiqueUnTituloParaEl"));
+
       return;
     }
     setBusy(true);
@@ -380,8 +432,10 @@ export function CreateIncidentModal({
       stationId: camera?.stationId || undefined,
       postSiteId: camera?.postSiteId || undefined,
     };
+
     try {
       let incident: any;
+
       if (clipId) {
         incident = await videoService.clipToIncident(clipId, body);
       } else if (eventId) {
@@ -392,23 +446,34 @@ export function CreateIncidentModal({
           videoCameraId: camera.id,
           videoDeviceId: camera.videoDeviceId || undefined,
           type: "manual",
-          severity: priority === "critica" ? "critical" : priority === "alta" ? "high" : "medium",
+          severity:
+            priority === "critica"
+              ? "critical"
+              : priority === "alta"
+                ? "high"
+                : "medium",
           title: title.trim(),
           description: description.trim() || undefined,
           stationId: camera.stationId || undefined,
           postSiteId: camera.postSiteId || undefined,
         });
+
         incident = await videoService.eventToIncident(ev.id, body);
       } else {
-        toast.error(t('ui.VideoActionModals.noHayOrigenParaCrear'));
+        toast.error(t("ui.VideoActionModals.noHayOrigenParaCrear"));
         setBusy(false);
+
         return;
       }
-      toast.success(t('comun.incidenteCreado'));
+      toast.success(t("comun.incidenteCreado"));
       onCreated?.(incident);
       onClose();
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || t("video.actions.incidentError", "No se pudo crear el incidente"));
+      toast.error(
+        e?.data?.message ||
+          e?.message ||
+          t("video.actions.incidentError", "No se pudo crear el incidente"),
+      );
     } finally {
       setBusy(false);
     }
@@ -416,19 +481,21 @@ export function CreateIncidentModal({
 
   return (
     <ModalShell
-      open={open}
-      onClose={onClose}
-      title={t('comun.crearIncidente')}
-      icon={<AlertTriangle className="size-4" />}
       footer={
         <>
-          <Button variant="outline" onClick={onClose} disabled={busy}>
+          <Button disabled={busy} variant="outline" onClick={onClose}>
             Cancelar
           </Button>
           <GoldButton busy={busy} onClick={handleCreate}>
-            <AlertTriangle className="size-4" />{" "}{t('comun.crearIncidente')}{" "}</GoldButton>
+            <AlertTriangle className="size-4" />{" "}
+            {t("comun.crearIncidente")}{" "}
+          </GoldButton>
         </>
       }
+      icon={<AlertTriangle className="size-4" />}
+      open={open}
+      title={t("comun.crearIncidente")}
+      onClose={onClose}
     >
       <div className="space-y-4">
         {camera?.name ? (
@@ -439,21 +506,28 @@ export function CreateIncidentModal({
         ) : null}
 
         <div className="space-y-1.5">
-          <Label htmlFor="inc-title">{t("ui.VideoActionModals.titulo", "Título")}</Label>
+          <Label htmlFor="inc-title">
+            {t("ui.VideoActionModals.titulo", "Título")}
+          </Label>
           <Input
             id="inc-title"
-            placeholder={t("ui.VideoActionModals.ejIntrusionDetectada", "Ej. Intrusión detectada")}
+            placeholder={t(
+              "ui.VideoActionModals.ejIntrusionDetectada",
+              "Ej. Intrusión detectada",
+            )}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="inc-desc">{t("ui.VideoActionModals.descripcion", "Descripción")}</Label>
+          <Label htmlFor="inc-desc">
+            {t("ui.VideoActionModals.descripcion", "Descripción")}
+          </Label>
           <Textarea
             id="inc-desc"
+            placeholder={t("ui.VideoActionModals.detallesDelIncidente")}
             rows={4}
-            placeholder={t('ui.VideoActionModals.detallesDelIncidente')}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
@@ -462,15 +536,17 @@ export function CreateIncidentModal({
         <div className="space-y-1.5">
           <Label htmlFor="inc-priority">Prioridad</Label>
           <select
-            id="inc-priority"
             className={selectClass}
+            id="inc-priority"
             value={priority}
             onChange={(e) => setPriority(e.target.value as Priority)}
           >
-            <option value="baja">{t('comun.baja')}</option>
-            <option value="media">{t('comun.media')}</option>
-            <option value="alta">{t('comun.alta')}</option>
-            <option value="critica">{t("ui.VideoActionModals.critica", "Crítica")}</option>
+            <option value="baja">{t("comun.baja")}</option>
+            <option value="media">{t("comun.media")}</option>
+            <option value="alta">{t("comun.alta")}</option>
+            <option value="critica">
+              {t("ui.VideoActionModals.critica", "Crítica")}
+            </option>
           </select>
         </div>
       </div>
@@ -516,11 +592,16 @@ export function DispatchModal({
         eventId,
         note: note.trim() || undefined,
       });
-      toast.success(t('ui.VideoActionModals.supervisorNotificado'));
+
+      toast.success(t("ui.VideoActionModals.supervisorNotificado"));
       onDispatched?.(result);
       onClose();
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || t("video.actions.dispatchError", "No se pudo despachar"));
+      toast.error(
+        e?.data?.message ||
+          e?.message ||
+          t("video.actions.dispatchError", "No se pudo despachar"),
+      );
     } finally {
       setBusy(false);
     }
@@ -528,13 +609,9 @@ export function DispatchModal({
 
   return (
     <ModalShell
-      open={open}
-      onClose={onClose}
-      title={t("ui.VideoActionModals.despacharASupervision", "Despachar a supervisión")}
-      icon={<Radio className="size-4" />}
       footer={
         <>
-          <Button variant="outline" onClick={onClose} disabled={busy}>
+          <Button disabled={busy} variant="outline" onClick={onClose}>
             Cancelar
           </Button>
           <GoldButton busy={busy} onClick={handleDispatch}>
@@ -543,6 +620,13 @@ export function DispatchModal({
           </GoldButton>
         </>
       }
+      icon={<Radio className="size-4" />}
+      open={open}
+      title={t(
+        "ui.VideoActionModals.despacharASupervision",
+        "Despachar a supervisión",
+      )}
+      onClose={onClose}
     >
       <div className="space-y-4">
         {camera?.name ? (
@@ -553,11 +637,16 @@ export function DispatchModal({
         ) : null}
 
         <div className="space-y-1.5">
-          <Label htmlFor="dispatch-note">{t('ui.VideoActionModals.notaParaElSupervisor')}</Label>
+          <Label htmlFor="dispatch-note">
+            {t("ui.VideoActionModals.notaParaElSupervisor")}
+          </Label>
           <Textarea
             id="dispatch-note"
+            placeholder={t(
+              "ui.VideoActionModals.describaLaSituacionQueRequiere",
+              "Describa la situación que requiere atención…",
+            )}
             rows={4}
-            placeholder={t("ui.VideoActionModals.describaLaSituacionQueRequiere", "Describa la situación que requiere atención…")}
             value={note}
             onChange={(e) => setNote(e.target.value)}
           />

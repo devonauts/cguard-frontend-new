@@ -34,29 +34,45 @@
 
 import { useEffect, useState } from "react";
 
-export interface Rgba { r: number; g: number; b: number; a: number }
+export interface Rgba {
+  r: number;
+  g: number;
+  b: number;
+  a: number;
+}
 
 /* ── Conversión de color ─────────────────────────────────────────────────── */
 
-const acota = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n));
+const acota = (n: number, min: number, max: number) =>
+  Math.min(max, Math.max(min, n));
 
 function parseHex(s: string): Rgba | null {
   const h = s.replace("#", "").trim();
-  const exp = h.length === 3 || h.length === 4
-    ? h.split("").map((c) => c + c).join("")
-    : h;
+  const exp =
+    h.length === 3 || h.length === 4
+      ? h
+          .split("")
+          .map((c) => c + c)
+          .join("")
+      : h;
+
   if (exp.length !== 6 && exp.length !== 8) return null;
   const n = Number.parseInt(exp.slice(0, 6), 16);
+
   if (Number.isNaN(n)) return null;
   const a = exp.length === 8 ? Number.parseInt(exp.slice(6, 8), 16) / 255 : 1;
+
   return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255, a };
 }
 
 /** Números de una función CSS, resolviendo porcentajes con su escala. */
 function nums(s: string, pctScale: number[]): number[] {
   const raw = s.match(/-?\d*\.?\d+(?:e[-+]?\d+)?%?/gi) || [];
+
   return raw.map((t, i) => {
-    if (t.endsWith("%")) return (Number.parseFloat(t) / 100) * (pctScale[i] ?? 1);
+    if (t.endsWith("%"))
+      return (Number.parseFloat(t) / 100) * (pctScale[i] ?? 1);
+
     return Number.parseFloat(t);
   });
 }
@@ -64,15 +80,23 @@ function nums(s: string, pctScale: number[]): number[] {
 /** sRGB con gamma a partir del canal lineal. */
 function gamma(c: number): number {
   const v = c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055;
+
   return Math.round(acota(v, 0, 1) * 255);
 }
 
 /** OKLab → sRGB (matrices estándar de Björn Ottosson). */
-function oklabToRgb(L: number, a: number, b: number): { r: number; g: number; b: number } {
+function oklabToRgb(
+  L: number,
+  a: number,
+  b: number,
+): { r: number; g: number; b: number } {
   const l_ = L + 0.3963377774 * a + 0.2158037573 * b;
   const m_ = L - 0.1055613458 * a - 0.0638541728 * b;
   const s_ = L - 0.0894841775 * a - 1.291485548 * b;
-  const l = l_ * l_ * l_, m = m_ * m_ * m_, s = s_ * s_ * s_;
+  const l = l_ * l_ * l_,
+    m = m_ * m_ * m_,
+    s = s_ * s_ * s_;
+
   return {
     r: gamma(+4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s),
     g: gamma(-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s),
@@ -81,16 +105,21 @@ function oklabToRgb(L: number, a: number, b: number): { r: number; g: number; b:
 }
 
 let ctx2d: CanvasRenderingContext2D | null | undefined;
+
 /** Último recurso: dejar que el navegador normalice el color. */
 function porLienzo(s: string): Rgba | null {
   try {
-    if (ctx2d === undefined) ctx2d = document.createElement("canvas").getContext("2d");
+    if (ctx2d === undefined)
+      ctx2d = document.createElement("canvas").getContext("2d");
     if (!ctx2d) return null;
     const centinela = "#010203";
+
     ctx2d.fillStyle = centinela;
     ctx2d.fillStyle = s;
     const salida = String(ctx2d.fillStyle);
+
     if (salida.toLowerCase() === centinela) return null; // no lo entendió
+
     return salida.startsWith("#") ? parseHex(salida) : parseFuncion(salida);
   } catch {
     return null;
@@ -99,29 +128,43 @@ function porLienzo(s: string): Rgba | null {
 
 function parseFuncion(s: string): Rgba | null {
   const v = nums(s, [255, 255, 255, 1]);
+
   if (v.length < 3) return null;
-  return { r: acota(v[0], 0, 255), g: acota(v[1], 0, 255), b: acota(v[2], 0, 255), a: v[3] ?? 1 };
+
+  return {
+    r: acota(v[0], 0, 255),
+    g: acota(v[1], 0, 255),
+    b: acota(v[2], 0, 255),
+    a: v[3] ?? 1,
+  };
 }
 
 /** Cualquier cadena de color CSS → RGBA. */
 export function parseCssColor(raw: string): Rgba | null {
-  const s = String(raw || "").trim().toLowerCase();
+  const s = String(raw || "")
+    .trim()
+    .toLowerCase();
+
   if (!s || s === "transparent") return null;
   if (s.startsWith("#")) return parseHex(s);
 
   if (s.startsWith("oklch")) {
     const v = nums(s, [1, 0.4, 360, 1]);
+
     if (v.length < 3 || v.some((n) => Number.isNaN(n))) return porLienzo(s);
     const [L, C, H] = v;
     const rad = (H * Math.PI) / 180;
     const { r, g, b } = oklabToRgb(L, C * Math.cos(rad), C * Math.sin(rad));
+
     return { r, g, b, a: v[3] ?? 1 };
   }
 
   if (s.startsWith("oklab")) {
     const v = nums(s, [1, 0.4, 0.4, 1]);
+
     if (v.length < 3 || v.some((n) => Number.isNaN(n))) return porLienzo(s);
     const { r, g, b } = oklabToRgb(v[0], v[1], v[2]);
+
     return { r, g, b, a: v[3] ?? 1 };
   }
 
@@ -130,9 +173,16 @@ export function parseCssColor(raw: string): Rgba | null {
   if (s.startsWith("color(")) {
     // color(srgb r g b / a) — canales 0..1
     const v = nums(s, [1, 1, 1, 1]);
+
     if (v.length >= 3 && s.includes("srgb")) {
-      return { r: Math.round(acota(v[0], 0, 1) * 255), g: Math.round(acota(v[1], 0, 1) * 255), b: Math.round(acota(v[2], 0, 1) * 255), a: v[3] ?? 1 };
+      return {
+        r: Math.round(acota(v[0], 0, 1) * 255),
+        g: Math.round(acota(v[1], 0, 1) * 255),
+        b: Math.round(acota(v[2], 0, 1) * 255),
+        a: v[3] ?? 1,
+      };
     }
+
     return porLienzo(s);
   }
 
@@ -140,7 +190,11 @@ export function parseCssColor(raw: string): Rgba | null {
 }
 
 export function toHex({ r, g, b }: Rgba): string {
-  const h = (n: number) => Math.round(acota(n, 0, 255)).toString(16).padStart(2, "0");
+  const h = (n: number) =>
+    Math.round(acota(n, 0, 255))
+      .toString(16)
+      .padStart(2, "0");
+
   return `#${h(r)}${h(g)}${h(b)}`;
 }
 
@@ -151,6 +205,7 @@ export function toRgba({ r, g, b, a }: Rgba, alfa?: number): string {
 /** Compone una capa con alfa sobre un fondo opaco. */
 export function componer(capa: Rgba, fondo: Rgba): Rgba {
   const a = acota(capa.a, 0, 1);
+
   return {
     r: capa.r * a + fondo.r * (1 - a),
     g: capa.g * a + fondo.g * (1 - a),
@@ -162,7 +217,13 @@ export function componer(capa: Rgba, fondo: Rgba): Rgba {
 /** Mezcla lineal de dos colores opacos. */
 export function mezclar(a: Rgba, b: Rgba, t: number): Rgba {
   const k = acota(t, 0, 1);
-  return { r: a.r + (b.r - a.r) * k, g: a.g + (b.g - a.g) * k, b: a.b + (b.b - a.b) * k, a: 1 };
+
+  return {
+    r: a.r + (b.r - a.r) * k,
+    g: a.g + (b.g - a.g) * k,
+    b: a.b + (b.b - a.b) * k,
+    a: 1,
+  };
 }
 
 /** La misma capa con la opacidad escalada. */
@@ -173,12 +234,15 @@ function conAlfa(c: Rgba, k: number): Rgba {
 /* ── Lectura de las variables del sistema ────────────────────────────────── */
 
 let sonda: HTMLElement | null = null;
+
 function obtenerSonda(forzarOscuro: boolean): HTMLElement | null {
   if (typeof document === "undefined") return null;
   if (!sonda || !sonda.isConnected) {
     const el = document.createElement("span");
+
     el.setAttribute("aria-hidden", "true");
-    el.style.cssText = "position:absolute;left:-9999px;top:0;width:0;height:0;opacity:0;pointer-events:none";
+    el.style.cssText =
+      "position:absolute;left:-9999px;top:0;width:0;height:0;opacity:0;pointer-events:none";
     document.body.appendChild(el);
     sonda = el;
   }
@@ -187,6 +251,7 @@ function obtenerSonda(forzarOscuro: boolean): HTMLElement | null {
   // ganan a las heredadas del <html>. Es lo que permite leer la paleta oscura
   // con la aplicación en claro, para el ajuste «Tema del mapa: Noche».
   sonda.classList.toggle("dark", forzarOscuro);
+
   return sonda;
 }
 
@@ -195,29 +260,45 @@ function obtenerSonda(forzarOscuro: boolean): HTMLElement | null {
  * Ver la cabecera: se pasa por una propiedad tipada para que el navegador
  * evalúe `calc()` además de `var()`.
  */
-export function leerToken(nombre: string, respaldo = "#808080", forzarOscuro = false): Rgba {
+export function leerToken(
+  nombre: string,
+  respaldo = "#808080",
+  forzarOscuro = false,
+): Rgba {
   try {
     const el = obtenerSonda(forzarOscuro);
+
     if (el) {
       el.style.color = "";
       el.style.color = `var(${nombre})`;
       const calculado = getComputedStyle(el).color;
       const c = calculado ? parseCssColor(calculado) : null;
+
       if (c) return c;
     }
   } catch {
     /* sin DOM o variable inexistente — cae al respaldo */
   }
+
   return parseCssColor(respaldo) || { r: 128, g: 128, b: 128, a: 1 };
 }
 
 /** La variable, ya en `#rrggbb` — el formato que exige Google Maps. */
-export function tokenHex(nombre: string, respaldo = "#808080", forzarOscuro = false): string {
+export function tokenHex(
+  nombre: string,
+  respaldo = "#808080",
+  forzarOscuro = false,
+): string {
   return toHex(leerToken(nombre, respaldo, forzarOscuro));
 }
 
 /** La variable como `rgba(...)`, con alfa propia o forzada. Para los SVG. */
-export function tokenRgba(nombre: string, alfa?: number, respaldo = "#808080", forzarOscuro = false): string {
+export function tokenRgba(
+  nombre: string,
+  alfa?: number,
+  respaldo = "#808080",
+  forzarOscuro = false,
+): string {
   return toRgba(leerToken(nombre, respaldo, forzarOscuro), alfa);
 }
 
@@ -226,25 +307,44 @@ export function tokenRgba(nombre: string, alfa?: number, respaldo = "#808080", f
 export interface MapPalette {
   oscuro: boolean;
   /** Acento configurable y sus variantes. */
-  brand: string; brandInk: string; brandText: string; brandLine: string;
+  brand: string;
+  brandInk: string;
+  brandText: string;
+  brandLine: string;
   /** Tinta. */
-  ink: string; inkSoft: string; inkFaint: string;
+  ink: string;
+  inkSoft: string;
+  inkFaint: string;
   /** Superficies del cristal (ya compuestas y opacas donde el mapa las exige). */
-  canvas: string; glassSolid: string; hairline: string; hairlineLit: string;
+  canvas: string;
+  glassSolid: string;
+  hairline: string;
+  hairlineLit: string;
   /** Semánticos — fijos, no dependen del acento. */
-  ok: string; warn: string; bad: string; info: string;
+  ok: string;
+  warn: string;
+  bad: string;
+  info: string;
   /** Teselas del mapa, derivadas de las superficies. */
-  tierra: string; agua: string; calle: string; via: string; frontera: string; edificio: string;
+  tierra: string;
+  agua: string;
+  calle: string;
+  via: string;
+  frontera: string;
+  edificio: string;
 }
 
 /** `modo: "noche"` lee la paleta oscura aunque la aplicación esté en claro. */
 export function leerPaleta(modo: "auto" | "noche" = "auto"): MapPalette {
-  const temaOscuro = typeof document !== "undefined" && document.documentElement.classList.contains("dark");
+  const temaOscuro =
+    typeof document !== "undefined" &&
+    document.documentElement.classList.contains("dark");
   const oscuro = modo === "noche" ? true : temaOscuro;
   const forzar = modo === "noche" && !temaOscuro;
 
   const tokenHex = (n: string, r?: string) => toHex(leerToken(n, r, forzar));
-  const tokenRgba = (n: string, a?: number, r?: string) => toRgba(leerToken(n, r, forzar), a);
+  const tokenRgba = (n: string, a?: number, r?: string) =>
+    toRgba(leerToken(n, r, forzar), a);
 
   const canvas = leerToken("--canvas", oscuro ? "#111111" : "#f2f2f2", forzar);
   const sunken = leerToken("--glass-sunken", "#00000055", forzar);
@@ -315,33 +415,102 @@ export function estiloMapa(p: MapPalette): any[] {
     { elementType: "labels.text.fill", stylers: [{ color: p.inkFaint }] },
     // El contorno del texto tiene que ser GRUESO: sobre teselas casi negras un
     // topónimo sin halo se pierde en cuanto pasa por encima de una calle.
-    { elementType: "labels.text.stroke", stylers: [{ color: p.tierra }, { weight: 3 }] },
+    {
+      elementType: "labels.text.stroke",
+      stylers: [{ color: p.tierra }, { weight: 3 }],
+    },
 
     // Sin ruido: puntos de interés y transporte fuera. El mapa es un tablero de
     // operaciones, no una guía turística.
     { featureType: "poi", stylers: [{ visibility: "off" }] },
     { featureType: "transit", stylers: [{ visibility: "off" }] },
-    { featureType: "administrative.land_parcel", stylers: [{ visibility: "off" }] },
-    { featureType: "administrative.neighborhood", stylers: [{ visibility: "off" }] },
+    {
+      featureType: "administrative.land_parcel",
+      stylers: [{ visibility: "off" }],
+    },
+    {
+      featureType: "administrative.neighborhood",
+      stylers: [{ visibility: "off" }],
+    },
 
-    { featureType: "administrative", elementType: "geometry", stylers: [{ color: p.frontera }] },
-    { featureType: "administrative.locality", elementType: "labels.text.fill", stylers: [{ color: p.inkSoft }] },
-    { featureType: "administrative.province", elementType: "labels.text.fill", stylers: [{ color: p.inkFaint }] },
+    {
+      featureType: "administrative",
+      elementType: "geometry",
+      stylers: [{ color: p.frontera }],
+    },
+    {
+      featureType: "administrative.locality",
+      elementType: "labels.text.fill",
+      stylers: [{ color: p.inkSoft }],
+    },
+    {
+      featureType: "administrative.province",
+      elementType: "labels.text.fill",
+      stylers: [{ color: p.inkFaint }],
+    },
 
-    { featureType: "landscape.natural", elementType: "geometry", stylers: [{ color: p.tierra }] },
-    { featureType: "landscape.man_made", elementType: "geometry", stylers: [{ color: p.edificio }] },
+    {
+      featureType: "landscape.natural",
+      elementType: "geometry",
+      stylers: [{ color: p.tierra }],
+    },
+    {
+      featureType: "landscape.man_made",
+      elementType: "geometry",
+      stylers: [{ color: p.edificio }],
+    },
 
-    { featureType: "road", elementType: "geometry", stylers: [{ color: p.calle }] },
-    { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: p.frontera }] },
-    { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: p.inkFaint }] },
-    { featureType: "road", elementType: "labels.text.stroke", stylers: [{ color: p.tierra }] },
-    { featureType: "road.highway", elementType: "geometry", stylers: [{ color: p.via }] },
-    { featureType: "road.highway", elementType: "geometry.stroke", stylers: [{ color: p.frontera }] },
-    { featureType: "road.local", elementType: "labels", stylers: [{ visibility: "simplified" }] },
+    {
+      featureType: "road",
+      elementType: "geometry",
+      stylers: [{ color: p.calle }],
+    },
+    {
+      featureType: "road",
+      elementType: "geometry.stroke",
+      stylers: [{ color: p.frontera }],
+    },
+    {
+      featureType: "road",
+      elementType: "labels.text.fill",
+      stylers: [{ color: p.inkFaint }],
+    },
+    {
+      featureType: "road",
+      elementType: "labels.text.stroke",
+      stylers: [{ color: p.tierra }],
+    },
+    {
+      featureType: "road.highway",
+      elementType: "geometry",
+      stylers: [{ color: p.via }],
+    },
+    {
+      featureType: "road.highway",
+      elementType: "geometry.stroke",
+      stylers: [{ color: p.frontera }],
+    },
+    {
+      featureType: "road.local",
+      elementType: "labels",
+      stylers: [{ visibility: "simplified" }],
+    },
 
-    { featureType: "water", elementType: "geometry", stylers: [{ color: p.agua }] },
-    { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: p.inkFaint }] },
-    { featureType: "water", elementType: "labels.text.stroke", stylers: [{ color: p.agua }] },
+    {
+      featureType: "water",
+      elementType: "geometry",
+      stylers: [{ color: p.agua }],
+    },
+    {
+      featureType: "water",
+      elementType: "labels.text.fill",
+      stylers: [{ color: p.inkFaint }],
+    },
+    {
+      featureType: "water",
+      elementType: "labels.text.stroke",
+      stylers: [{ color: p.agua }],
+    },
   ];
 }
 
@@ -369,14 +538,24 @@ export function useMapPalette(modo: "auto" | "noche" = "auto"): MapPalette {
         // una regeneraría los SVG de todos los marcadores del mapa.
         setPaleta((previa) => {
           const nueva = leerPaleta(modo);
+
           return mismaPaleta(previa, nueva) ? previa : nueva;
         });
       });
     };
+
     recalcular();
     const obs = new MutationObserver(recalcular);
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class", "style"] });
-    return () => { obs.disconnect(); cancelAnimationFrame(pendiente); };
+
+    obs.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class", "style"],
+    });
+
+    return () => {
+      obs.disconnect();
+      cancelAnimationFrame(pendiente);
+    };
   }, [modo]);
 
   return paleta;
@@ -384,6 +563,7 @@ export function useMapPalette(modo: "auto" | "noche" = "auto"): MapPalette {
 
 function mismaPaleta(a: MapPalette, b: MapPalette): boolean {
   const claves = Object.keys(a) as Array<keyof MapPalette>;
+
   return claves.every((k) => a[k] === b[k]);
 }
 
@@ -412,12 +592,21 @@ export function huella(p: MapPalette): string {
 
 /** Sólo el modo oscuro, para quien no necesita la paleta entera. */
 export function useIsDark(): boolean {
-  const obtener = () => typeof document !== "undefined" && document.documentElement.classList.contains("dark");
+  const obtener = () =>
+    typeof document !== "undefined" &&
+    document.documentElement.classList.contains("dark");
   const [oscuro, setOscuro] = useState(obtener);
+
   useEffect(() => {
     const obs = new MutationObserver(() => setOscuro(obtener()));
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+
+    obs.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
     return () => obs.disconnect();
   }, []);
+
   return oscuro;
 }

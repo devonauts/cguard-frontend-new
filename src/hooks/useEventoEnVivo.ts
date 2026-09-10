@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+
 import { crearSocket, cerrarSocket } from "@/lib/socket";
 import { getAuthToken } from "@/lib/api";
 
@@ -42,6 +43,7 @@ export function useEventoEnVivo(
   // Se guarda en un ref para que cambiar la función de recarga en cada render
   // no destruya y rehaga la suscripción — el fallo clásico de este patrón.
   const recargarRef = useRef(recargar);
+
   recargarRef.current = recargar;
 
   const clave = eventos.join("|");
@@ -49,6 +51,7 @@ export function useEventoEnVivo(
   useEffect(() => {
     if (!activo) return;
     const tid = tenantId();
+
     if (!tid) return;
 
     const socket = crearSocket(getAuthToken() || "", tid);
@@ -90,20 +93,31 @@ export function useEventoEnVivo(
     let ultimaSeq: number | null = null;
     const conSeq = (p: any) => {
       const seq = Number(p?.seq);
+
       if (Number.isFinite(seq)) {
         const reinicio = ultimaSeq != null && seq < ultimaSeq;
+
         ultimaSeq = seq;
-        if (reinicio) { recargarRef.current(); return; }
+        if (reinicio) {
+          recargarRef.current();
+
+          return;
+        }
       }
       alAvisar();
     };
 
     const nombres = clave.split("|");
+
     for (const n of nombres) socket.on(n, conSeq);
     /* `connect` recarga SIEMPRE y reinicia la cuenta: tras una reconexión no
        sabemos qué nos perdimos, así que se pide el estado actual una vez y se
        vuelve a empezar a numerar desde lo que llegue. */
-    const alConectar = () => { ultimaSeq = null; alAvisar(); };
+    const alConectar = () => {
+      ultimaSeq = null;
+      alAvisar();
+    };
+
     socket.on("connect", alConectar);
 
     return () => {

@@ -19,6 +19,7 @@ import { getAuthToken } from "@/lib/api";
 export function openEventStream(tenantId: string): EventSource | null {
   const token = getAuthToken() || localStorage.getItem("authToken") || "";
   const base = (import.meta as any).env?.VITE_API_URL || "";
+
   if (!tenantId || !token || !base) return null;
   try {
     return new EventSource(

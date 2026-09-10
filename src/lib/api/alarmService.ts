@@ -1,7 +1,8 @@
-import { ApiService } from "@/services/api/apiService";
-import i18n from '@/i18n';
-import { descargarInforme } from "@/lib/export/serverDownload";
 import type { ExportFormat } from "@/lib/export/reportExport";
+
+import { ApiService } from "@/services/api/apiService";
+import i18n from "@/i18n";
+import { descargarInforme } from "@/lib/export/serverDownload";
 
 const tid = (): string => localStorage.getItem("tenantId") || "";
 
@@ -9,10 +10,25 @@ const tid = (): string => localStorage.getItem("tenantId") || "";
 // Types
 // ============================================================
 
-export type AlarmProtocol = "sia-dc09" | "contactid" | "surgard" | "webhook" | "manual";
-export type AlarmPanelType = "intrusion" | "fire" | "holdup" | "access" | "environmental";
+export type AlarmProtocol =
+  | "sia-dc09"
+  | "contactid"
+  | "surgard"
+  | "webhook"
+  | "manual";
+export type AlarmPanelType =
+  | "intrusion"
+  | "fire"
+  | "holdup"
+  | "access"
+  | "environmental";
 export type AlarmComms = "ip" | "cellular" | "dual";
-export type AlarmPanelStatus = "online" | "offline" | "armed" | "disarmed" | "unknown";
+export type AlarmPanelStatus =
+  | "online"
+  | "offline"
+  | "armed"
+  | "disarmed"
+  | "unknown";
 
 export interface AlarmPanel {
   id: string;
@@ -68,7 +84,11 @@ export interface AlarmZone {
   updatedAt?: string;
 }
 
-export type AlarmContactAuthority = "owner" | "manager" | "keyholder" | "emergency";
+export type AlarmContactAuthority =
+  | "owner"
+  | "manager"
+  | "keyholder"
+  | "emergency";
 
 export interface AlarmContact {
   id: string;
@@ -84,7 +104,12 @@ export interface AlarmContact {
   updatedAt?: string;
 }
 
-export type AlarmSignalFormat = "sia" | "contactid" | "surgard" | "webhook" | "manual";
+export type AlarmSignalFormat =
+  | "sia"
+  | "contactid"
+  | "surgard"
+  | "webhook"
+  | "manual";
 export type AlarmSignalQualifier = "event" | "restore" | "status";
 export type AlarmSignalChannel = "ip" | "cellular" | "receiver";
 
@@ -142,7 +167,12 @@ export type AlarmCaseStatus =
   | "dispatched"
   | "resolved"
   | "closed";
-export type AlarmCaseDisposition = "real" | "false" | "test" | "runaway" | "cancelled";
+export type AlarmCaseDisposition =
+  | "real"
+  | "false"
+  | "test"
+  | "runaway"
+  | "cancelled";
 
 export interface AlarmCase {
   id: string;
@@ -194,27 +224,49 @@ export interface AlarmCase {
  * verde porque lo ponga en verde.
  */
 export function alarmSourceMeta(source?: string | null): {
-  label: string; short: string; tone: 'bad' | 'warn' | 'neutral' | 'info';
+  label: string;
+  short: string;
+  tone: "bad" | "warn" | "neutral" | "info";
 } {
   switch (source) {
-    case 'client_app':
-      return { label: i18n.t('alarm.source.clientApp'), short: i18n.t('alarm.source.clientAppShort'), tone: 'bad' };
-    case 'worker_app':
+    case "client_app":
+      return {
+        label: i18n.t("alarm.source.clientApp"),
+        short: i18n.t("alarm.source.clientAppShort"),
+        tone: "bad",
+      };
+    case "worker_app":
       // `bad`, NO `warn`. Antes era naranja —se conservó al migrar de clases a
       // tonos— y quedaba el absurdo de que el SOS de un cliente salía rojo y el
       // botón de pánico de un vigilante ámbar. El backend dispara la MISMA ruta
       // de pánico completa para los dos: pintar uno menos grave es mentir.
-      return { label: i18n.t('alarm.source.workerApp'), short: i18n.t('alarm.source.workerAppShort'), tone: 'bad' };
-    case 'manual':
-      return { label: i18n.t('alarm.source.manual'), short: i18n.t('alarm.source.manualShort'), tone: 'neutral' };
-    case 'alarm_panel':
+      return {
+        label: i18n.t("alarm.source.workerApp"),
+        short: i18n.t("alarm.source.workerAppShort"),
+        tone: "bad",
+      };
+    case "manual":
+      return {
+        label: i18n.t("alarm.source.manual"),
+        short: i18n.t("alarm.source.manualShort"),
+        tone: "neutral",
+      };
+    case "alarm_panel":
     default:
-      return { label: i18n.t('alarm.source.panel'), short: i18n.t('alarm.source.panelShort'), tone: 'info' };
+      return {
+        label: i18n.t("alarm.source.panel"),
+        short: i18n.t("alarm.source.panelShort"),
+        tone: "info",
+      };
   }
 }
 
 export type AlarmDispatchType = "guard" | "police" | "fire" | "medical";
-export type AlarmDispatchStatus = "requested" | "enroute" | "onscene" | "cleared";
+export type AlarmDispatchStatus =
+  | "requested"
+  | "enroute"
+  | "onscene"
+  | "cleared";
 
 export interface AlarmDispatch {
   id: string;
@@ -289,10 +341,12 @@ export interface OpenCloseSchedule {
 const qstr = (params?: Record<string, string | number | undefined>): string => {
   if (!params) return "";
   const qs = new URLSearchParams();
+
   for (const [k, v] of Object.entries(params)) {
     if (v !== undefined && v !== null && v !== "") qs.set(k, String(v));
   }
   const s = qs.toString();
+
   return s ? `?${s}` : "";
 };
 
@@ -308,10 +362,15 @@ export const alarmService = {
   panel(id: string): Promise<AlarmPanel> {
     return ApiService.get(`/tenant/${tid()}/alarm/panel/${id}`);
   },
-  createPanel(body: Partial<AlarmPanel> & { dc09Key?: string }): Promise<AlarmPanel> {
+  createPanel(
+    body: Partial<AlarmPanel> & { dc09Key?: string },
+  ): Promise<AlarmPanel> {
     return ApiService.post(`/tenant/${tid()}/alarm/panel`, body);
   },
-  updatePanel(id: string, body: Partial<AlarmPanel> & { dc09Key?: string }): Promise<AlarmPanel> {
+  updatePanel(
+    id: string,
+    body: Partial<AlarmPanel> & { dc09Key?: string },
+  ): Promise<AlarmPanel> {
     return ApiService.put(`/tenant/${tid()}/alarm/panel/${id}`, body);
   },
   deletePanel(id: string): Promise<void> {
@@ -323,7 +382,10 @@ export const alarmService = {
     return ApiService.get(`/tenant/${tid()}/alarm/panel/${panelId}/zones`);
   },
   createZone(panelId: string, body: Partial<AlarmZone>): Promise<AlarmZone> {
-    return ApiService.post(`/tenant/${tid()}/alarm/panel/${panelId}/zone`, body);
+    return ApiService.post(
+      `/tenant/${tid()}/alarm/panel/${panelId}/zone`,
+      body,
+    );
   },
   updateZone(id: string, body: Partial<AlarmZone>): Promise<AlarmZone> {
     return ApiService.put(`/tenant/${tid()}/alarm/zone/${id}`, body);
@@ -336,10 +398,19 @@ export const alarmService = {
   contacts(panelId: string): Promise<AlarmContact[]> {
     return ApiService.get(`/tenant/${tid()}/alarm/panel/${panelId}/contacts`);
   },
-  createContact(panelId: string, body: Partial<AlarmContact> & { passcode?: string }): Promise<AlarmContact> {
-    return ApiService.post(`/tenant/${tid()}/alarm/panel/${panelId}/contact`, body);
+  createContact(
+    panelId: string,
+    body: Partial<AlarmContact> & { passcode?: string },
+  ): Promise<AlarmContact> {
+    return ApiService.post(
+      `/tenant/${tid()}/alarm/panel/${panelId}/contact`,
+      body,
+    );
   },
-  updateContact(id: string, body: Partial<AlarmContact> & { passcode?: string }): Promise<AlarmContact> {
+  updateContact(
+    id: string,
+    body: Partial<AlarmContact> & { passcode?: string },
+  ): Promise<AlarmContact> {
     return ApiService.put(`/tenant/${tid()}/alarm/contact/${id}`, body);
   },
   deleteContact(id: string): Promise<void> {
@@ -364,8 +435,14 @@ export const alarmService = {
   schedules(panelId: string): Promise<OpenCloseSchedule[]> {
     return ApiService.get(`/tenant/${tid()}/alarm/panel/${panelId}/schedules`);
   },
-  createSchedule(panelId: string, body: Partial<OpenCloseSchedule>): Promise<OpenCloseSchedule> {
-    return ApiService.post(`/tenant/${tid()}/alarm/panel/${panelId}/schedule`, body);
+  createSchedule(
+    panelId: string,
+    body: Partial<OpenCloseSchedule>,
+  ): Promise<OpenCloseSchedule> {
+    return ApiService.post(
+      `/tenant/${tid()}/alarm/panel/${panelId}/schedule`,
+      body,
+    );
   },
   deleteSchedule(id: string): Promise<void> {
     return ApiService.delete(`/tenant/${tid()}/alarm/schedule/${id}`);
@@ -391,7 +468,10 @@ export const alarmService = {
     return ApiService.get(`/tenant/${tid()}/alarm/case/${id}`);
   },
   acknowledge(id: string, action?: string): Promise<AlarmCase> {
-    return ApiService.post(`/tenant/${tid()}/alarm/case/${id}/acknowledge`, action ? { action } : undefined);
+    return ApiService.post(
+      `/tenant/${tid()}/alarm/case/${id}/acknowledge`,
+      action ? { action } : undefined,
+    );
   },
   dispatch(
     id: string,
@@ -402,19 +482,35 @@ export const alarmService = {
   resolve(id: string): Promise<AlarmCase> {
     return ApiService.post(`/tenant/${tid()}/alarm/case/${id}/resolve`);
   },
-  close(id: string, body: { disposition: AlarmCaseDisposition }): Promise<AlarmCase> {
+  close(
+    id: string,
+    body: { disposition: AlarmCaseDisposition },
+  ): Promise<AlarmCase> {
     return ApiService.post(`/tenant/${tid()}/alarm/case/${id}/close`, body);
   },
-  caseToIncident(id: string, body: Record<string, unknown>): Promise<{ id?: string; incidentId?: string }> {
+  caseToIncident(
+    id: string,
+    body: Record<string, unknown>,
+  ): Promise<{ id?: string; incidentId?: string }> {
     return ApiService.post(`/tenant/${tid()}/alarm/case/${id}/incident`, body);
   },
   addNote(id: string, body: { detail: string }): Promise<AlarmAuditLog> {
     return ApiService.post(`/tenant/${tid()}/alarm/case/${id}/note`, body);
   },
-  actionPlan(id: string): Promise<{ plan: { id: string; name: string } | null; steps: ActionPlanStep[]; progress: Record<string, { done: boolean; note?: string | null; at?: string; by?: string | null }> }> {
+  actionPlan(id: string): Promise<{
+    plan: { id: string; name: string } | null;
+    steps: ActionPlanStep[];
+    progress: Record<
+      string,
+      { done: boolean; note?: string | null; at?: string; by?: string | null }
+    >;
+  }> {
     return ApiService.get(`/tenant/${tid()}/alarm/case/${id}/action-plan`);
   },
-  setStep(id: string, body: { stepIndex: number; done: boolean; note?: string }): Promise<any> {
+  setStep(
+    id: string,
+    body: { stepIndex: number; done: boolean; note?: string },
+  ): Promise<any> {
     return ApiService.post(`/tenant/${tid()}/alarm/case/${id}/step`, body);
   },
   caseCameras(id: string): Promise<any[]> {
@@ -423,20 +519,43 @@ export const alarmService = {
   caseClips(id: string): Promise<any[]> {
     return ApiService.get(`/tenant/${tid()}/alarm/case/${id}/clips`);
   },
-  logCall(id: string, body: { alarmContactId?: string; contactName?: string; phone?: string; outcome: string; note?: string }): Promise<{ call: any; ecvSatisfied: boolean; attempts: number }> {
+  logCall(
+    id: string,
+    body: {
+      alarmContactId?: string;
+      contactName?: string;
+      phone?: string;
+      outcome: string;
+      note?: string;
+    },
+  ): Promise<{ call: any; ecvSatisfied: boolean; attempts: number }> {
     return ApiService.post(`/tenant/${tid()}/alarm/case/${id}/call`, body);
   },
-  dispatchPolice(id: string, body: { note?: string; override?: boolean }): Promise<{ police?: { message?: string } }> {
-    return ApiService.post(`/tenant/${tid()}/alarm/case/${id}/dispatch`, { type: "police", ...body });
+  dispatchPolice(
+    id: string,
+    body: { note?: string; override?: boolean },
+  ): Promise<{ police?: { message?: string } }> {
+    return ApiService.post(`/tenant/${tid()}/alarm/case/${id}/dispatch`, {
+      type: "police",
+      ...body,
+    });
   },
-  falseAlarmReport(params?: { days?: number }): Promise<{ days: number; overall: any; panels: any[] }> {
-    return ApiService.get(`/tenant/${tid()}/alarm/reports/false-alarms${qstr(params)}`);
+  falseAlarmReport(params?: {
+    days?: number;
+  }): Promise<{ days: number; overall: any; panels: any[] }> {
+    return ApiService.get(
+      `/tenant/${tid()}/alarm/reports/false-alarms${qstr(params)}`,
+    );
   },
   analytics(params?: { days?: number }): Promise<any> {
     return ApiService.get(`/tenant/${tid()}/alarm/analytics${qstr(params)}`);
   },
-  auditExport(params?: { days?: number }): Promise<{ days: number; count: number; rows: any[] }> {
-    return ApiService.get(`/tenant/${tid()}/alarm/reports/audit-export${qstr(params)}`);
+  auditExport(params?: {
+    days?: number;
+  }): Promise<{ days: number; count: number; rows: any[] }> {
+    return ApiService.get(
+      `/tenant/${tid()}/alarm/reports/audit-export${qstr(params)}`,
+    );
   },
   /**
    * El mismo rastro de auditoría, pero como archivo ya armado por el servidor.
@@ -446,8 +565,12 @@ export const alarmService = {
    * abrir una ruta nueva porque los datos, el permiso y el tope de filas son
    * exactamente los mismos; lo único que cambia es el envoltorio.
    */
-  auditExportFile(format: ExportFormat, params?: { days?: number }): Promise<void> {
+  auditExportFile(
+    format: ExportFormat,
+    params?: { days?: number },
+  ): Promise<void> {
     const days = params?.days ?? 30;
+
     return descargarInforme(
       `/tenant/${tid()}/alarm/reports/audit-export?days=${days}&format=${format}`,
       { format, nombreBase: `auditoria-alarmas-${days}d` },
@@ -455,7 +578,10 @@ export const alarmService = {
   },
 
   // --- Signals / Events ---
-  signals(params?: { panelId?: string; limit?: number }): Promise<AlarmSignal[]> {
+  signals(params?: {
+    panelId?: string;
+    limit?: number;
+  }): Promise<AlarmSignal[]> {
     return ApiService.get(`/tenant/${tid()}/alarm/signals${qstr(params)}`);
   },
   events(params?: { caseId?: string }): Promise<AlarmEvent[]> {

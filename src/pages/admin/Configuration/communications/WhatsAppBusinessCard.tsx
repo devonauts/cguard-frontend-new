@@ -4,8 +4,14 @@ import { toast } from "sonner";
 import { Loader2, MessageCircle, Unplug, RefreshCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Section, StatusBadge, Field, Modal, SkeletonBlock } from "@/components/kit";
-import { localeActual } from '@/lib/localeActual'
+import {
+  Section,
+  StatusBadge,
+  Field,
+  Modal,
+  SkeletonBlock,
+} from "@/components/kit";
+import { localeActual } from "@/lib/localeActual";
 import {
   communicationService,
   WhatsAppStatus,
@@ -39,9 +45,11 @@ async function loadFacebookSdk(appId: string, graphVersion: string) {
         if (document.getElementById(FB_SDK_ID)) {
           // Script tag already present (e.g. previous failed init) — wait for it.
           if (window.FB) resolve();
+
           return;
         }
         const script = document.createElement("script");
+
         script.id = FB_SDK_ID;
         script.src = FB_SDK_SRC;
         script.async = true;
@@ -68,6 +76,7 @@ async function loadFacebookSdk(appId: string, graphVersion: string) {
     xfbml: false,
     version: graphVersion || "v21.0",
   });
+
   return window.FB;
 }
 
@@ -83,22 +92,29 @@ function messagingLimitLabel(limit?: string | null): string {
     TIER_UNLIMITED: "Ilimitado",
     UNLIMITED: "Ilimitado",
   };
+
   return map[limit.toUpperCase()] || limit;
 }
 
 /** Calidad de la cuenta según Meta → tono del sistema (nunca el acento). */
-function qualityTone(rating?: string | null): "ok" | "warn" | "bad" | "neutral" {
+function qualityTone(
+  rating?: string | null,
+): "ok" | "warn" | "bad" | "neutral" {
   const r = (rating || "").toUpperCase();
+
   if (r === "GREEN" || r === "HIGH") return "ok";
   if (r === "YELLOW" || r === "MEDIUM") return "warn";
   if (r === "RED" || r === "LOW") return "bad";
+
   return "neutral";
 }
 
 function fmtDate(value?: string | null) {
   if (!value) return "—";
   const d = new Date(value);
+
   if (Number.isNaN(d.getTime())) return String(value);
+
   return d.toLocaleString(localeActual(), {
     year: "numeric",
     month: "short",
@@ -118,7 +134,9 @@ export default function WhatsAppBusinessCard() {
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   // waba/phone ids captured from the Embedded Signup postMessage session info.
-  const sessionInfoRef = useRef<{ wabaId?: string; phoneNumberId?: string }>({});
+  const sessionInfoRef = useRef<{ wabaId?: string; phoneNumberId?: string }>(
+    {},
+  );
   const mountedRef = useRef(true);
 
   useEffect(() => {
@@ -140,10 +158,10 @@ export default function WhatsAppBusinessCard() {
       .finally(() => {
         if (mountedRef.current) setLoading(false);
       });
+
     return () => {
       mountedRef.current = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const qualityLabels: Record<string, string> = {
@@ -154,6 +172,7 @@ export default function WhatsAppBusinessCard() {
 
   const onConnect = async () => {
     const embedded = status?.embedded;
+
     if (!embedded?.configured || !embedded.appId || !embedded.configId) {
       toast.error(
         t("comms.wa.notConfigured", {
@@ -161,6 +180,7 @@ export default function WhatsAppBusinessCard() {
             "La plataforma aún no tiene configurada la app de Meta (contacta a soporte).",
         }),
       );
+
       return;
     }
     setConnecting(true);
@@ -172,6 +192,7 @@ export default function WhatsAppBusinessCard() {
       try {
         const data =
           typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+
         if (!data || data.type !== "WA_EMBEDDED_SIGNUP") return;
         if (data.event === "FINISH" || data.event === "FINISH_ONLY_WABA") {
           sessionInfoRef.current = {
@@ -183,6 +204,7 @@ export default function WhatsAppBusinessCard() {
         // Non-JSON messages from facebook.com are irrelevant — ignore.
       }
     };
+
     window.addEventListener("message", onMessage);
 
     try {
@@ -198,6 +220,7 @@ export default function WhatsAppBusinessCard() {
       });
 
       const code = response?.authResponse?.code;
+
       if (!code) {
         // Popup closed, login cancelled, or popup blocked by the browser.
         toast.info(
@@ -206,6 +229,7 @@ export default function WhatsAppBusinessCard() {
               "Conexión cancelada. Si no viste la ventana de Meta, permite ventanas emergentes para este sitio.",
           }),
         );
+
         return;
       }
 
@@ -214,6 +238,7 @@ export default function WhatsAppBusinessCard() {
         wabaId: sessionInfoRef.current.wabaId ?? null,
         phoneNumberId: sessionInfoRef.current.phoneNumberId ?? null,
       });
+
       if (mountedRef.current) setStatus(fresh);
       toast.success(
         t("comms.wa.connected", { defaultValue: "WhatsApp conectado" }),
@@ -236,6 +261,7 @@ export default function WhatsAppBusinessCard() {
     setDisconnecting(true);
     try {
       const fresh = await communicationService.whatsappDisconnect();
+
       if (mountedRef.current) setStatus(fresh);
       setConfirmOpen(false);
       toast.success(
@@ -261,8 +287,6 @@ export default function WhatsAppBusinessCard() {
   return (
     <>
       <Section
-        title={t("comms.wa.title", { defaultValue: "WhatsApp Business" })}
-        icon={<MessageCircle />}
         action={
           connected ? (
             <StatusBadge tone={status?.status === "error" ? "bad" : "ok"}>
@@ -273,11 +297,17 @@ export default function WhatsAppBusinessCard() {
           ) : (
             <StatusBadge tone={configured ? "neutral" : "warn"}>
               {configured
-                ? t("comms.wa.notConnectedBadge", { defaultValue: "Sin conectar" })
-                : t("comms.wa.pendingBadge", { defaultValue: "Pendiente de habilitar" })}
+                ? t("comms.wa.notConnectedBadge", {
+                    defaultValue: "Sin conectar",
+                  })
+                : t("comms.wa.pendingBadge", {
+                    defaultValue: "Pendiente de habilitar",
+                  })}
             </StatusBadge>
           )
         }
+        icon={<MessageCircle />}
+        title={t("comms.wa.title", { defaultValue: "WhatsApp Business" })}
       >
         <div className="space-y-4">
           <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
@@ -302,9 +332,9 @@ export default function WhatsAppBusinessCard() {
               </p>
               <div className="flex flex-col items-start gap-2">
                 <Button
+                  disabled={connecting || !configured}
                   variant="brand"
                   onClick={onConnect}
-                  disabled={connecting || !configured}
                 >
                   {connecting ? (
                     <Loader2 className="mr-2 animate-spin" size={16} />
@@ -313,7 +343,9 @@ export default function WhatsAppBusinessCard() {
                   )}
                   {connecting
                     ? t("comms.wa.connecting", { defaultValue: "Conectando…" })
-                    : t("comms.wa.connect", { defaultValue: "Conectar WhatsApp" })}
+                    : t("comms.wa.connect", {
+                        defaultValue: "Conectar WhatsApp",
+                      })}
                 </Button>
                 {!configured && (
                   <p className="text-xs" style={{ color: "var(--warn-text)" }}>
@@ -335,7 +367,9 @@ export default function WhatsAppBusinessCard() {
                   <StatusBadge tone={status?.status === "error" ? "bad" : "ok"}>
                     {status?.status === "error"
                       ? t("comms.wa.error", { defaultValue: "Con problemas" })
-                      : t("comms.wa.connectedBadge", { defaultValue: "Conectado" })}
+                      : t("comms.wa.connectedBadge", {
+                          defaultValue: "Conectado",
+                        })}
                   </StatusBadge>
                 </div>
                 <Field
@@ -365,17 +399,19 @@ export default function WhatsAppBusinessCard() {
                 />
                 <Field
                   className="glass-flat p-3"
-                  label={t("comms.wa.connectedAt", { defaultValue: "Conectado el" })}
+                  label={t("comms.wa.connectedAt", {
+                    defaultValue: "Conectado el",
+                  })}
                   value={fmtDate(status?.connectedAt)}
                 />
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
                 <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={onConnect}
                   disabled={connecting || disconnecting || !configured}
+                  size="sm"
+                  variant="outline"
+                  onClick={onConnect}
                 >
                   {connecting ? (
                     <Loader2 className="mr-1.5 animate-spin" size={14} />
@@ -387,11 +423,11 @@ export default function WhatsAppBusinessCard() {
                     : t("comms.wa.reconnect", { defaultValue: "Reconectar" })}
                 </Button>
                 <Button
-                  variant="ghost"
+                  disabled={connecting || disconnecting}
                   size="sm"
                   style={{ color: "var(--bad-text)" }}
+                  variant="ghost"
                   onClick={() => setConfirmOpen(true)}
-                  disabled={connecting || disconnecting}
                 >
                   <Unplug className="mr-1.5" size={14} />
                   {t("comms.wa.disconnect", { defaultValue: "Desconectar" })}
@@ -403,26 +439,19 @@ export default function WhatsAppBusinessCard() {
       </Section>
 
       <Modal
-        open={confirmOpen}
-        onOpenChange={(o) => !disconnecting && setConfirmOpen(o)}
-        title={t("comms.wa.disconnectTitle", {
-          defaultValue: "¿Desconectar WhatsApp Business?",
-        })}
-        icon={<Unplug />}
-        size="sm"
         footer={
           <>
             <Button
+              disabled={disconnecting}
               variant="outline"
               onClick={() => setConfirmOpen(false)}
-              disabled={disconnecting}
             >
               {t("comms.wa.cancel", { defaultValue: "Cancelar" })}
             </Button>
             <Button
+              disabled={disconnecting}
               variant="destructive"
               onClick={onDisconnect}
-              disabled={disconnecting}
             >
               {disconnecting && (
                 <Loader2 className="mr-2 animate-spin" size={16} />
@@ -431,6 +460,13 @@ export default function WhatsAppBusinessCard() {
             </Button>
           </>
         }
+        icon={<Unplug />}
+        open={confirmOpen}
+        size="sm"
+        title={t("comms.wa.disconnectTitle", {
+          defaultValue: "¿Desconectar WhatsApp Business?",
+        })}
+        onOpenChange={(o) => !disconnecting && setConfirmOpen(o)}
       >
         <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
           {t("comms.wa.disconnectDesc", {

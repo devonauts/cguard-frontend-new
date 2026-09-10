@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { Sparkles, CreditCard, Check } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Sparkles, CreditCard, Check } from "lucide-react";
-import { localeActual } from '@/lib/localeActual'
+import { localeActual } from "@/lib/localeActual";
 import {
   PageContainer,
   PageHeader,
@@ -62,7 +63,9 @@ const STATUS_META: Record<string, { label: string; tone: BadgeTone }> = {
 function fmtDate(iso: string | null | undefined): string {
   if (!iso) return "—";
   const d = new Date(iso);
+
   if (isNaN(d.getTime())) return "—";
+
   return d.toLocaleDateString(localeActual(), {
     day: "2-digit",
     month: "short",
@@ -79,17 +82,20 @@ export default function SubscriptionDetailsModule() {
 
   useEffect(() => {
     let active = true;
+
     (async () => {
       try {
         const summary = await subscriptionBillingService.summary();
+
         if (active) setData(summary);
       } catch {
         if (active)
-          toast.error(t('ui.SubscriptionDetailsModule.noSePudoCargarLa'));
+          toast.error(t("ui.SubscriptionDetailsModule.noSePudoCargarLa"));
       } finally {
         if (active) setLoading(false);
       }
     })();
+
     return () => {
       active = false;
     };
@@ -98,7 +104,7 @@ export default function SubscriptionDetailsModule() {
   const isAnnual = period === "annual";
   const priceByPeriod = useMemo(
     () => (isAnnual ? ANNUAL_PRICE : MONTHLY_PRICE),
-    [isAnnual]
+    [isAnnual],
   );
 
   // The real backend uses a per-seat pricing model, not the tiered
@@ -106,7 +112,9 @@ export default function SubscriptionDetailsModule() {
   // are NOT wired here. Highlight the current tier only if it maps.
   const currentPlan: PlanKey | null = useMemo(() => {
     const key = data?.plan?.key?.toLowerCase();
+
     if (key && key in PLAN_LABEL) return key as PlanKey;
+
     return null;
   }, [data]);
 
@@ -118,21 +126,23 @@ export default function SubscriptionDetailsModule() {
     <PageContainer width="wide">
       <PageHeader
         icon={<CreditCard />}
+        subtitle={t("ui.SubscriptionDetailsModule.gestionaTuPlanPeriodoDe")}
         title={t("ui.SubscriptionDetailsModule.suscripcion", "Suscripción")}
-        subtitle={t('ui.SubscriptionDetailsModule.gestionaTuPlanPeriodoDe')}
       />
 
       {/* Banner */}
       <GlassPanel brand className="p-4">
         <div className="flex items-start gap-3">
-          <IconTile size="sm"><Sparkles /></IconTile>
+          <IconTile size="sm">
+            <Sparkles />
+          </IconTile>
           <p className="text-sm leading-relaxed">
-            <span className="font-semibold">Oferta especial.</span> Mejora tu plan
-            ahora y obtén un 15 % de descuento durante los próximos 3 meses. El
-            cobro se calcula sobre el número de usuarios activos.{" "}
+            <span className="font-semibold">Oferta especial.</span> Mejora tu
+            plan ahora y obtén un 15 % de descuento durante los próximos 3
+            meses. El cobro se calcula sobre el número de usuarios activos.{" "}
             <button
               className="font-medium underline-offset-2 hover:underline"
-              style={{ color: 'var(--brand-text)' }}
+              style={{ color: "var(--brand-text)" }}
               onClick={goToBilling}
             >
               Ver detalles
@@ -143,13 +153,19 @@ export default function SubscriptionDetailsModule() {
 
       {/* Información de suscripción */}
       <Section
-        title={t("ui.SubscriptionDetailsModule.informacionDeSuscripcion", "Información de suscripción")}
-        icon={<CreditCard />}
         action={
           <Button variant="outline" onClick={goToBilling}>
-            {t('ui.SubscriptionDetailsModule.gestionarSuscripcion', 'Gestionar Suscripción')}
+            {t(
+              "ui.SubscriptionDetailsModule.gestionarSuscripcion",
+              "Gestionar Suscripción",
+            )}
           </Button>
         }
+        icon={<CreditCard />}
+        title={t(
+          "ui.SubscriptionDetailsModule.informacionDeSuscripcion",
+          "Información de suscripción",
+        )}
       >
         {loading ? (
           // Barras fantasma con la forma de los cuatro campos, no una ruleta:
@@ -163,28 +179,39 @@ export default function SubscriptionDetailsModule() {
             ))}
           </div>
         ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
-          <Field
-            label="Plan"
-            value={data?.plan?.name || (currentPlan ? PLAN_LABEL[currentPlan] : "—")}
-          />
-          <Field
-            label={t('ui.SubscriptionDetailsModule.periodoDePrueba', 'Periodo de prueba')}
-            value={
-              data?.trial?.endsAt
-                ? `Termina el ${fmtDate(data.trial.endsAt)}`
-                : "—"
-            }
-          />
-          <div className="min-w-0">
-            <div className="cg-eyebrow mb-0.5">{t("ui.SubscriptionDetailsModule.estadoDeLaSuscripcion", "Estado de la Suscripción")}</div>
-            <StatusBadge tone={meta.tone}>{meta.label}</StatusBadge>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+            <Field
+              label="Plan"
+              value={
+                data?.plan?.name ||
+                (currentPlan ? PLAN_LABEL[currentPlan] : "—")
+              }
+            />
+            <Field
+              label={t(
+                "ui.SubscriptionDetailsModule.periodoDePrueba",
+                "Periodo de prueba",
+              )}
+              value={
+                data?.trial?.endsAt
+                  ? `Termina el ${fmtDate(data.trial.endsAt)}`
+                  : "—"
+              }
+            />
+            <div className="min-w-0">
+              <div className="cg-eyebrow mb-0.5">
+                {t(
+                  "ui.SubscriptionDetailsModule.estadoDeLaSuscripcion",
+                  "Estado de la Suscripción",
+                )}
+              </div>
+              <StatusBadge tone={meta.tone}>{meta.label}</StatusBadge>
+            </div>
+            <Field
+              label="Usuarios facturables"
+              value={String(data?.seats ?? "—")}
+            />
           </div>
-          <Field
-            label="Usuarios facturables"
-            value={String(data?.seats ?? "—")}
-          />
-        </div>
         )}
 
         <Separator className="my-6" />
@@ -192,12 +219,12 @@ export default function SubscriptionDetailsModule() {
         {/* Selector Mensual / Anual */}
         <div className="flex justify-center">
           <Segmented<BillingPeriod>
-            value={period}
-            onChange={setPeriod}
             options={[
               { value: "monthly", label: "Mensual" },
               { value: "annual", label: "Anual" },
             ]}
+            value={period}
+            onChange={setPeriod}
           />
         </div>
 
@@ -207,15 +234,22 @@ export default function SubscriptionDetailsModule() {
             comprar desde aquí. */}
         <p
           className="mt-4 rounded-lg border border-dashed px-3 py-2 text-center text-xs"
-          style={{ borderColor: 'var(--hairline)', background: 'var(--glass-sunken)', color: 'var(--ink-soft)' }}
+          style={{
+            borderColor: "var(--hairline)",
+            background: "var(--glass-sunken)",
+            color: "var(--ink-soft)",
+          }}
         >
           Los cambios de plan y pagos se gestionan en{" "}
           <button
             className="font-medium underline-offset-2 hover:underline"
-            style={{ color: 'var(--brand-text)' }}
+            style={{ color: "var(--brand-text)" }}
             onClick={goToBilling}
           >
-            {t('ui.SubscriptionDetailsModule.suscripcionFacturacion', 'Suscripción / Facturación')}
+            {t(
+              "ui.SubscriptionDetailsModule.suscripcionFacturacion",
+              "Suscripción / Facturación",
+            )}
           </button>
           .
         </p>
@@ -227,6 +261,7 @@ export default function SubscriptionDetailsModule() {
               const price = priceByPeriod[plan];
               const isCurrent = plan === currentPlan;
               const isPopular = plan === "professional";
+
               return (
                 // `GlassPanel flat` y no `Card`. `Card` trae `.glass` cosido
                 // dentro, y `.glass` lleva `backdrop-filter`: dentro de este
@@ -243,7 +278,11 @@ export default function SubscriptionDetailsModule() {
                 >
                   <div className="flex items-center justify-between">
                     <h3 className="font-semibold">{PLAN_LABEL[plan]}</h3>
-                    {isPopular && <StatusBadge tone="brand" dot={false}>POPULAR</StatusBadge>}
+                    {isPopular && (
+                      <StatusBadge dot={false} tone="brand">
+                        POPULAR
+                      </StatusBadge>
+                    )}
                   </div>
 
                   <div className="space-y-1">
@@ -263,23 +302,26 @@ export default function SubscriptionDetailsModule() {
 
                   <div className="mt-auto">
                     {isCurrent ? (
-                      <Button className="w-full" variant="brand" disabled>
+                      <Button disabled className="w-full" variant="brand">
                         <Check className="h-4 w-4 mr-1.5" /> Plan Actual
                       </Button>
                     ) : (
                       <Button
-                        className="w-full"
-                        variant={isPopular ? "brand" : "outline"}
                         disabled
-                        title={t("ui.SubscriptionDetailsModule.gestionaTuPlanEnSuscripcion", "Gestiona tu plan en Suscripción / Facturación")}
+                        className="w-full"
+                        title={t(
+                          "ui.SubscriptionDetailsModule.gestionaTuPlanEnSuscripcion",
+                          "Gestiona tu plan en Suscripción / Facturación",
+                        )}
+                        variant={isPopular ? "brand" : "outline"}
                       >
-                        {t('ui.Reports.proximamente', 'Próximamente')}
+                        {t("ui.Reports.proximamente", "Próximamente")}
                       </Button>
                     )}
                   </div>
                 </GlassPanel>
               );
-            }
+            },
           )}
         </div>
       </Section>

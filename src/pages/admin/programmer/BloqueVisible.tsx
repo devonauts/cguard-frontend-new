@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, type ReactNode } from 'react';
+import { useLayoutEffect, useRef, type ReactNode } from "react";
 
 /**
  * Envoltorio de un bloque de estación que MIDE su alto y lo deja apuntado.
@@ -18,7 +18,9 @@ import { useLayoutEffect, useRef, type ReactNode } from 'react';
  * tiene que ser «enséñalo todo», nunca «no enseñes nada».
  */
 export default function BloqueVisible({
-  id, alturas, children,
+  id,
+  alturas,
+  children,
 }: {
   id: string;
   /** Mapa compartido idEstación → alto real. Se escribe, no provoca repintado. */
@@ -29,8 +31,13 @@ export default function BloqueVisible({
 
   useLayoutEffect(() => {
     const h = ref.current?.offsetHeight;
+
     if (h && h > 0) alturas.current.set(id, h);
   });
 
-  return <div ref={ref} id={`hs-${id}`}>{children}</div>;
+  return (
+    <div ref={ref} id={`hs-${id}`}>
+      {children}
+    </div>
+  );
 }

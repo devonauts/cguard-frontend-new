@@ -1,16 +1,34 @@
+import type { ExportFormat } from "@/lib/export/reportExport";
+
 import { useEffect, useState } from "react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import {
-  Activity, Clock, Send, ShieldCheck, TrendingUp, AlertTriangle, PhoneCall, Users, BarChart3,
+  Activity,
+  Clock,
+  Send,
+  ShieldCheck,
+  TrendingUp,
+  AlertTriangle,
+  PhoneCall,
+  Users,
+  BarChart3,
 } from "lucide-react";
+
+import { SeverityBars, categoryTone, priorityTone } from "./shared";
+
 import AppLayout from "@/layouts/app-layout";
-import { MetricCard, DayBars, HBars, Section, GOLD, TONES } from "@/pages/admin/analytics/_shared";
+import {
+  MetricCard,
+  DayBars,
+  HBars,
+  Section,
+  GOLD,
+  TONES,
+} from "@/pages/admin/analytics/_shared";
 import { alarmService } from "@/lib/api/alarmService";
 import ExportMenu from "@/components/reports/ExportMenu";
-import type { ExportFormat } from "@/lib/export/reportExport";
-import { SeverityBars, categoryTone, priorityTone } from "./shared";
 import {
   PageContainer,
   PageHeader,
@@ -20,7 +38,6 @@ import {
   Segmented,
 } from "@/components/kit";
 import { Button } from "@/components/ui/button";
-import i18n from "@/i18n";
 import { tablaDeEtiquetas } from "@/lib/i18nLabel";
 
 const PERIODS = [7, 30, 90, 365];
@@ -30,6 +47,7 @@ function fmtDur(sec?: number): string {
   if (sec < 60) return `${sec}s`;
   const m = Math.floor(sec / 60);
   const s = sec % 60;
+
   return s ? `${m}m ${s}s` : `${m}m`;
 }
 
@@ -57,20 +75,36 @@ const CAT_LABEL: Record<string, string> = tablaDeEtiquetas({
  *  ordenarlas, cuando el orden ya no coincide con el del objeto de entrada. */
 function toItems(obj: Record<string, number>, labeler?: (k: string) => string) {
   return Object.entries(obj || {})
-    .map(([k, v]) => ({ raw: k, label: labeler ? labeler(k) : k, count: v as number }))
+    .map(([k, v]) => ({
+      raw: k,
+      label: labeler ? labeler(k) : k,
+      count: v as number,
+    }))
     .sort((a, b) => b.count - a.count);
 }
 
 interface AlarmAnalyticsData {
-  total: number; open: number;
-  avgTtaSec: number; avgTtdSec: number; avgTtrSec: number;
-  slaAckCompliance: number; escalationRate: number; falseRate: number;
-  ecvSatisfiedCases: number; totalCalls: number;
+  total: number;
+  open: number;
+  avgTtaSec: number;
+  avgTtdSec: number;
+  avgTtrSec: number;
+  slaAckCompliance: number;
+  escalationRate: number;
+  falseRate: number;
+  ecvSatisfiedCases: number;
+  totalCalls: number;
   trend?: Array<{ k: string; v: number }>;
   byCategory: Record<string, number>;
   byPriority: Record<string, number>;
   dispatchByType: Record<string, number>;
-  operators?: Array<{ operatorId: string; name: string; handled: number; avgTtaSec: number; avgTtdSec: number }>;
+  operators?: Array<{
+    operatorId: string;
+    name: string;
+    handled: number;
+    avgTtaSec: number;
+    avgTtdSec: number;
+  }>;
 }
 
 export default function AlarmAnalytics() {
@@ -82,7 +116,11 @@ export default function AlarmAnalytics() {
 
   useEffect(() => {
     setLoading(true);
-    alarmService.analytics({ days }).then(setD).catch(() => {}).finally(() => setLoading(false));
+    alarmService
+      .analytics({ days })
+      .then(setD)
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, [days]);
 
   /**
@@ -101,7 +139,13 @@ export default function AlarmAnalytics() {
       await alarmService.auditExportFile(format, { days });
       toast.success(t("alarm.analytics.exportAuditOk", "Auditoría exportada"));
     } catch (e) {
-      toast.error((e as Error)?.message || t("alarm.analytics.exportAuditFailed", "No se pudo exportar la auditoría"));
+      toast.error(
+        (e as Error)?.message ||
+          t(
+            "alarm.analytics.exportAuditFailed",
+            "No se pudo exportar la auditoría",
+          ),
+      );
     } finally {
       setExporting(false);
     }
@@ -111,46 +155,119 @@ export default function AlarmAnalytics() {
     <AppLayout>
       <PageContainer width="wide">
         <PageHeader
-          icon={<Activity />}
-          title={t("ui.AlarmAnalytics.analisisDeMonitoreo", "Análisis de Monitoreo")}
-          subtitle={t('ui.AlarmAnalytics.tiemposDeRespuestaCumplimientoDe')}
           actions={
             <>
               <Segmented
+                options={PERIODS.map((p) => ({
+                  value: String(p),
+                  label: p === 365 ? "1 año" : `${p} días`,
+                }))}
                 value={String(days)}
                 onChange={(v) => setDays(Number(v))}
-                options={PERIODS.map((p) => ({ value: String(p), label: p === 365 ? "1 año" : `${p} días` }))}
               />
               <ExportMenu
-                onExport={exportAudit}
                 busy={exporting}
-                size="sm"
                 label={t("alarm.analytics.exportAudit", "Exportar historial")}
+                size="sm"
+                onExport={exportAudit}
               />
-              <Button asChild variant="ghost" size="sm">
+              <Button asChild size="sm" variant="ghost">
                 <Link to="/alarm/reports">Falsas alarmas →</Link>
               </Button>
             </>
           }
+          icon={<Activity />}
+          subtitle={t("ui.AlarmAnalytics.tiemposDeRespuestaCumplimientoDe")}
+          title={t(
+            "ui.AlarmAnalytics.analisisDeMonitoreo",
+            "Análisis de Monitoreo",
+          )}
         />
 
         {loading || !d ? (
-          <SkeletonCards count={8} className="lg:grid-cols-4" />
+          <SkeletonCards className="lg:grid-cols-4" count={8} />
         ) : (
           <>
             <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-              <MetricCard icon={<BarChart3 size={16} />} accent={GOLD} value={d.total} label="Casos" sub={`${d.open} abiertos`} />
-              <MetricCard icon={<Clock size={16} />} accent={TONES.info} value={fmtDur(d.avgTtaSec)} label="Reconocimiento prom." sub="tiempo a reconocer" />
-              <MetricCard icon={<Send size={16} />} accent={TONES.serie2} value={fmtDur(d.avgTtdSec)} label="Despacho prom." sub="tiempo a despachar" />
-              <MetricCard icon={<TrendingUp size={16} />} accent={TONES.ok} value={fmtDur(d.avgTtrSec)} label={t("ui.AlarmAnalytics.resolucionProm", "Resolución prom.")} sub="tiempo a resolver" />
-              <MetricCard icon={<ShieldCheck size={16} />} accent={TONES.ok} value={`${d.slaAckCompliance}%`} label="Plazos cumplidos" sub="reconocidos a tiempo" pct={d.slaAckCompliance} />
-              <MetricCard icon={<AlertTriangle size={16} />} accent={TONES.warn} value={`${d.escalationRate}%`} label={t('ui.AlarmAnalytics.tasaDeEscalado', 'Tasa de escalado')} sub={t('ui.AlarmAnalytics.superaronElPlazo')} pct={d.escalationRate} />
-              <MetricCard icon={<AlertTriangle size={16} />} accent={TONES.bad} value={`${d.falseRate}%`} label={t('ui.AlarmAnalytics.tasaDeFalsas', 'Tasa de falsas')} sub="falsas y reincidentes" pct={d.falseRate} />
-              <MetricCard icon={<PhoneCall size={16} />} accent={TONES.info} value={d.ecvSatisfiedCases} label={t("ui.AlarmAnalytics.verificacionPorLlamada", "Verificación por llamada")} sub={`${d.totalCalls} llamadas`} />
+              <MetricCard
+                accent={GOLD}
+                icon={<BarChart3 size={16} />}
+                label="Casos"
+                sub={`${d.open} abiertos`}
+                value={d.total}
+              />
+              <MetricCard
+                accent={TONES.info}
+                icon={<Clock size={16} />}
+                label="Reconocimiento prom."
+                sub="tiempo a reconocer"
+                value={fmtDur(d.avgTtaSec)}
+              />
+              <MetricCard
+                accent={TONES.serie2}
+                icon={<Send size={16} />}
+                label="Despacho prom."
+                sub="tiempo a despachar"
+                value={fmtDur(d.avgTtdSec)}
+              />
+              <MetricCard
+                accent={TONES.ok}
+                icon={<TrendingUp size={16} />}
+                label={t(
+                  "ui.AlarmAnalytics.resolucionProm",
+                  "Resolución prom.",
+                )}
+                sub="tiempo a resolver"
+                value={fmtDur(d.avgTtrSec)}
+              />
+              <MetricCard
+                accent={TONES.ok}
+                icon={<ShieldCheck size={16} />}
+                label="Plazos cumplidos"
+                pct={d.slaAckCompliance}
+                sub="reconocidos a tiempo"
+                value={`${d.slaAckCompliance}%`}
+              />
+              <MetricCard
+                accent={TONES.warn}
+                icon={<AlertTriangle size={16} />}
+                label={t(
+                  "ui.AlarmAnalytics.tasaDeEscalado",
+                  "Tasa de escalado",
+                )}
+                pct={d.escalationRate}
+                sub={t("ui.AlarmAnalytics.superaronElPlazo")}
+                value={`${d.escalationRate}%`}
+              />
+              <MetricCard
+                accent={TONES.bad}
+                icon={<AlertTriangle size={16} />}
+                label={t("ui.AlarmAnalytics.tasaDeFalsas", "Tasa de falsas")}
+                pct={d.falseRate}
+                sub="falsas y reincidentes"
+                value={`${d.falseRate}%`}
+              />
+              <MetricCard
+                accent={TONES.info}
+                icon={<PhoneCall size={16} />}
+                label={t(
+                  "ui.AlarmAnalytics.verificacionPorLlamada",
+                  "Verificación por llamada",
+                )}
+                sub={`${d.totalCalls} llamadas`}
+                value={d.ecvSatisfiedCases}
+              />
             </Stagger>
 
             <div className="mt-5">
-              <DayBars title={t("ui.AlarmAnalytics.casosDeAlarmaPorDia", "Casos de alarma por día")} color={GOLD} points={(d.trend || []).map((t) => ({ k: t.k, v: t.v }))} />
+              <DayBars
+                color={GOLD}
+                points={(d.trend || []).map((t) => ({ k: t.k, v: t.v }))}
+                title={t(
+                  "ui.AlarmAnalytics.casosDeAlarmaPorDia",
+                  "Casos de alarma por día",
+                )}
+              />
             </div>
 
             <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-3">
@@ -158,29 +275,60 @@ export default function AlarmAnalytics() {
                   del sistema. Iban las dos series de un color plano —dorado de
                   marca y azul decorativo—, así que «Incendio» se pintaba igual
                   que «Prueba» y una P1 igual que una P5. */}
-              <Section title={t("ui.AlarmAnalytics.porCategoria", "Por categoría")} icon={<AlertTriangle size={16} />}>
+              <Section
+                icon={<AlertTriangle size={16} />}
+                title={t("ui.AlarmAnalytics.porCategoria", "Por categoría")}
+              >
                 <SeverityBars
-                  items={toItems(d.byCategory, (k) => CAT_LABEL[k] || k)
-                    .map((i) => ({ ...i, tone: categoryTone(i.raw) }))}
+                  items={toItems(d.byCategory, (k) => CAT_LABEL[k] || k).map(
+                    (i) => ({ ...i, tone: categoryTone(i.raw) }),
+                  )}
                 />
               </Section>
-              <Section title={t('ui.AlarmAnalytics.porPrioridad')} icon={<BarChart3 size={16} />}>
-                <SeverityBars items={toItems(d.byPriority).map((i) => ({ ...i, tone: priorityTone(i.raw) }))} />
+              <Section
+                icon={<BarChart3 size={16} />}
+                title={t("ui.AlarmAnalytics.porPrioridad")}
+              >
+                <SeverityBars
+                  items={toItems(d.byPriority).map((i) => ({
+                    ...i,
+                    tone: priorityTone(i.raw),
+                  }))}
+                />
               </Section>
-              <Section title="Despachos" icon={<Send size={16} />}>
+              <Section icon={<Send size={16} />} title="Despachos">
                 <HBars
-                  items={toItems(d.dispatchByType, (k) => ({ guard: "Vigilante", police: "Policía", fire: "Bomberos", medical: "Médico" }[k] || k))}
-                  color={TONES.info} empty={t('ui.AlarmAnalytics.sinDespachos')} />
+                  color={TONES.info}
+                  empty={t("ui.AlarmAnalytics.sinDespachos")}
+                  items={toItems(
+                    d.dispatchByType,
+                    (k) =>
+                      ({
+                        guard: "Vigilante",
+                        police: "Policía",
+                        fire: "Bomberos",
+                        medical: "Médico",
+                      })[k] || k,
+                  )}
+                />
               </Section>
             </div>
 
             <div className="mt-5">
-              <Section title={t("ui.AlarmAnalytics.desempenoDeOperadores", "Desempeño de operadores")} icon={<Users size={16} />}>
-                {(!d.operators || d.operators.length === 0) ? (
+              <Section
+                icon={<Users size={16} />}
+                title={t(
+                  "ui.AlarmAnalytics.desempenoDeOperadores",
+                  "Desempeño de operadores",
+                )}
+              >
+                {!d.operators || d.operators.length === 0 ? (
                   <EmptyState
+                    description={t(
+                      "ui.AlarmAnalytics.sinCasosAsignadosAOperadores",
+                    )}
                     icon={<Users />}
-                    title={t('ui.AlarmAnalytics.sinOperadores')}
-                    description={t('ui.AlarmAnalytics.sinCasosAsignadosAOperadores')}
+                    title={t("ui.AlarmAnalytics.sinOperadores")}
                   />
                 ) : (
                   <div className="overflow-x-auto">
@@ -189,17 +337,39 @@ export default function AlarmAnalytics() {
                         <tr className="border-b border-border text-left text-xs text-muted-foreground">
                           <th className="px-2 py-2">Operador</th>
                           <th className="px-2 py-2 text-right">Casos</th>
-                          <th className="px-2 py-2 text-right">Reconoc. prom.</th>
-                          <th className="px-2 py-2 text-right">Despacho prom.</th>
+                          <th className="px-2 py-2 text-right">
+                            Reconoc. prom.
+                          </th>
+                          <th className="px-2 py-2 text-right">
+                            Despacho prom.
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
                         {d.operators.map((o) => (
-                          <tr key={o.operatorId} className="border-b" style={{ borderColor: 'var(--hairline)' }}>
-                            <td className="px-2 py-2 font-medium text-foreground">{o.name}</td>
-                            <td className="px-2 py-2 text-right tabular-nums">{o.handled}</td>
-                            <td className="px-2 py-2 text-right tabular-nums" style={{ color: 'var(--ink-soft)' }}>{fmtDur(o.avgTtaSec)}</td>
-                            <td className="px-2 py-2 text-right tabular-nums" style={{ color: 'var(--ink-soft)' }}>{fmtDur(o.avgTtdSec)}</td>
+                          <tr
+                            key={o.operatorId}
+                            className="border-b"
+                            style={{ borderColor: "var(--hairline)" }}
+                          >
+                            <td className="px-2 py-2 font-medium text-foreground">
+                              {o.name}
+                            </td>
+                            <td className="px-2 py-2 text-right tabular-nums">
+                              {o.handled}
+                            </td>
+                            <td
+                              className="px-2 py-2 text-right tabular-nums"
+                              style={{ color: "var(--ink-soft)" }}
+                            >
+                              {fmtDur(o.avgTtaSec)}
+                            </td>
+                            <td
+                              className="px-2 py-2 text-right tabular-nums"
+                              style={{ color: "var(--ink-soft)" }}
+                            >
+                              {fmtDur(o.avgTtdSec)}
+                            </td>
                           </tr>
                         ))}
                       </tbody>

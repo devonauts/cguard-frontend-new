@@ -1,17 +1,29 @@
+import type { TFunction } from "i18next";
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import type { TFunction } from "i18next";
 import { Route as RouteIcon } from "lucide-react";
+
+import { fechaHora, haceCuanto, kmh } from "./trackGeometry";
+
 import { loadGoogleMaps } from "@/utils/loadGoogleMaps";
-import { estiloMapa, huella, pielDe, useMapPalette, type MapPalette } from "@/utils/mapTheme";
+import {
+  estiloMapa,
+  huella,
+  pielDe,
+  useMapPalette,
+  type MapPalette,
+} from "@/utils/mapTheme";
 import { chipPin, iconoDe, orbPin } from "@/utils/mapPins";
 import { metrosEntre, useMotorMapa, type Tono } from "@/utils/mapMotion";
 import {
-  useMapPopup, mapPopupActions, mapPopupItems,
-  type MapPopupData, type MapPopupMetric,
+  useMapPopup,
+  mapPopupActions,
+  mapPopupItems,
+  type MapPopupData,
+  type MapPopupMetric,
 } from "@/components/maps/MapPopup";
-import { fechaHora, haceCuanto, kmh } from "./trackGeometry";
 import "@/styles/map.css";
 
 /** One plotted stop of a vehicle-patrol route (a point with valid coordinates). */
@@ -106,10 +118,33 @@ type EstadoUnidad = "activo" | "detenido" | "sinSenal";
 
 // Mapa de módulo: la etiqueta se traduce donde se pinta (`clave`), nunca aquí,
 // porque un t() a la carga del módulo congela el idioma de arranque.
-const ESTADO: Record<EstadoUnidad, { clave: string; etiqueta: string; tono: Tono; pop: "ok" | "info" | "neutral" }> = {
-  activo: { clave: "tracking.unitState.active", etiqueta: "En servicio", tono: "bien", pop: "ok" },
-  detenido: { clave: "tracking.unitState.stopped", etiqueta: "Detenido", tono: "info", pop: "info" },
-  sinSenal: { clave: "tracking.unitState.noSignal", etiqueta: "Sin señal", tono: "tenue", pop: "neutral" },
+const ESTADO: Record<
+  EstadoUnidad,
+  {
+    clave: string;
+    etiqueta: string;
+    tono: Tono;
+    pop: "ok" | "info" | "neutral";
+  }
+> = {
+  activo: {
+    clave: "tracking.unitState.active",
+    etiqueta: "En servicio",
+    tono: "bien",
+    pop: "ok",
+  },
+  detenido: {
+    clave: "tracking.unitState.stopped",
+    etiqueta: "Detenido",
+    tono: "info",
+    pop: "info",
+  },
+  sinSenal: {
+    clave: "tracking.unitState.noSignal",
+    etiqueta: "Sin señal",
+    tono: "tenue",
+    pop: "neutral",
+  },
 };
 
 interface RegistroUnidad {
@@ -131,17 +166,33 @@ function estiloPara(pal: MapPalette, mapType: MapType): any[] | undefined {
 }
 
 function colorDeEstado(pal: MapPalette, estado: EstadoUnidad): string {
-  return estado === "activo" ? pal.ok : estado === "detenido" ? pal.info : pal.inkFaint;
+  return estado === "activo"
+    ? pal.ok
+    : estado === "detenido"
+      ? pal.info
+      : pal.inkFaint;
 }
 
 /** Las dos cifras grandes del globo de una unidad. Vive fuera del componente
  *  porque se calculan en dos sitios —al abrir y en cada refresco en vivo— y
  *  tienen que decir exactamente lo mismo. */
-function metricasDe(u: LiveUnit, estado: EstadoUnidad, t: TFunction): MapPopupMetric[] {
+function metricasDe(
+  u: LiveUnit,
+  estado: EstadoUnidad,
+  t: TFunction,
+): MapPopupMetric[] {
   return mapPopupItems<MapPopupMetric>(
-    { label: t("ui.AlarmCaseDetail.ultimaSenal", "Última señal"), value: haceCuanto(u.at), tone: estado === "sinSenal" ? "warn" : undefined },
+    {
+      label: t("ui.AlarmCaseDetail.ultimaSenal", "Última señal"),
+      value: haceCuanto(u.at),
+      tone: estado === "sinSenal" ? "warn" : undefined,
+    },
     u.bateria != null
-      ? { label: "Batería", value: `${Math.round(u.bateria)}%`, tone: u.bateria <= 20 ? "bad" : undefined }
+      ? {
+          label: "Batería",
+          value: `${Math.round(u.bateria)}%`,
+          tone: u.bateria <= 20 ? "bad" : undefined,
+        }
       : null,
   );
 }
@@ -186,6 +237,7 @@ export default function RouteTrackingMap({
   const motor = useMotorMapa(mapRef.current, ready);
   const pop = useMapPopup(() => mapRef.current);
   const popRef = useRef(pop);
+
   popRef.current = pop;
 
   /** Unidad que la cámara está siguiendo, si alguna. */
@@ -199,6 +251,7 @@ export default function RouteTrackingMap({
     const hechas = new Set(stops.filter((s) => s.done).map((s) => s.routeId));
     const paradas = stops.length;
     const paradasHechas = stops.filter((s) => s.done).length;
+
     return {
       rutas: rutas.size,
       hechas: hechas.size,
@@ -211,6 +264,7 @@ export default function RouteTrackingMap({
   // one-time map init
   useEffect(() => {
     let cancelled = false;
+
     loadGoogleMaps()
       .then(() => {
         if (cancelled || !ref.current) return;
@@ -221,6 +275,7 @@ export default function RouteTrackingMap({
           : first
             ? { lat: first.lat, lng: first.lng }
             : { lat: -0.18, lng: -78.46 };
+
         mapRef.current = new g.maps.Map(ref.current, {
           center: initCenter,
           zoom: defaultCenter?.zoom ?? 12,
@@ -236,18 +291,27 @@ export default function RouteTrackingMap({
         const revisarZoom = () => {
           const z = mapRef.current?.getZoom?.() ?? 12;
           const quiere = z >= ZOOM_FICHA;
-          if (quiere !== fichaRef.current) { fichaRef.current = quiere; setFicha(quiere); }
+
+          if (quiere !== fichaRef.current) {
+            fichaRef.current = quiere;
+            setFicha(quiere);
+          }
         };
+
         mapRef.current.addListener("idle", revisarZoom);
         // Arrastrar el mapa suelta el seguimiento: si el operador agarró la
         // vista, manda él y no la unidad.
-        mapRef.current.addListener("dragstart", () => { siguiendoRef.current = null; });
+        mapRef.current.addListener("dragstart", () => {
+          siguiendoRef.current = null;
+        });
         revisarZoom();
         setReady(true);
       })
       .catch((e) => setErr(e?.message || "No se pudo cargar el mapa"));
-    return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // react to map-type + theme/accent changes
@@ -278,6 +342,7 @@ export default function RouteTrackingMap({
 
     // group stops by route so each route gets its own ordered polyline
     const byRoute = new Map<string, RouteStopMarker[]>();
+
     stops.forEach((s) => {
       if (!byRoute.has(s.routeId)) byRoute.set(s.routeId, []);
       byRoute.get(s.routeId)!.push(s);
@@ -292,7 +357,13 @@ export default function RouteTrackingMap({
         const color = s.done ? pal.ok : pal.warn;
         const numero = String(idx + 1);
         const asset = ficha
-          ? chipPin({ etiqueta: s.siteName, insignia: numero, color, piel, version })
+          ? chipPin({
+              etiqueta: s.siteName,
+              insignia: numero,
+              color,
+              piel,
+              version,
+            })
           : orbPin({ color, insignia: numero, piel, version });
 
         const marker = new g.maps.Marker({
@@ -302,6 +373,7 @@ export default function RouteTrackingMap({
           title: s.siteName,
           zIndex: 400 + idx,
         });
+
         marker.addListener("click", () => {
           const datos: MapPopupData = {
             id: s.id,
@@ -315,10 +387,14 @@ export default function RouteTrackingMap({
             fields: mapPopupItems(
               { label: "Ruta", value: s.routeName },
               { label: "Orden", value: `#${s.order}`, mono: true },
-              s.address ? { label: "Dirección", value: s.address, wide: true } : null,
+              s.address
+                ? { label: "Dirección", value: s.address, wide: true }
+                : null,
             ),
             actions: mapPopupItems(
-              mapPopupActions.center(() => motor?.camara.volarA(pos, { zoom: 17 })),
+              mapPopupActions.center(() =>
+                motor?.camara.volarA(pos, { zoom: 17 }),
+              ),
               mapPopupActions.directions(s.lat, s.lng),
             ),
             // La altura de la chincheta la sabe este mapa y sólo este mapa: la
@@ -326,6 +402,7 @@ export default function RouteTrackingMap({
             // taparían la una a la otra.
             offsetY: ficha ? -52 : -26,
           };
+
           popRef.current.open(marker, datos);
         });
         markersRef.current.push(marker);
@@ -357,14 +434,27 @@ export default function RouteTrackingMap({
         // viva encima. Una sola polilínea sobre teselas casi negras se pierde;
         // el halo es lo que la hace «encenderse».
         const color = done ? pal.ok : pal.brand;
+
         linesRef.current.push(
           new g.maps.Polyline({
-            map: mapRef.current, path, geodesic: true, clickable: false,
-            strokeColor: color, strokeOpacity: 0.18, strokeWeight: 11, zIndex: 1,
+            map: mapRef.current,
+            path,
+            geodesic: true,
+            clickable: false,
+            strokeColor: color,
+            strokeOpacity: 0.18,
+            strokeWeight: 11,
+            zIndex: 1,
           }),
           new g.maps.Polyline({
-            map: mapRef.current, path, geodesic: true, clickable: false,
-            strokeColor: color, strokeOpacity: 0.95, strokeWeight: 2.5, zIndex: 2,
+            map: mapRef.current,
+            path,
+            geodesic: true,
+            clickable: false,
+            strokeColor: color,
+            strokeOpacity: 0.95,
+            strokeWeight: 2.5,
+            zIndex: 2,
           }),
         );
       }
@@ -374,8 +464,18 @@ export default function RouteTrackingMap({
       if (stops.length > 1) mapRef.current.fitBounds(bounds, 64);
       else mapRef.current.setCenter({ lat: stops[0].lat, lng: stops[0].lng });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stops, ready, showGeofence, geofenceRadius, defaultCenter, pal, piel, version, ficha, motor]);
+  }, [
+    stops,
+    ready,
+    showGeofence,
+    geofenceRadius,
+    defaultCenter,
+    pal,
+    piel,
+    version,
+    ficha,
+    motor,
+  ]);
 
   /* ── Capa en vivo ─────────────────────────────────────────────────────── */
 
@@ -386,67 +486,92 @@ export default function RouteTrackingMap({
   useEffect(() => {
     if (!units.length) return;
     const iv = window.setInterval(() => setRevision((n) => n + 1), MS_REVISION);
+
     return () => window.clearInterval(iv);
   }, [units.length]);
 
-  const globoDeUnidad = useCallback((id: string) => {
-    const rec = unidadesRef.current.get(id);
-    if (!rec) return;
-    const u = rec.datos;
-    const e = ESTADO[rec.estado];
-    const dia = new Date().toISOString().slice(0, 10);
+  const globoDeUnidad = useCallback(
+    (id: string) => {
+      const rec = unidadesRef.current.get(id);
 
-    const acciones = mapPopupItems(
-      u.kind === "guard" && u.guardId
-        ? {
-            id: "recorrido",
-            label: t("tracking.viewTodayRoute", "Ver recorrido de hoy"),
-            icon: <RouteIcon />,
-            variant: "primary" as const,
-            onClick: () => navigate(`/tracking-history?guard=${encodeURIComponent(u.guardId!)}&from=${dia}&to=${dia}`),
-          }
-        : null,
-      {
-        ...mapPopupActions.center(() => {
-          siguiendoRef.current = id;
-          // La posición INTERPOLADA, no la del último ping: entre pings el
-          // marcador ya se movió y centrar en el ping lo dejaría descuadrado.
-          const p = motor?.posicionDe(id) ?? { lat: rec.lat, lng: rec.lng };
-          motor?.camara.volarA(p, { zoom: 17 });
-        }),
-        label: "Centrar y seguir",
-      },
-      mapPopupActions.call(u.telefono),
-      mapPopupActions.directions(rec.lat, rec.lng),
-    );
+      if (!rec) return;
+      const u = rec.datos;
+      const e = ESTADO[rec.estado];
+      const dia = new Date().toISOString().slice(0, 10);
 
-    const datos: MapPopupData = {
-      id,
-      kind: u.kind === "supervisor" ? "supervisor" : "guard",
-      title: u.nombre,
-      subtitle: `${u.kind === "supervisor" ? "Supervisor" : "Vigilante"}${u.sub ? ` · ${u.sub}` : ""}`,
-      status: { label: t(e.clave, e.etiqueta), tone: e.pop, live: rec.estado !== "sinSenal" },
-      metrics: metricasDe(u, rec.estado, t),
-      fields: mapPopupItems(
-        { label: "Velocidad", value: kmh(u.velocidad ?? null), mono: true },
-        { label: "En servicio desde", value: u.desde ? fechaHora(u.desde) : "—", mono: true },
-        { label: "Coordenadas", value: `${rec.lat.toFixed(5)}, ${rec.lng.toFixed(5)}`, mono: true, wide: true },
-      ),
-      note: rec.estado === "sinSenal"
-        ? "El dispositivo lleva más de cinco minutos sin reportar. La chincheta muestra la última posición conocida."
-        : undefined,
-      actions: acciones,
-      // El orbe está anclado por su CENTRO: sin subir el globo, saldría encima.
-      offsetY: -26,
-    };
-    // Se ancla al MARCADOR, no a una coordenada: así el globo viaja con la
-    // chincheta mientras `mapMotion` la desliza entre pings.
-    popRef.current.open(rec.marker, datos);
-  }, [motor, navigate]);
+      const acciones = mapPopupItems(
+        u.kind === "guard" && u.guardId
+          ? {
+              id: "recorrido",
+              label: t("tracking.viewTodayRoute", "Ver recorrido de hoy"),
+              icon: <RouteIcon />,
+              variant: "primary" as const,
+              onClick: () =>
+                navigate(
+                  `/tracking-history?guard=${encodeURIComponent(u.guardId!)}&from=${dia}&to=${dia}`,
+                ),
+            }
+          : null,
+        {
+          ...mapPopupActions.center(() => {
+            siguiendoRef.current = id;
+            // La posición INTERPOLADA, no la del último ping: entre pings el
+            // marcador ya se movió y centrar en el ping lo dejaría descuadrado.
+            const p = motor?.posicionDe(id) ?? { lat: rec.lat, lng: rec.lng };
+
+            motor?.camara.volarA(p, { zoom: 17 });
+          }),
+          label: "Centrar y seguir",
+        },
+        mapPopupActions.call(u.telefono),
+        mapPopupActions.directions(rec.lat, rec.lng),
+      );
+
+      const datos: MapPopupData = {
+        id,
+        kind: u.kind === "supervisor" ? "supervisor" : "guard",
+        title: u.nombre,
+        subtitle: `${u.kind === "supervisor" ? "Supervisor" : "Vigilante"}${u.sub ? ` · ${u.sub}` : ""}`,
+        status: {
+          label: t(e.clave, e.etiqueta),
+          tone: e.pop,
+          live: rec.estado !== "sinSenal",
+        },
+        metrics: metricasDe(u, rec.estado, t),
+        fields: mapPopupItems(
+          { label: "Velocidad", value: kmh(u.velocidad ?? null), mono: true },
+          {
+            label: "En servicio desde",
+            value: u.desde ? fechaHora(u.desde) : "—",
+            mono: true,
+          },
+          {
+            label: "Coordenadas",
+            value: `${rec.lat.toFixed(5)}, ${rec.lng.toFixed(5)}`,
+            mono: true,
+            wide: true,
+          },
+        ),
+        note:
+          rec.estado === "sinSenal"
+            ? "El dispositivo lleva más de cinco minutos sin reportar. La chincheta muestra la última posición conocida."
+            : undefined,
+        actions: acciones,
+        // El orbe está anclado por su CENTRO: sin subir el globo, saldría encima.
+        offsetY: -26,
+      };
+
+      // Se ancla al MARCADOR, no a una coordenada: así el globo viaja con la
+      // chincheta mientras `mapMotion` la desliza entre pings.
+      popRef.current.open(rec.marker, datos);
+    },
+    [motor, navigate],
+  );
 
   /** El oyente del marcador se registra UNA vez; esto le da siempre la versión
    *  fresca del constructor del globo, sin volver a suscribir nada. */
   const globoDeUnidadRef = useRef(globoDeUnidad);
+
   globoDeUnidadRef.current = globoDeUnidad;
 
   useEffect(() => {
@@ -461,6 +586,7 @@ export default function RouteTrackingMap({
       vivos.add(u.id);
 
       let rec = registro.get(u.id);
+
       if (!rec) {
         const marker = new g.maps.Marker({
           map: mapRef.current,
@@ -468,6 +594,7 @@ export default function RouteTrackingMap({
           title: u.nombre,
           zIndex: 800,
         });
+
         // El oyente se registra UNA vez y lee del registro, no del cierre: así
         // el globo enseña siempre el último dato y no el de cuando se creó.
         marker.addListener("click", () => globoDeUnidadRef.current(u.id));
@@ -484,36 +611,46 @@ export default function RouteTrackingMap({
         registro.set(u.id, rec);
       }
 
-      if (metrosEntre({ lat: rec.lat, lng: rec.lng }, u) >= M_MOVIMIENTO) rec.movidoEn = ahora;
+      if (metrosEntre({ lat: rec.lat, lng: rec.lng }, u) >= M_MOVIMIENTO)
+        rec.movidoEn = ahora;
       rec.datos = u;
       rec.lat = u.lat;
       rec.lng = u.lng;
 
       const visto = u.at ? new Date(u.at).getTime() : NaN;
       const antiguedad = Number.isFinite(visto) ? ahora - visto : Infinity;
-      rec.estado = antiguedad > MS_SIN_SENAL
-        ? "sinSenal"
-        : ahora - rec.movidoEn > MS_DETENIDO
-          ? "detenido"
-          : "activo";
+
+      rec.estado =
+        antiguedad > MS_SIN_SENAL
+          ? "sinSenal"
+          : ahora - rec.movidoEn > MS_DETENIDO
+            ? "detenido"
+            : "activo";
 
       const color = colorDeEstado(pal, rec.estado);
       const insignia = u.kind === "supervisor" ? "S" : "V";
       const clave = `${rec.estado}|${version}|${insignia}`;
       const pintar = () => {
         rec!.marker.setIcon(
-          iconoDe(g, orbPin({
-            color,
-            insignia,
-            piel,
-            version,
-            // Sólo lo que se mueve lleva proa: una flecha en alguien parado
-            // apunta a donde estuvo hace rato y miente.
-            rumbo: rec!.estado === "activo" ? rec!.rumbo ?? undefined : undefined,
-            tamano: u.kind === "supervisor" ? "md" : "sm",
-          })),
+          iconoDe(
+            g,
+            orbPin({
+              color,
+              insignia,
+              piel,
+              version,
+              // Sólo lo que se mueve lleva proa: una flecha en alguien parado
+              // apunta a donde estuvo hace rato y miente.
+              rumbo:
+                rec!.estado === "activo"
+                  ? (rec!.rumbo ?? undefined)
+                  : undefined,
+              tamano: u.kind === "supervisor" ? "md" : "sm",
+            }),
+          ),
         );
       };
+
       if (clave !== rec.clave) {
         rec.clave = clave;
         pintar();
@@ -521,46 +658,66 @@ export default function RouteTrackingMap({
 
       // `seguir` ES la forma de mover el marcador: nadie más le escribe la
       // posición, o darían tirones dos manos escribiendo el mismo valor.
-      motor.seguir(u.id, rec.marker, { lat: u.lat, lng: u.lng }, {
-        duracion: "auto",
-        rumbo: true,
-        // Por encima del umbral que trae el motor (4 m) a propósito: la mayoría
-        // de los vigilantes están en un puesto FIJO, y con 4 m el temblor del
-        // GPS de un teléfono quieto ya hace girar la proa sola.
-        minMetrosRumbo: 10,
-        alRumbo: (grados) => {
-          const r = registro.get(u.id);
-          if (!r || r.rumbo === grados) return;
-          r.rumbo = grados;
-          if (r.estado !== "activo") return;
-          try {
-            r.marker.setIcon(
-              iconoDe(g, orbPin({
-                color: colorDeEstado(pal, r.estado),
-                insignia: r.datos.kind === "supervisor" ? "S" : "V",
-                piel,
-                version,
-                rumbo: grados,
-                tamano: r.datos.kind === "supervisor" ? "md" : "sm",
-              })),
-            );
-          } catch { /* el marcador ya no está en el mapa */ }
+      motor.seguir(
+        u.id,
+        rec.marker,
+        { lat: u.lat, lng: u.lng },
+        {
+          duracion: "auto",
+          rumbo: true,
+          // Por encima del umbral que trae el motor (4 m) a propósito: la mayoría
+          // de los vigilantes están en un puesto FIJO, y con 4 m el temblor del
+          // GPS de un teléfono quieto ya hace girar la proa sola.
+          minMetrosRumbo: 10,
+          alRumbo: (grados) => {
+            const r = registro.get(u.id);
+
+            if (!r || r.rumbo === grados) return;
+            r.rumbo = grados;
+            if (r.estado !== "activo") return;
+            try {
+              r.marker.setIcon(
+                iconoDe(
+                  g,
+                  orbPin({
+                    color: colorDeEstado(pal, r.estado),
+                    insignia: r.datos.kind === "supervisor" ? "S" : "V",
+                    piel,
+                    version,
+                    rumbo: grados,
+                    tamano: r.datos.kind === "supervisor" ? "md" : "sm",
+                  }),
+                ),
+              );
+            } catch {
+              /* el marcador ya no está en el mapa */
+            }
+          },
         },
-      });
+      );
 
       // El latido SÓLO donde hay señal viva. Es lo que le da sentido.
-      motor.latido(u.id, { lat: u.lat, lng: u.lng }, {
-        activo: rec.estado !== "sinSenal",
-        tono: ESTADO[rec.estado].tono,
-        radio: 22,
-      });
+      motor.latido(
+        u.id,
+        { lat: u.lat, lng: u.lng },
+        {
+          activo: rec.estado !== "sinSenal",
+          tono: ESTADO[rec.estado].tono,
+          radio: 22,
+        },
+      );
 
-      if (siguiendoRef.current === u.id) motor.camara.volarA({ lat: u.lat, lng: u.lng });
+      if (siguiendoRef.current === u.id)
+        motor.camara.volarA({ lat: u.lat, lng: u.lng });
       // El globo abierto se refresca en el sitio: si estás mirando a alguien, la
       // «última señal» y la batería tienen que envejecer solas.
       if (popRef.current.isOpen && popRef.current.openId === u.id) {
         popRef.current.update({
-          status: { label: t(ESTADO[rec.estado].clave, ESTADO[rec.estado].etiqueta), tone: ESTADO[rec.estado].pop, live: rec.estado !== "sinSenal" },
+          status: {
+            label: t(ESTADO[rec.estado].clave, ESTADO[rec.estado].etiqueta),
+            tone: ESTADO[rec.estado].pop,
+            live: rec.estado !== "sinSenal",
+          },
           metrics: metricasDe(u, rec.estado, t),
         });
       }
@@ -570,7 +727,12 @@ export default function RouteTrackingMap({
     Array.from(registro.keys()).forEach((id) => {
       if (vivos.has(id)) return;
       const rec = registro.get(id)!;
-      try { rec.marker.setMap(null); } catch { /* ya estaba fuera */ }
+
+      try {
+        rec.marker.setMap(null);
+      } catch {
+        /* ya estaba fuera */
+      }
       registro.delete(id);
       if (siguiendoRef.current === id) siguiendoRef.current = null;
       if (popRef.current.openId === id) popRef.current.close();
@@ -579,48 +741,78 @@ export default function RouteTrackingMap({
 
     // Sin paradas geolocalizadas nadie encuadra el mapa y el personal se queda
     // fuera de la vista. La primera hornada de unidades lo resuelve.
-    if (!encuadradoRef.current && !stops.length && !defaultCenter && vivos.size) {
+    if (
+      !encuadradoRef.current &&
+      !stops.length &&
+      !defaultCenter &&
+      vivos.size
+    ) {
       encuadradoRef.current = true;
       motor.camara.encuadrar(
-        units.filter((u) => vivos.has(u.id)).map((u) => ({ lat: u.lat, lng: u.lng })),
+        units
+          .filter((u) => vivos.has(u.id))
+          .map((u) => ({ lat: u.lat, lng: u.lng })),
         { padding: 72, zoomMax: 16 },
       );
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [units, ready, motor, pal, piel, version, revision, stops.length, defaultCenter]);
+  }, [
+    units,
+    ready,
+    motor,
+    pal,
+    piel,
+    version,
+    revision,
+    stops.length,
+    defaultCenter,
+  ]);
 
   // Al desmontar, los marcadores de las unidades se van con el componente.
-  useEffect(() => () => {
-    unidadesRef.current.forEach((rec) => {
-      try { rec.marker.setMap(null); } catch { /* el mapa ya se destruyó */ }
-    });
-    unidadesRef.current.clear();
-  }, []);
+  useEffect(
+    () => () => {
+      unidadesRef.current.forEach((rec) => {
+        try {
+          rec.marker.setMap(null);
+        } catch {
+          /* el mapa ya se destruyó */
+        }
+      });
+      unidadesRef.current.clear();
+    },
+    [],
+  );
 
   const conteo = useMemo(() => {
     let activos = 0;
     let detenidos = 0;
     let sinSenal = 0;
     const ahora = Date.now();
+
     units.forEach((u) => {
       const visto = u.at ? new Date(u.at).getTime() : NaN;
       const rec = unidadesRef.current.get(u.id);
       const antiguedad = Number.isFinite(visto) ? ahora - visto : Infinity;
+
       if (antiguedad > MS_SIN_SENAL) sinSenal += 1;
       else if (rec && ahora - rec.movidoEn > MS_DETENIDO) detenidos += 1;
       else activos += 1;
     });
+
     return { activos, detenidos, sinSenal, total: units.length };
     // `revision` entra a propósito: es el latido que refresca los rótulos.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [units, revision]);
 
   if (err) {
     return (
-      <div className="grid place-items-center text-center text-sm text-muted-foreground" style={{ height }}>
+      <div
+        className="grid place-items-center text-center text-sm text-muted-foreground"
+        style={{ height }}
+      >
         <div>
           <p>{err}</p>
-          <p className="mt-1 text-xs">Verifica <code>VITE_GOOGLE_MAPS_API_KEY</code>.</p>
+          <p className="mt-1 text-xs">
+            Verifica <code>VITE_GOOGLE_MAPS_API_KEY</code>.
+          </p>
         </div>
       </div>
     );
@@ -631,7 +823,10 @@ export default function RouteTrackingMap({
       <div ref={ref} className="cc-map-canvas" />
 
       {hud && (stops.length > 0 || units.length > 0) && (
-        <div className="cc-map-hud" style={{ left: 12, bottom: 30, maxWidth: "min(92%, 30rem)" }}>
+        <div
+          className="cc-map-hud"
+          style={{ left: 12, bottom: 30, maxWidth: "min(92%, 30rem)" }}
+        >
           <div className="cc-map-card px-3 py-2.5">
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
               {stops.length > 0 && (
@@ -641,7 +836,12 @@ export default function RouteTrackingMap({
                       className="cc-map-ring"
                       style={{
                         ["--pct" as any]: resumen.pct,
-                        ["--anillo" as any]: resumen.pct >= 80 ? "var(--ok)" : resumen.pct >= 50 ? "var(--warn)" : "var(--brand)",
+                        ["--anillo" as any]:
+                          resumen.pct >= 80
+                            ? "var(--ok)"
+                            : resumen.pct >= 50
+                              ? "var(--warn)"
+                              : "var(--brand)",
                       }}
                     />
                     <span>{resumen.pct}%</span>
@@ -650,7 +850,11 @@ export default function RouteTrackingMap({
                     <div className="cc-map-eyebrow">Paradas</div>
                     <div className="cc-map-metric">
                       {resumen.paradasHechas}
-                      <span style={{ color: "var(--ink-faint)", fontWeight: 600 }}>/{resumen.paradas}</span>
+                      <span
+                        style={{ color: "var(--ink-faint)", fontWeight: 600 }}
+                      >
+                        /{resumen.paradas}
+                      </span>
                     </div>
                   </div>
                   <div className="hidden sm:block">
@@ -662,20 +866,41 @@ export default function RouteTrackingMap({
               {units.length > 0 && (
                 <div>
                   <div className="cc-map-eyebrow">En servicio</div>
-                  <div className="cc-map-metric" style={{ color: "var(--ok-text)" }}>{conteo.total}</div>
+                  <div
+                    className="cc-map-metric"
+                    style={{ color: "var(--ok-text)" }}
+                  >
+                    {conteo.total}
+                  </div>
                 </div>
               )}
               <div className="ml-auto flex flex-col items-end gap-1">
                 {units.length > 0 ? (
                   <>
-                    <span className="cc-map-key"><i style={{ color: "var(--ok)" }} />En servicio · {conteo.activos}</span>
-                    <span className="cc-map-key"><i style={{ color: "var(--info)" }} />Detenido · {conteo.detenidos}</span>
-                    <span className="cc-map-key"><i style={{ color: "var(--ink-faint)" }} />{t("tracking.unitState.noSignal", "Sin señal")} · {conteo.sinSenal}</span>
+                    <span className="cc-map-key">
+                      <i style={{ color: "var(--ok)" }} />
+                      En servicio · {conteo.activos}
+                    </span>
+                    <span className="cc-map-key">
+                      <i style={{ color: "var(--info)" }} />
+                      Detenido · {conteo.detenidos}
+                    </span>
+                    <span className="cc-map-key">
+                      <i style={{ color: "var(--ink-faint)" }} />
+                      {t("tracking.unitState.noSignal", "Sin señal")} ·{" "}
+                      {conteo.sinSenal}
+                    </span>
                   </>
                 ) : (
                   <>
-                    <span className="cc-map-key"><i style={{ color: "var(--ok)" }} />Completada</span>
-                    <span className="cc-map-key"><i style={{ color: "var(--warn)" }} />Pendiente</span>
+                    <span className="cc-map-key">
+                      <i style={{ color: "var(--ok)" }} />
+                      Completada
+                    </span>
+                    <span className="cc-map-key">
+                      <i style={{ color: "var(--warn)" }} />
+                      Pendiente
+                    </span>
                   </>
                 )}
               </div>
@@ -686,7 +911,10 @@ export default function RouteTrackingMap({
 
       {ready && stops.length === 0 && units.length === 0 && (
         <div className="pointer-events-none absolute inset-0 z-[3] grid place-items-center">
-          <div className="cc-map-card px-4 py-3 text-center text-sm" style={{ color: "var(--ink-soft)" }}>
+          <div
+            className="cc-map-card px-4 py-3 text-center text-sm"
+            style={{ color: "var(--ink-soft)" }}
+          >
             No hay paradas con ubicación ni personal en servicio para mostrar.
           </div>
         </div>

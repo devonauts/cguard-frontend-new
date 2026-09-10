@@ -1,31 +1,62 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Shield, CheckCircle2, CalendarDays, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
-import { ApiService } from '@/services/api/apiService';
-import { getTenantTimezone } from '@/utils/tenantLocation';
-import { EmptyState, Modal } from '@/components/kit';
-import SecuenciaPropiaSelect from '@/components/schedule/SecuenciaPropiaSelect';
+import { useState, useEffect, useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { Shield, CheckCircle2, CalendarDays, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+
+import { ApiService } from "@/services/api/apiService";
+import { getTenantTimezone } from "@/utils/tenantLocation";
+import { EmptyState, Modal } from "@/components/kit";
+import SecuenciaPropiaSelect from "@/components/schedule/SecuenciaPropiaSelect";
 
 /** Local (tenant-tz) YYYY-MM-DD for a shift start. */
 function localDateKey(iso: string): string {
-  const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone: getTenantTimezone(), year: 'numeric', month: '2-digit', day: '2-digit',
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: getTenantTimezone(),
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
   }).formatToParts(new Date(iso));
-  const g = (t: string) => parts.find(p => p.type === t)?.value || '';
-  return `${g('year')}-${g('month')}-${g('day')}`;
+  const g = (t: string) => parts.find((p) => p.type === t)?.value || "";
+
+  return `${g("year")}-${g("month")}-${g("day")}`;
 }
 
-import { localToday } from '@/lib/utils';
+import { localToday } from "@/lib/utils";
 const today = () => localToday();
 
-interface Candidate { id: string; name: string; busy: Set<string>; freeForGaps: number; busyOnGaps: number; }
+interface Candidate {
+  id: string;
+  name: string;
+  busy: Set<string>;
+  freeForGaps: number;
+  busyOnGaps: number;
+}
 
 // Raw API rows read while ranking candidates.
-interface AssignmentRow { positionId?: string | null; isRelief?: boolean; guardId?: string; guard?: { id?: string } | null }
-interface GuardAutoRow { guardId?: string; id?: string; fullName?: string; label?: string; name?: string }
-interface ShiftRow { guardId?: string; guard?: { id?: string } | null; startTime?: string }
-interface PositionRow { id: string; type?: string; startTime?: string | null; endTime?: string | null }
+interface AssignmentRow {
+  positionId?: string | null;
+  isRelief?: boolean;
+  guardId?: string;
+  guard?: { id?: string } | null;
+}
+interface GuardAutoRow {
+  guardId?: string;
+  id?: string;
+  fullName?: string;
+  label?: string;
+  name?: string;
+}
+interface ShiftRow {
+  guardId?: string;
+  guard?: { id?: string } | null;
+  startTime?: string;
+}
+interface PositionRow {
+  id: string;
+  type?: string;
+  startTime?: string | null;
+  endTime?: string | null;
+}
 
 /**
  * Assign a Sacafranco (relief) to cover the fijos' rest-day gaps. Shows each
@@ -47,7 +78,12 @@ interface PositionRow { id: string; type?: string; startTime?: string | null; en
  *     veía exactamente igual que el fallo. Ahora se dice cuántos salieron.
  */
 export default function SacafrancoAssignModal({
-  open, onClose, stationId, tenantId, gapDates, onAssigned,
+  open,
+  onClose,
+  stationId,
+  tenantId,
+  gapDates,
+  onAssigned,
 }: {
   open: boolean;
   onClose: () => void;
@@ -61,12 +97,17 @@ export default function SacafrancoAssignModal({
   const [loading, setLoading] = useState(false);
   const [assigning, setAssigning] = useState<string | null>(null);
   /** Ciclo propio del sacafranco. Vacío = tapa los huecos que haya, sin ciclo. */
-  const [cicloPropio, setCicloPropio] = useState('');
+  const [cicloPropio, setCicloPropio] = useState("");
 
   const days = (() => {
     const out: string[] = [];
-    const d = new Date(); d.setHours(0, 0, 0, 0);
-    for (let i = 0; i < 14; i++) { out.push(new Date(d.getTime() + i * 86400000).toISOString().slice(0, 10)); }
+    const d = new Date();
+
+    d.setHours(0, 0, 0, 0);
+    for (let i = 0; i < 14; i++) {
+      out.push(new Date(d.getTime() + i * 86400000).toISOString().slice(0, 10));
+    }
+
     return out;
   })();
   const gapSet = new Set(gapDates);
@@ -75,66 +116,110 @@ export default function SacafrancoAssignModal({
     setLoading(true);
     try {
       const [guardsRes, asgRes, shiftsRes] = await Promise.all([
-        ApiService.get(`/tenant/${tenantId}/security-guard/autocomplete?limit=200`),
+        ApiService.get(
+          `/tenant/${tenantId}/security-guard/autocomplete?limit=200`,
+        ),
         ApiService.get(`/tenant/${tenantId}/guard-assignments?status=active`),
         ApiService.get(`/tenant/${tenantId}/shift?limit=999`),
       ]);
-      const guards: GuardAutoRow[] = Array.isArray(guardsRes) ? guardsRes : (guardsRes?.rows || []);
-      const asg: AssignmentRow[] = Array.isArray(asgRes) ? asgRes : (asgRes?.rows || []);
-      const shifts: ShiftRow[] = Array.isArray(shiftsRes) ? shiftsRes : (shiftsRes?.rows || []);
+      const guards: GuardAutoRow[] = Array.isArray(guardsRes)
+        ? guardsRes
+        : guardsRes?.rows || [];
+      const asg: AssignmentRow[] = Array.isArray(asgRes)
+        ? asgRes
+        : asgRes?.rows || [];
+      const shifts: ShiftRow[] = Array.isArray(shiftsRes)
+        ? shiftsRes
+        : shiftsRes?.rows || [];
 
       // A guard with an active rotation (fijo or relief) can't take another.
       const occupied = new Set<string>(
-        asg.filter((a: AssignmentRow) => a.positionId || a.isRelief)
-          .map((a: AssignmentRow) => String(a.guardId || a.guard?.id || '')).filter(Boolean),
+        asg
+          .filter((a: AssignmentRow) => a.positionId || a.isRelief)
+          .map((a: AssignmentRow) => String(a.guardId || a.guard?.id || ""))
+          .filter(Boolean),
       );
       // Busy dates per guard (works somewhere that day).
       const busyBy: Record<string, Set<string>> = {};
+
       for (const sh of shifts) {
-        const gid = String(sh.guardId || sh.guard?.id || '');
+        const gid = String(sh.guardId || sh.guard?.id || "");
+
         if (!gid || !sh.startTime) continue;
-        (busyBy[gid] = busyBy[gid] || new Set()).add(localDateKey(sh.startTime));
+        (busyBy[gid] = busyBy[gid] || new Set()).add(
+          localDateKey(sh.startTime),
+        );
       }
       const cands: Candidate[] = guards
-        .map((g: GuardAutoRow) => ({ id: String(g.guardId || g.id || ''), name: g.fullName || g.label || g.name || 'Vigilante' }))
+        .map((g: GuardAutoRow) => ({
+          id: String(g.guardId || g.id || ""),
+          name: g.fullName || g.label || g.name || "Vigilante",
+        }))
         .filter((g) => g.id && !occupied.has(g.id))
         .map((g) => {
           const busy = busyBy[g.id] || new Set<string>();
-          const busyOnGaps = gapDates.filter(d => busy.has(d)).length;
-          return { ...g, busy, busyOnGaps, freeForGaps: gapDates.length - busyOnGaps };
+          const busyOnGaps = gapDates.filter((d) => busy.has(d)).length;
+
+          return {
+            ...g,
+            busy,
+            busyOnGaps,
+            freeForGaps: gapDates.length - busyOnGaps,
+          };
         })
-        .sort((a: Candidate, b: Candidate) => b.freeForGaps - a.freeForGaps || a.busy.size - b.busy.size);
+        .sort(
+          (a: Candidate, b: Candidate) =>
+            b.freeForGaps - a.freeForGaps || a.busy.size - b.busy.size,
+        );
+
       setCandidates(cands);
     } catch {
       /* api client toasts */
-    } finally { setLoading(false); }
+    } finally {
+      setLoading(false);
+    }
   }, [tenantId, gapDates]);
 
-  useEffect(() => { if (open) load(); }, [open, load]);
+  useEffect(() => {
+    if (open) load();
+  }, [open, load]);
 
   const assign = async (g: Candidate) => {
     setAssigning(g.id);
     try {
       // Ensure the station has a Sacafranco position to assign into.
-      const posRes: any = await ApiService.get(`/tenant/${tenantId}/station/${stationId}/positions`);
-      const posList: PositionRow[] = Array.isArray(posRes) ? posRes : (posRes?.rows || []);
-      let sf = posList.find((p: PositionRow) => p.type === 'sacafranco');
+      const posRes: any = await ApiService.get(
+        `/tenant/${tenantId}/station/${stationId}/positions`,
+      );
+      const posList: PositionRow[] = Array.isArray(posRes)
+        ? posRes
+        : posRes?.rows || [];
+      let sf = posList.find((p: PositionRow) => p.type === "sacafranco");
+
       if (!sf) {
         // La ventana de la plaza sale de la de los FIJOS de la estación, no de
         // un 07:00–19:00 escrito a mano: en una estación de 07:00 a 23:00 esa
         // plaza nacía con un horario que no existe en el puesto.
-        const fijos = posList.filter((p: PositionRow) => (p.type || 'fijo') !== 'sacafranco');
-        const primero = [...fijos].sort((a, b) => String(a.startTime || '').localeCompare(String(b.startTime || '')))[0];
-        const created: any = await ApiService.post(`/tenant/${tenantId}/station/${stationId}/positions`, {
-          data: {
-            name: 'Sacafranco',
-            type: 'sacafranco',
-            startTime: String(primero?.startTime || '07:00').slice(0, 5),
-            endTime: String(primero?.endTime || '19:00').slice(0, 5),
-            sortOrder: 99,
-            guardsNeeded: 1,
+        const fijos = posList.filter(
+          (p: PositionRow) => (p.type || "fijo") !== "sacafranco",
+        );
+        const primero = [...fijos].sort((a, b) =>
+          String(a.startTime || "").localeCompare(String(b.startTime || "")),
+        )[0];
+        const created: any = await ApiService.post(
+          `/tenant/${tenantId}/station/${stationId}/positions`,
+          {
+            data: {
+              name: "Sacafranco",
+              type: "sacafranco",
+              startTime: String(primero?.startTime || "07:00").slice(0, 5),
+              endTime: String(primero?.endTime || "19:00").slice(0, 5),
+              sortOrder: 99,
+              guardsNeeded: 1,
+            },
           },
-        });
+        );
+
         sf = created?.data || created;
       }
       await ApiService.post(`/tenant/${tenantId}/guard-assignment`, {
@@ -155,26 +240,36 @@ export default function SacafrancoAssignModal({
          había ni un hueco que tapar» deja al operador exactamente igual de
          perdido que el fallo. Se cuentan y se dicen. */
       let turnos: number | null = null;
+
       try {
         const desde = today();
-        const hasta = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
+        const hasta = new Date(Date.now() + 30 * 86400000)
+          .toISOString()
+          .slice(0, 10);
         const res: any = await ApiService.get(
           `/tenant/${tenantId}/shift?limit=999&guardId=${encodeURIComponent(g.id)}`,
         );
-        const filas: ShiftRow[] = Array.isArray(res) ? res : (res?.rows || []);
+        const filas: ShiftRow[] = Array.isArray(res) ? res : res?.rows || [];
+
         turnos = filas.filter((sh) => {
           if (!sh.startTime) return false;
-          const gid = String(sh.guardId || sh.guard?.id || '');
+          const gid = String(sh.guardId || sh.guard?.id || "");
+
           if (gid && gid !== String(g.id)) return false;
           const d = localDateKey(sh.startTime);
+
           return d >= desde && d <= hasta;
         }).length;
-      } catch { /* el conteo es informativo */ }
+      } catch {
+        /* el conteo es informativo */
+      }
 
       if (turnos === null) {
         toast.success(`${g.name} quedó asignado como sacafranco.`);
       } else if (turnos > 0) {
-        toast.success(`${g.name} quedó como sacafranco — ${turnos} turno${turnos === 1 ? '' : 's'} generado${turnos === 1 ? '' : 's'} en los próximos 30 días.`);
+        toast.success(
+          `${g.name} quedó como sacafranco — ${turnos} turno${turnos === 1 ? "" : "s"} generado${turnos === 1 ? "" : "s"} en los próximos 30 días.`,
+        );
       } else {
         toast.warning(
           `${g.name} quedó como sacafranco, pero no hay ningún descanso que tapar en los próximos 30 días, así que no se generó ningún turno. Revisa que los fijos de la estación tengan descansos en su ciclo, o dale un ciclo propio.`,
@@ -184,18 +279,29 @@ export default function SacafrancoAssignModal({
       onAssigned();
       onClose();
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || t('ui.SacafrancoAssignModal.noSePudoAsignarElSacafranco', 'No se pudo asignar el sacafranco'));
-    } finally { setAssigning(null); }
+      toast.error(
+        e?.data?.message ||
+          e?.message ||
+          t(
+            "ui.SacafrancoAssignModal.noSePudoAsignarElSacafranco",
+            "No se pudo asignar el sacafranco",
+          ),
+      );
+    } finally {
+      setAssigning(null);
+    }
   };
 
   return (
     <Modal
-      open={open}
-      onOpenChange={(o) => { if (!o) onClose(); }}
-      size="lg"
+      description={t("ui.SacafrancoAssignModal.cubreLosDiasDeDescanso")}
       icon={<Shield className="h-5 w-5" />}
+      open={open}
+      size="lg"
       title="Asignar sacafranco"
-      description={t('ui.SacafrancoAssignModal.cubreLosDiasDeDescanso')}
+      onOpenChange={(o) => {
+        if (!o) onClose();
+      }}
     >
       <div className="space-y-3">
         {/* Ciclo del sacafranco. El defecto —sin ciclo propio— es lo que la
@@ -203,73 +309,143 @@ export default function SacafrancoAssignModal({
         <div>
           <p className="cg-eyebrow mb-1.5">Cómo trabaja</p>
           <SecuenciaPropiaSelect
+            etiquetaPorDefecto="Tapa el hueco donde caiga (recomendado)"
             tenantId={tenantId}
             value={cicloPropio}
             onChange={setCicloPropio}
-            etiquetaPorDefecto="Tapa el hueco donde caiga (recomendado)"
           />
-          <p className="mt-1 text-[10px]" style={{ color: 'var(--ink-soft)' }}>
-            Sin ciclo propio cubre, día a día, el descanso que dejen los fijos. Con ciclo propio corre
-            su rotación y dentro de sus días de trabajo va al hueco que exista.
+          <p className="mt-1 text-[10px]" style={{ color: "var(--ink-soft)" }}>
+            Sin ciclo propio cubre, día a día, el descanso que dejen los fijos.
+            Con ciclo propio corre su rotación y dentro de sus días de trabajo
+            va al hueco que exista.
           </p>
         </div>
 
         {/* Legend */}
-        <div className="flex flex-wrap items-center gap-4 text-[10px]" style={{ color: 'var(--ink-soft)' }}>
-          <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded-sm" style={{ background: 'color-mix(in oklab, var(--bad) 45%, transparent)' }} />{" "}{t("ui.SacafrancoAssignModal.diaACubrirDescansoDel", "Día a cubrir (descanso del fijo)")}</span>
-          <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded-sm" style={{ background: 'color-mix(in oklab, var(--warn) 55%, transparent)' }} />{" "}{t('ui.SacafrancoAssignModal.ocupadoEnOtroPuesto')}</span>
-          <span className="inline-flex items-center gap-1"><span className="h-3 w-3 rounded-sm" style={{ background: 'color-mix(in oklab, var(--ok) 45%, transparent)' }} /> Libre</span>
+        <div
+          className="flex flex-wrap items-center gap-4 text-[10px]"
+          style={{ color: "var(--ink-soft)" }}
+        >
+          <span className="inline-flex items-center gap-1">
+            <span
+              className="h-3 w-3 rounded-sm"
+              style={{
+                background: "color-mix(in oklab, var(--bad) 45%, transparent)",
+              }}
+            />{" "}
+            {t(
+              "ui.SacafrancoAssignModal.diaACubrirDescansoDel",
+              "Día a cubrir (descanso del fijo)",
+            )}
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <span
+              className="h-3 w-3 rounded-sm"
+              style={{
+                background: "color-mix(in oklab, var(--warn) 55%, transparent)",
+              }}
+            />{" "}
+            {t("ui.SacafrancoAssignModal.ocupadoEnOtroPuesto")}
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <span
+              className="h-3 w-3 rounded-sm"
+              style={{
+                background: "color-mix(in oklab, var(--ok) 45%, transparent)",
+              }}
+            />{" "}
+            Libre
+          </span>
         </div>
 
         <div className="space-y-2">
           {loading ? (
-            <div className="flex items-center justify-center py-12" style={{ color: 'var(--ink-soft)' }}><Loader2 className="animate-spin" /></div>
+            <div
+              className="flex items-center justify-center py-12"
+              style={{ color: "var(--ink-soft)" }}
+            >
+              <Loader2 className="animate-spin" />
+            </div>
           ) : candidates.length === 0 ? (
             <EmptyState
+              description={t(
+                "ui.SacafrancoAssignModal.todosLosVigilantesTienenUna",
+              )}
               icon={<Shield />}
-              title={t('comun.sinVigilantesDisponibles')}
-              description={t('ui.SacafrancoAssignModal.todosLosVigilantesTienenUna')}
+              title={t("comun.sinVigilantesDisponibles")}
             />
-          ) : candidates.map((g) => (
-            <div key={g.id} className="glass-flat p-3">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2 min-w-0">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold" style={{ background: 'color-mix(in oklab, var(--ok) 16%, transparent)', color: 'var(--ok-text)' }}>
-                    {g.name.split(' ').map(w => w[0]).slice(0, 2).join('')}
+          ) : (
+            candidates.map((g) => (
+              <div key={g.id} className="glass-flat p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div
+                      className="flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold"
+                      style={{
+                        background:
+                          "color-mix(in oklab, var(--ok) 16%, transparent)",
+                        color: "var(--ok-text)",
+                      }}
+                    >
+                      {g.name
+                        .split(" ")
+                        .map((w) => w[0])
+                        .slice(0, 2)
+                        .join("")}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold">{g.name}</p>
+                      <p
+                        className="text-[11px]"
+                        style={{ color: "var(--ink-soft)" }}
+                      >
+                        <CalendarDays className="inline mr-1" size={11} />
+                        Libre {g.freeForGaps}/{gapDates.length} días a cubrir
+                        {g.busyOnGaps > 0 ? ` · ocupado ${g.busyOnGaps}` : ""}
+                      </p>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold">{g.name}</p>
-                    <p className="text-[11px]" style={{ color: 'var(--ink-soft)' }}>
-                      <CalendarDays size={11} className="inline mr-1" />
-                      Libre {g.freeForGaps}/{gapDates.length} días a cubrir{g.busyOnGaps > 0 ? ` · ocupado ${g.busyOnGaps}` : ''}
-                    </p>
-                  </div>
+                  <button
+                    className="cg-focus flex shrink-0 items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold disabled:opacity-50"
+                    disabled={!!assigning}
+                    style={{
+                      background: "var(--ok)",
+                      color: "var(--brand-ink)",
+                    }}
+                    onClick={() => assign(g)}
+                  >
+                    {assigning === g.id ? (
+                      <Loader2 className="animate-spin" size={13} />
+                    ) : (
+                      <CheckCircle2 size={13} />
+                    )}
+                    Asignar
+                  </button>
                 </div>
-                <button
-                  onClick={() => assign(g)}
-                  disabled={!!assigning}
-                  className="cg-focus flex shrink-0 items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold disabled:opacity-50"
-                  style={{ background: 'var(--ok)', color: 'var(--brand-ink)' }}
-                >
-                  {assigning === g.id ? <Loader2 size={13} className="animate-spin" /> : <CheckCircle2 size={13} />}
-                  Asignar
-                </button>
+                {/* 14-day availability strip */}
+                <div className="mt-2 flex gap-0.5">
+                  {days.map((d) => {
+                    const isGap = gapSet.has(d);
+                    const isBusy = g.busy.has(d);
+                    const fondo = isBusy
+                      ? "color-mix(in oklab, var(--warn) 55%, transparent)"
+                      : isGap
+                        ? "color-mix(in oklab, var(--bad) 45%, transparent)"
+                        : "color-mix(in oklab, var(--ok) 28%, transparent)";
+
+                    return (
+                      <div
+                        key={d}
+                        className="h-4 flex-1 rounded-sm"
+                        style={{ background: fondo }}
+                        title={`${d}${isGap ? " · descanso del fijo" : ""}${isBusy ? " · ocupado" : ""}`}
+                      />
+                    );
+                  })}
+                </div>
               </div>
-              {/* 14-day availability strip */}
-              <div className="mt-2 flex gap-0.5">
-                {days.map((d) => {
-                  const isGap = gapSet.has(d);
-                  const isBusy = g.busy.has(d);
-                  const fondo = isBusy
-                    ? 'color-mix(in oklab, var(--warn) 55%, transparent)'
-                    : isGap
-                    ? 'color-mix(in oklab, var(--bad) 45%, transparent)'
-                    : 'color-mix(in oklab, var(--ok) 28%, transparent)';
-                  return <div key={d} title={`${d}${isGap ? ' · descanso del fijo' : ''}${isBusy ? ' · ocupado' : ''}`} className="h-4 flex-1 rounded-sm" style={{ background: fondo }} />;
-                })}
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </Modal>

@@ -1,7 +1,21 @@
-import { StatusBadge, MetricTile, DeltaPill, InfoNote, Cifra } from '@/components/kit';
-import { Sparkles, Route as RouteIcon, Timer, Info } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { fechaOptimizacion, fraseAhorro, km, minutos, type AhorroRuta } from './routeOptimizacion';
+import { Sparkles, Route as RouteIcon, Timer, Info } from "lucide-react";
+import { useTranslation } from "react-i18next";
+
+import {
+  fechaOptimizacion,
+  fraseAhorro,
+  km,
+  minutos,
+  type AhorroRuta,
+} from "./routeOptimizacion";
+
+import {
+  StatusBadge,
+  MetricTile,
+  DeltaPill,
+  InfoNote,
+  Cifra,
+} from "@/components/kit";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -32,9 +46,20 @@ export function InsigniaOptimizada({
   compacta?: boolean;
 }) {
   const { t } = useTranslation();
-  if (!optimizada) return <StatusBadge tone="neutral">{t('routes.optimizacion.sinOptimizar', 'Sin optimizar')}</StatusBadge>;
+
+  if (!optimizada)
+    return (
+      <StatusBadge tone="neutral">
+        {t("routes.optimizacion.sinOptimizar", "Sin optimizar")}
+      </StatusBadge>
+    );
   const fecha = compacta ? null : fechaOptimizacion(optimizadaEn);
-  return <StatusBadge tone="ok">{fecha ? `Optimizada · ${fecha}` : 'Optimizada'}</StatusBadge>;
+
+  return (
+    <StatusBadge tone="ok">
+      {fecha ? `Optimizada · ${fecha}` : "Optimizada"}
+    </StatusBadge>
+  );
 }
 
 /**
@@ -61,8 +86,17 @@ export function PanelAhorro({
 
   if (!frase) {
     return (
-      <InfoNote tone="neutral" icon={<Info />} title={t('routes.optimizacion.yaEnMejorOrden', 'Ya estaba en el mejor orden posible')} className={className}>
-        Se recalculó el recorrido y no hizo falta mover ninguna parada. El orden que había ya era el más corto.
+      <InfoNote
+        className={className}
+        icon={<Info />}
+        title={t(
+          "routes.optimizacion.yaEnMejorOrden",
+          "Ya estaba en el mejor orden posible",
+        )}
+        tone="neutral"
+      >
+        Se recalculó el recorrido y no hizo falta mover ninguna parada. El orden
+        que había ya era el más corto.
       </InfoNote>
     );
   }
@@ -74,27 +108,38 @@ export function PanelAhorro({
       <div
         className="flex flex-col gap-1 rounded-2xl border px-5 py-4"
         style={{
-          background: 'color-mix(in oklab, var(--ok) 12%, transparent)',
-          borderColor: 'color-mix(in oklab, var(--ok) 30%, transparent)',
+          background: "color-mix(in oklab, var(--ok) 12%, transparent)",
+          borderColor: "color-mix(in oklab, var(--ok) 30%, transparent)",
         }}
       >
-        <div className="cg-eyebrow flex items-center gap-1.5" style={{ color: 'var(--ok-text)' }}>
-          <Sparkles className="size-3.5" /> {t('routes.optimizacion.ahorroDeEstaOptimizacion', 'Ahorro de esta optimización')}
+        <div
+          className="cg-eyebrow flex items-center gap-1.5"
+          style={{ color: "var(--ok-text)" }}
+        >
+          <Sparkles className="size-3.5" />{" "}
+          {t(
+            "routes.optimizacion.ahorroDeEstaOptimizacion",
+            "Ahorro de esta optimización",
+          )}
         </div>
         <div
           className="font-display text-2xl font-bold leading-tight tracking-tight tabular-nums sm:text-3xl"
-          style={{ color: 'var(--ok-text)' }}
+          style={{ color: "var(--ok-text)" }}
         >
           {frase}
         </div>
         {ahorro.porcentaje != null && ahorro.porcentaje >= 1 && (
-          <div className="text-sm font-semibold tabular-nums" style={{ color: 'var(--ok-text)' }}>
+          <div
+            className="text-sm font-semibold tabular-nums"
+            style={{ color: "var(--ok-text)" }}
+          >
             {Math.round(ahorro.porcentaje)} % menos de recorrido
           </div>
         )}
         {fecha && (
-          <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>
-            Calculado el {fecha}. Si cambias las paradas o los extremos, el orden vuelve a ser manual.
+          <div className="text-xs" style={{ color: "var(--ink-soft)" }}>
+            Calculado el {fecha}. Si cambias las paradas o los extremos, el
+            orden vuelve a ser manual.
           </div>
         )}
       </div>
@@ -102,15 +147,16 @@ export function PanelAhorro({
       {/* Las dos advertencias que EXPLICAN un orden inesperado. Sin ellas, el
           operador ve paradas «mal colocadas» y culpa al cálculo. */}
       {ahorro.sinCoordenadas != null && ahorro.sinCoordenadas > 0 && (
-        <InfoNote tone="info" icon={<Info />} className="mt-3">
+        <InfoNote className="mt-3" icon={<Info />} tone="info">
           {ahorro.sinCoordenadas === 1
-            ? 'Una parada no tiene ubicación: conserva su posición en la lista y las demás se repartieron por los huecos.'
+            ? "Una parada no tiene ubicación: conserva su posición en la lista y las demás se repartieron por los huecos."
             : `${ahorro.sinCoordenadas} paradas no tienen ubicación: conservan su posición en la lista y las demás se repartieron por los huecos.`}
         </InfoNote>
       )}
       {ahorro.truncado && (
-        <InfoNote tone="warn" icon={<Info />} className="mt-3">
-          La ruta tiene demasiadas paradas y el cálculo no las cubrió todas. Revisa el orden del final del recorrido.
+        <InfoNote className="mt-3" icon={<Info />} tone="warn">
+          La ruta tiene demasiadas paradas y el cálculo no las cubrió todas.
+          Revisa el orden del final del recorrido.
         </InfoNote>
       )}
 
@@ -118,26 +164,44 @@ export function PanelAhorro({
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           {ahorro.kmDespues != null && (
             <MetricTile
-              label={t('routes.optimizacion.distanciaDelRecorrido', 'Distancia del recorrido')}
+              delta={
+                ahorro.km != null && ahorro.km >= 0.05
+                  ? { value: `-${km(ahorro.km)}`, direction: "down" }
+                  : undefined
+              }
+              hint={
+                ahorro.kmAntes != null
+                  ? `Antes: ${km(ahorro.kmAntes)}`
+                  : undefined
+              }
               icon={<RouteIcon />}
-              value={<Cifra valor={ahorro.kmDespues} decimales={ahorro.kmDespues < 10 ? 1 : 0} />}
-              delta={ahorro.km != null && ahorro.km >= 0.05 ? { value: `-${km(ahorro.km)}`, direction: 'down' } : undefined}
-              hint={ahorro.kmAntes != null ? `Antes: ${km(ahorro.kmAntes)}` : undefined}
+              label={t(
+                "routes.optimizacion.distanciaDelRecorrido",
+                "Distancia del recorrido",
+              )}
+              value={
+                <Cifra
+                  decimales={ahorro.kmDespues < 10 ? 1 : 0}
+                  valor={ahorro.kmDespues}
+                />
+              }
             />
           )}
           {ahorro.minDespues != null && (
             <MetricTile
-              label="Tiempo en ruta"
-              icon={<Timer />}
-              value={<Cifra valor={Math.round(ahorro.minDespues)} />}
               delta={
-                ahorro.min != null && ahorro.min >= 0.5 ? { value: `-${minutos(ahorro.min)}`, direction: 'down' } : undefined
+                ahorro.min != null && ahorro.min >= 0.5
+                  ? { value: `-${minutos(ahorro.min)}`, direction: "down" }
+                  : undefined
               }
               hint={
                 ahorro.minAntes != null
                   ? `Antes: ${minutos(ahorro.minAntes)} · incluye la permanencia en cada parada, a marcha de tráfico urbano`
                   : undefined
               }
+              icon={<Timer />}
+              label="Tiempo en ruta"
+              value={<Cifra valor={Math.round(ahorro.minDespues)} />}
             />
           )}
         </div>
@@ -150,11 +214,19 @@ export function PanelAhorro({
  * El ahorro en UNA línea, para donde no cabe el panel (la tarjeta de una lista).
  * Misma cifra, mismo formato — sólo cambia el tamaño.
  */
-export function LineaAhorro({ ahorro, className }: { ahorro: AhorroRuta | null; className?: string }) {
+export function LineaAhorro({
+  ahorro,
+  className,
+}: {
+  ahorro: AhorroRuta | null;
+  className?: string;
+}) {
   const frase = fraseAhorro(ahorro);
+
   if (!frase) return null;
+
   return (
-    <DeltaPill direction="down" valence="good" className={className}>
+    <DeltaPill className={className} direction="down" valence="good">
       {frase}
     </DeltaPill>
   );

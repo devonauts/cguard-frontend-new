@@ -1,14 +1,14 @@
-import React from 'react';
-import { Outlet, NavLink } from 'react-router-dom';
-import { Shield, Calendar, CalendarOff } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import { Outlet, NavLink } from "react-router-dom";
+import { Shield, Calendar, CalendarOff } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function GuardAppLayout() {
   const { t } = useTranslation();
   const navItems = [
-    { to: '/guard', icon: Shield, label: t('guard.nav.home') },
-    { to: '/guard/schedule', icon: Calendar, label: t('guard.nav.schedule') },
-    { to: '/guard/time-off', icon: CalendarOff, label: t('guard.nav.timeOff') },
+    { to: "/guard", icon: Shield, label: t("guard.nav.home") },
+    { to: "/guard/schedule", icon: Calendar, label: t("guard.nav.schedule") },
+    { to: "/guard/time-off", icon: CalendarOff, label: t("guard.nav.timeOff") },
   ];
 
   return (
@@ -16,10 +16,12 @@ export default function GuardAppLayout() {
       {/* Header */}
       <header className="bg-card border-b px-4 py-3 flex items-center justify-between sticky top-0 z-40">
         <div className="flex items-center gap-2">
-          <Shield size={20} className="text-primary" />
+          <Shield className="text-primary" size={20} />
           <span className="font-bold text-foreground text-sm">CGuard Pro</span>
         </div>
-        <span className="text-xs text-muted-foreground">{t('guard.roleLabel')}</span>
+        <span className="text-xs text-muted-foreground">
+          {t("guard.roleLabel")}
+        </span>
       </header>
 
       {/* Content */}
@@ -35,13 +37,15 @@ export default function GuardAppLayout() {
         {navItems.map(({ to, icon: Icon, label }) => (
           <NavLink
             key={to}
-            to={to}
-            end={to === '/guard'}
             className={({ isActive }) =>
               `flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors ${
-                isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+                isActive
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground"
               }`
             }
+            end={to === "/guard"}
+            to={to}
           >
             <Icon size={20} />
             <span className="text-[10px] font-medium">{label}</span>

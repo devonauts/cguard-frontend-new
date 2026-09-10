@@ -5,9 +5,13 @@
  */
 
 // Roles that must NEVER reach the CRM (their home is a mobile app / portal).
-export const FIELD_ONLY_ROLES = ['securityguard', 'securitysupervisor', 'customer'];
+export const FIELD_ONLY_ROLES = [
+  "securityguard",
+  "securitysupervisor",
+  "customer",
+];
 
-const SUPER = ['superadmin', 'super_admin'];
+const SUPER = ["superadmin", "super_admin"];
 
 /** Every role slug (lowercased) a user holds, across selected tenant, tenants[], top-level. */
 export function normalizedRoles(user: any): string[] {
@@ -15,18 +19,26 @@ export function normalizedRoles(user: any): string[] {
   const push = (r: any) => {
     if (!r) return;
     if (Array.isArray(r)) r.forEach((x) => push(x));
-    else if (typeof r === 'string') r.split(',').forEach((x) => out.push(x.trim()));
-    else if (typeof r === 'object' && (r.name || r.slug || r.id || r.key)) out.push(String(r.name || r.slug || r.id || r.key));
+    else if (typeof r === "string")
+      r.split(",").forEach((x) => out.push(x.trim()));
+    else if (typeof r === "object" && (r.name || r.slug || r.id || r.key))
+      out.push(String(r.name || r.slug || r.id || r.key));
   };
+
   push(user?.tenant?.roles ?? user?.tenant?.role);
-  if (Array.isArray(user?.tenants)) user.tenants.forEach((t: any) => push(t?.roles ?? t?.role));
+  if (Array.isArray(user?.tenants))
+    user.tenants.forEach((t: any) => push(t?.roles ?? t?.role));
   push(user?.roles ?? user?.role);
-  if (user?.isSuperadmin) out.push('superadmin');
+  if (user?.isSuperadmin) out.push("superadmin");
+
   return out.map((r) => String(r).toLowerCase()).filter(Boolean);
 }
 
 export function isPlatformSuperadmin(user: any): boolean {
-  return user?.isSuperadmin === true || normalizedRoles(user).some((r) => SUPER.includes(r));
+  return (
+    user?.isSuperadmin === true ||
+    normalizedRoles(user).some((r) => SUPER.includes(r))
+  );
 }
 
 /**
@@ -42,7 +54,9 @@ export function canAccessCrm(user: any): boolean {
   // en cada membresía (ver centralOperationsService); aquí sólo se respeta.
   if (esOperadorDeCentral(user)) return true;
   const roles = normalizedRoles(user);
+
   if (roles.length === 0) return true;
+
   return roles.some((r) => !FIELD_ONLY_ROLES.includes(r));
 }
 
@@ -51,7 +65,11 @@ export function esOperadorDeCentral(user: any): boolean {
   if (!user) return false;
   if (user.centralOperator === true) return true;
   const ts = Array.isArray(user?.tenants) ? user.tenants : [];
-  return ts.some((t: any) => t && t.centralOperator === true && (!t.status || t.status === 'active'));
+
+  return ts.some(
+    (t: any) =>
+      t && t.centralOperator === true && (!t.status || t.status === "active"),
+  );
 }
 
 /**
@@ -87,7 +105,7 @@ export const AUTHORITY = {
   SUPERVISOR: 80,
   HR: 75,
   DISPATCHER: 60, // + dispatcher — monitoreo de operaciones
-  OFFICE: 52,     // + oficina; excluye vigilante(50) y cliente(10)
+  OFFICE: 52, // + oficina; excluye vigilante(50) y cliente(10)
   GUARD: 50,
 } as const;
 
@@ -98,12 +116,16 @@ function rolesEnEmpresa(user: any, tenantId?: string | null): string[] {
   const push = (r: any) => {
     if (!r) return;
     if (Array.isArray(r)) r.forEach((x) => push(x));
-    else if (typeof r === 'string') r.split(',').forEach((x) => out.push(x.trim()));
-    else if (typeof r === 'object' && (r.name || r.slug || r.id || r.key)) out.push(String(r.name || r.slug || r.id || r.key));
+    else if (typeof r === "string")
+      r.split(",").forEach((x) => out.push(x.trim()));
+    else if (typeof r === "object" && (r.name || r.slug || r.id || r.key))
+      out.push(String(r.name || r.slug || r.id || r.key));
   };
-  const idDe = (t: any) => String(t?.tenantId || t?.tenant?.id || '');
-  const activa = (t: any) => !t?.status || String(t.status).toLowerCase() === 'active';
+  const idDe = (t: any) => String(t?.tenantId || t?.tenant?.id || "");
+  const activa = (t: any) =>
+    !t?.status || String(t.status).toLowerCase() === "active";
   const membresias = Array.isArray(user?.tenants) ? user.tenants : [];
+
   membresias
     .filter((t: any) => idDe(t) === String(tenantId) && activa(t))
     .forEach((t: any) => push(t?.roles ?? t?.role));
@@ -112,7 +134,8 @@ function rolesEnEmpresa(user: any, tenantId?: string | null): string[] {
     push(user?.tenant?.roles ?? user?.tenant?.role);
   }
   push(user?.roles ?? user?.role);
-  if (user?.isSuperadmin) out.push('superadmin');
+  if (user?.isSuperadmin) out.push("superadmin");
+
   return out.map((r) => String(r).toLowerCase()).filter(Boolean);
 }
 
@@ -129,10 +152,15 @@ export function userAuthority(user: any, tenantId?: string | null): number {
     0,
   );
   const porConsola = esOperadorDeCentral(user) ? ROLE_AUTHORITY.dispatcher : 0;
+
   return Math.max(porRol, porConsola);
 }
 
 /** ¿Alcanza el piso de autoridad que ese endpoint del CRM exige? */
-export function hasMinAuthority(user: any, minAuthority: number, tenantId?: string | null): boolean {
+export function hasMinAuthority(
+  user: any,
+  minAuthority: number,
+  tenantId?: string | null,
+): boolean {
   return userAuthority(user, tenantId) >= minAuthority;
 }

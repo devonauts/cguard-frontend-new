@@ -1,7 +1,13 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { useTranslation } from 'react-i18next';
-import { MapPin, Maximize2 } from 'lucide-react';
-import { staticMapUrl, staticMapUrlMulti, type StaticMapOptions, type StaticMapPoint } from '@/utils/staticMapUrl';
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
+import { MapPin, Maximize2 } from "lucide-react";
+
+import {
+  staticMapUrl,
+  staticMapUrlMulti,
+  type StaticMapOptions,
+  type StaticMapPoint,
+} from "@/utils/staticMapUrl";
 
 /**
  * Miniatura de mapa que sólo se vuelve interactiva cuando alguien la pide.
@@ -28,7 +34,8 @@ import { staticMapUrl, staticMapUrlMulti, type StaticMapOptions, type StaticMapP
  *    proyecto), se cae al mapa interactivo. El comportamiento anterior es
  *    siempre la red de seguridad: esto no puede dejar una pantalla sin mapa.
  */
-export interface StaticMapImageProps extends Omit<StaticMapOptions, 'height' | 'width'> {
+export interface StaticMapImageProps
+  extends Omit<StaticMapOptions, "height" | "width"> {
   lat?: number | string | null | undefined;
   lng?: number | string | null | undefined;
   /** Varias chinchetas con encuadre automático. Si viene con al menos un punto
@@ -51,8 +58,8 @@ export default function StaticMapImage({
   lng,
   points,
   children,
-  height = '256px',
-  className = '',
+  height = "256px",
+  className = "",
   alt,
   interactive = true,
   ...mapOptions
@@ -71,16 +78,19 @@ export default function StaticMapImage({
   const alturaPx = /^\d+(\.\d+)?px$|^\d+$/.test(height.trim())
     ? Math.max(120, parseInt(height, 10))
     : 320;
-  const url = points && points.length
-    ? staticMapUrlMulti(points, { height: alturaPx, ...mapOptions })
-    : staticMapUrl(lat, lng, { height: alturaPx, ...mapOptions });
+  const url =
+    points && points.length
+      ? staticMapUrlMulti(points, { height: alturaPx, ...mapOptions })
+      : staticMapUrl(lat, lng, { height: alturaPx, ...mapOptions });
 
   useEffect(() => {
     const nodo = hostRef.current;
+
     if (!nodo || visible) return;
 
-    if (typeof IntersectionObserver !== 'function') {
+    if (typeof IntersectionObserver !== "function") {
       setVisible(true);
+
       return;
     }
 
@@ -93,9 +103,11 @@ export default function StaticMapImage({
       },
       // Margen generoso: la imagen llega justo antes de que el hueco aparezca,
       // así no se ve el hueco vacío al desplazarse.
-      { rootMargin: '250px' },
+      { rootMargin: "250px" },
     );
+
     obs.observe(nodo);
+
     return () => obs.disconnect();
   }, [visible]);
 
@@ -113,27 +125,36 @@ export default function StaticMapImage({
       {visible ? (
         <>
           <img
-            src={url}
-            alt={alt ?? t('maps.static.altDefault', 'Mapa de la ubicación')}
-            loading="lazy"
-            decoding="async"
-            onError={() => setImagenRota(true)}
+            alt={alt ?? t("maps.static.altDefault", "Mapa de la ubicación")}
             className="h-full w-full object-cover"
+            decoding="async"
+            loading="lazy"
+            src={url}
+            onError={() => setImagenRota(true)}
           />
           {interactive && (
             <button
+              aria-label={t(
+                "ui.StaticMapImage.abrirElMapaInteractivo",
+                "Abrir el mapa interactivo",
+              )}
+              className="absolute inset-0 flex items-end justify-end p-2 opacity-0 transition-opacity hover:opacity-100 focus-visible:opacity-100"
+              style={{
+                background:
+                  "linear-gradient(to top, rgba(0,0,0,.35), transparent 45%)",
+              }}
               type="button"
               onClick={() => setExpandido(true)}
-              aria-label={t('ui.StaticMapImage.abrirElMapaInteractivo', 'Abrir el mapa interactivo')}
-              className="absolute inset-0 flex items-end justify-end p-2 opacity-0 transition-opacity hover:opacity-100 focus-visible:opacity-100"
-              style={{ background: 'linear-gradient(to top, rgba(0,0,0,.35), transparent 45%)' }}
             >
               <span
                 className="pointer-events-none flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-medium"
-                style={{ background: 'var(--glass, rgba(255,255,255,.92))', color: 'var(--ink, #111)' }}
+                style={{
+                  background: "var(--glass, rgba(255,255,255,.92))",
+                  color: "var(--ink, #111)",
+                }}
               >
                 <Maximize2 className="h-3 w-3" />
-                {t('ui.StaticMapImage.explorarElMapa', 'Explorar el mapa')}
+                {t("ui.StaticMapImage.explorarElMapa", "Explorar el mapa")}
               </span>
             </button>
           )}
@@ -141,7 +162,7 @@ export default function StaticMapImage({
       ) : (
         <div
           className="flex h-full w-full items-center justify-center"
-          style={{ background: 'var(--glass-sunken, rgba(0,0,0,.04))' }}
+          style={{ background: "var(--glass-sunken, rgba(0,0,0,.04))" }}
         >
           <MapPin className="h-5 w-5 opacity-30" />
         </div>

@@ -1,5 +1,17 @@
-import { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
-import { leerAparienciaDeLaCuenta, guardarApariencia, cambioLocalReciente } from "@/lib/appearanceSync";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  useRef,
+} from "react";
+
+import {
+  leerAparienciaDeLaCuenta,
+  guardarApariencia,
+  cambioLocalReciente,
+} from "@/lib/appearanceSync";
 
 /**
  * El acento configurable del CRM.
@@ -28,17 +40,83 @@ export type Accent = { h: number; c: number };
 /** Tono y croma; el nombre es sólo para la interfaz.
  *  `labelKey` es la clave i18n: este array se evalúa al cargar el módulo, así
  *  que el texto se traduce DONDE SE PINTA (`t(p.labelKey ?? "", p.label)`). */
-export const ACCENT_PRESETS: Array<{ id: string; label: string; labelKey?: string; h: number; c: number }> = [
-  { id: "mostaza", label: "Mostaza oro", labelKey: "appearance.accent.mostaza", h: 88, c: 0.16 },
-  { id: "ambar", label: "Ámbar", labelKey: "appearance.accent.ambar", h: 70, c: 0.16 },
-  { id: "lima", label: "Lima", labelKey: "appearance.accent.lima", h: 125, c: 0.16 },
-  { id: "esmeralda", label: "Esmeralda", labelKey: "appearance.accent.esmeralda", h: 155, c: 0.15 },
-  { id: "cian", label: "Cian", labelKey: "appearance.accent.cian", h: 205, c: 0.14 },
-  { id: "azul", label: "Azul", labelKey: "appearance.accent.azul", h: 250, c: 0.15 },
-  { id: "violeta", label: "Violeta", labelKey: "appearance.accent.violeta", h: 295, c: 0.16 },
-  { id: "magenta", label: "Magenta", labelKey: "appearance.accent.magenta", h: 340, c: 0.16 },
-  { id: "carmesi", label: "Carmesí", labelKey: "appearance.accent.carmesi", h: 22, c: 0.17 },
-  { id: "acero", label: "Acero", labelKey: "appearance.accent.acero", h: 250, c: 0.04 },
+export const ACCENT_PRESETS: Array<{
+  id: string;
+  label: string;
+  labelKey?: string;
+  h: number;
+  c: number;
+}> = [
+  {
+    id: "mostaza",
+    label: "Mostaza oro",
+    labelKey: "appearance.accent.mostaza",
+    h: 88,
+    c: 0.16,
+  },
+  {
+    id: "ambar",
+    label: "Ámbar",
+    labelKey: "appearance.accent.ambar",
+    h: 70,
+    c: 0.16,
+  },
+  {
+    id: "lima",
+    label: "Lima",
+    labelKey: "appearance.accent.lima",
+    h: 125,
+    c: 0.16,
+  },
+  {
+    id: "esmeralda",
+    label: "Esmeralda",
+    labelKey: "appearance.accent.esmeralda",
+    h: 155,
+    c: 0.15,
+  },
+  {
+    id: "cian",
+    label: "Cian",
+    labelKey: "appearance.accent.cian",
+    h: 205,
+    c: 0.14,
+  },
+  {
+    id: "azul",
+    label: "Azul",
+    labelKey: "appearance.accent.azul",
+    h: 250,
+    c: 0.15,
+  },
+  {
+    id: "violeta",
+    label: "Violeta",
+    labelKey: "appearance.accent.violeta",
+    h: 295,
+    c: 0.16,
+  },
+  {
+    id: "magenta",
+    label: "Magenta",
+    labelKey: "appearance.accent.magenta",
+    h: 340,
+    c: 0.16,
+  },
+  {
+    id: "carmesi",
+    label: "Carmesí",
+    labelKey: "appearance.accent.carmesi",
+    h: 22,
+    c: 0.17,
+  },
+  {
+    id: "acero",
+    label: "Acero",
+    labelKey: "appearance.accent.acero",
+    h: 250,
+    c: 0.04,
+  },
 ];
 
 export const ACCENT_DEFAULT: Accent = { h: 88, c: 0.16 };
@@ -50,18 +128,22 @@ const CLAVE = "cguard-accent";
  *  saldrían con intensidades distintas. */
 const CROMA_MAX = 0.2;
 
-const acota = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n));
+const acota = (n: number, min: number, max: number) =>
+  Math.min(max, Math.max(min, n));
 
 function leerGuardado(): Accent {
   try {
     const bruto = localStorage.getItem(CLAVE);
+
     if (bruto) {
       const v = JSON.parse(bruto);
+
       if (typeof v?.h === "number" && typeof v?.c === "number") {
         return { h: acota(v.h, 0, 360), c: acota(v.c, 0, CROMA_MAX) };
       }
     }
   } catch {}
+
   return ACCENT_DEFAULT;
 }
 
@@ -70,6 +152,7 @@ function leerGuardado(): Accent {
  *  defecto. */
 export function aplicarAccent(a: Accent) {
   const raiz = document.documentElement;
+
   raiz.style.setProperty("--brand-h", String(a.h));
   raiz.style.setProperty("--brand-c", String(a.c));
 }
@@ -94,11 +177,14 @@ export function AccentProvider({ children }: { children: React.ReactNode }) {
    *  o le pisarías al usuario el acento que eligió en otro dispositivo. */
   const cuentaLeida = useRef(false);
 
-  useEffect(() => { aplicarAccent(accent); }, [accent]);
+  useEffect(() => {
+    aplicarAccent(accent);
+  }, [accent]);
 
   // Al arrancar: lo que diga la cuenta manda sobre la caché de este navegador.
   useEffect(() => {
     let vivo = true;
+
     leerAparienciaDeLaCuenta().then((a) => {
       if (!vivo) return;
       cuentaLeida.current = true;
@@ -106,36 +192,52 @@ export function AccentProvider({ children }: { children: React.ReactNode }) {
       // (caché de identidad por instancia): no dejes que revierta tu cambio.
       if (cambioLocalReciente()) return;
       const g = a?.accent;
+
       if (g && typeof g.h === "number" && typeof g.c === "number") {
         const seguro = { h: acota(g.h, 0, 360), c: acota(g.c, 0, CROMA_MAX) };
+
         setAccentState(seguro);
-        try { localStorage.setItem(CLAVE, JSON.stringify(seguro)); } catch {}
+        try {
+          localStorage.setItem(CLAVE, JSON.stringify(seguro));
+        } catch {}
       } else if (a && a.accent === null) {
         // La cuenta dice explícitamente «el de fábrica».
         setAccentState(ACCENT_DEFAULT);
-        try { localStorage.removeItem(CLAVE); } catch {}
+        try {
+          localStorage.removeItem(CLAVE);
+        } catch {}
       }
     });
-    return () => { vivo = false; };
+
+    return () => {
+      vivo = false;
+    };
   }, []);
 
   const setAccent = useCallback((a: Accent) => {
     const seguro = { h: acota(a.h, 0, 360), c: acota(a.c, 0, CROMA_MAX) };
+
     setAccentState(seguro);
-    try { localStorage.setItem(CLAVE, JSON.stringify(seguro)); } catch {}
+    try {
+      localStorage.setItem(CLAVE, JSON.stringify(seguro));
+    } catch {}
     guardarApariencia({ accent: seguro });
   }, []);
 
   const resetAccent = useCallback(() => {
     setAccentState(ACCENT_DEFAULT);
-    try { localStorage.removeItem(CLAVE); } catch {}
+    try {
+      localStorage.removeItem(CLAVE);
+    } catch {}
     // null = «vuelve al de fábrica» también en la cuenta; si no, al recargar
     // volvería el acento viejo desde el servidor.
     guardarApariencia({ accent: null });
   }, []);
 
   return (
-    <AccentContext.Provider value={{ accent, setAccent, resetAccent, presets: ACCENT_PRESETS }}>
+    <AccentContext.Provider
+      value={{ accent, setAccent, resetAccent, presets: ACCENT_PRESETS }}
+    >
       {children}
     </AccentContext.Provider>
   );

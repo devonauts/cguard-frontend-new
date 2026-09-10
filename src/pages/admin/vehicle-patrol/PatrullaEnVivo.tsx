@@ -1,13 +1,38 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { Activity, Clock, MapPin, User, Pause, AlertTriangle, ChevronRight } from 'lucide-react';
-import { Section, StatusBadge, StatusDot, EmptyState, GlassPanel, SkeletonCards, Meter } from '@/components/kit';
-import { getAuthToken } from '@/lib/api';
-import { crearSocket, cerrarSocket } from '@/lib/socket';
-import routeService from '@/lib/api/routeService';
-import { localeActual } from '@/lib/localeActual';
-import { RUN_STATUS_LABEL, RUN_STATUS_TONE, SCHEDULE_LABEL, SCHEDULE_TONE, VISIT_STATUS_LABEL, fmtHora } from './runLabels';
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import {
+  Activity,
+  Clock,
+  MapPin,
+  User,
+  Pause,
+  AlertTriangle,
+  ChevronRight,
+} from "lucide-react";
+
+import {
+  RUN_STATUS_LABEL,
+  RUN_STATUS_TONE,
+  SCHEDULE_LABEL,
+  SCHEDULE_TONE,
+  VISIT_STATUS_LABEL,
+  fmtHora,
+} from "./runLabels";
+
+import {
+  Section,
+  StatusBadge,
+  StatusDot,
+  EmptyState,
+  GlassPanel,
+  SkeletonCards,
+  Meter,
+} from "@/components/kit";
+import { getAuthToken } from "@/lib/api";
+import { crearSocket, cerrarSocket } from "@/lib/socket";
+import routeService from "@/lib/api/routeService";
+import { localeActual } from "@/lib/localeActual";
 
 /**
  * LO QUE ESTÁ PASANDO AHORA: las ejecuciones abiertas de todas las rutas de
@@ -22,52 +47,88 @@ export default function PatrullaEnVivo() {
   const [vivo, setVivo] = useState(false);
 
   const load = useCallback(async () => {
-    try { setRows(await routeService.activeRuns()); } catch { setRows((r) => r ?? []); }
+    try {
+      setRows(await routeService.activeRuns());
+    } catch {
+      setRows((r) => r ?? []);
+    }
   }, []);
 
   useEffect(() => {
     load();
-    const tid = localStorage.getItem('tenantId');
-    const socket = tid ? crearSocket(getAuthToken() || '', tid) : null;
-    const onProgress = () => { load(); };
+    const tid = localStorage.getItem("tenantId");
+    const socket = tid ? crearSocket(getAuthToken() || "", tid) : null;
+    const onProgress = () => {
+      load();
+    };
+
     if (socket) {
-      socket.on('route:progress', onProgress);
-      socket.on('connect', () => setVivo(true));
-      socket.on('disconnect', () => setVivo(false));
+      socket.on("route:progress", onProgress);
+      socket.on("connect", () => setVivo(true));
+      socket.on("disconnect", () => setVivo(false));
     }
     const timer = window.setInterval(load, 45000);
-    return () => { window.clearInterval(timer); if (socket) { socket.off('route:progress', onProgress); cerrarSocket(socket); } };
+
+    return () => {
+      window.clearInterval(timer);
+      if (socket) {
+        socket.off("route:progress", onProgress);
+        cerrarSocket(socket);
+      }
+    };
   }, [load]);
 
   const locale = localeActual();
 
   return (
     <Section
-      title={t('ui.PatrullaEnVivo.titulo', 'En curso ahora')}
-      icon={<Activity />}
-      action={(
+      action={
         /* El punto que late es el del kit (`StatusDot pulse`): sólo late
            mientras el canal en vivo está conectado. Si se cae, se dice cada
            cuánto se refresca en vez de fingir que sigue en vivo. */
-        <span className="inline-flex items-center gap-2 text-xs" style={{ color: 'var(--ink-soft)' }}>
-          <StatusDot tone={vivo ? 'ok' : 'neutral'} pulse={vivo} label={vivo ? t('ui.PatrullaEnVivo.enVivo', 'En vivo') : t('ui.PatrullaEnVivo.sondeo', 'Actualizando cada 45 s')} />
-          {vivo ? t('ui.PatrullaEnVivo.enVivo', 'En vivo') : t('ui.PatrullaEnVivo.sondeo', 'Actualizando cada 45 s')}
+        <span
+          className="inline-flex items-center gap-2 text-xs"
+          style={{ color: "var(--ink-soft)" }}
+        >
+          <StatusDot
+            label={
+              vivo
+                ? t("ui.PatrullaEnVivo.enVivo", "En vivo")
+                : t("ui.PatrullaEnVivo.sondeo", "Actualizando cada 45 s")
+            }
+            pulse={vivo}
+            tone={vivo ? "ok" : "neutral"}
+          />
+          {vivo
+            ? t("ui.PatrullaEnVivo.enVivo", "En vivo")
+            : t("ui.PatrullaEnVivo.sondeo", "Actualizando cada 45 s")}
         </span>
-      )}
+      }
+      icon={<Activity />}
+      title={t("ui.PatrullaEnVivo.titulo", "En curso ahora")}
     >
       {rows === null ? (
-        <SkeletonCards count={2} className="lg:grid-cols-2" />
+        <SkeletonCards className="lg:grid-cols-2" count={2} />
       ) : rows.length === 0 ? (
         <EmptyState
+          description={t(
+            "ui.PatrullaEnVivo.sinRutasSub",
+            "Cuando un supervisor empiece una ruta desde su app aparecerá aquí con su avance.",
+          )}
           icon={<Activity />}
-          title={t('ui.PatrullaEnVivo.sinRutas', 'Ningún supervisor está en ruta en este momento')}
-          description={t('ui.PatrullaEnVivo.sinRutasSub', 'Cuando un supervisor empiece una ruta desde su app aparecerá aquí con su avance.')}
+          title={t(
+            "ui.PatrullaEnVivo.sinRutas",
+            "Ningún supervisor está en ruta en este momento",
+          )}
         />
       ) : (
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
           {rows.map((r) => {
-            const pct = r.progress?.total ? Math.round((r.progress.completed / r.progress.total) * 100) : 0;
-            const paused = r.status === 'paused';
+            const pct = r.progress?.total
+              ? Math.round((r.progress.completed / r.progress.total) * 100)
+              : 0;
+            const paused = r.status === "paused";
+
             return (
               /* `role="link"` + teclado: la tarjeta entera abre la ejecución,
                  y antes sólo respondía al ratón. */
@@ -75,41 +136,100 @@ export default function PatrullaEnVivo() {
                 key={r.id}
                 flat
                 hover
+                className="cg-focus cursor-pointer p-4"
                 role="link"
                 tabIndex={0}
-                className="cg-focus cursor-pointer p-4"
                 onClick={() => navigate(`/vehicle-patrol/runs/${r.id}`)}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(`/vehicle-patrol/runs/${r.id}`); } }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    navigate(`/vehicle-patrol/runs/${r.id}`);
+                  }
+                }}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="truncate text-sm font-semibold text-foreground">{r.routeName || t('ui.PatrullaEnVivo.ruta', 'Ruta')}</p>
-                      <StatusBadge tone={RUN_STATUS_TONE[r.status] || 'neutral'}>{RUN_STATUS_LABEL[r.status] || r.status}</StatusBadge>
-                      {!paused && r.scheduleState && r.scheduleState !== 'on_time' && (
-                        <StatusBadge tone={SCHEDULE_TONE[r.scheduleState]} dot={false}>
-                          {r.scheduleState === 'at_risk' ? <AlertTriangle className="size-3" /> : <Clock className="size-3" />}
-                          {SCHEDULE_LABEL[r.scheduleState]}{r.varianceMinutes ? ` · +${r.varianceMinutes} min` : ''}
+                      <p className="truncate text-sm font-semibold text-foreground">
+                        {r.routeName || t("ui.PatrullaEnVivo.ruta", "Ruta")}
+                      </p>
+                      <StatusBadge
+                        tone={RUN_STATUS_TONE[r.status] || "neutral"}
+                      >
+                        {RUN_STATUS_LABEL[r.status] || r.status}
+                      </StatusBadge>
+                      {!paused &&
+                        r.scheduleState &&
+                        r.scheduleState !== "on_time" && (
+                          <StatusBadge
+                            dot={false}
+                            tone={SCHEDULE_TONE[r.scheduleState]}
+                          >
+                            {r.scheduleState === "at_risk" ? (
+                              <AlertTriangle className="size-3" />
+                            ) : (
+                              <Clock className="size-3" />
+                            )}
+                            {SCHEDULE_LABEL[r.scheduleState]}
+                            {r.varianceMinutes
+                              ? ` · +${r.varianceMinutes} min`
+                              : ""}
+                          </StatusBadge>
+                        )}
+                      {paused && (
+                        <StatusBadge dot={false} tone="warn">
+                          <Pause className="size-3" />
+                          {t("ui.PatrullaEnVivo.pausada", "Pausada")}
                         </StatusBadge>
                       )}
-                      {paused && <StatusBadge tone="warn" dot={false}><Pause className="size-3" />{t('ui.PatrullaEnVivo.pausada', 'Pausada')}</StatusBadge>}
-                      {r.planVersion > 1 && <StatusBadge tone="brand" dot={false}>v{r.planVersion}</StatusBadge>}
+                      {r.planVersion > 1 && (
+                        <StatusBadge dot={false} tone="brand">
+                          v{r.planVersion}
+                        </StatusBadge>
+                      )}
                     </div>
-                    <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs" style={{ color: 'var(--ink-soft)' }}>
-                      {r.supervisorName && <span className="flex items-center gap-1"><User className="size-3.5" />{r.supervisorName}</span>}
-                      <span className="flex items-center gap-1"><Clock className="size-3.5" />{t('ui.PatrullaEnVivo.desde', 'Desde')} {fmtHora(r.startedAt, locale)}</span>
+                    <div
+                      className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs"
+                      style={{ color: "var(--ink-soft)" }}
+                    >
+                      {r.supervisorName && (
+                        <span className="flex items-center gap-1">
+                          <User className="size-3.5" />
+                          {r.supervisorName}
+                        </span>
+                      )}
+                      <span className="flex items-center gap-1">
+                        <Clock className="size-3.5" />
+                        {t("ui.PatrullaEnVivo.desde", "Desde")}{" "}
+                        {fmtHora(r.startedAt, locale)}
+                      </span>
                       {r.currentStop && (
                         <span className="flex items-center gap-1">
-                          <MapPin className="size-3.5" style={{ color: 'var(--brand-text)' }} />
-                          {r.currentStop.name || t('ui.PatrullaEnVivo.parada', 'Parada')} · {VISIT_STATUS_LABEL[r.currentStop.status] || r.currentStop.status}
+                          <MapPin
+                            className="size-3.5"
+                            style={{ color: "var(--brand-text)" }}
+                          />
+                          {r.currentStop.name ||
+                            t("ui.PatrullaEnVivo.parada", "Parada")}{" "}
+                          ·{" "}
+                          {VISIT_STATUS_LABEL[r.currentStop.status] ||
+                            r.currentStop.status}
                         </span>
                       )}
                     </div>
                     <div className="mt-3">
-                      <Meter value={pct} tone={paused ? 'warn' : 'brand'} label={`${r.progress?.completed ?? 0}/${r.progress?.total ?? 0} ${t('ui.PatrullaEnVivo.paradas', 'paradas')}`} showValue />
+                      <Meter
+                        showValue
+                        label={`${r.progress?.completed ?? 0}/${r.progress?.total ?? 0} ${t("ui.PatrullaEnVivo.paradas", "paradas")}`}
+                        tone={paused ? "warn" : "brand"}
+                        value={pct}
+                      />
                     </div>
                   </div>
-                  <ChevronRight className="size-4 shrink-0" style={{ color: 'var(--ink-faint)' }} />
+                  <ChevronRight
+                    className="size-4 shrink-0"
+                    style={{ color: "var(--ink-faint)" }}
+                  />
                 </div>
               </GlassPanel>
             );

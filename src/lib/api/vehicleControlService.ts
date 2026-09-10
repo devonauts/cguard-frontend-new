@@ -1,4 +1,4 @@
-import { ApiService } from '@/services/api/apiService';
+import { ApiService } from "@/services/api/apiService";
 
 /**
  * Control vehicular: reglas por puesto, ocupación y placas vetadas.
@@ -35,21 +35,34 @@ export interface PlacaVetada {
   createdAt?: string;
 }
 
-const tid = () => localStorage.getItem('tenantId') || '';
+const tid = () => localStorage.getItem("tenantId") || "";
 const unwrap = (r: any) => (r?.data !== undefined ? r.data : r);
 
 export const vehicleControlService = {
   ocupacion: (stationId: string): Promise<Ocupacion> =>
-    ApiService.get(`/tenant/${tid()}/station/${stationId}/vehicle-control`).then(unwrap),
+    ApiService.get(
+      `/tenant/${tid()}/station/${stationId}/vehicle-control`,
+    ).then(unwrap),
 
-  guardarReglas: (stationId: string, reglas: ReglasVehiculo): Promise<Ocupacion> =>
-    ApiService.put(`/tenant/${tid()}/station/${stationId}/vehicle-control`, { data: reglas }).then(unwrap),
+  guardarReglas: (
+    stationId: string,
+    reglas: ReglasVehiculo,
+  ): Promise<Ocupacion> =>
+    ApiService.put(`/tenant/${tid()}/station/${stationId}/vehicle-control`, {
+      data: reglas,
+    }).then(unwrap),
 
   listaNegra: (): Promise<{ rows: PlacaVetada[]; count: number }> =>
     ApiService.get(`/tenant/${tid()}/vehicle-blacklist`).then(unwrap),
 
-  vetar: (plate: string, reason?: string, stationId?: string | null): Promise<PlacaVetada> =>
-    ApiService.post(`/tenant/${tid()}/vehicle-blacklist`, { data: { plate, reason, stationId: stationId || null } }).then(unwrap),
+  vetar: (
+    plate: string,
+    reason?: string,
+    stationId?: string | null,
+  ): Promise<PlacaVetada> =>
+    ApiService.post(`/tenant/${tid()}/vehicle-blacklist`, {
+      data: { plate, reason, stationId: stationId || null },
+    }).then(unwrap),
 
   quitarVeto: (id: string): Promise<void> =>
     ApiService.delete(`/tenant/${tid()}/vehicle-blacklist/${id}`).then(unwrap),

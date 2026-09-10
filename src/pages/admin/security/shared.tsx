@@ -17,16 +17,24 @@
  * elija el rojo como acento.
  * ════════════════════════════════════════════════════════════════════════════
  */
-import type { ReactNode } from 'react';
-import { useTranslation } from 'react-i18next';
-import i18n from '@/i18n';
-import {
-  LogIn, LogOut, Smartphone, AlertTriangle, Search, ShieldCheck, Loader2,
-} from 'lucide-react';
-import { SkeletonBlock } from '@/components/kit';
-import { cn } from '@/lib/utils';
+import type { ReactNode } from "react";
 
-export type SeverityTone = 'ok' | 'bad' | 'warn' | 'info' | 'neutral';
+import { useTranslation } from "react-i18next";
+import {
+  LogIn,
+  LogOut,
+  Smartphone,
+  AlertTriangle,
+  Search,
+  ShieldCheck,
+  Loader2,
+} from "lucide-react";
+
+import i18n from "@/i18n";
+import { SkeletonBlock } from "@/components/kit";
+import { cn } from "@/lib/utils";
+
+export type SeverityTone = "ok" | "bad" | "warn" | "info" | "neutral";
 
 // ── Metadatos de evento ─────────────────────────────────────────────────────
 /**
@@ -41,22 +49,64 @@ export type SeverityTone = 'ok' | 'bad' | 'warn' | 'info' | 'neutral';
  * la etiqueta quedaría congelada en el idioma de arranque para toda la sesión.
  * La traducción se hace en `metaFor`, que corre durante el render.
  */
-export const EVENT_META: Record<string, { labelKey: string; label: string; icon: ReactNode; tone: SeverityTone }> = {
-  login: { labelKey: 'security.event.login', label: 'Inicio de sesión', icon: <LogIn className="size-3.5" />, tone: 'ok' },
-  login_failed: { labelKey: 'security.event.loginFailed', label: 'Intento fallido', icon: <AlertTriangle className="size-3.5" />, tone: 'bad' },
-  logout: { labelKey: 'security.event.logout', label: 'Cierre de sesión', icon: <LogOut className="size-3.5" />, tone: 'neutral' },
-  device_registered: { labelKey: 'security.event.deviceRegistered', label: 'Dispositivo registrado', icon: <Smartphone className="size-3.5" />, tone: 'info' },
-  device_evicted: { labelKey: 'security.event.deviceEvicted', label: 'Dispositivo retirado', icon: <Smartphone className="size-3.5" />, tone: 'warn' },
+export const EVENT_META: Record<
+  string,
+  { labelKey: string; label: string; icon: ReactNode; tone: SeverityTone }
+> = {
+  login: {
+    labelKey: "security.event.login",
+    label: "Inicio de sesión",
+    icon: <LogIn className="size-3.5" />,
+    tone: "ok",
+  },
+  login_failed: {
+    labelKey: "security.event.loginFailed",
+    label: "Intento fallido",
+    icon: <AlertTriangle className="size-3.5" />,
+    tone: "bad",
+  },
+  logout: {
+    labelKey: "security.event.logout",
+    label: "Cierre de sesión",
+    icon: <LogOut className="size-3.5" />,
+    tone: "neutral",
+  },
+  device_registered: {
+    labelKey: "security.event.deviceRegistered",
+    label: "Dispositivo registrado",
+    icon: <Smartphone className="size-3.5" />,
+    tone: "info",
+  },
+  device_evicted: {
+    labelKey: "security.event.deviceEvicted",
+    label: "Dispositivo retirado",
+    icon: <Smartphone className="size-3.5" />,
+    tone: "warn",
+  },
   // El proveedor entrando al CRM de la empresa (soporte). En ámbar a propósito:
   // no es un fallo, pero es exactamente lo que el dueño quiere notar de un
   // vistazo en su historial.
-  provider_access: { labelKey: 'security.event.providerAccess', label: 'Acceso de soporte (CGuardPro)', icon: <ShieldCheck className="size-3.5" />, tone: 'warn' },
+  provider_access: {
+    labelKey: "security.event.providerAccess",
+    label: "Acceso de soporte (CGuardPro)",
+    icon: <ShieldCheck className="size-3.5" />,
+    tone: "warn",
+  },
 };
 
 /** Se traduce AQUÍ (en tiempo de render), no en la constante de arriba. */
-export const metaFor = (event: string): { label: string; icon: ReactNode; tone: SeverityTone } => {
+export const metaFor = (
+  event: string,
+): { label: string; icon: ReactNode; tone: SeverityTone } => {
   const m = EVENT_META[event];
-  if (!m) return { label: event, icon: <ShieldCheck className="size-3.5" />, tone: 'neutral' };
+
+  if (!m)
+    return {
+      label: event,
+      icon: <ShieldCheck className="size-3.5" />,
+      tone: "neutral",
+    };
+
   return { label: i18n.t(m.labelKey, m.label), icon: m.icon, tone: m.tone };
 };
 
@@ -65,31 +115,41 @@ export const metaFor = (event: string): { label: string; icon: ReactNode; tone: 
 export function fmtStamp(d?: string): string {
   try {
     return new Date(d as string).toLocaleString(undefined, {
-      day: '2-digit', month: 'short', year: 'numeric',
-      hour: '2-digit', minute: '2-digit', second: '2-digit',
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
     });
   } catch {
-    return '';
+    return "";
   }
 }
 
 // ── Buscador ────────────────────────────────────────────────────────────────
 /** La caja de búsqueda de la barra de herramientas: lupa dentro del campo. */
-export function AuditSearch({ value, onChange, placeholder = 'Buscar…' }: {
-  value: string; onChange: (v: string) => void; placeholder?: string;
+export function AuditSearch({
+  value,
+  onChange,
+  placeholder = "Buscar…",
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
 }) {
   return (
     <div className="relative min-w-0 flex-1 sm:max-w-xs">
       <Search
         className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2"
-        style={{ color: 'var(--ink-faint)' }}
+        style={{ color: "var(--ink-faint)" }}
       />
       <input
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
         aria-label={placeholder}
         className="cg-input h-9 w-full pl-9 pr-3 text-sm"
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
       />
     </div>
   );
@@ -119,18 +179,27 @@ export function AuditSkeleton({ rows = 8 }: { rows?: number }) {
  * tabla es lo último del panel; con pie de desplazamiento infinito debajo va sin
  * redondeo, que es lo que las tres pantallas hacían de tres maneras distintas.
  */
-export function AuditTable({ head, children, flush = false }: {
-  head: ReactNode; children: ReactNode; flush?: boolean;
+export function AuditTable({
+  head,
+  children,
+  flush = false,
+}: {
+  head: ReactNode;
+  children: ReactNode;
+  flush?: boolean;
 }) {
   return (
-    <div className={cn('overflow-x-auto', flush && 'rounded-b-2xl')}>
+    <div className={cn("overflow-x-auto", flush && "rounded-b-2xl")}>
       {/* `min-w` es lo que hace que el `overflow-x-auto` de arriba sirva de algo:
           con sólo `w-full` las seis columnas se comprimían dentro de un teléfono
           hasta partir cada celda en una tira vertical ilegible. Con un ancho
           mínimo, la tabla se desplaza DENTRO de su marco y la página no. */}
       <table className="w-full min-w-[760px] text-sm">
         <thead>
-          <tr className="cg-eyebrow border-b text-left" style={{ borderColor: 'var(--hairline)' }}>
+          <tr
+            className="cg-eyebrow border-b text-left"
+            style={{ borderColor: "var(--hairline)" }}
+          >
             {head}
           </tr>
         </thead>
@@ -146,16 +215,28 @@ export function AuditTable({ head, children, flush = false }: {
  * pantallas, y tiene que encontrarse recorriendo la columna con la vista, sin
  * leer una a una.
  */
-export function AuditRow({ tone, onClick, children }: {
-  tone: SeverityTone; onClick?: () => void; children: ReactNode;
+export function AuditRow({
+  tone,
+  onClick,
+  children,
+}: {
+  tone: SeverityTone;
+  onClick?: () => void;
+  children: ReactNode;
 }) {
-  const grave = tone === 'bad';
+  const grave = tone === "bad";
+
   return (
     <tr
-      className={cn('border-b transition-colors hover:bg-muted/30', onClick && 'cursor-pointer')}
+      className={cn(
+        "border-b transition-colors hover:bg-muted/30",
+        onClick && "cursor-pointer",
+      )}
       style={{
-        borderColor: 'var(--hairline)',
-        background: grave ? 'color-mix(in oklab, var(--bad) 7%, transparent)' : undefined,
+        borderColor: "var(--hairline)",
+        background: grave
+          ? "color-mix(in oklab, var(--bad) 7%, transparent)"
+          : undefined,
       }}
       onClick={onClick}
     >
@@ -167,37 +248,50 @@ export function AuditRow({ tone, onClick, children }: {
 /** El filo de severidad del canto izquierdo. Va dentro de la primera celda,
  *  que debe llevar `relative`. */
 export function SeverityRail({ tone }: { tone: SeverityTone }) {
-  if (tone !== 'bad') return null;
+  if (tone !== "bad") return null;
+
   return (
     <span
       aria-hidden
       className="absolute left-0 top-1/2 h-[60%] w-[3px] -translate-y-1/2 rounded-full"
       style={{
-        background: 'var(--bad)',
-        boxShadow: '0 0 12px color-mix(in oklab, var(--bad) 45%, transparent)',
+        background: "var(--bad)",
+        boxShadow: "0 0 12px color-mix(in oklab, var(--bad) 45%, transparent)",
       }}
     />
   );
 }
 
 // ── Pie de desplazamiento infinito ──────────────────────────────────────────
-export function InfiniteFooter({ sentinelRef, loading, hasMore, count, endLabel }: {
+export function InfiniteFooter({
+  sentinelRef,
+  loading,
+  hasMore,
+  count,
+  endLabel,
+}: {
   sentinelRef: React.Ref<HTMLDivElement>;
-  loading: boolean; hasMore: boolean; count: number; endLabel: string;
+  loading: boolean;
+  hasMore: boolean;
+  count: number;
+  endLabel: string;
 }) {
   const { t } = useTranslation();
+
   return (
     <div
       ref={sentinelRef}
       className="flex items-center justify-center py-4 text-xs"
-      style={{ color: 'var(--ink-faint)' }}
+      style={{ color: "var(--ink-faint)" }}
     >
       {loading && count > 0 ? (
         <span className="flex items-center gap-2">
           <Loader2 className="size-4 animate-spin" /> Cargando más…
         </span>
       ) : hasMore ? (
-        <span>{t("ui.shared.desplazateParaVerMas", "Desplázate para ver más")}</span>
+        <span>
+          {t("ui.shared.desplazateParaVerMas", "Desplázate para ver más")}
+        </span>
       ) : count > 0 ? (
         <span>— {endLabel} —</span>
       ) : null}

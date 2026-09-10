@@ -1,7 +1,8 @@
-import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { ClipboardList, ArrowRight } from 'lucide-react';
-import { InfoNote, StatusBadge } from '@/components/kit';
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { ClipboardList, ArrowRight } from "lucide-react";
+
+import { InfoNote, StatusBadge } from "@/components/kit";
 
 /**
  * ────────────────────────────────────────────────────────────────────────────
@@ -45,16 +46,19 @@ export interface SiteWithSetup {
  */
 export function needsOperationSetup(site?: SiteWithSetup | null): boolean {
   if (!site) return false;
-  if (site.setup && typeof site.setup.pending === 'boolean') return site.setup.pending;
+  if (site.setup && typeof site.setup.pending === "boolean")
+    return site.setup.pending;
   const t = site.serviceType;
-  return t === null || t === undefined || String(t).trim() === '';
+
+  return t === null || t === undefined || String(t).trim() === "";
 }
 
 /** Píldora corta para listas y tablas. */
 export function OperationSetupBadge({ site }: { site?: SiteWithSetup | null }) {
   if (!needsOperationSetup(site)) return null;
+
   return (
-    <StatusBadge tone="warn" dot={false}>
+    <StatusBadge dot={false} tone="warn">
       Falta configurar
     </StatusBadge>
   );
@@ -63,46 +67,53 @@ export function OperationSetupBadge({ site }: { site?: SiteWithSetup | null }) {
 export default function OperationSetupAlert({
   site,
   siteId,
-  context = 'site',
+  context = "site",
   className,
 }: {
   site?: SiteWithSetup | null;
   /** Cuando la sede llega sin `id` (vistas que la aplanan). */
   siteId?: string | number | null;
   /** Dónde se está enseñando: cambia lo que hay que decir, no el diagnóstico. */
-  context?: 'site' | 'station' | 'guard' | 'client';
+  context?: "site" | "station" | "guard" | "client";
   className?: string;
 }) {
   const { t } = useTranslation();
+
   if (!needsOperationSetup(site)) return null;
 
-  const id = String(siteId ?? site?.id ?? '');
+  const id = String(siteId ?? site?.id ?? "");
 
   const cuerpo =
-    context === 'station'
-      ? 'Estás por crear un puesto en una sede que todavía no dice qué servicio se presta ni con qué equipamiento y capacitación. Puedes continuar, pero el puesto quedará sin esas reglas hasta que la configures.'
-      : context === 'guard'
-      ? 'Estás por asignar personal a una sede que todavía no dice qué servicio se presta ni con qué equipamiento y capacitación. Puedes continuar, pero el vigilante no tendrá esas reglas hasta que la configures.'
-      : context === 'client'
-      ? 'Esta sede se creó automáticamente al dar de alta al cliente, con sus datos de contacto. Falta lo operativo: qué servicio se presta, con qué equipamiento y qué capacitación. Conviene configurarlo antes de crear puestos y asignar vigilantes.'
-      : 'Esta sede no tiene configuración operativa: falta indicar qué servicio se presta, con qué equipamiento y qué capacitación. Conviene hacerlo antes de crear puestos y asignar vigilantes.';
+    context === "station"
+      ? "Estás por crear un puesto en una sede que todavía no dice qué servicio se presta ni con qué equipamiento y capacitación. Puedes continuar, pero el puesto quedará sin esas reglas hasta que la configures."
+      : context === "guard"
+        ? "Estás por asignar personal a una sede que todavía no dice qué servicio se presta ni con qué equipamiento y capacitación. Puedes continuar, pero el vigilante no tendrá esas reglas hasta que la configures."
+        : context === "client"
+          ? "Esta sede se creó automáticamente al dar de alta al cliente, con sus datos de contacto. Falta lo operativo: qué servicio se presta, con qué equipamiento y qué capacitación. Conviene configurarlo antes de crear puestos y asignar vigilantes."
+          : "Esta sede no tiene configuración operativa: falta indicar qué servicio se presta, con qué equipamiento y qué capacitación. Conviene hacerlo antes de crear puestos y asignar vigilantes.";
 
   return (
     <InfoNote
-      tone="warn"
-      icon={<ClipboardList />}
-      title={t("ui.OperationSetupAlert.faltaLaConfiguracionOperativa", "Falta la configuración operativa")}
       className={className}
+      icon={<ClipboardList />}
+      title={t(
+        "ui.OperationSetupAlert.faltaLaConfiguracionOperativa",
+        "Falta la configuración operativa",
+      )}
+      tone="warn"
     >
       <div className="space-y-2">
         <p>{cuerpo}</p>
         {id ? (
           <Link
-            to={`/post-sites/${id}/edit?step=1`}
             className="cg-focus inline-flex items-center gap-1.5 text-sm font-semibold hover:underline"
-            style={{ color: 'var(--brand-text)' }}
+            style={{ color: "var(--brand-text)" }}
+            to={`/post-sites/${id}/edit?step=1`}
           >
-            {t('ui.OperationSetupAlert.configurarLaOperacion', 'Configurar la operación')}
+            {t(
+              "ui.OperationSetupAlert.configurarLaOperacion",
+              "Configurar la operación",
+            )}
             <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         ) : null}

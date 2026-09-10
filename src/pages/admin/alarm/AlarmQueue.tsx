@@ -12,12 +12,37 @@ import {
   Activity,
   ChevronRight,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+
+import {
+  CriticalRail,
+  ClockPill,
+  PriorityPill,
+  STATUS_META,
+  OPEN_STATUSES,
+  categoryMeta,
+  categoryTone,
+  criticalBorder,
+  elapsedSince,
+  formatWhen,
+  slaTone,
+  sourceTone,
+} from "./shared";
 
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import {
-  PageContainer, PageHeader, Section, Stagger, StatCard, EmptyState,
-  GlassPanel, StatusBadge, Segmented, Toolbar, SkeletonCards,
+  PageContainer,
+  PageHeader,
+  Section,
+  Stagger,
+  StatCard,
+  EmptyState,
+  GlassPanel,
+  StatusBadge,
+  Segmented,
+  Toolbar,
+  SkeletonCards,
 } from "@/components/kit";
 import {
   alarmService,
@@ -25,15 +50,8 @@ import {
   type AlarmCase,
   type AlarmCaseStatus,
 } from "@/lib/api/alarmService";
-import { useTranslation } from "react-i18next";
 import { openEventStream } from "@/lib/api/eventStream";
 import { useEventoEnVivo } from "@/hooks/useEventoEnVivo";
-import {
-  CriticalRail, ClockPill, PriorityPill, STATUS_META, OPEN_STATUSES,
-  categoryMeta, categoryTone, criticalBorder, elapsedSince, formatWhen, slaTone,
-  sourceTone,
-} from "./shared";
-
 
 /* ------------------------------------------------------------------ */
 /* Metadata (labels via i18n)                                          */
@@ -75,17 +93,21 @@ export default function AlarmQueue() {
       if (!opts?.silent) setLoading(true);
       try {
         const rows = await alarmService.cases(
-          status === "all" ? undefined : { status }
+          status === "all" ? undefined : { status },
         );
+
         setCases(Array.isArray(rows) ? rows : []);
       } catch (e) {
         const err = e as { data?: { message?: string }; message?: string };
-        toast.error(err?.data?.message || err?.message || t("emergency.loadError"));
+
+        toast.error(
+          err?.data?.message || err?.message || t("emergency.loadError"),
+        );
       } finally {
         setLoading(false);
       }
     },
-    [status]
+    [status],
   );
 
   React.useEffect(() => {
@@ -97,6 +119,7 @@ export default function AlarmQueue() {
      reiniciaba también el cronómetro. */
   React.useEffect(() => {
     const tick = setInterval(() => setNow(Date.now()), 1000);
+
     return () => clearInterval(tick);
   }, []);
 
@@ -108,12 +131,30 @@ export default function AlarmQueue() {
   React.useEffect(() => {
     let iv: ReturnType<typeof setInterval> | null = null;
     const visible = () => document.visibilityState !== "hidden";
-    const arrancar = () => { if (!iv && visible()) iv = setInterval(() => load({ silent: true }), 120_000); };
-    const parar = () => { if (iv) { clearInterval(iv); iv = null; } };
-    const alVerse = () => { if (visible()) { load({ silent: true }); arrancar(); } else parar(); };
+    const arrancar = () => {
+      if (!iv && visible())
+        iv = setInterval(() => load({ silent: true }), 120_000);
+    };
+    const parar = () => {
+      if (iv) {
+        clearInterval(iv);
+        iv = null;
+      }
+    };
+    const alVerse = () => {
+      if (visible()) {
+        load({ silent: true });
+        arrancar();
+      } else parar();
+    };
+
     arrancar();
     document.addEventListener("visibilitychange", alVerse);
-    return () => { parar(); document.removeEventListener("visibilitychange", alVerse); };
+
+    return () => {
+      parar();
+      document.removeEventListener("visibilitychange", alVerse);
+    };
   }, [load]);
 
   // Real-time: subscribe to the platform SSE stream; refresh instantly on alarm events.
@@ -121,24 +162,44 @@ export default function AlarmQueue() {
     const tid = localStorage.getItem("tenantId") || "";
     // Se llamaba `t` y tapaba la función de traducción del componente.
     let temporizador: ReturnType<typeof setTimeout> | null = null;
-    const debouncedReload = () => { if (temporizador) clearTimeout(temporizador); temporizador = setTimeout(() => load({ silent: true }), 600); };
+    const debouncedReload = () => {
+      if (temporizador) clearTimeout(temporizador);
+      temporizador = setTimeout(() => load({ silent: true }), 600);
+    };
     // Shared helper centralizes the token-in-URL setup (see eventStream.ts security note).
     const es = openEventStream(tid);
+
     if (es) {
       const onEvent = (ev: MessageEvent) => {
         try {
           const data = JSON.parse(ev.data);
-          if (typeof data?.eventType === "string" && data.eventType.startsWith("alarm")) {
-            if (data.eventType === "alarm.case.new" || data.eventType === "alarm.case.escalated") {
-              toast(data.title || t("emergency.newAlarm"), { description: data.body });
+
+          if (
+            typeof data?.eventType === "string" &&
+            data.eventType.startsWith("alarm")
+          ) {
+            if (
+              data.eventType === "alarm.case.new" ||
+              data.eventType === "alarm.case.escalated"
+            ) {
+              toast(data.title || t("emergency.newAlarm"), {
+                description: data.body,
+              });
             }
             debouncedReload();
           }
-        } catch { /* heartbeat / non-JSON */ }
+        } catch {
+          /* heartbeat / non-JSON */
+        }
       };
+
       es.addEventListener("notification", onEvent as EventListener);
     } // else SSE unsupported — the poll covers it
-    return () => { es?.close(); if (temporizador) clearTimeout(temporizador); };
+
+    return () => {
+      es?.close();
+      if (temporizador) clearTimeout(temporizador);
+    };
   }, [load]);
 
   // Sort by priority (asc, 1=critical first) then by time (newest first)
@@ -146,19 +207,24 @@ export default function AlarmQueue() {
     return [...cases].sort((a, b) => {
       const pa = a.priority ?? 3;
       const pb = b.priority ?? 3;
+
       if (pa !== pb) return pa - pb;
       const ta = new Date(caseTime(a)).getTime() || 0;
       const tb = new Date(caseTime(b)).getTime() || 0;
+
       return tb - ta;
     });
   }, [cases]);
 
   const counts = React.useMemo(() => {
     const c: Record<string, number> = {};
+
     for (const cs of cases) {
       const s = cs.status || "queued";
+
       c[s] = (c[s] || 0) + 1;
     }
+
     return c;
   }, [cases]);
 
@@ -166,17 +232,52 @@ export default function AlarmQueue() {
      cabecera late o no. */
   const abiertas = React.useMemo(
     () => cases.filter((c) => OPEN_STATUSES.has(c.status || "queued")).length,
-    [cases]
+    [cases],
   );
   const criticas = React.useMemo(
-    () => cases.filter((c) => (c.priority ?? 3) === 1 && OPEN_STATUSES.has(c.status || "queued")).length,
-    [cases]
+    () =>
+      cases.filter(
+        (c) =>
+          (c.priority ?? 3) === 1 && OPEN_STATUSES.has(c.status || "queued"),
+      ).length,
+    [cases],
   );
 
   return (
     <AppLayout>
       <PageContainer width="wide">
         <PageHeader
+          actions={(
+            <Button
+              variant="outline"
+              onClick={() => load()}
+              disabled={loading}
+            >
+              {loading ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <RefreshCw className="size-4" />
+              )}
+              {t("emergency.refresh")}
+            </Button>
+          )}
+          badges={loading ? null : (
+            <>
+              {criticas > 0 && (
+                <StatusBadge tone="bad">
+                  {t("emergency.criticalOpen", { count: criticas })}
+                </StatusBadge>
+              )}
+              {abiertas > 0 ? (
+                <StatusBadge tone={criticas > 0 ? "warn" : "info"}>
+                  {t("emergency.casesOpen", { count: abiertas })}
+                </StatusBadge>
+              ) : (
+                <StatusBadge tone="ok">{t("emergency.noneOpen")}</StatusBadge>
+              )}
+            </>
+          )}
+          subtitle={t("emergency.subtitle")}
           icon={<Siren />}
           /**
            * ── DEJA DE LLAMARSE «COLA DE ALARMAS» ──────────────────────────
@@ -197,56 +298,46 @@ export default function AlarmQueue() {
            * también es una emergencia y también se atiende aquí.
            */
           title={t("emergency.title")}
-          subtitle={t("emergency.subtitle")}
-          badges={loading ? null : (
-            <>
-              {criticas > 0 && (
-                <StatusBadge tone="bad">
-                  {t("emergency.criticalOpen", { count: criticas })}
-                </StatusBadge>
-              )}
-              {abiertas > 0 ? (
-                <StatusBadge tone={criticas > 0 ? "warn" : "info"}>
-                  {t("emergency.casesOpen", { count: abiertas })}
-                </StatusBadge>
-              ) : (
-                <StatusBadge tone="ok">{t("emergency.noneOpen")}</StatusBadge>
-              )}
-            </>
-          )}
-          actions={(
-            <Button
-              variant="outline"
-              onClick={() => load()}
-              disabled={loading}
-            >
-              {loading ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <RefreshCw className="size-4" />
-              )}
-              {t("emergency.refresh")}
-            </Button>
-          )}
         />
 
         <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <StatCard label={t("emergency.stat.total")} value={cases.length} icon={<Siren />} accent="neutral" />
-          <StatCard label={t("emergency.stat.queued")} value={counts['queued'] || 0} icon={<Clock />} accent="bad" />
-          <StatCard label={t("emergency.stat.verifying")} value={counts['verifying'] || 0} icon={<ShieldAlert />} accent="info" />
-          <StatCard label={t("emergency.stat.resolved")} value={counts['resolved'] || 0} icon={<Activity />} accent="ok" />
+          <StatCard
+            accent="neutral"
+            icon={<Siren />}
+            label={t("emergency.stat.total")}
+            value={cases.length}
+          />
+          <StatCard
+            accent="bad"
+            icon={<Clock />}
+            label={t("emergency.stat.queued")}
+            value={counts["queued"] || 0}
+          />
+          <StatCard
+            accent="info"
+            icon={<ShieldAlert />}
+            label={t("emergency.stat.verifying")}
+            value={counts["verifying"] || 0}
+          />
+          <StatCard
+            accent="ok"
+            icon={<Activity />}
+            label={t("emergency.stat.resolved")}
+            value={counts["resolved"] || 0}
+          />
         </Stagger>
 
         {/* Filtros */}
         <Toolbar>
-          <span className="ml-1 mr-1 flex items-center gap-1.5 text-xs font-semibold" style={{ color: 'var(--ink-soft)' }}>
+          <span
+            className="ml-1 mr-1 flex items-center gap-1.5 text-xs font-semibold"
+            style={{ color: "var(--ink-soft)" }}
+          >
             <Filter className="size-3.5" />
             {t("emergency.statusFilter")}
           </span>
           <Segmented
             className="flex-wrap"
-            value={status}
-            onChange={setStatus}
             options={STATUS_FILTERS.map((f) => ({
               value: f.value,
               label: (
@@ -258,6 +349,8 @@ export default function AlarmQueue() {
                 </span>
               ),
             }))}
+            value={status}
+            onChange={setStatus}
           />
         </Toolbar>
 
@@ -265,146 +358,173 @@ export default function AlarmQueue() {
         {/* «Casos de alarma» era el vocabulario de la central receptora. Lo
             que hay aquí son emergencias: SOS de clientes, pánicos de
             vigilantes y —cuando existan— alarmas de panel. */}
-        <Section title={t("emergency.section")} icon={<Siren />}>
-        {loading ? (
-          <SkeletonCards count={4} className="sm:grid-cols-1" />
-        ) : sorted.length === 0 ? (
-          <EmptyState
-            icon={<Siren />}
-            title={t("emergency.empty.title")}
-            description={status === "all"
-              ? t("emergency.empty.none")
-              : t("emergency.empty.filtered")}
-          />
-        ) : (
-          <div className="space-y-3">
-            {sorted.map((c) => {
-              const cat = categoryMeta(c.category);
-              const st = STATUS_META[c.status || "queued"] || STATUS_META.queued;
-              const live = OPEN_STATUSES.has(c.status || "queued");
-              /**
-               * ── DÓNDE PASÓ, SIN INVENTAR UN PANEL ──────────────────────
-               * Esto era `c.panel?.name || "Panel desconocido"`, y un SOS no
-               * tiene panel: los 29 casos que hay en producción son SOS o
-               * pánico, así que el CIEN POR CIEN de la lista decía «Panel
-               * desconocido». En una pantalla de emergencias, escribir el
-               * nombre de un equipo que no existe en lugar del sitio donde
-               * alguien pidió auxilio es lo contrario de informar.
-               *
-               * Ahora el «dónde» es lo que corresponda a su origen: el panel
-               * si vino de un panel, y el puesto y la estación si vino de una
-               * persona. Si no se sabe, no se escribe nada — un hueco es más
-               * honesto que un dato falso.
-               */
-              const dePanel = c.source === "alarm_panel" || !!c.panel;
-              const lugar = dePanel
-                ? c.panel?.name || null
-                : [c.station?.stationName, c.postSite?.companyName].filter(Boolean).join(" · ") || null;
-              const accountNumber = dePanel ? c.panel?.accountNumber : null;
+        <Section icon={<Siren />} title={t("emergency.section")}>
+          {loading ? (
+            <SkeletonCards className="sm:grid-cols-1" count={4} />
+          ) : sorted.length === 0 ? (
+            <EmptyState
+              description={
+                status === "all"
+                  ? t("emergency.empty.none")
+                  : t("emergency.empty.filtered")
+              }
+              icon={<Siren />}
+              title={t("emergency.empty.title")}
+            />
+          ) : (
+            <div className="space-y-3">
+              {sorted.map((c) => {
+                const cat = categoryMeta(c.category);
+                const st =
+                  STATUS_META[c.status || "queued"] || STATUS_META.queued;
+                const live = OPEN_STATUSES.has(c.status || "queued");
+                /**
+                 * ── DÓNDE PASÓ, SIN INVENTAR UN PANEL ──────────────────────
+                 * Esto era `c.panel?.name || "Panel desconocido"`, y un SOS no
+                 * tiene panel: los 29 casos que hay en producción son SOS o
+                 * pánico, así que el CIEN POR CIEN de la lista decía «Panel
+                 * desconocido». En una pantalla de emergencias, escribir el
+                 * nombre de un equipo que no existe en lugar del sitio donde
+                 * alguien pidió auxilio es lo contrario de informar.
+                 *
+                 * Ahora el «dónde» es lo que corresponda a su origen: el panel
+                 * si vino de un panel, y el puesto y la estación si vino de una
+                 * persona. Si no se sabe, no se escribe nada — un hueco es más
+                 * honesto que un dato falso.
+                 */
+                const dePanel = c.source === "alarm_panel" || !!c.panel;
+                const lugar = dePanel
+                  ? c.panel?.name || null
+                  : [c.station?.stationName, c.postSite?.companyName]
+                      .filter(Boolean)
+                      .join(" · ") || null;
+                const accountNumber = dePanel ? c.panel?.accountNumber : null;
 
-              const sm = alarmSourceMeta(c.source);
-              const sla = slaTone(caseTime(c), live, now);
-              /* El canto rojo: sólo para lo que de verdad está ardiendo — una P1
+                const sm = alarmSourceMeta(c.source);
+                const sla = slaTone(caseTime(c), live, now);
+                /* El canto rojo: sólo para lo que de verdad está ardiendo — una P1
                  todavía abierta. Si se lo ponemos a todo, deja de significar nada. */
-              const urgente = live && (c.priority ?? 3) === 1;
+                const urgente = live && (c.priority ?? 3) === 1;
 
-              return (
-                /* `flat`: es una lista que puede tener cientos de casos y se
+                return (
+                  /* `flat`: es una lista que puede tener cientos de casos y se
                    refresca cada segundo con el cronómetro. */
-                <GlassPanel
-                  key={c.id}
-                  flat
-                  hover
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => navigate(`/alarm/case/${c.id}`)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      navigate(`/alarm/case/${c.id}`);
-                    }
-                  }}
-                  className="cg-focus relative cursor-pointer overflow-hidden p-4"
-                  style={criticalBorder(urgente)}
-                >
-                  {urgente && <CriticalRail />}
-                  <div className="flex items-center gap-3">
-                    {/* Prioridad */}
-                    <PriorityPill p={c.priority} />
+                  <GlassPanel
+                    key={c.id}
+                    flat
+                    hover
+                    className="cg-focus relative cursor-pointer overflow-hidden p-4"
+                    role="button"
+                    style={criticalBorder(urgente)}
+                    tabIndex={0}
+                    onClick={() => navigate(`/alarm/case/${c.id}`)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        navigate(`/alarm/case/${c.id}`);
+                      }
+                    }}
+                  >
+                    {urgente && <CriticalRail />}
+                    <div className="flex items-center gap-3">
+                      {/* Prioridad */}
+                      <PriorityPill p={c.priority} />
 
-                    {/* Center info */}
-                    <div className="min-w-0 flex-1">
-                      <div className="mb-1 flex flex-wrap items-center gap-2">
-                        {/* Incendio, atraco, pánico, intrusión y médica van en
+                      {/* Center info */}
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-1 flex flex-wrap items-center gap-2">
+                          {/* Incendio, atraco, pánico, intrusión y médica van en
                             `--bad` vengan con la prioridad que vengan: un
                             incendio no deja de serlo porque el panel lo
                             etiquete P3. El resto son clasificación, no
                             severidad, y van neutras. */}
-                        <StatusBadge tone={categoryTone(c.category)} dot={false}>
-                          <span className="[&_svg]:size-3.5">{cat.icon}</span>
-                          {cat.label}
-                        </StatusBadge>
-                        <StatusBadge tone={st.tone} dot={live}>{st.label}</StatusBadge>
-                        <StatusBadge tone={sourceTone(c.source)} dot={false}>{sm.short}</StatusBadge>
-                        {c.incidentId ? (
-                          /* Escalado a incidente: es una agravación del caso, no
-                             un realce de marca. Iba en el acento configurable. */
-                          <StatusBadge tone="bad" dot={false}>
-                            <AlertTriangle className="size-3.5" />
-                            {t("emergency.chip.incident")}
+                          <StatusBadge
+                            dot={false}
+                            tone={categoryTone(c.category)}
+                          >
+                            <span className="[&_svg]:size-3.5">{cat.icon}</span>
+                            {cat.label}
                           </StatusBadge>
-                        ) : null}
+                          <StatusBadge dot={live} tone={st.tone}>
+                            {st.label}
+                          </StatusBadge>
+                          <StatusBadge dot={false} tone={sourceTone(c.source)}>
+                            {sm.short}
+                          </StatusBadge>
+                          {c.incidentId ? (
+                            /* Escalado a incidente: es una agravación del caso, no
+                             un realce de marca. Iba en el acento configurable. */
+                            <StatusBadge dot={false} tone="bad">
+                              <AlertTriangle className="size-3.5" />
+                              {t("emergency.chip.incident")}
+                            </StatusBadge>
+                          ) : null}
+                        </div>
+
+                        <p className="truncate font-medium">
+                          {c.title || cat.label}
+                        </p>
+
+                        <div
+                          className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs"
+                          style={{ color: "var(--ink-faint)" }}
+                        >
+                          {lugar ? (
+                            <span className="inline-flex items-center gap-1">
+                              <ShieldAlert className="size-3.5" />
+                              {lugar}
+                              {accountNumber ? ` · #${accountNumber}` : ""}
+                            </span>
+                          ) : null}
+                          <span>{formatWhen(caseTime(c))}</span>
+                        </div>
                       </div>
 
-                      <p className="truncate font-medium">
-                        {c.title || cat.label}
-                      </p>
-
-                      <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs" style={{ color: 'var(--ink-faint)' }}>
-                        {lugar ? (
-                          <span className="inline-flex items-center gap-1">
-                            <ShieldAlert className="size-3.5" />
-                            {lugar}
-                            {accountNumber ? ` · #${accountNumber}` : ""}
-                          </span>
-                        ) : null}
-                        <span>{formatWhen(caseTime(c))}</span>
-                      </div>
-                    </div>
-
-                    {/* SLA timer — LIVE only while the case is open. Once resolved/
+                      {/* SLA timer — LIVE only while the case is open. Once resolved/
                         closed the clock stops: we show the FINAL handling duration
                         (frozen to closedAt/resolvedAt), never a ticking counter. */}
-                    {live ? (
-                      <div className="hidden shrink-0 flex-col items-end gap-1 sm:flex">
-                        <ClockPill token={sla.token} pulsa={sla.alarmante}>
-                          <Clock className="size-3.5" />
-                          {elapsedSince(caseTime(c), now)}
-                        </ClockPill>
-                        <span className="cg-eyebrow">{t("emergency.pill.inQueue")}</span>
-                      </div>
-                    ) : (
-                      <div className="hidden shrink-0 flex-col items-end gap-1 sm:flex">
-                        <ClockPill token="neutral">
-                          <Clock className="size-3.5" />
-                          {elapsedSince(
-                            caseTime(c),
-                            new Date(c.closedAt || c.resolvedAt || c.updatedAt || caseTime(c)).getTime(),
-                          )}
-                        </ClockPill>
-                        <span className="cg-eyebrow">
-                          {(c.status || "") === "closed" ? t("emergency.pill.duration") : t("emergency.pill.resolvedIn")}
-                        </span>
-                      </div>
-                    )}
+                      {live ? (
+                        <div className="hidden shrink-0 flex-col items-end gap-1 sm:flex">
+                          <ClockPill pulsa={sla.alarmante} token={sla.token}>
+                            <Clock className="size-3.5" />
+                            {elapsedSince(caseTime(c), now)}
+                          </ClockPill>
+                          <span className="cg-eyebrow">
+                            {t("emergency.pill.inQueue")}
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="hidden shrink-0 flex-col items-end gap-1 sm:flex">
+                          <ClockPill token="neutral">
+                            <Clock className="size-3.5" />
+                            {elapsedSince(
+                              caseTime(c),
+                              new Date(
+                                c.closedAt ||
+                                  c.resolvedAt ||
+                                  c.updatedAt ||
+                                  caseTime(c),
+                              ).getTime(),
+                            )}
+                          </ClockPill>
+                          <span className="cg-eyebrow">
+                            {(c.status || "") === "closed"
+                              ? t("emergency.pill.duration")
+                              : t("emergency.pill.resolvedIn")}
+                          </span>
+                        </div>
+                      )}
 
-                    <ChevronRight className="size-5 shrink-0" style={{ color: 'var(--ink-faint)' }} />
-                  </div>
-                </GlassPanel>
-              );
-            })}
-          </div>
-        )}
+                      <ChevronRight
+                        className="size-5 shrink-0"
+                        style={{ color: "var(--ink-faint)" }}
+                      />
+                    </div>
+                  </GlassPanel>
+                );
+              })}
+            </div>
+          )}
         </Section>
       </PageContainer>
     </AppLayout>

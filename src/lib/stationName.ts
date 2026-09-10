@@ -20,8 +20,9 @@ export interface StationLike {
 
 /** "P-031 · Caseta Principal" — nominativo first, as operations says it. */
 export function stationLabel(s?: StationLike | null): string {
-  if (!s) return '—';
-  return [s.nickname, s.stationName].filter(Boolean).join(' · ') || '—';
+  if (!s) return "—";
+
+  return [s.nickname, s.stationName].filter(Boolean).join(" · ") || "—";
 }
 
 /**
@@ -30,6 +31,7 @@ export function stationLabel(s?: StationLike | null): string {
  * call-sign yet, so nothing ever renders blank.
  */
 export function stationShort(s?: StationLike | null): string {
-  if (!s) return '—';
-  return s.nickname || s.stationName || '—';
+  if (!s) return "—";
+
+  return s.nickname || s.stationName || "—";
 }

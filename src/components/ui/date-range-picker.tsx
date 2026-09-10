@@ -3,6 +3,7 @@ import { Calendar as CalendarIcon } from "lucide-react";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
 import { es } from "date-fns/locale";
 import { DateRange } from "react-day-picker";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -66,6 +67,7 @@ export function DateRangePicker({
       label: i18n.t("kit.dateRange.thisMonth"),
       getValue: () => {
         const now = new Date();
+
         return {
           from: startOfDay(new Date(now.getFullYear(), now.getMonth(), 1)),
           to: endOfDay(new Date()),
@@ -77,6 +79,7 @@ export function DateRangePicker({
       getValue: () => {
         const now = new Date();
         const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
         return {
           from: startOfDay(lastMonth),
           to: endOfDay(new Date(now.getFullYear(), now.getMonth(), 0)),
@@ -101,6 +104,7 @@ export function DateRangePicker({
 
   const handlePresetClick = (preset: any) => {
     const range = preset.getValue();
+
     onDateRangeChange(range);
     setIsOpen(false);
   };
@@ -112,10 +116,11 @@ export function DateRangePicker({
     if (!dateRange.to) {
       return format(dateRange.from, "d/MM/yyyy", { locale: es });
     }
+
     return `${format(dateRange.from, "d/MM/yyyy", { locale: es })} – ${format(
       dateRange.to,
       "d/MM/yyyy",
-      { locale: es }
+      { locale: es },
     )}`;
   };
 
@@ -124,18 +129,18 @@ export function DateRangePicker({
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant="outline"
-            size="sm"
             className={cn(
               "h-8 justify-start text-left text-xs font-medium",
-              !dateRange && "text-[color:var(--ink-faint)]"
+              !dateRange && "text-[color:var(--ink-faint)]",
             )}
+            size="sm"
+            variant="outline"
           >
             <CalendarIcon className="mr-1.5 h-3.5 w-3.5" />
             {formatDateRange()}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto overflow-hidden p-0" align="end">
+        <PopoverContent align="end" className="w-auto overflow-hidden p-0">
           {/* Atajos + calendario suman ~410 px: en un teléfono no caben uno al
               lado del otro, así que ahí se apilan y los atajos pasan a ser una
               fila que se desplaza. */}
@@ -146,8 +151,8 @@ export function DateRangePicker({
                 {presets.map((preset) => (
                   <button
                     key={preset.label}
-                    onClick={() => handlePresetClick(preset)}
                     className="cg-focus w-auto shrink-0 whitespace-nowrap rounded-[var(--r-sm)] px-2.5 py-1.5 text-left text-xs font-medium text-[color:var(--ink-soft)] transition-colors duration-200 hover:bg-[var(--brand-wash)] hover:text-[color:var(--brand-text)] motion-reduce:transition-none sm:w-full"
+                    onClick={() => handlePresetClick(preset)}
                   >
                     {preset.label}
                   </button>
@@ -158,13 +163,13 @@ export function DateRangePicker({
             <div className="p-2">
               <Calendar
                 initialFocus
-                mode="range"
+                className="[--cell-size:1.75rem]"
                 defaultMonth={dateRange?.from}
+                locale={es}
+                mode="range"
+                numberOfMonths={1}
                 selected={dateRange}
                 onSelect={onDateRangeChange}
-                numberOfMonths={1}
-                locale={es}
-                className="[--cell-size:1.75rem]"
               />
             </div>
           </div>

@@ -2,7 +2,12 @@ import { ApiService } from "@/services/api/apiService";
 
 const tenantId = (): string => {
   const t = localStorage.getItem("tenantId");
-  if (!t) throw new Error("No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.");
+
+  if (!t)
+    throw new Error(
+      "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+    );
+
   return t;
 };
 
@@ -24,10 +29,12 @@ export interface GuardDevice {
 /** Devices a guard has reported (bind/flag) — guard-detail "Dispositivo" tab. */
 export const guardDeviceService = {
   async list(userId: string): Promise<GuardDevice[]> {
-    const resp: { rows?: GuardDevice[]; data?: { rows?: GuardDevice[] } } = await ApiService.get(
-      `/tenant/${tenantId()}/guard-device/by-guard/${userId}`,
-    );
+    const resp: { rows?: GuardDevice[]; data?: { rows?: GuardDevice[] } } =
+      await ApiService.get(
+        `/tenant/${tenantId()}/guard-device/by-guard/${userId}`,
+      );
     const data = (resp && (resp.data || resp)) || resp;
+
     return (data?.rows as GuardDevice[]) || [];
   },
 

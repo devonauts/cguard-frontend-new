@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
   Loader2,
@@ -12,12 +12,26 @@ import {
   WifiOff,
 } from "lucide-react";
 
+import {
+  DeviceStatusBadge,
+  FaultRail,
+  healthTone,
+  type DeviceHealth,
+} from "../video/deviceStatus";
+
 import AppLayout from "@/layouts/app-layout";
 import {
-  PageContainer, PageHeader, StatCard, StatusBadge, EmptyState, SkeletonCards,
-  Stagger, GlassPanel, IconTile, Section,
+  PageContainer,
+  PageHeader,
+  StatCard,
+  StatusBadge,
+  EmptyState,
+  SkeletonCards,
+  Stagger,
+  GlassPanel,
+  IconTile,
+  Section,
 } from "@/components/kit";
-import { DeviceStatusBadge, FaultRail, healthTone, type DeviceHealth } from "../video/deviceStatus";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -92,11 +106,30 @@ const emptyForm: FormState = {
  * se leía como trámite o como avería según la pantalla.
  */
 // Constante de módulo: guarda la CLAVE. Se traduce donde se pinta.
-const STATUS_BADGE: Record<string, { health: DeviceHealth; labelKey: string; label: string }> = {
-  registered: { health: "up", labelKey: "radio.devices.status.registered", label: "Registrado" },
-  offline: { health: "down", labelKey: "radio.devices.status.offline", label: "Sin conexión" },
-  error: { health: "down", labelKey: "radio.devices.status.error", label: "Error" },
-  unknown: { health: "unknown", labelKey: "radio.devices.status.unknown", label: "Sin probar" },
+const STATUS_BADGE: Record<
+  string,
+  { health: DeviceHealth; labelKey: string; label: string }
+> = {
+  registered: {
+    health: "up",
+    labelKey: "radio.devices.status.registered",
+    label: "Registrado",
+  },
+  offline: {
+    health: "down",
+    labelKey: "radio.devices.status.offline",
+    label: "Sin conexión",
+  },
+  error: {
+    health: "down",
+    labelKey: "radio.devices.status.error",
+    label: "Error",
+  },
+  unknown: {
+    health: "unknown",
+    labelKey: "radio.devices.status.unknown",
+    label: "Sin probar",
+  },
 };
 
 export default function RadioDevices() {
@@ -119,12 +152,16 @@ export default function RadioDevices() {
     radioDeviceService
       .list()
       .then(setDevices)
-      .catch((e: any) => setError(e?.message || "No se pudieron cargar los radios IP"))
+      .catch((e: any) =>
+        setError(e?.message || "No se pudieron cargar los radios IP"),
+      )
       .finally(() => setLoading(false));
   };
+
   useEffect(load, []);
 
-  const set = (patch: Partial<FormState>) => setForm((f) => ({ ...f, ...patch }));
+  const set = (patch: Partial<FormState>) =>
+    setForm((f) => ({ ...f, ...patch }));
 
   const openNew = () => {
     setEditing(null);
@@ -154,11 +191,13 @@ export default function RadioDevices() {
 
   const save = async () => {
     if (!form.name.trim()) {
-      toast.error(t('comun.elNombreEsObligatorio'));
+      toast.error(t("comun.elNombreEsObligatorio"));
+
       return;
     }
     if (!form.host.trim()) {
-      toast.error(t('ui.RadioDevices.laIpHostDelRadio'));
+      toast.error(t("ui.RadioDevices.laIpHostDelRadio"));
+
       return;
     }
     const payload: any = {
@@ -175,6 +214,7 @@ export default function RadioDevices() {
       notes: form.notes.trim() || null,
       active: form.active,
     };
+
     // Only send the password when the user typed one (blank = keep existing).
     if (form.sipPassword) payload.sipPassword = form.sipPassword;
 
@@ -192,7 +232,10 @@ export default function RadioDevices() {
       setEditing(null);
       load();
     } catch (e: any) {
-      toast.error(e?.message || t("radio.devices.saveError", "No se pudo guardar el radio IP"));
+      toast.error(
+        e?.message ||
+          t("radio.devices.saveError", "No se pudo guardar el radio IP"),
+      );
     } finally {
       setSaving(false);
     }
@@ -214,6 +257,7 @@ export default function RadioDevices() {
     setTestingId(d.id);
     try {
       const res = await radioDeviceService.test(d.id);
+
       toast.success(
         res.dispatched
           ? "Solicitud de registro enviada al puente SIP"
@@ -221,7 +265,10 @@ export default function RadioDevices() {
       );
       load();
     } catch (e: any) {
-      toast.error(e?.message || t("radio.devices.testError", "No se pudo probar la conexión"));
+      toast.error(
+        e?.message ||
+          t("radio.devices.testError", "No se pudo probar la conexión"),
+      );
     } finally {
       setTestingId(null);
     }
@@ -229,79 +276,117 @@ export default function RadioDevices() {
 
   const counts = useMemo(() => {
     const c = { total: devices.length, registered: 0, offline: 0, other: 0 };
+
     for (const d of devices) {
       if (d.status === "registered") c.registered++;
       else if (d.status === "offline") c.offline++;
       else c.other++;
     }
+
     return c;
   }, [devices]);
 
   return (
     <AppLayout>
-      <PageContainer width="wide" className="px-4 sm:px-6">
+      <PageContainer className="px-4 sm:px-6" width="wide">
         <PageHeader
-          icon={<Radio />}
-          title="Radios IP"
-          subtitle={t('ui.RadioDevices.conectaUnaPasarelaRoipSip')}
-          badges={(
+          actions={
+            <Button variant="brand" onClick={openNew}>
+              <Plus className="mr-2 h-4 w-4" /> Agregar radio IP
+            </Button>
+          }
+          badges={
             counts.registered > 0 ? (
               /* La misma píldora que el kit ya calcula: la página la pintaba a
                  mano en la rama «hay enlaces» y con `StatusBadge` en la otra,
                  así que el mismo indicador tenía dos anatomías. */
               <StatusBadge tone="ok">
-                {counts.registered === 1 ? 'Un enlace al aire' : `${counts.registered} enlaces al aire`}
+                {counts.registered === 1
+                  ? "Un enlace al aire"
+                  : `${counts.registered} enlaces al aire`}
               </StatusBadge>
             ) : (
-              <StatusBadge tone="neutral">{t('ui.RadioDevices.sinEnlacesAlAire')}</StatusBadge>
+              <StatusBadge tone="neutral">
+                {t("ui.RadioDevices.sinEnlacesAlAire")}
+              </StatusBadge>
             )
-          )}
-          actions={(
-            <Button variant="brand" onClick={openNew}>
-              <Plus className="mr-2 h-4 w-4" /> Agregar radio IP
-            </Button>
-          )}
+          }
+          icon={<Radio />}
+          subtitle={t("ui.RadioDevices.conectaUnaPasarelaRoipSip")}
+          title="Radios IP"
         />
 
         {/* Summary */}
         <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          <StatCard label={t('comun.total')} value={counts.total} icon={<Radio />} accent="primary" />
-          <StatCard label="Registrados" value={counts.registered} icon={<Wifi />} accent="ok" />
-          <StatCard label={t("ui.RadioDevices.sinConexion", "Sin conexión")} value={counts.offline} icon={<WifiOff />} accent="neutral" />
+          <StatCard
+            accent="primary"
+            icon={<Radio />}
+            label={t("comun.total")}
+            value={counts.total}
+          />
+          <StatCard
+            accent="ok"
+            icon={<Wifi />}
+            label="Registrados"
+            value={counts.registered}
+          />
+          <StatCard
+            accent="neutral"
+            icon={<WifiOff />}
+            label={t("ui.RadioDevices.sinConexion", "Sin conexión")}
+            value={counts.offline}
+          />
         </Stagger>
 
         {/* List */}
         {loading ? (
-          <SkeletonCards count={4} className="lg:grid-cols-2" />
+          <SkeletonCards className="lg:grid-cols-2" count={4} />
         ) : error ? (
           <Section>
             <div className="flex flex-col items-center gap-3 py-8 text-center">
-              <IconTile tone="bad" size="lg"><WifiOff /></IconTile>
-              <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{error}</p>
-              <Button variant="outline" onClick={load}><RefreshCw className="mr-2 h-4 w-4" />Reintentar</Button>
+              <IconTile size="lg" tone="bad">
+                <WifiOff />
+              </IconTile>
+              <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+                {error}
+              </p>
+              <Button variant="outline" onClick={load}>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Reintentar
+              </Button>
             </div>
           </Section>
         ) : devices.length === 0 ? (
           <EmptyState
-            icon={<Radio />}
-            title={t("ui.RadioDevices.aunNoHayRadiosIp", "Aún no hay radios IP")}
-            description={t('ui.RadioDevices.agregaLaPasarelaRoipSip')}
-            action={(
+            action={
               <Button variant="brand" onClick={openNew}>
-                <Plus className="mr-2 h-4 w-4" />Agregar radio IP
+                <Plus className="mr-2 h-4 w-4" />
+                Agregar radio IP
               </Button>
+            }
+            description={t("ui.RadioDevices.agregaLaPasarelaRoipSip")}
+            icon={<Radio />}
+            title={t(
+              "ui.RadioDevices.aunNoHayRadiosIp",
+              "Aún no hay radios IP",
             )}
           />
         ) : (
           <Stagger className="grid gap-3 lg:grid-cols-2">
             {devices.map((d) => {
-              const badge = STATUS_BADGE[d.status || "unknown"] || STATUS_BADGE.unknown;
+              const badge =
+                STATUS_BADGE[d.status || "unknown"] || STATUS_BADGE.unknown;
               const alAire = d.status === "registered";
               const falla = d.status === "error";
+
               return (
                 /* `flat` a propósito: dentro de un map(), el desenfoque de `.glass`
                    obliga a rasterizar el fondo por tarjeta en cada fotograma. */
-                <GlassPanel key={d.id} flat className="relative overflow-hidden p-4">
+                <GlassPanel
+                  key={d.id}
+                  flat
+                  className="relative overflow-hidden p-4"
+                >
                   {/* Canto de severidad — sólo cuando el enlace ha fallado. */}
                   {falla && <FaultRail />}
                   <div className="flex items-start gap-3">
@@ -309,32 +394,77 @@ export default function RadioDevices() {
                         «sin probar» tenía la píldora en ámbar y el icono en el
                         acento de marca. */}
                     <IconTile tone={healthTone(badge.health)}>
-                      {alAire ? <Wifi /> : d.status === "offline" || falla ? <WifiOff /> : <Radio />}
+                      {alAire ? (
+                        <Wifi />
+                      ) : d.status === "offline" || falla ? (
+                        <WifiOff />
+                      ) : (
+                        <Radio />
+                      )}
                     </IconTile>
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <p className="truncate font-semibold text-foreground">{d.name}</p>
-                        <DeviceStatusBadge health={badge.health} label={t(badge.labelKey, badge.label)} />
-                        {!d.active && <StatusBadge tone="neutral" dot={false}>{t('common.inactive')}</StatusBadge>}
+                        <p className="truncate font-semibold text-foreground">
+                          {d.name}
+                        </p>
+                        <DeviceStatusBadge
+                          health={badge.health}
+                          label={t(badge.labelKey, badge.label)}
+                        />
+                        {!d.active && (
+                          <StatusBadge dot={false} tone="neutral">
+                            {t("common.inactive")}
+                          </StatusBadge>
+                        )}
                       </div>
-                      <p className="mt-0.5 truncate text-xs" style={{ color: 'var(--ink-soft)' }}>
-                        {d.host || "—"}:{d.sipPort ?? 5060} · {String(d.transport || "udp").toUpperCase()}
+                      <p
+                        className="mt-0.5 truncate text-xs"
+                        style={{ color: "var(--ink-soft)" }}
+                      >
+                        {d.host || "—"}:{d.sipPort ?? 5060} ·{" "}
+                        {String(d.transport || "udp").toUpperCase()}
                         {d.extension ? ` · ext ${d.extension}` : ""}
                         {d.sipUsername ? ` · ${d.sipUsername}` : ""}
                       </p>
                       {d.lastError && (
-                        <p className="mt-1 truncate text-xs" style={{ color: 'var(--bad-text)' }}>{d.lastError}</p>
+                        <p
+                          className="mt-1 truncate text-xs"
+                          style={{ color: "var(--bad-text)" }}
+                        >
+                          {d.lastError}
+                        </p>
                       )}
                       <div className="mt-2.5 flex flex-wrap gap-2">
-                        <Button size="sm" variant="outline" disabled={testingId === d.id} onClick={() => test(d)}>
-                          {testingId === d.id ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="mr-1.5 h-3.5 w-3.5" />}
+                        <Button
+                          disabled={testingId === d.id}
+                          size="sm"
+                          variant="outline"
+                          onClick={() => test(d)}
+                        >
+                          {testingId === d.id ? (
+                            <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+                          )}
                           Probar
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => openEdit(d)}>
-                          <Pencil className="mr-1.5 h-3.5 w-3.5" />Editar
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => openEdit(d)}
+                        >
+                          <Pencil className="mr-1.5 h-3.5 w-3.5" />
+                          Editar
                         </Button>
-                        <Button size="sm" variant="ghost" style={{ color: 'var(--bad-text)' }} onClick={() => setDeleteTarget(d)}>
-                          <Trash2 className="mr-1.5 h-3.5 w-3.5" />{t('actions.delete')}{" "}</Button>
+                        <Button
+                          size="sm"
+                          style={{ color: "var(--bad-text)" }}
+                          variant="ghost"
+                          onClick={() => setDeleteTarget(d)}
+                        >
+                          <Trash2 className="mr-1.5 h-3.5 w-3.5" />
+                          {t("actions.delete")}{" "}
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -346,33 +476,68 @@ export default function RadioDevices() {
       </PageContainer>
 
       {/* Create / edit dialog */}
-      <Dialog open={dialogOpen} onOpenChange={(o) => { if (!saving) { setDialogOpen(o); if (!o) { setEditing(null); setForm({ ...emptyForm }); } } }}>
+      <Dialog
+        open={dialogOpen}
+        onOpenChange={(o) => {
+          if (!saving) {
+            setDialogOpen(o);
+            if (!o) {
+              setEditing(null);
+              setForm({ ...emptyForm });
+            }
+          }
+        }}
+      >
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>{editing ? "Editar radio IP" : "Agregar radio IP"}</DialogTitle>
-            <DialogDescription>{t("ui.RadioDevices.pasarelaRoipSipLaContrasena", "Pasarela RoIP / SIP. La contraseña SIP se guarda cifrada.")}</DialogDescription>
+            <DialogTitle>
+              {editing ? "Editar radio IP" : "Agregar radio IP"}
+            </DialogTitle>
+            <DialogDescription>
+              {t(
+                "ui.RadioDevices.pasarelaRoipSipLaContrasena",
+                "Pasarela RoIP / SIP. La contraseña SIP se guarda cifrada.",
+              )}
+            </DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-3 py-2">
             <div className="grid gap-1.5">
-              <Label>{t('comun.nombreReq')}</Label>
-              <Input value={form.name} onChange={(e) => set({ name: e.target.value })} placeholder="Radio Central Norte" />
+              <Label>{t("comun.nombreReq")}</Label>
+              <Input
+                placeholder="Radio Central Norte"
+                value={form.name}
+                onChange={(e) => set({ name: e.target.value })}
+              />
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="grid gap-1.5">
                 <Label>IP / Host *</Label>
-                <Input value={form.host} onChange={(e) => set({ host: e.target.value })} placeholder="192.168.1.50" />
+                <Input
+                  placeholder="192.168.1.50"
+                  value={form.host}
+                  onChange={(e) => set({ host: e.target.value })}
+                />
               </div>
               <div className="grid gap-1.5">
                 <Label>Puerto SIP</Label>
-                <Input type="number" value={form.sipPort} onChange={(e) => set({ sipPort: e.target.value })} />
+                <Input
+                  type="number"
+                  value={form.sipPort}
+                  onChange={(e) => set({ sipPort: e.target.value })}
+                />
               </div>
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="grid gap-1.5">
                 <Label>Transporte</Label>
-                <Select value={form.transport} onValueChange={(v) => set({ transport: v as RadioTransport })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                <Select
+                  value={form.transport}
+                  onValueChange={(v) => set({ transport: v as RadioTransport })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="udp">UDP</SelectItem>
                     <SelectItem value="tcp">TCP</SelectItem>
@@ -381,72 +546,116 @@ export default function RadioDevices() {
                 </Select>
               </div>
               <div className="grid gap-1.5">
-                <Label>{t("ui.RadioDevices.extensionTalkgroup", "Extensión / Talkgroup")}</Label>
-                <Input value={form.extension} onChange={(e) => set({ extension: e.target.value })} placeholder="1001" />
+                <Label>
+                  {t(
+                    "ui.RadioDevices.extensionTalkgroup",
+                    "Extensión / Talkgroup",
+                  )}
+                </Label>
+                <Input
+                  placeholder="1001"
+                  value={form.extension}
+                  onChange={(e) => set({ extension: e.target.value })}
+                />
               </div>
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="grid gap-1.5">
-                <Label>{t('ui.RadioDevices.usuarioSip')}</Label>
-                <Input value={form.sipUsername} onChange={(e) => set({ sipUsername: e.target.value })} autoComplete="off" />
+                <Label>{t("ui.RadioDevices.usuarioSip")}</Label>
+                <Input
+                  autoComplete="off"
+                  value={form.sipUsername}
+                  onChange={(e) => set({ sipUsername: e.target.value })}
+                />
               </div>
               <div className="grid gap-1.5">
-                <Label>{t("ui.RadioDevices.contrasenaSip", "Contraseña SIP")}</Label>
+                <Label>
+                  {t("ui.RadioDevices.contrasenaSip", "Contraseña SIP")}
+                </Label>
                 <Input
+                  autoComplete="new-password"
+                  placeholder={
+                    editing?.sipPasswordConfigured ? "•••• (sin cambios)" : ""
+                  }
                   type="password"
                   value={form.sipPassword}
                   onChange={(e) => set({ sipPassword: e.target.value })}
-                  autoComplete="new-password"
-                  placeholder={editing?.sipPasswordConfigured ? "•••• (sin cambios)" : ""}
                 />
                 {editing?.sipPasswordConfigured && (
-                  <p className="text-[11px] text-muted-foreground">{t('ui.RadioDevices.dejaEnBlancoParaConservar')}</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {t("ui.RadioDevices.dejaEnBlancoParaConservar")}
+                  </p>
                 )}
               </div>
             </div>
             <div className="grid gap-1.5">
               <Label>Dominio / Registrar (opcional)</Label>
-              <Input value={form.sipDomain} onChange={(e) => set({ sipDomain: e.target.value })} placeholder={t('ui.RadioDevices.porDefectoElHost')} />
+              <Input
+                placeholder={t("ui.RadioDevices.porDefectoElHost")}
+                value={form.sipDomain}
+                onChange={(e) => set({ sipDomain: e.target.value })}
+              />
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="grid gap-1.5">
                 <Label>Puerto RTP inicial</Label>
-                <Input type="number" value={form.rtpPortStart} onChange={(e) => set({ rtpPortStart: e.target.value })} />
+                <Input
+                  type="number"
+                  value={form.rtpPortStart}
+                  onChange={(e) => set({ rtpPortStart: e.target.value })}
+                />
               </div>
               <div className="grid gap-1.5">
                 <Label>Puerto RTP final</Label>
-                <Input type="number" value={form.rtpPortEnd} onChange={(e) => set({ rtpPortEnd: e.target.value })} />
+                <Input
+                  type="number"
+                  value={form.rtpPortEnd}
+                  onChange={(e) => set({ rtpPortEnd: e.target.value })}
+                />
               </div>
             </div>
             <div className="grid gap-1.5">
-              <Label>{t('comun.notas')}</Label>
-              <Textarea value={form.notes} onChange={(e) => set({ notes: e.target.value })} rows={2} />
+              <Label>{t("comun.notas")}</Label>
+              <Textarea
+                rows={2}
+                value={form.notes}
+                onChange={(e) => set({ notes: e.target.value })}
+              />
             </div>
             <label className="glass-sunken flex cursor-pointer items-center gap-2.5 p-3 text-sm">
               <input
-                type="checkbox"
-                className="cg-focus size-4"
-                style={{ accentColor: 'var(--brand)' }}
                 checked={form.registerRequired}
+                className="cg-focus size-4"
+                style={{ accentColor: "var(--brand)" }}
+                type="checkbox"
                 onChange={(e) => set({ registerRequired: e.target.checked })}
               />
               Requiere registro SIP (REGISTER)
             </label>
             <label className="glass-sunken flex cursor-pointer items-center gap-2.5 p-3 text-sm">
               <input
-                type="checkbox"
-                className="cg-focus size-4"
-                style={{ accentColor: 'var(--brand)' }}
                 checked={form.active}
+                className="cg-focus size-4"
+                style={{ accentColor: "var(--brand)" }}
+                type="checkbox"
                 onChange={(e) => set({ active: e.target.checked })}
               />
-              {t('ui.RadioDevices.activoSeIntentaraMantenerConectado', 'Activo (se intentará mantener conectado)')}
+              {t(
+                "ui.RadioDevices.activoSeIntentaraMantenerConectado",
+                "Activo (se intentará mantener conectado)",
+              )}
             </label>
           </div>
 
           <DialogFooter>
-            <Button variant="outline" disabled={saving} onClick={() => setDialogOpen(false)}>{t('actions.cancel')}</Button>
-            <Button variant="brand" disabled={saving} onClick={save}>
+            <Button
+              disabled={saving}
+              variant="outline"
+              onClick={() => setDialogOpen(false)}
+            >
+              {t("actions.cancel")}
+            </Button>
+            <Button disabled={saving} variant="brand" onClick={save}>
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {editing ? "Guardar" : "Agregar"}
             </Button>
@@ -455,17 +664,24 @@ export default function RadioDevices() {
       </Dialog>
 
       {/* Delete confirm */}
-      <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
+      <AlertDialog
+        open={!!deleteTarget}
+        onOpenChange={(o) => !o && setDeleteTarget(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('ui.RadioDevices.eliminarRadioIp')}</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t("ui.RadioDevices.eliminarRadioIp")}
+            </AlertDialogTitle>
             <AlertDialogDescription>
               ¿Eliminar “{deleteTarget?.name}”? El puente dejará de conectarlo.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="cg-btn-bad">{t('actions.delete')}</AlertDialogAction>
+            <AlertDialogCancel>{t("actions.cancel")}</AlertDialogCancel>
+            <AlertDialogAction className="cg-btn-bad" onClick={confirmDelete}>
+              {t("actions.delete")}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { WifiOff, RefreshCw, CloudUpload } from "lucide-react";
-import { getNetworkStatus, subscribeNetworkStatus, type NetStatus } from "@/lib/offline/networkStatus";
+
+import {
+  getNetworkStatus,
+  subscribeNetworkStatus,
+  type NetStatus,
+} from "@/lib/offline/networkStatus";
 import { subscribePending, flush } from "@/lib/offline/offlineQueue";
 
 /**
@@ -21,24 +26,34 @@ export default function OfflineBanner() {
 
   const offline = status === "offline";
   const reconnecting = status === "reconnecting";
+
   if (!offline && !reconnecting && pending === 0) return null;
 
-  const bg = offline ? "var(--bad, #b91c1c)" : reconnecting ? "var(--warn, #b45309)" : "var(--brand, #b45309)";
+  const bg = offline
+    ? "var(--bad, #b91c1c)"
+    : reconnecting
+      ? "var(--warn, #b45309)"
+      : "var(--brand, #b45309)";
 
   return (
     <div
-      role="status"
       className="fixed inset-x-0 top-0 z-[9999] flex items-center justify-center gap-2 px-4 py-1.5 text-[12.5px] font-semibold text-white shadow-md"
+      role="status"
       style={{ background: bg }}
     >
       {offline ? (
         <>
           <WifiOff size={14} />
-          <span>{t("ui.OfflineBanner.sinConexionMostrandoLosUltimos", "Sin conexión — mostrando los últimos datos conocidos.")}</span>
+          <span>
+            {t(
+              "ui.OfflineBanner.sinConexionMostrandoLosUltimos",
+              "Sin conexión — mostrando los últimos datos conocidos.",
+            )}
+          </span>
         </>
       ) : reconnecting ? (
         <>
-          <RefreshCw size={14} className="animate-spin" />
+          <RefreshCw className="animate-spin" size={14} />
           <span>Reconectando…</span>
         </>
       ) : (
@@ -46,10 +61,10 @@ export default function OfflineBanner() {
       )}
       {pending > 0 && (
         <button
+          className="ml-2 rounded-full bg-white/20 px-2.5 py-0.5 text-[11.5px] font-bold hover:bg-white/30"
+          title={t("ui.OfflineBanner.enviarAhora")}
           type="button"
           onClick={() => void flush()}
-          className="ml-2 rounded-full bg-white/20 px-2.5 py-0.5 text-[11.5px] font-bold hover:bg-white/30"
-          title={t('ui.OfflineBanner.enviarAhora')}
         >
           {pending} {pending === 1 ? "cambio pendiente" : "cambios pendientes"}
         </button>

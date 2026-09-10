@@ -2,7 +2,12 @@ import { ApiService } from "@/services/api/apiService";
 
 const tenantId = (): string => {
   const t = localStorage.getItem("tenantId");
-  if (!t) throw new Error("No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.");
+
+  if (!t)
+    throw new Error(
+      "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+    );
+
   return t;
 };
 
@@ -66,7 +71,9 @@ export const emailPreferencesService = {
    *  el propio remitente parándose antes de enviar, así que no puede diferir de
    *  lo que recibe el destinatario. */
   previewTemplate(key: string): Promise<EmailPreviewResult> {
-    return ApiService.get(`/tenant/${tenantId()}/email-preferences/preview/${encodeURIComponent(key)}`);
+    return ApiService.get(
+      `/tenant/${tenantId()}/email-preferences/preview/${encodeURIComponent(key)}`,
+    );
   },
 };
 

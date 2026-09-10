@@ -1,17 +1,17 @@
-import * as React from "react"
-import * as SheetPrimitive from "@radix-ui/react-dialog"
-import { cva, type VariantProps } from "class-variance-authority"
-import { X } from "lucide-react"
+import * as React from "react";
+import * as SheetPrimitive from "@radix-ui/react-dialog";
+import { cva, type VariantProps } from "class-variance-authority";
+import { X } from "lucide-react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-const Sheet = SheetPrimitive.Root
+const Sheet = SheetPrimitive.Root;
 
-const SheetTrigger = SheetPrimitive.Trigger
+const SheetTrigger = SheetPrimitive.Trigger;
 
-const SheetClose = SheetPrimitive.Close
+const SheetClose = SheetPrimitive.Close;
 
-const SheetPortal = SheetPrimitive.Portal
+const SheetPortal = SheetPrimitive.Portal;
 
 const SheetOverlay = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Overlay>,
@@ -20,13 +20,14 @@ const SheetOverlay = React.forwardRef<
   <SheetPrimitive.Overlay
     className={cn(
       "glass-scrim fixed inset-0 z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 motion-reduce:animate-none!",
-      className
+      className,
     )}
     {...props}
     ref={ref}
   />
-))
-SheetOverlay.displayName = SheetPrimitive.Overlay.displayName
+));
+
+SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
 
 const sheetVariants = cva(
   /* `overflow-y-auto`: un panel lateral con un formulario largo no cabía en un
@@ -47,8 +48,8 @@ const sheetVariants = cva(
     defaultVariants: {
       side: "right",
     },
-  }
-)
+  },
+);
 
 /* Sólo se redondean los cantos INTERIORES: un panel anclado al borde con las
    cuatro esquinas redondeadas se despega de la pantalla y parece un error. */
@@ -57,7 +58,7 @@ const radiusBySide: Record<"top" | "bottom" | "left" | "right", string> = {
   left: "0 var(--r-2xl) var(--r-2xl) 0",
   top: "0 0 var(--r-2xl) var(--r-2xl)",
   bottom: "var(--r-2xl) var(--r-2xl) 0 0",
-}
+};
 
 interface SheetContentProps
   extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
@@ -70,6 +71,7 @@ const SheetContent = React.forwardRef<
   <SheetPortal>
     <SheetOverlay />
     <SheetPrimitive.Content
+      className={cn(sheetVariants({ side }), className)}
       ref={ref}
       /* `position` y `border-radius` van en línea: `.glass-raised` se declara
          sin capa en glass.css y gana a las utilidades `fixed`/`rounded-*`. */
@@ -78,7 +80,6 @@ const SheetContent = React.forwardRef<
         borderRadius: radiusBySide[side ?? "right"],
         ...style,
       }}
-      className={cn(sheetVariants({ side }), className)}
       {...props}
     >
       <SheetPrimitive.Close className="cg-focus absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-[color:var(--ink-faint)] transition-colors hover:bg-[var(--glass-sunken)] hover:text-[color:var(--ink)] disabled:pointer-events-none motion-reduce:transition-none">
@@ -88,8 +89,9 @@ const SheetContent = React.forwardRef<
       {children}
     </SheetPrimitive.Content>
   </SheetPortal>
-))
-SheetContent.displayName = SheetPrimitive.Content.displayName
+));
+
+SheetContent.displayName = SheetPrimitive.Content.displayName;
 
 const SheetHeader = ({
   className,
@@ -98,12 +100,13 @@ const SheetHeader = ({
   <div
     className={cn(
       "flex flex-col space-y-2 text-center sm:text-left",
-      className
+      className,
     )}
     {...props}
   />
-)
-SheetHeader.displayName = "SheetHeader"
+);
+
+SheetHeader.displayName = "SheetHeader";
 
 const SheetFooter = ({
   className,
@@ -112,12 +115,13 @@ const SheetFooter = ({
   <div
     className={cn(
       "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
-      className
+      className,
     )}
     {...props}
   />
-)
-SheetFooter.displayName = "SheetFooter"
+);
+
+SheetFooter.displayName = "SheetFooter";
 
 const SheetTitle = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Title>,
@@ -127,12 +131,13 @@ const SheetTitle = React.forwardRef<
     ref={ref}
     className={cn(
       "text-lg font-semibold tracking-[-0.02em] text-[color:var(--ink)]",
-      className
+      className,
     )}
     {...props}
   />
-))
-SheetTitle.displayName = SheetPrimitive.Title.displayName
+));
+
+SheetTitle.displayName = SheetPrimitive.Title.displayName;
 
 const SheetDescription = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Description>,
@@ -143,8 +148,9 @@ const SheetDescription = React.forwardRef<
     className={cn("text-sm text-[color:var(--ink-soft)]", className)}
     {...props}
   />
-))
-SheetDescription.displayName = SheetPrimitive.Description.displayName
+));
+
+SheetDescription.displayName = SheetPrimitive.Description.displayName;
 
 export {
   Sheet,
@@ -157,4 +163,4 @@ export {
   SheetFooter,
   SheetTitle,
   SheetDescription,
-}
+};

@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Clock, AlertTriangle } from "lucide-react";
-import { subscriptionBillingService, BillingSummary } from "@/lib/api/subscriptionBillingService";
+
+import {
+  subscriptionBillingService,
+  BillingSummary,
+} from "@/lib/api/subscriptionBillingService";
 
 const CACHE_KEY = "cg_billing_summary";
 const TTL_MS = 5 * 60 * 1000;
@@ -23,10 +27,13 @@ export default function TrialBanner() {
     // Use a fresh cached value if available.
     try {
       const raw = sessionStorage.getItem(CACHE_KEY);
+
       if (raw) {
         const { ts, data } = JSON.parse(raw);
+
         if (Date.now() - ts < TTL_MS && data) {
           setSummary(data);
+
           return;
         }
       }
@@ -40,7 +47,10 @@ export default function TrialBanner() {
         if (!mounted) return;
         setSummary(data);
         try {
-          sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data }));
+          sessionStorage.setItem(
+            CACHE_KEY,
+            JSON.stringify({ ts: Date.now(), data }),
+          );
         } catch {
           /* ignore */
         }
@@ -63,22 +73,33 @@ export default function TrialBanner() {
   // cualquier acento configurado. Antes eran seis colores de Tailwind sueltos,
   // con tintas `-800` que sobre un fondo oscuro quedaban ilegibles.
   let tono: "info" | "warn" | "bad" = "info";
-  let icon = <Clock size={15} className="shrink-0" />;
+  let icon = <Clock className="shrink-0" size={15} />;
   let text = "";
 
   if (summary.status === "trialing") {
     text =
       summary.trial.daysLeft > 0
-        ? t("billing.bannerTrialLeft", { defaultValue: "Prueba gratuita: te quedan {{n}} día(s).", n: summary.trial.daysLeft })
-        : t("billing.bannerTrialToday", { defaultValue: "Tu prueba gratuita termina hoy." });
+        ? t("billing.bannerTrialLeft", {
+            defaultValue: "Prueba gratuita: te quedan {{n}} día(s).",
+            n: summary.trial.daysLeft,
+          })
+        : t("billing.bannerTrialToday", {
+            defaultValue: "Tu prueba gratuita termina hoy.",
+          });
   } else if (summary.status === "trial_expired") {
     tono = "warn";
-    icon = <AlertTriangle size={15} className="shrink-0" />;
-    text = t("billing.bannerExpired", { defaultValue: "Tu prueba gratuita terminó. Activa tu suscripción para seguir usando la plataforma." });
+    icon = <AlertTriangle className="shrink-0" size={15} />;
+    text = t("billing.bannerExpired", {
+      defaultValue:
+        "Tu prueba gratuita terminó. Activa tu suscripción para seguir usando la plataforma.",
+    });
   } else if (summary.status === "past_due") {
     tono = "bad";
-    icon = <AlertTriangle size={15} className="shrink-0" />;
-    text = t("billing.bannerPastDue", { defaultValue: "Tu último pago falló. Actualiza tu suscripción para mantener el servicio." });
+    icon = <AlertTriangle className="shrink-0" size={15} />;
+    text = t("billing.bannerPastDue", {
+      defaultValue:
+        "Tu último pago falló. Actualiza tu suscripción para mantener el servicio.",
+    });
   } else {
     return null;
   }
@@ -101,8 +122,8 @@ export default function TrialBanner() {
       {/* Activar es la acción principal del producto: relleno de marca con tinta
           `--brand-ink`. El coral `#f36a6d` de antes no salía de ningún token. */}
       <button
-        onClick={go}
         className="cg-btn-brand cg-focus shrink-0 rounded-full px-3 py-1 text-xs font-semibold transition-[filter] hover:brightness-105"
+        onClick={go}
       >
         {t("billing.activate", { defaultValue: "Activar suscripción" })}
       </button>

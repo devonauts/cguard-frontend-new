@@ -1,5 +1,16 @@
-import { createContext, useContext, useMemo, useRef, useState, useCallback } from "react";
-import { useNotificationStream, type PlatformNotification } from "@/hooks/useNotificationStream";
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
+
+import {
+  useNotificationStream,
+  type PlatformNotification,
+} from "@/hooks/useNotificationStream";
 
 /**
  * One socket.io subscription for the whole radio feature. Both the draggable
@@ -13,15 +24,26 @@ interface RadioRealtimeValue {
   connected: boolean;
 }
 
-const RadioRealtimeContext = createContext<RadioRealtimeValue>({ version: 0, lastEvent: null, connected: false });
+const RadioRealtimeContext = createContext<RadioRealtimeValue>({
+  version: 0,
+  lastEvent: null,
+  connected: false,
+});
 
 export function useRadioRealtime() {
   return useContext(RadioRealtimeContext);
 }
 
-const isRadioEvent = (n: PlatformNotification) => typeof n?.eventType === "string" && n.eventType.startsWith("radio.");
+const isRadioEvent = (n: PlatformNotification) =>
+  typeof n?.eventType === "string" && n.eventType.startsWith("radio.");
 
-export function RadioRealtimeProvider({ tenantId, children }: { tenantId?: string | null; children: React.ReactNode }) {
+export function RadioRealtimeProvider({
+  tenantId,
+  children,
+}: {
+  tenantId?: string | null;
+  children: React.ReactNode;
+}) {
   const [version, setVersion] = useState(0);
   const [lastEvent, setLastEvent] = useState<PlatformNotification | null>(null);
   const seen = useRef<Set<string>>(new Set());
@@ -36,6 +58,14 @@ export function RadioRealtimeProvider({ tenantId, children }: { tenantId?: strin
 
   const { connected } = useNotificationStream(tenantId, onLive);
 
-  const value = useMemo(() => ({ version, lastEvent, connected }), [version, lastEvent, connected]);
-  return <RadioRealtimeContext.Provider value={value}>{children}</RadioRealtimeContext.Provider>;
+  const value = useMemo(
+    () => ({ version, lastEvent, connected }),
+    [version, lastEvent, connected],
+  );
+
+  return (
+    <RadioRealtimeContext.Provider value={value}>
+      {children}
+    </RadioRealtimeContext.Provider>
+  );
 }
