@@ -28,13 +28,24 @@ const resourceUrl = (resource: string) => {
 export interface CustomerGuardVisibility {
   name: boolean;
   photo: boolean;
+  document: boolean;
+  address: boolean;
+  email: boolean;
+  phone: boolean;
 }
 
 export async function getCustomerGuardVisibility(): Promise<CustomerGuardVisibility> {
   const { data } = await api.get(resourceUrl('settings'));
   const v = (data && (data as any).customerGuardVisibility) || {};
   // Default a visible (comportamiento actual) cuando la clave no existe.
-  return { name: v.name !== false, photo: v.photo !== false };
+  return {
+    name: v.name !== false,
+    photo: v.photo !== false,
+    document: v.document !== false,
+    address: v.address !== false,
+    email: v.email !== false,
+    phone: v.phone !== false,
+  };
 }
 
 export async function saveCustomerGuardVisibility(
@@ -44,7 +55,14 @@ export async function saveCustomerGuardVisibility(
   // toca logo, tema ni el resto de la configuración.
   await api.put(resourceUrl('settings'), {
     settings: {
-      customerGuardVisibility: { name: !!vis.name, photo: !!vis.photo },
+      customerGuardVisibility: {
+        name: !!vis.name,
+        photo: !!vis.photo,
+        document: !!vis.document,
+        address: !!vis.address,
+        email: !!vis.email,
+        phone: !!vis.phone,
+      },
     },
   });
 }

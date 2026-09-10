@@ -10,6 +10,7 @@ import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Plus, Pencil, Trash2, Smartphone, Image as ImageIcon, Tag, BadgeCheck, Upload, ShieldCheck } from 'lucide-react';
 import CustomerAppPreview, { serviceIcon, SERVICE_ICONS } from './CustomerAppPreview';
@@ -167,7 +168,14 @@ const defaultCertificationForm = {
 export default function MobilPage() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
-  const [guardVis, setGuardVis] = useState<{ name: boolean; photo: boolean }>({ name: true, photo: true });
+  const [guardVis, setGuardVis] = useState<{
+    name: boolean;
+    photo: boolean;
+    document: boolean;
+    address: boolean;
+    email: boolean;
+    phone: boolean;
+  }>({ name: true, photo: true, document: true, address: true, email: true, phone: true });
   const [savingGuardVis, setSavingGuardVis] = useState(false);
   const [bannerDialogOpen, setBannerDialogOpen] = useState(false);
   const [certDialogOpen, setCertDialogOpen] = useState(false);
@@ -313,7 +321,16 @@ export default function MobilPage() {
     loadData();
   }, []);
 
-  const updateGuardVis = async (patch: Partial<{ name: boolean; photo: boolean }>) => {
+  const updateGuardVis = async (
+    patch: Partial<{
+      name: boolean;
+      photo: boolean;
+      document: boolean;
+      address: boolean;
+      email: boolean;
+      phone: boolean;
+    }>,
+  ) => {
     const prev = guardVis;
     const next = { ...guardVis, ...patch };
     setGuardVis(next);
@@ -547,31 +564,15 @@ export default function MobilPage() {
             }
           />
           <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
-            <div className="min-w-0 space-y-6">
+            <Tabs className="min-w-0 space-y-6" defaultValue="contenido">
+              <div className="-mx-1 overflow-x-auto px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <TabsList className="w-max min-w-full justify-start">
+                  <TabsTrigger value="contenido">{t('settings.mobil.tabContent', { defaultValue: 'Contenido' })}</TabsTrigger>
+                  <TabsTrigger value="vigilante">{t('settings.mobil.tabGuard', { defaultValue: 'Privacidad del vigilante' })}</TabsTrigger>
+                </TabsList>
+              </div>
 
-          <Section
-            title={t('settings.mobil.guardVisTitle', { defaultValue: 'Datos del vigilante visibles para el cliente' })}
-            icon={<ShieldCheck />}
-            contentClassName="space-y-4"
-          >
-            <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
-              {t('settings.mobil.guardVisDesc', { defaultValue: 'Elige qué datos del vigilante ve el cliente en la app Mi Seguridad. El cambio se aplica de inmediato, sin actualizar la app.' })}
-            </p>
-            <div className="flex items-center justify-between gap-4 rounded-xl border p-4" style={{ borderColor: 'var(--hairline)' }}>
-              <div>
-                <div className="text-sm font-medium">{t('settings.mobil.guardVisName', { defaultValue: 'Nombre del vigilante' })}</div>
-                <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{t('settings.mobil.guardVisNameHint', { defaultValue: 'Si se apaga, el cliente ve "Vigilante" en vez del nombre.' })}</div>
-              </div>
-              <Switch checked={guardVis.name} disabled={savingGuardVis || loading} onCheckedChange={(v) => updateGuardVis({ name: !!v })} />
-            </div>
-            <div className="flex items-center justify-between gap-4 rounded-xl border p-4" style={{ borderColor: 'var(--hairline)' }}>
-              <div>
-                <div className="text-sm font-medium">{t('settings.mobil.guardVisPhoto', { defaultValue: 'Foto del vigilante' })}</div>
-                <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{t('settings.mobil.guardVisPhotoHint', { defaultValue: 'Si se apaga, el cliente ve las iniciales en vez de la foto.' })}</div>
-              </div>
-              <Switch checked={guardVis.photo} disabled={savingGuardVis || loading} onCheckedChange={(v) => updateGuardVis({ photo: !!v })} />
-            </div>
-          </Section>
+              <TabsContent className="space-y-6" value="contenido">
 
           <Section
             title={t('settings.mobil.bannerSectionTitle', { defaultValue: 'Banner Superior' })}
@@ -1015,7 +1016,62 @@ export default function MobilPage() {
               </TableBody>
             </Table>
           </Section>
-            </div>
+              </TabsContent>
+
+              <TabsContent className="space-y-6" value="vigilante">
+                <Section
+                  title={t('settings.mobil.guardVisTitle', { defaultValue: 'Datos del vigilante visibles para el cliente' })}
+                  icon={<ShieldCheck />}
+                  contentClassName="space-y-4"
+                >
+                  <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>
+                    {t('settings.mobil.guardVisDesc', { defaultValue: 'Elige qué datos del vigilante ve el cliente en la app Mi Seguridad. El cambio se aplica de inmediato, sin actualizar la app. El puesto y el estado (en turno) siempre se muestran; los datos de RRHH (nacimiento, tipo de sangre, estado civil, etc.) nunca se comparten.' })}
+                  </p>
+                  <div className="flex items-center justify-between gap-4 rounded-xl border p-4" style={{ borderColor: 'var(--hairline)' }}>
+                    <div>
+                      <div className="text-sm font-medium">{t('settings.mobil.guardVisName', { defaultValue: 'Nombre del vigilante' })}</div>
+                      <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{t('settings.mobil.guardVisNameHint', { defaultValue: 'Si se apaga, el cliente ve "Vigilante" en vez del nombre.' })}</div>
+                    </div>
+                    <Switch checked={guardVis.name} disabled={savingGuardVis || loading} onCheckedChange={(v) => updateGuardVis({ name: !!v })} />
+                  </div>
+                  <div className="flex items-center justify-between gap-4 rounded-xl border p-4" style={{ borderColor: 'var(--hairline)' }}>
+                    <div>
+                      <div className="text-sm font-medium">{t('settings.mobil.guardVisPhoto', { defaultValue: 'Foto del vigilante' })}</div>
+                      <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{t('settings.mobil.guardVisPhotoHint', { defaultValue: 'Si se apaga, el cliente ve las iniciales.' })}</div>
+                    </div>
+                    <Switch checked={guardVis.photo} disabled={savingGuardVis || loading} onCheckedChange={(v) => updateGuardVis({ photo: !!v })} />
+                  </div>
+                  <div className="flex items-center justify-between gap-4 rounded-xl border p-4" style={{ borderColor: 'var(--hairline)' }}>
+                    <div>
+                      <div className="text-sm font-medium">{t('settings.mobil.guardVisDocument', { defaultValue: 'Cédula / Documento' })}</div>
+                      <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{t('settings.mobil.guardVisDocumentHint', { defaultValue: 'Número de identificación del vigilante.' })}</div>
+                    </div>
+                    <Switch checked={guardVis.document} disabled={savingGuardVis || loading} onCheckedChange={(v) => updateGuardVis({ document: !!v })} />
+                  </div>
+                  <div className="flex items-center justify-between gap-4 rounded-xl border p-4" style={{ borderColor: 'var(--hairline)' }}>
+                    <div>
+                      <div className="text-sm font-medium">{t('settings.mobil.guardVisAddress', { defaultValue: 'Dirección' })}</div>
+                      <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{t('settings.mobil.guardVisAddressHint', { defaultValue: 'Dirección del vigilante.' })}</div>
+                    </div>
+                    <Switch checked={guardVis.address} disabled={savingGuardVis || loading} onCheckedChange={(v) => updateGuardVis({ address: !!v })} />
+                  </div>
+                  <div className="flex items-center justify-between gap-4 rounded-xl border p-4" style={{ borderColor: 'var(--hairline)' }}>
+                    <div>
+                      <div className="text-sm font-medium">{t('settings.mobil.guardVisEmail', { defaultValue: 'Email' })}</div>
+                      <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{t('settings.mobil.guardVisEmailHint', { defaultValue: 'Correo del vigilante.' })}</div>
+                    </div>
+                    <Switch checked={guardVis.email} disabled={savingGuardVis || loading} onCheckedChange={(v) => updateGuardVis({ email: !!v })} />
+                  </div>
+                  <div className="flex items-center justify-between gap-4 rounded-xl border p-4" style={{ borderColor: 'var(--hairline)' }}>
+                    <div>
+                      <div className="text-sm font-medium">{t('settings.mobil.guardVisPhone', { defaultValue: 'Teléfono' })}</div>
+                      <div className="text-xs" style={{ color: 'var(--ink-soft)' }}>{t('settings.mobil.guardVisPhoneHint', { defaultValue: 'Teléfono del vigilante (botón de llamada en la app).' })}</div>
+                    </div>
+                    <Switch checked={guardVis.phone} disabled={savingGuardVis || loading} onCheckedChange={(v) => updateGuardVis({ phone: !!v })} />
+                  </div>
+                </Section>
+              </TabsContent>
+            </Tabs>
             {/* Live phone preview (sticky) — reflects the configured banners. */}
             <div className="lg:sticky lg:top-6">
               <CustomerAppPreview
