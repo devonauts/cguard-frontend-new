@@ -74,6 +74,15 @@ export const REPORT_SECTIONS: ReportSection[] = [
         href: "/reports/vehicle-patrol",
       },
       {
+        id: "supervision-history",
+        title: "Historial de supervisión por puesto",
+        titleKey: "reports.card.supervisionHistory.title",
+        description:
+          "Cada visita del supervisor a un puesto: resultado, hallazgos y evidencia",
+        descriptionKey: "reports.card.supervisionHistory.desc",
+        href: "/reports/supervision-history",
+      },
+      {
         id: "checklist",
         title: "Informe de lista de verificación",
         titleKey: "reports.card.checklist.title",

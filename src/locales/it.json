@@ -11714,6 +11714,10 @@
       },
       "watchModeLogs": {
         "desc": "Vedi i file multimediali inviati dalle guardie"
+      },
+      "supervisionHistory": {
+        "title": "Storico delle supervisioni per sito",
+        "desc": "Ogni visita del supervisore a un sito: esito, rilievi ed evidenze"
       }
     },
     "panicLog": {

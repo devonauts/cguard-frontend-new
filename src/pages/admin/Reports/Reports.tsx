@@ -36,6 +36,7 @@ const READY_REPORT_HREFS = new Set<string>([
   "/reports/panic-button-log",
   "/reports/geo-fence-log",
   "/reports/incidents/general",
+  "/reports/supervision-history",
 ]);
 
 interface ReportsProps {

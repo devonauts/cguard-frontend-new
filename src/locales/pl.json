@@ -11714,6 +11714,10 @@
       },
       "watchModeLogs": {
         "desc": "Podgląd plików multimedialnych przesłanych przez pracowników ochrony"
+      },
+      "supervisionHistory": {
+        "title": "Historia nadzoru według obiektu",
+        "desc": "Każda wizyta nadzorcy w obiekcie: wynik, ustalenia i dowody"
       }
     },
     "panicLog": {

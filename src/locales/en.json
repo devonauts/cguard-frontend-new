@@ -11742,6 +11742,10 @@
       },
       "watchModeLogs": {
         "desc": "See the media files sent by security guards"
+      },
+      "supervisionHistory": {
+        "title": "Supervision history by post",
+        "desc": "Every supervisor visit to a post: result, findings and evidence"
       }
     },
     "panicLog": {

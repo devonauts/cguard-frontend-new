@@ -374,6 +374,9 @@ const SiteTour = lazy(() => import("./pages/admin/Reports/SiteTour"));
 const Task = lazy(() => import("./pages/admin/Reports/Task"));
 const Dar = lazy(() => import("./pages/admin/Reports/Dar"));
 const VehiclePatrol = lazy(() => import("./pages/admin/Reports/VehiclePatrol"));
+const SupervisionHistory = lazy(
+  () => import("./pages/admin/Reports/SupervisionHistory"),
+);
 const Checklist = lazy(() => import("./pages/admin/Reports/Checklist"));
 const PostKpi = lazy(() => import("./pages/admin/Reports/PostKpi"));
 const GuardKpi = lazy(() => import("./pages/admin/Reports/GuardKpi"));
@@ -1674,6 +1677,14 @@ export default function App() {
                                 </ProtectedRoute>
                               }
                               path="/reports/vehicle-patrol"
+                            />
+                            <Route
+                              element={
+                                <ProtectedRoute>
+                                  <SupervisionHistory />
+                                </ProtectedRoute>
+                              }
+                              path="/reports/supervision-history"
                             />
                             <Route
                               element={

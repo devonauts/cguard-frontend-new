@@ -11742,6 +11742,10 @@
       },
       "watchModeLogs": {
         "desc": "Ver los archivos multimedia enviados por los vigilantes de seguridad"
+      },
+      "supervisionHistory": {
+        "title": "Historial de supervisión por puesto",
+        "desc": "Cada visita del supervisor a un puesto: resultado, hallazgos y evidencia"
       }
     },
     "panicLog": {

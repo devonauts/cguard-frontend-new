@@ -11714,6 +11714,10 @@
       },
       "watchModeLogs": {
         "desc": "Voir les fichiers multimédias envoyés par les agents de sécurité"
+      },
+      "supervisionHistory": {
+        "title": "Historique de supervision par site",
+        "desc": "Chaque visite du superviseur sur un site : résultat, constats et preuves"
       }
     },
     "panicLog": {

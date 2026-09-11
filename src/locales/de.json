@@ -11714,6 +11714,10 @@
       },
       "watchModeLogs": {
         "desc": "Die von den Sicherheitskräften gesendeten Medien ansehen"
+      },
+      "supervisionHistory": {
+        "title": "Kontrollhistorie je Objekt",
+        "desc": "Jeder Supervisor-Besuch an einem Objekt: Ergebnis, Befunde und Nachweise"
       }
     },
     "panicLog": {

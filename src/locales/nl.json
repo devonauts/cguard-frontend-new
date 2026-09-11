@@ -11714,6 +11714,10 @@
       },
       "watchModeLogs": {
         "desc": "Bekijk de foto's en video's die de beveiligers hebben gestuurd"
+      },
+      "supervisionHistory": {
+        "title": "Supervisiegeschiedenis per locatie",
+        "desc": "Elk supervisiebezoek aan een locatie: resultaat, bevindingen en bewijs"
       }
     },
     "panicLog": {

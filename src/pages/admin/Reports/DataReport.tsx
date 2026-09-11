@@ -1,7 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import type { ReportTone } from "./reportIcons";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -43,6 +43,13 @@ interface DataReportProps<T> {
   load: (range: { from: string; to: string }) => Promise<T[]>;
   /** Optional client-side text search over the rendered row values. */
   searchable?: boolean;
+  /**
+   * Filtros PROPIOS del informe, dentro del mismo cajón que el rango de fechas
+   * (un selector de estación, de cliente…). Van aquí y no en la página para que
+   * compartan el botón «Aplicar»: dos sitios distintos donde tocar filtros
+   * acaban con uno aplicado y el otro no.
+   */
+  extraFilters?: ReactNode;
   /** Days back the default range spans (default 30). */
   defaultDays?: number;
   emptyMessage?: string;
@@ -102,6 +109,7 @@ export default function DataReport<T>({
   columns: columnsProp,
   load,
   searchable = true,
+  extraFilters,
   defaultDays = 30,
   emptyMessage,
   rowTone,
@@ -336,6 +344,7 @@ export default function DataReport<T>({
       empty={{ message: emptyMessage }}
       exporting={exportando}
       filters={
+        <div className="space-y-3">
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="cg-eyebrow">Desde</label>
@@ -357,6 +366,8 @@ export default function DataReport<T>({
               onChange={(e) => setTo(e.target.value)}
             />
           </div>
+        </div>
+        {extraFilters}
         </div>
       }
       icon={icon}
