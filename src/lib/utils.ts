@@ -65,6 +65,84 @@ export function rotationDseOf(d: Date): number {
   );
 }
 
+/**
+ * ════════════════════════════════════════════════════════════════════════════
+ * LAS DOS REGLAS QUE NO CABEN EN TRES NÚMEROS — ESPEJO DEL SERVIDOR
+ *
+ * Copia fiel de `estadoDeRotacion` (backend `shiftGenerationService`). Existe
+ * porque la rejilla del Programador pinta el mes ANTES de tener los turnos
+ * delante, y si aquí se calculara con la aritmética desnuda el cuadro dibujado
+ * no sería el que el motor genera: un 7-1 que alterna día y noche saldría como
+ * siete «D» seguidas, con la noche del puesto vacía en pantalla y cubierta en
+ * la realidad.
+ *
+ * Si se toca el servidor, se toca ESTO. Las dos reglas:
+ *   · `alternatesDayNight` — el fijo cambia de mitad en cada franco.
+ *   · `sundayDoubleRest`   — franco en domingo = domingo Y lunes, y el ciclo
+ *     se CORRE un día (no es un día suelto), así que hay que caminar desde un
+ *     ancla en vez de resolver `dse % ciclo` de un salto.
+ * ════════════════════════════════════════════════════════════════════════════
+ */
+export interface ReglasDeRotacion {
+  alternatesDayNight?: boolean | null;
+  sundayDoubleRest?: boolean | null;
+}
+
+/** ¿Ese día es domingo? `dse` cuenta desde la época 2024-01-01, que fue lunes. */
+export function esDomingoDse(dse: number): boolean {
+  // 2024-01-01 fue LUNES; el domingo es el 6.º día de esa semana.
+  return (((dse % 7) + 7) % 7) === 6;
+}
+
+/**
+ * El estado de un día aplicando las reglas. `anclaDse` es el día 0 del ciclo
+ * (la fecha de inicio de la asignación). Sin reglas activas devuelve
+ * exactamente lo mismo que la aritmética de siempre.
+ */
+export function estadoDeRotacionCliente(
+  dse: number,
+  anclaDse: number,
+  platoonOffset: number,
+  dayShifts: number,
+  nightShifts: number,
+  restDays: number,
+  reglas?: ReglasDeRotacion | null,
+): "day" | "night" | "rest" {
+  const ciclo = dayShifts + nightShifts + restDays;
+  if (ciclo <= 0) return "rest";
+
+  const crudo = (d: number): "day" | "night" | "rest" => {
+    const a = (((d - platoonOffset) % ciclo) + ciclo) % ciclo;
+    if (a < dayShifts) return "day";
+    if (a < dayShifts + nightShifts) return "night";
+
+    return "rest";
+  };
+
+  const alterna = !!reglas?.alternatesDayNight;
+  const dominical = !!reglas?.sundayDoubleRest;
+  if (!alterna && !dominical) return crudo(dse);
+  if (!Number.isFinite(anclaDse) || dse < anclaDse) return crudo(dse);
+
+  let corrimiento = 0;
+  let vueltas = 0;
+  let previo: "day" | "night" | "rest" | null = null;
+  let estado: "day" | "night" | "rest" = "rest";
+
+  for (let d = anclaDse; d <= dse; d++) {
+    const st = crudo(d - corrimiento);
+    // La vuelta se cierra al pisar el primer día de trabajo tras el franco.
+    if (previo === "rest" && st !== "rest") vueltas += 1;
+    if (dominical && st === "rest" && esDomingoDse(d)) corrimiento += 1;
+    previo = st;
+    estado = st;
+  }
+
+  if (estado === "rest" || !alterna) return estado;
+
+  return vueltas % 2 === 1 ? (estado === "day" ? "night" : "day") : estado;
+}
+
 /** Rotation status for a calendar date under a cycle + platoonOffset. */
 export function rotationStatusOn(
   style: RotationCycle,

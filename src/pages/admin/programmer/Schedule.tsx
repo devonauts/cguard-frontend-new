@@ -57,7 +57,7 @@ import ScheduleTimeline, {
 import ContextMenu, { CtxItem, CtxMenuState } from "./ContextMenu";
 
 import TransferShiftModal, { TransferTarget } from "./TransferShiftModal";
-import { localToday } from '@/lib/utils';
+import { localToday, estadoDeRotacionCliente } from '@/lib/utils';
 import {
   nombreDeVigilante,
   inicialesDeVigilante,
@@ -1189,24 +1189,39 @@ export default function Schedule() {
         return "rest";
       }
 
-      // ─── FIJO LOGIC ─── Guard rotates work/rest following the station rotation
-      // Uses GLOBAL EPOCH (Jan 1) for consistent sequential pattern across all stations
-      const cycleLength = rot.dayShifts + rot.nightShifts + rot.restDays;
-      const daysSinceEpoch = dseOf(date); // DST-safe day index (matches backend getGlobalEpoch)
-      const adjustedDay =
-        (((daysSinceEpoch - assignment.platoonOffset) % cycleLength) +
-          cycleLength) %
-        cycleLength;
+      /* ─── FIJO ─── El MISMO motor que genera los turnos.
+         Aquí vivía una TERCERA copia de la aritmética (la 1.ª en el generador,
+         la 2.ª en `supervisorScheduleService`). Mientras el ciclo se dijo con
+         tres números las tres coincidían. Con las reglas que no caben en tres
+         números —alternar día/noche, doblar el franco en domingo— esta copia se
+         quedó atrás: un 7-1 que alterna salía como siete «D» seguidas, así que
+         la rejilla pintaba la noche del puesto VACÍA mientras el motor la tenía
+         cubierta. El cuadro dibujado y el trabajado dejaban de ser el mismo.
 
-      // For 24H positions: distinguish day/night phases
-      // For 12H positions: both day and night rotation phases are just "work" days
+         El ancla es la fecha de inicio de la asignación, igual que el motor. */
+      const daysSinceEpoch = dseOf(date); // DST-safe (coincide con getGlobalEpoch)
+      const anclaDse = assignment.startDate
+        ? dseOf(new Date(`${String(assignment.startDate).slice(0, 10)}T12:00:00`))
+        : -Infinity;
+      const estado = estadoDeRotacionCliente(
+        daysSinceEpoch,
+        anclaDse,
+        assignment.platoonOffset,
+        rot.dayShifts,
+        rot.nightShifts,
+        rot.restDays,
+        {
+          alternatesDayNight: (rot as any).alternatesDayNight,
+          sundayDoubleRest: (rot as any).sundayDoubleRest,
+        },
+      );
+
+      // En un 12 h las dos fases de trabajo son lo mismo: se trabaja.
       const is24h = station?.scheduleType === "24h";
 
-      if (adjustedDay < rot.dayShifts) return "day";
-      if (adjustedDay < rot.dayShifts + rot.nightShifts)
-        return is24h ? "night" : "day";
+      if (estado === "night") return is24h ? "night" : "day";
 
-      return "rest";
+      return estado;
     },
     [positionsById, stationsById, rotationStylesById],
   );

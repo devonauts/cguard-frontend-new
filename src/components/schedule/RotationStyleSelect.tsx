@@ -217,16 +217,27 @@ export default function RotationStyleSelect({
      etiquetita «sin noches» con un tooltip. Se pregunta directamente. */
   const estiloActual = styles.find((s) => s.id === value) || null;
   const [modoFijos, setModoFijos] = useState<boolean | null>(null);
+  /* ── UN PATRÓN QUE ALTERNA ES ROTATIVO, AUNQUE TENGA 0 NOCHES ───────────
+     «Turnos fijos» se deducía sólo de `nightShifts === 0`. El rol peruano se
+     escribe justo así —7 de día, 0 de noche, 1 libre— y la alternancia va en
+     `alternatesDayNight`, no en el segundo número. Con la regla vieja, crear
+     ese patrón tiraba la estación a TURNOS FIJOS: plazas con ventana fija
+     (07:00–19:00 y 19:00–07:00) para gente que sí rota. El Horario lo
+     enseñaba tal cual —las plazas con hora fija y los días sin nombre— porque
+     la plaza ya no decía la verdad de lo que hace su ocupante.
+
+     Rota si tiene bloque de noche O si alterna. Las dos formas de decir lo
+     mismo. */
+  const rota = (s?: RotationStyle | null) =>
+    !!s && ((s.nightShifts || 0) > 0 || !!s.alternatesDayNight);
+
   const fijos =
     dosTramos &&
-    (modoFijos ?? (estiloActual?.nightShifts ?? (is24h ? 1 : 0)) === 0);
+    (modoFijos ??
+      (estiloActual ? !rota(estiloActual) : (is24h ? 1 : 0) === 0));
 
   const encaja = (s: RotationStyle) =>
-    dosTramos
-      ? fijos
-        ? (s.nightShifts || 0) === 0
-        : (s.nightShifts || 0) > 0
-      : (s.nightShifts || 0) === 0;
+    dosTramos ? (fijos ? !rota(s) : rota(s)) : (s.nightShifts || 0) === 0;
   /* En TURNOS FIJOS se filtra de verdad, no se ordena. Un 4-4-2 ahí no quiere
      decir nada —el vigilante no rota, se queda en su plaza— y ofrecerlo sólo
      confunde: lo único que se decide es cada cuántos días libra. En rotativo se
@@ -234,7 +245,7 @@ export default function RotationStyleSelect({
   const options = useMemo(
     () =>
       fijos
-        ? styles.filter((s) => (s.nightShifts || 0) === 0)
+        ? styles.filter((s) => !rota(s))
         : [...styles].sort((a, b) => Number(encaja(b)) - Number(encaja(a))),
 
     [styles, dosTramos, fijos],
@@ -264,7 +275,7 @@ export default function RotationStyleSelect({
   const elegirModo = (quiereFijos: boolean) => {
     setModoFijos(quiereFijos);
     const candidatos = styles.filter((s) =>
-      quiereFijos ? (s.nightShifts || 0) === 0 : (s.nightShifts || 0) > 0,
+      quiereFijos ? !rota(s) : rota(s),
     );
 
     if (!candidatos.length) {
@@ -397,6 +408,9 @@ export default function RotationStyleSelect({
     );
 
     if (igual) {
+      // El modo vuelve a DEDUCIRSE del patrón elegido: si alterna, la estación
+      // es rotativa aunque el creador se hubiera abierto desde «turnos fijos».
+      setModoFijos(null);
       onChange(igual.id);
       setCustom(false);
 
@@ -427,6 +441,7 @@ export default function RotationStyleSelect({
         setStyles((prev) =>
           prev.some((p) => p.id === created.id) ? prev : [...prev, created],
         );
+        setModoFijos(null);
         onChange(created.id);
         setCustom(false);
         toast.success(t("ui.RotationStyleSelect.patronDeRotacionCreado"));
