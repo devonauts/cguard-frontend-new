@@ -1,14 +1,13 @@
 import api from "@/lib/api";
+import axiosInstance from "@/lib/api";
 import i18n from "@/i18n";
 
 const getTenantId = (): string => {
   const t = localStorage.getItem("tenantId");
-
   if (!t)
     throw new Error(
       "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
     );
-
   return t;
 };
 
@@ -102,19 +101,16 @@ export const ITEM_CONDITION_KEYS: Record<ItemCondition, string> = {
 
 export function itemTypeLabel(value?: string | null): string {
   const k = ITEM_TYPE_KEYS[value as ItemType];
-
   return k ? i18n.t(k, ITEM_TYPE_LABELS[value as ItemType]) : (value ?? "");
 }
 
 export function itemStatusLabel(value?: string | null): string {
   const k = ITEM_STATUS_KEYS[value as ItemStatus];
-
   return k ? i18n.t(k, ITEM_STATUS_LABELS[value as ItemStatus]) : (value ?? "");
 }
 
 export function itemConditionLabel(value?: string | null): string {
   const k = ITEM_CONDITION_KEYS[value as ItemCondition];
-
   return k
     ? i18n.t(k, ITEM_CONDITION_LABELS[value as ItemCondition])
     : (value ?? "");
@@ -177,19 +173,16 @@ const inventoryItemService = {
   ): Promise<{ rows: InventoryItem[]; count: number }> {
     const tenantId = getTenantId();
     const query = new URLSearchParams();
-
     if (params.limit != null) query.append("limit", String(params.limit));
     if (params.offset != null) query.append("offset", String(params.offset));
     if (params.orderBy) query.append("orderBy", params.orderBy);
     const f = params.filter || {};
-
     Object.entries(f).forEach(([k, v]) => {
       if (v != null && v !== "") query.append(`filter[${k}]`, String(v));
     });
     const { data } = await api.get(
       `/tenant/${tenantId}/global-inventory?${query.toString()}`,
     );
-
     return data;
   },
 
@@ -198,7 +191,6 @@ const inventoryItemService = {
     const { data } = await api.get(
       `/tenant/${tenantId}/global-inventory/${id}`,
     );
-
     return data;
   },
 
@@ -207,7 +199,6 @@ const inventoryItemService = {
     const { data } = await api.post(`/tenant/${tenantId}/global-inventory`, {
       data: payload,
     });
-
     return data;
   },
 
@@ -220,13 +211,11 @@ const inventoryItemService = {
       `/tenant/${tenantId}/global-inventory/${id}`,
       { data: payload },
     );
-
     return data;
   },
 
   async delete(ids: string[]): Promise<void> {
     const tenantId = getTenantId();
-
     await api.delete(`/tenant/${tenantId}/global-inventory`, { data: { ids } });
   },
 
@@ -240,17 +229,14 @@ const inventoryItemService = {
 
     const uploadUrl = creds?.uploadCredentials?.url ?? creds?.url;
     const fields = creds?.uploadCredentials?.fields;
-
     if (!uploadUrl) throw new Error("Upload URL not available");
 
     const form = new FormData();
-
     if (fields) Object.keys(fields).forEach((k) => form.append(k, fields[k]));
     form.append("filename", filename);
     form.append("file", file);
 
     const resp = await fetch(uploadUrl, { method: "POST", body: form });
-
     if (!resp.ok) throw new Error(`Upload failed: ${resp.status}`);
 
     return {
@@ -269,13 +255,11 @@ const inventoryItemService = {
   ): Promise<{ id: string; label: string; type: string; status: string }[]> {
     const tenantId = getTenantId();
     const query = new URLSearchParams();
-
     if (search) query.append("query", search);
     query.append("limit", String(limit));
     const { data } = await api.get(
       `/tenant/${tenantId}/global-inventory/autocomplete?${query.toString()}`,
     );
-
     return data;
   },
 };

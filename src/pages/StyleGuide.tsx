@@ -44,7 +44,6 @@ import {
   Users,
   Video,
 } from "lucide-react";
-
 import BrandLockup from "@/components/BrandLockup";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -133,6 +132,7 @@ import {
   SkeletonBlock,
   Modal,
   Field,
+  GlassPanel,
   IconTile,
   Segmented,
   Toolbar,
@@ -189,9 +189,11 @@ function Api({
       () => {},
     );
   };
-
   return (
     <button
+      type="button"
+      onClick={copiar}
+      title="Copiar"
       className="cg-focus inline-flex max-w-full items-center gap-1.5 rounded-md border px-2 py-0.5 font-mono text-[11px] leading-5 transition-colors motion-reduce:transition-none"
       style={
         tipo === "clase"
@@ -206,9 +208,6 @@ function Api({
               color: "var(--ink-soft)",
             }
       }
-      title="Copiar"
-      type="button"
-      onClick={copiar}
     >
       <span className="truncate">{children}</span>
       {copiado ? (
@@ -395,6 +394,16 @@ export default function StyleGuide() {
     <TooltipProvider>
       <PageContainer width="wide">
         <PageHeader
+          icon={<Shield />}
+          title="Guía de estilo"
+          subtitle="El sistema de cristal de C-Guard Pro. Superficie acromática, un acento configurable, un solo tema escrito para claro y oscuro."
+          badges={
+            <>
+              <StatusBadge tone="brand">Sistema v2</StatusBadge>
+              <StatusBadge tone="ok">Claro y oscuro</StatusBadge>
+              <StatusBadge tone="info">Movimiento reducido</StatusBadge>
+            </>
+          }
           actions={
             <>
               <Button variant="outline" onClick={toggleTheme}>
@@ -405,19 +414,9 @@ export default function StyleGuide() {
               </Button>
             </>
           }
-          badges={
-            <>
-              <StatusBadge tone="brand">Sistema v2</StatusBadge>
-              <StatusBadge tone="ok">Claro y oscuro</StatusBadge>
-              <StatusBadge tone="info">Movimiento reducido</StatusBadge>
-            </>
-          }
-          icon={<Shield />}
-          subtitle="El sistema de cristal de C-Guard Pro. Superficie acromática, un acento configurable, un solo tema escrito para claro y oscuro."
-          title="Guía de estilo"
         />
 
-        <InfoNote icon={<Info />} title="Cómo se lee esta página" tone="brand">
+        <InfoNote tone="brand" icon={<Info />} title="Cómo se lee esta página">
           Cada bloque lleva a la derecha el nombre con el que se importa la
           pieza o la clase con la que se aplica — pulsa la etiqueta para
           copiarla. Debajo del título, la frase de cuándo usarla. Si tienes que
@@ -428,26 +427,27 @@ export default function StyleGuide() {
             1 · FUNDAMENTOS
             ══════════════════════════════════════════════════════════════════ */}
         <Capitulo
-          bajada="Color, tipografía, forma y profundidad. Todo lo demás se construye con esto."
           numero="1"
           titulo="Fundamentos"
+          bajada="Color, tipografía, forma y profundidad. Todo lo demás se construye con esto."
         />
 
         <Bloque
-          api={["--brand-h", "--brand-c"]}
-          nota="La LUMINOSIDAD no se puede cambiar, y no es un olvido: es lo que garantiza que el texto contraste sobre el acento sea cual sea el tono. Medido sobre los 360 tonos — 5,09:1 en el peor caso claro, 8,5:1 en el peor oscuro. Entre L 0,54 y 0,58 hay una zona muerta donde ninguna tinta pasa, y por eso el sistema no deja entrar ahí."
           titulo="Acento configurable"
           uso="Elige un tono y mira la página entera: nada de lo que hay debajo tiene un color escrito a mano."
+          api={["--brand-h", "--brand-c"]}
+          nota="La LUMINOSIDAD no se puede cambiar, y no es un olvido: es lo que garantiza que el texto contraste sobre el acento sea cual sea el tono. Medido sobre los 360 tonos — 5,09:1 en el peor caso claro, 8,5:1 en el peor oscuro. Entre L 0,54 y 0,58 hay una zona muerta donde ninguna tinta pasa, y por eso el sistema no deja entrar ahí."
         >
           <div className="flex flex-wrap gap-2">
             {ACCENT_PRESETS.map((p) => {
               const activo =
                 Math.abs(p.h - accent.h) < 1 &&
                 Math.abs(p.c - accent.c) < 0.005;
-
               return (
                 <button
                   key={p.id}
+                  type="button"
+                  onClick={() => aplicar({ h: p.h, c: p.c })}
                   className="cg-focus flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition-all motion-reduce:transition-none"
                   style={{
                     borderColor: activo ? "var(--brand)" : "var(--hairline)",
@@ -456,8 +456,6 @@ export default function StyleGuide() {
                       : "var(--glass-sunken)",
                     color: activo ? "var(--brand-text)" : "var(--ink-soft)",
                   }}
-                  type="button"
-                  onClick={() => aplicar({ h: p.h, c: p.c })}
                 >
                   <span
                     className="h-4 w-4 rounded-full"
@@ -477,15 +475,15 @@ export default function StyleGuide() {
                 Tono — {Math.round(accent.h)}°
               </div>
               <input
-                className="cg-focus w-full"
-                max={360}
-                min={0}
-                style={{ accentColor: "var(--brand)" }}
                 type="range"
+                min={0}
+                max={360}
                 value={accent.h}
                 onChange={(e) =>
                   aplicar({ ...accent, h: Number(e.target.value) })
                 }
+                className="cg-focus w-full"
+                style={{ accentColor: "var(--brand)" }}
               />
             </label>
             <label className="block">
@@ -493,23 +491,23 @@ export default function StyleGuide() {
                 Intensidad — {accent.c.toFixed(3)}
               </div>
               <input
-                className="cg-focus w-full"
-                max={0.2}
-                min={0}
-                step={0.005}
-                style={{ accentColor: "var(--brand)" }}
                 type="range"
+                min={0}
+                max={0.2}
+                step={0.005}
                 value={accent.c}
                 onChange={(e) =>
                   aplicar({ ...accent, c: Number(e.target.value) })
                 }
+                className="cg-focus w-full"
+                style={{ accentColor: "var(--brand)" }}
               />
             </label>
           </div>
           <Button
-            className="mt-3"
-            size="sm"
             variant="ghost"
+            size="sm"
+            className="mt-3"
             onClick={resetAccent}
           >
             Volver al mostaza oro de la marca
@@ -517,6 +515,8 @@ export default function StyleGuide() {
         </Bloque>
 
         <Bloque
+          titulo="Color"
+          uso="Los neutros van a croma 0 — negro y blanco puros — para que el acento sea lo único con color en pantalla."
           api={[
             "--brand",
             "--brand-text",
@@ -527,8 +527,6 @@ export default function StyleGuide() {
             "--info",
           ]}
           nota="`--brand` es el RELLENO (botones, píldoras, barras) y lleva tinta `--brand-ink` encima. `--brand-text` es el mismo tono a la luminosidad que necesita el TEXTO: usar el de relleno como color de letra sobre blanco da 2,25:1, ilegible. Los semánticos son fijos a propósito — un pánico tiene que seguir siendo rojo aunque alguien elija rojo como acento."
-          titulo="Color"
-          uso="Los neutros van a croma 0 — negro y blanco puros — para que el acento sea lo único con color en pantalla."
         >
           <div className="cg-eyebrow mb-3">Marca</div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -558,10 +556,10 @@ export default function StyleGuide() {
         </Bloque>
 
         <Bloque
-          api={["BrandLockup", "cg-lockup"]}
-          nota="El lema NO es parte de la imagen. Estaba dibujado dentro del PNG, y por eso decía «Seguridad Inteligente» también en inglés y en portugués: ahora sale de `brand.tagline` y se estira al ancho del wordmark, porque cada idioma mide distinto y si no el bloque bailaría al cambiarlo. El arte tiene dos versiones, clara y oscura, porque el cristal lleva color propio: el viejo truco de invertir el PNG negro con `dark:brightness-0 dark:invert` ya no sirve. Las medidas del hueco del lema salen del alfa del arte original (6477×1119), no de ajustarlas a ojo — si se rehace el logo, hay que volver a medirlas."
           titulo="Bloque de marca"
           uso="El logotipo con el lema. Se usa en el acceso y en el arranque; en cualquier otro sitio, consúltalo antes."
+          api={["BrandLockup", "cg-lockup"]}
+          nota="El lema NO es parte de la imagen. Estaba dibujado dentro del PNG, y por eso decía «Seguridad Inteligente» también en inglés y en portugués: ahora sale de `brand.tagline` y se estira al ancho del wordmark, porque cada idioma mide distinto y si no el bloque bailaría al cambiarlo. El arte tiene dos versiones, clara y oscura, porque el cristal lleva color propio: el viejo truco de invertir el PNG negro con `dark:brightness-0 dark:invert` ya no sirve. Las medidas del hueco del lema salen del alfa del arte original (6477×1119), no de ajustarlas a ojo — si se rehace el logo, hay que volver a medirlas."
         >
           <div className="space-y-6">
             <div>
@@ -579,7 +577,7 @@ export default function StyleGuide() {
             </div>
             <div>
               <div className="cg-eyebrow mb-2">Quieto · sin destello</div>
-              <BrandLockup animated={false} className="w-[260px]" />
+              <BrandLockup className="w-[260px]" animated={false} />
             </div>
             <div>
               <div className="cg-eyebrow mb-2">
@@ -615,10 +613,10 @@ export default function StyleGuide() {
         </Bloque>
 
         <Bloque
-          api={["og:image", "/assets/og/"]}
-          nota="Se diseña para el tamaño CHICO, no para el grande: WhatsApp la muestra a unos 300 px de ancho, así que si el titular no se lee ahí, no se lee. De ahí el titular a dos líneas y corto, y nada de texto secundario que dependa de leerse. El escudo va SIEMPRE en su variante oscura sobre estos fondos — la clara puesta encima de un fondo oscuro se lee plateada, que es un error fácil de colar. Y va UNA POR IDIOMA: el titular y el lema son texto, no están dibujados en la imagen, así que el enlace en español se comparte en español. Antes había una sola en inglés con el lema en español."
           titulo="Miniatura al compartir"
           uso="La imagen que sale cuando alguien pega el enlace en WhatsApp, X, LinkedIn o Slack. 1200×630, JPG."
+          api={["og:image", "/assets/og/"]}
+          nota="Se diseña para el tamaño CHICO, no para el grande: WhatsApp la muestra a unos 300 px de ancho, así que si el titular no se lee ahí, no se lee. De ahí el titular a dos líneas y corto, y nada de texto secundario que dependa de leerse. El escudo va SIEMPRE en su variante oscura sobre estos fondos — la clara puesta encima de un fondo oscuro se lee plateada, que es un error fácil de colar. Y va UNA POR IDIOMA: el titular y el lema son texto, no están dibujados en la imagen, así que el enlace en español se comparte en español. Antes había una sola en inglés con el lema en español."
         >
           <div className="space-y-6">
             {[
@@ -651,9 +649,9 @@ export default function StyleGuide() {
               <div key={m.src}>
                 <div className="cg-eyebrow mb-2">{m.n}</div>
                 <img
+                  src={`/assets/og/${m.src}.jpg`}
                   alt={`Miniatura ${m.n}`}
                   className="w-full max-w-[520px] rounded-xl border border-line"
-                  src={`/assets/og/${m.src}.jpg`}
                 />
                 <p className="mt-2 max-w-[520px] text-sm text-ink-soft">
                   {m.d}
@@ -676,10 +674,10 @@ export default function StyleGuide() {
         </Bloque>
 
         <Bloque
-          api={["font-display", "font-sans", "tabular-nums"]}
-          nota="Los datos van SIEMPRE con cero barrado y ancho fijo de cifra. En una consola de operaciones se leen matrículas, identificadores y coordenadas: distinguir 0 de O no es un capricho tipográfico, es evitar que alguien teclee mal una placa."
           titulo="Tipografía"
           uso="Space Grotesk para titulares y cifras; Inter para todo lo demás."
+          api={["font-display", "font-sans", "tabular-nums"]}
+          nota="Los datos van SIEMPRE con cero barrado y ancho fijo de cifra. En una consola de operaciones se leen matrículas, identificadores y coordenadas: distinguir 0 de O no es un capricho tipográfico, es evitar que alguien teclee mal una placa."
         >
           <div className="space-y-4">
             <div>
@@ -771,10 +769,10 @@ export default function StyleGuide() {
         </Bloque>
 
         <Bloque
-          api={["--r-sm", "--r-md", "--r-lg", "--r-xl", "--r-2xl"]}
-          nota="Las piezas del kit ya los llevan: `Section` y `GlassPanel` van a --r-xl, `glass-flat` a --r-lg, los campos a --r-md. Las superficies `.glass*` viven en `@layer components`, así que un `rounded-*` de Tailwind por encima SÍ manda cuando de verdad hace falta salirse de la escala."
           titulo="Radios"
           uso="La escala de esquinas. Cuanto más grande la superficie, más grande el radio."
+          api={["--r-sm", "--r-md", "--r-lg", "--r-xl", "--r-2xl"]}
+          nota="Las piezas del kit ya los llevan: `Section` y `GlassPanel` van a --r-xl, `glass-flat` a --r-lg, los campos a --r-md. Las superficies `.glass*` viven en `@layer components`, así que un `rounded-*` de Tailwind por encima SÍ manda cuando de verdad hace falta salirse de la escala."
         >
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
             {(["--r-sm", "--r-md", "--r-lg", "--r-xl", "--r-2xl"] as const).map(
@@ -795,10 +793,10 @@ export default function StyleGuide() {
         </Bloque>
 
         <Bloque
-          api={["--lift-1", "--lift-2", "--lift-3", "--lift-4"]}
-          nota="Las sombras son ACROMÁTICAS — sin tinte de color — para no pelearse con el acento elegido. En oscuro son mucho más profundas: sobre negro una sombra suave no se ve."
           titulo="Elevación"
           uso="Cuánto se despega del lienzo. Sube con la importancia: una tarjeta flota poco, un diálogo flota mucho."
+          api={["--lift-1", "--lift-2", "--lift-3", "--lift-4"]}
+          nota="Las sombras son ACROMÁTICAS — sin tinte de color — para no pelearse con el acento elegido. En oscuro son mucho más profundas: sobre negro una sombra suave no se ve."
         >
           <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
             {(
@@ -836,16 +834,16 @@ export default function StyleGuide() {
             2 · SUPERFICIES
             ══════════════════════════════════════════════════════════════════ */}
         <Capitulo
-          bajada="El lienzo, las cuatro clases de cristal y los dos velos. Elegir mal aquí cuesta fotogramas."
           numero="2"
           titulo="Superficies"
+          bajada="El lienzo, las cuatro clases de cristal y los dos velos. Elegir mal aquí cuesta fotogramas."
         />
 
         <Bloque
-          api={[".app-shell"]}
-          nota="No es decoración. El cristal necesita algo DETRÁS que desenfocar: sobre un fondo plano y liso el desenfoque no se percibe y la superficie se lee como un rectángulo gris con opacidad."
           titulo="El lienzo"
           uso="El fondo de la aplicación: dos halos muy difusos del acento sobre un plano acromático."
+          api={[".app-shell"]}
+          nota="No es decoración. El cristal necesita algo DETRÁS que desenfocar: sobre un fondo plano y liso el desenfoque no se percibe y la superficie se lee como un rectángulo gris con opacidad."
         >
           <div
             className="relative h-44 overflow-hidden rounded-2xl border"
@@ -881,6 +879,8 @@ export default function StyleGuide() {
         </Bloque>
 
         <Bloque
+          titulo="Las cuatro superficies"
+          uso="glass para paneles; glass-flat para lo que se repite; glass-raised para lo que flota; glass-sunken para huecos."
           api={[
             ".glass",
             ".glass-flat",
@@ -889,8 +889,6 @@ export default function StyleGuide() {
             "GlassPanel",
           ]}
           nota="Lo que hace que algo parezca vidrio no es la transparencia: es el filo de 1 px MÁS CLARO ARRIBA que abajo — la luz cayendo sobre el canto. Quitarlo deja una tarjeta normal con opacidad. `glass-sunken` invierte esa luz: el filo claro pasa abajo, y eso es lo que se lee como hundido."
-          titulo="Las cuatro superficies"
-          uso="glass para paneles; glass-flat para lo que se repite; glass-raised para lo que flota; glass-sunken para huecos."
         >
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="glass p-4">
@@ -935,10 +933,10 @@ export default function StyleGuide() {
           </div>
 
           <InfoNote
-            className="mt-5"
+            tone="warn"
             icon={<TriangleAlert />}
             title="glass vs glass-flat es una decisión de RENDIMIENTO, no de gusto"
-            tone="warn"
+            className="mt-5"
           >
             <code>backdrop-filter</code> obliga al navegador a rasterizar todo
             lo que hay detrás en cada fotograma. Una sola superficie sale
@@ -954,10 +952,10 @@ export default function StyleGuide() {
         </Bloque>
 
         <Bloque
-          api={[".glass-scrim", "body::before"]}
-          nota="La diferencia no es estética: el del modal captura el clic para cerrar y atrapa el foco; el del desplegable NO lo captura, porque pulsar otro botón con un menú abierto debe cerrarlo Y activar ese botón en una sola pulsación."
           titulo="Los dos velos"
           uso="El modal usa `.glass-scrim` sobre el velo de Radix, que captura el clic. El desplegable no tiene velo propio en Radix, así que lo pinta `body::before` cuando hay algo flotando abierto."
+          api={[".glass-scrim", "body::before"]}
+          nota="La diferencia no es estética: el del modal captura el clic para cerrar y atrapa el foco; el del desplegable NO lo captura, porque pulsar otro botón con un menú abierto debe cerrarlo Y activar ese botón en una sola pulsación."
         >
           <div className="grid gap-4 sm:grid-cols-2">
             <div
@@ -1033,6 +1031,8 @@ export default function StyleGuide() {
         </Bloque>
 
         <Bloque
+          titulo="Contenedores del kit"
+          uso="Section envuelve un bloque de contenido en cristal; con `bare` deja sólo la cabecera sobre el lienzo."
           api={[
             "Section",
             "GlassPanel",
@@ -1041,18 +1041,16 @@ export default function StyleGuide() {
             "PageHeader",
           ]}
           nota="`bare` existe porque una rejilla de tarjetas de cristal dentro de otro cristal deja dos filos concéntricos, y el segundo no significa nada."
-          titulo="Contenedores del kit"
-          uso="Section envuelve un bloque de contenido en cristal; con `bare` deja sólo la cabecera sobre el lienzo."
         >
           <div className="space-y-4">
             <Section
+              title="Sección normal"
+              icon={<Radio />}
               action={
                 <Button size="sm" variant="ghost">
                   Ver todo
                 </Button>
               }
-              icon={<Radio />}
-              title="Sección normal"
             >
               <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
                 El contenido va sobre cristal.
@@ -1061,13 +1059,13 @@ export default function StyleGuide() {
 
             <Section
               bare
+              title="Sección `bare`"
+              icon={<MapPin />}
               action={
                 <Button size="sm" variant="ghost">
                   Ver todo
                 </Button>
               }
-              icon={<MapPin />}
-              title="Sección `bare`"
             >
               <div className="grid gap-3 sm:grid-cols-3">
                 {["Torre Norte", "Planta Sur", "Acceso 3"].map((n) => (
@@ -1080,10 +1078,10 @@ export default function StyleGuide() {
 
             <Toolbar>
               <SearchInput
-                className="w-56"
-                placeholder="Buscar vigilante…"
                 value={busqueda}
                 onChange={setBusqueda}
+                placeholder="Buscar vigilante…"
+                className="w-56"
               />
               <Button size="sm" variant="ghost">
                 <Filter /> Filtros
@@ -1100,16 +1098,16 @@ export default function StyleGuide() {
             3 · ESTADOS
             ══════════════════════════════════════════════════════════════════ */}
         <Capitulo
-          bajada="Los siete estados de cualquier control, uno al lado del otro. Si un componente nuevo no los cubre todos, no está terminado."
           numero="3"
           titulo="Estados"
+          bajada="Los siete estados de cualquier control, uno al lado del otro. Si un componente nuevo no los cubre todos, no está terminado."
         />
 
         <Bloque
-          api={[".cg-focus", ":focus-visible"]}
-          nota="Las muestras de «puntero» y «pulsado» llevan el estilo aplicado a la fuerza para poder verse quietas; la columna de la derecha es real, pruébala con el ratón y con el tabulador. El foco es `:focus-visible` y no `:focus`: así el anillo aparece al tabular pero no al hacer clic, que es cuando molesta."
           titulo="Los siete estados"
           uso="Reposo, puntero encima, foco de teclado, pulsado, deshabilitado, cargando y error."
+          api={[".cg-focus", ":focus-visible"]}
+          nota="Las muestras de «puntero» y «pulsado» llevan el estilo aplicado a la fuerza para poder verse quietas; la columna de la derecha es real, pruébala con el ratón y con el tabulador. El foco es `:focus-visible` y no `:focus`: así el anillo aparece al tabular pero no al hacer clic, que es cuando molesta."
         >
           <div className="space-y-3">
             {(
@@ -1182,9 +1180,9 @@ export default function StyleGuide() {
                 <div>
                   <input
                     readOnly
+                    value="Torre Norte"
                     className="cg-input h-9 w-full px-3 text-sm"
                     style={e.campo as React.CSSProperties}
-                    value="Torre Norte"
                   />
                 </div>
               </div>
@@ -1237,16 +1235,16 @@ export default function StyleGuide() {
               </div>
               <div>
                 <input
-                  aria-invalid
                   readOnly
-                  className="cg-input h-9 w-full px-3 text-sm"
+                  value=""
                   placeholder="Obligatorio"
+                  className="cg-input h-9 w-full px-3 text-sm"
                   style={{
                     borderColor: "var(--bad)",
                     boxShadow:
                       "0 0 0 3px color-mix(in oklab, var(--bad) 22%, transparent)",
                   }}
-                  value=""
+                  aria-invalid
                 />
                 <p
                   className="mt-1.5 text-xs"
@@ -1290,12 +1288,14 @@ export default function StyleGuide() {
             4 · ACCIONES
             ══════════════════════════════════════════════════════════════════ */}
         <Capitulo
-          bajada="Botones, píldoras y conmutadores. Una acción principal por pantalla."
           numero="4"
           titulo="Acciones"
+          bajada="Botones, píldoras y conmutadores. Una acción principal por pantalla."
         />
 
         <Bloque
+          titulo="Botones"
+          uso="`default` para la acción principal, `outline` para la secundaria, `ghost` para la terciaria, `destructive` para lo que borra."
           api={[
             "Button",
             ".cg-btn-brand",
@@ -1304,8 +1304,6 @@ export default function StyleGuide() {
             ".cg-btn-bad",
           ]}
           nota="El relleno sale de `--brand` y la tinta de `--brand-ink`, así que se recalculan solos al cambiar el acento — por eso van en CSS y no en clases de Tailwind, que obligarían a enumerar un color por tono posible."
-          titulo="Botones"
-          uso="`default` para la acción principal, `outline` para la secundaria, `ghost` para la terciaria, `destructive` para lo que borra."
         >
           <div className="flex flex-wrap items-center gap-3">
             <Button>
@@ -1338,35 +1336,35 @@ export default function StyleGuide() {
             <Button size="sm">Pequeño</Button>
             <Button>Normal</Button>
             <Button size="lg">Grande</Button>
-            <Button aria-label="Buscar" size="icon">
+            <Button size="icon" aria-label="Buscar">
               <Search />
             </Button>
-            <Button aria-label="Avisos" size="icon-sm" variant="outline">
+            <Button size="icon-sm" variant="outline" aria-label="Avisos">
               <Bell />
             </Button>
-            <Button aria-label="Ajustes" size="icon-lg" variant="ghost">
+            <Button size="icon-lg" variant="ghost" aria-label="Ajustes">
               <Settings />
             </Button>
           </div>
         </Bloque>
 
         <Bloque
-          api={["Segmented", "ToggleGroup", "ToggleGroupItem"]}
-          nota="La confusión habitual es usar pestañas para filtrar. Si lo de debajo sigue siendo la misma lista con otro recorte, es un conmutador; si es otro contenido, son pestañas."
           titulo="Conmutadores"
           uso="Segmented filtra una MISMA lista; ToggleGroup elige un modo de ver; TabNav cambia de sección."
+          api={["Segmented", "ToggleGroup", "ToggleGroupItem"]}
+          nota="La confusión habitual es usar pestañas para filtrar. Si lo de debajo sigue siendo la misma lista con otro recorte, es un conmutador; si es otro contenido, son pestañas."
         >
           <div className="flex flex-wrap items-center gap-6">
             <div>
               <div className="cg-eyebrow mb-2">Segmented</div>
               <Segmented
+                value={rango}
+                onChange={setRango}
                 options={[
                   { value: "dia", label: "Día" },
                   { value: "semana", label: "Semana" },
                   { value: "mes", label: "Mes" },
                 ]}
-                value={rango}
-                onChange={setRango}
               />
             </div>
             <div>
@@ -1376,13 +1374,13 @@ export default function StyleGuide() {
                 value={vista}
                 onValueChange={(v) => v && setVista(v)}
               >
-                <ToggleGroupItem aria-label="Lista" value="lista">
+                <ToggleGroupItem value="lista" aria-label="Lista">
                   Lista
                 </ToggleGroupItem>
-                <ToggleGroupItem aria-label="Tarjetas" value="tarjetas">
+                <ToggleGroupItem value="tarjetas" aria-label="Tarjetas">
                   Tarjetas
                 </ToggleGroupItem>
-                <ToggleGroupItem aria-label="Mapa" value="mapa">
+                <ToggleGroupItem value="mapa" aria-label="Mapa">
                   Mapa
                 </ToggleGroupItem>
               </ToggleGroup>
@@ -1394,23 +1392,23 @@ export default function StyleGuide() {
             5 · FORMULARIOS
             ══════════════════════════════════════════════════════════════════ */}
         <Capitulo
-          bajada="Todo lo que recoge un dato. Cada control con su etiqueta atada y su anillo de foco."
           numero="5"
           titulo="Formularios"
+          bajada="Todo lo que recoge un dato. Cada control con su etiqueta atada y su anillo de foco."
         />
 
         <Bloque
-          api={["FormField", "Input", "Textarea", "SearchInput", ".cg-input"]}
-          nota="`FormField` ata la etiqueta al control con `htmlFor` — es lo que hace que pulsar el texto ponga el cursor dentro — y anuncia el error con `role='alert'`. Ojo: `Field` (del kit) es otra cosa, es el par etiqueta/dato de SÓLO LECTURA."
           titulo="Campos de texto"
           uso="FormField envuelve cualquier control con su etiqueta, su pista y su error."
+          api={["FormField", "Input", "Textarea", "SearchInput", ".cg-input"]}
+          nota="`FormField` ata la etiqueta al control con `htmlFor` — es lo que hace que pulsar el texto ponga el cursor dentro — y anuncia el error con `role='alert'`. Ojo: `Field` (del kit) es otra cosa, es el par etiqueta/dato de SÓLO LECTURA."
         >
           <div className="grid gap-5 sm:grid-cols-2">
             <FormField
+              label="Nombre del puesto"
+              htmlFor="sg-puesto"
               required
               hint="Como aparecerá en el parte del turno."
-              htmlFor="sg-puesto"
-              label="Nombre del puesto"
             >
               <Input
                 id="sg-puesto"
@@ -1418,32 +1416,32 @@ export default function StyleGuide() {
               />
             </FormField>
             <FormField
-              error="Ya existe un puesto con ese código."
-              htmlFor="sg-codigo"
               label="Código"
+              htmlFor="sg-codigo"
+              error="Ya existe un puesto con ese código."
             >
-              <Input aria-invalid defaultValue="TN-01" id="sg-codigo" />
+              <Input id="sg-codigo" defaultValue="TN-01" aria-invalid />
             </FormField>
             <FormField
-              hint="Con aspa para limpiar cuando hay texto."
-              htmlFor="sg-buscar"
               label="Buscar"
+              htmlFor="sg-buscar"
+              hint="Con aspa para limpiar cuando hay texto."
             >
               <SearchInput
-                placeholder="Buscar vigilante…"
                 value={busqueda}
                 onChange={setBusqueda}
+                placeholder="Buscar vigilante…"
               />
             </FormField>
             <FormField
-              hint="Se muestra al vigilante al marcar entrada."
-              htmlFor="sg-consigna"
               label="Consigna"
+              htmlFor="sg-consigna"
+              hint="Se muestra al vigilante al marcar entrada."
             >
               <Textarea
                 id="sg-consigna"
-                placeholder="Instrucciones del puesto…"
                 rows={3}
+                placeholder="Instrucciones del puesto…"
               />
             </FormField>
           </div>
@@ -1454,20 +1452,20 @@ export default function StyleGuide() {
             Campo suelto — cuando no se puede usar &lt;Input&gt;
           </div>
           <div className="grid max-w-xl gap-4 sm:grid-cols-2">
-            <FormField htmlFor="sg-nativo" label="Nativo con FIELD_CLS">
-              <select className={FIELD_CLS} defaultValue="a" id="sg-nativo">
+            <FormField label="Nativo con FIELD_CLS" htmlFor="sg-nativo">
+              <select id="sg-nativo" className={FIELD_CLS} defaultValue="a">
                 <option value="a">Turno de mañana</option>
                 <option value="b">Turno de tarde</option>
                 <option value="c">Turno de noche</option>
               </select>
             </FormField>
             <FormField
-              htmlFor="sg-nativo-lg"
               label="Variante alta — FIELD_CLS_LG"
+              htmlFor="sg-nativo-lg"
             >
               <input
-                className={FIELD_CLS_LG}
                 id="sg-nativo-lg"
+                className={FIELD_CLS_LG}
                 placeholder="Observaciones"
               />
             </FormField>
@@ -1486,13 +1484,13 @@ export default function StyleGuide() {
         </Bloque>
 
         <Bloque
-          api={["Select", "RadioGroup", "Checkbox", "Switch", "Label"]}
-          nota="La diferencia entre casilla e interruptor: la casilla es un dato del formulario que se guarda al enviar; el interruptor aplica el cambio en el momento."
           titulo="Selección"
           uso="Select para una lista larga; Radio para pocas opciones visibles; Checkbox e interruptor para sí/no."
+          api={["Select", "RadioGroup", "Checkbox", "Switch", "Label"]}
+          nota="La diferencia entre casilla e interruptor: la casilla es un dato del formulario que se guarda al enviar; el interruptor aplica el cambio en el momento."
         >
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            <FormField htmlFor="sg-cliente" label="Cliente">
+            <FormField label="Cliente" htmlFor="sg-cliente">
               <Select defaultValue="andina">
                 <SelectTrigger id="sg-cliente">
                   <SelectValue />
@@ -1507,9 +1505,9 @@ export default function StyleGuide() {
 
             <FormField label="Tipo de asignación">
               <RadioGroup
-                className="gap-2"
                 value={opcion}
                 onValueChange={setOpcion}
+                className="gap-2"
               >
                 {[
                   ["fijo", "Fijo"],
@@ -1517,10 +1515,10 @@ export default function StyleGuide() {
                   ["relevo", "Relevo"],
                 ].map(([v, l]) => (
                   <div key={v} className="flex items-center gap-2">
-                    <RadioGroupItem id={`sg-r-${v}`} value={v} />
+                    <RadioGroupItem value={v} id={`sg-r-${v}`} />
                     <Label
-                      className="text-sm font-normal"
                       htmlFor={`sg-r-${v}`}
+                      className="text-sm font-normal"
                     >
                       {l}
                     </Label>
@@ -1533,25 +1531,25 @@ export default function StyleGuide() {
               <div className="space-y-2.5">
                 <div className="flex items-center gap-2">
                   <Checkbox
-                    checked={casilla}
                     id="sg-c1"
+                    checked={casilla}
                     onCheckedChange={(v) => setCasilla(v === true)}
                   />
-                  <Label className="text-sm font-normal" htmlFor="sg-c1">
+                  <Label htmlFor="sg-c1" className="text-sm font-normal">
                     Exigir escaneo de etiqueta
                   </Label>
                 </div>
                 <div className="flex items-center gap-2">
                   <Checkbox id="sg-c2" />
-                  <Label className="text-sm font-normal" htmlFor="sg-c2">
+                  <Label htmlFor="sg-c2" className="text-sm font-normal">
                     Avisar si sale del geocerco
                   </Label>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Checkbox disabled id="sg-c3" />
+                  <Checkbox id="sg-c3" disabled />
                   <Label
-                    className="text-sm font-normal opacity-50"
                     htmlFor="sg-c3"
+                    className="text-sm font-normal opacity-50"
                   >
                     No disponible en este plan
                   </Label>
@@ -1559,14 +1557,14 @@ export default function StyleGuide() {
               </div>
             </FormField>
 
-            <FormField hint="Se aplica al momento." label="Interruptor">
+            <FormField label="Interruptor" hint="Se aplica al momento.">
               <div className="flex items-center gap-2.5">
                 <Switch
-                  checked={interruptor}
                   id="sg-sw"
+                  checked={interruptor}
                   onCheckedChange={setInterruptor}
                 />
-                <Label className="text-sm font-normal" htmlFor="sg-sw">
+                <Label htmlFor="sg-sw" className="text-sm font-normal">
                   {interruptor
                     ? "Notificaciones activas"
                     : "Notificaciones en pausa"}
@@ -1577,31 +1575,31 @@ export default function StyleGuide() {
         </Bloque>
 
         <Bloque
-          api={["input[type=range]", "accentColor: var(--brand)"]}
-          nota="No hay primitivo propio: es el control nativo con `accent-color` apuntando al acento. El nativo trae gratis el teclado, el lector de pantalla y el comportamiento táctil de cada plataforma, que es mucho más de lo que compensa reimplementar."
           titulo="Deslizador"
           uso="Un valor continuo dentro de un rango, cuando el número exacto importa menos que la proporción."
+          api={["input[type=range]", "accentColor: var(--brand)"]}
+          nota="No hay primitivo propio: es el control nativo con `accent-color` apuntando al acento. El nativo trae gratis el teclado, el lector de pantalla y el comportamiento táctil de cada plataforma, que es mucho más de lo que compensa reimplementar."
         >
           <label className="block max-w-sm">
             <div className="cg-eyebrow mb-2">
               Radio del geocerco — {deslizador} m
             </div>
             <input
-              className="cg-focus w-full"
-              max={200}
-              min={10}
-              style={{ accentColor: "var(--brand)" }}
               type="range"
+              min={10}
+              max={200}
               value={deslizador}
               onChange={(e) => setDeslizador(Number(e.target.value))}
+              className="cg-focus w-full"
+              style={{ accentColor: "var(--brand)" }}
             />
           </label>
         </Bloque>
 
         <Bloque
-          api={["Calendar", "DateRangePicker"]}
           titulo="Fecha"
           uso="Calendar para elegir un día; el selector de rango para acotar un informe."
+          api={["Calendar", "DateRangePicker"]}
         >
           <div className="flex flex-wrap items-start gap-6">
             <div className="glass-flat inline-block p-2">
@@ -1615,7 +1613,7 @@ export default function StyleGuide() {
                     <CalendarIcon /> Elegir fecha <ChevronDown />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent align="start" className="w-auto p-2">
+                <PopoverContent className="w-auto p-2" align="start">
                   <Calendar
                     mode="single"
                     selected={fecha}
@@ -1636,10 +1634,10 @@ export default function StyleGuide() {
         </Bloque>
 
         <Bloque
-          api={["InputOTP", "InputOTPGroup", "InputOTPSlot"]}
-          nota="Una casilla por dígito y no un campo de texto normal: pegar el código desde el mensaje reparte los dígitos solo, y el teclado del móvil sale numérico."
           titulo="Código de verificación"
           uso="Los códigos de un solo uso que llegan por correo o SMS."
+          api={["InputOTP", "InputOTPGroup", "InputOTPSlot"]}
+          nota="Una casilla por dígito y no un campo de texto normal: pegar el código desde el mensaje reparte los dígitos solo, y el teclado del móvil sale numérico."
         >
           <InputOTP maxLength={6} value={otp} onChange={setOtp}>
             <InputOTPGroup>
@@ -1654,18 +1652,20 @@ export default function StyleGuide() {
             6 · NAVEGACIÓN
             ══════════════════════════════════════════════════════════════════ */}
         <Capitulo
-          bajada="Moverse entre secciones de un registro, entre páginas de una lista y entre pasos de un asistente."
           numero="6"
           titulo="Navegación"
+          bajada="Moverse entre secciones de un registro, entre páginas de una lista y entre pasos de un asistente."
         />
 
         <Bloque
-          api={["TabNav"]}
-          nota="Cada elemento navega (`to`) o conmuta (`onChange`). El subrayado activo es un hijo posicionado y no un `border-bottom` porque lleva el halo del acento, y una sombra sobre un borde se recorta. Para filtrar una misma lista —«Día / Semana / Mes»— es `Segmented`, no esto."
           titulo="Pestañas de ficha"
           uso="Las secciones de UN registro: un cliente, un vigilante, un puesto."
+          api={["TabNav"]}
+          nota="Cada elemento navega (`to`) o conmuta (`onChange`). El subrayado activo es un hijo posicionado y no un `border-bottom` porque lleva el halo del acento, y una sombra sobre un borde se recorta. Para filtrar una misma lista —«Día / Semana / Mes»— es `Segmented`, no esto."
         >
           <TabNav
+            value={pestana}
+            onChange={setPestana}
             items={[
               { value: "resumen", label: "Resumen", icon: <Activity /> },
               { value: "turnos", label: "Turnos", icon: <Clock />, badge: 12 },
@@ -1676,8 +1676,6 @@ export default function StyleGuide() {
                 badge: 3,
               },
             ]}
-            value={pestana}
-            onChange={setPestana}
           />
           <div className="pt-4 text-sm" style={{ color: "var(--ink-soft)" }}>
             Contenido de «{pestana}».
@@ -1699,23 +1697,23 @@ export default function StyleGuide() {
               <TabsTrigger value="avisos">Avisos</TabsTrigger>
             </TabsList>
             <TabsContent
+              value="general"
               className="pt-3 text-sm"
               style={{ color: "var(--ink-soft)" }}
-              value="general"
             >
               Datos generales del puesto.
             </TabsContent>
             <TabsContent
+              value="acceso"
               className="pt-3 text-sm"
               style={{ color: "var(--ink-soft)" }}
-              value="acceso"
             >
               Quién puede entrar y con qué credencial.
             </TabsContent>
             <TabsContent
+              value="avisos"
               className="pt-3 text-sm"
               style={{ color: "var(--ink-soft)" }}
-              value="avisos"
             >
               A quién se avisa y por qué canal.
             </TabsContent>
@@ -1723,10 +1721,10 @@ export default function StyleGuide() {
         </Bloque>
 
         <Bloque
-          api={["Breadcrumb", "Pagination"]}
-          nota="Veintidós archivos repetían la fila de paginación a mano, incluida la cadena «Elementos por página», y otra área había inventado un paginador numerado en paralelo. El rango va en `tabular-nums`: sin ancho fijo de cifra, «9 – 18 de 240» baila al cambiar de página."
           titulo="Migas y paginación"
           uso="Las migas dicen dónde estás; la paginación recorre una lista larga."
+          api={["Breadcrumb", "Pagination"]}
+          nota="Veintidós archivos repetían la fila de paginación a mano, incluida la cadena «Elementos por página», y otra área había inventado un paginador numerado en paralelo. El rango va en `tabular-nums`: sin ancho fijo de cifra, «9 – 18 de 240» baila al cambiar de página."
         >
           <nav className="mb-5 flex flex-wrap items-center gap-1 text-sm">
             {["Clientes", "Corporación Andina", "Torre Norte"].map(
@@ -1769,15 +1767,15 @@ export default function StyleGuide() {
             Numerada — cuando conviene saltar de página
           </div>
           <Pagination
-            numbered
-            noun="resultados"
             page={pagina}
             pageSize={tamPagina}
             total={240}
+            numbered
+            noun="resultados"
             onPageChange={setPagina}
           />
 
-          <InfoNote className="mt-5" icon={<Info />} tone="neutral">
+          <InfoNote tone="neutral" icon={<Info />} className="mt-5">
             Había DOS paginadores en el producto: uno con «Elementos por página»
             y anterior/siguiente (22 archivos) y otro numerado con «Mostrando X
             a Y de Z» (las pestañas de cliente). Ahora es uno solo:{" "}
@@ -1790,33 +1788,33 @@ export default function StyleGuide() {
         </Bloque>
 
         <Bloque
-          api={["Stepper"]}
-          nota="El paso activo va sobre el relleno del acento con tinta `--brand-ink`; los ya hechos, en el lavado. El conector se llena al completarse, que es lo que da la sensación de avance."
           titulo="Pasos"
           uso="Un asistente con principio y fin: alta guiada, configuración inicial, importación."
+          api={["Stepper"]}
+          nota="El paso activo va sobre el relleno del acento con tinta `--brand-ink`; los ya hechos, en el lavado. El conector se llena al completarse, que es lo que da la sensación de avance."
         >
           <Stepper
-            current={paso}
             steps={[
               { label: "Datos" },
               { label: "Puestos" },
               { label: "Vigilantes" },
               { label: "Revisión" },
             ]}
+            current={paso}
             onStepClick={setPaso}
           />
           <div className="mt-5 flex gap-2">
             <Button
-              disabled={paso === 0}
-              size="sm"
               variant="outline"
+              size="sm"
+              disabled={paso === 0}
               onClick={() => setPaso((p) => Math.max(0, p - 1))}
             >
               Atrás
             </Button>
             <Button
-              disabled={paso === 3}
               size="sm"
+              disabled={paso === 3}
               onClick={() => setPaso((p) => Math.min(3, p + 1))}
             >
               Siguiente
@@ -1828,16 +1826,16 @@ export default function StyleGuide() {
             7 · CAPAS
             ══════════════════════════════════════════════════════════════════ */}
         <Capitulo
-          bajada="Lo que flota por encima de la página. De menos a más interrupción."
           numero="7"
           titulo="Capas"
+          bajada="Lo que flota por encima de la página. De menos a más interrupción."
         />
 
         <Bloque
-          api={["Tooltip", "Popover", "DropdownMenu"]}
-          nota="Un tooltip nunca puede llevar la única copia de una información importante: no existe en táctil ni para el teclado. Si el dato hace falta, va en la página."
           titulo="Pista y desplegables"
           uso="Tooltip para una aclaración de una línea; Popover para contenido; DropdownMenu para acciones."
+          api={["Tooltip", "Popover", "DropdownMenu"]}
+          nota="Un tooltip nunca puede llevar la única copia de una información importante: no existe en táctil ni para el teclado. Si el dato hace falta, va en la página."
         >
           <div className="flex flex-wrap items-center gap-4">
             <Tooltip>
@@ -1860,7 +1858,7 @@ export default function StyleGuide() {
               <PopoverContent className="w-72">
                 <div className="cg-eyebrow mb-3">Filtrar por</div>
                 <div className="space-y-3">
-                  <FormField htmlFor="sg-pop-estado" label="Estado">
+                  <FormField label="Estado" htmlFor="sg-pop-estado">
                     <Select defaultValue="todos">
                       <SelectTrigger id="sg-pop-estado">
                         <SelectValue />
@@ -1872,7 +1870,7 @@ export default function StyleGuide() {
                       </SelectContent>
                     </Select>
                   </FormField>
-                  <Button className="w-full" size="sm">
+                  <Button size="sm" className="w-full">
                     Aplicar
                   </Button>
                 </div>
@@ -1881,7 +1879,7 @@ export default function StyleGuide() {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button aria-label="Más acciones" size="icon" variant="outline">
+                <Button variant="outline" size="icon" aria-label="Más acciones">
                   <MoreHorizontal />
                 </Button>
               </DropdownMenuTrigger>
@@ -1903,9 +1901,9 @@ export default function StyleGuide() {
         </Bloque>
 
         <Bloque
-          api={["Command", "CommandInput", "CommandItem"]}
           titulo="Paleta de comandos"
           uso="Saltar a cualquier sitio escribiendo. El atajo del CRM para quien ya sabe a dónde va."
+          api={["Command", "CommandInput", "CommandItem"]}
         >
           <div className="glass-flat max-w-md overflow-hidden">
             <Command>
@@ -1937,10 +1935,10 @@ export default function StyleGuide() {
         </Bloque>
 
         <Bloque
-          api={["Sheet", "Modal"]}
-          nota="Los dos oscurecen y desenfocan lo de detrás con `.glass-scrim`. Si la respuesta es sí o no, es un diálogo; si hay que rellenar seis campos, es una hoja."
           titulo="Hoja lateral y diálogo"
           uso="La hoja para un formulario largo sin perder el contexto; el diálogo para una decisión corta."
+          api={["Sheet", "Modal"]}
+          nota="Los dos oscurecen y desenfocan lo de detrás con `.glass-scrim`. Si la respuesta es sí o no, es un diálogo; si hay que rellenar seis campos, es una hoja."
         >
           <div className="flex flex-wrap items-center gap-3">
             <Sheet>
@@ -1949,7 +1947,7 @@ export default function StyleGuide() {
                   <Filter /> Abrir hoja
                 </Button>
               </SheetTrigger>
-              <SheetContent className="w-[400px] sm:w-[460px]" side="right">
+              <SheetContent side="right" className="w-[400px] sm:w-[460px]">
                 <SheetHeader>
                   <SheetTitle>Filtros</SheetTitle>
                   <SheetDescription>
@@ -1957,7 +1955,7 @@ export default function StyleGuide() {
                   </SheetDescription>
                 </SheetHeader>
                 <div className="mt-6 space-y-5">
-                  <FormField htmlFor="sg-sheet-cliente" label="Cliente">
+                  <FormField label="Cliente" htmlFor="sg-sheet-cliente">
                     <Select defaultValue="todos">
                       <SelectTrigger id="sg-sheet-cliente">
                         <SelectValue />
@@ -1970,7 +1968,7 @@ export default function StyleGuide() {
                       </SelectContent>
                     </Select>
                   </FormField>
-                  <FormField htmlFor="sg-sheet-estado" label="Estado">
+                  <FormField label="Estado" htmlFor="sg-sheet-estado">
                     <Select defaultValue="todos">
                       <SelectTrigger id="sg-sheet-estado">
                         <SelectValue />
@@ -1982,7 +1980,7 @@ export default function StyleGuide() {
                     </Select>
                   </FormField>
                   <Button className="w-full">Aplicar filtros</Button>
-                  <Button className="w-full" variant="outline">
+                  <Button variant="outline" className="w-full">
                     Limpiar filtros
                   </Button>
                 </div>
@@ -1995,6 +1993,10 @@ export default function StyleGuide() {
           </div>
 
           <Modal
+            open={abierto}
+            onOpenChange={setAbierto}
+            icon={<Shield />}
+            title="Confirmar traslado"
             description="El vigilante quedará asignado al puesto de destino durante el turno."
             footer={
               <>
@@ -2006,10 +2008,6 @@ export default function StyleGuide() {
                 </Button>
               </>
             }
-            icon={<Shield />}
-            open={abierto}
-            title="Confirmar traslado"
-            onOpenChange={setAbierto}
           >
             <FadeIn className="space-y-3">
               <Field label="Desde" value="Torre Norte — Acceso principal" />
@@ -2025,42 +2023,42 @@ export default function StyleGuide() {
             8 · RETROALIMENTACIÓN
             ══════════════════════════════════════════════════════════════════ */}
         <Capitulo
-          bajada="Decirle al usuario qué ha pasado, qué falta y qué está cargando."
           numero="8"
           titulo="Retroalimentación"
+          bajada="Decirle al usuario qué ha pasado, qué falta y qué está cargando."
         />
 
         <Bloque
-          api={["InfoNote", "Alert", "AlertTitle", "AlertDescription"]}
-          nota="`InfoNote` sustituye a los `bg-yellow-50 border-yellow-300 text-yellow-800` con su gemelo `dark:` — que era escribir dos temas a mano por cada tono. Aquí el tono se pide por nombre y los dos temas salen solos."
           titulo="Avisos"
           uso="InfoNote va ligado a lo que tiene al lado; Alert encabeza una página o un panel entero."
+          api={["InfoNote", "Alert", "AlertTitle", "AlertDescription"]}
+          nota="`InfoNote` sustituye a los `bg-yellow-50 border-yellow-300 text-yellow-800` con su gemelo `dark:` — que era escribir dos temas a mano por cada tono. Aquí el tono se pide por nombre y los dos temas salen solos."
         >
           <div className="space-y-3">
-            <InfoNote icon={<Info />} tone="info">
+            <InfoNote tone="info" icon={<Info />}>
               El turno de la noche todavía no tiene relevo asignado.
             </InfoNote>
-            <InfoNote icon={<Check />} title="Ronda completa" tone="ok">
+            <InfoNote tone="ok" icon={<Check />} title="Ronda completa">
               Los ocho puntos se escanearon dentro de la ventana.
             </InfoNote>
             <InfoNote
+              tone="warn"
               icon={<TriangleAlert />}
               title="Cobertura incompleta"
-              tone="warn"
             >
               Faltan 2 vigilantes para cubrir el fin de semana.
             </InfoNote>
             <InfoNote
+              tone="bad"
               icon={<AlertTriangle />}
               title="Botón de pánico"
-              tone="bad"
             >
               Torre Norte — hace 40 segundos, sin confirmar.
             </InfoNote>
-            <InfoNote icon={<ShieldCheck />} tone="brand">
+            <InfoNote tone="brand" icon={<ShieldCheck />}>
               El acento configurado se aplica a toda la organización.
             </InfoNote>
-            <InfoNote icon={<Info />} tone="neutral">
+            <InfoNote tone="neutral" icon={<Info />}>
               Este puesto no ha tenido novedades en los últimos 30 días.
             </InfoNote>
           </div>
@@ -2086,50 +2084,50 @@ export default function StyleGuide() {
         </Bloque>
 
         <Bloque
-          api={["toast()", "[data-sonner-toast]"]}
-          nota="La caja es acromática en los cinco casos y el tono lo lleva SÓLO la placa del icono. Pintar el fondo entero de verde o rojo —lo que hacía `richColors`— tapaba el cristal y metía en pantalla un color que compite con el acento configurado. Los colores de estado son los fijos de tokens.css: un error sigue siendo rojo aunque el acento sea rojo."
           titulo="Avisos flotantes"
           uso="Confirman una acción que acaba de ocurrir. Pruébalos: aparecen arriba, se apilan y se descartan deslizando."
+          api={["toast()", "[data-sonner-toast]"]}
+          nota="La caja es acromática en los cinco casos y el tono lo lleva SÓLO la placa del icono. Pintar el fondo entero de verde o rojo —lo que hacía `richColors`— tapaba el cristal y metía en pantalla un color que compite con el acento configurado. Los colores de estado son los fijos de tokens.css: un error sigue siendo rojo aunque el acento sea rojo."
         >
           <div className="flex flex-wrap gap-2">
             <Button
-              size="sm"
               variant="outline"
+              size="sm"
               onClick={() => toast.success("Turno guardado")}
             >
               Correcto
             </Button>
             <Button
-              size="sm"
               variant="outline"
+              size="sm"
               onClick={() => toast.error("No se pudo guardar el turno")}
             >
               Error
             </Button>
             <Button
-              size="sm"
               variant="outline"
+              size="sm"
               onClick={() => toast.warning("Este puesto queda sin cubrir")}
             >
               Atención
             </Button>
             <Button
-              size="sm"
               variant="outline"
+              size="sm"
               onClick={() => toast.info("El vigilante fichó entrada")}
             >
               Información
             </Button>
             <Button
-              size="sm"
               variant="outline"
+              size="sm"
               onClick={() => toast("Ronda registrada")}
             >
               Neutro
             </Button>
             <Button
-              size="sm"
               variant="outline"
+              size="sm"
               onClick={() =>
                 toast.success("Ronda completa", {
                   description:
@@ -2140,8 +2138,8 @@ export default function StyleGuide() {
               Con detalle
             </Button>
             <Button
-              size="sm"
               variant="outline"
+              size="sm"
               onClick={() =>
                 toast.warning("Cobertura incompleta", {
                   description: "Faltan 2 vigilantes para el fin de semana.",
@@ -2155,8 +2153,8 @@ export default function StyleGuide() {
               Con acción
             </Button>
             <Button
-              size="sm"
               variant="outline"
+              size="sm"
               onClick={() =>
                 toast.promise(new Promise((r) => setTimeout(r, 1800)), {
                   loading: "Optimizando la ruta…",
@@ -2171,10 +2169,10 @@ export default function StyleGuide() {
         </Bloque>
 
         <Bloque
-          api={["StatusBadge", "DeltaPill", "Badge"]}
-          nota="`StatusBadge` acepta los tonos heredados (`green`, `blue`, `red`, `orange`) y los remapea al semántico equivalente, así que decenas de páginas antiguas siguen funcionando sin pintar un color de Tailwind."
           titulo="Estado y variación"
           uso="StatusBadge nombra un estado; DeltaPill dice cuánto ha cambiado una cifra; Badge etiqueta."
+          api={["StatusBadge", "DeltaPill", "Badge"]}
+          nota="`StatusBadge` acepta los tonos heredados (`green`, `blue`, `red`, `orange`) y los remapea al semántico equivalente, así que decenas de páginas antiguas siguen funcionando sin pintar un color de Tailwind."
         >
           <div className="flex flex-wrap items-center gap-2">
             <StatusBadge tone="ok">En servicio</StatusBadge>
@@ -2183,7 +2181,7 @@ export default function StyleGuide() {
             <StatusBadge tone="info">Programado</StatusBadge>
             <StatusBadge tone="brand">Destacado</StatusBadge>
             <StatusBadge tone="neutral">Archivado</StatusBadge>
-            <StatusBadge dot={false} tone="ok">
+            <StatusBadge tone="ok" dot={false}>
               Sin punto
             </StatusBadge>
           </div>
@@ -2195,26 +2193,26 @@ export default function StyleGuide() {
           </div>
           <div className="flex flex-wrap items-center gap-5">
             <span className="inline-flex items-center gap-2 text-xs">
-              <StatusDot pulse label="Emitiendo" tone="ok" /> Emitiendo
+              <StatusDot tone="ok" pulse label="Emitiendo" /> Emitiendo
             </span>
             <span className="inline-flex items-center gap-2 text-xs">
-              <StatusDot label="Señal débil" tone="warn" /> Señal débil
+              <StatusDot tone="warn" label="Señal débil" /> Señal débil
             </span>
             <span className="inline-flex items-center gap-2 text-xs">
-              <StatusDot label="Sin conexión" tone="bad" /> Sin conexión
+              <StatusDot tone="bad" label="Sin conexión" /> Sin conexión
             </span>
             <span className="inline-flex items-center gap-2 text-xs">
-              <StatusDot label="Apagada" tone="neutral" /> Apagada
+              <StatusDot tone="neutral" label="Apagada" /> Apagada
             </span>
             <div
               className="relative h-14 w-24 overflow-hidden rounded-lg"
               style={{ background: "var(--glass-sunken)" }}
             >
               <StatusDot
-                pulse
-                className="absolute right-1.5 top-1.5"
-                label="Cámara en directo"
                 tone="ok"
+                pulse
+                label="Cámara en directo"
+                className="absolute right-1.5 top-1.5"
               />
               <span
                 className="absolute bottom-1 left-1.5 text-[10px]"
@@ -2256,7 +2254,7 @@ export default function StyleGuide() {
               rotación +4 %
             </DeltaPill>
           </div>
-          <InfoNote className="mt-4" icon={<TriangleAlert />} tone="warn">
+          <InfoNote tone="warn" icon={<TriangleAlert />} className="mt-4">
             Por omisión el color va atado a la flecha: sube = verde, baja =
             rojo. Eso vale para cobertura y para cumplimiento, y es{" "}
             <strong>mentira</strong> para media consola de seguridad —
@@ -2273,23 +2271,23 @@ export default function StyleGuide() {
         </Bloque>
 
         <Bloque
-          api={["EmptyState", "SkeletonCards", "SkeletonBlock"]}
-          nota="Los dos comparten familia a propósito: borde punteado y hueco `glass-sunken` el vacío, `glass-flat` el esqueleto — nunca `glass`, porque son N tarjetas dentro de un `map()` y el desenfoque se pagaría justo mientras la página aún está cargando."
           titulo="Vacío y carga"
           uso="EmptyState cuando no hay nada que enseñar; los esqueletos mientras se va a buscarlo."
+          api={["EmptyState", "SkeletonCards", "SkeletonBlock"]}
+          nota="Los dos comparten familia a propósito: borde punteado y hueco `glass-sunken` el vacío, `glass-flat` el esqueleto — nunca `glass`, porque son N tarjetas dentro de un `map()` y el desenfoque se pagaría justo mientras la página aún está cargando."
         >
           <div className="grid gap-6 lg:grid-cols-2">
             <div>
               <div className="cg-eyebrow mb-2">Sin contenido</div>
               <EmptyState
+                icon={<MapPin />}
+                title="Ningún puesto todavía"
+                description="Los puestos que des de alta aparecerán aquí con su cobertura del día."
                 action={
                   <Button size="sm">
                     <Plus /> Crear puesto
                   </Button>
                 }
-                description="Los puestos que des de alta aparecerán aquí con su cobertura del día."
-                icon={<MapPin />}
-                title="Ningún puesto todavía"
               />
             </div>
             <div>
@@ -2304,21 +2302,21 @@ export default function StyleGuide() {
         </Bloque>
 
         <Bloque
-          api={["Meter"]}
-          nota="Es un `role='progressbar'` de verdad: un lector de pantalla anuncia el valor en vez de leer dos divs vacíos. Seis áreas lo tenían escrito a mano, idéntico."
           titulo="Progreso"
           uso="Meter para una proporción dentro de una fila o una tarjeta."
+          api={["Meter"]}
+          nota="Es un `role='progressbar'` de verdad: un lector de pantalla anuncia el valor en vez de leer dos divs vacíos. Seis áreas lo tenían escrito a mano, idéntico."
         >
           <div className="grid max-w-xl gap-4">
-            <Meter showValue label="Cumplimiento de rondas" value={87} />
+            <Meter label="Cumplimiento de rondas" value={87} showValue />
             <Meter
-              showValue
               label="Cobertura del turno"
-              tone="warn"
               value={64}
+              tone="warn"
+              showValue
             />
-            <Meter showValue label="Puestos sin cubrir" tone="bad" value={12} />
-            <Meter showValue label="Documentos al día" tone="ok" value={100} />
+            <Meter label="Puestos sin cubrir" value={12} tone="bad" showValue />
+            <Meter label="Documentos al día" value={100} tone="ok" showValue />
           </div>
         </Bloque>
 
@@ -2326,66 +2324,66 @@ export default function StyleGuide() {
             9 · DATOS
             ══════════════════════════════════════════════════════════════════ */}
         <Capitulo
-          bajada="Cifras, personas, listas y tablas. Lo que llena el CRM de verdad."
           numero="9"
           titulo="Datos"
+          bajada="Cifras, personas, listas y tablas. Lo que llena el CRM de verdad."
         />
 
         <Bloque
-          api={["StatCard", "MetricTile", "IconTile"]}
           titulo="Métricas"
           uso="StatCard para la rejilla compacta de cabecera; MetricTile cuando el número es el protagonista."
+          api={["StatCard", "MetricTile", "IconTile"]}
         >
           <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard
-              hint="+12 desde ayer"
               icon={<Users />}
               label="Vigilantes en servicio"
               value="128"
+              hint="+12 desde ayer"
             />
             <StatCard
-              accent="warn"
-              hint="2 sin cerrar"
               icon={<AlertTriangle />}
               label="Incidentes hoy"
+              accent="warn"
               value="7"
+              hint="2 sin cerrar"
             />
             <StatCard
-              accent="ok"
-              hint="de 35"
               icon={<MapPin />}
               label="Puestos cubiertos"
+              accent="ok"
               value="35"
+              hint="de 35"
             />
             <StatCard
-              accent="bad"
-              hint="pase de novedades"
               icon={<Radio />}
               label="Sin responder"
+              accent="bad"
               value="3"
+              hint="pase de novedades"
             />
           </Stagger>
           <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <MetricTile
-              delta={{ value: "12,4 %", direction: "up" }}
-              hint="Arranques en las próximas 24 h"
-              icon={<Clock />}
               label="Próximos servicios"
               value="54"
+              icon={<Clock />}
+              delta={{ value: "12,4 %", direction: "up" }}
+              hint="Arranques en las próximas 24 h"
             />
             <MetricTile
-              delta={{ value: "2,1 %", direction: "down" }}
-              hint="Últimos 7 días"
-              icon={<Activity />}
               label="Cumplimiento de rondas"
               value="87 %"
+              icon={<Activity />}
+              delta={{ value: "2,1 %", direction: "down" }}
+              hint="Últimos 7 días"
             />
             <MetricTile
-              delta={{ value: "sin cambio", direction: "flat" }}
-              hint="Mediana del turno"
-              icon={<Shield />}
               label="Tiempo de respuesta"
               value="4,2 min"
+              icon={<Shield />}
+              delta={{ value: "sin cambio", direction: "flat" }}
+              hint="Mediana del turno"
             />
           </div>
 
@@ -2411,20 +2409,20 @@ export default function StyleGuide() {
             <IconTile tone="info">
               <MapPin />
             </IconTile>
-            <IconTile size="lg" tone="brand">
+            <IconTile tone="brand" size="lg">
               <Radio />
             </IconTile>
-            <IconTile size="sm" tone="neutral">
+            <IconTile tone="neutral" size="sm">
               <Bell />
             </IconTile>
           </div>
         </Bloque>
 
         <Bloque
-          api={["Avatar", "initialsOf", "ListRow"]}
-          nota="Las iniciales estaban resueltas de OCHO formas distintas por el CRM, cada una fallando con un caso de borde diferente. El fondo NO se deriva del nombre: un tono por persona mete color aleatorio en una superficie acromática y choca con la mitad de los acentos posibles."
           titulo="Personas y filas"
           uso="Avatar para el retrato; ListRow para la fila de una lista de personas o registros."
+          api={["Avatar", "initialsOf", "ListRow"]}
+          nota="Las iniciales estaban resueltas de OCHO formas distintas por el CRM, cada una fallando con un caso de borde diferente. El fondo NO se deriva del nombre: un tono por persona mete color aleatorio en una superficie acromática y choca con la mitad de los acentos posibles."
         >
           <div className="mb-5 flex flex-wrap items-end gap-3">
             <Muestra pie="sm · 36 px">
@@ -2455,7 +2453,7 @@ export default function StyleGuide() {
             </Muestra>
           </div>
 
-          <InfoNote className="mb-5" icon={<Info />} tone="neutral">
+          <InfoNote tone="neutral" icon={<Info />} className="mb-5">
             La escala es la MISMA que la de <code>IconTile</code> — 36 / 44 / 56
             px. Un retrato y una ficha de icono son el mismo objeto para la
             maquetación: si no miden igual, una fila que mezcle los dos queda
@@ -2491,16 +2489,16 @@ export default function StyleGuide() {
             ].map((r) => (
               <ListRow
                 key={r.n}
+                avatar={<Avatar name={r.n} size="sm" />}
+                title={r.n}
+                subtitle={r.p}
+                badges={<StatusBadge tone={r.t}>{r.e}</StatusBadge>}
+                meta={r.m}
                 actions={
-                  <Button aria-label="Más" size="icon-sm" variant="ghost">
+                  <Button size="icon-sm" variant="ghost" aria-label="Más">
                     <MoreHorizontal />
                   </Button>
                 }
-                avatar={<Avatar name={r.n} size="sm" />}
-                badges={<StatusBadge tone={r.t}>{r.e}</StatusBadge>}
-                meta={r.m}
-                subtitle={r.p}
-                title={r.n}
               />
             ))}
           </div>
@@ -2512,53 +2510,53 @@ export default function StyleGuide() {
         </Bloque>
 
         <Bloque
-          api={["CatalogTile"]}
-          nota="`glass-flat` y no `glass`: van en rejillas de ocho o diez, y el desenfoque por tarjeta se paga en cada fotograma."
           titulo="Catálogo"
           uso="La rejilla de destinos: Ajustes, Informes, Nómina."
+          api={["CatalogTile"]}
+          nota="`glass-flat` y no `glass`: van en rejillas de ocho o diez, y el desenfoque por tarjeta se paga en cada fotograma."
         >
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <CatalogTile
-              description="Altas, documentos y asignaciones."
               icon={<Users />}
               title="Vigilantes"
+              description="Altas, documentos y asignaciones."
               onClick={() => {}}
             />
             <CatalogTile
-              description="Geocercos, consignas y cobertura."
               icon={<MapPin />}
               title="Puestos"
+              description="Geocercos, consignas y cobertura."
               onClick={() => {}}
             />
             <CatalogTile
+              icon={<Radio />}
+              title="Pase de novedades"
+              description="Relevos y comunicaciones del turno."
               badge={
-                <StatusBadge dot={false} tone="brand">
+                <StatusBadge tone="brand" dot={false}>
                   Nuevo
                 </StatusBadge>
               }
-              description="Relevos y comunicaciones del turno."
-              icon={<Radio />}
-              title="Pase de novedades"
               onClick={() => {}}
             />
             <CatalogTile
-              description="Partes, rondas y asistencia."
               icon={<FileText />}
               title="Informes"
+              description="Partes, rondas y asistencia."
               tone="neutral"
               onClick={() => {}}
             />
             <CatalogTile
-              description="Correo, WhatsApp y SMS."
               icon={<Mail />}
               title="Comunicaciones"
+              description="Correo, WhatsApp y SMS."
               tone="neutral"
               onClick={() => {}}
             />
             <CatalogTile
-              description="Marca, roles y preferencias."
               icon={<Settings />}
               title="Ajustes"
+              description="Marca, roles y preferencias."
               tone="neutral"
               onClick={() => {}}
             />
@@ -2566,10 +2564,10 @@ export default function StyleGuide() {
         </Bloque>
 
         <Bloque
-          api={["Field", "Table", "TableHead", "TableRow", "TableCell"]}
-          nota="Las celdas heredan `tabular-nums slashed-zero` de globals.css: las horas y los importes quedan alineados en columna sin pedirlo."
           titulo="Ficha y tabla"
           uso="Field para el par etiqueta/dato de sólo lectura; Table para una lista con columnas."
+          api={["Field", "Table", "TableHead", "TableRow", "TableCell"]}
+          nota="Las celdas heredan `tabular-nums slashed-zero` de globals.css: las horas y los importes quedan alineados en columna sin pedirlo."
         >
           <div className="mb-5 grid gap-4 sm:grid-cols-3">
             <Field label="Cliente" value="Corporación Andina" />
@@ -2636,6 +2634,8 @@ export default function StyleGuide() {
         </Bloque>
 
         <Bloque
+          titulo="Acordeón"
+          uso="Contenido secundario que la mayoría no necesita ver: detalles técnicos, historial, ayuda."
           api={[
             "Accordion",
             "AccordionItem",
@@ -2643,10 +2643,8 @@ export default function StyleGuide() {
             "AccordionContent",
           ]}
           nota="No se usa para esconder algo obligatorio. Si el usuario TIENE que rellenarlo, no puede estar plegado."
-          titulo="Acordeón"
-          uso="Contenido secundario que la mayoría no necesita ver: detalles técnicos, historial, ayuda."
         >
-          <Accordion collapsible className="max-w-2xl" type="single">
+          <Accordion type="single" collapsible className="max-w-2xl">
             <AccordionItem value="a">
               <AccordionTrigger>
                 ¿Qué pasa si el vigilante no marca salida?
@@ -2681,12 +2679,14 @@ export default function StyleGuide() {
             10 · GRÁFICOS
             ══════════════════════════════════════════════════════════════════ */}
         <Capitulo
-          bajada="Seis formas. Elegir la forma va ANTES que elegir el color."
           numero="10"
           titulo="Gráficos"
+          bajada="Seis formas. Elegir la forma va ANTES que elegir el color."
         />
 
         <Bloque
+          titulo="Las seis formas"
+          uso="Anillo para un valor contra su máximo; rosco para un reparto; línea para una tendencia; barras para comparar; medidor para una sola proporción; área para una serie temporal."
           api={[
             "ProgressRing",
             "Donut",
@@ -2696,8 +2696,6 @@ export default function StyleGuide() {
             "AreaChart",
           ]}
           nota="Ninguno escribe un color a mano: todos salen de `--chart-1..5`, que derivan del acento. Cambia el tono arriba y se repintan los seis. Un anillo no compara categorías y unas barras no enseñan la evolución de una sola cifra — la forma es la decisión, el color viene después."
-          titulo="Las seis formas"
-          uso="Anillo para un valor contra su máximo; rosco para un reparto; línea para una tendencia; barras para comparar; medidor para una sola proporción; área para una serie temporal."
         >
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             <Muestra
@@ -2710,11 +2708,11 @@ export default function StyleGuide() {
               }
             >
               <ProgressRing
-                caption="Rondas"
-                centerLabel="87 %"
+                value={87}
                 max={100}
                 size={104}
-                value={87}
+                centerLabel="87 %"
+                caption="Rondas"
               />
             </Muestra>
 
@@ -2728,14 +2726,14 @@ export default function StyleGuide() {
               }
             >
               <Donut
-                centerBottom="turnos"
-                centerTop="92"
+                size={104}
                 segments={[
                   { value: 62, label: "En servicio", tone: "brand" },
                   { value: 21, label: "Descanso", tone: "neutral" },
                   { value: 9, label: "Ausencia", tone: "warn" },
                 ]}
-                size={104}
+                centerTop="92"
+                centerBottom="turnos"
               />
             </Muestra>
 
@@ -2750,15 +2748,14 @@ export default function StyleGuide() {
             >
               <div className="w-full px-2">
                 <Sparkline
-                  area
                   data={[12, 18, 14, 22, 19, 28, 24, 31, 27, 34]}
                   height={56}
+                  area
                 />
               </div>
             </Muestra>
 
             <Muestra
-              className="sm:col-span-2 lg:col-span-1"
               pie={
                 <>
                   <code>MeterBar</code>
@@ -2766,6 +2763,7 @@ export default function StyleGuide() {
                   Una proporción contra su canal
                 </>
               }
+              className="sm:col-span-2 lg:col-span-1"
             >
               <div className="w-full space-y-2.5 px-2">
                 <MeterBar pct={78} />
@@ -2775,7 +2773,6 @@ export default function StyleGuide() {
             </Muestra>
 
             <Muestra
-              className="sm:col-span-2"
               pie={
                 <>
                   <code>BarChart</code>
@@ -2783,9 +2780,11 @@ export default function StyleGuide() {
                   Categorías comparadas
                 </>
               }
+              className="sm:col-span-2"
             >
               <div className="w-full px-1">
                 <BarChart
+                  height={120}
                   data={[
                     { label: "Lun", value: 18 },
                     { label: "Mar", value: 24 },
@@ -2795,7 +2794,6 @@ export default function StyleGuide() {
                     { label: "Sáb", value: 12 },
                     { label: "Dom", value: 9 },
                   ]}
-                  height={120}
                 />
               </div>
             </Muestra>
@@ -2807,6 +2805,7 @@ export default function StyleGuide() {
             </div>
             <div className="glass-flat p-4">
               <BarChart
+                height={120}
                 data={[
                   { label: "P1 — Crítica", value: 4, tone: "bad" },
                   { label: "P2 — Alta", value: 11, tone: "bad" },
@@ -2814,10 +2813,9 @@ export default function StyleGuide() {
                   { label: "P4 — Baja", value: 38, tone: "info" },
                   { label: "P5 — Informativa", value: 52, tone: "neutral" },
                 ]}
-                height={120}
               />
             </div>
-            <InfoNote className="mt-3" icon={<AlertTriangle />} tone="bad">
+            <InfoNote tone="bad" icon={<AlertTriangle />} className="mt-3">
               Un «por prioridad» con todas las barras del mismo color hace que{" "}
               <strong>P1 parezca P5</strong>. Y un pánico pintado con el acento
               configurable puede salir en dorado con la píldora de al lado
@@ -2833,12 +2831,12 @@ export default function StyleGuide() {
             </div>
             <div className="glass-flat p-4">
               <AreaChart
+                height={180}
                 data={Array.from({ length: 24 }).map((_, i) => ({
                   label: `${String(i).padStart(2, "0")}:00`,
                   value: Math.round(40 + 30 * Math.sin(i / 3) + (i % 5) * 4),
                 }))}
                 formatValue={(v) => `${v} vig.`}
-                height={180}
               />
             </div>
           </div>
@@ -2848,12 +2846,14 @@ export default function StyleGuide() {
             11 · MOVIMIENTO
             ══════════════════════════════════════════════════════════════════ */}
         <Capitulo
-          bajada="Entradas, énfasis y espera. Todo se apaga solo con «reducir movimiento» activado en el sistema."
           numero="11"
           titulo="Movimiento"
+          bajada="Entradas, énfasis y espera. Todo se apaga solo con «reducir movimiento» activado en el sistema."
         />
 
         <Bloque
+          titulo="Animaciones"
+          uso="Pulsa «Repetir» para verlas otra vez. Debajo de cada una, la clase o el componente con el que se aplica."
           api={[
             "FadeIn",
             "Stagger",
@@ -2862,13 +2862,11 @@ export default function StyleGuide() {
             ".cg-stagger",
           ]}
           nota="Todas las entradas viven dentro de `@media (prefers-reduced-motion: no-preference)`: quien pide movimiento reducido ve el contenido colocado, no una versión más lenta. Los velos además apagan el desenfoque, que es justo lo que marea a quien activa esa preferencia."
-          titulo="Animaciones"
-          uso="Pulsa «Repetir» para verlas otra vez. Debajo de cada una, la clase o el componente con el que se aplica."
         >
           <Button
-            className="mb-4"
-            size="sm"
             variant="outline"
+            size="sm"
+            className="mb-4"
             onClick={() => setRepeticion((r) => r + 1)}
           >
             <RotateCw /> Repetir
@@ -2998,7 +2996,7 @@ export default function StyleGuide() {
             </Muestra>
           </div>
 
-          <InfoNote className="mt-5" icon={<Info />} tone="neutral">
+          <InfoNote tone="neutral" icon={<Info />} className="mt-5">
             Prueba a activar «Reducir movimiento» en las preferencias del
             sistema y vuelve a cargar: las entradas desaparecen, el latido se
             para, el barrido del esqueleto se detiene y los velos dejan de

@@ -1,5 +1,3 @@
-import type { PostSite } from "@/types";
-
 import React, { useState, useRef, useEffect } from "react";
 import {
   Search,
@@ -12,9 +10,6 @@ import {
   Trash,
   StickyNote,
 } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
-
 import MobileCardList from "@/components/responsive/MobileCardList";
 import { EmptyState, Modal } from "@/components/kit";
 import {
@@ -22,8 +17,11 @@ import {
   FIELD_CLS_LG,
 } from "@/pages/admin/clientes/components/_shared/tab-kit";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 import { postSiteService } from "@/lib/api/postSiteService";
+import { toast } from "sonner";
 import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
+import type { PostSite } from "@/types";
 
 type Props = {
   site?: PostSite;
@@ -89,7 +87,6 @@ export default function PostSiteNotes({ site }: Props) {
       toast.error(
         t("clients.notes.validation.titleRequired", "Title is required"),
       );
-
       return false;
     }
     if (!formData.description || !formData.description.trim()) {
@@ -99,17 +96,14 @@ export default function PostSiteNotes({ site }: Props) {
           "Description is required",
         ),
       );
-
       return false;
     }
     if (!formData.date) {
       toast.error(
         t("clients.notes.validation.dateRequired", "Date is required"),
       );
-
       return false;
     }
-
     return true;
   };
 
@@ -141,7 +135,6 @@ export default function PostSiteNotes({ site }: Props) {
 
     if (actionOpen) {
       document.addEventListener("mousedown", handleClickOutside);
-
       return () =>
         document.removeEventListener("mousedown", handleClickOutside);
     }
@@ -150,7 +143,6 @@ export default function PostSiteNotes({ site }: Props) {
   // Load notes when site changes
   useEffect(() => {
     let mounted = true;
-
     async function loadNotes() {
       if (!site || !site.id) return;
       try {
@@ -158,14 +150,12 @@ export default function PostSiteNotes({ site }: Props) {
           limit: 9999,
           offset: 0,
         });
-
         if (!mounted) return;
         const rows = Array.isArray(resp?.rows)
           ? resp.rows
           : Array.isArray(resp)
             ? resp
             : [];
-
         setNotesData(
           rows.map((r: NoteApiRow) => ({
             id: String(r.id || r._id),
@@ -183,7 +173,6 @@ export default function PostSiteNotes({ site }: Props) {
       }
     }
     loadNotes();
-
     return () => {
       mounted = false;
     };
@@ -192,7 +181,6 @@ export default function PostSiteNotes({ site }: Props) {
   const handleSubmitNote = () => {
     if (!site || !site.id) {
       toast.error(t("notes.noSite", "No post site selected"));
-
       return;
     }
 
@@ -215,7 +203,6 @@ export default function PostSiteNotes({ site }: Props) {
             payload,
           );
           const created = resp && resp.data ? resp.data : resp;
-
           setNotesData((prev) =>
             prev.map((n) =>
               String(n.id) === String(noteId)
@@ -245,7 +232,6 @@ export default function PostSiteNotes({ site }: Props) {
               created.createdById ||
               "",
           };
-
           setNotesData((prev) => [row, ...prev]);
           toast.success(t("notes.created", "Note created"));
         }
@@ -282,7 +268,6 @@ export default function PostSiteNotes({ site }: Props) {
     if (selectedIds.length === 0)
       return toast.error(t("notes.noSelection", "No notes selected"));
     const ids = [...selectedIds];
-
     try {
       for (const id of ids) {
         await postSiteService.destroyPostSiteNote(String(site.id), id);
@@ -300,7 +285,6 @@ export default function PostSiteNotes({ site }: Props) {
     name.length <= max ? name : name.slice(0, max) + "...";
 
   const containerRef = useRef<HTMLDivElement | null>(null);
-
   useScrollToTopOnMount(containerRef);
 
   return (
@@ -312,10 +296,10 @@ export default function PostSiteNotes({ site }: Props) {
         {/* Sin `flex-wrap` el buscador se quedaba en ~30 px de ancho entre los
             dos botones en un teléfono. */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <div ref={actionRef} className="relative">
+          <div className="relative" ref={actionRef}>
             <button
-              className="cg-btn-glass cg-focus flex min-w-[100px] items-center gap-2 rounded-md px-3 py-2 text-sm font-medium"
               onClick={() => setActionOpen((v) => !v)}
+              className="cg-btn-glass cg-focus flex min-w-[100px] items-center gap-2 rounded-md px-3 py-2 text-sm font-medium"
             >
               {t("actions.action", "Action")}
               <ChevronDown size={16} />
@@ -323,11 +307,11 @@ export default function PostSiteNotes({ site }: Props) {
             {actionOpen && (
               <div className="glass-raised absolute left-0 z-10 mt-1 w-full">
                 <button
-                  className="block w-full text-left px-4 py-2 text-sm hover:bg-muted"
                   onClick={() => {
                     setActionOpen(false);
                     setConfirmDeleteIds(selectedIds);
                   }}
+                  className="block w-full text-left px-4 py-2 text-sm hover:bg-muted"
                 >
                   {t("clients.notes.delete", "Delete")}
                 </button>
@@ -338,25 +322,25 @@ export default function PostSiteNotes({ site }: Props) {
           <div className="min-w-48 flex-1 sm:max-w-xs">
             <div className="relative">
               <Search
-                className="absolute left-3 top-3 text-muted-foreground"
                 size={16}
+                className="absolute left-3 top-3 text-muted-foreground"
               />
               <input
-                className={`${FIELD_CLS} pl-9`}
+                type="text"
                 placeholder={t(
                   "clients.notes.notesearchPlaceholder",
                   "Search note",
                 )}
-                type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                className={`${FIELD_CLS} pl-9`}
               />
             </div>
           </div>
 
           <button
-            className="cg-btn-brand cg-focus flex items-center gap-2 rounded-md px-6 py-2 text-sm font-semibold transition-colors"
             onClick={handleAddNote}
+            className="cg-btn-brand cg-focus flex items-center gap-2 rounded-md px-6 py-2 text-sm font-semibold transition-colors"
           >
             <Plus size={18} />
             {t("clients.notes.addNote", "Add Note")}
@@ -370,22 +354,21 @@ export default function PostSiteNotes({ site }: Props) {
                 <tr className="border-b bg-muted/30">
                   <th className="cg-eyebrow px-2 py-2">
                     <input
-                      aria-label="Select all notes"
-                      checked={
-                        (notesData || []).length > 0 &&
-                        selectedIds.length === (notesData || []).length
-                      }
-                      className="rounded"
                       type="checkbox"
+                      className="rounded"
                       onChange={(e) => {
                         const checked = e.target.checked;
-
                         if (checked)
                           setSelectedIds(
                             (notesData || []).map((n) => String(n.id)),
                           );
                         else setSelectedIds([]);
                       }}
+                      checked={
+                        (notesData || []).length > 0 &&
+                        selectedIds.length === (notesData || []).length
+                      }
+                      aria-label="Select all notes"
                     />
                   </th>
                   <th className="cg-eyebrow px-2 py-2">
@@ -397,17 +380,17 @@ export default function PostSiteNotes({ site }: Props) {
                   <th className="cg-eyebrow px-2 py-2">
                     {t("clients.notes.Added By")}
                   </th>
-                  <th className="cg-eyebrow px-2 py-2" />
+                  <th className="cg-eyebrow px-2 py-2"></th>
                 </tr>
               </thead>
               <tbody>
                 {notesData.length === 0 ? (
                   <tr>
-                    <td className="px-4 py-8" colSpan={6}>
+                    <td colSpan={6} className="px-4 py-8">
                       <EmptyState
-                        description={t("clients.empty.description")}
                         icon={<StickyNote />}
                         title={t("clients.empty.title")}
+                        description={t("clients.empty.description")}
                       />
                     </td>
                   </tr>
@@ -419,8 +402,8 @@ export default function PostSiteNotes({ site }: Props) {
                     >
                       <td className="px-2 py-2.5 text-sm text-foreground">
                         <input
-                          checked={selectedIds.includes(String(note.id))}
                           type="checkbox"
+                          checked={selectedIds.includes(String(note.id))}
                           onChange={() => toggleSelect(String(note.id))}
                         />
                       </td>
@@ -436,13 +419,13 @@ export default function PostSiteNotes({ site }: Props) {
                       <td className="px-2 py-2.5 text-right">
                         <div className="relative inline-block">
                           <button
-                            className="p-2 rounded-full hover:bg-muted focus:outline-none"
-                            title={t("actions.action") || "Actions"}
                             onClick={() =>
                               setOpenMenuId((prev) =>
                                 prev === note.id ? null : String(note.id),
                               )
                             }
+                            className="p-2 rounded-full hover:bg-muted focus:outline-none"
+                            title={t("actions.action") || "Actions"}
                           >
                             <EllipsisVertical size={18} />
                           </button>
@@ -450,11 +433,11 @@ export default function PostSiteNotes({ site }: Props) {
                           {openMenuId === String(note.id) && (
                             <div className="glass-raised absolute right-0 z-50 mt-2 w-44">
                               <button
-                                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted/30 focus:outline-none"
                                 onClick={() => {
                                   setDetailsNote(note.raw || note);
                                   setOpenMenuId(null);
                                 }}
+                                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted/30 focus:outline-none"
                               >
                                 <Eye size={16} />
                                 <span className="text-sm">
@@ -462,7 +445,6 @@ export default function PostSiteNotes({ site }: Props) {
                                 </span>
                               </button>
                               <button
-                                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted/30 focus:outline-none"
                                 onClick={() => {
                                   setFormData({
                                     title: note.title,
@@ -475,6 +457,7 @@ export default function PostSiteNotes({ site }: Props) {
                                   setShowModal(true);
                                   setOpenMenuId(null);
                                 }}
+                                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted/30 focus:outline-none"
                               >
                                 <Pencil size={16} />
                                 <span className="text-sm">
@@ -482,12 +465,12 @@ export default function PostSiteNotes({ site }: Props) {
                                 </span>
                               </button>
                               <button
-                                className="cg-btn-ghost cg-focus flex w-full items-center gap-2 px-3 py-2"
-                                style={{ color: "var(--bad-text)" }}
                                 onClick={() => {
                                   setOpenMenuId(null);
                                   setConfirmDeleteIds([String(note.id)]);
                                 }}
+                                className="cg-btn-ghost cg-focus flex w-full items-center gap-2 px-3 py-2"
+                                style={{ color: "var(--bad-text)" }}
                               >
                                 <Trash size={16} />
                                 <span className="text-sm">
@@ -508,7 +491,6 @@ export default function PostSiteNotes({ site }: Props) {
           <div className="md:hidden">
             <MobileCardList
               items={notesData}
-              loading={false}
               renderCard={(note: NoteRow) => (
                 <div>
                   <div className="text-sm font-semibold">{note.title}</div>
@@ -520,6 +502,7 @@ export default function PostSiteNotes({ site }: Props) {
                   </div>
                 </div>
               )}
+              loading={false}
             />
           </div>
         </div>
@@ -554,13 +537,13 @@ export default function PostSiteNotes({ site }: Props) {
                   {t("clients.notes.form.Titlenote", "Title *")}{" "}
                 </label>
                 <input
-                  className={FIELD_CLS_LG}
-                  placeholder={t("clients.notes.form.Titlenote", "Title *")}
                   type="text"
                   value={formData.title}
                   onChange={(e) =>
                     setFormData({ ...formData, title: e.target.value })
                   }
+                  placeholder={t("clients.notes.form.Titlenote", "Title *")}
+                  className={FIELD_CLS_LG}
                 />
               </div>
 
@@ -569,16 +552,16 @@ export default function PostSiteNotes({ site }: Props) {
                   {t("clients.notes.form.Description", "Description *")}{" "}
                 </label>
                 <textarea
-                  className={`${FIELD_CLS_LG} resize-none`}
-                  placeholder={t(
-                    "clients.notes.form.Descriptioninput",
-                    "Description *",
-                  )}
-                  rows={6}
                   value={formData.description}
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
                   }
+                  placeholder={t(
+                    "clients.notes.form.Descriptioninput",
+                    "Description *",
+                  )}
+                  className={`${FIELD_CLS_LG} resize-none`}
+                  rows={6}
                 />
               </div>
 
@@ -587,12 +570,12 @@ export default function PostSiteNotes({ site }: Props) {
                   {t("clients.notes.form.Date", "Date *")}{" "}
                 </label>
                 <input
-                  className={`${FIELD_CLS_LG} cursor-pointer`}
                   type="date"
                   value={formData.date}
                   onChange={(e) =>
                     setFormData({ ...formData, date: e.target.value })
                   }
+                  className={`${FIELD_CLS_LG} cursor-pointer`}
                 />
               </div>
 
@@ -622,13 +605,13 @@ export default function PostSiteNotes({ site }: Props) {
                                 </span>
                               </div>
                               <button
-                                aria-label={`Remove ${f.name}`}
-                                className="cg-focus rounded p-1"
-                                style={{ color: "var(--bad-text)" }}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   removeAttachment(i);
                                 }}
+                                className="cg-focus rounded p-1"
+                                style={{ color: "var(--bad-text)" }}
+                                aria-label={`Remove ${f.name}`}
                               >
                                 <X size={14} />
                               </button>
@@ -647,16 +630,15 @@ export default function PostSiteNotes({ site }: Props) {
                   </div>
 
                   <input
-                    multiple
-                    className="sr-only"
                     type="file"
+                    multiple
                     onChange={(e) => {
                       const files = e.target.files
                         ? Array.from(e.target.files)
                         : [];
-
                       setFormData({ ...formData, attachments: files });
                     }}
+                    className="sr-only"
                   />
                 </label>
               </div>
@@ -664,9 +646,9 @@ export default function PostSiteNotes({ site }: Props) {
 
             <div className="sticky bottom-0 flex items-center justify-end gap-3 border-t p-6">
               <button
-                className={`cg-btn-brand cg-focus rounded-md px-6 py-2 font-semibold ${!isFormValid ? "opacity-50 cursor-not-allowed" : ""}`}
-                disabled={!isFormValid}
                 onClick={handleSubmitNote}
+                disabled={!isFormValid}
+                className={`cg-btn-brand cg-focus rounded-md px-6 py-2 font-semibold ${!isFormValid ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {t("actions.save", "Save")}
               </button>
@@ -676,6 +658,13 @@ export default function PostSiteNotes({ site }: Props) {
       )}
 
       <Modal
+        open={confirmDeleteIds.length > 0}
+        onOpenChange={(o) => {
+          if (!o) setConfirmDeleteIds([]);
+        }}
+        title={t("clients.notes.confirmDeleteTitle", "¿Eliminar nota(s)?")}
+        icon={<Trash className="h-5 w-5" />}
+        size="sm"
         footer={
           <>
             <Button variant="outline" onClick={() => setConfirmDeleteIds([])}>
@@ -692,7 +681,6 @@ export default function PostSiteNotes({ site }: Props) {
                   );
                   toast.success(t("notes.deleted", "Notas eliminadas"));
                   setConfirmDeleteIds([]);
-
                   return;
                 }
                 try {
@@ -708,7 +696,6 @@ export default function PostSiteNotes({ site }: Props) {
                         : acc,
                     [] as string[],
                   );
-
                   if (successes.length > 0) {
                     setNotesData((prev) =>
                       prev.filter((n) => !successes.includes(String(n.id))),
@@ -721,7 +708,6 @@ export default function PostSiteNotes({ site }: Props) {
                   const failures = results.filter(
                     (r) => r.status === "rejected",
                   );
-
                   if (failures.length > 0) {
                     console.error("Some deletions failed", failures);
                     toast.error(
@@ -745,13 +731,6 @@ export default function PostSiteNotes({ site }: Props) {
             </Button>
           </>
         }
-        icon={<Trash className="h-5 w-5" />}
-        open={confirmDeleteIds.length > 0}
-        size="sm"
-        title={t("clients.notes.confirmDeleteTitle", "¿Eliminar nota(s)?")}
-        onOpenChange={(o) => {
-          if (!o) setConfirmDeleteIds([]);
-        }}
       >
         <p className="text-sm text-foreground/70">
           {t(
@@ -762,6 +741,12 @@ export default function PostSiteNotes({ site }: Props) {
       </Modal>
 
       <Modal
+        open={!!detailsNote}
+        onOpenChange={(o) => {
+          if (!o) setDetailsNote(null);
+        }}
+        title={t("clients.notes.detailsTitle", "Detalle de la nota")}
+        icon={<StickyNote className="h-5 w-5" />}
         footer={
           detailsNote ? (
             <Button
@@ -785,12 +770,6 @@ export default function PostSiteNotes({ site }: Props) {
             </Button>
           ) : undefined
         }
-        icon={<StickyNote className="h-5 w-5" />}
-        open={!!detailsNote}
-        title={t("clients.notes.detailsTitle", "Detalle de la nota")}
-        onOpenChange={(o) => {
-          if (!o) setDetailsNote(null);
-        }}
       >
         {detailsNote && (
           <div className="space-y-2">

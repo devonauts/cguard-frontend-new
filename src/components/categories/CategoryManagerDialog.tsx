@@ -1,8 +1,4 @@
-import { useEffect, useState } from "react";
-import { EllipsisVertical, Pencil, Trash2, Plus, Search } from "lucide-react";
-import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
-
+import { useEffect, useMemo, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -35,10 +31,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { EllipsisVertical, Pencil, Trash2, Plus, Search } from "lucide-react";
+import { toast } from "sonner";
 import { categoryService, type Category } from "@/lib/api/categoryService";
 import { useDebouncedValue } from "@/hooks/useDebounce";
 import { clientService } from "@/lib/api/clientService";
 import { usePermissions } from "@/hooks/usePermissions";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   open: boolean;
@@ -86,7 +85,6 @@ export function CategoryManagerDialog({
         limit: 1000,
         offset: 0,
       });
-
       setItems(res.rows);
     } catch (e) {
       console.error(e);
@@ -100,6 +98,7 @@ export function CategoryManagerDialog({
 
   useEffect(() => {
     if (open) load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, debounced, module]);
 
   // Cuando se cierra el diálogo principal, asegurarse de cerrar/limpiar los subpaneles
@@ -124,7 +123,6 @@ export function CategoryManagerDialog({
           "You do not have permission to create categories",
         ),
       );
-
       return;
     }
     setNewName("");
@@ -142,12 +140,10 @@ export function CategoryManagerDialog({
           "You do not have permission to create categories",
         ),
       );
-
       return;
     }
     if (!newName.trim()) {
       toast.error(t("categories.nameRequired", "El nombre es requerido"));
-
       return;
     }
     try {
@@ -156,7 +152,6 @@ export function CategoryManagerDialog({
         description: newDesc.trim() || undefined,
         module,
       });
-
       toast.success(t("categories.categoryCreated", "Category created"));
       // cerrar panel create
       setModalMode(undefined);
@@ -177,7 +172,6 @@ export function CategoryManagerDialog({
           "You do not have permission to edit categories",
         ),
       );
-
       return;
     }
     // cerrar posible create y abrir edit
@@ -197,19 +191,16 @@ export function CategoryManagerDialog({
           "You do not have permission to delete categories",
         ),
       );
-
       return;
     }
     try {
       // Pre-chequeo: ¿está en uso por algún cliente?
       const usedCount = await clientService.checkCategoryUsage(cat.id);
-
       console.log(
         `Verificando categoría ${cat.name} (${cat.id}): ${usedCount} usos encontrados`,
       );
       if (usedCount > 0) {
         setInUseInfo({ id: cat.id, name: cat.name, count: usedCount });
-
         return;
       }
       setConfirmDeleteId(cat.id);
@@ -234,13 +225,11 @@ export function CategoryManagerDialog({
           "You do not have permission to edit categories",
         ),
       );
-
       return;
     }
     if (!editing) return;
     if (!editName.trim()) {
       toast.error(t("categories.nameRequired", "El nombre es requerido"));
-
       return;
     }
     try {
@@ -273,7 +262,6 @@ export function CategoryManagerDialog({
         ),
       );
       setConfirmDeleteId(null);
-
       return;
     }
     try {
@@ -312,8 +300,8 @@ export function CategoryManagerDialog({
               <div className="relative w-full sm:w-72">
                 <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  className="pl-9"
                   placeholder={t("categories.searchPlaceholder", "Search...")}
+                  className="pl-9"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
@@ -346,8 +334,8 @@ export function CategoryManagerDialog({
                   {items.length === 0 && (
                     <TableRow>
                       <TableCell
-                        className="text-center text-sm text-muted-foreground py-8"
                         colSpan={3}
+                        className="text-center text-sm text-muted-foreground py-8"
                       >
                         {loading
                           ? t("categories.loading", "Loading...")
@@ -366,7 +354,7 @@ export function CategoryManagerDialog({
                       <TableCell className="text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button size="icon" variant="ghost">
+                            <Button variant="ghost" size="icon">
                               <EllipsisVertical className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
@@ -406,10 +394,10 @@ export function CategoryManagerDialog({
                       {t("categories.name", "Name*")}
                     </label>
                     <Input
-                      className="placeholder:text-muted-foreground"
-                      placeholder={t("categories.nameHint", "Ej: General")}
                       value={newName}
                       onChange={(e) => setNewName(e.target.value)}
+                      placeholder={t("categories.nameHint", "Ej: General")}
+                      className="placeholder:text-muted-foreground"
                     />
                   </div>
                   <div>
@@ -417,13 +405,13 @@ export function CategoryManagerDialog({
                       {t("categories.description", "Description")}
                     </label>
                     <Input
-                      className="placeholder:text-muted-foreground"
+                      value={newDesc}
+                      onChange={(e) => setNewDesc(e.target.value)}
                       placeholder={t(
                         "categories.descriptionHint",
                         "Brief description (optional)",
                       )}
-                      value={newDesc}
-                      onChange={(e) => setNewDesc(e.target.value)}
+                      className="placeholder:text-muted-foreground"
                     />
                   </div>
                 </div>
@@ -438,8 +426,8 @@ export function CategoryManagerDialog({
                     {t("categories.cancel", "Cancel")}
                   </Button>
                   <Button
-                    className="disabled:pointer-events-none disabled:opacity-50"
                     onClick={submitCreate}
+                    className="disabled:pointer-events-none disabled:opacity-50"
                   >
                     {t("categories.save", "Save")}
                   </Button>
@@ -459,10 +447,10 @@ export function CategoryManagerDialog({
                       {t("categories.name", "Name*")}
                     </label>
                     <Input
-                      className="placeholder:text-muted-foreground"
-                      placeholder={t("categories.nameHint", "Ej: General")}
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
+                      placeholder={t("categories.nameHint", "Ej: General")}
+                      className="placeholder:text-muted-foreground"
                     />
                   </div>
                   <div>
@@ -470,13 +458,13 @@ export function CategoryManagerDialog({
                       {t("categories.description", "Description")}
                     </label>
                     <Input
-                      className="placeholder:text-muted-foreground"
+                      value={editDesc}
+                      onChange={(e) => setEditDesc(e.target.value)}
                       placeholder={t(
                         "categories.descriptionHint",
                         "Brief description (optional)",
                       )}
-                      value={editDesc}
-                      onChange={(e) => setEditDesc(e.target.value)}
+                      className="placeholder:text-muted-foreground"
                     />
                   </div>
                 </div>
@@ -491,8 +479,8 @@ export function CategoryManagerDialog({
                     {t("actions.cancel")}
                   </Button>
                   <Button
-                    className="disabled:pointer-events-none disabled:opacity-50"
                     onClick={submitEdit}
+                    className="disabled:pointer-events-none disabled:opacity-50"
                   >
                     {t("categories.save", "Save")}
                   </Button>
@@ -517,7 +505,7 @@ export function CategoryManagerDialog({
             <AlertDialogCancel>
               {t("categories.cancel", "Cancel")}
             </AlertDialogCancel>
-            <AlertDialogAction className="cg-btn-bad" onClick={removeConfirmed}>
+            <AlertDialogAction onClick={removeConfirmed} className="cg-btn-bad">
               {t("categories.delete", "Delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -543,8 +531,8 @@ export function CategoryManagerDialog({
           </div>
           <AlertDialogFooter>
             <AlertDialogAction
-              className="bg-card text-foreground hover:bg-muted border"
               onClick={() => setInUseInfo(null)}
+              className="bg-card text-foreground hover:bg-muted border"
             >
               {t("categories.Understood", "Understood")}
             </AlertDialogAction>

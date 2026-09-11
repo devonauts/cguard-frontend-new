@@ -1,8 +1,7 @@
-import type { GuardAssignment } from "@/types";
-
 import api from "@/lib/api";
 import { cachedFetch, invalidateEntity } from "@/lib/queryClient";
 import { PostSiteInput } from "@/lib/validators/post-site";
+import type { GuardAssignment } from "@/types";
 
 export interface PostSite {
   id: string;
@@ -105,7 +104,6 @@ export interface PostSiteListResponse {
 }
 
 let globalTenantId: string | null = null;
-
 export const setTenantId = (id: string) => {
   globalTenantId = id;
   localStorage.setItem("tenantId", id);
@@ -114,10 +112,8 @@ export const setTenantId = (id: string) => {
 const getTenantId = (): string => {
   if (globalTenantId) return globalTenantId;
   const local = localStorage.getItem("tenantId");
-
   if (local) {
     globalTenantId = local;
-
     return local;
   }
   try {
@@ -133,29 +129,24 @@ const getTenantId = (): string => {
       };
     };
     const info = w.__APP_AUTH;
-
     if (info) {
       if (info.tenantId) {
         globalTenantId = info.tenantId;
         try {
           localStorage.setItem("tenantId", info.tenantId);
         } catch {}
-
         return info.tenantId;
       }
       const u = info.user;
-
       if (u && Array.isArray(u.tenants) && u.tenants.length > 0) {
         const t = u.tenants[0];
         const tid =
           t.tenantId || (t.tenant && (t.tenant.id || t.tenant.tenantId));
-
         if (tid) {
           globalTenantId = tid;
           try {
             localStorage.setItem("tenantId", tid);
           } catch {}
-
           return tid;
         }
       }
@@ -190,6 +181,13 @@ export interface StationCard {
   coverageStatus: "covered" | "at_risk" | "uncovered" | "idle" | null;
   /** Cuántos hay fichados AHORA. */
   onDutyCount: number;
+  /**
+   * QUIÉN está fichado ahora, por nombre. La insignia enseña el nombre en vez
+   * de «Vigilante en puesto», que es lo que ya dice el color verde.
+   * Vacío = no se pudo resolver el nombre; la insignia vuelve al texto genérico
+   * en lugar de quedarse en blanco.
+   */
+  onDutyNames: string[];
   /** Cuántos se esperan según el horario. */
   expectedCount: number;
   /** Próxima entrada planificada (24 h) — «Entra 19:00». */
@@ -229,7 +227,6 @@ const stationService = {
       `/tenant/${tenantId}/station/cards`,
       { toast: { silentError: true } },
     );
-
     return Array.isArray(data) ? data : (data?.data ?? []);
   },
 
@@ -238,11 +235,9 @@ const stationService = {
     options: PaginationOptions = { limit: 25, offset: 0 },
   ): Promise<PostSiteListResponse> {
     const tenantId = getTenantId();
-
     // Read-through cache shared by the ~10 pages that list post-sites/stations.
     return cachedFetch(["stations", tenantId, filters, options], async () => {
       const params = new URLSearchParams();
-
       if (filters.name) params.append("filter[name]", filters.name);
       if (filters.clientId) params.append("filter[clientId]", filters.clientId);
       // allow filtering stations by postSite id (station repository expects filter.postSite)
@@ -252,17 +247,14 @@ const stationService = {
       };
       const postSiteId =
         filtersExt.postSite || filtersExt.postSiteId || undefined;
-
       if (postSiteId) params.append("filter[postSite]", postSiteId);
       const categoryToUse = filters.categoryId ?? filters.category;
-
       if (categoryToUse) params.append("filter[categoryIds]", categoryToUse);
       if (filters.email) {
         params.append("filter[email]", filters.email);
         params.append("filter[contactEmail]", filters.email);
       }
       const phoneToUse = filters.phone ?? filters.phoneNumber;
-
       if (phoneToUse) {
         params.append("filter[phone]", phoneToUse);
         params.append("filter[contactPhone]", phoneToUse);
@@ -328,7 +320,6 @@ const stationService = {
         numberOfGuardsInStation: r.numberOfGuardsInStation ?? undefined,
         serviceType: r.serviceType ?? undefined,
       }));
-
       return { rows: mappedRows as unknown as PostSite[], count: data.count };
     });
   },
@@ -342,7 +333,6 @@ const stationService = {
     const { data } = await api.get<RawStationRow>(postSiteUrl, {
       toast: { silentError: true },
     });
-
     return data;
   },
 
@@ -380,9 +370,7 @@ const stationService = {
       serviceConfig: p.serviceConfig ?? undefined,
     };
     const { data } = await api.post(`/tenant/${tenantId}/post-site`, body);
-
     invalidateEntity("stations");
-
     return data;
   },
 
@@ -393,7 +381,6 @@ const stationService = {
     // attempt a direct `/post-site/:id` GET as a last resort and proceed with
     // an empty fallback object so update still attempts to submit.
     let existing: RawStationRow = {};
-
     try {
       existing = await stationService.get(id);
     } catch (err) {
@@ -406,7 +393,6 @@ const stationService = {
           `/tenant/${tenantId}/post-site/${id}`,
           { toast: { silentError: true } },
         );
-
         existing = res.data || {};
       } catch (e) {
         console.error(
@@ -455,15 +441,12 @@ const stationService = {
       serviceConfig: p.serviceConfig ?? existing.serviceConfig ?? undefined,
     };
     const { data } = await api.put(`/tenant/${tenantId}/post-site/${id}`, body);
-
     invalidateEntity("stations");
-
     return data;
   },
 
   async delete(ids: string[]): Promise<void> {
     const tenantId = getTenantId();
-
     await api.delete(`/tenant/${tenantId}/post-site`, { data: { ids } });
     invalidateEntity("stations");
   },
@@ -471,18 +454,15 @@ const stationService = {
   async exportPDF(filters: PostSiteFilters = {}): Promise<Blob> {
     const tenantId = getTenantId();
     const params = new URLSearchParams();
-
     if (filters.name) params.append("filter[name]", filters.name);
     if (filters.clientId) params.append("filter[clientId]", filters.clientId);
     const categoryToUse = filters.categoryId ?? filters.category;
-
     if (categoryToUse) params.append("filter[categoryIds]", categoryToUse);
     if (filters.email) {
       params.append("filter[email]", filters.email);
       params.append("filter[contactEmail]", filters.email);
     }
     const phoneToUse = filters.phone ?? filters.phoneNumber;
-
     if (phoneToUse) {
       params.append("filter[phone]", phoneToUse);
       params.append("filter[contactPhone]", phoneToUse);
@@ -499,25 +479,21 @@ const stationService = {
       `/tenant/${tenantId}/post-site/export?${params.toString()}`,
       { responseType: "blob" },
     );
-
     return data;
   },
 
   async exportExcel(filters: PostSiteFilters = {}): Promise<Blob> {
     const tenantId = getTenantId();
     const params = new URLSearchParams();
-
     if (filters.name) params.append("filter[name]", filters.name);
     if (filters.clientId) params.append("filter[clientId]", filters.clientId);
     const categoryToUse = filters.categoryId ?? filters.category;
-
     if (categoryToUse) params.append("filter[categoryIds]", categoryToUse);
     if (filters.email) {
       params.append("filter[email]", filters.email);
       params.append("filter[contactEmail]", filters.email);
     }
     const phoneToUse = filters.phone ?? filters.phoneNumber;
-
     if (phoneToUse) {
       params.append("filter[phone]", phoneToUse);
       params.append("filter[contactPhone]", phoneToUse);
@@ -534,7 +510,6 @@ const stationService = {
       `/tenant/${tenantId}/post-site/export?${params.toString()}`,
       { responseType: "blob" },
     );
-
     return data;
   },
 
@@ -543,14 +518,12 @@ const stationService = {
   ): Promise<{ success: number; failed: number; errors: any[] }> {
     const tenantId = getTenantId();
     const formData = new FormData();
-
     formData.append("file", file);
     const { data } = await api.post(
       `/tenant/${tenantId}/post-site/import`,
       formData,
       { headers: { "Content-Type": "multipart/form-data" } },
     );
-
     return data;
   },
 
@@ -580,7 +553,6 @@ const stationService = {
       `/tenant/${tenantId}/post-site/${postSiteId}/active-status`,
       { toast: { silentError: true } },
     );
-
     return data;
   },
 
@@ -619,7 +591,6 @@ const stationService = {
       `/tenant/${tenantId}/post-site/${postSiteId}/coverage-gaps?${params}`,
       { toast: { silentError: true } },
     );
-
     return data;
   },
 };

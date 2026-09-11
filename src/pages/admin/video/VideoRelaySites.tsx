@@ -11,13 +11,12 @@ import {
   Server,
 } from "lucide-react";
 
+import AppLayout from "@/layouts/app-layout";
 import {
   DeviceStatusBadge,
   healthTone,
   type DeviceHealth,
 } from "./deviceStatus";
-
-import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import {
   PageContainer,
@@ -26,6 +25,7 @@ import {
   Stagger,
   GlassPanel,
   IconTile,
+  StatusBadge,
   SkeletonCards,
 } from "@/components/kit";
 import { Input } from "@/components/ui/input";
@@ -112,13 +112,11 @@ export default function VideoRelaySites() {
       )
       .finally(() => setLoading(false));
   };
-
   useEffect(load, []);
 
   const create = async () => {
     if (!name.trim()) {
       toast.error(t("comun.elNombreEsObligatorio"));
-
       return;
     }
     setSaving(true);
@@ -161,7 +159,6 @@ export default function VideoRelaySites() {
     const blob = new Blob([bundle.compose], { type: "text/yaml" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-
     a.href = url;
     a.download = `docker-compose.${bundle.siteKey}.yml`;
     document.body.appendChild(a);
@@ -205,45 +202,44 @@ export default function VideoRelaySites() {
     <AppLayout>
       <PageContainer width="wide">
         <PageHeader
+          icon={<Server />}
+          title="Sitios remotos (Relay)"
+          subtitle={t("ui.VideoRelaySites.paraDvrNvrDetrasDe")}
           actions={
-            <Button variant="brand" onClick={() => setNewOpen(true)}>
+            <Button onClick={() => setNewOpen(true)} variant="brand">
               <Plus className="mr-2 h-4 w-4" />{" "}
               {t("ui.VideoRelaySites.nuevoSitioRelay")}{" "}
             </Button>
           }
-          icon={<Server />}
-          subtitle={t("ui.VideoRelaySites.paraDvrNvrDetrasDe")}
-          title="Sitios remotos (Relay)"
         />
 
         {loading ? (
-          <SkeletonCards className="lg:grid-cols-2" count={4} />
+          <SkeletonCards count={4} className="lg:grid-cols-2" />
         ) : error ? (
           <EmptyState
+            icon={<RefreshCw />}
+            title={t("ui.VideoRelaySites.noSePudieronCargarLos")}
+            description={error}
             action={
               <Button variant="outline" onClick={load}>
                 <RefreshCw className="mr-2 h-4 w-4" />
                 Reintentar
               </Button>
             }
-            description={error}
-            icon={<RefreshCw />}
-            title={t("ui.VideoRelaySites.noSePudieronCargarLos")}
           />
         ) : sites.length === 0 ? (
           <EmptyState
-            description={t("ui.VideoRelaySites.creaUnSitioDescargaSu")}
             icon={<Server />}
             title={t(
               "ui.VideoRelaySites.aunNoHaySitiosRemotos",
               "Aún no hay sitios remotos",
             )}
+            description={t("ui.VideoRelaySites.creaUnSitioDescargaSu")}
           />
         ) : (
           <Stagger className="grid gap-3 lg:grid-cols-2">
             {sites.map((s) => {
               const badge = STATUS[s.status || "unknown"] || STATUS.unknown;
-
               return (
                 <GlassPanel
                   key={s.id}
@@ -297,8 +293,8 @@ export default function VideoRelaySites() {
                       </Button>
                       <Button
                         size="sm"
-                        style={{ color: "var(--bad-text)" }}
                         variant="ghost"
+                        style={{ color: "var(--bad-text)" }}
                         onClick={() => setDeleteTarget(s)}
                       >
                         <Trash2 className="mr-1.5 h-3.5 w-3.5" />
@@ -340,29 +336,29 @@ export default function VideoRelaySites() {
             <div className="grid gap-1.5">
               <Label>{t("comun.nombreReq")}</Label>
               <Input
-                placeholder="BAS - Guayaquil"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                placeholder="BAS - Guayaquil"
               />
             </div>
             <div className="grid gap-1.5">
               <Label>{t("comun.notas")}</Label>
               <Textarea
-                rows={2}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
+                rows={2}
               />
             </div>
           </div>
           <DialogFooter>
             <Button
-              disabled={saving}
               variant="outline"
+              disabled={saving}
               onClick={() => setNewOpen(false)}
             >
               {t("actions.cancel")}
             </Button>
-            <Button disabled={saving} variant="brand" onClick={create}>
+            <Button disabled={saving} onClick={create} variant="brand">
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Crear
             </Button>
           </DialogFooter>
@@ -436,7 +432,7 @@ export default function VideoRelaySites() {
                 >
                   Copiar
                 </Button>
-                <Button variant="brand" onClick={downloadCompose}>
+                <Button onClick={downloadCompose} variant="brand">
                   <Download className="mr-2 h-4 w-4" />
                   Descargar docker-compose
                 </Button>
@@ -463,7 +459,7 @@ export default function VideoRelaySites() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t("actions.cancel")}</AlertDialogCancel>
-            <AlertDialogAction className="cg-btn-bad" onClick={confirmDelete}>
+            <AlertDialogAction onClick={confirmDelete} className="cg-btn-bad">
               {t("actions.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>

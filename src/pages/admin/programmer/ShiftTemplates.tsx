@@ -1,18 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Search,
-  Filter,
-  EllipsisVertical,
-  X,
-  Edit,
-  Trash2,
-  Loader2,
-  LayoutTemplate,
-  Plus,
-} from "lucide-react";
-import { toast } from "sonner";
-
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,6 +34,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Search,
+  Filter,
+  EllipsisVertical,
+  X,
+  Edit,
+  Trash2,
+  Loader2,
+  LayoutTemplate,
+  Plus,
+} from "lucide-react";
 import Breadcrumb from "@/components/ui/breadcrumb";
 import {
   PageContainer,
@@ -55,6 +53,7 @@ import {
   EmptyState,
   Toolbar,
 } from "@/components/kit";
+import { toast } from "sonner";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import shiftTemplateService, {
   type ShiftTemplate,
@@ -128,7 +127,6 @@ export default function ShiftTemplates() {
       .catch((e) => toast.error(e?.message || "Error al cargar plantillas"))
       .finally(() => setLoading(false));
   }, [filters.category]);
-
   useEffect(loadTemplates, [loadTemplates]);
 
   // Guards + post sites for the dropdowns and for resolving names in the table.
@@ -137,7 +135,6 @@ export default function ShiftTemplates() {
       .list({ limit: "500" })
       .then((res) => {
         const rows = Array.isArray(res) ? res : (res?.rows ?? []);
-
         setGuards(
           rows.map(
             (g: {
@@ -157,7 +154,6 @@ export default function ShiftTemplates() {
       .list({}, { limit: 500, offset: 0 })
       .then((res) => {
         const rows = res?.rows ?? [];
-
         setPostSites(rows.map((p) => ({ id: p.id, name: p.name })));
       })
       .catch(() => {});
@@ -197,7 +193,6 @@ export default function ShiftTemplates() {
   const handleSave = async () => {
     if (!form.templateName.trim() || !form.startTime || !form.endTime) {
       toast.error(t("ui.ShiftTemplates.tituloHoraDeInicioY"));
-
       return;
     }
     const payload: ShiftTemplateInput = {
@@ -214,7 +209,6 @@ export default function ShiftTemplates() {
       note: form.note || null,
       category: form.category || null,
     };
-
     setSaving(true);
     try {
       if (editingId) {
@@ -276,13 +270,13 @@ export default function ShiftTemplates() {
           },
         ]}
       />
-      <PageContainer className="px-4 lg:px-6" width="wide">
+      <PageContainer width="wide" className="px-4 lg:px-6">
         <PageHeader
           icon={<LayoutTemplate />}
+          title={t("ui.ShiftTemplates.plantillasDeTurno")}
           subtitle={t(
             "ui.ShiftTemplates.definePlantillasReutilizablesParaCrear",
           )}
-          title={t("ui.ShiftTemplates.plantillasDeTurno")}
         />
 
         {/* Barra de filtros */}
@@ -294,8 +288,8 @@ export default function ShiftTemplates() {
                 style={{ color: "var(--ink-faint)" }}
               />
               <Input
-                className="pl-9"
                 placeholder={t("ui.ShiftTemplates.buscarPlantillaDeTurno")}
+                className="pl-9"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -322,9 +316,9 @@ export default function ShiftTemplates() {
                           )}
                     </SheetTitle>
                     <Button
-                      className="absolute right-0 top-0"
-                      size="icon"
                       variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-0"
                       onClick={() => setIsFormOpen(false)}
                     >
                       <X className="h-4 w-4" />
@@ -544,11 +538,11 @@ export default function ShiftTemplates() {
                     <div className="grid gap-2">
                       <Label>Nota</Label>
                       <Textarea
-                        rows={3}
                         value={form.note}
                         onChange={(e) =>
                           setForm({ ...form, note: e.target.value })
                         }
+                        rows={3}
                       />
                     </div>
 
@@ -574,10 +568,10 @@ export default function ShiftTemplates() {
 
                     <div className="flex gap-2 pt-4">
                       <Button
-                        className="flex-1"
-                        disabled={saving}
                         variant="brand"
+                        className="flex-1"
                         onClick={handleSave}
+                        disabled={saving}
                       >
                         {saving ? (
                           <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -589,10 +583,10 @@ export default function ShiftTemplates() {
                             : "Guardar"}
                       </Button>
                       <Button
-                        className="flex-1"
-                        disabled={saving}
                         variant="outline"
+                        className="flex-1"
                         onClick={() => setIsFormOpen(false)}
+                        disabled={saving}
                       >
                         Cancelar
                       </Button>
@@ -611,9 +605,9 @@ export default function ShiftTemplates() {
                   <SheetHeader className="relative">
                     <SheetTitle>Filtros</SheetTitle>
                     <Button
-                      className="absolute right-0 top-0"
-                      size="icon"
                       variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-0"
                       onClick={() => setIsFiltersOpen(false)}
                     >
                       <X className="h-4 w-4" />
@@ -656,9 +650,9 @@ export default function ShiftTemplates() {
 
         {/* Tabla */}
         <Section
-          contentClassName="overflow-x-auto -mx-1"
-          icon={<LayoutTemplate />}
           title="Plantillas"
+          icon={<LayoutTemplate />}
+          contentClassName="overflow-x-auto -mx-1"
         >
           <Table>
             <TableHeader style={{ background: "var(--glass-sunken)" }}>
@@ -681,13 +675,13 @@ export default function ShiftTemplates() {
                 <TableHead className="cg-eyebrow">
                   {t("comun.vigilante")}
                 </TableHead>
-                <TableHead className="w-[50px]" />
+                <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell className="h-[300px] text-center" colSpan={7}>
+                  <TableCell colSpan={7} className="h-[300px] text-center">
                     <div
                       className="flex flex-col items-center justify-center gap-3"
                       style={{ color: "var(--ink-soft)" }}
@@ -704,14 +698,14 @@ export default function ShiftTemplates() {
                 </TableRow>
               ) : filteredTemplates.length === 0 ? (
                 <TableRow>
-                  <TableCell className="h-[300px] text-center" colSpan={7}>
+                  <TableCell colSpan={7} className="h-[300px] text-center">
                     <EmptyState
-                      className="border-0 py-2"
+                      icon={<LayoutTemplate />}
+                      title={t("ui.ShiftTemplates.noHayPlantillas")}
                       description={t(
                         "ui.ShiftTemplates.creaTuPrimeraPlantillaDe",
                       )}
-                      icon={<LayoutTemplate />}
-                      title={t("ui.ShiftTemplates.noHayPlantillas")}
+                      className="border-0 py-2"
                     />
                   </TableCell>
                 </TableRow>
@@ -742,7 +736,7 @@ export default function ShiftTemplates() {
                     <TableCell onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button size="icon" variant="ghost">
+                          <Button variant="ghost" size="icon">
                             <EllipsisVertical
                               className="h-4 w-4"
                               style={{ color: "var(--ink-soft)" }}

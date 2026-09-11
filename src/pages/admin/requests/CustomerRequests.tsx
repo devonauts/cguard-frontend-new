@@ -1,19 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import {
-  Search,
-  EllipsisVertical,
-  Loader2,
-  CheckCircle,
-  RotateCcw,
-  AlertCircle,
-  Inbox,
-  MailQuestion,
-  MailOpen,
-  Layers,
-} from "lucide-react";
-
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,6 +25,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Search,
+  EllipsisVertical,
+  Loader2,
+  CheckCircle,
+  RotateCcw,
+  AlertCircle,
+  Inbox,
+  MailQuestion,
+  MailOpen,
+  Layers,
+} from "lucide-react";
 import Breadcrumb from "@/components/ui/breadcrumb";
 import customerRequestService, {
   CustomerRequestRecord,
@@ -52,12 +51,12 @@ import {
   Stagger,
   Toolbar,
 } from "@/components/kit";
+
 import { localeActual } from "@/lib/localeActual";
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 function formatDate(iso: string | null) {
   if (!iso) return "—";
-
   return new Date(iso).toLocaleDateString(localeActual(), {
     day: "2-digit",
     month: "short",
@@ -91,7 +90,6 @@ export default function CustomerRequests() {
     setError(false);
     try {
       const { rows } = await customerRequestService.list({ limit: 500 });
-
       // Only customer-originated requests (callerType='client').
       setRecords((rows || []).filter(isCustomerRequest));
     } catch (err) {
@@ -118,7 +116,6 @@ export default function CustomerRequests() {
   const filtered = records.filter((r) => {
     if (statusFilter !== "all" && r.status !== statusFilter) return false;
     if (!q) return true;
-
     return (
       (r.subject ?? "").toLowerCase().includes(q) ||
       (r.content ?? "").toLowerCase().includes(q) ||
@@ -169,16 +166,19 @@ export default function CustomerRequests() {
           },
         ]}
       />
-      <PageContainer className="p-4 sm:p-6" width="wide">
+      <PageContainer width="wide" className="p-4 sm:p-6">
         <PageHeader
           icon={<Inbox />}
-          subtitle={t("ui.CustomerRequests.mensajesYSolicitudesEnviadasDesde")}
           title={t("sidebar.solicitudes-clientes", "Solicitudes de clientes")}
+          subtitle={t("ui.CustomerRequests.mensajesYSolicitudesEnviadasDesde")}
         />
 
         {/* Stats */}
         <Stagger className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <MetricTile
+            label="Abiertas"
+            value={stats.open}
+            icon={<MailQuestion />}
             delta={
               stats.total > 0
                 ? {
@@ -188,21 +188,18 @@ export default function CustomerRequests() {
                 : undefined
             }
             hint={t("ui.CustomerRequests.sobreElTotalRecibido")}
-            icon={<MailQuestion />}
-            label="Abiertas"
-            value={stats.open}
           />
           <MetricTile
-            hint={t("ui.CustomerRequests.solicitudesYaCerradas")}
-            icon={<MailOpen />}
             label="Atendidas"
             value={stats.closed}
+            icon={<MailOpen />}
+            hint={t("ui.CustomerRequests.solicitudesYaCerradas")}
           />
           <MetricTile
-            hint={t("ui.CustomerRequests.recibidasDesdeLaAppDe")}
-            icon={<Layers />}
             label={t("comun.total")}
             value={stats.total}
+            icon={<Layers />}
+            hint={t("ui.CustomerRequests.recibidasDesdeLaAppDe")}
           />
         </Stagger>
 
@@ -235,8 +232,8 @@ export default function CustomerRequests() {
               style={{ color: "var(--ink-faint)" }}
             />
             <Input
-              className="pl-9"
               placeholder={t("ui.CustomerRequests.buscarPorAsuntoClienteO")}
+              className="pl-9"
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -246,7 +243,7 @@ export default function CustomerRequests() {
           </div>
         </Toolbar>
 
-        <Section icon={<Inbox />} title="Solicitudes">
+        <Section title="Solicitudes" icon={<Inbox />}>
           {/* Tabla */}
           <div
             className="overflow-hidden rounded-2xl"
@@ -272,13 +269,13 @@ export default function CustomerRequests() {
                   <TableHead className="cg-eyebrow">
                     {t("comun.estado")}
                   </TableHead>
-                  <TableHead className="w-[50px]" />
+                  <TableHead className="w-[50px]"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell className="h-[200px] text-center" colSpan={7}>
+                    <TableCell colSpan={7} className="h-[200px] text-center">
                       <Loader2
                         className="mx-auto h-6 w-6 animate-spin"
                         style={{ color: "var(--ink-faint)" }}
@@ -287,37 +284,37 @@ export default function CustomerRequests() {
                   </TableRow>
                 ) : error ? (
                   <TableRow>
-                    <TableCell className="h-[300px] text-center" colSpan={7}>
+                    <TableCell colSpan={7} className="h-[300px] text-center">
                       <EmptyState
+                        icon={<AlertCircle />}
+                        title={t(
+                          "ui.CustomerRequests.noSePudoCargarLa",
+                          "No se pudo cargar la información",
+                        )}
+                        description={t(
+                          "ui.CustomerRequests.ocurrioUnErrorAlObtener",
+                        )}
                         action={
                           <Button variant="outline" onClick={fetchRecords}>
                             <RotateCcw className="mr-2 h-4 w-4" /> Reintentar
                           </Button>
                         }
                         className="border-0"
-                        description={t(
-                          "ui.CustomerRequests.ocurrioUnErrorAlObtener",
-                        )}
-                        icon={<AlertCircle />}
-                        title={t(
-                          "ui.CustomerRequests.noSePudoCargarLa",
-                          "No se pudo cargar la información",
-                        )}
                       />
                     </TableCell>
                   </TableRow>
                 ) : paginated.length === 0 ? (
                   <TableRow>
-                    <TableCell className="h-[400px] text-center" colSpan={7}>
+                    <TableCell colSpan={7} className="h-[400px] text-center">
                       <EmptyState
-                        className="border-0"
-                        description={t(
-                          "ui.CustomerRequests.lasSolicitudesEnviadasDesdeLa",
-                        )}
                         icon={<Inbox />}
                         title={t(
                           "ui.CustomerRequests.noHaySolicitudesDeClientes",
                         )}
+                        description={t(
+                          "ui.CustomerRequests.lasSolicitudesEnviadasDesdeLa",
+                        )}
+                        className="border-0"
                       />
                     </TableCell>
                   </TableRow>
@@ -343,7 +340,7 @@ export default function CustomerRequests() {
                       <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button size="icon" variant="ghost">
+                            <Button variant="ghost" size="icon">
                               <EllipsisVertical
                                 className="h-4 w-4"
                                 style={{ color: "var(--ink-soft)" }}
@@ -420,9 +417,9 @@ export default function CustomerRequests() {
             </div>
             <div className="flex items-center space-x-2">
               <Button
-                disabled={page <= 1}
-                size="icon"
                 variant="outline"
+                size="icon"
+                disabled={page <= 1}
                 onClick={() => setPage((p) => p - 1)}
               >
                 <span className="sr-only">
@@ -431,21 +428,21 @@ export default function CustomerRequests() {
                 <svg
                   className="h-4 w-4"
                   fill="none"
-                  stroke="currentColor"
                   viewBox="0 0 24 24"
+                  stroke="currentColor"
                 >
                   <path
-                    d="M15 19l-7-7 7-7"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
                   />
                 </svg>
               </Button>
               <Button
-                disabled={page >= totalPages}
-                size="icon"
                 variant="outline"
+                size="icon"
+                disabled={page >= totalPages}
                 onClick={() => setPage((p) => p + 1)}
               >
                 <span className="sr-only">
@@ -454,14 +451,14 @@ export default function CustomerRequests() {
                 <svg
                   className="h-4 w-4"
                   fill="none"
-                  stroke="currentColor"
                   viewBox="0 0 24 24"
+                  stroke="currentColor"
                 >
                   <path
-                    d="M9 5l7 7-7 7"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
+                    d="M9 5l7 7-7 7"
                   />
                 </svg>
               </Button>

@@ -1,6 +1,32 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
+  Modal,
+  Field,
+  EmptyState,
+  TabNav,
+  IconTile,
+  StatusBadge as ToneBadge,
+  InfoNote,
+} from "@/components/kit";
+import { Button } from "@/components/ui/button";
+import GoogleMapEmbed from "@/components/GoogleMap/GoogleMapEmbed";
+import StaticMapImage from "@/components/maps/StaticMapImage";
+import { useFileUrl } from "@/lib/fileUrl";
+import attendanceService, {
+  type AttendanceRecord,
+  type TimesheetEvent,
+} from "@/lib/api/attendanceService";
+import {
+  StatusBadge,
+  PayrollBadge,
+  PAYROLL_FLOW_META,
+  PAYROLL_FLOW_NEXT,
+  fmtDateTime,
+  fmtTime,
+  fmtHours,
+} from "./shared";
+import {
   ImageOff,
   LogIn,
   LogOut,
@@ -13,33 +39,6 @@ import {
   AlertOctagon,
   ShieldCheck,
 } from "lucide-react";
-
-import {
-  StatusBadge,
-  PayrollBadge,
-  PAYROLL_FLOW_META,
-  PAYROLL_FLOW_NEXT,
-  fmtDateTime,
-  fmtTime,
-  fmtHours,
-} from "./shared";
-
-import {
-  Modal,
-  Field,
-  EmptyState,
-  TabNav,
-  StatusBadge as ToneBadge,
-  InfoNote,
-} from "@/components/kit";
-import { Button } from "@/components/ui/button";
-import GoogleMapEmbed from "@/components/GoogleMap/GoogleMapEmbed";
-import StaticMapImage from "@/components/maps/StaticMapImage";
-import { useFileUrl } from "@/lib/fileUrl";
-import attendanceService, {
-  type AttendanceRecord,
-  type TimesheetEvent,
-} from "@/lib/api/attendanceService";
 import { getTenantTimezone } from "@/utils/tenantLocation";
 
 /**
@@ -76,7 +75,6 @@ function aLocalInput(iso: string | null | undefined): string {
       minute: "2-digit",
       hour12: false,
     }).format(new Date(iso));
-
     return p.replace(" ", "T").slice(0, 16);
   } catch {
     return "";
@@ -92,7 +90,6 @@ function deLocalInput(v: string): string | null {
   if (!v) return null;
   const tz = getTenantTimezone();
   const [f, h] = v.split("T");
-
   if (!f || !h) return null;
   // Se busca el desfase real de ESA fecha (respeta horario de verano).
   const tentativa = new Date(`${f}T${h}:00Z`);
@@ -107,7 +104,6 @@ function deLocalInput(v: string): string | null {
   }).format(tentativa);
   const leido = new Date(`${enTz.replace(" ", "T")}:00Z`).getTime();
   const desfase = leido - tentativa.getTime();
-
   return new Date(tentativa.getTime() - desfase).toISOString();
 }
 
@@ -201,10 +197,8 @@ function FichaDeAusencia({ r }: { r: AttendanceRecord }) {
    y la hora a la derecha. */
 function Bitacora({ id }: { id: string }) {
   const [rows, setRows] = useState<TimesheetEvent[] | null>(null);
-
   useEffect(() => {
     let vivo = true;
-
     attendanceService
       .history(id)
       .then((r) => {
@@ -213,7 +207,6 @@ function Bitacora({ id }: { id: string }) {
       .catch(() => {
         if (vivo) setRows([]);
       });
-
     return () => {
       vivo = false;
     };
@@ -231,10 +224,10 @@ function Bitacora({ id }: { id: string }) {
   if (!rows.length) {
     return (
       <EmptyState
-        className="py-10"
-        description="Nadie ha corregido ni movido esta tarjeta."
         icon={<History />}
         title="Sin movimientos"
+        description="Nadie ha corregido ni movido esta tarjeta."
+        className="py-10"
       />
     );
   }
@@ -350,7 +343,6 @@ export default function TimesheetModal({
         const m = Math.round(
           (new Date(d.end).getTime() - new Date(d.start).getTime()) / 60000,
         );
-
         return n + (m > 0 ? m : 0);
       }, 0),
     [descansos],
@@ -360,7 +352,6 @@ export default function TimesheetModal({
     if (!record) return;
     if (!motivo.trim()) {
       toast.error("Escribe el motivo de la corrección");
-
       return;
     }
     setBusy(true);
@@ -415,6 +406,10 @@ export default function TimesheetModal({
   return (
     <Modal
       open
+      onOpenChange={(o) => !o && onClose()}
+      size="xl"
+      icon={<FileText />}
+      title={record.guardName?.fullName || "Trabajador"}
       description={
         esAusencia
           ? "Día sin fichaje"
@@ -438,9 +433,9 @@ export default function TimesheetModal({
                 {siguientes.map((s) => (
                   <Button
                     key={s}
-                    disabled={busy}
                     size="sm"
                     variant={s === "rejected" ? "outline" : "default"}
+                    disabled={busy}
                     onClick={() => void mover(s)}
                   >
                     {PAYROLL_FLOW_META[s]?.label || s}
@@ -455,10 +450,6 @@ export default function TimesheetModal({
           </div>
         )
       }
-      icon={<FileText />}
-      size="xl"
-      title={record.guardName?.fullName || "Trabajador"}
-      onOpenChange={(o) => !o && onClose()}
     >
       {esAusencia ? (
         <FichaDeAusencia r={record} />
@@ -466,6 +457,8 @@ export default function TimesheetModal({
         <>
           <TabNav<Pestana>
             className="-mt-1 mb-4"
+            value={tab}
+            onChange={setTab}
             items={[
               { value: "detalle", label: "Detalle", icon: <FileText /> },
               ...(puedeEditar
@@ -479,8 +472,6 @@ export default function TimesheetModal({
                 : []),
               { value: "bitacora", label: "Bitácora", icon: <History /> },
             ]}
-            value={tab}
-            onChange={setTab}
           />
 
           {tab === "detalle" && (
@@ -488,8 +479,8 @@ export default function TimesheetModal({
               <div className="space-y-4">
                 <div className="flex flex-wrap items-center gap-3">
                   <StatusBadge
-                    approval={record.approvalStatus}
                     status={record.status}
+                    approval={record.approvalStatus}
                   />
                   <PayrollBadge status={record.payrollStatus} />
                   {record.punchInOutsideGeofence && (
@@ -513,11 +504,11 @@ export default function TimesheetModal({
                     }
                   />
                   <Field
-                    numeric
                     label={esOtroReloj ? "Horas (netas)" : "Horas en el puesto"}
                     value={
                       <span className="tabular-nums">{fmtHours(horas)}</span>
                     }
+                    numeric
                   />
                   <Field
                     label="Entrada"
@@ -536,13 +527,13 @@ export default function TimesheetModal({
                     }
                   />
                   <Field
-                    numeric
                     label="Descanso"
                     value={
                       <span className="tabular-nums">
                         {desc ? `${desc} min` : "—"}
                       </span>
                     }
+                    numeric
                   />
                   {/* En un vigilante `hoursWorked` es tiempo EN EL PUESTO y el
                       descanso va aparte; en supervisión y oficina el propio
@@ -550,7 +541,6 @@ export default function TimesheetModal({
                       quitaría el almuerzo dos veces. */}
                   {!esOtroReloj && (
                     <Field
-                      numeric
                       label="Netas"
                       value={
                         <span className="tabular-nums">
@@ -559,43 +549,44 @@ export default function TimesheetModal({
                             : fmtHours(Math.max(0, horas - desc / 60))}
                         </span>
                       }
+                      numeric
                     />
                   )}
                   <Field
-                    numeric
                     label="Tarde"
                     value={
                       <span className="tabular-nums">
                         {record.lateMinutes || 0} min
                       </span>
                     }
+                    numeric
                   />
                   <Field
-                    numeric
                     label="Extra"
                     value={
                       <span className="tabular-nums">
                         {record.overtimeMinutes || 0} min
                       </span>
                     }
+                    numeric
                   />
                   <Field
-                    numeric
                     label="Rondas"
                     value={
                       <span className="tabular-nums">
                         {record.numberOfPatrolsDuringShift ?? 0}
                       </span>
                     }
+                    numeric
                   />
                   <Field
-                    numeric
                     label="Incidentes"
                     value={
                       <span className="tabular-nums">
                         {record.numberOfIncidentsDurindShift ?? 0}
                       </span>
                     }
+                    numeric
                   />
                 </div>
 
@@ -688,10 +679,11 @@ export default function TimesheetModal({
                             </span>
                           </div>
                           <StaticMapImage
-                            alt="Ubicación de la marcación de entrada"
-                            height="170px"
                             lat={Number(record.punchInLatitude)}
                             lng={Number(record.punchInLongitude)}
+                            zoom={16}
+                            height="170px"
+                            alt="Ubicación de la marcación de entrada"
                             polygon={
                               record.stationName?.geofencePolygon || undefined
                             }
@@ -701,15 +693,22 @@ export default function TimesheetModal({
                                 ? Number(record.stationName.geofenceRadius)
                                 : null
                             }
-                            zoom={16}
                           >
                             <GoogleMapEmbed
+                              lat={Number(record.punchInLatitude)}
+                              lng={Number(record.punchInLongitude)}
+                              zoom={16}
+                              height="170px"
+                              showGeofence={
+                                !record.stationName?.geofencePolygon &&
+                                !!record.stationName?.geofenceRadius
+                              }
                               geofenceRadius={
                                 record.stationName?.geofenceRadius || 100
                               }
-                              height="170px"
-                              lat={Number(record.punchInLatitude)}
-                              lng={Number(record.punchInLongitude)}
+                              polygon={
+                                record.stationName?.geofencePolygon || undefined
+                              }
                               markers={[
                                 {
                                   id: "in",
@@ -718,14 +717,6 @@ export default function TimesheetModal({
                                   label: "Entrada",
                                 },
                               ]}
-                              polygon={
-                                record.stationName?.geofencePolygon || undefined
-                              }
-                              showGeofence={
-                                !record.stationName?.geofencePolygon &&
-                                !!record.stationName?.geofenceRadius
-                              }
-                              zoom={16}
                             />
                           </StaticMapImage>
                           {record.punchInOutsideGeofence && (
@@ -765,10 +756,11 @@ export default function TimesheetModal({
                             </span>
                           </div>
                           <StaticMapImage
-                            alt="Ubicación de la marcación de salida"
-                            height="170px"
                             lat={Number(record.punchOutLatitude)}
                             lng={Number(record.punchOutLongitude)}
+                            zoom={16}
+                            height="170px"
+                            alt="Ubicación de la marcación de salida"
                             polygon={
                               record.stationName?.geofencePolygon || undefined
                             }
@@ -778,15 +770,22 @@ export default function TimesheetModal({
                                 ? Number(record.stationName.geofenceRadius)
                                 : null
                             }
-                            zoom={16}
                           >
                             <GoogleMapEmbed
+                              lat={Number(record.punchOutLatitude)}
+                              lng={Number(record.punchOutLongitude)}
+                              zoom={16}
+                              height="170px"
+                              showGeofence={
+                                !record.stationName?.geofencePolygon &&
+                                !!record.stationName?.geofenceRadius
+                              }
                               geofenceRadius={
                                 record.stationName?.geofenceRadius || 100
                               }
-                              height="170px"
-                              lat={Number(record.punchOutLatitude)}
-                              lng={Number(record.punchOutLongitude)}
+                              polygon={
+                                record.stationName?.geofencePolygon || undefined
+                              }
                               markers={[
                                 {
                                   id: "out",
@@ -795,14 +794,6 @@ export default function TimesheetModal({
                                   label: "Salida",
                                 },
                               ]}
-                              polygon={
-                                record.stationName?.geofencePolygon || undefined
-                              }
-                              showGeofence={
-                                !record.stationName?.geofencePolygon &&
-                                !!record.stationName?.geofenceRadius
-                              }
-                              zoom={16}
                             />
                           </StaticMapImage>
                         </div>
@@ -816,15 +807,15 @@ export default function TimesheetModal({
                 <p className="cg-eyebrow mb-1">Selfie de entrada</p>
                 {selfieUrl ? (
                   <a
-                    className="block"
                     href={selfieUrl}
-                    rel="noopener noreferrer"
                     target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
                   >
                     <img
+                      src={selfieUrl}
                       alt="Selfie de entrada"
                       className="glass-flat w-full object-contain"
-                      src={selfieUrl}
                     />
                     {record.punchInAddress && (
                       <p
@@ -837,9 +828,9 @@ export default function TimesheetModal({
                   </a>
                 ) : (
                   <EmptyState
-                    className="py-8"
                     icon={<ImageOff />}
                     title="Sin selfie"
+                    className="py-8"
                   />
                 )}
               </div>
@@ -860,8 +851,8 @@ export default function TimesheetModal({
                 <label className="block">
                   <span className="cg-eyebrow mb-1 block">Entrada</span>
                   <input
-                    className="cg-input cg-focus w-full px-3 py-2 text-sm tabular-nums"
                     type="datetime-local"
+                    className="cg-input cg-focus w-full px-3 py-2 text-sm tabular-nums"
                     value={entrada}
                     onChange={(e) => setEntrada(e.target.value)}
                   />
@@ -869,8 +860,8 @@ export default function TimesheetModal({
                 <label className="block">
                   <span className="cg-eyebrow mb-1 block">Salida</span>
                   <input
-                    className="cg-input cg-focus w-full px-3 py-2 text-sm tabular-nums"
                     type="datetime-local"
+                    className="cg-input cg-focus w-full px-3 py-2 text-sm tabular-nums"
                     value={salida}
                     onChange={(e) => setSalida(e.target.value)}
                   />
@@ -884,9 +875,9 @@ export default function TimesheetModal({
                     {minutosDescanso ? ` · ${minutosDescanso} min` : ""}
                   </span>
                   <Button
-                    className="rounded-full"
                     size="sm"
                     variant="outline"
+                    className="rounded-full"
                     onClick={() =>
                       setDescansos((p) => [
                         ...p,
@@ -926,8 +917,8 @@ export default function TimesheetModal({
                         <option value="lunch">Almuerzo</option>
                       </select>
                       <input
-                        className="cg-input cg-focus px-2 py-2 text-sm tabular-nums"
                         type="datetime-local"
+                        className="cg-input cg-focus px-2 py-2 text-sm tabular-nums"
                         value={d.start}
                         onChange={(e) =>
                           setDescansos((p) =>
@@ -938,8 +929,8 @@ export default function TimesheetModal({
                         }
                       />
                       <input
-                        className="cg-input cg-focus px-2 py-2 text-sm tabular-nums"
                         type="datetime-local"
+                        className="cg-input cg-focus px-2 py-2 text-sm tabular-nums"
                         value={d.end}
                         onChange={(e) =>
                           setDescansos((p) =>
@@ -966,9 +957,9 @@ export default function TimesheetModal({
               <label className="block">
                 <span className="cg-eyebrow mb-1 block">Observaciones</span>
                 <textarea
-                  className="cg-input cg-focus w-full px-3 py-2 text-sm"
-                  maxLength={500}
                   rows={2}
+                  maxLength={500}
+                  className="cg-input cg-focus w-full px-3 py-2 text-sm"
                   value={obs}
                   onChange={(e) => setObs(e.target.value)}
                 />
@@ -980,19 +971,19 @@ export default function TimesheetModal({
                 </span>
                 <input
                   className="cg-input cg-focus w-full px-3 py-2 text-sm"
-                  placeholder="Ej.: el reloj no registró la salida; se confirmó con el supervisor"
                   value={motivo}
+                  placeholder="Ej.: el reloj no registró la salida; se confirmó con el supervisor"
                   onChange={(e) => setMotivo(e.target.value)}
                 />
               </label>
 
               <div className="flex justify-end gap-2">
-                <Button disabled={busy} variant="ghost" onClick={onClose}>
+                <Button variant="ghost" onClick={onClose} disabled={busy}>
                   Cancelar
                 </Button>
                 <Button
-                  disabled={busy || !motivo.trim()}
                   onClick={() => void guardar()}
+                  disabled={busy || !motivo.trim()}
                 >
                   Guardar corrección
                 </Button>

@@ -6,9 +6,9 @@ import {
   ShieldCheck,
   Siren,
   FlaskConical,
+  RefreshCw,
   BarChart3,
 } from "lucide-react";
-
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import { alarmService } from "@/lib/api/alarmService";
@@ -79,86 +79,86 @@ export default function AlarmReports() {
     <AppLayout>
       <PageContainer width="wide">
         <PageHeader
-          actions={
-            <>
-              <Segmented
-                options={PERIODS.map((dd) => ({
-                  value: String(dd),
-                  label: dd === 365 ? "1 año" : `${dd} días`,
-                }))}
-                value={String(days)}
-                onChange={(v) => setDays(Number(v))}
-              />
-              <Button asChild size="sm" variant="outline">
-                <Link to="/alarm/queue">Cola</Link>
-              </Button>
-            </>
-          }
           icon={<BarChart3 />}
-          subtitle="Cómo se cerró cada caso y qué proporción resultó ser falsa, panel por panel."
           title={t(
             "ui.AlarmReports.reportesDeFalsasAlarmas",
             "Reportes de falsas alarmas",
           )}
+          subtitle="Cómo se cerró cada caso y qué proporción resultó ser falsa, panel por panel."
+          actions={
+            <>
+              <Segmented
+                value={String(days)}
+                onChange={(v) => setDays(Number(v))}
+                options={PERIODS.map((dd) => ({
+                  value: String(dd),
+                  label: dd === 365 ? "1 año" : `${dd} días`,
+                }))}
+              />
+              <Button asChild variant="outline" size="sm">
+                <Link to="/alarm/queue">Cola</Link>
+              </Button>
+            </>
+          }
         />
 
         {loading ? (
-          <SkeletonCards className="lg:grid-cols-6" count={6} />
+          <SkeletonCards count={6} className="lg:grid-cols-6" />
         ) : (
           <>
             <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
               <StatCard
-                accent="neutral"
-                icon={<BarChart3 />}
                 label="Total"
                 value={o.total}
+                icon={<BarChart3 />}
+                accent="neutral"
               />
               <StatCard
-                accent="ok"
-                icon={<ShieldCheck />}
                 label="Reales"
                 value={o.real}
+                icon={<ShieldCheck />}
+                accent="ok"
               />
               <StatCard
-                accent="warn"
-                icon={<ShieldAlert />}
                 label="Falsas"
                 value={o.false}
+                icon={<ShieldAlert />}
+                accent="warn"
               />
               <StatCard
-                accent="bad"
-                icon={<Siren />}
                 label="Reincidentes"
                 value={o.runaway}
+                icon={<Siren />}
+                accent="bad"
               />
               <StatCard
-                accent="neutral"
-                icon={<FlaskConical />}
                 label="Pruebas"
                 value={o.test}
+                icon={<FlaskConical />}
+                accent="neutral"
               />
               {/* La cifra que resume la salud de la cuenta lleva la MISMA escala que
                   las celdas de la tabla de abajo (50 % / 25 %). Iba en el acento
                   de marca, contradiciendo su propia tabla en la misma página. */}
               <StatCard
+                label="Tasa falsas"
+                value={`${o.falseRate}%`}
+                icon={<ShieldAlert />}
                 accent={
                   o.falseRate >= 50 ? "bad" : o.falseRate >= 25 ? "warn" : "ok"
                 }
-                icon={<ShieldAlert />}
-                label="Tasa falsas"
-                value={`${o.falseRate}%`}
               />
             </Stagger>
 
-            <Section icon={<BarChart3 />} title="Por panel">
+            <Section title="Por panel" icon={<BarChart3 />}>
               {!data?.panels || data.panels.length === 0 ? (
                 <EmptyState
+                  icon={<BarChart3 />}
+                  title={t("comun.sinDatos", "Sin datos")}
                   description={t(
                     "ui.AlarmReports.sinCasosCerradosConDisposicionEnElPeriodo",
                     "Sin casos cerrados con disposición en el período.",
                   )}
-                  icon={<BarChart3 />}
-                  title={t("comun.sinDatos", "Sin datos")}
                 />
               ) : (
                 <div className="overflow-x-auto -mx-1">

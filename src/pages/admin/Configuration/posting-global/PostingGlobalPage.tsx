@@ -12,12 +12,16 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { ShieldCheck, Route as RouteIcon, MapPin } from "lucide-react";
-
+import {
+  ShieldCheck,
+  Route as RouteIcon,
+  MapPin,
+  ClipboardList,
+  BellRing,
+} from "lucide-react";
+import { Section, Stagger, SkeletonCards } from "@/components/kit";
 import SettingsPageShell from "../components/SettingsPageShell";
 import { ToggleRow, SaveBar } from "../components/SettingsForm";
-
-import { Section, Stagger, SkeletonCards } from "@/components/kit";
 import { usePermissions } from "@/hooks/usePermissions";
 import api from "@/lib/api";
 
@@ -64,7 +68,6 @@ export default function PostingGlobalPage() {
     (async () => {
       try {
         const { data } = await api.get(`/tenant/${tenantId()}/settings`);
-
         setRow(data || {});
         setRules({ ...DEFAULTS, ...((data && data.postRules) || {}) });
         setEscalarTrasMin(Number(data?.coverage?.escalateAfterMin) || 20);
@@ -117,6 +120,9 @@ export default function PostingGlobalPage() {
   return (
     <SettingsPageShell
       icon={<ShieldCheck />}
+      title={t("settings.postingGlobal.pageTitle", {
+        defaultValue: "Configuración Global de Puestos",
+      })}
       navTitle={t("settings.postingGlobal.navTitle", {
         defaultValue: "Configuración Global de Puestos de Vigilancia",
       })}
@@ -124,41 +130,38 @@ export default function PostingGlobalPage() {
         defaultValue:
           "Reglas operativas aplicadas a todos los puestos de vigilancia de tu empresa.",
       })}
-      title={t("settings.postingGlobal.pageTitle", {
-        defaultValue: "Configuración Global de Puestos",
-      })}
     >
       {loading ? (
-        <SkeletonCards className="sm:grid-cols-1" count={3} />
+        <SkeletonCards count={3} className="sm:grid-cols-1" />
       ) : (
         <Stagger className="space-y-6">
           <Section
-            contentClassName="divide-y"
-            icon={<RouteIcon />}
             title={t("settings.postingGlobal.sectionRondas", {
               defaultValue: "Rondas",
             })}
+            icon={<RouteIcon />}
+            contentClassName="divide-y"
           >
             <ToggleRow
-              checked={rules.requireActiveShiftForRounds}
-              disabled={!canEdit || loading}
+              label={t("settings.postingGlobal.requireActiveShiftLabel", {
+                defaultValue: "Exigir turno activo para escanear rondas",
+              })}
               hint={t("settings.postingGlobal.requireActiveShiftHint", {
                 defaultValue:
                   "El vigilante debe haber marcado su entrada para que un escaneo de punto de control cuente. Evita rondas registradas fuera de turno.",
               })}
-              label={t("settings.postingGlobal.requireActiveShiftLabel", {
-                defaultValue: "Exigir turno activo para escanear rondas",
-              })}
+              checked={rules.requireActiveShiftForRounds}
               onCheckedChange={(v) => set("requireActiveShiftForRounds", v)}
+              disabled={!canEdit || loading}
             />
           </Section>
 
           <Section
-            contentClassName="divide-y"
-            icon={<MapPin />}
             title={t("settings.postingGlobal.sectionUncovered", {
               defaultValue: "Puesto sin cubrir",
             })}
+            icon={<MapPin />}
+            contentClassName="divide-y"
           >
             <label className="block py-3">
               <span className="text-sm font-medium">
@@ -177,13 +180,13 @@ export default function PostingGlobalPage() {
               </p>
               <div className="mt-2 flex items-center gap-2">
                 <input
-                  className="cg-input cg-focus w-28 px-3 py-2 text-sm"
-                  disabled={!canEdit || loading}
-                  max={240}
-                  min={5}
                   type="number"
+                  min={5}
+                  max={240}
                   value={escalarTrasMin}
                   onChange={(e) => setEscalarTrasMin(Number(e.target.value))}
+                  disabled={!canEdit || loading}
+                  className="cg-input cg-focus w-28 px-3 py-2 text-sm"
                 />
                 <span className="text-sm" style={{ color: "var(--ink-soft)" }}>
                   {t("settings.postingGlobal.suffixMinutos", {
@@ -195,39 +198,39 @@ export default function PostingGlobalPage() {
           </Section>
 
           <Section
-            contentClassName="divide-y"
-            icon={<MapPin />}
             title={t("settings.postingGlobal.sectionGeofence", {
               defaultValue: "Alertas de geocerca en turno",
             })}
+            icon={<MapPin />}
+            contentClassName="divide-y"
           >
             <ToggleRow
-              checked={rules.geofenceExitAlert}
-              disabled={!canEdit || loading}
-              hint={t("settings.postingGlobal.geofenceExitHint", {
-                defaultValue:
-                  "Con el GPS del turno, detecta cuando el vigilante abandona el área de su puesto estando de servicio y notifica a los supervisores (requiere 2 lecturas consecutivas fuera, para evitar falsos positivos del GPS). Los puestos móviles quedan exentos.",
-              })}
               label={t("settings.postingGlobal.geofenceExitLabel", {
                 defaultValue:
                   "Alertar cuando el vigilante salga de la geocerca",
               })}
+              hint={t("settings.postingGlobal.geofenceExitHint", {
+                defaultValue:
+                  "Con el GPS del turno, detecta cuando el vigilante abandona el área de su puesto estando de servicio y notifica a los supervisores (requiere 2 lecturas consecutivas fuera, para evitar falsos positivos del GPS). Los puestos móviles quedan exentos.",
+              })}
+              checked={rules.geofenceExitAlert}
               onCheckedChange={(v) => {
                 set("geofenceExitAlert", v);
                 if (!v) set("geofenceReturnAlert", false);
               }}
+              disabled={!canEdit || loading}
             />
             <ToggleRow
-              checked={rules.geofenceReturnAlert}
-              disabled={!canEdit || loading || !rules.geofenceExitAlert}
+              label={t("settings.postingGlobal.geofenceReturnLabel", {
+                defaultValue: "Alertar también cuando regrese",
+              })}
               hint={t("settings.postingGlobal.geofenceReturnHint", {
                 defaultValue:
                   "Envía una segunda notificación cuando el vigilante vuelve a entrar a la geocerca.",
               })}
-              label={t("settings.postingGlobal.geofenceReturnLabel", {
-                defaultValue: "Alertar también cuando regrese",
-              })}
+              checked={rules.geofenceReturnAlert}
               onCheckedChange={(v) => set("geofenceReturnAlert", v)}
+              disabled={!canEdit || loading || !rules.geofenceExitAlert}
             />
             <p className="pt-3 text-xs" style={{ color: "var(--ink-faint)" }}>
               {t("settings.postingGlobal.geofenceChannelsPre", {
@@ -235,9 +238,9 @@ export default function PostingGlobalPage() {
                   "Por dónde llegan estas alertas (panel, correo o SMS) se decide en",
               })}{" "}
               <Link
+                to="/setting/notifications"
                 className="font-semibold underline underline-offset-2"
                 style={{ color: "var(--brand-text)" }}
-                to="/setting/notifications"
               >
                 {t("settings.postingGlobal.geofenceChannelsLink", {
                   defaultValue: "Configuración › Avisos",
@@ -257,9 +260,9 @@ export default function PostingGlobalPage() {
                             la columna de índice en SettingsLayout. */}
 
           <SaveBar
-            disabled={!canEdit || loading}
-            saving={saving}
             onSave={save}
+            saving={saving}
+            disabled={!canEdit || loading}
           />
         </Stagger>
       )}

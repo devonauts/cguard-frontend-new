@@ -2,13 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-
-import { CatalogTable, type CatalogColumn } from "../components/CatalogTable";
-
-import PolicyDialog, { PolicyForm } from "./PolicyDialog";
-
 import { Button } from "@/components/ui/button";
+import { StatusBadge } from "@/components/kit";
 import { ApiService } from "@/services/api/apiService";
+import { CatalogTable, type CatalogColumn } from "../components/CatalogTable";
+import PolicyDialog, { PolicyForm } from "./PolicyDialog";
 
 type Policy = {
   id: string;
@@ -26,7 +24,6 @@ type Policy = {
 const formatPolicyDate = (value?: string) => {
   if (!value) return "—";
   const d = new Date(value);
-
   return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString();
 };
 
@@ -70,9 +67,7 @@ export default function CompanyPoliciesTable() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-
     if (!q) return policies;
-
     return policies.filter((p) => p.title.toLowerCase().includes(q));
   }, [query, policies]);
 
@@ -91,7 +86,6 @@ export default function CompanyPoliciesTable() {
           c,
         ]),
       );
-
       setPolicies(
         filas.map((p) => ({
           ...p,
@@ -136,13 +130,32 @@ export default function CompanyPoliciesTable() {
   return (
     <>
       <CatalogTable<Policy>
+        rows={filtered}
+        columns={columns}
         canEdit
+        query={query}
+        onQueryChange={setQuery}
+        searchPlaceholder="Buscar política de empresa"
+        page={1}
+        pageSize={pageSize}
+        total={filtered.length}
+        onPageChange={() => {}}
+        onPageSizeChange={setPageSize}
         bulkActions={[
           { label: "Eliminar", destructive: true, onRun: () => {} },
           { label: "Publicar", onRun: () => {} },
           { label: "Mover a borrador", onRun: () => {} },
         ]}
-        columns={columns}
+        toolbarExtra={
+          <Button
+            onClick={() => setOpenNew(true)}
+            variant="brand"
+            className="whitespace-nowrap"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            {t("ui.CompanyPoliciesTable.nuevaPolitica", "Nueva política")}
+          </Button>
+        }
         empty={{
           title: query.trim()
             ? "No se encontraron resultados"
@@ -151,32 +164,13 @@ export default function CompanyPoliciesTable() {
             ? "No pudimos encontrar ningún elemento que coincida con tu búsqueda."
             : "Publica el reglamento interno y sabrás quién lo ha firmado.",
         }}
-        page={1}
-        pageSize={pageSize}
-        query={query}
-        rows={filtered}
-        searchPlaceholder="Buscar política de empresa"
-        toolbarExtra={
-          <Button
-            className="whitespace-nowrap"
-            variant="brand"
-            onClick={() => setOpenNew(true)}
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            {t("ui.CompanyPoliciesTable.nuevaPolitica", "Nueva política")}
-          </Button>
-        }
-        total={filtered.length}
-        onPageChange={() => {}}
-        onPageSizeChange={setPageSize}
-        onQueryChange={setQuery}
       />
 
       <PolicyDialog
         open={openNew}
-        onDraft={handleDraft}
         onOpenChange={setOpenNew}
         onSubmit={handleCreate}
+        onDraft={handleDraft}
       />
     </>
   );

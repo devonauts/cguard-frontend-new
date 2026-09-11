@@ -1,20 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Undo2,
-  Trash2,
-  MapPin,
-  Search,
-  Building2,
-  Maximize2,
-} from "lucide-react";
-
 import { loadGoogleMaps } from "@/utils/loadGoogleMaps";
 import { getTenantLocation } from "@/utils/tenantLocation";
 import { useMapPalette } from "@/utils/mapTheme";
 import {
   useMapPopup,
   mapPopupActions,
+  mapPopupItems,
   type MapPopupTone,
 } from "@/components/maps/MapPopup";
 import { useMotorMapa } from "@/utils/mapMotion";
@@ -28,6 +20,14 @@ import {
   radioEquivalente,
   radioMaximo,
 } from "@/utils/geoMedidas";
+import {
+  Undo2,
+  Trash2,
+  MapPin,
+  Search,
+  Building2,
+  Maximize2,
+} from "lucide-react";
 import "@/styles/map.css";
 
 export type PolyPoint = { lat: number; lng: number };
@@ -89,7 +89,6 @@ export default function StationGeofencePolygon({
   const searchRef = useRef<HTMLInputElement | null>(null);
   const centerMarkerRef = useRef<any>(null);
   const onCenterChangeRef = useRef(onCenterChange);
-
   onCenterChangeRef.current = onCenterChange;
   const [ready, setReady] = useState(false);
   const [alto, setAlto] = useState(340);
@@ -100,10 +99,8 @@ export default function StationGeofencePolygon({
 
   // The map-click listener is registered once; read the latest props via refs.
   const ptsRef = useRef(pts);
-
   ptsRef.current = pts;
   const onChangeRef = useRef(onChange);
-
   onChangeRef.current = onChange;
 
   // Puente de color: la geocerca se dibuja con el acento configurable del CRM,
@@ -115,13 +112,11 @@ export default function StationGeofencePolygon({
   // derecho — quitar un vértice — y que con el dedo no existe.
   const pop = useMapPopup(() => mapRef.current);
   const popRef = useRef(pop);
-
   popRef.current = pop;
 
   // Cámara compartida: encuadrar el recinto y viajar a un vértice con transición.
   const motor = useMotorMapa(mapRef.current, ready);
   const motorRef = useRef(motor);
-
   motorRef.current = motor;
 
   const hasCenter =
@@ -133,13 +128,11 @@ export default function StationGeofencePolygon({
   // ── Init map once ──────────────────────────────────────────────────────────
   useEffect(() => {
     let mounted = true;
-
     (async () => {
       try {
         await loadGoogleMaps();
         if (!mounted || !mapDivRef.current) return;
         const g = (window as any).google;
-
         if (!g?.maps) return;
 
         const biz = getTenantLocation();
@@ -162,14 +155,12 @@ export default function StationGeofencePolygon({
           draggableCursor: "crosshair",
           // No mapId on purpose — keeps classic Markers/Polygon rendering.
         });
-
         mapRef.current = map;
 
         map.addListener("click", (e: any) => {
           if (!e?.latLng) return;
           const lat = e.latLng.lat();
           const lng = e.latLng.lng();
-
           onChangeRef.current([...(ptsRef.current || []), { lat, lng }]);
         });
 
@@ -210,16 +201,13 @@ export default function StationGeofencePolygon({
             const ac = new g.maps.places.Autocomplete(searchRef.current, {
               fields: ["geometry"],
             });
-
             ac.bindTo("bounds", map);
             ac.addListener("place_changed", () => {
               const place = ac.getPlace();
               const loc = place?.geometry?.location;
-
               if (!loc) return;
               const lat = loc.lat();
               const lng = loc.lng();
-
               motorRef.current?.camara.volarA({ lat, lng }, { zoom: 18 });
               onCenterChangeRef.current?.(lat, lng);
             });
@@ -231,7 +219,6 @@ export default function StationGeofencePolygon({
         console.error("[StationGeofencePolygon] map init failed", err);
       }
     })();
-
     return () => {
       mounted = false;
       try {
@@ -248,23 +235,23 @@ export default function StationGeofencePolygon({
         /* ignore */
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── Recenter + move the center pin when coords change ──────────────────────
   useEffect(() => {
     if (mapRef.current && hasCenter) {
       const c = { lat: centerLat as number, lng: centerLng as number };
-
       motorRef.current?.camara.volarA(c);
       if (centerMarkerRef.current) centerMarkerRef.current.setPosition(c);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [centerLat, centerLng]);
 
   // El mapa cambia de alto sin que Google se entere: hay que avisarle o las
   // teselas se quedan cortadas en la mitad de abajo.
   useEffect(() => {
     const g = (window as any).google;
-
     if (!ready || !g?.maps || !mapRef.current) return;
     const id = window.setTimeout(() => {
       try {
@@ -273,7 +260,6 @@ export default function StationGeofencePolygon({
         /* desmontado */
       }
     }, 220);
-
     return () => window.clearTimeout(id);
   }, [alto, ready]);
 
@@ -288,7 +274,6 @@ export default function StationGeofencePolygon({
   // ── Redraw markers + line/polygon whenever the points change ───────────────
   useEffect(() => {
     const g = (window as any).google;
-
     if (!ready || !g?.maps || !mapRef.current) return;
     const map = mapRef.current;
 
@@ -329,7 +314,6 @@ export default function StationGeofencePolygon({
       const sync = () => {
         if (!arrastrando) onChangeRef.current(leer());
       };
-
       g.maps.event.addListener(p, "set_at", sync);
       g.maps.event.addListener(p, "insert_at", sync);
       g.maps.event.addListener(p, "remove_at", sync);
@@ -356,11 +340,9 @@ export default function StationGeofencePolygon({
       const ruta = (ptsRef.current || []).map((p, j) =>
         j === i ? { lat, lng } : p,
       );
-
       try {
         const destino =
           polyRef.current?.getPath?.() ?? lineRef.current?.getPath?.();
-
         if (destino && i < destino.getLength())
           destino.setAt(i, new g.maps.LatLng(lat, lng));
       } catch {
@@ -413,7 +395,6 @@ export default function StationGeofencePolygon({
         if (!e?.latLng) return;
         const lat = e.latLng.lat();
         const lng = e.latLng.lng();
-
         onChangeRef.current(
           (ptsRef.current || []).map((p, j) => (j === i ? { lat, lng } : p)),
         );
@@ -462,15 +443,14 @@ export default function StationGeofencePolygon({
     });
 
     return () => cancelAnimationFrame(pendiente);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, pal, JSON.stringify(pts)]);
 
   // ── Las cifras: lo que hay que ver MIENTRAS se dibuja ──────────────────────
   const medidas = useMemo(() => {
     const ruta = rutaViva ?? pts;
-
     if (ruta.length < 3) return null;
     const area = areaPoligono(ruta);
-
     return {
       area,
       perimetro: perimetroPoligono(ruta),
@@ -491,7 +471,6 @@ export default function StationGeofencePolygon({
    */
   const aviso = useMemo((): { tono: MapPopupTone; texto: string } | null => {
     const ruta = rutaViva ?? pts;
-
     if (!ruta.length) return null;
     if (ruta.length < 3) {
       return {
@@ -504,7 +483,6 @@ export default function StationGeofencePolygon({
     }
     if (!medidas) return null;
     const r = medidas.radio;
-
     if (r < 15) {
       return {
         tono: "bad",
@@ -533,7 +511,6 @@ export default function StationGeofencePolygon({
           "Bastante amplia: revisa que no se salga de la propiedad del cliente.",
       };
     }
-
     return {
       tono: "ok",
       texto: t(
@@ -565,24 +542,24 @@ export default function StationGeofencePolygon({
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <div className="relative flex-1">
             <Search
-              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
               size={14}
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
             />
             <input
               ref={searchRef}
-              className="w-full rounded-lg border border-border bg-background py-2 pl-9 pr-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              type="text"
               placeholder={t(
                 "ui.StationGeofencePolygon.buscarDireccionDelPuesto",
                 "Buscar dirección del puesto…",
               )}
-              type="text"
+              className="w-full rounded-lg border border-border bg-background py-2 pl-9 pr-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
             />
           </div>
           {hasSite && (
             <button
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-input px-3 py-2 text-xs font-medium text-muted-foreground hover:text-foreground"
               type="button"
               onClick={useSite}
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-input px-3 py-2 text-xs font-medium text-muted-foreground hover:text-foreground"
             >
               <Building2 size={13} />{" "}
               {t(
@@ -606,27 +583,27 @@ export default function StationGeofencePolygon({
         </span>
         <div className="flex gap-2">
           <button
-            className="inline-flex min-h-9 items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs disabled:opacity-40"
-            disabled={pts.length < 2}
             type="button"
             onClick={cuadrar}
+            disabled={pts.length < 2}
+            className="inline-flex min-h-9 items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs disabled:opacity-40"
           >
             <Maximize2 size={12} /> Encuadrar
           </button>
           <button
-            className="inline-flex min-h-9 items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs disabled:opacity-40"
-            disabled={!pts.length}
             type="button"
             onClick={undo}
+            disabled={!pts.length}
+            className="inline-flex min-h-9 items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs disabled:opacity-40"
           >
             <Undo2 size={12} /> Deshacer
           </button>
           <button
-            className="inline-flex min-h-9 items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs disabled:opacity-40"
-            disabled={!pts.length}
-            style={{ color: "var(--bad-text)" }}
             type="button"
             onClick={clear}
+            disabled={!pts.length}
+            className="inline-flex min-h-9 items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs disabled:opacity-40"
+            style={{ color: "var(--bad-text)" }}
           >
             <Trash2 size={12} /> Limpiar
           </button>
@@ -674,9 +651,9 @@ export default function StationGeofencePolygon({
 
         <div className="cc-map-hud" style={{ right: 10, bottom: 10 }}>
           <button
-            className="cc-map-card px-2.5 py-1.5 text-[11px] font-semibold"
             type="button"
             onClick={() => setAlto((a) => (a > 420 ? 340 : 560))}
+            className="cc-map-card px-2.5 py-1.5 text-[11px] font-semibold"
           >
             {alto > 420 ? "Reducir mapa" : "Ampliar mapa"}
           </button>

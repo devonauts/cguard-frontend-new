@@ -1,6 +1,5 @@
-import type { Client } from "@/types/client";
-
 import React, { useState, useRef, useEffect, useMemo } from "react";
+import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import {
   Search,
   ChevronDown,
@@ -13,11 +12,22 @@ import {
   Eye,
   FileText,
 } from "lucide-react";
+import ClientsLayout from "@/layouts/ClientsLayout";
+import AppLayout from "@/layouts/app-layout";
 import { useTranslation } from "react-i18next";
+import { clientService } from "@/lib/api/clientService";
 import { toast } from "sonner";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import MobileCardList from "@/components/responsive/MobileCardList";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-
+import { Button } from "@/components/ui/button";
+import { Section, EmptyState, Modal } from "@/components/kit";
 import {
   FIELD_CLS,
   LabeledField,
@@ -26,18 +36,7 @@ import {
   Th,
   Tr,
 } from "../_shared/tab-kit";
-
-import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
-import { clientService } from "@/lib/api/clientService";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import MobileCardList from "@/components/responsive/MobileCardList";
-import { Button } from "@/components/ui/button";
-import { Section, EmptyState, Modal } from "@/components/kit";
+import type { Client } from "@/types/client";
 
 type Props = {
   client?: Client & { firstName?: string };
@@ -119,11 +118,9 @@ export default function ClientNotes({ client }: Props) {
   // Load notes for client
   useEffect(() => {
     let mounted = true;
-
     async function loadNotes() {
       if (!client || !client.id) {
         setNotesData([]);
-
         return;
       }
       try {
@@ -131,10 +128,8 @@ export default function ClientNotes({ client }: Props) {
           limit: 9999,
           offset: 0,
         });
-
         if (!mounted) return;
         const rows = Array.isArray(resp?.rows) ? resp.rows : [];
-
         setNotesData(rows);
       } catch (err) {
         console.warn("[ClientNotes] failed to load notes", err);
@@ -142,7 +137,6 @@ export default function ClientNotes({ client }: Props) {
       }
     }
     loadNotes();
-
     return () => {
       mounted = false;
     };
@@ -150,15 +144,12 @@ export default function ClientNotes({ client }: Props) {
 
   const confirmNames = (confirmDeleteIds || []).map((id) => {
     const found = (notesData || []).find((n) => n.id === id);
-
     return found ? found.title || String(found.id) : String(id);
   });
 
   const filtered = useMemo(() => {
     const q = (searchQuery || "").toLowerCase().trim();
-
     if (!q) return notesData;
-
     return (notesData || []).filter((n) => {
       const title = (n.title || "").toString().toLowerCase();
       const desc = (n.description || "").toString().toLowerCase();
@@ -177,7 +168,6 @@ export default function ClientNotes({ client }: Props) {
             (client.lastName || "")
           ).toLowerCase()
         : "";
-
       return (
         title.includes(q) ||
         desc.includes(q) ||
@@ -203,10 +193,8 @@ export default function ClientNotes({ client }: Props) {
       )
         setActionOpen(false);
     };
-
     if (actionOpen) {
       document.addEventListener("mousedown", handleClickOutside);
-
       return () =>
         document.removeEventListener("mousedown", handleClickOutside);
     }
@@ -219,7 +207,6 @@ export default function ClientNotes({ client }: Props) {
       toast.error(
         t("clients.notes.validation.titleRequired", "Title is required"),
       );
-
       return;
     }
     if (!formData.description || !formData.description.trim()) {
@@ -229,14 +216,12 @@ export default function ClientNotes({ client }: Props) {
           "Description is required",
         ),
       );
-
       return;
     }
     if (!formData.date) {
       toast.error(
         t("clients.notes.validation.dateRequired", "Date is required"),
       );
-
       return;
     }
     const payload: {
@@ -254,7 +239,6 @@ export default function ClientNotes({ client }: Props) {
     if (!client || !client.id) {
       // local-only
       const local = { id: String(Date.now()), ...payload, addedBy: "You" };
-
       setNotesData((prev) => [local, ...prev]);
       setShowModal(false);
       setFormData({
@@ -263,7 +247,6 @@ export default function ClientNotes({ client }: Props) {
         date: new Date().toISOString().split("T")[0],
         attachments: [],
       });
-
       return;
     }
 
@@ -275,7 +258,6 @@ export default function ClientNotes({ client }: Props) {
           payload,
         );
         const updated = resp && resp.data ? resp.data : resp;
-
         setNotesData((prev) =>
           prev.map((n) => (n.id === updated.id ? updated : n)),
         );
@@ -285,12 +267,10 @@ export default function ClientNotes({ client }: Props) {
             : resp && resp.message
               ? resp.message
               : t("clients.notes.noteUpdated");
-
         toast.success(msg);
       } else {
         const resp = await clientService.createClientNote(client.id, payload);
         const created = resp && resp.data ? resp.data : resp;
-
         setNotesData((prev) => [created, ...prev]);
         const msg =
           resp && resp.messageCode
@@ -298,7 +278,6 @@ export default function ClientNotes({ client }: Props) {
             : resp && resp.message
               ? resp.message
               : t("clients.notes.noteCreated");
-
         toast.success(msg);
       }
 
@@ -316,11 +295,9 @@ export default function ClientNotes({ client }: Props) {
       const errorMsg = isEditing
         ? t("clients.notes.noteUpdateFailed", "Could not update note")
         : t("clients.notes.noteCreateFailed", "Could not create note");
-
       toast.error(errorMsg);
       // fallback to local
       const local = { id: String(Date.now()), ...payload, addedBy: "You" };
-
       setNotesData((prev) => [local, ...prev]);
       setShowModal(false);
       setFormData({
@@ -345,12 +322,12 @@ export default function ClientNotes({ client }: Props) {
 
   return (
     <div ref={containerRef}>
-      <Section icon={<FileText />} title={t("clients.nav.notes", "Notas")}>
+      <Section title={t("clients.nav.notes", "Notas")} icon={<FileText />}>
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-          <div ref={actionRef} className="relative">
+          <div className="relative" ref={actionRef}>
             <button
-              className="cg-btn-glass cg-focus flex min-w-[100px] items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium"
               onClick={() => setActionOpen(!actionOpen)}
+              className="cg-btn-glass cg-focus flex min-w-[100px] items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium"
             >
               {t("actions.action", "-")}
               <ChevronDown size={16} />
@@ -358,12 +335,12 @@ export default function ClientNotes({ client }: Props) {
             {actionOpen && (
               <div className="glass-raised absolute left-0 z-10 mt-1 w-full p-1">
                 <button
-                  className={`cg-focus block w-full rounded-md px-3 py-2 text-left text-sm transition-opacity hover:opacity-70 ${selectedNoteIds.length === 0 ? "cursor-not-allowed text-muted-foreground" : ""}`}
                   onClick={() => {
                     if (selectedNoteIds.length > 0)
                       setConfirmDeleteIds(selectedNoteIds);
                     setActionOpen(false);
                   }}
+                  className={`cg-focus block w-full rounded-md px-3 py-2 text-left text-sm transition-opacity hover:opacity-70 ${selectedNoteIds.length === 0 ? "cursor-not-allowed text-muted-foreground" : ""}`}
                 >
                   {t("actions.delete")}
                 </button>
@@ -374,24 +351,24 @@ export default function ClientNotes({ client }: Props) {
           <div className="flex-1 max-w-xs">
             <div className="relative">
               <Search
-                className="absolute left-2.5 top-1/2 -translate-y-1/2"
                 size={16}
+                className="absolute left-2.5 top-1/2 -translate-y-1/2"
                 style={{ color: "var(--ink-faint)" }}
               />
               <input
-                className={`${FIELD_CLS} pl-8`}
+                type="text"
                 placeholder={t(
                   "clients.notes.notesearchPlaceholder",
                   "Search notes",
                 )}
-                type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                className={`${FIELD_CLS} pl-8`}
               />
             </div>
           </div>
 
-          <Button className="gap-2" variant="brand" onClick={handleAddNote}>
+          <Button variant="brand" onClick={handleAddNote} className="gap-2">
             <Plus size={18} />
             {t("clients.notes.addNote", "New Note")}
           </Button>
@@ -403,20 +380,19 @@ export default function ClientNotes({ client }: Props) {
               <THead>
                 <Th>
                   <input
-                    aria-label="Select all notes"
-                    checked={
-                      selectedNoteIds.length === filtered.length &&
-                      filtered.length > 0
-                    }
-                    className="rounded"
                     type="checkbox"
+                    className="rounded"
                     onChange={(e) => {
                       const checked = e.target.checked;
-
                       if (checked)
                         setSelectedNoteIds(filtered.map((n) => n.id));
                       else setSelectedNoteIds([]);
                     }}
+                    checked={
+                      selectedNoteIds.length === filtered.length &&
+                      filtered.length > 0
+                    }
+                    aria-label="Select all notes"
                   />
                 </Th>
                 <Th>{t("clients.notes.Title", "Title")}</Th>
@@ -427,14 +403,14 @@ export default function ClientNotes({ client }: Props) {
               <tbody>
                 {filtered.length === 0 ? (
                   <tr>
-                    <td className="px-2 py-8" colSpan={5}>
+                    <td colSpan={5} className="px-2 py-8">
                       <EmptyState
+                        icon={<FileText />}
+                        title={t("clients.empty.title", "No results found")}
                         description={t(
                           "clients.empty.description",
                           "We couldn't find any items matching your search",
                         )}
-                        icon={<FileText />}
-                        title={t("clients.empty.title", "No results found")}
                       />
                     </td>
                   </tr>
@@ -443,11 +419,11 @@ export default function ClientNotes({ client }: Props) {
                     <Tr key={note.id}>
                       <td className="px-2 py-2.5">
                         <input
-                          aria-label={`Select note ${note.id}`}
-                          checked={selectedNoteIds.includes(note.id)}
-                          className="rounded"
                           type="checkbox"
+                          className="rounded"
+                          checked={selectedNoteIds.includes(note.id)}
                           onChange={() => toggleSelect(note.id)}
+                          aria-label={`Select note ${note.id}`}
                         />
                       </td>
                       <td className="px-2 py-2.5 font-medium">{note.title}</td>
@@ -463,7 +439,6 @@ export default function ClientNotes({ client }: Props) {
                             ? (cb.fullName || cb.name || cb.firstName || "") +
                               (cb.lastName ? " " + cb.lastName : "")
                             : "";
-
                           return name && name.trim()
                             ? name
                             : note.createdById || "-";
@@ -487,17 +462,16 @@ export default function ClientNotes({ client }: Props) {
                           </PopoverTrigger>
                           <PopoverContent className="w-44 p-1 rounded-md shadow-lg">
                             <button
-                              className="flex items-center gap-2 px-3 py-2 text-sm w-full hover:bg-muted/30"
                               onClick={() => {
                                 setDetailsNote(note);
                                 setOpenPopoverId(null);
                               }}
+                              className="flex items-center gap-2 px-3 py-2 text-sm w-full hover:bg-muted/30"
                             >
                               <Eye className="h-4 w-4 text-muted-foreground" />
                               {t("actions.viewDetails", "Details")}
                             </button>
                             <button
-                              className="flex items-center gap-2 px-3 py-2 text-sm w-full hover:bg-muted/30"
                               onClick={() => {
                                 setFormData({
                                   title: note.title,
@@ -513,17 +487,18 @@ export default function ClientNotes({ client }: Props) {
                                 setShowModal(true);
                                 setOpenPopoverId(null);
                               }}
+                              className="flex items-center gap-2 px-3 py-2 text-sm w-full hover:bg-muted/30"
                             >
                               <Pencil className="h-4 w-4" />
                               {t("actions.edit") || "Edit"}
                             </button>
                             <button
-                              className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-muted/30"
-                              style={{ color: "var(--bad-text)" }}
                               onClick={() => {
                                 setConfirmDeleteIds([note.id]);
                                 setOpenPopoverId(null);
                               }}
+                              className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-muted/30"
+                              style={{ color: "var(--bad-text)" }}
                             >
                               <Trash className="h-4 w-4" />
                               {t("actions.delete") || "Delete"}
@@ -540,9 +515,9 @@ export default function ClientNotes({ client }: Props) {
 
           <div className="md:hidden">
             <MobileCardList
-              emptyMessage={t("clients.empty.title") as string}
               items={filtered}
               loading={false}
+              emptyMessage={t("clients.empty.title") as string}
               renderCard={(note: ClientNote) => (
                 <div>
                   <div className="flex items-start justify-between gap-2">
@@ -557,10 +532,10 @@ export default function ClientNotes({ client }: Props) {
                     <div className="shrink-0 text-right">
                       <div className="mt-2">
                         <button
-                          className="px-2 py-1 text-sm"
                           onClick={() => {
                             setDetailsNote(note);
                           }}
+                          className="px-2 py-1 text-sm"
                         >
                           {t("actions.viewDetails")}
                         </button>
@@ -575,37 +550,37 @@ export default function ClientNotes({ client }: Props) {
       </Section>
 
       <Modal
+        open={showModal}
+        onOpenChange={(o) => {
+          if (!o) handleCloseModal();
+        }}
+        title={t("clients.notes.form.Title", "Add New Note")}
+        icon={<FileText className="h-5 w-5" />}
         footer={
           <Button
-            disabled={!isFormValid}
             variant="brand"
             onClick={handleSubmitNote}
+            disabled={!isFormValid}
           >
             {isEditing
               ? t("clients.notes.SaveChanges", "Save changes")
               : t("clients.notes.Save", "Save")}
           </Button>
         }
-        icon={<FileText className="h-5 w-5" />}
-        open={showModal}
-        title={t("clients.notes.form.Title", "Add New Note")}
-        onOpenChange={(o) => {
-          if (!o) handleCloseModal();
-        }}
       >
         <div className="space-y-3">
           <LabeledField label={t("clients.notes.form.Titlenote", "Title")}>
             <input
-              className={FIELD_CLS}
-              placeholder={t(
-                "clients.notes.form.Titleinput",
-                "Enter note title",
-              )}
               type="text"
               value={formData.title}
               onChange={(e) =>
                 setFormData({ ...formData, title: e.target.value })
               }
+              placeholder={t(
+                "clients.notes.form.Titleinput",
+                "Enter note title",
+              )}
+              className={FIELD_CLS}
             />
           </LabeledField>
 
@@ -613,16 +588,16 @@ export default function ClientNotes({ client }: Props) {
             label={t("clients.notes.form.Description", "Description")}
           >
             <textarea
-              className={`${FIELD_CLS} h-auto resize-none py-2`}
-              placeholder={t(
-                "clients.notes.form.Descriptioninput",
-                "Enter note description",
-              )}
-              rows={6}
               value={formData.description}
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
+              placeholder={t(
+                "clients.notes.form.Descriptioninput",
+                "Enter note description",
+              )}
+              className={`${FIELD_CLS} h-auto resize-none py-2`}
+              rows={6}
             />
           </LabeledField>
 
@@ -630,8 +605,8 @@ export default function ClientNotes({ client }: Props) {
             <Popover>
               <PopoverTrigger asChild>
                 <Button
-                  className="w-full justify-between text-left font-normal"
                   variant="outline"
+                  className="w-full justify-between text-left font-normal"
                 >
                   {formData.date ? (
                     format(new Date(formData.date), "MMM dd, yyyy", {
@@ -645,10 +620,8 @@ export default function ClientNotes({ client }: Props) {
               </PopoverTrigger>
               <PopoverContent className="w-[320px] p-3 rounded-lg shadow-lg">
                 <Calendar
-                  initialFocus
                   mode="single"
                   selected={formData.date ? new Date(formData.date) : undefined}
-                  toDate={new Date()}
                   onSelect={(d) => {
                     if (d) {
                       setFormData((prev) => ({
@@ -657,6 +630,8 @@ export default function ClientNotes({ client }: Props) {
                       }));
                     }
                   }}
+                  initialFocus
+                  toDate={new Date()}
                 />
               </PopoverContent>
             </Popover>
@@ -685,13 +660,13 @@ export default function ClientNotes({ client }: Props) {
                             </span>
                           </div>
                           <button
-                            aria-label={`Quitar ${f.name}`}
-                            className="cg-focus rounded p-1"
-                            style={{ color: "var(--bad-text)" }}
                             onClick={(e) => {
                               e.stopPropagation();
                               removeAttachment(i);
                             }}
+                            className="cg-focus rounded p-1"
+                            style={{ color: "var(--bad-text)" }}
+                            aria-label={`Quitar ${f.name}`}
                           >
                             <X size={14} />
                           </button>
@@ -709,16 +684,15 @@ export default function ClientNotes({ client }: Props) {
                 </div>
               </div>
               <input
-                multiple
-                className="sr-only"
                 type="file"
+                multiple
                 onChange={(e) => {
                   const files = e.target.files
                     ? Array.from(e.target.files)
                     : [];
-
                   setFormData({ ...formData, attachments: files });
                 }}
+                className="sr-only"
               />
             </label>
           </LabeledField>
@@ -726,6 +700,12 @@ export default function ClientNotes({ client }: Props) {
       </Modal>
 
       <Modal
+        open={!!detailsNote}
+        onOpenChange={(o) => {
+          if (!o) setDetailsNote(null);
+        }}
+        title={t("clients.notes.Details.detailsTitle", "Detalle de la nota")}
+        icon={<FileText className="h-5 w-5" />}
         footer={
           detailsNote ? (
             <Button
@@ -749,12 +729,6 @@ export default function ClientNotes({ client }: Props) {
             </Button>
           ) : undefined
         }
-        icon={<FileText className="h-5 w-5" />}
-        open={!!detailsNote}
-        title={t("clients.notes.Details.detailsTitle", "Detalle de la nota")}
-        onOpenChange={(o) => {
-          if (!o) setDetailsNote(null);
-        }}
       >
         {detailsNote && (
           <div className="space-y-2">
@@ -787,6 +761,13 @@ export default function ClientNotes({ client }: Props) {
       </Modal>
 
       <Modal
+        open={confirmDeleteIds.length > 0}
+        onOpenChange={(o) => {
+          if (!o) setConfirmDeleteIds([]);
+        }}
+        title={t("clients.notes.confirmDeleteTitle", "¿Eliminar nota(s)?")}
+        icon={<Trash className="h-5 w-5" />}
+        size="sm"
         footer={
           <>
             <Button variant="outline" onClick={() => setConfirmDeleteIds([])}>
@@ -803,7 +784,6 @@ export default function ClientNotes({ client }: Props) {
                   );
                   toast.success(t("clients.notes.noteDeleted"));
                   setSelectedNoteIds([]);
-
                   return setConfirmDeleteIds([]);
                 }
                 try {
@@ -819,7 +799,6 @@ export default function ClientNotes({ client }: Props) {
                         : acc,
                     [] as string[],
                   );
-
                   if (successes.length > 0) {
                     setNotesData((prev) =>
                       prev.filter((n) => !successes.includes(n.id)),
@@ -832,7 +811,6 @@ export default function ClientNotes({ client }: Props) {
                   const failures = results.filter(
                     (r) => r.status === "rejected",
                   );
-
                   if (failures.length > 0) {
                     console.error("Some deletions failed", failures);
                     toast.error(t("clients.notes.deleteFailed"));
@@ -849,13 +827,6 @@ export default function ClientNotes({ client }: Props) {
             </Button>
           </>
         }
-        icon={<Trash className="h-5 w-5" />}
-        open={confirmDeleteIds.length > 0}
-        size="sm"
-        title={t("clients.notes.confirmDeleteTitle", "¿Eliminar nota(s)?")}
-        onOpenChange={(o) => {
-          if (!o) setConfirmDeleteIds([]);
-        }}
       >
         <p className="text-sm font-medium text-foreground mb-2">
           {confirmNames.join(", ")}

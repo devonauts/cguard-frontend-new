@@ -1,18 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Search,
-  Filter,
-  ChevronsUpDown,
-  X,
-  Loader2,
-  ListChecks,
-  Clock,
-  PlayCircle,
-  CheckCircle2,
-  XCircle,
-} from "lucide-react";
-
 import { getTenantTimezone } from "@/utils/tenantLocation";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
@@ -41,6 +28,18 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
+import {
+  Search,
+  Filter,
+  ChevronsUpDown,
+  X,
+  Loader2,
+  ListChecks,
+  Clock,
+  PlayCircle,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
 import Breadcrumb from "@/components/ui/breadcrumb";
 import {
   PageContainer,
@@ -53,12 +52,12 @@ import {
   Toolbar,
 } from "@/components/kit";
 import shiftService, { ShiftRecord } from "@/lib/api/shiftService";
+
 import { localeActual } from "@/lib/localeActual";
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 function formatDate(iso: string | null) {
   if (!iso) return "—";
-
   return new Date(iso).toLocaleDateString(localeActual(), {
     day: "2-digit",
     month: "short",
@@ -71,7 +70,6 @@ function formatDate(iso: string | null) {
 
 function formatTime(iso: string | null) {
   if (!iso) return "—";
-
   return new Date(iso).toLocaleTimeString(localeActual(), {
     hour: "2-digit",
     minute: "2-digit",
@@ -86,13 +84,11 @@ function computeStatus(row: ShiftRecord): ShiftStatusValue {
   const now = new Date();
   const start = new Date(row.startTime);
   const end = new Date(row.endTime);
-
   if (!row.guardId) {
     return end < now ? "cancelled" : "pending";
   }
   if (now >= start && now <= end) return "in-progress";
   if (end < now) return "completed";
-
   return "pending";
 }
 
@@ -145,7 +141,6 @@ export default function ShiftStatus() {
         limit: 500,
         orderBy: "startTime_ASC",
       });
-
       setRawShifts(rows);
     } catch (err) {
       console.error("Failed to fetch shifts", err);
@@ -183,7 +178,6 @@ export default function ShiftStatus() {
       !formatDate(r.startTime).toLowerCase().includes(q)
     )
       return false;
-
     return true;
   });
 
@@ -219,49 +213,52 @@ export default function ShiftStatus() {
           { label: t("ui.ShiftStatus.estadoDelTurno", "Estado del Turno") },
         ]}
       />
-      <PageContainer className="px-4 lg:px-6" width="wide">
+      <PageContainer width="wide" className="px-4 lg:px-6">
         <PageHeader
           icon={<ListChecks />}
-          subtitle={t("ui.ShiftStatus.seguimientoDelProgresoDeLos")}
           title={t("ui.ShiftStatus.estadoDeTurnos")}
+          subtitle={t("ui.ShiftStatus.seguimientoDelProgresoDeLos")}
         />
 
         {/* KPIs */}
         <Stagger className="grid grid-cols-2 gap-4 md:grid-cols-4">
           <MetricTile
+            label="Pendientes"
+            value={stats.pending}
+            icon={<Clock />}
             delta={
               totalTurnos > 0
                 ? { value: `${pctTurnos(stats.pending)} %`, direction: "flat" }
                 : undefined
             }
             hint={t("ui.ShiftStatus.aunNoEmpiezan")}
-            icon={<Clock />}
-            label="Pendientes"
-            value={stats.pending}
           />
           <MetricTile
+            label="En curso"
+            value={stats.inProgress}
+            icon={<PlayCircle />}
             delta={
               totalTurnos > 0
                 ? { value: `${pctTurnos(stats.inProgress)} %`, direction: "up" }
                 : undefined
             }
             hint="Sucediendo ahora mismo"
-            icon={<PlayCircle />}
-            label="En curso"
-            value={stats.inProgress}
           />
           <MetricTile
+            label="Completados"
+            value={stats.completed}
+            icon={<CheckCircle2 />}
             delta={
               totalTurnos > 0
                 ? { value: `${pctTurnos(stats.completed)} %`, direction: "up" }
                 : undefined
             }
             hint={t("ui.ShiftStatus.turnosYaCerrados")}
-            icon={<CheckCircle2 />}
-            label="Completados"
-            value={stats.completed}
           />
           <MetricTile
+            label="Cancelados"
+            value={stats.cancelled}
+            icon={<XCircle />}
             delta={
               totalTurnos > 0
                 ? {
@@ -271,9 +268,6 @@ export default function ShiftStatus() {
                 : undefined
             }
             hint={t("ui.ShiftStatus.quedaronSinVigilante")}
-            icon={<XCircle />}
-            label="Cancelados"
-            value={stats.cancelled}
           />
         </Stagger>
 
@@ -309,8 +303,8 @@ export default function ShiftStatus() {
                 style={{ color: "var(--ink-faint)" }}
               />
               <Input
-                className="pl-9"
                 placeholder={t("ui.ShiftStatus.buscarVigilanteOPuesto")}
+                className="pl-9"
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
@@ -330,9 +324,9 @@ export default function ShiftStatus() {
                   <SheetHeader className="relative">
                     <SheetTitle>Filtros</SheetTitle>
                     <Button
-                      className="absolute right-0 top-0"
-                      size="icon"
                       variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-0"
                       onClick={() => setIsFiltersOpen(false)}
                     >
                       <X className="h-4 w-4" />
@@ -393,8 +387,8 @@ export default function ShiftStatus() {
 
                     <div className="space-y-2 pt-4">
                       <Button
-                        className="w-full"
                         variant="brand"
+                        className="w-full"
                         onClick={() => {
                           setAppliedFilters({ ...filters });
                           setIsFiltersOpen(false);
@@ -404,8 +398,8 @@ export default function ShiftStatus() {
                         Aplicar Filtros
                       </Button>
                       <Button
-                        className="w-full"
                         variant="outline"
+                        className="w-full"
                         onClick={() => {
                           const empty = {
                             startDate: "",
@@ -413,7 +407,6 @@ export default function ShiftStatus() {
                             endDate: "",
                             endTime: "",
                           };
-
                           setFilters(empty);
                           setAppliedFilters(empty);
                           setPage(1);
@@ -431,9 +424,9 @@ export default function ShiftStatus() {
 
         {/* Tabla */}
         <Section
-          contentClassName="overflow-x-auto -mx-1"
-          icon={<ListChecks />}
           title="Turnos"
+          icon={<ListChecks />}
+          contentClassName="overflow-x-auto -mx-1"
         >
           <Table>
             <TableHeader style={{ background: "var(--glass-sunken)" }}>
@@ -457,13 +450,13 @@ export default function ShiftStatus() {
                 <TableHead className="cg-eyebrow">
                   {t("comun.estado")}
                 </TableHead>
-                <TableHead className="w-[50px]" />
+                <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell className="h-[200px] text-center" colSpan={8}>
+                  <TableCell colSpan={8} className="h-[200px] text-center">
                     <Loader2
                       className="mx-auto h-6 w-6 animate-spin"
                       style={{ color: "var(--ink-faint)" }}
@@ -472,12 +465,12 @@ export default function ShiftStatus() {
                 </TableRow>
               ) : paginated.length === 0 ? (
                 <TableRow>
-                  <TableCell className="h-[360px] text-center" colSpan={8}>
+                  <TableCell colSpan={8} className="h-[360px] text-center">
                     <EmptyState
-                      className="border-0 py-2"
-                      description={t("comun.noPudimosEncontrarNingunElemento")}
                       icon={<ListChecks />}
                       title={t("kit.table.emptyTitle")}
+                      description={t("comun.noPudimosEncontrarNingunElemento")}
+                      className="border-0 py-2"
                     />
                   </TableCell>
                 </TableRow>
@@ -502,7 +495,7 @@ export default function ShiftStatus() {
                     </TableCell>
                     <TableCell>{getStatusBadge(row._status)}</TableCell>
                     <TableCell>
-                      <Button size="icon" variant="ghost">
+                      <Button variant="ghost" size="icon">
                         <ChevronsUpDown
                           className="h-4 w-4"
                           style={{ color: "var(--ink-soft)" }}
@@ -547,9 +540,9 @@ export default function ShiftStatus() {
           </div>
           <div className="flex items-center space-x-2">
             <Button
-              disabled={page <= 1}
-              size="icon"
               variant="outline"
+              size="icon"
+              disabled={page <= 1}
               onClick={() => setPage((p) => p - 1)}
             >
               <span className="sr-only">
@@ -558,21 +551,21 @@ export default function ShiftStatus() {
               <svg
                 className="h-4 w-4"
                 fill="none"
-                stroke="currentColor"
                 viewBox="0 0 24 24"
+                stroke="currentColor"
               >
                 <path
-                  d="M15 19l-7-7 7-7"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
                 />
               </svg>
             </Button>
             <Button
-              disabled={page >= totalPages}
-              size="icon"
               variant="outline"
+              size="icon"
+              disabled={page >= totalPages}
               onClick={() => setPage((p) => p + 1)}
             >
               <span className="sr-only">
@@ -581,14 +574,14 @@ export default function ShiftStatus() {
               <svg
                 className="h-4 w-4"
                 fill="none"
-                stroke="currentColor"
                 viewBox="0 0 24 24"
+                stroke="currentColor"
               >
                 <path
-                  d="M9 5l7 7-7 7"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
+                  d="M9 5l7 7-7 7"
                 />
               </svg>
             </Button>

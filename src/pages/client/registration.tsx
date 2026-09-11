@@ -19,11 +19,10 @@ const MISEGURIDAD_PLAY_URL =
 const MISEGURIDAD_IOS_URL =
   (import.meta as any).env?.VITE_MISEGURIDAD_IOS_URL ||
   "https://apps.apple.com/us/app/mi-seguridad-by-c-guard-pro/id6778661633";
-
 import { toast } from "sonner";
-
 import { FadeIn, IconTile, InfoNote } from "@/components/kit";
 import AuthShell, {
+  AvisoError,
   BOTON_PRINCIPAL,
   CAMPO,
   Etiqueta,
@@ -94,7 +93,6 @@ export default function ClientRegistration() {
         navigate(
           `/auth/invitation?token=${encodeURIComponent(inviteToken)}&inviteType=guard`,
         );
-
         return;
       }
       // Supervisor invites belong on the supervisor app screen, not the client view.
@@ -103,7 +101,6 @@ export default function ClientRegistration() {
           `/supervisor/registration?token=${encodeURIComponent(inviteToken)}&inviteType=supervisor`,
           { replace: true },
         );
-
         return;
       }
       // Internal administrative staff (admins, supervisors, …) belong in the CRM
@@ -113,7 +110,6 @@ export default function ClientRegistration() {
           `/auth/accept-invitation?token=${encodeURIComponent(inviteToken)}&inviteType=staff`,
           { replace: true },
         );
-
         return;
       }
       // inviteType puede ser 'client' (clientes)
@@ -121,15 +117,12 @@ export default function ClientRegistration() {
       try {
         const endpointBase = `/user/public`;
         const qp = new URLSearchParams();
-
         qp.append("token", inviteToken);
         const urlWithQs = `${endpointBase}?${qp.toString()}`;
         const res = await ApiService.get(urlWithQs, { skipAuth: true });
         const data = res?.data || res;
-
         if (!data) {
           setInviteNotFound(true);
-
           return;
         }
         setFetched(data);
@@ -140,7 +133,6 @@ export default function ClientRegistration() {
             ? `${data.firstName} ${data.lastName || ""}`
             : undefined);
         const emailCandidate = data.email || undefined;
-
         if (rootName) {
           setName(rootName);
           setLockedName(true);
@@ -159,13 +151,11 @@ export default function ClientRegistration() {
               { skipAuth: true },
             );
             const guardData = guardResponse?.data || guardResponse;
-
             if (guardData) {
               // This is a security guard invitation
               navigate(
                 `/auth/invitation?token=${encodeURIComponent(inviteToken)}&inviteType=guard`,
               );
-
               return;
             }
           } catch (_guardErr) {
@@ -181,7 +171,6 @@ export default function ClientRegistration() {
         setIsLoading(false);
       }
     };
-
     fetchInvite();
   }, [inviteToken, navigate]);
 
@@ -191,7 +180,6 @@ export default function ClientRegistration() {
 
   const validate = () => {
     const nextErrors: Record<string, string> = {};
-
     if (!name?.trim())
       nextErrors.name = t(
         "invite.val.name_required",
@@ -241,7 +229,6 @@ export default function ClientRegistration() {
         "Las contraseñas no coinciden",
       );
     setErrors(nextErrors);
-
     return Object.keys(nextErrors).length === 0;
   };
 
@@ -256,7 +243,6 @@ export default function ClientRegistration() {
         invitationToken: inviteToken,
         name,
       };
-
       await AuthService.signUp(payload);
       // A client is NOT a tenant web-admin — do NOT send them to /login (it fails
       // for them). Show a confirmation with the Mi Seguridad app + download links.
@@ -279,7 +265,6 @@ export default function ClientRegistration() {
     // Si tenemos datos de la invitación, usar los roles para determinar el título
     if (fetched && fetched.roles && Array.isArray(fetched.roles)) {
       const roles = fetched.roles;
-
       if (
         roles.includes("supervisor") ||
         roles.includes("securitySupervisor")
@@ -306,7 +291,6 @@ export default function ClientRegistration() {
         defaultValue: "Registro de usuario",
       });
     }
-
     return t("client.registration_title", {
       defaultValue: "Registro de cliente",
     });
@@ -316,7 +300,6 @@ export default function ClientRegistration() {
   const getRoleDescription = () => {
     if (fetched && fetched.roles && Array.isArray(fetched.roles)) {
       const roles = fetched.roles;
-
       if (
         roles.includes("supervisor") ||
         roles.includes("securitySupervisor")
@@ -330,7 +313,6 @@ export default function ClientRegistration() {
         return "Estás completando tu registro como Administrador. Por favor, ingresa una contraseña para tu cuenta.";
       }
     }
-
     return t(
       "invite.client.subtitle",
       "Por favor, completa tu registro ingresando una contraseña para tu cuenta.",
@@ -348,11 +330,11 @@ export default function ClientRegistration() {
     onToggle: () => void;
   }) => (
     <button
-      aria-label={visible ? "Ocultar contraseña" : "Mostrar contraseña"}
-      className="cg-focus absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md p-2.5"
-      style={{ color: "var(--ink-faint)" }}
       type="button"
       onClick={onToggle}
+      className="cg-focus absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md p-2.5"
+      style={{ color: "var(--ink-faint)" }}
+      aria-label={visible ? "Ocultar contraseña" : "Mostrar contraseña"}
     >
       {visible ? <EyeOff size={18} /> : <Eye size={18} />}
     </button>
@@ -360,26 +342,39 @@ export default function ClientRegistration() {
 
   return (
     <AuthShell
+      title={done ? "¡Cuenta activada!" : getTitle()}
+      subtitle={
+        done
+          ? t("invite.accessReady", "Tu acceso quedó listo.")
+          : getRoleDescription()
+      }
       brandName={empresa}
-      eyebrow={t('invite.eyebrow_client', 'Invitación · Portal del cliente')}
-      features={[
-        { icon: ShieldCheck, label: t('invite.client.feature_live', 'Tu servicio, en directo') },
-        { icon: MapPin, label: t('invite.client.feature_gps', 'Rondas y puestos con GPS') },
-        { icon: Bell, label: t('invite.client.feature_alerts', 'Avisos de incidentes') },
-      ]}
       logoUrl={fetched?.tenant?.logoUrl || undefined}
-      subtitle={done ? t('invite.accessReady', 'Tu acceso quedó listo.') : getRoleDescription()}
-      title={done ? '¡Cuenta activada!' : getTitle()}
+      eyebrow={t("invite.eyebrow_client", "Invitación · Portal del cliente")}
       width="lg"
       /* Ya se ha ido a la red a por la invitación: una cortina de 2,5 s encima
          sólo retrasa lo que el usuario está esperando. */
       splash={false}
+      features={[
+        {
+          icon: ShieldCheck,
+          label: t("invite.client.feature_live", "Tu servicio, en directo"),
+        },
+        {
+          icon: MapPin,
+          label: t("invite.client.feature_gps", "Rondas y puestos con GPS"),
+        },
+        {
+          icon: Bell,
+          label: t("invite.client.feature_alerts", "Avisos de incidentes"),
+        },
+      ]}
     >
       {done ? (
         /* Un cliente NO entra por la web: su casa es la app Mi Seguridad. */
         <FadeIn className="text-center">
           <div className="mb-5 flex justify-center">
-            <IconTile size="lg" tone="ok">
+            <IconTile tone="ok" size="lg">
               <CheckCircle2 />
             </IconTile>
           </div>
@@ -398,9 +393,9 @@ export default function ClientRegistration() {
 
           <div className="glass-sunken mt-6 flex items-center gap-3 p-4 text-left">
             <img
+              src="/assets/logo/miseguridad.png"
               alt="Mi Seguridad"
               className="h-12 w-12 shrink-0 rounded-xl object-contain"
-              src="/assets/logo/miseguridad.png"
             />
             <div className="min-w-0">
               <p className="text-sm font-bold">Mi Seguridad</p>
@@ -413,30 +408,30 @@ export default function ClientRegistration() {
 
           <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
             <a
-              className="cg-focus rounded-lg transition-opacity hover:opacity-90"
               href={MISEGURIDAD_PLAY_URL}
-              rel="noreferrer"
               target="_blank"
+              rel="noreferrer"
+              className="cg-focus rounded-lg transition-opacity hover:opacity-90"
             >
               <img
+                src="/assets/badges/google-play.png"
                 alt="Descargar en Google Play"
                 className="h-12 w-auto"
-                src="/assets/badges/google-play.png"
               />
             </a>
             <a
-              className="cg-focus rounded-lg transition-opacity hover:opacity-90"
               href={MISEGURIDAD_IOS_URL}
-              rel="noreferrer"
               target="_blank"
+              rel="noreferrer"
+              className="cg-focus rounded-lg transition-opacity hover:opacity-90"
             >
               <img
+                src="/assets/badges/app-store.png"
                 alt={t(
                   "ui.registration.consigueloEnElAppStore",
                   "Consíguelo en el App Store",
                 )}
                 className="h-12 w-auto"
-                src="/assets/badges/app-store.png"
               />
             </a>
           </div>
@@ -449,7 +444,7 @@ export default function ClientRegistration() {
       ) : (
         <form className="space-y-5" onSubmit={handleSubmit}>
           {inviteNotFound && (
-            <InfoNote icon={<AlertTriangle />} tone="warn">
+            <InfoNote tone="warn" icon={<AlertTriangle />}>
               {t("client.invite_not_found", {
                 defaultValue: "Invitación no encontrada o inválida.",
               })}
@@ -460,17 +455,17 @@ export default function ClientRegistration() {
             <div>
               <Etiqueta htmlFor="cliente-nombre">{t("comun.nombre")}</Etiqueta>
               <input
-                aria-invalid={!!errors.name}
-                className={CAMPO}
-                disabled={isLoading || lockedName}
                 id="cliente-nombre"
-                placeholder={t("comun.nombre")}
+                className={CAMPO}
                 style={estiloError("name")}
                 value={name}
                 onChange={(e) => {
                   setName(e.target.value);
                   setErrors((p) => ({ ...p, name: undefined }));
                 }}
+                placeholder={t("comun.nombre")}
+                disabled={isLoading || lockedName}
+                aria-invalid={!!errors.name}
               />
               {errors.name && (
                 <p
@@ -486,18 +481,18 @@ export default function ClientRegistration() {
                 {t("ui.registration.correoElectronico3", "Correo electrónico")}
               </Etiqueta>
               <input
-                aria-invalid={!!errors.email}
-                className={CAMPO}
-                disabled={isLoading || lockedEmail}
                 id="cliente-email"
-                placeholder={t("comun.tuCorreoCom")}
-                style={estiloError("email")}
                 type="email"
+                className={CAMPO}
+                style={estiloError("email")}
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
                   setErrors((p) => ({ ...p, email: undefined }));
                 }}
+                placeholder={t("comun.tuCorreoCom")}
+                disabled={isLoading || lockedEmail}
+                aria-invalid={!!errors.email}
               />
               {errors.email && (
                 <p
@@ -514,14 +509,8 @@ export default function ClientRegistration() {
               </Etiqueta>
               <div className="relative">
                 <input
-                  aria-invalid={!!errors.password}
-                  className={`${CAMPO} pr-12`}
-                  disabled={isLoading}
                   id="cliente-clave"
-                  placeholder={t(
-                    "ui.registration.minimo8Caracteres",
-                    "Mínimo 8 caracteres",
-                  )}
+                  className={`${CAMPO} pr-12`}
                   style={estiloError("password")}
                   type={showPwd ? "text" : "password"}
                   value={password}
@@ -529,6 +518,12 @@ export default function ClientRegistration() {
                     setPassword(e.target.value);
                     setErrors((p) => ({ ...p, password: undefined }));
                   }}
+                  placeholder={t(
+                    "ui.registration.minimo8Caracteres",
+                    "Mínimo 8 caracteres",
+                  )}
+                  disabled={isLoading}
+                  aria-invalid={!!errors.password}
                 />
                 <Ojo visible={showPwd} onToggle={() => setShowPwd((v) => !v)} />
               </div>
@@ -550,14 +545,8 @@ export default function ClientRegistration() {
               </Etiqueta>
               <div className="relative">
                 <input
-                  aria-invalid={!!errors.confirm}
-                  className={`${CAMPO} pr-12`}
-                  disabled={isLoading}
                   id="cliente-confirmar"
-                  placeholder={t(
-                    "ui.registration.repiteLaContrasena",
-                    "Repite la contraseña",
-                  )}
+                  className={`${CAMPO} pr-12`}
                   style={estiloError("confirm")}
                   type={showConfirm ? "text" : "password"}
                   value={confirm}
@@ -565,6 +554,12 @@ export default function ClientRegistration() {
                     setConfirm(e.target.value);
                     setErrors((p) => ({ ...p, confirm: undefined }));
                   }}
+                  placeholder={t(
+                    "ui.registration.repiteLaContrasena",
+                    "Repite la contraseña",
+                  )}
+                  disabled={isLoading}
+                  aria-invalid={!!errors.confirm}
                 />
                 <Ojo
                   visible={showConfirm}
@@ -583,9 +578,9 @@ export default function ClientRegistration() {
           </div>
 
           <button
+            type="submit"
             className={BOTON_PRINCIPAL}
             disabled={isLoading}
-            type="submit"
           >
             {isLoading
               ? t("client.registering", { defaultValue: "Registrando…" })

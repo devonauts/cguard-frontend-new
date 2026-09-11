@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
+import PostSiteLayout from "@/layouts/PostSiteLayout";
+import {
+  postSiteService,
+  setTenantId as setGlobalTenantId,
+} from "@/lib/api/postSiteService";
 import { Loader2, AlertTriangle, MapPinOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
-
+import { EmptyState } from "@/components/kit";
 import Overview from "./components/PostsiteOverview/Overview";
 import Profile from "./components/PostsiteProfile/Profile";
 import Contacts from "./components/PostsiteContacts/Contacts";
@@ -15,13 +20,7 @@ import Incidents from "./components/PostsiteIncidents/Incidents";
 import SiteTours from "./components/PostsiteSiteTours/SiteTours";
 import Inventory from "./components/PostsiteInventory/Inventory";
 import OperationSetupAlert from "./components/OperationSetup/OperationSetupAlert";
-
-import { EmptyState } from "@/components/kit";
-import {
-  postSiteService,
-  setTenantId as setGlobalTenantId,
-} from "@/lib/api/postSiteService";
-import PostSiteLayout from "@/layouts/PostSiteLayout";
+import { useTranslation } from "react-i18next";
 
 export default function PostSiteDetailsPage() {
   const { t } = useTranslation();
@@ -36,7 +35,6 @@ export default function PostSiteDetailsPage() {
   useEffect(() => {
     if (!id) return;
     let mounted = true;
-
     // Clear the previous site so switching :id A→B never shows A under B's URL.
     setSite(null);
     const load = async () => {
@@ -44,7 +42,6 @@ export default function PostSiteDetailsPage() {
       setError(null);
       try {
         const data = await postSiteService.get(id);
-
         if (!mounted) return;
         setSite(data);
         // Ensure tenantId is available globally for components that rely on localStorage fallback
@@ -54,7 +51,6 @@ export default function PostSiteDetailsPage() {
             (data?.tenant &&
               typeof data.tenant === "object" &&
               (data.tenant.id || data.tenant.tenantId));
-
           if (tid) {
             setGlobalTenantId(tid);
           }
@@ -74,9 +70,7 @@ export default function PostSiteDetailsPage() {
         if (mounted) setLoading(false);
       }
     };
-
     load();
-
     return () => {
       mounted = false;
     };
@@ -111,13 +105,13 @@ export default function PostSiteDetailsPage() {
 
   return (
     <PostSiteLayout
-      site={site}
       title={
         site?.businessName ||
         site?.companyName ||
         site?.name ||
         t("postSites.Details.title", "-")
       }
+      site={site}
     >
       <div className="p-4">
         {loading ? (
@@ -126,12 +120,12 @@ export default function PostSiteDetailsPage() {
           </div>
         ) : error ? (
           <EmptyState
-            description={error}
             icon={<AlertTriangle />}
             title={t(
               "postSites.Details.errorTitle",
               "No se pudo cargar la sede",
             )}
+            description={error}
           />
         ) : site ? (
           <div className="space-y-4 animate-fade-up">

@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { Building2, UserPlus } from "lucide-react";
-
+import axios from "axios";
 import ClientForm, { Category } from "./ClientForm";
-
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
 import { usePermissions } from "@/hooks/usePermissions";
+import { useTranslation } from "react-i18next";
+import MobileCardList from "@/components/responsive/MobileCardList";
 import { PageContainer, PageHeader } from "@/components/kit";
+import { Building2, UserPlus } from "lucide-react";
 
 export default function NewOrEditClientPage() {
   const { id } = useParams<{ id: string }>();
@@ -45,6 +45,7 @@ export default function NewOrEditClientPage() {
       <PageContainer>
         <PageHeader
           icon={id ? <Building2 /> : <UserPlus />}
+          title={id ? t("clients.editClient") : t("clients.newClient")}
           subtitle={
             id
               ? t("clients.editClientSubtitle", {
@@ -54,9 +55,8 @@ export default function NewOrEditClientPage() {
                   defaultValue: "Registra un nuevo cliente en la plataforma.",
                 })
           }
-          title={id ? t("clients.editClient") : t("clients.newClient")}
         />
-        <ClientForm categories={cats} id={id} mode={id ? "edit" : "create"} />
+        <ClientForm mode={id ? "edit" : "create"} id={id} categories={cats} />
       </PageContainer>
     </AppLayout>
   );

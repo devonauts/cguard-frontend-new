@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { ImportarHojaDeVida } from "@/components/security-guards/ImportarHojaDeVida";
+import { clientDisplayName } from "@/lib/clientName";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -12,20 +14,12 @@ import {
   Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
-import { UserPlus } from "lucide-react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 
-import ProfilePhotoCapture from "./components/ProfilePhotoCapture";
-import DocumentUpload, { type DocumentFile } from "./components/DocumentUpload";
-
-import { ImportarHojaDeVida } from "@/components/security-guards/ImportarHojaDeVida";
-import { clientDisplayName } from "@/lib/clientName";
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { PageContainer, PageHeader, Section } from "@/components/kit";
-
+import { UserPlus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/phone/PhoneInput";
 import {
@@ -49,6 +43,8 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { Separator } from "@/components/ui/separator";
+
 import {
   inviteByOptions,
   type GuardEntryValues,
@@ -73,8 +69,11 @@ import {
   MARITAL_STATUS_OPTIONS,
   ACADEMIC_INSTRUCTION_OPTIONS,
 } from "@/lib/validators/create-profile.schema";
+
 import { GuardTabsHeader } from "@/components/app/guard-tabs";
 import { FormBlock } from "@/components/app/form-block";
+import { Combobox } from "@/components/app/combobox";
+import MultiCombobox from "@/components/app/multicombobox";
 import { Copyable } from "@/components/app/copyable";
 import { AddBlockButton, RemoveBlockButton } from "@/components/app/add-remove";
 import { SubmitBar } from "@/components/app/submit-bar";
@@ -82,8 +81,11 @@ import { clientService } from "@/lib/api/clientService";
 import { securityGuardService } from "@/lib/api/securityGuardService";
 import { stationService } from "@/lib/api/stationService";
 import { usePermissions } from "@/hooks/usePermissions";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import AddressAutocomplete from "@/components/maps/AddressAutocomplete";
-
+import ProfilePhotoCapture from "./components/ProfilePhotoCapture";
+import DocumentUpload, { type DocumentFile } from "./components/DocumentUpload";
 
 // Lightweight station shape used to build select options and client-filter matching.
 interface StationLike {
@@ -222,7 +224,6 @@ export default function NewSecurityGuardPage() {
         // Do not include `roles` here — backend sets securityGuard role server-side
         inviteBy: e.inviteBy,
       }));
-
       await securityGuardService.invite(payload);
       console.log("[NewSecurityGuardPage] invite response: sent");
       toast.success(t("guards.new.toasts.invites_sent"));
@@ -236,7 +237,6 @@ export default function NewSecurityGuardPage() {
         );
         const result = applyValidationErrorsToForm(e, setInviteError as any);
         const msgs = Array.isArray(result) ? result : result.messages;
-
         if (msgs && msgs.length > 0) msgs.forEach((m) => toast.error(m));
         else toast.error(e?.message ?? t("guards.new.toasts.invite_error"));
       } catch (ex) {
@@ -275,7 +275,6 @@ export default function NewSecurityGuardPage() {
       });
       // Ensure backend gets phoneNumber
       const payload = v.entries.map((e) => ({ phoneNumber: e.phone }));
-
       await securityGuardService.joinByCode(v.code, payload);
       console.log("[NewSecurityGuardPage] joinByCode response: sent");
       toast.success(t("guards.new.join_code.invite_sent"));
@@ -287,7 +286,6 @@ export default function NewSecurityGuardPage() {
         );
         const result = applyValidationErrorsToForm(e, setJoinError as any);
         const msgs = Array.isArray(result) ? result : result.messages;
-
         if (msgs && msgs.length > 0) msgs.forEach((m) => toast.error(m));
         else toast.error(e?.message ?? t("guards.new.join_code.invite_error"));
       } catch (ex) {
@@ -329,7 +327,6 @@ export default function NewSecurityGuardPage() {
       });
       // Ensure backend receives phoneNumber
       const payload = v.entries.map((e) => ({ phoneNumber: e.phone }));
-
       await securityGuardService.inviteByLink(v.link, payload);
       console.log("[NewSecurityGuardPage] inviteByLink response: sent");
       toast.success(t("guards.new.link.invite_sent"));
@@ -341,7 +338,6 @@ export default function NewSecurityGuardPage() {
         );
         const result = applyValidationErrorsToForm(e, setLinkError as any);
         const msgs = Array.isArray(result) ? result : result.messages;
-
         if (msgs && msgs.length > 0) msgs.forEach((m) => toast.error(m));
         else toast.error(e?.message ?? t("guards.new.link.invite_error"));
       } catch (ex) {
@@ -403,7 +399,6 @@ export default function NewSecurityGuardPage() {
    */
   useEffect(() => {
     const desdeVigia = (location.state as any)?.hojaDeVida;
-
     if (!desdeVigia) return;
     setActiveTab("create_profile");
     Object.entries(desdeVigia).forEach(([campo, valor]) => {
@@ -411,7 +406,6 @@ export default function NewSecurityGuardPage() {
       setCreateValue(campo as never, valor as never, { shouldDirty: true });
     });
     const archivo = (location.state as any)?.hojaDeVidaArchivo;
-
     if (archivo instanceof File) setHojaDeVida(archivo);
     navigate(location.pathname, { replace: true, state: null });
   }, [location.state]);
@@ -428,7 +422,6 @@ export default function NewSecurityGuardPage() {
     () => (profilePhotoFile ? URL.createObjectURL(profilePhotoFile) : null),
     [profilePhotoFile],
   );
-
   useEffect(() => {
     return () => {
       if (profilePhotoPreviewUrl) URL.revokeObjectURL(profilePhotoPreviewUrl);
@@ -441,7 +434,6 @@ export default function NewSecurityGuardPage() {
       return await securityGuardService.uploadFileToStorage(file, storageId);
     } catch (e) {
       console.warn(`[GuardCreate] failed to upload ${storageId}:`, e);
-
       return null;
     }
   };
@@ -452,7 +444,6 @@ export default function NewSecurityGuardPage() {
 
       // 1. Upload profile photo
       let profileImageObj: any = null;
-
       if (guardDocs.profilePhoto) {
         profileImageObj = await uploadDoc(
           guardDocs.profilePhoto,
@@ -528,7 +519,6 @@ export default function NewSecurityGuardPage() {
         : rest.stationId
           ? [rest.stationId]
           : [];
-
       delete rest.stationId;
       const payload = {
         ...rest,
@@ -561,7 +551,6 @@ export default function NewSecurityGuardPage() {
       };
 
       const creado: any = await securityGuardService.create(payload);
-
       toast.success(t("guards.new.toasts.profile_created_sent"));
 
       // La hoja de vida que se importó queda ARCHIVADA en el expediente. Va
@@ -570,14 +559,12 @@ export default function NewSecurityGuardPage() {
       // el adjunto es un fastidio, tumbar el alta con un error después de haber
       // creado a la persona es mucho peor.
       const idCreado = creado?.id || creado?.data?.id || null;
-
       if (hojaDeVida && idCreado) {
         try {
           const subido = await securityGuardService.uploadFileToStorage(
             hojaDeVida,
             "securityGuardDocument",
           );
-
           await securityGuardService.addDocuments(idCreado, [
             {
               name: hojaDeVida.name,
@@ -614,7 +601,6 @@ export default function NewSecurityGuardPage() {
         );
         const result = applyValidationErrorsToForm(e, setCreateError as any);
         const msgs = Array.isArray(result) ? result : result.messages;
-
         if (msgs && msgs.length > 0)
           msgs.forEach((m: string) => toast.error(m));
         else
@@ -655,7 +641,6 @@ export default function NewSecurityGuardPage() {
       String(s.clientAccount.id) === String(clientId)
     )
       return true;
-
     return false;
   };
 
@@ -690,8 +675,8 @@ export default function NewSecurityGuardPage() {
 
         <PageHeader
           icon={<UserPlus />}
-          subtitle={t("guards.new.invite.description")}
           title={t("guards.new.title")}
+          subtitle={t("guards.new.invite.description")}
         />
 
         <GuardTabsHeader
@@ -844,10 +829,10 @@ export default function NewSecurityGuardPage() {
                   })}
 
                   <SubmitBar
-                    loading={inviteState.isSubmitting}
-                    primaryClassName="cg-btn-brand rounded-full px-6 py-3 font-medium transition-colors disabled:opacity-50"
                     primaryLabel={t("guards.new.form.send")}
+                    loading={inviteState.isSubmitting}
                     onPrimary={submitInvite(onSubmitInvite)}
+                    primaryClassName="cg-btn-brand rounded-full px-6 py-3 font-medium transition-colors disabled:opacity-50"
                   />
                 </form>
               </Form>
@@ -931,10 +916,10 @@ export default function NewSecurityGuardPage() {
                   ))}
 
                   <SubmitBar
-                    loading={joinState.isSubmitting}
-                    primaryClassName="cg-btn-brand rounded-full px-6 py-3 font-medium transition-colors disabled:opacity-50"
                     primaryLabel={t("guards.new.form.send")}
+                    loading={joinState.isSubmitting}
                     onPrimary={submitJoin(onSubmitJoin)}
+                    primaryClassName="cg-btn-brand rounded-full px-6 py-3 font-medium transition-colors disabled:opacity-50"
                   />
                 </form>
               </Form>
@@ -994,10 +979,10 @@ export default function NewSecurityGuardPage() {
                   ))}
 
                   <SubmitBar
-                    loading={linkState.isSubmitting}
-                    primaryClassName="cg-btn-brand rounded-full px-6 py-3 font-medium transition-colors disabled:opacity-50"
                     primaryLabel={t("guards.new.form.send")}
+                    loading={linkState.isSubmitting}
                     onPrimary={submitLink(onSubmitLink)}
+                    primaryClassName="cg-btn-brand rounded-full px-6 py-3 font-medium transition-colors disabled:opacity-50"
                   />
                 </form>
               </Form>
@@ -1016,7 +1001,6 @@ export default function NewSecurityGuardPage() {
                   primero que hace quien tiene el papel del candidato delante. */}
               <ImportarHojaDeVida
                 className="mt-4"
-                onArchivo={(archivo) => setHojaDeVida(archivo)}
                 onDatos={(campos) => {
                   // `shouldDirty` para que el formulario sepa que hay cambios
                   // sin guardar; `shouldValidate` no, porque validar un
@@ -1033,6 +1017,7 @@ export default function NewSecurityGuardPage() {
                     });
                   });
                 }}
+                onArchivo={(archivo) => setHojaDeVida(archivo)}
               />
 
               <Form {...createForm}>
@@ -1042,20 +1027,20 @@ export default function NewSecurityGuardPage() {
                 >
                   {/* ── Section 1: Personal Information ─────────────────────── */}
                   <Section
-                    icon={<User />}
                     title={t(
                       "ui.NewSecurityGuard.informacionPersonal",
                       "Información Personal",
                     )}
+                    icon={<User />}
                   >
                     {/* Profile photo centred at top */}
                     <div className="mb-6 flex justify-center">
                       <ProfilePhotoCapture
-                        previewUrl={profilePhotoPreviewUrl}
                         value={guardDocs.profilePhoto ?? null}
                         onChange={
                           setDoc("profilePhoto") as (f: File | null) => void
                         }
+                        previewUrl={profilePhotoPreviewUrl}
                       />
                     </div>
 
@@ -1126,8 +1111,8 @@ export default function NewSecurityGuardPage() {
                               <span className="text-destructive">*</span>
                             </FormLabel>
                             <Select
-                              value={field.value ?? ""}
                               onValueChange={field.onChange}
+                              value={field.value ?? ""}
                             >
                               <FormControl>
                                 <SelectTrigger>
@@ -1161,8 +1146,8 @@ export default function NewSecurityGuardPage() {
                               <span className="text-destructive">*</span>
                             </FormLabel>
                             <Select
-                              value={field.value ?? ""}
                               onValueChange={field.onChange}
+                              value={field.value ?? ""}
                             >
                               <FormControl>
                                 <SelectTrigger>
@@ -1195,8 +1180,8 @@ export default function NewSecurityGuardPage() {
                               <span className="text-destructive">*</span>
                             </FormLabel>
                             <Select
-                              value={field.value ?? ""}
                               onValueChange={field.onChange}
+                              value={field.value ?? ""}
                             >
                               <FormControl>
                                 <SelectTrigger>
@@ -1272,8 +1257,8 @@ export default function NewSecurityGuardPage() {
                               <span className="text-destructive">*</span>
                             </FormLabel>
                             <Select
-                              value={field.value ?? ""}
                               onValueChange={field.onChange}
+                              value={field.value ?? ""}
                             >
                               <FormControl>
                                 <SelectTrigger>
@@ -1302,8 +1287,8 @@ export default function NewSecurityGuardPage() {
 
                   {/* ── Section 2: Contact & Address ─────────────────────────── */}
                   <Section
-                    icon={<Phone />}
                     title={t("ui.NewSecurityGuardPage.contactoYDomicilio")}
+                    icon={<Phone />}
                   >
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                       <FormField
@@ -1320,10 +1305,10 @@ export default function NewSecurityGuardPage() {
                             </FormLabel>
                             <FormControl>
                               <Input
+                                type="email"
                                 placeholder={t(
                                   "ui.NewSecurityGuardPage.vigilanteEjemploCom",
                                 )}
-                                type="email"
                                 {...field}
                               />
                             </FormControl>
@@ -1344,9 +1329,9 @@ export default function NewSecurityGuardPage() {
                             </FormLabel>
                             <FormControl>
                               <PhoneInput
-                                placeholder="+1 (555) 000-0000"
                                 value={field.value || ""}
                                 onChange={(val: string) => field.onChange(val)}
+                                placeholder="+1 (555) 000-0000"
                               />
                             </FormControl>
                             <FormMessage />
@@ -1365,11 +1350,6 @@ export default function NewSecurityGuardPage() {
                             <FormControl>
                               <AddressAutocomplete
                                 defaultValue={field.value || ""}
-                                placeholder={t(
-                                  "ui.NewSecurityGuard.buscarDireccionDelVigilante",
-                                  "Buscar dirección del vigilante...",
-                                )}
-                                showMap={true}
                                 onAddressSelect={(result) => {
                                   field.onChange(result.address);
                                   setCreateValue(
@@ -1381,6 +1361,11 @@ export default function NewSecurityGuardPage() {
                                     result.longitude ?? undefined,
                                   );
                                 }}
+                                showMap={true}
+                                placeholder={t(
+                                  "ui.NewSecurityGuard.buscarDireccionDelVigilante",
+                                  "Buscar dirección del vigilante...",
+                                )}
                               />
                             </FormControl>
                             <FormDescription>
@@ -1398,11 +1383,11 @@ export default function NewSecurityGuardPage() {
 
                   {/* ── Section 3: Identification ─────────────────────────────── */}
                   <Section
-                    icon={<FileCheck />}
                     title={t(
                       "ui.NewSecurityGuard.identificacionYContrato",
                       "Identificación y Contrato",
                     )}
+                    icon={<FileCheck />}
                   >
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                       <FormField
@@ -1433,12 +1418,12 @@ export default function NewSecurityGuardPage() {
 
                       <div>
                         <DocumentUpload
-                          description={t(
-                            "ui.NewSecurityGuardPage.fotoOEscaneoDelDocumento",
-                          )}
                           label={t(
                             "ui.NewSecurityGuard.imagenDeIdentificacion",
                             "Imagen de Identificación",
+                          )}
+                          description={t(
+                            "ui.NewSecurityGuardPage.fotoOEscaneoDelDocumento",
                           )}
                           value={guardDocs.identificationImage ?? null}
                           onChange={
@@ -1491,25 +1476,25 @@ export default function NewSecurityGuardPage() {
 
                   {/* ── Section 4: Certifications ─────────────────────────────── */}
                   <Section
-                    icon={<ShieldCheck />}
                     title="Certificaciones y Documentos Profesionales"
+                    icon={<ShieldCheck />}
                   >
                     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                       <DocumentUpload
+                        label="Certificado AFIS"
                         description={t(
                           "ui.NewSecurityGuardPage.sistemaAutomatizadoDeIdentificacionDe",
                         )}
-                        label="Certificado AFIS"
                         value={guardDocs.afisCertificate ?? null}
                         onChange={setDoc("afisCertificate") as (f: any) => void}
                       />
                       <DocumentUpload
-                        description={t(
-                          "ui.NewSecurityGuardPage.certificadoMedicoVigente",
-                        )}
                         label={t(
                           "ui.NewSecurityGuard.certificadoMedico",
                           "Certificado Médico",
+                        )}
+                        description={t(
+                          "ui.NewSecurityGuardPage.certificadoMedicoVigente",
                         )}
                         value={guardDocs.medicalCertificate ?? null}
                         onChange={
@@ -1517,12 +1502,12 @@ export default function NewSecurityGuardPage() {
                         }
                       />
                       <DocumentUpload
-                        description={t(
-                          "ui.NewSecurityGuardPage.evaluacionPsicologicaActualizada",
-                        )}
                         label={t(
                           "ui.NewSecurityGuard.certificadoPsicologico",
                           "Certificado Psicológico",
+                        )}
+                        description={t(
+                          "ui.NewSecurityGuardPage.evaluacionPsicologicaActualizada",
                         )}
                         value={guardDocs.psychologicalCertificate ?? null}
                         onChange={
@@ -1530,23 +1515,23 @@ export default function NewSecurityGuardPage() {
                         }
                       />
                       <DocumentUpload
+                        label="Credencial"
                         description={t(
                           "ui.NewSecurityGuardPage.documentoDeCredencialProfesional",
                           "Documento de credencial profesional",
                         )}
-                        label="Credencial"
                         value={guardDocs.credentialDocument ?? null}
                         onChange={
                           setDoc("credentialDocument") as (f: any) => void
                         }
                       />
                       <DocumentUpload
-                        description={t(
-                          "ui.NewSecurityGuardPage.certificacionDeVigilanteNivel1",
-                        )}
                         label={t(
                           "ui.NewSecurityGuard.certificacionNivel1",
                           "Certificación Nivel 1",
+                        )}
+                        description={t(
+                          "ui.NewSecurityGuardPage.certificacionDeVigilanteNivel1",
                         )}
                         value={guardDocs.certificationLevel1 ?? null}
                         onChange={
@@ -1554,12 +1539,12 @@ export default function NewSecurityGuardPage() {
                         }
                       />
                       <DocumentUpload
-                        description={t(
-                          "ui.NewSecurityGuardPage.certificacionDeVigilanteNivel2",
-                        )}
                         label={t(
                           "ui.NewSecurityGuard.certificacionNivel2",
                           "Certificación Nivel 2",
+                        )}
+                        description={t(
+                          "ui.NewSecurityGuardPage.certificacionDeVigilanteNivel2",
                         )}
                         value={guardDocs.certificationLevel2 ?? null}
                         onChange={
@@ -1567,11 +1552,11 @@ export default function NewSecurityGuardPage() {
                         }
                       />
                       <DocumentUpload
+                        label="Certificado Violencia Intrafamiliar"
                         description={t(
                           "ui.NewSecurityGuardPage.certificadoDeNoAntecedentesDeViolenciaFamiliar",
                           "Certificado de no antecedentes de violencia familiar",
                         )}
-                        label="Certificado Violencia Intrafamiliar"
                         value={guardDocs.familyViolenceCertificate ?? null}
                         onChange={
                           setDoc("familyViolenceCertificate") as (
@@ -1594,13 +1579,13 @@ export default function NewSecurityGuardPage() {
                       </span>
                     )}
                     <SubmitBar
-                      loading={createState.isSubmitting || uploading}
-                      primaryClassName="cg-btn-brand rounded-full px-6 py-3 font-medium transition-colors disabled:opacity-50"
                       primaryLabel={t("guards.new.form.create_and_send")}
+                      loading={createState.isSubmitting || uploading}
                       onPrimary={() => {
                         createIntentRef.current = "create_send";
                         submitCreate(onSubmitCreate)();
                       }}
+                      primaryClassName="cg-btn-brand rounded-full px-6 py-3 font-medium transition-colors disabled:opacity-50"
                     />
                   </div>
                 </form>

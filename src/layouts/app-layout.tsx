@@ -1,15 +1,15 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-
 import Header from "@/components/header";
 import Sidebar from "@/components/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
 import { setTenantId } from "@/lib/api/clientService";
 import { setTenantId as setCategoryTenantId } from "@/lib/api/categoryService";
+import { useLocation, useNavigate } from "react-router-dom";
 import TenantJoinModal from "@/components/TenantJoinModal";
 import TrialBanner from "@/components/TrialBanner";
 import DemoDataBanner from "@/components/DemoDataBanner";
 import PlatformAnnouncements from "@/components/PlatformAnnouncements";
+import { RadioRealtimeProvider } from "@/components/radio/RadioRealtimeProvider";
 import RadioVoiceWidget from "@/components/radio/RadioVoiceWidget";
 import VigiaWidget from "@/components/vigia/VigiaWidget";
 import VisitBeacon from "@/components/VisitBeacon";
@@ -51,9 +51,7 @@ const YaHayArmazon = createContext(false);
 
 export default function AppLayout({ children }: AppLayoutProps) {
   const anidado = useContext(YaHayArmazon);
-
   if (anidado) return <>{children}</>;
-
   return (
     <YaHayArmazon.Provider value={true}>
       <AppLayoutInterno>{children}</AppLayoutInterno>
@@ -63,11 +61,9 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
 function AppLayoutInterno({ children }: AppLayoutProps) {
   const alreadyInShell = useContext(AppLayoutMountedContext);
-
   // Nested (page-level) AppLayout → passthrough. No hooks below run here, so the
   // persistent shell above owns all the shell state/effects exactly once.
   if (alreadyInShell) return <>{children}</>;
-
   return <AppLayoutShell>{children}</AppLayoutShell>;
 }
 
@@ -87,9 +83,7 @@ function AppLayoutShell({ children }: AppLayoutProps) {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const isMobile = window.matchMedia("(max-width: 1023px)").matches;
-
     document.body.style.overflow = isMobile && sidebarOpen ? "hidden" : "";
-
     return () => {
       document.body.style.overflow = "";
     };
@@ -99,9 +93,7 @@ function AppLayoutShell({ children }: AppLayoutProps) {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const handleResize = () => setSidebarOpen(window.innerWidth >= 1024);
-
     window.addEventListener("resize", handleResize);
-
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
@@ -109,11 +101,9 @@ function AppLayoutShell({ children }: AppLayoutProps) {
   useEffect(() => {
     try {
       let tenantId: string | null = null;
-
       if (user) {
         if (Array.isArray(user.tenants) && user.tenants.length > 0) {
           const t = user.tenants[0];
-
           tenantId =
             t.tenantId ||
             t.id ||
@@ -155,7 +145,6 @@ function AppLayoutShell({ children }: AppLayoutProps) {
           (user.tenant ||
             (Array.isArray(user.tenants) && user.tenants.length > 0))),
     );
-
     if (!hasTenant && location.pathname !== "/dashboard") {
       navigate("/dashboard", { replace: true });
     }
@@ -180,7 +169,6 @@ function AppLayoutShell({ children }: AppLayoutProps) {
         t.id ||
         t._id ||
         (t.tenant && (t.tenant.id || t.tenant.tenantId));
-
       if (tid) return true;
     }
 
@@ -197,7 +185,6 @@ function AppLayoutShell({ children }: AppLayoutProps) {
           tu._id ||
           (tu.tenant && (tu.tenant.id || tu.tenant.tenantId));
         const status = tu.status || null;
-
         return Boolean(tid) && status !== "invited";
       });
     }
@@ -221,7 +208,6 @@ function AppLayoutShell({ children }: AppLayoutProps) {
           )
           .filter(Boolean);
       if (typeof r === "string") return [r];
-
       return [];
     };
 
@@ -235,7 +221,6 @@ function AppLayoutShell({ children }: AppLayoutProps) {
     const all = [...global, ...tenantsArr, ...singleTenant].map((s) =>
       (s || "").toString().toLowerCase(),
     );
-
     return all.some((n) => n.includes("superadmin"));
   };
 
@@ -249,11 +234,9 @@ function AppLayoutShell({ children }: AppLayoutProps) {
 
     // Derive tenantId from `user` shape
     let derived: string | null = null;
-
     try {
       if (user.tenant) {
         const t = user.tenant;
-
         derived =
           t.tenantId ||
           t.id ||
@@ -263,7 +246,6 @@ function AppLayoutShell({ children }: AppLayoutProps) {
       }
       if (!derived && Array.isArray(user.tenants) && user.tenants.length > 0) {
         const first = user.tenants[0];
-
         derived =
           first.tenantId ||
           first.id ||
@@ -292,7 +274,6 @@ function AppLayoutShell({ children }: AppLayoutProps) {
           const res: any = await tenantService.findById(String(derived));
           const t =
             res && (res.data || res.tenant) ? res.data || res.tenant : res;
-
           cacheTenantLocation((t as any)?.latitude, (t as any)?.longitude);
           cacheTenantCountry(
             (t as any)?.countryCode ?? (t as any)?.country_code ?? null,
@@ -322,7 +303,6 @@ function AppLayoutShell({ children }: AppLayoutProps) {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const isMobile = window.matchMedia("(max-width: 1023px)").matches;
-
     if (isMobile) {
       setSidebarOpen(false);
     }
@@ -364,7 +344,7 @@ function AppLayoutShell({ children }: AppLayoutProps) {
           ENTERO —cabecera y menú incluidos— y desenfocaba también el menú que
           venía a destacar. Dentro, con z-40, queda por debajo de la cabecera
           (z-50) y por encima del contenido, que es exactamente lo que hace falta. */}
-        <div aria-hidden className="cg-scrim-menu" />
+        <div className="cg-scrim-menu" aria-hidden />
         {/* La cabecera RESERVA la muesca con `padding-top` y crece lo mismo en
           `height`: con `box-sizing: border-box` su caja de contenido sigue
           midiendo 3,5rem exactas, así que los botones no se mueven ni un píxel.
@@ -376,7 +356,7 @@ function AppLayoutShell({ children }: AppLayoutProps) {
             sidebarOpen ? "lg:ml-[17rem]" : "lg:ml-16",
           ].join(" ")}
         >
-          <Header sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+          <Header toggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} />
         </div>
 
         {/* 17rem es el menú SOLO: la barra ya no lleva un riel de secciones de

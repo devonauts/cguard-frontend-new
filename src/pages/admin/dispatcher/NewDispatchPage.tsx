@@ -1,8 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { clientDisplayName } from "@/lib/clientName";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import AppLayout from "@/layouts/app-layout";
+import Breadcrumb from "@/components/ui/breadcrumb";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useWatch } from "react-hook-form";
+import {
+  dispatchCreateSchema,
+  type DispatchCreateSchema,
+} from "@/lib/validators/dispatch-create.schema";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   X,
   ClipboardPlus,
@@ -11,17 +20,6 @@ import {
   Paperclip,
   NotebookPen,
 } from "lucide-react";
-import { toast } from "sonner";
-
-import { clientDisplayName } from "@/lib/clientName";
-import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
-import {
-  dispatchCreateSchema,
-  type DispatchCreateSchema,
-} from "@/lib/validators/dispatch-create.schema";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { PageContainer, PageHeader, Section, FadeIn } from "@/components/kit";
 import {
@@ -39,11 +37,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+
 import { clientService } from "@/lib/api/clientService";
 import IncidentTypesService from "@/services/incident-types.service";
 import api from "@/lib/api";
 import { postSiteService } from "@/lib/api/postSiteService";
 import { runOrQueue } from "@/lib/offline/offlineQueue";
+import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import securityGuardService from "@/lib/api/securityGuardService";
 
@@ -134,7 +134,6 @@ export default function NewDispatchPage() {
           { active: true },
           { limit: 100, offset: 0 },
         );
-
         if (clientsResp && Array.isArray(clientsResp.rows)) {
           setClientes(
             clientsResp.rows.map((c: any) => {
@@ -158,7 +157,6 @@ export default function NewDispatchPage() {
     (async () => {
       try {
         const tenantId = localStorage.getItem("tenantId");
-
         if (!tenantId) return;
 
         const tryPaths = [
@@ -170,14 +168,12 @@ export default function NewDispatchPage() {
         ];
 
         let rows: any[] | undefined;
-
         for (const path of tryPaths) {
           try {
             const resp = await api.get(path, { toast: { silentError: true } });
             const body = resp.data ?? resp; // axios returns { data }
-
             // Log response for debugging guard list endpoints
-
+            // eslint-disable-next-line no-console
             if (Array.isArray(body)) {
               rows = body;
             } else if (body && Array.isArray(body.rows)) {
@@ -188,6 +184,7 @@ export default function NewDispatchPage() {
             if (rows && rows.length > 0) break;
           } catch (err) {
             // intentar siguiente path
+            // eslint-disable-next-line no-console
           }
         }
 
@@ -198,10 +195,8 @@ export default function NewDispatchPage() {
               g.government_id ??
               g.user?.governmentId ??
               g.user?.government_id;
-
             return gov && String(gov).toLowerCase() !== "pending";
           });
-
           setVigilantes(
             filtered.map((g: any) => {
               const display =
@@ -218,7 +213,6 @@ export default function NewDispatchPage() {
                 g.username ||
                 g.email ||
                 "Sin nombre";
-
               return {
                 id: g.id || g.userId || g.guardId || g.uuid,
                 name: display,
@@ -239,7 +233,6 @@ export default function NewDispatchPage() {
     (async () => {
       try {
         const res = await IncidentTypesService.list("", 1, 100);
-
         if (res && Array.isArray(res.rows)) {
           setTiposIncidente(
             res.rows.map((t: { id: string; name: string }) => ({
@@ -323,11 +316,9 @@ export default function NewDispatchPage() {
         } catch (e) {
           /* ignore */
         }
-
         return;
       }
       const tenantId = localStorage.getItem("tenantId");
-
       if (!tenantId) return;
 
       // Preferred endpoint (singular 'station' with postSiteId filter)
@@ -337,9 +328,8 @@ export default function NewDispatchPage() {
           { toast: { silentError: true } },
         );
         const body = res && (res.data ?? res);
-
+        // eslint-disable-next-line no-console
         let rows: any[] = [];
-
         if (Array.isArray(body)) rows = body;
         else if (body && Array.isArray(body.rows)) rows = body.rows;
         else if (body && Array.isArray(body.data)) rows = body.data;
@@ -353,12 +343,10 @@ export default function NewDispatchPage() {
             r?.site ||
             r?.postSite ||
             r?.business_info_id;
-
           return link && String(link) === String(siteToLoad);
         });
-
         // Debug: log counts to help diagnose stations appearing under wrong post-site
-
+        // eslint-disable-next-line no-console
         if (!exactRows.length) {
           // No stations explicitly linked to this postSite in this response — try next fallback
           throw new Error("noExactRows");
@@ -377,10 +365,8 @@ export default function NewDispatchPage() {
             s?.address ||
             (s?.location && (s.location.name || s.location.address)) ||
             (typeof s === "string" ? s : s && s.id ? s.id : String(id));
-
           return { id, name };
         });
-
         setStations(mapped);
         if (dup && dup.stationId) {
           setSelectedStationId(dup.stationId);
@@ -390,7 +376,6 @@ export default function NewDispatchPage() {
             /* ignore */
           }
         }
-
         return;
       } catch (err) {
         // try fallbacks below
@@ -403,7 +388,6 @@ export default function NewDispatchPage() {
         );
         const body2 = res2 && (res2.data ?? res2);
         let rows2: any[] = [];
-
         if (Array.isArray(body2)) rows2 = body2;
         else if (body2 && Array.isArray(body2.rows)) rows2 = body2.rows;
         else if (body2 && Array.isArray(body2.data)) rows2 = body2.data;
@@ -416,12 +400,10 @@ export default function NewDispatchPage() {
             r?.site ||
             r?.postSite ||
             r?.business_info_id;
-
           return link && String(link) === String(siteToLoad);
         });
-
         // Debug: log counts for this fallback
-
+        // eslint-disable-next-line no-console
         if (!exactRows2.length) {
           // No exact matches here — continue to next fallback
           throw new Error("noExactRows2");
@@ -440,10 +422,8 @@ export default function NewDispatchPage() {
             s?.address ||
             (s?.location && (s.location.name || s.location.address)) ||
             (typeof s === "string" ? s : s && s.id ? s.id : String(id));
-
           return { id, name };
         });
-
         setStations(mapped2);
         if (dup && dup.stationId) {
           setSelectedStationId(dup.stationId);
@@ -453,7 +433,6 @@ export default function NewDispatchPage() {
             /* ignore */
           }
         }
-
         return;
       } catch (err2) {
         // try another fallback
@@ -466,7 +445,6 @@ export default function NewDispatchPage() {
         );
         const body3 = res3 && (res3.data ?? res3);
         let rows3: any[] = [];
-
         if (Array.isArray(body3)) rows3 = body3;
         else if (body3 && Array.isArray(body3.rows)) rows3 = body3.rows;
         else if (body3 && Array.isArray(body3.data)) rows3 = body3.data;
@@ -479,10 +457,8 @@ export default function NewDispatchPage() {
             r?.site ||
             r?.postSite ||
             r?.business_info_id;
-
           return link && String(link) === String(siteToLoad);
         });
-
         if (!exactRows3.length) {
           // No exact matches in final stations response
           throw new Error("noExactRows3");
@@ -500,13 +476,11 @@ export default function NewDispatchPage() {
             s?.address ||
             (s?.location && (s.location.name || s.location.address)) ||
             (typeof s === "string" ? s : s && s.id ? s.id : String(id));
-
           return { id, name };
         });
-
         setStations(mapped3);
         // Debug: log final stations set
-
+        // eslint-disable-next-line no-console
         if (dup && dup.stationId) {
           setSelectedStationId(dup.stationId);
           try {
@@ -515,7 +489,6 @@ export default function NewDispatchPage() {
             /* ignore */
           }
         }
-
         return;
       } catch (err3) {
         console.warn("Fallback stations endpoints failed", err3);
@@ -529,7 +502,6 @@ export default function NewDispatchPage() {
 
   useEffect(() => {
     const siteToLoad = dupSiteId || watchedSiteId;
-
     fetchStationsFor(siteToLoad ?? null);
   }, [dupSiteId, watchedSiteId, location]);
 
@@ -540,10 +512,8 @@ export default function NewDispatchPage() {
       try {
         const siteToLoad = dupSiteId || watchedSiteId;
         const tenantId = localStorage.getItem("tenantId");
-
         if (!tenantId || !siteToLoad) {
           if (mounted) setAssignedVigilantes([]);
-
           return;
         }
 
@@ -556,7 +526,6 @@ export default function NewDispatchPage() {
             );
             const body = resp && (resp.data ?? resp);
             let exactRows: any[] = [];
-
             if (Array.isArray(body)) exactRows = body;
             else if (body && Array.isArray(body.rows)) exactRows = body.rows;
             else if (body && Array.isArray(body.data)) exactRows = body.data;
@@ -597,7 +566,6 @@ export default function NewDispatchPage() {
                     r.postSiteId ||
                     (r.raw && (r.raw.postSiteId || r.raw.post_site_id)) ||
                     null;
-
                   return {
                     id,
                     name: display,
@@ -608,9 +576,7 @@ export default function NewDispatchPage() {
                   };
                 })
                 .filter((x: any) => x.id);
-
               if (mounted) setAssignedVigilantes(mappedExact);
-
               return;
             }
           } catch (err) {
@@ -633,7 +599,7 @@ export default function NewDispatchPage() {
           try {
             const resp = await api.get(path, { toast: { silentError: true } });
             const body = resp && (resp.data ?? resp);
-
+            // eslint-disable-next-line no-console
             if (Array.isArray(body)) rows = body;
             else if (body && Array.isArray(body.rows)) rows = body.rows;
             else if (body && Array.isArray(body.data)) rows = body.data;
@@ -660,12 +626,10 @@ export default function NewDispatchPage() {
                   r.postSiteStationId ||
                   r.post_site_station_id ||
                   null;
-
                 if (candStation) {
                   // If station linkage present, accept — we'll further filter against loaded stations later
                   return true;
                 }
-
                 return false;
               });
 
@@ -678,6 +642,7 @@ export default function NewDispatchPage() {
             }
           } catch (e) {
             // try next
+            // eslint-disable-next-line no-console
           }
         }
 
@@ -689,12 +654,13 @@ export default function NewDispatchPage() {
               { toast: { silentError: true } },
             );
             const body = resp && (resp.data ?? resp);
-
+            // eslint-disable-next-line no-console
             if (Array.isArray(body)) rows = body;
             else if (body && Array.isArray(body.rows)) rows = body.rows;
             else if (body && Array.isArray(body.data)) rows = body.data;
           } catch (e) {
             // ignore
+            // eslint-disable-next-line no-console
           }
         }
 
@@ -707,14 +673,12 @@ export default function NewDispatchPage() {
               `/tenant/${tenantId}/shifts?postSiteId=${encodeURIComponent(siteToLoad)}&limit=999`,
             ];
             let shiftRows: any[] = [];
-
             for (const sp of shiftPaths) {
               try {
                 const r = await api.get(sp, { toast: { silentError: true } });
                 const b = r && (r.data ?? r);
-
+                // eslint-disable-next-line no-console
                 let sarr: any[] = [];
-
                 if (Array.isArray(b)) sarr = b;
                 else if (b && Array.isArray(b.rows)) sarr = b.rows;
                 else if (b && Array.isArray(b.data)) sarr = b.data;
@@ -724,12 +688,12 @@ export default function NewDispatchPage() {
                 }
               } catch (err) {
                 // try next shift path
+                // eslint-disable-next-line no-console
               }
             }
 
             if (shiftRows && shiftRows.length) {
               const extracted: any[] = [];
-
               for (const sh of shiftRows) {
                 const stationForShift =
                   sh.stationId ||
@@ -751,11 +715,9 @@ export default function NewDispatchPage() {
                   sh.users ||
                   sh.assignees ||
                   sh.assignments;
-
                 if (Array.isArray(cand)) {
                   for (const c of cand) {
                     let guardObj: any = null;
-
                     if (!c) continue;
                     // If c is a primitive id (string/number), resolve name from loaded guard list if possible
                     if (typeof c === "string" || typeof c === "number") {
@@ -763,7 +725,6 @@ export default function NewDispatchPage() {
                       const found = (vigilantes || []).find(
                         (g) => String(g.id) === gid,
                       );
-
                       guardObj = { id: gid, name: found?.name || null, raw: c };
                     } else if (typeof c === "object") {
                       const gid =
@@ -780,7 +741,6 @@ export default function NewDispatchPage() {
                         c.user?.fullName ||
                         found?.name ||
                         null;
-
                       guardObj = { id: gid || null, name: display, raw: c };
                     }
                     if (guardObj) {
@@ -793,13 +753,11 @@ export default function NewDispatchPage() {
                 } else if (sh.guard || sh.user || sh.guardId) {
                   const c = sh.guard || sh.user || sh.guardId;
                   let guardObj: any = null;
-
                   if (typeof c === "string" || typeof c === "number") {
                     const gid = String(c);
                     const found = (vigilantes || []).find(
                       (g) => String(g.id) === gid,
                     );
-
                     guardObj = { id: gid, name: found?.name || null, raw: c };
                   } else if (typeof c === "object") {
                     const gid =
@@ -816,7 +774,6 @@ export default function NewDispatchPage() {
                       c.user?.fullName ||
                       found?.name ||
                       null;
-
                     guardObj = { id: gid || null, name: display, raw: c };
                   }
                   if (guardObj) {
@@ -829,6 +786,7 @@ export default function NewDispatchPage() {
               }
               if (extracted.length) {
                 rows = extracted;
+                // eslint-disable-next-line no-console
               }
             }
           } catch (e) {
@@ -836,17 +794,18 @@ export default function NewDispatchPage() {
           }
         }
 
+        // eslint-disable-next-line no-console
         try {
           // Print full JSON for easier copy-paste debugging
-
+          // eslint-disable-next-line no-console
           if ((rows || []).length) {
+            // eslint-disable-next-line no-console
           }
         } catch (err) {
           // ignore stringify errors
         }
         if (!rows || !Array.isArray(rows) || rows.length === 0) {
           if (mounted) setAssignedVigilantes([]);
-
           return;
         }
 
@@ -868,7 +827,6 @@ export default function NewDispatchPage() {
                 r.post_site_station_id,
             );
           });
-
           if (!anyLinked && siteToLoad && (rows || []).length) {
             // annotate each row with the current post-site id
             rows = (rows || []).map((r: any) => ({
@@ -881,6 +839,7 @@ export default function NewDispatchPage() {
                 r.site ||
                 siteToLoad,
             }));
+            // eslint-disable-next-line no-console
           }
         } catch (err) {
           // ignore
@@ -915,7 +874,6 @@ export default function NewDispatchPage() {
             r.postSiteStationId ||
             r.post_site_station_id ||
             null;
-
           if (candStation && stationIdsForSite.has(String(candStation)))
             return true;
 
@@ -928,7 +886,6 @@ export default function NewDispatchPage() {
             r.post_site_station_name ||
             ""
           ).trim();
-
           if (candStationName) {
             const match = (stations || []).some(
               (s) =>
@@ -936,7 +893,6 @@ export default function NewDispatchPage() {
                   .trim()
                   .toLowerCase() === String(candStationName).toLowerCase(),
             );
-
             if (match) return true;
           }
 
@@ -1000,7 +956,6 @@ export default function NewDispatchPage() {
               (g.rawShift &&
                 (g.rawShift.postSiteId || g.rawShift.post_site_id)) ||
               null;
-
             return {
               id,
               name: display,
@@ -1013,6 +968,7 @@ export default function NewDispatchPage() {
           .filter((x: any) => x.id);
 
         // Debug: show what rows we received, how we filtered them and the final mapped guards
+        // eslint-disable-next-line no-console
 
         // If we found no station-matching guards but a station is selected, try station-scoped shift endpoints
         if ((!mapped || mapped.length === 0) && selectedStationId) {
@@ -1024,13 +980,12 @@ export default function NewDispatchPage() {
             );
             const bodyCanon = respCanon && (respCanon.data ?? respCanon);
             let canonRows: any[] = [];
-
             if (Array.isArray(bodyCanon)) canonRows = bodyCanon;
             else if (bodyCanon && Array.isArray(bodyCanon.rows))
               canonRows = bodyCanon.rows;
             else if (bodyCanon && Array.isArray(bodyCanon.data))
               canonRows = bodyCanon.data;
-
+            // eslint-disable-next-line no-console
             if (canonRows && canonRows.length) {
               const mappedCanon = (canonRows || [])
                 .map((r: any) => ({
@@ -1066,15 +1021,15 @@ export default function NewDispatchPage() {
                   String(m.stationId || "").trim() ===
                     String(selectedStationId).trim(),
               );
-
+              // eslint-disable-next-line no-console
               if (stationMatches && stationMatches.length) {
                 if (mounted) setAssignedVigilantes(stationMatches);
-
                 return;
               }
             }
           } catch (err) {
             // ignore canonical endpoint errors
+            // eslint-disable-next-line no-console
           }
 
           // Next fallback: try station-scoped shift endpoints
@@ -1086,13 +1041,11 @@ export default function NewDispatchPage() {
             );
             const spBody = spResp && (spResp.data ?? spResp);
             let spRows: any[] = [];
-
             if (Array.isArray(spBody)) spRows = spBody;
             else if (spBody && Array.isArray(spBody.rows)) spRows = spBody.rows;
             else if (spBody && Array.isArray(spBody.data)) spRows = spBody.data;
             // Extract guard objects from shifts
             const extracted: any[] = [];
-
             for (const sh of spRows || []) {
               const stationForShift =
                 sh.stationId || sh.station?.id || sh.station_id || null;
@@ -1109,18 +1062,15 @@ export default function NewDispatchPage() {
                 sh.users ||
                 sh.assignees ||
                 sh.assignments;
-
               if (Array.isArray(cand)) {
                 for (const c of cand) {
                   let guardObj: any = null;
-
                   if (!c) continue;
                   if (typeof c === "string" || typeof c === "number") {
                     const gid = String(c);
                     const found = (vigilantes || []).find(
                       (g) => String(g.id) === gid,
                     );
-
                     guardObj = { id: gid, name: found?.name || null, raw: c };
                   } else if (typeof c === "object") {
                     const gid =
@@ -1137,7 +1087,6 @@ export default function NewDispatchPage() {
                       c.user?.fullName ||
                       found?.name ||
                       null;
-
                     guardObj = { id: gid || null, name: display, raw: c };
                   }
                   if (guardObj) {
@@ -1150,13 +1099,11 @@ export default function NewDispatchPage() {
               } else if (sh.guard || sh.user || sh.guardId) {
                 const c = sh.guard || sh.user || sh.guardId;
                 let guardObj: any = null;
-
                 if (typeof c === "string" || typeof c === "number") {
                   const gid = String(c);
                   const found = (vigilantes || []).find(
                     (g) => String(g.id) === gid,
                   );
-
                   guardObj = { id: gid, name: found?.name || null, raw: c };
                 } else if (typeof c === "object") {
                   const gid =
@@ -1173,7 +1120,6 @@ export default function NewDispatchPage() {
                     c.user?.fullName ||
                     found?.name ||
                     null;
-
                   guardObj = { id: gid || null, name: display, raw: c };
                 }
                 if (guardObj) {
@@ -1195,13 +1141,13 @@ export default function NewDispatchPage() {
                   postSiteId: g.postSiteId,
                 }))
                 .filter((x: any) => x.id);
-
+              // eslint-disable-next-line no-console
               if (mounted) setAssignedVigilantes(mappedStation);
-
               return;
             }
           } catch (err) {
             // ignore station-specific fallback errors
+            // eslint-disable-next-line no-console
           }
         }
 
@@ -1212,7 +1158,6 @@ export default function NewDispatchPage() {
     };
 
     loadAssignedForSite();
-
     return () => {
       mounted = false;
     };
@@ -1229,7 +1174,6 @@ export default function NewDispatchPage() {
     try {
       const dup =
         (location?.state as { duplicate?: unknown } | null)?.duplicate || null;
-
       if (!dup) return;
 
       const data: any = dup;
@@ -1237,10 +1181,8 @@ export default function NewDispatchPage() {
       let incidentDate = "";
       let incidentTime = "";
       const dateVal = data.incidentAt || data.dateTime || null;
-
       if (dateVal) {
         const d = new Date(dateVal);
-
         if (!isNaN(d.getTime())) {
           incidentDate = d.toISOString().slice(0, 10);
           // format HH:MM
@@ -1276,13 +1218,11 @@ export default function NewDispatchPage() {
       (async () => {
         try {
           const siteId = prefill.siteId || dupSiteId;
-
           if (!siteId) return;
           // fetch post-site details to show human-friendly names in readonly fields
           const ps = await postSiteService.get(String(siteId));
           const siteName =
             ps?.companyName || ps?.name || ps?.businessName || "";
-
           setPrefillSiteName(siteName || String(siteId));
           setSitios([
             {
@@ -1296,7 +1236,6 @@ export default function NewDispatchPage() {
             ps?.clientId ||
             (typeof ps?.client === "object" ? ps?.client?.id : ps?.client) ||
             null;
-
           if (cid) {
             form.setValue("clientId", cid);
             // Ensure siteId is set on the form when opened from a post-site context
@@ -1307,13 +1246,11 @@ export default function NewDispatchPage() {
             }
             try {
               const existing = clientes.find((c) => c.id === cid);
-
               if (existing) setPrefillClientName(existing.name);
               else {
                 const cdata = await clientService.getClient(String(cid));
                 const cname =
                   cdata?.fullName || cdata?.company || cdata?.name || "";
-
                 setPrefillClientName(cname || String(cid));
                 setClientes((prev) =>
                   (prev || []).concat({
@@ -1357,14 +1294,12 @@ export default function NewDispatchPage() {
             /* ignore */
           }
           setStations([]);
-
           return;
         }
         const resp = await postSiteService.list(
           { clientId: watchedClientId },
           { limit: 100, offset: 0 },
         );
-
         if (resp && Array.isArray(resp.rows)) {
           setSitios(
             resp.rows.map((s: any) => ({
@@ -1403,7 +1338,6 @@ export default function NewDispatchPage() {
   useEffect(() => {
     try {
       const ct = watchedCallerType;
-
       if (!ct) return;
 
       // If user manually edited callerName, do not overwrite it
@@ -1416,7 +1350,6 @@ export default function NewDispatchPage() {
           const g =
             (vigilantes || []).find((x) => String(x.id) === id) ||
             (assignedVigilantes || []).find((x) => String(x.id) === id);
-
           if (g && g.name) form.setValue("callerName", g.name);
         }
       } else if (ct === "cliente") {
@@ -1424,7 +1357,6 @@ export default function NewDispatchPage() {
           const c = clientes.find(
             (x) => String(x.id) === String(watchedClientId),
           );
-
           if (c && c.name) form.setValue("callerName", c.name);
         }
       } else if (ct === "supervisor") {
@@ -1437,12 +1369,12 @@ export default function NewDispatchPage() {
             : null) ||
           user?.email ||
           "";
-
         if (name) form.setValue("callerName", name);
       }
     } catch (e) {
       // noop
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     watchedCallerType,
     watchedGuardId,
@@ -1491,13 +1423,12 @@ export default function NewDispatchPage() {
     // Ensure we don't accidentally send File objects
     // (form has `attachment` but attachments are handled separately)
     // Log payload for debugging in DevTools / network
+    // eslint-disable-next-line no-console
 
     try {
       const tenantId = localStorage.getItem("tenantId");
-
       if (!tenantId) {
         console.error("No tenantId found");
-
         return;
       }
 
@@ -1505,15 +1436,12 @@ export default function NewDispatchPage() {
       // Normalize payload keys to backend expectations
       // Try to resolve selected guard to a securityGuard record id (guardNameId) when possible
       let resolvedGuardNameId: string | null = null;
-
       try {
         const sel = payload.guardId;
-
         if (sel) {
           const found = (assignedVigilantes || []).find(
             (g) => String(g.id) === String(sel),
           );
-
           if (found) {
             // Safely resolve candidate using optional chaining to avoid undefined errors
             const candidate =
@@ -1525,7 +1453,6 @@ export default function NewDispatchPage() {
               found?.raw?.guardNameId ??
               found?.raw?.guardName ??
               null;
-
             resolvedGuardNameId = candidate != null ? String(candidate) : null;
           }
         }
@@ -1551,6 +1478,7 @@ export default function NewDispatchPage() {
       };
 
       // Debug: log final payload that will be sent to the API
+      // eslint-disable-next-line no-console
 
       // Sin red, el incidente NO se pierde: entra a la cola offline y sale solo
       // al reconectar (lib/offline). Un error DEL SERVIDOR (4xx/5xx) sigue
@@ -1565,7 +1493,6 @@ export default function NewDispatchPage() {
         // hace que el reintento sea inocuo aunque el primero SÍ hubiera llegado.
         { queueTimeouts: true },
       );
-
       if (queued) {
         toast.warning(
           attachments && attachments.length > 0
@@ -1575,7 +1502,6 @@ export default function NewDispatchPage() {
         );
         setAttachments([]);
         navigate("/dispatch-tickets");
-
         return;
       }
       const created =
@@ -1629,7 +1555,6 @@ export default function NewDispatchPage() {
       setAttachments([]);
       const targetSiteId =
         incidentPayload.postSiteId || payload.siteId || dupSiteId || null;
-
       if (targetSiteId) {
         navigate(`/post-sites/${targetSiteId}/incidents`);
       } else {
@@ -1641,7 +1566,6 @@ export default function NewDispatchPage() {
         const msg =
           (error as { message?: string } | null)?.message ||
           "Error al crear Incidente";
-
         toast.error(msg);
       } catch (e) {
         toast.error(t("ui.NewDispatchPage.errorAlCrearIncidente"));
@@ -1653,9 +1577,8 @@ export default function NewDispatchPage() {
   // If no station selected, show guards assigned to the current post-site (do not hide everything)
   const guardOptions = (() => {
     const sid = selectedStationId ? String(selectedStationId) : null;
-
     // Debug: overall state when computing options
-
+    // eslint-disable-next-line no-console
     try {
       const stationNameForSid =
         (stations || []).find((s) => String(s.id) === sid)?.name || "";
@@ -1686,7 +1609,6 @@ export default function NewDispatchPage() {
             r.post_site_station_id,
             r.station?.stationId,
           ];
-
           // include canonical ids from raw rows
           if (r.stationIdCanonical) candidateIds.push(r.stationIdCanonical);
           if (m.stationIdCanonical) candidateIds.push(m.stationIdCanonical);
@@ -1703,7 +1625,6 @@ export default function NewDispatchPage() {
             r.station?.stationName ||
             ""
           ).trim();
-
           if (
             candStationName &&
             stationNameForSid &&
@@ -1715,7 +1636,6 @@ export default function NewDispatchPage() {
           return false;
         })
         .map((m) => ({ id: m.id as string, name: m.name }));
-
       // Debug: inspect assignedVigilantes and matches
       // eslint-disable-next-line no-console
       console.debug("guardOptions compute", {
@@ -1729,7 +1649,6 @@ export default function NewDispatchPage() {
       // If a station is selected, only return guards that match that station (no fallbacks)
       if (sid) {
         if (byStation && byStation.length) return byStation;
-
         // No guards for this station
         return [] as { id: string; name: string }[];
       }
@@ -1737,7 +1656,6 @@ export default function NewDispatchPage() {
       // No station selected: return guards assigned to the current post-site (if any)
       try {
         const currentSite = dupSiteId || watchedSiteId || null;
-
         if (currentSite) {
           const byPostSite = (assignedVigilantes || [])
             .filter(
@@ -1752,7 +1670,6 @@ export default function NewDispatchPage() {
                 ) === String(currentSite),
             )
             .map((m) => ({ id: m.id as string, name: m.name }));
-
           if (byPostSite && byPostSite.length) {
             // eslint-disable-next-line no-console
             console.debug("guardOptions fallback byPostSite", {
@@ -1760,7 +1677,6 @@ export default function NewDispatchPage() {
               count: byPostSite.length,
               sample: byPostSite[0],
             });
-
             return byPostSite;
           }
         }
@@ -1773,7 +1689,6 @@ export default function NewDispatchPage() {
       console.debug("guardOptions fallback to all assignedVigilantes", {
         assignedCount: (assignedVigilantes || []).length,
       });
-
       return (assignedVigilantes || []).map((m) => ({
         id: m.id as string,
         name: m.name,
@@ -1787,12 +1702,10 @@ export default function NewDispatchPage() {
   useEffect(() => {
     try {
       const current = form.getValues ? form.getValues("guardId") : null;
-
       if (!current) return;
       const found =
         guardOptions &&
         guardOptions.some((g) => String(g.id) === String(current));
-
       if (!found) {
         form.setValue("guardId", "");
       }
@@ -1810,20 +1723,20 @@ export default function NewDispatchPage() {
         ]}
       />
 
-      <PageContainer className="px-6 pt-4" width="wide">
+      <PageContainer width="wide" className="px-6 pt-4">
         <PageHeader
           icon={<ClipboardPlus />}
-          subtitle={t("ui.NewDispatchPage.registraUnNuevoIncidenteY")}
           title={t("ui.NewDispatchPage.nuevoIncidente")}
+          subtitle={t("ui.NewDispatchPage.registraUnNuevoIncidenteY")}
         />
         <Form {...form}>
-          <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <Section
-              icon={<Users />}
               title={t(
                 "ui.NewDispatch.informacionDelIncidente",
                 "Información del incidente",
               )}
+              icon={<Users />}
             >
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                 {!isFromPostSite ? (
@@ -1835,6 +1748,7 @@ export default function NewDispatchPage() {
                         <FormItem>
                           <FormLabel>{t("comun.clienteReq")}</FormLabel>
                           <Select
+                            onValueChange={field.onChange}
                             value={field.value}
                             onOpenChange={(open) => {
                               if (open) {
@@ -1846,7 +1760,6 @@ export default function NewDispatchPage() {
                                 setClienteFilter("");
                               }
                             }}
-                            onValueChange={field.onChange}
                           >
                             <SelectTrigger>
                               <SelectValue
@@ -1893,6 +1806,10 @@ export default function NewDispatchPage() {
                             {t("comun.puestoDeSeguridadReq")}
                           </FormLabel>
                           <Select
+                            onValueChange={(v) => {
+                              field.onChange(v);
+                              fetchStationsFor(v);
+                            }}
                             value={field.value}
                             onOpenChange={(open) => {
                               if (open) {
@@ -1903,10 +1820,6 @@ export default function NewDispatchPage() {
                               } else {
                                 setSitioFilter("");
                               }
-                            }}
-                            onValueChange={(v) => {
-                              field.onChange(v);
-                              fetchStationsFor(v);
                             }}
                           >
                             <SelectTrigger>
@@ -1954,7 +1867,6 @@ export default function NewDispatchPage() {
                           <FormControl>
                             <Input
                               {...field}
-                              disabled
                               value={
                                 field.value ??
                                 (prefillClientName ||
@@ -1963,6 +1875,7 @@ export default function NewDispatchPage() {
                                   )?.name ||
                                   "")
                               }
+                              disabled
                             />
                           </FormControl>
                         </FormItem>
@@ -1978,13 +1891,13 @@ export default function NewDispatchPage() {
                           <FormControl>
                             <Input
                               {...field}
-                              disabled
                               value={
                                 field.value ??
                                 (prefillSiteName ||
                                   (sitios && sitios[0] && sitios[0].name) ||
                                   "")
                               }
+                              disabled
                             />
                           </FormControl>
                         </FormItem>
@@ -2004,6 +1917,10 @@ export default function NewDispatchPage() {
                       </FormLabel>
                       <Select
                         value={field.value || ""}
+                        onValueChange={(v) => {
+                          field.onChange(v);
+                          setSelectedStationId(v || null);
+                        }}
                         onOpenChange={(open) => {
                           if (open)
                             setTimeout(
@@ -2011,10 +1928,6 @@ export default function NewDispatchPage() {
                               50,
                             );
                           else setStationFilter("");
-                        }}
-                        onValueChange={(v) => {
-                          field.onChange(v);
-                          setSelectedStationId(v || null);
                         }}
                       >
                         <SelectTrigger>
@@ -2035,13 +1948,13 @@ export default function NewDispatchPage() {
                           <div className="px-2 py-2">
                             <Input
                               ref={(el) => (stationInputRef.current = el)}
-                              disabled={!(watchedSiteId || dupSiteId)}
                               placeholder={t(
                                 "ui.NewDispatch.buscarEstacion",
                                 "Buscar estación...",
                               )}
                               value={stationFilter}
                               onChange={(e) => setStationFilter(e.target.value)}
+                              disabled={!(watchedSiteId || dupSiteId)}
                             />
                           </div>
                           {stations && stations.length > 0 ? (
@@ -2059,8 +1972,8 @@ export default function NewDispatchPage() {
                           ) : (
                             <SelectItem
                               key="__no_stations"
-                              disabled
                               value="__no_stations"
+                              disabled
                             >
                               {watchedSiteId || dupSiteId
                                 ? "Sin estaciones"
@@ -2083,6 +1996,7 @@ export default function NewDispatchPage() {
                         {t("ui.NewDispatchPage.vigilanteAInformar")}
                       </FormLabel>
                       <Select
+                        onValueChange={field.onChange}
                         value={field.value}
                         onOpenChange={(open) => {
                           if (open) {
@@ -2094,7 +2008,6 @@ export default function NewDispatchPage() {
                             setGuardFilter("");
                           }
                         }}
-                        onValueChange={field.onChange}
                       >
                         <SelectTrigger>
                           <SelectValue
@@ -2114,8 +2027,8 @@ export default function NewDispatchPage() {
                             <>
                               <SelectItem
                                 key="__no_station_selected"
-                                disabled
                                 value="__no_station_selected"
+                                disabled
                               >
                                 {t(
                                   "ui.NewDispatchPage.seleccioneUnaEstacionPrimero",
@@ -2138,8 +2051,8 @@ export default function NewDispatchPage() {
                           ) : (
                             <SelectItem
                               key="__no_assigned_guards"
-                              disabled
                               value="__no_assigned_guards"
+                              disabled
                             >
                               {t(
                                 "ui.NewDispatchPage.noHayVigilantesAsignadosAEstaEstacion",
@@ -2161,6 +2074,7 @@ export default function NewDispatchPage() {
                     <FormItem>
                       <FormLabel>Prioridad*</FormLabel>
                       <Select
+                        onValueChange={field.onChange}
                         value={field.value}
                         onOpenChange={(open) => {
                           if (open) {
@@ -2169,7 +2083,6 @@ export default function NewDispatchPage() {
                             setTipoFilter("");
                           }
                         }}
-                        onValueChange={field.onChange}
                       >
                         <SelectTrigger>
                           <SelectValue
@@ -2196,8 +2109,8 @@ export default function NewDispatchPage() {
                     <FormItem>
                       <FormLabel>{t("comun.tipoDeLlamador")}</FormLabel>
                       <Select
-                        value={field.value}
                         onValueChange={field.onChange}
+                        value={field.value}
                       >
                         <SelectTrigger>
                           <SelectValue
@@ -2240,8 +2153,8 @@ export default function NewDispatchPage() {
             </Section>
 
             <Section
-              icon={<FileText />}
               title={t("comun.detallesDelIncidente")}
+              icon={<FileText />}
             >
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <FormField
@@ -2270,8 +2183,8 @@ export default function NewDispatchPage() {
                     <FormItem className="md:col-span-1">
                       <FormLabel>{t("comun.tipoDeIncidente")}</FormLabel>
                       <Select
-                        value={field.value}
                         onValueChange={field.onChange}
+                        value={field.value}
                       >
                         <SelectTrigger>
                           <SelectValue
@@ -2314,7 +2227,6 @@ export default function NewDispatchPage() {
                         className="cursor-pointer"
                         onClick={() => {
                           const el = incidentDateRef.current;
-
                           if (!el) return;
                           // Prefer showPicker() when available (Chromium), otherwise focus.
                           if (
@@ -2365,7 +2277,6 @@ export default function NewDispatchPage() {
                         className="cursor-pointer"
                         onClick={() => {
                           const el = incidentTimeRef.current;
-
                           if (!el) return;
                           if (
                             typeof (
@@ -2426,7 +2337,7 @@ export default function NewDispatchPage() {
               </div>
             </Section>
 
-            <Section icon={<NotebookPen />} title="Seguimiento">
+            <Section title="Seguimiento" icon={<NotebookPen />}>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <FormField
                   control={form.control}
@@ -2458,7 +2369,7 @@ export default function NewDispatchPage() {
               </div>
             </Section>
 
-            <Section icon={<Paperclip />} title="Adjuntos">
+            <Section title="Adjuntos" icon={<Paperclip />}>
               <FormField
                 control={form.control}
                 name="attachment"
@@ -2468,18 +2379,16 @@ export default function NewDispatchPage() {
                     <div className="flex items-start justify-between gap-3">
                       <input
                         ref={fileInputRef}
-                        multiple
-                        className="sr-only"
                         id="dispatch-attachments"
                         type="file"
+                        multiple
+                        className="sr-only"
                         onChange={(e) => {
                           const input = e.target as HTMLInputElement;
                           const files = Array.from(input.files || []);
-
                           if (files.length === 0) return;
                           setAttachments((prev) => {
                             const next = [...prev, ...files];
-
                             try {
                               form.setValue(
                                 "attachment",
@@ -2488,7 +2397,6 @@ export default function NewDispatchPage() {
                             } catch (err) {
                               /* ignore */
                             }
-
                             return next;
                           });
                           // reset input so same file can be reselected if needed
@@ -2498,10 +2406,10 @@ export default function NewDispatchPage() {
 
                       <div className="flex flex-wrap items-center gap-3">
                         <Button
-                          className="min-w-[160px]"
                           type="button"
                           variant="outline"
                           onClick={() => fileInputRef.current?.click()}
+                          className="min-w-[160px]"
                         >
                           Elegir archivos
                         </Button>
@@ -2521,15 +2429,12 @@ export default function NewDispatchPage() {
                                   {f.name}
                                 </span>
                                 <button
-                                  aria-label={`Eliminar ${f.name}`}
-                                  className="text-muted-foreground hover:text-[color:var(--bad-text)]"
                                   type="button"
                                   onClick={() => {
                                     setAttachments((prev) => {
                                       const next = prev.filter(
                                         (_, i) => i !== idx,
                                       );
-
                                       try {
                                         form.setValue(
                                           "attachment",
@@ -2538,10 +2443,11 @@ export default function NewDispatchPage() {
                                       } catch (err) {
                                         /* ignore */
                                       }
-
                                       return next;
                                     });
                                   }}
+                                  className="text-muted-foreground hover:text-[color:var(--bad-text)]"
+                                  aria-label={`Eliminar ${f.name}`}
                                 >
                                   <X className="h-4 w-4" />
                                 </button>
@@ -2558,13 +2464,13 @@ export default function NewDispatchPage() {
             </Section>
 
             <FadeIn className="flex items-center justify-end gap-2">
-              <Button asChild variant="outline">
+              <Button variant="outline" asChild>
                 <Link to="/dispatch-tickets">{t("actions.cancel")}</Link>
               </Button>
               <Button
-                disabled={form.formState.isSubmitting}
                 type="submit"
                 variant="brand"
+                disabled={form.formState.isSubmitting}
               >
                 Enviar
               </Button>

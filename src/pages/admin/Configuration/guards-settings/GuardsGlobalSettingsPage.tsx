@@ -15,15 +15,18 @@ import { toast } from "sonner";
 import {
   ShieldCheck,
   SatelliteDish,
+  BellRing,
   IdCard,
+  MapPin,
+  Route as RouteIcon,
+  Smartphone,
+  Wallet,
   CalendarClock,
   Gauge,
 } from "lucide-react";
-
+import { Section, Stagger, SkeletonCards } from "@/components/kit";
 import SettingsPageShell from "../components/SettingsPageShell";
 import { ToggleRow, SettingDetail, SaveBar } from "../components/SettingsForm";
-
-import { Section, Stagger, SkeletonCards } from "@/components/kit";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -108,7 +111,6 @@ export default function GuardsGlobalSettingsPage() {
     (async () => {
       try {
         const { data } = await api.get(`/tenant/${tenantId()}/settings`);
-
         setRow(data || {});
         setCfg({ ...DEFAULTS, ...((data && data.guardSettings) || {}) });
       } catch {
@@ -162,36 +164,36 @@ export default function GuardsGlobalSettingsPage() {
   return (
     <SettingsPageShell
       icon={<ShieldCheck />}
+      title={t("settings.guardsGlobal.pageTitle", {
+        defaultValue: "Configuración Global de Vigilantes",
+      })}
       subtitle={t("settings.guardsGlobal.pageSubtitle", {
         defaultValue:
           "Estas preferencias aplican a todos los vigilantes de tu empresa.",
       })}
-      title={t("settings.guardsGlobal.pageTitle", {
-        defaultValue: "Configuración Global de Vigilantes",
-      })}
     >
       {loading ? (
-        <SkeletonCards className="sm:grid-cols-1" count={4} />
+        <SkeletonCards count={4} className="sm:grid-cols-1" />
       ) : (
         <Stagger className="space-y-6">
           <Section
-            contentClassName="divide-y"
-            icon={<SatelliteDish />}
             title={t("settings.guardsGlobal.sectionSupervision", {
               defaultValue: "Supervisión en tiempo real",
             })}
+            icon={<SatelliteDish />}
+            contentClassName="divide-y"
           >
             <ToggleRow
-              checked={cfg.inactivityAlert}
-              disabled={disabled}
+              label={t("settings.guardsGlobal.inactivityLabel", {
+                defaultValue: "Alerta de inactividad en turno",
+              })}
               hint={t("settings.guardsGlobal.inactivityHint", {
                 defaultValue:
                   "Avisa a los supervisores cuando un vigilante o supervisor de servicio deja de reportar ubicación (teléfono apagado, sin señal o app cerrada). La alerta llega al panel, a las apps y por correo/SMS según tus canales de notificación.",
               })}
-              label={t("settings.guardsGlobal.inactivityLabel", {
-                defaultValue: "Alerta de inactividad en turno",
-              })}
+              checked={cfg.inactivityAlert}
               onCheckedChange={(v) => set("inactivityAlert", v)}
+              disabled={disabled}
             >
               {cfg.inactivityAlert && (
                 <SettingDetail>
@@ -204,11 +206,11 @@ export default function GuardsGlobalSettingsPage() {
                     })}
                   </span>
                   <Select
-                    disabled={disabled}
                     value={String(cfg.inactivityThresholdMin)}
                     onValueChange={(v) =>
                       set("inactivityThresholdMin", Number(v))
                     }
+                    disabled={disabled}
                   >
                     <SelectTrigger className="w-40">
                       <SelectValue />
@@ -255,23 +257,23 @@ export default function GuardsGlobalSettingsPage() {
           </Section>
 
           <Section
-            contentClassName="divide-y"
-            icon={<CalendarClock />}
             title={t("settings.guardsGlobal.sectionReminders", {
               defaultValue: "Recordatorios de turno",
             })}
+            icon={<CalendarClock />}
+            contentClassName="divide-y"
           >
             <ToggleRow
-              checked={cfg.shiftRemindersEnabled}
-              disabled={disabled}
+              label={t("settings.guardsGlobal.remindersLabel", {
+                defaultValue: "Recordar a los vigilantes sus próximos turnos",
+              })}
               hint={t("settings.guardsGlobal.remindersHint", {
                 defaultValue:
                   "Avisos automáticos antes de cada turno, para que nadie falte después de sus días de descanso.",
               })}
-              label={t("settings.guardsGlobal.remindersLabel", {
-                defaultValue: "Recordar a los vigilantes sus próximos turnos",
-              })}
+              checked={cfg.shiftRemindersEnabled}
               onCheckedChange={(v) => set("shiftRemindersEnabled", v)}
+              disabled={disabled}
             >
               {cfg.shiftRemindersEnabled && (
                 <SettingDetail className="flex-col items-stretch gap-0">
@@ -292,17 +294,16 @@ export default function GuardsGlobalSettingsPage() {
                   <div className="flex flex-col gap-1">
                     {AVISOS.map((a) => {
                       const on = cfg.shiftReminderOffsets.includes(a.key);
-
                       return (
                         <label
                           key={a.key}
                           className="flex cursor-pointer items-center gap-2.5 py-1.5"
                         >
                           <input
-                            checked={on}
-                            className="cg-focus h-4 w-4"
-                            disabled={disabled}
                             type="checkbox"
+                            className="cg-focus h-4 w-4"
+                            checked={on}
+                            disabled={disabled}
                             onChange={() =>
                               set(
                                 "shiftReminderOffsets",
@@ -358,58 +359,58 @@ export default function GuardsGlobalSettingsPage() {
               )}
             </ToggleRow>
             <ToggleRow
-              checked={cfg.shiftRemindersAdaptive}
-              disabled={disabled || !cfg.shiftRemindersEnabled}
+              label={t("settings.guardsGlobal.adaptiveLabel", {
+                defaultValue: "Recordatorios adaptativos según puntualidad",
+              })}
               hint={t("settings.guardsGlobal.adaptiveHint", {
                 defaultValue:
                   "El vigilante sin tardanzas ni inasistencias en 30 días recibe solo «1 día antes» y «1 hora antes»; el reincidente, todos los activos. Menos ruido para quien no lo necesita — y los avisos vuelven a significar algo.",
               })}
-              label={t("settings.guardsGlobal.adaptiveLabel", {
-                defaultValue: "Recordatorios adaptativos según puntualidad",
-              })}
+              checked={cfg.shiftRemindersAdaptive}
               onCheckedChange={(v) => set("shiftRemindersAdaptive", v)}
+              disabled={disabled || !cfg.shiftRemindersEnabled}
             />
           </Section>
 
           <Section
-            contentClassName="divide-y"
-            icon={<Gauge />}
             title={t("settings.guardsGlobal.sectionDesempeno", {
               defaultValue: "Medición de desempeño",
             })}
+            icon={<Gauge />}
+            contentClassName="divide-y"
           >
             <ToggleRow
-              checked={cfg.performanceScoringEnabled}
-              disabled={disabled}
+              label={t("settings.guardsGlobal.performanceLabel", {
+                defaultValue: "Medir el desempeño del personal",
+              })}
               hint={t("settings.guardsGlobal.performanceHint", {
                 defaultValue:
                   "Todo el personal arranca en 100 y sólo baja por lo que se mide: puntualidad, uniforme, inventario, consignas, rondas, evaluaciones, capacitación y la valoración del cliente, más las faltas. Apagado, nadie ve puntaje —ni tú en las fichas, ni el vigilante en su aplicación—; no se pone a cero, deja de existir. Para dejar de medir a UNA persona en concreto, usa el interruptor de su ficha, en Desempeño.",
               })}
-              label={t("settings.guardsGlobal.performanceLabel", {
-                defaultValue: "Medir el desempeño del personal",
-              })}
+              checked={cfg.performanceScoringEnabled}
               onCheckedChange={(v) => set("performanceScoringEnabled", v)}
+              disabled={disabled}
             />
           </Section>
 
           <Section
-            contentClassName="divide-y"
-            icon={<IdCard />}
             title={t("settings.guardsGlobal.sectionCredenciales", {
               defaultValue: "Credenciales y licencias",
             })}
+            icon={<IdCard />}
+            contentClassName="divide-y"
           >
             <ToggleRow
-              checked={cfg.licenseExpiryAlert}
-              disabled={disabled}
+              label={t("settings.guardsGlobal.licenseAlertLabel", {
+                defaultValue: "Avisar cuando una credencial esté por vencer",
+              })}
               hint={t("settings.guardsGlobal.licenseAlertHint", {
                 defaultValue:
                   "RR.HH. recibe un aviso semanal por cada credencial o licencia próxima a vencer (o ya vencida) hasta que se renueve. Las credenciales se registran en el perfil de cada vigilante.",
               })}
-              label={t("settings.guardsGlobal.licenseAlertLabel", {
-                defaultValue: "Avisar cuando una credencial esté por vencer",
-              })}
+              checked={cfg.licenseExpiryAlert}
               onCheckedChange={(v) => set("licenseExpiryAlert", v)}
+              disabled={disabled}
             >
               {cfg.licenseExpiryAlert && (
                 <SettingDetail>
@@ -422,15 +423,15 @@ export default function GuardsGlobalSettingsPage() {
                     })}
                   </span>
                   <Input
-                    className="w-24"
-                    disabled={disabled}
-                    max={120}
-                    min={7}
                     type="number"
+                    min={7}
+                    max={120}
+                    className="w-24"
                     value={cfg.licenseExpiryDays}
                     onChange={(e) =>
                       set("licenseExpiryDays", Number(e.target.value) || 30)
                     }
+                    disabled={disabled}
                   />
                   <span
                     className="text-sm"
@@ -444,17 +445,17 @@ export default function GuardsGlobalSettingsPage() {
               )}
             </ToggleRow>
             <ToggleRow
-              checked={cfg.blockClockInOnExpiredLicense}
-              disabled={disabled}
-              hint={t("settings.guardsGlobal.blockClockInHint", {
-                defaultValue:
-                  "Hasta ahora una credencial caducada sólo generaba un aviso: el vigilante fichaba igual, se le asignaba un puesto y salía en el informe al cliente. Actívalo sólo cuando las fechas de tus credenciales estén al día — si no, alguien puede quedarse sin poder empezar su turno.",
-              })}
               label={t("settings.guardsGlobal.blockClockInLabel", {
                 defaultValue:
                   "Impedir marcar entrada con la credencial vencida",
               })}
+              hint={t("settings.guardsGlobal.blockClockInHint", {
+                defaultValue:
+                  "Hasta ahora una credencial caducada sólo generaba un aviso: el vigilante fichaba igual, se le asignaba un puesto y salía en el informe al cliente. Actívalo sólo cuando las fechas de tus credenciales estén al día — si no, alguien puede quedarse sin poder empezar su turno.",
+              })}
+              checked={cfg.blockClockInOnExpiredLicense}
               onCheckedChange={(v) => set("blockClockInOnExpiredLicense", v)}
+              disabled={disabled}
             />
           </Section>
 
@@ -465,7 +466,7 @@ export default function GuardsGlobalSettingsPage() {
                             más señalización que producto. Se quitó al devolver
                             la columna de índice en SettingsLayout. */}
 
-          <SaveBar disabled={disabled} saving={saving} onSave={save} />
+          <SaveBar onSave={save} saving={saving} disabled={disabled} />
         </Stagger>
       )}
     </SettingsPageShell>

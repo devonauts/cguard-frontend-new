@@ -1,7 +1,7 @@
-import type { PostSite } from "@/types";
-
 import React, { useEffect, useState, useRef } from "react";
+import { invalidateEntity } from "@/lib/queryClient";
 import { useNavigate } from "react-router-dom";
+import { ApiService } from "@/services/api/apiService";
 import { toast } from "sonner";
 import {
   Plus,
@@ -14,10 +14,7 @@ import {
   List as ListIcon,
   Search,
 } from "lucide-react";
-import { useTranslation } from "react-i18next";
-
 import StationCardsGrid from "./StationCardsGrid";
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,11 +25,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ApiService } from "@/services/api/apiService";
-import { invalidateEntity } from "@/lib/queryClient";
+import { useTranslation } from "react-i18next";
 import { EmptyState, SkeletonCards, Segmented, Field } from "@/components/kit";
 import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
-import { type PolyPoint } from "@/components/GoogleMap/StationGeofencePolygon";
+import StationGeofencePolygon, {
+  type PolyPoint,
+} from "@/components/GoogleMap/StationGeofencePolygon";
+import type { PostSite } from "@/types";
 
 interface SiteProp extends PostSite {
   latitude?: number | string | null;
@@ -53,16 +52,13 @@ function jornadaType(
   const hour = (s?: string) => {
     if (!s) return null;
     const m = String(s).match(/(\d{1,2}):(\d{2})/);
-
     return m ? parseInt(m[1], 10) : null;
   };
   const sh = hour(start);
   const eh = hour(end);
-
   if (sh == null) return null;
   if (eh != null && eh <= sh) return "nocturno"; // crosses midnight
   if (sh >= 18 || sh < 5) return "nocturno";
-
   return "diurno";
 }
 // Fijo positions required for a single jornada — always 1 (a 24h post would be 2).
@@ -85,7 +81,6 @@ const JORNADA_TONE: Record<string, "warn" | "info" | "ok" | "neutral"> = {
 function jornadaChip(tipo?: string): React.CSSProperties {
   const t = JORNADA_TONE[String(tipo || "").toLowerCase()] ?? "neutral";
   const fill = t === "neutral" ? "var(--ink-faint)" : `var(--${t})`;
-
   return {
     background: `color-mix(in oklab, ${fill} 14%, transparent)`,
     borderColor: `color-mix(in oklab, ${fill} 32%, transparent)`,
@@ -103,7 +98,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
       (localStorage.getItem("stationsView.viewMode") as "cards" | "list") ||
       "cards",
   );
-
   useEffect(() => {
     localStorage.setItem("stationsView.viewMode", viewMode);
   }, [viewMode]);
@@ -157,13 +151,11 @@ export default function Stations({ site }: { site?: SiteProp }) {
 
   useEffect(() => {
     let mounted = true;
-
     (async () => {
       try {
         const tenantId =
           site?.tenantId || localStorage.getItem("tenantId") || "";
         const postSiteId = site?.id || "";
-
         if (!postSiteId) return;
         setLoading(true);
         const res = await ApiService.get(
@@ -181,7 +173,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
             (r.postSite && r.postSite.id) ||
             (r.station && (r.station.postSiteId || r.station.postSite)) ||
             null;
-
           if (!rPost) return true; // keep when unknown shape
           try {
             return String(rPost) === String(postSiteId);
@@ -204,20 +195,16 @@ export default function Stations({ site }: { site?: SiteProp }) {
         // Normalize station objects for UI
         const mapped = (filtered || []).map((r: any) => {
           let jornadas: any[] = [];
-
           try {
             const raw = r.stationSchedule;
-
             if (raw && typeof raw === "string" && raw.trim().startsWith("[")) {
               jornadas = JSON.parse(raw);
             }
           } catch {}
           const toNum = (v: any) => {
             const n = Number(v);
-
             return Number.isFinite(n) ? n : null;
           };
-
           return {
             id:
               r.id ||
@@ -257,7 +244,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
         if (mounted) setLoading(false);
       }
     })();
-
     return () => {
       mounted = false;
     };
@@ -268,7 +254,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
   useEffect(() => {
     if (!selectedStationId) return;
     let mounted = true;
-
     (async () => {
       try {
         setLoadingDetail(true);
@@ -278,7 +263,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
           `/tenant/${tenantId}/station/${encodeURIComponent(selectedStationId)}`,
         );
         const detail = (res && (res.data || res)) || res;
-
         if (mounted) setSelectedStationDetail(detail);
       } catch (err) {
         // fallback: try to find in list
@@ -286,13 +270,11 @@ export default function Stations({ site }: { site?: SiteProp }) {
           (s) =>
             s.id === selectedStationId || s.stationId === selectedStationId,
         );
-
         if (mounted) setSelectedStationDetail(found || null);
       } finally {
         if (mounted) setLoadingDetail(false);
       }
     })();
-
     return () => {
       mounted = false;
     };
@@ -330,7 +312,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
     try {
       setLoadingGuards(true);
       const tenantId = site?.tenantId || localStorage.getItem("tenantId") || "";
-
       // prefer security-guard autocomplete (more likely to include guard user info)
       try {
         const res = await ApiService.get(
@@ -350,9 +331,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
             r.guardEmail ||
             "",
         }));
-
         setGuardsOptions(normalized.filter((g: any) => g.id));
-
         return;
       } catch (e) {
         // fallback to users
@@ -370,7 +349,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
         id: u.id,
         label: u.fullName || u.name || u.email || "",
       }));
-
       setGuardsOptions(normalized2);
     } catch (err) {
       console.error("Failed to fetch guards options", err);
@@ -384,12 +362,10 @@ export default function Stations({ site }: { site?: SiteProp }) {
     try {
       const tenantId = site?.tenantId || localStorage.getItem("tenantId") || "";
       const postSiteId = site?.id || "";
-
       if (!postSiteId || !selectedStationDetail) {
         toast.error(
           t("postSites.stations.selectStationFirst", "Select a station first"),
         );
-
         return;
       }
       const payload: any = {
@@ -413,7 +389,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
         const res = await ApiService.post(`/tenant/${tenantId}/shift`, {
           data: payload,
         });
-
         toast.success(t("postSites.stations.shiftCreated", "Shift created"));
       }
 
@@ -435,11 +410,9 @@ export default function Stations({ site }: { site?: SiteProp }) {
   useEffect(() => {
     if (!selectedStationId) {
       setStationShifts([]);
-
       return;
     }
     let mounted = true;
-
     (async () => {
       try {
         setLoadingShifts(true);
@@ -457,7 +430,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
           const res2 = await ApiService.get(
             `/tenant/${tenantId}/guard-shift?filter[stationName]=${encodeURIComponent(selectedStationId)}&limit=999`,
           );
-
           rows = Array.isArray(res2)
             ? res2
             : res2 && res2.rows
@@ -473,7 +445,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
         if (mounted) setLoadingShifts(false);
       }
     })();
-
     return () => {
       mounted = false;
     };
@@ -483,13 +454,10 @@ export default function Stations({ site }: { site?: SiteProp }) {
     const onDocClick = (e: any) => {
       if (!openMenuId) return;
       const el = document.querySelector(`[data-menu-id="${openMenuId}"]`);
-
       if (el && el.contains(e.target)) return;
       setOpenMenuId(null);
     };
-
     document.addEventListener("click", onDocClick);
-
     return () => document.removeEventListener("click", onDocClick);
   }, [openMenuId]);
 
@@ -499,32 +467,24 @@ export default function Stations({ site }: { site?: SiteProp }) {
       if (!s) return null;
       if (s.includes("T")) {
         const d = new Date(s);
-
         if (isNaN(d.getTime())) return null;
-
         return { h: d.getHours(), m: d.getMinutes() };
       }
       const parts = s.split(":");
       const hh = parseInt(parts[0] || "0", 10);
       const mm = parseInt(parts[1] || "0", 10);
-
       if (isNaN(hh) || isNaN(mm)) return null;
-
       return { h: hh, m: mm };
     };
 
     const a = parseTime(start);
     const b = parseTime(end);
-
     if (!a || !b) return null;
     let minutes = b.h * 60 + b.m - (a.h * 60 + a.m);
-
     if (minutes < 0) minutes += 24 * 60;
     const hrs = Math.floor(minutes / 60);
     const mins = minutes % 60;
-
     if (mins === 0) return `${hrs} ${t("postSites.stations.hours", "horas")}`;
-
     return `${hrs}${t("postSites.stations.hShort", "h")} ${mins}${t("postSites.stations.mShort", "m")}`;
   };
 
@@ -532,7 +492,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
     if (!value) return "-";
     try {
       let dt: Date | null = null;
-
       // ISO datetime
       if (value.includes("T")) dt = new Date(value);
       else {
@@ -540,20 +499,16 @@ export default function Stations({ site }: { site?: SiteProp }) {
         const ampmMatch = value.match(
           /(\d{1,2}:\d{2})\s*([ap]\.m\.|am|pm|AM|PM)?/i,
         );
-
         if (ampmMatch) {
           const timePart = ampmMatch[1];
           const ampm = (ampmMatch[2] || "").toLowerCase();
           const parts = timePart.split(":");
-
           if (parts.length >= 2) {
             let hh = parseInt(parts[0] || "0", 10);
             const mm = parseInt(parts[1] || "0", 10);
-
             if (ampm.includes("p") && hh < 12) hh += 12;
             if (ampm.includes("a") && hh === 12) hh = 0;
             const now = new Date();
-
             now.setHours(hh);
             now.setMinutes(mm);
             now.setSeconds(0);
@@ -561,10 +516,8 @@ export default function Stations({ site }: { site?: SiteProp }) {
           }
         } else {
           const parts = value.split(":");
-
           if (parts.length >= 2) {
             const now = new Date();
-
             now.setHours(parseInt(parts[0] || "0", 10));
             now.setMinutes(parseInt(parts[1] || "0", 10));
             now.setSeconds(0);
@@ -573,7 +526,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
         }
       }
       if (!dt || isNaN(dt.getTime())) return value;
-
       return new Intl.DateTimeFormat(undefined, {
         hour: "2-digit",
         minute: "2-digit",
@@ -594,7 +546,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
       return detail.guards.rows;
     // some endpoints return embedded objects under 'assigned' or similar
     if (Array.isArray(detail.assigned)) return detail.assigned;
-
     return [];
   };
 
@@ -602,17 +553,14 @@ export default function Stations({ site }: { site?: SiteProp }) {
     try {
       const tenantId = site?.tenantId || localStorage.getItem("tenantId") || "";
       const postSiteId = site?.id || "";
-
       if (!newName || !postSiteId) {
         toast.error(t("postSites.stations.provideName", "Provide a name"));
-
         return;
       }
       if (!stationSchedule) {
         toast.error(
           t("postSites.stations.provideSchedule", "Select a schedule"),
         );
-
         return;
       }
       const latitud = site?.latitud || site?.latitude || "";
@@ -633,11 +581,9 @@ export default function Stations({ site }: { site?: SiteProp }) {
       const res = await ApiService.post(`/tenant/${tenantId}/station`, {
         data: payload,
       });
-
       invalidateEntity("stations");
       const created = (res && (res.data || res)) || res;
       const adopted = (created && created.adoptedTours) || 0;
-
       if (adopted > 0)
         toast.success(
           `${adopted} ronda(s) del puesto anterior recuperada(s) en este puesto`,
@@ -665,7 +611,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
   const removeStation = async (id: string) => {
     try {
       const tenantId = site?.tenantId || localStorage.getItem("tenantId") || "";
-
       await ApiService.delete(`/tenant/${tenantId}/station/${id}`);
       invalidateEntity("stations");
       setStations((s) => s.filter((x) => x.id !== id));
@@ -683,7 +628,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
     console.debug("[Stations] handleDelete called", id);
     (async () => {
       const tenantId = site?.tenantId || localStorage.getItem("tenantId") || "";
-
       try {
         const resp = await ApiService.get(
           `/tenant/${tenantId}/station/${encodeURIComponent(id)}`,
@@ -704,7 +648,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
           : st.siteTourTags && Array.isArray(st.siteTourTags.rows)
             ? st.siteTourTags.rows.length
             : 0;
-
         if ((guards || 0) > 0 || (siteTours || 0) > 0 || (tags || 0) > 0) {
           setDeleteBlocked(true);
           setDependencyDetails([
@@ -718,7 +661,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
           ]);
           setPendingDeleteStation(id);
           setTimeout(() => setOpenDeleteDialog(true), 0);
-
           return;
         }
       } catch (e) {
@@ -733,10 +675,8 @@ export default function Stations({ site }: { site?: SiteProp }) {
 
   const confirmDeleteStation = async () => {
     const idOrIds = pendingDeleteStation;
-
     if (!idOrIds) {
       setOpenDeleteDialog(false);
-
       return;
     }
 
@@ -780,7 +720,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
     if (!selectedIds.length) return;
     try {
       const tenantId = site?.tenantId || localStorage.getItem("tenantId") || "";
-
       await Promise.all(
         selectedIds.map((id) =>
           ApiService.delete(`/tenant/${tenantId}/station/${id}`),
@@ -815,10 +754,8 @@ export default function Stations({ site }: { site?: SiteProp }) {
     const fetchAssigned = async () => {
       if (!selectedStationDetail) return;
       const existing = normalizeAssignedGuards(selectedStationDetail);
-
       if (existing && existing.length) {
         if (mounted) setFetchedAssignedGuards([]);
-
         return;
       }
 
@@ -865,7 +802,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
               : res && res.rows
                 ? res.rows
                 : [];
-
             if (rrows && rrows.length) {
               rows = rrows;
               break;
@@ -877,7 +813,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
 
         if (!rows || rows.length === 0) {
           if (mounted) setFetchedAssignedGuards([]);
-
           return;
         }
 
@@ -911,7 +846,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
             rawStationId && typeof rawStationId === "object"
               ? rawStationId.id || rawStationId.stationId || ""
               : rawStationId;
-
           if (rStationId && stationIdsToMatch.includes(String(rStationId)))
             return true;
 
@@ -926,7 +860,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
           )
             .toString()
             .toLowerCase();
-
           if (
             rStationName &&
             stationNamesToMatch.some(
@@ -981,19 +914,16 @@ export default function Stations({ site }: { site?: SiteProp }) {
             null;
           const postSite =
             r.postSiteName || r.companyName || r.postSite || null;
-
           return { id, fullName, email, station, postSite, raw: guardObj };
         });
 
         // dedupe by id
         const byId: Record<string, any> = {};
-
         for (const g of normalized) {
           if (!g.id) continue;
           if (!byId[g.id]) byId[g.id] = g;
         }
         const deduped = Object.values(byId);
-
         if (mounted) setFetchedAssignedGuards(deduped);
       } catch (err) {
         if (mounted) setFetchedAssignedGuards([]);
@@ -1001,7 +931,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
     };
 
     fetchAssigned();
-
     return () => {
       mounted = false;
     };
@@ -1011,9 +940,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
 
   const filteredStations = (() => {
     const q = query.trim().toLowerCase();
-
     if (!q) return stations;
-
     return stations.filter(
       (s) =>
         (s.name || "").toLowerCase().includes(q) ||
@@ -1030,11 +957,9 @@ export default function Stations({ site }: { site?: SiteProp }) {
           <div className="mx-2 flex min-w-0 flex-1 flex-wrap items-center gap-3">
             <div className="flex-shrink-0">
               <select
-                className="cg-input cg-focus rounded-lg px-4 py-2 text-sm"
                 value={actionSelectValue}
                 onChange={(e) => {
                   const v = e.target.value;
-
                   setActionSelectValue(v);
                   if (v === "delete_selected") {
                     if (!selectedIds || selectedIds.length === 0) {
@@ -1045,7 +970,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
                         ),
                       );
                       setActionSelectValue("");
-
                       return;
                     }
                     // Check dependencies before opening confirmation
@@ -1055,7 +979,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
                         localStorage.getItem("tenantId") ||
                         "";
                       const problematic: any[] = [];
-
                       for (const sid of selectedIds) {
                         try {
                           const resp = await ApiService.get(
@@ -1079,7 +1002,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                 Array.isArray(st.siteTourTags.rows)
                               ? st.siteTourTags.rows.length
                               : 0;
-
                           if (
                             (guards || 0) > 0 ||
                             (siteTours || 0) > 0 ||
@@ -1111,6 +1033,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
                     setActionSelectValue("");
                   }
                 }}
+                className="cg-input cg-focus rounded-lg px-4 py-2 text-sm"
               >
                 <option value="">
                   {t("postSites.stations.action", "Action")}
@@ -1130,13 +1053,13 @@ export default function Stations({ site }: { site?: SiteProp }) {
                   <Search className="h-4 w-4" />
                 </div>
                 <input
-                  className="cg-input cg-focus w-full py-2.5 pl-10 pr-4 text-sm"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
                   placeholder={t(
                     "postSites.stations.searchPlaceholder",
                     "Buscar estación…",
                   )}
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
+                  className="cg-input cg-focus w-full py-2.5 pl-10 pr-4 text-sm"
                 />
               </div>
             </div>
@@ -1144,6 +1067,8 @@ export default function Stations({ site }: { site?: SiteProp }) {
             <div className="flex flex-shrink-0 items-center gap-2">
               <div className="hidden md:block">
                 <Segmented
+                  value={viewMode}
+                  onChange={(v) => setViewMode(v)}
                   options={[
                     {
                       value: "cards",
@@ -1163,15 +1088,13 @@ export default function Stations({ site }: { site?: SiteProp }) {
                       ),
                     },
                   ]}
-                  value={viewMode}
-                  onChange={(v) => setViewMode(v)}
                 />
               </div>
               <button
-                className="cg-btn-brand cg-focus flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors"
                 onClick={() =>
                   navigate(`/post-sites/${site?.id || ""}/stations/new`)
                 }
+                className="cg-btn-brand cg-focus flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors"
               >
                 <Plus size={16} />{" "}
                 {t("postSites.stations.add", "Crear estación")}
@@ -1207,10 +1130,10 @@ export default function Stations({ site }: { site?: SiteProp }) {
                   <div className="overflow-y-auto max-h-[52vh] pr-1">
                     <StationCardsGrid
                       stations={filteredStations}
-                      onDelete={(id) => handleDelete(id)}
                       onOpen={(id) =>
                         navigate(`/post-sites/${site?.id}/stations/${id}`)
                       }
+                      onDelete={(id) => handleDelete(id)}
                     />
                   </div>
                 ) : (
@@ -1228,6 +1151,9 @@ export default function Stations({ site }: { site?: SiteProp }) {
                               style={{ background: "var(--glass-solid)" }}
                             >
                               <input
+                                type="checkbox"
+                                className="h-4 w-4"
+                                style={{ accentColor: "var(--brand)" }}
                                 aria-label={t(
                                   "ui.Stations.seleccionarTodasLasEstaciones",
                                 )}
@@ -1235,9 +1161,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                   selectedIds.length === stations.length &&
                                   stations.length > 0
                                 }
-                                className="h-4 w-4"
-                                style={{ accentColor: "var(--brand)" }}
-                                type="checkbox"
                                 onChange={() => {
                                   if (selectedIds.length === stations.length)
                                     setSelectedIds([]);
@@ -1265,7 +1188,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
                             <th
                               className="cg-eyebrow px-2 py-2 sticky top-0 z-20"
                               style={{ background: "var(--glass-solid)" }}
-                            />
+                            ></th>
                           </tr>
                         </thead>
                         <tbody className="min-h-0">
@@ -1282,7 +1205,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
                               st.assignedGuards.length > 0
                                 ? String(st.assignedGuards.length)
                                 : st.numberOfGuardsInStation || "-";
-
                             return (
                               <tr
                                 key={id}
@@ -1301,11 +1223,11 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                   onClick={(e) => e.stopPropagation()}
                                 >
                                   <input
-                                    aria-label={`Seleccionar ${name}`}
-                                    checked={selectedIds.includes(id)}
+                                    type="checkbox"
                                     className="h-5 w-5"
                                     style={{ accentColor: "var(--brand)" }}
-                                    type="checkbox"
+                                    aria-label={`Seleccionar ${name}`}
+                                    checked={selectedIds.includes(id)}
                                     onChange={() => {
                                       setSelectedIds((prev) =>
                                         prev.includes(id)
@@ -1364,27 +1286,26 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                   <div className="inline-flex items-center gap-2">
                                     <div className="relative">
                                       <button
-                                        aria-label={t(
-                                          "ui.Stations.masAcciones",
-                                          "Más acciones",
-                                        )}
-                                        className="cg-btn-ghost cg-focus rounded p-1"
                                         onClick={(e) => {
                                           e.stopPropagation();
                                           setOpenMenuId(
                                             openMenuId === id ? null : id,
                                           );
                                         }}
+                                        aria-label={t(
+                                          "ui.Stations.masAcciones",
+                                          "Más acciones",
+                                        )}
+                                        className="cg-btn-ghost cg-focus rounded p-1"
                                       >
                                         <MoreVertical size={18} />
                                       </button>
                                       {openMenuId === id && (
                                         <div
-                                          className="glass-raised absolute right-0 z-50 mt-2 w-44 py-1"
                                           data-menu-id={id}
+                                          className="glass-raised absolute right-0 z-50 mt-2 w-44 py-1"
                                         >
                                           <button
-                                            className="cg-btn-ghost flex w-full items-center gap-2 px-3 py-2 text-left text-sm"
                                             onClick={(e) => {
                                               e.stopPropagation();
                                               navigate(
@@ -1392,6 +1313,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                               );
                                               setOpenMenuId(null);
                                             }}
+                                            className="cg-btn-ghost flex w-full items-center gap-2 px-3 py-2 text-left text-sm"
                                           >
                                             <Eye size={14} />
                                             {t(
@@ -1400,13 +1322,13 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                             )}
                                           </button>
                                           <button
-                                            className="cg-btn-ghost flex w-full items-center gap-2 px-3 py-2 text-left text-sm"
-                                            style={{ color: "var(--bad-text)" }}
                                             onClick={(e) => {
                                               e.stopPropagation();
                                               handleDelete(id);
                                               setOpenMenuId(null);
                                             }}
+                                            className="cg-btn-ghost flex w-full items-center gap-2 px-3 py-2 text-left text-sm"
+                                            style={{ color: "var(--bad-text)" }}
                                           >
                                             <Trash size={14} />
                                             {t(
@@ -1441,7 +1363,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
                         ? String(st.assignedGuards.length)
                         : "-");
                     const jornadas: any[] = st.jornadas || [];
-
                     return (
                       <div
                         key={id}
@@ -1454,11 +1375,12 @@ export default function Stations({ site }: { site?: SiteProp }) {
                           <div>
                             <div className="flex items-center gap-3">
                               <input
-                                aria-label={`Seleccionar ${name}`}
-                                checked={selectedIds.includes(id)}
+                                type="checkbox"
                                 className="h-5 w-5"
                                 style={{ accentColor: "var(--brand)" }}
-                                type="checkbox"
+                                aria-label={`Seleccionar ${name}`}
+                                checked={selectedIds.includes(id)}
+                                onClick={(e) => e.stopPropagation()}
                                 onChange={() =>
                                   setSelectedIds((prev) =>
                                     prev.includes(id)
@@ -1466,7 +1388,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                       : [...prev, id],
                                   )
                                 }
-                                onClick={(e) => e.stopPropagation()}
                               />
                               <div className="font-medium">{name}</div>
                             </div>
@@ -1502,25 +1423,24 @@ export default function Stations({ site }: { site?: SiteProp }) {
                           <div className="flex items-center">
                             <div className="relative">
                               <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setOpenMenuId(openMenuId === id ? null : id);
+                                }}
                                 aria-label={t(
                                   "ui.Stations.masAcciones",
                                   "Más acciones",
                                 )}
                                 className="cg-btn-ghost cg-focus rounded p-1"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setOpenMenuId(openMenuId === id ? null : id);
-                                }}
                               >
                                 <MoreVertical size={18} />
                               </button>
                               {openMenuId === id && (
                                 <div
-                                  className="glass-raised absolute right-0 z-50 mt-2 w-44 py-1"
                                   data-menu-id={id}
+                                  className="glass-raised absolute right-0 z-50 mt-2 w-44 py-1"
                                 >
                                   <button
-                                    className="cg-btn-ghost flex w-full items-center gap-2 px-3 py-2 text-left text-sm"
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       navigate(
@@ -1528,6 +1448,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                       );
                                       setOpenMenuId(null);
                                     }}
+                                    className="cg-btn-ghost flex w-full items-center gap-2 px-3 py-2 text-left text-sm"
                                   >
                                     <Eye size={14} />
                                     {t(
@@ -1536,13 +1457,13 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                     )}
                                   </button>
                                   <button
-                                    className="cg-btn-ghost flex w-full items-center gap-2 px-3 py-2 text-left text-sm"
-                                    style={{ color: "var(--bad-text)" }}
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       handleDelete(id);
                                       setOpenMenuId(null);
                                     }}
+                                    className="cg-btn-ghost flex w-full items-center gap-2 px-3 py-2 text-left text-sm"
+                                    style={{ color: "var(--bad-text)" }}
                                   >
                                     <Trash size={14} />
                                     {t("postSites.stations.remove", "Remove")}
@@ -1588,9 +1509,9 @@ export default function Stations({ site }: { site?: SiteProp }) {
                 {t("postSites.stations.detailsTitle", "Station details")}
               </h2>
               <button
+                onClick={() => setShowDetailModal(false)}
                 aria-label={t("actions.close")}
                 className="cg-btn-ghost cg-focus rounded-full p-2"
-                onClick={() => setShowDetailModal(false)}
               >
                 <X className="h-4 w-4" />
               </button>
@@ -1699,10 +1620,10 @@ export default function Stations({ site }: { site?: SiteProp }) {
                       </h4>
                       <div>
                         <button
-                          className="cg-btn-glass cg-focus rounded px-2 py-1 text-sm"
                           onClick={() =>
                             navigate(`/post-sites/${site?.id}/assign-guards`)
                           }
+                          className="cg-btn-glass cg-focus rounded px-2 py-1 text-sm"
                         >
                           {t(
                             "postSites.stations.manageAssignments",
@@ -1731,7 +1652,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                 <div>
                                   {g.id ? (
                                     <button
-                                      className="cg-focus rounded text-sm underline"
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         setShowDetailModal(false);
@@ -1742,7 +1662,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                         // Open a blank tab immediately to avoid popup blockers,
                                         // then resolve the correct security-guard resource and navigate it.
                                         const popup = window.open("", "_blank");
-
                                         (async () => {
                                           try {
                                             // Fast path: if the assigned-guard payload already carries the canonical
@@ -1751,13 +1670,10 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                               g.securityGuardId ||
                                               g.securityGuard?.id ||
                                               g.guard?.securityGuardId;
-
                                             if (directId) {
                                               const directUrl = `${window.location.origin}/guards/${directId}/resumen`;
-
                                               if (popup)
                                                 popup.location.href = directUrl;
-
                                               return;
                                             }
                                             // Try several queries and attempt to find the best matching security-guard record
@@ -1788,7 +1704,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                                   } as any);
                                                 const rows =
                                                   normalizeRows(resp);
-
                                                 if (!rows || !rows.length)
                                                   continue;
                                                 // Find row where nested guard id matches the clicked guard id
@@ -1800,7 +1715,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                                       row.guard?.guardId ||
                                                       row.id ||
                                                       row.guardId;
-
                                                     if (
                                                       nestedGuardId &&
                                                       String(nestedGuardId) ===
@@ -1849,11 +1763,9 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                                             )))
                                                     )
                                                       return true;
-
                                                     return false;
                                                   },
                                                 );
-
                                                 if (match) {
                                                   candidate = match;
                                                   break;
@@ -1878,19 +1790,17 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                                 g.id
                                               : g.id;
                                             const finalUrl = `${window.location.origin}/guards/${finalId}/resumen`;
-
                                             if (popup)
                                               popup.location.href = finalUrl;
-
                                             return;
                                           } catch (e) {
                                             const fallbackUrl = `${window.location.origin}/guards/${g.id}/resumen`;
-
                                             if (popup)
                                               popup.location.href = fallbackUrl;
                                           }
                                         })();
                                       }}
+                                      className="cg-focus rounded text-sm underline"
                                     >
                                       {g.fullName ||
                                         g.label ||
@@ -1934,7 +1844,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                             ps.companyName ||
                                             ps.stationName ||
                                             "";
-
                                     return stLabel || psLabel || "";
                                   })()}
                                 </div>
@@ -1957,8 +1866,8 @@ export default function Stations({ site }: { site?: SiteProp }) {
               }}
             >
               <button
-                className="cg-btn-glass cg-focus rounded-md px-4 py-2 text-sm"
                 onClick={() => setShowDetailModal(false)}
+                className="cg-btn-glass cg-focus rounded-md px-4 py-2 text-sm"
               >
                 {t("actions.close") || "Close"}
               </button>
@@ -1993,9 +1902,9 @@ export default function Stations({ site }: { site?: SiteProp }) {
                   : t("postSites.stations.createShift", "Create shift")}
               </h2>
               <button
+                onClick={() => setShowShiftModal(false)}
                 aria-label={t("actions.close")}
                 className="cg-btn-ghost cg-focus rounded-full p-2"
-                onClick={() => setShowShiftModal(false)}
               >
                 <X className="h-4 w-4" />
               </button>
@@ -2007,10 +1916,10 @@ export default function Stations({ site }: { site?: SiteProp }) {
                   {t("postSites.stations.form.shiftStart", "Start")}
                 </label>
                 <input
-                  className="cg-input cg-focus w-full px-3 py-2 text-sm"
                   type="datetime-local"
                   value={shiftStart}
                   onChange={(e) => setShiftStart(e.target.value)}
+                  className="cg-input cg-focus w-full px-3 py-2 text-sm"
                 />
               </div>
               <div>
@@ -2018,10 +1927,10 @@ export default function Stations({ site }: { site?: SiteProp }) {
                   {t("postSites.stations.form.shiftEnd", "End")}
                 </label>
                 <input
-                  className="cg-input cg-focus w-full px-3 py-2 text-sm"
                   type="datetime-local"
                   value={shiftEnd}
                   onChange={(e) => setShiftEnd(e.target.value)}
+                  className="cg-input cg-focus w-full px-3 py-2 text-sm"
                 />
               </div>
               <div>
@@ -2029,9 +1938,9 @@ export default function Stations({ site }: { site?: SiteProp }) {
                   {t("postSites.stations.form.guard", "Guard")}
                 </label>
                 <select
-                  className="cg-input cg-focus w-full px-3 py-2 text-sm"
                   value={shiftGuard}
                   onChange={(e) => setShiftGuard(e.target.value)}
+                  className="cg-input cg-focus w-full px-3 py-2 text-sm"
                 >
                   <option value="">
                     {t("postSites.stations.form.selectGuard", "Select guard")}
@@ -2040,7 +1949,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
                     const id = g.id || g.value;
                     const label =
                       g.fullName || g.label || g.name || g.email || id;
-
                     return (
                       <option key={id} value={id}>
                         {label}
@@ -2059,15 +1967,15 @@ export default function Stations({ site }: { site?: SiteProp }) {
               }}
             >
               <button
-                className="cg-btn-glass cg-focus rounded-md px-4 py-2 text-sm"
                 onClick={() => setShowShiftModal(false)}
+                className="cg-btn-glass cg-focus rounded-md px-4 py-2 text-sm"
               >
                 {t("actions.cancel") || "Cancel"}
               </button>
               <button
-                className={`cg-btn-brand cg-focus rounded-md px-6 py-2 text-sm font-semibold ${!shiftStart || !shiftEnd ? "opacity-50 cursor-not-allowed" : ""}`}
-                disabled={!shiftStart || !shiftEnd}
                 onClick={saveShift}
+                disabled={!shiftStart || !shiftEnd}
+                className={`cg-btn-brand cg-focus rounded-md px-6 py-2 text-sm font-semibold ${!shiftStart || !shiftEnd ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {t("actions.save", "Save")}
               </button>

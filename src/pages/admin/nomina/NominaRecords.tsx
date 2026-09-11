@@ -1,19 +1,18 @@
-import type { ExportFormat } from "@/lib/export/reportExport";
-
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
+import AppLayout from "@/layouts/app-layout";
+import { DataTable, type Column } from "@/components/table/DataTable";
 import { toast } from "sonner";
-import {
-  ClipboardCheck,
-  ClipboardList,
-  Filter,
-  ChevronLeft,
-  ChevronRight,
-  MapPin,
-  Users,
-} from "lucide-react";
-
+import attendanceService, {
+  type AttendanceRecord,
+} from "@/lib/api/attendanceService";
+import departmentService, {
+  type Department,
+} from "@/lib/api/departmentService";
+import GoogleMapEmbed from "@/components/GoogleMap/GoogleMapEmbed";
+import StaticMapImage from "@/components/maps/StaticMapImage";
+import { useFileUrl } from "@/lib/fileUrl";
 import {
   StatusBadge,
   PayrollBadge,
@@ -23,17 +22,6 @@ import {
   fmtTime,
   fmtHours,
 } from "./shared";
-import TimesheetModal from "./TimesheetModal";
-
-import AppLayout from "@/layouts/app-layout";
-import { DataTable, type Column } from "@/components/table/DataTable";
-import attendanceService, {
-  type AttendanceRecord,
-} from "@/lib/api/attendanceService";
-import departmentService, {
-  type Department,
-} from "@/lib/api/departmentService";
-import { useFileUrl } from "@/lib/fileUrl";
 import {
   PageContainer,
   PageHeader,
@@ -44,10 +32,22 @@ import {
   StatusBadge as ToneBadge,
   EmptyState,
 } from "@/components/kit";
+import {
+  ClipboardCheck,
+  ClipboardList,
+  Filter,
+  ChevronLeft,
+  ChevronRight,
+  MapPin,
+  Users,
+} from "lucide-react";
 import { BulkActionsSelect } from "@/components/table/BulkActionsSelect";
+import TimesheetModal from "./TimesheetModal";
 import { usePermissions } from "@/hooks/usePermissions";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import ExportMenu from "@/components/reports/ExportMenu";
+import type { ExportFormat } from "@/lib/export/reportExport";
+
 import { localeActual } from "@/lib/localeActual";
 const STATUS_OPTIONS = [
   "",
@@ -72,7 +72,6 @@ function rangeFor(period: Period, anchor: Date): [Date, Date] {
   const y = anchor.getFullYear(),
     m = anchor.getMonth(),
     d = anchor.getDate();
-
   if (period === "day") {
     return [new Date(y, m, d, 0, 0, 0, 0), new Date(y, m, d, 23, 59, 59, 999)];
   }
@@ -88,10 +87,8 @@ function rangeFor(period: Period, anchor: Date): [Date, Date] {
       59,
       999,
     );
-
     return [start, end];
   }
-
   return [
     new Date(y, m, 1, 0, 0, 0, 0),
     new Date(y, m + 1, 0, 23, 59, 59, 999),
@@ -101,17 +98,14 @@ function rangeFor(period: Period, anchor: Date): [Date, Date] {
 /** Shift the anchor by ±1 of the period unit. */
 function shiftAnchor(period: Period, anchor: Date, dir: number): Date {
   const d = new Date(anchor);
-
   if (period === "day") d.setDate(d.getDate() + dir);
   else if (period === "week") d.setDate(d.getDate() + dir * 7);
   else d.setMonth(d.getMonth() + dir);
-
   return d;
 }
 
 function rangeLabel(period: Period, anchor: Date): string {
   const [s, e] = rangeFor(period, anchor);
-
   if (period === "day")
     return s.toLocaleDateString(localeActual(), {
       weekday: "short",
@@ -125,7 +119,6 @@ function rangeLabel(period: Period, anchor: Date): string {
       year: "numeric",
     });
   const sameMonth = s.getMonth() === e.getMonth();
-
   return `${s.toLocaleDateString(localeActual(), { day: "2-digit", month: sameMonth ? undefined : "short" })} – ${e.toLocaleDateString(localeActual(), { day: "2-digit", month: "short", year: "numeric" })}`;
 }
 
@@ -149,14 +142,11 @@ export default function NominaRecords() {
   // roto. Se ancla el periodo en ese día.
   const [anchor, setAnchor] = useState<Date>(() => {
     const d = searchParams.get("date");
-
     if (d && /^\d{4}-\d{2}-\d{2}$/.test(d)) {
       const [y, m, day] = d.split("-").map(Number);
       const parsed = new Date(y, m - 1, day);
-
       if (!isNaN(parsed.getTime())) return parsed;
     }
-
     return new Date();
   });
   const [selected, setSelected] = useState<AttendanceRecord | null>(null);
@@ -199,16 +189,13 @@ export default function NominaRecords() {
       })
       .then((r) => {
         const filas = r.rows || [];
-
         setRows(filas);
         // Se refresca el catálogo de trabajadores sólo cuando NO hay filtro:
         // ver la nota en `guardOptions`.
         if (!guardId) {
           const m = new Map<string, string>();
-
           for (const f of filas) {
             const id = f.guardName?.id;
-
             if (id) m.set(String(id), f.guardName?.fullName || "Trabajador");
           }
           setGuardOptions(
@@ -221,7 +208,6 @@ export default function NominaRecords() {
       .catch((e) => toast.error(e?.message || "Error al cargar registros"))
       .finally(() => setLoading(false));
   }, [status, departmentId, guardId, rangeStart, rangeEnd]);
-
   useEffect(load, [load]);
   // Una selección que sobrevive a un cambio de filtro actúa sobre filas que ya
   // no están en pantalla — exactamente lo que nadie espera de un botón «aplicar
@@ -251,7 +237,6 @@ export default function NominaRecords() {
   useEffect(() => {
     if (focusHandled || !focusId || loading) return;
     const match = rows.find((r) => r.id === focusId);
-
     if (match) {
       setSelected(match);
       attendanceService
@@ -259,7 +244,6 @@ export default function NominaRecords() {
         .then(setSelected)
         .catch(() => {});
       setFocusHandled(true);
-
       return;
     }
     // ── SI LA FILA NO ESTÁ EN LA LISTA, SE PIDE — EN SILENCIO ───────────────
@@ -283,7 +267,6 @@ export default function NominaRecords() {
   const act = async (fn: () => Promise<unknown>, okMsg: string) => {
     setBusy(true);
     const openId = selected?.id;
-
     try {
       await fn();
       toast.success(okMsg);
@@ -313,12 +296,12 @@ export default function NominaRecords() {
         <span className="flex items-center gap-1.5">
           {r.guardName?.fullName || "—"}
           {r.role === "supervisor" && (
-            <ToneBadge dot={false} tone="warn">
+            <ToneBadge tone="warn" dot={false}>
               {t("comun.supervisor")}
             </ToneBadge>
           )}
           {r.role === "administrative" && (
-            <ToneBadge dot={false} tone="info">
+            <ToneBadge tone="info" dot={false}>
               Administrativo
             </ToneBadge>
           )}
@@ -410,14 +393,14 @@ export default function NominaRecords() {
       header: "Ubicación",
       render: (_v, r) =>
         r.punchInOutsideGeofence ? (
-          <ToneBadge dot={false} tone="bad">
+          <ToneBadge tone="bad" dot={false}>
             <MapPin size={12} />{" "}
             <span className="tabular-nums">
               Fuera ({r.punchInDistanceM ?? "?"} m)
             </span>
           </ToneBadge>
         ) : (
-          <ToneBadge dot={false} tone="ok">
+          <ToneBadge tone="ok" dot={false}>
             Dentro
           </ToneBadge>
         ),
@@ -426,7 +409,7 @@ export default function NominaRecords() {
       key: "status",
       header: "Estado",
       render: (_v, r) => (
-        <StatusBadge approval={r.approvalStatus} status={r.status} />
+        <StatusBadge status={r.status} approval={r.approvalStatus} />
       ),
     },
     {
@@ -441,25 +424,22 @@ export default function NominaRecords() {
       render: (_v, r) => {
         const actual = String(r.payrollStatus || "");
         const siguientes = PAYROLL_FLOW_NEXT[actual] || [];
-
         if (!actual || !puedeAprobar || !siguientes.length)
           return <PayrollBadge status={r.payrollStatus} />;
-
         return (
           <select
             className="cg-input cg-focus max-w-[13rem] px-2 py-1 text-xs"
             value={actual}
+            onClick={(e) => e.stopPropagation()}
             onChange={(e) => {
               e.stopPropagation();
               const destino = e.target.value;
-
               if (destino === actual) return;
               void act(
                 () => attendanceService.setStatus(r.id, destino),
                 `Ahora: ${PAYROLL_FLOW_META[destino]?.label || destino}`,
               );
             }}
-            onClick={(e) => e.stopPropagation()}
           >
             <option value={actual}>
               {PAYROLL_FLOW_META[actual]?.label || actual}
@@ -480,7 +460,6 @@ export default function NominaRecords() {
     setBulkKey((k) => k + 1);
     if (!selectedIds.length) {
       toast.error("No hay tarjetas seleccionadas");
-
       return;
     }
     const etiqueta = PAYROLL_FLOW_META[destino]?.label || destino;
@@ -489,12 +468,10 @@ export default function NominaRecords() {
       message: `Se pondrán ${selectedIds.length} tarjeta(s) en «${etiqueta}». Las que no admitan ese paso se quedan como están y te digo cuáles.`,
       confirmText: "Cambiar",
     });
-
     if (!ok) return;
     setBusy(true);
     try {
       const r = await attendanceService.bulkSetStatus(selectedIds, destino);
-
       if (r.fallidas?.length)
         toast.warning(
           `${r.actualizadas} actualizada(s); ${r.fallidas.length} no admitían ese paso`,
@@ -536,8 +513,11 @@ export default function NominaRecords() {
 
   return (
     <AppLayout>
-      <PageContainer className="p-4 sm:p-6" width="wide">
+      <PageContainer width="wide" className="p-4 sm:p-6">
         <PageHeader
+          icon={<ClipboardCheck />}
+          title={t("ui.NominaRecords.registrosDeAsistencia")}
+          subtitle="Marcaciones de entrada / salida"
           actions={
             /* Tres formatos y UNA fuente: el archivo lo arma el servidor con el
                mismo filtro que la pantalla, así que incluye también los días de
@@ -550,18 +530,15 @@ export default function NominaRecords() {
                que el navegador había alcanzado a cargar—. Dos botones de
                exportar que daban archivos distintos era la peor parte. */
             <ExportMenu
+              onExport={exportar}
               busy={busy}
               label={
                 selectedIds.length
                   ? `Exportar ${selectedIds.length}`
                   : "Exportar"
               }
-              onExport={exportar}
             />
           }
-          icon={<ClipboardCheck />}
-          subtitle="Marcaciones de entrada / salida"
-          title={t("ui.NominaRecords.registrosDeAsistencia")}
         />
 
         <Toolbar>
@@ -600,35 +577,35 @@ export default function NominaRecords() {
 
           {/* Período: Día / Semana / Mes */}
           <Segmented<Period>
+            value={period}
+            onChange={setPeriod}
             options={[
               { value: "day", label: t("comun.periodo.dia", "Día") },
               { value: "week", label: "Semana" },
               { value: "month", label: "Mes" },
             ]}
-            value={period}
-            onChange={setPeriod}
           />
 
           {/* Navegación de fecha */}
           <div className="glass-sunken inline-flex items-center gap-1 px-1.5 py-1">
             <button
-              aria-label={t("kit.pagination.prev")}
-              className="cg-focus cg-btn-ghost rounded-full p-1"
               onClick={() => setAnchor((a) => shiftAnchor(period, a, -1))}
+              className="cg-focus cg-btn-ghost rounded-full p-1"
+              aria-label={t("kit.pagination.prev")}
             >
               <ChevronLeft className="size-4" />
             </button>
             <button
-              className="cg-focus min-w-[9rem] rounded-full px-2 text-center text-sm font-medium capitalize"
-              title="Ir a hoy"
               onClick={() => setAnchor(new Date())}
+              title="Ir a hoy"
+              className="cg-focus min-w-[9rem] rounded-full px-2 text-center text-sm font-medium capitalize"
             >
               {rangeLabel(period, anchor)}
             </button>
             <button
-              aria-label={t("kit.pagination.next")}
-              className="cg-focus cg-btn-ghost rounded-full p-1"
               onClick={() => setAnchor((a) => shiftAnchor(period, a, +1))}
+              className="cg-focus cg-btn-ghost rounded-full p-1"
+              aria-label={t("kit.pagination.next")}
             >
               <ChevronRight className="size-4" />
             </button>
@@ -638,10 +615,10 @@ export default function NominaRecords() {
           <label className="glass-sunken flex items-center gap-2 px-3 py-1.5">
             <Filter className="size-4" style={{ color: "var(--ink-faint)" }} />
             <select
-              className="cg-focus bg-transparent text-sm outline-none"
-              style={{ color: "var(--ink)" }}
               value={status}
               onChange={(e) => setStatus(e.target.value)}
+              className="cg-focus bg-transparent text-sm outline-none"
+              style={{ color: "var(--ink)" }}
             >
               {STATUS_OPTIONS.map((s) => (
                 <option key={s} value={s}>
@@ -661,10 +638,10 @@ export default function NominaRecords() {
                 style={{ color: "var(--ink-faint)" }}
               />
               <select
-                className="cg-focus bg-transparent text-sm outline-none"
-                style={{ color: "var(--ink)" }}
                 value={departmentId}
                 onChange={(e) => setDepartmentId(e.target.value)}
+                className="cg-focus bg-transparent text-sm outline-none"
+                style={{ color: "var(--ink)" }}
               >
                 <option value="">
                   {t("ui.NominaRecords.todosLosDepartamentos")}
@@ -679,7 +656,7 @@ export default function NominaRecords() {
           )}
         </Toolbar>
 
-        <Section icon={<ClipboardList />} title="Marcaciones">
+        <Section title="Marcaciones" icon={<ClipboardList />}>
           {!loading && (
             <div
               className="mb-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm"
@@ -717,14 +694,15 @@ export default function NominaRecords() {
             <DataTable
               columns={columns}
               data={visibles}
-              emptyState={
-                <EmptyState
-                  description={t("ui.NominaRecords.noHayMarcacionesParaLos")}
-                  icon={<ClipboardList />}
-                  title={t("comun.sinRegistros")}
-                />
-              }
               selectedIds={selectedIds}
+              onSelectOne={(id, checked) =>
+                setSelectedIds((p) =>
+                  checked ? [...p, id] : p.filter((x) => x !== id),
+                )
+              }
+              onSelectAll={(checked) =>
+                setSelectedIds(checked ? visibles.map((r) => r.id) : [])
+              }
               toolbar={
                 puedeAprobar && selectedIds.length > 0 ? (
                   <div className="flex items-center gap-2">
@@ -757,13 +735,12 @@ export default function NominaRecords() {
                   .then(setSelected)
                   .catch(() => {});
               }}
-              onSelectAll={(checked) =>
-                setSelectedIds(checked ? visibles.map((r) => r.id) : [])
-              }
-              onSelectOne={(id, checked) =>
-                setSelectedIds((p) =>
-                  checked ? [...p, id] : p.filter((x) => x !== id),
-                )
+              emptyState={
+                <EmptyState
+                  icon={<ClipboardList />}
+                  title={t("comun.sinRegistros")}
+                  description={t("ui.NominaRecords.noHayMarcacionesParaLos")}
+                />
               }
             />
           )}
@@ -774,9 +751,8 @@ export default function NominaRecords() {
           tarjeta quedaba fuera de pantalla: es la pieza sobre la que se decide
           lo que se paga, así que se mira entera. */}
       <TimesheetModal
-        puedeAprobar={puedeAprobar}
-        puedeEditar={puedeEditar}
         record={selected}
+        onClose={() => setSelected(null)}
         onChanged={() => {
           load();
           if (selected)
@@ -785,7 +761,8 @@ export default function NominaRecords() {
               .then(setSelected)
               .catch(() => {});
         }}
-        onClose={() => setSelected(null)}
+        puedeEditar={puedeEditar}
+        puedeAprobar={puedeAprobar}
       />
     </AppLayout>
   );

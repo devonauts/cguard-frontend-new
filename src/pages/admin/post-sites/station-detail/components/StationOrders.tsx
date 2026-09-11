@@ -1,8 +1,7 @@
-import type { Station } from "@/types";
-
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { confirmDialog } from "@/components/ui/confirmDialog";
 import {
   Plus,
   Clock,
@@ -21,8 +20,6 @@ import {
   CheckCircle2,
   FileText,
 } from "lucide-react";
-
-import { confirmDialog } from "@/components/ui/confirmDialog";
 import { stationOrderService } from "@/lib/api/stationOrderService";
 import {
   Section,
@@ -37,6 +34,8 @@ import {
   LabeledField,
 } from "@/pages/admin/clientes/components/_shared/tab-kit";
 import { Button } from "@/components/ui/button";
+import type { Station } from "@/types";
+
 import { localeActual } from "@/lib/localeActual";
 type Props = { station: Station; stationId: string; postSiteId: string };
 
@@ -139,7 +138,6 @@ export default function StationOrders({ stationId }: Props) {
     try {
       const res: any = await stationOrderService.list(stationId);
       const list = Array.isArray(res) ? res : (res?.rows ?? []);
-
       setRows(
         list.map((r: any) => ({
           ...r,
@@ -163,9 +161,8 @@ export default function StationOrders({ stationId }: Props) {
       setLoading(false);
     }
   };
-
   useEffect(() => {
-    load();
+    load(); /* eslint-disable-next-line */
   }, [stationId]);
 
   const save = async () => {
@@ -174,13 +171,11 @@ export default function StationOrders({ stationId }: Props) {
       toast.error(
         t("station.orders.titleRequired", "El título es obligatorio"),
       );
-
       return;
     }
     setSaving(true);
     try {
       const payload = { ...modal, title: modal.title.trim() };
-
       if (modal.id)
         await stationOrderService.update(stationId, modal.id, payload);
       else await stationOrderService.create(stationId, payload);
@@ -234,11 +229,15 @@ export default function StationOrders({ stationId }: Props) {
     <div className="space-y-4">
       {/* header */}
       <Section
+        icon={<ClipboardList />}
+        title={t("station.orders.title", "Consignas específicas")}
         action={
           /* El selector y el botón juntos pasan de 380 px: en un teléfono tienen
              que poder caer uno debajo del otro o sacan la cabecera de pantalla. */
           <div className="flex flex-wrap items-center justify-end gap-2">
             <Segmented
+              value={view}
+              onChange={(v) => setView(v)}
               options={[
                 {
                   value: "list",
@@ -249,13 +248,11 @@ export default function StationOrders({ stationId }: Props) {
                   label: t("station.orders.tabLog", "Registro de actividad"),
                 },
               ]}
-              value={view}
-              onChange={(v) => setView(v)}
             />
             {view === "list" && (
               <Button
-                size="sm"
                 variant="brand"
+                size="sm"
                 onClick={() => setModal({ ...EMPTY })}
               >
                 <Plus size={16} /> {t("station.orders.add", "Agregar consigna")}
@@ -263,8 +260,6 @@ export default function StationOrders({ stationId }: Props) {
             )}
           </div>
         }
-        icon={<ClipboardList />}
-        title={t("station.orders.title", "Consignas específicas")}
       >
         <p className="-mt-2 text-xs" style={{ color: "var(--ink-soft)" }}>
           {t(
@@ -280,15 +275,15 @@ export default function StationOrders({ stationId }: Props) {
           t={t as unknown as (key: string, def?: string) => string}
         />
       ) : /* list */ loading ? (
-        <SkeletonCards className="lg:grid-cols-2" count={4} />
+        <SkeletonCards count={4} className="lg:grid-cols-2" />
       ) : rows.length === 0 ? (
         <EmptyState
+          icon={<ClipboardList />}
+          title={t("station.orders.emptyTitle", "Sin consignas")}
           description={t(
             "station.orders.emptyHint",
             "Agrega tareas recurrentes (por ejemplo: abrir los baños públicos a las 09:00) que el vigilante deberá completar.",
           )}
-          icon={<ClipboardList />}
-          title={t("station.orders.emptyTitle", "Sin consignas")}
         />
       ) : (
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
@@ -304,9 +299,9 @@ export default function StationOrders({ stationId }: Props) {
                       {o.title}
                     </h3>
                     <StatusBadge
-                      className="shrink-0"
-                      dot={false}
                       tone={PRIO[o.priority]?.tone || "warn"}
+                      dot={false}
+                      className="shrink-0"
                     >
                       {PRIO[o.priority]?.label || o.priority}
                     </StatusBadge>
@@ -343,19 +338,19 @@ export default function StationOrders({ stationId }: Props) {
                 </div>
                 <div className="flex shrink-0 items-center gap-1">
                   <button
+                    onClick={() => toggleActive(o)}
                     aria-pressed={o.active}
+                    title={
+                      o.active
+                        ? t("station.orders.deactivate", "Desactivar")
+                        : t("station.orders.activate", "Activar")
+                    }
                     className="cg-focus relative h-5 w-9 rounded-full transition-colors"
                     style={{
                       background: o.active
                         ? "var(--brand)"
                         : "var(--glass-sunken)",
                     }}
-                    title={
-                      o.active
-                        ? t("station.orders.deactivate", "Desactivar")
-                        : t("station.orders.activate", "Activar")
-                    }
-                    onClick={() => toggleActive(o)}
                   >
                     <span
                       className={`absolute top-0.5 h-4 w-4 rounded-full transition-all ${o.active ? "left-[18px]" : "left-0.5"}`}
@@ -367,17 +362,17 @@ export default function StationOrders({ stationId }: Props) {
                     />
                   </button>
                   <button
+                    onClick={() => setModal({ ...o })}
                     aria-label={t("station.orders.edit", "Editar consigna")}
                     className="cg-btn-ghost cg-focus rounded-md p-1.5"
-                    onClick={() => setModal({ ...o })}
                   >
                     <Pencil size={15} />
                   </button>
                   <button
+                    onClick={() => remove(o)}
                     aria-label={t("actions.delete", "Eliminar")}
                     className="cg-focus rounded-md p-1.5"
                     style={{ color: "var(--bad-text)" }}
-                    onClick={() => remove(o)}
                   >
                     <Trash2 size={15} />
                   </button>
@@ -390,6 +385,10 @@ export default function StationOrders({ stationId }: Props) {
 
       {modal && (
         <OrderModal
+          value={modal}
+          onChange={setModal}
+          onClose={() => setModal(null)}
+          onSave={save}
           saving={saving}
           t={
             t as unknown as (
@@ -398,10 +397,6 @@ export default function StationOrders({ stationId }: Props) {
               opts?: Record<string, unknown>,
             ) => string
           }
-          value={modal}
-          onChange={setModal}
-          onClose={() => setModal(null)}
-          onSave={save}
         />
       )}
     </div>
@@ -449,9 +444,9 @@ function OrderModal({
               : t("station.orders.add", "Agregar consigna")}
           </h3>
           <button
+            onClick={onClose}
             aria-label={t("actions.close", "Cerrar")}
             className="cg-btn-ghost cg-focus rounded-lg p-1.5"
-            onClick={onClose}
           >
             <X size={18} />
           </button>
@@ -461,24 +456,24 @@ function OrderModal({
           <LabeledField label={t("station.orders.fTitle", "Título")}>
             <input
               className={FIELD_CLS_LG}
+              value={o.title}
+              onChange={(e) => set({ title: e.target.value })}
               placeholder={t(
                 "station.orders.fTitlePh",
                 "Ej: Abrir baños públicos",
               )}
-              value={o.title}
-              onChange={(e) => set({ title: e.target.value })}
             />
           </LabeledField>
           <LabeledField label={t("station.orders.fDesc", "Descripción")}>
             <textarea
               className={FIELD_CLS_LG}
+              rows={2}
+              value={o.description || ""}
+              onChange={(e) => set({ description: e.target.value })}
               placeholder={t(
                 "station.orders.fDescPh",
                 "Detalles de lo que debe hacerse...",
               )}
-              rows={2}
-              value={o.description || ""}
-              onChange={(e) => set({ description: e.target.value })}
             />
           </LabeledField>
 
@@ -492,8 +487,8 @@ function OrderModal({
               }
             >
               <input
-                className={FIELD_CLS_LG}
                 type="time"
+                className={FIELD_CLS_LG}
                 value={o.time || ""}
                 onChange={(e) => set({ time: e.target.value })}
               />
@@ -569,6 +564,8 @@ function OrderModal({
                 {DOW.map((d, i) => (
                   <button
                     key={i}
+                    type="button"
+                    onClick={() => toggleDay(i)}
                     aria-pressed={!!o.days?.includes(i)}
                     className="cg-focus grid h-9 w-9 place-items-center rounded-lg border text-xs font-semibold transition-colors"
                     style={
@@ -583,8 +580,6 @@ function OrderModal({
                             color: "var(--ink-soft)",
                           }
                     }
-                    type="button"
-                    onClick={() => toggleDay(i)}
                   >
                     {d}
                   </button>
@@ -597,10 +592,10 @@ function OrderModal({
               label={t("station.orders.fDayOfMonth", "Día del mes")}
             >
               <input
-                className={`${FIELD_CLS_LG} w-24`}
-                max={31}
-                min={1}
                 type="number"
+                min={1}
+                max={31}
+                className={`${FIELD_CLS_LG} w-24`}
                 value={o.dayOfMonth || ""}
                 onChange={(e) =>
                   set({ dayOfMonth: Number(e.target.value) || null })
@@ -618,8 +613,8 @@ function OrderModal({
               }
             >
               <input
-                className={FIELD_CLS_LG}
                 type="date"
+                className={FIELD_CLS_LG}
                 value={o.date || ""}
                 onChange={(e) => set({ date: e.target.value })}
               />
@@ -637,15 +632,15 @@ function OrderModal({
                 )}
               </span>
               <button
+                type="button"
                 aria-pressed={o.notifyEnabled}
+                onClick={() => set({ notifyEnabled: !o.notifyEnabled })}
                 className="cg-focus relative h-5 w-9 rounded-full transition-colors"
                 style={{
                   background: o.notifyEnabled
                     ? "var(--brand)"
                     : "var(--glass-sunken)",
                 }}
-                type="button"
-                onClick={() => set({ notifyEnabled: !o.notifyEnabled })}
               >
                 <span
                   className={`absolute top-0.5 h-4 w-4 rounded-full transition-all ${o.notifyEnabled ? "left-[18px]" : "left-0.5"}`}
@@ -664,10 +659,10 @@ function OrderModal({
               >
                 <span>{t("station.orders.fNotifyBefore", "Avisar")}</span>
                 <input
-                  className={`${FIELD_CLS_LG} w-20`}
-                  max={120}
-                  min={0}
                   type="number"
+                  min={0}
+                  max={120}
+                  className={`${FIELD_CLS_LG} w-20`}
                   value={o.notifyMinutesBefore}
                   onChange={(e) =>
                     set({ notifyMinutesBefore: Number(e.target.value) || 0 })
@@ -683,17 +678,17 @@ function OrderModal({
 
         <div className="mt-5 flex justify-end gap-2">
           <button
-            className="rounded-lg border border-border px-4 py-2 text-sm text-muted-foreground hover:text-foreground"
             onClick={onClose}
+            className="rounded-lg border border-border px-4 py-2 text-sm text-muted-foreground hover:text-foreground"
           >
             {t("common.cancel", "Cancelar")}
           </button>
           <button
-            className="cg-btn-brand cg-focus flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-50"
-            disabled={saving}
             onClick={onSave}
+            disabled={saving}
+            className="cg-btn-brand cg-focus flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-50"
           >
-            {saving ? <Loader2 className="animate-spin" size={15} /> : null}{" "}
+            {saving ? <Loader2 size={15} className="animate-spin" /> : null}{" "}
             {t("common.save", "Guardar")}
           </button>
         </div>
@@ -727,7 +722,6 @@ function ActivityLog({
 }) {
   const [rows, setRows] = useState<CompletionRow[]>([]);
   const [loading, setLoading] = useState(false);
-
   useEffect(() => {
     if (!stationId) return;
     setLoading(true);
@@ -738,16 +732,16 @@ function ActivityLog({
       .finally(() => setLoading(false));
   }, [stationId]);
 
-  if (loading) return <SkeletonCards className="sm:grid-cols-1" count={3} />;
+  if (loading) return <SkeletonCards count={3} className="sm:grid-cols-1" />;
   if (!rows.length)
     return (
       <EmptyState
+        icon={<CheckCircle2 />}
+        title={t("station.orders.logEmpty", "Sin actividad registrada")}
         description={t(
           "station.orders.logEmptyHint",
           "Cuando un vigilante complete una consigna, aparecerá aquí con su evidencia.",
         )}
-        icon={<CheckCircle2 />}
-        title={t("station.orders.logEmpty", "Sin actividad registrada")}
       />
     );
 
@@ -792,8 +786,8 @@ function ActivityLog({
           {c.note && (
             <p className="mt-2 flex items-start gap-1.5 text-sm text-foreground">
               <FileText
-                className="mt-0.5 shrink-0 text-muted-foreground"
                 size={13}
+                className="mt-0.5 shrink-0 text-muted-foreground"
               />
               {c.note}
             </p>
@@ -805,26 +799,26 @@ function ActivityLog({
                   fileUrl(ph.downloadUrl) && (
                     <a
                       key={i}
-                      className="block h-16 w-16 overflow-hidden rounded-lg border border-border"
                       href={fileUrl(ph.downloadUrl)!}
-                      rel="noreferrer"
                       target="_blank"
+                      rel="noreferrer"
+                      className="block h-16 w-16 overflow-hidden rounded-lg border border-border"
                     >
                       <SmartImage
-                        alt=""
-                        className="h-full w-full"
-                        rounded="rounded-none"
                         src={fileUrl(ph.downloadUrl)!}
+                        alt=""
+                        rounded="rounded-none"
+                        className="h-full w-full"
                       />
                     </a>
                   ),
               )}
               {c.videoDownloadUrl && (
                 <a
-                  className="cg-btn-glass cg-focus flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs"
                   href={fileUrl(c.videoDownloadUrl)!}
-                  rel="noreferrer"
                   target="_blank"
+                  rel="noreferrer"
+                  className="cg-btn-glass cg-focus flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs"
                 >
                   <Video size={14} />{" "}
                   {t("station.orders.viewVideo", "Ver video")}
@@ -832,11 +826,11 @@ function ActivityLog({
               )}
               {c.audioDownloadUrl && (
                 <span className="flex items-center gap-1.5 rounded-lg border border-border px-2 py-1">
-                  <Mic className="text-muted-foreground" size={13} />
+                  <Mic size={13} className="text-muted-foreground" />
                   <audio
+                    src={fileUrl(c.audioDownloadUrl)!}
                     controls
                     className="h-7"
-                    src={fileUrl(c.audioDownloadUrl)!}
                   />
                 </span>
               )}

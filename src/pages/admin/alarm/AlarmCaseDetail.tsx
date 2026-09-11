@@ -2,6 +2,9 @@ import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
+import AlarmActionPlan from "@/components/alarm/AlarmActionPlan";
+import AlarmVideoVerification from "@/components/alarm/AlarmVideoVerification";
+import AlarmECV from "@/components/alarm/AlarmECV";
 import {
   Siren,
   ArrowLeft,
@@ -14,28 +17,13 @@ import {
   AlertTriangle,
   StickyNote,
   Clock,
+  ShieldAlert,
   MapPin,
   Cpu,
   FileText,
   History,
 } from "lucide-react";
 
-import {
-  Chip,
-  CriticalRail,
-  PriorityPill,
-  STATUS_META,
-  OPEN_STATUSES,
-  categoryMeta,
-  categoryTone,
-  criticalBorder,
-  formatWhenFull as formatWhen,
-  sourceTone,
-} from "./shared";
-
-import AlarmActionPlan from "@/components/alarm/AlarmActionPlan";
-import AlarmVideoVerification from "@/components/alarm/AlarmVideoVerification";
-import AlarmECV from "@/components/alarm/AlarmECV";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,6 +36,7 @@ import {
   EmptyState,
   Modal,
   GlassPanel,
+  IconTile,
   StatusBadge,
   SkeletonCards,
 } from "@/components/kit";
@@ -60,6 +49,18 @@ import {
   type AlarmDispatchType,
   type AlarmCaseDisposition,
 } from "@/lib/api/alarmService";
+import {
+  Chip,
+  CriticalRail,
+  PriorityPill,
+  STATUS_META,
+  OPEN_STATUSES,
+  categoryMeta,
+  categoryTone,
+  criticalBorder,
+  formatWhenFull as formatWhen,
+  sourceTone,
+} from "./shared";
 
 /* ------------------------------------------------------------------ */
 /* Metadata                                                            */
@@ -149,11 +150,9 @@ export default function AlarmCaseDetail() {
       if (!opts?.silent) setLoading(true);
       try {
         const c = await alarmService.case(id);
-
         setData(c || null);
       } catch (e) {
         const err = e as { data?: { message?: string }; message?: string };
-
         toast.error(
           err?.data?.message || err?.message || "No se pudo cargar el caso",
         );
@@ -176,15 +175,12 @@ export default function AlarmCaseDetail() {
       await fn();
       toast.success(okMsg);
       await refetch();
-
       return true;
     } catch (e) {
       const err = e as { data?: { message?: string }; message?: string };
-
       toast.error(
         err?.data?.message || err?.message || "No se pudo completar la acción",
       );
-
       return false;
     } finally {
       setBusy(false);
@@ -200,7 +196,6 @@ export default function AlarmCaseDetail() {
   const onDispatch = async () => {
     if (!dTarget.trim()) {
       toast.error(t("ui.AlarmCaseDetail.indiqueElDestinoDelDespacho"));
-
       return;
     }
     const ok = await runAction(
@@ -212,7 +207,6 @@ export default function AlarmCaseDetail() {
         }),
       "Despacho solicitado",
     );
-
     if (ok) {
       setDispatchOpen(false);
       setDTarget("");
@@ -225,7 +219,6 @@ export default function AlarmCaseDetail() {
       () => alarmService.close(id, { disposition }),
       "Caso cerrado",
     );
-
     if (ok) setCloseOpen(false);
   };
 
@@ -238,7 +231,6 @@ export default function AlarmCaseDetail() {
         }),
       "Incidente creado",
     );
-
     if (ok) {
       setIncidentOpen(false);
       setIncTitle("");
@@ -249,14 +241,12 @@ export default function AlarmCaseDetail() {
   const onNote = async () => {
     if (!noteText.trim()) {
       toast.error(t("ui.AlarmCaseDetail.escribaUnaNota"));
-
       return;
     }
     const ok = await runAction(
       () => alarmService.addNote(id, { detail: noteText.trim() }),
       "Nota agregada",
     );
-
     if (ok) {
       setNoteOpen(false);
       setNoteText("");
@@ -280,6 +270,12 @@ export default function AlarmCaseDetail() {
       <AppLayout>
         <PageContainer width="narrow">
           <EmptyState
+            icon={<Siren />}
+            title={t(
+              "ui.AlarmCaseDetail.casoNoEncontrado",
+              "Caso no encontrado",
+            )}
+            description={t("ui.AlarmCaseDetail.elCasoSolicitadoNoExiste")}
             action={
               <Button
                 variant="outline"
@@ -289,12 +285,6 @@ export default function AlarmCaseDetail() {
                 {t("ui.AlarmCaseDetail.volverALaCola", "Volver a la cola")}
               </Button>
             }
-            description={t("ui.AlarmCaseDetail.elCasoSolicitadoNoExiste")}
-            icon={<Siren />}
-            title={t(
-              "ui.AlarmCaseDetail.casoNoEncontrado",
-              "Caso no encontrado",
-            )}
           />
         </PageContainer>
       </AppLayout>
@@ -319,13 +309,11 @@ export default function AlarmCaseDetail() {
   const sortedEvents = [...events].sort((a, b) => {
     const ta = new Date(a.at || a.createdAt || "").getTime() || 0;
     const tb = new Date(b.at || b.createdAt || "").getTime() || 0;
-
     return tb - ta;
   });
   const sortedAudit = [...audit].sort((a, b) => {
     const ta = new Date(a.at || a.createdAt || "").getTime() || 0;
     const tb = new Date(b.at || b.createdAt || "").getTime() || 0;
-
     return tb - ta;
   });
 
@@ -339,44 +327,24 @@ export default function AlarmCaseDetail() {
         <div className="relative">
           {critico && <CriticalRail />}
           <PageHeader
-            actions={
-              <>
-                <Button
-                  variant="ghost"
-                  onClick={() => navigate("/alarm/queue")}
-                >
-                  <ArrowLeft className="size-4" />
-                  {t("emergency.title", "Centro de Emergencias")}
-                </Button>
-                <Button
-                  disabled={busy}
-                  variant="outline"
-                  onClick={() => load()}
-                >
-                  {busy ? (
-                    <Loader2 className="size-4 animate-spin" />
-                  ) : (
-                    <RefreshCw className="size-4" />
-                  )}
-                  Actualizar
-                </Button>
-              </>
-            }
+            className={critico ? "overflow-hidden" : undefined}
+            icon={<Siren />}
+            title={data.title || cat.label}
+            subtitle={`Caso #${String(data.id).slice(0, 8)} · creado ${formatWhen(data.createdAt)}`}
             badges={
               <>
                 <PriorityPill p={data.priority} />
-                <StatusBadge dot={false} tone={categoryTone(data.category)}>
+                <StatusBadge tone={categoryTone(data.category)} dot={false}>
                   <span className="[&_svg]:size-3.5">{cat.icon}</span>
                   {cat.label}
                 </StatusBadge>
-                <StatusBadge dot={isOpen} tone={st.tone}>
+                <StatusBadge tone={st.tone} dot={isOpen}>
                   {st.label}
                 </StatusBadge>
                 {(() => {
                   const sm = alarmSourceMeta(data.source);
-
                   return (
-                    <StatusBadge dot={false} tone={sourceTone(data.source)}>
+                    <StatusBadge tone={sourceTone(data.source)} dot={false}>
                       {sm.label}
                     </StatusBadge>
                   );
@@ -390,17 +358,36 @@ export default function AlarmCaseDetail() {
                 {data.incidentId ? (
                   /* Escalado a incidente: agravación del caso, no realce de
                      marca. Iba en el acento configurable. */
-                  <StatusBadge dot={false} tone="bad">
+                  <StatusBadge tone="bad" dot={false}>
                     <AlertTriangle className="size-3.5" />
                     Incidente
                   </StatusBadge>
                 ) : null}
               </>
             }
-            className={critico ? "overflow-hidden" : undefined}
-            icon={<Siren />}
-            subtitle={`Caso #${String(data.id).slice(0, 8)} · creado ${formatWhen(data.createdAt)}`}
-            title={data.title || cat.label}
+            actions={
+              <>
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate("/alarm/queue")}
+                >
+                  <ArrowLeft className="size-4" />
+                  {t("emergency.title", "Centro de Emergencias")}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => load()}
+                  disabled={busy}
+                >
+                  {busy ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="size-4" />
+                  )}
+                  Actualizar
+                </Button>
+              </>
+            }
           />
         </div>
 
@@ -411,54 +398,54 @@ export default function AlarmCaseDetail() {
         >
           <div className="flex flex-wrap gap-2">
             <Button
-              disabled={busy || acked || isClosed}
-              size="sm"
               variant="outline"
+              size="sm"
+              disabled={busy || acked || isClosed}
               onClick={onAcknowledge}
             >
               <Check className="size-4" />
               Reconocer
             </Button>
             <Button
-              disabled={busy || !isOpen}
               size="sm"
               variant="brand"
+              disabled={busy || !isOpen}
               onClick={() => setDispatchOpen(true)}
             >
               <Radio className="size-4" />
               Despachar
             </Button>
             <Button
-              disabled={busy || !isOpen}
-              size="sm"
               variant="outline"
+              size="sm"
+              disabled={busy || !isOpen}
               onClick={onResolve}
             >
               <CheckCircle2 className="size-4" />
               Resolver
             </Button>
             <Button
-              disabled={busy || isClosed}
-              size="sm"
               variant="outline"
+              size="sm"
+              disabled={busy || isClosed}
               onClick={() => setCloseOpen(true)}
             >
               <Lock className="size-4" />
               Cerrar
             </Button>
             <Button
-              disabled={busy || Boolean(data.incidentId)}
-              size="sm"
               variant="outline"
+              size="sm"
+              disabled={busy || Boolean(data.incidentId)}
               onClick={() => setIncidentOpen(true)}
             >
               <AlertTriangle className="size-4" />{" "}
               {t("comun.crearIncidente")}{" "}
             </Button>
             <Button
-              disabled={busy}
-              size="sm"
               variant="outline"
+              size="sm"
+              disabled={busy}
               onClick={() => setNoteOpen(true)}
             >
               <StickyNote className="size-4" />
@@ -480,11 +467,11 @@ export default function AlarmCaseDetail() {
         {/* ECV — enhanced call verification + police dispatch */}
         <div className="mb-5">
           <AlarmECV
-            calls={(data as AlarmCaseWithEcv).calls || []}
             caseId={id}
+            panelId={(data as AlarmCaseWithEcv).alarmPanelId}
             category={data.category || undefined}
             ecvSatisfied={(data as AlarmCaseWithEcv).ecvSatisfied}
-            panelId={(data as AlarmCaseWithEcv).alarmPanelId}
+            calls={(data as AlarmCaseWithEcv).calls || []}
             status={data.status || undefined}
             onChanged={() => load()}
           />
@@ -493,14 +480,14 @@ export default function AlarmCaseDetail() {
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
           {/* Panel / site info */}
           <Section
-            className="lg:col-span-1"
-            icon={<Cpu />}
             title="Panel y sitio"
+            icon={<Cpu />}
+            className="lg:col-span-1"
           >
             {panel ? (
               <dl className="space-y-2.5 text-sm">
                 <PanelField label="Panel" value={panel.name} />
-                <PanelField mono label="Cuenta" value={panel.accountNumber} />
+                <PanelField label="Cuenta" value={panel.accountNumber} mono />
                 <PanelField
                   label={t("comun.tipo")}
                   value={
@@ -602,7 +589,6 @@ export default function AlarmCaseDetail() {
                       : ev.priority === 2
                         ? "warn"
                         : "info";
-
                   return (
                     <li key={ev.id} className="relative">
                       {/* El nudo de la línea de tiempo, con el halo del lienzo
@@ -620,8 +606,8 @@ export default function AlarmCaseDetail() {
                       />
                       <div className="flex flex-wrap items-center gap-2">
                         <StatusBadge
-                          dot={false}
                           tone={categoryTone(ev.category)}
+                          dot={false}
                         >
                           <span className="[&_svg]:size-3.5">{ec.icon}</span>
                           {ec.label}
@@ -719,16 +705,22 @@ export default function AlarmCaseDetail() {
 
       {/* Dispatch */}
       <Modal
+        open={dispatchOpen}
+        title="Despachar"
+        icon={<Radio className="size-4" />}
+        onOpenChange={(o) => {
+          if (!o) setDispatchOpen(false);
+        }}
         footer={
           <>
             <Button
-              disabled={busy}
               variant="outline"
               onClick={() => setDispatchOpen(false)}
+              disabled={busy}
             >
               Cancelar
             </Button>
-            <Button disabled={busy} variant="brand" onClick={onDispatch}>
+            <Button onClick={onDispatch} variant="brand" disabled={busy}>
               {busy ? (
                 <Loader2 className="size-4 animate-spin" />
               ) : (
@@ -738,19 +730,13 @@ export default function AlarmCaseDetail() {
             </Button>
           </>
         }
-        icon={<Radio className="size-4" />}
-        open={dispatchOpen}
-        title="Despachar"
-        onOpenChange={(o) => {
-          if (!o) setDispatchOpen(false);
-        }}
       >
         <div className="space-y-4">
           <div className="space-y-1.5">
             <Label htmlFor="d-type">{t("comun.tipo")}</Label>
             <select
-              className={selectClass}
               id="d-type"
+              className={selectClass}
               value={dType}
               onChange={(e) => setDType(e.target.value as AlarmDispatchType)}
             >
@@ -765,22 +751,22 @@ export default function AlarmCaseDetail() {
             <Label htmlFor="d-target">Destino</Label>
             <Input
               id="d-target"
+              value={dTarget}
+              onChange={(e) => setDTarget(e.target.value)}
               placeholder={t(
                 "ui.AlarmCaseDetail.unidadNombreONumeroDe",
                 "Unidad, nombre o número de contacto",
               )}
-              value={dTarget}
-              onChange={(e) => setDTarget(e.target.value)}
             />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="d-note">Nota (opcional)</Label>
             <Textarea
               id="d-note"
-              placeholder={t("ui.AlarmCaseDetail.instruccionesParaElDespacho")}
-              rows={3}
               value={dNote}
               onChange={(e) => setDNote(e.target.value)}
+              placeholder={t("ui.AlarmCaseDetail.instruccionesParaElDespacho")}
+              rows={3}
             />
           </div>
         </div>
@@ -788,16 +774,22 @@ export default function AlarmCaseDetail() {
 
       {/* Close */}
       <Modal
+        open={closeOpen}
+        title={t("ui.AlarmCaseDetail.cerrarCaso")}
+        icon={<Lock className="size-4" />}
+        onOpenChange={(o) => {
+          if (!o) setCloseOpen(false);
+        }}
         footer={
           <>
             <Button
-              disabled={busy}
               variant="outline"
               onClick={() => setCloseOpen(false)}
+              disabled={busy}
             >
               Cancelar
             </Button>
-            <Button disabled={busy} variant="brand" onClick={onClose}>
+            <Button onClick={onClose} variant="brand" disabled={busy}>
               {busy ? (
                 <Loader2 className="size-4 animate-spin" />
               ) : (
@@ -807,20 +799,14 @@ export default function AlarmCaseDetail() {
             </Button>
           </>
         }
-        icon={<Lock className="size-4" />}
-        open={closeOpen}
-        title={t("ui.AlarmCaseDetail.cerrarCaso")}
-        onOpenChange={(o) => {
-          if (!o) setCloseOpen(false);
-        }}
       >
         <div className="space-y-1.5">
           <Label htmlFor="disposition">
             {t("ui.AlarmCaseDetail.disposicion", "Disposición")}
           </Label>
           <select
-            className={selectClass}
             id="disposition"
+            className={selectClass}
             value={disposition}
             onChange={(e) =>
               setDisposition(e.target.value as AlarmCaseDisposition)
@@ -843,16 +829,22 @@ export default function AlarmCaseDetail() {
 
       {/* Incident */}
       <Modal
+        open={incidentOpen}
+        title={t("comun.crearIncidente")}
+        icon={<AlertTriangle className="size-4" />}
+        onOpenChange={(o) => {
+          if (!o) setIncidentOpen(false);
+        }}
         footer={
           <>
             <Button
-              disabled={busy}
               variant="outline"
               onClick={() => setIncidentOpen(false)}
+              disabled={busy}
             >
               Cancelar
             </Button>
-            <Button disabled={busy} variant="brand" onClick={onIncident}>
+            <Button onClick={onIncident} variant="brand" disabled={busy}>
               {busy ? (
                 <Loader2 className="size-4 animate-spin" />
               ) : (
@@ -862,12 +854,6 @@ export default function AlarmCaseDetail() {
             </Button>
           </>
         }
-        icon={<AlertTriangle className="size-4" />}
-        open={incidentOpen}
-        title={t("comun.crearIncidente")}
-        onOpenChange={(o) => {
-          if (!o) setIncidentOpen(false);
-        }}
       >
         <div className="space-y-4">
           <div className="space-y-1.5">
@@ -876,9 +862,9 @@ export default function AlarmCaseDetail() {
             </Label>
             <Input
               id="inc-title"
-              placeholder={data.title || cat.label}
               value={incTitle}
               onChange={(e) => setIncTitle(e.target.value)}
+              placeholder={data.title || cat.label}
             />
           </div>
           <div className="space-y-1.5">
@@ -887,10 +873,10 @@ export default function AlarmCaseDetail() {
             </Label>
             <Textarea
               id="inc-desc"
-              placeholder={t("ui.AlarmCaseDetail.detalleDelIncidente")}
-              rows={4}
               value={incDescription}
               onChange={(e) => setIncDescription(e.target.value)}
+              placeholder={t("ui.AlarmCaseDetail.detalleDelIncidente")}
+              rows={4}
             />
           </div>
         </div>
@@ -898,16 +884,22 @@ export default function AlarmCaseDetail() {
 
       {/* Note */}
       <Modal
+        open={noteOpen}
+        title={t("ui.AlarmCaseDetail.agregarNota")}
+        icon={<StickyNote className="size-4" />}
+        onOpenChange={(o) => {
+          if (!o) setNoteOpen(false);
+        }}
         footer={
           <>
             <Button
-              disabled={busy}
               variant="outline"
               onClick={() => setNoteOpen(false)}
+              disabled={busy}
             >
               Cancelar
             </Button>
-            <Button disabled={busy} variant="brand" onClick={onNote}>
+            <Button onClick={onNote} variant="brand" disabled={busy}>
               {busy ? (
                 <Loader2 className="size-4 animate-spin" />
               ) : (
@@ -917,21 +909,15 @@ export default function AlarmCaseDetail() {
             </Button>
           </>
         }
-        icon={<StickyNote className="size-4" />}
-        open={noteOpen}
-        title={t("ui.AlarmCaseDetail.agregarNota")}
-        onOpenChange={(o) => {
-          if (!o) setNoteOpen(false);
-        }}
       >
         <div className="space-y-1.5">
           <Label htmlFor="note-text">Nota</Label>
           <Textarea
             id="note-text"
-            placeholder={t("ui.AlarmCaseDetail.observacionesDelOperador")}
-            rows={4}
             value={noteText}
             onChange={(e) => setNoteText(e.target.value)}
+            placeholder={t("ui.AlarmCaseDetail.observacionesDelOperador")}
+            rows={4}
           />
         </div>
       </Modal>

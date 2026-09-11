@@ -1,10 +1,22 @@
-import type { Client } from "@/types/client";
-import type { ReactNode } from "react";
-
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { clientDisplayName } from "@/lib/clientName";
+import type { Client } from "@/types/client";
 import { useNavigate } from "react-router-dom";
+import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
+import { clientService } from "@/lib/api/clientService";
+import { useAppInviteEnabled } from "@/hooks/useAppInviteEnabled";
 import { toast } from "sonner";
+import {
+  Section,
+  StatusBadge,
+  Modal,
+  EmptyState,
+  GlassPanel,
+  IconTile,
+} from "@/components/kit";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Globe,
   Mail,
@@ -23,21 +35,7 @@ import {
   MapPin,
   Bell,
 } from "lucide-react";
-
-import { clientDisplayName } from "@/lib/clientName";
-import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
-import { clientService } from "@/lib/api/clientService";
-import { emailPreferencesService } from "@/lib/api/emailPreferencesService";
-import {
-  Section,
-  StatusBadge,
-  Modal,
-  EmptyState,
-  GlassPanel,
-  IconTile,
-} from "@/components/kit";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import type { ReactNode } from "react";
 
 type Props = {
   client?: Client & {
@@ -168,7 +166,7 @@ function Kpi({
 }) {
   return (
     <GlassPanel flat className="p-4">
-      <IconTile className="mb-2" size="sm" tone={KPI_TONE[accent] ?? "brand"}>
+      <IconTile tone={KPI_TONE[accent] ?? "brand"} size="sm" className="mb-2">
         {icon}
       </IconTile>
       <div className="font-display truncate text-xl font-bold leading-tight">
@@ -185,7 +183,6 @@ export default function ClientPortal({ client }: Props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement | null>(null);
-
   useScrollToTopOnMount(containerRef);
 
   const email = client?.email || client?.contactEmail || "";
@@ -194,10 +191,8 @@ export default function ClientPortal({ client }: Props) {
   // Real access roster from /access-users (client.portalUsers never existed in
   // the backend — this card always said 0/1 while Accesos showed the truth).
   const [accessUsers, setAccessUsers] = useState<AccessUser[]>([]);
-
   useEffect(() => {
     let alive = true;
-
     if (!client?.id) return;
     clientService
       .getClientAccessUsers(client.id)
@@ -207,7 +202,6 @@ export default function ClientPortal({ client }: Props) {
       .catch(() => {
         /* keep empty */
       });
-
     return () => {
       alive = false;
     };
@@ -216,28 +210,7 @@ export default function ClientPortal({ client }: Props) {
 
   const [confirm, setConfirm] = useState<Kind | null>(null);
   const [sending, setSending] = useState(false);
-
-  // Igual que en ClientsPage: si el tenant apagó el correo de la app en
-  // Preferencias de correo, el servidor lo rechaza con un 400. No se ofrece el
-  // botón que no puede funcionar. Fallo de lectura → se ofrece igual.
-  const [appInviteEnabled, setAppInviteEnabled] = useState(true);
-
-  useEffect(() => {
-    let vivo = true;
-
-    emailPreferencesService
-      .get()
-      .then((res) => {
-        if (vivo) setAppInviteEnabled(res?.preferences?.appInvite !== false);
-      })
-      .catch(() => {
-        /* se queda encendido a propósito */
-      });
-
-    return () => {
-      vivo = false;
-    };
-  }, []);
+  const appInviteEnabled = useAppInviteEnabled();
   const [result, setResult] = useState<{
     kind: Kind;
     recipient: string;
@@ -264,7 +237,6 @@ export default function ClientPortal({ client }: Props) {
   const togglePortal = async (key: string) => {
     if (!client?.id) return;
     const siguiente = { ...portal, [key]: portal[key] === false };
-
     setPortal(siguiente);
     setGuardandoPortal(true);
     try {
@@ -295,7 +267,6 @@ export default function ClientPortal({ client }: Props) {
               client?.id ?? "",
               email || undefined,
             );
-
       setResult({ kind, recipient: res?.recipient || email });
       setConfirm(null);
       toast.success(
@@ -330,35 +301,35 @@ export default function ClientPortal({ client }: Props) {
       {/* Status KPIs */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Kpi
-          accent={linked ? "green" : "slate"}
           icon={<Globe />}
-          label="Acceso al portal"
           value={linked ? "Vinculado" : "Sin usuario"}
+          label="Acceso al portal"
+          accent={linked ? "green" : "slate"}
         />
         <Kpi
-          accent="blue"
           icon={<Users />}
-          label={t("comun.usuariosConAcceso")}
           value={accessCount}
+          label={t("comun.usuariosConAcceso")}
+          accent="blue"
         />
         <Kpi
-          accent="primary"
           icon={<Smartphone />}
+          value="Mi Seguridad"
           label={t(
             "ui.ClientPortal.appMovilDelCliente",
             "App móvil del cliente",
           )}
-          value="Mi Seguridad"
+          accent="primary"
         />
         <Kpi
-          accent={email ? "green" : "orange"}
           icon={<Mail />}
-          label={email || "Agrega un correo al cliente"}
           value={
             email
               ? t("ui.ClientPortal.withEmail", "Con correo")
               : t("ui.ClientPortal.withoutEmail", "Sin correo")
           }
+          label={email || "Agrega un correo al cliente"}
+          accent={email ? "green" : "orange"}
         />
       </div>
 
@@ -366,8 +337,8 @@ export default function ClientPortal({ client }: Props) {
         {/* LEFT — access + actions */}
         <div className="space-y-4">
           <Section
-            icon={<KeyRound />}
             title={t("ui.ClientPortal.accesoAlPortalDelCliente")}
+            icon={<KeyRound />}
           >
             {/* Titular */}
             <div className="glass-sunken flex items-center gap-3 p-3">
@@ -427,8 +398,8 @@ export default function ClientPortal({ client }: Props) {
                   </p>
                 </div>
                 <button
-                  className="cg-focus rounded text-xs underline"
                   onClick={() => setResult(null)}
+                  className="cg-focus rounded text-xs underline"
                 >
                   {t("actions.close")}
                 </button>
@@ -453,8 +424,8 @@ export default function ClientPortal({ client }: Props) {
                   <p>{errorMsg}</p>
                 </div>
                 <button
-                  className="cg-focus rounded text-xs underline"
                   onClick={() => setErrorMsg("")}
+                  className="cg-focus rounded text-xs underline"
                 >
                   {t("actions.close")}
                 </button>
@@ -464,9 +435,9 @@ export default function ClientPortal({ client }: Props) {
             {/* Actions */}
             <div className="mt-3 flex flex-wrap gap-2">
               <Button
-                disabled={!email && !linked}
                 variant="brand"
                 onClick={() => setConfirm("portal")}
+                disabled={!email && !linked}
               >
                 <Mail className="mr-1.5 h-4 w-4" />{" "}
                 {linked
@@ -481,9 +452,9 @@ export default function ClientPortal({ client }: Props) {
               </Button>
               {appInviteEnabled && (
                 <Button
-                  disabled={!email && !linked}
                   variant="outline"
                   onClick={() => setConfirm("app")}
+                  disabled={!email && !linked}
                 >
                   <Smartphone className="mr-1.5 h-4 w-4" />{" "}
                   {t("ui.ClientPortal.invitarALaAppMi")}
@@ -498,23 +469,23 @@ export default function ClientPortal({ client }: Props) {
           </Section>
 
           <Section
+            title={t("comun.usuariosConAcceso")}
+            icon={<Users />}
             action={
               <button
+                onClick={() => navigate(`/clients/${client?.id}/user-access`)}
                 className="cg-focus inline-flex items-center gap-1 rounded-md text-xs font-semibold hover:underline"
                 style={{ color: "var(--brand-text)" }}
-                onClick={() => navigate(`/clients/${client?.id}/user-access`)}
               >
                 Gestionar accesos <ArrowRight className="h-3.5 w-3.5" />
               </button>
             }
-            icon={<Users />}
-            title={t("comun.usuariosConAcceso")}
           >
             {accessCount === 0 ? (
               <EmptyState
-                description={t("ui.ClientPortal.invitaAlTitularOAgrega")}
                 icon={<Users />}
                 title={t("comun.sinUsuariosConAcceso")}
+                description={t("ui.ClientPortal.invitaAlTitularOAgrega")}
               />
             ) : (
               <div
@@ -548,7 +519,7 @@ export default function ClientPortal({ client }: Props) {
                         </div>
                       </div>
                     </div>
-                    <StatusBadge className="shrink-0" dot={false} tone="ok">
+                    <StatusBadge tone="ok" dot={false} className="shrink-0">
                       Titular
                     </StatusBadge>
                   </div>
@@ -581,13 +552,13 @@ export default function ClientPortal({ client }: Props) {
                       </div>
                     </div>
                     <StatusBadge
-                      className="shrink-0"
-                      dot={false}
                       tone={
                         (u.status || "").toLowerCase().includes("activ")
                           ? "ok"
                           : "neutral"
                       }
+                      dot={false}
+                      className="shrink-0"
                     >
                       {u.role || u.status || "Acceso"}
                     </StatusBadge>
@@ -601,28 +572,27 @@ export default function ClientPortal({ client }: Props) {
         {/* RIGHT — what the client sees + how it works */}
         <div className="space-y-4">
           <Section
-            icon={<Smartphone />}
             title={t(
               "ui.ClientPortal.quePuedeVerElCliente",
               "¿Qué puede ver el cliente?",
             )}
+            icon={<Smartphone />}
           >
             <div className="space-y-2.5">
               {MODULOS.map((f) => {
                 const on = portal[f.key] !== false;
                 const fLabel = t(f.labelKey, f.label);
-
                 return (
                   <label
                     key={f.key}
                     className="flex cursor-pointer items-start gap-3"
                   >
                     <Checkbox
-                      aria-label={fLabel}
                       checked={on}
-                      className="mt-0.5"
                       disabled={guardandoPortal}
                       onCheckedChange={() => togglePortal(f.key)}
+                      className="mt-0.5"
+                      aria-label={fLabel}
                     />
                     <IconTile size="sm">
                       <f.icon />
@@ -643,8 +613,8 @@ export default function ClientPortal({ client }: Props) {
           </Section>
 
           <Section
-            icon={<ShieldCheck />}
             title={t("ui.ClientPortal.comoFunciona", "¿Cómo funciona?")}
+            icon={<ShieldCheck />}
           >
             <ol className="space-y-2.5">
               {[
@@ -681,19 +651,26 @@ export default function ClientPortal({ client }: Props) {
 
       {/* Confirm modal */}
       <Modal
+        open={!!confirm}
+        onOpenChange={(o) => {
+          if (!o && !sending) setConfirm(null);
+        }}
+        title={t("ui.ClientPortal.enviarInvitacion", "Enviar invitación")}
+        icon={<Mail className="h-5 w-5" />}
+        size="sm"
         footer={
           <>
             <Button
-              disabled={sending}
               variant="outline"
               onClick={() => setConfirm(null)}
+              disabled={sending}
             >
               {t("actions.cancel")}
             </Button>
             <Button
-              disabled={sending}
               variant="brand"
               onClick={() => confirm && send(confirm)}
+              disabled={sending}
             >
               {sending ? (
                 <>
@@ -705,13 +682,6 @@ export default function ClientPortal({ client }: Props) {
             </Button>
           </>
         }
-        icon={<Mail className="h-5 w-5" />}
-        open={!!confirm}
-        size="sm"
-        title={t("ui.ClientPortal.enviarInvitacion", "Enviar invitación")}
-        onOpenChange={(o) => {
-          if (!o && !sending) setConfirm(null);
-        }}
       >
         <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
           {t(

@@ -8,7 +8,6 @@ import {
   ChevronDown,
   ChevronRight,
 } from "lucide-react";
-
 import {
   useOpsAnalytics,
   AnalyticsShell,
@@ -22,7 +21,6 @@ import {
   GuardLink,
   AttendanceTiles,
 } from "./_shared";
-
 import {
   analyticsService,
   PerfLeaderboard,
@@ -109,25 +107,23 @@ function ScoreBadge({
   enabled?: boolean;
 }) {
   const t = tierOf(tier);
-
   // «No se le mide» y «no hay datos» son cosas distintas, y la diferencia
   // importa: la primera es una decisión de la empresa, la segunda un vacío que
   // se llena solo trabajando.
   if (!enabled)
     return (
-      <StatusBadge dot={false} tone="neutral">
+      <StatusBadge tone="neutral" dot={false}>
         {i18n.t("ui.Guard.sinMedir")}
       </StatusBadge>
     );
   if (score == null)
     return (
-      <StatusBadge dot={false} tone="neutral">
+      <StatusBadge tone="neutral" dot={false}>
         {i18n.t("comun.sinDatos")}
       </StatusBadge>
     );
-
   return (
-    <StatusBadge className="text-sm font-bold" dot={false} tone={t.tone}>
+    <StatusBadge tone={t.tone} dot={false} className="text-sm font-bold">
       {score}
       <span className="text-[10px] font-medium opacity-80">/100</span>
     </StatusBadge>
@@ -136,7 +132,6 @@ function ScoreBadge({
 
 function FactorBars({ g }: { g: GuardPerformance }) {
   const { t } = useTranslation();
-
   if (g.enabled === false) {
     return (
       <p className="text-xs text-muted-foreground">
@@ -153,23 +148,21 @@ function FactorBars({ g }: { g: GuardPerformance }) {
       </p>
     );
   }
-
   return (
     <div className="grid gap-x-6 gap-y-2 sm:grid-cols-2">
       {g.components.map((c) => {
         const f = FACTOR_ES[c.key];
         const etiqueta = f ? t(f.clave, f.etiqueta) : c.key;
-
         return (
           <div key={c.key} className="flex items-center gap-2">
             <span className="w-24 shrink-0 text-xs text-foreground/80">
               {etiqueta}
             </span>
             <MeterBar
-              ariaLabel={etiqueta}
               className="flex-1"
               height={8}
               pct={c.score}
+              ariaLabel={etiqueta}
               tone={c.score >= 75 ? "ok" : c.score >= 50 ? "warn" : "bad"}
             />
             <span className="w-8 shrink-0 text-right text-xs font-semibold text-foreground">
@@ -200,9 +193,8 @@ export default function Guard() {
       .catch(() => setLb(null))
       .finally(() => setLbLoading(false));
   };
-
   useEffect(() => {
-    loadLb(ops.days);
+    loadLb(ops.days); /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [ops.days]);
 
   const k = ops.data?.kpis;
@@ -213,76 +205,74 @@ export default function Guard() {
 
   return (
     <AnalyticsShell
+      title={t("ui.Guard.analiticasDeVigilantes", "Analíticas de Vigilantes")}
+      subtitle={t("ui.Guard.puntuacionDeDesempenoMismoAlgoritmo")}
       days={ops.days}
-      error={ops.error}
+      setDays={ops.setDays}
       loading={ops.loading}
+      error={ops.error}
       reload={() => {
         ops.reload();
         loadLb(ops.days);
       }}
-      setDays={ops.setDays}
-      subtitle={t("ui.Guard.puntuacionDeDesempenoMismoAlgoritmo")}
-      title={t("ui.Guard.analiticasDeVigilantes", "Analíticas de Vigilantes")}
     >
       {ops.data && k && (
         <>
           {/* KPIs */}
           <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <MetricCard
-              accent={GOLD}
               icon={<Award size={16} />}
-              label={t("ui.Guard.puntuacionPromedio", "Puntuación promedio")}
-              pct={lb?.averageScore ?? undefined}
-              sub={`${counts?.scored ?? 0} vigilantes evaluados`}
+              accent={GOLD}
               value={lb?.averageScore ?? "—"}
+              label={t("ui.Guard.puntuacionPromedio", "Puntuación promedio")}
+              sub={`${counts?.scored ?? 0} vigilantes evaluados`}
+              pct={lb?.averageScore ?? undefined}
             />
             <MetricCard
-              accent={TONES.ok}
               icon={<Shield size={16} />}
+              accent={TONES.ok}
+              value={counts?.excellent ?? 0}
               label="Excelentes"
               sub={`${counts?.good ?? 0} buenos · ${counts?.poor ?? 0} bajos`}
-              value={counts?.excellent ?? 0}
             />
             <MetricCard
-              accent={TONES.info}
               icon={<Shield size={16} />}
+              accent={TONES.info}
+              value={k.guardsOnDuty}
               label="En servicio"
               sub="ahora mismo"
-              value={k.guardsOnDuty}
             />
             <MetricCard
-              accent={TONES.warn}
               icon={<Clock size={16} />}
-              label="Puntualidad"
-              pct={k.punctualityPct}
-              sub={`${k.clockinsOnTime}/${k.clockinsTotal} a tiempo`}
+              accent={TONES.warn}
               value={`${k.punctualityPct}%`}
+              label="Puntualidad"
+              sub={`${k.clockinsOnTime}/${k.clockinsTotal} a tiempo`}
+              pct={k.punctualityPct}
             />
           </Stagger>
 
           {/* Tier distribution */}
           {!!tierTotal && (
             <Section
-              icon={<Award size={16} />}
               title={t(
                 "ui.Guard.distribucionDeDesempeno",
                 "Distribución de desempeño",
               )}
+              icon={<Award size={16} />}
             >
               <div className="flex h-3 w-full overflow-hidden rounded-full">
                 {(["excellent", "good", "fair", "poor"] as const).map((t) => {
                   const v = counts![t];
-
                   if (!v) return null;
-
                   return (
                     <div
                       key={t}
+                      title={`${tierOf(t).label}: ${v}`}
                       style={{
                         width: `${(v / tierTotal) * 100}%`,
                         background: tierOf(t).color,
                       }}
-                      title={`${tierOf(t).label}: ${v}`}
                     />
                   );
                 })}
@@ -306,8 +296,8 @@ export default function Guard() {
 
           {/* Leaderboard */}
           <Section
-            icon={<Award size={16} />}
             title={t("ui.Guard.rankingDeDesempeno", "Ranking de desempeño")}
+            icon={<Award size={16} />}
           >
             {lbLoading ? (
               <div className="space-y-3 py-2">
@@ -322,18 +312,18 @@ export default function Guard() {
               </div>
             ) : lb && lb.enabled === false ? (
               <EmptyState
-                description="La medición está desactivada para toda la empresa en Configuración › Vigilantes en turno. Mientras siga así, nadie tiene puntuación."
                 icon={<Award />}
                 title={t(
                   "ui.Guard.tuEmpresaNoEstaMidiendo",
                   "Tu empresa no está midiendo el desempeño",
                 )}
+                description="La medición está desactivada para toda la empresa en Configuración › Vigilantes en turno. Mientras siga así, nadie tiene puntuación."
               />
             ) : !lb || lb.guards.length === 0 ? (
               <EmptyState
-                description={t("ui.Guard.noHayVigilantesParaEvaluar")}
                 icon={<Award />}
                 title={t("ui.Guard.sinEvaluaciones")}
+                description={t("ui.Guard.noHayVigilantesParaEvaluar")}
               />
             ) : (
               <div className="overflow-x-auto">
@@ -359,13 +349,12 @@ export default function Guard() {
                       <th className="px-3 py-2 text-right font-semibold">
                         Atrasos
                       </th>
-                      <th className="px-3 py-2" />
+                      <th className="px-3 py-2"></th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
                     {lb.guards.map((g, i) => {
                       const open = expanded === g.id;
-
                       return (
                         <Fragment key={g.id}>
                           <tr
@@ -383,15 +372,15 @@ export default function Guard() {
                             </td>
                             <td className="px-3 py-2">
                               <ScoreBadge
-                                enabled={g.enabled !== false}
                                 score={g.score}
                                 tier={g.tier}
+                                enabled={g.enabled !== false}
                               />
                             </td>
                             <td className="px-3 py-2">
                               <span
-                                className="text-xs font-semibold"
                                 style={{ color: tierOf(g.tier).ink }}
+                                className="text-xs font-semibold"
                               >
                                 {g.enabled !== false && g.hasData
                                   ? tierOf(g.tier).label
@@ -425,7 +414,7 @@ export default function Guard() {
                           </tr>
                           {open && (
                             <tr style={{ background: "var(--glass-sunken)" }}>
-                              <td className="px-6 py-3" colSpan={8}>
+                              <td colSpan={8} className="px-6 py-3">
                                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                                   Desglose de factores (puntaje × peso)
                                 </p>
@@ -444,8 +433,8 @@ export default function Guard() {
 
           {/* Attendance summary (raw) */}
           <Section
-            icon={<Timer size={16} />}
             title={t("ui.Guard.asistenciaRegistrosDeLaApp")}
+            icon={<Timer size={16} />}
           >
             <AttendanceTiles
               attendance={ops.data.attendance}

@@ -1,36 +1,41 @@
-import type {
-  DirectoryOption,
-  NamedEntity,
-  DispatchComment,
-  CommentAttachment,
-} from "./types";
-
 import React, { useEffect, useState } from "react";
+import { clientDisplayName } from "@/lib/clientName";
 import { useTranslation } from "react-i18next";
 import { useParams, Link } from "react-router-dom";
-import { toast } from "sonner";
-import { Printer, MessageSquarePlus } from "lucide-react";
-
-import { coordDeSitio } from "./DispatchIncidentMap";
-
-import { clientDisplayName } from "@/lib/clientName";
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { clientService } from "@/lib/api/clientService";
 import { postSiteService } from "@/lib/api/postSiteService";
 import IncidentTypesService from "@/services/incident-types.service";
 import IncidentMap from "@/components/IncidentMap/IncidentMap";
-
 // El acta impresa se queda con el mapa PLANO a propósito (nadie despacha desde
 // un papel); lo que se comparte es la sonda de coordenadas.
-
+import { coordDeSitio } from "./DispatchIncidentMap";
+import { toast } from "sonner";
 import {
   PageContainer,
   PageHeader,
   Modal,
   StatusBadge,
 } from "@/components/kit";
+import { Printer, MessageSquarePlus } from "lucide-react";
+import type {
+  DirectoryOption,
+  NamedEntity,
+  DispatchComment,
+  CommentAttachment,
+} from "./types";
 import i18n from "@/i18n";
 
 export function DispatchDetailsContent({
@@ -65,24 +70,20 @@ export function DispatchDetailsContent({
       toast.error(
         t("dispatcher.comment.write_error") || "Escribe un comentario",
       );
-
       return;
     }
     try {
       const tenantId = localStorage.getItem("tenantId");
-
       if (!tenantId) {
         toast.error(
           t("dispatcher.tenant_unavailable") || "Tenant no disponible",
         );
-
         return;
       }
       setCommentsLoading(true);
       const api = (await import("@/lib/api")).default;
 
       let attachment: CommentAttachment | null = null;
-
       if (selectedFile) {
         try {
           setFileUploading(true);
@@ -97,11 +98,9 @@ export function DispatchDetailsContent({
             creds?.uploadCredentials?.url ||
             creds?.url ||
             (creds?.uploadCredentials && creds.uploadCredentials.url);
-
           if (!uploadUrl) throw new Error("No upload URL");
 
           const form = new FormData();
-
           form.append("filename", selectedFile.name);
           form.append("file", selectedFile);
 
@@ -110,10 +109,8 @@ export function DispatchDetailsContent({
             body: form,
           });
           let downloadUrl: unknown = null;
-
           try {
             const json = await uploadResp.json();
-
             downloadUrl = json?.downloadUrl || json?.url || json;
           } catch (e) {
             downloadUrl = await uploadResp.text();
@@ -136,7 +133,6 @@ export function DispatchDetailsContent({
       }
 
       let author: { id?: string; name?: string } | null = null;
-
       try {
         const possibleKeys = [
           "currentUser",
@@ -145,14 +141,11 @@ export function DispatchDetailsContent({
           "profile",
           "authUser",
         ];
-
         for (const k of possibleKeys) {
           const raw = localStorage.getItem(k);
-
           if (!raw) continue;
           try {
             const obj = JSON.parse(raw);
-
             if (
               obj &&
               (obj.id ||
@@ -187,7 +180,6 @@ export function DispatchDetailsContent({
             localStorage.getItem("userName") ||
             localStorage.getItem("username") ||
             localStorage.getItem("name");
-
           if (uid || uname)
             author = { id: uid || undefined, name: uname || undefined };
         }
@@ -202,7 +194,6 @@ export function DispatchDetailsContent({
           author?: { id?: string; name?: string };
         };
       } = { data: { text: newComment } };
-
       if (attachment) body.data.attachment = attachment;
       if (author) body.data.author = author;
       try {
@@ -214,7 +205,6 @@ export function DispatchDetailsContent({
         const created = (p && (p.comment || p.data || p)) || {
           text: newComment,
         };
-
         setComments((c) => [
           ...c,
           {
@@ -271,7 +261,6 @@ export function DispatchDetailsContent({
 
         const clientRows = (clientsResp as { rows?: DirectoryOption[] })?.rows;
         const siteRows = (sitesResp as { rows?: DirectoryOption[] })?.rows;
-
         if (clientsResp && Array.isArray(clientRows)) {
           setClients(clientRows);
         }
@@ -282,7 +271,6 @@ export function DispatchDetailsContent({
           const itResp = (await IncidentTypesService.list("", 1, 1000)) as {
             rows?: NamedEntity[];
           };
-
           if (itResp && Array.isArray(itResp.rows))
             setIncidentTypes(itResp.rows);
         } catch (e) {
@@ -301,12 +289,10 @@ export function DispatchDetailsContent({
       if (!requestId) return;
       try {
         const tenantId = localStorage.getItem("tenantId");
-
         if (!tenantId) return;
         const api = (await import("@/lib/api")).default;
         const resp = await api.get(`/tenant/${tenantId}/request/${requestId}`);
         const payload = resp && resp.data ? resp.data : resp;
-
         if (!payload) return;
         // debug log to inspect payload shape
         // eslint-disable-next-line no-console
@@ -346,7 +332,6 @@ export function DispatchDetailsContent({
 
   // prepare guard rows to avoid complex nested JSX/ternary
   const guardRows: JSX.Element[] = [];
-
   if (requestPayload) {
     if (requestPayload.guardName) {
       guardRows.push(
@@ -372,7 +357,6 @@ export function DispatchDetailsContent({
         requestPayload.assignedGuards.length > 0)
     ) {
       const list = requestPayload.guards || requestPayload.assignedGuards;
-
       list.forEach((g: any, i: number) => {
         guardRows.push(
           <tr key={i} className="border-t">
@@ -397,10 +381,8 @@ export function DispatchDetailsContent({
   const ticketShort = (() => {
     const full =
       (requestPayload && (requestPayload.ticketId || requestPayload.id)) || "";
-
     if (!full) return "";
     const idx = full.indexOf("-");
-
     return idx > 0 ? full.slice(0, idx) : full;
   })();
 
@@ -421,12 +403,10 @@ export function DispatchDetailsContent({
       maybe("locationLng") ||
       (requestPayload.geo && requestPayload.geo.lng) ||
       null;
-
     if (lat && lng) return { lat: Number(lat), lng: Number(lng) };
     // Prefer client coordinates when available (better location accuracy)
     try {
       const clientId = requestPayload.clientId || requestPayload.client?.id;
-
       if (clientId && clients && clients.length > 0) {
         const client = clients.find(
           (c) =>
@@ -434,13 +414,11 @@ export function DispatchDetailsContent({
             c._id === clientId ||
             c.id === String(clientId),
         );
-
         if (client) {
           const cLat =
             client.latitude || client.lat || client.coords?.lat || null;
           const cLng =
             client.longitude || client.lng || client.coords?.lng || null;
-
           if (cLat && cLng) return { lat: Number(cLat), lng: Number(cLng) };
         }
       }
@@ -453,7 +431,6 @@ export function DispatchDetailsContent({
       requestPayload.locationCoords.length >= 2
     ) {
       const [a, b] = requestPayload.locationCoords;
-
       if (!isNaN(Number(a)) && !isNaN(Number(b)))
         return { lat: Number(a), lng: Number(b) };
     }
@@ -463,7 +440,6 @@ export function DispatchDetailsContent({
       typeof requestPayload.location === "string"
     ) {
       const m = requestPayload.location.split(",").map((s: string) => s.trim());
-
       if (m.length === 2 && !isNaN(Number(m[0])) && !isNaN(Number(m[1])))
         return { lat: Number(m[0]), lng: Number(m[1]) };
     }
@@ -477,13 +453,11 @@ export function DispatchDetailsContent({
         requestPayload.siteId ||
         requestPayload.postSiteId ||
         requestPayload.site?.id;
-
       if (siteId && postSites && postSites.length > 0) {
         const site = postSites.find(
           (s) => s.id === siteId || s._id === siteId || s.id === String(siteId),
         );
         const c = coordDeSitio(site);
-
         if (c) return c;
       }
     } catch (e) {
@@ -492,7 +466,6 @@ export function DispatchDetailsContent({
     // fallback: try client coordinates
     try {
       const clientId = requestPayload.clientId || requestPayload.client?.id;
-
       if (clientId && clients && clients.length > 0) {
         const client = clients.find(
           (c) =>
@@ -500,20 +473,17 @@ export function DispatchDetailsContent({
             c._id === clientId ||
             c.id === String(clientId),
         );
-
         if (client) {
           const cLat =
             client.latitude || client.lat || client.coords?.lat || null;
           const cLng =
             client.longitude || client.lng || client.coords?.lng || null;
-
           if (cLat && cLng) return { lat: Number(cLat), lng: Number(cLng) };
         }
       }
     } catch (e) {
       // ignore
     }
-
     return null;
   })();
 
@@ -531,15 +501,11 @@ export function DispatchDetailsContent({
         requestPayload.incidentType) ||
       requestPayload.incidentTypeId ||
       null;
-
     if (idString) {
       const found = incidentTypes.find((t) => t.id === idString);
-
       if (found) return found.name || idString;
-
       return idString; // fallback to id if name not found
     }
-
     return "-";
   })();
 
@@ -552,9 +518,9 @@ export function DispatchDetailsContent({
           {coords && (
             <div className="mb-4">
               <IncidentMap
-                label={ticketShort || undefined}
                 lat={coords.lat}
                 lng={coords.lng}
+                label={ticketShort || undefined}
               />
             </div>
           )}
@@ -562,7 +528,7 @@ export function DispatchDetailsContent({
             <div className="bg-muted px-4 py-2 text-sm font-semibold flex items-center justify-between">
               <div>{t("dispatcher.basic_details") || "Basic Details"}</div>
               <div className="flex items-center gap-2">
-                <Button asChild size="sm" variant="brand">
+                <Button variant="brand" size="sm" asChild>
                   <Link to={`/dispatch-tickets/${requestId}/edit`}>
                     {t("dispatcher.edit") || "Editar"}
                   </Link>
@@ -581,13 +547,13 @@ export function DispatchDetailsContent({
                       <StatusBadge
                         /* Abierto = pendiente, no fallo — igual que en la lista
                            y en el detalle. */
-                        className="ml-2"
                         tone={
                           requestPayload.status === "open" ||
                           requestPayload.status === "abierto"
                             ? "warn"
                             : "ok"
                         }
+                        className="ml-2"
                       >
                         {requestPayload.status ?? ""}
                       </StatusBadge>
@@ -692,6 +658,15 @@ export function DispatchDetailsContent({
       {/* Comment input box (toggle) */}
       {/* Comment modal (opens on Add) */}
       <Modal
+        open={showCommentModal}
+        onOpenChange={(o) => {
+          if (!o) {
+            setShowCommentModal(false);
+            setNewComment("");
+          }
+        }}
+        title={t("dispatcher.comment.new_comment_title") || "Nuevo comentario"}
+        icon={<MessageSquarePlus className="h-5 w-5" />}
         footer={
           <>
             <Button
@@ -709,15 +684,6 @@ export function DispatchDetailsContent({
             </Button>
           </>
         }
-        icon={<MessageSquarePlus className="h-5 w-5" />}
-        open={showCommentModal}
-        title={t("dispatcher.comment.new_comment_title") || "Nuevo comentario"}
-        onOpenChange={(o) => {
-          if (!o) {
-            setShowCommentModal(false);
-            setNewComment("");
-          }
-        }}
       >
         <label className="text-sm font-medium">
           {t("dispatcher.comment.note") || "Nota"}
@@ -736,8 +702,8 @@ export function DispatchDetailsContent({
             </div>
             <div className="flex items-center gap-3">
               <input
-                className="flex-1"
                 type="file"
+                className="flex-1"
                 onChange={(e) => {
                   setSelectedFile(
                     e.target.files && e.target.files[0]
@@ -748,12 +714,12 @@ export function DispatchDetailsContent({
               />
               {selectedFile ? (
                 <button
+                  type="button"
+                  className="text-xs text-muted-foreground hover:text-foreground"
+                  onClick={() => setSelectedFile(null)}
                   aria-label={
                     t("dispatcher.comment.remove_file") || "Eliminar archivo"
                   }
-                  className="text-xs text-muted-foreground hover:text-foreground"
-                  type="button"
-                  onClick={() => setSelectedFile(null)}
                 >
                   {t("dispatcher.comment.remove_file") || "Eliminar"}
                 </button>
@@ -921,10 +887,10 @@ export function DispatchDetailsContent({
                         <div className="mt-2">
                           <a
                             className="text-xs underline"
-                            href={c.attachment.url}
-                            rel="noreferrer"
                             style={{ color: "var(--brand-text)" }}
+                            href={c.attachment.url}
                             target="_blank"
+                            rel="noreferrer"
                           >
                             Adjunto: {c.attachment.name || c.attachment.url}
                           </a>
@@ -939,8 +905,8 @@ export function DispatchDetailsContent({
         </div>
       </div>
       <Button
-        className="text-sm"
         variant="brand"
+        className="text-sm"
         onClick={() => setShowCommentModal((s) => !s)}
       >
         {showCommentModal
@@ -963,13 +929,13 @@ export default function DispatchDetailsPage() {
         ]}
       />
 
-      <PageContainer className="px-6 pt-4" width="wide">
+      <PageContainer width="wide" className="px-6 pt-4">
         <PageHeader
           icon={<Printer />}
+          title={i18n.t("comun.detalleDelIncidente")}
           subtitle={i18n.t(
             "ui.DispatchPrintablePage.vistaImprimibleDelIncidente",
           )}
-          title={i18n.t("comun.detalleDelIncidente")}
         />
         <DispatchDetailsContent requestId={id ?? null} />
       </PageContainer>

@@ -1,23 +1,22 @@
-import type { GuardDetail } from "../../guardDetailTypes";
-
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { AlertCircle } from "lucide-react";
-import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
-
 import AppLayout from "@/layouts/app-layout";
 import GuardsLayout from "@/layouts/GuardsLayout";
 import GuardSummary from "@/pages/admin/security-guards/components/GuardSummary/GuardSummarypage";
+import { useEffect, useState } from "react";
 import securityGuardService from "@/lib/api/securityGuardService";
 import guardRatingService from "@/lib/api/guardRatingService";
+import GuardRatingLevel from "@/pages/admin/security-guards/GuardRatingLevel";
 import { fileUrlFromFile, type FileLike } from "@/lib/fileUrl";
+import { AlertCircle } from "lucide-react";
 import {
   StatCard,
   EmptyState,
   SkeletonBlock,
   SkeletonCards,
 } from "@/components/kit";
+import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+import type { GuardDetail } from "../../guardDetailTypes";
 
 // The loaded guard record, flattened with the derived photo URL. The linked app
 // `user` (under `guard`) may carry live duty/account fields.
@@ -46,7 +45,6 @@ export default function GuardResumenPage() {
   // (quien se fue y volvió no se lleva de regalo los meses que estuvo fuera) y
   // las bajas viajan con la etiqueta del motivo ya resuelta.
   const [expediente, setExpediente] = useState<any | null>(null);
-
   useEffect(() => {
     if (!id) return;
     securityGuardService
@@ -60,14 +58,12 @@ export default function GuardResumenPage() {
   useEffect(() => {
     if (!id) return;
     let alive = true;
-
     guardRatingService
       .summary([id])
       .then((m) => {
         if (alive) setRating(m[id] || null);
       })
       .catch(() => {});
-
     return () => {
       alive = false;
     };
@@ -76,7 +72,6 @@ export default function GuardResumenPage() {
   useEffect(() => {
     if (!id) return;
     let mounted = true;
-
     setLoading(true);
     securityGuardService
       .get(id)
@@ -103,7 +98,6 @@ export default function GuardResumenPage() {
           const photoFile = (Array.isArray(pi) ? pi[0] : pi) as FileLike;
           const photoUrl =
             data.photoUrl ?? g.photoUrl ?? fileUrlFromFile(photoFile) ?? null;
-
           setGuard({ ...g, fullName, photoUrl });
         },
       )
@@ -115,7 +109,6 @@ export default function GuardResumenPage() {
         if (!mounted) return;
         setLoading(false);
       });
-
     return () => {
       mounted = false;
     };
@@ -147,7 +140,7 @@ export default function GuardResumenPage() {
           {loading ? (
             <div className="space-y-6">
               <SkeletonBlock className="h-44 rounded-3xl" />
-              <SkeletonCards className="grid-cols-2 sm:grid-cols-4" count={4} />
+              <SkeletonCards count={4} className="grid-cols-2 sm:grid-cols-4" />
               <div
                 className="text-center text-sm"
                 style={{ color: "var(--ink-soft)" }}
@@ -163,17 +156,6 @@ export default function GuardResumenPage() {
                   (station, performance, schedule, activity) lives in GuardSummary. */}
               <div className="grid grid-cols-2 gap-4">
                 <StatCard
-                  accent={accessTone}
-                  icon={
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        d="M12 11c0-1.105.895-2 2-2s2 .895 2 2v2M5 13h14a2 2 0 012 2v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4a2 2 0 012-2z"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                      />
-                    </svg>
-                  }
                   label={
                     t("guards.profile.cards.appAccess") || "Acceso a la app"
                   }
@@ -182,19 +164,19 @@ export default function GuardResumenPage() {
                       ? t("guards.profile.access.statusActive") || "Activa"
                       : t("guards.profile.access.statusPending") || "Pendiente"
                   }
-                />
-                <StatCard
-                  accent={dutyTone}
+                  accent={accessTone}
                   icon={
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
-                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
+                        d="M12 11c0-1.105.895-2 2-2s2 .895 2 2v2M5 13h14a2 2 0 012 2v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4a2 2 0 012-2z"
                       />
                     </svg>
                   }
+                />
+                <StatCard
                   label={
                     onDuty
                       ? t("guards.summary.onDuty", "En servicio")
@@ -204,6 +186,17 @@ export default function GuardResumenPage() {
                     onDuty
                       ? t("guards.summary.onDutyYes", "Sí")
                       : t("guards.summary.onDutyNo", "No")
+                  }
+                  accent={dutyTone}
+                  icon={
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
                   }
                 />
               </div>
@@ -328,12 +321,12 @@ export default function GuardResumenPage() {
             </>
           ) : (
             <EmptyState
+              icon={<AlertCircle />}
+              title={t("guards.overview.loadError")}
               description={
                 t("guards.overview.empty") ||
                 "Sin información del vigilante todavía."
               }
-              icon={<AlertCircle />}
-              title={t("guards.overview.loadError")}
             />
           )}
         </div>

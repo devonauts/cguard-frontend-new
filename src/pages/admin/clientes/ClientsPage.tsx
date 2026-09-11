@@ -1,36 +1,11 @@
-import type { Client } from "@/types/client";
-
 import { useState, useEffect, useMemo, useRef } from "react";
-import { useTranslation } from "react-i18next";
-import {
-  EllipsisVertical,
-  Filter,
-  FileDown,
-  FileSpreadsheet,
-  ArrowDownUp,
-  Search,
-  Eye,
-  Tag,
-  Archive,
-  Trash,
-  RotateCcw,
-  Smartphone,
-  Download,
-  Users,
-  Plus,
-} from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { LayoutGrid, List as ListIcon } from "lucide-react";
-
-import ClientCardsGrid, {
-  type ClientCardMeta,
-} from "./components/ClientCardsGrid";
-
 import { clientDisplayName } from "@/lib/clientName";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -54,6 +29,24 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+
+import {
+  EllipsisVertical,
+  Filter,
+  FileDown,
+  FileSpreadsheet,
+  ArrowDownUp,
+  Search,
+  Eye,
+  Tag,
+  Archive,
+  Trash,
+  RotateCcw,
+  Smartphone,
+  Download,
+  Users,
+  Plus,
+} from "lucide-react";
 import {
   PageContainer,
   PageHeader,
@@ -64,8 +57,16 @@ import {
   GlassPanel,
   IconTile,
 } from "@/components/kit";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+
 import { clientService } from "@/lib/api/clientService";
-import { emailPreferencesService } from "@/lib/api/emailPreferencesService";
+import { useAppInviteEnabled } from "@/hooks/useAppInviteEnabled";
+import ClientCardsGrid, {
+  type ClientCardMeta,
+} from "./components/ClientCardsGrid";
+import { LayoutGrid, List as ListIcon } from "lucide-react";
+import type { Client } from "@/types/client";
 
 type ClientFilters = {
   active?: boolean;
@@ -86,9 +87,7 @@ import {
   type BulkAction,
 } from "@/components/table/BulkActionsSelect";
 import { DataTable, type Column } from "@/components/table/DataTable";
-
 import type { RowAction } from "@/components/table/RowActionsMenu";
-
 import { RowActionsMenu } from "@/components/table/RowActionsMenu";
 import MobileCardList from "@/components/responsive/MobileCardList";
 import {
@@ -117,15 +116,12 @@ import { useClientSelection } from "@/contexts/ClientSelectionContext";
 // Local replacement for missing hook: useDebouncedValue
 function useDebouncedValue<T>(value: T, delay = 300): T {
   const [debounced, setDebounced] = useState<T>(value);
-
   useEffect(() => {
     const handler = window.setTimeout(() => setDebounced(value), delay);
-
     return () => {
       clearTimeout(handler);
     };
   }, [value, delay]);
-
   return debounced;
 }
 
@@ -144,7 +140,6 @@ const getServerErrorMessage = (error: any, defaultMessage = "Error") => {
 
 export default function ClientesPage() {
   const { t } = useTranslation();
-
   usePageTitle("Clientes");
   const { hasPermission } = usePermissions();
   const navigate = useNavigate();
@@ -183,12 +178,12 @@ export default function ClientesPage() {
   useEffect(() => {
     if (viewMode !== "cards" || !clients.length) return;
     const missing = clients.map((c) => c.id).filter((id) => !(id in cardMeta));
-
     if (!missing.length) return;
     clientService
       .getCardMeta(missing)
       .then((m) => setCardMeta((prev) => ({ ...prev, ...m })))
       .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [viewMode, clients]);
   // Sorting state
   const [sortKey, setSortKey] = useState<string | null>(null);
@@ -224,34 +219,9 @@ export default function ClientesPage() {
   const [appInviteClient, setAppInviteClient] = useState<Client | null>(null);
   const [sendingAppInvite, setSendingAppInvite] = useState(false);
 
-  // ── ¿Está encendido el correo de invitación a la app? ───────────────────────
-  // El servidor rechaza el envío con un 400 cuando el tenant lo apagó en
-  // Preferencias de correo. Enterarse así es tarde: el administrador ya abrió el
-  // diálogo, leyó a quién se le iba a enviar y confirmó. Se pregunta una vez al
-  // entrar y la acción no se ofrece si está apagada; el 400 se queda de red de
-  // seguridad del servidor, no como la forma de avisar.
-  //
-  // Ante un fallo de lectura se deja ENCENDIDA: `settingsRead` lo tiene todo el
-  // personal, así que un fallo aquí es de red, no de permisos, y esconder una
-  // acción por un fallo de red es peor que ofrecerla y que el servidor decida.
-  const [appInviteEnabled, setAppInviteEnabled] = useState(true);
-
-  useEffect(() => {
-    let vivo = true;
-
-    emailPreferencesService
-      .get()
-      .then((res) => {
-        if (vivo) setAppInviteEnabled(res?.preferences?.appInvite !== false);
-      })
-      .catch(() => {
-        /* se queda encendida a propósito — ver arriba */
-      });
-
-    return () => {
-      vivo = false;
-    };
-  }, []);
+  // El correo de invitación a la app se puede apagar en Preferencias de correo;
+  // si está apagado, esta acción no se ofrece (ver el hook).
+  const appInviteEnabled = useAppInviteEnabled();
   const { setSelectedClient } = useClientSelection();
 
   const debouncedSearch = useDebouncedValue(searchQuery, 500);
@@ -265,11 +235,9 @@ export default function ClientesPage() {
     // setPage(1) effect + the load effect both react to filters); only the
     // latest response may apply, else a slow earlier one clobbers newer rows.
     const mine = ++loadClientsSeqRef.current;
-
     setLoading(true);
     try {
       const tenantId = localStorage.getItem("tenantId");
-
       if (!tenantId) {
         if (!tenantMissingNotifiedRef.current) {
           toast.error(t("ui.ClientsPage.elUsuarioDebeEstarVinculado"));
@@ -279,14 +247,12 @@ export default function ClientesPage() {
           setClients([]);
           setTotalCount(0);
         }
-
         return;
       }
       const pagination: { limit: number; offset: number; orderBy?: string } = {
         limit,
         offset: (page - 1) * limit,
       };
-
       if (sortKey && sortDir) pagination.orderBy = `${sortKey}:${sortDir}`;
 
       const data = await clientService.getClients(
@@ -297,7 +263,6 @@ export default function ClientesPage() {
         },
         pagination,
       );
-
       if (mine !== loadClientsSeqRef.current) return; // superseded by a newer load
       setClients(data.rows);
       setTotalCount(data.count);
@@ -346,10 +311,8 @@ export default function ClientesPage() {
       try {
         // AppLayout renders the scrollable area inside a <main> element
         const main = document.querySelector("main");
-
         if (main && typeof (main as HTMLElement).scrollTo === "function") {
           (main as HTMLElement).scrollTo({ top: 0, behavior: "smooth" });
-
           return;
         }
       } catch (e) {
@@ -363,10 +326,8 @@ export default function ClientesPage() {
     };
 
     const onChange = () => scrollTopMain();
-
     if (mq.addEventListener) mq.addEventListener("change", onChange);
     else mq.addListener(onChange);
-
     return () => {
       if (mq.removeEventListener)
         mq.removeEventListener("change", onChange as any);
@@ -407,7 +368,6 @@ export default function ClientesPage() {
     setOpenCategorizeDialog(true);
     try {
       const data = await clientService.getClient(client.id);
-
       setCategorizeCategories((data as any).categoryIds ?? []);
     } catch (error: any) {
       // error handled by backend
@@ -424,15 +384,12 @@ export default function ClientesPage() {
         if (prev) {
           // toggle para forzar re-render del diálogo
           setTimeout(() => setOpenCategoryManager(true), 0);
-
           return false;
         }
-
         return true;
       });
       // Resetear el selector para poder re-seleccionar la misma opción
       setBulkKey((k) => k + 1);
-
       return;
     }
 
@@ -440,80 +397,65 @@ export default function ClientesPage() {
       if (selectedIds.length === 0) {
         // user-visible warnings/errors are handled by backend
         setBulkKey((k) => k + 1);
-
         return;
       }
       setMoveCategories([]);
       setOpenMoveDialog(true);
       setBulkKey((k) => k + 1);
-
       return;
     }
 
     if (selectedIds.length === 0) {
       // backend will notify user
       setBulkKey((k) => k + 1);
-
       return;
     }
 
     if (action === "archivar") {
       const invalid = selectedIds.filter((id) => {
         const c = clients.find((x) => x.id === id);
-
         return !c || c.active === false;
       });
-
       if (invalid.length > 0) {
         // backend will notify user
         setSelectedIds([]);
         setBulkKey((k) => k + 1);
-
         return;
       }
       setOpenArchiveBulkDialog(true);
       setBulkKey((k) => k + 1);
-
       return;
     }
 
     if (action === "restaurar") {
       const invalid = selectedIds.filter((id) => {
         const c = clients.find((x) => x.id === id);
-
         return !c || c.active === true;
       });
-
       if (invalid.length > 0) {
         // backend will notify user
         setSelectedIds([]);
         setBulkKey((k) => k + 1);
-
         return;
       }
       setOpenRestoreBulkDialog(true);
       setBulkKey((k) => k + 1);
-
       return;
     }
 
     if (action === "eliminar") {
       const invalid = selectedIds.filter((id) => {
         const c = clients.find((x) => x.id === id);
-
         return !c || c.active === true;
       });
-
       if (invalid.length > 0) {
         // backend will notify user
         setSelectedIds([]);
         setBulkKey((k) => k + 1);
-
         return;
       }
       setOpenDeleteBulkDialog(true);
       setBulkKey((k) => k + 1);
-
       return;
     }
 
@@ -532,7 +474,6 @@ export default function ClientesPage() {
 
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
-
       a.href = url;
       a.download = `clientes-${new Date().toISOString().split("T")[0]}.pdf`;
       a.click();
@@ -555,7 +496,6 @@ export default function ClientesPage() {
 
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
-
       a.href = url;
       a.download = `clientes-${new Date().toISOString().split("T")[0]}.xlsx`;
       a.click();
@@ -589,7 +529,6 @@ export default function ClientesPage() {
   const handleMoveSubmit = async () => {
     if (moveCategories.length === 0) {
       toast.warning(t("clients.selectAtLeastOneCategory"));
-
       return;
     }
     setMoveLoading(true);
@@ -603,7 +542,6 @@ export default function ClientesPage() {
       );
       const failed = results.filter((r) => r.status === "rejected").length;
       const succeeded = results.length - failed;
-
       if (failed === 0) {
         toast.success(t("clients.categoriesUpdated"));
       } else if (succeeded === 0) {
@@ -631,7 +569,6 @@ export default function ClientesPage() {
 
   const bulkActions: BulkAction[] = useMemo(() => {
     const actions: BulkAction[] = [];
-
     // mover (cambiar categoría) requires edit
     if (hasPermission("clientAccountEdit"))
       actions.push({ value: "mover", label: t("actions.move") });
@@ -656,7 +593,6 @@ export default function ClientesPage() {
         value: "gestionar-Sectores",
         label: t("actions.manageCategories"),
       });
-
     return actions;
   }, [filters.active, hasPermission, t]);
 
@@ -669,7 +605,6 @@ export default function ClientesPage() {
         render: (value, row) => {
           if (row.commercialName) return row.commercialName;
           const lastName = cleanLastName(row.lastName);
-
           return lastName ? `${row.name} ${lastName}` : row.name;
         },
       },
@@ -698,9 +633,9 @@ export default function ClientesPage() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  aria-label={t("clients.columns.more", "Más")}
-                  size="icon"
                   variant="ghost"
+                  size="icon"
+                  aria-label={t("clients.columns.more", "Más")}
                 >
                   <EllipsisVertical className="h-4 w-4" />
                 </Button>
@@ -727,9 +662,9 @@ export default function ClientesPage() {
                   </div>
                   <div className="mt-2">
                     <Link
+                      to={`/clients/${row.id}/overview`}
                       className="text-sm font-semibold"
                       style={{ color: "var(--brand-text)" }}
-                      to={`/clients/${row.id}/overview`}
                     >
                       {t("actions.viewDetails", "Ver")}
                     </Link>
@@ -746,7 +681,6 @@ export default function ClientesPage() {
         render: (_value: unknown, row: Client) => {
           // El backend puede enviar booleano o entero (0/1)
           const isActive = row.active === true;
-
           return (
             <StatusBadge tone={isActive ? "ok" : "bad"}>
               {isActive
@@ -783,9 +717,8 @@ export default function ClientesPage() {
             },
           };
           const badge = map[status] || map.not_invited;
-
           return (
-            <StatusBadge className="whitespace-nowrap" tone={badge.tone}>
+            <StatusBadge tone={badge.tone} className="whitespace-nowrap">
               {badge.label}
             </StatusBadge>
           );
@@ -917,10 +850,8 @@ export default function ClientesPage() {
         setIsSmallScreen(false);
       }
     };
-
     onResize();
     window.addEventListener("resize", onResize);
-
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
@@ -941,9 +872,15 @@ export default function ClientesPage() {
       <section className="p-4">
         <PageContainer width="wide">
           <PageHeader
+            icon={<Users />}
+            title={t("clients.breadcrumb.clients")}
+            subtitle={t(
+              "clients.header.subtitle",
+              "Gestiona tus clientes, su acceso a la app y su categorización.",
+            )}
             actions={
               hasPermission("clientAccountCreate") ? (
-                <Button asChild variant="brand">
+                <Button variant="brand" asChild>
                   <Link to="/clients/add-new">
                     <Plus className="h-4 w-4" />
                     {t("clients.newClient")}
@@ -951,12 +888,6 @@ export default function ClientesPage() {
                 </Button>
               ) : undefined
             }
-            icon={<Users />}
-            subtitle={t(
-              "clients.header.subtitle",
-              "Gestiona tus clientes, su acceso a la app y su categorización.",
-            )}
-            title={t("clients.breadcrumb.clients")}
           />
           <Toolbar className="grid grid-cols-1 items-center gap-3 p-3 md:grid-cols-[auto_1fr_auto]">
             <div className="flex items-center gap-2">
@@ -974,8 +905,8 @@ export default function ClientesPage() {
                   style={{ color: "var(--ink-faint)" }}
                 />
                 <Input
-                  className="h-9 w-full border-0 bg-transparent px-0 shadow-none"
                   placeholder={t("clients.searchPlaceholder")}
+                  className="h-9 w-full border-0 bg-transparent px-0 shadow-none"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -987,18 +918,18 @@ export default function ClientesPage() {
                 <Sheet open={openFilter} onOpenChange={setOpenFilter}>
                   <SheetTrigger asChild>
                     <Button
+                      variant="outline"
                       className="flex-1 justify-center md:flex-none"
                       style={{
                         borderColor: "var(--brand-line)",
                         color: "var(--brand-text)",
                       }}
-                      variant="outline"
                     >
                       <Filter className="mr-2 h-4 w-4" />
                       {t("clients.filters.title")}
                     </Button>
                   </SheetTrigger>
-                  <SheetContent className={sheetClass} side={sheetSide}>
+                  <SheetContent side={sheetSide} className={sheetClass}>
                     <SheetHeader>
                       <SheetTitle>{t("clients.filters.title")}</SheetTitle>
                     </SheetHeader>
@@ -1127,15 +1058,15 @@ export default function ClientesPage() {
                       </div>
 
                       <Button
-                        className="w-full"
                         variant="brand"
+                        className="w-full"
                         onClick={() => setOpenFilter(false)}
                       >
                         {t("clients.applyFilters")}
                       </Button>
                       <Button
-                        className="w-full"
                         variant="outline"
+                        className="w-full"
                         onClick={() => {
                           setFilters({ active: true });
                           setOpenFilter(false);
@@ -1150,6 +1081,8 @@ export default function ClientesPage() {
                 {/* Vista de tarjetas ⇄ lista */}
                 <Segmented
                   className="hidden md:inline-flex"
+                  value={viewMode}
+                  onChange={setViewMode}
                   options={[
                     {
                       value: "cards",
@@ -1169,15 +1102,13 @@ export default function ClientesPage() {
                       ),
                     },
                   ]}
-                  value={viewMode}
-                  onChange={setViewMode}
                 />
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
-                      className="flex w-12 items-center justify-center md:w-auto"
                       variant="outline"
+                      className="flex w-12 items-center justify-center md:w-auto"
                     >
                       <EllipsisVertical className="h-4 w-4" />
                     </Button>
@@ -1205,36 +1136,36 @@ export default function ClientesPage() {
             {viewMode === "cards" ? (
               <ClientCardsGrid
                 clients={clients}
-                loading={loading}
                 meta={cardMeta}
-                rowActions={rowActions}
+                loading={loading}
                 onOpen={(c) => navigate(`/clients/${c.id}/overview`)}
+                rowActions={rowActions}
               />
             ) : (
               <DataTable<Client>
                 columns={columns}
                 data={clients}
-                emptyState={
-                  <EmptyState
-                    className="border-0"
-                    description={t("clients.empty.description")}
-                    icon={<Users />}
-                    title={t("clients.empty.title")}
-                  />
-                }
                 loading={loading}
-                rowActions={rowActions}
                 selectedIds={selectedIds}
-                sortDir={sortDir ?? undefined}
-                sortKey={sortKey ?? undefined}
-                onRowClick={(r) => navigate(`/clients/${r.id}/overview`)}
                 onSelectAll={handleSelectAll}
                 onSelectOne={handleSelectOne}
+                rowActions={rowActions}
+                onRowClick={(r) => navigate(`/clients/${r.id}/overview`)}
+                sortKey={sortKey ?? undefined}
+                sortDir={sortDir ?? undefined}
                 onSortChange={(key, dir) => {
                   setSortKey(dir ? key : null);
                   setSortDir(dir);
                   setPage(1);
                 }}
+                emptyState={
+                  <EmptyState
+                    icon={<Users />}
+                    title={t("clients.empty.title")}
+                    description={t("clients.empty.description")}
+                    className="border-0"
+                  />
+                }
               />
             )}
 
@@ -1272,17 +1203,17 @@ export default function ClientesPage() {
 
               <div className="flex gap-2">
                 <Button
-                  disabled={page === 1 || loading}
-                  size="sm"
                   variant="outline"
+                  size="sm"
+                  disabled={page === 1 || loading}
                   onClick={() => setPage((p) => p - 1)}
                 >
                   {t("clients.pagination.prev")}
                 </Button>
                 <Button
-                  disabled={page * limit >= totalCount || loading}
-                  size="sm"
                   variant="outline"
+                  size="sm"
+                  disabled={page * limit >= totalCount || loading}
                   onClick={() => setPage((p) => p + 1)}
                 >
                   {t("clients.pagination.next")}
@@ -1294,9 +1225,9 @@ export default function ClientesPage() {
           {/* Mobile cards */}
           <div className="mt-4 md:hidden">
             <MobileCardList
-              emptyMessage={t("clients.empty.title") as string}
               items={clients}
               loading={loading}
+              emptyMessage={t("clients.empty.title") as string}
               renderCard={(client: Client) => (
                 <GlassPanel flat className="p-4">
                   <div className="flex items-start justify-between gap-3">
@@ -1353,7 +1284,6 @@ export default function ClientesPage() {
                           },
                         };
                         const b = mobileMap[s] || mobileMap.not_invited;
-
                         return (
                           <StatusBadge tone={b.tone}>{b.label}</StatusBadge>
                         );
@@ -1398,31 +1328,31 @@ export default function ClientesPage() {
           <div className="space-y-2">
             <Label>{t("clients.dialogs.changeCategories.newCategories")}</Label>
             <CategorySelect
-              multiple
               module="clientAccount"
-              options={categories.map((c) => ({ id: c.id, name: c.name }))}
+              multiple
+              value={moveCategories}
+              onChange={(val) =>
+                setMoveCategories(Array.isArray(val) ? val : [])
+              }
               placeholder={
                 categories.length === 0
                   ? t("categories.loading")
                   : t("clients.selectCategories")
               }
-              value={moveCategories}
+              options={categories.map((c) => ({ id: c.id, name: c.name }))}
               onCategoryCreated={loadCategories}
-              onChange={(val) =>
-                setMoveCategories(Array.isArray(val) ? val : [])
-              }
             />
           </div>
 
           <DialogFooter>
             <Button
-              disabled={moveLoading}
               variant="outline"
               onClick={() => setOpenMoveDialog(false)}
+              disabled={moveLoading}
             >
               {t("clients.cancel")}
             </Button>
-            <Button disabled={moveLoading} onClick={handleMoveSubmit}>
+            <Button onClick={handleMoveSubmit} disabled={moveLoading}>
               {moveLoading ? t("clients.saving") : t("clients.save")}
             </Button>
           </DialogFooter>
@@ -1443,34 +1373,34 @@ export default function ClientesPage() {
           <div className="space-y-2">
             <Label>{t("clients.filters.categories")}</Label>
             <CategorySelect
-              multiple
               module="clientAccount"
-              options={categories.map((c) => ({ id: c.id, name: c.name }))}
+              multiple
+              value={categorizeCategories}
+              onChange={(val) =>
+                setCategorizeCategories(Array.isArray(val) ? val : [])
+              }
               placeholder={
                 categorizeLoading || categories.length === 0
                   ? t("clients.loading")
                   : t("clients.selectCategories")
               }
-              value={categorizeCategories}
+              options={categories.map((c) => ({ id: c.id, name: c.name }))}
               onCategoryCreated={loadCategories}
-              onChange={(val) =>
-                setCategorizeCategories(Array.isArray(val) ? val : [])
-              }
             />
           </div>
 
           <DialogFooter>
             <Button
-              disabled={categorizeSaving}
               variant="outline"
               onClick={() => setOpenCategorizeDialog(false)}
+              disabled={categorizeSaving}
             >
               {t("clients.cancel")}
             </Button>
             <Button
-              disabled={categorizeSaving || categorizeLoading}
               variant="brand"
               onClick={handleCategorizeSubmit}
+              disabled={categorizeSaving || categorizeLoading}
             >
               {categorizeSaving ? t("clients.saving") : t("clients.save")}
             </Button>
@@ -1478,10 +1408,10 @@ export default function ClientesPage() {
         </DialogContent>
       </Dialog>
       <CategoryManagerDialog
-        module="clientAccount"
         open={openCategoryManager}
-        onChanged={loadCategories}
         onOpenChange={setOpenCategoryManager}
+        module="clientAccount"
+        onChanged={loadCategories}
       />
       {/* ClientDetailsDialog removed: navigation uses ClientsDetails page instead of modal */}
 
@@ -1514,7 +1444,6 @@ export default function ClientesPage() {
                     (r) => r.status === "rejected",
                   ).length;
                   const succeeded = results.length - failed;
-
                   if (failed === 0) {
                     toast.success(t("clients.clientsArchived"));
                   } else if (succeeded === 0) {
@@ -1576,7 +1505,6 @@ export default function ClientesPage() {
                     (r) => r.status === "rejected",
                   ).length;
                   const succeeded = results.length - failed;
-
                   if (failed === 0) {
                     toast.success(t("clients.clientsRestored"));
                   } else if (succeeded === 0) {

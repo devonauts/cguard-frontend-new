@@ -1,9 +1,7 @@
 import type { ReactNode } from "react";
-
+import { alphaVar, type ChartTone } from "@/lib/chartColors";
 import { useSvgId, clamp } from "./internals";
 import { useSeriesColor } from "./useSeriesColor";
-
-import { alphaVar, type ChartTone } from "@/lib/chartColors";
 
 export interface ProgressRingProps {
   /** Valor actual. Se acota a [0, max]. */
@@ -59,7 +57,7 @@ export default function ProgressRing({
 
   // Sólo el acento tiene segundo escalón propio; los semánticos van planos para
   // no inventarles una variación que no existe en el sistema.
-  const c2 = color || tone !== "brand" ? c : paleta.chart2;
+  const c2 = color || tone !== "brand" ? c : paleta.chart2; // eslint-disable-line no-mixed-operators
 
   const r = (size - thickness) / 2;
   const centro = size / 2;
@@ -72,15 +70,15 @@ export default function ProgressRing({
       style={{ position: "relative", width: size, height: size }}
     >
       <svg
-        aria-label={ariaLabel ?? `${pct}%`}
-        className="block"
-        height={size}
-        role="img"
-        viewBox={`0 0 ${size} ${size}`}
         width={size}
+        height={size}
+        viewBox={`0 0 ${size} ${size}`}
+        className="block"
+        role="img"
+        aria-label={ariaLabel ?? `${pct}%`}
       >
         <defs>
-          <linearGradient id={gradId} x1="0" x2="1" y1="0" y2="1">
+          <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor={c} />
             <stop offset="100%" stopColor={c2} />
           </linearGradient>
@@ -90,8 +88,8 @@ export default function ProgressRing({
         <circle
           cx={centro}
           cy={centro}
-          fill="none"
           r={r}
+          fill="none"
           stroke={paleta.track}
           strokeWidth={thickness}
         />
@@ -101,19 +99,19 @@ export default function ProgressRing({
           <circle
             cx={centro}
             cy={centro}
-            fill="none"
             r={r}
+            fill="none"
             stroke={`url(#${gradId})`}
-            strokeDasharray={`${arco} ${C - arco}`}
-            strokeLinecap="round"
             strokeWidth={thickness}
+            strokeLinecap="round"
+            strokeDasharray={`${arco} ${C - arco}`}
+            transform={`rotate(-90 ${centro} ${centro})`}
             style={{
               filter: glow
                 ? `drop-shadow(0 0 8px ${alphaVar(c, 45)})`
                 : undefined,
               transition: "stroke-dasharray 0.6s var(--ease)",
             }}
-            transform={`rotate(-90 ${centro} ${centro})`}
           />
         )}
       </svg>

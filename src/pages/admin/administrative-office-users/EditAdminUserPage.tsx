@@ -3,18 +3,6 @@
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState, useRef, useCallback } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
-import {
-  UserCog,
-  ShieldCheck,
-  ChevronDown,
-  ChevronRight,
-  MapPin,
-} from "lucide-react";
-
-import UserPermissionOverrides, { Overrides } from "./UserPermissionOverrides";
 
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
@@ -35,16 +23,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 import { clientService } from "@/lib/api/clientService";
 import { postSiteService } from "@/lib/api/postSiteService";
 import { ApiService } from "@/services/api/apiService";
 import userService from "@/lib/api/userService";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { MultiSelectDeSedes } from "@/components/MultiSelectDeSedes";
+
 import {
   newAdminUserSchema,
   type NewAdminUserValues,
 } from "@/lib/validators/new-admin-user.schema";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandInput,
+  CommandList,
+  CommandGroup,
+  CommandItem,
+} from "@/components/ui/command";
 import { usePermissions } from "@/hooks/usePermissions";
+import UserPermissionOverrides, { Overrides } from "./UserPermissionOverrides";
 import {
   PageContainer,
   PageHeader,
@@ -53,6 +59,13 @@ import {
   IconTile,
 } from "@/components/kit";
 import { roleDisplayDescription } from "@/config/roleLabels";
+import {
+  UserCog,
+  ShieldCheck,
+  ChevronDown,
+  ChevronRight,
+  MapPin,
+} from "lucide-react";
 
 const CLIENT_OPTIONS_PLACEHOLDER: Array<{ id: string; name: string }> = [];
 
@@ -128,21 +141,17 @@ export default function EditAdminUserPage() {
   useEffect(() => {
     if (!canEditPerms || !watchedAccessLevel) {
       setRolePermissions([]);
-
       return;
     }
     let mounted = true;
-
     (async () => {
       try {
         const tenantId = localStorage.getItem("tenantId") || "";
-
         if (!tenantId) return;
         const res = await ApiService.get(
           `/tenant/${tenantId}/role/${watchedAccessLevel}`,
         );
         const data = res && (res.data || res) ? res.data || res : {};
-
         if (mounted)
           setRolePermissions(
             Array.isArray(data.permissions) ? data.permissions : [],
@@ -151,7 +160,6 @@ export default function EditAdminUserPage() {
         if (mounted) setRolePermissions([]);
       }
     })();
-
     return () => {
       mounted = false;
     };
@@ -162,7 +170,6 @@ export default function EditAdminUserPage() {
       const id = (role.id || "").toString().toLowerCase();
       const name = (role.name || "").toString();
       const slug = (role.slug || "").toString().toLowerCase();
-
       if (
         id === "administrativesupervisor" ||
         slug === "administrativesupervisor"
@@ -213,7 +220,6 @@ export default function EditAdminUserPage() {
         return t("adminOfficeUsers.roleNames.clientAccountManager", {
           defaultValue: "Gestor de Cuentas",
         });
-
       return name || id || "";
     },
     [t],
@@ -233,7 +239,6 @@ export default function EditAdminUserPage() {
     (async () => {
       try {
         const clients = await clientService.getClients({});
-
         setClientOptions((clients as any).rows || []);
       } catch (err) {
         setClientOptions([]);
@@ -248,7 +253,6 @@ export default function EditAdminUserPage() {
     (async () => {
       try {
         const tenantId = localStorage.getItem("tenantId") || "";
-
         if (!tenantId) return;
         const res = await ApiService.get(`/tenant/${tenantId}/role`);
         const rows = Array.isArray(res)
@@ -265,7 +269,6 @@ export default function EditAdminUserPage() {
           name: r.name ?? r.label ?? "",
           slug: r.slug ?? r.name ?? undefined,
         }));
-
         setRoleOptions(opts);
       } catch (e) {
         setRoleOptions([]);
@@ -300,7 +303,6 @@ export default function EditAdminUserPage() {
     const found = roleOptions.find((o) => {
       if (!o) return false;
       const nameNorm = normalize(o.name ?? o.label ?? o.id);
-
       // exact id match
       if (o.id === candidate) return true;
       // exact normalized match
@@ -308,7 +310,6 @@ export default function EditAdminUserPage() {
       // contains or partial match (e.g., 'gerente-general' vs 'Gerente General')
       if (candNorm && nameNorm.includes(candNorm)) return true;
       if (candNorm && candNorm.includes(nameNorm)) return true;
-
       return false;
     });
 
@@ -321,11 +322,9 @@ export default function EditAdminUserPage() {
     (async () => {
       try {
         const tenantId = localStorage.getItem("tenantId") || "";
-
         if (!tenantId) return;
         const res = await userService.fetchUser(id as string);
         const user = res?.data || res || null;
-
         if (!user) return;
 
         // map backend user to form fields as best-effort
@@ -349,10 +348,8 @@ export default function EditAdminUserPage() {
         });
         // Try to resolve accessLevel from several shapes, prefer tenant-scoped roles
         let roleCandidate: any = null;
-
         try {
           const tenantId = localStorage.getItem("tenantId");
-
           if (Array.isArray(user.tenants) && user.tenants.length > 0) {
             const tenantEntry = tenantId
               ? user.tenants.find(
@@ -363,7 +360,6 @@ export default function EditAdminUserPage() {
                         t.tenant.tenantId === tenantId)),
                 )
               : user.tenants[0];
-
             if (tenantEntry) {
               // tenantEntry.roles might be array or single value
               if (
@@ -374,7 +370,6 @@ export default function EditAdminUserPage() {
               else if (tenantEntry.role) roleCandidate = tenantEntry.role;
               // Load existing per-user permission overrides.
               const ov = tenantEntry.permissionOverrides;
-
               if (ov && (Array.isArray(ov.grant) || Array.isArray(ov.deny))) {
                 setOverrides({
                   grant: Array.isArray(ov.grant) ? ov.grant : [],
@@ -395,7 +390,6 @@ export default function EditAdminUserPage() {
         // if candidate is an object with id, use it; otherwise keep candidate to resolve after roleOptions load
         const roleId =
           roleCandidate && (roleCandidate.id ?? roleCandidate._id ?? null);
-
         if (roleId) {
           setValue("accessLevel", String(roleId));
         } else if (roleCandidate) {
@@ -419,7 +413,6 @@ export default function EditAdminUserPage() {
               .map((p: any) => (p && (p.id || p)) || p)
               .filter(Boolean)
           : [];
-
         // SECURITY: seed prevClientIdsRef with the user's SAVED clientIds *before* they hydrate
         // the form. The watchedClientIds effect diffs current vs prev to decide which sites to
         // auto-add; if prev is empty on load, every saved client counts as "newly added" and its
@@ -454,7 +447,6 @@ export default function EditAdminUserPage() {
       setSiteOptions([]);
       setValue("postSiteIds", []);
       prevClientIdsRef.current = current;
-
       return;
     }
 
@@ -477,10 +469,8 @@ export default function EditAdminUserPage() {
                   r.clientAccountId ??
                   r.clientId ??
                   null;
-
                 return rowClientId === cid;
               });
-
               return filtered.map((r: any) => ({
                 id: r.id,
                 name: r.companyName ?? r.name ?? "",
@@ -510,7 +500,6 @@ export default function EditAdminUserPage() {
                 clientIds: new Set<string>(),
               };
             acc[cur.id].clientIds.add(cur.clientId);
-
             return acc;
           },
           {} as Record<
@@ -524,7 +513,6 @@ export default function EditAdminUserPage() {
           name: v.name,
           clientIds: Array.from(v.clientIds),
         }));
-
         setSiteOptions(uniqueSites);
 
         const added = current.filter((c) => !prev.includes(c));
@@ -539,13 +527,11 @@ export default function EditAdminUserPage() {
         }
 
         const allowedIds = new Set(uniqueSites.map((s) => s.id));
-
         for (const sid of Array.from(selectedSet)) {
           if (!allowedIds.has(sid)) selectedSet.delete(sid);
         }
 
         const newSelected = Array.from(selectedSet);
-
         setValue("postSiteIds", newSelected);
       } catch (err) {
         setSiteOptions([]);
@@ -564,7 +550,6 @@ export default function EditAdminUserPage() {
   const saveOfficeLocation = async (clear = false) => {
     if (!id) return;
     const tenantId = localStorage.getItem("tenantId") || "";
-
     if (!tenantId) return;
     setOfficeSaving(true);
     try {
@@ -584,7 +569,6 @@ export default function EditAdminUserPage() {
               office.radius.trim() === "" ? null : Number(office.radius),
             officeAddress: office.address.trim() || null,
           };
-
       await ApiService.patch(`/tenant/${tenantId}/user/${id}`, { data });
       if (clear) setOffice({ address: "", lat: "", lng: "", radius: "150" });
       toast.success(
@@ -623,7 +607,6 @@ export default function EditAdminUserPage() {
   const onSubmit = async (values: NewAdminUserValues) => {
     try {
       const tenantId = localStorage.getItem("tenantId") || "";
-
       if (!tenantId)
         throw new Error(
           "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
@@ -636,7 +619,6 @@ export default function EditAdminUserPage() {
         clientIds: values.clientIds,
         postSiteIds: values.postSiteIds || [],
       } as any;
-
       // Only admins send per-user overrides; the backend additionally requires
       // settingsEdit and enforces the admin-floor lockout guard.
       if (canEditPerms && id) {
@@ -651,7 +633,6 @@ export default function EditAdminUserPage() {
           await userService.updateUser(id, payload);
         } catch (e: any) {
           const status = e?.response?.status;
-
           // Only fallback to create if the user was not found (legacy behavior)
           if (status === 404) {
             await userService.createUser({ ...payload, id } as any);
@@ -686,14 +667,12 @@ export default function EditAdminUserPage() {
         );
         const result = applyValidationErrorsToForm(err, setError as any);
         const msgs = Array.isArray(result) ? result : result.messages;
-
         if (msgs && msgs.length > 0) msgs.forEach((m) => toast.error(m));
         else {
           const msg =
             err?.response?.data?.message ||
             err?.message ||
             (typeof err === "string" ? err : "Error desconocido");
-
           toast.error(`${msg}`);
         }
       } catch (ex) {
@@ -701,7 +680,6 @@ export default function EditAdminUserPage() {
           err?.response?.data?.message ||
           err?.message ||
           (typeof err === "string" ? err : "Error desconocido");
-
         toast.error(`${msg}`);
       }
     }
@@ -729,8 +707,22 @@ export default function EditAdminUserPage() {
         ]}
       />
 
-      <PageContainer className="p-4" width="wide">
+      <PageContainer width="wide" className="p-4">
         <PageHeader
+          icon={<UserCog />}
+          title={
+            id
+              ? t("adminOfficeUsers.editUser.breadcrumb.edit", {
+                  defaultValue: "Editar Usuario",
+                })
+              : t("adminOfficeUsers.editUser.breadcrumb.new", {
+                  defaultValue: "Nuevo Usuario",
+                })
+          }
+          subtitle={t("adminOfficeUsers.editUser.subtitle", {
+            defaultValue:
+              "Actualiza la identidad, el nivel de acceso y los permisos del usuario",
+          })}
           actions={
             id && selectedRoleSlug === "securitysupervisor" ? (
               <Button
@@ -743,30 +735,16 @@ export default function EditAdminUserPage() {
               </Button>
             ) : undefined
           }
-          icon={<UserCog />}
-          subtitle={t("adminOfficeUsers.editUser.subtitle", {
-            defaultValue:
-              "Actualiza la identidad, el nivel de acceso y los permisos del usuario",
-          })}
-          title={
-            id
-              ? t("adminOfficeUsers.editUser.breadcrumb.edit", {
-                  defaultValue: "Editar Usuario",
-                })
-              : t("adminOfficeUsers.editUser.breadcrumb.new", {
-                  defaultValue: "Nuevo Usuario",
-                })
-          }
         />
 
         <Section
-          icon={<UserCog />}
           title={t("adminOfficeUsers.editUser.sectionTitle", {
             defaultValue: "Datos del usuario",
           })}
+          icon={<UserCog />}
         >
           <Form {...form}>
-            <form className="grid gap-6" onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmit)} className="grid gap-6">
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <FormField
                   control={control}
@@ -889,6 +867,12 @@ export default function EditAdminUserPage() {
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                       <button
+                        type="button"
+                        onClick={() => {
+                          setAcotado(false);
+                          setValue("clientIds", []);
+                          setValue("postSiteIds", []);
+                        }}
                         className="cg-focus rounded-xl border px-4 py-3 text-left transition"
                         style={{
                           borderColor: !acotado
@@ -897,12 +881,6 @@ export default function EditAdminUserPage() {
                           background: !acotado
                             ? "color-mix(in oklab, var(--brand) 8%, transparent)"
                             : "transparent",
-                        }}
-                        type="button"
-                        onClick={() => {
-                          setAcotado(false);
-                          setValue("clientIds", []);
-                          setValue("postSiteIds", []);
                         }}
                       >
                         <span className="block text-sm font-semibold">
@@ -922,6 +900,8 @@ export default function EditAdminUserPage() {
                         </span>
                       </button>
                       <button
+                        type="button"
+                        onClick={() => setAcotado(true)}
                         className="cg-focus rounded-xl border px-4 py-3 text-left transition"
                         style={{
                           borderColor: acotado
@@ -931,8 +911,6 @@ export default function EditAdminUserPage() {
                             ? "color-mix(in oklab, var(--brand) 8%, transparent)"
                             : "transparent",
                         }}
-                        type="button"
-                        onClick={() => setAcotado(true)}
                       >
                         <span className="block text-sm font-semibold">
                           {t("comun.soloLoQueYoElija")}
@@ -969,12 +947,12 @@ export default function EditAdminUserPage() {
                               </p>
                               <FormControl>
                                 <MultiSelectDeSedes
-                                  options={siteOptions}
-                                  placeholder={t("comun.elegirSedes")}
                                   value={(field.value as string[]) || []}
                                   onChange={(ids: string[]) =>
                                     field.onChange(ids)
                                   }
+                                  options={siteOptions}
+                                  placeholder={t("comun.elegirSedes")}
                                 />
                               </FormControl>
                               {(!field.value ||
@@ -1018,12 +996,12 @@ export default function EditAdminUserPage() {
                               </p>
                               <FormControl>
                                 <MultiSelectDeSedes
-                                  options={clientOptions}
-                                  placeholder={t("comun.elegirClientes")}
                                   value={(field.value as string[]) || []}
                                   onChange={(ids: string[]) =>
                                     field.onChange(ids)
                                   }
+                                  options={clientOptions}
+                                  placeholder={t("comun.elegirClientes")}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -1039,9 +1017,9 @@ export default function EditAdminUserPage() {
               {canEditPerms && id && (
                 <GlassPanel flat className="p-4">
                   <button
-                    className="flex w-full items-center justify-between text-left"
                     type="button"
                     onClick={() => setPermsOpen((v) => !v)}
+                    className="flex w-full items-center justify-between text-left"
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <IconTile size="sm">
@@ -1090,12 +1068,12 @@ export default function EditAdminUserPage() {
                         </div>
                       )}
                       <UserPermissionOverrides
-                        deny={overrides.deny}
-                        grant={overrides.grant}
-                        query={permQuery}
                         rolePermissions={rolePermissions}
                         roleSlug={selectedRoleSlug}
+                        grant={overrides.grant}
+                        deny={overrides.deny}
                         onChange={setOverrides}
+                        query={permQuery}
                       />
                     </div>
                   )}
@@ -1105,9 +1083,9 @@ export default function EditAdminUserPage() {
               {id && (
                 <GlassPanel flat className="p-4">
                   <button
-                    className="flex w-full items-center justify-between text-left"
                     type="button"
                     onClick={() => setOfficeOpen((v) => !v)}
+                    className="flex w-full items-center justify-between text-left"
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <IconTile size="sm">
@@ -1146,7 +1124,6 @@ export default function EditAdminUserPage() {
                           )}
                         </label>
                         <Input
-                          placeholder="Ej. Oficina central, Av. Amazonas 123"
                           value={office.address}
                           onChange={(e) =>
                             setOffice((o) => ({
@@ -1154,33 +1131,33 @@ export default function EditAdminUserPage() {
                               address: e.target.value,
                             }))
                           }
+                          placeholder="Ej. Oficina central, Av. Amazonas 123"
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                         <div>
                           <label className="cg-eyebrow">Latitud</label>
                           <Input
-                            placeholder="-0.1807"
                             value={office.lat}
                             onChange={(e) =>
                               setOffice((o) => ({ ...o, lat: e.target.value }))
                             }
+                            placeholder="-0.1807"
                           />
                         </div>
                         <div>
                           <label className="cg-eyebrow">Longitud</label>
                           <Input
-                            placeholder="-78.4678"
                             value={office.lng}
                             onChange={(e) =>
                               setOffice((o) => ({ ...o, lng: e.target.value }))
                             }
+                            placeholder="-78.4678"
                           />
                         </div>
                         <div>
                           <label className="cg-eyebrow">Radio (m)</label>
                           <Input
-                            placeholder="150"
                             value={office.radius}
                             onChange={(e) =>
                               setOffice((o) => ({
@@ -1188,14 +1165,15 @@ export default function EditAdminUserPage() {
                                 radius: e.target.value,
                               }))
                             }
+                            placeholder="150"
                           />
                         </div>
                       </div>
                       <div className="flex flex-wrap items-center gap-2">
                         <Button
-                          size="sm"
                           type="button"
                           variant="outline"
+                          size="sm"
                           onClick={useCurrentLocationAsOffice}
                         >
                           {t(
@@ -1204,19 +1182,19 @@ export default function EditAdminUserPage() {
                           )}
                         </Button>
                         <Button
-                          disabled={officeSaving}
-                          size="sm"
                           type="button"
                           variant="brand"
+                          size="sm"
+                          disabled={officeSaving}
                           onClick={() => saveOfficeLocation(false)}
                         >
                           {officeSaving ? "Guardando..." : "Guardar ubicación"}
                         </Button>
                         <Button
-                          disabled={officeSaving}
-                          size="sm"
                           type="button"
                           variant="ghost"
+                          size="sm"
+                          disabled={officeSaving}
                           onClick={() => saveOfficeLocation(true)}
                         >
                           Quitar
@@ -1236,9 +1214,9 @@ export default function EditAdminUserPage() {
 
               <div className="flex justify-end">
                 <Button
-                  disabled={formState.isSubmitting}
-                  type="submit"
                   variant="brand"
+                  type="submit"
+                  disabled={formState.isSubmitting}
                 >
                   {formState.isSubmitting
                     ? id

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { olvidarPreferenciaDeInvitacion } from "@/hooks/useAppInviteEnabled";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
@@ -74,9 +75,9 @@ function ToggleRow({
           <Label className="text-sm font-medium">{item.label}</Label>
           {item.locked && (
             <StatusBadge
-              className="px-2 py-0.5 text-[10px]"
-              dot={false}
               tone="neutral"
+              dot={false}
+              className="px-2 py-0.5 text-[10px]"
             >
               <Lock size={10} /> Siempre activo
             </StatusBadge>
@@ -89,10 +90,10 @@ function ToggleRow({
         )}
         {/* Decidir si se apaga un correo sin haberlo visto es adivinar. */}
         <button
-          className="cg-focus mt-1.5 inline-flex items-center gap-1.5 text-xs font-semibold transition-colors hover:underline"
-          style={{ color: "var(--brand-text)" }}
           type="button"
           onClick={onVerEjemplo}
+          className="cg-focus mt-1.5 inline-flex items-center gap-1.5 text-xs font-semibold transition-colors hover:underline"
+          style={{ color: "var(--brand-text)" }}
         >
           <Eye size={13} /> Ver ejemplo
         </button>
@@ -129,7 +130,6 @@ function EjemploDeCorreo({
   useEffect(() => {
     if (!abierto || !item) return;
     let vivo = true;
-
     setCargando(true);
     setDatos(null);
     emailPreferencesService
@@ -150,7 +150,6 @@ function EjemploDeCorreo({
       .finally(() => {
         if (vivo) setCargando(false);
       });
-
     return () => {
       vivo = false;
     };
@@ -160,18 +159,18 @@ function EjemploDeCorreo({
 
   return (
     <Modal
-      icon={<Mail />}
       open={abierto}
-      size="lg"
-      title={item.label}
       onOpenChange={(o) => {
         if (!o) onCerrar();
       }}
+      title={item.label}
+      icon={<Mail />}
+      size="lg"
     >
       {cargando && <SkeletonBlock className="h-[28rem] w-full" />}
 
       {!cargando && datos && !datos.disponible && (
-        <InfoNote icon={<Info />} tone="neutral">
+        <InfoNote tone="neutral" icon={<Info />}>
           {datos.motivo}
         </InfoNote>
       )}
@@ -184,18 +183,18 @@ function EjemploDeCorreo({
           </div>
 
           {datos.avisoSendgrid && (
-            <InfoNote icon={<TriangleAlert />} tone="warn">
+            <InfoNote tone="warn" icon={<TriangleAlert />}>
               Este correo se está enviando con una plantilla externa, así que lo
               que llega puede no coincidir con este ejemplo.
             </InfoNote>
           )}
 
           <iframe
-            className="h-[28rem] w-full rounded-xl border"
-            sandbox=""
-            srcDoc={datos.html}
-            style={{ borderColor: "var(--hairline)", background: "#fff" }}
             title={`Ejemplo — ${item.label}`}
+            srcDoc={datos.html}
+            sandbox=""
+            className="h-[28rem] w-full rounded-xl border"
+            style={{ borderColor: "var(--hairline)", background: "#fff" }}
           />
 
           <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
@@ -222,6 +221,8 @@ function Swatches({
       {presets.map((c) => (
         <button
           key={c}
+          type="button"
+          onClick={() => onPick(c)}
           aria-label={`Color ${c}`}
           aria-pressed={value.toLowerCase() === c.toLowerCase()}
           className={`cg-focus h-9 w-9 rounded-full border-2 transition-transform hover:scale-110 ${value.toLowerCase() === c.toLowerCase() ? "scale-110" : ""}`}
@@ -232,8 +233,6 @@ function Swatches({
                 ? "var(--ink)"
                 : "transparent",
           }}
-          type="button"
-          onClick={() => onPick(c)}
         />
       ))}
       <label
@@ -241,10 +240,10 @@ function Swatches({
         style={{ color: "var(--ink-soft)" }}
       >
         <input
-          className="h-6 w-8 cursor-pointer border-0 bg-transparent p-0"
           type="color"
           value={value}
           onChange={(e) => onPick(e.target.value)}
+          className="h-6 w-8 cursor-pointer border-0 bg-transparent p-0"
         />
         Personalizado
       </label>
@@ -305,16 +304,15 @@ export default function EmailPreferencesPage() {
         .catch(() => setPreviewHtml(""))
         .finally(() => setPreviewLoading(false));
     }, 300);
-
     return () => {
       if (previewTimer.current) clearTimeout(previewTimer.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [branding.brandColor, branding.headerColor, loading]);
 
   const groups = useMemo(() => {
     const order: string[] = [];
     const byCat: Record<string, EmailCatalogItem[]> = {};
-
     for (const item of catalog) {
       if (!byCat[item.category]) {
         byCat[item.category] = [];
@@ -322,7 +320,6 @@ export default function EmailPreferencesPage() {
       }
       byCat[item.category].push(item);
     }
-
     return order.map((category) => ({ category, items: byCat[category] }));
   }, [catalog]);
 
@@ -338,12 +335,10 @@ export default function EmailPreferencesPage() {
     setSaving(true);
     try {
       const payload: Record<string, boolean> = {};
-
       for (const item of catalog) {
         if (!item.locked) payload[item.key] = prefs[item.key] !== false;
       }
       const res = await emailPreferencesService.update(payload, branding);
-
       setCatalog(res.catalog || catalog);
       setPrefs(res.preferences || prefs);
       if (res.branding)
@@ -351,6 +346,10 @@ export default function EmailPreferencesPage() {
           brandColor: res.branding.brandColor,
           headerColor: res.branding.headerColor,
         });
+      // La ficha del cliente pregunta UNA vez por sesión si puede invitar a la
+      // app. Si no se olvida aquí, apagar ese interruptor no se notaría en la
+      // ficha hasta recargar el CRM — y encenderlo tampoco.
+      olvidarPreferenciaDeInvitacion();
       toast.success(
         t("emailPreferences.saved", { defaultValue: "Preferencias guardadas" }),
       );
@@ -374,9 +373,24 @@ export default function EmailPreferencesPage() {
       >
         <PageContainer width="wide">
           <PageHeader
+            icon={<Mail />}
+            title={t("settings.configuracion.preferencias-correo", {
+              defaultValue: "Preferencias de correo",
+            })}
+            subtitle={t("emailPreferences.intro", {
+              defaultValue:
+                'Personaliza el color de tus correos y activa o desactiva cada notificación. Los correos marcados como "Requerido" no se pueden desactivar por seguridad.',
+            })}
+            badges={
+              !loading && catalog.length ? (
+                <StatusBadge tone="ok">
+                  {activos} de {catalog.length} avisos activos
+                </StatusBadge>
+              ) : undefined
+            }
             actions={
               !loading ? (
-                <Button disabled={saving} variant="brand" onClick={save}>
+                <Button onClick={save} disabled={saving} variant="brand">
                   {saving ? (
                     <Loader2 className="mr-2 animate-spin" size={16} />
                   ) : (
@@ -386,21 +400,6 @@ export default function EmailPreferencesPage() {
                 </Button>
               ) : undefined
             }
-            badges={
-              !loading && catalog.length ? (
-                <StatusBadge tone="ok">
-                  {activos} de {catalog.length} avisos activos
-                </StatusBadge>
-              ) : undefined
-            }
-            icon={<Mail />}
-            subtitle={t("emailPreferences.intro", {
-              defaultValue:
-                'Personaliza el color de tus correos y activa o desactiva cada notificación. Los correos marcados como "Requerido" no se pueden desactivar por seguridad.',
-            })}
-            title={t("settings.configuracion.preferencias-correo", {
-              defaultValue: "Preferencias de correo",
-            })}
           />
 
           {loading ? (
@@ -410,10 +409,10 @@ export default function EmailPreferencesPage() {
               {/* LEFT: branding + toggles */}
               <div className="space-y-6">
                 <Section
-                  icon={<Palette />}
                   title={t("emailPreferences.branding", {
                     defaultValue: "Personalización de marca",
                   })}
+                  icon={<Palette />}
                 >
                   <div className="space-y-6">
                     <div>
@@ -469,8 +468,8 @@ export default function EmailPreferencesPage() {
                       branding.headerColor.toLowerCase() !==
                         DEFAULT_HEADER.toLowerCase()) && (
                       <Button
-                        size="sm"
                         variant="ghost"
+                        size="sm"
                         onClick={() =>
                           setBranding({
                             brandColor: DEFAULT_BRAND,
@@ -478,7 +477,7 @@ export default function EmailPreferencesPage() {
                           })
                         }
                       >
-                        <RotateCcw className="mr-1" size={14} />{" "}
+                        <RotateCcw size={14} className="mr-1" />{" "}
                         {t("emailPreferences.reset", {
                           defaultValue: "Restaurar colores originales",
                         })}
@@ -516,10 +515,10 @@ export default function EmailPreferencesPage() {
                       {group.items.map((item) => (
                         <ToggleRow
                           key={item.key}
+                          item={item}
                           checked={
                             item.locked ? true : prefs[item.key] !== false
                           }
-                          item={item}
                           onCheckedChange={(b) => setPref(item.key, b)}
                           onVerEjemplo={() => setEjemplo(item)}
                         />
@@ -532,10 +531,10 @@ export default function EmailPreferencesPage() {
               {/* RIGHT: live preview */}
               <div className="lg:sticky lg:top-24 lg:self-start">
                 <Section
-                  icon={<Eye />}
                   title={t("emailPreferences.preview", {
                     defaultValue: "Vista previa",
                   })}
+                  icon={<Eye />}
                 >
                   <p
                     className="mb-3 text-xs"
@@ -558,10 +557,10 @@ export default function EmailPreferencesPage() {
                     )}
                     {previewHtml ? (
                       <iframe
+                        title="email-preview"
+                        srcDoc={previewHtml}
                         className="h-[560px] w-full border-0"
                         sandbox=""
-                        srcDoc={previewHtml}
-                        title="email-preview"
                       />
                     ) : (
                       <div className="flex h-[560px] flex-col gap-3 p-4">
@@ -580,8 +579,8 @@ export default function EmailPreferencesPage() {
         </PageContainer>
 
         <EjemploDeCorreo
-          abierto={!!ejemplo}
           item={ejemplo}
+          abierto={!!ejemplo}
           onCerrar={() => setEjemplo(null)}
         />
       </SettingsLayout>

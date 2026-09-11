@@ -1,26 +1,11 @@
 import { useMemo, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import {
-  Filter as FilterIcon,
-  Eye,
-  Edit,
-  Archive,
-  Car,
-  CheckCircle2,
-  PauseCircle,
-  Plus,
-  Palette,
-  Gauge,
-  KeyRound,
-  ImageOff,
-} from "lucide-react";
-import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
-
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
+
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -37,6 +22,21 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+
+import {
+  Filter as FilterIcon,
+  Eye,
+  Edit,
+  Archive,
+  Car,
+  CheckCircle2,
+  PauseCircle,
+  Plus,
+  Palette,
+  Gauge,
+  KeyRound,
+  ImageOff,
+} from "lucide-react";
 import {
   PageContainer,
   PageHeader,
@@ -63,6 +63,8 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -72,6 +74,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+
 import {
   vehicleFiltersSchema,
   type VehicleFilters,
@@ -92,7 +95,6 @@ const OWNERSHIP_LABELS: Record<string, { label: string; labelKey: string }> = {
 /** Primera foto utilizable del vehículo, si la hay. */
 const fotoVehiculo = (v: any): string | null => {
   const img = Array.isArray(v?.imageUrl) ? v.imageUrl[0] : null;
-
   return img?.downloadUrl || img?.publicUrl || null;
 };
 
@@ -120,10 +122,8 @@ export default function VehiclesPage() {
 
   const aplicarFiltros = () => {
     const parse = vehicleFiltersSchema.safeParse(filters);
-
     if (!parse.success) {
       console.error(parse.error.flatten());
-
       return;
     }
     console.log("Aplicando filtros:", parse.data);
@@ -166,7 +166,6 @@ export default function VehiclesPage() {
       if (filters.status) params.active = filters.status === "activo";
 
       const resp = await vehicleService.list(params);
-
       setRows(resp.rows || []);
       setCount(resp.count || 0);
     } catch (err) {
@@ -191,7 +190,6 @@ export default function VehiclesPage() {
   const perPageText = useMemo(() => {
     if (filters.perPage === "10") return "10";
     if (filters.perPage === "25") return "25";
-
     return "50";
   }, [filters.perPage]);
 
@@ -218,7 +216,6 @@ export default function VehiclesPage() {
     selectedCount > 0 && selectedRows.every((r) => r.active === false);
   const mixed = selectedCount > 0 && !allActive && !allInactive;
   const availableActions: Array<{ value: string; label: string }> = [];
-
   if (allActive) {
     availableActions.push({ value: "inactivar", label: "Inactivar" });
   } else if (allInactive) {
@@ -235,7 +232,6 @@ export default function VehiclesPage() {
     setDetailsLoading(true);
     try {
       const resp = await vehicleService.find(id);
-
       setDetailsVehicle(resp);
     } catch (err) {
       console.error("Error cargando detalles del vehículo", err);
@@ -302,11 +298,24 @@ export default function VehiclesPage() {
         ]}
       />
 
-      <PageContainer className="px-4 py-6 sm:px-6" width="wide">
+      <PageContainer width="wide" className="px-4 py-6 sm:px-6">
         <PageHeader
+          icon={<Car />}
+          title={t("ui.Vehicles.vehiculos2", "Vehículos")}
+          subtitle={t("ui.VehiclesPage.flotaDeLaEmpresaY")}
+          badges={
+            <>
+              <StatusBadge tone="brand">{count} en la flota</StatusBadge>
+              {selectedCount > 0 && (
+                <StatusBadge tone="info">
+                  {selectedCount} seleccionado{selectedCount === 1 ? "" : "s"}
+                </StatusBadge>
+              )}
+            </>
+          }
           actions={
             <>
-              <Button asChild variant="brand">
+              <Button variant="brand" asChild>
                 <Link to="/vehicle-patrol/vehicles/add-vehicle">
                   <Plus className="mr-1 h-4 w-4" />{" "}
                   {t("ui.Vehicles.nuevoVehiculo", "Nuevo vehículo")}
@@ -320,8 +329,8 @@ export default function VehiclesPage() {
                   </Button>
                 </SheetTrigger>
                 <SheetContent
-                  className="w-full overflow-y-auto sm:w-[460px]"
                   side="right"
+                  className="w-full overflow-y-auto sm:w-[460px]"
                 >
                   <SheetHeader>
                     <SheetTitle>Filtros</SheetTitle>
@@ -373,8 +382,8 @@ export default function VehiclesPage() {
                     </div>
 
                     <Button
-                      className="w-full"
                       variant="brand"
+                      className="w-full"
                       onClick={aplicarFiltros}
                     >
                       Filtro
@@ -384,41 +393,28 @@ export default function VehiclesPage() {
               </Sheet>
             </>
           }
-          badges={
-            <>
-              <StatusBadge tone="brand">{count} en la flota</StatusBadge>
-              {selectedCount > 0 && (
-                <StatusBadge tone="info">
-                  {selectedCount} seleccionado{selectedCount === 1 ? "" : "s"}
-                </StatusBadge>
-              )}
-            </>
-          }
-          icon={<Car />}
-          subtitle={t("ui.VehiclesPage.flotaDeLaEmpresaY")}
-          title={t("ui.Vehicles.vehiculos2", "Vehículos")}
         />
 
         <Stagger className="grid gap-4 sm:grid-cols-3">
           <StatCard
-            accent="primary"
-            icon={<Car />}
             label={t("comun.total")}
             value={count}
+            icon={<Car />}
+            accent="primary"
           />
           <StatCard
-            accent="ok"
-            hint={t("ui.Vehicles.enEstaPagina", "En esta página")}
-            icon={<CheckCircle2 />}
             label="Activos"
             value={activos}
+            icon={<CheckCircle2 />}
+            accent="ok"
+            hint={t("ui.Vehicles.enEstaPagina", "En esta página")}
           />
           <StatCard
-            accent="neutral"
-            hint={t("ui.Vehicles.enEstaPagina2", "En esta página")}
-            icon={<PauseCircle />}
             label="Inactivos"
             value={inactivos}
+            icon={<PauseCircle />}
+            accent="neutral"
+            hint={t("ui.Vehicles.enEstaPagina2", "En esta página")}
           />
         </Stagger>
 
@@ -427,9 +423,9 @@ export default function VehiclesPage() {
                         y que las tablas del CRM, con su botón de limpiar. */}
           <div className="min-w-48 flex-1">
             <TableSearch
-              placeholder={t("ui.Vehicles.buscarVehiculo2", "Buscar vehículo")}
               value={filters.search ?? ""}
               onChange={(v) => setFilters((s) => ({ ...s, search: v }))}
+              placeholder={t("ui.Vehicles.buscarVehiculo2", "Buscar vehículo")}
             />
           </div>
           <Select
@@ -450,17 +446,19 @@ export default function VehiclesPage() {
           </Select>
           <div className="ml-auto">
             <Segmented
+              value={vista}
+              onChange={setVista}
               options={[
                 { value: "tarjetas", label: "Tarjetas" },
                 { value: "lista", label: "Lista" },
               ]}
-              value={vista}
-              onChange={setVista}
             />
           </div>
         </Toolbar>
 
         <Section
+          title={t("ui.Vehicles.listadoDeVehiculos2", "Listado de vehículos")}
+          icon={<Car />}
           action={
             vista === "tarjetas" && rows.length > 0 ? (
               <label
@@ -468,38 +466,36 @@ export default function VehiclesPage() {
                 style={{ color: "var(--ink-soft)" }}
               >
                 <Checkbox
-                  aria-label={t("comun.seleccionarTodos")}
                   checked={
                     rows.length > 0 && selectedIds.length === rows.length
                   }
                   onCheckedChange={(c) => handleSelectAll(c === true)}
+                  aria-label={t("comun.seleccionarTodos")}
                 />{" "}
                 {t("comun.seleccionarTodos")}{" "}
               </label>
             ) : undefined
           }
           contentClassName={vista === "lista" ? "-mx-5 -mb-5" : undefined}
-          icon={<Car />}
-          title={t("ui.Vehicles.listadoDeVehiculos2", "Listado de vehículos")}
         >
           {loading ? (
             <div className={vista === "lista" ? "p-5" : undefined}>
-              <SkeletonCards className="lg:grid-cols-3" count={6} />
+              <SkeletonCards count={6} className="lg:grid-cols-3" />
             </div>
           ) : sinResultados ? (
             <div className={vista === "lista" ? "p-5" : undefined}>
               <EmptyState
+                icon={<Car />}
+                title={t("kit.table.emptyTitle")}
+                description={t("ui.VehiclesPage.noHayVehiculosQueCoincidan")}
                 action={
-                  <Button asChild size="sm" variant="brand">
+                  <Button size="sm" variant="brand" asChild>
                     <Link to="/vehicle-patrol/vehicles/add-vehicle">
                       <Plus className="mr-1 h-3.5 w-3.5" />{" "}
                       {t("ui.Vehicles.nuevoVehiculo", "Nuevo vehículo")}
                     </Link>
                   </Button>
                 }
-                description={t("ui.VehiclesPage.noHayVehiculosQueCoincidan")}
-                icon={<Car />}
-                title={t("kit.table.emptyTitle")}
               />
             </div>
           ) : vista === "tarjetas" ? (
@@ -507,7 +503,6 @@ export default function VehiclesPage() {
               {rows.map((r) => {
                 const foto = fotoVehiculo(r);
                 const seleccionado = selectedIds.includes(r.id);
-
                 return (
                   <GlassPanel
                     key={r.id}
@@ -517,12 +512,12 @@ export default function VehiclesPage() {
                   >
                     <div className="flex items-start gap-3">
                       <Checkbox
-                        aria-label={`Seleccionar ${r.licensePlate || r.name || "vehículo"}`}
-                        checked={seleccionado}
                         className="mt-1"
+                        checked={seleccionado}
                         onCheckedChange={(c) =>
                           handleSelectOne(r.id, c === true)
                         }
+                        aria-label={`Seleccionar ${r.licensePlate || r.name || "vehículo"}`}
                       />
                       <div className="min-w-0 flex-1">
                         <div className="truncate font-mono text-sm font-semibold text-foreground">
@@ -539,16 +534,17 @@ export default function VehiclesPage() {
                     </div>
 
                     <button
-                      aria-label={`Ver detalles de ${r.licensePlate || "vehículo"}`}
+                      type="button"
+                      onClick={() => viewVehicle(r.id)}
                       className="cg-focus block h-32 w-full overflow-hidden rounded-xl border"
                       style={{
                         borderColor: "var(--hairline)",
                         background: "var(--glass-sunken)",
                       }}
-                      type="button"
-                      onClick={() => viewVehicle(r.id)}
+                      aria-label={`Ver detalles de ${r.licensePlate || "vehículo"}`}
                     >
                       <SmartImage
+                        src={foto}
                         alt=""
                         className="h-full w-full"
                         fallback={
@@ -559,7 +555,6 @@ export default function VehiclesPage() {
                             <ImageOff className="h-6 w-6" />
                           </span>
                         }
-                        src={foto}
                       />
                     </button>
 
@@ -568,7 +563,7 @@ export default function VehiclesPage() {
                         {r.active ? "Activo" : "Inactivo"}
                       </StatusBadge>
                       {r.ownership && (
-                        <StatusBadge dot={false} tone="info">
+                        <StatusBadge tone="info" dot={false}>
                           {OWNERSHIP_LABELS[r.ownership]
                             ? t(
                                 OWNERSHIP_LABELS[r.ownership].labelKey,
@@ -607,11 +602,11 @@ export default function VehiclesPage() {
                   <tr>
                     <th className="px-4 py-2">
                       <Checkbox
-                        aria-label={t("comun.seleccionarTodos")}
                         checked={
                           rows.length > 0 && selectedIds.length === rows.length
                         }
                         onCheckedChange={(c) => handleSelectAll(c === true)}
+                        aria-label={t("comun.seleccionarTodos")}
                       />
                     </th>
                     <th className="px-4 py-2 font-semibold">
@@ -640,11 +635,11 @@ export default function VehiclesPage() {
                     >
                       <td className="px-4 py-3">
                         <Checkbox
-                          aria-label={`Seleccionar ${r.licensePlate || "vehículo"}`}
                           checked={selectedIds.includes(r.id)}
                           onCheckedChange={(c) =>
                             handleSelectOne(r.id, c === true)
                           }
+                          aria-label={`Seleccionar ${r.licensePlate || "vehículo"}`}
                         />
                       </td>
                       <td className="px-4 py-3 tabular-nums">
@@ -688,9 +683,9 @@ export default function VehiclesPage() {
                   {t("actions.cancel")}
                 </AlertDialogCancel>
                 <AlertDialogAction
+                  onClick={confirmArchive}
                   className="cg-btn-bad"
                   disabled={archiveLoading}
-                  onClick={confirmArchive}
                 >
                   Confirmar
                 </AlertDialogAction>
@@ -722,8 +717,6 @@ export default function VehiclesPage() {
                   {t("actions.cancel")}
                 </AlertDialogCancel>
                 <AlertDialogAction
-                  className="cg-btn-bad"
-                  disabled={bulkActionLoading}
                   onClick={async () => {
                     if (!bulkActionConfirm) return;
                     setBulkActionLoading(true);
@@ -731,10 +724,8 @@ export default function VehiclesPage() {
                       if (bulkActionConfirm === "eliminar") {
                         const idsToDelete = selectedIds.filter((id) => {
                           const r = rows.find((x) => x.id === id);
-
                           return r && r.active === false;
                         });
-
                         if (idsToDelete.length === 0) {
                           toast.info(
                             t("ui.VehiclesPage.noHayRegistrosInactivosPara"),
@@ -747,7 +738,6 @@ export default function VehiclesPage() {
                         }
                       } else {
                         const active = bulkActionConfirm === "activar";
-
                         await Promise.all(
                           selectedIds.map((id) =>
                             vehicleService.update(id, { active }),
@@ -766,6 +756,8 @@ export default function VehiclesPage() {
                       setBulkActionLoading(false);
                     }
                   }}
+                  className="cg-btn-bad"
+                  disabled={bulkActionLoading}
                 >
                   Confirmar
                 </AlertDialogAction>
@@ -834,12 +826,12 @@ export default function VehiclesPage() {
                         }}
                       >
                         <img
-                          alt={t("ui.VehiclesPage.vehiculo")}
-                          className="max-h-52 w-full object-cover"
                           src={
                             detailsVehicle.imageUrl[0].downloadUrl ||
                             detailsVehicle.imageUrl[0].publicUrl
                           }
+                          alt={t("ui.VehiclesPage.vehiculo")}
+                          className="max-h-52 w-full object-cover"
                         />
                       </div>
                     )}
@@ -923,11 +915,11 @@ export default function VehiclesPage() {
               ) : (
                 <div className="p-4">
                   <EmptyState
+                    icon={<Car />}
+                    title={t("ui.Vehicles.sinInformacion", "Sin información")}
                     description={t(
                       "ui.VehiclesPage.noSeEncontroInformacionDel",
                     )}
-                    icon={<Car />}
-                    title={t("ui.Vehicles.sinInformacion", "Sin información")}
                   />
                 </div>
               )}
@@ -987,18 +979,18 @@ export default function VehiclesPage() {
 
             <div className="flex items-center gap-2">
               <Button
-                disabled={page <= 1}
-                size="sm"
                 variant="outline"
+                size="sm"
                 onClick={handlePrevPage}
+                disabled={page <= 1}
               >
                 {t("kit.pagination.prev")}
               </Button>
               <Button
-                disabled={page >= totalPages}
-                size="sm"
                 variant="outline"
+                size="sm"
                 onClick={handleNextPage}
+                disabled={page >= totalPages}
               >
                 {t("kit.pagination.next")}
               </Button>

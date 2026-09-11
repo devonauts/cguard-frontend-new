@@ -1,4 +1,4 @@
-import api from "../api";
+import api, { getAuthToken } from "../api";
 
 // Reuse tenantId retrieval pattern
 const getTenantId = (): string => {
@@ -17,7 +17,6 @@ export const securityGuardService = {
   async create(input: Record<string, unknown>) {
     const tenantId = getTenantId();
     const resp = await api.post(`/tenant/${tenantId}/security-guard`, input);
-
     return resp && resp.data !== undefined ? resp.data : resp;
   },
 
@@ -27,7 +26,6 @@ export const securityGuardService = {
     const resp = await api.post(`/tenant/${tenantId}/security-guard/invite`, {
       entries,
     });
-
     return resp && resp.data !== undefined ? resp.data : resp;
   },
 
@@ -37,7 +35,6 @@ export const securityGuardService = {
       `/tenant/${tenantId}/security-guard/invite`,
       input,
     );
-
     return resp && resp.data !== undefined ? resp.data : resp;
   },
 
@@ -69,7 +66,6 @@ export const securityGuardService = {
       filename ??
       (file instanceof File ? file.name : undefined) ??
       "upload.csv";
-
     formData.append("file", file as Blob, nameToUse);
     const resp = await api.post(
       `/tenant/${tenantId}/security-guard/import`,
@@ -117,7 +113,6 @@ export const securityGuardService = {
       `/tenant/${tenantId}/security-guard/${id}/employment`,
       { toast: { silentError: true } },
     );
-
     return resp && resp.data !== undefined ? resp.data : resp;
   },
   async archive(
@@ -169,7 +164,6 @@ export const securityGuardService = {
     const resp = await api.get(
       `/tenant/${tenantId}/staff/${userId}/role-options`,
     );
-
     return (resp as any)?.data ?? resp;
   },
   /** Mueve a la persona al rol indicado conservando su expediente. */
@@ -179,7 +173,6 @@ export const securityGuardService = {
       `/tenant/${tenantId}/staff/${userId}/change-role`,
       { role },
     );
-
     return (resp as any)?.data ?? resp;
   },
 
@@ -198,7 +191,6 @@ export const securityGuardService = {
     const resp = await api.get(
       `/tenant/${tenantId}/security-guard/active-locations`,
     );
-
     return resp && resp.data !== undefined ? resp.data : resp;
   },
 
@@ -209,7 +201,6 @@ export const securityGuardService = {
   ) {
     const tenantId = getTenantId();
     const qs = new URLSearchParams();
-
     if (params?.from) qs.set("from", params.from);
     if (params?.to) qs.set("to", params.to);
     if (params?.limit) qs.set("limit", String(params.limit));
@@ -218,7 +209,6 @@ export const securityGuardService = {
       `/tenant/${tenantId}/security-guard/${guardId}/trail${q ? `?${q}` : ""}`,
     );
     const data = resp && resp.data !== undefined ? resp.data : resp;
-
     return (data?.points || []) as Array<{
       lat: number;
       lng: number;
@@ -245,7 +235,6 @@ export const securityGuardService = {
         toast: { silentError: true },
       },
     );
-
     return response && response.data !== undefined ? response.data : response;
   },
 
@@ -256,7 +245,6 @@ export const securityGuardService = {
       // The component will display a user-friendly toast once.
       toast: { silentError: true },
     });
-
     return resp && resp.data !== undefined ? resp.data : resp;
   },
 
@@ -272,7 +260,6 @@ export const securityGuardService = {
   ) {
     const tenantId = getTenantId();
     const params = new URLSearchParams();
-
     if (pagination.limit !== undefined)
       params.append("limit", String(pagination.limit));
     if (pagination.offset !== undefined)
@@ -281,7 +268,6 @@ export const securityGuardService = {
     const { data } = await api.get<any>(
       `/tenant/${tenantId}/security-guard/${guardId}/notes?${params.toString()}`,
     );
-
     return data;
   },
 
@@ -294,7 +280,6 @@ export const securityGuardService = {
       `/tenant/${tenantId}/security-guard/${guardId}/notes`,
       payload,
     );
-
     return data;
   },
 
@@ -308,7 +293,6 @@ export const securityGuardService = {
       `/tenant/${tenantId}/security-guard/${guardId}/notes/${noteId}`,
       payload,
     );
-
     return data;
   },
 
@@ -317,7 +301,6 @@ export const securityGuardService = {
     const { data } = await api.delete<any>(
       `/tenant/${tenantId}/security-guard/${guardId}/notes/${noteId}`,
     );
-
     return data;
   },
 
@@ -328,7 +311,6 @@ export const securityGuardService = {
   ) {
     const tenantId = getTenantId();
     const params = new URLSearchParams();
-
     if (pagination.limit !== undefined)
       params.append("limit", String(pagination.limit));
     if (pagination.offset !== undefined)
@@ -337,7 +319,6 @@ export const securityGuardService = {
     const { data } = await api.get<any>(
       `/tenant/${tenantId}/security-guard/${guardId}/licenses?${params.toString()}`,
     );
-
     return data;
   },
 
@@ -350,7 +331,6 @@ export const securityGuardService = {
       `/tenant/${tenantId}/security-guard/${guardId}/licenses`,
       payload,
     );
-
     return data;
   },
 
@@ -359,7 +339,6 @@ export const securityGuardService = {
     const { data } = await api.get<any>(
       `/tenant/${tenantId}/security-guard/${guardId}/licenses/${licenseId}`,
     );
-
     return data;
   },
 
@@ -372,7 +351,6 @@ export const securityGuardService = {
         toast: { silentError: true },
       },
     );
-
     return response && response.data !== undefined ? response.data : response;
   },
 
@@ -386,7 +364,6 @@ export const securityGuardService = {
       `/tenant/${tenantId}/security-guard/${guardId}/licenses/${licenseId}`,
       payload,
     );
-
     return data;
   },
 
@@ -395,7 +372,6 @@ export const securityGuardService = {
     const { data } = await api.delete<any>(
       `/tenant/${tenantId}/security-guard/${guardId}/licenses?ids=${ids.join(",")}`,
     );
-
     return data;
   },
 
@@ -408,19 +384,15 @@ export const securityGuardService = {
 
     const uploadUrl =
       creds.data?.uploadCredentials?.url ?? creds.uploadCredentials?.url;
-
     if (!uploadUrl) throw new Error("Upload URL not available");
 
     const form = new FormData();
-
     form.append("filename", filename);
     form.append("file", file);
 
     const uploadResp = await fetch(uploadUrl, { method: "POST", body: form });
-
     if (!uploadResp.ok) {
       const text = await uploadResp.text().catch(() => null);
-
       throw new Error(`Upload failed: ${uploadResp.status} ${text}`);
     }
 
@@ -460,7 +432,6 @@ export const securityGuardService = {
     // If backend returned fields (S3/GCS presigned POST), use FormData
     if (fields || isBackendFileUpload) {
       const form = new FormData();
-
       if (fields) {
         Object.keys(fields).forEach((k) => form.append(k, fields[k]));
       }
@@ -472,19 +443,15 @@ export const securityGuardService = {
       }
 
       const uploadResp = await fetch(uploadUrl, { method: "POST", body: form });
-
       if (!uploadResp.ok) {
         const text = await uploadResp.text().catch(() => null);
-
         throw new Error(`Upload failed: ${uploadResp.status} ${text}`);
       }
     } else {
       // If backend expects direct PUT to uploadUrl
       const putResp = await fetch(uploadUrl, { method: "PUT", body: file });
-
       if (!putResp.ok) {
         const text = await putResp.text().catch(() => null);
-
         throw new Error(`Upload failed: ${putResp.status} ${text}`);
       }
     }
@@ -540,7 +507,6 @@ export const securityGuardService = {
       xhr.upload.onprogress = function (e) {
         if (e.lengthComputable) {
           const percent = Math.round((e.loaded / e.total) * 100);
-
           try {
             onProgress(percent);
           } catch (e) {}
@@ -564,7 +530,6 @@ export const securityGuardService = {
               creds?.publicUrl ??
               null,
           };
-
           try {
             onProgress(100);
           } catch (e) {}
@@ -578,7 +543,6 @@ export const securityGuardService = {
 
       if (fields || isBackendFileUpload) {
         const form = new FormData();
-
         if (fields) {
           Object.keys(fields).forEach((k) => form.append(k, fields[k]));
         }
@@ -611,7 +575,6 @@ export const securityGuardService = {
       `/tenant/${tenantId}/security-guard/${guardId}/assignments`,
     );
     const p: any = resp?.data ?? resp;
-
     return { rows: Array.isArray(p?.rows) ? p.rows : [], count: p?.count ?? 0 };
   },
 
@@ -627,7 +590,6 @@ export const securityGuardService = {
     const resp = await api.get(
       `/tenant/${tenantId}/security-guard/${guardId}/schedule${qs}`,
     );
-
     return resp?.data ?? resp;
   },
 
@@ -637,7 +599,6 @@ export const securityGuardService = {
     const resp = await api.get(
       `/tenant/${tenantId}/security-guard/${guardId}/performance?period=${period}`,
     );
-
     return resp?.data ?? resp;
   },
 
@@ -648,7 +609,6 @@ export const securityGuardService = {
       `/tenant/${tenantId}/security-guard/${guardId}/documents`,
     );
     const p: any = resp?.data ?? resp;
-
     return { rows: Array.isArray(p?.rows) ? p.rows : [], count: p?.count ?? 0 };
   },
 
@@ -659,7 +619,6 @@ export const securityGuardService = {
       `/tenant/${tenantId}/security-guard/${guardId}/documents`,
       { data: { documents } },
     );
-
     return resp?.data ?? resp;
   },
 
@@ -668,7 +627,6 @@ export const securityGuardService = {
     const resp = await api.delete(
       `/tenant/${tenantId}/security-guard/${guardId}/documents/${docId}`,
     );
-
     return resp?.data ?? resp;
   },
 };

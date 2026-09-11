@@ -2,8 +2,7 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { UserCog, User, Phone, FileText } from "lucide-react";
-
+import { UserCog, User, Phone, MapPin, FileText } from "lucide-react";
 import AppLayout from "@/layouts/app-layout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -75,10 +74,8 @@ export default function EditSecurityGuardPage() {
     (async () => {
       try {
         const data = await securityGuardService.get(id);
-
         setFetchedData(data);
         const g = data.guard ?? data;
-
         setForm({
           firstName: g.firstName ?? "",
           lastName: g.lastName ?? "",
@@ -101,7 +98,6 @@ export default function EditSecurityGuardPage() {
         });
       } catch (err: any) {
         let msg = err?.message || err;
-
         if (
           !toastAndRedirected.current &&
           (err?.response?.status === 404 ||
@@ -136,7 +132,6 @@ export default function EditSecurityGuardPage() {
         } else if (!generalErrorShown.current) {
           generalErrorShown.current = true;
           let details = "";
-
           if (err?.response) {
             details = JSON.stringify(err.response, null, 2);
           } else if (err?.stack) {
@@ -156,7 +151,6 @@ export default function EditSecurityGuardPage() {
         setLoading(false);
       }
     })();
-
     // Limpiar la ref al desmontar
     return () => {
       toastAndRedirected.current = false;
@@ -203,7 +197,6 @@ export default function EditSecurityGuardPage() {
           maritalStatus: orNull(form.maritalStatus),
           academicInstruction: orNull(form.academicInstruction),
         };
-
         // Dates: only send when present (avoid clearing with empty string).
         if (form.birthDate) payload.birthDate = form.birthDate;
         if (form.hiringContractDate)
@@ -219,7 +212,6 @@ export default function EditSecurityGuardPage() {
         navigate("/security-guards");
       } catch (err: any) {
         const msg = err?.message || String(err);
-
         toast.error("Error guardando cambios: " + msg);
       } finally {
         setLoading(false);
@@ -241,8 +233,8 @@ export default function EditSecurityGuardPage() {
 
         <PageHeader
           icon={<UserCog />}
-          subtitle={t("ui.EditSecurityGuardPage.actualizaLosDatosPersonalesDe")}
           title={t("ui.EditSecurityGuardPage.editarVigilante")}
+          subtitle={t("ui.EditSecurityGuardPage.actualizaLosDatosPersonalesDe")}
         />
 
         {error && (
@@ -261,19 +253,19 @@ export default function EditSecurityGuardPage() {
         {loading && !fetchedData ? (
           <SkeletonCards count={4} />
         ) : (
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* ── Datos personales ─────────────────────────────────── */}
-            <Section icon={<User />} title="Datos personales">
+            <Section title="Datos personales" icon={<User />}>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                   <label className="block text-sm font-medium mb-1">
                     {t("comun.nombreReq")}
                   </label>
                   <Input
-                    required
                     name="firstName"
                     value={form.firstName}
                     onChange={handleChange}
+                    required
                   />
                 </div>
                 <div>
@@ -281,10 +273,10 @@ export default function EditSecurityGuardPage() {
                     Apellidos *
                   </label>
                   <Input
-                    required
                     name="lastName"
                     value={form.lastName}
                     onChange={handleChange}
+                    required
                   />
                 </div>
                 <div>
@@ -293,9 +285,9 @@ export default function EditSecurityGuardPage() {
                   </label>
                   <Input
                     name="birthDate"
-                    type="date"
                     value={form.birthDate}
                     onChange={handleChange}
+                    type="date"
                   />
                 </div>
                 <div>
@@ -316,10 +308,10 @@ export default function EditSecurityGuardPage() {
                     {t("comun.estadoCivil")}
                   </label>
                   <select
-                    className={selectClass}
                     name="maritalStatus"
                     value={form.maritalStatus}
                     onChange={handleChange}
+                    className={selectClass}
                   >
                     <option value="">{t("comun.seleccionar")}</option>
                     {["Soltero", "Casado", "Unión libre", "Divorciado"].map(
@@ -336,10 +328,10 @@ export default function EditSecurityGuardPage() {
                     {t("comun.tipoDeSangre")}
                   </label>
                   <select
-                    className={selectClass}
                     name="bloodType"
                     value={form.bloodType}
                     onChange={handleChange}
+                    className={selectClass}
                   >
                     <option value="">{t("comun.seleccionar")}</option>
                     {["A+", "A-", "AB+", "AB-", "O+", "O-", "B+", "B-"].map(
@@ -359,10 +351,10 @@ export default function EditSecurityGuardPage() {
                     )}
                   </label>
                   <select
-                    className={selectClass}
                     name="academicInstruction"
                     value={form.academicInstruction}
                     onChange={handleChange}
+                    className={selectClass}
                   >
                     <option value="">{t("comun.seleccionar")}</option>
                     {[
@@ -383,10 +375,10 @@ export default function EditSecurityGuardPage() {
                     {t("ui.EditSecurityGuard.genero", "Género")}
                   </label>
                   <select
-                    className={selectClass}
                     name="gender"
                     value={form.gender}
                     onChange={handleChange}
+                    className={selectClass}
                   >
                     <option value="">{t("comun.seleccionar")}</option>
                     {["Masculino", "Femenino"].map((o) => (
@@ -401,8 +393,8 @@ export default function EditSecurityGuardPage() {
 
             {/* ── Contacto y domicilio ─────────────────────────────── */}
             <Section
-              icon={<Phone />}
               title={t("ui.EditSecurityGuardPage.contactoYDomicilio")}
+              icon={<Phone />}
             >
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
@@ -413,11 +405,11 @@ export default function EditSecurityGuardPage() {
                     )}
                   </label>
                   <Input
-                    required
                     name="email"
-                    type="email"
                     value={form.email}
                     onChange={handleChange}
+                    required
+                    type="email"
                   />
                 </div>
                 <div>
@@ -425,10 +417,10 @@ export default function EditSecurityGuardPage() {
                     {t("ui.EditSecurityGuard.telefono", "Teléfono *")}
                   </label>
                   <Input
-                    required
                     name="phoneNumber"
                     value={form.phoneNumber}
                     onChange={handleChange}
+                    required
                   />
                 </div>
                 <div className="md:col-span-2">
@@ -446,11 +438,11 @@ export default function EditSecurityGuardPage() {
 
             {/* ── Identificación y contrato ────────────────────────── */}
             <Section
-              icon={<FileText />}
               title={t(
                 "ui.EditSecurityGuard.identificacionYContrato",
                 "Identificación y contrato",
               )}
+              icon={<FileText />}
             >
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
@@ -469,9 +461,9 @@ export default function EditSecurityGuardPage() {
                   </label>
                   <Input
                     name="hiringContractDate"
-                    type="date"
                     value={form.hiringContractDate}
                     onChange={handleChange}
+                    type="date"
                   />
                 </div>
                 <div>
@@ -479,13 +471,13 @@ export default function EditSecurityGuardPage() {
                     {t("ui.EditSecurityGuardPage.tarifaPorHoraUs")}
                   </label>
                   <Input
-                    min="0"
                     name="hourlyRate"
-                    placeholder="3.50"
-                    step="0.01"
-                    type="number"
                     value={form.hourlyRate}
                     onChange={handleChange}
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="3.50"
                   />
                   <p
                     className="mt-1 text-xs"
@@ -515,7 +507,7 @@ export default function EditSecurityGuardPage() {
               >
                 Cancelar
               </Button>
-              <Button disabled={loading} type="submit" variant="brand">
+              <Button type="submit" variant="brand" disabled={loading}>
                 Guardar cambios
               </Button>
             </div>

@@ -1,25 +1,7 @@
-import type { PostSite } from "@/types";
-
 import React, { useEffect, useState, useMemo, useRef } from "react";
+import { clientDisplayName } from "@/lib/clientName";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
-import {
-  EllipsisVertical,
-  Eye,
-  Edit,
-  Printer,
-  FileDown,
-  FileSpreadsheet,
-  Mail,
-  Search,
-  Filter,
-  ExternalLink,
-  X,
-  Trash2,
-} from "lucide-react";
-
-import { clientDisplayName } from "@/lib/clientName";
 import { ApiService } from "@/services/api/apiService";
 import {
   supervisorService,
@@ -50,6 +32,22 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { toast } from "sonner";
+import { Link } from "react-router-dom";
+import {
+  EllipsisVertical,
+  Eye,
+  Edit,
+  Printer,
+  FileDown,
+  FileSpreadsheet,
+  Mail,
+  Search,
+  Filter,
+  ExternalLink,
+  X,
+  Trash2,
+} from "lucide-react";
 import IncidentTypesService from "@/services/incident-types.service";
 import {
   DropdownMenu,
@@ -60,6 +58,7 @@ import {
 import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import { EmptyState, StatusBadge, SkeletonCards } from "@/components/kit";
 import { FIELD_CLS_LG } from "@/pages/admin/clientes/components/_shared/tab-kit";
+import type { PostSite } from "@/types";
 
 interface SiteProp extends PostSite {
   tenantId?: string;
@@ -152,13 +151,11 @@ export default function Incidents({ site }: { site?: SiteProp }) {
 
   const handleGenerateShareableLink = async (it: any) => {
     const url = `${window.location.origin}/dispatch-tickets/${it.id}?resource=incident`;
-
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(url);
       } else {
         const ta = document.createElement("textarea");
-
         ta.value = url;
         document.body.appendChild(ta);
         ta.select();
@@ -179,7 +176,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
   const handleCloseTicket = async (it: any) => {
     try {
       const tenantId = site?.tenantId || localStorage.getItem("tenantId") || "";
-
       if (!tenantId) throw new Error("Tenant missing");
       await ApiService.put(`/tenant/${tenantId}/incident/${it.id}`, {
         data: { status: "cerrado", workStatus: "closed" },
@@ -201,7 +197,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
   const handleDeleteIncident = async (it: any) => {
     try {
       const tenantId = site?.tenantId || localStorage.getItem("tenantId") || "";
-
       if (!tenantId) throw new Error("Tenant missing");
       // Backend expects bulk-delete via query param `ids[]`; use that for single-id delete
       await ApiService.delete(
@@ -220,13 +215,11 @@ export default function Incidents({ site }: { site?: SiteProp }) {
     // when incidents change, reset client-side filtered list
     setFilteredIncidents(null);
     let mounted = true;
-
     (async () => {
       try {
         const tenantId =
           site?.tenantId || localStorage.getItem("tenantId") || "";
         const postSiteId = site?.id || "";
-
         if (!postSiteId || !tenantId) return;
         setLoading(true);
         // Use the nested filter[] the backend actually reads — a bare ?postSiteId=
@@ -235,7 +228,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
           `/tenant/${tenantId}/incident?filter[postSiteId]=${encodeURIComponent(postSiteId)}&limit=50`,
         );
         const rows = Array.isArray(res) ? res : res && res.rows ? res.rows : [];
-
         if (mounted) setIncidents(rows);
       } catch (err) {
         console.error("Failed to load incidents", err);
@@ -243,7 +235,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
         if (mounted) setLoading(false);
       }
     })();
-
     return () => {
       mounted = false;
     };
@@ -265,24 +256,20 @@ export default function Incidents({ site }: { site?: SiteProp }) {
   // Load related dispatches (requests) for this post site — backend uses siteId
   useEffect(() => {
     let mounted = true;
-
     (async () => {
       try {
         const tenantId =
           site?.tenantId || localStorage.getItem("tenantId") || "";
         const postSiteId = site?.id || "";
-
         if (!postSiteId) return;
         setLoadingDispatches(true);
 
         // load assigned guards for this post site
         let guardsRows: any[] = [];
-
         try {
           const guardsResp = await ApiService.get(
             `/tenant/${tenantId}/post-site/${postSiteId}/guards`,
           );
-
           guardsRows = Array.isArray(guardsResp)
             ? guardsResp
             : guardsResp && guardsResp.rows
@@ -305,7 +292,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
 
         // Fetch dispatches for each assigned guard (if any)
         let guardRows: any[] = [];
-
         try {
           const sourceGuards = guardsRows.length
             ? guardsRows
@@ -323,7 +309,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
             ),
           );
           const guardResponses = await Promise.allSettled(guardPromises);
-
           for (const r of guardResponses) {
             if (r.status === "fulfilled") {
               const data = r.value;
@@ -332,7 +317,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                 : data && data.rows
                   ? data.rows
                   : [];
-
               guardRows = guardRows.concat(rows);
             }
           }
@@ -342,21 +326,17 @@ export default function Incidents({ site }: { site?: SiteProp }) {
 
         // merge unique by id and mark source
         const mergedMap = new Map<string, any>();
-
         for (const r of siteRows)
           mergedMap.set(String(r.id), { ...r, _source: "site" });
         for (const r of guardRows) {
           const id = String(r.id);
-
           if (!mergedMap.has(id)) mergedMap.set(id, { ...r, _source: "guard" });
         }
         const merged = Array.from(mergedMap.values()).sort((a: any, b: any) => {
           const tb = +new Date(b.createdAt || b.created_at || 0) || 0;
           const ta = +new Date(a.createdAt || a.created_at || 0) || 0;
-
           return tb - ta;
         });
-
         if (mounted) setDispatches(merged);
       } catch (err) {
         console.error("Failed to load dispatches", err);
@@ -364,7 +344,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
         if (mounted) setLoadingDispatches(false);
       }
     })();
-
     return () => {
       mounted = false;
     };
@@ -373,7 +352,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
   const visibleRows = useMemo(() => {
     const base = filteredIncidents !== null ? filteredIncidents : incidents;
     const start = (page - 1) * limit;
-
     return (base || []).slice(start, start + limit);
   }, [incidents, filteredIncidents, page, limit]);
 
@@ -386,7 +364,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
           it?.stationId ||
           (it?.station && (it.station.id || it.station)) ||
           null;
-
         if (!sid) continue;
         const name =
           (it?.station &&
@@ -396,20 +373,16 @@ export default function Incidents({ site }: { site?: SiteProp }) {
               it.station.title)) ||
           it.stationName ||
           String(sid);
-
         map.set(String(sid), { id: sid, name });
       }
     };
-
     collectFrom(incidents || []);
     collectFrom(dispatches || []);
-
     return Array.from(map.values());
   }, [stations, incidents, dispatches]);
 
   const stationOptions = useMemo(() => {
     const list = visualStations || [];
-
     if (!filterClientId) return list;
     // Filter stations to those that actually have an incident for the selected
     // client. (The old `s.clientId` guard was dead — visualStations' fallback
@@ -422,7 +395,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
             String(filterClientId),
       );
     });
-
     return filtered && filtered.length ? filtered : list;
   }, [visualStations, filterClientId, incidents]);
 
@@ -430,24 +402,19 @@ export default function Incidents({ site }: { site?: SiteProp }) {
     event: React.MouseEvent<HTMLButtonElement>,
   ): Promise<void> {
     const postSiteId = site?.id || "";
-
     if (!postSiteId) {
       toast.error("Post site missing");
-
       return;
     }
     if (!newSubject && !newContent) {
       toast.error("Provide a subject or description");
-
       return;
     }
     try {
       setCreating(true);
       const tenantId = site?.tenantId || localStorage.getItem("tenantId") || "";
-
       if (!tenantId) {
         toast.error("Tenant missing");
-
         return;
       }
       const payload: any = {
@@ -464,7 +431,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
         payload,
       );
       const created = resp && resp.data ? resp.data : resp;
-
       setDispatches((d) => [created, ...d]);
       setCreateOpen(false);
       setNewSubject("");
@@ -481,7 +447,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
 
   useEffect(() => {
     let mounted = true;
-
     (async () => {
       if (!createOpen) return;
       try {
@@ -489,15 +454,12 @@ export default function Incidents({ site }: { site?: SiteProp }) {
           site?.tenantId || localStorage.getItem("tenantId") || "";
         // Prefer a selected post site from the filters when opening the create dialog
         const postSiteId = filterStationId || site?.id || "";
-
         if (!tenantId || !postSiteId) {
           if (mounted) setStations([]);
-
           return;
         }
 
         let stationRows: any[] = [];
-
         try {
           // The station list endpoint filters by post-site via filter[postSite]
           // (the old `/post-site/:id/stations` route never existed → always 404'd
@@ -505,7 +467,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
           const res: any = await ApiService.get(
             `/tenant/${tenantId}/stations?filter[postSite]=${encodeURIComponent(postSiteId)}&limit=200&offset=0`,
           );
-
           stationRows = Array.isArray(res)
             ? res
             : res && res.rows
@@ -523,7 +484,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
             s?.title ||
             s?.label ||
             (typeof s === "string" ? s : s && s.id ? s.id : String(id));
-
           return { id, name };
         });
 
@@ -533,19 +493,16 @@ export default function Incidents({ site }: { site?: SiteProp }) {
           incidents.length > 0
         ) {
           const map = new Map<string, { id: any; name: string }>();
-
           for (const it of incidents) {
             const sid =
               it.stationId ||
               (it.station && (it.station.id || it.station)) ||
               null;
-
             if (!sid) continue;
             const name =
               (it.station &&
                 (it.station.name || it.station.label || it.station.title)) ||
               String(sid);
-
             map.set(String(sid), { id: sid, name });
           }
           stationMapped = Array.from(map.values());
@@ -561,7 +518,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
         if (mounted) setStations([]);
       }
     })();
-
     return () => {
       mounted = false;
     };
@@ -570,14 +526,12 @@ export default function Incidents({ site }: { site?: SiteProp }) {
   // Load clients and stations when opening filter panel
   useEffect(() => {
     let mounted = true;
-
     (async () => {
       if (!openFilter) return;
       try {
         const tenantId =
           site?.tenantId || localStorage.getItem("tenantId") || "";
         const postSiteId = filterPostSiteId || site?.id || "";
-
         if (!tenantId) return;
 
         // load incident types for filter
@@ -591,7 +545,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
               : Array.isArray(itResp)
                 ? itResp
                 : [];
-
           if (mounted) setIncidentTypes(itRows || []);
         } catch (err) {
           console.warn("Failed to load incident types for filters", err);
@@ -602,7 +555,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
         try {
           const clientIdLocal =
             site?.clientId || (site?.client && site.client.id) || null;
-
           if (clientIdLocal) {
             const clientResp: any = await ApiService.get(
               `/tenant/${tenantId}/client-account/${clientIdLocal}`,
@@ -617,7 +569,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                 : clientObj && Array.isArray(clientObj.users)
                   ? clientObj.users
                   : [];
-
             if (mounted) setClientAdmins(admins || []);
           } else {
             if (mounted) setClientAdmins([]);
@@ -630,14 +581,12 @@ export default function Incidents({ site }: { site?: SiteProp }) {
         // load stations for post site
         try {
           let stationRows: any[] = [];
-
           try {
             // filter[postSite] is the supported station-list filter (the old
             // `/post-site/:id/stations` route never existed → always 404'd).
             const res: any = await ApiService.get(
               `/tenant/${tenantId}/stations?filter[postSite]=${encodeURIComponent(postSiteId)}&limit=200&offset=0`,
             );
-
             stationRows = Array.isArray(res)
               ? res
               : res && res.rows
@@ -655,7 +604,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
               s?.title ||
               s?.label ||
               (typeof s === "string" ? s : s && s.id ? s.id : String(id));
-
             return { id, name };
           });
 
@@ -666,19 +614,16 @@ export default function Incidents({ site }: { site?: SiteProp }) {
             incidents.length > 0
           ) {
             const map = new Map<string, { id: any; name: string }>();
-
             for (const it of incidents) {
               const sid =
                 it.stationId ||
                 (it.station && (it.station.id || it.station)) ||
                 null;
-
               if (!sid) continue;
               const name =
                 (it.station &&
                   (it.station.name || it.station.label || it.station.title)) ||
                 String(sid);
-
               map.set(String(sid), { id: sid, name });
             }
             stationMapped = Array.from(map.values());
@@ -692,7 +637,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
         console.error(err);
       }
     })();
-
     return () => {
       mounted = false;
     };
@@ -727,7 +671,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
         const created = new Date(
           it.createdAt || it.created_at || it.createdAt || 0,
         );
-
         if (created < from) return false;
       }
       if (filterCreatedTo) {
@@ -735,7 +678,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
         const created = new Date(
           it.createdAt || it.created_at || it.createdAt || 0,
         );
-
         if (created > to) return false;
       }
       // incident date range
@@ -744,7 +686,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
         const inc = new Date(
           it.incidentAt || it.date || it.createdAt || it.created_at || 0,
         );
-
         if (inc < from) return false;
       }
       if (filterIncidentTo) {
@@ -752,7 +693,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
         const inc = new Date(
           it.incidentAt || it.date || it.createdAt || it.created_at || 0,
         );
-
         if (inc > to) return false;
       }
       // informer filter (supports guard ids, client:<id> and admin:<id>)
@@ -775,7 +715,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
               it.postSite?.clientId ||
               "",
           );
-
           if (String(cid) !== incidentClientId) return false;
         } else if (informerSel.startsWith("admin:")) {
           const aid = informerSel.split(":")[1] || "";
@@ -788,7 +727,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
           const nameMatchAdmin = adminName
             ? String(callerName).toLowerCase().includes(adminName.toLowerCase())
             : false;
-
           if (!nameMatchAdmin) return false;
         } else {
           // treat as guard id or name substring
@@ -818,7 +756,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
               String(callerName)
                 .toLowerCase()
                 .includes(String(filterInformer).toLowerCase());
-
           if (!guardMatch && !nameMatch) return false;
         }
       }
@@ -831,17 +768,14 @@ export default function Incidents({ site }: { site?: SiteProp }) {
           (it.incidentType && (it.incidentType.id || it.incidentType)) ||
           it.incidentType ||
           "";
-
         if (String(itTypeId) !== typeId) return false;
       }
       // archived flag (if item has `archived` property)
       if (!filterShowArchived) {
         if (it.archived === true) return false;
       }
-
       return true;
     });
-
     setFilteredIncidents(filtered);
     setOpenFilter(false);
     setPage(1);
@@ -902,7 +836,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
         callerName: it.callerName || "",
         internalNotes: it.internalNotes || "",
       };
-
       navigate("/dispatch-tickets/new", { state: { duplicate: dup } });
     } catch (err) {
       console.error("Error creating dispatch from incident", err);
@@ -929,7 +862,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                   if (!selectedIds || selectedIds.length === 0) {
                     toast.error(t("ui.Incidents.seleccioneAlMenosUnElemento"));
                     setActionSelectValue("");
-
                     return;
                   }
                   toast("Acción eliminar no implementada aquí");
@@ -953,7 +885,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                 size={16}
               />
               <Input
-                className="w-full max-w-md pl-9"
                 placeholder={
                   t("incidents.searchPlaceholder") || "Search incidents..."
                 }
@@ -961,14 +892,15 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                 onChange={(e) =>
                   setSearchTerm((e.target as HTMLInputElement).value)
                 }
+                className="w-full max-w-md pl-9"
               />
             </div>
 
             <Sheet open={openFilter} onOpenChange={setOpenFilter}>
               <SheetTrigger asChild>
                 <Button
-                  className="border-primary/30 brand-text"
                   variant="outline"
+                  className="border-primary/30 brand-text"
                 >
                   <Filter className="mr-2 h-4 w-4" />
                   {t("incidents.filters") || "Filters"}
@@ -1018,7 +950,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                               </SelectItem>
                             ))
                           ) : (
-                            <SelectItem disabled value="__no_stations">
+                            <SelectItem value="__no_stations" disabled>
                               {t("incidents.noStations", {
                                 defaultValue: "No hay estaciones",
                               })}
@@ -1104,7 +1036,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                                 </SelectItem>
                               ))
                             ) : (
-                              <SelectItem disabled value="__no_informers">
+                              <SelectItem value="__no_informers" disabled>
                                 {t("ui.Incidents.noHayInformadores")}
                               </SelectItem>
                             )}
@@ -1164,7 +1096,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                                 </SelectItem>
                               ))
                             ) : (
-                              <SelectItem disabled value="__no_types">
+                              <SelectItem value="__no_types" disabled>
                                 {t("ui.Incidents.noHayTipos")}
                               </SelectItem>
                             )}
@@ -1181,8 +1113,8 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                           "Created from"}
                       </label>
                       <input
-                        className="mt-1 block w-full border rounded px-2 py-2"
                         type="date"
+                        className="mt-1 block w-full border rounded px-2 py-2"
                         value={filterCreatedFrom || ""}
                         onChange={(e) =>
                           setFilterCreatedFrom(e.target.value || undefined)
@@ -1194,8 +1126,8 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                         {t("incidents.filterFields.createdTo") || "Created to"}
                       </label>
                       <input
-                        className="mt-1 block w-full border rounded px-2 py-2"
                         type="date"
+                        className="mt-1 block w-full border rounded px-2 py-2"
                         value={filterCreatedTo || ""}
                         onChange={(e) =>
                           setFilterCreatedTo(e.target.value || undefined)
@@ -1208,8 +1140,8 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                           "Incident from"}
                       </label>
                       <input
-                        className="mt-1 block w-full border rounded px-2 py-2"
                         type="date"
+                        className="mt-1 block w-full border rounded px-2 py-2"
                         value={filterIncidentFrom || ""}
                         onChange={(e) =>
                           setFilterIncidentFrom(e.target.value || undefined)
@@ -1222,8 +1154,8 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                           "Incident to"}
                       </label>
                       <input
-                        className="mt-1 block w-full border rounded px-2 py-2"
                         type="date"
+                        className="mt-1 block w-full border rounded px-2 py-2"
                         value={filterIncidentTo || ""}
                         onChange={(e) =>
                           setFilterIncidentTo(e.target.value || undefined)
@@ -1234,17 +1166,17 @@ export default function Incidents({ site }: { site?: SiteProp }) {
 
                   <div className="flex items-center gap-2">
                     <input
-                      checked={filterShowArchived}
-                      className="h-4 w-4"
                       id="archived"
                       type="checkbox"
+                      className="h-4 w-4"
+                      checked={filterShowArchived}
                       onChange={(e) =>
                         setFilterShowArchived(Boolean(e.target.checked))
                       }
                     />
                     <label
-                      className="text-sm text-foreground"
                       htmlFor="archived"
+                      className="text-sm text-foreground"
                     >
                       {t("incidents.filterFields.showArchived") ||
                         "Show archived"}
@@ -1254,15 +1186,15 @@ export default function Incidents({ site }: { site?: SiteProp }) {
 
                 <div className="mt-6 flex gap-2 justify-end">
                   <Button
-                    className="px-3 py-1 text-sm"
                     variant="secondary"
+                    className="px-3 py-1 text-sm"
                     onClick={clearFilters}
                   >
                     {t("incidents.clearFilters") || "Clear filters"}
                   </Button>
                   <Button
-                    className="px-3 py-1 text-sm"
                     variant="brand"
+                    className="px-3 py-1 text-sm"
                     onClick={applyFilters}
                   >
                     {t("incidents.applyFilters") || "Apply filters"}
@@ -1275,9 +1207,9 @@ export default function Incidents({ site }: { site?: SiteProp }) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  aria-label={t("ui.Incidents.masAcciones", "Más acciones")}
-                  size="icon"
                   variant="ghost"
+                  size="icon"
+                  aria-label={t("ui.Incidents.masAcciones", "Más acciones")}
                 >
                   <EllipsisVertical className="h-5 w-5" />
                 </Button>
@@ -1332,7 +1264,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
         </div>
 
         {loading ? (
-          <SkeletonCards className="mt-4" count={4} />
+          <SkeletonCards count={4} className="mt-4" />
         ) : (
           <>
             {/* `overflow-x-auto`, no `overflow-hidden`: siete columnas con fecha no
@@ -1349,13 +1281,10 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                         }
                         onCheckedChange={(v) => {
                           const checked = Boolean(v);
-
                           if (checked) {
                             setSelectedIds((prev) => {
                               const ids = new Set(prev);
-
                               visibleRows.forEach((r) => ids.add(r.id));
-
                               return Array.from(ids);
                             });
                           } else {
@@ -1389,16 +1318,16 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                 <tbody>
                   {visibleRows.length === 0 ? (
                     <tr>
-                      <td className="py-12" colSpan={7}>
+                      <td colSpan={7} className="py-12">
                         <EmptyState
-                          description={t(
-                            "incidents.emptyMessage",
-                            "Ajusta los filtros o crea un incidente nuevo.",
-                          )}
                           icon={<Filter />}
                           title={t(
                             "incidents.emptyTitle",
                             "Sin incidentes para esta sede.",
+                          )}
+                          description={t(
+                            "incidents.emptyMessage",
+                            "Ajusta los filtros o crea un incidente nuevo.",
                           )}
                         />
                       </td>
@@ -1441,11 +1370,9 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                                 g.id ||
                                 "",
                             ).toLowerCase();
-
                             return name.includes(s);
                           },
                         );
-
                         return (
                           title.includes(s) ||
                           caller.includes(s) ||
@@ -1460,14 +1387,11 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                               checked={selectedIds.includes(it.id)}
                               onCheckedChange={(v) => {
                                 const checked = Boolean(v);
-
                                 setSelectedIds((prev) => {
                                   if (checked) {
                                     if (prev.includes(it.id)) return prev;
-
                                     return [...prev, it.id];
                                   }
-
                                   return prev.filter((id) => id !== it.id);
                                 });
                               }}
@@ -1511,7 +1435,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                               const ws = (
                                 (it as any).workStatus || ""
                               ).toString();
-
                               if (ws === "inProgress")
                                 return (
                                   <StatusBadge tone="amber">
@@ -1540,7 +1463,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                               const s = (it.status || "")
                                 .toString()
                                 .toLowerCase();
-
                               if (s === "cerrado" || s === "closed") {
                                 return (
                                   <StatusBadge tone="green">
@@ -1568,12 +1490,12 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <Button
+                                  variant="ghost"
+                                  size="icon"
                                   aria-label={t(
                                     "ui.Incidents.masAcciones",
                                     "Más acciones",
                                   )}
-                                  size="icon"
-                                  variant="ghost"
                                 >
                                   <EllipsisVertical className="h-5 w-5" />
                                 </Button>
@@ -1660,7 +1582,6 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                                     setSelSup("");
                                     try {
                                       const r = await supervisorService.list();
-
                                       setSups(r.rows || []);
                                     } catch {
                                       setSups([]);
@@ -1735,17 +1656,17 @@ export default function Incidents({ site }: { site?: SiteProp }) {
 
               <div className="flex gap-2">
                 <Button
-                  disabled={page === 1 || loading}
-                  size="sm"
                   variant="outline"
+                  size="sm"
+                  disabled={page === 1 || loading}
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                 >
                   {t("incidents.prev") || "Prev"}
                 </Button>
                 <Button
-                  disabled={page * limit >= totalCount || loading}
-                  size="sm"
                   variant="outline"
+                  size="sm"
+                  disabled={page * limit >= totalCount || loading}
                   onClick={() => setPage((p) => p + 1)}
                 >
                   {t("incidents.next") || "Next"}
@@ -1791,8 +1712,8 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                   ) : (
                     <SelectItem
                       key="__no_stations"
-                      disabled
                       value="__no_stations"
+                      disabled
                     >
                       {t("incidents.noStations") || "No stations"}
                     </SelectItem>
@@ -1829,7 +1750,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
               <Button variant="secondary" onClick={() => setCreateOpen(false)}>
                 {t("incidents.cancel") || "Cancel"}
               </Button>
-              <Button disabled={creating} onClick={handleCreateDispatch}>
+              <Button onClick={handleCreateDispatch} disabled={creating}>
                 {creating
                   ? t("incidents.creating") || "Creating..."
                   : t("incidents.create") || "Create"}
@@ -1862,9 +1783,9 @@ export default function Incidents({ site }: { site?: SiteProp }) {
               })}
             </p>
             <select
-              className={FIELD_CLS_LG}
               value={selSup}
               onChange={(e) => setSelSup(e.target.value)}
+              className={FIELD_CLS_LG}
             >
               <option value="">
                 {t("incidents.selectSupervisor", {
@@ -1889,10 +1810,8 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                 if (!selSup || !dispatchFor) return;
                 const tid =
                   site?.tenantId || localStorage.getItem("tenantId") || "";
-
                 if (!tid) {
                   toast.error("Tenant missing");
-
                   return;
                 }
                 setDispatching(true);

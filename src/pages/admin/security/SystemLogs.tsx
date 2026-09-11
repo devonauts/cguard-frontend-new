@@ -1,5 +1,3 @@
-import type { ReactNode } from "react";
-
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -13,19 +11,7 @@ import {
   Activity,
   Inbox,
 } from "lucide-react";
-
-import { useInfiniteAuditList } from "./useInfiniteAuditList";
-import {
-  AuditRow,
-  AuditSearch,
-  AuditSkeleton,
-  AuditTable,
-  InfiniteFooter,
-  SeverityRail,
-  fmtStamp,
-  type SeverityTone,
-} from "./shared";
-
+import type { ReactNode } from "react";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,6 +23,17 @@ import {
   StatusBadge,
   EmptyState,
 } from "@/components/kit";
+import { useInfiniteAuditList } from "./useInfiniteAuditList";
+import {
+  AuditRow,
+  AuditSearch,
+  AuditSkeleton,
+  AuditTable,
+  InfiniteFooter,
+  SeverityRail,
+  fmtStamp,
+  type SeverityTone,
+} from "./shared";
 
 type LogRow = {
   id: string;
@@ -63,7 +60,6 @@ function actionMeta(action: string): {
   icon: ReactNode;
 } {
   const a = String(action || "").toLowerCase();
-
   if (a.includes("create"))
     return {
       label: "Creación",
@@ -85,7 +81,6 @@ function actionMeta(action: string): {
       tone: "bad",
       icon: <Trash2 className="size-3.5" />,
     };
-
   return {
     label: action || "—",
     tone: "neutral",
@@ -112,20 +107,17 @@ export default function SystemLogs() {
   // Debounce the search box (server-side search).
   useEffect(() => {
     const h = setTimeout(() => setDebouncedQ(q), 350);
-
     return () => clearTimeout(h);
   }, [q]);
 
   const buildParams = useCallback(
     (offset: number, limit: number) => {
       const params = new URLSearchParams();
-
       params.set("limit", String(limit));
       params.set("offset", String(offset));
       params.set("orderBy", "timestamp_DESC");
       if (action) params.set("filter[action]", action);
       if (debouncedQ.trim()) params.set("filter[search]", debouncedQ.trim());
-
       return params;
     },
     [action, debouncedQ],
@@ -144,46 +136,46 @@ export default function SystemLogs() {
 
   return (
     <AppLayout>
-      <PageContainer className="px-4 pt-4 sm:px-6 sm:pt-6" width="wide">
+      <PageContainer width="wide" className="px-4 pt-4 sm:px-6 sm:pt-6">
         <PageHeader
+          icon={<ScrollText />}
+          title={t("ui.SystemLogs.registrosDelSistema")}
+          subtitle={t("ui.SystemLogs.todasLasAccionesCreacionesCambios")}
           badges={
             !primeraCarga ? (
-              <StatusBadge dot={false} tone="neutral">
+              <StatusBadge tone="neutral" dot={false}>
                 {items.length}
                 {total ? ` de ${total}` : ""} registro
                 {items.length === 1 ? "" : "s"}
               </StatusBadge>
             ) : undefined
           }
-          icon={<ScrollText />}
-          subtitle={t("ui.SystemLogs.todasLasAccionesCreacionesCambios")}
-          title={t("ui.SystemLogs.registrosDelSistema")}
         />
 
         <Toolbar>
           <AuditSearch
+            value={q}
+            onChange={setQ}
             placeholder={t(
               "ui.SystemLogs.buscarPorRegistroUsuarioO",
               "Buscar por registro, usuario o código…",
             )}
-            value={q}
-            onChange={setQ}
           />
 
           <Segmented
-            className="max-w-full overflow-x-auto"
-            options={FILTERS.map((f) => ({ value: f.key, label: f.label }))}
             value={action}
             onChange={setAction}
+            options={FILTERS.map((f) => ({ value: f.key, label: f.label }))}
+            className="max-w-full overflow-x-auto"
           />
 
           <Button
-            aria-label="Recargar"
-            className="ml-auto"
-            size="icon"
-            title="Recargar"
             variant="outline"
+            size="icon"
+            className="ml-auto"
             onClick={() => load(true)}
+            title="Recargar"
+            aria-label="Recargar"
           >
             <RefreshCw
               className={`size-4 ${primeraCarga ? "animate-spin" : ""}`}
@@ -198,13 +190,13 @@ export default function SystemLogs() {
             <div className="p-6">
               <EmptyState
                 className="border-0"
+                icon={<Inbox />}
+                title={t("comun.sinRegistros")}
                 description={
                   q.trim() || action
                     ? "Ninguna acción coincide con la búsqueda o el filtro elegido."
                     : "Todavía no se ha registrado ninguna acción."
                 }
-                icon={<Inbox />}
-                title={t("comun.sinRegistros")}
               />
             </div>
           ) : (
@@ -217,14 +209,13 @@ export default function SystemLogs() {
                   <th className="px-3 py-3">Registro</th>
                   <th className="px-3 py-3">{t("comun.usuario")}</th>
                   <th className="px-3 py-3 text-right">{t("comun.fecha")}</th>
-                  <th className="px-2 py-3" />
+                  <th className="px-2 py-3"></th>
                 </>
               }
             >
               {items.map((r) => {
                 const m = actionMeta(r.action);
                 const isOpen = expanded === r.id;
-
                 return (
                   <Fragment key={r.id}>
                     <AuditRow
@@ -233,7 +224,7 @@ export default function SystemLogs() {
                     >
                       <td className="relative px-4 py-2.5">
                         <SeverityRail tone={m.tone} />
-                        <StatusBadge dot={false} tone={m.tone}>
+                        <StatusBadge tone={m.tone} dot={false}>
                           {m.icon}
                           {m.labelKey ? t(m.labelKey, m.label) : m.label}
                         </StatusBadge>
@@ -278,7 +269,7 @@ export default function SystemLogs() {
                           background: "var(--glass-sunken)",
                         }}
                       >
-                        <td className="px-4 py-3" colSpan={5}>
+                        <td colSpan={5} className="px-4 py-3">
                           <div
                             className="mb-1.5 text-xs"
                             style={{ color: "var(--ink-soft)" }}
@@ -299,11 +290,11 @@ export default function SystemLogs() {
           )}
 
           <InfiniteFooter
+            sentinelRef={sentinelRef}
+            loading={loading}
+            hasMore={hasMore}
             count={items.length}
             endLabel="Fin de los registros"
-            hasMore={hasMore}
-            loading={loading}
-            sentinelRef={sentinelRef}
           />
         </Section>
       </PageContainer>

@@ -1,7 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Sparkles, ArrowRight } from "lucide-react";
-
+import { Button } from "@/components/ui/button";
+import onboardingService from "@/lib/api/onboardingService";
 import {
   OnboardingTenant,
   getMissingFields,
@@ -9,9 +10,6 @@ import {
   trialDaysLeft,
   isTrialing,
 } from "./onboardingUtils";
-
-import { Button } from "@/components/ui/button";
-import onboardingService from "@/lib/api/onboardingService";
 
 interface OnboardingBannerProps {
   tenant: OnboardingTenant | null;
@@ -118,9 +116,9 @@ export default function OnboardingBanner({
         </div>
       </div>
       <Button
-        className="shrink-0 self-start sm:self-auto"
         size="sm"
         onClick={onOpenWizard}
+        className="shrink-0 self-start sm:self-auto"
       >
         {t(
           "ui.OnboardingBanner.continuarConfiguracion",

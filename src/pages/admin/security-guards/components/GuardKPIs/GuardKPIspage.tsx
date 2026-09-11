@@ -1,9 +1,3 @@
-import type {
-  GuardDetail,
-  Kpi,
-  GuardAssignmentRow,
-} from "../../guardDetailTypes";
-
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
@@ -13,30 +7,30 @@ import {
   Plus,
   X,
   Mail,
+  MessageCircle,
   ChevronLeft,
   ChevronRight,
   Edit,
   Trash,
   FileText,
   File,
+  Upload,
   MoreVertical,
   ArrowUpDown,
   BarChart3,
   MapPin,
 } from "lucide-react";
-import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
-
-import GuardPerformancePanel from "./GuardPerformancePanel";
-
 import MobileCardList from "@/components/responsive/MobileCardList";
 import AppLayout from "@/layouts/app-layout";
 import GuardsLayout from "@/layouts/GuardsLayout";
+import { toast } from "sonner";
 import KpiBarChart from "@/components/KpiBarChart";
+import GuardPerformancePanel from "./GuardPerformancePanel";
 import KpiService from "@/services/kpi.service";
 import { useAuth } from "@/contexts/AuthContext";
 import { ApiService } from "@/services/api/apiService";
 import api from "@/lib/api";
+import { useTranslation } from "react-i18next";
 import {
   PageContainer,
   PageHeader,
@@ -48,6 +42,11 @@ import {
   IconTile,
 } from "@/components/kit";
 import { Button } from "@/components/ui/button";
+import type {
+  GuardDetail,
+  Kpi,
+  GuardAssignmentRow,
+} from "../../guardDetailTypes";
 
 type Props = {
   guard?: GuardDetail;
@@ -123,7 +122,6 @@ export default function GuardIndicators({ guard }: Props) {
 
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
     return emailRegex.test(email);
   };
 
@@ -135,7 +133,6 @@ export default function GuardIndicators({ guard }: Props) {
           "Por favor ingresa un correo electrónico",
         ),
       );
-
       return;
     }
 
@@ -146,7 +143,6 @@ export default function GuardIndicators({ guard }: Props) {
           "Correo electrónico no válido",
         ),
       );
-
       return;
     }
 
@@ -157,7 +153,6 @@ export default function GuardIndicators({ guard }: Props) {
           "Este correo ya ha sido agregado",
         ),
       );
-
       return;
     }
 
@@ -207,7 +202,6 @@ export default function GuardIndicators({ guard }: Props) {
   const loadKpis = async () => {
     const reqId = ++loadKpisReqId.current;
     const isStale = () => reqId !== loadKpisReqId.current;
-
     try {
       const monthStr = selectedMonth
         ? `${selectedMonth.getFullYear()}-${String(selectedMonth.getMonth() + 1).padStart(2, "0")}`
@@ -222,14 +216,12 @@ export default function GuardIndicators({ guard }: Props) {
         guard: guardId,
         month: monthStr,
       };
-
       if (searchQuery && searchQuery.trim().length > 0) {
         params.description = searchQuery.trim();
       }
       const resGuard = (await KpiService.list(params)) as
         | { rows?: Kpi[] }
         | Kpi[];
-
       if (import.meta.env.DEV)
         console.debug("[GuardKPIs] kpi guard response:", resGuard);
       let combinedRows: Kpi[] = Array.isArray(resGuard)
@@ -241,7 +233,6 @@ export default function GuardIndicators({ guard }: Props) {
       // Also fetch assigned post-sites for this guard and include KPIs attached to those post-sites
       try {
         const tenantId = localStorage.getItem("tenantId");
-
         if (tenantId && guardId) {
           const resp = (await ApiService.get(
             `/tenant/${tenantId}/security-guard/${guardId}/assignments`,
@@ -251,7 +242,6 @@ export default function GuardIndicators({ guard }: Props) {
                 rows?: GuardAssignmentRow[];
               }
             | GuardAssignmentRow[];
-
           if (import.meta.env.DEV)
             console.debug("[GuardKPIs] assignments response:", resp);
           const assignData = Array.isArray(resp) ? resp : (resp?.data ?? resp);
@@ -266,7 +256,6 @@ export default function GuardIndicators({ guard }: Props) {
                 .map((r: GuardAssignmentRow) => {
                   // support various shapes returned by assignments
                   if (!r) return null;
-
                   return (
                     r.businessInfoId ||
                     r.postSiteId ||
@@ -291,14 +280,12 @@ export default function GuardIndicators({ guard }: Props) {
                   postSite: siteId,
                   month: monthStr,
                 })) as { rows?: Kpi[] } | Kpi[];
-
                 if (import.meta.env.DEV)
                   console.debug(
                     "[GuardKPIs] kpi postSite response for",
                     siteId,
                     resSite,
                   );
-
                 return Array.isArray(resSite)
                   ? resSite
                   : Array.isArray(resSite?.rows)
@@ -310,12 +297,10 @@ export default function GuardIndicators({ guard }: Props) {
                   siteId,
                   e,
                 );
-
                 return [];
               }
             }),
           );
-
           for (const siteRows of perSite)
             combinedRows = combinedRows.concat(siteRows);
         }
@@ -325,12 +310,10 @@ export default function GuardIndicators({ guard }: Props) {
 
       // Deduplicate by id
       const seen = new Set<string>();
-
       combinedRows = combinedRows.filter((r: Kpi) => {
         if (!r || !r.id) return false;
         if (seen.has(r.id)) return false;
         seen.add(r.id);
-
         return true;
       });
 
@@ -347,14 +330,12 @@ export default function GuardIndicators({ guard }: Props) {
 
   const prevMonth = () => {
     const d = new Date(selectedMonth);
-
     d.setMonth(d.getMonth() - 1);
     setSelectedMonth(d);
   };
 
   const nextMonth = () => {
     const d = new Date(selectedMonth);
-
     d.setMonth(d.getMonth() + 1);
     setSelectedMonth(d);
   };
@@ -367,7 +348,6 @@ export default function GuardIndicators({ guard }: Props) {
     if (!value) return "";
     try {
       const d = new Date(value);
-
       return d.toLocaleString();
     } catch {
       return "";
@@ -402,7 +382,6 @@ export default function GuardIndicators({ guard }: Props) {
         window.open(kpi.pdfUrl, "_blank");
         toast.success(t("guards.KPI.toasts.pdfOpened", "PDF opened"));
         setMenuOpenId(null);
-
         return;
       }
 
@@ -410,20 +389,17 @@ export default function GuardIndicators({ guard }: Props) {
       if (kpi?.pdfBase64) {
         const byteCharacters = atob(kpi.pdfBase64);
         const byteNumbers = new Array(byteCharacters.length);
-
         for (let i = 0; i < byteCharacters.length; i++) {
           byteNumbers[i] = byteCharacters.charCodeAt(i);
         }
         const byteArray = new Uint8Array(byteNumbers);
         const blob = new Blob([byteArray], { type: "application/pdf" });
         const url = URL.createObjectURL(blob);
-
         window.open(url, "_blank");
         // Revoke after the new tab has had time to load so the Blob isn't pinned.
         setTimeout(() => URL.revokeObjectURL(url), 60000);
         toast.success(t("guards.KPI.toasts.pdfGenerated", "PDF generado"));
         setMenuOpenId(null);
-
         return;
       }
 
@@ -432,7 +408,6 @@ export default function GuardIndicators({ guard }: Props) {
         try {
           const blob = await KpiService.getPdf(kpi.id);
           const url = URL.createObjectURL(blob);
-
           window.open(url, "_blank");
           // Revoke after the new tab has had time to load so the Blob isn't pinned.
           setTimeout(() => URL.revokeObjectURL(url), 60000);
@@ -460,7 +435,6 @@ export default function GuardIndicators({ guard }: Props) {
           const blob = await KpiService.getExcel(kpi.id);
           const url = URL.createObjectURL(blob);
           const a = document.createElement("a");
-
           a.href = url;
           a.download = `kpi-${kpi.id}.xlsx`;
           document.body.appendChild(a);
@@ -540,7 +514,6 @@ export default function GuardIndicators({ guard }: Props) {
     try {
       if (!kpis || !kpis.length) return;
       const tenantId = localStorage.getItem("tenantId");
-
       if (!tenantId) return;
       const month = monthDate || selectedMonth || new Date();
       const year = month.getFullYear();
@@ -556,7 +529,6 @@ export default function GuardIndicators({ guard }: Props) {
       const resp = (await ApiService.get(`/tenant/${tenantId}/report${q}`)) as
         | { rows?: ReportRow[] }
         | ReportRow[];
-
       if (import.meta.env.DEV)
         console.debug("[GuardKPIs] reports response:", resp);
       const rows: ReportRow[] = Array.isArray(resp)
@@ -566,12 +538,10 @@ export default function GuardIndicators({ guard }: Props) {
           : [];
 
       const countsByKpi: Record<string, number> = {};
-
       for (const kpi of kpis) {
         let cnt = 0;
         const guardRef = kpi.guard;
         const postSiteRef = kpi.postSite;
-
         if (kpi.scope === "guard" && guardRef && guardRef.id) {
           cnt = rows.filter(
             (r) =>
@@ -581,7 +551,6 @@ export default function GuardIndicators({ guard }: Props) {
         } else if (kpi.scope === "postSite" && postSiteRef && postSiteRef.id) {
           // match report to postSite using multiple possible report fields
           const siteId = String(postSiteRef.id);
-
           cnt = rows.filter((r) => {
             if (!r) return false;
             // direct stationId equals site id
@@ -605,7 +574,6 @@ export default function GuardIndicators({ guard }: Props) {
               String(r.businessInfo.id) === siteId
             )
               return true;
-
             return false;
           }).length;
         } else {
@@ -630,11 +598,9 @@ export default function GuardIndicators({ guard }: Props) {
   useEffect(() => {
     if (!guardRecordId) return;
     let mounted = true;
-
     (async () => {
       try {
         const tenantId = localStorage.getItem("tenantId");
-
         if (!tenantId) return;
         const resp = await api.get(
           `/tenant/${tenantId}/security-guard/${guardRecordId}/assignments`,
@@ -645,14 +611,12 @@ export default function GuardIndicators({ guard }: Props) {
           : Array.isArray(data)
             ? data
             : [];
-
         if (!mounted) return;
         setAssignedSitesCount(rows.length);
       } catch (e) {
         console.error("Failed loading guard assignments", e);
       }
     })();
-
     return () => {
       mounted = false;
     };
@@ -666,18 +630,17 @@ export default function GuardIndicators({ guard }: Props) {
     const timer = setTimeout(() => {
       loadKpis();
     }, 300);
-
     return () => {
       clearTimeout(timer);
       loadKpisReqId.current++;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedMonth, searchQuery, guardRecordId]);
 
   // Close menu when clicking outside (matches PostSiteKPIs behavior)
   useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-
       if (!target) return;
       if (
         target.closest("[data-kpi-menu]") ||
@@ -686,9 +649,7 @@ export default function GuardIndicators({ guard }: Props) {
         return;
       setMenuOpenId(null);
     };
-
     document.addEventListener("mousedown", onDocClick);
-
     return () => document.removeEventListener("mousedown", onDocClick);
   }, []);
 
@@ -697,8 +658,17 @@ export default function GuardIndicators({ guard }: Props) {
       <GuardsLayout navKey="keep-safe" title="guards.nav.indicadores">
         <PageContainer width="wide">
           <PageHeader
+            icon={<BarChart3 />}
+            title={t("guards.KPI.title", {
+              defaultValue: "Indicadores de rendimiento",
+            })}
+            subtitle={t("guards.KPI.subtitle", {
+              defaultValue: "KPIs y desempeño del vigilante.",
+            })}
             actions={
               <Button
+                variant="brand"
+                onClick={handleAddKPI}
                 disabled={!canEdit}
                 title={
                   canEdit
@@ -708,36 +678,27 @@ export default function GuardIndicators({ guard }: Props) {
                         "Solo un administrador puede crear o modificar indicadores",
                       )
                 }
-                variant="brand"
-                onClick={handleAddKPI}
               >
                 <Plus size={16} />
                 {t("guards.KPI.kpiadded", "Añadir Nuevo KPI")}
               </Button>
             }
-            icon={<BarChart3 />}
-            subtitle={t("guards.KPI.subtitle", {
-              defaultValue: "KPIs y desempeño del vigilante.",
-            })}
-            title={t("guards.KPI.title", {
-              defaultValue: "Indicadores de rendimiento",
-            })}
           />
 
           <Stagger className="grid gap-4 sm:grid-cols-2">
             <StatCard
-              accent="info"
-              icon={<MapPin />}
               label={t("guards.assignSites.assignedCount", {
                 defaultValue: "Assigned Sites",
               })}
               value={assignedSitesCount}
+              icon={<MapPin />}
+              accent="info"
             />
             <StatCard
-              accent="brand"
-              icon={<BarChart3 />}
               label={t("guards.KPI.totalKpis", { defaultValue: "KPIs" })}
               value={kpiData.length}
+              icon={<BarChart3 />}
+              accent="brand"
             />
           </Stagger>
 
@@ -745,13 +706,18 @@ export default function GuardIndicators({ guard }: Props) {
           <GuardPerformancePanel securityGuardId={guard?.id} />
 
           <Section
+            title={t("guards.KPI.feedTitle", {
+              defaultValue: "Indicadores clave (KPIs)",
+            })}
+            icon={<BarChart3 />}
+            className="min-h-[560px]"
             action={
               <div className="flex items-center gap-2">
                 {/* Left: Action Dropdown */}
                 <div className="relative inline-block">
                   <button
-                    className="cg-btn-glass cg-focus flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold"
                     onClick={() => setActionOpen(!actionOpen)}
+                    className="cg-btn-glass cg-focus flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold"
                   >
                     {actionSelection}
                     <ChevronDown size={16} />
@@ -762,7 +728,6 @@ export default function GuardIndicators({ guard }: Props) {
                       style={{ position: "absolute" }}
                     >
                       <button
-                        className="block w-full text-left px-4 py-2 text-sm hover:bg-muted"
                         onClick={() => {
                           setActionOpen(false);
                           if (!selectedIds || selectedIds.length === 0) {
@@ -772,11 +737,11 @@ export default function GuardIndicators({ guard }: Props) {
                                 "Debes seleccionar al menos un KPI",
                               ),
                             );
-
                             return;
                           }
                           setDeleteModalOpen(true);
                         }}
+                        className="block w-full text-left px-4 py-2 text-sm hover:bg-muted"
                       >
                         Eliminar
                       </button>
@@ -787,25 +752,20 @@ export default function GuardIndicators({ guard }: Props) {
                 {/* Center: Search */}
                 <div className="relative">
                   <Search
-                    className="absolute left-2.5 top-1/2 -translate-y-1/2"
                     size={15}
+                    className="absolute left-2.5 top-1/2 -translate-y-1/2"
                     style={{ color: "var(--ink-faint)" }}
                   />
                   <input
-                    className="cg-input w-48 py-2 pl-8 pr-3 text-sm"
-                    placeholder={t("guards.KPI.kpisearch", "Buscar KPI")}
                     type="text"
+                    placeholder={t("guards.KPI.kpisearch", "Buscar KPI")}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    className="cg-input w-48 py-2 pl-8 pr-3 text-sm"
                   />
                 </div>
               </div>
             }
-            className="min-h-[560px]"
-            icon={<BarChart3 />}
-            title={t("guards.KPI.feedTitle", {
-              defaultValue: "Indicadores clave (KPIs)",
-            })}
           >
             {/* Table */}
             <div className="overflow-x-auto min-h-[520px] pb-12">
@@ -819,12 +779,12 @@ export default function GuardIndicators({ guard }: Props) {
                       >
                         <th className="px-4 py-3 text-left">
                           <input
+                            type="checkbox"
+                            className="rounded"
                             checked={
                               kpiData.length > 0 &&
                               selectedIds.length === kpiData.length
                             }
-                            className="rounded"
-                            type="checkbox"
                             onChange={(e) => {
                               if (e.target.checked)
                                 setSelectedIds(kpiData.map((k) => k.id));
@@ -854,16 +814,16 @@ export default function GuardIndicators({ guard }: Props) {
                     <tbody>
                       {kpiData.length === 0 ? (
                         <tr>
-                          <td className="px-4 py-6" colSpan={5}>
+                          <td colSpan={5} className="px-4 py-6">
                             <EmptyState
-                              description={t(
-                                "clients.empty.description",
-                                "No pudimos encontrar ningún elemento que coincida con su búsqueda",
-                              )}
                               icon={<BarChart3 />}
                               title={t(
                                 "clients.empty.title",
                                 "No se encontraron resultados",
+                              )}
+                              description={t(
+                                "clients.empty.description",
+                                "No pudimos encontrar ningún elemento que coincida con su búsqueda",
                               )}
                             />
                           </td>
@@ -872,18 +832,18 @@ export default function GuardIndicators({ guard }: Props) {
                         kpiData.map((kpi, idx) => (
                           <React.Fragment key={kpi.id || idx}>
                             <tr
-                              className="border-b transition-colors hover:[background:var(--glass-sunken)]"
                               onClick={() =>
                                 setExpandedId(
                                   expandedId === kpi.id ? null : kpi.id,
                                 )
                               }
+                              className="border-b transition-colors hover:[background:var(--glass-sunken)]"
                             >
                               <td className="px-4 py-3">
                                 <input
-                                  checked={selectedIds.includes(kpi.id)}
-                                  className="rounded"
                                   type="checkbox"
+                                  className="rounded"
+                                  checked={selectedIds.includes(kpi.id)}
                                   onChange={(e) => {
                                     if (e.target.checked)
                                       setSelectedIds([...selectedIds, kpi.id]);
@@ -911,32 +871,32 @@ export default function GuardIndicators({ guard }: Props) {
                               >
                                 <div className="inline-flex items-center">
                                   <button
-                                    data-kpi-menu-button
-                                    className="text-muted-foreground hover:text-foreground/70 p-1 rounded mr-2"
-                                    title="Options"
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       setMenuOpenId(
                                         menuOpenId === kpi.id ? null : kpi.id,
                                       );
                                     }}
+                                    className="text-muted-foreground hover:text-foreground/70 p-1 rounded mr-2"
+                                    title="Options"
+                                    data-kpi-menu-button
                                   >
                                     <MoreVertical size={16} />
                                   </button>
 
                                   <button
-                                    className="text-muted-foreground hover:text-foreground p-1 rounded"
-                                    title={
-                                      expandedId === kpi.id
-                                        ? "Collapse"
-                                        : "Expand"
-                                    }
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       setExpandedId(
                                         expandedId === kpi.id ? null : kpi.id,
                                       );
                                     }}
+                                    title={
+                                      expandedId === kpi.id
+                                        ? "Collapse"
+                                        : "Expand"
+                                    }
+                                    className="text-muted-foreground hover:text-foreground p-1 rounded"
                                   >
                                     {expandedId === kpi.id ? (
                                       <ChevronUp size={16} />
@@ -953,15 +913,14 @@ export default function GuardIndicators({ guard }: Props) {
                                        fotograma mientras se desplaza la tabla.
                                        Plano: mismo aspecto, sin ese coste. */
                                     <div
-                                      className="glass-flat absolute right-4 top-full z-50 w-44 min-w-[11rem] translate-y-2 divide-y divide-border overflow-hidden py-1"
                                       data-kpi-menu={"kpi-" + (kpi.id || idx)}
+                                      className="glass-flat absolute right-4 top-full z-50 w-44 min-w-[11rem] translate-y-2 divide-y divide-border overflow-hidden py-1"
                                       style={{
                                         position: "absolute",
                                         background: "var(--glass-solid)",
                                       }}
                                     >
                                       <button
-                                        className="w-full text-left px-4 py-2 hover:bg-muted"
                                         onClick={() => {
                                           setEditingId(kpi.id);
                                           setFormData({
@@ -998,6 +957,7 @@ export default function GuardIndicators({ guard }: Props) {
                                           setShowModal(true);
                                           setMenuOpenId(null);
                                         }}
+                                        className="w-full text-left px-4 py-2 hover:bg-muted"
                                       >
                                         <div className="flex items-center gap-2 text-sm text-foreground">
                                           <Edit size={16} />
@@ -1006,12 +966,12 @@ export default function GuardIndicators({ guard }: Props) {
                                       </button>
 
                                       <button
-                                        className="w-full text-left px-4 py-2 hover:bg-muted"
                                         onClick={() => {
                                           setToDeleteId(kpi.id);
                                           setDeleteModalOpen(true);
                                           setMenuOpenId(null);
                                         }}
+                                        className="w-full text-left px-4 py-2 hover:bg-muted"
                                       >
                                         <div
                                           className="flex items-center gap-2 text-sm"
@@ -1023,10 +983,10 @@ export default function GuardIndicators({ guard }: Props) {
                                       </button>
 
                                       <button
-                                        className="w-full text-left px-4 py-2 hover:bg-muted"
                                         onClick={() => {
                                           handleExportPdf(kpi);
                                         }}
+                                        className="w-full text-left px-4 py-2 hover:bg-muted"
                                       >
                                         <div className="flex items-center gap-2 text-sm text-foreground">
                                           <FileText size={16} />{" "}
@@ -1038,10 +998,10 @@ export default function GuardIndicators({ guard }: Props) {
                                       </button>
 
                                       <button
-                                        className="w-full text-left px-4 py-2 hover:bg-muted"
                                         onClick={() => {
                                           handleExportExcel(kpi);
                                         }}
+                                        className="w-full text-left px-4 py-2 hover:bg-muted"
                                       >
                                         <div className="flex items-center gap-2 text-sm text-foreground">
                                           <File size={16} />{" "}
@@ -1053,7 +1013,6 @@ export default function GuardIndicators({ guard }: Props) {
                                       </button>
 
                                       <button
-                                        className="w-full text-left px-4 py-2 hover:bg-muted"
                                         onClick={() => {
                                           toast.success(
                                             t(
@@ -1063,6 +1022,7 @@ export default function GuardIndicators({ guard }: Props) {
                                           );
                                           setMenuOpenId(null);
                                         }}
+                                        className="w-full text-left px-4 py-2 hover:bg-muted"
                                       >
                                         <div className="flex items-center gap-2 text-sm text-foreground">
                                           <Mail size={16} />{" "}
@@ -1080,7 +1040,7 @@ export default function GuardIndicators({ guard }: Props) {
 
                             {expandedId === kpi.id && (
                               <tr>
-                                <td className="p-4" colSpan={5}>
+                                <td colSpan={5} className="p-4">
                                   <div className="space-y-4 min-h-[360px]">
                                     <div className="flex items-start justify-between">
                                       <div>
@@ -1096,12 +1056,12 @@ export default function GuardIndicators({ guard }: Props) {
                                       </div>
                                       <div className="flex items-center gap-2 text-sm text-foreground/70">
                                         <button
-                                          className="p-1 rounded hover:bg-muted"
                                           onClick={(e) => {
                                             e.stopPropagation();
                                             prevMonth();
                                             loadKpis();
                                           }}
+                                          className="p-1 rounded hover:bg-muted"
                                         >
                                           <ChevronLeft size={16} />
                                         </button>
@@ -1109,12 +1069,12 @@ export default function GuardIndicators({ guard }: Props) {
                                           {formatMonth(selectedMonth)}
                                         </div>
                                         <button
-                                          className="p-1 rounded hover:bg-muted"
                                           onClick={(e) => {
                                             e.stopPropagation();
                                             nextMonth();
                                             loadKpis();
                                           }}
+                                          className="p-1 rounded hover:bg-muted"
                                         >
                                           <ChevronRight size={16} />
                                         </button>
@@ -1144,7 +1104,6 @@ export default function GuardIndicators({ guard }: Props) {
                                           v !== undefined &&
                                           v !== null &&
                                           Number(v) > 0;
-
                                         if (
                                           hasTarget(
                                             kpi.incidentReportsNumber,
@@ -1289,8 +1248,8 @@ export default function GuardIndicators({ guard }: Props) {
                                                   target: m.target,
                                                   actual: m.actual,
                                                 }))}
-                                                height={300}
                                                 width={720}
+                                                height={300}
                                               />
                                             </div>
                                           </>
@@ -1315,13 +1274,13 @@ export default function GuardIndicators({ guard }: Props) {
                     quedaba en blanco. */}
                 <div className="md:hidden">
                   <MobileCardList
+                    items={kpiData || []}
+                    loading={false}
                     emptyMessage={
                       t("guards.KPI.empty", {
                         defaultValue: "No KPI data",
                       }) as string
                     }
-                    items={kpiData || []}
-                    loading={false}
                     renderCard={(k: Kpi) => (
                       <div className="glass-flat p-4">
                         <div className="text-sm font-semibold">{k.type}</div>
@@ -1353,7 +1312,7 @@ export default function GuardIndicators({ guard }: Props) {
                         background: "var(--glass-solid)",
                       }}
                     >
-                      <IconTile size="sm" tone="brand">
+                      <IconTile tone="brand" size="sm">
                         <BarChart3 />
                       </IconTile>
                       <h2 className="text-base font-semibold">
@@ -1373,7 +1332,6 @@ export default function GuardIndicators({ guard }: Props) {
                           <span style={{ color: "var(--bad-text)" }}>*</span>
                         </label>
                         <select
-                          className="cg-input w-full px-3 py-2 text-sm"
                           value={formData.frequency}
                           onChange={(e) =>
                             setFormData({
@@ -1381,6 +1339,7 @@ export default function GuardIndicators({ guard }: Props) {
                               frequency: e.target.value,
                             })
                           }
+                          className="cg-input w-full px-3 py-2 text-sm"
                         >
                           <option value="">
                             {t(
@@ -1416,12 +1375,6 @@ export default function GuardIndicators({ guard }: Props) {
                           <span style={{ color: "var(--bad-text)" }}>*</span>
                         </label>
                         <textarea
-                          className="cg-input w-full resize-none px-3 py-2 text-sm"
-                          placeholder={t(
-                            "guards.KPI.modal.descriptionPlaceholder",
-                            "Ingrese la descripción",
-                          )}
-                          rows={4}
                           value={formData.description}
                           onChange={(e) =>
                             setFormData({
@@ -1429,6 +1382,12 @@ export default function GuardIndicators({ guard }: Props) {
                               description: e.target.value,
                             })
                           }
+                          placeholder={t(
+                            "guards.KPI.modal.descriptionPlaceholder",
+                            "Ingrese la descripción",
+                          )}
+                          className="cg-input w-full resize-none px-3 py-2 text-sm"
+                          rows={4}
                         />
                       </div>
 
@@ -1444,25 +1403,19 @@ export default function GuardIndicators({ guard }: Props) {
                           </label>
                           <div className="flex items-center gap-2">
                             <input
-                              checked={formData.standardReports}
-                              className="rounded w-5 h-5"
                               type="checkbox"
+                              checked={formData.standardReports}
                               onChange={(e) =>
                                 setFormData({
                                   ...formData,
                                   standardReports: e.target.checked,
                                 })
                               }
+                              className="rounded w-5 h-5"
                             />
                             <input
-                              className="cg-input w-32 px-2 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50"
-                              disabled={!formData.standardReports}
-                              min={0}
-                              placeholder={t(
-                                "guards.KPI.modal.defineNumber",
-                                "Definir un Número",
-                              )}
                               type="number"
+                              min={0}
                               value={formData.standardReportsNumber}
                               onChange={(
                                 e: React.ChangeEvent<HTMLInputElement>,
@@ -1472,12 +1425,17 @@ export default function GuardIndicators({ guard }: Props) {
                                   v === ""
                                     ? ""
                                     : String(Math.max(0, Number(v)));
-
                                 setFormData({
                                   ...formData,
                                   standardReportsNumber: sanitized,
                                 });
                               }}
+                              disabled={!formData.standardReports}
+                              placeholder={t(
+                                "guards.KPI.modal.defineNumber",
+                                "Definir un Número",
+                              )}
+                              className="cg-input w-32 px-2 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                             />
                           </div>
                         </div>
@@ -1492,25 +1450,19 @@ export default function GuardIndicators({ guard }: Props) {
                           </label>
                           <div className="flex items-center gap-2">
                             <input
-                              checked={formData.incidentReports}
-                              className="rounded w-5 h-5"
                               type="checkbox"
+                              checked={formData.incidentReports}
                               onChange={(e) =>
                                 setFormData({
                                   ...formData,
                                   incidentReports: e.target.checked,
                                 })
                               }
+                              className="rounded w-5 h-5"
                             />
                             <input
-                              className="cg-input w-32 px-2 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50"
-                              disabled={!formData.incidentReports}
-                              min={0}
-                              placeholder={t(
-                                "guards.KPI.modal.defineNumber",
-                                "Definir un Número",
-                              )}
                               type="number"
+                              min={0}
                               value={formData.incidentReportsNumber}
                               onChange={(
                                 e: React.ChangeEvent<HTMLInputElement>,
@@ -1520,12 +1472,17 @@ export default function GuardIndicators({ guard }: Props) {
                                   v === ""
                                     ? ""
                                     : String(Math.max(0, Number(v)));
-
                                 setFormData({
                                   ...formData,
                                   incidentReportsNumber: sanitized,
                                 });
                               }}
+                              disabled={!formData.incidentReports}
+                              placeholder={t(
+                                "guards.KPI.modal.defineNumber",
+                                "Definir un Número",
+                              )}
+                              className="cg-input w-32 px-2 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                             />
                           </div>
                         </div>
@@ -1540,25 +1497,19 @@ export default function GuardIndicators({ guard }: Props) {
                           </label>
                           <div className="flex items-center gap-2">
                             <input
-                              checked={formData.routeReports}
-                              className="rounded w-5 h-5"
                               type="checkbox"
+                              checked={formData.routeReports}
                               onChange={(e) =>
                                 setFormData({
                                   ...formData,
                                   routeReports: e.target.checked,
                                 })
                               }
+                              className="rounded w-5 h-5"
                             />
                             <input
-                              className="cg-input w-32 px-2 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50"
-                              disabled={!formData.routeReports}
-                              min={0}
-                              placeholder={t(
-                                "guards.KPI.modal.defineNumber",
-                                "Definir un Número",
-                              )}
                               type="number"
+                              min={0}
                               value={formData.routeReportsNumber}
                               onChange={(
                                 e: React.ChangeEvent<HTMLInputElement>,
@@ -1568,12 +1519,17 @@ export default function GuardIndicators({ guard }: Props) {
                                   v === ""
                                     ? ""
                                     : String(Math.max(0, Number(v)));
-
                                 setFormData({
                                   ...formData,
                                   routeReportsNumber: sanitized,
                                 });
                               }}
+                              disabled={!formData.routeReports}
+                              placeholder={t(
+                                "guards.KPI.modal.defineNumber",
+                                "Definir un Número",
+                              )}
+                              className="cg-input w-32 px-2 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                             />
                           </div>
                         </div>
@@ -1588,25 +1544,19 @@ export default function GuardIndicators({ guard }: Props) {
                           </label>
                           <div className="flex items-center gap-2">
                             <input
-                              checked={formData.taskReports}
-                              className="rounded w-5 h-5"
                               type="checkbox"
+                              checked={formData.taskReports}
                               onChange={(e) =>
                                 setFormData({
                                   ...formData,
                                   taskReports: e.target.checked,
                                 })
                               }
+                              className="rounded w-5 h-5"
                             />
                             <input
-                              className="cg-input w-32 px-2 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50"
-                              disabled={!formData.taskReports}
-                              min={0}
-                              placeholder={t(
-                                "guards.KPI.modal.defineNumber",
-                                "Definir un Número",
-                              )}
                               type="number"
+                              min={0}
                               value={formData.taskReportsNumber}
                               onChange={(
                                 e: React.ChangeEvent<HTMLInputElement>,
@@ -1616,12 +1566,17 @@ export default function GuardIndicators({ guard }: Props) {
                                   v === ""
                                     ? ""
                                     : String(Math.max(0, Number(v)));
-
                                 setFormData({
                                   ...formData,
                                   taskReportsNumber: sanitized,
                                 });
                               }}
+                              disabled={!formData.taskReports}
+                              placeholder={t(
+                                "guards.KPI.modal.defineNumber",
+                                "Definir un Número",
+                              )}
+                              className="cg-input w-32 px-2 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                             />
                           </div>
                         </div>
@@ -1636,25 +1591,19 @@ export default function GuardIndicators({ guard }: Props) {
                           </label>
                           <div className="flex items-center gap-2">
                             <input
-                              checked={formData.verificationReports}
-                              className="rounded w-5 h-5"
                               type="checkbox"
+                              checked={formData.verificationReports}
                               onChange={(e) =>
                                 setFormData({
                                   ...formData,
                                   verificationReports: e.target.checked,
                                 })
                               }
+                              className="rounded w-5 h-5"
                             />
                             <input
-                              className="cg-input w-32 px-2 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50"
-                              disabled={!formData.verificationReports}
-                              min={0}
-                              placeholder={t(
-                                "guards.KPI.modal.defineNumber",
-                                "Definir un Número",
-                              )}
                               type="number"
+                              min={0}
                               value={formData.verificationReportsNumber}
                               onChange={(
                                 e: React.ChangeEvent<HTMLInputElement>,
@@ -1664,12 +1613,17 @@ export default function GuardIndicators({ guard }: Props) {
                                   v === ""
                                     ? ""
                                     : String(Math.max(0, Number(v)));
-
                                 setFormData({
                                   ...formData,
                                   verificationReportsNumber: sanitized,
                                 });
                               }}
+                              disabled={!formData.verificationReports}
+                              placeholder={t(
+                                "guards.KPI.modal.defineNumber",
+                                "Definir un Número",
+                              )}
+                              className="cg-input w-32 px-2 py-1 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                             />
                           </div>
                         </div>
@@ -1685,16 +1639,16 @@ export default function GuardIndicators({ guard }: Props) {
                             )}
                           </label>
                           <input
-                            checked={formData.emailNotification}
-                            className="ml-auto h-5 w-5 rounded-md"
-                            style={{ accentColor: "var(--brand)" }}
                             type="checkbox"
+                            checked={formData.emailNotification}
                             onChange={(e) =>
                               setFormData({
                                 ...formData,
                                 emailNotification: e.target.checked,
                               })
                             }
+                            className="ml-auto h-5 w-5 rounded-md"
+                            style={{ accentColor: "var(--brand)" }}
                           />
                         </div>
 
@@ -1714,8 +1668,8 @@ export default function GuardIndicators({ guard }: Props) {
                                   >
                                     <span>{email}</span>
                                     <button
-                                      className="text-muted-foreground hover:text-foreground focus:outline-none"
                                       onClick={() => handleRemoveEmail(email)}
+                                      className="text-muted-foreground hover:text-foreground focus:outline-none"
                                     >
                                       <X size={14} />
                                     </button>
@@ -1728,16 +1682,6 @@ export default function GuardIndicators({ guard }: Props) {
                             <div className="space-y-1">
                               <div className="flex gap-2">
                                 <input
-                                  className="cg-input flex-1 px-3 py-2 text-sm"
-                                  placeholder={t(
-                                    "guards.KPI.modal.newEmailPlaceholder",
-                                    "Nuevo Correo Electrónico...",
-                                  )}
-                                  style={
-                                    emailError
-                                      ? { borderColor: "var(--bad)" }
-                                      : undefined
-                                  }
                                   type="email"
                                   value={currentEmail}
                                   onChange={(e) => {
@@ -1745,10 +1689,20 @@ export default function GuardIndicators({ guard }: Props) {
                                     setEmailError("");
                                   }}
                                   onKeyPress={handleKeyPress}
+                                  placeholder={t(
+                                    "guards.KPI.modal.newEmailPlaceholder",
+                                    "Nuevo Correo Electrónico...",
+                                  )}
+                                  className="cg-input flex-1 px-3 py-2 text-sm"
+                                  style={
+                                    emailError
+                                      ? { borderColor: "var(--bad)" }
+                                      : undefined
+                                  }
                                 />
                                 <button
-                                  className="cg-btn-brand cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-colors"
                                   onClick={handleAddEmail}
+                                  className="cg-btn-brand cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-colors"
                                 >
                                   {t("guards.KPI.modal.addEmail", "Agregar")}
                                 </button>
@@ -1787,6 +1741,19 @@ export default function GuardIndicators({ guard }: Props) {
               )}
               {deleteModalOpen && (
                 <Modal
+                  open={deleteModalOpen}
+                  onOpenChange={(o) => {
+                    if (!o) {
+                      setDeleteModalOpen(false);
+                      setToDeleteId(null);
+                    }
+                  }}
+                  title={t(
+                    "guards.KPI.modal.confirmDeleteTitle",
+                    "Confirmar eliminación",
+                  )}
+                  icon={<Trash className="h-5 w-5" />}
+                  size="sm"
                   footer={
                     <>
                       <Button
@@ -1824,7 +1791,6 @@ export default function GuardIndicators({ guard }: Props) {
                                   "No hay elementos seleccionados",
                                 ),
                               );
-
                               return;
                             }
                             await loadKpis();
@@ -1847,19 +1813,6 @@ export default function GuardIndicators({ guard }: Props) {
                       </Button>
                     </>
                   }
-                  icon={<Trash className="h-5 w-5" />}
-                  open={deleteModalOpen}
-                  size="sm"
-                  title={t(
-                    "guards.KPI.modal.confirmDeleteTitle",
-                    "Confirmar eliminación",
-                  )}
-                  onOpenChange={(o) => {
-                    if (!o) {
-                      setDeleteModalOpen(false);
-                      setToDeleteId(null);
-                    }
-                  }}
                 >
                   <p className="text-sm text-foreground">
                     {t(

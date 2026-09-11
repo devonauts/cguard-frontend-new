@@ -1,5 +1,18 @@
 import { useState, useEffect, useRef, Fragment } from "react";
 import { useTranslation } from "react-i18next";
+import AppLayout from "@/layouts/app-layout";
+import Breadcrumb from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import {
   Plus,
@@ -16,20 +29,6 @@ import {
   CalendarClock,
   Hash,
 } from "lucide-react";
-
-import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   PageContainer,
   PageHeader,
@@ -95,10 +94,8 @@ function estadoVigencia(
 ): { tone: "ok" | "warn" | "bad"; label: string } | null {
   if (!fecha) return null;
   const d = new Date(fecha);
-
   if (Number.isNaN(d.getTime())) return null;
   const dias = Math.ceil((d.getTime() - Date.now()) / UN_DIA);
-
   if (dias < 0) return { tone: "bad", label: "Vencido" };
   if (dias <= 30)
     return {
@@ -108,7 +105,6 @@ function estadoVigencia(
           ? "Vence hoy"
           : `Vence en ${dias} día${dias === 1 ? "" : "s"}`,
     };
-
   return { tone: "ok", label: "Vigente" };
 }
 
@@ -128,7 +124,6 @@ const EMPTY_FORM: InventoryItemInput = {
 export default function GlobalInventoryPage() {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
-
   useScrollToTopOnMount(containerRef);
 
   const [items, setItems] = useState<InventoryItem[]>([]);
@@ -164,7 +159,6 @@ export default function GlobalInventoryPage() {
     try {
       setLoading(true);
       const filter: Record<string, string> = {};
-
       if (query) filter["name"] = query;
       if (filterType) filter["type"] = filterType;
       if (filterStatus) filter["status"] = filterStatus;
@@ -173,7 +167,6 @@ export default function GlobalInventoryPage() {
         limit: PAGE_SIZE,
         offset: page * PAGE_SIZE,
       });
-
       setItems(res.rows || []);
       setTotal(res.count || 0);
     } catch (e) {
@@ -186,7 +179,6 @@ export default function GlobalInventoryPage() {
   // Debounce text search into a settled value that drives loading.
   useEffect(() => {
     const t = setTimeout(() => setDebouncedQuery(query), 350);
-
     return () => clearTimeout(t);
   }, [query]);
 
@@ -199,7 +191,7 @@ export default function GlobalInventoryPage() {
   // Single source of truth for list requests: exactly one per settled change.
   useEffect(() => {
     load();
-  }, [page, debouncedQuery, filterType, filterStatus]);
+  }, [page, debouncedQuery, filterType, filterStatus]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const openCreate = () => {
     setEditingItem(null);
@@ -237,7 +229,6 @@ export default function GlobalInventoryPage() {
   const handleSave = async () => {
     if (!form.name.trim()) {
       toast.error(t("comun.elNombreEsObligatorio"));
-
       return;
     }
     try {
@@ -251,7 +242,6 @@ export default function GlobalInventoryPage() {
         expirationDate: form.expirationDate || undefined,
         photos: form.photos || [],
       };
-
       if (editingItem) {
         await inventoryItemService.update(editingItem.id, payload);
         toast.success(t("ui.GlobalInventoryPage.articuloActualizado"));
@@ -274,18 +264,15 @@ export default function GlobalInventoryPage() {
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-
     if (!files.length) return;
     // Validate: images only, max 20MB each
     for (const file of files) {
       if (!file.type.startsWith("image/")) {
         toast.error(`"${file.name}" no es una imagen válida`);
-
         return;
       }
       if (file.size > 20 * 1024 * 1024) {
         toast.error(`"${file.name}" excede el límite de 20 MB`);
-
         return;
       }
     }
@@ -294,7 +281,6 @@ export default function GlobalInventoryPage() {
       const uploaded: InventoryItemPhoto[] = await Promise.all(
         files.map((f) => inventoryItemService.uploadPhoto(f)),
       );
-
       setForm((prev) => ({
         ...prev,
         photos: [...(prev.photos || []), ...uploaded],
@@ -369,7 +355,7 @@ export default function GlobalInventoryPage() {
   return (
     <AppLayout>
       <div ref={containerRef}>
-        <PageContainer className="px-4 py-6" width="wide">
+        <PageContainer width="wide" className="px-4 py-6">
           <Breadcrumb
             items={[
               { label: "Panel de control", path: "/dashboard" },
@@ -378,12 +364,9 @@ export default function GlobalInventoryPage() {
           />
 
           <PageHeader
-            actions={
-              <Button className="shrink-0" variant="brand" onClick={openCreate}>
-                <Plus className="mr-1 h-4 w-4" />{" "}
-                {t("ui.GlobalInventoryPage.nuevoArticulo", "Nuevo artículo")}
-              </Button>
-            }
+            icon={<Package />}
+            title="Inventario Global"
+            subtitle={t("ui.GlobalInventoryPage.catalogoDeEquiposYRecursos")}
             badges={
               <>
                 <StatusBadge tone="brand">
@@ -394,38 +377,41 @@ export default function GlobalInventoryPage() {
                 )}
               </>
             }
-            icon={<Package />}
-            subtitle={t("ui.GlobalInventoryPage.catalogoDeEquiposYRecursos")}
-            title="Inventario Global"
+            actions={
+              <Button variant="brand" onClick={openCreate} className="shrink-0">
+                <Plus className="mr-1 h-4 w-4" />{" "}
+                {t("ui.GlobalInventoryPage.nuevoArticulo", "Nuevo artículo")}
+              </Button>
+            }
           />
 
           <Stagger className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard
-              accent="primary"
-              icon={<Package />}
               label={t("ui.GlobalInventory.articulos", "Artículos")}
               value={total}
+              icon={<Package />}
+              accent="primary"
             />
             <StatCard
-              accent="ok"
-              hint={t("ui.GlobalInventory.enEstaPagina", "En esta página")}
-              icon={<CheckCircle2 />}
               label="Disponibles"
               value={disponibles}
+              icon={<CheckCircle2 />}
+              accent="ok"
+              hint={t("ui.GlobalInventory.enEstaPagina", "En esta página")}
             />
             <StatCard
-              accent="warn"
-              hint={t("ui.GlobalInventory.enEstaPagina2", "En esta página")}
-              icon={<Wrench />}
               label="En mantenimiento"
               value={enMantenimiento}
+              icon={<Wrench />}
+              accent="warn"
+              hint={t("ui.GlobalInventory.enEstaPagina2", "En esta página")}
             />
             <StatCard
-              accent="bad"
-              hint={t("ui.GlobalInventory.enEstaPagina3", "En esta página")}
-              icon={<AlertTriangle />}
               label={t("ui.GlobalInventoryPage.enMalEstado")}
               value={dañados}
+              icon={<AlertTriangle />}
+              accent="bad"
+              hint={t("ui.GlobalInventory.enEstaPagina3", "En esta página")}
             />
           </Stagger>
 
@@ -435,9 +421,9 @@ export default function GlobalInventoryPage() {
               de borrar la búsqueda, que la copia a mano no tenía. */}
             <div className="min-w-48 flex-1">
               <TableSearch
-                placeholder={t("ui.GlobalInventoryPage.buscarPorNombre")}
                 value={query}
                 onChange={setQuery}
+                placeholder={t("ui.GlobalInventoryPage.buscarPorNombre")}
               />
             </div>
             <Select
@@ -484,8 +470,8 @@ export default function GlobalInventoryPage() {
             </Select>
             {hayFiltros && (
               <Button
-                size="sm"
                 variant="ghost"
+                size="sm"
                 onClick={() => {
                   setQuery("");
                   setFilterType("");
@@ -497,18 +483,23 @@ export default function GlobalInventoryPage() {
             )}
             <div className="ml-auto">
               <Segmented
+                value={vista}
+                onChange={setVista}
                 options={[
                   { value: "tarjetas", label: "Tarjetas" },
                   { value: "lista", label: "Lista" },
                 ]}
-                value={vista}
-                onChange={setVista}
               />
             </div>
           </Toolbar>
 
           {/* Catálogo */}
           <Section
+            title={t(
+              "ui.GlobalInventory.catalogoDeInventario",
+              "Catálogo de inventario",
+            )}
+            icon={<Package />}
             action={
               <span className="text-sm" style={{ color: "var(--ink-soft)" }}>
                 {loading
@@ -519,19 +510,25 @@ export default function GlobalInventoryPage() {
             contentClassName={
               vista === "lista" ? "-mx-5 -mb-5 overflow-hidden" : undefined
             }
-            icon={<Package />}
-            title={t(
-              "ui.GlobalInventory.catalogoDeInventario",
-              "Catálogo de inventario",
-            )}
           >
             {loading && items.length === 0 ? (
               <div className={vista === "lista" ? "p-5" : undefined}>
-                <SkeletonCards className="lg:grid-cols-3" count={6} />
+                <SkeletonCards count={6} className="lg:grid-cols-3" />
               </div>
             ) : sinResultados ? (
               <div className={vista === "lista" ? "p-5" : undefined}>
                 <EmptyState
+                  icon={<Package />}
+                  title={
+                    hayFiltros
+                      ? "Sin resultados"
+                      : "Sin artículos en el catálogo"
+                  }
+                  description={
+                    hayFiltros
+                      ? "Ningún artículo coincide con la búsqueda. Prueba a quitar algún filtro."
+                      : "Agrega tu primer equipo o recurso para empezar a inventariar."
+                  }
                   action={
                     hayFiltros ? (
                       <Button
@@ -555,17 +552,6 @@ export default function GlobalInventoryPage() {
                       </Button>
                     )
                   }
-                  description={
-                    hayFiltros
-                      ? "Ningún artículo coincide con la búsqueda. Prueba a quitar algún filtro."
-                      : "Agrega tu primer equipo o recurso para empezar a inventariar."
-                  }
-                  icon={<Package />}
-                  title={
-                    hayFiltros
-                      ? "Sin resultados"
-                      : "Sin artículos en el catálogo"
-                  }
                 />
               </div>
             ) : vista === "tarjetas" ? (
@@ -574,7 +560,6 @@ export default function GlobalInventoryPage() {
                   const portada =
                     (item.photos || []).map(getPhotoUrl).find(Boolean) || null;
                   const vigencia = estadoVigencia(item.expirationDate);
-
                   return (
                     <GlassPanel
                       key={item.id}
@@ -584,16 +569,16 @@ export default function GlobalInventoryPage() {
                       <div className="flex items-start gap-3">
                         {portada ? (
                           <button
-                            aria-label={`Ver foto de ${item.name}`}
-                            className="cg-focus h-14 w-14 shrink-0 overflow-hidden rounded-xl border"
-                            style={{ borderColor: "var(--hairline)" }}
                             type="button"
                             onClick={() => setLightboxSrc(portada)}
+                            className="cg-focus h-14 w-14 shrink-0 overflow-hidden rounded-xl border"
+                            style={{ borderColor: "var(--hairline)" }}
+                            aria-label={`Ver foto de ${item.name}`}
                           >
                             <SmartImage
+                              src={portada}
                               alt=""
                               className="h-full w-full"
-                              src={portada}
                             />
                           </button>
                         ) : (
@@ -676,7 +661,7 @@ export default function GlobalInventoryPage() {
                       <th
                         className="w-10 px-4 py-3 text-left font-semibold"
                         style={{ color: "var(--ink-soft)" }}
-                      />
+                      ></th>
                       <th
                         className="px-4 py-3 text-left font-semibold"
                         style={{ color: "var(--ink-soft)" }}
@@ -719,7 +704,6 @@ export default function GlobalInventoryPage() {
                     {items.map((item) => {
                       const abierto = expandedId === item.id;
                       const vigencia = estadoVigencia(item.expirationDate);
-
                       return (
                         <Fragment key={item.id}>
                           <tr
@@ -735,13 +719,13 @@ export default function GlobalInventoryPage() {
                           >
                             <td className="w-10 px-2 py-3">
                               <span
-                                aria-hidden
                                 className="inline-flex p-1"
                                 style={{
                                   color: abierto
                                     ? "var(--brand-text)"
                                     : "var(--ink-faint)",
                                 }}
+                                aria-hidden
                               >
                                 {abierto ? (
                                   <ChevronUp className="h-4 w-4" />
@@ -789,7 +773,7 @@ export default function GlobalInventoryPage() {
                           {/* Detalle desplegado */}
                           {abierto && (
                             <tr style={{ background: "var(--brand-wash)" }}>
-                              <td className="px-6 py-4" colSpan={7}>
+                              <td colSpan={7} className="px-6 py-4">
                                 <div className="glass-sunken grid grid-cols-2 gap-3 p-4 sm:grid-cols-3 md:grid-cols-4">
                                   <Field
                                     label="Marca"
@@ -821,8 +805,8 @@ export default function GlobalInventoryPage() {
                                           ).toLocaleDateString()}
                                           {vigencia && (
                                             <StatusBadge
-                                              dot={false}
                                               tone={vigencia.tone}
+                                              dot={false}
                                             >
                                               {vigencia.label}
                                             </StatusBadge>
@@ -867,18 +851,17 @@ export default function GlobalInventoryPage() {
                                             photo.downloadUrl ||
                                             photo.publicUrl ||
                                             null;
-
                                           return src ? (
                                             <button
                                               key={idx}
-                                              className="cg-focus h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border transition-colors"
-                                              style={{
-                                                borderColor: "var(--hairline)",
-                                              }}
                                               type="button"
                                               onClick={(e) => {
                                                 e.stopPropagation();
                                                 setLightboxSrc(src);
+                                              }}
+                                              className="cg-focus h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border transition-colors"
+                                              style={{
+                                                borderColor: "var(--hairline)",
                                               }}
                                               onMouseEnter={(e) => {
                                                 e.currentTarget.style.borderColor =
@@ -890,9 +873,9 @@ export default function GlobalInventoryPage() {
                                               }}
                                             >
                                               <SmartImage
+                                                src={src}
                                                 alt=""
                                                 className="h-full w-full"
-                                                src={src}
                                               />
                                             </button>
                                           ) : null;
@@ -933,17 +916,17 @@ export default function GlobalInventoryPage() {
                 </span>
                 <div className="flex gap-2">
                   <Button
-                    disabled={page === 0}
-                    size="sm"
                     variant="outline"
+                    size="sm"
+                    disabled={page === 0}
                     onClick={() => setPage((p) => p - 1)}
                   >
                     Anterior
                   </Button>
                   <Button
-                    disabled={page >= totalPages - 1}
-                    size="sm"
                     variant="outline"
+                    size="sm"
+                    disabled={page >= totalPages - 1}
                     onClick={() => setPage((p) => p + 1)}
                   >
                     Siguiente
@@ -957,12 +940,23 @@ export default function GlobalInventoryPage() {
 
       {/* Alta / edición */}
       <Modal
+        open={showModal}
+        onOpenChange={(o) => {
+          if (!o) closeModal();
+        }}
+        title={
+          editingItem
+            ? "Editar artículo"
+            : t("ui.GlobalInventoryPage.nuevoArticulo", "Nuevo artículo")
+        }
+        icon={<Package className="h-5 w-5" />}
+        size="md"
         footer={
           <>
-            <Button disabled={saving} variant="outline" onClick={closeModal}>
+            <Button variant="outline" onClick={closeModal} disabled={saving}>
               Cancelar
             </Button>
-            <Button disabled={saving} onClick={handleSave}>
+            <Button onClick={handleSave} disabled={saving}>
               {saving
                 ? "Guardando..."
                 : editingItem
@@ -971,17 +965,6 @@ export default function GlobalInventoryPage() {
             </Button>
           </>
         }
-        icon={<Package className="h-5 w-5" />}
-        open={showModal}
-        size="md"
-        title={
-          editingItem
-            ? "Editar artículo"
-            : t("ui.GlobalInventoryPage.nuevoArticulo", "Nuevo artículo")
-        }
-        onOpenChange={(o) => {
-          if (!o) closeModal();
-        }}
       >
         <div className="space-y-4">
           {/* Nombre */}
@@ -993,9 +976,9 @@ export default function GlobalInventoryPage() {
             </Label>
             <Input
               id="inv-name"
-              placeholder="Ej: Radio Motorola #3"
               value={form.name}
               onChange={(e) => setField("name", e.target.value)}
+              placeholder="Ej: Radio Motorola #3"
             />
           </div>
 
@@ -1029,18 +1012,18 @@ export default function GlobalInventoryPage() {
               <Label htmlFor="inv-brand">Marca</Label>
               <Input
                 id="inv-brand"
-                placeholder="Motorola"
                 value={form.brand}
                 onChange={(e) => setField("brand", e.target.value)}
+                placeholder="Motorola"
               />
             </div>
             <div className="space-y-1">
               <Label htmlFor="inv-model">Modelo</Label>
               <Input
                 id="inv-model"
-                placeholder="EP350"
                 value={form.modelName}
                 onChange={(e) => setField("modelName", e.target.value)}
+                placeholder="EP350"
               />
             </div>
           </div>
@@ -1056,11 +1039,11 @@ export default function GlobalInventoryPage() {
                 style={{ color: "var(--ink-faint)" }}
               />
               <Input
-                className="pl-9 font-mono"
                 id="inv-serial"
-                placeholder="SN-12345"
+                className="pl-9 font-mono"
                 value={form.serialNumber}
                 onChange={(e) => setField("serialNumber", e.target.value)}
+                placeholder="SN-12345"
               />
             </div>
           </div>
@@ -1115,9 +1098,9 @@ export default function GlobalInventoryPage() {
                   style={{ color: "var(--ink-faint)" }}
                 />
                 <Input
-                  className="pl-9"
                   id="inv-exp"
                   type="date"
+                  className="pl-9"
                   value={form.expirationDate}
                   onChange={(e) => setField("expirationDate", e.target.value)}
                 />
@@ -1129,12 +1112,12 @@ export default function GlobalInventoryPage() {
           <div className="space-y-1">
             <Label htmlFor="inv-notes">{t("comun.notasOpcional")}</Label>
             <Textarea
-              className="resize-none"
               id="inv-notes"
-              placeholder="Observaciones adicionales..."
+              className="resize-none"
               rows={2}
               value={form.notes}
               onChange={(e) => setField("notes", e.target.value)}
+              placeholder="Observaciones adicionales..."
             />
           </div>
 
@@ -1145,22 +1128,22 @@ export default function GlobalInventoryPage() {
             </Label>
             <input
               ref={photoInputRef}
-              multiple
-              accept="image/*"
-              className="hidden"
               type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
               onChange={handlePhotoUpload}
             />
             <button
-              className="cg-focus flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed px-3 py-3 text-sm font-medium transition-colors disabled:opacity-50"
+              type="button"
+              onClick={() => photoInputRef.current?.click()}
               disabled={uploadingPhoto}
+              className="cg-focus flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed px-3 py-3 text-sm font-medium transition-colors disabled:opacity-50"
               style={{
                 borderColor: "var(--hairline)",
                 background: "var(--glass-sunken)",
                 color: "var(--ink-soft)",
               }}
-              type="button"
-              onClick={() => photoInputRef.current?.click()}
               onMouseEnter={(e) => {
                 e.currentTarget.style.borderColor = "var(--brand)";
                 e.currentTarget.style.color = "var(--brand-text)";
@@ -1187,7 +1170,6 @@ export default function GlobalInventoryPage() {
               <div className="mt-1 grid grid-cols-4 gap-2">
                 {(form.photos || []).map((photo, idx) => {
                   const src = getPhotoUrl(photo);
-
                   return (
                     <div
                       key={idx}
@@ -1198,6 +1180,7 @@ export default function GlobalInventoryPage() {
                       }}
                     >
                       <SmartImage
+                        src={src}
                         alt=""
                         className="h-full w-full"
                         fallback={
@@ -1208,21 +1191,20 @@ export default function GlobalInventoryPage() {
                             <Package className="h-6 w-6" />
                           </span>
                         }
-                        src={src}
                       />
                       <button
-                        className="cg-btn-bad cg-focus absolute right-1 top-1 flex h-7 w-7 items-center justify-center rounded-full transition-opacity md:h-5 md:w-5 md:opacity-0 md:group-hover:opacity-100"
-                            type="button"
-                            aria-label="Quitar foto"
-                            // `.cg-btn-bad` en vez de un `oklch(1 0 0)` a mano:
-                            // el blanco sobre el rojo de peligro es una decisión
-                            // que ya toma el sistema, en glass.css, y que sigue
-                            // valiendo si el rojo semántico cambia.
-                            /* En un móvil no hay `hover`: si la única forma de
+                        type="button"
+                        onClick={() => removePhoto(idx)}
+                        aria-label="Quitar foto"
+                        // `.cg-btn-bad` en vez de un `oklch(1 0 0)` a mano:
+                        // el blanco sobre el rojo de peligro es una decisión
+                        // que ya toma el sistema, en glass.css, y que sigue
+                        // valiendo si el rojo semántico cambia.
+                        /* En un móvil no hay `hover`: si la única forma de
                                ver la aspa es pasar el ratón, la foto no se
                                puede quitar desde el teléfono. Visible siempre
                                en táctil, y del tamaño mínimo para el dedo. */
-                            onClick={() => removePhoto(idx)}
+                        className="cg-btn-bad cg-focus absolute right-1 top-1 flex h-7 w-7 items-center justify-center rounded-full transition-opacity md:h-5 md:w-5 md:opacity-0 md:group-hover:opacity-100"
                       >
                         <X className="h-3 w-3" />
                       </button>
@@ -1247,17 +1229,17 @@ export default function GlobalInventoryPage() {
           onClick={() => setLightboxSrc(null)}
         >
           <button
-            aria-label={t("actions.close")}
             className="glass-flat cg-focus absolute right-4 top-4 rounded-full p-2 transition-colors"
             style={{ color: "var(--ink)" }}
             onClick={() => setLightboxSrc(null)}
+            aria-label={t("actions.close")}
           >
             <X className="h-6 w-6" />
           </button>
           <img
+            src={lightboxSrc}
             alt=""
             className="max-h-[90vh] max-w-[90vw] rounded-2xl object-contain"
-            src={lightboxSrc}
             style={{ boxShadow: "var(--lift-4)" }}
             onClick={(e) => e.stopPropagation()}
           />
@@ -1266,31 +1248,31 @@ export default function GlobalInventoryPage() {
 
       {/* Confirmación de borrado */}
       <Modal
+        open={!!deleteTarget}
+        onOpenChange={(o) => {
+          if (!o) setDeleteTarget(null);
+        }}
+        title={t("ui.GlobalInventory.eliminarArticulo", "Eliminar artículo")}
+        icon={<Trash2 className="h-5 w-5" />}
+        size="sm"
         footer={
           <>
             <Button
-              disabled={deleting}
               variant="outline"
               onClick={() => setDeleteTarget(null)}
+              disabled={deleting}
             >
               Cancelar
             </Button>
             <Button
-              disabled={deleting}
               variant="destructive"
               onClick={handleDelete}
+              disabled={deleting}
             >
               {deleting ? "Eliminando..." : "Eliminar"}
             </Button>
           </>
         }
-        icon={<Trash2 className="h-5 w-5" />}
-        open={!!deleteTarget}
-        size="sm"
-        title={t("ui.GlobalInventory.eliminarArticulo", "Eliminar artículo")}
-        onOpenChange={(o) => {
-          if (!o) setDeleteTarget(null);
-        }}
       >
         <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
           ¿Estás seguro de que quieres eliminar{" "}

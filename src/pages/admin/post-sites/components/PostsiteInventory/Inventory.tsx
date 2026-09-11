@@ -1,11 +1,8 @@
-import type { PostSite } from "@/types";
-
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Plus, RotateCcw, X, Search, Package, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,13 +25,14 @@ import inventoryAssignmentService, {
 import { securityGuardService } from "@/lib/api/securityGuardService";
 import { EmptyState, Modal, SkeletonCards } from "@/components/kit";
 import { FIELD_CLS_LG } from "@/pages/admin/clientes/components/_shared/tab-kit";
+import type { PostSite } from "@/types";
 
 type ConditionKey = "bueno" | "regular" | "danado";
 const CONDITIONS: ConditionKey[] = ["bueno", "regular", "danado"];
 const CONDITION_MAP: Record<ConditionKey, ItemCondition> = {
   bueno: "bueno",
   regular: "regular",
-
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore -- spanish special char handled at runtime
   danado: "da\u00f1ado",
 };
@@ -49,10 +47,8 @@ const CONDITION_TONE: Record<string, "ok" | "warn" | "bad"> = {
   regular: "warn",
   danado: "bad",
 };
-
 function conditionStyle(key: string): React.CSSProperties {
   const t = CONDITION_TONE[key] ?? "ok";
-
   return {
     background: `color-mix(in oklab, var(--${t}) 15%, transparent)`,
     color: `var(--${t}-text)`,
@@ -65,10 +61,8 @@ function normCond(v: string | undefined): ConditionKey {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
-
   if (c === "regular") return "regular";
   if (c.startsWith("da")) return "danado";
-
   return "bueno";
 }
 
@@ -76,9 +70,7 @@ function getGuardName(guard: any): string {
   if (!guard) return "";
   const first = guard.firstName || guard.first_name || guard.nombre || "";
   const last = guard.lastName || guard.last_name || guard.apellido || "";
-
   if (first || last) return (first + " " + last).trim();
-
   return guard.fullName || guard.name || guard.email || "";
 }
 
@@ -112,7 +104,6 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
         filter: { status: "disponible", ...(q ? { name: q } : {}) },
         limit: 20,
       });
-
       setItems(res.rows || []);
     } catch {
       setItems([]);
@@ -123,7 +114,6 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
 
   useEffect(() => {
     const t = setTimeout(() => searchItems(itemSearch), 300);
-
     return () => clearTimeout(t);
   }, [itemSearch, searchItems]);
 
@@ -131,7 +121,6 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
     try {
       setLoadingGuards(true);
       const res = await securityGuardService.autocomplete(q, 20);
-
       setGuards(Array.isArray(res) ? res : (res as any)?.rows || []);
     } catch {
       setGuards([]);
@@ -142,14 +131,12 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
 
   useEffect(() => {
     const t = setTimeout(() => searchGuards(guardSearch), 300);
-
     return () => clearTimeout(t);
   }, [guardSearch, searchGuards]);
 
   const handleAssign = async () => {
     if (!selectedItem) {
       toast.error(t("ui.Inventory.seleccionaUnArticulo"));
-
       return;
     }
     try {
@@ -175,29 +162,29 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
   return (
     <Modal
       open
+      onOpenChange={(o) => {
+        if (!o) onClose();
+      }}
+      title={t(
+        "ui.Inventory.asignarArticuloAlPuesto",
+        "Asignar artículo al puesto",
+      )}
+      icon={<Package className="h-5 w-5" />}
+      size="md"
       footer={
         <>
-          <Button disabled={saving} variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={onClose} disabled={saving}>
             {t("actions.cancel")}
           </Button>
           <Button
-            disabled={saving || !selectedItem}
             variant="brand"
             onClick={handleAssign}
+            disabled={saving || !selectedItem}
           >
             {saving ? "Asignando..." : "Asignar"}
           </Button>
         </>
       }
-      icon={<Package className="h-5 w-5" />}
-      size="md"
-      title={t(
-        "ui.Inventory.asignarArticuloAlPuesto",
-        "Asignar artículo al puesto",
-      )}
-      onOpenChange={(o) => {
-        if (!o) onClose();
-      }}
     >
       <div className="space-y-5">
         {/* Item */}
@@ -236,7 +223,6 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
-                  autoFocus
                   className="pl-9"
                   placeholder={t(
                     "ui.Inventory.buscarArticuloDisponible",
@@ -244,6 +230,7 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
                   )}
                   value={itemSearch}
                   onChange={(e) => setItemSearch(e.target.value)}
+                  autoFocus
                 />
               </div>
               <div className="border border-border rounded-lg max-h-40 overflow-y-auto">
@@ -365,10 +352,10 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
           <Label>{t("comun.notasOpcional")}</Label>
           <textarea
             className={`${FIELD_CLS_LG} resize-none`}
-            placeholder="Observaciones..."
             rows={2}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
+            placeholder="Observaciones..."
           />
         </div>
       </div>
@@ -414,22 +401,22 @@ function ReturnModal({ assignment, onClose, onDone }: ReturnModalProps) {
   return (
     <Modal
       open
+      onOpenChange={(o) => {
+        if (!o) onClose();
+      }}
+      title={t("ui.Inventory.devolverArticulo", "Devolver artículo")}
+      icon={<RotateCcw className="h-5 w-5" />}
+      size="sm"
       footer={
         <>
-          <Button disabled={saving} variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={onClose} disabled={saving}>
             {t("actions.cancel")}
           </Button>
-          <Button disabled={saving} variant="brand" onClick={handleReturn}>
+          <Button variant="brand" onClick={handleReturn} disabled={saving}>
             {saving ? "Procesando..." : "Confirmar devolución"}
           </Button>
         </>
       }
-      icon={<RotateCcw className="h-5 w-5" />}
-      size="sm"
-      title={t("ui.Inventory.devolverArticulo", "Devolver artículo")}
-      onOpenChange={(o) => {
-        if (!o) onClose();
-      }}
     >
       <div className="space-y-4">
         <p className="text-sm text-foreground/70">
@@ -460,10 +447,10 @@ function ReturnModal({ assignment, onClose, onDone }: ReturnModalProps) {
           <Label>{t("comun.notasOpcional")}</Label>
           <textarea
             className={`${FIELD_CLS_LG} resize-none`}
-            placeholder="Observaciones..."
             rows={2}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
+            placeholder="Observaciones..."
           />
         </div>
       </div>
@@ -478,7 +465,6 @@ export default function Inventory({ site }: { site?: PostSite }) {
   const { t } = useTranslation();
   const params = useParams();
   const containerRef = useRef<HTMLDivElement>(null);
-
   useScrollToTopOnMount(containerRef);
 
   const [assignments, setAssignments] = useState<InventoryAssignment[]>([]);
@@ -494,7 +480,6 @@ export default function Inventory({ site }: { site?: PostSite }) {
   const load = useCallback(async () => {
     if (!postSiteId) {
       setAssignments([]);
-
       return;
     }
     try {
@@ -509,7 +494,6 @@ export default function Inventory({ site }: { site?: PostSite }) {
       const direct: InventoryAssignment[] = res.rows || [];
       // 2. Fetch all stations for this postSite
       let stationAssignments: any[] = [];
-
       try {
         const stRes: any = await import("@/services/api/apiService").then((m) =>
           m.ApiService.get(
@@ -522,11 +506,9 @@ export default function Inventory({ site }: { site?: PostSite }) {
           stationName?: string;
           name?: string;
         }[] = Array.isArray(stRes) ? stRes : (stRes?.rows ?? []);
-
         await Promise.all(
           stations.map(async (st) => {
             const sid = st.id || st.stationId;
-
             if (!sid) return;
             try {
               const r = await inventoryAssignmentService.list({
@@ -534,7 +516,6 @@ export default function Inventory({ site }: { site?: PostSite }) {
                 limit: 200,
                 offset: 0,
               } as any);
-
               (r.rows || []).forEach((a: any) =>
                 stationAssignments.push({
                   ...a,
@@ -547,7 +528,6 @@ export default function Inventory({ site }: { site?: PostSite }) {
       } catch {}
       // 3. Merge + dedup by id, filter active
       const byId: Record<string, any> = {};
-
       [...direct, ...stationAssignments].forEach((a) => {
         if (a.id && !byId[a.id]) byId[a.id] = a;
       });
@@ -573,7 +553,6 @@ export default function Inventory({ site }: { site?: PostSite }) {
     : assignments.filter((a) => {
         const q = query.toLowerCase();
         const item = (a as any).inventoryItem;
-
         return (
           (item?.name || "").toLowerCase().includes(q) ||
           (item?.type || "").toLowerCase().includes(q) ||
@@ -602,10 +581,10 @@ export default function Inventory({ site }: { site?: PostSite }) {
           <p className="text-sm text-muted-foreground">{countMsg}</p>
         </div>
         <Button
-          disabled={!postSiteId}
-          size="sm"
           variant="brand"
           onClick={() => setShowAssignModal(true)}
+          disabled={!postSiteId}
+          size="sm"
         >
           <Plus className="w-4 h-4 mr-1" />{" "}
           {t("ui.Inventory.asignarArticulo", "Asignar artículo")}
@@ -631,6 +610,10 @@ export default function Inventory({ site }: { site?: PostSite }) {
           </div>
         ) : filtered.length === 0 ? (
           <EmptyState
+            icon={<Package />}
+            title={
+              query ? "Sin resultados" : "Sin artículos asignados a este puesto"
+            }
             action={
               !query ? (
                 <Button
@@ -647,10 +630,6 @@ export default function Inventory({ site }: { site?: PostSite }) {
               ) : undefined
             }
             className="border-0"
-            icon={<Package />}
-            title={
-              query ? "Sin resultados" : "Sin artículos asignados a este puesto"
-            }
           />
         ) : (
           <div className="overflow-x-auto">
@@ -679,7 +658,6 @@ export default function Inventory({ site }: { site?: PostSite }) {
                 {filtered.map((a) => {
                   const item = (a as any).inventoryItem;
                   const ck = normCond(a.conditionAtCheckout);
-
                   return (
                     <tr
                       key={a.id}

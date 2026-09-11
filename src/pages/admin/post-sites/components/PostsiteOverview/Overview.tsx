@@ -1,8 +1,22 @@
-import type { PostSite } from "@/types";
-
 import React, { useRef, useEffect } from "react";
+import { clientDisplayName } from "@/lib/clientName";
 import { useTranslation } from "react-i18next";
+import IncidentMap from "@/components/IncidentMap/IncidentMap";
 import { useState } from "react";
+import { ApiService } from "@/services/api/apiService";
+import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ServiceTypeBadge } from "@/components/post-sites/ServiceTypeBadge";
+import { StatCard, EmptyState, Stagger, Section } from "@/components/kit";
+import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import {
   Users,
   ShieldCheck,
@@ -16,22 +30,7 @@ import {
   Activity,
   SlidersHorizontal,
 } from "lucide-react";
-
-import { clientDisplayName } from "@/lib/clientName";
-import IncidentMap from "@/components/IncidentMap/IncidentMap";
-import { ApiService } from "@/services/api/apiService";
-import {
-  Sheet,
-  SheetTrigger,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { StatCard, EmptyState, Stagger, Section } from "@/components/kit";
-import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
+import type { PostSite } from "@/types";
 
 interface SiteProp extends PostSite {
   active?: boolean;
@@ -60,7 +59,6 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
   const [openFilter, setOpenFilter] = useState(false);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const containerRef = useRef<HTMLDivElement | null>(null);
-
   useScrollToTopOnMount(containerRef);
 
   const typeKeys = [
@@ -155,13 +153,11 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
 
   useEffect(() => {
     let mounted = true;
-
     (async () => {
       try {
         const tenantId =
           site?.tenantId || localStorage.getItem("tenantId") || "";
         const postSiteId = site?.id || "";
-
         if (!tenantId || !postSiteId) return;
 
         // Prefer backend-provided overview counters (single request)
@@ -170,7 +166,6 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
             `/tenant/${tenantId}/post-site/${postSiteId}/overview`,
             { toast: { silentError: true } } as any,
           );
-
           if (overview && typeof overview.assignedCount !== "undefined") {
             if (mounted) {
               setAssignedCount(Number(overview.assignedCount || 0));
@@ -181,12 +176,10 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
               const secs = Number(overview.hoursLoggedSeconds || 0);
               const hrs = Math.floor(secs / 3600);
               const mins = Math.floor((secs % 3600) / 60);
-
               setHoursLogged(
                 `${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}`,
               );
             }
-
             return; // done
           }
         } catch (e) {
@@ -195,13 +188,11 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
 
         // 2) Shifts — used for onsite count and hours logged
         let shifts: any[] = [];
-
         try {
           const shiftsResp: any = await ApiService.get(
             `/tenant/${tenantId}/shift?postSiteId=${encodeURIComponent(postSiteId)}&limit=999`,
             { headers: { "Cache-Control": "no-cache" } } as any,
           );
-
           shifts = Array.isArray(shiftsResp)
             ? shiftsResp
             : shiftsResp && (shiftsResp.rows || shiftsResp.data)
@@ -214,7 +205,6 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
               `/tenant/${tenantId}/post-site/${postSiteId}/shifts`,
               { toast: { silentError: true } } as any,
             );
-
             shifts = Array.isArray(resp2)
               ? resp2
               : resp2 && (resp2.rows || resp2.data)
@@ -229,7 +219,6 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
         let onsite = 0;
         let hoursSeconds = 0;
         const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-
         for (const sh of shifts || []) {
           const startStr =
             sh.start ||
@@ -248,7 +237,6 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
             sh.finish;
           const s = startStr ? +new Date(startStr) : NaN;
           const e = endStr ? +new Date(endStr) : NaN;
-
           if (!isNaN(s) && !isNaN(e)) {
             if (s <= now && now <= e) onsite += 1;
             if (s >= sevenDaysAgo || e >= sevenDaysAgo) {
@@ -260,7 +248,6 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
           setOnsiteCount(onsite);
           const hrs = Math.floor(hoursSeconds / 3600);
           const mins = Math.floor((hoursSeconds % 3600) / 60);
-
           setHoursLogged(
             `${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}`,
           );
@@ -278,13 +265,10 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
               : [];
           const recentTags = (tags || []).filter((t: any) => {
             const c = t.createdAt || t.created_at || t.timestamp || t.date;
-
             if (!c) return false;
             const tms = +new Date(c);
-
             return !isNaN(tms) && tms >= sevenDaysAgo;
           });
-
           if (mounted) setToursCount(recentTags.length);
         } catch (e) {
           if (mounted) setToursCount(0);
@@ -302,13 +286,10 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
               : [];
           const recent = (rows || []).filter((r: any) => {
             const c = r.createdAt || r.created_at || r.incidentAt || r.date;
-
             if (!c) return false;
             const tms = +new Date(c);
-
             return !isNaN(tms) && tms >= sevenDaysAgo;
           });
-
           if (mounted) setIncidentsCount(recent.length);
         } catch (e) {
           if (mounted) setIncidentsCount(0);
@@ -317,13 +298,11 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
         // 5) Tasks completed last 7 days — try couple endpoints
         try {
           let tasksRows: any[] = [];
-
           try {
             const tResp: any = await ApiService.get(
               `/tenant/${tenantId}/post-site/${postSiteId}/tasks`,
               { toast: { silentError: true } } as any,
             );
-
             tasksRows = Array.isArray(tResp)
               ? tResp
               : tResp && (tResp.rows || tResp.data)
@@ -335,7 +314,6 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
                 `/tenant/${tenantId}/task?postSiteId=${encodeURIComponent(postSiteId)}&limit=999`,
                 { toast: { silentError: true } } as any,
               );
-
               tasksRows = Array.isArray(t2)
                 ? t2
                 : t2 && (t2.rows || t2.data)
@@ -356,13 +334,10 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
               it.closed_at ||
               it.updatedAt ||
               it.updated_at;
-
             if (!fin) return false;
             const tms = +new Date(fin);
-
             return !isNaN(tms) && tms >= sevenDaysAgo;
           });
-
           if (mounted) setTasksCount(recentTasks.length);
         } catch (e) {
           if (mounted) setTasksCount(0);
@@ -371,7 +346,6 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
         console.error("Failed loading overview counters", err);
       }
     })();
-
     return () => {
       mounted = false;
     };
@@ -430,14 +404,13 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
         <Stagger className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
           {stats.map((s) => {
             const Icon = s.icon;
-
             return (
               <StatCard
                 key={s.id}
-                accent={s.accent}
-                icon={<Icon />}
                 label={s.label}
                 value={s.value}
+                icon={<Icon />}
+                accent={s.accent}
               />
             );
           })}
@@ -446,38 +419,43 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
 
       {/* ── Location map ─────────────────────────────────────────────────── */}
       <Section
+        title={t("postSites.overview.Map.title")}
+        icon={<MapIcon />}
         action={
           address ? (
             <a
-              className="cg-btn-link cg-focus inline-flex items-center gap-1.5 rounded text-sm hover:underline"
               href={mapsUrl}
-              rel="noreferrer"
               target="_blank"
+              rel="noreferrer"
+              className="cg-btn-link cg-focus inline-flex items-center gap-1.5 rounded text-sm hover:underline"
             >
               {t("postSites.overview.Map.openInMaps", "Abrir en Google Maps")}
               <ExternalLink className="h-3.5 w-3.5" />
             </a>
           ) : undefined
         }
-        icon={<MapIcon />}
-        title={t("postSites.overview.Map.title")}
       >
         {hasCoords ? (
           <div
             className="h-80 overflow-hidden rounded-xl border"
             style={{ borderColor: "var(--hairline)" }}
           >
-            <IncidentMap label={siteName} lat={latNum} lng={lngNum} />
+            <IncidentMap lat={latNum} lng={lngNum} label={siteName} />
           </div>
         ) : (
           <EmptyState
+            icon={<MapPin />}
+            title={t(
+              "postSites.overview.Map.noCoords",
+              "Este sitio no tiene coordenadas configuradas.",
+            )}
             action={
               address ? (
                 <a
-                  className="cg-btn-link cg-focus rounded text-sm hover:underline"
                   href={mapsUrl}
-                  rel="noreferrer"
                   target="_blank"
+                  rel="noreferrer"
+                  className="cg-btn-link cg-focus rounded text-sm hover:underline"
                 >
                   {t(
                     "postSites.overview.Map.openInMaps",
@@ -486,27 +464,24 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
                 </a>
               ) : undefined
             }
-            icon={<MapPin />}
-            title={t(
-              "postSites.overview.Map.noCoords",
-              "Este sitio no tiene coordenadas configuradas.",
-            )}
           />
         )}
       </Section>
 
       {/* ── Latest activity ──────────────────────────────────────────────── */}
       <Section
+        title={t("postSites.overview.LatestActivity")}
+        icon={<Activity />}
         action={
           <Sheet open={openFilter} onOpenChange={setOpenFilter}>
             <SheetTrigger asChild>
-              <Button className="gap-1.5" size="sm" variant="outline">
+              <Button variant="outline" size="sm" className="gap-1.5">
                 <SlidersHorizontal className="h-4 w-4" />
                 {t("postSites.overview.Filters", "Filtros")}
                 {selectedTypes.length > 0 ? (
                   <Badge
-                    className="ml-1 px-1.5 py-0 text-[10px]"
                     variant="secondary"
+                    className="ml-1 px-1.5 py-0 text-[10px]"
                   >
                     {selectedTypes.length}
                   </Badge>
@@ -517,8 +492,8 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
             {/* 400 px fijos son más anchos que un teléfono de 375: el panel se
                   salía por la derecha. En móvil ocupa el ancho disponible. */}
             <SheetContent
-              className="z-[9999] w-full max-w-full sm:w-[460px] sm:max-w-[460px]"
               side="right"
+              className="z-[9999] w-full max-w-full sm:w-[460px] sm:max-w-[460px]"
             >
               <SheetHeader>
                 <SheetTitle>
@@ -539,8 +514,8 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
                       {t("postSites.overview.Filter.fromDate", "Desde")}
                     </label>
                     <input
-                      className="cg-input cg-focus w-full px-3 py-2 text-sm"
                       type="date"
+                      className="cg-input cg-focus w-full px-3 py-2 text-sm"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -548,8 +523,8 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
                       {t("postSites.overview.Filter.toDate", "Hasta")}
                     </label>
                     <input
-                      className="cg-input cg-focus w-full px-3 py-2 text-sm"
                       type="date"
+                      className="cg-input cg-focus w-full px-3 py-2 text-sm"
                     />
                   </div>
                 </div>
@@ -579,16 +554,16 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
                 <div className="flex justify-end gap-2 pt-2">
                   {selectedTypes.length > 0 ? (
                     <Button
-                      size="sm"
                       variant="ghost"
+                      size="sm"
                       onClick={() => setSelectedTypes([])}
                     >
                       {t("common.clear", "Limpiar")}
                     </Button>
                   ) : null}
                   <Button
-                    size="sm"
                     variant="brand"
+                    size="sm"
                     onClick={() => setOpenFilter(false)}
                   >
                     {t("common.apply", "Filtrar")}
@@ -598,8 +573,6 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
             </SheetContent>
           </Sheet>
         }
-        icon={<Activity />}
-        title={t("postSites.overview.LatestActivity")}
       >
         <div className="mt-2">
           <EmptyState

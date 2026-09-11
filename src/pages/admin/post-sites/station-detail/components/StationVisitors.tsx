@@ -1,5 +1,3 @@
-import type { Station } from "@/types";
-
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -17,7 +15,6 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
-
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { visitorLogService } from "@/lib/api/visitorLogService";
 import { runOrQueue } from "@/lib/offline/offlineQueue";
@@ -45,6 +42,11 @@ import {
   FadeIn,
   SmartImage,
 } from "@/components/kit";
+import ExportarPeriodo, {
+  type Ventana,
+} from "@/components/reports/ExportarPeriodo";
+import type { ExportFormat } from "@/lib/export/reportExport";
+import type { Station } from "@/types";
 
 type Props = { station: Station; stationId: string; postSiteId: string };
 
@@ -97,7 +99,6 @@ function toLocalInputValue(iso?: string | null) {
   try {
     const d = new Date(iso);
     const pad = (n: number) => String(n).padStart(2, "0");
-
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
   } catch {
     return "";
@@ -119,7 +120,6 @@ async function ocrAndParseId(
 ): Promise<{ firstName?: string; lastName?: string; idNumber?: string }> {
   const { createWorker } = await import("tesseract.js");
   const worker = await createWorker("spa");
-
   try {
     const {
       data: { text },
@@ -128,17 +128,13 @@ async function ocrAndParseId(
     const result: { firstName?: string; lastName?: string; idNumber?: string } =
       {};
     const cedMatch = upper.match(/\b([0-9]{10})\b/);
-
     if (cedMatch) result.idNumber = cedMatch[1];
     const apellidosMatch = upper.match(
       /APELLIDOS?\s*[:\n]+\s*([A-ZÁÉÍÓÚÑÜ ]{3,})/,
     );
-
     if (apellidosMatch) result.lastName = titleCase(apellidosMatch[1].trim());
     const nombresMatch = upper.match(/NOMBRES?\s*[:\n]+\s*([A-ZÁÉÍÓÚÑÜ ]{3,})/);
-
     if (nombresMatch) result.firstName = titleCase(nombresMatch[1].trim());
-
     return result;
   } finally {
     await worker.terminate();
@@ -194,7 +190,6 @@ function CameraModal({
         video: { facingMode, width: { ideal: 1920 } },
         audio: false,
       });
-
       streamRef.current = s;
       setStream(s);
       if (videoRef.current) {
@@ -229,7 +224,6 @@ function CameraModal({
     if (open) {
       startCamera();
     }
-
     return () => {
       streamRef.current?.getTracks().forEach((t) => t.stop());
       streamRef.current = null;
@@ -244,7 +238,6 @@ function CameraModal({
   const capture = () => {
     const v = videoRef.current,
       c = canvasRef.current;
-
     if (!v || !c) return;
     c.width = v.videoWidth;
     c.height = v.videoHeight;
@@ -296,30 +289,30 @@ function CameraModal({
           ) : captured ? (
             <div className="space-y-3">
               <img
+                src={captured.url}
                 alt="Captura"
                 className="w-full rounded border"
-                src={captured.url}
                 style={{ borderColor: "var(--hairline)" }}
               />
               <div className="flex gap-2">
                 <Button
-                  className="flex-1 gap-1"
                   variant="outline"
                   onClick={() => {
                     setCapturedPhoto(null);
                     startCamera();
                   }}
+                  className="flex-1 gap-1"
                 >
                   <X size={14} /> Retomar
                 </Button>
                 <Button
-                  className="flex-1 gap-1"
                   variant="brand"
                   onClick={() => {
                     capturedUrlRef.current = null;
                     onCapture(captured.blob, captured.url);
                     onClose();
                   }}
+                  className="flex-1 gap-1"
                 >
                   <Check size={14} /> Usar foto
                 </Button>
@@ -345,8 +338,8 @@ function CameraModal({
                 <video
                   ref={videoRef}
                   autoPlay
-                  muted
                   playsInline
+                  muted
                   className="w-full h-full object-cover"
                 />
                 {!ready && (
@@ -365,10 +358,10 @@ function CameraModal({
                 )}
               </div>
               <Button
-                className="w-full gap-2"
-                disabled={!ready}
                 variant="brand"
                 onClick={capture}
+                disabled={!ready}
+                className="w-full gap-2"
               >
                 <Camera size={15} /> Capturar
               </Button>
@@ -446,7 +439,6 @@ function VisitorFormModal({
     if (!open) return;
     if (initialData) {
       const parts = (initialData.placeType || "").split(" - ");
-
       setForm({
         firstName: initialData.firstName || "",
         lastName: initialData.lastName || "",
@@ -478,7 +470,6 @@ function VisitorFormModal({
     setScanning(true);
     try {
       const r = await ocrAndParseId(blob);
-
       if (r.firstName) set("firstName", r.firstName);
       if (r.lastName) set("lastName", r.lastName);
       if (r.idNumber) set("idNumber", r.idNumber);
@@ -495,14 +486,12 @@ function VisitorFormModal({
   const handleSave = async () => {
     if (!form.firstName.trim() || !form.lastName.trim()) {
       toast.error(t("ui.StationVisitors.nombreYApellidoSonObligatorios"));
-
       return;
     }
     setSaving(true);
     try {
       let idPhotoMeta: any[] | undefined;
       let photoDroppedOffline = false;
-
       if (photoBlob) {
         const f =
           photoBlob instanceof File
@@ -510,10 +499,8 @@ function VisitorFormModal({
             : new File([photoBlob], `visitor-${Date.now()}.jpg`, {
                 type: "image/jpeg",
               });
-
         try {
           const meta = await visitorLogService.uploadPhoto(f);
-
           idPhotoMeta = [meta];
         } catch (e) {
           // Sin red la subida de la foto revienta ANTES de llegar a la cola y se
@@ -541,7 +528,6 @@ function VisitorFormModal({
         exitTime: form.exitTime ? new Date(form.exitTime).toISOString() : null,
         stationId,
       };
-
       if (idPhotoMeta) payload.idPhoto = idPhotoMeta;
       if (isEdit) {
         await visitorLogService.update(initialData.id, payload);
@@ -554,7 +540,6 @@ function VisitorFormModal({
           () => visitorLogService.create(payload),
           "Visita",
         );
-
         if (queued)
           toast.warning(
             photoDroppedOffline
@@ -612,15 +597,15 @@ function VisitorFormModal({
                 )}
               </p>
               <Button
-                className="gap-1.5"
-                disabled={scanning}
-                size="sm"
                 variant="outline"
+                size="sm"
                 onClick={() => setCameraMode("id-scan")}
+                disabled={scanning}
+                className="gap-1.5"
               >
                 {scanning ? (
                   <>
-                    <Loader2 className="animate-spin" size={13} /> Procesando…
+                    <Loader2 size={13} className="animate-spin" /> Procesando…
                   </>
                 ) : (
                   <>
@@ -636,12 +621,12 @@ function VisitorFormModal({
                   Apellido <span style={{ color: "var(--bad-text)" }}>*</span>
                 </Label>
                 <Input
+                  value={form.lastName}
+                  onChange={(e) => set("lastName", e.target.value)}
                   placeholder={t(
                     "ui.StationVisitors.perezGarcia",
                     "Pérez García",
                   )}
-                  value={form.lastName}
-                  onChange={(e) => set("lastName", e.target.value)}
                 />
               </div>
               <div className="space-y-1">
@@ -650,9 +635,9 @@ function VisitorFormModal({
                   <span style={{ color: "var(--bad-text)" }}>*</span>
                 </Label>
                 <Input
-                  placeholder="Juan Carlos"
                   value={form.firstName}
                   onChange={(e) => set("firstName", e.target.value)}
+                  placeholder="Juan Carlos"
                 />
               </div>
             </div>
@@ -666,16 +651,16 @@ function VisitorFormModal({
                   )}
                 </Label>
                 <Input
-                  placeholder="0912345678"
                   value={form.idNumber}
                   onChange={(e) => set("idNumber", e.target.value)}
+                  placeholder="0912345678"
                 />
               </div>
               <div className="space-y-1">
                 <Label>N° Personas</Label>
                 <Input
-                  min={1}
                   type="number"
+                  min={1}
                   value={form.numPeople}
                   onChange={(e) => set("numPeople", e.target.value)}
                 />
@@ -706,9 +691,9 @@ function VisitorFormModal({
                   {t("ui.StationVisitors.numeroDetalle", "Número / Detalle")}
                 </Label>
                 <Input
-                  placeholder="24-B"
                   value={form.placeTypeValue}
                   onChange={(e) => set("placeTypeValue", e.target.value)}
+                  placeholder="24-B"
                 />
               </div>
             </div>
@@ -735,9 +720,9 @@ function VisitorFormModal({
             <div className="space-y-1">
               <Label>{t("comun.motivo")}</Label>
               <Input
-                placeholder={t("ui.StationVisitors.visitaAFamiliarEntregaEtc")}
                 value={form.reason}
                 onChange={(e) => set("reason", e.target.value)}
+                placeholder={t("ui.StationVisitors.visitaAFamiliarEntregaEtc")}
               />
             </div>
             {/* Photo */}
@@ -746,20 +731,20 @@ function VisitorFormModal({
               {displayPhoto && (
                 <div className="relative w-24 h-24">
                   <img
+                    src={displayPhoto}
                     alt={t("ui.StationVisitors.fotoDelVisitante")}
                     className="h-24 w-24 rounded-lg border object-cover"
-                    src={displayPhoto}
                     style={{ borderColor: "var(--hairline)" }}
                   />
                   <button
-                    aria-label="Quitar foto"
-                    className="cg-btn-bad cg-focus absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full"
                     type="button"
+                    aria-label="Quitar foto"
                     onClick={() => {
                       setPhotoBlob(null);
                       setPhotoUrl(null);
                       setExistingPhotoUrl(null);
                     }}
+                    className="cg-btn-bad cg-focus absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full"
                   >
                     <X size={12} />
                   </button>
@@ -767,32 +752,31 @@ function VisitorFormModal({
               )}
               <div className="flex gap-2">
                 <Button
-                  className="gap-1"
-                  size="sm"
                   type="button"
                   variant="outline"
+                  size="sm"
                   onClick={() => setCameraMode("photo")}
+                  className="gap-1"
                 >
                   <Camera size={13} /> Tomar foto
                 </Button>
                 <Button
-                  className="gap-1"
-                  size="sm"
                   type="button"
                   variant="outline"
+                  size="sm"
                   onClick={() => fileInputRef.current?.click()}
+                  className="gap-1"
                 >
                   <Upload size={13} /> Subir archivo
                 </Button>
               </div>
               <input
                 ref={fileInputRef}
+                type="file"
                 accept="image/*"
                 className="hidden"
-                type="file"
                 onChange={(e) => {
                   const f = e.target.files?.[0];
-
                   if (f) {
                     setPhotoBlob(f);
                     setPhotoUrl(URL.createObjectURL(f));
@@ -803,21 +787,21 @@ function VisitorFormModal({
             {/* Actions */}
             <div className="flex gap-2 pt-1">
               <Button
-                className="flex-1"
-                disabled={saving}
                 variant="outline"
                 onClick={onClose}
+                disabled={saving}
+                className="flex-1"
               >
                 {t("actions.cancel")}
               </Button>
               <Button
-                className="flex-1 gap-1"
-                disabled={saving || scanning}
                 variant="brand"
                 onClick={handleSave}
+                disabled={saving || scanning}
+                className="flex-1 gap-1"
               >
                 {saving ? (
-                  <Loader2 className="animate-spin" size={13} />
+                  <Loader2 size={13} className="animate-spin" />
                 ) : (
                   <UserCheck size={13} />
                 )}
@@ -831,23 +815,23 @@ function VisitorFormModal({
         <CameraModal
           open
           mode="id-scan"
+          onClose={() => setCameraMode(null)}
           onCapture={(blob) => {
             setCameraMode(null);
             handleIdCapture(blob);
           }}
-          onClose={() => setCameraMode(null)}
         />
       )}
       {cameraMode === "photo" && (
         <CameraModal
           open
           mode="photo"
+          onClose={() => setCameraMode(null)}
           onCapture={(blob, url) => {
             setCameraMode(null);
             setPhotoBlob(blob);
             setPhotoUrl(url);
           }}
-          onClose={() => setCameraMode(null)}
         />
       )}
     </>
@@ -867,6 +851,25 @@ export default function StationVisitors({ stationId }: Props) {
   const [editRow, setEditRow] = useState<VisitorRow | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
 
+  /**
+   * La exportación la arma el SERVIDOR con el periodo pedido, no la página con
+   * lo que tenga paginado: quien pide «la semana» quiere la semana entera, no
+   * los veinticinco registros que se ven.
+   */
+  const exportar = async (format: ExportFormat, v: Ventana) => {
+    try {
+      await visitorLogService.exportar(format, {
+        stationId,
+        kind: "visitors",
+        from: v.from,
+        to: v.to,
+        nombreBase: `visitantes_${v.etiqueta}`,
+      });
+    } catch (e: any) {
+      toast.error(e?.message || "No se pudo generar el archivo");
+    }
+  };
+
   const load = useCallback(async () => {
     if (!stationId) return;
     setLoading(true);
@@ -877,7 +880,6 @@ export default function StationVisitors({ stationId }: Props) {
         { limit: LIMIT, offset: page * LIMIT },
       );
       const list = Array.isArray(res) ? res : (res?.rows ?? []);
-
       setRows(list);
       setTotal(typeof res?.count === "number" ? res.count : list.length);
     } catch (e: any) {
@@ -915,20 +917,6 @@ export default function StationVisitors({ stationId }: Props) {
 
   return (
     <Section
-      action={
-        <Button
-          className="gap-1"
-          size="sm"
-          variant="brand"
-          onClick={() => {
-            setEditRow(null);
-            setFormOpen(true);
-          }}
-        >
-          <Plus size={14} /> Nuevo visitante
-        </Button>
-      }
-      contentClassName="-mx-5 -mb-5"
       icon={<UserCheck />}
       title={
         <span>
@@ -943,6 +931,25 @@ export default function StationVisitors({ stationId }: Props) {
           )}
         </span>
       }
+      action={
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Sin registros el menú se deshabilita: un archivo vacío se lee como
+              que el sistema perdió los datos, no como que no hubo visitas. */}
+          <ExportarPeriodo onExport={exportar} disabled={total === 0} />
+          <Button
+            variant="brand"
+            size="sm"
+            onClick={() => {
+              setEditRow(null);
+              setFormOpen(true);
+            }}
+            className="gap-1"
+          >
+            <Plus size={14} /> Nuevo visitante
+          </Button>
+        </div>
+      }
+      contentClassName="-mx-5 -mb-5"
     >
       {loading ? (
         <div className="px-5 pb-5">
@@ -970,7 +977,7 @@ export default function StationVisitors({ stationId }: Props) {
                 }}
               >
                 <tr>
-                  <th className="cg-eyebrow px-2 py-2 w-10" />
+                  <th className="cg-eyebrow px-2 py-2 w-10"></th>
                   <th className="cg-eyebrow px-2 py-2">{t("comun.nombre")}</th>
                   <th className="cg-eyebrow px-2 py-2">
                     {t("ui.StationVisitors.cedula", "Cédula")}
@@ -996,7 +1003,6 @@ export default function StationVisitors({ stationId }: Props) {
                       r.guard.name ||
                       "-"
                     : r.guardName || "-";
-
                   return (
                     <tr
                       key={r.id || i}
@@ -1004,8 +1010,11 @@ export default function StationVisitors({ stationId }: Props) {
                     >
                       <td className="px-2 py-2.5">
                         <SmartImage
+                          src={photo}
                           alt={name}
+                          rounded="rounded-full"
                           className="h-8 w-8 border"
+                          style={{ borderColor: "var(--hairline)" }}
                           fallback={
                             <span
                               className="grid h-full w-full place-items-center text-xs font-bold"
@@ -1017,9 +1026,6 @@ export default function StationVisitors({ stationId }: Props) {
                               {(fn[0] || ln[0] || "?").toUpperCase()}
                             </span>
                           }
-                          rounded="rounded-full"
-                          src={photo}
-                          style={{ borderColor: "var(--hairline)" }}
                         />
                       </td>
                       <td className="px-2 py-2.5 font-medium">{name}</td>
@@ -1046,28 +1052,28 @@ export default function StationVisitors({ stationId }: Props) {
                       <td className="px-2 py-2.5 text-right">
                         <div className="flex items-center justify-end gap-1">
                           <button
-                            aria-label={t("ui.StationVisitors.editarVisitante")}
-                            className="cg-btn-ghost cg-focus rounded p-1.5"
-                            title={t("actions.edit")}
                             onClick={() => {
                               setEditRow(r);
                               setFormOpen(true);
                             }}
+                            className="cg-btn-ghost cg-focus rounded p-1.5"
+                            title={t("actions.edit")}
+                            aria-label={t("ui.StationVisitors.editarVisitante")}
                           >
                             <Edit2 size={14} />
                           </button>
                           <button
+                            onClick={() => handleDelete(r.id)}
+                            disabled={deleting === r.id}
+                            className="cg-focus rounded p-1.5 disabled:opacity-40"
+                            style={{ color: "var(--bad-text)" }}
+                            title={t("actions.delete")}
                             aria-label={t(
                               "ui.StationVisitors.eliminarVisitante",
                             )}
-                            className="cg-focus rounded p-1.5 disabled:opacity-40"
-                            disabled={deleting === r.id}
-                            style={{ color: "var(--bad-text)" }}
-                            title={t("actions.delete")}
-                            onClick={() => handleDelete(r.id)}
                           >
                             {deleting === r.id ? (
-                              <Loader2 className="animate-spin" size={14} />
+                              <Loader2 size={14} className="animate-spin" />
                             ) : (
                               <Trash2 size={14} />
                             )}
@@ -1094,24 +1100,24 @@ export default function StationVisitors({ stationId }: Props) {
               </span>
               <div className="flex gap-1">
                 <button
+                  disabled={page === 0}
+                  onClick={() => setPage((p) => p - 1)}
                   aria-label={t(
                     "ui.StationVisitors.paginaAnterior",
                     "Página anterior",
                   )}
                   className="cg-btn-glass cg-focus rounded p-1.5 disabled:opacity-40"
-                  disabled={page === 0}
-                  onClick={() => setPage((p) => p - 1)}
                 >
                   <ChevronLeft size={15} />
                 </button>
                 <button
+                  disabled={(page + 1) * LIMIT >= total}
+                  onClick={() => setPage((p) => p + 1)}
                   aria-label={t(
                     "ui.StationVisitors.paginaSiguiente",
                     "Página siguiente",
                   )}
                   className="cg-btn-glass cg-focus rounded p-1.5 disabled:opacity-40"
-                  disabled={(page + 1) * LIMIT >= total}
-                  onClick={() => setPage((p) => p + 1)}
                 >
                   <ChevronRight size={15} />
                 </button>
@@ -1122,8 +1128,8 @@ export default function StationVisitors({ stationId }: Props) {
       )}
 
       <VisitorFormModal
-        initialData={editRow}
         open={formOpen}
+        initialData={editRow}
         stationId={stationId}
         onClose={() => {
           setFormOpen(false);

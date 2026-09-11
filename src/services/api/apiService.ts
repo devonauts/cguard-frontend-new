@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import i18n from "@/i18n";
 import {
   reportRequestOk,
@@ -29,7 +30,6 @@ export class ApiService {
       (this as any)._rateLimitPausedUntil = 0;
     const rateLimitPausedUntil: number =
       (this as any)._rateLimitPausedUntil || 0;
-
     if (Date.now() < rateLimitPausedUntil) {
       throw new ApiError(
         "Client rate-limited: temporarily paused requests",
@@ -46,7 +46,6 @@ export class ApiService {
     };
 
     const isFormData = options.body instanceof FormData;
-
     if (isFormData) delete headers["Content-Type"];
 
     if (token && !options.skipAuth) {
@@ -72,7 +71,6 @@ export class ApiService {
 
     let response!: Response;
     let data: any = null;
-
     for (let attempt = 1; ; attempt++) {
       try {
         // Ensure credentials (cookies) are sent so backend session auth works
@@ -117,7 +115,6 @@ export class ApiService {
         if (response.status === 204 || response.status === 304) data = null;
         else if (isJson) {
           const text = await response.text();
-
           data = text ? JSON.parse(text) : null;
         } else {
           data = await response.text().catch(() => null);
@@ -142,14 +139,11 @@ export class ApiService {
       if (response.status === 429) {
         const retryAfter = response.headers.get("retry-after");
         let pauseMs = 5000; // default 5s
-
         if (retryAfter) {
           const asInt = parseInt(retryAfter, 10);
-
           if (!Number.isNaN(asInt)) pauseMs = asInt * 1000;
           else {
             const parsed = Date.parse(retryAfter);
-
             if (!Number.isNaN(parsed))
               pauseMs = Math.max(1000, parsed - Date.now());
           }
@@ -157,7 +151,6 @@ export class ApiService {
         // Exponential safety: if there's already a pause, extend it a bit
         const current = (this as any)._rateLimitPausedUntil || 0;
         const nextUntil = Math.max(current, Date.now() + pauseMs);
-
         (this as any)._rateLimitPausedUntil = nextUntil;
       }
       // Build a concise message. If the response is non-JSON and looks like an HTML error page,
@@ -169,7 +162,6 @@ export class ApiService {
 
       let msg = msgRaw;
       let fullResponse = data;
-
       if (typeof data === "string" && /<\s*!?doctype|<html/i.test(data)) {
         msg = `Error: ${response.status} ${response.statusText}`;
         fullResponse = null; // avoid logging large HTML blobs
@@ -224,7 +216,6 @@ export class ApiService {
   static post(endpoint: string, body?: any, options = {}) {
     const payload =
       body instanceof FormData ? body : JSON.stringify(body ?? {});
-
     return this.request(endpoint, {
       ...options,
       method: "POST",
@@ -234,7 +225,6 @@ export class ApiService {
   static patch(endpoint: string, body?: any, options = {}) {
     const payload =
       body instanceof FormData ? body : JSON.stringify(body ?? {});
-
     return this.request(endpoint, {
       ...options,
       method: "PATCH",
@@ -244,7 +234,6 @@ export class ApiService {
   static put(endpoint: string, body?: any, options = {}) {
     const payload =
       body instanceof FormData ? body : JSON.stringify(body ?? {});
-
     return this.request(endpoint, { ...options, method: "PUT", body: payload });
   }
   static delete(endpoint: string, options = {}) {
@@ -265,7 +254,6 @@ export class ApiService {
     const url = `${API_BASE_URL}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
 
     let response: Response;
-
     try {
       response = await fetch(url, {
         ...options,
@@ -287,7 +275,6 @@ export class ApiService {
     if (!response.ok) {
       const text = await response.text().catch(() => null);
       let data = null;
-
       try {
         data = text ? JSON.parse(text) : null;
       } catch {
@@ -296,7 +283,6 @@ export class ApiService {
       let msg =
         (data && (data.message || data.error)) ||
         `Error: ${response.status} ${response.statusText}`;
-
       if (typeof text === "string" && /<\s*!?doctype|<html/i.test(text)) {
         msg = `Error: ${response.status} ${response.statusText}`;
       }
@@ -304,7 +290,6 @@ export class ApiService {
     }
 
     const blob = await response.blob();
-
     return blob;
   }
 }

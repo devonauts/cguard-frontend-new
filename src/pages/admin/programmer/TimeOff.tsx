@@ -1,21 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import {
-  Search,
-  ChevronsUpDown,
-  X,
-  Loader2,
-  CheckCircle,
-  XCircle,
-  Trash2,
-  CalendarOff,
-  Clock,
-  ThumbsUp,
-  ThumbsDown,
-  Plus,
-} from "lucide-react";
-
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
@@ -52,6 +37,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Search,
+  ChevronsUpDown,
+  X,
+  Loader2,
+  CheckCircle,
+  XCircle,
+  Trash2,
+  CalendarOff,
+  Clock,
+  ThumbsUp,
+  ThumbsDown,
+  Plus,
+} from "lucide-react";
 import Breadcrumb from "@/components/ui/breadcrumb";
 import {
   PageContainer,
@@ -68,6 +67,7 @@ import timeOffRequestService, {
   TimeOffRecord,
 } from "@/lib/api/timeOffRequestService";
 import { securityGuardService } from "@/lib/api/securityGuardService";
+
 import { localeActual } from "@/lib/localeActual";
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -81,7 +81,6 @@ function formatDate(iso: string | null) {
   const d = m
     ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]))
     : new Date(iso);
-
   return d.toLocaleDateString(localeActual(), {
     day: "2-digit",
     month: "short",
@@ -142,10 +141,8 @@ export default function TimeOff() {
     setLoading(true);
     try {
       const params: Record<string, string | number> = { limit: 500 };
-
       if (statusFilter !== "all") params["filter[status]"] = statusFilter;
       const { rows } = await timeOffRequestService.list(params);
-
       setRecords(rows);
     } catch (err) {
       console.error("Failed to fetch time-off requests", err);
@@ -176,11 +173,9 @@ export default function TimeOff() {
               (item.guard?.firstName && item.guard?.lastName
                 ? `${item.guard.firstName} ${item.guard.lastName}`
                 : (item.guard?.fullName ?? ""));
-
             return userId ? { userId, fullName } : null;
           })
           .filter(Boolean) as GuardOption[];
-
         setGuards(opts);
       } catch (e) {
         console.error("Failed to load guards", e);
@@ -199,7 +194,6 @@ export default function TimeOff() {
   const filtered = records.filter((r) => {
     if (!q) return true;
     const guardName = r.guard?.fullName ?? "";
-
     return (
       guardName.toLowerCase().includes(q) ||
       (r.type ?? "").toLowerCase().includes(q) ||
@@ -233,7 +227,6 @@ export default function TimeOff() {
   const handleCreate = async () => {
     if (!form.type || !form.startDate || !form.endDate || !form.reason) {
       toast.error(t("ui.TimeOff.faltanCamposTipoDesdeHasta"));
-
       return;
     }
     setSaving(true);
@@ -263,7 +256,6 @@ export default function TimeOff() {
   const handleApprove = async (id: string) => {
     try {
       const updated = await timeOffRequestService.updateStatus(id, "approved");
-
       setRecords((prev) => prev.map((r) => (r.id === id ? updated : r)));
     } catch (err) {
       console.error("Failed to approve", err);
@@ -273,7 +265,6 @@ export default function TimeOff() {
   const handleReject = async (id: string) => {
     try {
       const updated = await timeOffRequestService.updateStatus(id, "rejected");
-
       setRecords((prev) => prev.map((r) => (r.id === id ? updated : r)));
     } catch (err) {
       console.error("Failed to reject", err);
@@ -324,16 +315,19 @@ export default function TimeOff() {
           },
         ]}
       />
-      <PageContainer className="px-4 lg:px-6" width="wide">
+      <PageContainer width="wide" className="px-4 lg:px-6">
         <PageHeader
           icon={<CalendarOff />}
-          subtitle={t("ui.TimeOff.solicitudesDeVacacionesEnfermedadY")}
           title="Tiempo libre"
+          subtitle={t("ui.TimeOff.solicitudesDeVacacionesEnfermedadY")}
         />
 
         {/* KPIs */}
         <Stagger className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <MetricTile
+            label="Pendientes"
+            value={stats.pending}
+            icon={<Clock />}
             delta={
               totalPermisos > 0
                 ? {
@@ -343,22 +337,22 @@ export default function TimeOff() {
                 : undefined
             }
             hint={t("comun.esperandoUnaDecision")}
-            icon={<Clock />}
-            label="Pendientes"
-            value={stats.pending}
           />
           <MetricTile
+            label="Aprobadas"
+            value={stats.approved}
+            icon={<ThumbsUp />}
             delta={
               totalPermisos > 0
                 ? { value: `${pctPermisos(stats.approved)} %`, direction: "up" }
                 : undefined
             }
             hint={t("comun.delTotalDeSolicitudes")}
-            icon={<ThumbsUp />}
-            label="Aprobadas"
-            value={stats.approved}
           />
           <MetricTile
+            label="Rechazadas"
+            value={stats.rejected}
+            icon={<ThumbsDown />}
             delta={
               totalPermisos > 0
                 ? {
@@ -368,9 +362,6 @@ export default function TimeOff() {
                 : undefined
             }
             hint={t("comun.delTotalDeSolicitudes")}
-            icon={<ThumbsDown />}
-            label="Rechazadas"
-            value={stats.rejected}
           />
         </Stagger>
 
@@ -380,17 +371,17 @@ export default function TimeOff() {
               desplegable. Muestra las cuatro opciones sin abrir nada. */}
           <Segmented<"all" | "pending" | "approved" | "rejected">
             className="max-w-full flex-wrap"
+            value={statusFilter}
+            onChange={(v) => {
+              setStatusFilter(v);
+              setPage(1);
+            }}
             options={[
               { value: "all", label: "Todos" },
               { value: "pending", label: "Pendiente" },
               { value: "approved", label: "Aprobado" },
               { value: "rejected", label: "Rechazado" },
             ]}
-            value={statusFilter}
-            onChange={(v) => {
-              setStatusFilter(v);
-              setPage(1);
-            }}
           />
 
           <div className="flex w-full flex-col items-center gap-4 md:w-auto md:flex-row">
@@ -400,8 +391,8 @@ export default function TimeOff() {
                 style={{ color: "var(--ink-faint)" }}
               />
               <Input
-                className="pl-9"
                 placeholder={t("ui.TimeOff.buscarVigilanteTipoOMotivo")}
+                className="pl-9"
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
@@ -430,9 +421,9 @@ export default function TimeOff() {
                       {t("ui.TimeOff.nuevaSolicitudDeTiempoLibre")}
                     </SheetTitle>
                     <Button
-                      className="absolute right-0 top-0"
-                      size="icon"
                       variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-0"
                       onClick={() => setIsNewRequestOpen(false)}
                     >
                       <X className="h-4 w-4" />
@@ -544,26 +535,26 @@ export default function TimeOff() {
                     <div className="grid gap-2">
                       <Label>Comentario</Label>
                       <Textarea
-                        placeholder="Comentario adicional…"
                         rows={3}
                         value={form.comment}
                         onChange={(e) =>
                           setForm({ ...form, comment: e.target.value })
                         }
+                        placeholder="Comentario adicional…"
                       />
                     </div>
 
                     <div className="flex items-center gap-2">
                       <Checkbox
-                        checked={form.isPaid}
                         id="isPaid"
+                        checked={form.isPaid}
                         onCheckedChange={(v) =>
                           setForm({ ...form, isPaid: v as boolean })
                         }
                       />
                       <Label
-                        className="text-sm font-normal cursor-pointer"
                         htmlFor="isPaid"
+                        className="text-sm font-normal cursor-pointer"
                       >
                         Pagado
                       </Label>
@@ -571,9 +562,9 @@ export default function TimeOff() {
                   </div>
                   <SheetFooter>
                     <Button
+                      variant="brand"
                       className="w-full sm:w-auto"
                       disabled={saving}
-                      variant="brand"
                       onClick={handleCreate}
                     >
                       {saving ? (
@@ -590,12 +581,12 @@ export default function TimeOff() {
 
         {/* Tabla */}
         <Section
-          contentClassName="overflow-x-auto -mx-1"
-          icon={<CalendarOff />}
           title={t(
             "ui.TimeOff.solicitudesDeTiempoLibre",
             "Solicitudes de tiempo libre",
           )}
+          icon={<CalendarOff />}
+          contentClassName="overflow-x-auto -mx-1"
         >
           <Table>
             <TableHeader style={{ background: "var(--glass-sunken)" }}>
@@ -615,13 +606,13 @@ export default function TimeOff() {
                 <TableHead className="cg-eyebrow">
                   {t("comun.estado")}
                 </TableHead>
-                <TableHead className="w-[50px]" />
+                <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell className="h-[200px] text-center" colSpan={8}>
+                  <TableCell colSpan={8} className="h-[200px] text-center">
                     <Loader2
                       className="mx-auto h-6 w-6 animate-spin"
                       style={{ color: "var(--ink-faint)" }}
@@ -630,12 +621,12 @@ export default function TimeOff() {
                 </TableRow>
               ) : paginated.length === 0 ? (
                 <TableRow>
-                  <TableCell className="h-[360px] text-center" colSpan={8}>
+                  <TableCell colSpan={8} className="h-[360px] text-center">
                     <EmptyState
-                      className="border-0 py-2"
-                      description={t("comun.noPudimosEncontrarNingunElemento")}
                       icon={<CalendarOff />}
                       title={t("kit.table.emptyTitle")}
+                      description={t("comun.noPudimosEncontrarNingunElemento")}
+                      className="border-0 py-2"
                     />
                   </TableCell>
                 </TableRow>
@@ -668,7 +659,7 @@ export default function TimeOff() {
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button size="icon" variant="ghost">
+                          <Button variant="ghost" size="icon">
                             <ChevronsUpDown
                               className="h-4 w-4"
                               style={{ color: "var(--ink-soft)" }}
@@ -699,8 +690,8 @@ export default function TimeOff() {
                             </>
                           )}
                           <DropdownMenuItem
-                            style={{ color: "var(--bad-text)" }}
                             onClick={() => handleDelete(rec.id)}
+                            style={{ color: "var(--bad-text)" }}
                           >
                             <Trash2 className="mr-2 h-4 w-4" /> Eliminar
                           </DropdownMenuItem>
@@ -745,9 +736,9 @@ export default function TimeOff() {
           </div>
           <div className="flex items-center space-x-2">
             <Button
-              disabled={page <= 1}
-              size="icon"
               variant="outline"
+              size="icon"
+              disabled={page <= 1}
               onClick={() => setPage((p) => p - 1)}
             >
               <span className="sr-only">
@@ -756,21 +747,21 @@ export default function TimeOff() {
               <svg
                 className="h-4 w-4"
                 fill="none"
-                stroke="currentColor"
                 viewBox="0 0 24 24"
+                stroke="currentColor"
               >
                 <path
-                  d="M15 19l-7-7 7-7"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
                 />
               </svg>
             </Button>
             <Button
-              disabled={page >= totalPages}
-              size="icon"
               variant="outline"
+              size="icon"
+              disabled={page >= totalPages}
               onClick={() => setPage((p) => p + 1)}
             >
               <span className="sr-only">
@@ -779,14 +770,14 @@ export default function TimeOff() {
               <svg
                 className="h-4 w-4"
                 fill="none"
-                stroke="currentColor"
                 viewBox="0 0 24 24"
+                stroke="currentColor"
               >
                 <path
-                  d="M9 5l7 7-7 7"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
+                  d="M9 5l7 7-7 7"
                 />
               </svg>
             </Button>

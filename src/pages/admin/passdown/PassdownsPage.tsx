@@ -1,10 +1,10 @@
 import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
-import { ClipboardSignature, Repeat, ListChecks, ImageOff } from "lucide-react";
-
 import AppLayout from "@/layouts/app-layout";
 import { DataTable, type Column } from "@/components/table/DataTable";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { ClipboardSignature, Repeat, ListChecks, ImageOff } from "lucide-react";
 import {
   PageContainer,
   PageHeader,
@@ -23,11 +23,11 @@ import passdownService, {
   type PassdownStatus,
 } from "@/lib/api/passdownService";
 import i18n from "@/i18n";
+
 import { localeActual } from "@/lib/localeActual";
 function fmtDate(s?: string | null): string {
   if (!s) return "—";
   const d = new Date(s);
-
   return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString(localeActual());
 }
 
@@ -83,7 +83,6 @@ export default function PassdownsPage() {
       )
       .finally(() => setLoading(false));
   }, [filter]);
-
   useEffect(load, [load]);
 
   const openDetail = async (row: Passdown) => {
@@ -92,7 +91,6 @@ export default function PassdownsPage() {
     setDetailLoading(true);
     try {
       const r = await passdownService.get(row.id);
-
       setDetail(r.passdown);
     } catch (e: any) {
       toast.error(
@@ -114,7 +112,7 @@ export default function PassdownsPage() {
           {r.stationName ||
             ((r as any).channel === "supervisor" ? "Supervisión" : "—")}
           {(r as any).channel === "supervisor" && (
-            <StatusBadge dot={false} tone="warn">
+            <StatusBadge tone="warn" dot={false}>
               {t("comun.supervisor")}
             </StatusBadge>
           )}
@@ -191,30 +189,30 @@ export default function PassdownsPage() {
         <PageContainer width="wide">
           <PageHeader
             icon={<ClipboardSignature />}
-            subtitle={t("ui.PassdownsPage.entregasDeTurnoDeLos")}
             title={t("ui.PassdownsPage.pasesDeTurno")}
+            subtitle={t("ui.PassdownsPage.entregasDeTurnoDeLos")}
           />
 
           <Section
+            title={t("ui.PassdownsPage.pasesDeTurno")}
+            icon={<Repeat />}
             action={
               <Segmented<PassdownStatus | "all">
-                options={FILTERS.map((f) => ({ value: f.key, label: f.label }))}
                 value={filter}
                 onChange={setFilter}
+                options={FILTERS.map((f) => ({ value: f.key, label: f.label }))}
               />
             }
-            icon={<Repeat />}
-            title={t("ui.PassdownsPage.pasesDeTurno")}
           >
             {loading ? (
               <SkeletonCards count={4} />
             ) : rows.length === 0 ? (
               <EmptyState
+                icon={<ClipboardSignature />}
+                title={t("ui.PassdownsPage.noHayPasesDeTurno")}
                 description={t(
                   "ui.PassdownsPage.cuandoLosVigilantesRegistrenLa",
                 )}
-                icon={<ClipboardSignature />}
-                title={t("ui.PassdownsPage.noHayPasesDeTurno")}
               />
             ) : (
               <DataTable
@@ -228,12 +226,12 @@ export default function PassdownsPage() {
       </div>
 
       <Modal
-        description={detail?.shiftLabel || undefined}
-        icon={<ClipboardSignature />}
         open={detailOpen}
-        size="lg"
-        title={t("ui.PassdownsPage.paseDeTurno")}
         onOpenChange={setDetailOpen}
+        icon={<ClipboardSignature />}
+        title={t("ui.PassdownsPage.paseDeTurno")}
+        description={detail?.shiftLabel || undefined}
+        size="lg"
       >
         {detailLoading || !detail ? (
           <SkeletonCards count={2} />
@@ -282,17 +280,18 @@ export default function PassdownsPage() {
                 <div className="flex flex-wrap gap-3">
                   {detail.passdownImages.map((img, i) => {
                     const src = imageSrc(img);
-
                     return src ? (
                       <a
                         key={i}
-                        className="glass-flat block h-24 w-24 overflow-hidden"
                         href={src}
-                        rel="noreferrer"
                         target="_blank"
+                        rel="noreferrer"
+                        className="glass-flat block h-24 w-24 overflow-hidden"
                       >
                         <SmartImage
+                          src={src}
                           alt={`Imagen del pase ${i + 1}`}
+                          fit="cover"
                           className="h-full w-full"
                           fallback={
                             <span
@@ -302,8 +301,6 @@ export default function PassdownsPage() {
                               <ImageOff />
                             </span>
                           }
-                          fit="cover"
-                          src={src}
                         />
                       </a>
                     ) : (
@@ -336,7 +333,6 @@ export default function PassdownsPage() {
                     const pr =
                       PRIORITY_META[ins.priority || "media"] ||
                       PRIORITY_META.media;
-
                     return (
                       <div
                         key={ins.id}

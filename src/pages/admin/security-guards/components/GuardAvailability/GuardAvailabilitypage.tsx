@@ -1,15 +1,14 @@
-import type { GuardDetail } from "../../guardDetailTypes";
-
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-
+import { Clock } from "lucide-react";
 import GuardsLayout from "@/layouts/GuardsLayout";
 import AppLayout from "@/layouts/app-layout";
 import TimeInput from "@/components/TimeInput";
 import MobileCardList from "@/components/responsive/MobileCardList";
 import securityGuardService from "@/lib/api/securityGuardService";
+import type { GuardDetail } from "../../guardDetailTypes";
 
 type Av = { day: string; available: boolean; start: string; end: string };
 
@@ -26,11 +25,9 @@ export default function GuardAvailability({ guard }: Props) {
   // needed to persist changes (the backend stores `availability` as JSON).
   const { id: routeId } = useParams();
   const [fetchedGuard, setFetchedGuard] = useState<GuardDetail | null>(null);
-
   useEffect(() => {
     if (guard || !routeId) return;
     let alive = true;
-
     securityGuardService
       .get(routeId)
       .then((g) => {
@@ -39,7 +36,6 @@ export default function GuardAvailability({ guard }: Props) {
       .catch(() => {
         /* keep defaults */
       });
-
     return () => {
       alive = false;
     };
@@ -55,14 +51,10 @@ export default function GuardAvailability({ guard }: Props) {
       { day: "Saturday", available: true, start: "00:00", end: "23:59" },
       { day: "Sunday", available: true, start: "00:00", end: "23:59" },
     ];
-
     if (!guard) return base;
-
     return base.map((b) => {
       const gDay = (guard.availability || []).find((x) => x.day === b.day);
-
       if (!gDay) return b;
-
       return {
         day: b.day,
         available: !!gDay.available,
@@ -83,18 +75,14 @@ export default function GuardAvailability({ guard }: Props) {
       { day: "Saturday", available: true, start: "00:00", end: "23:59" },
       { day: "Sunday", available: true, start: "00:00", end: "23:59" },
     ];
-
     if (!effGuard) {
       setAvailability(base);
-
       return;
     }
     setAvailability(
       base.map((b) => {
         const gDay = (effGuard.availability || []).find((x) => x.day === b.day);
-
         if (!gDay) return b;
-
         return {
           day: b.day,
           available: !!gDay.available,
@@ -108,9 +96,7 @@ export default function GuardAvailability({ guard }: Props) {
   const updateAvailability = (index: number, v: Av) => {
     setAvailability((prev) => {
       const copy = [...prev];
-
       copy[index] = v;
-
       return copy;
     });
   };
@@ -119,10 +105,8 @@ export default function GuardAvailability({ guard }: Props) {
     (async () => {
       try {
         const saveId = effGuard?.id || routeId;
-
         if (!saveId) {
           toast.error(t("guards.availability.toasts.saveError", "No guard id"));
-
           return;
         }
         await securityGuardService.update(saveId, { availability });
@@ -186,9 +170,9 @@ export default function GuardAvailability({ guard }: Props) {
                         </td>
                         <td className="p-2">
                           <input
-                            checked={a.available}
                             className="ml-6"
                             type="checkbox"
+                            checked={a.available}
                             onChange={(e) =>
                               updateAvailability(i, {
                                 ...a,
@@ -231,13 +215,13 @@ export default function GuardAvailability({ guard }: Props) {
 
               <div className="md:hidden">
                 <MobileCardList
+                  items={availability || []}
+                  loading={false}
                   emptyMessage={
                     t("guards.availability.empty", {
                       defaultValue: "No availability",
                     }) as string
                   }
-                  items={availability || []}
-                  loading={false}
                   renderCard={(a: Av) => (
                     <div className="glass-flat p-4">
                       <div className="flex items-center justify-between">
@@ -261,8 +245,8 @@ export default function GuardAvailability({ guard }: Props) {
             </div>
             <div className="mt-4 flex justify-end">
               <button
-                className="cg-btn-brand cg-focus rounded-full px-4 py-2 text-sm font-semibold"
                 onClick={handleSaveAvailability}
+                className="cg-btn-brand cg-focus rounded-full px-4 py-2 text-sm font-semibold"
               >
                 {t("guards.availability.save", { defaultValue: "Save" })}
               </button>

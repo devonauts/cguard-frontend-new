@@ -1,16 +1,13 @@
-import type { Station } from "@/types";
-
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Car, Settings2, AlarmClock, Ban } from "lucide-react";
-import { toast } from "sonner";
-
 import { visitorLogService } from "@/lib/api/visitorLogService";
 import {
   vehicleControlService,
   type Ocupacion,
   type ReglasVehiculo,
 } from "@/lib/api/vehicleControlService";
+import { toast } from "sonner";
 import {
   Section,
   EmptyState,
@@ -20,6 +17,12 @@ import {
   SmartImage,
 } from "@/components/kit";
 import { fileUrlFromFile } from "@/lib/fileUrl";
+import ExportarPeriodo, {
+  type Ventana,
+} from "@/components/reports/ExportarPeriodo";
+import type { ExportFormat } from "@/lib/export/reportExport";
+import type { Station } from "@/types";
+
 import { localeActual } from "@/lib/localeActual";
 type Props = { station: Station; stationId: string; postSiteId: string };
 
@@ -146,13 +149,10 @@ function permanencia(
   if (!entrada) return "—";
   const ini = new Date(entrada).getTime();
   const fin = salida ? new Date(salida).getTime() : Date.now();
-
   if (!Number.isFinite(ini) || !Number.isFinite(fin) || fin < ini) return "—";
   const min = Math.round((fin - ini) / 60000);
-
   if (min < 60) return `${min} min`;
   const h = Math.floor(min / 60);
-
   return min % 60 === 0 ? `${h} h` : `${h} h ${min % 60} min`;
 }
 
@@ -196,13 +196,11 @@ export default function StationParking({ stationId }: Props) {
           offset: 0,
         });
         const list: ParkingRow[] = Array.isArray(res) ? res : (res?.rows ?? []);
-
         if (mounted) setRows(list);
         // Las reglas del puesto van aparte: pueden estar apagadas, y en ese
         // caso la pantalla no enseña ni cupo ni permanencia ni vetos.
         try {
           const o = await vehicleControlService.ocupacion(stationId);
-
           if (mounted) {
             setOcup(o);
             setBorrador(o.reglas);
@@ -226,11 +224,32 @@ export default function StationParking({ stationId }: Props) {
     };
   }, [stationId, t]);
 
+  /**
+   * La exportación NO sale de `vehiculos`: esa lista son las 200 últimas filas
+   * que cupieron en la pantalla. Se le pide al servidor el periodo entero, que
+   * es lo que el cliente espera cuando pide «el mes».
+   */
+  const exportar = async (format: ExportFormat, v: Ventana) => {
+    try {
+      await visitorLogService.exportar(format, {
+        stationId,
+        kind: "vehicles",
+        from: v.from,
+        to: v.to,
+        nombreBase: `control-vehicular_${v.etiqueta}`,
+      });
+    } catch (e: any) {
+      toast.error(
+        e?.message ||
+          t("station.parking.exportError", "No se pudo generar el archivo"),
+      );
+    }
+  };
+
   const vehiculos = useMemo(() => {
     const conPlaca = rows.filter((r) =>
       String(r.vehiclePlate || r.vehicle_plate || "").trim(),
     );
-
     // Más reciente primero: lo que acaba de entrar es lo que se está mirando.
     return conPlaca.sort((a, b) => {
       const fa = new Date(
@@ -239,7 +258,6 @@ export default function StationParking({ stationId }: Props) {
       const fb = new Date(
         b.visitDate || b.entryTime || b.createdAt || 0,
       ).getTime();
-
       return fb - fa;
     });
   }, [rows]);
@@ -252,9 +270,27 @@ export default function StationParking({ stationId }: Props) {
 
   return (
     <Section
+      icon={<Car />}
+      title={
+        <span>
+          {t("station.parking.title", "Control vehicular")}
+          {!loading && vehiculos.length > 0 && (
+            <span className="ml-2 text-sm font-normal text-muted-foreground">
+              ({vehiculos.length})
+            </span>
+          )}
+        </span>
+      }
       action={
         !loading ? (
           <>
+            {/* Exportar va PRIMERO en la barra: es la acción que se busca cuando
+              se entra a esta pestaña a final de mes. Se deshabilita sin filas,
+              porque bajar un archivo vacío parece que el sistema perdió datos. */}
+            <ExportarPeriodo
+              onExport={exportar}
+              disabled={vehiculos.length === 0}
+            />
             {/* El cupo sólo aparece si el puesto lo tiene configurado. */}
             {ocup?.reglas.enabled && ocup.capacidad != null && (
               <span
@@ -283,20 +319,22 @@ export default function StationParking({ stationId }: Props) {
               </span>
             )}
             <button
+              type="button"
+              onClick={() => setAjustes((v) => !v)}
               className="cg-focus min-h-9 shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold transition-all"
               style={{
                 background: "var(--glass-sunken)",
                 color: "var(--ink-soft)",
               }}
               title={t("station.parking.rules", "Reglas del control vehicular")}
-              type="button"
-              onClick={() => setAjustes((v) => !v)}
             >
-              <Settings2 className="mr-1 inline" size={13} />
+              <Settings2 size={13} className="mr-1 inline" />
               {t("station.parking.rules", "Reglas")}
             </button>
             {vehiculos.length > 0 && (
               <button
+                type="button"
+                onClick={() => setSoloDentro((v) => !v)}
                 aria-pressed={soloDentro}
                 className="cg-focus min-h-9 shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all"
                 style={
@@ -307,8 +345,6 @@ export default function StationParking({ stationId }: Props) {
                         color: "var(--ink-soft)",
                       }
                 }
-                type="button"
-                onClick={() => setSoloDentro((v) => !v)}
               >
                 {t("station.parking.onlyInside", "Sólo los que están dentro")} (
                 {dentro.length})
@@ -318,17 +354,6 @@ export default function StationParking({ stationId }: Props) {
         ) : undefined
       }
       contentClassName="-mx-5 -mb-5"
-      icon={<Car />}
-      title={
-        <span>
-          {t("station.parking.title", "Control vehicular")}
-          {!loading && vehiculos.length > 0 && (
-            <span className="ml-2 text-sm font-normal text-muted-foreground">
-              ({vehiculos.length})
-            </span>
-          )}
-        </span>
-      }
     >
       <p className="px-5 -mt-2 mb-3 text-xs text-muted-foreground">
         {t(
@@ -349,12 +374,12 @@ export default function StationParking({ stationId }: Props) {
         >
           <label className="flex cursor-pointer items-start gap-3">
             <input
-              checked={borrador.enabled}
-              className="mt-0.5 h-4 w-4 shrink-0"
               type="checkbox"
+              checked={borrador.enabled}
               onChange={(e) =>
                 setBorrador({ ...borrador, enabled: e.target.checked })
               }
+              className="mt-0.5 h-4 w-4 shrink-0"
             />
             <span className="min-w-0">
               <span className="block text-sm font-semibold">
@@ -383,12 +408,8 @@ export default function StationParking({ stationId }: Props) {
                     {t("station.parking.capacity", "Cupo de vehículos")}
                   </label>
                   <input
-                    className="cg-input cg-focus w-full px-3 py-2 text-sm tabular-nums"
-                    min={0}
-                    placeholder={
-                      t("station.parking.noLimit", "Sin límite") as string
-                    }
                     type="number"
+                    min={0}
                     value={borrador.capacity ?? ""}
                     onChange={(e) =>
                       setBorrador({
@@ -397,6 +418,10 @@ export default function StationParking({ stationId }: Props) {
                           e.target.value === "" ? null : Number(e.target.value),
                       })
                     }
+                    placeholder={
+                      t("station.parking.noLimit", "Sin límite") as string
+                    }
+                    className="cg-input cg-focus w-full px-3 py-2 text-sm tabular-nums"
                   />
                   <p
                     className="mt-1 text-[10px]"
@@ -410,19 +435,15 @@ export default function StationParking({ stationId }: Props) {
                 </div>
                 <div className="min-w-0">
                   <label className="cg-eyebrow mb-1.5 block">
-                    <AlarmClock className="mr-1 inline" size={11} />
+                    <AlarmClock size={11} className="mr-1 inline" />
                     {t(
                       "station.parking.maxStay",
                       "Aviso por permanencia (min)",
                     )}
                   </label>
                   <input
-                    className="cg-input cg-focus w-full px-3 py-2 text-sm tabular-nums"
-                    min={0}
-                    placeholder={
-                      t("station.parking.noAlert", "Sin aviso") as string
-                    }
                     type="number"
+                    min={0}
                     value={borrador.maxStayMinutes ?? ""}
                     onChange={(e) =>
                       setBorrador({
@@ -431,6 +452,10 @@ export default function StationParking({ stationId }: Props) {
                           e.target.value === "" ? null : Number(e.target.value),
                       })
                     }
+                    placeholder={
+                      t("station.parking.noAlert", "Sin aviso") as string
+                    }
+                    className="cg-input cg-focus w-full px-3 py-2 text-sm tabular-nums"
                   />
                   <p
                     className="mt-1 text-[10px]"
@@ -449,8 +474,6 @@ export default function StationParking({ stationId }: Props) {
                   {t("station.parking.bays", "Cajones (opcional)")}
                 </label>
                 <input
-                  className="cg-input cg-focus w-full px-3 py-2 text-sm"
-                  placeholder="A-01, A-02, B-01…"
                   value={borrador.bays.join(", ")}
                   onChange={(e) =>
                     setBorrador({
@@ -461,6 +484,8 @@ export default function StationParking({ stationId }: Props) {
                         .filter(Boolean),
                     })
                   }
+                  placeholder="A-01, A-02, B-01…"
+                  className="cg-input cg-focus w-full px-3 py-2 text-sm"
                 />
                 <p
                   className="mt-1 text-[10px]"
@@ -475,19 +500,19 @@ export default function StationParking({ stationId }: Props) {
 
               <label className="flex cursor-pointer items-start gap-3">
                 <input
-                  checked={borrador.blacklistEnabled}
-                  className="mt-0.5 h-4 w-4 shrink-0"
                   type="checkbox"
+                  checked={borrador.blacklistEnabled}
                   onChange={(e) =>
                     setBorrador({
                       ...borrador,
                       blacklistEnabled: e.target.checked,
                     })
                   }
+                  className="mt-0.5 h-4 w-4 shrink-0"
                 />
                 <span className="min-w-0">
                   <span className="block text-sm font-semibold">
-                    <Ban className="mr-1 inline" size={12} />
+                    <Ban size={12} className="mr-1 inline" />
                     {t("station.parking.blacklist", "Avisar de placas vetadas")}
                   </span>
                   <span
@@ -516,19 +541,18 @@ export default function StationParking({ stationId }: Props) {
             style={{ borderColor: "var(--hairline)" }}
           >
             <button
-              className="cg-btn-ghost cg-focus min-h-9 rounded-full px-4 text-sm font-semibold"
               type="button"
               onClick={() => {
                 setBorrador(ocup?.reglas ?? borrador);
                 setAjustes(false);
               }}
+              className="cg-btn-ghost cg-focus min-h-9 rounded-full px-4 text-sm font-semibold"
             >
               {t("common.cancel", "Cancelar")}
             </button>
             <button
-              className="cg-btn-brand cg-focus min-h-9 rounded-full px-5 text-sm font-semibold disabled:opacity-40"
-              disabled={guardando}
               type="button"
+              disabled={guardando}
               onClick={async () => {
                 setGuardando(true);
                 try {
@@ -536,7 +560,6 @@ export default function StationParking({ stationId }: Props) {
                     stationId,
                     borrador,
                   );
-
                   setOcup(o);
                   setBorrador(o.reglas);
                   setAjustes(false);
@@ -553,6 +576,7 @@ export default function StationParking({ stationId }: Props) {
                   setGuardando(false);
                 }
               }}
+              className="cg-btn-brand cg-focus min-h-9 rounded-full px-5 text-sm font-semibold disabled:opacity-40"
             >
               {guardando ? "…" : t("common.save", "Guardar")}
             </button>
@@ -571,14 +595,6 @@ export default function StationParking({ stationId }: Props) {
       ) : visibles.length === 0 ? (
         <div className="px-5 pb-5">
           <EmptyState
-            description={
-              soloDentro
-                ? undefined
-                : t(
-                    "station.parking.emptyHint",
-                    "El vigilante los registra desde la app, en Visitas › Vehículo.",
-                  )
-            }
             icon={<Car />}
             title={
               soloDentro
@@ -589,6 +605,14 @@ export default function StationParking({ stationId }: Props) {
                 : t(
                     "station.parking.empty",
                     "Todavía no se ha registrado ningún vehículo en este puesto.",
+                  )
+            }
+            description={
+              soloDentro
+                ? undefined
+                : t(
+                    "station.parking.emptyHint",
+                    "El vigilante los registra desde la app, en Visitas › Vehículo.",
                   )
             }
           />
@@ -677,20 +701,12 @@ export default function StationParking({ stationId }: Props) {
                 const estSalida = r.vehicleExitCondition
                   ? ESTADO[r.vehicleExitCondition]
                   : null;
-
                 return (
                   <tr key={r.id || i} className="hover:bg-muted/40">
                     <td className="px-2 py-2">
                       {/* La foto de ENTRADA es la que se mira de un vistazo; la de
                           salida se ofrece detrás, porque sólo importa al comparar. */}
                       <button
-                        className="cg-focus block disabled:cursor-default"
-                        disabled={!fotoEntrada}
-                        title={
-                          fotoEntrada
-                            ? t("station.parking.viewPhoto", "Ver foto")
-                            : undefined
-                        }
                         type="button"
                         onClick={() =>
                           fotoEntrada &&
@@ -700,26 +716,31 @@ export default function StationParking({ stationId }: Props) {
                             cual: "entrada",
                           })
                         }
+                        disabled={!fotoEntrada}
+                        className="cg-focus block disabled:cursor-default"
+                        title={
+                          fotoEntrada
+                            ? t("station.parking.viewPhoto", "Ver foto")
+                            : undefined
+                        }
                       >
                         <SmartImage
+                          src={fotoEntrada}
                           alt=""
+                          fit="cover"
+                          rounded="rounded-lg"
                           className="h-11 w-16 shrink-0"
+                          style={{ border: "1px solid var(--hairline)" }}
                           fallback={
                             <Car
                               size={16}
                               style={{ color: "var(--ink-faint)" }}
                             />
                           }
-                          fit="cover"
-                          rounded="rounded-lg"
-                          src={fotoEntrada}
-                          style={{ border: "1px solid var(--hairline)" }}
                         />
                       </button>
                       {fotoSalida && (
                         <button
-                          className="cg-focus mt-1 block text-[10px] font-semibold hover:underline"
-                          style={{ color: "var(--brand-text)" }}
                           type="button"
                           onClick={() =>
                             setLightbox({
@@ -728,6 +749,8 @@ export default function StationParking({ stationId }: Props) {
                               cual: "salida",
                             })
                           }
+                          className="cg-focus mt-1 block text-[10px] font-semibold hover:underline"
+                          style={{ color: "var(--brand-text)" }}
                         >
                           {t("station.parking.exitPhoto", "Ver salida")}
                         </button>
@@ -802,7 +825,6 @@ export default function StationParking({ stationId }: Props) {
                         // Sólo se marca al que SIGUE dentro: uno que ya salió
                         // tarde es historia, no algo que atender ahora.
                         const pasado = !!limite && !salidaISO && mins > limite;
-
                         return pasado ? (
                           <span
                             className="inline-flex items-center gap-1 font-semibold"
@@ -862,15 +884,15 @@ export default function StationParking({ stationId }: Props) {
           abrirla grande. Se cierra tocando fuera o con Escape. */}
       {lightbox && (
         <div
+          role="dialog"
           aria-modal="true"
           className="fixed inset-0 z-[70] flex items-center justify-center p-4"
-          role="dialog"
           style={{ background: "oklch(0 0 0 / 0.85)" }}
-          tabIndex={-1}
           onClick={() => setLightbox(null)}
           onKeyDown={(e) => {
             if (e.key === "Escape") setLightbox(null);
           }}
+          tabIndex={-1}
         >
           <div
             className="max-h-full w-full max-w-3xl"
@@ -886,17 +908,17 @@ export default function StationParking({ stationId }: Props) {
                 </span>
               </p>
               <button
-                className="cg-focus min-h-9 rounded-full px-3 text-sm font-semibold text-white/80 hover:text-white"
                 type="button"
                 onClick={() => setLightbox(null)}
+                className="cg-focus min-h-9 rounded-full px-3 text-sm font-semibold text-white/80 hover:text-white"
               >
                 {t("common.close", "Cerrar")}
               </button>
             </div>
             <img
+              src={lightbox.url}
               alt=""
               className="max-h-[78vh] w-full rounded-xl object-contain"
-              src={lightbox.url}
             />
           </div>
         </div>

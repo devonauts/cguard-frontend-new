@@ -1,19 +1,17 @@
-import type { PostSite } from "@/types";
-
 import React, { useMemo, useState, useRef, useEffect } from "react";
+import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
-import { toast } from "sonner";
-import { EllipsisVertical, Pencil, Trash, Plus, Users } from "lucide-react";
-
 import { clientService } from "@/lib/api/clientService";
 import { postSiteService } from "@/lib/api/postSiteService";
 import { PhoneInput } from "@/components/phone/PhoneInput";
-import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
+import { toast } from "sonner";
+import { EllipsisVertical, Pencil, Trash, Plus, Users } from "lucide-react";
 import MobileCardList from "@/components/responsive/MobileCardList";
 import { Button } from "@/components/ui/button";
 import { Section, EmptyState, Modal } from "@/components/kit";
+import type { PostSite } from "@/types";
 
 type Contact = {
   id: string;
@@ -80,7 +78,6 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
     const v = String(email).trim();
     const re =
       /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z]{2,})+$/;
-
     return re.test(v);
   };
 
@@ -90,13 +87,11 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
     if (!phone || !phone.trim()) return false;
     try {
       const p = parsePhoneNumberFromString(String(phone));
-
       if (!p) return false;
       if (!p.isValid()) return false;
       // Ensure E.164 formatted result has a sensible number of digits (7-15)
       const e164 = p.format("E.164") || "";
       const digits = e164.replace(/\D/g, "");
-
       return e164.startsWith("+") && digits.length >= 7 && digits.length <= 15;
     } catch (e) {
       return false;
@@ -111,9 +106,7 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
 
   const filtered = useMemo(() => {
     const q = (query || "").toLowerCase().trim();
-
     if (!q) return contacts;
-
     return contacts.filter(
       (c) =>
         (c.name || "").toLowerCase().includes(q) ||
@@ -135,7 +128,6 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
         "-"
       );
     }
-
     return String(ps);
   };
 
@@ -149,7 +141,6 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
 
   useEffect(() => {
     let mounted = true;
-
     async function loadContacts() {
       if (!postSiteId && !site?.clientId) return;
       console.debug("[PostSiteContacts] loadContacts start", {
@@ -165,7 +156,6 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
             limit: 9999,
             offset: 0,
           });
-
           console.debug(
             "[PostSiteContacts] API response for postSite contacts",
             { resp },
@@ -176,7 +166,6 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
             : Array.isArray(resp)
               ? resp
               : [];
-
           console.debug("[PostSiteContacts] rows length", rows.length);
           setContacts(
             rows.map((r: ContactApiRow) => ({
@@ -188,7 +177,6 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
               description: r.description || r.desc || r.note || r.notes || "",
             })),
           );
-
           return;
         }
 
@@ -197,19 +185,16 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
           site?.clientId ||
           (site?.client && site.client.id) ||
           resolvedClientId;
-
         if (clientId) {
           const resp = await clientService.getClientContacts(String(clientId), {
             limit: 9999,
             offset: 0,
           });
-
           console.debug("[PostSiteContacts] API response for client contacts", {
             resp,
           });
           if (!mounted) return;
           const rows = Array.isArray(resp?.rows) ? resp.rows : [];
-
           console.debug("[PostSiteContacts] client rows length", rows.length);
           setContacts(
             rows.map((r: ContactApiRow) => ({
@@ -235,7 +220,6 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
       }
     }
     loadContacts();
-
     return () => {
       mounted = false;
     };
@@ -255,7 +239,6 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
 
     if (field === "email") {
       const v = String(value || "");
-
       setErrors((prev) => ({
         ...prev,
         email:
@@ -267,7 +250,6 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
 
     if (field === "mobile") {
       const v = String(value || "");
-
       setErrors((prev) => ({
         ...prev,
         mobile:
@@ -279,7 +261,6 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
 
     if (field === "name") {
       const v = String(value || "");
-
       setErrors((prev) => ({
         ...prev,
         name: v
@@ -296,7 +277,6 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
     const mobileVal = String(form.mobile || "").trim();
 
     const nextErrors: any = {};
-
     if (!nameVal)
       nextErrors.name = t(
         "clients.contacts.errors.requiredName",
@@ -321,7 +301,6 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
           "Corrige los errores del formulario",
         ),
       );
-
       return;
     }
 
@@ -336,7 +315,6 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
       description: (form as any).description || "",
       allowGuard: !!(form as any).allowGuard,
     };
-
     (async () => {
       try {
         // If we resolved a clientId, persist via clientService (primary flow)
@@ -344,7 +322,6 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
           site?.clientId ||
           (site?.client && site.client.id) ||
           resolvedClientId;
-
         if (clientIdLocal) {
           const payload: any = {
             name: nameVal,
@@ -379,7 +356,6 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
               payload,
             );
             const created = resp && resp.data ? resp.data : resp;
-
             setContacts((prev) => [
               {
                 id: String(created.id || created._id || Date.now()),
@@ -450,7 +426,6 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
           site?.clientId ||
           (site?.client && site.client.id) ||
           resolvedClientId;
-
         if (clientIdLocal) {
           await clientService.destroyClientContact(String(clientIdLocal), id);
         }
@@ -487,32 +462,32 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
             <div className="flex-shrink-0">
               <div className="relative">
                 <button
-                  className="cg-btn-glass cg-focus inline-flex items-center gap-2 rounded-md px-3 py-2"
                   onClick={() => setHeaderMenuOpen((v) => !v)}
+                  className="cg-btn-glass cg-focus inline-flex items-center gap-2 rounded-md px-3 py-2"
                 >
                   <span>{t("actions.action")}</span>
                   <svg
-                    aria-hidden
-                    fill="none"
+                    width="12"
                     height="12"
                     viewBox="0 0 24 24"
-                    width="12"
+                    fill="none"
                     xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden
                   >
                     <path
                       d="M6 9l6 6 6-6"
                       stroke="currentColor"
+                      strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      strokeWidth="2"
                     />
                   </svg>
                 </button>
                 {headerMenuOpen && (
                   <div className="glass-raised absolute z-20 mt-2">
                     <button
-                      className="block px-4 py-2 text-sm hover:bg-muted/30"
                       onClick={deleteSelected}
+                      className="block px-4 py-2 text-sm hover:bg-muted/30"
                     >
                       {t("actions.delete")}
                     </button>
@@ -524,50 +499,50 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
               <div className="relative w-full max-w-lg">
                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none">
                   <svg
-                    aria-hidden
-                    fill="none"
+                    width="18"
                     height="18"
                     viewBox="0 0 24 24"
-                    width="18"
+                    fill="none"
                     xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden
                   >
                     <path
                       d="M21 21l-4.35-4.35"
                       stroke="currentColor"
+                      strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      strokeWidth="2"
                     />
                     <circle
                       cx="11"
                       cy="11"
                       r="6"
                       stroke="currentColor"
+                      strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      strokeWidth="2"
                     />
                   </svg>
                 </span>
                 <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={
+                    t("clients.contacts.searchcontact") || "Search Contacts"
+                  }
                   aria-label={
                     t("clients.contacts.searchcontact") || "Search Contacts"
                   }
                   className="w-full max-w-lg h-10 rounded-full border pl-10 pr-3"
-                  placeholder={
-                    t("clients.contacts.searchcontact") || "Search Contacts"
-                  }
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
                 />
               </div>
             </div>
           </div>
           <div>
             <Button
-              className="whitespace-nowrap sm:min-w-[160px]"
               variant="brand"
               onClick={handleOpenAdd}
+              className="whitespace-nowrap sm:min-w-[160px]"
             >
               <Plus className="h-4 w-4" />
               <span>{t("clients.contacts.addcontact") || "Add Contact"}</span>
@@ -581,17 +556,16 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
                 <tr className="border-b bg-muted/30">
                   <th className="cg-eyebrow px-2 py-2">
                     <input
+                      type="checkbox"
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        if (checked) setSelectedIds(contacts.map((c) => c.id));
+                        else setSelectedIds([]);
+                      }}
                       checked={
                         selectedIds.length === contacts.length &&
                         contacts.length > 0
                       }
-                      type="checkbox"
-                      onChange={(e) => {
-                        const checked = e.target.checked;
-
-                        if (checked) setSelectedIds(contacts.map((c) => c.id));
-                        else setSelectedIds([]);
-                      }}
                     />
                   </th>
                   <th className="cg-eyebrow px-2 py-2">
@@ -603,20 +577,20 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
                   <th className="cg-eyebrow px-2 py-2">
                     {t("clients.contacts.contactPhone") || "Mobile Number"}
                   </th>
-                  <th className="cg-eyebrow px-2 py-2" />
+                  <th className="cg-eyebrow px-2 py-2"></th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.length === 0 ? (
                   <tr>
-                    <td className="px-4 py-12" colSpan={5}>
+                    <td colSpan={5} className="px-4 py-12">
                       <EmptyState
+                        icon={<Users />}
+                        title={t("clients.empty.title") || "No results found"}
                         description={
                           t("clients.empty.description") ||
                           "We couldn't find any items matching your search."
                         }
-                        icon={<Users />}
-                        title={t("clients.empty.title") || "No results found"}
                       />
                     </td>
                   </tr>
@@ -625,8 +599,8 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
                     <tr key={c.id} className="border-t">
                       <td className="px-2 py-2.5">
                         <input
-                          checked={selectedIds.includes(c.id)}
                           type="checkbox"
+                          checked={selectedIds.includes(c.id)}
                           onChange={() => toggleSelect(c.id)}
                         />
                       </td>
@@ -640,33 +614,33 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
                       <td className="px-2 py-2.5 text-right">
                         <div className="relative inline-block">
                           <button
-                            aria-controls={`actions-${c.id}-menu`}
-                            aria-expanded={openMenuId === c.id}
-                            className="p-2 rounded-full hover:bg-muted focus:outline-none"
-                            title={t("actions.action") || "Actions"}
                             onClick={() =>
                               setOpenMenuId((prev) =>
                                 prev === c.id ? null : c.id,
                               )
                             }
+                            aria-expanded={openMenuId === c.id}
+                            aria-controls={`actions-${c.id}-menu`}
+                            className="p-2 rounded-full hover:bg-muted focus:outline-none"
+                            title={t("actions.action") || "Actions"}
                           >
                             <EllipsisVertical size={18} />
                           </button>
 
                           {openMenuId === c.id && (
                             <div
-                              className="glass-raised absolute right-0 z-50 mt-2 w-36"
                               id={`actions-${c.id}-menu`}
+                              className="glass-raised absolute right-0 z-50 mt-2 w-36"
                             >
                               <button
-                                aria-label="Edit"
-                                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted/30 focus:outline-none"
-                                title={t("actions.edit") || "Edit"}
                                 onClick={() => {
                                   setForm(c);
                                   setShowAdd(true);
                                   setOpenMenuId(null);
                                 }}
+                                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted/30 focus:outline-none"
+                                aria-label="Edit"
+                                title={t("actions.edit") || "Edit"}
                               >
                                 <Pencil size={16} />
                                 <span className="text-sm">
@@ -674,14 +648,14 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
                                 </span>
                               </button>
                               <button
-                                aria-label="Delete"
-                                className="cg-btn-ghost cg-focus flex w-full items-center gap-2 px-3 py-2"
-                                style={{ color: "var(--bad-text)" }}
-                                title={t("actions.delete") || "Delete"}
                                 onClick={() => {
                                   setConfirmDeleteIds([c.id]);
                                   setOpenMenuId(null);
                                 }}
+                                className="cg-btn-ghost cg-focus flex w-full items-center gap-2 px-3 py-2"
+                                style={{ color: "var(--bad-text)" }}
+                                aria-label="Delete"
+                                title={t("actions.delete") || "Delete"}
                               >
                                 <Trash size={16} />
                                 <span className="text-sm">
@@ -717,11 +691,11 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
                     </div>
                     <div className="flex-shrink-0">
                       <button
-                        className="px-3 py-2 bg-muted rounded-md text-sm"
                         onClick={() => {
                           setForm(c);
                           setShowAdd(true);
                         }}
+                        className="px-3 py-2 bg-muted rounded-md text-sm"
                       >
                         Edit
                       </button>
@@ -735,22 +709,22 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
       </Section>
 
       <Modal
+        open={showAdd}
+        onOpenChange={(o) => {
+          if (!o) handleCloseAdd();
+        }}
+        title={t(
+          "clients.contacts.form.AddClientContact",
+          "Agregar contacto a la sede",
+        )}
+        icon={<Users className="h-5 w-5" />}
         footer={
-          <Button disabled={!canSubmit} onClick={handleAdd}>
+          <Button onClick={handleAdd} disabled={!canSubmit}>
             {form && (form as any).id
               ? t("actions.save", "Guardar")
               : t("clients.contacts.form.addContact", "Agregar contacto")}
           </Button>
         }
-        icon={<Users className="h-5 w-5" />}
-        open={showAdd}
-        title={t(
-          "clients.contacts.form.AddClientContact",
-          "Agregar contacto a la sede",
-        )}
-        onOpenChange={(o) => {
-          if (!o) handleCloseAdd();
-        }}
       >
         <div className="space-y-4">
           <div>
@@ -789,12 +763,12 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
             </label>
             <div aria-invalid={!!errors.mobile}>
               <PhoneInput
+                value={form.mobile || ""}
+                onChange={(v) => handleChange("mobile", v)}
                 placeholder={t(
                   "clients.contacts.form.mobilePlaceholder",
                   "ej. +593987654321",
                 )}
-                value={form.mobile || ""}
-                onChange={(v) => handleChange("mobile", v)}
               />
             </div>
             {errors.mobile && (
@@ -815,13 +789,13 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
           </div>
           <div className="flex items-center gap-2">
             <input
-              checked={!!(form as any).allowGuard}
-              className="h-4 w-4"
               id="allowGuard"
               type="checkbox"
+              className="h-4 w-4"
+              checked={!!(form as any).allowGuard}
               onChange={(e) => handleChange("allowGuard", e.target.checked)}
             />
-            <label className="text-sm text-foreground" htmlFor="allowGuard">
+            <label htmlFor="allowGuard" className="text-sm text-foreground">
               {t(
                 "clients.contacts.form.checkbox",
                 "Permitir que el vigilante vea el contacto",
@@ -832,6 +806,16 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
       </Modal>
 
       <Modal
+        open={confirmDeleteIds.length > 0}
+        onOpenChange={(o) => {
+          if (!o) setConfirmDeleteIds([]);
+        }}
+        title={t(
+          "clients.contacts.confirmDeleteTitle",
+          "Confirmar eliminación",
+        )}
+        icon={<Trash className="h-5 w-5" />}
+        size="sm"
         footer={
           <>
             <Button variant="outline" onClick={() => setConfirmDeleteIds([])}>
@@ -841,14 +825,12 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
               variant="destructive"
               onClick={() => {
                 const removedCount = confirmDeleteIds.length;
-
                 confirmDeleteIds.forEach((cid) => deleteContact(cid));
                 setConfirmDeleteIds([]);
                 const base = t(
                   "clients.contacts.contactDeleted",
                   "Contacto eliminado",
                 );
-
                 toast.success(
                   removedCount > 1 ? `${base} (${removedCount})` : base,
                 );
@@ -858,16 +840,6 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
             </Button>
           </>
         }
-        icon={<Trash className="h-5 w-5" />}
-        open={confirmDeleteIds.length > 0}
-        size="sm"
-        title={t(
-          "clients.contacts.confirmDeleteTitle",
-          "Confirmar eliminación",
-        )}
-        onOpenChange={(o) => {
-          if (!o) setConfirmDeleteIds([]);
-        }}
       >
         <p className="text-sm text-foreground/70">
           {t(

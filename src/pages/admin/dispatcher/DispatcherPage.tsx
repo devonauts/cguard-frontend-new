@@ -1,5 +1,4 @@
-import type { DispatchRow, DirectoryOption, DispatchApiError } from "./types";
-
+import { loadXlsx } from "../../../lib/lazyXlsx";
 import {
   useMemo,
   useState,
@@ -7,33 +6,12 @@ import {
   useRef,
   type MouseEvent as ReactMouseEvent,
 } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import {
-  EllipsisVertical,
-  Filter as FilterIcon,
-  FileDown,
-  FileSpreadsheet,
-  Printer,
-  Mail,
-  Search,
-  Eye,
-  ExternalLink,
-  Link as LinkIcon,
-  Edit,
-  X,
-  Trash,
-  Siren,
-  FileText,
-} from "lucide-react";
-import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
-
-import { loadXlsx } from "../../../lib/lazyXlsx";
-
 import { clientDisplayName } from "@/lib/clientName";
 import { getStoredTenantBranding } from "@/lib/tenantBranding";
+import { Link, useNavigate } from "react-router-dom";
 import AppLayout from "@/layouts/app-layout";
 import Breadcrumb from "@/components/ui/breadcrumb";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -75,15 +53,38 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetDescription,
   SheetTrigger,
 } from "@/components/ui/sheet";
+
+import {
+  EllipsisVertical,
+  Filter as FilterIcon,
+  FileDown,
+  FileSpreadsheet,
+  Printer,
+  Mail,
+  Search,
+  Eye,
+  Tag,
+  Archive,
+  ExternalLink,
+  Link as LinkIcon,
+  Edit,
+  X,
+  Trash,
+  Siren,
+  FileText,
+} from "lucide-react";
 import {
   PageContainer,
   PageHeader,
   EmptyState,
   StatusBadge,
+  Toolbar,
   SkeletonCards,
 } from "@/components/kit";
+import { toast } from "sonner";
 
 // Validaciones (zod) y tipos
 import {
@@ -93,8 +94,11 @@ import {
 } from "@/lib/validators/dispatcher-filters";
 import { clientService } from "@/lib/api/clientService";
 import { postSiteService } from "@/lib/api/postSiteService";
+import { ApiService } from "@/services/api/apiService";
 import { usePermissions } from "@/hooks/usePermissions";
+import { useTranslation } from "react-i18next";
 import api from "@/lib/api";
+import type { DispatchRow, DirectoryOption, DispatchApiError } from "./types";
 
 // The list is paginated client-side over what we load. The backend hard-caps a
 // no-limit /request query at 1000 rows, which silently truncated tenants past
@@ -106,7 +110,6 @@ const DISPATCH_FETCH_LIMIT = 5000;
 /** Asunto por defecto del envío de despachos, con el nombre de LA empresa en sesión. */
 function asuntoPorDefecto(): string {
   const empresa = getStoredTenantBranding().name;
-
   return empresa ? `Despachos | ${empresa}` : "Despachos";
 }
 
@@ -116,7 +119,6 @@ export default function DispatcherPage() {
     if (!msg) return null;
     const s = String(msg);
     const translated = t(s);
-
     return translated && translated !== s ? translated : s;
   };
   const [openFilter, setOpenFilter] = useState(false);
@@ -189,12 +191,10 @@ export default function DispatcherPage() {
       const configured = (
         import.meta as unknown as { env?: { VITE_API_URL?: string } }
       ).env?.VITE_API_URL;
-
       if (configured) return configured.replace(/\/$/, "");
     } catch (e) {
       /* ignore */
     }
-
     return import.meta.env.DEV ? "http://localhost:3001" : null;
   };
 
@@ -206,7 +206,6 @@ export default function DispatcherPage() {
       localStorage.getItem("accessToken") ||
       localStorage.getItem("authToken") ||
       localStorage.getItem("idToken");
-
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
 
@@ -225,9 +224,7 @@ export default function DispatcherPage() {
         setShareTargetId(null);
       }
     };
-
     document.addEventListener("mousedown", handleOutsideClick);
-
     return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, [shareDialogOpen]);
 
@@ -236,16 +233,13 @@ export default function DispatcherPage() {
 
     const loadRows = async () => {
       const mine = ++loadSeqRef.current;
-
       setLoading(true);
       try {
         const tenantId = localStorage.getItem("tenantId");
-
         if (!tenantId) return;
         const api = (await import("@/lib/api")).default;
         // Send status filter when present (skip 'todo' which means all)
         let url = `/tenant/${tenantId}/request`;
-
         if (
           filters &&
           filters.status &&
@@ -255,7 +249,6 @@ export default function DispatcherPage() {
         }
         url += `${url.includes("?") ? "&" : "?"}limit=${DISPATCH_FETCH_LIMIT}`;
         const resp = await api.get(url);
-
         if (mine !== loadSeqRef.current) return; // superseded
         const payload = resp && resp.data ? resp.data : resp;
 
@@ -284,11 +277,9 @@ export default function DispatcherPage() {
           err?.response?.status ||
           err?.data?.status ||
           err?.statusCode;
-
         if (status === 403) {
           setForbiddenRead(true);
           const serverMsg = err?.response?.data?.message || err?.message;
-
           setForbiddenMessage(serverMsg || null);
           try {
             toast.error(
@@ -330,7 +321,6 @@ export default function DispatcherPage() {
 
         const clientRows = (clientsResp as { rows?: DirectoryOption[] })?.rows;
         const siteRows = (sitesResp as { rows?: DirectoryOption[] })?.rows;
-
         if (clientsResp && Array.isArray(clientRows)) {
           setAllClients(clientRows);
         }
@@ -349,14 +339,12 @@ export default function DispatcherPage() {
 
       try {
         const tenantId = localStorage.getItem("tenantId");
-
         if (!tenantId) return;
         const api = (await import("@/lib/api")).default;
         const resp = await api.get(`/tenant/${tenantId}/request`);
         const payload = resp && resp.data ? resp.data : resp;
 
         let rowsData: DispatchRow[] = [];
-
         if (payload && Array.isArray(payload.rows)) {
           rowsData = payload.rows;
         } else if (Array.isArray(payload)) {
@@ -369,7 +357,6 @@ export default function DispatcherPage() {
         for (const r of rowsData) {
           let cid: string | undefined;
           let cname: string | undefined;
-
           if (r.client && typeof r.client === "object") {
             cid = r.client.id || r.client.clientId || r.clientId;
             cname = clientDisplayName(r.client, "") || undefined;
@@ -385,7 +372,6 @@ export default function DispatcherPage() {
 
           let sid: string | undefined;
           let sname: string | undefined;
-
           if (r.site && typeof r.site === "object") {
             sid = r.site.id || r.site.siteId || r.siteId;
             sname = r.site.name || r.site.companyName || r.site.address;
@@ -422,7 +408,6 @@ export default function DispatcherPage() {
         // client id/name can be in multiple shapes
         let cid: string | undefined;
         let cname: string | undefined;
-
         if (r.client && typeof r.client === "object") {
           cid = r.client.id || r.client.clientId || r.clientId;
           cname = r.client.name || r.client.fullName || r.client.displayName;
@@ -441,7 +426,6 @@ export default function DispatcherPage() {
         // site
         let sid: string | undefined;
         let sname: string | undefined;
-
         if (r.site && typeof r.site === "object") {
           sid = r.site.id || r.site.siteId || r.siteId;
           sname = r.site.name || r.site.companyName || r.site.address;
@@ -472,11 +456,9 @@ export default function DispatcherPage() {
     const list =
       (allPostSites && allPostSites.length > 0 ? allPostSites : postSites) ||
       [];
-
     // Until a client is selected, do not show any post sites
     if (!filters || !filters.clientId) return [];
     const cid = String(filters.clientId);
-
     return list.filter((s: DirectoryOption) => {
       if (!s) return false;
       // support various shapes: s.clientId, s.client?.id, s.client?.clientId
@@ -493,7 +475,6 @@ export default function DispatcherPage() {
           String(s.clientAccount.id) === cid)
       )
         return true;
-
       return false;
     });
   }, [allPostSites, postSites, filters]);
@@ -502,13 +483,13 @@ export default function DispatcherPage() {
   useEffect(() => {
     try {
       const sid = filters.siteId;
-
       fetchStationsFor(sid);
       // clear station filter when site changes
       setFilters((s) => ({ ...s, stationId: undefined }));
     } catch (e) {
       // ignore
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters.siteId]);
 
   // Apply filters by fetching rows according to current `filters`
@@ -516,23 +497,19 @@ export default function DispatcherPage() {
     const usedFilters = filtersParam ?? filters;
     // Validate with zod but allow fetching even when validation fails (log and warn)
     const parse = dispatcherFiltersSchema.safeParse(usedFilters);
-
     if (!parse.success) {
       console.error("Errores de validación:", parse.error.flatten());
     }
 
     setOpenFilter(false);
     const mine = ++loadSeqRef.current;
-
     setLoading(true);
     try {
       const tenantId = localStorage.getItem("tenantId");
-
       if (!tenantId) return;
       const api = (await import("@/lib/api")).default;
 
       const params = new URLSearchParams();
-
       // status as top-level param (backend expects ?status=... as used elsewhere)
       if (
         usedFilters &&
@@ -556,7 +533,6 @@ export default function DispatcherPage() {
           const d = filters.createdDate;
           const start = new Date(`${d}T00:00:00`).toISOString();
           const end = new Date(`${d}T23:59:59`).toISOString();
-
           // append twice so backend receives an array: filter[createdAtRange]=start&filter[createdAtRange]=end
           params.append("filter[createdAtRange][]", start);
           params.append("filter[createdAtRange][]", end);
@@ -570,7 +546,6 @@ export default function DispatcherPage() {
           const d = filters.incidentDate;
           const start = new Date(`${d}T00:00:00`).toISOString();
           const end = new Date(`${d}T23:59:59`).toISOString();
-
           // append twice so backend receives an array: filter[dateTimeRange]=start&filter[dateTimeRange]=end
           params.append("filter[dateTimeRange][]", start);
           params.append("filter[dateTimeRange][]", end);
@@ -582,11 +557,9 @@ export default function DispatcherPage() {
       params.append("limit", String(DISPATCH_FETCH_LIMIT));
       let url = `/tenant/${tenantId}/request`;
       const qs = params.toString();
-
       if (qs) url += `?${qs}`;
 
       const resp = await api.get(url);
-
       if (mine !== loadSeqRef.current) return; // superseded
       const payload = resp && resp.data ? resp.data : resp;
 
@@ -617,11 +590,9 @@ export default function DispatcherPage() {
     try {
       if (!siteToLoad) {
         setStations([]);
-
         return;
       }
       const tenantId = localStorage.getItem("tenantId");
-
       if (!tenantId) return;
 
       // Try preferred stations endpoint with postSite/postSiteId query
@@ -630,7 +601,6 @@ export default function DispatcherPage() {
         const res = await api.get(url, { toast: { silentError: true } });
         const body = res && (res.data ?? res);
         let rows: any[] = [];
-
         if (Array.isArray(body)) rows = body;
         else if (body && Array.isArray(body.rows)) rows = body.rows;
         else if (body && Array.isArray(body.data)) rows = body.data;
@@ -646,9 +616,7 @@ export default function DispatcherPage() {
                   (s.postSite && (s.postSite.id || s.postSite)) ||
                   s.post_site)) ||
               null;
-
             if (!pid) return true; // can't determine, keep
-
             return String(pid) === String(siteToLoad);
           });
           const source = filtered.length ? filtered : rows;
@@ -663,9 +631,7 @@ export default function DispatcherPage() {
               (s.postSite && (s.postSite.businessName || s.postSite.name)) ||
               String(s.id),
           }));
-
           setStations(mapped);
-
           return;
         }
       } catch (e) {
@@ -679,7 +645,6 @@ export default function DispatcherPage() {
         );
         const body2 = res2 && (res2.data ?? res2);
         let rows2: any[] = [];
-
         if (Array.isArray(body2)) rows2 = body2;
         else if (body2 && Array.isArray(body2.rows)) rows2 = body2.rows;
         else if (body2 && Array.isArray(body2.data)) rows2 = body2.data;
@@ -693,9 +658,7 @@ export default function DispatcherPage() {
             s.address ||
             String(s.id),
         }));
-
         setStations(mapped2);
-
         return;
       } catch (e2) {
         // fallback
@@ -708,7 +671,6 @@ export default function DispatcherPage() {
         );
         const body3 = res3 && (res3.data ?? res3);
         let rows3: any[] = [];
-
         if (Array.isArray(body3)) rows3 = body3;
         else if (body3 && Array.isArray(body3.rows)) rows3 = body3.rows;
         else if (body3 && Array.isArray(body3.data)) rows3 = body3.data;
@@ -722,20 +684,16 @@ export default function DispatcherPage() {
             s.address ||
             String(s.id),
         }));
-
         setStations(mapped3);
-
         return;
       } catch (e3) {
         console.warn("Failed to load stations for post-site", siteToLoad, e3);
         setStations([]);
-
         return;
       }
     } catch (e) {
       console.error("Error loading stations", e);
       setStations([]);
-
       return;
     }
   };
@@ -746,19 +704,15 @@ export default function DispatcherPage() {
       ...defaultDispatcherFilters,
       status: "abierto",
     };
-
     setFilters(newFilters);
     const mine = ++loadSeqRef.current;
-
     setLoading(true);
     try {
       const tenantId = localStorage.getItem("tenantId");
-
       if (!tenantId) return;
       const api = (await import("@/lib/api")).default;
 
       let url = `/tenant/${tenantId}/request`;
-
       if (
         newFilters &&
         newFilters.status &&
@@ -769,7 +723,6 @@ export default function DispatcherPage() {
       url += `${url.includes("?") ? "&" : "?"}limit=${DISPATCH_FETCH_LIMIT}`;
 
       const resp = await api.get(url);
-
       if (mine !== loadSeqRef.current) return; // superseded
       const payload = resp && resp.data ? resp.data : resp;
 
@@ -799,7 +752,6 @@ export default function DispatcherPage() {
   useEffect(() => {
     if (!rows || !rows.length) {
       setSelectedIds([]);
-
       return;
     }
 
@@ -812,7 +764,6 @@ export default function DispatcherPage() {
 
   const visibleRows = useMemo(() => {
     const start = (page - 1) * limit;
-
     return rows.slice(start, start + limit);
   }, [rows, page, limit]);
 
@@ -833,7 +784,6 @@ export default function DispatcherPage() {
 
       // Collect candidate client id strings from multiple possible fields
       const candidates: string[] = [];
-
       if (r.clientId) candidates.push(String(r.clientId));
       if (r.client && typeof r.client === "string")
         candidates.push(String(r.client));
@@ -847,7 +797,6 @@ export default function DispatcherPage() {
 
       const list =
         (allClients && allClients.length > 0 ? allClients : clients) || [];
-
       for (const cid of candidates) {
         if (!cid) continue;
         const found = list.find((c: DirectoryOption) => {
@@ -862,7 +811,6 @@ export default function DispatcherPage() {
               c.externalId,
               c.code,
             ];
-
             return keys.some(
               (k) => typeof k !== "undefined" && String(k) === String(cid),
             );
@@ -870,7 +818,6 @@ export default function DispatcherPage() {
             return false;
           }
         });
-
         if (found)
           return (
             found.name ||
@@ -883,7 +830,6 @@ export default function DispatcherPage() {
 
       // Fallbacks: use primitive client field if present, or display callerName
       if (r.client && typeof r.client === "string") return String(r.client);
-
       return "-";
     } catch (e) {
       return "-";
@@ -895,7 +841,6 @@ export default function DispatcherPage() {
   const handleConfirmDelete = async () => {
     try {
       const tenantId = localStorage.getItem("tenantId");
-
       if (!tenantId) return;
       setShowDeleteConfirm(false);
 
@@ -903,13 +848,11 @@ export default function DispatcherPage() {
 
       let lastSuccessMessage: string | null = null;
       let lastErrorMessage: string | null = null;
-
       try {
         const resp = await api.delete(`/tenant/${tenantId}/request`, {
           params: { ids: selectedIds },
         });
         const r = resp && resp.data ? resp.data : resp;
-
         if (r && r.message) lastSuccessMessage = String(r.message);
       } catch (err) {
         lastErrorMessage =
@@ -923,7 +866,6 @@ export default function DispatcherPage() {
 
       // refresh rows using same logic as initial load
       const mine = ++loadSeqRef.current;
-
       try {
         const resp = await api.get(`/tenant/${tenantId}/request`);
         const payload = resp && resp.data ? resp.data : resp;
@@ -967,7 +909,6 @@ export default function DispatcherPage() {
       const msg =
         (e as DispatchApiError)?.response?.data?.message ||
         (e as DispatchApiError)?.message;
-
       toast.error(msg || t("dispatcher.deleted_error"));
     }
   };
@@ -977,10 +918,8 @@ export default function DispatcherPage() {
     if (!shareTargetId) return;
     try {
       const tenantId = localStorage.getItem("tenantId");
-
       if (!tenantId) {
         toast.error(t("dispatcher.tenantUnavailable"));
-
         return;
       }
       setShareLoading(true);
@@ -989,7 +928,6 @@ export default function DispatcherPage() {
 
       const now = Date.now();
       let expiresAt: string | null = null;
-
       if (shareExpiry === "1h")
         expiresAt = new Date(now + 1 * 60 * 60 * 1000).toISOString();
       else if (shareExpiry === "24h")
@@ -1003,7 +941,6 @@ export default function DispatcherPage() {
       // Send both to maximize compatibility so the value reaches the server/db.
       const payloadBody: { data: Record<string, string>; expiresAt?: string } =
         { data: {} };
-
       if (expiresAt) {
         payloadBody.data.expiresAt = expiresAt;
         payloadBody.expiresAt = expiresAt;
@@ -1040,7 +977,6 @@ export default function DispatcherPage() {
         setShareTargetId(null);
       } else {
         const serverMsg = payload && payload.message ? payload.message : null;
-
         toast.error(
           serverMsg
             ? resolveServerMessage(serverMsg)
@@ -1060,15 +996,12 @@ export default function DispatcherPage() {
     try {
       if (!selectedIds || selectedIds.length === 0) {
         toast.error(t("dispatcher.select_at_least_one_export"));
-
         return;
       }
 
       const tenantId = localStorage.getItem("tenantId");
-
       if (!tenantId) {
         toast.error(t("dispatcher.tenantUnavailable"));
-
         return;
       }
       const api = (await import("@/lib/api")).default;
@@ -1078,13 +1011,11 @@ export default function DispatcherPage() {
       // hundreds of simultaneous requests and trip the per-token rate limiter.
       const BATCH = 8;
       const responses: any[] = [];
-
       for (let i = 0; i < selectedIds.length; i += BATCH) {
         const chunk = selectedIds.slice(i, i + BATCH);
         const settled = await Promise.all(
           chunk.map((id) => api.get(`/tenant/${tenantId}/request/${id}`)),
         );
-
         responses.push(...settled);
       }
       const records = responses.map((r) => (r && r.data ? r.data : r));
@@ -1116,7 +1047,6 @@ export default function DispatcherPage() {
       const XLSX = await loadXlsx();
       const ws = XLSX.utils.json_to_sheet(rows);
       const wb = XLSX.utils.book_new();
-
       XLSX.utils.book_append_sheet(wb, ws, "Incidentes");
 
       const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" });
@@ -1125,7 +1055,6 @@ export default function DispatcherPage() {
       });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
-
       a.href = url;
       a.download = `Incidentes_${new Date().toISOString().slice(0, 10)}.xlsx`;
       document.body.appendChild(a);
@@ -1143,24 +1072,19 @@ export default function DispatcherPage() {
     try {
       if (!selectedIds || selectedIds.length === 0) {
         toast.error(t("dispatcher.select_at_least_one_print"));
-
         return;
       }
 
       const tenantId = localStorage.getItem("tenantId");
-
       if (!tenantId) {
         toast.error(t("dispatcher.tenantUnavailable"));
-
         return;
       }
 
       // Determine backend origin from VITE_API_URL (no prod localhost fallback)
       const apiOrigin = getApiOrigin();
-
       if (!apiOrigin) {
         toast.error(t("dispatcher.pdf_generate_failed"));
-
         return;
       }
 
@@ -1176,24 +1100,18 @@ export default function DispatcherPage() {
         credentials: "include",
         headers,
       });
-
       if (!resp.ok) {
         const text = await resp.text().catch(() => null);
-
         console.error("Export PDF failed", text || resp.statusText);
         toast.error(t("dispatcher.pdf_generate_failed"));
-
         return;
       }
 
       const contentType = resp.headers.get("content-type") || "";
-
       if (!contentType.includes("application/pdf")) {
         const text = await resp.text().catch(() => null);
-
         console.error("Expected PDF, got:", contentType, text);
         toast.error(t("dispatcher.pdf_invalid_response"));
-
         return;
       }
 
@@ -1202,7 +1120,6 @@ export default function DispatcherPage() {
 
       // Create an off-screen iframe so the PDF can render, then call print()
       const iframe = document.createElement("iframe");
-
       // Use visibility + off-screen positioning so the PDF renderer has space to initialize
       iframe.style.visibility = "hidden";
       iframe.style.position = "fixed";
@@ -1255,14 +1172,12 @@ export default function DispatcherPage() {
   const handleSendEmail = async () => {
     if (!selectedIds || selectedIds.length === 0) {
       toast.error(t("dispatcher.select_at_least_one_send"));
-
       return;
     }
     // Se propone el correo del propio operador como «responder a»: quien
     // conteste el despacho llega a quien lo mandó. Se puede borrar o cambiar.
     const suyo =
       localStorage.getItem("userEmail") || localStorage.getItem("email") || "";
-
     setEmailReplyTo(suyo);
     // default To empty
     setEmailTo("");
@@ -1275,17 +1190,14 @@ export default function DispatcherPage() {
   const performSend = async () => {
     if (!selectedIds || selectedIds.length === 0) {
       toast.error(t("dispatcher.select_at_least_one_send"));
-
       return;
     }
 
     setSendingEmail(true);
     try {
       const tenantId = localStorage.getItem("tenantId");
-
       if (!tenantId) {
         toast.error("Tenant no disponible");
-
         return;
       }
 
@@ -1311,7 +1223,6 @@ export default function DispatcherPage() {
 
       const resp = await api.post(`/tenant/${tenantId}/request/email`, payload);
       const result = resp && resp.data ? resp.data : resp;
-
       if (result && result.message)
         toast.success(
           resolveServerMessage(result.message) || t("dispatcher.email_sent"),
@@ -1323,7 +1234,6 @@ export default function DispatcherPage() {
       const serverMsg =
         (err as DispatchApiError)?.response?.data?.message ||
         (err as DispatchApiError)?.message;
-
       toast.error(
         serverMsg
           ? resolveServerMessage(serverMsg)
@@ -1343,14 +1253,14 @@ export default function DispatcherPage() {
         ]}
       />
 
-      <PageContainer className="p-6" width="wide">
+      <PageContainer width="wide" className="p-6">
         <PageHeader
           icon={<Siren />}
+          title={t("dispatcher.breadcrumbList")}
           subtitle={
             t("dispatcher.subtitle") ||
             "Gestiona y da seguimiento a los despachos de tu operación."
           }
-          title={t("dispatcher.breadcrumbList")}
         />
         {/* Acciones superiores */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -1366,13 +1276,11 @@ export default function DispatcherPage() {
                     toast.error(t("dispatcher.select_at_least_one_delete"));
                     // reset select after showing message
                     setActionSelectValue("");
-
                     return;
                   }
                   setShowDeleteConfirm(true);
                   // reset select so it returns to placeholder
                   setActionSelectValue("");
-
                   return;
                 }
               }}
@@ -1398,7 +1306,6 @@ export default function DispatcherPage() {
                 value={searchTerm}
                 onChange={(e) => {
                   const v = e.target.value;
-
                   setSearchTerm(v);
 
                   // debounce search
@@ -1407,16 +1314,13 @@ export default function DispatcherPage() {
                   }
                   searchTimeoutRef.current = setTimeout(async () => {
                     const mine = ++loadSeqRef.current;
-
                     try {
                       const tenantId = localStorage.getItem("tenantId");
-
                       if (!tenantId) return;
                       setLoading(true);
                       const api = (await import("@/lib/api")).default;
 
                       const params = new URLSearchParams();
-
                       // main query
                       if (v) params.append("query", String(v));
                       // include active filters so search respects them
@@ -1442,7 +1346,6 @@ export default function DispatcherPage() {
                           const d = filters.createdDate;
                           const start = new Date(`${d}T00:00:00`).toISOString();
                           const end = new Date(`${d}T23:59:59`).toISOString();
-
                           params.append("filter[createdAtRange][]", start);
                           params.append("filter[createdAtRange][]", end);
                         } catch (e) {
@@ -1458,7 +1361,6 @@ export default function DispatcherPage() {
                           const d = filters.incidentDate;
                           const start = new Date(`${d}T00:00:00`).toISOString();
                           const end = new Date(`${d}T23:59:59`).toISOString();
-
                           params.append("filter[dateTimeRange][]", start);
                           params.append("filter[dateTimeRange][]", end);
                         } catch (e) {
@@ -1477,11 +1379,9 @@ export default function DispatcherPage() {
                       params.append("limit", String(DISPATCH_FETCH_LIMIT));
                       let url = `/tenant/${tenantId}/request`;
                       const qs = params.toString();
-
                       if (qs) url += `?${qs}`;
 
                       const resp = await api.get(url);
-
                       if (mine !== loadSeqRef.current) return; // superseded
                       const payload = resp && resp.data ? resp.data : resp;
 
@@ -1511,20 +1411,20 @@ export default function DispatcherPage() {
             </div>
 
             {canCreate ? (
-              <Button asChild variant="brand">
+              <Button variant="brand" asChild>
                 <Link to="/dispatch-tickets/new">
                   {t("dispatcher.newDispatch")}
                 </Link>
               </Button>
             ) : (
               <Button
-                disabled
-                className="cursor-not-allowed"
-                title={t("dispatcher.no_permission_create")}
                 variant="brand"
+                className="cursor-not-allowed"
+                disabled
                 onClick={() =>
                   toast.error(t("dispatcher.no_permission_create"))
                 }
+                title={t("dispatcher.no_permission_create")}
               >
                 {t("dispatcher.newDispatch")}
               </Button>
@@ -1534,11 +1434,11 @@ export default function DispatcherPage() {
             <Sheet open={openFilter} onOpenChange={setOpenFilter}>
               <SheetTrigger asChild>
                 <Button
+                  variant="outline"
                   style={{
                     borderColor: "var(--brand-line)",
                     color: "var(--brand-text)",
                   }}
-                  variant="outline"
                 >
                   <FilterIcon className="mr-2 h-4 w-4" />
                   {t("dispatcher.filters")}
@@ -1546,8 +1446,8 @@ export default function DispatcherPage() {
               </SheetTrigger>
 
               <SheetContent
-                className="w-full overflow-y-auto sm:w-[460px]"
                 side="right"
+                className="w-full overflow-y-auto sm:w-[460px]"
               >
                 <SheetHeader>
                   <SheetTitle>{t("dispatcher.filters")}</SheetTitle>
@@ -1565,7 +1465,6 @@ export default function DispatcherPage() {
                           clientId: v ? v : undefined,
                           siteId: undefined,
                         };
-
                         setFilters(newFilters);
                         void aplicarFiltros(newFilters);
                       }}
@@ -1590,7 +1489,7 @@ export default function DispatcherPage() {
                             </SelectItem>
                           ))
                         ) : (
-                          <SelectItem disabled value="__no_clients">
+                          <SelectItem value="__no_clients" disabled>
                             {t("dispatcher.no_clients")}
                           </SelectItem>
                         )}
@@ -1609,7 +1508,6 @@ export default function DispatcherPage() {
                           siteId: v,
                           stationId: undefined,
                         };
-
                         setFilters(newFilters);
                         void aplicarFiltros(newFilters);
                       }}
@@ -1627,7 +1525,7 @@ export default function DispatcherPage() {
                             </SelectItem>
                           ))
                         ) : (
-                          <SelectItem disabled value="__no_sites">
+                          <SelectItem value="__no_sites" disabled>
                             {t("dispatcher.no_sites")}
                           </SelectItem>
                         )}
@@ -1640,6 +1538,9 @@ export default function DispatcherPage() {
                     <Label>{t("dispatcher.station")}</Label>
                     <Select
                       value={filters.stationId ?? ""}
+                      onValueChange={(v) =>
+                        setFilters((s) => ({ ...s, stationId: v }))
+                      }
                       onOpenChange={(open) => {
                         if (open)
                           setTimeout(
@@ -1648,9 +1549,6 @@ export default function DispatcherPage() {
                           );
                         else setStationFilter("");
                       }}
-                      onValueChange={(v) =>
-                        setFilters((s) => ({ ...s, stationId: v }))
-                      }
                     >
                       <SelectTrigger>
                         <SelectValue
@@ -1664,13 +1562,13 @@ export default function DispatcherPage() {
                         <div className="px-2 py-2">
                           <Input
                             ref={(el) => (stationInputRef.current = el)}
-                            disabled={!filters.siteId}
                             placeholder={
                               t("dispatcher.search_station") ||
                               "Buscar estación..."
                             }
                             value={stationFilter}
                             onChange={(e) => setStationFilter(e.target.value)}
+                            disabled={!filters.siteId}
                           />
                         </div>
                         {stations && stations.length > 0 ? (
@@ -1697,8 +1595,8 @@ export default function DispatcherPage() {
                         ) : (
                           <SelectItem
                             key="__no_stations"
-                            disabled
                             value="__no_stations"
+                            disabled
                           >
                             {filters.siteId
                               ? t("dispatcher.no_stations") || "Sin estaciones"
@@ -1776,8 +1674,8 @@ export default function DispatcherPage() {
                   {/* Archivados */}
                   <div className="flex items-center gap-2 pt-1">
                     <Checkbox
-                      checked={filters.includeArchived}
                       id="archived"
+                      checked={filters.includeArchived}
                       onCheckedChange={(v) =>
                         setFilters((s) => ({
                           ...s,
@@ -1785,7 +1683,7 @@ export default function DispatcherPage() {
                         }))
                       }
                     />
-                    <Label className="cursor-pointer" htmlFor="archived">
+                    <Label htmlFor="archived" className="cursor-pointer">
                       {t("dispatcher.show_archived")}
                     </Label>
                   </div>
@@ -1796,15 +1694,15 @@ export default function DispatcherPage() {
                       acento. Pintarlos con utilidades sueltas se salta esa
                       derivación y deja el borde y la sombra de cristal fuera. */}
                   <Button
-                    className="w-full"
                     variant="brand"
+                    className="w-full"
                     onClick={() => void aplicarFiltros()}
                   >
                     {t("dispatcher.apply_filters")}
                   </Button>
                   <Button
-                    className="w-full"
                     variant="outline"
+                    className="w-full"
                     onClick={clearFilters}
                   >
                     {t("dispatcher.clear_filters")}
@@ -1817,9 +1715,9 @@ export default function DispatcherPage() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  aria-label={t("ui.Dispatcher.masAcciones", "Más acciones")}
-                  size="icon"
                   variant="ghost"
+                  size="icon"
+                  aria-label={t("ui.Dispatcher.masAcciones", "Más acciones")}
                 >
                   <EllipsisVertical className="h-5 w-5" />
                 </Button>
@@ -1831,26 +1729,21 @@ export default function DispatcherPage() {
                       // require exactly one selected id
                       if (!selectedIds || selectedIds.length === 0) {
                         toast.error(t("dispatcher.select_at_least_one_export"));
-
                         return;
                       }
                       // allow exporting multiple selected ids; backend will render one page per id
                       const id = selectedIds[0];
                       const idsParam = selectedIds.join(",");
                       const tenantId = localStorage.getItem("tenantId");
-
                       if (!tenantId) {
                         toast.error(t("dispatcher.tenantUnavailable"));
-
                         return;
                       }
 
                       // Determine backend origin from VITE_API_URL (no prod localhost fallback)
                       const apiOrigin = getApiOrigin();
-
                       if (!apiOrigin) {
                         toast.error(t("dispatcher.pdf_generate_failed"));
-
                         return;
                       }
 
@@ -1869,34 +1762,27 @@ export default function DispatcherPage() {
                         credentials: "include",
                         headers,
                       });
-
                       if (!resp.ok) {
                         const text = await resp.text().catch(() => null);
-
                         console.error(
                           "Export PDF failed",
                           text || resp.statusText,
                         );
                         toast.error(t("dispatcher.pdf_generate_failed"));
-
                         return;
                       }
 
                       const contentType =
                         resp.headers.get("content-type") || "";
-
                       if (!contentType.includes("application/pdf")) {
                         const text = await resp.text().catch(() => null);
-
                         console.error("Expected PDF, got:", contentType, text);
                         toast.error(t("dispatcher.pdf_invalid_response"));
-
                         return;
                       }
 
                       const blob = await resp.blob();
                       const blobUrl = URL.createObjectURL(blob);
-
                       // open in new tab
                       window.open(blobUrl, "_blank");
                       // revoke after a delay
@@ -1958,13 +1844,10 @@ export default function DispatcherPage() {
                       }
                       onCheckedChange={(v) => {
                         const checked = Boolean(v);
-
                         if (checked) {
                           setSelectedIds((prev) => {
                             const ids = new Set(prev);
-
                             rows.forEach((r) => ids.add(r.id));
-
                             return Array.from(ids);
                           });
                         } else {
@@ -2002,7 +1885,7 @@ export default function DispatcherPage() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td className="p-4" colSpan={9}>
+                    <td colSpan={9} className="p-4">
                       <SkeletonCards count={4} />
                     </td>
                   </tr>
@@ -2012,12 +1895,12 @@ export default function DispatcherPage() {
                       dominio externo: si ese servidor no responde, la tabla
                       vacía se queda con un icono roto. El vacío lo dibuja el
                       sistema. */}
-                    <td className="py-10" colSpan={9}>
+                    <td colSpan={9} className="py-10">
                       <EmptyState
-                        className="border-0"
-                        description={t("dispatcher.no_results_subtitle")}
                         icon={<FileText />}
                         title={t("dispatcher.no_results_title")}
+                        description={t("dispatcher.no_results_subtitle")}
+                        className="border-0"
                       />
                     </td>
                   </tr>
@@ -2029,14 +1912,11 @@ export default function DispatcherPage() {
                           checked={selectedIds.includes(r.id)}
                           onCheckedChange={(v) => {
                             const checked = Boolean(v);
-
                             setSelectedIds((prev) => {
                               if (checked) {
                                 if (prev.includes(r.id)) return prev;
-
                                 return [...prev, r.id];
                               }
-
                               return prev.filter((id) => id !== r.id);
                             });
                           }}
@@ -2048,10 +1928,8 @@ export default function DispatcherPage() {
                       <td className="px-4 py-3">
                         {(() => {
                           const dateValue = r.dateTime || r.incidentAt;
-
                           if (!dateValue) return "-";
                           const d = new Date(dateValue);
-
                           return isNaN(d.getTime()) ? "-" : d.toLocaleString();
                         })()}
                       </td>
@@ -2080,7 +1958,6 @@ export default function DispatcherPage() {
                       <td className="px-4 py-3">
                         {(() => {
                           const s = (r.status || "").toString().toLowerCase();
-
                           if (s === "cerrado" || s === "closed") {
                             return (
                               <StatusBadge tone="ok">
@@ -2103,7 +1980,7 @@ export default function DispatcherPage() {
 
                           // Estado desconocido: píldora neutra con el valor tal cual.
                           return (
-                            <StatusBadge dot={false} tone="neutral">
+                            <StatusBadge tone="neutral" dot={false}>
                               {r.status || "-"}
                             </StatusBadge>
                           );
@@ -2113,12 +1990,12 @@ export default function DispatcherPage() {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button
+                              variant="ghost"
+                              size="icon"
                               aria-label={t(
                                 "ui.Dispatcher.masAcciones",
                                 "Más acciones",
                               )}
-                              size="icon"
-                              variant="ghost"
                             >
                               <EllipsisVertical className="h-5 w-5" />
                             </Button>
@@ -2168,8 +2045,8 @@ export default function DispatcherPage() {
 
                             <DropdownMenuItem>
                               <Link
-                                className="flex items-center w-full"
                                 to={`/dispatch-tickets/${r.id}/edit`}
+                                className="flex items-center w-full"
                               >
                                 <Edit className="mr-2 h-4 w-4" />
                                 {t("dispatcher.edit")}
@@ -2181,11 +2058,9 @@ export default function DispatcherPage() {
                                 try {
                                   const tenantId =
                                     localStorage.getItem("tenantId");
-
                                   if (!tenantId) return;
                                   const api = (await import("@/lib/api"))
                                     .default;
-
                                   // Use PATCH for partial updates so unspecified fields are not nulled
                                   await api.patch(
                                     `/tenant/${tenantId}/request/${r.id}`,
@@ -2268,17 +2143,17 @@ export default function DispatcherPage() {
 
             <div className="flex gap-2">
               <Button
-                disabled={page === 1 || loading}
-                size="sm"
                 variant="outline"
+                size="sm"
+                disabled={page === 1 || loading}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
               >
                 {t("dispatcher.prev")}
               </Button>
               <Button
-                disabled={page * limit >= totalCount || loading}
-                size="sm"
                 variant="outline"
+                size="sm"
+                disabled={page * limit >= totalCount || loading}
                 onClick={() => setPage((p) => p + 1)}
               >
                 {t("dispatcher.next")}
@@ -2317,20 +2192,20 @@ export default function DispatcherPage() {
               <div>
                 <Label>Responder a (opcional)</Label>
                 <Input
-                  placeholder={t("ui.DispatcherPage.porDefectoElCorreoDe")}
                   value={emailReplyTo}
                   onChange={(e) => setEmailReplyTo(e.target.value)}
+                  placeholder={t("ui.DispatcherPage.porDefectoElCorreoDe")}
                 />
               </div>
 
               <div>
                 <Label>{t("ui.DispatcherPage.para")}</Label>
                 <Input
+                  value={emailTo}
+                  onChange={(e) => setEmailTo(e.target.value)}
                   placeholder={t(
                     "ui.DispatcherPage.correoEmpresaComSeparaVarios",
                   )}
-                  value={emailTo}
-                  onChange={(e) => setEmailTo(e.target.value)}
                 />
               </div>
 
@@ -2359,9 +2234,9 @@ export default function DispatcherPage() {
                 {t("dispatcher.cancel")}
               </Button>
               <Button
-                disabled={sendingEmail}
                 variant="brand"
                 onClick={performSend}
+                disabled={sendingEmail}
               >
                 {sendingEmail ? t("dispatcher.sending") : t("common.send")}
               </Button>
@@ -2392,36 +2267,36 @@ export default function DispatcherPage() {
               <div className="mt-4 space-y-3 px-4">
                 <label className="flex items-center gap-2">
                   <input
-                    checked={shareExpiry === "1h"}
-                    name="shareExpiry"
                     type="radio"
+                    name="shareExpiry"
+                    checked={shareExpiry === "1h"}
                     onChange={() => setShareExpiry("1h")}
                   />
                   <span>1 hora</span>
                 </label>
                 <label className="flex items-center gap-2">
                   <input
-                    checked={shareExpiry === "24h"}
-                    name="shareExpiry"
                     type="radio"
+                    name="shareExpiry"
+                    checked={shareExpiry === "24h"}
                     onChange={() => setShareExpiry("24h")}
                   />
                   <span>24 horas</span>
                 </label>
                 <label className="flex items-center gap-2">
                   <input
-                    checked={shareExpiry === "7d"}
-                    name="shareExpiry"
                     type="radio"
+                    name="shareExpiry"
+                    checked={shareExpiry === "7d"}
                     onChange={() => setShareExpiry("7d")}
                   />
                   <span>{t("ui.Dispatcher.7Dias", "7 días")}</span>
                 </label>
                 <label className="flex items-center gap-2">
                   <input
-                    checked={shareExpiry === "never"}
-                    name="shareExpiry"
                     type="radio"
+                    name="shareExpiry"
+                    checked={shareExpiry === "never"}
                     onChange={() => setShareExpiry("never")}
                   />
                   <span>Nunca</span>
@@ -2432,8 +2307,8 @@ export default function DispatcherPage() {
                 <AlertDialogCancel>{t("actions.cancel")}</AlertDialogCancel>
                 <AlertDialogAction
                   className="cg-btn-brand"
-                  disabled={shareLoading}
                   onClick={handleCreateShare}
+                  disabled={shareLoading}
                 >
                   {shareLoading ? "Creando..." : "Generar y copiar"}
                 </AlertDialogAction>

@@ -1,21 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import {
-  Search,
-  ChevronsUpDown,
-  X,
-  Loader2,
-  CheckCircle,
-  XCircle,
-  Trash2,
-  ArrowLeftRight,
-  Clock,
-  ThumbsUp,
-  ThumbsDown,
-  Plus,
-} from "lucide-react";
-
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
@@ -52,6 +37,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Search,
+  ChevronsUpDown,
+  X,
+  Loader2,
+  CheckCircle,
+  XCircle,
+  Trash2,
+  ArrowLeftRight,
+  Clock,
+  ThumbsUp,
+  ThumbsDown,
+  Plus,
+} from "lucide-react";
 import Breadcrumb from "@/components/ui/breadcrumb";
 import {
   PageContainer,
@@ -69,12 +68,12 @@ import shiftExchangeRequestService, {
 } from "@/lib/api/shiftExchangeRequestService";
 import { securityGuardService } from "@/lib/api/securityGuardService";
 import { getTenantTimezone } from "@/utils/tenantLocation";
+
 import { localeActual } from "@/lib/localeActual";
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 function formatDate(iso: string | null) {
   if (!iso) return "—";
-
   return new Date(iso).toLocaleDateString(localeActual(), {
     day: "2-digit",
     month: "short",
@@ -137,10 +136,8 @@ export default function ShiftExchange() {
     setLoading(true);
     try {
       const params: Record<string, string | number> = { limit: 500 };
-
       if (statusFilter !== "all") params["filter[status]"] = statusFilter;
       const { rows } = await shiftExchangeRequestService.list(params);
-
       setRecords(rows);
     } catch (err) {
       console.error("Failed to fetch shift exchange requests", err);
@@ -171,11 +168,9 @@ export default function ShiftExchange() {
               (item.guard?.firstName && item.guard?.lastName
                 ? `${item.guard.firstName} ${item.guard.lastName}`
                 : (item.guard?.fullName ?? ""));
-
             return userId ? { userId, fullName } : null;
           })
           .filter(Boolean) as GuardOption[];
-
         setGuards(opts);
       } catch (e) {
         console.error("Failed to load guards", e);
@@ -194,7 +189,6 @@ export default function ShiftExchange() {
   const q = searchQuery.toLowerCase().trim();
   const filtered = records.filter((r) => {
     if (!q) return true;
-
     return (
       (r.fromGuard?.fullName ?? "").toLowerCase().includes(q) ||
       (r.toGuard?.fullName ?? "").toLowerCase().includes(q)
@@ -223,7 +217,6 @@ export default function ShiftExchange() {
   const handleCreate = async () => {
     if (!form.fromGuardId) {
       toast.error(t("ui.ShiftExchange.eligeElVigilanteQueSolicita"));
-
       return;
     }
     setSaving(true);
@@ -252,7 +245,6 @@ export default function ShiftExchange() {
         id,
         "approved",
       );
-
       setRecords((prev) => prev.map((r) => (r.id === id ? updated : r)));
     } catch (err) {
       console.error("Failed to approve", err);
@@ -265,7 +257,6 @@ export default function ShiftExchange() {
         id,
         "rejected",
       );
-
       setRecords((prev) => prev.map((r) => (r.id === id ? updated : r)));
     } catch (err) {
       console.error("Failed to reject", err);
@@ -316,19 +307,22 @@ export default function ShiftExchange() {
           },
         ]}
       />
-      <PageContainer className="px-4 lg:px-6" width="wide">
+      <PageContainer width="wide" className="px-4 lg:px-6">
         <PageHeader
           icon={<ArrowLeftRight />}
-          subtitle="Solicitudes de intercambio de turnos entre vigilantes."
           title={t(
             "ui.ShiftExchange.intercambioDeTurnos",
             "Intercambio de turnos",
           )}
+          subtitle="Solicitudes de intercambio de turnos entre vigilantes."
         />
 
         {/* KPIs */}
         <Stagger className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <MetricTile
+            label="Pendientes"
+            value={stats.pending}
+            icon={<Clock />}
             delta={
               totalSolicitudes > 0
                 ? {
@@ -338,11 +332,11 @@ export default function ShiftExchange() {
                 : undefined
             }
             hint={t("comun.esperandoUnaDecision")}
-            icon={<Clock />}
-            label="Pendientes"
-            value={stats.pending}
           />
           <MetricTile
+            label="Aprobadas"
+            value={stats.approved}
+            icon={<ThumbsUp />}
             delta={
               totalSolicitudes > 0
                 ? {
@@ -352,11 +346,11 @@ export default function ShiftExchange() {
                 : undefined
             }
             hint={t("comun.delTotalDeSolicitudes")}
-            icon={<ThumbsUp />}
-            label="Aprobadas"
-            value={stats.approved}
           />
           <MetricTile
+            label="Rechazadas"
+            value={stats.rejected}
+            icon={<ThumbsDown />}
             delta={
               totalSolicitudes > 0
                 ? {
@@ -366,9 +360,6 @@ export default function ShiftExchange() {
                 : undefined
             }
             hint={t("comun.delTotalDeSolicitudes")}
-            icon={<ThumbsDown />}
-            label="Rechazadas"
-            value={stats.rejected}
           />
         </Stagger>
 
@@ -377,17 +368,17 @@ export default function ShiftExchange() {
           {/* Elegir UNO de cuatro estados: el conmutador del sistema, no un
               desplegable. Muestra las cuatro opciones sin abrir nada. */}
           <Segmented<"all" | "pending" | "approved" | "rejected">
+            value={statusFilter}
+            onChange={(v) => {
+              setStatusFilter(v);
+              setPage(1);
+            }}
             options={[
               { value: "all", label: "Todos" },
               { value: "pending", label: "Pendiente" },
               { value: "approved", label: "Aprobado" },
               { value: "rejected", label: "Rechazado" },
             ]}
-            value={statusFilter}
-            onChange={(v) => {
-              setStatusFilter(v);
-              setPage(1);
-            }}
           />
 
           <div className="flex w-full flex-col items-center gap-4 md:w-auto md:flex-row">
@@ -397,8 +388,8 @@ export default function ShiftExchange() {
                 style={{ color: "var(--ink-faint)" }}
               />
               <Input
-                className="pl-9"
                 placeholder={t("comun.buscarVigilante")}
+                className="pl-9"
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
@@ -427,9 +418,9 @@ export default function ShiftExchange() {
                       {t("ui.ShiftExchange.nuevaSolicitudDeIntercambio")}
                     </SheetTitle>
                     <Button
-                      className="absolute right-0 top-0"
-                      size="icon"
                       variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-0"
                       onClick={() => setIsNewRequestOpen(false)}
                     >
                       <X className="h-4 w-4" />
@@ -495,22 +486,22 @@ export default function ShiftExchange() {
                     <div className="grid gap-2">
                       <Label>{t("comun.notas")}</Label>
                       <Textarea
-                        placeholder={t(
-                          "ui.ShiftExchange.describeLosDetallesDelIntercambio",
-                        )}
                         rows={4}
                         value={form.notes}
                         onChange={(e) =>
                           setForm({ ...form, notes: e.target.value })
                         }
+                        placeholder={t(
+                          "ui.ShiftExchange.describeLosDetallesDelIntercambio",
+                        )}
                       />
                     </div>
                   </div>
                   <SheetFooter>
                     <Button
+                      variant="brand"
                       className="w-full sm:w-auto"
                       disabled={saving}
-                      variant="brand"
                       onClick={handleCreate}
                     >
                       {saving ? (
@@ -527,12 +518,12 @@ export default function ShiftExchange() {
 
         {/* Tabla */}
         <Section
-          contentClassName="overflow-x-auto -mx-1"
-          icon={<ArrowLeftRight />}
           title={t(
             "ui.ShiftExchange.solicitudesDeIntercambio",
             "Solicitudes de intercambio",
           )}
+          icon={<ArrowLeftRight />}
+          contentClassName="overflow-x-auto -mx-1"
         >
           <Table>
             <TableHeader style={{ background: "var(--glass-sunken)" }}>
@@ -550,13 +541,13 @@ export default function ShiftExchange() {
                 <TableHead className="cg-eyebrow">
                   {t("comun.estado")}
                 </TableHead>
-                <TableHead className="w-[50px]" />
+                <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell className="h-[200px] text-center" colSpan={6}>
+                  <TableCell colSpan={6} className="h-[200px] text-center">
                     <Loader2
                       className="mx-auto h-6 w-6 animate-spin"
                       style={{ color: "var(--ink-faint)" }}
@@ -565,12 +556,12 @@ export default function ShiftExchange() {
                 </TableRow>
               ) : paginated.length === 0 ? (
                 <TableRow>
-                  <TableCell className="h-[360px] text-center" colSpan={6}>
+                  <TableCell colSpan={6} className="h-[360px] text-center">
                     <EmptyState
-                      className="border-0 py-2"
-                      description={t("comun.noPudimosEncontrarNingunElemento")}
                       icon={<ArrowLeftRight />}
                       title={t("kit.table.emptyTitle")}
+                      description={t("comun.noPudimosEncontrarNingunElemento")}
+                      className="border-0 py-2"
                     />
                   </TableCell>
                 </TableRow>
@@ -591,7 +582,7 @@ export default function ShiftExchange() {
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button size="icon" variant="ghost">
+                          <Button variant="ghost" size="icon">
                             <ChevronsUpDown
                               className="h-4 w-4"
                               style={{ color: "var(--ink-soft)" }}
@@ -622,8 +613,8 @@ export default function ShiftExchange() {
                             </>
                           )}
                           <DropdownMenuItem
-                            style={{ color: "var(--bad-text)" }}
                             onClick={() => handleDelete(rec.id)}
+                            style={{ color: "var(--bad-text)" }}
                           >
                             <Trash2 className="mr-2 h-4 w-4" /> Eliminar
                           </DropdownMenuItem>
@@ -668,9 +659,9 @@ export default function ShiftExchange() {
           </div>
           <div className="flex items-center space-x-2">
             <Button
-              disabled={page <= 1}
-              size="icon"
               variant="outline"
+              size="icon"
+              disabled={page <= 1}
               onClick={() => setPage((p) => p - 1)}
             >
               <span className="sr-only">
@@ -679,21 +670,21 @@ export default function ShiftExchange() {
               <svg
                 className="h-4 w-4"
                 fill="none"
-                stroke="currentColor"
                 viewBox="0 0 24 24"
+                stroke="currentColor"
               >
                 <path
-                  d="M15 19l-7-7 7-7"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
                 />
               </svg>
             </Button>
             <Button
-              disabled={page >= totalPages}
-              size="icon"
               variant="outline"
+              size="icon"
+              disabled={page >= totalPages}
               onClick={() => setPage((p) => p + 1)}
             >
               <span className="sr-only">
@@ -702,14 +693,14 @@ export default function ShiftExchange() {
               <svg
                 className="h-4 w-4"
                 fill="none"
-                stroke="currentColor"
                 viewBox="0 0 24 24"
+                stroke="currentColor"
               >
                 <path
-                  d="M9 5l7 7-7 7"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
+                  d="M9 5l7 7-7 7"
                 />
               </svg>
             </Button>
