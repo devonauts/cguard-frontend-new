@@ -39,26 +39,46 @@ export type RotationStyle = {
  */
 /**
  * ════════════════════════════════════════════════════════════════════════════
- * SEIS SEMANAS DE ESE PATRÓN, PARA VERLAS ANTES DE GUARDAR
+ * OCHO SEMANAS DE ESE PATRÓN, PARA VERLAS ANTES DE GUARDAR
  *
  * Tres números y dos casillas no dicen lo que le pasa a una persona. Esto sí:
- * pinta 42 días reales — D de día, N de noche, S de franco — empezando un
- * lunes, que es como se lee un rol.
+ * pinta 56 días reales — D de día, N de noche, S de franco — que es como se
+ * lee un rol.
  *
  * Repite la MISMA regla que el servidor (`estadoDeRotacion`), y tiene que
  * seguir haciéndolo: el domingo no añade un día libre suelto, CORRE el ciclo,
  * así que el franco siguiente cae dos días de la semana más tarde en vez de
  * uno. Si aquí se calculara «a ojo», la vista previa mentiría justo en lo que
  * la hace útil.
+ *
+ * `diaDeArranque` NO es decoración. En un 7-1 el franco avanza un día de la
+ * semana por vuelta, así que arrancando un lunes el primer domingo de franco
+ * llega el día 55: quien marcara «descanso dominical» veía una vista previa
+ * idéntica y concluía que la casilla no hacía nada. Con el arranque a mano se
+ * pone el día real en que empieza la persona y el franco doble aparece donde
+ * le toca.
  * ════════════════════════════════════════════════════════════════════════════
  */
+/** Etiquetas del selector de arranque. El orden es el del rol: lunes primero. */
+const DIAS_SEMANA = [
+  { corto: "L", largo: "lunes" },
+  { corto: "M", largo: "martes" },
+  { corto: "X", largo: "miércoles" },
+  { corto: "J", largo: "jueves" },
+  { corto: "V", largo: "viernes" },
+  { corto: "S", largo: "sábado" },
+  { corto: "D", largo: "domingo" },
+];
+
 function previsualiza(
   dia: number,
   noche: number,
   libre: number,
   alterna: boolean,
   dominical: boolean,
-  dias = 42,
+  /** Día de la semana en que arranca el ciclo. 0 = lunes … 6 = domingo. */
+  diaDeArranque = 0,
+  dias = 56,
 ): string[] {
   const ciclo = dia + noche + libre;
   if (ciclo <= 0) return [];
@@ -76,8 +96,9 @@ function previsualiza(
   for (let d = 0; d < dias; d++) {
     const st = base(d - corrimiento);
     if (previo === "S" && st !== "S") vueltas += 1;
-    // Día 0 = lunes, así que el domingo es el 6 de cada semana.
-    if (dominical && st === "S" && ((d % 7) + 7) % 7 === 6) corrimiento += 1;
+    // El domingo es el 6 de la semana, contando desde el día de arranque.
+    if (dominical && st === "S" && ((d + diaDeArranque) % 7) % 7 === 6)
+      corrimiento += 1;
     previo = st;
     out.push(
       st === "S" || !alterna || vueltas % 2 === 0
@@ -142,6 +163,8 @@ export default function RotationStyleSelect({
      Nacen apagadas: un patrón como los de siempre se crea igual que antes. */
   const [cAlterna, setCAlterna] = useState(false);
   const [cDomingo, setCDomingo] = useState(false);
+  /** Día de la semana en que arranca la vista previa. 0 = lunes. */
+  const [cArranque, setCArranque] = useState(0);
 
   useEffect(() => {
     let alive = true;
@@ -710,11 +733,35 @@ export default function RotationStyleSelect({
               que uno cree. */}
           {(parseInt(cRest) || 0) > 0 && (cAlterna || cDomingo) && (
             <div className="basis-full">
-              <div
-                className="text-[10px] uppercase tracking-wide mb-1"
-                style={{ color: "var(--ink-soft)" }}
-              >
-                Las próximas seis semanas, empezando un lunes
+              <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1">
+                <span
+                  className="text-[10px] uppercase tracking-wide"
+                  style={{ color: "var(--ink-soft)" }}
+                >
+                  Ocho semanas, empezando un
+                </span>
+                <div className="flex gap-[3px]">
+                  {DIAS_SEMANA.map((d, i) => (
+                    <button
+                      key={d.corto}
+                      aria-pressed={cArranque === i}
+                      className="cg-focus grid place-items-center rounded-[4px] text-[9px] font-bold uppercase"
+                      style={{
+                        width: 19,
+                        height: 17,
+                        background:
+                          cArranque === i ? "var(--brand)" : "var(--glass-sunken)",
+                        color:
+                          cArranque === i ? "var(--brand-ink)" : "var(--ink-soft)",
+                      }}
+                      title={d.largo}
+                      type="button"
+                      onClick={() => setCArranque(i)}
+                    >
+                      {d.corto}
+                    </button>
+                  ))}
+                </div>
               </div>
               <div className="flex flex-wrap gap-[3px]">
                 {previsualiza(
@@ -723,6 +770,7 @@ export default function RotationStyleSelect({
                   Math.max(0, parseInt(cRest) || 0),
                   cAlterna,
                   cDomingo,
+                  cArranque,
                 ).map((c, i) => (
                   <span
                     key={i}
@@ -759,10 +807,18 @@ export default function RotationStyleSelect({
                     Math.max(0, parseInt(cRest) || 0),
                     cAlterna,
                     cDomingo,
+                    cArranque,
                   );
                   const libres = p.filter((x) => x === "S").length;
+                  const dobles = p.filter(
+                    (x, i) => x === "S" && p[i - 1] === "S",
+                  ).length;
 
-                  return `${libres} días libres en 42 — ${(libres / 6).toFixed(1)} por semana.`;
+                  return (
+                    `${libres} días libres en ${p.length} — ` +
+                    `${(libres / (p.length / 7)).toFixed(1)} por semana` +
+                    (dobles ? `, con ${dobles} franco${dobles > 1 ? "s" : ""} doble${dobles > 1 ? "s" : ""}.` : ".")
+                  );
                 })()}
               </div>
             </div>
