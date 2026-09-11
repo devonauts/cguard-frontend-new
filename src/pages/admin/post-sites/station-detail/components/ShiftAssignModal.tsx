@@ -270,6 +270,12 @@ export default function ShiftAssignModal({
     );
   }, [bloques, positions, selectedPositionId]);
 
+  /* La estación SIN ciclo: entonces elegirlo aquí no es una excepción, es LA
+     pregunta. El ciclo ya no se inventa al crear el puesto —se preguntaba antes
+     de que existiera nadie a quien aplicárselo— y sin él el generador no
+     escribe un solo turno. */
+  const estacionSinCiclo = !(station as any)?.rotationStyleId;
+
   const patronDeLaEstacion = useMemo(
     () =>
       rotationStyles.find(
@@ -533,7 +539,12 @@ export default function ShiftAssignModal({
       footer={
         <>
           <Button variant="outline" onClick={onClose}>{t('actions.cancel')}</Button>
-          <Button onClick={saveShift} disabled={saving || !shiftGuard || (assignMode === 'rotation' && !selectedPositionId)}>
+          <Button onClick={saveShift} disabled={
+              saving ||
+              !shiftGuard ||
+              (assignMode === "rotation" &&
+                (!selectedPositionId || (estacionSinCiclo && !secuenciaPropia)))
+            }>
             {saving ? <Loader2 size={14} className="animate-spin" /> : <UserPlus size={14} />}
             {assignMode === 'rotation' ? t('ui.ShiftAssignModal.asignarRotacion', 'Asignar rotación') : t('ui.ShiftAssignModal.crearTurno', 'Crear turno')}
           </Button>
@@ -682,22 +693,38 @@ export default function ShiftAssignModal({
             {selectedPositionId &&
               (positions.find((p) => p.id === selectedPositionId)?.type ||
                 "fijo") !== "sacafranco" && (
-                <LabeledField label="Secuencia de este vigilante">
+                <LabeledField
+                  label={
+                    estacionSinCiclo
+                      ? "¿Cada cuántos días libra?"
+                      : "Secuencia de este vigilante"
+                  }
+                >
                   <SecuenciaPropiaSelect
                     etiquetaPrimerBloque={etiquetaPrimerBloque}
                     etiquetaSegundoBloque={etiquetaSegundoBloque}
+                    obligatorio={estacionSinCiclo}
                     patronDeLaEstacion={patronDeLaEstacion}
                     tenantId={tenantId}
                     value={secuenciaPropia}
                     onChange={setSecuenciaPropia}
                   />
                   <p className="mt-1 text-[10px] text-muted-foreground/70">
+                    {estacionSinCiclo ? (
+                      <>
+                        Este puesto todavía no tiene ciclo. El que elijas aquí
+                        pasa a ser el del puesto, y sus compañeros lo heredan.
+                      </>
+                    ) : (
+                      <>
                     Déjalo en «la de la estación» salvo que este vigilante tenga
                     un ciclo distinto al de sus compañeros
                     {bloques.length > 1
                       ? ` (por ejemplo 2 de ${etiquetaPrimerBloque} y 2 de ${etiquetaSegundoBloque})`
                       : ""}
                     .
+                      </>
+                    )}
                   </p>
                 </LabeledField>
               )}

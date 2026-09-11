@@ -40,6 +40,11 @@ export default function SecuenciaPropiaSelect({
   patronDeLaEstacion,
   /** Texto de la opción vacía. Un sacafranco no «hereda» nada: tapa huecos. */
   etiquetaPorDefecto,
+  /** La estación no tiene ciclo: entonces esto NO es una excepción, es la
+      pregunta. Sin ciclo el generador no escribe un solo turno, así que dejarlo
+      en «la de la estación» daría de alta a alguien sin cuadrante y en
+      silencio. */
+  obligatorio = false,
 }: {
   tenantId: string;
   value: string;
@@ -48,6 +53,7 @@ export default function SecuenciaPropiaSelect({
   etiquetaSegundoBloque?: string;
   patronDeLaEstacion?: string | null;
   etiquetaPorDefecto?: string;
+  obligatorio?: boolean;
 }) {
   const [styles, setStyles] = useState<RotationStyle[]>([]);
   const [loading, setLoading] = useState(false);
@@ -186,10 +192,12 @@ export default function SecuenciaPropiaSelect({
           }}
         >
           <option value="">
-            {etiquetaPorDefecto ||
-              (patronDeLaEstacion
-                ? `La de la estación (${patronDeLaEstacion})`
-                : "La de la estación")}
+            {obligatorio
+              ? "Elige cada cuántos días libra…"
+              : etiquetaPorDefecto ||
+                (patronDeLaEstacion
+                  ? `La de la estación (${patronDeLaEstacion})`
+                  : "La de la estación")}
           </option>
           {opciones.map((s) => (
             <option key={s.id} value={s.id}>
