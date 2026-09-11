@@ -2550,6 +2550,8 @@
       "preferencias-correo.desc": "Quais e-mails são enviados, com quais cores e como cada um aparece.",
       "comunicaciones.desc": "WhatsApp, SMS, saldo da carteira e o histórico de consumo.",
       "mobile-hub.desc": "Marca e módulos visíveis nos aplicativos do vigilante e do supervisor.",
+      "supervisor-app": "App do supervisor",
+      "supervisor-app.desc": "Cor dos botões, tipo de letra e nome que o supervisor vê no telemóvel.",
       "mobil.desc": "Banners, serviços e certificações que seu cliente vê no aplicativo dele.",
       "report-configuration.desc": "Privacidade, cabeçalho e rodapé dos relatórios que seu cliente recebe.",
       "registro-actividad.desc": "Quem alterou o quê, quem entrou e o que a plataforma fez sozinha.",

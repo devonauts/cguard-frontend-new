@@ -7067,6 +7067,8 @@
       "comunicaciones.desc": "WhatsApp, SMS, solde du portefeuille et historique de consommation.",
       "mobile-hub": "App de l'équipe",
       "mobile-hub.desc": "Identité visuelle et modules visibles dans les apps agent et superviseur.",
+      "supervisor-app": "App du superviseur",
+      "supervisor-app.desc": "Couleur des boutons, police et nom que le superviseur voit sur son téléphone.",
       "mobil": "App du client (Mi Seguridad)",
       "mobil.desc": "Bannières, services et certifications que votre client voit dans son app.",
       "report-configuration": "Rapports",

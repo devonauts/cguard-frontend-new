@@ -6599,6 +6599,8 @@
       "comunicaciones.desc": "WhatsApp, SMS, wallet balance and your usage history.",
       "mobile-hub": "Team app",
       "mobile-hub.desc": "Branding and visible modules in the guard and supervisor apps.",
+      "supervisor-app": "Supervisor app",
+      "supervisor-app.desc": "Button colour, font and name the supervisor sees on their phone.",
       "mobil": "Client app (Mi Seguridad)",
       "mobil.desc": "Banners, services and certifications your client sees in their app.",
       "report-configuration": "Reports",

@@ -6599,6 +6599,8 @@
       "comunicaciones.desc": "WhatsApp, SMS, saldo del monedero y el historial de consumo.",
       "mobile-hub": "App del equipo",
       "mobile-hub.desc": "Marca y módulos visibles en las apps del vigilante y del supervisor.",
+      "supervisor-app": "App del supervisor",
+      "supervisor-app.desc": "Color de los botones, tipo de letra y nombre que ve el supervisor en su teléfono.",
       "mobil": "App del cliente (Mi Seguridad)",
       "mobil.desc": "Banners, servicios y certificaciones que ve tu cliente en su app.",
       "report-configuration": "Informes",
