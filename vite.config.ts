@@ -134,6 +134,10 @@ export default defineConfig({
         navigateFallbackDenylist: [
           /^\/api\//,
           /^\/superadmin/,
+          // La vista previa de la app del supervisor, que el panel mete en un
+          // iframe: sin esto el SW le servía el index del CRM y en el marco
+          // salía un 404 del propio panel. Mismo caso que /desktop/.
+          /^\/supervisor-preview/,
           /^\/documentation/,
           /^\/desktop/,
           /^\/guard-reset/,
