@@ -97,6 +97,51 @@ const PRIORIDAD_LABEL: Record<string, string> = {
   critical: "Crítica",
 };
 
+/**
+ * ════════════════════════════════════════════════════════════════════════════
+ * LO QUE SE GUARDA NO ES LO QUE SE LEE
+ *
+ * La app del supervisor GUARDA el valor crudo de cada respuesta —`yes`, `no`,
+ * `na`— y lo enseña traducido en su propia pantalla. Aquí se estaba pintando
+ * tal cual salía de la base, así que la ficha de una inspección le decía «yes»
+ * y «no» a un administrador que tiene todo el CRM en español. Lo mismo con el
+ * estado de la verificación del personal (`late`, `not_present`…).
+ *
+ * Se traduce al pintar, NO al guardar: el valor almacenado es el contrato con
+ * la app y con el cálculo de la nota (`scoreItem` compara contra `yes`/`no`),
+ * y tocarlo dejaría las inspecciones viejas fuera de ese cálculo.
+ * ════════════════════════════════════════════════════════════════════════════
+ */
+const RESPUESTA_SI = new Set(["yes", "si", "sí", "true", "pass", "ok", "present", "1"]);
+const RESPUESTA_NO = new Set(["no", "false", "fail", "absent", "0"]);
+const RESPUESTA_MEDIA: Record<string, string> = {
+  na: "N/A",
+  "n/a": "N/A",
+  warning: "Con reparos",
+  partial: "Parcial",
+};
+
+function etiquetaRespuesta(valor: unknown): string {
+  if (Array.isArray(valor)) return valor.map(etiquetaRespuesta).join(", ");
+  if (typeof valor === "boolean") return valor ? "Sí" : "No";
+  const s = String(valor).trim().toLowerCase();
+
+  if (RESPUESTA_SI.has(s)) return "Sí";
+  if (RESPUESTA_NO.has(s)) return "No";
+
+  return RESPUESTA_MEDIA[s] || String(valor);
+}
+
+/** Estados de `guardVerifications` — valores de columna del servidor. */
+const VERIFICACION: Record<string, string> = {
+  present: "Presente",
+  not_present: "Ausente",
+  replacement: "Relevo",
+  late: "Llegó tarde",
+  left_early: "Salió antes",
+  other: "Otro",
+};
+
 export default function RouteRunDetailPage() {
   const { t } = useTranslation();
   const { runId = "" } = useParams<{ runId: string }>();
@@ -695,9 +740,7 @@ function VisitaCard({
                           >
                             <span>{it.label}</span>
                             <strong className="tabular-nums">
-                              {Array.isArray(val)
-                                ? val.join(", ")
-                                : String(val)}
+                              {etiquetaRespuesta(val)}
                             </strong>
                           </p>
                         );
@@ -716,7 +759,7 @@ function VisitaCard({
                     <p key={i} className="flex justify-between gap-4 text-sm">
                       <span>{g.name}</span>
                       <strong>
-                        {g.status}
+                        {VERIFICACION[String(g.status)] || g.status}
                         {g.note ? ` — ${g.note}` : ""}
                       </strong>
                     </p>

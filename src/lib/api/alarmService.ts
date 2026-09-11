@@ -354,10 +354,36 @@ const qstr = (params?: Record<string, string | number | undefined>): string => {
 // Service
 // ============================================================
 
+/**
+ * ════════════════════════════════════════════════════════════════════════════
+ * LEER UNA LISTA VENGA COMO VENGA
+ *
+ * El módulo de alarmas contesta de DOS formas según el endpoint: los casos, las
+ * señales y los eventos devuelven el array pelado; los paneles, las zonas, los
+ * contactos, los protocolos y los horarios lo envuelven en `{ rows, count }`.
+ *
+ * Las cinco pantallas envueltas hacían `Array.isArray(x) ? x : []` sobre el
+ * objeto, así que enseñaban CERO paneles, CERO zonas y CERO contactos con la
+ * base llena — «No hay paneles» encima de cinco paneles. No se veía porque
+ * hasta ahora nadie tenía datos que enseñar ahí.
+ *
+ * Se desenvuelve aquí, en el único sitio por el que pasan las cinco, en vez de
+ * cambiar el contrato del servidor: es el mismo criterio que `leerAhorro` en
+ * las rutas —aceptar las formas razonables en vez de romper la pantalla entera
+ * por la envoltura— y no puede afectar a ningún otro consumidor.
+ * ════════════════════════════════════════════════════════════════════════════
+ */
+function lista<T>(respuesta: any): T[] {
+  if (Array.isArray(respuesta)) return respuesta as T[];
+  if (respuesta && Array.isArray(respuesta.rows)) return respuesta.rows as T[];
+
+  return [];
+}
+
 export const alarmService = {
   // --- Panels ---
   panels(): Promise<AlarmPanel[]> {
-    return ApiService.get(`/tenant/${tid()}/alarm/panels`);
+    return ApiService.get(`/tenant/${tid()}/alarm/panels`).then(lista<AlarmPanel>);
   },
   panel(id: string): Promise<AlarmPanel> {
     return ApiService.get(`/tenant/${tid()}/alarm/panel/${id}`);
@@ -379,7 +405,9 @@ export const alarmService = {
 
   // --- Zones ---
   zones(panelId: string): Promise<AlarmZone[]> {
-    return ApiService.get(`/tenant/${tid()}/alarm/panel/${panelId}/zones`);
+    return ApiService.get(`/tenant/${tid()}/alarm/panel/${panelId}/zones`).then(
+      lista<AlarmZone>,
+    );
   },
   createZone(panelId: string, body: Partial<AlarmZone>): Promise<AlarmZone> {
     return ApiService.post(
@@ -396,7 +424,9 @@ export const alarmService = {
 
   // --- Contacts ---
   contacts(panelId: string): Promise<AlarmContact[]> {
-    return ApiService.get(`/tenant/${tid()}/alarm/panel/${panelId}/contacts`);
+    return ApiService.get(`/tenant/${tid()}/alarm/panel/${panelId}/contacts`).then(
+      lista<AlarmContact>,
+    );
   },
   createContact(
     panelId: string,
@@ -419,7 +449,9 @@ export const alarmService = {
 
   // --- Action Plans ---
   actionPlans(): Promise<ActionPlan[]> {
-    return ApiService.get(`/tenant/${tid()}/alarm/action-plans`);
+    return ApiService.get(`/tenant/${tid()}/alarm/action-plans`).then(
+      lista<ActionPlan>,
+    );
   },
   createActionPlan(body: Partial<ActionPlan>): Promise<ActionPlan> {
     return ApiService.post(`/tenant/${tid()}/alarm/action-plan`, body);
@@ -433,7 +465,9 @@ export const alarmService = {
 
   // --- Schedules ---
   schedules(panelId: string): Promise<OpenCloseSchedule[]> {
-    return ApiService.get(`/tenant/${tid()}/alarm/panel/${panelId}/schedules`);
+    return ApiService.get(`/tenant/${tid()}/alarm/panel/${panelId}/schedules`).then(
+      lista<OpenCloseSchedule>,
+    );
   },
   createSchedule(
     panelId: string,
