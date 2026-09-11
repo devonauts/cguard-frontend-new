@@ -274,6 +274,14 @@
             "keywords": "app movil vigilante supervisor modulos marca logo tema entrenamiento visitas"
           },
           {
+            "id": "supervisor-app",
+            "label": "App del supervisor",
+            "path": "/setting/supervisor-app",
+            "icon": "ShieldCheck",
+            "desc": "Color de los botones, tipo de letra y nombre que ve el supervisor en su teléfono.",
+            "keywords": "supervisor app color boton acento letra fuente tipografia tema marca patrulla recorrido"
+          },
+          {
             "id": "mobil",
             "label": "App del cliente (Mi Seguridad)",
             "path": "/setting/mobil",

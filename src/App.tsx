@@ -52,6 +52,9 @@ const MobilPage = lazy(
 const MobileHubPage = lazy(
   () => import("./pages/admin/Configuration/mobile-hub/MobileHubPage"),
 );
+const SupervisorAppPage = lazy(
+  () => import("./pages/admin/Configuration/supervisor-app/SupervisorAppPage"),
+);
 
 import GuardAppLayout from "./layouts/GuardAppLayout";
 import { ClientSelectionProvider } from "./contexts/ClientSelectionContext";
@@ -2291,6 +2294,14 @@ export default function App() {
                                 </ProtectedRoute>
                               }
                               path="/setting/mobile-hub"
+                            />
+                            <Route
+                              element={
+                                <ProtectedRoute>
+                                  <SupervisorAppPage />
+                                </ProtectedRoute>
+                              }
+                              path="/setting/supervisor-app"
                             />
                             <Route
                               element={

@@ -38,6 +38,12 @@ export interface TemplateItem {
   help?: string;
   required?: boolean;
   clientVisible?: boolean;
+  /**
+   * ¿Se le pregunta hoy? Apagar NO es borrar: la pregunta se queda en la
+   * plantilla —con su peso, sus condiciones y su historial— pero sale del
+   * formulario que ve el supervisor. Ausente = encendida.
+   */
+  enabled?: boolean;
   weight?: number;
   scale?: {
     min: number;

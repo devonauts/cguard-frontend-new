@@ -11,6 +11,8 @@ import {
   ChevronDown,
   Copy,
   SlidersHorizontal,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
@@ -19,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -39,6 +42,7 @@ import {
   InfoNote,
   GlassPanel,
 } from "@/components/kit";
+import InspectionPreview from "./InspectionPreview";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import routeInspectionTemplateService, {
@@ -403,6 +407,10 @@ function EditorModal({
           },
   );
   const [saving, setSaving] = useState(false);
+  // La vista previa nace ABIERTA: el problema que resuelve —no saber cómo queda
+  // el formulario en el teléfono— sólo lo ve quien la tiene delante. Se puede
+  // cerrar para ganar ancho en pantallas pequeñas.
+  const [previa, setPrevia] = useState(true);
   const setSettings = (p: Partial<NonNullable<TemplateContent["settings"]>>) =>
     setContent((c) => ({ ...c, settings: { ...(c.settings || {}), ...p } }));
   const setSection = (i: number, fn: (s: TemplateSection) => TemplateSection) =>
@@ -519,7 +527,26 @@ function EditorModal({
         if (!v) onClose();
       }}
     >
+      {/* ── EDITOR A LA IZQUIERDA, TELÉFONO A LA DERECHA ──────────────────
+          Una plantilla se escribe como una lista de campos y se contesta como
+          un formulario de pie, de noche, en un puesto. Quien la escribe no
+          puede juzgar si funciona mirando la lista: tiene que ver el paso.
+          En pantallas estrechas el teléfono baja debajo, no compite por el
+          ancho con lo que se está editando. */}
+      <div className={previa ? "grid gap-5 lg:grid-cols-[minmax(0,1fr)_22rem]" : ""}>
       <div className="space-y-5">
+        <div className="flex items-center justify-end">
+          <Button
+            size="sm"
+            variant={previa ? "brand" : "outline"}
+            onClick={() => setPrevia((v) => !v)}
+          >
+            {previa ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
+            {previa
+              ? t("ui.InspectionTemplates.ocultarPrevia", "Ocultar vista previa")
+              : t("ui.InspectionTemplates.verPrevia", "Ver vista previa")}
+          </Button>
+        </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <FormField
             required
@@ -730,6 +757,12 @@ function EditorModal({
           {t("ui.InspectionTemplates.agregarSeccion", "Añadir sección")}
         </Button>
       </div>
+        {previa && (
+          <div className="lg:sticky lg:top-2 lg:self-start">
+            <InspectionPreview content={content} />
+          </div>
+        )}
+      </div>
     </Modal>
   );
 }
@@ -760,6 +793,8 @@ function ItemEditor({
   const uid = useId();
   const [mas, setMas] = useState(false);
   const set = (p: Partial<TemplateItem>) => onChange((x) => ({ ...x, ...p }));
+  // Ausente = encendida: las plantillas de siempre no cambian de comportamiento.
+  const activa = it.enabled !== false;
   const setOpcion = (
     i: number,
     p: Partial<NonNullable<TemplateItem["options"]>[number]>,
@@ -775,7 +810,12 @@ function ItemEditor({
     : "fail";
 
   return (
-    <div className="glass-sunken p-3">
+    <div
+      className="glass-sunken p-3"
+      // Apagada se lee apagada, pero SIGUE siendo editable: se apaga para
+      // dejar de preguntarla, no para congelarla.
+      style={activa ? undefined : { opacity: 0.62 }}
+    >
       <div className="grid gap-2 sm:grid-cols-[1fr_11rem]">
         <Input
           aria-label={t("ui.InspectionTemplates.pregunta", "Pregunta")}
@@ -819,8 +859,27 @@ function ItemEditor({
         </Select>
       </div>
       <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-2">
+        {/* ── SE PREGUNTA / NO SE PREGUNTA ──────────────────────────────
+            Apagar NO es borrar, y por eso es un interruptor y no la papelera:
+            la pregunta se queda con su texto, su peso y sus condiciones, lista
+            para volver. Una empresa que deja de pedir algo una temporada no
+            quiere reescribirlo dentro de tres meses. */}
+        <div className="flex items-center gap-2">
+          <Switch
+            aria-label={t("ui.InspectionTemplates.sePregunta", "Se pregunta")}
+            checked={activa}
+            id={`${uid}-on`}
+            onCheckedChange={(v) => set({ enabled: v })}
+          />
+          <Label className="text-sm font-normal" htmlFor={`${uid}-on`}>
+            {activa
+              ? t("ui.InspectionTemplates.sePregunta", "Se pregunta")
+              : t("ui.InspectionTemplates.noSePregunta", "No se pregunta")}
+          </Label>
+        </div>
         <Casilla
           checked={it.required !== false}
+          disabled={!activa}
           id={`${uid}-req`}
           onChange={(v) => set({ required: v })}
         >
@@ -828,6 +887,7 @@ function ItemEditor({
         </Casilla>
         <Casilla
           checked={it.clientVisible !== false}
+          disabled={!activa}
           id={`${uid}-cli`}
           onChange={(v) => set({ clientVisible: v })}
         >
