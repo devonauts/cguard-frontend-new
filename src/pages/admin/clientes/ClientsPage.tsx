@@ -1583,7 +1583,7 @@ export default function ClientesPage() {
             </AlertDialogTitle>
             <AlertDialogDescription>
               {t("clients.alerts.deleteClient.desc", {
-                name: deleteClient?.name,
+                name: clientDisplayName(deleteClient, deleteClient?.name),
               })}
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -1618,7 +1618,7 @@ export default function ClientesPage() {
             </AlertDialogTitle>
             <AlertDialogDescription>
               {t("clients.alerts.restoreClient.desc", {
-                name: restoreClient?.name,
+                name: clientDisplayName(restoreClient, restoreClient?.name),
               })}
             </AlertDialogDescription>
           </AlertDialogHeader>

@@ -706,8 +706,7 @@ export default function ClientForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">
-                        {t("clients.form.clientType", "Tipo de cliente")}{" "}
-                        <span className="brand-text">*</span>
+                        {t("clients.form.clientType", "Tipo de cliente")}
                       </FormLabel>
                       <FormControl>
                         <Select
@@ -880,8 +879,7 @@ export default function ClientForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">
-                        {t("clients.legalRep.phone", "Teléfono personal")}{" "}
-                        <span className="brand-text">*</span>
+                        {t("clients.legalRep.phone", "Teléfono personal")}
                       </FormLabel>
                       <FormControl>
                         <input
@@ -906,8 +904,7 @@ export default function ClientForm({
                         {t(
                           "clients.legalRep.email",
                           "Correo electrónico personal",
-                        )}{" "}
-                        <span className="brand-text">*</span>
+                        )}
                       </FormLabel>
                       <FormControl>
                         <input
@@ -938,8 +935,7 @@ export default function ClientForm({
                             : t(
                                 "clients.legalRep.documentGeneric",
                                 "Documento del representante",
-                              )}{" "}
-                          <span className="brand-text">*</span>
+                              )}
                         </FormLabel>
                         {/* Sin `inputMode="numeric"` ni el filtro de dígitos: el documento de
                                           una persona lleva letras en media Europa (DNI español, codice

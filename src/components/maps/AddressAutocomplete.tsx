@@ -184,6 +184,7 @@ export default function AddressAutocomplete({
       lastEmittedRef.current = {
         lat: components.latitude,
         lng: components.longitude,
+        porArrastre: false,
       };
       setInputValue(place.formatted_address ?? components.address);
       onAddressSelect(components);
@@ -238,7 +239,15 @@ export default function AddressAutocomplete({
   // más allá: al desmontar (cambiar de pestaña, retroceder en el asistente,
   // cerrar el modal) el mapa se guarda en vez de tirarse, así que volver a
   // entrar tampoco construye nada.
-  const lastEmittedRef = useRef<{ lat: number; lng: number } | null>(null);
+  /* `porArrastre` distingue QUIÉN movió el pin. El guardia de abajo existe
+     para no pelear con el gesto de arrastrar; sin esta marca también se tragaba
+     la BÚSQUEDA —el padre devuelve las mismas coordenadas que acabamos de
+     emitir— y el mapa se quedaba donde estaba, normalmente sobre Quito. */
+  const lastEmittedRef = useRef<{
+    lat: number;
+    lng: number;
+    porArrastre: boolean;
+  } | null>(null);
   const initialCoordsRef = useRef({ lat: initialLat, lng: initialLng });
 
   initialCoordsRef.current = { lat: initialLat, lng: initialLng };
@@ -377,7 +386,7 @@ export default function AddressAutocomplete({
 
         // Se recuerda lo último emitido para que el efecto de re-centrado no
         // pelee con el arrastre cuando el padre nos devuelva estas coordenadas.
-        lastEmittedRef.current = { lat: newLat, lng: newLng };
+        lastEmittedRef.current = { lat: newLat, lng: newLng, porArrastre: true };
         // Carry forward the last resolved address, update only coordinates
         const updated: AddressComponents = {
           ...(lastAddressRef.current ?? {
@@ -477,6 +486,7 @@ export default function AddressAutocomplete({
 
     if (
       last &&
+      last.porArrastre &&
       Math.abs(last.lat - (initialLat as number)) < 1e-7 &&
       Math.abs(last.lng - (initialLng as number)) < 1e-7
     ) {
@@ -496,7 +506,7 @@ export default function AddressAutocomplete({
       );
     anclaRef.current = destino;
     anotar({ ...destino, arrastrando: false });
-  }, [initialLat, initialLng, google, anotar]);
+  }, [initialLat, initialLng, google, anotar, mapaListo]);
 
   // El tema del CRM cambia → las teselas de Google cambian con él. Es la misma
   // vigilancia que hace `GoogleMapEmbed`; sin ella este mapa era el único
@@ -548,13 +558,27 @@ export default function AddressAutocomplete({
       if (!city && types.includes("administrative_area_level_1")) city = long;
     });
 
-    // Sin `place.name`: ya no se pide a Google (subía la llamada al nivel Pro) y
-    // `formatted_address` cubre el mismo hueco — siempre viene informado cuando
-    // la respuesta trae geometría, que es lo que este método exige arriba.
-    const address =
-      [route, streetNumber].filter(Boolean).join(" ") ||
-      place.formatted_address ||
-      "";
+    /* ── LA DIRECCIÓN QUE SE GUARDA ES LA QUE SE ELIGIÓ ──────────────────
+       Sin `place.name`: ya no se pide a Google (subía la llamada al nivel Pro)
+       y `formatted_address` cubre el mismo hueco — siempre viene informado
+       cuando la respuesta trae geometría, que es lo que este método exige.
+
+       Pero `formatted_address` estaba de RESPALDO, detrás de una dirección
+       reconstruida a mano como `route + número`. Cuando la predicción que el
+       usuario pulsó y el componente `route` del sitio resuelto no coinciden,
+       se guardaba una calle distinta de la que se ve en la caja de búsqueda:
+       medido, se buscó «Paseo de la Reforma 100» y quedó «Antonio Van Dick
+       100» — con coordenadas correctas de CDMX, que es lo que lo hacía tan
+       difícil de ver.
+
+       Ahora manda lo que el usuario eligió, y la reconstrucción queda de
+       respaldo. Se corta por la primera coma porque ciudad, código postal y
+       país van en sus propios campos. */
+    const reconstruida = [route, streetNumber].filter(Boolean).join(" ");
+    const elegida = String(place.formatted_address || "")
+      .split(",")[0]
+      .trim();
+    const address = elegida || reconstruida || "";
 
     return {
       address: address.substring(0, 200),
@@ -584,7 +608,7 @@ export default function AddressAutocomplete({
         }
 
         // Update coords in the form (address text unchanged)
-        lastEmittedRef.current = { lat, lng };
+        lastEmittedRef.current = { lat, lng, porArrastre: true };
         const updated: AddressComponents = {
           ...(lastAddressRef.current ?? {
             address: "",

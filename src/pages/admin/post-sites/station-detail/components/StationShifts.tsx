@@ -18,6 +18,7 @@ import {
   Moon,
   Trash2,
   Pencil,
+  Users,
 } from "lucide-react";
 import { ApiService } from "@/services/api/apiService";
 import { toast } from "sonner";
@@ -282,6 +283,36 @@ export default function StationShifts({
     loadShifts();
   }, [stationId]);
 
+  /* ── ¿HAY ALGUIEN EN ESTE PUESTO? ───────────────────────────────────────
+     Las PLAZAS existen desde el segundo cero (las crea `auto-positions` al
+     guardar el horario), así que el cálculo de huecos encuentra dos slots
+     vacíos cada día desde el primer momento: un puesto de 24 h recién creado
+     enseñaba «30 turnos por cubrir» en rojo antes de que nadie hubiera
+     asignado a nadie. Eso no es una alerta, es el estado normal de algo que
+     acabas de crear — y es lo primero que ve quien da de alta su primer
+     puesto.
+
+     La cuenta de asignaciones activas es la que distingue «falta gente por
+     poner» de «hay un hueco de verdad en un puesto que ya opera». */
+  const [asignados, setAsignados] = useState<number | null>(null);
+  const loadAsignados = useCallback(() => {
+    if (!stationId || !tenantId) return;
+    ApiService.get(
+      `/tenant/${tenantId}/guard-assignments?stationId=${encodeURIComponent(stationId)}&status=active`,
+    )
+      .then((res: any) => {
+        const filas = Array.isArray(res) ? res : (res?.rows ?? []);
+        setAsignados(Array.isArray(filas) ? filas.length : 0);
+      })
+      // Si no se puede saber, se asume que SÍ hay gente: la alerta es
+      // información útil en un puesto que opera, y esconderla es peor que
+      // mostrarla de más.
+      .catch(() => setAsignados(1));
+  }, [stationId, tenantId]);
+  useEffect(() => {
+    loadAsignados();
+  }, [loadAsignados]);
+
   // Auto-refresh the sketch when the horario/turnos of THIS station change
   // (the editor broadcasts after /auto-positions succeeds) — no manual reload,
   // no stale day+night sketch after switching a station to a custom turno.
@@ -291,13 +322,14 @@ export default function StationShifts({
       if (!changedId || String(changedId) === String(stationId)) {
         loadPositions();
         loadShifts();
+        loadAsignados();
       }
     };
     window.addEventListener("station-horario-changed", onChanged);
     return () =>
       window.removeEventListener("station-horario-changed", onChanged);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stationId, loadPositions]);
+  }, [stationId, loadPositions, loadAsignados]);
 
   // Jornadas = the TURNO the user defined on the station (its schedule). That is
   // the source of truth for what coverage is required; positions are just the
@@ -784,8 +816,42 @@ export default function StationShifts({
 
   return (
     <div className="space-y-3">
+      {/* ── PUESTO RECIÉN CREADO: NO ES UNA ALARMA, ES UN PRIMER PASO ──────
+          Sin nadie asignado, la cuenta de huecos es simplemente el tamaño del
+          puesto. Se dice lo que hay que hacer, no lo que falla. */}
+      {asignados === 0 && (
+        <div
+          className="glass-flat flex flex-wrap items-center gap-3 px-4 py-3"
+          style={{ borderColor: "var(--hairline)" }}
+        >
+          <IconTile tone="brand" size="sm">
+            <Users />
+          </IconTile>
+          <div className="min-w-48 flex-1">
+            <p className="text-sm font-semibold">
+              {t(
+                "ui.StationShifts.puestoSinVigilantes",
+                "Este puesto todavía no tiene vigilantes",
+              )}
+            </p>
+            <p className="mt-0.5 text-xs" style={{ color: "var(--ink-soft)" }}>
+              {t(
+                "ui.StationShifts.asignaElPrimeroYElCuadrante",
+                "Asigna al primero y el cuadrante se arma solo con su horario.",
+              )}
+            </p>
+          </div>
+          <button
+            className="cg-btn-brand cg-focus flex-shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold"
+            onClick={() => openForm()}
+          >
+            {t("ui.StationShifts.asignarElPrimero", "Asignar el primero")}
+          </button>
+        </div>
+      )}
+
       {/* Alert banner for uncovered shifts */}
-      {futureUncovered > 0 && (
+      {asignados !== 0 && futureUncovered > 0 && (
         <div
           className="glass-flat flex flex-wrap items-center gap-3 px-4 py-3 animate-in fade-in slide-in-from-top-2 duration-300"
           style={{
@@ -804,13 +870,15 @@ export default function StationShifts({
               {futureUncovered} turno{futureUncovered > 1 ? "s" : ""} por cubrir
               (próximos 14 días)
             </p>
+            {/* El texto de antes explicaba la ARITMÉTICA del motor («2 fijos no
+                alcanzan a cubrir 24/7») a quien sólo quiere saber qué hacer. Y
+                media frase estaba fuera de i18n, así que en inglés salía a
+                medias. Ahora dice la acción, y entera. */}
             <p className="mt-0.5 text-xs" style={{ color: "var(--ink-soft)" }}>
               {t(
-                "ui.StationShifts.completaLosFijosDelPuesto",
-                "Completa los fijos del puesto y asigna un",
-              )}{" "}
-              <strong>sacafranco</strong> (relevo) para cubrir sus días de
-              descanso — 2 fijos no alcanzan a cubrir 24/7.
+                "ui.StationShifts.sonLosDiasDeDescanso",
+                "Son los días de descanso de los vigilantes fijos. Asigna un relevo para cubrirlos.",
+              )}
             </p>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
@@ -819,7 +887,7 @@ export default function StationShifts({
               className="cg-focus rounded-lg px-3 py-1.5 text-xs font-semibold transition-all"
               style={{ background: "var(--ok)", color: "var(--brand-ink)" }}
             >
-              Asignar sacafranco
+              {t("ui.StationShifts.asignarRelevo", "Asignar relevo")}
             </button>
             <button
               onClick={() => openForm()}

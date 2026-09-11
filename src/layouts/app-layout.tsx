@@ -20,6 +20,7 @@ import {
   cacheTenantCountry,
   cacheTenantTimezone,
 } from "@/utils/tenantLocation";
+import { resolveCountryCode } from "@/lib/validators/id";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -275,9 +276,13 @@ function AppLayoutShell({ children }: AppLayoutProps) {
           const t =
             res && (res.data || res.tenant) ? res.data || res.tenant : res;
           cacheTenantLocation((t as any)?.latitude, (t as any)?.longitude);
-          cacheTenantCountry(
-            (t as any)?.countryCode ?? (t as any)?.country_code ?? null,
-          );
+          /* El tenant NO tiene `countryCode`: la columna se llama `country` y
+             guarda texto libre («México», «Mexico», «MX»). Leer una clave que
+             no existe dejaba el cache vacío, y sin cache el selector de
+             teléfono caía al idioma del navegador y de ahí a Estados Unidos:
+             una empresa mexicana daba de alta a sus clientes con prefijo +1.
+             `resolveCountryCode` es el que ya normaliza ese texto libre. */
+          cacheTenantCountry(resolveCountryCode((t as any)?.country));
           cacheTenantTimezone((t as any)?.timezone ?? null);
         } catch {}
       })();
