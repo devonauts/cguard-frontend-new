@@ -238,7 +238,11 @@ export function PageHeader({
   className?: string;
 }) {
   return (
-    <FadeIn className={cn("glass overflow-hidden", className)}>
+    /* `mt-5` NO es decoración: el encabezado es lo primero de casi todas las
+       páginas y la barra superior es `sticky`, así que sin este margen el
+       cristal queda pegado debajo de ella y la página empieza sin respirar.
+       Va aquí y no en cada página porque son 105 las que lo usan. */
+    <FadeIn className={cn("glass mt-5 overflow-hidden", className)}>
       {/* El halo va DETRÁS del cristal, no encima: es lo que el desenfoque tiene
           que difuminar para que la superficie parezca tener profundidad. */}
       <div
