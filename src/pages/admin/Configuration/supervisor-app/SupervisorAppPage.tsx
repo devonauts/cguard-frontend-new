@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
@@ -7,12 +7,6 @@ import {
   Type,
   Save,
   RotateCcw,
-  ChevronsRight,
-  PauseCircle,
-  OctagonX,
-  Radio,
-  MapPin,
-  Building2,
   Link2,
 } from "lucide-react";
 
@@ -25,7 +19,6 @@ import {
   Section,
   SkeletonCards,
   Segmented,
-  IconTile,
 } from "@/components/kit";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -106,20 +99,6 @@ const VACIO: SupervisorSettings = {
 
 /** ¿Es un hex de seis dígitos? Lo que el servidor acepta, ni más ni menos. */
 const esHex = (v: string) => /^#[0-9a-fA-F]{6}$/.test(v.trim());
-
-/** Blanco o negro sobre el acento, según lo claro que sea (luminancia WCAG). */
-function tintaSobre(hex: string): string {
-  const m = /^#([0-9a-f]{6})$/i.exec(hex);
-  if (!m) return "#ffffff";
-  const n = parseInt(m[1], 16);
-  const c = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => {
-    const s = v / 255;
-    return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
-  });
-  return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2] > 0.45
-    ? "#0b0c0e"
-    : "#ffffff";
-}
 
 export default function SupervisorAppPage() {
   const { t } = useTranslation();
@@ -219,11 +198,6 @@ export default function SupervisorAppPage() {
   // Lo que de verdad va a ver la app: lo propio si está, si no lo del equipo.
   const acentoReal = cfg.accentColor || equipo.accentColor || "#d4a017";
   const fuenteReal = cfg.fontFamily || equipo.fontFamily || "";
-  const cssFuente = useMemo(
-    () => FUENTES.find((f) => f.value === fuenteReal)?.css,
-    [fuenteReal],
-  );
-  const claro = cfg.defaultTheme === "light";
 
   return (
     <AppLayout>
@@ -512,10 +486,9 @@ export default function SupervisorAppPage() {
               <div className="xl:sticky xl:top-4 xl:self-start">
                 <VistaParada
                   accent={acentoReal}
-                  claro={claro}
-                  font={cssFuente}
-                  nombre={
-                    cfg.displayName || equipo.displayName || "C-Guard Pro"
+                  font={fuenteReal}
+                  tema={
+                    cfg.defaultTheme === "inherit" ? "dark" : cfg.defaultTheme
                   }
                 />
               </div>
@@ -528,130 +501,113 @@ export default function SupervisorAppPage() {
 }
 
 /**
- * La pantalla donde el supervisor pasa el turno: una parada del recorrido.
- * Los colores de DENTRO son los de la APP NATIVA, no los del CRM — si aquí
- * usáramos los tokens del panel, la vista previa mentiría.
+ * ── LA APP DE VERDAD, NO UN DIBUJO ─────────────────────────────────────────
+ *
+ * Esto es un `<iframe>` con la app del supervisor corriendo en modo vista
+ * previa (`?preview=1`). No es una maqueta pintada en el panel: son sus
+ * componentes y sus hojas de estilo. Una maqueta miente en cuanto alguien toca
+ * la app —cambia el radio de un botón, el peso de la letra, el alto del
+ * deslizador— y la vista previa se queda enseñando la app del mes pasado.
+ *
+ * El color y la letra viajan por `postMessage`, no recargando el iframe: con la
+ * URL habría un parpadeo blanco en cada toque del selector y sería imposible
+ * comparar dos colores seguidos.
+ *
+ * Si la app no está publicada (instalación sin la vista previa servida), el
+ * marco queda vacío y se dice por qué — mejor eso que un dibujo que engaña.
  */
 function VistaParada({
   accent,
   font,
-  claro,
-  nombre,
+  tema,
 }: {
   accent: string;
-  font?: string;
-  claro: boolean;
-  nombre: string;
+  font: string;
+  tema: string;
 }) {
   const { t } = useTranslation();
-  const bg = claro ? "#f5f5f4" : "#0a0e16";
-  const card = claro ? "#ffffff" : "#141a24";
-  const texto = claro ? "#111827" : "#f3f4f6";
-  const suave = claro ? "#6b7280" : "#9ca3af";
-  const linea = claro ? "#e5e7eb" : "#232a36";
-  const tinta = tintaSobre(accent);
+  const marco = useRef<HTMLIFrameElement | null>(null);
+  const [listo, setListo] = useState(false);
+  const [falla, setFalla] = useState(false);
+
+  // El origen es el MISMO que sirve el CRM: la vista previa se publica junto a
+  // él (`/supervisor-preview/`). Así no hay dominio cruzado ni CSP que valga.
+  const src = `/supervisor-preview/index.html?preview=1&accent=${encodeURIComponent(
+    accent,
+  )}&font=${encodeURIComponent(font)}&theme=${encodeURIComponent(tema)}`;
+
+  useEffect(() => {
+    const onMsg = (e: MessageEvent) => {
+      if (e.data?.tipo === "cguard:preview:listo") setListo(true);
+    };
+    window.addEventListener("message", onMsg);
+    // Si en ocho segundos la app no ha dicho «listo», no está publicada.
+    const reloj = window.setTimeout(
+      () => setFalla((f) => (listo ? f : true)),
+      8000,
+    );
+    return () => {
+      window.removeEventListener("message", onMsg);
+      window.clearTimeout(reloj);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Cada cambio de color o letra se manda por mensaje, sin recargar.
+  useEffect(() => {
+    if (!listo) return;
+    try {
+      marco.current?.contentWindow?.postMessage(
+        { tipo: "cguard:preview", marca: { accent, font, theme: tema } },
+        window.location.origin,
+      );
+    } catch {
+      /* el marco aún no responde: al cargar toma los valores de la URL */
+    }
+  }, [accent, font, tema, listo]);
 
   return (
     <div className="space-y-2">
       <span className="cg-eyebrow">
-        {t("ui.SupervisorApp.previa", "Vista previa · parada del recorrido")}
+        {t("ui.SupervisorApp.previa", "Vista previa · la app del supervisor")}
       </span>
       <div
-        className="mx-auto w-full max-w-[360px] overflow-hidden rounded-[2rem] border p-4"
-        style={{
-          background: bg,
-          borderColor: linea,
-          color: texto,
-          fontFamily: font,
-        }}
+        className="mx-auto overflow-hidden rounded-[2.25rem] border-[10px] shadow-2xl"
+        style={{ borderColor: "#1c1f26", width: 372, maxWidth: "100%" }}
       >
-        <div className="flex items-center justify-between">
-          <span className="text-[15px] font-bold">
-            {t("ui.SupervisorApp.paradaN", "Parada 2 de 4")}
-          </span>
-          <span
-            className="grid size-8 place-items-center rounded-full border"
-            style={{ borderColor: linea, color: accent }}
-          >
-            <Radio className="size-4" />
-          </span>
-        </div>
-
-        <div className="mt-2 h-1 rounded-full" style={{ background: linea }}>
-          <div
-            className="h-1 w-1/4 rounded-full"
-            style={{ background: accent }}
-          />
-        </div>
-
-        <div
-          className="mt-3 rounded-2xl border p-3"
-          style={{ background: card, borderColor: linea }}
+        <iframe
+          ref={marco}
+          className="block"
+          height={720}
+          src={src}
+          style={{ width: "100%", border: 0, background: "#0a0e16" }}
+          title={t(
+            "ui.SupervisorApp.previa",
+            "Vista previa · la app del supervisor",
+          )}
+          onLoad={() => setFalla(false)}
+        />
+      </div>
+      {falla && !listo && (
+        <p
+          className="text-center text-[11px]"
+          style={{ color: "var(--ink-faint)" }}
         >
-          <div className="flex items-start gap-2.5">
-            <IconTile tone="info">
-              <Building2 className="size-4" />
-            </IconTile>
-            <div>
-              <p className="text-[16px] font-bold leading-tight">P-061</p>
-              <p className="text-[12px]" style={{ color: suave }}>
-                <MapPin className="mr-1 inline size-3" />
-                {t("ui.SupervisorApp.caseta", "Caseta de Acceso")}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* El deslizador: es donde el color decide si se acierta a la primera. */}
-        <div
-          className="relative mt-4 flex h-[52px] items-center overflow-hidden rounded-full border"
-          style={{
-            background: claro ? "#eceae6" : "#161c27",
-            borderColor: linea,
-          }}
-        >
-          <span
-            className="grid size-[44px] place-items-center rounded-full"
-            style={{ background: accent, color: tinta, marginLeft: 4 }}
-          >
-            <ChevronsRight className="size-5" />
-          </span>
-          <span
-            className="absolute inset-0 grid place-items-center text-[13px] font-bold uppercase tracking-wide"
-            style={{ color: accent }}
-          >
-            {t("ui.SupervisorApp.deslizaLlegue", "Desliza: ya llegué")}
-          </span>
-        </div>
-        <p className="mt-1.5 text-center text-[11px]" style={{ color: suave }}>
           {t(
-            "ui.SupervisorApp.seRegistra",
-            "Se registra la hora y tu ubicación",
+            "ui.SupervisorApp.previaNoDisponible",
+            "La vista previa no está publicada en este servidor. Los ajustes se guardan igual.",
           )}
         </p>
-
-        <div
-          className="mt-3 flex items-center justify-center gap-3 border-t pt-2.5 text-[12px] font-semibold"
-          style={{ borderColor: linea, color: suave }}
-        >
-          <span className="inline-flex items-center gap-1">
-            <PauseCircle className="size-3.5" />
-            {t("ui.SupervisorApp.pausar", "Pausar ruta")}
-          </span>
-          <span style={{ color: linea }}>|</span>
-          <span
-            className="inline-flex items-center gap-1"
-            style={{ color: "#ef4444" }}
-          >
-            <OctagonX className="size-3.5" />
-            {t("ui.SupervisorApp.abortar", "Abortar")}
-          </span>
-        </div>
-
-        <p className="mt-3 text-center text-[11px]" style={{ color: suave }}>
-          {nombre}
-        </p>
-      </div>
+      )}
+      <p
+        className="text-center text-[11px]"
+        style={{ color: "var(--ink-faint)" }}
+      >
+        {t(
+          "ui.SupervisorApp.previaNota",
+          "Es la app de verdad, sin sesión: lo que toques aquí no se guarda en ninguna parte.",
+        )}
+      </p>
     </div>
   );
 }
