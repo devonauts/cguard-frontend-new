@@ -44,6 +44,7 @@ interface Visita {
   status?: string | null;
   stationId?: string | null;
   stationName?: string | null;
+  stationCode?: string | null;
   routeName?: string | null;
   runId?: string | null;
   supervisorName?: string | null;
@@ -61,7 +62,22 @@ interface Visita {
 interface Puesto {
   id: string;
   stationName?: string | null;
+  /** El CÓDIGO del puesto (P-011). Es lo único que lo distingue de verdad. */
+  nickname?: string | null;
 }
+
+/**
+ * «Caseta Principal» hay cuatro, una por cliente. El nombre solo deja un
+ * desplegable con opciones idénticas y un informe filtrado por la que no era.
+ * El código del puesto va delante porque es lo que se lee en la app y en la
+ * radio.
+ */
+const nombrePuesto = (p: { stationCode?: string | null; nickname?: string | null; stationName?: string | null }) => {
+  const codigo = p.stationCode || p.nickname || "";
+  const nombre = p.stationName || "";
+  if (codigo && nombre) return `${codigo} · ${nombre}`;
+  return codigo || nombre || "—";
+};
 
 /** Segundos → «12 min» / «1 h 05». Una visita de 4 500 s no dice nada. */
 const duracion = (s?: number | null) => {
@@ -95,9 +111,7 @@ export default function SupervisionHistory() {
         setPuestos(
           rows
             .filter((p) => p?.id)
-            .sort((a, b) =>
-              String(a.stationName || "").localeCompare(String(b.stationName || "")),
-            ),
+            .sort((a, b) => nombrePuesto(a).localeCompare(nombrePuesto(b))),
         );
       } catch {
         /* sin lista de puestos el informe sigue sirviendo: se ven todos */
@@ -127,7 +141,7 @@ export default function SupervisionHistory() {
       {
         key: "station",
         label: t("ui.SupervisionHistory.puesto", "Puesto"),
-        value: (r) => r.stationName || "—",
+        value: (r) => nombrePuesto(r),
       },
       {
         key: "status",
@@ -241,7 +255,7 @@ export default function SupervisionHistory() {
             </option>
             {puestos.map((p) => (
               <option key={p.id} value={p.id}>
-                {p.stationName || p.id}
+                {nombrePuesto(p)}
               </option>
             ))}
           </select>
