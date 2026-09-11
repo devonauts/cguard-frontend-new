@@ -149,7 +149,7 @@ export default function SupervisorAppPage() {
       try {
         const tenantId = localStorage.getItem("tenantId") || "";
         const { data } = await api.get(`/tenant/${tenantId}/settings`);
-        const s = (data as any)?.data ?? data ?? {};
+        const s = (data as any) || {};
         setCrudo(s);
         const m = s.mobileAppSettings || {};
         setEquipo({
@@ -189,8 +189,12 @@ export default function SupervisorAppPage() {
     try {
       const tenantId = localStorage.getItem("tenantId") || "";
       await api.put(`/tenant/${tenantId}/settings`, {
-        data: {
-          ...(crudo || {}),
+        settings: {
+          theme: (crudo || {}).theme || "default",
+          // Se reenvían tal cual: el PUT recalcula `logoUrl` desde `logos[0]`,
+          // así que omitirlos BORRARÍA el logo de la empresa.
+          logos: (crudo || {}).logos || [],
+          backgroundImages: (crudo || {}).backgroundImages || [],
           mobileAppSettings: {
             ...((crudo || {}).mobileAppSettings || {}),
             supervisor: cfg,
