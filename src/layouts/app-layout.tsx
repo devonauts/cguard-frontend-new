@@ -269,25 +269,42 @@ function AppLayoutShell({ children }: AppLayoutProps) {
         setCategoryTenantId(derived);
       } catch {}
 
-      // Warm the business location cache so maps center on the business city
-      (async () => {
-        try {
-          const res: any = await tenantService.findById(String(derived));
-          const t =
-            res && (res.data || res.tenant) ? res.data || res.tenant : res;
-          cacheTenantLocation((t as any)?.latitude, (t as any)?.longitude);
-          /* El tenant NO tiene `countryCode`: la columna se llama `country` y
-             guarda texto libre («México», «Mexico», «MX»). Leer una clave que
-             no existe dejaba el cache vacío, y sin cache el selector de
-             teléfono caía al idioma del navegador y de ahí a Estados Unidos:
-             una empresa mexicana daba de alta a sus clientes con prefijo +1.
-             `resolveCountryCode` es el que ya normaliza ese texto libre. */
-          cacheTenantCountry(resolveCountryCode((t as any)?.country));
-          cacheTenantTimezone((t as any)?.timezone ?? null);
-        } catch {}
-      })();
     }
   }, [user]);
+
+  /* ── DÓNDE ESTÁ LA EMPRESA: PAÍS, COORDENADAS Y ZONA HORARIA ─────────────
+     Esto vivía DENTRO del efecto de arriba, que empieza con
+     `if (tenantIdNow) return;` — o sea, sólo corría la primerísima vez que
+     alguien iniciaba sesión en ese navegador, y nunca más. Con el cache vacío:
+     los mapas se abrían sobre Quito (su respaldo por defecto) y el selector de
+     teléfono caía al idioma del navegador y de ahí a Estados Unidos, así que
+     una empresa mexicana daba de alta a sus clientes con prefijo +1.
+
+     Ahora es su propio efecto y se refresca siempre que haya empresa. Es una
+     petición por carga, cacheada en `localStorage`. */
+  useEffect(() => {
+    const id = tenantIdNow;
+    if (!id) return;
+    let vivo = true;
+    (async () => {
+      try {
+        const res: any = await tenantService.findById(String(id));
+        const t = res && (res.data || res.tenant) ? res.data || res.tenant : res;
+        if (!vivo || !t) return;
+        cacheTenantLocation((t as any)?.latitude, (t as any)?.longitude);
+        // La columna se llama `country` y guarda texto libre («México»,
+        // «Mexico», «MX»); `resolveCountryCode` es quien lo normaliza a ISO-2.
+        cacheTenantCountry(resolveCountryCode((t as any)?.country));
+        cacheTenantTimezone((t as any)?.timezone ?? null);
+      } catch {
+        /* sin cache se sigue usando el respaldo de siempre */
+      }
+    })();
+
+    return () => {
+      vivo = false;
+    };
+  }, [tenantIdNow]);
 
   // Only show the tenant modal after auth has finished loading. This prevents
   // a flash where the modal appears before the user's profile (and tenant)

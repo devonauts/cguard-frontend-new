@@ -87,9 +87,26 @@ export default function AddressAutocomplete({
   /** Punto de la dirección BUSCADA — la referencia contra la que se mide el desvío. */
   const anclaRef = useRef<{ lat: number; lng: number } | null>(null);
 
+  /* Espejo de lo que hay escrito. El `<input>` es no controlado (ver abajo),
+     así que el estado de React no puede ser la fuente de verdad del texto. */
+  const inputValueRef = useRef<string>("");
   const [inputValue, setInputValue] = useState(
     openWithQuery || defaultValue || "",
   );
+  /* El campo es NO controlado, así que un cambio que venga de fuera (abrir la
+     ficha de una sede ya guardada, o `openWithQuery`) no llega solo al DOM.
+     Esto lo escribe a mano —y sólo cuando de verdad difiere, para no pisar lo
+     que el usuario está tecleando ni lo que el widget acaba de poner. */
+  useEffect(() => {
+    const texto = openWithQuery || defaultValue || "";
+    if (!texto) return;
+    if (inputValueRef.current) return;
+    inputValueRef.current = texto;
+    if (inputRef.current && inputRef.current.value !== texto) {
+      inputRef.current.value = texto;
+    }
+  }, [openWithQuery, defaultValue]);
+
   const [lectura, setLectura] = useState<Lectura | null>(null);
   /** El mapa vive en una `ref` y no re-renderiza; esto es la señal de que ya está. */
   const [mapaListo, setMapaListo] = useState(false);
@@ -186,7 +203,14 @@ export default function AddressAutocomplete({
         lng: components.longitude,
         porArrastre: false,
       };
-      setInputValue(place.formatted_address ?? components.address);
+      const textoElegido = place.formatted_address ?? components.address;
+      setInputValue(textoElegido);
+      inputValueRef.current = textoElegido;
+      // El widget ya escribió en el nodo; esto sólo lo deja consistente si
+      // Google devolvió un `formatted_address` distinto de la predicción.
+      if (inputRef.current && inputRef.current.value !== textoElegido) {
+        inputRef.current.value = textoElegido;
+      }
       onAddressSelect(components);
       onGeocodeResult?.(components);
       onQueryChange?.(place.formatted_address ?? "");
@@ -682,13 +706,30 @@ export default function AddressAutocomplete({
       <div className="flex items-center gap-2">
         <div className="relative min-w-0 flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          {/* ── EL CAMPO LO GOBIERNA GOOGLE, NO REACT ──────────────────────
+              `google.maps.places.Autocomplete` escribe DIRECTAMENTE en este
+              nodo del DOM: al recorrer las sugerencias con las flechas va
+              dejando la predicción en el `value`, y al elegir una la escribe
+              entera. Con `value={inputValue}` React volvía a pintar el texto
+              viejo en cada pulsación, y el widget perdía la cuenta de qué
+              predicción estaba señalando: pulsabas la sugerencia A y te
+              resolvía el sitio B. Coordenadas plausibles, calle equivocada —
+              por eso costaba tanto verlo.
+
+              Se deja NO controlado y se sincroniza a mano cuando somos
+              nosotros los que cambiamos el texto (ver el efecto de abajo). */}
           <input
             ref={inputRef}
             className="cg-focus h-10 w-full rounded-md border border-border bg-card pl-9 pr-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-primary"
+            defaultValue={inputValue}
             placeholder={placeholder}
             type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={(e) => {
+              // Sin `setState` en cada tecla: sólo se recuerda lo tecleado
+              // para que el resto del componente lo pueda leer.
+              inputValueRef.current = e.target.value;
+              onQueryChange?.(e.target.value);
+            }}
           />
         </div>
         <Button
