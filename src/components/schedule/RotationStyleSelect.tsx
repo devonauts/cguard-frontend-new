@@ -11,6 +11,8 @@ export type RotationStyle = {
   dayShifts: number;
   nightShifts: number;
   restDays: number;
+  alternatesDayNight?: boolean;
+  sundayDoubleRest?: boolean;
   isSystem?: boolean;
 };
 
@@ -35,6 +37,60 @@ export type RotationStyle = {
  * más (`bloques`), y se llama por su nombre real —«tarde», «mañana», «noche»—
  * en vez de «noches» a secas.
  */
+/**
+ * ════════════════════════════════════════════════════════════════════════════
+ * SEIS SEMANAS DE ESE PATRÓN, PARA VERLAS ANTES DE GUARDAR
+ *
+ * Tres números y dos casillas no dicen lo que le pasa a una persona. Esto sí:
+ * pinta 42 días reales — D de día, N de noche, S de franco — empezando un
+ * lunes, que es como se lee un rol.
+ *
+ * Repite la MISMA regla que el servidor (`estadoDeRotacion`), y tiene que
+ * seguir haciéndolo: el domingo no añade un día libre suelto, CORRE el ciclo,
+ * así que el franco siguiente cae dos días de la semana más tarde en vez de
+ * uno. Si aquí se calculara «a ojo», la vista previa mentiría justo en lo que
+ * la hace útil.
+ * ════════════════════════════════════════════════════════════════════════════
+ */
+function previsualiza(
+  dia: number,
+  noche: number,
+  libre: number,
+  alterna: boolean,
+  dominical: boolean,
+  dias = 42,
+): string[] {
+  const ciclo = dia + noche + libre;
+  if (ciclo <= 0) return [];
+  const base = (d: number): "D" | "N" | "S" => {
+    const x = ((d % ciclo) + ciclo) % ciclo;
+    if (x < dia) return "D";
+    if (x < dia + noche) return "N";
+
+    return "S";
+  };
+  const out: string[] = [];
+  let corrimiento = 0;
+  let vueltas = 0;
+  let previo: string | null = null;
+  for (let d = 0; d < dias; d++) {
+    const st = base(d - corrimiento);
+    if (previo === "S" && st !== "S") vueltas += 1;
+    // Día 0 = lunes, así que el domingo es el 6 de cada semana.
+    if (dominical && st === "S" && ((d % 7) + 7) % 7 === 6) corrimiento += 1;
+    previo = st;
+    out.push(
+      st === "S" || !alterna || vueltas % 2 === 0
+        ? st
+        : st === "D"
+          ? "N"
+          : "D",
+    );
+  }
+
+  return out;
+}
+
 export default function RotationStyleSelect({
   scheduleType,
   value,
@@ -82,6 +138,10 @@ export default function RotationStyleSelect({
   const [cWork, setCWork] = useState(dosTramos ? (is24h ? "4" : "2") : "8");
   const [cNight, setCNight] = useState(is24h ? "4" : "2");
   const [cRest, setCRest] = useState("2");
+  /* ── LAS DOS REGLAS QUE NO CABEN EN TRES NÚMEROS ─────────────────────────
+     Nacen apagadas: un patrón como los de siempre se crea igual que antes. */
+  const [cAlterna, setCAlterna] = useState(false);
+  const [cDomingo, setCDomingo] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -295,12 +355,22 @@ export default function RotationStyleSelect({
 
       return;
     }
-    const name = night > 0 ? `${work}-${night}-${rest}` : `${work}-${rest}`;
+    const base = night > 0 ? `${work}-${night}-${rest}` : `${work}-${rest}`;
+    // El nombre tiene que distinguirlos en la lista: dos «7-1», uno con
+    // descanso dominical y otro sin él, son imposibles de elegir a ciegas.
+    const marcas = [cAlterna ? "D/N" : "", cDomingo ? "dom" : ""].filter(Boolean);
+    const name = marcas.length ? `${base} · ${marcas.join(" · ")}` : base;
     // Reutiliza uno idéntico en vez de acumular duplicados en el catálogo: el
     // mismo ciclo creado dos veces son dos filas que luego hay que distinguir.
     const igual = styles.find(
       (s) =>
-        s.dayShifts === work && s.nightShifts === night && s.restDays === rest,
+        s.dayShifts === work &&
+        s.nightShifts === night &&
+        s.restDays === rest &&
+        // Dos patrones con los mismos números pero distintas reglas NO son el
+        // mismo patrón: reutilizar uno por el número daría un rol distinto.
+        !!s.alternatesDayNight === cAlterna &&
+        !!s.sundayDoubleRest === cDomingo,
     );
 
     if (igual) {
@@ -323,6 +393,8 @@ export default function RotationStyleSelect({
             dayShifts: work,
             nightShifts: night,
             restDays: rest,
+            alternatesDayNight: cAlterna,
+            sundayDoubleRest: cDomingo,
           },
         },
       );
@@ -583,6 +655,116 @@ export default function RotationStyleSelect({
             >
               Sin descanso: el vigilante trabaja todos los días, sin sacafranco
               que lo releve.
+            </div>
+          )}
+
+          {/* ── LAS DOS REGLAS DEL ROL PERUANO ──────────────────────────────
+              Ninguna se puede escribir con los tres números de arriba, y las
+              dos juntas son el rol que usa media Perú: 7-1 que alterna día y
+              noche, y que dobla el franco cuando cae en domingo. */}
+          {(parseInt(cRest) || 0) > 0 && (
+            <div className="basis-full grid gap-2 pt-1">
+              <label className="flex items-start gap-2 cursor-pointer">
+                <input
+                  checked={cAlterna}
+                  className="mt-0.5"
+                  id="rot-alterna"
+                  type="checkbox"
+                  onChange={(e) => setCAlterna(e.target.checked)}
+                />
+                <span className="text-[11px] leading-snug">
+                  <b>Alterna día y noche</b> en cada descanso
+                  <span
+                    className="block text-[10px]"
+                    style={{ color: "var(--ink-soft)" }}
+                  >
+                    Para un puesto de 24 h con dos fijos: trabaja {parseInt(cWork) || 0} de
+                    día, descansa, {parseInt(cWork) || 0} de noche, descansa.
+                  </span>
+                </span>
+              </label>
+              <label className="flex items-start gap-2 cursor-pointer">
+                <input
+                  checked={cDomingo}
+                  className="mt-0.5"
+                  id="rot-domingo"
+                  type="checkbox"
+                  onChange={(e) => setCDomingo(e.target.checked)}
+                />
+                <span className="text-[11px] leading-snug">
+                  <b>Descanso dominical</b>: si el franco cae en domingo, son dos días
+                  <span
+                    className="block text-[10px]"
+                    style={{ color: "var(--ink-soft)" }}
+                  >
+                    Domingo y lunes. El ciclo se corre un día, así que el franco
+                    siguiente cae dos días de la semana más tarde.
+                  </span>
+                </span>
+              </label>
+            </div>
+          )}
+
+          {/* Lo que de verdad le pasa a una persona con este patrón. Sin esto
+              hay que confiar en que tres números y dos casillas significan lo
+              que uno cree. */}
+          {(parseInt(cRest) || 0) > 0 && (cAlterna || cDomingo) && (
+            <div className="basis-full">
+              <div
+                className="text-[10px] uppercase tracking-wide mb-1"
+                style={{ color: "var(--ink-soft)" }}
+              >
+                Las próximas seis semanas, empezando un lunes
+              </div>
+              <div className="flex flex-wrap gap-[3px]">
+                {previsualiza(
+                  Math.max(1, parseInt(cWork) || 0),
+                  dosTramos && !fijos ? Math.max(0, parseInt(cNight) || 0) : 0,
+                  Math.max(0, parseInt(cRest) || 0),
+                  cAlterna,
+                  cDomingo,
+                ).map((c, i) => (
+                  <span
+                    key={i}
+                    className="grid place-items-center rounded-[3px] font-mono text-[9px] font-bold"
+                    style={{
+                      width: 17,
+                      height: 17,
+                      background:
+                        c === "S"
+                          ? "var(--ok-soft, #ddefe6)"
+                          : c === "N"
+                            ? "var(--info-soft, #e2e6f4)"
+                            : "var(--warn-soft, #fbf0dc)",
+                      color:
+                        c === "S"
+                          ? "var(--ok, #2c7357)"
+                          : c === "N"
+                            ? "var(--info, #303f78)"
+                            : "var(--warn, #b5761a)",
+                    }}
+                  >
+                    {c}
+                  </span>
+                ))}
+              </div>
+              <div
+                className="text-[10px] mt-1.5"
+                style={{ color: "var(--ink-soft)" }}
+              >
+                {(() => {
+                  const p = previsualiza(
+                    Math.max(1, parseInt(cWork) || 0),
+                    dosTramos && !fijos ? Math.max(0, parseInt(cNight) || 0) : 0,
+                    Math.max(0, parseInt(cRest) || 0),
+                    cAlterna,
+                    cDomingo,
+                  );
+                  const libres = p.filter((x) => x === "S").length;
+
+                  return `${libres} días libres en 42 — ${(libres / 6).toFixed(1)} por semana.`;
+                })()}
+              </div>
             </div>
           )}
           {/* La tinta sobre el relleno de marca es `--brand-ink`, no blanco:
