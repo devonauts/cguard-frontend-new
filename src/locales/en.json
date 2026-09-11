@@ -8272,7 +8272,11 @@
         "diaYNoche": "Day + Night",
         "diurno": "12h Day",
         "nocturno": "12h Night"
-      }
+      },
+      "ajustesAvanzados": "Advanced settings",
+      "cadaPlazaConSuCiclo": "Each post with its own cycle",
+      "cicloYCuandoLibran": "Days-off cycle: {{ciclo}}",
+      "sinCicloTodavia": "No days-off cycle yet — you'll pick one when you assign the first guard"
     },
     "StationShifts": {
       "dia": "Day",

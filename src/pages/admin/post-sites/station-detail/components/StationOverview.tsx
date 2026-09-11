@@ -13,6 +13,7 @@ import {
   LogIn,
   LogOut,
   ShieldCheck,
+  ChevronDown,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -178,6 +179,9 @@ export default function StationOverview({
     "sacafranco",
   );
   const [rotStyle, setRotStyle] = useState<{
+    // El nombre («4-4-2», «7-1 · D/N · dom») es lo que se resume en la cabecera
+    // de los ajustes plegados, para no tener que abrirlos sólo para mirar.
+    name?: string | null;
     dayShifts: number;
     nightShifts: number;
     restDays: number;
@@ -199,6 +203,44 @@ export default function StationOverview({
   const [rotationStyleId, setRotationStyleId] = useState("");
   /* Un ciclo por plaza cuando la rotación es individual; `null` = compartida. */
   const [estilosPorPlaza, setEstilosPorPlaza] = useState<string[] | null>(null);
+  /* Los ajustes de rotación nacen plegados. Se abren solos cuando la estación
+     corre rotación INDIVIDUAL, que es lo único que no se puede resumir en una
+     línea y que nadie configuró por accidente. */
+  const [avanzado, setAvanzado] = useState(false);
+  useEffect(() => {
+    if (estilosPorPlaza) setAvanzado(true);
+  }, [estilosPorPlaza]);
+
+  /* El NOMBRE del ciclo para la línea de resumen. No se puede sacar de
+     `rotStyle`, que lo rellena el selector y el selector sólo existe con el
+     panel abierto: plegado diría «aún sin ciclo» en una estación que sí tiene
+     uno. Una lectura del catálogo y a resolverlo por id. */
+  const [nombreDelCiclo, setNombreDelCiclo] = useState<string | null>(null);
+  useEffect(() => {
+    const tid = localStorage.getItem("tenantId") || "";
+    if (!tid || !rotationStyleId) {
+      setNombreDelCiclo(null);
+
+      return;
+    }
+    let vivo = true;
+
+    ApiService.get(`/tenant/${tid}/rotation-styles`)
+      .then((res: any) => {
+        if (!vivo) return;
+        const filas = Array.isArray(res) ? res : (res?.rows ?? []);
+        const suyo = filas.find(
+          (x: any) => String(x.id) === String(rotationStyleId),
+        );
+
+        setNombreDelCiclo(suyo?.name ?? null);
+      })
+      .catch(() => setNombreDelCiclo(null));
+
+    return () => {
+      vivo = false;
+    };
+  }, [rotationStyleId]);
   const [savingHorario, setSavingHorario] = useState(false);
 
   // Station LOCATION (coordinates the clock-in geofence uses). Editable here —
@@ -1054,9 +1096,71 @@ export default function StationOverview({
               </div>
             </div>
           )}
+          {/* ── UNA PREGUNTA ARRIBA, EL RESTO PLEGADO ────────────────────────
+              Antes se hacían CUATRO preguntas anidadas —horario, «¿mismo
+              ciclo?», «¿rotativo o fijos?» y elegir entre nueve patrones—
+              antes de que el puesto tuviera un solo vigilante. Tres de las
+              cuatro no se pueden contestar bien sin saber a quién vas a poner,
+              y ninguna hace falta para dar de alta el puesto.
+
+              Arriba queda la única que sí: cuántas horas cubre. Lo demás sigue
+              aquí, a un clic, con un resumen de lo que hay puesto para que
+              nadie tenga que abrirlo sólo para mirar. */}
           {turno && (
-            <RotacionDeLaEstacion
-              entrada={{
+            <div
+              className="rounded-xl border"
+              style={{ borderColor: "var(--hairline)" }}
+            >
+              <button
+                aria-expanded={avanzado}
+                className="cg-focus flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left"
+                type="button"
+                onClick={() => setAvanzado((v) => !v)}
+              >
+                <span className="min-w-0">
+                  <span className="block text-xs font-semibold text-foreground">
+                    {t(
+                      "ui.StationOverview.ajustesAvanzados",
+                      "Ajustes avanzados",
+                    )}
+                  </span>
+                  <span
+                    className="mt-0.5 block truncate text-[11px]"
+                    style={{ color: "var(--ink-soft)" }}
+                  >
+                    {estilosPorPlaza
+                      ? t(
+                          "ui.StationOverview.cadaPlazaConSuCiclo",
+                          "Cada plaza con su ciclo",
+                        )
+                      : (nombreDelCiclo ?? rotStyle?.name)
+                        ? t(
+                            "ui.StationOverview.cicloYCuandoLibran",
+                            "Ciclo de descansos: {{ciclo}}",
+                            { ciclo: nombreDelCiclo ?? rotStyle?.name },
+                          )
+                        : t(
+                            "ui.StationOverview.sinCicloTodavia",
+                            "Aún sin ciclo de descansos — se elige al asignar al primer vigilante",
+                          )}
+                  </span>
+                </span>
+                <ChevronDown
+                  className="shrink-0 transition-transform"
+                  size={16}
+                  style={{
+                    color: "var(--ink-soft)",
+                    transform: avanzado ? "rotate(180deg)" : undefined,
+                  }}
+                />
+              </button>
+              {avanzado && (
+                <div
+                  className="border-t p-3"
+                  style={{ borderColor: "var(--hairline)" }}
+                >
+                  <RotacionDeLaEstacion
+                    entrada={{
                 scheduleType: turnoToScheduleType(turno),
                 inicio:
                   turno === "custom"
@@ -1079,9 +1183,12 @@ export default function StationOverview({
               tenantId={localStorage.getItem("tenantId") || ""}
               value={rotationStyleId}
               onChange={setRotationStyleId}
-              onPorPlazaChange={setEstilosPorPlaza}
-              onStyleChange={setRotStyle}
-            />
+                    onPorPlazaChange={setEstilosPorPlaza}
+                    onStyleChange={setRotStyle}
+                  />
+                </div>
+              )}
+            </div>
           )}
           <div className="flex items-center justify-between gap-3">
             <p className="text-[11px]" style={{ color: "var(--warn-text)" }}>

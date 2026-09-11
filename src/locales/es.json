@@ -8272,7 +8272,11 @@
         "diaYNoche": "Día + Noche",
         "diurno": "12h Diurno",
         "nocturno": "12h Nocturno"
-      }
+      },
+      "ajustesAvanzados": "Ajustes avanzados",
+      "cadaPlazaConSuCiclo": "Cada plaza con su ciclo",
+      "cicloYCuandoLibran": "Ciclo de descansos: {{ciclo}}",
+      "sinCicloTodavia": "Aún sin ciclo de descansos — se elige al asignar al primer vigilante"
     },
     "StationShifts": {
       "dia": "Día",
