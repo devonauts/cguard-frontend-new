@@ -75,9 +75,17 @@ const PRESETS = [
 
 const FUENTES: Array<{ value: string; label: string; css?: string }> = [
   { value: "", label: "Heredar del equipo" },
-  { value: "poppins", label: "Poppins", css: '"Poppins", system-ui, sans-serif' },
+  {
+    value: "poppins",
+    label: "Poppins",
+    css: '"Poppins", system-ui, sans-serif',
+  },
   { value: "inter", label: "Inter", css: '"Inter", system-ui, sans-serif' },
-  { value: "manrope", label: "Manrope", css: '"Manrope", system-ui, sans-serif' },
+  {
+    value: "manrope",
+    label: "Manrope",
+    css: '"Manrope", system-ui, sans-serif',
+  },
 ];
 
 interface SupervisorSettings {
@@ -108,7 +116,9 @@ function tintaSobre(hex: string): string {
     const s = v / 255;
     return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
   });
-  return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2] > 0.45 ? "#0b0c0e" : "#ffffff";
+  return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2] > 0.45
+    ? "#0b0c0e"
+    : "#ffffff";
 }
 
 export default function SupervisorAppPage() {
@@ -121,7 +131,11 @@ export default function SupervisorAppPage() {
   const [guardando, setGuardando] = useState(false);
   const [cfg, setCfg] = useState<SupervisorSettings>(VACIO);
   // Lo del EQUIPO, sólo para enseñar de qué se hereda. No se toca desde aquí.
-  const [equipo, setEquipo] = useState<{ accentColor: string; fontFamily: string; displayName: string }>({
+  const [equipo, setEquipo] = useState<{
+    accentColor: string;
+    fontFamily: string;
+    displayName: string;
+  }>({
     accentColor: "",
     fontFamily: "",
     displayName: "",
@@ -146,7 +160,10 @@ export default function SupervisorAppPage() {
         setCfg({ ...VACIO, ...(m.supervisor || {}) });
       } catch {
         toast.error(
-          t("ui.SupervisorApp.noCargo", "No se pudo leer la configuración. Reintenta."),
+          t(
+            "ui.SupervisorApp.noCargo",
+            "No se pudo leer la configuración. Reintenta.",
+          ),
         );
       } finally {
         setCargando(false);
@@ -154,12 +171,16 @@ export default function SupervisorAppPage() {
     })();
   }, [t]);
 
-  const set = (p: Partial<SupervisorSettings>) => setCfg((c) => ({ ...c, ...p }));
+  const set = (p: Partial<SupervisorSettings>) =>
+    setCfg((c) => ({ ...c, ...p }));
 
   const guardar = async () => {
     if (cfg.accentColor && !esHex(cfg.accentColor)) {
       toast.error(
-        t("ui.SupervisorApp.colorInvalido", "El color debe ser un hex de seis dígitos, como #2563eb"),
+        t(
+          "ui.SupervisorApp.colorInvalido",
+          "El color debe ser un hex de seis dígitos, como #2563eb",
+        ),
       );
 
       return;
@@ -177,10 +198,15 @@ export default function SupervisorAppPage() {
         },
       });
       toast.success(
-        t("ui.SupervisorApp.guardado", "Guardado. Los supervisores lo verán al abrir la app."),
+        t(
+          "ui.SupervisorApp.guardado",
+          "Guardado. Los supervisores lo verán al abrir la app.",
+        ),
       );
     } catch {
-      toast.error(t("ui.SupervisorApp.noGuardo", "No se pudo guardar. Reintenta."));
+      toast.error(
+        t("ui.SupervisorApp.noGuardo", "No se pudo guardar. Reintenta."),
+      );
     } finally {
       setGuardando(false);
     }
@@ -212,9 +238,16 @@ export default function SupervisorAppPage() {
                     onClick={() => setCfg(VACIO)}
                   >
                     <RotateCcw className="size-4" />
-                    {t("ui.SupervisorApp.heredarTodo", "Heredar todo del equipo")}
+                    {t(
+                      "ui.SupervisorApp.heredarTodo",
+                      "Heredar todo del equipo",
+                    )}
                   </Button>
-                  <Button disabled={guardando} variant="brand" onClick={guardar}>
+                  <Button
+                    disabled={guardando}
+                    variant="brand"
+                    onClick={guardar}
+                  >
                     <Save className="size-4" />
                     {guardando
                       ? t("comun.guardando", "Guardando…")
@@ -241,18 +274,23 @@ export default function SupervisorAppPage() {
                   icon={<Palette className="size-4" />}
                   title={t("ui.SupervisorApp.color", "Color de los botones")}
                 >
-                    <p className="mb-3 text-sm" style={{ color: "var(--ink-faint)" }}>
-                      t(
-                    "ui.SupervisorApp.colorSub",
-                    "Pinta los botones, el deslizador de llegada y la pestaña activa. Un supervisor mira su teléfono de noche y en marcha: conviene que resalte.",
-                  )
-                    </p>
+                  <p
+                    className="mb-3 text-sm"
+                    style={{ color: "var(--ink-faint)" }}
+                  >
+                    {t(
+                      "ui.SupervisorApp.colorSub",
+                      "Pinta los botones, el deslizador de llegada y la pestaña activa. Un supervisor mira su teléfono de noche y en marcha: conviene que resalte.",
+                    )}
+                  </p>
                   <div className="flex flex-wrap items-center gap-2">
                     <button
                       className="flex h-9 items-center gap-2 rounded-lg border px-3 text-sm"
                       disabled={!puedeEditar}
                       style={{
-                        borderColor: cfg.accentColor ? "var(--line-2)" : "var(--brand)",
+                        borderColor: cfg.accentColor
+                          ? "var(--line-2)"
+                          : "var(--brand)",
                       }}
                       type="button"
                       onClick={() => set({ accentColor: HEREDA })}
@@ -269,7 +307,9 @@ export default function SupervisorAppPage() {
                         style={{
                           background: c,
                           borderColor:
-                            cfg.accentColor.toLowerCase() === c ? "var(--ink)" : "transparent",
+                            cfg.accentColor.toLowerCase() === c
+                              ? "var(--ink)"
+                              : "transparent",
                         }}
                         type="button"
                         onClick={() => set({ accentColor: c })}
@@ -277,7 +317,10 @@ export default function SupervisorAppPage() {
                     ))}
                     <div className="flex items-center gap-2">
                       <input
-                        aria-label={t("ui.SupervisorApp.colorPropio", "Color propio")}
+                        aria-label={t(
+                          "ui.SupervisorApp.colorPropio",
+                          "Color propio",
+                        )}
                         className="size-9 cursor-pointer rounded-lg border-0 bg-transparent p-0"
                         disabled={!puedeEditar}
                         type="color"
@@ -295,9 +338,17 @@ export default function SupervisorAppPage() {
                     </div>
                   </div>
                   {!cfg.accentColor && (
-                    <p className="mt-2 text-sm" style={{ color: "var(--ink-faint)" }}>
-                      {t("ui.SupervisorApp.heredandoColor", "Heredando el color del equipo:")}{" "}
-                      <span className="font-mono">{equipo.accentColor || "#d4a017"}</span>
+                    <p
+                      className="mt-2 text-sm"
+                      style={{ color: "var(--ink-faint)" }}
+                    >
+                      {t(
+                        "ui.SupervisorApp.heredandoColor",
+                        "Heredando el color del equipo:",
+                      )}{" "}
+                      <span className="font-mono">
+                        {equipo.accentColor || "#d4a017"}
+                      </span>
                     </p>
                   )}
                 </Section>
@@ -307,12 +358,15 @@ export default function SupervisorAppPage() {
                   icon={<Type className="size-4" />}
                   title={t("ui.SupervisorApp.letra", "Tipo de letra")}
                 >
-                    <p className="mb-3 text-sm" style={{ color: "var(--ink-faint)" }}>
-                      t(
-                    "ui.SupervisorApp.letraSub",
-                    "Las tres van dentro de la app: cambiar de una a otra es instantáneo y funciona sin cobertura.",
-                  )
-                    </p>
+                  <p
+                    className="mb-3 text-sm"
+                    style={{ color: "var(--ink-faint)" }}
+                  >
+                    {t(
+                      "ui.SupervisorApp.letraSub",
+                      "Las tres van dentro de la app: cambiar de una a otra es instantáneo y funciona sin cobertura.",
+                    )}
+                  </p>
                   <div className="flex flex-wrap gap-2">
                     {FUENTES.map((f) => (
                       <button
@@ -321,21 +375,43 @@ export default function SupervisorAppPage() {
                         disabled={!puedeEditar}
                         style={{
                           borderColor:
-                            cfg.fontFamily === f.value ? "var(--brand)" : "var(--line-2)",
+                            cfg.fontFamily === f.value
+                              ? "var(--brand)"
+                              : "var(--line-2)",
                           fontFamily: f.css,
                         }}
                         type="button"
-                        onClick={() => set({ fontFamily: f.value as SupervisorSettings["fontFamily"] })}
+                        onClick={() =>
+                          set({
+                            fontFamily:
+                              f.value as SupervisorSettings["fontFamily"],
+                          })
+                        }
                       >
-                        <span className="block text-sm font-semibold">{f.label}</span>
-                        <span className="block text-xs" style={{ color: "var(--ink-faint)" }}>
+                        <span className="block text-sm font-semibold">
+                          {f.label}
+                        </span>
+                        <span
+                          className="block text-xs"
+                          style={{ color: "var(--ink-faint)" }}
+                        >
                           {f.value
-                            ? t("ui.SupervisorApp.muestra", "Parada 2 de 4 · Ya llegué")
+                            ? t(
+                                "ui.SupervisorApp.muestra",
+                                "Parada 2 de 4 · Ya llegué",
+                              )
                             : equipo.fontFamily
-                              ? t("ui.SupervisorApp.equipoUsa", "El equipo usa {{f}}", {
-                                  f: equipo.fontFamily,
-                                })
-                              : t("ui.SupervisorApp.delSistema", "La del teléfono")}
+                              ? t(
+                                  "ui.SupervisorApp.equipoUsa",
+                                  "El equipo usa {{f}}",
+                                  {
+                                    f: equipo.fontFamily,
+                                  },
+                                )
+                              : t(
+                                  "ui.SupervisorApp.delSistema",
+                                  "La del teléfono",
+                                )}
                         </span>
                       </button>
                     ))}
@@ -346,12 +422,15 @@ export default function SupervisorAppPage() {
                 <Section
                   title={t("ui.SupervisorApp.identidad", "Nombre y tema")}
                 >
-                    <p className="mb-3 text-sm" style={{ color: "var(--ink-faint)" }}>
-                      t(
-                    "ui.SupervisorApp.identidadSub",
-                    "Lo que se lee en el acceso y en la cabecera de la app del supervisor.",
-                  )
-                    </p>
+                  <p
+                    className="mb-3 text-sm"
+                    style={{ color: "var(--ink-faint)" }}
+                  >
+                    {t(
+                      "ui.SupervisorApp.identidadSub",
+                      "Lo que se lee en el acceso y en la cabecera de la app del supervisor.",
+                    )}
+                  </p>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-1.5">
                       <Label htmlFor={`${uid}-nombre`}>
@@ -374,25 +453,48 @@ export default function SupervisorAppPage() {
                         disabled={!puedeEditar}
                         id={`${uid}-lema`}
                         maxLength={60}
-                        placeholder={t("ui.SupervisorApp.lemaEj", "Supervisión de campo")}
+                        placeholder={t(
+                          "ui.SupervisorApp.lemaEj",
+                          "Supervisión de campo",
+                        )}
                         value={cfg.tagline}
                         onChange={(e) => set({ tagline: e.target.value })}
                       />
                     </div>
                   </div>
                   <div className="mt-4 space-y-1.5">
-                    <Label>{t("ui.SupervisorApp.tema", "Tema al instalar")}</Label>
+                    <Label>
+                      {t("ui.SupervisorApp.tema", "Tema al instalar")}
+                    </Label>
                     <Segmented<SupervisorSettings["defaultTheme"]>
                       options={[
-                        { value: "inherit", label: t("ui.SupervisorApp.heredar", "Heredar") },
-                        { value: "dark", label: t("ui.SupervisorApp.oscuro", "Oscuro") },
-                        { value: "light", label: t("ui.SupervisorApp.claro", "Claro") },
-                        { value: "user", label: t("ui.SupervisorApp.delTelefono", "Del teléfono") },
+                        {
+                          value: "inherit",
+                          label: t("ui.SupervisorApp.heredar", "Heredar"),
+                        },
+                        {
+                          value: "dark",
+                          label: t("ui.SupervisorApp.oscuro", "Oscuro"),
+                        },
+                        {
+                          value: "light",
+                          label: t("ui.SupervisorApp.claro", "Claro"),
+                        },
+                        {
+                          value: "user",
+                          label: t(
+                            "ui.SupervisorApp.delTelefono",
+                            "Del teléfono",
+                          ),
+                        },
                       ]}
                       value={cfg.defaultTheme}
                       onChange={(v) => puedeEditar && set({ defaultTheme: v })}
                     />
-                    <p className="text-sm" style={{ color: "var(--ink-faint)" }}>
+                    <p
+                      className="text-sm"
+                      style={{ color: "var(--ink-faint)" }}
+                    >
                       {t(
                         "ui.SupervisorApp.temaNota",
                         "Sólo decide con qué tema ARRANCA una instalación nueva; luego cada supervisor lo cambia en su app.",
@@ -408,7 +510,9 @@ export default function SupervisorAppPage() {
                   accent={acentoReal}
                   claro={claro}
                   font={cssFuente}
-                  nombre={cfg.displayName || equipo.displayName || "C-Guard Pro"}
+                  nombre={
+                    cfg.displayName || equipo.displayName || "C-Guard Pro"
+                  }
                 />
               </div>
             </div>
@@ -450,7 +554,12 @@ function VistaParada({
       </span>
       <div
         className="mx-auto w-full max-w-[360px] overflow-hidden rounded-[2rem] border p-4"
-        style={{ background: bg, borderColor: linea, color: texto, fontFamily: font }}
+        style={{
+          background: bg,
+          borderColor: linea,
+          color: texto,
+          fontFamily: font,
+        }}
       >
         <div className="flex items-center justify-between">
           <span className="text-[15px] font-bold">
@@ -465,7 +574,10 @@ function VistaParada({
         </div>
 
         <div className="mt-2 h-1 rounded-full" style={{ background: linea }}>
-          <div className="h-1 w-1/4 rounded-full" style={{ background: accent }} />
+          <div
+            className="h-1 w-1/4 rounded-full"
+            style={{ background: accent }}
+          />
         </div>
 
         <div
@@ -489,7 +601,10 @@ function VistaParada({
         {/* El deslizador: es donde el color decide si se acierta a la primera. */}
         <div
           className="relative mt-4 flex h-[52px] items-center overflow-hidden rounded-full border"
-          style={{ background: claro ? "#eceae6" : "#161c27", borderColor: linea }}
+          style={{
+            background: claro ? "#eceae6" : "#161c27",
+            borderColor: linea,
+          }}
         >
           <span
             className="grid size-[44px] place-items-center rounded-full"
@@ -505,7 +620,10 @@ function VistaParada({
           </span>
         </div>
         <p className="mt-1.5 text-center text-[11px]" style={{ color: suave }}>
-          {t("ui.SupervisorApp.seRegistra", "Se registra la hora y tu ubicación")}
+          {t(
+            "ui.SupervisorApp.seRegistra",
+            "Se registra la hora y tu ubicación",
+          )}
         </p>
 
         <div
@@ -517,7 +635,10 @@ function VistaParada({
             {t("ui.SupervisorApp.pausar", "Pausar ruta")}
           </span>
           <span style={{ color: linea }}>|</span>
-          <span className="inline-flex items-center gap-1" style={{ color: "#ef4444" }}>
+          <span
+            className="inline-flex items-center gap-1"
+            style={{ color: "#ef4444" }}
+          >
             <OctagonX className="size-3.5" />
             {t("ui.SupervisorApp.abortar", "Abortar")}
           </span>

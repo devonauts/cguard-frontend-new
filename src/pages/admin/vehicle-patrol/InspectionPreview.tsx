@@ -100,12 +100,21 @@ function Control({ it }: { it: TemplateItem }) {
 
       return (
         <div>
-          <div className="mb-1 flex justify-between text-[11px]" style={{ color: "var(--ink-faint)" }}>
+          <div
+            className="mb-1 flex justify-between text-[11px]"
+            style={{ color: "var(--ink-faint)" }}
+          >
             <span>{it.scale?.minLabel || min}</span>
             <span>{it.scale?.maxLabel || max}</span>
           </div>
-          <div className="h-1.5 rounded-full" style={{ background: "var(--line-2)" }}>
-            <div className="h-1.5 w-1/2 rounded-full" style={{ background: "var(--brand)" }} />
+          <div
+            className="h-1.5 rounded-full"
+            style={{ background: "var(--line-2)" }}
+          >
+            <div
+              className="h-1.5 w-1/2 rounded-full"
+              style={{ background: "var(--brand)" }}
+            />
           </div>
         </div>
       );
@@ -137,7 +146,9 @@ function Control({ it }: { it: TemplateItem }) {
         <span className={caja} style={{ ...estilo, display: "inline-block" }}>
           <Camera className="mr-1 inline size-3.5" />
           {t("ui.InspectionPreview.anadirFoto", "Añadir foto")}
-          {it.photo?.min ? ` · ${t("ui.InspectionPreview.minimo", "mín. {{n}}", { n: it.photo.min })}` : ""}
+          {it.photo?.min
+            ? ` · ${t("ui.InspectionPreview.minimo", "mín. {{n}}", { n: it.photo.min })}`
+            : ""}
         </span>
       );
     default:
@@ -181,7 +192,10 @@ export default function InspectionPreview({
       <div className="flex items-center justify-between">
         <span className="cg-eyebrow inline-flex items-center gap-1.5">
           <Smartphone className="size-3.5" />
-          {t("ui.InspectionPreview.titulo", "Vista previa · lo que ve el supervisor")}
+          {t(
+            "ui.InspectionPreview.titulo",
+            "Vista previa · lo que ve el supervisor",
+          )}
         </span>
         {apagadas > 0 && (
           <span
@@ -189,7 +203,9 @@ export default function InspectionPreview({
             style={{ color: "var(--ink-faint)" }}
           >
             <EyeOff className="size-3" />
-            {t("ui.InspectionPreview.apagadas", "{{n}} sin preguntar", { n: apagadas })}
+            {t("ui.InspectionPreview.apagadas", "{{n}} sin preguntar", {
+              n: apagadas,
+            })}
           </span>
         )}
       </div>
@@ -208,7 +224,11 @@ export default function InspectionPreview({
               className="h-1 flex-1 rounded-full"
               style={{
                 background:
-                  i < actual ? "var(--ok)" : i === actual ? "var(--brand)" : "var(--line-2)",
+                  i < actual
+                    ? "var(--ok)"
+                    : i === actual
+                      ? "var(--brand)"
+                      : "var(--line-2)",
               }}
             />
           ))}
@@ -227,7 +247,9 @@ export default function InspectionPreview({
           )}
         </div>
         <p className="mt-0.5 text-[17px] font-bold leading-tight">
-          {sec ? sec.title : t("ui.InspectionPreview.cierre", "Cierre de la parada")}
+          {sec
+            ? sec.title
+            : t("ui.InspectionPreview.cierre", "Cierre de la parada")}
         </p>
 
         <div className="mt-3 max-h-[22rem] space-y-3 overflow-y-auto pr-1">
@@ -235,13 +257,17 @@ export default function InspectionPreview({
             sec.items.map((it) => (
               <div key={it.id}>
                 <p className="mb-1.5 text-[13px] font-semibold">
-                  {it.label || t("ui.InspectionPreview.sinTexto", "(sin texto)")}
+                  {it.label ||
+                    t("ui.InspectionPreview.sinTexto", "(sin texto)")}
                   {it.required !== false && (
                     <span style={{ color: "var(--brand-text)" }}> *</span>
                   )}
                 </p>
                 {it.help && (
-                  <p className="mb-1.5 text-[11px]" style={{ color: "var(--ink-faint)" }}>
+                  <p
+                    className="mb-1.5 text-[11px]"
+                    style={{ color: "var(--ink-faint)" }}
+                  >
                     {it.help}
                   </p>
                 )}
@@ -261,9 +287,15 @@ export default function InspectionPreview({
                   )}
                 </p>
                 <div className="flex flex-wrap gap-1.5">
-                  <Pastilla>{t("ui.InspectionPreview.presente", "Presente")}</Pastilla>
-                  <Pastilla>{t("ui.InspectionPreview.ausente", "Ausente")}</Pastilla>
-                  <Pastilla>{t("ui.InspectionPreview.reemplazo", "Reemplazo")}</Pastilla>
+                  <Pastilla>
+                    {t("ui.InspectionPreview.presente", "Presente")}
+                  </Pastilla>
+                  <Pastilla>
+                    {t("ui.InspectionPreview.ausente", "Ausente")}
+                  </Pastilla>
+                  <Pastilla>
+                    {t("ui.InspectionPreview.reemplazo", "Reemplazo")}
+                  </Pastilla>
                 </div>
               </div>
               <div>
@@ -272,13 +304,16 @@ export default function InspectionPreview({
                   {t("ui.InspectionPreview.evidencia", "Foto de evidencia")}
                   {(content.settings?.minPhotos ?? 0) > 0 && (
                     <span style={{ color: "var(--ink-faint)" }}>
-                      · {t("ui.InspectionPreview.minimo", "mín. {{n}}", {
+                      ·{" "}
+                      {t("ui.InspectionPreview.minimo", "mín. {{n}}", {
                         n: content.settings?.minPhotos,
                       })}
                     </span>
                   )}
                 </p>
-                <Control it={{ id: "p", type: "photo", label: "" } as TemplateItem} />
+                <Control
+                  it={{ id: "p", type: "photo", label: "" } as TemplateItem}
+                />
               </div>
               <div>
                 <p className="mb-1.5 inline-flex items-center gap-1.5 text-[13px] font-semibold">
@@ -290,9 +325,15 @@ export default function InspectionPreview({
                 </p>
                 <div
                   className="rounded-lg border px-3 py-4 text-[12px]"
-                  style={{ borderColor: "var(--line-2)", color: "var(--ink-faint)" }}
+                  style={{
+                    borderColor: "var(--line-2)",
+                    color: "var(--ink-faint)",
+                  }}
                 >
-                  {t("ui.InspectionPreview.observaciones", "Observaciones de la parada…")}
+                  {t(
+                    "ui.InspectionPreview.observaciones",
+                    "Observaciones de la parada…",
+                  )}
                 </div>
               </div>
             </>
@@ -300,7 +341,10 @@ export default function InspectionPreview({
         </div>
 
         {/* El pie: el mismo par Atrás / Siguiente, y «Completar parada» al final. */}
-        <div className="mt-3 border-t pt-2.5" style={{ borderColor: "var(--line)" }}>
+        <div
+          className="mt-3 border-t pt-2.5"
+          style={{ borderColor: "var(--line)" }}
+        >
           <p
             className="mb-2 inline-flex items-center gap-1 text-[11px]"
             style={{ color: "var(--brand-text)" }}
@@ -339,7 +383,10 @@ export default function InspectionPreview({
         </div>
       </div>
 
-      <p className="text-center text-[11px]" style={{ color: "var(--ink-faint)" }}>
+      <p
+        className="text-center text-[11px]"
+        style={{ color: "var(--ink-faint)" }}
+      >
         {t(
           "ui.InspectionPreview.nota",
           "Sólo para verlo: nada de lo que toques aquí se guarda.",
