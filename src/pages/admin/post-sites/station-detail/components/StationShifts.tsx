@@ -332,6 +332,37 @@ export default function StationShifts({
         const endTime = p.endTime || "19:00";
         blocks.set(`${startTime}|${endTime}`, { startTime, endTime });
       }
+      /* ── UN PUESTO DE 24 H SIEMPRE TIENE DOS MITADES ────────────────────
+         Agrupar por ventana DISTINTA da una sola jornada cuando las dos
+         plazas comparten horario — que es justo la forma de un 24 h cuyo
+         patrón ALTERNA día y noche: las dos plazas dicen 07:00–19:00 y lo que
+         lleva a uno a la noche es la rotación, no la ventana.
+
+         Con una sola fila, los turnos de 19:00 no tenían dónde pintarse y
+         DESAPARECÍAN de la vista: el puesto salía cubierto sólo de día y la
+         noche ni figuraba, aunque los turnos estaban generados y el vigilante
+         iba a ir. La estación dice que es de 24 h; entonces hay dos mitades,
+         las declare la plaza o no. */
+      if (
+        (station as any)?.scheduleType === "24h" &&
+        blocks.size === 1
+      ) {
+        const [b] = Array.from(blocks.values());
+        const span =
+          (((parseInt(String(b.endTime).split(":")[0], 10) || 0) -
+            (parseInt(String(b.startTime).split(":")[0], 10) || 0) +
+            24) %
+            24) || 24;
+        // Un bloque de 24 h de verdad (24x24) NO se parte: ahí una persona
+        // cubre el día entero y dos filas serían una cobertura inventada.
+        if (span < 23) {
+          blocks.set(`${b.endTime}|${b.startTime}`, {
+            startTime: b.endTime,
+            endTime: b.startTime,
+          });
+        }
+      }
+
       return Array.from(blocks.values())
         .sort((a, b) => a.startTime.localeCompare(b.startTime))
         .map(
