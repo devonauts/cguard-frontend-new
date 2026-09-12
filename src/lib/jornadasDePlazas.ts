@@ -129,11 +129,22 @@ export function jornadasDePlazas(
   if (scheduleType === "24h" && jornadas.length === 1) {
     const b = jornadas[0];
     if (minutosDeVentana(b.startTime, b.endTime) < 23 * 60) {
+      /* LA DOTACIÓN SE REPARTE, NO SE DUPLICA. Las plazas que comparten
+         ventana en un 24 h no son gente a la vez: son las dos mitades del
+         puesto, y la rotación lleva a cada una a la suya. Copiar el total
+         exigía el DOBLE de gente de la que el puesto tiene, y la ficha pintaba
+         «1/2» —en rojo— todos los días. Impar: el día se queda con el de más. */
+      const total = Number(b.guardsCount) || 1;
+      const deDia = Math.max(1, Math.ceil(total / 2));
+      const deNoche = Math.max(1, total - deDia);
+      const esNocturnaLaPrimera = b.tipo === "Nocturno";
+
+      b.guardsCount = esNocturnaLaPrimera ? deNoche : deDia;
       jornadas.push({
-        tipo: b.tipo === "Nocturno" ? "Diurno" : "Nocturno",
+        tipo: esNocturnaLaPrimera ? "Diurno" : "Nocturno",
         startTime: b.endTime,
         endTime: b.startTime,
-        guardsCount: b.guardsCount,
+        guardsCount: esNocturnaLaPrimera ? deDia : deNoche,
         // La otra mitad opera los MISMOS días: es el mismo puesto partido por
         // la rotación, no otro horario.
         days: b.days,
