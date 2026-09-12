@@ -57,7 +57,7 @@ import ScheduleTimeline, {
 import ContextMenu, { CtxItem, CtxMenuState } from "./ContextMenu";
 
 import TransferShiftModal, { TransferTarget } from "./TransferShiftModal";
-import { localToday, estadoDeRotacionCliente } from '@/lib/utils';
+import { localToday, estadoDeRotacionCliente } from "@/lib/utils";
 import {
   nombreDeVigilante,
   inicialesDeVigilante,
@@ -65,25 +65,20 @@ import {
 } from "@/lib/guardName";
 import { getTenantTimezone } from "@/utils/tenantLocation";
 
-
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
-
 
 import { StatusBadge, Segmented, IconTile, EmptyState } from "@/components/kit";
 import { MeterBar } from "@/components/charts";
 import { ApiService } from "@/services/api/apiService";
 
-
 import { confirmDialog } from "@/components/ui/confirmDialog";
-
 
 import RotationStyleSelect from "@/components/schedule/RotationStyleSelect";
 import {
   etiquetaPrimerTramo,
   etiquetaSegundoTramo,
 } from "@/components/schedule/tramos";
-
 
 import { stationLabel } from "@/lib/stationName";
 
@@ -100,6 +95,7 @@ import { COL_W, COL_STICKY_W } from "./gridBand";
 
 import { localeActual } from "@/lib/localeActual";
 import { cuentaComoCobertura } from "@/lib/shiftStatus";
+import { sePuedeMarcar, fechaMinimaEditable } from "@/lib/ventanaDeEdicion";
 import {
   leerAparienciaDeLaCuenta,
   guardarApariencia,
@@ -1201,7 +1197,9 @@ export default function Schedule() {
          El ancla es la fecha de inicio de la asignación, igual que el motor. */
       const daysSinceEpoch = dseOf(date); // DST-safe (coincide con getGlobalEpoch)
       const anclaDse = assignment.startDate
-        ? dseOf(new Date(`${String(assignment.startDate).slice(0, 10)}T12:00:00`))
+        ? dseOf(
+            new Date(`${String(assignment.startDate).slice(0, 10)}T12:00:00`),
+          )
         : -Infinity;
       const estado = estadoDeRotacionCliente(
         daysSinceEpoch,
@@ -2238,7 +2236,7 @@ export default function Schedule() {
       items.push({
         label: `Cambiar a V / PM / F / L${suf}…`,
         onClick: () =>
-          setOverrideTarget({
+          abrirNovedad({
             guardId: a.guardId,
             guardName: full,
             date: dateStr,
@@ -2276,7 +2274,7 @@ export default function Schedule() {
       items.push({
         label: `Cambiar a V / PM / F / L a ${nm} (cobertura)…`,
         onClick: () =>
-          setOverrideTarget({
+          abrirNovedad({
             guardId: cs.guardId,
             guardName: full,
             date: dateStr,
@@ -2502,7 +2500,7 @@ export default function Schedule() {
       items.push({
         label: "Marcar el día (V / PM / F / L)…",
         onClick: () =>
-          setOverrideTarget({
+          abrirNovedad({
             guardId: sfGuard.guardId,
             guardName: gName,
             date: dateStr,
@@ -3552,6 +3550,35 @@ export default function Schedule() {
     date: string;
     assignmentId?: string;
   } | null>(null);
+  /**
+   * Abre el diálogo de novedad, salvo en un día demasiado atrás.
+   *
+   * El tope lo impone el SERVIDOR (`lib/ventanaDeEdicion`); esto sólo evita que
+   * alguien abra el diálogo, elija un código y se entere entonces de que no.
+   * Regla del dueño: el horario se edita desde una semana atrás como máximo,
+   * para no reescribir turnos ya trabajados ni pagos ya emitidos.
+   */
+  const abrirNovedad = useCallback(
+    (target: {
+      guardId: string;
+      guardName: string;
+      date: string;
+      assignmentId?: string;
+    }) => {
+      if (!sePuedeMarcar(target.date, getTenantTimezone())) {
+        toast.error(
+          `Ese día ya está cerrado. El horario se edita desde el ${fechaMinimaEditable(
+            getTenantTimezone(),
+          )} en adelante, para no cambiar turnos ya trabajados ni pagos ya emitidos.`,
+        );
+
+        return;
+      }
+      setOverrideTarget(target);
+    },
+    [],
+  );
+
   /** «Extender turno…»: el vigilante que ya está en el puesto se queda más. */
   const [extendTarget, setExtendTarget] = useState<ExtendTarget | null>(null);
 
@@ -4073,7 +4100,7 @@ export default function Schedule() {
     const a = asigsDeFila(row)[0] || row.assignments[0];
     const guardName = nombreDeVigilante(a.guard, "Vigilante");
 
-    setOverrideTarget({
+    abrirNovedad({
       guardId: a.guardId,
       guardName,
       date: fmtDate(monthDays[sel.fc]),
@@ -5126,14 +5153,14 @@ export default function Schedule() {
               ) : (
                 <div
                   ref={gridScrollRef}
-                onMouseDown={e => startPan(e, gridScrollRef.current)}
-                onScroll={onGridScroll}
-                tabIndex={0}
-                /* `glass-flat`, NO `glass`: `backdrop-filter` obliga al navegador a
+                  onMouseDown={(e) => startPan(e, gridScrollRef.current)}
+                  onScroll={onGridScroll}
+                  tabIndex={0}
+                  /* `glass-flat`, NO `glass`: `backdrop-filter` obliga al navegador a
                    rasterizar lo que hay detrás en CADA fotograma, y esto es un
                    lienzo de 16.000 px que se desplaza. Es la regla que el
                    propio `glass.css` documenta para lo que hace scroll. */
-                className="glass-flat flex-1 min-w-0 select-none overflow-auto outline-none"
+                  className="glass-flat flex-1 min-w-0 select-none overflow-auto outline-none"
                 >
                   <div className="relative" style={{ minWidth: gridMinWidth }}>
                     {/* Today guide: a full-height vertical line framing today's
@@ -5632,7 +5659,7 @@ export default function Schedule() {
                                             style={codePill(override.type)}
                                             title={`${gName} — ${CODE_LABEL[override.type] ?? override.type}${override.note ? ": " + override.note : ""} (doble clic para editar)`}
                                             onDoubleClick={() =>
-                                              setOverrideTarget({
+                                              abrirNovedad({
                                                 guardId: sfGuard.guardId,
                                                 guardName: gName,
                                                 date: dateStr,
@@ -5663,7 +5690,7 @@ export default function Schedule() {
                                         "?",
                                       );
 
-                                      setOverrideTarget({
+                                      abrirNovedad({
                                         guardId: sfGuard.guardId,
                                         guardName: gName,
                                         date: dateStr,
@@ -7518,7 +7545,7 @@ export default function Schedule() {
 
                       setSfPick(null);
                       setSfPickQuery("");
-                      setOverrideTarget({
+                      abrirNovedad({
                         guardId: p.assignment.guardId,
                         guardName: p.guardName,
                         date: p.dateStr,
@@ -8551,7 +8578,7 @@ export default function Schedule() {
                 onStyleChange={setCfgRotStyle}
                 /* Partida en bloques, la estación tiene DOS tramos que repartir en
                    el ciclo (mañana y tarde) — no sólo «trabaja / descansa». */
-                bloques={configType === 'custom' ? cfgBlockCount : 1}
+                bloques={configType === "custom" ? cfgBlockCount : 1}
               />
             </div>
             <div
@@ -8668,12 +8695,12 @@ export default function Schedule() {
                   {CODE_ORDER.map((c) => (
                     <button
                       key={c}
-                  style={codeCard(c)}
-                  onClick={() => performOverrideSave(overrideTarget, c)}
-                  /* Misma píldora que en la rejilla: el color que se elige aquí
+                      style={codeCard(c)}
+                      onClick={() => performOverrideSave(overrideTarget, c)}
+                      /* Misma píldora que en la rejilla: el color que se elige aquí
                      es literalmente el que va a aparecer en la celda — los dos
                      salen de `codePill`. */
-                  className="cg-focus rounded-xl px-3 py-2.5 text-xs font-semibold transition-all hover:scale-105"
+                      className="cg-focus rounded-xl px-3 py-2.5 text-xs font-semibold transition-all hover:scale-105"
                     >
                       {c} — {CODE_LABEL[c]}
                     </button>

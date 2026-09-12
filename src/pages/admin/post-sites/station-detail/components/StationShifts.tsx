@@ -296,6 +296,17 @@ export default function StationShifts({
      La cuenta de asignaciones activas es la que distingue «falta gente por
      poner» de «hay un hueco de verdad en un puesto que ya opera». */
   const [asignados, setAsignados] = useState<number | null>(null);
+  /* ── QUIÉN TRABAJA TODOS LOS DÍAS ─────────────────────────────────────────
+     Una asignación `adhoc` no ocupa plaza ni corre ciclo: su cuadrante es un
+     turno DIARIO con su propia ventana, sin descansos. Es lo correcto cuando
+     alguien cubre un hueco unos días, pero en un puesto fijo significa que a
+     esa persona el sistema le pide trabajar los siete días — y el día que
+     libre de verdad saldrá como ausencia.
+
+     No se corrige solo desde aquí a propósito: darle un ciclo mueve los días
+     que trabaja, y eso lo decide quien conoce el acuerdo con esa persona. Lo
+     que sí se puede es dejar de ser invisible. */
+  const [sinCiclo, setSinCiclo] = useState<string[]>([]);
   const loadAsignados = useCallback(() => {
     if (!stationId || !tenantId) return;
     ApiService.get(
@@ -304,11 +315,28 @@ export default function StationShifts({
       .then((res: any) => {
         const filas = Array.isArray(res) ? res : (res?.rows ?? []);
         setAsignados(Array.isArray(filas) ? filas.length : 0);
+        setSinCiclo(
+          (Array.isArray(filas) ? filas : [])
+            .filter(
+              (f: any) => (f?.kind || "rotation") === "adhoc" && !f?.positionId,
+            )
+            .map(
+              (f: any) =>
+                f?.guard?.fullName ||
+                [f?.guard?.firstName, f?.guard?.lastName]
+                  .filter(Boolean)
+                  .join(" ") ||
+                "Vigilante",
+            ),
+        );
       })
       // Si no se puede saber, se asume que SÍ hay gente: la alerta es
       // información útil en un puesto que opera, y esconderla es peor que
       // mostrarla de más.
-      .catch(() => setAsignados(1));
+      .catch(() => {
+        setAsignados(1);
+        setSinCiclo([]);
+      });
   }, [stationId, tenantId]);
   useEffect(() => {
     loadAsignados();
@@ -739,6 +767,42 @@ export default function StationShifts({
             onClick={() => openForm()}
           >
             {t("ui.StationShifts.asignarElPrimero", "Asignar el primero")}
+          </button>
+        </div>
+      )}
+
+      {/* ── TRABAJAN TODOS LOS DÍAS ────────────────────────────────────────
+          Aviso, no alarma: su cuadrante es correcto para una cobertura y
+          equivocado para un puesto fijo, y quién lo sabe es el que lo
+          contrató. */}
+      {sinCiclo.length > 0 && (
+        <div
+          className="glass-flat flex flex-wrap items-center gap-3 px-4 py-3"
+          style={{
+            background: "color-mix(in oklab, var(--warn) 10%, transparent)",
+            borderColor: "color-mix(in oklab, var(--warn) 28%, transparent)",
+          }}
+        >
+          <IconTile tone="warn" size="sm">
+            <AlertTriangle />
+          </IconTile>
+          <div className="min-w-48 flex-1">
+            <p className="text-sm font-semibold">
+              {sinCiclo.length === 1
+                ? `${sinCiclo[0]} trabaja todos los días en este puesto`
+                : `${sinCiclo.length} vigilantes trabajan todos los días en este puesto`}
+            </p>
+            <p className="mt-0.5 text-xs" style={{ color: "var(--ink-soft)" }}>
+              Su horario no tiene ciclo de descanso, así que el día que libren
+              saldrá como ausencia. Ponles el ciclo que de verdad hacen.
+              {sinCiclo.length > 1 && ` (${sinCiclo.join(", ")})`}
+            </p>
+          </div>
+          <button
+            className="cg-btn-brand cg-focus flex-shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold"
+            onClick={() => openForm()}
+          >
+            Poner ciclo
           </button>
         </div>
       )}
