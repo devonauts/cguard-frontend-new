@@ -29,9 +29,7 @@ import type { Station } from "@/types";
 
 import { localeActual } from "@/lib/localeActual";
 import { jornadasDePlazas, jornadasPorTipo } from "@/lib/jornadasDePlazas";
-interface StationDetail extends Station {
-  stationSchedule?: string | null;
-}
+interface StationDetail extends Station {}
 
 // Minutes-of-day of a UTC instant rendered in the tenant timezone. Shift times
 // are stored as UTC; the jornada window is the station's local wall-clock. We

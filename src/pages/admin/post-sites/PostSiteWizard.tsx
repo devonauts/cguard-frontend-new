@@ -51,7 +51,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { stationService } from "@/lib/api/stationService";
 import { ApiService } from "@/services/api/apiService";
-import { jornadasDePlazas } from "@/lib/jornadasDePlazas";
+import { jornadasDePlazas, jornadasPorTipo } from "@/lib/jornadasDePlazas";
 import { clientService } from "@/lib/api/clientService";
 import { ServiceTypePicker } from "@/components/post-sites/ServiceTypeBadge";
 import AddressAutocomplete, {
@@ -119,7 +119,6 @@ interface StationApiRow {
   name?: string;
   description?: string;
   scheduleType?: string;
-  stationSchedule?: string;
 }
 
 // Map the station's turnos (jornadas) to the scheduling engine's scheduleType.
@@ -947,39 +946,23 @@ export default function PostSiteWizard({
               }
             }
 
-            try {
-              const raw = jornadas.length ? null : r.stationSchedule;
-
-              if (
-                raw &&
-                typeof raw === "string" &&
-                raw.trim().startsWith("[")
-              ) {
-                // Normalize the stored tipo: "Crear Estación" writes
-                // 'Diurno'/'Nocturno'/'Personalizado' while this wizard uses
-                // matutina/nocturna/sacafranco/personalizada — an unknown key
-                // crashed JORNADA_STYLE[tipo].ring and killed the whole editor.
-                const normTipo = (t: any): JornadaDraft["tipo"] => {
-                  const v = String(t || "").toLowerCase();
-
-                  if (v.startsWith("diur") || v.startsWith("matut"))
-                    return "matutina";
-                  if (v.startsWith("noct")) return "nocturna";
-                  if (v.startsWith("saca") || v === "sf") return "sacafranco";
-
-                  return "personalizada";
-                };
-
-                jornadas = JSON.parse(raw).map((j: any, idx: number) => ({
-                  id: String(idx),
-                  nombre: j.nombre || j.tipo || "",
-                  tipo: normTipo(j.tipo),
-                  startTime: j.startTime || "",
-                  endTime: j.endTime || "",
-                  guardsCount: j.guardsCount || "1",
-                }));
-              }
-            } catch {}
+            /* Sin plazas, la cobertura PREVISTA por tipo de horario. Aquí se
+               leía `r.stationSchedule`, la columna JSON que se eliminó de la
+               base el 2026-09-12: la lectura devolvía siempre `undefined` y el
+               `catch` se lo tragaba, así que una estación sin plazas salía en
+               blanco y en silencio. */
+            if (!jornadas.length) {
+              jornadas = jornadasPorTipo((r as any).scheduleType).map((j) => ({
+                id: `${j.startTime}-${j.endTime}`,
+                nombre: j.tipo === "Nocturno" ? "Nocturna" : "Diurna",
+                tipo: (j.tipo === "Nocturno"
+                  ? "nocturna"
+                  : "matutina") as JornadaDraft["tipo"],
+                startTime: j.startTime,
+                endTime: j.endTime,
+                guardsCount: String(j.guardsCount),
+              }));
+            }
 
             return {
               name: r.stationName || r.name || "",

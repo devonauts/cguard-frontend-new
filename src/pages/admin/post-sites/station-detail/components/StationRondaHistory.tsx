@@ -565,15 +565,26 @@ function RondaDetailModal({
       {/* Detalle + revisión de UN punto (el mismo que abre el informe) */}
       <ScanDetailModal
         open={!!escaneoRevisar}
-        onOpenChange={(o: boolean) => { if (!o) setEscaneoRevisar(null); }}
+        onOpenChange={(o: boolean) => {
+          if (!o) setEscaneoRevisar(null);
+        }}
         scanId={escaneoRevisar}
         // Rechazar un punto puede sacar la ronda de «completada»: se vuelve a
         // pedir el detalle para que la cabecera no siga diciendo lo viejo.
         onRevisado={() => {
           if (!assignmentId) return;
-          ApiService.get(`/tenant/${tenantId}/site-tour/ronda/${encodeURIComponent(assignmentId)}?_=${Date.now()}`)
-            .then((res: any) => setDetail((res && (res.data !== undefined ? res.data : res)) as RondaDetail))
-            .catch(() => { /* el veredicto ya está guardado; esto es sólo refresco */ });
+          ApiService.get(
+            `/tenant/${tenantId}/site-tour/ronda/${encodeURIComponent(assignmentId)}?_=${Date.now()}`,
+          )
+            .then((res: any) =>
+              setDetail(
+                (res &&
+                  (res.data !== undefined ? res.data : res)) as RondaDetail,
+              ),
+            )
+            .catch(() => {
+              /* el veredicto ya está guardado; esto es sólo refresco */
+            });
         }}
       />
 

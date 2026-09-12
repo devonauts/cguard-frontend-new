@@ -1161,28 +1161,29 @@ export default function StationOverview({
                 >
                   <RotacionDeLaEstacion
                     entrada={{
-                scheduleType: turnoToScheduleType(turno),
-                inicio:
-                  turno === "custom"
-                    ? customStart
-                    : station.startingTimeInDay || "",
-                fin:
-                  turno === "custom"
-                    ? customEnd
-                    : station.finishTimeInDay || "",
-                ciclo: rotStyle,
-                blockHours:
-                  turno === "custom" && blockHours
-                    ? Number(blockHours)
-                    : undefined,
-                restCoverage: turno === "custom" ? restCoverage : undefined,
-              }}
-              etiquetaPrimerBloque={primerTramo}
-              etiquetaSegundoBloque={segundoTramo}
-              porPlaza={estilosPorPlaza}
-              tenantId={localStorage.getItem("tenantId") || ""}
-              value={rotationStyleId}
-              onChange={setRotationStyleId}
+                      scheduleType: turnoToScheduleType(turno),
+                      inicio:
+                        turno === "custom"
+                          ? customStart
+                          : station.startingTimeInDay || "",
+                      fin:
+                        turno === "custom"
+                          ? customEnd
+                          : station.finishTimeInDay || "",
+                      ciclo: rotStyle,
+                      blockHours:
+                        turno === "custom" && blockHours
+                          ? Number(blockHours)
+                          : undefined,
+                      restCoverage:
+                        turno === "custom" ? restCoverage : undefined,
+                    }}
+                    etiquetaPrimerBloque={primerTramo}
+                    etiquetaSegundoBloque={segundoTramo}
+                    porPlaza={estilosPorPlaza}
+                    tenantId={localStorage.getItem("tenantId") || ""}
+                    value={rotationStyleId}
+                    onChange={setRotationStyleId}
                     onPorPlazaChange={setEstilosPorPlaza}
                     onStyleChange={setRotStyle}
                   />

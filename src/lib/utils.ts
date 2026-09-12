@@ -91,7 +91,7 @@ export interface ReglasDeRotacion {
 /** ¿Ese día es domingo? `dse` cuenta desde la época 2024-01-01, que fue lunes. */
 export function esDomingoDse(dse: number): boolean {
   // 2024-01-01 fue LUNES; el domingo es el 6.º día de esa semana.
-  return (((dse % 7) + 7) % 7) === 6;
+  return ((dse % 7) + 7) % 7 === 6;
 }
 
 /**
@@ -143,21 +143,43 @@ export function estadoDeRotacionCliente(
   return vueltas % 2 === 1 ? (estado === "day" ? "night" : "day") : estado;
 }
 
-/** Rotation status for a calendar date under a cycle + platoonOffset. */
+/**
+ * El estado de un día bajo un ciclo — **con las dos reglas**.
+ *
+ * Esto era aritmética desnuda `dse % ciclo`, y su firma (tres números) hacía
+ * estructuralmente imposible pasarle `alternatesDayNight` / `sundayDoubleRest`.
+ * Los modales de asignación lo llamaban para prometerle al operador cuándo va a
+ * librar la persona —con el comentario «mira el MISMO ciclo que va a generar el
+ * backend»— y no lo miraba: con descanso dominical el ciclo se CORRE un día en
+ * cada domingo, así que la promesa se apartaba del cuadrante ya al segundo o
+ * tercer franco.
+ *
+ * Ahora delega en `estadoDeRotacionCliente`, que es el espejo de verdad. El
+ * ancla es la fecha de inicio de la asignación: sin ella las reglas no se
+ * pueden caminar, y se cae a la aritmética simple (que es lo correcto cuando no
+ * hay ninguna regla activa).
+ */
 export function rotationStatusOn(
   style: RotationCycle,
   platoonOffset: number,
   date: Date,
+  reglas?: ReglasDeRotacion | null,
+  anclaDse?: number,
 ): "day" | "night" | "rest" {
   const cycle = style.dayShifts + style.nightShifts + style.restDays;
-
   if (cycle <= 0) return "rest";
-  const adj = (((rotationDseOf(date) - platoonOffset) % cycle) + cycle) % cycle;
 
-  if (adj < style.dayShifts) return "day";
-  if (adj < style.dayShifts + style.nightShifts) return "night";
-
-  return "rest";
+  return estadoDeRotacionCliente(
+    rotationDseOf(date),
+    Number.isFinite(anclaDse as number)
+      ? (anclaDse as number)
+      : rotationDseOf(date),
+    platoonOffset,
+    style.dayShifts,
+    style.nightShifts,
+    style.restDays,
+    reglas,
+  );
 }
 
 /** The next `count` rest (libre) dates from `from` (inclusive) for a cycle+offset. */
@@ -167,6 +189,8 @@ export function nextRestDates(
   from: Date,
   count = 3,
   horizon = 45,
+  reglas?: ReglasDeRotacion | null,
+  anclaDse?: number,
 ): Date[] {
   const out: Date[] = [];
   const cycle = style.dayShifts + style.nightShifts + style.restDays;
@@ -175,7 +199,7 @@ export function nextRestDates(
   const d = new Date(from.getFullYear(), from.getMonth(), from.getDate());
 
   for (let i = 0; i < horizon && out.length < count; i++) {
-    if (rotationStatusOn(style, platoonOffset, d) === "rest")
+    if (rotationStatusOn(style, platoonOffset, d, reglas, anclaDse) === "rest")
       out.push(new Date(d));
     d.setDate(d.getDate() + 1);
   }
@@ -204,10 +228,17 @@ export function offsetForRestStart(
 export function weeklyRestWeekday(
   style: RotationCycle,
   platoonOffset: number,
+  reglas?: ReglasDeRotacion | null,
 ): string | null {
   const cycle = style.dayShifts + style.nightShifts + style.restDays;
-
   if (cycle <= 0 || cycle % 7 !== 0) return null;
+
+  /* CON DESCANSO DOMINICAL NO HAY DÍA FIJO. La regla corre el ciclo un día cada
+     vez que el franco cae en domingo, así que el franco siguiente aterriza dos
+     días de la semana más tarde en vez de uno: prometer «libra los lunes» es
+     prometer algo que deja de ser cierto a la segunda vuelta. */
+  if (reglas?.sundayDoubleRest) return null;
+
   const d = nextRestDates(style, platoonOffset, new Date(), 1, cycle + 7)[0];
 
   return d ? d.toLocaleDateString(localeActual(), { weekday: "long" }) : null;

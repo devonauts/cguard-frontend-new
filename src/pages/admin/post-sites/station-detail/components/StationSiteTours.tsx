@@ -589,14 +589,22 @@ export default function StationSiteTours({
                                 lat={cpLat}
                                 lng={cpLng}
                                 radius={cpRadius}
-                                onChange={(la, ln, r) => { setCpLat(la); setCpLng(ln); setCpRadius(r); }}
+                                onChange={(la, ln, r) => {
+                                  setCpLat(la);
+                                  setCpLng(ln);
+                                  setCpRadius(r);
+                                }}
                                 // Con el puesto como referencia, el mapa dice «a
                                 // 34 m del puesto»: la comprobación que importa
                                 // aquí, porque una dirección postal no distingue
                                 // el vestíbulo de la azotea y una distancia sí.
                                 reference={
                                   stationLat != null && stationLng != null
-                                    ? { lat: stationLat, lng: stationLng, label: 'el puesto' }
+                                    ? {
+                                        lat: stationLat,
+                                        lng: stationLng,
+                                        label: "el puesto",
+                                      }
                                     : null
                                 }
                               />

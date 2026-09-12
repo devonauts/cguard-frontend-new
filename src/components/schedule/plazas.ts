@@ -21,6 +21,17 @@ export interface CicloRotacion {
   dayShifts: number;
   nightShifts: number;
   restDays: number;
+  /**
+   * El fijo cambia de MITAD del día en cada franco (el rol peruano 7-1).
+   *
+   * Faltaba, y no era un olvido inocuo: el servidor decide con
+   * `nightShifts === 0 && !alterna` si la segunda plaza lleva la ventana
+   * ESPEJADA o compartida, así que sin este dato la vista previa enseñaba
+   * 19:00–07:00 en la plaza 2 y el servidor la creaba compartiendo 07:00–19:00.
+   * Lo que el operador veía al configurar no era lo que se guardaba — que es
+   * exactamente lo que este fichero existe para evitar.
+   */
+  alternatesDayNight?: boolean | null;
 }
 
 export interface PlazaPrevista {
@@ -54,6 +65,35 @@ export function minutosDeVentana(inicio: string, fin: string): number {
   return w === 0 ? 1440 : w;
 }
 
+/**
+ * Por qué esta configuración NO se va a poder guardar, o `null` si sí.
+ *
+ * El servidor LANZA cuando se pide alternancia con un ciclo que no tesela
+ * (`stationAutoConfigService`: «el ciclo debe ser múltiplo de los días de
+ * trabajo»). Aquí se caía en silencio a un fijo por bloque, así que la vista
+ * previa enseñaba una configuración razonable y el botón de guardar devolvía un
+ * error que no se entendía. Mejor decirlo antes de pulsarlo.
+ */
+export function porQueNoSePuede(e: EntradaDePlazas): string | null {
+  const dia = Math.max(0, Number(e.ciclo?.dayShifts) || 0);
+  const noche = Math.max(0, Number(e.ciclo?.nightShifts) || 0);
+  const libres = Math.max(0, Number(e.ciclo?.restDays) || 0);
+  const trabajo = dia + noche;
+  const largo = trabajo + libres;
+
+  if (e.scheduleType === "custom" && e.restCoverage === "alternate") {
+    if (trabajo <= 0)
+      return "La alternancia necesita un patrón con días de trabajo.";
+    if (largo % trabajo !== 0) {
+      return (
+        `El patrón (${trabajo} de trabajo / ${libres} de descanso) no permite alternancia exacta: ` +
+        "el ciclo tiene que ser múltiplo de los días de trabajo."
+      );
+    }
+  }
+  return null;
+}
+
 export function plazasPrevistas(e: EntradaDePlazas): PlazaPrevista[] {
   const inicio = e.inicio || "07:00";
   const fin = e.fin || "19:00";
@@ -84,10 +124,13 @@ export function plazasPrevistas(e: EntradaDePlazas): PlazaPrevista[] {
       aMinutos(inicio) === 0 && (fin === "23:59" || aMinutos(fin) === 0);
     const ini = todoElDia ? "07:00" : inicio;
     const fn = todoElDia ? "19:00" : fin;
-    // Las dos plazas comparten ventana y es la ROTACIÓN la que lleva a una a la
-    // noche… salvo que el patrón no tenga segundo tramo: entonces la noche la
-    // pone la VENTANA y la segunda plaza cubre el espejo.
-    const sinFaseDeNoche = noche === 0;
+    /* Las dos plazas comparten ventana y es la ROTACIÓN la que lleva a una a la
+       noche… salvo que el patrón no tenga segundo tramo NI alterne: entonces la
+       noche la pone la VENTANA y la segunda plaza cubre el espejo.
+       Misma condición que `stationAutoConfigService`: si alterna, las dos
+       comparten ventana y lo que las separa es la fecha de inicio de cada
+       vigilante. Sin el `&& !alterna` la vista previa mentía. */
+    const sinFaseDeNoche = noche === 0 && !e.ciclo?.alternatesDayNight;
 
     return [
       plaza(0, ini, fn),

@@ -96,6 +96,7 @@ import { COL_W, COL_STICKY_W } from "./gridBand";
 import { localeActual } from "@/lib/localeActual";
 import { cuentaComoCobertura } from "@/lib/shiftStatus";
 import { sePuedeMarcar, fechaMinimaEditable } from "@/lib/ventanaDeEdicion";
+import { jornadasDePlazas, jornadasPorTipo } from "@/lib/jornadasDePlazas";
 import {
   leerAparienciaDeLaCuenta,
   guardarApariencia,
@@ -8022,62 +8023,40 @@ export default function Schedule() {
               {(assignMode === "single" || assignMode === "rango") && (
                 <div>
                   {(() => {
-                    const hhmm = (x?: string | null) =>
-                      x ? String(x).slice(0, 5) : "";
-                    const etiqueta = (ini: string, fin: string) => {
-                      const h1 = parseInt(ini.split(":")[0], 10) || 0;
-                      const h2 = parseInt(fin.split(":")[0], 10) || 0;
-                      let span = (h2 - h1 + 24) % 24;
-
-                      if (span === 0) span = 24;
-                      if (span >= 23) return "24 horas";
-
-                      return h1 >= 18 || h1 < 6 ? "Nocturno" : "Diurno";
-                    };
-                    const bloques = new Map<
-                      string,
-                      { ini: string; fin: string }
-                    >();
-
-                    for (const pp of positions) {
-                      if (pp.stationId !== assignTarget?.stationId) continue;
-                      const ini = hhmm(pp.startTime) || "07:00";
-                      const fin = hhmm(pp.endTime) || "19:00";
-
-                      bloques.set(`${ini}|${fin}`, { ini, fin });
-                    }
-                    // Sin plazas configuradas no hay turnos que ofrecer: los dos
-                    // de siempre, que es mejor que una fila vacía.
-                    if (bloques.size === 0) {
-                      bloques.set("07:00|19:00", {
-                        ini: "07:00",
-                        fin: "19:00",
-                      });
-                      bloques.set("19:00|07:00", {
-                        ini: "19:00",
-                        fin: "07:00",
-                      });
-                    }
-                    /* Estación de 24 h cubierta por DOS que alternan: sus plazas
-                       declaran las MISMAS horas (07–19) y la mitad la decide la
-                       fase de la rotación, no la plaza. Ahí el único bloque que
-                       sale del catálogo es el diurno — y cubrir la noche era
-                       imposible. Se ofrece también su complementario. */
-                    if (bloques.size === 1) {
-                      const uno = Array.from(bloques.values())[0];
-                      const h1 = parseInt(uno.ini.split(":")[0], 10) || 0;
-                      const h2 = parseInt(uno.fin.split(":")[0], 10) || 0;
-                      let span = (h2 - h1 + 24) % 24;
-
-                      if (span === 0) span = 24;
-                      if (span < 23)
-                        bloques.set(`${uno.fin}|${uno.ini}`, {
-                          ini: uno.fin,
-                          fin: uno.ini,
-                        });
-                    }
-                    const lista = Array.from(bloques.values()).sort((x, y) =>
-                      x.ini.localeCompare(y.ini),
+                    /* Los turnos que de verdad existen en esta estación, con
+                       el espejo del servidor (`lib/jornadasDePlazas`). Aquí
+                       había una copia propia que NO filtraba sacafrancos —así
+                       que ofrecía la ventana del relevo como si fuera una
+                       jornada del puesto— y otra, en el diálogo de editar
+                       turno, que sí los filtraba pero no reponía la noche de un
+                       24 h. Dos copias de lo mismo que ya discrepaban entre
+                       sí. */
+                    const delPuesto = positions.filter(
+                      (pp: any) => pp.stationId === assignTarget?.stationId,
+                    );
+                    const estacionDelAsignado = stations.find(
+                      (x: any) => x.id === assignTarget?.stationId,
+                    );
+                    const jornadas = jornadasDePlazas(
+                      delPuesto as any,
+                      (estacionDelAsignado as any)?.scheduleType,
+                    );
+                    const lista = (
+                      jornadas.length
+                        ? jornadas
+                        : jornadasPorTipo(
+                            (estacionDelAsignado as any)?.scheduleType || "24h",
+                          )
+                    ).map(
+                      (b: {
+                        tipo: string;
+                        startTime: string;
+                        endTime: string;
+                      }) => ({
+                        ini: b.startTime,
+                        fin: b.endTime,
+                        etiqueta: b.tipo,
+                      }),
                     );
 
                     return (
@@ -8107,7 +8086,7 @@ export default function Schedule() {
                                 }}
                               >
                                 <div className="text-xs font-semibold">
-                                  {etiqueta(b.ini, b.fin)}
+                                  {b.etiqueta}
                                 </div>
                                 <div
                                   className="text-[10px] tabular-nums"
@@ -8791,37 +8770,31 @@ export default function Schedule() {
           const durH = ((eMin <= sMin ? eMin + 1440 : eMin) - sMin) / 60;
           const set = (patch: Partial<NonNullable<typeof shiftEdit>>) =>
             setShiftEdit((m) => (m ? { ...m, ...patch } : m));
-          const etiqueta = (ini: string, fin: string) => {
-            const h1 = parseInt(ini.split(":")[0], 10) || 0;
-            const h2 = parseInt(fin.split(":")[0], 10) || 0;
-            let span = (h2 - h1 + 24) % 24;
-
-            if (span === 0) span = 24;
-            if (span >= 23) return "24 horas";
-
-            return h1 >= 18 || h1 < 6 ? "Nocturno" : "Diurno";
-          };
-          // Los turnos que de verdad existen en la estación de destino.
-          const bloques = new Map<string, { ini: string; fin: string }>();
-
-          for (const pp of positions) {
-            if (pp.stationId !== shiftEdit.stationId) continue;
-            if ((pp.type || "fijo") === "sacafranco") continue;
-            bloques.set(
-              `${String(pp.startTime || "07:00").slice(0, 5)}|${String(pp.endTime || "19:00").slice(0, 5)}`,
-              {
-                ini: String(pp.startTime || "07:00").slice(0, 5),
-                fin: String(pp.endTime || "19:00").slice(0, 5),
-              },
-            );
-          }
-          if (bloques.size === 0) {
-            bloques.set("07:00|19:00", { ini: "07:00", fin: "19:00" });
-            bloques.set("19:00|07:00", { ini: "19:00", fin: "07:00" });
-          }
-          const turnos = Array.from(bloques.values()).sort((a, b) =>
-            a.ini.localeCompare(b.ini),
+          /* Los turnos que de verdad existen en la estación de destino, con el
+             espejo del servidor. Aquí había una copia propia que sí filtraba
+             sacafrancos pero NO reponía la mitad de noche de un 24 h: en un
+             puesto cuyas dos plazas comparten ventana, este diálogo sólo
+             ofrecía el turno de día y no había forma de mover a alguien a la
+             noche. */
+          const plazasDestino = positions.filter(
+            (pp: any) => pp.stationId === shiftEdit.stationId,
           );
+          const estacionDestino = stations.find(
+            (x: any) => x.id === shiftEdit.stationId,
+          );
+          const deLasPlazas = jornadasDePlazas(
+            plazasDestino as any,
+            (estacionDestino as any)?.scheduleType,
+          );
+          const turnos = (
+            deLasPlazas.length
+              ? deLasPlazas
+              : jornadasPorTipo((estacionDestino as any)?.scheduleType || "24h")
+          ).map((b: { tipo: string; startTime: string; endTime: string }) => ({
+            ini: b.startTime,
+            fin: b.endTime,
+            etiqueta: b.tipo,
+          }));
           const cambiaEstacion =
             shiftEdit.stationId !== shiftEdit.shift.stationId;
 
@@ -8902,7 +8875,7 @@ export default function Schedule() {
                             onClick={() => set({ start: b.ini, end: b.fin })}
                           >
                             <div className="text-xs font-semibold">
-                              {etiqueta(b.ini, b.fin)}
+                              {b.etiqueta}
                             </div>
                             <div
                               className="text-[10px] tabular-nums"

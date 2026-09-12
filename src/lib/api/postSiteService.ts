@@ -24,7 +24,6 @@ export interface PostSite {
   // Station-specific frontend fields
   latitud?: string | number;
   longitud?: string | number;
-  stationSchedule?: string | null;
   startingTimeInDay?: string | null;
   finishTimeInDay?: string | null;
   assignedGuards?: any[];
@@ -71,7 +70,6 @@ export interface RawBusinessInfoRow {
   latitude?: string | number;
   longitud?: string | number;
   longitude?: string | number;
-  stationSchedule?: string | null;
   startingTimeInDay?: string | null;
   finishTimeInDay?: string | null;
   chargeRate?: number | null;
@@ -280,7 +278,6 @@ const postSiteService = {
         // station-specific fields (backend uses business-info for post-sites)
         latitud: r.latitud ?? r.latitude ?? undefined,
         longitud: r.longitud ?? r.longitude ?? undefined,
-        stationSchedule: r.stationSchedule ?? undefined,
         startingTimeInDay: r.startingTimeInDay ?? undefined,
         finishTimeInDay: r.finishTimeInDay ?? undefined,
         assignedGuards: Array.isArray(r.assignedGuards)

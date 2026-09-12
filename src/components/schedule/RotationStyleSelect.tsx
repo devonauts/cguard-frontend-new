@@ -101,11 +101,7 @@ function previsualiza(
       corrimiento += 1;
     previo = st;
     out.push(
-      st === "S" || !alterna || vueltas % 2 === 0
-        ? st
-        : st === "D"
-          ? "N"
-          : "D",
+      st === "S" || !alterna || vueltas % 2 === 0 ? st : st === "D" ? "N" : "D",
     );
   }
 
@@ -233,8 +229,7 @@ export default function RotationStyleSelect({
 
   const fijos =
     dosTramos &&
-    (modoFijos ??
-      (estiloActual ? !rota(estiloActual) : (is24h ? 1 : 0) === 0));
+    (modoFijos ?? (estiloActual ? !rota(estiloActual) : (is24h ? 1 : 0) === 0));
 
   const encaja = (s: RotationStyle) =>
     dosTramos ? (fijos ? !rota(s) : rota(s)) : (s.nightShifts || 0) === 0;
@@ -272,9 +267,7 @@ export default function RotationStyleSelect({
    *  guardaría justo lo contrario de lo que se acaba de pedir. */
   const elegirModo = (quiereFijos: boolean) => {
     setModoFijos(quiereFijos);
-    const candidatos = styles.filter((s) =>
-      quiereFijos ? !rota(s) : rota(s),
-    );
+    const candidatos = styles.filter((s) => (quiereFijos ? !rota(s) : rota(s)));
 
     if (!candidatos.length) {
       // No hay ninguno: se abre el creador ya preparado para ese modo.
@@ -390,7 +383,9 @@ export default function RotationStyleSelect({
     const base = night > 0 ? `${work}-${night}-${rest}` : `${work}-${rest}`;
     // El nombre tiene que distinguirlos en la lista: dos «7-1», uno con
     // descanso dominical y otro sin él, son imposibles de elegir a ciegas.
-    const marcas = [cAlterna ? "D/N" : "", cDomingo ? "dom" : ""].filter(Boolean);
+    const marcas = [cAlterna ? "D/N" : "", cDomingo ? "dom" : ""].filter(
+      Boolean,
+    );
     const name = marcas.length ? `${base} · ${marcas.join(" · ")}` : base;
     // Reutiliza uno idéntico en vez de acumular duplicados en el catálogo: el
     // mismo ciclo creado dos veces son dos filas que luego hay que distinguir.
@@ -714,8 +709,9 @@ export default function RotationStyleSelect({
                     className="block text-[10px]"
                     style={{ color: "var(--ink-soft)" }}
                   >
-                    Para un puesto de 24 h con dos fijos: trabaja {parseInt(cWork) || 0} de
-                    día, descansa, {parseInt(cWork) || 0} de noche, descansa.
+                    Para un puesto de 24 h con dos fijos: trabaja{" "}
+                    {parseInt(cWork) || 0} de día, descansa,{" "}
+                    {parseInt(cWork) || 0} de noche, descansa.
                   </span>
                 </span>
               </label>
@@ -728,7 +724,8 @@ export default function RotationStyleSelect({
                   onChange={(e) => setCDomingo(e.target.checked)}
                 />
                 <span className="text-[11px] leading-snug">
-                  <b>Descanso dominical</b>: si el franco cae en domingo, son dos días
+                  <b>Descanso dominical</b>: si el franco cae en domingo, son
+                  dos días
                   <span
                     className="block text-[10px]"
                     style={{ color: "var(--ink-soft)" }}
@@ -763,9 +760,13 @@ export default function RotationStyleSelect({
                         width: 19,
                         height: 17,
                         background:
-                          cArranque === i ? "var(--brand)" : "var(--glass-sunken)",
+                          cArranque === i
+                            ? "var(--brand)"
+                            : "var(--glass-sunken)",
                         color:
-                          cArranque === i ? "var(--brand-ink)" : "var(--ink-soft)",
+                          cArranque === i
+                            ? "var(--brand-ink)"
+                            : "var(--ink-soft)",
                       }}
                       title={d.largo}
                       type="button"
@@ -816,7 +817,9 @@ export default function RotationStyleSelect({
                 {(() => {
                   const p = previsualiza(
                     Math.max(1, parseInt(cWork) || 0),
-                    dosTramos && !fijos ? Math.max(0, parseInt(cNight) || 0) : 0,
+                    dosTramos && !fijos
+                      ? Math.max(0, parseInt(cNight) || 0)
+                      : 0,
                     Math.max(0, parseInt(cRest) || 0),
                     cAlterna,
                     cDomingo,
@@ -830,7 +833,9 @@ export default function RotationStyleSelect({
                   return (
                     `${libres} días libres en ${p.length} — ` +
                     `${(libres / (p.length / 7)).toFixed(1)} por semana` +
-                    (dobles ? `, con ${dobles} franco${dobles > 1 ? "s" : ""} doble${dobles > 1 ? "s" : ""}.` : ".")
+                    (dobles
+                      ? `, con ${dobles} franco${dobles > 1 ? "s" : ""} doble${dobles > 1 ? "s" : ""}.`
+                      : ".")
                   );
                 })()}
               </div>

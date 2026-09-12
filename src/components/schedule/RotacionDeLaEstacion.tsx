@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Loader2, Plus, Users, UserCog } from "lucide-react";
+import { AlertTriangle, Loader2, Plus, Users, UserCog } from "lucide-react";
 
 import RotationStyleSelect from "./RotationStyleSelect";
 import {
   bloqueSiguiente,
   plazasPrevistas,
+  porQueNoSePuede,
   secuenciaDelCiclo,
   tramoSiguiente,
   type CicloRotacion,
@@ -103,6 +104,10 @@ export default function RotacionDeLaEstacion({
       entrada.ciclo?.dayShifts,
       entrada.ciclo?.nightShifts,
       entrada.ciclo?.restDays,
+      // Sin esta dependencia la vista previa no se recalcula al marcar
+      // «alterna día y noche», y vuelve a enseñar la ventana espejada que el
+      // servidor no va a guardar.
+      entrada.ciclo?.alternatesDayNight,
     ],
   );
 
@@ -110,6 +115,19 @@ export default function RotacionDeLaEstacion({
      puesto de una sola plaza «cada uno el suyo» y «el de la estación» son la
      misma frase, y ofrecer la elección sólo añade un paso que no decide nada. */
   const puedeIndividual = plazas.length >= 2;
+
+  /* Lo que el servidor va a rechazar, dicho ANTES de pulsar guardar. Ver
+     `porQueNoSePuede`. */
+  const impedimento = useMemo(
+    () => porQueNoSePuede(entrada),
+    [
+      entrada.scheduleType,
+      entrada.restCoverage,
+      entrada.ciclo?.dayShifts,
+      entrada.ciclo?.nightShifts,
+      entrada.ciclo?.restDays,
+    ],
+  );
   const individual = !!porPlaza && puedeIndividual;
 
   // La lista se recorta o se alarga con las plazas: cambiar las horas del
@@ -216,6 +234,21 @@ export default function RotacionDeLaEstacion({
 
   return (
     <div className="space-y-3">
+      {impedimento && (
+        <div
+          className="flex items-start gap-2.5 rounded-xl px-3 py-2.5 text-xs"
+          style={{
+            background: "color-mix(in oklab, var(--bad) 10%, transparent)",
+            border:
+              "1px solid color-mix(in oklab, var(--bad) 28%, transparent)",
+            color: "var(--bad-text)",
+          }}
+        >
+          <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0" />
+          <span>{impedimento}</span>
+        </div>
+      )}
+
       {puedeIndividual && (
         <div
           className="rounded-xl p-2.5"

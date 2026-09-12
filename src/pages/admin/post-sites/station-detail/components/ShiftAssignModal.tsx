@@ -1,5 +1,12 @@
-import { useTranslation } from 'react-i18next';
-import { localToday, rotationDseOf, nextRestDates, weeklyRestWeekday, shortRestLabel, type RotationCycle } from '@/lib/utils';
+import { useTranslation } from "react-i18next";
+import {
+  localToday,
+  rotationDseOf,
+  nextRestDates,
+  weeklyRestWeekday,
+  shortRestLabel,
+  type RotationCycle,
+} from "@/lib/utils";
 import { useEffect, useMemo, useState } from "react";
 import { Loader2, UserPlus, Repeat, CalendarRange, Moon } from "lucide-react";
 import { toast } from "sonner";
@@ -207,15 +214,27 @@ export default function ShiftAssignModal({
     if (cycle <= 0 || !rotationStartDate) return null;
     const start = new Date(rotationStartDate + "T12:00:00");
     const offset = ((rotationDseOf(start) % cycle) + cycle) % cycle; // phase = startDate
+    /* Las REGLAS y el ANCLA: con descanso dominical el ciclo se corre un día en
+       cada domingo, y sin pasarlas esta vista previa prometía francos que el
+       cuadrante no iba a cumplir. */
     const dates = nextRestDates(
       style,
       offset,
       start,
       style.restDays >= 2 ? 2 : 1,
+      45,
+      {
+        alternatesDayNight: (style as any).alternatesDayNight,
+        sundayDoubleRest: (style as any).sundayDoubleRest,
+      },
+      rotationDseOf(start),
     );
 
     return {
-      weekday: weeklyRestWeekday(style, offset),
+      weekday: weeklyRestWeekday(style, offset, {
+        alternatesDayNight: (style as any).alternatesDayNight,
+        sundayDoubleRest: (style as any).sundayDoubleRest,
+      }),
       dates,
       startWeekday: start.toLocaleDateString(localeActual(), {
         weekday: "long",
@@ -356,7 +375,6 @@ export default function ShiftAssignModal({
         setOccupiedPositionIds(op);
       })
       .catch(() => {});
-     
   }, [open]);
 
   /* ── LA PLAZA TRAE SU CICLO ───────────────────────────────────────────────
@@ -373,7 +391,6 @@ export default function ShiftAssignModal({
     );
 
     setSecuenciaPropia(pos?.rotationStyleId ? String(pos.rotationStyleId) : "");
-     
   }, [selectedPositionId, positions]);
 
   // Default the puesto to the first FREE one once positions/occupancy load.
@@ -388,7 +405,6 @@ export default function ShiftAssignModal({
     ) {
       setSelectedPositionId(free.id);
     }
-     
   }, [open, positionOptions]);
 
   // A slot already taken by THIS guard is the desired end state, not an error.
@@ -535,26 +551,39 @@ export default function ShiftAssignModal({
 
   return (
     <Modal
-      description={t('ui.ShiftAssignModal.programaLaCoberturaDelTurno')}
+      description={t("ui.ShiftAssignModal.programaLaCoberturaDelTurno")}
       footer={
         <>
-          <Button variant="outline" onClick={onClose}>{t('actions.cancel')}</Button>
-          <Button onClick={saveShift} disabled={
+          <Button variant="outline" onClick={onClose}>
+            {t("actions.cancel")}
+          </Button>
+          <Button
+            onClick={saveShift}
+            disabled={
               saving ||
               !shiftGuard ||
               (assignMode === "rotation" &&
                 (!selectedPositionId || (estacionSinCiclo && !secuenciaPropia)))
-            }>
-            {saving ? <Loader2 size={14} className="animate-spin" /> : <UserPlus size={14} />}
-            {assignMode === 'rotation' ? t('ui.ShiftAssignModal.asignarRotacion', 'Asignar rotación') : t('ui.ShiftAssignModal.crearTurno', 'Crear turno')}
+            }
+          >
+            {saving ? (
+              <Loader2 size={14} className="animate-spin" />
+            ) : (
+              <UserPlus size={14} />
+            )}
+            {assignMode === "rotation"
+              ? t("ui.ShiftAssignModal.asignarRotacion", "Asignar rotación")
+              : t("ui.ShiftAssignModal.crearTurno", "Crear turno")}
           </Button>
         </>
       }
       icon={<UserPlus className="h-5 w-5" />}
       open={open}
       size="md"
-      title={t('comun.asignarVigilante')}
-      onOpenChange={(o) => { if (!o) onClose(); }}
+      title={t("comun.asignarVigilante")}
+      onOpenChange={(o) => {
+        if (!o) onClose();
+      }}
     >
       <div className="space-y-4">
         <Segmented
@@ -717,12 +746,12 @@ export default function ShiftAssignModal({
                       </>
                     ) : (
                       <>
-                    Déjalo en «la de la estación» salvo que este vigilante tenga
-                    un ciclo distinto al de sus compañeros
-                    {bloques.length > 1
-                      ? ` (por ejemplo 2 de ${etiquetaPrimerBloque} y 2 de ${etiquetaSegundoBloque})`
-                      : ""}
-                    .
+                        Déjalo en «la de la estación» salvo que este vigilante
+                        tenga un ciclo distinto al de sus compañeros
+                        {bloques.length > 1
+                          ? ` (por ejemplo 2 de ${etiquetaPrimerBloque} y 2 de ${etiquetaSegundoBloque})`
+                          : ""}
+                        .
                       </>
                     )}
                   </p>

@@ -110,18 +110,10 @@ export const postSiteSchema = z.object({
           ),
       },
     ),
-  stationSchedule: z
-    .enum([
-      "1 hora",
-      "4 horas",
-      "8 horas",
-      "10 horas",
-      "12 horas",
-      "14 horas",
-      "16 horas",
-      "24 horas",
-    ])
-    .optional(),
+  /* Aquí vivía `stationSchedule`, un enum de duraciones sueltas («8 horas»,
+     «12 horas»…). Era un CUARTO formato del mismo dato, incompatible con las
+     plazas, con el array JSON que recibían las apps y con la franja. La columna
+     se eliminó de la base el 2026-09-12; el validador se va con ella. */
   startingTimeInDay: z
     .string()
     .trim()

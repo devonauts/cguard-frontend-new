@@ -231,9 +231,27 @@ export default function AsignacionEditModal({
     if (isNaN(d.getTime())) return null;
     const fase = ((rotationDseOf(d) % ciclo) + ciclo) % ciclo;
 
+    /* Las REGLAS y el ANCLA, que es lo que faltaba: con descanso dominical el
+       ciclo se corre un día en cada domingo, así que sin pasarlas la vista
+       previa prometía francos que el cuadrante no iba a cumplir a partir del
+       segundo. Ver `estadoDeRotacionCliente`. */
+    const reglas = {
+      alternatesDayNight: (estilo as any).alternatesDayNight,
+      sundayDoubleRest: (estilo as any).sundayDoubleRest,
+    };
+    const ancla = rotationDseOf(d);
+
     return {
-      weekday: weeklyRestWeekday(estilo, fase),
-      dates: nextRestDates(estilo, fase, d, estilo.restDays >= 2 ? 2 : 1),
+      weekday: weeklyRestWeekday(estilo, fase, reglas),
+      dates: nextRestDates(
+        estilo,
+        fase,
+        d,
+        estilo.restDays >= 2 ? 2 : 1,
+        45,
+        reglas,
+        ancla,
+      ),
       startWeekday: d.toLocaleDateString(localeActual(), {
         weekday: "long",
         day: "numeric",

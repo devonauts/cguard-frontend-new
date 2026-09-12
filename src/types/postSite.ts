@@ -22,7 +22,6 @@ export interface PostSite {
   // Station-specific frontend fields
   latitud?: string | number;
   longitud?: string | number;
-  stationSchedule?: string | null;
   startingTimeInDay?: string | null;
   finishTimeInDay?: string | null;
   assignedGuards?: any[];

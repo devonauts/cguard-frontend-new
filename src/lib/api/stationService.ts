@@ -20,7 +20,6 @@ export interface PostSite {
   // station fields
   latitud?: string | number;
   longitud?: string | number;
-  stationSchedule?: string | null;
   startingTimeInDay?: string | null;
   finishTimeInDay?: string | null;
   assignedGuards?: GuardAssignment[];
@@ -98,7 +97,6 @@ export interface RawStationRow {
   latitude?: string | number;
   longitud?: string | number;
   longitude?: string | number;
-  stationSchedule?: string | null;
   startingTimeInDay?: string | null;
   finishTimeInDay?: string | null;
   assignedGuards?: GuardAssignment[];
@@ -321,7 +319,6 @@ const stationService = {
             : ((r.status as "active" | "inactive") ?? "inactive"),
         latitud: r.latitud ?? r.latitude ?? undefined,
         longitud: r.longitud ?? r.longitude ?? undefined,
-        stationSchedule: r.stationSchedule ?? undefined,
         startingTimeInDay: r.startingTimeInDay ?? undefined,
         finishTimeInDay: r.finishTimeInDay ?? undefined,
         assignedGuards: Array.isArray(r.assignedGuards)
