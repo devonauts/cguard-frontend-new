@@ -422,10 +422,11 @@ const postSiteService = {
           p.latitud ?? p.latitude ?? existing.latitud ?? existing.latitude,
         longitud:
           p.longitud ?? p.longitude ?? existing.longitud ?? existing.longitude,
-        // preserve or update schedule/times if provided
-        stationSchedule: p.stationSchedule ?? existing.stationSchedule,
-        startingTimeInDay: p.startingTimeInDay ?? existing.startingTimeInDay,
-        finishTimeInDay: p.finishTimeInDay ?? existing.finishTimeInDay,
+        /* El horario NO vive en la sede: `stationSchedule`,
+           `startingTimeInDay` y `finishTimeInDay` son columnas de `stations`.
+           Se mandaban aquí y el backend las descartaba en silencio (ni el
+           modelo ni el `pick` del repositorio las tienen), así que parecía que
+           se guardaban y no se guardaba nada. */
         chargeRate:
           p.chargeRate !== undefined
             ? p.chargeRate
