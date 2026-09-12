@@ -29,6 +29,7 @@ import { useTranslation } from "react-i18next";
 import { EmptyState, SkeletonCards, Segmented, Field } from "@/components/kit";
 import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import type { PostSite } from "@/types";
+import { jornadasDePlazas, jornadasPorTipo } from "@/lib/jornadasDePlazas";
 
 interface SiteProp extends PostSite {
   latitude?: number | string | null;
@@ -42,41 +43,12 @@ interface SiteProp extends PostSite {
 // it does NOT belong to a single station and is NOT counted in a station's
 // required guards. Hence a 12h diurno/nocturno station requires 1 guard (the
 // fijo) — the sacafranco is shared.
-function jornadaType(
-  start?: string,
-  end?: string,
-): "diurno" | "nocturno" | null {
-  const hour = (s?: string) => {
-    if (!s) return null;
-    const m = String(s).match(/(\d{1,2}):(\d{2})/);
-    return m ? parseInt(m[1], 10) : null;
-  };
-  const sh = hour(start);
-  const eh = hour(end);
-  if (sh == null) return null;
-  if (eh != null && eh <= sh) return "nocturno"; // crosses midnight
-  if (sh >= 18 || sh < 5) return "nocturno";
-  return "diurno";
-}
-
-// Minutos que cubre una ventana, cruzando la medianoche si hace falta.
-function minutosDeVentana(inicio: string, fin: string): number {
-  const min = (s: string) => {
-    const m = String(s).match(/(\d{1,2}):(\d{2})/);
-    return m ? parseInt(m[1], 10) * 60 + parseInt(m[2], 10) : null;
-  };
-  const a = min(inicio);
-  const b = min(fin);
-  if (a == null || b == null) return 0;
-  const w = (b - a + 1440) % 1440;
-  return w === 0 ? 1440 : w;
-}
-
 // El nombre que ve el usuario. «Matutina» se quedó fuera a propósito: una
 // jornada de 07:00 a 19:00 no es una mañana.
 const ETIQUETA_JORNADA: Record<string, string> = {
   diurno: "Diurna",
   nocturno: "Nocturna",
+  "24 horas": "24 horas",
   sacafranco: "Relevo",
   personalizada: "Personalizada",
 };
@@ -84,87 +56,40 @@ const ETIQUETA_JORNADA: Record<string, string> = {
 // El tinte de la jornada sale de los semánticos del sistema: día = warn,
 // noche = info, relevo = ok. Se calcula en línea (nada de clases de color
 // escritas a mano) para que respete claro/oscuro y el acento elegido. Las
-// claves antiguas («matutina», «nocturna») siguen aquí porque el respaldo en
-// JSON de las estaciones sin plazas todavía las trae.
+// claves antiguas («matutina», «nocturna») siguen aquí porque hay datos que
+// todavía las traen.
 const JORNADA_TONE: Record<string, "warn" | "info" | "ok" | "neutral"> = {
   matutina: "warn",
   diurno: "warn",
   nocturna: "info",
   nocturno: "info",
+  "24 horas": "warn",
   sacafranco: "ok",
   personalizada: "neutral",
 };
 
-// Las jornadas que se pintan salen de las PLAZAS (`stationPosition`), que es lo
-// único que lee el generador de turnos. `stationSchedule` era una copia en JSON
-// que dejaba de coincidir en cuanto alguien tocaba el horario desde el
-// Programador o desde la ficha de la estación; sólo se usa como respaldo para
-// las estaciones antiguas que aún no tienen plazas.
+/* Las jornadas salen de las PLAZAS, que es lo único que el generador de turnos
+   lee. La aritmética es UNA y vive en `lib/jornadasDePlazas`, espejo del
+   servidor: aquí había una copia propia, y una copia que no se actualiza es una
+   pantalla que miente. Sin plazas se enseña la cobertura prevista según el tipo
+   de horario. */
 function jornadasDeEstacion(r: any): any[] {
-  const plazas = Array.isArray(r?.positions) ? r.positions : [];
-  if (plazas.length) {
-    const porVentana = new Map<string, any>();
-    for (const pz of plazas) {
-      const esRelevo = String(pz?.type || "") === "sacafranco";
-      const tipo = esRelevo
-        ? "sacafranco"
-        : jornadaType(pz?.startTime, pz?.endTime) || "personalizada";
-      const clave = esRelevo
-        ? "sacafranco"
-        : `${tipo}|${pz?.startTime ?? ""}|${pz?.endTime ?? ""}`;
-      const cuantos = Number(pz?.guardsNeeded) || 1;
-      const ya = porVentana.get(clave);
-      if (ya) {
-        ya.guardsCount = String(Number(ya.guardsCount) + cuantos);
-        continue;
-      }
-      porVentana.set(clave, {
-        tipo,
-        nombre: ETIQUETA_JORNADA[tipo] || pz?.name || tipo,
-        startTime: esRelevo ? "" : pz?.startTime || "",
-        endTime: esRelevo ? "" : pz?.endTime || "",
-        guardsCount: String(cuantos),
-      });
-    }
-    const jornadas = Array.from(porVentana.values());
+  const desdePlazas = jornadasDePlazas(r?.positions, r?.scheduleType);
+  const base = desdePlazas.length
+    ? desdePlazas
+    : jornadasPorTipo(r?.scheduleType);
 
-    /* LA MITAD ESPEJO DE UN PUESTO DE 24 H. Un 24 h se guarda como dos plazas,
-       y `auto-positions` las crea con la MISMA ventana (07:00–19:00): el turno
-       de noche sale de la rotación, no de la hora de la plaza. Sin esto, la
-       lista colapsaba las dos en un solo chip «Diurna ×2» y el puesto parecía
-       cerrado por la noche — el mismo fallo que ya se corrigió en el servidor
-       (`bloquesDesdePlazas`) y en la vista de turnos de la estación. */
-    const fijas = jornadas.filter((j) => j.tipo !== "sacafranco");
+  return base.map((j) => {
+    const clave = j.tipo.toLowerCase();
 
-    if (
-      String(r?.scheduleType || "") === "24h" &&
-      fijas.length === 1 &&
-      fijas[0].startTime &&
-      fijas[0].endTime &&
-      minutosDeVentana(fijas[0].startTime, fijas[0].endTime) < 23 * 60
-    ) {
-      const dia = fijas[0];
-      const espejo = jornadaType(dia.endTime, dia.startTime) || "nocturno";
-
-      jornadas.push({
-        tipo: espejo,
-        nombre: ETIQUETA_JORNADA[espejo] || espejo,
-        startTime: dia.endTime,
-        endTime: dia.startTime,
-        guardsCount: dia.guardsCount,
-      });
-    }
-
-    return jornadas;
-  }
-  try {
-    const raw = r?.stationSchedule;
-    if (raw && typeof raw === "string" && raw.trim().startsWith("[")) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed;
-    }
-  } catch {}
-  return [];
+    return {
+      tipo: clave,
+      nombre: ETIQUETA_JORNADA[clave] || j.tipo,
+      startTime: j.startTime,
+      endTime: j.endTime,
+      guardsCount: String(j.guardsCount),
+    };
+  });
 }
 
 function jornadaChip(tipo?: string): React.CSSProperties {

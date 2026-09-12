@@ -28,6 +28,7 @@ import { Segmented, IconTile, EmptyState } from "@/components/kit";
 import type { Station } from "@/types";
 
 import { localeActual } from "@/lib/localeActual";
+import { jornadasDePlazas, jornadasPorTipo } from "@/lib/jornadasDePlazas";
 interface StationDetail extends Station {
   stationSchedule?: string | null;
 }
@@ -335,129 +336,21 @@ export default function StationShifts({
   // the source of truth for what coverage is required; positions are just the
   // staffing used to cover it. So we read the station schedule FIRST and only
   // fall back to positions when no explicit schedule exists.
+  /* Las jornadas salen de las PLAZAS, con el espejo del servidor
+     (`lib/jornadasDePlazas`). Aquí vivía una CUARTA copia de esa aritmética
+     —servidor, lista de estaciones, esta vista y el asistente de la sede— y
+     cada copia que no se actualizó fue una pantalla que mentía: ésta perdía la
+     fila de la noche en los puestos de 24 h.
+
+     Sin plazas se enseña la cobertura PREVISTA según el tipo de horario, para
+     que una estación recién creada no salga en blanco. */
   const jornadas: Jornada[] = useMemo(() => {
-    const ALL_DAYS = ["lun", "mar", "mie", "jue", "vie", "sab", "dom"];
-    const fijos = positions.filter(
-      (p: PositionRow) => (p.type || "fijo") !== "sacafranco",
-    );
+    const tipoDeHorario = (station as any)?.scheduleType as string | undefined;
+    const desdePlazas = jornadasDePlazas(positions as any[], tipoDeHorario);
 
-    // UNIVERSAL SOURCE OF TRUTH = the station's fijo POSITIONS, grouped by their
-    // block (startTime|endTime). Each DISTINCT block is one required jornada
-    // needing ONE guard on duty at a time — fijos sharing a block are alternating
-    // (24x24 → one 24h block, 1 guard/day; NOT a phantom day+night split), while
-    // fijos in different blocks each need their own coverage (16h/2×8h → two
-    // 8h jornadas). This mirrors the backend's block-based gap engine, so the
-    // sketch matches whatever horario the tenant configured — any hours, any
-    // number of guards, with or without sacafranco.
-    const blockLabel = (start: string, end: string): string => {
-      const sh = parseInt(String(start).split(":")[0], 10) || 0;
-      const eh = parseInt(String(end).split(":")[0], 10) || 0;
-      let span = (eh - sh + 24) % 24;
-      if (span === 0) span = 24;
-      if (span >= 23) return "24 horas";
-      return sh >= 18 || sh < 6 ? "Nocturno" : "Diurno";
-    };
-    if (fijos.length > 0) {
-      const blocks = new Map<string, { startTime: string; endTime: string }>();
-      for (const p of fijos) {
-        const startTime = p.startTime || "07:00";
-        const endTime = p.endTime || "19:00";
-        blocks.set(`${startTime}|${endTime}`, { startTime, endTime });
-      }
-      /* ── UN PUESTO DE 24 H SIEMPRE TIENE DOS MITADES ────────────────────
-         Agrupar por ventana DISTINTA da una sola jornada cuando las dos
-         plazas comparten horario — que es justo la forma de un 24 h cuyo
-         patrón ALTERNA día y noche: las dos plazas dicen 07:00–19:00 y lo que
-         lleva a uno a la noche es la rotación, no la ventana.
-
-         Con una sola fila, los turnos de 19:00 no tenían dónde pintarse y
-         DESAPARECÍAN de la vista: el puesto salía cubierto sólo de día y la
-         noche ni figuraba, aunque los turnos estaban generados y el vigilante
-         iba a ir. La estación dice que es de 24 h; entonces hay dos mitades,
-         las declare la plaza o no. */
-      if (
-        (station as any)?.scheduleType === "24h" &&
-        blocks.size === 1
-      ) {
-        const [b] = Array.from(blocks.values());
-        const span =
-          (((parseInt(String(b.endTime).split(":")[0], 10) || 0) -
-            (parseInt(String(b.startTime).split(":")[0], 10) || 0) +
-            24) %
-            24) || 24;
-        // Un bloque de 24 h de verdad (24x24) NO se parte: ahí una persona
-        // cubre el día entero y dos filas serían una cobertura inventada.
-        if (span < 23) {
-          blocks.set(`${b.endTime}|${b.startTime}`, {
-            startTime: b.endTime,
-            endTime: b.startTime,
-          });
-        }
-      }
-
-      return Array.from(blocks.values())
-        .sort((a, b) => a.startTime.localeCompare(b.startTime))
-        .map(
-          (b) =>
-            ({
-              tipo: blockLabel(b.startTime, b.endTime),
-              startTime: b.startTime,
-              endTime: b.endTime,
-              guardsCount: 1,
-              days: ALL_DAYS,
-            }) as any,
-        );
-    }
-
-    // No positions yet: fall back to the station's scheduleType so an
-    // un-staffed station still shows its intended coverage.
-    const st = (station as any)?.scheduleType as string | undefined;
-    if (st === "24h") {
-      return [
-        {
-          tipo: "Diurno",
-          startTime: "07:00",
-          endTime: "19:00",
-          guardsCount: 1,
-          days: ALL_DAYS,
-        } as any,
-        {
-          tipo: "Nocturno",
-          startTime: "19:00",
-          endTime: "07:00",
-          guardsCount: 1,
-          days: ALL_DAYS,
-        } as any,
-      ];
-    }
-    if (st === "12h-day" || st === "12h-night") {
-      const isNight = st === "12h-night";
-      return [
-        {
-          tipo: isNight ? "Nocturno" : "Diurno",
-          startTime: isNight ? "19:00" : "07:00",
-          endTime: isNight ? "07:00" : "19:00",
-          guardsCount: 1,
-          days: ALL_DAYS,
-        } as any,
-      ];
-    }
-    // Legacy custom: explicit hand-edited stationSchedule JSON.
-    let parsed: any[] = [];
-    try {
-      const raw = station?.stationSchedule;
-      if (Array.isArray(raw)) parsed = raw;
-      else if (raw && typeof raw === "string" && raw.trim().startsWith("["))
-        parsed = JSON.parse(raw);
-    } catch {}
-    if (parsed.length > 0) {
-      return parsed.map((j) => ({
-        ...j,
-        days: j.days || ALL_DAYS,
-        guardsCount: j.guardsCount || 1,
-      }));
-    }
-    return [];
+    return (
+      desdePlazas.length ? desdePlazas : jornadasPorTipo(tipoDeHorario)
+    ) as any;
   }, [station, positions]);
 
   // Guard color assignment

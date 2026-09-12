@@ -51,6 +51,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { stationService } from "@/lib/api/stationService";
 import { ApiService } from "@/services/api/apiService";
+import { jornadasDePlazas } from "@/lib/jornadasDePlazas";
 import { clientService } from "@/lib/api/clientService";
 import { ServiceTypePicker } from "@/components/post-sites/ServiceTypeBadge";
 import AddressAutocomplete, {
@@ -905,47 +906,44 @@ export default function PostSiteWizard({
             const plazas = (r as any).positions as any[] | undefined;
 
             if (plazas?.length) {
-              jornadas = plazas.map((p: any, idx: number) => {
-                const esRelevo = (p.type || "fijo") === "sacafranco";
-                const h = parseInt(String(p.startTime || "").split(":")[0], 10);
-                const deNoche = Number.isFinite(h) && (h >= 18 || h < 6);
-                const tipo: JornadaDraft["tipo"] = esRelevo
-                  ? "sacafranco"
-                  : deNoche
-                    ? "nocturna"
-                    : "matutina";
+              /* La aritmética de agrupar plazas en jornadas es UNA y vive en
+                 `lib/jornadasDePlazas`, espejo del servidor. Aquí había una
+                 copia propia que, entre otras cosas, no reponía la mitad de
+                 noche de un 24 h: dos «Diurna» hacían que `deriveScheduleType`
+                 degradara el puesto a 12h-day al guardar, o sea que abrir el
+                 asistente y darle a guardar apagaba el turno de noche. */
+              jornadas = jornadasDePlazas(plazas, (r as any).scheduleType).map(
+                (j) => {
+                  const esNoche = j.tipo === "Nocturno";
 
-                return {
-                  id: String(p.id || idx),
-                  nombre: esRelevo ? "Relevo" : deNoche ? "Nocturna" : "Diurna",
-                  tipo,
+                  return {
+                    // La jornada es un GRUPO de plazas (dos fijos en la misma
+                    // ventana son una jornada de dos personas), así que no
+                    // hereda el id de ninguna: la identifica su ventana.
+                    id: `${j.startTime}-${j.endTime}`,
+                    nombre: esNoche ? "Nocturna" : "Diurna",
+                    tipo: (esNoche
+                      ? "nocturna"
+                      : "matutina") as JornadaDraft["tipo"],
+                    startTime: j.startTime,
+                    endTime: j.endTime,
+                    guardsCount: String(j.guardsCount),
+                  };
+                },
+              );
+
+              // Los sacafrancos no son jornada del puesto pero SÍ se editan
+              // aquí: se añaden aparte, que es como los espera el editor.
+              for (const p of plazas) {
+                if ((p.type || "fijo") !== "sacafranco") continue;
+                jornadas.push({
+                  id: String(p.id),
+                  nombre: "Relevo",
+                  tipo: "sacafranco",
                   startTime: p.startTime || "",
                   endTime: p.endTime || "",
                   guardsCount: String(p.guardsNeeded ?? 1),
-                };
-              });
-
-              /* LA SEGUNDA MITAD DE UN 24 H. `auto-positions` crea las dos
-                 plazas de un puesto de 24 h con la MISMA ventana: la noche sale
-                 de la rotación, no de la hora de la plaza. Si se rehidratan tal
-                 cual, el editor enseña «Diurna» dos veces y `deriveScheduleType`
-                 degrada el puesto a 12h-day al guardar — es decir, abrir el
-                 asistente y darle a guardar apagaría el turno de noche. */
-              const fijas = jornadas.filter((j) => j.tipo !== "sacafranco");
-
-              if (
-                (r as any).scheduleType === "24h" &&
-                fijas.length === 2 &&
-                fijas[0].startTime === fijas[1].startTime &&
-                fijas[0].endTime === fijas[1].endTime &&
-                fijas[0].startTime !== fijas[0].endTime
-              ) {
-                const noche = fijas[1];
-
-                noche.tipo = "nocturna";
-                noche.nombre = "Nocturna";
-                noche.startTime = fijas[0].endTime;
-                noche.endTime = fijas[0].startTime;
+                });
               }
             }
 
