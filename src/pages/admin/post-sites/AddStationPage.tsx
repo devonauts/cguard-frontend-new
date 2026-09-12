@@ -50,10 +50,22 @@ function jornadaType(
 
   if (sh == null) return null;
   if (eh != null && eh <= sh) return "nocturno";
-  if (sh >= 18 || sh < 5) return "nocturno";
+  /* La noche acaba a las SEIS, no a las cinco. Este 5 era el único del sistema:
+     el resto —servidor y CRM— usa `FIN_DE_LA_NOCHE = 6`, así que una estación
+     que empieza a las 05:30 salía «diurna» aquí y nocturna en todas las demás
+     pantallas. */
+  if (sh >= UMBRAL_DE_NOCHE || sh < FIN_DE_LA_NOCHE) return "nocturno";
 
   return "diurno";
 }
+/* El corte día/noche. Vive también en `lib/jornadasDePlazas` y, configurable
+   por empresa, en el servidor (`schedulingSettingsService`). Medido 2026-09-12:
+   ninguna empresa lo ha cambiado del 18 por defecto, así que aquí se deja fijo;
+   el día que alguna lo mueva hay que leerlo de sus ajustes, como ya hace el
+   planificador. */
+const UMBRAL_DE_NOCHE = 18;
+const FIN_DE_LA_NOCHE = 6;
+
 function requiredFijos(_schedule?: string): number {
   return 1;
 }
