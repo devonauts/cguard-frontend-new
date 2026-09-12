@@ -159,26 +159,35 @@ const JORNADA_PRESETS: {
   startTime: string;
   endTime: string;
 }[] = [
+  /* ── UN SOLO VOCABULARIO, Y LAS MISMAS HORAS ─────────────────────────────
+     Esto decía «Matutina 06:00–18:00» y la ficha del puesto, «12h Diurno
+     07:00–19:00»: el mismo turno con otro nombre y otra hora según por dónde
+     entraras. Y no era sólo cosmético — el propio código de rehidratación de
+     más abajo documenta que un `tipo` desconocido reventaba
+     `JORNADA_STYLE[tipo].ring` y se llevaba por delante el editor entero.
+
+     Manda el vocabulario del Horario y de la app del vigilante: Diurno y
+     Nocturno, 07:00–19:00 y 19:00–07:00. */
   {
     tipo: "matutina",
-    label: "Matutina",
-    labelKey: "ui.PostSiteWizard.jornada.matutina",
-    startTime: "06:00",
-    endTime: "18:00",
+    label: "Diurna",
+    labelKey: "ui.PostSiteWizard.jornada.diurna",
+    startTime: "07:00",
+    endTime: "19:00",
   },
   {
     tipo: "nocturna",
     label: "Nocturna",
     labelKey: "ui.PostSiteWizard.jornada.nocturna",
-    startTime: "18:00",
-    endTime: "06:00",
+    startTime: "19:00",
+    endTime: "07:00",
   },
   {
     tipo: "sacafranco",
-    label: "Sacafranco",
-    labelKey: "ui.PostSiteWizard.jornada.sacafranco",
-    startTime: "06:00",
-    endTime: "18:00",
+    label: "Relevo",
+    labelKey: "ui.PostSiteWizard.jornada.relevo",
+    startTime: "07:00",
+    endTime: "19:00",
   },
   {
     tipo: "personalizada",
@@ -680,8 +689,8 @@ function StationRow({
             className="py-3 text-center text-xs italic"
             style={{ color: "var(--ink-faint)" }}
           >
-            Sin turnos — añade Matutina, Nocturna o Sacafranco con los botones
-            de arriba.
+            Sin jornadas — añade Diurna, Nocturna o Relevo con los botones de
+            arriba.
           </p>
         ) : (
           <div className="space-y-1.5">
@@ -878,13 +887,47 @@ export default function PostSiteWizard({
             { postSite: id } as any,
             { limit: 100, offset: 0 },
           );
+          /* ── LAS JORNADAS SALEN DE LAS PLAZAS ──────────────────────────
+             `stationSchedule` es una columna JSON que describe lo mismo que
+             las PLAZAS (`stationPositions`), y sólo las plazas son lo que el
+             generador de turnos lee. Mientras el asistente se rehidrataba del
+             JSON, este editor enseñaba una cosa y el puesto trabajaba otra:
+             cambiar el turno desde la ficha movía las plazas y dejaba el JSON
+             con las jornadas viejas.
+
+             Ahora se leen las plazas. El JSON queda de respaldo sólo para un
+             puesto que aún no las tenga. */
           const loadedStations: StationDraft[] = (
             (stationsResp.rows || []) as unknown as StationApiRow[]
           ).map((r: StationApiRow) => {
             let jornadas: JornadaDraft[] = [];
 
+            const plazas = (r as any).positions as any[] | undefined;
+
+            if (plazas?.length) {
+              jornadas = plazas.map((p: any, idx: number) => {
+                const esRelevo = (p.type || "fijo") === "sacafranco";
+                const h = parseInt(String(p.startTime || "").split(":")[0], 10);
+                const deNoche = Number.isFinite(h) && (h >= 18 || h < 6);
+                const tipo: JornadaDraft["tipo"] = esRelevo
+                  ? "sacafranco"
+                  : deNoche
+                    ? "nocturna"
+                    : "matutina";
+
+                return {
+                  id: String(p.id || idx),
+                  nombre: esRelevo ? "Relevo" : deNoche ? "Nocturna" : "Diurna",
+                  tipo,
+                  startTime: p.startTime || "",
+                  endTime: p.endTime || "",
+                  guardsCount: String(p.guardsNeeded ?? 1),
+                };
+              });
+            }
+
             try {
-              const raw = r.stationSchedule;
+              const raw = jornadas.length ? null : r.stationSchedule;
 
               if (
                 raw &&
@@ -1007,18 +1050,12 @@ export default function PostSiteWizard({
       postSite: postSiteId,
       startingTimeInDay: firstJornada?.startTime || undefined,
       finishTimeInDay: firstJornada?.endTime || undefined,
-      stationSchedule:
-        s.jornadas.length > 0
-          ? JSON.stringify(
-              s.jornadas.map((j) => ({
-                nombre: j.nombre,
-                tipo: j.tipo,
-                startTime: j.startTime,
-                endTime: j.endTime,
-                guardsCount: j.guardsCount || "1",
-              })),
-            )
-          : undefined,
+      /* Aquí se escribía `stationSchedule`, una TERCERA descripción del mismo
+         horario junto a la franja y las plazas — y en un formato distinto del
+         que escriben las otras dos pantallas del CRM. Las jornadas ya viajan a
+         `auto-positions`, que crea las plazas, y las plazas son lo único que el
+         generador de turnos lee. Escribir el JSON sólo servía para tener dos
+         versiones que se podían contradecir, y se contradecían. */
     };
   };
 

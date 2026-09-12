@@ -7118,6 +7118,8 @@
     },
     "noResults": "Brak wyników",
     "jornada": {
+      "diurna": "Dzienna",
+      "relevo": "Zmiennik",
       "reglaDesactivada": "· reguła wyłączona",
       "loadError": "Nie udało się wczytać zasad czasu pracy.",
       "saveSuccess": "Zasady czasu pracy zapisane.",

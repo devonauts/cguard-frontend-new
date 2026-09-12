@@ -7118,6 +7118,8 @@
     },
     "noResults": "Aucun résultat",
     "jornada": {
+      "diurna": "Jour",
+      "relevo": "Relève",
       "reglaDesactivada": "· règle désactivée",
       "loadError": "Impossible de charger la politique de temps de travail.",
       "saveSuccess": "Politique de temps de travail enregistrée.",

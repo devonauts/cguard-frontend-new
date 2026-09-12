@@ -7118,6 +7118,8 @@
     },
     "noResults": "Keine Ergebnisse",
     "jornada": {
+      "diurna": "Tagschicht",
+      "relevo": "Ablösung",
       "reglaDesactivada": "· Regel deaktiviert",
       "loadError": "Die Arbeitszeitrichtlinie konnte nicht geladen werden.",
       "saveSuccess": "Arbeitszeitrichtlinie gespeichert.",

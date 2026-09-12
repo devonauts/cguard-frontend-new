@@ -7118,6 +7118,8 @@
     },
     "noResults": "Nessun risultato",
     "jornada": {
+      "diurna": "Diurno",
+      "relevo": "Sostituzione",
       "reglaDesactivada": "· regola disattivata",
       "loadError": "Impossibile caricare le regole sull'orario di lavoro.",
       "saveSuccess": "Regole sull'orario di lavoro salvate.",

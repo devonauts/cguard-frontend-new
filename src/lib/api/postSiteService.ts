@@ -352,10 +352,8 @@ const postSiteService = {
         active: typeof p.status === "string" ? p.status === "active" : true,
         latitud: p.latitud ?? p.latitude ?? undefined,
         longitud: p.longitud ?? p.longitude ?? undefined,
-        // allow creating with schedule and times if provided
-        stationSchedule: p.stationSchedule ?? undefined,
-        startingTimeInDay: p.startingTimeInDay ?? undefined,
-        finishTimeInDay: p.finishTimeInDay ?? undefined,
+        /* El horario NO vive en la sede (ver el alta más abajo): son columnas
+           de `stations` y el backend las descartaba en silencio. */
       };
 
       // Debug log to inspect payload sent to backend (helps diagnose 400s for missing fields)

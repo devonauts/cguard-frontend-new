@@ -28,9 +28,6 @@ import {
 import { useTranslation } from "react-i18next";
 import { EmptyState, SkeletonCards, Segmented, Field } from "@/components/kit";
 import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
-import StationGeofencePolygon, {
-  type PolyPoint,
-} from "@/components/GoogleMap/StationGeofencePolygon";
 import type { PostSite } from "@/types";
 
 interface SiteProp extends PostSite {
@@ -61,14 +58,21 @@ function jornadaType(
   if (sh >= 18 || sh < 5) return "nocturno";
   return "diurno";
 }
-// Fijo positions required for a single jornada — always 1 (a 24h post would be 2).
-function requiredFijos(_schedule?: string): number {
-  return 1;
-}
 
-// El tinte de la jornada sale de los semánticos del sistema: matutina = día,
-// nocturna = noche, sacafranco = relevo. Se calcula en línea (nada de clases de
-// color escritas a mano) para que respete claro/oscuro y el acento elegido.
+// El nombre que ve el usuario. «Matutina» se quedó fuera a propósito: una
+// jornada de 07:00 a 19:00 no es una mañana.
+const ETIQUETA_JORNADA: Record<string, string> = {
+  diurno: "Diurna",
+  nocturno: "Nocturna",
+  sacafranco: "Relevo",
+  personalizada: "Personalizada",
+};
+
+// El tinte de la jornada sale de los semánticos del sistema: día = warn,
+// noche = info, relevo = ok. Se calcula en línea (nada de clases de color
+// escritas a mano) para que respete claro/oscuro y el acento elegido. Las
+// claves antiguas («matutina», «nocturna») siguen aquí porque el respaldo en
+// JSON de las estaciones sin plazas todavía las trae.
 const JORNADA_TONE: Record<string, "warn" | "info" | "ok" | "neutral"> = {
   matutina: "warn",
   diurno: "warn",
@@ -77,6 +81,49 @@ const JORNADA_TONE: Record<string, "warn" | "info" | "ok" | "neutral"> = {
   sacafranco: "ok",
   personalizada: "neutral",
 };
+
+// Las jornadas que se pintan salen de las PLAZAS (`stationPosition`), que es lo
+// único que lee el generador de turnos. `stationSchedule` era una copia en JSON
+// que dejaba de coincidir en cuanto alguien tocaba el horario desde el
+// Programador o desde la ficha de la estación; sólo se usa como respaldo para
+// las estaciones antiguas que aún no tienen plazas.
+function jornadasDeEstacion(r: any): any[] {
+  const plazas = Array.isArray(r?.positions) ? r.positions : [];
+  if (plazas.length) {
+    const porVentana = new Map<string, any>();
+    for (const pz of plazas) {
+      const esRelevo = String(pz?.type || "") === "sacafranco";
+      const tipo = esRelevo
+        ? "sacafranco"
+        : jornadaType(pz?.startTime, pz?.endTime) || "personalizada";
+      const clave = esRelevo
+        ? "sacafranco"
+        : `${tipo}|${pz?.startTime ?? ""}|${pz?.endTime ?? ""}`;
+      const cuantos = Number(pz?.guardsNeeded) || 1;
+      const ya = porVentana.get(clave);
+      if (ya) {
+        ya.guardsCount = String(Number(ya.guardsCount) + cuantos);
+        continue;
+      }
+      porVentana.set(clave, {
+        tipo,
+        nombre: ETIQUETA_JORNADA[tipo] || pz?.name || tipo,
+        startTime: esRelevo ? "" : pz?.startTime || "",
+        endTime: esRelevo ? "" : pz?.endTime || "",
+        guardsCount: String(cuantos),
+      });
+    }
+    return Array.from(porVentana.values());
+  }
+  try {
+    const raw = r?.stationSchedule;
+    if (raw && typeof raw === "string" && raw.trim().startsWith("[")) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch {}
+  return [];
+}
 
 function jornadaChip(tipo?: string): React.CSSProperties {
   const t = JORNADA_TONE[String(tipo || "").toLowerCase()] ?? "neutral";
@@ -102,7 +149,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
     localStorage.setItem("stationsView.viewMode", viewMode);
   }, [viewMode]);
   const [query, setQuery] = useState("");
-  const [showNew, setShowNew] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedStationId, setSelectedStationId] = useState<string | null>(
     null,
@@ -132,22 +178,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
   const [editingShiftId, setEditingShiftId] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // form state for create
-  const [newName, setNewName] = useState("");
-  const [newDescription, setNewDescription] = useState("");
-  const [stationSchedule, setStationSchedule] = useState("");
-  const [numberOfGuardsInStation, setNumberOfGuardsInStation] = useState("1");
-  const [startingTimeInDay, setStartingTimeInDay] = useState("");
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const [finishTimeInDay, setFinishTimeInDay] = useState("");
-  const [geofenceRadius, setGeofenceRadius] = useState("100");
-  const [geofencePolygon, setGeofencePolygon] = useState<PolyPoint[]>([]);
-
-  // Required guards is derived from the turno: 1 fijo per jornada. The sacafranco
-  // covers rest days, is shared across stations, and is NOT counted here.
-  useEffect(() => {
-    setNumberOfGuardsInStation(String(requiredFijos(stationSchedule)));
-  }, [stationSchedule]);
 
   useEffect(() => {
     let mounted = true;
@@ -194,13 +225,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
 
         // Normalize station objects for UI
         const mapped = (filtered || []).map((r: any) => {
-          let jornadas: any[] = [];
-          try {
-            const raw = r.stationSchedule;
-            if (raw && typeof raw === "string" && raw.trim().startsWith("[")) {
-              jornadas = JSON.parse(raw);
-            }
-          } catch {}
+          const jornadas = jornadasDeEstacion(r);
           const toNum = (v: any) => {
             const n = Number(v);
             return Number.isFinite(n) ? n : null;
@@ -279,10 +304,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
       mounted = false;
     };
   }, [selectedStationId, site, stations]);
-
-  useEffect(() => {
-    // no-op: guard assignment delegated to AssignGuards component
-  }, [showNew, site]);
 
   useEffect(() => {
     // no-op placeholder for detail modal lifecycle
@@ -547,65 +568,6 @@ export default function Stations({ site }: { site?: SiteProp }) {
     // some endpoints return embedded objects under 'assigned' or similar
     if (Array.isArray(detail.assigned)) return detail.assigned;
     return [];
-  };
-
-  const createStation = async () => {
-    try {
-      const tenantId = site?.tenantId || localStorage.getItem("tenantId") || "";
-      const postSiteId = site?.id || "";
-      if (!newName || !postSiteId) {
-        toast.error(t("postSites.stations.provideName", "Provide a name"));
-        return;
-      }
-      if (!stationSchedule) {
-        toast.error(
-          t("postSites.stations.provideSchedule", "Select a schedule"),
-        );
-        return;
-      }
-      const latitud = site?.latitud || site?.latitude || "";
-      const longitud = site?.longitud || site?.longitude || "";
-      const payload = {
-        stationName: newName,
-        postSiteId,
-        latitud,
-        longitud,
-        stationSchedule,
-        numberOfGuardsInStation,
-        startingTimeInDay,
-        finishTimeInDay,
-        geofenceRadius: Number(geofenceRadius) || 100,
-        geofencePolygon: geofencePolygon.length >= 3 ? geofencePolygon : null,
-        description: newDescription,
-      } as any;
-      const res = await ApiService.post(`/tenant/${tenantId}/station`, {
-        data: payload,
-      });
-      invalidateEntity("stations");
-      const created = (res && (res.data || res)) || res;
-      const adopted = (created && created.adoptedTours) || 0;
-      if (adopted > 0)
-        toast.success(
-          `${adopted} ronda(s) del puesto anterior recuperada(s) en este puesto`,
-        );
-      setStations((s) => [created, ...s]);
-      setNewName("");
-      setNewDescription("");
-      setStationSchedule("");
-      setNumberOfGuardsInStation("1");
-      setStartingTimeInDay("");
-      setFinishTimeInDay("");
-      setGeofenceRadius("100");
-      setGeofencePolygon([]);
-      setShowNew(false);
-      toast.success(t("postSites.stations.created", "Station created"));
-    } catch (err: any) {
-      console.error("Failed creating station", err);
-      toast.error(
-        err?.message ||
-          t("postSites.stations.createFailed", "Failed creating station"),
-      );
-    }
   };
 
   const removeStation = async (id: string) => {
@@ -1572,9 +1534,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
                             selectedStationDetail?.endTime ||
                             selectedStationDetail?.finish ||
                             selectedStationDetail?.end_time,
-                        ) ||
-                        selectedStationDetail.stationSchedule ||
-                        "-"
+                        ) || "-"
                       }
                     />
 

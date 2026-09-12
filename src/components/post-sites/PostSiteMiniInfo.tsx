@@ -78,11 +78,6 @@ export default function PostSiteMiniInfo({
               ? site.assignedGuards.length
               : (site.numberOfGuardsInStation ?? 0))}
         </div>
-        {site.stationSchedule && (
-          <div className="px-2 py-1 text-xs rounded-full bg-yellow-50 text-yellow-800">
-            Horario: {site.stationSchedule}
-          </div>
-        )}
         {site.latitud && site.longitud && (
           <div className="px-2 py-1 text-xs rounded-full bg-muted/30 text-foreground">
             {parseFloat(site.latitud).toFixed(4)},{" "}

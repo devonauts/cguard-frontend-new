@@ -27,6 +27,21 @@ export interface PostSite {
   guardsCount?: number;
   numberOfGuardsInStation?: string | number | null;
   serviceType?: string;
+  positions?: StationPositionRow[];
+}
+
+/** Una PLAZA del puesto (`stationPosition`): la jornada real que trabaja un
+ *  vigilante. Es lo único que lee el generador de turnos, así que cualquier
+ *  pantalla que pinte horarios tiene que salir de aquí. */
+export interface StationPositionRow {
+  id: string;
+  stationId?: string;
+  name?: string | null;
+  type?: string | null;
+  startTime?: string | null;
+  endTime?: string | null;
+  guardsNeeded?: number | null;
+  sortOrder?: number | null;
 }
 
 export interface PostSiteFilters {
@@ -91,6 +106,7 @@ export interface RawStationRow {
   numberOfGuardsInStation?: string | number | null;
   serviceType?: string;
   serviceConfig?: unknown;
+  positions?: StationPositionRow[];
 }
 
 export interface PaginationOptions {
@@ -319,6 +335,9 @@ const stationService = {
               : undefined,
         numberOfGuardsInStation: r.numberOfGuardsInStation ?? undefined,
         serviceType: r.serviceType ?? undefined,
+        // Las plazas viajan con la lista (una consulta agrupada en el servidor):
+        // son la fuente de las jornadas que pintan las pantallas.
+        positions: Array.isArray(r.positions) ? r.positions : undefined,
       }));
       return { rows: mappedRows as unknown as PostSite[], count: data.count };
     });
@@ -363,7 +382,6 @@ const stationService = {
       active: typeof p.status === "string" ? p.status === "active" : true,
       latitud: p.latitud ?? p.latitude ?? undefined,
       longitud: p.longitud ?? p.longitude ?? undefined,
-      stationSchedule: p.stationSchedule ?? undefined,
       startingTimeInDay: p.startingTimeInDay ?? undefined,
       finishTimeInDay: p.finishTimeInDay ?? undefined,
       serviceType: p.serviceType ?? undefined,
@@ -434,7 +452,10 @@ const stationService = {
       latitud: p.latitud ?? p.latitude ?? existing.latitud ?? existing.latitude,
       longitud:
         p.longitud ?? p.longitude ?? existing.longitud ?? existing.longitude,
-      stationSchedule: p.stationSchedule ?? existing.stationSchedule,
+      /* `stationSchedule` NO se manda: las jornadas viven en las PLAZAS
+         (`stationPosition`), que es lo único que lee el generador de turnos.
+         Al omitir la clave el `pick` del repositorio deja la columna intacta
+         en las estaciones antiguas que aún la tienen. */
       startingTimeInDay: p.startingTimeInDay ?? existing.startingTimeInDay,
       finishTimeInDay: p.finishTimeInDay ?? existing.finishTimeInDay,
       serviceType: p.serviceType ?? existing.serviceType ?? undefined,

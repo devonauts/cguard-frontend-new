@@ -7118,6 +7118,8 @@
     },
     "noResults": "Geen resultaten",
     "jornada": {
+      "diurna": "Dagdienst",
+      "relevo": "Aflossing",
       "reglaDesactivada": "· regel uitgeschakeld",
       "loadError": "Het werktijdenbeleid kon niet worden geladen.",
       "saveSuccess": "Werktijdenbeleid opgeslagen.",

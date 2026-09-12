@@ -309,7 +309,6 @@ export default function GuardDashboard() {
                 </p>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   {st.startingTimeInDay || "?"} — {st.finishTimeInDay || "?"}
-                  {st.stationSchedule && ` · ${st.stationSchedule}`}
                 </p>
               </div>
             ))}

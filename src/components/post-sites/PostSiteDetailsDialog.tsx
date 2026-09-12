@@ -119,9 +119,10 @@ export default function PostSiteDetailsDialog({
                   {t("comun.horario")}
                 </p>
                 <p className="text-sm">
-                  {(site as any).stationSchedule ??
-                    (site as any).scheduleLabel ??
-                    "-"}
+                  {(site as any).startingTimeInDay &&
+                  (site as any).finishTimeInDay
+                    ? `${(site as any).startingTimeInDay} – ${(site as any).finishTimeInDay}`
+                    : ((site as any).scheduleLabel ?? "-")}
                 </p>
               </div>
               <div>

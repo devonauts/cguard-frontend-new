@@ -84,15 +84,6 @@ function turnoToScheduleType(
 type TurnoType = "diurno" | "nocturno" | "24h" | "custom";
 const ALL_DAYS = ["lun", "mar", "mie", "jue", "vie", "sab", "dom"];
 
-// One jornada (turno block) persisted on stationSchedule.
-interface Jornada {
-  tipo: string;
-  startTime: string;
-  endTime: string;
-  guardsCount: string;
-  days: string[];
-}
-
 const TURNO_OPTIONS: {
   key: TurnoType;
   label: string;
@@ -163,66 +154,6 @@ function windowMinutes(start: string, end: string): number {
   const w = (toMin(end) - toMin(start) + 1440) % 1440;
 
   return w === 0 ? 1440 : w;
-}
-
-// Build the station's stationSchedule jornadas (the turno) from the selected
-// type. Custom with a per-guard block length emits ONE jornada PER BLOCK so
-// the horario/calendar reads the real per-vigilante coverage.
-function buildJornadas(
-  turnoType: TurnoType,
-  start: string,
-  end: string,
-  blockHours?: number,
-): Jornada[] {
-  if (turnoType === "24h") {
-    return [
-      {
-        tipo: "Diurno",
-        startTime: "07:00",
-        endTime: "19:00",
-        guardsCount: "1",
-        days: ALL_DAYS,
-      },
-      {
-        tipo: "Nocturno",
-        startTime: "19:00",
-        endTime: "07:00",
-        guardsCount: "1",
-        days: ALL_DAYS,
-      },
-    ];
-  }
-  const tipo =
-    turnoType === "diurno"
-      ? "Diurno"
-      : turnoType === "nocturno"
-        ? "Nocturno"
-        : "Personalizado";
-  const win = windowMinutes(start, end);
-
-  if (
-    turnoType === "custom" &&
-    blockHours &&
-    win > 0 &&
-    win % (blockHours * 60) === 0
-  ) {
-    const blockMin = blockHours * 60;
-    const k = win / blockMin;
-
-    if (k > 1) {
-      return Array.from({ length: k }, (_, i) => ({
-        tipo: "Personalizado",
-        startTime: toHHMM(toMin(start) + i * blockMin),
-        endTime: toHHMM(toMin(start) + (i + 1) * blockMin),
-        guardsCount: "1",
-        days: ALL_DAYS,
-      }));
-    }
-  }
-
-  return [
-    { tipo, startTime: start, endTime: end, guardsCount: "1", days: ALL_DAYS },
-  ];
 }
 
 /**
@@ -430,14 +361,6 @@ export default function AddStationPage() {
     try {
       const latitud = site?.latitud || site?.latitude || "";
       const longitud = site?.longitud || site?.longitude || "";
-      // The turno (horario) is stored as jornadas on stationSchedule so the
-      // station's horario/calendar reads it as the required coverage.
-      const jornadas = buildJornadas(
-        turnoType,
-        startingTimeInDay,
-        finishTimeInDay,
-        turnoType === "custom" && blockHours ? Number(blockHours) : undefined,
-      );
       const stationStart = turnoType === "24h" ? "00:00" : startingTimeInDay;
       const stationEnd = turnoType === "24h" ? "23:59" : finishTimeInDay;
       const payload = {
@@ -446,7 +369,12 @@ export default function AddStationPage() {
         postSiteId,
         latitud,
         longitud,
-        stationSchedule: JSON.stringify(jornadas),
+        /* El horario ya no se escribe aquí como JSON. Lo describen las PLAZAS,
+           que las crea `auto-positions` con este mismo `turnoType`, y son lo
+           único que el generador de turnos lee. El JSON era una tercera
+           versión del mismo dato — y en un formato distinto del que escribía
+           el asistente de la sede, que es lo que hacía que un puesto se viera
+           de una forma o de otra según por dónde lo abrieras. */
         turnoType,
         is24h: turnoType === "24h",
         numberOfGuardsInStation: String(requiredGuards),
@@ -733,35 +661,37 @@ export default function AddStationPage() {
                       />
                     </button>
                     {avanzado && (
-                    <div
-                      className="border-t p-3"
-                      style={{ borderColor: "var(--hairline)" }}
-                    >
-                    <RotacionDeLaEstacion
-                      entrada={{
-                        scheduleType: turnoToScheduleType(turnoType),
-                        inicio: startingTimeInDay,
-                        fin: finishTimeInDay,
-                        ciclo: rotStyle,
-                        blockHours:
-                          turnoType === "custom" && blockHours
-                            ? Number(blockHours)
-                            : undefined,
-                        restCoverage:
-                          turnoType === "custom" ? restCoverage : undefined,
-                      }}
-                      etiquetaPrimerBloque={primerTramo}
-                      etiquetaSegundoBloque={segundoTramo}
-                      porPlaza={estilosPorPlaza}
-                      tenantId={
-                        site?.tenantId || localStorage.getItem("tenantId") || ""
-                      }
-                      value={rotationStyleId}
-                      onChange={setRotationStyleId}
-                      onPorPlazaChange={setEstilosPorPlaza}
-                      onStyleChange={setRotStyle}
-                    />
-                    </div>
+                      <div
+                        className="border-t p-3"
+                        style={{ borderColor: "var(--hairline)" }}
+                      >
+                        <RotacionDeLaEstacion
+                          entrada={{
+                            scheduleType: turnoToScheduleType(turnoType),
+                            inicio: startingTimeInDay,
+                            fin: finishTimeInDay,
+                            ciclo: rotStyle,
+                            blockHours:
+                              turnoType === "custom" && blockHours
+                                ? Number(blockHours)
+                                : undefined,
+                            restCoverage:
+                              turnoType === "custom" ? restCoverage : undefined,
+                          }}
+                          etiquetaPrimerBloque={primerTramo}
+                          etiquetaSegundoBloque={segundoTramo}
+                          porPlaza={estilosPorPlaza}
+                          tenantId={
+                            site?.tenantId ||
+                            localStorage.getItem("tenantId") ||
+                            ""
+                          }
+                          value={rotationStyleId}
+                          onChange={setRotationStyleId}
+                          onPorPlazaChange={setEstilosPorPlaza}
+                          onStyleChange={setRotStyle}
+                        />
+                      </div>
                     )}
                   </div>
                 )}

@@ -2590,6 +2590,8 @@
     },
     "noResults": "Sem resultados",
     "jornada": {
+      "diurna": "Diurna",
+      "relevo": "Rendição",
       "reglaDesactivada": "· regra desativada",
       "loadError": "Não foi possível carregar a política de jornada.",
       "saveSuccess": "Política de jornada salva.",

@@ -6650,6 +6650,8 @@
     },
     "noResults": "No results",
     "jornada": {
+      "diurna": "Day shift",
+      "relevo": "Relief",
       "reglaDesactivada": "· rule disabled",
       "loadError": "The work schedule policy could not be loaded.",
       "saveSuccess": "Work schedule policy saved.",
