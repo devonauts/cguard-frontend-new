@@ -4,6 +4,36 @@
  * without hardcoding any values.
  */
 
+/**
+ * ════════════════════════════════════════════════════════════════════════════
+ * DÓNDE ABRE UN MAPA CUANDO NO SE SABE NADA
+ *
+ * Estas coordenadas son Quito, y estaban COPIADAS a mano en doce componentes
+ * distintos —`AddressAutocomplete`, `GoogleMapEmbed`, el selector de puntos de
+ * ronda, la geocerca de la estación, el centro de operaciones, los mapas de
+ * GPS…—. Cada copia era un sitio más donde un tenant mexicano veía su mapa
+ * abrirse sobre Ecuador, y arreglarlo significaba encontrarlas todas.
+ *
+ * Es un RESPALDO, no un defecto de producto: lo primero que se mira siempre es
+ * la ubicación de la empresa (`getTenantLocation`), que se cachea al entrar.
+ * Esto sólo decide qué se ve mientras eso no esté disponible — un tenant recién
+ * creado, o el instante antes de que responda la petición.
+ *
+ * `centroPorDefecto()` ya aplica ese orden. Úsala en vez de escribir números.
+ * ════════════════════════════════════════════════════════════════════════════
+ */
+export const CENTRO_DE_RESPALDO = { lat: -0.2295, lng: -78.5236 } as const;
+
+/**
+ * El centro con el que abrir un mapa: la empresa si se sabe dónde está, y el
+ * respaldo si no. Un solo sitio, para que cambiarlo sea cambiarlo de verdad.
+ */
+export function centroPorDefecto(): { lat: number; lng: number } {
+  const biz = getTenantLocation();
+
+  return biz ? { lat: biz.lat, lng: biz.lng } : { ...CENTRO_DE_RESPALDO };
+}
+
 const LAT_KEY = "tenantLat";
 const LNG_KEY = "tenantLng";
 const COUNTRY_KEY = "tenantCountry";

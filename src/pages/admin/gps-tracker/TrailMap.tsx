@@ -37,6 +37,7 @@ import {
 import "@/styles/map.css";
 import i18n from "@/i18n";
 import { localeActual } from "@/lib/localeActual";
+import { CENTRO_DE_RESPALDO } from "@/utils/tenantLocation";
 /** Un ping del GPS. Se re-exporta desde la geometría para no partir el tipo en
  *  dos: la página del historial lo importa desde aquí desde siempre. */
 export type TrailPoint = PuntoRecorrido;
@@ -197,7 +198,7 @@ export default function TrailMap({
         mapRef.current = new g.maps.Map(ref.current, {
           center: first
             ? { lat: first.lat, lng: first.lng }
-            : { lat: -0.18, lng: -78.46 },
+            : { ...CENTRO_DE_RESPALDO },
           zoom: 14,
           disableDefaultUI: true,
           zoomControl: true,

@@ -3122,7 +3122,7 @@
       "backToStations": "Stations",
       "createShift": "Create shift",
       "editShift": "Edit shift",
-      "guards": "guards",
+      "guards": "guard(s)",
       "placeholderNickname": "Nickname / internal call sign",
       "provideName": "Provide a name",
       "selectStationFirst": "Select a station first",

@@ -10,6 +10,7 @@ import {
   Clock,
   SlidersHorizontal,
   ShieldPlus,
+  ChevronDown,
 } from "lucide-react";
 
 import OperationSetupAlert from "./components/OperationSetup/OperationSetupAlert";
@@ -244,6 +245,9 @@ export default function AddStationPage() {
   const [newDescription, setNewDescription] = useState("");
   const [turnoType, setTurnoType] = useState<TurnoType | "">("");
   const [rotationStyleId, setRotationStyleId] = useState("");
+  /* Los ajustes de rotación nacen plegados: al crear un puesto la única
+     pregunta que hace falta es cuántas horas cubre. */
+  const [avanzado, setAvanzado] = useState(false);
   const [startingTimeInDay, setStartingTimeInDay] = useState("");
   const [finishTimeInDay, setFinishTimeInDay] = useState("");
   // Custom: hours each fijo works per day ('' = one fijo covers the whole window).
@@ -689,9 +693,50 @@ export default function AddStationPage() {
                   </div>
                 </div>
 
-                {/* Patrón de rotación — chosen here at the station; assigned guards inherit it. */}
+                {/* ── UNA PREGUNTA ARRIBA, EL RESTO PLEGADO ───────────────────
+                    Mismo criterio que la ficha del puesto: al crear, la única
+                    pregunta que hace falta es cuántas horas cubre. El ciclo de
+                    descansos ya no se elige aquí por defecto —se pregunta al
+                    asignar al primer vigilante, que es cuando significa algo—
+                    pero quien quiera fijarlo de entrada lo tiene a un clic. */}
                 {turnoType && (
-                  <div className="glass-sunken p-3">
+                  <div
+                    className="rounded-xl border"
+                    style={{ borderColor: "var(--hairline)" }}
+                  >
+                    <button
+                      aria-expanded={avanzado}
+                      className="cg-focus flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left"
+                      type="button"
+                      onClick={() => setAvanzado((v) => !v)}
+                    >
+                      <span className="min-w-0">
+                        <span className="block text-xs font-semibold text-foreground">
+                          Ajustes avanzados
+                        </span>
+                        <span
+                          className="mt-0.5 block truncate text-[11px]"
+                          style={{ color: "var(--ink-soft)" }}
+                        >
+                          {rotationStyleId
+                            ? "Ciclo de descansos elegido"
+                            : "El ciclo de descansos se elige al asignar al primer vigilante"}
+                        </span>
+                      </span>
+                      <ChevronDown
+                        className="shrink-0 transition-transform"
+                        size={16}
+                        style={{
+                          color: "var(--ink-soft)",
+                          transform: avanzado ? "rotate(180deg)" : undefined,
+                        }}
+                      />
+                    </button>
+                    {avanzado && (
+                    <div
+                      className="border-t p-3"
+                      style={{ borderColor: "var(--hairline)" }}
+                    >
                     <RotacionDeLaEstacion
                       entrada={{
                         scheduleType: turnoToScheduleType(turnoType),
@@ -716,6 +761,8 @@ export default function AddStationPage() {
                       onPorPlazaChange={setEstilosPorPlaza}
                       onStyleChange={setRotStyle}
                     />
+                    </div>
+                    )}
                   </div>
                 )}
 

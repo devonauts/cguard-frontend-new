@@ -54,6 +54,7 @@ import {
   leerBloqueDeEmpresa,
   cambioLocalReciente,
 } from "@/lib/appearanceSync";
+import { CENTRO_DE_RESPALDO } from "@/utils/tenantLocation";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -541,7 +542,7 @@ export function OperationsMap({
           ? { lat: defaultCenter.lat, lng: defaultCenter.lng }
           : first
             ? { lat: first.lat, lng: first.lng }
-            : { lat: -0.18, lng: -78.46 };
+            : { ...CENTRO_DE_RESPALDO };
 
         if (defaultCenter)
           appliedCenterRef.current = `${defaultCenter.lat},${defaultCenter.lng},${defaultCenter.zoom ?? 12}`;

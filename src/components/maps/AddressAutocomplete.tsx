@@ -6,7 +6,9 @@ import { Loader2, MapPin, AlertCircle, Search } from "lucide-react";
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { getTenantLocation } from "@/utils/tenantLocation";
+import { getTenantLocation,
+  CENTRO_DE_RESPALDO,
+} from "@/utils/tenantLocation";
 import { acquireMap, type PooledMap } from "@/utils/mapPool";
 import { useMapPalette } from "@/utils/mapTheme";
 import { useMapPopup, mapPopupActions } from "@/components/maps/MapPopup";
@@ -283,9 +285,9 @@ export default function AddressAutocomplete({
     const biz = getTenantLocation();
     const { lat: iLat, lng: iLng } = initialCoordsRef.current;
     const lat =
-      (Number.isFinite(iLat) ? iLat : undefined) ?? biz?.lat ?? -0.2295;
+      (Number.isFinite(iLat) ? iLat : undefined) ?? biz?.lat ?? CENTRO_DE_RESPALDO.lat;
     const lng =
-      (Number.isFinite(iLng) ? iLng : undefined) ?? biz?.lng ?? -78.5236;
+      (Number.isFinite(iLng) ? iLng : undefined) ?? biz?.lng ?? CENTRO_DE_RESPALDO.lng;
     const center = new google.maps.LatLng(lat, lng);
     const oscuro = document.documentElement.classList.contains("dark");
 

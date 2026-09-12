@@ -252,23 +252,21 @@ export default function RotationStyleSelect({
   );
   const recomendados = useMemo(() => options.filter(encaja), [options]);
 
-  // Auto-pick a sensible default when nothing valid is selected for this horario.
-  useEffect(() => {
-    if (!options.length) return;
-    if (value && options.some((o) => o.id === value)) return;
-    // El defecto sigue siendo el de siempre: quien no toque nada no nota el
-    // cambio. Lo que se abrió es el catálogo, no el valor por defecto.
-    const base = recomendados.length ? recomendados : options;
-    const preferred = is24h
-      ? base.find((o) => o.name === "4-4-2") || base[0]
-      : dosTramos && !fijos
-        ? base.find((o) => o.name === "2-2-2") || base[0]
-        : base.find((o) => o.name === "8-2") ||
-          base.find((o) => o.name === "5-2") ||
-          base[0];
+  /* ── AQUÍ SE ELEGÍA UN CICLO POR TI ─────────────────────────────────────
+     Este efecto preseleccionaba un patrón —4-4-2 en un 24 h, 2-2-2 o 8-2 en el
+     resto— en cuanto el componente montaba sin valor. Es el gemelo en el CRM
+     del defecto que el backend estampaba en `auto-positions`: al crear una
+     estación acababas con un ciclo que nunca elegiste, y de él salían turnos y
+     alarmas de cobertura que nadie pidió.
 
-    if (preferred) onChange(preferred.id);
-  }, [options, is24h, dosTramos, fijos]);
+     «¿Cada cuántos días libra?» no se puede contestar antes de que exista la
+     persona: depende de su fecha de inicio y de con quién se escalona. Ahora se
+     pregunta al ASIGNAR (ver `ShiftAssignModal`), y el primer vigilante fija el
+     ciclo del puesto.
+
+     Cambiar de modo (rotativo ⇄ turnos fijos) SÍ sigue re-eligiendo, en
+     `elegirModo`: ahí es una acción explícita del operador y dejar seleccionado
+     un patrón del otro modo guardaría justo lo contrario de lo que pidió. */
 
   /** Cambiar de modo re-elige patrón: dejar seleccionado uno del otro modo
    *  guardaría justo lo contrario de lo que se acaba de pedir. */

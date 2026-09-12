@@ -15,9 +15,10 @@ import { useChartColors } from "@/lib/chartColors";
 import { metrosEntre } from "@/utils/mapMotion";
 import { formatearCoord, formatearDistancia } from "@/utils/geoMedidas";
 import "@/styles/map.css";
+import { CENTRO_DE_RESPALDO } from "@/utils/tenantLocation";
 
 // Quito fallback when nothing is set yet.
-const FALLBACK: [number, number] = [-0.2295, -78.5236];
+const FALLBACK: [number, number] = [CENTRO_DE_RESPALDO.lat, CENTRO_DE_RESPALDO.lng];
 
 /**
  * Pin del punto de control.

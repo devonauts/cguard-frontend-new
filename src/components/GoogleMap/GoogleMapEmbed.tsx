@@ -10,7 +10,9 @@ import { useTranslation } from "react-i18next";
 
 import i18n from "@/i18n";
 import { loadGoogleMaps } from "@/utils/loadGoogleMaps";
-import { getTenantLocation } from "@/utils/tenantLocation";
+import { getTenantLocation,
+  CENTRO_DE_RESPALDO,
+} from "@/utils/tenantLocation";
 import { useMapPalette, type MapPalette } from "@/utils/mapTheme";
 import {
   useMapPopup,
@@ -707,15 +709,15 @@ export default function GoogleMapEmbed({
 
           if (biz) return { lat: biz.lat, lng: biz.lng, zoom: 12 };
 
-          return { lat: -0.2295, lng: -78.5236, zoom: 12 };
+          return { ...CENTRO_DE_RESPALDO, zoom: 12 };
         }
 
         const c = await determineCenter();
 
         if (!mounted || !mapRef.current) return;
         // Ensure coordinates are finite numbers
-        const centerLat = Number.isFinite(c.lat) ? c.lat : -0.2295;
-        const centerLng = Number.isFinite(c.lng) ? c.lng : -78.5236;
+        const centerLat = Number.isFinite(c.lat) ? c.lat : CENTRO_DE_RESPALDO.lat;
+        const centerLng = Number.isFinite(c.lng) ? c.lng : CENTRO_DE_RESPALDO.lng;
         const center = { lat: centerLat, lng: centerLng };
         const initialZoom =
           c.zoom ??
@@ -1315,13 +1317,13 @@ export default function GoogleMapEmbed({
         ? lat
         : markerRef.current?.getPosition
           ? markerRef.current.getPosition().lat()
-          : (getTenantLocation()?.lat ?? -0.2295);
+          : (getTenantLocation()?.lat ?? CENTRO_DE_RESPALDO.lat);
     const rawLng =
       typeof lng === "number"
         ? lng
         : markerRef.current?.getPosition
           ? markerRef.current.getPosition().lng()
-          : (getTenantLocation()?.lng ?? -78.5236);
+          : (getTenantLocation()?.lng ?? CENTRO_DE_RESPALDO.lng);
 
     // Guard against NaN — skip update entirely if coordinates are invalid
     if (!Number.isFinite(rawLat) || !Number.isFinite(rawLng)) return;
@@ -1444,7 +1446,7 @@ export default function GoogleMapEmbed({
         ? `${lat},${lng}`
         : address
           ? encodeURIComponent(address)
-          : `${bizFallback?.lat ?? -0.2295},${bizFallback?.lng ?? -78.5236}`;
+          : `${bizFallback?.lat ?? CENTRO_DE_RESPALDO.lat},${bizFallback?.lng ?? CENTRO_DE_RESPALDO.lng}`;
     const tParam = mapType === "satellite" ? "&t=k" : "";
     const src = `https://maps.google.com/maps?q=${coords}&z=${zoom}${tParam}&output=embed`;
 

@@ -21,6 +21,7 @@ import {
   estimarMinutos,
 } from "@/utils/geoMedidas";
 import "@/styles/map.css";
+import { CENTRO_DE_RESPALDO } from "@/utils/tenantLocation";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -169,7 +170,7 @@ export default function RouteMap({
       .then(() => {
         if (cancelado || !ref.current) return;
         const g = (window as any).google;
-        const centro = secuencia[0] ?? { lat: -0.18, lng: -78.46 };
+        const centro = secuencia[0] ?? { ...CENTRO_DE_RESPALDO };
 
         mapRef.current = new g.maps.Map(ref.current, {
           center: centro,

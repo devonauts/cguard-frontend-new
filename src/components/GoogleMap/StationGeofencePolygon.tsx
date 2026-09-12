@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { loadGoogleMaps } from "@/utils/loadGoogleMaps";
-import { getTenantLocation } from "@/utils/tenantLocation";
+import { getTenantLocation,
+  CENTRO_DE_RESPALDO,
+} from "@/utils/tenantLocation";
 import { useMapPalette } from "@/utils/mapTheme";
 import {
   useMapPopup,
@@ -32,7 +34,7 @@ import "@/styles/map.css";
 
 export type PolyPoint = { lat: number; lng: number };
 
-const FALLBACK = { lat: -0.2295, lng: -78.5236 }; // Quito
+const FALLBACK = { ...CENTRO_DE_RESPALDO };
 
 /**
  * Editor de geocerca poligonal sobre Google Maps. Se toca el mapa para soltar

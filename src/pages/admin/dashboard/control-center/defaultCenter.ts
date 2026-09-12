@@ -11,6 +11,7 @@
  * the network on every load.
  */
 import { searchGeocode } from "@/lib/geocodeClient";
+import { CENTRO_DE_RESPALDO } from "@/utils/tenantLocation";
 
 export type CenterSource = "company" | "company-address" | "ip" | "fallback";
 export interface MapCenter {
@@ -21,8 +22,7 @@ export interface MapCenter {
 }
 
 const FINAL_FALLBACK: MapCenter = {
-  lat: -0.18,
-  lng: -78.46,
+  ...CENTRO_DE_RESPALDO,
   zoom: 11,
   source: "fallback",
 };

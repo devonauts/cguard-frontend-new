@@ -25,6 +25,7 @@ import {
   type MapPopupMetric,
 } from "@/components/maps/MapPopup";
 import "@/styles/map.css";
+import { CENTRO_DE_RESPALDO } from "@/utils/tenantLocation";
 
 /** One plotted stop of a vehicle-patrol route (a point with valid coordinates). */
 export interface RouteStopMarker {
@@ -274,7 +275,7 @@ export default function RouteTrackingMap({
           ? { lat: defaultCenter.lat, lng: defaultCenter.lng }
           : first
             ? { lat: first.lat, lng: first.lng }
-            : { lat: -0.18, lng: -78.46 };
+            : { ...CENTRO_DE_RESPALDO };
 
         mapRef.current = new g.maps.Map(ref.current, {
           center: initCenter,
