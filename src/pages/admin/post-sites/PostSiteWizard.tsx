@@ -924,6 +924,29 @@ export default function PostSiteWizard({
                   guardsCount: String(p.guardsNeeded ?? 1),
                 };
               });
+
+              /* LA SEGUNDA MITAD DE UN 24 H. `auto-positions` crea las dos
+                 plazas de un puesto de 24 h con la MISMA ventana: la noche sale
+                 de la rotación, no de la hora de la plaza. Si se rehidratan tal
+                 cual, el editor enseña «Diurna» dos veces y `deriveScheduleType`
+                 degrada el puesto a 12h-day al guardar — es decir, abrir el
+                 asistente y darle a guardar apagaría el turno de noche. */
+              const fijas = jornadas.filter((j) => j.tipo !== "sacafranco");
+
+              if (
+                (r as any).scheduleType === "24h" &&
+                fijas.length === 2 &&
+                fijas[0].startTime === fijas[1].startTime &&
+                fijas[0].endTime === fijas[1].endTime &&
+                fijas[0].startTime !== fijas[0].endTime
+              ) {
+                const noche = fijas[1];
+
+                noche.tipo = "nocturna";
+                noche.nombre = "Nocturna";
+                noche.startTime = fijas[0].endTime;
+                noche.endTime = fijas[0].startTime;
+              }
             }
 
             try {

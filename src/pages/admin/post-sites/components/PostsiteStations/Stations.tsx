@@ -59,6 +59,19 @@ function jornadaType(
   return "diurno";
 }
 
+// Minutos que cubre una ventana, cruzando la medianoche si hace falta.
+function minutosDeVentana(inicio: string, fin: string): number {
+  const min = (s: string) => {
+    const m = String(s).match(/(\d{1,2}):(\d{2})/);
+    return m ? parseInt(m[1], 10) * 60 + parseInt(m[2], 10) : null;
+  };
+  const a = min(inicio);
+  const b = min(fin);
+  if (a == null || b == null) return 0;
+  const w = (b - a + 1440) % 1440;
+  return w === 0 ? 1440 : w;
+}
+
 // El nombre que ve el usuario. «Matutina» se quedó fuera a propósito: una
 // jornada de 07:00 a 19:00 no es una mañana.
 const ETIQUETA_JORNADA: Record<string, string> = {
@@ -113,7 +126,36 @@ function jornadasDeEstacion(r: any): any[] {
         guardsCount: String(cuantos),
       });
     }
-    return Array.from(porVentana.values());
+    const jornadas = Array.from(porVentana.values());
+
+    /* LA MITAD ESPEJO DE UN PUESTO DE 24 H. Un 24 h se guarda como dos plazas,
+       y `auto-positions` las crea con la MISMA ventana (07:00–19:00): el turno
+       de noche sale de la rotación, no de la hora de la plaza. Sin esto, la
+       lista colapsaba las dos en un solo chip «Diurna ×2» y el puesto parecía
+       cerrado por la noche — el mismo fallo que ya se corrigió en el servidor
+       (`bloquesDesdePlazas`) y en la vista de turnos de la estación. */
+    const fijas = jornadas.filter((j) => j.tipo !== "sacafranco");
+
+    if (
+      String(r?.scheduleType || "") === "24h" &&
+      fijas.length === 1 &&
+      fijas[0].startTime &&
+      fijas[0].endTime &&
+      minutosDeVentana(fijas[0].startTime, fijas[0].endTime) < 23 * 60
+    ) {
+      const dia = fijas[0];
+      const espejo = jornadaType(dia.endTime, dia.startTime) || "nocturno";
+
+      jornadas.push({
+        tipo: espejo,
+        nombre: ETIQUETA_JORNADA[espejo] || espejo,
+        startTime: dia.endTime,
+        endTime: dia.startTime,
+        guardsCount: dia.guardsCount,
+      });
+    }
+
+    return jornadas;
   }
   try {
     const raw = r?.stationSchedule;
