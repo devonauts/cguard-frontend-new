@@ -172,6 +172,13 @@ const POSITION_TONE: Record<string, { tone: Tone; icon: LucideIcon }> = {
  * No hace falta ninguna bandera: si el patrón no tiene noches, el estado nunca
  * vale 'night' y la letra sale de `position.startTime` como siempre.
  */
+/** La letra de un turno REAL: la banda de la hora a la que se entra. */
+function horaDeEntradaAletra(ini: Date): "D" | "N" {
+  const h = ini.getHours();
+
+  return h >= 18 || h < 6 ? "N" : "D";
+}
+
 function dnCode(
   scheduleType: string | null | undefined,
   posStartTime: string | null | undefined,
@@ -192,6 +199,19 @@ function dnCode(
 }
 
 export type MonthStationBlockProps = {
+  /**
+   * EL TURNO QUE DE VERDAD EXISTE, por `guardId|fecha`.
+   *
+   * La rejilla pintaba la letra recalculando la rotación, mientras los turnos
+   * generados estaban a un `Map` de distancia. Dos cuentas, dos verdades, y la
+   * de la pantalla perdía: en Central BAS (2026-09-13) el motor tenía a un fijo
+   * en D D D / N N N y la rejilla le pintaba una fila entera de «D».
+   *
+   * Un slot, una verdad: si hay turno, la letra sale de SU hora de entrada. La
+   * rotación queda de respaldo sólo para los días que aún no tienen turno
+   * generado (más allá del horizonte).
+   */
+  shiftByGuardDate: Map<string, { startTime?: string | Date | null }>;
   station: Station;
   stationPositions: StationPosition[];
   stationAlert: StationAlert | undefined;
@@ -223,6 +243,7 @@ export type MonthStationBlockProps = {
 };
 
 function MonthStationBlockInner({
+  shiftByGuardDate,
   station,
   stationPositions,
   stationAlert,
@@ -599,12 +620,21 @@ function MonthStationBlockInner({
               }
 
               const esAprendiz = (assignment as any).role === "shadow";
-              const code = dnCode(
-                station.scheduleType,
-                pos.startTime,
-                workStatus as "day" | "night",
-                pos.endTime,
+              // Un slot, una verdad: si el turno existe, manda su hora.
+              const turnoReal = shiftByGuardDate.get(
+                `${assignment.guardId}|${dateStr}`,
               );
+              const horaReal = turnoReal?.startTime
+                ? new Date(turnoReal.startTime)
+                : null;
+              const code = horaReal
+                ? horaDeEntradaAletra(horaReal)
+                : dnCode(
+                    station.scheduleType,
+                    pos.startTime,
+                    workStatus as "day" | "night",
+                    pos.endTime,
+                  );
               // El color sale del MISMO mapa que la leyenda; el 24 h se pinta con
               // su propio código, que ya es el más denso de la rejilla. Un puesto
               // partido en dos mitades NO es un 24 h para quien lo trabaja: son

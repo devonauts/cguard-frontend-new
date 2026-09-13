@@ -5345,6 +5345,7 @@ export default function Schedule() {
                                   overrideByGuardDate={overrideByGuardDate}
                                   sel={selForRows(plazas)}
                                   sfStationCoverage={sfStationCoverage}
+                                  shiftByGuardDate={shiftByGuardDate}
                                   station={station}
                                   stationAlert={stationAlertByStationId.get(
                                     station.id,
