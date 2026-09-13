@@ -142,34 +142,53 @@ const POSITION_TONE: Record<string, { tone: Tone; icon: LucideIcon }> = {
 // Día/Noche letter for a WORKING cell — misma regla que el backend
 // (`shiftHalfByStart`, umbral 18/6) para que la letra pintada coincida con el
 // turno generado.
+/**
+ * LA LETRA DE LA CELDA — LA MISMA REGLA QUE EL MOTOR, SIN UNA SEGUNDA VERDAD.
+ *
+ * `shiftGenerationService` decide la hora de un turno así, y sólo así:
+ *
+ *     dayStartTime   = position.startTime        // la ventana de SU plaza
+ *     nightStartTime = position.endTime          // la inversa
+ *     estado 'day'   → el turno empieza a dayStartTime
+ *     estado 'night' → el turno empieza a nightStartTime
+ *
+ * De modo que la letra es la BANDA de la hora en que de verdad entra. Para el
+ * Fijo 1 (07:00-19:00) eso da D y luego N; para el Fijo 2 (19:00-07:00), N y
+ * luego D. Los dos se turnan, que es lo que significa una rotación con noches.
+ *
+ * ── LO QUE HABÍA AQUÍ Y POR QUÉ ESTABA MAL ─────────────────────────────────
+ * Una bandera `hoursDecideHalf`: si los fijos de la estación tenían horas
+ * distintas entre sí, la letra salía SÓLO de la hora de la plaza y la rotación
+ * se ignoraba. El comentario lo defendía así: «un puesto de 24 h con Fijo 1
+ * 07:00–19:00 y Fijo 2 19:00–07:00 son un diurno fijo y un nocturno fijo, no
+ * dos que se turnan».
+ *
+ * Eso no es cierto cuando el patrón TIENE noches. Central BAS, 2026-09-13:
+ * puesto de 24 h en 3-3-2, el motor generaba a Carlos D D D / N N N y a
+ * Leonardo al revés —comprobado fila a fila en la base— y la rejilla enseñaba
+ * una fila entera de «D» y otra entera de «N». El dueño veía su rotación
+ * convertida en dos turnos fijos y no entendía nada. Con razón.
+ *
+ * No hace falta ninguna bandera: si el patrón no tiene noches, el estado nunca
+ * vale 'night' y la letra sale de `position.startTime` como siempre.
+ */
 function dnCode(
   scheduleType: string | null | undefined,
   posStartTime: string | null | undefined,
   status: "day" | "night",
-  /**
-   * ¿Los fijos de este puesto tienen HORAS DISTINTAS entre sí? Entonces cada uno
-   * es dueño de su mitad y la letra sale de SU horario, no de la fase.
-   *
-   * Es la misma regla que el detector de huecos del backend (`hoursDecideHalf`
-   * en shiftGenerationService): un puesto de 24 h con Fijo 1 07:00–19:00 y
-   * Fijo 2 19:00–07:00 son un diurno fijo y un nocturno fijo, no dos que se
-   * turnan. Sin esto la rejilla pintaba «D» al de la noche —la rotación sin
-   * noches sólo sabe decir 'day'— y el horario dejaba de coincidir con lo que
-   * el motor genera de verdad.
-   */
-  hoursDecideHalf?: boolean,
+  posEndTime?: string | null,
 ): "D" | "N" {
-  if (hoursDecideHalf) {
-    const hp = parseInt(String(posStartTime || "").split(":")[0], 10);
-
-    if (!Number.isNaN(hp)) return hp >= 18 || hp < 6 ? "N" : "D";
-  }
-  if (scheduleType === "24h") return status === "night" ? "N" : "D";
+  // Los puestos de una sola mitad no tienen nada que decidir.
   if (scheduleType === "12h-night") return "N";
   if (scheduleType === "12h-day") return "D";
-  const h = parseInt(String(posStartTime || "").split(":")[0], 10);
 
-  return !Number.isNaN(h) && (h >= 18 || h < 6) ? "N" : "D";
+  const horaDeEntrada = status === "night" ? posEndTime : posStartTime;
+  const h = parseInt(String(horaDeEntrada || "").split(":")[0], 10);
+
+  if (!Number.isNaN(h)) return h >= 18 || h < 6 ? "N" : "D";
+
+  // Sin horas en la plaza, el estado del ciclo es lo único que queda.
+  return status === "night" ? "N" : "D";
 }
 
 export type MonthStationBlockProps = {
@@ -584,7 +603,7 @@ function MonthStationBlockInner({
                 station.scheduleType,
                 pos.startTime,
                 workStatus as "day" | "night",
-                horasDecidenMitad,
+                pos.endTime,
               );
               // El color sale del MISMO mapa que la leyenda; el 24 h se pinta con
               // su propio código, que ya es el más denso de la rejilla. Un puesto
