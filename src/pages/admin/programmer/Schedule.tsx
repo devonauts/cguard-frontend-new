@@ -1218,6 +1218,32 @@ export default function Schedule() {
       // En un 12 h las dos fases de trabajo son lo mismo: se trabaja.
       const is24h = station?.scheduleType === "24h";
 
+      if (estado !== "rest" && is24h) {
+        /* ── LA LETRA SALE DE LA BANDA REAL, NO DEL ESTADO DEL CICLO ──────────
+           `estado` dice en qué punto del ciclo está la persona; la BANDA que de
+           verdad trabaja la decide la ventana de SU PLAZA, igual que en el
+           generador (`shiftGenerationService`: `dayStartTime` sale de
+           `position.startTime`, y la noche es su inversa).
+
+           Para el titular de la plaza diurna (07-19) las dos cosas coinciden y
+           por eso el fallo pasó desapercibido. Para el de la plaza NOCTURNA
+           (19-07) están invertidas: su estado `day` lo pone en su ventana, que
+           es la noche. La rejilla pintaba «D» los días que trabajaba de noche.
+
+           Central BAS, 2026-09-13: el puesto hacía 3-3-2 con dos fijos en
+           ventanas espejo, el motor lo generaba bien —Carlos D D D / N N N y
+           Leonardo al revés— y la pantalla enseñaba una fila de «D» fijas y
+           otra de «N» fijas. El dueño no podía ver su propia rotación. */
+        const plaza = positionsById.get(assignment.positionId);
+        const inicio = String((plaza as any)?.startTime || "").slice(0, 5);
+        const [hh] = inicio.split(":").map(Number);
+        const plazaEsNocturna =
+          Number.isFinite(hh) && (hh >= 18 || hh < 6);
+
+        if (plazaEsNocturna) return estado === "day" ? "night" : "day";
+        return estado;
+      }
+
       if (estado === "night") return is24h ? "night" : "day";
 
       return estado;
