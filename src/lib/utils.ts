@@ -99,6 +99,30 @@ export function esDomingoDse(dse: number): boolean {
  * (la fecha de inicio de la asignación). Sin reglas activas devuelve
  * exactamente lo mismo que la aritmética de siempre.
  */
+/**
+ * ⚠️  SÓLO PARA PREVISUALIZAR — NUNCA PARA MOSTRAR UN HORARIO.
+ *
+ * Esta función calcula el ciclo en el cliente. Su único uso legítimo es
+ * enseñar, ANTES de guardar, qué pasaría si se elige un patrón: «con este ciclo
+ * descansarías el jueves y el viernes». Eso es una previsualización de lo que
+ * se va a crear, no un horario.
+ *
+ * Para MOSTRAR un horario —rejilla, calendario, ficha, informe— se leen los
+ * TURNOS que existen. El horario son los slots, y la única verdad la escribe
+ * `shiftGenerationService` al crearlos.
+ *
+ * Por qué está dicho así de fuerte: hubo cuatro copias de esta aritmética (el
+ * generador, la rejilla, el calendario de la app y el servicio del supervisor).
+ * Mientras un ciclo se dijo con tres números las cuatro coincidían; en cuanto
+ * dejaron de coincidir, cada pantalla enseñó una verdad distinta y ninguna era
+ * comprobable contra la otra. El 2026-09-13 eso costó un día entero: un puesto
+ * de 24 h en 3-3-2 salía como dos turnos fijos en la rejilla mientras el motor
+ * los rotaba, y un vigilante veía en su app el horario de su compañero.
+ *
+ * Consumidores permitidos hoy: `AsignacionEditModal` y `ShiftAssignModal`.
+ * Si vas a añadir otro, pregúntate si lo que quieres es MOSTRAR. Si lo es, lee
+ * los turnos.
+ */
 export function estadoDeRotacionCliente(
   dse: number,
   anclaDse: number,

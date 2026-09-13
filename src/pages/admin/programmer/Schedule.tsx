@@ -57,7 +57,7 @@ import ScheduleTimeline, {
 import ContextMenu, { CtxItem, CtxMenuState } from "./ContextMenu";
 
 import TransferShiftModal, { TransferTarget } from "./TransferShiftModal";
-import { localToday, estadoDeRotacionCliente } from "@/lib/utils";
+import { localToday } from "@/lib/utils";
 import {
   nombreDeVigilante,
   inicialesDeVigilante,
@@ -1118,111 +1118,45 @@ export default function Schedule() {
     return map;
   }, [assignments, shifts]);
 
-  // Check if a guard works on a given date based on rotation.
-  // useCallback so dependent memos (sfStationCoverage, localStationAlerts) keep a stable
-  // identity and only recompute when their real inputs change.
+  /**
+   * ¿QUÉ HACE ESTA PERSONA ESE DÍA? — SE LEE, NO SE CALCULA.
+   *
+   * Aquí vivía una copia de la aritmética del ciclo (la 1.ª está en el
+   * generador, la 2.ª estaba en `supervisorScheduleService` y la 3.ª en el
+   * calendario de la app). Mientras un ciclo se dijo con tres números las
+   * cuatro coincidían; en cuanto dejaron de coincidir, cada pantalla enseñó una
+   * verdad distinta y ninguna era comprobable contra la otra.
+   *
+   * El 2026-09-13 eso costó un día entero en Seguridad B.A.S.: un puesto de
+   * 24 h en 3-3-2 salía como dos turnos fijos en la rejilla mientras el motor
+   * los rotaba de verdad, y un vigilante veía en su app el horario de su
+   * compañero.
+   *
+   * La regla del dueño: «absolutamente nada debe volver a calcular; en todo
+   * lugar debe reutilizar el mismo servicio y sólo reflejar eso». Así que esto
+   * mira los TURNOS que existen: si hay turno, la banda sale de su hora de
+   * entrada; si no hay, es libre. Un slot, una verdad.
+   *
+   * Se conserva la firma porque seis sitios preguntan «¿descansa este día?» y
+   * la respuesta es la misma, sólo que ahora es cierta.
+   *
+   * Más allá del horizonte de generación no hay turnos y todo sale «libre». Eso
+   * es lo honesto: no es que descanse, es que su horario aún no está hecho —y
+   * antes la pantalla se lo inventaba con una cuenta que nadie podía auditar.
+   */
   const isWorkDay = useCallback(
     (assignment: GuardAssignment, date: Date): "day" | "night" | "rest" => {
-      /* ── DE DÓNDE SALE EL PATRÓN: LA MISMA REGLA QUE EL GENERADOR ───────────
-       `shiftGenerationService` resuelve con UNA sola línea, igual para todos:
-
-           const rotationStyleId = assignment.rotationStyleId || station?.rotationStyleId;
-
-       El ciclo de la ASIGNACIÓN manda, y el de la estación es el respaldo. Da
-       lo mismo que sea un fijo o un sacafranco.
-
-       Aquí se invertía para los fijos —ganaba el de la estación— y era una
-       verdad distinta de la del generador: a un fijo con secuencia propia se le
-       generaban los turnos de SU ciclo y la pantalla le pintaba el de la
-       estación. Los dos cuadros, el de la rejilla y el que de verdad se
-       trabaja, discrepaban todo el mes. Es la misma familia de fallo que «el
-       horario no guarda»: la pantalla no enseña lo que el sistema hizo.
-
-       Verificado contra el generador en el banco de laboratorio (familia F14,
-       «cambiar el ciclo»): al ponerle un ciclo propio a la asignación de un
-       fijo, los turnos futuros siguen ESE ciclo, no el de la estación.
-       (Y leer sólo `assignment.rotationStyle` ponía "L" todos los días.) */
-      const station = stationsById.get(assignment.stationId);
-      const esRelevo =
-        positionsById.get(assignment.positionId)?.type === "sacafranco" ||
-        assignment.isRelief;
-      const propia = assignment.rotationStyleId
-        ? rotationStylesById.get(String(assignment.rotationStyleId))
-        : null;
-      const deLaEstacion = station?.rotationStyleId
-        ? rotationStylesById.get(station.rotationStyleId)
-        : null;
-      const rot = propia || deLaEstacion || assignment.rotationStyle;
-
-      if (!rot) return "rest";
-
-      // Vigencia: outside [startDate, endDate] the assignment generates no
-      // shifts, so the grid must not paint work there (a cover \"hasta el 31\"
-      // used to show D/N all year).
-      const dStr = fmtDate(date);
-
-      if (
-        assignment.startDate &&
-        dStr < String(assignment.startDate).slice(0, 10)
-      )
-        return "rest";
-      if (assignment.endDate && dStr > String(assignment.endDate).slice(0, 10))
-        return "rest";
-
-      // El sacafranco sigue SU ciclo (ya resuelto arriba), no el de la estación.
-      if (esRelevo) {
-        // Sacafranco follows its OWN rotation using global epoch (Jan 1)
-        const sfCycle = rot.dayShifts + rot.nightShifts + rot.restDays;
-
-        if (sfCycle === 0) return "rest";
-        const sfDiff = dseOf(date); // DST-safe day index (matches backend getGlobalEpoch)
-        const sfAdj =
-          (((sfDiff - (assignment.platoonOffset || 0)) % sfCycle) + sfCycle) %
-          sfCycle;
-
-        if (sfAdj < rot.dayShifts) return "day";
-        if (sfAdj < rot.dayShifts + rot.nightShifts) return "night";
-
-        return "rest";
-      }
-
-      /* ─── FIJO ─── El MISMO motor que genera los turnos.
-         Aquí vivía una TERCERA copia de la aritmética (la 1.ª en el generador,
-         la 2.ª en `supervisorScheduleService`). Mientras el ciclo se dijo con
-         tres números las tres coincidían. Con las reglas que no caben en tres
-         números —alternar día/noche, doblar el franco en domingo— esta copia se
-         quedó atrás: un 7-1 que alterna salía como siete «D» seguidas, así que
-         la rejilla pintaba la noche del puesto VACÍA mientras el motor la tenía
-         cubierta. El cuadro dibujado y el trabajado dejaban de ser el mismo.
-
-         El ancla es la fecha de inicio de la asignación, igual que el motor. */
-      const daysSinceEpoch = dseOf(date); // DST-safe (coincide con getGlobalEpoch)
-      const anclaDse = assignment.startDate
-        ? dseOf(
-            new Date(`${String(assignment.startDate).slice(0, 10)}T12:00:00`),
-          )
-        : -Infinity;
-      const estado = estadoDeRotacionCliente(
-        daysSinceEpoch,
-        anclaDse,
-        assignment.platoonOffset,
-        rot.dayShifts,
-        rot.nightShifts,
-        rot.restDays,
-        {
-          alternatesDayNight: (rot as any).alternatesDayNight,
-          sundayDoubleRest: (rot as any).sundayDoubleRest,
-        },
+      const turno = shiftByGuardDate.get(
+        `${assignment.guardId}|${fmtDate(date)}`,
       );
 
-      // En un 12 h las dos fases de trabajo son lo mismo: se trabaja.
-      const is24h = station?.scheduleType === "24h";
+      if (!turno?.startTime) return "rest";
 
-      if (estado === "night") return is24h ? "night" : "day";
+      const { minutes } = dateToWall(new Date(turno.startTime), tzName);
 
-      return estado;
+      return minutes >= 18 * 60 || minutes < 6 * 60 ? "night" : "day";
     },
-    [positionsById, stationsById, rotationStylesById],
+    [shiftByGuardDate, tzName],
   );
 
   // Unassigned guards (not in any active assignment)
