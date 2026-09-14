@@ -26,6 +26,8 @@ export interface OnboardingTenant {
   logoUrl?: string | null;
   trialEndsAt?: string | null;
   billingStatus?: string | null;
+  /** `'reseller'` = a esta empresa la factura su distribuidor, no CGuard Pro. */
+  billingOwnership?: string | null;
   onboardingCompleted?: boolean;
   raw?: any;
 }
@@ -158,6 +160,8 @@ export function extractOnboardingTenant(user: any): OnboardingTenant | null {
     firstNonEmpty(entry.trialEndsAt, rel?.trialEndsAt) ?? null;
   const billingStatus =
     firstNonEmpty(entry.billingStatus, rel?.billingStatus) ?? null;
+  const billingOwnership =
+    firstNonEmpty(entry.billingOwnership, rel?.billingOwnership) ?? "direct";
   const onboardingCompleted = Boolean(
     entry.onboardingCompleted ?? rel?.onboardingCompleted ?? false,
   );
@@ -183,6 +187,7 @@ export function extractOnboardingTenant(user: any): OnboardingTenant | null {
     logoUrl,
     trialEndsAt,
     billingStatus,
+    billingOwnership,
     onboardingCompleted,
     raw: rel,
   };
@@ -276,6 +281,17 @@ export function formatTrialEndDate(trialEndsAt?: string | null): string | null {
 
 export const isTrialing = (billingStatus?: string | null) =>
   (billingStatus || "").toLowerCase() === "trialing";
+
+/**
+ * ¿Le factura un distribuidor a esta empresa?
+ *
+ * Cuando la respuesta es sí, CGuard Pro no tiene relación de cobro con ella:
+ * no hay prueba corriendo, no hay tarjeta, no hay precio por usuario. Todo lo
+ * que hable de nuestra suscripción se esconde — no por estética, sino porque
+ * enseñárselo la llevaría a intentar pagar aquí una factura que le cobra otro.
+ */
+export const esFacturadaPorProveedor = (billingOwnership?: string | null) =>
+  (billingOwnership || "direct").toLowerCase() === "reseller";
 
 /**
  * Zonas horarias: se reexportan desde `@/lib/timezones`.

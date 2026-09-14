@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
+import ProviderManagedBilling from "@/components/ProviderManagedBilling";
 import { Button } from "@/components/ui/button";
 import {
   PageContainer,
@@ -245,6 +246,10 @@ export default function BillingPage() {
   const q = data?.quote;
   const currency = q?.currency || "USD";
   const isActive = status === "active";
+  /* La señal la da el servidor, en dos campos que dicen lo mismo por si uno
+     falta: quien factura a esta empresa es su distribuidor. */
+  const esDeProveedor =
+    data?.billingOwnership === "reseller" || status === "reseller_managed";
   const visibleInvoices = invoices.filter((inv) => inv.status !== "draft");
 
   return (
@@ -264,7 +269,16 @@ export default function BillingPage() {
             defaultValue: "Suscripción",
           })}
         />
-        {loading || !data || !q ? (
+        {loading || !data ? (
+          <SkeletonCards count={4} />
+        ) : esDeProveedor ? (
+          /* A esta empresa la factura su distribuidor: aquí no hay suscripción
+             de CGuard Pro que gestionar. Ver `ProviderManagedBilling`. */
+          <ProviderManagedBilling
+            managedBy={data.managedBy}
+            plan={data.plan?.name || data.plan?.key || null}
+          />
+        ) : !q ? (
           <SkeletonCards count={4} />
         ) : (
           <div className="space-y-6">

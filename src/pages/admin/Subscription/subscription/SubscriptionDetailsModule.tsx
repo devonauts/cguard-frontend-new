@@ -22,6 +22,7 @@ import {
   subscriptionBillingService,
   BillingSummary,
 } from "@/lib/api/subscriptionBillingService";
+import ProviderManagedBilling from "@/components/ProviderManagedBilling";
 
 type BillingPeriod = "monthly" | "annual";
 type PlanKey = "essential" | "advance" | "professional";
@@ -121,6 +122,31 @@ export default function SubscriptionDetailsModule() {
   const status = data?.status || "trialing";
   const meta = STATUS_META[status] || STATUS_META.trialing;
   const goToBilling = () => navigate("/setting/billing");
+
+  /* A las empresas que trae un distribuidor las factura ÉL. Nada de lo que hay
+     debajo —la oferta, el precio por usuario, los planes por niveles, el
+     periodo de prueba, «gestionar suscripción»— significa nada para ellas: son
+     condiciones de una relación comercial que no tienen con nosotros. */
+  const esDeProveedor =
+    data?.billingOwnership === "reseller" || status === "reseller_managed";
+
+  if (!loading && esDeProveedor) {
+    return (
+      <PageContainer width="wide">
+        <PageHeader
+          icon={<CreditCard />}
+          subtitle={t("billing.managedByProvider.subtitle", {
+            defaultValue: "Tu proveedor gestiona tu plan y tu facturación",
+          })}
+          title={t("ui.SubscriptionDetailsModule.suscripcion", "Suscripción")}
+        />
+        <ProviderManagedBilling
+          managedBy={data?.managedBy}
+          plan={data?.plan?.name || data?.plan?.key || null}
+        />
+      </PageContainer>
+    );
+  }
 
   return (
     <PageContainer width="wide">
