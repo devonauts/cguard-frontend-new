@@ -1,6 +1,8 @@
 import { useCallback, useLayoutEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
+import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
+
 /**
  * Bloque de marca: el ojo + «C-GUARD» como imagen, y el lema como TEXTO.
  *
@@ -16,6 +18,17 @@ import { useTranslation } from "react-i18next";
  *
  * El arte tiene dos versiones porque el vidrio lleva color propio: el truco de
  * `dark:brightness-0 dark:invert` que usaba el logo negro ya no sirve.
+ *
+ * ── EN EL ANFITRIÓN DE UN SOCIO, EL LOGOTIPO ES EL SUYO (fase 11) ─────────
+ * Se mira si ESTE anfitrión tiene logotipo propio, no si es «un socio» o «la
+ * plataforma»: la pregunta por el ámbito se hace UNA sola vez en todo el CRM y
+ * vive dentro de `WhiteLabelProvider`. Aquí sólo se lee un dato ya resuelto.
+ *
+ * El bloque de plataforma no se puede reutilizar tal cual para un socio: son dos
+ * imágenes (clara y oscura) con un lema medido sobre el alfa del PNG original.
+ * Un logotipo de socio es una sola imagen y no trae lema, así que se pinta como
+ * lo que es — centrado y a la misma altura — en vez de forzarlo dentro de una
+ * maqueta hecha para otro arte.
  */
 export default function BrandLockup({
   className = "",
@@ -27,6 +40,7 @@ export default function BrandLockup({
   showTagline?: boolean;
 }) {
   const { t } = useTranslation();
+  const { logoUrl, platformName } = useWhiteLabel();
   const tagline = t("brand.tagline", { defaultValue: "Seguridad Inteligente" });
   const slotRef = useRef<HTMLSpanElement>(null);
   const textRef = useRef<HTMLSpanElement>(null);
@@ -72,12 +86,24 @@ export default function BrandLockup({
     return () => ro.disconnect();
   }, [fit, tagline]);
 
+  if (logoUrl) {
+    return (
+      <span className={`inline-flex items-center justify-center ${className}`.trim()}>
+        <img
+          alt={platformName}
+          className="h-14 max-w-full object-contain"
+          src={logoUrl}
+        />
+      </span>
+    );
+  }
+
   return (
     <span
       className={`cg-lockup ${animated ? "is-animated" : ""} ${className}`.trim()}
     >
       <img
-        alt={t("auth.landing.logo_alt", { defaultValue: "C-Guard Pro" })}
+        alt={t("auth.landing.logo_alt", { defaultValue: platformName })}
         className="cg-lockup__mark cg-lockup__mark--light"
         src="/assets/logo/c-guard-lockup-light.png"
       />
