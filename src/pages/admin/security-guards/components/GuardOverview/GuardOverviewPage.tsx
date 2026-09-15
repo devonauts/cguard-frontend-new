@@ -98,7 +98,21 @@ export default function GuardResumenPage() {
           const photoFile = (Array.isArray(pi) ? pi[0] : pi) as FileLike;
           const photoUrl =
             data.photoUrl ?? g.photoUrl ?? fileUrlFromFile(photoFile) ?? null;
-          setGuard({ ...g, fullName, photoUrl });
+          /* EL `id` TIENE QUE SEGUIR SIENDO EL DE LA FICHA.
+             `g` es `data.guard` —el USUARIO vinculado— cuando existe, así que
+             extenderlo sin más dejaba en el estado un objeto con el id del
+             usuario haciéndose pasar por la ficha. `GuardSummary` usa
+             `guard.id` para pedir memorandos, asignaciones, desempeño y
+             horario: los cuatro salían con el id que no era.
+
+             Se veía así en producción (auditoría 2026-09-15):
+               200  /security-guard/89797e3e…             ← id de la ficha
+               404  /security-guard/01b88d2d…/performance ← id de usuario
+             `assignments` y `schedule` devolvían 200 sólo porque el servidor
+             resuelve los dos ids; `performance` no lo hacía y por eso cantó.
+             El id del usuario no se pierde: viaja en `guardId`, que es de donde
+             lo lee la cabecera para el diálogo de cambio de rol. */
+          setGuard({ ...g, id: data.id ?? id, fullName, photoUrl });
         },
       )
       .catch((err: any) => {
