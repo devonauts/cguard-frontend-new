@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -24,6 +24,7 @@ import {
   SkeletonCards,
   PageContainer,
 } from "@/components/kit";
+import { useRegistroDeFicha } from "@/layouts/FichaPersona";
 import {
   supervisorService,
   type Supervisor,
@@ -328,16 +329,22 @@ export default function SupervisorDetailPage() {
     });
   };
 
-  const load = useCallback(() => {
-    setLoading(true);
-    supervisorService
-      .get(id)
-      .then(hydrate)
-      .catch(() => toast.error(t("ui.SupervisorDetailPage.noSePudoCargarEl")))
-      .finally(() => setLoading(false));
-  }, [id]);
+  /* La lectura la hace la ruta padre (`FichaPersonaProvider`), que se queda
+     montada al cambiar de pestaña: esta pantalla y la cabecera pedían
+     `GET /supervisors/:id` cada una por su lado. Guardar no necesita releer —
+     `save` rehidrata con la respuesta del propio PUT. */
+  const { registro, cargando } = useRegistroDeFicha(id, true);
 
-  useEffect(load, [load]);
+  useEffect(() => {
+    setLoading(cargando);
+    if (registro === null) {
+      toast.error(t("ui.SupervisorDetailPage.noSePudoCargarEl"));
+
+      return;
+    }
+    if (registro) hydrate(registro);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [registro, cargando]);
 
   const beginEdit = () => {
     if (sup) hydrate(sup);

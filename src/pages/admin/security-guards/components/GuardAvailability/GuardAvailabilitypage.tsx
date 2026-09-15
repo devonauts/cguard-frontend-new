@@ -8,6 +8,7 @@ import AppLayout from "@/layouts/app-layout";
 import TimeInput from "@/components/TimeInput";
 import MobileCardList from "@/components/responsive/MobileCardList";
 import securityGuardService from "@/lib/api/securityGuardService";
+import { useRegistroDeFicha } from "@/layouts/FichaPersona";
 import type { GuardDetail } from "../../guardDetailTypes";
 
 type Av = { day: string; available: boolean; start: string; end: string };
@@ -24,22 +25,12 @@ export default function GuardAvailability({ guard }: Props) {
   // fetch the guard by route id to load its saved availability and get the id
   // needed to persist changes (the backend stores `availability` as JSON).
   const { id: routeId } = useParams();
-  const [fetchedGuard, setFetchedGuard] = useState<GuardDetail | null>(null);
-  useEffect(() => {
-    if (guard || !routeId) return;
-    let alive = true;
-    securityGuardService
-      .get(routeId)
-      .then((g) => {
-        if (alive) setFetchedGuard((g?.guard ?? g) as GuardDetail);
-      })
-      .catch(() => {
-        /* keep defaults */
-      });
-    return () => {
-      alive = false;
-    };
-  }, [guard, routeId]);
+  // El registro lo trae la ruta padre (`FichaPersonaProvider`); esta pestaña ya
+  // no lo pide por su cuenta. Si se monta con `guard` por prop, ese manda.
+  const { registro } = useRegistroDeFicha(guard ? undefined : routeId);
+  const fetchedGuard = registro
+    ? ((registro.guard ?? registro) as GuardDetail)
+    : null;
   const effGuard = guard ?? fetchedGuard ?? undefined;
   const [availability, setAvailability] = useState<Av[]>(() => {
     const base = [

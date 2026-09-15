@@ -4,7 +4,6 @@ import GuardsLayout from "@/layouts/GuardsLayout";
 import GuardSummary from "@/pages/admin/security-guards/components/GuardSummary/GuardSummarypage";
 import { useEffect, useState } from "react";
 import securityGuardService from "@/lib/api/securityGuardService";
-import guardRatingService from "@/lib/api/guardRatingService";
 import GuardRatingLevel from "@/pages/admin/security-guards/GuardRatingLevel";
 import { fileUrlFromFile, type FileLike } from "@/lib/fileUrl";
 import { AlertCircle } from "lucide-react";
@@ -17,6 +16,8 @@ import {
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import type { GuardDetail } from "../../guardDetailTypes";
+
+import { useRegistroDeFicha } from "@/layouts/FichaPersona";
 
 // The loaded guard record, flattened with the derived photo URL. The linked app
 // `user` (under `guard`) may carry live duty/account fields.
@@ -36,11 +37,7 @@ export default function GuardResumenPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [guard, setGuard] = useState<OverviewGuard | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [rating, setRating] = useState<{
-    average: number;
-    count: number;
-  } | null>(null);
+  const { registro, cargando: loading } = useRegistroDeFicha(id);
   // Expediente laboral: la antigüedad se calcula en el servidor POR CICLOS
   // (quien se fue y volvió no se lleva de regalo los meses que estuvo fuera) y
   // las bajas viajan con la etiqueta del motivo ya resuelta.
@@ -55,78 +52,54 @@ export default function GuardResumenPage() {
       });
   }, [id]);
 
+  /* EL REGISTRO LO TRAE LA RUTA PADRE.
+     Esta pestaña pedía `GET /security-guard/:id` por su cuenta mientras la
+     cabecera pedía exactamente el mismo, así que el resumen salía con la
+     petición DUPLICADA (medido: 2x separadas por 4 ms). Ahora las dos leen lo
+     que `FichaPersonaProvider` ya trajo; el hook sólo pide si esta pantalla se
+     monta sin ruta padre encima. */
   useEffect(() => {
-    if (!id) return;
-    let alive = true;
-    guardRatingService
-      .summary([id])
-      .then((m) => {
-        if (alive) setRating(m[id] || null);
-      })
-      .catch(() => {});
-    return () => {
-      alive = false;
+    if (!registro) return;
+    const data = registro as OverviewGuard & {
+      profileImage?: unknown;
+      photoUrl?: string | null;
     };
-  }, [id]);
+    const g = (data.guard ?? data) as OverviewGuard & {
+      profileImage?: unknown;
+      photoUrl?: string | null;
+    };
+    const fullName =
+      g.fullName ?? `${g.firstName ?? ""} ${g.lastName ?? ""}`.trim();
+    // The photo comes back on the TOP-LEVEL response as `profileImage` (a signed
+    // file array), NOT on the nested `guard` user — flatten it to `photoUrl` so the
+    // avatar here AND the <GuardSummary guard={guard}> child both render it.
+    const pi = (data.profileImage ?? g.profileImage) as FileLike | FileLike[];
+    const photoFile = (Array.isArray(pi) ? pi[0] : pi) as FileLike;
+    const photoUrl =
+      data.photoUrl ?? g.photoUrl ?? fileUrlFromFile(photoFile) ?? null;
 
+    /* EL `id` TIENE QUE SEGUIR SIENDO EL DE LA FICHA.
+       `g` es `data.guard` —el USUARIO vinculado— cuando existe, así que
+       extenderlo sin más dejaba en el estado un objeto con el id del usuario
+       haciéndose pasar por la ficha. `GuardSummary` usa `guard.id` para pedir
+       memorandos, asignaciones, desempeño y horario: los cuatro salían con el
+       id que no era.
+
+       Se veía así en producción (auditoría 2026-09-15):
+         200  /security-guard/89797e3e…             ← id de la ficha
+         404  /security-guard/01b88d2d…/performance ← id de usuario
+       `assignments` y `schedule` devolvían 200 sólo porque el servidor
+       resuelve los dos ids; `performance` no lo hacía y por eso cantó. El id
+       del usuario no se pierde: viaja en `guardId`, que es de donde lo lee la
+       cabecera para el diálogo de cambio de rol. */
+    setGuard({ ...g, id: data.id ?? id, fullName, photoUrl });
+  }, [registro, id]);
+
+  // La lectura falló arriba: se avisa igual que cuando se pedía aquí.
   useEffect(() => {
-    if (!id) return;
-    let mounted = true;
-    setLoading(true);
-    securityGuardService
-      .get(id)
-      .then(
-        (
-          data: OverviewGuard & {
-            profileImage?: unknown;
-            photoUrl?: string | null;
-          },
-        ) => {
-          if (!mounted) return;
-          const g = (data.guard ?? data) as OverviewGuard & {
-            profileImage?: unknown;
-            photoUrl?: string | null;
-          };
-          const fullName =
-            g.fullName ?? `${g.firstName ?? ""} ${g.lastName ?? ""}`.trim();
-          // The photo comes back on the TOP-LEVEL response as `profileImage` (a signed
-          // file array), NOT on the nested `guard` user — flatten it to `photoUrl` so the
-          // avatar here AND the <GuardSummary guard={guard}> child both render it.
-          const pi = (data.profileImage ?? g.profileImage) as
-            | FileLike
-            | FileLike[];
-          const photoFile = (Array.isArray(pi) ? pi[0] : pi) as FileLike;
-          const photoUrl =
-            data.photoUrl ?? g.photoUrl ?? fileUrlFromFile(photoFile) ?? null;
-          /* EL `id` TIENE QUE SEGUIR SIENDO EL DE LA FICHA.
-             `g` es `data.guard` —el USUARIO vinculado— cuando existe, así que
-             extenderlo sin más dejaba en el estado un objeto con el id del
-             usuario haciéndose pasar por la ficha. `GuardSummary` usa
-             `guard.id` para pedir memorandos, asignaciones, desempeño y
-             horario: los cuatro salían con el id que no era.
-
-             Se veía así en producción (auditoría 2026-09-15):
-               200  /security-guard/89797e3e…             ← id de la ficha
-               404  /security-guard/01b88d2d…/performance ← id de usuario
-             `assignments` y `schedule` devolvían 200 sólo porque el servidor
-             resuelve los dos ids; `performance` no lo hacía y por eso cantó.
-             El id del usuario no se pierde: viaja en `guardId`, que es de donde
-             lo lee la cabecera para el diálogo de cambio de rol. */
-          setGuard({ ...g, id: data.id ?? id, fullName, photoUrl });
-        },
-      )
-      .catch((err: any) => {
-        console.error("Error cargando vigilante:", err);
-        toast.error(t("guards.overview.loadError"));
-      })
-      .finally(() => {
-        if (!mounted) return;
-        setLoading(false);
-      });
-    return () => {
-      mounted = false;
-    };
-  }, [id]);
+    if (registro === null) toast.error(t("guards.overview.loadError"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [registro]);
 
   // ── Derived presentation values (from data the page already loads) ──────────
   const fullName = guard?.fullName || t("guards.profile.nav") || "Vigilante";

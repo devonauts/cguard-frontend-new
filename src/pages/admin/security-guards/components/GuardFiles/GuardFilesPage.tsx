@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import AppLayout from "@/layouts/app-layout";
 import GuardsLayout from "@/layouts/GuardsLayout";
 import MobileCardList from "@/components/responsive/MobileCardList";
-import securityGuardService from "@/lib/api/securityGuardService";
+import { useRegistroDeFicha } from "@/layouts/FichaPersona";
 import {
   PageContainer,
   PageHeader,
@@ -48,38 +48,30 @@ export default function GuardFilesPage() {
   const [uploadFiles, setUploadFiles] = useState<File[]>([]);
   const [dragOver, setDragOver] = useState(false);
 
+  // El registro lo trae la ruta padre; esta pestaña ya no lo pide por su cuenta.
+  const { registro, cargando } = useRegistroDeFicha(id);
+
   useEffect(() => {
-    if (!id) return;
-    let mounted = true;
+    setLoading(cargando);
+    if (registro === null) {
+      console.error("Error cargando vigilante");
+      toast.error(
+        t("guards.files.toasts.loadError", {
+          defaultValue: "Could not load guard",
+        }),
+      );
 
-    setLoading(true);
-    securityGuardService
-      .get(id)
-      .then((data: GuardDetail & { guard?: GuardDetail }) => {
-        if (!mounted) return;
-        const g = data.guard ?? data;
-        const fullName =
-          g.fullName ?? `${g.firstName ?? ""} ${g.lastName ?? ""}`.trim();
+      return;
+    }
+    if (!registro) return;
+    const data = registro as GuardDetail & { guard?: GuardDetail };
+    const g = data.guard ?? data;
+    const fullName =
+      g.fullName ?? `${g.firstName ?? ""} ${g.lastName ?? ""}`.trim();
 
-        setGuard({ ...g, fullName });
-      })
-      .catch((err: unknown) => {
-        console.error("Error cargando vigilante:", err);
-        toast.error(
-          t("guards.files.toasts.loadError", {
-            defaultValue: "Could not load guard",
-          }),
-        );
-      })
-      .finally(() => {
-        if (!mounted) return;
-        setLoading(false);
-      });
-
-    return () => {
-      mounted = false;
-    };
-  }, [id]);
+    setGuard({ ...g, fullName });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [registro, cargando]);
 
   return (
     <AppLayout>

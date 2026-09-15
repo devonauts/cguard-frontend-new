@@ -17,7 +17,7 @@ import { toast } from "sonner";
 
 import AppLayout from "@/layouts/app-layout";
 import GuardsLayout from "@/layouts/GuardsLayout";
-import securityGuardService from "@/lib/api/securityGuardService";
+import { useRegistroDeFicha } from "@/layouts/FichaPersona";
 import api from "@/lib/api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -82,39 +82,26 @@ export default function GuardMemosPage() {
 
   const tenantId = localStorage.getItem("tenantId") || "";
 
-  // Load the guard (for the header context).
+  // El vigilante, para el contexto de la cabecera. Lo trae la ruta padre: esta
+  // pestaña ya no lo pide por su cuenta.
+  const { registro } = useRegistroDeFicha(id);
+
   useEffect(() => {
-    if (!id) return;
-    let mounted = true;
-
-    securityGuardService
-      .get(id)
-      .then(
-        (
-          data:
-            | (GuardDetail & { firstName?: string; lastName?: string })
-            | {
-                guard: GuardDetail & { firstName?: string; lastName?: string };
-              },
-        ) => {
-          if (!mounted) return;
-          const g = (
-            "guard" in data && data.guard ? data.guard : data
-          ) as GuardDetail & { firstName?: string; lastName?: string };
-          const fullName =
-            g.fullName ?? `${g.firstName ?? ""} ${g.lastName ?? ""}`.trim();
-
-          setGuard({ ...g, fullName });
-        },
-      )
-      .catch(() => {
-        /* header just stays sparse */
-      });
-
-    return () => {
-      mounted = false;
+    if (!registro) return;
+    const data = registro as
+      | (GuardDetail & { firstName?: string; lastName?: string })
+      | { guard: GuardDetail & { firstName?: string; lastName?: string } };
+    const g = (
+      "guard" in data && data.guard ? data.guard : data
+    ) as GuardDetail & {
+      firstName?: string;
+      lastName?: string;
     };
-  }, [id]);
+    const fullName =
+      g.fullName ?? `${g.firstName ?? ""} ${g.lastName ?? ""}`.trim();
+
+    setGuard({ ...g, fullName });
+  }, [registro]);
 
   const loadMemos = async () => {
     if (!id) return;

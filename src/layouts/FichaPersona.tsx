@@ -10,6 +10,18 @@ import guardRatingService from "@/lib/api/guardRatingService";
 export interface DatosDeFicha {
   /** Nombre, foto, contacto y estado ya normalizados. `null` = cargando. */
   entity: any;
+  /**
+   * La respuesta CRUDA del servicio, tal cual.
+   *
+   * `entity` es lo que necesita la cabecera y ya viene masticado; las pestañas
+   * necesitan el registro entero (disponibilidad, departamento, archivos,
+   * formulario del perfil…). Sin esto, cada pestaña volvía a pedir
+   * `GET /security-guard/:id` para sacar lo suyo, que es la mitad del problema
+   * que arregla esta ruta padre.
+   *
+   * `undefined` mientras carga; `null` si la lectura falló.
+   */
+  bruto: any;
   /** Media de valoraciones del vigilante (los supervisores no tienen). */
   rating: { average: number; count: number } | null;
   /** Si la persona ya no es vigilante, el rol al que se movió. */
@@ -53,6 +65,7 @@ export function useDatosDeFicha(
 ): DatosDeFicha {
   const [rolMovido, setRolMovido] = useState<string | null>(null);
   const [entity, setEntity] = useState<any>(null);
+  const [bruto, setBruto] = useState<any>(undefined);
   const [rating, setRating] = useState<{
     average: number;
     count: number;
@@ -68,6 +81,7 @@ export function useDatosDeFicha(
           const s: any = await supervisorService.get(id);
 
           if (!mounted) return;
+          setBruto(s);
           setEntity({
             name:
               s.fullName ||
@@ -86,6 +100,7 @@ export function useDatosDeFicha(
           const d: any = await securityGuardService.get(id);
 
           if (!mounted) return;
+          setBruto(d);
           const g = d?.guard ?? d;
           const pi = d?.profileImage ?? g?.profileImage;
           const photoFile = Array.isArray(pi) ? pi[0] : pi;
@@ -132,7 +147,10 @@ export function useDatosDeFicha(
           }
         }
       } catch {
-        /* header stays sparse */
+        /* La cabecera se queda escueta. `null` (y no `undefined`) para que las
+           pestañas sepan distinguir «falló» de «todavía cargando» y puedan
+           pedirlo ellas si lo necesitan. */
+        if (mounted) setBruto(null);
       }
     })();
 
@@ -158,7 +176,52 @@ export function useDatosDeFicha(
     };
   }, [id, isSupervisor, activo]);
 
-  return { entity, rating, rolMovido };
+  return { entity, bruto, rating, rolMovido };
+}
+
+/**
+ * EL REGISTRO DE LA FICHA, PARA UNA PESTAÑA.
+ *
+ * Devuelve el registro que YA leyó la ruta padre. Si no hay ruta padre encima
+ * —alguien monta la pestaña suelta— lo pide por su cuenta, así que la pestaña
+ * funciona en los dos casos sin saber cuál es.
+ *
+ * Esto es la otra mitad del arreglo. Subir la lectura a la ruta padre quitó las
+ * tres peticiones de la CABECERA por pestaña; sin este hook, las ocho pestañas
+ * que necesitan el registro entero (perfil, disponibilidad, departamento,
+ * archivos, memorandos, reseñas…) seguirían pidiendo cada una su
+ * `GET /security-guard/:id`.
+ *
+ * `registro` es `undefined` mientras carga y `null` si la lectura falló.
+ */
+export function useRegistroDeFicha(
+  id: string | undefined,
+  isSupervisor = false,
+): { registro: any; cargando: boolean } {
+  const deLaRuta = useFichaPersona();
+  const [propio, setPropio] = useState<any>(undefined);
+
+  useEffect(() => {
+    // Con ruta padre encima no se pide nada: ella ya lo trae.
+    if (deLaRuta || !id) return;
+    let vivo = true;
+
+    (isSupervisor ? supervisorService.get(id) : securityGuardService.get(id))
+      .then((d: any) => {
+        if (vivo) setPropio(d);
+      })
+      .catch(() => {
+        if (vivo) setPropio(null);
+      });
+
+    return () => {
+      vivo = false;
+    };
+  }, [id, isSupervisor, deLaRuta]);
+
+  const registro = deLaRuta ? deLaRuta.bruto : propio;
+
+  return { registro, cargando: registro === undefined };
 }
 
 /**

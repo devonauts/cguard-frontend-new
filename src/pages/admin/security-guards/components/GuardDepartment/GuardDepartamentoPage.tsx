@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 
 import AppLayout from "@/layouts/app-layout";
 import GuardsLayout from "@/layouts/GuardsLayout";
-import securityGuardService from "@/lib/api/securityGuardService";
+import { useRegistroDeFicha } from "@/layouts/FichaPersona";
 import departmentService, { Department } from "@/lib/api/departmentService";
 import {
   PageContainer,
@@ -47,15 +47,26 @@ export default function GuardDepartamentoPage() {
   // securityGuard.guardId is the USER id — department membership hangs off tenantUsers.
   const userId: string | undefined = guard?.guardId;
 
+  // El registro del vigilante lo trae la ruta padre; aquí sólo queda pedir el
+  // catálogo de departamentos, que es lo propio de esta pestaña.
+  const { registro } = useRegistroDeFicha(id);
+
   useEffect(() => {
     if (!id) return;
+    // La lectura de arriba falló: hay que soltar el giro o la pestaña se queda
+    // cargando para siempre (`loading` arranca en true).
+    if (registro === null) {
+      setLoading(false);
+
+      return;
+    }
+    if (!registro) return;
     let mounted = true;
 
     setLoading(true);
     Promise.all([
-      securityGuardService
-        .get(id)
-        .then((data: GuardDetail & { guard?: GuardDetail }) => {
+      Promise.resolve(registro as GuardDetail & { guard?: GuardDetail }).then(
+        (data) => {
           const g = data.guard ?? data;
 
           return {
@@ -63,7 +74,8 @@ export default function GuardDepartamentoPage() {
             fullName:
               g.fullName ?? `${g.firstName ?? ""} ${g.lastName ?? ""}`.trim(),
           };
-        }),
+        },
+      ),
       departmentService
         .list()
         .then((r) => r.rows)
@@ -99,7 +111,7 @@ export default function GuardDepartamentoPage() {
     return () => {
       mounted = false;
     };
-  }, [id]);
+  }, [id, registro]);
 
   const assign = async (departmentId: string | null) => {
     if (!userId) return;

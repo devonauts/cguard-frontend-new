@@ -8,6 +8,7 @@ import { Pencil, Mail, Loader2 } from "lucide-react";
 
 import { getTenantTimezone } from "@/utils/tenantLocation";
 import securityGuardService from "@/lib/api/securityGuardService";
+import { useRegistroDeFicha } from "@/layouts/FichaPersona";
 import { ApiService } from "@/services/api/apiService";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -223,33 +224,24 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
 
   const setField = (k: string, v: string) => setForm((p) => ({ ...p, [k]: v }));
 
-  // ── Load full guard ────────────────────────────────────────────────────────
+  /* ── El registro completo, leído por la ruta padre ────────────────────────
+     Esto pedía `GET /security-guard/:id` mientras la cabecera pedía el mismo,
+     así que el perfil salía con la petición duplicada (medido: 2x). */
+  const { registro } = useRegistroDeFicha(id);
+
   useEffect(() => {
-    let mounted = true;
+    if (!registro) return;
+    const resp = registro as ProfileGuard & { data?: ProfileGuard };
+    const payload: ProfileGuard =
+      resp && resp.id ? resp : resp && resp.data ? resp.data : resp;
 
-    (async () => {
-      if (!id) return;
-      try {
-        const resp = (await securityGuardService.get(id)) as ProfileGuard & {
-          data?: ProfileGuard;
-        };
-
-        if (!mounted) return;
-        const payload: ProfileGuard =
-          resp && resp.id ? resp : resp && resp.data ? resp.data : resp;
-
-        setData((prev) => ({ ...prev, ...payload }));
-        savedRef.current = { ...savedRef.current, ...payload };
-        if (onGuardUpdate) onGuardUpdate(payload);
-      } catch (err) {
-        console.error("Error cargando vigilante:", err);
-      }
-    })();
-
-    return () => {
-      mounted = false;
-    };
-  }, [id]);
+    setData((prev) => ({ ...prev, ...payload }));
+    savedRef.current = { ...savedRef.current, ...payload };
+    if (onGuardUpdate) onGuardUpdate(payload);
+    // `onGuardUpdate` cambia de identidad en cada render del padre; meterlo en
+    // las dependencias volvería a disparar esto en bucle.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [registro]);
 
   const beginEdit = () => {
     const src = data || ({} as ProfileGuard);

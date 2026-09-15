@@ -16,7 +16,7 @@ import {
 
 import AppLayout from "@/layouts/app-layout";
 import GuardsLayout from "@/layouts/GuardsLayout";
-import securityGuardService from "@/lib/api/securityGuardService";
+import { useRegistroDeFicha } from "@/layouts/FichaPersona";
 import guardRatingService, {
   GuardRatingRecord,
 } from "@/lib/api/guardRatingService";
@@ -99,19 +99,19 @@ export default function GuardReviewsPage() {
   useEffect(() => {
     load();
   }, [id]);
-  useEffect(() => {
-    if (!id) return;
-    securityGuardService
-      .get(id)
-      .then((d: GuardDetail & { guard?: GuardDetail }) => {
-        const g = d?.guard ?? d;
+  // El nombre sale del registro que ya leyó la ruta padre; esta pestaña no
+  // vuelve a pedir la ficha sólo para poner un nombre en el título.
+  const { registro } = useRegistroDeFicha(id);
 
-        setGuardName(
-          g?.fullName || `${g?.firstName || ""} ${g?.lastName || ""}`.trim(),
-        );
-      })
-      .catch(() => {});
-  }, [id]);
+  useEffect(() => {
+    if (!registro) return;
+    const d = registro as GuardDetail & { guard?: GuardDetail };
+    const g = d?.guard ?? d;
+
+    setGuardName(
+      g?.fullName || `${g?.firstName || ""} ${g?.lastName || ""}`.trim(),
+    );
+  }, [registro]);
 
   // Star distribution (5→1).
   const dist = useMemo(() => {

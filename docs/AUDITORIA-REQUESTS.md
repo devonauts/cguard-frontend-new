@@ -196,16 +196,35 @@ Confirmados por medición y lectura:
 | `StationShifts.tsx` | — | `/guard-assignments` (`useEffect(…, [loadAsignados])` inestable) |
 | `ActivitiesPage.tsx` + `useNotificationStream.ts:134` | 206 / 134 | `/{tenantId}/events` |
 
-Candidatos del mismo patrón, **sin medir todavía** (mismas dependencias, dos efectos de
-red; hay que comprobar uno a uno si es el mismo endpoint o no):
-`SiteTours.tsx` (380, 1043) · `PostsiteIncidents/Incidents.tsx` (213, 257) ·
-`DispatcherPage.tsx` (231, 313) · `ShiftTemplates.tsx` (109, 130) ·
-`GuardAsignarSitiosPage.tsx` (205, 210) · `Visitors.tsx` (777, 825) ·
-`SupervisorPositionsPage.tsx` (121, 128) · `PostSiteKPIs.tsx` · `AlarmPanels.tsx` ·
-`MessengerPage.tsx` · `AssignGuards.tsx` · `RadioDispatch.tsx`.
-Descartados tras leerlos (deps iguales pero endpoints distintos → **no** son duplicados):
-`ClientContacts.tsx`, `SecurityGuardsPage.tsx`, `GuardMemosPage.tsx`,
-`GuardOverviewPage.tsx` (sus 3 efectos con `[id]` piden tres cosas distintas).
+Los 12 candidatos restantes se revisaron uno a uno. **Salió uno real**:
+
+- `PostSiteKPIs.tsx` (356 y 466) — **duplicado real**. Un efecto carga los indicadores al
+  montar y otro los carga con 300 ms de espera para no pedir en cada tecla del buscador;
+  como el segundo también corre al montar, abrir la pestaña sacaba dos veces lo mismo.
+
+Los otros once son **falsos positivos** de la heurística (mismas dependencias, pero
+endpoints distintos o disparadores distintos). Se dejan anotados para que nadie los
+vuelva a «arreglar»:
+
+| Archivo | Por qué NO es duplicado |
+|---|---|
+| `SiteTours.tsx` | un efecto carga estaciones, otro rondas |
+| `DispatcherPage.tsx` | uno carga las filas, otro los catálogos de cliente/puesto |
+| `ShiftTemplates.tsx` | departamentos, plantillas y vigilantes: tres cosas |
+| `GuardAsignarSitiosPage.tsx` | montaje + oyente de `assignments:changed` |
+| `AssignGuards.tsx` | montaje + oyente de `assignments:changed` |
+| `Visitors.tsx` | puestos del filtro vs puestos del alta |
+| `SupervisorPositionsPage.tsx` | plazas, supervisores y estaciones: tres cosas |
+| `AlarmPanels.tsx` | dos componentes distintos del mismo archivo |
+| `MessengerPage.tsx` | autocompletado con dos modos de búsqueda |
+| `RadioDispatch.tsx` | montaje + sondeo de 20 s + refresco por evento de radio |
+| `ClientContacts.tsx` · `SecurityGuardsPage.tsx` · `GuardMemosPage.tsx` · `GuardOverviewPage.tsx` | endpoints distintos con las mismas dependencias |
+
+Y salió además un **N+1** que la heurística no buscaba, en
+`PostsiteIncidents/Incidents.tsx`: pedía los despachos de CADA vigilante asignado al
+puesto en su propia petición. Medido: `GET /request` **6×**, cinco de ellas en el mismo
+milisegundo (`@ms 1868041,1868041,1868041,1868042,1868042`). Arreglado haciendo que el
+filtro `guardName` del servidor acepte una lista de ids.
 
 ### D · Dos ids para el mismo vigilante
 
@@ -275,7 +294,7 @@ Ordenado por peticiones eliminadas ÷ riesgo. Un commit por punto.
 
 | # | Cambio | Archivos | Elimina |
 |---|---|---|---|
-| 1 | Ruta padre `/guards/:id` con `<Outlet/>`; el perfil se carga una vez y las pestañas lo consumen por contexto | `App.tsx`, `GuardsLayout.tsx`, las 8 pestañas de §3A | ~36 de 39 peticiones al recorrer la ficha |
+| 1 | Ruta padre `/guards/:id` con `<Outlet/>`; el perfil se carga una vez y las pestañas lo consumen por contexto | `App.tsx`, `GuardsLayout.tsx`, `FichaPersona.tsx`, las 8 pestañas de §3A | ~36 de 39 peticiones al recorrer la ficha |
 | 2 | `guard.id` → id de la ficha en `GuardSummary`; y que `performance` resuelva los dos ids como ya hace `assignments` | `GuardOverviewPage.tsx:78`, `GuardSummarypage.tsx:191/214/240`, `guardPerformanceService.ts:364` | el 404 + el lío de ids |
 | 3 | Borrar el efecto duplicado de licencias | `GuardLicensespage.tsx:258` | 1× por carga |
 | 4 | Unificar la cascada de `StationOverview` y `StationShifts` | 2 archivos | 5× por carga (la peor pantalla) |
@@ -300,3 +319,50 @@ aparte y con criterio de frescura caso por caso.
 - Ninguna pantalla pierde frescura: no se cachea nada sin decidirlo caso por caso.
 - `npm run build` y `npm test` en verde.
 - Re-medición con el mismo método, tabla antes/después.
+
+---
+
+## 8. Lo que se cambió (2026-09-15)
+
+Once commits, uno por pantalla o por pieza. En `frontend` la rama es
+`fix/duplicate-requests`; en `backend`, `fix/guard-performance-id`.
+
+| Commit | Qué arregla | Peticiones que quita |
+|---|---|---|
+| `docs: auditoría de peticiones duplicadas` | este documento | — |
+| `fix(licencias): una sola petición de la lista` | dos efectos con las mismas dependencias | 1× por visita |
+| `fix(empresa): una sola GET /tenant/:id` | dedupe en vuelo en `tenant.service.ts` | 1× por sesión |
+| `perf(auth): memorizar el valor del contexto` | el `value={{…}}` sin `useMemo` | latente |
+| `fix(actividad): el historial se lee una vez` | la página y el hook de la campana pedían lo mismo | 1× por visita + 1× por sesión |
+| `fix(desempeño): aceptar también el id de usuario` *(backend)* | el 404 de `/performance` | — |
+| `fix(ficha): el id del usuario se colaba por el de la ficha` | 3 endpoints con el id equivocado | — |
+| `fix(puesto): la pantalla se montaba dos veces` | `loading` arrancaba en `false` + cabecera y resumen pedían lo mismo | 7 de 13 |
+| `perf(ficha): el perfil se lee una vez por ficha` | ruta padre con `<Outlet/>` + las 8 pestañas consumen el registro | 36 de 39 |
+| `fix(indicadores del puesto): una sola carga` | efecto de montaje + efecto con espera | 1× por visita |
+| `feat(despachos): filter[guardName] acepta una lista` *(backend)* + `fix(incidentes del puesto)` | N+1: una petición por vigilante asignado | 5 de 6 |
+
+### Dos piezas nuevas que conviene conocer
+
+**`src/layouts/FichaPersona.tsx`** — la ficha de una persona (vigilante o supervisor),
+leída una sola vez:
+
+- `FichaPersonaProvider` es el elemento de las rutas padre `/guards/:id` y
+  `/supervisors/:id`. Lee la ficha, se queda montado mientras se cambia de pestaña y la
+  sirve por contexto. No dibuja nada: cada pestaña sigue poniendo su armazón y su cabecera.
+- `useDatosDeFicha(id, isSupervisor, activo)` es la lectura en sí. `GuardsLayout` la usa
+  como **respaldo** con `activo = !hayProveedor`, así que montar el layout fuera de esas
+  rutas sigue funcionando igual que antes.
+- `useRegistroDeFicha(id)` es lo que usan las pestañas: devuelve el registro crudo que ya
+  trajo la ruta padre, y lo pide por su cuenta si no hay ruta padre encima.
+
+**`src/pages/admin/post-sites/station-detail/stationDetailTypes.ts`** — el tipo de las
+marcaciones que la página del puesto lee una vez y reparte entre la cabecera y el resumen.
+
+### Dos cosas que NO se hicieron, a propósito
+
+1. **No se migraron las 311 ocurrencias de `useEffect` a `useQuery`.** La medición no lo
+   justifica y el riesgo en producción es alto. Lo que sí tiene sentido —caché entre
+   visitas— es otra tanda, con `cachedFetch()`, decidiendo la frescura caso por caso.
+2. **No se tocó el doble `POST /api/track` ni el sondeo.** El primero son dos pantallas
+   distintas (§5); el segundo no existe salvo en la consola de radio, que refresca cada
+   20 s a propósito.
