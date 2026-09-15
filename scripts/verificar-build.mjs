@@ -41,7 +41,9 @@ const fallar = (titulo, detalle) => {
 const AYUDA_PRECEDENCIA =
   '  Orden de Vite, de más a menos prioridad:\n' +
   '    .env.production.local  >  .env.production  >  .env.local  >  .env\n' +
-  '  La URL de producción tiene que estar en `.env.production`.';
+  '  La URL de producción tiene que estar en `.env.production`\n' +
+  '  — o, en CI, en el `env:` del workflow: `loadEnv` toma también las VITE_*\n' +
+  '    que ya vengan en el entorno del proceso, sin necesidad de fichero.';
 
 // ── 1. La variable, resuelta como la resuelve Vite ──────────────────────────
 const env = loadEnv(MODO, RAIZ, 'VITE_');

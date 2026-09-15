@@ -1,9 +1,12 @@
 
-!.env.example
 !.vscode/extensions.json
 .DS_Store
 .env
 .env.*
+# La negación va DESPUÉS de `.env.*`: en .gitignore gana la última regla que
+# casa, y puesta antes no servía de nada. `.env.example` no lleva valores, sólo
+# documenta qué variables necesita el build.
+!.env.example
 .idea
 *.local
 *.log

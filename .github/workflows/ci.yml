@@ -27,6 +27,28 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
+    # ── LA CONFIGURACIÓN DEL BUILD, AQUÍ Y NO EN UN FICHERO DE NADIE ─────────
+    # Los `.env` están en `.gitignore` a propósito, así que un checkout limpio
+    # no tiene ninguno: el build de CI salía sin saber a dónde llamar y
+    # `verificar-build` lo paraba (que es justo su trabajo).
+    #
+    # No hace falta fabricar un `.env`: Vite lee también las `VITE_*` que ya
+    # vengan en el entorno del proceso, y `verificar-build` usa su mismo
+    # `loadEnv`, así que las dos mitades ven el mismo valor.
+    #
+    # La URL va EN CLARO a propósito: acaba dentro del bundle que sirve el
+    # navegador, o sea que es pública por definición. Meterla en un secreto
+    # daría una falsa sensación de confidencialidad y además la ocultaría en
+    # los registros, que es lo contrario de lo que conviene aquí.
+    env:
+      VITE_API_URL: https://api.cguardpro.com/api
+      # Ésta sí se inyecta desde un secreto: también viaja en el bundle —eso no
+      # se puede evitar y se protege restringiendo por referente en Google—
+      # pero es una credencial FACTURABLE y no se versiona. Si el secreto no
+      # está configurado, llega vacía y el build sigue: es exactamente lo que
+      # pasa hoy, no una regresión nueva.
+      VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
+
     steps:
       - uses: actions/checkout@v4
 
