@@ -62,6 +62,13 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
+      # Falla en SEGUNDOS si falta configuración, en vez de dos minutos después
+      # al final del build. Es el mismo script que corre tras compilar —una sola
+      # lista de requisitos— pero en modo «sólo entorno», sin exigir `dist`.
+      # Nunca imprime el valor de nada: sólo dice si está.
+      - name: Preflight de configuración de producción
+        run: node scripts/verificar-build.mjs --solo-entorno
+
       - name: Typecheck
         run: npx tsc --noEmit
 
@@ -71,5 +78,13 @@ jobs:
       - name: Paridad i18n (es/en/pt)
         run: npm run i18n:parity
 
-      - name: Compilar
+      # Vitest no estaba en el gate: 104 pruebas corrían sólo si alguien se
+      # acordaba de lanzarlas a mano. Se usa el comando canónico del proyecto.
+      - name: Pruebas (Vitest)
+        run: npm test
+
+      # `npm run build` es `tsc && vite build && node scripts/verificar-build.mjs`,
+      # así que la verificación del artefacto va DENTRO: comprueba que la URL que
+      # Vite resolvió de verdad no es local, es https, y llegó al bundle.
+      - name: Compilar y verificar el artefacto
         run: npm run build
