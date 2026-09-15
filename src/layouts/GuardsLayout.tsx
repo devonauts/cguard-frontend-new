@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams, useLocation, useNavigate } from "react-router-dom";
 import {
@@ -16,11 +16,8 @@ import guardsNav from "@/data/guards-nav.json";
 import { Button } from "@/components/ui/button";
 import { PromoteDialog } from "@/pages/admin/security-guards/components/PromoteDialog";
 import { Avatar, StatusBadge, TabNav } from "@/components/kit";
-import securityGuardService from "@/lib/api/securityGuardService";
-import { supervisorService } from "@/lib/api/supervisorService";
-import { fileUrlFromFile } from "@/lib/fileUrl";
 import GuardRatingLevel from "@/pages/admin/security-guards/GuardRatingLevel";
-import guardRatingService from "@/lib/api/guardRatingService";
+import { useDatosDeFicha, useFichaPersona } from "@/layouts/FichaPersona";
 
 type Props = {
   navKey: string;
@@ -49,121 +46,28 @@ export default function GuardsLayout({ navKey, title, children }: Props) {
   const [promoverAbierto, setPromoverAbierto] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  /* ── ESTA PERSONA YA NO ES VIGILANTE ───────────────────────────────────────
-     La ficha de vigilante NO se borra al ascender —el expediente de campo
-     cuelga de ella— así que su url sigue resolviendo para siempre. Con el
-     redirect de abajo el flujo normal ya no acaba aquí, pero un enlace viejo,
-     un marcador o el botón «atrás» sí. Sin este aviso, esa pantalla presenta a
-     un supervisor como si siguiera siendo vigilante, con pestañas que ya no le
-     corresponden. */
-  const [rolMovido, setRolMovido] = useState<string | null>(null);
   const isSupervisor = navKey === "supervisors";
 
-  const [entity, setEntity] = useState<any>(null);
-  const [rating, setRating] = useState<{
-    average: number;
-    count: number;
-  } | null>(null);
+  /* LOS DATOS DE LA CABECERA VIENEN DE LA RUTA PADRE.
+     `FichaPersonaProvider` (App.tsx, rutas `/guards/:id` y `/supervisors/:id`)
+     lee la ficha UNA vez y se queda montado mientras se cambia de pestaña, así
+     que el perfil, la valoración y el rol ya no se vuelven a pedir en cada
+     click. Antes esto se pedía aquí, y como las 17 rutas de la ficha eran
+     hermanas, este layout se desmontaba y se montaba en cada pestaña: 13 x 3 =
+     39 peticiones para leer una ficha.
 
-  useEffect(() => {
-    if (!id) return;
-    let mounted = true;
-
-    (async () => {
-      try {
-        if (isSupervisor) {
-          const s: any = await supervisorService.get(id);
-
-          if (!mounted) return;
-          setEntity({
-            name:
-              s.fullName ||
-              `${s.firstName || ""} ${s.lastName || ""}`.trim() ||
-              "Supervisor",
-            photo: s.photoUrl || null,
-            onDuty: !!s.isOnDuty,
-            email: s.email,
-            phone: s.phoneNumber,
-            code: s.governmentId,
-            role: "Supervisor",
-            zone: s.zone,
-            userId: s.userId || s.supervisorUserId || id,
-          });
-        } else {
-          const d: any = await securityGuardService.get(id);
-
-          if (!mounted) return;
-          const g = d?.guard ?? d;
-          const pi = d?.profileImage ?? g?.profileImage;
-          const photoFile = Array.isArray(pi) ? pi[0] : pi;
-          const photo =
-            d?.photoUrl ?? g?.photoUrl ?? fileUrlFromFile(photoFile) ?? null;
-
-          setEntity({
-            name:
-              g?.fullName ||
-              `${g?.firstName || ""} ${g?.lastName || ""}`.trim() ||
-              "Vigilante",
-            photo,
-            onDuty: !!g?.isOnDuty,
-            activated: !!g?.hasPassword && g?.status === "active",
-            email: g?.email,
-            phone: g?.phoneNumber || g?.phone,
-            code: d?.employeeCode || d?.guardNumber || g?.guardNumber || null,
-            role: g?.role || null,
-            userId: g?.guardId || d?.guardId || null,
-          });
-
-          /* Se pregunta por la membresía REAL, que es la que manda sobre qué
-             app usa y qué ve. Se reutiliza el mismo endpoint del diálogo de
-             cambio de rol en vez de engordar el payload de la ficha, que lo
-             consumen muchas pantallas. Mejor esfuerzo: si falla, la cabecera
-             simplemente no avisa. */
-          const uid = g?.guardId || d?.guardId || null;
-
-          if (uid) {
-            try {
-              const ro: any = await securityGuardService.roleOptions(uid);
-              const actuales: string[] = (ro?.rolesActuales || []).map(String);
-
-              if (
-                mounted &&
-                actuales.length > 0 &&
-                !actuales.includes("securityGuard")
-              ) {
-                setRolMovido(actuales[0]);
-              }
-            } catch {
-              /* sin aviso: no se pudo comprobar */
-            }
-          }
-        }
-      } catch {
-        /* header stays sparse */
-      }
-    })();
-
-    return () => {
-      mounted = false;
-    };
-  }, [id, isSupervisor]);
-
-  // Guard review level for the header (link → Reseñas tab).
-  useEffect(() => {
-    if (!id || isSupervisor) return;
-    let alive = true;
-
-    guardRatingService
-      .summary([id])
-      .then((m) => {
-        if (alive) setRating(m[id] || null);
-      })
-      .catch(() => {});
-
-    return () => {
-      alive = false;
-    };
-  }, [id, isSupervisor]);
+     Si no hay proveedor encima —alguien monta este layout fuera de esas rutas—
+     `useDatosDeFicha` se activa y pide por su cuenta, exactamente como antes. */
+  const deLaRuta = useFichaPersona();
+  const propios = useDatosDeFicha(id, isSupervisor, !deLaRuta);
+  /* `rolMovido` = ESTA PERSONA YA NO ES VIGILANTE.
+     La ficha de vigilante NO se borra al ascender —el expediente de campo
+     cuelga de ella— así que su url sigue resolviendo para siempre. Con el
+     redirect de más abajo el flujo normal ya no acaba aquí, pero un enlace
+     viejo, un marcador o el botón «atrás» sí. Sin ese aviso, esta pantalla
+     presenta a un supervisor como si siguiera siendo vigilante, con pestañas
+     que ya no le corresponden. */
+  const { entity, rating, rolMovido } = deLaRuta ?? propios;
 
   const resolvePath = (path: string) =>
     id && path.includes(":id") ? path.replace(":id", id) : path;

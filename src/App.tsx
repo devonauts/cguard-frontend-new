@@ -32,6 +32,7 @@ import { AccentProvider } from "./contexts/AccentContext";
 import { RadioRealtimeProvider } from "./components/radio/RadioRealtimeProvider";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { queryClient } from "./lib/queryClient";
+import { FichaPersonaProvider } from "./layouts/FichaPersona";
 import "./i18n";
 import Register from "./pages/auth/register";
 import VerifyEmail from "./pages/auth/verify-email";
@@ -1244,134 +1245,96 @@ export default function App() {
                               }
                               path="/security-guards/edit/:id"
                             />
+                            {/* ── LA FICHA DEL VIGILANTE, BAJO UNA SOLA RUTA PADRE ────────────
+                                Las 13 pestañas eran 16 rutas HERMANAS, cada una montando su propio
+                                `GuardsLayout`. Cambiar de pestaña desmontaba la cabecera y montaba
+                                otra, así que el perfil, la valoración y el rol se volvían a pedir
+                                en cada click: 13 x 3 = 39 peticiones para leer una ficha (auditoría
+                                2026-09-15). `FichaPersonaProvider` se queda montado mientras se
+                                cambia de pestaña y sirve esos tres datos por contexto; las pestañas
+                                se pintan en su `<Outlet/>` y siguen siendo exactamente las mismas
+                                páginas, con su propio armazón y su propia cabecera. */}
                             <Route
                               element={
                                 <ProtectedRoute>
-                                  <GuardResumenPage />
+                                  <FichaPersonaProvider />
                                 </ProtectedRoute>
                               }
-                              path="/guards/:id/resumen"
-                            />
-                            <Route
-                              element={
-                                <ProtectedRoute>
-                                  <GuardPerfilPage {...({} as any)} />
-                                </ProtectedRoute>
-                              }
-                              path="/guards/:id/perfil"
-                            />
-                            <Route
-                              element={
-                                <ProtectedRoute>
-                                  <GuardDispositivoPage />
-                                </ProtectedRoute>
-                              }
-                              path="/guards/:id/dispositivo"
-                            />
-                            <Route
-                              element={
-                                <ProtectedRoute>
-                                  <GuardAvailabilityPage />
-                                </ProtectedRoute>
-                              }
-                              path="/guards/:id/availability"
-                            />
-                            <Route
-                              element={
-                                <ProtectedRoute>
-                                  <GuardIndicadoresPage />
-                                </ProtectedRoute>
-                              }
-                              path="/guards/:id/indicadores"
-                            />
-                            <Route
-                              element={
-                                <ProtectedRoute>
-                                  <GuardLicenciasPage />
-                                </ProtectedRoute>
-                              }
-                              path="/guards/:id/licencias"
-                            />
-                            <Route
-                              element={
-                                <ProtectedRoute>
-                                  <GuardNotasPage />
-                                </ProtectedRoute>
-                              }
-                              path="/guards/:id/notas"
-                            />
-                            <Route
-                              element={
-                                <ProtectedRoute>
-                                  <GuardMemosPage />
-                                </ProtectedRoute>
-                              }
-                              path="/guards/:id/memos"
-                            />
-                            <Route
-                              element={
-                                <ProtectedRoute>
-                                  <GuardReviewsPage />
-                                </ProtectedRoute>
-                              }
-                              path="/guards/:id/reviews"
-                            />
-                            <Route
-                              element={
-                                <ProtectedRoute>
-                                  <GuardHorarioPage />
-                                </ProtectedRoute>
-                              }
-                              path="/guards/:id/horario"
-                            />
-                            <Route
-                              element={
-                                <ProtectedRoute>
-                                  <GuardAsistenciaPage />
-                                </ProtectedRoute>
-                              }
-                              path="/guards/:id/asistencia"
-                            />
-                            <Route
-                              element={
-                                <ProtectedRoute>
-                                  <GuardDesempenoPage />
-                                </ProtectedRoute>
-                              }
-                              path="/guards/:id/desempeno"
-                            />
-                            <Route
-                              element={
-                                <ProtectedRoute>
-                                  <GuardDocumentosPage />
-                                </ProtectedRoute>
-                              }
-                              path="/guards/:id/documentos"
-                            />
-                            <Route
-                              element={
-                                <ProtectedRoute>
-                                  <GuardFilesPage />
-                                </ProtectedRoute>
-                              }
-                              path="/guards/:id/archivos"
-                            />
-                            <Route
-                              element={
-                                <ProtectedRoute>
-                                  <GuardAsignarSitiosPage />
-                                </ProtectedRoute>
-                              }
-                              path="/guards/:id/asignar-sitios"
-                            />
-                            <Route
-                              element={
-                                <ProtectedRoute>
-                                  <GuardDepartamentoPage />
-                                </ProtectedRoute>
-                              }
-                              path="/guards/:id/departamento"
-                            />
+                              path="/guards/:id"
+                            >
+                              {/* `/guards/:id` a secas —un enlace viejo, un
+                                  marcador— cae en el resumen. Antes esa url no
+                                  resolvía ninguna ruta; ahora la resuelve el
+                                  padre, así que sin esto se quedaría en blanco. */}
+                              <Route
+                                element={<Navigate replace to="resumen" />}
+                                index
+                              />
+                              <Route
+                                element={<GuardResumenPage />}
+                                path="resumen"
+                              />
+                              <Route
+                                element={<GuardPerfilPage {...({} as any)} />}
+                                path="perfil"
+                              />
+                              <Route
+                                element={<GuardDispositivoPage />}
+                                path="dispositivo"
+                              />
+                              <Route
+                                element={<GuardAvailabilityPage />}
+                                path="availability"
+                              />
+                              <Route
+                                element={<GuardIndicadoresPage />}
+                                path="indicadores"
+                              />
+                              <Route
+                                element={<GuardLicenciasPage />}
+                                path="licencias"
+                              />
+                              <Route
+                                element={<GuardNotasPage />}
+                                path="notas"
+                              />
+                              <Route
+                                element={<GuardMemosPage />}
+                                path="memos"
+                              />
+                              <Route
+                                element={<GuardReviewsPage />}
+                                path="reviews"
+                              />
+                              <Route
+                                element={<GuardHorarioPage />}
+                                path="horario"
+                              />
+                              <Route
+                                element={<GuardAsistenciaPage />}
+                                path="asistencia"
+                              />
+                              <Route
+                                element={<GuardDesempenoPage />}
+                                path="desempeno"
+                              />
+                              <Route
+                                element={<GuardDocumentosPage />}
+                                path="documentos"
+                              />
+                              <Route
+                                element={<GuardFilesPage />}
+                                path="archivos"
+                              />
+                              <Route
+                                element={<GuardAsignarSitiosPage />}
+                                path="asignar-sitios"
+                              />
+                              <Route
+                                element={<GuardDepartamentoPage />}
+                                path="departamento"
+                              />
+                            </Route>
                             <Route
                               element={
                                 <ProtectedRoute>
@@ -1883,73 +1846,52 @@ export default function App() {
                               }
                               path="/supervisor-positions"
                             />
+                            {/* La ficha del supervisor, bajo la misma ruta padre que la del
+                                vigilante y por lo mismo: `FichaPersonaProvider` lee la ficha una
+                                vez y la cabecera deja de pedirla en cada pestaña. */}
                             <Route
                               element={
                                 <ProtectedRoute>
-                                  <SupervisorDetailPage />
+                                  <FichaPersonaProvider isSupervisor />
                                 </ProtectedRoute>
                               }
                               path="/supervisors/:id"
-                            />
-                            <Route
-                              element={
-                                <ProtectedRoute>
-                                  <SupervisorDetailPage />
-                                </ProtectedRoute>
-                              }
-                              path="/supervisors/:id/perfil"
-                            />
-                            <Route
-                              element={
-                                <ProtectedRoute>
-                                  <SupervisorCoveragePage />
-                                </ProtectedRoute>
-                              }
-                              path="/supervisors/:id/cobertura"
-                            />
-                            <Route
-                              element={
-                                <ProtectedRoute>
-                                  <SupervisorSchedulePage />
-                                </ProtectedRoute>
-                              }
-                              path="/supervisors/:id/horario"
-                            />
-                            <Route
-                              element={
-                                <ProtectedRoute>
+                            >
+                              <Route element={<SupervisorDetailPage />} index />
+                              <Route
+                                element={<SupervisorDetailPage />}
+                                path="perfil"
+                              />
+                              <Route
+                                element={<SupervisorCoveragePage />}
+                                path="cobertura"
+                              />
+                              <Route
+                                element={<SupervisorSchedulePage />}
+                                path="horario"
+                              />
+                              <Route
+                                element={
                                   <GuardDispositivoPage
                                     navKey="supervisors"
                                     title="Dispositivo"
                                   />
-                                </ProtectedRoute>
-                              }
-                              path="/supervisors/:id/dispositivo"
-                            />
-                            <Route
-                              element={
-                                <ProtectedRoute>
-                                  <SupervisorKpisPage />
-                                </ProtectedRoute>
-                              }
-                              path="/supervisors/:id/indicadores"
-                            />
-                            <Route
-                              element={
-                                <ProtectedRoute>
-                                  <SupervisorNotesPage />
-                                </ProtectedRoute>
-                              }
-                              path="/supervisors/:id/notas"
-                            />
-                            <Route
-                              element={
-                                <ProtectedRoute>
-                                  <SupervisorLicensesPage />
-                                </ProtectedRoute>
-                              }
-                              path="/supervisors/:id/licencias"
-                            />
+                                }
+                                path="dispositivo"
+                              />
+                              <Route
+                                element={<SupervisorKpisPage />}
+                                path="indicadores"
+                              />
+                              <Route
+                                element={<SupervisorNotesPage />}
+                                path="notas"
+                              />
+                              <Route
+                                element={<SupervisorLicensesPage />}
+                                path="licencias"
+                              />
+                            </Route>
                             <Route
                               element={
                                 <ProtectedRoute>
