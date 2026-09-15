@@ -366,3 +366,115 @@ marcaciones que la página del puesto lee una vez y reparte entre la cabecera y 
 2. **No se tocó el doble `POST /api/track` ni el sondeo.** El primero son dos pantallas
    distintas (§5); el segundo no existe salvo en la consola de radio, que refresca cada
    20 s a propósito.
+
+---
+
+## 9. RE-MEDICIÓN (2026-09-15, tras desplegar)
+
+Mismo método, mismo inquilino, misma sesión, mismo endpoint de producción. Backend
+desplegado desde `main`; frontend desde `despliegue/sin-peticiones-duplicadas` (los 12
+commits de esta auditoría sobre lo que el servidor ya corría — ver §10).
+
+Aviso: hubo que forzar la actualización del **service worker** para medir el bundle nuevo.
+La PWA sirve el anterior de su caché hasta que se actualiza, así que una re-medición
+inmediata mide el código viejo. Comprobar siempre el hash del bundle antes de medir.
+
+### 9.1 El titular: recorrer la ficha del vigilante
+
+| | Antes | Después |
+|---|---|---|
+| `GET /security-guard/{id}` | 13× | **1×** |
+| `GET /guard-ratings/summary` | 13× | **1×** |
+| `GET /staff/{id}/role-options` | 13× | **1×** |
+| **Total sólo de la cabecera** | **39** | **3** |
+
+Recorrido completo de las 13 pestañas: **23 peticiones en total**, y son las de cada
+pestaña (su horario, sus licencias, sus memorandos…). Antes, sólo la cabecera ya gastaba 39.
+
+### 9.2 Las pantallas, una a una
+
+| Ruta | Endpoint | Antes | Después |
+|---|---|---|---|
+| `/guards/{id}/resumen` | `security-guard/{id}` | 2× @4 ms | **1×** |
+| | `guard-ratings/summary` | 2× @2 ms | **1×** |
+| | `security-guard/{id}/performance` | **404** | **200** |
+| | total de la pantalla | 13 | **10** |
+| `/guards/{id}/licencias` | `security-guard/{id}/licenses` | 2× @4 ms | **1×** |
+| `/guards/{id}/*` (cambio de pestaña) | perfil + valoración + rol | 3 por pestaña | **0** |
+| `/post-sites/…/stations/…/overview` | `guard-shift` | 4× | **1×** |
+| | `post-site/{id}` | 2× @640 ms | **1×** |
+| | `station/{id}/positions` | 2× @639 ms | **1×** |
+| | total de la pantalla | 13 | **6** |
+| `/post-sites/…/stations/…/shifts` | `guard-assignments` | 3× (@5 ms + @2,4 s) | **1×** |
+| `/activities` | `{tenantId}/events` | 2× @3 ms | **1×** |
+| `/post-sites/{id}/incidents` | `request` | 6× (5 en el mismo ms) | **2×** (sitio + vigilantes, @313 ms) |
+| | total de la pantalla | 11 | **7** |
+| `/post-sites/{id}/kpis` | `kpi` | 2× @300 ms | **1×** |
+| arranque de sesión | `tenant/{id}` | 2× | **1×** |
+| arranque de sesión | `{tenantId}/events` (siembra) | 2× | **1×** |
+
+### 9.3 El resto del alcance, re-verificado
+
+`/dashboard` · `/alarm/queue` · `/stations` · `/dispatch-tickets` · `/inventory` ·
+`/clients` · `/customer-requests` · `/guard-ratings` · `/security/audit` ·
+`/back-office` · `/security-guards` · `/supervisors` · `/schedule` ·
+`/nomina/dashboard` · `/tasks` · `/live-tracking` · `/analytics/guard` — **todas 1×**,
+ninguna repetición por debajo de 50 ms.
+
+### 9.4 Lo que sigue saliendo dos veces, y por qué está bien
+
+Tres casos que el agregador marca como repetición y **no** lo son. Quedan escritos para
+que nadie los «arregle»:
+
+1. **`POST /api/track` 2× en cada navegación** — el cierre de la pantalla anterior y la
+   apertura de la nueva. Dos pantallas distintas con `pv.id` distinto (§5).
+2. **`GET /incident` 2× en `/dashboard`, en el mismo milisegundo** — son dos CONSULTAS
+   distintas al mismo endpoint: `?limit=50&orderBy=createdAt_DESC` para la lista y
+   `?limit=1&filter[status]=abierto` para el contador de abiertos. El segundo existe a
+   propósito: contar en el cliente dentro de los últimos 50 se dejaba fuera a los
+   incidentes abiertos más viejos (hay un comentario en `useControlCenter.ts:405` que lo
+   explica).
+3. **`GET /file/token` 12× en `/activities`** — doce ficheros privados distintos, un token
+   cada uno. Es un N+1 de diseño del firmado de ficheros; se arregla con un endpoint que
+   firme un lote, no tocando el frontend.
+
+> **Límite del método, aprendido aquí.** El agregador normaliza el id y **descarta la
+> query**, así que dos consultas distintas al mismo endpoint se ven como un duplicado.
+> Antes de arreglar una repetición, comprobar en el código si las urls son idénticas de
+> verdad. Los casos 2 y 3 de arriba son exactamente eso.
+
+### 9.5 Criterios de aceptación
+
+| Criterio | Estado |
+|---|---|
+| Cero repeticiones < 50 ms del mismo endpoint en las rutas auditadas | ✅ (las 3 restantes son consultas distintas, §9.4) |
+| Cambiar de pestaña no vuelve a pedir el perfil | ✅ 13 pestañas → 1 lectura |
+| `GET /security-guard/{id}/performance` responde 200 | ✅ y el resumen ya pinta «100/100» en vez de «sin datos» |
+| Ninguna pantalla pierde frescura | ✅ no se cacheó nada: todo son lecturas compartidas dentro de un mismo montaje o subidas a la ruta padre |
+| `npm run build` y `npm test` en verde | ✅ build 0, tests 69/69 en la rama desplegada (103/103 en `main`) |
+| Commits separados por pantalla o por hook | ✅ 12 commits |
+
+## 10. Cómo quedó desplegado
+
+**Backend** (`api.cguardpro.com`): `main` @ `c532714f`. Build atómico, `pm2 reload` sin
+caída, las dos instancias en línea, HTTP 200, sin errores nuevos en el log. Sin
+migraciones: los tres ficheros del despliegue son de código.
+
+**Frontend** (`app.cguardpro.com`): rama `despliegue/sin-peticiones-duplicadas` @ `2d4a4ef7`.
+
+> **El servidor NO estaba en `main`.** Corría `3c554435`, de la rama
+> `despliegue/rol-navegacion`, que sale de un punto anterior. Ese commit es el mismo
+> cambio que `40476ca9` de main (mismo `patch-id`, duplicado en dos ramas), así que no
+> se perdió nada — pero el servidor **nunca desplegó** `21a42d78` («De tu facturación se
+> encarga tu proveedor») ni `72fa0919` (marca del anfitrión). Por decisión del dueño, este
+> despliegue NO los arrastra: se hizo `cherry-pick` de los 12 commits de esta auditoría
+> sobre lo que el servidor ya corría. Cero conflictos y cero solape de ficheros entre
+> ambos conjuntos (comprobado antes de empezar).
+>
+> **Queda pendiente**: el servidor sigue divergido de `main`. Esos dos commits de marca
+> blanca y facturación siguen sin desplegar. Todo lo de esta auditoría está también en
+> `main`, así que cuando se decida desplegar `main` no hay nada que rehacer.
+
+Respaldo del sitio en vivo antes de publicar:
+`/home/cguardpro/deploy-backups/20260915-064843/frontend-live.tgz` (8 MB).
+Respaldo del `dist` del backend: `/home/cguardpro/deploy-backups/20260915-064109/`.
