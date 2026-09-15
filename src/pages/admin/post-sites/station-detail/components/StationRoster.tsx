@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Shield, User, Sun, Moon } from "lucide-react";
 
-import { ApiService } from "@/services/api/apiService";
 import { getTenantTimezone } from "@/utils/tenantLocation";
 import { localeActual } from "@/lib/localeActual";
 /** Tenant-tz date key + hour of a shift start. */
@@ -43,13 +42,15 @@ interface RosterEvent {
  * derived from the generated shifts. Sacafrancos are flagged + sorted last.
  */
 export default function StationRoster({
-  stationId,
-  tenantId,
+  asignaciones,
   events,
   guardColorMap,
 }: {
-  stationId: string;
-  tenantId: string;
+  /* Las filas de `guard-assignments` que YA leyó `StationShifts`. Antes esto
+     las pedía por su cuenta con la misma url que el padre, así que la pestaña
+     de turnos salía con dos peticiones idénticas separadas por 2 ms.
+     `null` = todavía cargando. */
+  asignaciones: any[] | null;
   events: RosterEvent[];
   guardColorMap: Record<string, { accent: string; bg: string; text: string }>;
 }) {
@@ -59,36 +60,22 @@ export default function StationRoster({
   >({});
 
   useEffect(() => {
-    let alive = true;
+    if (!asignaciones) return;
+    const m: Record<string, { label: string; isRelief: boolean }> = {};
 
-    ApiService.get(
-      `/tenant/${tenantId}/guard-assignments?stationId=${encodeURIComponent(stationId)}&status=active`,
-    )
-      .then((res: any) => {
-        const list = Array.isArray(res) ? res : res?.rows || res?.data || [];
-        const m: Record<string, { label: string; isRelief: boolean }> = {};
+    for (const a of asignaciones) {
+      const gid = String(a.guardId || a.guard?.id || "");
 
-        for (const a of list) {
-          const gid = String(a.guardId || a.guard?.id || "");
+      if (!gid) continue;
+      const isRelief = !!a.isRelief || a.position?.type === "sacafranco";
 
-          if (!gid) continue;
-          const isRelief = !!a.isRelief || a.position?.type === "sacafranco";
-
-          m[gid] = {
-            label: a.position?.name || (isRelief ? "Sacafranco" : "Fijo"),
-            isRelief,
-          };
-        }
-        if (alive) setRoles(m);
-      })
-      .catch(() => {
-        /* roles optional */
-      });
-
-    return () => {
-      alive = false;
-    };
-  }, [stationId, tenantId]);
+      m[gid] = {
+        label: a.position?.name || (isRelief ? "Sacafranco" : "Fijo"),
+        isRelief,
+      };
+    }
+    setRoles(m);
+  }, [asignaciones]);
 
   const days = useMemo(() => {
     const out: string[] = [];

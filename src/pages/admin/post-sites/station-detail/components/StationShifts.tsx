@@ -305,6 +305,11 @@ export default function StationShifts({
      que trabaja, y eso lo decide quien conoce el acuerdo con esa persona. Lo
      que sí se puede es dejar de ser invisible. */
   const [sinCiclo, setSinCiclo] = useState<string[]>([]);
+  /* Las filas de asignación, tal cual. Se guardan porque `StationRoster` las
+     necesita para poner el papel de cada vigilante (fijo / sacafranco) y las
+     pedía POR SU CUENTA con exactamente la misma url: abrir la pestaña de
+     turnos sacaba dos `GET /guard-assignments` separadas por 2 ms. */
+  const [filasAsignacion, setFilasAsignacion] = useState<any[] | null>(null);
   const loadAsignados = useCallback(() => {
     if (!stationId || !tenantId) return;
     ApiService.get(
@@ -312,6 +317,7 @@ export default function StationShifts({
     )
       .then((res: any) => {
         const filas = Array.isArray(res) ? res : (res?.rows ?? []);
+        setFilasAsignacion(Array.isArray(filas) ? filas : []);
         setAsignados(Array.isArray(filas) ? filas.length : 0);
         setSinCiclo(
           (Array.isArray(filas) ? filas : [])
@@ -334,6 +340,7 @@ export default function StationShifts({
       .catch(() => {
         setAsignados(1);
         setSinCiclo([]);
+        setFilasAsignacion([]);
       });
   }, [stationId, tenantId]);
   useEffect(() => {
@@ -934,8 +941,7 @@ export default function StationShifts({
           <div className="flex flex-col">
             <div className="px-3 pt-3">
               <StationRoster
-                stationId={stationId}
-                tenantId={tenantId}
+                asignaciones={filasAsignacion}
                 events={events}
                 guardColorMap={guardColorMap}
               />
