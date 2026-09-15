@@ -5,8 +5,9 @@
  * estación en el CRM), vigilantes asignados y quién está de turno AHORA.
  */
 import type { Station } from "@/types";
+import type { RecentShiftRow } from "../stationDetailTypes";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -70,11 +71,17 @@ export default function StationHero({
   stationId,
   postSiteId,
   onRenamed,
+  recentShifts,
 }: {
   station: StationDetail;
   stationId: string;
   postSiteId: string;
   onRenamed: (name: string) => void;
+  /* Marcaciones recientes del puesto, leídas UNA vez por `StationDetailPage`.
+     Antes las pedía esta cabecera por su cuenta con exactamente la misma url
+     que el resumen de debajo, así que abrir el puesto sacaba dos
+     `GET /guard-shift` idénticas. `null` = todavía cargando. */
+  recentShifts: RecentShiftRow[] | null;
 }) {
   const { t } = useTranslation();
   const { hasPermission } = usePermissions();
@@ -83,9 +90,6 @@ export default function StationHero({
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState("");
   const [saving, setSaving] = useState(false);
-  const [onDuty, setOnDuty] = useState<
-    { id: string; name: string; since?: string }[] | null
-  >(null);
 
   const name = station?.stationName || station?.name || "Puesto";
   const guards: { id: string; name: string }[] = useMemo(
@@ -100,41 +104,21 @@ export default function StationHero({
     [station],
   );
 
-  // Quién está de turno AHORA: últimas marcaciones de esta estación sin salida.
-  useEffect(() => {
-    if (!stationId) return;
-    let mounted = true;
-    const tenantId = localStorage.getItem("tenantId") || "";
-
-    ApiService.get(
-      `/tenant/${tenantId}/guard-shift?filter[stationName]=${encodeURIComponent(stationId)}&limit=15&orderBy=punchInTime_DESC`,
-    )
-      .then((res: any) => {
-        if (!mounted) return;
-        // guard-shift (attendance) rows: name is nested under guardName.fullName.
-        interface OnDutyRow {
-          id: string;
-          punchInTime?: string;
-          punchOutTime?: string | null;
-          guardName?: { fullName?: string } | null;
-        }
-        const rows: OnDutyRow[] = (res && (res.rows || res.data?.rows)) || [];
-        const open = rows
-          .filter((r) => !r.punchOutTime)
-          .map((r) => ({
-            id: r.id,
-            name: r.guardName?.fullName || "Vigilante",
-            since: r.punchInTime,
-          }));
-
-        setOnDuty(open);
-      })
-      .catch(() => mounted && setOnDuty([]));
-
-    return () => {
-      mounted = false;
-    };
-  }, [stationId]);
+  // Quién está de turno AHORA: las marcaciones de este puesto que no tienen
+  // salida. Sale de las filas que ya trae la página, sin pedir nada.
+  const onDuty = useMemo(
+    () =>
+      recentShifts === null
+        ? null
+        : recentShifts
+            .filter((r) => !r.punchOutTime)
+            .map((r) => ({
+              id: r.id || "",
+              name: r.guardName?.fullName || "Vigilante",
+              since: r.punchInTime || undefined,
+            })),
+    [recentShifts],
+  );
 
   const saveRename = async () => {
     const newName = draft.trim();

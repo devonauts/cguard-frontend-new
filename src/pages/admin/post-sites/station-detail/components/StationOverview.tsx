@@ -1,4 +1,5 @@
 import type { Station } from "@/types";
+import type { RecentShiftRow } from "../stationDetailTypes";
 
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -46,17 +47,14 @@ interface StationDetail extends Station {
   finishTimeInDay?: string | null;
 }
 
-type Props = { station: StationDetail; stationId: string; postSiteId: string };
-
-// A guard-shift row from /guard-shift — the attendance/clock-in record. Note the
-// backend nests the guard's display name under guardName.fullName (an object).
-interface RecentShiftRow {
-  id?: string;
-  punchInTime?: string | null;
-  punchOutTime?: string | null;
-  status?: string;
-  guardName?: { fullName?: string } | null;
-}
+type Props = {
+  station: StationDetail;
+  stationId: string;
+  postSiteId: string;
+  /* Las marcaciones las lee `StationDetailPage` una vez y las reparte entre
+     esta pestaña y la cabecera. `null` = todavía cargando. */
+  recentShifts: RecentShiftRow[] | null;
+};
 
 // A station's "horario" = the scheduling engine's scheduleType, configured via
 // /auto-positions (the same path Programador › Horario uses). The turno picker
@@ -132,6 +130,7 @@ export default function StationOverview({
   station,
   stationId,
   postSiteId,
+  recentShifts,
 }: Props) {
   const { t } = useTranslation();
   const [editing, setEditing] = useState(false);
@@ -254,30 +253,10 @@ export default function StationOverview({
   const [polygon, setPolygon] = useState<PolyPoint[]>([]);
   // Human-readable address for the station coords (reverse-geocoded for display).
   const [stationAddress, setStationAddress] = useState("");
-  // Actividad reciente de la estación (marcaciones) — alimenta cobertura en
-  // vivo + la lista de actividad del modo lectura.
-  const [recentShifts, setRecentShifts] = useState<RecentShiftRow[] | null>(
-    null,
-  );
-
-  useEffect(() => {
-    if (!stationId) return;
-    let alive = true;
-    const tenantId = localStorage.getItem("tenantId") || "";
-
-    ApiService.get(
-      `/tenant/${tenantId}/guard-shift?filter[stationName]=${encodeURIComponent(stationId)}&limit=15&orderBy=punchInTime_DESC`,
-    )
-      .then((res: any) => {
-        if (!alive) return;
-        setRecentShifts((res && (res.rows || res.data?.rows)) || []);
-      })
-      .catch(() => alive && setRecentShifts([]));
-
-    return () => {
-      alive = false;
-    };
-  }, [stationId]);
+  /* La actividad reciente (marcaciones) llega por prop: alimenta la cobertura
+     en vivo y la lista de actividad del modo lectura. Antes se pedía aquí con
+     la MISMA url que usa `StationHero` un palmo más arriba, así que la pantalla
+     salía con dos `GET /guard-shift` idénticas. */
 
   useEffect(() => {
     const la = station?.latitud ?? station?.latitude;

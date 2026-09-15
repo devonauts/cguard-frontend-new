@@ -1,3 +1,5 @@
+import type { RecentShiftRow } from "./stationDetailTypes";
+
 import React, { useEffect, useState } from "react";
 import { useParams, useLocation, Navigate } from "react-router-dom";
 import { Loader2, AlertTriangle } from "lucide-react";
@@ -31,11 +33,31 @@ export default function StationDetailPage() {
   const currentTab = parts[4] || "overview";
 
   const [station, setStation] = useState<any | null>(null);
-  const [loading, setLoading] = useState(false);
+  /* ARRANCA EN `true`, Y ESO ES EL ARREGLO.
+     Con `false`, el primer pintado entraba por la rama de abajo y montaba la
+     cabecera y la pestaña ANTES de tener puesto; el efecto ponía `loading` a
+     true acto seguido, las desmontaba para enseñar el giro, y al llegar la
+     respuesta las volvía a montar. Dos montajes = dos rondas de peticiones de
+     TODA la pantalla. Medido en producción: `guard-shift` 4x, `post-site` 2x y
+     `station/:id/positions` 2x, con los pares separados justo por lo que tarda
+     la lectura del puesto (~640 ms). */
+  const [loading, setLoading] = useState(true);
+  /* Las marcaciones recientes del puesto, leídas UNA vez aquí.
+     Las pedían la cabecera (para «quién está de turno ahora») y el resumen
+     (para la lista de actividad) con la MISMA url, cada una por su cuenta. */
+  const [recentShifts, setRecentShifts] = useState<RecentShiftRow[] | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!stationId) return;
+    // Sin puesto no hay nada que leer, pero hay que soltar el giro: `loading`
+    // arranca en `true` y si nadie lo baja la pantalla se queda girando.
+    if (!stationId) {
+      setLoading(false);
+
+      return;
+    }
     let mounted = true;
 
     (async () => {
@@ -65,6 +87,29 @@ export default function StationDetailPage() {
     };
   }, [stationId]);
 
+  // Marcaciones recientes del puesto: una sola lectura para la cabecera y el
+  // resumen, que antes pedían esto mismo por separado.
+  useEffect(() => {
+    if (!stationId) return;
+    let alive = true;
+    const tenantId = localStorage.getItem("tenantId") || "";
+
+    ApiService.get(
+      `/tenant/${tenantId}/guard-shift?filter[stationName]=${encodeURIComponent(
+        stationId,
+      )}&limit=15&orderBy=punchInTime_DESC`,
+    )
+      .then((res: any) => {
+        if (!alive) return;
+        setRecentShifts((res && (res.rows || res.data?.rows)) || []);
+      })
+      .catch(() => alive && setRecentShifts([]));
+
+    return () => {
+      alive = false;
+    };
+  }, [stationId]);
+
   // Redirect bare /post-sites/:postSiteId/stations/:stationId → overview
   if (parts.length === 4) {
     return (
@@ -84,7 +129,7 @@ export default function StationDetailPage() {
   const renderTab = () => {
     switch (currentTab) {
       case "overview":
-        return <StationOverview {...tabProps} />;
+        return <StationOverview {...tabProps} recentShifts={recentShifts} />;
       case "visitors":
         return <StationVisitors {...tabProps} />;
       case "guards":
@@ -106,7 +151,7 @@ export default function StationDetailPage() {
       case "parking":
         return <StationParking {...tabProps} />;
       default:
-        return <StationOverview {...tabProps} />;
+        return <StationOverview {...tabProps} recentShifts={recentShifts} />;
     }
   };
 
@@ -127,6 +172,7 @@ export default function StationDetailPage() {
           <FadeIn className="space-y-4">
             <StationHero
               postSiteId={postSiteId || ""}
+              recentShifts={recentShifts}
               station={station}
               stationId={stationId || ""}
               onRenamed={(n) =>
