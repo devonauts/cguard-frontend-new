@@ -255,35 +255,12 @@ export default function GuardLicenses({
     }
   }, [actionOpen]);
 
-  useEffect(() => {
-    if (!id) return;
-    let mounted = true;
-
-    setLoading(true);
-    api
-      .list({ limit, offset: (page - 1) * limit })
-      .then((data: LicenseList) => {
-        if (!mounted) return;
-        setLicenseData(data.rows || []);
-        setTotalCount(data.count || 0);
-      })
-      .catch((err: any) => {
-        console.error("Error loading licenses", err);
-        toast.error(
-          t("guards.licenses.toasts.loadError", {
-            defaultValue: "Could not load licenses",
-          }),
-        );
-      })
-      .finally(() => {
-        if (!mounted) return;
-        setLoading(false);
-      });
-
-    return () => {
-      mounted = false;
-    };
-  }, [id, page, limit]);
+  /* Aquí vivía un SEGUNDO efecto con las MISMAS dependencias `[id, page, limit]`
+     que pedía la misma lista que `loadLicenses()` unas líneas más abajo: cada
+     visita a la pestaña de licencias salía con dos
+     `GET /security-guard/:id/licenses` separadas por 4 ms. Se quedó el que
+     llama al cargador extraído, que es el que además reutilizan el alta, la
+     edición y el borrado para refrescar. */
 
   // Extracted loader so we can refresh after creating
   const loadLicenses = async (pageToUse = page, limitToUse = limit) => {
