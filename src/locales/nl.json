@@ -2739,7 +2739,8 @@
       "no_call_no_show": "Niet verschenen (no-show)",
       "outside_geofence": "Buiten de geofence",
       "overtime": "Overuren",
-      "correction_pending": "Correctie in behandeling"
+      "correction_pending": "Correctie in behandeling",
+      "missing_location": "Zonder locatie"
     },
     "excEstado": {
       "open": "Open",

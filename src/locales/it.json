@@ -2739,7 +2739,8 @@
       "no_call_no_show": "Assenza ingiustificata (no-show)",
       "outside_geofence": "Fuori dal geofence",
       "overtime": "Straordinario",
-      "correction_pending": "Correzione in sospeso"
+      "correction_pending": "Correzione in sospeso",
+      "missing_location": "Senza posizione"
     },
     "excEstado": {
       "open": "Aperta",

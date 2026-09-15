@@ -59,6 +59,7 @@ const TYPE_OPTIONS = [
   "no_call_no_show",
   "missed_clockout",
   "outside_geofence",
+  "missing_location",
   "early_departure",
   "overtime",
 ];

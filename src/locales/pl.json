@@ -2739,7 +2739,8 @@
       "no_call_no_show": "Nieobecność bez zgłoszenia",
       "outside_geofence": "Poza strefą",
       "overtime": "Nadgodziny",
-      "correction_pending": "Korekta w toku"
+      "correction_pending": "Korekta w toku",
+      "missing_location": "Bez lokalizacji"
     },
     "excEstado": {
       "open": "Otwarta",

@@ -11021,7 +11021,8 @@
       "no_call_no_show": "Falta sem aviso",
       "outside_geofence": "Fora da cerca virtual",
       "overtime": "Hora extra",
-      "correction_pending": "Correção pendente"
+      "correction_pending": "Correção pendente",
+      "missing_location": "Sem localização"
     },
     "excEstado": {
       "open": "Aberta",

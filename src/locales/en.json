@@ -11025,7 +11025,8 @@
       "no_call_no_show": "No-show",
       "outside_geofence": "Outside geofence",
       "overtime": "Overtime",
-      "correction_pending": "Correction pending"
+      "correction_pending": "Correction pending",
+      "missing_location": "No location"
     },
     "excEstado": {
       "open": "Open",

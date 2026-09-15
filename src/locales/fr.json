@@ -2739,7 +2739,8 @@
       "no_call_no_show": "Absence injustifiée",
       "outside_geofence": "Hors géorepérage",
       "overtime": "Heures supplémentaires",
-      "correction_pending": "Correction en attente"
+      "correction_pending": "Correction en attente",
+      "missing_location": "Sans localisation"
     },
     "excEstado": {
       "open": "Ouverte",

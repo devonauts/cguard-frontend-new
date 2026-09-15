@@ -132,6 +132,7 @@ export const EXCEPTION_LABEL: Record<string, string> = tablaDeEtiquetas({
   missed_clockout: "nomina.excepcion.missed_clockout",
   no_call_no_show: "nomina.excepcion.no_call_no_show",
   outside_geofence: "nomina.excepcion.outside_geofence",
+  missing_location: "nomina.excepcion.missing_location",
   overtime: "nomina.excepcion.overtime",
   correction_pending: "nomina.excepcion.correction_pending",
 });

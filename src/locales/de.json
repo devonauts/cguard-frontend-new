@@ -2739,7 +2739,8 @@
       "no_call_no_show": "Unentschuldigt gefehlt (No-Show)",
       "outside_geofence": "Außerhalb des Geofence",
       "overtime": "Überstunden",
-      "correction_pending": "Korrektur offen"
+      "correction_pending": "Korrektur offen",
+      "missing_location": "Ohne Standort"
     },
     "excEstado": {
       "open": "Offen",
