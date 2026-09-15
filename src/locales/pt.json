@@ -8250,6 +8250,10 @@
       "proximas4Semanas": "Próximas 4 semanas:"
     },
     "StationOverview": {
+      "ajustesAvanzados": "Configurações avançadas",
+      "cadaPlazaConSuCiclo": "Cada posto com seu próprio ciclo",
+      "cicloYCuandoLibran": "Ciclo de folgas: {{ciclo}}",
+      "sinCicloTodavia": "Ainda sem ciclo de folgas — será definido ao atribuir o primeiro vigilante",
       "cambiarElHorarioReconfiguraLos": "Alterar o horário reconfigura os postos; os vigilantes atribuídos precisarão ser reatribuídos.",
       "editarHorarioToleranciasYUbicacion": "Editar horário, tolerâncias e localização",
       "noHayInformacionDelPuesto": "Não há informações do posto",

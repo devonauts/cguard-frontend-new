@@ -877,7 +877,7 @@ export default function Schedule() {
       if (silent) setRefreshing(true);
       else setLoading(true);
       try {
-        const [overviewRes, rotRes, guardsRes, staffingRes, coverageRes] =
+        const [overviewRes, rotRes, guardsRes, coverageRes] =
           await Promise.all([
             ApiService.get(
               `/tenant/${tenantId}/scheduler/overview?startDate=${startDateStr}&endDate=${endDateStr}`,
@@ -885,9 +885,6 @@ export default function Schedule() {
             ApiService.get(`/tenant/${tenantId}/rotation-styles`),
             ApiService.get(
               `/tenant/${tenantId}/security-guard/autocomplete?limit=200`,
-            ),
-            ApiService.get(`/tenant/${tenantId}/scheduler/staffing`).catch(
-              () => null,
             ),
             ApiService.get(
               `/tenant/${tenantId}/scheduler/coverage?days=14`,
@@ -920,11 +917,6 @@ export default function Schedule() {
             .filter((g: { id: string; label: string }) => g.id),
         );
 
-        if (staffingRes) {
-          const sd = staffingRes?.data || staffingRes;
-
-          setStaffing(sd);
-        }
         hasLoadedRef.current = true;
       } catch (e: any) {
         console.error("[Scheduler] fetch error", e);
@@ -940,6 +932,38 @@ export default function Schedule() {
   useEffect(() => {
     fetchAll();
   }, [fetchAll]);
+
+  /* ── LAS ALERTAS SON DEL MES QUE SE MIRA ─────────────────────────────────
+     `/scheduler/staffing` se pedía sin `year`/`month`, así que el servidor
+     contestaba siempre por SU mes en curso: la hoja podía estar en noviembre y
+     las insignias seguir describiendo septiembre. El parámetro existía en el
+     backend desde el principio y nadie lo mandaba.
+
+     Va en su propio efecto y no en el lote de arriba a propósito: depende del
+     mes visible, y meterlo allí obligaría a recargar la rejilla entera —el año
+     completo de turnos— cada vez que alguien pasa de un mes al siguiente. */
+  const mesDeLasAlertas = visibleMonth.getFullYear() * 12 + visibleMonth.getMonth();
+
+  useEffect(() => {
+    if (!tenantId) return;
+    let vigente = true;
+    const anio = Math.floor(mesDeLasAlertas / 12);
+    const mes = (mesDeLasAlertas % 12) + 1;
+
+    ApiService.get(
+      `/tenant/${tenantId}/scheduler/staffing?year=${anio}&month=${mes}`,
+    )
+      .then((res: any) => {
+        if (vigente && res) setStaffing(res?.data || res);
+      })
+      .catch(() => {
+        /* Las insignias son informativas: si no llegan, la hoja sigue. */
+      });
+
+    return () => {
+      vigente = false;
+    };
+  }, [tenantId, mesDeLasAlertas]);
 
   // ─── Helpers ──────────────────────────────────────────────────────────────
 
@@ -1321,101 +1345,20 @@ export default function Schedule() {
     ? staffing!.stationAlerts
     : null;
 
-  // Per-station alerts for uncovered fijo slots and SF rest-day coverage gaps.
-  const localStationAlerts = useMemo(() => {
-    const rows: {
-      stationId: string;
-      stationName: string;
-      nickname?: string | null;
-      missingFijoCount: number;
-      sfUncoveredDays: number;
-    }[] = [];
+  /* ── AQUÍ HABÍA UNA SEGUNDA OPINIÓN, Y ERA LA MISMA EQUIVOCADA ──────────
+     `localStationAlerts` recalculaba las insignias en el navegador con la
+     regla vieja —«¿libra algún fijo y no vino un sacafranco?»—, que en un
+     puesto de 24 h que alterna salta todos los días: el descanso de uno ES el
+     turno del otro. Sólo se usaba cuando el servidor no contestaba, así que su
+     único efecto posible era enseñar el número equivocado justo cuando nadie
+     podía contrastarlo.
 
-    if (apiStationAlerts) return rows;
-
-    // Indices por puesto, construidos UNA vez. Antes eran dos `.filter()` sobre
-    // TODAS las posiciones y asignaciones DENTRO del bucle de puestos.
-    const fijoPosByStation = new Map<string, StationPosition[]>();
-
-    for (const p of positions) {
-      if (p.type !== "fijo") continue;
-      const list = fijoPosByStation.get(p.stationId);
-
-      if (list) list.push(p);
-      else fijoPosByStation.set(p.stationId, [p]);
-    }
-    const fijoAsgByStation = new Map<string, GuardAssignment[]>();
-
-    for (const a of assignments) {
-      if (a.isRelief || positionsById.get(a.positionId)?.type !== "fijo")
-        continue;
-      const list = fijoAsgByStation.get(a.stationId);
-
-      if (list) list.push(a);
-      else fijoAsgByStation.set(a.stationId, [a]);
-    }
-
-    for (const st of stations) {
-      const stationFijoPositions = fijoPosByStation.get(st.id) || [];
-      const stationFijoAssignments = fijoAsgByStation.get(st.id) || [];
-
-      const assignedPosIds = new Set(
-        stationFijoAssignments.map((a) => a.positionId),
-      );
-      const missingFijoCount = stationFijoPositions.filter(
-        (p) => !assignedPosIds.has(p.id),
-      ).length;
-
-      let sfUncoveredDays = 0;
-
-      if (stationFijoAssignments.length > 0) {
-        for (const day of monthDays) {
-          const dateStr = fmtDate(day);
-          const anyResting = stationFijoAssignments.some(
-            (a) => isWorkDay(a, day) === "rest",
-          );
-
-          if (!anyResting) continue;
-
-          const key = `${st.id}-${dateStr}`;
-          const coveredBySf = (sfStationCoverage.get(key) || []).length > 0;
-
-          if (!coveredBySf) sfUncoveredDays++;
-        }
-      }
-
-      if (missingFijoCount > 0 || sfUncoveredDays > 0) {
-        rows.push({
-          stationId: st.id,
-          stationName: st.stationName,
-          nickname: st.nickname,
-          missingFijoCount,
-          sfUncoveredDays,
-        });
-      }
-    }
-
-    rows.sort(
-      (a, b) =>
-        b.missingFijoCount +
-        b.sfUncoveredDays -
-        (a.missingFijoCount + a.sfUncoveredDays),
-    );
-
-    return rows;
-  }, [
-    apiStationAlerts,
-    stations,
-    positions,
-    positionsById,
-    assignments,
-    monthDays,
-    sfStationCoverage,
-    isWorkDay,
-  ]);
+     La cobertura la calcula ahora el servidor a partir de los TURNOS
+     (`/scheduler/staffing`, por tramos). Sin respuesta no se enseña insignia:
+     no saber es mejor que inventar. */
 
   const stationAlerts = useMemo<StationAlert[]>(() => {
-    const rows = apiStationAlerts ?? localStationAlerts;
+    const rows = apiStationAlerts ?? [];
     // The staffing endpoint does not return the nominativo, and this panel is
     // where you pick which puesto to fix — so stitch it back on from the
     // stations we already hold. Several puestos share a stationName; without it
@@ -1429,7 +1372,7 @@ export default function Schedule() {
         ? a
         : { ...a, nickname: nickById.get(String(a.stationId)) ?? null },
     );
-  }, [apiStationAlerts, localStationAlerts, stations]);
+  }, [apiStationAlerts, stations]);
 
   const stationAlertByStationId = useMemo(() => {
     const map = new Map<string, StationAlert>();
@@ -2959,9 +2902,11 @@ export default function Schedule() {
    *
    * El backend ya tenía la puerta buena abierta y nadie la usaba:
    * `PUT /station/:id/positions/:positionId` cambia nombre/tipo/horas/plazas y
-   * llama a `regenerateStationShiftsSafe`, que rehace los turnos futuros desde
-   * las horas nuevas SIN tocar a quién está asignado. El mismo formulario crea
-   * (POST) cuando no hay `positionId`.
+   * reconcilia los turnos futuros con las horas nuevas SIN tocar a quién está
+   * asignado (`reconcileScheduleChange`, acotado a esa plaza). Si no puede
+   * rehacerlos devuelve 409 y deja el puesto como estaba: no existe el estado
+   * «configuración nueva + turnos viejos + pantalla contenta». El mismo
+   * formulario crea (POST) cuando no hay `positionId`.
    */
   /** Alta de un aprendiz que acompaña a un titular. */
   const [shadowFor, setShadowFor] = useState<{
@@ -3151,6 +3096,11 @@ export default function Schedule() {
           `/tenant/${tenantId}/station/${posEditor.stationId}/positions/${posEditor.positionId}`,
           { data },
         );
+        /* Este mensaje ya no es una promesa: el servidor sólo responde 200
+           cuando los turnos futuros SE REHICIERON de verdad. Si la
+           reconciliación falla devuelve 409, deja el puesto con sus horas
+           anteriores y el `catch` de abajo enseña el motivo. Antes se
+           prometía lo mismo pasara lo que pasara. */
         toast.success(
           "Puesto actualizado — los turnos futuros se rehicieron con las horas nuevas",
         );
@@ -6067,9 +6017,9 @@ export default function Schedule() {
                                       vigilante
                                     </div>
                                   )}
-                                  {alert.sfUncoveredDays > 0 && (
+                                  {alert.uncoveredDays > 0 && (
                                     <div className="tabular-nums">
-                                      • {alert.sfUncoveredDays} día(s) L sin SF
+                                      • {alert.uncoveredDays} día(s) sin cubrir
                                       cubriendo
                                     </div>
                                   )}
@@ -6782,8 +6732,8 @@ export default function Schedule() {
                           : marcadas.length === 1
                             ? "Todos sus días de trabajo van a esta estación."
                             : Object.keys(posEditor.stationDays || {}).length
-                              ? "Se reparten sus días en esa proporción. Si una estación no tiene descanso que cubrir ese día, va a otra antes que quedarse parado."
-                              : "Sin días asignados se reparte por igual. Escribe cuántos días de su ciclo van a cada una."}
+                              ? "Son los puestos donde se le PERMITE fichar. Sus turnos se generan en su puesto base; para que cubra otro, arrastra su día allí."
+                              : "Son los puestos donde se le permite fichar cuando le coloques un turno en ellos. No reparte sus días solo."}
                       </p>
                     </div>
 

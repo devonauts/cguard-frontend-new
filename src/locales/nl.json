@@ -8730,6 +8730,10 @@
       "proximas4Semanas": "Komende 4 weken:"
     },
     "StationOverview": {
+      "ajustesAvanzados": "Geavanceerde instellingen",
+      "cadaPlazaConSuCiclo": "Elke post met een eigen cyclus",
+      "cicloYCuandoLibran": "Rustdagencyclus: {{ciclo}}",
+      "sinCicloTodavia": "Nog geen rustdagencyclus — die wordt gekozen bij het indelen van de eerste beveiliger",
       "cambiarElHorarioReconfiguraLos": "Als u de tijden wijzigt, worden de posten opnieuw ingericht; toegewezen beveiligers moeten opnieuw worden ingedeeld.",
       "editarHorarioToleranciasYUbicacion": "Tijden, marges en positie bewerken",
       "noHayInformacionDelPuesto": "Er is geen informatie over deze post",

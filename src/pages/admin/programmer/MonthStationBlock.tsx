@@ -758,13 +758,13 @@ function MonthStationBlockInner({
                     {stationAlert.missingFijoCount} fijo(s) faltan
                   </span>
                 )}
-                {stationAlert.sfUncoveredDays > 0 && (
+                {stationAlert.uncoveredDays > 0 && (
                   <span
                     className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[9px] font-semibold tabular-nums"
                     style={toneCard("warn")}
                   >
                     <AlertTriangle size={9} />
-                    {stationAlert.sfUncoveredDays} L sin SF
+                    {stationAlert.uncoveredDays} día(s) sin cubrir
                   </span>
                 )}
               </div>

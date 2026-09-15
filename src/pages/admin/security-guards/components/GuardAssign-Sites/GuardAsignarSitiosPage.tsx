@@ -411,11 +411,17 @@ export default function GuardAsignarSitiosPage() {
           /* noop */
         }
         await loadAssignments();
-      } catch (err) {
+      } catch (err: any) {
+        /* El mensaje del servidor MANDA cuando lo hay. Asignar a alguien es
+           darle horario, y el backend ya distingue por qué no pudo: si el
+           puesto no tiene estilo de rotación, decir «No se pudo asignar el
+           puesto» esconde justo lo que hay que arreglar. */
         toast.error(
-          t("guards.assignSites.errors.assignFailed", {
-            defaultValue: "No se pudo asignar el puesto",
-          }),
+          err?.data?.message ||
+            err?.message ||
+            t("guards.assignSites.errors.assignFailed", {
+              defaultValue: "No se pudo asignar el puesto",
+            }),
         );
       } finally {
         setAssigning(false);

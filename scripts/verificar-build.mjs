@@ -30,7 +30,13 @@ import path from 'node:path';
 import { loadEnv } from 'vite';
 
 const RAIZ = process.cwd();
-const DIST = path.resolve(process.argv[2] || 'dist');
+/* `--solo-entorno` comprueba la CONFIGURACIÓN sin exigir que exista `dist`.
+   Sirve para fallar en segundos al principio de CI, antes de gastar dos minutos
+   compilando algo que ya se sabe que no se puede publicar. Es el MISMO fichero
+   que corre después del build, así que no hay dos listas de requisitos que se
+   desincronicen. */
+const SOLO_ENTORNO = process.argv.includes('--solo-entorno');
+const DIST = path.resolve(process.argv.slice(2).find((a) => !a.startsWith('--')) || 'dist');
 const MODO = process.env.NODE_ENV === 'development' ? 'development' : 'production';
 
 const fallar = (titulo, detalle) => {
@@ -41,7 +47,9 @@ const fallar = (titulo, detalle) => {
 const AYUDA_PRECEDENCIA =
   '  Orden de Vite, de más a menos prioridad:\n' +
   '    .env.production.local  >  .env.production  >  .env.local  >  .env\n' +
-  '  La URL de producción tiene que estar en `.env.production`.';
+  '  La URL de producción tiene que estar en `.env.production`\n' +
+  '  — o, en CI, en el `env:` del workflow: `loadEnv` toma también las VITE_*\n' +
+  '    que ya vengan en el entorno del proceso, sin necesidad de fichero.';
 
 // ── 1. La variable, resuelta como la resuelve Vite ──────────────────────────
 const env = loadEnv(MODO, RAIZ, 'VITE_');
@@ -79,7 +87,59 @@ if (destino.protocol !== 'https:') {
   );
 }
 
-// ── 2. Que ese valor viajó de verdad al bundle ──────────────────────────────
+/* ── 2. LA CLAVE DE MAPAS ────────────────────────────────────────────────────
+   La usan siete sitios —centro de operaciones, rastreo GPS, imágenes estáticas
+   de mapa— y vivía SÓLO en el `.env` local. Un build hecho en un checkout
+   limpio salía sin ella: compila, pesa lo mismo, se despliega sin fricción, y
+   los mapas aparecen vacíos. Es exactamente la misma clase de fallo que el de
+   `localhost` del 6-sep-2026: un artefacto roto que se ve igual que uno bueno.
+
+   NO se imprime el valor ni una parte de él. Sólo se dice si está. */
+const mapas = (env.VITE_GOOGLE_MAPS_API_KEY || '').trim();
+if (!mapas) {
+  fallar(
+    'VITE_GOOGLE_MAPS_API_KEY VACÍA',
+    '  El CRM saldría sin mapas: el centro de operaciones, el rastreo GPS y las\n' +
+      '  imágenes estáticas de mapa quedan en blanco, y nada más avisa.\n\n' +
+      '  En CI se inyecta desde el secreto del repositorio:\n' +
+      '    VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}\n' +
+      '  En local, en tu `.env` (ver `.env.example`).\n\n' +
+      '  Ojo: esta clave ACABA EN EL NAVEGADOR, como toda VITE_*. Su protección no\n' +
+      '  es el secreto, es la restricción por REFERENTE HTTP y por API en la\n' +
+      '  consola de Google. El secreto sólo evita versionar una credencial que se\n' +
+      '  factura.',
+  );
+}
+
+/* El marcador de CI vale para compilar, NUNCA para publicar. CI construye para
+   comprobar el código; el artefacto de producción se compila en el servidor con
+   su `.env` de verdad. Si este valor aparece fuera de CI, alguien está a punto
+   de publicar un CRM con los mapas muertos. */
+const MARCADOR_CI = 'CI-PLACEHOLDER-NO-ES-UNA-CLAVE-REAL';
+if (mapas === MARCADOR_CI) {
+  if (process.env.CI !== 'true') {
+    fallar(
+      'MARCADOR DE CI FUERA DE CI',
+      '  VITE_GOOGLE_MAPS_API_KEY trae el marcador que sólo debe usar GitHub\n' +
+        '  Actions para validar que el código compila. Un artefacto construido con\n' +
+        '  él sale SIN MAPAS.\n\n' +
+        '  El build de producción se hace en el servidor, y toma la clave real de\n' +
+        '  su propio `.env`. Si estás compilando para publicar, usa esa vía.',
+    );
+  }
+  console.log(
+    '[verificar-build] · clave de mapas = marcador de CI: se valida que el código\n' +
+    '                    COMPILA, no la conectividad con Google. El artefacto de\n' +
+    '                    producción se construye en el servidor con la clave real.',
+  );
+}
+
+if (SOLO_ENTORNO) {
+  console.log('[verificar-build] ✓ configuración presente: API y clave de mapas');
+  process.exit(0);
+}
+
+// ── 3. Que ese valor viajó de verdad al bundle ──────────────────────────────
 if (!fs.existsSync(DIST)) fallar('NO EXISTE dist', `  ${DIST} — ¿falló vite build?`);
 
 function* ficheros(dir) {

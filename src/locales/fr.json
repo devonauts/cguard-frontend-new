@@ -8730,6 +8730,10 @@
       "proximas4Semanas": "4 prochaines semaines :"
     },
     "StationOverview": {
+      "ajustesAvanzados": "Paramètres avancés",
+      "cadaPlazaConSuCiclo": "Chaque poste avec son propre cycle",
+      "cicloYCuandoLibran": "Cycle de repos : {{ciclo}}",
+      "sinCicloTodavia": "Pas encore de cycle de repos — il sera choisi lors de l'affectation du premier agent",
       "cambiarElHorarioReconfiguraLos": "Changer le planning reconfigure les postes ; les agents affectés devront être réaffectés.",
       "editarHorarioToleranciasYUbicacion": "Modifier le planning, les tolérances et l'emplacement",
       "noHayInformacionDelPuesto": "Aucune information sur le poste",

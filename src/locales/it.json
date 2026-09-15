@@ -8730,6 +8730,10 @@
       "proximas4Semanas": "Prossime 4 settimane:"
     },
     "StationOverview": {
+      "ajustesAvanzados": "Impostazioni avanzate",
+      "cadaPlazaConSuCiclo": "Ogni posto con il proprio ciclo",
+      "cicloYCuandoLibran": "Ciclo di riposi: {{ciclo}}",
+      "sinCicloTodavia": "Nessun ciclo di riposi — verrà scelto assegnando la prima guardia",
       "cambiarElHorarioReconfiguraLos": "Cambiare l'orario riconfigura i posti; le guardie assegnate dovranno essere riassegnate.",
       "editarHorarioToleranciasYUbicacion": "Modifica orario, tolleranze e posizione",
       "noHayInformacionDelPuesto": "Nessuna informazione sul posto",
