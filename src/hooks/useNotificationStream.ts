@@ -42,6 +42,12 @@ interface UseNotificationStreamResult {
   markRead: (id: string) => void;
   markAllRead: () => void;
   connected: boolean;
+  /** true mientras se lee el historial inicial (para pintar el esqueleto). */
+  seeding: boolean;
+  /** el historial inicial no se pudo leer. Los eventos en vivo siguen llegando. */
+  seedError: boolean;
+  /** Relee el historial y lo funde con lo que ya hay. Para el botón «Actualizar». */
+  refresh: () => Promise<void>;
 }
 
 const MAX_STORED = 50;
@@ -54,6 +60,40 @@ const MAX_STORED = 50;
 // propia reacción); lo global es solo lo que el USUARIO oye/ve una vez.
 const globallyAlerted = new Set<string>();
 
+/**
+ * LA SIEMBRA DEL HISTORIAL, COMPARTIDA ENTRE INSTANCIAS.
+ *
+ * Este hook lo montan a la vez la campana del header, `RadioRealtimeProvider` y
+ * la pantalla de Actividad. Cada instancia pedía su propio
+ * `GET /:tenantId/events`, así que al abrir sesión salían dos y al entrar en
+ * Actividad otra más.
+ *
+ * Igual que en `tenant.service.ts`, esto comparte la promesa mientras la
+ * petición está VIVA y la suelta al terminar: dos instancias que montan juntas
+ * se reparten una sola respuesta, y quien monte después vuelve a pedir, que es
+ * lo que se espera de un historial.
+ */
+const siembraEnVuelo = new Map<string, Promise<any[]>>();
+
+function leerHistorial(tenantId: string, token: string): Promise<any[]> {
+  const pendiente = siembraEnVuelo.get(tenantId);
+
+  if (pendiente) return pendiente;
+
+  const p = fetch(`${API_URL}/${tenantId}/events?limit=${MAX_STORED}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  })
+    .then((r) => (r.ok ? r.json() : { rows: [] }))
+    .then((data) => (data?.rows || []) as any[])
+    .finally(() => {
+      siembraEnVuelo.delete(tenantId);
+    });
+
+  siembraEnVuelo.set(tenantId, p);
+
+  return p;
+}
+
 export function useNotificationStream(
   tenantId: string | null | undefined,
   onLive?: (n: PlatformNotification) => void,
@@ -62,6 +102,10 @@ export function useNotificationStream(
     [],
   );
   const [connected, setConnected] = useState(false);
+  // Estado del historial inicial, para que quien pinte una lista completa
+  // (la pantalla de Actividad) sepa si está esperando o si falló.
+  const [seeding, setSeeding] = useState(true);
+  const [seedError, setSeedError] = useState(false);
   const socketRef = useRef<Socket | null>(null);
   // Keep the latest callback in a ref so changing it doesn't re-create the
   // socket connection (the effect depends only on tenantId).
@@ -94,6 +138,45 @@ export function useNotificationStream(
     [],
   );
 
+  /** Vuelca las filas del historial en la lista (dedup por id lo hace addNotification). */
+  const sembrar = useCallback(
+    (rows: any[]) => {
+      for (const ev of rows) {
+        addNotification(
+          {
+            id: ev.id,
+            eventType: ev.eventType,
+            title: ev.title,
+            body: ev.body,
+            payload: ev.payload,
+            sourceEntityType: ev.sourceEntityType,
+            sourceEntityId: ev.sourceEntityId,
+            createdAt: ev.createdAt,
+          },
+          ev.deliveryStatus === "read",
+        );
+      }
+    },
+    [addNotification],
+  );
+
+  /** Relectura a petición del usuario (botón «Actualizar» de Actividad). */
+  const refresh = useCallback(async () => {
+    if (!tenantId) return;
+    const token = getAuthToken();
+
+    if (!token) return;
+    setSeeding(true);
+    setSeedError(false);
+    try {
+      sembrar(await leerHistorial(tenantId, token));
+    } catch {
+      setSeedError(true);
+    } finally {
+      setSeeding(false);
+    }
+  }, [tenantId, sembrar]);
+
   const markRead = useCallback(
     (id: string) => {
       setNotifications((prev) =>
@@ -123,39 +206,40 @@ export function useNotificationStream(
   }, [tenantId]);
 
   useEffect(() => {
-    if (!tenantId) return;
+    // Sin empresa o sin sesión no hay historial que leer, pero el consumidor
+    // tiene que dejar de esperar: si `seeding` se queda en true, la pantalla de
+    // Actividad muestra el esqueleto para siempre.
+    if (!tenantId) {
+      setSeeding(false);
+
+      return;
+    }
     const token = getAuthToken();
 
-    if (!token) return;
+    if (!token) {
+      setSeeding(false);
+
+      return;
+    }
 
     let destroyed = false;
 
     // Seed the recent backlog (websocket only delivers new events post-connect).
-    fetch(`${API_URL}/${tenantId}/events?limit=30`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    })
-      .then((r) => (r.ok ? r.json() : { rows: [] }))
-      .then((data) => {
+    // La petición se comparte con las otras instancias del hook que monten a la
+    // vez (ver `leerHistorial`).
+    setSeeding(true);
+    setSeedError(false);
+    leerHistorial(tenantId, token)
+      .then((rows) => {
         if (destroyed) return;
-        const rows: any[] = data?.rows || [];
-
-        for (const ev of rows) {
-          addNotification(
-            {
-              id: ev.id,
-              eventType: ev.eventType,
-              title: ev.title,
-              body: ev.body,
-              payload: ev.payload,
-              sourceEntityType: ev.sourceEntityType,
-              sourceEntityId: ev.sourceEntityId,
-              createdAt: ev.createdAt,
-            },
-            ev.deliveryStatus === "read",
-          );
-        }
+        sembrar(rows);
+        setSeeding(false);
       })
-      .catch(() => {});
+      .catch(() => {
+        if (destroyed) return;
+        setSeedError(true);
+        setSeeding(false);
+      });
 
     const socket = crearSocket(token, tenantId);
 
@@ -269,7 +353,7 @@ export function useNotificationStream(
       cerrarSocket(socket);
       socketRef.current = null;
     };
-  }, [tenantId, addNotification]);
+  }, [tenantId, addNotification, sembrar]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -292,5 +376,14 @@ export function useNotificationStream(
     ensureNotificationPermission();
   }, [tenantId]);
 
-  return { notifications, unreadCount, markRead, markAllRead, connected };
+  return {
+    notifications,
+    unreadCount,
+    markRead,
+    markAllRead,
+    connected,
+    seeding,
+    seedError,
+    refresh,
+  };
 }

@@ -35,7 +35,6 @@ import {
   Segmented,
   SmartImage,
 } from "@/components/kit";
-import api from "@/lib/api";
 import { useFileUrl } from "@/lib/fileUrl";
 import { useNotificationStream } from "@/hooks/useNotificationStream";
 import { targetForNotification } from "@/components/notifications/notificationToast";
@@ -146,14 +145,20 @@ export default function ActivitiesPage() {
   const { t, i18n } = useTranslation();
   const tenantId = localStorage.getItem("tenantId") || "";
 
+  /* EL HISTORIAL VIENE DEL MISMO HOOK QUE LOS EVENTOS EN VIVO.
+     Antes esta pantalla montaba el hook (que ya siembra el historial reciente)
+     Y ADEMÁS pedía `GET /:tenantId/events` por su cuenta con otro `limit`:
+     dos peticiones al mismo endpoint separadas por 3 ms en cada visita. Ahora
+     el hook siembra `MAX_STORED` filas —las mismas que esta lista puede
+     mostrar— y expone `refresh` para el botón «Actualizar». */
   const {
     notifications: live,
     markRead: persistRead,
     connected,
+    seeding: loading,
+    seedError: error,
+    refresh: load,
   } = useNotificationStream(tenantId);
-  const [history, setHistory] = useState<ActivityEvent[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
   const [readIds, setReadIds] = useState<Set<string>>(new Set());
 
   // filters
@@ -168,50 +173,10 @@ export default function ActivitiesPage() {
   const [searchParams] = useSearchParams();
   const focusId = searchParams.get("focus");
 
-  const load = useCallback(async () => {
-    if (!tenantId) {
-      setLoading(false);
-
-      return;
-    }
-    setLoading(true);
-    setError(false);
-    try {
-      const res = await api.get(`/${tenantId}/events`, {
-        params: { limit: 50 },
-        toast: { silentError: true },
-      } as any);
-      const rows = (res.data?.rows ?? []) as any[];
-
-      setHistory(
-        rows.map((e) => ({
-          id: e.id,
-          eventType: e.eventType,
-          title: e.title || e.eventType || "Evento",
-          body: e.body,
-          createdAt: e.createdAt,
-          read: e.deliveryStatus === "read",
-          payload: parsePayload(e.payload),
-          sourceEntityType: e.sourceEntityType,
-          sourceEntityId: e.sourceEntityId,
-        })),
-      );
-    } catch {
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
-  }, [tenantId]);
-
-  useEffect(() => {
-    load();
-  }, [load]);
-
-  // merge live SSE events with fetched history, de-duplicated by id, newest first
+  // historial + eventos en vivo, ya deduplicados por id dentro del hook
   const events = useMemo<ActivityEvent[]>(() => {
     const map = new Map<string, ActivityEvent>();
 
-    history.forEach((e) => map.set(e.id, e));
     live.forEach((n) =>
       map.set(n.id, {
         id: n.id,
@@ -229,7 +194,7 @@ export default function ActivitiesPage() {
     return Array.from(map.values()).sort(
       (a, b) => +new Date(b.createdAt) - +new Date(a.createdAt),
     );
-  }, [history, live]);
+  }, [live]);
 
   const isRead = useCallback(
     (e: ActivityEvent) => e.read || readIds.has(e.id),
