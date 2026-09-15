@@ -64,7 +64,17 @@ export function PromoteDialog({
   personName?: string;
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  onDone?: () => void;
+  /**
+   * Se avisa CON EL ROL NUEVO, no a secas.
+   *
+   * Antes esto no llevaba argumento y el único llamador hacía
+   * `window.location.reload()`: recargar la MISMA url, que es la ficha de
+   * vigilante desde donde se asciende. O sea que ascender a alguien te dejaba
+   * exactamente donde estabas, mirándolo como vigilante. Quien decide a dónde
+   * ir es el llamador —esto es un diálogo, no un router—, pero necesita saber
+   * en qué se ha convertido la persona para poder llevarte a su ficha nueva.
+   */
+  onDone?: (rolNuevo: string) => void;
 }) {
   const { t } = useTranslation();
   const [cargando, setCargando] = useState(false);
@@ -165,7 +175,7 @@ export function PromoteDialog({
         );
       }
       onOpenChange(false);
-      onDone?.();
+      onDone?.(elegido);
     } catch (e: any) {
       toast.error(
         e?.data?.message ||

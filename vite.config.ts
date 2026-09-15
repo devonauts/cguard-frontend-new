@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
+import { sinComentariosHtml } from "./build/sinComentariosHtml";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -10,6 +11,7 @@ export default defineConfig({
     react(),
     tsconfigPaths(),
     tailwindcss(),
+    sinComentariosHtml(),
     // ── PWA / offline ───────────────────────────────────────────────────────
     // Convierte el CRM en app INSTALABLE (Chrome/Edge "Instalar aplicación" en
     // Mac/Windows/Linux) y le da arranque sin red: el service worker pre-cachea
@@ -33,11 +35,17 @@ export default defineConfig({
       includeManifestIcons: false,
       // El manifest ya existía en public/manifest.json (huérfano hasta hoy) —
       // se genera desde aquí para mantenerlo versionado junto al SW.
+      /* MANIFEST NEUTRO (fase 11): un solo artefacto sirve a todos los
+         anfitriones y el navegador lee el manifest antes de que corra nada
+         nuestro, así que su nombre no puede depender del socio. Un nombre con
+         marca aparecería al INSTALAR desde el anfitrión de un socio. El porqué
+         completo y la salida (manifest por anfitrión) están en
+         `backend/docs/runbooks/phase-a-wildcard.md`. */
       manifest: {
-        name: "C-Guard Pro",
-        short_name: "C-Guard",
+        name: "Panel de seguridad",
+        short_name: "Panel",
         description:
-          "Plataforma de gestión de seguridad física: guardias, puestos de vigilancia, patrullaje GPS y reportes en tiempo real.",
+          "Gestión de seguridad física: vigilantes, puestos, patrullaje GPS y reportes en tiempo real.",
         // "/" y no "/login": una sesión viva debe abrir en el panel; el router
         // ya redirige a /login cuando no hay sesión.
         start_url: "/",

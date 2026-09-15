@@ -2439,6 +2439,10 @@
     },
     "reviews": {
       "saveError": "Vastleggen mislukt"
+    },
+    "rolCambiado": {
+      "aviso": "{{name}} is geen beveiliger meer: nu {{rol}}. Dit dossier blijft bewaard met de veldhistorie.",
+      "ir": "Supervisordossier openen"
     }
   },
   "incidents": {

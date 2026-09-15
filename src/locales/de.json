@@ -2439,6 +2439,10 @@
     },
     "reviews": {
       "saveError": "Die Bewertung konnte nicht gespeichert werden"
+    },
+    "rolCambiado": {
+      "aviso": "{{name}} ist kein Wachmann mehr, sondern jetzt {{rol}}. Dieser Datensatz bleibt mit der Einsatzhistorie erhalten.",
+      "ir": "Supervisor-Datensatz öffnen"
     }
   },
   "incidents": {

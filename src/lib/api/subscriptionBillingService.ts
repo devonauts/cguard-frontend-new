@@ -31,8 +31,20 @@ export interface PlanResolution {
   overLimit: boolean;
 }
 
+/** Los datos del distribuidor que factura, cuando lo hace uno. */
+export interface ManagedByProvider {
+  name: string | null;
+  supportEmail: string | null;
+  supportPhone: string | null;
+}
+
 export interface BillingSummary {
-  status: string; // trialing | active | past_due | trial_expired | canceled
+  /** `reseller_managed` cuando factura un distribuidor: entonces no hay
+   *  suscripción de CGuard Pro, ni prueba, ni precio por usuario que enseñar. */
+  status: string; // trialing | active | past_due | trial_expired | canceled | reseller_managed
+  /** `'reseller'` = la relación de cobro es con el distribuidor, no con nosotros. */
+  billingOwnership?: "direct" | "reseller";
+  managedBy?: ManagedByProvider | null;
   trial: {
     endsAt: string | null;
     daysLeft: number;

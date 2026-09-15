@@ -2439,6 +2439,10 @@
     },
     "reviews": {
       "saveError": "Impossible d'enregistrer"
+    },
+    "rolCambiado": {
+      "aviso": "{{name}} n'est plus agent : il ou elle est désormais {{rol}}. Cette fiche est conservée avec son historique de terrain.",
+      "ir": "Voir sa fiche de superviseur"
     }
   },
   "incidents": {

@@ -49,6 +49,14 @@ export default function GuardsLayout({ navKey, title, children }: Props) {
   const [promoverAbierto, setPromoverAbierto] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  /* ── ESTA PERSONA YA NO ES VIGILANTE ───────────────────────────────────────
+     La ficha de vigilante NO se borra al ascender —el expediente de campo
+     cuelga de ella— así que su url sigue resolviendo para siempre. Con el
+     redirect de abajo el flujo normal ya no acaba aquí, pero un enlace viejo,
+     un marcador o el botón «atrás» sí. Sin este aviso, esa pantalla presenta a
+     un supervisor como si siguiera siendo vigilante, con pestañas que ya no le
+     corresponden. */
+  const [rolMovido, setRolMovido] = useState<string | null>(null);
   const isSupervisor = navKey === "supervisors";
 
   const [entity, setEntity] = useState<any>(null);
@@ -105,6 +113,30 @@ export default function GuardsLayout({ navKey, title, children }: Props) {
             role: g?.role || null,
             userId: g?.guardId || d?.guardId || null,
           });
+
+          /* Se pregunta por la membresía REAL, que es la que manda sobre qué
+             app usa y qué ve. Se reutiliza el mismo endpoint del diálogo de
+             cambio de rol en vez de engordar el payload de la ficha, que lo
+             consumen muchas pantallas. Mejor esfuerzo: si falla, la cabecera
+             simplemente no avisa. */
+          const uid = g?.guardId || d?.guardId || null;
+
+          if (uid) {
+            try {
+              const ro: any = await securityGuardService.roleOptions(uid);
+              const actuales: string[] = (ro?.rolesActuales || []).map(String);
+
+              if (
+                mounted &&
+                actuales.length > 0 &&
+                !actuales.includes("securityGuard")
+              ) {
+                setRolMovido(actuales[0]);
+              }
+            } catch {
+              /* sin aviso: no se pudo comprobar */
+            }
+          }
         }
       } catch {
         /* header stays sparse */
@@ -167,6 +199,35 @@ export default function GuardsLayout({ navKey, title, children }: Props) {
 
   return (
     <div className="mx-auto w-full max-w-[1440px] space-y-4 px-4 py-4">
+      {/* Esta persona ya cambió de rol: su ficha de vigilante es historial.
+          Se enseña ANTES de nada, porque lo primero que hay que saber al abrir
+          esta pantalla es que lo que se ve ya no es su papel actual. */}
+      {!isSupervisor && rolMovido && (
+        <div className="flex flex-wrap items-center gap-2 rounded-lg border border-amber-300/60 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
+          <span className="flex-1">
+            {t(
+              "guards.rolCambiado.aviso",
+              "{{name}} ya no es vigilante: ahora es {{rol}}. Esta ficha se conserva con su historial de campo.",
+              {
+                name: displayName,
+                rol:
+                  rolMovido === "securitySupervisor"
+                    ? t("roles.securitySupervisor", "Supervisor")
+                    : rolMovido,
+              },
+            )}
+          </span>
+          {rolMovido === "securitySupervisor" && entity?.userId && (
+            <Link
+              className="shrink-0 font-semibold underline underline-offset-2"
+              to={`/supervisors/${entity.userId}`}
+            >
+              {t("guards.rolCambiado.ir", "Ver su ficha de supervisor")}
+            </Link>
+          )}
+        </div>
+      )}
+
       {/* Breadcrumb: {Raíz} › {Nombre} › {Pestaña} */}
       <div className="flex min-w-0 items-center gap-1.5 text-sm text-muted-foreground">
         <Link className="shrink-0 hover:text-primary" to={listPath}>
@@ -295,7 +356,33 @@ export default function GuardsLayout({ navKey, title, children }: Props) {
         open={promoverAbierto}
         personName={entity?.name}
         userId={(entity as any)?.userId || null}
-        onDone={() => window.location.reload()}
+        onDone={(rolNuevo) => {
+          /* ── ASCENDER TIENE QUE LLEVARTE A LA FICHA NUEVA ──────────────────
+             Esto hacía `window.location.reload()`, que recarga la MISMA url. Y
+             la url es la ficha de VIGILANTE desde donde se asciende, así que
+             promover a alguien te devolvía al mismo sitio, mirándolo como
+             vigilante — como si no hubiera pasado nada.
+
+             La ficha de vigilante sigue existiendo A PROPÓSITO después del
+             cambio (`cambioDeRolService` la conserva: el expediente de campo
+             —fichajes, incidentes, rondas, licencias— cuelga de
+             `securityGuards.id`, y borrarla dejaría ese historial huérfano y la
+             promoción sin vuelta atrás). Lo que faltaba no era borrar nada:
+             era IR a donde ahora vive la persona. */
+          const userId = (entity as any)?.userId;
+
+          if (rolNuevo === "securitySupervisor" && userId) {
+            navigate(`/supervisors/${userId}`, { replace: true });
+            return;
+          }
+          if (rolNuevo === "securityGuard" && userId) {
+            navigate(`/security-guards/${userId}`, { replace: true });
+            return;
+          }
+          // Rol que esta pantalla no sabe ubicar: recargar es mejor que dejar
+          // datos viejos delante.
+          window.location.reload();
+        }}
         onOpenChange={setPromoverAbierto}
       />
 

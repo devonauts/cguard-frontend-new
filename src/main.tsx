@@ -50,6 +50,7 @@ import { registerSW } from "virtual:pwa-register";
 // Puente escritorio/SO (efecto secundario: registra el manejador de deep links
 // cguardpro:// cuando corremos dentro de la app de escritorio).
 import "@/lib/desktop";
+import { WhiteLabelProvider } from "@/contexts/WhiteLabelContext";
 import { ConfirmHost } from "@/components/ui/confirmDialog";
 import { PromptHost } from "@/components/ui/promptDialog";
 
@@ -105,8 +106,15 @@ window.addEventListener("vite:preloadError", (event) => {
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    {/* <BrowserRouter> */}
-    <App />
+    {/* LA MARCA PRIMERO. `WhiteLabelProvider` no pinta a sus hijos hasta que ha
+        resuelto de quién es este anfitrión, así que nadie que entre por la URL
+        de un socio ve un parpadeo con el logotipo de CGuardPro. Mientras espera
+        hay un esqueleto NEUTRO — sin marca de nadie —, y si el contexto no se
+        puede leer se sigue con la identidad de plataforma: esto es identidad
+        visual, no una dependencia para poder entrar a trabajar. */}
+    <WhiteLabelProvider>
+      {/* <BrowserRouter> */}
+      <App />
     {/* Estado de red global: solo visible sin conexión / reconectando /
             con escrituras encoladas. */}
     <OfflineBanner />
@@ -126,6 +134,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       style={{ zIndex: 2147483647 }}
       toastOptions={{ style: { zIndex: 2147483647 } }}
     />
-    {/* </BrowserRouter> */}
+      {/* </BrowserRouter> */}
+    </WhiteLabelProvider>
   </React.StrictMode>,
 );

@@ -8,6 +8,7 @@ import {
   extractOnboardingTenant,
   trialDaysLeft,
   isTrialing,
+  esFacturadaPorProveedor,
 } from "@/components/onboarding/onboardingUtils";
 
 /**
@@ -22,6 +23,12 @@ export default function TrialDaysBadge() {
   const tenant = useMemo(() => extractOnboardingTenant(user), [user]);
 
   if (!tenant || !isTrialing(tenant.billingStatus)) return null;
+  /* A una empresa que factura su distribuidor no se le enseña el aviso de
+     prueba de CGuard Pro: esa prueba es de una relación de cobro que no tiene
+     con nosotros, y el aviso lleva a una pantalla de pago que no le sirve.
+     Puede pasar en una empresa que ya existía y se pasó a un distribuidor con
+     la prueba todavía corriendo. */
+  if (esFacturadaPorProveedor(tenant.billingOwnership)) return null;
 
   const days = trialDaysLeft(tenant.trialEndsAt);
 

@@ -45,50 +45,74 @@
          que ese permiso nunca lo vería. Si algún día hay que posicionar
          «cguardpro acceso», sale de la web comercial o de una cabecera
          `X-Robots-Tag` por ruta en nginx, no de este archivo. -->
-    <title>Acceso — CGuardPro</title>
+    <!-- ── EL TÍTULO DEL PRIMER PINTADO ES NEUTRO (fase 11) ──────────────
+         Este archivo es EL MISMO para `app.cguardpro.com` y para el anfitrión
+         de cualquier socio: hay un solo artefacto de CRM y la marca es un dato
+         en tiempo de ejecución. Un título con la marca aquí aparecería en la
+         pestaña durante el arranque de TODOS los anfitriones, y el cliente de
+         un socio descubriría a su proveedor por el rabillo del ojo.
+
+         `WhiteLabelProvider` pone el título de verdad —el del socio, o el de
+         CGuardPro— en cuanto responde `/api/platform/context`. Lo que se ve
+         entretanto es esto: una palabra que no es de nadie. -->
+    <title>Acceso</title>
 
     <!-- Poppins is self-hosted (bundled via src/main.tsx) — no render-blocking
          Google Fonts CDN request, and no dependency on a CDN that email/geo
          filters sometimes block. (Removed the duplicate CDN <link>.) -->
 
+    <!-- Neutra por lo mismo que el título. La página lleva `noindex`, así que
+         esto no lo lee ningún buscador: lo leen las vistas previas de enlaces,
+         que es donde una marca ajena canta. -->
     <meta
       name="description"
-      content="Pantalla de acceso para las empresas que ya trabajan con CGuardPro. Si buscas qué es y qué incluye el sistema, está todo en cguardpro.com."
+      content="Pantalla de acceso. Entra con tu cuenta de empresa."
     />
     <!-- Aquí vivía una lista de palabras clave declaradas a mano. Google la
          ignora desde 2009 y hoy sólo delata SEO viejo: se retiró entera en
          lugar de mantenerla. -->
-    <meta name="author" content="CGuardPro" />
+    <!-- Sin autor declarado: aquí diría la marca de la plataforma en el
+         anfitrión de un socio. -->
     <meta name="robots" content="noindex, follow" />
-    <meta name="theme-color" content="#f97316" />
+    <!-- El color de la barra del navegador, en el tono NEUTRO de la superficie
+         y no en un acento de marca: el acento lo pone `--brand-h` en tiempo de
+         ejecución y aquí clavarlo haría que la barra parpadeara del color de la
+         plataforma al del socio. -->
+    <meta name="theme-color" content="#0A0E16" />
+    <!-- ── EL CANÓNICO SE QUEDA, Y APUNTA A LA WEB COMERCIAL ─────────────
+         Decisión deliberada, no un descuido. La página lleva `noindex, follow`,
+         así que ningún buscador la va a indexar bajo ninguna URL — el canónico
+         aquí sólo consolida la señal de marca de la PLATAFORMA en su propia web,
+         que es lo que ya hacía y sigue siendo correcto.
+
+         Lo que NO se hace es inventar un canónico por anfitrión: eso sería
+         arquitectura SEO por socio (sitemaps, indexación, señales de marca
+         separadas) y no es de esta fase. Y dejarlo apuntando a
+         `app.cguardpro.com` sí habría sido un error: haría que el anfitrión de
+         un socio reclamara la identidad canónica de la plataforma. -->
     <link rel="canonical" href="https://cguardpro.com/" />
 
-    <!-- Open Graph / Facebook — esto NO es para buscadores, es la vista previa
-         de cuando alguien pega el enlace del acceso en un chat o un correo. Por
-         eso `og:url` sigue siendo el de la aplicación (es a donde lleva el
-         enlace) aunque el canónico apunte a la web comercial. -->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="CGuardPro" />
-    <meta property="og:locale" content="es_EC" />
-    <meta property="og:title" content="Acceso — CGuardPro" />
-    <meta
-      property="og:description"
-      content="Entra al panel de CGuardPro con tu cuenta de empresa."
-    />
-    <meta property="og:url" content="https://app.cguardpro.com/" />
-    <meta property="og:image" content="https://app.cguardpro.com/assets/logo/c-guard-logo.png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+    <!-- ── OPENGRAPH Y TWITTER, RETIRADOS (fase 11) ──────────────────────
+         Declaraban `og:site_name`, `og:title`, `og:image` y `twitter:*` con la
+         marca y el logotipo de CGuardPro, en un archivo que ahora sirve también
+         a los anfitriones de los socios. Pegar el enlace de acceso de un socio
+         en un chat mostraba la tarjeta de CGuardPro — que es precisamente el
+         trato que la marca blanca vende.
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Acceso — CGuardPro" />
-    <meta
-      name="twitter:description"
-      content="Entra al panel de CGuardPro con tu cuenta de empresa."
-    />
-    <meta name="twitter:image" content="https://app.cguardpro.com/assets/logo/c-guard-logo.png" />
+         No se sustituyen por etiquetas dinámicas: eso es arquitectura de vista
+         previa por anfitrión, necesita render en servidor (los rastreadores de
+         tarjetas no ejecutan JavaScript) y es trabajo de otra fase. Retirarlas
+         deja una vista previa sosa; dejarlas delataba al proveedor. Sosa gana.
 
+         `og:url` tampoco puede quedarse: era `https://app.cguardpro.com/`, que
+         en el anfitrión de un socio apunta a otro sitio. -->
+
+    <!-- ── ICONOS: RESPALDO DE PLATAFORMA ─────────────────────────────────
+         Son el valor por defecto del primer pintado y el respaldo de un socio
+         sin favicon propio. `WhiteLabelProvider` sustituye el `href` en cuanto
+         llega el contexto. Se quedan porque un documento sin favicon pide
+         `/favicon.ico`, recibe el index.html del SPA y deja un icono roto en la
+         pestaña de TODOS los anfitriones. -->
     <!-- Favicon / Icons -->
     <link rel="icon" href="/favicon-escudo.ico?v=2" sizes="any" />
     <link rel="icon" type="image/png" sizes="512x512" href="/icons/favicon-512.png?v=2" />
