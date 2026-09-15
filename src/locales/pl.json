@@ -8726,6 +8726,10 @@
       "proximas4Semanas": "Najbliższe 4 tygodnie:"
     },
     "StationOverview": {
+      "ajustesAvanzados": "Ustawienia zaawansowane",
+      "cadaPlazaConSuCiclo": "Każdy posterunek z własnym cyklem",
+      "cicloYCuandoLibran": "Cykl dni wolnych: {{ciclo}}",
+      "sinCicloTodavia": "Brak cyklu dni wolnych — zostanie wybrany przy przypisaniu pierwszego pracownika ochrony",
       "cambiarElHorarioReconfiguraLos": "Zmiana grafiku przebudowuje posterunki; przypisanych pracowników ochrony trzeba będzie przypisać ponownie.",
       "editarHorarioToleranciasYUbicacion": "Edytuj grafik, tolerancje i lokalizację",
       "noHayInformacionDelPuesto": "Brak informacji o posterunku",

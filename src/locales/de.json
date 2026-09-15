@@ -8726,6 +8726,10 @@
       "proximas4Semanas": "Nächste 4 Wochen:"
     },
     "StationOverview": {
+      "ajustesAvanzados": "Erweiterte Einstellungen",
+      "cadaPlazaConSuCiclo": "Jeder Posten mit eigenem Zyklus",
+      "cicloYCuandoLibran": "Ruhetage-Zyklus: {{ciclo}}",
+      "sinCicloTodavia": "Noch kein Ruhetage-Zyklus – er wird bei der Zuweisung der ersten Wachkraft festgelegt",
       "cambiarElHorarioReconfiguraLos": "Eine Änderung der Zeiten richtet die Objekte neu ein; zugewiesene Wachkräfte müssen erneut zugewiesen werden.",
       "editarHorarioToleranciasYUbicacion": "Zeiten, Toleranzen und Standort bearbeiten",
       "noHayInformacionDelPuesto": "Keine Informationen zum Objekt",
