@@ -309,15 +309,19 @@ export default function SacafrancoAssignModal({
         <div>
           <p className="cg-eyebrow mb-1.5">Cómo trabaja</p>
           <SecuenciaPropiaSelect
-            etiquetaPorDefecto="Tapa el hueco donde caiga (recomendado)"
+            etiquetaPorDefecto="Hereda el ciclo de la estación"
             tenantId={tenantId}
             value={cicloPropio}
             onChange={setCicloPropio}
           />
+          {/* Esto prometía «cubre, día a día, el descanso que dejen los
+              fijos», y el reparto automático se retiró: un sacafranco corre su
+              ciclo en su puesto, igual que un fijo. Quien lo lea tiene que
+              saber que colocarlo en otro puesto es un acto suyo. */}
           <p className="mt-1 text-[10px]" style={{ color: "var(--ink-soft)" }}>
-            Sin ciclo propio cubre, día a día, el descanso que dejen los fijos.
-            Con ciclo propio corre su rotación y dentro de sus días de trabajo
-            va al hueco que exista.
+            Corre su ciclo en este puesto, igual que un fijo. Sin ciclo propio
+            hereda el de la estación. Para cubrir el descanso de un compañero,
+            arrastra su día al puesto que quieras en el Programador.
           </p>
         </div>
 

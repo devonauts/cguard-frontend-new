@@ -12,6 +12,7 @@ import { describe, it, expect } from "vitest";
 
 import {
   cuentaComoCobertura,
+  sigueEnPie,
   esNovedad,
   ESTADOS_ANULADOS,
 } from "./shiftStatus";
@@ -30,6 +31,15 @@ describe("cuentaComoCobertura", () => {
     for (const status of ["planned", "covered", "reinforcement", "extension"]) {
       expect(cuentaComoCobertura({ status })).toBe(true);
     }
+  });
+
+  it("el acompañamiento NO cubre, aunque esté en pie", () => {
+    // Un aprendiz es una persona real que ficha y cobra, y precisamente por eso
+    // el estado existe: si el titular falta y sólo aparece él, el puesto está
+    // DESCUBIERTO. Este espejo decía que sí cubría.
+    expect(cuentaComoCobertura({ status: "training" })).toBe(false);
+    // Pero la fila sigue en pie: es su cuadrante, no una anulación.
+    expect(sigueEnPie({ status: "training" })).toBe(true);
   });
 
   it("sin estado cuenta como cobertura — es el turno de siempre", () => {

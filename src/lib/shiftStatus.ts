@@ -41,6 +41,24 @@ export const ESTADOS_ANULADOS = [
  */
 export const ESTADO_NOVEDAD = "absent";
 
+/**
+ * EL APRENDIZ ESTÁ, PERO NO CUBRE.
+ *
+ * Un acompañante (`training`) es una persona real —ficha y cobra— que NO
+ * satisface la dotación del puesto: si el titular falta y sólo aparece el
+ * aprendiz, el puesto tiene que salir DESCUBIERTO. Es el mismo criterio que el
+ * servidor aplica con `activeShiftWhere` (ver `backend/src/lib/shiftStatus`).
+ *
+ * Este espejo se había quedado sin él: `cuentaComoCobertura` devolvía `true`
+ * para un turno de acompañamiento, o sea justo lo contrario de lo que el estado
+ * existe para impedir. Hoy no lo lee nadie en producción, y por eso se arregla
+ * ahora — el día que alguien lo use, heredaría el fallo.
+ *
+ * Va SEPARADO de los anulados a propósito: un acompañamiento no está anulado.
+ * La fila está en pie, se le paga, y aparece en el cuadrante de esa persona.
+ */
+export const ESTADO_APRENDIZ = "training";
+
 /** ¿Este turno significa que alguien va a estar en el puesto? */
 export function cuentaComoCobertura(
   turno: { status?: string | null } | null | undefined,
@@ -50,6 +68,26 @@ export function cuentaComoCobertura(
   // Sin estado = turno de siempre (la mayoría en empresas antiguas) = cuenta.
   // Se decide por lista NEGRA para que un estado nuevo cuente como cobertura
   // por defecto: que algo desaparezca del cuadrante sin avisar es el fallo caro.
+  const estado = String(turno.status || "planned");
+
+  return (
+    !(ESTADOS_ANULADOS as readonly string[]).includes(estado) &&
+    estado !== ESTADO_APRENDIZ
+  );
+}
+
+/**
+ * ¿Esta fila sigue EN PIE? (sin anular) — incluido el acompañamiento.
+ *
+ * Es la pregunta de «¿es esto parte del cuadrante de esta persona?», distinta de
+ * «¿cubre el puesto?». Un aprendiz contesta que sí a la primera y que no a la
+ * segunda. Equivale a `notVoidedShiftWhere` del servidor.
+ */
+export function sigueEnPie(
+  turno: { status?: string | null } | null | undefined,
+): boolean {
+  if (!turno) return false;
+
   return !(ESTADOS_ANULADOS as readonly string[]).includes(
     String(turno.status || "planned"),
   );

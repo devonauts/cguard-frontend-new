@@ -78,5 +78,8 @@ export interface StationAlert {
   stationName: string;
   nickname?: string | null;
   missingFijoCount: number;
-  sfUncoveredDays: number;
+  /** Días del mes en que al puesto le faltó gente en algún tramo. */
+  uncoveredDays: number;
+  /** @deprecated Nombre viejo: nunca midió al sacafranco, mide el hueco. */
+  sfUncoveredDays?: number;
 }
