@@ -290,8 +290,13 @@ export default function Incidents({ site }: { site?: SiteProp }) {
             ? siteResp.rows
             : [];
 
-        // Fetch dispatches for each assigned guard (if any)
+        /* Los despachos de los vigilantes asignados, en UNA petición.
+           Antes salía una por vigilante: cinco asignados eran cinco
+           `GET /request` disparadas a la vez (auditoría 2026-09-15). El filtro
+           `guardName` del servidor ya acepta una lista de ids y la resuelve
+           con un `IN`. */
         let guardRows: any[] = [];
+
         try {
           const sourceGuards = guardsRows.length
             ? guardsRows
@@ -301,24 +306,19 @@ export default function Incidents({ site }: { site?: SiteProp }) {
           const guardIds = sourceGuards
             .map((g: any) => g.securityGuardId || g.guardId || g.userId || g.id)
             .filter(Boolean);
-          // If we already fetched guards above, use that; otherwise retrieve guards now
-          const idsToQuery = guardIds.length ? guardIds : [];
-          const guardPromises = idsToQuery.map((gid: string) =>
-            ApiService.get(
-              `/tenant/${tenantId}/request?filter[guardName]=${encodeURIComponent(gid)}&limit=50`,
-            ),
-          );
-          const guardResponses = await Promise.allSettled(guardPromises);
-          for (const r of guardResponses) {
-            if (r.status === "fulfilled") {
-              const data = r.value;
-              const rows = Array.isArray(data)
-                ? data
-                : data && data.rows
-                  ? data.rows
-                  : [];
-              guardRows = guardRows.concat(rows);
-            }
+
+          if (guardIds.length) {
+            // El tope sube con el número de vigilantes para no traer MENOS
+            // filas que antes: eran 50 por cada uno, ahora son 50 por cada uno
+            // dentro de la misma petición, con un techo para no pedir de más.
+            const tope = Math.min(500, guardIds.length * 50);
+            const data = await ApiService.get(
+              `/tenant/${tenantId}/request?filter[guardName]=${encodeURIComponent(
+                guardIds.join(","),
+              )}&limit=${tope}`,
+            );
+
+            guardRows = Array.isArray(data) ? data : (data?.rows ?? []);
           }
         } catch (err) {
           console.warn("Failed to load guard-related dispatches", err);
