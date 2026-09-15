@@ -353,10 +353,12 @@ export default function PostSiteKPIs({ site }: Props) {
     }
   };
 
-  useEffect(() => {
-    loadKpis();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [site?.id]);
+  /* La carga de los indicadores vivía en DOS efectos: éste, que disparaba al
+     montar, y el de más abajo, que espera 300 ms para no pedir en cada tecla
+     del buscador. Como el debounce también corre al montar, abrir la pestaña
+     sacaba dos veces los mismos indicadores con 300 ms de diferencia. Ahora es
+     un solo efecto: la primera vez pide YA (nadie quiere esperar un tercio de
+     segundo por la pantalla que acaba de abrir) y a partir de ahí espera. */
 
   async function computeActualsForKpis(kpis: any[], monthDate?: Date) {
     try {
@@ -462,11 +464,20 @@ export default function PostSiteKPIs({ site }: Props) {
     }
   }
 
-  // Reload when month or search query changes (debounced)
+  // Carga inicial + recarga al cambiar mes o búsqueda (con espera)
+  const primeraCarga = useRef(true);
+
   useEffect(() => {
+    if (primeraCarga.current) {
+      primeraCarga.current = false;
+      loadKpis();
+
+      return;
+    }
     const t = setTimeout(() => {
       loadKpis();
     }, 300);
+
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedMonth, searchQuery, site?.id]);
