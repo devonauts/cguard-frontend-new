@@ -3,6 +3,7 @@ import {
   useContext,
   useState,
   useEffect,
+  useMemo,
   ReactNode,
 } from "react";
 
@@ -932,26 +933,37 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return perms.some((p) => hasPermission(p));
   };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        error,
-        signIn,
-        signUp,
-        signOut,
-        signInWithToken,
-        refreshProfile,
-        isAuthenticated: !!user,
-        hasPermission,
-        hasAny,
-        isAdmin,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  /* EL VALOR DEL CONTEXTO, MEMORIZADO.
+     Antes era un objeto literal, así que estrenaba identidad en CADA render de
+     este proveedor —incluidos los que provoca un cambio de tema, de acento o de
+     idioma, que cuelgan por encima— y con él se re-renderizaba todo el que use
+     `useAuth()`, que es medio CRM. Peor: los efectos con dependencia `[user]`
+     (once en el repo) no distinguen «otro usuario» de «otro objeto», así que
+     una identidad nueva les parecía un cambio de sesión y volvían a pedir.
+
+     Las dependencias son EXACTAMENTE los seis estados del proveedor. No hay
+     refs ni nada más que estas funciones lean por cierre, así que ninguna se
+     queda mirando un valor viejo: cuando cambia lo que leen, se rehacen. */
+  const valor = useMemo(
+    () => ({
+      user,
+      loading,
+      error,
+      signIn,
+      signUp,
+      signOut,
+      signInWithToken,
+      refreshProfile,
+      isAuthenticated: !!user,
+      hasPermission,
+      hasAny,
+      isAdmin,
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [user, loading, error, permissions, isAdmin, tenantAdmin],
   );
+
+  return <AuthContext.Provider value={valor}>{children}</AuthContext.Provider>;
 };
 
 function extractPermissionsFromUser(u: any): {
