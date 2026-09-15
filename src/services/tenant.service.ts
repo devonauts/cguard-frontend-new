@@ -1,5 +1,22 @@
 import { ApiService } from "./api/apiService";
 
+/**
+ * DEDUPLICACIÓN EN VUELO DE `findById` (no es caché).
+ *
+ * El armazón pide la empresa DOS veces al arrancar la sesión: `app-layout.tsx`
+ * para cachear ubicación/país/huso, y `sidebar.tsx` para el nombre y el
+ * logotipo. Son dos efectos distintos que montan a la vez, así que salían dos
+ * `GET /tenant/:id` idénticas con milisegundos de diferencia. Y hay más
+ * llamantes (el centro de control, el perfil de empresa) que pueden coincidir.
+ *
+ * Esto NO guarda el resultado: sólo comparte la promesa mientras la petición
+ * está viva, y la suelta en cuanto termina. Es deliberado — el perfil de
+ * empresa vuelve a leer el registro justo después de guardarlo, y con una caché
+ * de verdad se quedaría mirando lo viejo. Quien llame después de que la primera
+ * termine vuelve a pedir, como siempre.
+ */
+const enVuelo = new Map<string, Promise<any>>();
+
 const tenantService = {
   create(data: any) {
     return ApiService.post("/tenant", { data });
@@ -11,7 +28,17 @@ const tenantService = {
     return ApiService.get(`/tenant${query ? `?${query}` : ""}`);
   },
   findById(id: string) {
-    return ApiService.get(`/tenant/${id}`);
+    const pendiente = enVuelo.get(id);
+
+    if (pendiente) return pendiente;
+
+    const p = ApiService.get(`/tenant/${id}`).finally(() => {
+      enVuelo.delete(id);
+    });
+
+    enVuelo.set(id, p);
+
+    return p;
   },
   findByUrl(url: string) {
     return ApiService.get(`/tenant/url?url=${encodeURIComponent(url)}`);
