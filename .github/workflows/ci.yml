@@ -42,12 +42,21 @@ jobs:
     # los registros, que es lo contrario de lo que conviene aquí.
     env:
       VITE_API_URL: https://api.cguardpro.com/api
-      # Ésta sí se inyecta desde un secreto: también viaja en el bundle —eso no
-      # se puede evitar y se protege restringiendo por referente en Google—
-      # pero es una credencial FACTURABLE y no se versiona. Si el secreto no
-      # está configurado, llega vacía y el build sigue: es exactamente lo que
-      # pasa hoy, no una regresión nueva.
-      VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
+      # ── LA CLAVE DE MAPAS EN CI ES UN MARCADOR, A PROPÓSITO ───────────────
+      # CI NO construye el artefacto que se publica. El de producción se compila
+      # EN EL SERVIDOR, en `~/cguard-frontend-new`, con su propio `.env`, y de
+      # ahí sale el `dist` que se copia a `/var/www/frontend`. Esa es la vía por
+      # la que la clave real ha llegado siempre, y sigue igual.
+      #
+      # Lo que CI comprueba es que el CÓDIGO compila, pasa sus pruebas y produce
+      # un artefacto bien formado, no que Google conteste. Exigir aquí la
+      # credencial real obligaría a configurar un secreto que este repositorio
+      # nunca ha necesitado — un requisito nuevo inventado por el gate, no por
+      # el producto.
+      #
+      # `verificar-build` sólo acepta este marcador cuando CI=true: si aparece
+      # en cualquier otro sitio, el build se niega a continuar.
+      VITE_GOOGLE_MAPS_API_KEY: CI-PLACEHOLDER-NO-ES-UNA-CLAVE-REAL
 
     steps:
       - uses: actions/checkout@v4

@@ -111,6 +111,29 @@ if (!mapas) {
   );
 }
 
+/* El marcador de CI vale para compilar, NUNCA para publicar. CI construye para
+   comprobar el código; el artefacto de producción se compila en el servidor con
+   su `.env` de verdad. Si este valor aparece fuera de CI, alguien está a punto
+   de publicar un CRM con los mapas muertos. */
+const MARCADOR_CI = 'CI-PLACEHOLDER-NO-ES-UNA-CLAVE-REAL';
+if (mapas === MARCADOR_CI) {
+  if (process.env.CI !== 'true') {
+    fallar(
+      'MARCADOR DE CI FUERA DE CI',
+      '  VITE_GOOGLE_MAPS_API_KEY trae el marcador que sólo debe usar GitHub\n' +
+        '  Actions para validar que el código compila. Un artefacto construido con\n' +
+        '  él sale SIN MAPAS.\n\n' +
+        '  El build de producción se hace en el servidor, y toma la clave real de\n' +
+        '  su propio `.env`. Si estás compilando para publicar, usa esa vía.',
+    );
+  }
+  console.log(
+    '[verificar-build] · clave de mapas = marcador de CI: se valida que el código\n' +
+    '                    COMPILA, no la conectividad con Google. El artefacto de\n' +
+    '                    producción se construye en el servidor con la clave real.',
+  );
+}
+
 if (SOLO_ENTORNO) {
   console.log('[verificar-build] ✓ configuración presente: API y clave de mapas');
   process.exit(0);
