@@ -2536,6 +2536,10 @@
     },
     "reviews": {
       "saveError": "No se pudo registrar"
+    },
+    "rolCambiado": {
+      "aviso": "{{name}} ya no es vigilante: ahora es {{rol}}. Esta ficha se conserva con su historial de campo.",
+      "ir": "Ver su ficha de supervisor"
     }
   },
   "header": {

@@ -2536,6 +2536,10 @@
     },
     "reviews": {
       "saveError": "It could not be saved"
+    },
+    "rolCambiado": {
+      "aviso": "{{name}} is no longer a guard: they are now {{rol}}. This record is kept with their field history.",
+      "ir": "Open their supervisor record"
     }
   },
   "header": {
