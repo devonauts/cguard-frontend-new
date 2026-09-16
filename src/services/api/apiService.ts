@@ -5,6 +5,7 @@ import {
   reportNetworkFailure,
 } from "@/lib/offline/networkStatus";
 import { autoInvalidateForMutation } from "@/lib/queryClient";
+import { anotarPeticion } from "@/lib/diagnosticoDeRed";
 const API_BASE_URL = (
   import.meta.env.VITE_API_URL ?? "http://localhost:3001/api"
 ).replace(/\/+$/, "");
@@ -57,6 +58,12 @@ export class ApiService {
     // if (tenantId) headers["X-Tenant-Id"] = tenantId;
 
     const url = `${API_BASE_URL}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
+
+    try {
+      anotarPeticion(String(options.method || "GET"), url);
+    } catch {
+      /* el diagnóstico jamás puede tumbar una petición */
+    }
 
     // Transient-failure retry: ONLY for idempotent reads — retrying a
     // POST/PATCH/DELETE risks a double submit. A dropped connection or a 502/503/504

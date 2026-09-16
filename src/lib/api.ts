@@ -6,6 +6,7 @@ import {
   reportNetworkFailure,
 } from "@/lib/offline/networkStatus";
 import { autoInvalidateForMutation } from "@/lib/queryClient";
+import { anotarPeticion } from "@/lib/diagnosticoDeRed";
 
 const API_URL = import.meta.env.VITE_API_URL as string | undefined;
 
@@ -53,6 +54,13 @@ let __lastErrorAt = 0;
 const ERROR_DEDUPE_WINDOW = 3000; // ms
 
 api.interceptors.request.use((config) => {
+  // Contador de tormentas (sólo en desarrollo; en producción es un no-op que
+  // el minificador elimina). Va lo primero para que cuente TODAS las salidas.
+  try {
+    anotarPeticion(config.method || "GET", String(config.url || ""));
+  } catch {
+    /* el diagnóstico jamás puede tumbar una petición */
+  }
   const token = getAuthToken();
 
   if (token) {
