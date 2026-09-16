@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { tituloConMarca } from "@/hooks/usePageTitle";
 import { useTranslation } from "react-i18next";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import {
@@ -126,10 +127,10 @@ export default function AcceptInvitation() {
   );
 
   useEffect(() => {
-    document.title = t(
+    document.title = tituloConMarca(t(
       "invite.staff.doc_title",
       "Activa tu cuenta | CGuard Pro",
-    );
+    ));
     const run = async () => {
       if (!inviteToken) {
         setInviteNotFound(true);

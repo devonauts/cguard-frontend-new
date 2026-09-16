@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
+import { tituloConMarca } from "@/hooks/usePageTitle";
 import { Mail, Lock, Eye, EyeOff, User, ArrowRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -45,7 +46,7 @@ export default function Register() {
   });
 
   useEffect(() => {
-    document.title = t("auth.register_title") || "Registro | Cguard";
+    document.title = tituloConMarca(t("auth.register_title") || "Registro | Cguard");
   }, []);
 
   // ATRIBUCIÓN ENTRE DOMINIOS. El sitio vive en cguardpro.com y el alta aquí,

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { tituloConMarca } from "@/hooks/usePageTitle";
 import { useSearchParams, NavLink, useNavigate } from "react-router-dom";
 import {
   Eye,
@@ -34,9 +35,9 @@ export default function ResetPassword() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.title = t("auth.reset_title", {
+    document.title = tituloConMarca(t("auth.reset_title", {
       defaultValue: "Reset password | Cguard",
-    });
+    }));
   }, []);
 
   const handleSubmit = async (e?: React.FormEvent) => {

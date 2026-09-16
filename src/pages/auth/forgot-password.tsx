@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { tituloConMarca } from "@/hooks/usePageTitle";
 import { Mail, Send } from "lucide-react";
 import { toast } from "sonner";
 import { NavLink } from "react-router-dom";
@@ -21,9 +22,9 @@ export default function ForgotPassword() {
   const [formError, setFormError] = useState("");
 
   useEffect(() => {
-    document.title = t("auth.forgot_title", {
+    document.title = tituloConMarca(t("auth.forgot_title", {
       defaultValue: "Forgot password | Cguard",
-    });
+    }));
   }, []);
 
   const handleSubmit = async (e?: React.FormEvent) => {

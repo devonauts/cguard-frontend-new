@@ -34,3 +34,26 @@ export function usePageTitle(page: string) {
     };
   }, [page]);
 }
+
+/**
+ * Un título de página ya traducido → el mismo, pero con el nombre del producto
+ * de ESTE anfitrión.
+ *
+ * Las pantallas de acceso traen su título de i18n con el nombre ya pegado
+ * (`"Iniciar sesión | Cguard"`, y su equivalente en los ocho idiomas), así que
+ * en el anfitrión de un socio la pestaña seguía diciendo el nuestro. Aquí se
+ * cambia el sufijo en vez de tocar las ocho traducciones: la etiqueta de la
+ * página es suya y se respeta; el nombre del producto lo pone el anfitrión.
+ *
+ * Sin marca publicada se deja SÓLO la etiqueta. Nunca el nuestro.
+ */
+export function tituloConMarca(tituloTraducido: string, nombreApp?: string): string {
+  /* `nombreApp` es para las pruebas: el proyecto no monta DOM, así que la
+     función tiene que poder comprobarse sin `document`. En la aplicación no se
+     pasa y el nombre sale del `<html>`. */
+  const etiqueta = String(tituloTraducido || "").split("|")[0].trim();
+  const app = nombreApp !== undefined ? nombreApp : nombreDelProducto();
+
+  if (!app) return etiqueta;
+  return etiqueta ? `${etiqueta} | ${app}` : app;
+}

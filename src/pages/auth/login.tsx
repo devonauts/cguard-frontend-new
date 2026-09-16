@@ -1,4 +1,5 @@
 import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
+import { tituloConMarca } from "@/hooks/usePageTitle";
 import { Lock, Mail, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
@@ -42,7 +43,7 @@ export default function Login() {
   } = useAuthForm();
 
   useEffect(() => {
-    document.title = t("auth.login_title") || "Iniciar Sesión | Cguard";
+    document.title = tituloConMarca(t("auth.login_title") || "Iniciar Sesión | Cguard");
   }, []);
 
   useEffect(() => {

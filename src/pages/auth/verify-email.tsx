@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { tituloConMarca } from "@/hooks/usePageTitle";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -18,8 +19,9 @@ export default function VerifyEmail() {
   useEffect(() => {
     if (calledRef.current) return;
     calledRef.current = true;
-    document.title =
-      t("auth.verify_email_title") || "Verificando correo | Cguard";
+    document.title = tituloConMarca(
+      t("auth.verify_email_title") || "Verificando correo | Cguard",
+    );
     (async () => {
       const params = new URLSearchParams(location.search);
       const rawToken = params.get("token");
