@@ -613,12 +613,15 @@ export default function Stations({ site }: { site?: SiteProp }) {
       const tenantId = site?.tenantId || localStorage.getItem("tenantId") || "";
 
       if (Array.isArray(idOrIds)) {
-        // bulk delete
-        await Promise.all(
-          idOrIds.map((id) =>
-            ApiService.delete(`/tenant/${tenantId}/station/${id}`),
-          ),
+        /* UNA llamada, no una por estación: `DELETE /station` acepta `?ids=`
+           (ver `api/station/stationDestroy.ts`, que normaliza lista o csv).
+           Además invalida el caché igual que el borrado de una sola — antes
+           el camino de lote se lo saltaba y la lista volvía con las estaciones
+           ya borradas hasta que vencía la frescura. */
+        await ApiService.delete(
+          `/tenant/${tenantId}/station?ids=${idOrIds.map(encodeURIComponent).join(",")}`,
         );
+        invalidateEntity("stations");
         setStations((s) =>
           s.filter((x) => !idOrIds.includes(x.id || x.stationId || "")),
         );
@@ -649,11 +652,12 @@ export default function Stations({ site }: { site?: SiteProp }) {
     if (!selectedIds.length) return;
     try {
       const tenantId = site?.tenantId || localStorage.getItem("tenantId") || "";
-      await Promise.all(
-        selectedIds.map((id) =>
-          ApiService.delete(`/tenant/${tenantId}/station/${id}`),
-        ),
+
+      // Igual que arriba: una sola llamada de lote, y se invalida el caché.
+      await ApiService.delete(
+        `/tenant/${tenantId}/station?ids=${selectedIds.map(encodeURIComponent).join(",")}`,
       );
+      invalidateEntity("stations");
       setStations((s) =>
         s.filter((x) => !selectedIds.includes(x.id || x.stationId || "")),
       );

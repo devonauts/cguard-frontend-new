@@ -358,7 +358,14 @@ export default function MemosPage() {
     try {
       const tenantId = localStorage.getItem("tenantId") || "";
       if (!tenantId) throw new Error("Tenant no configurado");
-      await ApiService.delete(`/tenant/${tenantId}/memos/${memoToDelete.id}`);
+      /* El backend NO registra `DELETE /memos/:id` — sólo `DELETE /memos?ids=`.
+         Por la ruta con el id en el camino, Express respondía «Cannot DELETE»
+         (404 de Express, no del API), así que BORRAR UN MEMO NO BORRABA NADA:
+         la fila desaparecía de la pantalla porque el estado local se
+         actualizaba igual, y volvía a aparecer al recargar. */
+      await ApiService.delete(
+        `/tenant/${tenantId}/memos?ids=${encodeURIComponent(memoToDelete.id)}`,
+      );
       setMemos((current) =>
         current.filter((item) => item.id !== memoToDelete.id),
       );
@@ -445,10 +452,10 @@ export default function MemosPage() {
     try {
       const tenantId = localStorage.getItem("tenantId") || "";
       if (!tenantId) throw new Error("Tenant no configurado");
-      await Promise.all(
-        selectedIds.map((id) =>
-          ApiService.delete(`/tenant/${tenantId}/memos/${id}`),
-        ),
+      // Una sola llamada con todos los ids: el endpoint es de lote (`?ids=`).
+      // Antes era una petición por memo — y ninguna llegaba a ninguna ruta.
+      await ApiService.delete(
+        `/tenant/${tenantId}/memos?ids=${selectedIds.map(encodeURIComponent).join(",")}`,
       );
       setMemos((current) =>
         current.filter((memo) => !selectedIds.includes(memo.id)),

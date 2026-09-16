@@ -296,18 +296,14 @@ export default function ClientNotes({ client }: Props) {
         ? t("clients.notes.noteUpdateFailed", "Could not update note")
         : t("clients.notes.noteCreateFailed", "Could not create note");
       toast.error(errorMsg);
-      // fallback to local
-      const local = { id: String(Date.now()), ...payload, addedBy: "You" };
-      setNotesData((prev) => [local, ...prev]);
-      setShowModal(false);
-      setFormData({
-        title: "",
-        description: "",
-        date: new Date().toISOString().split("T")[0],
-        attachments: [],
-      });
-      setIsEditing(false);
-      setEditingNoteId(null);
+      /* NO se inventa una nota local.
+         Aquí había un «fallback to local»: si el guardado fallaba, se avisaba
+         del error Y ADEMÁS se metía en la lista una nota fabricada en el
+         navegador. La pantalla se contradecía a sí misma —error arriba, nota
+         nueva abajo— y al recargar la nota desaparecía. Editando era peor:
+         quedaba una copia falsa arriba y el original sin cambiar debajo.
+         Lo correcto ante un fallo es no tocar la lista y dejar el formulario
+         ABIERTO con lo escrito, para poder reintentar sin volver a teclearlo. */
     }
   };
 
