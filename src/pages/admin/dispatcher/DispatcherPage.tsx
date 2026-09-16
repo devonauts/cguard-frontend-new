@@ -1006,19 +1006,20 @@ export default function DispatcherPage() {
       }
       const api = (await import("@/lib/api")).default;
 
-      // Fetch full details for each selected id to ensure all fields are present.
-      // Batched (not one big Promise.all) so selecting many tickets doesn't fire
-      // hundreds of simultaneous requests and trip the per-token rate limiter.
-      const BATCH = 8;
-      const responses: any[] = [];
-      for (let i = 0; i < selectedIds.length; i += BATCH) {
-        const chunk = selectedIds.slice(i, i + BATCH);
-        const settled = await Promise.all(
-          chunk.map((id) => api.get(`/tenant/${tenantId}/request/${id}`)),
-        );
-        responses.push(...settled);
-      }
-      const records = responses.map((r) => (r && r.data ? r.data : r));
+      /* UNA petición para toda la exportación.
+         Antes se pedía el detalle de CADA solicitud —troceado de ocho en ocho—
+         porque al listado le falta `internalNotes`, que es la columna «Notas».
+         Con «seleccionar todo» sobre el tope del tablero eran 5.000 peticiones
+         en 625 tandas encadenadas. El campo no se puede añadir al listado: ese
+         mismo endpoint sirve a la app del vigilante y al portal del cliente, y
+         las notas internas no son para ellos. Por eso hay un endpoint de
+         exportación aparte, con autoridad de oficina (ver
+         `api/request/requestExportRows.ts`). */
+      const resp: any = await api.get(
+        `/tenant/${tenantId}/request/export?ids=${selectedIds.map(encodeURIComponent).join(",")}`,
+      );
+      const cuerpo = resp?.data ?? resp;
+      const records: any[] = cuerpo?.rows ?? [];
 
       const rows = records.map((r: any) => ({
         "Client Name": getClientDisplay(r),
