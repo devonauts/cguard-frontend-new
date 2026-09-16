@@ -565,3 +565,44 @@ describe("Etapa E · el respaldo de plataforma no se le presta a un socio", () =
     expect(fuente).toMatch(/c-guard-lockup-light\.png/);
   });
 });
+
+/**
+ * ════════════════════════════════════════════════════════════════════════════
+ * ETAPA E.1 · EL CONTEXTO SE PIDE AL MISMO ORIGEN
+ *
+ * El resolutor decide por el `Host`, que es el único dato que no escribe el
+ * cliente. Pero el CRM habla con una API de anfitrión FIJO, así que esta
+ * petición llegaba con `Host: api.cguardpro.com` —plataforma— y el servidor
+ * respondía «plataforma» CORRECTAMENTE. El anfitrión por el que navega la
+ * persona se perdía por el camino, y la marca blanca no podía funcionar en el
+ * navegador por bien que estuviera el servidor.
+ *
+ * No se vio antes porque comprobarlo con `curl -H "Host: ..."` pone a mano
+ * justo el dato que el navegador no manda.
+ * ════════════════════════════════════════════════════════════════════════════
+ */
+describe("Etapa E.1 · el contexto va al mismo origen", () => {
+  const CODIGO_WL = fs.readFileSync(
+    path.resolve(__dirname, "./WhiteLabelContext.tsx"), "utf8",
+  );
+
+  it("LA QUE IMPORTA · el mismo origen va PRIMERO", () => {
+    expect(CODIGO_WL).toMatch(/urlsDelContexto/);
+    expect(CODIGO_WL).toMatch(/const mismoOrigen = "\/api\/platform\/context"/);
+    // y el fijo queda de respaldo, no de primera opción
+    expect(CODIGO_WL).toMatch(/return \[mismoOrigen, fijo\]/);
+  });
+
+  it("los envoltorios que NO son web usan el anfitrión fijo", () => {
+    /* `app://crm` (escritorio) y `capacitor://localhost` (móvil) no tienen un
+       origen que sirva la API. Todos ésos son plataforma. */
+    expect(CODIGO_WL).toMatch(/cguardDesktop/);
+    expect(CODIGO_WL).toMatch(/https\?:\$/);
+  });
+
+  it("ya no se pide SÓLO al anfitrión fijo", () => {
+    /* La forma vieja era un único `fetch(`${API}/platform/context`)`. Si vuelve,
+       vuelve el fallo: el navegador no manda el anfitrión por el que navega. */
+    expect(CODIGO_WL).not.toMatch(/await fetch\(`\$\{API\}\/platform\/context`/);
+  });
+});

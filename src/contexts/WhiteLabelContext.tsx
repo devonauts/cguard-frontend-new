@@ -237,6 +237,39 @@ const API = (import.meta.env.VITE_API_URL as string | undefined) || "";
 const TIEMPO_MAXIMO_MS = 4000;
 
 /**
+ * ── ESTA PETICIÓN VA AL MISMO ORIGEN, Y ES TODO EL ASUNTO ─────────────────
+ * El resolutor decide la marca por el `Host` de la petición, y con razón: es el
+ * único dato que no escribe el cliente. Pero el CRM habla con una API de
+ * anfitrión FIJO (`VITE_API_URL` = `https://api.cguardpro.com/api`), así que
+ * esta petición llegaba con `Host: api.cguardpro.com` —un anfitrión de
+ * plataforma— y el servidor respondía «plataforma» CORRECTAMENTE. El anfitrión
+ * por el que navega la persona se perdía por el camino.
+ *
+ * Resultado: la marca blanca no podía funcionar NUNCA en el navegador, por bien
+ * que estuviera el servidor. No se vio antes porque comprobarlo con `curl -H
+ * "Host: ..."` pone a mano justo el dato que el navegador no manda.
+ *
+ * Por eso ESTA petición —y sólo ésta— va al mismo origen: es la única cuyo
+ * propósito es preguntar «¿de quién es el anfitrión en el que estoy?». El resto
+ * del CRM sigue hablando con la API de siempre.
+ *
+ * El respaldo existe para los envoltorios que NO son un sitio web: el CRM de
+ * escritorio sirve desde `app://crm` y las apps móviles desde
+ * `capacitor://localhost`, y ahí el mismo origen no es nadie. Todos ésos son
+ * plataforma, que es lo que responde el anfitrión fijo.
+ */
+function urlsDelContexto(): string[] {
+  const mismoOrigen = "/api/platform/context";
+  const fijo = `${API}/platform/context`;
+  try {
+    const esWeb = /^https?:$/.test(window.location.protocol);
+    const esEscritorio = !!(window as any).cguardDesktop;
+    if (esWeb && !esEscritorio) return [mismoOrigen, fijo];
+  } catch { /* sin `window`: sólo el fijo */ }
+  return [fijo];
+}
+
+/**
  * Pide el contexto. Nunca lanza y nunca se queda colgada.
  *
  * El tiempo máximo es corto A PROPÓSITO. Esto bloquea el primer pintado, así que
@@ -249,18 +282,27 @@ export async function pedirContexto(): Promise<{ ctx: ContextoDeMarca; degradado
   const reloj = setTimeout(() => control.abort(), TIEMPO_MAXIMO_MS);
 
   try {
-    const r = await fetch(`${API}/platform/context`, {
-      signal: control.signal,
-      credentials: "omit",
-      headers: { Accept: "application/json" },
-    });
-    if (!r.ok) return { ctx: MARCA_DE_PLATAFORMA, degradado: true };
-
-    const crudo = await r.json();
-    const ctx = normalizarContexto(crudo);
-    /* Que caiga a plataforma NO es degradarse: un anfitrión de plataforma
-       responde `platform` y eso es la respuesta correcta, no un fallo. */
-    return { ctx, degradado: false };
+    /* Se prueban en orden bajo UN SOLO presupuesto de tiempo: el mismo origen
+       primero, y el anfitrión fijo sólo si aquél no está (escritorio, móvil, o
+       un despliegue sin `/api` delante). */
+    for (const url of urlsDelContexto()) {
+      try {
+        const r = await fetch(url, {
+          signal: control.signal,
+          credentials: "omit",
+          headers: { Accept: "application/json" },
+        });
+        if (!r.ok) continue;
+        const crudo = await r.json();
+        /* Que caiga a plataforma NO es degradarse: un anfitrión de plataforma
+           responde `platform` y eso es la respuesta correcta, no un fallo. */
+        return { ctx: normalizarContexto(crudo), degradado: false };
+      } catch {
+        if (control.signal.aborted) break;
+        /* Este camino no está; se prueba el siguiente. */
+      }
+    }
+    return { ctx: MARCA_DE_PLATAFORMA, degradado: true };
   } catch {
     return { ctx: MARCA_DE_PLATAFORMA, degradado: true };
   } finally {
