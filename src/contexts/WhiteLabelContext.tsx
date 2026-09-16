@@ -77,8 +77,21 @@ const LOGO_DE_PLATAFORMA = "/assets/logo/c-guard-logo.png";
 const FAVICON_DE_PLATAFORMA = "/favicon-escudo.ico?v=2";
 
 interface ValorDelContexto extends ContextoDeMarca {
-  /** El logotipo a pintar, ya resuelto: el del socio o el de plataforma. */
-  logo: string;
+  /**
+   * El logotipo a pintar, ya resuelto — o `null` si no hay ninguno que se PUEDA
+   * pintar. Ver `puedeUsarArteDePlataforma`.
+   */
+  logo: string | null;
+  /**
+   * ¿Se puede recurrir al arte de CGuardPro cuando al socio le falta el suyo?
+   *
+   * Sólo si es la plataforma, o si el socio conserva la atribución. Con
+   * `showPlatformAttribution = false` el respaldo NO puede ser nuestro
+   * logotipo ni nuestro favicon: eso convierte un hueco en su configuración en
+   * una fuga de nuestra identidad, que es exactamente lo que esa bandera se
+   * vendió para impedir. Sin arte propio se pinta el NOMBRE.
+   */
+  puedeUsarArteDePlataforma: boolean;
   /** `true` mientras se espera. Los consumidores rara vez lo necesitan. */
   cargando: boolean;
   /** El contexto no se pudo leer y se está usando el de plataforma. */
@@ -88,9 +101,15 @@ interface ValorDelContexto extends ContextoDeMarca {
 const Contexto = createContext<ValorDelContexto>({
   ...MARCA_DE_PLATAFORMA,
   logo: LOGO_DE_PLATAFORMA,
+  puedeUsarArteDePlataforma: true,
   cargando: false,
   degradado: false,
 });
+
+/** La regla, en un solo sitio para que las dos mitades no puedan divergir. */
+export function puedeUsarArteDePlataforma(ctx: ContextoDeMarca): boolean {
+  return ctx.scope === "platform" || ctx.showPlatformAttribution;
+}
 
 export const useWhiteLabel = () => useContext(Contexto);
 
@@ -130,7 +149,17 @@ export function normalizarContexto(crudo: unknown): ContextoDeMarca {
   return {
     scope: "reseller",
     resellerPublicId: texto(c.resellerPublicId, 32),
-    platformName: texto(c.platformName, 60) ?? MARCA_DE_PLATAFORMA.platformName,
+    /* ── UN ANFITRIÓN DE SOCIO NUNCA SE LLAMA «CGuard Pro» ────────────────
+       Esto era `?? MARCA_DE_PLATAFORMA.platformName`, y deshacía en el
+       navegador la misma fuga que el servidor ya cierra: el resolutor cae al
+       nombre comercial del socio y, si no hubiera ninguno, manda cadena vacía
+       A PROPÓSITO. Volver a rellenarla aquí con nuestro nombre le enseña
+       nuestra marca al cliente de un socio que paga por no verla — y en la
+       pantalla de acceso, que es donde más se mira.
+       Un anfitrión que YA resolvió a un socio es suyo: si no trae nombre, se
+       queda sin nombre. Una cabecera sin texto es un defecto del socio; una
+       que diga «CGuard Pro» sobre su anfitrión es un defecto nuestro. */
+    platformName: texto(c.platformName, 60) ?? "",
     logoUrl: texto(c.logoUrl, 2083),
     faviconUrl: texto(c.faviconUrl, 2083),
     brandHue: numero(c.brandHue, 0, 360),
@@ -172,7 +201,9 @@ function aplicarFavicon(url: string): void {
 
 function aplicarMarca(ctx: ContextoDeMarca): void {
   try {
-    document.title = ctx.platformName;
+    // Un socio sin nombre publicado deja el título como esté: vale más el que
+    // trae el HTML que escribir el nuestro sobre su anfitrión.
+    if (ctx.platformName) document.title = ctx.platformName;
   } catch { /* idem */ }
 
   /* El tono y el croma, las MISMAS dos variables que usa el acento del usuario
@@ -190,7 +221,14 @@ function aplicarMarca(ctx: ContextoDeMarca): void {
     }
   } catch { /* idem */ }
 
-  aplicarFavicon(ctx.faviconUrl || FAVICON_DE_PLATAFORMA);
+  /* El favicon del socio, o el nuestro SÓLO si se nos permite aparecer. La
+     cadena canónica es `favicon → marca → null`; el contexto público no lleva
+     la marca compacta, así que aquí es `favicon → null`. Dejar el escudo de
+     CGuardPro en la pestaña de un socio sin atribución delata al proveedor en
+     el sitio más visible y más permanente que tiene un navegador. */
+  const respaldo = puedeUsarArteDePlataforma(ctx) ? FAVICON_DE_PLATAFORMA : null;
+  const favicon = ctx.faviconUrl || respaldo;
+  if (favicon) aplicarFavicon(favicon);
 }
 
 /* ── La petición ─────────────────────────────────────────────────────────── */
@@ -295,9 +333,11 @@ export function WhiteLabelProvider({ children }: { children: ReactNode }) {
   // Todavía no hay respuesta: esqueleto neutro, nunca la marca de nadie.
   if (!ctx) return <EsqueletoNeutro />;
 
+  const permitido = puedeUsarArteDePlataforma(ctx);
   const valor: ValorDelContexto = {
     ...ctx,
-    logo: ctx.logoUrl || LOGO_DE_PLATAFORMA,
+    logo: ctx.logoUrl || (permitido ? LOGO_DE_PLATAFORMA : null),
+    puedeUsarArteDePlataforma: permitido,
     cargando: false,
     degradado,
   };

@@ -40,7 +40,7 @@ export default function BrandLockup({
   showTagline?: boolean;
 }) {
   const { t } = useTranslation();
-  const { logoUrl, platformName } = useWhiteLabel();
+  const { logoUrl, platformName, puedeUsarArteDePlataforma } = useWhiteLabel();
   const tagline = t("brand.tagline", { defaultValue: "Seguridad Inteligente" });
   const slotRef = useRef<HTMLSpanElement>(null);
   const textRef = useRef<HTMLSpanElement>(null);
@@ -94,6 +94,25 @@ export default function BrandLockup({
           className="h-14 max-w-full object-contain"
           src={logoUrl}
         />
+      </span>
+    );
+  }
+
+  /* ── SIN LOGOTIPO PROPIO Y SIN DERECHO A USAR EL NUESTRO ────────────────
+     El bloque de abajo pinta el lockup de CGuardPro, y era el respaldo de
+     TODOS: un socio con `showPlatformAttribution = false` al que le faltara el
+     logotipo acababa enseñando el nuestro en su pantalla de acceso — la fuga
+     exacta que esa bandera existe para impedir.
+     Se pinta su NOMBRE. Es lo que un producto de marca blanca hace cuando el
+     cliente aún no ha subido su arte: enseñar de quién es, no de quién no. */
+  if (!puedeUsarArteDePlataforma) {
+    return (
+      <span
+        className={`inline-flex items-center justify-center ${className}`.trim()}
+      >
+        <span className="cg-lockup__wordmark text-center text-2xl font-semibold tracking-tight">
+          {platformName}
+        </span>
       </span>
     );
   }

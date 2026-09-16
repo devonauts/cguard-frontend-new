@@ -98,8 +98,15 @@ describe("Fase 11 · 48 · una respuesta malformada NO se pinta a medias", () =>
     });
 
     expect(c.scope).toBe("reseller");
-    // Sin nombre utilizable se usa el de plataforma, no una cadena vacía.
-    expect(c.platformName).toBe(MARCA_DE_PLATAFORMA.platformName);
+    /* ── CAMBIADO EN LA ETAPA E ────────────────────────────────────────────
+       Decía «sin nombre utilizable se usa el de plataforma». Eso es una fuga:
+       este socio puede tener la atribución desactivada, y entonces enseñarle
+       «CGuard Pro» a su gente es exactamente lo que paga por evitar. El resto
+       de la prueba —que un campo corrupto cae a un valor seguro— no cambia:
+       un nombre inservible sigue sin pintarse, sólo que ahora se queda vacío
+       en vez de convertirse en el nuestro. */
+    expect(c.platformName).not.toBe(MARCA_DE_PLATAFORMA.platformName);
+    expect(c.platformName).toBe("");
     expect(c.logoUrl).toBeNull();
     expect(c.faviconUrl).toBeNull();
     expect(c.brandHue).toBeNull();
@@ -315,7 +322,12 @@ describe("Fase 11 · 51-54 · quién lee la marca, y quién no", () => {
   it("51 · el bloque de marca del acceso lee el proveedor", () => {
     const lockup = leer("src/components/BrandLockup.tsx");
     expect(lockup).toMatch(/useWhiteLabel\(\)/);
-    expect(lockup).toMatch(/const \{ logoUrl, platformName \} = useWhiteLabel\(\)/);
+    /* La etapa E añade `puedeUsarArteDePlataforma`: sin él, el lockup prestaba
+       el arte de CGuardPro a un socio sin logotipo. Se comprueba que lee los
+       tres del proveedor, sin fijar el orden. */
+    for (const campo of ["logoUrl", "platformName", "puedeUsarArteDePlataforma"]) {
+      expect(lockup).toMatch(new RegExp(`const \\{[^}]*${campo}[^}]*\\} = useWhiteLabel\\(\\)`));
+    }
     // Y NO pregunta por el ámbito: lee un dato ya resuelto.
     expect(soloCodigo(lockup)).not.toMatch(/scope/);
   });
@@ -432,11 +444,124 @@ describe("Fase 11 · 57-59 · un solo artefacto, y sin cruzar aplicaciones", () 
   });
 
   it("44-45 · título y favicon se aplican desde el contexto", () => {
-    expect(CODIGO).toMatch(/document\.title = ctx\.platformName;/);
-    expect(CODIGO).toMatch(/aplicarFavicon\(ctx\.faviconUrl \|\| FAVICON_DE_PLATAFORMA\)/);
+    expect(CODIGO).toMatch(/document\.title = ctx\.platformName/);
+    expect(CODIGO).toMatch(/aplicarFavicon\(favicon\)/);
   });
 
-  it("46 · sin logotipo propio se usa el de la plataforma", () => {
-    expect(CODIGO).toMatch(/logo: ctx\.logoUrl \|\| LOGO_DE_PLATAFORMA/);
+  it("46 · sin logotipo propio se usa el de la plataforma SÓLO si se permite", () => {
+    /* ── CAMBIADO EN LA ETAPA E ────────────────────────────────────────────
+       Era `logo: ctx.logoUrl || LOGO_DE_PLATAFORMA`, incondicional. Un socio
+       con `showPlatformAttribution = false` al que le faltara el logotipo
+       acababa enseñando el nuestro. El respaldo sigue existiendo —para la
+       plataforma y para quien conserva la atribución—, pero ahora pasa por el
+       permiso. Ver el bloque «el respaldo de plataforma no se le presta a un
+       socio». */
+    expect(CODIGO).toMatch(/logo: ctx\.logoUrl \|\| \(permitido \? LOGO_DE_PLATAFORMA : null\)/);
+    expect(CODIGO).toMatch(/const permitido = puedeUsarArteDePlataforma\(ctx\)/);
+  });
+});
+
+/**
+ * ════════════════════════════════════════════════════════════════════════════
+ * ETAPA E · LA MARCA DE CGUARDPRO NO ES EL RESPALDO DE UN SOCIO
+ *
+ * El servidor ya no manda «CGuard Pro» cuando un socio publica su marca sin
+ * nombre: cae a su nombre comercial y, si no hubiera ninguno, manda cadena
+ * vacía A PROPÓSITO. Pero el CRM la volvía a rellenar con la nuestra, así que
+ * la corrección del servidor no llegaba a verse: un socio con la atribución
+ * desactivada —que paga precisamente por que su gente no nos vea— seguía
+ * enseñando «CGuard Pro» en su pantalla de acceso.
+ *
+ * Lo mismo con el arte: el logotipo y el favicon de plataforma eran el respaldo
+ * de TODOS, así que un hueco en la configuración de un socio se convertía en
+ * una fuga de nuestra identidad.
+ *
+ * La regla: con `showPlatformAttribution = false` no se presta ni el nombre, ni
+ * el logotipo, ni el favicon. Sin arte propio se enseña el NOMBRE, que es lo
+ * que un producto de marca blanca hace cuando el cliente aún no ha subido el
+ * suyo — decir de quién es, no de quién no.
+ * ════════════════════════════════════════════════════════════════════════════
+ */
+describe("Etapa E · el respaldo de plataforma no se le presta a un socio", () => {
+  const socio = (extra: Record<string, unknown> = {}) => ({
+    scope: "reseller",
+    resellerPublicId: "RSL-TEST",
+    platformName: "Seguridad Alfa",
+    logoUrl: null,
+    faviconUrl: null,
+    brandHue: 250,
+    brandChroma: 0.09,
+    loginTagline: null,
+    support: {},
+    showPlatformAttribution: false,
+    ...extra,
+  });
+
+  it("LA QUE IMPORTA · un nombre VACÍO no se convierte en «CGuard Pro»", () => {
+    for (const vacio of ["", "   ", null, undefined]) {
+      const ctx = normalizarContexto(socio({ platformName: vacio }));
+      expect(ctx.scope).toBe("reseller");
+      expect(ctx.platformName).not.toBe(MARCA_DE_PLATAFORMA.platformName);
+      expect(ctx.platformName).toBe("");
+    }
+  });
+
+  it("un nombre publicado sigue mandando", () => {
+    expect(normalizarContexto(socio()).platformName).toBe("Seguridad Alfa");
+  });
+
+  it("la plataforma SIGUE llamándose CGuard Pro", () => {
+    // La corrección no puede haberle quitado el nombre a la plataforma.
+    expect(normalizarContexto({ scope: "platform" }).platformName)
+      .toBe(MARCA_DE_PLATAFORMA.platformName);
+    expect(normalizarContexto(null).platformName)
+      .toBe(MARCA_DE_PLATAFORMA.platformName);
+  });
+
+  it("con atribución DESACTIVADA no se puede usar nuestro arte", async () => {
+    const { puedeUsarArteDePlataforma } = await import("./WhiteLabelContext");
+    expect(puedeUsarArteDePlataforma(normalizarContexto(socio()))).toBe(false);
+  });
+
+  it("con atribución ACTIVADA sí, que es lo que esa bandera significa", async () => {
+    const { puedeUsarArteDePlataforma } = await import("./WhiteLabelContext");
+    expect(puedeUsarArteDePlataforma(
+      normalizarContexto(socio({ showPlatformAttribution: true })),
+    )).toBe(true);
+  });
+
+  it("y la plataforma siempre puede usar el suyo", async () => {
+    const { puedeUsarArteDePlataforma } = await import("./WhiteLabelContext");
+    expect(puedeUsarArteDePlataforma(MARCA_DE_PLATAFORMA)).toBe(true);
+  });
+
+  it("el logotipo del socio, cuando lo hay, se respeta en los dos casos", () => {
+    for (const atrib of [true, false]) {
+      const ctx = normalizarContexto(socio({
+        logoUrl: "/api/file/download?fileToken=abc", showPlatformAttribution: atrib,
+      }));
+      expect(ctx.logoUrl).toBe("/api/file/download?fileToken=abc");
+    }
+  });
+
+  it("la FUENTE ya no presta el arte de plataforma sin comprobar el permiso", () => {
+    const fuente = fs.readFileSync(
+      path.resolve(__dirname, "./WhiteLabelContext.tsx"), "utf8",
+    );
+    /* El respaldo incondicional era `ctx.logoUrl || LOGO_DE_PLATAFORMA` y
+       `ctx.faviconUrl || FAVICON_DE_PLATAFORMA`. Si vuelve cualquiera de los
+       dos, vuelve la fuga. */
+    expect(fuente).not.toMatch(/logoUrl\s*\|\|\s*LOGO_DE_PLATAFORMA/);
+    expect(fuente).not.toMatch(/faviconUrl\s*\|\|\s*FAVICON_DE_PLATAFORMA/);
+    expect(fuente).toMatch(/puedeUsarArteDePlataforma/);
+  });
+
+  it("y el lockup tampoco: sin permiso pinta el NOMBRE", () => {
+    const fuente = fs.readFileSync(
+      path.resolve(__dirname, "../components/BrandLockup.tsx"), "utf8",
+    );
+    expect(fuente).toMatch(/if \(!puedeUsarArteDePlataforma\)/);
+    // Y el arte de CGuardPro sigue existiendo para la plataforma.
+    expect(fuente).toMatch(/c-guard-lockup-light\.png/);
   });
 });
