@@ -8,6 +8,7 @@ import {
 
 import { setAppLanguage } from "@/i18n";
 import api from "@/lib/api";
+import { leerPerfil } from "@/lib/perfilDeLaCuenta";
 
 type Language = "es" | "en" | "pt" | "de" | "fr" | "it" | "pl" | "nl";
 /** Lo que la persona ELIGE. 'auto' = que lo decida el navegador. */
@@ -349,8 +350,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }
     if (!tieneSesion) return;
 
-    api
-      .get("/auth/me", { toast: { silentError: true } } as any)
+    leerPerfil()
       .then((resp: any) => {
         const d = resp && resp.data !== undefined ? resp.data : resp;
         const cuentaEleccion = norm(d?.languageChoice);

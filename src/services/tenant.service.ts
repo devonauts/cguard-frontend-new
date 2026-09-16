@@ -1,7 +1,12 @@
 import { ApiService } from "./api/apiService";
 
+import {
+  crearLecturaCompartida,
+  type LectorCompartido,
+} from "@/lib/lecturaCompartida";
+
 /**
- * DEDUPLICACIÓN EN VUELO DE `findById` (no es caché).
+ * DEDUPLICACIÓN DE `findById` — con una ventana muy corta, no una caché.
  *
  * El armazón pide la empresa DOS veces al arrancar la sesión: `app-layout.tsx`
  * para cachear ubicación/país/huso, y `sidebar.tsx` para el nombre y el
@@ -9,36 +14,62 @@ import { ApiService } from "./api/apiService";
  * `GET /tenant/:id` idénticas con milisegundos de diferencia. Y hay más
  * llamantes (el centro de control, el perfil de empresa) que pueden coincidir.
  *
- * Esto NO guarda el resultado: sólo comparte la promesa mientras la petición
- * está viva, y la suelta en cuanto termina. Es deliberado — el perfil de
- * empresa vuelve a leer el registro justo después de guardarlo, y con una caché
- * de verdad se quedaría mirando lo viejo. Quien llame después de que la primera
- * termine vuelve a pedir, como siempre.
+ * Compartir SÓLO la promesa en vuelo resultó ser demasiado frágil: al quitar
+ * las dos peticiones sobrantes de `/auth/me` el arranque se volvió más rápido,
+ * los dos efectos dejaron de solaparse —127 ms de separación, medido— y la
+ * segunda petición reapareció. Una deduplicación que depende de que dos efectos
+ * caigan en el mismo tic no es una deduplicación: es una carrera que suele
+ * salir bien.
+ *
+ * Por eso ahora también se comparte el RESULTADO, pero durante dos segundos:
+ * cubre de sobra un arranque y es demasiado poco para que nadie vea un dato
+ * viejo. Y sigue habiendo escape: el perfil de empresa lee justo después de
+ * guardar, así que `update()` olvida lo leído y `findById(id, true)` fuerza una
+ * lectura de verdad. Eso era lo que protegía el comentario anterior.
  */
-const enVuelo = new Map<string, Promise<any>>();
+const VENTANA_MS = 2_000;
+const lectores = new Map<string, LectorCompartido<any>>();
+
+function lectorDe(id: string): LectorCompartido<any> {
+  let l = lectores.get(id);
+
+  if (!l) {
+    l = crearLecturaCompartida(
+      () => ApiService.get(`/tenant/${id}`),
+      VENTANA_MS,
+    );
+    lectores.set(id, l);
+  }
+
+  return l;
+}
+
+/** Olvida lo leído de una empresa (o de todas). Tras guardar, o al cerrar sesión. */
+export function olvidarEmpresa(id?: string): void {
+  if (id) lectores.get(id)?.olvidar();
+  else lectores.clear();
+}
 
 const tenantService = {
   create(data: any) {
     return ApiService.post("/tenant", { data });
   },
   update(id: string, data: any) {
+    // Guardar invalida lo leído: el perfil de empresa relee justo después.
+    olvidarEmpresa(id);
+
     return ApiService.put(`/tenant/${id}`, { data });
   },
   list(query = "") {
     return ApiService.get(`/tenant${query ? `?${query}` : ""}`);
   },
-  findById(id: string) {
-    const pendiente = enVuelo.get(id);
+  /** `forzar` salta la ventana: para releer tras guardar. */
+  findById(id: string, forzar = false) {
+    const l = lectorDe(id);
 
-    if (pendiente) return pendiente;
+    if (forzar) l.olvidar();
 
-    const p = ApiService.get(`/tenant/${id}`).finally(() => {
-      enVuelo.delete(id);
-    });
-
-    enVuelo.set(id, p);
-
-    return p;
+    return l.leer();
   },
   findByUrl(url: string) {
     return ApiService.get(`/tenant/url?url=${encodeURIComponent(url)}`);
@@ -126,6 +157,8 @@ const tenantService = {
       // ignore and fallback to default
     }
 
+    olvidarEmpresa(tenantId);
+
     return ApiService.put(`/tenant/${tenantId}/settings`, {
       settings: { logos: [fileObj], theme },
     });
@@ -172,6 +205,8 @@ const tenantService = {
     };
 
     // Actualizar documentos legales del tenant (agregar)
+    olvidarEmpresa(tenantId);
+
     return ApiService.put(`/tenant/${tenantId}/settings`, {
       settings: { legalDocuments: [fileObj] },
     });

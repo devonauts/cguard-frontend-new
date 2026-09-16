@@ -15,6 +15,9 @@ import {
 import { ApiError } from "../services/api/apiService";
 
 import { olvidarApariencia } from "@/lib/appearanceSync";
+import { leerPerfil, olvidarPerfil } from "@/lib/perfilDeLaCuenta";
+import { olvidarSiembraDeAvisos } from "@/hooks/useNotificationStream";
+import { olvidarEmpresa } from "@/services/tenant.service";
 import { startIdleLogout, stopIdleLogout } from "@/lib/idleLogout";
 import { setAuthToken, clearAuthToken } from "@/lib/api";
 import {
@@ -50,6 +53,9 @@ function purgeOfflineDataIfDifferentUser(newUserId: string | undefined): void {
       localStorage.removeItem("cguard-accent");
       localStorage.removeItem("cguard-theme");
       olvidarApariencia();
+      olvidarPerfil();
+      olvidarSiembraDeAvisos();
+      olvidarEmpresa();
     }
   } catch {
     /* best-effort */
@@ -317,7 +323,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       for (let attempt = 1; ; attempt++) {
         try {
-          userData = await AuthService.getProfile();
+          userData = await leerPerfil();
           break;
         } catch (err: any) {
           const status = err?.status;
@@ -687,6 +693,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // purgeOfflineDataIfDifferentUser.
       try {
         olvidarApariencia();
+      olvidarPerfil();
+      olvidarSiembraDeAvisos();
+      olvidarEmpresa();
       } catch {}
       try {
         clearQueue();

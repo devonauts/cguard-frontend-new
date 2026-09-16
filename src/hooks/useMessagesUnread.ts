@@ -106,6 +106,18 @@ function pararTimer() {
    estaba caído, y `connect` recupera lo que pasó mientras no escuchábamos. */
 let socketContador: ReturnType<typeof crearSocket> | null = null;
 
+/* `connect` sirve para RECUPERAR lo que pasó mientras el socket estuvo caído.
+   En la PRIMERA conexión no hay nada que recuperar: `arrancar()` acaba de
+   preguntar unas milésimas antes, así que el handler disparaba una segunda
+   consulta idéntica en cada arranque (medido: 2× /message-unread por carga).
+   Sólo se recupera a partir de la RE-conexión. */
+let yaConectoAlgunaVez = false;
+
+const alConectar = () => {
+  if (yaConectoAlgunaVez) tick();
+  yaConectoAlgunaVez = true;
+};
+
 function arrancar() {
   window.addEventListener(MESSAGES_CHANGED_EVENT, tick);
   window.addEventListener("focus", alVolver);
@@ -116,7 +128,7 @@ function arrancar() {
     if (tid) {
       socketContador = crearSocket(getAuthToken() || "", tid);
       socketContador.on("message:changed", tick);
-      socketContador.on("connect", tick);
+      socketContador.on("connect", alConectar);
     }
   } catch {
     /* sin socket, el reloj sigue cubriendo */
@@ -128,7 +140,7 @@ function arrancar() {
 function parar() {
   if (socketContador) {
     socketContador.off("message:changed", tick);
-    socketContador.off("connect", tick);
+    socketContador.off("connect", alConectar);
     cerrarSocket(socketContador);
     socketContador = null;
   }
@@ -136,6 +148,7 @@ function parar() {
   window.removeEventListener("focus", alVolver);
   document.removeEventListener("visibilitychange", alVolver);
   pararTimer();
+  yaConectoAlgunaVez = false;
   valor = 0;
 }
 

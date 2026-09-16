@@ -17,6 +17,7 @@
  *    decenas de cambios por segundo; sin agrupar, serían decenas de PUT.
  */
 import api from "@/lib/api";
+import { leerPerfil } from "@/lib/perfilDeLaCuenta";
 
 export type UiTheme = "light" | "dark";
 export interface UiAccent {
@@ -102,8 +103,7 @@ export function leerAparienciaDeLaCuenta(): Promise<UiAppearance | null> {
   if (pendiente) return pendiente;
   if (!haySesion()) return Promise.resolve(null);
 
-  pendiente = api
-    .get("/auth/me", { toast: { silentError: true } } as any)
+  pendiente = leerPerfil()
     .then((resp: any) => {
       const d = resp && resp.data !== undefined ? resp.data : resp;
       let a = d?.appearance ?? null;

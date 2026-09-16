@@ -21,6 +21,10 @@ import {
   ensureNotificationPermission,
 } from "@/lib/desktop";
 import { crearSocket, cerrarSocket } from "@/lib/socket";
+import {
+  crearLecturaCompartida,
+  type LectorCompartido,
+} from "@/lib/lecturaCompartida";
 
 const API_URL = (import.meta.env.VITE_API_URL as string | undefined) || "";
 
@@ -68,30 +72,53 @@ const globallyAlerted = new Set<string>();
  * `GET /:tenantId/events`, así que al abrir sesión salían dos y al entrar en
  * Actividad otra más.
  *
- * Igual que en `tenant.service.ts`, esto comparte la promesa mientras la
- * petición está VIVA y la suelta al terminar: dos instancias que montan juntas
- * se reparten una sola respuesta, y quien monte después vuelve a pedir, que es
- * lo que se espera de un historial.
+ * Compartir la promesa mientras la petición está VIVA junta a las instancias
+ * que montan a la vez, y quien monte MÁS TARDE vuelve a pedir — que es lo que
+ * se espera de un historial.
+ *
+ * El problema es qué cuenta como «más tarde». Medido en un build de producción:
+ * la campana y `RadioRealtimeProvider` montan con 91 ms de diferencia, o sea
+ * dentro del MISMO arranque, y la segunda se perdía la ventana por milésimas y
+ * pedía el histórico otra vez. Tres instancias, tres peticiones.
+ *
+ * Con una ventana de frescura corta se conservan las dos intenciones: el
+ * arranque entero se sirve de una sola respuesta, y abrir Actividad un minuto
+ * después sí vuelve a leer. Cinco segundos es de sobra para lo primero y muy
+ * poco para lo segundo.
  */
-const siembraEnVuelo = new Map<string, Promise<any[]>>();
+const SIEMBRA_FRESCA_MS = 5_000;
+const siembraPorEmpresa = new Map<string, LectorCompartido<any[]>>();
 
-function leerHistorial(tenantId: string, token: string): Promise<any[]> {
-  const pendiente = siembraEnVuelo.get(tenantId);
+function leerHistorial(
+  tenantId: string,
+  token: string,
+  /** El botón «Actualizar» de Actividad. Una orden explícita de la persona NO
+   *  se puede servir de la ventana de frescura: pulsar y que no pase nada se
+   *  lee como que el botón está roto. */
+  forzar = false,
+): Promise<any[]> {
+  let lector = siembraPorEmpresa.get(tenantId);
 
-  if (pendiente) return pendiente;
+  if (!lector) {
+    lector = crearLecturaCompartida<any[]>(
+      () =>
+        fetch(`${API_URL}/${tenantId}/events?limit=${MAX_STORED}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        })
+          .then((r) => (r.ok ? r.json() : { rows: [] }))
+          .then((data) => (data?.rows || []) as any[]),
+      SIEMBRA_FRESCA_MS,
+    );
+    siembraPorEmpresa.set(tenantId, lector);
+  }
+  if (forzar) lector.olvidar();
 
-  const p = fetch(`${API_URL}/${tenantId}/events?limit=${MAX_STORED}`, {
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  })
-    .then((r) => (r.ok ? r.json() : { rows: [] }))
-    .then((data) => (data?.rows || []) as any[])
-    .finally(() => {
-      siembraEnVuelo.delete(tenantId);
-    });
+  return lector.leer();
+}
 
-  siembraEnVuelo.set(tenantId, p);
-
-  return p;
+/** Al cerrar sesión o cambiar de empresa: que la siguiente no herede nada. */
+export function olvidarSiembraDeAvisos(): void {
+  siembraPorEmpresa.clear();
 }
 
 export function useNotificationStream(
@@ -169,7 +196,7 @@ export function useNotificationStream(
     setSeeding(true);
     setSeedError(false);
     try {
-      sembrar(await leerHistorial(tenantId, token));
+      sembrar(await leerHistorial(tenantId, token, true));
     } catch {
       setSeedError(true);
     } finally {
