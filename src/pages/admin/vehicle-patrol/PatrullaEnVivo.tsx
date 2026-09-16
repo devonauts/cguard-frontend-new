@@ -33,6 +33,7 @@ import { getAuthToken } from "@/lib/api";
 import { crearSocket, cerrarSocket } from "@/lib/socket";
 import routeService from "@/lib/api/routeService";
 import { localeActual } from "@/lib/localeActual";
+import { useSondeoVisible } from "@/hooks/useSondeoVisible";
 
 /**
  * LO QUE ESTÁ PASANDO AHORA: las ejecuciones abiertas de todas las rutas de
@@ -58,8 +59,18 @@ export default function PatrullaEnVivo() {
     load();
     const tid = localStorage.getItem("tenantId");
     const socket = tid ? crearSocket(getAuthToken() || "", tid) : null;
+    /* AGRUPADO, como en Cobertura. `route:progress` no es «una ruta avanzó»:
+       es CADA punto de GPS de CADA vehículo en marcha. Sin agrupar, una flota
+       de veinte vehículos emitiendo cada diez segundos pedía la lista entera
+       unas 7.000 veces por hora — y todas devuelven lo mismo, porque lo que
+       cambió cabe en una fila. Con la ventana de 700 ms, una ráfaga de
+       llegadas simultáneas se lee UNA vez. */
+    let agrup: ReturnType<typeof setTimeout> | null = null;
     const onProgress = () => {
-      load();
+      if (agrup) clearTimeout(agrup);
+      agrup = setTimeout(() => {
+        void load();
+      }, 700);
     };
 
     if (socket) {
@@ -67,16 +78,18 @@ export default function PatrullaEnVivo() {
       socket.on("connect", () => setVivo(true));
       socket.on("disconnect", () => setVivo(false));
     }
-    const timer = window.setInterval(load, 45000);
 
     return () => {
-      window.clearInterval(timer);
+      if (agrup) clearTimeout(agrup);
       if (socket) {
         socket.off("route:progress", onProgress);
         cerrarSocket(socket);
       }
     };
   }, [load]);
+
+  // El reloj de respaldo por si el socket se cae, sólo con la pestaña a la vista.
+  useSondeoVisible(load, 45_000);
 
   const locale = localeActual();
 

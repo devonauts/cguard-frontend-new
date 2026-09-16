@@ -78,6 +78,7 @@ import { getAuthToken } from "@/lib/api";
 import { crearSocket, cerrarSocket } from "@/lib/socket";
 import routeService from "@/lib/api/routeService";
 import { localeActual } from "@/lib/localeActual";
+import { useSondeoVisible } from "@/hooks/useSondeoVisible";
 
 /**
  * UNA EJECUCIÓN DE RUTA, ENTERA. Si está abierta, es el puesto de mando de la
@@ -167,19 +168,59 @@ export default function RouteRunDetailPage() {
     }
   }, [runId, t]);
 
+  /**
+   * RECUPERACIÓN DE ESTADO DE UNA RUTA EN CURSO.
+   *
+   * Un websocket entrega lo que pasa MIENTRAS escuchas. Si el socket se cae
+   * treinta segundos y en ese hueco el supervisor llega a dos puntos, contesta
+   * una inspección y sube una foto, socket.io NO guarda ni reenvía nada: esos
+   * avisos se pierden para siempre. Esta pantalla no tenía manejador de
+   * `connect`, así que se quedaba congelada en el estado de antes de la caída
+   * —sin marcar nada raro— hasta que por casualidad llegara el siguiente aviso.
+   * En una ruta que estaba acabando, eso es «para siempre».
+   *
+   * Lo que arregla el hueco es volver a pedir el detalle UNA vez al reconectar.
+   * `runDetail` es una lectura completa (visitas, llegadas, inspecciones,
+   * fotos, observaciones y el histórico de eventos), así que reconstruye todo
+   * lo que se perdiera. Esa petición NO es un duplicado: es la recuperación.
+   */
+  const [enVivo, setEnVivo] = useState(true);
+
   useEffect(() => {
     load();
     const tid = localStorage.getItem("tenantId");
     const socket = tid ? crearSocket(getAuthToken() || "", tid) : null;
-    const onProgress = (e: any) => {
-      if (!e?.runId || String(e.runId) === runId) load();
+    /* Agrupado: un solo punto de control dispara llegada + inspección +
+       cierre, y cada uno emite su propio `route:progress`. Sin agrupar son
+       tres lecturas completas seguidas para pintar un cambio. */
+    let agrup: ReturnType<typeof setTimeout> | null = null;
+    const recargarAgrupado = () => {
+      if (agrup) clearTimeout(agrup);
+      agrup = setTimeout(() => void load(), 700);
     };
+    const onProgress = (e: any) => {
+      // Se filtra por ruta: en un piso de supervisión hay varias a la vez y
+      // esta pantalla sólo mira una.
+      if (!e?.runId || String(e.runId) === runId) recargarAgrupado();
+    };
+    const alConectar = () => {
+      setEnVivo(true);
+      recargarAgrupado();
+    };
+    const alCaerse = () => setEnVivo(false);
 
-    if (socket) socket.on("route:progress", onProgress);
+    if (socket) {
+      socket.on("route:progress", onProgress);
+      socket.on("connect", alConectar);
+      socket.on("disconnect", alCaerse);
+    }
 
     return () => {
+      if (agrup) clearTimeout(agrup);
       if (socket) {
         socket.off("route:progress", onProgress);
+        socket.off("connect", alConectar);
+        socket.off("disconnect", alCaerse);
         cerrarSocket(socket);
       }
     };
@@ -188,6 +229,14 @@ export default function RouteRunDetailPage() {
   const ex = data?.execution;
   const stops: any[] = ex?.stops || [];
   const abierta = ex ? OPEN.has(ex.status) : false;
+
+  /* RED DE SEGURIDAD, y sólo cuando hace falta de verdad: la ruta sigue
+     ABIERTA, el socket está CAÍDO y la pestaña está A LA VISTA. Con el socket
+     sano no corre nada — un websocket sano más un reloj permanente es
+     justamente lo que no queremos. En cuanto `connect` vuelve, `enVivo` pasa a
+     true, `activo` a false y el hook desarma el temporizador. 20 s y no 45
+     porque aquí se mira UNA ruta en marcha, no una lista de flota. */
+  useSondeoVisible(load, 20_000, abierta && !enVivo);
   const sum = ex?.summary;
   const mapStops = useMemo(
     () =>

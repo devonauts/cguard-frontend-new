@@ -48,6 +48,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { localeActual } from "@/lib/localeActual";
+import { useSondeoVisible } from "@/hooks/useSondeoVisible";
 type BadgeTone = "green" | "blue" | "orange" | "red" | "primary" | "slate";
 
 // ── Shape of GET /client-account/:id/personnel (clientAccountPersonnel.ts) ──
@@ -240,12 +241,10 @@ export default function ClientStaff({ client }: { client: Client }) {
 
     return () => clearTimeout(t);
   }, [q, sede, role, estado, turno, page, client.id]);
-  // Live refresh.
-  useEffect(() => {
-    const t = setInterval(() => load(true), 45000);
-
-    return () => clearInterval(t);
-  }, [q, sede, role, estado, turno, page, client.id]);
+  // Live refresh, sólo con la pestaña a la vista. Antes el intervalo dependía
+  // de los siete filtros: cada tecleo en el buscador lo desarmaba y lo volvía a
+  // armar. El hook lo arma UNA vez y lee los filtros actuales desde la ref.
+  useSondeoVisible(() => load(true), 45_000);
 
   const dist: RoleDistribution[] = data?.roleDistribution || [];
   const sedes: Array<{ id: string; name: string }> = data?.sedes || [];

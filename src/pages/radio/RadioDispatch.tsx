@@ -26,6 +26,7 @@ import { useFileUrl } from "@/lib/fileUrl";
 import { useRadioRealtime } from "@/components/radio/RadioRealtimeProvider";
 import RadioLiveChannelPanel from "@/components/radio/RadioLiveChannelPanel";
 import RadioCoveragePanel from "@/components/radio/RadioCoveragePanel";
+import { useSondeoVisible } from "@/hooks/useSondeoVisible";
 
 const statusBadge: Record<
   string,
@@ -140,11 +141,11 @@ export default function RadioDispatch() {
       .then(setSettings)
       .catch(() => {});
   }, [refresh]);
-  useEffect(() => {
-    const id = setInterval(refresh, 20000);
-
-    return () => clearInterval(id);
-  }, [refresh]);
+  /* La consola de radio se refresca cada 20 s, pero SÓLO con la pestaña a la
+     vista. Era la única pantalla en vivo que se quedó sin la guarda cuando se
+     puso en las demás: una consola abierta en un monitor de garita seguía
+     pidiendo toda la noche. Al volver se recarga en el acto. */
+  useSondeoVisible(refresh, 20_000);
   useEffect(() => {
     if (version > 0) refresh();
   }, [version, refresh]);

@@ -17,6 +17,7 @@ import {
   EmptyState,
   SkeletonCards,
 } from "@/components/kit";
+import { useSondeoVisible } from "@/hooks/useSondeoVisible";
 
 interface CorrectionRow {
   id: string;
@@ -101,11 +102,11 @@ export default function NominaApprovals() {
   // Live queue: the guard app polls its request every 6s, but this page used to
   // load only on mount — a supervisor sitting here never saw newly-arriving
   // requests. Refresh silently every 30s (no spinner, no flicker).
-  useEffect(() => {
-    const t = setInterval(() => load({ silent: true }), 30_000);
-
-    return () => clearInterval(t);
-  }, [load]);
+  //
+  // Sólo con la pestaña a la vista: cada tic son TRES peticiones (correcciones,
+  // entradas y salidas pendientes), así que una pantalla de aprobaciones dejada
+  // abierta toda la noche eran 8.640 peticiones que no miraba nadie.
+  useSondeoVisible(() => load({ silent: true }), 30_000);
 
   const decide = async (id: string, decision: "approved" | "rejected") => {
     setBusy(true);

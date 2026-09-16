@@ -43,6 +43,7 @@ import {
 } from "@/components/kit";
 import { Button } from "@/components/ui/button";
 import { localeActual } from "@/lib/localeActual";
+import { useEventoEnVivo } from "@/hooks/useEventoEnVivo";
 type BadgeTone = "bad" | "warn" | "info" | "ok";
 
 // ── Shape of GET /client-account/:id/incidents-board (clientAccountIncidentsBoard.ts) ──
@@ -250,6 +251,10 @@ export default function ClientIncidents({ client }: { client: Client }) {
     }
   };
 
+
+  /* Incidentes en vivo: el backend avisa con `incident:changed` (ids y hora,
+     nunca la fila), así que se vuelve a leer. `quiet` para que no parpadee. */
+  useEventoEnVivo(["incident:changed"], () => load(true));
   useEffect(() => {
     const t = setTimeout(() => load(), 250);
 

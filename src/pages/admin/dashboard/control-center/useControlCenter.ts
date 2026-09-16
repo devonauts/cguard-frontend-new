@@ -364,6 +364,19 @@ export function useControlCenter(
   const [tick, setTick] = useState(0);
   const refresh = useCallback(() => setTick((t) => t + 1), []);
 
+  /* INCIDENTES EN VIVO — PENDIENTE, y con motivo medido.
+     `incident:changed` existe en el backend y nadie lo escucha, así que los
+     contadores de incidentes sólo se mueven al recargar o al pulsar Refrescar.
+     Se intentó engancharlo aquí con `useEventoEnVivo(["incident:changed"],
+     refresh)` y se revirtió: `refresh` no es una relectura de incidentes, es
+     un `setTick` que vuelve a lanzar la carga ENTERA del tablero — catorce
+     peticiones. Como el hook también recarga al conectar el socket (que es lo
+     correcto para no perderse nada), el tablero pasó de 17 a 39 peticiones al
+     volver a la pantalla. Medido, no supuesto.
+     Para engancharlo hace falta antes una relectura ESTRECHA que toque sólo
+     `/incident` y sus dos contadores, sin arrastrar estaciones, clientes,
+     usuarios ni KPIs. Mientras no exista, se queda como estaba. */
+
   // ── primary load (stats + entities) ─────────────────────────────────────
   useEffect(() => {
     if (!tenantId()) {

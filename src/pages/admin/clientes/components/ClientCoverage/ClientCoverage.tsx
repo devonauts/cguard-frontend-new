@@ -62,6 +62,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { useSondeoVisible } from "@/hooks/useSondeoVisible";
 
 // ── Shape of GET /client-account/:id/coverage (clientAccountCoverage.ts) ──
 type CoverageStatus =
@@ -253,12 +254,10 @@ export default function ClientCoverage({ client }: { client: Client }) {
     setLoading(true);
     load();
   }, [client.id]);
-  // Live refresh every 45s (coverage is real-time).
-  useEffect(() => {
-    const t = setInterval(() => load(sedeId, true), 45000);
-
-    return () => clearInterval(t);
-  }, [sedeId, client.id]);
+  // Live refresh every 45s (coverage is real-time), sólo con la pestaña a la
+  // vista. El hook guarda la tarea en una ref, así que sigue usando el `sedeId`
+  // actual sin rearmar el reloj en cada render.
+  useSondeoVisible(() => load(sedeId, true), 45_000);
 
   const sedes: CoverageSede[] = data?.sedes || [];
   const puestos: CoveragePuesto[] = data?.puestos || [];
