@@ -26,6 +26,11 @@
             "path": "/guards/:id/asistencia"
           },
           {
+            "id": "logs",
+            "label": "guards.nav.logs",
+            "path": "/guards/:id/logs"
+          },
+          {
             "id": "asignar-sitios",
             "label": "guards.nav.asignarSitios",
             "path": "/guards/:id/asignar-sitios"
@@ -109,6 +114,11 @@
             "id": "sup-horario",
             "label": "supervisors.nav.horario",
             "path": "/supervisors/:id/horario"
+          },
+          {
+            "id": "sup-logs",
+            "label": "supervisors.nav.logs",
+            "path": "/supervisors/:id/logs"
           },
           {
             "id": "sup-indicadores",

@@ -1926,7 +1926,8 @@
       "asistencia": "Présence",
       "desempeno": "Performance",
       "documentos": "Documents",
-      "supervisorsRoot": "Superviseurs"
+      "supervisorsRoot": "Superviseurs",
+      "logs": "Journaux"
     },
     "new": {
       "title": "Nouvel agent de sécurité",
@@ -8484,7 +8485,8 @@
       "desempeno": "Performance",
       "licencias": "Licences",
       "notas": "Notes",
-      "dispositivo": "Appareil"
+      "dispositivo": "Appareil",
+      "logs": "Journaux"
     },
     "card": {
       "noVehicle": "Sans véhicule",
@@ -12065,5 +12067,8 @@
     "switch": "Changer d'entreprise",
     "company": "Entreprise",
     "switchHeader": "Avec quelle entreprise travaillez-vous ?"
+  },
+  "logs": {
+    "tab": "Journaux"
   }
 }

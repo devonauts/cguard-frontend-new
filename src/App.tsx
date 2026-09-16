@@ -463,6 +463,15 @@ const GuardHorarioPage = lazy(
       "./pages/admin/security-guards/components/GuardHorario/GuardHorarioPage"
     ),
 );
+const GuardLogsPage = lazy(
+  () =>
+    import(
+      "./pages/admin/security-guards/components/GuardLogs/GuardLogsPage"
+    ),
+);
+const SupervisorLogsPage = lazy(
+  () => import("./pages/admin/supervisors/SupervisorLogsPage"),
+);
 const GuardAsistenciaPage = lazy(
   () =>
     import(
@@ -1325,6 +1334,10 @@ export default function App() {
                                 element={<GuardAsistenciaPage />}
                                 path="asistencia"
                               />
+                              {/* Los fichajes que el reloj le RECHAZÓ. Va al
+                                  lado de «asistencia» porque es lo que le falta
+                                  a esa pestaña: lo que NO llegó a ser. */}
+                              <Route element={<GuardLogsPage />} path="logs" />
                               <Route
                                 element={<GuardDesempenoPage />}
                                 path="desempeno"
@@ -1902,6 +1915,10 @@ export default function App() {
                                 element={<SupervisorLicensesPage />}
                                 path="licencias"
                               />
+                              {/* Los fichajes que el reloj le RECHAZÓ. Misma
+                                  pantalla que la del vigilante: el suceso es el
+                                  mismo aunque el reloj que lo rechaza sea otro. */}
+                              <Route element={<SupervisorLogsPage />} path="logs" />
                             </Route>
                             <Route
                               element={

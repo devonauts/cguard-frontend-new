@@ -1926,7 +1926,8 @@
       "asistencia": "Aanwezigheid",
       "desempeno": "Prestaties",
       "documentos": "Documenten",
-      "supervisorsRoot": "Supervisors"
+      "supervisorsRoot": "Supervisors",
+      "logs": "Logboek"
     },
     "new": {
       "title": "Nieuwe beveiliger",
@@ -8484,7 +8485,8 @@
       "desempeno": "Prestaties",
       "licencias": "Passen",
       "notas": "Notities",
-      "dispositivo": "Apparaat"
+      "dispositivo": "Apparaat",
+      "logs": "Logboek"
     },
     "card": {
       "noVehicle": "Geen voertuig",
@@ -12065,5 +12067,8 @@
     "switch": "Bedrijf wisselen",
     "company": "Bedrijf",
     "switchHeader": "Met welk bedrijf werk je?"
+  },
+  "logs": {
+    "tab": "Logboek"
   }
 }

@@ -32,8 +32,10 @@ import {
   KeyRound,
   CheckCircle2,
   XCircle,
+  ShieldX,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import RegistroDeIntentos from "@/components/RegistroDeIntentos";
 import type { AdminUser, RoleRef, TenantUser } from "./adminUserTypes";
 
 import { localeActual } from "@/lib/localeActual";
@@ -92,7 +94,7 @@ export default function AdminUserDetailPage() {
   const navigate = useNavigate();
   const [user, setUser] = useState<AdminUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<"perfil" | "permisos">("perfil");
+  const [tab, setTab] = useState<"perfil" | "permisos" | "logs">("perfil");
 
   useEffect(() => {
     if (!id) return;
@@ -168,12 +170,17 @@ export default function AdminUserDetailPage() {
     .includes("supervisor");
 
   const TABS: Array<{
-    id: "perfil" | "permisos";
+    id: "perfil" | "permisos" | "logs";
     label: string;
     icon: LucideIcon;
   }> = [
     { id: "perfil", label: "Perfil", icon: IdCard },
     { id: "permisos", label: "Permisos", icon: KeyRound },
+    /* Los fichajes que el reloj le RECHAZÓ. El personal de oficina también
+       ficha (`staffShifts`), así que también se le puede quedar en la puerta.
+       Misma pantalla que en la ficha del vigilante y en la del supervisor:
+       esta ficha no usa rutas, pero el componente es el mismo. */
+    { id: "logs", label: t("logs.tab", { defaultValue: "Registros" }), icon: ShieldX },
   ];
 
   return (
@@ -197,7 +204,7 @@ export default function AdminUserDetailPage() {
           </Link>
           <ChevronRight className="h-3.5 w-3.5 shrink-0" />
           <span className="shrink-0 font-medium text-foreground">
-            {tab === "perfil" ? "Perfil" : "Permisos"}
+            {TABS.find((x) => x.id === tab)?.label ?? "Perfil"}
           </span>
         </div>
 
@@ -326,6 +333,8 @@ export default function AdminUserDetailPage() {
             title={t("ui.AdminUserDetailPage.usuarioNoEncontrado")}
             description={t("ui.AdminUserDetailPage.noSePudoCargarEste")}
           />
+        ) : tab === "logs" ? (
+          <RegistroDeIntentos userId={user?.id ? String(user.id) : null} />
         ) : tab === "perfil" ? (
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             <div className="lg:col-span-2">

@@ -2023,7 +2023,8 @@
       "asistencia": "Asistencia",
       "desempeno": "Desempeño",
       "documentos": "Documentos",
-      "supervisorsRoot": "Supervisores"
+      "supervisorsRoot": "Supervisores",
+      "logs": "Registros"
     },
     "new": {
       "title": "Nuevo Vigilante",
@@ -11113,7 +11114,8 @@
       "desempeno": "Desempeño",
       "licencias": "Licencias",
       "notas": "Notas",
-      "dispositivo": "Dispositivo"
+      "dispositivo": "Dispositivo",
+      "logs": "Registros"
     },
     "card": {
       "noVehicle": "Sin vehículo",
@@ -12131,5 +12133,39 @@
       "mapNoStation": "Pon primero la ubicación del puesto para poder colocar los puntos.",
       "pendingPlacement": "{{n}} punto(s) siguen en la coordenada del puesto. Mientras compartan sitio, la comprobación de cercanía no distingue un punto de otro: estar en la entrada daría por válida la azotea. Puedes crearlos igual y colocarlos después."
     }
+  },
+  "logs": {
+    "accuracy": " (±{{m}} m)",
+    "availableAt": "Podía desde: {{h}}",
+    "count": "{{n}} en total",
+    "device": "Teléfono",
+    "distance": "A {{m}} m del puesto",
+    "empty": "Ningún fichaje rechazado",
+    "emptyDesc": "Aquí aparece cada vez que el reloj le impide marcar entrada o salida, y por qué. Vacío significa que no le ha pasado.",
+    "error": "No se pudo leer el registro",
+    "errorDesc": "Vuelve a intentarlo en un momento.",
+    "kindIn": "Entrada",
+    "kindOut": "Salida",
+    "reason": {
+      "geofence_failed": "Fuera del área del puesto",
+      "too_early": "Demasiado pronto",
+      "late_needs_approval": "Llegada tarde sin aprobación",
+      "already_clocked_in": "Ya tenía una entrada activa",
+      "already_clocked_in_elsewhere": "Entrada activa en otro puesto",
+      "not_clocked_in": "No tenía entrada activa",
+      "approval_required": "Salida anticipada sin aprobación",
+      "selfie_required": "Faltaba la selfie",
+      "location_required": "Sin ubicación del teléfono",
+      "not_scheduled_here_today": "Hoy no le tocaba en ese puesto",
+      "not_assigned_to_post": "No está asignado a ese puesto",
+      "time_clock_disabled": "El reloj estaba desactivado",
+      "license_expired": "Credencial vencida",
+      "guard_profile_not_found": "Sin ficha de vigilante",
+      "station_not_found": "El puesto no existe"
+    },
+    "scheduled": "Su turno: {{h}}",
+    "tab": "Registros",
+    "title": "Intentos de fichaje rechazados",
+    "truncated": "Últimos {{n}}"
   }
 }

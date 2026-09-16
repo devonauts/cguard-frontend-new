@@ -98,6 +98,28 @@ export interface AttendanceRecord {
 }
 
 /** Un movimiento de la bitácora de una tarjeta. */
+/** Un fichaje RECHAZADO: el que no llegó a ser. Ver `clockAttempts` en el servidor. */
+export interface ClockAttempt {
+  id: string;
+  subjectType: "guard" | "supervisor" | "staff";
+  kind: "in" | "out";
+  /** El código que devolvió el servidor: `too_early`, `geofence_failed`, … */
+  reason: string;
+  message: string | null;
+  stationId: string | null;
+  stationName: string | null;
+  shiftId: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  accuracy: number | null;
+  distanceMeters: number | null;
+  scheduledStart: string | null;
+  availableAt: string | null;
+  platform: string | null;
+  deviceId: string | null;
+  attemptedAt: string;
+}
+
 export interface TimesheetEvent {
   id: string;
   kind: string;
@@ -554,6 +576,22 @@ const attendanceService = {
     const t = getTenantId();
 
     return unwrap(await api.put(`/tenant/${t}/attendance/settings`, { data }));
+  },
+  /**
+   * Los fichajes RECHAZADOS de UNA persona — la pestaña «Registros» de su ficha.
+   *
+   * Se pregunta por `userId` y no por la ficha de vigilante a propósito: la
+   * misma llamada sirve para un vigilante, un supervisor y alguien de oficina,
+   * que tienen tres relojes distintos pero un solo id de usuario.
+   */
+  async clockAttempts(params: { userId: string; limit?: number }) {
+    const t = getTenantId();
+
+    return unwrap(
+      await api.get(
+        `/tenant/${t}/attendance/clock-attempts${buildQuery(params)}`,
+      ),
+    ) as { rows: ClockAttempt[]; limit: number; truncated: boolean };
   },
 };
 

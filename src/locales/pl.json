@@ -1926,7 +1926,8 @@
       "asistencia": "Obecność",
       "desempeno": "Wyniki",
       "documentos": "Dokumenty",
-      "supervisorsRoot": "Nadzorcy"
+      "supervisorsRoot": "Nadzorcy",
+      "logs": "Dzienniki"
     },
     "new": {
       "title": "Nowy pracownik ochrony",
@@ -8484,7 +8485,8 @@
       "desempeno": "Wyniki",
       "licencias": "Uprawnienia",
       "notas": "Notatki",
-      "dispositivo": "Urządzenie"
+      "dispositivo": "Urządzenie",
+      "logs": "Dzienniki"
     },
     "card": {
       "noVehicle": "Brak pojazdu",
@@ -12065,5 +12067,8 @@
     "switch": "Zmień firmę",
     "company": "Firma",
     "switchHeader": "Z którą firmą pracujesz?"
+  },
+  "logs": {
+    "tab": "Dzienniki"
   }
 }

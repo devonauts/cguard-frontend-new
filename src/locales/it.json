@@ -1926,7 +1926,8 @@
       "asistencia": "Presenze",
       "desempeno": "Rendimento",
       "documentos": "Documenti",
-      "supervisorsRoot": "Supervisori"
+      "supervisorsRoot": "Supervisori",
+      "logs": "Registri"
     },
     "new": {
       "title": "Nuova guardia",
@@ -8484,7 +8485,8 @@
       "desempeno": "Rendimento",
       "licencias": "Licenze",
       "notas": "Note",
-      "dispositivo": "Dispositivo"
+      "dispositivo": "Dispositivo",
+      "logs": "Registri"
     },
     "card": {
       "noVehicle": "Nessun veicolo",
@@ -12065,5 +12067,8 @@
     "switch": "Cambia azienda",
     "company": "Azienda",
     "switchHeader": "Con quale azienda vuoi lavorare?"
+  },
+  "logs": {
+    "tab": "Registri"
   }
 }

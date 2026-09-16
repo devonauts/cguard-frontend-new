@@ -3588,7 +3588,8 @@
       "dispositivo": "Dispositivo",
       "documentos": "Documentos",
       "horario": "Horário",
-      "supervisorsRoot": "Supervisores"
+      "supervisorsRoot": "Supervisores",
+      "logs": "Registos"
     },
     "summary": {
       "roleDefault": "Segurança",
@@ -11113,7 +11114,8 @@
       "desempeno": "Desempenho",
       "licencias": "Licenças",
       "notas": "Notas",
-      "dispositivo": "Dispositivo"
+      "dispositivo": "Dispositivo",
+      "logs": "Registos"
     },
     "card": {
       "noVehicle": "Sem veículo",
@@ -12131,5 +12133,8 @@
       "mapNoStation": "Defina primeiro a localização do posto para poder colocar os pontos.",
       "pendingPlacement": "{{n}} ponto(s) continuam na coordenada do posto. Enquanto dividirem o mesmo lugar, a verificação de proximidade não distingue um ponto do outro: estar na entrada validaria o terraço. Você pode criá-los assim mesmo e colocá-los depois."
     }
+  },
+  "logs": {
+    "tab": "Registos"
   }
 }

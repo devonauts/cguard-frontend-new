@@ -1926,7 +1926,8 @@
       "asistencia": "Anwesenheit",
       "desempeno": "Leistung",
       "documentos": "Dokumente",
-      "supervisorsRoot": "Einsatzleiter"
+      "supervisorsRoot": "Einsatzleiter",
+      "logs": "Protokolle"
     },
     "new": {
       "title": "Neue Sicherheitskraft",
@@ -8484,7 +8485,8 @@
       "desempeno": "Leistung",
       "licencias": "Lizenzen",
       "notas": "Notizen",
-      "dispositivo": "Gerät"
+      "dispositivo": "Gerät",
+      "logs": "Protokolle"
     },
     "card": {
       "noVehicle": "Kein Fahrzeug",
@@ -12065,5 +12067,8 @@
     "switch": "Unternehmen wechseln",
     "company": "Unternehmen",
     "switchHeader": "Mit welchem Unternehmen arbeiten Sie?"
+  },
+  "logs": {
+    "tab": "Protokolle"
   }
 }

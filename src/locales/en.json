@@ -2023,7 +2023,8 @@
       "asistencia": "Attendance",
       "desempeno": "Performance",
       "documentos": "Documents",
-      "supervisorsRoot": "Supervisors"
+      "supervisorsRoot": "Supervisors",
+      "logs": "Logs"
     },
     "new": {
       "title": "New Guard",
@@ -11113,7 +11114,8 @@
       "desempeno": "Performance",
       "licencias": "Licenses",
       "notas": "Notes",
-      "dispositivo": "Device"
+      "dispositivo": "Device",
+      "logs": "Logs"
     },
     "card": {
       "noVehicle": "No vehicle",
@@ -12131,5 +12133,39 @@
       "mapNoStation": "Set the post location first so checkpoints can be placed.",
       "pendingPlacement": "{{n}} checkpoint(s) are still on the post coordinate. While they share a spot, the proximity check cannot tell one from another: standing at the entrance would validate the roof. You can create them anyway and place them later."
     }
+  },
+  "logs": {
+    "accuracy": " (±{{m}} m)",
+    "availableAt": "Allowed from: {{h}}",
+    "count": "{{n}} total",
+    "device": "Phone",
+    "distance": "{{m}} m from the post",
+    "empty": "No rejected attempts",
+    "emptyDesc": "Every time the clock refuses a punch, it shows up here with the reason. Empty means it hasn't happened.",
+    "error": "Couldn't load the log",
+    "errorDesc": "Try again in a moment.",
+    "kindIn": "Clock-in",
+    "kindOut": "Clock-out",
+    "reason": {
+      "geofence_failed": "Outside the post area",
+      "too_early": "Too early",
+      "late_needs_approval": "Late arrival, no approval",
+      "already_clocked_in": "Already clocked in",
+      "already_clocked_in_elsewhere": "Clocked in at another post",
+      "not_clocked_in": "Was not clocked in",
+      "approval_required": "Early departure, no approval",
+      "selfie_required": "Selfie missing",
+      "location_required": "No location from the phone",
+      "not_scheduled_here_today": "Not scheduled there today",
+      "not_assigned_to_post": "Not assigned to that post",
+      "time_clock_disabled": "Time clock was off",
+      "license_expired": "Licence expired",
+      "guard_profile_not_found": "No guard profile",
+      "station_not_found": "Post does not exist"
+    },
+    "scheduled": "Their shift: {{h}}",
+    "tab": "Logs",
+    "title": "Rejected clock-in attempts",
+    "truncated": "Latest {{n}}"
   }
 }
