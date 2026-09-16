@@ -29,6 +29,7 @@ const OperationsMapFull = lazy(
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AccentProvider } from "./contexts/AccentContext";
+import { IdentidadEfectivaProvider } from "./contexts/IdentidadEfectiva";
 import { RadioRealtimeProvider } from "./components/radio/RadioRealtimeProvider";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { queryClient } from "./lib/queryClient";
@@ -650,6 +651,16 @@ export default function App() {
         <AccentProvider>
           <LanguageProvider>
             <AuthProvider>
+              {/* ── LA MARCA, YA CONTRASTADA CONTRA LA EMPRESA DE LA SESIÓN ───
+                  `WhiteLabelProvider` (en main.tsx) resuelve de quién es el
+                  ANFITRIÓN, que es lo correcto mientras no hay nadie dentro.
+                  Esto va DEBAJO de `AuthProvider` porque necesita saber qué
+                  empresa está activa: una empresa directa entrando por el
+                  anfitrión de un socio —o la del socio A bajo el de B— no puede
+                  pintarse con una marca que no es la suya. Vuelve a proveer el
+                  MISMO contexto, así que los componentes siguen leyendo
+                  `useWhiteLabel()` sin enterarse. */}
+              <IdentidadEfectivaProvider>
               <ClientSelectionProvider>
                 <CoBrowseAgent />
                 <BrowserRouter>
@@ -2546,6 +2557,7 @@ export default function App() {
                   </RadioRealtimeProvider>
                 </BrowserRouter>
               </ClientSelectionProvider>
+              </IdentidadEfectivaProvider>
             </AuthProvider>
           </LanguageProvider>
         </AccentProvider>

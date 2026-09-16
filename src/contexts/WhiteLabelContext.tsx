@@ -113,6 +113,17 @@ export function puedeUsarArteDePlataforma(ctx: ContextoDeMarca): boolean {
 
 export const useWhiteLabel = () => useContext(Contexto);
 
+/**
+ * El objeto de contexto, para que la capa de identidad EFECTIVA pueda volver a
+ * proveerlo con el valor ya contrastado contra la empresa de la sesión.
+ *
+ * Se exporta esto y no una segunda pareja de hook/proveedor a propósito: los
+ * componentes ya leen `useWhiteLabel()`, y darles una fuente distinta sería
+ * pedirle a cada pantalla que recuerde cuál de las dos mirar. Hay UNA identidad
+ * y la capa de arriba decide cuál es.
+ */
+export { Contexto as ContextoDeMarcaReact };
+
 /* ── Validación de lo que llega ──────────────────────────────────────────── */
 
 const texto = (v: unknown, max: number): string | null => {
@@ -199,7 +210,15 @@ function aplicarFavicon(url: string): void {
   }
 }
 
-function aplicarMarca(ctx: ContextoDeMarca): void {
+export function aplicarMarca(ctx: ContextoDeMarca): void {
+  /* ── SE APLICA Y SE DESHACE ─────────────────────────────────────────────
+     Esto ya no corre una sola vez al arrancar. Cuando se sabe de qué empresa
+     es la sesión, la identidad puede CAMBIAR de socio a plataforma —una
+     empresa directa entrando por el anfitrión de un socio, o la empresa de A
+     bajo el anfitrión de B—, y entonces no basta con pintar lo nuevo: hay que
+     quitar lo viejo. Un `--brand-h` que se queda, o un favicon que no se
+     repone, es marca de un socio sobreviviendo en una pantalla que ya no es
+     suya. Por eso cada rama tiene su contraria explícita. */
   try {
     // Un socio sin nombre publicado deja el título como esté: vale más el que
     // trae el HTML que escribir el nuestro sobre su anfitrión.
@@ -208,6 +227,8 @@ function aplicarMarca(ctx: ContextoDeMarca): void {
       /* Para `usePageTitle`, que lo lee de aquí: lo llaman pantallas que no
          siempre cuelgan del proveedor. */
       document.documentElement.dataset.nombreDeMarca = ctx.platformName;
+    } else {
+      delete document.documentElement.dataset.nombreDeMarca;
     }
   } catch { /* idem */ }
 
@@ -231,9 +252,17 @@ function aplicarMarca(ctx: ContextoDeMarca): void {
          fábrica». En un anfitrión de plataforma la marca no se pone y el acento
          por defecto se aplica igual que siempre. */
       document.documentElement.dataset.marcaDeAnfitrion = "1";
+    } else {
+      /* Sin tono propio se DEVUELVE el control: se quita la propiedad en línea
+         para que mande otra vez el valor de `tokens.css`, y se retira la marca
+         para que el acento de fábrica vuelva a poder aplicarse. */
+      document.documentElement.style.removeProperty("--brand-h");
+      delete document.documentElement.dataset.marcaDeAnfitrion;
     }
     if (ctx.brandChroma !== null) {
       document.documentElement.style.setProperty("--brand-c", String(ctx.brandChroma));
+    } else {
+      document.documentElement.style.removeProperty("--brand-c");
     }
   } catch { /* idem */ }
 
@@ -335,7 +364,7 @@ export async function pedirContexto(): Promise<{ ctx: ContextoDeMarca; degradado
  * cargador con el escudo de CGuardPro delataría al proveedor en el anfitrión de
  * un socio, que es justo lo que esto evita.
  */
-function EsqueletoNeutro() {
+export function EsqueletoNeutro() {
   return (
     <div
       role="status"

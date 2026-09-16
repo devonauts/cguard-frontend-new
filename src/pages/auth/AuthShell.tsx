@@ -28,6 +28,7 @@ import { AlertTriangle, BarChart3, Clock, MapPin, Shield } from "lucide-react";
 
 import SplashScreen from "@/components/SplashScreen";
 import BrandLockup from "@/components/BrandLockup";
+import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
 import { FadeIn } from "@/components/kit";
 
 interface AuthShellProps {
@@ -135,6 +136,11 @@ export default function AuthShell({
           { icon: BarChart3, label: t("auth.landing.tag_analytics") },
         ]);
 
+  /* La identidad YA contrastada contra la empresa de la sesión: en el árbol
+     autenticado la sirve `IdentidadEfectivaProvider`, y antes de entrar es la
+     del anfitrión. Aquí sólo se lee un dato ya resuelto. */
+  const { platformName: nombreDeMarca, showPlatformAttribution } = useWhiteLabel();
+
   const cintillo =
     eyebrow ??
     (esCampo
@@ -148,7 +154,16 @@ export default function AuthShell({
           defaultValue:
             "Vuelve a entrar a la app C-Guard Pro con tu nueva contraseña.",
         })
-      : t("auth.landing.desc", { product: "C-GUARD" }));
+      /* ── EL NOMBRE DEL PRODUCTO LO PONE EL ANFITRIÓN ────────────────────
+         La frase ya venía con un hueco `{{product}}` en los ocho idiomas —con
+         la estructura de cada lengua intacta—, pero aquí se rellenaba con
+         «C-GUARD» escrito a mano. Así que en el anfitrión de un socio la
+         pantalla de acceso decía en voz alta de quién es la plataforma que su
+         cliente cree suya. Se rellena con el nombre resuelto; si no hubiera
+         ninguno, no se pinta la frase en vez de poner el nuestro. */
+      : nombreDeMarca
+        ? t("auth.landing.desc", { product: nombreDeMarca })
+        : "");
 
   return (
     <div className="app-shell relative flex min-h-screen flex-col items-center justify-center px-4 py-10 sm:px-6">
@@ -243,15 +258,25 @@ export default function AuthShell({
           </div>
         )}
 
+        {/* ── LA ATRIBUCIÓN, DONDE ESTÁ PERMITIDA ────────────────────────────
+            Este pie nombra a CGUARD. Con `showPlatformAttribution` puesto es
+            legítimo y se deja tal cual —el socio acepta que se nos vea, y
+            quitarlo sería cambiarle su configuración—. Con la atribución
+            DESACTIVADA el socio paga justamente por lo contrario, así que el
+            pie pasa a ser suyo: su nombre y su año. */}
         <p
           className="mt-7 text-center text-xs"
           style={{ color: "var(--ink-faint)" }}
         >
-          {t("auth.landing.copyright", {
-            defaultValue:
-              "© 2025-{{year}} C-GUARD. Todos los derechos reservados.",
-            year: new Date().getFullYear(),
-          })}
+          {showPlatformAttribution
+            ? t("auth.landing.copyright", {
+                defaultValue:
+                  "© 2025-{{year}} C-GUARD. Todos los derechos reservados.",
+                year: new Date().getFullYear(),
+              })
+            : nombreDeMarca
+              ? `© ${new Date().getFullYear()} ${nombreDeMarca}`
+              : null}
         </p>
       </FadeIn>
     </div>
