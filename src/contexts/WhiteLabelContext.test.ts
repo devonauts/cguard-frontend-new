@@ -606,3 +606,51 @@ describe("Etapa E.1 · el contexto va al mismo origen", () => {
     expect(CODIGO_WL).not.toMatch(/await fetch\(`\$\{API\}\/platform\/context`/);
   });
 });
+
+/**
+ * ════════════════════════════════════════════════════════════════════════════
+ * ETAPA E.1 · EL TONO Y EL TÍTULO SON DEL ANFITRIÓN
+ *
+ * Las dos cosas que seguían diciendo CGuardPro en el anfitrión del piloto
+ * después de que todo lo demás ya funcionara:
+ *
+ *   · `--brand-h` lo pisaba el acento DE FÁBRICA de `AccentContext` (tono 88),
+ *     justo en la pantalla de acceso, donde no hay ningún usuario cuyo gusto
+ *     respetar. El CRM de un socio salía con el verde de CGuardPro.
+ *   · `usePageTitle` llevaba `"C-Guard Pro"` escrito como constante, así que la
+ *     pestaña —lo que la persona ve todo el día— seguía siendo la nuestra.
+ * ════════════════════════════════════════════════════════════════════════════
+ */
+describe("Etapa E.1 · el tono y el título los pone el anfitrión", () => {
+  const WL = fs.readFileSync(path.resolve(__dirname, "./WhiteLabelContext.tsx"), "utf8");
+  const ACCENT = fs.readFileSync(path.resolve(__dirname, "./AccentContext.tsx"), "utf8");
+  const TITULO = fs.readFileSync(path.resolve(__dirname, "../hooks/usePageTitle.ts"), "utf8");
+
+  it("el proveedor MARCA el <html> cuando aplica un tono de anfitrión", () => {
+    expect(WL).toMatch(/dataset\.marcaDeAnfitrion = "1"/);
+  });
+
+  it("LA QUE IMPORTA · el acento DE FÁBRICA ya no pisa la marca del anfitrión", () => {
+    expect(ACCENT).toMatch(/hayAccentElegido\(\)/);
+    expect(ACCENT).toMatch(/dataset\.marcaDeAnfitrion === "1"/);
+  });
+
+  it("pero un acento ELEGIDO sigue mandando", () => {
+    /* La guarda sólo actúa cuando NO hay acento elegido. Si alguien invirtiera
+       la condición, le quitaría a cada usuario el acento que escogió. */
+    expect(ACCENT).toMatch(/if \(!hayAccentElegido\(\) && raiz\.dataset\.marcaDeAnfitrion === "1"\) return;/);
+  });
+
+  it("`usePageTitle` ya no lleva «C-Guard Pro» escrito a mano", () => {
+    expect(TITULO).not.toMatch(/APP_NAME\s*=\s*"C-Guard Pro"/);
+    expect(TITULO).toMatch(/dataset\.nombreDeMarca/);
+  });
+
+  it("y sin nombre de marca se deja la página sola, nunca nuestro nombre", () => {
+    expect(TITULO).toMatch(/app \? `\$\{page\} \| \$\{app\}` : page/);
+  });
+
+  it("el proveedor publica el nombre en el <html> para que el título lo lea", () => {
+    expect(WL).toMatch(/dataset\.nombreDeMarca = ctx\.platformName/);
+  });
+});

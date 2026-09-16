@@ -203,7 +203,12 @@ function aplicarMarca(ctx: ContextoDeMarca): void {
   try {
     // Un socio sin nombre publicado deja el título como esté: vale más el que
     // trae el HTML que escribir el nuestro sobre su anfitrión.
-    if (ctx.platformName) document.title = ctx.platformName;
+    if (ctx.platformName) {
+      document.title = ctx.platformName;
+      /* Para `usePageTitle`, que lo lee de aquí: lo llaman pantallas que no
+         siempre cuelgan del proveedor. */
+      document.documentElement.dataset.nombreDeMarca = ctx.platformName;
+    }
   } catch { /* idem */ }
 
   /* El tono y el croma, las MISMAS dos variables que usa el acento del usuario
@@ -215,6 +220,17 @@ function aplicarMarca(ctx: ContextoDeMarca): void {
   try {
     if (ctx.brandHue !== null) {
       document.documentElement.style.setProperty("--brand-h", String(ctx.brandHue));
+      /* ── LA MARCA DEL VECINO NO PUEDE PISARLA EL ACENTO DE FÁBRICA ────────
+         `AccentContext` escribe estas dos variables con el acento del usuario,
+         y cuando no hay ninguno guardado escribe el DE FÁBRICA (tono 88). Sin
+         esta marca, ese valor por defecto pisaba el tono del socio en la
+         pantalla de acceso — donde todavía no hay usuario que pueda tener una
+         preferencia—, y el CRM del socio salía con el verde de CGuardPro.
+         Esto NO le quita el acento a nadie: quien ha elegido uno lo conserva.
+         Sólo dice «aquí ya hay un tono de anfitrión, no lo tapes con el de
+         fábrica». En un anfitrión de plataforma la marca no se pone y el acento
+         por defecto se aplica igual que siempre. */
+      document.documentElement.dataset.marcaDeAnfitrion = "1";
     }
     if (ctx.brandChroma !== null) {
       document.documentElement.style.setProperty("--brand-c", String(ctx.brandChroma));
