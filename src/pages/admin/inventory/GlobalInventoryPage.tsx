@@ -60,6 +60,7 @@ import inventoryItemService, {
   ITEM_CONDITION_LABELS,
 } from "@/lib/api/inventoryItemService";
 import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
+import { enLotes } from "@/lib/enLotes";
 
 // Shape of the errors thrown by the API layer (axios-style response envelope).
 type ApiError = {
@@ -278,9 +279,20 @@ export default function GlobalInventoryPage() {
     }
     setUploadingPhoto(true);
     try {
-      const uploaded: InventoryItemPhoto[] = await Promise.all(
-        files.map((f) => inventoryItemService.uploadPhoto(f)),
+      /* De tres en tres: cada una es un multipart pesado, no un JSON. Con
+         `Promise.all` se subían TODAS a la vez —tantas como permita el
+         selector de archivos— y en una conexión de oficina eso se atraganta. */
+      const subidas = await enLotes(
+        files,
+        (f) => inventoryItemService.uploadPhoto(f),
+        3,
       );
+      const fallidas = subidas.filter((r) => r.status === "rejected").length;
+
+      if (fallidas) toast.error(`${fallidas} foto(s) no se pudieron subir`);
+      const uploaded: InventoryItemPhoto[] = subidas
+        .filter((r) => r.status === "fulfilled")
+        .map((r) => (r as PromiseFulfilledResult<InventoryItemPhoto>).value);
       setForm((prev) => ({
         ...prev,
         photos: [...(prev.photos || []), ...uploaded],

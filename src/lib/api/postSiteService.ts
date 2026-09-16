@@ -1,5 +1,6 @@
 import api from "@/lib/api";
 import { PostSiteInput } from "@/lib/validators/post-site";
+import { cachedFetch } from "@/lib/queryClient";
 
 export interface PostSite {
   id: string;
@@ -184,7 +185,35 @@ const postSiteService = {
   /**
    * Get paginated list of post sites
    */
+  /**
+   * Los puestos de servicio, con la MISMA caché de lectura que usa
+   * `stationService.list()`.
+   *
+   * Los dos servicios acaban en el mismo sitio: `/post-site` es un alias
+   * literal de `/business-info` en el backend (ver `api/postSite/index.ts`,
+   * «Legacy compatibility routes»), así que comparten clave a propósito —
+   * `["stations", …]`— y una escritura por cualquiera de los dos refresca a los
+   * dos. Las mutaciones de aquí van a `/business-info`, que YA está en
+   * `URL_ENTITY_MAP`: la invalidación no hace falta añadirla, ya existía sin
+   * que nadie la aprovechara.
+   *
+   * Once pantallas llaman a este método —entre ellas la pestaña «Puestos y
+   * cobertura» de cada cliente— y hasta ahora ninguna se ahorraba nada.
+   */
   async list(
+    filters: PostSiteFilters = {},
+    options: PaginationOptions = { limit: 25, offset: 0 },
+  ): Promise<PostSiteListResponse> {
+    const tenantIdParaClave = getTenantId();
+
+    return cachedFetch(
+      ["stations", tenantIdParaClave, "business-info", filters, options],
+      () => this._listSinCache(filters, options),
+      20_000,
+    );
+  },
+
+  async _listSinCache(
     filters: PostSiteFilters = {},
     options: PaginationOptions = { limit: 25, offset: 0 },
   ): Promise<PostSiteListResponse> {

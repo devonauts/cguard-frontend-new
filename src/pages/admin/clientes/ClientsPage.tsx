@@ -112,18 +112,9 @@ import { CategorySelect } from "@/components/categories/CategorySelect";
 import { ImportDialog } from "@/components/clients/ImportDialog";
 import { usePermissions } from "@/hooks/usePermissions";
 import { useClientSelection } from "@/contexts/ClientSelectionContext";
+import { useDebouncedValue } from "@/hooks/useDebounce";
+import { enLotes } from "@/lib/enLotes";
 
-// Local replacement for missing hook: useDebouncedValue
-function useDebouncedValue<T>(value: T, delay = 300): T {
-  const [debounced, setDebounced] = useState<T>(value);
-  useEffect(() => {
-    const handler = window.setTimeout(() => setDebounced(value), delay);
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-  return debounced;
-}
 
 // Guard against the literal string 'undefined' that some legacy records persisted
 // for lastName (from a String(undefined) concat on save). Hides bad data until cleaned.
@@ -533,12 +524,14 @@ export default function ClientesPage() {
     }
     setMoveLoading(true);
     try {
-      const results = await Promise.allSettled(
-        selectedIds.map((id) =>
-          clientService.updateClient(id, {
-            categoryIds: moveCategories,
-          } as any),
-        ),
+      /* `enLotes` y no `allSettled(map(...))`: dentro de un `.map` la petición
+         ARRANCA al construir el array, así que «esperar» después no limita
+         nada. Con «seleccionar todo» sobre una lista cargada entera esto eran
+         cientos de PUT simultáneos. Misma forma de resultado que `allSettled`. */
+      const results = await enLotes(selectedIds, (id) =>
+        clientService.updateClient(id, {
+          categoryIds: moveCategories,
+        } as any),
       );
       const failed = results.filter((r) => r.status === "rejected").length;
       const succeeded = results.length - failed;
@@ -1435,10 +1428,8 @@ export default function ClientesPage() {
             <AlertDialogAction
               onClick={async () => {
                 try {
-                  const results = await Promise.allSettled(
-                    selectedIds.map((id) =>
-                      clientService.updateClient(id, { active: false } as any),
-                    ),
+                  const results = await enLotes(selectedIds, (id) =>
+                    clientService.updateClient(id, { active: false } as any),
                   );
                   const failed = results.filter(
                     (r) => r.status === "rejected",
@@ -1496,10 +1487,8 @@ export default function ClientesPage() {
               className="cg-btn-brand"
               onClick={async () => {
                 try {
-                  const results = await Promise.allSettled(
-                    selectedIds.map((id) =>
-                      clientService.updateClient(id, { active: true } as any),
-                    ),
+                  const results = await enLotes(selectedIds, (id) =>
+                    clientService.updateClient(id, { active: true } as any),
                   );
                   const failed = results.filter(
                     (r) => r.status === "rejected",

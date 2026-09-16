@@ -74,6 +74,12 @@ const URL_ENTITY_MAP: Array<[RegExp, string[]]> = [
     /\/(station|stations|post-site|business-info|auto-positions|positions|guard-assignment|guard-assignments|shift|shifts|shift-template|shift-exchange|schedule-overrides?|rotation-styles?|scheduler)(\/|\?|$)/,
     ["stations"],
   ],
+  /* Vigilantes. Una sola entrada cubre create/update/patch/destroy/archive/
+     restore/invite/import/changeRole, porque TODAS cuelgan de la misma raíz
+     `/security-guard`. Se hace por regla y no con `invalidateEntity` esparcido
+     por el servicio a propósito: así una mutación NUEVA queda cubierta el día
+     que alguien la añada, sin acordarse de nada. */
+  [/\/security-guard(s)?(\/|\?|$)/, ["security-guards"]],
   [/\/client-account(s)?(\/|\?|$)/, ["clients"]],
   [/\/category(\/|\?|$)/, ["categories"]],
 ];

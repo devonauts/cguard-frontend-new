@@ -1,7 +1,7 @@
 import { loadXlsx } from "../../../lib/lazyXlsx";
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { clientDisplayName } from "@/lib/clientName";
-import { invalidateEntity } from "@/lib/queryClient";
+import { invalidateEntity, cachedFetch } from "@/lib/queryClient";
 import { useNavigate } from "react-router-dom";
 import GuardCardsGrid, {
   type GuardCardAction,
@@ -84,12 +84,12 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { usePermissions } from "@/hooks/usePermissions";
+import { useDebouncedValue } from "@/hooks/useDebounce";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import securityGuardService from "@/lib/api/securityGuardService";
 import { clientService } from "@/lib/api/clientService";
 import { postSiteService } from "@/lib/api/postSiteService";
-import { stationService } from "@/lib/api/stationService";
 // Fallback local Breadcrumb component (avoid missing module error)
 interface BreadcrumbItem {
   label: string;
@@ -189,6 +189,10 @@ export default function SecurityGuardsPage() {
     localStorage.setItem("guards.viewMode", viewMode);
   }, [viewMode]);
   const [searchQuery, setSearchQuery] = useState("");
+  /* La búsqueda tiene DOS velocidades a propósito: `searchQuery` filtra en el
+     acto lo que ya está en pantalla, y `busquedaAplazada` es la que viaja al
+     servidor cuando quien escribe se detiene. */
+  const busquedaAplazada = useDebouncedValue(searchQuery, 400);
   const [selectedGuards, setSelectedGuards] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(25);
@@ -413,9 +417,15 @@ export default function SecurityGuardsPage() {
       .replace(/'/g, "&#39;");
   }
 
-  // Load stations for the assign dialog (actual stations, not post sites)
+  /* Las estaciones del diálogo «Asignar a estación», SÓLO cuando se abre.
+     Se pedían en cada carga de la pantalla —doscientas filas— para rellenar un
+     desplegable que la mayoría de las visitas no llega a abrir nunca. Medido:
+     era una de las cuatro peticiones que costaba volver a esta pantalla. */
   useEffect(() => {
+    if (!assignDialogOpen) return;
+    if (assignStations.length) return; // ya están, no volver a pedirlas
     const tenantId = localStorage.getItem("tenantId") || "";
+
     if (!tenantId) return;
     import("@/lib/api").then(({ default: api }) => {
       api
@@ -435,7 +445,11 @@ export default function SecurityGuardsPage() {
         })
         .catch(() => {});
     });
-  }, []);
+    /* `assignStations.length` NO va en las dependencias a propósito: lo lee la
+       guarda de arriba para no repetir la petición, y ponerlo aquí volvería a
+       disparar el efecto justo al llegar la respuesta. */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [assignDialogOpen]);
 
   const handleAssignStation = async () => {
     if (!assignGuard || !assignStationId) return;
@@ -502,12 +516,21 @@ export default function SecurityGuardsPage() {
     const tenantId = localStorage.getItem("tenantId") || "";
     if (!tenantId) return;
     import("@/lib/api").then(({ default: api }) => {
-      api
-        .get(`/tenant/${tenantId}/security-guard/assignment-map`, {
-          toast: { silentError: true },
-        })
+      /* Bajo la clave ["stations", …]: el mapa ES el reparto vigilante↔puesto,
+         así que CUALQUIER escritura de asignación, turno u horario ya lo tira
+         por la regla de `URL_ENTITY_MAP`. Con eso, volver a la pantalla deja de
+         pedirlo y un cambio de asignación se ve igual de rápido que antes. */
+      cachedFetch(
+        ["stations", tenantId, "assignment-map"],
+        () =>
+          api.get(`/tenant/${tenantId}/security-guard/assignment-map`, {
+            toast: { silentError: true },
+          }) as Promise<any>,
+        20_000,
+      )
         .then((resp: any) => {
           const mapa = resp?.data?.byGuardId ?? resp?.byGuardId ?? {};
+
           setStationByUserId(mapa);
         })
         .catch(() => {
@@ -535,7 +558,7 @@ export default function SecurityGuardsPage() {
       params["filter[clientId]"] = filterClient;
     if (filterSite && filterSite !== "todos")
       params["filter[postSiteId]"] = filterSite;
-    if (searchQuery) params["q"] = searchQuery;
+    if (busquedaAplazada) params["q"] = busquedaAplazada;
 
     securityGuardService
       .list(params)
@@ -563,7 +586,12 @@ export default function SecurityGuardsPage() {
     return () => {
       mounted = false;
     };
-  }, [filterClient, filterSite, searchQuery]);
+    /* `busquedaAplazada`, no `searchQuery`: este efecto pide el censo COMPLETO
+       (`limit: 100000`), asi que atado a la tecla escribir «Rodríguez» eran
+       nueve censos seguidos y sólo valía el último. El filtro de más abajo
+       sigue usando `searchQuery` en vivo, de modo que la lista ya visible se
+       estrecha mientras se teclea y la petición sale una vez al parar. */
+  }, [filterClient, filterSite, busquedaAplazada]);
 
   // Load filter options when sheet opens
   useEffect(() => {

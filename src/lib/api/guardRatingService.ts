@@ -1,4 +1,5 @@
 import api from "../api";
+import { cachedFetch } from "@/lib/queryClient";
 
 /**
  * CRM read of customer-generated guard ratings.
@@ -79,7 +80,32 @@ const guardRatingService = {
    * surface can show a review "level" in one round-trip. Pass the visible guard
    * ids (or none for all). Returns {} on failure (badges just don't render).
    */
+  /**
+   * Cacheado un minuto. Las reseñas las escribe el CLIENTE desde su app, no el
+   * CRM: aquí no existe ninguna mutación que pueda dejar esto viejo desde
+   * dentro, así que basta con el tiempo. Es una insignia de nivel junto al
+   * nombre, no un dato operativo — que tarde un minuto en subir de 4,2 a 4,3
+   * no le cambia el turno a nadie.
+   */
   async summary(
+    guardIds?: string[],
+  ): Promise<Record<string, GuardRatingSummary>> {
+    const tenantParaClave = (() => {
+      try {
+        return getTenantId();
+      } catch {
+        return "";
+      }
+    })();
+
+    return cachedFetch(
+      ["guard-ratings", tenantParaClave, guardIds?.slice().sort() ?? null],
+      () => this._summarySinCache(guardIds),
+      60_000,
+    );
+  },
+
+  async _summarySinCache(
     guardIds?: string[],
   ): Promise<Record<string, GuardRatingSummary>> {
     try {

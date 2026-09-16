@@ -26,6 +26,7 @@ import { securityGuardService } from "@/lib/api/securityGuardService";
 import { EmptyState, Modal, SkeletonCards } from "@/components/kit";
 import { FIELD_CLS_LG } from "@/pages/admin/clientes/components/_shared/tab-kit";
 import type { PostSite } from "@/types";
+import { enLotes } from "@/lib/enLotes";
 
 type ConditionKey = "bueno" | "regular" | "danado";
 const CONDITIONS: ConditionKey[] = ["bueno", "regular", "danado"];
@@ -506,8 +507,10 @@ export default function Inventory({ site }: { site?: PostSite }) {
           stationName?: string;
           name?: string;
         }[] = Array.isArray(stRes) ? stRes : (stRes?.rows ?? []);
-        await Promise.all(
-          stations.map(async (st) => {
+        /* Una petición por ESTACIÓN del sitio, al abrir la pestaña. En un
+           sitio grande son decenas a la vez, y como son GET el reintento
+           automático las triplica justo cuando el servidor va mal. */
+        await enLotes(stations, async (st) => {
             const sid = st.id || st.stationId;
             if (!sid) return;
             try {
@@ -523,8 +526,7 @@ export default function Inventory({ site }: { site?: PostSite }) {
                 }),
               );
             } catch {}
-          }),
-        );
+        });
       } catch {}
       // 3. Merge + dedup by id, filter active
       const byId: Record<string, any> = {};

@@ -114,6 +114,7 @@ import {
   codeCard,
   columnRules,
 } from "./codeTones";
+import { enLotes } from "@/lib/enLotes";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -3719,19 +3720,28 @@ export default function Schedule() {
 
         return [...kept, ...added];
       });
+      /* OJO: esto es una lista de ENCARGOS, no de promesas. Construirla con
+         `ApiService.post(...)` directamente lanzaba la petición al crear el
+         array, así que para cuando se llegaba al `await` ya estaban TODAS en el
+         aire y no había nada que limitar. `cells` es filas × días sin tope —una
+         selección de dos meses sobre un turno grande son miles de celdas—, así
+         que la avalancha tumbaba al servidor y disparaba el limitador de
+         peticiones. Con encargos, `enLotes` deja seis en vuelo: el máximo que
+         el navegador abre por origen de todas formas, o sea que no tarda más. */
       const jobs = cells.flatMap(({ asigs, dateStr }) =>
-        asigs.map((a) =>
-          ApiService.post(`/tenant/${tenantId}/schedule-overrides`, {
-            data: {
-              guardId: a.guardId,
-              assignmentId: a.id,
-              date: dateStr,
-              type,
-            },
-          }),
+        asigs.map(
+          (a) => () =>
+            ApiService.post(`/tenant/${tenantId}/schedule-overrides`, {
+              data: {
+                guardId: a.guardId,
+                assignmentId: a.id,
+                date: dateStr,
+                type,
+              },
+            }),
         ),
       );
-      const results = await Promise.allSettled(jobs);
+      const results = await enLotes(jobs, (encargo) => encargo());
       const failed = results.filter((r) => r.status === "rejected").length;
 
       if (failed) toast.error(`${failed} día(s) no se pudieron marcar`);
@@ -3921,10 +3931,14 @@ export default function Schedule() {
     if (shiftIdSet.size)
       setShifts((prev) => prev.filter((s) => !shiftIdSet.has(s.id)));
 
-    const jobs: Promise<any>[] = victims
+    /* ENCARGOS, no promesas — ver el comentario de `applyCodeToSelection`. Los
+       turnos ya iban en trozos de 100; las novedades no llevaban ningún tope y
+       se borraban de una en una, todas a la vez. */
+    const jobs: Array<() => Promise<any>> = victims
       .filter((v) => !String(v.id).startsWith("tmp-"))
-      .map((v) =>
-        ApiService.delete(`/tenant/${tenantId}/schedule-overrides/${v.id}`),
+      .map(
+        (v) => () =>
+          ApiService.delete(`/tenant/${tenantId}/schedule-overrides/${v.id}`),
       );
 
     // En trozos: una selección de un año son cientos de ids y `?ids=` acabaría
@@ -3932,12 +3946,12 @@ export default function Schedule() {
     for (let i = 0; i < shiftIds.length; i += 100) {
       const lote = shiftIds.slice(i, i + 100);
 
-      jobs.push(
+      jobs.push(() =>
         ApiService.delete(`/tenant/${tenantId}/shift?ids=${lote.join(",")}`),
       );
     }
 
-    const results = await Promise.allSettled(jobs);
+    const results = await enLotes(jobs, (encargo) => encargo());
     const failed = results.filter((r) => r.status === "rejected").length;
 
     if (failed)

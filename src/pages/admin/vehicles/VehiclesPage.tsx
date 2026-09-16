@@ -81,6 +81,7 @@ import {
   defaultVehicleFilters,
 } from "@/lib/validators/vehicle-filters";
 import vehicleService from "@/lib/api/vehicleService";
+import { enLotes } from "@/lib/enLotes";
 
 /** Cómo se llama la propiedad del vehículo en la ficha. Constante de MÓDULO: la
  *  clave viaja junto al español de respaldo y se traduce al PINTAR; llamar a t()
@@ -738,10 +739,8 @@ export default function VehiclesPage() {
                         }
                       } else {
                         const active = bulkActionConfirm === "activar";
-                        await Promise.all(
-                          selectedIds.map((id) =>
-                            vehicleService.update(id, { active }),
-                          ),
+                        await enLotes(selectedIds, (id) =>
+                          vehicleService.update(id, { active }),
                         );
                         toast.success(t("ui.VehiclesPage.accionEjecutada"));
                       }

@@ -48,6 +48,7 @@ import {
   type RouteFilters,
   defaultRouteFilters,
 } from "@/lib/validators/route-filters";
+import { enLotes } from "@/lib/enLotes";
 
 export default function RoutesPage() {
   const [openFilter, setOpenFilter] = useState(false);
@@ -123,8 +124,14 @@ export default function RoutesPage() {
             if (missingSiteIds.size === 0) return;
 
             const ids = Array.from(missingSiteIds);
-            const results = await Promise.all(
-              ids.map((id) => postSiteService.get(id).catch(() => null)),
+            /* Una petición por puesto que la lista no trajo con nombre, y la
+               lista no tiene tope: con cincuenta rutas esto eran cien o
+               doscientas peticiones simultáneas nada más abrir la pantalla,
+               sin que nadie pulsara nada. Limitadas a seis en vuelo mientras
+               el listado no devuelva `siteName`, que es el arreglo de verdad. */
+            const asentados = await enLotes(ids, (id) => postSiteService.get(id));
+            const results = asentados.map((r) =>
+              r.status === "fulfilled" ? r.value : null,
             );
             const map = new Map<string, any>();
 

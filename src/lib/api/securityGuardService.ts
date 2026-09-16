@@ -1,4 +1,5 @@
 import api, { getAuthToken } from "../api";
+import { cachedFetch } from "@/lib/queryClient";
 
 // Reuse tenantId retrieval pattern
 const getTenantId = (): string => {
@@ -176,14 +177,34 @@ export const securityGuardService = {
     return (resp as any)?.data ?? resp;
   },
 
+  /**
+   * El censo de vigilantes, con caché de lectura compartida.
+   *
+   * Ocho pantallas piden esta lista, y la de vigilantes la pedía ENTERA
+   * (`limit: 100000`) en cada visita: medido, volver a `/security-guards`
+   * costaba 4 peticiones mientras volver a `/clients` costaba 1, y la única
+   * diferencia era que `clientService` sí pasaba por aquí.
+   *
+   * Veinte segundos es corto a propósito. Un vigilante dado de alta, archivado
+   * o cambiado de rol invalida la clave AL INSTANTE por la regla de
+   * `URL_ENTITY_MAP`, así que la ventana sólo tapa navegación repetida, nunca
+   * un cambio hecho desde el propio CRM.
+   */
   async list(params?: Record<string, unknown>) {
     const tenantId = getTenantId();
-    const qs = params
-      ? `?${new URLSearchParams(params as Record<string, string>).toString()}`
-      : "";
-    const resp = await api.get(`/tenant/${tenantId}/security-guard${qs}`);
 
-    return resp && resp.data !== undefined ? resp.data : resp;
+    return cachedFetch(
+      ["security-guards", tenantId, params ?? null],
+      async () => {
+        const qs = params
+          ? `?${new URLSearchParams(params as Record<string, string>).toString()}`
+          : "";
+        const resp = await api.get(`/tenant/${tenantId}/security-guard${qs}`);
+
+        return resp && resp.data !== undefined ? resp.data : resp;
+      },
+      20_000,
+    );
   },
 
   async activeLocations() {
