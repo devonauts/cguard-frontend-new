@@ -42,6 +42,7 @@ import { Toaster } from "sonner";
 
 import OfflineBanner from "@/components/OfflineBanner";
 import { startCachePersistence } from "@/lib/offline/persistCache";
+import { adelantarPerfil } from "@/lib/perfilDeLaCuenta";
 
 // Registra los replayers de la cola offline (efecto secundario, una vez).
 import "@/lib/offline/replayers";
@@ -94,6 +95,9 @@ if (!(window as any).cguardDesktop) {
   });
 }
 startCachePersistence();
+/* La identidad sale YA, en paralelo con la marca del anfitrión, en vez de
+   encolarse detrás de ella. El porqué medido está en `perfilDeLaCuenta.ts`. */
+adelantarPerfil();
 
 window.addEventListener("vite:preloadError", (event) => {
   const last = Number(sessionStorage.getItem("chunkReloadAt") || 0);

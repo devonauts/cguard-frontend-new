@@ -176,57 +176,117 @@ export default defineConfig({
     chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Core React runtime
-          "vendor-react": ["react", "react-dom", "react-router-dom"],
-          // Form + validation
-          "vendor-forms": ["react-hook-form", "@hookform/resolvers", "zod"],
-          // UI component library
-          "vendor-ui": [
-            "@radix-ui/react-dialog",
-            "@radix-ui/react-dropdown-menu",
-            "@radix-ui/react-select",
-            "@radix-ui/react-tabs",
-            "@radix-ui/react-tooltip",
-            "@radix-ui/react-accordion",
-            "@radix-ui/react-checkbox",
-            "@radix-ui/react-label",
-            "@radix-ui/react-popover",
-            "@radix-ui/react-scroll-area",
-            "@radix-ui/react-separator",
-            "@radix-ui/react-slot",
-            "@radix-ui/react-switch",
-          ],
-          // Date utilities
-          "vendor-dates": ["date-fns", "react-day-picker"],
-          // i18n
-          "vendor-i18n": ["i18next", "react-i18next"],
-          // Spreadsheet / export
-          "vendor-xlsx": ["xlsx"],
-          // Los dos armadores del PDF van juntos: `jspdf-autotable` no sirve de
-          // nada sin `jspdf`, y separados eran dos peticiones encadenadas —la
-          // segunda no puede empezar hasta que la primera resuelve— justo en el
-          // momento en que el usuario está esperando su archivo.
-          "vendor-pdf": ["jspdf", "jspdf-autotable"],
-          // Phone input
-          "vendor-phone": ["libphonenumber-js"],
-          // Notifications
-          "vendor-toast": ["sonner"],
-          // ── LOS ICONOS, EN UN SOLO FICHERO ──────────────────────────────
-          // Sin esto Rollup le hacía un trozo a CADA icono: 136 ficheros de
-          // menos de 1 KB de los 395 del build. El Horario pide una veintena, y
-          // cada uno es un viaje de ida y vuelta que se encola detrás de los
-          // demás — medido en producción: 900 ms por icono con la caché
-          // caliente y 8,5 s con la caché fría, para 300 bytes de contenido.
-          // Agrupados van en una sola petición.
-          "vendor-icons": ["lucide-react"],
-          // Heavy, feature-specific libs — split out so they never sit in the
-          // initial entry. Combined with route-level React.lazy, these only
-          // download when a user actually opens radio / maps.
-          "vendor-livekit": ["livekit-client"],
-          "vendor-maps": ["leaflet", "react-leaflet"],
-        },
+        manualChunks: hacerTrozos,
       },
     },
   },
 });
+
+// ── LOS GRUPOS DE LIBRERÍA ────────────────────────────────────────────────
+// Mismos grupos de siempre. Lo que cambió es CÓMO se aplican: antes iban como
+// objeto y ahora los aplica `hacerTrozos`, porque hacía falta poder colocar a
+// mano el ayudante de precarga de Vite (ver abajo). El contenido de cada grupo
+// no se ha tocado.
+const GRUPOS: Record<string, string[]> = {
+  // Core React runtime
+  "vendor-react": ["react", "react-dom", "react-router-dom"],
+  // Form + validation
+  "vendor-forms": ["react-hook-form", "@hookform/resolvers", "zod"],
+  // UI component library
+  "vendor-ui": [
+    "@radix-ui/react-dialog",
+    "@radix-ui/react-dropdown-menu",
+    "@radix-ui/react-select",
+    "@radix-ui/react-tabs",
+    "@radix-ui/react-tooltip",
+    "@radix-ui/react-accordion",
+    "@radix-ui/react-checkbox",
+    "@radix-ui/react-label",
+    "@radix-ui/react-popover",
+    "@radix-ui/react-scroll-area",
+    "@radix-ui/react-separator",
+    "@radix-ui/react-slot",
+    "@radix-ui/react-switch",
+  ],
+  // Date utilities
+  "vendor-dates": ["date-fns", "react-day-picker"],
+  // i18n
+  "vendor-i18n": ["i18next", "react-i18next"],
+  // Spreadsheet / export
+  "vendor-xlsx": ["xlsx"],
+  // Los dos armadores del PDF van juntos: `jspdf-autotable` no sirve de
+  // nada sin `jspdf`, y separados eran dos peticiones encadenadas —la
+  // segunda no puede empezar hasta que la primera resuelve— justo en el
+  // momento en que el usuario está esperando su archivo.
+  "vendor-pdf": ["jspdf", "jspdf-autotable"],
+  // Phone input
+  "vendor-phone": ["libphonenumber-js"],
+  // Notifications
+  "vendor-toast": ["sonner"],
+  // ── LOS ICONOS, EN UN SOLO FICHERO ──────────────────────────────
+  // Sin esto Rollup le hacía un trozo a CADA icono: 136 ficheros de
+  // menos de 1 KB de los 395 del build. El Horario pide una veintena, y
+  // cada uno es un viaje de ida y vuelta que se encola detrás de los
+  // demás — medido en producción: 900 ms por icono con la caché
+  // caliente y 8,5 s con la caché fría, para 300 bytes de contenido.
+  // Agrupados van en una sola petición.
+  "vendor-icons": ["lucide-react"],
+  // Heavy, feature-specific libs — split out so they never sit in the
+  // initial entry. Combined with route-level React.lazy, these only
+  // download when a user actually opens radio / maps.
+  "vendor-livekit": ["livekit-client"],
+  "vendor-maps": ["leaflet", "react-leaflet"],
+};
+
+/** De `/…/node_modules/@radix-ui/react-slot/dist/x.js` saca `@radix-ui/react-slot`.
+ *  Se corta por el ÚLTIMO `node_modules/` (las dependencias anidadas cuentan por
+ *  la de dentro) y se compara el nombre COMPLETO, no por prefijo: comparar por
+ *  prefijo metía `react-dom` y `react-router-dom` dentro del grupo de `react`
+ *  por accidente. */
+function paqueteDe(id: string): string | null {
+  const i = id.lastIndexOf("node_modules/");
+
+  if (i < 0) return null;
+  const resto = id.slice(i + "node_modules/".length).split("/");
+
+  if (!resto.length) return null;
+
+  return resto[0].startsWith("@") && resto.length > 1
+    ? `${resto[0]}/${resto[1]}`
+    : resto[0];
+}
+
+/** Nombre de paquete → grupo, precalculado una vez. */
+const GRUPO_DE_PAQUETE = new Map<string, string>(
+  Object.entries(GRUPOS).flatMap(([grupo, paquetes]) =>
+    paquetes.map((p) => [p, grupo] as [string, string]),
+  ),
+);
+
+function hacerTrozos(id: string): string | undefined {
+  /* ── EL AYUDANTE DE PRECARGA VA SOLO, Y ESTA ES LA RAZÓN ──────────────────
+     `__vitePreload` es un módulo VIRTUAL de Vite: lo importa todo trozo que
+     tenga un `import()` dinámico — o sea, casi todos. Sin asignar, Rollup lo
+     aparcó dentro de `vendor-pdf`, y el resultado medido en el build de
+     producción 6764d243 fue:
+
+       · 181 trozos importaban `vendor-pdf` de forma ESTÁTICA
+       · 167 de ellos con un import de efecto secundario, sin usar nada
+       · 13 pedían sólo `_` (este ayudante)
+       · sólo 2 pedían símbolos de jsPDF de verdad
+       · el trozo de ENTRADA importaba únicamente `_`
+
+     Es decir: 410 KB de jsPDF entraban en el arranque de CADA carga —la
+     pantalla de acceso incluida— para entregar un ayudante de 1 KB. Eso
+     contradice lo que dice este mismo archivo más arriba («sólo bajan cuando
+     alguien pulsa Exportar») y anulaba de paso la exclusión de `vendor-pdf` en
+     los `globIgnores` del service worker.
+
+     En su propio trozo no puede arrastrar nada: los 181 siguen importándolo,
+     pero ahora lo que importan pesa 1 KB. */
+  if (id.includes("vite/preload-helper")) return "vite-precarga";
+
+  const paquete = paqueteDe(id);
+
+  return paquete ? GRUPO_DE_PAQUETE.get(paquete) : undefined;
+}

@@ -43,3 +43,45 @@ export const leerPerfil = lector.leer;
  * sin recarga— se encontraría con la identidad del anterior.
  */
 export const olvidarPerfil = lector.olvidar;
+
+/**
+ * PREGUNTA «¿QUIÉN SOY?» ANTES DE QUE HAYA ÁRBOL DE REACT.
+ *
+ * Medido en el arranque de producción 6764d243, con la caché del service
+ * worker caliente:
+ *
+ *      97 ms  React inyectado
+ *     159 ms  sale `/platform/context`  (la marca del anfitrión)
+ *     301 ms  sale `/auth/me`           ← espera a la anterior
+ *     678 ms  salen las 38 peticiones de la empresa  ← esperan a `/auth/me`
+ *
+ * Los 142 ms entre la primera y la segunda no los gasta nadie trabajando: son
+ * de espera. `WhiteLabelProvider` (main.tsx) no pinta a sus hijos hasta saber
+ * de quién es el anfitrión —lo cual es correcto, evita el parpadeo de marca—,
+ * así que `AuthProvider` ni siquiera se MONTA hasta entonces, y su `checkAuth`
+ * no puede arrancar. La identidad acaba encolada detrás de una decisión
+ * puramente visual de la que no depende en absoluto.
+ *
+ * Esto rompe esa dependencia sin tocar el orden de los proveedores: se lanza la
+ * lectura desde `main.tsx`, fuera de React. Cuando `AuthProvider` monta y llama
+ * a `leerPerfil()`, el lector compartido le entrega ESA MISMA petición —en
+ * vuelo o ya resuelta—, así que no hay una segunda llamada.
+ *
+ * Lo que NO cambia:
+ *  · Sin `authToken` no se pide nada, igual que hoy.
+ *  · Un fallo no se memoriza (ver `crearLecturaCompartida`), así que el bucle
+ *    de reintentos con retroceso de `checkAuth` sigue funcionando igual ante un
+ *    429 o un 503.
+ *  · Un 401 lo sigue tratando `ApiService` como siempre; sólo ocurre antes.
+ */
+export function adelantarPerfil(): void {
+  try {
+    if (typeof localStorage === "undefined") return;
+    if (!localStorage.getItem("authToken")) return;
+    // El rechazo se traga AQUÍ para que no salga como «unhandled rejection»:
+    // quien de verdad maneja el fallo es `checkAuth`, que volverá a pedir.
+    void leerPerfil().catch(() => {});
+  } catch {
+    /* almacenamiento bloqueado: se pedirá desde React, como siempre */
+  }
+}
