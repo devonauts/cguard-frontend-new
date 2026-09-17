@@ -12135,6 +12135,37 @@
     }
   },
   "logs": {
-    "tab": "Registos"
+    "accuracy": " (±{{m}} m)",
+    "availableAt": "A partir de: {{h}}",
+    "count": "{{n}} no total",
+    "device": "Telefone",
+    "distance": "A {{m}} m do posto",
+    "empty": "Nenhuma tentativa de ponto rejeitada",
+    "emptyDesc": "Sempre que o relógio de ponto impedir uma entrada ou saída, aparece aqui com o motivo. Vazio significa que ainda não aconteceu.",
+    "error": "Não foi possível ler o registo",
+    "errorDesc": "Tente novamente dentro de momentos.",
+    "kindIn": "Entrada",
+    "kindOut": "Saída",
+    "reason": {
+      "geofence_failed": "Fora da área do posto",
+      "too_early": "Demasiado cedo",
+      "late_needs_approval": "Chegada tardia sem aprovação",
+      "already_clocked_in": "Já tinha uma entrada ativa",
+      "already_clocked_in_elsewhere": "Entrada ativa noutro posto",
+      "not_clocked_in": "Não tinha entrada ativa",
+      "approval_required": "Saída antecipada sem aprovação",
+      "selfie_required": "Faltava a selfie",
+      "location_required": "Sem localização do telefone",
+      "not_scheduled_here_today": "Hoje não tinha turno nesse posto",
+      "not_assigned_to_post": "Não está atribuído a esse posto",
+      "time_clock_disabled": "O relógio de ponto estava desativado",
+      "license_expired": "Credencial caducada",
+      "guard_profile_not_found": "Sem ficha de vigilante",
+      "station_not_found": "O posto não existe"
+    },
+    "scheduled": "O seu turno: {{h}}",
+    "tab": "Registos",
+    "title": "Tentativas de ponto rejeitadas",
+    "truncated": "Últimos {{n}}"
   }
 }
