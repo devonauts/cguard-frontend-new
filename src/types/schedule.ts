@@ -16,6 +16,8 @@ export interface StationPosition {
   guardsNeeded: number;
   sortOrder: number;
   stationId: string;
+  /** Ciclo PROPIO de la plaza. Vacío = hereda el de la estación. */
+  rotationStyleId?: string | null;
 }
 export interface GuardRef {
   id: string;

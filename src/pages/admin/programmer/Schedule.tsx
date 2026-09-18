@@ -2992,6 +2992,44 @@ export default function Schedule() {
         return;
       }
     }
+    /* ── CAMBIAR SÓLO EL CICLO NO ES «RECONFIGURAR» ────────────────────────
+       `auto-positions` es la puerta del ALTA: vuelve a derivar las plazas desde
+       el tipo de jornada y la ventana, y cuando el recuento sale distinto las
+       que sobran se cierran y sus asignaciones pasan a `ended` — por eso el
+       aviso decía que habría que reasignar. Pero el caso más corriente no toca
+       la forma del puesto: es «a esta estación cámbiale el ciclo». Para ése
+       existe ahora `PUT /station/:id/rotation`, que cambia el ciclo, conserva
+       las plazas con su identidad y su gente, y sólo rehace los turnos futuros.
+
+       Se compara contra lo que la estación tiene HOY; si la forma no se movió,
+       se va por la puerta que no echa a nadie y no se pregunta nada. */
+    const soloElCiclo =
+      configType === (configStation.scheduleType || "24h") &&
+      configType !== "custom" &&
+      !!configRotation &&
+      configRotation !== (configStation.rotationStyleId || "");
+
+    if (soloElCiclo) {
+      setConfigSaving(true);
+      try {
+        await ApiService.put(
+          `/tenant/${tenantId}/station/${configStation.id}/rotation`,
+          { data: { rotationStyleId: configRotation } },
+        );
+        toast.success(
+          "Ciclo actualizado — los turnos futuros se rehicieron y nadie perdió su puesto",
+        );
+        setConfigStation(null);
+        fetchAll();
+      } catch (e: any) {
+        toast.error(e?.data?.message || e?.message || "Error");
+      } finally {
+        setConfigSaving(false);
+      }
+
+      return;
+    }
+
     if (
       !(await confirmDialog({
         message:
@@ -3129,6 +3167,11 @@ export default function Schedule() {
     rotDays?: number;
     rotNights?: number;
     rotRest?: number;
+    /** Editando una plaza: true = ciclo propio, false = el de la estación. */
+    rotPropio?: boolean;
+    /** El ciclo que la plaza tenía al abrir. Sirve para NO reescribirlo —y con
+     *  él la fase— cuando la edición sólo tocó el nombre o las horas. */
+    rotOriginal?: string | null;
     /** Qué día de su ciclo es el PRIMER DÍA: 0 = el primer turno de día. */
     cycleStartIndex?: number;
     /** Cuántos días de su ciclo va a cada estación cubierta. */
@@ -3180,7 +3223,30 @@ export default function Schedule() {
     });
   };
 
+  /* ── EL CICLO TAMBIÉN SE EDITA, Y SIN ECHAR A NADIE ──────────────────────
+     El editor de un puesto preguntaba nombre, tipo, horas y plazas — pero no el
+     CICLO, que es lo que decide qué días trabaja quien esté ahí. Cambiarlo sólo
+     se podía por «Reconfigurar», que vuelve a derivar las plazas desde la
+     jornada: en cuanto el recuento sale distinto, las que sobran se cierran y
+     sus asignaciones pasan a `ended`. O sea, para cambiar un 4-4-2 había que
+     arriesgarse a quedarse sin el vigilante o sin el sacafranco.
+
+     El ciclo se dice con tres ruedas (día · tarde/noche · libres) igual que en
+     el alta del sacafranco, y al guardar se busca el patrón con esos números o
+     se crea (`resolverEstiloDeRotacion`). Vacío = hereda el de la estación. */
   const editPosition = (station: Station, pos: StationPosition) => {
+    const propio = (pos as any).rotationStyleId
+      ? rotationStyles.find((r) => r.id === String((pos as any).rotationStyleId))
+      : null;
+    /* Sin ciclo propio se enseña el de la ESTACIÓN: es el que esa plaza está
+       usando de verdad, y arrancar las ruedas en otro número haría creer que
+       guardar sin tocarlas no cambia nada cuando sí lo cambiaría. */
+    const efectivo =
+      propio ||
+      (station.rotationStyleId
+        ? rotationStyles.find((r) => r.id === String(station.rotationStyleId))
+        : null);
+
     setPosEditor({
       stationId: station.id,
       stationIds: [station.id],
@@ -3191,6 +3257,11 @@ export default function Schedule() {
       startTime: (pos.startTime || "07:00").slice(0, 5),
       endTime: (pos.endTime || "19:00").slice(0, 5),
       guardsNeeded: String((pos as any).guardsNeeded ?? 1),
+      rotPropio: !!propio,
+      rotOriginal: propio ? propio.id : null,
+      rotDays: efectivo?.dayShifts ?? 5,
+      rotNights: efectivo?.nightShifts ?? 0,
+      rotRest: efectivo?.restDays ?? 2,
     });
   };
 
@@ -3310,17 +3381,63 @@ export default function Schedule() {
       };
 
       if (posEditor.positionId) {
+        /* ── EL CICLO NO VA POR AQUÍ, Y ES A PROPÓSITO ───────────────────
+           `PUT /positions/:id` guarda el ciclo de la PLAZA, pero el generador
+           resuelve con `assignment.rotationStyleId || station.rotationStyleId`:
+           la plaza no la mira. Su ciclo es sólo la plantilla que hereda quien
+           se asigne después — y un sacafranco ni eso. Guardarlo ahí y quedarse
+           tan anchos no le movería un turno a quien ya está dentro, que es
+           justo lo que hacía creer que había que borrarlo para cambiárselo.
+
+           El ciclo va por `PUT /station/:id/rotation`, que lo baja también a
+           las asignaciones vivas de la plaza y rehace los turnos futuros en una
+           sola reconciliación (con su vuelta atrás si falla). */
+        let cicloPedido: string | null = null;
+
+        if (posEditor.rotPropio) {
+          const d = Math.max(0, posEditor.rotDays ?? 0);
+          const n = Math.max(0, posEditor.rotNights ?? 0);
+          const l = Math.max(0, posEditor.rotRest ?? 0);
+
+          cicloPedido = await resolverEstiloDeRotacion(d, n, l);
+          // El resolver ya avisó por qué no se pudo; guardar las horas y
+          // callarse el ciclo sería peor que no guardar nada.
+          if (!cicloPedido) return;
+        }
+
         await ApiService.put(
           `/tenant/${tenantId}/station/${posEditor.stationId}/positions/${posEditor.positionId}`,
           { data },
         );
+
+        /* Sólo si CAMBIÓ. Reescribirlo en cada guardado volvería a calcular la
+           fase desde la fecha de inicio, y eso le desharía el descanso a quien
+           se lo hubieran colocado a mano con «Aplicar este descanso». */
+        const cambioElCiclo =
+          (cicloPedido || null) !== (posEditor.rotOriginal || null);
+
+        if (cambioElCiclo) {
+          await ApiService.put(
+            `/tenant/${tenantId}/station/${posEditor.stationId}/rotation`,
+            {
+              data: {
+                positionRotationStyleIds: {
+                  [posEditor.positionId]: cicloPedido,
+                },
+              },
+            },
+          );
+        }
+
         /* Este mensaje ya no es una promesa: el servidor sólo responde 200
            cuando los turnos futuros SE REHICIERON de verdad. Si la
            reconciliación falla devuelve 409, deja el puesto con sus horas
            anteriores y el `catch` de abajo enseña el motivo. Antes se
            prometía lo mismo pasara lo que pasara. */
         toast.success(
-          "Puesto actualizado — los turnos futuros se rehicieron con las horas nuevas",
+          cambioElCiclo
+            ? "Puesto y ciclo actualizados — los turnos futuros se rehicieron y nadie perdió su asignación"
+            : "Puesto actualizado — los turnos futuros se rehicieron con las horas nuevas",
         );
         setPosEditor(null);
         fetchAll({ silent: true });
@@ -6727,6 +6844,21 @@ export default function Schedule() {
           const set = (patch: Partial<NonNullable<typeof posEditor>>) =>
             setPosEditor((m) => (m ? { ...m, ...patch } : m));
 
+          /* El ciclo de la plaza que se está editando, en sus tres números, y
+             el de la estación para poder nombrarlo en la opción «heredar». */
+          const rotD = Math.max(0, posEditor.rotDays ?? 5);
+          const rotN = Math.max(0, posEditor.rotNights ?? 0);
+          const rotL = Math.max(0, posEditor.rotRest ?? 2);
+          const rotLen = rotD + rotN + rotL;
+          const rotNombre =
+            rotN > 0 ? `${rotD}-${rotN}-${rotL}` : `${rotD}-${rotL}`;
+          const estacionDelEditor = stationsById.get(posEditor.stationId);
+          const estiloDeLaEstacion = estacionDelEditor?.rotationStyleId
+            ? rotationStyles.find(
+                (r) => r.id === String(estacionDelEditor.rotationStyleId),
+              )
+            : null;
+
           /* ── ASISTENTE DEL SACAFRANCO ────────────────────────────────────────
            El diálogo genérico de puestos preguntaba «Tipo: fijo o sacafranco» y
            se titulaba «Agregar puesto». Cuando ya se sabe que se está creando un
@@ -7362,6 +7494,117 @@ export default function Schedule() {
                       />
                     </div>
                   </div>
+                  {/* ── EL CICLO DE ESTA PLAZA ────────────────────────────
+                    Sólo al EDITAR: al crear todavía no hay a quién aplicárselo
+                    y el ciclo lo pone el primer vigilante que se asigne (ver
+                    guardAssignmentCreate). Aquí se cambia en sitio — nadie
+                    pierde el puesto y sólo se rehacen los turnos futuros. */}
+                  {posEditor.positionId ? (
+                    <div>
+                      <label
+                        className="mb-1 block text-[10px] font-semibold uppercase tracking-wider"
+                        style={{ color: "var(--ink-soft)" }}
+                      >
+                        Ciclo de rotación
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {[
+                          {
+                            v: false,
+                            label: "El de la estación",
+                            sub: estiloDeLaEstacion
+                              ? estiloDeLaEstacion.name
+                              : "sin ciclo",
+                          },
+                          {
+                            v: true,
+                            label: "Propio",
+                            sub: "sólo este puesto",
+                          },
+                        ].map((o) => (
+                          <button
+                            key={String(o.v)}
+                            className={`cg-focus rounded-xl border px-2 py-2 text-center transition-all ${!!posEditor.rotPropio === o.v ? "glass-brand" : "glass-flat"}`}
+                            onClick={() => set({ rotPropio: o.v })}
+                          >
+                            <div className="text-xs font-semibold">
+                              {o.label}
+                            </div>
+                            <div
+                              className="truncate text-[10px]"
+                              style={{ color: "var(--ink-soft)" }}
+                            >
+                              {o.sub}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                      {posEditor.rotPropio ? (
+                        <div
+                          className="mt-2 space-y-2.5 rounded-xl px-3 py-2.5"
+                          style={{ border: "1px solid var(--hairline)" }}
+                        >
+                          <NumberStepper
+                            hint="Seguidos, antes de cambiar de bloque"
+                            label="Turnos de día"
+                            max={31}
+                            min={0}
+                            suffix="D"
+                            value={rotD}
+                            onChange={(v) => set({ rotDays: v })}
+                          />
+                          <NumberStepper
+                            hint="El segundo bloque del puesto"
+                            label="Turnos de tarde o noche"
+                            max={31}
+                            min={0}
+                            suffix="T/N"
+                            value={rotN}
+                            onChange={(v) => set({ rotNights: v })}
+                          />
+                          <NumberStepper
+                            hint="Los que libra al cerrar el ciclo"
+                            label="Días libres"
+                            max={31}
+                            min={0}
+                            suffix="L"
+                            value={rotL}
+                            onChange={(v) => set({ rotRest: v })}
+                          />
+                          <div
+                            className="flex items-center justify-between gap-2 pt-1 text-[11px]"
+                            style={{
+                              borderTop: "1px solid var(--hairline)",
+                              color: "var(--ink-soft)",
+                            }}
+                          >
+                            <span>Ciclo</span>
+                            <span className="font-semibold tabular-nums">
+                              {rotLen > 0
+                                ? `${rotNombre} · ${rotLen} día${rotLen === 1 ? "" : "s"}`
+                                : "—"}
+                            </span>
+                          </div>
+                          {rotD + rotN < 1 ? (
+                            <p
+                              className="text-[11px]"
+                              style={{ color: "var(--danger)" }}
+                            >
+                              El ciclo necesita al menos un turno de trabajo.
+                            </p>
+                          ) : rotL === 0 ? (
+                            <p
+                              className="text-[11px]"
+                              style={{ color: "var(--ink-soft)" }}
+                            >
+                              Sin descanso: se trabaja todos los días y no hace
+                              falta sacafranco que releve.
+                            </p>
+                          ) : null}
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
                   <div
                     className="rounded-xl px-3 py-2"
                     style={toneCard("ok", 8, 26)}
@@ -7391,7 +7634,13 @@ export default function Schedule() {
                   </button>
                   <button
                     className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40"
-                    disabled={posSaving}
+                    disabled={
+                      posSaving ||
+                      /* Un ciclo propio sin ningún turno de trabajo no es un
+                         ciclo: el generador no escribiría nada y la plaza se
+                         quedaría con el mes vacío sin decirlo. */
+                      (!!posEditor.rotPropio && rotD + rotN < 1)
+                    }
                     onClick={savePosition}
                   >
                     {posSaving ? (
