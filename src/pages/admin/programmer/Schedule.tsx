@@ -350,6 +350,28 @@ type RanuraDelCiclo = {
   tipo: "dia" | "noche" | "libre";
 };
 
+/**
+ * La casilla del ciclo por la que entró una asignación, deshaciendo su fase.
+ *
+ * La fase es la INVERSA del índice (`fase = dse(alta) − índice`), así que el
+ * índice se recupera restando al revés. Sin esto, abrir un sacafranco que entró
+ * en la noche 1 muestra «D1» y guardarlo lo re-fasea en silencio — le mueve el
+ * mes entero por haberle corregido el nombre.
+ */
+const ranuraDesdeLaFase = (
+  asg: { startDate?: any; platoonOffset?: any } | null | undefined,
+  ciclo: { dayShifts?: number; nightShifts?: number; restDays?: number } | null | undefined,
+): number => {
+  if (!asg?.startDate || !ciclo) return 0;
+  const largo =
+    (ciclo.dayShifts || 0) + (ciclo.nightShifts || 0) + (ciclo.restDays || 0);
+
+  if (largo <= 0) return 0;
+  const dse = dseOf(new Date(`${String(asg.startDate).slice(0, 10)}T00:00:00`));
+
+  return (((dse - (Number(asg.platoonOffset) || 0)) % largo) + largo) % largo;
+};
+
 const ranurasDelCiclo = (
   dias: number,
   noches: number,
@@ -3154,6 +3176,14 @@ export default function Schedule() {
        tablas (la posición y la asignación), pero para quien opera es UNA sola
        decisión, así que se pregunta de una vez y se guarda en dos pasos. */
     sfWizard?: boolean;
+    /* ── EL ASISTENTE VA POR PASOS ────────────────────────────────────────
+       Todo cabía en un solo diálogo mientras fueron cuatro preguntas. Con la
+       ronda de estaciones son tres bloques que no se leen de una: quién es, qué
+       ciclo corre, y por dónde rota. En una pantalla seguida hay que hacer
+       scroll para saber si ya se contestó algo. */
+    sfPaso?: 1 | 2 | 3;
+    /** Editando: la asignación del sacafranco (la ronda y el alta viven ahí). */
+    assignmentId?: string;
     guardId?: string;
     rotMode?: "rotativo" | "manual";
     rotationStyleId?: string;
@@ -3234,7 +3264,69 @@ export default function Schedule() {
      El ciclo se dice con tres ruedas (día · tarde/noche · libres) igual que en
      el alta del sacafranco, y al guardar se busca el patrón con esos números o
      se crea (`resolverEstiloDeRotacion`). Vacío = hereda el de la estación. */
+  /* ── EDITAR UN SACAFRANCO ES EL MISMO ASISTENTE ─────────────────────────
+     Un sacafranco vive en DOS tablas: la plaza (nombre, horas) y su asignación
+     (quién es, desde cuándo, su ciclo, por qué casilla entra y la ronda de
+     estaciones). El editor genérico de puestos sólo conoce la primera, así que
+     para cambiarle la ronda había que borrarlo y volver a crearlo — y la baja
+     le anula los turnos futuros.
+
+     Aquí se abre el asistente ya relleno con las dos, y al guardar se escriben
+     las dos. La fila no se toca: conserva su identidad y su historial. */
+  const editSacafranco = (station: Station, pos: StationPosition) => {
+    const asg = assignments.find(
+      (a) => String(a.positionId) === String(pos.id) && a.status === "active",
+    );
+    const ciclo = asg?.rotationStyleId
+      ? rotationStyles.find((r) => r.id === String(asg.rotationStyleId))
+      : null;
+    /* La lista que cubre manda el ORDEN de la ronda. Si está vacía, al menos su
+       propia estación: una ronda sin estaciones no se puede dibujar. */
+    const cubiertas = Array.isArray(asg?.coveredStationIds)
+      ? (asg?.coveredStationIds as string[]).map(String).filter(Boolean)
+      : [];
+    const marcadas = cubiertas.length ? cubiertas : [String(pos.stationId)];
+    const dias = (asg as any)?.coveredStationDays || {};
+
+    setPosEditor({
+      sfWizard: true,
+      sfPaso: 1,
+      stationId: station.id,
+      stationIds: marcadas,
+      positionId: pos.id,
+      assignmentId: asg ? String(asg.id) : undefined,
+      stationName: stationLabel(station),
+      name: pos.name || "",
+      type: "sacafranco",
+      startTime: (pos.startTime || "07:00").slice(0, 5),
+      endTime: (pos.endTime || "19:00").slice(0, 5),
+      guardsNeeded: String((pos as any).guardsNeeded ?? 1),
+      guardId: asg?.guardId ? String(asg.guardId) : undefined,
+      rotMode: ciclo ? "rotativo" : "manual",
+      rotationStyleId: ciclo?.id,
+      rotDays: ciclo?.dayShifts ?? 5,
+      rotNights: ciclo?.nightShifts ?? 0,
+      rotRest: ciclo?.restDays ?? 2,
+      /* La casilla de entrada se RECUPERA deshaciendo la fase; si no, abrir uno
+         que entró en la noche 1 mostraría «D1» y guardarlo lo re-fasearía sin
+         avisar. Es la misma cuenta que ya hace el diálogo de asignación. */
+      cycleStartIndex:
+        asg && ciclo ? ranuraDesdeLaFase(asg, ciclo) : 0,
+      stationDays: { ...dias },
+      startDate: asg?.startDate ? String(asg.startDate).slice(0, 10) : tzToday(),
+    });
+  };
+
   const editPosition = (station: Station, pos: StationPosition) => {
+    /* Un sacafranco no cabe en el diálogo genérico: la mitad de lo suyo —su
+       ciclo, por qué casilla entra, y por qué estaciones rota— vive en la
+       ASIGNACIÓN, no en la plaza. Se deriva a su asistente por cualquier
+       puerta desde la que se abra. */
+    if ((pos.type || "fijo") === "sacafranco") {
+      editSacafranco(station, pos);
+
+      return;
+    }
     const propio = (pos as any).rotationStyleId
       ? rotationStyles.find((r) => r.id === String((pos as any).rotationStyleId))
       : null;
@@ -3380,6 +3472,66 @@ export default function Schedule() {
         guardsNeeded: Number(posEditor.guardsNeeded) || 1,
       };
 
+      /* ── EDITANDO UN SACAFRANCO: LAS DOS TABLAS, UN SOLO GUARDAR ──────
+         La plaza lleva nombre y horas; la asignación lleva su ciclo, por qué
+         casilla entra y la RONDA de estaciones. Se escriben las dos y no se
+         borra nada: la fila conserva su identidad y sus turnos pasados. */
+      if (posEditor.sfWizard && posEditor.positionId) {
+        await ApiService.put(
+          `/tenant/${tenantId}/station/${posEditor.stationId}/positions/${posEditor.positionId}`,
+          { data },
+        );
+
+        if (posEditor.assignmentId) {
+          const rotativo = (posEditor.rotMode || "manual") === "rotativo";
+          let estilo: string | null = null;
+
+          if (rotativo) {
+            estilo = await resolverEstiloDeRotacion(
+              posEditor.rotDays ?? 0,
+              posEditor.rotNights ?? 0,
+              posEditor.rotRest ?? 0,
+            );
+            // El resolver ya dijo por qué no se pudo. Guardar la plaza y
+            // callarse el ciclo dejaría las dos tablas discrepando.
+            if (!estilo) return;
+          }
+
+          /* El orden de `stationIds` ES la cadencia, y el servidor lo conserva
+             tal cual desde que la ronda lo lee. Los días se recortan a las
+             estaciones que de verdad cubre. */
+          const dias: Record<string, number> = {};
+          for (const id of ids) {
+            const n = Math.floor(posEditor.stationDays?.[id] ?? 1);
+
+            dias[id] = Number.isFinite(n) && n > 0 ? n : 1;
+          }
+
+          await ApiService.put(
+            `/tenant/${tenantId}/guard-assignment/${posEditor.assignmentId}`,
+            {
+              data: {
+                rotationStyleId: estilo,
+                startDate: posEditor.startDate || undefined,
+                cycleStartIndex: rotativo ? posEditor.cycleStartIndex || 0 : 0,
+                coveredStationIds: ids,
+                coveredStationDays: ids.length > 1 ? dias : null,
+              },
+            },
+          );
+        }
+
+        toast.success(
+          ids.length > 1
+            ? `Sacafranco actualizado — rota por ${ids.length} estaciones`
+            : "Sacafranco actualizado",
+        );
+        setPosEditor(null);
+        fetchAll({ silent: true });
+
+        return;
+      }
+
       if (posEditor.positionId) {
         /* ── EL CICLO NO VA POR AQUÍ, Y ES A PROPÓSITO ───────────────────
            `PUT /positions/:id` guarda el ciclo de la PLAZA, pero el generador
@@ -3493,15 +3645,22 @@ export default function Schedule() {
                   ? posEditor.cycleStartIndex || 0
                   : 0,
               coveredStationIds: ids.length ? ids : null,
-              // Reparto por estación: sólo lo marcado y sólo si suma algo.
+              /* La cadencia, con las MISMAS cuentas que enseñó la vista previa:
+                 sin cuenta, un día — que es lo que dibujaba la tira. Mandarla a
+                 medias dejaba que el motor pusiera su propio uno y la pantalla
+                 prometía una vuelta distinta de la que salía. */
               coveredStationDays: (() => {
+                if (ids.length < 2) return null;
                 const d = posEditor.stationDays || {};
                 const limpio: Record<string, number> = {};
 
-                for (const sid of ids)
-                  if (Number(d[sid]) > 0) limpio[sid] = Number(d[sid]);
+                for (const sid of ids) {
+                  const n = Math.floor(Number(d[sid]));
 
-                return Object.keys(limpio).length ? limpio : null;
+                  limpio[sid] = Number.isFinite(n) && n > 0 ? n : 1;
+                }
+
+                return limpio;
               })(),
             },
           });
@@ -6865,7 +7024,11 @@ export default function Schedule() {
            sacafranco eso sobra, y en cambio falta todo lo que un sacafranco SÍ
            necesita: quién es, qué horas cubre, si su mes es rotativo o se coloca
            a mano, y en qué estaciones cubre — con cuál de ellas de base. */
-          if (posEditor.sfWizard && !posEditor.positionId) {
+          /* El MISMO asistente crea y edita. Antes editar un sacafranco caía
+             en el diálogo genérico de puestos —nombre, tipo, horas— donde no
+             existen ni su ciclo ni las estaciones que cubre: para cambiarle la
+             ronda había que borrarlo y rehacerlo. */
+          if (posEditor.sfWizard) {
             const marcadas = posEditor.stationIds;
             const alternar = (id: string) => {
               const siguiente = marcadas.includes(id)
@@ -6905,6 +7068,30 @@ export default function Schedule() {
                 ? `${sfDias}-${sfNoches}-${sfLibres}`
                 : `${sfDias}-${sfLibres}`;
             const sfRanuras = ranurasDelCiclo(sfDias, sfNoches, sfLibres);
+
+            const paso = posEditor.sfPaso || 1;
+            const editando = !!posEditor.positionId;
+
+            /* ── LA RONDA, COMO SE VA A LEER ───────────────────────────────
+               El orden es el de `marcadas` (es lo que se guarda en
+               `coveredStationIds`) y las cuentas salen de `stationDays`; sin
+               cuenta, un día. Así «3-1» se escribe con dos casillas y se lee
+               entero en la vista previa de abajo, que es lo único que dice si
+               lo que se tecleó es lo que se quería. */
+            const rondaTramos = marcadas.map((id) => ({
+              id,
+              dias: Math.max(1, Math.floor(posEditor.stationDays?.[id] ?? 1)),
+            }));
+            const rondaLargo = rondaTramos.reduce((a, t) => a + t.dias, 0);
+            const rondaCadencia = rondaTramos.map((t) => t.dias).join("-");
+            /** Los días trabajados de la ronda, en orden, con su estación. */
+            const rondaSecuencia: string[] = [];
+            for (const t of rondaTramos) {
+              for (let i = 0; i < t.dias; i++) rondaSecuencia.push(t.id);
+            }
+            /** Iniciales para la tira: A, B, C… en el orden de la lista. */
+            const letraDe = (id: string) =>
+              String.fromCharCode(65 + Math.max(0, marcadas.indexOf(id)));
 
             // Achicar el ciclo puede dejar el índice elegido fuera: se enrolla
             // igual que lo hará el servidor, así nunca se pinta nada elegido
@@ -6950,6 +7137,28 @@ export default function Schedule() {
                   </div>
 
                   <div className="space-y-4 p-5">
+                    {/* ── LOS TRES PASOS, SIEMPRE A LA VISTA ──────────────
+                        Sin esto el diálogo no dice cuánto queda ni deja volver
+                        a lo ya contestado sin perderlo. */}
+                    <div className="flex items-center gap-1.5">
+                      {[
+                        { n: 1 as const, t: "Quién" },
+                        { n: 2 as const, t: "Su ciclo" },
+                        { n: 3 as const, t: "Dónde cubre" },
+                      ].map((x) => (
+                        <button
+                          key={x.n}
+                          className={`cg-focus flex-1 rounded-lg px-2 py-1.5 text-center text-[10px] font-semibold transition-all ${paso === x.n ? "glass-brand" : "glass-flat"}`}
+                          type="button"
+                          onClick={() => set({ sfPaso: x.n })}
+                        >
+                          <span className="tabular-nums">{x.n}</span> · {x.t}
+                        </button>
+                      ))}
+                    </div>
+
+                    {paso === 1 && (
+                    <>
                     {/* Quién */}
                     <div>
                       <label className="cg-eyebrow mb-1.5 block">
@@ -6992,6 +7201,11 @@ export default function Schedule() {
                       />
                     </div>
 
+                    </>
+                    )}
+
+                    {paso === 2 && (
+                    <>
                     {/* Fijo o rotativo — igual que al dar de alta a un vigilante.
                       Las HORAS no se preguntan: un sacafranco no tiene horario
                       propio, cubre el hueco que deja el fijo y toma las horas de
@@ -7086,6 +7300,11 @@ export default function Schedule() {
                       )}
                     </div>
 
+                    </>
+                    )}
+
+                    {paso === 3 && (
+                    <>
                     {/* En qué estaciones cubre */}
                     <div>
                       <div className="mb-1.5 flex items-center justify-between gap-2">
@@ -7191,6 +7410,145 @@ export default function Schedule() {
                       </p>
                     </div>
 
+                    {/* ── CÓMO ALTERNA ENTRE ELLAS ─────────────────────────
+                        Marcar las estaciones no dice la operación: «3 días en
+                        una y 1 en la otra» no es lo mismo que «2 y 2», ni que
+                        «1, 1, 1 y 1». Aquí se escribe la cadencia —el ORDEN de
+                        la lista más los días de cada una— y debajo se enseña la
+                        tira que va a salir, que es lo único que confirma que lo
+                        tecleado es lo que se quería.
+
+                        Ojo con lo que esto NO hace: no busca huecos. El reparto
+                        automático se retiró porque miraba los descansos de toda
+                        la empresa y colocaba al sacafranco donde le parecía. La
+                        ronda se recorre y punto. */}
+                    {marcadas.length > 1 && (
+                      <div>
+                        <label className="cg-eyebrow mb-1.5 block">
+                          Cómo alterna entre ellas
+                        </label>
+                        <div
+                          className="space-y-1 rounded-xl px-2 py-2"
+                          style={{ border: "1px solid var(--hairline)" }}
+                        >
+                          {rondaTramos.map((t, idx) => {
+                            const st = stationsById.get(t.id);
+
+                            return (
+                              <div
+                                key={t.id}
+                                className="flex items-center gap-2 rounded-lg px-1.5 py-1 text-xs"
+                              >
+                                <span
+                                  className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-[10px] font-bold"
+                                  style={tonePill("ok", 14)}
+                                >
+                                  {letraDe(t.id)}
+                                </span>
+                                <span className="min-w-0 flex-1 truncate">
+                                  {st ? stationLabel(st) : "—"}
+                                </span>
+                                <NumberStepper
+                                  label=""
+                                  max={31}
+                                  min={1}
+                                  suffix="d"
+                                  value={t.dias}
+                                  onChange={(v) =>
+                                    set({
+                                      stationDays: {
+                                        ...(posEditor.stationDays || {}),
+                                        [t.id]: Math.max(1, v),
+                                      },
+                                    })
+                                  }
+                                />
+                                {/* El orden ES la cadencia: primero A tres
+                                    días, luego B uno. Sin poder moverlas, la
+                                    única forma de reordenar era desmarcarlas
+                                    todas y volver a marcarlas en otro orden. */}
+                                <div className="flex shrink-0 flex-col">
+                                  <button
+                                    aria-label="Subir"
+                                    className="cg-btn-ghost cg-focus rounded px-1 text-[9px] leading-tight disabled:opacity-30"
+                                    disabled={idx === 0}
+                                    type="button"
+                                    onClick={() => {
+                                      const v = [...marcadas];
+
+                                      [v[idx - 1], v[idx]] = [v[idx], v[idx - 1]];
+                                      set({ stationIds: v });
+                                    }}
+                                  >
+                                    ▲
+                                  </button>
+                                  <button
+                                    aria-label="Bajar"
+                                    className="cg-btn-ghost cg-focus rounded px-1 text-[9px] leading-tight disabled:opacity-30"
+                                    disabled={idx === rondaTramos.length - 1}
+                                    type="button"
+                                    onClick={() => {
+                                      const v = [...marcadas];
+
+                                      [v[idx], v[idx + 1]] = [v[idx + 1], v[idx]];
+                                      set({ stationIds: v });
+                                    }}
+                                  >
+                                    ▼
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* La tira: los días TRABAJADOS de una vuelta, en orden.
+                            Los descansos no salen porque no consumen turno de
+                            estación — quien libra dos días no pierde su paso. */}
+                        <div
+                          className="mt-2 rounded-xl px-3 py-2"
+                          style={toneCard("ok", 8, 26)}
+                        >
+                          <div className="mb-1 flex items-center justify-between gap-2">
+                            <span className="cg-eyebrow">Su vuelta</span>
+                            <span className="text-[11px] font-semibold tabular-nums">
+                              {rondaCadencia} · {rondaLargo} día
+                              {rondaLargo === 1 ? "" : "s"} de trabajo
+                            </span>
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {rondaSecuencia.map((id, i) => (
+                              <span
+                                key={`${id}-${i}`}
+                                className="flex h-5 w-5 items-center justify-center rounded text-[10px] font-bold"
+                                style={tonePill("ok", 14)}
+                                title={(() => {
+                                  const st = stationsById.get(id);
+
+                                  return st ? stationLabel(st) : "";
+                                })()}
+                              >
+                                {letraDe(id)}
+                              </span>
+                            ))}
+                            <span
+                              className="self-center text-[10px]"
+                              style={{ color: "var(--ink-faint)" }}
+                            >
+                              · y vuelta a empezar
+                            </span>
+                          </div>
+                          <p
+                            className="mt-1 text-[10px]"
+                            style={{ color: "var(--ink-soft)" }}
+                          >
+                            Cuenta sus días de TRABAJO: los de descanso no gastan
+                            turno de estación.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
                     {/* De cuál cuelga su horario */}
                     {marcadas.length > 1 && (
                       <div>
@@ -7268,10 +7626,12 @@ export default function Schedule() {
                           </div>
                         )}
                     </div>
+                    </>
+                    )}
                   </div>
 
                   <div
-                    className="flex items-center justify-end gap-2 px-5 py-3"
+                    className="flex items-center justify-between gap-2 px-5 py-3"
                     style={{
                       borderTop: "1px solid var(--hairline)",
                       background: "var(--glass-sunken)",
@@ -7279,30 +7639,54 @@ export default function Schedule() {
                   >
                     <button
                       className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold"
-                      onClick={() => setPosEditor(null)}
-                    >
-                      Cancelar
-                    </button>
-                    <button
-                      className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40"
-                      disabled={
-                        posSaving ||
-                        marcadas.length === 0 ||
-                        /* Rotativo sin un solo turno de trabajo no es un ciclo:
-                           el generador no escribiría nada y el sacafranco
-                           nacería con el mes vacío sin decirlo. */
-                        ((posEditor.rotMode || "manual") === "rotativo" &&
-                          !!posEditor.guardId &&
-                          sfDias + sfNoches < 1)
+                      type="button"
+                      onClick={() =>
+                        paso === 1
+                          ? setPosEditor(null)
+                          : set({ sfPaso: (paso - 1) as 1 | 2 })
                       }
-                      onClick={savePosition}
                     >
-                      {posSaving ? (
-                        <Loader2 className="animate-spin" size={14} />
-                      ) : (
-                        "Crear sacafranco"
-                      )}
+                      {paso === 1 ? "Cancelar" : "Atrás"}
                     </button>
+                    {paso < 3 ? (
+                      <button
+                        className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40"
+                        type="button"
+                        disabled={
+                          /* Rotativo sin un solo turno de trabajo no es un
+                             ciclo: el generador no escribiría nada y el
+                             sacafranco nacería con el mes vacío sin decirlo.
+                             Se corta AQUÍ, en el paso que lo pregunta, y no al
+                             final — donde ya no se ve qué hay que arreglar. */
+                          paso === 2 &&
+                          (posEditor.rotMode || "manual") === "rotativo" &&
+                          sfDias + sfNoches < 1
+                        }
+                        onClick={() => set({ sfPaso: (paso + 1) as 2 | 3 })}
+                      >
+                        Siguiente
+                      </button>
+                    ) : (
+                      <button
+                        className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40"
+                        disabled={
+                          posSaving ||
+                          marcadas.length === 0 ||
+                          ((posEditor.rotMode || "manual") === "rotativo" &&
+                            !!posEditor.guardId &&
+                            sfDias + sfNoches < 1)
+                        }
+                        onClick={savePosition}
+                      >
+                        {posSaving ? (
+                          <Loader2 className="animate-spin" size={14} />
+                        ) : editando ? (
+                          "Guardar cambios"
+                        ) : (
+                          "Crear sacafranco"
+                        )}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
