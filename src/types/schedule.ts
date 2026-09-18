@@ -38,6 +38,10 @@ export interface GuardAssignment {
   /** Sacafranco: estaciones cuyos descansos cubre. Vacío/ausente = todas las de fijos. */ coveredStationIds?:
     | string[]
     | null;
+  /** Sacafranco: la CADENCIA de su ronda, `{estación: días}`. El orden lo pone
+   *  `coveredStationIds`. Sin esto no hay ronda: la lista sola es permiso de
+   *  fichaje, no rotación. */
+  coveredStationDays?: Record<string, number> | null;
   status: string;
   /** 'holder' | 'shadow' — un aprendiz acompaña y NO cuenta como cobertura. */ role?: string;
   shadowOfAssignmentId?: string | null;
