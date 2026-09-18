@@ -16,6 +16,7 @@ import {
   Route,
   CalendarClock,
   Copy,
+  Pencil,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -132,6 +133,11 @@ export default function StationSiteTours({
 
   // Per-tour checkpoint state
   const [expanded, setExpanded] = useState<string | null>(null);
+  /** Qué ronda se está renombrando, y el borrador de su nombre/descripción. */
+  const [editingName, setEditingName] = useState<string | null>(null);
+  const [editName, setEditName] = useState<Record<string, string>>({});
+  const [editDesc, setEditDesc] = useState<Record<string, string>>({});
+  const [savingName, setSavingName] = useState<string | null>(null);
   const [cps, setCps] = useState<Record<string, Checkpoint[]>>({});
   const [cpLoading, setCpLoading] = useState<string | null>(null);
   // inline "add checkpoint" form (per tour)
@@ -242,6 +248,56 @@ export default function StationSiteTours({
    * compartan — antes duplicar obligaba a crear puntos nuevos y a repegar toda
    * la señalética del puesto.
    */
+  /**
+   * RENOMBRAR UNA RONDA.
+   *
+   * No se podía. Una ronda nacía con su nombre y se quedaba con él para
+   * siempre: para corregir una errata había que borrarla —perdiendo sus puntos
+   * y su historial— y volver a crearla. Con los puntos compartidos eso ya sería
+   * absurdo, porque los QR sobreviven a la ronda.
+   */
+  const renameTour = async (tour: SiteTourRow) => {
+    const id = String(tour.id);
+    const nombre = (editName[id] ?? (tour.name || tour.tourName || "")).trim();
+
+    if (!nombre) {
+      toast.error(
+        t("station.siteTours.nameRequired", "La ronda necesita un nombre"),
+      );
+
+      return;
+    }
+    setSavingName(id);
+    try {
+      const res: any = await ApiService.patch(
+        `/tenant/${tenantId}/site-tour/${encodeURIComponent(id)}`,
+        { name: nombre, description: editDesc[id] ?? tour.description ?? "" },
+      );
+      const actualizada = res?.data ?? res ?? {};
+
+      setTours((ts) =>
+        ts.map((x) =>
+          String(x.id) === id
+            ? {
+                ...x,
+                name: nombre,
+                description:
+                  actualizada.description ?? editDesc[id] ?? x.description,
+              }
+            : x,
+        ),
+      );
+      setEditingName(null);
+      toast.success(t("station.siteTours.renamed", "Ronda actualizada"));
+    } catch (e: any) {
+      toast.error(
+        e?.message || t("station.siteTours.renameFailed", "No se pudo guardar"),
+      );
+    } finally {
+      setSavingName(null);
+    }
+  };
+
   const duplicateTour = async (tour: SiteTourRow) => {
     const nombre = (tour.name || tour.tourName || "").trim();
 
@@ -543,6 +599,105 @@ export default function StationSiteTours({
 
                   {isOpen && (
                     <div className="border-t bg-muted/10 px-6 py-4">
+                      {/* ── NOMBRE Y DESCRIPCIÓN ───────────────────────────
+                          Renombrar no existía: para corregir una errata había
+                          que borrar la ronda —con sus puntos y su historial— y
+                          rehacerla. */}
+                      <div className="mb-5 rounded-lg border bg-background p-4">
+                        <div className="mb-3 flex items-center justify-between gap-2">
+                          <p className="cg-eyebrow flex items-center gap-1.5">
+                            <Pencil size={14} />
+                            {t(
+                              "station.siteTours.identity",
+                              "Nombre y descripción",
+                            )}
+                          </p>
+                          {editingName !== id && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => {
+                                setEditingName(id);
+                                setEditName((m) => ({ ...m, [id]: name }));
+                                setEditDesc((m) => ({
+                                  ...m,
+                                  [id]: r.description || "",
+                                }));
+                              }}
+                            >
+                              {t("common.edit", "Editar")}
+                            </Button>
+                          )}
+                        </div>
+                        {editingName === id ? (
+                          <div className="space-y-2">
+                            <input
+                              className={FIELD_CLS_LG}
+                              placeholder={t(
+                                "station.siteTours.namePh",
+                                "Nombre de la ronda",
+                              )}
+                              value={editName[id] ?? name}
+                              onChange={(e) =>
+                                setEditName((m) => ({
+                                  ...m,
+                                  [id]: e.target.value,
+                                }))
+                              }
+                            />
+                            <input
+                              className={FIELD_CLS_LG}
+                              placeholder={t(
+                                "station.siteTours.descPh",
+                                "Descripción (opcional)",
+                              )}
+                              value={editDesc[id] ?? r.description ?? ""}
+                              onChange={(e) =>
+                                setEditDesc((m) => ({
+                                  ...m,
+                                  [id]: e.target.value,
+                                }))
+                              }
+                            />
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => setEditingName(null)}
+                              >
+                                {t("common.cancel", "Cancelar")}
+                              </Button>
+                              <Button
+                                disabled={savingName === id}
+                                size="sm"
+                                onClick={() => renameTour(r)}
+                              >
+                                {savingName === id && (
+                                  <Loader2
+                                    className="mr-2 animate-spin"
+                                    size={14}
+                                  />
+                                )}
+                                {t("common.save", "Guardar")}
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div>
+                            <p className="text-sm font-medium text-foreground">
+                              {name}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {r.description ||
+                                t(
+                                  "station.siteTours.noDesc",
+                                  "Sin descripción",
+                                )}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+
                       {/* ── CUÁNDO ─────────────────────────────────────────
                           Va ARRIBA de los puntos a propósito: el recorrido ya
                           existe cuando se llega aquí; lo que falta por decidir

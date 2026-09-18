@@ -11,8 +11,17 @@ import {
   Printer,
   Check,
   Crosshair,
+  CalendarClock,
 } from "lucide-react";
 import { toast } from "sonner";
+
+import {
+  CamposDeHorario,
+  valorInicial,
+  aCuerpo,
+  validaHorario,
+  type ValorDeHorario,
+} from "./RondaHorario";
 
 import { ApiService } from "@/services/api/apiService";
 import { Modal, FIELD_CLS, InfoNote } from "@/components/kit";
@@ -167,6 +176,16 @@ export default function RondaWizard({
   const [paso, setPaso] = useState<1 | 2 | 3>(1);
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
+  /**
+   * El horario, aquí mismo en el alta.
+   *
+   * Nace en «una vez por turno», que es la conducta de siempre: quien sólo
+   * quiere crear la ronda y salir no tiene que tocar nada, y el asistente
+   * sigue siendo tan corto como era. Ésa era su razón de existir.
+   */
+  const [horario, setHorario] = useState<ValorDeHorario>(() =>
+    valorInicial(null),
+  );
   const [guardando, setGuardando] = useState(false);
   const [resultado, setResultado] = useState<{
     tourId: string;
@@ -204,6 +223,7 @@ export default function RondaWizard({
     setPaso(1);
     setNombre("");
     setDescripcion("");
+    setHorario(valorInicial(null));
     setPuntos([puntoVacio()]);
     setResultado(null);
     setEditando(null);
@@ -267,6 +287,13 @@ export default function RondaWizard({
 
       return;
     }
+    const errorHorario = validaHorario(horario, t);
+
+    if (errorHorario) {
+      toast.error(errorHorario);
+
+      return;
+    }
     setGuardando(true);
     try {
       const tour: any = await ApiService.post(`/tenant/${tenantId}/site-tour`, {
@@ -275,6 +302,9 @@ export default function RondaWizard({
         stationId,
         postSiteId: postSiteId || undefined,
         active: true,
+        // El horario entra CON el alta. Antes había que crear la ronda y
+        // volver a su tarjeta a ponérselo, que es donde se quedaban a medias.
+        ...aCuerpo(horario),
       });
       const tourId = String(tour?.id ?? tour?.data?.id ?? "");
 
@@ -485,6 +515,24 @@ export default function RondaWizard({
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* ── CUÁNDO ─────────────────────────────────────────────────────
+              Va aquí y no en un paso propio a propósito: este asistente nació
+              para que crear una ronda dejara de ser diecisiete pasos, y un
+              cuarto paso obligatorio iría justo contra eso. En «una vez por
+              turno» —el valor de partida— son cuatro opciones y los días, así
+              que quien no quiera horario pasa de largo sin tocar nada. */}
+          <div className="rounded-lg border p-4">
+            <p className="cg-eyebrow mb-3 flex items-center gap-1.5">
+              <CalendarClock className="h-3.5 w-3.5" />
+              {t("ronda.wizard.when", "Cuándo se hace")}
+            </p>
+            <CamposDeHorario
+              idPrefijo="alta"
+              valor={horario}
+              onChange={setHorario}
+            />
           </div>
         </div>
       )}
