@@ -61,10 +61,14 @@ export interface BillingSummary {
 
 export interface BillableUser {
   id: string;
+  /** El id del USUARIO — con éste se quita o se reactiva. */
+  userId: string | null;
   name: string;
   email: string | null;
   roles: string[];
   status: string | null;
+  /** Por qué NO se cobra. Ausente = se cobra. */
+  excludedReason?: "archived" | "demo" | "duplicate";
 }
 
 export interface PlatformInvoice {
@@ -88,9 +92,29 @@ export const subscriptionBillingService = {
   summary(): Promise<BillingSummary> {
     return ApiService.get(`/tenant/${tenantId()}/subscription/summary`);
   },
-  /** The users counted as billable seats (who the tenant pays for). */
-  users(): Promise<BillableUser[]> {
-    return ApiService.get(`/tenant/${tenantId()}/subscription/users`);
+  /**
+   * Quién se cobra. Con `todos`, vienen TAMBIÉN los que no se cobran
+   * —archivados, de ejemplo, duplicados— cada uno con su motivo, que es lo que
+   * permite devolverlos a la factura desde la propia pantalla.
+   */
+  users(todos = false): Promise<BillableUser[]> {
+    return ApiService.get(
+      `/tenant/${tenantId()}/subscription/users${todos ? "?all=1" : ""}`,
+    );
+  },
+
+  /**
+   * Dejar de pagar por alguien. Archiva su membresía: el servidor le revoca las
+   * sesiones y le cierra la entrada en TODOS los canales. Por eso la pantalla
+   * lo dice sin rodeos — no es «quitarlo de la factura», es sacarlo del sistema.
+   */
+  quitarUsuario(userId: string): Promise<any> {
+    return ApiService.post(`/tenant/${tenantId()}/user/${userId}/suspend`, {});
+  },
+
+  /** Devolverlo: recupera el acceso y vuelve a la factura. */
+  reactivarUsuario(userId: string): Promise<any> {
+    return ApiService.post(`/tenant/${tenantId()}/user/${userId}/restore`, {});
   },
   /** Returns a Stripe Checkout URL to redirect to. */
   checkout(): Promise<{ url: string; id: string }> {

@@ -16,6 +16,7 @@ import {
   Receipt,
 } from "lucide-react";
 
+import { confirmDialog } from "@/components/ui/confirmDialog";
 import AppLayout from "@/layouts/app-layout";
 import ProviderManagedBilling from "@/components/ProviderManagedBilling";
 import { Button } from "@/components/ui/button";
@@ -99,6 +100,7 @@ export default function BillingPage() {
   const { t, i18n } = useTranslation();
   const [data, setData] = useState<BillingSummary | null>(null);
   const [users, setUsers] = useState<BillableUser[]>([]);
+  const [cambiandoUsuario, setCambiandoUsuario] = useState<string | null>(null);
   const [invoices, setInvoices] = useState<PlatformInvoice[]>([]);
   const [showUsers, setShowUsers] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -130,7 +132,8 @@ export default function BillingPage() {
     }
     // Non-blocking: the seat list and invoice history are supplementary.
     try {
-      setUsers(await subscriptionBillingService.users());
+      // `true` → también los que NO se cobran, para poder devolverlos.
+      setUsers(await subscriptionBillingService.users(true));
     } catch {
       /* ignore — summary already shows the seat count */
     }
@@ -138,6 +141,86 @@ export default function BillingPage() {
       setInvoices(await subscriptionBillingService.invoices());
     } catch {
       /* ignore — the section shows its empty state */
+    }
+  };
+
+  /**
+   * ── QUITAR A ALGUIEN DE LA FACTURA ES SACARLO DEL SISTEMA ─────────────────
+   * No hay un «no lo cobres pero que siga entrando»: el servidor archiva la
+   * membresía, le revoca las sesiones abiertas y le cierra el acceso en todos
+   * los canales. Por eso el aviso lo dice con esas palabras — si dijera sólo
+   * «dejar de pagar», el administrador quitaría a un vigilante en turno y se
+   * enteraría cuando el teléfono dejara de fichar.
+   */
+  const quitarDeLaFactura = async (u: BillableUser) => {
+    if (!u.userId) return;
+    if (
+      !(await confirmDialog({
+        title: t("billing.removeUser", {
+          defaultValue: "Dejar de pagar por esta persona",
+        }),
+        message: t("billing.removeUserConfirm", {
+          defaultValue: `${u.name} dejará de contar en la factura, pero también PERDERÁ EL ACCESO: se le cierran las sesiones y no podrá entrar a la app ni al CRM. Puedes devolverla cuando quieras, y volverá a la factura.`,
+        }),
+        confirmText: t("billing.removeUserOk", {
+          defaultValue: "Quitar y bloquear acceso",
+        }),
+        tone: "danger",
+      }))
+    )
+      return;
+    setCambiandoUsuario(u.id);
+    try {
+      await subscriptionBillingService.quitarUsuario(u.userId);
+      toast.success(
+        t("billing.removedUser", {
+          defaultValue: "Ya no se cobra por esta persona",
+        }),
+      );
+      await load();
+    } catch (e: any) {
+      toast.error(
+        e?.message ||
+          t("billing.removeUserFailed", { defaultValue: "No se pudo quitar" }),
+      );
+    } finally {
+      setCambiandoUsuario(null);
+    }
+  };
+
+  /** Devolverlo: recupera el acceso y vuelve a la factura del mes. */
+  const devolverALaFactura = async (u: BillableUser) => {
+    if (!u.userId) return;
+    if (
+      !(await confirmDialog({
+        title: t("billing.restoreUser", {
+          defaultValue: "Volver a dar acceso",
+        }),
+        message: t("billing.restoreUserConfirm", {
+          defaultValue: `${u.name} recuperará el acceso y volverá a contar en la factura.`,
+        }),
+        confirmText: t("billing.restoreUserOk", { defaultValue: "Dar acceso" }),
+      }))
+    )
+      return;
+    setCambiandoUsuario(u.id);
+    try {
+      await subscriptionBillingService.reactivarUsuario(u.userId);
+      toast.success(
+        t("billing.restoredUser", {
+          defaultValue: "Acceso devuelto; vuelve a la factura",
+        }),
+      );
+      await load();
+    } catch (e: any) {
+      toast.error(
+        e?.message ||
+          t("billing.restoreUserFailed", {
+            defaultValue: "No se pudo reactivar",
+          }),
+      );
+    } finally {
+      setCambiandoUsuario(null);
     }
   };
 
@@ -395,11 +478,34 @@ export default function BillingPage() {
                         <div
                           key={u.id}
                           className="glass-flat flex items-center justify-between gap-3 px-3 py-2.5"
+                          style={
+                            u.excludedReason ? { opacity: 0.6 } : undefined
+                          }
                         >
                           <div className="min-w-0">
                             <div className="truncate text-sm font-medium">
                               {u.name}
                             </div>
+                            {u.excludedReason && (
+                              <div
+                                className="truncate text-[11px] font-medium"
+                                style={{ color: "var(--ink-soft)" }}
+                              >
+                                {u.excludedReason === "archived"
+                                  ? t("billing.notBilled.archived", {
+                                      defaultValue: "Sin acceso · no se cobra",
+                                    })
+                                  : u.excludedReason === "demo"
+                                    ? t("billing.notBilled.demo", {
+                                        defaultValue:
+                                          "Datos de ejemplo · no se cobra",
+                                      })
+                                    : t("billing.notBilled.duplicate", {
+                                        defaultValue:
+                                          "Repetida · ya se cobra una vez",
+                                      })}
+                              </div>
+                            )}
                             {u.email && (
                               <div
                                 className="truncate text-xs"
@@ -430,6 +536,33 @@ export default function BillingPage() {
                               }}
                               title={u.status || ""}
                             />
+                            {/* Sólo se ofrece para personas de verdad: los de
+                                ejemplo y las filas repetidas no se cobran y
+                                tampoco son gente a la que quitar el acceso. */}
+                            {u.userId &&
+                              (u.excludedReason === "archived" ? (
+                                <Button
+                                  disabled={cambiandoUsuario === u.id}
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => devolverALaFactura(u)}
+                                >
+                                  {t("billing.restoreUserShort", {
+                                    defaultValue: "Dar acceso",
+                                  })}
+                                </Button>
+                              ) : !u.excludedReason ? (
+                                <Button
+                                  disabled={cambiandoUsuario === u.id}
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => quitarDeLaFactura(u)}
+                                >
+                                  {t("billing.removeUserShort", {
+                                    defaultValue: "Quitar",
+                                  })}
+                                </Button>
+                              ) : null)}
                           </div>
                         </div>
                       ))
