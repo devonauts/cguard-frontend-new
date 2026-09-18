@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { ApiService } from "@/services/api/apiService";
 import { Button } from "@/components/ui/button";
 import { FIELD_CLS_LG } from "@/pages/admin/clientes/components/_shared/tab-kit";
+import { apartarDelWidget } from "@/lib/apartarDelWidget";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -249,6 +250,31 @@ export function validaHorario(
     return t(
       "ronda.horario.sinHoras",
       "Añade al menos una hora, o cambia el modo",
+    );
+  }
+
+  // Tolerancia y aviso valen para CUALQUIER modo, y en blanco significa «hereda
+  // de Configuración › Rondas», que no es lo mismo que cero. Sin esta
+  // comprobación el servidor convertía un valor fuera de rango en `null` y
+  // respondía 200: la pantalla decía «guardado» y el número escrito
+  // desaparecía sin una palabra.
+  const rango = (crudo: string, min: number, max: number) => {
+    if (crudo.trim() === "") return true;
+    const n = parseInt(crudo, 10);
+
+    return Number.isFinite(n) && n >= min && n <= max;
+  };
+
+  if (!rango(v.tolerancia, 0, 240)) {
+    return t(
+      "ronda.horario.toleranciaInvalida",
+      "La tolerancia va de 0 a 240 minutos. Déjala vacía para usar la de Configuración › Rondas.",
+    );
+  }
+  if (!rango(v.aviso, 0, 240)) {
+    return t(
+      "ronda.horario.avisoInvalido",
+      "El aviso previo va de 0 a 240 minutos. Déjalo vacío para no avisar antes.",
     );
   }
 
@@ -602,7 +628,9 @@ export default function RondaHorario({
   return (
     <div className="space-y-4">
       <CamposDeHorario idPrefijo={tourId} valor={valor} onChange={setValor} />
-      <div className="flex justify-end">
+      {/* El `ref` aparta este bloque de la burbuja de VigIA, que está fija en la
+        esquina inferior derecha y tapaba este mismo «Guardar». */}
+      <div ref={apartarDelWidget} className="flex justify-end">
         <Button disabled={guardando} onClick={guardar}>
           {guardando && <Loader2 className="mr-2 animate-spin" size={15} />}
           {t("common.save", "Guardar")}

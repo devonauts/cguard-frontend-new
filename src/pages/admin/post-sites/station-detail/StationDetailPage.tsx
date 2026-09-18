@@ -184,6 +184,13 @@ export default function StationDetailPage() {
               }
             />
             {renderTab()}
+            {/* Aire al final de la pestaña. La burbuja de VigIA está fija en la
+              esquina inferior derecha y tapaba el «Guardar» de los formularios
+              en línea que caen al final de una lista larga —el de añadir un
+              punto a una ronda, sin ir más lejos: el clic abría el chat—. Sin
+              este hueco no hay adónde desplazarse para despejarlo. Ver
+              `apartarDelWidget`, que es quien hace el empujón. */}
+            <div aria-hidden className="h-24" />
           </FadeIn>
         )}
       </div>

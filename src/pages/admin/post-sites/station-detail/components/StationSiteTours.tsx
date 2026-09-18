@@ -30,6 +30,7 @@ import RondaHorario, {
 
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { ApiService } from "@/services/api/apiService";
+import { apartarDelWidget } from "@/lib/apartarDelWidget";
 import RondaSettingsForm from "@/pages/admin/Configuration/rondas-settings/RondaSettingsForm";
 import CheckpointLocationPicker from "@/components/maps/CheckpointLocationPicker";
 import {
@@ -93,6 +94,18 @@ const num = (v: any): number | null => {
 
   return Number.isFinite(n) ? n : null;
 };
+
+/* Una fila de punto, venga del listado de rondas (`withTags=1`) o del endpoint
+   de puntos de una ronda. Estaba escrito dos veces y las dos copias tenían que
+   coincidir; ahora es una. */
+const aPunto = (r: TagRow) => ({
+  id: String(r.id),
+  name: r.name || r.tagIdentifier || "—",
+  tagIdentifier: r.tagIdentifier || String(r.id),
+  latitude: num(r.latitude ?? r.latitud),
+  longitude: num(r.longitude ?? r.longitud),
+  radius: num(r.geofenceRadius),
+});
 /* ── EL CÓDIGO DEL PUNTO LO EMITE EL SERVIDOR ─────────────────────────────
    Aquí se generaba: `QR-` + cuatro caracteres de `Math.random()` + cuatro
    derivados de `Date.now()`. Tres cosas mal, y el QR es LA PRUEBA de que el
@@ -154,11 +167,29 @@ export default function StationSiteTours({
     setLoading(true);
     setError(null);
     try {
+      // `withTags=1`: el listado ya sabía devolver los puntos de cada ronda y
+      // nadie se los pedía. Sin esto, el contador de la fila plegada sólo
+      // aparecía DESPUÉS de desplegarla una vez —al recargar desaparecía— y una
+      // ronda recién duplicada decía «sin puntos» hasta recargar la página.
+      // Son dos consultas más en total, no una por ronda.
       const res: any = await ApiService.get(
-        `/tenant/${tenantId}/site-tour?stationId=${encodeURIComponent(stationId)}&limit=999&_=${Date.now()}`,
+        `/tenant/${tenantId}/site-tour?stationId=${encodeURIComponent(stationId)}&withTags=1&limit=999&_=${Date.now()}`,
       );
+      const filas = Array.isArray(res) ? res : (res?.rows ?? []);
 
-      setTours(Array.isArray(res) ? res : (res?.rows ?? []));
+      setTours(filas);
+
+      // Se siembran los puntos que vinieron con el listado. `toggleExpand` ya
+      // sólo pide los que falten, así que desplegar deja de costar una vuelta.
+      setCps((m) => {
+        const out = { ...m };
+
+        for (const f of filas) {
+          if (Array.isArray(f?.tags)) out[String(f.id)] = f.tags.map(aPunto);
+        }
+
+        return out;
+      });
     } catch (e: any) {
       setError(
         e?.message ||
@@ -182,17 +213,7 @@ export default function StationSiteTours({
         );
         const rows = Array.isArray(res) ? res : (res?.rows ?? []);
 
-        setCps((m) => ({
-          ...m,
-          [tourId]: rows.map((r: TagRow) => ({
-            id: String(r.id),
-            name: r.name || r.tagIdentifier || "—",
-            tagIdentifier: r.tagIdentifier || String(r.id),
-            latitude: num(r.latitude ?? r.latitud),
-            longitude: num(r.longitude ?? r.longitud),
-            radius: num(r.geofenceRadius),
-          })),
-        }));
+        setCps((m) => ({ ...m, [tourId]: rows.map(aPunto) }));
       } catch {
         setCps((m) => ({ ...m, [tourId]: [] }));
       } finally {
@@ -633,6 +654,7 @@ export default function StationSiteTours({
                           <div className="space-y-2">
                             <input
                               className={FIELD_CLS_LG}
+                              maxLength={200}
                               placeholder={t(
                                 "station.siteTours.namePh",
                                 "Nombre de la ronda",
@@ -826,7 +848,15 @@ export default function StationSiteTours({
                           )}
 
                           {addingFor === id ? (
-                            <div className="glass-sunken mt-3 space-y-3 p-3">
+                            /* `ref` y no un efecto: el empujón tiene que
+                              ocurrir cuando este formulario existe, y aquí es
+                              donde nace. Sin esto su «Guardar» queda debajo de
+                              la burbuja de VigIA al final de una lista larga y
+                              el clic abre el chat en vez de guardar. */
+                            <div
+                              ref={apartarDelWidget}
+                              className="glass-sunken mt-3 space-y-3 p-3"
+                            >
                               <div>
                                 <label className="cg-eyebrow mb-1 block">
                                   {t(
@@ -834,9 +864,14 @@ export default function StationSiteTours({
                                     "Nombre del punto",
                                   )}
                                 </label>
+                                {/* El servidor corta en 200 y responde 400.
+                                  Sin tope, pegar un texto largo devolvía
+                                  «Internal server error» en inglés: un fallo
+                                  del cliente disfrazado de avería nuestra. */}
                                 <input
                                   autoFocus
                                   className={FIELD_CLS_LG}
+                                  maxLength={200}
                                   placeholder={
                                     t(
                                       "station.siteTours.cpPlaceholder",

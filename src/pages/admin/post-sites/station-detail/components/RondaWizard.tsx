@@ -240,6 +240,15 @@ export default function RondaWizard({
     if (!p) return;
     if (!nombre.trim()) setNombre(p.nombre);
     setPuntos(p.puntos.map((n) => puntoVacio(n)));
+    // Una plantilla también salta al paso 2, así que pasa por la misma
+    // comprobación del horario; si no, sería la puerta de atrás.
+    const problema = validaHorario(horario, t as any);
+
+    if (problema) {
+      toast.error(problema);
+
+      return;
+    }
     setPaso(2);
   };
 
@@ -409,7 +418,19 @@ export default function RondaWizard({
                 <Button
                   disabled={!nombre.trim()}
                   variant="brand"
-                  onClick={() => setPaso(2)}
+                  onClick={() => {
+                    // Aquí y no al pulsar «Crear»: los campos del horario están
+                    // en ESTE paso, y un aviso sobre el intervalo dos pantallas
+                    // más allá no dice dónde hay que mirar.
+                    const problema = validaHorario(horario, t as any);
+
+                    if (problema) {
+                      toast.error(problema);
+
+                      return;
+                    }
+                    setPaso(2);
+                  }}
                 >
                   {t("common.next", "Siguiente")}
                 </Button>
@@ -447,9 +468,13 @@ export default function RondaWizard({
             >
               {t("ronda.wizard.name", "Nombre de la ronda")}
             </label>
+            {/* El servidor corta en 200 y responde 400. Sin este tope, pegar
+              un texto largo devolvía «Internal server error» en inglés: un
+              fallo del cliente disfrazado de avería nuestra. */}
             <input
               autoFocus
               className={FIELD_CLS}
+              maxLength={200}
               placeholder={t("ronda.wizard.namePh", "Ronda nocturna") as string}
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
