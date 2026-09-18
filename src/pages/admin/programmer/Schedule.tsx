@@ -5928,9 +5928,29 @@ export default function Schedule() {
                                       <Shield size={12} />
                                     </div>
                                     <div className="min-w-0 flex-1">
-                                      <div className="truncate text-xs font-semibold">
+                                      {/* ── LA PUERTA PARA EDITARLO ────────
+                                          El nombre era texto plano, así que un
+                                          sacafranco ya creado no se podía tocar:
+                                          la fila sólo ofrecía «asignar» y
+                                          «eliminar», y para cambiarle el ciclo o
+                                          la ronda había que borrarlo y rehacerlo
+                                          —con lo que se le anulan los turnos
+                                          futuros—. Ahora abre su asistente, el
+                                          mismo con el que se creó. */}
+                                      <button
+                                        className="cg-focus block max-w-full truncate text-left text-xs font-semibold hover:underline"
+                                        title="Editar este sacafranco: su ciclo y por qué estaciones rota"
+                                        type="button"
+                                        onClick={() => {
+                                          const st = stationsById.get(
+                                            pos.stationId,
+                                          );
+
+                                          if (st) editSacafranco(st, pos);
+                                        }}
+                                      >
                                         {pos.name}
-                                      </div>
+                                      </button>
                                       {/* La estación es lo primero que hay que saber de
                                       un sacafranco: sin ella todas las filas se
                                       llaman igual y no se sabe cuál se está
@@ -7637,10 +7657,24 @@ export default function Schedule() {
                             className="mt-1.5 text-[10px]"
                             style={{ color: "var(--ink-soft)" }}
                           >
+                            {/* ── LA EXPLICACIÓN TIENE QUE SER VERDAD ────
+                                Decía «por eso la misma estación le toca unas
+                                veces de día y otras de noche» SIEMPRE que el
+                                ciclo y la ronda no cuadraran. Con un ciclo sin
+                                tramo de noche eso es falso —salen doce casillas
+                                todas de día y el texto debajo hablando de
+                                noches—, y la coletilla de los descansos sobra
+                                cuando el ciclo no tiene ninguno. Se dice sólo
+                                lo que se ve. */}
                             {vueltas > 1
-                              ? `Su ciclo (${sfNombreCiclo}) y la ronda (${rondaCadencia}) no cuadran en una vuelta: tardan ${vueltas} ciclos en repetirse. Por eso la misma estación le toca unas veces de día y otras de noche.`
-                              : `Su ciclo (${sfNombreCiclo}) y la ronda (${rondaCadencia}) cuadran en una vuelta.`}{" "}
-                            Los días de descanso no gastan turno de estación.
+                              ? `Su ciclo (${sfNombreCiclo}) y la ronda (${rondaCadencia}) no cuadran en una vuelta: tardan ${vueltas} ciclos en repetirse.`
+                              : `Su ciclo (${sfNombreCiclo}) y la ronda (${rondaCadencia}) cuadran en una vuelta.`}
+                            {vueltas > 1 && sfNoches > 0 && sfDias > 0
+                              ? " Por eso la misma estación le toca unas veces de día y otras de noche."
+                              : ""}
+                            {sfLibres > 0
+                              ? " Los días de descanso no gastan turno de estación."
+                              : " Sin descansos, cada día del ciclo gasta un turno de la ronda."}
                           </p>
                         </div>
                       </div>
