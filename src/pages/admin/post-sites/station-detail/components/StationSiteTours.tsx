@@ -14,11 +14,18 @@ import {
   QrCode,
   Crosshair,
   Route,
+  CalendarClock,
+  Copy,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
 import RondaWizard from "./RondaWizard";
+import RondaHorario, {
+  resumenDeHorario,
+  resumenDeDias,
+  modoDe,
+} from "./RondaHorario";
 
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { ApiService } from "@/services/api/apiService";
@@ -58,6 +65,15 @@ interface SiteTourRow {
   tourName?: string;
   description?: string;
   active?: boolean;
+  // El horario. Sin estos campos en el tipo, la tarjeta no puede resumir
+  // cuándo corre la ronda y el editor nacería siempre en blanco.
+  scheduleMode?: string | null;
+  everyMinutes?: number | null;
+  timesPerShift?: number | null;
+  fixedTimes?: string[] | string | null;
+  graceMinutes?: number | null;
+  reminderMinutes?: number | null;
+  scheduledDays?: unknown;
 }
 // A raw checkpoint/tag row from `/site-tour/:id/tags`.
 interface TagRow {
@@ -214,6 +230,53 @@ export default function StationSiteTours({
       toast.error(
         e?.message ||
           t("station.siteTours.deleteFailed", "No se pudo eliminar"),
+      );
+    }
+  };
+
+  /**
+   * Duplicar una ronda para darle otro horario.
+   *
+   * La copia apunta a LOS MISMOS puntos de control: mismas etiquetas, mismos
+   * códigos, ninguna que reimprimir. Es la razón de que los puntos se
+   * compartan — antes duplicar obligaba a crear puntos nuevos y a repegar toda
+   * la señalética del puesto.
+   */
+  const duplicateTour = async (tour: SiteTourRow) => {
+    const nombre = (tour.name || tour.tourName || "").trim();
+
+    if (
+      !(await confirmDialog({
+        title: t("station.siteTours.duplicate", "Duplicar ronda"),
+        message: t(
+          "station.siteTours.confirmDuplicate",
+          `Se creará una copia de «${nombre}» con los MISMOS puntos de control. No hay que reimprimir ningún QR: sólo tendrás que ponerle su horario.`,
+        ),
+        confirmText: t("station.siteTours.duplicate", "Duplicar"),
+      }))
+    )
+      return;
+    try {
+      const res: any = await ApiService.post(
+        `/tenant/${tenantId}/site-tour/${encodeURIComponent(String(tour.id))}/duplicate`,
+        {},
+      );
+      const copia = res?.data ?? res;
+
+      toast.success(
+        t(
+          "station.siteTours.duplicated",
+          `Ronda duplicada con ${copia?.puntosHeredados ?? 0} punto(s)`,
+        ),
+      );
+      await loadTours();
+      // Se abre la copia: duplicar sin cambiarle la hora no sirve de nada, y
+      // dejarla cerrada esconde justo el paso que falta.
+      if (copia?.id) setExpanded(String(copia.id));
+    } catch (e: any) {
+      toast.error(
+        e?.message ||
+          t("station.siteTours.duplicateFailed", "No se pudo duplicar"),
       );
     }
   };
@@ -449,6 +512,24 @@ export default function StationSiteTours({
                             : t("station.siteTours.points", "puntos")}
                         </span>
                       )}
+                      {/* CUÁNDO corre, sin tener que desplegar. Una ronda sin
+                          horario se ve igual que antes: «Una vez por turno». */}
+                      <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                        <CalendarClock className="shrink-0" size={13} />
+                        {resumenDeHorario(r, t)}
+                        {modoDe(r) !== "once" && (
+                          <span className="opacity-70">
+                            · {resumenDeDias(r, t)}
+                          </span>
+                        )}
+                      </span>
+                    </button>
+                    <button
+                      className="cg-focus rounded p-1.5 text-muted-foreground"
+                      title={t("station.siteTours.duplicate", "Duplicar ronda")}
+                      onClick={() => duplicateTour(r)}
+                    >
+                      <Copy size={16} />
                     </button>
                     <button
                       className="cg-focus rounded p-1.5"
@@ -462,6 +543,32 @@ export default function StationSiteTours({
 
                   {isOpen && (
                     <div className="border-t bg-muted/10 px-6 py-4">
+                      {/* ── CUÁNDO ─────────────────────────────────────────
+                          Va ARRIBA de los puntos a propósito: el recorrido ya
+                          existe cuando se llega aquí; lo que falta por decidir
+                          —y lo que hay que cambiar en una ronda duplicada— es
+                          la hora. */}
+                      <div className="mb-5 rounded-lg border bg-background p-4">
+                        <p className="cg-eyebrow mb-3 flex items-center gap-1.5">
+                          <CalendarClock size={14} />
+                          {t("station.siteTours.schedule", "Cuándo se hace")}
+                        </p>
+                        <RondaHorario
+                          inicial={r}
+                          tenantId={tenantId}
+                          tourId={id}
+                          onGuardado={(actualizada) =>
+                            setTours((ts) =>
+                              ts.map((x) =>
+                                String(x.id) === id
+                                  ? { ...x, ...(actualizada || {}) }
+                                  : x,
+                              ),
+                            )
+                          }
+                        />
+                      </div>
+
                       {cpLoading === id ? (
                         <div className="flex justify-center py-4">
                           <Loader2
