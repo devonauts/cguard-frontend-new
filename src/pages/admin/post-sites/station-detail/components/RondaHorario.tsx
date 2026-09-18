@@ -168,37 +168,122 @@ export function resumenDeDias(
     .join(" ");
 }
 
-interface Props {
-  tenantId: string;
-  tourId: string;
-  inicial: HorarioDeRonda;
-  onGuardado: (r: any) => void;
+/**
+ * El horario mientras se edita: todo cadena, como lo escribe el formulario.
+ * Se normaliza en `aCuerpo()` — una sola vez, y en un solo sitio.
+ */
+export interface ValorDeHorario {
+  modo: ModoDeHorario;
+  cadaMin: string;
+  veces: string;
+  horas: string[];
+  dias: number[];
+  tolerancia: string;
+  aviso: string;
 }
 
-export default function RondaHorario({
-  tenantId,
-  tourId,
-  inicial,
-  onGuardado,
-}: Props) {
+/** El valor de partida a partir de lo que tenga la ronda (o de una nueva). */
+export function valorInicial(r?: HorarioDeRonda | null): ValorDeHorario {
+  return {
+    modo: modoDe(r),
+    cadaMin: String(r?.everyMinutes ?? 180),
+    veces: String(r?.timesPerShift ?? 4),
+    horas: leerHoras(r?.fixedTimes),
+    dias: leerDias(r?.scheduledDays),
+    tolerancia: r?.graceMinutes == null ? "" : String(r.graceMinutes),
+    aviso: r?.reminderMinutes == null ? "" : String(r.reminderMinutes),
+  };
+}
+
+/**
+ * Lo que se manda al servidor. Vive aquí y no en cada pantalla porque el alta
+ * y la edición tienen que escribir EXACTAMENTE lo mismo: dos copias de esta
+ * conversión acabarían discrepando, y la floja es la que se cuela.
+ */
+export function aCuerpo(v: ValorDeHorario): Record<string, any> {
+  return {
+    scheduleMode: v.modo,
+    everyMinutes: v.modo === "everyN" ? parseInt(v.cadaMin, 10) : null,
+    timesPerShift: v.modo === "timesPerShift" ? parseInt(v.veces, 10) : null,
+    fixedTimes: v.modo === "fixedTimes" ? v.horas : null,
+    // Vacío = hereda de Configuración › Rondas. No es lo mismo que cero.
+    graceMinutes:
+      v.tolerancia.trim() === "" ? null : parseInt(v.tolerancia, 10),
+    reminderMinutes: v.aviso.trim() === "" ? null : parseInt(v.aviso, 10),
+    scheduledDays: v.dias,
+  };
+}
+
+/**
+ * Devuelve el mensaje de error, o null si vale.
+ *
+ * Se valida ANTES de mandar porque el servidor convierte un valor imposible en
+ * `null`: guardar «cada 2 minutos» respondería 200 y dejaría la ronda sin
+ * horario, sin decir nada. El clásico «sí se guardó» que no.
+ */
+export function validaHorario(
+  v: ValorDeHorario,
+  t: (k: string, d?: any) => string,
+): string | null {
+  if (v.modo === "everyN") {
+    const n = parseInt(v.cadaMin, 10);
+
+    if (!Number.isFinite(n) || n < 5 || n > 1440) {
+      return t(
+        "ronda.horario.intervaloInvalido",
+        "El intervalo va de 5 minutos a 24 horas",
+      );
+    }
+  }
+  if (v.modo === "timesPerShift") {
+    const n = parseInt(v.veces, 10);
+
+    if (!Number.isFinite(n) || n < 1 || n > 96) {
+      return t(
+        "ronda.horario.vecesInvalido",
+        "El número de vueltas va de 1 a 96",
+      );
+    }
+  }
+  if (v.modo === "fixedTimes" && !v.horas.length) {
+    return t(
+      "ronda.horario.sinHoras",
+      "Añade al menos una hora, o cambia el modo",
+    );
+  }
+
+  return null;
+}
+
+/**
+ * LOS CAMPOS, controlados y sin botón de guardar.
+ *
+ * Los usa el asistente de alta (donde el horario viaja con el resto del
+ * formulario) y el editor de la tarjeta (que le pone su propio botón). Así la
+ * recurrencia se define en un solo sitio.
+ */
+export function CamposDeHorario({
+  valor,
+  onChange,
+  idPrefijo,
+}: {
+  valor: ValorDeHorario;
+  onChange: (v: ValorDeHorario) => void;
+  idPrefijo: string;
+}) {
   const { t } = useTranslation();
-  const [modo, setModo] = useState<ModoDeHorario>(modoDe(inicial));
-  const [cadaMin, setCadaMin] = useState<string>(
-    String(inicial?.everyMinutes ?? 180),
-  );
-  const [veces, setVeces] = useState<string>(
-    String(inicial?.timesPerShift ?? 4),
-  );
-  const [horas, setHoras] = useState<string[]>(leerHoras(inicial?.fixedTimes));
   const [horaNueva, setHoraNueva] = useState<string>("");
-  const [dias, setDias] = useState<number[]>(leerDias(inicial?.scheduledDays));
-  const [tolerancia, setTolerancia] = useState<string>(
-    inicial?.graceMinutes == null ? "" : String(inicial.graceMinutes),
-  );
-  const [aviso, setAviso] = useState<string>(
-    inicial?.reminderMinutes == null ? "" : String(inicial.reminderMinutes),
-  );
-  const [guardando, setGuardando] = useState(false);
+  const { modo, cadaMin, veces, horas, dias, tolerancia, aviso } = valor;
+  const set = (parcial: Partial<ValorDeHorario>) =>
+    onChange({ ...valor, ...parcial });
+  const setModo = (m: ModoDeHorario) => set({ modo: m });
+  const setCadaMin = (x: string) => set({ cadaMin: x });
+  const setVeces = (x: string) => set({ veces: x });
+  const setHoras = (x: string[]) => set({ horas: x });
+  const setDias = (x: number[]) => set({ dias: x });
+  const setTolerancia = (x: string) => set({ tolerancia: x });
+  const setAviso = (x: string) => set({ aviso: x });
+  const tourId = idPrefijo;
 
   const opciones: Array<{ v: ModoDeHorario; label: string; ayuda: string }> =
     useMemo(
@@ -259,75 +344,6 @@ export default function RondaHorario({
     }
     setHoras([...horas, norm].sort());
     setHoraNueva("");
-  };
-
-  const guardar = async () => {
-    // Se valida ANTES de mandar: el servidor convierte un valor imposible en
-    // `null`, así que guardar «cada 2 minutos» respondería 200 y dejaría la
-    // ronda sin horario, sin decir nada. El clásico «sí se guardó» que no.
-    if (modo === "everyN") {
-      const n = parseInt(cadaMin, 10);
-
-      if (!Number.isFinite(n) || n < 5 || n > 1440) {
-        toast.error(
-          t(
-            "ronda.horario.intervaloInvalido",
-            "El intervalo va de 5 minutos a 24 horas",
-          ),
-        );
-
-        return;
-      }
-    }
-    if (modo === "timesPerShift") {
-      const n = parseInt(veces, 10);
-
-      if (!Number.isFinite(n) || n < 1 || n > 96) {
-        toast.error(
-          t("ronda.horario.vecesInvalido", "El número de vueltas va de 1 a 96"),
-        );
-
-        return;
-      }
-    }
-    if (modo === "fixedTimes" && !horas.length) {
-      toast.error(
-        t(
-          "ronda.horario.sinHoras",
-          "Añade al menos una hora, o cambia el modo",
-        ),
-      );
-
-      return;
-    }
-
-    setGuardando(true);
-    try {
-      const cuerpo: any = {
-        scheduleMode: modo,
-        everyMinutes: modo === "everyN" ? parseInt(cadaMin, 10) : null,
-        timesPerShift: modo === "timesPerShift" ? parseInt(veces, 10) : null,
-        fixedTimes: modo === "fixedTimes" ? horas : null,
-        // Vacío = hereda de Configuración › Rondas. No es lo mismo que cero.
-        graceMinutes:
-          tolerancia.trim() === "" ? null : parseInt(tolerancia, 10),
-        reminderMinutes: aviso.trim() === "" ? null : parseInt(aviso, 10),
-        scheduledDays: dias,
-      };
-      const res: any = await ApiService.patch(
-        `/tenant/${tenantId}/site-tour/${encodeURIComponent(tourId)}`,
-        cuerpo,
-      );
-
-      toast.success(t("ronda.horario.guardado", "Horario guardado"));
-      onGuardado(res?.data ?? res ?? cuerpo);
-    } catch (e: any) {
-      toast.error(
-        e?.message || t("ronda.horario.errorGuardar", "No se pudo guardar"),
-      );
-    } finally {
-      setGuardando(false);
-    }
   };
 
   return (
@@ -529,7 +545,63 @@ export default function RondaHorario({
           </p>
         </div>
       )}
+    </div>
+  );
+}
 
+/**
+ * EL EDITOR DE LA TARJETA: los campos de arriba + su botón, y guarda solo.
+ *
+ * El asistente de alta usa `CamposDeHorario` directamente porque allí el
+ * horario viaja con el resto del formulario y se manda en la creación.
+ */
+export default function RondaHorario({
+  tenantId,
+  tourId,
+  inicial,
+  onGuardado,
+}: {
+  tenantId: string;
+  tourId: string;
+  inicial: HorarioDeRonda;
+  onGuardado: (r: any) => void;
+}) {
+  const { t } = useTranslation();
+  const [valor, setValor] = useState<ValorDeHorario>(() =>
+    valorInicial(inicial),
+  );
+  const [guardando, setGuardando] = useState(false);
+
+  const guardar = async () => {
+    const error = validaHorario(valor, t);
+
+    if (error) {
+      toast.error(error);
+
+      return;
+    }
+    setGuardando(true);
+    try {
+      const cuerpo = aCuerpo(valor);
+      const res: any = await ApiService.patch(
+        `/tenant/${tenantId}/site-tour/${encodeURIComponent(tourId)}`,
+        cuerpo,
+      );
+
+      toast.success(t("ronda.horario.guardado", "Horario guardado"));
+      onGuardado(res?.data ?? res ?? cuerpo);
+    } catch (e: any) {
+      toast.error(
+        e?.message || t("ronda.horario.errorGuardar", "No se pudo guardar"),
+      );
+    } finally {
+      setGuardando(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <CamposDeHorario idPrefijo={tourId} valor={valor} onChange={setValor} />
       <div className="flex justify-end">
         <Button disabled={guardando} onClick={guardar}>
           {guardando && <Loader2 className="mr-2 animate-spin" size={15} />}
