@@ -7186,7 +7186,11 @@ export default function Schedule() {
                   >
                     <div>
                       <h4 className="text-sm font-semibold">
-                        Agregar sacafranco
+                        {/* El mismo diálogo hace las dos cosas, así que tiene
+                            que decir cuál está haciendo: abrirlo sobre uno que
+                            ya existe y leer «Agregar» hace dudar de si se va a
+                            crear otro. */}
+                        {editando ? "Editar sacafranco" : "Agregar sacafranco"}
                       </h4>
                       <p
                         className="mt-0.5 text-[11px]"
