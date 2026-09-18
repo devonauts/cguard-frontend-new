@@ -244,3 +244,12 @@
 /* Focus ring helper for custom interactive elements. */
 .cg-focus { outline: none; }
 .cg-focus:focus-visible { box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 45%, transparent); }
+
+/* Rueda de números (kit › NumberStepper). Las flechitas nativas de `type=number`
+   caen justo al lado de los botones − y +, y a esa escala son dos pares de
+   controles que hacen lo mismo pegados: se ocultan y mandan los del kit. El
+   campo sigue siendo `number`, así que el teclado del móvil sale numérico y
+   las flechas del teclado siguen sumando y restando. */
+.cg-stepper-num::-webkit-outer-spin-button,
+.cg-stepper-num::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.cg-stepper-num { -moz-appearance: textfield; appearance: textfield; }
