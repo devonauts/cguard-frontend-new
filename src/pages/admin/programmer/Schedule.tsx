@@ -3695,9 +3695,14 @@ export default function Schedule() {
         // Se espera al refresco: la asignación que se abre a continuación lee
         // el tipo de la posición recién creada para saber que es un relevo.
         await fetchAll({ silent: true });
+        /* Prometía «cubrirá N estaciones» aunque la ronda todavía no estuviera
+           guardada en ninguna parte: se guarda con la ASIGNACIÓN, y este camino
+           es el de la fila sin vigilante. Si se abandona el diálogo que viene
+           detrás, la cobertura se queda sin escribir — así que aquí se dice lo
+           que de verdad ha pasado. */
         toast.success(
           ids.length > 1
-            ? `Sacafranco creado — cubrirá ${ids.length} estaciones`
+            ? `Sacafranco creado — su ronda por ${ids.length} estaciones se guarda al asignarle un vigilante`
             : "Sacafranco creado",
         );
         if (nuevoId) {
@@ -7473,14 +7478,36 @@ export default function Schedule() {
                         className="mt-1 text-[10px]"
                         style={{ color: "var(--ink-faint)" }}
                       >
+                        {/* Este texto se quedó atrás: decía «sus turnos se
+                            generan en su puesto base» y «no reparte sus días
+                            solo», que era verdad mientras la lista era sólo un
+                            permiso de fichaje. Con la cadencia de abajo SÍ los
+                            reparte — y seguir diciendo lo contrario debajo de
+                            una tira que enseña la ronda es peor que no decir
+                            nada. */}
                         {!marcadas.length
                           ? "Marca al menos una."
                           : marcadas.length === 1
                             ? "Todos sus días de trabajo van a esta estación."
-                            : Object.keys(posEditor.stationDays || {}).length
-                              ? "Son los puestos donde se le PERMITE fichar. Sus turnos se generan en su puesto base; para que cubra otro, arrastra su día allí."
-                              : "Son los puestos donde se le permite fichar cuando le coloques un turno en ellos. No reparte sus días solo."}
+                            : "El orden y los días de abajo son su ronda: se recorre tal cual, sin adivinar huecos."}
                       </p>
+
+                      {/* ── SIN VIGILANTE, LA RONDA NO SE GUARDA ───────────
+                          La ronda vive en la ASIGNACIÓN, no en la plaza: crear
+                          la fila sin nadie dentro deja las estaciones y la
+                          cadencia sin sitio donde guardarse. Antes esto pasaba
+                          en silencio —el aviso decía «cubrirá 4 estaciones» y
+                          al reabrirlo sólo quedaba la suya—. */}
+                      {!editando && !posEditor.guardId && marcadas.length > 1 && (
+                        <p
+                          className="mt-1.5 rounded-lg px-2 py-1.5 text-[10px]"
+                          style={toneCard("warn", 8, 26)}
+                        >
+                          Sin vigilante, la fila se crea vacía y esta ronda
+                          <b> se vuelve a pedir al asignarlo</b>: es su
+                          asignación la que la guarda.
+                        </p>
+                      )}
                     </div>
 
                     {/* ── CÓMO ALTERNA ENTRE ELLAS ─────────────────────────
