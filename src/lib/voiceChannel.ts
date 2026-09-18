@@ -39,6 +39,20 @@ try {
   /* older SDKs: no-op */
 }
 
+/**
+ * ¿El puntero primario es un dedo? Es la misma señal que usa `glass.css` para
+ * separar escritorio de móvil. Se mira contra el puntero y no contra el ancho
+ * de la ventana a propósito: una ventana del CRM estrecha en el escritorio
+ * sigue siendo escritorio, y ahí el permiso del micrófono sí se queda dado.
+ */
+function esTactil(): boolean {
+  try {
+    return window.matchMedia("(pointer: coarse)").matches;
+  } catch {
+    return false;
+  }
+}
+
 export type VoiceMember = { userId: string; name: string; role: string };
 export type VoiceSpeaker = { userId: string; name: string } | null;
 export type VoiceState = "idle" | "connecting" | "connected" | "error";
@@ -231,12 +245,23 @@ export class VoiceChannel {
       // push-to-talk publishes instantly instead of the permission prompt
       // interrupting the hold. Best-effort; the track is released immediately —
       // the mic only actually publishes on startTalk().
-      try {
-        const s = await navigator.mediaDevices.getUserMedia({ audio: true });
+      //
+      // ── SÓLO EN ESCRITORIO ────────────────────────────────────────────────
+      // Ahí el permiso queda concedido para el origen y esto se paga UNA vez.
+      // En el móvil el permiso es por sesión, así que lo único que conseguía
+      // era pedir el micrófono —y encender el indicador de grabación— CADA vez
+      // que se abría el CRM: el widget de radio va en `app-layout`, y al montar
+      // llama a `restoreRadio()`, que reconecta solo si alguna vez se encendió
+      // la radio en ese navegador. Nadie lo había pedido; era el precalentado.
+      // En táctil se entra en escucha y el micrófono se pide en el primer PTT.
+      if (!esTactil()) {
+        try {
+          const s = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-        s.getTracks().forEach((t) => t.stop());
-      } catch {
-        /* user can still grant on first PTT */
+          s.getTracks().forEach((t) => t.stop());
+        } catch {
+          /* user can still grant on first PTT */
+        }
       }
     } catch (e: any) {
       this.cb.onState?.("error");

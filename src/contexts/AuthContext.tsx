@@ -34,6 +34,43 @@ import { setAppBadge } from "@/lib/desktop";
 import { resolveActiveTenantId, clearTenants } from "@/lib/activeTenant";
 
 /**
+ * Lo ÚNICO que sobrevive a un cierre de sesión. No es preferencia de nadie: es
+ * la identidad de ESTE aparato en la radio. Si se regenera en cada salida, el
+ * participante anterior se queda de fantasma en la sala y la persona aparece
+ * dos veces en el canal (ver `lib/radioDevice.ts`), que es justo el fallo que
+ * ese archivo existe para evitar.
+ */
+const CLAVES_DE_DISPOSITIVO = ["radio.deviceId"];
+
+/**
+ * Vacía el almacenamiento del navegador salvo las claves de dispositivo.
+ *
+ * Se borra TODO y se repone lo poco que se salva, en vez de ir quitando claves
+ * una a una: así lo que se añada mañana queda cubierto sin tocar esta función.
+ * `sessionStorage` va también — el token no puede sobrevivir en ningún cajón.
+ */
+function borrarAlmacenamientoDeSesion(): void {
+  try {
+    const salvados: Array<[string, string]> = [];
+
+    for (const clave of CLAVES_DE_DISPOSITIVO) {
+      const valor = localStorage.getItem(clave);
+
+      if (valor !== null) salvados.push([clave, valor]);
+    }
+    localStorage.clear();
+    for (const [clave, valor] of salvados) localStorage.setItem(clave, valor);
+  } catch {
+    /* modo privado / cuota: no hay nada que limpiar */
+  }
+  try {
+    sessionStorage.clear();
+  } catch {
+    /* ignore */
+  }
+}
+
+/**
  * Higiene de máquina compartida: si el usuario que ENTRA no es el mismo que
  * dejó datos offline (caché IDB, cola de escrituras, perfil), se limpian antes
  * de hidratar. El signOut ya limpia — esto cubre los cierres que NO pasan por
@@ -651,6 +688,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // Remove the token FIRST so the persist effect (guarded on authToken) can't
       // resurrect the perm/admin keys when the state resets below re-fire it.
       localStorage.removeItem("authToken");
+      // ── Y AHORA TODO LO DEMÁS ────────────────────────────────────────────
+      // Esto era una LISTA de claves que borrar, y una lista siempre se queda
+      // corta: cada función nueva que guarda algo en `localStorage` hay que
+      // acordarse de añadirla aquí, y nadie se acuerda. El tema y el color de
+      // acento se conservaban incluso a propósito (para que no parpadeara al
+      // volver a entrar la misma persona), fiándolo todo a que
+      // `purgeOfflineDataIfDifferentUser` limpiara al entrar OTRA — y no lo
+      // hizo: el acento elegido en una empresa apareció en Ecuaseguridad.
+      // Se invierte la regla: al salir se borra el almacenamiento ENTERO y
+      // sólo sobrevive lo que esté en `CLAVES_DE_DISPOSITIVO`. Lo que se olvide
+      // de añadir ahí se borra, que es el lado seguro del error.
+      borrarAlmacenamientoDeSesion();
       try {
         localStorage.removeItem("userPermissions");
         localStorage.removeItem("userIsAdmin");
@@ -693,9 +742,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // purgeOfflineDataIfDifferentUser.
       try {
         olvidarApariencia();
-      olvidarPerfil();
-      olvidarSiembraDeAvisos();
-      olvidarEmpresa();
+        olvidarPerfil();
+        olvidarSiembraDeAvisos();
+        olvidarEmpresa();
       } catch {}
       try {
         clearQueue();
@@ -713,6 +762,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setIsAdmin(false);
       setTenantAdmin(false);
       setError(null);
+      // ── Y SE VUELVE A CARGAR LA PÁGINA ───────────────────────────────────
+      // Vaciar el almacenamiento no basta. `ThemeProvider`, `AccentProvider` y
+      // `LanguageProvider` se montan POR ENCIMA del router (App.tsx) y leen la
+      // apariencia de la cuenta UNA sola vez, en un efecto con dependencias
+      // vacías. Al salir e iniciar sesión en la MISMA pestaña —que es una
+      // navegación del router, no una recarga— nunca se vuelven a montar: el
+      // acento de la cuenta anterior sigue vivo en memoria y se repinta tal
+      // cual. Es exactamente lo que se vio, un color elegido en otra empresa
+      // apareciendo en Ecuaseguridad, y por eso no se arregla borrando claves.
+      // Una carga limpia deja a todos los proveedores partiendo de cero.
+      try {
+        window.location.replace("/login");
+      } catch {
+        /* sin window (pruebas): el estado ya quedó limpio */
+      }
     }
   };
 
@@ -968,7 +1032,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       hasAny,
       isAdmin,
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     [user, loading, error, permissions, isAdmin, tenantAdmin],
   );
 
