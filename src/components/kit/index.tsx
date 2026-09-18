@@ -678,6 +678,106 @@ export function Segmented<T extends string>({
   );
 }
 
+/**
+ * ── RUEDA DE NÚMEROS, COMO EN iOS ──────────────────────────────────────────
+ * Un número pequeño y acotado —cuántos días, cuántas noches, cuántos libres—
+ * se toca, no se escribe. Un desplegable obliga a que alguien haya creado
+ * antes la combinación exacta que hace falta, y un campo de texto libre acepta
+ * «12a» y un ciclo de 400 días.
+ *
+ * `−` y `+` a los lados, el valor en el medio en cifras tabulares para que no
+ * baile al pasar de 9 a 10. Los extremos se desactivan solos en `min`/`max`, y
+ * el valor sigue siendo editable con el teclado (flechas arriba/abajo) porque
+ * quien mete veinte de golpe no quiere dar veinte toques.
+ */
+export function NumberStepper({
+  value,
+  onChange,
+  min = 0,
+  max = 99,
+  label,
+  hint,
+  suffix,
+  disabled,
+  className,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+  min?: number;
+  max?: number;
+  label?: React.ReactNode;
+  hint?: React.ReactNode;
+  /** Unidad corta junto al número: «días», «turnos». */
+  suffix?: React.ReactNode;
+  disabled?: boolean;
+  className?: string;
+}) {
+  const acotar = (n: number) => Math.min(max, Math.max(min, n));
+  const v = acotar(Number.isFinite(value) ? Math.floor(value) : min);
+  const boton =
+    "cg-focus flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-base font-semibold leading-none transition-all duration-150 disabled:opacity-30";
+
+  return (
+    <div className={cn("flex items-center justify-between gap-3", className)}>
+      {(label || hint) && (
+        <div className="min-w-0">
+          {label && <div className="text-sm font-medium">{label}</div>}
+          {hint && (
+            <div className="text-[11px]" style={{ color: "var(--ink-faint)" }}>
+              {hint}
+            </div>
+          )}
+        </div>
+      )}
+      <div className="glass-sunken flex shrink-0 items-center gap-1 rounded-full p-1">
+        <button
+          aria-label="Restar"
+          className={boton}
+          disabled={disabled || v <= min}
+          style={{ color: "var(--ink-soft)" }}
+          type="button"
+          onClick={() => onChange(acotar(v - 1))}
+        >
+          −
+        </button>
+        <input
+          aria-label={typeof label === "string" ? label : undefined}
+          className="cg-focus cg-stepper-num w-9 bg-transparent text-center text-sm font-semibold tabular-nums outline-none"
+          disabled={disabled}
+          inputMode="numeric"
+          max={max}
+          min={min}
+          type="number"
+          value={String(v)}
+          onChange={(e) => {
+            const n = parseInt(e.target.value, 10);
+
+            onChange(acotar(Number.isFinite(n) ? n : min));
+          }}
+        />
+        {suffix && (
+          <span
+            className="pr-1 text-[11px] font-medium"
+            style={{ color: "var(--ink-faint)" }}
+          >
+            {suffix}
+          </span>
+        )}
+        <button
+          aria-label="Sumar"
+          className={boton}
+          disabled={disabled || v >= max}
+          style={{ color: "var(--ink-soft)" }}
+          type="button"
+          onClick={() => onChange(acotar(v + 1))}
+        >
+          +
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /** Barra de filtros/acciones de cristal. */
 export function Toolbar({
   children,
