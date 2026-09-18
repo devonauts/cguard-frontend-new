@@ -7069,6 +7069,13 @@ export default function Schedule() {
                 : `${sfDias}-${sfLibres}`;
             const sfRanuras = ranurasDelCiclo(sfDias, sfNoches, sfLibres);
 
+            // Achicar el ciclo puede dejar el índice elegido fuera: se enrolla
+            // igual que lo hará el servidor, así nunca se pinta nada elegido
+            // que ya no existe.
+            const sfArranque = sfCicloLen
+              ? (posEditor.cycleStartIndex || 0) % sfCicloLen
+              : 0;
+
             const paso = posEditor.sfPaso || 1;
             const editando = !!posEditor.positionId;
 
@@ -7084,21 +7091,63 @@ export default function Schedule() {
             }));
             const rondaLargo = rondaTramos.reduce((a, t) => a + t.dias, 0);
             const rondaCadencia = rondaTramos.map((t) => t.dias).join("-");
-            /** Los días trabajados de la ronda, en orden, con su estación. */
-            const rondaSecuencia: string[] = [];
-            for (const t of rondaTramos) {
-              for (let i = 0; i < t.dias; i++) rondaSecuencia.push(t.id);
+            /* ── LA VUELTA DE VERDAD: ESTACIÓN **Y** TRAMO ─────────────────
+               Enseñar sólo la estación no dice la operación. Su ciclo es D/N/L
+               y la ronda avanza por días TRABAJADOS, así que las dos cosas se
+               entrelazan: en una ronda 3-1 sobre un 3-3-2, la estación B no cae
+               siempre de noche ni siempre de día — va rotando. Sin verlo, nadie
+               sabe cuántos turnos de día y cuántos de noche acaba haciendo en
+               cada sitio, que es justo lo que hay que decidir.
+
+               La vuelta COMPLETA no es el ciclo ni la ronda: es donde vuelven a
+               coincidir. Con W días de trabajo por ciclo y una ronda de R, se
+               repite cada R/mcd(W,R) ciclos. Un 3-3-2 (W=6) con ronda 3-1 (R=4)
+               da 2 ciclos: 12 turnos, no 4.
+
+               Se simula igual que el motor —los libres se saltan y NO gastan
+               paso de ronda— para que lo que se promete aquí sea lo que sale. */
+            const mcd = (a: number, b: number): number => (b ? mcd(b, a % b) : a);
+            const trabajaPorCiclo = sfDias + sfNoches;
+            const vueltas =
+              rondaLargo > 0 && trabajaPorCiclo > 0
+                ? rondaLargo / mcd(trabajaPorCiclo, rondaLargo)
+                : 1;
+            const estacionEnPaso = (paso0: number): string => {
+              let r = rondaLargo > 0 ? paso0 % rondaLargo : 0;
+
+              for (const t of rondaTramos) {
+                if (r < t.dias) return t.id;
+                r -= t.dias;
+              }
+
+              return rondaTramos[0]?.id || "";
+            };
+            /** Los turnos de una vuelta entera, en orden, con su tramo. */
+            const rondaSecuencia: { id: string; noche: boolean }[] = [];
+            if (rondaLargo > 0 && trabajaPorCiclo > 0 && sfCicloLen > 0) {
+              let trabajados = 0;
+
+              for (let d = 0; d < vueltas * sfCicloLen; d++) {
+                const pos = (sfArranque + d) % sfCicloLen;
+
+                if (pos >= trabajaPorCiclo) continue; // libre: no gasta paso
+                rondaSecuencia.push({
+                  id: estacionEnPaso(trabajados),
+                  noche: pos >= sfDias,
+                });
+                trabajados++;
+              }
             }
+            /** Por estación: cuántos de día y cuántos de noche en esa vuelta. */
+            const rondaResumen = marcadas.map((id) => ({
+              id,
+              dia: rondaSecuencia.filter((x) => x.id === id && !x.noche).length,
+              noche: rondaSecuencia.filter((x) => x.id === id && x.noche).length,
+            }));
             /** Iniciales para la tira: A, B, C… en el orden de la lista. */
             const letraDe = (id: string) =>
               String.fromCharCode(65 + Math.max(0, marcadas.indexOf(id)));
 
-            // Achicar el ciclo puede dejar el índice elegido fuera: se enrolla
-            // igual que lo hará el servidor, así nunca se pinta nada elegido
-            // que ya no existe.
-            const sfArranque = sfCicloLen
-              ? (posEditor.cycleStartIndex || 0) % sfCicloLen
-              : 0;
             const sfRanuraElegida = sfRanuras.find((r) => r.i === sfArranque);
 
             return (
@@ -7502,48 +7551,96 @@ export default function Schedule() {
                           })}
                         </div>
 
-                        {/* La tira: los días TRABAJADOS de una vuelta, en orden.
-                            Los descansos no salen porque no consumen turno de
-                            estación — quien libra dos días no pierde su paso. */}
+                        {/* ── LO QUE DE VERDAD VA A HACER ────────────────
+                            La tira decía DÓNDE pero no QUÉ turno, y eso deja la
+                            decisión a medias: en una ronda 3-1 sobre un 3-3-2,
+                            la segunda estación no cae siempre de noche ni
+                            siempre de día — va rotando. Ahora cada casilla lleva
+                            su tramo, y encima va la cuenta por estación, que es
+                            la pregunta de verdad: cuántos de día y cuántos de
+                            noche acaba haciendo en cada sitio. */}
                         <div
                           className="mt-2 rounded-xl px-3 py-2"
                           style={toneCard("ok", 8, 26)}
                         >
-                          <div className="mb-1 flex items-center justify-between gap-2">
-                            <span className="cg-eyebrow">Su vuelta</span>
+                          <div className="mb-1.5 flex items-center justify-between gap-2">
+                            <span className="cg-eyebrow">Su vuelta completa</span>
                             <span className="text-[11px] font-semibold tabular-nums">
-                              {rondaCadencia} · {rondaLargo} día
-                              {rondaLargo === 1 ? "" : "s"} de trabajo
+                              {rondaSecuencia.length} turno
+                              {rondaSecuencia.length === 1 ? "" : "s"} ·{" "}
+                              {vueltas * sfCicloLen} días
                             </span>
                           </div>
-                          <div className="flex flex-wrap gap-1">
-                            {rondaSecuencia.map((id, i) => (
-                              <span
-                                key={`${id}-${i}`}
-                                className="flex h-5 w-5 items-center justify-center rounded text-[10px] font-bold"
-                                style={tonePill("ok", 14)}
-                                title={(() => {
-                                  const st = stationsById.get(id);
 
-                                  return st ? stationLabel(st) : "";
-                                })()}
-                              >
-                                {letraDe(id)}
-                              </span>
-                            ))}
-                            <span
-                              className="self-center text-[10px]"
-                              style={{ color: "var(--ink-faint)" }}
-                            >
-                              · y vuelta a empezar
-                            </span>
+                          {/* La cuenta por estación: lo que se estaba pidiendo. */}
+                          <div className="space-y-1">
+                            {rondaResumen.map((r) => {
+                              const st = stationsById.get(r.id);
+
+                              return (
+                                <div
+                                  key={r.id}
+                                  className="flex items-center gap-2 text-[11px]"
+                                >
+                                  <span
+                                    className="flex h-4 w-4 shrink-0 items-center justify-center rounded text-[9px] font-bold"
+                                    style={tonePill("ok", 14)}
+                                  >
+                                    {letraDe(r.id)}
+                                  </span>
+                                  <span className="min-w-0 flex-1 truncate">
+                                    {st ? stationLabel(st) : "—"}
+                                  </span>
+                                  <span className="shrink-0 tabular-nums">
+                                    <b>{r.dia}</b> de día ·{" "}
+                                    <b>{r.noche}</b> de noche
+                                  </span>
+                                </div>
+                              );
+                            })}
                           </div>
+
+                          {rondaSecuencia.length > 0 && (
+                            <div
+                              className="mt-2 flex flex-wrap gap-1 pt-2"
+                              style={{ borderTop: "1px solid var(--hairline)" }}
+                            >
+                              {rondaSecuencia.map((t, i) => (
+                                <span
+                                  key={`${t.id}-${i}`}
+                                  className="flex h-6 w-6 flex-col items-center justify-center rounded leading-none"
+                                  style={tonePill(t.noche ? "info" : "ok", 14)}
+                                  title={(() => {
+                                    const st = stationsById.get(t.id);
+
+                                    return `${st ? stationLabel(st) : ""} · ${t.noche ? "noche" : "día"}`;
+                                  })()}
+                                >
+                                  <span className="text-[10px] font-bold">
+                                    {letraDe(t.id)}
+                                  </span>
+                                  <span className="text-[7px] font-semibold opacity-80">
+                                    {t.noche ? "N" : "D"}
+                                  </span>
+                                </span>
+                              ))}
+                              <span
+                                className="self-center text-[10px]"
+                                style={{ color: "var(--ink-faint)" }}
+                              >
+                                · y vuelta a empezar
+                              </span>
+                            </div>
+                          )}
+
                           <p
-                            className="mt-1 text-[10px]"
+                            className="mt-1.5 text-[10px]"
                             style={{ color: "var(--ink-soft)" }}
                           >
-                            Cuenta sus días de TRABAJO: los de descanso no gastan
-                            turno de estación.
+                            {vueltas > 1
+                              ? `Su ciclo (${sfNombreCiclo}) y la ronda (${rondaCadencia}) no cuadran en una vuelta: tardan ${vueltas} ciclos en repetirse. Por eso la misma estación le toca unas veces de día y otras de noche.`
+                              : `Su ciclo (${sfNombreCiclo}) y la ronda (${rondaCadencia}) cuadran en una vuelta.`}{" "}
+                            Los días de descanso no gastan turno de estación.
                           </p>
                         </div>
                       </div>
