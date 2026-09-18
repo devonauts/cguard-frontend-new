@@ -121,7 +121,7 @@
     "eslint-plugin-react-hooks": "5.2.0",
     "eslint-plugin-unused-imports": "4.1.4",
     "globals": "16.0.0",
-    "postcss": "8.5.6",
+    "postcss": "8.5.28",
     "prettier": "3.5.3",
     "rollup": "^4.53.3",
     "tailwindcss-animate": "^1.0.7",
