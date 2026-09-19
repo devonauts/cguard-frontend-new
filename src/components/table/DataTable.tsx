@@ -29,6 +29,8 @@ import { RowActionsMenu, type RowAction } from "./RowActionsMenu";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { EmptyState } from "@/components/kit";
+import MobileCardList from "@/components/responsive/MobileCardList";
+import { useEsTelefono } from "@/hooks/useEsTelefono";
 import { cn } from "@/lib/utils";
 import i18n from "@/i18n";
 
@@ -76,6 +78,9 @@ type DataTableProps<T> = {
   footer?: React.ReactNode;
   /** Filas fantasma mientras carga. */
   skeletonRows?: number;
+  /** No plegar en tarjetas en el teléfono. Para la tabla donde la REJILLA es
+   *  el dato —comparar una columna de arriba abajo— y no una lista de fichas. */
+  sinTarjetas?: boolean;
 };
 
 /** Ancho variado para que el esqueleto no parezca una rejilla. */
@@ -102,7 +107,9 @@ export function DataTable<T extends { id: string }>({
   toolbar,
   footer,
   skeletonRows = 6,
+  sinTarjetas,
 }: DataTableProps<T>) {
+  const esTelefono = useEsTelefono();
   const allSelected =
     Array.isArray(selectedIds) &&
     data &&
@@ -397,6 +404,115 @@ export function DataTable<T extends { id: string }>({
       </tbody>
     </table>
   );
+
+  /* ── LA MISMA TABLA, PLEGADA EN FICHAS ───────────────────────────────────
+     Siete pantallas pintaban una tabla de siete a nueve columnas en 390 px:
+     979 px de ancho dentro de un carril de 314. Se lee arrastrando de lado,
+     que es la peor manera de leer una lista.
+
+     `MobileCardList` ya existía y su propio comentario decía que era «la cara
+     móvil de DataTable» — pero había que cablearla a mano, así que sólo lo
+     hacían dos pantallas. Ahora lo hace la tabla: conoce sus columnas, así que
+     puede plegar cada fila sin que nadie escriba una tarjeta.
+
+     La PRIMERA columna es el título de la ficha —en la tabla ya se pinta como
+     ancla de la fila— y el resto van como etiqueta y valor. Las vacías se caen:
+     una ficha con seis «—» no dice nada. */
+  const filaComoFicha = (row: T) => {
+    const [primera, ...resto] = resolved;
+    const vacio = (v: any) =>
+      v == null || v === "" || (typeof v === "string" && v.trim() === "");
+    const pintar = (col: Column<T>) => {
+      const value = (row as any)[col.key];
+
+      return col.render ? col.render(value, row) : value;
+    };
+
+    return (
+      <>
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex min-w-0 flex-1 items-start gap-2.5">
+            {showSelection && (
+              <Checkbox
+                aria-label={i18n.t("kit.table.selectRow", {
+                  defaultValue: "Seleccionar fila",
+                })}
+                checked={selectedSet.has(String((row as any).id))}
+                className="mt-0.5"
+                onCheckedChange={(v) =>
+                  onSelectOne?.((row as any).id, Boolean(v))
+                }
+                onClick={(e) => e.stopPropagation()}
+              />
+            )}
+            <div className="min-w-0 flex-1 text-sm font-semibold">
+              {primera ? pintar(primera.col) : null}
+            </div>
+          </div>
+          {rowActions && (
+            <div
+              className="-mr-1 -mt-1 shrink-0"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <RowActionsMenu actions={rowActions(row)} />
+            </div>
+          )}
+        </div>
+
+        {resto.some(({ col }) => !vacio((row as any)[col.key])) && (
+          <dl className="mt-1 grid gap-1.5 text-xs">
+            {resto.map(({ col }) => {
+              const value = (row as any)[col.key];
+
+              if (vacio(value) && !col.render) return null;
+
+              return (
+                <div
+                  key={String(col.key)}
+                  className="flex items-start justify-between gap-3"
+                >
+                  <dt className="shrink-0" style={{ color: "var(--ink-faint)" }}>
+                    {col.header}
+                  </dt>
+                  <dd className="min-w-0 text-right">{pintar(col)}</dd>
+                </div>
+              );
+            })}
+          </dl>
+        )}
+      </>
+    );
+  };
+
+  if (esTelefono && !sinTarjetas) {
+    /* `toolbar` y `footer` siguen pintándose: el pie es donde vive la
+       paginación, y dejarla fuera convertía una lista de 159 fichas en un
+       desplazamiento infinito sin manera de saltar. */
+    return (
+      <div className="space-y-3">
+        {toolbar && (
+          <div className="flex flex-wrap items-center gap-2">{toolbar}</div>
+        )}
+        <MobileCardList
+          emptyState={emptyState}
+          items={data ?? []}
+          loading={loading}
+          renderCard={filaComoFicha}
+          selectedIds={selectedIds}
+          skeletonCount={skeletonRows}
+          onItemClick={onRowClick}
+        />
+        {footer && (
+          <div
+            className="flex flex-wrap items-center justify-between gap-2 text-xs"
+            style={{ color: "var(--ink-soft)" }}
+          >
+            {footer}
+          </div>
+        )}
+      </div>
+    );
+  }
 
   const scroller = (
     /* `min-w-0`: dentro de una rejilla o de un flex, el ancho mínimo por
