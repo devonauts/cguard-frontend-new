@@ -3178,11 +3178,11 @@ export default function Schedule() {
     sfWizard?: boolean;
     /* ── EL ASISTENTE VA POR PASOS ────────────────────────────────────────
        Todo cabía en un solo diálogo mientras fueron cuatro preguntas. Con la
-       ronda de estaciones son tres bloques que no se leen de una: quién es, qué
+       alternancia entre estaciones son tres bloques que no se leen de una: quién
        ciclo corre, y por dónde rota. En una pantalla seguida hay que hacer
        scroll para saber si ya se contestó algo. */
     sfPaso?: 1 | 2 | 3;
-    /** Editando: la asignación del sacafranco (la ronda y el alta viven ahí). */
+    /** Editando: la asignación del sacafranco (la alternancia y el alta viven ahí). */
     assignmentId?: string;
     guardId?: string;
     rotMode?: "rotativo" | "manual";
@@ -3266,9 +3266,9 @@ export default function Schedule() {
      se crea (`resolverEstiloDeRotacion`). Vacío = hereda el de la estación. */
   /* ── EDITAR UN SACAFRANCO ES EL MISMO ASISTENTE ─────────────────────────
      Un sacafranco vive en DOS tablas: la plaza (nombre, horas) y su asignación
-     (quién es, desde cuándo, su ciclo, por qué casilla entra y la ronda de
+     (quién es, desde cuándo, su ciclo, por qué casilla entra y la alternancia de
      estaciones). El editor genérico de puestos sólo conoce la primera, así que
-     para cambiarle la ronda había que borrarlo y volver a crearlo — y la baja
+     para cambiarle la alternancia había que borrarlo y volver a crearlo — y la baja
      le anula los turnos futuros.
 
      Aquí se abre el asistente ya relleno con las dos, y al guardar se escriben
@@ -3280,8 +3280,8 @@ export default function Schedule() {
     const ciclo = asg?.rotationStyleId
       ? rotationStyles.find((r) => r.id === String(asg.rotationStyleId))
       : null;
-    /* La lista que cubre manda el ORDEN de la ronda. Si está vacía, al menos su
-       propia estación: una ronda sin estaciones no se puede dibujar. */
+    /* La lista que cubre manda el ORDEN de la alternancia. Si está vacía, al menos su
+       propia estación: una alternancia sin estaciones no se puede dibujar. */
     const cubiertas = Array.isArray(asg?.coveredStationIds)
       ? (asg?.coveredStationIds as string[]).map(String).filter(Boolean)
       : [];
@@ -3498,7 +3498,7 @@ export default function Schedule() {
           }
 
           /* El orden de `stationIds` ES la cadencia, y el servidor lo conserva
-             tal cual desde que la ronda lo lee. Los días se recortan a las
+             tal cual desde que la alternancia lo lee. Los días se recortan a las
              estaciones que de verdad cubre. */
           const dias: Record<string, number> = {};
           for (const id of ids) {
@@ -3695,14 +3695,14 @@ export default function Schedule() {
         // Se espera al refresco: la asignación que se abre a continuación lee
         // el tipo de la posición recién creada para saber que es un relevo.
         await fetchAll({ silent: true });
-        /* Prometía «cubrirá N estaciones» aunque la ronda todavía no estuviera
+        /* Prometía «cubrirá N estaciones» aunque la alternancia todavía no estuviera
            guardada en ninguna parte: se guarda con la ASIGNACIÓN, y este camino
            es el de la fila sin vigilante. Si se abandona el diálogo que viene
            detrás, la cobertura se queda sin escribir — así que aquí se dice lo
            que de verdad ha pasado. */
         toast.success(
           ids.length > 1
-            ? `Sacafranco creado — su ronda por ${ids.length} estaciones se guarda al asignarle un vigilante`
+            ? `Sacafranco creado. Asígnale un vigilante: hasta entonces no se guarda en qué estaciones cubre ni cada cuántos días.`
             : "Sacafranco creado",
         );
         if (nuevoId) {
@@ -5938,7 +5938,7 @@ export default function Schedule() {
                                           sacafranco ya creado no se podía tocar:
                                           la fila sólo ofrecía «asignar» y
                                           «eliminar», y para cambiarle el ciclo o
-                                          la ronda había que borrarlo y rehacerlo
+                                          la alternancia había que borrarlo y rehacerlo
                                           —con lo que se le anulan los turnos
                                           futuros—. Ahora abre su asistente, el
                                           mismo con el que se creó. */}
@@ -7052,7 +7052,7 @@ export default function Schedule() {
           /* El MISMO asistente crea y edita. Antes editar un sacafranco caía
              en el diálogo genérico de puestos —nombre, tipo, horas— donde no
              existen ni su ciclo ni las estaciones que cubre: para cambiarle la
-             ronda había que borrarlo y rehacerlo. */
+             alternancia había que borrarlo y rehacerlo. */
           if (posEditor.sfWizard) {
             const marcadas = posEditor.stationIds;
             const alternar = (id: string) => {
@@ -7110,53 +7110,53 @@ export default function Schedule() {
                cuenta, un día. Así «3-1» se escribe con dos casillas y se lee
                entero en la vista previa de abajo, que es lo único que dice si
                lo que se tecleó es lo que se quería. */
-            const rondaTramos = marcadas.map((id) => ({
+            const tramosPorEstacion = marcadas.map((id) => ({
               id,
               dias: Math.max(1, Math.floor(posEditor.stationDays?.[id] ?? 1)),
             }));
-            const rondaLargo = rondaTramos.reduce((a, t) => a + t.dias, 0);
-            const rondaCadencia = rondaTramos.map((t) => t.dias).join("-");
+            const pasosDeLaAlternancia = tramosPorEstacion.reduce((a, t) => a + t.dias, 0);
+            const cadencia = tramosPorEstacion.map((t) => t.dias).join("-");
             /* ── LA VUELTA DE VERDAD: ESTACIÓN **Y** TRAMO ─────────────────
                Enseñar sólo la estación no dice la operación. Su ciclo es D/N/L
-               y la ronda avanza por días TRABAJADOS, así que las dos cosas se
-               entrelazan: en una ronda 3-1 sobre un 3-3-2, la estación B no cae
+               y la alternancia avanza por días TRABAJADOS, así que las dos cosas se
+               entrelazan: con una alternancia 3-1 sobre un 3-3-2, la estación B no cae
                siempre de noche ni siempre de día — va rotando. Sin verlo, nadie
                sabe cuántos turnos de día y cuántos de noche acaba haciendo en
                cada sitio, que es justo lo que hay que decidir.
 
-               La vuelta COMPLETA no es el ciclo ni la ronda: es donde vuelven a
-               coincidir. Con W días de trabajo por ciclo y una ronda de R, se
-               repite cada R/mcd(W,R) ciclos. Un 3-3-2 (W=6) con ronda 3-1 (R=4)
+               El tramo que SE REPITE no es el ciclo ni la alternancia: es donde vuelven a
+               coincidir. Con W días de trabajo por ciclo y una alternancia de R, se
+               repite cada R/mcd(W,R) ciclos. Un 3-3-2 (W=6) con alternancia 3-1 (R=4)
                da 2 ciclos: 12 turnos, no 4.
 
                Se simula igual que el motor —los libres se saltan y NO gastan
-               paso de ronda— para que lo que se promete aquí sea lo que sale. */
+               paso de la alternancia— para que lo que se promete aquí sea lo que sale. */
             const mcd = (a: number, b: number): number => (b ? mcd(b, a % b) : a);
             const trabajaPorCiclo = sfDias + sfNoches;
-            const vueltas =
-              rondaLargo > 0 && trabajaPorCiclo > 0
-                ? rondaLargo / mcd(trabajaPorCiclo, rondaLargo)
+            const ciclosHastaRepetir =
+              pasosDeLaAlternancia > 0 && trabajaPorCiclo > 0
+                ? pasosDeLaAlternancia / mcd(trabajaPorCiclo, pasosDeLaAlternancia)
                 : 1;
             const estacionEnPaso = (paso0: number): string => {
-              let r = rondaLargo > 0 ? paso0 % rondaLargo : 0;
+              let r = pasosDeLaAlternancia > 0 ? paso0 % pasosDeLaAlternancia : 0;
 
-              for (const t of rondaTramos) {
+              for (const t of tramosPorEstacion) {
                 if (r < t.dias) return t.id;
                 r -= t.dias;
               }
 
-              return rondaTramos[0]?.id || "";
+              return tramosPorEstacion[0]?.id || "";
             };
             /** Los turnos de una vuelta entera, en orden, con su tramo. */
-            const rondaSecuencia: { id: string; noche: boolean }[] = [];
-            if (rondaLargo > 0 && trabajaPorCiclo > 0 && sfCicloLen > 0) {
+            const secuenciaDeTurnos: { id: string; noche: boolean }[] = [];
+            if (pasosDeLaAlternancia > 0 && trabajaPorCiclo > 0 && sfCicloLen > 0) {
               let trabajados = 0;
 
-              for (let d = 0; d < vueltas * sfCicloLen; d++) {
+              for (let d = 0; d < ciclosHastaRepetir * sfCicloLen; d++) {
                 const pos = (sfArranque + d) % sfCicloLen;
 
                 if (pos >= trabajaPorCiclo) continue; // libre: no gasta paso
-                rondaSecuencia.push({
+                secuenciaDeTurnos.push({
                   id: estacionEnPaso(trabajados),
                   noche: pos >= sfDias,
                 });
@@ -7164,10 +7164,10 @@ export default function Schedule() {
               }
             }
             /** Por estación: cuántos de día y cuántos de noche en esa vuelta. */
-            const rondaResumen = marcadas.map((id) => ({
+            const resumenPorEstacion = marcadas.map((id) => ({
               id,
-              dia: rondaSecuencia.filter((x) => x.id === id && !x.noche).length,
-              noche: rondaSecuencia.filter((x) => x.id === id && x.noche).length,
+              dia: secuenciaDeTurnos.filter((x) => x.id === id && !x.noche).length,
+              noche: secuenciaDeTurnos.filter((x) => x.id === id && x.noche).length,
             }));
             /** Iniciales para la tira: A, B, C… en el orden de la lista. */
             const letraDe = (id: string) =>
@@ -7483,17 +7483,17 @@ export default function Schedule() {
                             solo», que era verdad mientras la lista era sólo un
                             permiso de fichaje. Con la cadencia de abajo SÍ los
                             reparte — y seguir diciendo lo contrario debajo de
-                            una tira que enseña la ronda es peor que no decir
+                            una tira que la enseña es peor que no decir
                             nada. */}
                         {!marcadas.length
                           ? "Marca al menos una."
                           : marcadas.length === 1
                             ? "Todos sus días de trabajo van a esta estación."
-                            : "El orden y los días de abajo son su ronda: se recorre tal cual, sin adivinar huecos."}
+                            : "El orden y los días de abajo dicen cómo alterna: se recorre tal cual, sin adivinar huecos."}
                       </p>
 
                       {/* ── SIN VIGILANTE, LA RONDA NO SE GUARDA ───────────
-                          La ronda vive en la ASIGNACIÓN, no en la plaza: crear
+                          La alternancia vive en la ASIGNACIÓN, no en la plaza: crear
                           la fila sin nadie dentro deja las estaciones y la
                           cadencia sin sitio donde guardarse. Antes esto pasaba
                           en silencio —el aviso decía «cubrirá 4 estaciones» y
@@ -7503,9 +7503,9 @@ export default function Schedule() {
                           className="mt-1.5 rounded-lg px-2 py-1.5 text-[10px]"
                           style={toneCard("warn", 8, 26)}
                         >
-                          Sin vigilante, la fila se crea vacía y esta ronda
-                          <b> se vuelve a pedir al asignarlo</b>: es su
-                          asignación la que la guarda.
+                          Sin vigilante, la fila se crea vacía y esto
+                          <b> se vuelve a preguntar al asignarlo</b>: es su
+                          asignación la que lo guarda.
                         </p>
                       )}
                     </div>
@@ -7521,7 +7521,7 @@ export default function Schedule() {
                         Ojo con lo que esto NO hace: no busca huecos. El reparto
                         automático se retiró porque miraba los descansos de toda
                         la empresa y colocaba al sacafranco donde le parecía. La
-                        ronda se recorre y punto. */}
+                        alternancia se recorre y punto. */}
                     {marcadas.length > 1 && (
                       <div>
                         <label className="cg-eyebrow mb-1.5 block">
@@ -7531,7 +7531,7 @@ export default function Schedule() {
                           className="space-y-1 rounded-xl px-2 py-2"
                           style={{ border: "1px solid var(--hairline)" }}
                         >
-                          {rondaTramos.map((t, idx) => {
+                          {tramosPorEstacion.map((t, idx) => {
                             const st = stationsById.get(t.id);
 
                             return (
@@ -7585,7 +7585,7 @@ export default function Schedule() {
                                   <button
                                     aria-label="Bajar"
                                     className="cg-btn-ghost cg-focus rounded px-1 text-[9px] leading-tight disabled:opacity-30"
-                                    disabled={idx === rondaTramos.length - 1}
+                                    disabled={idx === tramosPorEstacion.length - 1}
                                     type="button"
                                     onClick={() => {
                                       const v = [...marcadas];
@@ -7604,7 +7604,7 @@ export default function Schedule() {
 
                         {/* ── LO QUE DE VERDAD VA A HACER ────────────────
                             La tira decía DÓNDE pero no QUÉ turno, y eso deja la
-                            decisión a medias: en una ronda 3-1 sobre un 3-3-2,
+                            decisión a medias: con una alternancia 3-1 sobre un 3-3-2,
                             la segunda estación no cae siempre de noche ni
                             siempre de día — va rotando. Ahora cada casilla lleva
                             su tramo, y encima va la cuenta por estación, que es
@@ -7615,17 +7615,17 @@ export default function Schedule() {
                           style={toneCard("ok", 8, 26)}
                         >
                           <div className="mb-1.5 flex items-center justify-between gap-2">
-                            <span className="cg-eyebrow">Su vuelta completa</span>
+                            <span className="cg-eyebrow">Cómo queda repartido</span>
                             <span className="text-[11px] font-semibold tabular-nums">
-                              {rondaSecuencia.length} turno
-                              {rondaSecuencia.length === 1 ? "" : "s"} ·{" "}
-                              {vueltas * sfCicloLen} días
+                              {secuenciaDeTurnos.length} turno
+                              {secuenciaDeTurnos.length === 1 ? "" : "s"} ·{" "}
+                              {ciclosHastaRepetir * sfCicloLen} días
                             </span>
                           </div>
 
                           {/* La cuenta por estación: lo que se estaba pidiendo. */}
                           <div className="space-y-1">
-                            {rondaResumen.map((r) => {
+                            {resumenPorEstacion.map((r) => {
                               const st = stationsById.get(r.id);
 
                               return (
@@ -7651,12 +7651,12 @@ export default function Schedule() {
                             })}
                           </div>
 
-                          {rondaSecuencia.length > 0 && (
+                          {secuenciaDeTurnos.length > 0 && (
                             <div
                               className="mt-2 flex flex-wrap gap-1 pt-2"
                               style={{ borderTop: "1px solid var(--hairline)" }}
                             >
-                              {rondaSecuencia.map((t, i) => (
+                              {secuenciaDeTurnos.map((t, i) => (
                                 <span
                                   key={`${t.id}-${i}`}
                                   className="flex h-6 w-6 flex-col items-center justify-center rounded leading-none"
@@ -7679,7 +7679,7 @@ export default function Schedule() {
                                 className="self-center text-[10px]"
                                 style={{ color: "var(--ink-faint)" }}
                               >
-                                · y vuelta a empezar
+                                · y se repite
                               </span>
                             </div>
                           )}
@@ -7691,21 +7691,21 @@ export default function Schedule() {
                             {/* ── LA EXPLICACIÓN TIENE QUE SER VERDAD ────
                                 Decía «por eso la misma estación le toca unas
                                 veces de día y otras de noche» SIEMPRE que el
-                                ciclo y la ronda no cuadraran. Con un ciclo sin
+                                ciclo y la alternancia no encajaran. Con un ciclo sin
                                 tramo de noche eso es falso —salen doce casillas
                                 todas de día y el texto debajo hablando de
                                 noches—, y la coletilla de los descansos sobra
                                 cuando el ciclo no tiene ninguno. Se dice sólo
                                 lo que se ve. */}
-                            {vueltas > 1
-                              ? `Su ciclo (${sfNombreCiclo}) y la ronda (${rondaCadencia}) no cuadran en una vuelta: tardan ${vueltas} ciclos en repetirse.`
-                              : `Su ciclo (${sfNombreCiclo}) y la ronda (${rondaCadencia}) cuadran en una vuelta.`}
-                            {vueltas > 1 && sfNoches > 0 && sfDias > 0
+                            {ciclosHastaRepetir > 1
+                              ? `Su ciclo (${sfNombreCiclo}) y la alternancia (${cadencia}) no encajan a la primera: tardan ${ciclosHastaRepetir} ciclos en volver a coincidir.`
+                              : `Su ciclo (${sfNombreCiclo}) y la alternancia (${cadencia}) encajan a la primera.`}
+                            {ciclosHastaRepetir > 1 && sfNoches > 0 && sfDias > 0
                               ? " Por eso la misma estación le toca unas veces de día y otras de noche."
                               : ""}
                             {sfLibres > 0
                               ? " Los días de descanso no gastan turno de estación."
-                              : " Sin descansos, cada día del ciclo gasta un turno de la ronda."}
+                              : " Sin descansos, cada día del ciclo gasta un paso de la alternancia."}
                           </p>
                         </div>
                       </div>
