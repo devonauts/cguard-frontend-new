@@ -46,6 +46,11 @@ export type Column<T = any> = {
    *  unidades queden una debajo de otra. Se deduce sola cuando la columna
    *  trae números sin `render` propio. */
   numeric?: boolean;
+  /** Esta columna TITULA la ficha del teléfono. Por omisión titula la primera,
+   *  que en una tabla suele ser el ancla de la fila — pero no siempre: en
+   *  Solicitudes de clientes la primera es la fecha, y una ficha encabezada por
+   *  «19 sept 2026, 09:19 a. m.» no dice de qué va. */
+  titulo?: boolean;
 };
 
 type DataTableProps<T> = {
@@ -419,9 +424,49 @@ export function DataTable<T extends { id: string }>({
      ancla de la fila— y el resto van como etiqueta y valor. Las vacías se caen:
      una ficha con seis «—» no dice nada. */
   const filaComoFicha = (row: T) => {
-    const [primera, ...resto] = resolved;
-    const vacio = (v: any) =>
-      v == null || v === "" || (typeof v === "string" && v.trim() === "");
+    /* Vacío se juzga por lo PINTADO, no por el dato crudo: la columna «Fecha»
+       de Solicitudes pinta `dateTime || createdAt`, así que mirando sólo
+       `dateTime` —que viene nulo— la fila desaparecía aunque tuviera fecha. Y
+       una columna derivada como «duración» no tiene clave propia en la fila.
+       `render` es un formateador puro, llamarlo dos veces no cuesta nada. */
+    const sinContenido = ({ col }: { col: Column<T> }) => {
+      const raw = (row as any)[col.key];
+      const pintado = col.render ? col.render(raw, row) : raw;
+
+      const parece = (v: any) => {
+        if (v == null) return true;
+        if (typeof v === "number") return false;
+        if (typeof v !== "string") return false;
+        const t = v.trim();
+
+        // La raya es el «sin dato» de todo el CRM; en una ficha no aporta.
+        return t === "" || t === "—" || t === "-";
+      };
+
+      /* Si lo pintado es texto, manda lo pintado. Si es un nodo —una etiqueta,
+         unas estrellas, un `<span>` de estilo— no se puede leer por dentro, así
+         que se juzga el dato crudo: «Mensaje» envuelve su contenido en un
+         `<span>` y sin esto la fila salía con una raya dentro de una caja. */
+      return React.isValidElement(pintado)
+        ? parece(raw)
+        : parece(pintado);
+    };
+
+    /* El título es la columna marcada `titulo`, o la primera. Pero si ESA viene
+       vacía en esta fila, se busca la siguiente con contenido: una ficha
+       encabezada por una raya no identifica nada, y la fecha o el cliente que
+       venga detrás sí. */
+    const marcado = resolved.findIndex(({ col }) => col.titulo);
+    const preferido = marcado >= 0 ? marcado : 0;
+    const iTitulo = !sinContenido(resolved[preferido])
+      ? preferido
+      : Math.max(
+          0,
+          resolved.findIndex((c) => !sinContenido(c)),
+        );
+    const primera = resolved[iTitulo];
+    const resto = resolved.filter((_, i) => i !== iTitulo);
+
     const pintar = (col: Column<T>) => {
       const value = (row as any)[col.key];
 
@@ -459,12 +504,12 @@ export function DataTable<T extends { id: string }>({
           )}
         </div>
 
-        {resto.some(({ col }) => !vacio((row as any)[col.key])) && (
+        {resto.some((c) => !sinContenido(c)) && (
           <dl className="mt-1 grid gap-1.5 text-xs">
-            {resto.map(({ col }) => {
-              const value = (row as any)[col.key];
+            {resto.map((c) => {
+              const { col } = c;
 
-              if (vacio(value) && !col.render) return null;
+              if (sinContenido(c)) return null;
 
               return (
                 <div

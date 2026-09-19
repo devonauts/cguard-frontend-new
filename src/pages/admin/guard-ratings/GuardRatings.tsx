@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { DataTable } from "@/components/table/DataTable";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
@@ -258,106 +259,65 @@ export default function GuardRatings() {
           icon={<Star />}
           title="Calificaciones a personal"
         >
-          <Table>
-            <TableHeader style={{ background: "var(--glass-sunken)" }}>
-              <TableRow>
-                <TableHead className="cg-eyebrow">{t("comun.fecha")}</TableHead>
-                <TableHead className="cg-eyebrow">
-                  {t("comun.vigilante")}
-                </TableHead>
-                <TableHead className="cg-eyebrow">
-                  {t("comun.cliente")}
-                </TableHead>
-                <TableHead className="cg-eyebrow">
-                  {t("ui.GuardRatings.estacion", "Estación")}
-                </TableHead>
-                <TableHead className="cg-eyebrow">
-                  {t("ui.GuardRatings.calificacion", "Calificación")}
-                </TableHead>
-                <TableHead className="cg-eyebrow">Comentario</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell className="h-[200px] text-center" colSpan={6}>
-                    <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
-                  </TableCell>
-                </TableRow>
-              ) : error ? (
-                <TableRow>
-                  <TableCell className="p-0" colSpan={6}>
-                    <EmptyState
-                      action={
-                        <Button variant="outline" onClick={fetchRecords}>
-                          <RotateCcw className="h-4 w-4 mr-2" /> Reintentar
-                        </Button>
-                      }
-                      className="border-0"
-                      description={t("ui.GuardRatings.ocurrioUnErrorAlObtener")}
-                      icon={<AlertCircle />}
-                      title={t(
-                        "ui.GuardRatings.noSePudoCargarLa",
-                        "No se pudo cargar la información",
-                      )}
-                    />
-                  </TableCell>
-                </TableRow>
-              ) : paginated.length === 0 ? (
-                <TableRow>
-                  <TableCell className="p-0" colSpan={6}>
-                    <EmptyState
-                      className="border-0"
-                      description={t(
-                        "ui.GuardRatings.lasCalificacionesEnviadasPorLos",
-                      )}
-                      icon={<Star />}
-                      title={t("ui.GuardRatings.noHayCalificaciones")}
-                    />
-                  </TableCell>
-                </TableRow>
-              ) : (
-                paginated.map((rec) => (
-                  <TableRow
-                    key={rec.id}
-                    className={rec.guardId ? "cursor-pointer" : undefined}
-                    title={
-                      rec.guardId
-                        ? t(
-                            "ui.GuardRatingLevel.verResenasDelVigilante",
-                            "Ver reseñas del vigilante",
-                          )
-                        : undefined
-                    }
-                    onClick={() =>
-                      rec.guardId && navigate(`/guards/${rec.guardId}/reviews`)
-                    }
-                  >
-                    <TableCell className="whitespace-nowrap">
-                      {formatDate(rec.createdAt)}
-                    </TableCell>
-                    <TableCell
-                      className="font-medium hover:underline"
-                      style={{ color: "var(--brand-text)" }}
-                    >
-                      {rec.guardName ?? "—"}
-                    </TableCell>
-                    <TableCell>{rec.clientName ?? "—"}</TableCell>
-                    <TableCell>{rec.stationName ?? "—"}</TableCell>
-                    <TableCell>
-                      <Stars value={rec.rating} />
-                    </TableCell>
-                    <TableCell
-                      className="max-w-[320px] truncate text-muted-foreground"
-                      title={rec.comment ?? undefined}
-                    >
-                      {rec.comment ?? "—"}
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+          {/* `DataTable` y no el primitivo `<Table>`: se pliega sola en fichas
+              en el teléfono, donde estas seis columnas se leían de lado. El
+              clic de la fila —ir a las reseñas del vigilante— viaja en
+              `onRowClick`, y la ficha lo hereda. */}
+          <DataTable
+            columns={[
+              {
+                key: "createdAt",
+                header: t("comun.fecha"),
+                render: (_v: any, row: any) => formatDate(row.createdAt),
+              },
+              {
+                key: "guardName",
+                header: t("comun.vigilante"),
+                titulo: true,
+                render: (_v: any, row: any) => (
+                  <span style={{ color: "var(--brand-text)" }}>
+                    {row.guardName ?? "—"}
+                  </span>
+                ),
+              },
+              {
+                key: "clientName",
+                header: t("comun.cliente"),
+                render: (_v: any, row: any) => row.clientName ?? "—",
+              },
+              {
+                key: "stationName",
+                header: t("ui.GuardRatings.estacion", "Estación"),
+                render: (_v: any, row: any) => row.stationName ?? "—",
+              },
+              {
+                key: "rating",
+                header: t("ui.GuardRatings.calificacion", "Calificación"),
+                render: (_v: any, row: any) => <Stars value={row.rating} />,
+              },
+              {
+                key: "comment",
+                header: "Comentario",
+                render: (_v: any, row: any) => row.comment ?? "—",
+              },
+            ]}
+            containerless
+            data={paginated as any}
+            emptyState={
+              <EmptyState
+                className="border-0"
+                description={t(
+                  "ui.GuardRatings.lasCalificacionesEnviadasPorLos",
+                )}
+                icon={<Star />}
+                title={t("ui.GuardRatings.noHayCalificaciones")}
+              />
+            }
+            loading={loading}
+            onRowClick={(row: any) =>
+              row.guardId && navigate(`/guards/${row.guardId}/reviews`)
+            }
+          />
         </Section>
 
         {/* Pagination */}

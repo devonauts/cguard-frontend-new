@@ -431,6 +431,7 @@ export default function ShiftStatus() {
               {
                 key: "_guardName",
                 header: t("comun.vigilante"),
+                titulo: true,
               },
               {
                 key: "_stationName",

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { DataTable } from "@/components/table/DataTable";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import AppLayout from "@/layouts/app-layout";
@@ -238,135 +239,75 @@ export default function CustomerRequests() {
             {/* 7 columnas: por debajo de ~880 px la tabla se desplaza dentro de su
               caja (el envoltorio de `Table` ya trae el `overflow-auto`) en vez de
               apretar cada columna hasta lo ilegible. */}
-            <Table className="min-w-[880px]">
-              <TableHeader style={{ background: "var(--glass-sunken)" }}>
-                <TableRow>
-                  <TableHead className="cg-eyebrow">
-                    {t("comun.fecha")}
-                  </TableHead>
-                  <TableHead className="cg-eyebrow">
-                    {t("comun.cliente")}
-                  </TableHead>
-                  <TableHead className="cg-eyebrow">Asunto</TableHead>
-                  <TableHead className="cg-eyebrow">Mensaje</TableHead>
-                  <TableHead className="cg-eyebrow">
-                    {t("comun.puesto")}
-                  </TableHead>
-                  <TableHead className="cg-eyebrow">
-                    {t("comun.estado")}
-                  </TableHead>
-                  <TableHead className="w-[50px]"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="h-[200px] text-center">
-                      <Loader2
-                        className="mx-auto h-6 w-6 animate-spin"
-                        style={{ color: "var(--ink-faint)" }}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ) : error ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="h-[300px] text-center">
-                      <EmptyState
-                        icon={<AlertCircle />}
-                        title={t(
-                          "ui.CustomerRequests.noSePudoCargarLa",
-                          "No se pudo cargar la información",
-                        )}
-                        description={t(
-                          "ui.CustomerRequests.ocurrioUnErrorAlObtener",
-                        )}
-                        action={
-                          <Button variant="outline" onClick={fetchRecords}>
-                            <RotateCcw className="mr-2 h-4 w-4" /> Reintentar
-                          </Button>
-                        }
-                        className="border-0"
-                      />
-                    </TableCell>
-                  </TableRow>
-                ) : paginated.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="h-[400px] text-center">
-                      <EmptyState
-                        icon={<Inbox />}
-                        title={t(
-                          "ui.CustomerRequests.noHaySolicitudesDeClientes",
-                        )}
-                        description={t(
-                          "ui.CustomerRequests.lasSolicitudesEnviadasDesdeLa",
-                        )}
-                        className="border-0"
-                      />
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  paginated.map((rec) => (
-                    <TableRow key={rec.id}>
-                      <TableCell className="whitespace-nowrap tabular-nums">
-                        {formatDate(rec.dateTime || rec.createdAt)}
-                      </TableCell>
-                      <TableCell>{rec.callerName ?? "—"}</TableCell>
-                      <TableCell className="font-medium">
-                        {rec.subject ?? "—"}
-                      </TableCell>
-                      <TableCell
-                        className="max-w-[280px] truncate"
-                        style={{ color: "var(--ink-soft)" }}
-                        title={rec.content ?? undefined}
-                      >
-                        {rec.content ?? "—"}
-                      </TableCell>
-                      <TableCell>{rec.station?.stationName ?? "—"}</TableCell>
-                      <TableCell>{getStatusBadge(rec.status)}</TableCell>
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <EllipsisVertical
-                                className="h-4 w-4"
-                                style={{ color: "var(--ink-soft)" }}
-                              />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            {rec.status !== "cerrado" ? (
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  handleSetStatus(rec.id, "cerrado")
-                                }
-                              >
-                                <CheckCircle
-                                  className="mr-2 h-4 w-4"
-                                  style={{ color: "var(--ok-text)" }}
-                                />{" "}
-                                Marcar como atendida
-                              </DropdownMenuItem>
-                            ) : (
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  handleSetStatus(rec.id, "abierto")
-                                }
-                              >
-                                <RotateCcw
-                                  className="mr-2 h-4 w-4"
-                                  style={{ color: "var(--warn-text)" }}
-                                />{" "}
-                                Reabrir
-                              </DropdownMenuItem>
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+            {/* `DataTable` y no el primitivo `<Table>` con `min-w-[880px]`: esas
+                880 px en una pantalla de 390 se leían arrastrando de lado. Ahora
+                se pliega en fichas, y el desplegable de la última columna —el
+                mismo `DropdownMenu` escrito a mano de siempre— va por
+                `rowActions`. */}
+            <DataTable
+              columns={[
+                {
+                  key: "dateTime",
+                  header: t("comun.fecha"),
+                  render: (_v: any, row: any) =>
+                    formatDate(row.dateTime || row.createdAt),
+                },
+                {
+                  key: "callerName",
+                  header: t("comun.cliente"),
+                  render: (_v: any, row: any) => row.callerName ?? "—",
+                },
+                {
+                  key: "subject",
+                  header: "Asunto",
+                  titulo: true,
+                  render: (_v: any, row: any) => row.subject ?? "—",
+                },
+                {
+                  key: "content",
+                  header: "Mensaje",
+                  render: (_v: any, row: any) => (
+                    <span style={{ color: "var(--ink-soft)" }}>
+                      {row.content ?? "—"}
+                    </span>
+                  ),
+                },
+                {
+                  key: "station",
+                  header: t("comun.puesto"),
+                  render: (_v: any, row: any) => row.station?.stationName ?? "—",
+                },
+                {
+                  key: "status",
+                  header: t("comun.estado"),
+                  render: (_v: any, row: any) => getStatusBadge(row.status),
+                },
+              ]}
+              containerless
+              data={paginated as any}
+              loading={loading}
+              rowActions={(row: any) =>
+                row.status !== "cerrado"
+                  ? [
+                      {
+                        label: "Marcar como atendida",
+                        icon: (
+                          <CheckCircle style={{ color: "var(--ok-text)" }} />
+                        ),
+                        onClick: () => handleSetStatus(row.id, "cerrado"),
+                      },
+                    ]
+                  : [
+                      {
+                        label: "Reabrir",
+                        icon: (
+                          <RotateCcw style={{ color: "var(--warn-text)" }} />
+                        ),
+                        onClick: () => handleSetStatus(row.id, "abierto"),
+                      },
+                    ]
+              }
+            />
           </div>
 
           {/* Pagination */}

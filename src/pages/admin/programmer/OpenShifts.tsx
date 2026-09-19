@@ -449,6 +449,7 @@ export default function OpenShifts() {
               {
                 key: "station",
                 header: t("comun.puesto"),
+                titulo: true,
                 render: (_v: any, row: any) => row.station?.stationName ?? "—",
               },
               {

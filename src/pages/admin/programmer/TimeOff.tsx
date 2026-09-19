@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { DataTable } from "@/components/table/DataTable";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { confirmDialog } from "@/components/ui/confirmDialog";
@@ -571,121 +572,90 @@ export default function TimeOff() {
           icon={<CalendarOff />}
           contentClassName="overflow-x-auto -mx-1"
         >
-          <Table>
-            <TableHeader style={{ background: "var(--glass-sunken)" }}>
-              <TableRow>
-                <TableHead className="w-[50px]">
-                  <Checkbox />
-                </TableHead>
-                <TableHead className="cg-eyebrow">
-                  {t("comun.fechaDeSolicitud")}
-                </TableHead>
-                <TableHead className="cg-eyebrow">
-                  {t("comun.vigilante")}
-                </TableHead>
-                <TableHead className="cg-eyebrow">{t("comun.tipo")}</TableHead>
-                <TableHead className="cg-eyebrow">{t("comun.desde")}</TableHead>
-                <TableHead className="cg-eyebrow">{t("comun.hasta")}</TableHead>
-                <TableHead className="cg-eyebrow">
-                  {t("comun.estado")}
-                </TableHead>
-                <TableHead className="w-[50px]"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="h-[200px] text-center">
-                    <Loader2
-                      className="mx-auto h-6 w-6 animate-spin"
-                      style={{ color: "var(--ink-faint)" }}
-                    />
-                  </TableCell>
-                </TableRow>
-              ) : paginated.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="h-[360px] text-center">
-                    <EmptyState
-                      icon={<CalendarOff />}
-                      title={t("kit.table.emptyTitle")}
-                      description={t("comun.noPudimosEncontrarNingunElemento")}
-                      className="border-0 py-2"
-                    />
-                  </TableCell>
-                </TableRow>
-              ) : (
-                paginated.map((rec) => (
-                  <TableRow key={rec.id}>
-                    <TableCell>
-                      <Checkbox />
-                    </TableCell>
-                    <TableCell className="tabular-nums">
-                      {formatDate(rec.requestDate)}
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {rec.guard?.fullName ?? rec.guardName ?? "—"}
-                    </TableCell>
-                    <TableCell className="capitalize">
-                      {rec.type ?? "—"}
-                    </TableCell>
-                    <TableCell className="tabular-nums">
-                      {rec.startDate
-                        ? `${rec.startDate}${rec.startTime ? " " + rec.startTime : ""}`
-                        : "—"}
-                    </TableCell>
-                    <TableCell className="tabular-nums">
-                      {rec.endDate
-                        ? `${rec.endDate}${rec.endTime ? " " + rec.endTime : ""}`
-                        : "—"}
-                    </TableCell>
-                    <TableCell>{getStatusBadge(rec.status)}</TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <ChevronsUpDown
-                              className="h-4 w-4"
-                              style={{ color: "var(--ink-soft)" }}
-                            />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          {rec.status === "pending" && (
-                            <>
-                              <DropdownMenuItem
-                                onClick={() => handleApprove(rec.id)}
-                              >
-                                <CheckCircle
-                                  className="mr-2 h-4 w-4"
-                                  style={{ color: "var(--ok-text)" }}
-                                />{" "}
-                                Aprobar
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => handleReject(rec.id)}
-                              >
-                                <XCircle
-                                  className="mr-2 h-4 w-4"
-                                  style={{ color: "var(--bad-text)" }}
-                                />{" "}
-                                Rechazar
-                              </DropdownMenuItem>
-                            </>
-                          )}
-                          <DropdownMenuItem
-                            onClick={() => handleDelete(rec.id)}
-                            style={{ color: "var(--bad-text)" }}
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" /> Eliminar
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+          {/* `DataTable` y no el primitivo `<Table>`: se pliega sola en fichas
+              en el teléfono. El desplegable de la última columna era un
+              `DropdownMenu` escrito a mano con las mismas tres opciones que
+              `RowActionsMenu` ya sabe pintar — ahora va por `rowActions`, así
+              que en la ficha aparece en la esquina como en el resto del CRM. */}
+          <DataTable
+            columns={[
+              {
+                key: "requestDate",
+                header: t("comun.fechaDeSolicitud"),
+                render: (_v: any, row: any) => formatDate(row.requestDate),
+              },
+              {
+                key: "guardName",
+                header: t("comun.vigilante"),
+                titulo: true,
+                render: (_v: any, row: any) =>
+                  row.guard?.fullName ?? row.guardName ?? "—",
+              },
+              {
+                key: "type",
+                header: t("comun.tipo"),
+                render: (_v: any, row: any) => (
+                  <span className="capitalize">{row.type ?? "—"}</span>
+                ),
+              },
+              {
+                key: "startDate",
+                header: t("comun.desde"),
+                render: (_v: any, row: any) =>
+                  row.startDate
+                    ? `${row.startDate}${row.startTime ? " " + row.startTime : ""}`
+                    : "—",
+              },
+              {
+                key: "endDate",
+                header: t("comun.hasta"),
+                render: (_v: any, row: any) =>
+                  row.endDate
+                    ? `${row.endDate}${row.endTime ? " " + row.endTime : ""}`
+                    : "—",
+              },
+              {
+                key: "status",
+                header: t("comun.estado"),
+                render: (_v: any, row: any) => getStatusBadge(row.status),
+              },
+            ]}
+            containerless
+            data={paginated as any}
+            emptyState={
+              <EmptyState
+                className="border-0 py-2"
+                description={t("comun.noPudimosEncontrarNingunElemento")}
+                icon={<CalendarOff />}
+                title={t("kit.table.emptyTitle")}
+              />
+            }
+            loading={loading}
+            rowActions={(row: any) => [
+              ...(row.status === "pending"
+                ? [
+                    {
+                      label: "Aprobar",
+                      icon: (
+                        <CheckCircle style={{ color: "var(--ok-text)" }} />
+                      ),
+                      onClick: () => handleApprove(row.id),
+                    },
+                    {
+                      label: "Rechazar",
+                      icon: <XCircle style={{ color: "var(--bad-text)" }} />,
+                      onClick: () => handleReject(row.id),
+                    },
+                  ]
+                : []),
+              {
+                label: "Eliminar",
+                icon: <Trash2 />,
+                destructive: true,
+                onClick: () => handleDelete(row.id),
+              },
+            ]}
+          />
         </Section>
 
         {/* Pagination */}
