@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import MeterBar from "@/components/charts/MeterBar";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import {
   Radio,
   Play,
@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+import MeterBar from "@/components/charts/MeterBar";
 import AppLayout from "@/layouts/app-layout";
 import {
   PageContainer,
@@ -27,7 +28,6 @@ import { useFileUrl } from "@/lib/fileUrl";
 import { useRadioRealtime } from "@/components/radio/RadioRealtimeProvider";
 import RadioLiveChannelPanel from "@/components/radio/RadioLiveChannelPanel";
 import RadioCoveragePanel from "@/components/radio/RadioCoveragePanel";
-import RadioChannelsManager from "@/components/radio/RadioChannelsManager";
 import { useSondeoVisible } from "@/hooks/useSondeoVisible";
 
 const statusBadge: Record<
@@ -102,6 +102,7 @@ function RadioAudio({ audioUrl }: { audioUrl?: string | null }) {
 
 export default function RadioDispatch() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { version, connected } = useRadioRealtime();
   const [data, setData] = useState<any>(null);
   const [running, setRunning] = useState<any>(null);
@@ -109,10 +110,6 @@ export default function RadioDispatch() {
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
-  const [showChannels, setShowChannels] = useState(false);
-  /* Al crear o borrar un canal, el selector del panel en vivo tiene que
-     enterarse: se remonta cambiando su `key` en vez de inventar un bus. */
-  const [channelsVersion, setChannelsVersion] = useState(0);
   const [settings, setSettings] = useState<any>(null);
   const [nowMs, setNowMs] = useState(() => Date.now());
 
@@ -252,7 +249,7 @@ export default function RadioDispatch() {
                 size="sm"
                 title={t("radio.channels.manage", "Canales de radio")}
                 variant="outline"
-                onClick={() => setShowChannels((v) => !v)}
+                onClick={() => navigate("/radio/channels")}
               >
                 <Radio size={15} /> Canales
               </Button>
@@ -432,16 +429,8 @@ export default function RadioDispatch() {
           </div>
         )}
 
-        {showChannels && (
-          <div className="mb-5">
-            <RadioChannelsManager
-              onChanged={() => setChannelsVersion((v) => v + 1)}
-            />
-          </div>
-        )}
-
         <div className="mb-5">
-          <RadioLiveChannelPanel key={channelsVersion} />
+          <RadioLiveChannelPanel />
         </div>
         {/* Debajo del canal en vivo a propósito: primero se ve el canal, y
           justo después a quién le toca estar en él y no está. */}

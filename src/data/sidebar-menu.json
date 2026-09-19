@@ -242,6 +242,11 @@
         "path": "/radio"
       },
       {
+        "id": "radio-canales",
+        "name": "Canales",
+        "path": "/radio/channels"
+      },
+      {
         "id": "radio-dispositivos",
         "name": "Radios IP",
         "path": "/radio/devices"

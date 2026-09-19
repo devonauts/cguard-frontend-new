@@ -249,6 +249,7 @@ const MessengerPage = lazy(
 );
 const RadioDispatch = lazy(() => import("./pages/radio/RadioDispatch"));
 const RadioDevices = lazy(() => import("./pages/admin/radio/RadioDevices"));
+const RadioChannels = lazy(() => import("./pages/radio/RadioChannels"));
 const DispatcherPage = lazy(
   () => import("./pages/admin/dispatcher/DispatcherPage"),
 );
@@ -1609,6 +1610,14 @@ export default function App() {
                                 </ProtectedRoute>
                               }
                               path="/radio"
+                            />
+                            <Route
+                              element={
+                                <ProtectedRoute>
+                                  <RadioChannels />
+                                </ProtectedRoute>
+                              }
+                              path="/radio/channels"
                             />
                             <Route
                               element={
