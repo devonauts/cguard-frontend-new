@@ -1255,52 +1255,86 @@ export default function Schedule() {
     return m;
   }, [positions]);
 
-  /* ── QUIÉNES ESTÁN DENTRO ────────────────────────────────────────────────
-     La lista que el paso 1 enseña: los titulares vivos de las plazas de esta
-     estación, con su plaza y el ciclo que corren de verdad (el suyo si lo
-     tiene, si no el de la estación). */
-  const cfgVigilantes = useMemo(() => {
-    if (!configStation) return [] as {
-      id: string; nombre: string; plaza: string; ciclo: string;
-      adhoc: boolean; esRelevo: boolean;
-    }[];
+  /* ── QUIÉNES ESTÁN DENTRO, PLAZA A PLAZA ────────────────────────────────
+     Se listan las PLAZAS, no las asignaciones: así se ven también las vacías,
+     que son la mitad de la pregunta —«¿quién está aquí?» casi siempre acaba en
+     «y aquí no hay nadie»—. Las asignaciones sin plaza (`adhoc`) van al final,
+     porque existen pero no ocupan asiento. */
+  const cfgFilas = useMemo(() => {
+    type Fila = {
+      key: string;
+      plaza: string;
+      vigilante: string | null;
+      asignacion: GuardAssignment | null;
+      positionId: string | null;
+      ciclo: string;
+      adhoc: boolean;
+      esRelevo: boolean;
+    };
+    if (!configStation) return [] as Fila[];
 
-    return assignments
-      .filter(
-        (a) =>
-          String(a.stationId) === String(configStation.id) &&
-          a.status === "active" &&
-          (a as any).role !== "shadow",
-      )
-      .map((a) => {
-        const pos = positionsById.get(String(a.positionId));
-        const propio = a.rotationStyleId
-          ? rotationStyles.find((r) => r.id === String(a.rotationStyleId))
-          : null;
-        const heredado = configStation.rotationStyleId
-          ? rotationStyles.find((r) => r.id === String(configStation.rotationStyleId))
-          : null;
-        const rot = propio || heredado;
+    const delPuesto = assignments.filter(
+      (a) =>
+        String(a.stationId) === String(configStation.id) &&
+        a.status === "active" &&
+        (a as any).role !== "shadow",
+    );
+    const heredado = configStation.rotationStyleId
+      ? rotationStyles.find((r) => r.id === String(configStation.rotationStyleId))
+      : null;
+    const cicloDe = (a: GuardAssignment | null) => {
+      if (!a) return heredado ? heredado.name : "";
+      const propio = a.rotationStyleId
+        ? rotationStyles.find((r) => r.id === String(a.rotationStyleId))
+        : null;
+      const rot = propio || heredado;
 
-        /* ── EL AD-HOC NO CORRE CICLO ────────────────────────────────
-           Una asignación sin plaza es un `adhoc`: cuadrante DIARIO y sin
-           descansos, pensado para tapar un hueco unos días. Enseñarle el ciclo
-           de la estación —«8-2»— es mentira: no lo usa. Y en un puesto fijo es
-           un estado que hay que ver, porque el día que esa persona libre saldrá
-           como ausencia. Se dice tal cual, y se marca. */
-        const adhoc = !a.positionId || (a as any).kind === "adhoc";
+      return rot ? rot.name : "";
+    };
+
+    const filas: Fila[] = (positionsByStation.get(String(configStation.id)) || [])
+      .slice()
+      .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+      .map((pos) => {
+        const a = delPuesto.find((x) => String(x.positionId) === String(pos.id)) || null;
 
         return {
-          id: String(a.id),
-          nombre: nombreDeVigilante(a.guard, "Sin nombre"),
-          plaza: pos?.name || (adhoc ? "Cuadrante diario (sin plaza)" : "Sin plaza"),
-          ciclo: adhoc ? "" : rot ? rot.name : "",
-          adhoc,
-          esRelevo: !!a.isRelief || pos?.type === "sacafranco",
+          key: String(pos.id),
+          plaza: pos.name || "Plaza",
+          vigilante: a ? nombreDeVigilante(a.guard, "Sin nombre") : null,
+          asignacion: a,
+          positionId: String(pos.id),
+          ciclo: cicloDe(a),
+          adhoc: false,
+          esRelevo: pos.type === "sacafranco",
         };
-      })
-      .sort((x, y) => x.plaza.localeCompare(y.plaza));
-  }, [configStation, assignments, positionsById, rotationStyles]);
+      });
+
+    /* El `adhoc` no tiene plaza: cuadrante DIARIO y sin descansos, pensado para
+       tapar un hueco unos días. Enseñarle el ciclo de la estación sería mentira
+       —no lo usa— y en un puesto fijo es un estado que conviene ver, porque el
+       día que esa persona libre saldrá como ausencia. */
+    for (const a of delPuesto) {
+      if (a.positionId && filas.some((f) => f.positionId === String(a.positionId))) continue;
+      filas.push({
+        key: String(a.id),
+        plaza: "Cuadrante diario (sin plaza)",
+        vigilante: nombreDeVigilante(a.guard, "Sin nombre"),
+        asignacion: a,
+        positionId: null,
+        ciclo: "",
+        adhoc: true,
+        esRelevo: !!a.isRelief,
+      });
+    }
+
+    return filas;
+  }, [configStation, assignments, positionsByStation, rotationStyles]);
+  /** Los que de verdad hay dentro, para las cuentas de la cabecera. */
+  const cfgVigilantes = useMemo(
+    () => cfgFilas.filter((f) => !!f.asignacion),
+    [cfgFilas],
+  );
 
   const assignmentsByPosition = useMemo(() => {
     const m = new Map<string, GuardAssignment[]>();
@@ -9586,49 +9620,120 @@ export default function Schedule() {
                   <label className="cg-eyebrow mb-1.5 block">
                     Vigilantes asignados
                   </label>
-                  {cfgVigilantes.length === 0 ? (
+                  {cfgFilas.length === 0 ? (
                     <p
                       className="rounded-xl px-3 py-2 text-[11px]"
                       style={toneCard("warn", 8, 26)}
                     >
-                      Nadie asignado todavía. Puedes configurar el puesto igual;
-                      quien entre después hereda lo que dejes aquí.
+                      Este puesto todavía no tiene plazas. Créalas en el paso 3,
+                      eligiendo su jornada.
                     </p>
                   ) : (
                     <div
                       className="max-h-56 space-y-1 overflow-y-auto rounded-xl px-2 py-2"
                       style={{ border: "1px solid var(--hairline)" }}
                     >
-                      {cfgVigilantes.map((v) => (
+                      {cfgFilas.map((f) => (
                         <div
-                          key={v.id}
+                          key={f.key}
                           className="flex items-center gap-2 rounded-lg px-1.5 py-1 text-xs"
                         >
                           <span
                             className="flex h-6 w-6 shrink-0 items-center justify-center rounded"
                             style={tonePill(
-                              v.adhoc ? "warn" : v.esRelevo ? "info" : "ok",
+                              f.adhoc
+                                ? "warn"
+                                : !f.asignacion
+                                  ? "neutral"
+                                  : f.esRelevo
+                                    ? "info"
+                                    : "ok",
                               14,
                             )}
                           >
                             <Shield size={12} />
                           </span>
                           <div className="min-w-0 flex-1">
-                            <div className="truncate font-semibold">
-                              {v.nombre}
+                            <div
+                              className="truncate font-semibold"
+                              style={
+                                f.vigilante
+                                  ? undefined
+                                  : { color: "var(--ink-faint)" }
+                              }
+                            >
+                              {f.vigilante || "Sin asignar"}
                             </div>
                             <div
                               className="truncate text-[10px]"
                               style={{ color: "var(--ink-soft)" }}
                             >
-                              {v.plaza}
-                              {v.adhoc
+                              {f.plaza}
+                              {f.adhoc
                                 ? " · día a día, sin descansos"
-                                : v.ciclo
-                                  ? ` · ${v.ciclo}`
+                                : f.ciclo
+                                  ? ` · ${f.ciclo}`
                                   : " · sin ciclo"}
                             </div>
                           </div>
+                          {/* ── QUITAR Y CAMBIAR ─────────────────────────
+                              Ver quién está dentro sin poder tocarlo deja la
+                              pregunta a medias. «Cambiar» reusa el formulario de
+                              asignación con `moveFrom`: libera al de ahora y
+                              pone al nuevo en la MISMA plaza, que es lo que
+                              significa relevar. Los dos cierran este diálogo
+                              porque abren el suyo. */}
+                          {f.asignacion ? (
+                            <div className="flex shrink-0 items-center gap-1">
+                              {f.positionId && (
+                                <button
+                                  className="cg-btn-ghost cg-focus rounded-lg px-2 py-1 text-[10px] font-semibold"
+                                  title="Poner a otro vigilante en esta plaza"
+                                  type="button"
+                                  onClick={() => {
+                                    const asg = f.asignacion;
+
+                                    setConfigStation(null);
+                                    setMoveFrom(asg);
+                                    openAssignForm(
+                                      String(configStation.id),
+                                      String(f.positionId),
+                                    );
+                                  }}
+                                >
+                                  Cambiar
+                                </button>
+                              )}
+                              <button
+                                className="cg-btn-ghost cg-focus rounded-lg p-1"
+                                title="Quitar a este vigilante del puesto"
+                                type="button"
+                                onClick={async () => {
+                                  const id = String(f.asignacion!.id);
+
+                                  setConfigStation(null);
+                                  await removeAssignment(id);
+                                }}
+                              >
+                                <X size={12} />
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              className="cg-btn-ghost cg-focus shrink-0 rounded-lg px-2 py-1 text-[10px] font-semibold"
+                              title="Asignar un vigilante a esta plaza"
+                              type="button"
+                              onClick={() => {
+                                setConfigStation(null);
+                                openAssignForm(
+                                  String(configStation.id),
+                                  String(f.positionId),
+                                );
+                              }}
+                            >
+                              Asignar
+                            </button>
+                          )}
                         </div>
                       ))}
                     </div>
