@@ -167,7 +167,11 @@ export default function SettingsLayout({
         </div>
 
         <div className="flex-1">
-          <div className="p-4 sm:p-6">{children}</div>
+          {/* Sin relleno horizontal: ya lo pone `PageContainer`, y sumados daban
+              32 px de margen en Ajustes contra los 16 del resto del CRM — la
+              única familia de pantallas que no cuadraba con las demás. El
+              vertical sí se queda: aquí no hay encabezado de página que lo dé. */}
+          <div className="py-4 sm:py-6">{children}</div>
         </div>
       </div>
     </div>

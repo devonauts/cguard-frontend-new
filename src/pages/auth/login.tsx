@@ -239,7 +239,7 @@ export default function Login() {
             {t("auth.no_account_text")}{" "}
           </span>
           <NavLink
-            className="font-semibold hover:underline"
+            className="-my-2 inline-block py-2 font-semibold hover:underline"
             style={{ color: "var(--brand-text)" }}
             to="/register"
           >

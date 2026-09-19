@@ -126,7 +126,7 @@ export default function ForgotPassword() {
 
         <div className="flex items-center justify-between text-sm">
           <NavLink
-            className="font-semibold hover:underline"
+            className="-my-2 inline-block py-2 font-semibold hover:underline"
             style={{ color: "var(--brand-text)" }}
             to="/login"
           >

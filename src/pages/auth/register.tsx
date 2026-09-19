@@ -401,7 +401,7 @@ export default function Register() {
             {t("auth.already_have_account")}{" "}
           </span>
           <NavLink
-            className="font-semibold hover:underline"
+            className="-my-2 inline-block py-2 font-semibold hover:underline"
             style={{ color: "var(--brand-text)" }}
             to="/login"
           >

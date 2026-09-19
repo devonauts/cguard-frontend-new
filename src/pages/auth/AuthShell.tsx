@@ -166,7 +166,12 @@ export default function AuthShell({
         : "");
 
   return (
-    <div className="app-shell relative flex min-h-screen flex-col items-center justify-center px-4 py-10 sm:px-6">
+    /* `overflow-x-clip`: el halo mide 576 px y va centrado, así que en una
+       pantalla de 390 sobresale 93 por cada lado. Es decoración —`aria-hidden`,
+       sin eventos— pero el navegador no lo sabe: contaba para el desplazamiento
+       y la pantalla de acceso se movía de lado. `clip` y no `hidden` para no
+       crear un contenedor de desplazamiento que atrape el foco de los campos. */
+    <div className="app-shell relative flex min-h-screen flex-col items-center justify-center overflow-x-clip px-4 py-10 sm:px-6">
       {/* Halo del acento justo detrás de la tarjeta: es lo que el cristal
           desenfoca. Sin nada detrás, el desenfoque no se percibe. */}
       <div
