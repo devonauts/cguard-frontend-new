@@ -365,7 +365,7 @@ export default function MobileHubPage() {
           {loading ? (
             <SkeletonCards count={4} />
           ) : (
-            <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_400px]">
+            <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_400px]">
               <div className="space-y-6">
                 {/* ── Marca ─────────────────────────────────────────────── */}
                 <Section

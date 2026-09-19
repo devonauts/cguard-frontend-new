@@ -344,7 +344,7 @@ export default function DispatchIncidentMap({
   };
 
   return (
-    <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_17rem]">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-3 lg:grid-cols-[minmax(0,1fr)_17rem]">
       <div
         className="overflow-hidden rounded-xl border"
         style={{ borderColor: "var(--hairline)" }}

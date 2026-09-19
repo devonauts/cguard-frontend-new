@@ -563,7 +563,7 @@ export default function MobilPage() {
               </>
             }
           />
-          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+          <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
             <Tabs className="min-w-0 space-y-6" defaultValue="contenido">
               <div className="-mx-1 overflow-x-auto px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 <TabsList className="w-max min-w-full justify-start">

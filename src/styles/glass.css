@@ -1086,11 +1086,13 @@ button, [role="button"] { transition: transform 0.09s var(--ease); }
   /* Y 44 px de ALTO, por la misma razón por la que los botones lo tienen: un
      campo de 36 px se falla con el pulgar. Las casillas y los deslizadores
      quedan fuera — ahí el alto ES el dibujo, y se arreglan abajo. */
-  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  input:not([type="checkbox"]):not([type="radio"]),
   select,
   textarea {
     min-height: 44px;
   }
+  /* El deslizador entra en el lote: su pista se dibuja CENTRADA en la caja, así
+     que crecer de alto no la engorda — sólo agranda la zona donde se agarra. */
 
   /* La casilla mide 16 px y tiene que SEGUIR midiendo 16: estirarla a 44 la
      convierte en un cuadro enorme al lado de una línea de texto. Lo que se
@@ -1101,6 +1103,23 @@ button, [role="button"] { transition: transform 0.09s var(--ease); }
     content: "";
     position: absolute;
     inset: -14px;
+  }
+  /* Las nativas no admiten pseudo-elementos, así que aquí el dibujo SÍ crece:
+     de 16 a 24 px. No llega a 44 —para eso habría que separarlas de su etiqueta
+     con margen y eso mueve todas las filas—, pero 16 px es un blanco que se
+     falla y 24 es el mínimo con el que se acierta. */
+  input[type="checkbox"], input[type="radio"] {
+    min-width: 24px;
+    min-height: 24px;
+  }
+
+  /* Un botón que sólo lleva un icono tiene el alto de los 44 px de arriba pero
+     el ANCHO del icono: 12, 26, 28 px. Es el mismo fallo de siempre visto de
+     lado. La regla se escribe con `:has` y no botón por botón porque son
+     decenas repartidas por todo el CRM, y el que se escriba mañana también lo
+     necesita. Las casillas quedan fuera: ahí el ancho ES el dibujo. */
+  button:has(> svg:only-child):not([role="checkbox"]):not([role="radio"]) {
+    min-width: 44px;
   }
 }
 

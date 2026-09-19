@@ -245,7 +245,7 @@ export default function SupervisorAppPage() {
           {cargando ? (
             <SkeletonCards count={2} />
           ) : (
-            <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
+            <div className="grid grid-cols-[minmax(0,1fr)] gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
               <div className="space-y-6">
                 {/* ── COLOR DE LOS BOTONES ─────────────────────────────── */}
                 <Section

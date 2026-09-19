@@ -405,7 +405,7 @@ export default function EmailPreferencesPage() {
           {loading ? (
             <SkeletonCards count={4} />
           ) : (
-            <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
+            <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
               {/* LEFT: branding + toggles */}
               <div className="space-y-6">
                 <Section

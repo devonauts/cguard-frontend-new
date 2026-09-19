@@ -475,7 +475,7 @@ export default function TimesheetModal({
           />
 
           {tab === "detalle" && (
-            <div className="grid gap-5 lg:grid-cols-[1fr_18rem]">
+            <div className="grid grid-cols-[minmax(0,1fr)] gap-5 lg:grid-cols-[1fr_18rem]">
               <div className="space-y-4">
                 <div className="flex flex-wrap items-center gap-3">
                   <StatusBadge

@@ -581,7 +581,7 @@ export default function RondaWizard({
             </InfoNote>
           )}
 
-          <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
             {/* ── La lista ──────────────────────────────────────────────── */}
             <div className="space-y-2">
               {puntos.map((p, i) => {

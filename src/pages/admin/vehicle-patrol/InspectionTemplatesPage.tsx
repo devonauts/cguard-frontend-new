@@ -533,7 +533,7 @@ function EditorModal({
           puede juzgar si funciona mirando la lista: tiene que ver el paso.
           En pantallas estrechas el teléfono baja debajo, no compite por el
           ancho con lo que se está editando. */}
-      <div className={previa ? "grid gap-5 lg:grid-cols-[minmax(0,1fr)_22rem]" : ""}>
+      <div className={previa ? "grid grid-cols-[minmax(0,1fr)] gap-5 lg:grid-cols-[minmax(0,1fr)_22rem]" : ""}>
       <div className="space-y-5">
         <div className="flex items-center justify-end">
           <Button
@@ -816,7 +816,7 @@ function ItemEditor({
       // dejar de preguntarla, no para congelarla.
       style={activa ? undefined : { opacity: 0.62 }}
     >
-      <div className="grid gap-2 sm:grid-cols-[1fr_11rem]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-2 sm:grid-cols-[1fr_11rem]">
         <Input
           aria-label={t("ui.InspectionTemplates.pregunta", "Pregunta")}
           maxLength={200}
