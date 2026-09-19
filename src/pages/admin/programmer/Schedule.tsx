@@ -761,6 +761,22 @@ export default function Schedule() {
   const [configType, setConfigType] = useState("24h");
   const [configRotation, setConfigRotation] = useState("");
   const [configSaving, setConfigSaving] = useState(false);
+  /* ── LA ESTACIÓN SE CONFIGURA COMO EL SACAFRANCO: POR PASOS ──────────────
+     Este diálogo era una sola pantalla que abría por el tipo de cobertura —lo
+     más estructural y lo que menos se toca— y no decía en ningún momento QUIÉN
+     está dentro. Se cambiaba el ciclo de un puesto sin ver que tenía tres
+     vigilantes trabajándolo.
+
+     Ahora sigue la forma que ya funciona en el alta del sacafranco: primero
+     quiénes, luego su ciclo, y la jornada al final. Y el ciclo se guarda por la
+     puerta que NO da de baja a nadie (`PUT /station/:id/rotation`). */
+  const [configPaso, setConfigPaso] = useState<1 | 2 | 3>(1);
+  const [cfgRotMode, setCfgRotMode] = useState<"rotativo" | "manual">("rotativo");
+  const [cfgDias, setCfgDias] = useState(4);
+  const [cfgNoches, setCfgNoches] = useState(4);
+  const [cfgLibres, setCfgLibres] = useState(2);
+  /** El ciclo que la estación tenía al abrir: sin esto no se sabe si cambió. */
+  const [cfgRotOriginal, setCfgRotOriginal] = useState<string>("");
   const [cfgStart, setCfgStart] = useState("07:00");
   const [cfgEnd, setCfgEnd] = useState("07:00");
   const [cfgBlockHours, setCfgBlockHours] = useState(""); // '' = whole window per fijo
@@ -774,6 +790,26 @@ export default function Schedule() {
   } | null>(null);
 
   // Window math (mirrors StationOverview): wraps midnight; start==end → 24h.
+  /** El ciclo que dibujan las tres ruedas del paso 2. */
+  const cfgCicloLen = Math.max(0, cfgDias) + Math.max(0, cfgNoches) + Math.max(0, cfgLibres);
+  const cfgNombreCiclo =
+    cfgNoches > 0 ? `${cfgDias}-${cfgNoches}-${cfgLibres}` : `${cfgDias}-${cfgLibres}`;
+  /** ¿Las ruedas dicen algo distinto de lo que la estación tiene guardado? */
+  const cfgCambiaElCiclo = useMemo(() => {
+    if (cfgRotMode !== "rotativo") return false;
+    const actual = cfgRotOriginal
+      ? rotationStyles.find((r) => r.id === cfgRotOriginal)
+      : null;
+
+    if (!actual) return cfgDias + cfgNoches > 0;
+
+    return (
+      (actual.dayShifts || 0) !== cfgDias ||
+      (actual.nightShifts || 0) !== cfgNoches ||
+      (actual.restDays || 0) !== cfgLibres
+    );
+  }, [cfgRotMode, cfgRotOriginal, rotationStyles, cfgDias, cfgNoches, cfgLibres]);
+
   const cfgWinMin = useMemo(() => {
     if (!cfgStart || !cfgEnd) return 0;
     const toMin = (x: string) => {
@@ -1218,6 +1254,53 @@ export default function Schedule() {
 
     return m;
   }, [positions]);
+
+  /* ── QUIÉNES ESTÁN DENTRO ────────────────────────────────────────────────
+     La lista que el paso 1 enseña: los titulares vivos de las plazas de esta
+     estación, con su plaza y el ciclo que corren de verdad (el suyo si lo
+     tiene, si no el de la estación). */
+  const cfgVigilantes = useMemo(() => {
+    if (!configStation) return [] as {
+      id: string; nombre: string; plaza: string; ciclo: string;
+      adhoc: boolean; esRelevo: boolean;
+    }[];
+
+    return assignments
+      .filter(
+        (a) =>
+          String(a.stationId) === String(configStation.id) &&
+          a.status === "active" &&
+          (a as any).role !== "shadow",
+      )
+      .map((a) => {
+        const pos = positionsById.get(String(a.positionId));
+        const propio = a.rotationStyleId
+          ? rotationStyles.find((r) => r.id === String(a.rotationStyleId))
+          : null;
+        const heredado = configStation.rotationStyleId
+          ? rotationStyles.find((r) => r.id === String(configStation.rotationStyleId))
+          : null;
+        const rot = propio || heredado;
+
+        /* ── EL AD-HOC NO CORRE CICLO ────────────────────────────────
+           Una asignación sin plaza es un `adhoc`: cuadrante DIARIO y sin
+           descansos, pensado para tapar un hueco unos días. Enseñarle el ciclo
+           de la estación —«8-2»— es mentira: no lo usa. Y en un puesto fijo es
+           un estado que hay que ver, porque el día que esa persona libre saldrá
+           como ausencia. Se dice tal cual, y se marca. */
+        const adhoc = !a.positionId || (a as any).kind === "adhoc";
+
+        return {
+          id: String(a.id),
+          nombre: nombreDeVigilante(a.guard, "Sin nombre"),
+          plaza: pos?.name || (adhoc ? "Cuadrante diario (sin plaza)" : "Sin plaza"),
+          ciclo: adhoc ? "" : rot ? rot.name : "",
+          adhoc,
+          esRelevo: !!a.isRelief || pos?.type === "sacafranco",
+        };
+      })
+      .sort((x, y) => x.plaza.localeCompare(y.plaza));
+  }, [configStation, assignments, positionsById, rotationStyles]);
 
   const assignmentsByPosition = useMemo(() => {
     const m = new Map<string, GuardAssignment[]>();
@@ -2972,8 +3055,23 @@ export default function Schedule() {
 
   const configureStation = (station: Station) => {
     setConfigStation(station);
+    setConfigPaso(1);
     setConfigType(station.scheduleType || "24h");
     setConfigRotation(station.rotationStyleId || "");
+    setCfgRotOriginal(station.rotationStyleId || "");
+    /* Las ruedas arrancan en el ciclo que la estación TIENE. Ponerlas en un
+       número cualquiera haría creer que guardar sin tocarlas no cambia nada
+       cuando sí lo cambiaría — el mismo cuidado que en el editor de plaza. */
+    {
+      const actual = station.rotationStyleId
+        ? rotationStyles.find((r) => r.id === String(station.rotationStyleId))
+        : null;
+
+      setCfgRotMode(actual ? "rotativo" : "manual");
+      setCfgDias(actual?.dayShifts ?? 4);
+      setCfgNoches(actual?.nightShifts ?? 4);
+      setCfgLibres(actual?.restDays ?? 2);
+    }
     setCfgStart("07:00");
     setCfgEnd("07:00");
     setCfgBlockHours("");
@@ -3025,18 +3123,35 @@ export default function Schedule() {
 
        Se compara contra lo que la estación tiene HOY; si la forma no se movió,
        se va por la puerta que no echa a nadie y no se pregunta nada. */
+    /* El ciclo lo dicen ahora las tres ruedas del paso 2, no un desplegable:
+       se resuelve (o se crea) el patrón con esos números, igual que en el
+       sacafranco. En «Turno fijo» no hay ciclo que guardar. */
+    let cicloElegido: string | null = configRotation || null;
+
+    /* En «Personalizado» el patrón lo elige el selector del paso 3, que sabe de
+       bloques; en el resto lo dicen las ruedas del paso 2. */
+    if (configType !== "custom" && cfgRotMode === "rotativo") {
+      if (cfgDias + cfgNoches < 1) {
+        toast.error("El ciclo necesita al menos un turno de trabajo.");
+
+        return;
+      }
+      cicloElegido = await resolverEstiloDeRotacion(cfgDias, cfgNoches, cfgLibres);
+      if (!cicloElegido) return;
+    }
+
     const soloElCiclo =
       configType === (configStation.scheduleType || "24h") &&
       configType !== "custom" &&
-      !!configRotation &&
-      configRotation !== (configStation.rotationStyleId || "");
+      !!cicloElegido &&
+      cicloElegido !== cfgRotOriginal;
 
     if (soloElCiclo) {
       setConfigSaving(true);
       try {
         await ApiService.put(
           `/tenant/${tenantId}/station/${configStation.id}/rotation`,
-          { data: { rotationStyleId: configRotation } },
+          { data: { rotationStyleId: cicloElegido } },
         );
         toast.success(
           "Ciclo actualizado — los turnos futuros se rehicieron y nadie perdió su puesto",
@@ -3068,7 +3183,7 @@ export default function Schedule() {
         {
           data: {
             scheduleType: configType,
-            rotationStyleId: configRotation || undefined, // alternate + none → engine seeds 1-1
+            rotationStyleId: cicloElegido || undefined, // alternate + none → engine seeds 1-1
             startTime: configType === "custom" ? cfgStart : undefined,
             endTime: configType === "custom" ? cfgEnd : undefined,
             blockHours:
@@ -9423,9 +9538,19 @@ export default function Schedule() {
               className="flex items-center justify-between px-5 py-4"
               style={{ borderBottom: "1px solid var(--hairline)" }}
             >
-              <h4 className="text-sm font-semibold">
-                Configurar: {stationLabel(configStation)}
-              </h4>
+              <div>
+                <h4 className="text-sm font-semibold">
+                  {stationLabel(configStation)}
+                </h4>
+                <p
+                  className="mt-0.5 text-[11px]"
+                  style={{ color: "var(--ink-soft)" }}
+                >
+                  {cfgVigilantes.length
+                    ? `${cfgVigilantes.length} vigilante${cfgVigilantes.length === 1 ? "" : "s"} en este puesto`
+                    : "Todavía no hay nadie asignado"}
+                </p>
+              </div>
               <button
                 className="cg-btn-ghost cg-focus rounded-lg p-1.5"
                 onClick={() => setConfigStation(null)}
@@ -9434,6 +9559,197 @@ export default function Schedule() {
               </button>
             </div>
             <div className="p-5 space-y-4">
+              {/* Los tres pasos, igual que en el alta del sacafranco. */}
+              <div className="flex items-center gap-1.5">
+                {[
+                  { n: 1 as const, t: "Quiénes" },
+                  { n: 2 as const, t: "Su ciclo" },
+                  { n: 3 as const, t: "Su jornada" },
+                ].map((x) => (
+                  <button
+                    key={x.n}
+                    className={`cg-focus flex-1 rounded-lg px-2 py-1.5 text-center text-[10px] font-semibold transition-all ${configPaso === x.n ? "glass-brand" : "glass-flat"}`}
+                    type="button"
+                    onClick={() => setConfigPaso(x.n)}
+                  >
+                    <span className="tabular-nums">{x.n}</span> · {x.t}
+                  </button>
+                ))}
+              </div>
+
+              {/* ── PASO 1 · QUIÉNES ────────────────────────────────────────
+                  El diálogo abría por el tipo de cobertura y no decía en ningún
+                  momento quién está dentro. Se cambiaba el ciclo de un puesto
+                  con tres personas trabajándolo sin verlas. */}
+              {configPaso === 1 && (
+                <div>
+                  <label className="cg-eyebrow mb-1.5 block">
+                    Vigilantes asignados
+                  </label>
+                  {cfgVigilantes.length === 0 ? (
+                    <p
+                      className="rounded-xl px-3 py-2 text-[11px]"
+                      style={toneCard("warn", 8, 26)}
+                    >
+                      Nadie asignado todavía. Puedes configurar el puesto igual;
+                      quien entre después hereda lo que dejes aquí.
+                    </p>
+                  ) : (
+                    <div
+                      className="max-h-56 space-y-1 overflow-y-auto rounded-xl px-2 py-2"
+                      style={{ border: "1px solid var(--hairline)" }}
+                    >
+                      {cfgVigilantes.map((v) => (
+                        <div
+                          key={v.id}
+                          className="flex items-center gap-2 rounded-lg px-1.5 py-1 text-xs"
+                        >
+                          <span
+                            className="flex h-6 w-6 shrink-0 items-center justify-center rounded"
+                            style={tonePill(
+                              v.adhoc ? "warn" : v.esRelevo ? "info" : "ok",
+                              14,
+                            )}
+                          >
+                            <Shield size={12} />
+                          </span>
+                          <div className="min-w-0 flex-1">
+                            <div className="truncate font-semibold">
+                              {v.nombre}
+                            </div>
+                            <div
+                              className="truncate text-[10px]"
+                              style={{ color: "var(--ink-soft)" }}
+                            >
+                              {v.plaza}
+                              {v.adhoc
+                                ? " · día a día, sin descansos"
+                                : v.ciclo
+                                  ? ` · ${v.ciclo}`
+                                  : " · sin ciclo"}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <p
+                    className="mt-1 text-[10px]"
+                    style={{ color: "var(--ink-faint)" }}
+                  >
+                    El ciclo del paso siguiente es el de la ESTACIÓN: lo heredan
+                    quienes no tengan uno propio.
+                  </p>
+                </div>
+              )}
+
+              {/* ── PASO 2 · SU CICLO ───────────────────────────────────── */}
+              {configPaso === 2 && (
+                <div>
+                  <label className="cg-eyebrow mb-1.5 block">
+                    Tipo de turno
+                  </label>
+                  <Segmented<"rotativo" | "manual">
+                    options={[
+                      { value: "rotativo", label: "Turno rotativo" },
+                      { value: "manual", label: "Turno fijo" },
+                    ]}
+                    value={cfgRotMode}
+                    onChange={setCfgRotMode}
+                  />
+                  {cfgRotMode === "rotativo" ? (
+                    <div className="mt-2">
+                      <label className="cg-eyebrow mb-1.5 block">
+                        Estilo de rotación
+                      </label>
+                      <div
+                        className="space-y-2.5 rounded-xl px-3 py-2.5"
+                        style={{ border: "1px solid var(--hairline)" }}
+                      >
+                        <NumberStepper
+                          hint="Seguidos, antes de cambiar de bloque"
+                          label="Turnos de día"
+                          max={31}
+                          min={0}
+                          suffix="D"
+                          value={cfgDias}
+                          onChange={setCfgDias}
+                        />
+                        <NumberStepper
+                          hint="El segundo bloque del puesto"
+                          label="Turnos de tarde o noche"
+                          max={31}
+                          min={0}
+                          suffix="T/N"
+                          value={cfgNoches}
+                          onChange={setCfgNoches}
+                        />
+                        <NumberStepper
+                          hint="Los que libra al cerrar el ciclo"
+                          label="Días libres"
+                          max={31}
+                          min={0}
+                          suffix="L"
+                          value={cfgLibres}
+                          onChange={setCfgLibres}
+                        />
+                        <div
+                          className="flex items-center justify-between gap-2 pt-1 text-[11px]"
+                          style={{
+                            borderTop: "1px solid var(--hairline)",
+                            color: "var(--ink-soft)",
+                          }}
+                        >
+                          <span>Ciclo</span>
+                          <span className="font-semibold tabular-nums">
+                            {cfgCicloLen > 0
+                              ? `${cfgNombreCiclo} · ${cfgCicloLen} día${cfgCicloLen === 1 ? "" : "s"}`
+                              : "—"}
+                          </span>
+                        </div>
+                        {cfgDias + cfgNoches < 1 ? (
+                          <p
+                            className="text-[11px]"
+                            style={{ color: "var(--danger)" }}
+                          >
+                            El ciclo necesita al menos un turno de trabajo.
+                          </p>
+                        ) : cfgLibres === 0 ? (
+                          <p
+                            className="text-[11px]"
+                            style={{ color: "var(--ink-soft)" }}
+                          >
+                            Sin descanso: se trabaja todos los días y no hace
+                            falta sacafranco que releve.
+                          </p>
+                        ) : null}
+                      </div>
+                      {cfgCambiaElCiclo && cfgVigilantes.length > 0 && (
+                        <p
+                          className="mt-2 rounded-lg px-2 py-1.5 text-[10px]"
+                          style={toneCard("ok", 8, 26)}
+                        >
+                          Se aplica a {cfgVigilantes.length} vigilante
+                          {cfgVigilantes.length === 1 ? "" : "s"} y se rehacen
+                          sus turnos futuros. <b>Nadie pierde su puesto.</b>
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <p
+                      className="mt-1.5 text-[10px]"
+                      style={{ color: "var(--ink-faint)" }}
+                    >
+                      Sin ciclo de estación, cada vigilante necesita el suyo
+                      propio o su mes sale en blanco.
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* ── PASO 3 · SU JORNADA ─────────────────────────────────── */}
+              {configPaso === 3 && (
+              <>
               <label className="cg-eyebrow mb-2 block">
                 {t("ui.Schedule.tipoDeCobertura")}
               </label>
@@ -9625,20 +9941,45 @@ export default function Schedule() {
                 </div>
               )}
 
-              <RotationStyleSelect
-                etiquetaPrimerBloque={cfgPrimerTramo}
-                etiquetaSegundoBloque={cfgSegundoTramo}
-                scheduleType={configType}
-                value={configRotation}
-                onChange={setConfigRotation}
-                onStyleChange={setCfgRotStyle}
-                /* Partida en bloques, la estación tiene DOS tramos que repartir en
-                   el ciclo (mañana y tarde) — no sólo «trabaja / descansa». */
-                bloques={configType === "custom" ? cfgBlockCount : 1}
-              />
+              {/* ── EL CICLO SE ELIGE UNA SOLA VEZ ──────────────────────────
+                  Las tres ruedas del paso 2 ya dicen el ciclo. Dejar aquí el
+                  catálogo entero era el mismo dato en dos controles y la duda
+                  de cuál manda.
+
+                  Se queda SÓLO en «Personalizado», donde no sobra: ahí la
+                  estación está partida en bloques y el patrón reparte DOS
+                  tramos (mañana y tarde), algo que tres números no saben
+                  decir. Y es el que alimenta la comprobación de la alternancia
+                  sin sacafranco. */}
+              {configType === "custom" ? (
+                <RotationStyleSelect
+                  etiquetaPrimerBloque={cfgPrimerTramo}
+                  etiquetaSegundoBloque={cfgSegundoTramo}
+                  scheduleType={configType}
+                  value={configRotation}
+                  onChange={setConfigRotation}
+                  onStyleChange={setCfgRotStyle}
+                  bloques={cfgBlockCount}
+                />
+              ) : (
+                <p
+                  className="rounded-xl px-3 py-2 text-[11px]"
+                  style={toneCard("ok", 8, 26)}
+                >
+                  Su ciclo es el del paso 2:{" "}
+                  <b>
+                    {cfgRotMode === "rotativo"
+                      ? `${cfgNombreCiclo} · ${cfgCicloLen} día${cfgCicloLen === 1 ? "" : "s"}`
+                      : "turno fijo, sin ciclo de estación"}
+                  </b>
+                  .
+                </p>
+              )}
+              </>
+              )}
             </div>
             <div
-              className="flex items-center justify-end gap-2 px-5 py-3"
+              className="flex items-center justify-between gap-2 px-5 py-3"
               style={{
                 borderTop: "1px solid var(--hairline)",
                 background: "var(--glass-sunken)",
@@ -9646,21 +9987,62 @@ export default function Schedule() {
             >
               <button
                 className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all"
-                onClick={() => setConfigStation(null)}
+                type="button"
+                onClick={() =>
+                  configPaso === 1
+                    ? setConfigStation(null)
+                    : setConfigPaso((configPaso - 1) as 1 | 2)
+                }
               >
-                {t("actions.cancel")}
+                {configPaso === 1 ? t("actions.cancel") : "Atrás"}
               </button>
-              <button
-                className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40"
-                disabled={configSaving}
-                onClick={saveStationConfig}
-              >
-                {configSaving ? (
-                  <Loader2 className="animate-spin" size={14} />
-                ) : (
-                  "Guardar"
+              <div className="flex items-center gap-2">
+                {/* Desde el paso 2 se puede guardar SÓLO el ciclo: es el cambio
+                    más corriente y no toca la forma del puesto, así que no hay
+                    por qué obligar a pasar por la jornada para llegar al botón. */}
+                {configPaso === 2 && cfgCambiaElCiclo && (
+                  <button
+                    className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40"
+                    disabled={
+                      configSaving ||
+                      (cfgRotMode === "rotativo" && cfgDias + cfgNoches < 1)
+                    }
+                    onClick={saveStationConfig}
+                  >
+                    {configSaving ? (
+                      <Loader2 className="animate-spin" size={14} />
+                    ) : (
+                      "Guardar el ciclo"
+                    )}
+                  </button>
                 )}
-              </button>
+                {configPaso < 3 ? (
+                  <button
+                    className={`cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40 ${configPaso === 2 && cfgCambiaElCiclo ? "cg-btn-ghost" : "cg-btn-brand"}`}
+                    disabled={
+                      configPaso === 2 &&
+                      cfgRotMode === "rotativo" &&
+                      cfgDias + cfgNoches < 1
+                    }
+                    type="button"
+                    onClick={() => setConfigPaso((configPaso + 1) as 2 | 3)}
+                  >
+                    Siguiente
+                  </button>
+                ) : (
+                  <button
+                    className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40"
+                    disabled={configSaving}
+                    onClick={saveStationConfig}
+                  >
+                    {configSaving ? (
+                      <Loader2 className="animate-spin" size={14} />
+                    ) : (
+                      "Guardar"
+                    )}
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
