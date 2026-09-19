@@ -38,7 +38,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Search,
   ChevronsUpDown,
   X,
   Loader2,
@@ -62,6 +61,7 @@ import {
   EmptyState,
   Toolbar,
   Segmented,
+  SearchInput,
 } from "@/components/kit";
 import timeOffRequestService, {
   TimeOffRecord,
@@ -374,21 +374,15 @@ export default function TimeOff() {
           />
 
           <div className="flex w-full flex-col items-center gap-4 md:w-auto md:flex-row">
-            <div className="relative w-full md:w-80">
-              <Search
-                className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
-                style={{ color: "var(--ink-faint)" }}
-              />
-              <Input
-                placeholder={t("ui.TimeOff.buscarVigilanteTipoOMotivo")}
-                className="pl-9"
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setPage(1);
-                }}
-              />
-            </div>
+            <SearchInput
+              className="w-full md:w-80"
+              placeholder={t("ui.TimeOff.buscarVigilanteTipoOMotivo")}
+              value={searchQuery}
+              onChange={(v) => {
+                setSearchQuery(v);
+                setPage(1);
+              }}
+            />
 
             <div className="flex items-center gap-2">
               {/* New Request Sheet */}

@@ -27,6 +27,7 @@ import {
   Modal,
   IconTile,
   SkeletonBlock,
+  SearchInput,
 } from "@/components/kit";
 import { clientDisplayName } from "@/lib/clientName";
 import { Button } from "@/components/ui/button";
@@ -659,22 +660,15 @@ export default function GuardAsignarSitiosPage() {
           <Section
             action={
               <div className="flex items-center gap-2">
-                <div className="relative hidden sm:block">
-                  <Search
-                    className="absolute left-2.5 top-2.5"
-                    size={15}
-                    style={{ color: "var(--ink-faint)" }}
-                  />
-                  <input
-                    className="cg-input h-9 w-52 pl-8 pr-3 text-sm"
-                    placeholder={t("guards.assignSites.searchPlaceholder", {
+                <SearchInput
+                  className="hidden sm:block"
+                  placeholder={t("guards.assignSites.searchPlaceholder", {
                       defaultValue: "Buscar puesto o estación",
                     })}
-                    type="text"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                  />
-                </div>
+                  type="text"
+                  value={query}
+                  onChange={(v) => setQuery(v)}
+                />
                 <div ref={actionRef} className="relative">
                   <button
                     className="cg-btn-glass cg-focus inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40"

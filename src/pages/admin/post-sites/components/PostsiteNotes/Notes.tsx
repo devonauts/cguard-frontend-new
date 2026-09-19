@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import {
-  Search,
   ChevronDown,
   Plus,
   X,
@@ -11,7 +10,7 @@ import {
   StickyNote,
 } from "lucide-react";
 import MobileCardList from "@/components/responsive/MobileCardList";
-import { EmptyState, Modal } from "@/components/kit";
+import { EmptyState, Modal, SearchInput } from "@/components/kit";
 import {
   FIELD_CLS,
   FIELD_CLS_LG,
@@ -320,22 +319,15 @@ export default function PostSiteNotes({ site }: Props) {
           </div>
 
           <div className="min-w-48 flex-1 sm:max-w-xs">
-            <div className="relative">
-              <Search
-                size={16}
-                className="absolute left-3 top-3 text-muted-foreground"
-              />
-              <input
-                type="text"
-                placeholder={t(
+            <SearchInput
+              placeholder={t(
                   "clients.notes.notesearchPlaceholder",
                   "Search note",
                 )}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className={`${FIELD_CLS} pl-9`}
-              />
-            </div>
+              type="text"
+              value={searchQuery}
+              onChange={(v) => setSearchQuery(v)}
+            />
           </div>
 
           <button

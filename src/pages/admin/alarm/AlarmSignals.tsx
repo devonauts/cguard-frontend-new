@@ -5,7 +5,6 @@ import {
   Radio,
   RefreshCw,
   Loader2,
-  Search,
   ArrowDownUp,
   ArrowUpRight,
   Wifi,
@@ -28,6 +27,7 @@ import {
   Segmented,
   Toolbar,
   SkeletonCards,
+  SearchInput,
 } from "@/components/kit";
 
 /* ------------------------------------------------------------------ */
@@ -161,21 +161,15 @@ export default function AlarmSignals() {
 
         {/* Controles */}
         <Toolbar>
-          <div className="relative min-w-[240px] flex-1">
-            <Search
-              className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2"
-              style={{ color: "var(--ink-faint)" }}
-            />
-            <Input
-              className="pl-9"
-              placeholder={t(
+          <SearchInput
+            className="min-w-[240px] flex-1"
+            placeholder={t(
                 "ui.AlarmSignals.buscarPorCuentaCodigoZona",
                 "Buscar por cuenta, código, zona…",
               )}
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-          </div>
+            value={query}
+            onChange={(v) => setQuery(v)}
+          />
           <span
             className="flex items-center gap-1.5 text-xs font-semibold"
             style={{ color: "var(--ink-soft)" }}

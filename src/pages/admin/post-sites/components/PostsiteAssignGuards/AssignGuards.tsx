@@ -5,7 +5,6 @@ import {
   MapPin,
   ArrowRight,
   Users,
-  Search,
   RefreshCw,
   Loader2,
 } from "lucide-react";
@@ -13,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import { ApiService } from "@/services/api/apiService";
-import { Section, EmptyState } from "@/components/kit";
+import { Section, EmptyState, SearchInput } from "@/components/kit";
 import { Input } from "@/components/ui/input";
 
 interface SiteProp extends PostSite {
@@ -241,20 +240,17 @@ export default function AssignGuards({ site }: { site?: SiteProp }) {
         )}
       </p>
       <div className="mb-4 flex items-center gap-2">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            className="pl-8"
-            placeholder={
+        <SearchInput
+          className="flex-1 max-w-sm"
+          placeholder={
               t(
                 "clients.assignGuards.searchPlaceholder",
                 "Buscar vigilante o estación…",
               ) as string
             }
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-        </div>
+          value={query}
+          onChange={(v) => setQuery(v)}
+        />
       </div>
 
       {error ? (

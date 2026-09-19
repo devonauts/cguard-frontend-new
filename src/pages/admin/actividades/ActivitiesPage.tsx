@@ -33,6 +33,7 @@ import {
   Toolbar,
   Segmented,
   SmartImage,
+  SearchInput,
 } from "@/components/kit";
 import { useFileUrl } from "@/lib/fileUrl";
 import { useNotificationStream } from "@/hooks/useNotificationStream";
@@ -403,18 +404,12 @@ export default function ActivitiesPage() {
 
           {/* ── Barra: búsqueda + categorías + solo sin leer ──────────────────── */}
           <Toolbar className="gap-3">
-            <div className="relative w-full max-w-xs">
-              <Search
-                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
-                style={{ color: "var(--ink-faint)" }}
-              />
-              <input
-                className="cg-input cg-focus h-9 w-full pl-9 pr-3 text-sm"
-                placeholder={t("activity.search")}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-            </div>
+            <SearchInput
+              className="w-full max-w-xs"
+              placeholder={t("activity.search")}
+              value={query}
+              onChange={(v) => setQuery(v)}
+            />
 
             {/* Elegir UNA categoría es exactamente lo que hace `Segmented`; la
               copia local iba 2px más estrecha y con otro fondo inactivo, así que

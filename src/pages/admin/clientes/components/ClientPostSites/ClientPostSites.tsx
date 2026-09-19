@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import {
   Building2,
-  Search,
   MapPin,
   Users,
   Clock,
@@ -31,6 +30,7 @@ import {
   StatusBadge,
   SmartImage,
   SkeletonCards,
+  SearchInput,
 } from "@/components/kit";
 import { MeterBar } from "@/components/charts";
 import { confirmDialog } from "@/components/ui/confirmDialog";
@@ -305,21 +305,15 @@ export default function ClientPostSites({ client }: { client: Client }) {
         <Section icon={<Building2 />} title="Sedes">
           {/* Filters */}
           <div className="mb-4 flex flex-wrap items-center gap-2">
-            <div className="relative min-w-[200px] flex-1">
-              <Search
-                className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2"
-                style={{ color: "var(--ink-faint)" }}
-              />
-              <input
-                className={`${FIELD_CLS} pl-8`}
-                placeholder={t(
+            <SearchInput
+              className="min-w-[200px] flex-1"
+              placeholder={t(
                   "ui.ClientPostSites.buscarSedePorNombreO",
                   "Buscar sede por nombre o dirección",
                 )}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-            </div>
+              value={query}
+              onChange={(v) => setQuery(v)}
+            />
             <select
               className={FIELD_CLS}
               value={estado}

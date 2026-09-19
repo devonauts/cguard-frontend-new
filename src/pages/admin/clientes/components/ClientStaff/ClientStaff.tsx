@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
-  Search,
   Users,
   UserX,
   ShieldCheck,
@@ -35,7 +34,7 @@ import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import { clientService } from "@/lib/api/clientService";
 import guardRatingService from "@/lib/api/guardRatingService";
 import GuardRatingLevel from "@/pages/admin/security-guards/GuardRatingLevel";
-import { Section, EmptyState, StatusBadge } from "@/components/kit";
+import { Section, EmptyState, StatusBadge, SearchInput } from "@/components/kit";
 import { Donut, MeterBar } from "@/components/charts";
 import { seriesVar } from "@/lib/chartColors";
 import { ApiService } from "@/services/api/apiService";
@@ -358,18 +357,15 @@ export default function ClientStaff({ client }: { client: Client }) {
         {/* LEFT — filters + roster table */}
         <Section icon={<Users className="h-4 w-4" />} title="Personal asignado">
           <div className="mb-3 grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
-            <div className="relative col-span-2 md:col-span-3 xl:col-span-1">
-              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <input
-                className={`${FIELD_CLS} pl-8`}
-                placeholder={t(
+            <SearchInput
+              className="col-span-2 md:col-span-3 xl:col-span-1"
+              placeholder={t(
                   "ui.ClientStaff.buscarPorNombreIdO",
                   "Buscar por nombre, ID o estación",
                 )}
-                value={q}
-                onChange={(e) => resetPage(setQ)(e.target.value)}
-              />
-            </div>
+              value={q}
+              onChange={(v) => resetPage(setQ)(v)}
+            />
             <select
               className={FIELD_CLS}
               value={sede}

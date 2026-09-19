@@ -27,7 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { StatusBadge, EmptyState, Toolbar, GlassPanel } from "@/components/kit";
+import { StatusBadge, EmptyState, Toolbar, GlassPanel, SearchInput } from "@/components/kit";
 
 export type UserRoleRow = {
   id: string;
@@ -112,20 +112,14 @@ export default function UserRolesTable({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <div className="relative min-w-[200px] flex-1">
-          <Search
-            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4"
-            style={{ color: "var(--ink-faint)" }}
-          />
-          <Input
-            className="pl-9"
-            placeholder={t("settings.userRoles.searchPlaceholder", {
+        <SearchInput
+          className="min-w-[200px] flex-1"
+          placeholder={t("settings.userRoles.searchPlaceholder", {
               defaultValue: "Buscar rol de usuario",
             })}
-            value={query}
-            onChange={(e) => onQueryChange(e.target.value)}
-          />
-        </div>
+          value={query}
+          onChange={(v) => onQueryChange(v)}
+        />
       </Toolbar>
 
       <GlassPanel className="overflow-hidden p-0">

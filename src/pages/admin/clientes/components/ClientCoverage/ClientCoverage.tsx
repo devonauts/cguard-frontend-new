@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import {
-  Search,
   MapPin,
   Shield,
   ShieldAlert,
@@ -50,6 +49,7 @@ import {
   StatusBadge,
   IconTile,
   Segmented,
+  SearchInput,
 } from "@/components/kit";
 import { Button } from "@/components/ui/button";
 import { ApiService } from "@/services/api/apiService";
@@ -430,24 +430,18 @@ export default function ClientCoverage({ client }: { client: Client }) {
             title={t("ui.ClientCoverage.estacionesDelSitio")}
           >
             <div className="mb-3 flex flex-wrap items-center gap-2">
-              <div className="relative min-w-[180px] flex-1">
-                <Search
-                  className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2"
-                  style={{ color: "var(--ink-faint)" }}
-                />
-                <input
-                  className={`${FIELD_CLS} pl-8`}
-                  placeholder={t(
+              <SearchInput
+                className="min-w-[180px] flex-1"
+                placeholder={t(
                     "ui.ClientCoverage.buscarEstacionPorNombre",
                     "Buscar estación por nombre",
                   )}
-                  value={q}
-                  onChange={(e) => {
-                    setQ(e.target.value);
-                    setPage(1);
-                  }}
-                />
-              </div>
+                value={q}
+                onChange={(v) => {
+                  setQ(v);
+                  setPage(1);
+                }}
+              />
               <select
                 className={FIELD_CLS}
                 value={estado}

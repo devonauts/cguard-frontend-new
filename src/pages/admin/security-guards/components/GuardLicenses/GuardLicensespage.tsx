@@ -7,7 +7,6 @@ import type {
 
 import React, { useState, useRef, useEffect } from "react";
 import {
-  Search,
   Plus,
   X,
   Paperclip,
@@ -38,6 +37,7 @@ import {
   EmptyState,
   SkeletonCards,
   IconTile,
+  SearchInput,
 } from "@/components/kit";
 import {
   Select,
@@ -483,20 +483,13 @@ export default function GuardLicenses({
           <PageHeader
             actions={
               <>
-                <div className="relative">
-                  <Search
-                    className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
-                    style={{ color: "var(--ink-faint)" }}
-                  />
-                  <Input
-                    className="h-9 w-full pl-9 text-sm sm:w-56"
-                    placeholder={t("guards.licenses.searchPlaceholder", {
+                <SearchInput
+                  placeholder={t("guards.licenses.searchPlaceholder", {
                       defaultValue: "Search license",
                     })}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
+                  value={searchQuery}
+                  onChange={(v) => setSearchQuery(v)}
+                />
                 <Button
                   className="whitespace-nowrap"
                   variant="brand"

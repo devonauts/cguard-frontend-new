@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { SearchInput } from "@/components/kit";
 import {
   Dialog,
   DialogContent,
@@ -31,7 +32,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { EllipsisVertical, Pencil, Trash2, Plus, Search } from "lucide-react";
+import { EllipsisVertical, Pencil, Trash2, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { categoryService, type Category } from "@/lib/api/categoryService";
 import { useDebouncedValue } from "@/hooks/useDebounce";
@@ -297,15 +298,12 @@ export function CategoryManagerDialog({
 
           <div className="flex flex-col gap-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="relative w-full sm:w-72">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder={t("categories.searchPlaceholder", "Search...")}
-                  className="pl-9"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-              </div>
+              <SearchInput
+                className="w-full sm:w-72"
+                placeholder={t("categories.searchPlaceholder", "Search...")}
+                value={search}
+                onChange={(v) => setSearch(v)}
+              />
 
               {hasPermission("categoryCreate") && (
                 <Button onClick={startCreate}>

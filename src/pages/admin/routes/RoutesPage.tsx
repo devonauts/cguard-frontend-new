@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
-  Search,
   Filter as FilterIcon,
   Plus,
   Route as RouteIcon,
@@ -42,6 +41,7 @@ import {
   StatusBadge,
   Toolbar,
   SkeletonCards,
+  SearchInput,
 } from "@/components/kit";
 import {
   type RouteFilters,
@@ -286,15 +286,12 @@ export default function RoutesPage() {
           </div>
 
           <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
-            <div className="relative min-w-0 flex-1 sm:flex-none">
-              <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                className="w-full pl-9 sm:w-72"
-                placeholder={t("ui.RoutesPage.buscarRuta")}
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-              />
-            </div>
+            <SearchInput
+              className="min-w-0 flex-1 sm:flex-none"
+              placeholder={t("ui.RoutesPage.buscarRuta")}
+              value={searchInput}
+              onChange={(v) => setSearchInput(v)}
+            />
 
             <Sheet open={openFilter} onOpenChange={setOpenFilter}>
               <SheetTrigger asChild>

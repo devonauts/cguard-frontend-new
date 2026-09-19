@@ -5,7 +5,6 @@ import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   Plus,
-  Search,
   FileText,
   CheckCircle2,
   Clock,
@@ -31,6 +30,7 @@ import {
   EmptyState,
   SkeletonCards,
   Field,
+  SearchInput,
 } from "@/components/kit";
 
 type Memo = {
@@ -260,22 +260,14 @@ export default function GuardMemosPage() {
           {/* ── FEED ─────────────────────────────────────────────────────────── */}
           <Section
             action={
-              <div className="relative">
-                <Search
-                  className="absolute left-2.5 top-1/2 -translate-y-1/2"
-                  size={15}
-                  style={{ color: "var(--ink-faint)" }}
-                />
-                <Input
-                  className="h-9 text-sm w-56 pl-8"
-                  placeholder={t("guards.memos.searchPlaceholder", {
+              <SearchInput
+                placeholder={t("guards.memos.searchPlaceholder", {
                     defaultValue: "Buscar memo...",
                   })}
-                  type="text"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                />
-              </div>
+                type="text"
+                value={query}
+                onChange={(v) => setQuery(v)}
+              />
             }
             title={t("guards.memos.feedTitle", {
               defaultValue: "Historial de memos",

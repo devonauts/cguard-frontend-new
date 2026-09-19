@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
-  Search,
   ChevronDown,
   ChevronUp,
   Plus,
@@ -26,7 +25,7 @@ import KpiBarChart from "@/components/KpiBarChart";
 import { useTranslation } from "react-i18next";
 import MobileCardList from "@/components/responsive/MobileCardList";
 import { Button } from "@/components/ui/button";
-import { EmptyState, StatusBadge, Modal } from "@/components/kit";
+import { EmptyState, StatusBadge, Modal, SearchInput } from "@/components/kit";
 import {
   FIELD_CLS,
   FIELD_CLS_LG,
@@ -541,19 +540,12 @@ export default function PostSiteKPIs({ site }: Props) {
         </div>
 
         <div className="min-w-48 flex-1 sm:max-w-xs">
-          <div className="relative">
-            <Search
-              size={16}
-              className="absolute left-3 top-3 text-muted-foreground"
-            />
-            <input
-              type="text"
-              placeholder={t("postSites.KPI.kpisearch", "Buscar KPI")}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className={`${FIELD_CLS} pl-9`}
-            />
-          </div>
+          <SearchInput
+            placeholder={t("postSites.KPI.kpisearch", "Buscar KPI")}
+            type="text"
+            value={searchQuery}
+            onChange={(v) => setSearchQuery(v)}
+          />
         </div>
 
         <Button

@@ -22,6 +22,7 @@ import {
   GlassPanel,
   SkeletonCards,
   Field,
+  SearchInput,
 } from "@/components/kit";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import AppLayout from "@/layouts/app-layout";
@@ -66,7 +67,6 @@ import {
   FileDown,
   FileSpreadsheet,
   ArrowDownUp,
-  Search,
   ChevronLeft,
   ChevronRight,
   Eye,
@@ -1119,21 +1119,15 @@ export default function SecurityGuardsPage() {
                 comparten la siguiente: apretados en una sola fila, el campo se
                 quedaba en un muñón donde no cabía ni un apellido. */}
             <div className="order-1 flex w-full flex-wrap items-center gap-2 md:order-2 md:w-auto md:flex-nowrap">
-              <div className="relative w-full md:w-auto">
-                <Search
-                  className="absolute left-3 top-2.5 h-4 w-4"
-                  style={{ color: "var(--ink-faint)" }}
-                />
-                <Input
-                  placeholder={t(
+              <SearchInput
+                className="w-full md:w-auto"
+                placeholder={t(
                     "guards.list.searchPlaceholder",
                     "Buscar vigilante",
                   )}
-                  className="w-full pl-9 md:w-64"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
+                value={searchQuery}
+                onChange={(v) => setSearchQuery(v)}
+              />
 
               {/* Filtros */}
               <Sheet open={openFilter} onOpenChange={setOpenFilter}>

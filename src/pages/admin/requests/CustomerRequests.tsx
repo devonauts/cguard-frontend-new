@@ -26,7 +26,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Search,
   EllipsisVertical,
   Loader2,
   CheckCircle,
@@ -50,6 +49,7 @@ import {
   EmptyState,
   Stagger,
   Toolbar,
+  SearchInput,
 } from "@/components/kit";
 
 import { localeActual } from "@/lib/localeActual";
@@ -218,21 +218,15 @@ export default function CustomerRequests() {
             </Select>
           </div>
 
-          <div className="relative w-full md:w-80">
-            <Search
-              className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
-              style={{ color: "var(--ink-faint)" }}
-            />
-            <Input
-              placeholder={t("ui.CustomerRequests.buscarPorAsuntoClienteO")}
-              className="pl-9"
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setPage(1);
-              }}
-            />
-          </div>
+          <SearchInput
+            className="w-full md:w-80"
+            placeholder={t("ui.CustomerRequests.buscarPorAsuntoClienteO")}
+            value={searchQuery}
+            onChange={(v) => {
+              setSearchQuery(v);
+              setPage(1);
+            }}
+          />
         </Toolbar>
 
         <Section title="Solicitudes" icon={<Inbox />}>

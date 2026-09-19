@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
-  Search,
   Star,
   Loader2,
   RotateCcw,
@@ -42,6 +41,7 @@ import {
   StatsStrip,
   EmptyState,
   Stagger,
+  SearchInput,
 } from "@/components/kit";
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -239,18 +239,15 @@ export default function GuardRatings() {
             </Select>
           </div>
 
-          <div className="relative w-full md:w-80">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              className="pl-9"
-              placeholder={t("ui.GuardRatings.buscarPorVigilanteClienteO")}
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setPage(1);
-              }}
-            />
-          </div>
+          <SearchInput
+            className="w-full md:w-80"
+            placeholder={t("ui.GuardRatings.buscarPorVigilanteClienteO")}
+            value={searchQuery}
+            onChange={(v) => {
+              setSearchQuery(v);
+              setPage(1);
+            }}
+          />
         </div>
 
         {/* Table — Calificaciones a personal (las reseñas son hacia cada

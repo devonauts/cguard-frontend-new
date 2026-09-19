@@ -35,7 +35,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Search,
   Filter,
   EllipsisVertical,
   X,
@@ -51,6 +50,7 @@ import {
   Section,
   EmptyState,
   Toolbar,
+  SearchInput,
 } from "@/components/kit";
 import { toast } from "sonner";
 import { confirmDialog } from "@/components/ui/confirmDialog";
@@ -270,18 +270,12 @@ export default function ShiftTemplates() {
         {/* Barra de filtros */}
         <Toolbar className="justify-between gap-4">
           <div className="flex w-full flex-col items-center gap-4 md:flex-row">
-            <div className="relative w-full md:w-80">
-              <Search
-                className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
-                style={{ color: "var(--ink-faint)" }}
-              />
-              <Input
-                placeholder={t("ui.ShiftTemplates.buscarPlantillaDeTurno")}
-                className="pl-9"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
+            <SearchInput
+              className="w-full md:w-80"
+              placeholder={t("ui.ShiftTemplates.buscarPlantillaDeTurno")}
+              value={searchQuery}
+              onChange={(v) => setSearchQuery(v)}
+            />
 
             <div className="flex items-center gap-2 ml-auto">
               <Sheet open={isFormOpen} onOpenChange={setIsFormOpen}>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { Plus, RotateCcw, X, Search, Package, User } from "lucide-react";
+import { Plus, RotateCcw, X, Package, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,7 +23,7 @@ import inventoryAssignmentService, {
   InventoryAssignment,
 } from "@/lib/api/inventoryAssignmentService";
 import { securityGuardService } from "@/lib/api/securityGuardService";
-import { EmptyState, Modal, SkeletonCards } from "@/components/kit";
+import { EmptyState, Modal, SkeletonCards, SearchInput } from "@/components/kit";
 import { FIELD_CLS_LG } from "@/pages/admin/clientes/components/_shared/tab-kit";
 import type { PostSite } from "@/types";
 import { enLotes } from "@/lib/enLotes";
@@ -221,19 +221,15 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
             </div>
           ) : (
             <div className="space-y-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  className="pl-9"
-                  placeholder={t(
+              <SearchInput
+                autoFocus
+                placeholder={t(
                     "ui.Inventory.buscarArticuloDisponible",
                     "Buscar artículo disponible...",
                   )}
-                  value={itemSearch}
-                  onChange={(e) => setItemSearch(e.target.value)}
-                  autoFocus
-                />
-              </div>
+                value={itemSearch}
+                onChange={(v) => setItemSearch(v)}
+              />
               <div className="border border-border rounded-lg max-h-40 overflow-y-auto">
                 {loadingItems ? (
                   <div className="text-center text-xs text-muted-foreground py-4">
@@ -290,15 +286,11 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
             </div>
           ) : (
             <div className="space-y-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  className="pl-9"
-                  placeholder={t("comun.buscarVigilante")}
-                  value={guardSearch}
-                  onChange={(e) => setGuardSearch(e.target.value)}
-                />
-              </div>
+              <SearchInput
+                placeholder={t("comun.buscarVigilante")}
+                value={guardSearch}
+                onChange={(v) => setGuardSearch(v)}
+              />
               {(loadingGuards || guards.length > 0) && (
                 <div className="border border-border rounded-lg max-h-32 overflow-y-auto">
                   {loadingGuards ? (
@@ -594,15 +586,11 @@ export default function Inventory({ site }: { site?: PostSite }) {
       </div>
 
       {assignments.length > 0 && (
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            className="pl-9"
-            placeholder={t("ui.Inventory.buscarPorNombreTipoVigilante")}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-        </div>
+        <SearchInput
+          placeholder={t("ui.Inventory.buscarPorNombreTipoVigilante")}
+          value={query}
+          onChange={(v) => setQuery(v)}
+        />
       )}
 
       <div className="glass overflow-hidden">

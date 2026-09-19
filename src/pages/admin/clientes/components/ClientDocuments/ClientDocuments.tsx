@@ -5,7 +5,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
-  Search,
   FileText,
   FileSpreadsheet,
   FileImage,
@@ -49,6 +48,7 @@ import {
   StatusBadge,
   Modal,
   IconTile,
+  SearchInput,
 } from "@/components/kit";
 import { Donut, MeterBar } from "@/components/charts";
 import { seriesVar } from "@/lib/chartColors";
@@ -490,18 +490,12 @@ export default function ClientDocuments({ client }: { client: Client }) {
         {/* LEFT — filters + table */}
         <Section icon={<Files />} title="Documentos">
           <div className="mb-3 flex flex-wrap items-center gap-2">
-            <div className="relative min-w-[200px] flex-1">
-              <Search
-                className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2"
-                style={{ color: "var(--ink-faint)" }}
-              />
-              <input
-                className={`${FIELD_CLS} pl-8`}
-                placeholder={t("ui.ClientDocuments.buscarPorNombreTipoO")}
-                value={q}
-                onChange={(e) => resetPage(setQ)(e.target.value)}
-              />
-            </div>
+            <SearchInput
+              className="min-w-[200px] flex-1"
+              placeholder={t("ui.ClientDocuments.buscarPorNombreTipoO")}
+              value={q}
+              onChange={(v) => resetPage(setQ)(v)}
+            />
             <select
               className={FIELD_CLS}
               value={category}

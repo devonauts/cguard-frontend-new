@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import {
-  Search,
   ChevronDown,
   Plus,
   X,
@@ -27,7 +26,7 @@ import MobileCardList from "@/components/responsive/MobileCardList";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
-import { Section, EmptyState, Modal } from "@/components/kit";
+import { Section, EmptyState, Modal, SearchInput } from "@/components/kit";
 import {
   FIELD_CLS,
   LabeledField,
@@ -345,23 +344,15 @@ export default function ClientNotes({ client }: Props) {
           </div>
 
           <div className="flex-1 max-w-xs">
-            <div className="relative">
-              <Search
-                size={16}
-                className="absolute left-2.5 top-1/2 -translate-y-1/2"
-                style={{ color: "var(--ink-faint)" }}
-              />
-              <input
-                type="text"
-                placeholder={t(
+            <SearchInput
+              placeholder={t(
                   "clients.notes.notesearchPlaceholder",
                   "Search notes",
                 )}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className={`${FIELD_CLS} pl-8`}
-              />
-            </div>
+              type="text"
+              value={searchQuery}
+              onChange={(v) => setSearchQuery(v)}
+            />
           </div>
 
           <Button variant="brand" onClick={handleAddNote} className="gap-2">

@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
-  Search,
   ChevronDown,
   ChevronUp,
   Plus,
@@ -41,6 +40,7 @@ import {
   EmptyState,
   Modal,
   IconTile,
+  SearchInput,
 } from "@/components/kit";
 import { Button } from "@/components/ui/button";
 import type {
@@ -751,20 +751,12 @@ export default function GuardIndicators({ guard }: Props) {
                 </div>
 
                 {/* Center: Search */}
-                <div className="relative">
-                  <Search
-                    size={15}
-                    className="absolute left-2.5 top-1/2 -translate-y-1/2"
-                    style={{ color: "var(--ink-faint)" }}
-                  />
-                  <input
-                    type="text"
-                    placeholder={t("guards.KPI.kpisearch", "Buscar KPI")}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="cg-input w-48 py-2 pl-8 pr-3 text-sm"
-                  />
-                </div>
+                <SearchInput
+                  placeholder={t("guards.KPI.kpisearch", "Buscar KPI")}
+                  type="text"
+                  value={searchQuery}
+                  onChange={(v) => setSearchQuery(v)}
+                />
               </div>
             }
           >

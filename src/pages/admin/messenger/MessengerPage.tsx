@@ -9,7 +9,7 @@ import {
 } from "react";
 import { useTranslation } from "react-i18next";
 
-import { MessageSquareText, Send, Plus, Search, Loader2, X, Check, CheckCheck, Paperclip, Play, Trash2, Users, Mic, UserPlus, RefreshCw, UserCircle2, ArrowLeft } from "lucide-react";
+import { MessageSquareText, Send, Plus, Loader2, X, Check, CheckCheck, Paperclip, Play, Trash2, Users, Mic, UserPlus, RefreshCw, UserCircle2, ArrowLeft } from "lucide-react";
 import AppLayout from "@/layouts/app-layout";
 import {
   PageHeader,
@@ -19,6 +19,7 @@ import {
   Segmented,
   StatusBadge,
   SmartImage,
+  SearchInput,
 } from "@/components/kit";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -1122,21 +1123,13 @@ function ComposeDialog({
               </div>
             ) : (
               <div>
-                <div className="relative">
-                  <Search
-                    size={15}
-                    className="absolute left-3 top-1/2 -translate-y-1/2"
-                    style={{ color: "var(--ink-faint)" }}
-                  />
-                  <input
-                    value={q}
-                    onChange={(e) => setQ(e.target.value)}
-                    placeholder={
+                <SearchInput
+                  placeholder={
                       isClient ? "Buscar cliente…" : "Buscar vigilante…"
                     }
-                    className="cg-input w-full py-2 pl-9 pr-3 text-sm"
-                  />
-                </div>
+                  value={q}
+                  onChange={(v) => setQ(v)}
+                />
                 {results.length > 0 && (
                   <div
                     className="mt-2 max-h-44 overflow-auto rounded-xl border"
@@ -1190,19 +1183,11 @@ function ComposeDialog({
               </div>
             ) : (
               <div>
-                <div className="relative">
-                  <Search
-                    size={15}
-                    className="absolute left-3 top-1/2 -translate-y-1/2"
-                    style={{ color: "var(--ink-faint)" }}
-                  />
-                  <input
-                    value={siteQ}
-                    onChange={(e) => setSiteQ(e.target.value)}
-                    placeholder={i18n.t("ui.MessengerPage.buscarPuestoSitio")}
-                    className="cg-input w-full py-2 pl-9 pr-3 text-sm"
-                  />
-                </div>
+                <SearchInput
+                  placeholder={i18n.t("ui.MessengerPage.buscarPuestoSitio")}
+                  value={siteQ}
+                  onChange={(v) => setSiteQ(v)}
+                />
                 {siteResults.length > 0 && (
                   <div
                     className="mt-2 max-h-44 overflow-auto rounded-xl border"

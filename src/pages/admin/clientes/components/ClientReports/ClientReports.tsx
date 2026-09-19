@@ -50,6 +50,7 @@ import {
   GlassPanel,
   IconTile,
   Segmented,
+  SearchInput,
 } from "@/components/kit";
 import { Sparkline, Donut, AreaChart, MeterBar } from "@/components/charts";
 import { CHART_VARS, alphaVar, rampVar } from "@/lib/chartColors";
@@ -767,18 +768,15 @@ export default function ClientReports({
         icon={<FileText className="h-4 w-4" />}
         title={t("ui.ClientReports.todosLosReportes")}
       >
-        <div className="mb-3 relative max-w-sm">
-          <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input
-            className={`${FIELD_CLS} pl-8`}
-            placeholder={t("ui.ClientReports.buscarReportePorNombre")}
-            value={q}
-            onChange={(e) => {
-              setQ(e.target.value);
-              setPage(1);
-            }}
-          />
-        </div>
+        <SearchInput
+          className="mb-3 max-w-sm"
+          placeholder={t("ui.ClientReports.buscarReportePorNombre")}
+          value={q}
+          onChange={(v) => {
+            setQ(v);
+            setPage(1);
+          }}
+        />
         {reportsList.length === 0 ? (
           <EmptyState
             description={t(

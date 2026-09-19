@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Search,
   Filter,
   X,
   Loader2,
@@ -49,6 +48,7 @@ import {
   EmptyState,
   Modal,
   Toolbar,
+  SearchInput,
 } from "@/components/kit";
 import shiftService, { ShiftRecord } from "@/lib/api/shiftService";
 import { securityGuardService } from "@/lib/api/securityGuardService";
@@ -309,21 +309,15 @@ export default function OpenShifts() {
         {/* Barra de filtros */}
         <Toolbar className="justify-end gap-4">
           <div className="flex w-full flex-col items-center gap-4 md:w-auto md:flex-row">
-            <div className="relative w-full md:w-80">
-              <Search
-                className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
-                style={{ color: "var(--ink-faint)" }}
-              />
-              <Input
-                className="pl-9"
-                placeholder={t("ui.OpenShifts.buscarPuestoOFecha")}
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setPage(1);
-                }}
-              />
-            </div>
+            <SearchInput
+              className="w-full md:w-80"
+              placeholder={t("ui.OpenShifts.buscarPuestoOFecha")}
+              value={searchQuery}
+              onChange={(v) => {
+                setSearchQuery(v);
+                setPage(1);
+              }}
+            />
 
             <div className="flex items-center gap-2">
               <Sheet open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
@@ -665,18 +659,11 @@ export default function OpenShifts() {
               </div>
             </div>
 
-            <div className="relative">
-              <Search
-                className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
-                style={{ color: "var(--ink-faint)" }}
-              />
-              <Input
-                className="pl-9"
-                placeholder={t("comun.buscarVigilante")}
-                value={guardSearch}
-                onChange={(e) => setGuardSearch(e.target.value)}
-              />
-            </div>
+            <SearchInput
+              placeholder={t("comun.buscarVigilante")}
+              value={guardSearch}
+              onChange={(v) => setGuardSearch(v)}
+            />
 
             <div className="glass-sunken max-h-56 overflow-y-auto p-1">
               {filteredGuards.length === 0 ? (

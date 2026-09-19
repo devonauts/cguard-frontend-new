@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { ShieldCheck, Search, Plus, Lock } from "lucide-react";
+import { ShieldCheck, Plus, Lock } from "lucide-react";
 
 import UserRolesTable, { UserRoleRow } from "./UserRolesTable";
 import UserRoleDialog, { UserRoleDialogValues } from "./UserRoleDialog";
@@ -29,7 +29,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { PermissionedButton } from "@/components/permissions/Permissioned";
 import { ADMIN_FLOOR_PERMISSIONS } from "@/config/permissions";
-import { PageContainer, PageHeader, StatusBadge } from "@/components/kit";
+import { PageContainer, PageHeader, StatusBadge, SearchInput } from "@/components/kit";
 
 // Roles whose permissions are NEVER tenant-editable (global / external).
 const FULLY_LOCKED_ROLE_SLUGS = ["superadmin", "customer"];
@@ -504,21 +504,15 @@ export default function UserRolesPage() {
             expandedContent={
               expandedRoleId ? (
                 <div>
-                  <div className="relative mb-3">
-                    <Search
-                      className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4"
-                      style={{ color: "var(--ink-faint)" }}
-                    />
-                    <Input
-                      className="pl-9"
-                      placeholder={t(
+                  <SearchInput
+                    className="mb-3"
+                    placeholder={t(
                         "settings.userRoles.permSearchPlaceholder",
                         { defaultValue: "Buscar permisos…" },
                       )}
-                      value={permQuery}
-                      onChange={(e) => setPermQuery(e.target.value)}
-                    />
-                  </div>
+                    value={permQuery}
+                    onChange={(v) => setPermQuery(v)}
+                  />
                   <PermissionsEditor
                     lockedPermissions={expandedLockedPerms}
                     query={permQuery}

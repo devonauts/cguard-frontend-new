@@ -13,6 +13,7 @@ import {
   Stagger,
   EmptyState,
   IconTile,
+  SearchInput,
 } from "@/components/kit";
 
 type SubItem = {
@@ -76,20 +77,14 @@ export default function SettingsHome() {
         {/* Hero */}
         <PageHeader
           actions={
-            <div className="relative w-full sm:w-72">
-              <Search
-                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
-                style={{ color: "var(--ink-faint)" }}
-              />
-              <input
-                className="cg-input w-full py-2.5 pl-10 pr-3 text-sm"
-                placeholder={t("settings.home.searchPlaceholder", {
+            <SearchInput
+              className="w-full sm:w-72"
+              placeholder={t("settings.home.searchPlaceholder", {
                   defaultValue: "Buscar un ajuste...",
                 })}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-            </div>
+              value={query}
+              onChange={(v) => setQuery(v)}
+            />
           }
           icon={<Settings2 />}
           subtitle={t("settings.home.heroSubtitle", {

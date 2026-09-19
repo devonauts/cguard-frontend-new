@@ -3,7 +3,6 @@ import type { Client, PostSite, SecurityGuard } from "@/types";
 import { useTranslation } from "react-i18next";
 import { useMemo, useState, useEffect, useCallback, FormEvent } from "react";
 import {
-  Search,
   Filter as FilterIcon,
   ClipboardList,
   LogIn,
@@ -24,6 +23,7 @@ import {
   StatsStrip,
   StatusBadge,
   SkeletonCards,
+  SearchInput,
 } from "@/components/kit";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
@@ -559,21 +559,15 @@ export default function Visits() {
           </StatsStrip>
 
           <Toolbar>
-            <div className="relative min-w-0 flex-1 sm:max-w-xs">
-              <Search
-                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
-                style={{ color: "var(--ink-faint)" }}
-              />
-              <Input
-                className="w-full pl-9"
-                placeholder={t("ui.Visits.buscarRegistroDeVisitas")}
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setOffset(0);
-                }}
-              />
-            </div>
+            <SearchInput
+              className="min-w-0 flex-1 sm:max-w-xs"
+              placeholder={t("ui.Visits.buscarRegistroDeVisitas")}
+              value={search}
+              onChange={(v) => {
+                setSearch(v);
+                setOffset(0);
+              }}
+            />
 
             <Sheet open={openFilter} onOpenChange={setOpenFilter}>
               <SheetTrigger asChild>

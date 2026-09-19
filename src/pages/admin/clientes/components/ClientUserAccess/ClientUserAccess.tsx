@@ -5,7 +5,6 @@ import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import { clientService } from "@/lib/api/clientService";
 import { useAppInviteEnabled } from "@/hooks/useAppInviteEnabled";
 import {
-  Search,
   UserPlus,
   Users,
   Trash2,
@@ -13,7 +12,7 @@ import {
   Smartphone,
   Loader2,
 } from "lucide-react";
-import { Section, EmptyState, StatusBadge, Modal } from "@/components/kit";
+import { Section, EmptyState, StatusBadge, Modal, SearchInput } from "@/components/kit";
 import {
   FIELD_CLS,
   LabeledField,
@@ -140,15 +139,12 @@ export default function ClientUserAccess({ client }: Props) {
           </Button>
         }
       >
-        <div className="mb-3 relative max-w-sm">
-          <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input
-            className={`${FIELD_CLS} pl-8`}
-            placeholder={t("ui.ClientUserAccess.buscarPorNombreOCorreo")}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-        </div>
+        <SearchInput
+          className="mb-3 max-w-sm"
+          placeholder={t("ui.ClientUserAccess.buscarPorNombreOCorreo")}
+          value={query}
+          onChange={(v) => setQuery(v)}
+        />
 
         {filtered.length === 0 ? (
           <EmptyState

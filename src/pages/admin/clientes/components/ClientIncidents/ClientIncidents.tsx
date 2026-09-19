@@ -40,6 +40,7 @@ import {
   StatusBadge,
   GlassPanel,
   SmartImage,
+  SearchInput,
 } from "@/components/kit";
 import { Button } from "@/components/ui/button";
 import { localeActual } from "@/lib/localeActual";
@@ -448,21 +449,15 @@ export default function ClientIncidents({ client }: { client: Client }) {
         {/* LEFT — filters + table */}
         <Section icon={<AlertTriangle />} title="Incidentes">
           <div className="mb-3 grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
-            <div className="relative col-span-2 md:col-span-3 xl:col-span-1">
-              <Search
-                className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2"
-                style={{ color: "var(--ink-faint)" }}
-              />
-              <input
-                className={`${FIELD_CLS} pl-8`}
-                placeholder={t(
+            <SearchInput
+              className="col-span-2 md:col-span-3 xl:col-span-1"
+              placeholder={t(
                   "ui.ClientIncidents.buscarPorIdTituloO",
                   "Buscar por ID, título o ubicación",
                 )}
-                value={q}
-                onChange={(e) => resetPage(setQ)(e.target.value)}
-              />
-            </div>
+              value={q}
+              onChange={(v) => resetPage(setQ)(v)}
+            />
             <select
               className={FIELD_CLS}
               value={sedeId}

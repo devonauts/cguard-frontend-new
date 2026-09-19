@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { Search, MoreVertical, Upload, FileDown, FileSpreadsheet, Printer, Mail, Car, Plus } from "lucide-react";
+import { MoreVertical, Upload, FileDown, FileSpreadsheet, Printer, Mail, Car, Plus } from "lucide-react";
 import { useAsyncList } from "@/hooks/useAsyncList";
 import AppLayout from "@/layouts/app-layout";
 
@@ -38,6 +38,7 @@ import {
   Toolbar,
   StatusBadge,
   SkeletonCards,
+  SearchInput,
 } from "@/components/kit";
 
 import { toast } from "sonner";
@@ -267,18 +268,12 @@ export default function Vehicles() {
           />
 
           <Toolbar>
-            <div className="relative min-w-0 flex-1 sm:max-w-xs">
-              <Search
-                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
-                style={{ color: "var(--ink-faint)" }}
-              />
-              <Input
-                className="w-full pl-9"
-                placeholder={t("ui.Vehicles.buscarVehiculo", "Buscar vehículo")}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </div>
+            <SearchInput
+              className="min-w-0 flex-1 sm:max-w-xs"
+              placeholder={t("ui.Vehicles.buscarVehiculo", "Buscar vehículo")}
+              value={search}
+              onChange={(v) => setSearch(v)}
+            />
 
             <Sheet open={isAddOpen} onOpenChange={setIsAddOpen}>
               <SheetTrigger asChild>

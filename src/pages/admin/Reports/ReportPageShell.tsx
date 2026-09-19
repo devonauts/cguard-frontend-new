@@ -3,7 +3,7 @@ import type { ExportFormat } from "@/lib/export/reportExport";
 import type { ReportTone } from "./reportIcons";
 
 import { useState, type ReactNode } from "react";
-import { Search, Filter, Inbox } from "lucide-react";
+import { Filter, Inbox } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +24,7 @@ import {
   StatusBadge,
   SkeletonBlock,
   Pagination,
+  SearchInput,
 } from "@/components/kit";
 
 /** Estado de paginación que el informe cede al armazón: el armazón dibuja el
@@ -171,18 +172,12 @@ export default function ReportPageShell({
               (conmutador ~200 px + botón ~120 px). De `sm` en adelante vuelve a
               ser la caja estrecha de siempre a la izquierda de la barra. */}
             {showSearch && (
-              <div className="relative w-full min-w-0 sm:w-auto sm:flex-1 sm:max-w-xs">
-                <Search
-                  className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
-                  style={{ color: "var(--ink-faint)" }}
-                />
-                <input
-                  className="cg-input w-full py-2 pl-9 pr-3 text-sm"
-                  placeholder="Buscar…"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-              </div>
+              <SearchInput
+                className="w-full min-w-0 sm:w-auto sm:flex-1 sm:max-w-xs"
+                placeholder="Buscar…"
+                value={search}
+                onChange={(v) => setSearch(v)}
+              />
             )}
 
             {rangeControl}

@@ -25,13 +25,12 @@ import {
   LogOut,
   Smartphone,
   AlertTriangle,
-  Search,
   ShieldCheck,
   Loader2,
 } from "lucide-react";
 
 import i18n from "@/i18n";
-import { SkeletonBlock } from "@/components/kit";
+import { SkeletonBlock, SearchInput } from "@/components/kit";
 import { cn } from "@/lib/utils";
 
 export type SeverityTone = "ok" | "bad" | "warn" | "info" | "neutral";
@@ -139,19 +138,13 @@ export function AuditSearch({
   placeholder?: string;
 }) {
   return (
-    <div className="relative min-w-0 flex-1 sm:max-w-xs">
-      <Search
-        className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2"
-        style={{ color: "var(--ink-faint)" }}
-      />
-      <input
-        aria-label={placeholder}
-        className="cg-input h-9 w-full pl-9 pr-3 text-sm"
-        placeholder={placeholder}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      />
-    </div>
+    <SearchInput
+      aria-label={placeholder}
+      className="min-w-0 flex-1 sm:max-w-xs"
+      placeholder={placeholder}
+      value={value}
+      onChange={(v) => onChange(v)}
+    />
   );
 }
 

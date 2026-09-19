@@ -1,4 +1,5 @@
 import type { GuardDetail, GuardNote, NoteAttachment, FileDescriptor } from '../../guardDetailTypes';
+import { SearchInput } from "@/components/kit";
 import React, { useState, useEffect, useCallback } from 'react';
 import { Search, Plus, X, StickyNote, Calendar, User, Trash2, Paperclip, Download } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -387,24 +388,17 @@ export default function GuardNotes({
             }
           >
             {/* Search */}
-            <div className="relative mb-5 max-w-sm">
-              <Search
-                size={16}
-                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2"
-                style={{ color: "var(--ink-faint)" }}
-              />
-              <Input
-                type="text"
-                placeholder={
+            <SearchInput
+              className="mb-5 max-w-sm"
+              placeholder={
                   t("guards.notes.searchPlaceholder", {
                     defaultValue: "Buscar nota",
                   }) as string
                 }
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-9 pl-9 text-sm"
-              />
-            </div>
+              type="text"
+              value={searchQuery}
+              onChange={(v) => setSearchQuery(v)}
+            />
 
             {/* Notes feed */}
             {filteredNotes.length === 0 ? (

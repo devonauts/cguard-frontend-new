@@ -2,7 +2,7 @@ import type { GuardDetail } from "../../guardDetailTypes";
 
 import { useParams } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
-import { Search, ChevronDown, X, Paperclip, FolderOpen } from "lucide-react";
+import { ChevronDown, X, Paperclip, FolderOpen } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -17,6 +17,7 @@ import {
   EmptyState,
   SkeletonCards,
   IconTile,
+  SearchInput,
 } from "@/components/kit";
 import { Button } from "@/components/ui/button";
 
@@ -135,21 +136,14 @@ export default function GuardFilesPage() {
                       </div>
                     )}
                   </div>
-                  <div className="relative">
-                    <Search
-                      className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground"
-                      size={15}
-                    />
-                    <input
-                      className="cg-input w-56 py-2 pl-8 pr-3 text-sm"
-                      placeholder={t("guards.files.searchPlaceholder", {
+                  <SearchInput
+                    placeholder={t("guards.files.searchPlaceholder", {
                         defaultValue: "Search files...",
                       })}
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                  </div>
+                    type="text"
+                    value={searchQuery}
+                    onChange={(v) => setSearchQuery(v)}
+                  />
                 </div>
               }
               icon={<FolderOpen />}
