@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import Header from "@/components/header";
 import Sidebar from "@/components/sidebar";
+import BarraInferiorMovil from "@/components/BarraInferiorMovil";
 import { useAuth } from "@/contexts/AuthContext";
 import { setTenantId } from "@/lib/api/clientService";
 import { setTenantId as setCategoryTenantId } from "@/lib/api/categoryService";
@@ -414,7 +415,10 @@ function AppLayoutShell({ children }: AppLayoutProps) {
         <main
           ref={mainRef}
           className={[
-            "relative h-[calc(100vh_-_3.5rem_-_env(safe-area-inset-top))] supports-[height:100dvh]:h-[calc(100dvh_-_3.5rem_-_env(safe-area-inset-top))] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] overflow-y-auto transition-[margin] duration-300",
+            /* `pb-[…]` en móvil: la barra inferior es `fixed`, así que sin
+               reservarle su alto (56 px + la franja del indicador) tapa la
+               última fila de cualquier lista. En `lg` no existe y no se paga. */
+            "relative h-[calc(100vh_-_3.5rem_-_env(safe-area-inset-top))] supports-[height:100dvh]:h-[calc(100dvh_-_3.5rem_-_env(safe-area-inset-top))] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] pb-[calc(3.5rem_+_env(safe-area-inset-bottom))] lg:pb-0 overflow-y-auto transition-[margin] duration-300",
             sidebarOpen ? "lg:ml-[17rem]" : "lg:ml-16",
           ].join(" ")}
         >
@@ -435,6 +439,11 @@ function AppLayoutShell({ children }: AppLayoutProps) {
         {/* El proveedor ya NO va aquí: vive en `App.tsx`, por encima de las rutas,
           porque una página que renderiza `AppLayout` como hijo quedaba fuera de
           su alcance y leía el contexto por defecto. Aquí sólo el widget. */}
+        {/* Los cuatro destinos que se usan desde la calle, a la altura del
+          pulgar, y el menú completo detrás del quinto. Sólo en el teléfono: en
+          escritorio la barra lateral ya hace este trabajo. */}
+        <BarraInferiorMovil onAbrirMenu={() => setSidebarOpen(true)} />
+
         <RadioVoiceWidget />
 
         {/* VigIA — el asistente, abajo a la derecha. Solo para el equipo (el
