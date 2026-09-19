@@ -147,7 +147,29 @@ export class VoiceChannel {
         },
       );
 
-      if (!resp.ok) throw new Error(`radio token ${resp.status}`);
+      if (!resp.ok) {
+        /* QUÉ FALLA, NO UN NÚMERO. Desde que el canal se comprueba contra el
+           catálogo (services/radio/radioChannels), un 403 aquí significa algo
+           concreto y accionable: ese canal existe pero no es tuyo. Decir
+           «radio token 403» dejaba al despachador mirando un código. */
+        if (resp.status === 403) {
+          throw new Error(
+            i18n.t(
+              "radio.voice.channelForbidden",
+              "No tienes acceso a este canal de radio.",
+            ),
+          );
+        }
+        if (resp.status === 400) {
+          throw new Error(
+            i18n.t(
+              "radio.voice.channelMissing",
+              "Ese canal de radio ya no existe. Actualiza la lista de canales.",
+            ),
+          );
+        }
+        throw new Error(`radio token ${resp.status}`);
+      }
       const data: any = await resp.json();
       const url: string = data?.url;
       const token: string = data?.token;

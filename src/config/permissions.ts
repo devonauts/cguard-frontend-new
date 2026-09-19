@@ -66,6 +66,7 @@ export const PERMISSIONS: string[] = [
   "radioDeviceCreate","radioDeviceEdit","radioDeviceDestroy","radioDeviceRead",
   "radioCheckRead","radioCheckReply","radioCheckManage",
   "radioCheckSettingsRead","radioCheckSettingsEdit",
+  "radioChannelRead","radioChannelManage",
   // ── Entrenamiento ──
   "trainingCourseCreate","trainingCourseRead","trainingCourseEdit","trainingCourseDestroy",
   "trainingLessonCreate","trainingLessonRead","trainingLessonEdit","trainingLessonDestroy","trainingLessonComplete",

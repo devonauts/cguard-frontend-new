@@ -203,8 +203,13 @@ export default function RadioVoiceWidget() {
           size={16}
           style={{ color: snap.on ? "var(--brand-text)" : "var(--ink-faint)" }}
         />
-        <div className="flex-1">
-          <p className="text-sm font-semibold leading-tight">Canal general</p>
+        <div className="min-w-0 flex-1">
+          {/* El NOMBRE del canal en el que se está, no un rótulo fijo: desde
+              que la empresa puede tener varios, «Canal general» mentía en
+              cuanto el despachador cambiaba de canal en la pantalla de Radio. */}
+          <p className="truncate text-sm font-semibold leading-tight">
+            {snap.channelName || "Canal general"}
+          </p>
           <p
             className="text-[11px] leading-tight"
             style={{ color: "var(--ink-soft)" }}

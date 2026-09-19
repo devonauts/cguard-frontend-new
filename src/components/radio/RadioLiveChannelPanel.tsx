@@ -1,6 +1,20 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { useTranslation } from "react-i18next";
-import { Mic, Loader2, Users, Radio, LogOut, Volume2 } from "lucide-react";
+import {
+  Mic,
+  Loader2,
+  Users,
+  Radio,
+  LogOut,
+  Volume2,
+  RefreshCw,
+} from "lucide-react";
 
 import { radioDenied, playTalkPermit, playRoger } from "@/lib/radioTones";
 import { useAuth } from "@/contexts/AuthContext";
@@ -9,10 +23,15 @@ import {
   getRadioSnapshot,
   setRadioSelf,
   setRadioOn,
+  setRadioChannel,
   radioStartTalk,
   radioStopTalk,
   radioResume,
 } from "@/lib/radioVoiceManager";
+import {
+  radioChannelService,
+  type MiCanal,
+} from "@/lib/api/radioChannelService";
 
 /**
  * Dispatcher side of the open live channel (Canal abierto). This is a VIEW over
@@ -28,7 +47,52 @@ export default function RadioLiveChannelPanel() {
   const myId = (user as any)?.id || (user as any)?._id;
 
   const snap = useSyncExternalStore(subscribeRadio, getRadioSnapshot);
-  const { state, joined, roster, speaker, talking, hint } = snap;
+  const {
+    state,
+    joined,
+    roster,
+    speaker,
+    talking,
+    hint,
+    channel,
+    channelName,
+  } = snap;
+
+  /* MIS canales, no todos. El backend ya filtra por pertenencia, así que esta
+     lista es exactamente aquello a lo que este usuario puede entrar. */
+  const [canales, setCanales] = useState<MiCanal[]>([]);
+
+  const cargarCanales = useCallback(async () => {
+    try {
+      const r = await radioChannelService.mine();
+
+      setCanales(r.rows);
+      // Si el canal recordado ya no existe (lo borraron, o se le quitó el
+      // acceso), se cae al predeterminado en vez de fallar al conectar.
+      const sigue = r.rows.some((c) => c.key === channel);
+
+      if (!sigue) {
+        const destino =
+          r.rows.find((c) => c.key === r.defaultChannel) || r.rows[0];
+
+        if (destino) setRadioChannel(destino.key, destino.name);
+      } else {
+        const actual = r.rows.find((c) => c.key === channel);
+
+        if (actual && actual.name !== channelName)
+          setRadioChannel(actual.key, actual.name);
+      }
+    } catch {
+      /* sin lista se sigue con el canal recordado: la radio no puede caerse
+         porque el catálogo no cargue */
+    }
+    // `channel`/`channelName` se leen dentro a propósito y NO van en las
+    // dependencias: incluirlos re-dispararía la carga en cada cambio de canal.
+  }, []);
+
+  useEffect(() => {
+    cargarCanales();
+  }, [cargarCanales]);
   const busy = state === "connecting" && !joined;
   const [localHint, setLocalHint] = useState<string | null>(null);
   const pressedRef = useRef(false);
@@ -133,6 +197,49 @@ export default function RadioLiveChannelPanel() {
           </span>
         )}
       </div>
+
+      {/* ── EL CANAL ─────────────────────────────────────────────────────────
+          Con un solo canal esto no aparece: sería un desplegable de una opción
+          en la pantalla más ocupada del despacho. En cuanto hay dos, cambiar de
+          canal RECONECTA (una conexión de LiveKit vive en una sola sala), y por
+          eso se avisa con el punto de estado en vez de fingir que es instantáneo. */}
+      {canales.length > 1 && (
+        <div className="mb-3 flex items-center gap-2">
+          <select
+            className="cg-input h-9 min-w-0 flex-1 px-2 text-sm"
+            value={channel}
+            onChange={(e) => {
+              const c = canales.find((x) => x.key === e.target.value);
+
+              if (c) setRadioChannel(c.key, c.name);
+            }}
+          >
+            {canales.map((c) => (
+              <option key={c.key} value={c.key}>
+                {c.name}
+                {c.online ? ` · ${c.online} en línea` : ""}
+                {c.isDefault ? " · predeterminado" : ""}
+              </option>
+            ))}
+          </select>
+          <button
+            className="cg-btn-glass cg-focus rounded-lg px-2.5 py-2 text-[11px]"
+            title={t(
+              "ui.RadioLiveChannelPanel.actualizarCanales",
+              "Actualizar canales",
+            )}
+            type="button"
+            onClick={cargarCanales}
+          >
+            <RefreshCw size={14} />
+          </button>
+        </div>
+      )}
+      {canales.length === 1 && (
+        <p className="mb-3 text-[11px]" style={{ color: "var(--ink-soft)" }}>
+          {channelName}
+        </p>
+      )}
 
       {!joined ? (
         <div className="flex flex-col items-center gap-3 py-4 text-center">

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
 import { Users, RadioTower, BellOff, WifiOff } from "lucide-react";
 
@@ -19,6 +19,7 @@ import {
   type RadioPresenceState,
 } from "@/lib/api/radioCheckService";
 import { useRadioRealtime } from "@/components/radio/RadioRealtimeProvider";
+import { subscribeRadio, getRadioSnapshot } from "@/lib/radioVoiceManager";
 
 /**
  * Cobertura del canal abierto.
@@ -130,12 +131,16 @@ function Fila({ f }: { f: RadioPresenceRow }) {
 export default function RadioCoveragePanel() {
   const { t } = useTranslation();
   const { version } = useRadioRealtime();
+  /* La cobertura es DEL CANAL que se está mirando. Pedirla siempre de
+     «general» mientras el despachador oye otro canal describía a gente que no
+     tenía nada que ver con la conversación que tiene delante. */
+  const { channel } = useSyncExternalStore(subscribeRadio, getRadioSnapshot);
   const [datos, setDatos] = useState<RadioPresence | null>(null);
   const [cargando, setCargando] = useState(true);
 
   const refrescar = useCallback(async () => {
     try {
-      setDatos(await radioCheckService.getRadioPresence());
+      setDatos(await radioCheckService.getRadioPresence(channel));
     } catch {
       // Sin permiso o sin radio configurada: el panel se queda fuera en vez de
       // gritar. La pantalla del pase sigue siendo utilizable.
@@ -143,7 +148,7 @@ export default function RadioCoveragePanel() {
     } finally {
       setCargando(false);
     }
-  }, []);
+  }, [channel]);
 
   useEffect(() => {
     refrescar();

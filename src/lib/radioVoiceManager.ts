@@ -7,8 +7,11 @@
  * remounts. The floating widget is just a thin subscriber. Toggling on/off (and
  * surviving a full reload) is persisted in localStorage.
  *
- * It joins the same tenant-wide channel (`rc-voice:<tenantId>`) the guards use,
- * so the dispatcher listens to every station/guard on one frequency.
+ * Se une al CANAL SELECCIONADO de la empresa (por defecto el general, que es
+ * donde están los vigilantes). El canal se guarda igual que el encendido, así
+ * que el despachador vuelve al que estaba oyendo tras recargar; cambiarlo
+ * reconecta a la sala nueva, porque una conexión de LiveKit está atada a UNA
+ * sala y la misma identidad en dos salas se expulsaría sola.
  */
 // SÓLO TIPOS. Se borran al compilar, así que este import no arrastra nada en
 // tiempo de ejecución. La clase se carga bajo demanda en `doConnect` — ver ahí
@@ -35,6 +38,11 @@ const socketOrigin = () => {
 };
 
 const ON_KEY = "radioVoiceOn";
+const CHANNEL_KEY = "radioVoiceChannel";
+const CHANNEL_NAME_KEY = "radioVoiceChannelName";
+
+/** El canal al que se entra si nadie ha elegido otro. */
+export const CANAL_POR_DEFECTO = "general";
 
 export type RadioVoiceSnapshot = {
   open: boolean; // is the widget panel showing (toggled from the header icon)
@@ -45,7 +53,22 @@ export type RadioVoiceSnapshot = {
   speaker: VoiceSpeaker;
   talking: boolean;
   hint: string | null;
+  /** Clave del canal en el que se está (o en el que se entrará al encender). */
+  channel: string;
+  /** Su nombre visible, para no pintar la clave cruda en la cabecera. */
+  channelName: string;
 };
+
+function canalGuardado(): { key: string; name: string } {
+  try {
+    return {
+      key: localStorage.getItem(CHANNEL_KEY) || CANAL_POR_DEFECTO,
+      name: localStorage.getItem(CHANNEL_NAME_KEY) || "General",
+    };
+  } catch {
+    return { key: CANAL_POR_DEFECTO, name: "General" };
+  }
+}
 
 let vc: VoiceChannel | null = null;
 let connectPending = false;
@@ -174,6 +197,8 @@ let snap: RadioVoiceSnapshot = {
   speaker: null,
   talking: false,
   hint: null,
+  channel: canalGuardado().key,
+  channelName: canalGuardado().name,
 };
 
 const listeners = new Set<() => void>();
@@ -272,6 +297,7 @@ async function doConnect() {
       token: getAuthToken() || "",
       tenantId,
       selfId,
+      channel: snap.channel || CANAL_POR_DEFECTO,
     },
     {
       onState: (s) => set({ state: s }),
@@ -360,6 +386,51 @@ export function setRadioOn(on: boolean) {
   set({ on });
   if (on) doConnect();
   else doDisconnect();
+}
+
+/**
+ * Cambia de canal.
+ *
+ * Una conexión de LiveKit vive en UNA sala, así que cambiar de canal es
+ * desconectar y volver a conectar. Se hace en ese orden a propósito: quedarse
+ * en las dos salas a la vez mezclaría dos conversaciones, y reconectar sin
+ * soltar la anterior deja a la misma identidad entrando dos veces — que es
+ * justo lo que el SFU castiga expulsando (ver lib/radioIdentity en el backend).
+ *
+ * Con la radio apagada sólo se recuerda la elección: se entrará ahí al encender.
+ */
+export function setRadioChannel(key: string, name?: string) {
+  const clave =
+    String(key || CANAL_POR_DEFECTO)
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]/g, "")
+      .slice(0, 40) || CANAL_POR_DEFECTO;
+
+  if (clave === snap.channel) {
+    if (name && name !== snap.channelName) {
+      try {
+        localStorage.setItem(CHANNEL_NAME_KEY, name);
+      } catch {
+        /* ignore */
+      }
+      set({ channelName: name });
+    }
+
+    return;
+  }
+
+  try {
+    localStorage.setItem(CHANNEL_KEY, clave);
+    if (name) localStorage.setItem(CHANNEL_NAME_KEY, name);
+  } catch {
+    /* ignore */
+  }
+
+  const estaba = snap.on;
+
+  if (estaba) doDisconnect();
+  set({ channel: clave, channelName: name || clave, hint: null });
+  if (estaba) doConnect();
 }
 
 /** Restore the on-state after a reload / first mount (best-effort). */
