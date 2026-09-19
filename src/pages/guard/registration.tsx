@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import MeterBar from "@/components/charts/MeterBar";
 import { useTranslation } from "react-i18next";
 import { NavLink, useSearchParams, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, CheckCircle2, Smartphone, Clock } from "lucide-react";
@@ -1057,12 +1058,7 @@ export default function GuardRegistration() {
               </div>
             </div>
             {/* progress bar */}
-            <div className="h-1 w-full overflow-hidden rounded-full bg-muted">
-              <div
-                className="h-full rounded-full bg-primary transition-all duration-300"
-                style={{ width: `${(step / totalSteps) * 100}%` }}
-              />
-            </div>
+            <MeterBar height={4} pct={(step / totalSteps) * 100} />
           </div>
 
           {step === 1 && (

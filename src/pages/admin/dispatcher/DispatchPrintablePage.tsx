@@ -27,6 +27,7 @@ import {
   PageHeader,
   Modal,
   StatusBadge,
+  Avatar,
 } from "@/components/kit";
 import { Printer, MessageSquarePlus } from "lucide-react";
 import type {
@@ -855,18 +856,15 @@ export function DispatchDetailsContent({
                     key={c.id || c.createdAt}
                     className="flex items-start gap-3"
                   >
-                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-muted flex items-center justify-center text-sm font-medium text-foreground">
-                      {c.author &&
-                      (c.author.name || c.author.fullName || c.author.username)
-                        ? String(
-                            c.author.name ||
-                              c.author.fullName ||
-                              c.author.username,
-                          )
-                            .charAt(0)
-                            .toUpperCase()
-                        : "U"}
-                    </div>
+                    <Avatar
+                      name={
+                        c.author?.name ||
+                        c.author?.fullName ||
+                        c.author?.username
+                      }
+                      size="sm"
+                      tone="neutral"
+                    />
                     <div className="flex-1">
                       <div className="text-xs text-foreground/70">
                         {(c.author &&

@@ -151,6 +151,8 @@ import {
   StatusDot,
   FIELD_CLS,
   FIELD_CLS_LG,
+  StatsStrip,
+  NumberStepper,
 } from "@/components/kit";
 import {
   AreaChart,
@@ -383,6 +385,7 @@ export default function StyleGuide() {
   const [casilla, setCasilla] = useState(true);
   const [opcion, setOpcion] = useState("fijo");
   const [deslizador, setDeslizador] = useState(60);
+  const [contador, setContador] = useState(6);
   const [fecha, setFecha] = useState<Date | undefined>(new Date());
   const [otp, setOtp] = useState("");
   const [vista, setVista] = useState("lista");
@@ -875,6 +878,34 @@ export default function StyleGuide() {
                 Cristal sobre el lienzo
               </div>
             </div>
+          </div>
+        </Bloque>
+
+        <Bloque
+          titulo="La superficie como componente"
+          uso="GlassPanel cuando el panel es un elemento del árbol; la clase suelta cuando sólo estás pintando una caja."
+          api={["GlassPanel", "Section"]}
+          nota="`GlassPanel` es `.glass` con `flat` y `hover` como props, y sobre todo es el sitio donde se arregla el cristal una vez para todos. La clase escrita a mano aparece en 53 pantallas y no está mal —una caja es una caja—, pero en cuanto el panel tiene cabecera, acción o estado vacío, lo que toca es `Section`. Ojo con anidarlos: un cristal dentro de otro deja dos filos concéntricos y el de fuera no significa nada."
+        >
+          <div className="grid gap-4 sm:grid-cols-3">
+            <GlassPanel className="p-4">
+              <div className="text-xs font-semibold">GlassPanel</div>
+              <p className="mt-1 text-xs" style={{ color: "var(--ink-faint)" }}>
+                Con desenfoque. El panel de siempre.
+              </p>
+            </GlassPanel>
+            <GlassPanel flat className="p-4">
+              <div className="text-xs font-semibold">flat</div>
+              <p className="mt-1 text-xs" style={{ color: "var(--ink-faint)" }}>
+                Sin desenfoque: para lo que se repite en una lista.
+              </p>
+            </GlassPanel>
+            <GlassPanel hover className="p-4">
+              <div className="text-xs font-semibold">hover</div>
+              <p className="mt-1 text-xs" style={{ color: "var(--ink-faint)" }}>
+                Se levanta al pasar por encima. Sólo si se puede tocar.
+              </p>
+            </GlassPanel>
           </div>
         </Bloque>
 
@@ -1571,6 +1602,25 @@ export default function StyleGuide() {
                 </Label>
               </div>
             </FormField>
+          </div>
+        </Bloque>
+
+        <Bloque
+          titulo="Contador"
+          uso="NumberStepper para una cantidad pequeña y acotada: días de ciclo, turnos, plazas."
+          api={["NumberStepper"]}
+          nota="Es lo contrario del deslizador: aquí el número exacto SÍ importa y el rango es corto. Con dos botones no hay que acertar una posición dentro de una barra —el gesto más difícil de todos con el pulgar—, y el valor no se puede salir del rango porque los botones se apagan en los extremos."
+        >
+          <div className="grid max-w-sm gap-4">
+            <NumberStepper
+              hint="Cuántos días seguidos trabaja antes de librar."
+              label="Días de trabajo"
+              max={12}
+              min={1}
+              suffix="días"
+              value={contador}
+              onChange={setContador}
+            />
           </div>
         </Bloque>
 
@@ -2304,8 +2354,8 @@ export default function StyleGuide() {
         <Bloque
           titulo="Progreso"
           uso="Meter para una proporción dentro de una fila o una tarjeta."
-          api={["Meter"]}
-          nota="Es un `role='progressbar'` de verdad: un lector de pantalla anuncia el valor en vez de leer dos divs vacíos. Seis áreas lo tenían escrito a mano, idéntico."
+          api={["Meter", "MeterBar"]}
+          nota="Había DOS barras: ésta y la de `components/charts`, en diecinueve pantallas. La de charts es la buena —tonos de serie, degradado hacia la punta, mínimo visible para que un 1 % no desaparezca—, así que `Meter` ya no dibuja nada: sólo añade la fila de etiqueta y porcentaje y delega la barra en `MeterBar`. Si sólo necesitas la barra, usa `MeterBar` directamente."
         >
           <div className="grid max-w-xl gap-4">
             <Meter label="Cumplimiento de rondas" value={87} showValue />
@@ -2416,6 +2466,20 @@ export default function StyleGuide() {
               <Bell />
             </IconTile>
           </div>
+        </Bloque>
+
+        <Bloque
+          titulo="Cifras en el teléfono"
+          uso="StatsStrip envuelve la MISMA rejilla de cifras y la convierte en un carrusel paginado por debajo de md."
+          api={["StatsStrip", ".cg-paginas", ".cg-punto"]}
+          nota="Se le pasa el `className` de rejilla que la página ya tenía: en escritorio no cambia un pixel. En el teléfono seis cifras a dos columnas son tres filas de tarjetas —media pantalla antes del contenido—; paginadas ocupan una fila y siguen estando las seis. Cada gesto mueve una página entera (`scroll-snap-stop: always`), porque si el desplazamiento pudiera quedarse a medias los puntos mentirían. Redimensiona la ventana por debajo de 768 px para verlo."
+        >
+          <StatsStrip className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <StatCard icon={<Users />} label="Total" value="41" />
+            <StatCard accent="ok" icon={<ShieldCheck />} label="Activos" value="38" />
+            <StatCard accent="warn" icon={<Clock />} label="Pendientes" value="2" />
+            <StatCard accent="neutral" icon={<Bell />} label="Archivados" value="1" />
+          </StatsStrip>
         </Bloque>
 
         <Bloque
@@ -3001,6 +3065,55 @@ export default function StyleGuide() {
             sistema y vuelve a cargar: las entradas desaparecen, el latido se
             para, el barrido del esqueleto se detiene y los velos dejan de
             desenfocar. Sin tocar una línea del componente.
+          </InfoNote>
+        </Bloque>
+
+        {/* ══════════════════════════════════════════════════════════════════
+            12 · EL TELÉFONO
+            ══════════════════════════════════════════════════════════════════ */}
+        <Capitulo
+          numero="12"
+          titulo="El teléfono"
+          bajada="Lo que cambia por debajo de 768 px. Nada de esto se escribe por pantalla: son reglas del armazón y las hereda todo el CRM."
+        />
+
+        <Bloque
+          titulo="El margen y la miga"
+          uso="PageContainer pone el margen lateral; la miga sale del menú."
+          api={["PageContainer", "Breadcrumb"]}
+          nota="El margen vive SÓLO en `PageContainer` (16 px, 24 en sm). Cuando lo ponía cada pantalla, medido en un teléfono iba de 0 a 40 px según en cuál estuvieras. Como `cn` es tailwind-merge, una página que pase el suyo lo sigue ganando — pero no hace falta. La miga se pinta una vez en el armazón y sale de `sidebar-menu.json`, la misma fuente y las mismas claves i18n que el menú lateral, así que no puede contradecirlo; se oculta sola cuando la ruta no da para dos migas."
+        >
+          <div className="glass-sunken flex flex-col gap-1 rounded-xl p-4 text-xs">
+            <span style={{ color: "var(--ink-faint)" }}>Programador › Cobertura en vivo</span>
+            <span style={{ color: "var(--ink-soft)" }}>
+              Derivada de la ruta, no escrita a mano en la pantalla.
+            </span>
+          </div>
+        </Bloque>
+
+        <Bloque
+          titulo="Botoneras que ocupan el ancho"
+          uso="cg-acciones sobre la fila de acciones: en el teléfono los botones crecen hasta llenar su línea."
+          api={[".cg-acciones"]}
+          nota="Ya la llevan `PageHeader`, `Section` y `Toolbar`, así que la heredan todas las pantallas. Sin ella, una fila de acciones se queda pegada a la izquierda con el ancho de su texto y deja un hueco muerto a la derecha. Los botones de sólo icono no crecen — se reconocen por su clase de tamaño cuadrado y NO con `:has(> svg:only-child)`, porque un botón con icono Y texto también tiene el svg como único hijo elemento: el texto es un nodo de texto y `:only-child` no lo cuenta."
+        >
+          <div className="cg-acciones flex flex-wrap items-center gap-2">
+            <Button size="sm">Reemplazo por vacaciones</Button>
+            <Button size="sm" variant="outline">
+              Actualizar
+            </Button>
+          </div>
+        </Bloque>
+
+        <Bloque
+          titulo="Lo que se toca mide 44"
+          uso="Reglas globales del bloque móvil de glass.css. No hay que pedirlas."
+          api={[".cg-bottom-bar", ".cg-marco-tabla"]}
+          nota="Botones, enlaces, campos, selectores y deslizadores suben a 44 px de alto en cuanto el puntero es grueso. Un botón de sólo icono heredaba ese alto pero conservaba el ancho del icono —12, 26, 28 px—, así que también se le pone ancho. Las casillas guardan sus 16 px de dibujo y ganan la zona sensible con un `::after` de `inset: -14px`; las nativas, que no admiten pseudo-elementos, crecen a 24. Y `.cg-marco-tabla` apaga el marco de una tabla en el teléfono, donde no hay tabla que enmarcar sino tarjetas que ya son de cristal."
+        >
+          <InfoNote tone="neutral" icon={<Info />}>
+            Estrecha la ventana por debajo de 768 px y vuelve a medir cualquier
+            botón de esta página: el alto cambia solo.
           </InfoNote>
         </Bloque>
 

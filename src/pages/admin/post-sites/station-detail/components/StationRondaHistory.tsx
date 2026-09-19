@@ -1,4 +1,5 @@
 import type { Station } from "@/types";
+import MeterBar from "@/components/charts/MeterBar";
 
 import React, { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -349,15 +350,7 @@ function RondaDetailModal({
                   {scanCount}/{total || "—"} puntos ({pct}%)
                 </span>
               </div>
-              <div
-                className="h-1.5 w-full overflow-hidden rounded-full"
-                style={{ background: "var(--glass-sunken)" }}
-              >
-                <div
-                  className="h-full rounded-full"
-                  style={{ width: `${pct}%`, background: "var(--brand)" }}
-                />
-              </div>
+              <MeterBar height={6} pct={pct} />
             </div>
 
             {/* Checkpoints */}

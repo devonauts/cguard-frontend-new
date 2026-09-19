@@ -1,4 +1,5 @@
 import type { DirectoryOption, NamedEntity, DispatchComment, CommentAttachment } from './types';
+import { Avatar } from "@/components/kit";
 import React, { useEffect, useState } from 'react';
 import { clientDisplayName } from '@/lib/clientName';
 import { useParams, Link } from 'react-router-dom';
@@ -897,18 +898,15 @@ export function DispatchDetailsContent({
                     key={c.id || c.createdAt}
                     className="flex items-start gap-3"
                   >
-                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-muted flex items-center justify-center text-sm font-medium text-foreground">
-                      {c.author &&
-                      (c.author.name || c.author.fullName || c.author.username)
-                        ? String(
-                            c.author.name ||
-                              c.author.fullName ||
-                              c.author.username,
-                          )
-                            .charAt(0)
-                            .toUpperCase()
-                        : "U"}
-                    </div>
+                    <Avatar
+                      name={
+                        c.author?.name ||
+                        c.author?.fullName ||
+                        c.author?.username
+                      }
+                      size="sm"
+                      tone="neutral"
+                    />
                     <div className="min-w-0 flex-1">
                       <div className="text-xs text-foreground/70">
                         {(c.author &&

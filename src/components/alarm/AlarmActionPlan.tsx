@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import MeterBar from "@/components/charts/MeterBar";
 import { useTranslation } from "react-i18next";
 import {
   ClipboardList,
@@ -146,19 +147,7 @@ export default function AlarmActionPlan({ caseId }: { caseId: string }) {
           {doneCount}/{steps.length}
         </span>
       </div>
-      <div
-        className="mb-3 h-1.5 w-full overflow-hidden rounded-full"
-        style={{ background: "var(--glass-sunken)" }}
-      >
-        <div
-          className="h-full rounded-full transition-[width] duration-500"
-          style={{
-            width: `${pct}%`,
-            background: "var(--brand)",
-            boxShadow: "0 0 12px 0 var(--brand-glow)",
-          }}
-        />
-      </div>
+      <MeterBar className="mb-3" height={6} pct={pct} />
       <ol className="space-y-1.5">
         {steps.map((s, i) => {
           const known = STEP_META[s.type];

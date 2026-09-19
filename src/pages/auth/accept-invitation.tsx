@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import MeterBar from "@/components/charts/MeterBar";
 import { tituloConMarca } from "@/hooks/usePageTitle";
 import { useTranslation } from "react-i18next";
 import { useSearchParams, useNavigate } from "react-router-dom";
@@ -445,15 +446,12 @@ export default function AcceptInvitation() {
                   {strengthLabel}
                 </span>
               </div>
-              <div className="glass-sunken mt-1.5 h-1.5 w-full overflow-hidden rounded-full">
-                <div
-                  className="h-full rounded-full transition-all duration-300"
-                  style={{
-                    width: `${strength}%`,
-                    background: `var(--${strengthTone})`,
-                  }}
-                />
-              </div>
+              <MeterBar
+                className="mt-1.5"
+                height={6}
+                pct={strength}
+                tone={strengthTone}
+              />
             </div>
           )}
 

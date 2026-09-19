@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import MeterBar from "@/components/charts/MeterBar";
 import { useTranslation } from "react-i18next";
 import {
   Radio,
@@ -410,14 +411,11 @@ export default function RadioDispatch() {
                 </span>
               </div>
             </div>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-              <div
-                className="h-full rounded-full bg-amber-500 transition-all"
-                style={{
-                  width: `${total ? Math.round((done / total) * 100) : 0}%`,
-                }}
-              />
-            </div>
+            <MeterBar
+              height={8}
+              pct={total ? Math.round((done / total) * 100) : 0}
+              tone="warn"
+            />
           </div>
         )}
 

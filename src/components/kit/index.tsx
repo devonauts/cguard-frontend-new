@@ -23,6 +23,8 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Search, X } from "lucide-react";
 
+import MeterBar from "@/components/charts/MeterBar";
+
 import { useEsTelefono } from "@/hooks/useEsTelefono";
 
 import {
@@ -1815,12 +1817,6 @@ export function Meter({
   className?: string;
 }) {
   const pct = max > 0 ? Math.max(0, Math.min(100, (value / max) * 100)) : 0;
-  const relleno =
-    tone === "brand"
-      ? "var(--brand)"
-      : tone === "neutral"
-        ? "var(--ink-faint)"
-        : `var(--${tone})`;
 
   return (
     <div className={cn("min-w-0", className)}>
@@ -1834,19 +1830,12 @@ export function Meter({
           )}
         </div>
       )}
-      <div
-        aria-valuemax={100}
-        aria-valuemin={0}
-        aria-valuenow={Math.round(pct)}
-        className="h-1.5 w-full overflow-hidden rounded-full"
-        role="progressbar"
-        style={{ background: "var(--glass-sunken)" }}
-      >
-        <div
-          className="h-full rounded-full transition-[width] duration-500 motion-reduce:transition-none"
-          style={{ width: `${pct}%`, background: relleno }}
-        />
-      </div>
+      {/* La barra la dibuja `MeterBar` — había DOS implementaciones de lo mismo:
+          ésta, en una pantalla, y la de `components/charts`, en diecinueve. La
+          de charts es la buena (tonos de serie, degradado hacia la punta, mínimo
+          visible para que un 1 % no desaparezca, `role="meter"`), así que aquí
+          sólo queda lo que ella no hace: la fila de etiqueta y porcentaje. */}
+      <MeterBar height={6} pct={pct} tone={tone} />
     </div>
   );
 }
