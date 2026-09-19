@@ -678,30 +678,30 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
               items={filtered}
               loading={loading}
               renderCard={(c: Contact) => (
-                <div className="glass-flat p-4">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <div className="text-sm font-semibold">{c.name}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {c.email || "-"}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {c.mobile || "-"}
-                      </div>
+                <>
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <div className="text-sm font-semibold">{c.name}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {c.email || "-"}
                     </div>
-                    <div className="flex-shrink-0">
-                      <button
-                        onClick={() => {
-                          setForm(c);
-                          setShowAdd(true);
-                        }}
-                        className="px-3 py-2 bg-muted rounded-md text-sm"
-                      >
-                        Edit
-                      </button>
+                    <div className="text-xs text-muted-foreground">
+                      {c.mobile || "-"}
                     </div>
                   </div>
+                  <div className="flex-shrink-0">
+                    <button
+                      onClick={() => {
+                        setForm(c);
+                        setShowAdd(true);
+                      }}
+                      className="px-3 py-2 bg-muted rounded-md text-sm"
+                    >
+                      Edit
+                    </button>
+                  </div>
                 </div>
+                </>
               )}
             />
           </div>

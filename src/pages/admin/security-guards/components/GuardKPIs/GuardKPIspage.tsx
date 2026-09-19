@@ -1283,12 +1283,12 @@ export default function GuardIndicators({ guard }: Props) {
                       }) as string
                     }
                     renderCard={(k: Kpi) => (
-                      <div className="glass-flat p-4">
-                        <div className="text-sm font-semibold">{k.type}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {k.date} • {k.createdBy?.fullName ?? k.addedBy}
-                        </div>
+                      <>
+                      <div className="text-sm font-semibold">{k.type}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {k.date} • {k.createdBy?.fullName ?? k.addedBy}
                       </div>
+                      </>
                     )}
                   />
                 </div>

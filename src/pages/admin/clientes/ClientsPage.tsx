@@ -114,7 +114,6 @@ import { useClientSelection } from "@/contexts/ClientSelectionContext";
 import { useDebouncedValue } from "@/hooks/useDebounce";
 import { enLotes } from "@/lib/enLotes";
 
-
 // Guard against the literal string 'undefined' that some legacy records persisted
 // for lastName (from a String(undefined) concat on save). Hides bad data until cleaned.
 const cleanLastName = (lastName: unknown): string =>
@@ -854,7 +853,6 @@ export default function ClientesPage() {
 
   return (
     <AppLayout>
-
       <section>
         <PageContainer width="wide">
           <PageHeader
@@ -1215,78 +1213,83 @@ export default function ClientesPage() {
               loading={loading}
               emptyMessage={t("clients.empty.title") as string}
               renderCard={(client: Client) => (
-                <GlassPanel flat className="p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0 flex-1">
-                      {/* Mobile cards must match the desktop table, which already
-                        shows commercialName. */}
-                      <div className="truncate text-sm font-semibold">
-                        {clientDisplayName(client, client.name)}
-                      </div>
-                      <div
-                        className="truncate text-xs"
-                        style={{ color: "var(--ink-soft)" }}
-                      >
-                        {client.email || "-"}
-                      </div>
+                <>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    {/* Mobile cards must match the desktop table, which already
+                      shows commercialName. */}
+                    <div className="truncate text-sm font-semibold">
+                      {clientDisplayName(client, client.name)}
                     </div>
+                    <div
+                      className="truncate text-xs"
+                      style={{ color: "var(--ink-soft)" }}
+                    >
+                      {client.email || "-"}
+                    </div>
+                  </div>
 
-                    <div className="flex-shrink-0 flex flex-col items-end gap-1 ml-2">
-                      <StatusBadge tone={client.active ? "ok" : "bad"}>
-                        {client.active
-                          ? t("clients.status.active")
-                          : t("clients.status.archived")}
-                      </StatusBadge>
-                      {(() => {
-                        const s = client.onboardingStatus || "not_invited";
-                        const mobileMap: Record<
-                          string,
-                          {
-                            label: string;
-                            tone: "neutral" | "warn" | "ok" | "bad";
-                          }
-                        > = {
-                          not_invited: {
-                            label: t(
-                              "clients.onboarding.not_invited",
-                              "Sin acceso",
-                            ),
-                            tone: "neutral",
-                          },
-                          invited: {
-                            label: t("clients.onboarding.invited", "Invitado"),
-                            tone: "warn",
-                          },
-                          active: {
-                            label: t("clients.onboarding.active", "En app"),
-                            tone: "ok",
-                          },
-                          suspended: {
-                            label: t(
-                              "clients.onboarding.suspended",
-                              "Suspendido",
-                            ),
-                            tone: "bad",
-                          },
-                        };
-                        const b = mobileMap[s] || mobileMap.not_invited;
-                        return (
-                          <StatusBadge tone={b.tone}>{b.label}</StatusBadge>
-                        );
-                      })()}
-                      <div className="mt-2">
-                        <RowActionsMenu actions={rowActions(client)} />
-                      </div>
-                    </div>
+                  {/* El menú va ARRIBA, pegado a la esquina; las etiquetas
+                      bajan a su propia fila. Apilados los tres en una columna
+                      a la derecha —dos etiquetas y un menú de 44 px— esa
+                      columna medía 112 px contra los 36 del nombre, y el
+                      hueco que quedaba debajo del correo era medio tarjeta
+                      de vacío con el menú flotando en mitad de la nada. */}
+                  <div className="-mr-1 -mt-1 shrink-0">
+                    <RowActionsMenu actions={rowActions(client)} />
                   </div>
-                  <div
-                    className="mt-3 space-y-1 text-xs"
-                    style={{ color: "var(--ink-soft)" }}
-                  >
-                    <div className="truncate">{client.phoneNumber || "-"}</div>
-                    <div className="truncate">{client.address || "-"}</div>
-                  </div>
-                </GlassPanel>
+                </div>
+
+                <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                  <StatusBadge tone={client.active ? "ok" : "bad"}>
+                    {client.active
+                      ? t("clients.status.active")
+                      : t("clients.status.archived")}
+                  </StatusBadge>
+                  {(() => {
+                    const s = client.onboardingStatus || "not_invited";
+                    const mobileMap: Record<
+                      string,
+                      {
+                        label: string;
+                        tone: "neutral" | "warn" | "ok" | "bad";
+                      }
+                    > = {
+                      not_invited: {
+                        label: t(
+                          "clients.onboarding.not_invited",
+                          "Sin acceso",
+                        ),
+                        tone: "neutral",
+                      },
+                      invited: {
+                        label: t("clients.onboarding.invited", "Invitado"),
+                        tone: "warn",
+                      },
+                      active: {
+                        label: t("clients.onboarding.active", "En app"),
+                        tone: "ok",
+                      },
+                      suspended: {
+                        label: t(
+                          "clients.onboarding.suspended",
+                          "Suspendido",
+                        ),
+                        tone: "bad",
+                      },
+                    };
+                    const b = mobileMap[s] || mobileMap.not_invited;
+                    return <StatusBadge tone={b.tone}>{b.label}</StatusBadge>;
+                  })()}
+                </div>
+                <div
+                  className="mt-3 space-y-1 text-xs"
+                  style={{ color: "var(--ink-soft)" }}
+                >
+                  <div className="truncate">{client.phoneNumber || "-"}</div>
+                  <div className="truncate">{client.address || "-"}</div>
+                </div>
+                </>
               )}
             />
           </div>

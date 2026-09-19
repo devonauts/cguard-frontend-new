@@ -973,6 +973,18 @@ button, [role="button"] { transition: transform 0.09s var(--ease); }
   min-width: 148px;
 }
 
+/* ── RIEL DE PESTAÑAS ─────────────────────────────────────────────────────── */
+/* El riel se desplaza por dentro cuando sus píldoras no caben, y esa barra de
+   desplazamiento se dibujaba como una línea gris pegada al borde inferior del
+   cristal: parecía un filo mal alineado, no un control. El gesto sigue estando;
+   lo que se quita es su dibujo. */
+[role="tablist"] {
+  scrollbar-width: none;
+}
+[role="tablist"]::-webkit-scrollbar {
+  display: none;
+}
+
 /* ── CIFRAS PAGINADAS ─────────────────────────────────────────────────────── */
 /* La variante de TELÉFONO de las cifras de cabecera. El carrusel de arriba
    desliza libre, tarjeta a tarjeta; éste pagina: cada gesto mueve una página
@@ -1091,6 +1103,14 @@ button, [role="button"] { transition: transform 0.09s var(--ease); }
   textarea {
     min-height: 44px;
   }
+
+  /* Un texto de ayuda largo se cortaba a hachazos en mitad de una palabra
+     («Buscar por nominativo, puesto o clie»). Con puntos suspensivos al menos
+     se lee como una frase que sigue, no como un fallo de pintado. */
+  input::placeholder,
+  textarea::placeholder {
+    text-overflow: ellipsis;
+  }
   /* El deslizador entra en el lote: su pista se dibuja CENTRADA en la caja, así
      que crecer de alto no la engorda — sólo agranda la zona donde se agarra. */
 
@@ -1155,6 +1175,27 @@ button, [role="button"] { transition: transform 0.09s var(--ease); }
       [data-fijo]
     ) {
     flex: 0 0 auto;
+  }
+
+  /* Un riel de pestañas dentro de una botonera reparte lo que SOBRA, no lo que
+     mide su contenido: con `flex-basis: auto` se quedaba con la línea entera y
+     mandaba al botón de recargar a una fila para él solo, con 300 px de vacío
+     al lado. Con base 0 ambos caben en la misma línea y el riel se encoge — ya
+     sabe desplazarse por dentro. */
+  .cg-acciones > [role="tablist"] {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  /* El marco de una tabla desaparece en el teléfono. Ahí la tabla se cambia por
+     tarjetas y CADA tarjeta ya es de cristal: dejar el marco dibuja dos filos
+     concéntricos, y el de fuera no significa nada — el sistema de diseño lo
+     dice de la rejilla dentro de la rejilla y vale igual aquí. */
+  .cg-marco-tabla {
+    background: none;
+    border: 0;
+    box-shadow: none;
+    border-radius: 0;
   }
 }
 

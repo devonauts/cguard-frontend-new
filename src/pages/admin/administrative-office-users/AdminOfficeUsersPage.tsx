@@ -1135,7 +1135,7 @@ export default function AdminOfficeUsersPage() {
           </div>
 
           {/* Tabla */}
-          <GlassPanel flat className="mt-4 overflow-hidden p-0">
+          <GlassPanel flat className="cg-marco-tabla mt-4 overflow-hidden p-0">
             <div className="md:block hidden overflow-x-auto">
               {viewMode === "cards" ? (
                 <AdminUserCardsGrid
@@ -1554,96 +1554,96 @@ export default function AdminOfficeUsersPage() {
                   }) as string
                 }
                 renderCard={(u: AdminUserRow) => (
-                  <GlassPanel flat className="p-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex-1">
-                        <div className="text-sm font-semibold">
-                          {[u.firstName, u.lastName]
-                            .filter(Boolean)
-                            .join(" ") ||
-                            u.name ||
-                            u.email ||
-                            "-"}
-                        </div>
-                        <div
-                          className="text-xs"
-                          style={{ color: "var(--ink-soft)" }}
-                        >
-                          {u.email || "-"}
-                        </div>
-                        <div
-                          className="mt-1 text-xs"
-                          style={{ color: "var(--ink-soft)" }}
-                        >
-                          {u._rolesDisplay ||
-                            (Array.isArray(u.roles)
-                              ? u.roles
-                                  .map((r) =>
-                                    typeof r === "string"
-                                      ? r
-                                      : r?.name || r?.role || "",
-                                  )
-                                  .join(", ")
-                              : typeof u.roles === "string"
-                                ? u.roles
-                                : typeof u.role === "string"
-                                  ? u.role
-                                  : "-")}
-                        </div>
+                  <>
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex-1">
+                      <div className="text-sm font-semibold">
+                        {[u.firstName, u.lastName]
+                          .filter(Boolean)
+                          .join(" ") ||
+                          u.name ||
+                          u.email ||
+                          "-"}
                       </div>
-                      <div className="flex min-w-0 flex-col items-end gap-1 text-right sm:shrink-0">
-                        {(() => {
-                          const status = (u.status || "")
-                            .toString()
-                            .toLowerCase();
-                          if (status === "archived" || status === "archivado")
-                            return (
-                              <StatusBadge tone="neutral">
-                                {t("adminOfficeUsers.statuses.archived", {
-                                  defaultValue: "Archivado",
-                                })}
-                              </StatusBadge>
-                            );
-                          if (status === "invited" || status === "pending")
-                            return (
-                              <StatusBadge tone="warn">
-                                {t("adminOfficeUsers.statuses.pending", {
-                                  defaultValue: "Pendiente",
-                                })}
-                              </StatusBadge>
-                            );
-                          if (u.active === false)
-                            return (
-                              <StatusBadge tone="bad">
-                                {t("adminOfficeUsers.statuses.inactive", {
-                                  defaultValue: "Inactivo",
-                                })}
-                              </StatusBadge>
-                            );
+                      <div
+                        className="text-xs"
+                        style={{ color: "var(--ink-soft)" }}
+                      >
+                        {u.email || "-"}
+                      </div>
+                      <div
+                        className="mt-1 text-xs"
+                        style={{ color: "var(--ink-soft)" }}
+                      >
+                        {u._rolesDisplay ||
+                          (Array.isArray(u.roles)
+                            ? u.roles
+                                .map((r) =>
+                                  typeof r === "string"
+                                    ? r
+                                    : r?.name || r?.role || "",
+                                )
+                                .join(", ")
+                            : typeof u.roles === "string"
+                              ? u.roles
+                              : typeof u.role === "string"
+                                ? u.role
+                                : "-")}
+                      </div>
+                    </div>
+                    <div className="flex min-w-0 flex-col items-end gap-1 text-right sm:shrink-0">
+                      {(() => {
+                        const status = (u.status || "")
+                          .toString()
+                          .toLowerCase();
+                        if (status === "archived" || status === "archivado")
                           return (
-                            <StatusBadge tone="ok">
-                              {t("adminOfficeUsers.statuses.active", {
-                                defaultValue: "Activo",
+                            <StatusBadge tone="neutral">
+                              {t("adminOfficeUsers.statuses.archived", {
+                                defaultValue: "Archivado",
                               })}
                             </StatusBadge>
                           );
-                        })()}
-                        <div
-                          /* La fecha completa con segundos mide 149 px y no
-                             parte: en un teléfono empujaba la tarjeta 19 px
-                             fuera de la pantalla. Que se parta en dos líneas. */
-                          className="break-words text-xs tabular-nums"
-                          style={{ color: "var(--ink-soft)" }}
-                        >
-                          {u.lastLoginAt
-                            ? new Date(u.lastLoginAt as string).toLocaleString(
-                                localeActual(),
-                              )
-                            : "—"}
-                        </div>
+                        if (status === "invited" || status === "pending")
+                          return (
+                            <StatusBadge tone="warn">
+                              {t("adminOfficeUsers.statuses.pending", {
+                                defaultValue: "Pendiente",
+                              })}
+                            </StatusBadge>
+                          );
+                        if (u.active === false)
+                          return (
+                            <StatusBadge tone="bad">
+                              {t("adminOfficeUsers.statuses.inactive", {
+                                defaultValue: "Inactivo",
+                              })}
+                            </StatusBadge>
+                          );
+                        return (
+                          <StatusBadge tone="ok">
+                            {t("adminOfficeUsers.statuses.active", {
+                              defaultValue: "Activo",
+                            })}
+                          </StatusBadge>
+                        );
+                      })()}
+                      <div
+                        /* La fecha completa con segundos mide 149 px y no
+                           parte: en un teléfono empujaba la tarjeta 19 px
+                           fuera de la pantalla. Que se parta en dos líneas. */
+                        className="break-words text-xs tabular-nums"
+                        style={{ color: "var(--ink-soft)" }}
+                      >
+                        {u.lastLoginAt
+                          ? new Date(u.lastLoginAt as string).toLocaleString(
+                              localeActual(),
+                            )
+                          : "—"}
                       </div>
                     </div>
-                  </GlassPanel>
+                  </div>
+                  </>
                 )}
               />
             </div>

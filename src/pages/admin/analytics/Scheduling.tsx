@@ -20,7 +20,7 @@ import {
   SiteLink,
 } from "./_shared";
 
-import { Stagger, EmptyState } from "@/components/kit";
+import { Stagger, EmptyState, StatsStrip } from "@/components/kit";
 import { MeterBar } from "@/components/charts";
 import { CHART_VARS, alphaVar } from "@/lib/chartColors";
 
@@ -102,7 +102,7 @@ export default function Scheduling() {
     >
       {data && k && (
         <>
-          <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <StatsStrip className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <MetricCard
               accent={TONES.info}
               icon={<ClipboardCheck size={16} />}
@@ -138,7 +138,7 @@ export default function Scheduling() {
               sub={t("ui.Scheduling.proximos7Dias", "próximos 7 días")}
               value={data.upcomingUncoveredTotal}
             />
-          </Stagger>
+          </StatsStrip>
 
           <Section
             icon={<ClipboardCheck size={16} />}

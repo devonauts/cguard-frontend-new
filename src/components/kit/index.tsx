@@ -273,8 +273,21 @@ export function PageHeader({
           antes de enseñar nada. Al lado ocupa la altura que ya ocupaba el
           título. En `sm` hacia arriba la composición es la de siempre. */}
       <div className="relative flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:p-6">
-        <div className="flex min-w-0 flex-1 items-center gap-3 sm:contents">
-          {icon && <IconTile size="lg">{icon}</IconTile>}
+        <div className="flex min-w-0 flex-1 items-start gap-3 sm:contents">
+          {/* El icono se alinea con la PRIMERA LÍNEA del título, no con el
+              centro del bloque: centrado, un encabezado con subtítulo largo lo
+              empujaba 25 px por debajo del título y quedaba flotando a media
+              altura, sin nada con qué alinearse. Y en el teléfono mide 44 en
+              vez de 56 — a 56 px el cuadro pesaba más que el nombre de la
+              pantalla, que es lo que se ha venido a leer. */}
+          {icon && (
+            <IconTile
+              className="h-11 w-11 [&_svg]:size-5 sm:h-14 sm:w-14 sm:[&_svg]:size-7"
+              size="lg"
+            >
+              {icon}
+            </IconTile>
+          )}
           <div className="min-w-0 flex-1">
             <h1 className="font-display truncate text-2xl font-bold tracking-tight">
               {title}

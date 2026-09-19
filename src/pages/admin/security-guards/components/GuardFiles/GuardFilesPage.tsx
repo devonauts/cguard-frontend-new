@@ -268,21 +268,21 @@ export default function GuardFilesPage() {
                     items={filesData || []}
                     loading={false}
                     renderCard={(f: FileRow) => (
-                      <div className="glass-flat p-4">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="text-sm font-semibold">
-                              {f.name}
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                              {f.date}
-                            </div>
+                      <>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="text-sm font-semibold">
+                            {f.name}
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            {f.addedBy}
+                            {f.date}
                           </div>
                         </div>
+                        <div className="text-xs text-muted-foreground">
+                          {f.addedBy}
+                        </div>
                       </div>
+                      </>
                     )}
                   />
                 </div>

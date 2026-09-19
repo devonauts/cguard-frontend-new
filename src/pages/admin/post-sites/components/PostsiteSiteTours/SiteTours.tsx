@@ -1699,22 +1699,22 @@ export default function PostSiteTours({
             <MobileCardList
               items={filteredTours}
               renderCard={(tour: any) => (
-                <div className="glass-flat p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-sm font-semibold">
-                        {tour.name ||
-                          t("siteTour.placeholders.tourNameFallback")}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {translateTimeMode(tour.timeMode)}
-                      </div>
+                <>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm font-semibold">
+                      {tour.name ||
+                        t("siteTour.placeholders.tourNameFallback")}
                     </div>
-                    <div className="text-sm text-foreground/70">
-                      {tour.maxDuration || "-"}
+                    <div className="text-xs text-muted-foreground">
+                      {translateTimeMode(tour.timeMode)}
                     </div>
                   </div>
+                  <div className="text-sm text-foreground/70">
+                    {tour.maxDuration || "-"}
+                  </div>
                 </div>
+                </>
               )}
             />
           </div>

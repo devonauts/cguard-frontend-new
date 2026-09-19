@@ -13,7 +13,7 @@ import {
   PerSiteTable,
 } from "./_shared";
 
-import { Stagger, EmptyState } from "@/components/kit";
+import { Stagger, EmptyState, StatsStrip } from "@/components/kit";
 
 export default function PostSite() {
   const { t } = useTranslation();
@@ -35,7 +35,7 @@ export default function PostSite() {
     >
       {data && k && (
         <>
-          <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <StatsStrip className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <MetricCard
               accent={GOLD}
               icon={<Building2 size={16} />}
@@ -69,7 +69,7 @@ export default function PostSite() {
               sub={`${k.incidentsOpen} abiertos`}
               value={k.incidentsTotal}
             />
-          </Stagger>
+          </StatsStrip>
 
           <Section
             icon={<AlertTriangle size={16} />}

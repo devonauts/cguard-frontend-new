@@ -33,6 +33,7 @@ import {
   SkeletonCards,
   EmptyState,
   Segmented,
+  StatsStrip,
 } from "@/components/kit";
 import { Button } from "@/components/ui/button";
 import i18n from "@/i18n";
@@ -185,7 +186,7 @@ export default function AlarmAnalytics() {
           <SkeletonCards count={8} className="lg:grid-cols-4" />
         ) : (
           <>
-            <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            <StatsStrip className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
               <MetricCard
                 icon={<BarChart3 size={16} />}
                 accent={GOLD}
@@ -254,7 +255,7 @@ export default function AlarmAnalytics() {
                 )}
                 sub={`${d.totalCalls} llamadas`}
               />
-            </Stagger>
+            </StatsStrip>
 
             <div className="mt-5">
               <DayBars

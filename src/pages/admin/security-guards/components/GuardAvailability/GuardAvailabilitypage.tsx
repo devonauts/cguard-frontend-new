@@ -214,22 +214,22 @@ export default function GuardAvailability({ guard }: Props) {
                     }) as string
                   }
                   renderCard={(a: Av) => (
-                    <div className="glass-flat p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="text-sm font-semibold">
-                          {t(`guards.availability.days.${a.day}`, {
-                            defaultValue: a.day,
-                          })}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          {a.available
-                            ? `${a.start} — ${a.end}`
-                            : t("guards.availability.notAvailable", {
-                                defaultValue: "Not available",
-                              })}
-                        </div>
+                    <>
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm font-semibold">
+                        {t(`guards.availability.days.${a.day}`, {
+                          defaultValue: a.day,
+                        })}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {a.available
+                          ? `${a.start} — ${a.end}`
+                          : t("guards.availability.notAvailable", {
+                              defaultValue: "Not available",
+                            })}
                       </div>
                     </div>
+                    </>
                   )}
                 />
               </div>

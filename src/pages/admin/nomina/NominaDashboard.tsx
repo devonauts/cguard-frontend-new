@@ -17,7 +17,12 @@ import {
 import AppLayout from "@/layouts/app-layout";
 import attendanceService from "@/lib/api/attendanceService";
 import { Button } from "@/components/ui/button";
-import { PageContainer, PageHeader, StatCard, Stagger } from "@/components/kit";
+import {
+  PageContainer,
+  PageHeader,
+  StatCard,
+  StatsStrip,
+} from "@/components/kit";
 
 interface Summary {
   scheduledToday: number;
@@ -143,7 +148,7 @@ export default function NominaDashboard() {
           </div>
         )}
 
-        <Stagger className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <StatsStrip className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {CARDS.map((c) => {
             const Icon = c.icon;
             const raw = data ? (data[c.key] as number | null) : null;
@@ -166,7 +171,7 @@ export default function NominaDashboard() {
               />
             );
           })}
-        </Stagger>
+        </StatsStrip>
 
         <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
           Las excepciones (tarde, inasistencia, sin marcar salida) se detectan

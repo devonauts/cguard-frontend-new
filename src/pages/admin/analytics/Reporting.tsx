@@ -30,7 +30,7 @@ import {
 } from "./_shared";
 
 import { analyticsService, PerfLeaderboard } from "@/lib/api/analyticsService";
-import { Stagger, EmptyState } from "@/components/kit";
+import { Stagger, EmptyState, StatsStrip } from "@/components/kit";
 
 export default function Reporting() {
   const { t } = useTranslation();
@@ -70,7 +70,7 @@ export default function Reporting() {
     >
       {data && k && (
         <>
-          <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <StatsStrip className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             <MetricCard
               accent={GOLD}
               icon={<Shield size={16} />}
@@ -120,7 +120,7 @@ export default function Reporting() {
               sub={`${k.clockinsOnTime}/${k.clockinsTotal} a tiempo`}
               value={`${k.punctualityPct}%`}
             />
-          </Stagger>
+          </StatsStrip>
 
           {/* Team performance — official score (links to Vigilantes) */}
           {lb && lb.averageScore != null && (

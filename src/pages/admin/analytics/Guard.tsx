@@ -31,6 +31,7 @@ import {
   EmptyState,
   StatusBadge,
   SkeletonBlock,
+  StatsStrip,
 } from "@/components/kit";
 import { MeterBar } from "@/components/charts";
 import { CHART_VARS, alphaVar } from "@/lib/chartColors";
@@ -219,7 +220,7 @@ export default function Guard() {
       {ops.data && k && (
         <>
           {/* KPIs */}
-          <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <StatsStrip className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <MetricCard
               icon={<Award size={16} />}
               accent={GOLD}
@@ -250,7 +251,7 @@ export default function Guard() {
               sub={`${k.clockinsOnTime}/${k.clockinsTotal} a tiempo`}
               pct={k.punctualityPct}
             />
-          </Stagger>
+          </StatsStrip>
 
           {/* Tier distribution */}
           {!!tierTotal && (
