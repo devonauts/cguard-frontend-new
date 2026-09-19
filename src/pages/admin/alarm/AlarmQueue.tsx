@@ -338,7 +338,9 @@ export default function AlarmQueue() {
             {t("emergency.statusFilter")}
           </span>
           <Segmented
-            className="flex-wrap"
+            /* Sin `flex-wrap`: el riel ya se desplaza por dentro, y partido en
+               líneas los siete filtros formaban una columna de 198 px de alto
+               con los extremos redondeados colgando. */
             options={STATUS_FILTERS.map((f) => ({
               value: f.value,
               label: (
@@ -427,13 +429,28 @@ export default function AlarmQueue() {
                     }}
                   >
                     {urgente && <CriticalRail />}
-                    <div className="flex items-center gap-3">
-                      {/* Prioridad */}
-                      <PriorityPill p={c.priority} />
+                    {/* `items-start` y no `items-center`: en el teléfono las
+                        cuatro etiquetas de la columna central se parten en tres
+                        líneas, y centrado verticalmente contra ese bloque alto
+                        la píldora de prioridad y la flecha quedaban flotando a
+                        media altura, con vacío encima y debajo. Alineadas
+                        arriba, la fila vuelve a leerse de una pasada. */}
+                    <div className="flex items-start gap-3 sm:items-center">
+                      {/* Prioridad. En el teléfono baja a la MISMA fila que las
+                          etiquetas: como columna aparte se llevaba 100 px de los
+                          282 de la tarjeta y dejaba 138 para cuatro etiquetas,
+                          que caían de una en una con un vacío al lado. Juntas,
+                          las cinco fluyen y llenan el ancho. */}
+                      <div className="hidden sm:block">
+                        <PriorityPill p={c.priority} />
+                      </div>
 
                       {/* Center info */}
                       <div className="min-w-0 flex-1">
                         <div className="mb-1 flex flex-wrap items-center gap-2">
+                          <span className="sm:hidden">
+                            <PriorityPill p={c.priority} />
+                          </span>
                           {/* Incendio, atraco, pánico, intrusión y médica van en
                             `--bad` vengan con la prioridad que vengan: un
                             incendio no deja de serlo porque el panel lo
@@ -517,7 +534,7 @@ export default function AlarmQueue() {
                       )}
 
                       <ChevronRight
-                        className="size-5 shrink-0"
+                        className="mt-0.5 size-5 shrink-0 sm:mt-0"
                         style={{ color: "var(--ink-faint)" }}
                       />
                     </div>

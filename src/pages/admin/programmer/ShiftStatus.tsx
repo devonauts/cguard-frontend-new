@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { DataTable } from "@/components/table/DataTable";
 import { useTranslation } from "react-i18next";
 import { getTenantTimezone } from "@/utils/tenantLocation";
 import AppLayout from "@/layouts/app-layout";
@@ -416,85 +417,53 @@ export default function ShiftStatus() {
           icon={<ListChecks />}
           contentClassName="overflow-x-auto -mx-1"
         >
-          <Table>
-            <TableHeader style={{ background: "var(--glass-sunken)" }}>
-              <TableRow>
-                <TableHead className="w-[50px]">
-                  <Checkbox />
-                </TableHead>
-                <TableHead className="cg-eyebrow">{t("comun.fecha")}</TableHead>
-                <TableHead className="cg-eyebrow">
-                  {t("comun.vigilante")}
-                </TableHead>
-                <TableHead className="cg-eyebrow">
-                  {t("comun.puesto")}
-                </TableHead>
-                <TableHead className="cg-eyebrow">
-                  {t("comun.horaDeInicio")}
-                </TableHead>
-                <TableHead className="cg-eyebrow">
-                  {t("comun.horaDeFin")}
-                </TableHead>
-                <TableHead className="cg-eyebrow">
-                  {t("comun.estado")}
-                </TableHead>
-                <TableHead className="w-[50px]"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="h-[200px] text-center">
-                    <Loader2
-                      className="mx-auto h-6 w-6 animate-spin"
-                      style={{ color: "var(--ink-faint)" }}
-                    />
-                  </TableCell>
-                </TableRow>
-              ) : paginated.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="h-[360px] text-center">
-                    <EmptyState
-                      icon={<ListChecks />}
-                      title={t("kit.table.emptyTitle")}
-                      description={t("comun.noPudimosEncontrarNingunElemento")}
-                      className="border-0 py-2"
-                    />
-                  </TableCell>
-                </TableRow>
-              ) : (
-                paginated.map((row) => (
-                  <TableRow key={row.id}>
-                    <TableCell>
-                      <Checkbox />
-                    </TableCell>
-                    <TableCell className="tabular-nums">
-                      {formatDate(row.startTime)}
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {row._guardName}
-                    </TableCell>
-                    <TableCell>{row._stationName}</TableCell>
-                    <TableCell className="tabular-nums">
-                      {formatTime(row.startTime)}
-                    </TableCell>
-                    <TableCell className="tabular-nums">
-                      {formatTime(row.endTime)}
-                    </TableCell>
-                    <TableCell>{getStatusBadge(row._status)}</TableCell>
-                    <TableCell>
-                      <Button variant="ghost" size="icon">
-                        <ChevronsUpDown
-                          className="h-4 w-4"
-                          style={{ color: "var(--ink-soft)" }}
-                        />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+          {/* `DataTable` y no el primitivo `<Table>`: así se pliega sola en
+              fichas en el teléfono, donde estas siete columnas se leían
+              arrastrando de lado. La casilla y el botón de la derecha que había
+              aquí NO tenían manejador —eran adorno—, así que no viajan. */}
+          <DataTable
+            columns={[
+              {
+                key: "startTime",
+                header: t("comun.fecha"),
+                render: (_v: any, row: any) => formatDate(row.startTime),
+              },
+              {
+                key: "_guardName",
+                header: t("comun.vigilante"),
+              },
+              {
+                key: "_stationName",
+                header: t("comun.puesto"),
+              },
+              {
+                key: "startTime",
+                header: t("comun.horaDeInicio"),
+                render: (_v: any, row: any) => formatTime(row.startTime),
+              },
+              {
+                key: "endTime",
+                header: t("comun.horaDeFin"),
+                render: (_v: any, row: any) => formatTime(row.endTime),
+              },
+              {
+                key: "_status",
+                header: t("comun.estado"),
+                render: (_v: any, row: any) => getStatusBadge(row._status),
+              },
+            ]}
+            containerless
+            data={paginated as any}
+            emptyState={
+              <EmptyState
+                className="border-0 py-2"
+                description={t("comun.noPudimosEncontrarNingunElemento")}
+                icon={<ListChecks />}
+                title={t("kit.table.emptyTitle")}
+              />
+            }
+            loading={loading}
+          />
         </Section>
 
         {/* Pagination */}

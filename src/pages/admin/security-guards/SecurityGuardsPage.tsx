@@ -992,7 +992,6 @@ export default function SecurityGuardsPage() {
                 setFilterStatus(v);
                 setCurrentPage(1);
               }}
-              className="flex-wrap"
               options={[
                 { key: "todos", label: "Todos", count: guards.length },
                 { key: "activos", label: "Activos", count: activeCount },

@@ -1174,7 +1174,13 @@ button, [role="button"] { transition: transform 0.09s var(--ease); }
      Los de sólo icono quedan fuera: estirar una lupa a media pantalla es
      peor que dejarla pequeña. */
   .cg-acciones { width: 100%; }
-  .cg-acciones > * { flex: 1 1 auto; min-width: 0; }
+  /* Crecen los CONTROLES, no las etiquetas. Un rótulo como «Estado» delante de
+     un riel de filtros es texto, no algo que se toca: estirarlo se llevaba 187
+     px de los 358 y dejaba al riel con 137, donde sus siete píldoras no caben. */
+  .cg-acciones > :where(button, a[href], input, select, [role="tablist"], [role="button"], [role="group"]) {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
 
   /* La excepción se reconoce por su CLASE de tamaño cuadrado y no por
      `:has(> svg:only-child)`: un botón con icono Y texto también tiene el svg

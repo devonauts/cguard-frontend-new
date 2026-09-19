@@ -359,7 +359,7 @@ export default function TimeOff() {
           {/* Elegir UNO de cuatro estados: el conmutador del sistema, no un
               desplegable. Muestra las cuatro opciones sin abrir nada. */}
           <Segmented<"all" | "pending" | "approved" | "rejected">
-            className="max-w-full flex-wrap"
+            className="max-w-full"
             value={statusFilter}
             onChange={(v) => {
               setStatusFilter(v);

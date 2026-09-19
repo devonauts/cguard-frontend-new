@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { DataTable } from "@/components/table/DataTable";
 import { useTranslation } from "react-i18next";
 import {
   Filter,
@@ -435,93 +436,68 @@ export default function OpenShifts() {
           icon={<CalendarClock />}
           title="Turnos abiertos"
         >
-          <Table>
-            <TableHeader style={{ background: "var(--glass-sunken)" }}>
-              <TableRow>
-                <TableHead className="w-[50px]">
-                  <Checkbox />
-                </TableHead>
-                <TableHead className="cg-eyebrow">{t("comun.fecha")}</TableHead>
-                <TableHead className="cg-eyebrow">
-                  {t("comun.puesto")}
-                </TableHead>
-                <TableHead className="cg-eyebrow">
-                  {t("comun.horaDeInicio")}
-                </TableHead>
-                <TableHead className="cg-eyebrow">
-                  {t("comun.horaDeFin")}
-                </TableHead>
-                <TableHead className="cg-eyebrow">
-                  {t("ui.OpenShifts.duracion", "Duración")}
-                </TableHead>
-                <TableHead className="cg-eyebrow">
-                  {t("ui.OpenShifts.accion", "Acción")}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell className="h-[200px] text-center" colSpan={7}>
-                    <Loader2
-                      className="mx-auto h-6 w-6 animate-spin"
-                      style={{ color: "var(--ink-faint)" }}
-                    />
-                  </TableCell>
-                </TableRow>
-              ) : paginated.length === 0 ? (
-                <TableRow>
-                  <TableCell className="h-[360px] text-center" colSpan={7}>
-                    <EmptyState
-                      className="border-0 py-2"
-                      description={t(
-                        "ui.OpenShifts.todosLosTurnosTienenVigilante",
-                      )}
-                      icon={<CalendarClock />}
-                      title={t("ui.OpenShifts.noHayTurnosAbiertos")}
-                    />
-                  </TableCell>
-                </TableRow>
-              ) : (
-                paginated.map((shift) => (
-                  <TableRow key={shift.id}>
-                    <TableCell>
-                      <Checkbox />
-                    </TableCell>
-                    <TableCell className="tabular-nums">
-                      {formatDate(shift.startTime)}
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {shift.station?.stationName ?? "—"}
-                    </TableCell>
-                    <TableCell className="tabular-nums">
-                      {formatTime(shift.startTime)}
-                    </TableCell>
-                    <TableCell className="tabular-nums">
-                      {formatTime(shift.endTime)}
-                    </TableCell>
-                    <TableCell className="tabular-nums">
-                      {durationHours(shift.startTime, shift.endTime)}
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                          setAssignTarget(shift);
-                          setSelectedGuard(null);
-                          setGuardSearch("");
-                        }}
-                      >
-                        <UserCheck className="h-4 w-4 mr-1" />{" "}
-                        {t("comun.asignarVigilante")}{" "}
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+          {/* `DataTable` y no el primitivo `<Table>`: se pliega sola en fichas
+              en el teléfono. La casilla de la primera columna no tenía
+              manejador —era adorno— y no viaja. */}
+          <DataTable
+            columns={[
+              {
+                key: "startTime",
+                header: t("comun.fecha"),
+                render: (_v: any, row: any) => formatDate(row.startTime),
+              },
+              {
+                key: "station",
+                header: t("comun.puesto"),
+                render: (_v: any, row: any) => row.station?.stationName ?? "—",
+              },
+              {
+                key: "startTime",
+                header: t("comun.horaDeInicio"),
+                render: (_v: any, row: any) => formatTime(row.startTime),
+              },
+              {
+                key: "endTime",
+                header: t("comun.horaDeFin"),
+                render: (_v: any, row: any) => formatTime(row.endTime),
+              },
+              {
+                key: "duracion",
+                header: t("ui.OpenShifts.duracion", "Duración"),
+                render: (_v: any, row: any) =>
+                  durationHours(row.startTime, row.endTime),
+              },
+              {
+                key: "accion",
+                header: t("ui.OpenShifts.accion", "Acción"),
+                render: (_v: any, row: any) => (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setAssignTarget(row);
+                      setSelectedGuard(null);
+                      setGuardSearch("");
+                    }}
+                  >
+                    <UserCheck className="mr-1 h-4 w-4" />{" "}
+                    {t("comun.asignarVigilante")}
+                  </Button>
+                ),
+              },
+            ]}
+            containerless
+            data={paginated as any}
+            emptyState={
+              <EmptyState
+                className="border-0 py-2"
+                description={t("ui.OpenShifts.todosLosTurnosTienenVigilante")}
+                icon={<CalendarClock />}
+                title={t("ui.OpenShifts.noHayTurnosAbiertos")}
+              />
+            }
+            loading={loading}
+          />
         </Section>
 
         {/* Pagination */}

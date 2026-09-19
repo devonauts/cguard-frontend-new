@@ -347,7 +347,12 @@ export function Section({
   return (
     <div
       className={cn(
-        bare ? "" : flat ? "glass-flat p-5" : "glass p-5",
+        /* 16 px de relleno en el teléfono, 20 a partir de `sm`. Con 20 fijos,
+           una tarjeta dentro de una `Section` dentro del margen de página se
+           quedaba con 282 px de los 390 de la pantalla: el anidamiento se comía
+           108 y las etiquetas de dentro caían de una en una. Cuatro píxeles por
+           nivel no se ven; lo que se ve es la columna que dejan. */
+        bare ? "" : flat ? "glass-flat p-4 sm:p-5" : "glass p-4 sm:p-5",
         className,
       )}
     >
@@ -864,7 +869,11 @@ export function Segmented<T extends string>({
     <div
       ref={riel}
       className={cn(
-        "glass-sunken min-w-0 max-w-full items-center gap-1 overflow-x-auto p-1",
+        /* `flex-nowrap`: al expandirse, los hijos pasan a `flex-1` y sin esto
+           se PARTEN en varias líneas — siete píldoras se apilaron en una
+           columna de 342 px de alto. El riel nunca salta de línea: o cabe, o se
+           desplaza por dentro. */
+        "glass-sunken min-w-0 max-w-full flex-nowrap items-center gap-1 overflow-x-auto p-1",
         expandido ? "flex w-full" : "inline-flex",
         className,
       )}
