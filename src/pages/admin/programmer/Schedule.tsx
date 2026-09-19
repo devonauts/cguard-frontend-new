@@ -5619,7 +5619,11 @@ export default function Schedule() {
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5">
+          {/* En el teléfono ocupa el ANCHO: las flechas a los extremos y el mes
+              centrado entre ellas. Pegado a la izquierda con 70 px de vacío a
+              la derecha, el «›» quedaba en mitad de la pantalla y no donde el
+              pulgar lo busca. En `sm` mide lo que mide su contenido. */}
+          <div className="flex w-full items-center gap-1.5 sm:w-auto">
             <Button
               size="sm"
               title={t("ui.Schedule.anteriorRePag", "Anterior (Re Pág)")}
@@ -5631,7 +5635,7 @@ export default function Schedule() {
             <Button size="sm" variant="outline" onClick={goToday}>
               Hoy
             </Button>
-            <span className="min-w-[130px] text-center text-sm font-semibold">
+            <span className="min-w-[130px] flex-1 text-center text-sm font-semibold sm:flex-none">
               {rangeLabel}
             </span>
             <Button
@@ -5716,7 +5720,21 @@ export default function Schedule() {
               const ok = (coverage.gapCount || 0) === 0;
 
               return (
-                <StatusBadge dot={false} tone={ok ? "ok" : "bad"}>
+                <StatusBadge
+                  /* A lo ancho en el teléfono: es el titular del día —cuánto
+                     está cubierto y cuánto no—, y encogida a su texto en una
+                     esquina se lee como una etiqueta más de las muchas que hay
+                     en la pantalla.
+
+                     `[&>span]:flex`: el envoltorio interno de `StatusBadge` es
+                     un bloque, y los `svg` del sistema son `display: block`, así
+                     que el triángulo de aviso se ponía en una línea para él solo
+                     encima del texto. En fila queda al lado, como en el resto de
+                     las etiquetas. */
+                  className="w-full justify-center whitespace-nowrap [&>span]:flex [&>span]:items-center [&>span]:gap-1.5 sm:w-auto"
+                  dot={false}
+                  tone={ok ? "ok" : "bad"}
+                >
                   {ok ? (
                     <CheckCircle2 size={13} />
                   ) : (
