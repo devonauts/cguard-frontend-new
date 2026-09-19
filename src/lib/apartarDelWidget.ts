@@ -16,13 +16,39 @@
  */
 
 /**
- * Alto de la esquina que ocupa la burbuja, en píxeles.
+ * Margen de respiro por encima de lo que ocupen los flotantes.
  *
- * La burbuja mide 56 px y va a `bottom-6` (24 px), así que reclama los 80
- * inferiores. Se dejan 24 de respiro para que el botón no quede pegado al
- * borde, que es incómodo aunque se pueda pulsar.
+ * El alto ya NO se adivina: se mide. La primera versión de esto daba por
+ * supuesto 104 px —la burbuja mide 56 y va a `bottom-6`— y no bastaba: VigIA
+ * lleva una onda animada alrededor y su caja real son 74 × 83 px arrancando a
+ * 159 px del borde inferior. El botón quedaba «despejado» según la cuenta y
+ * seguía comiéndose el clic. Se descubrió probándolo en el navegador de verdad,
+ * con `document.elementFromPoint` sobre el «Guardar»; la cuenta a mano decía
+ * que estaba bien.
  */
-const ALTO_DE_LA_BURBUJA = 104;
+const RESPIRO = 24;
+
+/** Lo que reclaman los widgets flotantes, medido ahora mismo. */
+function altoOcupado(): number {
+  if (typeof document === "undefined") return 160;
+  let arriba = window.innerHeight;
+
+  for (const el of Array.from(
+    document.querySelectorAll<HTMLElement>("[data-flotante]"),
+  )) {
+    const c = el.getBoundingClientRect();
+
+    // Sólo los de la franja inferior y con caja real; uno oculto no estorba.
+    if (c.height > 0 && c.bottom > window.innerHeight - 260) {
+      arriba = Math.min(arriba, c.top);
+    }
+  }
+  const medido = window.innerHeight - arriba;
+
+  // Sin flotantes montados (o sin marcar) se usa un valor prudente: más vale
+  // subir de más que dejar el botón debajo de algo.
+  return (medido > 0 ? medido : 160) + RESPIRO;
+}
 
 /**
  * El ancestro que de verdad hace scroll.
@@ -59,12 +85,32 @@ function contenedorQueDesplaza(el: HTMLElement): HTMLElement | null {
 export function apartarDelWidget(el: HTMLElement | null): void {
   if (!el || typeof window === "undefined") return;
 
+  // El formulario CRECE después de montarse: el selector de ubicación monta un
+  // mapa que tarda en pintar y empuja la botonera hacia abajo. Medir una sola
+  // vez al montar daba «ya está despejado» sobre un formulario que todavía era
+  // corto, y el botón acababa fuera de pantalla igualmente.
+  //
+  // Por eso se vigila el alto un rato y se vuelve a ajustar cuando cambia. Se
+  // corta a los 3 s: pasado ese tiempo lo que mueva la página ya es cosa del
+  // usuario, y seguir desplazándole la vista sería peor que el problema.
+  if (typeof ResizeObserver !== "undefined") {
+    const obs = new ResizeObserver(() => ajustar(el));
+
+    obs.observe(el);
+    setTimeout(() => obs.disconnect(), 3000);
+  }
+
+  ajustar(el);
+}
+
+/** Un ajuste: mide y, si hace falta, sube lo justo. */
+function ajustar(el: HTMLElement): void {
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       const caja = el.getBoundingClientRect();
       // La burbuja está fija a la VENTANA, así que el límite se mide contra la
       // ventana aunque quien se desplace sea otro.
-      const sobra = caja.bottom - (window.innerHeight - ALTO_DE_LA_BURBUJA);
+      const sobra = caja.bottom - (window.innerHeight - altoOcupado());
 
       if (sobra <= 0) return;
 

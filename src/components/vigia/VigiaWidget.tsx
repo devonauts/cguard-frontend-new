@@ -561,7 +561,6 @@ export default function VigiaWidget() {
         <button
           aria-expanded={open}
           aria-label={t("vigia.openAria", "Abrir VigIA, el asistente")}
-          className="cg-focus transition-transform hover:scale-105"
           style={{
             // z-45: los diálogos del sistema (z-50) tapan la burbuja, no al
             // revés. La botonera de guardar de algunas páginas vive en
@@ -575,6 +574,13 @@ export default function VigiaWidget() {
             filter: "drop-shadow(0 6px 14px rgba(0,0,0,0.30))",
           }}
           onClick={() => setOpen(true)}
+          className="cg-focus transition-transform hover:scale-105"
+          /* `data-flotante`: así `apartarDelWidget` puede MEDIR lo que ocupa en
+             vez de suponerlo. La onda animada hace que su caja real sean 83 px
+             de alto arrancando a 159 del borde, bastante más que los 56 de la
+             silueta — y un botón «despejado» según la cuenta seguía comiéndose
+             el clic. */
+          data-flotante
         >
           {/* La animación vive aquí y no en glass.css: es exclusiva del widget. */}
           <style>{`
@@ -635,6 +641,7 @@ export default function VigiaWidget() {
       {/* ── El panel ───────────────────────────────────────────────────── */}
       {open && (
         <div
+          data-flotante
           className="flex flex-col"
           style={{
             position: "fixed",

@@ -186,6 +186,7 @@ export default function RadioVoiceWidget() {
     // `position: fixed` en línea: `.glass-raised` fija `relative` y glass.css va
     // sin `@layer`, así que gana a la utilidad `fixed` (ver su cabecera).
     <div
+      data-flotante
       className="glass-raised fixed right-3 top-16 z-[80] max-h-[calc(100dvh-5rem)] w-80 max-w-[calc(100vw-1.5rem)] overflow-y-auto"
       style={{ position: "fixed" }}
       onPointerDown={() => radioResume()}
