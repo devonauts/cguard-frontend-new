@@ -819,6 +819,8 @@ export default function Schedule() {
      Ahora sigue la forma que ya funciona en el alta del sacafranco: primero
      quiénes, luego su ciclo, y la jornada al final. Y el ciclo se guarda por la
      puerta que NO da de baja a nadie (`PUT /station/:id/rotation`). */
+  /** Móvil: hoja para elegir a qué puesto entrar (la rejilla no está). */
+  const [elegirPuesto, setElegirPuesto] = useState(false);
   const [configPaso, setConfigPaso] = useState<1 | 2 | 3>(1);
   const [cfgRotMode, setCfgRotMode] = useState<"rotativo" | "manual">("rotativo");
   const [cfgDias, setCfgDias] = useState(4);
@@ -2033,6 +2035,13 @@ export default function Schedule() {
     /** Estaciones que cubrirá, cuando el sacafranco se acaba de crear para
      *  varias a la vez (multi-selección del editor de puestos). */
     cubrePrecargado?: string[],
+    /* ── A QUIÉN SE RELEVA ────────────────────────────────────────────────
+       Va como PARÁMETRO y no como un `setMoveFrom` antes de llamar, porque
+       esta función termina limpiándolo: ponerlo fuera se perdía en silencio y
+       el relevo se convertía en un alta — los dos vigilantes acababan activos
+       en la misma plaza, con su cuadrante cada uno, y el puesto contaba doble
+       cobertura. Pasó de verdad al probar «Cambiar» desde el móvil. */
+    relevarA?: GuardAssignment | null,
   ) => {
     // ── DE DÓNDE SALEN LAS HORAS, EN ORDEN ────────────────────────────────
     // 1) El turno que se está cubriendo, si quien abre el menú lo sabe.
@@ -2133,7 +2142,7 @@ export default function Schedule() {
     // Con fecha (clic derecho sobre un día) se asume tapar ESE día; sin fecha,
     // el gesto sólo puede significar rotación.
     setAssignMode(modo);
-    setMoveFrom(null);
+    setMoveFrom(relevarA || null);
     setShowAssignForm(true);
   };
 
@@ -5659,9 +5668,47 @@ export default function Schedule() {
                     { value: "agenda", label: "Agenda" },
                   ]
             }
+            /* En el teléfono ocupa el ancho: pegado a la izquierda sobraba
+               medio ancho a la derecha y parecía mal puesto. */
+            expandir={pantallaEstrecha}
             value={view}
             onChange={elegirVista}
           />
+
+          {/* ── LAS PUERTAS QUE SÓLO EXISTÍAN EN LA HOJA ────────────────────
+              Asignar a alguien, editarle el puesto o crear un sacafranco se
+              hacían desde la rejilla: el «+» de cada estación, el reloj, el
+              nombre de la plaza. En un teléfono la rejilla no se puede usar —y
+              desde que no se ofrece, esas acciones no tenían NINGUNA puerta—.
+              Aquí están las dos que hacen falta: entrar a un puesto (y desde su
+              asistente asignar, cambiar o quitar gente) y crear un sacafranco.
+              En pantalla ancha no aparecen: ahí ya están en su sitio. */}
+          {pantallaEstrecha && (
+            /* `w-full` y no sólo `flex-1` en los hijos: el contenedor vive en
+               una fila que envuelve, así que sin él los dos botones se quedan
+               midiendo su contenido y sobra medio ancho a la derecha — el mismo
+               desajuste que tenía el riel de vistas. */
+            <div className="flex w-full items-center gap-2">
+              <Button
+                className="flex-1"
+                size="sm"
+                variant="outline"
+                onClick={() => setElegirPuesto(true)}
+              >
+                <Shield className="mr-1.5" size={15} />
+                Puestos
+              </Button>
+              <Button
+                className="flex-1"
+                size="sm"
+                variant="outline"
+                onClick={addSacafranco}
+              >
+                <Plus className="mr-1.5" size={15} />
+                Sacafranco
+              </Button>
+            </div>
+          )}
 
           {coverage &&
             typeof coverage.coveredPct === "number" &&
@@ -9710,6 +9757,108 @@ export default function Schedule() {
       )}
 
       {/* ─── Configure Station Modal ─────────────────────────────────────── */}
+      {/* ── ELEGIR PUESTO (sólo móvil) ──────────────────────────────────────
+          Una lista de estaciones con lo que hace falta para decidir a cuál
+          entrar: cuánta gente tiene y cuántas plazas le faltan por cubrir. Al
+          tocar una se abre su asistente, el mismo del reloj en el escritorio,
+          y desde su primer paso se asigna, se cambia o se quita gente. */}
+      {elegirPuesto && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center"
+          style={{ background: "oklch(0 0 0 / 0.55)" }}
+          onClick={() => setElegirPuesto(false)}
+        >
+          <div
+            className="glass-raised max-h-[80vh] w-full overflow-hidden rounded-t-2xl animate-in slide-in-from-bottom duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              className="flex items-center justify-between px-5 py-4"
+              style={{ borderBottom: "1px solid var(--hairline)" }}
+            >
+              <div>
+                <h4 className="text-sm font-semibold">Puestos</h4>
+                <p
+                  className="mt-0.5 text-[11px]"
+                  style={{ color: "var(--ink-soft)" }}
+                >
+                  Entra a uno para asignar, cambiar o quitar vigilantes
+                </p>
+              </div>
+              <button
+                className="cg-btn-ghost cg-focus rounded-lg p-1.5"
+                onClick={() => setElegirPuesto(false)}
+              >
+                <X size={15} />
+              </button>
+            </div>
+            <div className="max-h-[calc(80vh-72px)] overflow-y-auto p-2">
+              {stations.map((st) => {
+                const plazas = positionsByStation.get(String(st.id)) || [];
+                const dentro = assignments.filter(
+                  (a) =>
+                    String(a.stationId) === String(st.id) &&
+                    a.status === "active",
+                ).length;
+                const vacias = plazas.filter(
+                  (p) =>
+                    !assignments.some(
+                      (a) =>
+                        String(a.positionId) === String(p.id) &&
+                        a.status === "active",
+                    ),
+                ).length;
+
+                return (
+                  <button
+                    key={st.id}
+                    className="cg-focus flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition-colors hover:bg-[var(--glass-sunken)]"
+                    type="button"
+                    onClick={() => {
+                      setElegirPuesto(false);
+                      configureStation(st);
+                    }}
+                  >
+                    <span
+                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                      style={tonePill(vacias ? "warn" : "ok", 14)}
+                    >
+                      <Shield size={14} />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-semibold">
+                        {stationLabel(st)}
+                      </span>
+                      <span
+                        className="block truncate text-[11px]"
+                        style={{ color: "var(--ink-soft)" }}
+                      >
+                        {dentro} vigilante{dentro === 1 ? "" : "s"}
+                        {vacias
+                          ? ` · ${vacias} plaza${vacias === 1 ? "" : "s"} sin cubrir`
+                          : " · completo"}
+                      </span>
+                    </span>
+                    <ChevronRight
+                      size={16}
+                      style={{ color: "var(--ink-faint)" }}
+                    />
+                  </button>
+                );
+              })}
+              {stations.length === 0 && (
+                <p
+                  className="px-3 py-6 text-center text-[11px]"
+                  style={{ color: "var(--ink-faint)" }}
+                >
+                  No hay puestos todavía.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {configStation && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center"
@@ -9846,10 +9995,15 @@ export default function Schedule() {
                                     const asg = f.asignacion;
 
                                     setConfigStation(null);
-                                    setMoveFrom(asg);
                                     openAssignForm(
                                       String(configStation.id),
                                       String(f.positionId),
+                                      undefined,
+                                      null,
+                                      undefined,
+                                      null,
+                                      undefined,
+                                      asg,
                                     );
                                   }}
                                 >

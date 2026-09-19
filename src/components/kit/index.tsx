@@ -629,11 +629,18 @@ export function Segmented<T extends string>({
   onChange,
   options,
   className,
+  expandir,
 }: {
   value: T;
   onChange: (v: T) => void;
   options: Array<{ value: T; label: React.ReactNode }>;
   className?: string;
+  /* Ocupa todo el ancho y reparte las opciones por igual. Con el riel pegado a
+     la izquierda de una pantalla de 390 px sobra medio ancho a la derecha y se
+     lee como si la barra estuviera mal puesta; además, píldoras estrechas en el
+     borde son las más difíciles de acertar con el pulgar. Por omisión NO se
+     expande: en el escritorio el riel debe medir lo que mide su contenido. */
+  expandir?: boolean;
 }) {
   return (
     /* Con cinco opciones el riel medía ~500 px y ensanchaba la página entera
@@ -644,7 +651,8 @@ export function Segmented<T extends string>({
        Con dos o tres opciones no cambia absolutamente nada. */
     <div
       className={cn(
-        "glass-sunken inline-flex min-w-0 max-w-full items-center gap-1 overflow-x-auto p-1",
+        "glass-sunken min-w-0 max-w-full items-center gap-1 overflow-x-auto p-1",
+        expandir ? "flex w-full" : "inline-flex",
         className,
       )}
       role="tablist"
@@ -656,7 +664,10 @@ export function Segmented<T extends string>({
           <button
             key={o.value}
             aria-selected={activo}
-            className="cg-focus min-h-8 shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all duration-200 sm:min-h-0"
+            className={cn(
+              "cg-focus min-h-8 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all duration-200 sm:min-h-0",
+              expandir ? "flex-1" : "shrink-0",
+            )}
             role="tab"
             style={
               activo
