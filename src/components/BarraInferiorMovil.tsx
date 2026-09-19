@@ -55,7 +55,12 @@ export default function BarraInferiorMovil({
   return (
     <nav
       aria-label="Navegación principal"
-      className="fixed inset-x-0 bottom-0 z-50 lg:hidden"
+      /* El cristal va SEPARADO de los cantos: 5 px a los lados y 2 abajo. Con
+         las esquinas redondeadas pegadas al filo de la pantalla, el redondeo no
+         se lee —queda cortado por el borde del aparato—; con este aire la barra
+         se ve como lo que es, una pieza apoyada encima. El relleno va en el
+         `<nav>`, no dentro, para que lo que se separe sea el cristal entero. */
+      className="fixed inset-x-0 bottom-0 z-50 px-[5px] pb-[2px] lg:hidden"
     >
       {/* El alto va en el CONTENEDOR: una regla global del kit fija
           `min-height: 44px` en los enlaces y gana por especificidad, así que
