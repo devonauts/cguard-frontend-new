@@ -4568,12 +4568,38 @@ export default function Schedule() {
           }
         }
       }
+      /* ── BORRAR UN DÍA QUE TODAVÍA NO EXISTE ──────────────────────────
+         La rejilla pinta la rotación más allá de donde el horario está
+         materializado, así que ahí se ve una D y no hay fila que borrar. Supr
+         se limitaba a explicarlo y a mandar al operador a escribir la novedad a
+         mano — desde su silla, eso es «selecciono, borro y no pasa nada», y
+         cuando el horizonte avanza esos días aparecen: «se regeneran».
+
+         La novedad de LIBRE es justo el mecanismo que el propio mensaje
+         recomendaba (`dropAbsenceDays` la respeta al generar), así que se
+         escribe aquí en vez de pedirla. El resultado es el mismo desde
+         cualquier lado: el día queda bloqueado y la rotación no lo crea. */
+      if (proyectado) {
+        if (
+          !(await confirmDialog({
+            title: "Bloquear esos días",
+            message:
+              "Ahí la rejilla enseña el patrón proyectado: el turno todavía no" +
+              " está creado, así que no hay nada que borrar. Se marcan como" +
+              " LIBRE para que la rotación no los cree cuando avance el" +
+              " horizonte.",
+            confirmText: "Marcar libres",
+          }))
+        )
+          return;
+        await applyCodeToSelection("L");
+
+        return;
+      }
       toast.info(
         filaVacia
           ? "Ese puesto no tiene vigilante asignado: no hay turno que borrar."
-          : proyectado
-            ? "Ahí todavía no hay un turno creado: la rejilla está enseñando el patrón proyectado. El horario se genera unos meses por delante; para bloquear ese día usa una novedad (L, V, PM, F)."
-            : "En esas celdas no hay turno ni novedad — están libres (L). Doble clic para registrar una novedad.",
+          : "En esas celdas no hay turno ni novedad — están libres (L). Doble clic para registrar una novedad.",
       );
 
       return;
@@ -4582,18 +4608,27 @@ export default function Schedule() {
     // Un turno es trabajo real de alguien: se confirma. Una novedad se deshace
     // volviéndola a escribir, así que ésa sigue sin preguntar.
     if (turnos.length) {
-      const generados = turnos.some((s) => s.positionId);
       const partes = [
         `${turnos.length} turno(s)`,
         victims.length ? `${victims.length} novedad(es)` : "",
       ]
         .filter(Boolean)
         .join(" y ");
+      /* ── ESTE AVISO DECÍA LO CONTRARIO DE LO QUE PASA ────────────────────
+         Advertía de que «los turnos generados por la rotación pueden volver a
+         aparecer al reoptimizar o reasignar». Era verdad antes de que el
+         borrado firmara su lápida; hoy no lo es, y decirlo es peor que no decir
+         nada: le cuenta al operador que su decisión no es de fiar, justo lo que
+         el contrato del Horario promete al revés —el cuadrante se genera una
+         vez y a partir de ahí manda quien lo edita—.
+
+         Comprobado contra el motor: borrar y regenerar la asignación, regenerar
+         la estación entera y cambiarle el ciclo dejan los días borrados a cero.
+         `ShiftRepository.destroy` firma con `pinned` y la supresión del
+         generador respeta esa firma. */
       const msg =
-        `Se eliminarán ${partes}.` +
-        (generados
-          ? " Los turnos generados por la rotación pueden volver a aparecer al reoptimizar o reasignar."
-          : "");
+        `Se eliminarán ${partes}. Los días quedan libres y la rotación NO los` +
+        ` vuelve a crear: el borrado se respeta al regenerar.`;
 
       if (
         !(await confirmDialog({
@@ -4665,6 +4700,9 @@ export default function Schedule() {
     monthDays,
     asigsDeFila,
     isWorkDay,
+    // Supr también marca libres los días proyectados: sin esta dependencia se
+    // quedaría con una versión vieja y escribiría sobre la selección anterior.
+    applyCodeToSelection,
     t,
   ]);
 
