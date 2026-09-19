@@ -56,6 +56,10 @@ import ScheduleTimeline, {
 } from "./ScheduleTimeline";
 import ContextMenu, { CtxItem, CtxMenuState } from "./ContextMenu";
 import TransferShiftModal, { TransferTarget } from "./TransferShiftModal";
+import {
+  handlersDePulsacionLarga,
+  type PuntoDePulsacion,
+} from "./pulsacionLarga";
 import SupervisionSection from "./SupervisionSection";
 import StaffScheduleSection from "./StaffScheduleSection";
 import MonthStationBlock, {
@@ -2362,13 +2366,17 @@ export default function Schedule() {
   };
 
   const openCellCtx = (
-    e: React.MouseEvent,
+    e: React.MouseEvent | PuntoDePulsacion,
     station: Station,
     pos: StationPosition,
     posAssignments: GuardAssignment[],
     dateStr: string,
   ) => {
-    e.preventDefault();
+    /* Puede venir de un clic derecho o de una pulsación larga; lo segundo no
+       tiene `preventDefault` que dar. */
+    const tactil = !("preventDefault" in e);
+
+    if (!tactil) (e as React.MouseEvent).preventDefault();
     const items: CtxItem[] = [];
     /* Cada casillero es una hoja de asistencia: lo que se puede hacer con él es
        cambiar QUÉ pasó (novedad), cambiar las horas o borrarlo. Antes esas tres
@@ -2582,16 +2590,20 @@ export default function Schedule() {
         onClick: () => openAssignForm(station.id, pos.id, dateStr),
       });
     }
-    setCtxMenu({ x: e.clientX, y: e.clientY, items });
+    setCtxMenu({ x: e.clientX, y: e.clientY, items, tactil });
   };
 
   const openSfCtx = (
-    e: React.MouseEvent,
+    e: React.MouseEvent | PuntoDePulsacion,
     pos: StationPosition,
     sfGuard: GuardAssignment | null,
     dateStr: string,
   ) => {
-    e.preventDefault();
+    /* Puede venir de un clic derecho o de una pulsación larga; lo segundo no
+       tiene `preventDefault` que dar. */
+    const tactil = !("preventDefault" in e);
+
+    if (!tactil) (e as React.MouseEvent).preventDefault();
     const items: CtxItem[] = [];
 
     if (sfGuard) {
@@ -2688,7 +2700,7 @@ export default function Schedule() {
         onClick: () => openAssignForm(pos.stationId, pos.id, dateStr),
       });
     }
-    setCtxMenu({ x: e.clientX, y: e.clientY, items });
+    setCtxMenu({ x: e.clientX, y: e.clientY, items, tactil });
   };
 
   /* ─── MOVER UNA COBERTURA ARRASTRÁNDOLA ──────────────────────────────────
@@ -6276,6 +6288,17 @@ export default function Schedule() {
                                           posAssignments[0] || null,
                                           dateStr,
                                         ),
+                                      /* En un móvil no hay clic derecho: sin
+                                         esto, cubrir un turno desde el teléfono
+                                         era imposible. */
+                                      ...handlersDePulsacionLarga((punto) =>
+                                        openSfCtx(
+                                          punto,
+                                          pos,
+                                          posAssignments[0] || null,
+                                          dateStr,
+                                        ),
+                                      ),
                                     };
 
                                     // Novedades (typed or via modal) also show on SF rows.

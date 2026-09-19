@@ -1,4 +1,8 @@
 import type { LucideIcon } from "lucide-react";
+import {
+  handlersDePulsacionLarga,
+  type PuntoDePulsacion,
+} from "./pulsacionLarga";
 import type {
   StationPosition,
   GuardAssignment,
@@ -88,7 +92,8 @@ export type MonthGridHandlers = {
   /** Arrastrar una tarjeta de cobertura para moverla de día o de puesto. */
   onCoverageDragStart: (e: React.DragEvent, shiftId: string) => void;
   openCellCtx: (
-    e: React.MouseEvent,
+    /* Clic derecho o pulsación larga: al menú le basta con el punto. */
+    e: React.MouseEvent | PuntoDePulsacion,
     station: Station,
     pos: StationPosition,
     posAssignments: GuardAssignment[],
@@ -455,6 +460,14 @@ function MonthStationBlockInner({
               : isSunday ? TINT_SUNDAY : undefined,
         }}
         onContextMenu={e => h.openCellCtx(e, station, pos, posAssignments, dateStr)}
+        /* En un móvil no hay clic derecho, y en este menú vive casi todo lo que
+           se puede hacer con un día: cubrirlo, ponerle una novedad, cambiarle
+           las horas, borrarlo. Sin esto, la rejilla se veía pero no se operaba.
+           El gesto se cancela al mover el dedo, así que desplazar la hoja —lo
+           que más se hace en un teléfono— sigue funcionando igual. */
+        {...handlersDePulsacionLarga(punto =>
+          h.openCellCtx(punto, station, pos, posAssignments, dateStr),
+        )}
         onDragOver={e => e.preventDefault()}
         onDrop={e => h.handleDrop(e, station.id, pos.id, dateStr)}
         onMouseDown={e => { if (e.button === 0) h.startCellSelect(pos.id, dayIdx, e.shiftKey); }}
