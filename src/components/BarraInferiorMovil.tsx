@@ -31,6 +31,9 @@ import { AlertTriangle, CalendarDays, Gauge, Menu, Radio } from "lucide-react";
  *   barra de navegación que se falla es peor que no tenerla.
  * · El `<main>` reserva este alto con `padding-bottom` (ver `app-layout`), o la
  *   barra tapa la última fila de cualquier lista.
+ * · El cristal vive en `.cg-bottom-bar` (glass.css) y es el MISMO del menú
+ *   lateral, no el de los paneles flotantes: la barra es armazón, no algo que
+ *   flota encima, y tiene que dejar ver la lista pasando por debajo.
  * ════════════════════════════════════════════════════════════════════════════
  */
 
@@ -58,7 +61,7 @@ export default function BarraInferiorMovil({
           ponerlo en cada destino no servía de nada (medían 44 y no 56). Desde
           aquí los hijos se estiran con `items-stretch` y no hace falta pelearse
           con `!important`. */}
-      <div className="glass-raised flex min-h-[3.5rem] items-stretch border-t pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">
+      <div className="flex min-h-[3.5rem] items-stretch pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">
         {DESTINOS.map(({ to, etiqueta, Icono }) => {
           const activo = pathname === to || pathname.startsWith(`${to}/`);
 

@@ -973,6 +973,43 @@ button, [role="button"] { transition: transform 0.09s var(--ease); }
   min-width: 148px;
 }
 
+/* ── BARRA INFERIOR DEL TELÉFONO ──────────────────────────────────────────── */
+/* EL MISMO CRISTAL DEL MENÚ LATERAL, girado al canto de abajo. Antes usaba
+   `.glass-raised`, y ahí estaba el fallo: esa receta pinta sobre `--float`, que
+   es un 97 % opaco. Está pensada para lo que flota SOBRE el lienzo —un
+   desplegable, un panel— donde lo de detrás es ruido y conviene taparlo. Una
+   barra de navegación no flota: es armazón, como la barra lateral, y tiene que
+   dejar ver la lista pasando por debajo.
+
+   El menú se conforma con `--glass` a secas porque detrás sólo tiene lienzo.
+   Aquí pasa una LISTA, y a 5,5 % en oscuro los nombres de los destinos
+   competían con los del contenido. Un velo del 70 % sobre el lienzo deja ver el
+   movimiento de lo que hay detrás —que es de lo que va el efecto— sin que haya
+   que adivinar qué pone.
+
+   Sin esquinas redondeadas ni borde completo, que es lo que traía
+   `.glass-raised`: pegada al canto inferior, un cristal con las cuatro esquinas
+   redondas deja dos muescas de lienzo abajo y se lee como una tarjeta suelta
+   que se cayó, no como el borde de la aplicación. */
+.cg-bottom-bar {
+  /* SIN `position`: la barra ya es `fixed` desde el componente y esta regla
+     vive después en la cascada, así que un `position: relative` aquí le ganaba
+     al `fixed` y la dejaba caer FUERA de la pantalla (`top: 844` en un viewport
+     de 844). El `::before` no lo necesita: `fixed` ya es bloque contenedor. */
+  background: color-mix(in oklab, var(--glass-solid) 70%, transparent);
+  backdrop-filter: blur(calc(var(--blur) * 1.2)) saturate(180%);
+  -webkit-backdrop-filter: blur(calc(var(--blur) * 1.2)) saturate(180%);
+  border-top: 1px solid var(--hairline);
+}
+/* El filo iluminado del menú, en horizontal: allí recorre el canto derecho,
+   aquí el superior. Separa el cristal del contenido sin dibujar una línea dura. */
+.cg-bottom-bar::before {
+  content: "";
+  position: absolute; left: 0; right: 0; top: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--hairline-lit) 12%, var(--hairline-lit) 60%, transparent);
+  opacity: 0.7; pointer-events: none;
+}
+
 /* ── RIEL DE PESTAÑAS ─────────────────────────────────────────────────────── */
 /* El riel se desplaza por dentro cuando sus píldoras no caben, y esa barra de
    desplazamiento se dibujaba como una línea gris pegada al borde inferior del
