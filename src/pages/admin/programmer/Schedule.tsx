@@ -474,6 +474,29 @@ function SelectorDeRanura({
  *  confianza distinta, y ahí sanear es obligatorio aunque el cliente ya filtre.) */
 const VISTAS = ["month", "calendar", "week", "day", "agenda"] as const;
 
+/* ── UNA HOJA DE CÁLCULO NO ES UNA PREFERENCIA EN UN TELÉFONO ──────────────
+   La caída a Agenda en pantalla estrecha estaba escrita, pero iba LA ÚLTIMA:
+   sólo se aplicaba si no había preferencia guardada. Y quien usa el CRM en el
+   escritorio tiene «month» guardado —en `localStorage` y en la cuenta, que
+   además sincroniza entre dispositivos—, así que en el móvil abría la rejilla
+   igualmente. Ésa es la queja: «no vale nada en móvil».
+
+   En 390 px una rejilla obliga a desplazarse en las dos direcciones para leer
+   un dato; eso no es lo que nadie eligió, es un estado roto. Así que la
+   pantalla manda sobre lo guardado, y SÓLO en este sentido: se cae a Agenda,
+   nunca al revés. La preferencia del escritorio no se toca — al volver al
+   ordenador sigue en su vista. */
+const vistaUsableAqui = (v: ViewMode): ViewMode => {
+  try {
+    if (v !== "agenda" && window.matchMedia("(max-width: 767px)").matches)
+      return "agenda";
+  } catch {
+    /* SSR o navegador sin matchMedia */
+  }
+
+  return v;
+};
+
 type ViewMode = (typeof VISTAS)[number];
 const esVista = (v: any): v is ViewMode =>
   typeof v === "string" && (VISTAS as readonly string[]).includes(v);
@@ -601,19 +624,14 @@ export default function Schedule() {
     try {
       const cache = localStorage.getItem(VIEW_STYLE_KEY);
 
-      if (esVista(cache)) return cache;
+      if (esVista(cache)) return vistaUsableAqui(cache);
     } catch {
       /* almacenamiento bloqueado */
     }
-    if (esVista(savedView.v) && savedView.v !== "month") return savedView.v;
+    if (esVista(savedView.v) && savedView.v !== "month")
+      return vistaUsableAqui(savedView.v);
     // Sin preferencia: en una pantalla estrecha la hoja de cálculo no sirve.
-    try {
-      if (window.matchMedia("(max-width: 767px)").matches) return "agenda";
-    } catch {
-      /* SSR */
-    }
-
-    return "month";
+    return vistaUsableAqui("month");
   });
 
   /* Lo que diga la CUENTA gana a la caché local — salvo que la persona acabe de
@@ -621,6 +639,31 @@ export default function Schedule() {
      el servidor todavía va por detrás y devolverle el valor viejo se vería como
      que la elección «no se guardó». Es la misma cautela que usan el tema y el
      acento. */
+  /* Ancho de pantalla, en vivo: girar el teléfono o abrir el CRM en una ventana
+     estrecha cambia lo que tiene sentido ofrecer. */
+  const [pantallaEstrecha, setPantallaEstrecha] = useState(() => {
+    try {
+      return window.matchMedia("(max-width: 767px)").matches;
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    let mq: MediaQueryList;
+
+    try {
+      mq = window.matchMedia("(max-width: 767px)");
+    } catch {
+      return;
+    }
+    const alCambiar = () => setPantallaEstrecha(mq.matches);
+
+    mq.addEventListener("change", alCambiar);
+
+    return () => mq.removeEventListener("change", alCambiar);
+  }, []);
+
   const vistaDeCuentaAplicada = useRef(false);
 
   useEffect(() => {
@@ -633,7 +676,9 @@ export default function Schedule() {
       const v = ap?.scheduler?.view;
 
       if (esVista(v)) {
-        setView(v);
+        // Lo mismo que al montar: la cuenta puede traer «month» desde el
+        // escritorio, y en un teléfono eso es volver a la hoja de cálculo.
+        setView(vistaUsableAqui(v));
         try {
           localStorage.setItem(VIEW_STYLE_KEY, v);
         } catch {
@@ -2591,6 +2636,35 @@ export default function Schedule() {
       });
     }
     setCtxMenu({ x: e.clientX, y: e.clientY, items, tactil });
+  };
+
+  /* ── DESDE LA AGENDA TAMBIÉN SE OPERA ───────────────────────────────────
+     Tocar un turno saltaba a la vista de DÍA, que en un teléfono es otra
+     rejilla: la agenda servía para mirar y para nada más. Y mirar no es lo que
+     se hace desde el móvil — se hace «Fulano no llega, cubre este turno».
+
+     Se abre el MISMO menú de la rejilla, con las mismas acciones, en el punto
+     que se tocó. Un turno lleva encima su estación, su plaza y su día, que es
+     todo lo que el menú necesita. */
+  const accionesDelTurno = (sh: ShiftRecord, punto: PuntoDePulsacion) => {
+    const station = stationsById.get(String(sh.stationId));
+    const pos = sh.positionId ? positionsById.get(String(sh.positionId)) : null;
+
+    if (!station) return;
+    const dateStr = dateToWall(new Date(sh.startTime), tzName).dateStr;
+    /* Sin plaza el turno es una cobertura suelta (o un `adhoc`): el menú se
+       abre igual sobre la PRIMERA plaza de la estación, que es donde la rejilla
+       pinta esas coberturas y desde donde ya sabe borrarlas. */
+    const plaza = pos || getPositionsForStation(String(sh.stationId))[0];
+
+    if (!plaza) return;
+    openCellCtx(
+      punto,
+      station,
+      plaza,
+      assignmentsByPosition.get(String(plaza.id)) || [],
+      dateStr,
+    );
   };
 
   const openSfCtx = (
@@ -5561,15 +5635,30 @@ export default function Schedule() {
             </Button>
           </div>
 
-          {/* Rango: Mes = hoja de cálculo · Semana/Día = línea de tiempo dibujable */}
+          {/* Rango: Mes = hoja de cálculo · Semana/Día = línea de tiempo dibujable.
+
+              ── EN UN TELÉFONO NO SE OFRECEN LAS REJILLAS ──────────────────
+              Hoja, Semana y Día se leen desplazándose en las DOS direcciones.
+              En 390 px eso no es una vista peor: es una pantalla en la que no
+              se puede trabajar. Ofrecerla es invitar a un estado roto —y es
+              justo como se llega aquí, porque basta con haberla elegido una vez
+              en el escritorio—. Se dejan las dos que sí funcionan con el pulgar:
+              la lista y el calendario del mes. En cuanto hay ancho vuelven todas. */}
           <Segmented<ViewMode>
-            options={[
-              { value: "month", label: "Hoja" },
-              { value: "calendar", label: "Calendario" },
-              { value: "week", label: "Semana" },
-              { value: "day", label: "Día" },
-              { value: "agenda", label: "Agenda" },
-            ]}
+            options={
+              pantallaEstrecha
+                ? [
+                    { value: "agenda", label: "Agenda" },
+                    { value: "calendar", label: "Calendario" },
+                  ]
+                : [
+                    { value: "month", label: "Hoja" },
+                    { value: "calendar", label: "Calendario" },
+                    { value: "week", label: "Semana" },
+                    { value: "day", label: "Día" },
+                    { value: "agenda", label: "Agenda" },
+                  ]
+            }
             value={view}
             onChange={elegirVista}
           />
@@ -5714,10 +5803,12 @@ export default function Schedule() {
                     return `${String(Math.floor(w.minutes / 60)).padStart(2, "0")}:${String(w.minutes % 60).padStart(2, "0")}`;
                   }}
                   todayStr={todayStr}
-                  onPickShift={(sh) =>
-                    jumpToDay(
-                      dateToWall(new Date(sh.startTime), tzName).dateStr,
-                    )
+                  onPickShift={(sh, punto) =>
+                    punto
+                      ? accionesDelTurno(sh, punto)
+                      : jumpToDay(
+                          dateToWall(new Date(sh.startTime), tzName).dateStr,
+                        )
                   }
                 />
               ) : view === "calendar" ? (

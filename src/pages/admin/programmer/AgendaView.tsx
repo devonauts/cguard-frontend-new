@@ -32,7 +32,12 @@ export type AgendaViewProps = {
   todayStr: string;
   dateStrOf: (iso: string) => string;
   timeOf: (iso: string) => string;
-  onPickShift: (s: ShiftRecord) => void;
+  /* El punto del toque, para abrir el menú de acciones justo ahí. Sin punto
+     (teclado, o quien lo llame sin ratón) el padre decide qué hacer. */
+  onPickShift: (
+    s: ShiftRecord,
+    punto?: { clientX: number; clientY: number },
+  ) => void;
 };
 
 function AgendaViewInner({
@@ -170,7 +175,13 @@ function AgendaViewInner({
                       : null),
                   }}
                   type="button"
-                  onClick={() => onPickShift(s)}
+                  /* Tocar un turno abre sus acciones —cubrirlo, ponerle una
+                     novedad, cambiarle las horas, borrarlo—, que es a lo que se
+                     entra desde un teléfono. Antes saltaba a la vista de día,
+                     otra rejilla que en 390 px tampoco se puede usar. */
+                  onClick={(e) =>
+                    onPickShift(s, { clientX: e.clientX, clientY: e.clientY })
+                  }
                 >
                   {/* La hora primero: es lo que se busca al abrir esto */}
                   <span
