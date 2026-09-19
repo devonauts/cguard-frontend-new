@@ -16,7 +16,6 @@ import routeService from "@/lib/api/routeService";
 import { postSiteService } from "@/lib/api/postSiteService";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -237,14 +236,8 @@ export default function RoutesPage() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: "Panel de control", path: "/dashboard" },
-          { label: "Rutas" },
-        ]}
-      />
 
-      <PageContainer className="px-6" width="wide">
+      <PageContainer width="wide">
         <PageHeader
           actions={
             <Button asChild variant="brand">

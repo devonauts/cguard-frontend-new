@@ -15,7 +15,6 @@ import { toast } from "sonner";
 
 import { clientDisplayName } from "@/lib/clientName";
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import {
   dispatchCreateSchema,
   type DispatchCreateSchema,
@@ -485,14 +484,8 @@ export default function EditDispatchPage() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: "Panel de control", path: "/dashboard" },
-          { label: "Editar Incidente" },
-        ]}
-      />
 
-      <PageContainer className="px-6 pt-4" width="wide">
+      <PageContainer className="pt-4" width="wide">
         <PageHeader
           icon={<ClipboardEdit />}
           subtitle={t("ui.EditDispatchPage.actualizaLosDatosDelIncidente")}

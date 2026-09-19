@@ -22,7 +22,6 @@ import {
 } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import {
   PageContainer,
@@ -349,14 +348,8 @@ export default function ActivitiesPage() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: t("dashboard.title"), path: "/dashboard" },
-          { label: t("activity.title") },
-        ]}
-      />
 
-      <div className="p-4 sm:p-6">
+      <div>
         <PageContainer width="wide">
           {/* ── Header ───────────────────────────────────────────────────────── */}
           <PageHeader

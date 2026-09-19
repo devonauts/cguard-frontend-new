@@ -513,7 +513,7 @@ export default function NominaRecords() {
 
   return (
     <AppLayout>
-      <PageContainer width="wide" className="p-4 sm:p-6">
+      <PageContainer width="wide">
         <PageHeader
           icon={<ClipboardCheck />}
           title={t("ui.NominaRecords.registrosDeAsistencia")}

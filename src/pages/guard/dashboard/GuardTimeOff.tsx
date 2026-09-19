@@ -119,7 +119,7 @@ export default function GuardTimeOff() {
   }
 
   return (
-    <PageContainer className="px-4 pt-4 sm:px-6 sm:pt-6" width="narrow">
+    <PageContainer className="pt-4 sm:pt-6" width="narrow">
       <PageHeader
         actions={
           <Button variant="brand" onClick={() => setShowForm(!showForm)}>

@@ -5,7 +5,6 @@ import { Route as RouteIcon } from "lucide-react";
 import RouteForm from "./RouteForm";
 
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import { PageContainer, PageHeader } from "@/components/kit";
 
 /**
@@ -42,14 +41,7 @@ export default function NewRoutePage() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: "Panel de control", path: "/dashboard" },
-          { label: "Rutas", path: "/vehicle-patrol/routes" },
-          { label: "Nueva ruta" },
-        ]}
-      />
-      <PageContainer className="p-6" width="wide">
+      <PageContainer width="wide">
         <PageHeader
           icon={<RouteIcon />}
           subtitle="Define las paradas del recorrido, quién lo hace y con qué vehículo."

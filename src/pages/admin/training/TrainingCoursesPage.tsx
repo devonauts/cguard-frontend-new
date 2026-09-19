@@ -22,7 +22,6 @@ import {
 } from "./trainingConstants";
 
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -165,13 +164,7 @@ export default function TrainingCoursesPage() {
   if (!canRead) {
     return (
       <AppLayout>
-        <Breadcrumb
-          items={[
-            { label: "Panel de control", path: "/dashboard" },
-            { label: "Entrenamiento" },
-          ]}
-        />
-        <PageContainer className="p-4 sm:p-6" width="wide">
+        <PageContainer width="wide">
           <EmptyState
             description={t("ui.TrainingCoursesPage.noTienesPermisoParaVer")}
             icon={<BookOpen />}
@@ -242,15 +235,8 @@ export default function TrainingCoursesPage() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: "Panel de control", path: "/dashboard" },
-          { label: "Entrenamiento" },
-          { label: "Cursos" },
-        ]}
-      />
 
-      <PageContainer className="p-4 sm:p-6" width="wide">
+      <PageContainer width="wide">
         <PageHeader
           actions={
             canCreate ? (

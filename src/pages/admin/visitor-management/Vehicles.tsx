@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { Search, MoreVertical, Upload, FileDown, FileSpreadsheet, Printer, Mail, Car, Plus } from "lucide-react";
 import { useAsyncList } from "@/hooks/useAsyncList";
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -223,14 +222,8 @@ export default function Vehicles() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: "Panel de control", path: "/dashboard" },
-          { label: t("ui.Vehicles.vehiculos", "Vehículos") },
-        ]}
-      />
 
-      <section className="p-6">
+      <section>
         <PageContainer width="wide">
           <PageHeader
             icon={<Car />}

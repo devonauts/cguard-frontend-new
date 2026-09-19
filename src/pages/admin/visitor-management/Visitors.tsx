@@ -5,7 +5,6 @@ import { exportMatrix, type ExportFormat } from "@/lib/export/reportExport";
 import { clientDisplayName } from '@/lib/clientName';
 import { useAsyncList } from "@/hooks/useAsyncList";
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -1130,17 +1129,8 @@ export default function Visitors() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          {
-            label: t("visitantes.dashboard") || "Panel de control",
-            path: "/dashboard",
-          },
-          { label: t("visitantes.title") || "Visitantes" },
-        ]}
-      />
 
-      <section className="p-6">
+      <section>
         <PageContainer width="wide">
           <PageHeader
             actions={

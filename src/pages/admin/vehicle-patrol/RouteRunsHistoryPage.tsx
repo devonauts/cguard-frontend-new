@@ -18,7 +18,6 @@ import {
 } from "./runLabels";
 
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import {
   Select,
   SelectContent,
@@ -88,12 +87,6 @@ export default function RouteRunsHistoryPage() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: "Patrulla vehicular", path: "/vehicle-patrol" },
-          { label: "Historial" },
-        ]}
-      />
       <PageContainer width="wide">
         <PageHeader
           icon={<HistoryIcon />}

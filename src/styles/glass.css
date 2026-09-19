@@ -1121,6 +1121,41 @@ button, [role="button"] { transition: transform 0.09s var(--ease); }
   button:has(> svg:only-child):not([role="checkbox"]):not([role="radio"]) {
     min-width: 44px;
   }
+
+  /* ── BOTONERAS QUE OCUPAN EL ANCHO ─────────────────────────────────────
+     Una fila de acciones en el teléfono se quedaba pegada a la izquierda con
+     el ancho de su texto: «Reemplazo por vacaciones» de 238 px encima de
+     «Actualizar» de 127, y 197 px de hueco muerto a la derecha. No parece una
+     botonera, parecen dos botones sueltos que cayeron ahí.
+
+     Aquí los botones CRECEN hasta llenar su línea. Si caben dos, se reparten
+     la fila a medias; si sólo cabe uno, ocupa el ancho entero. Es la forma de
+     una botonera de iOS y, de paso, el blanco es el doble de grande.
+
+     Los de sólo icono quedan fuera: estirar una lupa a media pantalla es
+     peor que dejarla pequeña. */
+  .cg-acciones { width: 100%; }
+  .cg-acciones > * { flex: 1 1 auto; min-width: 0; }
+
+  /* La excepción se reconoce por su CLASE de tamaño cuadrado y no por
+     `:has(> svg:only-child)`: un botón con icono Y texto también tiene el svg
+     como único hijo ELEMENTO —el texto es un nodo de texto, y `:only-child` no
+     lo cuenta—, así que esa prueba dejaba quieto justo al que tenía que crecer.
+     `[class~=…]` compara el token entero: la clase base de todo botón lleva
+     dentro la cadena `size-4`, y con `*=` habría casado con todos. */
+  .cg-acciones
+    > :where(
+      [class~="size-8"],
+      [class~="size-9"],
+      [class~="size-10"],
+      [class~="w-7"],
+      [class~="w-8"],
+      [class~="w-9"],
+      [class~="w-10"],
+      [data-fijo]
+    ) {
+    flex: 0 0 auto;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -158,7 +158,7 @@ export default function TaskApprovals() {
 
   return (
     <AppLayout>
-      <div className="p-4 sm:p-6">
+      <div>
         <PageContainer width="wide">
           <PageHeader
             badges={

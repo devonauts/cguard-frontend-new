@@ -10,7 +10,6 @@ import QuizManager from "./components/QuizManager";
 import AssignGuardsPanel from "./components/AssignGuardsPanel";
 
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -132,7 +131,7 @@ export default function TrainingCourseDetailPage() {
   if (loading) {
     return (
       <AppLayout>
-        <PageContainer className="p-4 sm:p-6" width="wide">
+        <PageContainer width="wide">
           <SkeletonCards count={4} />
         </PageContainer>
       </AppLayout>
@@ -142,7 +141,7 @@ export default function TrainingCourseDetailPage() {
   if (!course) {
     return (
       <AppLayout>
-        <PageContainer className="p-4">
+        <PageContainer>
           <EmptyState
             description={t("ui.TrainingCourseDetailPage.elCursoQueBuscasNo")}
             icon={<GraduationCap />}
@@ -158,16 +157,8 @@ export default function TrainingCourseDetailPage() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: "Panel de control", path: "/dashboard" },
-          { label: "Entrenamiento", path: "/training/courses" },
-          { label: "Cursos", path: "/training/courses" },
-          { label: course.title },
-        ]}
-      />
 
-      <PageContainer className="p-4 sm:p-6" width="wide">
+      <PageContainer width="wide">
         <PageHeader
           actions={
             <Button

@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/sheet";
 import ExportMenu from "@/components/reports/ExportMenu";
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import {
   PageContainer,
   PageHeader,
@@ -143,13 +142,6 @@ export default function ReportPageShell({
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: "Panel de control", path: "/dashboard" },
-          { label: "Reportes", path: "/reports" },
-          { label: breadcrumb || title },
-        ]}
-      />
 
       <PageContainer width="wide">
         {/* ── Cabecera ── */}

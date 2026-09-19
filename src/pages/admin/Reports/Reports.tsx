@@ -112,7 +112,7 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
 
   return (
     <AppLayout>
-      <PageContainer className="p-4 lg:p-8" width="wide">
+      <PageContainer width="wide">
         {/* ── Hero ── */}
         <PageHeader
           actions={searchField}

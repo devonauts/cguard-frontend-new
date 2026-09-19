@@ -136,7 +136,7 @@ export default function SystemLogs() {
 
   return (
     <AppLayout>
-      <PageContainer width="wide" className="px-4 pt-4 sm:px-6 sm:pt-6">
+      <PageContainer width="wide" className="pt-4 sm:pt-6">
         <PageHeader
           icon={<ScrollText />}
           title={t("ui.SystemLogs.registrosDelSistema")}

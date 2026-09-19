@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -184,12 +183,6 @@ export default function InspectionTemplatesPage() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: "Patrulla vehicular", path: "/vehicle-patrol" },
-          { label: "Plantillas de inspección" },
-        ]}
-      />
       <PageContainer>
         <PageHeader
           actions={

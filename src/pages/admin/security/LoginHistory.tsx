@@ -97,7 +97,7 @@ export default function LoginHistory() {
 
   return (
     <AppLayout>
-      <PageContainer className="px-4 pt-4 sm:px-6 sm:pt-6" width="wide">
+      <PageContainer className="pt-4 sm:pt-6" width="wide">
         <PageHeader
           badges={
             !primeraCarga ? (

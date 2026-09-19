@@ -7,7 +7,6 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams } from "react-router-dom";
 
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -916,23 +915,8 @@ export default function NewAdminUserPage() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          {
-            label: t("adminOfficeUsers.newUser.breadcrumb.dashboard", {
-              defaultValue: "Panel de control",
-            }),
-            path: "/dashboard",
-          },
-          {
-            label: t("adminOfficeUsers.newUser.breadcrumb.new", {
-              defaultValue: "Nuevo Usuario",
-            }),
-          },
-        ]}
-      />
 
-      <PageContainer width="wide" className="p-4">
+      <PageContainer width="wide">
         <PageHeader
           icon={<UserPlus />}
           title={

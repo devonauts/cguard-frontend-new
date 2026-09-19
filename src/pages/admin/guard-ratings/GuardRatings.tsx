@@ -29,7 +29,6 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import guardRatingService, {
   GuardRatingRecord,
 } from "@/lib/api/guardRatingService";
@@ -180,13 +179,7 @@ export default function GuardRatings() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: "Panel de control", path: "/dashboard" },
-          { label: t("sidebar.control-de-calidad", "Control de Calidad") },
-        ]}
-      />
-      <PageContainer className="p-6" width="wide">
+      <PageContainer width="wide">
         <PageHeader
           icon={<Star />}
           subtitle={t("ui.GuardRatings.calificacionesDeLosClientesHacia")}

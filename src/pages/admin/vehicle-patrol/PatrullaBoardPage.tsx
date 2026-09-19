@@ -29,7 +29,6 @@ import {
 import PatrullaEnVivo from "./PatrullaEnVivo";
 
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import {
   PageContainer,
@@ -244,7 +243,6 @@ export default function PatrullaBoardPage() {
 
   return (
     <AppLayout>
-      <Breadcrumb items={[{ label: "Patrulla vehicular" }]} />
       <PageContainer width="wide">
         <PageHeader
           icon={<Car />}

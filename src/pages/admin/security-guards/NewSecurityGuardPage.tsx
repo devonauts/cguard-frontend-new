@@ -16,7 +16,6 @@ import {
 import { toast } from "sonner";
 
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { PageContainer, PageHeader, Section } from "@/components/kit";
 import { UserPlus } from "lucide-react";
@@ -666,12 +665,6 @@ export default function NewSecurityGuardPage() {
   return (
     <AppLayout>
       <PageContainer width="wide">
-        <Breadcrumb
-          items={[
-            { label: t("guards.new.breadcrumb.dashboard"), path: "/dashboard" },
-            { label: t("guards.new.title") },
-          ]}
-        />
 
         <PageHeader
           icon={<UserPlus />}

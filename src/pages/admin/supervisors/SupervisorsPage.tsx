@@ -381,22 +381,22 @@ export default function SupervisorsPage() {
 
   return (
     <AppLayout>
-      <div className="p-4 sm:p-6">
+      <div>
         <PageContainer width="wide">
           <PageHeader
             actions={
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => navigate("/supervisor-positions")}
-                >
-                  <MapPin className="mr-2 h-4 w-4" /> Puestos
-                </Button>
-                <Button variant="brand" onClick={() => setOpen(true)}>
-                  <Plus className="mr-2 h-4 w-4" />{" "}
-                  {t("ui.SupervisorsPage.nuevoSupervisor")}{" "}
-                </Button>
-              </div>
+              <>
+              <Button
+                variant="outline"
+                onClick={() => navigate("/supervisor-positions")}
+              >
+                <MapPin className="mr-2 h-4 w-4" /> Puestos
+              </Button>
+              <Button variant="brand" onClick={() => setOpen(true)}>
+                <Plus className="mr-2 h-4 w-4" />{" "}
+                {t("ui.SupervisorsPage.nuevoSupervisor")}{" "}
+              </Button>
+              </>
             }
             icon={<ShieldCheck />}
             subtitle={t(

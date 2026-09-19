@@ -1,6 +1,9 @@
 import React from "react";
 import { ChevronRight } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
+import { migaDeRuta } from "@/lib/migaDeRuta";
 
 interface BreadcrumbItem {
   label: string;
@@ -14,15 +17,30 @@ interface BreadcrumbProps {
 
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className }) => {
   const location = useLocation();
+  const { t } = useTranslation();
 
-  // Si no se pasan items, generamos a partir de la URL actual
-  const paths = location.pathname.split("/").filter(Boolean);
-  const generatedItems =
-    items ||
-    paths.map((segment, index) => ({
-      label: segment.charAt(0).toUpperCase() + segment.slice(1),
-      path: "/" + paths.slice(0, index + 1).join("/"),
-    }));
+  /* Sin `items`, la miga sale del MENÚ — ver `migaDeRuta`. Antes se fabricaba
+     capitalizando los trozos de la URL, que es como el inquilino acababa
+     leyendo «Back-office» o «Post-sites»: nombres de carpeta, no de pantallas.
+     Ver la regla de la casa sobre la jerga en el texto que ve el inquilino. */
+  const derivados = React.useMemo(
+    () =>
+      migaDeRuta(location.pathname).map((m) => ({
+        label:
+          m.claves.reduce(
+            (hallado, clave) =>
+              hallado || (t(clave, { defaultValue: "" }) as string),
+            "",
+          ) || m.respaldo,
+        path: m.path,
+      })),
+    [location.pathname, t],
+  );
+  const generatedItems = items || derivados;
+
+  // Una sola miga es la página donde ya estamos: no dice nada que el
+  // encabezado no diga, y ocupa una franja entera del teléfono.
+  if (generatedItems.length < 2) return null;
 
   return (
     /* Fondo transparente: la miga va SOBRE el lienzo de la app y deja ver los
@@ -40,13 +58,22 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className }) => {
 
           return (
             <li key={index} className="flex items-center">
-              {!isLast ? (
+              {/* Enlace SÓLO si hay a dónde ir. «Programador» o «Nómina» son
+                  desplegables del menú, no pantallas: con `to="#"` React Router
+                  lo resolvía contra la ruta actual y el enlace recargaba la
+                  misma página. Un enlace que no lleva a ninguna parte es peor
+                  que un texto. */}
+              {!isLast && item.path ? (
                 <Link
                   className="cg-focus rounded-full px-1 font-medium text-[color:var(--ink-soft)] transition-colors duration-200 hover:text-[color:var(--brand-text)] motion-reduce:transition-none"
-                  to={item.path || "#"}
+                  to={item.path}
                 >
                   {item.label}
                 </Link>
+              ) : !isLast ? (
+                <span className="px-1 font-medium text-[color:var(--ink-soft)]">
+                  {item.label}
+                </span>
               ) : (
                 <span className="px-1 font-semibold text-[color:var(--ink)]">
                   {item.label}

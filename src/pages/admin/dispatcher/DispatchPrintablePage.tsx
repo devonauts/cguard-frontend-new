@@ -3,7 +3,6 @@ import { clientDisplayName } from "@/lib/clientName";
 import { useTranslation } from "react-i18next";
 import { useParams, Link } from "react-router-dom";
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -922,14 +921,8 @@ export default function DispatchDetailsPage() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: "Panel de control", path: "/dashboard" },
-          { label: "Detalle Incidente" },
-        ]}
-      />
 
-      <PageContainer width="wide" className="px-6 pt-4">
+      <PageContainer width="wide" className="pt-4">
         <PageHeader
           icon={<Printer />}
           title={i18n.t("comun.detalleDelIncidente")}

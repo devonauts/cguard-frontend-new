@@ -914,15 +914,6 @@ export default function SecurityGuardsPage() {
     <AppLayout>
       {/* Page Header */}
       <div className="px-4 pt-5 sm:px-6">
-        <Breadcrumb
-          items={[
-            {
-              label: t("sidebar.panel", "Panel de control"),
-              path: "/dashboard",
-            },
-            { label: t("guards.list.pageTitle", "Vigilantes") },
-          ]}
-        />
         <PageHeader
           className="mt-2"
           icon={<ShieldCheck />}

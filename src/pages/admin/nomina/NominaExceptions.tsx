@@ -327,7 +327,7 @@ export default function NominaExceptions() {
 
   return (
     <AppLayout>
-      <PageContainer className="p-4 sm:p-6" width="wide">
+      <PageContainer width="wide">
         <PageHeader
           icon={<AlertTriangle />}
           subtitle={t("ui.NominaExceptions.desviacionesDeAsistenciaRegistroE")}

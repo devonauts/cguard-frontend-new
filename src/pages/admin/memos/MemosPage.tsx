@@ -526,7 +526,7 @@ export default function MemosPage() {
 
   return (
     <AppLayout>
-      <div className="px-4 py-6 sm:px-6 lg:px-8">
+      <div className="py-6">
         <PageContainer width="wide">
           <PageHeader
             icon={<Megaphone />}

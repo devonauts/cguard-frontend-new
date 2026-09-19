@@ -40,7 +40,6 @@ import {
   CheckCircle2,
   XCircle,
 } from "lucide-react";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import {
   PageContainer,
   PageHeader,
@@ -208,13 +207,7 @@ export default function ShiftStatus() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: "Panel de control", path: "/dashboard" },
-          { label: t("ui.ShiftStatus.estadoDelTurno", "Estado del Turno") },
-        ]}
-      />
-      <PageContainer width="wide" className="px-4 lg:px-6">
+      <PageContainer width="wide">
         <PageHeader
           icon={<ListChecks />}
           title={t("ui.ShiftStatus.estadoDeTurnos")}

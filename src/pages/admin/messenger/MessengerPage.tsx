@@ -11,7 +11,6 @@ import { useTranslation } from "react-i18next";
 
 import { MessageSquareText, Send, Plus, Search, Loader2, X, Check, CheckCheck, Paperclip, Play, Trash2, Users, Mic, UserPlus, RefreshCw, UserCircle2, ArrowLeft } from "lucide-react";
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import {
   PageHeader,
   Modal,
@@ -441,13 +440,6 @@ export default function MessengerPage({
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: "Panel de control", path: "/dashboard" },
-          { label: t("sidebar.mensajeria.label", "Mensajería") },
-          { label: pageTitle },
-        ]}
-      />
       <div className="p-4 lg:p-6 space-y-4">
         <PageHeader
           actions={

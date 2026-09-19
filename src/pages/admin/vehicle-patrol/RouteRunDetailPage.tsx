@@ -43,7 +43,6 @@ import {
 } from "./runLabels";
 
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -364,13 +363,6 @@ export default function RouteRunDetailPage() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: "Patrulla vehicular", path: "/vehicle-patrol" },
-          { label: "Historial", path: "/vehicle-patrol/history" },
-          { label: titulo },
-        ]}
-      />
       <PageContainer width="wide">
         <PageHeader
           actions={abierta ? (

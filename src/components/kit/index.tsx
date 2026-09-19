@@ -219,7 +219,15 @@ export function PageContainer({
         : "max-w-5xl";
 
   return (
-    <div className={cn("mx-auto w-full space-y-6 pb-16", w, className)}>
+    /* EL MARGEN LATERAL VIVE AQUÍ, y sólo aquí. Antes lo ponía cada página por
+       su cuenta —`p-4 sm:p-6`, `px-4 lg:px-6`, `px-6 pt-4`, `p-6`…— y el
+       resultado medido en un teléfono iba de 0 a 24 px según en cuál estuvieras:
+       /stations y /alarm/queue pegadas al filo, /visitors a 24, el resto a 16.
+       Como `cn` es tailwind-merge, una página que aún pase el suyo lo sigue
+       ganando; pero ya no hace falta que lo pase. */
+    <div
+      className={cn("mx-auto w-full space-y-6 px-4 pb-16 sm:px-6", w, className)}
+    >
       {children}
     </div>
   );
@@ -287,7 +295,7 @@ export function PageHeader({
           </div>
         </div>
         {actions && (
-          <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <div className="cg-acciones flex flex-wrap items-center gap-2 sm:w-auto sm:shrink-0">
             {actions}
           </div>
         )}
@@ -361,7 +369,7 @@ export function Section({
                horizontal, y un padre que se niega a encoger le da un ancho
                imposible: el riel deja de recortar y arrastra la página entera
                de lado. */
-            <div className="flex min-w-0 max-w-full flex-wrap items-center gap-3 sm:shrink-0">
+            <div className="cg-acciones flex min-w-0 max-w-full flex-wrap items-center gap-3 sm:w-auto sm:shrink-0">
               {action}
             </div>
           )}
@@ -801,6 +809,36 @@ export function Segmented<T extends string>({
      expande: en el escritorio el riel debe medir lo que mide su contenido. */
   expandir?: boolean;
 }) {
+  const esTelefono = useEsTelefono();
+  const riel = React.useRef<HTMLDivElement | null>(null);
+  const [cabe, setCabe] = React.useState(false);
+
+  /* En el teléfono el riel se expande SI CABE, y eso se mide, no se supone: con
+     dos pestañas sobra medio ancho a la derecha y se lee como si la barra
+     estuviera mal puesta; con siete no caben y estirarlas recortaría las
+     etiquetas, así que ahí sigue desplazándose. La comprobación es estable:
+     cuando se expande, el contenido pasa a medir exactamente el ancho visible,
+     así que la condición se mantiene y no oscila. */
+  React.useLayoutEffect(() => {
+    const el = riel.current;
+
+    if (!el || !esTelefono) {
+      setCabe(false);
+
+      return;
+    }
+    const medir = () => setCabe(el.scrollWidth <= el.clientWidth + 1);
+
+    medir();
+    const ro = new ResizeObserver(medir);
+
+    ro.observe(el);
+
+    return () => ro.disconnect();
+  }, [esTelefono, options.length]);
+
+  const expandido = expandir ?? cabe;
+
   return (
     /* Con cinco opciones el riel medía ~500 px y ensanchaba la página entera
        en el teléfono. Se desplaza por dentro en vez de crecer, igual que
@@ -809,9 +847,10 @@ export function Segmented<T extends string>({
        porque dentro de un flex el mínimo por defecto es el del CONTENIDO.
        Con dos o tres opciones no cambia absolutamente nada. */
     <div
+      ref={riel}
       className={cn(
         "glass-sunken min-w-0 max-w-full items-center gap-1 overflow-x-auto p-1",
-        expandir ? "flex w-full" : "inline-flex",
+        expandido ? "flex w-full" : "inline-flex",
         className,
       )}
       role="tablist"
@@ -825,7 +864,7 @@ export function Segmented<T extends string>({
             aria-selected={activo}
             className={cn(
               "cg-focus min-h-8 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all duration-200 sm:min-h-0",
-              expandir ? "flex-1" : "shrink-0",
+              expandido ? "flex-1" : "shrink-0",
             )}
             role="tab"
             style={
@@ -958,7 +997,10 @@ export function Toolbar({
 }) {
   return (
     <div
-      className={cn("glass flex flex-wrap items-center gap-2 p-2", className)}
+      className={cn(
+        "cg-acciones glass flex flex-wrap items-center gap-2 p-2",
+        className,
+      )}
     >
       {children}
     </div>

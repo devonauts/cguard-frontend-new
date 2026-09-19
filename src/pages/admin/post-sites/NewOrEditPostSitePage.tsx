@@ -9,7 +9,6 @@ import { clientService } from "@/lib/api/clientService";
 import { MapPin, Pencil } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 
 import { useTranslation } from "react-i18next";
 
@@ -69,20 +68,7 @@ export default function NewOrEditPostSitePage() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          {
-            label: t("postSites.postsitdash", "Panel de control"),
-            path: "/dashboard",
-          },
-          {
-            label: id
-              ? t("postSites.editPostSite", "Editar Puesto de seguridad")
-              : t("postSites.newPostSite", "Nuevo Puesto de seguridad"),
-          },
-        ]}
-      />
-      <section className="p-4">
+      <section>
         <PageContainer width="narrow">
           <PageHeader
             icon={id ? <Pencil /> : <MapPin />}

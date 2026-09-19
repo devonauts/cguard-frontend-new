@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -855,14 +854,8 @@ export default function ClientesPage() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: t("clients.breadcrumb.dashboard"), path: "/dashboard" },
-          { label: t("clients.breadcrumb.clients") },
-        ]}
-      />
 
-      <section className="p-4">
+      <section>
         <PageContainer width="wide">
           <PageHeader
             icon={<Users />}

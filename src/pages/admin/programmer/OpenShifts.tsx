@@ -39,7 +39,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import {
   PageContainer,
   PageHeader,
@@ -262,13 +261,7 @@ export default function OpenShifts() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: "Panel de control", path: "/dashboard" },
-          { label: "Turno Abierto" },
-        ]}
-      />
-      <PageContainer className="px-4 lg:px-6" width="wide">
+      <PageContainer width="wide">
         <PageHeader
           icon={<CalendarClock />}
           subtitle={t("ui.OpenShifts.turnosSinVigilanteAsignadoAsignalos")}

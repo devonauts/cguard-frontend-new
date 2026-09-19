@@ -175,7 +175,7 @@ export function AnalyticsShell({
 
   return (
     <AppLayout>
-      <PageContainer className="p-4 sm:p-6" width="wide">
+      <PageContainer width="wide">
         <PageHeader
           actions={
             <>

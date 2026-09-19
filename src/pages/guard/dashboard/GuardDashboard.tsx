@@ -157,7 +157,7 @@ export default function GuardDashboard() {
   };
 
   return (
-    <PageContainer className="px-4 pt-4 sm:px-6 sm:pt-6" width="narrow">
+    <PageContainer className="pt-4 sm:pt-6" width="narrow">
       <PageHeader
         badges={
           <StatusBadge tone={isClockedIn ? "green" : "slate"}>

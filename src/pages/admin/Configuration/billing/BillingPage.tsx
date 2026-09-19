@@ -338,7 +338,7 @@ export default function BillingPage() {
 
   return (
     <AppLayout>
-      <PageContainer className="p-4 sm:p-6" width="narrow">
+      <PageContainer width="narrow">
         <PageHeader
           badges={
             !loading && data ? (

@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -368,13 +367,7 @@ export default function GlobalInventoryPage() {
   return (
     <AppLayout>
       <div ref={containerRef}>
-        <PageContainer width="wide" className="px-4 py-6">
-          <Breadcrumb
-            items={[
-              { label: "Panel de control", path: "/dashboard" },
-              { label: "Inventario Global" },
-            ]}
-          />
+        <PageContainer width="wide" className="py-6">
 
           <PageHeader
             icon={<Package />}

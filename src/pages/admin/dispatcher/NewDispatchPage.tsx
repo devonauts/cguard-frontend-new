@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { clientDisplayName } from "@/lib/clientName";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useWatch } from "react-hook-form";
 import {
@@ -1716,14 +1715,8 @@ export default function NewDispatchPage() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: "Panel de control", path: "/dashboard" },
-          { label: "Nuevo Incidente" },
-        ]}
-      />
 
-      <PageContainer width="wide" className="px-6 pt-4">
+      <PageContainer width="wide" className="pt-4">
         <PageHeader
           icon={<ClipboardPlus />}
           title={t("ui.NewDispatchPage.nuevoIncidente")}

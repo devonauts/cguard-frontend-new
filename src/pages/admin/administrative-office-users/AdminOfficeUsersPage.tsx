@@ -3,7 +3,6 @@ import { clientDisplayName } from "@/lib/clientName";
 import { ApiService } from "@/services/api/apiService";
 import userService from "@/lib/api/userService";
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -789,23 +788,8 @@ export default function AdminOfficeUsersPage() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          {
-            label: t("adminOfficeUsers.breadcrumb.dashboard", {
-              defaultValue: "Panel de control",
-            }),
-            path: "/dashboard",
-          },
-          {
-            label: t("adminOfficeUsers.title", {
-              defaultValue: "Usuarios de Oficina Administrativa",
-            }),
-          },
-        ]}
-      />
 
-      <PageContainer width="wide" className="p-4">
+      <PageContainer width="wide">
         <PageHeader
           icon={<Users />}
           title={t("adminOfficeUsers.title", {

@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState, useRef, useCallback } from "react";
 
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -687,27 +686,8 @@ export default function EditAdminUserPage() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          {
-            label: t("adminOfficeUsers.editUser.breadcrumb.dashboard", {
-              defaultValue: "Panel de control",
-            }),
-            path: "/dashboard",
-          },
-          {
-            label: id
-              ? t("adminOfficeUsers.editUser.breadcrumb.edit", {
-                  defaultValue: "Editar Usuario",
-                })
-              : t("adminOfficeUsers.editUser.breadcrumb.new", {
-                  defaultValue: "Nuevo Usuario",
-                }),
-          },
-        ]}
-      />
 
-      <PageContainer width="wide" className="p-4">
+      <PageContainer width="wide">
         <PageHeader
           icon={<UserCog />}
           title={

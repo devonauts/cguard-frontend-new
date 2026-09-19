@@ -2,7 +2,6 @@ import { useMemo, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -293,14 +292,8 @@ export default function VehiclesPage() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: "Panel de control", path: "/dashboard" },
-          { label: "Vehículos" },
-        ]}
-      />
 
-      <PageContainer width="wide" className="px-4 py-6 sm:px-6">
+      <PageContainer width="wide" className="py-6">
         <PageHeader
           icon={<Car />}
           title={t("ui.Vehicles.vehiculos2", "Vehículos")}

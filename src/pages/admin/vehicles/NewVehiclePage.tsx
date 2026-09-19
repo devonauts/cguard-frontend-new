@@ -7,7 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import {
   PageContainer,
   PageHeader,
@@ -227,14 +226,8 @@ export default function NewVehiclePage() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: "Panel de control", path: "/dashboard" },
-          { label: t("ui.Vehicles.nuevoVehiculo", "Nuevo vehículo") },
-        ]}
-      />
 
-      <section className="p-6">
+      <section>
         <PageContainer width="narrow">
           <PageHeader
             icon={<Car />}

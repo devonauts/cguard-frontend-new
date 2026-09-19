@@ -296,7 +296,7 @@ export default function TaskTracking() {
 
   return (
     <AppLayout>
-      <div className="p-4 sm:p-6">
+      <div>
         <PageContainer width="wide">
           <PageHeader
             actions={

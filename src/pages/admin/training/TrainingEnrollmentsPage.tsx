@@ -17,7 +17,6 @@ import {
 } from "./trainingConstants";
 
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { MeterBar } from "@/components/charts";
 import {
@@ -117,13 +116,7 @@ export default function TrainingEnrollmentsPage() {
   if (!canRead) {
     return (
       <AppLayout>
-        <Breadcrumb
-          items={[
-            { label: "Panel de control", path: "/dashboard" },
-            { label: "Entrenamiento" },
-          ]}
-        />
-        <PageContainer className="p-4 sm:p-6" width="wide">
+        <PageContainer width="wide">
           <EmptyState
             description={t("ui.TrainingEnrollmentsPage.noTienesPermisoParaVer")}
             icon={<Users />}
@@ -235,20 +228,8 @@ export default function TrainingEnrollmentsPage() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: "Panel de control", path: "/dashboard" },
-          { label: "Entrenamiento", path: "/training/courses" },
-          { label: "Cursos", path: "/training/courses" },
-          {
-            label: course?.title ?? "Curso",
-            path: courseId ? `/training/courses/${courseId}` : undefined,
-          },
-          { label: "Progreso" },
-        ]}
-      />
 
-      <PageContainer className="p-4 sm:p-6" width="wide">
+      <PageContainer width="wide">
         <PageHeader
           actions={
             <>

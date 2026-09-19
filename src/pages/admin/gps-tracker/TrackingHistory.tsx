@@ -18,7 +18,6 @@ import {
 import { Button } from "@/components/ui/button";
 import ExportMenu from "@/components/reports/ExportMenu";
 import { exportMatrix, type ExportFormat } from "@/lib/export/reportExport";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import { rangeBounds } from "@/pages/admin/Reports/reportFormat";
 import {
   PageContainer,
@@ -237,18 +236,7 @@ export default function TrackingHistoryPage() {
 
   return (
     <AppLayout>
-      <PageContainer className="p-4 sm:p-6" width="wide">
-        <Breadcrumb
-          items={[
-            { label: "Panel de control", path: "/dashboard" },
-            {
-              label: t(
-                "sidebar.rastreador.historial",
-                "Historial de seguimiento",
-              ),
-            },
-          ]}
-        />
+      <PageContainer width="wide">
 
         <PageHeader
           actions={<ExportMenu disabled={!points.length} onExport={exportar} />}

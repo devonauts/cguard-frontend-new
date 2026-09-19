@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import ClientForm, { Category } from "./ClientForm";
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import { usePermissions } from "@/hooks/usePermissions";
 import { useTranslation } from "react-i18next";
 import MobileCardList from "@/components/responsive/MobileCardList";
@@ -36,12 +35,6 @@ export default function NewOrEditClientPage() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: t("clients.breadcrumb.dashboard"), path: "/dashboard" },
-          { label: id ? t("clients.editClient") : t("clients.newClient") },
-        ]}
-      />
       <PageContainer>
         <PageHeader
           icon={id ? <Building2 /> : <UserPlus />}

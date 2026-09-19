@@ -173,11 +173,40 @@ export default function VigiaWidget() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+  /* La burbuja se APARTA mientras se desplaza la página. Flota sobre la esquina
+     derecha de las listas, que es justo donde viven los estados («Sin cubrir»,
+     «Activo»), y en una pantalla de teléfono no hay ningún sitio donde no tape
+     algo. Apartarla mientras el dedo recorre la lista y devolverla al soltar es
+     lo que hace cualquier botón flotante de iOS; el gesto para invocarla es
+     tocarla, no leerla, así que no se pierde nada. */
+  const [desplazando, setDesplazando] = useState(false);
   const hiloGuardado = useRef(cargarHilo());
   const [msgs, setMsgs] = useState<Msg[]>(() => hiloGuardado.current.msgs);
   // El id del hilo abierto: acompaña cada mensaje al servidor.
   const [hiloId, setHiloId] = useState<string>(() => hiloGuardado.current.id);
   const [texto, setTexto] = useState("");
+
+  useEffect(() => {
+    if (open) return;
+    const lienzo = document.querySelector("main");
+
+    if (!lienzo) return;
+    let temporizador: ReturnType<typeof setTimeout> | undefined;
+    const alDesplazar = () => {
+      setDesplazando(true);
+      if (temporizador) clearTimeout(temporizador);
+      // 420 ms: lo justo para que un desplazamiento con inercia no la haga
+      // parpadear entre empujón y empujón.
+      temporizador = setTimeout(() => setDesplazando(false), 420);
+    };
+
+    lienzo.addEventListener("scroll", alDesplazar, { passive: true });
+
+    return () => {
+      lienzo.removeEventListener("scroll", alDesplazar);
+      if (temporizador) clearTimeout(temporizador);
+    };
+  }, [open]);
   const [ocupado, setOcupado] = useState(false);
   const [propuesta, setPropuesta] = useState<Propuesta | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
@@ -575,6 +604,7 @@ export default function VigiaWidget() {
           }}
           onClick={() => setOpen(true)}
           className="vigia-burbuja cg-focus transition-transform hover:scale-105"
+          data-apartada={desplazando || undefined}
           /* `data-flotante`: así `apartarDelWidget` puede MEDIR lo que ocupa en
              vez de suponerlo. La onda animada hace que su caja real sean 83 px
              de alto arrancando a 159 del borde, bastante más que los 56 de la
@@ -594,6 +624,9 @@ export default function VigiaWidget() {
                estados («Sin cubrir», «Activo»). Encogido tapa un tercio menos
                y sigue siendo un blanco de 58 px, por encima del mínimo. */
             @media (max-width: 767.98px) { .vigia-burbuja { transform: scale(0.78); transform-origin: 100% 100%; } }
+            .vigia-burbuja { transition: opacity .22s ease, transform .22s ease; }
+            .vigia-burbuja[data-apartada] { opacity: .18; pointer-events: none; }
+            @media (prefers-reduced-motion: reduce) { .vigia-burbuja { transition: none } }
           `}</style>
           <span className="relative block">
             <svg aria-hidden height={83} viewBox="0 0 48 54" width={74}>

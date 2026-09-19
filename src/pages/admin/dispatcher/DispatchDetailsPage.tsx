@@ -963,14 +963,8 @@ export default function DispatchDetailsPage() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: "Panel de control", path: "/dashboard" },
-          { label: "Detalle Incidente" },
-        ]}
-      />
 
-      <PageContainer className="px-6 pt-4" width="wide">
+      <PageContainer className="pt-4" width="wide">
         <PageHeader
           icon={<FileSearch />}
           subtitle={i18n.t('ui.DispatchDetailsPage.informacionCompletaComentariosYVigilantes')}

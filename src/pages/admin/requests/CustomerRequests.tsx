@@ -37,7 +37,6 @@ import {
   MailOpen,
   Layers,
 } from "lucide-react";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import customerRequestService, {
   CustomerRequestRecord,
 } from "@/lib/api/customerRequestService";
@@ -159,15 +158,7 @@ export default function CustomerRequests() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: "Panel de control", path: "/dashboard" },
-          {
-            label: t("sidebar.solicitudes-clientes", "Solicitudes de clientes"),
-          },
-        ]}
-      />
-      <PageContainer width="wide" className="p-4 sm:p-6">
+      <PageContainer width="wide">
         <PageHeader
           icon={<Inbox />}
           title={t("sidebar.solicitudes-clientes", "Solicitudes de clientes")}

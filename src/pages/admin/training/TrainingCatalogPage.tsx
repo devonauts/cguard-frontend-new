@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import { categoryLabel, levelLabel } from "./trainingConstants";
 
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { usePermissions } from "@/hooks/usePermissions";
 import {
@@ -59,13 +58,7 @@ export default function TrainingCatalogPage() {
   if (!canRead) {
     return (
       <AppLayout>
-        <Breadcrumb
-          items={[
-            { label: "Panel de control", path: "/dashboard" },
-            { label: "Entrenamiento" },
-          ]}
-        />
-        <PageContainer className="p-4 sm:p-6" width="wide">
+        <PageContainer width="wide">
           <EmptyState
             description={t("ui.TrainingCatalogPage.noTienesPermisoParaVer")}
             icon={<Lock />}
@@ -81,20 +74,8 @@ export default function TrainingCatalogPage() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: "Panel de control", path: "/dashboard" },
-          { label: "Entrenamiento", path: "/training/courses" },
-          {
-            label: t(
-              "sidebar.entrenamiento.training-catalog",
-              "Catálogo de la plataforma",
-            ),
-          },
-        ]}
-      />
 
-      <PageContainer className="p-4 sm:p-6" width="wide">
+      <PageContainer width="wide">
         <PageHeader
           icon={<GraduationCap />}
           subtitle={t("ui.TrainingCatalogPage.cursosAddonOtorgadosATu")}

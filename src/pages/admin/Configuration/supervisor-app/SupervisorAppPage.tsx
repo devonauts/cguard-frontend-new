@@ -205,7 +205,7 @@ export default function SupervisorAppPage() {
         navKey="configuracion"
         title={t("ui.SupervisorApp.titulo", "App del supervisor")}
       >
-        <PageContainer className="p-4 lg:p-8" width="wide">
+        <PageContainer width="wide">
           <PageHeader
             actions={
               puedeEditar ? (

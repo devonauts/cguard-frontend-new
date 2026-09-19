@@ -118,7 +118,7 @@ export default function NominaDashboard() {
 
   return (
     <AppLayout>
-      <PageContainer className="p-4 sm:p-6" width="wide">
+      <PageContainer width="wide">
         <PageHeader
           actions={
             <Button disabled={loading} variant="brand" onClick={load}>

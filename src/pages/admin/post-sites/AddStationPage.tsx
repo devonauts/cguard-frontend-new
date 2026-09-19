@@ -479,7 +479,7 @@ export default function AddStationPage() {
         t("postSites.postsite", "Post Site")
       }
     >
-      <div className="p-4">
+      <div>
         <PageContainer width="narrow">
           <Link
             className="cg-focus inline-flex items-center gap-1 rounded text-sm"

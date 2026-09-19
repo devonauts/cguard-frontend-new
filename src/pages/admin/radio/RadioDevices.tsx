@@ -289,7 +289,7 @@ export default function RadioDevices() {
 
   return (
     <AppLayout>
-      <PageContainer className="px-4 sm:px-6" width="wide">
+      <PageContainer width="wide">
         <PageHeader
           actions={
             <Button variant="brand" onClick={openNew}>

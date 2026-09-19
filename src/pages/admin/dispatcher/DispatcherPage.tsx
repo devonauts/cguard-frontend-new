@@ -10,7 +10,6 @@ import { clientDisplayName } from "@/lib/clientName";
 import { getStoredTenantBranding } from "@/lib/tenantBranding";
 import { Link, useNavigate } from "react-router-dom";
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -1247,14 +1246,8 @@ export default function DispatcherPage() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: t("dispatcher.breadcrumbDashboard"), path: "/dashboard" },
-          { label: t("dispatcher.breadcrumbList") },
-        ]}
-      />
 
-      <PageContainer width="wide" className="p-6">
+      <PageContainer width="wide">
         <PageHeader
           icon={<Siren />}
           title={t("dispatcher.breadcrumbList")}

@@ -16,7 +16,6 @@ import { toast } from "sonner";
 import GuardTypeahead, { GuardPick } from "./GuardTypeahead";
 
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -481,14 +480,14 @@ export default function Coverage() {
             return (
               <div
                 key={e.shiftId}
-                /* Envuelve en el teléfono: tres botones que no parten
-                   («Trasladar», «Registrar entrada», «Novedad») suman 340 px y
-                   no caben junto al nombre en una columna de 358. Sin
-                   `flex-wrap` la fila no encoge — estira la tarjeta entera y se
-                   sale de la pantalla. */
-                className="glass-sunken flex flex-wrap items-center gap-2 px-3 py-2"
+                /* En el teléfono el nombre va arriba y los botones debajo, en
+                   su propia fila: tres botones que no parten («Trasladar»,
+                   «Registrar entrada», «Novedad») suman 340 px y no caben junto
+                   al nombre en una columna de 318. A partir de `sm` vuelven a la
+                   misma línea, que es donde sí caben. */
+                className="glass-sunken px-3 py-2 sm:flex sm:items-center sm:gap-2"
               >
-                <div className="w-full min-w-0 sm:w-auto sm:flex-1">
+                <div className="min-w-0 sm:flex-1">
                   <p className="truncate text-sm font-medium">
                     {e.fullName || "Vigilante"}
                   </p>
@@ -512,53 +511,59 @@ export default function Coverage() {
                     </span>
                   </p>
                 </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    setTransferFor({
-                      ...e,
-                      stationId: st.stationId,
-                      stationName: st.stationName,
-                    });
-                    setToStationId("");
-                    setNote("");
-                  }}
-                >
-                  <ArrowRightLeft className="mr-1 size-3.5" /> Trasladar
-                </Button>
-                {!here && (
-                  <>
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        setEntradaManualFor({
-                          ...e,
-                          stationId: st.stationId,
-                          stationName: st.stationName,
-                        });
-                        setMotivoManual("");
-                      }}
-                    >
-                      <UserCheck className="mr-1 size-3.5" /> Registrar entrada
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => {
-                        setAbsenceFor({
-                          ...e,
-                          stationId: st.stationId,
-                          stationName: st.stationName,
-                        });
-                        setReason("permiso_con_sueldo");
-                        setNote("");
-                      }}
-                    >
-                      Novedad
-                    </Button>
-                  </>
-                )}
+                {/* `cg-acciones`: en el teléfono los botones CRECEN hasta
+                    llenar su línea en vez de quedarse pegados a la izquierda
+                    con el ancho de su texto. */}
+                <div className="cg-acciones mt-2 flex flex-wrap items-center gap-2 sm:mt-0 sm:w-auto sm:shrink-0">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setTransferFor({
+                        ...e,
+                        stationId: st.stationId,
+                        stationName: st.stationName,
+                      });
+                      setToStationId("");
+                      setNote("");
+                    }}
+                  >
+                    <ArrowRightLeft className="mr-1 size-3.5" /> Trasladar
+                  </Button>
+                  {!here && (
+                    <>
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          setEntradaManualFor({
+                            ...e,
+                            stationId: st.stationId,
+                            stationName: st.stationName,
+                          });
+                          setMotivoManual("");
+                        }}
+                      >
+                        <UserCheck className="mr-1 size-3.5" /> Registrar
+                        entrada
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => {
+                          setAbsenceFor({
+                            ...e,
+                            stationId: st.stationId,
+                            stationName: st.stationName,
+                          });
+                          setReason("permiso_con_sueldo");
+                          setNote("");
+                        }}
+                      >
+                        Novedad
+                      </Button>
+                    </>
+                  )}
+                </div>
               </div>
             );
           })}
@@ -604,23 +609,17 @@ export default function Coverage() {
     <AppLayout>
       {/* Mismo ancho y mismos márgenes que sus cinco páginas hermanas: sin
           esto, pasar de Cobertura a Turnos abiertos daba un salto de anchura. */}
-      <Breadcrumb
-        items={[
-          { label: "Programador", path: "/admin/programmer/schedule" },
-          { label: "Cobertura" },
-        ]}
-      />
-      <PageContainer className="px-4 lg:px-6" width="wide">
+      <PageContainer width="wide">
         <PageHeader
           actions={
-            <div className="flex flex-wrap items-center gap-2">
+            <>
               <Button onClick={openReplacement}>
                 <UserPlus className="mr-1.5 size-4" /> Reemplazo por vacaciones
               </Button>
               <Button disabled={busy} variant="outline" onClick={load}>
                 <RefreshCw className="mr-1.5 size-4" /> Actualizar
               </Button>
-            </div>
+            </>
           }
           icon={<ShieldCheck />}
           subtitle={

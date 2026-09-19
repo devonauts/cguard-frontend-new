@@ -6,7 +6,6 @@ import { Route as RouteIcon, AlertCircle } from "lucide-react";
 import RouteForm from "./RouteForm";
 
 import AppLayout from "@/layouts/app-layout";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import routeService from "@/lib/api/routeService";
 import {
   PageContainer,
@@ -167,13 +166,7 @@ export default function EditRoutePage() {
   if (loading) {
     return (
       <AppLayout>
-        <Breadcrumb
-          items={[
-            { label: "Panel de control", path: "/dashboard" },
-            { label: "Editar ruta" },
-          ]}
-        />
-        <PageContainer className="p-6" width="wide">
+        <PageContainer width="wide">
           <PageHeader
             icon={<RouteIcon />}
             subtitle={t("ui.EditRoutePage.cargandoRuta")}
@@ -188,13 +181,7 @@ export default function EditRoutePage() {
   if (!routeData) {
     return (
       <AppLayout>
-        <Breadcrumb
-          items={[
-            { label: "Panel de control", path: "/dashboard" },
-            { label: "Editar ruta" },
-          ]}
-        />
-        <PageContainer className="p-6" width="wide">
+        <PageContainer width="wide">
           <PageHeader
             icon={<RouteIcon />}
             title={t("ui.EditRoutePage.editarRuta")}
@@ -217,13 +204,7 @@ export default function EditRoutePage() {
 
   return (
     <AppLayout>
-      <Breadcrumb
-        items={[
-          { label: "Panel de control", path: "/dashboard" },
-          { label: "Editar ruta" },
-        ]}
-      />
-      <PageContainer className="p-6" width="wide">
+      <PageContainer width="wide">
         <PageHeader
           icon={<RouteIcon />}
           subtitle={

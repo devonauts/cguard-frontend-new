@@ -36,7 +36,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import {
   PageContainer,
   PageHeader,
@@ -452,115 +451,109 @@ export default function LiveTrackingPage() {
 
   return (
     <AppLayout>
-      <PageContainer className="p-4 sm:p-6" width="wide">
+      <PageContainer width="wide">
         {/* Dentro del contenedor, como en «Historial de seguimiento»: fuera se
             alineaba con el borde de la ventana y no con la página. */}
-        <Breadcrumb
-          items={[
-            { label: "Panel de control", path: "/dashboard" },
-            { label: "Seguimiento en vivo" },
-          ]}
-        />
 
         <PageHeader
           actions={
-            <div className="flex flex-wrap items-center gap-2">
-              <input
-                aria-label={t("comun.fecha")}
-                className="cg-input cg-focus h-9 px-3 text-sm"
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
-              <Sheet open={openFilter} onOpenChange={setOpenFilter}>
-                <SheetTrigger asChild>
-                  <Button variant="outline">
-                    <Filter className="size-4" />
-                    Filtros
-                  </Button>
-                </SheetTrigger>
+            <>
+            <input
+              aria-label={t("comun.fecha")}
+              className="cg-input cg-focus h-9 px-3 text-sm"
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+            />
+            <Sheet open={openFilter} onOpenChange={setOpenFilter}>
+              <SheetTrigger asChild>
+                <Button variant="outline">
+                  <Filter className="size-4" />
+                  Filtros
+                </Button>
+              </SheetTrigger>
 
-                <SheetContent
-                  className="w-full max-w-[400px] overflow-y-auto sm:max-w-[460px]"
-                  side="right"
-                >
-                  <SheetHeader>
-                    <SheetTitle>Filtros</SheetTitle>
-                  </SheetHeader>
+              <SheetContent
+                className="w-full max-w-[400px] overflow-y-auto sm:max-w-[460px]"
+                side="right"
+              >
+                <SheetHeader>
+                  <SheetTitle>Filtros</SheetTitle>
+                </SheetHeader>
 
-                  <div className="mt-6 space-y-5">
-                    <div className="space-y-2">
-                      <Label>Ruta</Label>
-                      <Select
-                        value={routeFilter}
-                        onValueChange={setRouteFilter}
-                      >
-                        <SelectTrigger>
-                          <SelectValue
-                            placeholder={t("ui.LiveTracking.todasLasRutas")}
-                          />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">
-                            {t("ui.LiveTracking.todasLasRutas")}
+                <div className="mt-6 space-y-5">
+                  <div className="space-y-2">
+                    <Label>Ruta</Label>
+                    <Select
+                      value={routeFilter}
+                      onValueChange={setRouteFilter}
+                    >
+                      <SelectTrigger>
+                        <SelectValue
+                          placeholder={t("ui.LiveTracking.todasLasRutas")}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">
+                          {t("ui.LiveTracking.todasLasRutas")}
+                        </SelectItem>
+                        {routes.map((r) => (
+                          <SelectItem key={r.id} value={String(r.id)}>
+                            {r.name || r.id}
                           </SelectItem>
-                          {routes.map((r) => (
-                            <SelectItem key={r.id} value={String(r.id)}>
-                              {r.name || r.id}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <Checkbox
+                      checked={showAll}
+                      onCheckedChange={(v) => setShowAll(Boolean(v))}
+                    />
+                    <span className="text-sm text-foreground">
+                      {t(
+                        "ui.LiveTracking.mostrarTodasLasRutasNo",
+                        "Mostrar todas las rutas (no solo las del día)",
+                      )}
+                    </span>
+                  </label>
+
+                  <div className="space-y-2 border-t pt-4">
+                    <Label>{t("ui.LiveTracking.personalEnElMapa")}</Label>
                     <label className="flex items-center gap-2 cursor-pointer">
                       <Checkbox
-                        checked={showAll}
-                        onCheckedChange={(v) => setShowAll(Boolean(v))}
+                        checked={verVigilantes}
+                        onCheckedChange={(v) => setVerVigilantes(Boolean(v))}
                       />
                       <span className="text-sm text-foreground">
-                        {t(
-                          "ui.LiveTracking.mostrarTodasLasRutasNo",
-                          "Mostrar todas las rutas (no solo las del día)",
-                        )}
+                        Vigilantes
                       </span>
                     </label>
-
-                    <div className="space-y-2 border-t pt-4">
-                      <Label>{t("ui.LiveTracking.personalEnElMapa")}</Label>
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <Checkbox
-                          checked={verVigilantes}
-                          onCheckedChange={(v) => setVerVigilantes(Boolean(v))}
-                        />
-                        <span className="text-sm text-foreground">
-                          Vigilantes
-                        </span>
-                      </label>
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <Checkbox
-                          checked={verSupervisores}
-                          onCheckedChange={(v) =>
-                            setVerSupervisores(Boolean(v))
-                          }
-                        />
-                        <span className="text-sm text-foreground">
-                          Supervisores
-                        </span>
-                      </label>
-                    </div>
-
-                    <Button
-                      className="w-full"
-                      variant="brand"
-                      onClick={() => setOpenFilter(false)}
-                    >
-                      Aplicar
-                    </Button>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <Checkbox
+                        checked={verSupervisores}
+                        onCheckedChange={(v) =>
+                          setVerSupervisores(Boolean(v))
+                        }
+                      />
+                      <span className="text-sm text-foreground">
+                        Supervisores
+                      </span>
+                    </label>
                   </div>
-                </SheetContent>
-              </Sheet>
-            </div>
+
+                  <Button
+                    className="w-full"
+                    variant="brand"
+                    onClick={() => setOpenFilter(false)}
+                  >
+                    Aplicar
+                  </Button>
+                </div>
+              </SheetContent>
+            </Sheet>
+            </>
           }
           icon={<MapPinned />}
           subtitle={t("ui.LiveTracking.vigilantesYSupervisoresEnServicio")}

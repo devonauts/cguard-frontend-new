@@ -7,7 +7,6 @@ import AppLayout from "@/layouts/app-layout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import securityGuardService from "@/lib/api/securityGuardService";
-import Breadcrumb from "@/components/ui/breadcrumb";
 import { usePermissions } from "@/hooks/usePermissions";
 import {
   PageContainer,
@@ -224,12 +223,6 @@ export default function EditSecurityGuardPage() {
   return (
     <AppLayout>
       <PageContainer>
-        <Breadcrumb
-          items={[
-            { label: "Panel de control", path: "/dashboard" },
-            { label: "Editar vigilante" },
-          ]}
-        />
 
         <PageHeader
           icon={<UserCog />}
