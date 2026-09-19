@@ -59,6 +59,7 @@ import {
   PageHeader,
   Section,
   StatCard,
+  StatsStrip,
   StatusBadge,
   StatusDot,
   EmptyState,
@@ -408,7 +409,7 @@ export default function RouteRunDetailPage() {
           <>
             {/* Cuatro en fila sólo con sitio de sobra (xl); en un portátil, 2×2 —
                 si no, las etiquetas se cortan («INSPECCIÓN M…»). */}
-            <Stagger className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <StatsStrip className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <StatCard
                 accent="brand"
                 icon={<ListChecks />}
@@ -458,7 +459,7 @@ export default function RouteRunDetailPage() {
                   )
                 }
               />
-            </Stagger>
+            </StatsStrip>
 
             {/* El resumen de tiempos y evidencia: pares etiqueta/dato de sólo
                 lectura (`Field`), como en cualquier ficha del CRM. */}

@@ -665,7 +665,7 @@ export default function RondaWizard({
                     <div className="flex shrink-0 flex-col gap-1">
                       <button
                         aria-label={t("common.moveUp", "Subir") as string}
-                        className="cg-focus cg-btn-glass grid h-7 w-7 place-items-center rounded-md disabled:opacity-30"
+                        className="cg-focus cg-btn-glass grid h-10 w-10 place-items-center rounded-md disabled:opacity-30 sm:h-7 sm:w-7"
                         disabled={i === 0}
                         type="button"
                         onClick={() => mover(i, -1)}
@@ -674,7 +674,7 @@ export default function RondaWizard({
                       </button>
                       <button
                         aria-label={t("common.moveDown", "Bajar") as string}
-                        className="cg-focus cg-btn-glass grid h-7 w-7 place-items-center rounded-md disabled:opacity-30"
+                        className="cg-focus cg-btn-glass grid h-10 w-10 place-items-center rounded-md disabled:opacity-30 sm:h-7 sm:w-7"
                         disabled={i === puntos.length - 1}
                         type="button"
                         onClick={() => mover(i, 1)}
@@ -683,7 +683,7 @@ export default function RondaWizard({
                       </button>
                       <button
                         aria-label={t("common.delete", "Eliminar") as string}
-                        className="cg-focus cg-btn-glass grid h-7 w-7 place-items-center rounded-md disabled:opacity-30"
+                        className="cg-focus cg-btn-glass grid h-10 w-10 place-items-center rounded-md disabled:opacity-30 sm:h-7 sm:w-7"
                         disabled={puntos.length === 1}
                         type="button"
                         onClick={() => {

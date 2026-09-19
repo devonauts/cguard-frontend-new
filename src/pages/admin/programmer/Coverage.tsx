@@ -31,6 +31,7 @@ import {
   PageHeader,
   Section,
   MetricTile,
+  StatsStrip,
   EmptyState,
   SkeletonCards,
   Modal,
@@ -480,9 +481,14 @@ export default function Coverage() {
             return (
               <div
                 key={e.shiftId}
-                className="glass-sunken flex items-center gap-2 px-3 py-2"
+                /* Envuelve en el teléfono: tres botones que no parten
+                   («Trasladar», «Registrar entrada», «Novedad») suman 340 px y
+                   no caben junto al nombre en una columna de 358. Sin
+                   `flex-wrap` la fila no encoge — estira la tarjeta entera y se
+                   sale de la pantalla. */
+                className="glass-sunken flex flex-wrap items-center gap-2 px-3 py-2"
               >
-                <div className="min-w-0 flex-1">
+                <div className="w-full min-w-0 sm:w-auto sm:flex-1">
                   <p className="truncate text-sm font-medium">
                     {e.fullName || "Vigilante"}
                   </p>
@@ -625,7 +631,7 @@ export default function Coverage() {
           title="Cobertura en vivo"
         />
 
-        <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatsStrip className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <MetricTile
             delta={
               totalPuestos > 0
@@ -671,7 +677,7 @@ export default function Coverage() {
             label="Novedades abiertas"
             value={openEvents.length}
           />
-        </Stagger>
+        </StatsStrip>
 
         <Segmented<"board" | "events">
           options={[

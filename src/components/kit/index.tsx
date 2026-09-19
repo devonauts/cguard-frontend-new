@@ -23,6 +23,8 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Search, X } from "lucide-react";
 
+import { useEsTelefono } from "@/hooks/useEsTelefono";
+
 import {
   Dialog,
   DialogContent,
@@ -85,7 +87,10 @@ export function Stagger({
       animate="show"
       /* El escalonado se ACOTA a ~230 ms en total: veinte filas a 60 ms cada una
          son 1,2 s mirando cómo se dibuja una tabla. */
-      variants={{ hidden: {}, show: { transition: { staggerChildren: gap, delayChildren: 0 } } }}
+      variants={{
+        hidden: {},
+        show: { transition: { staggerChildren: gap, delayChildren: 0 } },
+      }}
     >
       {React.Children.map(children, (child, i) => (
         <motion.div
@@ -254,22 +259,32 @@ export function PageHeader({
           opacity: 0.16,
         }}
       />
-      <div className="relative flex flex-col gap-4 p-6 sm:flex-row sm:items-center">
-        {icon && <IconTile size="lg">{icon}</IconTile>}
-        <div className="min-w-0 flex-1">
-          <h1 className="font-display truncate text-2xl font-bold tracking-tight">
-            {title}
-          </h1>
-          {subtitle && (
-            <p className="mt-0.5 text-sm" style={{ color: "var(--ink-soft)" }}>
-              {subtitle}
-            </p>
-          )}
-          {badges && (
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              {badges}
-            </div>
-          )}
+      {/* En el TELÉFONO el icono va al lado del título, no encima. Apilados —
+          icono, título, subtítulo, botones, cada uno en su fila — el encabezado
+          medía 290 px: un tercio de la pantalla gastado en decir dónde estás
+          antes de enseñar nada. Al lado ocupa la altura que ya ocupaba el
+          título. En `sm` hacia arriba la composición es la de siempre. */}
+      <div className="relative flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:p-6">
+        <div className="flex min-w-0 flex-1 items-center gap-3 sm:contents">
+          {icon && <IconTile size="lg">{icon}</IconTile>}
+          <div className="min-w-0 flex-1">
+            <h1 className="font-display truncate text-2xl font-bold tracking-tight">
+              {title}
+            </h1>
+            {subtitle && (
+              <p
+                className="mt-0.5 text-sm"
+                style={{ color: "var(--ink-soft)" }}
+              >
+                {subtitle}
+              </p>
+            )}
+            {badges && (
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                {badges}
+              </div>
+            )}
+          </div>
         </div>
         {actions && (
           <div className="flex shrink-0 flex-wrap items-center gap-2">
@@ -341,7 +356,12 @@ export function Section({
             )}
           </div>
           {action && (
-            <div className="flex shrink-0 flex-wrap items-center gap-3">
+            /* `shrink-0` sólo a partir de `sm`. En el teléfono la acción de una
+               sección suele ser un riel de filtros con su propio desplazamiento
+               horizontal, y un padre que se niega a encoger le da un ancho
+               imposible: el riel deja de recortar y arrastra la página entera
+               de lado. */
+            <div className="flex min-w-0 max-w-full flex-wrap items-center gap-3 sm:shrink-0">
               {action}
             </div>
           )}
@@ -411,6 +431,145 @@ export function StatCard({
             {hint}
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+// ── StatsStrip ──────────────────────────────────────────────────────────────
+/** Hueco entre páginas, en px. Vive aquí y no en una clase de Tailwind porque
+ *  el cálculo del punto activo necesita el número: la página k empieza en
+ *  k * (ancho + hueco). Si los dos valores se separan, el indicador se
+ *  desincroniza en cuanto alguien cambia el `gap`. */
+const HUECO_PAGINA = 12;
+
+/** Del `className` de escritorio sólo sobreviven los MÁRGENES cuando el
+ *  teléfono cambia la rejilla por el carrusel: `grid-cols-4` ya no aplica, pero
+ *  el `mb-4` que separa las cifras del contenido sigue haciendo falta y se
+ *  perdería en silencio. */
+function soloMargenes(className?: string): string | undefined {
+  if (!className) return undefined;
+  const margenes = className
+    .split(/\s+/)
+    .filter((c) => /^-?m[trblxy]?-/.test(c.replace(/^[a-z]+:/, "")));
+
+  return margenes.length ? margenes.join(" ") : undefined;
+}
+
+/**
+ * La fila de cifras de cabecera de una página.
+ *
+ * En ESCRITORIO es exactamente la rejilla de siempre: se le pasa el mismo
+ * `className` con el que la página ya la pintaba y no cambia un pixel.
+ *
+ * En el TELÉFONO deja de crecer hacia abajo y pasa a ser un carrusel PAGINADO,
+ * como una collection view de iOS: cada gesto mueve una página entera, nunca se
+ * queda a medio camino, y debajo unos puntos dicen cuántas páginas hay y en
+ * cuál estamos.
+ *
+ * ── POR QUÉ ────────────────────────────────────────────────────────────────
+ * Seis cifras a dos columnas son tres filas de tarjetas: media pantalla de
+ * teléfono gastada ANTES de que empiece el contenido por el que se entró a la
+ * página. Paginadas ocupan una fila y siguen estando las seis.
+ *
+ * Los hijos falsos se descartan (`{puedeVer && <StatCard/>}` es el patrón de
+ * media docena de páginas): si no, una condición apagada dejaría una página en
+ * blanco y un punto que no lleva a ninguna parte.
+ */
+export function StatsStrip({
+  children,
+  className,
+  porPagina = 2,
+  gap = 0.06,
+}: {
+  children: React.ReactNode;
+  /** La rejilla de escritorio, tal cual estaba. */
+  className?: string;
+  /** Cuántas tarjetas caben en una página del teléfono. */
+  porPagina?: number;
+  /** Escalonado de entrada en escritorio, igual que `Stagger`. */
+  gap?: number;
+}) {
+  const esTelefono = useEsTelefono();
+  const pista = React.useRef<HTMLDivElement | null>(null);
+  const [pagina, setPagina] = React.useState(0);
+
+  const tarjetas = React.Children.toArray(children).filter(Boolean);
+  const paginas: React.ReactNode[][] = [];
+
+  for (let i = 0; i < tarjetas.length; i += porPagina) {
+    paginas.push(tarjetas.slice(i, i + porPagina));
+  }
+
+  // Si se quedan menos tarjetas que páginas visitadas (un filtro que recorta la
+  // lista), el índice guardado apuntaría fuera.
+  React.useEffect(() => {
+    if (pagina > paginas.length - 1) setPagina(Math.max(0, paginas.length - 1));
+  }, [pagina, paginas.length]);
+
+  if (!esTelefono || paginas.length <= 1) {
+    return (
+      <Stagger className={className} gap={gap}>
+        {children}
+      </Stagger>
+    );
+  }
+
+  const irA = (i: number) => {
+    const el = pista.current;
+
+    if (!el) return;
+    el.scrollTo({
+      left: i * (el.clientWidth + HUECO_PAGINA),
+      behavior: "smooth",
+    });
+  };
+
+  return (
+    <div className={soloMargenes(className)}>
+      <div
+        ref={pista}
+        className="cg-paginas"
+        style={{ gap: HUECO_PAGINA }}
+        onScroll={(e) => {
+          const el = e.currentTarget;
+          const i = Math.round(el.scrollLeft / (el.clientWidth + HUECO_PAGINA));
+
+          setPagina(Math.min(Math.max(i, 0), paginas.length - 1));
+        }}
+      >
+        {paginas.map((grupo, i) => (
+          <div
+            key={i}
+            className="grid gap-3"
+            style={{
+              /* Columnas CONSTANTES aunque la última página vaya a medias:
+                 si la última tarjeta se ensanchara para rellenar el hueco,
+                 parecería otra cosa distinta de las de las páginas anteriores. */
+              gridTemplateColumns: `repeat(${porPagina}, minmax(0, 1fr))`,
+            }}
+          >
+            {grupo}
+          </div>
+        ))}
+      </div>
+
+      {/* Indicador. Los puntos miden 6 px pero el botón mide 40: el área que se
+          toca no puede ser del tamaño del dibujo. El margen negativo devuelve
+          el espacio que esa altura le robaría a la página. */}
+      <div className="-my-2 flex items-center justify-center gap-1.5">
+        {paginas.map((_, i) => (
+          <button
+            key={i}
+            aria-current={i === pagina ? "true" : undefined}
+            aria-label={`Página ${i + 1} de ${paginas.length}`}
+            className="flex h-10 w-8 items-center justify-center"
+            type="button"
+            onClick={() => irA(i)}
+          >
+            <span className="cg-punto" data-activo={i === pagina} />
+          </button>
+        ))}
       </div>
     </div>
   );

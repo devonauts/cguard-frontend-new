@@ -40,6 +40,7 @@ import {
   PageHeader,
   Section,
   StatCard,
+  StatsStrip,
   EmptyState,
   Stagger,
 } from "@/components/kit";
@@ -193,7 +194,7 @@ export default function GuardRatings() {
         />
 
         {/* Stats */}
-        <Stagger className="grid grid-cols-2 gap-4">
+        <StatsStrip className="grid grid-cols-2 gap-4">
           <StatCard
             accent="orange"
             hint={
@@ -217,7 +218,7 @@ export default function GuardRatings() {
             label="Calificaciones"
             value={count}
           />
-        </Stagger>
+        </StatsStrip>
 
         {/* Toolbar */}
         <div className="flex flex-col md:flex-row justify-between gap-4">

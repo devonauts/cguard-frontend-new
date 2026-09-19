@@ -25,6 +25,7 @@ import {
   PageContainer,
   PageHeader,
   StatCard,
+  StatsStrip,
   Stagger,
   EmptyState,
   Modal,
@@ -1566,7 +1567,7 @@ export default function AlarmPanels() {
         />
 
         {/* Summary */}
-        <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <StatsStrip className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <StatCard
             label={t("comun.total")}
             value={counts.total}
@@ -1591,7 +1592,7 @@ export default function AlarmPanels() {
             icon={<WifiOff />}
             accent="bad"
           />
-        </Stagger>
+        </StatsStrip>
 
         {/* List */}
         {loading ? (

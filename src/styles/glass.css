@@ -973,6 +973,49 @@ button, [role="button"] { transition: transform 0.09s var(--ease); }
   min-width: 148px;
 }
 
+/* ── CIFRAS PAGINADAS ─────────────────────────────────────────────────────── */
+/* La variante de TELÉFONO de las cifras de cabecera. El carrusel de arriba
+   desliza libre, tarjeta a tarjeta; éste pagina: cada gesto mueve una página
+   entera y `scroll-snap-stop: always` impide que un empujón fuerte se salte
+   tres de golpe. Es el comportamiento de una collection view de iOS con
+   `isPagingEnabled`, y es el que hace que los puntos de abajo signifiquen algo:
+   si el desplazamiento pudiera quedarse entre dos páginas, el indicador
+   mentiría la mitad del tiempo. */
+.cg-paginas {
+  display: flex;
+  overflow-x: auto; overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  /* El gesto horizontal no debe arrastrar la página entera ni disparar el
+     «atrás» del navegador al llegar al final. */
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+.cg-paginas::-webkit-scrollbar { display: none; }
+.cg-paginas > * {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  flex: 0 0 100%;
+  min-width: 0;
+}
+
+/* Punto del indicador. El activo se ESTIRA en vez de sólo cambiar de color:
+   se distingue sin depender de que el usuario perciba el contraste. */
+.cg-punto {
+  display: block;
+  width: 6px; height: 6px;
+  border-radius: 9999px;
+  background: color-mix(in oklab, var(--ink-faint) 45%, transparent);
+  transition: width 0.28s ease, background 0.28s ease;
+}
+.cg-punto[data-activo="true"] {
+  width: 18px;
+  background: var(--brand);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cg-punto { transition: none; }
+}
+
 /* ── CAPA SOBRE EL MAPA ───────────────────────────────────────────────────── */
 /* El mapa ocupa la pantalla; esto flota encima. `pointer-events: none` en el
    contenedor y `auto` en los hijos: así se puede arrastrar el mapa por los
@@ -1039,6 +1082,26 @@ button, [role="button"] { transition: transform 0.09s var(--ease); }
      tiene que pellizcar para volver. Va aquí y no en cada campo porque son
      cientos y el que se escriba mañana también lo necesita. */
   input, select, textarea, .cg-input, .cg-input input { font-size: 16px; }
+
+  /* Y 44 px de ALTO, por la misma razón por la que los botones lo tienen: un
+     campo de 36 px se falla con el pulgar. Las casillas y los deslizadores
+     quedan fuera — ahí el alto ES el dibujo, y se arreglan abajo. */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea {
+    min-height: 44px;
+  }
+
+  /* La casilla mide 16 px y tiene que SEGUIR midiendo 16: estirarla a 44 la
+     convierte en un cuadro enorme al lado de una línea de texto. Lo que se
+     estira es la zona que responde al dedo, con una capa invisible alrededor
+     — 16 + 14 + 14 = 44. */
+  [role="checkbox"], [role="radio"] { position: relative; }
+  [role="checkbox"]::after, [role="radio"]::after {
+    content: "";
+    position: absolute;
+    inset: -14px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

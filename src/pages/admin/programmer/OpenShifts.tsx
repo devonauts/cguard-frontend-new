@@ -45,6 +45,7 @@ import {
   PageHeader,
   Section,
   MetricTile,
+  StatsStrip,
   Stagger,
   EmptyState,
   Modal,
@@ -275,7 +276,7 @@ export default function OpenShifts() {
         />
 
         {/* KPIs */}
-        <Stagger className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <StatsStrip className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <MetricTile
             hint={t("ui.OpenShifts.turnosSinVigilante")}
             icon={<CalendarClock />}
@@ -310,7 +311,7 @@ export default function OpenShifts() {
             label={t("ui.OpenShifts.estaSemana")}
             value={stats.thisWeek}
           />
-        </Stagger>
+        </StatsStrip>
 
         {/* Barra de filtros */}
         <Toolbar className="justify-end gap-4">

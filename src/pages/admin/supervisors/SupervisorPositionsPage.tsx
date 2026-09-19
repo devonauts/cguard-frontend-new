@@ -27,6 +27,7 @@ import {
   Section,
   SkeletonCards,
   StatCard,
+  StatsStrip,
   Modal,
   StatusBadge,
   EmptyState,
@@ -264,7 +265,7 @@ export default function SupervisorPositionsPage() {
             title={t("ui.SupervisorPositionsPage.puestosDeSupervisor")}
           />
 
-          <div className="mb-4 grid grid-cols-2 gap-3 sm:max-w-md">
+          <StatsStrip className="mb-4 grid grid-cols-2 gap-3 sm:max-w-md">
             <StatCard icon={<MapPin />} label="Puestos" value={rows.length} />
             <StatCard
               accent="ok"
@@ -272,7 +273,7 @@ export default function SupervisorPositionsPage() {
               label="Supervisores asignados"
               value={totalAssigned}
             />
-          </div>
+          </StatsStrip>
 
           {loading ? (
             <SkeletonCards count={3} />

@@ -49,6 +49,7 @@ import {
   Section,
   EmptyState,
   StatCard,
+  StatsStrip,
   StatusBadge,
   Modal,
   Field,
@@ -793,7 +794,7 @@ export default function ClientContract({ client }: { client: Client }) {
       </Section>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <StatsStrip className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
           hint={t("ui.ClientContract.segunElContrato", "Según el contrato")}
           icon={<Clock className="h-4 w-4" />}
@@ -840,7 +841,7 @@ export default function ClientContract({ client }: { client: Client }) {
               : "—"
           }
         />
-      </div>
+      </StatsStrip>
 
       {/* Row 3 — SLA, notas, historial */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">

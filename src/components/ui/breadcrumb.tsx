@@ -29,7 +29,10 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className }) => {
        halos del acento. Con `bg-background` se recortaba una banda opaca en
        medio del cristal. */
     <nav
-      className={`border-b border-[color:var(--hairline)] bg-transparent px-6 py-6 ${className || ""}`}
+      /* El relleno de 24 px hacía que una miga de una línea midiera 93 px de
+         alto: en un teléfono es la décima parte de la pantalla para repetir
+         dónde estamos, justo encima del encabezado que lo dice otra vez. */
+      className={`border-b border-[color:var(--hairline)] bg-transparent px-4 py-3 sm:px-6 sm:py-6 ${className || ""}`}
     >
       <ol className="flex flex-wrap items-center text-sm">
         {generatedItems.map((item, index) => {

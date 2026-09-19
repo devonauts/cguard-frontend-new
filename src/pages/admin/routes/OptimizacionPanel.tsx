@@ -12,6 +12,7 @@ import {
 import {
   StatusBadge,
   MetricTile,
+  StatsStrip,
   DeltaPill,
   InfoNote,
   Cifra,
@@ -161,7 +162,7 @@ export function PanelAhorro({
       )}
 
       {(ahorro.kmAntes != null || ahorro.minAntes != null) && (
-        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <StatsStrip className="mt-3 grid gap-3 sm:grid-cols-2">
           {ahorro.kmDespues != null && (
             <MetricTile
               delta={
@@ -204,7 +205,7 @@ export function PanelAhorro({
               value={<Cifra valor={Math.round(ahorro.minDespues)} />}
             />
           )}
-        </div>
+        </StatsStrip>
       )}
     </div>
   );

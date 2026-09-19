@@ -21,6 +21,7 @@ import {
   EmptyState,
   Toolbar,
   StatCard,
+  StatsStrip,
   StatusBadge,
   SkeletonCards,
 } from "@/components/kit";
@@ -540,7 +541,7 @@ export default function Visits() {
             title="Visitas"
           />
 
-          <div className="grid gap-4 sm:grid-cols-3">
+          <StatsStrip className="grid gap-4 sm:grid-cols-3">
             <StatCard
               accent="brand"
               hint={t("comun.conLosFiltrosAplicados")}
@@ -562,7 +563,7 @@ export default function Visits() {
               label={t("comun.conSalidaRegistrada")}
               value={conSalida}
             />
-          </div>
+          </StatsStrip>
 
           <Toolbar>
             <div className="relative min-w-0 flex-1 sm:max-w-xs">

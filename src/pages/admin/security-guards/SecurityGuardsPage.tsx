@@ -12,6 +12,7 @@ import guardRatingService from "@/lib/api/guardRatingService";
 import {
   PageHeader,
   StatCard,
+  StatsStrip,
   Stagger,
   Modal,
   StatusBadge,
@@ -962,7 +963,7 @@ export default function SecurityGuardsPage() {
 
       {/* Indicadores */}
       <div className="px-4 pb-2 pt-5 sm:px-6">
-        <Stagger className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <StatsStrip className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           <StatCard
             icon={<Users />}
             accent="info"
@@ -987,7 +988,7 @@ export default function SecurityGuardsPage() {
             label="Archivados"
             value={archivedCount}
           />
-        </Stagger>
+        </StatsStrip>
       </div>
 
       <div className="px-4 pb-6 pt-2 sm:px-6">

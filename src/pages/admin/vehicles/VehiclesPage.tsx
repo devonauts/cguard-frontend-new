@@ -43,6 +43,7 @@ import {
   Section,
   Stagger,
   StatCard,
+  StatsStrip,
   StatusBadge,
   EmptyState,
   Toolbar,
@@ -396,7 +397,7 @@ export default function VehiclesPage() {
           }
         />
 
-        <Stagger className="grid gap-4 sm:grid-cols-3">
+        <StatsStrip className="grid gap-4 sm:grid-cols-3">
           <StatCard
             label={t("comun.total")}
             value={count}
@@ -417,7 +418,7 @@ export default function VehiclesPage() {
             accent="neutral"
             hint={t("ui.Vehicles.enEstaPagina2", "En esta página")}
           />
-        </Stagger>
+        </StatsStrip>
 
         <Toolbar>
           {/* `TableSearch` del kit — el mismo buscador que Inventario

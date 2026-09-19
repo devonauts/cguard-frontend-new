@@ -426,7 +426,7 @@ export default function ActivitiesPage() {
             {/* Elegir UNA categoría es exactamente lo que hace `Segmented`; la
               copia local iba 2px más estrecha y con otro fondo inactivo, así que
               cambiar el conmutador del kit rompía la paridad sólo aquí. */}
-            <div className="flex flex-1 flex-wrap items-center gap-1.5">
+            <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
               <Segmented<Category | "all">
                 options={[
                   { value: "all", label: t("activity.filters.all") },

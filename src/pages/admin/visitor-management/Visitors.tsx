@@ -52,6 +52,7 @@ import {
     Modal,
     Toolbar,
     StatCard,
+  StatsStrip,
     StatusBadge,
     SkeletonCards,
     Field,
@@ -1167,7 +1168,7 @@ export default function Visitors() {
                     title={t('visitantes.title') || 'Visitantes'}
           />
 
-          <div className="grid gap-4 sm:grid-cols-3">
+          <StatsStrip className="grid gap-4 sm:grid-cols-3">
             <StatCard
               label={t("visitantes.bitacoras") || "Bitácoras"}
               value={logsCount}
@@ -1189,7 +1190,7 @@ export default function Visitors() {
               accent="neutral"
               hint={t("comun.deLosRegistrosMostrados")}
             />
-          </div>
+          </StatsStrip>
 
           <Toolbar>
             <div className="relative min-w-0 flex-1 sm:max-w-xs">

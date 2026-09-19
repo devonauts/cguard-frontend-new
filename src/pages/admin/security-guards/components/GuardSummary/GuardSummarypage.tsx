@@ -17,6 +17,7 @@ import securityGuardService from "@/lib/api/securityGuardService";
 import {
   Section,
   StatCard,
+  StatsStrip,
   EmptyState,
   IconTile,
   StatusBadge,
@@ -387,7 +388,7 @@ export default function GuardSummary({ guard }: Props) {
             )}
           />
         ) : (
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <StatsStrip className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             <StatCard
               accent={TIER_ACCENT[perf.tier] || "neutral"}
               hint={
@@ -429,7 +430,7 @@ export default function GuardSummary({ guard }: Props) {
               label="Faltas / Atrasos"
               value={`${stats.absences ?? 0} / ${stats.tardies ?? 0}`}
             />
-          </div>
+          </StatsStrip>
         )}
       </Section>
 

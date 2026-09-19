@@ -38,6 +38,7 @@ import {
   Segmented,
   Stagger,
   StatCard,
+  StatsStrip,
   StatusBadge,
   EmptyState,
   GlassPanel,
@@ -301,7 +302,7 @@ export default function PatrullaBoardPage() {
           </Button>
         </Toolbar>
 
-        <Stagger className="grid gap-4 sm:grid-cols-2">
+        <StatsStrip className="grid gap-4 sm:grid-cols-2">
           <StatCard
             accent="brand"
             icon={<ListChecks />}
@@ -314,7 +315,7 @@ export default function PatrullaBoardPage() {
             label="Completadas"
             value={doneCount}
           />
-        </Stagger>
+        </StatsStrip>
 
         {/* Lo que está pasando AHORA: las ejecuciones abiertas, con su avance.
             Se alimenta del socket `route:progress` — el mismo canal por el que

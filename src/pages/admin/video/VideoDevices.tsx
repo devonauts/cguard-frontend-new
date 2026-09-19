@@ -28,6 +28,7 @@ import {
   PageContainer,
   PageHeader,
   StatCard,
+  StatsStrip,
   Stagger,
   EmptyState,
   SkeletonCards,
@@ -448,7 +449,7 @@ export default function VideoDevices() {
         />
 
         {/* Summary */}
-        <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <StatsStrip className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <StatCard
             accent="primary"
             icon={<Video />}
@@ -473,7 +474,7 @@ export default function VideoDevices() {
             label="Desconocido"
             value={counts.unknown}
           />
-        </Stagger>
+        </StatsStrip>
 
         {/* List */}
         {loading ? (

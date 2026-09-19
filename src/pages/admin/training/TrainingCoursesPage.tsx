@@ -58,6 +58,7 @@ import {
   EmptyState,
   Stagger,
   StatCard,
+  StatsStrip,
   StatusBadge,
 } from "@/components/kit";
 import { DataTable, type Column } from "@/components/table/DataTable";
@@ -275,7 +276,7 @@ export default function TrainingCoursesPage() {
           )}
         />
 
-        <Stagger className="grid gap-4 sm:grid-cols-3">
+        <StatsStrip className="grid gap-4 sm:grid-cols-3">
           <StatCard
             accent="brand"
             icon={<BookOpen />}
@@ -294,7 +295,7 @@ export default function TrainingCoursesPage() {
             label="Borradores"
             value={draftCount}
           />
-        </Stagger>
+        </StatsStrip>
 
         {/* La barra de filtros del sistema: una sola superficie de cristal, con
             el buscador y los filtros dentro. Antes era una fila de divs suelta

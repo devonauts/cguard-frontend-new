@@ -67,6 +67,7 @@ import {
   EmptyState,
   Segmented,
   StatCard,
+  StatsStrip,
   StatusBadge,
   Field,
 } from "@/components/kit";
@@ -546,7 +547,7 @@ export default function MemosPage() {
             }
           />
 
-          <div className="grid gap-4 sm:grid-cols-3">
+          <StatsStrip className="grid gap-4 sm:grid-cols-3">
             <StatCard
               label="Memos"
               value={memos.length}
@@ -567,7 +568,7 @@ export default function MemosPage() {
               accent="warn"
               hint={t("ui.MemosPage.todaviaSinConfirmar")}
             />
-          </div>
+          </StatsStrip>
 
           <TableToolbar
             leading={

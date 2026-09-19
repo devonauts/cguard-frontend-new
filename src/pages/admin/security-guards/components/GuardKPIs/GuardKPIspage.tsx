@@ -36,6 +36,7 @@ import {
   PageHeader,
   Section,
   StatCard,
+  StatsStrip,
   Stagger,
   EmptyState,
   Modal,
@@ -685,7 +686,7 @@ export default function GuardIndicators({ guard }: Props) {
             }
           />
 
-          <Stagger className="grid gap-4 sm:grid-cols-2">
+          <StatsStrip className="grid gap-4 sm:grid-cols-2">
             <StatCard
               label={t("guards.assignSites.assignedCount", {
                 defaultValue: "Assigned Sites",
@@ -700,7 +701,7 @@ export default function GuardIndicators({ guard }: Props) {
               icon={<BarChart3 />}
               accent="brand"
             />
-          </Stagger>
+          </StatsStrip>
 
           {/* 8-factor performance score (read-only, additive to KPI tooling) */}
           <GuardPerformancePanel securityGuardId={guard?.id} />

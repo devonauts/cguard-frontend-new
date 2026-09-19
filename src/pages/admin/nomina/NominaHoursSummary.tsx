@@ -15,6 +15,7 @@ import {
   PageHeader,
   Section,
   MetricTile,
+  StatsStrip,
   Stagger,
   Toolbar,
   StatusBadge,
@@ -357,7 +358,7 @@ export default function NominaHoursSummary() {
         </Toolbar>
 
         {totals && (
-          <Stagger className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <StatsStrip className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <MetricTile
               hint="Turnos con marcación en el periodo"
               icon={<CalendarDays />}
@@ -390,7 +391,7 @@ export default function NominaHoursSummary() {
               label="Tardanzas / Inasist."
               value={`${totals.lateCount} / ${totals.noShows}`}
             />
-          </Stagger>
+          </StatsStrip>
         )}
 
         <Section icon={<Clock />} title="Detalle por persona">

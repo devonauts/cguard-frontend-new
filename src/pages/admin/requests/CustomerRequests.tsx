@@ -46,6 +46,7 @@ import {
   PageHeader,
   Section,
   MetricTile,
+  StatsStrip,
   StatusBadge,
   EmptyState,
   Stagger,
@@ -174,7 +175,7 @@ export default function CustomerRequests() {
         />
 
         {/* Stats */}
-        <Stagger className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <StatsStrip className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <MetricTile
             label="Abiertas"
             value={stats.open}
@@ -201,7 +202,7 @@ export default function CustomerRequests() {
             icon={<Layers />}
             hint={t("ui.CustomerRequests.recibidasDesdeLaAppDe")}
           />
-        </Stagger>
+        </StatsStrip>
 
         {/* Barra de filtros */}
         <Toolbar className="justify-between gap-4">

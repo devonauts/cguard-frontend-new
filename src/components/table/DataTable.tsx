@@ -403,7 +403,13 @@ export function DataTable<T extends { id: string }>({
            defecto es el del CONTENIDO, así que una tabla ancha estiraba la
            columna entera y sacaba scroll a la página en vez de a la tabla. */
     <div
-      className="w-full min-w-0 overflow-x-auto"
+      /* `relative` NO es decoración: dentro de la tabla hay `<span class="sr-only">`
+       —absolutos— y sin un ancestro posicionado aquí su bloque contenedor es la
+       página. Quedan colocados en su posición estática, que en una tabla de 560 px
+       cae fuera de la pantalla, y como NADIE los recorta estiran el documento: la
+       página entera se desplazaba 122 px hacia un costado vacío. Con esto el
+       recorte del scroller también les aplica. */
+      className="relative w-full min-w-0 overflow-x-auto"
       style={maxHeight != null ? { maxHeight, overflowY: "auto" } : undefined}
     >
       {table}

@@ -57,6 +57,7 @@ import {
   PageHeader,
   Section,
   MetricTile,
+  StatsStrip,
   Stagger,
   StatusBadge,
   EmptyState,
@@ -323,7 +324,7 @@ export default function TimeOff() {
         />
 
         {/* KPIs */}
-        <Stagger className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <StatsStrip className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <MetricTile
             label="Pendientes"
             value={stats.pending}
@@ -363,7 +364,7 @@ export default function TimeOff() {
             }
             hint={t("comun.delTotalDeSolicitudes")}
           />
-        </Stagger>
+        </StatsStrip>
 
         {/* Barra de filtros */}
         <Toolbar className="justify-between gap-4">

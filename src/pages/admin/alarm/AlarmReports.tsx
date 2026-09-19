@@ -17,6 +17,7 @@ import {
   PageHeader,
   Section,
   StatCard,
+  StatsStrip,
   Stagger,
   SkeletonCards,
   EmptyState,
@@ -106,7 +107,7 @@ export default function AlarmReports() {
           <SkeletonCards count={6} className="lg:grid-cols-6" />
         ) : (
           <>
-            <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            <StatsStrip className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
               <StatCard
                 label="Total"
                 value={o.total}
@@ -148,7 +149,7 @@ export default function AlarmReports() {
                   o.falseRate >= 50 ? "bad" : o.falseRate >= 25 ? "warn" : "ok"
                 }
               />
-            </Stagger>
+            </StatsStrip>
 
             <Section title="Por panel" icon={<BarChart3 />}>
               {!data?.panels || data.panels.length === 0 ? (

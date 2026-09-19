@@ -27,6 +27,7 @@ import {
   Modal,
   Section,
   StatCard,
+  StatsStrip,
   EmptyState,
   PageContainer,
   SkeletonCards,
@@ -182,7 +183,7 @@ export default function GuardReviewsPage() {
       <GuardsLayout navKey="keep-safe" title="guards.nav.reviews">
         <PageContainer>
           {/* Summary */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <StatsStrip className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <StatCard
               accent="warn"
               hint={average != null ? <Stars value={average} /> : undefined}
@@ -239,7 +240,7 @@ export default function GuardReviewsPage() {
                 );
               })}
             </Section>
-          </div>
+          </StatsStrip>
 
           {/* Reviews list */}
           <Section

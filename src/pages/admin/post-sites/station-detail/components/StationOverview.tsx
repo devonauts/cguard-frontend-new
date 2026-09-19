@@ -20,7 +20,7 @@ import { toast } from "sonner";
 
 import { invalidateEntity } from "@/lib/queryClient";
 import IncidentMap from "@/components/IncidentMap/IncidentMap";
-import { StatusBadge } from "@/components/kit";
+import { StatusBadge, StatsStrip } from "@/components/kit";
 import { ApiService } from "@/services/api/apiService";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import StationGeofencePolygon, {
@@ -648,7 +648,7 @@ export default function StationOverview({
     return (
       <div className="space-y-4">
         {/* Cobertura de un vistazo */}
-        <Stagger className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <StatsStrip className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <StatCard
             accent={openNow.length ? "ok" : "bad"}
             hint={
@@ -693,7 +693,7 @@ export default function StationOverview({
                 : t("station.overview.notConfigured", "Sin configurar")
             }
           />
-        </Stagger>
+        </StatsStrip>
 
         <div className="grid gap-4 lg:grid-cols-2">
           {/* Actividad reciente */}

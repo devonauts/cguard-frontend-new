@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 import GuardsLayout from "@/layouts/GuardsLayout";
-import { Section, StatCard, EmptyState, SkeletonCards } from "@/components/kit";
+import { Section, StatCard, StatsStrip, EmptyState, SkeletonCards } from "@/components/kit";
 import { Button } from "@/components/ui/button";
 import attendanceService, {
   type AttendanceRecord,
@@ -226,7 +226,7 @@ export default function GuardAsistenciaPage() {
     <GuardsLayout navKey="keep-safe" title="guards.nav.asistencia">
       <div className="mx-auto max-w-6xl space-y-4 pb-24">
         {/* Resumen del periodo */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <StatsStrip className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <StatCard
             accent="blue"
             icon={<CalendarClock />}
@@ -251,7 +251,7 @@ export default function GuardAsistenciaPage() {
             label="Tardanzas"
             value={String(summary.late)}
           />
-        </div>
+        </StatsStrip>
 
         <Section
           action={

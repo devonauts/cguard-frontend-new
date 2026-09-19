@@ -15,7 +15,7 @@ import { Bot, Wallet, MessageSquare, ListChecks } from "lucide-react";
 
 import SettingsPageShell from "../components/SettingsPageShell";
 
-import { SkeletonCards, StatCard } from "@/components/kit";
+import { SkeletonCards, StatCard, StatsStrip } from "@/components/kit";
 import api from "@/lib/api";
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
@@ -96,7 +96,7 @@ export default function VigiaUsagePage() {
         <SkeletonCards className="grid-cols-2 sm:grid-cols-4" count={4} />
       ) : !datos ? null : (
         <div className="space-y-6">
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <StatsStrip className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <StatCard
               icon={<MessageSquare />}
               label={t("ui.VigiaUsagePage.mensajesEsteMes")}
@@ -132,7 +132,7 @@ export default function VigiaUsagePage() {
               label="Saldo disponible"
               value={dinero(datos.saldoCents ?? 0)}
             />
-          </div>
+          </StatsStrip>
 
           <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
             VigIA comparte el monedero de Comunicaciones: la misma recarga sirve

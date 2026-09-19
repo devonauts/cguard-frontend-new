@@ -574,7 +574,7 @@ export default function VigiaWidget() {
             filter: "drop-shadow(0 6px 14px rgba(0,0,0,0.30))",
           }}
           onClick={() => setOpen(true)}
-          className="cg-focus transition-transform hover:scale-105"
+          className="vigia-burbuja cg-focus transition-transform hover:scale-105"
           /* `data-flotante`: así `apartarDelWidget` puede MEDIR lo que ocupa en
              vez de suponerlo. La onda animada hace que su caja real sean 83 px
              de alto arrancando a 159 del borde, bastante más que los 56 de la
@@ -589,6 +589,11 @@ export default function VigiaWidget() {
             @keyframes vigia-online { 0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--ok) 60%, transparent) } 70% { box-shadow: 0 0 0 9px transparent } 100% { box-shadow: 0 0 0 0 transparent } }
             .vigia-online { animation: vigia-online 2.8s ease-out infinite; }
             @media (prefers-reduced-motion: reduce) { .vigia-wave, .vigia-online { animation: none } }
+            /* En el teléfono el escudo mide 74x83 y flota sobre la esquina
+               derecha de las listas: tapa justo la columna donde viven los
+               estados («Sin cubrir», «Activo»). Encogido tapa un tercio menos
+               y sigue siendo un blanco de 58 px, por encima del mínimo. */
+            @media (max-width: 767.98px) { .vigia-burbuja { transform: scale(0.78); transform-origin: 100% 100%; } }
           `}</style>
           <span className="relative block">
             <svg aria-hidden height={83} viewBox="0 0 48 54" width={74}>

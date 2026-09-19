@@ -30,8 +30,12 @@ import i18n from "@/i18n";
  * se volvía ilegible justo al pasar el ratón por encima, que es cuando hay que
  * poder leerlo.
  */
+/* `py-2 -my-2` es el área que responde al dedo, no espacio: el relleno agranda
+   la caja del enlace a 36-40 px y el margen negativo se lo devuelve a la línea,
+   así la fila de la tabla mide lo mismo que antes. Un nombre de 20 px de alto
+   en una tabla densa se falla con el pulgar; el texto no se mueve un pixel. */
 const ENLACE =
-  "font-medium text-foreground hover:text-[var(--brand-text)] hover:underline";
+  "-my-3 inline-block py-3 font-medium text-foreground hover:text-[var(--brand-text)] hover:underline";
 
 /** Link a site name to its post-site detail page. */
 export function SiteLink({ id, name }: { id?: string; name: string }) {

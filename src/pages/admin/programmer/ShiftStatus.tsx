@@ -46,6 +46,7 @@ import {
   PageHeader,
   Section,
   MetricTile,
+  StatsStrip,
   Stagger,
   StatusBadge,
   EmptyState,
@@ -221,7 +222,7 @@ export default function ShiftStatus() {
         />
 
         {/* KPIs */}
-        <Stagger className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <StatsStrip className="grid grid-cols-2 gap-4 md:grid-cols-4">
           <MetricTile
             label="Pendientes"
             value={stats.pending}
@@ -269,7 +270,7 @@ export default function ShiftStatus() {
             }
             hint={t("ui.ShiftStatus.quedaronSinVigilante")}
           />
-        </Stagger>
+        </StatsStrip>
 
         {/* Barra de filtros */}
         <Toolbar className="justify-between gap-4">

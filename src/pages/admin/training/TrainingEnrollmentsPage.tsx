@@ -48,6 +48,7 @@ import {
   PageHeader,
   Section,
   StatCard,
+  StatsStrip,
   Stagger,
   StatusBadge,
   EmptyState,
@@ -282,7 +283,7 @@ export default function TrainingEnrollmentsPage() {
           }
         />
 
-        <Stagger className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <StatsStrip className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <StatCard
             accent="info"
             icon={<Users />}
@@ -301,7 +302,7 @@ export default function TrainingEnrollmentsPage() {
             label="Pendientes"
             value={Math.max(realEnrollments.length - completedCount, 0)}
           />
-        </Stagger>
+        </StatsStrip>
 
         <Section
           contentClassName="-mx-5 -mb-5"

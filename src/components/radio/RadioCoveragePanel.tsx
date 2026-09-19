@@ -5,6 +5,7 @@ import { Users, RadioTower, BellOff, WifiOff } from "lucide-react";
 import {
   Section,
   StatCard,
+  StatsStrip,
   StatusBadge,
   ListRow,
   Avatar,
@@ -179,7 +180,7 @@ export default function RadioCoveragePanel() {
       icon={<Users />}
       title={t("ui.RadioCoverage.title", "Cobertura del canal")}
     >
-      <div className="mb-4 grid gap-3 sm:grid-cols-3">
+      <StatsStrip className="mb-4 grid gap-3 sm:grid-cols-3">
         <StatCard
           accent="green"
           hint={t("ui.RadioCoverage.ofOnDuty", "de {{n}} en turno").replace(
@@ -211,7 +212,7 @@ export default function RadioCoveragePanel() {
           label={t("ui.RadioCoverage.wakeable", "Se les puede avisar")}
           value={r.despertables ?? 0}
         />
-      </div>
+      </StatsStrip>
 
       {fuera.length ? (
         <>

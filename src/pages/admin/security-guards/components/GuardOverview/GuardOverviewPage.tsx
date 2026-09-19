@@ -9,6 +9,7 @@ import { fileUrlFromFile, type FileLike } from "@/lib/fileUrl";
 import { AlertCircle } from "lucide-react";
 import {
   StatCard,
+  StatsStrip,
   EmptyState,
   SkeletonBlock,
   SkeletonCards,
@@ -141,7 +142,7 @@ export default function GuardResumenPage() {
                   GuardsLayout header card. These two tiles are REAL quick-status
                   signals derived from the loaded guard; the rest of the resumen
                   (station, performance, schedule, activity) lives in GuardSummary. */}
-              <div className="grid grid-cols-2 gap-4">
+              <StatsStrip className="grid grid-cols-2 gap-4">
                 <StatCard
                   label={
                     t("guards.profile.cards.appAccess") || "Acceso a la app"
@@ -186,7 +187,7 @@ export default function GuardResumenPage() {
                     </svg>
                   }
                 />
-              </div>
+              </StatsStrip>
 
               {/* ── REAL STATION / PERFORMANCE / SCHEDULE / ACTIVITY ───────── */}
               <GuardSummary guard={guard} />

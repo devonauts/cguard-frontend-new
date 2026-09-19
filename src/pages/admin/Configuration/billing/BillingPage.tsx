@@ -25,6 +25,7 @@ import {
   PageHeader,
   Section,
   StatCard,
+  StatsStrip,
   Stagger,
   StatusBadge,
   EmptyState,
@@ -366,7 +367,7 @@ export default function BillingPage() {
         ) : (
           <div className="space-y-6">
             {/* KPIs */}
-            <Stagger className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <StatsStrip className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <StatCard
                 accent="primary"
                 icon={<Users />}
@@ -384,7 +385,7 @@ export default function BillingPage() {
                 label={t("billing.monthly", { defaultValue: "Total mensual" })}
                 value={`${money(q!.monthlyCents, currency)}`}
               />
-            </Stagger>
+            </StatsStrip>
 
             {/* Status */}
             <Section

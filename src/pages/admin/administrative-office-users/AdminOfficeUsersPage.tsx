@@ -829,7 +829,7 @@ export default function AdminOfficeUsersPage() {
         <GlassPanel className="p-5">
           {/* Acciones superiores */}
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               {/* Bulk action: show Suspender and conditionally Activar if any selected is archived */}
               <Select
                 key={selectKey}
@@ -902,7 +902,7 @@ export default function AdminOfficeUsersPage() {
               </Select>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <Toolbar className="p-1">
                 <Search
                   className="ml-1.5 h-4 w-4 shrink-0"
@@ -1607,7 +1607,7 @@ export default function AdminOfficeUsersPage() {
                                   : "-")}
                         </div>
                       </div>
-                      <div className="flex shrink-0 flex-col items-end gap-1 text-right">
+                      <div className="flex min-w-0 flex-col items-end gap-1 text-right sm:shrink-0">
                         {(() => {
                           const status = (u.status || "")
                             .toString()
@@ -1645,7 +1645,10 @@ export default function AdminOfficeUsersPage() {
                           );
                         })()}
                         <div
-                          className="text-xs tabular-nums"
+                          /* La fecha completa con segundos mide 149 px y no
+                             parte: en un teléfono empujaba la tarjeta 19 px
+                             fuera de la pantalla. Que se parta en dos líneas. */
+                          className="break-words text-xs tabular-nums"
                           style={{ color: "var(--ink-soft)" }}
                         >
                           {u.lastLoginAt

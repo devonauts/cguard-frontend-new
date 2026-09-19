@@ -35,6 +35,7 @@ import {
   Section,
   Stagger,
   StatCard,
+  StatsStrip,
   StatusBadge,
   EmptyState,
   Modal,
@@ -397,7 +398,7 @@ export default function GlobalInventoryPage() {
             }
           />
 
-          <Stagger className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <StatsStrip className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard
               label={t("ui.GlobalInventory.articulos", "Artículos")}
               value={total}
@@ -425,7 +426,7 @@ export default function GlobalInventoryPage() {
               accent="bad"
               hint={t("ui.GlobalInventory.enEstaPagina3", "En esta página")}
             />
-          </Stagger>
+          </StatsStrip>
 
           {/* Filtros */}
           <Toolbar>

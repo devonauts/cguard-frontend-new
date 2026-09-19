@@ -448,9 +448,9 @@ export default function StationCardsGrid({
                         defaultValue: "Rondas del puesto",
                       }) as string
                     }
-                    className="cg-focus cg-btn-glass grid h-7 w-7 place-items-center rounded-md"
+                    className="cg-focus cg-btn-glass grid h-10 w-10 place-items-center rounded-md sm:h-7 sm:w-7"
                   >
-                    <Route className="h-3.5 w-3.5" />
+                    <Route className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
                   </button>
                   <button
                     type="button"
@@ -468,9 +468,9 @@ export default function StationCardsGrid({
                         defaultValue: "Códigos QR",
                       }) as string
                     }
-                    className="cg-focus cg-btn-glass grid h-7 w-7 place-items-center rounded-md"
+                    className="cg-focus cg-btn-glass grid h-10 w-10 place-items-center rounded-md sm:h-7 sm:w-7"
                   >
-                    <QrCode className="h-3.5 w-3.5" />
+                    <QrCode className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
                   </button>
                 </span>
               )}

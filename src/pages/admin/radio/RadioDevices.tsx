@@ -24,6 +24,7 @@ import {
   PageContainer,
   PageHeader,
   StatCard,
+  StatsStrip,
   StatusBadge,
   EmptyState,
   SkeletonCards,
@@ -317,7 +318,7 @@ export default function RadioDevices() {
         />
 
         {/* Summary */}
-        <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <StatsStrip className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           <StatCard
             accent="primary"
             icon={<Radio />}
@@ -336,7 +337,7 @@ export default function RadioDevices() {
             label={t("ui.RadioDevices.sinConexion", "Sin conexión")}
             value={counts.offline}
           />
-        </Stagger>
+        </StatsStrip>
 
         {/* List */}
         {loading ? (

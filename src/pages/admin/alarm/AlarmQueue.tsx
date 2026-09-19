@@ -37,6 +37,7 @@ import {
   Section,
   Stagger,
   StatCard,
+  StatsStrip,
   EmptyState,
   GlassPanel,
   StatusBadge,
@@ -300,7 +301,7 @@ export default function AlarmQueue() {
           title={t("emergency.title")}
         />
 
-        <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <StatsStrip className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <StatCard
             accent="neutral"
             icon={<Siren />}
@@ -325,7 +326,7 @@ export default function AlarmQueue() {
             label={t("emergency.stat.resolved")}
             value={counts["resolved"] || 0}
           />
-        </Stagger>
+        </StatsStrip>
 
         {/* Filtros */}
         <Toolbar>
