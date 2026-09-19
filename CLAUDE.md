@@ -126,6 +126,32 @@ decora**:
   que vive dentro de `.app-shell`. No se puede usar `body::before`: `.app-shell`
   tiene `isolation: isolate` y el velo se pintaría por encima de todo.
 
+## Antes de escribir un componente, mira si ya existe
+
+La /style-guide es la lista completa y **cada pieza dice cuándo usarla**. Si algo
+no está ahí, se añade ahí primero y luego se usa.
+
+Lo que se ha encontrado duplicado al barrer el producto, por si vuelve a pasar:
+
+- **Un buscador es `SearchInput`.** Había 42 escritos a mano —un `div relative`,
+  una lupa en `absolute` y un campo con `pl-9`— y el componente lo usaba UNA
+  pantalla. Al pasar por él se gana la equis para vaciar, el `type="search"` y el
+  texto de ayuda traducible.
+- **Una barra de progreso es `MeterBar`** (`components/charts`). `Meter`, en el
+  kit, ya no dibuja nada: sólo pone la fila de etiqueta y porcentaje encima.
+- **Una tarjeta de lista en el teléfono la envuelve `MobileCardList`**, y ya le
+  pone su `.glass-flat`. Envolverla otra vez deja dos filos concéntricos.
+- **La fila de acciones lleva `.cg-acciones`** — ya la traen `PageHeader`,
+  `Section` y `Toolbar`.
+- **El margen lateral lo pone `PageContainer`**, y sólo él.
+- **La miga sale de `sidebar-menu.json`** y se pinta una vez en el armazón. No se
+  escribe por pantalla.
+
+No todo lo que se parece es un duplicado: los círculos de iniciales del Horario
+llevan el color con el que se identifica a cada vigilante, y eso `Avatar` no lo
+modela. Antes de unificar, comprueba que la copia no esté diciendo algo que el
+componente no sabe decir.
+
 ## Cómo se escribe
 
 - La interfaz está en **español**. El término del producto es **«vigilante»**, no
