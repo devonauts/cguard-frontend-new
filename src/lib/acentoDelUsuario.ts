@@ -256,3 +256,133 @@ export function choqueConEstado(
 
   return peor;
 }
+
+/** Tono y croma; el nombre es sólo para la interfaz.
+ *  `labelKey` es la clave i18n: este array se evalúa al cargar el módulo, así
+ *  que el texto se traduce DONDE SE PINTA (`t(p.labelKey ?? "", p.label)`). */
+export const ACCENT_PRESETS: Array<{
+  id: string;
+  label: string;
+  labelKey?: string;
+  h: number;
+  c: number;
+  /** Con lámina metálica. Ver `--sheen` en tokens.css. */
+  metal?: boolean;
+}> = [
+  {
+    /* ── ORO DE VERDAD ─────────────────────────────────────────────────────
+       Va PRIMERO porque es lo que la gente busca cuando piensa «dorado».
+
+       Mismo tono que el mostaza (88° es exactamente el tono del #FFC800, el oro
+       de las paletas) y un croma un punto más alto; lo que lo separa no es el
+       color sino el ACABADO. El mostaza plano se queda: hay quien lo prefiere, y
+       es el de fábrica desde el principio. */
+    id: "oro",
+    label: "Oro metálico",
+    labelKey: "appearance.accent.oro",
+    h: 88,
+    c: 0.18,
+    metal: true,
+  },
+  {
+    /* ── LA OTRA MITAD DE LA PLACA ─────────────────────────────────────────
+       Una placa de seguridad es de oro o de PLATA; tener sólo el oro quedaba
+       cojo. No hace falta ningún color nuevo: es el gris azulado del acero con
+       la lámina puesta, y sale metal cepillado.
+
+       El croma va a 0,02 y no al 0,04 del Acero para que quede más neutro —la
+       plata tira a frío pero no a azul— y de paso los separa el comparador,
+       que considera iguales dos acentos a menos de 0,005. */
+    id: "plata",
+    label: "Plata",
+    labelKey: "appearance.accent.plata",
+    h: 250,
+    c: 0.02,
+    metal: true,
+  },
+  {
+    id: "mostaza",
+    label: "Mostaza oro",
+    labelKey: "appearance.accent.mostaza",
+    h: 88,
+    c: 0.16,
+  },
+  {
+    id: "ambar",
+    label: "Ámbar",
+    labelKey: "appearance.accent.ambar",
+    h: 70,
+    c: 0.16,
+  },
+  {
+    id: "lima",
+    label: "Lima",
+    labelKey: "appearance.accent.lima",
+    h: 125,
+    c: 0.16,
+  },
+  {
+    id: "esmeralda",
+    label: "Esmeralda",
+    labelKey: "appearance.accent.esmeralda",
+    h: 155,
+    c: 0.15,
+  },
+  {
+    /* ── EL ÚNICO HUECO DE TONO QUE QUEDABA ────────────────────────────────
+       Medida la rueda entera, entre Esmeralda (155°) y Cian (205°) había 50°
+       vacíos — el hueco más grande de la paleta. Y es el único sitio libre que
+       además no se parece a ningún color de estado: queda a 35° del verde de
+       «todo correcto».
+
+       Croma 0,12 y no más: a 0,13 el turquesa se sale del sRGB y el navegador
+       lo recorta, que es como dos pantallas enseñan colores distintos. */
+    id: "turquesa",
+    label: "Turquesa",
+    labelKey: "appearance.accent.turquesa",
+    h: 185,
+    c: 0.12,
+  },
+  {
+    id: "cian",
+    label: "Cian",
+    labelKey: "appearance.accent.cian",
+    h: 205,
+    c: 0.14,
+  },
+  {
+    id: "azul",
+    label: "Azul",
+    labelKey: "appearance.accent.azul",
+    h: 250,
+    c: 0.15,
+  },
+  {
+    id: "violeta",
+    label: "Violeta",
+    labelKey: "appearance.accent.violeta",
+    h: 295,
+    c: 0.16,
+  },
+  {
+    id: "magenta",
+    label: "Magenta",
+    labelKey: "appearance.accent.magenta",
+    h: 340,
+    c: 0.16,
+  },
+  {
+    id: "carmesi",
+    label: "Carmesí",
+    labelKey: "appearance.accent.carmesi",
+    h: 22,
+    c: 0.17,
+  },
+  {
+    id: "acero",
+    label: "Acero",
+    labelKey: "appearance.accent.acero",
+    h: 250,
+    c: 0.04,
+  },
+];

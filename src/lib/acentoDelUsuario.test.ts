@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   ACCENT_DEFAULT,
+  ACCENT_PRESETS,
   CROMA_MAX,
   CROMA_MINIMO_DE_CHOQUE,
   GRADOS_DE_CHOQUE,
@@ -405,5 +406,77 @@ describe("avisar cuando el color de la empresa choca con una alerta", () => {
     expect(distanciaDeTono(355, 27)).toBe(32);
     expect(distanciaDeTono(358, 10)).toBe(12);
     expect(choqueConEstado({ h: 15, c: 0.16 })?.estado).toBe("bad");
+  });
+});
+
+describe("la paleta predefinida", () => {
+  /** Los cuatro que ya chocaban cuando se midió la paleta, el 2026-09-20.
+   *  Están aquí a propósito: son colores que alguien puede querer de verdad y
+   *  no se le prohíben, se le avisa. Lo que esta lista impide es que entre un
+   *  QUINTO sin que nadie se dé cuenta. */
+  const CHOCAN_A_SABIENDAS = ["ambar", "esmeralda", "azul", "carmesi"];
+
+  it("no se cuela ningún color nuevo que choque con una alerta", () => {
+    const chocan = ACCENT_PRESETS.filter((p) => choqueConEstado(p)).map(
+      (p) => p.id,
+    );
+
+    expect(
+      chocan.sort(),
+      "si añades un color que se parece a un aviso, decídelo a conciencia y " +
+        "mételo en CHOCAN_A_SABIENDAS",
+    ).toEqual([...CHOCAN_A_SABIENDAS].sort());
+  });
+
+  it("los ids no se repiten", () => {
+    const ids = ACCENT_PRESETS.map((p) => p.id);
+
+    expect(new Set(ids).size, `ids repetidos en ${ids.join(", ")}`).toBe(
+      ids.length,
+    );
+  });
+
+  it("dos presets nunca son el mismo color", () => {
+    /* `mismoAcento` es lo que marca cuál está activo: si dos coinciden, se
+       encienden los dos a la vez y no hay forma de elegir entre ellos. */
+    for (let i = 0; i < ACCENT_PRESETS.length; i++) {
+      for (let j = i + 1; j < ACCENT_PRESETS.length; j++) {
+        const a = ACCENT_PRESETS[i];
+        const b = ACCENT_PRESETS[j];
+
+        expect(mismoAcento(a, b), `${a.id} y ${b.id} son indistinguibles`).toBe(
+          false,
+        );
+      }
+    }
+  });
+
+  it("todos caben en el croma que el sistema deja elegir", () => {
+    for (const p of ACCENT_PRESETS) {
+      expect(p.c, p.id).toBeLessThanOrEqual(CROMA_MAX);
+      expect(p.h, p.id).toBeGreaterThanOrEqual(0);
+      expect(p.h, p.id).toBeLessThanOrEqual(360);
+    }
+  });
+
+  it("todos traen su clave de traducción", () => {
+    for (const p of ACCENT_PRESETS) {
+      expect(p.labelKey, p.id).toBe(`appearance.accent.${p.id}`);
+    }
+  });
+
+  it("y la clave existe de verdad en los ocho idiomas", () => {
+    /* Sin esto, un color nuevo sale con su nombre en español dentro del CRM en
+       inglés y nadie lo nota hasta que lo ve un cliente. */
+    for (const loc of ["es", "en", "pt", "de", "fr", "it", "nl", "pl"]) {
+      const dic = JSON.parse(leer(`src/locales/${loc}.json`));
+
+      for (const p of ACCENT_PRESETS) {
+        expect(
+          dic?.appearance?.accent?.[p.id],
+          `falta ${p.id} en ${loc}.json`,
+        ).toBeTruthy();
+      }
+    }
   });
 });
