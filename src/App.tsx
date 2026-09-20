@@ -650,6 +650,21 @@ function PersistentChrome({ children }: { children: React.ReactNode }) {
   );
 }
 
+/**
+ * Cruza al panel de plataforma. `window.location` y no `<Navigate>`: hay que
+ * recargar de verdad para saltar a otro bundle de Vite, con su propio token
+ * (`cguard_sa_token`, ajeno al de este CRM). Vive aquí y no en
+ * `ProtectedRoute` porque hay que atenderlo aunque la sesión de ESTE CRM no
+ * sirva — el panel tiene su propio inicio de sesión.
+ */
+function IrAlPanelDePlataforma() {
+  useEffect(() => {
+    window.location.replace("/superadmin/");
+  }, []);
+
+  return null;
+}
+
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -2559,6 +2574,16 @@ export default function App() {
                                 path="time-off"
                               />
                             </Route>
+
+                            {/* El panel de plataforma es OTRA app, servida por
+                                nginx en `/superadmin/` con su propio bundle y su
+                                propio token. Quien llegue aquí con un marcador
+                                de antes de la separación caía en el 404 de este
+                                CRM en vez de en su panel. */}
+                            <Route
+                              element={<IrAlPanelDePlataforma />}
+                              path="/superadmin/*"
+                            />
 
                             {/* 404 - Página no encontrada */}
                             <Route element={<NotFound />} path="*" />

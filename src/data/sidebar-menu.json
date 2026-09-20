@@ -78,22 +78,6 @@
     ]
   },
   {
-    "id": "superadmin",
-    "name": "Superadmin",
-    "icon": "UserCog",
-    "allowedRoles": [
-      "superadmin"
-    ],
-    "expandable": true,
-    "subItems": [
-      {
-        "id": "tenants",
-        "name": "Tenants",
-        "path": "/superadmin/tenants"
-      }
-    ]
-  },
-  {
     "id": "analiticas",
     "name": "Analíticas",
     "icon": "BarChart3",

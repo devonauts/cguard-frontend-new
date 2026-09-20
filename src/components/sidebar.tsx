@@ -174,7 +174,10 @@ const GROUPS: GroupDef[] = [
     id: "sistema",
     label: "Sistema",
     icon: UserCog,
-    ids: ["seguridad-auditoria", "superadmin"],
+    /* «superadmin» salió del menú: apuntaba a `/superadmin/tenants`, que vive
+       en OTRA app. Quien lo pulsaba —cualquiera cuyo rol normalice a «admin»,
+       no sólo un superadmin de plataforma— caía en el 404 de este CRM. */
+    ids: ["seguridad-auditoria"],
   },
 ];
 
