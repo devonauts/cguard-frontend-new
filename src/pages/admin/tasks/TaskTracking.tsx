@@ -179,11 +179,27 @@ export default function TaskTracking() {
     setOpen(true);
     try {
       const r = await taskService.stations();
+      /* El nombre de un puesto NO es único entre clientes: en el listado salían
+         cuatro «Caseta Principal» idénticas y quien asignaba la tarea no podía
+         saber cuál era cuál. El autocompletado ya trae el apodo interno
+         (P-011, P-091…), que sí distingue; sólo había que pintarlo. */
       const opts = (r.rows || r || []).map(
-        (s: { id: string; label?: string; stationName?: string }) => ({
-          id: s.id,
-          label: s.label || s.stationName || s.id,
-        }),
+        (s: {
+          id: string;
+          label?: string;
+          stationName?: string;
+          nickname?: string;
+        }) => {
+          const nombre = s.label || s.stationName || s.id;
+
+          return {
+            id: s.id,
+            label:
+              s.nickname && s.nickname !== nombre
+                ? `${nombre} · ${s.nickname}`
+                : nombre,
+          };
+        },
       );
 
       setStations(opts);
