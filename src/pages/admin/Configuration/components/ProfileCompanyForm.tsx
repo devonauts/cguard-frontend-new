@@ -52,7 +52,10 @@ import {
   tzForCountry,
   browserTimezone,
 } from "@/lib/timezones";
-import { cacheTenantLocation } from "@/utils/tenantLocation";
+import {
+  cacheTenantLocation,
+  cacheTenantTimezone,
+} from "@/utils/tenantLocation";
 import { geocodeRaw, parseGeocodeResult } from "@/utils/geocodeAddress";
 
 // useEffect imported above
@@ -310,6 +313,11 @@ export default function ProfileCompanyForm() {
 
         await tenantService.update(String(tenantId), payload);
         cacheTenantLocation(payload.latitude, payload.longitude);
+        /* La zona horaria es la que decide a qué hora ocurrió CADA cosa en todo
+           el CRM. Sin refrescar su caché, cambiarla aquí no tenía efecto hasta
+           recargar la página: el Horario, la Nómina y los informes seguían
+           midiendo con la zona anterior. */
+        cacheTenantTimezone(payload.timezone);
         toast.success(
           t("settings.companyProfile.savedOk", {
             defaultValue: "Datos de la empresa guardados correctamente",
@@ -417,6 +425,7 @@ export default function ProfileCompanyForm() {
 
         // Keep the business location cache in sync
         cacheTenantLocation(t.latitude, t.longitude);
+        cacheTenantTimezone(t.timezone);
 
         if (t.phone) setPhoneE164(String(t.phone));
 

@@ -54,6 +54,7 @@ import {
 } from "@/lib/validators/id";
 import { Combobox } from "@/components/app/combobox";
 import { timezoneOptions } from "@/lib/timezones";
+import { cacheTenantTimezone } from "@/utils/tenantLocation";
 
 interface OnboardingWizardProps {
   open: boolean;
@@ -394,6 +395,9 @@ export default function OnboardingWizard({
       };
 
       await tenantService.update(tenant.id, payload);
+      // Misma razón que en Perfil de la empresa: la zona elegida aquí tiene que
+      // estar en la caché antes de que se pinte la primera pantalla con fechas.
+      cacheTenantTimezone(payload.timezone);
 
       if (logoFile) {
         try {
