@@ -42,6 +42,7 @@ import { clientService } from "@/lib/api/clientService";
 import IncidentTypesService from "@/services/incident-types.service";
 import api from "@/lib/api";
 import { postSiteService } from "@/lib/api/postSiteService";
+import { diaDeLaEmpresa, horaDeLaEmpresa, desdeInputFechaHora} from "@/lib/horaDeLaEmpresa";
 
 const prioridades = [
   { id: "alta", name: "Alta" },
@@ -278,8 +279,10 @@ export default function EditDispatchPage() {
           const d = new Date(dateVal);
 
           if (!isNaN(d.getTime())) {
-            incidentDate = d.toISOString().slice(0, 10);
-            incidentTime = d.toTimeString().slice(0, 5);
+            // La fecha venía de UTC y la hora del reloj del portátil: dos zonas
+            // distintas en el mismo formulario. Las dos son del puesto.
+            incidentDate = diaDeLaEmpresa(d);
+            incidentTime = horaDeLaEmpresa(d);
           }
         }
 
@@ -435,7 +438,12 @@ export default function EditDispatchPage() {
   const onSubmit = async (data: DispatchCreateSchema) => {
     const incidentAt =
       data.incidentDate && data.incidentTime
-        ? new Date(`${data.incidentDate}T${data.incidentTime}:00`).toISOString()
+        // «14:30» en el formulario son las 14:30 DEL PUESTO. `new Date("…T14:30:00")`
+        // las leía en la zona del dispositivo, así que un incidente registrado
+        // desde otra ciudad se guardaba a una hora distinta de la que se escribió.
+        ? desdeInputFechaHora(
+            `${data.incidentDate}T${data.incidentTime}`,
+          )
         : null;
 
     const payload: Record<string, string | null> = {

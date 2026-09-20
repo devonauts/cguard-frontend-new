@@ -38,6 +38,7 @@ import payrollService, {
   type TarjetaDeNomina,
 } from "@/lib/api/payrollService";
 import attendanceService from "@/lib/api/attendanceService";
+import { diaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import {
   PageContainer,
   PageHeader,
@@ -49,7 +50,10 @@ import {
   EmptyState,
 } from "@/components/kit";
 
-const isoDay = (d: Date) => d.toISOString().slice(0, 10);
+/* El día de una tarjeta de tiempo es el de la EMPRESA. Con `toISOString` el
+   rango por defecto se corría un día cada tarde: a las 18:00 de México ya era
+   mañana en Greenwich, y «hasta hoy» dejaba fuera el turno en curso. */
+const isoDay = (d: Date) => diaDeLaEmpresa(d);
 const num = (v: unknown) => Number(v ?? 0);
 
 /** Cifra alineada a la derecha, para poder comparar columnas de un vistazo. */

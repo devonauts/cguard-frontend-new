@@ -55,6 +55,7 @@ import {
 import shiftService, { ShiftRecord } from "@/lib/api/shiftService";
 
 import { localeActual } from "@/lib/localeActual";
+import { desdeInputFechaHora, limitesDelDia } from "@/lib/horaDeLaEmpresa";
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 function formatDate(iso: string | null) {
@@ -120,21 +121,22 @@ export default function ShiftStatus() {
   const fetchShifts = useCallback(async () => {
     setLoading(true);
     try {
+        // La hora que escribe el usuario es la DEL PUESTO. `new Date("…T07:00")`
+        // la leía en la zona del dispositivo, así que el mismo filtro devolvía
+        // turnos distintos según desde dónde se mirara.
       const fromDate = appliedFilters.startDate
-        ? new Date(
-            appliedFilters.startDate +
-              (appliedFilters.startTime
-                ? `T${appliedFilters.startTime}`
-                : "T00:00:00"),
-          ).toISOString()
+        ? appliedFilters.startTime
+          ? desdeInputFechaHora(
+              `${appliedFilters.startDate}T${appliedFilters.startTime}`,
+            )
+          : limitesDelDia(appliedFilters.startDate).start
         : new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
       const toDate = appliedFilters.endDate
-        ? new Date(
-            appliedFilters.endDate +
-              (appliedFilters.endTime
-                ? `T${appliedFilters.endTime}`
-                : "T23:59:59"),
-          ).toISOString()
+        ? appliedFilters.endTime
+          ? desdeInputFechaHora(
+              `${appliedFilters.endDate}T${appliedFilters.endTime}`,
+            )
+          : limitesDelDia(appliedFilters.endDate).end
         : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
       const { rows } = await shiftService.list({

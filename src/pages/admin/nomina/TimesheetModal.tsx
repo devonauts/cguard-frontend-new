@@ -40,6 +40,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { getTenantTimezone } from "@/utils/tenantLocation";
+import { desdeInputFechaHora } from "@/lib/horaDeLaEmpresa";
 
 /**
  * ─────────────────────────────────────────────────────────────────────────────
@@ -87,24 +88,7 @@ function aLocalInput(iso: string | null | undefined): string {
  * fichaje varias horas sin que nadie lo note.
  */
 function deLocalInput(v: string): string | null {
-  if (!v) return null;
-  const tz = getTenantTimezone();
-  const [f, h] = v.split("T");
-  if (!f || !h) return null;
-  // Se busca el desfase real de ESA fecha (respeta horario de verano).
-  const tentativa = new Date(`${f}T${h}:00Z`);
-  const enTz = new Intl.DateTimeFormat("sv-SE", {
-    timeZone: tz,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).format(tentativa);
-  const leido = new Date(`${enTz.replace(" ", "T")}:00Z`).getTime();
-  const desfase = leido - tentativa.getTime();
-  return new Date(tentativa.getTime() - desfase).toISOString();
+  return desdeInputFechaHora(v) || null;
 }
 
 /* ── UN DÍA SIN FICHAJE ─────────────────────────────────────────────────────

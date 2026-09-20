@@ -45,6 +45,7 @@ import { runOrQueue } from "@/lib/offline/offlineQueue";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import securityGuardService from "@/lib/api/securityGuardService";
+import { diaDeLaEmpresa, horaDeLaEmpresa, desdeInputFechaHora} from "@/lib/horaDeLaEmpresa";
 
 // Datos cargados desde backend
 // Se usan estados vacíos y se rellenan en useEffect
@@ -1183,9 +1184,11 @@ export default function NewDispatchPage() {
       if (dateVal) {
         const d = new Date(dateVal);
         if (!isNaN(d.getTime())) {
-          incidentDate = d.toISOString().slice(0, 10);
+          // La fecha venía de UTC y la hora del reloj del portátil: dos zonas
+            // distintas en el mismo formulario. Las dos son del puesto.
+            incidentDate = diaDeLaEmpresa(d);
           // format HH:MM
-          incidentTime = d.toTimeString().slice(0, 5);
+          incidentTime = horaDeLaEmpresa(d);
         }
       }
 
@@ -1388,7 +1391,12 @@ export default function NewDispatchPage() {
   const onSubmit = async (data: DispatchCreateSchema) => {
     const incidentAt =
       data.incidentDate && data.incidentTime
-        ? new Date(`${data.incidentDate}T${data.incidentTime}:00`).toISOString()
+        // «14:30» en el formulario son las 14:30 DEL PUESTO. `new Date("…T14:30:00")`
+        // las leía en la zona del dispositivo, así que un incidente registrado
+        // desde otra ciudad se guardaba a una hora distinta de la que se escribió.
+        ? desdeInputFechaHora(
+            `${data.incidentDate}T${data.incidentTime}`,
+          )
         : null;
 
     // Build explicit payload mapping form fields to backend field names

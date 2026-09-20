@@ -10,6 +10,7 @@ import { confirmDialog } from "@/components/ui/confirmDialog";
 import ExportMenu from "@/components/reports/ExportMenu";
 import { exportMatrix, type ExportFormat } from "@/lib/export/reportExport";
 import attendanceService from "@/lib/api/attendanceService";
+import { diaDeLaEmpresa, limitesDelDia} from "@/lib/horaDeLaEmpresa";
 import {
   PageContainer,
   PageHeader,
@@ -38,8 +39,9 @@ interface SummaryRow {
   role?: string;
 }
 
+/* Ver la nota de `NominaTimecards`: el día es el de la empresa, no el de UTC. */
 function isoDay(d: Date) {
-  return d.toISOString().slice(0, 10);
+  return diaDeLaEmpresa(d);
 }
 
 interface HoursTotals {
@@ -102,7 +104,11 @@ export default function NominaHoursSummary() {
   const load = useCallback(() => {
     setLoading(true);
     attendanceService
-      .payrollSummary({ from: `${from}T00:00:00`, to: `${to}T23:59:59` })
+      // Se mandaba `2026-09-19T00:00:00` sin zona, y el servidor lo lee con
+      // `new Date()`, o sea en la zona DEL SERVIDOR. El periodo de nómina
+      // empezaba donde estuviera la máquina. Ahora viaja el instante exacto que
+      // corresponde a la medianoche de la empresa.
+      .payrollSummary(limitesDelDia(from, to))
       .then((d: HoursSummaryResponse) => {
         setRows(
           (d.rows || []).map((r: SummaryRow) => ({
@@ -153,7 +159,7 @@ export default function NominaHoursSummary() {
       return;
     setClosing(true);
     try {
-      const r = await attendanceService.closePeriod(`${to}T23:59:59`);
+      const r = await attendanceService.closePeriod(limitesDelDia(to).end);
 
       toast.success(
         `Periodo cerrado · ${r.lockedCount} registro(s) bloqueado(s)`,

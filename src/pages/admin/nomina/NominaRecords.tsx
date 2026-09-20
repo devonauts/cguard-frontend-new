@@ -49,6 +49,7 @@ import ExportMenu from "@/components/reports/ExportMenu";
 import type { ExportFormat } from "@/lib/export/reportExport";
 
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 const STATUS_OPTIONS = [
   "",
   "on_time",
@@ -107,19 +108,19 @@ function shiftAnchor(period: Period, anchor: Date, dir: number): Date {
 function rangeLabel(period: Period, anchor: Date): string {
   const [s, e] = rangeFor(period, anchor);
   if (period === "day")
-    return s.toLocaleDateString(localeActual(), {
+    return s.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
       weekday: "short",
       day: "2-digit",
       month: "short",
       year: "numeric",
     });
   if (period === "month")
-    return s.toLocaleDateString(localeActual(), {
+    return s.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
       month: "long",
       year: "numeric",
     });
   const sameMonth = s.getMonth() === e.getMonth();
-  return `${s.toLocaleDateString(localeActual(), { day: "2-digit", month: sameMonth ? undefined : "short" })} – ${e.toLocaleDateString(localeActual(), { day: "2-digit", month: "short", year: "numeric" })}`;
+  return `${s.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(), day: "2-digit", month: sameMonth ? undefined : "short" })} – ${e.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(), day: "2-digit", month: "short", year: "numeric" })}`;
 }
 
 export default function NominaRecords() {

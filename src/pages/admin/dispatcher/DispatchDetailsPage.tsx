@@ -28,6 +28,7 @@ import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import i18n from "@/i18n";
 import { localeActual } from "@/lib/localeActual";
+import { diaDeLaEmpresa, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
 
 type ResourceType = "request" | "incident";
 
@@ -316,14 +317,13 @@ export function DispatchDetailsContent({
           payload.siteId || (payload.site && payload.site.id) || undefined,
         );
         setStatus(payload.status || "todo");
+        // El día de un incidente es el día del PUESTO: uno de las 21:00 en
+        // México se guarda como 03:00Z del día siguiente, y en UTC la ficha lo
+        // fechaba mañana.
         if (payload.createdAt)
-          setCreatedDate(
-            new Date(payload.createdAt).toISOString().slice(0, 10),
-          );
+          setCreatedDate(diaDeLaEmpresa(payload.createdAt));
         if (payload.dateTime)
-          setIncidentDate(
-            new Date(payload.dateTime).toISOString().slice(0, 10),
-          );
+          setIncidentDate(diaDeLaEmpresa(payload.dateTime));
         // initialize comments: prefer payload.comments if present
         if (payload.comments && Array.isArray(payload.comments)) {
           setComments(payload.comments);
@@ -356,9 +356,9 @@ export function DispatchDetailsContent({
           </td>
           <td className="py-2 px-3">
             {requestPayload.dateTime
-              ? new Date(requestPayload.dateTime).toLocaleString(localeActual())
+              ? new Date(requestPayload.dateTime).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
               : requestPayload.createdAt
-                ? new Date(requestPayload.createdAt).toLocaleString(localeActual())
+                ? new Date(requestPayload.createdAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
                 : "-"}
           </td>
         </tr>,
@@ -378,7 +378,7 @@ export function DispatchDetailsContent({
             </td>
             <td className="py-2 px-3">
               {g && (g.dateTime || g.assignedAt)
-                ? new Date(g.dateTime || g.assignedAt).toLocaleString(localeActual())
+                ? new Date(g.dateTime || g.assignedAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
                 : "-"}
             </td>
           </tr>,
@@ -627,7 +627,7 @@ export function DispatchDetailsContent({
                     </td>
                     <td className="py-3 px-4 text-sm text-foreground">
                       {requestPayload.createdAt
-                        ? new Date(requestPayload.createdAt).toLocaleString(localeActual())
+                        ? new Date(requestPayload.createdAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
                         : "-"}
                     </td>
                   </tr>
@@ -687,7 +687,7 @@ export function DispatchDetailsContent({
                         ? new Date(
                             requestPayload.incidentAt ||
                               requestPayload.dateTime,
-                          ).toLocaleString(localeActual())
+                          ).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
                         : "-"}
                     </td>
                   </tr>
@@ -917,7 +917,7 @@ export function DispatchDetailsContent({
                           "Usuario"}{" "}
                         ·{" "}
                         {c.createdAt
-                          ? new Date(c.createdAt).toLocaleString(localeActual())
+                          ? new Date(c.createdAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
                           : ""}
                       </div>
                       <div className="mt-1 text-sm text-foreground whitespace-pre-wrap break-words">

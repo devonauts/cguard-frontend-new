@@ -37,6 +37,7 @@ import {
   Toolbar,
 } from "@/components/kit";
 import { localeActual } from "@/lib/localeActual";
+import { limitesDelDia, soloFechaCivil } from "@/lib/horaDeLaEmpresa";
 interface ExceptionRow {
   id: string;
   type: string;
@@ -181,7 +182,7 @@ export default function NominaExceptions() {
 
     attendanceService
       .bulkResolveExceptions({
-        before: new Date(`${corte}T00:00:00`).toISOString(),
+        before: limitesDelDia(corte).start,
         type: type || undefined,
         preview: true,
       })
@@ -199,9 +200,7 @@ export default function NominaExceptions() {
 
   const cerrarAtraso = async () => {
     if (!corte || !alcance) return;
-    const fecha = new Date(`${corte}T00:00:00`).toLocaleDateString(
-      localeActual(),
-    );
+    const fecha = soloFechaCivil(corte);
 
     if (
       !window.confirm(
@@ -212,7 +211,7 @@ export default function NominaExceptions() {
     setCerrando(true);
     try {
       const r: any = await attendanceService.bulkResolveExceptions({
-        before: new Date(`${corte}T00:00:00`).toISOString(),
+        before: limitesDelDia(corte).start,
         type: type || undefined,
       });
 

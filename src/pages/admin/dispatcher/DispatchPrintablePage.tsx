@@ -38,6 +38,7 @@ import type {
 } from "./types";
 import i18n from "@/i18n";
 import { localeActual } from "@/lib/localeActual";
+import { diaDeLaEmpresa, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
 
 export function DispatchDetailsContent({
   requestId,
@@ -310,11 +311,11 @@ export function DispatchDetailsContent({
         setStatus(payload.status || "todo");
         if (payload.createdAt)
           setCreatedDate(
-            new Date(payload.createdAt).toISOString().slice(0, 10),
+            diaDeLaEmpresa(payload.createdAt),
           );
         if (payload.dateTime)
           setIncidentDate(
-            new Date(payload.dateTime).toISOString().slice(0, 10),
+            diaDeLaEmpresa(payload.dateTime),
           );
         // initialize comments: prefer payload.comments if present
         if (payload.comments && Array.isArray(payload.comments)) {
@@ -345,9 +346,9 @@ export function DispatchDetailsContent({
           <td className="py-2 px-3">-</td>
           <td className="py-2 px-3">
             {requestPayload.dateTime
-              ? new Date(requestPayload.dateTime).toLocaleString(localeActual())
+              ? new Date(requestPayload.dateTime).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
               : requestPayload.createdAt
-                ? new Date(requestPayload.createdAt).toLocaleString(localeActual())
+                ? new Date(requestPayload.createdAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
                 : "-"}
           </td>
         </tr>,
@@ -369,7 +370,7 @@ export function DispatchDetailsContent({
             </td>
             <td className="py-2 px-3">
               {g && (g.dateTime || g.assignedAt)
-                ? new Date(g.dateTime || g.assignedAt).toLocaleString(localeActual())
+                ? new Date(g.dateTime || g.assignedAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
                 : "-"}
             </td>
           </tr>,
@@ -564,7 +565,7 @@ export function DispatchDetailsContent({
                     </td>
                     <td className="py-3 px-4 text-sm text-foreground">
                       {requestPayload.createdAt
-                        ? new Date(requestPayload.createdAt).toLocaleString(localeActual())
+                        ? new Date(requestPayload.createdAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
                         : "-"}
                     </td>
                   </tr>
@@ -625,7 +626,7 @@ export function DispatchDetailsContent({
                         ? new Date(
                             requestPayload.incidentAt ||
                               requestPayload.dateTime,
-                          ).toLocaleString(localeActual())
+                          ).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
                         : "-"}
                     </td>
                   </tr>
@@ -875,7 +876,7 @@ export function DispatchDetailsContent({
                           "Usuario"}{" "}
                         ·{" "}
                         {c.createdAt
-                          ? new Date(c.createdAt).toLocaleString(localeActual())
+                          ? new Date(c.createdAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
                           : ""}
                       </div>
                       <div className="mt-1 text-sm text-foreground whitespace-pre-wrap">

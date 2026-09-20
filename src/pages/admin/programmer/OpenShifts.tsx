@@ -54,6 +54,7 @@ import {
 import shiftService, { ShiftRecord } from "@/lib/api/shiftService";
 import { securityGuardService } from "@/lib/api/securityGuardService";
 import { localeActual } from "@/lib/localeActual";
+import { desdeInputFechaHora, limitesDelDia } from "@/lib/horaDeLaEmpresa";
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 function formatDate(iso: string | null) {
@@ -143,25 +144,27 @@ export default function OpenShifts() {
       };
 
       if (appliedFilters.startDate) {
-        const from =
-          appliedFilters.startDate +
-          (appliedFilters.startTime
-            ? `T${appliedFilters.startTime}`
-            : "T00:00:00");
-
-        params["filter[startTimeRange]"] = [new Date(from).toISOString()];
+        // La hora que escribe el usuario es la DEL PUESTO. `new Date("…T07:00")`
+        // la leía en la zona del dispositivo, así que el mismo filtro devolvía
+        // turnos distintos según desde dónde se mirara.
+        params["filter[startTimeRange]"] = [
+          appliedFilters.startTime
+            ? desdeInputFechaHora(
+                `${appliedFilters.startDate}T${appliedFilters.startTime}`,
+              )
+            : limitesDelDia(appliedFilters.startDate).start,
+        ];
       }
       if (appliedFilters.endDate) {
-        const to =
-          appliedFilters.endDate +
-          (appliedFilters.endTime ? `T${appliedFilters.endTime}` : "T23:59:59");
+        const to = appliedFilters.endTime
+          ? desdeInputFechaHora(
+              `${appliedFilters.endDate}T${appliedFilters.endTime}`,
+            )
+          : limitesDelDia(appliedFilters.endDate).end;
         const existing =
           (params["filter[startTimeRange]"] as string[] | undefined) ?? [];
 
-        params["filter[startTimeRange]"] = [
-          ...existing,
-          new Date(to).toISOString(),
-        ];
+        params["filter[startTimeRange]"] = [...existing, to];
       }
 
       const { rows } = await shiftService.list(params);

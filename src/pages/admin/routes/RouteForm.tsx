@@ -83,6 +83,7 @@ import userService from "@/lib/api/userService";
 import { postSiteService } from "@/lib/api/postSiteService";
 import vehicleService from "@/lib/api/vehicleService";
 import routeService from "@/lib/api/routeService";
+import { desdeInputFechaHora } from "@/lib/horaDeLaEmpresa";
 
 const notifyTimes = ["00:05", "00:10", "00:15", "00:30", "01:00"];
 
@@ -1275,11 +1276,12 @@ export default function RouteForm({
         assignedGuard: data.supervisorId,
         windowStart:
           data.dateFrom && data.startTime
-            ? new Date(`${data.dateFrom}T${data.startTime}:00`).toISOString()
+            ? // La ventana de la ruta es hora del puesto, no del portátil.
+              desdeInputFechaHora(`${data.dateFrom}T${data.startTime}`)
             : null,
         windowEnd:
           data.dateTo && data.endTime
-            ? new Date(`${data.dateTo}T${data.endTime}:00`).toISOString()
+            ? desdeInputFechaHora(`${data.dateTo}T${data.endTime}`)
             : null,
         points: points.map((p, idx) => ({
           siteId: p.siteId,
