@@ -59,6 +59,8 @@ const TAB_ICONS: Record<string, any> = {
 import { Button } from "@/components/ui/button";
 import { StatusBadge, SmartImage } from "@/components/kit";
 import { clientService } from "@/lib/api/clientService";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { localeActual } from "@/lib/localeActual";
 
 type Props = {
   navKey: string;
@@ -251,7 +253,7 @@ export default function ClientsLayout({
     return `${String(Math.floor(s / 3600)).padStart(2, "0")}:${String(Math.floor((s % 3600) / 60)).padStart(2, "0")}`;
   })();
   const base = `/clients/${client?.id}`;
-  const fmtD = (d: any) => (d ? new Date(d).toLocaleDateString() : null);
+  const fmtD = (d: any) => (d ? new Date(d).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() }) : null);
 
   const kpis = [
     {

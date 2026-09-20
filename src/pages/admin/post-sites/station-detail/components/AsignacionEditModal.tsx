@@ -13,6 +13,7 @@ import {
 import SecuenciaPropiaSelect from "@/components/schedule/SecuenciaPropiaSelect";
 import { nombreDeTramo } from "@/components/schedule/tramos";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import {
   nextRestDates,
   rotationDseOf,
@@ -252,7 +253,7 @@ export default function AsignacionEditModal({
         reglas,
         ancla,
       ),
-      startWeekday: d.toLocaleDateString(localeActual(), {
+      startWeekday: d.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
         weekday: "long",
         day: "numeric",
         month: "short",

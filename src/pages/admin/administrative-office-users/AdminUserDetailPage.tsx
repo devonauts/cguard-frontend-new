@@ -39,6 +39,7 @@ import RegistroDeIntentos from "@/components/RegistroDeIntentos";
 import type { AdminUser, RoleRef, TenantUser } from "./adminUserTypes";
 
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 const photoOf = (u: AdminUser | null): string | null => {
   const a = u?.avatars ?? u?.avatar ?? u?.profileImage;
   const f = Array.isArray(a) ? a[0] : a;
@@ -81,7 +82,7 @@ const STATUS_META: Record<
 
 const fmtDate = (v: string | number | Date | null | undefined) =>
   v
-    ? new Date(v).toLocaleDateString(localeActual(), {
+    ? new Date(v).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
         day: "2-digit",
         month: "short",
         year: "numeric",

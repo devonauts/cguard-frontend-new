@@ -8,6 +8,7 @@ import { ApiService } from "@/services/api/apiService";
 import { CatalogTable, type CatalogColumn } from "../components/CatalogTable";
 import PolicyDialog, { PolicyForm } from "./PolicyDialog";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 type Policy = {
   id: string;
@@ -25,7 +26,7 @@ type Policy = {
 const formatPolicyDate = (value?: string) => {
   if (!value) return "—";
   const d = new Date(value);
-  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString(localeActual());
+  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() });
 };
 
 // La pantalla estuvo marcada «Próximamente» —honestamente: no fingía guardar—

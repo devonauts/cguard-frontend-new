@@ -117,6 +117,7 @@ import {
   cambioLocalReciente,
 } from "@/lib/appearanceSync";
 import { enLotes } from "@/lib/enLotes";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -11204,7 +11205,7 @@ export default function Schedule() {
                     }
                     const fmt = (d: string) => {
                       try {
-                        return new Date(d).toLocaleString(localeActual(), {
+                        return new Date(d).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa(),
                           day: "2-digit",
                           month: "short",
                           hour: "2-digit",

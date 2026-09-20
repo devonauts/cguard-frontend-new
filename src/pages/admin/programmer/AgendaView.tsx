@@ -7,6 +7,7 @@ import { localeActual } from "@/lib/localeActual";
 import { nombreDeVigilante } from "@/lib/guardName";
 import { stationLabel } from "@/lib/stationName";
 import { cuentaComoCobertura } from "@/lib/shiftStatus";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 /**
  * ────────────────────────────────────────────────────────────────────────────
@@ -137,7 +138,7 @@ function AgendaViewInner({
                 style={{ color: hoy ? "var(--brand-text)" : undefined }}
               >
                 {date
-                  .toLocaleDateString(locale, {
+                  .toLocaleDateString(locale, { timeZone: zonaDeLaEmpresa(),
                     weekday: "long",
                     day: "numeric",
                     month: "long",

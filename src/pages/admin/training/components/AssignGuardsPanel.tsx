@@ -27,6 +27,7 @@ import {
   type EnrollmentRow,
 } from "@/lib/api/trainingEnrollmentService";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 interface GuardOption {
   id: string;
   name: string;
@@ -229,7 +230,7 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
       render: (_v, e) => (
         <span className="tabular-nums" style={{ color: "var(--ink-soft)" }}>
           {e.completedAt
-            ? new Date(e.completedAt).toLocaleDateString(localeActual())
+            ? new Date(e.completedAt).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() })
             : "—"}
         </span>
       ),

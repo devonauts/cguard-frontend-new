@@ -60,6 +60,7 @@ import { EmptyState, StatusBadge, SkeletonCards } from "@/components/kit";
 import { FIELD_CLS_LG } from "@/pages/admin/clientes/components/_shared/tab-kit";
 import type { PostSite } from "@/types";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 interface SiteProp extends PostSite {
   tenantId?: string;
@@ -1411,7 +1412,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                                     it.date ||
                                     it.createdAt ||
                                     it.created_at,
-                                ).toLocaleString(localeActual())
+                                ).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
                               : "-"}
                           </td>
 

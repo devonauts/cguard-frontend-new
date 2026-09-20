@@ -17,11 +17,12 @@ import {
 import taskService, { type TaskRow } from "@/lib/api/taskService";
 import { promptDialog } from "@/components/ui/promptDialog";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 function fmtDate(s?: string | null): string {
   if (!s) return "—";
   const d = new Date(s);
 
-  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString(localeActual());
+  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() });
 }
 
 const PRIORITY_META: Record<

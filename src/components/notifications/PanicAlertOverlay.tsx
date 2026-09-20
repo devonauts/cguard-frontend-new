@@ -15,6 +15,7 @@ import { Siren, Phone, MapPin, User, Building2, Clock } from "lucide-react";
 import { startPanicAlarm, stopPanicAlarm } from "@/lib/notificationSound";
 import { ApiService } from "@/services/api/apiService";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 /**
  * AHORRO · El mapa llega SÓLO cuando hay un pánico en pantalla.
  *
@@ -216,7 +217,7 @@ export function PanicAlertOverlay({
   const hasCoords = !isNaN(lat) && !isNaN(lng) && (lat !== 0 || lng !== 0);
   const when = (() => {
     try {
-      return new Date(p.at || latest.createdAt).toLocaleString(localeActual(), {
+      return new Date(p.at || latest.createdAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa(),
         hour: "2-digit",
         minute: "2-digit",
         day: "2-digit",

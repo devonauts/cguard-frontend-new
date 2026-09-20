@@ -24,6 +24,7 @@ import { nombreDeTramo } from "@/components/schedule/tramos";
 import type { Station } from "@/types";
 
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 // Local YYYY-MM-DD (avoid toISOString — it shifts day in negative-UTC zones).
 const dateKey = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -236,7 +237,7 @@ export default function ShiftAssignModal({
         sundayDoubleRest: (style as any).sundayDoubleRest,
       }),
       dates,
-      startWeekday: start.toLocaleDateString(localeActual(), {
+      startWeekday: start.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
         weekday: "long",
         day: "numeric",
         month: "short",

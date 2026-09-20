@@ -34,6 +34,7 @@ import {
 import { reverseGeocode } from "@/lib/geocodeClient";
 import { Section, StatCard, Stagger } from "@/components/kit";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 interface StationDetail extends Station {
   name?: string;
   latitude?: number | string | null;
@@ -619,14 +620,14 @@ export default function StationOverview({
     };
     const fmtHM = (d: any) =>
       d
-        ? new Date(d).toLocaleTimeString(localeActual(), {
+        ? new Date(d).toLocaleTimeString(localeActual(), { timeZone: zonaDeLaEmpresa(),
             hour: "2-digit",
             minute: "2-digit",
           })
         : null;
     const fmtDay = (d: any) =>
       d
-        ? new Date(d).toLocaleDateString(localeActual(), {
+        ? new Date(d).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
             day: "2-digit",
             month: "short",
           })

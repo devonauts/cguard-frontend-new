@@ -30,6 +30,7 @@ import { ToggleRow, SaveBar } from "../components/SettingsForm";
 import { Section, Stagger, SkeletonCards, StatusBadge } from "@/components/kit";
 import { usePermissions } from "@/hooks/usePermissions";
 import api from "@/lib/api";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 type Central = {
   habilitada: boolean;
@@ -244,7 +245,7 @@ export default function CentralPage() {
                                 defaultValue: " · desde {{time}}",
                                 time: new Date(o.desde).toLocaleTimeString(
                                   undefined,
-                                  { hour: "2-digit", minute: "2-digit" },
+                                  { timeZone: zonaDeLaEmpresa(), hour: "2-digit", minute: "2-digit" },
                                 ),
                               })
                             : ""}

@@ -1,6 +1,7 @@
 import i18n from "@/i18n";
 import { localeActual } from "@/lib/localeActual";
 import { taxIdLabelFor } from "@/lib/validators/id";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 // Shared helpers for the first-login business onboarding feature.
 // Keeps tenant extraction, completeness, trial math and timezone options
 // consistent across the wizard, banner, header badge and provider.
@@ -269,13 +270,13 @@ export function formatTrialEndDate(trialEndsAt?: string | null): string | null {
 
   if (Number.isNaN(d.getTime())) return null;
   try {
-    return d.toLocaleDateString(localeActual(), {
+    return d.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
       day: "numeric",
       month: "long",
       year: "numeric",
     });
   } catch {
-    return d.toLocaleDateString(localeActual());
+    return d.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() });
   }
 }
 

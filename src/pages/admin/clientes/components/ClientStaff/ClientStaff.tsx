@@ -48,6 +48,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { localeActual } from "@/lib/localeActual";
 import { useSondeoVisible } from "@/hooks/useSondeoVisible";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 type BadgeTone = "green" | "blue" | "orange" | "red" | "primary" | "slate";
 
 // ── Shape of GET /client-account/:id/personnel (clientAccountPersonnel.ts) ──
@@ -281,7 +282,7 @@ export default function ClientStaff({ client }: { client: Client }) {
   const ausencias: Ausencia[] = data?.ausenciasHoy || [];
   const pageCount = Math.max(1, Math.ceil(total / perPage));
   const fmtUpdated = data?.updatedAt
-    ? new Date(data.updatedAt).toLocaleTimeString(localeActual(), {
+    ? new Date(data.updatedAt).toLocaleTimeString(localeActual(), { timeZone: zonaDeLaEmpresa(),
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit",

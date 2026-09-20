@@ -25,6 +25,7 @@ import {
 } from "@/components/kit";
 import securityGuardService from "@/lib/api/securityGuardService";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 const ACCEPT = "image/*,application/pdf";
 const MAX_BYTES = 10 * 1024 * 1024; // 10MB
 
@@ -52,7 +53,7 @@ function fmtDate(v?: string | null): string {
 
   if (isNaN(d.getTime())) return "";
 
-  return d.toLocaleDateString(localeActual(), {
+  return d.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
     day: "2-digit",
     month: "short",
     year: "numeric",

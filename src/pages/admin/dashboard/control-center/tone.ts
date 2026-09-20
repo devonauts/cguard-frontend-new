@@ -13,6 +13,7 @@
 import type { LiveStatus } from "./types";
 
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 export type Tone = "brand" | "neutral" | "ok" | "warn" | "bad" | "info";
 
 /**
@@ -108,7 +109,7 @@ export function clockOf(iso: string): string {
 
   if (Number.isNaN(d.getTime())) return "";
 
-  return d.toLocaleTimeString(localeActual(), {
+  return d.toLocaleTimeString(localeActual(), { timeZone: zonaDeLaEmpresa(),
     hour: "2-digit",
     minute: "2-digit",
   });

@@ -62,6 +62,7 @@ import inventoryItemService, {
 import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import { enLotes } from "@/lib/enLotes";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 // Shape of the errors thrown by the API layer (axios-style response envelope).
 type ApiError = {
@@ -639,7 +640,7 @@ export default function GlobalInventoryPage() {
                             item.expirationDate
                               ? new Date(
                                   item.expirationDate,
-                                ).toLocaleDateString(localeActual())
+                                ).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() })
                               : "—"
                           }
                         />
@@ -809,7 +810,7 @@ export default function GlobalInventoryPage() {
                                         <span className="inline-flex items-center gap-2">
                                           {new Date(
                                             item.expirationDate,
-                                          ).toLocaleDateString(localeActual())}
+                                          ).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() })}
                                           {vigencia && (
                                             <StatusBadge
                                               tone={vigencia.tone}
@@ -830,7 +831,7 @@ export default function GlobalInventoryPage() {
                                       item.createdAt
                                         ? new Date(
                                             item.createdAt,
-                                          ).toLocaleDateString(localeActual())
+                                          ).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() })
                                         : "—"
                                     }
                                   />

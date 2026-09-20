@@ -28,6 +28,7 @@ export function getServerErrorMessage(
 export default getServerErrorMessage;
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -265,12 +266,12 @@ export function weeklyRestWeekday(
 
   const d = nextRestDates(style, platoonOffset, new Date(), 1, cycle + 7)[0];
 
-  return d ? d.toLocaleDateString(localeActual(), { weekday: "long" }) : null;
+  return d ? d.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(), weekday: "long" }) : null;
 }
 
 /** Short human date, e.g. "lun 27 jul". */
 export function shortRestLabel(d: Date): string {
-  return d.toLocaleDateString(localeActual(), {
+  return d.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
     weekday: "short",
     day: "numeric",
     month: "short",

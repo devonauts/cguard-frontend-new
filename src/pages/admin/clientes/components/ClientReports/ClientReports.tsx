@@ -57,6 +57,7 @@ import { CHART_VARS, alphaVar, rampVar } from "@/lib/chartColors";
 import { Button } from "@/components/ui/button";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 // ── Shape of GET /client-account/:id/reports (clientAccountReports.ts) ──
 interface ReportKpi {
   key: string;
@@ -179,7 +180,7 @@ const fmtD = (iso: string) => {
 
   return Number.isNaN(d.getTime())
     ? ""
-    : d.toLocaleDateString(localeActual(), {
+    : d.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
@@ -206,7 +207,7 @@ function ActividadChart({
       />
     );
   const dia = (iso: string) =>
-    new Date(iso).toLocaleDateString(localeActual(), {
+    new Date(iso).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
       day: "2-digit",
       month: "short",
     });
@@ -351,7 +352,7 @@ export default function ClientReports({
   const reportsTotal = data?.reportsTotal ?? 0;
   const pageCount = Math.max(1, Math.ceil(reportsTotal / perPage));
   const fmtUpdated = data?.updatedAt
-    ? new Date(data.updatedAt).toLocaleString(localeActual(), {
+    ? new Date(data.updatedAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa(),
         day: "2-digit",
         month: "2-digit",
         hour: "2-digit",

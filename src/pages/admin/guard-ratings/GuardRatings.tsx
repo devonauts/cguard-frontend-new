@@ -34,6 +34,7 @@ import guardRatingService, {
 } from "@/lib/api/guardRatingService";
 import { securityGuardService } from "@/lib/api/securityGuardService";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import {
   PageContainer,
   PageHeader,
@@ -50,7 +51,7 @@ import {
 function formatDate(iso: string | null) {
   if (!iso) return "—";
 
-  return new Date(iso).toLocaleDateString(localeActual(), {
+  return new Date(iso).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
     day: "2-digit",
     month: "short",
     year: "numeric",

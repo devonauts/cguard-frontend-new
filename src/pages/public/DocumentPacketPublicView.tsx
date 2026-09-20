@@ -35,6 +35,7 @@ import {
 import BrandLockup from "@/components/BrandLockup";
 import { Button } from "@/components/ui/button";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 const API = (
   import.meta.env.VITE_API_URL ?? "http://localhost:3001/api"
@@ -403,7 +404,7 @@ export default function DocumentPacketPublicView() {
         {data.expiresAt && (
           <p className="mt-3 text-xs" style={{ color: "var(--ink-faint)" }}>
             {t("ui.DocumentPacketPublic.expiresOn", {
-              fecha: new Date(data.expiresAt).toLocaleString(localeActual()),
+              fecha: new Date(data.expiresAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() }),
             })}
           </p>
         )}
@@ -462,7 +463,7 @@ export default function DocumentPacketPublicView() {
               <div className="text-sm" style={{ color: "var(--ink-soft)" }}>
                 {data.decidedByName ? `${data.decidedByName} · ` : ""}
                 {data.decisionAt
-                  ? new Date(data.decisionAt).toLocaleString(localeActual())
+                  ? new Date(data.decisionAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
                   : ""}
               </div>
             </div>

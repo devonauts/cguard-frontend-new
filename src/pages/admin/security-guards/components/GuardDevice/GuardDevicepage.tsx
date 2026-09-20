@@ -28,6 +28,7 @@ import {
 } from "@/components/kit";
 import { Button } from "@/components/ui/button";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 // navKey/title default to the guard layout; a supervisor route can override them
 // to render the same device screen under the supervisor sidebar (the device
@@ -37,7 +38,7 @@ type Props = { guard?: GuardDetail; navKey?: string; title?: string };
 function fmt(dt: string | null): string {
   if (!dt) return "—";
   try {
-    return new Date(dt).toLocaleString(localeActual());
+    return new Date(dt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() });
   } catch {
     return "—";
   }

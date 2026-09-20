@@ -20,6 +20,7 @@ import { confirmDialog } from "@/components/ui/confirmDialog";
 import AppLayout from "@/layouts/app-layout";
 import ProviderManagedBilling from "@/components/ProviderManagedBilling";
 import { Button } from "@/components/ui/button";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import {
   PageContainer,
   PageHeader,
@@ -111,7 +112,7 @@ export default function BillingPage() {
   const dateLocale = i18n.language?.startsWith("en") ? "en-US" : "es-ES";
   const fmtDate = (iso: string | null) =>
     iso
-      ? new Date(iso).toLocaleDateString(dateLocale, {
+      ? new Date(iso).toLocaleDateString(dateLocale, { timeZone: zonaDeLaEmpresa(),
           day: "2-digit",
           month: "long",
           year: "numeric",

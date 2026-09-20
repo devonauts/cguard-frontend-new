@@ -18,6 +18,7 @@ import {
 } from "@/components/kit";
 import { supervisorService } from "@/lib/api/supervisorService";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 interface ScheduleRow {
   date: string | null;
   start: string | null;
@@ -32,7 +33,7 @@ function fmtTime(v: string | null): string {
 
   return isNaN(d.getTime())
     ? "—"
-    : d.toLocaleTimeString(localeActual(), {
+    : d.toLocaleTimeString(localeActual(), { timeZone: zonaDeLaEmpresa(),
         hour: "2-digit",
         minute: "2-digit",
       });
@@ -44,7 +45,7 @@ function fmtDateHeading(v: string): string {
   const date = new Date(y, (m || 1) - 1, d || 1);
 
   if (isNaN(date.getTime())) return v;
-  const s = date.toLocaleDateString(localeActual(), {
+  const s = date.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
     weekday: "long",
     day: "numeric",
     month: "long",

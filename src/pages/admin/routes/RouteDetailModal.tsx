@@ -20,6 +20,7 @@ import userService from "@/lib/api/userService";
 import vehicleService from "@/lib/api/vehicleService";
 import { postSiteService } from "@/lib/api/postSiteService";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 type Props = {
   open: boolean;
@@ -427,13 +428,13 @@ export default function RouteDetailModal({
             />
             <Field
               label="Ventana"
-              value={`${route.windowStart ? new Date(route.windowStart).toLocaleDateString(localeActual()) : "—"} — ${route.windowEnd ? new Date(route.windowEnd).toLocaleDateString(localeActual()) : "—"}`}
+              value={`${route.windowStart ? new Date(route.windowStart).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() }) : "—"} — ${route.windowEnd ? new Date(route.windowEnd).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() }) : "—"}`}
             />
             <Field
               label={t("comun.horaDeInicio")}
               value={
                 (route.windowStart
-                  ? new Date(route.windowStart).toLocaleTimeString([], {
+                  ? new Date(route.windowStart).toLocaleTimeString([], { timeZone: zonaDeLaEmpresa(),
                       hour: "2-digit",
                       minute: "2-digit",
                     })
@@ -444,7 +445,7 @@ export default function RouteDetailModal({
               label={t("comun.horaDeFin")}
               value={
                 (route.windowEnd
-                  ? new Date(route.windowEnd).toLocaleTimeString([], {
+                  ? new Date(route.windowEnd).toLocaleTimeString([], { timeZone: zonaDeLaEmpresa(),
                       hour: "2-digit",
                       minute: "2-digit",
                     })

@@ -38,11 +38,12 @@ import taskService, {
   type TaskImage,
 } from "@/lib/api/taskService";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 function fmtDate(s?: string | null): string {
   if (!s) return "—";
   const d = new Date(s);
 
-  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString(localeActual());
+  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() });
 }
 
 /**

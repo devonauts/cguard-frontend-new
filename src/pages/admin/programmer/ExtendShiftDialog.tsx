@@ -14,6 +14,7 @@ import {
 import { Modal } from "@/components/kit";
 import { coverageService, coverageErrorCode } from "@/lib/api/coverageService";
 import { ApiService } from "@/services/api/apiService";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 /**
  * «Extender turno» desde el Horario: el vigilante que ya cubrió el día se queda
@@ -205,7 +206,7 @@ export default function ExtendShiftDialog({
       });
       toast.success(
         `${target.guardName} queda cubriendo hasta las ` +
-          `${fin.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`,
+          `${fin.toLocaleTimeString([], { timeZone: zonaDeLaEmpresa(), hour: "2-digit", minute: "2-digit" })}`,
       );
       onDone?.();
       onClose();
@@ -229,7 +230,7 @@ export default function ExtendShiftDialog({
         `${target?.guardName || ""}` +
         `${target?.stationName ? ` · ${target.stationName}` : ""}` +
         (desde
-          ? ` · el tramo nuevo empieza a las ${desde.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+          ? ` · el tramo nuevo empieza a las ${desde.toLocaleTimeString([], { timeZone: zonaDeLaEmpresa(), hour: "2-digit", minute: "2-digit" })}`
           : " · se crea el tramo en el horario desde donde terminó el suyo")
       }
       footer={

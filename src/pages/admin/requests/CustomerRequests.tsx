@@ -54,11 +54,12 @@ import {
 } from "@/components/kit";
 
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 function formatDate(iso: string | null) {
   if (!iso) return "—";
-  return new Date(iso).toLocaleDateString(localeActual(), {
+  return new Date(iso).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
     day: "2-digit",
     month: "short",
     year: "numeric",

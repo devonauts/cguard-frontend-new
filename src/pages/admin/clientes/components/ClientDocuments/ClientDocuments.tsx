@@ -55,6 +55,7 @@ import { seriesVar } from "@/lib/chartColors";
 import { Button } from "@/components/ui/button";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 // ── Shape of GET /client-account/:id/documents (clientAccountDocuments.ts) ──
 interface DocRow {
   id: string;
@@ -271,7 +272,7 @@ export default function ClientDocuments({ client }: { client: Client }) {
   const total = data?.total ?? 0;
   const pageCount = Math.max(1, Math.ceil(total / perPage));
   const fmtUpdated = data?.updatedAt
-    ? new Date(data.updatedAt).toLocaleString(localeActual(), {
+    ? new Date(data.updatedAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa(),
         day: "2-digit",
         month: "2-digit",
         hour: "2-digit",
@@ -350,7 +351,7 @@ export default function ClientDocuments({ client }: { client: Client }) {
   /** Nombre por defecto: el mes en curso. Es lo que se teclea el 95 % de las veces. */
   const abrirAgrupar = () => {
     const ahora = new Date();
-    const mes = ahora.toLocaleDateString(localeActual(), {
+    const mes = ahora.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
       month: "long",
       year: "numeric",
     });

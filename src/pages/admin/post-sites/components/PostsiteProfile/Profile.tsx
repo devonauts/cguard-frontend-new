@@ -35,10 +35,11 @@ import {
 } from "@/components/kit";
 import i18n from "@/i18n";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 function formatDate(d?: string) {
   if (!d) return "-";
   try {
-    return new Date(d).toLocaleDateString(localeActual());
+    return new Date(d).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() });
   } catch {
     return d;
   }

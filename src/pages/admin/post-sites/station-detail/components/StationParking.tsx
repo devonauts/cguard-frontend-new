@@ -24,6 +24,7 @@ import type { ExportFormat } from "@/lib/export/reportExport";
 import type { Station } from "@/types";
 
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 type Props = { station: Station; stationId: string; postSiteId: string };
 
 /**
@@ -132,7 +133,7 @@ const TIPO: Record<string, { clave: string; texto: string }> = {
 function formatDate(val: string | null | undefined) {
   if (!val) return "—";
   try {
-    return new Date(val).toLocaleString(localeActual(), {
+    return new Date(val).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa(),
       dateStyle: "short",
       timeStyle: "short",
     });

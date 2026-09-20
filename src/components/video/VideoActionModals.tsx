@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import { videoService, type Camera } from "@/lib/api/videoService";
 import i18n from "@/i18n";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 /* ------------------------------------------------------------------ */
 /* Shared shell                                                        */
 /* ------------------------------------------------------------------ */
@@ -371,7 +372,7 @@ export function TrimShareModal({
           </Button>
           {expiresAt ? (
             <p className="text-center text-xs text-muted-foreground">
-              Expira el {new Date(expiresAt).toLocaleString(localeActual())}
+              Expira el {new Date(expiresAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })}
             </p>
           ) : null}
         </div>

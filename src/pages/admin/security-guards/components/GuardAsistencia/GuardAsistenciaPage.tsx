@@ -30,6 +30,7 @@ import {
 import ExportMenu from "@/components/reports/ExportMenu";
 import { exportMatrix, type ExportFormat } from "@/lib/export/reportExport";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 type Period = "week" | "month";
 
 /** [start, end] bounds for the period containing `anchor` (local time). */
@@ -73,13 +74,13 @@ function rangeLabel(period: Period, anchor: Date): string {
   const [s, e] = rangeFor(period, anchor);
 
   if (period === "month")
-    return s.toLocaleDateString(localeActual(), {
+    return s.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
       month: "long",
       year: "numeric",
     });
   const sameMonth = s.getMonth() === e.getMonth();
 
-  return `${s.toLocaleDateString(localeActual(), { day: "2-digit", month: sameMonth ? undefined : "short" })} – ${e.toLocaleDateString(localeActual(), { day: "2-digit", month: "short", year: "numeric" })}`;
+  return `${s.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(), day: "2-digit", month: sameMonth ? undefined : "short" })} – ${e.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(), day: "2-digit", month: "short", year: "numeric" })}`;
 }
 
 /**
@@ -130,7 +131,7 @@ export default function GuardAsistenciaPage() {
 
     for (const r of rows) {
       if (r.punchInTime)
-        days.add(new Date(r.punchInTime).toLocaleDateString(localeActual()));
+        days.add(new Date(r.punchInTime).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() }));
       hours += Number(r.hoursWorked || 0);
       if (r.status === "late" || Number(r.lateMinutes || 0) > 0) late += 1;
     }
@@ -159,7 +160,7 @@ export default function GuardAsistenciaPage() {
       label: "Fecha",
       get: (r) =>
         r.punchInTime
-          ? new Date(r.punchInTime).toLocaleDateString(localeActual())
+          ? new Date(r.punchInTime).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() })
           : "",
     },
     { label: "Puesto", get: (r) => r.stationName?.stationName || "" },
@@ -169,14 +170,14 @@ export default function GuardAsistenciaPage() {
       label: "Entrada",
       get: (r) =>
         r.punchInTime
-          ? new Date(r.punchInTime).toLocaleString(localeActual())
+          ? new Date(r.punchInTime).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
           : "",
     },
     {
       label: "Salida",
       get: (r) =>
         r.punchOutTime
-          ? new Date(r.punchOutTime).toLocaleString(localeActual())
+          ? new Date(r.punchOutTime).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
           : "",
     },
     { label: "Horas", get: (r) => r.hoursWorked ?? "", align: "right" },
@@ -347,7 +348,7 @@ export default function GuardAsistenciaPage() {
                         {r.punchInTime
                           ? new Date(r.punchInTime).toLocaleDateString(
                               localeActual(),
-                              { day: "2-digit", month: "short" },
+                              { timeZone: zonaDeLaEmpresa(), day: "2-digit", month: "short" },
                             )
                           : "—"}
                       </td>

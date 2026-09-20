@@ -34,6 +34,7 @@ import {
   Toolbar,
 } from "@/components/kit";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import {
   CreateIncidentModal,
   DispatchModal,
@@ -120,6 +121,7 @@ function formatWhen(iso?: string | null): string {
   if (Number.isNaN(d.getTime())) return "—";
 
   return d.toLocaleString(localeActual(), {
+    timeZone: zonaDeLaEmpresa(),
     day: "2-digit",
     month: "short",
     hour: "2-digit",

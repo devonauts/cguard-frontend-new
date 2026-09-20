@@ -45,6 +45,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { localeActual } from "@/lib/localeActual";
 import { useEventoEnVivo } from "@/hooks/useEventoEnVivo";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 type BadgeTone = "bad" | "warn" | "info" | "ok";
 
 // ── Shape of GET /client-account/:id/incidents-board (clientAccountIncidentsBoard.ts) ──
@@ -171,7 +172,7 @@ const fmtDate = (iso: string) => {
 
   return Number.isNaN(d.getTime())
     ? ""
-    : d.toLocaleDateString(localeActual(), {
+    : d.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
@@ -182,7 +183,7 @@ const fmtTime = (iso: string) => {
 
   return Number.isNaN(d.getTime())
     ? ""
-    : d.toLocaleTimeString(localeActual(), {
+    : d.toLocaleTimeString(localeActual(), { timeZone: zonaDeLaEmpresa(),
         hour: "2-digit",
         minute: "2-digit",
       });
@@ -271,7 +272,7 @@ export default function ClientIncidents({ client }: { client: Client }) {
   const pageCount = Math.max(1, Math.ceil(total / perPage));
   const selected = incidents.find((i) => i.id === selectedId) || null;
   const fmtUpdated = data?.updatedAt
-    ? new Date(data.updatedAt).toLocaleString(localeActual(), {
+    ? new Date(data.updatedAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa(),
         day: "2-digit",
         month: "2-digit",
         hour: "2-digit",

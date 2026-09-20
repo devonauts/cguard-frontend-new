@@ -34,6 +34,7 @@ import {
 } from "@/components/kit";
 import { MeterBar } from "@/components/charts";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 function Stars({ value, size = "h-4 w-4" }: { value: number; size?: string }) {
   return (
     <span
@@ -57,7 +58,7 @@ function Stars({ value, size = "h-4 w-4" }: { value: number; size?: string }) {
 
 const fmtDate = (iso: string | null) =>
   iso
-    ? new Date(iso).toLocaleDateString(localeActual(), {
+    ? new Date(iso).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
         day: "2-digit",
         month: "short",
         year: "numeric",

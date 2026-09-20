@@ -55,6 +55,7 @@ import {
 } from "@/components/kit";
 import { DataTable, type Column } from "@/components/table/DataTable";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 export default function TrainingEnrollmentsPage() {
   const { t } = useTranslation();
   const { courseId } = useParams<{ courseId: string }>();
@@ -208,7 +209,7 @@ export default function TrainingEnrollmentsPage() {
       render: (_v, r) => (
         <span className="tabular-nums" style={{ color: "var(--ink-soft)" }}>
           {r.completedAt
-            ? new Date(r.completedAt).toLocaleDateString(localeActual())
+            ? new Date(r.completedAt).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() })
             : "—"}
         </span>
       ),
@@ -411,8 +412,7 @@ export default function TrainingEnrollmentsPage() {
                       >
                         {lc.completedAt
                           ? new Date(lc.completedAt).toLocaleDateString(
-                              localeActual(),
-                            )
+                              localeActual(), { timeZone: zonaDeLaEmpresa() })
                           : "Pendiente"}
                       </span>
                     </div>

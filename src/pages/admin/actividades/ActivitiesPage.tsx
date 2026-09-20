@@ -38,6 +38,7 @@ import {
 import { useFileUrl } from "@/lib/fileUrl";
 import { useNotificationStream } from "@/hooks/useNotificationStream";
 import { targetForNotification } from "@/components/notifications/notificationToast";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 /* ─────────────────────────────────────────────────────────────────────────
    The activity log is powered by the platform Events API:
@@ -297,7 +298,7 @@ export default function ActivitiesPage() {
         key = "yesterday";
         label = t("activity.group.yesterday");
       } else {
-        label = d.toLocaleDateString(locale, {
+        label = d.toLocaleDateString(locale, { timeZone: zonaDeLaEmpresa(),
           day: "numeric",
           month: "long",
           ...(d.getFullYear() !== now.getFullYear() ? { year: "numeric" } : {}),
@@ -339,7 +340,7 @@ export default function ActivitiesPage() {
           ? "pt-BR"
           : "es-ES";
 
-      return new Date(iso).toLocaleString(locale, {
+      return new Date(iso).toLocaleString(locale, { timeZone: zonaDeLaEmpresa(),
         dateStyle: "medium",
         timeStyle: "short",
       });

@@ -18,6 +18,7 @@ import SettingsPageShell from "../components/SettingsPageShell";
 import { SkeletonCards, StatCard, StatsStrip } from "@/components/kit";
 import api from "@/lib/api";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
 
@@ -231,7 +232,7 @@ export default function VigiaUsagePage() {
                       style={{ color: "var(--ink-soft)" }}
                     >
                       {a.quien} ·{" "}
-                      {new Date(a.at).toLocaleString(localeActual())}
+                      {new Date(a.at).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })}
                     </span>
                   </div>
                 ))}

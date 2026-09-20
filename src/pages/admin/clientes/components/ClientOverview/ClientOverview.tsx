@@ -35,6 +35,7 @@ import SitesMap from "@/components/maps/SitesMap";
 import { clientService } from "@/lib/api/clientService";
 import { Section, EmptyState, StatusBadge, IconTile } from "@/components/kit";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 // ── Shapes from the overview / operation / activity / contacts endpoints ──
 interface StationLite {
@@ -105,7 +106,7 @@ const fmtTime = (d: string | number | Date) => {
 
   return Number.isNaN(dt.getTime())
     ? ""
-    : dt.toLocaleTimeString(localeActual(), {
+    : dt.toLocaleTimeString(localeActual(), { timeZone: zonaDeLaEmpresa(),
         hour: "2-digit",
         minute: "2-digit",
       });

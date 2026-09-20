@@ -1,3 +1,4 @@
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 /**
  * Etiquetas y tonos compartidos por el tablero en vivo, el historial y el
  * detalle de una ejecución. Los valores crudos (`in_progress`, `stop.arrived`)
@@ -107,7 +108,7 @@ export const SEVERITY_TONE: Record<string, string> = {
 
 export const fmtHora = (iso: string | null | undefined, locale: string) =>
   iso
-    ? new Date(iso).toLocaleTimeString(locale, {
+    ? new Date(iso).toLocaleTimeString(locale, { timeZone: zonaDeLaEmpresa(),
         hour: "2-digit",
         minute: "2-digit",
       })
@@ -119,7 +120,7 @@ export const fmtFecha = (ymd: string | null | undefined, locale: string) => {
 
   return Number.isNaN(d.getTime())
     ? String(ymd)
-    : d.toLocaleDateString(locale, {
+    : d.toLocaleDateString(locale, { timeZone: zonaDeLaEmpresa(),
         weekday: "short",
         day: "numeric",
         month: "short",

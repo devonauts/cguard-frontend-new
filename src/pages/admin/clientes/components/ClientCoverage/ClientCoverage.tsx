@@ -63,6 +63,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { useSondeoVisible } from "@/hooks/useSondeoVisible";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 // ── Shape of GET /client-account/:id/coverage (clientAccountCoverage.ts) ──
 type CoverageStatus =
@@ -375,7 +376,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
           : null;
 
   const fmtUpdated = data?.updatedAt
-    ? new Date(data.updatedAt).toLocaleTimeString(localeActual(), {
+    ? new Date(data.updatedAt).toLocaleTimeString(localeActual(), { timeZone: zonaDeLaEmpresa(),
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit",

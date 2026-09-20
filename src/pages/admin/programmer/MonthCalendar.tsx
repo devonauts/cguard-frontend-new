@@ -7,6 +7,7 @@ import { localeActual } from "@/lib/localeActual";
 import { nombreDeVigilante } from "@/lib/guardName";
 import { stationShort } from "@/lib/stationName";
 import { cuentaComoCobertura } from "@/lib/shiftStatus";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 /**
  * ────────────────────────────────────────────────────────────────────────────
@@ -146,7 +147,7 @@ function MonthCalendarInner({
       const d = new Date(base);
 
       d.setDate(d.getDate() + i);
-      const corto = d.toLocaleDateString(locale, {
+      const corto = d.toLocaleDateString(locale, { timeZone: zonaDeLaEmpresa(),
         weekday: estrecha ? "narrow" : "short",
       });
 

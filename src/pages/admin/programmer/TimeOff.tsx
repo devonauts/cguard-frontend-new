@@ -70,6 +70,7 @@ import timeOffRequestService, {
 import { securityGuardService } from "@/lib/api/securityGuardService";
 
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 function formatDate(iso: string | null) {
@@ -82,7 +83,7 @@ function formatDate(iso: string | null) {
   const d = m
     ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]))
     : new Date(iso);
-  return d.toLocaleDateString(localeActual(), {
+  return d.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
     day: "2-digit",
     month: "short",
     year: "numeric",

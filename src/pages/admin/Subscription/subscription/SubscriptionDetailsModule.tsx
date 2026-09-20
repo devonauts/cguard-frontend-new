@@ -23,6 +23,7 @@ import {
   BillingSummary,
 } from "@/lib/api/subscriptionBillingService";
 import ProviderManagedBilling from "@/components/ProviderManagedBilling";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 type BillingPeriod = "monthly" | "annual";
 type PlanKey = "essential" | "advance" | "professional";
@@ -67,7 +68,7 @@ function fmtDate(iso: string | null | undefined): string {
 
   if (isNaN(d.getTime())) return "—";
 
-  return d.toLocaleDateString(localeActual(), {
+  return d.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
     day: "2-digit",
     month: "short",
     year: "numeric",

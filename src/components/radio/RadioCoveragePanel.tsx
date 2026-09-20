@@ -21,6 +21,7 @@ import {
 import { useRadioRealtime } from "@/components/radio/RadioRealtimeProvider";
 import { subscribeRadio, getRadioSnapshot } from "@/lib/radioVoiceManager";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 /**
  * Cobertura del canal abierto.
@@ -91,7 +92,7 @@ function Fila({ f }: { f: RadioPresenceRow }) {
   const { t } = useTranslation();
   const e = insigniaEstado(f.reported, f.stale);
   const desde = f.lastReportAt
-    ? new Date(f.lastReportAt).toLocaleTimeString(localeActual(), {
+    ? new Date(f.lastReportAt).toLocaleTimeString(localeActual(), { timeZone: zonaDeLaEmpresa(),
         hour: "2-digit",
         minute: "2-digit",
       })

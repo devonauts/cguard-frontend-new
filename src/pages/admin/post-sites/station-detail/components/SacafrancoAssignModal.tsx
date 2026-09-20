@@ -22,6 +22,7 @@ function localDateKey(iso: string): string {
 }
 
 import { localToday } from "@/lib/utils";
+import { hoyEnLaEmpresa, sumaDias } from "@/lib/horaDeLaEmpresa";
 const today = () => localToday();
 
 interface Candidate {
@@ -100,12 +101,13 @@ export default function SacafrancoAssignModal({
   const [cicloPropio, setCicloPropio] = useState("");
 
   const days = (() => {
+    // Ver la nota gemela en `StationRoster`: los días se cuentan desde hoy en la
+    // empresa, no desde la medianoche del dispositivo pasada por UTC.
     const out: string[] = [];
-    const d = new Date();
+    const hoy = hoyEnLaEmpresa();
 
-    d.setHours(0, 0, 0, 0);
     for (let i = 0; i < 14; i++) {
-      out.push(new Date(d.getTime() + i * 86400000).toISOString().slice(0, 10));
+      out.push(sumaDias(hoy, i));
     }
 
     return out;

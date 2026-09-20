@@ -35,6 +35,7 @@ import { MeterBar } from "@/components/charts";
 import { alarmSourceMeta } from "@/lib/api/alarmService";
 import { conEtiqueta } from "@/lib/i18nLabel";
 import i18n from "@/i18n";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 export type AlarmTone = "ok" | "warn" | "bad" | "info" | "neutral" | "brand";
 
@@ -286,6 +287,7 @@ export function formatWhen(iso?: string | null): string {
   if (Number.isNaN(d.getTime())) return "—";
 
   return d.toLocaleString(i18n.language || "es", {
+    timeZone: zonaDeLaEmpresa(),
     day: "2-digit",
     month: "short",
     hour: "2-digit",

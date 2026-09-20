@@ -50,6 +50,7 @@ import { Button } from "@/components/ui/button";
 import { usePermissions } from "@/hooks/usePermissions";
 import api from "@/lib/api";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 type Clave = "locationTrailDays" | "communicationLogsDays" | "auditLogDays";
 type Retencion = Record<Clave, number>;
 
@@ -120,7 +121,7 @@ const nf = new Intl.NumberFormat(localeActual());
 function fecha(iso: string | null) {
   if (!iso) return null;
   try {
-    return new Date(iso).toLocaleDateString(localeActual(), {
+    return new Date(iso).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
       day: "numeric",
       month: "long",
       year: "numeric",

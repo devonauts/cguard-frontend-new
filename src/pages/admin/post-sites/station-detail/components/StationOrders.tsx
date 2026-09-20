@@ -37,6 +37,7 @@ import { Button } from "@/components/ui/button";
 import type { Station } from "@/types";
 
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 type Props = { station: Station; stationId: string; postSiteId: string };
 
 type Recurrence =
@@ -769,7 +770,7 @@ function ActivityLog({
                 <p className="flex items-center gap-1 text-xs text-muted-foreground">
                   <User size={11} />
                   {c.guardName || "—"} ·{" "}
-                  {new Date(c.completedAt).toLocaleString(localeActual(), {
+                  {new Date(c.completedAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa(),
                     dateStyle: "short",
                     timeStyle: "short",
                   })}

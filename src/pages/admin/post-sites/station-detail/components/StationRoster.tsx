@@ -4,6 +4,7 @@ import { Shield, User, Sun, Moon } from "lucide-react";
 
 import { getTenantTimezone } from "@/utils/tenantLocation";
 import { localeActual } from "@/lib/localeActual";
+import { hoyEnLaEmpresa, sumaDias, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
 /** Tenant-tz date key + hour of a shift start. */
 function localParts(iso: string | Date): { dateKey: string; hour: number } {
   const parts = new Intl.DateTimeFormat("en-CA", {
@@ -78,12 +79,14 @@ export default function StationRoster({
   }, [asignaciones]);
 
   const days = useMemo(() => {
+    // Se cuenta en días de calendario desde HOY EN LA EMPRESA. Antes se partía
+    // de la medianoche local y se pasaba a UTC: al este de Greenwich (Madrid)
+    // esa medianoche son las 22:00Z del día ANTERIOR, así que el cuadrante
+    // empezaba ayer.
     const out: string[] = [];
-    const d = new Date();
+    const hoy = hoyEnLaEmpresa();
 
-    d.setHours(0, 0, 0, 0);
-    for (let i = 0; i < 14; i++)
-      out.push(new Date(d.getTime() + i * 86400000).toISOString().slice(0, 10));
+    for (let i = 0; i < 14; i++) out.push(sumaDias(hoy, i));
 
     return out;
   }, []);
@@ -160,7 +163,7 @@ export default function StationRoster({
               days
                 .filter((d) => !g.pattern[d])
                 .map((d) =>
-                  new Date(d + "T12:00:00").toLocaleDateString(localeActual(), {
+                  new Date(d + "T12:00:00").toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
                     weekday: "long",
                   }),
                 ),

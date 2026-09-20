@@ -9,6 +9,7 @@ import { DayButton, DayPicker, getDefaultClassNames } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 /* El calendario NO trae fondo propio: vive dentro de un popover o una tarjeta de
    cristal y tiene que dejar ver el desenfoque de debajo. El día elegido es el
@@ -171,7 +172,7 @@ function Calendar({
       }}
       formatters={{
         formatMonthDropdown: (date) =>
-          date.toLocaleString("default", { month: "short" }),
+          date.toLocaleString("default", { timeZone: zonaDeLaEmpresa(), month: "short" }),
         ...formatters,
       }}
       showOutsideDays={showOutsideDays}

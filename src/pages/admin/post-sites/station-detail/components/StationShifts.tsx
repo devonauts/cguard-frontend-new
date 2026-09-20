@@ -29,6 +29,7 @@ import type { Station } from "@/types";
 
 import { localeActual } from "@/lib/localeActual";
 import { jornadasDePlazas, jornadasPorTipo } from "@/lib/jornadasDePlazas";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 interface StationDetail extends Station {}
 
 // Minutes-of-day of a UTC instant rendered in the tenant timezone. Shift times
@@ -624,7 +625,7 @@ export default function StationShifts({
       timeZone: getTenantTimezone(),
     });
   const fmtDate = (d: Date) =>
-    d.toLocaleDateString(localeActual(), {
+    d.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
       weekday: "long",
       day: "numeric",
       month: "long",
@@ -724,7 +725,7 @@ export default function StationShifts({
 
   const title = useMemo(() => {
     if (viewMode === "day")
-      return currentDate.toLocaleDateString(localeActual(), {
+      return currentDate.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
         weekday: "long",
         day: "numeric",
         month: "long",
@@ -1143,7 +1144,7 @@ export default function StationShifts({
                                     >
                                       {toDateKey(ev.start) === toDateKey(ev.end)
                                         ? `${fmtTime(ev.start)} – ${fmtTime(ev.end)}`
-                                        : `${ev.start.toLocaleDateString(localeActual(), { day: "numeric", month: "short" })} ${fmtTime(ev.start)} – ${ev.end.toLocaleDateString(localeActual(), { day: "numeric", month: "short" })} ${fmtTime(ev.end)}`}
+                                        : `${ev.start.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(), day: "numeric", month: "short" })} ${fmtTime(ev.start)} – ${ev.end.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(), day: "numeric", month: "short" })} ${fmtTime(ev.end)}`}
                                     </p>
                                     {/* ── LO QUE PASÓ, Y QUIÉN LO DECIDIÓ ─────────────────
                                     El turno tachado dice que no viene; esta línea dice
@@ -1160,7 +1161,7 @@ export default function StationShifts({
                                           ? ` — lo registró ${nov.registradaPor}`
                                           : ""}
                                         {nov.registradaEl
-                                          ? ` el ${new Date(nov.registradaEl).toLocaleDateString(localeActual(), { day: "numeric", month: "short" })}`
+                                          ? ` el ${new Date(nov.registradaEl).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(), day: "numeric", month: "short" })}`
                                           : ""}
                                         {nov.nota ? ` · ${nov.nota}` : ""}
                                       </p>
