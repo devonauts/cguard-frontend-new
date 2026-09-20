@@ -328,7 +328,7 @@ export default function Guard() {
               />
             ) : (
               <div className="overflow-x-auto">
-                <table className="min-w-full text-sm">
+                <table className="cg-tabla-fichas min-w-full text-sm">
                   <thead className="border-b text-xs uppercase tracking-wide text-muted-foreground">
                     <tr>
                       <th className="px-3 py-2 text-left font-semibold">#</th>
@@ -362,23 +362,25 @@ export default function Guard() {
                             className="cursor-pointer transition-colors hover:bg-[var(--glass-sunken)]"
                             onClick={() => setExpanded(open ? null : g.id)}
                           >
-                            <td className="px-3 py-2 text-muted-foreground">
+                            <td className="px-3 py-2 text-muted-foreground" data-rotulo="#">
                               {g.enabled !== false && g.hasData ? i + 1 : "—"}
                             </td>
                             <td
+                              data-rotulo={t("comun.vigilante")}
+                          data-titulo
                               className="px-3 py-2"
                               onClick={(e) => e.stopPropagation()}
                             >
                               <GuardLink id={g.id} name={g.name} />
                             </td>
-                            <td className="px-3 py-2">
+                            <td className="px-3 py-2" data-rotulo={t("ui.Guard.puntuacion", "Puntuación")}>
                               <ScoreBadge
                                 score={g.score}
                                 tier={g.tier}
                                 enabled={g.enabled !== false}
                               />
                             </td>
-                            <td className="px-3 py-2">
+                            <td className="px-3 py-2" data-rotulo="Nivel">
                               <span
                                 style={{ color: tierOf(g.tier).ink }}
                                 className="text-xs font-semibold"
@@ -388,7 +390,7 @@ export default function Guard() {
                                   : "—"}
                               </span>
                             </td>
-                            <td className="px-3 py-2 text-right">
+                            <td className="px-3 py-2 text-right" data-rotulo={t("comun.asistencia")}>
                               {g.attendanceRate != null ? (
                                 <span
                                   style={{ color: pctColor(g.attendanceRate) }}
@@ -399,10 +401,10 @@ export default function Guard() {
                                 <span className="text-muted-foreground">—</span>
                               )}
                             </td>
-                            <td className="px-3 py-2 text-right text-muted-foreground">
+                            <td className="px-3 py-2 text-right text-muted-foreground" data-rotulo="Faltas">
                               {g.absences}
                             </td>
-                            <td className="px-3 py-2 text-right text-muted-foreground">
+                            <td className="px-3 py-2 text-right text-muted-foreground" data-rotulo="Atrasos">
                               {g.tardies}
                             </td>
                             <td className="px-3 py-2 text-right text-muted-foreground">

@@ -444,7 +444,7 @@ export function PerSiteTable({
 
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full text-sm">
+      <table className="cg-tabla-fichas min-w-full text-sm">
         <thead className="border-b text-xs uppercase tracking-wide text-muted-foreground">
           <tr>
             <th className="px-3 py-2 text-left font-semibold">Sitio</th>
@@ -463,31 +463,31 @@ export function PerSiteTable({
         <tbody className="divide-y">
           {visibles.map((s, i) => (
             <tr key={i} className="hover:bg-[var(--glass-sunken)]">
-              <td className="px-3 py-2">
+              <td className="px-3 py-2" data-rotulo="Sitio">
                 <SiteLink id={s.id} name={s.site} />
               </td>
-              <td className="px-3 py-2 text-right tabular-nums text-muted-foreground">
+              <td className="px-3 py-2 text-right tabular-nums text-muted-foreground" data-rotulo="Vigilantes">
                 {s.guards}
               </td>
               {showShifts && (
-                <td className="px-3 py-2 text-right tabular-nums text-muted-foreground">
+                <td className="px-3 py-2 text-right tabular-nums text-muted-foreground" data-rotulo="Turnos">
                   {s.shiftsCovered}/{s.shiftsTotal}
                 </td>
               )}
-              <td className="px-3 py-2 text-right tabular-nums">
+              <td className="px-3 py-2 text-right tabular-nums" data-rotulo="Cobertura">
                 <span style={{ color: pctColor(s.coveragePct) }}>
                   {s.coveragePct}%
                 </span>
               </td>
-              <td className="px-3 py-2 text-right tabular-nums text-muted-foreground">
+              <td className="px-3 py-2 text-right tabular-nums text-muted-foreground" data-rotulo="Rondas">
                 {s.rondasCompleted}
               </td>
-              <td className="px-3 py-2 text-right tabular-nums">
+              <td className="px-3 py-2 text-right tabular-nums" data-rotulo={t("ui.shared.ubicacion", "Ubicación")}>
                 <span style={{ color: pctColor(s.locationCompliancePct) }}>
                   {s.locationCompliancePct}%
                 </span>
               </td>
-              <td className="px-3 py-2 text-right font-semibold tabular-nums text-foreground">
+              <td className="px-3 py-2 text-right font-semibold tabular-nums text-foreground" data-rotulo="Incidentes">
                 {s.incidents}
               </td>
             </tr>

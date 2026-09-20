@@ -573,6 +573,7 @@ function VistaParada({
       </span>
       <div
         className="mx-auto overflow-hidden rounded-[2.25rem] border-[10px] shadow-2xl"
+        data-simulador
         style={{ borderColor: "#1c1f26", width: 372, maxWidth: "100%" }}
       >
         <iframe

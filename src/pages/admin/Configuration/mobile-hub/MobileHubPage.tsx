@@ -1527,6 +1527,7 @@ function PhonePreview({
         >
           <div
             className="relative overflow-hidden rounded-[2.6rem]"
+        data-simulador
             style={{ width: ANCHO, height: ALTO, background: bg, color: text }}
           >
             {/* Isla dinámica */}
@@ -2015,6 +2016,7 @@ function SupervisorPreview({
         >
           <div
             className="relative overflow-hidden rounded-[2.6rem]"
+        data-simulador
             style={{ width: ANCHO, height: ALTO, background: bg, color: text }}
           >
             <div

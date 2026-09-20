@@ -297,7 +297,7 @@ export default function NominaTimeClock() {
   return (
     <AppLayout>
       <PageContainer className="max-w-md" width="narrow">
-        <FadeIn className="glass glass-hover overflow-hidden p-8 text-center">
+        <FadeIn className="glass glass-hover overflow-hidden p-5 text-center sm:p-8">
           <div className="mb-4 flex justify-center">
             <IconTile className="brand-glow-sm" size="lg">
               <Clock />

@@ -143,7 +143,7 @@ export default function ActivityLogHubPage() {
               defaultValue: "se borran según los plazos que fijes en",
             })}{" "}
             <Link
-              className="underline"
+              className="-my-3 inline-block py-3 underline"
               style={{ color: "var(--brand-text)" }}
               to="/setting/retencion"
             >

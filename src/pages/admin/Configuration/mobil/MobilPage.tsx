@@ -588,7 +588,7 @@ export default function MobilPage() {
               {t('settings.mobil.bannerSectionDesc', { defaultValue: 'Las imágenes que giran en la portada de la app del cliente.' })}
             </p>
 
-            <Table className="table-fixed min-w-[560px]">
+            <Table className="cg-tabla-fichas table-fixed min-w-[560px]">
               <colgroup>
                 <col style={{ width: '25%' }} />
                 <col style={{ width: '45%' }} />
@@ -630,9 +630,9 @@ export default function MobilPage() {
                 )}
                 {bannerItems.map((item) => (
                     <TableRow key={item.id}>
-                      <TableCell>{item.title}</TableCell>
-                      <TableCell>{item.description || '-'}</TableCell>
-                      <TableCell className="text-center">
+                      <TableCell data-rotulo={t('settings.mobil.colTitle', { defaultValue: 'Título' })}>{item.title}</TableCell>
+                      <TableCell data-rotulo={t('settings.mobil.descriptionLabel', { defaultValue: 'Descripción' })}>{item.description || '-'}</TableCell>
+                      <TableCell className="text-center" data-rotulo={t('settings.mobil.imageLabel', { defaultValue: 'Imagen' })}>
                         {resolveBannerImageUrl(item) ? (
                           <button
                             type="button"
@@ -837,7 +837,7 @@ export default function MobilPage() {
             <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t('settings.mobil.serviceSectionDesc', { defaultValue: 'Lista de servicios de tu empresa. Sólo los publicados se ven en la app.' })}</p>
 
             <div>
-              <Table className="table-fixed min-w-[720px]">
+              <Table className="cg-tabla-fichas table-fixed min-w-[720px]">
                 <colgroup>
                   <col style={{ width: '28%' }} />
                   <col style={{ width: '34%' }} />
@@ -876,10 +876,10 @@ export default function MobilPage() {
                   )}
                   {services.map((s) => (
                     <TableRow key={s.id}>
-                      <TableCell>{s.title}</TableCell>
-                      <TableCell className="truncate">{s.description}</TableCell>
-                      <TableCell className="tabular-nums">{s.price === null || s.price === undefined || s.price === '' ? '-' : s.price}</TableCell>
-                      <TableCell className="text-center">
+                      <TableCell data-rotulo={t('settings.mobil.colTitle', { defaultValue: 'Título' })}>{s.title}</TableCell>
+                      <TableCell className="truncate" data-rotulo={t('settings.mobil.descriptionLabel', { defaultValue: 'Descripción' })}>{s.description}</TableCell>
+                      <TableCell className="tabular-nums" data-rotulo={t('settings.mobil.priceLabel', { defaultValue: 'Precio' })}>{s.price === null || s.price === undefined || s.price === '' ? '-' : s.price}</TableCell>
+                      <TableCell className="text-center" data-rotulo={t('settings.mobil.colInApp', { defaultValue: 'En la app' })}>
                         <StatusBadge tone={s.publishedOnMobile ? 'ok' : 'neutral'}>
                           {s.publishedOnMobile ? t('settings.mobil.published', { defaultValue: 'Publicado' }) : t('settings.mobil.hidden', { defaultValue: 'Oculto' })}
                         </StatusBadge>
@@ -911,7 +911,7 @@ export default function MobilPage() {
           >
             <p className="text-sm" style={{ color: 'var(--ink-soft)' }}>{t('settings.mobil.certSectionDesc', { defaultValue: 'Los sellos y acreditaciones de tu empresa, con sus fechas y archivos.' })}</p>
 
-            <Table className="table-fixed min-w-[900px]">
+            <Table className="cg-tabla-fichas table-fixed min-w-[900px]">
               <colgroup>
                 <col style={{ width: '18%' }} />
                 <col style={{ width: '12%' }} />
@@ -959,9 +959,9 @@ export default function MobilPage() {
                 )}
                 {certItems.map((item) => (
                   <TableRow key={item.id}>
-                    <TableCell>{item.title}</TableCell>
-                    <TableCell>{item.code}</TableCell>
-                    <TableCell className="text-center">
+                    <TableCell data-rotulo={t('settings.mobil.colTitle', { defaultValue: 'Título' })}>{item.title}</TableCell>
+                    <TableCell data-rotulo={t('settings.mobil.colCode', { defaultValue: 'Código' })}>{item.code}</TableCell>
+                    <TableCell className="text-center" data-rotulo={t('settings.mobil.imageLabel', { defaultValue: 'Imagen' })}>
                       {resolveCertificationImageUrl(item) ? (
                         <button
                           type="button"
@@ -981,7 +981,7 @@ export default function MobilPage() {
                         <StatusBadge tone="neutral" dot={false}>{t('settings.mobil.noImage', { defaultValue: 'Sin imagen' })}</StatusBadge>
                       )}
                     </TableCell>
-                    <TableCell className="text-center">
+                    <TableCell className="text-center" data-rotulo={t('settings.mobil.iconLabel', { defaultValue: 'Icono' })}>
                       {resolveCertificationIconUrl(item) ? (
                         <button
                           type="button"
@@ -1001,8 +1001,8 @@ export default function MobilPage() {
                         <StatusBadge tone="neutral" dot={false}>{t('settings.mobil.noIcon', { defaultValue: 'Sin icono' })}</StatusBadge>
                       )}
                     </TableCell>
-                    <TableCell>{item.acquisitionDate || '-'}</TableCell>
-                    <TableCell>{item.expirationDate || '-'}</TableCell>
+                    <TableCell data-rotulo={t('settings.mobil.colAcquisition', { defaultValue: 'Adquisición' })}>{item.acquisitionDate || '-'}</TableCell>
+                    <TableCell data-rotulo={t('settings.mobil.colExpiration', { defaultValue: 'Vencimiento' })}>{item.expirationDate || '-'}</TableCell>
                     <TableCell className="text-right space-x-2">
                       <Button size="icon-sm" variant="outline" aria-label={t('settings.mobil.editAction', { defaultValue: 'Editar' })} onClick={() => openEditCertification(item)}>
                         <Pencil className="h-4 w-4" />

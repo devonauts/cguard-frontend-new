@@ -1123,6 +1123,21 @@ button, [role="button"] { transition: transform 0.09s var(--ease); }
     min-height: 44px;
   }
 
+  /* ── EL SUELO DE LA ESCALA SON 11 PX ───────────────────────────────────
+     Es lo que mide `.cg-eyebrow`, el rótulo más pequeño del sistema. Pero por
+     el producto hay 249 usos de `text-[10px]` escritos a mano —registros,
+     analíticas, el panel— que se salen por debajo de ese suelo sin que nadie lo
+     decidiera: en un teléfono es la diferencia entre leer y adivinar.
+
+     Se corrige aquí y no en los sesenta ficheros porque el suelo es una regla
+     del sistema, no una decisión de cada pantalla; y sólo en el teléfono,
+     porque en un monitor a 60 cm esos 10 px sí se leen. */
+  [class*="text-[10px]"],
+  [class*="text-[9px]"],
+  [class*="text-[8px]"] {
+    font-size: 11px;
+  }
+
   /* Un texto de ayuda largo se cortaba a hachazos en mitad de una palabra
      («Buscar por nominativo, puesto o clie»). Con puntos suspensivos al menos
      se lee como una frase que sigue, no como un fallo de pintado. */
@@ -1268,6 +1283,29 @@ button, [role="button"] { transition: transform 0.09s var(--ease); }
   }
   .cg-tabla-fichas td:first-child::before { content: none; }
   .cg-tabla-fichas td:empty { display: none; }
+
+  /* …salvo que otra celda se marque con `data-titulo`, y entonces manda ésa.
+     Hace falta cuando la primera columna no identifica nada: en Analíticas de
+     Vigilantes es el puesto del ranking, y una ficha titulada «1» no dice de
+     quién habla. La primera vuelve entonces a ser una fila más, con su rótulo. */
+  .cg-tabla-fichas td[data-titulo] {
+    display: block;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 600;
+    padding-bottom: 6px !important;
+  }
+  .cg-tabla-fichas td[data-titulo]::before { content: none; }
+  .cg-tabla-fichas tr:has(td[data-titulo]) td:first-child {
+    display: flex;
+    text-align: right;
+    font-size: 12px;
+    font-weight: 400;
+    padding: 3px 0 !important;
+  }
+  .cg-tabla-fichas tr:has(td[data-titulo]) td:first-child::before {
+    content: attr(data-rotulo);
+  }
 
   /* El marco de una tabla desaparece en el teléfono. Ahí la tabla se cambia por
      tarjetas y CADA tarjeta ya es de cristal: dejar el marco dibuja dos filos

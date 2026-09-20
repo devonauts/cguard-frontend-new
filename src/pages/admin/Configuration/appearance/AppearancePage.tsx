@@ -25,6 +25,7 @@ import {
   Download,
   Plus,
   Eye,
+  Info,
 } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
@@ -40,6 +41,7 @@ import {
   IconTile,
   GlassPanel,
   FadeIn,
+  InfoNote,
 } from "@/components/kit";
 import {
   useAccent,
@@ -164,14 +166,27 @@ export default function AppearancePage() {
               </>
             }
             icon={<Palette />}
+            /* El subtítulo se queda en UNA frase: la que dice de qué va la
+               pantalla. La segunda —que el cambio se guarda en la cuenta— es
+               una garantía, no una descripción, y en un teléfono estiraba el
+               encabezado a cinco líneas y 286 px antes de enseñar un solo
+               control. Baja al aviso de aquí abajo, que es donde se lee
+               mientras se toca el color. */
             subtitle={t("settings.appearance.pageSubtitle", {
               defaultValue:
-                "Elige el color con el que se pinta tu C-Guard Pro y si trabajas en claro u oscuro. El cambio se aplica al instante y se guarda en tu cuenta, así que lo verás igual desde cualquier computadora o navegador.",
+                "Elige el color con el que se pinta tu C-Guard Pro y si trabajas en claro u oscuro.",
             })}
             title={t("settings.appearance.pageTitle", {
               defaultValue: "Apariencia",
             })}
           />
+
+          <InfoNote icon={<Info />} tone="neutral">
+            {t("settings.appearance.pageNote", {
+              defaultValue:
+                "El cambio se aplica al instante y se guarda en tu cuenta, así que lo verás igual desde cualquier computadora o navegador.",
+            })}
+          </InfoNote>
 
           {/* ── COLOR DEL SISTEMA ─────────────────────────────────────────── */}
           <Section

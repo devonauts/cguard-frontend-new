@@ -257,7 +257,15 @@ export function PageHeader({
        páginas y la barra superior es `sticky`, así que sin este margen el
        cristal queda pegado debajo de ella y la página empieza sin respirar.
        Va aquí y no en cada página porque son 105 las que lo usan. */
-    <FadeIn className={cn("glass mt-5 overflow-hidden", className)}>
+    /* `data-encabezado`: lo que mide una auditoría como «encabezado de página»
+       tiene que ser ESTE componente, no cualquier tarjeta con un `h1` dentro.
+       El reloj de asistencia es una tarjeta centrada con su título y su botón
+       —la pantalla entera es ese control— y se contaba como un encabezado de
+       338 px que no lo es. */
+    <FadeIn
+      className={cn("glass mt-5 overflow-hidden", className)}
+      data-encabezado=""
+    >
       {/* El halo va DETRÁS del cristal, no encima: es lo que el desenfoque tiene
           que difuminar para que la superficie parezca tener profundidad. */}
       <div
@@ -274,7 +282,7 @@ export function PageHeader({
           medía 290 px: un tercio de la pantalla gastado en decir dónde estás
           antes de enseñar nada. Al lado ocupa la altura que ya ocupaba el
           título. En `sm` hacia arriba la composición es la de siempre. */}
-      <div className="relative flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:p-6">
+      <div className="relative flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:gap-4 sm:p-6">
         <div className="flex min-w-0 flex-1 items-start gap-3 sm:contents">
           {/* El icono se alinea con la PRIMERA LÍNEA del título, no con el
               centro del bloque: centrado, un encabezado con subtítulo largo lo
@@ -303,7 +311,7 @@ export function PageHeader({
               </p>
             )}
             {badges && (
-              <div className="mt-3 flex flex-wrap items-center gap-2">
+              <div className="mt-2 flex flex-wrap items-center gap-1.5 sm:mt-3 sm:gap-2">
                 {badges}
               </div>
             )}

@@ -163,7 +163,7 @@ export default function AlarmReports() {
                 />
               ) : (
                 <div className="overflow-x-auto -mx-1">
-                  <table className="w-full text-sm">
+                  <table className="cg-tabla-fichas w-full text-sm">
                     <thead>
                       <tr
                         className="border-b text-left text-xs uppercase tracking-wide"
@@ -198,37 +198,42 @@ export default function AlarmReports() {
                           className="border-b transition-colors"
                           style={{ borderColor: "var(--hairline)" }}
                         >
-                          <td className="px-4 py-2 font-medium text-foreground">
+                          <td className="px-4 py-2 font-medium text-foreground" data-rotulo="Panel">
                             {p.panelName}
                           </td>
                           <td
+                            data-rotulo="Cuenta"
                             className="px-3 py-2"
                             style={{ color: "var(--ink-soft)" }}
                           >
                             {p.accountNumber || "—"}
                           </td>
-                          <td className="px-3 py-2 text-right tabular-nums">
+                          <td className="px-3 py-2 text-right tabular-nums" data-rotulo="Total">
                             {p.total}
                           </td>
                           <td
+                            data-rotulo="Reales"
                             className="px-3 py-2 text-right tabular-nums"
                             style={{ color: "var(--ok-text)" }}
                           >
                             {p.real}
                           </td>
                           <td
+                            data-rotulo="Falsas"
                             className="px-3 py-2 text-right tabular-nums"
                             style={{ color: "var(--warn-text)" }}
                           >
                             {p.false}
                           </td>
                           <td
+                            data-rotulo="Reincidentes"
                             className="px-3 py-2 text-right tabular-nums"
                             style={{ color: "var(--bad-text)" }}
                           >
                             {p.runaway}
                           </td>
                           <td
+                            data-rotulo="Tasa falsas"
                             className="px-3 py-2 text-right font-semibold tabular-nums"
                             style={{
                               color:

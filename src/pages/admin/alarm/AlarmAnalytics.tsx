@@ -330,7 +330,7 @@ export default function AlarmAnalytics() {
                   />
                 ) : (
                   <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
+                    <table className="cg-tabla-fichas w-full text-sm">
                       <thead>
                         <tr className="border-b border-border text-left text-xs text-muted-foreground">
                           <th className="px-2 py-2">Operador</th>
@@ -350,19 +350,21 @@ export default function AlarmAnalytics() {
                             className="border-b"
                             style={{ borderColor: "var(--hairline)" }}
                           >
-                            <td className="px-2 py-2 font-medium text-foreground">
+                            <td className="px-2 py-2 font-medium text-foreground" data-rotulo="Operador">
                               {o.name}
                             </td>
-                            <td className="px-2 py-2 text-right tabular-nums">
+                            <td className="px-2 py-2 text-right tabular-nums" data-rotulo="Casos">
                               {o.handled}
                             </td>
                             <td
+                              data-rotulo="Reconoc. prom."
                               className="px-2 py-2 text-right tabular-nums"
                               style={{ color: "var(--ink-soft)" }}
                             >
                               {fmtDur(o.avgTtaSec)}
                             </td>
                             <td
+                              data-rotulo="Despacho prom."
                               className="px-2 py-2 text-right tabular-nums"
                               style={{ color: "var(--ink-soft)" }}
                             >

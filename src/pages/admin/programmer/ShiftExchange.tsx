@@ -508,7 +508,7 @@ export default function ShiftExchange() {
           icon={<ArrowLeftRight />}
           contentClassName="overflow-x-auto -mx-1"
         >
-          <Table>
+          <Table className="cg-tabla-fichas">
             <TableHeader style={{ background: "var(--glass-sunken)" }}>
               <TableRow>
                 <TableHead className="w-[50px]">
@@ -554,14 +554,14 @@ export default function ShiftExchange() {
                     <TableCell>
                       <Checkbox />
                     </TableCell>
-                    <TableCell className="tabular-nums">
+                    <TableCell className="tabular-nums" data-rotulo={t("comun.fechaDeSolicitud")}>
                       {formatDate(rec.requestDate)}
                     </TableCell>
-                    <TableCell className="font-medium">
+                    <TableCell className="font-medium" data-rotulo={t("ui.ShiftExchange.enviadaPor")} data-titulo>
                       {rec.fromGuard?.fullName ?? "—"}
                     </TableCell>
-                    <TableCell>{rec.toGuard?.fullName ?? "Abierto"}</TableCell>
-                    <TableCell>{getStatusBadge(rec.status)}</TableCell>
+                    <TableCell data-rotulo="Enviada a">{rec.toGuard?.fullName ?? "Abierto"}</TableCell>
+                    <TableCell data-rotulo={t("comun.estado")}>{getStatusBadge(rec.status)}</TableCell>
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>

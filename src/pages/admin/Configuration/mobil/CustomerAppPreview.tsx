@@ -213,6 +213,7 @@ export default function CustomerAppPreview({
 
       <div
         className="relative w-[300px] rounded-[2.6rem] border-[11px]"
+        data-simulador
         style={{
           background: "oklch(0.18 0 0)",
           borderColor: "oklch(0.18 0 0)",

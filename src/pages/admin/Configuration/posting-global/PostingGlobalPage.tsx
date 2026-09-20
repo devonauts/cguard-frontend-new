@@ -239,7 +239,7 @@ export default function PostingGlobalPage() {
               })}{" "}
               <Link
                 to="/setting/notifications"
-                className="font-semibold underline underline-offset-2"
+                className="-my-3 inline-block py-3 font-semibold underline underline-offset-2"
                 style={{ color: "var(--brand-text)" }}
               >
                 {t("settings.postingGlobal.geofenceChannelsLink", {

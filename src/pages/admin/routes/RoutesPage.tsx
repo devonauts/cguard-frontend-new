@@ -383,7 +383,7 @@ export default function RoutesPage() {
           title={t("ui.RoutesPage.listadoDeRutas", "Listado de rutas")}
         >
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[900px] border-collapse text-left text-sm">
+            <table className="cg-tabla-fichas w-full min-w-[900px] border-collapse text-left text-sm">
               <thead className="bg-muted/30">
                 <tr className="border-b">
                   <th className="px-4 py-3">
@@ -440,7 +440,7 @@ export default function RoutesPage() {
                   rows.length > 0 &&
                   rows.map((r: any) => (
                     <tr key={r.id || r._id} className="border-b">
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3" data-rotulo={t("comun.nombre")}>
                         <Checkbox
                           aria-label={t("ui.RoutesPage.seleccionarRuta")}
                           checked={selectedIds.includes(r.id)}
@@ -449,7 +449,7 @@ export default function RoutesPage() {
                           }
                         />
                       </td>
-                      <td className="px-4 py-3 font-medium">
+                      <td className="px-4 py-3 font-medium" data-rotulo={t("comun.puestoDeSeguridad")}>
                         <div className="flex flex-wrap items-center gap-2">
                           <span>{r.name || r.title || r.routeName || "—"}</span>
                           {/* Sólo cuando lo está: una insignia «sin optimizar» en
@@ -460,7 +460,7 @@ export default function RoutesPage() {
                           ) : null}
                         </div>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3" data-rotulo={t("comun.supervisor")}>
                         {(() => {
                           const pts =
                             r.points && Array.isArray(r.points) ? r.points : [];
@@ -482,7 +482,7 @@ export default function RoutesPage() {
                           return r.address || "—";
                         })()}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3" data-rotulo={t("ui.Routes.vehiculo", "Vehículo")}>
                         {(() => {
                           const g =
                             r.assignedGuard ||
@@ -507,12 +507,12 @@ export default function RoutesPage() {
                           return String(g);
                         })()}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3" data-rotulo={t("comun.tipo")}>
                         {(r.vehicle && (r.vehicle.plate || r.vehicle.name)) ||
                           r.vehicleId ||
                           "—"}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3" data-rotulo={t("comun.estado")}>
                         {(() => {
                           if (
                             r.continuous !== undefined &&

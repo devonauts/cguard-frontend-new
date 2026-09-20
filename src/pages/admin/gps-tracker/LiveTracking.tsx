@@ -640,7 +640,7 @@ export default function LiveTrackingPage() {
                 marco de arriba recorta: sin este contenedor, la mitad derecha
                 quedaba fuera de alcance en vez de poder desplazarse. */}
             <div className="overflow-x-auto">
-              <table className="min-w-full text-sm text-left border-collapse">
+              <table className="cg-tabla-fichas min-w-full text-sm text-left border-collapse">
                 <thead className="bg-muted/30">
                   <tr className="border-b">
                     <th className="px-4 py-3 font-semibold">Ruta</th>
@@ -671,18 +671,18 @@ export default function LiveTrackingPage() {
 
                       return (
                         <tr key={s.id} className="border-b hover:bg-muted/30">
-                          <td className="px-4 py-3">{s.routeName}</td>
-                          <td className="px-4 py-3">{s.siteName}</td>
-                          <td className="px-4 py-3 text-muted-foreground">
+                          <td className="px-4 py-3" data-rotulo="Ruta">{s.routeName}</td>
+                          <td className="px-4 py-3" data-rotulo={t("comun.puestoDeSeguridad")}>{s.siteName}</td>
+                          <td className="px-4 py-3 text-muted-foreground" data-rotulo={t("ui.LiveTracking.direccion", "Dirección")}>
                             {s.address || "—"}
                           </td>
-                          <td className="px-4 py-3">#{s.order}</td>
-                          <td className="px-4 py-3">
+                          <td className="px-4 py-3" data-rotulo="Parada">#{s.order}</td>
+                          <td className="px-4 py-3" data-rotulo="Pasadas">
                             {point?.scheduledHits != null
                               ? point.scheduledHits
                               : "—"}
                           </td>
-                          <td className="px-4 py-3">
+                          <td className="px-4 py-3" data-rotulo={t("comun.estado")}>
                             {s.done ? (
                               <StatusBadge tone="green">
                                 <CheckCircle2 className="mr-1 h-3 w-3" />{" "}

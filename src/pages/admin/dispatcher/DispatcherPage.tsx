@@ -1824,7 +1824,7 @@ export default function DispatcherPage() {
         )}
         <div className="mt-4 overflow-hidden rounded-lg border">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1000px] border-collapse text-left text-sm">
+            <table className="cg-tabla-fichas w-full min-w-[1000px] border-collapse text-left text-sm">
               <thead className="bg-muted/30">
                 <tr className="border-b">
                   <th className="px-4 py-3">
@@ -1916,10 +1916,10 @@ export default function DispatcherPage() {
                           }}
                         />
                       </td>
-                      <td className="px-4 py-3" title={r.id}>
+                      <td className="px-4 py-3" title={r.id} data-rotulo={t("dispatcher.header_ticket_id")}>
                         {r.id ? String(r.id).substring(0, 8) : "-"}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3" data-rotulo={t("dispatcher.header_datetime")}>
                         {(() => {
                           const dateValue = r.dateTime || r.incidentAt;
                           if (!dateValue) return "-";
@@ -1927,8 +1927,8 @@ export default function DispatcherPage() {
                           return isNaN(d.getTime()) ? "-" : d.toLocaleString();
                         })()}
                       </td>
-                      <td className="px-4 py-3">{getClientDisplay(r)}</td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3" data-rotulo={t("dispatcher.header_client")} data-titulo>{getClientDisplay(r)}</td>
+                      <td className="px-4 py-3" data-rotulo={t("dispatcher.header_post_site")}>
                         {r.site && typeof r.site === "object"
                           ? r.site.name ||
                             r.site.companyName ||
@@ -1936,7 +1936,7 @@ export default function DispatcherPage() {
                             String(r.site.id || "")
                           : r.site || r.siteId || "-"}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3" data-rotulo={t("dispatcher.header_caller_type")}>
                         {r.callerType && typeof r.callerType === "object"
                           ? r.callerType.name || r.callerType.id || "-"
                           : r.callerType ||
@@ -1944,12 +1944,12 @@ export default function DispatcherPage() {
                             r.guardName?.name ||
                             "-"}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3" data-rotulo={t("dispatcher.header_incident_type")}>
                         {r.incidentType && typeof r.incidentType === "object"
                           ? r.incidentType.name || r.incidentType.id || "-"
                           : r.incidentType || r.incidentTypeId || "-"}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3" data-rotulo={t("dispatcher.header_status")}>
                         {(() => {
                           const s = (r.status || "").toString().toLowerCase();
                           if (s === "cerrado" || s === "closed") {

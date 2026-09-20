@@ -582,7 +582,7 @@ export default function NotificationMatrix() {
               "—completada, perdida, iniciada— no se controlan aquí, sino en",
           })}{" "}
           <Link
-            className="underline"
+            className="-my-3 inline-block py-3 underline"
             style={{ color: "var(--brand-text)" }}
             to="/setting/rondas"
           >

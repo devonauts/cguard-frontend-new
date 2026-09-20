@@ -123,7 +123,7 @@ export default function UserRolesTable({
       </Toolbar>
 
       <GlassPanel className="overflow-hidden p-0">
-        <Table>
+        <Table className="cg-tabla-fichas">
           <TableHeader>
             <TableRow>
               <TableHead className="w-[44px]">
@@ -171,6 +171,7 @@ export default function UserRolesTable({
                       />
                     </TableCell>
                     <TableCell
+                      data-rotulo={t("settings.userRoles.colRole", { defaultValue: "Rol" })} data-titulo
                       aria-expanded={expandedRoleId === r.id}
                       className="cg-focus cursor-pointer font-medium"
                       role="button"
@@ -203,7 +204,7 @@ export default function UserRolesTable({
                         )}
                       </span>
                     </TableCell>
-                    <TableCell style={{ color: "var(--ink-soft)" }}>
+                    <TableCell style={{ color: "var(--ink-soft)" }} data-rotulo={t("settings.userRoles.colDescription", { defaultValue: "Descripción" })}>
                       {r.description}
                     </TableCell>
                     <TableCell className="text-right">

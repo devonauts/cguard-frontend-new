@@ -167,7 +167,7 @@ export default function Reporting() {
                       )}
                     </p>
                     <Link
-                      className="inline-flex items-center gap-1 text-xs font-medium hover:underline"
+                      className="-my-1.5 inline-flex items-center gap-1 py-1.5 text-xs font-medium hover:underline"
                       style={{ color: "var(--brand-text)" }}
                       to="/analytics/guard"
                     >
