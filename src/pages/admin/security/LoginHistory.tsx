@@ -183,7 +183,7 @@ export default function LoginHistory() {
 
                 return (
                   <AuditRow key={r.id} tone={m.tone}>
-                    <td className="relative px-4 py-2.5">
+                    <td className="relative px-4 py-2.5" data-rotulo="Evento">
                       <SeverityRail tone={m.tone} />
                       <StatusBadge dot={false} tone={m.tone}>
                         {m.icon}
@@ -191,24 +191,28 @@ export default function LoginHistory() {
                       </StatusBadge>
                     </td>
                     <td
+                      data-rotulo={t("comun.usuario")}
                       className="px-3 py-2.5"
                       style={{ color: "var(--ink-soft)" }}
                     >
                       {r.email || "—"}
                     </td>
                     <td
+                      data-rotulo={t("ui.LoginHistory.direccion", "Dirección")}
                       className="px-3 py-2.5 font-mono text-xs"
                       style={{ color: "var(--ink-soft)" }}
                     >
                       {r.ip || "—"}
                     </td>
                     <td
+                      data-rotulo="Plataforma"
                       className="px-3 py-2.5"
                       style={{ color: "var(--ink-soft)" }}
                     >
                       {r.platform || "—"}
                     </td>
                     <td
+                      data-rotulo={t("comun.detalle")}
                       className="px-3 py-2.5 text-xs"
                       style={{ color: "var(--ink-faint)" }}
                       title={r.detail || ""}
@@ -216,6 +220,7 @@ export default function LoginHistory() {
                       {(r.detail || "").slice(0, 60)}
                     </td>
                     <td
+                      data-rotulo={t("comun.fecha")}
                       className="px-3 py-2.5 text-right text-xs tabular-nums"
                       style={{ color: "var(--ink-faint)" }}
                     >

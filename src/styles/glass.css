@@ -1212,6 +1212,63 @@ button, [role="button"] { transition: transform 0.09s var(--ease); }
     min-width: 0;
   }
 
+  /* ── TABLA ESCRITA A MANO, PLEGADA EN FICHAS ──────────────────────────
+     `DataTable` y `DataReport` conocen sus columnas y pliegan solos. Una tabla
+     escrita a mano —celda a celda, con su JSX dentro— no puede: nadie sabe qué
+     rótulo le toca a cada valor. Aquí lo dice la propia celda con
+     `data-rotulo`, y el rótulo se pinta con un `::before`.
+
+     La cabecera no se oculta con `display: none`: se esconde como `.sr-only`
+     para que un lector de pantalla siga anunciando la columna. La PRIMERA celda
+     titula la ficha —va sin rótulo y a cuerpo mayor—, igual que en las otras
+     dos tablas del CRM, y una celda vacía desaparece en vez de dejar un rótulo
+     con una raya al lado. */
+  .cg-tabla-fichas { min-width: 0 !important; }
+  .cg-tabla-fichas thead {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .cg-tabla-fichas tbody,
+  .cg-tabla-fichas tr,
+  .cg-tabla-fichas td {
+    display: block;
+    width: auto;
+  }
+  .cg-tabla-fichas tr {
+    border: 1px solid var(--hairline);
+    border-radius: var(--r-lg);
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    background: var(--glass-sunken);
+  }
+  .cg-tabla-fichas td {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 3px 0 !important;
+    text-align: right;
+    font-size: 12px;
+  }
+  .cg-tabla-fichas td::before {
+    content: attr(data-rotulo);
+    color: var(--ink-faint);
+    flex: none;
+    text-align: left;
+  }
+  .cg-tabla-fichas td:first-child {
+    display: block;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 600;
+    padding-bottom: 6px !important;
+  }
+  .cg-tabla-fichas td:first-child::before { content: none; }
+  .cg-tabla-fichas td:empty { display: none; }
+
   /* El marco de una tabla desaparece en el teléfono. Ahí la tabla se cambia por
      tarjetas y CADA tarjeta ya es de cristal: dejar el marco dibuja dos filos
      concéntricos, y el de fuera no significa nada — el sistema de diseño lo

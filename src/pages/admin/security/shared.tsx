@@ -187,7 +187,10 @@ export function AuditTable({
           con sólo `w-full` las seis columnas se comprimían dentro de un teléfono
           hasta partir cada celda en una tira vertical ilegible. Con un ancho
           mínimo, la tabla se desplaza DENTRO de su marco y la página no. */}
-      <table className="w-full min-w-[760px] text-sm">
+      {/* `cg-tabla-fichas`: en el teléfono la tabla se pliega en fichas, una por
+          evento, y cada celda pinta su rótulo desde `data-rotulo`. Con el ancho
+          mínimo a secas se leía arrastrando de lado 760 px. */}
+      <table className="cg-tabla-fichas w-full min-w-[760px] text-sm">
         <thead>
           <tr
             className="cg-eyebrow border-b text-left"

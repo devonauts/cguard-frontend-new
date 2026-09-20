@@ -8,7 +8,14 @@ import { toast } from "sonner";
 import ReportPageShell from "./ReportPageShell";
 
 import { Segmented } from "@/components/kit";
+import MobileCardList from "@/components/responsive/MobileCardList";
+import { useEsTelefono } from "@/hooks/useEsTelefono";
 import { exportColumns, type ExportFormat } from "@/lib/export/reportExport";
+
+/** «13/09/2026, 10:50 a. m.», «2026-09-13 10:50», «10:50». Sólo marcas de
+ *  tiempo: un valor que EMPIEZA por una fecha pero sigue con texto no lo es. */
+const ES_FECHA =
+  /^(\d{1,2}[/-]\d{1,2}[/-]\d{2,4}|\d{4}-\d{2}-\d{2})?[\s,]*(\d{1,2}:\d{2}(:\d{2})?(\s*[ap]\.?\s*m\.?)?)?$/i;
 
 export interface ReportColumn<T> {
   key: string;
@@ -155,6 +162,7 @@ export default function DataReport<T>({
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const tableRef = useRef<HTMLDivElement>(null);
+  const esTelefono = useEsTelefono();
 
   const fetchRows = useCallback(() => {
     setLoading(true);
@@ -402,7 +410,81 @@ export default function DataReport<T>({
       onPrint={() => openPrint(true)}
       onSearchChange={searchable ? setSearch : undefined}
     >
-      {loading || filtered.length === 0 ? null : (
+      {loading || filtered.length === 0 ? null : esTelefono ? (
+        /* ── EL INFORME, PLEGADO EN FICHAS ─────────────────────────────────
+           Diez informes comparten este componente y todos pintaban de siete a
+           nueve columnas en 390 px. `ReportColumn` ya trae lo que hace falta
+           para una ficha —un rótulo y un valor que es texto—, porque es lo
+           mismo que viaja al CSV y a la impresión.
+
+           La primera columna titula; el resto van como rótulo y valor. El tono
+           de la fila —el rojo de un pánico, el de una caída— se conserva: es
+           severidad, y perderla en el teléfono sería perder justo lo que se
+           mira primero. */
+        <MobileCardList
+          items={pageRows}
+          renderCard={(row: T) => {
+            const t = rowTone?.(row);
+            /* Titula la primera columna que NO sea una marca de tiempo. En un
+               informe la fecha va delante porque ordena la tabla, pero lo que
+               se busca al repasar la lista es el título del incidente, el
+               recorrido o el nombre del vigilante; una ficha encabezada por
+               «13/09/2026, 10:50 a. m.» obliga a leerla entera para saber de
+               qué va. La fecha no se pierde: baja a su propia línea. */
+            const iTitulo = Math.max(
+              0,
+              columns.findIndex((c) => !ES_FECHA.test(c.value(row).trim())),
+            );
+            const primera = columns[iTitulo];
+            const resto = columns.filter((_, i) => i !== iTitulo);
+
+            return (
+              <div
+                className="-m-4 rounded-[inherit] p-4"
+                style={
+                  t
+                    ? {
+                        background: `color-mix(in oklab, var(--${t}) 7%, transparent)`,
+                        boxShadow: `inset 3px 0 0 0 var(--${t})`,
+                      }
+                    : undefined
+                }
+              >
+                <div className="text-sm font-semibold">
+                  {primera ? primera.value(row) : ""}
+                </div>
+                {resto.length > 0 && (
+                  <dl className="mt-1.5 grid gap-1.5 text-xs">
+                    {resto.map((c) => {
+                      const v = c.value(row);
+
+                      if (!v || v === "—" || v === "-") return null;
+
+                      return (
+                        <div
+                          key={c.key}
+                          className="flex items-start justify-between gap-3"
+                        >
+                          <dt
+                            className="shrink-0"
+                            style={{ color: "var(--ink-faint)" }}
+                          >
+                            {rotulo(c)}
+                          </dt>
+                          <dd className="min-w-0 text-right tabular-nums">
+                            {v}
+                          </dd>
+                        </div>
+                      );
+                    })}
+                  </dl>
+                )}
+              </div>
+            );
+          }}
+          onItemClick={onRowClick}
+        />
+      ) : (
         <div ref={tableRef} className="overflow-x-auto">
           <table className="min-w-full text-sm">
             <thead>

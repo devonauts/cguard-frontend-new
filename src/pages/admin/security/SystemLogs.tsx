@@ -222,14 +222,14 @@ export default function SystemLogs() {
                       tone={m.tone}
                       onClick={() => setExpanded(isOpen ? null : r.id)}
                     >
-                      <td className="relative px-4 py-2.5">
+                      <td className="relative px-4 py-2.5" data-rotulo={t("ui.SystemLogs.accion", "Acción")}>
                         <SeverityRail tone={m.tone} />
                         <StatusBadge tone={m.tone} dot={false}>
                           {m.icon}
                           {m.labelKey ? t(m.labelKey, m.label) : m.label}
                         </StatusBadge>
                       </td>
-                      <td className="px-3 py-2.5">
+                      <td className="px-3 py-2.5" data-rotulo="Registro">
                         <span className="font-medium">{r.entityName}</span>
                         <span
                           className="ml-1 font-mono text-[10px]"
@@ -239,12 +239,14 @@ export default function SystemLogs() {
                         </span>
                       </td>
                       <td
+                        data-rotulo={t("comun.usuario")}
                         className="px-3 py-2.5"
                         style={{ color: "var(--ink-soft)" }}
                       >
                         {r.createdByEmail || "—"}
                       </td>
                       <td
+                        data-rotulo={t("comun.fecha")}
                         className="px-3 py-2.5 text-right text-xs tabular-nums"
                         style={{ color: "var(--ink-faint)" }}
                       >
