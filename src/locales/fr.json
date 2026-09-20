@@ -2728,7 +2728,10 @@
       "approved": "Approuvé",
       "rejected": "Refusé",
       "revisado": "Vérifié",
-      "revisadoRechazado": "Vérifié (refusé)"
+      "revisadoRechazado": "Vérifié (refusé)",
+      "absent": "Absence",
+      "permission": "Congé",
+      "vacation": "Vacances"
     },
     "aprobacion": {
       "none": "Aucune approbation",
@@ -5561,6 +5564,18 @@
       "12hNight": "12 h nuit",
       "24h": "24 heures",
       "custom": "Personnalisé"
+    },
+    "openQr": "Codes QR",
+    "openRondas": "Rondes du poste",
+    "shift": {
+      "D": "J",
+      "N": "N",
+      "T": "A",
+      "label": "Service {{code}}",
+      "overdue": "sans relève depuis {{time}}",
+      "reliefSoon": "relève {{time}}",
+      "until": "jusqu’à {{time}}",
+      "vacant": "sans agent"
     }
   },
   "tenantValidations": {
@@ -7603,7 +7618,8 @@
       "todayShiftEyebrow": "Vacation du jour",
       "sampleSite": "Tour Nord — Accès principal",
       "shiftProgress": "72 % de la vacation effectuée",
-      "footerNote": "Votre choix est enregistré sur cet appareil. Si vous vous connectez depuis un autre ordinateur ou navigateur, choisissez-le à nouveau là-bas."
+      "footerNote": "Votre choix est enregistré sur cet appareil. Si vous vous connectez depuis un autre ordinateur ou navigateur, choisissez-le à nouveau là-bas.",
+      "pageNote": "Le changement s’applique immédiatement et est enregistré sur ton compte : tu le retrouveras à l’identique depuis n’importe quel ordinateur ou navigateur."
     },
     "marca": {
       "loadError": "Impossible de charger l'identité visuelle.",
@@ -7706,7 +7722,16 @@
       "timezoneTruthEmphasis": "source unique de vérité",
       "timezoneTruthSuffix": " pour les plannings : il détermine comment les vacations, les pointages et les rapports sont affichés et calculés — pour tout le monde (administrateurs et agents), quel que soit le fuseau de l'appareil.",
       "saveAdminOnlyTitle": "Seuls les administrateurs peuvent enregistrer les modifications",
-      "saveBtn": "Enregistrer"
+      "saveBtn": "Enregistrer",
+      "taxIdGenericLabel": "Identifiant fiscal",
+      "taxIdHintCO": "De 8 à 10 chiffres, avec chiffre de contrôle facultatif.",
+      "taxIdHintGeneric": "Entre 5 et 20 lettres ou chiffres.",
+      "taxIdHintMX": "12 caractères (entreprise) ou 13 (personne) : lettres, date et homoclave.",
+      "taxIdHintPE": "11 chiffres commençant par 10, 15, 17 ou 20.",
+      "taxIdInvalid": "Le format du {{doc}} n’est pas valide. {{ayuda}}",
+      "taxIdPlaceholder": "{{doc}} de l’entreprise",
+      "timezoneEmpty": "Aucun fuseau horaire ne correspond à cette recherche.",
+      "tzFromDevice": "Le fuseau horaire de cet appareil a été appliqué : {{tz}}. Si ton entreprise opère dans un autre, choisis-le dans la liste."
     },
     "security": {
       "loadError": "Impossible de charger la politique de sécurité.",
@@ -8400,7 +8425,10 @@
       "title": "Générer les codes QR des rondes",
       "useStationLocation": "Utiliser la position du poste",
       "verifyNote": "Vérification de la position : à chaque scan, le GPS de l'agent est comparé à la position du point. Le scan n'est valide que dans un rayon de",
-      "verifyNote2": "Les scans hors rayon sont enregistrés comme « hors position »."
+      "verifyNote2": "Les scans hors rayon sont enregistrés comme « hors position ».",
+      "popupBlocked": "Le navigateur a bloqué la fenêtre d’impression.",
+      "printFailed": "Impossible de préparer la feuille",
+      "qrFailed": "Impossible de générer le code"
     },
     "rondaHistory": {
       "empty": "Aucune ronde enregistrée à ce poste.",
@@ -11613,7 +11641,8 @@
       "phone": "Téléphone",
       "taxNumber": "RUC / Pièce d'identité",
       "timezone": "Fuseau horaire",
-      "logo": "Logo"
+      "logo": "Logo",
+      "taxNumberGeneric": "Identifiant fiscal"
     },
     "wizard": {
       "autoSearch": "Recherche automatique",
@@ -12086,6 +12115,75 @@
     "switchHeader": "Avec quelle entreprise travaillez-vous ?"
   },
   "logs": {
-    "tab": "Journaux"
+    "tab": "Journaux",
+    "accuracy": " (±{{m}} m)",
+    "availableAt": "Autorisé à partir de : {{h}}",
+    "count": "{{n}} au total",
+    "device": "Téléphone",
+    "distance": "À {{m}} m du poste",
+    "empty": "Aucun pointage refusé",
+    "emptyDesc": "Chaque fois que la pointeuse refuse un pointage, il apparaît ici avec sa raison. Vide signifie que cela n’est pas arrivé.",
+    "error": "Impossible de charger le journal",
+    "errorDesc": "Réessaie dans un instant.",
+    "kindIn": "Entrée",
+    "kindOut": "Sortie",
+    "reason": {
+      "already_clocked_in": "Déjà pointé en entrée",
+      "already_clocked_in_elsewhere": "Pointé sur un autre poste",
+      "approval_required": "Départ anticipé sans validation",
+      "geofence_failed": "Hors de la zone du poste",
+      "guard_profile_not_found": "Aucune fiche d’agent",
+      "late_needs_approval": "Retard sans validation",
+      "license_expired": "Habilitation expirée",
+      "location_required": "Pas de position du téléphone",
+      "not_assigned_to_post": "Non affecté à ce poste",
+      "not_clocked_in": "N’était pas pointé",
+      "not_scheduled_here_today": "Pas prévu là aujourd’hui",
+      "selfie_required": "Selfie manquant",
+      "station_not_found": "Le poste n’existe pas",
+      "time_clock_disabled": "La pointeuse était désactivée",
+      "too_early": "Trop tôt"
+    },
+    "scheduled": "Son service : {{h}}",
+    "title": "Tentatives de pointage refusées",
+    "truncated": "{{n}} dernières"
+  },
+  "ronda": {
+    "wizard": {
+      "addPoint": "Ajouter un point",
+      "count": "{{n}} point(s)",
+      "create": "Créer la ronde et ses points",
+      "created": "« {{nombre}} » avec {{n}} point(s) de contrôle",
+      "desc": "Description",
+      "descPh": "Toutes les 2 heures, de 22 h à 6 h",
+      "doneTitle": "Ronde créée",
+      "failed": "Impossible de créer la ronde",
+      "locHint": "Ils naissent tous à l’emplacement du poste. Tu pourras ensuite affiner chacun sur la carte pour que la vérification de proximité soit exacte.",
+      "mapHint": "Choisis un point dans la liste pour le placer sur la carte.",
+      "mapNoStation": "Définis d’abord l’emplacement du poste pour pouvoir placer les points.",
+      "name": "Nom de la ronde",
+      "namePh": "Ronde de nuit",
+      "nameRequired": "Donne un nom à la ronde",
+      "next": "Les points existent, mais un point de contrôle ne sert à rien tant que son étiquette n’est pas collée au mur. Imprime les QR, plastifie-les et pose-les là où l’indique le nom de chacun.",
+      "nextTitle": "Ce qu’il reste à faire",
+      "noCoords": "Les points seront créés sans coordonnées : impossible de vérifier que l’agent était bien là. Définis l’emplacement du poste, puis ajuste chaque point.",
+      "noCoordsTitle": "Ce poste n’a pas d’emplacement",
+      "noTourId": "La ronde a été créée mais le serveur n’a pas renvoyé son identifiant",
+      "placeIt": "Placer sur la carte",
+      "placed": "Placé sur la carte",
+      "pointPh": "Nom du point — p. ex. Entrée principale",
+      "points": "points",
+      "pointsRequired": "Ajoute au moins un point de contrôle",
+      "printNow": "Imprimer les QR",
+      "someFailed": "Impossible de créer {{n}} point(s). La ronde et les autres ont bien été enregistrés : ajoute les manquants depuis la liste.",
+      "step1": "Pars d’un modèle ou de zéro. Tu pourras tout modifier avant d’enregistrer.",
+      "step2": "Liste les points que l’agent doit parcourir, dans l’ordre.",
+      "step2map": "Liste les points dans l’ordre et place chacun sur la carte.",
+      "templates": "Partir d’un modèle",
+      "thisPoint": "Ce point",
+      "title": "Nouvelle ronde",
+      "wherePh": "Où l’étiquette est collée (facultatif) — p. ex. à côté du tourniquet",
+      "pendingPlacement": "{{n}} point(s) sont encore sur la coordonnée du poste. Tant qu’ils partagent le même endroit, la vérification de proximité ne les distingue pas."
+    }
   }
 }

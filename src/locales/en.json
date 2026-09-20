@@ -7134,7 +7134,8 @@
       "todayShiftEyebrow": "Today's shift",
       "sampleSite": "North Tower — Main entrance",
       "shiftProgress": "72 % of the shift completed",
-      "footerNote": "Your choice is saved on this device. If you sign in from another computer or browser, choose it again there."
+      "footerNote": "Your choice is saved on this device. If you sign in from another computer or browser, choose it again there.",
+      "pageNote": "The change applies instantly and is saved to your account, so you'll see it the same way from any computer or browser."
     },
     "marca": {
       "loadError": "The branding could not be loaded.",

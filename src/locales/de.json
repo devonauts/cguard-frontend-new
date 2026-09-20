@@ -2728,7 +2728,10 @@
       "approved": "Genehmigt",
       "rejected": "Abgelehnt",
       "revisado": "Geprüft",
-      "revisadoRechazado": "Geprüft (abgelehnt)"
+      "revisadoRechazado": "Geprüft (abgelehnt)",
+      "absent": "Fehltag",
+      "permission": "Freistellung",
+      "vacation": "Urlaub"
     },
     "aprobacion": {
       "none": "Ohne Freigabe",
@@ -5561,6 +5564,18 @@
       "12hNight": "12 h Nacht",
       "24h": "24 Stunden",
       "custom": "Individuell"
+    },
+    "openQr": "QR-Codes",
+    "openRondas": "Rundgänge des Postens",
+    "shift": {
+      "D": "T",
+      "N": "N",
+      "T": "S",
+      "label": "Schicht {{code}}",
+      "overdue": "seit {{time}} ohne Ablösung",
+      "reliefSoon": "Ablösung {{time}}",
+      "until": "bis {{time}}",
+      "vacant": "ohne Wachmann"
     }
   },
   "tenantValidations": {
@@ -7603,7 +7618,8 @@
       "todayShiftEyebrow": "Heutige Schicht",
       "sampleSite": "Nordturm — Haupteingang",
       "shiftProgress": "72 % der Schicht abgeschlossen",
-      "footerNote": "Ihre Auswahl wird auf diesem Gerät gespeichert. Wenn Sie sich von einem anderen Computer oder Browser anmelden, wählen Sie sie dort erneut."
+      "footerNote": "Ihre Auswahl wird auf diesem Gerät gespeichert. Wenn Sie sich von einem anderen Computer oder Browser anmelden, wählen Sie sie dort erneut.",
+      "pageNote": "Die Änderung wird sofort übernommen und in deinem Konto gespeichert, du siehst sie also auf jedem Computer und in jedem Browser gleich."
     },
     "marca": {
       "loadError": "Die Marke konnte nicht geladen werden.",
@@ -7706,7 +7722,16 @@
       "timezoneTruthEmphasis": "einzige verbindliche Quelle",
       "timezoneTruthSuffix": " für die Zeitangaben: Sie bestimmt, wie Schichten, Aufzeichnungen und Berichte angezeigt und berechnet werden — für alle (Administratoren und Wachkräfte), unabhängig von der Zeitzone des Geräts.",
       "saveAdminOnlyTitle": "Nur Administratoren können Änderungen speichern",
-      "saveBtn": "Speichern"
+      "saveBtn": "Speichern",
+      "taxIdGenericLabel": "Steuernummer",
+      "taxIdHintCO": "8 bis 10 Ziffern, mit optionaler Prüfziffer.",
+      "taxIdHintGeneric": "Zwischen 5 und 20 Buchstaben oder Ziffern.",
+      "taxIdHintMX": "12 Zeichen (Unternehmen) oder 13 (Person): Buchstaben, Datum und Homoclave.",
+      "taxIdHintPE": "11 Ziffern, beginnend mit 10, 15, 17 oder 20.",
+      "taxIdInvalid": "Das Format von {{doc}} ist ungültig. {{ayuda}}",
+      "taxIdPlaceholder": "{{doc}} des Unternehmens",
+      "timezoneEmpty": "Keine Zeitzone passt zu dieser Suche.",
+      "tzFromDevice": "Die Zeitzone dieses Geräts wurde übernommen: {{tz}}. Arbeitet dein Unternehmen in einer anderen, wähle sie in der Liste."
     },
     "security": {
       "loadError": "Die Sicherheitsrichtlinie konnte nicht geladen werden.",
@@ -8400,7 +8425,10 @@
       "title": "QR-Codes für Rundgänge erzeugen",
       "useStationLocation": "Standort des Objekts verwenden",
       "verifyNote": "Standortprüfung: Beim Scannen wird das GPS der Wachkraft mit dem Standort des Kontrollpunkts verglichen. Es zählt nur als gültig innerhalb von",
-      "verifyNote2": "Scans außerhalb der Reichweite werden als „außerhalb des Standorts“ erfasst."
+      "verifyNote2": "Scans außerhalb der Reichweite werden als „außerhalb des Standorts“ erfasst.",
+      "popupBlocked": "Der Browser hat das Druckfenster blockiert.",
+      "printFailed": "Das Blatt konnte nicht vorbereitet werden",
+      "qrFailed": "Der Code konnte nicht erzeugt werden"
     },
     "rondaHistory": {
       "empty": "Für dieses Objekt sind keine Rundgänge erfasst.",
@@ -11613,7 +11641,8 @@
       "phone": "Telefon",
       "taxNumber": "Steuernummer / Ausweis",
       "timezone": "Zeitzone",
-      "logo": "Logo"
+      "logo": "Logo",
+      "taxNumberGeneric": "Steuernummer"
     },
     "wizard": {
       "autoSearch": "Automatische Suche",
@@ -12086,6 +12115,75 @@
     "switchHeader": "Mit welchem Unternehmen arbeiten Sie?"
   },
   "logs": {
-    "tab": "Protokolle"
+    "tab": "Protokolle",
+    "accuracy": " (±{{m}} m)",
+    "availableAt": "Erlaubt ab: {{h}}",
+    "count": "{{n}} insgesamt",
+    "device": "Telefon",
+    "distance": "{{m}} m vom Posten entfernt",
+    "empty": "Keine abgelehnten Stempelungen",
+    "emptyDesc": "Jedes Mal, wenn die Stechuhr eine Stempelung ablehnt, erscheint sie hier mit dem Grund. Leer heißt: Es ist nicht vorgekommen.",
+    "error": "Protokoll konnte nicht geladen werden",
+    "errorDesc": "Versuche es gleich noch einmal.",
+    "kindIn": "Kommen",
+    "kindOut": "Gehen",
+    "reason": {
+      "already_clocked_in": "War bereits eingestempelt",
+      "already_clocked_in_elsewhere": "Auf einem anderen Posten eingestempelt",
+      "approval_required": "Früher Feierabend ohne Genehmigung",
+      "geofence_failed": "Außerhalb des Postenbereichs",
+      "guard_profile_not_found": "Kein Wachprofil",
+      "late_needs_approval": "Verspätung ohne Genehmigung",
+      "license_expired": "Ausweis abgelaufen",
+      "location_required": "Kein Standort vom Telefon",
+      "not_assigned_to_post": "Diesem Posten nicht zugewiesen",
+      "not_clocked_in": "War nicht eingestempelt",
+      "not_scheduled_here_today": "Heute dort nicht eingeplant",
+      "selfie_required": "Selfie fehlte",
+      "station_not_found": "Der Posten existiert nicht",
+      "time_clock_disabled": "Die Stechuhr war deaktiviert",
+      "too_early": "Zu früh"
+    },
+    "scheduled": "Seine Schicht: {{h}}",
+    "title": "Abgelehnte Stempelversuche",
+    "truncated": "Letzte {{n}}"
+  },
+  "ronda": {
+    "wizard": {
+      "addPoint": "Kontrollpunkt hinzufügen",
+      "count": "{{n}} Punkt(e)",
+      "create": "Rundgang und Punkte anlegen",
+      "created": "„{{nombre}}“ mit {{n}} Kontrollpunkt(en)",
+      "desc": "Beschreibung",
+      "descPh": "Alle 2 Stunden, von 22:00 bis 06:00",
+      "doneTitle": "Rundgang angelegt",
+      "failed": "Der Rundgang konnte nicht angelegt werden",
+      "locHint": "Alle entstehen am Standort des Postens. Danach kannst du jeden auf der Karte feinjustieren, damit die Näheprüfung genau stimmt.",
+      "mapHint": "Wähle einen Punkt aus der Liste, um ihn auf der Karte zu platzieren.",
+      "mapNoStation": "Lege zuerst den Standort des Postens fest, damit die Punkte platziert werden können.",
+      "name": "Name des Rundgangs",
+      "namePh": "Nachtrundgang",
+      "nameRequired": "Gib dem Rundgang einen Namen",
+      "next": "Die Punkte existieren, aber ein Kontrollpunkt nützt nichts, solange sein Etikett nicht an der Wand klebt. Drucke die QR-Codes, laminiere sie und hänge sie dort auf, wo der jeweilige Name sagt.",
+      "nextTitle": "Was noch fehlt",
+      "noCoords": "Die Punkte werden ohne Koordinaten angelegt, es lässt sich also nicht prüfen, ob der Wachmann dort war. Lege den Standort des Postens fest und passe danach jeden Punkt an.",
+      "noCoordsTitle": "Dieser Posten hat keinen Standort",
+      "noTourId": "Der Rundgang wurde angelegt, aber der Server hat keine Id zurückgegeben",
+      "placeIt": "Auf der Karte platzieren",
+      "placed": "Auf der Karte platziert",
+      "pointPh": "Name des Punkts — z. B. Haupteingang",
+      "points": "Punkte",
+      "pointsRequired": "Füge mindestens einen Kontrollpunkt hinzu",
+      "printNow": "QR-Codes drucken",
+      "someFailed": "{{n}} Punkt(e) konnten nicht angelegt werden. Der Rundgang und die übrigen wurden gespeichert: Füge die fehlenden über die Liste hinzu.",
+      "step1": "Starte mit einer Vorlage oder bei null. Vor dem Speichern kannst du alles ändern.",
+      "step2": "Schreibe die Punkte auf, die der Wachmann abgehen muss — in der Reihenfolge.",
+      "step2map": "Schreibe die Punkte in der Reihenfolge auf und platziere jeden auf der Karte.",
+      "templates": "Mit einer Vorlage beginnen",
+      "thisPoint": "Dieser Punkt",
+      "title": "Neuer Rundgang",
+      "wherePh": "Wo das Etikett klebt (optional) — z. B. neben dem Drehkreuz",
+      "pendingPlacement": "{{n}} Punkt(e) liegen noch auf der Koordinate des Postens. Solange sie sich denselben Ort teilen, kann die Näheprüfung sie nicht auseinanderhalten."
+    }
   }
 }

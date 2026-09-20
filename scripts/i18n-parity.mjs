@@ -87,6 +87,31 @@ if (missingPT.length) {
 }
 if (stuckPT.length) log(`\n⚠️  PT: ${stuckPT.length} valores idénticos al español (revisar si son cognados o falta traducir)`);
 
+/* ── LOS CINCO EUROPEOS: SE MIRAN, PERO NO TUMBAN EL GATE ──────────────────
+   El objetivo del producto es es/en/pt, y ésos SÍ bloquean. Pero de/fr/it/nl/pl
+   están en el selector de idioma: quien los elige ve la interfaz en su idioma y
+   los huecos EN ESPAÑOL, sin avisar de nada. Llegaron a 90 claves cada uno —el
+   asistente de rondas entero, el registro de fichajes rechazados y la ficha
+   fiscal— sin que nada lo dijera, porque este guion no los miraba.
+   Se informan para que la deriva se vea. Exigir ocho idiomas para poder
+   fusionar es una decisión del dueño, no de este archivo. */
+const EXTRA = ['de', 'fr', 'it', 'nl', 'pl'];
+const huecos = EXTRA.map((l) => {
+  const f = flat(load(`${l}.json`));
+  return { l, faltan: live.filter((k) => !(k in f)) };
+}).filter((x) => x.faltan.length);
+
+if (huecos.length) {
+  log('\n⚠️  Idiomas europeos con huecos (no bloquean):');
+  huecos.forEach(({ l, faltan }) => {
+    log(`     ${l.toUpperCase()}: faltan ${faltan.length} (${pct(faltan.length)}% cubierto)`);
+    faltan.slice(0, 5).forEach((k) => log(`        ${k}`));
+    if (faltan.length > 5) log(`        … y ${faltan.length - 5} más`);
+  });
+} else {
+  log(`\n✓ Los cinco europeos (${EXTRA.join(', ')}) también están al 100 %.`);
+}
+
 if (fail) {
   log('\n✗ PARIDAD ROTA — hay claves sin traducir. Añádelas antes de continuar.');
   process.exit(1);

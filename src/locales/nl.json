@@ -2728,7 +2728,10 @@
       "approved": "Goedgekeurd",
       "rejected": "Afgewezen",
       "revisado": "Beoordeeld",
-      "revisadoRechazado": "Beoordeeld (afgewezen)"
+      "revisadoRechazado": "Beoordeeld (afgewezen)",
+      "absent": "Afwezig",
+      "permission": "Verlof",
+      "vacation": "Vakantie"
     },
     "aprobacion": {
       "none": "Geen goedkeuring nodig",
@@ -5561,6 +5564,18 @@
       "12hNight": "12h nacht",
       "24h": "24 uur",
       "custom": "Aangepast"
+    },
+    "openQr": "QR-codes",
+    "openRondas": "Rondes van de post",
+    "shift": {
+      "D": "D",
+      "N": "N",
+      "T": "M",
+      "label": "Dienst {{code}}",
+      "overdue": "geen aflossing sinds {{time}}",
+      "reliefSoon": "aflossing {{time}}",
+      "until": "tot {{time}}",
+      "vacant": "zonder beveiliger"
     }
   },
   "tenantValidations": {
@@ -7603,7 +7618,8 @@
       "todayShiftEyebrow": "Dienst van vandaag",
       "sampleSite": "Noordtoren — hoofdingang",
       "shiftProgress": "72 % van de dienst voltooid",
-      "footerNote": "Uw keuze wordt op dit apparaat opgeslagen. Logt u in vanaf een andere computer of browser, kies hem daar dan opnieuw."
+      "footerNote": "Uw keuze wordt op dit apparaat opgeslagen. Logt u in vanaf een andere computer of browser, kies hem daar dan opnieuw.",
+      "pageNote": "De wijziging wordt meteen toegepast en in je account bewaard, dus je ziet hem overal hetzelfde, op elke computer en in elke browser."
     },
     "marca": {
       "loadError": "De huisstijl kon niet worden geladen.",
@@ -7706,7 +7722,16 @@
       "timezoneTruthEmphasis": "enige bron van waarheid",
       "timezoneTruthSuffix": " voor de tijden: die bepaalt hoe diensten, registraties en rapporten worden getoond en berekend — voor iedereen (beheerders en beveiligers), ongeacht de zone van het apparaat.",
       "saveAdminOnlyTitle": "Alleen beheerders kunnen wijzigingen opslaan",
-      "saveBtn": "Opslaan"
+      "saveBtn": "Opslaan",
+      "taxIdGenericLabel": "Fiscaal nummer",
+      "taxIdHintCO": "8 tot 10 cijfers, met optioneel controlecijfer.",
+      "taxIdHintGeneric": "Tussen 5 en 20 letters of cijfers.",
+      "taxIdHintMX": "12 tekens (bedrijf) of 13 (persoon): letters, datum en homoclave.",
+      "taxIdHintPE": "11 cijfers die beginnen met 10, 15, 17 of 20.",
+      "taxIdInvalid": "Het formaat van {{doc}} is ongeldig. {{ayuda}}",
+      "taxIdPlaceholder": "{{doc}} van het bedrijf",
+      "timezoneEmpty": "Geen tijdzone komt overeen met die zoekopdracht.",
+      "tzFromDevice": "De tijdzone van dit apparaat is toegepast: {{tz}}. Werkt je bedrijf in een andere, kies die dan in de lijst."
     },
     "security": {
       "loadError": "Het beveiligingsbeleid kon niet worden geladen.",
@@ -8400,7 +8425,10 @@
       "title": "QR-codes voor rondes genereren",
       "useStationLocation": "Positie van de post gebruiken",
       "verifyNote": "Positiecontrole: bij elke scan vergelijkt het systeem de gps van de beveiliger met de positie van het punt. De scan telt alleen als hij plaatsvindt binnen",
-      "verifyNote2": "Scans buiten bereik worden vastgelegd als \"buiten de positie\"."
+      "verifyNote2": "Scans buiten bereik worden vastgelegd als \"buiten de positie\".",
+      "popupBlocked": "De browser blokkeerde het afdrukvenster.",
+      "printFailed": "Kan het blad niet voorbereiden",
+      "qrFailed": "Kan de code niet genereren"
     },
     "rondaHistory": {
       "empty": "Er zijn geen rondes vastgelegd op deze post.",
@@ -11613,7 +11641,8 @@
       "phone": "Telefoon",
       "taxNumber": "Fiscaal nummer / ID-nummer",
       "timezone": "Tijdzone",
-      "logo": "Logo"
+      "logo": "Logo",
+      "taxNumberGeneric": "Fiscaal nummer"
     },
     "wizard": {
       "autoSearch": "Automatisch zoeken",
@@ -12086,6 +12115,75 @@
     "switchHeader": "Met welk bedrijf werk je?"
   },
   "logs": {
-    "tab": "Logboek"
+    "tab": "Logboek",
+    "accuracy": " (±{{m}} m)",
+    "availableAt": "Toegestaan vanaf: {{h}}",
+    "count": "{{n}} in totaal",
+    "device": "Telefoon",
+    "distance": "{{m}} m van de post",
+    "empty": "Geen geweigerde registraties",
+    "emptyDesc": "Elke keer dat de prikklok een registratie weigert, verschijnt die hier met de reden. Leeg betekent dat het niet is gebeurd.",
+    "error": "Kan het logboek niet laden",
+    "errorDesc": "Probeer het zo meteen opnieuw.",
+    "kindIn": "Inklokken",
+    "kindOut": "Uitklokken",
+    "reason": {
+      "already_clocked_in": "Was al ingeklokt",
+      "already_clocked_in_elsewhere": "Ingeklokt op een andere post",
+      "approval_required": "Vroeg vertrek zonder goedkeuring",
+      "geofence_failed": "Buiten het gebied van de post",
+      "guard_profile_not_found": "Geen beveiligersprofiel",
+      "late_needs_approval": "Te laat zonder goedkeuring",
+      "license_expired": "Vergunning verlopen",
+      "location_required": "Geen locatie van de telefoon",
+      "not_assigned_to_post": "Niet toegewezen aan die post",
+      "not_clocked_in": "Was niet ingeklokt",
+      "not_scheduled_here_today": "Vandaag daar niet ingeroosterd",
+      "selfie_required": "Selfie ontbrak",
+      "station_not_found": "De post bestaat niet",
+      "time_clock_disabled": "De prikklok stond uit",
+      "too_early": "Te vroeg"
+    },
+    "scheduled": "Zijn dienst: {{h}}",
+    "title": "Geweigerde klokpogingen",
+    "truncated": "Laatste {{n}}"
+  },
+  "ronda": {
+    "wizard": {
+      "addPoint": "Controlepunt toevoegen",
+      "count": "{{n}} punt(en)",
+      "create": "Ronde en punten aanmaken",
+      "created": "‘{{nombre}}’ met {{n}} controlepunt(en)",
+      "desc": "Omschrijving",
+      "descPh": "Elke 2 uur, van 22:00 tot 06:00",
+      "doneTitle": "Ronde aangemaakt",
+      "failed": "Kan de ronde niet aanmaken",
+      "locHint": "Ze ontstaan allemaal op de locatie van de post. Daarna kun je elk punt op de kaart bijstellen zodat de nabijheidscontrole klopt.",
+      "mapHint": "Kies een punt uit de lijst om het op de kaart te plaatsen.",
+      "mapNoStation": "Stel eerst de locatie van de post in om punten te kunnen plaatsen.",
+      "name": "Naam van de ronde",
+      "namePh": "Nachtronde",
+      "nameRequired": "Geef de ronde een naam",
+      "next": "De punten bestaan, maar een controlepunt doet niets tot het label aan de muur hangt. Print de QR-codes, lamineer ze en hang ze waar de naam van elk punt aangeeft.",
+      "nextTitle": "Wat er nog mist",
+      "noCoords": "De punten worden zonder coördinaten aangemaakt, dus er valt niet te controleren of de beveiliger er was. Stel de locatie van de post in en pas daarna elk punt aan.",
+      "noCoordsTitle": "Deze post heeft geen locatie",
+      "noTourId": "De ronde is aangemaakt maar de server gaf geen id terug",
+      "placeIt": "Op de kaart plaatsen",
+      "placed": "Op de kaart geplaatst",
+      "pointPh": "Naam van het punt — bijv. Hoofdingang",
+      "points": "punten",
+      "pointsRequired": "Voeg minstens één controlepunt toe",
+      "printNow": "QR-codes afdrukken",
+      "someFailed": "{{n}} punt(en) konden niet worden aangemaakt. De ronde en de rest zijn wel bewaard: voeg de ontbrekende toe vanuit de lijst.",
+      "step1": "Begin met een sjabloon of vanaf nul. Je kunt alles nog wijzigen voor je opslaat.",
+      "step2": "Noteer de punten die de beveiliger moet aflopen, op volgorde.",
+      "step2map": "Noteer de punten op volgorde en plaats elk op de kaart.",
+      "templates": "Beginnen met een sjabloon",
+      "thisPoint": "Dit punt",
+      "title": "Nieuwe ronde",
+      "wherePh": "Waar het label komt (optioneel) — bijv. naast het tourniquet",
+      "pendingPlacement": "{{n}} punt(en) staan nog op de coördinaat van de post. Zolang ze dezelfde plek delen, kan de nabijheidscontrole ze niet onderscheiden."
+    }
   }
 }

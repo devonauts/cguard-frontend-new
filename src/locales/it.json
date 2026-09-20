@@ -2728,7 +2728,10 @@
       "approved": "Approvato",
       "rejected": "Rifiutato",
       "revisado": "Verificato",
-      "revisadoRechazado": "Verificato (rifiutato)"
+      "revisadoRechazado": "Verificato (rifiutato)",
+      "absent": "Assenza",
+      "permission": "Permesso",
+      "vacation": "Ferie"
     },
     "aprobacion": {
       "none": "Nessuna approvazione",
@@ -5561,6 +5564,18 @@
       "12hNight": "12h notte",
       "24h": "24 ore",
       "custom": "Personalizzato"
+    },
+    "openQr": "Codici QR",
+    "openRondas": "Giri di ronda del posto",
+    "shift": {
+      "D": "G",
+      "N": "N",
+      "T": "P",
+      "label": "Turno {{code}}",
+      "overdue": "senza cambio dalle {{time}}",
+      "reliefSoon": "cambio {{time}}",
+      "until": "fino alle {{time}}",
+      "vacant": "senza guardia"
     }
   },
   "tenantValidations": {
@@ -7603,7 +7618,8 @@
       "todayShiftEyebrow": "Turno di oggi",
       "sampleSite": "Torre Nord — Ingresso principale",
       "shiftProgress": "72 % del turno completato",
-      "footerNote": "La tua scelta viene salvata su questo dispositivo. Se accedi da un altro computer o browser, dovrai sceglierla di nuovo lì."
+      "footerNote": "La tua scelta viene salvata su questo dispositivo. Se accedi da un altro computer o browser, dovrai sceglierla di nuovo lì.",
+      "pageNote": "La modifica si applica subito e viene salvata nel tuo account, così la vedrai uguale da qualsiasi computer o browser."
     },
     "marca": {
       "loadError": "Impossibile caricare l'identità visiva.",
@@ -7706,7 +7722,16 @@
       "timezoneTruthEmphasis": "unica fonte di verità",
       "timezoneTruthSuffix": " per gli orari: determina come vengono mostrati e calcolati turni, timbrature e report — per tutti (amministratori e guardie), a prescindere dal fuso del dispositivo.",
       "saveAdminOnlyTitle": "Solo gli amministratori possono salvare le modifiche",
-      "saveBtn": "Salva"
+      "saveBtn": "Salva",
+      "taxIdGenericLabel": "Codice fiscale",
+      "taxIdHintCO": "Da 8 a 10 cifre, con cifra di controllo facoltativa.",
+      "taxIdHintGeneric": "Tra 5 e 20 lettere o numeri.",
+      "taxIdHintMX": "12 caratteri (azienda) o 13 (persona): lettere, data e homoclave.",
+      "taxIdHintPE": "11 cifre che iniziano con 10, 15, 17 o 20.",
+      "taxIdInvalid": "Il formato di {{doc}} non è valido. {{ayuda}}",
+      "taxIdPlaceholder": "{{doc}} dell’azienda",
+      "timezoneEmpty": "Nessun fuso orario corrisponde a questa ricerca.",
+      "tzFromDevice": "È stato applicato il fuso orario di questo dispositivo: {{tz}}. Se la tua azienda opera in un altro, scegliilo dall’elenco."
     },
     "security": {
       "loadError": "Impossibile caricare le regole di sicurezza.",
@@ -8400,7 +8425,10 @@
       "title": "Genera i codici QR delle ronde",
       "useStationLocation": "Usa la posizione del posto",
       "verifyNote": "Verifica della posizione: alla scansione, il sistema confronta il GPS della guardia con la posizione del punto. Vale come valida solo se è entro",
-      "verifyNote2": "Le scansioni fuori raggio restano registrate come \"fuori posizione\"."
+      "verifyNote2": "Le scansioni fuori raggio restano registrate come \"fuori posizione\".",
+      "popupBlocked": "Il browser ha bloccato la finestra di stampa.",
+      "printFailed": "Impossibile preparare il foglio",
+      "qrFailed": "Impossibile generare il codice"
     },
     "rondaHistory": {
       "empty": "Nessuna ronda registrata in questo posto.",
@@ -11613,7 +11641,8 @@
       "phone": "Telefono",
       "taxNumber": "Partita IVA / Documento d'identità",
       "timezone": "Fuso orario",
-      "logo": "Logo"
+      "logo": "Logo",
+      "taxNumberGeneric": "Codice fiscale"
     },
     "wizard": {
       "autoSearch": "Ricerca automatica",
@@ -12086,6 +12115,75 @@
     "switchHeader": "Con quale azienda vuoi lavorare?"
   },
   "logs": {
-    "tab": "Registri"
+    "tab": "Registri",
+    "accuracy": " (±{{m}} m)",
+    "availableAt": "Consentito dalle: {{h}}",
+    "count": "{{n}} in totale",
+    "device": "Telefono",
+    "distance": "A {{m}} m dal posto",
+    "empty": "Nessuna timbratura rifiutata",
+    "emptyDesc": "Ogni volta che il timbratore rifiuta una timbratura, compare qui con il motivo. Vuoto significa che non è successo.",
+    "error": "Impossibile leggere il registro",
+    "errorDesc": "Riprova tra un momento.",
+    "kindIn": "Entrata",
+    "kindOut": "Uscita",
+    "reason": {
+      "already_clocked_in": "Era già entrato",
+      "already_clocked_in_elsewhere": "Entrata attiva in un altro posto",
+      "approval_required": "Uscita anticipata senza approvazione",
+      "geofence_failed": "Fuori dall’area del posto",
+      "guard_profile_not_found": "Nessuna scheda della guardia",
+      "late_needs_approval": "Ritardo senza approvazione",
+      "license_expired": "Licenza scaduta",
+      "location_required": "Nessuna posizione dal telefono",
+      "not_assigned_to_post": "Non assegnato a quel posto",
+      "not_clocked_in": "Non era entrato",
+      "not_scheduled_here_today": "Oggi non era in turno lì",
+      "selfie_required": "Mancava il selfie",
+      "station_not_found": "Il posto non esiste",
+      "time_clock_disabled": "Il timbratore era disattivato",
+      "too_early": "Troppo presto"
+    },
+    "scheduled": "Il suo turno: {{h}}",
+    "title": "Tentativi di timbratura rifiutati",
+    "truncated": "Ultimi {{n}}"
+  },
+  "ronda": {
+    "wizard": {
+      "addPoint": "Aggiungi punto",
+      "count": "{{n}} punto/i",
+      "create": "Crea il giro e i suoi punti",
+      "created": "«{{nombre}}» con {{n}} punto/i di controllo",
+      "desc": "Descrizione",
+      "descPh": "Ogni 2 ore, dalle 22:00 alle 06:00",
+      "doneTitle": "Giro creato",
+      "failed": "Impossibile creare il giro",
+      "locHint": "Nascono tutti nella posizione del posto. Poi potrai regolare ciascuno sulla mappa perché il controllo di prossimità sia esatto.",
+      "mapHint": "Scegli un punto dall’elenco per collocarlo sulla mappa.",
+      "mapNoStation": "Imposta prima la posizione del posto per poter collocare i punti.",
+      "name": "Nome del giro",
+      "namePh": "Giro notturno",
+      "nameRequired": "Dai un nome al giro",
+      "next": "I punti esistono, ma un punto di controllo non serve finché la sua etichetta non è attaccata al muro. Stampa i QR, plastificali e mettili dove dice il nome di ciascuno.",
+      "nextTitle": "Cosa manca",
+      "noCoords": "I punti verranno creati senza coordinate, quindi non si potrà verificare che la guardia fosse lì. Imposta la posizione del posto e poi regola ciascuno.",
+      "noCoordsTitle": "Questo posto non ha posizione",
+      "noTourId": "Il giro è stato creato ma il server non ha restituito il suo id",
+      "placeIt": "Colloca sulla mappa",
+      "placed": "Collocato sulla mappa",
+      "pointPh": "Nome del punto — es. Ingresso principale",
+      "points": "punti",
+      "pointsRequired": "Aggiungi almeno un punto di controllo",
+      "printNow": "Stampa i QR",
+      "someFailed": "Non è stato possibile creare {{n}} punto/i. Il giro e gli altri sono stati salvati: aggiungi quelli mancanti dall’elenco.",
+      "step1": "Parti da un modello o da zero. Potrai cambiare tutto prima di salvare.",
+      "step2": "Scrivi i punti che la guardia deve percorrere, in ordine.",
+      "step2map": "Scrivi i punti in ordine e colloca ciascuno sulla mappa.",
+      "templates": "Parti da un modello",
+      "thisPoint": "Questo punto",
+      "title": "Nuovo giro di ronda",
+      "wherePh": "Dove si attacca l’etichetta (facoltativo) — es. accanto al tornello",
+      "pendingPlacement": "{{n}} punto/i sono ancora sulla coordinata del posto. Finché condividono lo stesso luogo, il controllo di prossimità non li distingue."
+    }
   }
 }

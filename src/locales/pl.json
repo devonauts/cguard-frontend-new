@@ -2728,7 +2728,10 @@
       "approved": "Zatwierdzone",
       "rejected": "Odrzucony",
       "revisado": "Zweryfikowane",
-      "revisadoRechazado": "Zweryfikowane (odrzucone)"
+      "revisadoRechazado": "Zweryfikowane (odrzucone)",
+      "absent": "Nieobecność",
+      "permission": "Urlop okolicznościowy",
+      "vacation": "Urlop wypoczynkowy"
     },
     "aprobacion": {
       "none": "Bez zatwierdzania",
@@ -5561,6 +5564,18 @@
       "12hNight": "12 h nocna",
       "24h": "24 godziny",
       "custom": "Własny"
+    },
+    "openQr": "Kody QR",
+    "openRondas": "Obchody posterunku",
+    "shift": {
+      "D": "D",
+      "N": "N",
+      "T": "P",
+      "label": "Zmiana {{code}}",
+      "overdue": "bez zmiennika od {{time}}",
+      "reliefSoon": "zmiennik {{time}}",
+      "until": "do {{time}}",
+      "vacant": "bez pracownika"
     }
   },
   "tenantValidations": {
@@ -7603,7 +7618,8 @@
       "todayShiftEyebrow": "Dzisiejsza zmiana",
       "sampleSite": "Wieża Północna — wejście główne",
       "shiftProgress": "72 % zmiany za nami",
-      "footerNote": "Wybór zapisuje się na tym urządzeniu. Po zalogowaniu z innego komputera lub przeglądarki należy wybrać go tam ponownie."
+      "footerNote": "Wybór zapisuje się na tym urządzeniu. Po zalogowaniu z innego komputera lub przeglądarki należy wybrać go tam ponownie.",
+      "pageNote": "Zmiana działa od razu i zapisuje się na Twoim koncie, więc zobaczysz ją tak samo na każdym komputerze i w każdej przeglądarce."
     },
     "marca": {
       "loadError": "Nie udało się wczytać marki.",
@@ -7706,7 +7722,16 @@
       "timezoneTruthEmphasis": "jedynym źródłem prawdy",
       "timezoneTruthSuffix": " dla godzin: decyduje o tym, jak wyświetlane i liczone są zmiany, rejestracje i raporty — dla wszystkich (administratorów i pracowników ochrony), niezależnie od strefy ustawionej w urządzeniu.",
       "saveAdminOnlyTitle": "Tylko administratorzy mogą zapisywać zmiany",
-      "saveBtn": "Zapisz"
+      "saveBtn": "Zapisz",
+      "taxIdGenericLabel": "Numer podatkowy",
+      "taxIdHintCO": "Od 8 do 10 cyfr, z opcjonalną cyfrą kontrolną.",
+      "taxIdHintGeneric": "Od 5 do 20 liter lub cyfr.",
+      "taxIdHintMX": "12 znaków (firma) lub 13 (osoba): litery, data i homoclave.",
+      "taxIdHintPE": "11 cyfr zaczynających się od 10, 15, 17 lub 20.",
+      "taxIdInvalid": "Format {{doc}} jest nieprawidłowy. {{ayuda}}",
+      "taxIdPlaceholder": "{{doc}} firmy",
+      "timezoneEmpty": "Żadna strefa czasowa nie pasuje do wyszukiwania.",
+      "tzFromDevice": "Zastosowano strefę czasową tego urządzenia: {{tz}}. Jeśli Twoja firma działa w innej, wybierz ją z listy."
     },
     "security": {
       "loadError": "Nie udało się wczytać polityki bezpieczeństwa.",
@@ -8400,7 +8425,10 @@
       "title": "Generowanie kodów QR obchodów",
       "useStationLocation": "Użyj lokalizacji posterunku",
       "verifyNote": "Weryfikacja lokalizacji: przy skanowaniu system porównuje GPS pracownika ochrony z lokalizacją punktu. Skan liczy się tylko wtedy, gdy mieści się w promieniu",
-      "verifyNote2": "Skany poza zasięgiem zapisywane są jako „poza lokalizacją”."
+      "verifyNote2": "Skany poza zasięgiem zapisywane są jako „poza lokalizacją”.",
+      "popupBlocked": "Przeglądarka zablokowała okno drukowania.",
+      "printFailed": "Nie udało się przygotować arkusza",
+      "qrFailed": "Nie udało się wygenerować kodu"
     },
     "rondaHistory": {
       "empty": "Na tym posterunku nie zarejestrowano żadnych obchodów.",
@@ -11613,7 +11641,8 @@
       "phone": "Telefon",
       "taxNumber": "RUC / nr dowodu",
       "timezone": "Strefa czasowa",
-      "logo": "Logotyp"
+      "logo": "Logotyp",
+      "taxNumberGeneric": "Numer podatkowy"
     },
     "wizard": {
       "autoSearch": "Wyszukiwanie automatyczne",
@@ -12086,6 +12115,75 @@
     "switchHeader": "Z którą firmą pracujesz?"
   },
   "logs": {
-    "tab": "Dzienniki"
+    "tab": "Dzienniki",
+    "accuracy": " (±{{m}} m)",
+    "availableAt": "Dozwolone od: {{h}}",
+    "count": "Łącznie {{n}}",
+    "device": "Telefon",
+    "distance": "{{m}} m od posterunku",
+    "empty": "Brak odrzuconych rejestracji",
+    "emptyDesc": "Za każdym razem, gdy zegar odrzuci rejestrację, pojawi się tutaj wraz z powodem. Pusto oznacza, że to się nie zdarzyło.",
+    "error": "Nie udało się wczytać rejestru",
+    "errorDesc": "Spróbuj ponownie za chwilę.",
+    "kindIn": "Wejście",
+    "kindOut": "Wyjście",
+    "reason": {
+      "already_clocked_in": "Już zarejestrowano wejście",
+      "already_clocked_in_elsewhere": "Zarejestrowany na innym posterunku",
+      "approval_required": "Wcześniejsze wyjście bez zgody",
+      "geofence_failed": "Poza obszarem posterunku",
+      "guard_profile_not_found": "Brak profilu pracownika ochrony",
+      "late_needs_approval": "Spóźnienie bez zgody",
+      "license_expired": "Uprawnienie wygasło",
+      "location_required": "Brak lokalizacji z telefonu",
+      "not_assigned_to_post": "Nieprzypisany do tego posterunku",
+      "not_clocked_in": "Nie było rejestracji wejścia",
+      "not_scheduled_here_today": "Dziś nie miał tam służby",
+      "selfie_required": "Brak selfie",
+      "station_not_found": "Posterunek nie istnieje",
+      "time_clock_disabled": "Zegar był wyłączony",
+      "too_early": "Za wcześnie"
+    },
+    "scheduled": "Jego zmiana: {{h}}",
+    "title": "Odrzucone próby rejestracji",
+    "truncated": "Ostatnie {{n}}"
+  },
+  "ronda": {
+    "wizard": {
+      "addPoint": "Dodaj punkt kontrolny",
+      "count": "{{n}} punkt(ów)",
+      "create": "Utwórz obchód i punkty",
+      "created": "„{{nombre}}” z {{n}} punktami kontrolnymi",
+      "desc": "Opis",
+      "descPh": "Co 2 godziny, od 22:00 do 06:00",
+      "doneTitle": "Obchód utworzony",
+      "failed": "Nie udało się utworzyć obchodu",
+      "locHint": "Wszystkie powstają w lokalizacji posterunku. Potem możesz dopracować każdy na mapie, aby sprawdzanie bliskości było dokładne.",
+      "mapHint": "Wybierz punkt z listy, aby umieścić go na mapie.",
+      "mapNoStation": "Najpierw ustaw lokalizację posterunku, aby móc umieścić punkty.",
+      "name": "Nazwa obchodu",
+      "namePh": "Obchód nocny",
+      "nameRequired": "Nadaj obchodowi nazwę",
+      "next": "Punkty istnieją, ale punkt kontrolny nic nie znaczy, dopóki jego etykieta nie wisi na ścianie. Wydrukuj kody QR, zalaminuj je i umieść tam, gdzie wskazuje nazwa każdego z nich.",
+      "nextTitle": "Co jeszcze zostało",
+      "noCoords": "Punkty powstaną bez współrzędnych, więc nie da się sprawdzić, czy pracownik tam był. Ustaw lokalizację posterunku, a potem dopracuj każdy punkt.",
+      "noCoordsTitle": "Ten posterunek nie ma lokalizacji",
+      "noTourId": "Obchód utworzono, ale serwer nie zwrócił jego identyfikatora",
+      "placeIt": "Umieść na mapie",
+      "placed": "Umieszczony na mapie",
+      "pointPh": "Nazwa punktu — np. Wejście główne",
+      "points": "punkty",
+      "pointsRequired": "Dodaj co najmniej jeden punkt kontrolny",
+      "printNow": "Wydrukuj kody QR",
+      "someFailed": "Nie udało się utworzyć {{n}} punktów. Obchód i pozostałe zapisano: brakujące dodaj z listy.",
+      "step1": "Zacznij od szablonu albo od zera. Przed zapisaniem możesz wszystko zmienić.",
+      "step2": "Wypisz punkty, które pracownik ma obejść, po kolei.",
+      "step2map": "Wypisz punkty po kolei i umieść każdy na mapie.",
+      "templates": "Zacznij od szablonu",
+      "thisPoint": "Ten punkt",
+      "title": "Nowy obchód",
+      "wherePh": "Gdzie przyklejona jest etykieta (opcjonalnie) — np. obok kołowrotu",
+      "pendingPlacement": "{{n}} punktów nadal znajduje się we współrzędnych posterunku. Dopóki dzielą to samo miejsce, sprawdzanie bliskości ich nie rozróżni."
+    }
   }
 }

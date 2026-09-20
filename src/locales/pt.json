@@ -3069,7 +3069,8 @@
       "todayShiftEyebrow": "Turno de hoje",
       "sampleSite": "Torre Norte — Acesso principal",
       "shiftProgress": "72 % do turno concluído",
-      "footerNote": "Sua escolha fica salva neste dispositivo. Se você entrar de outro computador ou navegador, escolha-a novamente lá."
+      "footerNote": "Sua escolha fica salva neste dispositivo. Se você entrar de outro computador ou navegador, escolha-a novamente lá.",
+      "pageNote": "A alteração aplica-se de imediato e fica guardada na tua conta, por isso vais vê-la igual em qualquer computador ou navegador."
     },
     "marca": {
       "loadError": "Não foi possível carregar a marca.",
