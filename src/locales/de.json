@@ -11931,6 +11931,7 @@
       "academicInstructionRequired": "Der Bildungsabschluss ist erforderlich",
       "genderRequired": "Das Geschlecht ist erforderlich",
       "maritalStatusRequired": "Der Familienstand ist erforderlich",
+      "bloodTypeRequired": "Die Blutgruppe ist erforderlich",
       "birthDateRequired": "Das Geburtsdatum ist erforderlich",
       "identificationRequired": "Die Ausweisnummer ist erforderlich"
     },

@@ -11959,6 +11959,7 @@
       "academicInstructionRequired": "A formação acadêmica é obrigatória",
       "genderRequired": "O gênero é obrigatório",
       "maritalStatusRequired": "O estado civil é obrigatório",
+      "bloodTypeRequired": "O tipo sanguíneo é obrigatório",
       "birthDateRequired": "A data de nascimento é obrigatória",
       "identificationRequired": "O número do documento de identidade é obrigatório"
     },

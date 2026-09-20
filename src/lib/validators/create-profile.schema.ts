@@ -183,7 +183,14 @@ export const createProfileSchema = z.object({
       ),
     })
     .max(30, maxChars(30)),
-  bloodType: z.enum(BLOOD_TYPES),
+  // Sin `error` propio, Zod escupe su texto de fábrica —«Invalid option: expected
+  // one of "A+"|"A-"…»— y eso es lo que veía el usuario en pantalla.
+  bloodType: z.enum(BLOOD_TYPES, {
+    error: msg(
+      "validation.profile.bloodTypeRequired",
+      "El tipo de sangre es requerido",
+    ),
+  }),
 
   // ── Assignments ────────────────────────────────────────────────────────
   clientId: z.array(z.string().trim()).optional(),

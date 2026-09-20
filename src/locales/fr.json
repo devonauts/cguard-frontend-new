@@ -11931,6 +11931,7 @@
       "academicInstructionRequired": "Le niveau d'études est obligatoire",
       "genderRequired": "Le sexe est obligatoire",
       "maritalStatusRequired": "La situation familiale est obligatoire",
+      "bloodTypeRequired": "Le groupe sanguin est obligatoire",
       "birthDateRequired": "La date de naissance est obligatoire",
       "identificationRequired": "Le numéro de pièce d'identité est obligatoire"
     },

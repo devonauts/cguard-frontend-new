@@ -11931,6 +11931,7 @@
       "academicInstructionRequired": "De opleiding is verplicht",
       "genderRequired": "Het geslacht is verplicht",
       "maritalStatusRequired": "De burgerlijke staat is verplicht",
+      "bloodTypeRequired": "De bloedgroep is verplicht",
       "birthDateRequired": "De geboortedatum is verplicht",
       "identificationRequired": "Het identiteitsnummer is verplicht"
     },

@@ -11931,6 +11931,7 @@
       "academicInstructionRequired": "Wykształcenie jest wymagane",
       "genderRequired": "Płeć jest wymagana",
       "maritalStatusRequired": "Stan cywilny jest wymagany",
+      "bloodTypeRequired": "Grupa krwi jest wymagana",
       "birthDateRequired": "Data urodzenia jest wymagana",
       "identificationRequired": "Numer dowodu / identyfikatora jest wymagany"
     },

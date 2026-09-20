@@ -11931,6 +11931,7 @@
       "academicInstructionRequired": "Il titolo di studio è obbligatorio",
       "genderRequired": "Il genere è obbligatorio",
       "maritalStatusRequired": "Lo stato civile è obbligatorio",
+      "bloodTypeRequired": "Il gruppo sanguigno è obbligatorio",
       "birthDateRequired": "La data di nascita è obbligatoria",
       "identificationRequired": "Il numero del documento d'identità è obbligatorio"
     },

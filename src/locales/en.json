@@ -11959,6 +11959,7 @@
       "academicInstructionRequired": "Education is required",
       "genderRequired": "Gender is required",
       "maritalStatusRequired": "Marital status is required",
+      "bloodTypeRequired": "Blood type is required",
       "birthDateRequired": "The date of birth is required",
       "identificationRequired": "The ID number is required"
     },
