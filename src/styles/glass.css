@@ -1437,3 +1437,61 @@ html.dark .cg-lockup.is-animated .cg-lockup__tagline {
     -webkit-text-fill-color: currentColor;
   }
 }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   EL ACABADO METÁLICO — DÓNDE SE PONE LA LÁMINA
+   (la lámina en sí y por qué es acromática: `--sheen` en tokens.css)
+
+   Esta es la LISTA COMPLETA de superficies que llevan brillo metálico. Está
+   junta a propósito: repartida por veinte archivos, la siguiente persona que
+   añada un botón de marca no sabría que existe.
+
+   ── POR QUÉ `background-image` Y NO TOCAR CADA REGLA ──────────────────────
+   Las reglas de arriba pintan el acento con `background: var(--brand)`. Este
+   bloque sólo añade la capa de IMAGEN encima; el color de fondo lo sigue
+   poniendo la regla original. Así ningún estilo existente se modifica —y si
+   algún día se quita este bloque, todo vuelve a ser plano sin tocar nada más.
+
+   Va SIN `@layer` y al final del archivo, que es lo que le deja ganar a las
+   utilidades de Tailwind (ver «CÓMO COMPITE ESTE ARCHIVO CON TAILWIND» arriba).
+
+   ── QUÉ NO LLEVA LÁMINA, Y NO ES UN OLVIDO ────────────────────────────────
+   Nada por debajo de unos 24 px: los carriles de 3 px del elemento activo, el
+   subrayado de las pestañas, los puntos de estado, las casillas de verificar,
+   la contera con el número de avisos. En una superficie pequeña el degradado no
+   se lee como metal — se lee como suciedad, o como si el color estuviera mal
+   calculado. El brillo necesita sitio para rebotar.
+
+   Por eso `.bg-primary` NO está en la lista, aunque sea la traducción de
+   `--brand` al vocabulario de Tailwind y fuera lo cómodo de poner. Se miró qué
+   la usa de verdad: los tres puntos de 12 px de la pantalla de carga, un
+   cuadrito de 12 px de leyenda, un punto de 6 px del carrusel… y las CELDAS
+   SELECCIONADAS de la rejilla del Horario, que son miles y se repintan al
+   arrastrar. Una clase con ese reparto no es una superficie de marca, es un
+   cajón de sastre. Donde sí es una píldora de verdad —la insignia y la pestaña
+   activa— la lámina se pone en el componente, con `[background-image:…]`.
+
+   Con el acabado plano `--brand-sheen` vale `none` y todo esto no hace nada.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Todos los selectores van colgados de `:root` —que es el <html> y por tanto
+   siempre cierto— para subirles la especificidad un escalón. No es adorno: la
+   columna de navegación inyecta SU hoja desde `sidebar.tsx` al montarse, o sea
+   DESPUÉS de este archivo, y sus reglas usan `background:` a secas, que
+   reinicia la imagen de fondo a `none`. Con la misma especificidad ganaría la
+   última y la lámina desaparecería de la columna. */
+
+/* Botones de acción principal, píldoras y la utilidad de relleno de marca. */
+:root .cg-btn-brand,
+:root .brand-fill,
+:root [data-sonner-toaster] [data-sonner-toast][data-styled='true'] [data-button] {
+  background-image: var(--brand-sheen);
+}
+
+/* La columna de navegación: la placa del icono activo y las orbes del riel
+   plegado, que son las dos piezas de marca que siempre están en pantalla. */
+:root .cgsb-item.is-active .cgsb-item-icon,
+:root .cgsb-orb.is-on,
+:root .cgsb-orb-brand:hover {
+  background-image: var(--brand-sheen);
+}

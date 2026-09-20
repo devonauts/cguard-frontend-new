@@ -7618,8 +7618,14 @@
       "todayShiftEyebrow": "Heutige Schicht",
       "sampleSite": "Nordturm — Haupteingang",
       "shiftProgress": "72 % der Schicht abgeschlossen",
-      "footerNote": "Ihre Auswahl wird auf diesem Gerät gespeichert. Wenn Sie sich von einem anderen Computer oder Browser anmelden, wählen Sie sie dort erneut.",
-      "pageNote": "Die Änderung wird sofort übernommen und in deinem Konto gespeichert, du siehst sie also auf jedem Computer und in jedem Browser gleich."
+      "footerNote": "Meldungen für Gefahr, Warnung und Entwarnung folgen Ihrer Farbe nie: Ein roter Alarm muss rot bleiben, welche Farbe Sie auch wählen.",
+      "pageNote": "Die Änderung wird sofort übernommen und in deinem Konto gespeichert, du siehst sie also auf jedem Computer und in jedem Browser gleich.",
+      "finishSection": "Matt oder metallisch",
+      "finishIntro": "Das metallische Finish fügt der Farbe Glanzlichter und Schatten hinzu, wie bei einer polierten Platte. Genau das lässt ein Gold nach Gold aussehen und nicht nach Senf – und es funktioniert mit jeder Farbe.",
+      "finishFlatTitle": "Matt",
+      "finishFlatDesc": "Eine glatte Farbe, ohne Reflexe",
+      "finishMetalTitle": "Metallisch",
+      "finishMetalDesc": "Mit Glanz, wie poliertes Metall"
     },
     "marca": {
       "loadError": "Die Marke konnte nicht geladen werden.",
@@ -11580,7 +11586,8 @@
       "lima": "Limette",
       "magenta": "Magenta",
       "mostaza": "Senfgold",
-      "violeta": "Violett"
+      "violeta": "Violett",
+      "oro": "Metallic-Gold"
     }
   },
   "dispatch": {

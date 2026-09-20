@@ -165,6 +165,8 @@ import {
 import {
   useAccent,
   ACCENT_PRESETS,
+  mismoAcento,
+  muestraDeAcento,
   type Accent,
 } from "@/contexts/AccentContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
@@ -438,19 +440,17 @@ export default function StyleGuide() {
         <Bloque
           titulo="Acento configurable"
           uso="Elige un tono y mira la página entera: nada de lo que hay debajo tiene un color escrito a mano."
-          api={["--brand-h", "--brand-c"]}
-          nota="La LUMINOSIDAD no se puede cambiar, y no es un olvido: es lo que garantiza que el texto contraste sobre el acento sea cual sea el tono. Medido sobre los 360 tonos — 5,09:1 en el peor caso claro, 8,5:1 en el peor oscuro. Entre L 0,54 y 0,58 hay una zona muerta donde ninguna tinta pasa, y por eso el sistema no deja entrar ahí."
+          api={["--brand-h", "--brand-c", "--brand-sheen", "--brand-fill"]}
+          nota="La LUMINOSIDAD no se puede cambiar, y no es un olvido: es lo que garantiza que el texto contraste sobre el acento sea cual sea el tono. Medido sobre los 360 tonos — 5,09:1 en el peor caso claro, 8,5:1 en el peor oscuro. Entre L 0,54 y 0,58 hay una zona muerta donde ninguna tinta pasa, y por eso el sistema no deja entrar ahí. El ACABADO METÁLICO no es un color aparte: es una lámina de blancos y negros translúcidos encima del acento, así que vale para cualquier tono. Su banda de sombra para en el 16 % porque medido sobre los 360 tonos al croma máximo ahí queda en 4,89:1 y al 20 % ya baja a 4,49:1 — el texto del botón dejaría de leerse."
         >
           <div className="flex flex-wrap gap-2">
             {ACCENT_PRESETS.map((p) => {
-              const activo =
-                Math.abs(p.h - accent.h) < 1 &&
-                Math.abs(p.c - accent.c) < 0.005;
+              const activo = mismoAcento(accent, p);
               return (
                 <button
                   key={p.id}
                   type="button"
-                  onClick={() => aplicar({ h: p.h, c: p.c })}
+                  onClick={() => aplicar({ h: p.h, c: p.c, metal: p.metal })}
                   className="cg-focus flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition-all motion-reduce:transition-none"
                   style={{
                     borderColor: activo ? "var(--brand)" : "var(--hairline)",
@@ -462,9 +462,7 @@ export default function StyleGuide() {
                 >
                   <span
                     className="h-4 w-4 rounded-full"
-                    style={{
-                      background: `oklch(${theme === "dark" ? 0.78 : 0.72} ${p.c} ${p.h})`,
-                    }}
+                    style={muestraDeAcento(p, theme === "dark")}
                   />
                   {p.label}
                 </button>

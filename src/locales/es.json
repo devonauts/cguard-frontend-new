@@ -7135,7 +7135,13 @@
       "todayShiftEyebrow": "Turno de hoy",
       "sampleSite": "Torre Norte — Acceso principal",
       "shiftProgress": "72 % del turno completado",
-      "footerNote": "Tu elección se guarda en este equipo. Si entras desde otro computador o navegador, vuelve a elegirla allí."
+      "footerNote": "Los avisos de peligro, advertencia y todo correcto no siguen a tu color: un aviso rojo tiene que seguir siendo rojo elijas el color que elijas.",
+      "finishSection": "Plano o metálico",
+      "finishIntro": "El acabado metálico añade brillos y sombras al color, como una placa pulida. Es lo que hace que un dorado se vea de oro y no de mostaza, y funciona con cualquier color que elijas.",
+      "finishFlatTitle": "Plano",
+      "finishFlatDesc": "Un color liso, sin reflejos",
+      "finishMetalTitle": "Metálico",
+      "finishMetalDesc": "Con brillo, como metal pulido"
     },
     "marca": {
       "loadError": "No se pudo cargar la marca.",
@@ -11580,7 +11586,8 @@
       "azul": "Azul",
       "violeta": "Violeta",
       "magenta": "Magenta",
-      "acero": "Acero"
+      "acero": "Acero",
+      "oro": "Oro metálico"
     }
   },
   "dispatch": {

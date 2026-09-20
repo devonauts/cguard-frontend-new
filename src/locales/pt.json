@@ -3069,8 +3069,14 @@
       "todayShiftEyebrow": "Turno de hoje",
       "sampleSite": "Torre Norte — Acesso principal",
       "shiftProgress": "72 % do turno concluído",
-      "footerNote": "Sua escolha fica salva neste dispositivo. Se você entrar de outro computador ou navegador, escolha-a novamente lá.",
-      "pageNote": "A alteração aplica-se de imediato e fica guardada na tua conta, por isso vais vê-la igual em qualquer computador ou navegador."
+      "footerNote": "Os avisos de perigo, atenção e tudo certo não seguem a sua cor: um aviso vermelho tem de continuar vermelho, escolha a cor que escolher.",
+      "pageNote": "A alteração aplica-se de imediato e fica guardada na tua conta, por isso vais vê-la igual em qualquer computador ou navegador.",
+      "finishSection": "Liso ou metálico",
+      "finishIntro": "O acabamento metálico acrescenta brilhos e sombras à cor, como uma placa polida. É o que faz um dourado parecer ouro e não mostarda, e funciona com qualquer cor que você escolher.",
+      "finishFlatTitle": "Liso",
+      "finishFlatDesc": "Uma cor lisa, sem reflexos",
+      "finishMetalTitle": "Metálico",
+      "finishMetalDesc": "Com brilho, como metal polido"
     },
     "marca": {
       "loadError": "Não foi possível carregar a marca.",
@@ -11580,7 +11586,8 @@
       "lima": "Lima",
       "magenta": "Magenta",
       "mostaza": "Mostarda dourada",
-      "violeta": "Violeta"
+      "violeta": "Violeta",
+      "oro": "Ouro metálico"
     }
   },
   "dispatch": {

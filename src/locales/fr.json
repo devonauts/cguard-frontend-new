@@ -7618,8 +7618,14 @@
       "todayShiftEyebrow": "Vacation du jour",
       "sampleSite": "Tour Nord — Accès principal",
       "shiftProgress": "72 % de la vacation effectuée",
-      "footerNote": "Votre choix est enregistré sur cet appareil. Si vous vous connectez depuis un autre ordinateur ou navigateur, choisissez-le à nouveau là-bas.",
-      "pageNote": "Le changement s’applique immédiatement et est enregistré sur ton compte : tu le retrouveras à l’identique depuis n’importe quel ordinateur ou navigateur."
+      "footerNote": "Les alertes de danger, d’avertissement et de retour à la normale ne suivent jamais votre couleur : une alerte rouge doit rester rouge, quelle que soit la couleur choisie.",
+      "pageNote": "Le changement s’applique immédiatement et est enregistré sur ton compte : tu le retrouveras à l’identique depuis n’importe quel ordinateur ou navigateur.",
+      "finishSection": "Mat ou métallisé",
+      "finishIntro": "La finition métallisée ajoute des reflets et des ombres à la couleur, comme une plaque polie. C’est ce qui fait qu’un doré ressemble à de l’or et non à de la moutarde, et cela fonctionne avec n’importe quelle couleur.",
+      "finishFlatTitle": "Mat",
+      "finishFlatDesc": "Une couleur unie, sans reflets",
+      "finishMetalTitle": "Métallisé",
+      "finishMetalDesc": "Avec de l’éclat, comme du métal poli"
     },
     "marca": {
       "loadError": "Impossible de charger l'identité visuelle.",
@@ -11580,7 +11586,8 @@
       "lima": "Citron vert",
       "magenta": "Magenta",
       "mostaza": "Doré moutarde",
-      "violeta": "Violet"
+      "violeta": "Violet",
+      "oro": "Or métallisé"
     }
   },
   "dispatch": {

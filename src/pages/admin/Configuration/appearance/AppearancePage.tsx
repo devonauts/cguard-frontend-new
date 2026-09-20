@@ -26,6 +26,7 @@ import {
   Plus,
   Eye,
   Info,
+  Sparkles,
 } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
@@ -47,18 +48,21 @@ import {
   useAccent,
   ACCENT_PRESETS,
   ACCENT_DEFAULT,
-  type Accent,
+  esMetal,
+  mismoAcento,
+  muestraDeAcento,
 } from "@/contexts/AccentContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
 
 /** Cómo se verá el relleno del acento en el tema actual. La claridad es la misma
  *  que usa el sistema (0,72 en claro / 0,78 en oscuro): la muestra tiene que ser
- *  el color de verdad, no una aproximación. */
+ *  el color de verdad, no una aproximación.
+ *
+ *  Para las MUESTRAS de color se usa `muestraDeAcento`, que además pone la
+ *  lámina cuando toca; esto se queda para los rieles de los deslizadores, donde
+ *  hacen falta trece colores planos seguidos. */
 const relleno = (h: number, c: number, oscuro: boolean) =>
   `oklch(${oscuro ? 0.78 : 0.72} ${c} ${h})`;
-
-const mismoAcento = (a: Accent, b: { h: number; c: number }) =>
-  Math.abs(a.h - b.h) < 1 && Math.abs(a.c - b.c) < 0.005;
 
 /** Los 360 tonos en una franja, para que el deslizador de tono se entienda sin
  *  leer un número. */
@@ -148,8 +152,11 @@ export default function AppearancePage() {
             badges={
               <>
                 <StatusBadge tone="brand">
+                  {/* El nombre del color TRADUCIDO. Salía en español dentro del
+                      CRM en inglés porque aquí se leía `preset.label` a secas,
+                      que es el respaldo, no el texto. */}
                   {preset
-                    ? preset.label
+                    ? t(preset.labelKey ?? "", preset.label)
                     : t("settings.appearance.customColorBadge", {
                         defaultValue: "Color a medida",
                       })}
@@ -224,12 +231,17 @@ export default function AppearancePage() {
                         : "none",
                     }}
                     type="button"
-                    onClick={() => setAccent({ h: p.h, c: p.c })}
+                    onClick={() =>
+                      setAccent({ h: p.h, c: p.c, metal: p.metal })
+                    }
                   >
                     <span
                       className="grid h-12 w-12 place-items-center rounded-full transition-transform duration-200"
                       style={{
-                        background: relleno(p.h, p.c, oscuro),
+                        ...muestraDeAcento(
+                          { h: p.h, c: p.c, metal: p.metal },
+                          oscuro,
+                        ),
                         color: "var(--brand-ink)",
                         boxShadow:
                           "inset 0 1px 0 0 oklch(1 0 0 / 0.28), 0 6px 18px -8px oklch(0 0 0 / 0.35)",
@@ -245,6 +257,107 @@ export default function AppearancePage() {
                     >
                       {t(p.labelKey ?? "", p.label)}
                     </span>
+                  </button>
+                );
+              })}
+            </div>
+          </Section>
+
+          {/* ── ACABADO ───────────────────────────────────────────────────── */}
+          <Section
+            icon={<Sparkles />}
+            title={t("settings.appearance.finishSection", {
+              defaultValue: "Plano o metálico",
+            })}
+          >
+            <p
+              className="mb-4 text-xs leading-relaxed"
+              style={{ color: "var(--ink-soft)" }}
+            >
+              {t("settings.appearance.finishIntro", {
+                defaultValue:
+                  "El acabado metálico añade brillos y sombras al color, como una placa pulida. Es lo que hace que un dorado se vea de oro y no de mostaza, y funciona con cualquier color que elijas.",
+              })}
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {(
+                [
+                  {
+                    id: "plano",
+                    metal: false,
+                    titulo: t("settings.appearance.finishFlatTitle", {
+                      defaultValue: "Plano",
+                    }),
+                    pie: t("settings.appearance.finishFlatDesc", {
+                      defaultValue: "Un color liso, sin reflejos",
+                    }),
+                  },
+                  {
+                    id: "metal",
+                    metal: true,
+                    titulo: t("settings.appearance.finishMetalTitle", {
+                      defaultValue: "Metálico",
+                    }),
+                    pie: t("settings.appearance.finishMetalDesc", {
+                      defaultValue: "Con brillo, como metal pulido",
+                    }),
+                  },
+                ] as const
+              ).map((m) => {
+                const activo = esMetal(accent) === m.metal;
+
+                return (
+                  <button
+                    key={m.id}
+                    aria-pressed={activo}
+                    className="cg-focus flex items-center gap-3 rounded-2xl border p-4 text-left transition-all duration-200 hover:-translate-y-0.5"
+                    style={{
+                      borderColor: activo ? "var(--brand)" : "var(--hairline)",
+                      background: activo
+                        ? "var(--brand-wash)"
+                        : "var(--glass-sunken)",
+                      boxShadow: activo
+                        ? "0 0 28px -10px var(--brand-glow)"
+                        : "none",
+                    }}
+                    type="button"
+                    onClick={() => setAccent({ ...accent, metal: m.metal })}
+                  >
+                    {/* La muestra es el color que hay puesto AHORA con el
+                        acabado de este botón: se compara lo mismo, no un
+                        dorado de ejemplo contra el color propio. */}
+                    <span
+                      aria-hidden
+                      className="h-10 w-16 shrink-0 rounded-xl"
+                      style={{
+                        ...muestraDeAcento(
+                          { h: accent.h, c: accent.c, metal: m.metal },
+                          oscuro,
+                        ),
+                        boxShadow:
+                          "inset 0 1px 0 0 oklch(1 0 0 / 0.28), 0 6px 18px -8px oklch(0 0 0 / 0.35)",
+                      }}
+                    />
+                    <span className="min-w-0 flex-1">
+                      <span
+                        className="block text-sm font-semibold"
+                        style={{ color: "var(--ink)" }}
+                      >
+                        {m.titulo}
+                      </span>
+                      <span
+                        className="block text-xs"
+                        style={{ color: "var(--ink-faint)" }}
+                      >
+                        {m.pie}
+                      </span>
+                    </span>
+                    {activo && (
+                      <Check
+                        className="h-4 w-4 shrink-0"
+                        style={{ color: "var(--brand-text)" }}
+                      />
+                    )}
                   </button>
                 );
               })}
@@ -595,7 +708,7 @@ export default function AppearancePage() {
           >
             {t("settings.appearance.footerNote", {
               defaultValue:
-                "Tu elección se guarda en este equipo. Si entras desde otro computador o navegador, vuelve a elegirla allí.",
+                "Los avisos de peligro, advertencia y todo correcto no siguen a tu color: un aviso rojo tiene que seguir siendo rojo elijas el color que elijas.",
             })}
           </p>
         </PageContainer>

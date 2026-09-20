@@ -7618,8 +7618,14 @@
       "todayShiftEyebrow": "Dienst van vandaag",
       "sampleSite": "Noordtoren — hoofdingang",
       "shiftProgress": "72 % van de dienst voltooid",
-      "footerNote": "Uw keuze wordt op dit apparaat opgeslagen. Logt u in vanaf een andere computer of browser, kies hem daar dan opnieuw.",
-      "pageNote": "De wijziging wordt meteen toegepast en in je account bewaard, dus je ziet hem overal hetzelfde, op elke computer en in elke browser."
+      "footerNote": "Meldingen voor gevaar, waarschuwing en veilig volgen uw kleur nooit: een rode melding moet rood blijven, welke kleur u ook kiest.",
+      "pageNote": "De wijziging wordt meteen toegepast en in je account bewaard, dus je ziet hem overal hetzelfde, op elke computer en in elke browser.",
+      "finishSection": "Vlak of metallic",
+      "finishIntro": "De metallic afwerking voegt lichtjes en schaduwen toe aan de kleur, als een gepolijste plaat. Dat is wat goud er als goud laat uitzien in plaats van mosterd, en het werkt met elke kleur die u kiest.",
+      "finishFlatTitle": "Vlak",
+      "finishFlatDesc": "Een egale kleur, zonder weerspiegeling",
+      "finishMetalTitle": "Metallic",
+      "finishMetalDesc": "Met glans, als gepolijst metaal"
     },
     "marca": {
       "loadError": "De huisstijl kon niet worden geladen.",
@@ -11580,7 +11586,8 @@
       "lima": "Limoen",
       "magenta": "Magenta",
       "mostaza": "Mosterdgoud",
-      "violeta": "Violet"
+      "violeta": "Violet",
+      "oro": "Metallic goud"
     }
   },
   "dispatch": {

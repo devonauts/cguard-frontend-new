@@ -7618,8 +7618,14 @@
       "todayShiftEyebrow": "Turno di oggi",
       "sampleSite": "Torre Nord — Ingresso principale",
       "shiftProgress": "72 % del turno completato",
-      "footerNote": "La tua scelta viene salvata su questo dispositivo. Se accedi da un altro computer o browser, dovrai sceglierla di nuovo lì.",
-      "pageNote": "La modifica si applica subito e viene salvata nel tuo account, così la vedrai uguale da qualsiasi computer o browser."
+      "footerNote": "Gli avvisi di pericolo, attenzione e tutto a posto non seguono il tuo colore: un avviso rosso deve restare rosso, qualunque colore tu scelga.",
+      "pageNote": "La modifica si applica subito e viene salvata nel tuo account, così la vedrai uguale da qualsiasi computer o browser.",
+      "finishSection": "Piatto o metallizzato",
+      "finishIntro": "La finitura metallizzata aggiunge riflessi e ombre al colore, come una piastra lucidata. È ciò che fa sembrare un dorato vero oro e non senape, e funziona con qualsiasi colore tu scelga.",
+      "finishFlatTitle": "Piatto",
+      "finishFlatDesc": "Un colore uniforme, senza riflessi",
+      "finishMetalTitle": "Metallizzato",
+      "finishMetalDesc": "Con lucentezza, come metallo lucidato"
     },
     "marca": {
       "loadError": "Impossibile caricare l'identità visiva.",
@@ -11580,7 +11586,8 @@
       "lima": "Lime",
       "magenta": "Magenta",
       "mostaza": "Oro senape",
-      "violeta": "Viola"
+      "violeta": "Viola",
+      "oro": "Oro metallizzato"
     }
   },
   "dispatch": {

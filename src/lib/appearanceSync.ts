@@ -23,6 +23,8 @@ export type UiTheme = "light" | "dark";
 export interface UiAccent {
   h: number;
   c: number;
+  /** Acabado metálico. Ver `--sheen` en tokens.css. */
+  metal?: boolean;
 }
 export interface UiAppearance {
   theme?: UiTheme;

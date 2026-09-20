@@ -7134,8 +7134,14 @@
       "todayShiftEyebrow": "Today's shift",
       "sampleSite": "North Tower — Main entrance",
       "shiftProgress": "72 % of the shift completed",
-      "footerNote": "Your choice is saved on this device. If you sign in from another computer or browser, choose it again there.",
-      "pageNote": "The change applies instantly and is saved to your account, so you'll see it the same way from any computer or browser."
+      "footerNote": "Danger, warning and all-clear alerts never follow your colour: a red alert has to stay red whichever colour you choose.",
+      "pageNote": "The change applies instantly and is saved to your account, so you'll see it the same way from any computer or browser.",
+      "finishSection": "Flat or metallic",
+      "finishIntro": "The metallic finish adds highlights and shadows to the colour, like a polished plate. It is what makes a gold look like gold instead of mustard, and it works with any colour you pick.",
+      "finishFlatTitle": "Flat",
+      "finishFlatDesc": "A plain colour, no reflections",
+      "finishMetalTitle": "Metallic",
+      "finishMetalDesc": "With a shine, like polished metal"
     },
     "marca": {
       "loadError": "The branding could not be loaded.",
@@ -11580,7 +11586,8 @@
       "lima": "Lime",
       "magenta": "Magenta",
       "mostaza": "Mustard gold",
-      "violeta": "Violet"
+      "violeta": "Violet",
+      "oro": "Metallic gold"
     }
   },
   "dispatch": {

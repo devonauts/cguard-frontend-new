@@ -7618,8 +7618,14 @@
       "todayShiftEyebrow": "Dzisiejsza zmiana",
       "sampleSite": "Wieża Północna — wejście główne",
       "shiftProgress": "72 % zmiany za nami",
-      "footerNote": "Wybór zapisuje się na tym urządzeniu. Po zalogowaniu z innego komputera lub przeglądarki należy wybrać go tam ponownie.",
-      "pageNote": "Zmiana działa od razu i zapisuje się na Twoim koncie, więc zobaczysz ją tak samo na każdym komputerze i w każdej przeglądarce."
+      "footerNote": "Powiadomienia o zagrożeniu, ostrzeżeniu i odwołaniu alarmu nigdy nie idą za Twoim kolorem: czerwony alarm ma pozostać czerwony, niezależnie od wybranej barwy.",
+      "pageNote": "Zmiana działa od razu i zapisuje się na Twoim koncie, więc zobaczysz ją tak samo na każdym komputerze i w każdej przeglądarce.",
+      "finishSection": "Matowy czy metaliczny",
+      "finishIntro": "Wykończenie metaliczne dodaje kolorowi rozbłysków i cieni, jak polerowana płyta. To właśnie sprawia, że złoto wygląda na złoto, a nie na musztardę — i działa z każdym wybranym kolorem.",
+      "finishFlatTitle": "Matowy",
+      "finishFlatDesc": "Gładki kolor, bez odbić",
+      "finishMetalTitle": "Metaliczny",
+      "finishMetalDesc": "Z połyskiem, jak polerowany metal"
     },
     "marca": {
       "loadError": "Nie udało się wczytać marki.",
@@ -11580,7 +11586,8 @@
       "lima": "Limonka",
       "magenta": "Fuksja",
       "mostaza": "Złota musztarda",
-      "violeta": "Fiolet"
+      "violeta": "Fiolet",
+      "oro": "Złoto metaliczne"
     }
   },
   "dispatch": {

@@ -21,6 +21,9 @@ import {
   hayAccentElegido,
   leerGuardado,
   restaurarAccentDelUsuario,
+  esMetal,
+  mismoAcento,
+  muestraDeAcento,
   type Accent,
 } from "@/lib/acentoDelUsuario";
 
@@ -30,17 +33,21 @@ export {
   aplicarAccent,
   hayAccentElegido,
   restaurarAccentDelUsuario,
+  esMetal,
+  mismoAcento,
+  muestraDeAcento,
 };
 export type { Accent };
 
 /**
  * El acento configurable del CRM.
  *
- * Sólo escribe DOS variables en el <html>: el tono y el croma. Todo lo demás —
- * relleno, texto, borde, lavado, brillo, colores de gráfico, en claro y en
- * oscuro— lo deriva `tokens.css` de esas dos. Por eso cambiar el acento repinta
- * la aplicación entera sin volver a renderizar un solo componente de React: es
- * el navegador recalculando variables CSS.
+ * Sólo escribe DOS variables y UN atributo en el <html>: el tono, el croma y el
+ * acabado. Todo lo demás —relleno, texto, borde, lavado, brillo, lámina
+ * metálica, colores de gráfico, en claro y en oscuro— lo deriva `tokens.css` de
+ * ahí. Por eso cambiar el acento repinta la aplicación entera sin volver a
+ * renderizar un solo componente de React: es el navegador recalculando
+ * variables CSS.
  *
  * LA LUMINOSIDAD NO SE TOCA, y no es un descuido. La fija el sistema porque es
  * lo que garantiza que el texto contraste sobre el acento SEA CUAL SEA EL TONO
@@ -65,7 +72,24 @@ export const ACCENT_PRESETS: Array<{
   labelKey?: string;
   h: number;
   c: number;
+  /** Con lámina metálica. Ver `--sheen` en tokens.css. */
+  metal?: boolean;
 }> = [
+  {
+    /* ── ORO DE VERDAD ─────────────────────────────────────────────────────
+       Va PRIMERO porque es lo que la gente busca cuando piensa «dorado».
+
+       Mismo tono que el mostaza (88° es exactamente el tono del #FFC800, el oro
+       de las paletas) y un croma un punto más alto; lo que lo separa no es el
+       color sino el ACABADO. El mostaza plano se queda: hay quien lo prefiere, y
+       es el de fábrica desde el principio. */
+    id: "oro",
+    label: "Oro metálico",
+    labelKey: "appearance.accent.oro",
+    h: 88,
+    c: 0.18,
+    metal: true,
+  },
   {
     id: "mostaza",
     label: "Mostaza oro",
@@ -175,7 +199,12 @@ export function AccentProvider({ children }: { children: React.ReactNode }) {
       const g = a?.accent;
 
       if (g && typeof g.h === "number" && typeof g.c === "number") {
-        const seguro = { h: acota(g.h, 0, 360), c: acota(g.c, 0, CROMA_MAX) };
+        const seguro: Accent = {
+          h: acota(g.h, 0, 360),
+          c: acota(g.c, 0, CROMA_MAX),
+        };
+
+        if (g.metal === true) seguro.metal = true;
 
         setAccentState(seguro);
         try {
@@ -196,7 +225,14 @@ export function AccentProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const setAccent = useCallback((a: Accent) => {
-    const seguro = { h: acota(a.h, 0, 360), c: acota(a.c, 0, CROMA_MAX) };
+    const seguro: Accent = {
+      h: acota(a.h, 0, 360),
+      c: acota(a.c, 0, CROMA_MAX),
+    };
+
+    /* Sólo se guarda encendido. Un `metal: false` guardado no significa nada que
+       la ausencia no diga ya, y el backend lo descarta igual. */
+    if (a.metal === true) seguro.metal = true;
 
     setAccentState(seguro);
     try {

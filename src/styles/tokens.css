@@ -74,6 +74,68 @@
   --canvas-h1: 278;   /* violeta */
   --canvas-h2: 220;   /* azul */
 
+  /* ── LA LÁMINA — EL ACABADO METÁLICO ───────────────────────────────────────
+     Un oro plano se lee como MOSTAZA. Lo que hace que un dorado parezca metal
+     no es el tono —el mostaza del CRM ya está en 88°, que es exactamente el
+     tono del #FFC800— sino que la luz REBOTE: una franja brillante, una banda
+     en sombra y otro destello. Sin eso no hay oro, hay amarillo.
+
+     Por eso la lámina son BLANCOS Y NEGROS translúcidos y no un degradado de
+     dorados: va ENCIMA del acento, así que funciona sobre el tono que sea. El
+     oro es el tono 88 con la lámina puesta; el mismo acabado sobre el violeta
+     da violeta pulido.
+
+     ── EL TOPE DE LA SOMBRA NO ES ESTÉTICO ──────────────────────────────────
+     La tinta de encima (`--brand-ink`) es casi negra, y cada punto de sombra le
+     come contraste. Medido componiendo la sombra sobre los 360 tonos, con el
+     peor tono de cada modo y AL CROMA MÁXIMO que se deja elegir (0,20), que es
+     donde menos margen queda:
+
+         sin lámina   6,75:1 claro   ·  7,74:1 oscuro
+         negro 12 %   5,32:1         ·  6,07:1
+         negro 16 %   4,89:1         ·  5,57:1   ← el que se usa
+         negro 18 %   4,69:1         ·  5,33:1   ← el último que pasa
+         negro 20 %   4,49:1         ·  5,10:1   ← ya NO pasa en claro
+
+     De ahí que la banda oscura pare en 16 %: dos pasos más y el texto de un
+     botón deja de leerse en el peor tono (rojo, 21°) con el color más saturado.
+     Los brillos no tienen ese problema —aclaran el fondo, así que el contraste
+     SUBE: 11,98:1 con blanco al 55 %—, y por eso la lámina es mucho más de luz
+     que de sombra.
+
+     No hay que fiarse de esta tabla: `acentoDelUsuario.test.ts` la RECALCULA
+     leyendo las paradas de aquí abajo. Subir una sombra rompe la prueba.
+
+     ── POR QUÉ SON DOS TOKENS Y NO UNO ──────────────────────────────────────
+     Un degradado no cabe en `background-color`, y media aplicación pinta el
+     acento con `background-color` (`bg-primary`, `bg-[var(--brand)]`). Así que
+     `--brand` NO se toca —sigue siendo un color plano y todo lo que lo usa como
+     texto, borde o parada de gráfico sigue funcionando— y la lámina se reparte
+     de dos formas:
+
+       --brand-sheen  para `background-image`, que se APILA sobre el color de
+                      fondo que ya tenga el elemento. Es lo que usan las reglas
+                      de `glass.css`.
+       --brand-fill   para `background:` a secas, que es como pinta el acento el
+                      código de React con estilos en línea. Lleva la lámina Y el
+                      color, en ese orden.
+
+     Con el acabado plano las dos son «nada» y «el acento», así que el sistema
+     se comporta exactamente como antes. */
+  --sheen: linear-gradient(135deg,
+    oklch(0 0 0 / 0.09)   0%,
+    oklch(1 0 0 / 0.46)  12%,
+    oklch(1 0 0 / 0.10)  27%,
+    oklch(0 0 0 / 0.12)  40%,
+    oklch(0 0 0 / 0.16)  50%,
+    oklch(1 0 0 / 0.16)  57%,
+    oklch(1 0 0 / 0.55)  66%,
+    oklch(1 0 0 / 0.06)  80%,
+    oklch(0 0 0 / 0.10) 100%);
+
+  --brand-sheen: none;
+  --brand-fill:  var(--brand);
+
   /* ── Acento derivado — MODO CLARO ──────────────────────────────────────── */
   --brand:       oklch(0.72 var(--brand-c) var(--brand-h));
   --brand-ink:   oklch(0.16 0 0);
@@ -186,6 +248,18 @@
   --lift-2: 0 2px 10px -2px oklch(0 0 0 / 0.55);
   --lift-3: 0 16px 40px -16px oklch(0 0 0 / 0.70);
   --lift-4: 0 32px 72px -24px oklch(0 0 0 / 0.80);
+}
+
+/* El interruptor del acabado. Lo escribe `acentoDelUsuario.ts` en el <html>,
+   igual que el tono y el croma, y como es un atributo de la raíz basta con
+   cambiarlo para que el CRM entero pase de plano a metálico sin volver a
+   renderizar un solo componente.
+
+   Vale para claro y para oscuro: la lámina es acromática, así que no hay dos
+   versiones que mantener. */
+:root[data-acabado="metal"] {
+  --brand-sheen: var(--sheen);
+  --brand-fill:  var(--sheen), var(--brand);
 }
 
 /* ════════════════════════════════════════════════════════════════════════════

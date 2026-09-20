@@ -34,7 +34,9 @@ const TabsTrigger = React.forwardRef<
     className={cn(
       "cg-focus inline-flex h-8 min-h-8 items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-3.5 text-[13px] font-semibold transition-all duration-200 sm:h-7 sm:min-h-7",
       "text-[color:var(--ink-soft)] hover:text-[color:var(--ink)]",
-      "data-[state=active]:bg-[var(--brand)] data-[state=active]:text-[color:var(--brand-ink)] data-[state=active]:shadow-[0_0_18px_-6px_var(--brand-glow)]",
+      /* La lámina va con el estado ACTIVO, no suelta: sobre una pestaña sin
+         fondo se vería el degradado a solas, que es justo lo que no se quiere. */
+      "data-[state=active]:bg-[var(--brand)] data-[state=active]:[background-image:var(--brand-sheen)] data-[state=active]:text-[color:var(--brand-ink)] data-[state=active]:shadow-[0_0_18px_-6px_var(--brand-glow)]",
       "disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none",
       className,
     )}

@@ -23,7 +23,12 @@ import { DEFAULT_PREFS } from "../prefs";
 import { MAP_ICONS, ICON_NAMES } from "../iconRegistry";
 import { STATUS_LABEL } from "../tone";
 
-import { useAccent, ACCENT_PRESETS } from "@/contexts/AccentContext";
+import {
+  useAccent,
+  ACCENT_PRESETS,
+  mismoAcento,
+  muestraDeAcento,
+} from "@/contexts/AccentContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
 
 const KIND_LABEL: Record<EntityKind, string> = {
@@ -91,9 +96,7 @@ export function CustomizePanel({
         >
           <div className="flex flex-wrap gap-1.5">
             {ACCENT_PRESETS.map((preset) => {
-              const activo =
-                Math.abs(preset.h - accent.h) < 1 &&
-                Math.abs(preset.c - accent.c) < 0.005;
+              const activo = mismoAcento(accent, preset);
 
               return (
                 <button
@@ -107,13 +110,17 @@ export function CustomizePanel({
                   }}
                   title={t(preset.labelKey ?? "", preset.label)}
                   type="button"
-                  onClick={() => setAccent({ h: preset.h, c: preset.c })}
+                  onClick={() =>
+                    setAccent({
+                      h: preset.h,
+                      c: preset.c,
+                      metal: preset.metal,
+                    })
+                  }
                 >
                   <span
                     className="size-5 rounded-full"
-                    style={{
-                      background: `oklch(${theme === "dark" ? 0.78 : 0.72} ${preset.c} ${preset.h})`,
-                    }}
+                    style={muestraDeAcento(preset, theme === "dark")}
                   />
                 </button>
               );

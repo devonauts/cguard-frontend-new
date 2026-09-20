@@ -11,8 +11,10 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
+        /* `[background-image:…]` lleva la lámina del acabado metálico: con el
+           acabado plano la variable vale `none` y no pinta nada. */
         default:
-          "border-transparent bg-[var(--brand)] text-[color:var(--brand-ink)] shadow-[0_0_16px_-8px_var(--brand-glow)]",
+          "border-transparent bg-[var(--brand)] [background-image:var(--brand-sheen)] text-[color:var(--brand-ink)] shadow-[0_0_16px_-8px_var(--brand-glow)]",
         secondary:
           "border-[color:var(--hairline)] bg-[var(--glass-sunken)] text-[color:var(--ink)]",
         destructive: "cg-btn-bad border-transparent",

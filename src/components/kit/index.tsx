@@ -902,7 +902,11 @@ export function Segmented<T extends string>({
             style={
               activo
                 ? {
-                    background: "var(--brand)",
+                    /* `--brand-fill` y no `--brand`: lleva la lámina metálica
+                       cuando el acabado está encendido. Aquí hace falta la
+                       variable —y no una regla de CSS como en glass.css—
+                       porque un estilo en línea le gana a cualquier hoja. */
+                    background: "var(--brand-fill)",
                     color: "var(--brand-ink)",
                     boxShadow: "0 0 18px -6px var(--brand-glow)",
                   }
@@ -1472,7 +1476,7 @@ export function Avatar({
   const paleta =
     tone === "solid"
       ? {
-          background: "var(--brand)",
+          background: "var(--brand-fill)",
           borderColor: "transparent",
           color: "var(--brand-ink)",
         }
@@ -1970,7 +1974,7 @@ export function Pagination({
               style={
                 n === page
                   ? {
-                      background: "var(--brand)",
+                      background: "var(--brand-fill)",
                       color: "var(--brand-ink)",
                       borderColor: "transparent",
                     }
