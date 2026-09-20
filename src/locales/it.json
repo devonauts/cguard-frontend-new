@@ -7625,7 +7625,14 @@
       "finishFlatTitle": "Piatto",
       "finishFlatDesc": "Un colore uniforme, senza riflessi",
       "finishMetalTitle": "Metallizzato",
-      "finishMetalDesc": "Con lucentezza, come metallo lucidato"
+      "finishMetalDesc": "Con lucentezza, come metallo lucidato",
+      "clashTitle": "Somiglia al colore degli avvisi di {{estado}}",
+      "clashBody": "Gli avvisi di stato non seguono mai il tuo colore, quindi sullo schermo i due si somiglieranno molto. Puoi usarlo lo stesso — è solo bene saperlo.",
+      "clashSwatches": "il tuo e quello dell’avviso",
+      "stateOk": "tutto a posto",
+      "stateWarn": "attenzione",
+      "stateBad": "pericolo",
+      "stateInfo": "informazione"
     },
     "marca": {
       "loadError": "Impossibile caricare l'identità visiva.",
@@ -11587,7 +11594,8 @@
       "magenta": "Magenta",
       "mostaza": "Oro senape",
       "violeta": "Viola",
-      "oro": "Oro metallizzato"
+      "oro": "Oro metallizzato",
+      "plata": "Argento"
     }
   },
   "dispatch": {

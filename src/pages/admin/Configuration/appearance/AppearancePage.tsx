@@ -11,6 +11,8 @@
  * vista previa NO es una maqueta: es el producto real reaccionando en vivo.
  * ════════════════════════════════════════════════════════════════════════════
  */
+import type { TFunction } from "i18next";
+
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -51,6 +53,7 @@ import {
   esMetal,
   mismoAcento,
   muestraDeAcento,
+  choqueConEstado,
 } from "@/contexts/AccentContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
 
@@ -67,6 +70,19 @@ const relleno = (h: number, c: number, oscuro: boolean) =>
 /** Los 360 tonos en una franja, para que el deslizador de tono se entienda sin
  *  leer un número. */
 const ARCOIRIS = Array.from({ length: 13 }, (_, i) => i * 30);
+
+/** Cómo se llama cada color de estado para quien lo lee. Son los nombres del
+ *  producto, no los del código: nadie de una empresa de seguridad sabe qué es
+ *  un «info». */
+const NOMBRE_DE_ESTADO: Record<string, (t: TFunction) => string> = {
+  ok: (t) =>
+    t("settings.appearance.stateOk", { defaultValue: "todo correcto" }),
+  warn: (t) =>
+    t("settings.appearance.stateWarn", { defaultValue: "advertencia" }),
+  bad: (t) => t("settings.appearance.stateBad", { defaultValue: "peligro" }),
+  info: (t) =>
+    t("settings.appearance.stateInfo", { defaultValue: "algo informativo" }),
+};
 
 /**
  * Los deslizadores. Van en una hoja local y no en línea porque el BOTÓN del
@@ -125,6 +141,7 @@ export default function AppearancePage() {
   );
 
   const preset = ACCENT_PRESETS.find((p) => mismoAcento(accent, p));
+  const choque = choqueConEstado(accent);
 
   return (
     <AppLayout>
@@ -261,6 +278,59 @@ export default function AppearancePage() {
                 );
               })}
             </div>
+
+            {/* ── CUANDO EL COLOR ELEGIDO SE PARECE A UNA ALERTA ──────────────
+                Los cuatro colores de estado son fijos (un pánico no cambia de
+                color con las preferencias de nadie), así que el choque no se
+                puede evitar pintando: sólo se puede avisar. No se prohíbe nada
+                —es su empresa y su color—, se enseñan los dos juntos y que
+                decida quien lo va a mirar ocho horas al día.
+
+                Va aquí y no en una pantalla aparte porque también reacciona a
+                los deslizadores de abajo, que es por donde más fácil se cae en
+                un rojo sin querer. */}
+            {choque && (
+              <InfoNote
+                className="mt-5"
+                icon={<AlertTriangle />}
+                title={t("settings.appearance.clashTitle", {
+                  defaultValue:
+                    "Se parece al color de los avisos de {{estado}}",
+                  estado: NOMBRE_DE_ESTADO[choque.estado](t),
+                })}
+                tone="warn"
+              >
+                <span className="mb-2 mt-1 flex items-center gap-2">
+                  {/* Los dos, uno al lado del otro: se ve mejor que se explica. */}
+                  <span
+                    className="h-6 w-10 rounded-md border"
+                    style={{
+                      ...muestraDeAcento(accent, oscuro),
+                      borderColor: "var(--hairline)",
+                    }}
+                  />
+                  <span
+                    className="h-6 w-10 rounded-md border"
+                    style={{
+                      background: `var(--${choque.estado})`,
+                      borderColor: "var(--hairline)",
+                    }}
+                  />
+                  <span
+                    className="text-xs"
+                    style={{ color: "var(--ink-faint)" }}
+                  >
+                    {t("settings.appearance.clashSwatches", {
+                      defaultValue: "el tuyo y el del aviso",
+                    })}
+                  </span>
+                </span>
+                {t("settings.appearance.clashBody", {
+                  defaultValue:
+                    "Los avisos de estado nunca siguen a tu color, así que en pantalla los dos se van a parecer mucho. Puedes usarlo igual — sólo conviene saberlo.",
+                })}
+              </InfoNote>
+            )}
           </Section>
 
           {/* ── ACABADO ───────────────────────────────────────────────────── */}

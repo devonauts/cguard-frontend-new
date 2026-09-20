@@ -7625,7 +7625,14 @@
       "finishFlatTitle": "Mat",
       "finishFlatDesc": "Une couleur unie, sans reflets",
       "finishMetalTitle": "Métallisé",
-      "finishMetalDesc": "Avec de l’éclat, comme du métal poli"
+      "finishMetalDesc": "Avec de l’éclat, comme du métal poli",
+      "clashTitle": "Ressemble à la couleur des alertes de {{estado}}",
+      "clashBody": "Les alertes d’état ne suivent jamais votre couleur : à l’écran, les deux se ressembleront beaucoup. Vous pouvez quand même l’utiliser — c’est simplement bon à savoir.",
+      "clashSwatches": "la vôtre et celle de l’alerte",
+      "stateOk": "retour à la normale",
+      "stateWarn": "avertissement",
+      "stateBad": "danger",
+      "stateInfo": "information"
     },
     "marca": {
       "loadError": "Impossible de charger l'identité visuelle.",
@@ -11587,7 +11594,8 @@
       "magenta": "Magenta",
       "mostaza": "Doré moutarde",
       "violeta": "Violet",
-      "oro": "Or métallisé"
+      "oro": "Or métallisé",
+      "plata": "Argent"
     }
   },
   "dispatch": {

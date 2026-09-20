@@ -7625,7 +7625,14 @@
       "finishFlatTitle": "Matowy",
       "finishFlatDesc": "Gładki kolor, bez odbić",
       "finishMetalTitle": "Metaliczny",
-      "finishMetalDesc": "Z połyskiem, jak polerowany metal"
+      "finishMetalDesc": "Z połyskiem, jak polerowany metal",
+      "clashTitle": "Przypomina kolor powiadomień o {{estado}}",
+      "clashBody": "Powiadomienia o stanie nigdy nie idą za Twoim kolorem, więc na ekranie oba będą bardzo podobne. Możesz go mimo to wybrać — warto tylko o tym wiedzieć.",
+      "clashSwatches": "Twój i ten z powiadomienia",
+      "stateOk": "odwołaniu alarmu",
+      "stateWarn": "ostrzeżeniu",
+      "stateBad": "zagrożeniu",
+      "stateInfo": "informacji"
     },
     "marca": {
       "loadError": "Nie udało się wczytać marki.",
@@ -11587,7 +11594,8 @@
       "magenta": "Fuksja",
       "mostaza": "Złota musztarda",
       "violeta": "Fiolet",
-      "oro": "Złoto metaliczne"
+      "oro": "Złoto metaliczne",
+      "plata": "Srebro"
     }
   },
   "dispatch": {

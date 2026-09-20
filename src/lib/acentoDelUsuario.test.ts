@@ -6,6 +6,11 @@ import { describe, expect, it } from "vitest";
 import {
   ACCENT_DEFAULT,
   CROMA_MAX,
+  CROMA_MINIMO_DE_CHOQUE,
+  GRADOS_DE_CHOQUE,
+  TONOS_DE_ESTADO,
+  choqueConEstado,
+  distanciaDeTono,
   esMetal,
   mismoAcento,
   muestraDeAcento,
@@ -266,15 +271,139 @@ describe("comparar y mostrar acentos", () => {
     const sinLamina = muestraDeAcento(mostaza, false);
 
     expect(conLamina.backgroundImage).toBe("var(--sheen)");
-    expect(sinLamina.backgroundImage).toBeUndefined();
+    expect(sinLamina.backgroundImage).toBe("none");
     /* El color de debajo es el mismo en los dos casos: el acabado no cambia el
        tono, sólo cómo le da la luz. */
-    expect(conLamina.background).toContain("0.18 88");
-    expect(sinLamina.background).toContain("0.16 88");
+    expect(conLamina.backgroundColor).toContain("0.18 88");
+    expect(sinLamina.backgroundColor).toContain("0.16 88");
   });
 
   it("la muestra usa la claridad del sistema, no una inventada", () => {
-    expect(muestraDeAcento(mostaza, false).background).toContain("oklch(0.72");
-    expect(muestraDeAcento(mostaza, true).background).toContain("oklch(0.78");
+    expect(muestraDeAcento(mostaza, false).backgroundColor).toContain(
+      "oklch(0.72",
+    );
+    expect(muestraDeAcento(mostaza, true).backgroundColor).toContain(
+      "oklch(0.78",
+    );
+  });
+
+  /* ── LA LÁMINA SE BORRABA AL CAMBIAR DE COLOR ────────────────────────────
+     La muestra devolvía `{ background, backgroundImage }`. React sólo escribe
+     lo que cambió entre dos renders: al pasar de un acento a otro cambiaba el
+     ATAJO `background` pero no `backgroundImage`, así que React reescribía el
+     atajo… y escribir el atajo reinicia `background-image` a `none`. La lámina
+     desaparecía hasta que alguien recargaba la página, que es justo lo que la
+     hace difícil de ver.
+
+     Estas dos pruebas fijan la forma del objeto, que es donde estaba el fallo:
+     nunca el atajo, y el caso plano SIEMPRE dice `none` en vez de callarse. */
+  it("nunca devuelve el atajo `background` — pisaría la lámina", () => {
+    for (const a of [oro, mostaza, { h: 250, c: 0.02, metal: true }]) {
+      for (const oscuro of [false, true]) {
+        expect(
+          Object.keys(muestraDeAcento(a, oscuro)),
+          `acento ${JSON.stringify(a)}`,
+        ).toEqual(["backgroundColor", "backgroundImage"]);
+      }
+    }
+  });
+
+  it("plano y metálico devuelven LAS MISMAS claves, para que React las apague", () => {
+    /* Si el caso plano omitiera `backgroundImage`, React la dejaría puesta del
+       render anterior y un color sin acabado saldría con brillo. */
+    expect(Object.keys(muestraDeAcento(mostaza, false))).toEqual(
+      Object.keys(muestraDeAcento(oro, false)),
+    );
+  });
+});
+
+describe("avisar cuando el color de la empresa choca con una alerta", () => {
+  it("los tonos de estado son LOS MISMOS que pinta el CSS", () => {
+    /* Esta es la prueba que de verdad importa de este bloque. El aviso compara
+       contra cuatro números copiados a mano; si alguien retoca el rojo de
+       «peligro» en tokens.css y nadie toca aquí, el aviso sigue saliendo pero
+       apuntando a un color que ya no existe — y eso no lo nota nadie. */
+    const bloqueClaro = TOKENS.slice(
+      TOKENS.indexOf(":root {"),
+      TOKENS.indexOf(".dark {"),
+    );
+
+    for (const [clave, tono] of Object.entries(TONOS_DE_ESTADO)) {
+      const m = bloqueClaro.match(
+        new RegExp(`--${clave}:\\s*oklch\\([\\d.]+ [\\d.]+ (\\d+)\\)`),
+      );
+
+      expect(m, `no encuentro --${clave} en tokens.css`).not.toBeNull();
+      expect(Number(m![1]), `--${clave} cambió de tono en el CSS`).toBe(tono);
+    }
+  });
+
+  it("los cuatro presets que chocan de verdad avisan", () => {
+    /* Medido sobre la paleta: son estos cuatro y nadie más. */
+    const esperado: Array<[string, { h: number; c: number }, string]> = [
+      ["Ámbar", { h: 70, c: 0.16 }, "warn"],
+      ["Esmeralda", { h: 155, c: 0.15 }, "ok"],
+      ["Carmesí", { h: 22, c: 0.17 }, "bad"],
+      ["Azul", { h: 250, c: 0.15 }, "info"],
+    ];
+
+    for (const [nombre, acento, estado] of esperado) {
+      const r = choqueConEstado(acento);
+
+      expect(r, `${nombre} debería avisar`).not.toBeNull();
+      expect(r!.estado, nombre).toBe(estado);
+    }
+  });
+
+  it("los que NO chocan se quedan callados", () => {
+    const limpios: Array<[string, { h: number; c: number }]> = [
+      ["Oro metálico", { h: 88, c: 0.18 }],
+      ["Mostaza oro", { h: 88, c: 0.16 }],
+      ["Lima", { h: 125, c: 0.16 }],
+      ["Cian", { h: 205, c: 0.14 }],
+      ["Violeta", { h: 295, c: 0.16 }],
+      ["Magenta", { h: 340, c: 0.16 }],
+    ];
+
+    for (const [nombre, acento] of limpios) {
+      expect(choqueConEstado(acento), `${nombre} no debería avisar`).toBeNull();
+    }
+  });
+
+  it("un gris no se confunde con nada, aunque comparta tono", () => {
+    /* Acero y Plata están a 10° del azul informativo, pero son grises: sin la
+       puerta del croma avisarían por un parecido que no existe. */
+    expect(choqueConEstado({ h: 250, c: 0.04 })).toBeNull(); // Acero
+    expect(choqueConEstado({ h: 250, c: 0.02, metal: true })).toBeNull(); // Plata
+    // Y el mismo tono con color de verdad SÍ avisa: la puerta es el croma.
+    expect(choqueConEstado({ h: 250, c: 0.15 })?.estado).toBe("info");
+  });
+
+  it("avisa justo en el borde y no un grado más allá", () => {
+    const rojo = TONOS_DE_ESTADO.bad;
+
+    expect(
+      choqueConEstado({ h: rojo + GRADOS_DE_CHOQUE, c: 0.16 }),
+    ).not.toBeNull();
+    expect(
+      choqueConEstado({ h: rojo + GRADOS_DE_CHOQUE + 1, c: 0.16 }),
+    ).toBeNull();
+    expect(
+      choqueConEstado({ h: rojo, c: CROMA_MINIMO_DE_CHOQUE }),
+    ).not.toBeNull();
+    expect(
+      choqueConEstado({ h: rojo, c: CROMA_MINIMO_DE_CHOQUE - 0.001 }),
+    ).toBeNull();
+  });
+
+  it("si cae entre dos estados, gana el más cercano", () => {
+    // 40° está a 13° de peligro (27) y a 25° de advertencia (65).
+    expect(choqueConEstado({ h: 40, c: 0.16 })?.estado).toBe("bad");
+  });
+
+  it("la rueda da la vuelta: 355° está cerca del rojo de 27°", () => {
+    expect(distanciaDeTono(355, 27)).toBe(32);
+    expect(distanciaDeTono(358, 10)).toBe(12);
+    expect(choqueConEstado({ h: 15, c: 0.16 })?.estado).toBe("bad");
   });
 });

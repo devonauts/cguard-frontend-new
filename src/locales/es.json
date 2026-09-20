@@ -7141,7 +7141,14 @@
       "finishFlatTitle": "Plano",
       "finishFlatDesc": "Un color liso, sin reflejos",
       "finishMetalTitle": "Metálico",
-      "finishMetalDesc": "Con brillo, como metal pulido"
+      "finishMetalDesc": "Con brillo, como metal pulido",
+      "clashTitle": "Se parece al color de los avisos de {{estado}}",
+      "clashBody": "Los avisos de estado nunca siguen a tu color, así que en pantalla los dos se van a parecer mucho. Puedes usarlo igual — sólo conviene saberlo.",
+      "clashSwatches": "el tuyo y el del aviso",
+      "stateOk": "todo correcto",
+      "stateWarn": "advertencia",
+      "stateBad": "peligro",
+      "stateInfo": "algo informativo"
     },
     "marca": {
       "loadError": "No se pudo cargar la marca.",
@@ -11587,7 +11594,8 @@
       "violeta": "Violeta",
       "magenta": "Magenta",
       "acero": "Acero",
-      "oro": "Oro metálico"
+      "oro": "Oro metálico",
+      "plata": "Plata"
     }
   },
   "dispatch": {

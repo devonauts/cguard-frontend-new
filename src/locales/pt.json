@@ -3076,7 +3076,14 @@
       "finishFlatTitle": "Liso",
       "finishFlatDesc": "Uma cor lisa, sem reflexos",
       "finishMetalTitle": "Metálico",
-      "finishMetalDesc": "Com brilho, como metal polido"
+      "finishMetalDesc": "Com brilho, como metal polido",
+      "clashTitle": "Parece a cor dos avisos de {{estado}}",
+      "clashBody": "Os avisos de estado nunca seguem a sua cor, então na tela as duas vão se parecer muito. Você pode usá-la assim mesmo — só é bom saber.",
+      "clashSwatches": "a sua e a do aviso",
+      "stateOk": "tudo certo",
+      "stateWarn": "atenção",
+      "stateBad": "perigo",
+      "stateInfo": "informativo"
     },
     "marca": {
       "loadError": "Não foi possível carregar a marca.",
@@ -11587,7 +11594,8 @@
       "magenta": "Magenta",
       "mostaza": "Mostarda dourada",
       "violeta": "Violeta",
-      "oro": "Ouro metálico"
+      "oro": "Ouro metálico",
+      "plata": "Prata"
     }
   },
   "dispatch": {

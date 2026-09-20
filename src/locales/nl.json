@@ -7625,7 +7625,14 @@
       "finishFlatTitle": "Vlak",
       "finishFlatDesc": "Een egale kleur, zonder weerspiegeling",
       "finishMetalTitle": "Metallic",
-      "finishMetalDesc": "Met glans, als gepolijst metaal"
+      "finishMetalDesc": "Met glans, als gepolijst metaal",
+      "clashTitle": "Lijkt op de kleur van meldingen voor {{estado}}",
+      "clashBody": "Statusmeldingen volgen uw kleur nooit, dus op het scherm gaan die twee erg op elkaar lijken. U kunt hem gerust gebruiken — het is alleen goed om te weten.",
+      "clashSwatches": "die van u en die van de melding",
+      "stateOk": "veilig",
+      "stateWarn": "waarschuwing",
+      "stateBad": "gevaar",
+      "stateInfo": "informatie"
     },
     "marca": {
       "loadError": "De huisstijl kon niet worden geladen.",
@@ -11587,7 +11594,8 @@
       "magenta": "Magenta",
       "mostaza": "Mosterdgoud",
       "violeta": "Violet",
-      "oro": "Metallic goud"
+      "oro": "Metallic goud",
+      "plata": "Zilver"
     }
   },
   "dispatch": {

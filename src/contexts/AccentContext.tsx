@@ -24,6 +24,7 @@ import {
   esMetal,
   mismoAcento,
   muestraDeAcento,
+  choqueConEstado,
   type Accent,
 } from "@/lib/acentoDelUsuario";
 
@@ -36,6 +37,7 @@ export {
   esMetal,
   mismoAcento,
   muestraDeAcento,
+  choqueConEstado,
 };
 export type { Accent };
 
@@ -88,6 +90,22 @@ export const ACCENT_PRESETS: Array<{
     labelKey: "appearance.accent.oro",
     h: 88,
     c: 0.18,
+    metal: true,
+  },
+  {
+    /* ── LA OTRA MITAD DE LA PLACA ─────────────────────────────────────────
+       Una placa de seguridad es de oro o de PLATA; tener sólo el oro quedaba
+       cojo. No hace falta ningún color nuevo: es el gris azulado del acero con
+       la lámina puesta, y sale metal cepillado.
+
+       El croma va a 0,02 y no al 0,04 del Acero para que quede más neutro —la
+       plata tira a frío pero no a azul— y de paso los separa el comparador,
+       que considera iguales dos acentos a menos de 0,005. */
+    id: "plata",
+    label: "Plata",
+    labelKey: "appearance.accent.plata",
+    h: 250,
+    c: 0.02,
     metal: true,
   },
   {

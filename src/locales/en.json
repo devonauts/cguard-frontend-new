@@ -7141,7 +7141,14 @@
       "finishFlatTitle": "Flat",
       "finishFlatDesc": "A plain colour, no reflections",
       "finishMetalTitle": "Metallic",
-      "finishMetalDesc": "With a shine, like polished metal"
+      "finishMetalDesc": "With a shine, like polished metal",
+      "clashTitle": "This looks like the colour used for {{estado}} notices",
+      "clashBody": "Status notices never follow your colour, so on screen the two will look very much alike. You can still use it — it is just worth knowing.",
+      "clashSwatches": "yours and the notice colour",
+      "stateOk": "all clear",
+      "stateWarn": "warning",
+      "stateBad": "danger",
+      "stateInfo": "information"
     },
     "marca": {
       "loadError": "The branding could not be loaded.",
@@ -11587,7 +11594,8 @@
       "magenta": "Magenta",
       "mostaza": "Mustard gold",
       "violeta": "Violet",
-      "oro": "Metallic gold"
+      "oro": "Metallic gold",
+      "plata": "Silver"
     }
   },
   "dispatch": {

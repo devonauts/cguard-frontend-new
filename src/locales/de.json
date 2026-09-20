@@ -7625,7 +7625,14 @@
       "finishFlatTitle": "Matt",
       "finishFlatDesc": "Eine glatte Farbe, ohne Reflexe",
       "finishMetalTitle": "Metallisch",
-      "finishMetalDesc": "Mit Glanz, wie poliertes Metall"
+      "finishMetalDesc": "Mit Glanz, wie poliertes Metall",
+      "clashTitle": "Ähnelt der Farbe der Meldungen für {{estado}}",
+      "clashBody": "Statusmeldungen folgen Ihrer Farbe nie, auf dem Bildschirm werden sich beide also stark ähneln. Sie können sie trotzdem verwenden – man sollte es nur wissen.",
+      "clashSwatches": "Ihre und die der Meldung",
+      "stateOk": "Entwarnung",
+      "stateWarn": "Warnung",
+      "stateBad": "Gefahr",
+      "stateInfo": "Information"
     },
     "marca": {
       "loadError": "Die Marke konnte nicht geladen werden.",
@@ -11587,7 +11594,8 @@
       "magenta": "Magenta",
       "mostaza": "Senfgold",
       "violeta": "Violett",
-      "oro": "Metallic-Gold"
+      "oro": "Metallic-Gold",
+      "plata": "Silber"
     }
   },
   "dispatch": {
