@@ -361,10 +361,6 @@ const NominaSettings = lazy(
 const Visitors = lazy(
   () => import("./pages/admin/visitor-management/Visitors"),
 );
-const Vehicles = lazy(
-  () => import("./pages/admin/visitor-management/Vehicles"),
-);
-const Visits = lazy(() => import("./pages/admin/visitor-management/Visits"));
 const PostSite = lazy(() => import("./pages/admin/analytics/PostSite"));
 const Guard = lazy(() => import("./pages/admin/analytics/Guard"));
 const TimeOff = lazy(() => import("./pages/admin/programmer/TimeOff"));
@@ -2130,22 +2126,12 @@ export default function App() {
                               }
                               path="/visitors"
                             />
-                            {/* <Route
-                path="/visitor/vehicle-list"
-                element={
-                  <ProtectedRoute>
-                    <Vehicles />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/visitor/visit-list"
-                element={
-                  <ProtectedRoute>
-                    <Visits />
-                  </ProtectedRoute>
-                }
-              />*/}
+                            {/* «Visitas» y «Vehículos de visitantes» se quitaron:
+                                cada una era una segunda vista de datos que ya
+                                enseña otra pantalla —`/visitors` lee el mismo
+                                `visitorLogService` y además filtra por estación,
+                                y `/vehicle-patrol/vehicles` pide la misma lista
+                                de flota con buscador y filtro de estado—. */}
                             {/* FIN GESTION DE VISITANTES */}
 
                             {/* VEHICLES */}
