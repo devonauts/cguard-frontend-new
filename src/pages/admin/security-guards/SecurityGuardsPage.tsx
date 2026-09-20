@@ -92,6 +92,7 @@ import securityGuardService from "@/lib/api/securityGuardService";
 import { clientService } from "@/lib/api/clientService";
 import { postSiteService } from "@/lib/api/postSiteService";
 import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { useVistaGuardada } from "@/hooks/useVistaGuardada";
 // Fallback local Breadcrumb component (avoid missing module error)
 interface BreadcrumbItem {
   label: string;
@@ -183,13 +184,10 @@ export default function SecurityGuardsPage() {
   const { hasPermission } = usePermissions();
   const [openFilter, setOpenFilter] = useState(false);
   // Vista Tarjetas ⇄ Lista (persistida). Tarjetas por defecto, como en Clientes.
-  const [viewMode, setViewMode] = useState<"cards" | "list">(
-    () =>
-      (localStorage.getItem("guards.viewMode") as "cards" | "list") || "cards",
+  const [viewMode, setViewMode] = useVistaGuardada<"cards" | "list">(
+    "guards.viewMode",
+    "cards",
   );
-  useEffect(() => {
-    localStorage.setItem("guards.viewMode", viewMode);
-  }, [viewMode]);
   const [searchQuery, setSearchQuery] = useState("");
   /* La búsqueda tiene DOS velocidades a propósito: `searchQuery` filtra en el
      acto lo que ya está en pantalla, y `busquedaAplazada` es la que viaja al

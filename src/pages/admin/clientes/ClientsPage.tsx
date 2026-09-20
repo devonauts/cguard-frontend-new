@@ -114,6 +114,7 @@ import { useClientSelection } from "@/contexts/ClientSelectionContext";
 import { useDebouncedValue } from "@/hooks/useDebounce";
 import { enLotes } from "@/lib/enLotes";
 import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { useVistaGuardada } from "@/hooks/useVistaGuardada";
 
 // Guard against the literal string 'undefined' that some legacy records persisted
 // for lastName (from a String(undefined) concat on save). Hides bad data until cleaned.
@@ -154,15 +155,11 @@ export default function ClientesPage() {
   const [bulkKey, setBulkKey] = useState(0);
   // Vista Cards ⇄ Lista (persistida). Cards por defecto: es la experiencia
   // renovada; la lista queda a un clic para power users.
-  const [viewMode, setViewMode] = useState<"cards" | "list">(
-    () =>
-      (localStorage.getItem("clients.viewMode") as "cards" | "list") || "cards",
+  const [viewMode, setViewMode] = useVistaGuardada<"cards" | "list">(
+    "clients.viewMode",
+    "cards",
   );
   const [cardMeta, setCardMeta] = useState<Record<string, ClientCardMeta>>({});
-
-  useEffect(() => {
-    localStorage.setItem("clients.viewMode", viewMode);
-  }, [viewMode]);
 
   // Meta de tarjetas (logo firmado + conteos) por lote, solo en vista cards.
   useEffect(() => {

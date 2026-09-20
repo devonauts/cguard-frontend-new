@@ -30,6 +30,7 @@ import { EmptyState, SkeletonCards, Segmented, Field } from "@/components/kit";
 import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import type { PostSite } from "@/types";
 import { jornadasDePlazas, jornadasPorTipo } from "@/lib/jornadasDePlazas";
+import { useVistaGuardada } from "@/hooks/useVistaGuardada";
 
 interface SiteProp extends PostSite {
   latitude?: number | string | null;
@@ -107,14 +108,10 @@ export default function Stations({ site }: { site?: SiteProp }) {
   const [stations, setStations] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   // Vista Tarjetas ⇄ Lista (persistida), como en Clientes/Vigilantes.
-  const [viewMode, setViewMode] = useState<"cards" | "list">(
-    () =>
-      (localStorage.getItem("stationsView.viewMode") as "cards" | "list") ||
-      "cards",
+  const [viewMode, setViewMode] = useVistaGuardada<"cards" | "list">(
+    "stationsView.viewMode",
+    "cards",
   );
-  useEffect(() => {
-    localStorage.setItem("stationsView.viewMode", viewMode);
-  }, [viewMode]);
   const [query, setQuery] = useState("");
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedStationId, setSelectedStationId] = useState<string | null>(

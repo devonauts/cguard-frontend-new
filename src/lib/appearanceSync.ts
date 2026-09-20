@@ -35,6 +35,16 @@ export interface UiAppearance {
    *  agenda» es un hábito suyo y de su pantalla, no de la empresa en la que
    *  esté. */
   scheduler?: { view?: string; panel?: boolean; sf?: boolean };
+  /**
+   * Los conmutadores «tarjetas ⇄ lista» de los listados, por clave.
+   *
+   * Eran cinco `localStorage.setItem("clients.viewMode", …)` sueltos, uno por
+   * pantalla, con el mismo código copiado cinco veces. Se quedaban en el
+   * navegador: quien prefiere la lista tenía que volver a elegirla en cada
+   * equipo, en cada pantalla. Como el tema y el acento, es un gusto de la
+   * persona y va con ella.
+   */
+  vistas?: Record<string, string>;
 }
 
 /** La empresa activa. Las preferencias del tablero se guardan por empresa: la

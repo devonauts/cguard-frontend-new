@@ -52,6 +52,7 @@ import {
   type Supervisor,
 } from "@/lib/api/supervisorService";
 import { confirmDialog } from "@/components/ui/confirmDialog";
+import { useVistaGuardada } from "@/hooks/useVistaGuardada";
 
 type StatFilter = "todos" | "enTurno" | "fuera" | "conVehiculo";
 
@@ -100,15 +101,11 @@ export default function SupervisorsPage() {
   useEffect(load, [load]);
 
   // Vista tarjetas ⇄ lista (persistida) + filtro por tarjeta de estadística + búsqueda.
-  const [viewMode, setViewMode] = useState<"cards" | "list">(
-    () =>
-      (localStorage.getItem("supervisors.viewMode") as "cards" | "list") ||
-      "cards",
+  const [viewMode, setViewMode] = useVistaGuardada<"cards" | "list">(
+    "supervisors.viewMode",
+    "cards",
   );
 
-  useEffect(() => {
-    localStorage.setItem("supervisors.viewMode", viewMode);
-  }, [viewMode]);
   const [statFilter, setStatFilter] = useState<StatFilter>("todos");
   const [search, setSearch] = useState("");
 

@@ -82,6 +82,7 @@ import MobileCardList from "@/components/responsive/MobileCardList";
 
 import { localeActual } from "@/lib/localeActual";
 import { hoyEnLaEmpresa, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
+import { useVistaGuardada } from "@/hooks/useVistaGuardada";
 /* Debounce helper */
 function useDebounced<T>(value: T, delay = 400) {
   const [deb, setDeb] = useState(value);
@@ -96,14 +97,10 @@ export default function AdminOfficeUsersPage() {
   const { t } = useTranslation();
   const [openFilter, setOpenFilter] = useState(false);
   // Vista Tarjetas ⇄ Lista (persistida). Tarjetas por defecto, como en Clientes/Vigilantes.
-  const [viewMode, setViewMode] = useState<"cards" | "list">(
-    () =>
-      (localStorage.getItem("adminUsers.viewMode") as "cards" | "list") ||
-      "cards",
+  const [viewMode, setViewMode] = useVistaGuardada<"cards" | "list">(
+    "adminUsers.viewMode",
+    "cards",
   );
-  useEffect(() => {
-    localStorage.setItem("adminUsers.viewMode", viewMode);
-  }, [viewMode]);
   const [filterCategory, setFilterCategory] = useState<string | null>(null);
   const [filterClient, setFilterClient] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<string | null>(null);
