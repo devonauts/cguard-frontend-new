@@ -22,7 +22,11 @@ import { cn } from "@/lib/utils";
 import { videoService, type Camera } from "@/lib/api/videoService";
 import i18n from "@/i18n";
 import { localeActual } from "@/lib/localeActual";
-import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import {
+  zonaDeLaEmpresa,
+  desdeInputFechaHora,
+  paraInputFechaHora,
+} from "@/lib/horaDeLaEmpresa";
 /* ------------------------------------------------------------------ */
 /* Shared shell                                                        */
 /* ------------------------------------------------------------------ */
@@ -158,13 +162,14 @@ const selectClass =
   "cg-input cg-focus flex h-9 w-full px-3 py-1 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50";
 
 /* default datetime-local value = local now (truncated to minutes) */
+/**
+ * El valor con el que nace el campo tiene que estar en la MISMA zona en la que
+ * se va a leer al enviar (`desdeInputFechaHora`), que es la de la empresa. Con
+ * los captadores locales el formulario se abría con la hora del portátil y se
+ * guardaba con la del puesto: dos zonas en el mismo viaje.
+ */
 function localNow(offsetMinutes = 0): string {
-  const d = new Date(Date.now() + offsetMinutes * 60_000);
-  const pad = (n: number) => String(n).padStart(2, "0");
-
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
-    d.getHours(),
-  )}:${pad(d.getMinutes())}`;
+  return paraInputFechaHora(new Date(Date.now() + offsetMinutes * 60_000));
 }
 
 /* ------------------------------------------------------------------ */
@@ -239,8 +244,10 @@ export function TrimShareModal({
     try {
       const clip = await videoService.createClip({
         videoCameraId: camera.id,
-        startAt: new Date(startAt).toISOString(),
-        endAt: new Date(endAt).toISOString(),
+        // La ventana de grabación se pide en hora del PUESTO, que es donde está
+        // la cámara; `new Date(valor)` la interpretaba en la del portátil.
+        startAt: desdeInputFechaHora(startAt),
+        endAt: desdeInputFechaHora(endAt),
         label: label || undefined,
       });
       const share = await videoService.shareClip(clip.id);
@@ -372,7 +379,10 @@ export function TrimShareModal({
           </Button>
           {expiresAt ? (
             <p className="text-center text-xs text-muted-foreground">
-              Expira el {new Date(expiresAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })}
+              Expira el{" "}
+              {new Date(expiresAt).toLocaleString(localeActual(), {
+                timeZone: zonaDeLaEmpresa(),
+              })}
             </p>
           ) : null}
         </div>

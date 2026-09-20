@@ -38,12 +38,14 @@ import taskService, {
   type TaskImage,
 } from "@/lib/api/taskService";
 import { localeActual } from "@/lib/localeActual";
-import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { zonaDeLaEmpresa, desdeInputFechaHora } from "@/lib/horaDeLaEmpresa";
 function fmtDate(s?: string | null): string {
   if (!s) return "—";
   const d = new Date(s);
 
-  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() });
+  return Number.isNaN(d.getTime())
+    ? "—"
+    : d.toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() });
 }
 
 /**
@@ -220,7 +222,10 @@ export default function TaskTracking() {
       await taskService.create({
         taskToDo: form.taskToDo.trim(),
         taskBelongsToStation: form.stationId,
-        dateToDoTheTask: new Date(form.deadline).toISOString(),
+        // Lo que el usuario escribe en un `datetime-local` es hora de pared
+        // DEL PUESTO. `new Date(valor)` la leía en la zona del dispositivo,
+        // así que el mismo dato se guardaba corrido según quién lo escribiera.
+        dateToDoTheTask: desdeInputFechaHora(form.deadline),
         priority: form.priority as "alta" | "media" | "baja",
       });
       toast.success(t("ui.TaskTracking.tareaCreadaYEnviadaA"));

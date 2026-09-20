@@ -47,6 +47,7 @@ import ExportarPeriodo, {
 } from "@/components/reports/ExportarPeriodo";
 import type { ExportFormat } from "@/lib/export/reportExport";
 import type { Station } from "@/types";
+import { desdeInputFechaHora, paraInputFechaHora } from "@/lib/horaDeLaEmpresa";
 
 type Props = { station: Station; stationId: string; postSiteId: string };
 
@@ -94,15 +95,13 @@ function fmt(v: any) {
   }
 }
 
+/**
+ * Lo que se pinta en el campo va en la zona de la EMPRESA, que es la misma en
+ * la que se vuelve a leer al guardar (`desdeInputFechaHora`). Con los captadores
+ * locales, abrir una visita desde otra ciudad enseñaba una hora y guardaba otra.
+ */
 function toLocalInputValue(iso?: string | null) {
-  if (!iso) return "";
-  try {
-    const d = new Date(iso);
-    const pad = (n: number) => String(n).padStart(2, "0");
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-  } catch {
-    return "";
-  }
+  return paraInputFechaHora(iso);
 }
 
 function nowLocalInputValue() {
@@ -523,9 +522,11 @@ function VisitorFormModal({
         numPeople: Number(form.numPeople) || 1,
         placeType,
         visitDate: form.visitDate
-          ? new Date(form.visitDate).toISOString()
+          ? // La entrada y la salida de una visita son hora del PUESTO; con
+            // `new Date(valor)` se guardaban en la zona del dispositivo.
+            desdeInputFechaHora(form.visitDate)
           : new Date().toISOString(),
-        exitTime: form.exitTime ? new Date(form.exitTime).toISOString() : null,
+        exitTime: form.exitTime ? desdeInputFechaHora(form.exitTime) : null,
         stationId,
       };
       if (idPhotoMeta) payload.idPhoto = idPhotoMeta;
