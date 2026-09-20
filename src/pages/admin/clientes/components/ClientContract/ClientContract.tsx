@@ -59,6 +59,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa, soloFechaCivil} from "@/lib/horaDeLaEmpresa";
 // ── Shape of GET /client-account/:id/contract (clientAccountContract.ts) ──
 interface ContractTerms {
   id: string;
@@ -214,20 +215,10 @@ const SERVICE_PRESETS: Record<
 };
 const SERVICE_KEYS = Object.keys(SERVICE_PRESETS);
 
-const fmtDate = (d: string | number | Date | null | undefined) => {
-  if (!d) return "—";
-  const dt = new Date(
-    typeof d === "string" && d.length <= 10 ? `${d}T00:00:00` : d,
-  );
-
-  return Number.isNaN(dt.getTime())
-    ? "—"
-    : dt.toLocaleDateString(localeActual(), {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      });
-};
+/* Firma, vencimiento y renovación son DÍAS CIVILES: el día que dice el contrato,
+   sin hora y sin zona. Aplicarles la zona de la empresa los movería un día. */
+const fmtDate = (d: string | number | Date | null | undefined) =>
+  soloFechaCivil(d as string, {}, "—");
 const orDash = (v: unknown) =>
   v === null || v === undefined || v === "" ? "—" : (v as ReactNode);
 
@@ -650,7 +641,7 @@ export default function ClientContract({ client }: { client: Client }) {
                   </span>
                   <span className="shrink-0 text-xs text-muted-foreground">
                     {d.createdAt
-                      ? new Date(d.createdAt).toLocaleDateString(localeActual())
+                      ? new Date(d.createdAt).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() })
                       : ""}
                   </span>
                 </a>

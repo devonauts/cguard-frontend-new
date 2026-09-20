@@ -34,6 +34,7 @@ import userService from "@/lib/api/userService";
 import { MultiSelectDeSedes } from "@/components/MultiSelectDeSedes";
 import i18n from "@/i18n";
 import { localeActual } from "@/lib/localeActual";
+import { soloFechaCivil } from "@/lib/horaDeLaEmpresa";
 const WEEKDAYS = [
   { n: 1, label: "Lun" },
   { n: 2, label: "Mar" },
@@ -82,11 +83,15 @@ function toDateInput(v: string | number | Date | null | undefined): string {
 
   return isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 10);
 }
+/**
+ * Nacimiento y fecha de contrato son DÍAS CIVILES, no instantes: el backend los
+ * manda como «1992-04-11» y `new Date(...)` los lee como medianoche UTC, así que
+ * al oeste de Greenwich se pintaban un día antes —el vigilante nacía el 10—.
+ */
 function fmtDate(v: string | number | Date | null | undefined): string | null {
   if (!v) return null;
-  const d = new Date(v);
 
-  return isNaN(d.getTime()) ? String(v) : d.toLocaleDateString(localeActual());
+  return soloFechaCivil(v as string, {}, String(v));
 }
 
 /**

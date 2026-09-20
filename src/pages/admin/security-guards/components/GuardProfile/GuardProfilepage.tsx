@@ -17,6 +17,7 @@ import GuardsLayout from "@/layouts/GuardsLayout";
 import AppLayout from "@/layouts/app-layout";
 import i18n from "@/i18n";
 import { localeActual } from "@/lib/localeActual";
+import { soloFechaCivil, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
 /** The linked app user carried under `guard` on the securityGuard record. */
 interface ProfileUser {
   id?: string;
@@ -534,9 +535,7 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
                         }
                         value={
                           data?.birthDate
-                            ? new Date(data.birthDate).toLocaleDateString(
-                                localeActual(),
-                              )
+                            ? soloFechaCivil(data.birthDate, {}, "")
                             : null
                         }
                       />
@@ -660,7 +659,7 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
                           data?.hiringContractDate
                             ? new Date(
                                 data.hiringContractDate,
-                              ).toLocaleDateString(localeActual())
+                              ).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() })
                             : null
                         }
                       />
@@ -885,8 +884,7 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
                         style={{ color: "var(--ink)" }}
                       >
                         {new Date(data.guard.lastLoginAt).toLocaleString(
-                          localeActual(),
-                        )}
+                          localeActual(), { timeZone: zonaDeLaEmpresa() })}
                       </span>
                     </div>
                   )}
@@ -981,9 +979,7 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
                             }
                             value={
                               lic.expiryDate
-                                ? new Date(lic.expiryDate).toLocaleDateString(
-                                    localeActual(),
-                                  )
+                                ? soloFechaCivil(lic.expiryDate, {}, "")
                                 : null
                             }
                           />

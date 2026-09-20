@@ -47,6 +47,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { localeActual } from "@/lib/localeActual";
+import { soloFechaCivil, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
 /** Payload for creating/updating a guard license. */
 type LicensePayload = {
   licenseTypeId?: string;
@@ -615,9 +616,7 @@ export default function GuardLicenses({
                         })}
                         value={
                           lic.issueDate
-                            ? new Date(lic.issueDate).toLocaleDateString(
-                                localeActual(),
-                              )
+                            ? soloFechaCivil(lic.issueDate, {}, "")
                             : null
                         }
                       />
@@ -627,9 +626,7 @@ export default function GuardLicenses({
                         })}
                         value={
                           lic.expiryDate
-                            ? new Date(lic.expiryDate).toLocaleDateString(
-                                localeActual(),
-                              )
+                            ? soloFechaCivil(lic.expiryDate, {}, "")
                             : null
                         }
                       />
@@ -1199,7 +1196,7 @@ export default function GuardLicenses({
                           detailsData.issueDate
                             ? new Date(
                                 detailsData.issueDate,
-                              ).toLocaleDateString(localeActual())
+                              ).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() })
                             : null
                         }
                       />
@@ -1211,7 +1208,7 @@ export default function GuardLicenses({
                           detailsData.expiryDate
                             ? new Date(
                                 detailsData.expiryDate,
-                              ).toLocaleDateString(localeActual())
+                              ).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() })
                             : null
                         }
                       />
