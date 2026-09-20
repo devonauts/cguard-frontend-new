@@ -1555,6 +1555,10 @@ export default function PostSiteTours({
               if (!o) setShowDetailModal(false);
             }}
           >
+            {/* El cuerpo de un modal se CONSTRUYE aunque `open` sea false: JSX evalúa
+                sus hijos al renderizar el padre. Sin esta guarda, `detailTour.description`
+                reventaba la pestaña entera nada más entrar, con el recorrido aún sin abrir. */}
+            {detailTour && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <div className="text-sm text-muted-foreground">
@@ -1693,6 +1697,7 @@ export default function PostSiteTours({
 
               {/* Created At / Updated At intentionally omitted per request */}
             </div>
+            )}
           </Modal>
 
           <div className="md:hidden">
