@@ -623,7 +623,7 @@ describe("Etapa E.1 · el contexto va al mismo origen", () => {
  */
 describe("Etapa E.1 · el tono y el título los pone el anfitrión", () => {
   const WL = fs.readFileSync(path.resolve(__dirname, "./WhiteLabelContext.tsx"), "utf8");
-  const ACCENT = fs.readFileSync(path.resolve(__dirname, "./AccentContext.tsx"), "utf8");
+  const ACCENT = fs.readFileSync(path.resolve(__dirname, "../lib/acentoDelUsuario.ts"), "utf8");
   const TITULO = fs.readFileSync(path.resolve(__dirname, "../hooks/usePageTitle.ts"), "utf8");
 
   it("el proveedor MARCA el <html> cuando aplica un tono de anfitrión", () => {
@@ -633,6 +633,15 @@ describe("Etapa E.1 · el tono y el título los pone el anfitrión", () => {
   it("LA QUE IMPORTA · el acento DE FÁBRICA ya no pisa la marca del anfitrión", () => {
     expect(ACCENT).toMatch(/hayAccentElegido\(\)/);
     expect(ACCENT).toMatch(/dataset\.marcaDeAnfitrion === "1"/);
+  });
+
+  it("al soltar la variable, el anfitrión DEVUELVE el acento del usuario", () => {
+    /* `removeProperty` también borraba el acento personal si `AccentContext` ya
+       lo había puesto: los dos escriben la misma variable desde efectos que
+       corren a destiempo. Medido en un navegador limpio: el acento entraba a
+       los 361 ms y este borrado se lo llevaba a los 443. */
+    expect(WL).toMatch(/restaurarAccentDelUsuario\(\)/);
+    expect(ACCENT).toMatch(/export function restaurarAccentDelUsuario/);
   });
 
   it("pero un acento ELEGIDO sigue mandando", () => {

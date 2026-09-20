@@ -12,6 +12,26 @@ import {
   guardarApariencia,
   cambioLocalReciente,
 } from "@/lib/appearanceSync";
+import {
+  ACCENT_DEFAULT,
+  aplicarAccent,
+  acota,
+  CROMA_MAX,
+  CLAVE,
+  hayAccentElegido,
+  leerGuardado,
+  restaurarAccentDelUsuario,
+  type Accent,
+} from "@/lib/acentoDelUsuario";
+
+/* Se reexportan: hay pantallas que los importan de aquí. */
+export {
+  ACCENT_DEFAULT,
+  aplicarAccent,
+  hayAccentElegido,
+  restaurarAccentDelUsuario,
+};
+export type { Accent };
 
 /**
  * El acento configurable del CRM.
@@ -35,7 +55,6 @@ import {
  * pinta lo cacheado y, cuando responde la cuenta, gana lo guardado ahí.
  */
 
-export type Accent = { h: number; c: number };
 
 /** Tono y croma; el nombre es sólo para la interfaz.
  *  `labelKey` es la clave i18n: este array se evalúa al cargar el módulo, así
@@ -118,66 +137,6 @@ export const ACCENT_PRESETS: Array<{
     c: 0.04,
   },
 ];
-
-export const ACCENT_DEFAULT: Accent = { h: 88, c: 0.16 };
-
-const CLAVE = "cguard-accent";
-
-/** Croma máximo. Por encima, los tonos amarillo/verde se salen de gamut y el
- *  navegador los recorta de forma desigual: dos acentos «igual de saturados»
- *  saldrían con intensidades distintas. */
-const CROMA_MAX = 0.2;
-
-const acota = (n: number, min: number, max: number) =>
-  Math.min(max, Math.max(min, n));
-
-function leerGuardado(): Accent {
-  try {
-    const bruto = localStorage.getItem(CLAVE);
-
-    if (bruto) {
-      const v = JSON.parse(bruto);
-
-      if (typeof v?.h === "number" && typeof v?.c === "number") {
-        return { h: acota(v.h, 0, 360), c: acota(v.c, 0, CROMA_MAX) };
-      }
-    }
-  } catch {}
-
-  return ACCENT_DEFAULT;
-}
-
-/** Escribe en el <html>. Fuera del ciclo de React a propósito: se llama también
- *  antes del primer render para que no haya un parpadeo con el acento por
- *  defecto. */
-/** ¿Ha elegido esta persona un acento, o es el de fábrica? */
-export function hayAccentElegido(): boolean {
-  try {
-    const bruto = localStorage.getItem(CLAVE);
-    if (!bruto) return false;
-    const v = JSON.parse(bruto);
-    return typeof v?.h === "number" && typeof v?.c === "number";
-  } catch {
-    return false;
-  }
-}
-
-export function aplicarAccent(a: Accent) {
-  const raiz = document.documentElement;
-
-  /* ── EL DE FÁBRICA NO PISA LA MARCA DE UN ANFITRIÓN ─────────────────────
-     Si esta persona NO ha elegido acento y el anfitrión trae el suyo (lo marca
-     `WhiteLabelProvider`), se deja el del anfitrión. El acento de fábrica es la
-     ausencia de una preferencia, no una preferencia: dejarlo ganar pintaba el
-     CRM de un socio con el verde de CGuardPro, y justo antes de entrar, que es
-     cuando no hay ningún usuario cuyo gusto respetar.
-     Un acento ELEGIDO sigue mandando, que es el orden correcto: la marca
-     identifica el producto, el acento es de quien lo usa. */
-  if (!hayAccentElegido() && raiz.dataset.marcaDeAnfitrion === "1") return;
-
-  raiz.style.setProperty("--brand-h", String(a.h));
-  raiz.style.setProperty("--brand-c", String(a.c));
-}
 
 interface AccentContextValue {
   accent: Accent;

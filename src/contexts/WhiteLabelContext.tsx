@@ -2,6 +2,8 @@ import {
   createContext, useContext, useEffect, useRef, useState, type ReactNode,
 } from "react";
 
+import { restaurarAccentDelUsuario } from "@/lib/acentoDelUsuario";
+
 /**
  * ════════════════════════════════════════════════════════════════════════════
  * LA MARCA DE ESTE ANFITRIÓN
@@ -258,11 +260,20 @@ export function aplicarMarca(ctx: ContextoDeMarca): void {
          para que el acento de fábrica vuelva a poder aplicarse. */
       document.documentElement.style.removeProperty("--brand-h");
       delete document.documentElement.dataset.marcaDeAnfitrion;
+      /* …y si esta persona TIENE acento elegido, se le devuelve. Quitar la
+         propiedad a secas borraba su color: este efecto corre DESPUÉS del de
+         `AccentContext` cuando la apariencia llega de la cuenta (medido con
+         marca de tiempo en un navegador limpio: el acento a los 361 ms, este
+         borrado a los 443), así que quien entraba desde otro equipo veía el CRM
+         de fábrica con su elección bien guardada en la base. Soltar el mando no
+         es borrar lo de otro. */
+      restaurarAccentDelUsuario();
     }
     if (ctx.brandChroma !== null) {
       document.documentElement.style.setProperty("--brand-c", String(ctx.brandChroma));
     } else {
       document.documentElement.style.removeProperty("--brand-c");
+      restaurarAccentDelUsuario();
     }
   } catch { /* idem */ }
 
