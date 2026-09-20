@@ -99,6 +99,7 @@ import { useTranslation } from "react-i18next";
 import api from "@/lib/api";
 import type { DispatchRow, DirectoryOption, DispatchApiError } from "./types";
 import { localeActual } from "@/lib/localeActual";
+import { hoyEnLaEmpresa, limitesDelDia, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
 
 // The list is paginated client-side over what we load. The backend hard-caps a
 // no-limit /request query at 1000 rows, which silently truncated tenants past
@@ -531,8 +532,11 @@ export default function DispatcherPage() {
       if (filters && filters.createdDate) {
         try {
           const d = filters.createdDate;
-          const start = new Date(`${d}T00:00:00`).toISOString();
-          const end = new Date(`${d}T23:59:59`).toISOString();
+          // El día del filtro es el día del PUESTO, no el del portátil de quien
+          // filtra: con `new Date()` estas cotas salían en la zona del
+          // dispositivo y el «lunes» de una empresa mexicana empezaba el
+          // domingo para quien mirara desde Madrid.
+          const { start, end } = limitesDelDia(d);
           // append twice so backend receives an array: filter[createdAtRange]=start&filter[createdAtRange]=end
           params.append("filter[createdAtRange][]", start);
           params.append("filter[createdAtRange][]", end);
@@ -544,8 +548,11 @@ export default function DispatcherPage() {
       if (filters && filters.incidentDate) {
         try {
           const d = filters.incidentDate;
-          const start = new Date(`${d}T00:00:00`).toISOString();
-          const end = new Date(`${d}T23:59:59`).toISOString();
+          // El día del filtro es el día del PUESTO, no el del portátil de quien
+          // filtra: con `new Date()` estas cotas salían en la zona del
+          // dispositivo y el «lunes» de una empresa mexicana empezaba el
+          // domingo para quien mirara desde Madrid.
+          const { start, end } = limitesDelDia(d);
           // append twice so backend receives an array: filter[dateTimeRange]=start&filter[dateTimeRange]=end
           params.append("filter[dateTimeRange][]", start);
           params.append("filter[dateTimeRange][]", end);
@@ -1057,7 +1064,7 @@ export default function DispatcherPage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `Incidentes_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      a.download = `Incidentes_${hoyEnLaEmpresa()}.xlsx`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -1339,8 +1346,11 @@ export default function DispatcherPage() {
                       if (filters && filters.createdDate) {
                         try {
                           const d = filters.createdDate;
-                          const start = new Date(`${d}T00:00:00`).toISOString();
-                          const end = new Date(`${d}T23:59:59`).toISOString();
+                          // El día del filtro es el día del PUESTO, no el del portátil de quien
+                          // filtra: con `new Date()` estas cotas salían en la zona del
+                          // dispositivo y el «lunes» de una empresa mexicana empezaba el
+                          // domingo para quien mirara desde Madrid.
+                          const { start, end } = limitesDelDia(d);
                           params.append("filter[createdAtRange][]", start);
                           params.append("filter[createdAtRange][]", end);
                         } catch (e) {
@@ -1354,8 +1364,11 @@ export default function DispatcherPage() {
                       if (filters && filters.incidentDate) {
                         try {
                           const d = filters.incidentDate;
-                          const start = new Date(`${d}T00:00:00`).toISOString();
-                          const end = new Date(`${d}T23:59:59`).toISOString();
+                          // El día del filtro es el día del PUESTO, no el del portátil de quien
+                          // filtra: con `new Date()` estas cotas salían en la zona del
+                          // dispositivo y el «lunes» de una empresa mexicana empezaba el
+                          // domingo para quien mirara desde Madrid.
+                          const { start, end } = limitesDelDia(d);
                           params.append("filter[dateTimeRange][]", start);
                           params.append("filter[dateTimeRange][]", end);
                         } catch (e) {
@@ -1925,7 +1938,7 @@ export default function DispatcherPage() {
                           const dateValue = r.dateTime || r.incidentAt;
                           if (!dateValue) return "-";
                           const d = new Date(dateValue);
-                          return isNaN(d.getTime()) ? "-" : d.toLocaleString(localeActual());
+                          return isNaN(d.getTime()) ? "-" : d.toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() });
                         })()}
                       </td>
                       <td className="px-4 py-3" data-rotulo={t("dispatcher.header_client")} data-titulo>{getClientDisplay(r)}</td>

@@ -36,6 +36,7 @@ import {
   Tr,
 } from "../_shared/tab-kit";
 import type { Client } from "@/types/client";
+import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 type Props = {
   client?: Client & { firstName?: string };
@@ -87,7 +88,7 @@ export default function ClientNotes({ client }: Props) {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    date: new Date().toISOString().split("T")[0],
+    date: hoyEnLaEmpresa(),
     attachments: [] as File[],
   });
 
@@ -103,7 +104,7 @@ export default function ClientNotes({ client }: Props) {
     setFormData({
       title: "",
       description: "",
-      date: new Date().toISOString().split("T")[0],
+      date: hoyEnLaEmpresa(),
       attachments: [],
     });
   };
@@ -243,7 +244,7 @@ export default function ClientNotes({ client }: Props) {
       setFormData({
         title: "",
         description: "",
-        date: new Date().toISOString().split("T")[0],
+        date: hoyEnLaEmpresa(),
         attachments: [],
       });
       return;
@@ -284,7 +285,7 @@ export default function ClientNotes({ client }: Props) {
       setFormData({
         title: "",
         description: "",
-        date: new Date().toISOString().split("T")[0],
+        date: hoyEnLaEmpresa(),
         attachments: [],
       });
       setIsEditing(false);

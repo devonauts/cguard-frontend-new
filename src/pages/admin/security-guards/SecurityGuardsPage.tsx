@@ -91,6 +91,7 @@ import { toast } from "sonner";
 import securityGuardService from "@/lib/api/securityGuardService";
 import { clientService } from "@/lib/api/clientService";
 import { postSiteService } from "@/lib/api/postSiteService";
+import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 // Fallback local Breadcrumb component (avoid missing module error)
 interface BreadcrumbItem {
   label: string;
@@ -242,7 +243,7 @@ export default function SecurityGuardsPage() {
   // La baja se REGISTRA, no solo se aplica: fecha, motivo y equipo por devolver
   // alimentan el expediente laboral (guardTermination) del servidor.
   const [bajaFecha, setBajaFecha] = useState<string>(
-    new Date().toISOString().slice(0, 10),
+    hoyEnLaEmpresa(),
   );
   const [bajaMotivo, setBajaMotivo] = useState<string>("resignation");
   const [bajaNota, setBajaNota] = useState<string>("");
@@ -269,7 +270,7 @@ export default function SecurityGuardsPage() {
     ["other", "Otro"],
   ];
   const abrirDialogoDeBaja = () => {
-    setBajaFecha(new Date().toISOString().slice(0, 10));
+    setBajaFecha(hoyEnLaEmpresa());
     setBajaMotivo("resignation");
     setBajaNota("");
     setBajaRecontratable(true);
@@ -329,7 +330,7 @@ export default function SecurityGuardsPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `vigilantes_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `vigilantes_${hoyEnLaEmpresa()}.csv`;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -381,7 +382,7 @@ export default function SecurityGuardsPage() {
     try {
       const blob = await securityGuardService.export(format);
       const ext = format === "csv" ? "csv" : format === "pdf" ? "pdf" : "xlsx";
-      const filename = `vigilantes_${new Date().toISOString().slice(0, 10)}.${ext}`;
+      const filename = `vigilantes_${hoyEnLaEmpresa()}.${ext}`;
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;

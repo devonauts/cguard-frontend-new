@@ -50,6 +50,7 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import routeService from "@/lib/api/routeService";
 import { localeActual } from "@/lib/localeActual";
+import { hoyEnLaEmpresa, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
 const DOW_NUM: Record<string, number> = {
   sun: 0,
   sunday: 0,
@@ -110,7 +111,7 @@ export default function PatrullaBoardPage() {
 
   usePageTitle("Patrulla vehicular");
   const navigate = useNavigate();
-  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [date, setDate] = useState(() => hoyEnLaEmpresa());
   const [routes, setRoutes] = useState<any[]>([]);
   const [runs, setRuns] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -425,7 +426,7 @@ export default function PatrullaBoardPage() {
                               <Clock className="size-3.5" />
                               {new Date(route.windowStart).toLocaleTimeString(
                                 localeActual(),
-                                { hour: "2-digit", minute: "2-digit" },
+                                { timeZone: zonaDeLaEmpresa(), hour: "2-digit", minute: "2-digit" },
                               )}
                             </span>
                           )}

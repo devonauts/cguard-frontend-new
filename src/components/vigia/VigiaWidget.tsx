@@ -32,6 +32,7 @@ import {
 
 import api from "@/lib/api";
 import { localeActual } from "@/lib/localeActual";
+import { hoyEnLaEmpresa, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
 
@@ -321,7 +322,7 @@ export default function VigiaWidget() {
   // operación sin gastar un token — el retrato ya lo sabe todo.
   useEffect(() => {
     if (!open) return;
-    const hoy = new Date().toISOString().slice(0, 10);
+    const hoy = hoyEnLaEmpresa();
 
     if (localStorage.getItem("vigia_parte") === hoy) return;
     localStorage.setItem("vigia_parte", hoy);
@@ -856,7 +857,7 @@ export default function VigiaWidget() {
                         className="text-[11px]"
                         style={{ color: "var(--ink-faint)" }}
                       >
-                        {new Date(c.ts).toLocaleString(localeActual(), {
+                        {new Date(c.ts).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa(),
                           day: "2-digit",
                           month: "short",
                           hour: "2-digit",

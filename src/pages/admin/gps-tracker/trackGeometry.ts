@@ -29,6 +29,7 @@
 
 import { metrosEntre, rumboEntre, type Punto } from "@/utils/mapMotion";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 /** Un ping del GPS tal y como lo entrega `securityGuardService.trail()`. */
 export interface PuntoRecorrido extends Punto {
   at: string;
@@ -450,7 +451,7 @@ export function hora(iso: string | number | Date | null | undefined): string {
 
   return Number.isNaN(d.getTime())
     ? "—"
-    : d.toLocaleTimeString(localeActual(), {
+    : d.toLocaleTimeString(localeActual(), { timeZone: zonaDeLaEmpresa(),
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit",
@@ -463,7 +464,7 @@ export function fechaHora(
   if (iso == null) return "—";
   const d = new Date(iso);
 
-  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString(localeActual());
+  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() });
 }
 
 /** «hace 40 s», «hace 12 min», «hace 3 h». Sin `Intl.RelativeTimeFormat` para

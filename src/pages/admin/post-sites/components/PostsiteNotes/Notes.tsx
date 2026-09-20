@@ -21,6 +21,7 @@ import { postSiteService } from "@/lib/api/postSiteService";
 import { toast } from "sonner";
 import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import type { PostSite } from "@/types";
+import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 type Props = {
   site?: PostSite;
@@ -66,7 +67,7 @@ export default function PostSiteNotes({ site }: Props) {
   }>({
     title: "",
     description: "",
-    date: new Date().toISOString().split("T")[0],
+    date: hoyEnLaEmpresa(),
     attachments: [],
   });
 
@@ -112,7 +113,7 @@ export default function PostSiteNotes({ site }: Props) {
     setFormData({
       title: "",
       description: "",
-      date: new Date().toISOString().split("T")[0],
+      date: hoyEnLaEmpresa(),
       attachments: [],
     });
   };
@@ -239,7 +240,7 @@ export default function PostSiteNotes({ site }: Props) {
         setFormData({
           title: "",
           description: "",
-          date: new Date().toISOString().split("T")[0],
+          date: hoyEnLaEmpresa(),
           attachments: [],
         });
       } catch (err) {

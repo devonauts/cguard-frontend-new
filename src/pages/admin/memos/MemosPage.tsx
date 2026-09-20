@@ -74,6 +74,7 @@ import {
 import { userService } from "@/lib/api/userService";
 import { useAuth } from "@/contexts/AuthContext";
 import { localeActual } from "@/lib/localeActual";
+import { hoyEnLaEmpresa, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
 
 type MemoItem = {
   id: string;
@@ -416,7 +417,7 @@ export default function MemosPage() {
       const blob = await ApiService.getBlob(
         `/tenant/${tenantId}/memos/export?format=${format}&ids=${idsParam}`,
       );
-      const filename = `memos_${new Date().toISOString().slice(0, 10)}.${format === "pdf" ? "pdf" : "xlsx"}`;
+      const filename = `memos_${hoyEnLaEmpresa()}.${format === "pdf" ? "pdf" : "xlsx"}`;
       downloadBlob(blob, filename);
       toast.success(
         `Exportado a ${format === "pdf" ? "PDF" : "Excel"} correctamente`,
@@ -489,7 +490,7 @@ export default function MemosPage() {
       header: "Fecha",
       sortable: true,
       render: (value) =>
-        value ? new Date(value).toLocaleString(localeActual()) : "-",
+        value ? new Date(value).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() }) : "-",
     },
     {
       key: "wasAccepted",
@@ -885,8 +886,7 @@ export default function MemosPage() {
                   value={
                     viewMemo?.dateTime
                       ? new Date(viewMemo.dateTime).toLocaleString(
-                          localeActual(),
-                        )
+                          localeActual(), { timeZone: zonaDeLaEmpresa() })
                       : "-"
                   }
                   className="sm:col-span-2"

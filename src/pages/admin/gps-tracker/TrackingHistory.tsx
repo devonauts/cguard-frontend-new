@@ -27,6 +27,7 @@ import {
 } from "@/components/kit";
 import { securityGuardService } from "@/lib/api/securityGuardService";
 import { localeActual } from "@/lib/localeActual";
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 type MapType = "roadmap" | "satellite" | "hybrid" | "terrain";
 
 interface GuardOpt {
@@ -162,7 +163,7 @@ export default function TrackingHistoryPage() {
           "Batería (%)",
         ],
         points.map((p) => [
-          new Date(p.at).toLocaleString(localeActual()),
+          new Date(p.at).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() }),
           p.lat,
           p.lng,
           p.speed ?? "",

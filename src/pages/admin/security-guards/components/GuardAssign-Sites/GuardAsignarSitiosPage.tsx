@@ -32,6 +32,7 @@ import {
 import { clientDisplayName } from "@/lib/clientName";
 import { Button } from "@/components/ui/button";
 import { localeActual } from "@/lib/localeActual";
+import { paraInputFechaHora, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
 // ── Safe label extraction ────────────────────────────────────────────────────
 // The backend may return raw association OBJECTS (full Sequelize models) for
 // client / postSite / station. Rendering an object directly as a JSX child
@@ -98,7 +99,7 @@ const fmtDateOnly = (v: any): string | null => {
 
   if (isNaN(d.getTime())) return String(v);
 
-  return d.toLocaleDateString(localeActual(), {
+  return d.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -241,7 +242,7 @@ export default function GuardAsignarSitiosPage() {
   const [selectedStationAssign, setSelectedStationAssign] =
     useState<string>("");
   const [selectedStart, setSelectedStart] = useState<string>(() =>
-    new Date().toISOString().slice(0, 16),
+    paraInputFechaHora(new Date()),
   );
   const [selectedEnd, setSelectedEnd] = useState<string>(() =>
     new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16),

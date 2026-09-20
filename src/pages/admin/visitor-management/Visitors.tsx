@@ -68,6 +68,7 @@ import { toast } from "sonner";
 import { confirmDialog } from '@/components/ui/confirmDialog';
 import { VisitorLogFilters } from "@/lib/api/visitorLogService";
 import { localeActual } from "@/lib/localeActual";
+import { hoyEnLaEmpresa, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
 
 // Loose client shape covering the various name/id fields the association may carry.
 type ClientLike = {
@@ -463,7 +464,7 @@ export default function Visitors() {
 
       if (isNaN(d.getTime())) return String(val);
 
-      return d.toLocaleString(localeActual());
+      return d.toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() });
     } catch (e) {
       return String(val);
     }
@@ -619,7 +620,7 @@ export default function Visitors() {
         {
           title: t("visitantes.bitacoras", "Bitácoras"),
           subtitle: `${filas.length} registro(s)`,
-          fileBase: `bitacoras_export_${new Date().toISOString().slice(0, 10)}`,
+          fileBase: `bitacoras_export_${hoyEnLaEmpresa()}`,
         },
       );
     } catch (e) {

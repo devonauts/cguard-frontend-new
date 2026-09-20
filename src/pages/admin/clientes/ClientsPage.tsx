@@ -113,6 +113,7 @@ import { usePermissions } from "@/hooks/usePermissions";
 import { useClientSelection } from "@/contexts/ClientSelectionContext";
 import { useDebouncedValue } from "@/hooks/useDebounce";
 import { enLotes } from "@/lib/enLotes";
+import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 // Guard against the literal string 'undefined' that some legacy records persisted
 // for lastName (from a String(undefined) concat on save). Hides bad data until cleaned.
@@ -464,7 +465,7 @@ export default function ClientesPage() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `clientes-${new Date().toISOString().split("T")[0]}.pdf`;
+      a.download = `clientes-${hoyEnLaEmpresa()}.pdf`;
       a.click();
       window.URL.revokeObjectURL(url);
       toast.dismiss();
@@ -486,7 +487,7 @@ export default function ClientesPage() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `clientes-${new Date().toISOString().split("T")[0]}.xlsx`;
+      a.download = `clientes-${hoyEnLaEmpresa()}.xlsx`;
       a.click();
       window.URL.revokeObjectURL(url);
       toast.dismiss();

@@ -28,6 +28,7 @@ import {
 import { ApiService } from "@/services/api/apiService";
 import ExportMenu from "@/components/reports/ExportMenu";
 import { descargarInforme } from "@/lib/export/serverDownload";
+import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 type AuditRow = {
   id: string;
@@ -75,7 +76,7 @@ export default function AuditLogs() {
         `/tenant/${tid()}/security/audit-logs/export?${params.toString()}`,
         {
           format,
-          nombreBase: `bitacora-accesos-${new Date().toISOString().slice(0, 10)}`,
+          nombreBase: `bitacora-accesos-${hoyEnLaEmpresa()}`,
         },
       );
     } catch {

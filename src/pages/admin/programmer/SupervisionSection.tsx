@@ -17,6 +17,7 @@ import { codePill, CODE_LABEL, columnRules } from "./codeTones";
 
 import { ApiService } from "@/services/api/apiService";
 import { confirmDialog } from "@/components/ui/confirmDialog";
+import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 /**
  * ────────────────────────────────────────────────────────────────────────────
@@ -172,7 +173,7 @@ export default function SupervisionSection({
         {
           data: {
             supervisorUserId: asignar.userId,
-            startDate: new Date().toISOString().slice(0, 10),
+            startDate: hoyEnLaEmpresa(),
           },
         },
       );

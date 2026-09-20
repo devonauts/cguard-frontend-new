@@ -26,6 +26,7 @@ import {
 } from "@/components/maps/MapPopup";
 import "@/styles/map.css";
 import { CENTRO_DE_RESPALDO } from "@/utils/tenantLocation";
+import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 /** One plotted stop of a vehicle-patrol route (a point with valid coordinates). */
 export interface RouteStopMarker {
@@ -498,7 +499,7 @@ export default function RouteTrackingMap({
       if (!rec) return;
       const u = rec.datos;
       const e = ESTADO[rec.estado];
-      const dia = new Date().toISOString().slice(0, 10);
+      const dia = hoyEnLaEmpresa();
 
       const acciones = mapPopupItems(
         u.kind === "guard" && u.guardId

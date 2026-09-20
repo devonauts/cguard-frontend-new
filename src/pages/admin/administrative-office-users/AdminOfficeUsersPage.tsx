@@ -81,6 +81,7 @@ import {
 import MobileCardList from "@/components/responsive/MobileCardList";
 
 import { localeActual } from "@/lib/localeActual";
+import { hoyEnLaEmpresa, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
 /* Debounce helper */
 function useDebounced<T>(value: T, delay = 400) {
   const [deb, setDeb] = useState(value);
@@ -336,7 +337,7 @@ export default function AdminOfficeUsersPage() {
       const blob = await userService.exportFile(format);
       const ext =
         format === "excel" ? "xlsx" : format === "csv" ? "csv" : "pdf";
-      const filename = `usuarios_${new Date().toISOString().slice(0, 10)}.${ext}`;
+      const filename = `usuarios_${hoyEnLaEmpresa()}.${ext}`;
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -1284,7 +1285,7 @@ export default function AdminOfficeUsersPage() {
                             {u.lastLoginAt
                               ? new Date(
                                   u.lastLoginAt as string,
-                                ).toLocaleString(localeActual())
+                                ).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
                               : "-"}
                           </td>
                           <td className="px-4 py-3">
@@ -1637,8 +1638,7 @@ export default function AdminOfficeUsersPage() {
                       >
                         {u.lastLoginAt
                           ? new Date(u.lastLoginAt as string).toLocaleString(
-                              localeActual(),
-                            )
+                              localeActual(), { timeZone: zonaDeLaEmpresa() })
                           : "—"}
                       </div>
                     </div>

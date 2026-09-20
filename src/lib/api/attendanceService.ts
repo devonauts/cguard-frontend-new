@@ -3,6 +3,7 @@ import type { ExportFormat } from "@/lib/export/reportExport";
 import api from "../api";
 
 import { descargarInforme } from "@/lib/export/serverDownload";
+import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 /**
  * Nómina / Time & Attendance API client. Tenant-scoped; mirrors shiftService.
@@ -293,7 +294,7 @@ const attendanceService = {
       `/tenant/${t}/attendance/export${buildQuery(params)}`,
       {
         format,
-        nombreBase: `asistencia_${new Date().toISOString().slice(0, 10)}`,
+        nombreBase: `asistencia_${hoyEnLaEmpresa()}`,
       },
     );
   },

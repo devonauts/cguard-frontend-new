@@ -16,6 +16,7 @@ import api from '@/lib/api';
 
 
 import { localeActual } from "@/lib/localeActual";
+import { hoyEnLaEmpresa, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
 // Notes API shape the page consumes. Defaults to the guard endpoints; a
 // supervisor route injects `notesApi` + `entityId` (+navKey/title) to reuse this
 // exact page against the supervisor's user-keyed notes. Guard usage passes none
@@ -68,7 +69,7 @@ function fmtDate(v: string | number | Date | null | undefined): string {
 
   if (isNaN(d.getTime())) return String(v);
 
-  return d.toLocaleDateString(localeActual(), {
+  return d.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -110,7 +111,7 @@ export default function GuardNotes({
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    date: new Date().toISOString().split("T")[0],
+    date: hoyEnLaEmpresa(),
     attachments: [] as File[],
   });
   const [uploadProgress, setUploadProgress] = useState<Record<number, number>>(
@@ -122,7 +123,7 @@ export default function GuardNotes({
     setFormData({
       title: "",
       description: "",
-      date: new Date().toISOString().split("T")[0],
+      date: hoyEnLaEmpresa(),
       attachments: [],
     });
   };
@@ -274,7 +275,7 @@ export default function GuardNotes({
         setFormData({
           title: "",
           description: "",
-          date: new Date().toISOString().split("T")[0],
+          date: hoyEnLaEmpresa(),
           attachments: [],
         });
         setUploadProgress({});

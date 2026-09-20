@@ -47,6 +47,7 @@ import { getAuthToken } from "@/lib/api";
 import routeService from "@/lib/api/routeService";
 import { securityGuardService } from "@/lib/api/securityGuardService";
 import { supervisorService } from "@/lib/api/supervisorService";
+import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 const DOW_NUM: Record<string, number> = {
   sun: 0,
@@ -139,7 +140,7 @@ export default function LiveTrackingPage() {
   >("roadmap");
   const [showGeofence, setShowGeofence] = useState(true);
 
-  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [date, setDate] = useState(() => hoyEnLaEmpresa());
   const [routes, setRoutes] = useState<any[]>([]);
   const [runs, setRuns] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -152,7 +153,7 @@ export default function LiveTrackingPage() {
 
   const weekday = useMemo(() => new Date(`${date}T12:00:00`).getDay(), [date]);
   const esHoy = useMemo(
-    () => date === new Date().toISOString().slice(0, 10),
+    () => date === hoyEnLaEmpresa(),
     [date],
   );
 

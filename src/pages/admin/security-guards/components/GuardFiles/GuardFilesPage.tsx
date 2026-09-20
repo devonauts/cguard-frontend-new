@@ -20,6 +20,7 @@ import {
   SearchInput,
 } from "@/components/kit";
 import { Button } from "@/components/ui/button";
+import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 /**
  * A file row. NOTE: files live only in local component state — no file API is
@@ -448,7 +449,7 @@ export default function GuardFilesPage() {
                         Date.now().toString() +
                         Math.random().toString(36).slice(2, 7),
                       name: f.name,
-                      date: new Date().toISOString().slice(0, 10),
+                      date: hoyEnLaEmpresa(),
                       addedBy: "You",
                     }));
 

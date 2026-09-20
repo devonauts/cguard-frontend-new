@@ -46,6 +46,7 @@ import { localeActual } from "@/lib/localeActual";
 import attendanceService from "@/lib/api/attendanceService";
 import { crearSocket, cerrarSocket } from "@/lib/socket";
 import { getAuthToken } from "@/lib/api";
+import { hoyEnLaEmpresa, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
 import coverageService, {
   COVERAGE_REASONS,
   REASON_LABEL,
@@ -80,7 +81,7 @@ const STATUS_TONE: Record<string, "bad" | "warn" | "ok" | "neutral"> = {
 type ConfirmFlags = { allowRestDay: boolean; allowDoubleShift: boolean };
 
 const fmtTime = (iso: string) =>
-  new Date(iso).toLocaleTimeString(localeActual(), {
+  new Date(iso).toLocaleTimeString(localeActual(), { timeZone: zonaDeLaEmpresa(),
     hour: "2-digit",
     minute: "2-digit",
   });
@@ -391,7 +392,7 @@ export default function Coverage() {
         timeZone: live?.tz || "America/Mexico_City",
       }).format(new Date());
     } catch {
-      return new Date().toISOString().slice(0, 10);
+      return hoyEnLaEmpresa();
     }
   };
 
@@ -749,17 +750,14 @@ export default function Coverage() {
                           : ""}
                         {" · "}
                         {new Date(ev.windowStart).toLocaleDateString(
-                          localeActual(),
-                        )}
+                          localeActual(), { timeZone: zonaDeLaEmpresa() })}
                         {/* Same day start/end reads as one turno; otherwise show
                             the span so a multi-day traslado is legible. */}
                         {new Date(ev.windowEnd).toLocaleDateString(
-                          localeActual(),
-                        ) !==
+                          localeActual(), { timeZone: zonaDeLaEmpresa() }) !==
                           new Date(ev.windowStart).toLocaleDateString(
-                            localeActual(),
-                          ) &&
-                          ` – ${new Date(ev.windowEnd).toLocaleDateString(localeActual())}`}
+                            localeActual(), { timeZone: zonaDeLaEmpresa() }) &&
+                          ` – ${new Date(ev.windowEnd).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() })}`}
                         {ev.coveringGuard &&
                           ` · Cubre ${[ev.coveringGuard.firstName, ev.coveringGuard.lastName].filter(Boolean).join(" ")}`}
                       </p>
@@ -775,8 +773,7 @@ export default function Coverage() {
                             Vuelve a {stationLabel(ev.originStation)} después
                             del{" "}
                             {new Date(ev.windowEnd).toLocaleDateString(
-                              localeActual(),
-                            )}
+                              localeActual(), { timeZone: zonaDeLaEmpresa() })}
                           </p>
                         )}
                     </div>
