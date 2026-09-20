@@ -67,6 +67,7 @@ import securityGuardService from '@/lib/api/securityGuardService';
 import { toast } from "sonner";
 import { confirmDialog } from '@/components/ui/confirmDialog';
 import { VisitorLogFilters } from "@/lib/api/visitorLogService";
+import { localeActual } from "@/lib/localeActual";
 
 // Loose client shape covering the various name/id fields the association may carry.
 type ClientLike = {
@@ -462,7 +463,7 @@ export default function Visitors() {
 
       if (isNaN(d.getTime())) return String(val);
 
-      return d.toLocaleString();
+      return d.toLocaleString(localeActual());
     } catch (e) {
       return String(val);
     }
@@ -2007,6 +2008,21 @@ export default function Visitors() {
                       ))}
                     </SelectContent>
                   </Select>
+                  {/* Sin esto, una estación recién creada dejaba al operador
+                      encallado: el desplegable salía vacío y apagado, y al
+                      guardar sólo decía «Completa los campos obligatorios:
+                      Vigilante», sin explicar que no hay a quién elegir. */}
+                  {newVisitor.station && guardsForNewVisitor.length === 0 && (
+                    <p
+                      className="text-xs leading-snug"
+                      style={{ color: "var(--ink-faint)" }}
+                    >
+                      {t(
+                        "visitantes.sinVigilantesEnEstacion",
+                        "Esta estación todavía no tiene vigilantes asignados. Asígnale uno desde la ficha del puesto para poder registrar la visita.",
+                      )}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-1.5">

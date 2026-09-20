@@ -5588,11 +5588,11 @@
       "placeholder": {
         "company": "Nombre de la empresa",
         "email": "correo@ejemplo.com",
-        "idNumber": "e.g. 12015550123",
-        "lastName": "e.g. Doe",
-        "mobile": "e.g. +12015550123",
-        "name": "e.g. John",
-        "phone": "e.g. +12015550123",
+        "idNumber": "Ej. 1723456789",
+        "lastName": "Ej. Gómez",
+        "mobile": "Ej. +52 55 1234 5678",
+        "name": "Ej. Ana",
+        "phone": "Ej. +52 55 1234 5678",
         "reason": "Motivo de la visita"
       },
       "table": {
@@ -6089,11 +6089,11 @@
     "placeholder": {
       "company": "Nombre de la empresa",
       "email": "correo@ejemplo.com",
-      "idNumber": "e.g. 12015550123",
-      "lastName": "e.g. Doe",
-      "mobile": "e.g. +12015550123",
-      "name": "e.g. John",
-      "phone": "e.g. +12015550123",
+      "idNumber": "Ej. 1723456789",
+      "lastName": "Ej. Gómez",
+      "mobile": "Ej. +52 55 1234 5678",
+      "name": "Ej. Ana",
+      "phone": "Ej. +52 55 1234 5678",
       "reason": "Motivo de la visita",
       "numPeople": "N° de personas"
     },
@@ -10162,7 +10162,7 @@
       "noSeEncontraronMemos": "No se encontraron memos",
       "ajustaLaBusquedaOCrea": "Ajusta la búsqueda o crea un nuevo memo.",
       "nuevoMemo": "Nuevo Memo",
-      "seleccionaUnaVigilante": "Selecciona una vigilante",
+      "seleccionaUnaVigilante": "Selecciona un vigilante",
       "seleccionaElEstado": "Selecciona el estado",
       "detallesDelMemo": "Detalles del memo",
       "detalleDelMemo": "Detalle del Memo",
@@ -11960,6 +11960,7 @@
       "academicInstructionRequired": "La instrucción académica es requerida",
       "genderRequired": "El género es requerido",
       "maritalStatusRequired": "El estado civil es requerido",
+      "bloodTypeRequired": "El tipo de sangre es requerido",
       "birthDateRequired": "La fecha de nacimiento es requerida",
       "identificationRequired": "El número de cédula/identificación es requerido"
     },
