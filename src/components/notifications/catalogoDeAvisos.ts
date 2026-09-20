@@ -11,10 +11,10 @@
  *   2. La prueba `destinoDelAviso.test.ts`, que comprueba que los 101 llevan a
  *      una pantalla que existe de verdad en el router.
  *
- * Los marcados `catalogado: false` son los que el backend EMITE pero no tiene
- * en su tabla: caen en `FALLBACK_DEF` (genérico, prioridad normal) y en Android
- * en el canal de reserva. Están aquí para que se vean y para que la bandeja los
- * clasifique igual; el arreglo de verdad es darles su entrada en el servidor.
+ * Los 105 están catalogados en el servidor. Cuando se escribió esto eran 66 de
+ * 101 y los 35 restantes caían en el canal general — entre ellos `alarm.case.new`,
+ * una emergencia sonando como un memo. Ahora lo sujeta una prueba del backend
+ * (`catalogoCompleto.test.ts`), que lee los eventos del propio código.
  *
  * Si se toca el catálogo del backend, se toca ESTO.
  * ════════════════════════════════════════════════════════════════════════════
@@ -56,9 +56,9 @@ export interface EventoDeAviso {
 export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
   {
     evento: "alarm.case.closed",
-    familia: "generic",
-    prioridad: "normal",
-    catalogado: false,
+    familia: "sos",
+    prioridad: "low",
+    catalogado: true,
   },
   {
     evento: "alarm.case.escalated",
@@ -68,21 +68,21 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
   },
   {
     evento: "alarm.case.new",
-    familia: "generic",
-    prioridad: "normal",
-    catalogado: false,
+    familia: "sos",
+    prioridad: "urgent",
+    catalogado: true,
   },
   {
     evento: "alarm.case.updated",
-    familia: "generic",
+    familia: "sos",
     prioridad: "normal",
-    catalogado: false,
+    catalogado: true,
   },
   {
     evento: "alarm.case_create_failed",
-    familia: "generic",
-    prioridad: "normal",
-    catalogado: false,
+    familia: "sos",
+    prioridad: "urgent",
+    catalogado: true,
   },
   {
     evento: "alarm.escalated",
@@ -100,6 +100,12 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
     evento: "attendance.approval_required",
     familia: "attendance",
     prioridad: "important",
+    catalogado: true,
+  },
+  {
+    evento: "attendance.approved",
+    familia: "attendance",
+    prioridad: "normal",
     catalogado: true,
   },
   {
@@ -140,9 +146,9 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
   },
   {
     evento: "attendance.correction_submitted",
-    familia: "generic",
-    prioridad: "normal",
-    catalogado: false,
+    familia: "attendance",
+    prioridad: "important",
+    catalogado: true,
   },
   {
     evento: "attendance.geofence_exit",
@@ -152,9 +158,9 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
   },
   {
     evento: "attendance.geofence_return",
-    familia: "generic",
+    familia: "attendance",
     prioridad: "normal",
-    catalogado: false,
+    catalogado: true,
   },
   {
     evento: "attendance.late",
@@ -212,9 +218,9 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
   },
   {
     evento: "coverage",
-    familia: "generic",
-    prioridad: "normal",
-    catalogado: false,
+    familia: "coverage",
+    prioridad: "important",
+    catalogado: true,
   },
   {
     evento: "coverage.assigned",
@@ -236,9 +242,9 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
   },
   {
     evento: "digest.summary",
-    familia: "generic",
-    prioridad: "normal",
-    catalogado: false,
+    familia: "announcement",
+    prioridad: "low",
+    catalogado: true,
   },
   {
     evento: "dispatch.created",
@@ -254,9 +260,9 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
   },
   {
     evento: "document_packet_shared",
-    familia: "generic",
+    familia: "announcement",
     prioridad: "normal",
-    catalogado: false,
+    catalogado: true,
   },
   {
     evento: "guard.checkin",
@@ -284,21 +290,21 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
   },
   {
     evento: "guard.license_expiring",
-    familia: "generic",
+    familia: "announcement",
     prioridad: "normal",
-    catalogado: false,
+    catalogado: true,
   },
   {
     evento: "guard.rated",
     familia: "generic",
-    prioridad: "normal",
-    catalogado: false,
+    prioridad: "low",
+    catalogado: true,
   },
   {
     evento: "guard.shiftchange",
-    familia: "generic",
+    familia: "shift",
     prioridad: "normal",
-    catalogado: false,
+    catalogado: true,
   },
   {
     evento: "incident.created",
@@ -345,8 +351,8 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
   {
     evento: "notify.test",
     familia: "generic",
-    prioridad: "normal",
-    catalogado: false,
+    prioridad: "low",
+    catalogado: true,
   },
   {
     evento: "panic.alert",
@@ -386,9 +392,9 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
   },
   {
     evento: "patrol.vehicle_started",
-    familia: "generic",
-    prioridad: "normal",
-    catalogado: false,
+    familia: "patrol",
+    prioridad: "low",
+    catalogado: true,
   },
   {
     evento: "patrol_missed",
@@ -410,32 +416,44 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
   },
   {
     evento: "radio.reply",
-    familia: "generic",
+    familia: "radio_report",
     prioridad: "normal",
-    catalogado: false,
+    catalogado: true,
   },
   {
     evento: "radio.session_completed",
-    familia: "generic",
-    prioridad: "normal",
-    catalogado: false,
+    familia: "radio_report",
+    prioridad: "low",
+    catalogado: true,
   },
   {
     evento: "radio.session_started",
-    familia: "generic",
+    familia: "radio_report",
     prioridad: "normal",
-    catalogado: false,
+    catalogado: true,
   },
   {
     evento: "radio.station_notified",
-    familia: "generic",
+    familia: "radio_report",
     prioridad: "normal",
-    catalogado: false,
+    catalogado: true,
   },
   {
     evento: "radio.transmission",
     familia: "radio_report",
     prioridad: "normal",
+    catalogado: true,
+  },
+  {
+    evento: "radio.transmission.ended",
+    familia: "radio_report",
+    prioridad: "low",
+    catalogado: true,
+  },
+  {
+    evento: "radio.transmission.started",
+    familia: "radio_report",
+    prioridad: "low",
     catalogado: true,
   },
   {
@@ -454,7 +472,7 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
     evento: "request.created",
     familia: "generic",
     prioridad: "normal",
-    catalogado: false,
+    catalogado: true,
   },
   {
     evento: "ronda.late",
@@ -470,9 +488,9 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
   },
   {
     evento: "schedule.published",
-    familia: "generic",
+    familia: "shift",
     prioridad: "normal",
-    catalogado: false,
+    catalogado: true,
   },
   {
     evento: "shift.reminder",
@@ -489,21 +507,21 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
   { evento: "sos", familia: "sos", prioridad: "emergency", catalogado: true },
   {
     evento: "staff.forced_checkout",
-    familia: "generic",
-    prioridad: "normal",
-    catalogado: false,
+    familia: "attendance",
+    prioridad: "important",
+    catalogado: true,
   },
   {
     evento: "supervisor.eta",
-    familia: "generic",
+    familia: "patrol",
     prioridad: "normal",
-    catalogado: false,
+    catalogado: true,
   },
   {
     evento: "supervisor.forced_checkout",
-    familia: "generic",
-    prioridad: "normal",
-    catalogado: false,
+    familia: "attendance",
+    prioridad: "important",
+    catalogado: true,
   },
   {
     evento: "supervisor.incident.assigned",
@@ -513,9 +531,9 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
   },
   {
     evento: "supervisor.incident.dispatchResponse",
-    familia: "generic",
+    familia: "incident",
     prioridad: "normal",
-    catalogado: false,
+    catalogado: true,
   },
   {
     evento: "supervisor.incident.escalated",
@@ -537,33 +555,33 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
   },
   {
     evento: "supervisor.route.eta",
-    familia: "generic",
+    familia: "patrol",
     prioridad: "normal",
-    catalogado: false,
+    catalogado: true,
   },
   {
     evento: "supervisor.route.updated",
-    familia: "generic",
+    familia: "patrol",
     prioridad: "normal",
-    catalogado: false,
+    catalogado: true,
   },
   {
     evento: "supervisor.visit.completed",
-    familia: "generic",
-    prioridad: "normal",
-    catalogado: false,
+    familia: "patrol",
+    prioridad: "low",
+    catalogado: true,
   },
   {
     evento: "support.ticket.created",
     familia: "generic",
     prioridad: "normal",
-    catalogado: false,
+    catalogado: true,
   },
   {
     evento: "support.ticket.reply",
     familia: "generic",
     prioridad: "normal",
-    catalogado: false,
+    catalogado: true,
   },
   {
     evento: "task.approved",
@@ -602,10 +620,16 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
     catalogado: true,
   },
   {
-    evento: "timeoff.requested",
-    familia: "generic",
+    evento: "timeoff.approved",
+    familia: "shift",
     prioridad: "normal",
-    catalogado: false,
+    catalogado: true,
+  },
+  {
+    evento: "timeoff.requested",
+    familia: "shift",
+    prioridad: "normal",
+    catalogado: true,
   },
   {
     evento: "vehicle.overstay",
@@ -615,21 +639,21 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
   },
   {
     evento: "video.dispatch",
-    familia: "generic",
+    familia: "incident",
     prioridad: "normal",
-    catalogado: false,
+    catalogado: true,
   },
   {
     evento: "vigia.nightly",
-    familia: "generic",
-    prioridad: "normal",
-    catalogado: false,
+    familia: "announcement",
+    prioridad: "low",
+    catalogado: true,
   },
   {
     evento: "vigia.weekly",
-    familia: "generic",
-    prioridad: "normal",
-    catalogado: false,
+    familia: "announcement",
+    prioridad: "low",
+    catalogado: true,
   },
   {
     evento: "visitor.arrival",
@@ -645,15 +669,15 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
   },
   {
     evento: "visitor.exited",
-    familia: "generic",
-    prioridad: "normal",
-    catalogado: false,
+    familia: "visitor",
+    prioridad: "low",
+    catalogado: true,
   },
   {
     evento: "visitor.registered",
-    familia: "generic",
+    familia: "visitor",
     prioridad: "normal",
-    catalogado: false,
+    catalogado: true,
   },
 ];
 
