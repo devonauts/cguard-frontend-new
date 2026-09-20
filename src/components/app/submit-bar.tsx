@@ -31,6 +31,10 @@ export function SubmitBar({
           <Button
             className={secondaryClassName}
             disabled={loading}
+            // Sin `type`, un <button> dentro de un <form> vale "submit": el clic
+            // ejecutaba el manejador Y el envío nativo del formulario, así que el
+            // alta salía DOS veces (la primera devolvía 500 y la segunda 200).
+            type="button"
             variant="secondary"
             onClick={onSecondary}
           >
@@ -40,6 +44,7 @@ export function SubmitBar({
         <Button
           className={primaryClassName}
           disabled={loading}
+          type="button"
           onClick={onPrimary}
         >
           {loading ? sending : primary}
