@@ -18,9 +18,13 @@ export default function CompanyPhoneField({
   disabled,
 }: Props) {
   const { t } = useTranslation();
-  const country = value
-    ? parsePhoneNumberFromString(value)?.country
-    : undefined;
+  /* `PhoneInput` exige E.164 (sin espacios). El teléfono guardado del inquilino
+     venía como «+52 55 5080 0100» y el componente lo rechazaba con un aviso en
+     consola, dejando el campo sin bandera ni formato. Se normaliza aquí, que es
+     donde se sabe que lo que entra es texto de la base y no del teclado. */
+  const parsed = value ? parsePhoneNumberFromString(value) : undefined;
+  const country = parsed?.country;
+  const e164 = parsed?.number || (value ? value.replace(/(?!^\+)\D/g, "") : "");
 
   const handleChange = (val: string | undefined) => {
     if (!val) {
@@ -40,7 +44,7 @@ export default function CompanyPhoneField({
         placeholder={t("settings.phoneField.enterPhonePlaceholder", {
           defaultValue: "Ingresa número de teléfono",
         })}
-        value={value || undefined}
+        value={e164 || undefined}
         onChange={handleChange}
       />
     </div>
