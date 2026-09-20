@@ -11070,7 +11070,13 @@
     },
     "NotificationsPanel": {
       "resolverConVigia": "Mit VigIA lösen",
-      "sinNotificaciones": "Keine Benachrichtigungen"
+      "sinNotificaciones": "Keine Benachrichtigungen",
+      "titulo": "Benachrichtigungen",
+      "enVivo": "Live",
+      "reconectando": "Neu verbinden…",
+      "todos": "Alle",
+      "limpiarTodo": "Alle als gelesen markieren",
+      "verActividad": "Gesamte Aktivität ansehen"
     },
     "Passdown": {
       "registrosDeEntrega": "Protokolle der Schichtübergabe"
@@ -11351,6 +11357,16 @@
       "reviewNote": "Ihre Antwort wird mit Datum und Namen erfasst und ist für Ihren Sicherheitsdienstleister sichtbar.",
       "approveButton": "Genehmigen",
       "rejectButton": "Ablehnen"
+    },
+    "avisos": {
+      "grupo": {
+        "emergencia": "Notfälle",
+        "operacion": "Betrieb",
+        "personal": "Personal",
+        "tareas": "Aufgaben und Hinweise",
+        "comunicacion": "Kommunikation",
+        "otros": "Sonstige"
+      }
     }
   },
   "visitantes": {

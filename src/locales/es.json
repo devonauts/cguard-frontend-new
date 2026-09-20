@@ -10590,7 +10590,13 @@
     },
     "NotificationsPanel": {
       "resolverConVigia": "Resolver con VigIA",
-      "sinNotificaciones": "Sin notificaciones"
+      "sinNotificaciones": "Sin notificaciones",
+      "titulo": "Notificaciones",
+      "enVivo": "En vivo",
+      "reconectando": "Reconectando…",
+      "todos": "Todo",
+      "limpiarTodo": "Marcar todo como leído",
+      "verActividad": "Ver toda la actividad"
     },
     "Passdown": {
       "registrosDeEntrega": "Registros de Entrega"
@@ -10871,6 +10877,16 @@
       "reviewNote": "Tu respuesta queda registrada con fecha y nombre, y la ve tu proveedor de seguridad.",
       "approveButton": "Aprobar",
       "rejectButton": "Rechazar"
+    },
+    "avisos": {
+      "grupo": {
+        "emergencia": "Emergencias",
+        "operacion": "Operación",
+        "personal": "Personal",
+        "tareas": "Tareas y avisos",
+        "comunicacion": "Comunicación",
+        "otros": "Otros"
+      }
     }
   },
   "map": {

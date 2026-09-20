@@ -10589,7 +10589,13 @@
     },
     "NotificationsPanel": {
       "resolverConVigia": "Resolve with VigIA",
-      "sinNotificaciones": "No notifications"
+      "sinNotificaciones": "No notifications",
+      "titulo": "Notifications",
+      "enVivo": "Live",
+      "reconectando": "Reconnecting…",
+      "todos": "All",
+      "limpiarTodo": "Mark all as read",
+      "verActividad": "See all activity"
     },
     "Passdown": {
       "registrosDeEntrega": "Shift Handover Logs"
@@ -10870,6 +10876,16 @@
       "reviewNote": "Your response is recorded with a date and name, and your security provider can see it.",
       "approveButton": "Approve",
       "rejectButton": "Reject"
+    },
+    "avisos": {
+      "grupo": {
+        "emergencia": "Emergencies",
+        "operacion": "Operations",
+        "personal": "Staff",
+        "tareas": "Tasks and notices",
+        "comunicacion": "Communication",
+        "otros": "Other"
+      }
     }
   },
   "map": {

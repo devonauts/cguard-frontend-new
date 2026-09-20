@@ -11070,7 +11070,13 @@
     },
     "NotificationsPanel": {
       "resolverConVigia": "Risolvi con VigIA",
-      "sinNotificaciones": "Nessuna notifica"
+      "sinNotificaciones": "Nessuna notifica",
+      "titulo": "Notifiche",
+      "enVivo": "In diretta",
+      "reconectando": "Riconnessione…",
+      "todos": "Tutto",
+      "limpiarTodo": "Segna tutto come letto",
+      "verActividad": "Vedi tutta l'attività"
     },
     "Passdown": {
       "registrosDeEntrega": "Registri dei cambi turno"
@@ -11351,6 +11357,16 @@
       "reviewNote": "La tua risposta viene registrata con data e nome ed è visibile al tuo fornitore di sicurezza.",
       "approveButton": "Approva",
       "rejectButton": "Rifiuta"
+    },
+    "avisos": {
+      "grupo": {
+        "emergencia": "Emergenze",
+        "operacion": "Operazioni",
+        "personal": "Personale",
+        "tareas": "Attività e avvisi",
+        "comunicacion": "Comunicazione",
+        "otros": "Altro"
+      }
     }
   },
   "visitantes": {

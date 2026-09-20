@@ -11070,7 +11070,13 @@
     },
     "NotificationsPanel": {
       "resolverConVigia": "Oplossen met VigIA",
-      "sinNotificaciones": "Geen meldingen"
+      "sinNotificaciones": "Geen meldingen",
+      "titulo": "Meldingen",
+      "enVivo": "Live",
+      "reconectando": "Opnieuw verbinden…",
+      "todos": "Alles",
+      "limpiarTodo": "Alles als gelezen markeren",
+      "verActividad": "Alle activiteit bekijken"
     },
     "Passdown": {
       "registrosDeEntrega": "Registraties van dienstoverdracht"
@@ -11351,6 +11357,16 @@
       "reviewNote": "Uw antwoord wordt vastgelegd met datum en naam, en uw beveiligingsleverancier kan het zien.",
       "approveButton": "Goedkeuren",
       "rejectButton": "Afwijzen"
+    },
+    "avisos": {
+      "grupo": {
+        "emergencia": "Noodgevallen",
+        "operacion": "Operatie",
+        "personal": "Personeel",
+        "tareas": "Taken en meldingen",
+        "comunicacion": "Communicatie",
+        "otros": "Overig"
+      }
     }
   },
   "visitantes": {

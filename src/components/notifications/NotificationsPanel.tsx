@@ -1,8 +1,8 @@
 import type { PlatformNotification } from "@/hooks/useNotificationStream";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Bell, BellOff, Trash2, Wifi, WifiOff } from "lucide-react";
+import { Bell, BellOff, History, Trash2, Wifi, WifiOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -13,10 +13,14 @@ import {
 } from "./notificationToast";
 
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+  GRUPOS_DE_BANDEJA,
+  PESO_DE_PRIORIDAD,
+  grupoDe,
+  prioridadDe,
+  type GrupoDeBandeja,
+} from "./catalogoDeAvisos";
+
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -64,9 +68,55 @@ export function NotificationsPanel({
     navigate(targetForNotification(n));
   };
 
+  /* ── LA BANDEJA SE ORDENA POR LO QUE IMPORTA, NO POR LA HORA ────────────
+     Antes era una lista plana por hora: un pánico de hace media hora quedaba
+     enterrado bajo catorce fichajes de hace dos minutos. Ahora cada aviso cae
+     en su grupo (`grupoDe`, espejo del catálogo del servidor), los grupos van
+     en orden de urgencia y DENTRO de cada uno manda la prioridad declarada y
+     luego la hora. */
+  const porGrupo = useMemo(() => {
+    const mapa = new Map<GrupoDeBandeja, PlatformNotification[]>();
+
+    for (const n of visible) {
+      const g = grupoDe(n.eventType);
+
+      if (!mapa.has(g)) mapa.set(g, []);
+      mapa.get(g)!.push(n);
+    }
+    for (const lista of mapa.values()) {
+      lista.sort((a, b) => {
+        const pa = PESO_DE_PRIORIDAD[prioridadDe(a.eventType)];
+        const pb = PESO_DE_PRIORIDAD[prioridadDe(b.eventType)];
+
+        if (pa !== pb) return pb - pa;
+
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      });
+    }
+
+    return mapa;
+  }, [visible]);
+
+  /* Sólo se ofrecen las pestañas que tienen algo. Una fila de seis filtros de
+     los que cinco están vacíos es ruido, y además miente sobre lo que hay. */
+  const gruposConAvisos = GRUPOS_DE_BANDEJA.filter(
+    (g) => (porGrupo.get(g.id)?.length ?? 0) > 0,
+  );
+  const [filtro, setFiltro] = useState<GrupoDeBandeja | "todos">("todos");
+  const filtroVivo =
+    filtro !== "todos" && gruposConAvisos.some((g) => g.id === filtro)
+      ? filtro
+      : "todos";
+  const aMostrar =
+    filtroVivo === "todos"
+      ? gruposConAvisos
+      : gruposConAvisos.filter((g) => g.id === filtroVivo);
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
         {/* Botón circular de cristal, igual que el resto de la cabecera. El
             contador cuelga del canto y late con `.cc-dot` mientras haya algo sin
             leer — el mismo latido que usan los estados del sistema. */}
@@ -110,52 +160,93 @@ export function NotificationsPanel({
             </span>
           )}
         </button>
-      </PopoverTrigger>
+      </SheetTrigger>
 
-      <PopoverContent
-        align="end"
-        className="w-96 max-w-[calc(100vw-1rem)] p-0"
-        sideOffset={8}
+      {/* Cajón de la DERECHA. Era un `Popover` de 384 px colgando de la campana:
+          en el teléfono se salía de la pantalla y en escritorio no cabían ni
+          cinco avisos sin desplazar. `p-0` porque la hoja trae `p-6` y aquí las
+          filas llegan hasta el canto; `flex-col` + `min-h-0` para que la lista
+          se desplace dentro y la cabecera y el pie se queden quietos. */}
+      <SheetContent
+        className="flex w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-md"
+        side="right"
       >
-        {/* Header */}
         <div
-          className="flex items-center justify-between px-4 py-3"
+          className="shrink-0 px-4 pb-3 pt-4"
           style={{ borderBottom: "1px solid var(--hairline)" }}
         >
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-sm">Notificaciones</span>
-            <span
-              className="flex items-center gap-1 text-xs"
-              style={{
-                color: connected ? "var(--ok-text)" : "var(--ink-soft)",
-              }}
-            >
-              {connected ? (
-                <Wifi className="h-3 w-3" />
-              ) : (
-                <WifiOff className="h-3 w-3" />
-              )}
-              {connected ? "En vivo" : "Reconectando…"}
-            </span>
+          {/* `pr-10`: la hoja pone su propia X arriba a la derecha. */}
+          <div className="flex items-center justify-between gap-2 pr-10">
+            <div className="flex min-w-0 items-center gap-2">
+              <h2 className="truncate text-base font-semibold">
+                {t("ui.NotificationsPanel.titulo", "Notificaciones")}
+              </h2>
+              <span
+                className="flex shrink-0 items-center gap-1 text-xs"
+                style={{
+                  color: connected ? "var(--ok-text)" : "var(--ink-soft)",
+                }}
+              >
+                {connected ? (
+                  <Wifi className="h-3 w-3" />
+                ) : (
+                  <WifiOff className="h-3 w-3" />
+                )}
+                {connected
+                  ? t("ui.NotificationsPanel.enVivo", "En vivo")
+                  : t("ui.NotificationsPanel.reconectando", "Reconectando…")}
+              </span>
+            </div>
           </div>
+
           {visible.length > 0 && (
-            <Button
-              className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground gap-1"
-              size="sm"
-              variant="ghost"
-              onClick={onMarkAllRead}
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-              Limpiar todo
-            </Button>
+            <div className="mt-3 flex flex-col gap-2">
+              {/* Las pestañas de grupo. Se desplazan de lado en el teléfono en
+                  vez de partirse en dos filas: la cabecera de un cajón no puede
+                  crecer hacia abajo y comerse la lista. */}
+              <div
+                className="-mx-1 flex min-w-0 flex-1 gap-1.5 overflow-x-auto px-1 pb-0.5"
+                style={{ scrollbarWidth: "none" }}
+              >
+                <ChipDeGrupo
+                  activo={filtroVivo === "todos"}
+                  etiqueta={t("ui.NotificationsPanel.todos", "Todo")}
+                  n={visible.length}
+                  onClick={() => setFiltro("todos")}
+                />
+                {gruposConAvisos.map((g) => (
+                  <ChipDeGrupo
+                    key={g.id}
+                    activo={filtroVivo === g.id}
+                    etiqueta={t(g.claveI18n, g.etiqueta)}
+                    n={porGrupo.get(g.id)!.length}
+                    urgente={g.id === "emergencia"}
+                    onClick={() => setFiltro(g.id)}
+                  />
+                ))}
+              </div>
+              {/* Debajo y no al lado: con las dos cosas en la misma línea, el
+                  botón se comía el ancho y la última pestaña salía cortada. */}
+              <button
+                className="cg-focus self-start rounded-full px-1 py-0.5 text-xs underline-offset-2 hover:underline"
+                style={{ color: "var(--ink-faint)" }}
+                type="button"
+                onClick={onMarkAllRead}
+              >
+                <Trash2 className="mr-1 inline h-3 w-3 align-[-2px]" />
+                {t(
+                  "ui.NotificationsPanel.limpiarTodo",
+                  "Marcar todo como leído",
+                )}
+              </button>
+            </div>
           )}
         </div>
 
-        {/* Notification list */}
-        <ScrollArea className="h-[min(420px,60vh)]">
+        <ScrollArea className="min-h-0 flex-1">
           {visible.length === 0 ? (
             <div
-              className="flex h-32 flex-col items-center justify-center gap-2 text-sm"
+              className="flex h-48 flex-col items-center justify-center gap-2 px-6 text-center text-sm"
               style={{ color: "var(--ink-faint)" }}
             >
               <Bell className="h-8 w-8 opacity-40" />
@@ -167,22 +258,104 @@ export function NotificationsPanel({
               </span>
             </div>
           ) : (
-            <div
-              className="divide-y"
-              style={{ borderColor: "var(--hairline)" }}
-            >
-              {visible.map((n) => (
-                <NotificationItem
-                  key={n.id}
-                  notification={n}
-                  onOpen={handleOpen}
-                />
-              ))}
-            </div>
+            aMostrar.map((g) => (
+              <section key={g.id}>
+                {/* La cabecera sólo aparece con «Todo»: filtrando por un grupo,
+                    repetir su nombre encima de su única lista no dice nada. */}
+                {filtroVivo === "todos" && (
+                  <h3
+                    className="cg-eyebrow sticky top-0 z-10 px-4 py-2"
+                    style={{
+                      background: "var(--glass-solid)",
+                      borderBottom: "1px solid var(--hairline)",
+                      color:
+                        g.id === "emergencia"
+                          ? "var(--bad-text)"
+                          : "var(--ink-faint)",
+                    }}
+                  >
+                    {t(g.claveI18n, g.etiqueta)} · {porGrupo.get(g.id)!.length}
+                  </h3>
+                )}
+                <div
+                  className="divide-y"
+                  style={{ borderColor: "var(--hairline)" }}
+                >
+                  {porGrupo.get(g.id)!.map((n) => (
+                    <NotificationItem
+                      key={n.id}
+                      notification={n}
+                      onOpen={handleOpen}
+                    />
+                  ))}
+                </div>
+              </section>
+            ))
           )}
         </ScrollArea>
-      </PopoverContent>
-    </Popover>
+
+        {/* La campana es la bandeja de lo NO leído; el histórico completo vive
+            en Actividad. Sin esta salida, «limpiar» parecía borrar. */}
+        <div
+          className="shrink-0 px-4 py-3"
+          style={{ borderTop: "1px solid var(--hairline)" }}
+        >
+          <Button
+            className="w-full justify-center gap-2 text-xs"
+            size="sm"
+            variant="ghost"
+            onClick={() => {
+              setOpen(false);
+              navigate("/activities");
+            }}
+          >
+            <History className="h-3.5 w-3.5" />
+            {t("ui.NotificationsPanel.verActividad", "Ver toda la actividad")}
+          </Button>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+/** Pestaña de grupo con su cuenta. */
+function ChipDeGrupo({
+  etiqueta,
+  n,
+  activo,
+  urgente,
+  onClick,
+}: {
+  etiqueta: string;
+  n: number;
+  activo: boolean;
+  urgente?: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      aria-pressed={activo}
+      className={cn(
+        "cg-focus flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium transition-colors",
+        !activo && "hover:bg-[var(--glass-sunken)]",
+      )}
+      style={
+        activo
+          ? {
+              background: urgente ? "var(--bad)" : "var(--brand)",
+              color: "oklch(1 0 0)",
+            }
+          : {
+              background: "var(--glass-sunken)",
+              color: urgente ? "var(--bad-text)" : "var(--ink-soft)",
+            }
+      }
+      type="button"
+      onClick={onClick}
+    >
+      {etiqueta}
+      <span className="tabular-nums opacity-80">{n}</span>
+    </button>
   );
 }
 

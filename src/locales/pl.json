@@ -11070,7 +11070,13 @@
     },
     "NotificationsPanel": {
       "resolverConVigia": "Rozwiąż z VigIA",
-      "sinNotificaciones": "Brak powiadomień"
+      "sinNotificaciones": "Brak powiadomień",
+      "titulo": "Powiadomienia",
+      "enVivo": "Na żywo",
+      "reconectando": "Ponowne łączenie…",
+      "todos": "Wszystko",
+      "limpiarTodo": "Oznacz wszystko jako przeczytane",
+      "verActividad": "Zobacz całą aktywność"
     },
     "Passdown": {
       "registrosDeEntrega": "Rejestry zdania służby"
@@ -11351,6 +11357,16 @@
       "reviewNote": "Twoja odpowiedź jest zapisywana z datą i nazwiskiem i jest widoczna dla dostawcy usług ochrony.",
       "approveButton": "Zatwierdź",
       "rejectButton": "Odrzuć"
+    },
+    "avisos": {
+      "grupo": {
+        "emergencia": "Alarmy",
+        "operacion": "Operacje",
+        "personal": "Personel",
+        "tareas": "Zadania i komunikaty",
+        "comunicacion": "Komunikacja",
+        "otros": "Inne"
+      }
     }
   },
   "visitantes": {
