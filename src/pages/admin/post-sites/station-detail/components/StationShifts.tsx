@@ -1301,6 +1301,11 @@ export default function StationShifts({
           onSaved={(d) => {
             setShowForm(false);
             loadShifts();
+            // `loadShifts` no toca la cuenta de asignaciones, y es ESA la que
+            // decide el cartel de «este puesto todavía no tiene vigilantes».
+            // Sin esto, el puesto quedaba diciendo que estaba vacío con el
+            // vigilante ya listado debajo, hasta recargar la página.
+            loadAsignados();
             if (d) {
               setCurrentDate(new Date(d));
               setSelectedDate(dateKey(d));
@@ -1319,6 +1324,7 @@ export default function StationShifts({
           onSaved={() => {
             setSelectedShift(null);
             loadShifts();
+            loadAsignados();
           }}
           tenantId={tenantId}
           stationId={stationId}
@@ -1333,7 +1339,10 @@ export default function StationShifts({
           stationId={stationId}
           tenantId={tenantId}
           gapDates={gapDates}
-          onAssigned={() => loadShifts()}
+          onAssigned={() => {
+            loadShifts();
+            loadAsignados();
+          }}
         />
       </div>
     </div>
