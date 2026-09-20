@@ -12,7 +12,19 @@ const ScrollArea = React.forwardRef<
     className={cn("relative overflow-hidden", className)}
     {...props}
   >
-    <ScrollAreaPrimitive.Viewport className="cg-focus h-full w-full rounded-[inherit]">
+    {/* ── `[&>div]:block!`: POR QUÉ NO SE DEJA COMO VIENE ────────────────────
+        Radix maqueta al hijo del viewport con `display: table`, y una tabla se
+        dimensiona por su CONTENIDO, no por el contenedor. Consecuencia: dentro
+        de un ScrollArea, `truncate` y `line-clamp` no recortan nada —el bloque
+        crece— y el texto largo se sale por el canto. Medido en la bandeja de
+        notificaciones: las 50 filas median 862 px dentro de un panel de 446.
+
+        Ese `display: table` sólo sirve para poder desplazar de lado contenido
+        más ancho que el viewport, y aquí eso no existe: `ScrollArea` monta UNA
+        barra y es vertical (`orientation = "vertical"`), y ninguna pantalla
+        pide la horizontal. Sin barra que alcanzarlo, lo que se sale no se puede
+        leer: no es desplazamiento, es texto perdido. */}
+    <ScrollAreaPrimitive.Viewport className="cg-focus h-full w-full rounded-[inherit] [&>div]:block!">
       {children}
     </ScrollAreaPrimitive.Viewport>
     <ScrollBar />
