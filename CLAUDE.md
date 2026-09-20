@@ -133,6 +133,21 @@ no está ahí, se añade ahí primero y luego se usa.
 
 Lo que se ha encontrado duplicado al barrer el producto, por si vuelve a pasar:
 
+- **Ninguna fecha se formatea a mano: `lib/horaDeLaEmpresa`.** La hora de este
+  producto es la de la EMPRESA, la que el dueño elige en Ajustes › Perfil de la
+  empresa — no la del navegador de quien mira ni la de Greenwich. Hay que
+  distinguir tres cosas y el módulo tiene una función para cada una:
+  - un **instante** (`createdAt`, `dateTime`, un fichaje) se pinta con
+    `fechaYHora` / `soloFecha` / `soloHora`, que aplican la zona de la empresa;
+  - un **día civil** (nacimiento, fin de contrato, vencimiento de licencia) se
+    pinta con `soloFechaCivil`, que NO aplica ninguna zona. Aplicársela lo
+    empeora: `new Date("1992-04-11")` es medianoche UTC y en México salía el 10;
+  - **«hoy»** es `hoyEnLaEmpresa()`, nunca `new Date().toISOString().slice(0,10)`
+    —eso es el día de Greenwich y a las 18:00 de México ya es mañana—.
+  Para mandar un rango al servidor, `limitesDelDia`. Para leer y escribir un
+  `datetime-local`, `paraInputFechaHora` / `desdeInputFechaHora`: lo que el
+  usuario escribe es hora de pared DEL PUESTO. Todo esto tiene pruebas en
+  `horaDeLaEmpresa.test.ts`; si tocas la aritmética, se tocan ahí primero.
 - **Un buscador es `SearchInput`.** Había 42 escritos a mano —un `div relative`,
   una lupa en `absolute` y un campo con `pl-9`— y el componente lo usaba UNA
   pantalla. Al pasar por él se gana la equis para vaciar, el `type="search"` y el
