@@ -453,7 +453,10 @@ export default function OpenShifts() {
                 render: (_v: any, row: any) => row.station?.stationName ?? "—",
               },
               {
-                key: "startTime",
+                // La columna de fecha ya usa `startTime`; React avisaba de dos
+                // hijos con la misma clave. El valor lo saca `render` de la fila,
+                // así que la clave sólo hace de identidad.
+                key: "horaDeInicio",
                 header: t("comun.horaDeInicio"),
                 render: (_v: any, row: any) => formatTime(row.startTime),
               },
