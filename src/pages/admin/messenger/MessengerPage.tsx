@@ -40,6 +40,7 @@ import { confirmDialog } from "@/components/ui/confirmDialog";
 import i18n from "@/i18n";
 import { notifyMessagesChanged } from "@/hooks/useMessagesUnread";
 import { useEventoEnVivo } from "@/hooks/useEventoEnVivo";
+import { localeActual } from "@/lib/localeActual";
 
 /**
  * Renders one message attachment (image/video). The attachment `url` is a raw
@@ -126,7 +127,7 @@ type AcRow = {
 
 const fmtTime = (d?: string | null) => {
   try {
-    return new Date(d as string).toLocaleString(undefined, {
+    return new Date(d as string).toLocaleString(localeActual(), {
       day: "2-digit",
       month: "short",
       hour: "2-digit",

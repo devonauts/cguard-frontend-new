@@ -1284,7 +1284,7 @@ export default function AdminOfficeUsersPage() {
                             {u.lastLoginAt
                               ? new Date(
                                   u.lastLoginAt as string,
-                                ).toLocaleString()
+                                ).toLocaleString(localeActual())
                               : "-"}
                           </td>
                           <td className="px-4 py-3">

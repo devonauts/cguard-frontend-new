@@ -43,6 +43,7 @@ import {
   SearchInput,
 } from "@/components/kit";
 import { Button } from "@/components/ui/button";
+import { localeActual } from "@/lib/localeActual";
 import type {
   GuardDetail,
   Kpi,
@@ -342,14 +343,14 @@ export default function GuardIndicators({ guard }: Props) {
   };
 
   const formatMonth = (d: Date) => {
-    return d.toLocaleString(undefined, { month: "long" });
+    return d.toLocaleString(localeActual(), { month: "long" });
   };
 
   const formatDate = (value: string | number | Date | null | undefined) => {
     if (!value) return "";
     try {
       const d = new Date(value);
-      return d.toLocaleString();
+      return d.toLocaleString(localeActual());
     } catch {
       return "";
     }

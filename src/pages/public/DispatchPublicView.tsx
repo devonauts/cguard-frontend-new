@@ -10,6 +10,7 @@ import { clientService } from "@/lib/api/clientService";
 import { postSiteService } from "@/lib/api/postSiteService";
 import IncidentTypesService from "@/services/incident-types.service";
 import { Section, StatusBadge, EmptyState } from "@/components/kit";
+import { localeActual } from "@/lib/localeActual";
 
 // Only allow http/https URLs to be used as navigable hrefs. Rejects
 // javascript:/data:/other schemes that could come from server-stored data.
@@ -225,9 +226,9 @@ export default function DispatchPublicView() {
           <td className="py-2 px-3">-</td>
           <td className="py-2 px-3">
             {payload.dateTime
-              ? new Date(payload.dateTime).toLocaleString()
+              ? new Date(payload.dateTime).toLocaleString(localeActual())
               : payload.createdAt
-                ? new Date(payload.createdAt).toLocaleString()
+                ? new Date(payload.createdAt).toLocaleString(localeActual())
                 : "-"}
           </td>
         </tr>,
@@ -249,7 +250,9 @@ export default function DispatchPublicView() {
             </td>
             <td className="py-2 px-3">
               {g && (g.dateTime || g.assignedAt)
-                ? new Date(g.dateTime || g.assignedAt).toLocaleString()
+                ? new Date(g.dateTime || g.assignedAt).toLocaleString(
+                    localeActual(),
+                  )
                 : "-"}
             </td>
           </tr>,
@@ -351,7 +354,9 @@ export default function DispatchPublicView() {
                   </td>
                   <td className="py-3 px-4 text-sm text-foreground">
                     {payload.createdAt
-                      ? new Date(payload.createdAt).toLocaleString()
+                      ? new Date(payload.createdAt).toLocaleString(
+                          localeActual(),
+                        )
                       : "-"}
                   </td>
                 </tr>
@@ -408,7 +413,7 @@ export default function DispatchPublicView() {
                     {payload.incidentAt || payload.dateTime
                       ? new Date(
                           payload.incidentAt || payload.dateTime,
-                        ).toLocaleString()
+                        ).toLocaleString(localeActual())
                       : "-"}
                   </td>
                 </tr>
@@ -574,7 +579,9 @@ export default function DispatchPublicView() {
                               "Usuario"}{" "}
                             ·{" "}
                             {c.createdAt
-                              ? new Date(c.createdAt).toLocaleString()
+                              ? new Date(c.createdAt).toLocaleString(
+                                  localeActual(),
+                                )
                               : ""}
                           </div>
                           <div className="mt-1 text-sm text-foreground whitespace-pre-wrap">

@@ -82,6 +82,7 @@ import {
 } from "@/lib/validators/vehicle-filters";
 import vehicleService from "@/lib/api/vehicleService";
 import { enLotes } from "@/lib/enLotes";
+import { localeActual } from "@/lib/localeActual";
 
 /** Cómo se llama la propiedad del vehículo en la ficha. Constante de MÓDULO: la
  *  clave viaja junto al español de respaldo y se traduce al PINTAR; llamar a t()
@@ -575,7 +576,7 @@ export default function VehiclesPage() {
                         label="Kilometraje"
                         value={
                           r.initialMileage != null
-                            ? Number(r.initialMileage).toLocaleString()
+                            ? Number(r.initialMileage).toLocaleString(localeActual())
                             : "—"
                         }
                       />
@@ -870,7 +871,7 @@ export default function VehiclesPage() {
                         detailsVehicle.initialMileage != null
                           ? Number(
                               detailsVehicle.initialMileage,
-                            ).toLocaleString()
+                            ).toLocaleString(localeActual())
                           : "—"
                       }
                     />

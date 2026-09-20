@@ -29,6 +29,7 @@ import { useRadioRealtime } from "@/components/radio/RadioRealtimeProvider";
 import RadioLiveChannelPanel from "@/components/radio/RadioLiveChannelPanel";
 import RadioCoveragePanel from "@/components/radio/RadioCoveragePanel";
 import { useSondeoVisible } from "@/hooks/useSondeoVisible";
+import { localeActual } from "@/lib/localeActual";
 
 const statusBadge: Record<
   string,
@@ -573,7 +574,7 @@ function RecentSessions() {
               onClick={() => open(s.id)}
             >
               <span className="text-xs text-muted-foreground">
-                {new Date(s.startedAt).toLocaleString()}
+                {new Date(s.startedAt).toLocaleString(localeActual())}
               </span>
               <span className="text-xs">
                 {s.mode === "auto"

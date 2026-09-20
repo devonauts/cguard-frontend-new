@@ -38,7 +38,7 @@ import { localeActual } from "@/lib/localeActual";
 function formatDate(d?: string) {
   if (!d) return "-";
   try {
-    return new Date(d).toLocaleDateString();
+    return new Date(d).toLocaleDateString(localeActual());
   } catch {
     return d;
   }

@@ -19,6 +19,7 @@ import routeService from "@/lib/api/routeService";
 import userService from "@/lib/api/userService";
 import vehicleService from "@/lib/api/vehicleService";
 import { postSiteService } from "@/lib/api/postSiteService";
+import { localeActual } from "@/lib/localeActual";
 
 type Props = {
   open: boolean;
@@ -426,7 +427,7 @@ export default function RouteDetailModal({
             />
             <Field
               label="Ventana"
-              value={`${route.windowStart ? new Date(route.windowStart).toLocaleDateString() : "—"} — ${route.windowEnd ? new Date(route.windowEnd).toLocaleDateString() : "—"}`}
+              value={`${route.windowStart ? new Date(route.windowStart).toLocaleDateString(localeActual()) : "—"} — ${route.windowEnd ? new Date(route.windowEnd).toLocaleDateString(localeActual()) : "—"}`}
             />
             <Field
               label={t("comun.horaDeInicio")}

@@ -32,6 +32,7 @@ import {
 } from "@/pages/admin/clientes/components/_shared/tab-kit";
 import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import type { PostSite } from "@/types";
+import { localeActual } from "@/lib/localeActual";
 type Props = {
   site?: PostSite;
 };
@@ -192,14 +193,14 @@ export default function PostSiteKPIs({ site }: Props) {
   };
 
   const formatMonth = (d: Date) => {
-    return d.toLocaleString(undefined, { month: "long" });
+    return d.toLocaleString(localeActual(), { month: "long" });
   };
 
   const formatDate = (value: any) => {
     if (!value) return "";
     try {
       const d = new Date(value);
-      return d.toLocaleString();
+      return d.toLocaleString(localeActual());
     } catch (e) {
       return String(value);
     }

@@ -37,6 +37,7 @@ import type {
   CommentAttachment,
 } from "./types";
 import i18n from "@/i18n";
+import { localeActual } from "@/lib/localeActual";
 
 export function DispatchDetailsContent({
   requestId,
@@ -344,9 +345,9 @@ export function DispatchDetailsContent({
           <td className="py-2 px-3">-</td>
           <td className="py-2 px-3">
             {requestPayload.dateTime
-              ? new Date(requestPayload.dateTime).toLocaleString()
+              ? new Date(requestPayload.dateTime).toLocaleString(localeActual())
               : requestPayload.createdAt
-                ? new Date(requestPayload.createdAt).toLocaleString()
+                ? new Date(requestPayload.createdAt).toLocaleString(localeActual())
                 : "-"}
           </td>
         </tr>,
@@ -368,7 +369,7 @@ export function DispatchDetailsContent({
             </td>
             <td className="py-2 px-3">
               {g && (g.dateTime || g.assignedAt)
-                ? new Date(g.dateTime || g.assignedAt).toLocaleString()
+                ? new Date(g.dateTime || g.assignedAt).toLocaleString(localeActual())
                 : "-"}
             </td>
           </tr>,
@@ -563,7 +564,7 @@ export function DispatchDetailsContent({
                     </td>
                     <td className="py-3 px-4 text-sm text-foreground">
                       {requestPayload.createdAt
-                        ? new Date(requestPayload.createdAt).toLocaleString()
+                        ? new Date(requestPayload.createdAt).toLocaleString(localeActual())
                         : "-"}
                     </td>
                   </tr>
@@ -624,7 +625,7 @@ export function DispatchDetailsContent({
                         ? new Date(
                             requestPayload.incidentAt ||
                               requestPayload.dateTime,
-                          ).toLocaleString()
+                          ).toLocaleString(localeActual())
                         : "-"}
                     </td>
                   </tr>
@@ -874,7 +875,7 @@ export function DispatchDetailsContent({
                           "Usuario"}{" "}
                         ·{" "}
                         {c.createdAt
-                          ? new Date(c.createdAt).toLocaleString()
+                          ? new Date(c.createdAt).toLocaleString(localeActual())
                           : ""}
                       </div>
                       <div className="mt-1 text-sm text-foreground whitespace-pre-wrap">

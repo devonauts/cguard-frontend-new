@@ -11204,7 +11204,7 @@ export default function Schedule() {
                     }
                     const fmt = (d: string) => {
                       try {
-                        return new Date(d).toLocaleString(undefined, {
+                        return new Date(d).toLocaleString(localeActual(), {
                           day: "2-digit",
                           month: "short",
                           hour: "2-digit",

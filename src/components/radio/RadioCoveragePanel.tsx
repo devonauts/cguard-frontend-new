@@ -20,6 +20,7 @@ import {
 } from "@/lib/api/radioCheckService";
 import { useRadioRealtime } from "@/components/radio/RadioRealtimeProvider";
 import { subscribeRadio, getRadioSnapshot } from "@/lib/radioVoiceManager";
+import { localeActual } from "@/lib/localeActual";
 
 /**
  * Cobertura del canal abierto.
@@ -90,7 +91,7 @@ function Fila({ f }: { f: RadioPresenceRow }) {
   const { t } = useTranslation();
   const e = insigniaEstado(f.reported, f.stale);
   const desde = f.lastReportAt
-    ? new Date(f.lastReportAt).toLocaleTimeString(undefined, {
+    ? new Date(f.lastReportAt).toLocaleTimeString(localeActual(), {
         hour: "2-digit",
         minute: "2-digit",
       })

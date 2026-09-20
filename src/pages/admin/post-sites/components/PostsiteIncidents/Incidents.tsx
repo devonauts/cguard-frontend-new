@@ -59,6 +59,7 @@ import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import { EmptyState, StatusBadge, SkeletonCards } from "@/components/kit";
 import { FIELD_CLS_LG } from "@/pages/admin/clientes/components/_shared/tab-kit";
 import type { PostSite } from "@/types";
+import { localeActual } from "@/lib/localeActual";
 
 interface SiteProp extends PostSite {
   tenantId?: string;
@@ -1410,7 +1411,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                                     it.date ||
                                     it.createdAt ||
                                     it.created_at,
-                                ).toLocaleString()
+                                ).toLocaleString(localeActual())
                               : "-"}
                           </td>
 

@@ -24,6 +24,7 @@ import {
 } from "@/components/kit";
 import { Button } from "@/components/ui/button";
 import { qrDataUrl, qrDataUrls, descargarQr } from "@/lib/qr";
+import { localeActual } from "@/lib/localeActual";
 
 interface StationDetail extends Station {
   latitude?: number | string | null;
@@ -314,7 +315,7 @@ export default function StationPatrolQR({ station, stationId }: Props) {
           @media print { .aviso { border-color: #bbb; } }
         </style></head><body>
         <h1>Puntos de control — ${rotulo}</h1>
-        <p class="sub">${list.length} etiqueta(s) · impreso ${esc(new Date().toLocaleDateString())}</p>
+        <p class="sub">${list.length} etiqueta(s) · impreso ${esc(new Date().toLocaleDateString(localeActual()))}</p>
         <p class="aviso">
           Corta por la línea de puntos y <strong>plastifica cada etiqueta</strong> antes de
           pegarla: van a la intemperie y sin proteger no aguantan una temporada de lluvia.

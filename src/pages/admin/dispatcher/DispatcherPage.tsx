@@ -98,6 +98,7 @@ import { usePermissions } from "@/hooks/usePermissions";
 import { useTranslation } from "react-i18next";
 import api from "@/lib/api";
 import type { DispatchRow, DirectoryOption, DispatchApiError } from "./types";
+import { localeActual } from "@/lib/localeActual";
 
 // The list is paginated client-side over what we load. The backend hard-caps a
 // no-limit /request query at 1000 rows, which silently truncated tenants past
@@ -1924,7 +1925,7 @@ export default function DispatcherPage() {
                           const dateValue = r.dateTime || r.incidentAt;
                           if (!dateValue) return "-";
                           const d = new Date(dateValue);
-                          return isNaN(d.getTime()) ? "-" : d.toLocaleString();
+                          return isNaN(d.getTime()) ? "-" : d.toLocaleString(localeActual());
                         })()}
                       </td>
                       <td className="px-4 py-3" data-rotulo={t("dispatcher.header_client")} data-titulo>{getClientDisplay(r)}</td>

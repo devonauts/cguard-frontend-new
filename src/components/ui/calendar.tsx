@@ -8,6 +8,7 @@ import { DayButton, DayPicker, getDefaultClassNames } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { localeActual } from "@/lib/localeActual";
 
 /* El calendario NO trae fondo propio: vive dentro de un popover o una tarjeta de
    cristal y tiene que dejar ver el desenfoque de debajo. El día elegido es el
@@ -206,7 +207,7 @@ function CalendarDayButton({
         defaultClassNames.day,
         className,
       )}
-      data-day={day.date.toLocaleDateString()}
+      data-day={day.date.toLocaleDateString(localeActual())}
       data-range-end={modifiers.range_end}
       data-range-middle={modifiers.range_middle}
       data-range-start={modifiers.range_start}

@@ -73,6 +73,7 @@ import {
 } from "@/components/kit";
 import { userService } from "@/lib/api/userService";
 import { useAuth } from "@/contexts/AuthContext";
+import { localeActual } from "@/lib/localeActual";
 
 type MemoItem = {
   id: string;
@@ -487,7 +488,8 @@ export default function MemosPage() {
       key: "dateTime",
       header: "Fecha",
       sortable: true,
-      render: (value) => (value ? new Date(value).toLocaleString() : "-"),
+      render: (value) =>
+        value ? new Date(value).toLocaleString(localeActual()) : "-",
     },
     {
       key: "wasAccepted",
@@ -882,7 +884,9 @@ export default function MemosPage() {
                   label={t("comun.fecha")}
                   value={
                     viewMemo?.dateTime
-                      ? new Date(viewMemo.dateTime).toLocaleString()
+                      ? new Date(viewMemo.dateTime).toLocaleString(
+                          localeActual(),
+                        )
                       : "-"
                   }
                   className="sm:col-span-2"

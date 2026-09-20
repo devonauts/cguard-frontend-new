@@ -32,6 +32,7 @@ import {
 import i18n from "@/i18n";
 import { SkeletonBlock, SearchInput } from "@/components/kit";
 import { cn } from "@/lib/utils";
+import { localeActual } from "@/lib/localeActual";
 
 export type SeverityTone = "ok" | "bad" | "warn" | "info" | "neutral";
 
@@ -113,7 +114,7 @@ export const metaFor = (
 /** Fecha larga con segundos: en una auditoría el segundo es el dato. */
 export function fmtStamp(d?: string): string {
   try {
-    return new Date(d as string).toLocaleString(undefined, {
+    return new Date(d as string).toLocaleString(localeActual(), {
       day: "2-digit",
       month: "short",
       year: "numeric",

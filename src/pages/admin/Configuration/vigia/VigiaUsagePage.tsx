@@ -17,6 +17,7 @@ import SettingsPageShell from "../components/SettingsPageShell";
 
 import { SkeletonCards, StatCard, StatsStrip } from "@/components/kit";
 import api from "@/lib/api";
+import { localeActual } from "@/lib/localeActual";
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
 
@@ -27,7 +28,7 @@ const formatearDinero = (
   usd: number,
   decimales = 2,
 ) =>
-  `${(usd * moneda.tasa).toLocaleString(undefined, { minimumFractionDigits: decimales, maximumFractionDigits: decimales })} ${moneda.codigo}`;
+  `${(usd * moneda.tasa).toLocaleString(localeActual(), { minimumFractionDigits: decimales, maximumFractionDigits: decimales })} ${moneda.codigo}`;
 
 export default function VigiaUsagePage() {
   const { t } = useTranslation();
@@ -81,7 +82,7 @@ export default function VigiaUsagePage() {
   );
   const maxMensajes = Math.max(1, ...serie.map((d) => d.mensajes));
   const etiqueta = (dia: string) =>
-    new Date(`${dia}T12:00:00Z`).toLocaleDateString(undefined, {
+    new Date(`${dia}T12:00:00Z`).toLocaleDateString(localeActual(), {
       day: "2-digit",
       month: "short",
     });
@@ -118,7 +119,7 @@ export default function VigiaUsagePage() {
                 return Math.max(
                   0,
                   Math.floor(resto / Math.max(0.05, prom)),
-                ).toLocaleString();
+                ).toLocaleString(localeActual());
               })()}`}
             />
             <StatCard
@@ -197,8 +198,9 @@ export default function VigiaUsagePage() {
             )}
             {typeof datos.tokens30d === "number" && datos.tokens30d > 0 && (
               <p className="mt-2 text-xs" style={{ color: "var(--ink-faint)" }}>
-                {datos.tokens30d.toLocaleString()} tokens procesados en 30 días
-                · gasto ≈ {dineroDesdeCenti(costo30dCenti)}.
+                {datos.tokens30d.toLocaleString(localeActual())} tokens
+                procesados en 30 días · gasto ≈{" "}
+                {dineroDesdeCenti(costo30dCenti)}.
               </p>
             )}
           </section>
@@ -228,7 +230,8 @@ export default function VigiaUsagePage() {
                       className="text-xs"
                       style={{ color: "var(--ink-soft)" }}
                     >
-                      {a.quien} · {new Date(a.at).toLocaleString()}
+                      {a.quien} ·{" "}
+                      {new Date(a.at).toLocaleString(localeActual())}
                     </span>
                   </div>
                 ))}

@@ -27,6 +27,7 @@ import {
   SkeletonCards,
 } from "@/components/kit";
 import { Button } from "@/components/ui/button";
+import { localeActual } from "@/lib/localeActual";
 
 // navKey/title default to the guard layout; a supervisor route can override them
 // to render the same device screen under the supervisor sidebar (the device
@@ -36,7 +37,7 @@ type Props = { guard?: GuardDetail; navKey?: string; title?: string };
 function fmt(dt: string | null): string {
   if (!dt) return "—";
   try {
-    return new Date(dt).toLocaleString();
+    return new Date(dt).toLocaleString(localeActual());
   } catch {
     return "—";
   }

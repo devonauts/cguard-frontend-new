@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 
 import api from "@/lib/api";
+import { localeActual } from "@/lib/localeActual";
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
 
@@ -855,7 +856,7 @@ export default function VigiaWidget() {
                         className="text-[11px]"
                         style={{ color: "var(--ink-faint)" }}
                       >
-                        {new Date(c.ts).toLocaleString(undefined, {
+                        {new Date(c.ts).toLocaleString(localeActual(), {
                           day: "2-digit",
                           month: "short",
                           hour: "2-digit",

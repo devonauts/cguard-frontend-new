@@ -34,6 +34,7 @@ import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import SitesMap from "@/components/maps/SitesMap";
 import { clientService } from "@/lib/api/clientService";
 import { Section, EmptyState, StatusBadge, IconTile } from "@/components/kit";
+import { localeActual } from "@/lib/localeActual";
 
 // ── Shapes from the overview / operation / activity / contacts endpoints ──
 interface StationLite {
@@ -104,14 +105,17 @@ const fmtTime = (d: string | number | Date) => {
 
   return Number.isNaN(dt.getTime())
     ? ""
-    : dt.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+    : dt.toLocaleTimeString(localeActual(), {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
 };
 const fmtDateTime = (d: string | number | Date) => {
   const dt = new Date(d);
 
   return Number.isNaN(dt.getTime())
     ? ""
-    : dt.toLocaleString(undefined, {
+    : dt.toLocaleString(localeActual(), {
         day: "2-digit",
         month: "short",
         hour: "2-digit",

@@ -61,6 +61,7 @@ import inventoryItemService, {
 } from "@/lib/api/inventoryItemService";
 import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import { enLotes } from "@/lib/enLotes";
+import { localeActual } from "@/lib/localeActual";
 
 // Shape of the errors thrown by the API layer (axios-style response envelope).
 type ApiError = {
@@ -638,7 +639,7 @@ export default function GlobalInventoryPage() {
                             item.expirationDate
                               ? new Date(
                                   item.expirationDate,
-                                ).toLocaleDateString()
+                                ).toLocaleDateString(localeActual())
                               : "—"
                           }
                         />
@@ -808,7 +809,7 @@ export default function GlobalInventoryPage() {
                                         <span className="inline-flex items-center gap-2">
                                           {new Date(
                                             item.expirationDate,
-                                          ).toLocaleDateString()}
+                                          ).toLocaleDateString(localeActual())}
                                           {vigencia && (
                                             <StatusBadge
                                               tone={vigencia.tone}
@@ -829,7 +830,7 @@ export default function GlobalInventoryPage() {
                                       item.createdAt
                                         ? new Date(
                                             item.createdAt,
-                                          ).toLocaleDateString()
+                                          ).toLocaleDateString(localeActual())
                                         : "—"
                                     }
                                   />

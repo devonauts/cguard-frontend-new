@@ -275,7 +275,7 @@ export function formatTrialEndDate(trialEndsAt?: string | null): string | null {
       year: "numeric",
     });
   } catch {
-    return d.toLocaleDateString();
+    return d.toLocaleDateString(localeActual());
   }
 }
 

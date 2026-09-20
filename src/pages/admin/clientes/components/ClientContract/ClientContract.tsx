@@ -650,7 +650,7 @@ export default function ClientContract({ client }: { client: Client }) {
                   </span>
                   <span className="shrink-0 text-xs text-muted-foreground">
                     {d.createdAt
-                      ? new Date(d.createdAt).toLocaleDateString()
+                      ? new Date(d.createdAt).toLocaleDateString(localeActual())
                       : ""}
                   </span>
                 </a>

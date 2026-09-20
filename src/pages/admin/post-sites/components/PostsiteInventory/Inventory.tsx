@@ -27,6 +27,7 @@ import { EmptyState, Modal, SkeletonCards, SearchInput } from "@/components/kit"
 import { FIELD_CLS_LG } from "@/pages/admin/clientes/components/_shared/tab-kit";
 import type { PostSite } from "@/types";
 import { enLotes } from "@/lib/enLotes";
+import { localeActual } from "@/lib/localeActual";
 
 type ConditionKey = "bueno" | "regular" | "danado";
 const CONDITIONS: ConditionKey[] = ["bueno", "regular", "danado"];
@@ -688,7 +689,7 @@ export default function Inventory({ site }: { site?: PostSite }) {
                       </td>
                       <td className="px-2 py-2.5 text-muted-foreground text-xs hidden lg:table-cell">
                         {a.assignedAt
-                          ? new Date(a.assignedAt).toLocaleDateString()
+                          ? new Date(a.assignedAt).toLocaleDateString(localeActual())
                           : "—"}
                       </td>
                       <td className="px-2 py-2.5 text-right">
