@@ -36,6 +36,7 @@
  * `gzip` de nginx no afecta: el navegador comprueba el contenido descomprimido.
  * ════════════════════════════════════════════════════════════════════════════
  */
+import { execSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -66,6 +67,25 @@ function ficheroDe(url) {
 
 function sha384(fichero) {
   return `sha384-${createHash("sha384").update(readFileSync(fichero)).digest("base64")}`;
+}
+
+/* ── EL COMMIT, DENTRO DEL PROPIO BUILD ────────────────────────────────────
+   Se escribe aquí, en el momento de construir, y NO se lee del repositorio al
+   registrar la procedencia. La diferencia importa: estas aplicaciones se
+   despliegan construyéndolas en un portátil y subiéndolas por rsync, así que el
+   repositorio del servidor puede estar en OTRO commit que el de los ficheros
+   publicados. Medido el 2026-09-21: el registro guardó `ee640161` para un
+   bundle que salió de `6f037462`.
+
+   Un registro de procedencia con el commit equivocado es PEOR que uno sin
+   commit — apunta a un código que no es, y eso delante de un abogado se vuelve
+   en contra. Yendo dentro del build, no puede desincronizarse. */
+function commitDelBuild() {
+  try {
+    return execSync("git rev-parse HEAD", { cwd: process.cwd(), encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
+  } catch {
+    return null;
+  }
 }
 
 const sellos = [];
@@ -124,15 +144,18 @@ html = html.replace(
    cualquier asset de entrada y no cambia si no cambia nada. */
 const sello = createHash("sha256").update(sellos.join("|")).digest("hex").slice(0, 16);
 
+const commit = commitDelBuild();
+
 html = html.replace(
   /<head>/i,
-  `<head>\n    <meta name="cg-build" content="${sello}" />`,
+  `<head>\n    <meta name="cg-build" content="${sello}" />` +
+    (commit ? `\n    <meta name="cg-commit" content="${commit}" />` : ""),
 );
 
 writeFileSync(INDEX, html);
 
 console.log(`[sellado] ${sellados} recurso(s) sellado(s), ${saltados} sin fichero local`);
-console.log(`[sellado] build ${sello}`);
+console.log(`[sellado] build ${sello}${commit ? ` · commit ${commit.slice(0, 10)}` : " · sin commit"}`);
 
 if (sellados === 0) {
   console.error("[sellado] NADA sellado — el index no tiene recursos locales o cambió su forma");
