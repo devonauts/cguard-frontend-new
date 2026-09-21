@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 // import { BrowserRouter } from "react-router-dom";
 
 import App from "./App.tsx";
+import { iniciarCentinela } from "./lib/centinela";
 
 // import { Provider } from "./provider.tsx";
 // Tipografía AUTOALOJADA (empaquetada — sin depender del CDN de Google, que puede
@@ -107,6 +108,12 @@ window.addEventListener("vite:preloadError", (event) => {
   event.preventDefault();
   window.location.reload();
 });
+
+/* El centinela de integridad (Fase 2 del plan anti-copia). Va ANTES del
+   render y fuera de React a propósito: mira el documento tal y como llegó,
+   antes de que la aplicación empiece a añadirle cosas. No bloquea, no avisa al
+   usuario y no manda nada si todo está en orden. Ver `lib/centinela`. */
+iniciarCentinela();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
