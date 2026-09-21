@@ -11,12 +11,17 @@ import {
   Loader2,
   BellRing,
   Clock,
+  MapPinOff,
+  MapPin,
 } from "lucide-react";
 import { toast } from "sonner";
 
 import AppLayout from "@/layouts/app-layout";
 import GuardsLayout from "@/layouts/GuardsLayout";
-import guardDeviceService, { GuardDevice } from "@/lib/api/guardDeviceService";
+import guardDeviceService, {
+  GuardDevice,
+  CalidadDeUbicacion,
+} from "@/lib/api/guardDeviceService";
 import {
   PageContainer,
   PageHeader,
@@ -56,12 +61,17 @@ export default function GuardDevicePage({
   const [devices, setDevices] = useState<GuardDevice[]>([]);
   const [loading, setLoading] = useState(false);
   const [resetting, setResetting] = useState<string | null>(null);
+  const [ubicacion, setUbicacion] = useState<CalidadDeUbicacion | null>(null);
 
   const load = useCallback(async () => {
     if (!userId) return;
     setLoading(true);
     try {
-      setDevices(await guardDeviceService.list(userId));
+      const { devices: ds, ubicacion: u } =
+        await guardDeviceService.listWithLocation(userId);
+
+      setDevices(ds);
+      setUbicacion(u);
     } catch (e) {
       console.error("load guard devices", e);
     } finally {
@@ -105,7 +115,7 @@ export default function GuardDevicePage({
         <PageContainer>
           <PageHeader
             badges={
-              devices.length > 0 || flaggedCount > 0 ? (
+              devices.length > 0 || flaggedCount > 0 || ubicacion ? (
                 <>
                   {devices.length > 0 && (
                     <StatusBadge dot={false} tone="neutral">
@@ -116,6 +126,23 @@ export default function GuardDevicePage({
                       })}
                     </StatusBadge>
                   )}
+                  {ubicacion &&
+                    (ubicacion.estado === "sin_ubicacion" ||
+                      ubicacion.estado === "aproximada") && (
+                      <StatusBadge
+                        tone={
+                          ubicacion.estado === "sin_ubicacion" ? "bad" : "warn"
+                        }
+                      >
+                        {ubicacion.estado === "sin_ubicacion"
+                          ? t("guards.device.locNoneBadge", {
+                              defaultValue: "Sin ubicación",
+                            })
+                          : t("guards.device.locCoarseBadge", {
+                              defaultValue: "Ubicación aproximada",
+                            })}
+                      </StatusBadge>
+                    )}
                   {flaggedCount > 0 && (
                     <StatusBadge tone="bad">
                       {t("guards.device.flaggedBadge", {
@@ -136,6 +163,74 @@ export default function GuardDevicePage({
               defaultValue: "Dispositivo del vigilante",
             })}
           />
+
+          {/* ── ¿ESTE TELÉFONO DA UBICACIÓN? ────────────────────────────────
+              El vigilante FICHA IGUAL sin GPS — no se le deja en la calle por
+              un permiso mal puesto. Pero el turno entra sin prueba de dónde
+              estaba, y eso la empresa tiene que verlo para decidir.
+
+              Sólo se pinta cuando hay algo que hacer: si el teléfono va bien,
+              un cartel verde diciéndolo es ruido en una pantalla que se abre
+              precisamente cuando algo va mal. */}
+          {ubicacion &&
+            (ubicacion.estado === "sin_ubicacion" ||
+              ubicacion.estado === "aproximada") && (
+              <Section
+                icon={
+                  <IconTile
+                    tone={ubicacion.estado === "sin_ubicacion" ? "bad" : "warn"}
+                  >
+                    {ubicacion.estado === "sin_ubicacion" ? (
+                      <MapPinOff />
+                    ) : (
+                      <MapPin />
+                    )}
+                  </IconTile>
+                }
+                title={
+                  ubicacion.estado === "sin_ubicacion"
+                    ? t("guards.device.locNoneTitle", {
+                        defaultValue: "Este teléfono no está enviando ubicación",
+                      })
+                    : t("guards.device.locCoarseTitle", {
+                        defaultValue: "Este teléfono envía ubicación aproximada",
+                      })
+                }
+              >
+                <div className="space-y-3 text-sm">
+                  <p className="text-muted-foreground">
+                    {ubicacion.estado === "sin_ubicacion"
+                      ? t("guards.device.locNoneBody", {
+                          defaultValue:
+                            "{{sin}} de sus últimos {{total}} fichajes entraron sin ninguna coordenada. El fichaje se registra igual —no se le bloquea— pero el turno queda sin prueba de dónde estaba.",
+                          sin: ubicacion.sinUbicacion,
+                          total: ubicacion.total,
+                        })
+                      : t("guards.device.locCoarseBody", {
+                          defaultValue:
+                            "{{n}} de sus últimos {{total}} fichajes llegaron con una posición más gruesa de {{suelo}} m. Sirve para registrar, no para confirmar que estaba en el puesto.",
+                          n: ubicacion.sinUbicacion + ubicacion.aproximada,
+                          total: ubicacion.total,
+                          suelo: ubicacion.sueloPrecisionM,
+                        })}
+                  </p>
+                  <p className="text-muted-foreground">
+                    {t("guards.device.locFix", {
+                      defaultValue:
+                        "Causa habitual: en Android el permiso de ubicación quedó en «Aproximada». Hay que ponerlo en «Precisa» en los ajustes del teléfono — Android no permite cambiarlo desde la aplicación, así que alguien tiene que tocar ese móvil.",
+                    })}
+                  </p>
+                  {ubicacion.ultimoSinUbicacion && (
+                    <p className="text-muted-foreground">
+                      {t("guards.device.locLast", {
+                        defaultValue: "Último fichaje sin ubicación: {{cuando}}",
+                        cuando: fmt(ubicacion.ultimoSinUbicacion),
+                      })}
+                    </p>
+                  )}
+                </div>
+              </Section>
+            )}
 
           {/* ── BODY ─────────────────────────────────────────────────────────── */}
           {loading ? (

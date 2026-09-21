@@ -2332,7 +2332,15 @@
       "os": "Système",
       "otherDevices": "Autres appareils",
       "platform": "Plateforme",
-      "unknownDevice": "Appareil inconnu"
+      "unknownDevice": "Appareil inconnu",
+      "locNoneBadge": "Sans position",
+      "locCoarseBadge": "Position approximative",
+      "locNoneTitle": "Ce téléphone n'envoie pas de position",
+      "locCoarseTitle": "Ce téléphone envoie une position approximative",
+      "locNoneBody": "{{sin}} de ses {{total}} derniers pointages sont arrivés sans aucune coordonnée. Le pointage est quand même enregistré — l'agent n'est jamais bloqué — mais le service reste sans preuve du lieu.",
+      "locCoarseBody": "{{n}} de ses {{total}} derniers pointages sont arrivés avec une position plus grossière que {{suelo}} m. Suffisant pour enregistrer, pas pour confirmer sa présence au poste.",
+      "locFix": "Cause habituelle : sous Android, l'autorisation de localisation est restée sur « Approximative ». Il faut la passer sur « Précise » dans les réglages du téléphone — Android ne permet pas à l'application de le faire, quelqu'un doit donc prendre ce téléphone en main.",
+      "locLast": "Dernier pointage sans position : {{cuando}}"
     },
     "documents": {
       "deleteConfirm": "Voulez-vous vraiment supprimer « {{name}} » ? Cette action est irréversible.",

@@ -2332,7 +2332,15 @@
       "os": "Sistema",
       "otherDevices": "Altri dispositivi",
       "platform": "Piattaforma",
-      "unknownDevice": "Dispositivo sconosciuto"
+      "unknownDevice": "Dispositivo sconosciuto",
+      "locNoneBadge": "Senza posizione",
+      "locCoarseBadge": "Posizione approssimativa",
+      "locNoneTitle": "Questo telefono non sta inviando la posizione",
+      "locCoarseTitle": "Questo telefono invia una posizione approssimativa",
+      "locNoneBody": "{{sin}} delle sue ultime {{total}} timbrature sono arrivate senza alcuna coordinata. La timbratura viene comunque registrata — non viene mai bloccato — ma il turno resta senza prova di dove fosse.",
+      "locCoarseBody": "{{n}} delle sue ultime {{total}} timbrature sono arrivate con una posizione più grossolana di {{suelo}} m. Va bene per registrare, non per confermare che era in postazione.",
+      "locFix": "Causa abituale: su Android il permesso di posizione è rimasto su «Approssimativa». Va portato su «Precisa» nelle impostazioni del telefono — Android non permette all'app di cambiarlo, quindi qualcuno deve mettere mano a quel telefono.",
+      "locLast": "Ultima timbratura senza posizione: {{cuando}}"
     },
     "documents": {
       "deleteConfirm": "Vuoi davvero eliminare \"{{name}}\"? L'operazione non può essere annullata.",

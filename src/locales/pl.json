@@ -2332,7 +2332,15 @@
       "os": "System",
       "otherDevices": "Inne urządzenia",
       "platform": "Platforma",
-      "unknownDevice": "Nieznane urządzenie"
+      "unknownDevice": "Nieznane urządzenie",
+      "locNoneBadge": "Brak lokalizacji",
+      "locCoarseBadge": "Przybliżona lokalizacja",
+      "locNoneTitle": "Ten telefon nie wysyła lokalizacji",
+      "locCoarseTitle": "Ten telefon wysyła przybliżoną lokalizację",
+      "locNoneBody": "{{sin}} z ostatnich {{total}} odbić przyszło bez żadnych współrzędnych. Odbicie i tak zostaje zapisane — nikt nie jest blokowany — ale zmiana nie ma dowodu miejsca.",
+      "locCoarseBody": "{{n}} z ostatnich {{total}} odbić przyszło z pozycją mniej dokładną niż {{suelo}} m. Wystarczy do zapisu, nie do potwierdzenia obecności na posterunku.",
+      "locFix": "Zwykła przyczyna: w Androidzie uprawnienie lokalizacji zostało na „Przybliżona”. Trzeba ustawić „Dokładna” w ustawieniach telefonu — Android nie pozwala zmienić tego z aplikacji, więc ktoś musi wziąć ten telefon do ręki.",
+      "locLast": "Ostatnie odbicie bez lokalizacji: {{cuando}}"
     },
     "documents": {
       "deleteConfirm": "Czy na pewno usunąć „{{name}}”? Tej operacji nie można cofnąć.",

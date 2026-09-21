@@ -2332,7 +2332,15 @@
       "os": "System",
       "otherDevices": "Weitere Geräte",
       "platform": "Plattform",
-      "unknownDevice": "Unbekanntes Gerät"
+      "unknownDevice": "Unbekanntes Gerät",
+      "locNoneBadge": "Ohne Standort",
+      "locCoarseBadge": "Ungefährer Standort",
+      "locNoneTitle": "Dieses Telefon sendet keinen Standort",
+      "locCoarseTitle": "Dieses Telefon sendet einen ungefähren Standort",
+      "locNoneBody": "{{sin}} der letzten {{total}} Buchungen kamen ganz ohne Koordinaten an. Die Buchung wird trotzdem erfasst — niemand wird blockiert — aber die Schicht hat keinen Nachweis des Orts.",
+      "locCoarseBody": "{{n}} der letzten {{total}} Buchungen kamen mit einer Position gröber als {{suelo}} m an. Reicht zum Erfassen, nicht zum Bestätigen der Anwesenheit am Posten.",
+      "locFix": "Üblicher Grund: Unter Android steht die Standortberechtigung auf „Ungefähr“. Sie muss in den Telefoneinstellungen auf „Genau“ gesetzt werden — Android lässt das die App nicht ändern, also muss jemand dieses Telefon in die Hand nehmen.",
+      "locLast": "Letzte Buchung ohne Standort: {{cuando}}"
     },
     "documents": {
       "deleteConfirm": "Möchten Sie „{{name}}“ wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",

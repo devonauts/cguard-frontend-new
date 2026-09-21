@@ -2429,7 +2429,15 @@
       "os": "System",
       "otherDevices": "Other devices",
       "platform": "Platform",
-      "unknownDevice": "Unknown device"
+      "unknownDevice": "Unknown device",
+      "locNoneBadge": "No location",
+      "locCoarseBadge": "Approximate location",
+      "locNoneTitle": "This phone isn't sending a location",
+      "locCoarseTitle": "This phone sends an approximate location",
+      "locNoneBody": "{{sin}} of their last {{total}} clock-ins came in with no coordinates at all. The clock-in is still recorded — they are never blocked — but the shift has no proof of where they were.",
+      "locCoarseBody": "{{n}} of their last {{total}} clock-ins arrived with a position coarser than {{suelo}} m. Good enough to record, not to confirm they were at the post.",
+      "locFix": "Usual cause: on Android the location permission was left on “Approximate”. It has to be set to “Precise” in the phone's settings — Android won't let the app change it, so someone has to pick that phone up.",
+      "locLast": "Last clock-in without location: {{cuando}}"
     },
     "documents": {
       "deleteConfirm": "Delete \"{{name}}\"? This cannot be undone.",

@@ -2332,7 +2332,15 @@
       "os": "Systeem",
       "otherDevices": "Andere apparaten",
       "platform": "Platform",
-      "unknownDevice": "Onbekend apparaat"
+      "unknownDevice": "Onbekend apparaat",
+      "locNoneBadge": "Geen locatie",
+      "locCoarseBadge": "Globale locatie",
+      "locNoneTitle": "Deze telefoon stuurt geen locatie",
+      "locCoarseTitle": "Deze telefoon stuurt een globale locatie",
+      "locNoneBody": "{{sin}} van de laatste {{total}} kloppingen kwamen binnen zonder enige coördinaat. De klopping wordt gewoon vastgelegd — niemand wordt geblokkeerd — maar de dienst heeft geen bewijs van de plek.",
+      "locCoarseBody": "{{n}} van de laatste {{total}} kloppingen kwamen binnen met een positie grover dan {{suelo}} m. Goed genoeg om vast te leggen, niet om aanwezigheid op de post te bevestigen.",
+      "locFix": "Gebruikelijke oorzaak: op Android staat de locatietoestemming op ‘Globaal’. Die moet in de telefooninstellingen op ‘Precies’ — Android laat de app dat niet wijzigen, dus iemand moet die telefoon zelf oppakken.",
+      "locLast": "Laatste klopping zonder locatie: {{cuando}}"
     },
     "documents": {
       "deleteConfirm": "\"{{name}}\" verwijderen? Dit kan niet ongedaan worden gemaakt.",

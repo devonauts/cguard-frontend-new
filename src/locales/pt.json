@@ -4554,7 +4554,15 @@
       "os": "Sistema",
       "otherDevices": "Outros dispositivos",
       "platform": "Plataforma",
-      "unknownDevice": "Dispositivo desconhecido"
+      "unknownDevice": "Dispositivo desconhecido",
+      "locNoneBadge": "Sem localização",
+      "locCoarseBadge": "Localização aproximada",
+      "locNoneTitle": "Este telemóvel não está a enviar localização",
+      "locCoarseTitle": "Este telemóvel envia localização aproximada",
+      "locNoneBody": "{{sin}} das suas últimas {{total}} marcações entraram sem qualquer coordenada. A marcação regista-se na mesma — não é bloqueado — mas o turno fica sem prova de onde estava.",
+      "locCoarseBody": "{{n}} das suas últimas {{total}} marcações chegaram com uma posição mais grosseira do que {{suelo}} m. Serve para registar, não para confirmar que estava no posto.",
+      "locFix": "Causa habitual: no Android a permissão de localização ficou em «Aproximada». Tem de passar a «Precisa» nas definições do telemóvel — o Android não deixa alterá-la pela aplicação, por isso alguém tem de mexer nesse telemóvel.",
+      "locLast": "Última marcação sem localização: {{cuando}}"
     },
     "documents": {
       "deleteConfirm": "Excluir \"{{name}}\"? Esta ação não pode ser desfeita.",

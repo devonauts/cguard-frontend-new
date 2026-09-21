@@ -2429,7 +2429,15 @@
       "os": "Sistema",
       "otherDevices": "Otros dispositivos",
       "platform": "Plataforma",
-      "unknownDevice": "Dispositivo desconocido"
+      "unknownDevice": "Dispositivo desconocido",
+      "locNoneBadge": "Sin ubicación",
+      "locCoarseBadge": "Ubicación aproximada",
+      "locNoneTitle": "Este teléfono no está enviando ubicación",
+      "locCoarseTitle": "Este teléfono envía ubicación aproximada",
+      "locNoneBody": "{{sin}} de sus últimos {{total}} fichajes entraron sin ninguna coordenada. El fichaje se registra igual —no se le bloquea— pero el turno queda sin prueba de dónde estaba.",
+      "locCoarseBody": "{{n}} de sus últimos {{total}} fichajes llegaron con una posición más gruesa de {{suelo}} m. Sirve para registrar, no para confirmar que estaba en el puesto.",
+      "locFix": "Causa habitual: en Android el permiso de ubicación quedó en «Aproximada». Hay que ponerlo en «Precisa» en los ajustes del teléfono — Android no permite cambiarlo desde la aplicación, así que alguien tiene que tocar ese móvil.",
+      "locLast": "Último fichaje sin ubicación: {{cuando}}"
     },
     "documents": {
       "deleteConfirm": "¿Seguro que deseas eliminar \"{{name}}\"? Esta acción no se puede deshacer.",
