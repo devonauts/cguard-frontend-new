@@ -216,7 +216,15 @@ export type MonthStationBlockProps = {
    * rotación queda de respaldo sólo para los días que aún no tienen turno
    * generado (más allá del horizonte).
    */
-  shiftByGuardDate: Map<string, { startTime?: string | Date | null }>;
+  shiftByGuardDate: Map<
+    string,
+    { startTime?: string | Date | null; status?: string }
+  >;
+  /** Igual, pero por vigilante Y plaza: desempata a quien dobla. */
+  shiftByGuardPosDate: Map<
+    string,
+    { startTime?: string | Date | null; status?: string }
+  >;
   station: Station;
   stationPositions: StationPosition[];
   stationAlert: StationAlert | undefined;
@@ -249,6 +257,7 @@ export type MonthStationBlockProps = {
 
 function MonthStationBlockInner({
   shiftByGuardDate,
+  shiftByGuardPosDate,
   station,
   stationPositions,
   stationAlert,
@@ -634,9 +643,16 @@ function MonthStationBlockInner({
 
               const esAprendiz = (assignment as any).role === "shadow";
               // Un slot, una verdad: si el turno existe, manda su hora.
-              const turnoReal = shiftByGuardDate.get(
-                `${assignment.guardId}|${dateStr}`,
-              );
+              // El turno de ESTA plaza manda; el mapa por día es el respaldo
+              // para el turno que llega sin plaza asignada.
+              const suTurno =
+                shiftByGuardPosDate.get(
+                  `${assignment.guardId}|${pos.id}|${dateStr}`,
+                ) ?? shiftByGuardDate.get(`${assignment.guardId}|${dateStr}`);
+              // Si lo único suyo ese día es un doblaje, su hora no describe
+              // esta plaza: vale más la ventana declarada del puesto.
+              const turnoReal =
+                suTurno?.status === "extension" ? undefined : suTurno;
               const horaReal = turnoReal?.startTime
                 ? new Date(turnoReal.startTime)
                 : null;

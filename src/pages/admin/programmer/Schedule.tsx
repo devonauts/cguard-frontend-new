@@ -1242,15 +1242,48 @@ export default function Schedule() {
 
   // `${guardId}|${dateStr}` (tenant tz) → that guard's real shift that day.
   // SF cells read it for coverage; the right-click menu reads it for any guard.
+  //
+  // Quien DOBLA tiene dos turnos ese día: el suyo y el que le tocó encadenar.
+  // Aquí gana siempre el suyo. Ganaba el último —que es justo el doblaje,
+  // porque empieza más tarde— y su propia casilla pasaba de «D» a «N»: el
+  // horario mentía sobre el turno que de verdad le toca. El doblaje se ve donde
+  // corresponde, en la píldora «2×» de la plaza que fue a cubrir.
   const shiftByGuardDate = useMemo(() => {
     const m = new Map<string, ShiftRecord>();
 
     for (const s of shifts) {
       if (!s.startTime) continue;
-      m.set(
-        `${s.guardId}|${dateToWall(new Date(s.startTime), tzName).dateStr}`,
-        s,
-      );
+      const k = `${s.guardId}|${dateToWall(new Date(s.startTime), tzName).dateStr}`;
+      const previo = m.get(k);
+
+      if (s.status === "extension" && previo && previo.status !== "extension")
+        continue;
+
+      m.set(k, s);
+    }
+
+    return m;
+  }, [shifts, tzName]);
+
+  /**
+   * `${guardId}|${positionId}|${dateStr}` → el turno de ESE vigilante en ESA
+   * plaza. La casilla de un fijo lo mira primero: si su titular dobló el mismo
+   * día, saber cuáles son sus turnos no basta para decidir qué letra le toca a
+   * ESTA casilla; hay que quedarse con el de esta plaza.
+   */
+  const shiftByGuardPosDate = useMemo(() => {
+    const m = new Map<string, ShiftRecord>();
+
+    for (const s of shifts) {
+      if (!s.startTime || !s.positionId) continue;
+      const k = `${s.guardId}|${s.positionId}|${dateToWall(new Date(s.startTime), tzName).dateStr}`;
+      const previo = m.get(k);
+
+      // Gana el primero, y entre un doblaje y un turno normal, el normal.
+      if (previo && (previo.status !== "extension" || s.status === "extension"))
+        continue;
+
+      m.set(k, s);
     }
 
     return m;
@@ -6137,6 +6170,7 @@ export default function Schedule() {
                                   sel={selForRows(plazas)}
                                   sfStationCoverage={sfStationCoverage}
                                   shiftByGuardDate={shiftByGuardDate}
+                                  shiftByGuardPosDate={shiftByGuardPosDate}
                                   station={station}
                                   stationAlert={stationAlertByStationId.get(
                                     station.id,
