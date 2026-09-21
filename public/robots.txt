@@ -35,6 +35,19 @@ Disallow: /public/dispatch/
 Disallow: /documentation/
 Disallow: /documentation-config
 
+# Esta dirección NO existe como función del producto: es una TRAMPA. No la
+# enlaza nada —ni el menú, ni el paquete, ni ninguna página—, así que la única
+# forma de llegar a ella es leer este archivo y ir justo a donde dice que no se
+# vaya. Quien lo haga no es un usuario ni un buscador que se porte bien, y queda
+# anotado. Contesta un 404 idéntico al de cualquier ruta inexistente, a
+# propósito: avisar a quien la pisa sólo consigue que cambie de método.
+#
+# (Sí, contradice en apariencia lo explicado arriba sobre no enumerar rutas
+# internas. No es lo mismo: aquello era publicar el mapa del panel de verdad;
+# esto es publicar una puerta que no lleva a ninguna parte. Si alguien limpia
+# este archivo algún día, que sepa que esta línea está aquí a posta.)
+Disallow: /api/v1/respaldo-completo
+
 # No se lista un mapa del sitio: no queda ni una página de este dominio que deba
 # aparecer en los buscadores, y anunciar direcciones marcadas como no indexables
 # es justo la contradicción que se vino a quitar. El mapa del sitio de verdad es
