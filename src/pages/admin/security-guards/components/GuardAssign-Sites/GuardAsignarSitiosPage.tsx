@@ -241,6 +241,9 @@ export default function GuardAsignarSitiosPage() {
   >([]);
   const [selectedStationAssign, setSelectedStationAssign] =
     useState<string>("");
+  /* Mientras se cargan los puestos de la sede no se puede afirmar que no
+     tenga ninguno — sin esto, pulsar rápido acusaría de vacía una sede llena. */
+  const [cargandoPuestos, setCargandoPuestos] = useState(false);
   const [selectedStart, setSelectedStart] = useState<string>(() =>
     paraInputFechaHora(new Date()),
   );
@@ -312,6 +315,23 @@ export default function GuardAsignarSitiosPage() {
       toast.error(
         t("guards.assignSites.errors.selectClientSite", {
           defaultValue: "Selecciona un cliente y un puesto",
+        }),
+      );
+
+      return;
+    }
+    /* ── UNA SEDE SIN PUESTOS NO ES UN DESTINO ────────────────────────────
+       Si la sede no tiene puestos, el desplegable queda vacío,
+       `selectedStationAssign` se queda en "" y más abajo la llamada caía a
+       mandar el id de la SEDE por la ruta de puestos. El backend no puede
+       resolverlo y contestaba un 400 que en pantalla no significaba nada.
+       Pasó en producción: tres intentos seguidos contra una sede recién
+       creada, y el cliente acabó creando el puesto a mano por su cuenta. */
+    if (!cargandoPuestos && !selectedStationAssign) {
+      toast.error(
+        t("guards.assignSites.errors.siteHasNoStations", {
+          defaultValue:
+            "Esta sede todavía no tiene puestos. Crea un puesto en la sede y luego asigna al vigilante.",
         }),
       );
 
@@ -597,11 +617,13 @@ export default function GuardAsignarSitiosPage() {
     if (!selectedPostSite) {
       setStationsForPostSite([]);
       setSelectedStationAssign("");
+      setCargandoPuestos(false);
 
       return;
     }
     let mounted = true;
 
+    setCargandoPuestos(true);
     (async () => {
       try {
         const tenantId = localStorage.getItem("tenantId");
@@ -640,12 +662,18 @@ export default function GuardAsignarSitiosPage() {
         }
         if (!mounted) return;
         setStationsForPostSite(deduped);
+        /* El `else` NO es decorativo: sin él, al pasar de una sede CON puestos
+           a otra SIN puestos se quedaba seleccionado el puesto de la sede
+           anterior, y la asignación se iba a la sede equivocada sin avisar. */
         if (deduped.length) setSelectedStationAssign(deduped[0].id);
+        else setSelectedStationAssign("");
       } catch (err) {
         if (mounted) {
           setStationsForPostSite([]);
           setSelectedStationAssign("");
         }
+      } finally {
+        if (mounted) setCargandoPuestos(false);
       }
     })();
 
