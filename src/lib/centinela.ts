@@ -51,6 +51,37 @@ const ANFITRIONES_PROPIOS = [
 ];
 
 /**
+ * Los ESQUEMAS donde este mismo paquete también corre con todo el derecho, sin
+ * anfitrión que valga.
+ *
+ * ESTO FALTABA Y ERA GRAVE. El CRM de escritorio (Electron) sirve el paquete en
+ * `app://crm`, así que su `hostname` es «crm»: ni está en la lista de arriba ni
+ * acaba en `.cguardpro.com`. Sin esta comprobación, cada usuario de escritorio
+ * se anotaba como `origen-ajeno` — que es precisamente la señal de «nuestro
+ * paquete corriendo en un dominio que no es el nuestro», la única que significa
+ * COPIA. La señal más valiosa del plan disparando contra clientes.
+ *
+ * La lista es la MISMA que ya tiene el backend en su filtro de CORS
+ * (`api/index.ts`): `app:` para el escritorio, `capacitor:` e `ionic:` para las
+ * vistas web de las apps móviles. Si allí se añade un esquema, aquí también.
+ */
+const ESQUEMAS_PROPIOS = ['app:', 'capacitor:', 'ionic:'];
+
+/**
+ * ¿Este paquete está donde debe? Se saca aparte y se exporta para poder
+ * probarlo: es la decisión que dispara la única señal de copia que hay, y
+ * equivocarse acusa a un cliente.
+ */
+export function esOrigenPropio(loc: { hostname: string; protocol: string }): boolean {
+  if (ESQUEMAS_PROPIOS.includes(loc.protocol)) return true;
+  if (ANFITRIONES_PROPIOS.includes(loc.hostname)) return true;
+  if (loc.hostname.endsWith('.cguardpro.com')) return true;
+
+  // Desarrollo, no una copia.
+  return loc.hostname === 'localhost' || loc.hostname === '127.0.0.1';
+}
+
+/**
  * Orígenes que meten cosas en la página con permiso. No se avisan porque
  * serían una fila con un contador enorme por cada carga de cada usuario, y eso
  * tapa lo que sí importa. La lista es corta a propósito.
@@ -157,12 +188,7 @@ function enviar(): void {
 
 function mirarElDocumento(): void {
   // 1. ¿Estamos donde debemos?
-  if (!ANFITRIONES_PROPIOS.includes(location.hostname) && !location.hostname.endsWith('.cguardpro.com')) {
-    // `localhost` es desarrollo, no una copia.
-    if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
-      anotar('origen-ajeno', location.origin);
-    }
-  }
+  if (!esOrigenPropio(location)) anotar('origen-ajeno', location.origin);
 
   /* 2. ¿El documento conserva los sellos que le puso el build?
         Se mira el `integrity` del módulo de entrada Y el <meta> del build. Si
