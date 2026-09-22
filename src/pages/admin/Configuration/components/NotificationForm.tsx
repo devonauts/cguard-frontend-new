@@ -26,6 +26,7 @@ import { notificationSettingsService } from "@/lib/api/notificationSettingsServi
 import { communicationService } from "@/lib/api/communicationService";
 import { Section, SkeletonCards } from "@/components/kit";
 import { confirmDialog } from "@/components/ui/confirmDialog";
+import { useAgente } from "@/lib/agenteDeMarca";
 
 /**
  * Los cuatro destinos de un aviso. `push` es el TELÉFONO —las apps del vigilante
@@ -93,6 +94,8 @@ type MatrixState = Record<
 
 export default function NotificationMatrix() {
   const { t } = useTranslation();
+  // Cómo se llama el asistente aquí: en el CRM de un socio, el suyo.
+  const agente = useAgente();
 
   const NOTIFICATIONS: NotificationItem[] = React.useMemo<NotificationItem[]>(
     () => [
@@ -142,7 +145,8 @@ export default function NotificationMatrix() {
       {
         id: "vigia-digest",
         label: t("settings.notificationForm.vigiaDigestLabel", {
-          defaultValue: "Cierre del día (VigIA)",
+          defaultValue: "Cierre del día ({{agente}})",
+          agente: agente.nombre,
         }),
         hint: t("settings.notificationForm.vigiaDigestHint", {
           defaultValue:

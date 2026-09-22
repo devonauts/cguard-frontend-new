@@ -32,6 +32,7 @@ import { clearQueue } from "@/lib/offline/offlineQueue";
 import { isNetworkFailure } from "@/lib/offline/networkStatus";
 import { setAppBadge } from "@/lib/desktop";
 import { resolveActiveTenantId, clearTenants } from "@/lib/activeTenant";
+import { olvidarAgente } from "@/lib/agenteDeMarca";
 
 /**
  * Lo ÚNICO que sobrevive a un cierre de sesión. No es preferencia de nadie: es
@@ -68,6 +69,10 @@ function borrarAlmacenamientoDeSesion(): void {
   } catch {
     /* ignore */
   }
+  /* El nombre del asistente vive también en una variable de módulo, y eso NO lo
+     borra `localStorage.clear()`: sin salir de la página —un 401 duro, cambiar
+     de empresa— el siguiente que entrara vería el asistente del anterior. */
+  olvidarAgente();
 }
 
 /**

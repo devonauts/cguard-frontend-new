@@ -73,6 +73,7 @@ import { IconTile, FIELD_CLS, FIELD_CLS_LG } from "@/components/kit";
 import MENU from "@/data/sidebar-menu.json";
 import NAVS from "@/data/settings-nav.json";
 import TenantSwitcher from "@/components/TenantSwitcher";
+import { useAgente } from "@/lib/agenteDeMarca";
 
 type HeaderProps = {
   toggleSidebar: () => void;
@@ -217,6 +218,8 @@ export default function Header({
   /* El nombre del anfitrión. En el de la plataforma es «C-Guard Pro»; en el de
      un socio, el suyo — y por eso estos textos no lo llevan escrito. */
   const { platformName: nombreDeMarca } = useWhiteLabel();
+  // Y cómo se llama el asistente, que es otra decisión del socio y otra fuente.
+  const agente = useAgente();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const radio = useSyncExternalStore(subscribeRadio, getRadioSnapshot);
@@ -400,7 +403,10 @@ export default function Header({
   const destinos = useMemo<Destino[]>(() => {
     const etiqueta = (...claves: string[]) => {
       for (const k of claves) {
-        const v = t(k, { defaultValue: "" }) as string;
+        /* `agente` siempre: alguna etiqueta del menú lleva el nombre del
+           asistente, y una ranura sin valor se pinta literal —«{{agente}}»— en
+           mitad del buscador. */
+        const v = t(k, { defaultValue: "", agente: agente.nombre }) as string;
 
         if (v && typeof v === "string") return v;
       }
@@ -456,7 +462,10 @@ export default function Header({
     });
 
     return out;
-  }, [t]);
+    /* `agente.nombre` en las dependencias: sin él, el índice del buscador se
+       calcula una vez con «VigIA» y se queda así aunque luego llegue el nombre
+       del socio — y buscarlo por su nombre no encontraría su propia pantalla. */
+  }, [t, agente.nombre]);
 
   const resultados = useMemo(() => {
     const q = plano(consulta.trim());

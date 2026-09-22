@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useFileUrl } from "@/lib/fileUrl";
 import { SmartImage } from "@/components/kit";
+import { useAgente } from "@/lib/agenteDeMarca";
 
 interface NotificationsPanelProps {
   notifications: PlatformNotification[];
@@ -369,6 +370,8 @@ function NotificationItem({
   // Migrated to token URLs: NotificationItem is a component, so a hook is safe.
   // payload carries only a raw privateUrl string, so useFileUrl fetches a token.
   const { t } = useTranslation();
+  // Cómo se llama el asistente aquí: en el CRM de un socio, el suyo.
+  const agente = useAgente();
   const photoUrl = useFileUrl(n.payload?.photoUrl);
 
   return (
@@ -454,10 +457,9 @@ function NotificationItem({
                 }
               }}
             >
-              {t(
-                "ui.NotificationsPanel.resolverConVigia",
-                "Resolver con VigIA",
-              )}
+              {t("ui.NotificationsPanel.resolverConVigia", "Resolver con {{agente}}", {
+                agente: agente.nombre,
+              })}
             </button>
           )}
           {n.body && (

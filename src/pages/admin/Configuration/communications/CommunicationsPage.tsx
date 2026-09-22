@@ -52,6 +52,7 @@ import {
   LogsResult,
 } from "@/lib/api/communicationService";
 import { localeActual } from "@/lib/localeActual";
+import { useAgente } from "@/lib/agenteDeMarca";
 const RECHARGE_PRESETS = [10, 25, 50, 100];
 const CHANNEL_OPTIONS = ["push", "whatsapp", "sms", "email"];
 const PROVIDER_OPTIONS = ["fcm", "meta", "twilio", "smtp"];
@@ -231,6 +232,8 @@ function ResumenTile({
 
 export default function CommunicationsPage() {
   const { t } = useTranslation();
+  // Cómo se llama el asistente aquí: en el CRM de un socio, el suyo.
+  const agente = useAgente();
   /** Traduce al pintar. Si el código no está en el mapa se muestra crudo. */
   const etiqueta = (mapa: Record<string, Etiqueta>, code: string) => {
     const e = mapa[code];
@@ -556,12 +559,13 @@ export default function CommunicationsPage() {
                 </TabsList>
               </div>
 
-              {/* ── Saldo: el monedero que paga SMS, plantillas de WhatsApp y VigIA ── */}
+              {/* ── Saldo: el monedero que paga SMS, WhatsApp y el asistente ── */}
               <TabsContent className="space-y-6" value="saldo">
                 <MetricTile
                   hint={t("comms.walletHint2", {
                     defaultValue:
-                      "Un solo saldo prepago para SMS (Twilio), plantillas de WhatsApp y el asistente VigIA.",
+                      "Un solo saldo prepago para SMS (Twilio), plantillas de WhatsApp y el asistente {{agente}}.",
+                    agente: agente.nombre,
                   })}
                   icon={<Wallet />}
                   label={t("comms.walletTitle2", {

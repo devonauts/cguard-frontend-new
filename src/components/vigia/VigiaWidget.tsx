@@ -31,6 +31,9 @@ import {
 } from "lucide-react";
 
 import api from "@/lib/api";
+import {
+  agenteGuardado, cargarAgente, siglaDelAgente, type AgenteDeMarca,
+} from "@/lib/agenteDeMarca";
 import { localeActual } from "@/lib/localeActual";
 import { hoyEnLaEmpresa, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
 
@@ -150,8 +153,28 @@ interface Propuesta {
   exp: number;
 }
 
-/** El logo: un escudo con el pulso del vigía. Inline para no cargar assets. */
-function LogoVigia({ size = 18 }: { size?: number }) {
+/**
+ * La cara del asistente.
+ *
+ * Si el socio subió una, se pinta esa, redonda. Si no, el escudo de siempre —
+ * inline, para no cargar assets. `object-cover` y no `contain`: en un círculo
+ * de 18 px, una imagen encajada dentro deja aire por los lados y parece
+ * pequeña; recortada, llena.
+ */
+function LogoVigia({ size = 18, avatarUrl }: { size?: number; avatarUrl?: string | null }) {
+  if (avatarUrl) {
+    return (
+      <img
+        alt=""
+        aria-hidden
+        className="rounded-full object-cover"
+        height={size}
+        src={avatarUrl}
+        style={{ width: size, height: size }}
+        width={size}
+      />
+    );
+  }
   return (
     <svg aria-hidden fill="none" height={size} viewBox="0 0 24 24" width={size}>
       <path
@@ -187,6 +210,10 @@ export default function VigiaWidget() {
   // El id del hilo abierto: acompaña cada mensaje al servidor.
   const [hiloId, setHiloId] = useState<string>(() => hiloGuardado.current.id);
   const [texto, setTexto] = useState("");
+  /* Quién es el asistente aquí. Se siembra con lo último que se supo para que
+     no parpadee «VigIA» un instante en el CRM de un socio, y se refresca en
+     cuanto el servidor contesta. */
+  const [agente, setAgente] = useState<AgenteDeMarca>(() => agenteGuardado(tenantId()));
 
   useEffect(() => {
     if (open) return;
@@ -317,6 +344,16 @@ export default function VigiaWidget() {
     fondo.current?.scrollTo({ top: fondo.current.scrollHeight });
     guardarHilo(msgs, hiloId);
   }, [msgs, hiloId, propuesta, ocupado, open]);
+
+  /* Quién es el asistente. Al MONTAR y no al abrir: su nombre está en el
+     `aria-label` de la burbuja cerrada, que un lector de pantalla anuncia sin
+     que nadie la haya abierto. Una petición por sesión — la respuesta la cachea
+     el módulo. */
+  useEffect(() => {
+    let vivo = true;
+    cargarAgente(tenantId()).then((a) => { if (vivo) setAgente(a); });
+    return () => { vivo = false; };
+  }, []);
 
   // El parte matutino: la PRIMERA apertura del día trae el estado de la
   // operación sin gastar un token — el retrato ya lo sabe todo.
@@ -523,10 +560,9 @@ export default function VigiaWidget() {
     } catch (e: any) {
       setAviso(
         e?.message ||
-          t(
-            "vigia.netError",
-            "No pudimos hablar con VigIA. Inténtalo de nuevo.",
-          ),
+          t("vigia.netError", "No pudimos hablar con {{agente}}. Inténtalo de nuevo.", {
+            agente: agente.nombre,
+          }),
       );
     } finally {
       setOcupado(false);
@@ -591,7 +627,7 @@ export default function VigiaWidget() {
       {!open && (
         <button
           aria-expanded={open}
-          aria-label={t("vigia.openAria", "Abrir VigIA, el asistente")}
+          aria-label={t("vigia.openAria", "Abrir {{agente}}, el asistente", { agente: agente.nombre })}
           style={{
             // z-45: los diálogos del sistema (z-50) tapan la burbuja, no al
             // revés. La botonera de guardar de algunas páginas vive en
@@ -636,17 +672,40 @@ export default function VigiaWidget() {
                 d="M24 2 6 8.5v11.5c0 10.8 7.2 20 18 23 10.8-3 18-12.2 18-23V8.5L24 2z"
                 fill="var(--brand)"
               />
-              <text
-                fill="var(--brand-ink)"
-                fontSize="11"
-                fontWeight="800"
-                style={{ fontFamily: "Saira, Inter, sans-serif" }}
-                textAnchor="middle"
-                x="24"
-                y="23"
-              >
-                VigIA
-              </text>
+              {/* Con cara, la cara; sin ella, el nombre —o su sigla, si no
+                  cabe—. El `clipPath` la recorta en círculo dentro del escudo:
+                  una imagen cuadrada encima del escudo rompe la silueta, que es
+                  justo lo que hace reconocible la burbuja de lejos. */}
+              {agente.avatarUrl ? (
+                <>
+                  <defs>
+                    <clipPath id="vigia-cara">
+                      <circle cx="24" cy="19" r="9" />
+                    </clipPath>
+                  </defs>
+                  <image
+                    clipPath="url(#vigia-cara)"
+                    height="18"
+                    href={agente.avatarUrl}
+                    preserveAspectRatio="xMidYMid slice"
+                    width="18"
+                    x="15"
+                    y="10"
+                  />
+                </>
+              ) : (
+                <text
+                  fill="var(--brand-ink)"
+                  fontSize="11"
+                  fontWeight="800"
+                  style={{ fontFamily: "Saira, Inter, sans-serif" }}
+                  textAnchor="middle"
+                  x="24"
+                  y="23"
+                >
+                  {siglaDelAgente(agente.nombre)}
+                </text>
+              )}
               <path
                 d="M13 33h5l3-6 4 12 3-6h7"
                 fill="none"
@@ -696,10 +755,9 @@ export default function VigiaWidget() {
           }}
         >
           <div
-            aria-label={t(
-              "vigia.dialogAria",
-              "VigIA, asistente de la operación",
-            )}
+            aria-label={t("vigia.dialogAria", "{{agente}}, asistente de la operación", {
+              agente: agente.nombre,
+            })}
             className="flex min-h-0 flex-1 flex-col overflow-hidden border shadow-2xl"
             role="dialog"
             style={{
@@ -735,13 +793,13 @@ export default function VigiaWidget() {
                     <History size={16} />
                   )}
                 </button>
-                <LogoVigia />
+                <LogoVigia avatarUrl={agente.avatarUrl} />
                 <div>
                   <p
                     className="text-sm font-bold leading-none"
                     style={{ fontFamily: "Saira, Inter, sans-serif" }}
                   >
-                    VigIA
+                    {agente.nombre}
                   </p>
                   <p className="text-[11px] opacity-80">
                     {vista === "historial"
@@ -896,7 +954,10 @@ export default function VigiaWidget() {
                       className="mb-2 font-semibold"
                       style={{ color: "var(--ink)" }}
                     >
-                      {t("vigia.emptyTitle", "¿En qué te ayudo?")}
+                      {/* Si el socio escribió un saludo, manda el suyo. Es el
+                          único texto libre suyo de todo esto, y por eso se
+                          pinta aquí y NO llega al modelo: es interfaz. */}
+                      {agente.saludo || t("vigia.emptyTitle", "¿En qué te ayudo?")}
                     </p>
                     <p>{t("vigia.emptyHint", "Puedo, por ejemplo:")}</p>
                     <div className="mt-2 flex flex-wrap gap-1.5">
@@ -1069,7 +1130,7 @@ export default function VigiaWidget() {
                     style={{ color: "var(--ink-soft)" }}
                   >
                     <Loader2 className="animate-spin" size={13} />{" "}
-                    {t("vigia.working", "VigIA está trabajando…")}
+                    {t("vigia.working", "{{agente}} está trabajando…", { agente: agente.nombre })}
                   </div>
                 )}
                 {aviso && (
@@ -1095,10 +1156,10 @@ export default function VigiaWidget() {
               >
                 <textarea
                   ref={entrada}
-                  aria-label={t("vigia.inputAria", "Mensaje para VigIA")}
+                  aria-label={t("vigia.inputAria", "Mensaje para {{agente}}", { agente: agente.nombre })}
                   className="cg-input max-h-28 flex-1 resize-none px-3 py-2 text-sm"
                   disabled={ocupado}
-                  placeholder={t("vigia.placeholder", "Escríbele a VigIA…")}
+                  placeholder={t("vigia.placeholder", "Escríbele a {{agente}}…", { agente: agente.nombre })}
                   rows={1}
                   value={texto}
                   onChange={(e) => {

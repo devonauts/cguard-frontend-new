@@ -6,6 +6,7 @@ import { Search, ChevronRight, Settings2 } from "lucide-react";
 import AppLayout from "@/layouts/app-layout";
 import NAVS from "@/data/settings-nav.json";
 import { settingsIcon } from "@/config/settingsIcons";
+import { useAgente } from "@/lib/agenteDeMarca";
 import {
   PageContainer,
   PageHeader,
@@ -35,6 +36,8 @@ const sinAcentos = (v: string) =>
 
 export default function SettingsHome() {
   const { t } = useTranslation();
+  // Cómo se llama el asistente aquí: en el CRM de un socio, el suyo.
+  const agente = useAgente();
   const [query, setQuery] = useState("");
   const nav = (NAVS as Record<string, { title?: string; sections: Section[] }>)
     .configuracion;
@@ -50,6 +53,7 @@ export default function SettingsHome() {
         items: sec.items.filter((it) => {
           const label = t(`settings.configuracion.${it.id}`, {
             defaultValue: it.label,
+            agente: agente.nombre,
           }) as string;
           // La descripción también traducida: en inglés, buscar «retention» no
           // encontraba nada porque el heno seguía siendo el español del JSON.
@@ -148,8 +152,15 @@ export default function SettingsHome() {
                             <div className="min-w-0 flex-1">
                               <div className="flex items-center justify-between gap-2">
                                 <h3 className="truncate text-sm font-semibold">
+                                  {/* `agente` en TODAS las etiquetas del menú,
+                                      aunque sólo una lo use: el catálogo decide
+                                      cuáles llevan ranura, y pasar el valor sólo
+                                      donde hoy hace falta obliga a acordarse el
+                                      día que se añada otra — y lo que se ve
+                                      cuando falta es «{{agente}}» literal. */}
                                   {t(`settings.configuracion.${item.id}`, {
                                     defaultValue: item.label,
+                                    agente: agente.nombre,
                                   })}
                                 </h3>
                                 <ChevronRight
