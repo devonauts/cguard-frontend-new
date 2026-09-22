@@ -23,6 +23,7 @@ import { useTranslation } from "react-i18next";
 
 import AppLayout from "@/layouts/app-layout";
 import SettingsLayout from "@/layouts/SettingsLayout";
+import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
 import {
   PageContainer,
   PageHeader,
@@ -32,6 +33,9 @@ import {
 
 export default function IntegrationsList() {
   const { t } = useTranslation();
+  /* El nombre del anfitrión: «C-Guard Pro» en el de la plataforma, el del
+     socio en el suyo. Por eso estos textos ya no lo llevan escrito. */
+  const { platformName: nombreDeMarca } = useWhiteLabel();
 
   return (
     <AppLayout>
@@ -39,7 +43,7 @@ export default function IntegrationsList() {
         <PageContainer width="narrow">
           <PageHeader
             icon={<Plug />}
-            subtitle={t("ui.IntegrationsList.conectarCGuardProCon")}
+            subtitle={t("ui.IntegrationsList.conectarCGuardProCon", { marca: nombreDeMarca })}
             title="Conexiones y API"
           />
 

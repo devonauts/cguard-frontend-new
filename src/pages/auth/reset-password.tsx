@@ -16,9 +16,13 @@ import AuthShell, { CAMPO_ICONO, BOTON_PRINCIPAL, Etiqueta } from "./AuthShell";
 
 import { FadeIn, IconTile } from "@/components/kit";
 import { AuthService } from "@/services/auth/authService";
+import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
 
 export default function ResetPassword() {
   const { t } = useTranslation();
+  /* El nombre del anfitrión: «C-Guard Pro» en el de la plataforma, el del
+     socio en el suyo. Por eso estos textos ya no lo llevan escrito. */
+  const { platformName: nombreDeMarca } = useWhiteLabel();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token") || searchParams.get("t") || "";
   // Field users (guards/supervisors) reach this page from the worker-app reset
@@ -109,7 +113,8 @@ export default function ResetPassword() {
         splash={false}
         subtitle={t("auth.reset_done_field_subtitle", {
           defaultValue:
-            "Vuelve a la app C-Guard Pro e inicia sesión con tu nueva contraseña.",
+            "Vuelve a la app de {{marca}} e inicia sesión con tu nueva contraseña.",
+          marca: nombreDeMarca,
         })}
         title={t("auth.reset_done_title", {
           defaultValue: "¡Contraseña actualizada!",
@@ -126,13 +131,15 @@ export default function ResetPassword() {
           >
             {t("auth.reset_done_field_body", {
               defaultValue:
-                "Tu contraseña fue restablecida. Abre la app C-Guard Pro en tu teléfono e inicia sesión con tu correo y tu nueva contraseña.",
+                "Tu contraseña fue restablecida. Abre la app de {{marca}} en tu teléfono e inicia sesión con tu correo y tu nueva contraseña.",
+              marca: nombreDeMarca,
             })}
           </p>
           <a className={BOTON_PRINCIPAL} href="cguardpro://login">
             <Smartphone className="h-4.5 w-4.5" />
             {t("auth.reset_open_app", {
-              defaultValue: "Abrir la app C-Guard Pro",
+              defaultValue: "Abrir la app de {{marca}}",
+              marca: nombreDeMarca,
             })}
           </a>
         </FadeIn>

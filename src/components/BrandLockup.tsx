@@ -122,7 +122,7 @@ export default function BrandLockup({
       className={`cg-lockup ${animated ? "is-animated" : ""} ${className}`.trim()}
     >
       <img
-        alt={t("auth.landing.logo_alt", { defaultValue: platformName })}
+        alt={t("auth.landing.logo_alt", { defaultValue: platformName, marca: platformName })}
         className="cg-lockup__mark cg-lockup__mark--light"
         src="/assets/logo/c-guard-lockup-light.png"
       />

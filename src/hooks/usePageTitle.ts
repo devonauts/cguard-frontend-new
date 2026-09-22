@@ -15,7 +15,7 @@ import { useEffect } from "react";
  * Si no hubiera nombre —un socio sin marca publicada— se deja el título de la
  * página a secas, nunca el nuestro.
  */
-function nombreDelProducto(): string {
+export function nombreDelProducto(): string {
   try {
     return document.documentElement.dataset.nombreDeMarca || "";
   } catch {

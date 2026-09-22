@@ -34,6 +34,7 @@ import { SkeletonBlock, SearchInput } from "@/components/kit";
 import { cn } from "@/lib/utils";
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { nombreDelProducto } from "@/hooks/usePageTitle";
 
 export type SeverityTone = "ok" | "bad" | "warn" | "info" | "neutral";
 
@@ -89,7 +90,7 @@ export const EVENT_META: Record<
   // vistazo en su historial.
   provider_access: {
     labelKey: "security.event.providerAccess",
-    label: "Acceso de soporte (CGuardPro)",
+    label: "Acceso de soporte ({{marca}})",
     icon: <ShieldCheck className="size-3.5" />,
     tone: "warn",
   },
@@ -108,7 +109,16 @@ export const metaFor = (
       tone: "neutral",
     };
 
-  return { label: i18n.t(m.labelKey, m.label), icon: m.icon, tone: m.tone };
+  /* `marca` para las etiquetas que nombran a la plataforma. Este módulo no es
+     un componente —lo llaman tablas y formateadores—, así que el nombre del
+     anfitrión se lee del `<html>`, donde lo deja `WhiteLabelProvider`, y no de
+     `useWhiteLabel()`. En el anfitrión de un socio, el historial de seguridad
+     dice su nombre y no el nuestro. */
+  return {
+    label: i18n.t(m.labelKey, { defaultValue: m.label, marca: nombreDelProducto() }),
+    icon: m.icon,
+    tone: m.tone,
+  };
 };
 
 // ── Formato ─────────────────────────────────────────────────────────────────

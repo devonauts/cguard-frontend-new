@@ -28,6 +28,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { usePermissions } from "@/hooks/usePermissions";
 import api from "@/lib/api";
+import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
 
@@ -59,6 +60,9 @@ const IDLE_OPCIONES: Array<[number, string]> = [
 
 export default function SecurityPolicyPage() {
   const { t } = useTranslation();
+  /* El nombre del anfitrión: «C-Guard Pro» en el de la plataforma, el del
+     socio en el suyo. Por eso estos textos ya no lo llevan escrito. */
+  const { platformName: nombreDeMarca } = useWhiteLabel();
   const { hasPermission } = usePermissions();
   const canEdit = hasPermission("settingsEdit");
   const [password, setPassword] = useState<PasswordPolicy | null>(null);
@@ -272,7 +276,8 @@ export default function SecurityPolicyPage() {
             <p className="mb-3 text-xs" style={{ color: "var(--ink-soft)" }}>
               {t("settings.security.platformHint", {
                 defaultValue:
-                  "Las administra CGuardPro para todas las empresas. Aquí puedes ver si están activas.",
+                  "Las administra {{marca}} para todas las empresas. Aquí puedes ver si están activas.",
+                marca: nombreDeMarca,
               })}
             </p>
             <div className="space-y-3">

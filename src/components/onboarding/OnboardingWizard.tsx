@@ -55,6 +55,7 @@ import {
 import { Combobox } from "@/components/app/combobox";
 import { timezoneOptions } from "@/lib/timezones";
 import { cacheTenantTimezone } from "@/utils/tenantLocation";
+import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
 
 interface OnboardingWizardProps {
   open: boolean;
@@ -202,6 +203,9 @@ export default function OnboardingWizard({
   defaultEmail,
 }: OnboardingWizardProps) {
   const { t } = useTranslation();
+  /* El nombre del anfitrión: «C-Guard Pro» en el de la plataforma, el del
+     socio en el suyo. Por eso estos textos ya no lo llevan escrito. */
+  const { platformName: nombreDeMarca } = useWhiteLabel();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<WizardForm>(emptyForm);
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -424,7 +428,9 @@ export default function OnboardingWizard({
       invalidateTenantBranding();
       await onRefresh();
       toast.success(
-        t("ui.OnboardingWizard.configuracionCompletadaBienvenidoACguardpro"),
+        t("ui.OnboardingWizard.configuracionCompletadaBienvenidoACguardpro", {
+          marca: nombreDeMarca,
+        }),
       );
       // El momento de máxima intención: recién configurado, CRM vacío. VigIA
       // toma la mano — los 13 registros muertos en dashboards vacíos son el
@@ -933,6 +939,9 @@ function WelcomeStep({
   trialEnd: string | null;
 }) {
   const { t } = useTranslation();
+  /* El nombre del anfitrión: «C-Guard Pro» en el de la plataforma, el del
+     socio en el suyo. Por eso estos textos ya no lo llevan escrito. */
+  const { platformName: nombreDeMarca } = useWhiteLabel();
   const items = [
     {
       icon: Building2,
@@ -965,10 +974,10 @@ function WelcomeStep({
       </div>
       <div className="space-y-1.5">
         <h2 className="text-xl font-bold text-foreground">
-          {t(
-            "ui.OnboardingWizard.teDamosLaBienvenidaA",
-            "¡Te damos la bienvenida a CGuardPro!",
-          )}
+          {t("ui.OnboardingWizard.teDamosLaBienvenidaA", {
+            defaultValue: "¡Te damos la bienvenida a {{marca}}!",
+            marca: nombreDeMarca,
+          })}
         </h2>
         <p className="mx-auto max-w-md text-sm text-muted-foreground">
           En menos de 2 minutos dejaremos lista tu empresa para que empieces a

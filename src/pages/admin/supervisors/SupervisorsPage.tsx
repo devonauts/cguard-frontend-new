@@ -53,6 +53,7 @@ import {
 } from "@/lib/api/supervisorService";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { useVistaGuardada } from "@/hooks/useVistaGuardada";
+import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
 
 type StatFilter = "todos" | "enTurno" | "fuera" | "conVehiculo";
 
@@ -70,6 +71,9 @@ const WEEKDAYS = [
 
 export default function SupervisorsPage() {
   const { t } = useTranslation();
+  /* El nombre del anfitrión: «C-Guard Pro» en el de la plataforma, el del
+     socio en el suyo. Por eso estos textos ya no lo llevan escrito. */
+  const { platformName: nombreDeMarca } = useWhiteLabel();
   const navigate = useNavigate();
   const [rows, setRows] = useState<Supervisor[]>([]);
   const [loading, setLoading] = useState(true);
@@ -172,7 +176,7 @@ export default function SupervisorsPage() {
       // no se creó — decir "invitación enviada" haría esperar un correo de
       // registro que no va a llegar (recibe uno de "te dieron acceso").
       if ((sup as any)?.linkedExistingAccount) {
-        toast.success(t("ui.SupervisorsPage.esteCorreoYaTeniaCuenta"), {
+        toast.success(t("ui.SupervisorsPage.esteCorreoYaTeniaCuenta", { marca: nombreDeMarca }), {
           duration: 8000,
         });
       } else {

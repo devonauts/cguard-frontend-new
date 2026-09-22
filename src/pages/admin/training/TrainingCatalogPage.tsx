@@ -9,6 +9,7 @@ import { categoryLabel, levelLabel } from "./trainingConstants";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import { usePermissions } from "@/hooks/usePermissions";
+import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
 import {
   trainingCourseService,
   type TrainingCourse,
@@ -25,6 +26,9 @@ import {
 
 export default function TrainingCatalogPage() {
   const { t } = useTranslation();
+  /* El nombre del anfitrión: «C-Guard Pro» en el de la plataforma, el del
+     socio en el suyo. Por eso estos textos ya no lo llevan escrito. */
+  const { platformName: nombreDeMarca } = useWhiteLabel();
   const navigate = useNavigate();
   const { hasPermission } = usePermissions();
   const canRead = hasPermission("trainingCourseRead");
@@ -78,7 +82,7 @@ export default function TrainingCatalogPage() {
       <PageContainer width="wide">
         <PageHeader
           icon={<GraduationCap />}
-          subtitle={t("ui.TrainingCatalogPage.cursosAddonOtorgadosATu")}
+          subtitle={t("ui.TrainingCatalogPage.cursosAddonOtorgadosATu", { marca: nombreDeMarca })}
           title={t("ui.TrainingCatalogPage.cursosDeLaPlataforma")}
         />
 

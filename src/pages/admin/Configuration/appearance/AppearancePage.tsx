@@ -56,6 +56,7 @@ import {
   choqueConEstado,
 } from "@/contexts/AccentContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
+import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
 
 /** Cómo se verá el relleno del acento en el tema actual. La claridad es la misma
  *  que usa el sistema (0,72 en claro / 0,78 en oscuro): la muestra tiene que ser
@@ -123,6 +124,9 @@ const CSS_DESLIZADOR = `
 
 export default function AppearancePage() {
   const { t } = useTranslation();
+  /* El nombre del anfitrión: «C-Guard Pro» en el de la plataforma, el del
+     socio en el suyo. Por eso estos textos ya no lo llevan escrito. */
+  const { platformName: nombreDeMarca } = useWhiteLabel();
   const { accent, setAccent, resetAccent } = useAccent();
   const { theme, setTheme } = useThemeContext();
   const oscuro = theme === "dark";
@@ -198,7 +202,8 @@ export default function AppearancePage() {
                mientras se toca el color. */
             subtitle={t("settings.appearance.pageSubtitle", {
               defaultValue:
-                "Elige el color con el que se pinta tu C-Guard Pro y si trabajas en claro u oscuro.",
+                "Elige el color con el que se pinta tu {{marca}} y si trabajas en claro u oscuro.",
+              marca: nombreDeMarca,
             })}
             title={t("settings.appearance.pageTitle", {
               defaultValue: "Apariencia",

@@ -18,6 +18,7 @@ import { toast } from "sonner";
 
 import AppLayout from "@/layouts/app-layout";
 import SettingsLayout from "@/layouts/SettingsLayout";
+import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
 import {
   PageContainer,
   PageHeader,
@@ -34,6 +35,9 @@ import {
 
 export default function LanguagePage() {
   const { t } = useTranslation();
+  /* El nombre del anfitrión: «C-Guard Pro» en el de la plataforma, el del
+     socio en el suyo. Por eso estos textos ya no lo llevan escrito. */
+  const { platformName: nombreDeMarca } = useWhiteLabel();
   const { language, choice, setChoice, detected } = useLanguage();
 
   const nombre = (l: keyof typeof LANGUAGES) => LANGUAGES[l].name;
@@ -102,7 +106,8 @@ export default function LanguagePage() {
             icon={<Languages />}
             subtitle={t("settings.language.pageSubtitle", {
               defaultValue:
-                "En qué idioma quieres ver el C-Guard Pro. Normalmente lo decide tu navegador, pero aquí puedes fijarlo tú. El cambio se aplica al instante y se guarda en tu cuenta, así que lo verás igual desde cualquier computadora.",
+                "En qué idioma quieres ver {{marca}}. Normalmente lo decide tu navegador, pero aquí puedes fijarlo tú. El cambio se aplica al instante y se guarda en tu cuenta, así que lo verás igual desde cualquier computadora.",
+              marca: nombreDeMarca,
             })}
             title={t("settings.language.pageTitle", { defaultValue: "Idioma" })}
           />

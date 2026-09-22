@@ -46,6 +46,7 @@ import {
   radioResume,
 } from "@/lib/radioVoiceManager";
 import { useAuth } from "@/contexts/AuthContext";
+import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
 import { alarmService } from "@/lib/api/alarmService";
 import { ApiService } from "@/services/api/apiService";
 import {
@@ -213,6 +214,9 @@ export default function Header({
   notificationsCount = 1,
 }: HeaderProps) {
   const { user, signOut } = useAuth();
+  /* El nombre del anfitrión. En el de la plataforma es «C-Guard Pro»; en el de
+     un socio, el suyo — y por eso estos textos no lo llevan escrito. */
+  const { platformName: nombreDeMarca } = useWhiteLabel();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const radio = useSyncExternalStore(subscribeRadio, getRadioSnapshot);
@@ -729,7 +733,8 @@ export default function Header({
               className="cg-input h-9 w-full pl-9 pr-20 text-sm outline-none"
               placeholder={
                 t("header.searchPlaceholder", {
-                  defaultValue: "Buscar en C-Guard Pro…",
+                  defaultValue: "Buscar en {{marca}}…",
+                  marca: nombreDeMarca,
                 }) as string
               }
               value={consulta}
@@ -1108,7 +1113,7 @@ export default function Header({
                 C-Guard Pro
               </DialogTitle>
               <DialogDescription className="text-center">
-                {t("header.feedback_modal_desc")}
+                {t("header.feedback_modal_desc", { marca: nombreDeMarca })}
               </DialogDescription>
             </DialogHeader>
 
@@ -1117,7 +1122,7 @@ export default function Header({
                 className="mb-8 text-center text-base"
                 style={{ color: "var(--ink)" }}
               >
-                {t("header.feedback_modal_title")}
+                {t("header.feedback_modal_title", { marca: nombreDeMarca })}
               </h3>
 
               <div className="mb-6 flex justify-center gap-2">
