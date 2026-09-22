@@ -3,6 +3,7 @@ import {
 } from "react";
 
 import { restaurarAccentDelUsuario } from "@/lib/acentoDelUsuario";
+import { cargarAnaliticaDelSocio } from "@/lib/analiticaDelSocio";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -54,6 +55,8 @@ export interface ContextoDeMarca {
   loginTagline: string | null;
   support: SoporteDeMarca;
   showPlatformAttribution: boolean;
+  /** La medición del SOCIO. En el anfitrión de la plataforma, los dos `null`. */
+  analytics: { ga4: string | null; gtm: string | null };
 }
 
 /**
@@ -72,6 +75,10 @@ export const MARCA_DE_PLATAFORMA: ContextoDeMarca = {
   loginTagline: null,
   support: { email: null, url: null, phone: null },
   showPlatformAttribution: true,
+  /* La medición de CGuardPro NO se sirve por esta vía: mandarla aquí la
+     cargaría también en el anfitrión de un socio, contando sus visitas en
+     nuestra cuenta. */
+  analytics: { ga4: null, gtm: null },
 };
 
 /** Los recursos de plataforma, para cuando un socio no tiene los suyos. */
@@ -186,7 +193,22 @@ export function normalizarContexto(crudo: unknown): ContextoDeMarca {
     // Sólo un `false` explícito la quita. Cualquier otra cosa la deja puesta:
     // una respuesta rara no puede borrar una atribución que es obligatoria.
     showPlatformAttribution: c.showPlatformAttribution !== false,
+    /* ── LA MEDICIÓN, VALIDADA OTRA VEZ AQUÍ ──────────────────────────────
+       El servidor ya sólo guarda identificadores con forma de Google, pero
+       este valor acaba dentro de la URL de un `<script>`: se vuelve a
+       comprobar antes de usarlo. Un respaldo de más en el camino de un script
+       cuesta una línea; el fallo que evita, no. */
+    analytics: {
+      ga4: idDeMedicion(c?.analytics?.ga4, /^G-[A-Z0-9]{6,18}$/),
+      gtm: idDeMedicion(c?.analytics?.gtm, /^GTM-[A-Z0-9]{5,12}$/),
+    },
   };
+}
+
+/** Un identificador de Google, o nada. Nunca lo que venga. */
+function idDeMedicion(valor: unknown, patron: RegExp): string | null {
+  const v = typeof valor === "string" ? valor.trim().toUpperCase() : "";
+  return v && patron.test(v) ? v : null;
 }
 
 /* ── Aplicar la marca al documento ───────────────────────────────────────── */
@@ -422,6 +444,10 @@ export function WhiteLabelProvider({ children }: { children: ReactNode }) {
       const r = await pedirContexto();
       if (!montado.current) return;
       aplicarMarca(r.ctx);
+      /* La medición del socio, en cuanto se sabe de quién es este anfitrión.
+         Antes no: cargarla con el contexto de plataforma metería las visitas
+         de nuestro CRM en la cuenta de un socio. */
+      cargarAnaliticaDelSocio(r.ctx.analytics);
       setDegradado(r.degradado);
       setCtx(r.ctx);
     })();

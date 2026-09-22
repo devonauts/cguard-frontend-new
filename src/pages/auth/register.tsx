@@ -11,6 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { PhoneInput } from "@/components/phone/PhoneInput";
 import Captcha from "@/components/auth/Captcha";
 import { ApiService } from "@/services/api/apiService";
+import { EVENTOS, medir } from "@/lib/analiticaDelSocio";
 
 export default function Register() {
   const { t } = useTranslation();
@@ -162,6 +163,11 @@ export default function Register() {
 
     if (res?.success) {
       pistaDeAlta("signup_completed");
+      /* El embudo del SOCIO: en su anfitrión, este registro es su conversión.
+         `sign_up` es el nombre recomendado de GA4, así que sus informes de
+         conversión salen sin que tenga que configurar nada. En el anfitrión de
+         la plataforma no hay medición de socio y esto no hace nada. */
+      medir(EVENTOS.registro, { method: "email" });
       toast.success(t("auth.account_created_verify_email"));
       navigate("/login");
     } else {

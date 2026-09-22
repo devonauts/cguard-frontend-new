@@ -21,6 +21,7 @@ import AppLayout from "@/layouts/app-layout";
 import ProviderManagedBilling from "@/components/ProviderManagedBilling";
 import { Button } from "@/components/ui/button";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { EVENTOS, medir } from "@/lib/analiticaDelSocio";
 import {
   PageContainer,
   PageHeader,
@@ -231,6 +232,13 @@ export default function BillingPage() {
     const p = new URLSearchParams(window.location.search);
 
     if (p.get("activated") === "success") {
+      /* La compra, en el momento en que Stripe devuelve al cliente con el pago
+         hecho. `purchase` es el nombre recomendado de GA4.
+
+         El parámetro `activated` se borra unas líneas más abajo justo para que
+         una recarga no repita el aviso — y de paso tampoco repite el evento,
+         que contaría dos veces la misma venta. */
+      medir(EVENTOS.compra);
       toast.success(
         t("billing.activated", {
           defaultValue: "¡Suscripción activada! Gracias.",
@@ -260,7 +268,11 @@ export default function BillingPage() {
     try {
       const res = await subscriptionBillingService.checkout();
 
-      if (res?.url) window.location.href = res.url;
+      if (res?.url) {
+        // Se manda ANTES de salir de la página: después ya no hay página.
+        medir(EVENTOS.inicioDePago);
+        window.location.href = res.url;
+      }
       else
         toast.error(
           t("billing.checkoutError", {
