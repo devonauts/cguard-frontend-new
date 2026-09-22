@@ -1,10 +1,11 @@
 /**
  * ════════════════════════════════════════════════════════════════════════════
- * LA MEDICIÓN DEL SOCIO, EN SU ANFITRIÓN
+ * LA MEDICIÓN DE QUIEN SIRVE ESTA PÁGINA
  *
- * Un socio vende este CRM bajo su marca y mide su propio embudo: quién se
- * registra en su anfitrión y quién acaba pagando un plan. Los identificadores
- * los pone él desde su panel y llegan en el contexto público.
+ * Cada anfitrión mide SU embudo: quién se registra aquí y quién acaba pagando
+ * un plan. En el dominio de un socio, el socio, con los identificadores que
+ * puso en su panel. En el nuestro, CGuard Pro, con los que hay guardados en el
+ * superadmin. Los dos llegan por la misma vía: el contexto público.
  *
  * ── SE COMPONE EL SCRIPT, NO SE PEGA UNO ──────────────────────────────────
  * Del servidor viene `G-…` o `GTM-…` y nada más: una cadena validada por
@@ -14,11 +15,14 @@
  * `innerHTML` con eso dentro es exactamente la vía que el aviso de política de
  * contenido existe para cazar.
  *
- * ── SÓLO EN EL ANFITRIÓN DE UN SOCIO ──────────────────────────────────────
- * En `app.cguardpro.com` el contexto es `platform` y los dos vienen en `null`,
- * así que aquí no se carga nada. La medición de CGuardPro es otra cosa y tiene
- * su propio sitio: mezclarlas contaría las visitas de un socio en nuestra
- * cuenta y las nuestras en la suya.
+ * ── NUNCA LAS DOS A LA VEZ ────────────────────────────────────────────────
+ * Aquí no se decide de quién es la medición: se pinta la que venga en el
+ * contexto, y el contexto trae UNA. Quien decide es el resolutor del backend, y
+ * lo hace por anfitrión — mezclarlas contaría las visitas de un socio en
+ * nuestra cuenta y las nuestras en la suya.
+ *
+ * En un anfitrión que no resuelve a nadie —uno desconocido, uno de un socio
+ * terminado— los dos vienen en `null` y aquí no se carga nada.
  *
  * ── UNA SOLA VEZ POR CARGA ────────────────────────────────────────────────
  * `aplicarMarca` puede volver a correr cuando se sabe de qué empresa es la
@@ -69,7 +73,7 @@ function inyectar(src: string, id: string): void {
  * Es idempotente y no lanza nunca: un bloqueador de anuncios, una red caída o
  * un identificador retirado no pueden dejar sin CRM a nadie.
  */
-export function cargarAnaliticaDelSocio(analitica: AnaliticaDeMarca | null | undefined): void {
+export function cargarAnaliticaDeMarca(analitica: AnaliticaDeMarca | null | undefined): void {
   if (!analitica) return;
   try {
     const { ga4, gtm } = analitica;

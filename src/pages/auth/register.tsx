@@ -11,7 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { PhoneInput } from "@/components/phone/PhoneInput";
 import Captcha from "@/components/auth/Captcha";
 import { ApiService } from "@/services/api/apiService";
-import { EVENTOS, medir } from "@/lib/analiticaDelSocio";
+import { EVENTOS, medir } from "@/lib/analiticaDeMarca";
 
 export default function Register() {
   const { t } = useTranslation();

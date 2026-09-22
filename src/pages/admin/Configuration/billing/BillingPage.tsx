@@ -21,7 +21,7 @@ import AppLayout from "@/layouts/app-layout";
 import ProviderManagedBilling from "@/components/ProviderManagedBilling";
 import { Button } from "@/components/ui/button";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
-import { EVENTOS, medir } from "@/lib/analiticaDelSocio";
+import { EVENTOS, medir } from "@/lib/analiticaDeMarca";
 import {
   PageContainer,
   PageHeader,

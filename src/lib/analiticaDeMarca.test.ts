@@ -38,7 +38,7 @@ function montarNavegador(): ScriptFalso[] {
  * es lo que lo hace posible.
  */
 async function modulo() {
-  return import("./analiticaDelSocio");
+  return import("./analiticaDeMarca");
 }
 
 describe("la medición del socio", () => {
@@ -50,35 +50,35 @@ describe("la medición del socio", () => {
   });
 
   it("sin identificadores no carga nada", async () => {
-    const { cargarAnaliticaDelSocio } = await modulo();
-    cargarAnaliticaDelSocio({ ga4: null, gtm: null });
+    const { cargarAnaliticaDeMarca } = await modulo();
+    cargarAnaliticaDeMarca({ ga4: null, gtm: null });
     expect(puestos).toHaveLength(0);
   });
 
   it("y con el contexto de plataforma tampoco", async () => {
-    const { cargarAnaliticaDelSocio } = await modulo();
-    cargarAnaliticaDelSocio(null);
+    const { cargarAnaliticaDeMarca } = await modulo();
+    cargarAnaliticaDeMarca(null);
     expect(puestos).toHaveLength(0);
   });
 
   it("carga GA4 cuando hay uno, y con su identificador en la URL", async () => {
-    const { cargarAnaliticaDelSocio } = await modulo();
-    cargarAnaliticaDelSocio({ ga4: "G-ABC1234567", gtm: null });
+    const { cargarAnaliticaDeMarca } = await modulo();
+    cargarAnaliticaDeMarca({ ga4: "G-ABC1234567", gtm: null });
     expect(puestos).toHaveLength(1);
     expect(puestos[0].src).toContain("id=G-ABC1234567");
     expect(puestos[0].src.startsWith("https://www.googletagmanager.com/")).toBe(true);
   });
 
   it("carga GTM cuando hay uno", async () => {
-    const { cargarAnaliticaDelSocio } = await modulo();
-    cargarAnaliticaDelSocio({ ga4: null, gtm: "GTM-ABC1234" });
+    const { cargarAnaliticaDeMarca } = await modulo();
+    cargarAnaliticaDeMarca({ ga4: null, gtm: "GTM-ABC1234" });
     expect(puestos[0].src).toContain("gtm.js?id=GTM-ABC1234");
   });
 
   it("NO lo carga dos veces aunque se vuelva a aplicar la marca", async () => {
-    const { cargarAnaliticaDelSocio } = await modulo();
-    cargarAnaliticaDelSocio({ ga4: "G-ABC1234567", gtm: null });
-    cargarAnaliticaDelSocio({ ga4: "G-ABC1234567", gtm: null });
+    const { cargarAnaliticaDeMarca } = await modulo();
+    cargarAnaliticaDeMarca({ ga4: "G-ABC1234567", gtm: null });
+    cargarAnaliticaDeMarca({ ga4: "G-ABC1234567", gtm: null });
     expect(puestos.filter((s) => s.src.includes("G-ABC1234567"))).toHaveLength(1);
   });
 
@@ -99,15 +99,15 @@ describe("la medición del socio", () => {
   });
 
   it("medir con la cola puesta manda el evento", async () => {
-    const { cargarAnaliticaDelSocio, medir } = await modulo();
-    cargarAnaliticaDelSocio({ ga4: "G-XYZ9876543", gtm: null });
+    const { cargarAnaliticaDeMarca, medir } = await modulo();
+    cargarAnaliticaDeMarca({ ga4: "G-XYZ9876543", gtm: null });
     medir("sign_up", { method: "email" });
     expect(((globalThis as any).window.dataLayer as unknown[]).length).toBeGreaterThan(0);
   });
 
   it("un fallo del navegador no tumba la pantalla que lo llamó", async () => {
-    const { cargarAnaliticaDelSocio } = await modulo();
+    const { cargarAnaliticaDeMarca } = await modulo();
     (globalThis as any).document.head.appendChild = () => { throw new Error("bloqueador"); };
-    expect(() => cargarAnaliticaDelSocio({ ga4: "G-ABC1234567", gtm: null })).not.toThrow();
+    expect(() => cargarAnaliticaDeMarca({ ga4: "G-ABC1234567", gtm: null })).not.toThrow();
   });
 });

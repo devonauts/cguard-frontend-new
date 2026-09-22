@@ -3,7 +3,7 @@ import {
 } from "react";
 
 import { restaurarAccentDelUsuario } from "@/lib/acentoDelUsuario";
-import { cargarAnaliticaDelSocio } from "@/lib/analiticaDelSocio";
+import { cargarAnaliticaDeMarca } from "@/lib/analiticaDeMarca";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -447,7 +447,7 @@ export function WhiteLabelProvider({ children }: { children: ReactNode }) {
       /* La medición del socio, en cuanto se sabe de quién es este anfitrión.
          Antes no: cargarla con el contexto de plataforma metería las visitas
          de nuestro CRM en la cuenta de un socio. */
-      cargarAnaliticaDelSocio(r.ctx.analytics);
+      cargarAnaliticaDeMarca(r.ctx.analytics);
       setDegradado(r.degradado);
       setCtx(r.ctx);
     })();
