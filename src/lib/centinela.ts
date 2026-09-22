@@ -159,8 +159,13 @@ function enviar(): void {
   if (!avisos.length) return;
   enviados += avisos.length;
 
+  /* El ANFITRIÓN va delante, no sólo la ruta — desde el 2026-09-22. Sin él, un
+     `origen-ajeno` (la señal de copia) no se distingue de tráfico legítimo en
+     el backend, que sólo veía una ruta pelada como `/dashboard` igual de bien
+     servida desde aquí que desde el dominio de un clon. La consulta y el
+     fragmento SIGUEN sin mandarse — ahí es donde viajan testigos y búsquedas. */
   const cuerpo = JSON.stringify({
-    ruta: location.pathname,
+    ruta: location.origin + location.pathname,
     build: buildDelDocumento(),
     avisos,
   });
