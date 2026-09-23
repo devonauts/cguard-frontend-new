@@ -12485,6 +12485,20 @@
       "guardar": "No se pudo guardar. Inténtalo de nuevo.",
       "propuesta": "No se pudo calcular la propuesta.",
       "aplicar": "No se pudo aplicar la división. No se cambió nada."
+    },
+    "barra": {
+      "elegir": "Elegir sucursal",
+      "todas": "Todas las sucursales",
+      "lasMias": "Todas mis sucursales"
+    },
+    "acceso": {
+      "boton": "Acceso del personal",
+      "titulo": "Qué sucursales ve cada persona",
+      "intro": "«Todas» es lo de siempre. Si eliges sucursales, esa persona sólo verá lo de esas sucursales en todo el CRM, {{agente}} y la app del supervisor. Se guarda al momento.",
+      "cargando": "Cargando al personal…",
+      "vacio": "No hay personal de oficina que limitar.",
+      "admin": "Administrador: ve siempre todas las sucursales.",
+      "todas": "Todas"
     }
   }
 }

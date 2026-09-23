@@ -158,3 +158,28 @@ export function distanciaKm(
 
   return 2 * R * Math.asin(Math.sqrt(h));
 }
+
+// ── Fase 4: quién ve qué ─────────────────────────────────────────────────
+
+export interface MisSucursales {
+  /** true = la persona puede ver todas. */
+  todas: boolean;
+  sucursales: Array<{ id: string; name: string; code: string | null; color: string | null }>;
+}
+
+export interface AccesoDePersona {
+  userId: string;
+  nombre: string;
+  email: string | null;
+  roles: string[];
+  esAdmin: boolean;
+  /** null = todas. */
+  acceso: string[] | null;
+}
+
+export const accesoService = {
+  mias: (): Promise<MisSucursales> => ApiService.get(`${base()}/mine`),
+  listar: (): Promise<{ rows: AccesoDePersona[] }> => ApiService.get(`${base()}/access`),
+  fijar: (userId: string, branchIds: string[] | null): Promise<{ acceso: string[] | null }> =>
+    ApiService.put(`${base()}/access/${userId}`, { branchIds }),
+};

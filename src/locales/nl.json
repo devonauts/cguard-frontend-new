@@ -12432,6 +12432,20 @@
       "guardar": "Opslaan is mislukt. Probeer het opnieuw.",
       "propuesta": "Het voorstel kon niet worden berekend.",
       "aplicar": "De verdeling kon niet worden toegepast. Er is niets gewijzigd."
+    },
+    "barra": {
+      "elegir": "Vestiging kiezen",
+      "todas": "Alle vestigingen",
+      "lasMias": "Al mijn vestigingen"
+    },
+    "acceso": {
+      "boton": "Toegang personeel",
+      "titulo": "Welke vestigingen iedereen ziet",
+      "intro": "‘Alle’ is de standaard. Kiest u vestigingen, dan ziet die persoon alleen die vestigingen in het hele CRM, {{agente}} en de supervisor-app. Wordt direct opgeslagen.",
+      "cargando": "Personeel laden…",
+      "vacio": "Er is geen kantoorpersoneel om te beperken.",
+      "admin": "Beheerder: ziet altijd alle vestigingen.",
+      "todas": "Alle"
     }
   }
 }

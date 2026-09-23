@@ -74,6 +74,7 @@ import MENU from "@/data/sidebar-menu.json";
 import { useTiendaDeModulos } from "@/hooks/useTiendaDeModulos";
 import NAVS from "@/data/settings-nav.json";
 import TenantSwitcher from "@/components/TenantSwitcher";
+import SelectorDeSucursal from "@/components/SelectorDeSucursal";
 import { useAgente } from "@/lib/agenteDeMarca";
 
 type HeaderProps = {
@@ -870,6 +871,11 @@ export default function Header({
             empresa activa. */}
           <div className="mr-1 hidden sm:block">
             <TenantSwitcher />
+          </div>
+
+          {/* Módulo Sucursales: la sucursal activa acota todo lo de abajo. */}
+          <div className="mr-1 hidden sm:block">
+            <SelectorDeSucursal />
           </div>
 
           <div className="mr-1 hidden sm:block">

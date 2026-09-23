@@ -12485,6 +12485,20 @@
       "guardar": "Não foi possível salvar. Tente novamente.",
       "propuesta": "Não foi possível calcular a proposta.",
       "aplicar": "Não foi possível aplicar a divisão. Nada foi alterado."
+    },
+    "barra": {
+      "elegir": "Escolher filial",
+      "todas": "Todas as filiais",
+      "lasMias": "Todas as minhas filiais"
+    },
+    "acceso": {
+      "boton": "Acesso da equipe",
+      "titulo": "Quais filiais cada pessoa vê",
+      "intro": "«Todas» é o de sempre. Se você escolher filiais, essa pessoa só verá essas filiais em todo o CRM, na {{agente}} e no app do supervisor. Salva na hora.",
+      "cargando": "Carregando a equipe…",
+      "vacio": "Não há equipe de escritório para limitar.",
+      "admin": "Administrador: vê sempre todas as filiais.",
+      "todas": "Todas"
     }
   }
 }

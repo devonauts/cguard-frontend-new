@@ -12485,6 +12485,20 @@
       "guardar": "Could not save. Please try again.",
       "propuesta": "Could not work out the proposal.",
       "aplicar": "Could not apply the split. Nothing was changed."
+    },
+    "barra": {
+      "elegir": "Choose branch",
+      "todas": "All branches",
+      "lasMias": "All my branches"
+    },
+    "acceso": {
+      "boton": "Staff access",
+      "titulo": "Which branches each person sees",
+      "intro": "“All” is the usual. If you pick branches, that person will only see those branches across the CRM, {{agente}} and the supervisor app. Changes save instantly.",
+      "cargando": "Loading staff…",
+      "vacio": "There are no office staff to limit.",
+      "admin": "Administrator: always sees every branch.",
+      "todas": "All"
     }
   }
 }

@@ -12432,6 +12432,20 @@
       "guardar": "Speichern nicht möglich. Bitte erneut versuchen.",
       "propuesta": "Der Vorschlag konnte nicht berechnet werden.",
       "aplicar": "Die Aufteilung konnte nicht angewendet werden. Es wurde nichts geändert."
+    },
+    "barra": {
+      "elegir": "Niederlassung wählen",
+      "todas": "Alle Niederlassungen",
+      "lasMias": "Alle meine Niederlassungen"
+    },
+    "acceso": {
+      "boton": "Zugriff des Personals",
+      "titulo": "Welche Niederlassungen jede Person sieht",
+      "intro": "„Alle“ ist der Normalfall. Wenn Sie Niederlassungen wählen, sieht diese Person im gesamten CRM, in {{agente}} und in der Supervisor-App nur diese. Wird sofort gespeichert.",
+      "cargando": "Personal wird geladen…",
+      "vacio": "Kein Büropersonal zum Einschränken.",
+      "admin": "Administrator: sieht immer alle Niederlassungen.",
+      "todas": "Alle"
     }
   }
 }

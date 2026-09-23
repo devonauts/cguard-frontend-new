@@ -12432,6 +12432,20 @@
       "guardar": "Nie udało się zapisać. Spróbuj ponownie.",
       "propuesta": "Nie udało się obliczyć propozycji.",
       "aplicar": "Nie udało się zastosować podziału. Nic nie zostało zmienione."
+    },
+    "barra": {
+      "elegir": "Wybierz oddział",
+      "todas": "Wszystkie oddziały",
+      "lasMias": "Wszystkie moje oddziały"
+    },
+    "acceso": {
+      "boton": "Dostęp personelu",
+      "titulo": "Które oddziały widzi każda osoba",
+      "intro": "„Wszystkie” to ustawienie domyślne. Jeśli wybierzesz oddziały, ta osoba zobaczy tylko je w całym CRM, w {{agente}} i w aplikacji przełożonego. Zapisuje się od razu.",
+      "cargando": "Wczytywanie personelu…",
+      "vacio": "Brak personelu biurowego do ograniczenia.",
+      "admin": "Administrator: zawsze widzi wszystkie oddziały.",
+      "todas": "Wszystkie"
     }
   }
 }

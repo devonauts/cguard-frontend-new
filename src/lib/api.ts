@@ -8,6 +8,7 @@ import {
 import { autoInvalidateForMutation } from "@/lib/queryClient";
 import { anotarPeticion } from "@/lib/diagnosticoDeRed";
 import { manejarPagoRequerido } from "@/lib/pagoRequerido";
+import { cabeceraDeSucursal } from "@/lib/sucursalElegida";
 
 const API_URL = import.meta.env.VITE_API_URL as string | undefined;
 
@@ -63,6 +64,18 @@ api.interceptors.request.use((config) => {
     /* el diagnóstico jamás puede tumbar una petición */
   }
   const token = getAuthToken();
+
+  // Módulo Sucursales: la sucursal elegida en la barra superior.
+  try {
+    const b = cabeceraDeSucursal()["x-cguard-branch"];
+
+    if (b) {
+      if (!config.headers) config.headers = {} as any;
+      (config.headers as any)["x-cguard-branch"] = b;
+    }
+  } catch {
+    /* sin sucursal elegida */
+  }
 
   if (token) {
     if (!config.headers) config.headers = {} as any;

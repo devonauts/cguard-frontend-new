@@ -38,6 +38,7 @@ import {
   Plus,
   Settings2,
   Siren,
+  UserCog,
 } from "lucide-react";
 
 import { OperationsMap } from "../components/OperationsMap";
@@ -45,6 +46,7 @@ import { Panel } from "../components/Panel";
 
 import { repartir, SIN_SUCURSAL } from "./repartir";
 import { EditorDeSucursal } from "./EditorDeSucursal";
+import { AccesoDelPersonal } from "./AccesoDelPersonal";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -151,6 +153,7 @@ export function CarruselDeSucursales({
     abierto: false,
     sucursal: null,
   });
+  const [accesos, setAccesos] = useState(false);
 
   const refrescar = () => qc.invalidateQueries({ queryKey: ["sucursales"] });
 
@@ -202,6 +205,12 @@ export function CarruselDeSucursales({
     <Panel
       action={
         <div className="flex items-center gap-1.5">
+          {organizando && (
+            <Button size="sm" type="button" variant="outline" onClick={() => setAccesos(true)}>
+              <UserCog className="mr-1.5 size-3.5" />
+              {t("sucursales.acceso.boton")}
+            </Button>
+          )}
           <Button
             size="sm"
             type="button"
@@ -280,6 +289,12 @@ export function CarruselDeSucursales({
           onCambio={refrescar}
         />
       )}
+
+      <AccesoDelPersonal
+        abierto={accesos}
+        sucursales={lista.sucursales}
+        onCerrar={() => setAccesos(false)}
+      />
 
       <EditorDeSucursal
         abierto={editor.abierto}

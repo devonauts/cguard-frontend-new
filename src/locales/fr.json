@@ -12432,6 +12432,20 @@
       "guardar": "Impossible d’enregistrer. Réessayez.",
       "propuesta": "Impossible de calculer la proposition.",
       "aplicar": "Impossible d’appliquer la division. Rien n’a été modifié."
+    },
+    "barra": {
+      "elegir": "Choisir une agence",
+      "todas": "Toutes les agences",
+      "lasMias": "Toutes mes agences"
+    },
+    "acceso": {
+      "boton": "Accès du personnel",
+      "titulo": "Les agences que voit chaque personne",
+      "intro": "« Toutes » est le réglage habituel. Si vous choisissez des agences, cette personne ne verra que celles-ci dans tout le CRM, {{agente}} et l’application du superviseur. L’enregistrement est immédiat.",
+      "cargando": "Chargement du personnel…",
+      "vacio": "Aucun personnel de bureau à limiter.",
+      "admin": "Administrateur : voit toujours toutes les agences.",
+      "todas": "Toutes"
     }
   }
 }

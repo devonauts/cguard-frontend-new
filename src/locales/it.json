@@ -12432,6 +12432,20 @@
       "guardar": "Impossibile salvare. Riprova.",
       "propuesta": "Impossibile calcolare la proposta.",
       "aplicar": "Impossibile applicare la divisione. Non è stato modificato nulla."
+    },
+    "barra": {
+      "elegir": "Scegli filiale",
+      "todas": "Tutte le filiali",
+      "lasMias": "Tutte le mie filiali"
+    },
+    "acceso": {
+      "boton": "Accesso del personale",
+      "titulo": "Quali filiali vede ogni persona",
+      "intro": "«Tutte» è l’impostazione abituale. Se scegli delle filiali, quella persona vedrà solo quelle in tutto il CRM, in {{agente}} e nell’app del supervisore. Si salva subito.",
+      "cargando": "Caricamento del personale…",
+      "vacio": "Non c’è personale d’ufficio da limitare.",
+      "admin": "Amministratore: vede sempre tutte le filiali.",
+      "todas": "Tutte"
     }
   }
 }

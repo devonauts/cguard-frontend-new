@@ -7,6 +7,7 @@ import {
 import { autoInvalidateForMutation } from "@/lib/queryClient";
 import { anotarPeticion } from "@/lib/diagnosticoDeRed";
 import { manejarPagoRequerido } from "@/lib/pagoRequerido";
+import { cabeceraDeSucursal } from "@/lib/sucursalElegida";
 const API_BASE_URL = (
   import.meta.env.VITE_API_URL ?? "http://localhost:3001/api"
 ).replace(/\/+$/, "");
@@ -44,6 +45,7 @@ export class ApiService {
     const headers: Record<string, string> = {
       Accept: "application/json",
       "Content-Type": "application/json",
+      ...cabeceraDeSucursal(),
       ...(options.headers || {}),
     };
 
@@ -265,6 +267,7 @@ export class ApiService {
     const token = localStorage.getItem("authToken");
 
     const headers: Record<string, string> = {
+      ...cabeceraDeSucursal(),
       ...(options.headers || {}),
     };
 
