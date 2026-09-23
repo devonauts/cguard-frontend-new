@@ -84,6 +84,9 @@ import { useEsMovil } from "./useMovil";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import AppLayout from "@/layouts/app-layout";
+import { useSucursales } from "@/hooks/useSucursales";
+import { CarruselDeSucursales } from "./sucursales/CarruselDeSucursales";
+import { InvitacionADividir } from "./sucursales/InvitacionADividir";
 
 const KPI_ICON: Record<string, LucideIcon> = {
   onDuty: User,
@@ -165,6 +168,12 @@ export default function ControlCenter() {
   // En modo demo se muestra la muestra poblada para que un negocio nuevo pueda
   // ver el panel en operación. El refresco sigue siendo el real.
   const data = demo ? { ...demoData, refresh: live.refresh } : live;
+
+  // Módulo SUCURSALES: con la operación dividida, el mapa general deja paso al
+  // carrusel de sucursales. Sin el módulo no se pide nada y todo sigue igual.
+  const suc = useSucursales();
+  const divididas = suc.activo ? suc.lista.data?.sucursales.length ?? 0 : 0;
+  const invitarADividir = suc.activo && suc.lista.isSuccess && divididas === 0;
 
   const openFullMap = () =>
     window.open(
@@ -286,16 +295,30 @@ export default function ControlCenter() {
                 ))}
               </Stagger>
 
-              {/* ── 2. MAPA + DIAL + RIEL ─────────────────────────────────── */}
+              {invitarADividir && <InvitacionADividir />}
+
+              {/* ── 2. MAPA (o SUCURSALES) + DIAL + RIEL ───────────────────── */}
               <div className="grid gap-5 xl:grid-cols-12">
-                <MapPanel
-                  className="xl:col-span-8"
-                  defaultCenter={data.defaultCenter}
-                  entities={data.entities}
-                  live={data.health.sseConnected}
-                  prefs={prefs}
-                  onFull={openFullMap}
-                />
+                {divididas > 0 && suc.lista.data ? (
+                  <CarruselDeSucursales
+                    className="xl:col-span-8"
+                    defaultCenter={data.defaultCenter}
+                    entities={data.entities}
+                    lista={suc.lista.data}
+                    live={data.health.sseConnected}
+                    prefs={prefs}
+                    resumen={suc.resumen.data}
+                  />
+                ) : (
+                  <MapPanel
+                    className="xl:col-span-8"
+                    defaultCenter={data.defaultCenter}
+                    entities={data.entities}
+                    live={data.health.sseConnected}
+                    prefs={prefs}
+                    onFull={openFullMap}
+                  />
+                )}
 
                 <div className="flex flex-col gap-5 xl:col-span-4">
                   <Panel
