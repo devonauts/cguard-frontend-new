@@ -12446,6 +12446,12 @@
       "vacio": "Kein Büropersonal zum Einschränken.",
       "admin": "Administrator: sieht immer alle Niederlassungen.",
       "todas": "Alle"
+    },
+    "sede": {
+      "campo": "Niederlassung",
+      "automatica": "Automatisch (nach Stadt)",
+      "iraA": "Kommt wegen der Stadt zu „{{nombre}}“.",
+      "sinCoincidencia": "Die Stadt gehört zu keiner Niederlassung: Der Standort bleibt „Ohne Niederlassung“ und kann im Dashboard zugeordnet werden."
     }
   }
 }

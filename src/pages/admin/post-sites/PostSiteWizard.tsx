@@ -61,6 +61,7 @@ import { useClientSelection } from "@/contexts/ClientSelectionContext";
 import { getServiceType } from "@/lib/serviceTypes";
 import { Section, EmptyState, IconTile } from "@/components/kit";
 import i18n from "@/i18n";
+import CampoSucursalDeSede from "@/components/post-sites/CampoSucursalDeSede";
 
 // ─── types ────────────────────────────────────────────────────────────────────
 
@@ -760,6 +761,8 @@ export default function PostSiteWizard({
   const [address, setAddress] = useState("");
   const [addressLine2, setAddressLine2] = useState("");
   const [city, setCity] = useState("");
+  // Módulo Sucursales: null = automática (por su ciudad / el alcance).
+  const [branchId, setBranchId] = useState<string | null>(null);
   const [country, setCountry] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [latitud, setLatitud] = useState("");
@@ -853,6 +856,7 @@ export default function PostSiteWizard({
         setAddress(d.address ?? "");
         setAddressLine2(d.secondAddress ?? d.addressLine2 ?? "");
         setCity(d.city ?? "");
+        setBranchId(d.branchId ?? null);
         setCountry(d.country ?? "");
         setPostalCode(d.postalCode ?? "");
         setLatitud(String(d.latitud ?? d.latitude ?? ""));
@@ -1042,6 +1046,8 @@ export default function PostSiteWizard({
       serviceType,
       serviceConfig: finalConfig,
       status,
+      // Sólo si se eligió una: «automática» deja que el servidor la coloque.
+      ...(branchId ? { branchId } : {}),
     };
   };
 
@@ -1756,6 +1762,7 @@ export default function PostSiteWizard({
                   </div>
                 </div>
               )}
+              <CampoSucursalDeSede ciudad={city} value={branchId} onChange={setBranchId} />
             </div>
           )}
 

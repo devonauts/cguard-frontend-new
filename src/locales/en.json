@@ -12499,6 +12499,12 @@
       "vacio": "There are no office staff to limit.",
       "admin": "Administrator: always sees every branch.",
       "todas": "All"
+    },
+    "sede": {
+      "campo": "Branch",
+      "automatica": "Automatic (by its city)",
+      "iraA": "It will go to “{{nombre}}” because of its city.",
+      "sinCoincidencia": "Its city isn't in any branch: it will stay under “No branch” and you can assign it from the dashboard."
     }
   }
 }

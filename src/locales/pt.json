@@ -12499,6 +12499,12 @@
       "vacio": "Não há equipe de escritório para limitar.",
       "admin": "Administrador: vê sempre todas as filiais.",
       "todas": "Todas"
+    },
+    "sede": {
+      "campo": "Filial",
+      "automatica": "Automática (pela cidade)",
+      "iraA": "Irá para «{{nombre}}» pela cidade.",
+      "sinCoincidencia": "A cidade não está em nenhuma filial: ficará em «Sem filial» e você poderá atribuí-la pelo painel."
     }
   }
 }

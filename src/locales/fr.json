@@ -12446,6 +12446,12 @@
       "vacio": "Aucun personnel de bureau à limiter.",
       "admin": "Administrateur : voit toujours toutes les agences.",
       "todas": "Toutes"
+    },
+    "sede": {
+      "campo": "Agence",
+      "automatica": "Automatique (selon sa ville)",
+      "iraA": "Il ira dans « {{nombre}} » selon sa ville.",
+      "sinCoincidencia": "Sa ville n’est dans aucune agence : il restera « Sans agence » et vous pourrez l’affecter depuis le tableau de bord."
     }
   }
 }

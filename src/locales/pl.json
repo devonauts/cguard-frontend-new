@@ -12446,6 +12446,12 @@
       "vacio": "Brak personelu biurowego do ograniczenia.",
       "admin": "Administrator: zawsze widzi wszystkie oddziały.",
       "todas": "Wszystkie"
+    },
+    "sede": {
+      "campo": "Oddział",
+      "automatica": "Automatycznie (według miasta)",
+      "iraA": "Trafi do: {{nombre}} (według miasta).",
+      "sinCoincidencia": "Miasto nie należy do żadnego oddziału: obiekt pozostanie „Bez oddziału” i możesz go przypisać z pulpitu."
     }
   }
 }

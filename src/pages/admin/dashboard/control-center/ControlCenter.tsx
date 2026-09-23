@@ -232,6 +232,11 @@ export default function ControlCenter() {
             prefs={prefs}
             railItems={railItems}
             resumen={resumen}
+            sucursales={
+              divididas > 0 && suc.lista.data
+                ? { lista: suc.lista.data, resumen: suc.resumen.data }
+                : undefined
+            }
             userName={nombreDe(user)}
             onCustomize={() => setCustomizeOpen(true)}
             onDemo={toggleDemo}

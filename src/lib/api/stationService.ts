@@ -383,6 +383,8 @@ const stationService = {
       finishTimeInDay: p.finishTimeInDay ?? undefined,
       serviceType: p.serviceType ?? undefined,
       serviceConfig: p.serviceConfig ?? undefined,
+      // Módulo Sucursales: sin elegir, el servidor la coloca por su ciudad.
+      branchId: (p as { branchId?: string | null }).branchId ?? undefined,
     };
     const { data } = await api.post(`/tenant/${tenantId}/post-site`, body);
     invalidateEntity("stations");
@@ -457,6 +459,10 @@ const stationService = {
       finishTimeInDay: p.finishTimeInDay ?? existing.finishTimeInDay,
       serviceType: p.serviceType ?? existing.serviceType ?? undefined,
       serviceConfig: p.serviceConfig ?? existing.serviceConfig ?? undefined,
+      // Módulo Sucursales: sólo si se eligió una; si no, no se toca.
+      ...((p as { branchId?: string | null }).branchId
+        ? { branchId: (p as { branchId?: string | null }).branchId }
+        : {}),
     };
     const { data } = await api.put(`/tenant/${tenantId}/post-site/${id}`, body);
     invalidateEntity("stations");

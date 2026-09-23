@@ -62,6 +62,11 @@ import { TrendPanel } from "./TrendPanel";
 import { SystemStatus } from "./SystemStatus";
 import { StatCarousel } from "./StatCarousel";
 import { BottomSheet } from "./BottomSheet";
+import {
+  PastillasDeSucursal,
+  useFocoDeSucursal,
+  type SucursalesParaMovil,
+} from "../sucursales/SucursalesMovil";
 
 import {
   AlCambiar,
@@ -95,6 +100,7 @@ export function MobileCommandCenter({
   resumen,
   userName,
   cargando,
+  sucursales,
 }: {
   data: ControlCenterData & { refresh: () => void };
   prefs: DashboardPrefs;
@@ -109,8 +115,12 @@ export function MobileCommandCenter({
   resumen: string;
   userName: string;
   cargando: boolean;
+  /** Módulo Sucursales con la operación dividida: el mapa se centra en una. */
+  sucursales?: SucursalesParaMovil;
 }) {
   const { t } = useTranslation();
+  const foco = useFocoDeSucursal(sucursales, data.entities, t("sucursales.sinSucursal"));
+  const enFoco = foco.actual;
   const contRef = useRef<HTMLDivElement | null>(null);
   const carruselRef = useRef<HTMLDivElement | null>(null);
   const umbralRef = useRef(320);
@@ -215,8 +225,9 @@ export function MobileCommandCenter({
           hoja, y esas mismas cifras ya están en las tarjetas. */}
       <div className="cc-movil-mapa">
         <OperationsMap
-          defaultCenter={data.defaultCenter}
-          entities={data.entities}
+          key={enFoco?.clave || "todo"}
+          defaultCenter={enFoco?.centro || data.defaultCenter}
+          entities={enFoco ? enFoco.entidades : data.entities}
           height={alto || 520}
           hud={false}
           prefs={prefs}
@@ -269,6 +280,15 @@ export function MobileCommandCenter({
           >
             <SlidersHorizontal className="size-4" />
           </button>
+        </div>
+
+        {/* Módulo Sucursales: el mapa se centra en la sucursal elegida. */}
+        <div className="mt-2">
+          <PastillasDeSucursal
+            actual={foco.actual}
+            pastillas={foco.pastillas}
+            onElegir={foco.elegir}
+          />
         </div>
       </div>
 

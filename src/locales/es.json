@@ -12499,6 +12499,12 @@
       "vacio": "No hay personal de oficina que limitar.",
       "admin": "Administrador: ve siempre todas las sucursales.",
       "todas": "Todas"
+    },
+    "sede": {
+      "campo": "Sucursal",
+      "automatica": "Automática (por su ciudad)",
+      "iraA": "Irá a «{{nombre}}» por su ciudad.",
+      "sinCoincidencia": "Su ciudad no está en ninguna sucursal: quedará en «Sin sucursal» y podrás asignarla desde el panel."
     }
   }
 }

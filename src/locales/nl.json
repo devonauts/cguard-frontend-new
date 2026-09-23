@@ -12446,6 +12446,12 @@
       "vacio": "Er is geen kantoorpersoneel om te beperken.",
       "admin": "Beheerder: ziet altijd alle vestigingen.",
       "todas": "Alle"
+    },
+    "sede": {
+      "campo": "Vestiging",
+      "automatica": "Automatisch (op stad)",
+      "iraA": "Gaat naar ‘{{nombre}}’ vanwege de stad.",
+      "sinCoincidencia": "De stad hoort bij geen vestiging: de locatie blijft ‘Zonder vestiging’ en u kunt die op het dashboard toewijzen."
     }
   }
 }
