@@ -5302,6 +5302,10 @@
           "label": "Visitas"
         }
       }
+    },
+    "sections": {
+      "active": "Ativos",
+      "archived": "Arquivados"
     }
   },
   "header": {

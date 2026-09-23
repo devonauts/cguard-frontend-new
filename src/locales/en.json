@@ -1143,6 +1143,10 @@
           "label": "Visits"
         }
       }
+    },
+    "sections": {
+      "active": "Active",
+      "archived": "Archived"
     }
   },
   "common": {

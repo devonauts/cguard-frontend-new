@@ -891,6 +891,10 @@
           "label": "Visites"
         }
       }
+    },
+    "sections": {
+      "active": "Actifs",
+      "archived": "Archivés"
     }
   },
   "common": {

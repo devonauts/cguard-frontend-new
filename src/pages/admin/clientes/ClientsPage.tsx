@@ -334,7 +334,7 @@ export default function ClientesPage() {
   // Reset bulk action selector when filter (active state) changes to reflect new options
   useEffect(() => {
     setBulkKey((k) => k + 1);
-  }, [filters.active]);
+  }, [filters.active, filters.archived]);
 
   useEffect(() => {
     loadClients();
@@ -605,7 +605,9 @@ export default function ClientesPage() {
         label: t("actions.manageCategories"),
       });
     return actions;
-  }, [filters.active, hasPermission, t]);
+    /* `archived` también: de «Todos» a «Archivados» `active` no cambia (sigue
+       sin poner) y sin esto no aparecía «Restaurar». */
+  }, [filters.active, filters.archived, hasPermission, t]);
 
   const columns: Column<Client>[] = useMemo(
     () => [
@@ -902,6 +904,30 @@ export default function ClientesPage() {
                 actions={bulkActions}
                 onChange={handleBulkAction}
               />
+              {/* La puerta a Archivados, a la vista. Antes sólo estaba dentro
+                  del panel de Filtros y nadie la encontraba: un cliente que
+                  suspendió el servicio no tenía por dónde volver. */}
+              <Segmented
+                value={
+                  filters.archived
+                    ? "archived"
+                    : filters.active === true
+                      ? "active"
+                      : ("" as "active")
+                }
+                onChange={(v) => {
+                  setSelectedIds([]);
+                  setFilters(
+                    v === "archived"
+                      ? { ...filters, active: undefined, archived: true }
+                      : { ...filters, active: true, archived: undefined },
+                  );
+                }}
+                options={[
+                  { value: "active", label: t("clients.sections.active", "Activos") },
+                  { value: "archived", label: t("clients.sections.archived", "Archivados") },
+                ]}
+              />
             </div>
 
             <div className="flex justify-center">
@@ -1030,10 +1056,13 @@ export default function ClientesPage() {
                         <Label>{t("clients.filters.status")}</Label>
                         <Select
                           value={
-                            filters.active === undefined
-                              ? "all"
-                              : filters.archived
-                                ? "inactive"
+                            /* `archived` PRIMERO: al entrar en Archivados se
+                               limpia `active`, y mirándolo antes el selector
+                               decía «Todos» estando en Archivados. */
+                            filters.archived
+                              ? "inactive"
+                              : filters.active === undefined
+                                ? "all"
                                 : filters.active
                                   ? "active"
                                   : "inactive"

@@ -891,6 +891,10 @@
           "label": "Besuche"
         }
       }
+    },
+    "sections": {
+      "active": "Aktiv",
+      "archived": "Archiviert"
     }
   },
   "common": {

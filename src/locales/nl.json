@@ -891,6 +891,10 @@
           "label": "Bezoeken"
         }
       }
+    },
+    "sections": {
+      "active": "Actief",
+      "archived": "Gearchiveerd"
     }
   },
   "common": {

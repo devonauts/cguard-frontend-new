@@ -891,6 +891,10 @@
           "label": "Wizyty"
         }
       }
+    },
+    "sections": {
+      "active": "Aktywni",
+      "archived": "Zarchiwizowani"
     }
   },
   "common": {

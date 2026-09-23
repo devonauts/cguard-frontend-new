@@ -891,6 +891,10 @@
           "label": "Visite"
         }
       }
+    },
+    "sections": {
+      "active": "Attivi",
+      "archived": "Archiviati"
     }
   },
   "common": {
