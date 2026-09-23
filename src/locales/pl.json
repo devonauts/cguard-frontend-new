@@ -5419,7 +5419,8 @@
     "goToDashboard": "Przejdź do panelu",
     "unreadMessages": "{{count}} nieprzeczytanych",
     "emergencias": "Centrum alarmowe",
-    "pases-de-turno": "Zdania służby"
+    "pases-de-turno": "Zdania służby",
+    "modulos-adicionales": "Moduły dodatkowe"
   },
   "siteTour": {
     "newTour": "Nowy obchód",
@@ -12291,6 +12292,45 @@
       "title": "Nowy obchód",
       "wherePh": "Gdzie przyklejona jest etykieta (opcjonalnie) — np. obok kołowrotu",
       "pendingPlacement": "{{n}} punktów nadal znajduje się we współrzędnych posterunku. Dopóki dzielą to samo miejsce, sprawdzanie bliskości ich nie rozróżni."
+    }
+  },
+  "modulosAdicionales": {
+    "titulo": "Moduły dodatkowe",
+    "subtitulo": "Funkcje kupowane osobno. Płacisz raz i są Twoje na zawsze.",
+    "pagoUnico": "płatność jednorazowa",
+    "comprar": "Kup",
+    "comprando": "Przetwarzanie…",
+    "activo": "Aktywny",
+    "pendiente": "Płatność oczekująca",
+    "yaEsTuyo": "Już Twój",
+    "completarPago": "Dokończ płatność",
+    "irAFacturacion": "Przejdź do Planu i rozliczeń",
+    "confirmar": {
+      "titulo": "Kup: {{nombre}}",
+      "mensaje": "Z karty Twojej subskrypcji zostanie jednorazowo pobrane {{precio}}. {{nombre}} pozostanie aktywny na zawsze.",
+      "boton": "Zapłać {{precio}}"
+    },
+    "exito": "{{nombre}} jest już aktywny.",
+    "pendienteAviso": "Twój bank prosi o potwierdzenie płatności. Przekierowujemy Cię na stronę płatności; moduł zostanie aktywowany po jej dokończeniu.",
+    "vacio": {
+      "titulo": "Brak dostępnych modułów",
+      "desc": "Gdy pojawią się moduły dodatkowe dla Twojej firmy, zobaczysz je tutaj."
+    },
+    "socio": {
+      "titulo": "Aktywuje go Twój dystrybutor",
+      "desc": "Twoją firmę rozlicza dystrybutor. Poproś go o wybrany moduł, a on go aktywuje."
+    },
+    "motivos": {
+      "implementacion_sin_pagar": "Moduły można kupić po opłaceniu wdrożenia.",
+      "suscripcion_no_activa": "Moduły można kupić przy aktualnej subskrypcji.",
+      "suspendida": "Twoja firma jest zawieszona. Skontaktuj się z pomocą techniczną.",
+      "la_factura_el_socio": "Moduły aktywuje Twój dystrybutor.",
+      "sin_empresa": "Nie udało się ustalić Twojej firmy.",
+      "sin_cliente_stripe": "Nie znaleźliśmy metody płatności Twojej firmy. Sprawdź ją w Planie i rozliczeniach.",
+      "revocado": "Ten moduł został odebrany Twojej firmie. Skontaktuj się z pomocą techniczną.",
+      "en_proceso": "Ten zakup jest już przetwarzany. Poczekaj kilka sekund.",
+      "no_a_la_venta": "Ten moduł nie jest w sprzedaży.",
+      "error": "Nie udało się dokończyć zakupu. Spróbuj ponownie."
     }
   }
 }

@@ -158,6 +158,9 @@ const CommunicationsPage = lazy(
 const BillingPage = lazy(
   () => import("./pages/admin/Configuration/billing/BillingPage"),
 );
+const ModulosAdicionalesPage = lazy(
+  () => import("./pages/admin/modulos/ModulosAdicionalesPage"),
+);
 const ActivitiesPage = lazy(
   () => import("./pages/admin/actividades/ActivitiesPage"),
 );
@@ -2541,6 +2544,14 @@ export default function App() {
                                 </ProtectedRoute>
                               }
                               path="/setting/billing"
+                            />
+                            <Route
+                              element={
+                                <ProtectedRoute>
+                                  <ModulosAdicionalesPage />
+                                </ProtectedRoute>
+                              }
+                              path="/modulos-adicionales"
                             />
                             <Route
                               element={

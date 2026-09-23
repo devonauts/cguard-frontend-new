@@ -5419,7 +5419,8 @@
     "goToDashboard": "Aller au tableau de bord",
     "unreadMessages": "{{count}} messages non lus",
     "emergencias": "Centre des urgences",
-    "pases-de-turno": "Relèves"
+    "pases-de-turno": "Relèves",
+    "modulos-adicionales": "Modules complémentaires"
   },
   "siteTour": {
     "newTour": "Nouvelle ronde",
@@ -12291,6 +12292,45 @@
       "title": "Nouvelle ronde",
       "wherePh": "Où l’étiquette est collée (facultatif) — p. ex. à côté du tourniquet",
       "pendingPlacement": "{{n}} point(s) sont encore sur la coordonnée du poste. Tant qu’ils partagent le même endroit, la vérification de proximité ne les distingue pas."
+    }
+  },
+  "modulosAdicionales": {
+    "titulo": "Modules complémentaires",
+    "subtitulo": "Des fonctions achetées à part. Vous payez une seule fois et elles vous appartiennent pour toujours.",
+    "pagoUnico": "paiement unique",
+    "comprar": "Acheter",
+    "comprando": "Traitement…",
+    "activo": "Actif",
+    "pendiente": "Paiement en attente",
+    "yaEsTuyo": "Déjà à vous",
+    "completarPago": "Finaliser le paiement",
+    "irAFacturacion": "Aller à Offre et facturation",
+    "confirmar": {
+      "titulo": "Acheter {{nombre}}",
+      "mensaje": "{{precio}} sera débité une seule fois sur la carte de votre abonnement. {{nombre}} restera actif pour toujours.",
+      "boton": "Payer {{precio}}"
+    },
+    "exito": "{{nombre}} est maintenant actif.",
+    "pendienteAviso": "Votre banque demande de confirmer le paiement. Nous vous menons à la page de paiement ; le module s’active une fois le paiement finalisé.",
+    "vacio": {
+      "titulo": "Aucun module disponible",
+      "desc": "Les modules complémentaires proposés à votre entreprise apparaîtront ici."
+    },
+    "socio": {
+      "titulo": "Votre distributeur l’active",
+      "desc": "Votre entreprise est facturée par votre distributeur. Demandez-lui le module qui vous intéresse et il l’activera."
+    },
+    "motivos": {
+      "implementacion_sin_pagar": "Les modules peuvent être achetés une fois la mise en service payée.",
+      "suscripcion_no_activa": "Les modules peuvent être achetés avec un abonnement à jour.",
+      "suspendida": "Votre entreprise est suspendue. Contactez le support.",
+      "la_factura_el_socio": "C’est votre distributeur qui active les modules.",
+      "sin_empresa": "Impossible d’identifier votre entreprise.",
+      "sin_cliente_stripe": "Nous n’avons pas trouvé le moyen de paiement de votre entreprise. Vérifiez-le dans Offre et facturation.",
+      "revocado": "Ce module a été retiré à votre entreprise. Contactez le support pour le récupérer.",
+      "en_proceso": "Cet achat est déjà en cours de traitement. Patientez quelques secondes.",
+      "no_a_la_venta": "Ce module n’est pas en vente.",
+      "error": "L’achat n’a pas pu être finalisé. Réessayez."
     }
   }
 }

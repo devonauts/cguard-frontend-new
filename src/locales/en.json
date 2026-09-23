@@ -5764,7 +5764,8 @@
     "goToDashboard": "Go to the dashboard",
     "unreadMessages": "{{count}} unread messages",
     "emergencias": "Emergency Center",
-    "pases-de-turno": "Shift handovers"
+    "pases-de-turno": "Shift handovers",
+    "modulos-adicionales": "Add-on modules"
   },
   "siteTour": {
     "newTour": "New Tour",
@@ -12292,5 +12293,44 @@
     "tab": "Logs",
     "title": "Rejected clock-in attempts",
     "truncated": "Latest {{n}}"
+  },
+  "modulosAdicionales": {
+    "titulo": "Add-on modules",
+    "subtitulo": "Features you buy separately. Pay once and they are yours forever.",
+    "pagoUnico": "one-time payment",
+    "comprar": "Buy",
+    "comprando": "Processing…",
+    "activo": "Active",
+    "pendiente": "Payment pending",
+    "yaEsTuyo": "Already yours",
+    "completarPago": "Complete payment",
+    "irAFacturacion": "Go to Plan & billing",
+    "confirmar": {
+      "titulo": "Buy {{nombre}}",
+      "mensaje": "{{precio}} will be charged once to your subscription card. {{nombre}} will stay active forever.",
+      "boton": "Pay {{precio}}"
+    },
+    "exito": "{{nombre}} is now active.",
+    "pendienteAviso": "Your bank asks you to confirm the payment. We are taking you to the payment page; the module activates once it is completed.",
+    "vacio": {
+      "titulo": "No modules available",
+      "desc": "When there are add-on modules for your company, they will appear here."
+    },
+    "socio": {
+      "titulo": "Your provider activates it",
+      "desc": "Your company is billed by your provider. Ask them for the module you want and they will activate it."
+    },
+    "motivos": {
+      "implementacion_sin_pagar": "Modules can be bought once the implementation fee is paid.",
+      "suscripcion_no_activa": "Modules can be bought while your subscription is up to date.",
+      "suspendida": "Your company is suspended. Please contact support.",
+      "la_factura_el_socio": "Your provider is the one who activates modules.",
+      "sin_empresa": "We could not identify your company.",
+      "sin_cliente_stripe": "We could not find your company's payment method. Check it in Plan & billing.",
+      "revocado": "This module was removed from your company. Contact support to get it back.",
+      "en_proceso": "This purchase is already being processed. Please wait a few seconds.",
+      "no_a_la_venta": "This module is not for sale.",
+      "error": "The purchase could not be completed. Please try again."
+    }
   }
 }

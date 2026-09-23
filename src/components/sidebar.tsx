@@ -62,6 +62,7 @@ import {
   Moon,
   LayoutGrid,
   ClipboardSignature,
+  Puzzle,
   type LucideIcon,
 } from "lucide-react";
 
@@ -70,6 +71,7 @@ import sidebarMenuData from "../data/sidebar-menu.json";
 import { useAuth } from "@/contexts/AuthContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { useMessagesUnread } from "@/hooks/useMessagesUnread";
+import { useTiendaDeModulos } from "@/hooks/useTiendaDeModulos";
 import tenantService from "@/services/tenant.service";
 import {
   getStoredTenantBranding,
@@ -88,6 +90,8 @@ type MenuItem = {
   subItems?: SubMenuItem[];
   // optional allowedRoles controls visibility for global roles (e.g. ['superadmin'])
   allowedRoles?: string[];
+  /** «Módulos adicionales»: sólo si la empresa tiene tienda (ver useTiendaDeModulos). */
+  tienda?: boolean;
 };
 
 // Mapa de nombres de iconos a componentes de iconos
@@ -117,6 +121,7 @@ const iconMap: Record<string, LucideIcon> = {
   GraduationCap,
   Star,
   ClipboardSignature,
+  Puzzle,
 };
 
 /* ── GRUPOS DEL MENÚ ──────────────────────────────────────────────────────────
@@ -181,7 +186,7 @@ const GROUPS: GroupDef[] = [
     /* «superadmin» salió del menú: apuntaba a `/superadmin/tenants`, que vive
        en OTRA app. Quien lo pulsaba —cualquiera cuyo rol normalice a «admin»,
        no sólo un superadmin de plataforma— caía en el 404 de este CRM. */
-    ids: ["seguridad-auditoria"],
+    ids: ["seguridad-auditoria", "modulos-adicionales"],
   },
 ];
 
@@ -656,11 +661,16 @@ export default function Sidebar({
     );
   }, [user]);
 
+  // «Módulos adicionales» sólo aparece si esta empresa tiene tienda: algo a la
+  // venta y la implementación pagada, o algo ya suyo. Ver `tiendaVisible`.
+  const { visible: hayTienda } = useTiendaDeModulos();
+
   // Visibilidad por rol — misma regla que antes, sin cambios de permisos.
   const visibleItems = useMemo(
     () =>
       menuItems.filter((item) => {
         if ((item as any).disabled) return false;
+        if (item.tienda && !hayTienda) return false;
         if (!item.allowedRoles || item.allowedRoles.length === 0) return true;
         if (item.allowedRoles.includes("superadmin")) return isGlobalAdmin;
         const raw = user?.roles ?? user?.role ?? [];
@@ -679,7 +689,7 @@ export default function Sidebar({
           normalized.includes(ar.toLowerCase()),
         );
       }),
-    [menuItems, user, isGlobalAdmin],
+    [menuItems, user, isGlobalAdmin, hayTienda],
   );
 
   // Etiquetas i18n — mismo orden de resolución que la versión anterior.

@@ -71,6 +71,7 @@ import TrialDaysBadge from "@/components/TrialDaysBadge";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { IconTile, FIELD_CLS, FIELD_CLS_LG } from "@/components/kit";
 import MENU from "@/data/sidebar-menu.json";
+import { useTiendaDeModulos } from "@/hooks/useTiendaDeModulos";
 import NAVS from "@/data/settings-nav.json";
 import TenantSwitcher from "@/components/TenantSwitcher";
 import { useAgente } from "@/lib/agenteDeMarca";
@@ -397,6 +398,10 @@ export default function Header({
   const campoRef = useRef<HTMLInputElement>(null);
   const buscadorRef = useRef<HTMLDivElement>(null);
 
+  // «Módulos adicionales» sólo existe si la empresa tiene tienda: el buscador
+  // no puede ofrecer una página que el menú esconde.
+  const { visible: hayTienda } = useTiendaDeModulos();
+
   /** El menú lateral y el índice de Configuración SON el mapa del producto: el
    *  buscador los reutiliza en vez de mantener una segunda lista que se queda
    *  desfasada en cuanto alguien añade una página. */
@@ -416,6 +421,7 @@ export default function Header({
     const out: Destino[] = [];
 
     for (const item of MENU as any[]) {
+      if (item.tienda && !hayTienda) continue;
       const nombre =
         etiqueta(`sidebar.${item.id}.label`, `sidebar.${item.id}`) || item.name;
 
@@ -465,7 +471,7 @@ export default function Header({
     /* `agente.nombre` en las dependencias: sin él, el índice del buscador se
        calcula una vez con «VigIA» y se queda así aunque luego llegue el nombre
        del socio — y buscarlo por su nombre no encontraría su propia pantalla. */
-  }, [t, agente.nombre]);
+  }, [t, agente.nombre, hayTienda]);
 
   const resultados = useMemo(() => {
     const q = plano(consulta.trim());

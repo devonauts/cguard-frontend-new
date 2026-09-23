@@ -376,5 +376,12 @@
     "name": "Registro de Seguridad",
     "icon": "Shield",
     "path": "/security/audit"
+  },
+  {
+    "id": "modulos-adicionales",
+    "name": "Módulos adicionales",
+    "icon": "Puzzle",
+    "path": "/modulos-adicionales",
+    "tienda": true
   }
 ]

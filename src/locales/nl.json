@@ -5419,7 +5419,8 @@
     "goToDashboard": "Naar het dashboard",
     "unreadMessages": "{{count}} ongelezen berichten",
     "emergencias": "Noodcentrale",
-    "pases-de-turno": "Dienstoverdrachten"
+    "pases-de-turno": "Dienstoverdrachten",
+    "modulos-adicionales": "Extra modules"
   },
   "siteTour": {
     "newTour": "Nieuwe ronde",
@@ -12291,6 +12292,45 @@
       "title": "Nieuwe ronde",
       "wherePh": "Waar het label komt (optioneel) — bijv. naast het tourniquet",
       "pendingPlacement": "{{n}} punt(en) staan nog op de coördinaat van de post. Zolang ze dezelfde plek delen, kan de nabijheidscontrole ze niet onderscheiden."
+    }
+  },
+  "modulosAdicionales": {
+    "titulo": "Extra modules",
+    "subtitulo": "Functies die u apart koopt. U betaalt één keer en ze zijn voor altijd van u.",
+    "pagoUnico": "eenmalige betaling",
+    "comprar": "Kopen",
+    "comprando": "Bezig…",
+    "activo": "Actief",
+    "pendiente": "Betaling in behandeling",
+    "yaEsTuyo": "Al van u",
+    "completarPago": "Betaling afronden",
+    "irAFacturacion": "Naar Abonnement & facturatie",
+    "confirmar": {
+      "titulo": "{{nombre}} kopen",
+      "mensaje": "Er wordt eenmalig {{precio}} afgeschreven van de kaart van uw abonnement. {{nombre}} blijft voor altijd actief.",
+      "boton": "{{precio}} betalen"
+    },
+    "exito": "{{nombre}} is nu actief.",
+    "pendienteAviso": "Uw bank vraagt de betaling te bevestigen. We brengen u naar de betaalpagina; de module wordt actief zodra de betaling is afgerond.",
+    "vacio": {
+      "titulo": "Geen modules beschikbaar",
+      "desc": "Zodra er extra modules voor uw bedrijf zijn, verschijnen ze hier."
+    },
+    "socio": {
+      "titulo": "Uw distributeur activeert het",
+      "desc": "Uw bedrijf wordt gefactureerd door uw distributeur. Vraag hem om de module die u wilt; hij activeert die."
+    },
+    "motivos": {
+      "implementacion_sin_pagar": "Modules kunnen worden gekocht zodra de implementatie is betaald.",
+      "suscripcion_no_activa": "Modules kunnen worden gekocht met een actueel abonnement.",
+      "suspendida": "Uw bedrijf is opgeschort. Neem contact op met support.",
+      "la_factura_el_socio": "Uw distributeur activeert de modules.",
+      "sin_empresa": "We konden uw bedrijf niet vaststellen.",
+      "sin_cliente_stripe": "We vonden de betaalmethode van uw bedrijf niet. Controleer die bij Abonnement & facturatie.",
+      "revocado": "Deze module is bij uw bedrijf ingetrokken. Neem contact op met support.",
+      "en_proceso": "Deze aankoop wordt al verwerkt. Wacht een paar seconden.",
+      "no_a_la_venta": "Deze module is niet te koop.",
+      "error": "De aankoop kon niet worden afgerond. Probeer het opnieuw."
     }
   }
 }

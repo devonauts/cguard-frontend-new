@@ -2489,7 +2489,8 @@
       "viewDetails": "Ver detalhes",
       "website": "Site"
     },
-    "pases-de-turno": "Passagens de turno"
+    "pases-de-turno": "Passagens de turno",
+    "modulos-adicionales": "Módulos adicionais"
   },
   "settings": {
     "configuracion": {
@@ -12292,5 +12293,44 @@
     "tab": "Registos",
     "title": "Tentativas de ponto rejeitadas",
     "truncated": "Últimos {{n}}"
+  },
+  "modulosAdicionales": {
+    "titulo": "Módulos adicionais",
+    "subtitulo": "Funções compradas à parte. Você paga uma única vez e elas são suas para sempre.",
+    "pagoUnico": "pagamento único",
+    "comprar": "Comprar",
+    "comprando": "Processando…",
+    "activo": "Ativo",
+    "pendiente": "Pagamento pendente",
+    "yaEsTuyo": "Já é seu",
+    "completarPago": "Concluir o pagamento",
+    "irAFacturacion": "Ir para Plano e faturamento",
+    "confirmar": {
+      "titulo": "Comprar {{nombre}}",
+      "mensaje": "Será cobrado {{precio}} uma única vez no cartão da sua assinatura. {{nombre}} ficará ativo para sempre.",
+      "boton": "Pagar {{precio}}"
+    },
+    "exito": "{{nombre}} já está ativo.",
+    "pendienteAviso": "Seu banco pede para confirmar o pagamento. Vamos levá-lo à página de pagamento; o módulo é ativado ao concluí-lo.",
+    "vacio": {
+      "titulo": "Não há módulos disponíveis",
+      "desc": "Quando houver módulos adicionais para sua empresa, eles aparecerão aqui."
+    },
+    "socio": {
+      "titulo": "Seu distribuidor ativa para você",
+      "desc": "Sua empresa é faturada pelo seu distribuidor. Peça a ele o módulo que você quer e ele o ativará."
+    },
+    "motivos": {
+      "implementacion_sin_pagar": "Os módulos podem ser comprados quando a implantação estiver paga.",
+      "suscripcion_no_activa": "Os módulos podem ser comprados com a assinatura em dia.",
+      "suspendida": "Sua empresa está suspensa. Fale com o suporte.",
+      "la_factura_el_socio": "Quem ativa os módulos é o seu distribuidor.",
+      "sin_empresa": "Não foi possível identificar sua empresa.",
+      "sin_cliente_stripe": "Não encontramos a forma de pagamento da sua empresa. Verifique em Plano e faturamento.",
+      "revocado": "Este módulo foi retirado da sua empresa. Fale com o suporte para recuperá-lo.",
+      "en_proceso": "Esta compra já está sendo processada. Aguarde alguns segundos.",
+      "no_a_la_venta": "Este módulo não está à venda.",
+      "error": "Não foi possível concluir a compra. Tente novamente."
+    }
   }
 }

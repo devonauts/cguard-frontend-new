@@ -5419,7 +5419,8 @@
     "goToDashboard": "Zur Übersicht",
     "unreadMessages": "{{count}} ungelesene Nachrichten",
     "emergencias": "Notfallzentrale",
-    "pases-de-turno": "Schichtübergaben"
+    "pases-de-turno": "Schichtübergaben",
+    "modulos-adicionales": "Zusatzmodule"
   },
   "siteTour": {
     "newTour": "Neuer Rundgang",
@@ -12291,6 +12292,45 @@
       "title": "Neuer Rundgang",
       "wherePh": "Wo das Etikett klebt (optional) — z. B. neben dem Drehkreuz",
       "pendingPlacement": "{{n}} Punkt(e) liegen noch auf der Koordinate des Postens. Solange sie sich denselben Ort teilen, kann die Näheprüfung sie nicht auseinanderhalten."
+    }
+  },
+  "modulosAdicionales": {
+    "titulo": "Zusatzmodule",
+    "subtitulo": "Funktionen, die separat gekauft werden. Einmal bezahlen – dauerhaft Ihres.",
+    "pagoUnico": "Einmalzahlung",
+    "comprar": "Kaufen",
+    "comprando": "Wird verarbeitet…",
+    "activo": "Aktiv",
+    "pendiente": "Zahlung ausstehend",
+    "yaEsTuyo": "Bereits Ihres",
+    "completarPago": "Zahlung abschließen",
+    "irAFacturacion": "Zu Tarif & Abrechnung",
+    "confirmar": {
+      "titulo": "{{nombre}} kaufen",
+      "mensaje": "{{precio}} werden einmalig von der Karte Ihres Abonnements abgebucht. {{nombre}} bleibt dauerhaft aktiv.",
+      "boton": "{{precio}} bezahlen"
+    },
+    "exito": "{{nombre}} ist jetzt aktiv.",
+    "pendienteAviso": "Ihre Bank verlangt eine Bestätigung der Zahlung. Wir leiten Sie zur Zahlungsseite weiter; das Modul wird nach Abschluss aktiviert.",
+    "vacio": {
+      "titulo": "Keine Module verfügbar",
+      "desc": "Sobald es Zusatzmodule für Ihr Unternehmen gibt, erscheinen sie hier."
+    },
+    "socio": {
+      "titulo": "Ihr Vertriebspartner aktiviert es",
+      "desc": "Ihr Unternehmen wird von Ihrem Vertriebspartner abgerechnet. Fragen Sie ihn nach dem gewünschten Modul, er aktiviert es."
+    },
+    "motivos": {
+      "implementacion_sin_pagar": "Module können gekauft werden, sobald die Einrichtung bezahlt ist.",
+      "suscripcion_no_activa": "Module können bei aktuellem Abonnement gekauft werden.",
+      "suspendida": "Ihr Unternehmen ist gesperrt. Wenden Sie sich an den Support.",
+      "la_factura_el_socio": "Module werden von Ihrem Vertriebspartner aktiviert.",
+      "sin_empresa": "Ihr Unternehmen konnte nicht ermittelt werden.",
+      "sin_cliente_stripe": "Die Zahlungsmethode Ihres Unternehmens wurde nicht gefunden. Prüfen Sie sie unter Tarif & Abrechnung.",
+      "revocado": "Dieses Modul wurde Ihrem Unternehmen entzogen. Wenden Sie sich an den Support.",
+      "en_proceso": "Dieser Kauf wird bereits verarbeitet. Bitte warten Sie einige Sekunden.",
+      "no_a_la_venta": "Dieses Modul ist nicht erhältlich.",
+      "error": "Der Kauf konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut."
     }
   }
 }

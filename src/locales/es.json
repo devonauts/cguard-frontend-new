@@ -5764,7 +5764,8 @@
     "goToDashboard": "Ir al panel de control",
     "unreadMessages": "{{count}} mensajes sin leer",
     "emergencias": "Centro de Emergencias",
-    "pases-de-turno": "Pases de turno"
+    "pases-de-turno": "Pases de turno",
+    "modulos-adicionales": "Módulos adicionales"
   },
   "siteTour": {
     "newTour": "Nuevo Recorrido",
@@ -12292,5 +12293,44 @@
     "tab": "Registros",
     "title": "Intentos de fichaje rechazados",
     "truncated": "Últimos {{n}}"
+  },
+  "modulosAdicionales": {
+    "titulo": "Módulos adicionales",
+    "subtitulo": "Funciones que se compran aparte. Se pagan una sola vez y son tuyas para siempre.",
+    "pagoUnico": "pago único",
+    "comprar": "Comprar",
+    "comprando": "Procesando…",
+    "activo": "Activo",
+    "pendiente": "Pago pendiente",
+    "yaEsTuyo": "Ya es tuyo",
+    "completarPago": "Completar el pago",
+    "irAFacturacion": "Ir a Plan y facturación",
+    "confirmar": {
+      "titulo": "Comprar {{nombre}}",
+      "mensaje": "Se cobrará {{precio}} una sola vez a la tarjeta de tu suscripción. {{nombre}} quedará activo para siempre.",
+      "boton": "Pagar {{precio}}"
+    },
+    "exito": "{{nombre}} ya está activo.",
+    "pendienteAviso": "Tu banco pide confirmar el pago. Te llevamos a la página de pago; el módulo se activa al completarlo.",
+    "vacio": {
+      "titulo": "No hay módulos disponibles",
+      "desc": "Cuando haya módulos adicionales para tu empresa, aparecerán aquí."
+    },
+    "socio": {
+      "titulo": "Te lo activa tu distribuidor",
+      "desc": "Tu empresa la factura tu distribuidor. Pídele el módulo que te interese y él lo activará."
+    },
+    "motivos": {
+      "implementacion_sin_pagar": "Los módulos se pueden comprar cuando la implementación esté pagada.",
+      "suscripcion_no_activa": "Los módulos se pueden comprar con la suscripción al día.",
+      "suspendida": "Tu empresa está suspendida. Escribe a soporte.",
+      "la_factura_el_socio": "Tu distribuidor es quien activa los módulos.",
+      "sin_empresa": "No pudimos identificar tu empresa.",
+      "sin_cliente_stripe": "No encontramos el método de pago de tu empresa. Revísalo en Plan y facturación.",
+      "revocado": "Este módulo fue retirado a tu empresa. Escribe a soporte para recuperarlo.",
+      "en_proceso": "Esta compra ya se está procesando. Espera unos segundos.",
+      "no_a_la_venta": "Este módulo no está a la venta.",
+      "error": "No se pudo completar la compra. Inténtalo de nuevo."
+    }
   }
 }

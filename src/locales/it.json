@@ -5419,7 +5419,8 @@
     "goToDashboard": "Vai al cruscotto",
     "unreadMessages": "{{count}} messaggi non letti",
     "emergencias": "Centrale emergenze",
-    "pases-de-turno": "Consegne di turno"
+    "pases-de-turno": "Consegne di turno",
+    "modulos-adicionales": "Moduli aggiuntivi"
   },
   "siteTour": {
     "newTour": "Nuovo percorso",
@@ -12291,6 +12292,45 @@
       "title": "Nuovo giro di ronda",
       "wherePh": "Dove si attacca l’etichetta (facoltativo) — es. accanto al tornello",
       "pendingPlacement": "{{n}} punto/i sono ancora sulla coordinata del posto. Finché condividono lo stesso luogo, il controllo di prossimità non li distingue."
+    }
+  },
+  "modulosAdicionales": {
+    "titulo": "Moduli aggiuntivi",
+    "subtitulo": "Funzioni acquistate a parte. Si pagano una sola volta e sono tue per sempre.",
+    "pagoUnico": "pagamento unico",
+    "comprar": "Acquista",
+    "comprando": "Elaborazione…",
+    "activo": "Attivo",
+    "pendiente": "Pagamento in sospeso",
+    "yaEsTuyo": "Già tuo",
+    "completarPago": "Completa il pagamento",
+    "irAFacturacion": "Vai a Piano e fatturazione",
+    "confirmar": {
+      "titulo": "Acquista {{nombre}}",
+      "mensaje": "Verranno addebitati {{precio}} una sola volta sulla carta del tuo abbonamento. {{nombre}} resterà attivo per sempre.",
+      "boton": "Paga {{precio}}"
+    },
+    "exito": "{{nombre}} è ora attivo.",
+    "pendienteAviso": "La tua banca chiede di confermare il pagamento. Ti portiamo alla pagina di pagamento; il modulo si attiva al termine.",
+    "vacio": {
+      "titulo": "Nessun modulo disponibile",
+      "desc": "Quando ci saranno moduli aggiuntivi per la tua azienda, appariranno qui."
+    },
+    "socio": {
+      "titulo": "Lo attiva il tuo distributore",
+      "desc": "La tua azienda è fatturata dal tuo distributore. Chiedigli il modulo che ti interessa e lo attiverà."
+    },
+    "motivos": {
+      "implementacion_sin_pagar": "I moduli si possono acquistare una volta pagata l’attivazione.",
+      "suscripcion_no_activa": "I moduli si possono acquistare con l’abbonamento in regola.",
+      "suspendida": "La tua azienda è sospesa. Contatta l’assistenza.",
+      "la_factura_el_socio": "È il tuo distributore ad attivare i moduli.",
+      "sin_empresa": "Non è stato possibile identificare la tua azienda.",
+      "sin_cliente_stripe": "Non abbiamo trovato il metodo di pagamento della tua azienda. Controllalo in Piano e fatturazione.",
+      "revocado": "Questo modulo è stato rimosso dalla tua azienda. Contatta l’assistenza per recuperarlo.",
+      "en_proceso": "Questo acquisto è già in elaborazione. Attendi qualche secondo.",
+      "no_a_la_venta": "Questo modulo non è in vendita.",
+      "error": "Non è stato possibile completare l’acquisto. Riprova."
     }
   }
 }
