@@ -26,6 +26,20 @@ export const FEATURE_KEYS = [
 
 export type FeatureKey = (typeof FEATURE_KEYS)[number];
 
+/**
+ * MÓDULOS ADICIONALES (espejo de `backend/src/lib/modulosAdicionales.ts`).
+ * Se compran aparte con un pago único y, al revés que las funciones de arriba,
+ * FALLAN CERRADO: sin constancia de compra, no se tienen. Por eso no están en
+ * `FEATURE_KEYS`.
+ */
+export const MODULE_KEYS = ["sucursales"] as const;
+
+export type ModuleKey = (typeof MODULE_KEYS)[number];
+
+export function isModuleKey(key: string): key is ModuleKey {
+  return (MODULE_KEYS as readonly string[]).includes(key);
+}
+
 function persistedTenantId(): string | null {
   try {
     return localStorage.getItem("tenantId");
@@ -68,9 +82,14 @@ export function getPlanFeatures(user: any): string[] | null {
   return Array.isArray(feats) ? feats : null;
 }
 
-/** Whether the current tenant is entitled to a feature. Fail-open on unknown. */
+/**
+ * Whether the current tenant is entitled to a feature. Fail-open on unknown —
+ * EXCEPT a módulo adicional, which fails closed (it is paid for).
+ */
 export function hasFeature(user: any, key: string): boolean {
   const feats = getPlanFeatures(user);
+
+  if (isModuleKey(key)) return Array.isArray(feats) && feats.includes(key);
 
   if (!feats || feats.length === 0) return true; // fail open
 
