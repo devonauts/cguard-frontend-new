@@ -106,6 +106,9 @@ export function targetForNotification(n: PlatformNotification): string {
     type === "guard.checkout" ||
     type === "guard.forced_clockout" ||
     type === "guard.late" ||
+    // El relevo que no marca, el saliente que no estaba, el puesto vacío: todo
+    // se corrige en el registro de asistencia de ese turno.
+    type.startsWith("relevo.") ||
     type.startsWith("attendance")
   ) {
     // El día del TURNO, no el del aviso: un turno nocturno que empieza el 26 a

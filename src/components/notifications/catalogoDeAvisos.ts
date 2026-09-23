@@ -463,6 +463,90 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
     catalogado: true,
   },
   {
+    evento: "relevo.auto_entrada",
+    familia: "shift",
+    prioridad: "normal",
+    catalogado: true,
+  },
+  {
+    evento: "relevo.entrega",
+    familia: "shift",
+    prioridad: "urgent",
+    catalogado: true,
+  },
+  {
+    evento: "relevo.hora_entrar",
+    familia: "shift",
+    prioridad: "urgent",
+    catalogado: true,
+  },
+  {
+    evento: "relevo.hora_entregar",
+    familia: "shift",
+    prioridad: "important",
+    catalogado: true,
+  },
+  {
+    evento: "relevo.llegada",
+    familia: "shift",
+    prioridad: "urgent",
+    catalogado: true,
+  },
+  {
+    evento: "relevo.no_llego",
+    familia: "attendance",
+    prioridad: "urgent",
+    catalogado: true,
+  },
+  {
+    evento: "relevo.puesto_sin_cubrir",
+    familia: "coverage",
+    prioridad: "urgent",
+    catalogado: true,
+  },
+  {
+    evento: "relevo.recordatorio_entrada",
+    familia: "shift",
+    prioridad: "urgent",
+    catalogado: true,
+  },
+  {
+    evento: "relevo.relevo_no_acepta",
+    familia: "shift",
+    prioridad: "important",
+    catalogado: true,
+  },
+  {
+    evento: "relevo.resumen_ayer",
+    familia: "shift",
+    prioridad: "important",
+    catalogado: true,
+  },
+  {
+    evento: "relevo.saliente_ausente",
+    familia: "attendance",
+    prioridad: "important",
+    catalogado: true,
+  },
+  {
+    evento: "relevo.salida_anticipada",
+    familia: "shift",
+    prioridad: "urgent",
+    catalogado: true,
+  },
+  {
+    evento: "relevo.salida_registrada",
+    familia: "shift",
+    prioridad: "normal",
+    catalogado: true,
+  },
+  {
+    evento: "relevo.sin_entrada",
+    familia: "attendance",
+    prioridad: "urgent",
+    catalogado: true,
+  },
+  {
     evento: "radio.voice_message",
     familia: "radio_report",
     prioridad: "important",
@@ -719,6 +803,12 @@ export function familiaDe(eventType: string): FamiliaDeAviso {
   if (e.startsWith("dispatch")) return "dispatch";
   if (e.startsWith("incident")) return "incident";
   if (e.startsWith("coverage")) return "coverage";
+  /* Relevo: lo que va al supervisor es asistencia (o cobertura, si el puesto
+     se quedó vacío); lo que va al vigilante es de su turno. */
+  if (e === "relevo.puesto_sin_cubrir") return "coverage";
+  if (e === "relevo.sin_entrada" || e === "relevo.no_llego" || e === "relevo.saliente_ausente")
+    return "attendance";
+  if (e.startsWith("relevo")) return "shift";
   if (e.startsWith("attendance") || e.startsWith("guard.check"))
     return "attendance";
   if (
