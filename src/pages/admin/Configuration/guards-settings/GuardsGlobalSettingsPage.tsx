@@ -6,6 +6,9 @@
  *  - inactivityAlert/-ThresholdMin → barrido cada 5 min (guard.inactive)
  *  - shiftRemindersEnabled + shiftReminderOffsets → recordatorios de turno
  *  - licenseExpiryAlert/-Days → barrido diario de credenciales (aviso a RRHH)
+ *  - relevoEnabled + relevoAuto* + relevoSupervisorAlertMin → cambio de turno
+ *    (entrega y aceptación del puesto, marcaje por ubicación, avisos después
+ *    de la hora de entrada)
  * Lo que vive en otras páginas se enlaza, no se duplica. Reemplaza el clon
  * de 25 toggles falsos (4 tabs, botón Guardar sin handler).
  */
@@ -23,10 +26,16 @@ import {
   Wallet,
   CalendarClock,
   Gauge,
+  Repeat,
 } from "lucide-react";
 import { Section, Stagger, SkeletonCards } from "@/components/kit";
 import SettingsPageShell from "../components/SettingsPageShell";
-import { ToggleRow, SettingDetail, SaveBar } from "../components/SettingsForm";
+import {
+  ToggleRow,
+  NumberRow,
+  SettingDetail,
+  SaveBar,
+} from "../components/SettingsForm";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -67,7 +76,25 @@ type GuardSettings = {
   licenseExpiryDays: number;
   blockClockInOnExpiredLicense: boolean;
   performanceScoringEnabled: boolean;
+  relevoEnabled: boolean;
+  relevoAutoClockIn: boolean;
+  relevoAutoClockOut: boolean;
+  /** Null mientras se borra el campo para escribir otro número; se sanea al guardar. */
+  relevoSupervisorAlertMin: number | null;
 };
+
+/** Límites del aviso al supervisor; los mismos que sanea el backend. */
+const RELEVO_ALERT_MIN = 5;
+const RELEVO_ALERT_MAX = 120;
+const RELEVO_ALERT_DEFAULT = 20;
+
+function minutosDeAviso(v: number | null | undefined): number {
+  const n = Math.round(Number(v));
+
+  if (!Number.isFinite(n) || n <= 0) return RELEVO_ALERT_DEFAULT;
+
+  return Math.min(RELEVO_ALERT_MAX, Math.max(RELEVO_ALERT_MIN, n));
+}
 
 const DEFAULTS: GuardSettings = {
   inactivityAlert: false,
@@ -84,6 +111,12 @@ const DEFAULTS: GuardSettings = {
   blockClockInOnExpiredLicense: false,
   // Encendido, igual que en el backend: es como se ha comportado siempre.
   performanceScoringEnabled: true,
+  // Apagado, igual que en el backend: con él apagado nadie nota nada. Los
+  // tres de abajo sólo cuentan cuando la empresa lo enciende.
+  relevoEnabled: false,
+  relevoAutoClockIn: true,
+  relevoAutoClockOut: true,
+  relevoSupervisorAlertMin: RELEVO_ALERT_DEFAULT,
 };
 
 // Partial view of the tenant settings blob (GET/PUT /settings). Only the fields
@@ -138,7 +171,12 @@ export default function GuardsGlobalSettingsPage() {
           // logoUrl from logos[0], so omitting them would ERASE the logo.
           logos: row?.logos || [],
           backgroundImages: row?.backgroundImages || [],
-          guardSettings: cfg,
+          guardSettings: {
+            ...cfg,
+            relevoSupervisorAlertMin: minutosDeAviso(
+              cfg.relevoSupervisorAlertMin,
+            ),
+          },
         },
       });
       toast.success(
@@ -369,6 +407,69 @@ export default function GuardsGlobalSettingsPage() {
               checked={cfg.shiftRemindersAdaptive}
               onCheckedChange={(v) => set("shiftRemindersAdaptive", v)}
               disabled={disabled || !cfg.shiftRemindersEnabled}
+            />
+          </Section>
+
+          <Section
+            title={t("settings.guardsGlobal.sectionRelevo", {
+              defaultValue: "Cambio de turno",
+            })}
+            icon={<Repeat />}
+            contentClassName="divide-y"
+          >
+            <ToggleRow
+              label={t("settings.guardsGlobal.relevoLabel", {
+                defaultValue: "Entrega y aceptación del puesto",
+              })}
+              hint={t("settings.guardsGlobal.relevoHint", {
+                defaultValue:
+                  "El vigilante que sale entrega el puesto desde su teléfono y el que entra lo acepta: aceptar es su marca de entrada. Si nadie marca, la app le insiste y avisa al supervisor.",
+              })}
+              checked={cfg.relevoEnabled}
+              onCheckedChange={(v) => set("relevoEnabled", v)}
+              disabled={disabled}
+            />
+            <ToggleRow
+              label={t("settings.guardsGlobal.relevoAutoInLabel", {
+                defaultValue: "Marcar la entrada sola al llegar al puesto",
+              })}
+              hint={t("settings.guardsGlobal.relevoAutoInHint", {
+                defaultValue:
+                  "Si el vigilante llega a su puesto y a los 15 minutos todavía no ha marcado, se registra su entrada a la hora en que llegó.",
+              })}
+              checked={cfg.relevoAutoClockIn}
+              onCheckedChange={(v) => set("relevoAutoClockIn", v)}
+              disabled={disabled || !cfg.relevoEnabled}
+            />
+            <ToggleRow
+              label={t("settings.guardsGlobal.relevoAutoOutLabel", {
+                defaultValue: "Marcar la salida sola al irse del puesto",
+              })}
+              hint={t("settings.guardsGlobal.relevoAutoOutHint", {
+                defaultValue:
+                  "Cuando el vigilante se va del puesto al final de su turno, se registra su salida a la hora en que se fue. Si se va antes de hora y no vuelve en 15 minutos, queda como salida anticipada.",
+              })}
+              checked={cfg.relevoAutoClockOut}
+              onCheckedChange={(v) => set("relevoAutoClockOut", v)}
+              disabled={disabled || !cfg.relevoEnabled}
+            />
+            <NumberRow
+              label={t("settings.guardsGlobal.relevoAlertLabel", {
+                defaultValue:
+                  "Avisar al supervisor si el vigilante no marca en",
+              })}
+              hint={t("settings.guardsGlobal.relevoAlertHint", {
+                defaultValue:
+                  "Minutos desde la hora de entrada. Entre 5 y 120.",
+              })}
+              value={cfg.relevoSupervisorAlertMin}
+              onChange={(n) => set("relevoSupervisorAlertMin", n)}
+              min={RELEVO_ALERT_MIN}
+              max={RELEVO_ALERT_MAX}
+              suffix={t("settings.guardsGlobal.relevoAlertSuffix", {
+                defaultValue: "minutos",
+              })}
+              disabled={disabled || !cfg.relevoEnabled}
             />
           </Section>
 

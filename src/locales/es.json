@@ -5751,8 +5751,7 @@
     "tareas": {
       "label": "Tareas",
       "tareas-seguimiento": "Seguimiento",
-      "tareas-aprobaciones": "Aprobaciones",
-      "pases-de-turno": "Pases de turno"
+      "tareas-aprobaciones": "Aprobaciones"
     },
     "solicitudes-clientes": "Solicitudes de clientes",
     "control-de-calidad": "Control de Calidad",
@@ -5764,7 +5763,8 @@
     "themeToggle": "Cambiar tema",
     "goToDashboard": "Ir al panel de control",
     "unreadMessages": "{{count}} mensajes sin leer",
-    "emergencias": "Centro de Emergencias"
+    "emergencias": "Centro de Emergencias",
+    "pases-de-turno": "Pases de turno"
   },
   "siteTour": {
     "newTour": "Nuevo Recorrido",
@@ -6278,7 +6278,8 @@
       "rondaHistory": "Historial",
       "shifts": "Turnos",
       "siteTours": "Rondas",
-      "visitors": "Visitantes"
+      "visitors": "Visitantes",
+      "passdowns": "Pases de turno"
     },
     "orders": {
       "title": "Consignas específicas",
@@ -6805,7 +6806,17 @@
       "blockClockInHint": "Hasta ahora una credencial caducada sólo generaba un aviso: el vigilante fichaba igual, se le asignaba un puesto y salía en el informe al cliente. Actívalo sólo cuando las fechas de tus credenciales estén al día — si no, alguien puede quedarse sin poder empezar su turno.",
       "sectionDesempeno": "Medición de desempeño",
       "performanceLabel": "Medir el desempeño del personal",
-      "performanceHint": "Todo el personal arranca en 100 y sólo baja por lo que se mide: puntualidad, uniforme, inventario, consignas, rondas, evaluaciones, capacitación y la valoración del cliente, más las faltas. Apagado, nadie ve puntaje —ni tú en las fichas, ni el vigilante en su aplicación—; no se pone a cero, deja de existir. Para dejar de medir a UNA persona en concreto, usa el interruptor de su ficha, en Desempeño."
+      "performanceHint": "Todo el personal arranca en 100 y sólo baja por lo que se mide: puntualidad, uniforme, inventario, consignas, rondas, evaluaciones, capacitación y la valoración del cliente, más las faltas. Apagado, nadie ve puntaje —ni tú en las fichas, ni el vigilante en su aplicación—; no se pone a cero, deja de existir. Para dejar de medir a UNA persona en concreto, usa el interruptor de su ficha, en Desempeño.",
+      "sectionRelevo": "Cambio de turno",
+      "relevoLabel": "Entrega y aceptación del puesto",
+      "relevoHint": "El vigilante que sale entrega el puesto desde su teléfono y el que entra lo acepta: aceptar es su marca de entrada. Si nadie marca, la app le insiste y avisa al supervisor.",
+      "relevoAutoInLabel": "Marcar la entrada sola al llegar al puesto",
+      "relevoAutoInHint": "Si el vigilante llega a su puesto y a los 15 minutos todavía no ha marcado, se registra su entrada a la hora en que llegó.",
+      "relevoAutoOutLabel": "Marcar la salida sola al irse del puesto",
+      "relevoAutoOutHint": "Cuando el vigilante se va del puesto al final de su turno, se registra su salida a la hora en que se fue. Si se va antes de hora y no vuelve en 15 minutos, queda como salida anticipada.",
+      "relevoAlertLabel": "Avisar al supervisor si el vigilante no marca en",
+      "relevoAlertHint": "Minutos desde la hora de entrada. Entre 5 y 120.",
+      "relevoAlertSuffix": "minutos"
     },
     "postingGlobal": {
       "loadError": "No se pudo cargar la configuración.",
@@ -11108,6 +11119,14 @@
     },
     "timeClock": {
       "clockInError": "No se pudo marcar entrada"
+    },
+    "punchMethod": {
+      "autoIn": "Entrada automática",
+      "supervisorIn": "Marcada por supervisor",
+      "autoOut": "Salida automática",
+      "relevoOut": "Cerrada por el relevo",
+      "earlyExit": "Salida anticipada",
+      "supervisorOut": "Cerrada por supervisor"
     }
   },
   "maps": {
@@ -11707,7 +11726,63 @@
   },
   "passdown": {
     "loadDetailError": "No se pudo cargar el pase de turno",
-    "noNotes": "Sin novedades registradas."
+    "noNotes": "Sin novedades registradas.",
+    "loadError": "No se pudieron cargar los pases de turno",
+    "deliveredBy": "Entregó",
+    "acceptedBy": "Recibió",
+    "notes": "Novedades",
+    "supervision": "Supervisión",
+    "imageAlt": "Imagen del pase {{n}}",
+    "instructionsCount": "Consignas ({{n}})",
+    "done": "Hecha",
+    "viewDetail": "Ver detalle",
+    "notAccepted": "Sin aceptar",
+    "reliefMissing": "Relevo no llegó",
+    "reliefMissingAt": "El saliente avisó que su relevo no llegó: {{when}}",
+    "instructionsInDetail": "{{n}} consigna(s): ábrelo para verlas.",
+    "entryMethod": {
+      "app": "Desde la app",
+      "auto_location": "Automática por ubicación",
+      "supervisor": "Marcada por el supervisor"
+    },
+    "outgoingPresent": {
+      "label": "¿Estaba el saliente?",
+      "yes": "Estaba",
+      "no": "No estaba"
+    },
+    "priority": {
+      "alta": "Alta",
+      "media": "Media",
+      "baja": "Baja"
+    },
+    "status": {
+      "all": "Todos",
+      "open": "Abiertos",
+      "receivedPlural": "Recibidos",
+      "received": "Recibido",
+      "accepted": "Aceptado"
+    },
+    "col": {
+      "station": "Puesto",
+      "handover": "Entregó → Recibió",
+      "delivered": "Entregado",
+      "accepted": "Aceptado",
+      "entry": "Entrada del relevo",
+      "instructions": "Consignas"
+    },
+    "filter": {
+      "allStations": "Todos los puestos",
+      "search": "Buscar puesto…",
+      "searching": "Buscando…",
+      "noResults": "Ningún puesto coincide",
+      "clear": "Quitar el filtro de puesto"
+    },
+    "station": {
+      "empty": "Este puesto todavía no tiene pases de turno",
+      "emptyHint": "Cuando un vigilante entregue este puesto a su relevo, el pase aparecerá aquí con sus novedades y consignas.",
+      "viewAll": "Ver todos ({{n}})",
+      "showing": "Mostrando {{n}} de {{total}}"
+    }
   },
   "radio": {
     "devices": {

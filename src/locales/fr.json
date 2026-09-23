@@ -2793,6 +2793,14 @@
     },
     "timeClock": {
       "clockInError": "Pointage d'entrée impossible"
+    },
+    "punchMethod": {
+      "autoIn": "Arrivée automatique",
+      "supervisorIn": "Pointée par le superviseur",
+      "autoOut": "Départ automatique",
+      "relevoOut": "Clôturée par la relève",
+      "earlyExit": "Départ anticipé",
+      "supervisorOut": "Clôturée par le superviseur"
     }
   },
   "performance": {
@@ -5398,8 +5406,7 @@
     "tareas": {
       "label": "Tâches",
       "tareas-seguimiento": "Suivi",
-      "tareas-aprobaciones": "Approbations",
-      "pases-de-turno": "Relèves"
+      "tareas-aprobaciones": "Approbations"
     },
     "solicitudes-clientes": "Demandes des clients",
     "control-de-calidad": "Contrôle qualité",
@@ -5411,7 +5418,8 @@
     "themeToggle": "Changer de thème",
     "goToDashboard": "Aller au tableau de bord",
     "unreadMessages": "{{count}} messages non lus",
-    "emergencias": "Centre des urgences"
+    "emergencias": "Centre des urgences",
+    "pases-de-turno": "Relèves"
   },
   "siteTour": {
     "newTour": "Nouvelle ronde",
@@ -7290,7 +7298,17 @@
       "blockClockInHint": "Jusqu'ici une habilitation expirée ne produisait qu'une alerte : l'agent pointait quand même, se voyait attribuer un poste et apparaissait dans le rapport au client. Ne l'activez que lorsque les dates de vos habilitations sont à jour — sinon, quelqu'un peut se retrouver dans l'impossibilité de commencer sa vacation.",
       "sectionDesempeno": "Mesure de la performance",
       "performanceLabel": "Mesurer la performance du personnel",
-      "performanceHint": "Tout le personnel démarre à 100 et ne descend que par ce qui est mesuré : ponctualité, tenue, inventaire, consignes, rondes, évaluations, formation et l'appréciation du client, plus les manquements. Désactivé, personne ne voit de note — ni vous dans les fiches, ni l'agent dans son application — ; elle n'est pas remise à zéro, elle cesse d'exister. Pour arrêter de mesurer UNE personne en particulier, utilisez l'interrupteur de sa fiche, dans Performance."
+      "performanceHint": "Tout le personnel démarre à 100 et ne descend que par ce qui est mesuré : ponctualité, tenue, inventaire, consignes, rondes, évaluations, formation et l'appréciation du client, plus les manquements. Désactivé, personne ne voit de note — ni vous dans les fiches, ni l'agent dans son application — ; elle n'est pas remise à zéro, elle cesse d'exister. Pour arrêter de mesurer UNE personne en particulier, utilisez l'interrupteur de sa fiche, dans Performance.",
+      "sectionRelevo": "Changement de vacation",
+      "relevoLabel": "Remise et acceptation du poste",
+      "relevoHint": "L'agent sortant remet le poste depuis son téléphone et l'agent entrant l'accepte : accepter vaut pointage d'arrivée. Si personne ne pointe, l'application relance et prévient le superviseur.",
+      "relevoAutoInLabel": "Pointer l'arrivée automatiquement en arrivant au poste",
+      "relevoAutoInHint": "Si l'agent arrive à son poste et n'a toujours pas pointé au bout de 15 minutes, son arrivée est enregistrée à l'heure où il est arrivé.",
+      "relevoAutoOutLabel": "Pointer le départ automatiquement en quittant le poste",
+      "relevoAutoOutHint": "Quand l'agent quitte le poste en fin de vacation, son départ est enregistré à l'heure où il est parti. S'il part en avance et ne revient pas dans les 15 minutes, c'est enregistré comme départ anticipé.",
+      "relevoAlertLabel": "Prévenir le superviseur si l'agent n'a pas pointé dans les",
+      "relevoAlertHint": "Minutes après l'heure de prise de poste. Entre 5 et 120.",
+      "relevoAlertSuffix": "minutes"
     },
     "postingGlobal": {
       "loadError": "Impossible de charger les paramètres.",
@@ -8271,7 +8289,8 @@
       "rondaHistory": "Historique",
       "shifts": "Vacations",
       "siteTours": "Rondes",
-      "visitors": "Visiteurs"
+      "visitors": "Visiteurs",
+      "passdowns": "Relèves"
     },
     "orders": {
       "title": "Consignes particulières",
@@ -11707,7 +11726,63 @@
   },
   "passdown": {
     "loadDetailError": "Impossible de charger la relève",
-    "noNotes": "Aucune main courante enregistrée."
+    "noNotes": "Aucune main courante enregistrée.",
+    "loadError": "Impossible de charger les relèves",
+    "deliveredBy": "Remis par",
+    "acceptedBy": "Reçu par",
+    "notes": "Main courante",
+    "supervision": "Supervision",
+    "imageAlt": "Photo de la relève {{n}}",
+    "instructionsCount": "Consignes ({{n}})",
+    "done": "Faite",
+    "viewDetail": "Voir le détail",
+    "notAccepted": "Pas encore acceptée",
+    "reliefMissing": "Relève absente",
+    "reliefMissingAt": "L'agent sortant a signalé que sa relève n'est pas arrivée : {{when}}",
+    "instructionsInDetail": "{{n}} consigne(s) : ouvrez pour les voir.",
+    "entryMethod": {
+      "app": "Depuis l'application",
+      "auto_location": "Automatique par localisation",
+      "supervisor": "Pointée par le superviseur"
+    },
+    "outgoingPresent": {
+      "label": "L'agent sortant était-il là ?",
+      "yes": "Présent",
+      "no": "Absent"
+    },
+    "priority": {
+      "alta": "Haute",
+      "media": "Moyenne",
+      "baja": "Basse"
+    },
+    "status": {
+      "all": "Toutes",
+      "open": "Ouvertes",
+      "receivedPlural": "Reçues",
+      "received": "Reçue",
+      "accepted": "Acceptée"
+    },
+    "col": {
+      "station": "Poste",
+      "handover": "Remis → Reçu",
+      "delivered": "Remise",
+      "accepted": "Acceptée",
+      "entry": "Pointage de la relève",
+      "instructions": "Consignes"
+    },
+    "filter": {
+      "allStations": "Tous les postes",
+      "search": "Rechercher un poste…",
+      "searching": "Recherche…",
+      "noResults": "Aucun poste ne correspond",
+      "clear": "Retirer le filtre de poste"
+    },
+    "station": {
+      "empty": "Ce poste n'a encore aucune relève",
+      "emptyHint": "Quand un agent remettra ce poste à sa relève, la relève apparaîtra ici avec sa main courante et ses consignes.",
+      "viewAll": "Tout voir ({{n}})",
+      "showing": "{{n}} sur {{total}} affichées"
+    }
   },
   "radio": {
     "devices": {

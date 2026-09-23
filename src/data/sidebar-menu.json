@@ -25,6 +25,12 @@
     "path": "/stations"
   },
   {
+    "id": "pases-de-turno",
+    "name": "Pases de turno",
+    "icon": "ClipboardSignature",
+    "path": "/passdowns"
+  },
+  {
     "id": "clientes",
     "name": "Clientes",
     "icon": "Users",
@@ -344,11 +350,6 @@
         "id": "tareas-aprobaciones",
         "name": "Aprobaciones",
         "path": "/tasks/approvals"
-      },
-      {
-        "id": "pases-de-turno",
-        "name": "Pases de turno",
-        "path": "/passdowns"
       }
     ]
   },

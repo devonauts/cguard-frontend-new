@@ -1250,6 +1250,14 @@ export default function App() {
                               }
                               path="/post-sites/:postSiteId/stations/:stationId/parking"
                             />
+                            <Route
+                              element={
+                                <ProtectedRoute>
+                                  <StationDetailPage />
+                                </ProtectedRoute>
+                              }
+                              path="/post-sites/:postSiteId/stations/:stationId/passdowns"
+                            />
                             {/* FIN CLIENTES */}
 
                             {/* EQUIPOS DE SEGURIDAD */}

@@ -61,6 +61,7 @@ import {
   Sun,
   Moon,
   LayoutGrid,
+  ClipboardSignature,
   type LucideIcon,
 } from "lucide-react";
 
@@ -115,6 +116,7 @@ const iconMap: Record<string, LucideIcon> = {
   Radio,
   GraduationCap,
   Star,
+  ClipboardSignature,
 };
 
 /* ── GRUPOS DEL MENÚ ──────────────────────────────────────────────────────────
@@ -132,7 +134,9 @@ const GROUPS: GroupDef[] = [
     id: "resumen",
     label: "Resumen",
     icon: Gauge,
-    ids: ["panel", "actividad", "emergencias", "estaciones"],
+    // «pases-de-turno» va pegado a Estaciones: el pase es el registro del
+    // puesto en cada cambio de turno, no una tarea (antes colgaba de Tareas).
+    ids: ["panel", "actividad", "emergencias", "estaciones", "pases-de-turno"],
   },
   {
     id: "operacion",

@@ -432,8 +432,7 @@
     "tareas": {
       "label": "Tarefas",
       "tareas-seguimiento": "Acompanhamento",
-      "tareas-aprobaciones": "Aprovações",
-      "pases-de-turno": "Passagens de turno"
+      "tareas-aprobaciones": "Aprovações"
     },
     "solicitudes-clientes": "Solicitações de clientes",
     "control-de-calidad": "Controle de qualidade",
@@ -2489,7 +2488,8 @@
       },
       "viewDetails": "Ver detalhes",
       "website": "Site"
-    }
+    },
+    "pases-de-turno": "Passagens de turno"
   },
   "settings": {
     "configuracion": {
@@ -2728,7 +2728,17 @@
       "blockClockInHint": "Até agora uma credencial vencida só gerava um aviso: o vigilante marcava entrada mesmo assim, era atribuído a um posto e aparecia no relatório ao cliente. Ative apenas quando as datas das suas credenciais estiverem em dia — caso contrário, alguém pode ficar sem poder iniciar seu turno.",
       "sectionDesempeno": "Medição de desempenho",
       "performanceLabel": "Medir o desempenho do pessoal",
-      "performanceHint": "Todo o pessoal começa em 100 e só desce pelo que é medido: pontualidade, uniforme, inventário, consignas, rondas, avaliações, formação e avaliação do cliente, mais as faltas. Desligado, ninguém vê pontuação — nem você nas fichas, nem o vigilante na aplicação; não fica a zero, deixa de existir. Para deixar de medir UMA pessoa em concreto, use o interruptor da ficha dela, em Desempenho."
+      "performanceHint": "Todo o pessoal começa em 100 e só desce pelo que é medido: pontualidade, uniforme, inventário, consignas, rondas, avaliações, formação e avaliação do cliente, mais as faltas. Desligado, ninguém vê pontuação — nem você nas fichas, nem o vigilante na aplicação; não fica a zero, deixa de existir. Para deixar de medir UMA pessoa em concreto, use o interruptor da ficha dela, em Desempenho.",
+      "sectionRelevo": "Troca de turno",
+      "relevoLabel": "Entrega e aceite do posto",
+      "relevoHint": "O vigilante que sai entrega o posto pelo celular e o que entra o aceita: aceitar é a marcação de entrada dele. Se ninguém marcar, o app insiste e avisa o supervisor.",
+      "relevoAutoInLabel": "Marcar a entrada sozinha ao chegar ao posto",
+      "relevoAutoInHint": "Se o vigilante chegar ao posto e 15 minutos depois ainda não tiver marcado, a entrada é registrada na hora em que chegou.",
+      "relevoAutoOutLabel": "Marcar a saída sozinha ao sair do posto",
+      "relevoAutoOutHint": "Quando o vigilante sai do posto no fim do turno, a saída é registrada na hora em que saiu. Se sair antes da hora e não voltar em 15 minutos, fica como saída antecipada.",
+      "relevoAlertLabel": "Avisar o supervisor se o vigilante não marcar em",
+      "relevoAlertHint": "Minutos desde o horário de entrada. Entre 5 e 120.",
+      "relevoAlertSuffix": "minutos"
     },
     "postingGlobal": {
       "loadError": "Não foi possível carregar a configuração.",
@@ -6996,7 +7006,8 @@
       "rondaHistory": "Histórico",
       "shifts": "Turnos",
       "siteTours": "Rondas",
-      "visitors": "Visitantes"
+      "visitors": "Visitantes",
+      "passdowns": "Passagens de turno"
     },
     "orders": {
       "activate": "Ativar",
@@ -11108,6 +11119,14 @@
     },
     "timeClock": {
       "clockInError": "Não foi possível registrar a entrada"
+    },
+    "punchMethod": {
+      "autoIn": "Entrada automática",
+      "supervisorIn": "Marcada pelo supervisor",
+      "autoOut": "Saída automática",
+      "relevoOut": "Fechada pela rendição",
+      "earlyExit": "Saída antecipada",
+      "supervisorOut": "Fechada pelo supervisor"
     }
   },
   "maps": {
@@ -11707,7 +11726,63 @@
   },
   "passdown": {
     "loadDetailError": "Não foi possível carregar a passagem de turno",
-    "noNotes": "Sem novidades registradas."
+    "noNotes": "Sem novidades registradas.",
+    "loadError": "Não foi possível carregar as passagens de turno",
+    "deliveredBy": "Entregou",
+    "acceptedBy": "Recebeu",
+    "notes": "Novidades",
+    "supervision": "Supervisão",
+    "imageAlt": "Imagem da passagem {{n}}",
+    "instructionsCount": "Consignas ({{n}})",
+    "done": "Feita",
+    "viewDetail": "Ver detalhes",
+    "notAccepted": "Não aceita",
+    "reliefMissing": "Rendição não chegou",
+    "reliefMissingAt": "O vigilante que saía avisou que a rendição não chegou: {{when}}",
+    "instructionsInDetail": "{{n}} consigna(s): abra para vê-las.",
+    "entryMethod": {
+      "app": "Pelo app",
+      "auto_location": "Automática por localização",
+      "supervisor": "Marcada pelo supervisor"
+    },
+    "outgoingPresent": {
+      "label": "O vigilante que saía estava?",
+      "yes": "Estava",
+      "no": "Não estava"
+    },
+    "priority": {
+      "alta": "Alta",
+      "media": "Média",
+      "baja": "Baixa"
+    },
+    "status": {
+      "all": "Todas",
+      "open": "Abertas",
+      "receivedPlural": "Recebidas",
+      "received": "Recebida",
+      "accepted": "Aceita"
+    },
+    "col": {
+      "station": "Posto",
+      "handover": "Entregou → Recebeu",
+      "delivered": "Entregue",
+      "accepted": "Aceita",
+      "entry": "Entrada da rendição",
+      "instructions": "Consignas"
+    },
+    "filter": {
+      "allStations": "Todos os postos",
+      "search": "Buscar posto…",
+      "searching": "Buscando…",
+      "noResults": "Nenhum posto corresponde",
+      "clear": "Remover o filtro de posto"
+    },
+    "station": {
+      "empty": "Este posto ainda não tem passagens de turno",
+      "emptyHint": "Quando um vigilante entregar este posto à rendição, a passagem aparecerá aqui com as novidades e consignas.",
+      "viewAll": "Ver todas ({{n}})",
+      "showing": "Mostrando {{n}} de {{total}}"
+    }
   },
   "radio": {
     "devices": {

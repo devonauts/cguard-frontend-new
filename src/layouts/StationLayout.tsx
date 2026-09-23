@@ -20,6 +20,7 @@ import {
   Package,
   Car,
   AlertTriangle,
+  ClipboardSignature,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -65,6 +66,14 @@ export default function StationLayout({ title, children, station }: Props) {
       label: t("station.details.orders", "Consignas"),
       icon: ClipboardList,
       path: `${base}/orders`,
+    },
+    {
+      // Justo después de las consignas: el pase de turno es el registro del
+      // puesto en cada cambio de turno, y ahí es donde se busca.
+      id: "passdowns",
+      label: t("station.details.passdowns", "Pases de turno"),
+      icon: ClipboardSignature,
+      path: `${base}/passdowns`,
     },
     {
       id: "site-tours",

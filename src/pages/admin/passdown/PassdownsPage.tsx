@@ -1,10 +1,23 @@
 import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
+import { ClipboardSignature, Repeat } from "lucide-react";
+
+import PassdownDetailModal from "./PassdownDetailModal";
+import FiltroDePuesto, { type PuestoElegido } from "./FiltroDePuesto";
+import {
+  EstadoDelPase,
+  SalienteEstabaBadge,
+  fmtPase,
+  horaDeAceptacion,
+  horaDeEntrega,
+  metodoDeEntrada,
+  quienEntregaYRecibe,
+} from "./paseDeTurno";
+
 import AppLayout from "@/layouts/app-layout";
 import { DataTable, type Column } from "@/components/table/DataTable";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { ClipboardSignature, Repeat, ListChecks, ImageOff } from "lucide-react";
 import {
   PageContainer,
   PageHeader,
@@ -12,57 +25,12 @@ import {
   SkeletonCards,
   StatusBadge,
   EmptyState,
-  Modal,
-  Field,
   Segmented,
-  SmartImage,
 } from "@/components/kit";
 import passdownService, {
   type Passdown,
-  type PassdownDetail,
   type PassdownStatus,
 } from "@/lib/api/passdownService";
-import i18n from "@/i18n";
-
-import { localeActual } from "@/lib/localeActual";
-import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
-function fmtDate(s?: string | null): string {
-  if (!s) return "—";
-  const d = new Date(s);
-  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() });
-}
-
-const PRIORITY_META: Record<
-  string,
-  { label: string; tone: "bad" | "warn" | "neutral" }
-> = {
-  alta: { label: "Alta", tone: "bad" },
-  media: { label: "Media", tone: "warn" },
-  baja: { label: "Baja", tone: "neutral" },
-};
-
-const FILTERS: Array<{ key: PassdownStatus | "all"; label: string }> = [
-  { key: "all", label: "Todos" },
-  { key: "open", label: "Abiertos" },
-  { key: "received", label: "Recibidos" },
-];
-
-function StatusPill({ status }: { status: PassdownStatus }) {
-  return status === "received" ? (
-    <StatusBadge tone="ok">Recibido</StatusBadge>
-  ) : (
-    <StatusBadge tone="warn">
-      {i18n.t("ui.PassdownsPage.pendienteDeRecibir")}
-    </StatusBadge>
-  );
-}
-
-function imageSrc(img: {
-  downloadUrl?: string | null;
-  publicUrl?: string | null;
-}): string | null {
-  return img.downloadUrl || img.publicUrl || null;
-}
 
 export default function PassdownsPage() {
   const { t } = useTranslation();
@@ -70,50 +38,78 @@ export default function PassdownsPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<PassdownStatus | "all">("all");
 
-  const [detail, setDetail] = useState<PassdownDetail | null>(null);
+  /* El puesto va en la URL (`?stationId=…&station=…`): así la pestaña de la
+     estación, un aviso o un enlace compartido pueden abrir la página ya
+     filtrada, y recargar no lo pierde. */
+  const [params, setParams] = useSearchParams();
+  const stationId = params.get("stationId") || "";
+  const puesto: PuestoElegido | null = stationId
+    ? { id: stationId, label: params.get("station") || stationId }
+    : null;
+  const elegirPuesto = (p: PuestoElegido | null) => {
+    const next = new URLSearchParams(params);
+
+    if (p) {
+      next.set("stationId", p.id);
+      next.set("station", p.label);
+    } else {
+      next.delete("stationId");
+      next.delete("station");
+    }
+    setParams(next, { replace: true });
+  };
+
+  const [detailId, setDetailId] = useState<string | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
-  const [detailLoading, setDetailLoading] = useState(false);
 
   const load = useCallback(() => {
     setLoading(true);
     passdownService
-      .list({ status: filter === "all" ? undefined : filter, limit: 200 })
+      .list({
+        status: filter === "all" ? undefined : filter,
+        stationId: stationId || undefined,
+        limit: 200,
+      })
       .then((r) => setRows(r.rows || []))
       .catch((e: any) =>
-        toast.error(e?.message || "Error al cargar los pases de turno"),
+        toast.error(
+          e?.message ||
+            t(
+              "passdown.loadError",
+              "No se pudieron cargar los pases de turno",
+            ),
+        ),
       )
       .finally(() => setLoading(false));
-  }, [filter]);
+  }, [filter, stationId]);
   useEffect(load, [load]);
 
-  const openDetail = async (row: Passdown) => {
+  const openDetail = (row: Passdown) => {
+    setDetailId(row.id);
     setDetailOpen(true);
-    setDetail(null);
-    setDetailLoading(true);
-    try {
-      const r = await passdownService.get(row.id);
-      setDetail(r.passdown);
-    } catch (e: any) {
-      toast.error(
-        e?.message ||
-          t("passdown.loadDetailError", "No se pudo cargar el pase de turno"),
-      );
-      setDetailOpen(false);
-    } finally {
-      setDetailLoading(false);
-    }
   };
+
+  const filtros: Array<{ key: PassdownStatus | "all"; label: string }> = [
+    { key: "all", label: t("passdown.status.all", "Todos") },
+    { key: "open", label: t("passdown.status.open", "Abiertos") },
+    { key: "received", label: t("passdown.status.receivedPlural", "Recibidos") },
+  ];
+
+  const suave = { color: "var(--ink-soft)" };
 
   const columns: Column<Passdown>[] = [
     {
       key: "stationName",
-      header: "Puesto",
+      header: t("passdown.col.station", "Puesto"),
+      titulo: true,
       render: (_v, r) => (
         <span className="flex items-center gap-1.5 font-semibold">
           {r.stationName ||
-            ((r as any).channel === "supervisor" ? "Supervisión" : "—")}
-          {(r as any).channel === "supervisor" && (
-            <StatusBadge tone="warn" dot={false}>
+            (r.channel === "supervisor"
+              ? t("passdown.supervision", "Supervisión")
+              : "—")}
+          {r.channel === "supervisor" && (
+            <StatusBadge dot={false} tone="warn">
               {t("comun.supervisor")}
             </StatusBadge>
           )}
@@ -122,65 +118,68 @@ export default function PassdownsPage() {
     },
     {
       key: "outgoingGuardName",
-      header: "Vigilante saliente",
+      header: t("passdown.col.handover", "Entregó → Recibió"),
       render: (_v, r) => (
-        <span className="text-xs" style={{ color: "var(--ink-soft)" }}>
-          {r.outgoingGuardName || "—"}
+        <span className="text-xs" style={suave}>
+          {quienEntregaYRecibe(r)}
         </span>
       ),
     },
     {
       key: "shiftLabel",
-      header: "Turno",
+      header: t("comun.turno", "Turno"),
       render: (_v, r) => (
-        <span className="text-xs" style={{ color: "var(--ink-soft)" }}>
+        <span className="text-xs" style={suave}>
           {r.shiftLabel || "—"}
         </span>
       ),
     },
     {
+      key: "deliveredAt",
+      header: t("passdown.col.delivered", "Entregado"),
+      render: (_v, r) => (
+        <span className="text-xs tabular-nums" style={suave}>
+          {fmtPase(horaDeEntrega(r))}
+        </span>
+      ),
+    },
+    {
+      key: "acceptedAt",
+      header: t("passdown.col.accepted", "Aceptado"),
+      render: (_v, r) => (
+        <span className="text-xs tabular-nums" style={suave}>
+          {horaDeAceptacion(t, r)}
+        </span>
+      ),
+    },
+    {
+      key: "outgoingPresent",
+      header: t("passdown.outgoingPresent.label", "¿Estaba el saliente?"),
+      render: (_v, r) => <SalienteEstabaBadge passdown={r} t={t} />,
+    },
+    {
+      key: "incomingPunchMethod",
+      header: t("passdown.col.entry", "Entrada del relevo"),
+      render: (_v, r) => (
+        <span className="text-xs" style={suave}>
+          {metodoDeEntrada(t, r.incomingPunchMethod) || "—"}
+        </span>
+      ),
+    },
+    {
       key: "status",
-      header: "Estado",
-      render: (_v, r) => <StatusPill status={r.status} />,
+      header: t("comun.estado", "Estado"),
+      render: (_v, r) => <EstadoDelPase passdown={r} t={t} />,
     },
     {
       key: "instructionCount",
-      header: "Consignas",
+      header: t("passdown.col.instructions", "Consignas"),
+      numeric: true,
       render: (_v, r) => (
-        <span
-          className="text-xs tabular-nums"
-          style={{ color: "var(--ink-soft)" }}
-        >
+        <span className="text-xs tabular-nums" style={suave}>
           {r.instructionCount ?? 0}
         </span>
       ),
-    },
-    {
-      key: "createdAt",
-      header: "Creado",
-      render: (_v, r) => (
-        <span
-          className="text-xs tabular-nums"
-          style={{ color: "var(--ink-soft)" }}
-        >
-          {fmtDate(r.createdAt)}
-        </span>
-      ),
-    },
-    {
-      key: "receivedByName",
-      header: "Recibido por",
-      render: (_v, r) =>
-        r.status === "received" ? (
-          <span className="text-xs" style={{ color: "var(--ink-soft)" }}>
-            {r.receivedByName || "—"}
-            {r.receivedAt ? ` · ${fmtDate(r.receivedAt)}` : ""}
-          </span>
-        ) : (
-          <span className="text-xs" style={{ color: "var(--ink-faint)" }}>
-            —
-          </span>
-        ),
     },
   ];
 
@@ -190,30 +189,36 @@ export default function PassdownsPage() {
         <PageContainer width="wide">
           <PageHeader
             icon={<ClipboardSignature />}
-            title={t("ui.PassdownsPage.pasesDeTurno")}
             subtitle={t("ui.PassdownsPage.entregasDeTurnoDeLos")}
+            title={t("ui.PassdownsPage.pasesDeTurno")}
           />
 
           <Section
-            title={t("ui.PassdownsPage.pasesDeTurno")}
-            icon={<Repeat />}
             action={
-              <Segmented<PassdownStatus | "all">
-                value={filter}
-                onChange={setFilter}
-                options={FILTERS.map((f) => ({ value: f.key, label: f.label }))}
-              />
+              <div className="flex w-full min-w-0 flex-wrap items-center gap-2 sm:w-auto">
+                <FiltroDePuesto value={puesto} onChange={elegirPuesto} />
+                <Segmented<PassdownStatus | "all">
+                  options={filtros.map((f) => ({
+                    value: f.key,
+                    label: f.label,
+                  }))}
+                  value={filter}
+                  onChange={setFilter}
+                />
+              </div>
             }
+            icon={<Repeat />}
+            title={t("ui.PassdownsPage.pasesDeTurno")}
           >
             {loading ? (
               <SkeletonCards count={4} />
             ) : rows.length === 0 ? (
               <EmptyState
-                icon={<ClipboardSignature />}
-                title={t("ui.PassdownsPage.noHayPasesDeTurno")}
                 description={t(
                   "ui.PassdownsPage.cuandoLosVigilantesRegistrenLa",
                 )}
+                icon={<ClipboardSignature />}
+                title={t("ui.PassdownsPage.noHayPasesDeTurno")}
               />
             ) : (
               <DataTable
@@ -226,157 +231,11 @@ export default function PassdownsPage() {
         </PageContainer>
       </div>
 
-      <Modal
+      <PassdownDetailModal
         open={detailOpen}
+        passdownId={detailId}
         onOpenChange={setDetailOpen}
-        icon={<ClipboardSignature />}
-        title={t("ui.PassdownsPage.paseDeTurno")}
-        description={detail?.shiftLabel || undefined}
-        size="lg"
-      >
-        {detailLoading || !detail ? (
-          <SkeletonCards count={2} />
-        ) : (
-          <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              <Field label={t("comun.puesto")} value={detail.stationName} />
-              <Field
-                label={t("ui.PassdownsPage.vigilanteSaliente")}
-                value={detail.outgoingGuardName}
-              />
-              <Field label={t("comun.turno")} value={detail.shiftLabel} />
-              <Field label="Creado" value={fmtDate(detail.createdAt)} />
-              <div className="min-w-0">
-                <div className="cg-eyebrow mb-1">{t("comun.estado")}</div>
-                <StatusPill status={detail.status} />
-              </div>
-              {detail.status === "received" && (
-                <Field
-                  label={t("ui.PassdownsPage.recibidoPor")}
-                  value={
-                    detail.receivedByName
-                      ? `${detail.receivedByName}${detail.receivedAt ? ` · ${fmtDate(detail.receivedAt)}` : ""}`
-                      : "—"
-                  }
-                />
-              )}
-            </div>
-
-            <div>
-              <div className="cg-eyebrow mb-1">Novedades</div>
-              <p
-                className="glass-sunken whitespace-pre-wrap p-3 text-sm"
-                style={{ color: "var(--ink)" }}
-              >
-                {detail.notes?.trim() ||
-                  t("passdown.noNotes", "Sin novedades registradas.")}
-              </p>
-            </div>
-
-            {detail.passdownImages && detail.passdownImages.length > 0 && (
-              <div>
-                <div className="cg-eyebrow mb-2">
-                  {t("ui.Passdowns.imagenes", "Imágenes")}
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  {detail.passdownImages.map((img, i) => {
-                    const src = imageSrc(img);
-                    return src ? (
-                      <a
-                        key={i}
-                        href={src}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="glass-flat block h-24 w-24 overflow-hidden"
-                      >
-                        <SmartImage
-                          src={src}
-                          alt={`Imagen del pase ${i + 1}`}
-                          fit="cover"
-                          className="h-full w-full"
-                          fallback={
-                            <span
-                              className="grid h-full w-full place-items-center [&_svg]:size-6"
-                              style={{ color: "var(--ink-faint)" }}
-                            >
-                              <ImageOff />
-                            </span>
-                          }
-                        />
-                      </a>
-                    ) : (
-                      <div
-                        key={i}
-                        className="glass-sunken flex h-24 w-24 items-center justify-center [&_svg]:size-6"
-                        style={{ color: "var(--ink-faint)" }}
-                      >
-                        <ImageOff />
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            <div>
-              <div
-                className="mb-2 flex items-center gap-2 [&_svg]:size-4"
-                style={{ color: "var(--brand-text)" }}
-              >
-                <ListChecks />
-                <span className="cg-eyebrow">
-                  Consignas ({detail.instructions?.length ?? 0})
-                </span>
-              </div>
-              {detail.instructions && detail.instructions.length > 0 ? (
-                <div className="space-y-2">
-                  {detail.instructions.map((ins) => {
-                    const pr =
-                      PRIORITY_META[ins.priority || "media"] ||
-                      PRIORITY_META.media;
-                    return (
-                      <div
-                        key={ins.id}
-                        className="glass-flat flex items-start justify-between gap-3 p-3"
-                      >
-                        <div className="min-w-0">
-                          <div className="text-sm font-medium">
-                            {ins.taskToDo}
-                          </div>
-                          <div className="mt-1 flex flex-wrap items-center gap-2">
-                            <StatusBadge tone={pr.tone}>{pr.label}</StatusBadge>
-                            {ins.completionNotes && (
-                              <span
-                                className="text-xs"
-                                style={{ color: "var(--ink-soft)" }}
-                              >
-                                {ins.completionNotes}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        <div className="shrink-0">
-                          {ins.wasItDone ? (
-                            <StatusBadge tone="ok">Realizada</StatusBadge>
-                          ) : (
-                            <StatusBadge tone="neutral">
-                              {t("comun.pendiente")}
-                            </StatusBadge>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-                  {t("ui.PassdownsPage.sinConsignasRegistradas")}
-                </p>
-              )}
-            </div>
-          </div>
-        )}
-      </Modal>
+      />
     </AppLayout>
   );
 }

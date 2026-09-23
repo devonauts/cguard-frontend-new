@@ -5751,8 +5751,7 @@
     "tareas": {
       "label": "Tasks",
       "tareas-seguimiento": "Tracking",
-      "tareas-aprobaciones": "Approvals",
-      "pases-de-turno": "Shift handovers"
+      "tareas-aprobaciones": "Approvals"
     },
     "solicitudes-clientes": "Client requests",
     "control-de-calidad": "Quality control",
@@ -5764,7 +5763,8 @@
     "themeToggle": "Toggle theme",
     "goToDashboard": "Go to the dashboard",
     "unreadMessages": "{{count}} unread messages",
-    "emergencias": "Emergency Center"
+    "emergencias": "Emergency Center",
+    "pases-de-turno": "Shift handovers"
   },
   "siteTour": {
     "newTour": "New Tour",
@@ -6278,7 +6278,8 @@
       "rondaHistory": "History",
       "shifts": "Shifts",
       "siteTours": "Patrols",
-      "visitors": "Visitors"
+      "visitors": "Visitors",
+      "passdowns": "Shift handovers"
     },
     "orders": {
       "title": "Specific Standing Orders",
@@ -6805,7 +6806,17 @@
       "blockClockInHint": "Until now an expired credential only generated an alert: the guard clocked in anyway, was assigned a post and appeared in the client report. Turn it on only when your credential dates are up to date — otherwise, someone may be left unable to start their shift.",
       "sectionDesempeno": "Performance measurement",
       "performanceLabel": "Measure staff performance",
-      "performanceHint": "Everyone starts at 100 and only goes down for what is actually measured: punctuality, uniform, inventory, standing orders, patrols, tests, training and client rating, plus absences. Turned off, nobody sees a score — not you on their profile, not the officer in their app; it is not set to zero, it stops existing. To stop measuring ONE person, use the switch on their profile, under Performance."
+      "performanceHint": "Everyone starts at 100 and only goes down for what is actually measured: punctuality, uniform, inventory, standing orders, patrols, tests, training and client rating, plus absences. Turned off, nobody sees a score — not you on their profile, not the officer in their app; it is not set to zero, it stops existing. To stop measuring ONE person, use the switch on their profile, under Performance.",
+      "sectionRelevo": "Shift change",
+      "relevoLabel": "Post handover and acceptance",
+      "relevoHint": "The outgoing guard hands the post over from their phone and the incoming guard accepts it: accepting is their clock-in. If nobody clocks in, the app keeps reminding them and alerts the supervisor.",
+      "relevoAutoInLabel": "Clock in automatically on arrival at the post",
+      "relevoAutoInHint": "If the guard arrives at their post and still hasn't clocked in after 15 minutes, their clock-in is recorded at the time they arrived.",
+      "relevoAutoOutLabel": "Clock out automatically on leaving the post",
+      "relevoAutoOutHint": "When the guard leaves the post at the end of their shift, their clock-out is recorded at the time they left. If they leave early and don't come back within 15 minutes, it's recorded as an early departure.",
+      "relevoAlertLabel": "Alert the supervisor if the guard hasn't clocked in within",
+      "relevoAlertHint": "Minutes after the shift start time. Between 5 and 120.",
+      "relevoAlertSuffix": "minutes"
     },
     "postingGlobal": {
       "loadError": "The settings could not be loaded.",
@@ -11108,6 +11119,14 @@
     },
     "timeClock": {
       "clockInError": "The clock-in could not be recorded"
+    },
+    "punchMethod": {
+      "autoIn": "Automatic clock-in",
+      "supervisorIn": "Clocked in by supervisor",
+      "autoOut": "Automatic clock-out",
+      "relevoOut": "Closed by the relief",
+      "earlyExit": "Early departure",
+      "supervisorOut": "Closed by supervisor"
     }
   },
   "maps": {
@@ -11707,7 +11726,63 @@
   },
   "passdown": {
     "loadDetailError": "The shift handover could not be loaded",
-    "noNotes": "Nothing was reported."
+    "noNotes": "Nothing was reported.",
+    "loadError": "The shift handovers could not be loaded",
+    "deliveredBy": "Handed over by",
+    "acceptedBy": "Received by",
+    "notes": "Report",
+    "supervision": "Supervision",
+    "imageAlt": "Handover photo {{n}}",
+    "instructionsCount": "Instructions ({{n}})",
+    "done": "Done",
+    "viewDetail": "View details",
+    "notAccepted": "Not accepted yet",
+    "reliefMissing": "Relief didn't arrive",
+    "reliefMissingAt": "The outgoing guard reported that their relief didn't arrive: {{when}}",
+    "instructionsInDetail": "{{n}} instruction(s): open it to see them.",
+    "entryMethod": {
+      "app": "From the app",
+      "auto_location": "Automatic, by location",
+      "supervisor": "Clocked in by the supervisor"
+    },
+    "outgoingPresent": {
+      "label": "Was the outgoing guard there?",
+      "yes": "Was there",
+      "no": "Wasn't there"
+    },
+    "priority": {
+      "alta": "High",
+      "media": "Medium",
+      "baja": "Low"
+    },
+    "status": {
+      "all": "All",
+      "open": "Open",
+      "receivedPlural": "Received",
+      "received": "Received",
+      "accepted": "Accepted"
+    },
+    "col": {
+      "station": "Post",
+      "handover": "Handed over → Received",
+      "delivered": "Handed over",
+      "accepted": "Accepted",
+      "entry": "Relief's clock-in",
+      "instructions": "Instructions"
+    },
+    "filter": {
+      "allStations": "All posts",
+      "search": "Search post…",
+      "searching": "Searching…",
+      "noResults": "No post matches",
+      "clear": "Clear post filter"
+    },
+    "station": {
+      "empty": "This post has no shift handovers yet",
+      "emptyHint": "When a guard hands this post over to their relief, the handover will show up here with its report and instructions.",
+      "viewAll": "View all ({{n}})",
+      "showing": "Showing {{n}} of {{total}}"
+    }
   },
   "radio": {
     "devices": {

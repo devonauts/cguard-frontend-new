@@ -2793,6 +2793,14 @@
     },
     "timeClock": {
       "clockInError": "Impossibile timbrare l'entrata"
+    },
+    "punchMethod": {
+      "autoIn": "Entrata automatica",
+      "supervisorIn": "Timbrata dal supervisore",
+      "autoOut": "Uscita automatica",
+      "relevoOut": "Chiusa dal cambio",
+      "earlyExit": "Uscita anticipata",
+      "supervisorOut": "Chiusa dal supervisore"
     }
   },
   "performance": {
@@ -5398,8 +5406,7 @@
     "tareas": {
       "label": "Attività",
       "tareas-seguimiento": "Monitoraggio",
-      "tareas-aprobaciones": "Approvazioni",
-      "pases-de-turno": "Cambi turno"
+      "tareas-aprobaciones": "Approvazioni"
     },
     "solicitudes-clientes": "Richieste dei committenti",
     "control-de-calidad": "Controllo qualità",
@@ -5411,7 +5418,8 @@
     "themeToggle": "Cambia tema",
     "goToDashboard": "Vai al cruscotto",
     "unreadMessages": "{{count}} messaggi non letti",
-    "emergencias": "Centrale emergenze"
+    "emergencias": "Centrale emergenze",
+    "pases-de-turno": "Consegne di turno"
   },
   "siteTour": {
     "newTour": "Nuovo percorso",
@@ -7290,7 +7298,17 @@
       "blockClockInHint": "Finora un'abilitazione scaduta produceva solo un avviso: la guardia timbrava lo stesso, riceveva un posto e compariva nel report al committente. Attivalo solo quando le date delle tue abilitazioni sono aggiornate — altrimenti qualcuno può ritrovarsi impossibilitato a iniziare il turno.",
       "sectionDesempeno": "Misurazione delle prestazioni",
       "performanceLabel": "Misura le prestazioni del personale",
-      "performanceHint": "Tutto il personale parte da 100 e scende solo per ciò che viene misurato: puntualità, divisa, dotazione, consegne, ronde, valutazioni, formazione e il giudizio del committente, oltre alle mancanze. Se lo spegni, nessuno vede il punteggio — né tu nelle schede, né la guardia nella sua app —; non viene azzerato, semplicemente smette di esistere. Per smettere di misurare UNA persona in particolare, usa l'interruttore nella sua scheda, in Prestazioni."
+      "performanceHint": "Tutto il personale parte da 100 e scende solo per ciò che viene misurato: puntualità, divisa, dotazione, consegne, ronde, valutazioni, formazione e il giudizio del committente, oltre alle mancanze. Se lo spegni, nessuno vede il punteggio — né tu nelle schede, né la guardia nella sua app —; non viene azzerato, semplicemente smette di esistere. Per smettere di misurare UNA persona in particolare, usa l'interruttore nella sua scheda, in Prestazioni.",
+      "sectionRelevo": "Cambio turno",
+      "relevoLabel": "Consegna e accettazione del posto",
+      "relevoHint": "La guardia uscente consegna il posto dal telefono e quella entrante lo accetta: accettare è la sua timbratura d'entrata. Se nessuno timbra, l'app insiste e avvisa il supervisore.",
+      "relevoAutoInLabel": "Timbrare l'entrata da sola all'arrivo al posto",
+      "relevoAutoInHint": "Se la guardia arriva al posto e dopo 15 minuti non ha ancora timbrato, l'entrata viene registrata all'ora di arrivo.",
+      "relevoAutoOutLabel": "Timbrare l'uscita da sola lasciando il posto",
+      "relevoAutoOutHint": "Quando la guardia lascia il posto a fine turno, l'uscita viene registrata all'ora in cui se n'è andata. Se esce prima e non torna entro 15 minuti, risulta come uscita anticipata.",
+      "relevoAlertLabel": "Avvisare il supervisore se la guardia non timbra entro",
+      "relevoAlertHint": "Minuti dall'orario d'inizio. Tra 5 e 120.",
+      "relevoAlertSuffix": "minuti"
     },
     "postingGlobal": {
       "loadError": "Impossibile caricare le impostazioni.",
@@ -8271,7 +8289,8 @@
       "rondaHistory": "Storico",
       "shifts": "Turni",
       "siteTours": "Ronde",
-      "visitors": "Visitatori"
+      "visitors": "Visitatori",
+      "passdowns": "Consegne di turno"
     },
     "orders": {
       "title": "Consegne specifiche",
@@ -11707,7 +11726,63 @@
   },
   "passdown": {
     "loadDetailError": "Impossibile caricare la consegna di turno",
-    "noNotes": "Nessuna novità registrata."
+    "noNotes": "Nessuna novità registrata.",
+    "loadError": "Impossibile caricare le consegne di turno",
+    "deliveredBy": "Consegnato da",
+    "acceptedBy": "Ricevuto da",
+    "notes": "Novità",
+    "supervision": "Supervisione",
+    "imageAlt": "Foto della consegna {{n}}",
+    "instructionsCount": "Consegne ({{n}})",
+    "done": "Fatta",
+    "viewDetail": "Vedi dettagli",
+    "notAccepted": "Non ancora accettata",
+    "reliefMissing": "Il cambio non è arrivato",
+    "reliefMissingAt": "La guardia uscente ha segnalato che il cambio non è arrivato: {{when}}",
+    "instructionsInDetail": "{{n}} consegna/e: aprila per vederle.",
+    "entryMethod": {
+      "app": "Dall'app",
+      "auto_location": "Automatica tramite posizione",
+      "supervisor": "Timbrata dal supervisore"
+    },
+    "outgoingPresent": {
+      "label": "La guardia uscente era presente?",
+      "yes": "Presente",
+      "no": "Assente"
+    },
+    "priority": {
+      "alta": "Alta",
+      "media": "Media",
+      "baja": "Bassa"
+    },
+    "status": {
+      "all": "Tutte",
+      "open": "Aperte",
+      "receivedPlural": "Ricevute",
+      "received": "Ricevuta",
+      "accepted": "Accettata"
+    },
+    "col": {
+      "station": "Posto",
+      "handover": "Consegnato → Ricevuto",
+      "delivered": "Consegnata",
+      "accepted": "Accettata",
+      "entry": "Timbratura del cambio",
+      "instructions": "Consegne"
+    },
+    "filter": {
+      "allStations": "Tutti i posti",
+      "search": "Cerca posto…",
+      "searching": "Ricerca…",
+      "noResults": "Nessun posto corrisponde",
+      "clear": "Rimuovi il filtro posto"
+    },
+    "station": {
+      "empty": "Questo posto non ha ancora consegne di turno",
+      "emptyHint": "Quando una guardia consegnerà questo posto al cambio, la consegna apparirà qui con novità e consegne.",
+      "viewAll": "Vedi tutte ({{n}})",
+      "showing": "{{n}} di {{total}} mostrate"
+    }
   },
   "radio": {
     "devices": {

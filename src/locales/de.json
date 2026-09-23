@@ -2793,6 +2793,14 @@
     },
     "timeClock": {
       "clockInError": "Einstempeln nicht möglich"
+    },
+    "punchMethod": {
+      "autoIn": "Automatisch eingestempelt",
+      "supervisorIn": "Vom Einsatzleiter gestempelt",
+      "autoOut": "Automatisch ausgestempelt",
+      "relevoOut": "Durch Ablösung beendet",
+      "earlyExit": "Vorzeitig gegangen",
+      "supervisorOut": "Vom Einsatzleiter beendet"
     }
   },
   "performance": {
@@ -5398,8 +5406,7 @@
     "tareas": {
       "label": "Aufgaben",
       "tareas-seguimiento": "Nachverfolgung",
-      "tareas-aprobaciones": "Freigaben",
-      "pases-de-turno": "Schichtübergaben"
+      "tareas-aprobaciones": "Freigaben"
     },
     "solicitudes-clientes": "Auftraggeber-Anfragen",
     "control-de-calidad": "Qualitätskontrolle",
@@ -5411,7 +5418,8 @@
     "themeToggle": "Design wechseln",
     "goToDashboard": "Zur Übersicht",
     "unreadMessages": "{{count}} ungelesene Nachrichten",
-    "emergencias": "Notfallzentrale"
+    "emergencias": "Notfallzentrale",
+    "pases-de-turno": "Schichtübergaben"
   },
   "siteTour": {
     "newTour": "Neuer Rundgang",
@@ -7290,7 +7298,17 @@
       "blockClockInHint": "Bisher erzeugte ein abgelaufener Ausweis nur einen Hinweis: Die Wachkraft stempelte trotzdem ein, wurde einem Objekt zugeteilt und erschien im Bericht an den Auftraggeber. Aktivieren Sie dies nur, wenn die Daten Ihrer Ausweise aktuell sind — sonst kann jemand seine Schicht nicht beginnen.",
       "sectionDesempeno": "Leistungsmessung",
       "performanceLabel": "Leistung des Personals messen",
-      "performanceHint": "Das gesamte Personal startet bei 100 und verliert nur durch das, was tatsächlich gemessen wird: Pünktlichkeit, Uniform, Inventar, Anweisungen, Rundgänge, Bewertungen, Schulungen und die Beurteilung durch den Auftraggeber sowie Fehlzeiten. Ist es ausgeschaltet, sieht niemand eine Punktzahl — weder Sie in den Profilen noch die Wachkraft in ihrer App; sie wird nicht auf null gesetzt, sie existiert nicht mehr. Um EINE bestimmte Person nicht mehr zu messen, verwenden Sie den Schalter in ihrem Profil unter Leistung."
+      "performanceHint": "Das gesamte Personal startet bei 100 und verliert nur durch das, was tatsächlich gemessen wird: Pünktlichkeit, Uniform, Inventar, Anweisungen, Rundgänge, Bewertungen, Schulungen und die Beurteilung durch den Auftraggeber sowie Fehlzeiten. Ist es ausgeschaltet, sieht niemand eine Punktzahl — weder Sie in den Profilen noch die Wachkraft in ihrer App; sie wird nicht auf null gesetzt, sie existiert nicht mehr. Um EINE bestimmte Person nicht mehr zu messen, verwenden Sie den Schalter in ihrem Profil unter Leistung.",
+      "sectionRelevo": "Schichtwechsel",
+      "relevoLabel": "Übergabe und Übernahme des Objekts",
+      "relevoHint": "Die abgehende Wachkraft übergibt das Objekt per Handy, die ankommende übernimmt es: Die Übernahme ist ihre Einstempelung. Stempelt niemand, erinnert die App weiter und benachrichtigt den Einsatzleiter.",
+      "relevoAutoInLabel": "Beim Eintreffen am Objekt automatisch einstempeln",
+      "relevoAutoInHint": "Ist die Wachkraft am Objekt und hat nach 15 Minuten noch nicht gestempelt, wird ihr Dienstbeginn zur Ankunftszeit erfasst.",
+      "relevoAutoOutLabel": "Beim Verlassen des Objekts automatisch ausstempeln",
+      "relevoAutoOutHint": "Verlässt die Wachkraft das Objekt am Schichtende, wird ihr Dienstende zur Abgangszeit erfasst. Geht sie zu früh und kommt nicht innerhalb von 15 Minuten zurück, gilt das als vorzeitiges Gehen.",
+      "relevoAlertLabel": "Einsatzleiter benachrichtigen, wenn die Wachkraft nicht einstempelt innerhalb von",
+      "relevoAlertHint": "Minuten nach Schichtbeginn. Zwischen 5 und 120.",
+      "relevoAlertSuffix": "Minuten"
     },
     "postingGlobal": {
       "loadError": "Die Einstellungen konnten nicht geladen werden.",
@@ -8271,7 +8289,8 @@
       "rondaHistory": "Verlauf",
       "shifts": "Schichten",
       "siteTours": "Rundgänge",
-      "visitors": "Besucher"
+      "visitors": "Besucher",
+      "passdowns": "Schichtübergaben"
     },
     "orders": {
       "title": "Besondere Anweisungen",
@@ -11707,7 +11726,63 @@
   },
   "passdown": {
     "loadDetailError": "Die Schichtübergabe konnte nicht geladen werden",
-    "noNotes": "Keine Vorkommnisse erfasst."
+    "noNotes": "Keine Vorkommnisse erfasst.",
+    "loadError": "Die Schichtübergaben konnten nicht geladen werden",
+    "deliveredBy": "Übergeben von",
+    "acceptedBy": "Übernommen von",
+    "notes": "Vorkommnisse",
+    "supervision": "Einsatzleitung",
+    "imageAlt": "Übergabefoto {{n}}",
+    "instructionsCount": "Anweisungen ({{n}})",
+    "done": "Erledigt",
+    "viewDetail": "Details ansehen",
+    "notAccepted": "Noch nicht übernommen",
+    "reliefMissing": "Ablösung nicht erschienen",
+    "reliefMissingAt": "Die abgehende Wachkraft hat gemeldet, dass die Ablösung nicht erschienen ist: {{when}}",
+    "instructionsInDetail": "{{n}} Anweisung(en): zum Ansehen öffnen.",
+    "entryMethod": {
+      "app": "Über die App",
+      "auto_location": "Automatisch per Standort",
+      "supervisor": "Vom Einsatzleiter gestempelt"
+    },
+    "outgoingPresent": {
+      "label": "War die abgehende Wachkraft da?",
+      "yes": "War da",
+      "no": "War nicht da"
+    },
+    "priority": {
+      "alta": "Hoch",
+      "media": "Mittel",
+      "baja": "Niedrig"
+    },
+    "status": {
+      "all": "Alle",
+      "open": "Offen",
+      "receivedPlural": "Übernommen",
+      "received": "Übernommen",
+      "accepted": "Angenommen"
+    },
+    "col": {
+      "station": "Objekt",
+      "handover": "Übergeben → Übernommen",
+      "delivered": "Übergeben",
+      "accepted": "Angenommen",
+      "entry": "Stempelung der Ablösung",
+      "instructions": "Anweisungen"
+    },
+    "filter": {
+      "allStations": "Alle Objekte",
+      "search": "Objekt suchen…",
+      "searching": "Suche…",
+      "noResults": "Kein Objekt gefunden",
+      "clear": "Objektfilter entfernen"
+    },
+    "station": {
+      "empty": "Für dieses Objekt gibt es noch keine Schichtübergaben",
+      "emptyHint": "Sobald eine Wachkraft dieses Objekt an ihre Ablösung übergibt, erscheint die Übergabe hier mit Vorkommnissen und Anweisungen.",
+      "viewAll": "Alle ansehen ({{n}})",
+      "showing": "{{n}} von {{total}} angezeigt"
+    }
   },
   "radio": {
     "devices": {

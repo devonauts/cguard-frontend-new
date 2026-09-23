@@ -2793,6 +2793,14 @@
     },
     "timeClock": {
       "clockInError": "Nie udało się zarejestrować wejścia"
+    },
+    "punchMethod": {
+      "autoIn": "Wejście automatyczne",
+      "supervisorIn": "Odbite przez nadzorcę",
+      "autoOut": "Wyjście automatyczne",
+      "relevoOut": "Zamknięte przez zmiennika",
+      "earlyExit": "Wcześniejsze wyjście",
+      "supervisorOut": "Zamknięte przez nadzorcę"
     }
   },
   "performance": {
@@ -5398,8 +5406,7 @@
     "tareas": {
       "label": "Zadania",
       "tareas-seguimiento": "Śledzenie",
-      "tareas-aprobaciones": "Zatwierdzenia",
-      "pases-de-turno": "Zdania służby"
+      "tareas-aprobaciones": "Zatwierdzenia"
     },
     "solicitudes-clientes": "Wnioski zleceniodawców",
     "control-de-calidad": "Kontrola jakości",
@@ -5411,7 +5418,8 @@
     "themeToggle": "Zmień motyw",
     "goToDashboard": "Przejdź do panelu",
     "unreadMessages": "{{count}} nieprzeczytanych",
-    "emergencias": "Centrum alarmowe"
+    "emergencias": "Centrum alarmowe",
+    "pases-de-turno": "Zdania służby"
   },
   "siteTour": {
     "newTour": "Nowy obchód",
@@ -7290,7 +7298,17 @@
       "blockClockInHint": "Dotychczas wygasłe uprawnienie generowało wyłącznie powiadomienie: pracownik ochrony i tak rejestrował wejście, otrzymywał posterunek i pojawiał się w raporcie dla zleceniodawcy. Prosimy włączyć to dopiero wtedy, gdy daty uprawnień są aktualne — w przeciwnym razie ktoś może nie móc rozpocząć zmiany.",
       "sectionDesempeno": "Pomiar wyników pracy",
       "performanceLabel": "Mierz wyniki pracy personelu",
-      "performanceHint": "Cały personel startuje ze 100 punktami i traci wyłącznie za to, co jest mierzone: punktualność, mundur, wyposażenie, instrukcje, obchody, oceny, szkolenia i ocenę zleceniodawcy oraz nieobecności. Po wyłączeniu nikt nie widzi wyniku — ani Państwo w kartach pracowników, ani pracownik ochrony w swojej aplikacji; wynik nie zeruje się, po prostu przestaje istnieć. Aby przestać mierzyć JEDNĄ konkretną osobę, prosimy użyć przełącznika w jej karcie, w sekcji Wyniki."
+      "performanceHint": "Cały personel startuje ze 100 punktami i traci wyłącznie za to, co jest mierzone: punktualność, mundur, wyposażenie, instrukcje, obchody, oceny, szkolenia i ocenę zleceniodawcy oraz nieobecności. Po wyłączeniu nikt nie widzi wyniku — ani Państwo w kartach pracowników, ani pracownik ochrony w swojej aplikacji; wynik nie zeruje się, po prostu przestaje istnieć. Aby przestać mierzyć JEDNĄ konkretną osobę, prosimy użyć przełącznika w jej karcie, w sekcji Wyniki.",
+      "sectionRelevo": "Zmiana służby",
+      "relevoLabel": "Zdanie i przyjęcie posterunku",
+      "relevoHint": "Zdający służbę przekazuje posterunek z telefonu, a obejmujący go przyjmuje: przyjęcie jest jego odbiciem wejścia. Jeśli nikt się nie odbije, aplikacja przypomina i powiadamia nadzorcę.",
+      "relevoAutoInLabel": "Odbijaj wejście automatycznie po dotarciu na posterunek",
+      "relevoAutoInHint": "Jeśli pracownik dotrze na posterunek i po 15 minutach nadal się nie odbił, wejście zostanie zapisane z godziną przybycia.",
+      "relevoAutoOutLabel": "Odbijaj wyjście automatycznie po opuszczeniu posterunku",
+      "relevoAutoOutHint": "Gdy pracownik opuści posterunek na koniec zmiany, wyjście zostanie zapisane z godziną odejścia. Jeśli wyjdzie wcześniej i nie wróci w ciągu 15 minut, zostanie to zapisane jako wcześniejsze wyjście.",
+      "relevoAlertLabel": "Powiadom nadzorcę, jeśli pracownik nie odbije się w ciągu",
+      "relevoAlertHint": "Minuty od godziny rozpoczęcia. Od 5 do 120.",
+      "relevoAlertSuffix": "minut"
     },
     "postingGlobal": {
       "loadError": "Nie udało się wczytać ustawień.",
@@ -8271,7 +8289,8 @@
       "rondaHistory": "Historia",
       "shifts": "Zmiany",
       "siteTours": "Obchody",
-      "visitors": "Goście"
+      "visitors": "Goście",
+      "passdowns": "Zdania służby"
     },
     "orders": {
       "title": "Instrukcje szczegółowe",
@@ -11707,7 +11726,63 @@
   },
   "passdown": {
     "loadDetailError": "Nie udało się wczytać zdania służby",
-    "noNotes": "Nie zarejestrowano żadnych zdarzeń."
+    "noNotes": "Nie zarejestrowano żadnych zdarzeń.",
+    "loadError": "Nie udało się wczytać zdań służby",
+    "deliveredBy": "Zdał",
+    "acceptedBy": "Przyjął",
+    "notes": "Zdarzenia",
+    "supervision": "Nadzór",
+    "imageAlt": "Zdjęcie zdania służby {{n}}",
+    "instructionsCount": "Instrukcje ({{n}})",
+    "done": "Wykonana",
+    "viewDetail": "Zobacz szczegóły",
+    "notAccepted": "Nieprzyjęte",
+    "reliefMissing": "Zmiennik nie dotarł",
+    "reliefMissingAt": "Zdający służbę zgłosił, że zmiennik nie dotarł: {{when}}",
+    "instructionsInDetail": "Instrukcje: {{n}}. Otwórz, aby je zobaczyć.",
+    "entryMethod": {
+      "app": "Z aplikacji",
+      "auto_location": "Automatycznie wg lokalizacji",
+      "supervisor": "Odbita przez nadzorcę"
+    },
+    "outgoingPresent": {
+      "label": "Czy zdający był na miejscu?",
+      "yes": "Był",
+      "no": "Nie było go"
+    },
+    "priority": {
+      "alta": "Wysoki",
+      "media": "Średni",
+      "baja": "Niski"
+    },
+    "status": {
+      "all": "Wszystkie",
+      "open": "Otwarte",
+      "receivedPlural": "Przyjęte",
+      "received": "Przyjęte",
+      "accepted": "Zaakceptowane"
+    },
+    "col": {
+      "station": "Posterunek",
+      "handover": "Zdał → Przyjął",
+      "delivered": "Zdano",
+      "accepted": "Przyjęto",
+      "entry": "Wejście zmiennika",
+      "instructions": "Instrukcje"
+    },
+    "filter": {
+      "allStations": "Wszystkie posterunki",
+      "search": "Szukaj posterunku…",
+      "searching": "Szukam…",
+      "noResults": "Brak pasujących posterunków",
+      "clear": "Usuń filtr posterunku"
+    },
+    "station": {
+      "empty": "Ten posterunek nie ma jeszcze zdań służby",
+      "emptyHint": "Gdy pracownik ochrony zda ten posterunek zmiennikowi, zdanie służby pojawi się tutaj ze zdarzeniami i instrukcjami.",
+      "viewAll": "Zobacz wszystkie ({{n}})",
+      "showing": "Wyświetlono {{n}} z {{total}}"
+    }
   },
   "radio": {
     "devices": {

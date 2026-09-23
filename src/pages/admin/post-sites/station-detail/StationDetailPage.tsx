@@ -17,6 +17,7 @@ import StationIncidents from "./components/StationIncidents";
 import StationPatrolQR from "./components/StationPatrolQR";
 import StationParking from "./components/StationParking";
 import StationOrders from "./components/StationOrders";
+import StationPassdowns from "./components/StationPassdowns";
 
 import { EmptyState, FadeIn } from "@/components/kit";
 import { ApiService } from "@/services/api/apiService";
@@ -150,6 +151,8 @@ export default function StationDetailPage() {
         return <StationPatrolQR {...tabProps} />;
       case "parking":
         return <StationParking {...tabProps} />;
+      case "passdowns":
+        return <StationPassdowns {...tabProps} />;
       default:
         return <StationOverview {...tabProps} recentShifts={recentShifts} />;
     }

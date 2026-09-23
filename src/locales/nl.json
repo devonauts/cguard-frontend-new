@@ -2793,6 +2793,14 @@
     },
     "timeClock": {
       "clockInError": "Inklokken mislukt"
+    },
+    "punchMethod": {
+      "autoIn": "Automatisch ingeklokt",
+      "supervisorIn": "Ingeklokt door supervisor",
+      "autoOut": "Automatisch uitgeklokt",
+      "relevoOut": "Afgesloten door aflossing",
+      "earlyExit": "Vroegtijdig vertrek",
+      "supervisorOut": "Afgesloten door supervisor"
     }
   },
   "performance": {
@@ -5398,8 +5406,7 @@
     "tareas": {
       "label": "Taken",
       "tareas-seguimiento": "Opvolging",
-      "tareas-aprobaciones": "Goedkeuringen",
-      "pases-de-turno": "Dienstoverdrachten"
+      "tareas-aprobaciones": "Goedkeuringen"
     },
     "solicitudes-clientes": "Aanvragen opdrachtgevers",
     "control-de-calidad": "Kwaliteitscontrole",
@@ -5411,7 +5418,8 @@
     "themeToggle": "Thema wisselen",
     "goToDashboard": "Naar het dashboard",
     "unreadMessages": "{{count}} ongelezen berichten",
-    "emergencias": "Noodcentrale"
+    "emergencias": "Noodcentrale",
+    "pases-de-turno": "Dienstoverdrachten"
   },
   "siteTour": {
     "newTour": "Nieuwe ronde",
@@ -7290,7 +7298,17 @@
       "blockClockInHint": "Tot nu toe leverde een verlopen pasje alleen een melding op: de beveiliger klokte gewoon in, kreeg een post toegewezen en verscheen in het rapport aan de opdrachtgever. Zet dit pas aan als de data van uw pasjes kloppen — anders kan iemand zijn dienst niet beginnen.",
       "sectionDesempeno": "Meting van prestaties",
       "performanceLabel": "Prestaties van het personeel meten",
-      "performanceHint": "Iedereen begint op 100 en gaat alleen omlaag door wat daadwerkelijk wordt gemeten: stiptheid, uniform, inventaris, werkinstructies, rondes, evaluaties, training en de beoordeling van de opdrachtgever, plus verzuim. Staat het uit, dan ziet niemand een score — u niet op de personeelskaart en de beveiliger niet in zijn app; de score gaat niet naar nul, hij bestaat niet meer. Wilt u één specifieke persoon niet meer meten, gebruik dan de schakelaar op zijn kaart, onder Prestaties."
+      "performanceHint": "Iedereen begint op 100 en gaat alleen omlaag door wat daadwerkelijk wordt gemeten: stiptheid, uniform, inventaris, werkinstructies, rondes, evaluaties, training en de beoordeling van de opdrachtgever, plus verzuim. Staat het uit, dan ziet niemand een score — u niet op de personeelskaart en de beveiliger niet in zijn app; de score gaat niet naar nul, hij bestaat niet meer. Wilt u één specifieke persoon niet meer meten, gebruik dan de schakelaar op zijn kaart, onder Prestaties.",
+      "sectionRelevo": "Dienstwissel",
+      "relevoLabel": "Overdracht en acceptatie van de post",
+      "relevoHint": "De vertrekkende beveiliger draagt de post via de telefoon over en de aankomende accepteert die: accepteren is het inklokken. Klokt niemand in, dan blijft de app herinneren en waarschuwt de supervisor.",
+      "relevoAutoInLabel": "Automatisch inklokken bij aankomst op de post",
+      "relevoAutoInHint": "Als de beveiliger op de post aankomt en na 15 minuten nog niet heeft ingeklokt, wordt het inklokken geregistreerd op het tijdstip van aankomst.",
+      "relevoAutoOutLabel": "Automatisch uitklokken bij het verlaten van de post",
+      "relevoAutoOutHint": "Als de beveiliger de post aan het einde van de dienst verlaat, wordt het uitklokken geregistreerd op het tijdstip van vertrek. Vertrekt hij te vroeg en komt hij niet binnen 15 minuten terug, dan geldt het als vroegtijdig vertrek.",
+      "relevoAlertLabel": "Supervisor waarschuwen als de beveiliger niet inklokt binnen",
+      "relevoAlertHint": "Minuten na de begintijd. Tussen 5 en 120.",
+      "relevoAlertSuffix": "minuten"
     },
     "postingGlobal": {
       "loadError": "De instellingen konden niet worden geladen.",
@@ -8271,7 +8289,8 @@
       "rondaHistory": "Geschiedenis",
       "shifts": "Diensten",
       "siteTours": "Rondes",
-      "visitors": "Bezoekers"
+      "visitors": "Bezoekers",
+      "passdowns": "Dienstoverdrachten"
     },
     "orders": {
       "title": "Specifieke werkinstructies",
@@ -11707,7 +11726,63 @@
   },
   "passdown": {
     "loadDetailError": "De dienstoverdracht kon niet worden geladen",
-    "noNotes": "Geen bijzonderheden vastgelegd."
+    "noNotes": "Geen bijzonderheden vastgelegd.",
+    "loadError": "De dienstoverdrachten konden niet worden geladen",
+    "deliveredBy": "Overgedragen door",
+    "acceptedBy": "Ontvangen door",
+    "notes": "Bijzonderheden",
+    "supervision": "Supervisie",
+    "imageAlt": "Foto van de overdracht {{n}}",
+    "instructionsCount": "Instructies ({{n}})",
+    "done": "Gedaan",
+    "viewDetail": "Details bekijken",
+    "notAccepted": "Nog niet geaccepteerd",
+    "reliefMissing": "Aflossing niet gekomen",
+    "reliefMissingAt": "De vertrekkende beveiliger meldde dat de aflossing niet kwam: {{when}}",
+    "instructionsInDetail": "{{n}} instructie(s): open om ze te zien.",
+    "entryMethod": {
+      "app": "Via de app",
+      "auto_location": "Automatisch via locatie",
+      "supervisor": "Ingeklokt door de supervisor"
+    },
+    "outgoingPresent": {
+      "label": "Was de vertrekkende beveiliger er?",
+      "yes": "Was er",
+      "no": "Was er niet"
+    },
+    "priority": {
+      "alta": "Hoog",
+      "media": "Gemiddeld",
+      "baja": "Laag"
+    },
+    "status": {
+      "all": "Alle",
+      "open": "Open",
+      "receivedPlural": "Ontvangen",
+      "received": "Ontvangen",
+      "accepted": "Geaccepteerd"
+    },
+    "col": {
+      "station": "Post",
+      "handover": "Overgedragen → Ontvangen",
+      "delivered": "Overgedragen",
+      "accepted": "Geaccepteerd",
+      "entry": "Inklokken aflossing",
+      "instructions": "Instructies"
+    },
+    "filter": {
+      "allStations": "Alle posten",
+      "search": "Post zoeken…",
+      "searching": "Zoeken…",
+      "noResults": "Geen post gevonden",
+      "clear": "Postfilter wissen"
+    },
+    "station": {
+      "empty": "Deze post heeft nog geen dienstoverdrachten",
+      "emptyHint": "Zodra een beveiliger deze post aan de aflossing overdraagt, verschijnt de overdracht hier met bijzonderheden en instructies.",
+      "viewAll": "Alles bekijken ({{n}})",
+      "showing": "{{n}} van {{total}} weergegeven"
+    }
   },
   "radio": {
     "devices": {

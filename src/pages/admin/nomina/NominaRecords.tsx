@@ -50,6 +50,48 @@ import type { ExportFormat } from "@/lib/export/reportExport";
 
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+/**
+ * La marca que NO puso el vigilante con su dedo. Sólo se señalan las que
+ * cambian cómo leer la hora: la que registró el teléfono al llegar o irse del
+ * puesto, la que marcó el supervisor por él, la que cerró el relevo y la
+ * salida anticipada. 'app' y el barrido no llevan etiqueta: la primera es lo
+ * normal y el segundo ya lo cuenta el estado («sin marcar salida»).
+ */
+function MetodoDeMarcaje({
+  lado,
+  metodo,
+}: {
+  lado: "entrada" | "salida";
+  metodo?: string | null;
+}) {
+  const { t } = useTranslation();
+  let texto: string | null = null;
+  let tono: "info" | "warn" = "info";
+
+  if (lado === "entrada") {
+    if (metodo === "auto_location")
+      texto = t("nomina.punchMethod.autoIn", "Entrada automática");
+    else if (metodo === "supervisor")
+      texto = t("nomina.punchMethod.supervisorIn", "Marcada por supervisor");
+  } else if (metodo === "auto_location")
+    texto = t("nomina.punchMethod.autoOut", "Salida automática");
+  else if (metodo === "relevo")
+    texto = t("nomina.punchMethod.relevoOut", "Cerrada por el relevo");
+  else if (metodo === "early_exit") {
+    texto = t("nomina.punchMethod.earlyExit", "Salida anticipada");
+    tono = "warn";
+  } else if (metodo === "supervisor")
+    texto = t("nomina.punchMethod.supervisorOut", "Cerrada por supervisor");
+
+  if (!texto) return null;
+
+  return (
+    <ToneBadge className="ml-1.5 align-middle" dot={false} tone={tono}>
+      {texto}
+    </ToneBadge>
+  );
+}
+
 const STATUS_OPTIONS = [
   "",
   "on_time",
@@ -332,6 +374,7 @@ export default function NominaRecords() {
       render: (_v, r) => (
         <span>
           {fmtTime(r.punchInTime)}
+          <MetodoDeMarcaje lado="entrada" metodo={r.punchInMethod} />
           {Array.isArray(r.sessions) && r.sessions.length > 1 && (
             <span
               className="ml-1 text-[10px] font-medium tabular-nums"
@@ -347,7 +390,14 @@ export default function NominaRecords() {
       key: "punchOutTime",
       header: "Salida",
       numeric: true,
-      render: (_v, r) => fmtTime(r.punchOutTime),
+      render: (_v, r) => (
+        <span>
+          {fmtTime(r.punchOutTime)}
+          {r.punchOutTime && (
+            <MetodoDeMarcaje lado="salida" metodo={r.punchOutMethod} />
+          )}
+        </span>
+      ),
     },
     /* `numeric` no es decoración: alinea la columna Y su cabecera a la derecha
        con `tabular-nums`, que es lo que deja las horas unas debajo de otras.

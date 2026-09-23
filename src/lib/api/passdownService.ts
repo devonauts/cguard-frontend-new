@@ -59,6 +59,31 @@ export interface Passdown {
   receivedAt: string | null;
   createdAt: string;
   passdownImages: PassdownImage[];
+  /** 'supervisor' para la entrega del supervisor de ronda; si no, la del puesto. */
+  channel?: string | null;
+  // ── Relevo v2: entrega y aceptación entre compañeros ─────────────────────
+  // Todos opcionales: los pases anteriores a esto no los tienen, y el CRM
+  // tiene que seguir pintándolos igual.
+  /** Cuándo el saliente pulsó «Entregar». Null en los pases antiguos. */
+  deliveredAt?: string | null;
+  /** Cuándo el entrante aceptó el puesto (= marcó su entrada). */
+  acceptedAt?: string | null;
+  /**
+   * ¿El saliente seguía en el puesto cuando llegó el entrante? Lo contesta el
+   * entrante al aceptar. Null = no se preguntó (pase antiguo o app vieja).
+   * Viene de un TINYINT: puede llegar como 0/1 además de booleano.
+   */
+  outgoingPresent?: boolean | 0 | 1 | null;
+  /** Cuándo el saliente avisó de que su relevo no había llegado. */
+  reliefMissingReportedAt?: string | null;
+  /** Cómo se registró la entrada del entrante: 'app' | 'auto_location' | 'supervisor'. */
+  incomingPunchMethod?: string | null;
+  /**
+   * Consignas guardadas en el propio pase (JSON `[{text, priority, done}]`).
+   * Los pases antiguos las tienen como tareas y sólo llegan en el detalle.
+   * Puede venir como texto JSON sin parsear: ver `consignasDelPase`.
+   */
+  instructions?: unknown;
 }
 
 export interface PassdownInstruction {
@@ -72,7 +97,12 @@ export interface PassdownInstruction {
 }
 
 export interface PassdownDetail extends Passdown {
-  instructions: PassdownInstruction[];
+  /**
+   * Dos formas conviven: las tareas de los pases antiguos
+   * (`PassdownInstruction`) y el JSON nuevo `{text, priority, done}`.
+   * Se leen siempre a través de `consignasDelPase`.
+   */
+  instructions?: unknown;
 }
 
 const passdownService = {

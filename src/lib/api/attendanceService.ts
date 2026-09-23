@@ -58,6 +58,13 @@ export interface AttendanceRecord {
   punchInOutsideGeofence: boolean;
   punchInLatitude: number | null;
   punchInLongitude: number | null;
+  /**
+   * Cómo se marcó la entrada: 'app' | 'auto_location' | 'supervisor'.
+   * Null en los turnos anteriores al relevo v2 (todos fueron desde la app).
+   */
+  punchInMethod?: string | null;
+  /** Cómo se cerró: 'app' | 'relevo' | 'auto_location' | 'sweep' | 'early_exit' | 'supervisor'. */
+  punchOutMethod?: string | null;
   /** Every clock in/out pair within this shift's record (dedup model). */
   sessions?: Array<{ in: string; out?: string | null }> | null;
   // ── Operational fields (merged from the former Programador · Asistencia view) ──
