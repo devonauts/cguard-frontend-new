@@ -10290,7 +10290,10 @@
       "puestoRenombrado": "Post hernoemd",
       "renombrarPuesto": "Post hernoemen",
       "nadieDeTurnoEnEsteMomento": "Op dit moment niemand in dienst",
-      "errorRenombrar": "Hernoemen mislukt"
+      "errorRenombrar": "Hernoemen mislukt",
+      "editarNominativo": "Roepnaam wijzigen",
+      "nominativoGuardado": "Roepnaam opgeslagen",
+      "errorNominativo": "Kan de roepnaam niet opslaan"
     },
     "StationRoster": {
       "dia": "Dag",

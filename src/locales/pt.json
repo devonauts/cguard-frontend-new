@@ -9781,7 +9781,10 @@
       "puestoRenombrado": "Posto renomeado",
       "renombrarPuesto": "Renomear posto",
       "nadieDeTurnoEnEsteMomento": "Ninguém de plantão neste momento",
-      "errorRenombrar": "Não foi possível renomear"
+      "errorRenombrar": "Não foi possível renomear",
+      "editarNominativo": "Editar nominativo",
+      "nominativoGuardado": "Nominativo guardado",
+      "errorNominativo": "Não foi possível guardar o nominativo"
     },
     "StationRoster": {
       "dia": "Dia",

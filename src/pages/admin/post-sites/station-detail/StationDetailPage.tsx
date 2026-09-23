@@ -175,6 +175,9 @@ export default function StationDetailPage() {
               recentShifts={recentShifts}
               station={station}
               stationId={stationId || ""}
+              onNicknameChanged={(n) =>
+                setStation((prev: any) => ({ ...prev, nickname: n }))
+              }
               onRenamed={(n) =>
                 setStation((prev: any) => ({
                   ...prev,

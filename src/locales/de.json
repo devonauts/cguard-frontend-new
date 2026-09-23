@@ -10290,7 +10290,10 @@
       "puestoRenombrado": "Objekt umbenannt",
       "renombrarPuesto": "Objekt umbenennen",
       "nadieDeTurnoEnEsteMomento": "Derzeit niemand im Dienst",
-      "errorRenombrar": "Umbenennen nicht möglich"
+      "errorRenombrar": "Umbenennen nicht möglich",
+      "editarNominativo": "Rufname bearbeiten",
+      "nominativoGuardado": "Rufname gespeichert",
+      "errorNominativo": "Rufname konnte nicht gespeichert werden"
     },
     "StationRoster": {
       "dia": "Tag",

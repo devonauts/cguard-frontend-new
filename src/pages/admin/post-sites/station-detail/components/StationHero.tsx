@@ -71,12 +71,14 @@ export default function StationHero({
   stationId,
   postSiteId,
   onRenamed,
+  onNicknameChanged,
   recentShifts,
 }: {
   station: StationDetail;
   stationId: string;
   postSiteId: string;
   onRenamed: (name: string) => void;
+  onNicknameChanged: (nickname: string | null) => void;
   /* Marcaciones recientes del puesto, leídas UNA vez por `StationDetailPage`.
      Antes las pedía esta cabecera por su cuenta con exactamente la misma url
      que el resumen de debajo, así que abrir el puesto sacaba dos
@@ -90,6 +92,10 @@ export default function StationHero({
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState("");
   const [saving, setSaving] = useState(false);
+
+  const [editingNick, setEditingNick] = useState(false);
+  const [nickDraft, setNickDraft] = useState("");
+  const [savingNick, setSavingNick] = useState(false);
 
   const name = station?.stationName || station?.name || "Puesto";
   const guards: { id: string; name: string }[] = useMemo(
@@ -146,6 +152,41 @@ export default function StationHero({
       );
     } finally {
       setSaving(false);
+    }
+  };
+
+  /* El nominativo se guarda aparte del nombre del puesto: son dos datos que el
+     operador cambia por separado. Vacío guarda `null` a propósito, para poder
+     QUITAR un nominativo puesto por error. */
+  const saveNickname = async () => {
+    const nuevo = nickDraft.trim();
+
+    if (nuevo === (station?.nickname || "")) {
+      setEditingNick(false);
+
+      return;
+    }
+    setSavingNick(true);
+    try {
+      const tenantId = localStorage.getItem("tenantId") || "";
+
+      await ApiService.put(`/tenant/${tenantId}/station/${stationId}`, {
+        data: { nickname: nuevo || null },
+      });
+      invalidateEntity("stations");
+      onNicknameChanged(nuevo || null);
+      toast.success(t("ui.StationHero.nominativoGuardado"));
+      setEditingNick(false);
+    } catch (e: any) {
+      toast.error(
+        e?.message ||
+          t(
+            "ui.StationHero.errorNominativo",
+            "No se pudo guardar el nominativo",
+          ),
+      );
+    } finally {
+      setSavingNick(false);
     }
   };
 
@@ -225,8 +266,76 @@ export default function StationHero({
                   )}
                 </>
               )}
-              {station?.nickname && (
-                <StatusBadge tone="neutral">{station.nickname}</StatusBadge>
+              {editingNick ? (
+                <div className="flex w-full min-w-0 items-center gap-1.5">
+                  <Input
+                    value={nickDraft}
+                    onChange={(e) => setNickDraft(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") saveNickname();
+                      if (e.key === "Escape") setEditingNick(false);
+                    }}
+                    autoFocus
+                    aria-label={t(
+                      "postSites.stations.form.nickname",
+                      "Nominativo",
+                    )}
+                    placeholder={t(
+                      "postSites.stations.form.nickname",
+                      "Nominativo",
+                    )}
+                    className="h-9 w-full min-w-0 sm:w-44 sm:flex-none"
+                  />
+                  <Button
+                    className="h-9 w-9"
+                    disabled={savingNick}
+                    size="icon"
+                    variant="brand"
+                    onClick={saveNickname}
+                  >
+                    <Check className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    className="h-9 w-9"
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => setEditingNick(false)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  {station?.nickname && (
+                    <StatusBadge tone="neutral">{station.nickname}</StatusBadge>
+                  )}
+                  {/* Sin nominativo la etiqueta no se pintaba, así que no había
+                      ni pista de que el dato existiera: de ahí el «+». */}
+                  {canEdit &&
+                    (station?.nickname ? (
+                      <button
+                        aria-label={t("ui.StationHero.editarNominativo")}
+                        className="cg-btn-ghost cg-focus rounded-md p-1"
+                        onClick={() => {
+                          setNickDraft(station.nickname || "");
+                          setEditingNick(true);
+                        }}
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                    ) : (
+                      <button
+                        className="cg-btn-ghost cg-focus text-muted rounded-md px-2 py-1 text-xs"
+                        onClick={() => {
+                          setNickDraft("");
+                          setEditingNick(true);
+                        }}
+                      >
+                        {"+ "}
+                        {t("postSites.stations.form.nickname", "Nominativo")}
+                      </button>
+                    ))}
+                </>
               )}
               {station?.isMobile && (
                 <StatusBadge tone="warn">

@@ -9781,7 +9781,10 @@
       "puestoRenombrado": "Post renamed",
       "renombrarPuesto": "Rename post",
       "nadieDeTurnoEnEsteMomento": "Nobody on duty right now",
-      "errorRenombrar": "It could not be renamed"
+      "errorRenombrar": "It could not be renamed",
+      "editarNominativo": "Edit call sign",
+      "nominativoGuardado": "Call sign saved",
+      "errorNominativo": "Could not save the call sign"
     },
     "StationRoster": {
       "dia": "Day",

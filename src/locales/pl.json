@@ -10290,7 +10290,10 @@
       "puestoRenombrado": "Nazwa posterunku zmieniona",
       "renombrarPuesto": "Zmień nazwę posterunku",
       "nadieDeTurnoEnEsteMomento": "Nikt nie pełni w tej chwili służby",
-      "errorRenombrar": "Nie udało się zmienić nazwy"
+      "errorRenombrar": "Nie udało się zmienić nazwy",
+      "editarNominativo": "Edytuj kryptonim",
+      "nominativoGuardado": "Kryptonim zapisany",
+      "errorNominativo": "Nie udało się zapisać kryptonimu"
     },
     "StationRoster": {
       "dia": "Dzień",

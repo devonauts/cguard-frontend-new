@@ -3109,7 +3109,7 @@
         "clockInEarlyBuffer": "Tolerancia de entrada anticipada (min)",
         "clockInLateGrace": "Tolerancia de entrada tardía (min)",
         "geofenceHint": "Distancia máxima para marcar entrada",
-        "nicknameHint": "Solo visible para operaciones del tenant. El cliente no lo ve.",
+        "nicknameHint": "Solo visible para la operación de tu empresa. El cliente no lo ve.",
         "restCoverage": "Cobertura de descansos",
         "wholeWindow": "Toda la jornada",
         "withSf": "Sacafranco cubre los descansos",
@@ -9781,7 +9781,10 @@
       "puestoRenombrado": "Puesto renombrado",
       "renombrarPuesto": "Renombrar puesto",
       "nadieDeTurnoEnEsteMomento": "Nadie de turno en este momento",
-      "errorRenombrar": "No se pudo renombrar"
+      "errorRenombrar": "No se pudo renombrar",
+      "editarNominativo": "Editar nominativo",
+      "nominativoGuardado": "Nominativo guardado",
+      "errorNominativo": "No se pudo guardar el nominativo"
     },
     "StationRoster": {
       "dia": "Día",

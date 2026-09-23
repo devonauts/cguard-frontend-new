@@ -10290,7 +10290,10 @@
       "puestoRenombrado": "Posto rinominato",
       "renombrarPuesto": "Rinomina posto",
       "nadieDeTurnoEnEsteMomento": "Nessuno in turno in questo momento",
-      "errorRenombrar": "Impossibile rinominare"
+      "errorRenombrar": "Impossibile rinominare",
+      "editarNominativo": "Modifica nominativo",
+      "nominativoGuardado": "Nominativo salvato",
+      "errorNominativo": "Impossibile salvare il nominativo"
     },
     "StationRoster": {
       "dia": "Giorno",

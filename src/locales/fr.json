@@ -10290,7 +10290,10 @@
       "puestoRenombrado": "Poste renommé",
       "renombrarPuesto": "Renommer le poste",
       "nadieDeTurnoEnEsteMomento": "Personne en service actuellement",
-      "errorRenombrar": "Impossible de renommer"
+      "errorRenombrar": "Impossible de renommer",
+      "editarNominativo": "Modifier l'indicatif",
+      "nominativoGuardado": "Indicatif enregistré",
+      "errorNominativo": "Impossible d'enregistrer l'indicatif"
     },
     "StationRoster": {
       "dia": "Jour",
