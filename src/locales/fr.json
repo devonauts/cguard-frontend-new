@@ -1213,7 +1213,8 @@
         "tue": "Mar",
         "wed": "Mer"
       }
-    }
+    },
+    "cobertura": "couverture"
   },
   "customer": {
     "registration_title": "Inscription client"

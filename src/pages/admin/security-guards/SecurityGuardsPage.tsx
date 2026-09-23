@@ -628,8 +628,13 @@ export default function SecurityGuardsPage() {
         // Para la tabla y la búsqueda basta una etiqueta: el nominativo manda,
         // y el nombre del puesto va detrás para que buscar por cualquiera de
         // los dos encuentre al vigilante.
+        /* `esCobertura` = no es su plaza, es dónde está cubriendo HOY. El relevo
+           no tiene asignación NUNCA —cubre los puestos según hagan falta—, así
+           que sin esto su tarjeta salía en blanco. Se dice cuál es para que
+           nadie lo confunda con un fijo de ese puesto. */
         const station = a
-          ? [a.nickname, a.stationName].filter(Boolean).join(" · ")
+          ? [a.nickname, a.stationName].filter(Boolean).join(" · ") +
+            (a.esCobertura ? ` · ${t("comun.cobertura", "cobertura")}` : "")
           : "";
         return station ? { ...g, station } : g;
       }),

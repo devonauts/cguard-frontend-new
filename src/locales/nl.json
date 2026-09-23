@@ -1213,7 +1213,8 @@
         "tue": "Di",
         "wed": "Wo"
       }
-    }
+    },
+    "cobertura": "vervanging"
   },
   "customer": {
     "registration_title": "Registratie opdrachtgever"

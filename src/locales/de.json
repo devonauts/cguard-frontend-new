@@ -1213,7 +1213,8 @@
         "tue": "Di",
         "wed": "Mi"
       }
-    }
+    },
+    "cobertura": "Vertretung"
   },
   "customer": {
     "registration_title": "Registrierung des Auftraggebers"

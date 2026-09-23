@@ -1213,7 +1213,8 @@
         "tue": "Mar",
         "wed": "Mer"
       }
-    }
+    },
+    "cobertura": "copertura"
   },
   "customer": {
     "registration_title": "Registrazione committente"

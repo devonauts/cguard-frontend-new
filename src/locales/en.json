@@ -11353,7 +11353,8 @@
         "tue": "Tue",
         "wed": "Wed"
       }
-    }
+    },
+    "cobertura": "covering"
   },
   "roles": {
     "securityGuard": "Guard",

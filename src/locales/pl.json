@@ -1213,7 +1213,8 @@
         "tue": "Wt",
         "wed": "Śr"
       }
-    }
+    },
+    "cobertura": "zastępstwo"
   },
   "customer": {
     "registration_title": "Rejestracja zleceniodawcy"

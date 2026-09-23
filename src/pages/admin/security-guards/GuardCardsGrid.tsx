@@ -49,6 +49,10 @@ export type AsignacionVigilante = {
   isTemporary?: boolean;
   /** Cuántas estaciones MÁS tiene asignadas (relevos, coberturas). */
   extra?: number;
+  /** No es su plaza: es dónde está CUBRIENDO hoy. El relevo no tiene
+   *  asignación —cubre los puestos según hagan falta—, así que su puesto sale
+   *  del turno del día. Se marca para no confundirlo con un fijo. */
+  esCobertura?: boolean;
 };
 
 export type GuardCardAction = {
@@ -283,6 +287,21 @@ export default function GuardCardsGrid({
                   {asignacion.nickname && asignacion.stationName && (
                     <span className="truncate text-xs">
                       {asignacion.stationName}
+                    </span>
+                  )}
+                  {asignacion.esCobertura && (
+                    /* No es su plaza: hoy está cubriendo ahí. Sin decirlo, la
+                       tarjeta de un relevo se leería igual que la de un fijo
+                       de ese puesto. */
+                    <span
+                      className="shrink-0 text-xs"
+                      style={{ color: "var(--ink-faint)" }}
+                      title={t(
+                        "ui.GuardCardsGrid.cubriendoHoy",
+                        "Cubriendo hoy — no es su puesto fijo",
+                      )}
+                    >
+                      · {t("comun.cobertura", "cobertura")}
                     </span>
                   )}
                   {!!asignacion.extra && (

@@ -11353,7 +11353,8 @@
         "tue": "Ter",
         "wed": "Qua"
       }
-    }
+    },
+    "cobertura": "cobertura"
   },
   "roles": {
     "securityGuard": "Vigilante",
