@@ -109,6 +109,11 @@ export const clientService = {
                 const activeInt = filters.active ? 1 : 0;
                 params.append("filter[active]", String(activeInt));
             }
+            /* La sección de Archivados. Lo archivado lleva `deletedAt` y por eso
+               no se ve en ningún otro sitio; aquí se pide a propósito. */
+            if (filters.archived) {
+                params.append("filter[archived]", "true");
+            }
             if (filters.createdAtRange) {
                 params.append("filter[createdAtRange][]", filters.createdAtRange[0]);
                 params.append("filter[createdAtRange][]", filters.createdAtRange[1]);
@@ -308,6 +313,49 @@ export const clientService = {
         const tenantId = getTenantId();
         await api.post(`/tenant/${tenantId}/client-account/destroy-all`, { ids }, { toast: { silentError: true } });
         invalidateEntity("clients");
+    },
+
+    /**
+     * Qué se llevaría por delante archivar (o eliminar) este cliente: sedes,
+     * estaciones y a qué vigilantes deja sin puesto. No cambia nada — existe
+     * para poder DECIRLO antes de hacerlo.
+     */
+    async archiveImpact(id: string): Promise<{
+        sedes: number; estaciones: number; vigilantes: number;
+        nombresDeSedes: string[]; nombresDeVigilantes: string[];
+    }> {
+        const tenantId = getTenantId();
+        const { data } = await api.get<any>(
+            `/tenant/${tenantId}/client-account/${id}/impact`,
+            { toast: { silentError: true } },
+        );
+        return data?.data ?? data;
+    },
+
+    /** Archivar: el servicio terminó. Recuperable desde Archivados. */
+    async archiveClients(ids: string[], reason?: string | null): Promise<void> {
+        const tenantId = getTenantId();
+        await api.post(
+            `/tenant/${tenantId}/client-account/archive`,
+            { ids, reason: reason ?? null },
+            { toast: { silentError: true } },
+        );
+        /* Se invalidan también puestos y horario: archivar suelta vigilantes y
+           anula sus turnos, así que esas pantallas quedaron viejas. */
+        invalidateEntity("clients");
+        invalidateEntity("stations");
+    },
+
+    /** Restaurar: vuelve el sitio, no la gente. */
+    async restoreClients(ids: string[]): Promise<void> {
+        const tenantId = getTenantId();
+        await api.post(
+            `/tenant/${tenantId}/client-account/restore`,
+            { ids },
+            { toast: { silentError: true } },
+        );
+        invalidateEntity("clients");
+        invalidateEntity("stations");
     },
 
     /**

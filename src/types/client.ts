@@ -1,6 +1,9 @@
 // Client types matching backend structure
 
 export interface Client {
+  /** Cuándo se archivó, y por qué. Nulos salvo en la sección Archivados. */
+  archivedAt?: string | null;
+  archiveReason?: string | null;
   company?: string;
   fullName?: string;
   id: string;
@@ -80,6 +83,9 @@ export interface ClientFilters {
   website?: string;
   category?: string;
   active?: boolean;
+  /** Pide SÓLO lo archivado. Fuera de la sección de Archivados va sin poner:
+   *  lo archivado lleva `deletedAt` y no se ve en ninguna otra pantalla. */
+  archived?: boolean;
   createdAtRange?: [string, string];
 }
 

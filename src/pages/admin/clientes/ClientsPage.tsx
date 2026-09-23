@@ -69,6 +69,8 @@ import type { Client } from "@/types/client";
 
 type ClientFilters = {
   active?: boolean;
+  /** La sección de Archivados. Ver la nota del selector. */
+  archived?: boolean;
   email?: string;
   phoneNumber?: string;
   city?: string;
@@ -189,6 +191,13 @@ export default function ClientesPage() {
   const [categorizeLoading, setCategorizeLoading] = useState(false);
   const [categorizeSaving, setCategorizeSaving] = useState(false);
   const [openArchiveBulkDialog, setOpenArchiveBulkDialog] = useState(false);
+  /* Qué se va a llevar por delante el archivado. Archivar suelta vigilantes de
+     sus puestos y anula sus turnos: quien lo pulsa tiene que verlo ANTES, no
+     enterarse después. Para un solo cliente se pide al abrir el diálogo. */
+  const [alcanceArchivado, setAlcanceArchivado] = useState<{
+    sedes: number; estaciones: number; vigilantes: number;
+    nombresDeSedes: string[]; nombresDeVigilantes: string[];
+  } | null>(null);
   const [openArchiveSingleDialog, setOpenArchiveSingleDialog] = useState(false);
   const [archiveSingleClient, setArchiveSingleClient] = useState<Client | null>(
     null,
@@ -409,6 +418,13 @@ export default function ClientesPage() {
         setBulkKey((k) => k + 1);
         return;
       }
+      setAlcanceArchivado(null);
+      if (selectedIds.length === 1) {
+        clientService
+          .archiveImpact(selectedIds[0])
+          .then(setAlcanceArchivado)
+          .catch(() => setAlcanceArchivado(null));
+      }
       setOpenArchiveBulkDialog(true);
       setBulkKey((k) => k + 1);
       return;
@@ -561,8 +577,14 @@ export default function ClientesPage() {
     // mover (cambiar categoría) requires edit
     if (hasPermission("clientAccountEdit"))
       actions.push({ value: "mover", label: t("actions.move") });
-    if (filters.active === true) {
-      if (hasPermission("clientAccountEdit"))
+    if (filters.archived) {
+      // En Archivados sólo cabe devolverlo o eliminarlo del todo.
+      if (hasPermission("clientAccountDestroy"))
+        actions.push({ value: "restaurar", label: t("actions.restore") });
+      if (hasPermission("clientAccountDestroy"))
+        actions.push({ value: "eliminar", label: t("actions.delete") });
+    } else if (filters.active === true) {
+      if (hasPermission("clientAccountDestroy"))
         actions.push({ value: "archivar", label: t("actions.archive") });
     } else if (filters.active === false) {
       if (hasPermission("clientAccountEdit"))
@@ -745,9 +767,11 @@ export default function ClientesPage() {
           icon: <Archive className="h-4 w-4" />,
           onClick: async () => {
             try {
-              await clientService.updateClient(client.id, {
-                active: false,
-              } as any);
+              /* Archivar de verdad: baja sedes y estaciones y suelta a los
+                 vigilantes. Antes esto sólo ponía `active: false`, una bandera
+                 que no archivaba nada — el cliente seguía con su operación
+                 viva y visible. */
+              await clientService.archiveClients([client.id]);
               toast.success(t("clients.clientArchived"));
               loadClients();
             } catch (error: any) {
@@ -1008,16 +1032,24 @@ export default function ClientesPage() {
                           value={
                             filters.active === undefined
                               ? "all"
-                              : filters.active
-                                ? "active"
-                                : "inactive"
+                              : filters.archived
+                                ? "inactive"
+                                : filters.active
+                                  ? "active"
+                                  : "inactive"
                           }
                           onValueChange={(v: string) => {
+                            /* «Archivados» es su propia consulta, no un valor
+                               de `active`: lo archivado lleva `deletedAt` y no
+                               sale en ninguna otra vista. Por eso se limpia
+                               `active` al entrar y se quita `archived` al
+                               salir — si no, se pedirían las dos cosas a la
+                               vez y no saldría nada. */
                             if (v === "all")
-                              setFilters({ ...filters, active: undefined });
+                              setFilters({ ...filters, active: undefined, archived: undefined });
                             else if (v === "active")
-                              setFilters({ ...filters, active: true });
-                            else setFilters({ ...filters, active: false });
+                              setFilters({ ...filters, active: true, archived: undefined });
+                            else setFilters({ ...filters, active: undefined, archived: true });
                           }}
                         >
                           <SelectTrigger>
@@ -1416,6 +1448,39 @@ export default function ClientesPage() {
                 count: selectedIds.length,
               })}
             </AlertDialogDescription>
+            {alcanceArchivado && (
+              <div className="glass-sunken mt-3 space-y-1 p-3 text-sm">
+                <div className="font-semibold">
+                  {t(
+                    "clients.alerts.archiveClients.impactTitle",
+                    "Esto se archiva con él:",
+                  )}
+                </div>
+                <div>
+                  {t("clients.alerts.archiveClients.impactSites", {
+                    defaultValue: "{{sedes}} sede(s) y {{estaciones}} puesto(s)",
+                    sedes: alcanceArchivado.sedes,
+                    estaciones: alcanceArchivado.estaciones,
+                  })}
+                </div>
+                {alcanceArchivado.vigilantes > 0 && (
+                  <div style={{ color: "var(--ink-soft)" }}>
+                    {t("clients.alerts.archiveClients.impactGuards", {
+                      defaultValue:
+                        "{{n}} vigilante(s) quedan sin punto de vigilancia: {{nombres}}",
+                      n: alcanceArchivado.vigilantes,
+                      nombres: alcanceArchivado.nombresDeVigilantes.join(" · "),
+                    })}
+                  </div>
+                )}
+                <div style={{ color: "var(--ink-faint)" }}>
+                  {t(
+                    "clients.alerts.archiveClients.impactUndo",
+                    "Se puede restaurar desde Archivados. Los vigilantes no vuelven solos a este puesto.",
+                  )}
+                </div>
+              </div>
+            )}
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t("clients.cancel")}</AlertDialogCancel>
@@ -1423,7 +1488,7 @@ export default function ClientesPage() {
               onClick={async () => {
                 try {
                   const results = await enLotes(selectedIds, (id) =>
-                    clientService.updateClient(id, { active: false } as any),
+                    clientService.archiveClients([id]),
                   );
                   const failed = results.filter(
                     (r) => r.status === "rejected",
@@ -1482,7 +1547,7 @@ export default function ClientesPage() {
               onClick={async () => {
                 try {
                   const results = await enLotes(selectedIds, (id) =>
-                    clientService.updateClient(id, { active: true } as any),
+                    clientService.restoreClients([id]),
                   );
                   const failed = results.filter(
                     (r) => r.status === "rejected",
