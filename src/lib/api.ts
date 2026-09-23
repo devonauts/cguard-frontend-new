@@ -7,6 +7,7 @@ import {
 } from "@/lib/offline/networkStatus";
 import { autoInvalidateForMutation } from "@/lib/queryClient";
 import { anotarPeticion } from "@/lib/diagnosticoDeRed";
+import { manejarPagoRequerido } from "@/lib/pagoRequerido";
 
 const API_URL = import.meta.env.VITE_API_URL as string | undefined;
 
@@ -242,6 +243,16 @@ api.interceptors.response.use(
         }
       } catch {}
 
+      return Promise.reject(apiError);
+    }
+
+    // Empresa de socio pausada por impago (o su socio sin pagar): aviso y, si
+    // lo puede arreglar ella, a Facturación. Ver `lib/pagoRequerido`.
+    if (
+      manejarPagoRequerido(apiError.status, apiError.code, apiError.message, {
+        silencioso: !!cfg.toast?.silentError,
+      })
+    ) {
       return Promise.reject(apiError);
     }
 

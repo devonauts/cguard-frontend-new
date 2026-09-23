@@ -16,6 +16,8 @@ import {
   Receipt,
 } from "lucide-react";
 
+import PartnerBillingView from "./PartnerBillingView";
+
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import AppLayout from "@/layouts/app-layout";
 import ProviderManagedBilling from "@/components/ProviderManagedBilling";
@@ -39,6 +41,11 @@ import {
   BillableUser,
   PlatformInvoice,
 } from "@/lib/api/subscriptionBillingService";
+import {
+  partnerBillingService,
+  type CobroDelSocio,
+} from "@/lib/api/partnerBillingService";
+import { CODIGO_PAGO_DE_EMPRESA } from "@/lib/pagoRequerido";
 
 function money(cents: number, currency = "USD") {
   // en-US → dot as decimal separator (e.g. $12.50), comma as thousands.
@@ -109,6 +116,12 @@ export default function BillingPage() {
   const [loading, setLoading] = useState(true);
   const [activating, setActivating] = useState(false);
   const [portalLoading, setPortalLoading] = useState(false);
+  /* El cobro del SOCIO a esta empresa (sólo empresas de socio). `null` = no
+     aplica o no se pudo leer; `{ enabled: false }` = el socio no cobra en línea. */
+  const [cobroDelSocio, setCobroDelSocio] = useState<CobroDelSocio | null>(
+    null,
+  );
+  const [pausadaSinResumen, setPausadaSinResumen] = useState(false);
 
   const dateLocale = i18n.language?.startsWith("en") ? "en-US" : "es-ES";
   const fmtDate = (iso: string | null) =>
@@ -120,19 +133,54 @@ export default function BillingPage() {
         })
       : "—";
 
-  const load = async () => {
-    setLoading(true);
+  /** `enSilencio`: tras pagar o cambiar la tarjeta — refresca sin volver al esqueleto. */
+  const load = async (enSilencio = false) => {
+    if (!enSilencio) setLoading(true);
+    let resumen: BillingSummary | null = null;
+    /* Una empresa de socio PAUSADA por impago recibe 402 en todo menos en su
+       página de pago — también en este resumen. No es un error de carga: es
+       justo la empresa que tiene que ver su cobro para salir de la pausa. */
+    let pausadaPorImpago = false;
+
     try {
-      setData(await subscriptionBillingService.summary());
-    } catch {
-      toast.error(
-        t("billing.loadError", {
-          defaultValue: "No se pudo cargar la facturación",
-        }),
-      );
-    } finally {
-      setLoading(false);
+      resumen = await subscriptionBillingService.summary();
+      setData(resumen);
+    } catch (e: any) {
+      if (e?.status === 402 && e?.data?.code === CODIGO_PAGO_DE_EMPRESA) {
+        pausadaPorImpago = true;
+      } else {
+        toast.error(
+          t("billing.loadError", {
+            defaultValue: "No se pudo cargar la facturación",
+          }),
+        );
+      }
     }
+
+    const deProveedor =
+      pausadaPorImpago ||
+      resumen?.billingOwnership === "reseller" ||
+      resumen?.status === "reseller_managed";
+
+    if (deProveedor) {
+      // La factura la pone el socio: ni usuarios ni facturas de la plataforma.
+      try {
+        setCobroDelSocio(await partnerBillingService.resumen());
+      } catch {
+        setCobroDelSocio(null);
+        if (pausadaPorImpago)
+          toast.error(
+            t("billing.loadError", {
+              defaultValue: "No se pudo cargar la facturación",
+            }),
+          );
+      }
+      setPausadaSinResumen(pausadaPorImpago);
+      setLoading(false);
+
+      return;
+    }
+    setLoading(false);
     // Non-blocking: the seat list and invoice history are supplementary.
     try {
       // `true` → también los que NO se cobran, para poder devolverlos.
@@ -346,7 +394,10 @@ export default function BillingPage() {
   /* La señal la da el servidor, en dos campos que dicen lo mismo por si uno
      falta: quien factura a esta empresa es su distribuidor. */
   const esDeProveedor =
-    data?.billingOwnership === "reseller" || status === "reseller_managed";
+    pausadaSinResumen ||
+    data?.billingOwnership === "reseller" ||
+    status === "reseller_managed";
+  const cobroEnLinea = cobroDelSocio?.enabled ? cobroDelSocio : null;
   const visibleInvoices = invoices.filter((inv) => inv.status !== "draft");
 
   return (
@@ -354,7 +405,9 @@ export default function BillingPage() {
       <PageContainer width="narrow">
         <PageHeader
           badges={
-            !loading && data ? (
+            /* Con cobro en línea del socio, el estado lo lleva su propia
+               sección: la etiqueta de la suscripción directa no aplica. */
+            !loading && data && !cobroEnLinea ? (
               <StatusBadge tone={meta.tone}>{meta.label}</StatusBadge>
             ) : undefined
           }
@@ -366,7 +419,27 @@ export default function BillingPage() {
             defaultValue: "Suscripción",
           })}
         />
-        {loading || !data ? (
+        {loading ? (
+          <SkeletonCards count={4} />
+        ) : esDeProveedor && cobroEnLinea ? (
+          /* El socio cobra en línea con su propia pasarela: plan, tarjeta,
+             pagar y recibos. Ver `PartnerBillingView`. */
+          <PartnerBillingView
+            data={cobroEnLinea}
+            onRefresh={() => load(true)}
+          />
+        ) : pausadaSinResumen ? (
+          <EmptyState
+            description={t("billing.partner.pausedNoData", {
+              defaultValue:
+                "Tu suscripción está pausada por falta de pago y no pudimos cargar el detalle. Recarga la página o contacta a tu proveedor.",
+            })}
+            icon={<AlertTriangle />}
+            title={t("billing.loadError", {
+              defaultValue: "No se pudo cargar la facturación",
+            })}
+          />
+        ) : !data ? (
           <SkeletonCards count={4} />
         ) : esDeProveedor ? (
           /* A esta empresa la factura su distribuidor: aquí no hay suscripción

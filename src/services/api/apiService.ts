@@ -6,6 +6,7 @@ import {
 } from "@/lib/offline/networkStatus";
 import { autoInvalidateForMutation } from "@/lib/queryClient";
 import { anotarPeticion } from "@/lib/diagnosticoDeRed";
+import { manejarPagoRequerido } from "@/lib/pagoRequerido";
 const API_BASE_URL = (
   import.meta.env.VITE_API_URL ?? "http://localhost:3001/api"
 ).replace(/\/+$/, "");
@@ -199,6 +200,19 @@ export class ApiService {
         try {
           window.location.replace("/login");
         } catch {}
+      }
+      // 402 del cobro del socio: el mismo aviso y el mismo salto a Facturación
+      // que en el cliente axios (`lib/pagoRequerido`).
+      if (response.status === 402) {
+        try {
+          manejarPagoRequerido(
+            402,
+            data?.code,
+            typeof msg === "string" ? msg : null,
+          );
+        } catch {
+          /* ignore */
+        }
       }
       // Lanzar ApiError para que la UI decida mostrar toast
       throw new ApiError(msg, response.status, fullResponse);
