@@ -12452,6 +12452,11 @@
       "automatica": "Automatisch (nach Stadt)",
       "iraA": "Kommt wegen der Stadt zu „{{nombre}}“.",
       "sinCoincidencia": "Die Stadt gehört zu keiner Niederlassung: Der Standort bleibt „Ohne Niederlassung“ und kann im Dashboard zugeordnet werden."
+    },
+    "radio": {
+      "boton": "Funkkanal",
+      "hecho": "Funkkanal bereit: {{estaciones}} Posten und {{personas}} Personen.",
+      "error": "Der Funkkanal konnte nicht eingerichtet werden."
     }
   }
 }

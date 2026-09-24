@@ -12505,6 +12505,11 @@
       "automatica": "Automática (pela cidade)",
       "iraA": "Irá para «{{nombre}}» pela cidade.",
       "sinCoincidencia": "A cidade não está em nenhuma filial: ficará em «Sem filial» e você poderá atribuí-la pelo painel."
+    },
+    "radio": {
+      "boton": "Canal de rádio",
+      "hecho": "Canal de rádio pronto: {{estaciones}} postos e {{personas}} pessoas.",
+      "error": "Não foi possível preparar o canal de rádio."
     }
   }
 }

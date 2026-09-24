@@ -94,6 +94,21 @@ export function EditorDeSucursal({
     }
   };
 
+  const [sincronizando, setSincronizando] = useState(false);
+  const canalDeRadio = async () => {
+    if (!sucursal) return;
+    setSincronizando(true);
+    try {
+      const r = await sucursalesService.canalDeRadio(sucursal.id);
+
+      toast.success(t("sucursales.radio.hecho", { estaciones: r.estaciones, personas: r.personas }));
+    } catch {
+      toast.error(t("sucursales.radio.error"));
+    } finally {
+      setSincronizando(false);
+    }
+  };
+
   const archivar = async () => {
     if (!sucursal) return;
     if (sucursal.sedes.length) {
@@ -190,9 +205,14 @@ export function EditorDeSucursal({
 
         <DialogFooter className="gap-2 sm:justify-between">
           {sucursal ? (
-            <Button type="button" variant="ghost" onClick={archivar}>
-              {t("sucursales.editor.archivar")}
-            </Button>
+            <div className="flex gap-2">
+              <Button type="button" variant="ghost" onClick={archivar}>
+                {t("sucursales.editor.archivar")}
+              </Button>
+              <Button disabled={sincronizando} type="button" variant="outline" onClick={canalDeRadio}>
+                {t("sucursales.radio.boton")}
+              </Button>
+            </div>
           ) : (
             <span />
           )}

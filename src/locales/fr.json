@@ -12452,6 +12452,11 @@
       "automatica": "Automatique (selon sa ville)",
       "iraA": "Il ira dans « {{nombre}} » selon sa ville.",
       "sinCoincidencia": "Sa ville n’est dans aucune agence : il restera « Sans agence » et vous pourrez l’affecter depuis le tableau de bord."
+    },
+    "radio": {
+      "boton": "Canal radio",
+      "hecho": "Canal radio prêt : {{estaciones}} postes et {{personas}} personnes.",
+      "error": "Impossible de préparer le canal radio."
     }
   }
 }

@@ -91,6 +91,9 @@ export const sucursalesService = {
     ApiService.post(`${base()}/${id}/archive`, {}),
   asignarSedes: (siteIds: string[], branchId: string | null): Promise<{ movidas: number }> =>
     ApiService.post(`${base()}/assign-sites`, { siteIds, branchId }),
+  /** Crea o sincroniza el canal de radio de la sucursal (sus puestos y su gente). */
+  canalDeRadio: (id: string): Promise<{ channelId: string; estaciones: number; personas: number }> =>
+    ApiService.post(`${base()}/${id}/radio`, {}),
 };
 
 // ── Reglas que el panel necesita, sin red ────────────────────────────────

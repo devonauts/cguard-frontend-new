@@ -12505,6 +12505,11 @@
       "automatica": "Automatic (by its city)",
       "iraA": "It will go to “{{nombre}}” because of its city.",
       "sinCoincidencia": "Its city isn't in any branch: it will stay under “No branch” and you can assign it from the dashboard."
+    },
+    "radio": {
+      "boton": "Radio channel",
+      "hecho": "Radio channel ready: {{estaciones}} posts and {{personas}} people.",
+      "error": "The radio channel couldn't be set up."
     }
   }
 }

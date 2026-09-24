@@ -12505,6 +12505,11 @@
       "automatica": "Automática (por su ciudad)",
       "iraA": "Irá a «{{nombre}}» por su ciudad.",
       "sinCoincidencia": "Su ciudad no está en ninguna sucursal: quedará en «Sin sucursal» y podrás asignarla desde el panel."
+    },
+    "radio": {
+      "boton": "Canal de radio",
+      "hecho": "Canal de radio listo: {{estaciones}} puestos y {{personas}} personas.",
+      "error": "No se pudo preparar el canal de radio."
     }
   }
 }

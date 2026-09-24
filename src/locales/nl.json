@@ -12452,6 +12452,11 @@
       "automatica": "Automatisch (op stad)",
       "iraA": "Gaat naar ‘{{nombre}}’ vanwege de stad.",
       "sinCoincidencia": "De stad hoort bij geen vestiging: de locatie blijft ‘Zonder vestiging’ en u kunt die op het dashboard toewijzen."
+    },
+    "radio": {
+      "boton": "Radiokanaal",
+      "hecho": "Radiokanaal klaar: {{estaciones}} posten en {{personas}} personen.",
+      "error": "Het radiokanaal kon niet worden ingericht."
     }
   }
 }

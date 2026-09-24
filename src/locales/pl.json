@@ -12452,6 +12452,11 @@
       "automatica": "Automatycznie (według miasta)",
       "iraA": "Trafi do: {{nombre}} (według miasta).",
       "sinCoincidencia": "Miasto nie należy do żadnego oddziału: obiekt pozostanie „Bez oddziału” i możesz go przypisać z pulpitu."
+    },
+    "radio": {
+      "boton": "Kanał radiowy",
+      "hecho": "Kanał radiowy gotowy — posterunki: {{estaciones}}, osoby: {{personas}}.",
+      "error": "Nie udało się przygotować kanału radiowego."
     }
   }
 }
