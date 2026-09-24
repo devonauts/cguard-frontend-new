@@ -127,7 +127,7 @@ export default function ControlCenter() {
   const { t } = useTranslation();
 
   usePageTitle(t("dashboard.pageTitle"));
-  const { user } = useAuth();
+  const { user, hasPermission } = useAuth();
   const esMovil = useEsMovil();
   // Se pinta con la caché del navegador y, en cuanto responde la cuenta, manda
   // lo guardado ahí: así el tablero se ve igual desde cualquier computadora.
@@ -173,7 +173,9 @@ export default function ControlCenter() {
   // carrusel de sucursales. Sin el módulo no se pide nada y todo sigue igual.
   const suc = useSucursales();
   const divididas = suc.activo ? suc.lista.data?.sucursales.length ?? 0 : 0;
-  const invitarADividir = suc.activo && suc.lista.isSuccess && divididas === 0;
+  // Sólo a quien puede aplicarlo (el servidor pide `settingsEdit`).
+  const invitarADividir =
+    suc.activo && suc.lista.isSuccess && divididas === 0 && hasPermission("settingsEdit");
 
   const openFullMap = () =>
     window.open(

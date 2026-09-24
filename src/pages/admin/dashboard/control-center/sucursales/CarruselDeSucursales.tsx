@@ -50,6 +50,7 @@ import { AccesoDelPersonal } from "./AccesoDelPersonal";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { usePermissions } from "@/hooks/usePermissions";
 import {
   Select,
   SelectContent,
@@ -148,6 +149,10 @@ export function CarruselDeSucursales({
   const qc = useQueryClient();
   const riel = useRef<HTMLDivElement>(null);
   const [expandida, setExpandida] = useState<string | null>(null);
+  // Organizar pide lo mismo que el servidor (`settingsEdit`): a quien no lo
+  // tiene, el botón sólo le daría errores.
+  const { hasPermission } = usePermissions();
+  const puedeOrganizar = hasPermission("settingsEdit");
   const [organizando, setOrganizando] = useState(false);
   const [editor, setEditor] = useState<{ abierto: boolean; sucursal: Sucursal | null }>({
     abierto: false,
@@ -211,15 +216,17 @@ export function CarruselDeSucursales({
               {t("sucursales.acceso.boton")}
             </Button>
           )}
-          <Button
-            size="sm"
-            type="button"
-            variant={organizando ? "brand" : "outline"}
-            onClick={() => setOrganizando((v) => !v)}
-          >
-            <Settings2 className="mr-1.5 size-3.5" />
-            {organizando ? t("sucursales.organizar.listo") : t("sucursales.organizar.boton")}
-          </Button>
+          {puedeOrganizar && (
+            <Button
+              size="sm"
+              type="button"
+              variant={organizando ? "brand" : "outline"}
+              onClick={() => setOrganizando((v) => !v)}
+            >
+              <Settings2 className="mr-1.5 size-3.5" />
+              {organizando ? t("sucursales.organizar.listo") : t("sucursales.organizar.boton")}
+            </Button>
+          )}
           {tarjetas.length > 2 && (
             <>
               <button
