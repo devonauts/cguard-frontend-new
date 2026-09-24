@@ -367,14 +367,22 @@ export default function Register() {
           aria-hidden="true"
           className="absolute left-[-9999px] top-0 h-0 w-0 overflow-hidden"
         >
-          <label htmlFor="companyWebsite">
+          {/* Nombre SIN significado y sólo lectura: con `companyWebsite` y
+              `autocomplete="off"`, Edge/Copilot en Android lo autocompletaba
+              igual y el alta caía en la trampa (2026-09-24). Los navegadores
+              no autocompletan un campo de sólo lectura; el robot que manda el
+              POST a mano ni lo mira. */}
+          <label htmlFor="cg-x7">
             {t("auth.honeypot_label", { defaultValue: "No rellenar" })}
           </label>
 
           <input
+            readOnly
             autoComplete="off"
-            id="companyWebsite"
-            name="companyWebsite"
+            data-1p-ignore
+            data-lpignore="true"
+            id="cg-x7"
+            name="cg-x7"
             tabIndex={-1}
             type="text"
             value={trampa}
