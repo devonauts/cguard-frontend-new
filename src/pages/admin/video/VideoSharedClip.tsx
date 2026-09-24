@@ -6,6 +6,7 @@ import { Loader2, ShieldAlert, Film, Clock } from "lucide-react";
 import { EmptyState, IconTile } from "@/components/kit";
 import { ApiService } from "@/services/api/apiService";
 import { localeActual } from "@/lib/localeActual";
+import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
 interface SharedClip {
   label?: string;
   url?: string;
@@ -21,6 +22,7 @@ interface SharedClip {
 export default function VideoSharedClip() {
   const { token } = useParams();
   const { t } = useTranslation();
+  const { platformName: nombreDeMarca } = useWhiteLabel();
   const [clip, setClip] = useState<SharedClip | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -82,9 +84,13 @@ export default function VideoSharedClip() {
             <Film />
           </IconTile>
           <div>
-            <p className="text-sm font-bold tracking-tight">
-              CGUARD<span style={{ color: "var(--brand-text)" }}>PRO</span>
-            </p>
+            {/* The host's product name: a clip shared from a partner's CRM
+                is signed with the partner's brand, never ours. */}
+            {nombreDeMarca ? (
+              <p className="text-sm font-bold tracking-tight">
+                {nombreDeMarca}
+              </p>
+            ) : null}
             <p className="text-[11px]" style={{ color: "var(--ink-faint)" }}>
               {t(
                 "ui.VideoSharedClip.videoCompartidoDeFormaSegura",

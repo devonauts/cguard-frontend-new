@@ -1131,7 +1131,7 @@ export default function Header({
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
               <DialogTitle className="text-center text-lg font-semibold">
-                C-Guard Pro
+                {nombreDeMarca}
               </DialogTitle>
               <DialogDescription className="text-center">
                 {t("header.feedback_modal_desc", { marca: nombreDeMarca })}

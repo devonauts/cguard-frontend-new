@@ -291,7 +291,7 @@
           },
           {
             "id": "asistente-ia",
-            "label": "Asistente VigIA",
+            "label": "Asistente {{agente}}",
             "path": "/setting/asistente-ia",
             "icon": "Bot",
             "desc": "Uso del asistente: mensajes, costo, cuota gratis y acciones ejecutadas.",

@@ -42,6 +42,16 @@
  */
 import { loadXlsx } from "../lazyXlsx";
 import { loadPdf } from "../lazyPdf";
+import { nombreDelProducto } from "@/hooks/usePageTitle";
+
+/**
+ * The default report footer, signed with THIS host's product name. On a
+ * partner's host that is the partner's brand; with no published name the
+ * footer is left empty rather than falling back to ours.
+ */
+export function pieDeInforme(nombreApp: string = nombreDelProducto()): string {
+  return nombreApp ? `Generado por ${nombreApp}` : "";
+}
 
 export type ExportFormat = "csv" | "excel" | "pdf";
 
@@ -349,7 +359,8 @@ async function buildPdfBlob(
       doc.setFont("helvetica", "normal");
       doc.setFontSize(7.5);
       doc.setTextColor(140, 140, 140);
-      doc.text(meta.footer || "Generado por CGuardPro", 32, altoPagina - 16);
+      const pie = meta.footer || pieDeInforme();
+      if (pie) doc.text(pie, 32, altoPagina - 16);
       doc.text(String(pagina), anchoPagina - 32, altoPagina - 16, {
         align: "right",
       });

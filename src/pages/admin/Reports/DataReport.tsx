@@ -10,7 +10,7 @@ import ReportPageShell from "./ReportPageShell";
 import { Segmented } from "@/components/kit";
 import MobileCardList from "@/components/responsive/MobileCardList";
 import { useEsTelefono } from "@/hooks/useEsTelefono";
-import { exportColumns, type ExportFormat } from "@/lib/export/reportExport";
+import { exportColumns, pieDeInforme, type ExportFormat } from "@/lib/export/reportExport";
 
 /** «13/09/2026, 10:50 a. m.», «2026-09-13 10:50», «10:50». Sólo marcas de
  *  tiempo: un valor que EMPIEZA por una fecha pero sigue con texto no lo es. */
@@ -320,7 +320,7 @@ export default function DataReport<T>({
       <h1>${escapeHtml(title)}</h1>
       <p class="sub">Rango: ${escapeHtml(rangeLabel)} · ${filtered.length} registro(s)</p>
       <table><thead><tr>${head}</tr></thead><tbody>${body || `<tr><td colspan="${columns.length}" style="text-align:center;color:oklch(0.62 0 0);padding:24px">Sin datos</td></tr>`}</tbody></table>
-      <p class="foot">Generado por CGuardPro</p>
+      <p class="foot">${escapeHtml(pieDeInforme())}</p>
       </body></html>`;
   };
 

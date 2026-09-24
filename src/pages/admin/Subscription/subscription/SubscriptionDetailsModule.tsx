@@ -21,6 +21,8 @@ import {
 import {
   subscriptionBillingService,
   BillingSummary,
+  claveDelPlan,
+  nombreDelPlan,
 } from "@/lib/api/subscriptionBillingService";
 import ProviderManagedBilling from "@/components/ProviderManagedBilling";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
@@ -113,7 +115,7 @@ export default function SubscriptionDetailsModule() {
   // essential/advance/professional plans shown below — so plan purchases
   // are NOT wired here. Highlight the current tier only if it maps.
   const currentPlan: PlanKey | null = useMemo(() => {
-    const key = data?.plan?.key?.toLowerCase();
+    const key = claveDelPlan(data?.plan)?.toLowerCase();
 
     if (key && key in PLAN_LABEL) return key as PlanKey;
 
@@ -143,7 +145,7 @@ export default function SubscriptionDetailsModule() {
         />
         <ProviderManagedBilling
           managedBy={data?.managedBy}
-          plan={data?.plan?.name || data?.plan?.key || null}
+          plan={nombreDelPlan(data?.plan)}
         />
       </PageContainer>
     );
@@ -210,7 +212,7 @@ export default function SubscriptionDetailsModule() {
             <Field
               label="Plan"
               value={
-                data?.plan?.name ||
+                nombreDelPlan(data?.plan) ||
                 (currentPlan ? PLAN_LABEL[currentPlan] : "—")
               }
             />

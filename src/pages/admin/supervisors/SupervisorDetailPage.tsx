@@ -35,6 +35,7 @@ import { MultiSelectDeSedes } from "@/components/MultiSelectDeSedes";
 import i18n from "@/i18n";
 import { localeActual } from "@/lib/localeActual";
 import { soloFechaCivil } from "@/lib/horaDeLaEmpresa";
+import { nombreDelProducto } from "@/hooks/usePageTitle";
 const WEEKDAYS = [
   { n: 1, label: "Lun" },
   { n: 2, label: "Mar" },
@@ -470,10 +471,11 @@ export default function SupervisorDetailPage() {
                     color: "var(--ink-soft)",
                   }}
                 >
-                  Este supervisor también presta servicios con otra empresa en
-                  CGuardPro. Su nombre, correo y foto son de su cuenta personal;
-                  lo que configures aquí (zona, vehículo, turno, rutas) aplica
-                  solo a tu empresa.
+                  Este supervisor también presta servicios con otra empresa
+                  {nombreDelProducto() ? ` en ${nombreDelProducto()}` : ""}. Su
+                  nombre, correo y foto son de su cuenta personal; lo que
+                  configures aquí (zona, vehículo, turno, rutas) aplica solo a
+                  tu empresa.
                 </div>
               )}
 

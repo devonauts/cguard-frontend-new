@@ -40,6 +40,7 @@ import {
   BillingSummary,
   BillableUser,
   PlatformInvoice,
+  nombreDelPlan,
 } from "@/lib/api/subscriptionBillingService";
 import {
   partnerBillingService,
@@ -406,8 +407,11 @@ export default function BillingPage() {
         <PageHeader
           badges={
             /* Con cobro en línea del socio, el estado lo lleva su propia
-               sección: la etiqueta de la suscripción directa no aplica. */
-            !loading && data && !cobroEnLinea ? (
+               sección: la etiqueta de la suscripción directa no aplica.
+               Provider-billed companies (`reseller_managed`) have no status
+               of ours either: their unknown status used to fall back to
+               «Prueba gratuita», a trial they are not on. */
+            !loading && data && !cobroEnLinea && !esDeProveedor ? (
               <StatusBadge tone={meta.tone}>{meta.label}</StatusBadge>
             ) : undefined
           }
@@ -446,7 +450,7 @@ export default function BillingPage() {
              de CGuard Pro que gestionar. Ver `ProviderManagedBilling`. */
           <ProviderManagedBilling
             managedBy={data.managedBy}
-            plan={data.plan?.name || data.plan?.key || null}
+            plan={nombreDelPlan(data.plan)}
           />
         ) : !q ? (
           <SkeletonCards count={4} />

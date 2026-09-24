@@ -5,6 +5,9 @@ import { toast } from "sonner";
 
 import { ApiService } from "@/services/api/apiService";
 import { confirmDialog } from "@/components/ui/confirmDialog";
+import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
+import { enlaceDeAyuda } from "@/lib/avisosDelSocio";
+import { useAgente } from "@/lib/agenteDeMarca";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -30,6 +33,8 @@ const TTL_MS = 5 * 60 * 1000;
 
 export default function DemoDataBanner() {
   const { t } = useTranslation();
+  const marca = useWhiteLabel();
+  const agente = useAgente();
   const [active, setActive] = useState(false);
   const [removing, setRemoving] = useState(false);
 
@@ -84,6 +89,18 @@ export default function DemoDataBanner() {
   }, []);
 
   if (!active) return null;
+
+  /* The WhatsApp handoff: the 13 dead sign-ups showed self-service alone does
+     not close — in LATAM, B2B is a conversation. The message is prefilled so
+     the first contact doesn't start from zero. */
+  const ayuda = enlaceDeAyuda(
+    marca,
+    t("ui.DemoDataBanner.mensajeDeWhatsapp", {
+      defaultValue:
+        "Hola, acabo de crear mi cuenta en {{marca}} y me gustaría que me ayuden a configurarla.",
+      marca: marca.platformName,
+    }),
+  );
 
   const quitar = async () => {
     if (removing) return;
@@ -141,21 +158,18 @@ export default function DemoDataBanner() {
           vivo.
         </span>
       </span>
-      {/* El traspaso a WhatsApp: los 13 registros muertos demostraron que el
-          autoservicio solo no cierra — en LATAM el B2B se conversa. El mensaje
-          va prellenado para que el primer contacto no empiece de cero. */}
-      <a
-        className="flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-[filter] hover:brightness-110"
-        href={`https://wa.me/593995914128?text=${encodeURIComponent(
-          "Hola, acabo de crear mi cuenta en CGuardPro y me gustaría que me ayuden a configurarla.",
-        )}`}
-        rel="noopener noreferrer"
-        style={{ background: "var(--brand)", color: "var(--brand-ink)" }}
-        target="_blank"
-      >
-        <MessageCircle size={13} />
-        ¿Te lo configuramos contigo?
-      </a>
+      {ayuda ? (
+        <a
+          className="flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition-[filter] hover:brightness-110"
+          href={ayuda}
+          rel="noopener noreferrer"
+          style={{ background: "var(--brand)", color: "var(--brand-ink)" }}
+          target="_blank"
+        >
+          <MessageCircle size={13} />
+          ¿Te lo configuramos contigo?
+        </a>
+      ) : null}
       <button
         className="flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold transition-[filter] hover:brightness-110"
         style={{
@@ -168,8 +182,11 @@ export default function DemoDataBanner() {
             window.dispatchEvent(
               new CustomEvent("vigia:abrir", {
                 detail: {
-                  mensaje:
-                    "Soy VigIA. Puedo crear clientes, sedes y puestos, e invitar vigilantes por ti — dime qué necesitas.",
+                  mensaje: t("ui.DemoDataBanner.saludoDelAsistente", {
+                    defaultValue:
+                      "Soy {{agente}}. Puedo crear clientes, sedes y puestos, e invitar vigilantes por ti — dime qué necesitas.",
+                    agente: agente.nombre,
+                  }),
                 },
               }),
             );
@@ -178,7 +195,11 @@ export default function DemoDataBanner() {
           }
         }}
       >
-        <Sparkles size={13} />o pídeselo a VigIA
+        <Sparkles size={13} />
+        {t("ui.DemoDataBanner.pideseloAlAsistente", {
+          defaultValue: "o pídeselo a {{agente}}",
+          agente: agente.nombre,
+        })}
       </button>
       <button
         className="flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold transition-[filter] hover:brightness-110 disabled:opacity-60"

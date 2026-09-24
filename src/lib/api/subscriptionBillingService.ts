@@ -56,7 +56,22 @@ export interface BillingSummary {
   hasSubscription: boolean;
   quote: BillingQuote;
   trialDays: number;
-  plan?: PlanResolution;
+  /**
+   * A resolved plan for direct companies. For partner-billed companies
+   * (`reseller_managed`) the server sends just the plan's name as a string.
+   */
+  plan?: PlanResolution | string | null;
+}
+
+/** The plan's display name, whichever of the two shapes the server sent. */
+export function nombreDelPlan(plan: BillingSummary["plan"]): string | null {
+  if (typeof plan === "string") return plan.trim() || null;
+  return plan?.name || plan?.key || null;
+}
+
+/** The plan's key, only when the server sent a resolved plan. */
+export function claveDelPlan(plan: BillingSummary["plan"]): string | null {
+  return plan && typeof plan === "object" ? plan.key : null;
 }
 
 export interface BillableUser {

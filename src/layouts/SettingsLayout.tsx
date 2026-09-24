@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import NAVS from "@/data/settings-nav.json";
 import { settingsIcon } from "@/config/settingsIcons";
+import { useAgente } from "@/lib/agenteDeMarca";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -40,6 +41,8 @@ export default function SettingsLayout({
 }) {
   const { t } = useTranslation();
   const { pathname } = useLocation();
+  // Some labels carry the assistant's name, which a partner can rename.
+  const agente = useAgente();
   const secciones = (NAVS as Record<string, { sections: Section[] }>)
     .configuracion.sections;
 
@@ -120,6 +123,7 @@ export default function SettingsLayout({
                       <span className="truncate">
                         {t(`settings.configuracion.${item.id}`, {
                           defaultValue: item.label,
+                          agente: agente.nombre,
                         })}
                       </span>
                     </Link>

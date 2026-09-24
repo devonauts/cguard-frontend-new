@@ -123,6 +123,15 @@ export function puedeUsarArteDePlataforma(ctx: ContextoDeMarca): boolean {
 export const useWhiteLabel = () => useContext(Contexto);
 
 /**
+ * Is this identity a partner's? For the few places that must CHOOSE a
+ * destination rather than paint a value — e.g. whose support line to offer —
+ * so the scope question still lives only in this file.
+ */
+export function esMarcaDeSocio(ctx: Pick<ContextoDeMarca, "scope">): boolean {
+  return ctx.scope === "reseller";
+}
+
+/**
  * El objeto de contexto, para que la capa de identidad EFECTIVA pueda volver a
  * proveerlo con el valor ya contrastado contra la empresa de la sesión.
  *

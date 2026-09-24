@@ -7,6 +7,7 @@ import { loadPrefs } from "./prefs";
 import { OperationsMap } from "./components/OperationsMap";
 
 import { StatusBadge } from "@/components/kit";
+import { tituloConMarca } from "@/hooks/usePageTitle";
 import "./control-center.css";
 
 /**
@@ -35,7 +36,8 @@ export default function OperationsMapFull() {
   );
 
   useEffect(() => {
-    document.title = "Operaciones en tiempo real · CGuardPro";
+    // Signed with THIS host's product name, never ours on a partner's host.
+    document.title = tituloConMarca("Operaciones en tiempo real");
     const onResize = () => setH(window.innerHeight);
 
     window.addEventListener("resize", onResize);

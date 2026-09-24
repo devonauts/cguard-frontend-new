@@ -206,7 +206,7 @@
     "landing": {
       "copyright": "© 2025-{{year}} CGUARD. Alle Rechte vorbehalten.",
       "desc": "Mit der Plattform für physische Sicherheit {{product}}.",
-      "logo_alt": "CGUARD Logo",
+      "logo_alt": "{{marca}} Logo",
       "tag_analytics": "Analysen",
       "tag_cloud": "Cloud-basiert",
       "tag_realtime": "Ortung in Echtzeit",
@@ -217,7 +217,7 @@
     "change_password_subtitle": "Aktualisieren Sie Ihr Passwort für die Anmeldung.",
     "enter_email": "Bitte geben Sie Ihre E-Mail-Adresse ein",
     "fieldLanding": {
-      "desc": "Setzen Sie das Passwort Ihres Kontos als Sicherheitskraft zurück, um wieder in die C-Guard Pro App zu gelangen.",
+      "desc": "Setzen Sie das Passwort Ihres Kontos als Sicherheitskraft zurück, um wieder in die {{marca}} App zu gelangen.",
       "eyebrow": "App für Sicherheitskräfte",
       "tag_incidents": "Vorfälle melden",
       "title_part1": "Ihre Schicht,",
@@ -228,15 +228,15 @@
     "forgot_title": "Passwort vergessen?",
     "hide_password": "Passwort ausblenden",
     "new_password_placeholder": "Neues Passwort",
-    "reset_done_field_body": "Ihr Passwort wurde zurückgesetzt. Öffnen Sie die C-Guard Pro App auf Ihrem Telefon und melden Sie sich mit Ihrer E-Mail-Adresse und dem neuen Passwort an.",
-    "reset_done_field_subtitle": "Kehren Sie zur C-Guard Pro App zurück und melden Sie sich mit Ihrem neuen Passwort an.",
+    "reset_done_field_body": "Ihr Passwort wurde zurückgesetzt. Öffnen Sie die {{marca}} App auf Ihrem Telefon und melden Sie sich mit Ihrer E-Mail-Adresse und dem neuen Passwort an.",
+    "reset_done_field_subtitle": "Kehren Sie zur {{marca}} App zurück und melden Sie sich mit Ihrem neuen Passwort an.",
     "reset_done_title": "Passwort aktualisiert!",
-    "reset_open_app": "C-Guard Pro App öffnen",
+    "reset_open_app": "{{marca}} App öffnen",
     "reset_sent": "Link erfolgreich gesendet. Prüfen Sie Ihr E-Mail-Postfach",
     "reset_subtitle": "Wählen Sie ein neues Passwort, um wieder in Ihr Konto zu gelangen.",
     "show_password": "Passwort anzeigen",
     "verify_email_subtitle": "Wir bestätigen gerade Ihre Adresse. Das dauert nur einen Moment.",
-    "footer_copyright": "© {{year}} C-Guard Pro. Alle Rechte vorbehalten.",
+    "footer_copyright": "© {{year}} {{marca}}. Alle Rechte vorbehalten.",
     "verify_email_failed": "Wir konnten Ihre E-Mail-Adresse nicht bestätigen. Der Link ist möglicherweise abgelaufen.",
     "verify_email_missing_token": "Der Bestätigungslink ist unvollständig. Öffnen Sie ihn erneut aus der E-Mail.",
     "verify_email_processing": "Einen Moment, wir bestätigen gerade Ihre Adresse…",
@@ -972,7 +972,7 @@
     "tabPrefs": "Präferenzen",
     "tabHistory": "Verlauf",
     "walletTitle2": "Guthaben für Kommunikation und KI",
-    "walletHint2": "Ein einziges Prepaid-Guthaben für SMS (Twilio), WhatsApp-Vorlagen und den Assistenten VigIA.",
+    "walletHint2": "Ein einziges Prepaid-Guthaben für SMS (Twilio), WhatsApp-Vorlagen und den Assistenten {{agente}}.",
     "noBalance": "Ihr Guthaben ist aufgebraucht. Kostenpflichtige Nachrichten werden erst nach einer Aufladung versendet.",
     "lowBalance": "Niedriges Guthaben: unter der eingestellten Schwelle. Kostenpflichtige Kanäle können gesperrt werden.",
     "rechargeTitle": "Guthaben aufladen",
@@ -3280,7 +3280,7 @@
       "landing": {
         "copyright": "© 2025-{{year}} CGUARD. Alle Rechte vorbehalten.",
         "desc": "Mit der Plattform für physische Sicherheit {{product}}.",
-        "logo_alt": "CGUARD Logo",
+        "logo_alt": "{{marca}} Logo",
         "tag_analytics": "Analysen",
         "tag_cloud": "Cloud-basiert",
         "tag_realtime": "Ortung in Echtzeit",
@@ -4474,8 +4474,8 @@
       "connected_as": "Angemeldet als",
       "dark_mode": "Dunkelmodus",
       "feedback": "Feedback senden",
-      "feedback_modal_desc": "Bewerten Sie Ihre Erfahrung mit C-Guard Pro.",
-      "feedback_modal_title": "Wie bewerten Sie Ihre Erfahrung mit C-Guard Pro?",
+      "feedback_modal_desc": "Bewerten Sie Ihre Erfahrung mit {{marca}}.",
+      "feedback_modal_title": "Wie bewerten Sie Ihre Erfahrung mit {{marca}}?",
       "feedback_placeholder": "Erzählen Sie uns etwas mehr über Ihre Erfahrung",
       "feedback_thanks": "Vielen Dank für Ihr Feedback!",
       "help": "Hilfe",
@@ -5606,18 +5606,18 @@
     "required_fields": "Bitte füllen Sie die Pflichtfelder aus"
   },
   "vigia": {
-    "placeholder": "Schreiben Sie VigIA…",
-    "inputAria": "Nachricht an VigIA",
-    "openAria": "VigIA, den Assistenten, öffnen",
-    "dialogAria": "VigIA, Assistent für Ihren Betrieb",
+    "placeholder": "Schreiben Sie {{agente}}…",
+    "inputAria": "Nachricht an {{agente}}",
+    "openAria": "{{agente}}, den Assistenten, öffnen",
+    "dialogAria": "{{agente}}, Assistent für Ihren Betrieb",
     "tagline": "Ihr Wachposten im Einsatz",
     "emptyTitle": "Womit kann ich helfen?",
     "emptyHint": "Ich kann zum Beispiel:",
     "emptyNote": "Jede Aktion zeige ich Ihnen vorher und führe sie nur nach Ihrer Bestätigung aus.",
     "proposalTitle": "Aktion zur Bestätigung",
-    "working": "VigIA arbeitet…",
+    "working": "{{agente}} arbeitet…",
     "cancelled": "Verstanden, ich mache es nicht. Sonst noch etwas?",
-    "netError": "VigIA war nicht erreichbar. Bitte versuchen Sie es erneut.",
+    "netError": "{{agente}} war nicht erreichbar. Bitte versuchen Sie es erneut.",
     "confirmError": "Die Bestätigung kam nicht an (womöglich war die Verbindung weg). Tippen Sie erneut auf Bestätigen — das ist sicher.",
     "newChat": "Neue Unterhaltung",
     "history": "Frühere Unterhaltungen",
@@ -5943,7 +5943,9 @@
     "lockedCanceledTitle": "Abonnement gekündigt",
     "lockedCanceledMsg": "Ihr Abonnement wurde gekündigt. Reaktivieren Sie es, um die Plattform wieder zu nutzen.",
     "lockedReactivate": "Abonnement reaktivieren",
-    "lockedSignOut": "Abmelden"
+    "lockedSignOut": "Abmelden",
+    "lockedSuspendedMsgPartner": "Der Zugang zu diesem Konto wurde gesperrt. Wenden Sie sich an Ihren Anbieter, um es wieder zu aktivieren.",
+    "lockedCanceledMsgPartner": "Ihr Abonnement wurde gekündigt. Wenden Sie sich an Ihren Anbieter, um es wieder zu aktivieren."
   },
   "brand": {
     "tagline": "Intelligente Sicherheit"
@@ -6407,8 +6409,8 @@
     "connected_as": "Angemeldet als",
     "dark_mode": "Dunkelmodus",
     "feedback": "Feedback senden",
-    "feedback_modal_desc": "Bewerten Sie Ihre Erfahrung mit C-Guard Pro.",
-    "feedback_modal_title": "Wie bewerten Sie Ihre Erfahrung mit C-Guard Pro?",
+    "feedback_modal_desc": "Bewerten Sie Ihre Erfahrung mit {{marca}}.",
+    "feedback_modal_title": "Wie bewerten Sie Ihre Erfahrung mit {{marca}}?",
     "feedback_placeholder": "Erzählen Sie uns etwas mehr über Ihre Erfahrung",
     "feedback_thanks": "Vielen Dank für Ihr Feedback!",
     "help": "Hilfe",
@@ -6423,7 +6425,7 @@
     "settings": "Einstellungen",
     "subscription": "Abonnement",
     "system_logs": "Systemprotokolle",
-    "searchPlaceholder": "In C-Guard Pro suchen…",
+    "searchPlaceholder": "In {{marca}} suchen…",
     "sidebar": {
       "collapse": "Menü einklappen",
       "expand": "Menü ausklappen"
@@ -7132,7 +7134,7 @@
       "seguridad.desc": "Passwortrichtlinie, Abmeldung bei Inaktivität und Schutzmaßnahmen der Plattform.",
       "emergencias": "Notfälle und Notruf",
       "emergencias.desc": "Wer einen Notruf erhält, E-Mails der Leitstelle und der Takt der Eskalation.",
-      "asistente-ia": "Assistent VigIA",
+      "asistente-ia": "Assistent {{agente}}",
       "asistente-ia.desc": "Nutzung des Assistenten: Nachrichten, Kosten, Freikontingent und ausgeführte Aktionen.",
       "central": "Leitstelle",
       "central.desc": "Wenn Sie eine Leitstelle rund um die Uhr betreiben: welches Objekt sie ist, ob ihre Operatoren Schichten übernehmen und wer die Alarme erhält.",
@@ -7610,7 +7612,7 @@
     "appearance": {
       "layoutTitle": "Erscheinungsbild",
       "pageTitle": "Erscheinungsbild",
-      "pageSubtitle": "Wählen Sie die Farbe, in der Ihr C-Guard Pro dargestellt wird, und ob Sie hell oder dunkel arbeiten. Die Änderung wird sofort übernommen und in Ihrem Konto gespeichert, sodass Sie sie von jedem Computer und jedem Browser gleich sehen.",
+      "pageSubtitle": "Wählen Sie die Farbe, in der Ihr {{marca}} dargestellt wird, und ob Sie hell oder dunkel arbeiten. Die Änderung wird sofort übernommen und in Ihrem Konto gespeichert, sodass Sie sie von jedem Computer und jedem Browser gleich sehen.",
       "customColorBadge": "Individuelle Farbe",
       "darkModeBadge": "Dunkelmodus",
       "lightModeBadge": "Hellmodus",
@@ -7802,7 +7804,7 @@
       "idleOption_480": "8 Stunden (ein Arbeitstag)",
       "warnBeforeLogout": "2 Minuten vor der Abmeldung warnen",
       "platformHeading": "Schutzmaßnahmen der Plattform",
-      "platformHint": "CGuardPro verwaltet sie für alle Firmen. Hier können Sie sehen, ob sie aktiv sind.",
+      "platformHint": "{{marca}} verwaltet sie für alle Firmen. Hier können Sie sehen, ob sie aktiv sind.",
       "statusActive": "Aktiv",
       "statusInactive": "Inaktiv"
     },
@@ -7943,7 +7945,7 @@
       "coverageUncoveredLabel": "Unbesetztes Objekt",
       "coverageUncoveredHint": "Niemand ist am Objekt erschienen oder die Wachkraft hat es verlassen. Erreicht das Telefon, auch wenn Sie das Kästchen abwählen",
       "dispatchUpdatesLabel": "Aktualisierungen von Vorfall-Tickets",
-      "vigiaDigestLabel": "Tagesabschluss (VigIA)",
+      "vigiaDigestLabel": "Tagesabschluss ({{agente}})",
       "vigiaDigestHint": "Eine vom Assistenten verfasste Tageszusammenfassung um 21 Uhr — nur wenn es etwas zu berichten gab. Wählen Sie E-Mail, um sie in Ihrem Postfach zu erhalten",
       "incidentUnattendedLabel": "Schwerer Vorfall unbearbeitet",
       "incidentUnattendedHint": "Wenn ein kritischer Vorfall längere Zeit offen ist und niemand ihn bestätigt hat. Die Erinnerung endet, sobald sich jemand darum kümmert",
@@ -8108,7 +8110,7 @@
     "language": {
       "layoutTitle": "Sprache",
       "pageTitle": "Sprache",
-      "pageSubtitle": "In welcher Sprache Sie C-Guard Pro sehen möchten. Normalerweise entscheidet das Ihr Browser, aber hier können Sie es selbst festlegen. Die Änderung wird sofort wirksam und in Ihrem Konto gespeichert, sodass Sie sie auf jedem Computer gleich sehen.",
+      "pageSubtitle": "In welcher Sprache Sie {{marca}} sehen möchten. Normalerweise entscheidet das Ihr Browser, aber hier können Sie es selbst festlegen. Die Änderung wird sofort wirksam und in Ihrem Konto gespeichert, sodass Sie sie auf jedem Computer gleich sehen.",
       "badgeAuto": "Automatisch",
       "badgeFixed": "Von Ihnen gewählt",
       "chooseSection": "Wählen Sie die Sprache",
@@ -9452,7 +9454,10 @@
       "datosDeEjemploRetiradosEsta": "Beispieldaten entfernt. Dies ist jetzt Ihr echter Betrieb.",
       "noPudimosQuitarLosDatos": "Die Beispieldaten konnten nicht entfernt werden. Bitte versuchen Sie es erneut.",
       "estasExplorandoConUna": "Sie erkunden gerade mit",
-      "quitarDatosDeEjemplo": "Beispieldaten entfernen"
+      "quitarDatosDeEjemplo": "Beispieldaten entfernen",
+      "mensajeDeWhatsapp": "Hallo, ich habe gerade mein Konto bei {{marca}} erstellt und hätte gern Hilfe bei der Einrichtung.",
+      "saludoDelAsistente": "Ich bin {{agente}}. Ich kann Kunden, Standorte und Posten anlegen und Wachkräfte für Sie einladen — sagen Sie mir, was Sie brauchen.",
+      "pideseloAlAsistente": "oder fragen Sie {{agente}}"
     },
     "DepartmentDialog": {
       "descripcion": "Beschreibung",
@@ -9570,7 +9575,7 @@
     "IntegrationsList": {
       "operacion": "Einsatz",
       "todaviaNoHayIntegracionesDisponibles": "Noch keine Integrationen verfügbar",
-      "conectarCGuardProCon": "C-Guard Pro mit anderen Systemen Ihrer Firma verbinden.",
+      "conectarCGuardProCon": "{{marca}} mit anderen Systemen Ihrer Firma verbinden.",
       "buscasConectarOtroSistema": "Möchten Sie ein weiteres System anbinden?",
       "llavesDeApi": "API-Schlüssel"
     },
@@ -9763,7 +9768,7 @@
       "razonSocialRegistrada": "Eingetragener Firmenname",
       "ruc13DigitosOCedula": "Steuernummer (13 Ziffern) oder Ausweisnummer (10 Ziffern)",
       "rucCedula": "Steuernummer / Ausweis",
-      "teDamosLaBienvenidaA": "Willkommen bei CGuardPro!",
+      "teDamosLaBienvenidaA": "Willkommen bei {{marca}}!",
       "telefono": "Telefon",
       "nombreDeLaEmpresa": "Name der Firma",
       "logoDeLaEmpresa": "Logo der Firma",
@@ -9772,12 +9777,13 @@
       "empresa": "Firma",
       "noSeEncontroLaEmpresa": "Die Firma wurde nicht gefunden. Laden Sie die Seite neu und versuchen Sie es erneut.",
       "completaTodosLosCamposRequeridos": "Füllen Sie alle Pflichtfelder aus.",
-      "configuracionCompletadaBienvenidoACguardpro": "Einrichtung abgeschlossen! Willkommen bei CGuardPro.",
+      "configuracionCompletadaBienvenidoACguardpro": "Einrichtung abgeschlossen! Willkommen bei {{marca}}.",
       "miEmpresaDeSeguridad": "Meine Sicherheitsfirma",
       "noSePudoDetectarSeleccionala": "Konnte nicht erkannt werden; bitte wählen Sie sie manuell aus.",
       "completarMasTarde": "Später abschließen",
       "configuraTuEmpresa": "Unternehmen einrichten",
-      "detectarPorDireccion": "Anhand der Adresse ermitteln"
+      "detectarPorDireccion": "Anhand der Adresse ermitteln",
+      "saludoDelAsistente": "Willkommen! Ich bin {{agente}}, Ihr Assistent. Ihre Firma ist eingerichtet — der nächste Schritt ist Ihr erster Kunde. Nennen Sie mir Namen und Adresse, und ich lege ihn direkt hier an."
     },
     "OpenShifts": {
       "accion": "Aktion",
@@ -10803,7 +10809,7 @@
     "SupervisorsPage": {
       "nuevoSupervisor": "Neuer Supervisor",
       "elCorreoEsObligatorio": "Die E-Mail-Adresse ist erforderlich",
-      "esteCorreoYaTeniaCuenta": "Diese E-Mail-Adresse hatte bereits ein Konto bei CGuardPro: Sie erhielt Zugang zu Ihrer Firma. Die Anmeldung in der App erfolgt mit dem bisherigen Passwort.",
+      "esteCorreoYaTeniaCuenta": "Diese E-Mail-Adresse hatte bereits ein Konto bei {{marca}}: Sie erhielt Zugang zu Ihrer Firma. Die Anmeldung in der App erfolgt mit dem bisherigen Passwort.",
       "supervisorCreadoYEnviadaLa": "Supervisor erstellt und Einladung gesendet",
       "supervisorEliminado": "Supervisor gelöscht",
       "gestionaLosSupervisoresDeSeguridad": "Verwalten Sie Ihre Sicherheitssupervisoren: Profil, Zone, Fahrzeug und Schichtstatus.",
@@ -11027,7 +11033,7 @@
       "noSePudoCargarEl": "Der Katalog konnte nicht geladen werden.",
       "noTienesPermisoParaVer": "Sie haben keine Berechtigung, den Katalog anzusehen.",
       "cursosDeLaPlataforma": "Kurse der Plattform",
-      "cursosAddonOtorgadosATu": "Add-on-Kurse, die C-Guard Pro Ihrer Firma gewährt hat. Sie sind schreibgeschützt, können aber Ihren Wachkräften zugewiesen werden.",
+      "cursosAddonOtorgadosATu": "Add-on-Kurse, die {{marca}} Ihrer Firma gewährt hat. Sie sind schreibgeschützt, können aber Ihren Wachkräften zugewiesen werden.",
       "sinCursosAddon": "Keine Add-on-Kurse",
       "tuEmpresaAunNoTiene": "Ihrer Firma wurden noch keine Add-on-Kurse gewährt."
     },
@@ -11146,7 +11152,7 @@
       "sinDatosEnElRango": "Keine Daten im Zeitraum"
     },
     "NotificationsPanel": {
-      "resolverConVigia": "Mit VigIA lösen",
+      "resolverConVigia": "Mit {{agente}} lösen",
       "sinNotificaciones": "Keine Benachrichtigungen",
       "titulo": "Benachrichtigungen",
       "enVivo": "Live",
@@ -11989,7 +11995,7 @@
       "login": "Anmeldung",
       "loginFailed": "Fehlgeschlagener Versuch",
       "logout": "Abmeldung",
-      "providerAccess": "Support-Zugriff (CGuardPro)"
+      "providerAccess": "Support-Zugriff ({{marca}})"
     },
     "logs": {
       "actionCreate": "Anlegen",

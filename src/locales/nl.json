@@ -206,7 +206,7 @@
     "landing": {
       "copyright": "© 2025-{{year}} CGUARD. Alle rechten voorbehouden.",
       "desc": "Met het platform voor fysieke beveiliging {{product}}.",
-      "logo_alt": "CGUARD-logo",
+      "logo_alt": "{{marca}}-logo",
       "tag_analytics": "Analyse",
       "tag_cloud": "In de cloud",
       "tag_realtime": "Realtime volgen",
@@ -217,7 +217,7 @@
     "change_password_subtitle": "Werk je wachtwoord bij.",
     "enter_email": "Vul je e-mailadres in",
     "fieldLanding": {
-      "desc": "Herstel het wachtwoord van je beveiligersaccount om weer in de C-Guard Pro-app te komen.",
+      "desc": "Herstel het wachtwoord van je beveiligersaccount om weer in de {{marca}}-app te komen.",
       "eyebrow": "App voor beveiligers",
       "tag_incidents": "Incidenten melden",
       "title_part1": "Je dienst,",
@@ -228,15 +228,15 @@
     "forgot_title": "Wachtwoord vergeten?",
     "hide_password": "Wachtwoord verbergen",
     "new_password_placeholder": "Nieuw wachtwoord",
-    "reset_done_field_body": "Je wachtwoord is hersteld. Open de C-Guard Pro-app op je telefoon en log in met je e-mailadres en je nieuwe wachtwoord.",
-    "reset_done_field_subtitle": "Ga terug naar de C-Guard Pro-app en log in met je nieuwe wachtwoord.",
+    "reset_done_field_body": "Je wachtwoord is hersteld. Open de {{marca}}-app op je telefoon en log in met je e-mailadres en je nieuwe wachtwoord.",
+    "reset_done_field_subtitle": "Ga terug naar de {{marca}}-app en log in met je nieuwe wachtwoord.",
     "reset_done_title": "Wachtwoord bijgewerkt!",
-    "reset_open_app": "C-Guard Pro-app openen",
+    "reset_open_app": "{{marca}}-app openen",
     "reset_sent": "Link verstuurd. Controleer je e-mail",
     "reset_subtitle": "Kies een nieuw wachtwoord om weer bij je account te komen.",
     "show_password": "Wachtwoord tonen",
     "verify_email_subtitle": "We bevestigen je e-mailadres. Dit duurt maar even.",
-    "footer_copyright": "© {{year}} C-Guard Pro. Alle rechten voorbehouden.",
+    "footer_copyright": "© {{year}} {{marca}}. Alle rechten voorbehouden.",
     "verify_email_failed": "We konden je e-mailadres niet bevestigen. De link is mogelijk verlopen.",
     "verify_email_missing_token": "De bevestigingslink is onvolledig. Open hem opnieuw vanuit de e-mail.",
     "verify_email_processing": "Een moment, we bevestigen je e-mailadres…",
@@ -972,7 +972,7 @@
     "tabPrefs": "Voorkeuren",
     "tabHistory": "Geschiedenis",
     "walletTitle2": "Saldo voor communicatie en AI",
-    "walletHint2": "Eén prepaidsaldo voor sms (Twilio), WhatsApp-sjablonen en de assistent VigIA.",
+    "walletHint2": "Eén prepaidsaldo voor sms (Twilio), WhatsApp-sjablonen en de assistent {{agente}}.",
     "noBalance": "Je saldo is op. Berichten met kosten worden pas verstuurd als je opwaardeert.",
     "lowBalance": "Laag saldo: onder de ingestelde drempel. Kanalen met kosten kunnen worden geblokkeerd.",
     "rechargeTitle": "Saldo opwaarderen",
@@ -3280,7 +3280,7 @@
       "landing": {
         "copyright": "© 2025-{{year}} CGUARD. Alle rechten voorbehouden.",
         "desc": "Met het platform voor fysieke beveiliging {{product}}.",
-        "logo_alt": "CGUARD-logo",
+        "logo_alt": "{{marca}}-logo",
         "tag_analytics": "Analyse",
         "tag_cloud": "In de cloud",
         "tag_realtime": "Realtime volgen",
@@ -4474,8 +4474,8 @@
       "connected_as": "Ingelogd als",
       "dark_mode": "Donkere modus",
       "feedback": "Feedback sturen",
-      "feedback_modal_desc": "Beoordeel je ervaring met C-Guard Pro.",
-      "feedback_modal_title": "Hoe beoordeel je je ervaring met C-Guard Pro?",
+      "feedback_modal_desc": "Beoordeel je ervaring met {{marca}}.",
+      "feedback_modal_title": "Hoe beoordeel je je ervaring met {{marca}}?",
       "feedback_placeholder": "Vertel ons iets meer over je ervaring",
       "feedback_thanks": "Bedankt voor je feedback!",
       "help": "Help",
@@ -5606,18 +5606,18 @@
     "required_fields": "Vul de verplichte velden in"
   },
   "vigia": {
-    "placeholder": "Schrijf VigIA…",
-    "inputAria": "Bericht voor VigIA",
-    "openAria": "VigIA openen, de assistent",
-    "dialogAria": "VigIA, assistent van je operatie",
+    "placeholder": "Schrijf {{agente}}…",
+    "inputAria": "Bericht voor {{agente}}",
+    "openAria": "{{agente}} openen, de assistent",
+    "dialogAria": "{{agente}}, assistent van je operatie",
     "tagline": "De uitkijk van je operatie",
     "emptyTitle": "Waarmee kan ik je helpen?",
     "emptyHint": "Ik kan bijvoorbeeld:",
     "emptyNote": "Elke actie laat ik eerst zien en voer ik alleen uit als je bevestigt.",
     "proposalTitle": "Actie ter bevestiging",
-    "working": "VigIA is bezig…",
+    "working": "{{agente}} is bezig…",
     "cancelled": "Begrepen, ik doe het niet. Kan ik nog iets doen?",
-    "netError": "We konden VigIA niet bereiken. Probeer het opnieuw.",
+    "netError": "We konden {{agente}} niet bereiken. Probeer het opnieuw.",
     "confirmError": "Bevestigen is niet gelukt (verbinding weggevallen?). Druk gerust nog een keer op Bevestigen.",
     "newChat": "Nieuw gesprek",
     "history": "Eerdere gesprekken",
@@ -5943,7 +5943,9 @@
     "lockedCanceledTitle": "Abonnement geannuleerd",
     "lockedCanceledMsg": "Uw abonnement is geannuleerd. Activeer het opnieuw om het platform weer te gebruiken.",
     "lockedReactivate": "Abonnement opnieuw activeren",
-    "lockedSignOut": "Uitloggen"
+    "lockedSignOut": "Uitloggen",
+    "lockedSuspendedMsgPartner": "De toegang tot dit account is opgeschort. Neem contact op met je leverancier om het opnieuw te activeren.",
+    "lockedCanceledMsgPartner": "Je abonnement is opgezegd. Neem contact op met je leverancier om het opnieuw te activeren."
   },
   "brand": {
     "tagline": "Intelligente beveiliging"
@@ -6407,8 +6409,8 @@
     "connected_as": "Ingelogd als",
     "dark_mode": "Donkere modus",
     "feedback": "Feedback sturen",
-    "feedback_modal_desc": "Beoordeel uw ervaring met C-Guard Pro.",
-    "feedback_modal_title": "Hoe beoordeelt u uw ervaring met C-Guard Pro?",
+    "feedback_modal_desc": "Beoordeel uw ervaring met {{marca}}.",
+    "feedback_modal_title": "Hoe beoordeelt u uw ervaring met {{marca}}?",
     "feedback_placeholder": "Vertel ons wat meer over uw ervaring",
     "feedback_thanks": "Bedankt voor uw feedback.",
     "help": "Help",
@@ -6423,7 +6425,7 @@
     "settings": "Instellingen",
     "subscription": "Abonnement",
     "system_logs": "Systeemlogboek",
-    "searchPlaceholder": "Zoeken in C-Guard Pro…",
+    "searchPlaceholder": "Zoeken in {{marca}}…",
     "sidebar": {
       "collapse": "Menu inklappen",
       "expand": "Menu uitklappen"
@@ -7132,7 +7134,7 @@
       "seguridad.desc": "Wachtwoordbeleid, automatisch uitloggen bij inactiviteit en beveiliging van het platform.",
       "emergencias": "Noodgevallen en paniek",
       "emergencias.desc": "Wie een paniekalarm ontvangt, e-mails van de meldkamer en het ritme van de escalatie.",
-      "asistente-ia": "VigIA-assistent",
+      "asistente-ia": "{{agente}}-assistent",
       "asistente-ia.desc": "Gebruik van de assistent: berichten, kosten, gratis tegoed en uitgevoerde acties.",
       "central": "Meldkamer",
       "central.desc": "Als u een 24/7-meldkamer heeft: welke post dat is, of de centralisten diensten overnemen en wie de alarmen krijgt.",
@@ -7610,7 +7612,7 @@
     "appearance": {
       "layoutTitle": "Weergave",
       "pageTitle": "Weergave",
-      "pageSubtitle": "Kies de kleur waarin uw C-Guard Pro wordt weergegeven en of u in de lichte of donkere modus werkt. De wijziging is meteen zichtbaar en wordt in uw account opgeslagen, dus u ziet hem op elke computer en in elke browser hetzelfde.",
+      "pageSubtitle": "Kies de kleur waarin uw {{marca}} wordt weergegeven en of u in de lichte of donkere modus werkt. De wijziging is meteen zichtbaar en wordt in uw account opgeslagen, dus u ziet hem op elke computer en in elke browser hetzelfde.",
       "customColorBadge": "Eigen kleur",
       "darkModeBadge": "Donkere modus",
       "lightModeBadge": "Lichte modus",
@@ -7802,7 +7804,7 @@
       "idleOption_480": "8 uur (een werkdag)",
       "warnBeforeLogout": "2 minuten voor het afsluiten waarschuwen",
       "platformHeading": "Beveiliging van het platform",
-      "platformHint": "CGuardPro beheert deze voor alle bedrijven. Hier ziet u of ze actief zijn.",
+      "platformHint": "{{marca}} beheert deze voor alle bedrijven. Hier ziet u of ze actief zijn.",
       "statusActive": "Actief",
       "statusInactive": "Inactief"
     },
@@ -7943,7 +7945,7 @@
       "coverageUncoveredLabel": "Onbezette post",
       "coverageUncoveredHint": "Er kwam niemand opdagen op de post of de beveiliger heeft hem verlaten. Komt op de telefoon binnen, ook als u het vinkje weghaalt",
       "dispatchUpdatesLabel": "Updates van incidenttickets",
-      "vigiaDigestLabel": "Dagafsluiting (VigIA)",
+      "vigiaDigestLabel": "Dagafsluiting ({{agente}})",
       "vigiaDigestHint": "Een samenvatting van de dag, geschreven door de assistent, om negen uur 's avonds — alleen als er iets te melden was. Vink E-mail aan om hem in uw inbox te ontvangen",
       "incidentUnattendedLabel": "Ernstig incident niet opgepakt",
       "incidentUnattendedHint": "Wanneer een kritiek incident al een tijd openstaat en niemand het heeft bevestigd. Het stopt zodra iemand het oppakt",
@@ -8108,7 +8110,7 @@
     "language": {
       "layoutTitle": "Taal",
       "pageTitle": "Taal",
-      "pageSubtitle": "In welke taal u C-Guard Pro wilt zien. Normaal bepaalt uw browser dat, maar hier kunt u het zelf vastleggen. De wijziging is meteen zichtbaar en wordt in uw account opgeslagen, dus u ziet hem op elke computer hetzelfde.",
+      "pageSubtitle": "In welke taal u {{marca}} wilt zien. Normaal bepaalt uw browser dat, maar hier kunt u het zelf vastleggen. De wijziging is meteen zichtbaar en wordt in uw account opgeslagen, dus u ziet hem op elke computer hetzelfde.",
       "badgeAuto": "Automatisch",
       "badgeFixed": "Door u gekozen",
       "chooseSection": "Kies uw taal",
@@ -9452,7 +9454,10 @@
       "datosDeEjemploRetiradosEsta": "Voorbeeldgegevens verwijderd. Dit is nu uw echte operatie.",
       "noPudimosQuitarLosDatos": "De voorbeeldgegevens konden niet worden verwijderd. Probeer het opnieuw.",
       "estasExplorandoConUna": "Je werkt in een",
-      "quitarDatosDeEjemplo": "Voorbeeldgegevens verwijderen"
+      "quitarDatosDeEjemplo": "Voorbeeldgegevens verwijderen",
+      "mensajeDeWhatsapp": "Hallo, ik heb net mijn account bij {{marca}} aangemaakt en wil graag hulp bij het inrichten.",
+      "saludoDelAsistente": "Ik ben {{agente}}. Ik kan klanten, locaties en posten aanmaken en beveiligers voor je uitnodigen — zeg maar wat je nodig hebt.",
+      "pideseloAlAsistente": "of vraag het {{agente}}"
     },
     "DepartmentDialog": {
       "descripcion": "Omschrijving",
@@ -9570,7 +9575,7 @@
     "IntegrationsList": {
       "operacion": "Operatie",
       "todaviaNoHayIntegracionesDisponibles": "Er zijn nog geen koppelingen beschikbaar",
-      "conectarCGuardProCon": "Koppel C-Guard Pro aan de andere systemen van uw bedrijf.",
+      "conectarCGuardProCon": "Koppel {{marca}} aan de andere systemen van uw bedrijf.",
       "buscasConectarOtroSistema": "Wilt u een ander systeem koppelen?",
       "llavesDeApi": "API-sleutels"
     },
@@ -9763,7 +9768,7 @@
       "razonSocialRegistrada": "Geregistreerde statutaire naam",
       "ruc13DigitosOCedula": "RUC (13 cijfers) of identiteitsnummer (10 cijfers)",
       "rucCedula": "RUC / identiteitsnummer",
-      "teDamosLaBienvenidaA": "Welkom bij CGuardPro.",
+      "teDamosLaBienvenidaA": "Welkom bij {{marca}}.",
       "telefono": "Telefoon",
       "nombreDeLaEmpresa": "Naam van het bedrijf",
       "logoDeLaEmpresa": "Logo van het bedrijf",
@@ -9772,12 +9777,13 @@
       "empresa": "Bedrijf",
       "noSeEncontroLaEmpresa": "Het bedrijf is niet gevonden. Laad de pagina opnieuw en probeer het nog eens.",
       "completaTodosLosCamposRequeridos": "Vul alle verplichte velden in.",
-      "configuracionCompletadaBienvenidoACguardpro": "Inrichting afgerond. Welkom bij CGuardPro.",
+      "configuracionCompletadaBienvenidoACguardpro": "Inrichting afgerond. Welkom bij {{marca}}.",
       "miEmpresaDeSeguridad": "Mijn beveiligingsbedrijf",
       "noSePudoDetectarSeleccionala": "Kon niet worden bepaald; kies het handmatig.",
       "completarMasTarde": "Later afmaken",
       "configuraTuEmpresa": "Stel je bedrijf in",
-      "detectarPorDireccion": "Afleiden uit het adres"
+      "detectarPorDireccion": "Afleiden uit het adres",
+      "saludoDelAsistente": "Welkom! Ik ben {{agente}}, je assistent. Je bedrijf is ingericht — de volgende stap is je eerste klant. Geef me de naam en het adres en ik maak hem hier aan."
     },
     "OpenShifts": {
       "accion": "Actie",
@@ -10803,7 +10809,7 @@
     "SupervisorsPage": {
       "nuevoSupervisor": "Nieuwe supervisor",
       "elCorreoEsObligatorio": "Het e-mailadres is verplicht",
-      "esteCorreoYaTeniaCuenta": "Dit e-mailadres had al een account bij CGuardPro: het heeft toegang tot uw bedrijf gekregen. Hij logt in de app in met zijn huidige wachtwoord.",
+      "esteCorreoYaTeniaCuenta": "Dit e-mailadres had al een account bij {{marca}}: het heeft toegang tot uw bedrijf gekregen. Hij logt in de app in met zijn huidige wachtwoord.",
       "supervisorCreadoYEnviadaLa": "Supervisor aangemaakt en uitnodiging verstuurd",
       "supervisorEliminado": "Supervisor verwijderd",
       "gestionaLosSupervisoresDeSeguridad": "Beheer uw beveiligingssupervisors: profiel, gebied, voertuig en status in dienst.",
@@ -11027,7 +11033,7 @@
       "noSePudoCargarEl": "De catalogus kon niet worden geladen.",
       "noTienesPermisoParaVer": "U heeft geen rechten om de catalogus te bekijken.",
       "cursosDeLaPlataforma": "Cursussen van het platform",
-      "cursosAddonOtorgadosATu": "Add-oncursussen die C-Guard Pro aan uw bedrijf heeft toegekend. Ze zijn alleen-lezen, maar u kunt ze aan uw beveiligers toewijzen.",
+      "cursosAddonOtorgadosATu": "Add-oncursussen die {{marca}} aan uw bedrijf heeft toegekend. Ze zijn alleen-lezen, maar u kunt ze aan uw beveiligers toewijzen.",
       "sinCursosAddon": "Geen add-oncursussen",
       "tuEmpresaAunNoTiene": "Aan uw bedrijf zijn nog geen add-oncursussen toegekend."
     },
@@ -11146,7 +11152,7 @@
       "sinDatosEnElRango": "Geen gegevens in deze periode"
     },
     "NotificationsPanel": {
-      "resolverConVigia": "Oplossen met VigIA",
+      "resolverConVigia": "Oplossen met {{agente}}",
       "sinNotificaciones": "Geen meldingen",
       "titulo": "Meldingen",
       "enVivo": "Live",
@@ -11989,7 +11995,7 @@
       "login": "Aanmelding",
       "loginFailed": "Mislukte poging",
       "logout": "Afmelding",
-      "providerAccess": "Toegang door support (CGuardPro)"
+      "providerAccess": "Toegang door support ({{marca}})"
     },
     "logs": {
       "actionCreate": "Aangemaakt",

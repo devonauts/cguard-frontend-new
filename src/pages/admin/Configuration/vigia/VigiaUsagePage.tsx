@@ -17,6 +17,7 @@ import SettingsPageShell from "../components/SettingsPageShell";
 
 import { SkeletonCards, StatCard, StatsStrip } from "@/components/kit";
 import api from "@/lib/api";
+import { useAgente } from "@/lib/agenteDeMarca";
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
@@ -33,6 +34,8 @@ const formatearDinero = (
 
 export default function VigiaUsagePage() {
   const { t } = useTranslation();
+  // A partner's companies see the assistant under the partner's name.
+  const agente = useAgente();
   const [datos, setDatos] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -92,7 +95,10 @@ export default function VigiaUsagePage() {
     <SettingsPageShell
       icon={<Bot />}
       subtitle={t("ui.VigiaUsagePage.cuantoSeUsaCuantoCuesta")}
-      title="Asistente VigIA"
+      title={t("settings.configuracion.asistente-ia", {
+        defaultValue: "Asistente {{agente}}",
+        agente: agente.nombre,
+      })}
     >
       {loading ? (
         <SkeletonCards className="grid-cols-2 sm:grid-cols-4" count={4} />
@@ -137,7 +143,7 @@ export default function VigiaUsagePage() {
           </StatsStrip>
 
           <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
-            VigIA comparte el monedero de Comunicaciones: la misma recarga sirve
+            {agente.nombre} comparte el monedero de Comunicaciones: la misma recarga sirve
             para SMS, WhatsApp y el asistente.{" "}
             <Link
               className="-my-3 inline-block py-3 font-semibold underline"

@@ -206,7 +206,7 @@
     "landing": {
       "copyright": "© 2025-{{year}} CGUARD. Tous droits réservés.",
       "desc": "Avec la plateforme de gestion de sécurité physique {{product}}.",
-      "logo_alt": "Logo CGUARD",
+      "logo_alt": "Logo {{marca}}",
       "tag_analytics": "Analyses",
       "tag_cloud": "Dans le cloud",
       "tag_realtime": "Suivi en temps réel",
@@ -217,7 +217,7 @@
     "change_password_subtitle": "Mettez à jour votre mot de passe de connexion.",
     "enter_email": "Veuillez saisir votre adresse e-mail",
     "fieldLanding": {
-      "desc": "Réinitialisez le mot de passe de votre compte agent de sécurité pour revenir dans l'app C-Guard Pro.",
+      "desc": "Réinitialisez le mot de passe de votre compte agent de sécurité pour revenir dans l'app {{marca}}.",
       "eyebrow": "App pour agents de sécurité",
       "tag_incidents": "Signalement d'incidents",
       "title_part1": "Votre vacation,",
@@ -228,15 +228,15 @@
     "forgot_title": "Mot de passe oublié ?",
     "hide_password": "Masquer le mot de passe",
     "new_password_placeholder": "Nouveau mot de passe",
-    "reset_done_field_body": "Votre mot de passe a été réinitialisé. Ouvrez l'app C-Guard Pro sur votre téléphone et connectez-vous avec votre e-mail et votre nouveau mot de passe.",
-    "reset_done_field_subtitle": "Retournez dans l'app C-Guard Pro et connectez-vous avec votre nouveau mot de passe.",
+    "reset_done_field_body": "Votre mot de passe a été réinitialisé. Ouvrez l'app {{marca}} sur votre téléphone et connectez-vous avec votre e-mail et votre nouveau mot de passe.",
+    "reset_done_field_subtitle": "Retournez dans l'app {{marca}} et connectez-vous avec votre nouveau mot de passe.",
     "reset_done_title": "Mot de passe mis à jour !",
-    "reset_open_app": "Ouvrir l'app C-Guard Pro",
+    "reset_open_app": "Ouvrir l'app {{marca}}",
     "reset_sent": "Lien envoyé. Consultez votre boîte e-mail",
     "reset_subtitle": "Choisissez un nouveau mot de passe pour accéder de nouveau à votre compte.",
     "show_password": "Afficher le mot de passe",
     "verify_email_subtitle": "Nous confirmons votre adresse. Cela ne prend qu'un instant.",
-    "footer_copyright": "© {{year}} C-Guard Pro. Tous droits réservés.",
+    "footer_copyright": "© {{year}} {{marca}}. Tous droits réservés.",
     "verify_email_failed": "Nous n'avons pas pu vérifier votre e-mail. Le lien a peut-être expiré.",
     "verify_email_missing_token": "Le lien de vérification est incomplet. Ouvrez-le de nouveau depuis votre e-mail.",
     "verify_email_processing": "Un instant, nous confirmons votre adresse…",
@@ -972,7 +972,7 @@
     "tabPrefs": "Préférences",
     "tabHistory": "Historique",
     "walletTitle2": "Solde communications et IA",
-    "walletHint2": "Un seul solde prépayé pour les SMS (Twilio), les modèles WhatsApp et l'assistant VigIA.",
+    "walletHint2": "Un seul solde prépayé pour les SMS (Twilio), les modèles WhatsApp et l'assistant {{agente}}.",
     "noBalance": "Vous n'avez plus de solde. Les messages payants ne partiront pas tant que vous n'aurez pas rechargé.",
     "lowBalance": "Solde faible : en dessous du seuil configuré. Les canaux payants peuvent être bloqués.",
     "rechargeTitle": "Recharger le solde",
@@ -3280,7 +3280,7 @@
       "landing": {
         "copyright": "© 2025-{{year}} CGUARD. Tous droits réservés.",
         "desc": "Avec la plateforme de gestion de la sécurité physique {{product}}.",
-        "logo_alt": "Logo CGUARD",
+        "logo_alt": "Logo {{marca}}",
         "tag_analytics": "Analyses",
         "tag_cloud": "Dans le cloud",
         "tag_realtime": "Suivi en temps réel",
@@ -4474,8 +4474,8 @@
       "connected_as": "Connecté en tant que",
       "dark_mode": "Mode sombre",
       "feedback": "Envoyer un commentaire",
-      "feedback_modal_desc": "Évaluez votre expérience avec C-Guard Pro.",
-      "feedback_modal_title": "Comment évaluez-vous votre expérience avec C-Guard Pro ?",
+      "feedback_modal_desc": "Évaluez votre expérience avec {{marca}}.",
+      "feedback_modal_title": "Comment évaluez-vous votre expérience avec {{marca}} ?",
       "feedback_placeholder": "Dites-nous en un peu plus sur votre expérience",
       "feedback_thanks": "Merci pour votre avis !",
       "help": "Aide",
@@ -5606,18 +5606,18 @@
     "required_fields": "Veuillez remplir les champs obligatoires"
   },
   "vigia": {
-    "placeholder": "Écrivez à VigIA…",
-    "inputAria": "Message pour VigIA",
-    "openAria": "Ouvrir VigIA, l'assistant",
-    "dialogAria": "VigIA, assistant de l'exploitation",
+    "placeholder": "Écrivez à {{agente}}…",
+    "inputAria": "Message pour {{agente}}",
+    "openAria": "Ouvrir {{agente}}, l'assistant",
+    "dialogAria": "{{agente}}, assistant de l'exploitation",
     "tagline": "La vigie de votre exploitation",
     "emptyTitle": "Comment puis-je vous aider ?",
     "emptyHint": "Je peux, par exemple :",
     "emptyNote": "Je vous montre chaque action avant de l'exécuter, et je ne l'exécute que si vous la confirmez.",
     "proposalTitle": "Action à confirmer",
-    "working": "VigIA travaille…",
+    "working": "{{agente}} travaille…",
     "cancelled": "Entendu, je ne le fais pas. Autre chose ?",
-    "netError": "Impossible de joindre VigIA. Réessayez.",
+    "netError": "Impossible de joindre {{agente}}. Réessayez.",
     "confirmError": "Confirmation impossible (connexion interrompue ?). Appuyez de nouveau sur Confirmer : c'est sans risque.",
     "newChat": "Nouvelle conversation",
     "history": "Conversations passées",
@@ -5943,7 +5943,9 @@
     "lockedCanceledTitle": "Abonnement annulé",
     "lockedCanceledMsg": "Votre abonnement a été annulé. Réactivez-le pour utiliser à nouveau la plateforme.",
     "lockedReactivate": "Réactiver l'abonnement",
-    "lockedSignOut": "Se déconnecter"
+    "lockedSignOut": "Se déconnecter",
+    "lockedSuspendedMsgPartner": "L'accès à ce compte a été suspendu. Contactez votre fournisseur pour le réactiver.",
+    "lockedCanceledMsgPartner": "Votre abonnement a été annulé. Contactez votre fournisseur pour le réactiver."
   },
   "brand": {
     "tagline": "Sécurité intelligente"
@@ -6407,8 +6409,8 @@
     "connected_as": "Connecté en tant que",
     "dark_mode": "Mode sombre",
     "feedback": "Envoyer un commentaire",
-    "feedback_modal_desc": "Évaluez votre expérience avec C-Guard Pro.",
-    "feedback_modal_title": "Comment évalueriez-vous votre expérience avec C-Guard Pro ?",
+    "feedback_modal_desc": "Évaluez votre expérience avec {{marca}}.",
+    "feedback_modal_title": "Comment évalueriez-vous votre expérience avec {{marca}} ?",
     "feedback_placeholder": "Dites-nous en un peu plus sur votre expérience",
     "feedback_thanks": "Merci pour votre commentaire !",
     "help": "Aide",
@@ -6423,7 +6425,7 @@
     "settings": "Paramètres",
     "subscription": "Abonnement",
     "system_logs": "Journaux du système",
-    "searchPlaceholder": "Rechercher dans C-Guard Pro…",
+    "searchPlaceholder": "Rechercher dans {{marca}}…",
     "sidebar": {
       "collapse": "Réduire le menu",
       "expand": "Déployer le menu"
@@ -7132,7 +7134,7 @@
       "seguridad.desc": "Politique de mots de passe, déconnexion pour inactivité et protections de la plateforme.",
       "emergencias": "Urgences et alerte panique",
       "emergencias.desc": "Qui reçoit une alerte panique, e-mails du centre de supervision et cadence de l'escalade.",
-      "asistente-ia": "Assistant VigIA",
+      "asistente-ia": "Assistant {{agente}}",
       "asistente-ia.desc": "Utilisation de l'assistant : messages, coût, quota gratuit et actions exécutées.",
       "central": "Centre d'opérations",
       "central.desc": "Si vous avez une console 24h/24 : quel poste c'est, si ses opérateurs partent en couverture et qui reçoit les alertes.",
@@ -7610,7 +7612,7 @@
     "appearance": {
       "layoutTitle": "Apparence",
       "pageTitle": "Apparence",
-      "pageSubtitle": "Choisissez la couleur qui habille votre C-Guard Pro et si vous travaillez en clair ou en sombre. Le changement s'applique à l'instant et reste enregistré sur votre compte : vous le retrouverez à l'identique depuis n'importe quel ordinateur ou navigateur.",
+      "pageSubtitle": "Choisissez la couleur qui habille votre {{marca}} et si vous travaillez en clair ou en sombre. Le changement s'applique à l'instant et reste enregistré sur votre compte : vous le retrouverez à l'identique depuis n'importe quel ordinateur ou navigateur.",
       "customColorBadge": "Couleur sur mesure",
       "darkModeBadge": "Mode sombre",
       "lightModeBadge": "Mode clair",
@@ -7802,7 +7804,7 @@
       "idleOption_480": "8 heures (une journée)",
       "warnBeforeLogout": "Prévenir 2 minutes avant la fermeture",
       "platformHeading": "Protections de la plateforme",
-      "platformHint": "CGuardPro les gère pour toutes les entreprises. Vous pouvez voir ici si elles sont actives.",
+      "platformHint": "{{marca}} les gère pour toutes les entreprises. Vous pouvez voir ici si elles sont actives.",
       "statusActive": "Active",
       "statusInactive": "Inactive"
     },
@@ -7943,7 +7945,7 @@
       "coverageUncoveredLabel": "Poste non couvert",
       "coverageUncoveredHint": "Personne n'est arrivé au poste ou l'agent l'a quitté. Parvient au téléphone même si vous décochez la case",
       "dispatchUpdatesLabel": "Mises à jour des tickets d'incident",
-      "vigiaDigestLabel": "Clôture de la journée (VigIA)",
+      "vigiaDigestLabel": "Clôture de la journée ({{agente}})",
       "vigiaDigestHint": "Un résumé de la journée rédigé par l'assistant, à 21 h — seulement s'il y a eu quelque chose à signaler. Cochez E-mail pour le recevoir dans votre boîte",
       "incidentUnattendedLabel": "Incident grave non traité",
       "incidentUnattendedHint": "Quand un incident critique reste ouvert depuis un moment et que personne ne l'a pris en compte. Cesse d'insister dès que quelqu'un s'en charge",
@@ -8108,7 +8110,7 @@
     "language": {
       "layoutTitle": "Langue",
       "pageTitle": "Langue",
-      "pageSubtitle": "La langue dans laquelle vous souhaitez voir C-Guard Pro. C'est normalement votre navigateur qui la décide, mais ici vous pouvez la fixer vous-même. Le changement s'applique immédiatement et est enregistré sur votre compte : vous le retrouverez donc sur n'importe quel ordinateur.",
+      "pageSubtitle": "La langue dans laquelle vous souhaitez voir {{marca}}. C'est normalement votre navigateur qui la décide, mais ici vous pouvez la fixer vous-même. Le changement s'applique immédiatement et est enregistré sur votre compte : vous le retrouverez donc sur n'importe quel ordinateur.",
       "badgeAuto": "Automatique",
       "badgeFixed": "Choisie par vous",
       "chooseSection": "Choisissez la langue",
@@ -9452,7 +9454,10 @@
       "datosDeEjemploRetiradosEsta": "Données d'exemple retirées. Ceci est désormais votre opération réelle.",
       "noPudimosQuitarLosDatos": "Impossible de retirer les données d'exemple. Réessayez.",
       "estasExplorandoConUna": "Vous explorez avec une",
-      "quitarDatosDeEjemplo": "Retirer les données d'exemple"
+      "quitarDatosDeEjemplo": "Retirer les données d'exemple",
+      "mensajeDeWhatsapp": "Bonjour, je viens de créer mon compte {{marca}} et j'aimerais de l'aide pour le configurer.",
+      "saludoDelAsistente": "Je suis {{agente}}. Je peux créer des clients, des sites et des postes, et inviter des agents pour vous — dites-moi ce dont vous avez besoin.",
+      "pideseloAlAsistente": "ou demandez à {{agente}}"
     },
     "DepartmentDialog": {
       "descripcion": "Description",
@@ -9570,7 +9575,7 @@
     "IntegrationsList": {
       "operacion": "Opérations",
       "todaviaNoHayIntegracionesDisponibles": "Aucune intégration disponible pour le moment",
-      "conectarCGuardProCon": "Connectez C-Guard Pro aux autres systèmes de votre entreprise.",
+      "conectarCGuardProCon": "Connectez {{marca}} aux autres systèmes de votre entreprise.",
       "buscasConectarOtroSistema": "Vous souhaitez connecter un autre système ?",
       "llavesDeApi": "Clés d'API"
     },
@@ -9763,7 +9768,7 @@
       "razonSocialRegistrada": "Raison sociale enregistrée",
       "ruc13DigitosOCedula": "N° fiscal (13 chiffres) ou pièce d'identité (10 chiffres)",
       "rucCedula": "N° fiscal / pièce d'identité",
-      "teDamosLaBienvenidaA": "Bienvenue sur CGuardPro !",
+      "teDamosLaBienvenidaA": "Bienvenue sur {{marca}} !",
       "telefono": "Téléphone",
       "nombreDeLaEmpresa": "Nom de l'entreprise",
       "logoDeLaEmpresa": "Logo de l'entreprise",
@@ -9772,12 +9777,13 @@
       "empresa": "Entreprise",
       "noSeEncontroLaEmpresa": "Entreprise introuvable. Rechargez la page et réessayez.",
       "completaTodosLosCamposRequeridos": "Remplissez tous les champs obligatoires.",
-      "configuracionCompletadaBienvenidoACguardpro": "Configuration terminée ! Bienvenue sur CGuardPro.",
+      "configuracionCompletadaBienvenidoACguardpro": "Configuration terminée ! Bienvenue sur {{marca}}.",
       "miEmpresaDeSeguridad": "Ma société de sécurité",
       "noSePudoDetectarSeleccionala": "Détection impossible ; sélectionnez-la manuellement.",
       "completarMasTarde": "Terminer plus tard",
       "configuraTuEmpresa": "Configurez votre entreprise",
-      "detectarPorDireccion": "Détecter à partir de l'adresse"
+      "detectarPorDireccion": "Détecter à partir de l'adresse",
+      "saludoDelAsistente": "Bienvenue ! Je suis {{agente}}, votre assistant. Votre entreprise est configurée — la prochaine étape est votre premier client. Donnez-moi son nom et son adresse et je le crée ici même."
     },
     "OpenShifts": {
       "accion": "Action",
@@ -10803,7 +10809,7 @@
     "SupervisorsPage": {
       "nuevoSupervisor": "Nouveau superviseur",
       "elCorreoEsObligatorio": "L'e-mail est obligatoire",
-      "esteCorreoYaTeniaCuenta": "Cette adresse avait déjà un compte CGuardPro : l'accès à votre entreprise lui a été accordé. Elle se connectera à l'app avec son mot de passe actuel.",
+      "esteCorreoYaTeniaCuenta": "Cette adresse avait déjà un compte {{marca}} : l'accès à votre entreprise lui a été accordé. Elle se connectera à l'app avec son mot de passe actuel.",
       "supervisorCreadoYEnviadaLa": "Superviseur créé et invitation envoyée",
       "supervisorEliminado": "Superviseur supprimé",
       "gestionaLosSupervisoresDeSeguridad": "Gérez vos superviseurs de sécurité : profil, zone, véhicule et statut en vacation.",
@@ -11027,7 +11033,7 @@
       "noSePudoCargarEl": "Impossible de charger le catalogue.",
       "noTienesPermisoParaVer": "Vous n'avez pas l'autorisation de consulter le catalogue.",
       "cursosDeLaPlataforma": "Cours de la plateforme",
-      "cursosAddonOtorgadosATu": "Cours complémentaires accordés à votre entreprise par C-Guard Pro. Ils sont en lecture seule, mais vous pouvez les attribuer à vos agents.",
+      "cursosAddonOtorgadosATu": "Cours complémentaires accordés à votre entreprise par {{marca}}. Ils sont en lecture seule, mais vous pouvez les attribuer à vos agents.",
       "sinCursosAddon": "Aucun cours complémentaire",
       "tuEmpresaAunNoTiene": "Votre entreprise n'a encore aucun cours complémentaire accordé."
     },
@@ -11146,7 +11152,7 @@
       "sinDatosEnElRango": "Aucune donnée sur la période"
     },
     "NotificationsPanel": {
-      "resolverConVigia": "Résoudre avec VigIA",
+      "resolverConVigia": "Résoudre avec {{agente}}",
       "sinNotificaciones": "Aucune notification",
       "titulo": "Notifications",
       "enVivo": "En direct",
@@ -11989,7 +11995,7 @@
       "login": "Connexion",
       "loginFailed": "Tentative échouée",
       "logout": "Déconnexion",
-      "providerAccess": "Accès du support (CGuardPro)"
+      "providerAccess": "Accès du support ({{marca}})"
     },
     "logs": {
       "actionCreate": "Création",

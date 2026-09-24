@@ -499,7 +499,9 @@
       "loadingForm": "Cargando el formulario seguro…",
       "saveCard": "Guardar tarjeta",
       "pausedNoData": "Tu suscripción está pausada por falta de pago y no pudimos cargar el detalle. Recarga la página o contacta a tu proveedor."
-    }
+    },
+    "lockedSuspendedMsgPartner": "El acceso a esta cuenta fue suspendido. Contacta a tu proveedor para reactivarla.",
+    "lockedCanceledMsgPartner": "Tu suscripción fue cancelada. Contacta a tu proveedor para reactivarla."
   },
   "categories": {
     "Understood": "Entendido",
@@ -8988,7 +8990,10 @@
       "datosDeEjemploRetiradosEsta": "Datos de ejemplo retirados. Esta es ya tu operación real.",
       "noPudimosQuitarLosDatos": "No pudimos quitar los datos de ejemplo. Inténtalo de nuevo.",
       "estasExplorandoConUna": "Estás explorando con una",
-      "quitarDatosDeEjemplo": "Quitar datos de ejemplo"
+      "quitarDatosDeEjemplo": "Quitar datos de ejemplo",
+      "mensajeDeWhatsapp": "Hola, acabo de crear mi cuenta en {{marca}} y me gustaría que me ayuden a configurarla.",
+      "saludoDelAsistente": "Soy {{agente}}. Puedo crear clientes, sedes y puestos, e invitar vigilantes por ti — dime qué necesitas.",
+      "pideseloAlAsistente": "o pídeselo a {{agente}}"
     },
     "DepartmentDialog": {
       "descripcion": "Descripción",
@@ -9313,7 +9318,8 @@
       "noSePudoDetectarSeleccionala": "No se pudo detectar; selecciónala manualmente.",
       "completarMasTarde": "Completar más tarde",
       "configuraTuEmpresa": "Configura tu empresa",
-      "detectarPorDireccion": "Detectar por dirección"
+      "detectarPorDireccion": "Detectar por dirección",
+      "saludoDelAsistente": "¡Bienvenido! Soy {{agente}}, tu asistente. Ya quedó configurada tu empresa — el siguiente paso es tu primer cliente. Dime su nombre y su dirección y te lo creo aquí mismo."
     },
     "OpenShifts": {
       "accion": "Acción",

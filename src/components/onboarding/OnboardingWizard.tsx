@@ -56,6 +56,7 @@ import { Combobox } from "@/components/app/combobox";
 import { timezoneOptions } from "@/lib/timezones";
 import { cacheTenantTimezone } from "@/utils/tenantLocation";
 import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
+import { agenteGuardado } from "@/lib/agenteDeMarca";
 
 interface OnboardingWizardProps {
   open: boolean;
@@ -440,8 +441,13 @@ export default function OnboardingWizard({
           window.dispatchEvent(
             new CustomEvent("vigia:abrir", {
               detail: {
-                mensaje:
-                  "¡Bienvenido! Soy VigIA, tu asistente. Ya quedó configurada tu empresa — el siguiente paso es tu primer cliente. Dime su nombre y su dirección y te lo creo aquí mismo.",
+                // The assistant introduces itself by the name it has in THIS
+                // company: a partner's companies know it by the partner's name.
+                mensaje: t("ui.OnboardingWizard.saludoDelAsistente", {
+                  defaultValue:
+                    "¡Bienvenido! Soy {{agente}}, tu asistente. Ya quedó configurada tu empresa — el siguiente paso es tu primer cliente. Dime su nombre y su dirección y te lo creo aquí mismo.",
+                  agente: agenteGuardado(String(tenant?.id ?? "")).nombre,
+                }),
               },
             }),
           );

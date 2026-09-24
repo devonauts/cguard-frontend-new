@@ -22,6 +22,7 @@ import {
   type DeviceHealth,
 } from "./deviceStatus";
 
+import { nombreDelProducto } from "@/hooks/usePageTitle";
 import VideoGatewayModal from "@/components/video/VideoGatewayModal";
 import AppLayout from "@/layouts/app-layout";
 import {
@@ -693,7 +694,7 @@ export default function VideoDevices() {
                 <p className="sm:col-span-2 -mt-2 text-xs text-muted-foreground">
                   La IP/host de abajo es la del DVR en la red local del sitio.
                   El equipo relay instalado en el sitio se encarga de enviar el
-                  video a C-Guard Pro.
+                  video a {nombreDelProducto() || "la plataforma"}.
                 </p>
               )}
 

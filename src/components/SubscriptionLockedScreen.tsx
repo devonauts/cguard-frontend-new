@@ -1,8 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Lock, Ban } from "lucide-react";
+import { useMemo } from "react";
+import { Lock, Ban, Mail, Phone, Globe } from "lucide-react";
 
 import { useAuth } from "@/contexts/AuthContext";
+import { esMarcaDeSocio, useWhiteLabel } from "@/contexts/WhiteLabelContext";
+import {
+  esFacturadaPorProveedor,
+  extractOnboardingTenant,
+} from "@/components/onboarding/onboardingUtils";
 
 /**
  * Full-screen hard lockout for tenants whose access has been cut off:
@@ -10,6 +16,11 @@ import { useAuth } from "@/contexts/AuthContext";
  *    to re-subscribe, so we offer that CTA.
  *  - "suspended": administrative hold (superadmin). No self-serve recovery —
  *    they must contact support.
+ *
+ * A company billed by its partner is sent to the PARTNER, never to "the
+ * platform administrator": it has no relationship with us, and on the
+ * partner's host it doesn't even know we exist. The contact shown is the
+ * partner's published support from the white-label context.
  */
 export default function SubscriptionLockedScreen({
   variant,
@@ -18,9 +29,19 @@ export default function SubscriptionLockedScreen({
 }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { signOut } = useAuth() as any;
+  const { signOut, user } = useAuth() as any;
+  const marca = useWhiteLabel();
 
   const suspended = variant === "suspended";
+  const deSocio = useMemo(
+    () =>
+      esMarcaDeSocio(marca) ||
+      esFacturadaPorProveedor(extractOnboardingTenant(user)?.billingOwnership),
+    [marca, user],
+  );
+  /* Only the partner's own channels, and only on the partner's identity: on
+     the platform identity `support` is empty by construction. */
+  const soporte = esMarcaDeSocio(marca) ? marca.support : null;
 
   // Suspendido es GRAVE (`--bad`) y cancelado es un aviso (`--warn`): los dos
   // semánticos, fijos, para que no cambien con el acento de la empresa.
@@ -53,16 +74,70 @@ export default function SubscriptionLockedScreen({
               })}
         </h1>
         <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-          {suspended
-            ? t("billing.lockedSuspendedMsg", {
-                defaultValue:
-                  "El acceso a esta cuenta fue suspendido por el administrador de la plataforma. Contacta a soporte para reactivarla.",
-              })
-            : t("billing.lockedCanceledMsg", {
-                defaultValue:
-                  "Tu suscripción fue cancelada. Reactívala para volver a usar la plataforma.",
-              })}
+          {deSocio
+            ? suspended
+              ? t("billing.lockedSuspendedMsgPartner", {
+                  defaultValue:
+                    "El acceso a esta cuenta fue suspendido. Contacta a tu proveedor para reactivarla.",
+                })
+              : t("billing.lockedCanceledMsgPartner", {
+                  defaultValue:
+                    "Tu suscripción fue cancelada. Contacta a tu proveedor para reactivarla.",
+                })
+            : suspended
+              ? t("billing.lockedSuspendedMsg", {
+                  defaultValue:
+                    "El acceso a esta cuenta fue suspendido por el administrador de la plataforma. Contacta a soporte para reactivarla.",
+                })
+              : t("billing.lockedCanceledMsg", {
+                  defaultValue:
+                    "Tu suscripción fue cancelada. Reactívala para volver a usar la plataforma.",
+                })}
         </p>
+        {deSocio &&
+        soporte &&
+        (soporte.email || soporte.phone || soporte.url) ? (
+          <ul
+            className="flex flex-col items-center gap-1 pt-2 text-sm"
+            style={{ color: "var(--brand-text)" }}
+          >
+            {soporte.email ? (
+              <li>
+                <a
+                  className="inline-flex items-center gap-1.5 hover:underline"
+                  href={`mailto:${soporte.email}`}
+                >
+                  <Mail size={14} />
+                  {soporte.email}
+                </a>
+              </li>
+            ) : null}
+            {soporte.phone ? (
+              <li>
+                <a
+                  className="inline-flex items-center gap-1.5 hover:underline"
+                  href={`tel:${soporte.phone}`}
+                >
+                  <Phone size={14} />
+                  {soporte.phone}
+                </a>
+              </li>
+            ) : null}
+            {soporte.url && /^https?:\/\//i.test(soporte.url) ? (
+              <li>
+                <a
+                  className="inline-flex items-center gap-1.5 hover:underline"
+                  href={soporte.url}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <Globe size={14} />
+                  {soporte.url.replace(/^https?:\/\//i, "")}
+                </a>
+              </li>
+            ) : null}
+          </ul>
+        ) : null}
       </div>
 
       <div className="flex gap-3">
