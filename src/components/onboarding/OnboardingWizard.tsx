@@ -669,10 +669,6 @@ export default function OnboardingWizard({
                     <span style={{ color: "var(--bad-text)" }}>*</span>
                   </Label>
                   <PhoneInput
-                    placeholder={t(
-                      "ui.OnboardingWizard.numeroDeTelefono",
-                      "Número de teléfono",
-                    )}
                     value={form.phone}
                     onChange={(v) => set({ phone: v })}
                     onCountryChange={(c: any) =>

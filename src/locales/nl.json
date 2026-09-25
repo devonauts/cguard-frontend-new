@@ -9833,7 +9833,9 @@
       "sinRutasEsteDia": "Er zijn geen routes gepland voor deze dag"
     },
     "PhoneInput": {
-      "noSeEncontraronPaises": "Geen landen gevonden."
+      "noSeEncontraronPaises": "Geen landen gevonden.",
+      "cambiarPais": "Land wijzigen ({{pais}})",
+      "buscarPais": "Land of landcode zoeken"
     },
     "PostOrderAck": {
       "reconocimientoDeOrdenesDePublicacion": "Bevestiging van werkinstructies",

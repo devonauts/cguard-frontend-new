@@ -261,9 +261,6 @@ export default function Register() {
             {t("auth.phone_label", { defaultValue: "Teléfono" })}
           </Etiqueta>
           <PhoneInput
-            placeholder={t("auth.phone_placeholder", {
-              defaultValue: "99 123 4567",
-            })}
             value={phone}
             onChange={setPhone}
           />

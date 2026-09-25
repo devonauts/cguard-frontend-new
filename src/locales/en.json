@@ -9369,7 +9369,9 @@
       "sinRutasEsteDia": "No routes scheduled for this day"
     },
     "PhoneInput": {
-      "noSeEncontraronPaises": "No countries found."
+      "noSeEncontraronPaises": "No countries found.",
+      "cambiarPais": "Change country ({{pais}})",
+      "buscarPais": "Search country or code"
     },
     "PostOrderAck": {
       "reconocimientoDeOrdenesDePublicacion": "Post-order acknowledgement",

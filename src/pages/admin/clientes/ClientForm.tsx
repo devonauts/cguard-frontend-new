@@ -1370,7 +1370,6 @@ export default function ClientForm({
                               field.onChange(val.slice(0, 1 + 3 + 10));
                             }
                           }}
-                          placeholder="e.g. +12015550123"
                           maxLocalDigits={10}
                         />
                       </FormControl>
@@ -1921,7 +1920,6 @@ export default function ClientForm({
                                     field.onChange(val.slice(0, 1 + 3 + 10));
                                   }
                                 }}
-                                placeholder="e.g. +12015550123"
                                 maxLocalDigits={10}
                               />
                             </FormControl>

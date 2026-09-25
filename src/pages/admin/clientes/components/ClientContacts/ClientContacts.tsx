@@ -933,7 +933,6 @@ export default function ClientContacts({
                     if (data && data.countryCode)
                       setPhoneCountry(String(data.countryCode).toLowerCase());
                   },
-                  placeholder: "ej. +593987654321",
                   preferredCountries: ["ec", "us"],
                 } as any)}
               />

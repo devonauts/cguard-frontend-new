@@ -765,10 +765,6 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
               <PhoneInput
                 value={form.mobile || ""}
                 onChange={(v) => handleChange("mobile", v)}
-                placeholder={t(
-                  "clients.contacts.form.mobilePlaceholder",
-                  "ej. +593987654321",
-                )}
               />
             </div>
             {errors.mobile && (

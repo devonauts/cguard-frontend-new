@@ -1,0 +1,81 @@
+/* One box: country + number, with the same surface and focus as `.cg-input`. */
+.cg-phone {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-height: 2.75rem;
+  background: var(--glass-sunken);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  color: var(--ink);
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease), background-color 0.2s var(--ease);
+}
+.cg-phone:focus-within {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-glow);
+  background: var(--glass-raised);
+}
+.cg-phone--off { opacity: 0.6; }
+
+.cg-phone__pais {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0 0.55rem 0 0.8rem;
+  border: 0;
+  border-right: 1px solid var(--hairline);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  border-radius: var(--r-md) 0 0 var(--r-md);
+}
+.cg-phone__pais:hover { background: var(--glass-raised); }
+.cg-phone__pais:focus-visible { outline: none; }
+.cg-phone__bandera { font-size: 1.15rem; line-height: 1; }
+.cg-phone__codigo { font-size: 0.875rem; font-variant-numeric: tabular-nums; }
+.cg-phone__flecha { width: 0.8rem; height: 0.8rem; opacity: 0.5; }
+
+.cg-phone__numero {
+  flex: 1;
+  min-width: 0;
+  padding: 0 0.85rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+  outline: none;
+}
+.cg-phone__numero::placeholder { color: var(--ink-faint); }
+
+.cg-phone__menu { width: min(320px, calc(100vw - 32px)); overflow: hidden; }
+.cg-phone__buscar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--hairline);
+}
+.cg-phone__buscar input { flex: 1; min-width: 0; border: 0; background: transparent; color: inherit; font: inherit; font-size: 0.875rem; outline: none; }
+.cg-phone__lista { max-height: 16rem; overflow: auto; overscroll-behavior: contain; margin: 0; padding: 0.25rem; list-style: none; }
+.cg-phone__opcion {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.45rem 0.55rem;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.875rem;
+  text-align: left;
+  cursor: pointer;
+}
+.cg-phone__opcion:hover, .cg-phone__opcion[aria-selected="true"] { background: var(--glass-raised); }
+.cg-phone__nombre { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cg-phone__marcado { font-size: 0.75rem; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+.cg-phone__vacio { padding: 0.75rem; font-size: 0.875rem; color: var(--ink-faint); }

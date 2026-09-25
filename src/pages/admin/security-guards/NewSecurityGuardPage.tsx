@@ -1324,7 +1324,6 @@ export default function NewSecurityGuardPage() {
                               <PhoneInput
                                 value={field.value || ""}
                                 onChange={(val: string) => field.onChange(val)}
-                                placeholder="+1 (555) 000-0000"
                               />
                             </FormControl>
                             <FormMessage />

@@ -1417,7 +1417,6 @@ export default function GuardRegistration() {
                   </span>
                 </label>
                 <PhoneInput
-                  placeholder="p.ej. +12015550123"
                   value={phone || ""}
                   onChange={(val: string) => setPhone(val)}
                 />

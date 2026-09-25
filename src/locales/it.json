@@ -9833,7 +9833,9 @@
       "sinRutasEsteDia": "Non ci sono percorsi programmati per questo giorno"
     },
     "PhoneInput": {
-      "noSeEncontraronPaises": "Nessun Paese trovato."
+      "noSeEncontraronPaises": "Nessun paese trovato.",
+      "cambiarPais": "Cambia paese ({{pais}})",
+      "buscarPais": "Cerca paese o prefisso"
     },
     "PostOrderAck": {
       "reconocimientoDeOrdenesDePublicacion": "Presa visione delle consegne del posto",
