@@ -4,6 +4,7 @@ import {
 
 import { restaurarAccentDelUsuario } from "@/lib/acentoDelUsuario";
 import { cargarAnaliticaDeMarca } from "@/lib/analiticaDeMarca";
+import { TIPO_DE_MENSAJE, tokenDeVistaPrevia } from "@/lib/vistaPrevia";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -49,6 +50,8 @@ export interface ContextoDeMarca {
   resellerPublicId: string | null;
   platformName: string;
   logoUrl: string | null;
+  /** The logo for dark backgrounds; without one, `logoUrl` is used in both themes. */
+  logoDarkUrl: string | null;
   faviconUrl: string | null;
   brandHue: number | null;
   brandChroma: number | null;
@@ -69,6 +72,7 @@ export const MARCA_DE_PLATAFORMA: ContextoDeMarca = {
   resellerPublicId: null,
   platformName: "CGuard Pro",
   logoUrl: null,
+  logoDarkUrl: null,
   faviconUrl: null,
   brandHue: null,
   brandChroma: null,
@@ -190,6 +194,7 @@ export function normalizarContexto(crudo: unknown): ContextoDeMarca {
        que diga «CGuard Pro» sobre su anfitrión es un defecto nuestro. */
     platformName: texto(c.platformName, 60) ?? "",
     logoUrl: texto(c.logoUrl, 2083),
+    logoDarkUrl: texto(c.logoDarkUrl, 2083),
     faviconUrl: texto(c.faviconUrl, 2083),
     brandHue: numero(c.brandHue, 0, 360),
     brandChroma: numero(c.brandChroma, 0, 0.4),
@@ -346,8 +351,12 @@ const TIEMPO_MAXIMO_MS = 4000;
  * plataforma, que es lo que responde el anfitrión fijo.
  */
 function urlsDelContexto(): string[] {
-  const mismoOrigen = "/api/platform/context";
-  const fijo = `${API}/platform/context`;
+  /* The partner's login preview reads the DRAFT through a signed token; the
+     Host still decides everything else. */
+  const token = tokenDeVistaPrevia();
+  const sufijo = token ? `/preview?token=${encodeURIComponent(token)}` : "";
+  const mismoOrigen = "/api/platform/context" + sufijo;
+  const fijo = `${API}/platform/context` + sufijo;
   try {
     const esWeb = /^https?:$/.test(window.location.protocol);
     const esEscritorio = !!(window as any).cguardDesktop;
@@ -462,6 +471,54 @@ export function WhiteLabelProvider({ children }: { children: ReactNode }) {
     })();
     return () => { montado.current = false; };
   }, []);
+
+  /* Preview mode: the partner's panel sends what they are changing right now
+     (colour, name, tagline) so both iframes follow the sliders live. Only from
+     the page that embeds this one, and only these fields. A message that
+     arrives before the identity has loaded is kept and applied on load. */
+  const pendiente = useRef<Record<string, unknown> | null>(null);
+  const aplicarMensaje = (prev: ContextoDeMarca, d: Record<string, unknown>): ContextoDeMarca => {
+    const siguiente = normalizarContexto({
+      ...prev,
+      scope: "reseller",
+      brandHue: d.brandHue ?? prev.brandHue,
+      brandChroma: d.brandChroma ?? prev.brandChroma,
+      platformName: typeof d.platformName === "string" ? d.platformName : prev.platformName,
+      loginTagline: d.loginTagline === undefined ? prev.loginTagline : d.loginTagline,
+    });
+    aplicarMarca(siguiente);
+    return siguiente;
+  };
+
+  useEffect(() => {
+    if (!tokenDeVistaPrevia()) return;
+    const alRecibir = (e: MessageEvent) => {
+      if (e.source !== window.parent) return;
+      const d = e.data as Record<string, unknown> | null;
+      if (!d || d.tipo !== TIPO_DE_MENSAJE) return;
+      setCtx((prev) => {
+        if (!prev) { pendiente.current = d; return prev; }
+        return aplicarMensaje(prev, d);
+      });
+    };
+    window.addEventListener("message", alRecibir);
+    return () => window.removeEventListener("message", alRecibir);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /* Once the identity is in: apply what arrived early, then tell the panel
+     this page is ready (it answers with the current draft values). */
+  const listo = ctx !== null;
+  useEffect(() => {
+    if (!listo || !tokenDeVistaPrevia()) return;
+    if (pendiente.current) {
+      const d = pendiente.current;
+      pendiente.current = null;
+      setCtx((prev) => (prev ? aplicarMensaje(prev, d) : prev));
+    }
+    try { window.parent.postMessage({ tipo: `${TIPO_DE_MENSAJE}:lista` }, "*"); } catch { /* not embedded */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listo]);
 
   // Todavía no hay respuesta: esqueleto neutro, nunca la marca de nadie.
   if (!ctx) return <EsqueletoNeutro />;

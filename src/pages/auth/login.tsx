@@ -1,4 +1,5 @@
 import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
+import { esVistaPrevia } from "@/lib/vistaPrevia";
 import { tituloConMarca } from "@/hooks/usePageTitle";
 import { Lock, Mail, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
@@ -103,6 +104,12 @@ export default function Login() {
   }, [inviteToken, inviteType, securityGuardId, navigate]);
 
   const handleLogin = async (e?: React.FormEvent) => {
+    // The partner's login preview is a picture of the login: nobody signs in.
+    if (esVistaPrevia()) {
+      e?.preventDefault();
+
+      return;
+    }
     if (e) e.preventDefault();
     // use validation helpers from the hook (they show localized toasts)
     if (!validateEmail() || !validatePassword(6)) return;

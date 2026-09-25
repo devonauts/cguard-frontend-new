@@ -1,5 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
+import { temaDeVistaPrevia } from "@/lib/vistaPrevia";
+
 import {
   leerAparienciaDeLaCuenta,
   guardarApariencia,
@@ -28,6 +30,10 @@ const ThemeContext = createContext<ThemeContextValue>({
 });
 
 function getInitialTheme(): Theme {
+  // The partner's login preview shows the theme its panel asks for.
+  const forzado = temaDeVistaPrevia();
+
+  if (forzado) return forzado;
   try {
     // Our own key takes priority
     const stored = localStorage.getItem("cguard-theme");
@@ -83,6 +89,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let vivo = true;
 
+    // A preview keeps the theme it was asked for; nothing of the account applies.
+    if (temaDeVistaPrevia()) return;
     leerAparienciaDeLaCuenta().then((a) => {
       if (!vivo) return;
       if (cambioLocalReciente()) return; // la cuenta puede ir atrasada — ver appearanceSync
@@ -101,6 +109,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const setTheme = (t: Theme) => {
     setThemeState(t);
+    if (temaDeVistaPrevia()) return; // never persisted from a preview
     try {
       localStorage.setItem("cguard-theme", t);
     } catch {}

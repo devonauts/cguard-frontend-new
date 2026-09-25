@@ -40,7 +40,7 @@ export default function BrandLockup({
   showTagline?: boolean;
 }) {
   const { t } = useTranslation();
-  const { logoUrl, platformName, puedeUsarArteDePlataforma } = useWhiteLabel();
+  const { logoUrl, logoDarkUrl, platformName, puedeUsarArteDePlataforma } = useWhiteLabel();
   const tagline = t("brand.tagline", { defaultValue: "Seguridad Inteligente" });
   const slotRef = useRef<HTMLSpanElement>(null);
   const textRef = useRef<HTMLSpanElement>(null);
@@ -87,13 +87,23 @@ export default function BrandLockup({
   }, [fit, tagline]);
 
   if (logoUrl) {
+    /* The partner's two logos: the light-background one in the light theme and
+       the dark-background one in the dark theme (the light one in both when
+       they uploaded only that). */
     return (
       <span className={`inline-flex items-center justify-center ${className}`.trim()}>
         <img
           alt={platformName}
-          className="h-14 max-w-full object-contain"
+          className={`h-14 max-w-full object-contain${logoDarkUrl ? " dark:hidden" : ""}`}
           src={logoUrl}
         />
+        {logoDarkUrl && (
+          <img
+            alt={platformName}
+            className="hidden h-14 max-w-full object-contain dark:block"
+            src={logoDarkUrl}
+          />
+        )}
       </span>
     );
   }

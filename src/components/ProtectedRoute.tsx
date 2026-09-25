@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { esVistaPrevia } from "@/lib/vistaPrevia";
 import { Navigate, useLocation } from "react-router-dom";
 
 import NoWorkspaceAccess from "./NoWorkspaceAccess";
@@ -206,6 +207,9 @@ export function PublicOnlyRoute({
 }) {
   const { isAuthenticated, loading, user } = useAuth();
   const location = useLocation();
+
+  // The partner's login preview always shows the login, session or not.
+  if (esVistaPrevia()) return <>{children}</>;
 
   if (loading) {
     return <LoadingScreen />;
