@@ -5,6 +5,7 @@ import {
 import { restaurarAccentDelUsuario } from "@/lib/acentoDelUsuario";
 import { cargarAnaliticaDeMarca } from "@/lib/analiticaDeMarca";
 import { TIPO_DE_MENSAJE, tokenDeVistaPrevia } from "@/lib/vistaPrevia";
+import { aplicarFuenteDeMarca, esFuenteDeMarca } from "@/lib/fuentesDeMarca";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -55,6 +56,8 @@ export interface ContextoDeMarca {
   faviconUrl: string | null;
   brandHue: number | null;
   brandChroma: number | null;
+  /** A key of the closed typeface list (`lib/fuentesDeMarca`); null = platform. */
+  fontFamily: string | null;
   loginTagline: string | null;
   support: SoporteDeMarca;
   showPlatformAttribution: boolean;
@@ -76,6 +79,7 @@ export const MARCA_DE_PLATAFORMA: ContextoDeMarca = {
   faviconUrl: null,
   brandHue: null,
   brandChroma: null,
+  fontFamily: null,
   loginTagline: null,
   support: { email: null, url: null, phone: null },
   showPlatformAttribution: true,
@@ -198,6 +202,7 @@ export function normalizarContexto(crudo: unknown): ContextoDeMarca {
     faviconUrl: texto(c.faviconUrl, 2083),
     brandHue: numero(c.brandHue, 0, 360),
     brandChroma: numero(c.brandChroma, 0, 0.4),
+    fontFamily: esFuenteDeMarca(c.fontFamily) ? c.fontFamily : null,
     loginTagline: texto(c.loginTagline, 140),
     support: {
       email: texto(s.email, 255),
@@ -249,6 +254,8 @@ function aplicarFavicon(url: string): void {
 }
 
 export function aplicarMarca(ctx: ContextoDeMarca): void {
+  // The partner's typeface, or the platform's back (null removes it).
+  aplicarFuenteDeMarca(ctx.scope === "reseller" ? ctx.fontFamily : null);
   /* ── SE APLICA Y SE DESHACE ─────────────────────────────────────────────
      Esto ya no corre una sola vez al arrancar. Cuando se sabe de qué empresa
      es la sesión, la identidad puede CAMBIAR de socio a plataforma —una
@@ -485,6 +492,7 @@ export function WhiteLabelProvider({ children }: { children: ReactNode }) {
       brandChroma: d.brandChroma ?? prev.brandChroma,
       platformName: typeof d.platformName === "string" ? d.platformName : prev.platformName,
       loginTagline: d.loginTagline === undefined ? prev.loginTagline : d.loginTagline,
+      fontFamily: d.fontFamily === undefined ? prev.fontFamily : d.fontFamily,
     });
     aplicarMarca(siguiente);
     return siguiente;
