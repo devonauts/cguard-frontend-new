@@ -26,6 +26,7 @@
  * privadas de este componente.
  * ════════════════════════════════════════════════════════════════════════════
  */
+import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
@@ -539,6 +540,8 @@ export default function Sidebar({
   collapsed = false,
   onNavigate,
 }: SidebarProps) {
+  // Without a company name, the HOST's brand (the partner's on their subdomain), never ours.
+  const { platformName: nombreDeMarca } = useWhiteLabel();
   const { t } = useTranslation();
   const { user } = useAuth();
   const { theme, toggleTheme } = useThemeContext();
@@ -1073,7 +1076,7 @@ export default function Sidebar({
       <div className="cgsb-head">
         <button
           className="cgsb-brand cg-focus"
-          title={`${tenantName || "CGuard"} · ${t("sidebar.brandTooltip")}`}
+          title={`${tenantName || nombreDeMarca} · ${t("sidebar.brandTooltip")}`}
           type="button"
           onClick={() => go("/dashboard")}
         >
@@ -1083,7 +1086,7 @@ export default function Sidebar({
               className="block truncate text-[13.5px] font-semibold leading-tight"
               style={{ color: "var(--ink)" }}
             >
-              {tenantName || "CGuard"}
+              {tenantName || nombreDeMarca}
             </span>
             <span
               className="cg-eyebrow mt-1 block truncate"
@@ -1230,7 +1233,7 @@ export default function Sidebar({
       <button
         aria-label={t("sidebar.goToDashboard")}
         className={`cgsb-orb cg-focus ${tenantLogo ? "cgsb-orb-avatar" : "cgsb-orb-brand"}`}
-        title={`${tenantName || "C-GUARD PRO"} · ${t("sidebar.brandTooltip")}`}
+        title={`${tenantName || nombreDeMarca} · ${t("sidebar.brandTooltip")}`}
         type="button"
         onClick={() => go("/dashboard")}
       >

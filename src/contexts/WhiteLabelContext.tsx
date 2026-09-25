@@ -92,6 +92,8 @@ export const MARCA_DE_PLATAFORMA: ContextoDeMarca = {
 /** Los recursos de plataforma, para cuando un socio no tiene los suyos. */
 const LOGO_DE_PLATAFORMA = "/assets/logo/c-guard-logo.png";
 const FAVICON_DE_PLATAFORMA = "/favicon-escudo.ico?v=2";
+/** A transparent 1×1 icon: what a partner's tab shows when they have no art. */
+const ICONO_VACIO = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
 interface ValorDelContexto extends ContextoDeMarca {
   /**
@@ -125,7 +127,10 @@ const Contexto = createContext<ValorDelContexto>({
 
 /** La regla, en un solo sitio para que las dos mitades no puedan divergir. */
 export function puedeUsarArteDePlataforma(ctx: ContextoDeMarca): boolean {
-  return ctx.scope === "platform" || ctx.showPlatformAttribution;
+  /* Only the platform. A partner's customers never see our logo, favicon or
+     name — not even with `showPlatformAttribution` on (owner's rule,
+     2026-09-24): without art of their own, the partner's NAME is shown. */
+  return ctx.scope === "platform";
 }
 
 export const useWhiteLabel = () => useContext(Contexto);
@@ -242,6 +247,10 @@ function aplicarFavicon(url: string): void {
       document.head.appendChild(nuevo);
       return;
     }
+    // The home-screen icon too: the page ships ours by default.
+    if (url !== FAVICON_DE_PLATAFORMA) {
+      document.querySelectorAll<HTMLLinkElement>('link[rel="apple-touch-icon"]').forEach((l) => { l.href = url; });
+    }
     enlaces.forEach((l) => {
       l.href = url;
       // El `sizes`/`type` del icono de plataforma no describe el del socio.
@@ -326,7 +335,10 @@ export function aplicarMarca(ctx: ContextoDeMarca): void {
      CGuardPro en la pestaña de un socio sin atribución delata al proveedor en
      el sitio más visible y más permanente que tiene un navegador. */
   const respaldo = puedeUsarArteDePlataforma(ctx) ? FAVICON_DE_PLATAFORMA : null;
-  const favicon = ctx.faviconUrl || respaldo;
+  /* A partner without a favicon: their logo; without that either, an empty
+     icon — the page's static shield must not stay in their tab. */
+  const delSocio = ctx.scope === "reseller" ? (ctx.logoUrl || ICONO_VACIO) : null;
+  const favicon = ctx.faviconUrl || delSocio || respaldo;
   if (favicon) aplicarFavicon(favicon);
 }
 

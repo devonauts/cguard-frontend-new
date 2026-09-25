@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
+import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
@@ -101,6 +102,7 @@ const VACIO: SupervisorSettings = {
 const esHex = (v: string) => /^#[0-9a-fA-F]{6}$/.test(v.trim());
 
 export default function SupervisorAppPage() {
+  const { platformName: nombreDeMarca } = useWhiteLabel();
   const { t } = useTranslation();
   const uid = useId();
   const { hasPermission } = usePermissions();
@@ -418,7 +420,7 @@ export default function SupervisorAppPage() {
                         disabled={!puedeEditar}
                         id={`${uid}-nombre`}
                         maxLength={40}
-                        placeholder={equipo.displayName || "C-Guard Pro"}
+                        placeholder={equipo.displayName || nombreDeMarca}
                         value={cfg.displayName}
                         onChange={(e) => set({ displayName: e.target.value })}
                       />

@@ -9,6 +9,7 @@
  * borraríamos el logo de la empresa. Las apps leen la config resuelta por
  * GET /tenant/:id/mobile-app-config al iniciar sesión.
  */
+import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
 import { useEffect, useMemo, useState } from "react";
 import {
   TabletSmartphone,
@@ -187,6 +188,7 @@ type SettingsRow = {
 const tenantId = () => localStorage.getItem("tenantId") || "";
 
 export default function MobileHubPage() {
+  const { platformName: nombreDeMarca } = useWhiteLabel();
   const { t } = useTranslation();
   const { hasPermission } = usePermissions();
   const canEdit = hasPermission("settingsEdit");
@@ -275,7 +277,7 @@ export default function MobileHubPage() {
         light={cfg.defaultTheme === "light"}
         logoUrl={cfg.useTenantLogo ? logoUrl : null}
         modules={cfg.modules}
-        name={cfg.displayName || "C-Guard Pro"}
+        name={cfg.displayName || nombreDeMarca}
         tagline={cfg.tagline || "Security Operations"}
       />
     ),
@@ -298,7 +300,7 @@ export default function MobileHubPage() {
         font={cfg.fontFamily}
         light={cfg.defaultTheme === "light"}
         logoUrl={cfg.useTenantLogo ? logoUrl : null}
-        name={cfg.displayName || "C-Guard Pro"}
+        name={cfg.displayName || nombreDeMarca}
       />
     ),
     [
@@ -450,7 +452,7 @@ export default function MobileHubPage() {
                         <Input
                           id="mh-name"
                           maxLength={40}
-                          placeholder="C-Guard Pro"
+                          placeholder={nombreDeMarca}
                           value={cfg.displayName}
                           onChange={(e) => set("displayName", e.target.value)}
                         />

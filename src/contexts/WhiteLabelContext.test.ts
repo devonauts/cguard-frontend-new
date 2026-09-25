@@ -523,11 +523,11 @@ describe("Etapa E · el respaldo de plataforma no se le presta a un socio", () =
     expect(puedeUsarArteDePlataforma(normalizarContexto(socio()))).toBe(false);
   });
 
-  it("con atribución ACTIVADA sí, que es lo que esa bandera significa", async () => {
+  it("ni con atribución activada: los clientes de un socio nunca ven nuestra marca", async () => {
     const { puedeUsarArteDePlataforma } = await import("./WhiteLabelContext");
     expect(puedeUsarArteDePlataforma(
       normalizarContexto(socio({ showPlatformAttribution: true })),
-    )).toBe(true);
+    )).toBe(false);
   });
 
   it("y la plataforma siempre puede usar el suyo", async () => {

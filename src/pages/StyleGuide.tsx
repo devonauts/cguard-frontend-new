@@ -12,6 +12,8 @@
  * abajo tiene un color escrito a mano.
  * ════════════════════════════════════════════════════════════════════════════
  */
+import { Navigate } from "react-router-dom";
+import { esMarcaDeSocio, useWhiteLabel } from "@/contexts/WhiteLabelContext";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -370,6 +372,9 @@ function Token({ nombre, variable }: { nombre: string; variable: string }) {
    ════════════════════════════════════════════════════════════════════════════ */
 
 export default function StyleGuide() {
+  // Our design-system page: never on a partner's host.
+  const marca = useWhiteLabel();
+  if (esMarcaDeSocio(marca)) return <Navigate replace to="/" />;
   const { accent, setAccent, resetAccent } = useAccent();
   const { theme, toggleTheme } = useThemeContext();
 
