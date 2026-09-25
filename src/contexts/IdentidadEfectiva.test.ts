@@ -266,8 +266,11 @@ describe("Etapa E.1 · el subtítulo y la atribución del acceso", () => {
   it("la atribución del pie la gobierna `showPlatformAttribution`", () => {
     /* Con atribución puesta se deja tal cual: el socio la acepta y quitarla
        sería cambiarle su configuración. Sin ella, el pie es suyo. */
-    expect(SHELL).toMatch(/showPlatformAttribution\s*$/m);
+    // Platform: its own line. Partner WITH attribution: "© year Partner · authorized
+    // reseller of CGuard Pro". Partner WITHOUT it: only the partner's name.
     expect(SHELL).toMatch(/\? t\("auth\.landing\.copyright"/);
+    expect(SHELL).toMatch(/showPlatformAttribution && nombreDeMarca/);
+    expect(SHELL).toMatch(/t\("auth\.landing\.copyright_partner"/);
   });
 
   it("la marca se lee del contexto ya resuelto, no se recalcula", () => {

@@ -677,7 +677,7 @@
       "fill_all_fields": "Por favor, preencha todos os campos",
       "forgot_password": "Esqueceu sua senha?",
       "landing": {
-        "copyright": "© 2025-{{year}} CGUARD. Todos os direitos reservados.",
+        "copyright": "© {{year}} CGUARD. Todos os direitos reservados.",
         "desc": "Usando a plataforma de gestão de segurança física {{product}}.",
         "logo_alt": "Logotipo {{marca}}",
         "tag_analytics": "Análises",
@@ -6637,7 +6637,8 @@
     "fill_all_fields": "Por favor, preencha todos os campos",
     "forgot_password": "Esqueceu sua senha?",
     "landing": {
-      "copyright": "© 2025-{{year}} CGUARD. Todos os direitos reservados.",
+      "copyright": "© {{year}} CGUARD. Todos os direitos reservados.",
+      "copyright_partner": "© {{year}} {{marca}} · Revendedor autorizado",
       "desc": "Usando a plataforma de gestão de segurança física {{product}}.",
       "logo_alt": "Logotipo {{marca}}",
       "tag_analytics": "Análises",

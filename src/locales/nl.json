@@ -204,7 +204,8 @@
     "validation_uppercase": "Moet een hoofdletter bevatten",
     "verify_email_success": "E-mailadres bevestigd",
     "landing": {
-      "copyright": "© 2025-{{year}} CGUARD. Alle rechten voorbehouden.",
+      "copyright": "© {{year}} CGUARD. Alle rechten voorbehouden.",
+      "copyright_partner": "© {{year}} {{marca}} · Erkende wederverkoper",
       "desc": "Met het platform voor fysieke beveiliging {{product}}.",
       "logo_alt": "{{marca}}-logo",
       "tag_analytics": "Analyse",
@@ -3278,7 +3279,7 @@
       "validation_uppercase": "Moet een hoofdletter bevatten",
       "verify_email_success": "E-mailadres bevestigd",
       "landing": {
-        "copyright": "© 2025-{{year}} CGUARD. Alle rechten voorbehouden.",
+        "copyright": "© {{year}} CGUARD. Alle rechten voorbehouden.",
         "desc": "Met het platform voor fysieke beveiliging {{product}}.",
         "logo_alt": "{{marca}}-logo",
         "tag_analytics": "Analyse",

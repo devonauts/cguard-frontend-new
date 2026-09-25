@@ -204,7 +204,8 @@
     "validation_uppercase": "Doit contenir une majuscule",
     "verify_email_success": "Adresse e-mail vérifiée",
     "landing": {
-      "copyright": "© 2025-{{year}} CGUARD. Tous droits réservés.",
+      "copyright": "© {{year}} CGUARD. Tous droits réservés.",
+      "copyright_partner": "© {{year}} {{marca}} · Revendeur agréé",
       "desc": "Avec la plateforme de gestion de sécurité physique {{product}}.",
       "logo_alt": "Logo {{marca}}",
       "tag_analytics": "Analyses",
@@ -3278,7 +3279,7 @@
       "validation_uppercase": "Doit contenir une majuscule",
       "verify_email_success": "Adresse e-mail vérifiée",
       "landing": {
-        "copyright": "© 2025-{{year}} CGUARD. Tous droits réservés.",
+        "copyright": "© {{year}} CGUARD. Tous droits réservés.",
         "desc": "Avec la plateforme de gestion de la sécurité physique {{product}}.",
         "logo_alt": "Logo {{marca}}",
         "tag_analytics": "Analyses",

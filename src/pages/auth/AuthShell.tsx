@@ -28,7 +28,7 @@ import { AlertTriangle, BarChart3, Clock, MapPin, Shield } from "lucide-react";
 
 import SplashScreen from "@/components/SplashScreen";
 import BrandLockup from "@/components/BrandLockup";
-import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
+import { esMarcaDeSocio, useWhiteLabel } from "@/contexts/WhiteLabelContext";
 import { FadeIn } from "@/components/kit";
 
 interface AuthShellProps {
@@ -139,7 +139,8 @@ export default function AuthShell({
   /* La identidad YA contrastada contra la empresa de la sesión: en el árbol
      autenticado la sirve `IdentidadEfectivaProvider`, y antes de entrar es la
      del anfitrión. Aquí sólo se lee un dato ya resuelto. */
-  const { platformName: nombreDeMarca, showPlatformAttribution } = useWhiteLabel();
+  const marcaDelAnfitrion = useWhiteLabel();
+  const { platformName: nombreDeMarca, showPlatformAttribution } = marcaDelAnfitrion;
 
   const cintillo =
     eyebrow ??
@@ -273,15 +274,26 @@ export default function AuthShell({
           className="mt-7 text-center text-xs"
           style={{ color: "var(--ink-faint)" }}
         >
-          {showPlatformAttribution
+          {!esMarcaDeSocio(marcaDelAnfitrion)
             ? t("auth.landing.copyright", {
-                defaultValue:
-                  "© 2025-{{year}} C-GUARD. Todos los derechos reservados.",
+                defaultValue: "© {{year}} C-GUARD. Todos los derechos reservados.",
                 year: new Date().getFullYear(),
               })
-            : nombreDeMarca
-              ? `© ${new Date().getFullYear()} ${nombreDeMarca}`
-              : null}
+            : showPlatformAttribution && nombreDeMarca
+              /* The partner's name as an authorized reseller — and nothing of
+                 ours: a partner's customers never read our name. */
+              ? t("auth.landing.copyright_partner", {
+                  defaultValue: "© {{year}} {{marca}} · Distribuidor autorizado",
+                  year: new Date().getFullYear(),
+                  marca: nombreDeMarca,
+                })
+              : nombreDeMarca
+                ? t("auth.footer_copyright", {
+                    defaultValue: "© {{year}} {{marca}}. Todos los derechos reservados.",
+                    year: new Date().getFullYear(),
+                    marca: nombreDeMarca,
+                  })
+                : null}
         </p>
       </FadeIn>
     </div>
