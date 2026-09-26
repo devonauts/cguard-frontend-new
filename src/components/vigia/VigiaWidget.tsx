@@ -13,6 +13,7 @@
  *  - La conversación vive en el estado del armazón (persiste al navegar,
  *    muere al recargar — un chat operativo no necesita más memoria que esa).
  */
+import { siluetaDe } from "@/lib/formasDelAgente";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -32,10 +33,13 @@ import {
 
 import api from "@/lib/api";
 import {
-  agenteGuardado, cargarAgente, siglaDelAgente, type AgenteDeMarca,
+  agenteGuardado,
+  cargarAgente,
+  siglaDelAgente,
+  type AgenteDeMarca,
 } from "@/lib/agenteDeMarca";
 import { localeActual } from "@/lib/localeActual";
-import { hoyEnLaEmpresa, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
+import { hoyEnLaEmpresa, zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
 
@@ -161,7 +165,15 @@ interface Propuesta {
  * de 18 px, una imagen encajada dentro deja aire por los lados y parece
  * pequeña; recortada, llena.
  */
-function LogoVigia({ size = 18, avatarUrl }: { size?: number; avatarUrl?: string | null }) {
+function LogoVigia({
+  size = 18,
+  avatarUrl,
+  forma = "escudo",
+}: {
+  size?: number;
+  avatarUrl?: string | null;
+  forma?: string;
+}) {
   if (avatarUrl) {
     return (
       <img
@@ -173,6 +185,26 @@ function LogoVigia({ size = 18, avatarUrl }: { size?: number; avatarUrl?: string
         style={{ width: size, height: size }}
         width={size}
       />
+    );
+  }
+  /* A partner's shape: its silhouette, outlined. The shield (ours) keeps its
+     pulse line below. */
+  if (forma !== "escudo") {
+    return (
+      <svg
+        aria-hidden
+        fill="none"
+        height={size}
+        viewBox="0 0 48 54"
+        width={size}
+      >
+        <path
+          d={siluetaDe(forma).d}
+          stroke="currentColor"
+          strokeLinejoin="round"
+          strokeWidth="3.6"
+        />
+      </svg>
     );
   }
   return (
@@ -213,7 +245,13 @@ export default function VigiaWidget() {
   /* Quién es el asistente aquí. Se siembra con lo último que se supo para que
      no parpadee «VigIA» un instante en el CRM de un socio, y se refresca en
      cuanto el servidor contesta. */
-  const [agente, setAgente] = useState<AgenteDeMarca>(() => agenteGuardado(tenantId()));
+  const [agente, setAgente] = useState<AgenteDeMarca>(() =>
+    agenteGuardado(tenantId()),
+  );
+  /* The silhouette. The shield —and its pulse line and panel tip— only when the
+     server says so, which is only for our own companies. */
+  const silueta = siluetaDe(agente.forma);
+  const esEscudo = agente.forma === "escudo";
 
   useEffect(() => {
     if (open) return;
@@ -351,8 +389,12 @@ export default function VigiaWidget() {
      el módulo. */
   useEffect(() => {
     let vivo = true;
-    cargarAgente(tenantId()).then((a) => { if (vivo) setAgente(a); });
-    return () => { vivo = false; };
+    cargarAgente(tenantId()).then((a) => {
+      if (vivo) setAgente(a);
+    });
+    return () => {
+      vivo = false;
+    };
   }, []);
 
   // El parte matutino: la PRIMERA apertura del día trae el estado de la
@@ -560,9 +602,13 @@ export default function VigiaWidget() {
     } catch (e: any) {
       setAviso(
         e?.message ||
-          t("vigia.netError", "No pudimos hablar con {{agente}}. Inténtalo de nuevo.", {
-            agente: agente.nombre,
-          }),
+          t(
+            "vigia.netError",
+            "No pudimos hablar con {{agente}}. Inténtalo de nuevo.",
+            {
+              agente: agente.nombre,
+            },
+          ),
       );
     } finally {
       setOcupado(false);
@@ -627,7 +673,9 @@ export default function VigiaWidget() {
       {!open && (
         <button
           aria-expanded={open}
-          aria-label={t("vigia.openAria", "Abrir {{agente}}, el asistente", { agente: agente.nombre })}
+          aria-label={t("vigia.openAria", "Abrir {{agente}}, el asistente", {
+            agente: agente.nombre,
+          })}
           style={{
             // z-45: los diálogos del sistema (z-50) tapan la burbuja, no al
             // revés. La botonera de guardar de algunas páginas vive en
@@ -668,10 +716,7 @@ export default function VigiaWidget() {
           `}</style>
           <span className="relative block">
             <svg aria-hidden height={83} viewBox="0 0 48 54" width={74}>
-              <path
-                d="M24 2 6 8.5v11.5c0 10.8 7.2 20 18 23 10.8-3 18-12.2 18-23V8.5L24 2z"
-                fill="var(--brand)"
-              />
+              <path d={silueta.d} fill="var(--brand)" />
               {/* Con cara, la cara; sin ella, el nombre —o su sigla, si no
                   cabe—. El `clipPath` la recorta en círculo dentro del escudo:
                   una imagen cuadrada encima del escudo rompe la silueta, que es
@@ -680,7 +725,7 @@ export default function VigiaWidget() {
                 <>
                   <defs>
                     <clipPath id="vigia-cara">
-                      <circle cx="24" cy="19" r="9" />
+                      <circle cx="24" cy={silueta.cy} r="9" />
                     </clipPath>
                   </defs>
                   <image
@@ -690,7 +735,7 @@ export default function VigiaWidget() {
                     preserveAspectRatio="xMidYMid slice"
                     width="18"
                     x="15"
-                    y="10"
+                    y={silueta.cy - 9}
                   />
                 </>
               ) : (
@@ -701,19 +746,21 @@ export default function VigiaWidget() {
                   style={{ fontFamily: "Saira, Inter, sans-serif" }}
                   textAnchor="middle"
                   x="24"
-                  y="23"
+                  y={silueta.cy + 4}
                 >
                   {siglaDelAgente(agente.nombre)}
                 </text>
               )}
-              <path
-                d="M13 33h5l3-6 4 12 3-6h7"
-                fill="none"
-                stroke="var(--brand-ink)"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2.4"
-              />
+              {esEscudo && (
+                <path
+                  d="M13 33h5l3-6 4 12 3-6h7"
+                  fill="none"
+                  stroke="var(--brand-ink)"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2.4"
+                />
+              )}
             </svg>
             {/* En línea y listo: la manita saluda dentro de un anillo de presencia. */}
             <span
@@ -755,15 +802,21 @@ export default function VigiaWidget() {
           }}
         >
           <div
-            aria-label={t("vigia.dialogAria", "{{agente}}, asistente de la operación", {
-              agente: agente.nombre,
-            })}
+            aria-label={t(
+              "vigia.dialogAria",
+              "{{agente}}, asistente de la operación",
+              {
+                agente: agente.nombre,
+              },
+            )}
             className="flex min-h-0 flex-1 flex-col overflow-hidden border shadow-2xl"
             role="dialog"
             style={{
               // La silueta del escudo: esquinas superiores de tarjeta, base que
               // se afila hacia la punta central (el tip vive justo debajo).
-              borderRadius: "1.25rem 1.25rem 2.75rem 2.75rem",
+              borderRadius: esEscudo
+                ? "1.25rem 1.25rem 2.75rem 2.75rem"
+                : "1.25rem",
               background: "var(--float)",
               borderColor: "var(--hairline)",
               // La receta de .glass-raised: --float sin blur transparenta el
@@ -793,7 +846,7 @@ export default function VigiaWidget() {
                     <History size={16} />
                   )}
                 </button>
-                <LogoVigia avatarUrl={agente.avatarUrl} />
+                <LogoVigia avatarUrl={agente.avatarUrl} forma={agente.forma} />
                 <div>
                   <p
                     className="text-sm font-bold leading-none"
@@ -915,7 +968,8 @@ export default function VigiaWidget() {
                         className="text-[11px]"
                         style={{ color: "var(--ink-faint)" }}
                       >
-                        {new Date(c.ts).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa(),
+                        {new Date(c.ts).toLocaleString(localeActual(), {
+                          timeZone: zonaDeLaEmpresa(),
                           day: "2-digit",
                           month: "short",
                           hour: "2-digit",
@@ -957,7 +1011,8 @@ export default function VigiaWidget() {
                       {/* Si el socio escribió un saludo, manda el suyo. Es el
                           único texto libre suyo de todo esto, y por eso se
                           pinta aquí y NO llega al modelo: es interfaz. */}
-                      {agente.saludo || t("vigia.emptyTitle", "¿En qué te ayudo?")}
+                      {agente.saludo ||
+                        t("vigia.emptyTitle", "¿En qué te ayudo?")}
                     </p>
                     <p>{t("vigia.emptyHint", "Puedo, por ejemplo:")}</p>
                     <div className="mt-2 flex flex-wrap gap-1.5">
@@ -1130,7 +1185,9 @@ export default function VigiaWidget() {
                     style={{ color: "var(--ink-soft)" }}
                   >
                     <Loader2 className="animate-spin" size={13} />{" "}
-                    {t("vigia.working", "{{agente}} está trabajando…", { agente: agente.nombre })}
+                    {t("vigia.working", "{{agente}} está trabajando…", {
+                      agente: agente.nombre,
+                    })}
                   </div>
                 )}
                 {aviso && (
@@ -1156,10 +1213,16 @@ export default function VigiaWidget() {
               >
                 <textarea
                   ref={entrada}
-                  aria-label={t("vigia.inputAria", "Mensaje para {{agente}}", { agente: agente.nombre })}
+                  aria-label={t("vigia.inputAria", "Mensaje para {{agente}}", {
+                    agente: agente.nombre,
+                  })}
                   className="cg-input max-h-28 flex-1 resize-none px-3 py-2 text-sm"
                   disabled={ocupado}
-                  placeholder={t("vigia.placeholder", "Escríbele a {{agente}}…", { agente: agente.nombre })}
+                  placeholder={t(
+                    "vigia.placeholder",
+                    "Escríbele a {{agente}}…",
+                    { agente: agente.nombre },
+                  )}
                   rows={1}
                   value={texto}
                   onChange={(e) => {
@@ -1215,35 +1278,38 @@ export default function VigiaWidget() {
           {/* La punta del escudo: remata la silueta bajo el panel. El relleno es
             un div recortado (clip-path) para poder llevar el MISMO blur del
             panel — un fill de SVG no desenfoca lo que tiene detrás. */}
-          <div
-            aria-hidden
-            className="relative mx-auto shrink-0"
-            style={{ width: 48, height: 14, marginTop: -1.5 }}
-          >
+          {esEscudo && (
             <div
-              className="absolute inset-0"
-              style={{
-                clipPath: 'path("M1 0 C10 2 19 5 24 13 C29 5 38 2 47 0 Z")',
-                background: "var(--float)",
-                backdropFilter: "blur(calc(var(--blur) * 1.4)) saturate(200%)",
-                WebkitBackdropFilter:
-                  "blur(calc(var(--blur) * 1.4)) saturate(200%)",
-              }}
-            />
-            <svg
-              className="absolute inset-0"
-              height={14}
-              viewBox="0 0 48 14"
-              width={48}
+              aria-hidden
+              className="relative mx-auto shrink-0"
+              style={{ width: 48, height: 14, marginTop: -1.5 }}
             >
-              <path
-                d="M1 0 C10 2 19 5 24 13 C29 5 38 2 47 0"
-                fill="none"
-                stroke="var(--hairline)"
-                strokeWidth="1"
+              <div
+                className="absolute inset-0"
+                style={{
+                  clipPath: 'path("M1 0 C10 2 19 5 24 13 C29 5 38 2 47 0 Z")',
+                  background: "var(--float)",
+                  backdropFilter:
+                    "blur(calc(var(--blur) * 1.4)) saturate(200%)",
+                  WebkitBackdropFilter:
+                    "blur(calc(var(--blur) * 1.4)) saturate(200%)",
+                }}
               />
-            </svg>
-          </div>
+              <svg
+                className="absolute inset-0"
+                height={14}
+                viewBox="0 0 48 14"
+                width={48}
+              >
+                <path
+                  d="M1 0 C10 2 19 5 24 13 C29 5 38 2 47 0"
+                  fill="none"
+                  stroke="var(--hairline)"
+                  strokeWidth="1"
+                />
+              </svg>
+            </div>
+          )}
         </div>
       )}
     </>

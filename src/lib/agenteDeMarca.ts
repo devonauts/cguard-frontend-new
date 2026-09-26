@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import api from "@/lib/api";
+import { esAnfitrionDePlataforma } from "@/lib/apiBase";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -33,6 +34,23 @@ export interface AgenteDeMarca {
   /** La frase de la ventana vacía. `null` = la de siempre. */
   saludo: string | null;
   avatarUrl: string | null;
+  /** Silhouette key (see `formasDelAgente`). The shield only on our companies. */
+  forma: string;
+}
+
+/* Before the answer arrives: the shield only on our own planes. On a partner's
+   host the first paint is already the neutral orb, never our shield. */
+function formaInicial(): string {
+  try {
+    return esAnfitrionDePlataforma(
+      window.location.hostname,
+      import.meta.env.VITE_API_URL as string | undefined,
+    )
+      ? "escudo"
+      : "orbe";
+  } catch {
+    return "orbe";
+  }
 }
 
 /** Lo nuestro, y lo que se pinta mientras llega la respuesta. */
@@ -40,7 +58,13 @@ export const AGENTE_POR_DEFECTO: AgenteDeMarca = {
   nombre: "VigIA",
   saludo: null,
   avatarUrl: null,
+  forma: formaInicial(),
 };
+
+const formaValida = (v: unknown): string =>
+  typeof v === "string" && /^[a-z]{3,16}$/.test(v)
+    ? v
+    : AGENTE_POR_DEFECTO.forma;
 
 const CLAVE = "vigia_identidad";
 
@@ -58,9 +82,14 @@ export function agenteGuardado(tenantId: string): AgenteDeMarca {
     const d = JSON.parse(crudo);
     if (d?.tid !== tenantId) return AGENTE_POR_DEFECTO;
     return {
-      nombre: typeof d.nombre === "string" && d.nombre ? d.nombre : AGENTE_POR_DEFECTO.nombre,
+      nombre:
+        typeof d.nombre === "string" && d.nombre
+          ? d.nombre
+          : AGENTE_POR_DEFECTO.nombre,
       saludo: typeof d.saludo === "string" && d.saludo ? d.saludo : null,
-      avatarUrl: typeof d.avatarUrl === "string" && d.avatarUrl ? d.avatarUrl : null,
+      avatarUrl:
+        typeof d.avatarUrl === "string" && d.avatarUrl ? d.avatarUrl : null,
+      forma: formaValida(d.forma),
     };
   } catch {
     /* Modo privado, almacenamiento lleno, JSON de otra versión. Cualquiera de
@@ -77,20 +106,33 @@ export async function cargarAgente(tenantId: string): Promise<AgenteDeMarca> {
 
   enVuelo = (async () => {
     try {
-      const resp: any = await api.get(`/tenant/${tenantId}/assistant/identity`, {
-        toast: { silentError: true },
-      } as any);
+      const resp: any = await api.get(
+        `/tenant/${tenantId}/assistant/identity`,
+        {
+          toast: { silentError: true },
+        } as any,
+      );
       const d = resp && resp.data !== undefined ? resp.data : resp;
       const valor: AgenteDeMarca = {
-        nombre: typeof d?.nombre === "string" && d.nombre ? d.nombre : AGENTE_POR_DEFECTO.nombre,
+        nombre:
+          typeof d?.nombre === "string" && d.nombre
+            ? d.nombre
+            : AGENTE_POR_DEFECTO.nombre,
         saludo: typeof d?.saludo === "string" && d.saludo ? d.saludo : null,
-        avatarUrl: typeof d?.avatarUrl === "string" && d.avatarUrl ? d.avatarUrl : null,
+        avatarUrl:
+          typeof d?.avatarUrl === "string" && d.avatarUrl ? d.avatarUrl : null,
+        forma: formaValida(d?.forma),
       };
       enMemoria = { tid: tenantId, valor };
       for (const o of oyentes) o(valor);
       try {
-        localStorage.setItem(CLAVE, JSON.stringify({ tid: tenantId, ...valor }));
-      } catch { /* sin almacenamiento se vive: es sólo para no parpadear */ }
+        localStorage.setItem(
+          CLAVE,
+          JSON.stringify({ tid: tenantId, ...valor }),
+        );
+      } catch {
+        /* sin almacenamiento se vive: es sólo para no parpadear */
+      }
       return valor;
     } catch {
       return AGENTE_POR_DEFECTO;
@@ -121,7 +163,11 @@ export function siglaDelAgente(nombre: string): string {
 
   const palabras = limpio.split(" ").filter(Boolean);
   if (palabras.length > 1) {
-    return palabras.slice(0, 3).map((p) => p[0]).join("").toUpperCase();
+    return palabras
+      .slice(0, 3)
+      .map((p) => p[0])
+      .join("")
+      .toUpperCase();
   }
   /* Una sola palabra larga: sus tres primeras letras, con la caja que tenga.
      «SEN» en versalitas se lee peor que «Sen» cuando el nombre era «Sentinel». */
@@ -144,26 +190,42 @@ const oyentes = new Set<(a: AgenteDeMarca) => void>();
  * una petición para escribir una etiqueta.
  */
 export function useAgente(): AgenteDeMarca {
-  const [valor, setValor] = useState<AgenteDeMarca>(() => agenteGuardado(tenantActual()));
+  const [valor, setValor] = useState<AgenteDeMarca>(() =>
+    agenteGuardado(tenantActual()),
+  );
   useEffect(() => {
     oyentes.add(setValor);
-    return () => { oyentes.delete(setValor); };
+    return () => {
+      oyentes.delete(setValor);
+    };
   }, []);
   return valor;
 }
 
 function tenantActual(): string {
-  try { return localStorage.getItem("tenantId") || ""; } catch { return ""; }
+  try {
+    return localStorage.getItem("tenantId") || "";
+  } catch {
+    return "";
+  }
 }
 
 /** Al cambiar de empresa o al cerrar sesión. */
 export function olvidarAgente(): void {
   enMemoria = null;
-  try { localStorage.removeItem(CLAVE); } catch { /* da igual */ }
+  try {
+    localStorage.removeItem(CLAVE);
+  } catch {
+    /* da igual */
+  }
   for (const o of oyentes) o(AGENTE_POR_DEFECTO);
 }
 
 export default {
-  cargarAgente, agenteGuardado, olvidarAgente, siglaDelAgente, useAgente,
+  cargarAgente,
+  agenteGuardado,
+  olvidarAgente,
+  siglaDelAgente,
+  useAgente,
   AGENTE_POR_DEFECTO,
 };
