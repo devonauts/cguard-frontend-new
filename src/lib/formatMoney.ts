@@ -11,6 +11,7 @@
 const LOCALE_OF_CURRENCY: Record<string, string> = {
   USD: "en-US", MXN: "es-MX", PEN: "es-PE", ARS: "es-AR", PAB: "es-PA",
   COP: "es-CO", CLP: "es-CL", GTQ: "es-GT", CRC: "es-CR", DOP: "es-DO", BRL: "pt-BR",
+  BOB: "es-BO", UYU: "es-UY", HNL: "es-HN", NIO: "es-NI", CAD: "en-CA", EUR: "es-ES",
 };
 
 export function formatMoney(cents: number | null | undefined, currency = "USD"): string {
