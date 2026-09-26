@@ -9784,7 +9784,16 @@
       "completarMasTarde": "Terminer plus tard",
       "configuraTuEmpresa": "Configurez votre entreprise",
       "detectarPorDireccion": "Détecter à partir de l'adresse",
-      "saludoDelAsistente": "Bienvenue ! Je suis {{agente}}, votre assistant. Votre entreprise est configurée — la prochaine étape est votre premier client. Donnez-moi son nom et son adresse et je le crée ici même."
+      "saludoDelAsistente": "Bienvenue ! Je suis {{agente}}, votre assistant. Votre entreprise est configurée — la prochaine étape est votre premier client. Donnez-moi son nom et son adresse et je le crée ici même.",
+      "ruc13Digitos": "13 chiffres",
+      "rucTreceDigitos": "Le RUC compte 13 chiffres et la carte d'identité 10.",
+      "rfcInvalido": "Le RFC comporte trois ou quatre lettres, six chiffres de date et trois caractères de homoclave.",
+      "nit810": "8 à 10 chiffres",
+      "nitInvalido": "Le NIT comporte 8 à 10 chiffres, avec un chiffre de contrôle facultatif.",
+      "rucPeruInvalido": "Le RUC comporte 11 chiffres et commence par 10, 15, 17 ou 20.",
+      "identificacionFiscal": "Identifiant fiscal",
+      "identificacionFiscalEjemplo": "Tel qu'il figure dans l'immatriculation de votre entreprise",
+      "identificacionInvalida": "Saisissez 5 à 20 lettres ou chiffres, tel qu'il figure dans l'immatriculation de votre entreprise."
     },
     "OpenShifts": {
       "accion": "Action",
@@ -11717,7 +11726,25 @@
       },
       "welcome": {
         "companyData": "Les informations de votre entreprise (nom, raison sociale, RUC)",
-        "logo": "Le logo que verront vos agents et vos clients"
+        "logo": "Le logo que verront vos agents et vos clients",
+        "contact": "Contact, adresse et fuseau horaire",
+        "intro": "En moins de 2 minutes, votre entreprise sera prête pour gérer vos agents, vos postes et vos rondes.",
+        "trialBadge": "Essai gratuit",
+        "trialEnds": "Votre essai se termine le {{date}}",
+        "weWillSetUp": "Ce que nous allons configurer",
+        "daysLeft_one": "il reste {{count}} jour",
+        "daysLeft_other": "il reste {{count}} jours"
+      },
+      "stepOf": "Étape {{current}} sur {{total}}",
+      "start": "Commencer",
+      "continue": "Continuer",
+      "saving": "Enregistrement...",
+      "review": {
+        "timezone": "Fuseau horaire",
+        "website": "Site web",
+        "trialEnds": "Votre essai gratuit se termine le {{date}}",
+        "daysLeft_one": "{{count}} jour restant",
+        "daysLeft_other": "{{count}} jours restants"
       }
     }
   },

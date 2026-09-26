@@ -9784,7 +9784,16 @@
       "completarMasTarde": "Dokończ później",
       "configuraTuEmpresa": "Skonfiguruj swoją firmę",
       "detectarPorDireccion": "Wykryj na podstawie adresu",
-      "saludoDelAsistente": "Witamy! Jestem {{agente}}, Twój asystent. Firma jest już skonfigurowana — następny krok to pierwszy klient. Podaj jego nazwę i adres, a utworzę go tutaj."
+      "saludoDelAsistente": "Witamy! Jestem {{agente}}, Twój asystent. Firma jest już skonfigurowana — następny krok to pierwszy klient. Podaj jego nazwę i adres, a utworzę go tutaj.",
+      "ruc13Digitos": "13 cyfr",
+      "rucTreceDigitos": "RUC ma 13 cyfr, a numer dowodu 10.",
+      "rfcInvalido": "RFC to trzy lub cztery litery, sześć cyfr daty i trzy znaki homoclave.",
+      "nit810": "8 do 10 cyfr",
+      "nitInvalido": "NIT ma od 8 do 10 cyfr, z opcjonalną cyfrą kontrolną.",
+      "rucPeruInvalido": "RUC ma 11 cyfr i zaczyna się od 10, 15, 17 lub 20.",
+      "identificacionFiscal": "Numer identyfikacji podatkowej",
+      "identificacionFiscalEjemplo": "Tak jak w rejestrze Twojej firmy",
+      "identificacionInvalida": "Wpisz od 5 do 20 liter lub cyfr, tak jak w rejestrze Twojej firmy."
     },
     "OpenShifts": {
       "accion": "Akcja",
@@ -11717,7 +11726,29 @@
       },
       "welcome": {
         "companyData": "Dane Twojej firmy (nazwa, nazwa rejestrowa, RUC)",
-        "logo": "Logo, które zobaczą Twoi pracownicy ochrony i zleceniodawcy"
+        "logo": "Logo, które zobaczą Twoi pracownicy ochrony i zleceniodawcy",
+        "contact": "Kontakt, adres i strefa czasowa",
+        "intro": "W niecałe 2 minuty Twoja firma będzie gotowa do zarządzania ochroniarzami, zmianami i obchodami.",
+        "trialBadge": "Bezpłatny okres próbny",
+        "trialEnds": "Okres próbny kończy się {{date}}",
+        "weWillSetUp": "Co skonfigurujemy",
+        "daysLeft_one": "został {{count}} dzień",
+        "daysLeft_few": "zostały {{count}} dni",
+        "daysLeft_many": "zostało {{count}} dni",
+        "daysLeft_other": "zostało {{count}} dni"
+      },
+      "stepOf": "Krok {{current}} z {{total}}",
+      "start": "Zaczynamy",
+      "continue": "Dalej",
+      "saving": "Zapisywanie...",
+      "review": {
+        "timezone": "Strefa czasowa",
+        "website": "Strona internetowa",
+        "trialEnds": "Bezpłatny okres próbny kończy się {{date}}",
+        "daysLeft_one": "pozostał {{count}} dzień",
+        "daysLeft_few": "pozostały {{count}} dni",
+        "daysLeft_many": "pozostało {{count}} dni",
+        "daysLeft_other": "pozostało {{count}} dni"
       }
     }
   },

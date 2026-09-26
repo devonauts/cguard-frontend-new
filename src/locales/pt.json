@@ -9320,7 +9320,16 @@
       "completarMasTarde": "Concluir mais tarde",
       "configuraTuEmpresa": "Configure sua empresa",
       "detectarPorDireccion": "Detectar pelo endereço",
-      "saludoDelAsistente": "Boas-vindas! Sou {{agente}}, seu assistente. Sua empresa já está configurada — o próximo passo é o seu primeiro cliente. Diga o nome e o endereço dele e eu o crio aqui mesmo."
+      "saludoDelAsistente": "Boas-vindas! Sou {{agente}}, seu assistente. Sua empresa já está configurada — o próximo passo é o seu primeiro cliente. Diga o nome e o endereço dele e eu o crio aqui mesmo.",
+      "ruc13Digitos": "13 dígitos",
+      "rucTreceDigitos": "O RUC tem 13 dígitos e a cédula 10.",
+      "rfcInvalido": "O RFC tem três ou quatro letras, seis dígitos de data e três de homoclave.",
+      "nit810": "8 a 10 dígitos",
+      "nitInvalido": "O NIT tem de 8 a 10 dígitos, com dígito verificador opcional.",
+      "rucPeruInvalido": "O RUC tem 11 dígitos e começa com 10, 15, 17 ou 20.",
+      "identificacionFiscal": "Identificação fiscal",
+      "identificacionFiscalEjemplo": "Como aparece no registro da sua empresa",
+      "identificacionInvalida": "Digite de 5 a 20 letras ou números, como aparece no registro da sua empresa."
     },
     "OpenShifts": {
       "accion": "Ação",
@@ -11770,7 +11779,25 @@
       },
       "welcome": {
         "companyData": "Os dados da sua empresa (nome, razão social, RUC)",
-        "logo": "O logo que seus vigilantes e clientes vão ver"
+        "logo": "O logo que seus vigilantes e clientes vão ver",
+        "contact": "Contato, endereço e fuso horário",
+        "intro": "Em menos de 2 minutos sua empresa estará pronta para você começar a gerenciar seus vigilantes, turnos e rondas.",
+        "trialBadge": "Teste grátis",
+        "trialEnds": "Seu teste termina em {{date}}",
+        "weWillSetUp": "Vamos configurar",
+        "daysLeft_one": "resta {{count}} dia",
+        "daysLeft_other": "restam {{count}} dias"
+      },
+      "stepOf": "Etapa {{current}} de {{total}}",
+      "start": "Começar",
+      "continue": "Continuar",
+      "saving": "Salvando...",
+      "review": {
+        "timezone": "Fuso horário",
+        "website": "Site",
+        "trialEnds": "Seu teste grátis termina em {{date}}",
+        "daysLeft_one": "{{count}} dia restante",
+        "daysLeft_other": "{{count}} dias restantes"
       }
     }
   },

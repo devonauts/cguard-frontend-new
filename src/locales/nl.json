@@ -9784,7 +9784,16 @@
       "completarMasTarde": "Later afmaken",
       "configuraTuEmpresa": "Stel je bedrijf in",
       "detectarPorDireccion": "Afleiden uit het adres",
-      "saludoDelAsistente": "Welkom! Ik ben {{agente}}, je assistent. Je bedrijf is ingericht — de volgende stap is je eerste klant. Geef me de naam en het adres en ik maak hem hier aan."
+      "saludoDelAsistente": "Welkom! Ik ben {{agente}}, je assistent. Je bedrijf is ingericht — de volgende stap is je eerste klant. Geef me de naam en het adres en ik maak hem hier aan.",
+      "ruc13Digitos": "13 cijfers",
+      "rucTreceDigitos": "Het RUC heeft 13 cijfers en het identiteitsnummer 10.",
+      "rfcInvalido": "De RFC bestaat uit drie of vier letters, zes datumcijfers en drie tekens homoclave.",
+      "nit810": "8 tot 10 cijfers",
+      "nitInvalido": "Het NIT heeft 8 tot 10 cijfers, met een optioneel controlecijfer.",
+      "rucPeruInvalido": "Het RUC heeft 11 cijfers en begint met 10, 15, 17 of 20.",
+      "identificacionFiscal": "Fiscaal nummer",
+      "identificacionFiscalEjemplo": "Zoals vermeld in de registratie van je bedrijf",
+      "identificacionInvalida": "Voer 5 tot 20 letters of cijfers in, zoals vermeld in de registratie van je bedrijf."
     },
     "OpenShifts": {
       "accion": "Actie",
@@ -11717,7 +11726,25 @@
       },
       "welcome": {
         "companyData": "De gegevens van je bedrijf (naam, statutaire naam, fiscaal nummer)",
-        "logo": "Het logo dat je beveiligers en opdrachtgevers te zien krijgen"
+        "logo": "Het logo dat je beveiligers en opdrachtgevers te zien krijgen",
+        "contact": "Contact, adres en tijdzone",
+        "intro": "In minder dan 2 minuten is je bedrijf klaar om je bewakers, diensten en rondes te beheren.",
+        "trialBadge": "Gratis proefperiode",
+        "trialEnds": "Je proefperiode eindigt op {{date}}",
+        "weWillSetUp": "Dit stellen we in",
+        "daysLeft_one": "nog {{count}} dag",
+        "daysLeft_other": "nog {{count}} dagen"
+      },
+      "stepOf": "Stap {{current}} van {{total}}",
+      "start": "Beginnen",
+      "continue": "Doorgaan",
+      "saving": "Opslaan...",
+      "review": {
+        "timezone": "Tijdzone",
+        "website": "Website",
+        "trialEnds": "Je gratis proefperiode eindigt op {{date}}",
+        "daysLeft_one": "nog {{count}} dag",
+        "daysLeft_other": "nog {{count}} dagen"
       }
     }
   },

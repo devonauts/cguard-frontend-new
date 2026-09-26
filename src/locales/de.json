@@ -9784,7 +9784,16 @@
       "completarMasTarde": "Später abschließen",
       "configuraTuEmpresa": "Unternehmen einrichten",
       "detectarPorDireccion": "Anhand der Adresse ermitteln",
-      "saludoDelAsistente": "Willkommen! Ich bin {{agente}}, Ihr Assistent. Ihre Firma ist eingerichtet — der nächste Schritt ist Ihr erster Kunde. Nennen Sie mir Namen und Adresse, und ich lege ihn direkt hier an."
+      "saludoDelAsistente": "Willkommen! Ich bin {{agente}}, Ihr Assistent. Ihre Firma ist eingerichtet — der nächste Schritt ist Ihr erster Kunde. Nennen Sie mir Namen und Adresse, und ich lege ihn direkt hier an.",
+      "ruc13Digitos": "13 Ziffern",
+      "rucTreceDigitos": "Die RUC hat 13 Ziffern, der Personalausweis 10.",
+      "rfcInvalido": "Der RFC besteht aus drei oder vier Buchstaben, sechs Datumsziffern und drei Zeichen Homoclave.",
+      "nit810": "8 bis 10 Ziffern",
+      "nitInvalido": "Die NIT hat 8 bis 10 Ziffern, mit optionaler Prüfziffer.",
+      "rucPeruInvalido": "Die RUC hat 11 Ziffern und beginnt mit 10, 15, 17 oder 20.",
+      "identificacionFiscal": "Steuernummer",
+      "identificacionFiscalEjemplo": "Wie im Register Ihres Unternehmens eingetragen",
+      "identificacionInvalida": "Geben Sie 5 bis 20 Buchstaben oder Ziffern ein, wie im Register Ihres Unternehmens eingetragen."
     },
     "OpenShifts": {
       "accion": "Aktion",
@@ -11717,7 +11726,25 @@
       },
       "welcome": {
         "companyData": "Die Daten Ihrer Firma (Name, offizieller Firmenname, Steuernummer)",
-        "logo": "Das Logo, das Ihre Wachkräfte und Auftraggeber sehen"
+        "logo": "Das Logo, das Ihre Wachkräfte und Auftraggeber sehen",
+        "contact": "Kontakt, Adresse und Zeitzone",
+        "intro": "In weniger als 2 Minuten ist Ihr Unternehmen bereit, damit Sie Ihre Wachleute, Schichten und Rundgänge verwalten können.",
+        "trialBadge": "Kostenlose Testphase",
+        "trialEnds": "Ihre Testphase endet am {{date}}",
+        "weWillSetUp": "Das richten wir ein",
+        "daysLeft_one": "noch {{count}} Tag",
+        "daysLeft_other": "noch {{count}} Tage"
+      },
+      "stepOf": "Schritt {{current}} von {{total}}",
+      "start": "Loslegen",
+      "continue": "Weiter",
+      "saving": "Wird gespeichert...",
+      "review": {
+        "timezone": "Zeitzone",
+        "website": "Website",
+        "trialEnds": "Ihre kostenlose Testphase endet am {{date}}",
+        "daysLeft_one": "noch {{count}} Tag",
+        "daysLeft_other": "noch {{count}} Tage"
       }
     }
   },

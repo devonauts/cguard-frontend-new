@@ -9320,7 +9320,16 @@
       "completarMasTarde": "Finish later",
       "configuraTuEmpresa": "Set up your company",
       "detectarPorDireccion": "Detect from address",
-      "saludoDelAsistente": "Welcome! I'm {{agente}}, your assistant. Your company is set up — the next step is your first client. Tell me their name and address and I'll create it right here."
+      "saludoDelAsistente": "Welcome! I'm {{agente}}, your assistant. Your company is set up — the next step is your first client. Tell me their name and address and I'll create it right here.",
+      "ruc13Digitos": "13 digits",
+      "rucTreceDigitos": "The RUC has 13 digits and the national ID 10.",
+      "rfcInvalido": "The RFC is three or four letters, six date digits and a three-character homoclave.",
+      "nit810": "8 to 10 digits",
+      "nitInvalido": "The NIT is 8 to 10 digits, with an optional check digit.",
+      "rucPeruInvalido": "The RUC is 11 digits and starts with 10, 15, 17 or 20.",
+      "identificacionFiscal": "Tax ID",
+      "identificacionFiscalEjemplo": "As it appears in your company registration",
+      "identificacionInvalida": "Enter 5 to 20 letters or numbers, as it appears in your company registration."
     },
     "OpenShifts": {
       "accion": "Action",
@@ -11770,7 +11779,25 @@
       },
       "welcome": {
         "companyData": "Your company details (name, legal name, tax ID)",
-        "logo": "The logo your guards and clients will see"
+        "logo": "The logo your guards and clients will see",
+        "contact": "Contact, address and time zone",
+        "intro": "In under 2 minutes your company will be ready so you can start managing your guards, shifts and patrols.",
+        "trialBadge": "Free trial",
+        "trialEnds": "Your trial ends on {{date}}",
+        "weWillSetUp": "What we'll set up",
+        "daysLeft_one": "{{count}} day left",
+        "daysLeft_other": "{{count}} days left"
+      },
+      "stepOf": "Step {{current}} of {{total}}",
+      "start": "Get started",
+      "continue": "Continue",
+      "saving": "Saving...",
+      "review": {
+        "timezone": "Time zone",
+        "website": "Website",
+        "trialEnds": "Your free trial ends on {{date}}",
+        "daysLeft_one": "{{count}} day left",
+        "daysLeft_other": "{{count}} days left"
       }
     }
   },

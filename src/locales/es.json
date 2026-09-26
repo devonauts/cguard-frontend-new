@@ -9320,7 +9320,16 @@
       "completarMasTarde": "Completar más tarde",
       "configuraTuEmpresa": "Configura tu empresa",
       "detectarPorDireccion": "Detectar por dirección",
-      "saludoDelAsistente": "¡Bienvenido! Soy {{agente}}, tu asistente. Ya quedó configurada tu empresa — el siguiente paso es tu primer cliente. Dime su nombre y su dirección y te lo creo aquí mismo."
+      "saludoDelAsistente": "¡Bienvenido! Soy {{agente}}, tu asistente. Ya quedó configurada tu empresa — el siguiente paso es tu primer cliente. Dime su nombre y su dirección y te lo creo aquí mismo.",
+      "ruc13Digitos": "13 dígitos",
+      "rucTreceDigitos": "El RUC tiene 13 dígitos y la cédula 10.",
+      "rfcInvalido": "El RFC son tres o cuatro letras, seis dígitos de fecha y tres de homoclave.",
+      "nit810": "8 a 10 dígitos",
+      "nitInvalido": "El NIT son entre 8 y 10 dígitos, con dígito de verificación opcional.",
+      "rucPeruInvalido": "El RUC son 11 dígitos y empieza por 10, 15, 17 o 20.",
+      "identificacionFiscal": "Identificación fiscal",
+      "identificacionFiscalEjemplo": "Como aparece en el registro de tu empresa",
+      "identificacionInvalida": "Escribe entre 5 y 20 letras o números, como aparece en el registro de tu empresa."
     },
     "OpenShifts": {
       "accion": "Acción",
@@ -11770,7 +11779,25 @@
       },
       "welcome": {
         "companyData": "Los datos de tu empresa (nombre, razón social, RUC)",
-        "logo": "El logo que verán tus vigilantes y clientes"
+        "logo": "El logo que verán tus vigilantes y clientes",
+        "contact": "Contacto, dirección y zona horaria",
+        "intro": "En menos de 2 minutos dejaremos lista tu empresa para que empieces a gestionar tus vigilantes, turnos y rondas.",
+        "trialBadge": "Prueba gratis",
+        "trialEnds": "Tu prueba termina el {{date}}",
+        "weWillSetUp": "Vamos a configurar",
+        "daysLeft_one": "te queda {{count}} día",
+        "daysLeft_other": "te quedan {{count}} días"
+      },
+      "stepOf": "Paso {{current}} de {{total}}",
+      "start": "Comenzar",
+      "continue": "Continuar",
+      "saving": "Guardando...",
+      "review": {
+        "timezone": "Zona horaria",
+        "website": "Sitio web",
+        "trialEnds": "Tu prueba gratuita termina el {{date}}",
+        "daysLeft_one": "{{count}} día restante",
+        "daysLeft_other": "{{count}} días restantes"
       }
     }
   },

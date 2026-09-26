@@ -9784,7 +9784,16 @@
       "completarMasTarde": "Completa più tardi",
       "configuraTuEmpresa": "Configura la tua azienda",
       "detectarPorDireccion": "Rileva dall'indirizzo",
-      "saludoDelAsistente": "Benvenuto! Sono {{agente}}, il tuo assistente. La tua azienda è configurata: il prossimo passo è il tuo primo cliente. Dimmi nome e indirizzo e lo creo qui."
+      "saludoDelAsistente": "Benvenuto! Sono {{agente}}, il tuo assistente. La tua azienda è configurata: il prossimo passo è il tuo primo cliente. Dimmi nome e indirizzo e lo creo qui.",
+      "ruc13Digitos": "13 cifre",
+      "rucTreceDigitos": "Il RUC ha 13 cifre e la carta d'identità 10.",
+      "rfcInvalido": "L'RFC è composto da tre o quattro lettere, sei cifre di data e tre caratteri di homoclave.",
+      "nit810": "da 8 a 10 cifre",
+      "nitInvalido": "Il NIT ha da 8 a 10 cifre, con cifra di controllo facoltativa.",
+      "rucPeruInvalido": "Il RUC ha 11 cifre e inizia con 10, 15, 17 o 20.",
+      "identificacionFiscal": "Codice fiscale",
+      "identificacionFiscalEjemplo": "Come appare nella registrazione della tua azienda",
+      "identificacionInvalida": "Inserisci da 5 a 20 lettere o cifre, come appare nella registrazione della tua azienda."
     },
     "OpenShifts": {
       "accion": "Azione",
@@ -11717,7 +11726,25 @@
       },
       "welcome": {
         "companyData": "I dati della tua azienda (nome, ragione sociale, partita IVA)",
-        "logo": "Il logo che vedranno le tue guardie e i tuoi committenti"
+        "logo": "Il logo che vedranno le tue guardie e i tuoi committenti",
+        "contact": "Contatti, indirizzo e fuso orario",
+        "intro": "In meno di 2 minuti la tua azienda sarà pronta per gestire guardie, turni e ronde.",
+        "trialBadge": "Prova gratuita",
+        "trialEnds": "La tua prova termina il {{date}}",
+        "weWillSetUp": "Cosa configureremo",
+        "daysLeft_one": "resta {{count}} giorno",
+        "daysLeft_other": "restano {{count}} giorni"
+      },
+      "stepOf": "Passo {{current}} di {{total}}",
+      "start": "Inizia",
+      "continue": "Continua",
+      "saving": "Salvataggio...",
+      "review": {
+        "timezone": "Fuso orario",
+        "website": "Sito web",
+        "trialEnds": "La tua prova gratuita termina il {{date}}",
+        "daysLeft_one": "{{count}} giorno rimanente",
+        "daysLeft_other": "{{count}} giorni rimanenti"
       }
     }
   },

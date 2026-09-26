@@ -515,8 +515,12 @@ export default function OnboardingWizard({
                 )}
               </DialogTitle>
               <DialogDescription className="text-xs">
-                Paso {step + 1} de {STEPS.length} ·{" "}
-                {t(STEPS[step].labelKey, STEPS[step].label)}
+                {t("onboarding.wizard.stepOf", {
+                  defaultValue: "Paso {{current}} de {{total}}",
+                  current: step + 1,
+                  total: STEPS.length,
+                })}{" "}
+                · {t(STEPS[step].labelKey, STEPS[step].label)}
               </DialogDescription>
             </div>
             <button
@@ -889,7 +893,8 @@ export default function OnboardingWizard({
             )}
             {step === 0 && (
               <Button className="px-6" type="button" onClick={next}>
-                Comenzar <ArrowRight className="ml-1.5 h-4 w-4" />
+                {t("onboarding.wizard.start", "Comenzar")}{" "}
+                <ArrowRight className="ml-1.5 h-4 w-4" />
               </Button>
             )}
             {step > 0 && step < STEPS.length - 1 && (
@@ -899,7 +904,8 @@ export default function OnboardingWizard({
                 type="button"
                 onClick={next}
               >
-                Continuar <ArrowRight className="ml-1.5 h-4 w-4" />
+                {t("onboarding.wizard.continue", "Continuar")}{" "}
+                <ArrowRight className="ml-1.5 h-4 w-4" />
               </Button>
             )}
             {step === STEPS.length - 1 && (
@@ -912,7 +918,7 @@ export default function OnboardingWizard({
                 {submitting ? (
                   <>
                     <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />{" "}
-                    Guardando...
+                    {t("onboarding.wizard.saving", "Guardando...")}
                   </>
                 ) : (
                   <>
@@ -959,7 +965,13 @@ function WelcomeStep({
         "El logo que verán tus vigilantes y clientes",
       ),
     },
-    { icon: MapPin, text: "Contacto, dirección y zona horaria" },
+    {
+      icon: MapPin,
+      text: t(
+        "onboarding.wizard.welcome.contact",
+        "Contacto, dirección y zona horaria",
+      ),
+    },
   ];
 
   return (
@@ -982,8 +994,10 @@ function WelcomeStep({
           })}
         </h2>
         <p className="mx-auto max-w-md text-sm text-muted-foreground">
-          En menos de 2 minutos dejaremos lista tu empresa para que empieces a
-          gestionar tus vigilantes, turnos y rondas.
+          {t(
+            "onboarding.wizard.welcome.intro",
+            "En menos de 2 minutos dejaremos lista tu empresa para que empieces a gestionar tus vigilantes, turnos y rondas.",
+          )}
         </p>
       </div>
 
@@ -992,14 +1006,21 @@ function WelcomeStep({
           className="gap-1.5 border-0 px-3 py-1 text-sm"
           style={{ background: "var(--brand)", color: "var(--brand-ink)" }}
         >
-          <Gift className="h-3.5 w-3.5" /> 14 días de prueba gratis
+          <Gift className="h-3.5 w-3.5" />{" "}
+          {t("onboarding.wizard.welcome.trialBadge", "Prueba gratis")}
         </Badge>
         {trialEnd && (
           <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <CalendarClock className="h-3.5 w-3.5" />
-            Tu prueba termina el {trialEnd}
+            {t("onboarding.wizard.welcome.trialEnds", {
+              defaultValue: "Tu prueba termina el {{date}}",
+              date: trialEnd,
+            })}
             {days != null && days > 0
-              ? ` · te quedan ${days} día${days === 1 ? "" : "s"}`
+              ? ` · ${t("onboarding.wizard.welcome.daysLeft", {
+                  defaultValue: "te quedan {{count}} días",
+                  count: days,
+                })}`
               : ""}
           </p>
         )}
@@ -1007,7 +1028,7 @@ function WelcomeStep({
 
       <div className="mx-auto max-w-md space-y-2.5 rounded-xl border border-border bg-muted/30 p-4 text-left">
         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          Vamos a configurar
+          {t("onboarding.wizard.welcome.weWillSetUp", "Vamos a configurar")}
         </p>
         {items.map(({ icon: Icon, text }) => (
           <div
@@ -1123,16 +1144,30 @@ function ReviewStep({
           label={t("ui.OnboardingWizard.direccion", "Dirección")}
           value={form.address}
         />
-        <ReviewRow label="Zona horaria" value={tzLabel} />
-        {form.website && <ReviewRow label="Sitio web" value={form.website} />}
+        <ReviewRow
+          label={t("onboarding.wizard.review.timezone", "Zona horaria")}
+          value={tzLabel}
+        />
+        {form.website && (
+          <ReviewRow
+            label={t("onboarding.wizard.review.website", "Sitio web")}
+            value={form.website}
+          />
+        )}
       </div>
 
       {trialEnd && (
         <div className="flex items-center gap-2 rounded-lg bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
           <Gift className="h-3.5 w-3.5 text-primary" />
-          Tu prueba gratuita termina el {trialEnd}
+          {t("onboarding.wizard.review.trialEnds", {
+            defaultValue: "Tu prueba gratuita termina el {{date}}",
+            date: trialEnd,
+          })}
           {days != null && days > 0
-            ? ` (${days} día${days === 1 ? "" : "s"} restantes)`
+            ? ` (${t("onboarding.wizard.review.daysLeft", {
+                defaultValue: "{{count}} días restantes",
+                count: days,
+              })})`
             : ""}
           .
         </div>
