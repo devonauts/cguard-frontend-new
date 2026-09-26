@@ -258,7 +258,10 @@
     "appAccessPending": {
       "title": "Dostęp masz z poziomu aplikacji"
     },
-    "passwordRequirements": "Musi mieć co najmniej 8 znaków, wielką literę, małą literę, cyfrę i znak specjalny."
+    "passwordRequirements": "Musi mieć co najmniej 8 znaków, wielką literę, małą literę, cyfrę i znak specjalny.",
+    "chooseAccountTitle": "Do której firmy chcesz się zalogować?",
+    "chooseAccountHint": "Ten adres e-mail ma konto w każdej z nich. Wybierz, którego chcesz teraz użyć.",
+    "chooseAccountNoCompany": "Konto bez przypisanej firmy"
   },
   "client": {
     "invite_not_found": "Nie znaleziono zaproszenia lub jest ono nieprawidłowe.",

@@ -388,7 +388,10 @@
     "appAccessPending": {
       "title": "Your access is through the app"
     },
-    "passwordRequirements": "It must have at least 8 characters, an uppercase letter, a lowercase letter, a number and a special character."
+    "passwordRequirements": "It must have at least 8 characters, an uppercase letter, a lowercase letter, a number and a special character.",
+    "chooseAccountTitle": "Which company do you want to sign in to?",
+    "chooseAccountHint": "This email has an account in each. Choose the one you want to use now.",
+    "chooseAccountNoCompany": "Account with no company assigned"
   },
   "billing": {
     "title": "Subscription status",

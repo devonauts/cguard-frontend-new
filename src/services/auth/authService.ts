@@ -5,6 +5,8 @@ import { deviceSignals } from "./deviceFingerprint";
 export interface LoginCredentials {
   email: string;
   password: string;
+  /** The account's realm, once the person chose it (email unique per realm). */
+  realm?: string;
 }
 
 export interface SignUpData {
@@ -41,7 +43,9 @@ export class AuthService {
       const signals = await deviceSignals();
       const response = await ApiService.post(
         "/auth/sign-in",
-        { ...credentials, ...signals, app: "web" },
+        // accountChoice: this client can show "which company?" when the same
+        // email and password open accounts in several realms.
+        { ...credentials, ...signals, app: "web", accountChoice: true },
         { skipAuth: true },
       );
 

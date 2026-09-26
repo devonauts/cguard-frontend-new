@@ -115,6 +115,8 @@ interface AuthResult {
   success: boolean;
   error?: string;
   needVerification?: boolean;
+  /** Same email in several realms: the accounts to choose from. */
+  chooseAccount?: Array<{ realm: string; companies: string[] }>;
 }
 interface AuthContextType {
   user: User | null;
@@ -670,6 +672,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (codigo === "auth.emailNotVerified") {
         return { success: false, error: message, needVerification: true };
+      }
+      if (codigo === "auth.chooseAccount" && Array.isArray(err?.data?.accounts)) {
+        return { success: false, error: message, chooseAccount: err.data.accounts };
       }
       setError(message);
 

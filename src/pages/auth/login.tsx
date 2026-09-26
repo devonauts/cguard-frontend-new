@@ -14,6 +14,10 @@ import { ApiService } from "@/services/api/apiService";
 
 export default function Login() {
   const { signIn } = useAuth();
+  /* The same email can have one account per realm (platform, or a partner).
+     When the password opens several, the server lists them and we ask. */
+  const [cuentas, setCuentas] = useState<Array<{ realm: string; companies: string[] }> | null>(null);
+  const [cuentaElegida, setCuentaElegida] = useState<string | null>(null);
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -103,6 +107,22 @@ export default function Login() {
     redirectIfInviteLink();
   }, [inviteToken, inviteType, securityGuardId, navigate]);
 
+  /** Sign in to the account the person chose (email unique per realm). */
+  const entrarCon = async (realm: string) => {
+    setCuentaElegida(realm);
+    setIsLoading(true);
+    const result = await signIn({ email, password, realm });
+
+    setIsLoading(false);
+    if (result.success) {
+      setCuentas(null);
+      toast.success(t("auth.login_success"));
+      navigate("/dashboard");
+    } else {
+      toast.error(result.error || t("auth.login_failed"));
+    }
+  };
+
   const handleLogin = async (e?: React.FormEvent) => {
     // The partner's login preview is a picture of the login: nobody signs in.
     if (esVistaPrevia()) {
@@ -114,9 +134,15 @@ export default function Login() {
     // use validation helpers from the hook (they show localized toasts)
     if (!validateEmail() || !validatePassword(6)) return;
     setIsLoading(true);
-    const result = await signIn({ email, password });
+    const result = await signIn({ email, password, realm: cuentaElegida || undefined });
 
     setIsLoading(false);
+    if (result.chooseAccount?.length) {
+      // Same email and password in several worlds: ask, never pick blindly.
+      setCuentas(result.chooseAccount);
+
+      return;
+    }
     if (result.success) {
       toast.success(t("auth.login_success"));
       navigate("/dashboard");
@@ -157,6 +183,35 @@ export default function Login() {
           }}
         >
           {motivoSalida}
+        </div>
+      )}
+      {cuentas && (
+        <div className="mb-4 space-y-2 rounded-xl border p-4" role="dialog" aria-labelledby="elegir-cuenta" style={{ borderColor: "var(--hairline)" }}>
+          <p className="text-sm font-semibold" id="elegir-cuenta">
+            {t("auth.chooseAccountTitle", "¿Con qué empresa quieres entrar?")}
+          </p>
+          <p className="text-xs opacity-80">
+            {t("auth.chooseAccountHint", "Este correo tiene una cuenta en cada una. Elige la que quieres usar ahora.")}
+          </p>
+          {cuentas.map((c) => (
+            <button
+              key={c.realm}
+              className="w-full rounded-lg border px-3 py-2 text-left text-sm hover:opacity-90 disabled:opacity-60"
+              disabled={isLoading}
+              style={{ borderColor: "var(--hairline)" }}
+              type="button"
+              onClick={() => entrarCon(c.realm)}
+            >
+              {c.companies.length ? c.companies.join(" · ") : t("auth.chooseAccountNoCompany", "Cuenta sin empresa asignada")}
+            </button>
+          ))}
+          <button
+            className="text-xs underline opacity-80"
+            type="button"
+            onClick={() => { setCuentas(null); setCuentaElegida(null); }}
+          >
+            {t("common.cancel", "Cancelar")}
+          </button>
         </div>
       )}
       <form className="space-y-4" onSubmit={handleLogin}>

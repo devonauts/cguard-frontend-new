@@ -6830,7 +6830,10 @@
     "appAccessPending": {
       "title": "Seu acesso é pelo aplicativo"
     },
-    "passwordRequirements": "Deve ter pelo menos 8 caracteres, uma letra maiúscula, uma minúscula, um número e um caractere especial."
+    "passwordRequirements": "Deve ter pelo menos 8 caracteres, uma letra maiúscula, uma minúscula, um número e um caractere especial.",
+    "chooseAccountTitle": "Em qual empresa você quer entrar?",
+    "chooseAccountHint": "Este e-mail tem uma conta em cada uma. Escolha a que deseja usar agora.",
+    "chooseAccountNoCompany": "Conta sem empresa atribuída"
   },
   "billing": {
     "activate": "Ativar assinatura",

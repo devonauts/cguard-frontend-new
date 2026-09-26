@@ -258,7 +258,10 @@
     "appAccessPending": {
       "title": "Ihr Zugang erfolgt über die App"
     },
-    "passwordRequirements": "Es muss mindestens 8 Zeichen, einen Großbuchstaben, einen Kleinbuchstaben, eine Zahl und ein Sonderzeichen enthalten."
+    "passwordRequirements": "Es muss mindestens 8 Zeichen, einen Großbuchstaben, einen Kleinbuchstaben, eine Zahl und ein Sonderzeichen enthalten.",
+    "chooseAccountTitle": "Bei welchem Unternehmen möchtest du dich anmelden?",
+    "chooseAccountHint": "Diese E-Mail-Adresse hat in jedem ein Konto. Wähle das, das du jetzt verwenden möchtest.",
+    "chooseAccountNoCompany": "Konto ohne zugewiesenes Unternehmen"
   },
   "client": {
     "invite_not_found": "Die Einladung wurde nicht gefunden oder ist ungültig.",

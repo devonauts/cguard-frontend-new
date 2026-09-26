@@ -258,7 +258,10 @@
     "appAccessPending": {
       "title": "Il tuo accesso avviene dall'app"
     },
-    "passwordRequirements": "Deve contenere almeno 8 caratteri, una lettera maiuscola, una minuscola, un numero e un carattere speciale."
+    "passwordRequirements": "Deve contenere almeno 8 caratteri, una lettera maiuscola, una minuscola, un numero e un carattere speciale.",
+    "chooseAccountTitle": "In quale azienda vuoi accedere?",
+    "chooseAccountHint": "Questa e-mail ha un account in ciascuna. Scegli quello che vuoi usare ora.",
+    "chooseAccountNoCompany": "Account senza azienda assegnata"
   },
   "client": {
     "invite_not_found": "Invito non trovato o non valido.",

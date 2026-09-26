@@ -388,7 +388,10 @@
     "appAccessPending": {
       "title": "Tu acceso es desde la aplicación"
     },
-    "passwordRequirements": "Debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial."
+    "passwordRequirements": "Debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.",
+    "chooseAccountTitle": "¿Con qué empresa quieres entrar?",
+    "chooseAccountHint": "Este correo tiene una cuenta en cada una. Elige la que quieres usar ahora.",
+    "chooseAccountNoCompany": "Cuenta sin empresa asignada"
   },
   "billing": {
     "title": "Estado de la suscripción",

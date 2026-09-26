@@ -258,7 +258,10 @@
     "appAccessPending": {
       "title": "Je logt in via de app"
     },
-    "passwordRequirements": "Het moet minstens 8 tekens, een hoofdletter, een kleine letter, een cijfer en een speciaal teken bevatten."
+    "passwordRequirements": "Het moet minstens 8 tekens, een hoofdletter, een kleine letter, een cijfer en een speciaal teken bevatten.",
+    "chooseAccountTitle": "Bij welk bedrijf wilt u inloggen?",
+    "chooseAccountHint": "Dit e-mailadres heeft bij elk een account. Kies welk u nu wilt gebruiken.",
+    "chooseAccountNoCompany": "Account zonder toegewezen bedrijf"
   },
   "client": {
     "invite_not_found": "Uitnodiging niet gevonden of ongeldig.",
