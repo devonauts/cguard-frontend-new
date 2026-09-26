@@ -26,8 +26,9 @@ import type {
 import { getAuthToken } from "./api";
 
 import i18n from "@/i18n";
+import { resolveApiBase } from "@/lib/apiBase";
 
-const API_URL = (import.meta.env.VITE_API_URL as string | undefined) || "";
+const API_URL = (resolveApiBase() as string | undefined) || "";
 const socketOrigin = () => {
   try {
     return new URL(API_URL || window.location.origin, window.location.origin)

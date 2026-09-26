@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 
 import api from "./api";
+import { resolveApiBase } from "@/lib/apiBase";
 
 const API_BASE = (
-  import.meta.env.VITE_API_URL ?? "http://localhost:3001/api"
+  resolveApiBase() ?? "http://localhost:3001/api"
 ).replace(/\/+$/, "");
 
 /**

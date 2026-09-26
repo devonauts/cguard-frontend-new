@@ -12,6 +12,7 @@ import { PhoneInput } from "@/components/phone/PhoneInput";
 import Captcha from "@/components/auth/Captcha";
 import { ApiService } from "@/services/api/apiService";
 import { EVENTOS, medir } from "@/lib/analiticaDeMarca";
+import { resolveApiBase } from "@/lib/apiBase";
 
 export default function Register() {
   const { t } = useTranslation();
@@ -185,7 +186,7 @@ export default function Register() {
       const cg = sessionStorage.getItem("cg_web");
 
       if (!cg) return;
-      const base = (import.meta.env.VITE_API_URL as string | undefined) || "";
+      const base = (resolveApiBase() as string | undefined) || "";
 
       fetch(`${base}/track`, {
         method: "POST",

@@ -6,6 +6,7 @@ import { restaurarAccentDelUsuario } from "@/lib/acentoDelUsuario";
 import { cargarAnaliticaDeMarca } from "@/lib/analiticaDeMarca";
 import { TIPO_DE_MENSAJE, tokenDeVistaPrevia } from "@/lib/vistaPrevia";
 import { aplicarFuenteDeMarca, esFuenteDeMarca } from "@/lib/fuentesDeMarca";
+import { resolveApiBase } from "@/lib/apiBase";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -344,7 +345,7 @@ export function aplicarMarca(ctx: ContextoDeMarca): void {
 
 /* ── La petición ─────────────────────────────────────────────────────────── */
 
-const API = (import.meta.env.VITE_API_URL as string | undefined) || "";
+const API = (resolveApiBase() as string | undefined) || "";
 const TIEMPO_MAXIMO_MS = 4000;
 
 /**

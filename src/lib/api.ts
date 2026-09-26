@@ -9,8 +9,9 @@ import { autoInvalidateForMutation } from "@/lib/queryClient";
 import { anotarPeticion } from "@/lib/diagnosticoDeRed";
 import { manejarPagoRequerido } from "@/lib/pagoRequerido";
 import { cabeceraDeSucursal } from "@/lib/sucursalElegida";
+import { resolveApiBase } from "@/lib/apiBase";
 
-const API_URL = import.meta.env.VITE_API_URL as string | undefined;
+const API_URL = resolveApiBase() as string | undefined;
 
 const TOKEN_KEY = "authToken";
 

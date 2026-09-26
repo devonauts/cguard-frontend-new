@@ -8,6 +8,7 @@ import AuthShell from "./AuthShell";
 
 import { ApiService } from "@/services/api/apiService";
 import { FadeIn } from "@/components/kit";
+import { resolveApiBase } from "@/lib/apiBase";
 
 export default function VerifyEmail() {
   const navigate = useNavigate();
@@ -89,7 +90,7 @@ export default function VerifyEmail() {
 
       try {
         const base =
-          import.meta.env.VITE_API_URL ?? "http://localhost:3001/api";
+          resolveApiBase() ?? "http://localhost:3001/api";
         const url = `${base.replace(/\/+$/, "")}/auth/verify-email?token=${encodeURIComponent(token)}`;
         const res = await fetch(url, { method: "PUT", credentials: "include" });
 

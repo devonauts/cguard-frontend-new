@@ -36,9 +36,10 @@ import BrandLockup from "@/components/BrandLockup";
 import { Button } from "@/components/ui/button";
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { resolveApiBase } from "@/lib/apiBase";
 
 const API = (
-  import.meta.env.VITE_API_URL ?? "http://localhost:3001/api"
+  resolveApiBase() ?? "http://localhost:3001/api"
 ).replace(/\/+$/, "");
 
 interface Doc {

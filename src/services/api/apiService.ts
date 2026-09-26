@@ -8,8 +8,9 @@ import { autoInvalidateForMutation } from "@/lib/queryClient";
 import { anotarPeticion } from "@/lib/diagnosticoDeRed";
 import { manejarPagoRequerido } from "@/lib/pagoRequerido";
 import { cabeceraDeSucursal } from "@/lib/sucursalElegida";
+import { resolveApiBase } from "@/lib/apiBase";
 const API_BASE_URL = (
-  import.meta.env.VITE_API_URL ?? "http://localhost:3001/api"
+  resolveApiBase() ?? "http://localhost:3001/api"
 ).replace(/\/+$/, "");
 
 export class ApiError extends Error {

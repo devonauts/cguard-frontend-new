@@ -100,6 +100,7 @@ import api from "@/lib/api";
 import type { DispatchRow, DirectoryOption, DispatchApiError } from "./types";
 import { localeActual } from "@/lib/localeActual";
 import { hoyEnLaEmpresa, limitesDelDia, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
+import { resolveApiBase } from "@/lib/apiBase";
 
 // The list is paginated client-side over what we load. The backend hard-caps a
 // no-limit /request query at 1000 rows, which silently truncated tenants past
@@ -189,9 +190,7 @@ export default function DispatcherPage() {
   // do NOT fall back to a hardcoded localhost origin to avoid pointing prod at a dev host.
   const getApiOrigin = (): string | null => {
     try {
-      const configured = (
-        import.meta as unknown as { env?: { VITE_API_URL?: string } }
-      ).env?.VITE_API_URL;
+      const configured = resolveApiBase();
       if (configured) return configured.replace(/\/$/, "");
     } catch (e) {
       /* ignore */

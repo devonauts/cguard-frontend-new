@@ -1,3 +1,4 @@
+import { resolveApiBase } from "@/lib/apiBase";
 /**
  * Dirección → coordenadas, por el backend en vez de por el navegador.
  *
@@ -24,7 +25,7 @@
  */
 
 const API_BASE = (
-  import.meta.env.VITE_API_URL ?? "http://localhost:3001/api"
+  resolveApiBase() ?? "http://localhost:3001/api"
 ).replace(/\/+$/, "");
 const SS_PREFIX = "geocache:";
 /** Vigencia en la pestaña. Corta a propósito: el servidor ya guarda el largo. */

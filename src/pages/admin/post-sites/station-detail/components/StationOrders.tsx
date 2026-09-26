@@ -38,6 +38,7 @@ import type { Station } from "@/types";
 
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { resolveApiBase } from "@/lib/apiBase";
 type Props = { station: Station; stationId: string; postSiteId: string };
 
 type Recurrence =
@@ -75,7 +76,7 @@ const EMPTY: Order = {
   notifyEnabled: true,
   notifyMinutesBefore: 0,
 };
-const API_BASE = (import.meta as any).env?.VITE_API_URL || "";
+const API_BASE = resolveApiBase() || "";
 const fileUrl = (u?: string | null) => (u ? `${API_BASE}${u}` : null);
 const DOW = ["D", "L", "M", "X", "J", "V", "S"]; // Sun..Sat (index = JS getDay)
 const DOW_FULL = [

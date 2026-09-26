@@ -17,8 +17,9 @@ import { Eye, MousePointer2, Hand } from "lucide-react";
 
 import { crearSocket, cerrarSocket } from "@/lib/socket";
 import { getAuthToken } from "@/lib/api";
+import { resolveApiBase } from "@/lib/apiBase";
 
-const API_URL = (import.meta.env.VITE_API_URL as string | undefined) || "";
+const API_URL = (resolveApiBase() as string | undefined) || "";
 
 export default function CoBrowseAgent() {
   const [watchedBy, setWatchedBy] = useState<string | null>(null);

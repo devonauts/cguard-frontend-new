@@ -1,6 +1,7 @@
 import api from "../api";
+import { resolveApiBase } from "@/lib/apiBase";
 
-const API_URL = (import.meta.env.VITE_API_URL as string | undefined) || "";
+const API_URL = (resolveApiBase() as string | undefined) || "";
 
 const getTenantId = (): string => {
   const t = localStorage.getItem("tenantId");

@@ -14,6 +14,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Plus, Pencil, Trash2, Smartphone, Image as ImageIcon, Tag, BadgeCheck, Upload, ShieldCheck } from 'lucide-react';
 import CustomerAppPreview, { serviceIcon, SERVICE_ICONS } from './CustomerAppPreview';
+import { resolveApiBase } from "@/lib/apiBase";
 
 /** Pre-made security-service templates: pick one to pre-fill title/description + a
  * named icon (rendered in the app + preview without an uploaded image). */
@@ -194,7 +195,7 @@ export default function MobilPage() {
     type: 'banner' | 'certification' | 'service';
   } | null>(null);
 
-  const API_BASE_URL = (import.meta.env.VITE_API_URL ?? 'http://localhost:3001/api').replace(/\/+$/, '');
+  const API_BASE_URL = (resolveApiBase() ?? 'http://localhost:3001/api').replace(/\/+$/, '');
 
     // Token migration: always prefer the backend-attached token `downloadUrl`
     // (fillDownloadUrl). `publicUrl`/`privateUrl` remain only as transitional

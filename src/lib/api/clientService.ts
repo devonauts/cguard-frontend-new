@@ -9,6 +9,7 @@ import type {
     PaginationParams,
     ClientListResponse,
 } from "@/types/client";
+import { resolveApiBase } from "@/lib/apiBase";
 
 /**
  * Shape of a client row as it comes back RAW from the backend, before the
@@ -423,7 +424,7 @@ export const clientService = {
                 } catch (e) {}
 
                 // Try using fetch first to avoid axios multipart boundary issues observed in some environments.
-                const base = (import.meta.env.VITE_API_URL as string) || '';
+                const base = (resolveApiBase() as string) || '';
                 const url = `${base}/tenant/${tenantId}/client-account/import`;
                 const token = typeof getAuthToken === 'function' ? getAuthToken() : null;
 

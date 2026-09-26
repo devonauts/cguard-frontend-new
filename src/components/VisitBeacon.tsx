@@ -15,8 +15,9 @@ import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 
 import { useAuth } from "@/contexts/AuthContext";
+import { resolveApiBase } from "@/lib/apiBase";
 
-const API = (import.meta.env.VITE_API_URL as string | undefined) || "";
+const API = (resolveApiBase() as string | undefined) || "";
 const LATIDO_MS = 60_000;
 
 function idDeSesion(): string {

@@ -32,6 +32,7 @@ import {
 } from "@/components/kit";
 import { fileUrlFromPrivate } from "@/lib/fileUrl";
 import i18n from "@/i18n";
+import { resolveApiBase } from "@/lib/apiBase";
 
 interface StationDetail extends Station {
   name?: string;
@@ -137,7 +138,7 @@ function scanPhotoUrl(scannedData: any): string | null {
 
   if (token) {
     const base = String(
-      import.meta.env.VITE_API_URL ?? "http://localhost:3001/api",
+      resolveApiBase() ?? "http://localhost:3001/api",
     ).replace(/\/+$/, "");
 
     return `${base}/file/download?fileToken=${encodeURIComponent(String(token))}`;

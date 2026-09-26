@@ -12,6 +12,7 @@ import IncidentTypesService from "@/services/incident-types.service";
 import { Section, StatusBadge, EmptyState } from "@/components/kit";
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { resolveApiBase } from "@/lib/apiBase";
 
 // Only allow http/https URLs to be used as navigable hrefs. Rejects
 // javascript:/data:/other schemes that could come from server-stored data.
@@ -40,7 +41,7 @@ export default function DispatchPublicView() {
     const load = async () => {
       if (!token) return;
       try {
-        const configured = (import.meta as any).env?.VITE_API_URL as
+        const configured = resolveApiBase() as
           | string
           | undefined;
         let backendOrigin = "http://localhost:3001";

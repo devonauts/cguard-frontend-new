@@ -1,3 +1,4 @@
+import { resolveApiBase } from "@/lib/apiBase";
 /**
  * ════════════════════════════════════════════════════════════════════════════
  * WHERE IS THIS PERSON? — for form defaults, never for anything that matters
@@ -9,7 +10,7 @@
  */
 
 const CLAVE = "cg:paisDelVisitante";
-const API = (import.meta.env.VITE_API_URL as string | undefined) || "/api";
+const API = (resolveApiBase() as string | undefined) || "/api";
 
 /** Common time zones → country, for the device fallback. */
 const ZONAS: Record<string, string> = {

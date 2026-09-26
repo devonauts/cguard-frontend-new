@@ -1,4 +1,5 @@
 import { io, type Socket } from "socket.io-client";
+import { resolveApiBase } from "@/lib/apiBase";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -16,7 +17,7 @@ export const SOCKET_PATH = "/api/socket.io";
 
 /** El origen del backend, deducido de la URL de la API. */
 export function socketOrigin(): string {
-  const apiUrl = (import.meta.env.VITE_API_URL as string | undefined) || "";
+  const apiUrl = (resolveApiBase() as string | undefined) || "";
 
   try {
     return new URL(apiUrl || window.location.origin, window.location.origin)
