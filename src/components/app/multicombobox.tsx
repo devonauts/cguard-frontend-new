@@ -92,7 +92,7 @@ export function MultiCombobox({
         )}
       >
         <Command>
-          <CommandInput placeholder="Buscar..." />
+          <CommandInput placeholder={i18n.t("categories.searchPlaceholder", "Buscar...")} />
           <CommandList className="max-h-60 overflow-y-auto">
             <CommandEmpty>{empty}</CommandEmpty>
             <CommandGroup>

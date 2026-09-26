@@ -387,7 +387,10 @@ export default function GuardsGlobalSettingsPage() {
                         })
                       : t("settings.guardsGlobal.messagesPerShift", {
                           defaultValue:
-                            "{{n}} mensaje{{plural}} por turno y por vigilante.",
+                            "{{count}} mensaje por turno y por vigilante.",
+                          defaultValue_other:
+                            "{{count}} mensajes por turno y por vigilante.",
+                          count: cfg.shiftReminderOffsets.length,
                           n: cfg.shiftReminderOffsets.length,
                           plural:
                             cfg.shiftReminderOffsets.length === 1 ? "" : "s",

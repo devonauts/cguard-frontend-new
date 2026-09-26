@@ -25,6 +25,7 @@ import { familiaDe } from "./catalogoDeAvisos";
 
 import { useFileUrl } from "@/lib/fileUrl";
 import { SmartImage } from "@/components/kit";
+import i18n from "@/i18n";
 
 /**
  * Tono del aviso. Eran diez hexadecimales sueltos (verde, ámbar, morado, rosa…):
@@ -187,7 +188,7 @@ export function showNotificationToast(
           <p className="cg-eyebrow mt-1.5">Ahora</p>
         </div>
         <button
-          aria-label="Cerrar"
+          aria-label={i18n.t("actions.close", "Cerrar")}
           className="cg-focus -m-1 grid size-9 shrink-0 place-items-center rounded-full transition-colors"
           style={{ color: "var(--ink-faint)" }}
           onClick={(e) => {

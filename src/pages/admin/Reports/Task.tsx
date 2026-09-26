@@ -95,7 +95,7 @@ const columns: ReportColumn<TaskRow>[] = [
     key: "done",
     label: "Realizada",
     labelKey: "reports.col.task.done",
-    value: (r) => (r.wasItDone ? "Sí" : "No"),
+    value: (r) => (r.wasItDone ? i18n.t("ui.Task.si", "Sí") : i18n.t("ui.Task.no", "No")),
     align: "center",
   },
   {
@@ -112,7 +112,7 @@ export default function Task() {
   return (
     <DataReport<TaskRow>
       columns={columns}
-      description="Tareas de cliente/personal aprobadas y ejecutadas por los vigilantes en turno."
+      description={t("ui.Task.descripcion", "Tareas de cliente/personal aprobadas y ejecutadas por los vigilantes en turno.")}
       icon={CheckSquare}
       load={async ({ from, to }) => {
         // El rango (`createdAt`) va EN LA CONSULTA. Antes se pedían las 2000

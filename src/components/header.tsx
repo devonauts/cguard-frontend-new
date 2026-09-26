@@ -37,6 +37,8 @@ import {
 } from "lucide-react";
 import { useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
+
+import i18n from "@/i18n";
 import { toast } from "sonner";
 
 import {
@@ -90,7 +92,7 @@ function getDisplayName(user?: any) {
   if (first || last) return [first, last].filter(Boolean).join(" ");
   const email = user?.email || "";
 
-  return email.split("@")[0] || "Usuario";
+  return email.split("@")[0] || i18n.t("comun.usuario", "Usuario");
 }
 function getInitials(text: string) {
   const parts = (text || "").trim().split(/\s+/);
@@ -456,16 +458,24 @@ export default function Header({
           label: etiqueta(`settings.configuracion.${it.id}`) || it.label,
           path: it.path,
           grupo: "config",
-          contexto: sec.label ? String(sec.label).toLowerCase() : undefined,
+          contexto: sec.label
+            ? String(
+                sec.id
+                  ? t(`settings.section.${sec.id}`, { defaultValue: sec.label })
+                  : sec.label,
+              ).toLowerCase()
+            : undefined,
         });
       }
     }
     out.push({
       id: "cfg.apariencia",
-      label: "Apariencia",
+      label: t("settings.configuracion.apariencia", "Apariencia"),
       path: "/setting/apariencia",
       grupo: "config",
-      contexto: "mi cuenta",
+      contexto: String(
+        t("settings.section.mi_cuenta", "Mi cuenta"),
+      ).toLowerCase(),
     });
 
     return out;
@@ -795,7 +805,10 @@ export default function Header({
                       className="px-3 py-6 text-center text-xs"
                       style={{ color: "var(--ink-faint)" }}
                     >
-                      No hay nada con «{consulta.trim()}»
+                      {t("ui.header.noHayNadaCon", {
+                        defaultValue: "No hay nada con «{{q}}»",
+                        q: consulta.trim(),
+                      })}
                     </div>
                   ) : (
                     resultados.map((d, i) => {
@@ -925,7 +938,7 @@ export default function Header({
                   }
                 : null
             }
-            label="Radio · Canal general"
+            label={t("ui.header.radioCanalGeneral", "Radio · Canal general")}
             onClick={() => {
               radioResume();
               toggleWidget();
@@ -1063,7 +1076,7 @@ export default function Header({
                         className="h-4 w-4"
                         style={{ color: "var(--ink-faint)" }}
                       />
-                      Apariencia
+                      {t("settings.configuracion.apariencia", "Apariencia")}
                     </NavLink>
                     <NavLink
                       className={enlaceMenu}

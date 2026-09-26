@@ -99,7 +99,9 @@ const ALL_DAYS = ["lun", "mar", "mie", "jue", "vie", "sab", "dom"];
 const TURNO_OPTIONS: {
   key: TurnoType;
   label: string;
+  labelKey: string;
   sub: string;
+  subKey?: string;
   start: string;
   end: string;
   guards: number;
@@ -111,6 +113,7 @@ const TURNO_OPTIONS: {
   {
     key: "diurno",
     label: "12h Diurno",
+    labelKey: "ui.StationOverview.turno.diurno",
     sub: "07:00 – 19:00",
     start: "07:00",
     end: "19:00",
@@ -120,6 +123,7 @@ const TURNO_OPTIONS: {
   {
     key: "nocturno",
     label: "12h Nocturno",
+    labelKey: "ui.StationOverview.turno.nocturno",
     sub: "19:00 – 07:00",
     start: "19:00",
     end: "07:00",
@@ -129,7 +133,9 @@ const TURNO_OPTIONS: {
   {
     key: "24h",
     label: "24 Horas",
+    labelKey: "ui.StationOverview.turno.24h",
     sub: "Diurno + Nocturno",
+    subKey: "ui.AddStationPage.turnoSub24h",
     start: "00:00",
     end: "23:59",
     guards: 2,
@@ -138,7 +144,9 @@ const TURNO_OPTIONS: {
   {
     key: "custom",
     label: "Personalizado",
+    labelKey: "ui.StationOverview.turno.custom",
     sub: "Define tus horas",
+    subKey: "ui.AddStationPage.turnoSubCustom",
     start: "",
     end: "",
     guards: 1,
@@ -416,7 +424,11 @@ export default function AddStationPage() {
 
       if (adopted > 0)
         toast.success(
-          `${adopted} ronda(s) del puesto anterior recuperada(s) en este puesto`,
+          t("ui.AddStationPage.rondasRecuperadas", {
+            count: adopted,
+            defaultValue:
+              "{{count}} ronda(s) del puesto anterior recuperada(s) en este puesto",
+          }),
         );
       invalidateEntity("stations");
       const newStationId = createdSt?.id || createdSt?.data?.id || null;
@@ -578,7 +590,7 @@ export default function AddStationPage() {
                     {t("postSites.stations.form.schedule", "Turno (horario) *")}
                   </label>
                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                    {TURNO_OPTIONS.map(({ key, label, sub, Icon }) => {
+                    {TURNO_OPTIONS.map(({ key, label, labelKey, sub, subKey, Icon }) => {
                       const selected = turnoType === key;
 
                       return (
@@ -618,13 +630,13 @@ export default function AddStationPage() {
                                   : undefined
                               }
                             >
-                              {label}
+                              {t(labelKey, label)}
                             </p>
                             <p
                               className="text-[11px]"
                               style={{ color: "var(--ink-soft)" }}
                             >
-                              {sub}
+                              {subKey ? t(subKey, sub) : sub}
                             </p>
                           </div>
                         </button>
@@ -652,15 +664,24 @@ export default function AddStationPage() {
                     >
                       <span className="min-w-0">
                         <span className="block text-xs font-semibold text-foreground">
-                          Ajustes avanzados
+                          {t(
+                            "ui.StationOverview.ajustesAvanzados",
+                            "Ajustes avanzados",
+                          )}
                         </span>
                         <span
                           className="mt-0.5 block truncate text-[11px]"
                           style={{ color: "var(--ink-soft)" }}
                         >
                           {rotationStyleId
-                            ? "Ciclo de descansos elegido"
-                            : "El ciclo de descansos se elige al asignar al primer vigilante"}
+                            ? t(
+                                "ui.AddStationPage.cicloDeDescansosElegido",
+                                "Ciclo de descansos elegido",
+                              )
+                            : t(
+                                "ui.AddStationPage.cicloSeEligeAlAsignar",
+                                "El ciclo de descansos se elige al asignar al primer vigilante",
+                              )}
                         </span>
                       </span>
                       <ChevronDown
@@ -766,10 +787,17 @@ export default function AddStationPage() {
                                 disabled={!fits}
                                 value={String(h)}
                               >
-                                {h}h
                                 {fits
-                                  ? ` → ${k} bloque${k > 1 ? "s" : ""}`
-                                  : " (no divide la cobertura)"}
+                                  ? t("ui.AddStationPage.horasBloques", {
+                                      count: k,
+                                      h,
+                                      defaultValue: "{{h}}h → {{count}} bloques",
+                                    })
+                                  : t("ui.AddStationPage.horasNoDivide", {
+                                      h,
+                                      defaultValue:
+                                        "{{h}}h (no divide la cobertura)",
+                                    })}
                               </option>
                             );
                           })}
@@ -812,21 +840,30 @@ export default function AddStationPage() {
                       </label>
                       <div className="glass-sunken flex h-[42px] items-center px-3 text-sm">
                         <span className="font-semibold">
-                          {requiredGuards} fijo{requiredGuards > 1 ? "s" : ""}
+                          {t("ui.AddStationPage.fijosCount", {
+                            count: requiredGuards,
+                            defaultValue: "{{count}} fijos",
+                          })}
                         </span>
                         {turnoType === "custom" && customWindowMin > 0 ? (
                           <span
                             className="ml-auto text-[11px]"
                             style={{ color: "var(--ink-soft)" }}
                           >
-                            {customWindowMin / 60}h de cobertura
+                            {t("ui.AddStationPage.horasDeCobertura", {
+                              hours: customWindowMin / 60,
+                              defaultValue: "{{hours}}h de cobertura",
+                            })}
                           </span>
                         ) : jornadaType(startingTimeInDay, finishTimeInDay) ? (
                           <span
                             className="ml-auto text-[11px] capitalize"
                             style={{ color: "var(--ink-soft)" }}
                           >
-                            {jornadaType(startingTimeInDay, finishTimeInDay)}
+                            {jornadaType(startingTimeInDay, finishTimeInDay) ===
+                            "nocturno"
+                              ? t("ui.AddStationPage.jornadaNocturno", "Nocturno")
+                              : t("ui.AddStationPage.jornadaDiurno", "Diurno")}
                           </span>
                         ) : null}
                       </div>
@@ -860,20 +897,30 @@ export default function AddStationPage() {
                             {rotWork}-{rotCycle - rotWork}
                           </strong>
                           {t("ui.AddStationPage.cadaBloqueLoComparten")}{" "}
-                          <strong>{guardsPerBlock} fijos alternando</strong>{" "}
+                          <strong>
+                            {t("ui.AddStationPage.fijosAlternando", {
+                              count: guardsPerBlock,
+                              defaultValue: "{{count}} fijos alternando",
+                            })}
+                          </strong>{" "}
                           {t("ui.AddStationPage.unoTrabajaMientrasElOtro")}{" "}
                           <strong>
                             {t("ui.AddStationPage.sinSacafranco")}
                           </strong>
-                          . Total: {requiredGuards} fijo
-                          {requiredGuards > 1 ? "s" : ""}.
+                          {t("ui.AddStationPage.totalFijos", {
+                            count: requiredGuards,
+                            defaultValue: ". Total: {{count}} fijos.",
+                          })}
                         </>
                       ) : (
                         <>
-                          El patrón {rotWork}-{rotCycle - rotWork} no permite
-                          alternancia exacta: el ciclo ({rotCycle}) debe ser
-                          múltiplo de los días de trabajo ({rotWork}). Usa 1-1,
-                          2-2, 3-3…
+                          {t("ui.AddStationPage.patronNoPermiteAlternancia", {
+                            pattern: `${rotWork}-${rotCycle - rotWork}`,
+                            cycle: rotCycle,
+                            work: rotWork,
+                            defaultValue:
+                              "El patrón {{pattern}} no permite alternancia exacta: el ciclo ({{cycle}}) debe ser múltiplo de los días de trabajo ({{work}}). Usa 1-1, 2-2, 3-3…",
+                          })}
                         </>
                       )}
                     </p>
@@ -883,10 +930,18 @@ export default function AddStationPage() {
                   customBlockCount > 1 && (
                     <div className="glass-sunken p-4 text-sm">
                       <p className="mb-2 font-medium">
-                        Cobertura {customWindowMin / 60}h — {customBlockCount}{" "}
-                        bloques de {Number(blockHours)}h
+                        {t("ui.AddStationPage.coberturaBloques", {
+                          hours: customWindowMin / 60,
+                          count: customBlockCount,
+                          block: Number(blockHours),
+                          defaultValue:
+                            "Cobertura {{hours}}h — {{count}} bloques de {{block}}h",
+                        })}
                         {guardsPerBlock > 1
-                          ? ` × ${guardsPerBlock} fijos alternando`
+                          ? ` × ${t("ui.AddStationPage.fijosAlternando", {
+                              count: guardsPerBlock,
+                              defaultValue: "{{count}} fijos alternando",
+                            })}`
                           : ""}
                       </p>
                       <div
@@ -902,7 +957,11 @@ export default function AddStationPage() {
                               className="h-3.5 w-3.5"
                               style={{ color: "var(--brand-text)" }}
                             />
-                            Fijo {i + 1} ·{" "}
+                            {t("ui.AddStationPage.fijoN", {
+                              n: i + 1,
+                              defaultValue: "Fijo {{n}}",
+                            })}{" "}
+                            ·{" "}
                             {toHHMM(
                               toMin(startingTimeInDay) + i * customBlockMin,
                             )}{" "}
@@ -921,7 +980,10 @@ export default function AddStationPage() {
                 {turnoType === "24h" && (
                   <div className="glass-sunken p-4 text-sm">
                     <p className="mb-2 font-medium">
-                      Cobertura 24 horas — dos jornadas
+                      {t(
+                        "ui.AddStationPage.cobertura24hDosJornadas",
+                        "Cobertura 24 horas — dos jornadas",
+                      )}
                     </p>
                     <div
                       className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs"
@@ -932,16 +994,23 @@ export default function AddStationPage() {
                           className="h-3.5 w-3.5"
                           style={{ color: "var(--warn-text)" }}
                         />{" "}
-                        Diurno · 07:00 – 19:00
+                        {t("ui.AddStationPage.jornadaDiurno", "Diurno")} ·
+                        07:00 – 19:00
                       </span>
                       <span className="inline-flex items-center gap-1.5">
                         <Moon
                           className="h-3.5 w-3.5"
                           style={{ color: "var(--info-text)" }}
                         />{" "}
-                        Nocturno · 19:00 – 07:00
+                        {t("ui.AddStationPage.jornadaNocturno", "Nocturno")} ·
+                        19:00 – 07:00
                       </span>
-                      <span className="ml-auto font-semibold">2 fijos</span>
+                      <span className="ml-auto font-semibold">
+                        {t("ui.AddStationPage.fijosCount", {
+                          count: 2,
+                          defaultValue: "{{count}} fijos",
+                        })}
+                      </span>
                     </div>
                   </div>
                 )}
@@ -956,17 +1025,19 @@ export default function AddStationPage() {
                       }}
                     >
                       <strong style={{ color: "var(--ink)" }}>
-                        {requiredGuards} vigilante
-                        {requiredGuards > 1 ? "s" : ""} fijo
-                        {requiredGuards > 1 ? "s" : ""}
+                        {t("ui.AddStationPage.vigilantesFijos", {
+                          count: requiredGuards,
+                          defaultValue: "{{count}} vigilantes fijos",
+                        })}
                       </strong>{" "}
-                      en el puesto +{" "}
+                      {t("ui.AddStationPage.enElPuestoMas", "en el puesto +")}{" "}
                       <strong style={{ color: "var(--ink)" }}>
-                        1 sacafranco
+                        {t("ui.AddStationPage.unSacafranco", "1 sacafranco")}
                       </strong>{" "}
-                      que cubre los días de descanso. El sacafranco salta entre
-                      puestos — no pertenece a un solo puesto, por eso no se
-                      cuenta en las vigilantes requeridas.
+                      {t(
+                        "ui.AddStationPage.sacafrancoCubreDescansos",
+                        "que cubre los días de descanso. El sacafranco salta entre puestos — no pertenece a un solo puesto, por eso no se cuenta en las vigilantes requeridas.",
+                      )}
                     </p>
                   )}
 
@@ -1048,14 +1119,19 @@ export default function AddStationPage() {
                 {/* Geofence polygon — now has full page width + height to work with */}
                 <div>
                   <label className="mb-2 block text-sm font-medium">
-                    Geocerca poligonal (opcional)
+                    {t(
+                      "ui.AddStationPage.geocercaPoligonalOpcional",
+                      "Geocerca poligonal (opcional)",
+                    )}
                   </label>
                   <p
                     className="mb-2 text-xs"
                     style={{ color: "var(--ink-soft)" }}
                   >
-                    Si defines un polígono (3+ puntos), se usa en lugar del
-                    radio para validar la marcación.
+                    {t(
+                      "ui.AddStationPage.siDefinesUnPoligono",
+                      "Si defines un polígono (3+ puntos), se usa en lugar del radio para validar la marcación.",
+                    )}
                   </p>
                   <StationGeofencePolygon
                     centerLat={

@@ -131,12 +131,12 @@ export default function MemosPage() {
       setLoading(true);
       try {
         const tenantId = localStorage.getItem("tenantId") || "";
-        if (!tenantId) throw new Error("Tenant no configurado");
+        if (!tenantId) throw new Error(t("ui.MemosPage.tenantNoConfigurado", "Tenant no configurado"));
         const res = await ApiService.get(`/tenant/${tenantId}/memos`);
         const rows = Array.isArray(res) ? res : res.rows || [];
         const mapped = rows.map((memo: any) => ({
           id: memo.id ?? memo._id ?? String(memo.id),
-          subject: memo.subject || memo.title || "Sin asunto",
+          subject: memo.subject || memo.title || t("ui.MemosPage.sinAsunto", "Sin asunto"),
           content: memo.content || memo.description || "",
           dateTime: memo.dateTime || memo.createdAt || memo.updatedAt || "",
           wasAccepted: memo.wasAccepted || false,
@@ -289,7 +289,7 @@ export default function MemosPage() {
     setSaving(true);
     try {
       const tenantId = localStorage.getItem("tenantId") || "";
-      if (!tenantId) throw new Error("Tenant no configurado");
+      if (!tenantId) throw new Error(t("ui.MemosPage.tenantNoConfigurado", "Tenant no configurado"));
       const payload = {
         subject: subject.trim(),
         content: content.trim(),
@@ -336,9 +336,9 @@ export default function MemosPage() {
       setContent("");
       setGuardId("");
       setWasAccepted(false);
-      toast.success("Memo creado correctamente");
+      toast.success(t("ui.MemosPage.memoCreadoCorrectamente", "Memo creado correctamente"));
     } catch (err) {
-      let message = "Error creando memo";
+      let message = t("ui.MemosPage.errorCreandoMemo", "Error creando memo");
       if (err instanceof ApiError) {
         message = err.message || message;
       } else if (err && (err as any).message) {
@@ -360,7 +360,7 @@ export default function MemosPage() {
 
     try {
       const tenantId = localStorage.getItem("tenantId") || "";
-      if (!tenantId) throw new Error("Tenant no configurado");
+      if (!tenantId) throw new Error(t("ui.MemosPage.tenantNoConfigurado", "Tenant no configurado"));
       /* El backend NO registra `DELETE /memos/:id` — sólo `DELETE /memos?ids=`.
          Por la ruta con el id en el camino, Express respondía «Cannot DELETE»
          (404 de Express, no del API), así que BORRAR UN MEMO NO BORRABA NADA:
@@ -373,9 +373,9 @@ export default function MemosPage() {
         current.filter((item) => item.id !== memoToDelete.id),
       );
       setSelectedIds((prev) => prev.filter((id) => id !== memoToDelete.id));
-      toast.success("Memo eliminado correctamente");
+      toast.success(t("ui.MemosPage.memoEliminadoCorrectamente", "Memo eliminado correctamente"));
     } catch (err) {
-      let message = "Error eliminando memo";
+      let message = t("ui.MemosPage.errorEliminandoMemo", "Error eliminando memo");
       if (err instanceof ApiError) {
         message = err.message || message;
       } else if (err && (err as any).message) {
@@ -412,7 +412,7 @@ export default function MemosPage() {
 
     try {
       const tenantId = localStorage.getItem("tenantId") || "";
-      if (!tenantId) throw new Error("Tenant no configurado");
+      if (!tenantId) throw new Error(t("ui.MemosPage.tenantNoConfigurado", "Tenant no configurado"));
       const idsParam = selectedIds.map(encodeURIComponent).join(",");
       const blob = await ApiService.getBlob(
         `/tenant/${tenantId}/memos/export?format=${format}&ids=${idsParam}`,
@@ -420,10 +420,16 @@ export default function MemosPage() {
       const filename = `memos_${hoyEnLaEmpresa()}.${format === "pdf" ? "pdf" : "xlsx"}`;
       downloadBlob(blob, filename);
       toast.success(
-        `Exportado a ${format === "pdf" ? "PDF" : "Excel"} correctamente`,
+        t("ui.MemosPage.exportadoCorrectamente", {
+          defaultValue: "Exportado a {{format}} correctamente",
+          format: format === "pdf" ? "PDF" : "Excel",
+        }),
       );
     } catch (err) {
-      let message = `Error exportando a ${format === "pdf" ? "PDF" : "Excel"}`;
+      let message = t("ui.MemosPage.errorExportando", {
+        defaultValue: "Error exportando a {{format}}",
+        format: format === "pdf" ? "PDF" : "Excel",
+      });
       if (err instanceof ApiError) {
         message = err.message || message;
       } else if (err && (err as any).message) {
@@ -445,16 +451,19 @@ export default function MemosPage() {
 
     if (
       !(await confirmDialog({
-        title: "Eliminar memos",
-        message: `¿Eliminar ${selectedIds.length} memo(s)?`,
-        confirmText: "Eliminar",
+        title: t("ui.MemosPage.eliminarMemos", "Eliminar memos"),
+        message: t("ui.MemosPage.eliminarNMemos", {
+          defaultValue: "¿Eliminar {{count}} memos?",
+          count: selectedIds.length,
+        }),
+        confirmText: t("actions.delete", "Eliminar"),
         tone: "danger",
       }))
     )
       return;
     try {
       const tenantId = localStorage.getItem("tenantId") || "";
-      if (!tenantId) throw new Error("Tenant no configurado");
+      if (!tenantId) throw new Error(t("ui.MemosPage.tenantNoConfigurado", "Tenant no configurado"));
       // Una sola llamada con todos los ids: el endpoint es de lote (`?ids=`).
       // Antes era una petición por memo — y ninguna llegaba a ninguna ruta.
       await ApiService.delete(
@@ -465,9 +474,9 @@ export default function MemosPage() {
       );
       setSelectedIds([]);
       setBulkKey((prev) => prev + 1);
-      toast.success("Memos eliminados correctamente");
+      toast.success(t("ui.MemosPage.memosEliminadosCorrectamente", "Memos eliminados correctamente"));
     } catch (err) {
-      let message = "Error eliminando memos";
+      let message = t("ui.MemosPage.errorEliminandoMemos", "Error eliminando memos");
       if (err instanceof ApiError) {
         message = err.message || message;
       } else if (err && (err as any).message) {
@@ -478,29 +487,31 @@ export default function MemosPage() {
   };
 
   const bulkActions: BulkAction[] = [
-    { value: "deleteSelected", label: "Eliminar seleccionados" },
+    { value: "deleteSelected", label: t("postSites.stations.deleteSelected", "Eliminar seleccionados") },
   ];
 
   const columns: Column<MemoItem>[] = [
-    { key: "subject", header: "Asunto", sortable: true },
-    { key: "guardName", header: "Vigilante", sortable: true },
-    { key: "createdBy", header: "Creado por", sortable: true },
+    { key: "subject", header: t("guards.memos.form.subject", "Asunto"), sortable: true },
+    { key: "guardName", header: t("dashboard.table.headers.guard", "Vigilante"), sortable: true },
+    { key: "createdBy", header: t("guards.reminders.table.createdBy", "Creado por"), sortable: true },
     {
       key: "dateTime",
-      header: "Fecha",
+      header: t("guards.files.table.date", "Fecha"),
       sortable: true,
       render: (value) =>
         value ? new Date(value).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() }) : "-",
     },
     {
       key: "wasAccepted",
-      header: "Estado",
+      header: t("adminOfficeUsers.table.headers.status", "Estado"),
       sortable: true,
       // El acuse de lectura es un semántico, nunca el acento: aceptado = ok,
       // pendiente de acuse = warn.
       render: (value) =>
         value ? (
-          <StatusBadge tone="ok">Aceptado</StatusBadge>
+          <StatusBadge tone="ok">
+            {t("guards.memos.accepted", "Aceptado")}
+          </StatusBadge>
         ) : (
           <StatusBadge tone="warn">{t("comun.pendiente")}</StatusBadge>
         ),
@@ -515,12 +526,12 @@ export default function MemosPage() {
 
   const rowActions = (memo: MemoItem): RowAction[] => [
     {
-      label: "Ver",
+      label: t("actions.view", "Ver"),
       icon: <Eye className="h-4 w-4" />,
       onClick: () => handleView(memo),
     },
     {
-      label: "Eliminar",
+      label: t("actions.delete", "Eliminar"),
       icon: <Trash className="h-4 w-4" />,
       destructive: true,
       onClick: () => handleDelete(memo),
@@ -533,12 +544,15 @@ export default function MemosPage() {
         <PageContainer width="wide">
           <PageHeader
             icon={<Megaphone />}
-            title="Memos"
+            title={t("guards.memos.title", "Memos")}
             subtitle={t("ui.MemosPage.listaDeMemosDelEquipo")}
             badges={
               selectedIds.length > 0 ? (
                 <StatusBadge tone="brand">
-                  {selectedIds.length} seleccionados
+                  {t("ui.MemosPage.nSeleccionados", {
+                    defaultValue: "{{count}} seleccionados",
+                    count: selectedIds.length,
+                  })}
                 </StatusBadge>
               ) : undefined
             }
@@ -552,7 +566,7 @@ export default function MemosPage() {
 
           <StatsStrip className="grid gap-4 sm:grid-cols-3">
             <StatCard
-              label="Memos"
+              label={t("guards.memos.title", "Memos")}
               value={memos.length}
               icon={<Megaphone />}
               accent="brand"
@@ -593,16 +607,20 @@ export default function MemosPage() {
               value={filters.status || "all"}
               onChange={(value) => setFilters({ ...filters, status: value })}
               options={[
-                { value: "all", label: "Todos" },
-                { value: "accepted", label: "Aceptados" },
-                { value: "pending", label: "Pendientes" },
+                { value: "all", label: t("clients.filters.all", "Todos") },
+                { value: "accepted", label: t("ui.MemosPage.aceptados", "Aceptados") },
+                {
+                  value: "pending",
+                  label: t("guards.list.filter.statusPending", "Pendientes"),
+                },
               ]}
             />
 
             <Sheet open={openFilter} onOpenChange={setOpenFilter}>
               <SheetTrigger asChild>
                 <Button variant="outline" size="sm" className="h-9">
-                  <Filter className="mr-2 h-4 w-4" /> Filtros
+                  <Filter className="mr-2 h-4 w-4" />{" "}
+                  {t("clients.filters.title", "Filtros")}
                 </Button>
               </SheetTrigger>
               <SheetContent
@@ -673,7 +691,7 @@ export default function MemosPage() {
                     className="w-full"
                     onClick={() => setOpenFilter(false)}
                   >
-                    Aplicar filtros
+                    {t("clients.applyFilters", "Aplicar filtros")}
                   </Button>
                   <Button
                     variant="outline"
@@ -683,7 +701,7 @@ export default function MemosPage() {
                       setOpenFilter(false);
                     }}
                   >
-                    Limpiar filtros
+                    {t("clients.clearFilters", "Limpiar filtros")}
                   </Button>
                 </div>
               </SheetContent>
@@ -697,16 +715,18 @@ export default function MemosPage() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuItem onClick={handleExportPDF}>
-                  <FileDown className="mr-2 h-4 w-4" /> Exportar PDF
+                  <FileDown className="mr-2 h-4 w-4" />{" "}
+                  {t("clients.exportPDF", "Exportar PDF")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleExportExcel}>
-                  <FileSpreadsheet className="mr-2 h-4 w-4" /> Exportar Excel
+                  <FileSpreadsheet className="mr-2 h-4 w-4" />{" "}
+                  {t("clients.exportExcel", "Exportar Excel")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </TableToolbar>
 
-          <Section title="Memos" icon={<FileText />}>
+          <Section title={t("guards.memos.title", "Memos")} icon={<FileText />}>
             <DataTable<MemoItem>
               columns={columns}
               data={sortedMemos}
@@ -781,12 +801,16 @@ export default function MemosPage() {
                     <SelectItem value="pending">
                       {t("comun.pendiente")}
                     </SelectItem>
-                    <SelectItem value="accepted">Aceptado</SelectItem>
+                    <SelectItem value="accepted">
+                      {t("guards.memos.accepted", "Aceptado")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label className="mb-2 block">Asunto</Label>
+                <Label className="mb-2 block">
+                  {t("guards.memos.form.subject", "Asunto")}
+                </Label>
                 <Input
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
@@ -797,7 +821,9 @@ export default function MemosPage() {
                 />
               </div>
               <div>
-                <Label className="mb-2 block">Contenido</Label>
+                <Label className="mb-2 block">
+                  {t("guards.memos.form.content", "Contenido")}
+                </Label>
                 <Textarea
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
@@ -811,7 +837,9 @@ export default function MemosPage() {
                 <Button variant="outline">{t("actions.cancel")}</Button>
               </DialogClose>
               <Button variant="brand" onClick={handleCreate} disabled={saving}>
-                {saving ? "Guardando..." : "Guardar Memo"}
+                {saving
+                  ? t("clients.saving", "Guardando...")
+                  : t("ui.MemosPage.guardarMemo", "Guardar Memo")}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -824,8 +852,11 @@ export default function MemosPage() {
                 {t("ui.Memos.confirmarEliminacion", "Confirmar eliminación")}
               </DialogTitle>
               <DialogDescription>
-                ¿Estás seguro de que deseas eliminar el memo "
-                {memoToDelete?.subject}"?
+                {t("ui.MemosPage.estasSeguroDeEliminarElMemo", {
+                  defaultValue:
+                    "¿Estás seguro de que deseas eliminar el memo \"{{subject}}\"?",
+                  subject: memoToDelete?.subject ?? "",
+                })}
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="flex items-center justify-end gap-2">
@@ -836,7 +867,7 @@ export default function MemosPage() {
                 </Button>
               </DialogClose>
               <Button variant="destructive" onClick={confirmDelete}>
-                Eliminar memo
+                {t("ui.MemosPage.eliminarMemo", "Eliminar memo")}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -861,7 +892,7 @@ export default function MemosPage() {
                         "memos.readReceiptReceived",
                         "Acuse de lectura recibido",
                       )
-                    : "Pendiente de acuse"}
+                    : t("ui.MemosPage.pendienteDeAcuse", "Pendiente de acuse")}
                 </StatusBadge>
               </div>
               <div className="glass-sunken grid grid-cols-1 gap-4 p-4 sm:grid-cols-2">
@@ -893,13 +924,17 @@ export default function MemosPage() {
                 />
               </div>
               <div>
-                <div className="cg-eyebrow mb-1">Asunto</div>
+                <div className="cg-eyebrow mb-1">
+                  {t("guards.memos.form.subject", "Asunto")}
+                </div>
                 <p className="text-sm font-semibold">
                   {viewMemo?.subject || "-"}
                 </p>
               </div>
               <div>
-                <div className="cg-eyebrow mb-1">Contenido</div>
+                <div className="cg-eyebrow mb-1">
+                  {t("guards.memos.form.content", "Contenido")}
+                </div>
                 <p
                   className="whitespace-pre-line text-sm"
                   style={{ color: "var(--ink-soft)" }}

@@ -227,7 +227,12 @@ export default function DispatchIncidentMap({
         id: ID_INCIDENTE,
         lat: incidente.lat,
         lng: incidente.lng,
-        label: ticket ? `Incidente ${ticket}` : "Incidente",
+        label: ticket
+          ? t("ui.DispatchIncidentMap.incidenteTicket", {
+              defaultValue: "Incidente {{ticket}}",
+              ticket,
+            })
+          : t("ui.DispatchIncidentMap.incidente", "Incidente"),
         role: "crit",
         kind: "incident",
         subtitle: [tipo, cliente].filter(Boolean).join(" · ") || undefined,
@@ -249,9 +254,19 @@ export default function DispatchIncidentMap({
         // el mapa. Que se distingan de un vistazo es media decisión tomada.
         role: r.presentes.length ? "ok" : "muted",
         kind: "station",
-        subtitle: `${formatearDistancia(r.metros)} · ${formatearMinutos(r.minutos)} aprox.`,
+        subtitle: t("ui.DispatchIncidentMap.distanciaMinutosAprox", {
+          defaultValue: "{{distancia}} · {{minutos}} aprox.",
+          distancia: formatearDistancia(r.metros),
+          minutos: formatearMinutos(r.minutos),
+        }),
         status: r.presentes.length
-          ? { label: `${r.presentes.length} en puesto`, tone: "ok" }
+          ? {
+              label: t("ui.DispatchIncidentMap.enPuesto", {
+                defaultValue: "{{count}} en puesto",
+                count: r.presentes.length,
+              }),
+              tone: "ok",
+            }
           : {
               label: t(
                 "ui.DispatchIncidentMap.sinVigilanteAhora",
@@ -271,8 +286,11 @@ export default function DispatchIncidentMap({
       return {
         tone: tonoIncidente,
         fields: mapPopupItems(
-          tipo ? { label: "Tipo", value: tipo } : null,
-          prioridad ? { label: "Prioridad", value: prioridad } : null,
+          tipo ? { label: t("ui.DispatchIncidentMap.tipo", "Tipo"), value: tipo } : null,
+          prioridad ? {
+                label: t("ui.DispatchIncidentMap.prioridad", "Prioridad"),
+                value: prioridad,
+              } : null,
           direccion
             ? {
                 label: t("ui.NominaRecords.ubicacion", "Ubicación"),
@@ -281,7 +299,7 @@ export default function DispatchIncidentMap({
               }
             : null,
           {
-            label: "Coordenadas",
+            label: t("ui.DispatchIncidentMap.coordenadas", "Coordenadas"),
             value: formatearCoord(m.lat, m.lng),
             mono: true,
             wide: true,
@@ -299,13 +317,20 @@ export default function DispatchIncidentMap({
             : null,
           conGente.length
             ? {
-                label: "Llegada estimada",
+                label: t(
+                  "ui.DispatchIncidentMap.llegadaEstimada",
+                  "Llegada estimada",
+                ),
                 value: formatearMinutos(conGente[0].minutos),
               }
             : null,
         ),
         actions: mapPopupItems(
-          mapPopupActions.directions(m.lat, m.lng, "Cómo llegar"),
+          mapPopupActions.directions(
+            m.lat,
+            m.lng,
+            t("map.actions.comoLlegar", "Cómo llegar"),
+          ),
         ),
       };
     }
@@ -317,22 +342,38 @@ export default function DispatchIncidentMap({
     return {
       subtitle: r.direccion || undefined,
       metrics: mapPopupItems(
-        { label: "Distancia", value: formatearDistancia(r.metros) },
-        { label: "Llegada estimada", value: formatearMinutos(r.minutos) },
+        {
+          label: t("ui.DispatchIncidentMap.distancia", "Distancia"),
+          value: formatearDistancia(r.metros),
+        },
+        {
+          label: t(
+            "ui.DispatchIncidentMap.llegadaEstimada",
+            "Llegada estimada",
+          ),
+          value: formatearMinutos(r.minutos),
+        },
       ),
       fields: mapPopupItems({
-        label: "En puesto ahora",
-        value: r.presentes.length ? r.presentes.join(", ") : "Nadie",
+        label: t("ui.DispatchIncidentMap.enPuestoAhora", "En puesto ahora"),
+        value: r.presentes.length ? r.presentes.join(", ") : t("ui.DispatchIncidentMap.nadie", "Nadie"),
         tone: r.presentes.length ? "ok" : "warn",
         wide: true,
       }),
-      note: "Tiempo estimado en vehículo por distancia; no contempla el tráfico.",
+      note: t(
+        "ui.DispatchIncidentMap.tiempoEstimadoEnVehiculoPorDistancia",
+        "Tiempo estimado en vehículo por distancia; no contempla el tráfico.",
+      ),
       actions: mapPopupItems(
         mapPopupActions.detail(
           () => navigate(`/post-sites/${r.id}/overview`),
-          "Ver puesto",
+          t("ui.DispatchIncidentMap.verPuesto", "Ver puesto"),
         ),
-        mapPopupActions.directions(r.lat, r.lng, "Ruta al incidente"),
+        mapPopupActions.directions(
+          r.lat,
+          r.lng,
+          t("ui.DispatchIncidentMap.rutaAlIncidente", "Ruta al incidente"),
+        ),
         mapPopupActions.radio(() => navigate("/radio"), "Radio"),
       ),
     };
@@ -360,7 +401,8 @@ export default function DispatchIncidentMap({
                   rótulos de la leyenda en rojo y en verde. */}
               <div className="cc-map-card flex items-center gap-3 px-3 py-2">
                 <span className="cc-map-key">
-                  <i style={{ color: "var(--bad)" }} /> Incidente
+                  <i style={{ color: "var(--bad)" }} />{" "}
+                  {t("ui.DispatchIncidentMap.incidente", "Incidente")}
                 </span>
                 <span className="cc-map-key">
                   <i style={{ color: "var(--ok)" }} />{" "}
@@ -400,8 +442,11 @@ export default function DispatchIncidentMap({
 
         {cercanos.length === 0 ? (
           <p className="px-3 py-4 text-xs" style={{ color: "var(--ink-soft)" }}>
-            Ningún puesto con coordenadas a menos de{" "}
-            {formatearDistancia(ALCANCE_MAX_M)} de este incidente.
+            {t("ui.DispatchIncidentMap.ningunPuestoConCoordenadasAMenos", {
+              defaultValue:
+                "Ningún puesto con coordenadas a menos de {{distancia}} de este incidente.",
+              distancia: formatearDistancia(ALCANCE_MAX_M),
+            })}
           </p>
         ) : (
           <ul className="divide-y" style={{ borderColor: "var(--hairline)" }}>
@@ -463,8 +508,10 @@ export default function DispatchIncidentMap({
           style={{ borderColor: "var(--hairline)", color: "var(--ink-faint)" }}
         >
           <Radio className="mt-px h-3 w-3 shrink-0" />
-          Distancia en línea recta; el tiempo es una estimación en vehículo, sin
-          tráfico.
+          {t(
+            "ui.DispatchIncidentMap.distanciaEnLineaRectaElTiempo",
+            "Distancia en línea recta; el tiempo es una estimación en vehículo, sin tráfico.",
+          )}
         </p>
       </aside>
     </div>

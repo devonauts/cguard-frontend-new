@@ -64,9 +64,14 @@ function formatDate(iso: string | null) {
  * quedarían estrellas azules o violetas según la preferencia del usuario.
  */
 function Stars({ value }: { value: number }) {
+  const { t } = useTranslation();
+
   return (
     <span
-      aria-label={`${value} de 5`}
+      aria-label={t("ui.GuardRatings.nDe5", {
+        defaultValue: "{{value}} de 5",
+        value,
+      })}
       className="inline-flex items-center gap-0.5"
     >
       {[1, 2, 3, 4, 5].map((i) => (
@@ -202,15 +207,18 @@ export default function GuardRatings() {
             icon={<Star />}
             label={
               guardFilter === "all"
-                ? "Promedio general"
-                : "Promedio del vigilante"
+                ? t("ui.GuardRatings.promedioGeneral", "Promedio general")
+                : t(
+                    "ui.GuardReviewsPage.promedioDelVigilante",
+                    "Promedio del vigilante",
+                  )
             }
             value={average != null ? average.toFixed(2) : "—"}
           />
           <StatCard
             accent="primary"
             icon={<Star />}
-            label="Calificaciones"
+            label={t("ui.GuardRatings.calificaciones", "Calificaciones")}
             value={count}
           />
         </StatsStrip>
@@ -258,7 +266,10 @@ export default function GuardRatings() {
         <Section
           contentClassName="overflow-hidden rounded-2xl"
           icon={<Star />}
-          title="Calificaciones a personal"
+          title={t(
+            "ui.GuardRatings.calificacionesAPersonal",
+            "Calificaciones a personal",
+          )}
         >
           {/* `DataTable` y no el primitivo `<Table>`: se pliega sola en fichas
               en el teléfono, donde estas seis columnas se leían de lado. El
@@ -298,7 +309,7 @@ export default function GuardRatings() {
               },
               {
                 key: "comment",
-                header: "Comentario",
+                header: t("ui.DocumentPacketPublic.commentAria", "Comentario"),
                 render: (_v: any, row: any) => row.comment ?? "—",
               },
             ]}
@@ -344,8 +355,13 @@ export default function GuardRatings() {
           </Select>
           <div className="text-sm text-muted-foreground sm:mx-4">
             {filtered.length === 0
-              ? "0 de 0"
-              : `${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, filtered.length)} de ${filtered.length}`}
+              ? t("guards.list.pagination.emptyRange", "0 – 0 de 0")
+              : t("guards.list.pagination.range", {
+                  defaultValue: "{{start}} - {{end}} de {{total}}",
+                  start: (page - 1) * pageSize + 1,
+                  end: Math.min(page * pageSize, filtered.length),
+                  total: filtered.length,
+                })}
           </div>
           <div className="flex items-center space-x-2">
             <Button

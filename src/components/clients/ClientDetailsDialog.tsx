@@ -116,7 +116,7 @@ export function ClientDetailsDialog({
               {client.lastName && (
                 <div>
                   <p className="text-xs text-foreground/70 font-semibold">
-                    Apellidos
+                    {t("guards.list.details.fields.lastName", "Apellidos")}
                   </p>
                   <p className="text-sm">{client.lastName}</p>
                 </div>
@@ -144,7 +144,7 @@ export function ClientDetailsDialog({
               {categories.length > 0 && (
                 <div className="md:col-span-2">
                   <p className="text-xs text-foreground/70 font-semibold">
-                    Sectores
+                    {t("clients.filters.categories", "Sectores")}
                   </p>
                   <p className="text-sm">
                     {categories.map((c) => c.name).join(", ")}
@@ -209,7 +209,7 @@ export function ClientDetailsDialog({
                 return (
                   <div className="border-t pt-3">
                     <p className="text-xs text-foreground/70 font-semibold">
-                      Sitio Web
+                      {t("clients.form.website", "Sitio Web")}
                     </p>
                     <p className="text-sm">
                       {safeHref ? (
@@ -236,7 +236,7 @@ export function ClientDetailsDialog({
                 variant="outline"
                 onClick={() => onOpenChange(false)}
               >
-                Cerrar
+                {t("actions.close", "Cerrar")}
               </Button>
               {(() => {
                 const { hasPermission } = usePermissions();
@@ -247,7 +247,9 @@ export function ClientDetailsDialog({
                     className="bg-primary hover:bg-primary/90"
                     size="sm"
                   >
-                    <Link to={`/clients/edit/${client.id}`}>Editar</Link>
+                    <Link to={`/clients/edit/${client.id}`}>
+                      {t("actions.edit", "Editar")}
+                    </Link>
                   </Button>
                 ) : null;
               })()}

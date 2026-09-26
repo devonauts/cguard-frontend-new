@@ -697,7 +697,7 @@ export default function GuardNotes({
                                       }}
                                       className="cg-focus rounded p-1 transition-colors hover:[color:var(--bad-text)]"
                                       style={{ color: "var(--ink-faint)" }}
-                                      aria-label={`Quitar ${f.name}`}
+                                      aria-label={t("ui.RouteForm.quitar", { defaultValue: "Quitar {{name}}", name: f.name })}
                                     >
                                       <X size={14} />
                                     </button>
@@ -707,7 +707,7 @@ export default function GuardNotes({
                                     <MeterBar
                                       pct={uploadProgress[i]}
                                       height={8}
-                                      ariaLabel="Progreso de subida"
+                                      ariaLabel={t("ui.GuardNotespage.progresoDeSubida", "Progreso de subida")}
                                     />
                                   )}
                                 </div>

@@ -44,16 +44,21 @@ import api from "@/lib/api";
 import { postSiteService } from "@/lib/api/postSiteService";
 import { diaDeLaEmpresa, horaDeLaEmpresa, desdeInputFechaHora} from "@/lib/horaDeLaEmpresa";
 
+// `id` is the API value; `labelKey` + `name` are only for display.
 const prioridades = [
-  { id: "alta", name: "Alta" },
-  { id: "media", name: "Media" },
-  { id: "baja", name: "Baja" },
+  { id: "alta", name: "Alta", labelKey: "station.orders.prio.alta" },
+  { id: "media", name: "Media", labelKey: "station.orders.prio.media" },
+  { id: "baja", name: "Baja", labelKey: "station.orders.prio.baja" },
 ];
 
 const tiposLlamador = [
-  { id: "cliente", name: "Cliente" },
-  { id: "vigilante", name: "Vigilante" },
-  { id: "supervisor", name: "Supervisor" },
+  { id: "cliente", name: "Cliente", labelKey: "dispatcher.client" },
+  { id: "vigilante", name: "Vigilante", labelKey: "dispatcher.guard" },
+  {
+    id: "supervisor",
+    name: "Supervisor",
+    labelKey: "adminOfficeUsers.roleNames.supervisor",
+  },
 ];
 
 export default function EditDispatchPage() {
@@ -97,7 +102,8 @@ export default function EditDispatchPage() {
             clientsResp.rows.map((c: any) => {
               // El selector dice "Cliente": mostrar la empresa. Este bloque
               // priorizaba fullName/firstName+lastName, o sea el representante legal.
-              const display = clientDisplayName(c, c.company || "Sin nombre");
+              const display = clientDisplayName(c, c.company ||
+                  t("settings.companyPolicies.guardNoNameFallback", "Sin nombre"));
 
               return { id: String(c.id), name: display };
             }),
@@ -166,7 +172,7 @@ export default function EditDispatchPage() {
                 ).trim() ||
                 g.username ||
                 g.email ||
-                "Sin nombre";
+                t("settings.companyPolicies.guardNoNameFallback", "Sin nombre");
 
               return {
                 id: String(g.id || g.userId || g.guardId || g.uuid),
@@ -245,7 +251,7 @@ export default function EditDispatchPage() {
           setSitios(
             resp.rows.map((s: any) => ({
               id: String(s.id),
-              name: s.name || s.companyName || s.address || "Sitio",
+              name: s.name || s.companyName || s.address || t("dispatcher.header_post_site", "Sitio"),
             })),
           );
         } else {
@@ -361,23 +367,23 @@ export default function EditDispatchPage() {
               setSitios(
                 resp.rows.map((s: any) => ({
                   id: String(s.id),
-                  name: s.name || s.companyName || s.address || "Sitio",
+                  name: s.name || s.companyName || s.address || t("dispatcher.header_post_site", "Sitio"),
                 })),
               );
             } else if (prefill.siteId) {
               setSitios([
-                { id: String(prefill.siteId), name: data.site || "Sitio" },
+                { id: String(prefill.siteId), name: data.site || t("dispatcher.header_post_site", "Sitio") },
               ]);
             }
           } else if (prefill.siteId) {
             setSitios([
-              { id: String(prefill.siteId), name: data.site || "Sitio" },
+              { id: String(prefill.siteId), name: data.site || t("dispatcher.header_post_site", "Sitio") },
             ]);
           }
         } catch (err) {
           if (prefill.siteId)
             setSitios([
-              { id: String(prefill.siteId), name: data.site || "Sitio" },
+              { id: String(prefill.siteId), name: data.site || t("dispatcher.header_post_site", "Sitio") },
             ]);
         }
 
@@ -391,7 +397,7 @@ export default function EditDispatchPage() {
             if (exists) return prev;
 
             return [
-              { id: String(prefill.siteId), name: data.site || "Sitio" },
+              { id: String(prefill.siteId), name: data.site || t("dispatcher.header_post_site", "Sitio") },
               ...(prev || []),
             ];
           });
@@ -408,7 +414,7 @@ export default function EditDispatchPage() {
               (data.guardName &&
                 (data.guardName.fullName || data.guardName.name)) ||
               data.guardName ||
-              "Vigilante";
+              t("dispatcher.guard", "Vigilante");
 
             setVigilantes((prev) => {
               const exists =
@@ -481,7 +487,10 @@ export default function EditDispatchPage() {
       try {
         const msg =
           (error as { message?: string } | null)?.message ||
-          "Error al actualizar Incidente";
+          t(
+            "ui.EditDispatchPage.errorAlActualizarIncidente",
+            "Error al actualizar Incidente",
+          );
 
         toast.error(msg);
       } catch (e) {
@@ -672,7 +681,9 @@ export default function EditDispatchPage() {
                   name="priority"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Prioridad*</FormLabel>
+                      <FormLabel>
+                        {t("ui.NewDispatchPage.prioridadReq", "Prioridad*")}
+                      </FormLabel>
                       <Select
                         value={field.value}
                         onOpenChange={(open) => {
@@ -692,7 +703,7 @@ export default function EditDispatchPage() {
                         <SelectContent>
                           {prioridades.map((p) => (
                             <SelectItem key={p.id} value={p.id}>
-                              {p.name}
+                              {t(p.labelKey, p.name)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -718,9 +729,9 @@ export default function EditDispatchPage() {
                           />
                         </SelectTrigger>
                         <SelectContent>
-                          {tiposLlamador.map((t) => (
-                            <SelectItem key={t.id} value={t.id}>
-                              {t.name}
+                          {tiposLlamador.map((tipo) => (
+                            <SelectItem key={tipo.id} value={tipo.id}>
+                              {t(tipo.labelKey, tipo.name)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -932,14 +943,16 @@ export default function EditDispatchPage() {
               </div>
             </Section>
 
-            <Section icon={<NotebookPen />} title="Seguimiento">
+            <Section icon={<NotebookPen />} title={t("ui.NewDispatchPage.seguimiento", "Seguimiento")}>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="actionsTaken"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Acciones tomadas</FormLabel>
+                      <FormLabel>
+                        {t("dispatcher.action_taken", "Acciones tomadas")}
+                      </FormLabel>
                       <FormControl>
                         <Textarea rows={3} {...field} />
                       </FormControl>
@@ -964,13 +977,15 @@ export default function EditDispatchPage() {
               </div>
             </Section>
 
-            <Section icon={<Paperclip />} title="Adjuntos">
+            <Section icon={<Paperclip />} title={t("guards.notes.form.attachments.label", "Adjuntos")}>
               <FormField
                 control={form.control}
                 name="attachment"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Adjunto</FormLabel>
+                    <FormLabel>
+                      {t("guards.notes.attachment", "Adjunto")}
+                    </FormLabel>
                     <div className="flex items-start justify-between gap-3">
                       <input
                         ref={fileInputRef}
@@ -1008,7 +1023,7 @@ export default function EditDispatchPage() {
                           variant="outline"
                           onClick={() => fileInputRef.current?.click()}
                         >
-                          Elegir archivos
+                          {t("ui.NewDispatchPage.elegirArchivos", "Elegir archivos")}
                         </Button>
 
                         <div className="flex min-w-0 flex-1 flex-col gap-1">
@@ -1026,7 +1041,10 @@ export default function EditDispatchPage() {
                                   {f.name}
                                 </span>
                                 <button
-                                  aria-label={`Eliminar ${f.name}`}
+                                  aria-label={t("ui.NewDispatchPage.eliminarArchivo", {
+                                  defaultValue: "Eliminar {{nombre}}",
+                                  nombre: f.name,
+                                })}
                                   className="text-muted-foreground hover:text-[color:var(--bad-text)]"
                                   type="button"
                                   onClick={() => {
@@ -1071,7 +1089,7 @@ export default function EditDispatchPage() {
                 type="submit"
                 variant="brand"
               >
-                Enviar
+                {t("common.send", "Enviar")}
               </Button>
             </FadeIn>
           </form>

@@ -136,7 +136,7 @@ export default function TrainingCoursesPage() {
     try {
       const created = await trainingCourseService.create(form);
 
-      toast.success("Curso creado.");
+      toast.success(t("ui.TrainingCoursesPage.cursoCreado", "Curso creado."));
       setOpenForm(false);
       setForm(emptyForm);
       navigate(`/training/courses/${created.id}`);
@@ -152,7 +152,7 @@ export default function TrainingCoursesPage() {
     if (!deleteId) return;
     try {
       await trainingCourseService.remove(deleteId);
-      toast.success("Curso eliminado.");
+      toast.success(t("ui.TrainingCoursesPage.cursoEliminado", "Curso eliminado."));
       setDeleteId(null);
       load();
     } catch (err) {
@@ -178,7 +178,7 @@ export default function TrainingCoursesPage() {
   const courseColumns: Column<TrainingCourse>[] = [
     {
       key: "title",
-      header: "Curso",
+      header: t("ui.TrainingCoursesPage.curso", "Curso"),
       className: "max-w-[260px]",
       render: (_v, c) => (
         <div className="min-w-0">
@@ -186,7 +186,7 @@ export default function TrainingCoursesPage() {
             <span className="truncate font-medium">{c.title}</span>
             {c.isAddon && (
               <StatusBadge className="shrink-0" dot={false} tone="neutral">
-                <Lock className="h-3 w-3" /> Addon
+                <Lock className="h-3 w-3" /> {t("ui.TrainingCoursesPage.addon", "Addon")}
               </StatusBadge>
             )}
           </div>
@@ -206,10 +206,13 @@ export default function TrainingCoursesPage() {
       header: t("ui.TrainingCourses.categoria", "Categoría"),
       render: (_v, c) => categoryLabel(c.category),
     },
-    { key: "level", header: "Nivel", render: (_v, c) => levelLabel(c.level) },
+    {
+      key: "level",
+      header: t("ui.TrainingCourseDetailPage.nivel", "Nivel"),
+      render: (_v, c) => levelLabel(c.level) },
     {
       key: "pointsValue",
-      header: "Puntos",
+      header: t("ui.TrainingCoursesPage.puntos", "Puntos"),
       numeric: true,
       render: (_v, c) => (
         <span className="inline-flex items-center gap-1 tabular-nums">
@@ -223,12 +226,16 @@ export default function TrainingCoursesPage() {
     },
     {
       key: "published",
-      header: "Estado",
+      header: t("comun.estado", "Estado"),
       render: (_v, c) =>
         c.published ? (
-          <StatusBadge tone="ok">Publicado</StatusBadge>
+          <StatusBadge tone="ok">
+            {t("ui.TrainingCourseDetailPage.publicado", "Publicado")}
+          </StatusBadge>
         ) : (
-          <StatusBadge tone="neutral">Borrador</StatusBadge>
+          <StatusBadge tone="neutral">
+            {t("ui.TrainingCourseDetailPage.borrador", "Borrador")}
+          </StatusBadge>
         ),
     },
   ];
@@ -266,19 +273,19 @@ export default function TrainingCoursesPage() {
           <StatCard
             accent="brand"
             icon={<BookOpen />}
-            label="Cursos"
+            label={t("ui.TrainingCoursesPage.cursos", "Cursos")}
             value={courses.length}
           />
           <StatCard
             accent="ok"
             icon={<CheckCircle2 />}
-            label="Publicados"
+            label={t("ui.TrainingCoursesPage.publicados", "Publicados")}
             value={publishedCount}
           />
           <StatCard
             accent="warn"
             icon={<Pencil />}
-            label="Borradores"
+            label={t("ui.TrainingCoursesPage.borradores", "Borradores")}
             value={draftCount}
           />
         </StatsStrip>
@@ -349,7 +356,7 @@ export default function TrainingCoursesPage() {
             loading={loading}
             rowActions={(c) => [
               {
-                label: "Abrir / Editar",
+                label: t("ui.TrainingCoursesPage.abrirEditar", "Abrir / Editar"),
                 icon: <Pencil className="h-4 w-4" />,
                 onClick: () => navigate(`/training/courses/${c.id}`),
               },
@@ -365,7 +372,7 @@ export default function TrainingCoursesPage() {
               ...(canDestroy && !c.isAddon
                 ? [
                     {
-                      label: "Eliminar",
+                      label: t("actions.delete", "Eliminar"),
                       icon: <Trash2 className="h-4 w-4" />,
                       destructive: true,
                       onClick: () => setDeleteId(c.id),
@@ -393,7 +400,10 @@ export default function TrainingCoursesPage() {
             <div className="space-y-2">
               <Label>{t("ui.TrainingCourses.titulo", "Título *")}</Label>
               <Input
-                placeholder="Ej. Primeros auxilios en seguridad"
+                placeholder={t(
+                  "ui.TrainingCoursesPage.ejPrimerosAuxilios",
+                  "Ej. Primeros auxilios en seguridad",
+                )}
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
               />
@@ -432,7 +442,7 @@ export default function TrainingCoursesPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Nivel</Label>
+                <Label>{t("ui.TrainingCourseDetailPage.nivel", "Nivel")}</Label>
                 <Select
                   value={form.level}
                   onValueChange={(v) => setForm({ ...form, level: v as any })}
@@ -443,7 +453,7 @@ export default function TrainingCoursesPage() {
                   <SelectContent>
                     {TRAINING_LEVELS.map((l) => (
                       <SelectItem key={l.value} value={l.value}>
-                        {l.label}
+                        {t(l.labelKey, l.label)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -452,7 +462,9 @@ export default function TrainingCoursesPage() {
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label>Puntos al completar</Label>
+                <Label>
+                  {t("ui.TrainingCourseDetailPage.puntosAlCompletar", "Puntos al completar")}
+                </Label>
                 <Input
                   min={0}
                   type="number"
@@ -481,7 +493,9 @@ export default function TrainingCoursesPage() {
               {t("actions.cancel")}
             </Button>
             <Button disabled={saving} variant="brand" onClick={handleCreate}>
-              {saving ? "Creando..." : "Crear curso"}
+              {saving
+                ? t("ui.TrainingCoursesPage.creando", "Creando...")
+                : t("ui.TrainingCoursesPage.crearCurso", "Crear curso")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -498,8 +512,10 @@ export default function TrainingCoursesPage() {
               {t("ui.TrainingCourses.eliminarCurso", "¿Eliminar curso?")}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción archivará el curso. Las inscripciones y certificados
-              existentes se conservan.
+              {t(
+                "ui.TrainingCoursesPage.archivaraElCurso",
+                "Esta acción archivará el curso. Las inscripciones y certificados existentes se conservan.",
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

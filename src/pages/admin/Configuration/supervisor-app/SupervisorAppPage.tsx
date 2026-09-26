@@ -369,7 +369,12 @@ export default function SupervisorAppPage() {
                         }
                       >
                         <span className="block text-sm font-semibold">
-                          {f.label}
+                          {f.value
+                            ? f.label
+                            : t(
+                                "ui.SupervisorApp.heredarDelEquipo",
+                                "Heredar del equipo",
+                              )}
                         </span>
                         <span
                           className="block text-xs"

@@ -47,6 +47,7 @@ import {
   type CobroDelSocio,
 } from "@/lib/api/partnerBillingService";
 import { CODIGO_PAGO_DE_EMPRESA } from "@/lib/pagoRequerido";
+import { localeActual } from "@/lib/localeActual";
 
 function money(cents: number, currency = "USD") {
   // en-US → dot as decimal separator (e.g. $12.50), comma as thousands.
@@ -108,7 +109,7 @@ function Aviso({
 }
 
 export default function BillingPage() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [data, setData] = useState<BillingSummary | null>(null);
   const [users, setUsers] = useState<BillableUser[]>([]);
   const [cambiandoUsuario, setCambiandoUsuario] = useState<string | null>(null);
@@ -124,10 +125,9 @@ export default function BillingPage() {
   );
   const [pausadaSinResumen, setPausadaSinResumen] = useState(false);
 
-  const dateLocale = i18n.language?.startsWith("en") ? "en-US" : "es-ES";
   const fmtDate = (iso: string | null) =>
     iso
-      ? new Date(iso).toLocaleDateString(dateLocale, { timeZone: zonaDeLaEmpresa(),
+      ? new Date(iso).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
           day: "2-digit",
           month: "long",
           year: "numeric",
@@ -212,7 +212,9 @@ export default function BillingPage() {
           defaultValue: "Dejar de pagar por esta persona",
         }),
         message: t("billing.removeUserConfirm", {
-          defaultValue: `${u.name} dejará de contar en la factura, pero también PERDERÁ EL ACCESO: se le cierran las sesiones y no podrá entrar a la app ni al CRM. Puedes devolverla cuando quieras, y volverá a la factura.`,
+          defaultValue:
+            "{{name}} dejará de contar en la factura, pero también PERDERÁ EL ACCESO: se le cierran las sesiones y no podrá entrar a la app ni al CRM. Puedes devolverla cuando quieras, y volverá a la factura.",
+          name: u.name,
         }),
         confirmText: t("billing.removeUserOk", {
           defaultValue: "Quitar y bloquear acceso",
@@ -249,7 +251,9 @@ export default function BillingPage() {
           defaultValue: "Volver a dar acceso",
         }),
         message: t("billing.restoreUserConfirm", {
-          defaultValue: `${u.name} recuperará el acceso y volverá a contar en la factura.`,
+          defaultValue:
+            "{{name}} recuperará el acceso y volverá a contar en la factura.",
+          name: u.name,
         }),
         confirmText: t("billing.restoreUserOk", { defaultValue: "Dar acceso" }),
       }))
@@ -488,10 +492,10 @@ export default function BillingPage() {
                 {status === "trialing" && (
                   <Aviso icon={<Clock />} tone="info">
                     {data.trial.daysLeft > 0
-                      ? t("billing.trialLeft", {
+                      ? t("ui.BillingPage.teQuedanDiasDePruebaGratuita", {
                           defaultValue:
-                            "Te quedan {{n}} día(s) de prueba gratuita.",
-                          n: data.trial.daysLeft,
+                            "Te quedan {{count}} días de prueba gratuita.",
+                          count: data.trial.daysLeft,
                         })
                       : t("billing.trialEndsToday", {
                           defaultValue: "Tu prueba gratuita termina hoy.",
@@ -674,8 +678,11 @@ export default function BillingPage() {
               <div className="glass-flat glass-brand space-y-3 p-4">
                 <div className="flex items-center justify-between text-sm">
                   <span style={{ color: "var(--ink-soft)" }}>
-                    {money(q!.perUserCents, currency)} × {data.seats}{" "}
-                    {t("billing.users", { defaultValue: "usuarios" })}
+                    {money(q!.perUserCents, currency)} ×{" "}
+                    {t("ui.BillingPage.nUsuarios", {
+                      defaultValue: "{{count}} usuarios",
+                      count: data.seats,
+                    })}
                   </span>
                   <span className="tabular-nums">
                     {money(q!.perUserCents * data.seats, currency)}
@@ -699,7 +706,10 @@ export default function BillingPage() {
                     {t("billing.monthly", { defaultValue: "Total mensual" })}
                   </span>
                   <span className="font-display tabular-nums">
-                    {money(q!.monthlyCents, currency)}/mes
+                    {t("ui.BillingPage.montoPorMes", {
+                      defaultValue: "{{m}}/mes",
+                      m: money(q!.monthlyCents, currency),
+                    })}
                   </span>
                 </div>
               </div>

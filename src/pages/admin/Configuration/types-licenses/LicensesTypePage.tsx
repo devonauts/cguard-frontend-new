@@ -81,7 +81,10 @@ export default function LicenseTypePage() {
       badges={
         !loading && total > 0 ? (
           <StatusBadge tone="neutral">
-            {total} {total === 1 ? "tipo" : "tipos"}
+            {t("ui.IncidentTypePage.nTipos", {
+              defaultValue: "{{count}} tipos",
+              count: total,
+            })}
           </StatusBadge>
         ) : undefined
       }
@@ -106,7 +109,9 @@ export default function LicenseTypePage() {
             toast.success(t("ui.LicensesTypePage.tipoSDeLicenciaEliminado"));
             await fetchData();
           } catch (e: any) {
-            toast.error(e?.message || "Error al eliminar");
+            toast.error(
+              e?.message || t("clients.errorDelete", "Error al eliminar"),
+            );
           }
         }}
         onEdit={(r: LicenseTypeRow) => {
@@ -124,7 +129,13 @@ export default function LicenseTypePage() {
             toast.success(t("comun.estadoActualizado"));
             await fetchData();
           } catch (e: any) {
-            toast.error(e?.message || "Error al actualizar estado");
+            toast.error(
+              e?.message ||
+                t(
+                  "settings.incidentTypes.statusUpdateError",
+                  "Error al actualizar estado",
+                ),
+            );
           }
         }}
       />
@@ -154,7 +165,9 @@ export default function LicenseTypePage() {
             setEdit(null);
             await fetchData();
           } catch (e: any) {
-            toast.error(e?.message || "Error al guardar");
+            toast.error(
+              e?.message || t("settings.rondas.saveError", "Error al guardar"),
+            );
           }
         }}
       />

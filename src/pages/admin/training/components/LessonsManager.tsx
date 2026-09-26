@@ -274,18 +274,23 @@ export default function LessonsManager({
               >
                 {l.videoUrl && (
                   <span className="inline-flex items-center gap-1">
-                    <Video className="h-3.5 w-3.5" /> Video
+                    <Video className="h-3.5 w-3.5" />{" "}
+                    {t("ui.ClientDocuments.tipo.video", "Video")}
                   </span>
                 )}
                 {l.richContent && (
                   <span className="inline-flex items-center gap-1">
-                    <FileText className="h-3.5 w-3.5" /> Texto
+                    <FileText className="h-3.5 w-3.5" />{" "}
+                    {t("ui.ClientDocuments.tipo.texto", "Texto")}
                   </span>
                 )}
                 {Array.isArray(l.resources) && l.resources.length > 0 && (
                   <span className="inline-flex items-center gap-1">
-                    <Paperclip className="h-3.5 w-3.5" /> {l.resources.length}{" "}
-                    recurso(s)
+                    <Paperclip className="h-3.5 w-3.5" />{" "}
+                    {t("ui.LessonsManager.nRecursos", {
+                      defaultValue: "{{count}} recurso(s)",
+                      count: l.resources.length,
+                    })}
                   </span>
                 )}
                 {l.durationMinutes != null && (
@@ -332,7 +337,9 @@ export default function LessonsManager({
               {t("actions.cancel")}
             </Button>
             <Button disabled={saving} variant="brand" onClick={handleSave}>
-              {saving ? "Guardando..." : "Guardar"}
+              {saving
+                ? t("adminOfficeUsers.editUser.form.savingEdit", "Guardando...")
+                : t("actions.save", "Guardar")}
             </Button>
           </>
         }
@@ -377,7 +384,12 @@ export default function LessonsManager({
             />
           </div>
           <div className="space-y-2">
-            <Label>Contenido (texto enriquecido / HTML)</Label>
+            <Label>
+              {t(
+                "ui.LessonsManager.contenidoHtml",
+                "Contenido (texto enriquecido / HTML)",
+              )}
+            </Label>
             <Textarea
               rows={5}
               value={form.richContent}
@@ -401,7 +413,9 @@ export default function LessonsManager({
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label>Recursos (PDF, documentos)</Label>
+              <Label>
+                {t("ui.LessonsManager.recursosPdf", "Recursos (PDF, documentos)")}
+              </Label>
               <Button
                 size="sm"
                 type="button"

@@ -238,7 +238,10 @@ function MonthCalendarInner({
                 {visibles.map((s) => {
                   const color = guardColorMap[s.guardId] || "var(--ink-faint)";
                   const est = stationsById.get(s.stationId);
-                  const quien = nombreDeVigilante(s.guard, "Vigilante");
+                  const quien = nombreDeVigilante(
+                    s.guard,
+                    t("comun.vigilante", "Vigilante"),
+                  );
                   const aprendiz = (s as any).status === "training";
                   /* ── QUIEN NO VA, NO SE PINTA COMO SI FUERA ──────────────
                      El calendario sólo distinguía al aprendiz. Un turno

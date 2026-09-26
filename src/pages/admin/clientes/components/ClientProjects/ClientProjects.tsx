@@ -83,7 +83,7 @@ export default function ClientProjects({ client }: Props) {
     if (!deleteTargetId) return;
     try {
       await projectService.delete([deleteTargetId]);
-      toast.success("Proyecto eliminado");
+      toast.success(t("ui.ClientProjects.proyectoEliminado", "Proyecto eliminado"));
       setDeleteTargetId(undefined);
       loadProjects();
     } catch {
@@ -94,10 +94,12 @@ export default function ClientProjects({ client }: Props) {
   const handleMarkComplete = async (id: string) => {
     try {
       await projectService.update(id, { status: "completed" });
-      toast.success("Proyecto marcado como completado");
+      toast.success(
+        t("ui.ClientProjects.proyectoCompletado", "Proyecto marcado como completado"),
+      );
       loadProjects();
     } catch {
-      toast.error("Error al actualizar");
+      toast.error(t("ui.ClientProjects.errorAlActualizar", "Error al actualizar"));
     }
   };
 
@@ -114,12 +116,12 @@ export default function ClientProjects({ client }: Props) {
             }}
           >
             <Plus className="h-4 w-4 mr-1" />
-            Nuevo proyecto
+            {t("ui.ClientProjects.nuevoProyecto", "Nuevo proyecto")}
           </Button>
         }
         contentClassName="-mx-1"
         icon={<FolderKanban />}
-        title="Proyectos"
+        title={t("ui.ClientProjects.proyectos", "Proyectos")}
       >
         {/* List */}
         {loading ? (
@@ -135,7 +137,8 @@ export default function ClientProjects({ client }: Props) {
                   setOpenForm(true);
                 }}
               >
-                <Plus className="h-4 w-4 mr-1" /> Nuevo proyecto
+                <Plus className="h-4 w-4 mr-1" />{" "}
+                {t("ui.ClientProjects.nuevoProyecto", "Nuevo proyecto")}
               </Button>
             }
             description={t("ui.ClientProjects.noHayProyectosParaEste")}
@@ -147,12 +150,20 @@ export default function ClientProjects({ client }: Props) {
             <table className="min-w-[640px] w-full text-sm text-left">
               <thead>
                 <tr className="border-b">
-                  <th className="cg-eyebrow px-2 py-2">Proyecto</th>
+                  <th className="cg-eyebrow px-2 py-2">
+                    {t("ui.ClientProjects.proyecto", "Proyecto")}
+                  </th>
                   <th className="cg-eyebrow px-2 py-2">{t("comun.tipo")}</th>
-                  <th className="cg-eyebrow px-2 py-2">Inicio</th>
-                  <th className="cg-eyebrow px-2 py-2">Fin</th>
+                  <th className="cg-eyebrow px-2 py-2">
+                    {t("ui.ClientProjects.inicio", "Inicio")}
+                  </th>
+                  <th className="cg-eyebrow px-2 py-2">
+                    {t("ui.ClientProjects.fin", "Fin")}
+                  </th>
                   <th className="cg-eyebrow px-2 py-2">{t("comun.estado")}</th>
-                  <th className="cg-eyebrow px-2 py-2 text-right">Acciones</th>
+                  <th className="cg-eyebrow px-2 py-2 text-right">
+                    {t("ui.RouteForm.acciones", "Acciones")}
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -195,7 +206,7 @@ export default function ClientProjects({ client }: Props) {
                               setOpenForm(true);
                             }}
                           >
-                            <Pencil className="mr-2 h-4 w-4" /> Editar
+                            <Pencil className="mr-2 h-4 w-4" /> {t("actions.edit", "Editar")}
                           </DropdownMenuItem>
                           {p.status !== "completed" && (
                             <DropdownMenuItem
@@ -205,14 +216,14 @@ export default function ClientProjects({ client }: Props) {
                                 className="mr-2 h-4 w-4"
                                 style={{ color: "var(--ok-text)" }}
                               />{" "}
-                              Marcar completado
+                              {t("ui.ClientProjects.marcarCompletado", "Marcar completado")}
                             </DropdownMenuItem>
                           )}
                           <DropdownMenuItem
                             style={{ color: "var(--bad-text)" }}
                             onClick={() => setDeleteTargetId(p.id)}
                           >
-                            <Trash2 className="mr-2 h-4 w-4" /> Eliminar
+                            <Trash2 className="mr-2 h-4 w-4" /> {t("actions.delete", "Eliminar")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -230,7 +241,9 @@ export default function ClientProjects({ client }: Props) {
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingId ? "Editar proyecto" : "Nuevo proyecto"}
+              {editingId
+                ? t("ui.ClientProjects.editarProyecto", "Editar proyecto")
+                : t("ui.ClientProjects.nuevoProyecto", "Nuevo proyecto")}
             </DialogTitle>
           </DialogHeader>
           <ProjectForm
@@ -269,7 +282,7 @@ export default function ClientProjects({ client }: Props) {
           <AlertDialogFooter>
             <AlertDialogCancel>{t("actions.cancel")}</AlertDialogCancel>
             <AlertDialogAction className="cg-btn-bad" onClick={handleDelete}>
-              Eliminar
+              {t("actions.delete", "Eliminar")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

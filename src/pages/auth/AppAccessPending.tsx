@@ -71,15 +71,19 @@ export default function AppAccessPending() {
             className="mt-3 text-sm leading-relaxed"
             style={{ color: "var(--ink-soft)" }}
           >
-            Este panel es solo para el personal administrativo. Tu trabajo se
-            gestiona desde la aplicación móvil.
+            {t(
+              "ui.AppAccessPending.estePanelEsSoloParaElPersonal",
+              "Este panel es solo para el personal administrativo. Tu trabajo se gestiona desde la aplicación móvil.",
+            )}
           </p>
           <p
             className="mt-3 text-sm leading-relaxed"
             style={{ color: "var(--ink-soft)" }}
           >
-            Si todavía no tienes acceso a la app, tu administrador te lo enviará
-            pronto. Cuando lo recibas, inicia sesión desde la app.
+            {t(
+              "ui.AppAccessPending.siTodaviaNoTienesAccesoALaApp",
+              "Si todavía no tienes acceso a la app, tu administrador te lo enviará pronto. Cuando lo recibas, inicia sesión desde la app.",
+            )}
           </p>
 
           <Button
@@ -87,7 +91,8 @@ export default function AppAccessPending() {
             variant="outline"
             onClick={handleSignOut}
           >
-            <LogOut className="mr-2 h-4 w-4" /> Cerrar sesión
+            <LogOut className="mr-2 h-4 w-4" />{" "}
+            {t("header.logout", "Cerrar sesión")}
           </Button>
         </div>
       </FadeIn>

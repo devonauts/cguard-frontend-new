@@ -159,7 +159,7 @@ export default function CountryPhoneSelect({
           {loading ? (
             <span className="inline-flex items-center gap-2 text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />
-              Cargando…
+              {t("common.loading", "Cargando…")}
             </span>
           ) : current ? (
             <span className="truncate flex items-center gap-2">

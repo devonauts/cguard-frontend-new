@@ -699,7 +699,7 @@ export default function AdminOfficeUsersPage() {
     const acts: AdminUserCardAction[] = [];
     if (status === "invited" || status === "pending") {
       acts.push({
-        label: "Reenviar invitación",
+        label: t("adminOfficeUsers.rowActions.resendInvitation", "Reenviar Invitación"),
         icon: <Send className="h-4 w-4" />,
         disabled: !hasPermission("userEdit"),
         onClick: () => {
@@ -708,7 +708,7 @@ export default function AdminOfficeUsersPage() {
         },
       });
       acts.push({
-        label: "Suspender",
+        label: t("adminOfficeUsers.rowActions.suspend", "Suspender"),
         icon: <Archive className="h-4 w-4" />,
         disabled: !hasPermission("userEdit"),
         onClick: () => {
@@ -718,7 +718,7 @@ export default function AdminOfficeUsersPage() {
       });
     } else if (status === "archived" || status === "archivado") {
       acts.push({
-        label: "Restaurar",
+        label: t("adminOfficeUsers.rowActions.restore", "Restaurar"),
         icon: <RotateCw className="h-4 w-4" />,
         disabled: !hasPermission("userEdit"),
         onClick: () => {
@@ -727,7 +727,7 @@ export default function AdminOfficeUsersPage() {
         },
       });
       acts.push({
-        label: "Eliminar",
+        label: t("adminOfficeUsers.rowActions.delete", "Eliminar"),
         icon: <Trash className="h-4 w-4" />,
         destructive: true,
         disabled: !hasPermission("userDestroy"),
@@ -738,7 +738,7 @@ export default function AdminOfficeUsersPage() {
       });
     } else {
       acts.push({
-        label: "Editar",
+        label: t("adminOfficeUsers.rowActions.edit", "Editar"),
         icon: <Pencil className="h-4 w-4" />,
         disabled: !hasPermission("userEdit"),
         onClick: () => navigate(`/back-office/edit/${u.id}`),
@@ -759,7 +759,7 @@ export default function AdminOfficeUsersPage() {
       }
       if (!isUserAdmin(u)) {
         acts.push({
-          label: "Suspender",
+          label: t("adminOfficeUsers.rowActions.suspend", "Suspender"),
           icon: <Archive className="h-4 w-4" />,
           disabled: !hasPermission("userEdit"),
           onClick: () => {
@@ -1061,7 +1061,8 @@ export default function AdminOfficeUsersPage() {
                     value: "cards",
                     label: (
                       <span className="flex items-center gap-1.5">
-                        <LayoutGrid className="h-3.5 w-3.5" /> Tarjetas
+                        <LayoutGrid className="h-3.5 w-3.5" />{" "}
+                        {t("ui.AdminOfficeUsersPage.tarjetas", "Tarjetas")}
                       </span>
                     ),
                   },

@@ -29,6 +29,8 @@
 import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+
+import i18n from "@/i18n";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
@@ -510,7 +512,7 @@ function displayName(user: any) {
   if (first || last) return [first, last].filter(Boolean).join(" ");
   const email = user?.email || "";
 
-  return email.split("@")[0] || "Usuario";
+  return email.split("@")[0] || i18n.t("comun.usuario", "Usuario");
 }
 function initials(text: string) {
   const parts = (text || "").trim().split(/\s+/).filter(Boolean);
@@ -1060,7 +1062,7 @@ export default function Sidebar({
   const brandTile = (
     <span className="cgsb-logo">
       {tenantLogo ? (
-        <img alt={tenantName || "Logo"} src={tenantLogo} />
+        <img alt={tenantName || t("onboarding.requiredFields.logo", "Logo")} src={tenantLogo} />
       ) : (
         <span>
           {tenantName ? tenantName.substring(0, 2).toUpperCase() : "CG"}
@@ -1238,7 +1240,7 @@ export default function Sidebar({
         onClick={() => go("/dashboard")}
       >
         {tenantLogo ? (
-          <img alt={tenantName || "Logo"} src={tenantLogo} />
+          <img alt={tenantName || t("onboarding.requiredFields.logo", "Logo")} src={tenantLogo} />
         ) : (
           <Shield className="h-[18px] w-[18px]" />
         )}

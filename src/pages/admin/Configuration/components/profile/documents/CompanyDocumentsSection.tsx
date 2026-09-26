@@ -50,7 +50,7 @@ export default function CompanyDocumentsSection({
             onClick={() => fileInputRef.current?.click()}
           >
             <Upload className="mr-2 h-4 w-4" />
-            Subir documento
+            {t("ui.CompanyDocumentsSection.subirDocumento", "Subir documento")}
           </Button>
         ) : undefined
       }
@@ -72,7 +72,10 @@ export default function CompanyDocumentsSection({
 
       {documents.length === 0 ? (
         <EmptyState
-          description="Aquí aparecerán el permiso de operación, el nombramiento y cualquier otro documento legal que subas."
+          description={t(
+            "ui.CompanyDocumentsSection.aquiApareceranElPermisoDeOperacion",
+            "Aquí aparecerán el permiso de operación, el nombramiento y cualquier otro documento legal que subas.",
+          )}
           icon={<FileText />}
           title={t("comun.sinDocumentos", "Sin documentos")}
         />
@@ -104,14 +107,14 @@ export default function CompanyDocumentsSection({
               </div>
               {canEdit && (
                 <button
-                  aria-label="Eliminar"
+                  aria-label={t("actions.delete", "Eliminar")}
                   className="cg-focus inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-semibold"
                   style={{ color: "var(--bad-text)" }}
                   type="button"
                   onClick={() => onDelete(doc.id)}
                 >
                   <Trash2 className="h-3.5 w-3.5" />
-                  Eliminar
+                  {t("actions.delete", "Eliminar")}
                 </button>
               )}
             </li>

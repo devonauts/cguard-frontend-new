@@ -37,13 +37,14 @@ const ICON = {
   event: ActivityIcon,
 } as const;
 
-const KIND_LABEL: Record<ActivityItem["kind"], string> = {
-  incident: "Incidente",
-  checkin: "Fichaje",
-  patrol: "Ronda",
-  alert: "Alerta",
-  system: "Sistema",
-  event: "Novedad",
+/** Translation keys + Spanish defaults; resolved with `t()` at render time. */
+const KIND_LABEL: Record<ActivityItem["kind"], [string, string]> = {
+  incident: ["maps.kind.incident", "Incidente"],
+  checkin: ["ui.ActivityStream.fichaje", "Fichaje"],
+  patrol: ["ui.ActivityStream.ronda", "Ronda"],
+  alert: ["ui.ActivityStream.alerta", "Alerta"],
+  system: ["ui.ActivityStream.sistema", "Sistema"],
+  event: ["ui.ActivityStream.novedad", "Novedad"],
 };
 
 function ActivityStreamBase({
@@ -67,15 +68,21 @@ function ActivityStreamBase({
       live={live}
       subtitle={
         items.length
-          ? `${items.length} eventos recientes`
-          : "Sin eventos todavía"
+          ? t("ui.ActivityStream.eventosRecientes", {
+              count: items.length,
+              defaultValue: "{{count}} eventos recientes",
+            })
+          : t("ui.ActivityStream.sinEventosTodavia", "Sin eventos todavía")
       }
       title={t("ui.ActivityStream.parteDeNovedades", "Parte de novedades")}
     >
       {items.length === 0 ? (
         <EmptyState
           className="m-3 border-0"
-          description="Fichajes, rondas, incidentes y alertas aparecerán aquí conforme ocurran."
+          description={t(
+            "ui.ActivityStream.fichajesRondasIncidentesYAlertas",
+            "Fichajes, rondas, incidentes y alertas aparecerán aquí conforme ocurran.",
+          )}
           icon={<ActivityIcon />}
           title={t("ui.Coverage.sinNovedades", "Sin novedades")}
         />
@@ -87,6 +94,8 @@ function ActivityStreamBase({
             const urgente =
               it.status === "emergency" || it.status === "incident";
             const to = activityRoute(it);
+            const [kindKey, kindDefault] =
+              KIND_LABEL[it.kind] ?? KIND_LABEL.event;
 
             return (
               <div
@@ -127,7 +136,7 @@ function ActivityStreamBase({
                 </div>
 
                 <TonePill className="hidden sm:inline-flex" tone={tone}>
-                  {KIND_LABEL[it.kind]}
+                  {t(kindKey, kindDefault)}
                 </TonePill>
 
                 <div className="w-20 shrink-0 text-right">

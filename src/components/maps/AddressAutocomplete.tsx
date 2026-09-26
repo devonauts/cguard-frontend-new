@@ -65,7 +65,7 @@ interface Lectura {
 export default function AddressAutocomplete({
   onAddressSelect,
   defaultValue = "",
-  placeholder = "Buscar dirección...",
+  placeholder,
   showMap = true,
   mapHeight = "300px",
   initialLat,
@@ -448,12 +448,15 @@ export default function AddressAutocomplete({
         title:
           lastAddressRef.current?.address ||
           inputRef.current?.value ||
-          "Ubicación elegida",
-        subtitle: "Arrastra la chincheta para afinarla",
+          t("ui.AddressAutocomplete.ubicacionElegida", "Ubicación elegida"),
+        subtitle: t(
+          "ui.AddressAutocomplete.arrastraLaChinchetaParaAfinarla",
+          "Arrastra la chincheta para afinarla",
+        ),
         tone: "brand",
         fields: [
           {
-            label: "Coordenadas",
+            label: t("ui.AddressAutocomplete.coordenadas", "Coordenadas"),
             value: formatearCoord(ll.lat, ll.lng),
             mono: true,
             wide: true,
@@ -677,8 +680,10 @@ export default function AddressAutocomplete({
       <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
-          No se pudo cargar el mapa. Revisa la configuración de mapas de la
-          cuenta.
+          {t(
+            "ui.AddressAutocomplete.noSePudoCargarElMapa",
+            "No se pudo cargar el mapa. Revisa la configuración de mapas de la cuenta.",
+          )}
         </AlertDescription>
       </Alert>
     );
@@ -724,7 +729,10 @@ export default function AddressAutocomplete({
             ref={inputRef}
             className="cg-focus h-10 w-full rounded-md border border-border bg-card pl-9 pr-3 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-primary"
             defaultValue={inputValue}
-            placeholder={placeholder}
+            placeholder={
+              placeholder ??
+              t("ui.AddressAutocomplete.buscarDireccion", "Buscar dirección...")
+            }
             type="text"
             onChange={(e) => {
               // Sin `setState` en cada tecla: sólo se recuerda lo tecleado
@@ -773,8 +781,15 @@ export default function AddressAutocomplete({
                     style={{ color: "var(--ink)" }}
                   >
                     {lectura.arrastrando
-                      ? "Suelta para fijar el punto"
-                      : lectura.direccion || "Punto elegido a mano"}
+                      ? t(
+                          "ui.AddressAutocomplete.sueltaParaFijarElPunto",
+                          "Suelta para fijar el punto",
+                        )
+                      : lectura.direccion ||
+                        t(
+                          "ui.AddressAutocomplete.puntoElegidoAMano",
+                          "Punto elegido a mano",
+                        )}
                   </span>
                 </div>
                 <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5">
@@ -794,7 +809,9 @@ export default function AddressAutocomplete({
                       }}
                     >
                       · GPS ±{formatearDistancia(lectura.exactitud)}
-                      {exactitudFloja ? " · poco fiable" : ""}
+                      {exactitudFloja
+                        ? ` · ${t("ui.AddressAutocomplete.pocoFiable", "poco fiable")}`
+                        : ""}
                     </span>
                   )}
                   {lectura.exactitud == null && lectura.desvio > 25 && (
@@ -802,8 +819,11 @@ export default function AddressAutocomplete({
                       className="font-semibold"
                       style={{ color: "var(--warn-text)" }}
                     >
-                      · {formatearDistancia(lectura.desvio)} de la dirección
-                      buscada
+                      ·{" "}
+                      {t("ui.AddressAutocomplete.deLaDireccionBuscada", {
+                        defaultValue: "{{distancia}} de la dirección buscada",
+                        distancia: formatearDistancia(lectura.desvio),
+                      })}
                     </span>
                   )}
                 </div>
@@ -814,8 +834,10 @@ export default function AddressAutocomplete({
                   className="h-3 w-3 shrink-0"
                   style={{ color: "var(--brand-text)" }}
                 />
-                Busca una dirección o arrastra la chincheta para fijar la
-                ubicación exacta.
+                {t(
+                  "ui.AddressAutocomplete.buscaUnaDireccionOArrastra",
+                  "Busca una dirección o arrastra la chincheta para fijar la ubicación exacta.",
+                )}
               </span>
             )}
           </div>

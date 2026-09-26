@@ -11,7 +11,6 @@ import { ApiService, ApiError } from "@/services/api/apiService";
 import {
   roleDisplayName,
   roleDisplayDescription,
-  uiLang,
 } from "@/config/roleLabels";
 import AppLayout from "@/layouts/app-layout";
 import SettingsLayout from "@/layouts/SettingsLayout";
@@ -211,7 +210,9 @@ export default function UserRolesPage() {
     try {
       const tenantId = localStorage.getItem("tenantId") || "";
 
-      if (!tenantId) throw new Error("Tenant no configurado");
+      if (!tenantId) throw new Error(
+          t("ui.UserRolesPage.empresaNoConfigurada", "Empresa no configurada"),
+        );
       const res = await ApiService.get(`/tenant/${tenantId}/role/${r.id}`);
       // support nested shapes
       const data = res && (res.data || res) ? res.data || res : {};
@@ -245,7 +246,9 @@ export default function UserRolesPage() {
     try {
       const tenantId = localStorage.getItem("tenantId") || "";
 
-      if (!tenantId) throw new Error("Tenant no configurado");
+      if (!tenantId) throw new Error(
+          t("ui.UserRolesPage.empresaNoConfigurada", "Empresa no configurada"),
+        );
       const res = await ApiService.get(`/tenant/${tenantId}/role/${r.id}`);
       const data = res && (res.data || res) ? res.data || res : {};
       const perms = Array.isArray(data.permissions) ? data.permissions : [];
@@ -273,7 +276,9 @@ export default function UserRolesPage() {
       }
       const tenantId = localStorage.getItem("tenantId") || "";
 
-      if (!tenantId) throw new Error("Tenant no configurado");
+      if (!tenantId) throw new Error(
+          t("ui.UserRolesPage.empresaNoConfigurada", "Empresa no configurada"),
+        );
       // Always keep the admin floor in the saved set (defense in depth; the
       // backend also force-unions it).
       let toSave = perms;
@@ -305,7 +310,9 @@ export default function UserRolesPage() {
     try {
       const tenantId = localStorage.getItem("tenantId") || "";
 
-      if (!tenantId) throw new Error("Tenant no configurado");
+      if (!tenantId) throw new Error(
+          t("ui.UserRolesPage.empresaNoConfigurada", "Empresa no configurada"),
+        );
       const res = await ApiService.post(
         `/tenant/${tenantId}/role/${id}/reset`,
         {},
@@ -330,13 +337,20 @@ export default function UserRolesPage() {
     }
   };
 
-  const pageLabel = `${paged.length === 0 ? 0 : 1} – ${paged.length} ${uiLang() === "en" ? "of" : "de"} ${filtered.length}`;
+  const pageLabel = t("ui.CatalogTable.rangoDeTotal", {
+    defaultValue: "{{from}} – {{to}} de {{total}}",
+    from: paged.length === 0 ? 0 : 1,
+    to: paged.length,
+    total: filtered.length,
+  });
 
   const submit = async (data: UserRoleDialogValues) => {
     try {
       const tenantId = localStorage.getItem("tenantId") || "";
 
-      if (!tenantId) throw new Error("Tenant no configurado");
+      if (!tenantId) throw new Error(
+          t("ui.UserRolesPage.empresaNoConfigurada", "Empresa no configurada"),
+        );
 
       if (edit) {
         // update
@@ -419,7 +433,9 @@ export default function UserRolesPage() {
     try {
       const tenantId = localStorage.getItem("tenantId") || "";
 
-      if (!tenantId) throw new Error("Tenant no configurado");
+      if (!tenantId) throw new Error(
+          t("ui.UserRolesPage.empresaNoConfigurada", "Empresa no configurada"),
+        );
       for (const id of idsToDelete) {
         await ApiService.delete(`/tenant/${tenantId}/role/${id}`);
       }
@@ -479,14 +495,10 @@ export default function UserRolesPage() {
             badges={
               rows.length > 0 ? (
                 <StatusBadge tone="neutral">
-                  {rows.length}{" "}
-                  {rows.length === 1
-                    ? t("settings.userRoles.roleSingular", {
-                        defaultValue: "rol",
-                      })
-                    : t("settings.userRoles.rolePlural", {
-                        defaultValue: "roles",
-                      })}
+                  {t("ui.UserRolesPage.nRoles", {
+                    defaultValue: "{{count}} roles",
+                    count: rows.length,
+                  })}
                 </StatusBadge>
               ) : undefined
             }

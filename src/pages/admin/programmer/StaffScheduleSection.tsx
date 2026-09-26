@@ -51,13 +51,13 @@ const ymd = (d: Date) =>
 
 /** 0 = domingo, igual que `Date#getDay()` y que `supervisorProfile.turnoDays`. */
 const DIAS = [
-  { n: 1, label: "L" },
-  { n: 2, label: "M" },
-  { n: 3, label: "X" },
-  { n: 4, label: "J" },
-  { n: 5, label: "V" },
-  { n: 6, label: "S" },
-  { n: 0, label: "D" },
+  { n: 1, label: "L", clave: "ui.RotationStyleSelect.lunesCorto" },
+  { n: 2, label: "M", clave: "ui.RotationStyleSelect.martesCorto" },
+  { n: 3, label: "X", clave: "ui.RotationStyleSelect.miercolesCorto" },
+  { n: 4, label: "J", clave: "ui.RotationStyleSelect.juevesCorto" },
+  { n: 5, label: "V", clave: "ui.RotationStyleSelect.viernesCorto" },
+  { n: 6, label: "S", clave: "ui.RotationStyleSelect.sabadoCorto" },
+  { n: 0, label: "D", clave: "ui.RotationStyleSelect.domingoCorto" },
 ];
 
 export default function StaffScheduleSection({
@@ -156,7 +156,7 @@ export default function StaffScheduleSection({
     if (!Array.isArray(wd) || !wd.length)
       return t("ui.StaffSchedule.sinJornada");
     const etiquetas = DIAS.filter((d) => wd.includes(d.n))
-      .map((d) => d.label)
+      .map((d) => t(d.clave, d.label))
       .join("");
 
     return `${etiquetas} · ${(f.pattern?.startTime || "").slice(0, 5)}–${(f.pattern?.endTime || "").slice(0, 5)}`;
@@ -354,7 +354,7 @@ export default function StaffScheduleSection({
                           )
                         }
                       >
-                        {d.label}
+                        {t(d.clave, d.label)}
                       </button>
                     );
                   })}

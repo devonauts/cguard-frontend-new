@@ -136,7 +136,10 @@ export default function VideoSharedClip() {
             ) : (
               <EmptyState
                 className="h-72 justify-center border-0"
-                description="El video aún se está procesando. Vuelve a intentarlo en unos minutos."
+                description={t(
+                  "ui.VideoSharedClip.elVideoAunSeEstaProcesando",
+                  "El video aún se está procesando. Vuelve a intentarlo en unos minutos.",
+                )}
                 icon={<Clock />}
                 title={t(
                   "ui.VideoSharedClip.procesandoElVideo",

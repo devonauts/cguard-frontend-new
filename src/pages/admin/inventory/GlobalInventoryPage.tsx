@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, Fragment } from "react";
 import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,6 +59,9 @@ import inventoryItemService, {
   ITEM_TYPE_LABELS,
   ITEM_STATUS_LABELS,
   ITEM_CONDITION_LABELS,
+  itemTypeLabel,
+  itemStatusLabel,
+  itemConditionLabel,
 } from "@/lib/api/inventoryItemService";
 import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import { enLotes } from "@/lib/enLotes";
@@ -93,22 +97,33 @@ const UN_DIA = 24 * 60 * 60 * 1000;
 
 /** Vencimiento de chalecos y armas: vencido = grave, próximo = aviso, resto = vigente. */
 function estadoVigencia(
-  fecha?: string,
+  fecha: string | undefined,
+  t: TFunction,
 ): { tone: "ok" | "warn" | "bad"; label: string } | null {
   if (!fecha) return null;
   const d = new Date(fecha);
   if (Number.isNaN(d.getTime())) return null;
   const dias = Math.ceil((d.getTime() - Date.now()) / UN_DIA);
-  if (dias < 0) return { tone: "bad", label: "Vencido" };
+  if (dias < 0)
+    return {
+      tone: "bad",
+      label: t("training.enrollmentStatus.expired", "Vencido"),
+    };
   if (dias <= 30)
     return {
       tone: "warn",
       label:
         dias === 0
-          ? "Vence hoy"
-          : `Vence en ${dias} día${dias === 1 ? "" : "s"}`,
+          ? t("ui.GlobalInventoryPage.venceHoy", "Vence hoy")
+          : t("ui.GlobalInventoryPage.venceEnDias", {
+              count: dias,
+              defaultValue: "Vence en {{count}} días",
+            }),
     };
-  return { tone: "ok", label: "Vigente" };
+  return {
+    tone: "ok",
+    label: t("guards.licenses.status.valid", "Vigente"),
+  };
 }
 
 const EMPTY_FORM: InventoryItemInput = {
@@ -173,7 +188,11 @@ export default function GlobalInventoryPage() {
       setItems(res.rows || []);
       setTotal(res.count || 0);
     } catch (e) {
-      toast.error((e as ApiError)?.message || "Error cargando inventario");
+      toast.error((e as ApiError)?.message ||
+          t(
+            "ui.GlobalInventoryPage.errorCargandoInventario",
+            "Error cargando inventario",
+          ));
     } finally {
       setLoading(false);
     }
@@ -258,7 +277,7 @@ export default function GlobalInventoryPage() {
       toast.error(
         (e as ApiError)?.response?.data?.message ||
           (e as ApiError)?.message ||
-          "Error al guardar",
+          t("settings.rondas.saveError", "Error al guardar"),
       );
     } finally {
       setSaving(false);
@@ -271,11 +290,21 @@ export default function GlobalInventoryPage() {
     // Validate: images only, max 20MB each
     for (const file of files) {
       if (!file.type.startsWith("image/")) {
-        toast.error(`"${file.name}" no es una imagen válida`);
+        toast.error(
+          t("ui.GlobalInventoryPage.noEsUnaImagenValida", {
+            defaultValue: "\"{{name}}\" no es una imagen válida",
+            name: file.name,
+          }),
+        );
         return;
       }
       if (file.size > 20 * 1024 * 1024) {
-        toast.error(`"${file.name}" excede el límite de 20 MB`);
+        toast.error(
+          t("ui.GlobalInventoryPage.excedeElLimiteDe20Mb", {
+            defaultValue: "\"{{name}}\" excede el límite de 20 MB",
+            name: file.name,
+          }),
+        );
         return;
       }
     }
@@ -291,7 +320,13 @@ export default function GlobalInventoryPage() {
       );
       const fallidas = subidas.filter((r) => r.status === "rejected").length;
 
-      if (fallidas) toast.error(`${fallidas} foto(s) no se pudieron subir`);
+      if (fallidas)
+        toast.error(
+          t("ui.GlobalInventoryPage.fotosNoSePudieronSubir", {
+            count: fallidas,
+            defaultValue: "{{count}} foto(s) no se pudieron subir",
+          }),
+        );
       const uploaded: InventoryItemPhoto[] = subidas
         .filter((r) => r.status === "fulfilled")
         .map((r) => (r as PromiseFulfilledResult<InventoryItemPhoto>).value);
@@ -300,7 +335,8 @@ export default function GlobalInventoryPage() {
         photos: [...(prev.photos || []), ...uploaded],
       }));
     } catch (err) {
-      toast.error((err as ApiError)?.message || "Error subiendo imagen");
+      toast.error((err as ApiError)?.message ||
+          t("ui.GlobalInventoryPage.errorSubiendoImagen", "Error subiendo imagen"));
     } finally {
       setUploadingPhoto(false);
       if (photoInputRef.current) photoInputRef.current.value = "";
@@ -328,7 +364,7 @@ export default function GlobalInventoryPage() {
       toast.error(
         (e as ApiError)?.response?.data?.message ||
           (e as ApiError)?.message ||
-          "Error al eliminar",
+          t("clients.errorDelete", "Error al eliminar"),
       );
     } finally {
       setDeleting(false);
@@ -354,9 +390,13 @@ export default function GlobalInventoryPage() {
     <div onClick={(e) => e.stopPropagation()}>
       <RowActionsMenu
         actions={[
-          { label: "Editar", icon: <Pencil />, onClick: () => openEdit(item) },
           {
-            label: "Eliminar",
+            label: t("actions.edit", "Editar"),
+            icon: <Pencil />,
+            onClick: () => openEdit(item),
+          },
+          {
+            label: t("actions.delete", "Eliminar"),
             icon: <Trash2 />,
             destructive: true,
             onClick: () => setDeleteTarget(item),
@@ -373,15 +413,23 @@ export default function GlobalInventoryPage() {
 
           <PageHeader
             icon={<Package />}
-            title="Inventario Global"
+            title={t("ui.GlobalInventoryPage.inventarioGlobal", "Inventario Global")}
             subtitle={t("ui.GlobalInventoryPage.catalogoDeEquiposYRecursos")}
             badges={
               <>
                 <StatusBadge tone="brand">
-                  {total} artículo{total !== 1 ? "s" : ""}
+                  {t("ui.GlobalInventoryPage.articulosCount", {
+                    count: total,
+                    defaultValue: "{{count}} artículos",
+                  })}
                 </StatusBadge>
                 {dañados > 0 && (
-                  <StatusBadge tone="bad">{dañados} en mal estado</StatusBadge>
+                  <StatusBadge tone="bad">
+                    {t("ui.GlobalInventoryPage.enMalEstadoCount", {
+                      count: dañados,
+                      defaultValue: "{{count}} en mal estado",
+                    })}
+                  </StatusBadge>
                 )}
               </>
             }
@@ -401,14 +449,14 @@ export default function GlobalInventoryPage() {
               accent="primary"
             />
             <StatCard
-              label="Disponibles"
+              label={t("ui.GlobalInventoryPage.disponibles", "Disponibles")}
               value={disponibles}
               icon={<CheckCircle2 />}
               accent="ok"
               hint={t("ui.GlobalInventory.enEstaPagina", "En esta página")}
             />
             <StatCard
-              label="En mantenimiento"
+              label={t("inventory.itemStatus.enMantenimiento", "En mantenimiento")}
               value={enMantenimiento}
               icon={<Wrench />}
               accent="warn"
@@ -450,7 +498,7 @@ export default function GlobalInventoryPage() {
                 </SelectItem>
                 {ITEM_TYPES.map((t) => (
                   <SelectItem key={t} value={t}>
-                    {ITEM_TYPE_LABELS[t]}
+                    {itemTypeLabel(t)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -471,7 +519,7 @@ export default function GlobalInventoryPage() {
                 </SelectItem>
                 {STATUSES.map((s) => (
                   <SelectItem key={s} value={s}>
-                    {ITEM_STATUS_LABELS[s]}
+                    {itemStatusLabel(s)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -486,7 +534,7 @@ export default function GlobalInventoryPage() {
                   setFilterStatus("");
                 }}
               >
-                <X className="mr-1 h-4 w-4" /> Limpiar
+                <X className="mr-1 h-4 w-4" /> {t("common.clear", "Limpiar")}
               </Button>
             )}
             <div className="ml-auto">
@@ -494,8 +542,11 @@ export default function GlobalInventoryPage() {
                 value={vista}
                 onChange={setVista}
                 options={[
-                  { value: "tarjetas", label: "Tarjetas" },
-                  { value: "lista", label: "Lista" },
+                  {
+                    value: "tarjetas",
+                    label: t("ui.VehiclesPage.tarjetas", "Tarjetas"),
+                  },
+                  { value: "lista", label: t("comun.lista", "Lista") },
                 ]}
               />
             </div>
@@ -511,8 +562,11 @@ export default function GlobalInventoryPage() {
             action={
               <span className="text-sm" style={{ color: "var(--ink-soft)" }}>
                 {loading
-                  ? "Actualizando…"
-                  : `${total} artículo${total !== 1 ? "s" : ""}`}
+                  ? t("ui.GlobalInventoryPage.actualizando", "Actualizando…")
+                  : t("ui.GlobalInventoryPage.articulosCount", {
+                      count: total,
+                      defaultValue: "{{count}} artículos",
+                    })}
               </span>
             }
             contentClassName={
@@ -529,13 +583,22 @@ export default function GlobalInventoryPage() {
                   icon={<Package />}
                   title={
                     hayFiltros
-                      ? "Sin resultados"
-                      : "Sin artículos en el catálogo"
+                      ? t("activity.noResults.title", "Sin resultados")
+                      : t(
+                          "ui.GlobalInventoryPage.sinArticulosEnElCatalogo",
+                          "Sin artículos en el catálogo",
+                        )
                   }
                   description={
                     hayFiltros
-                      ? "Ningún artículo coincide con la búsqueda. Prueba a quitar algún filtro."
-                      : "Agrega tu primer equipo o recurso para empezar a inventariar."
+                      ? t(
+                          "ui.GlobalInventoryPage.ningunArticuloCoincide",
+                          "Ningún artículo coincide con la búsqueda. Prueba a quitar algún filtro.",
+                        )
+                      : t(
+                          "ui.GlobalInventoryPage.agregaTuPrimerEquipo",
+                          "Agrega tu primer equipo o recurso para empezar a inventariar.",
+                        )
                   }
                   action={
                     hayFiltros ? (
@@ -548,7 +611,8 @@ export default function GlobalInventoryPage() {
                           setFilterStatus("");
                         }}
                       >
-                        <X className="mr-1 h-3.5 w-3.5" /> Limpiar filtros
+                        <X className="mr-1 h-3.5 w-3.5" />{" "}
+                        {t("clients.clearFilters", "Limpiar filtros")}
                       </Button>
                     ) : (
                       <Button size="sm" variant="brand" onClick={openCreate}>
@@ -567,7 +631,7 @@ export default function GlobalInventoryPage() {
                 {items.map((item) => {
                   const portada =
                     (item.photos || []).map(getPhotoUrl).find(Boolean) || null;
-                  const vigencia = estadoVigencia(item.expirationDate);
+                  const vigencia = estadoVigencia(item.expirationDate, t);
                   return (
                     <GlassPanel
                       key={item.id}
@@ -581,7 +645,10 @@ export default function GlobalInventoryPage() {
                             onClick={() => setLightboxSrc(portada)}
                             className="cg-focus h-14 w-14 shrink-0 overflow-hidden rounded-xl border"
                             style={{ borderColor: "var(--hairline)" }}
-                            aria-label={`Ver foto de ${item.name}`}
+                            aria-label={t("ui.GlobalInventoryPage.verFotoDeX", {
+                              defaultValue: "Ver foto de {{name}}",
+                              name: item.name,
+                            })}
                           >
                             <SmartImage
                               src={portada}
@@ -599,7 +666,7 @@ export default function GlobalInventoryPage() {
                             {item.name}
                           </div>
                           <div className="cg-eyebrow mt-1 truncate">
-                            {ITEM_TYPE_LABELS[item.type] || item.type}
+                            {itemTypeLabel(item.type)}
                           </div>
                         </div>
                         {acciones(item)}
@@ -607,10 +674,10 @@ export default function GlobalInventoryPage() {
 
                       <div className="flex flex-wrap items-center gap-2">
                         <StatusBadge tone={STATUS_TONE[item.status]}>
-                          {ITEM_STATUS_LABELS[item.status]}
+                          {itemStatusLabel(item.status)}
                         </StatusBadge>
                         <StatusBadge tone={CONDITION_TONE[item.condition]}>
-                          {ITEM_CONDITION_LABELS[item.condition]}
+                          {itemConditionLabel(item.condition)}
                         </StatusBadge>
                         {vigencia && (
                           <StatusBadge tone={vigencia.tone}>
@@ -620,10 +687,16 @@ export default function GlobalInventoryPage() {
                       </div>
 
                       <div className="glass-sunken grid grid-cols-2 gap-3 p-3">
-                        <Field label="Marca" value={item.brand || "—"} />
-                        <Field label="Modelo" value={item.modelName || "—"} />
                         <Field
-                          label="N.º de serie"
+                          label={t("ui.NewVehiclePage.marca", "Marca")}
+                          value={item.brand || "—"}
+                        />
+                        <Field
+                          label={t("ui.NewVehiclePage.modelo", "Modelo")}
+                          value={item.modelName || "—"}
+                        />
+                        <Field
+                          label={t("ui.GlobalInventoryPage.nDeSerie", "N.º de serie")}
                           value={
                             item.serialNumber ? (
                               <span className="font-mono text-xs">
@@ -635,7 +708,7 @@ export default function GlobalInventoryPage() {
                           }
                         />
                         <Field
-                          label="Vencimiento"
+                          label={t("settings.mobil.colExpiration", "Vencimiento")}
                           value={
                             item.expirationDate
                               ? new Date(
@@ -686,7 +759,7 @@ export default function GlobalInventoryPage() {
                         className="hidden px-4 py-3 text-left font-semibold sm:table-cell"
                         style={{ color: "var(--ink-soft)" }}
                       >
-                        N.º de serie
+                        {t("ui.GlobalInventoryPage.nDeSerie", "N.º de serie")}
                       </th>
                       <th
                         className="hidden px-4 py-3 text-left font-semibold md:table-cell"
@@ -704,14 +777,14 @@ export default function GlobalInventoryPage() {
                         className="px-4 py-3 text-right font-semibold"
                         style={{ color: "var(--ink-soft)" }}
                       >
-                        Acciones
+                        {t("actions.more", "Acciones")}
                       </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
                     {items.map((item) => {
                       const abierto = expandedId === item.id;
-                      const vigencia = estadoVigencia(item.expirationDate);
+                      const vigencia = estadoVigencia(item.expirationDate, t);
                       return (
                         <Fragment key={item.id}>
                           <tr
@@ -751,7 +824,7 @@ export default function GlobalInventoryPage() {
                               className="px-4 py-3"
                               style={{ color: "var(--ink-soft)" }}
                             >
-                              {ITEM_TYPE_LABELS[item.type] || item.type}
+                              {itemTypeLabel(item.type)}
                             </td>
                             <td
                               className="hidden px-4 py-3 font-mono text-xs sm:table-cell"
@@ -763,12 +836,12 @@ export default function GlobalInventoryPage() {
                               <StatusBadge
                                 tone={CONDITION_TONE[item.condition]}
                               >
-                                {ITEM_CONDITION_LABELS[item.condition]}
+                                {itemConditionLabel(item.condition)}
                               </StatusBadge>
                             </td>
                             <td className="px-4 py-3">
                               <StatusBadge tone={STATUS_TONE[item.status]}>
-                                {ITEM_STATUS_LABELS[item.status]}
+                                {itemStatusLabel(item.status)}
                               </StatusBadge>
                             </td>
                             <td className="px-4 py-3">
@@ -784,15 +857,15 @@ export default function GlobalInventoryPage() {
                               <td colSpan={7} className="px-6 py-4">
                                 <div className="glass-sunken grid grid-cols-2 gap-3 p-4 sm:grid-cols-3 md:grid-cols-4">
                                   <Field
-                                    label="Marca"
+                                    label={t("ui.NewVehiclePage.marca", "Marca")}
                                     value={item.brand || "—"}
                                   />
                                   <Field
-                                    label="Modelo"
+                                    label={t("ui.NewVehiclePage.modelo", "Modelo")}
                                     value={item.modelName || "—"}
                                   />
                                   <Field
-                                    label="N.º de serie"
+                                    label={t("ui.GlobalInventoryPage.nDeSerie", "N.º de serie")}
                                     value={
                                       item.serialNumber ? (
                                         <span className="font-mono text-xs">
@@ -804,7 +877,7 @@ export default function GlobalInventoryPage() {
                                     }
                                   />
                                   <Field
-                                    label="Vencimiento"
+                                    label={t("settings.mobil.colExpiration", "Vencimiento")}
                                     value={
                                       item.expirationDate ? (
                                         <span className="inline-flex items-center gap-2">
@@ -826,7 +899,7 @@ export default function GlobalInventoryPage() {
                                     }
                                   />
                                   <Field
-                                    label="Creado"
+                                    label={t("ui.GlobalInventoryPage.creado", "Creado")}
                                     value={
                                       item.createdAt
                                         ? new Date(
@@ -851,7 +924,7 @@ export default function GlobalInventoryPage() {
                                   {item.photos && item.photos.length > 0 && (
                                     <div className="col-span-full mt-1">
                                       <div className="cg-eyebrow mb-2">
-                                        Fotos
+                                        {t("clients.portal.modules.photos.label", "Fotos")}
                                       </div>
                                       <div className="flex flex-wrap gap-2">
                                         {item.photos.map((photo, idx) => {
@@ -920,7 +993,11 @@ export default function GlobalInventoryPage() {
                 }
               >
                 <span className="text-sm" style={{ color: "var(--ink-soft)" }}>
-                  Página {page + 1} de {totalPages}
+                  {t("ui.GlobalInventoryPage.paginaXDeY", {
+                    defaultValue: "Página {{page}} de {{total}}",
+                    page: page + 1,
+                    total: totalPages,
+                  })}
                 </span>
                 <div className="flex gap-2">
                   <Button
@@ -929,7 +1006,7 @@ export default function GlobalInventoryPage() {
                     disabled={page === 0}
                     onClick={() => setPage((p) => p - 1)}
                   >
-                    Anterior
+                    {t("clients.pagination.prev", "Anterior")}
                   </Button>
                   <Button
                     variant="outline"
@@ -937,7 +1014,7 @@ export default function GlobalInventoryPage() {
                     disabled={page >= totalPages - 1}
                     onClick={() => setPage((p) => p + 1)}
                   >
-                    Siguiente
+                    {t("clients.pagination.next", "Siguiente")}
                   </Button>
                 </div>
               </div>
@@ -954,7 +1031,7 @@ export default function GlobalInventoryPage() {
         }}
         title={
           editingItem
-            ? "Editar artículo"
+            ? t("ui.GlobalInventoryPage.editarArticulo", "Editar artículo")
             : t("ui.GlobalInventoryPage.nuevoArticulo", "Nuevo artículo")
         }
         icon={<Package className="h-5 w-5" />}
@@ -962,14 +1039,14 @@ export default function GlobalInventoryPage() {
         footer={
           <>
             <Button variant="outline" onClick={closeModal} disabled={saving}>
-              Cancelar
+              {t("actions.cancel", "Cancelar")}
             </Button>
             <Button onClick={handleSave} disabled={saving}>
               {saving
-                ? "Guardando..."
+                ? t("clients.saving", "Guardando...")
                 : editingItem
-                  ? "Guardar cambios"
-                  : "Crear artículo"}
+                  ? t("comms.save", "Guardar cambios")
+                  : t("ui.GlobalInventoryPage.crearArticulo", "Crear artículo")}
             </Button>
           </>
         }
@@ -986,7 +1063,10 @@ export default function GlobalInventoryPage() {
               id="inv-name"
               value={form.name}
               onChange={(e) => setField("name", e.target.value)}
-              placeholder="Ej: Radio Motorola #3"
+              placeholder={t(
+                "ui.GlobalInventoryPage.ejRadioMotorola3",
+                "Ej: Radio Motorola #3",
+              )}
             />
           </div>
 
@@ -1007,7 +1087,7 @@ export default function GlobalInventoryPage() {
               <SelectContent>
                 {ITEM_TYPES.map((t) => (
                   <SelectItem key={t} value={t}>
-                    {ITEM_TYPE_LABELS[t]}
+                    {itemTypeLabel(t)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -1017,7 +1097,9 @@ export default function GlobalInventoryPage() {
           {/* Marca + modelo */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
-              <Label htmlFor="inv-brand">Marca</Label>
+              <Label htmlFor="inv-brand">
+                {t("ui.NewVehiclePage.marca", "Marca")}
+              </Label>
               <Input
                 id="inv-brand"
                 value={form.brand}
@@ -1026,7 +1108,9 @@ export default function GlobalInventoryPage() {
               />
             </div>
             <div className="space-y-1">
-              <Label htmlFor="inv-model">Modelo</Label>
+              <Label htmlFor="inv-model">
+                {t("ui.NewVehiclePage.modelo", "Modelo")}
+              </Label>
               <Input
                 id="inv-model"
                 value={form.modelName}
@@ -1070,7 +1154,7 @@ export default function GlobalInventoryPage() {
                 <SelectContent>
                   {CONDITIONS.map((c) => (
                     <SelectItem key={c} value={c}>
-                      {ITEM_CONDITION_LABELS[c]}
+                      {itemConditionLabel(c)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -1088,7 +1172,7 @@ export default function GlobalInventoryPage() {
                 <SelectContent>
                   {STATUSES.map((s) => (
                     <SelectItem key={s} value={s}>
-                      {ITEM_STATUS_LABELS[s]}
+                      {itemStatusLabel(s)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -1125,7 +1209,10 @@ export default function GlobalInventoryPage() {
               rows={2}
               value={form.notes}
               onChange={(e) => setField("notes", e.target.value)}
-              placeholder="Observaciones adicionales..."
+              placeholder={t(
+                "ui.GlobalInventoryPage.observacionesAdicionales",
+                "Observaciones adicionales...",
+              )}
             />
           </div>
 
@@ -1172,7 +1259,9 @@ export default function GlobalInventoryPage() {
               ) : (
                 <ImagePlus className="h-4 w-4" />
               )}
-              {uploadingPhoto ? "Subiendo..." : "Agregar fotos"}
+              {uploadingPhoto
+                ? t("ui.GlobalInventoryPage.subiendo", "Subiendo...")
+                : t("ui.GlobalInventoryPage.agregarFotos", "Agregar fotos")}
             </button>
             {(form.photos || []).length > 0 && (
               <div className="mt-1 grid grid-cols-4 gap-2">
@@ -1203,7 +1292,7 @@ export default function GlobalInventoryPage() {
                       <button
                         type="button"
                         onClick={() => removePhoto(idx)}
-                        aria-label="Quitar foto"
+                        aria-label={t("ui.GlobalInventoryPage.quitarFoto", "Quitar foto")}
                         // `.cg-btn-bad` en vez de un `oklch(1 0 0)` a mano:
                         // el blanco sobre el rojo de peligro es una decisión
                         // que ya toma el sistema, en glass.css, y que sigue
@@ -1270,24 +1359,33 @@ export default function GlobalInventoryPage() {
               onClick={() => setDeleteTarget(null)}
               disabled={deleting}
             >
-              Cancelar
+              {t("actions.cancel", "Cancelar")}
             </Button>
             <Button
               variant="destructive"
               onClick={handleDelete}
               disabled={deleting}
             >
-              {deleting ? "Eliminando..." : "Eliminar"}
+              {deleting
+                ? t("actions.deleting", "Eliminando...")
+                : t("actions.delete", "Eliminar")}
             </Button>
           </>
         }
       >
         <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-          ¿Estás seguro de que quieres eliminar{" "}
+          {t(
+            "ui.GlobalInventoryPage.estasSeguroDeQueQuieresEliminar",
+            "¿Estás seguro de que quieres eliminar",
+          )}{" "}
           <span className="font-medium text-foreground">
             {deleteTarget?.name}
           </span>
-          ? Esta acción no se puede deshacer.
+          ?{" "}
+          {t(
+            "components.addRemove.confirmDesc",
+            "Esta acción no se puede deshacer.",
+          )}
         </p>
       </Modal>
     </AppLayout>

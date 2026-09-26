@@ -87,7 +87,7 @@ export function Panel({
 /** La acción de cabecera: «Ver todo» con la flecha en diagonal. */
 export function PanelLink({
   to,
-  children = "Ver todo",
+  children,
   onClick,
 }: {
   to?: string;
@@ -95,6 +95,7 @@ export function PanelLink({
   onClick?: () => void;
 }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <button
@@ -107,7 +108,7 @@ export function PanelLink({
       type="button"
       onClick={onClick ?? (to ? () => navigate(to) : undefined)}
     >
-      {children}
+      {children ?? t("ui.PanelLink.verTodo", "Ver todo")}
       <ArrowUpRight className="size-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
     </button>
   );

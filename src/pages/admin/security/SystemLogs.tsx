@@ -88,11 +88,20 @@ function actionMeta(action: string): {
   };
 }
 
+// `labelKey` se traduce donde se pinta: esta constante se evalúa al importar.
 const FILTERS = [
-  { key: "", label: "Todas" },
-  { key: "create", label: "Creaciones" },
-  { key: "update", label: "Actualizaciones" },
-  { key: "delete", label: "Eliminaciones" },
+  { key: "", label: "Todas", labelKey: "ui.SystemLogs.filter.all" },
+  { key: "create", label: "Creaciones", labelKey: "ui.SystemLogs.filter.create" },
+  {
+    key: "update",
+    label: "Actualizaciones",
+    labelKey: "ui.SystemLogs.filter.update",
+  },
+  {
+    key: "delete",
+    label: "Eliminaciones",
+    labelKey: "ui.SystemLogs.filter.delete",
+  },
 ];
 
 export default function SystemLogs() {
@@ -144,9 +153,16 @@ export default function SystemLogs() {
           badges={
             !primeraCarga ? (
               <StatusBadge tone="neutral" dot={false}>
-                {items.length}
-                {total ? ` de ${total}` : ""} registro
-                {items.length === 1 ? "" : "s"}
+                {total
+                  ? t("ui.SystemLogs.nDeTotalRegistros", {
+                      defaultValue: "{{count}} de {{total}} registros",
+                      count: items.length,
+                      total,
+                    })
+                  : t("ui.SystemLogs.nRegistros", {
+                      defaultValue: "{{count}} registros",
+                      count: items.length,
+                    })}
               </StatusBadge>
             ) : undefined
           }
@@ -165,7 +181,10 @@ export default function SystemLogs() {
           <Segmented
             value={action}
             onChange={setAction}
-            options={FILTERS.map((f) => ({ value: f.key, label: f.label }))}
+            options={FILTERS.map((f) => ({
+              value: f.key,
+              label: t(f.labelKey, f.label),
+            }))}
             className="max-w-full overflow-x-auto"
           />
 
@@ -174,8 +193,8 @@ export default function SystemLogs() {
             size="icon"
             className="ml-auto"
             onClick={() => load(true)}
-            title="Recargar"
-            aria-label="Recargar"
+            title={t("ui.AuditLogs.recargar", "Recargar")}
+            aria-label={t("ui.AuditLogs.recargar", "Recargar")}
           >
             <RefreshCw
               className={`size-4 ${primeraCarga ? "animate-spin" : ""}`}
@@ -194,8 +213,14 @@ export default function SystemLogs() {
                 title={t("comun.sinRegistros")}
                 description={
                   q.trim() || action
-                    ? "Ninguna acción coincide con la búsqueda o el filtro elegido."
-                    : "Todavía no se ha registrado ninguna acción."
+                    ? t(
+                        "ui.SystemLogs.ningunaAccionCoincide",
+                        "Ninguna acción coincide con la búsqueda o el filtro elegido.",
+                      )
+                    : t(
+                        "ui.SystemLogs.todaviaNoSeHaRegistrado",
+                        "Todavía no se ha registrado ninguna acción.",
+                      )
                 }
               />
             </div>
@@ -206,7 +231,7 @@ export default function SystemLogs() {
                   <th className="px-4 py-3">
                     {t("ui.SystemLogs.accion", "Acción")}
                   </th>
-                  <th className="px-3 py-3">Registro</th>
+                  <th className="px-3 py-3">{t("ui.SystemLogs.registro", "Registro")}</th>
                   <th className="px-3 py-3">{t("comun.usuario")}</th>
                   <th className="px-3 py-3 text-right">{t("comun.fecha")}</th>
                   <th className="px-2 py-3"></th>
@@ -229,7 +254,7 @@ export default function SystemLogs() {
                           {m.labelKey ? t(m.labelKey, m.label) : m.label}
                         </StatusBadge>
                       </td>
-                      <td className="px-3 py-2.5" data-rotulo="Registro">
+                      <td className="px-3 py-2.5" data-rotulo={t("ui.SystemLogs.registro", "Registro")}>
                         <span className="font-medium">{r.entityName}</span>
                         <span
                           className="ml-1 font-mono text-[10px]"
@@ -276,7 +301,7 @@ export default function SystemLogs() {
                             className="mb-1.5 text-xs"
                             style={{ color: "var(--ink-soft)" }}
                           >
-                            Código:{" "}
+                            {t("ui.SystemLogs.codigo", "Código:")}{" "}
                             <span className="font-mono">{r.entityId}</span>
                           </div>
                           <pre className="glass-sunken max-h-72 overflow-auto p-3 text-xs">
@@ -296,7 +321,7 @@ export default function SystemLogs() {
             loading={loading}
             hasMore={hasMore}
             count={items.length}
-            endLabel="Fin de los registros"
+            endLabel={t("ui.SystemLogs.finDeLosRegistros", "Fin de los registros")}
           />
         </Section>
       </PageContainer>

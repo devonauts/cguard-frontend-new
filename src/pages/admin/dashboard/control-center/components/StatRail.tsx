@@ -9,6 +9,7 @@ import { memo } from "react";
  */
 import { ChevronRight, type LucideIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { fmtValue, toneFill, toneOf } from "../tone";
 
@@ -34,6 +35,7 @@ function StatRailBase({
   items: RailItem[];
 }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <Panel
@@ -56,7 +58,10 @@ function StatRailBase({
               ? {
                   role: "button" as const,
                   tabIndex: 0,
-                  "aria-label": `Ver ${String(kpi.label)}`,
+                  "aria-label": t("ui.MetricHero.verEtiqueta", {
+                    etiqueta: String(kpi.label),
+                    defaultValue: "Ver {{etiqueta}}",
+                  }),
                   onClick: ir,
                   onKeyDown: (e: KeyboardEvent) => {
                     if (e.key === "Enter" || e.key === " ") {

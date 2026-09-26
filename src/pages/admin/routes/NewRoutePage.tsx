@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { Route as RouteIcon } from "lucide-react";
 
@@ -28,6 +29,7 @@ import { PageContainer, PageHeader } from "@/components/kit";
 export default function NewRoutePage() {
   const params = useParams<{ tenantId?: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // El tenant de la URL manda: los servicios lo leen de aquí.
   useEffect(() => {
@@ -44,8 +46,8 @@ export default function NewRoutePage() {
       <PageContainer width="wide">
         <PageHeader
           icon={<RouteIcon />}
-          subtitle="Define las paradas del recorrido, quién lo hace y con qué vehículo."
-          title="Nueva ruta"
+          subtitle={t("ui.NewRoutePage.subtitulo", "Define las paradas del recorrido, quién lo hace y con qué vehículo.")}
+          title={t("ui.NewRoutePage.nuevaRuta", "Nueva ruta")}
         />
         <RouteForm
           mode="create"

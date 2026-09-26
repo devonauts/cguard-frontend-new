@@ -420,7 +420,12 @@ export class VoiceChannel {
     } catch (e: any) {
       return {
         ok: false,
-        error: e?.message || "No se pudo acceder al micrófono",
+        error:
+          e?.message ||
+          i18n.t(
+            "ui.MessengerPage.noSePudoAccederAlMicrofono",
+            "No se pudo acceder al micrófono",
+          ),
       };
     }
   }

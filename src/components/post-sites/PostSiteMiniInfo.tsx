@@ -72,7 +72,7 @@ export default function PostSiteMiniInfo({
 
       <div className="mt-2 flex items-center gap-2">
         <div className="px-2 py-1 text-xs rounded-full bg-blue-500/10 text-blue-600">
-          Guards:{" "}
+          {t("clients.stations.guardsCount", "Vigilantes")}:{" "}
           {site.guardsCount ??
             (Array.isArray(site.assignedGuards)
               ? site.assignedGuards.length

@@ -163,18 +163,24 @@ export default function PostSiteImportDialog({
     link.download = "plantilla-sitios-bilingue.csv";
     link.click();
     window.URL.revokeObjectURL(url);
-    toast.success("Plantilla descargada");
+    toast.success(
+      t("guards.list.importDialog.templateDownloaded", "Plantilla descargada"),
+    );
   }
 
   async function handleImport() {
     if (!file) {
-      toast.error("Selecciona un archivo");
+      toast.error(
+        t("guards.list.importDialog.errors.selectFile", "Selecciona un archivo"),
+      );
 
       return;
     }
 
     setLoading(true);
-    const toastId = toast.loading("Procesando archivo...");
+    const toastId = toast.loading(
+      t("guards.list.importDialog.processing", "Procesando archivo..."),
+    );
 
     try {
       // If file is CSV and user enabled auto-creation, preprocess to ensure clientId present
@@ -623,7 +629,10 @@ export default function PostSiteImportDialog({
             err,
           );
           toast.error(
-            "Para procesar archivos .xlsx habilita la opción e instala la dependencia `xlsx` (SheetJS).",
+            t(
+              "ui.PostSiteImportDialog.paraProcesarXlsx",
+              "Para procesar archivos .xlsx habilita la opción e instala la dependencia `xlsx` (SheetJS).",
+            ),
           );
         }
       }
@@ -727,11 +736,19 @@ export default function PostSiteImportDialog({
 
       if ((result as any).success > 0) {
         toast.success(
-          `${(result as any).success} sitios importados correctamente`,
+          t("ui.PostSiteImportDialog.sitiosImportados", {
+            defaultValue: "{{count}} sitios importados correctamente",
+            count: (result as any).success,
+          }),
         );
       }
       if ((result as any).failed && (result as any).failed > 0) {
-        toast.error(`${(result as any).failed} filas no se pudieron importar.`);
+        toast.error(
+          t("ui.PostSiteImportDialog.filasNoImportadas", {
+            defaultValue: "{{count}} filas no se pudieron importar.",
+            count: (result as any).failed,
+          }),
+        );
       }
 
       onSuccess();
@@ -739,7 +756,9 @@ export default function PostSiteImportDialog({
       setFile(null);
     } catch (error: any) {
       toast.dismiss(toastId);
-      toast.error(error?.message || "Error al importar");
+      toast.error(
+        error?.message || t("ui.ImportDialog.errorAlImportar", "Error al importar"),
+      );
     } finally {
       setLoading(false);
     }
@@ -812,9 +831,17 @@ export default function PostSiteImportDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] w-full max-w-lg overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Importar Sitios desde Excel/CSV</DialogTitle>
+          <DialogTitle>
+            {t(
+              "ui.PostSiteImportDialog.importarSitiosDesdeExcel",
+              "Importar Sitios desde Excel/CSV",
+            )}
+          </DialogTitle>
           <DialogDescription>
-            Sube un archivo .xlsx/.xls/.csv para importar Puestos de Vigilancia.
+            {t(
+              "ui.PostSiteImportDialog.subeUnArchivo",
+              "Sube un archivo .xlsx/.xls/.csv para importar Puestos de Vigilancia.",
+            )}
           </DialogDescription>
         </DialogHeader>
 
@@ -829,10 +856,10 @@ export default function PostSiteImportDialog({
                 )}
               </h4>
               <p className="text-xs text-muted-foreground">
-                Todos los campos marcados con (*) son obligatorios para la carga
-                masiva. Para asociar cliente, proporciona `clientId` o los
-                campos `clientName` / `clientLastName` / `clientEmail` /
-                `clientPhone`.
+                {t(
+                  "ui.PostSiteImportDialog.todosLosCamposMarcados",
+                  "Todos los campos marcados con (*) son obligatorios para la carga masiva. Para asociar cliente, proporciona `clientId` o los campos `clientName` / `clientLastName` / `clientEmail` / `clientPhone`.",
+                )}
               </p>
             </div>
 
@@ -865,7 +892,10 @@ export default function PostSiteImportDialog({
               variant="link"
               onClick={downloadTemplate}
             >
-              ¿No tienes el archivo? Descarga la plantilla aquí
+              {t(
+                "ui.PostSiteImportDialog.noTienesElArchivo",
+                "¿No tienes el archivo? Descarga la plantilla aquí",
+              )}
             </Button>
 
             <div className="border-2 border-dashed rounded-lg p-6 text-center">
@@ -902,7 +932,11 @@ export default function PostSiteImportDialog({
                         if (missing.length > 0) {
                           setMissingHeaders(missing);
                           toast.error(
-                            `Faltan columnas requeridas: ${missing.join(", ")}`,
+                            t("ui.PostSiteImportDialog.faltanColumnas", {
+                              defaultValue:
+                                "Faltan columnas requeridas: {{columnas}}",
+                              columnas: missing.join(", "),
+                            }),
                           );
                         } else {
                           setMissingHeaders([]);
@@ -923,7 +957,12 @@ export default function PostSiteImportDialog({
               >
                 <Upload className="mx-auto h-10 w-10 text-muted-foreground mb-1" />
                 <p className="text-sm text-muted-foreground font-medium">
-                  {file ? file.name : "Explorar tu archivo Excel aquí...."}
+                  {file
+                    ? file.name
+                    : t(
+                        "guards.list.importDialog.browsePlaceholder",
+                        "Explorar tu archivo Excel aquí....",
+                      )}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
                   {t(
@@ -937,18 +976,23 @@ export default function PostSiteImportDialog({
             <div>
               {missingHeaders.length > 0 && (
                 <div className="text-sm text-red-600 mb-2">
-                  Faltan columnas requeridas: {missingHeaders.join(", ")}
+                  {t("ui.PostSiteImportDialog.faltanColumnas", {
+                    defaultValue: "Faltan columnas requeridas: {{columnas}}",
+                    columnas: missingHeaders.join(", "),
+                  })}
                 </div>
               )}
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={() => onOpenChange(false)}>
-                  Cancelar
+                  {t("actions.cancel", "Cancelar")}
                 </Button>
                 <Button
                   disabled={!file || loading || missingHeaders.length > 0}
                   onClick={handleImport}
                 >
-                  {loading ? "Importando..." : "Importar"}
+                  {loading
+                    ? t("guards.list.importDialog.importing", "Importando...")
+                    : t("actions.import", "Importar")}
                 </Button>
               </div>
             </div>

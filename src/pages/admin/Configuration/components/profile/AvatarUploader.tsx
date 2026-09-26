@@ -52,7 +52,7 @@ export default function AvatarUploader({ src, onChange, size = 128 }: Props) {
         >
           {src ? (
             <img
-              alt="Foto de perfil"
+              alt={t("ui.AvatarUploader.fotoDePerfil", "Foto de perfil")}
               className="h-full w-full object-cover"
               src={src}
             />

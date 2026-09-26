@@ -239,7 +239,7 @@ export default function DataReport<T>({
     setTo(ymd(new Date()));
   };
 
-  const rangeLabel = `${from} a ${to}`;
+  const rangeLabel = t("ui.DataReport.rangoDeA", { defaultValue: "{{from}} a {{to}}", from, to });
   const fileBase = title
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
@@ -275,7 +275,7 @@ export default function DataReport<T>({
         filtered,
         {
           title,
-          subtitle: `Rango: ${rangeLabel} \u00b7 ${filtered.length} registro(s)`,
+          subtitle: t("ui.DataReport.rangoRegistros", { defaultValue: "Rango: {{range}} · {{count}} registro(s)", range: rangeLabel, count: filtered.length }),
           fileBase: `${fileBase}-${to}`,
         },
       );
@@ -318,8 +318,8 @@ export default function DataReport<T>({
         .foot{margin-top:18px;color:oklch(0.62 0 0);font-size:10px;text-align:right}
       </style></head><body>
       <h1>${escapeHtml(title)}</h1>
-      <p class="sub">Rango: ${escapeHtml(rangeLabel)} · ${filtered.length} registro(s)</p>
-      <table><thead><tr>${head}</tr></thead><tbody>${body || `<tr><td colspan="${columns.length}" style="text-align:center;color:oklch(0.62 0 0);padding:24px">Sin datos</td></tr>`}</tbody></table>
+      <p class="sub">${escapeHtml(t("ui.DataReport.rangoRegistros", { defaultValue: "Rango: {{range}} · {{count}} registro(s)", range: rangeLabel, count: filtered.length }))}</p>
+      <table><thead><tr>${head}</tr></thead><tbody>${body || `<tr><td colspan="${columns.length}" style="text-align:center;color:oklch(0.62 0 0);padding:24px">${escapeHtml(t("ui.DataReport.sinDatos", "Sin datos"))}</td></tr>`}</tbody></table>
       <p class="foot">${escapeHtml(pieDeInforme())}</p>
       </body></html>`;
   };
@@ -355,7 +355,7 @@ export default function DataReport<T>({
         <div className="space-y-3">
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <label className="cg-eyebrow">Desde</label>
+            <label className="cg-eyebrow">{t("comun.desde", "Desde")}</label>
             <input
               className="cg-input w-full px-3 py-2 text-sm"
               max={to}
@@ -365,7 +365,7 @@ export default function DataReport<T>({
             />
           </div>
           <div className="space-y-1.5">
-            <label className="cg-eyebrow">Hasta</label>
+            <label className="cg-eyebrow">{t("comun.hasta", "Hasta")}</label>
             <input
               className="cg-input w-full px-3 py-2 text-sm"
               min={from}
@@ -396,7 +396,7 @@ export default function DataReport<T>({
         <Segmented
           options={PRESETS.map((d) => ({
             value: String(d),
-            label: `${d} días`,
+            label: t("ui.DataReport.nDias", { defaultValue: "{{count}} días", count: d }),
           }))}
           value={activePreset}
           onChange={applyPreset}

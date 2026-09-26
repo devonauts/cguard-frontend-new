@@ -57,6 +57,7 @@ import {
 } from "@/contexts/AccentContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
+import { localeActual } from "@/lib/localeActual";
 
 /** Cómo se verá el relleno del acento en el tema actual. La claridad es la misma
  *  que usa el sistema (0,72 en claro / 0,78 en oscuro): la muestra tiene que ser
@@ -720,7 +721,10 @@ export default function AppearancePage() {
 
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <MetricTile
-                  delta={{ value: "3,2 %", direction: "up" }}
+                  delta={{
+                    value: `${(3.2).toLocaleString(localeActual())} %`,
+                    direction: "up",
+                  }}
                   hint={t("settings.appearance.metricRoundsHint", {
                     defaultValue: "Últimos 7 días",
                   })}

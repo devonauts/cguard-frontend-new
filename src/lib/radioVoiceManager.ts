@@ -166,8 +166,18 @@ function avisarTransmision(sp: { userId: string; name: string } | null) {
         typeof Notification !== "undefined" &&
         Notification.permission === "granted"
       ) {
-        const n = new Notification("Radio · transmisión entrante", {
-          body: `${sp?.name || "Un vigilante"} está hablando en el canal.`,
+        const n = new Notification(
+          i18n.t(
+            "ui.radioVoiceManager.radioTransmisionEntrante",
+            "Radio · transmisión entrante",
+          ),
+          {
+          body: i18n.t("ui.radioVoiceManager.estaHablandoEnElCanal", {
+            defaultValue: "{{nombre}} está hablando en el canal.",
+            nombre:
+              sp?.name ||
+              i18n.t("ui.radioVoiceManager.unVigilante", "Un vigilante"),
+          }),
           tag: "radio-tx",
           renotify: false,
           silent: false,

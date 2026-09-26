@@ -62,17 +62,41 @@ export function ImportarHojaDeVida({
       if (leidos === 0) {
         // Pasa con un escaneo torcido o una foto movida. Se dice qué hacer, no
         // que «falló la extracción».
-        toast.warning("No pudimos sacar datos de ese archivo", {
-          description: "Revisa que se lea bien, o llena el formulario a mano.",
+        toast.warning(
+          t(
+            "ui.ImportarHojaDeVida.noPudimosSacarDatos",
+            "No pudimos sacar datos de ese archivo",
+          ),
+          {
+          description: t(
+            "ui.ImportarHojaDeVida.revisaQueSeLeaBien",
+            "Revisa que se lea bien, o llena el formulario a mano.",
+          ),
         });
       } else if (r.faltantes.length) {
-        toast.success(`Leímos ${leidos} datos de la hoja de vida`, {
+        toast.success(
+          t("ui.ImportarHojaDeVida.leimosDatos", {
+            defaultValue: "Leímos {{count}} datos de la hoja de vida",
+            count: leidos,
+          }),
+          {
           description: r.faltantes.includes("contacto")
-            ? "Falta el correo o el teléfono: sin uno de los dos no se puede invitar."
-            : "Revisa lo que quedó vacío antes de guardar.",
+            ? t(
+                "ui.ImportarHojaDeVida.faltaCorreoOTelefono",
+                "Falta el correo o el teléfono: sin uno de los dos no se puede invitar.",
+              )
+            : t(
+                "ui.ImportarHojaDeVida.revisaLoQueQuedoVacio",
+                "Revisa lo que quedó vacío antes de guardar.",
+              ),
         });
       } else {
-        toast.success(`Leímos ${leidos} datos de la hoja de vida`, {
+        toast.success(
+          t("ui.ImportarHojaDeVida.leimosDatos", {
+            defaultValue: "Leímos {{count}} datos de la hoja de vida",
+            count: leidos,
+          }),
+          {
           description: t(
             "ui.ImportarHojaDeVida.revisalosAntesDeGuardar",
             "Revísalos antes de guardar.",
@@ -111,14 +135,22 @@ export function ImportarHojaDeVida({
         ) : (
           <FileUp className="size-4" />
         )}
-        {leyendo ? "Leyendo la hoja de vida…" : "Importar hoja de vida"}
+        {leyendo
+          ? t("ui.ImportarHojaDeVida.leyendo", "Leyendo la hoja de vida…")
+          : t("ui.ImportarHojaDeVida.importar", "Importar hoja de vida")}
         {!leyendo && <Sparkles className="size-3.5 opacity-60" />}
       </Button>
       <p className="mt-1.5 text-xs text-muted-foreground">
         {leyendo
           ? // Un escaneo tarda de verdad. Decir cuánto evita que se pulse otra vez.
-            "Puede tardar hasta un minuto si es un escaneo."
-          : "PDF o foto. Rellena el formulario; nada se guarda hasta que tú lo guardes."}
+            t(
+              "ui.ImportarHojaDeVida.puedeTardar",
+              "Puede tardar hasta un minuto si es un escaneo.",
+            )
+          : t(
+              "ui.ImportarHojaDeVida.pdfOFoto",
+              "PDF o foto. Rellena el formulario; nada se guarda hasta que tú lo guardes.",
+            )}
       </p>
     </div>
   );

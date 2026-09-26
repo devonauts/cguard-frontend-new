@@ -61,14 +61,21 @@ export type RotationStyle = {
  */
 /** Etiquetas del selector de arranque. El orden es el del rol: lunes primero. */
 const DIAS_SEMANA = [
-  { corto: "L", largo: "lunes" },
-  { corto: "M", largo: "martes" },
-  { corto: "X", largo: "miércoles" },
-  { corto: "J", largo: "jueves" },
-  { corto: "V", largo: "viernes" },
-  { corto: "S", largo: "sábado" },
-  { corto: "D", largo: "domingo" },
+  { corto: "L", largo: "lunes", clave: "lunes" },
+  { corto: "M", largo: "martes", clave: "martes" },
+  { corto: "X", largo: "miércoles", clave: "miercoles" },
+  { corto: "J", largo: "jueves", clave: "jueves" },
+  { corto: "V", largo: "viernes", clave: "viernes" },
+  { corto: "S", largo: "sábado", clave: "sabado" },
+  { corto: "D", largo: "domingo", clave: "domingo" },
 ];
+
+/** Display letter of each preview cell (the D/N/S values stay untranslated). */
+const LETRA_VISTA_PREVIA: Record<string, [string, string]> = {
+  D: ["ui.RotationStyleSelect.letraDia", "D"],
+  N: ["ui.RotationStyleSelect.letraNoche", "N"],
+  S: ["ui.RotationStyleSelect.letraFranco", "S"],
+};
 
 function previsualiza(
   dia: number,
@@ -144,10 +151,12 @@ export default function RotationStyleSelect({
      «tarde» en 07:00–15:00 + 15:00–23:00, «tarde» y «noche» en 15:00–07:00— y
      no se adivina uno a partir del otro: en un puesto de 24 h siguen siendo el
      día y la noche de siempre. */
-  const lblSegundo = (etiquetaSegundoBloque || "noche").trim() || "noche";
+  const noche = t("ui.tramos.noche", "noche");
+  const diaLbl = t("ui.tramos.dia", "día");
+  const lblSegundo = (etiquetaSegundoBloque || noche).trim() || noche;
   const lblPrimero = is24h
-    ? "día"
-    : (etiquetaPrimerBloque || "día").trim() || "día";
+    ? diaLbl
+    : (etiquetaPrimerBloque || diaLbl).trim() || diaLbl;
   const [styles, setStyles] = useState<RotationStyle[]>([]);
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -331,7 +340,13 @@ export default function RotationStyleSelect({
         onChange(creado.id);
       }
     } catch (e: any) {
-      toast.error(e?.message || "No se pudo crear el patrón");
+      toast.error(
+        e?.message ||
+          t(
+            "ui.RotationStyleSelect.errorCrearPatron",
+            "No se pudo crear el patrón",
+          ),
+      );
     } finally {
       setCreating(false);
     }
@@ -347,13 +362,22 @@ export default function RotationStyleSelect({
     // `restDays: 0` es un patrón legítimo —el vigilante trabaja todos los días—
     // y "0 descanso" se lee como un dato a medio escribir. Se nombra.
     const descanso =
-      s.restDays === 0 ? "sin descanso" : `${s.restDays} descansa`;
+      s.restDays === 0
+        ? t("ui.RotationStyleSelect.sinDescanso", "sin descanso")
+        : t("ui.RotationStyleSelect.nDescansa", {
+            defaultValue: "{{n}} descansa",
+            n: s.restDays,
+          });
 
     // Un patrón sin segundo tramo se describe con UN solo número de trabajo,
     // venga de donde venga: escribir «· 0 noche» sólo se lee como un dato roto.
     return (s.nightShifts || 0) > 0
       ? `${s.dayShifts} ${lblPrimero} · ${s.nightShifts} ${lblSegundo} · ${descanso}`
-      : `${s.dayShifts} trabaja · ${descanso}`;
+      : t("ui.RotationStyleSelect.nTrabaja", {
+          defaultValue: "{{n}} trabaja · {{descanso}}",
+          n: s.dayShifts,
+          descanso,
+        });
   };
 
   const createCustom = async () => {
@@ -376,7 +400,12 @@ export default function RotationStyleSelect({
     const night = dosTramos && !fijos ? Math.max(0, parseInt(cNight) || 0) : 0;
 
     if (work + night < 1) {
-      toast.error("El patrón necesita al menos un día de trabajo.");
+      toast.error(
+        t(
+          "ui.RotationStyleSelect.elPatronNecesitaAlMenos",
+          "El patrón necesita al menos un día de trabajo.",
+        ),
+      );
 
       return;
     }
@@ -463,7 +492,8 @@ export default function RotationStyleSelect({
           type="button"
           onClick={() => setCustom((v) => !v)}
         >
-          <Plus size={12} /> Personalizado
+          <Plus size={12} />{" "}
+          {t("ui.RotationStyleSelect.personalizado", "Personalizado")}
         </button>
       </div>
 
@@ -479,7 +509,15 @@ export default function RotationStyleSelect({
             className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider"
             style={{ color: "var(--ink-soft)" }}
           >
-            ¿Cómo trabajan los {tramos > 2 ? `${tramos} ` : "dos "}vigilantes?
+            {tramos > 2
+              ? t("ui.RotationStyleSelect.comoTrabajanLosN", {
+                  defaultValue: "¿Cómo trabajan los {{n}} vigilantes?",
+                  n: tramos,
+                })
+              : t(
+                  "ui.RotationStyleSelect.comoTrabajanLosDos",
+                  "¿Cómo trabajan los dos vigilantes?",
+                )}
           </div>
           <div className="grid grid-cols-2 gap-1.5">
             <button
@@ -487,11 +525,19 @@ export default function RotationStyleSelect({
               type="button"
               onClick={() => elegirModo(false)}
             >
-              Rotativo
+              {t("ui.RotationStyleSelect.rotativo", "Rotativo")}
               <span className="mt-0.5 block text-[10px] font-normal opacity-75">
                 {is24h
-                  ? "Cada uno hace días y noches por turnos"
-                  : `Cada uno hace unos días la ${lblPrimero} y otros la ${lblSegundo}`}
+                  ? t(
+                      "ui.RotationStyleSelect.cadaUnoHaceDiasYNoches",
+                      "Cada uno hace días y noches por turnos",
+                    )
+                  : t("ui.RotationStyleSelect.cadaUnoHaceUnosDias", {
+                      defaultValue:
+                        "Cada uno hace unos días la {{primero}} y otros la {{segundo}}",
+                      primero: lblPrimero,
+                      segundo: lblSegundo,
+                    })}
               </span>
             </button>
             <button
@@ -499,11 +545,19 @@ export default function RotationStyleSelect({
               type="button"
               onClick={() => elegirModo(true)}
             >
-              Turnos fijos
+              {t("ui.RotationStyleSelect.turnosFijos", "Turnos fijos")}
               <span className="mt-0.5 block text-[10px] font-normal opacity-75">
                 {is24h
-                  ? "Uno siempre de día y otro siempre de noche"
-                  : `Cada uno se queda siempre en su tramo (${lblPrimero} o ${lblSegundo})`}
+                  ? t(
+                      "ui.RotationStyleSelect.unoSiempreDeDia",
+                      "Uno siempre de día y otro siempre de noche",
+                    )
+                  : t("ui.RotationStyleSelect.cadaUnoSeQuedaEnSuTramo", {
+                      defaultValue:
+                        "Cada uno se queda siempre en su tramo ({{primero}} o {{segundo}})",
+                      primero: lblPrimero,
+                      segundo: lblSegundo,
+                    })}
               </span>
             </button>
           </div>
@@ -514,18 +568,35 @@ export default function RotationStyleSelect({
             >
               {is24h ? (
                 <>
-                  Se crean dos plazas con horarios espejo:{" "}
-                  <strong>Fijo 1 de 07:00 a 19:00</strong> y{" "}
-                  <strong>Fijo 2 de 19:00 a 07:00</strong>. Cada vigilante se
-                  queda en la suya — al asignarlos, el turno lo decide la plaza
-                  que elijas. Abajo sólo queda decidir cada cuántos días libran.
+                  {t(
+                    "ui.RotationStyleSelect.seCreanDosPlazasEspejo",
+                    "Se crean dos plazas con horarios espejo:",
+                  )}{" "}
+                  <strong>
+                    {t(
+                      "ui.RotationStyleSelect.fijo1De07a19",
+                      "Fijo 1 de 07:00 a 19:00",
+                    )}
+                  </strong>{" "}
+                  {t("ui.RotationStyleSelect.y", "y")}{" "}
+                  <strong>
+                    {t(
+                      "ui.RotationStyleSelect.fijo2De19a07",
+                      "Fijo 2 de 19:00 a 07:00",
+                    )}
+                  </strong>
+                  {t(
+                    "ui.RotationStyleSelect.cadaVigilanteSeQuedaEnLaSuyaTurno",
+                    ". Cada vigilante se queda en la suya — al asignarlos, el turno lo decide la plaza que elijas. Abajo sólo queda decidir cada cuántos días libran.",
+                  )}
                 </>
               ) : (
                 <>
-                  Se crea una plaza por tramo ({tramos} en total). Cada
-                  vigilante se queda en la suya — al asignarlo, el tramo lo
-                  decide la plaza que elijas. Abajo sólo queda decidir cada
-                  cuántos días libran.
+                  {t("ui.RotationStyleSelect.seCreaUnaPlazaPorTramo", {
+                    defaultValue:
+                      "Se crea una plaza por tramo ({{n}} en total). Cada vigilante se queda en la suya — al asignarlo, el tramo lo decide la plaza que elijas. Abajo sólo queda decidir cada cuántos días libran.",
+                    n: tramos,
+                  })}
                 </>
               )}
             </p>
@@ -535,11 +606,17 @@ export default function RotationStyleSelect({
               className="mt-2 text-[11px] leading-snug"
               style={{ color: "var(--ink-soft)" }}
             >
-              El ciclo alterna entre el tramo de la plaza y el siguiente. Un{" "}
-              <strong>2-2-2</strong> aquí es «2 días de {lblPrimero}, 2 días de{" "}
-              {lblSegundo}, 2 libres». Si el vigilante necesita otro ciclo
-              distinto al de sus compañeros, se le puede dar el suyo al
-              asignarlo.
+              {t(
+                "ui.RotationStyleSelect.elCicloAlternaEntreElTramo",
+                "El ciclo alterna entre el tramo de la plaza y el siguiente. Un",
+              )}{" "}
+              <strong>2-2-2</strong>{" "}
+              {t("ui.RotationStyleSelect.aquiEsDosDiasDe", {
+                defaultValue:
+                  "aquí es «2 días de {{primero}}, 2 días de {{segundo}}, 2 libres». Si el vigilante necesita otro ciclo distinto al de sus compañeros, se le puede dar el suyo al asignarlo.",
+                primero: lblPrimero,
+                segundo: lblSegundo,
+              })}
             </p>
           )}
         </div>
@@ -550,7 +627,10 @@ export default function RotationStyleSelect({
           className="text-[10px] font-semibold uppercase tracking-wider"
           style={{ color: "var(--ink-soft)" }}
         >
-          ¿Cada cuántos días libran?
+          {t(
+            "ui.RotationStyleSelect.cadaCuantosDiasLibran",
+            "¿Cada cuántos días libran?",
+          )}
         </div>
       )}
 
@@ -569,10 +649,13 @@ export default function RotationStyleSelect({
               onClick={() => void elegirSinDescansos()}
             >
               <span className="text-xs font-semibold text-foreground">
-                Sin descansos
+                {t("ui.RotationStyleSelect.sinDescansos", "Sin descansos")}
               </span>
               <div className="text-[10px] text-muted-foreground">
-                Trabaja todos los días
+                {t(
+                  "ui.RotationStyleSelect.trabajaTodosLosDias",
+                  "Trabaja todos los días",
+                )}
               </div>
             </button>
           )}
@@ -594,11 +677,27 @@ export default function RotationStyleSelect({
                       className="rounded px-1 text-[8px] font-bold uppercase text-muted-foreground"
                       title={
                         dosTramos
-                          ? `Sin ${lblSegundo}: cada fijo se queda en SU tramo. Úsalo con una plaza por tramo, cada una con sus horas.`
-                          : `Con ${lblSegundo}: pensado para puestos que alternan dos tramos.`
+                          ? t("ui.RotationStyleSelect.sinSegundoTooltip", {
+                              defaultValue:
+                                "Sin {{segundo}}: cada fijo se queda en SU tramo. Úsalo con una plaza por tramo, cada una con sus horas.",
+                              segundo: lblSegundo,
+                            })
+                          : t("ui.RotationStyleSelect.conSegundoTooltip", {
+                              defaultValue:
+                                "Con {{segundo}}: pensado para puestos que alternan dos tramos.",
+                              segundo: lblSegundo,
+                            })
                       }
                     >
-                      {dosTramos ? `sin ${lblSegundo}` : `con ${lblSegundo}`}
+                      {dosTramos
+                        ? t("ui.RotationStyleSelect.sinSegundo", {
+                            defaultValue: "sin {{segundo}}",
+                            segundo: lblSegundo,
+                          })
+                        : t("ui.RotationStyleSelect.conSegundo", {
+                            defaultValue: "con {{segundo}}",
+                            segundo: lblSegundo,
+                          })}
                     </span>
                   )}
                 </div>
@@ -622,7 +721,10 @@ export default function RotationStyleSelect({
               {dosTramos && !fijos
                 ? is24h
                   ? t("ui.RotationStyleSelect.dias", "Días")
-                  : `Turnos de ${lblPrimero}`
+                  : t("ui.RotationStyleSelect.turnosDe", {
+                      defaultValue: "Turnos de {{tramo}}",
+                      tramo: lblPrimero,
+                    })
                 : t("ui.RotationStyleSelect.trabaja", "Trabaja")}
             </label>
             <input
@@ -637,7 +739,12 @@ export default function RotationStyleSelect({
           {dosTramos && !fijos && (
             <div>
               <label className="block text-[10px] font-medium text-muted-foreground mb-1 uppercase">
-                {is24h ? "Noches" : `Turnos de ${lblSegundo}`}
+                {is24h
+                  ? t("ui.RotationStyleSelect.noches", "Noches")
+                  : t("ui.RotationStyleSelect.turnosDe", {
+                      defaultValue: "Turnos de {{tramo}}",
+                      tramo: lblSegundo,
+                    })}
               </label>
               <input
                 className="w-24 rounded-lg border border-border/40 bg-background px-2 py-1.5 text-sm font-mono outline-none focus:border-primary"
@@ -651,7 +758,7 @@ export default function RotationStyleSelect({
           )}
           <div>
             <label className="block text-[10px] font-medium text-muted-foreground mb-1 uppercase">
-              Descansa
+              {t("ui.RotationStyleSelect.descansa", "Descansa")}
             </label>
             <input
               className="w-24 rounded-lg border border-border/40 bg-background px-2 py-1.5 text-sm font-mono outline-none focus:border-primary"
@@ -667,15 +774,24 @@ export default function RotationStyleSelect({
               className="basis-full text-[10px]"
               style={{ color: "var(--ink-soft)" }}
             >
-              Ciclo de{" "}
-              {(parseInt(cWork) || 0) +
-                (parseInt(cNight) || 0) +
-                (parseInt(cRest) || 0)}{" "}
-              días: {parseInt(cWork) || 0} de {lblPrimero},{" "}
-              {parseInt(cNight) || 0} de {lblSegundo}
+              {t("ui.RotationStyleSelect.cicloDeNDias", {
+                defaultValue:
+                  "Ciclo de {{total}} días: {{trabajo}} de {{primero}}, {{noches}} de {{segundo}}",
+                total:
+                  (parseInt(cWork) || 0) +
+                  (parseInt(cNight) || 0) +
+                  (parseInt(cRest) || 0),
+                trabajo: parseInt(cWork) || 0,
+                primero: lblPrimero,
+                noches: parseInt(cNight) || 0,
+                segundo: lblSegundo,
+              })}
               {(parseInt(cRest) || 0) > 0
-                ? ` y ${parseInt(cRest) || 0} libre${(parseInt(cRest) || 0) > 1 ? "s" : ""}`
-                : ", sin libres"}
+                ? t("ui.RotationStyleSelect.yNLibres", {
+                    defaultValue: " y {{count}} libres",
+                    count: parseInt(cRest) || 0,
+                  })
+                : t("ui.RotationStyleSelect.sinLibres", ", sin libres")}
               .
             </div>
           )}
@@ -684,8 +800,10 @@ export default function RotationStyleSelect({
               className="basis-full text-[10px]"
               style={{ color: "var(--ink-soft)" }}
             >
-              Sin descanso: el vigilante trabaja todos los días, sin sacafranco
-              que lo releve.
+              {t(
+                "ui.RotationStyleSelect.sinDescansoElVigilanteTrabaja",
+                "Sin descanso: el vigilante trabaja todos los días, sin sacafranco que lo releve.",
+              )}
             </div>
           )}
 
@@ -704,14 +822,25 @@ export default function RotationStyleSelect({
                   onChange={(e) => setCAlterna(e.target.checked)}
                 />
                 <span className="text-[11px] leading-snug">
-                  <b>Alterna día y noche</b> en cada descanso
+                  <b>
+                    {t(
+                      "ui.RotationStyleSelect.alternaDiaYNoche",
+                      "Alterna día y noche",
+                    )}
+                  </b>{" "}
+                  {t(
+                    "ui.RotationStyleSelect.enCadaDescanso",
+                    "en cada descanso",
+                  )}
                   <span
                     className="block text-[10px]"
                     style={{ color: "var(--ink-soft)" }}
                   >
-                    Para un puesto de 24 h con dos fijos: trabaja{" "}
-                    {parseInt(cWork) || 0} de día, descansa,{" "}
-                    {parseInt(cWork) || 0} de noche, descansa.
+                    {t("ui.RotationStyleSelect.paraUnPuestoDe24h", {
+                      defaultValue:
+                        "Para un puesto de 24 h con dos fijos: trabaja {{n}} de día, descansa, {{n}} de noche, descansa.",
+                      n: parseInt(cWork) || 0,
+                    })}
                   </span>
                 </span>
               </label>
@@ -724,14 +853,24 @@ export default function RotationStyleSelect({
                   onChange={(e) => setCDomingo(e.target.checked)}
                 />
                 <span className="text-[11px] leading-snug">
-                  <b>Descanso dominical</b>: si el franco cae en domingo, son
-                  dos días
+                  <b>
+                    {t(
+                      "ui.RotationStyleSelect.descansoDominical",
+                      "Descanso dominical",
+                    )}
+                  </b>
+                  {t(
+                    "ui.RotationStyleSelect.siElFrancoCaeEnDomingo",
+                    ": si el franco cae en domingo, son dos días",
+                  )}
                   <span
                     className="block text-[10px]"
                     style={{ color: "var(--ink-soft)" }}
                   >
-                    Domingo y lunes. El ciclo se corre un día, así que el franco
-                    siguiente cae dos días de la semana más tarde.
+                    {t(
+                      "ui.RotationStyleSelect.domingoYLunes",
+                      "Domingo y lunes. El ciclo se corre un día, así que el franco siguiente cae dos días de la semana más tarde.",
+                    )}
                   </span>
                 </span>
               </label>
@@ -748,7 +887,10 @@ export default function RotationStyleSelect({
                   className="text-[10px] uppercase tracking-wide"
                   style={{ color: "var(--ink-soft)" }}
                 >
-                  Ocho semanas, empezando un
+                  {t(
+                    "ui.RotationStyleSelect.ochoSemanasEmpezandoUn",
+                    "Ocho semanas, empezando un",
+                  )}
                 </span>
                 <div className="flex gap-[3px]">
                   {DIAS_SEMANA.map((d, i) => (
@@ -768,11 +910,11 @@ export default function RotationStyleSelect({
                             ? "var(--brand-ink)"
                             : "var(--ink-soft)",
                       }}
-                      title={d.largo}
+                      title={t(`ui.RotationStyleSelect.${d.clave}`, d.largo)}
                       type="button"
                       onClick={() => setCArranque(i)}
                     >
-                      {d.corto}
+                      {t(`ui.RotationStyleSelect.${d.clave}Corto`, d.corto)}
                     </button>
                   ))}
                 </div>
@@ -806,7 +948,9 @@ export default function RotationStyleSelect({
                             : "var(--warn, #b5761a)",
                     }}
                   >
-                    {c}
+                    {LETRA_VISTA_PREVIA[c]
+                      ? t(LETRA_VISTA_PREVIA[c][0], LETRA_VISTA_PREVIA[c][1])
+                      : c}
                   </span>
                 ))}
               </div>
@@ -831,10 +975,18 @@ export default function RotationStyleSelect({
                   ).length;
 
                   return (
-                    `${libres} días libres en ${p.length} — ` +
-                    `${(libres / (p.length / 7)).toFixed(1)} por semana` +
+                    t("ui.RotationStyleSelect.diasLibresEnN", {
+                      defaultValue:
+                        "{{libres}} días libres en {{total}} — {{porSemana}} por semana",
+                      libres,
+                      total: p.length,
+                      porSemana: (libres / (p.length / 7)).toFixed(1),
+                    }) +
                     (dobles
-                      ? `, con ${dobles} franco${dobles > 1 ? "s" : ""} doble${dobles > 1 ? "s" : ""}.`
+                      ? t("ui.RotationStyleSelect.conNFrancosDobles", {
+                          defaultValue: ", con {{count}} francos dobles.",
+                          count: dobles,
+                        })
                       : ".")
                   );
                 })()}
@@ -854,7 +1006,7 @@ export default function RotationStyleSelect({
             ) : (
               <Plus size={13} />
             )}{" "}
-            Crear y usar
+            {t("ui.RotationStyleSelect.crearYUsar", "Crear y usar")}
           </button>
         </div>
       )}

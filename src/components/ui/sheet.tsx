@@ -4,6 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import i18n from "@/i18n";
 
 const Sheet = SheetPrimitive.Root;
 
@@ -84,7 +85,7 @@ const SheetContent = React.forwardRef<
     >
       <SheetPrimitive.Close className="cg-focus absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-[color:var(--ink-faint)] transition-colors hover:bg-[var(--glass-sunken)] hover:text-[color:var(--ink)] disabled:pointer-events-none motion-reduce:transition-none">
         <X className="h-4 w-4" />
-        <span className="sr-only">Cerrar</span>
+        <span className="sr-only">{i18n.t("actions.close", "Cerrar")}</span>
       </SheetPrimitive.Close>
       {children}
     </SheetPrimitive.Content>

@@ -37,12 +37,12 @@ import {
 /* El FORMATO de la señal es una clasificación técnica, no una severidad: iba en
    cinco colores distintos que no significaban nada. Ahora es una píldora neutra
    y el color queda libre para lo que sí lo necesita — el calificador. */
-const FORMAT_META: Record<string, { label: string }> = {
+const FORMAT_META: Record<string, { label: string; labelKey?: string }> = {
   sia: { label: "SIA DC-09" },
   contactid: { label: "Contact ID" },
   surgard: { label: "Sur-Gard" },
-  webhook: { label: "Aviso web" },
-  manual: { label: "Manual" },
+  webhook: { label: "Aviso web", labelKey: "ui.AlarmSignals.format.webhook" },
+  manual: { label: "Manual", labelKey: "ui.AlarmSignals.format.manual" },
 };
 
 /** Aquí sí hay severidad: un evento es una alarma que entra; una restauración es
@@ -51,7 +51,11 @@ const QUALIFIER_META: Record<
   string,
   { label: string; labelKey?: string; tone: string }
 > = {
-  event: { label: "Evento", tone: "bad" },
+  event: {
+    label: "Evento",
+    labelKey: "ui.AlarmSignals.qualifier.event",
+    tone: "bad",
+  },
   // La etiqueta se traduce DONDE SE PINTA: este objeto se evalúa al cargar el
   // módulo, antes de que el idioma esté listo, y llamar a t() aquí congelaría
   // el texto en el idioma de arranque para toda la sesión.
@@ -60,13 +64,28 @@ const QUALIFIER_META: Record<
     labelKey: "alarm.category.restore",
     tone: "ok",
   },
-  status: { label: "Estado", tone: "neutral" },
+  status: {
+    label: "Estado",
+    labelKey: "ui.AlarmSignals.qualifier.status",
+    tone: "neutral",
+  },
 };
 
-const CHANNEL_META: Record<string, { label: string; icon: React.ReactNode }> = {
+const CHANNEL_META: Record<
+  string,
+  { label: string; labelKey?: string; icon: React.ReactNode }
+> = {
   ip: { label: "IP", icon: <Wifi className="size-3.5" /> },
-  cellular: { label: "Celular", icon: <Signal className="size-3.5" /> },
-  receiver: { label: "Receptor", icon: <Server className="size-3.5" /> },
+  cellular: {
+    label: "Celular",
+    labelKey: "ui.AlarmSignals.channel.cellular",
+    icon: <Signal className="size-3.5" />,
+  },
+  receiver: {
+    label: "Receptor",
+    labelKey: "ui.AlarmSignals.channel.receiver",
+    icon: <Server className="size-3.5" />,
+  },
 };
 
 /* ------------------------------------------------------------------ */
@@ -93,7 +112,7 @@ export default function AlarmSignals() {
         toast.error(
           err?.data?.message ||
             err?.message ||
-            "No se pudieron cargar las señales",
+            t("ui.AlarmSignals.noSePudieronCargarLasSenales", "No se pudieron cargar las señales"),
         );
       } finally {
         setLoading(false);
@@ -151,7 +170,7 @@ export default function AlarmSignals() {
               ) : (
                 <RefreshCw className="size-4" />
               )}
-              Actualizar
+              {t("ui.AlarmCaseDetail.actualizar", "Actualizar")}
             </Button>
           }
           icon={<Radio />}
@@ -175,7 +194,7 @@ export default function AlarmSignals() {
             style={{ color: "var(--ink-soft)" }}
           >
             <ArrowDownUp className="size-3.5" />
-            Mostrar
+            {t("ui.AlarmSignals.mostrar", "Mostrar")}
           </span>
           <Segmented
             options={[100, 250, 500].map((n) => ({
@@ -198,7 +217,7 @@ export default function AlarmSignals() {
                     "ui.AlarmSignals.ningunaSenalCoincide",
                     "Ninguna señal coincide con la búsqueda.",
                   )
-                : "Aún no se han recibido señales."
+                : t("ui.AlarmSignals.aunNoSeHanRecibidoSenales", "Aún no se han recibido señales.")
             }
             icon={<Radio />}
             title={t("ui.AlarmSignals.sinSenales", "Sin señales")}
@@ -216,16 +235,18 @@ export default function AlarmSignals() {
                       color: "var(--ink-faint)",
                     }}
                   >
-                    <th className="px-4 py-3 font-medium">Recibida</th>
-                    <th className="px-4 py-3 font-medium">Cuenta</th>
-                    <th className="px-4 py-3 font-medium">Formato</th>
+                    <th className="px-4 py-3 font-medium">{t("ui.AlarmSignals.recibida", "Recibida")}</th>
+                    <th className="px-4 py-3 font-medium">{t("ui.AlarmCaseDetail.cuenta", "Cuenta")}</th>
+                    <th className="px-4 py-3 font-medium">{t("ui.AlarmSignals.formato", "Formato")}</th>
                     <th className="px-4 py-3 font-medium">
                       {t("ui.AlarmSignals.codigo", "Código")}
                     </th>
-                    <th className="px-4 py-3 font-medium">Calificador</th>
-                    <th className="px-4 py-3 font-medium">Zona</th>
-                    <th className="px-4 py-3 font-medium">Canal</th>
-                    <th className="px-4 py-3 font-medium">Mensaje original</th>
+                    <th className="px-4 py-3 font-medium">{t("ui.AlarmSignals.calificador", "Calificador")}</th>
+                    <th className="px-4 py-3 font-medium">{t("ui.AlarmPanels.zona", "Zona")}</th>
+                    <th className="px-4 py-3 font-medium">{t("ui.AlarmSignals.canal", "Canal")}</th>
+                    <th className="px-4 py-3 font-medium">
+                      {t("ui.AlarmSignals.mensajeOriginal", "Mensaje original")}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -249,7 +270,9 @@ export default function AlarmSignals() {
                         </td>
                         <td className="px-4 py-3">
                           {fmt ? (
-                            <Chip>{fmt.label}</Chip>
+                            <Chip>
+                              {fmt.labelKey ? t(fmt.labelKey, fmt.label) : fmt.label}
+                            </Chip>
                           ) : (
                             <span className="text-muted-foreground">
                               {s.format || "—"}
@@ -285,7 +308,9 @@ export default function AlarmSignals() {
                           {chan ? (
                             <span className="inline-flex items-center gap-1 text-muted-foreground">
                               {chan.icon}
-                              {chan.label}
+                              {chan.labelKey
+                                ? t(chan.labelKey, chan.label)
+                                : chan.label}
                             </span>
                           ) : (
                             <span className="text-muted-foreground">
@@ -321,8 +346,16 @@ export default function AlarmSignals() {
             className="text-right text-xs"
             style={{ color: "var(--ink-faint)" }}
           >
-            {filtered.length} señal{filtered.length === 1 ? "" : "es"}
-            {query ? ` (de ${signals.length})` : ""}
+            {t("ui.AlarmSignals.nSenales", {
+              defaultValue: "{{count}} señales",
+              count: filtered.length,
+            })}
+            {query
+              ? ` ${t("ui.AlarmSignals.deTotal", {
+                  defaultValue: "(de {{total}})",
+                  total: signals.length,
+                })}`
+              : ""}
           </p>
         ) : null}
       </PageContainer>

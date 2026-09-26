@@ -118,7 +118,7 @@ export default function TrainingCourseDetailPage() {
         certificateTemplate: meta.certificateTemplate,
         published: meta.published,
       });
-      toast.success("Curso actualizado.");
+      toast.success(t("ui.TrainingCourseDetailPage.cursoActualizado", "Curso actualizado."));
       load();
     } catch (err) {
       console.error(err);
@@ -165,27 +165,35 @@ export default function TrainingCourseDetailPage() {
               variant="outline"
               onClick={() => navigate("/training/courses")}
             >
-              Volver
+              {t("ui.TrainingCourseDetailPage.volver", "Volver")}
             </Button>
           }
           badges={
             <>
               {isAddon && (
                 <StatusBadge dot={false} tone="slate">
-                  <Lock className="h-3 w-3" /> Curso addon
+                  <Lock className="h-3 w-3" />{" "}
+                  {t("ui.TrainingCourseDetailPage.cursoAddon", "Curso addon")}
                 </StatusBadge>
               )}
               {course.published ? (
-                <StatusBadge tone="green">Publicado</StatusBadge>
+                <StatusBadge tone="green">
+                  {t("ui.TrainingCourseDetailPage.publicado", "Publicado")}
+                </StatusBadge>
               ) : (
-                <StatusBadge tone="slate">Borrador</StatusBadge>
+                <StatusBadge tone="slate">
+                  {t("ui.TrainingCourseDetailPage.borrador", "Borrador")}
+                </StatusBadge>
               )}
             </>
           }
           icon={<GraduationCap />}
           subtitle={
             isAddon
-              ? "Curso de la plataforma otorgado a tu empresa. Es de solo lectura; puedes asignarlo a tus vigilantes."
+              ? t(
+                  "ui.TrainingCourseDetailPage.cursoDeLaPlataforma",
+                  "Curso de la plataforma otorgado a tu empresa. Es de solo lectura; puedes asignarlo a tus vigilantes.",
+                )
               : undefined
           }
           title={course.title}
@@ -199,10 +207,19 @@ export default function TrainingCourseDetailPage() {
               {t("ui.TrainingCourseDetailPage.detalles")}
             </TabsTrigger>
             <TabsTrigger value="lessons">
-              Lecciones ({lessons.length})
+              {t("ui.TrainingCourseDetailPage.leccionesN", {
+                defaultValue: "Lecciones ({{n}})",
+                n: lessons.length,
+              })}
             </TabsTrigger>
-            <TabsTrigger value="quiz">Cuestionario</TabsTrigger>
-            {canAssign && <TabsTrigger value="assign">Asignar</TabsTrigger>}
+            <TabsTrigger value="quiz">
+              {t("ui.TrainingCourseDetailPage.cuestionario", "Cuestionario")}
+            </TabsTrigger>
+            {canAssign && (
+              <TabsTrigger value="assign">
+                {t("ui.SecurityGuardsPage.asignar", "Asignar")}
+              </TabsTrigger>
+            )}
           </TabsList>
 
           {/* DETAILS */}
@@ -272,7 +289,7 @@ export default function TrainingCourseDetailPage() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Nivel</Label>
+                  <Label>{t("ui.TrainingCourseDetailPage.nivel", "Nivel")}</Label>
                   <Select
                     disabled={readOnly}
                     value={meta.level}
@@ -284,7 +301,7 @@ export default function TrainingCourseDetailPage() {
                     <SelectContent>
                       {TRAINING_LEVELS.map((l) => (
                         <SelectItem key={l.value} value={l.value}>
-                          {l.label}
+                          {t(l.labelKey, l.label)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -293,7 +310,9 @@ export default function TrainingCourseDetailPage() {
               </div>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label>Puntos al completar</Label>
+                  <Label>
+                    {t("ui.TrainingCourseDetailPage.puntosAlCompletar", "Puntos al completar")}
+                  </Label>
                   <Input
                     disabled={readOnly}
                     min={0}
@@ -328,7 +347,16 @@ export default function TrainingCourseDetailPage() {
                 <Textarea
                   className="font-mono text-xs"
                   disabled={readOnly}
-                  placeholder="Usa {{guardName}}, {{courseTitle}}, {{score}}, {{serialNumber}}, {{issuedAt}}. Déjalo vacío para usar el certificado de marca C-Guard Pro."
+                  placeholder={t("ui.TrainingCourseDetailPage.plantillaPlaceholder", {
+                    defaultValue:
+                      "Usa {{guardName}}, {{courseTitle}}, {{score}}, {{serialNumber}}, {{issuedAt}}. Déjalo vacío para usar el certificado predeterminado con tu marca.",
+                    // Las variables de la plantilla se muestran literales.
+                    guardName: "{{guardName}}",
+                    courseTitle: "{{courseTitle}}",
+                    score: "{{score}}",
+                    serialNumber: "{{serialNumber}}",
+                    issuedAt: "{{issuedAt}}",
+                  })}
                   rows={4}
                   value={meta.certificateTemplate}
                   onChange={(e) =>
@@ -338,7 +366,9 @@ export default function TrainingCourseDetailPage() {
               </div>
               <div className="glass-sunken flex items-center justify-between p-3">
                 <div>
-                  <Label className="cursor-pointer">Publicado</Label>
+                  <Label className="cursor-pointer">
+                    {t("ui.TrainingCourseDetailPage.publicado", "Publicado")}
+                  </Label>
                   <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
                     {t(
                       "ui.TrainingCourseDetailPage.losCursosPublicadosPuedenAsignarse",
@@ -354,7 +384,9 @@ export default function TrainingCourseDetailPage() {
               {!readOnly && (
                 <div className="flex justify-end">
                   <Button disabled={saving} variant="brand" onClick={saveMeta}>
-                    {saving ? "Guardando..." : "Guardar cambios"}
+                    {saving
+                      ? t("adminOfficeUsers.editUser.form.savingEdit", "Guardando...")
+                      : t("ui.EditSecurityGuard.guardarCambios", "Guardar cambios")}
                   </Button>
                 </div>
               )}

@@ -29,6 +29,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { usePermissions } from "@/hooks/usePermissions";
 import api from "@/lib/api";
+import { localeActual } from "@/lib/localeActual";
 
 type Festivo = {
   id: string;
@@ -41,28 +42,33 @@ type Festivo = {
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
 
-/** 'YYYY-MM-DD' → «25 de diciembre de 2026», sin pasar por Date: la cadena YA es
- *  el día del calendario y convertirla arrastraría zona horaria. */
-const MESES = [
-  "enero",
-  "febrero",
-  "marzo",
-  "abril",
-  "mayo",
-  "junio",
-  "julio",
-  "agosto",
-  "septiembre",
-  "octubre",
-  "noviembre",
-  "diciembre",
-];
+/** 'YYYY-MM-DD' → «25 de diciembre de 2026». Formatted in UTC: the string IS
+ *  the calendar day, and a local-time conversion would drag the time zone in. */
+function legible(
+  ymd: string,
+  recurrente: boolean,
+  t: (k: string, o: Record<string, unknown>) => string,
+) {
+  const [a, m, d] = ymd.split("-").map(Number);
+  const fechaUtc = new Date(Date.UTC(a || 2000, (m || 1) - 1, d || 1));
 
-function legible(ymd: string, recurrente: boolean) {
-  const [a, m, d] = ymd.split("-");
-  const base = `${Number(d)} de ${MESES[Number(m) - 1] || ""}`;
+  if (recurrente) {
+    return t("ui.FestivosPage.cadaAnio", {
+      defaultValue: "{{date}}, cada año",
+      date: fechaUtc.toLocaleDateString(localeActual(), {
+        timeZone: "UTC",
+        day: "numeric",
+        month: "long",
+      }),
+    });
+  }
 
-  return recurrente ? `${base}, cada año` : `${base} de ${a}`;
+  return fechaUtc.toLocaleDateString(localeActual(), {
+    timeZone: "UTC",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 }
 
 export default function FestivosPage() {
@@ -369,7 +375,7 @@ export default function FestivosPage() {
                         className="mt-0.5 text-xs"
                         style={{ color: "var(--ink-soft)" }}
                       >
-                        {legible(f.date, f.recurring)}
+                        {legible(f.date, f.recurring, t as any)}
                       </p>
                     </div>
                     {canEdit && (

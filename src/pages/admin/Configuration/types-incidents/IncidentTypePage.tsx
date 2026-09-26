@@ -76,14 +76,10 @@ export default function IncidentTypePage() {
       badges={
         !loading && total > 0 ? (
           <StatusBadge tone="neutral">
-            {total}{" "}
-            {total === 1
-              ? t("settings.incidentTypes.typeSingular", {
-                  defaultValue: "tipo",
-                })
-              : t("settings.incidentTypes.typePlural", {
-                  defaultValue: "tipos",
-                })}
+            {t("ui.IncidentTypePage.nTipos", {
+              defaultValue: "{{count}} tipos",
+              count: total,
+            })}
           </StatusBadge>
         ) : undefined
       }

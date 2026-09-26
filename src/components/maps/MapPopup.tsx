@@ -487,7 +487,7 @@ export function MapPopup({ data, onClose, className }: MapPopupProps) {
     >
       {onClose && (
         <button
-          aria-label="Cerrar"
+          aria-label={i18n.t("ui.MapPopup.cerrar", "Cerrar")}
           className="cc-mpop-x"
           type="button"
           onClick={onClose}
@@ -567,7 +567,7 @@ export function MapPopup({ data, onClose, className }: MapPopupProps) {
               la cabecera de la chincheta se lee desde el primer fotograma. */}
           {data.loading && !data.error && (
             <div
-              aria-label="Cargando detalle"
+              aria-label={i18n.t("ui.MapPopup.cargandoDetalle", "Cargando detalle")}
               className={`cc-mpop-load${campos.length ? " cc-mpop-load--sep" : ""}`}
             >
               <span className="cc-mpop-sk" style={{ width: "62%" }} />

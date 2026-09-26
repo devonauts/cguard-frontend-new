@@ -355,7 +355,7 @@ export default function GuardMemosPage() {
                         </p>
                       </div>
                       <button
-                        aria-label="Delete memo"
+                        aria-label={t("ui.GuardMemosPage.eliminarMemo", "Eliminar memo")}
                         className="cg-focus shrink-0 rounded-lg p-1.5 opacity-60 transition hover:[color:var(--bad-text)] group-hover:opacity-100"
                         style={{ color: "var(--ink-faint)" }}
                         onClick={() => handleDelete(m.id)}

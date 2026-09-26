@@ -357,10 +357,10 @@ export default function RouteDetailModal({
     <Modal
       description={
         loading
-          ? "Cargando..."
+          ? t("common.loading", "Cargando…")
           : route
-            ? `Información de ${route.name || route.id}`
-            : "Sin datos"
+            ? t("ui.RouteDetailModal.informacionDe", { defaultValue: "Información de {{name}}", name: route.name || route.id })
+            : t("ui.RouteDetailModal.sinDatos", "Sin datos")
       }
       footer={
         <div className="flex w-full justify-end gap-2">
@@ -395,7 +395,7 @@ export default function RouteDetailModal({
             <Field label={t("comun.nombre")} value={route.name || "—"} />
             <Field
               label={t("comun.tipo")}
-              value={route.continuous ? "Continua" : "Programada"}
+              value={route.continuous ? t("ui.RouteDetailModal.continua", "Continua") : t("ui.RouteDetailModal.programada", "Programada")}
             />
             <Field label={t("comun.supervisor")} value={supervisorValue} />
             <Field
@@ -419,15 +419,15 @@ export default function RouteDetailModal({
                   }
                 >
                   {route.completed
-                    ? "Completada"
+                    ? t("ui.RouteDetailModal.completada", "Completada")
                     : route.active === false
-                      ? "Inactivo"
-                      : "Activo"}
+                      ? t("common.inactive", "Inactivo")
+                      : t("common.active", "Activo")}
                 </StatusBadge>
               }
             />
             <Field
-              label="Ventana"
+              label={t("ui.RouteDetailModal.ventana", "Ventana")}
               value={`${route.windowStart ? new Date(route.windowStart).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() }) : "—"} — ${route.windowEnd ? new Date(route.windowEnd).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() }) : "—"}`}
             />
             <Field
@@ -466,7 +466,7 @@ export default function RouteDetailModal({
               />
             )}
             <Field
-              label="Origen"
+              label={t("ui.RouteDetailModal.origen", "Origen")}
               value={
                 origen
                   ? origen.label
@@ -477,7 +477,7 @@ export default function RouteDetailModal({
               }
             />
             <Field
-              label="Destino"
+              label={t("ui.RouteDetailModal.destino", "Destino")}
               value={
                 destino
                   ? destino.label
@@ -517,7 +517,7 @@ export default function RouteDetailModal({
 
           <div>
             <div className="cg-eyebrow mb-2 flex items-center gap-1.5">
-              <MapPin className="size-3.5" /> Puestos
+              <MapPin className="size-3.5" /> {t("ui.RouteDetailModal.puestos", "Puestos")}
             </div>
             {paradasOrdenadas.length ? (
               <div className="space-y-2">
@@ -547,15 +547,18 @@ export default function RouteDetailModal({
                         className="mt-0.5 text-xs"
                         style={{ color: "var(--ink-soft)" }}
                       >
-                        Pasadas:{" "}
-                        {p.scheduledHits !== undefined &&
-                        p.scheduledHits !== null
-                          ? String(p.scheduledHits)
-                          : "—"}{" "}
-                        — Duración:{" "}
-                        {p.duration !== undefined && p.duration !== null
-                          ? String(p.duration) + " min"
-                          : "—"}
+                        {t("ui.RouteDetailModal.pasadasDuracion", {
+                          defaultValue: "Pasadas: {{hits}} — Duración: {{duration}}",
+                          hits:
+                            p.scheduledHits !== undefined &&
+                            p.scheduledHits !== null
+                              ? String(p.scheduledHits)
+                              : "—",
+                          duration:
+                            p.duration !== undefined && p.duration !== null
+                              ? String(p.duration) + " min"
+                              : "—",
+                        })}
                       </div>
                     </div>
                   </div>

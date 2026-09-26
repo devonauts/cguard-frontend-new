@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ShieldCheck } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 import { Modal } from "@/components/kit";
 import { Button } from "@/components/ui/button";
@@ -51,12 +51,54 @@ export default function UserRoleDialog({
   onSubmit,
 }: Props) {
   const { t } = useTranslation();
+  // Same shape as `schema`, but with the validation messages in the current language.
+  const localizedSchema = useMemo(
+    () =>
+      z.object({
+        name: z
+          .string(
+            t(
+              "ui.UserRoleDialog.elNombreDelRolEsObligatorio",
+              "El nombre del rol es obligatorio.",
+            ),
+          )
+          .trim()
+          .min(
+            3,
+            t(
+              "ui.UserRoleDialog.debeTenerAlMenos3Caracteres",
+              "Debe tener al menos 3 caracteres.",
+            ),
+          )
+          .max(
+            80,
+            t("ui.UserRoleDialog.maximoNCaracteres", {
+              defaultValue: "Máximo {{max}} caracteres.",
+              max: 80,
+            }),
+          ),
+        description: z
+          .string()
+          .trim()
+          .max(
+            500,
+            t("ui.UserRoleDialog.maximoNCaracteres", {
+              defaultValue: "Máximo {{max}} caracteres.",
+              max: 500,
+            }),
+          )
+          .optional()
+          .or(z.literal("")),
+        permissions: z.array(z.string()).optional(),
+      }),
+    [t],
+  );
 
   useEffect(() => {
     console.debug("[UserRoleDialog] mount/open state", open);
   }, [open]);
   const form = useForm<UserRoleDialogValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(localizedSchema),
     defaultValues: defaultValues ?? {
       name: "",
       description: "",
@@ -89,7 +131,8 @@ export default function UserRoleDialog({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  Rol <span style={{ color: "var(--bad-text)" }}>*</span>
+                  {t("settings.userRoles.colRole", "Rol")}{" "}
+                  <span style={{ color: "var(--bad-text)" }}>*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -132,10 +175,12 @@ export default function UserRoleDialog({
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Cancelar
+              {t("actions.cancel", "Cancelar")}
             </Button>
             <Button disabled={submitting} type="submit" variant="brand">
-              {submitting ? "Guardando…" : "Guardar"}
+              {submitting
+                ? t("common.saving", "Guardando…")
+                : t("actions.save", "Guardar")}
             </Button>
           </div>
         </form>

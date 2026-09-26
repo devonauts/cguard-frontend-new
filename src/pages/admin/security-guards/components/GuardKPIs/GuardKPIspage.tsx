@@ -745,7 +745,7 @@ export default function GuardIndicators({ guard }: Props) {
                         }}
                         className="block w-full text-left px-4 py-2 text-sm hover:bg-muted"
                       >
-                        Eliminar
+                        {t("actions.delete", "Eliminar")}
                       </button>
                     </div>
                   )}
@@ -872,7 +872,7 @@ export default function GuardIndicators({ guard }: Props) {
                                       );
                                     }}
                                     className="text-muted-foreground hover:text-foreground/70 p-1 rounded mr-2"
-                                    title="Options"
+                                    title={t("ui.GuardKPIspage.opciones", "Opciones")}
                                     data-kpi-menu-button
                                   >
                                     <MoreVertical size={16} />
@@ -887,8 +887,8 @@ export default function GuardIndicators({ guard }: Props) {
                                     }}
                                     title={
                                       expandedId === kpi.id
-                                        ? "Collapse"
-                                        : "Expand"
+                                        ? t("ui.GuardKPIspage.contraer", "Contraer")
+                                        : t("ui.GuardKPIspage.expandir", "Expandir")
                                     }
                                     className="text-muted-foreground hover:text-foreground p-1 rounded"
                                   >
@@ -1811,7 +1811,7 @@ export default function GuardIndicators({ guard }: Props) {
                   <p className="text-sm text-foreground">
                     {t(
                       "guards.KPI.modal.confirmDeleteMessage",
-                      '¿Estás seguro de que deseas eliminar {toDeleteId ? "este KPI" : `${selectedIds.length} KPI(s)`}? Esta acción no se puede deshacer.',
+                      "¿Estás seguro de que deseas eliminar los KPI seleccionados? Esta acción no se puede deshacer.",
                     )}
                   </p>
                 </Modal>

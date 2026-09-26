@@ -59,7 +59,12 @@ export default function VerifyEmailGate() {
     try {
       // Authenticated endpoint — uses the current user's email server-side.
       await ApiService.post("/auth/send-email-address-verification-email", {});
-      toast.success("Te enviamos un nuevo correo de verificación.");
+      toast.success(
+        t(
+          "ui.VerifyEmailGate.teEnviamosUnNuevoCorreo",
+          "Te enviamos un nuevo correo de verificación.",
+        ),
+      );
       setCooldown(60);
     } catch (e: any) {
       toast.error(
@@ -80,11 +85,14 @@ export default function VerifyEmailGate() {
       const fresh = await refreshProfile();
 
       if (fresh && (fresh as any).emailVerified) {
-        toast.success("¡Correo verificado!");
+        toast.success(t("ui.VerifyEmailGate.correoVerificado", "¡Correo verificado!"));
         // The gate unmounts on the next render once emailVerified is true.
       } else {
         toast.message(
-          "Aún no detectamos la verificación. Revisa tu correo (y la carpeta de spam).",
+          t(
+            "ui.VerifyEmailGate.aunNoDetectamosLaVerificacion",
+            "Aún no detectamos la verificación. Revisa tu correo (y la carpeta de spam).",
+          ),
         );
       }
     } catch {
@@ -150,8 +158,15 @@ export default function VerifyEmailGate() {
           className="mt-3 text-center text-sm leading-relaxed"
           style={{ color: "var(--ink-soft)" }}
         >
-          Para empezar a usar la plataforma debes confirmar tu correo. Te
-          enviamos un enlace de verificación{email ? " a:" : "."}
+          {email
+            ? t(
+                "ui.VerifyEmailGate.paraEmpezarDebesConfirmarA",
+                "Para empezar a usar la plataforma debes confirmar tu correo. Te enviamos un enlace de verificación a:",
+              )
+            : t(
+                "ui.VerifyEmailGate.paraEmpezarDebesConfirmar",
+                "Para empezar a usar la plataforma debes confirmar tu correo. Te enviamos un enlace de verificación.",
+              )}
         </p>
         {email && (
           <p
@@ -165,8 +180,10 @@ export default function VerifyEmailGate() {
           className="mt-3 text-center text-xs"
           style={{ color: "var(--ink-faint)" }}
         >
-          Abre el enlace del correo y luego vuelve aquí. Esta pantalla se
-          cerrará automáticamente cuando lo confirmes.
+          {t(
+            "ui.VerifyEmailGate.abreElEnlaceDelCorreo",
+            "Abre el enlace del correo y luego vuelve aquí. Esta pantalla se cerrará automáticamente cuando lo confirmes.",
+          )}
         </p>
 
         <div className="mt-6 flex flex-col gap-2">
@@ -176,7 +193,9 @@ export default function VerifyEmailGate() {
             type="button"
             onClick={checkNow}
           >
-            {checking ? "Comprobando…" : "Ya verifiqué mi correo"}
+            {checking
+              ? t("ui.VerifyEmailGate.comprobando", "Comprobando…")
+              : t("ui.VerifyEmailGate.yaVerifiqueMiCorreo", "Ya verifiqué mi correo")}
           </button>
           <button
             className="cg-btn-glass cg-focus w-full rounded-full px-4 py-2.5 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60"
@@ -185,10 +204,16 @@ export default function VerifyEmailGate() {
             onClick={resend}
           >
             {cooldown > 0
-              ? `Reenviar correo (${cooldown}s)`
+              ? t("ui.VerifyEmailGate.reenviarCorreoEnSegundos", {
+                  defaultValue: "Reenviar correo ({{s}}s)",
+                  s: cooldown,
+                })
               : resending
-                ? "Enviando…"
-                : "Reenviar correo de verificación"}
+                ? t("ui.VerifyEmailGate.enviando", "Enviando…")
+                : t(
+                    "ui.VerifyEmailGate.reenviarCorreoDeVerificacion",
+                    "Reenviar correo de verificación",
+                  )}
           </button>
         </div>
 

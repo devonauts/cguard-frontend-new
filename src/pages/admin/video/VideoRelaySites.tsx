@@ -107,7 +107,11 @@ export default function VideoRelaySites() {
       .then(setSites)
       .catch((e) =>
         setError(
-          (e as Error)?.message || "No se pudieron cargar los sitios relay",
+          (e as Error)?.message ||
+            t(
+              "ui.VideoRelaySites.noSePudieronCargarLosSitiosRelay",
+              "No se pudieron cargar los sitios relay",
+            ),
         ),
       )
       .finally(() => setLoading(false));
@@ -125,7 +129,7 @@ export default function VideoRelaySites() {
         name: name.trim(),
         notes: notes.trim() || undefined,
       });
-      toast.success("Sitio relay creado");
+      toast.success(t("ui.VideoRelaySites.sitioRelayCreado", "Sitio relay creado"));
       setNewOpen(false);
       setName("");
       setNotes("");
@@ -187,7 +191,9 @@ export default function VideoRelaySites() {
     if (!deleteTarget) return;
     try {
       await videoService.deleteRelaySite(deleteTarget.id);
-      toast.success("Sitio relay eliminado");
+      toast.success(
+        t("ui.VideoRelaySites.sitioRelayEliminado", "Sitio relay eliminado"),
+      );
       setDeleteTarget(null);
       load();
     } catch (e) {
@@ -203,7 +209,7 @@ export default function VideoRelaySites() {
       <PageContainer width="wide">
         <PageHeader
           icon={<Server />}
-          title="Sitios remotos (Relay)"
+          title={t("ui.VideoRelaySites.sitiosRemotosRelay", "Sitios remotos (Relay)")}
           subtitle={t("ui.VideoRelaySites.paraDvrNvrDetrasDe")}
           actions={
             <Button onClick={() => setNewOpen(true)} variant="brand">
@@ -223,7 +229,7 @@ export default function VideoRelaySites() {
             action={
               <Button variant="outline" onClick={load}>
                 <RefreshCw className="mr-2 h-4 w-4" />
-                Reintentar
+                {t("ui.VideoRelaySites.reintentar", "Reintentar")}
               </Button>
             }
           />
@@ -271,8 +277,8 @@ export default function VideoRelaySites() {
                       <code>{s.siteKey}</code> ·{" "}
                       {String(s.ingestProtocol || "rtmps").toUpperCase()}
                       {s.publishTokenConfigured
-                        ? " · clave de envío lista"
-                        : " · sin clave de envío"}
+                        ? ` · ${t("ui.VideoRelaySites.claveDeEnvioLista", "clave de envío lista")}`
+                        : ` · ${t("ui.VideoRelaySites.sinClaveDeEnvio", "sin clave de envío")}`}
                     </p>
                     <div className="mt-2.5 flex flex-wrap gap-2">
                       <Button
@@ -281,7 +287,7 @@ export default function VideoRelaySites() {
                         onClick={() => openBundle(s)}
                       >
                         <Download className="mr-1.5 h-3.5 w-3.5" />
-                        Descargar enlace
+                        {t("ui.VideoRelaySites.descargarEnlace", "Descargar enlace")}
                       </Button>
                       <Button
                         size="sm"
@@ -289,7 +295,7 @@ export default function VideoRelaySites() {
                         onClick={() => regenToken(s)}
                       >
                         <KeyRound className="mr-1.5 h-3.5 w-3.5" />
-                        Regenerar clave
+                        {t("ui.VideoRelaySites.regenerarClave", "Regenerar clave")}
                       </Button>
                       <Button
                         size="sm"
@@ -338,7 +344,7 @@ export default function VideoRelaySites() {
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="BAS - Guayaquil"
+                placeholder={t("ui.VideoRelaySites.ejemploNombreSitio", "BAS - Guayaquil")}
               />
             </div>
             <div className="grid gap-1.5">
@@ -359,7 +365,8 @@ export default function VideoRelaySites() {
               {t("actions.cancel")}
             </Button>
             <Button disabled={saving} onClick={create} variant="brand">
-              {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Crear
+              {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {t("ui.VideoRelaySites.crear", "Crear")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -372,11 +379,22 @@ export default function VideoRelaySites() {
       >
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Relay para “{bundleSite?.name}”</DialogTitle>
+            <DialogTitle>
+              {t("ui.VideoRelaySites.relayPara", {
+                defaultValue: "Relay para “{{name}}”",
+                name: bundleSite?.name ?? "",
+              })}
+            </DialogTitle>
             <DialogDescription>
-              Ejecuta esto en un equipo siempre encendido del sitio del DVR:{" "}
-              <code>docker compose up -d</code>. Empuja cada canal hacia la nube
-              (salida; no requiere abrir puertos).
+              {t(
+                "ui.VideoRelaySites.ejecutaEstoEnUnEquipo",
+                "Ejecuta esto en un equipo siempre encendido del sitio del DVR:",
+              )}{" "}
+              <code>docker compose up -d</code>.{" "}
+              {t(
+                "ui.VideoRelaySites.empujaCadaCanal",
+                "Empuja cada canal hacia la nube (salida; no requiere abrir puertos).",
+              )}
             </DialogDescription>
           </DialogHeader>
           {!bundle ? (
@@ -385,7 +403,7 @@ export default function VideoRelaySites() {
               style={{ color: "var(--ink-soft)" }}
             >
               <Loader2 className="h-5 w-5 animate-spin" />
-              Generando…
+              {t("ui.VideoRelaySites.generando", "Generando…")}
             </div>
           ) : (
             <>
@@ -400,7 +418,9 @@ export default function VideoRelaySites() {
                   <code>{bundle.ingest}</code>
                 </div>
                 <div>
-                  <span style={{ color: "var(--ink-faint)" }}>Canales:</span>{" "}
+                  <span style={{ color: "var(--ink-faint)" }}>
+                    {t("ui.VideoRelaySites.canales", "Canales:")}
+                  </span>{" "}
                   {bundle.channelCount}
                 </div>
               </div>
@@ -415,8 +435,10 @@ export default function VideoRelaySites() {
                     color: "var(--warn-text)",
                   }}
                 >
-                  La dirección de recepción aún no está configurada. El enlace
-                  empezará a transmitir en cuanto lo esté.
+                  {t(
+                    "ui.VideoRelaySites.direccionNoConfigurada",
+                    "La dirección de recepción aún no está configurada. El enlace empezará a transmitir en cuanto lo esté.",
+                  )}
                 </div>
               )}
               <pre className="glass-sunken max-h-72 overflow-auto p-3 text-xs">
@@ -427,14 +449,17 @@ export default function VideoRelaySites() {
                   variant="outline"
                   onClick={() => {
                     navigator.clipboard?.writeText(bundle.compose);
-                    toast.success("Copiado");
+                    toast.success(t("ui.VideoRelaySites.copiado", "Copiado"));
                   }}
                 >
-                  Copiar
+                  {t("ui.VideoRelaySites.copiar", "Copiar")}
                 </Button>
                 <Button onClick={downloadCompose} variant="brand">
                   <Download className="mr-2 h-4 w-4" />
-                  Descargar docker-compose
+                  {t(
+                    "ui.VideoRelaySites.descargarDockerCompose",
+                    "Descargar docker-compose",
+                  )}
                 </Button>
               </DialogFooter>
             </>
@@ -453,8 +478,11 @@ export default function VideoRelaySites() {
               {t("ui.VideoRelaySites.eliminarSitioRelay")}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              ¿Eliminar “{deleteTarget?.name}”? Los dispositivos que lo usen
-              dejarán de transmitir.
+              {t("ui.VideoRelaySites.eliminarConfirmacion", {
+                defaultValue:
+                  "¿Eliminar “{{name}}”? Los dispositivos que lo usen dejarán de transmitir.",
+                name: deleteTarget?.name ?? "",
+              })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

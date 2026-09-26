@@ -14,6 +14,9 @@
 import { useEffect, useRef, useState } from "react";
 import { type Socket } from "socket.io-client";
 import { Eye, MousePointer2, Hand } from "lucide-react";
+import { useTranslation } from "react-i18next";
+
+import i18n from "@/i18n";
 
 import { crearSocket, cerrarSocket } from "@/lib/socket";
 import { getAuthToken } from "@/lib/api";
@@ -22,6 +25,7 @@ import { resolveApiBase } from "@/lib/apiBase";
 const API_URL = (resolveApiBase() as string | undefined) || "";
 
 export default function CoBrowseAgent() {
+  const { t } = useTranslation();
   const [watchedBy, setWatchedBy] = useState<string | null>(null);
   // Shared control: who currently drives (null = the tenant), and the support
   // agent's live cursor position so the tenant sees where they're pointing.
@@ -197,7 +201,7 @@ export default function CoBrowseAgent() {
           // eslint-disable-next-line no-console
           console.log("[cobrowse] start received from", p.by);
           socket.emit("cobrowse:ack", { stage: "received" });
-          setWatchedBy(p.by || "Soporte");
+          setWatchedBy(p.by || i18n.t("ui.CoBrowseAgent.soporte", "Soporte"));
           startRecording(!!p.fresh);
         },
       );
@@ -214,7 +218,11 @@ export default function CoBrowseAgent() {
         const holder = p.holder === "support" ? "support" : "tenant";
 
         turnRef.current = holder;
-        setController(holder === "support" ? p.by || "Soporte" : null);
+        setController(
+          holder === "support"
+            ? p.by || i18n.t("ui.CoBrowseAgent.soporte", "Soporte")
+            : null,
+        );
       });
 
       return true;
@@ -293,15 +301,22 @@ export default function CoBrowseAgent() {
           <Eye className="h-3.5 w-3.5 shrink-0" />
         )}
         {controlling
-          ? `Soporte (${controller}) está controlando tu pantalla.`
-          : `Soporte (${watchedBy}) está viendo tu sesión en vivo para ayudarte.`}
+          ? t("ui.CoBrowseAgent.soporteEstaControlando", {
+              defaultValue: "Soporte ({{quien}}) está controlando tu pantalla.",
+              quien: controller,
+            })
+          : t("ui.CoBrowseAgent.soporteEstaViendo", {
+              defaultValue:
+                "Soporte ({{quien}}) está viendo tu sesión en vivo para ayudarte.",
+              quien: watchedBy,
+            })}
         {controlling && (
           <button
             className="cg-focus ml-2 inline-flex min-h-8 shrink-0 items-center rounded-full px-3 py-0.5 text-[11px] font-bold transition-[filter] hover:brightness-95"
             style={{ background: tinta, color: fondo }}
             onClick={reclaimControl}
           >
-            Recuperar control
+            {t("ui.CoBrowseAgent.recuperarControl", "Recuperar control")}
           </button>
         )}
       </div>
@@ -328,7 +343,7 @@ export default function CoBrowseAgent() {
               boxShadow: "var(--lift-2)",
             }}
           >
-            Soporte
+            {t("ui.CoBrowseAgent.soporte", "Soporte")}
           </span>
         </div>
       )}

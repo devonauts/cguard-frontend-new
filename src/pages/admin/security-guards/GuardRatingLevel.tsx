@@ -82,7 +82,11 @@ export default function GuardRatingLevel({
     <StatusBadge className={className} dot={false} tone={tone}>
       <span
         className="inline-flex items-center gap-1"
-        title={`${avg.toFixed(2)} de 5 · ${count} reseña(s)`}
+        title={t("ui.GuardRatingLevel.promedioDe5", {
+          defaultValue: "{{avg}} de 5 · {{count}} reseña(s)",
+          avg: avg.toFixed(2),
+          count,
+        })}
       >
         {inner}
       </span>

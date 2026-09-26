@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -39,8 +39,21 @@ export default function IncidentTypeDialog({
   onSubmit,
 }: Props) {
   const { t } = useTranslation();
+  // Same shape as `schema`, but with the validation message in the current language.
+  const localizedSchema = useMemo(
+    () =>
+      z.object({
+        name: z
+          .string()
+          .min(
+            2,
+            t("ui.IncidentTypeDialog.ingresaUnNombreValido", "Ingresa un nombre válido"),
+          ),
+      }),
+    [t],
+  );
   const form = useForm<IncidentTypeDialogValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(localizedSchema),
     defaultValues: { name: "" },
   });
 
@@ -100,7 +113,9 @@ export default function IncidentTypeDialog({
               type="submit"
               variant="brand"
             >
-              {submitting ? "Guardando…" : "Guardar"}
+              {submitting
+                ? t("common.saving", "Guardando…")
+                : t("actions.save", "Guardar")}
             </Button>
           </div>
         </form>

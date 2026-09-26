@@ -222,7 +222,7 @@ export default function LiveTrackingPage() {
         salida.push({
           id: `g-${g.guardId || g.id}`,
           kind: "guard",
-          nombre: g.fullName || "Vigilante",
+          nombre: g.fullName || t("comun.vigilante", "Vigilante"),
           sub: g.postSiteName || undefined,
           lat,
           lng,
@@ -249,7 +249,7 @@ export default function LiveTrackingPage() {
         salida.push({
           id: `sup-${s.id}`,
           kind: "supervisor",
-          nombre: s.fullName || "Supervisor",
+          nombre: s.fullName || t("comun.supervisor", "Supervisor"),
           sub: s.zone || s.assignedVehicle || undefined,
           lat,
           lng,
@@ -419,8 +419,8 @@ export default function LiveTrackingPage() {
         out.push({
           id: `${route.id}:${p.id ?? p.siteId ?? idx}`,
           routeId: String(route.id),
-          routeName: route.name || "Ruta",
-          siteName: p.siteName || p.address || p.siteId || `Parada ${idx + 1}`,
+          routeName: route.name || t("ui.LiveTracking.ruta", "Ruta"),
+          siteName: p.siteName || p.address || p.siteId || t("ui.LiveTracking.paradaN", { defaultValue: "Parada {{n}}", n: idx + 1 }),
           address: p.address || "",
           lat,
           lng,
@@ -470,7 +470,7 @@ export default function LiveTrackingPage() {
               <SheetTrigger asChild>
                 <Button variant="outline">
                   <Filter className="size-4" />
-                  Filtros
+                  {t("incidents.filters", "Filtros")}
                 </Button>
               </SheetTrigger>
 
@@ -479,12 +479,12 @@ export default function LiveTrackingPage() {
                 side="right"
               >
                 <SheetHeader>
-                  <SheetTitle>Filtros</SheetTitle>
+                  <SheetTitle>{t("incidents.filters", "Filtros")}</SheetTitle>
                 </SheetHeader>
 
                 <div className="mt-6 space-y-5">
                   <div className="space-y-2">
-                    <Label>Ruta</Label>
+                    <Label>{t("ui.LiveTracking.ruta", "Ruta")}</Label>
                     <Select
                       value={routeFilter}
                       onValueChange={setRouteFilter}
@@ -528,7 +528,7 @@ export default function LiveTrackingPage() {
                         onCheckedChange={(v) => setVerVigilantes(Boolean(v))}
                       />
                       <span className="text-sm text-foreground">
-                        Vigilantes
+                        {t("ui.LiveTracking.vigilantes", "Vigilantes")}
                       </span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer">
@@ -539,7 +539,7 @@ export default function LiveTrackingPage() {
                         }
                       />
                       <span className="text-sm text-foreground">
-                        Supervisores
+                        {t("ui.LiveTracking.supervisores", "Supervisores")}
                       </span>
                     </label>
                   </div>
@@ -549,7 +549,7 @@ export default function LiveTrackingPage() {
                     variant="brand"
                     onClick={() => setOpenFilter(false)}
                   >
-                    Aplicar
+                    {t("incidents.apply", "Aplicar")}
                   </Button>
                 </div>
               </SheetContent>
@@ -558,11 +558,11 @@ export default function LiveTrackingPage() {
           }
           icon={<MapPinned />}
           subtitle={t("ui.LiveTracking.vigilantesYSupervisoresEnServicio")}
-          title="Seguimiento en vivo"
+          title={t("ui.LiveTracking.seguimientoEnVivo", "Seguimiento en vivo")}
         />
 
         {/* Controles del mapa */}
-        <Section icon={<MapPin />} title="Mapa">
+        <Section icon={<MapPin />} title={t("ui.LiveTracking.mapa", "Mapa")}>
           <div className="flex flex-wrap items-end gap-4">
             {/* Tipo de mapa */}
             <div>
@@ -591,7 +591,7 @@ export default function LiveTrackingPage() {
                   <SelectItem value="hybrid">
                     {t("ui.LiveTracking.hibrido", "Híbrido")}
                   </SelectItem>
-                  <SelectItem value="terrain">Terreno</SelectItem>
+                  <SelectItem value="terrain">{t("ui.LiveTracking.terreno", "Terreno")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -602,7 +602,7 @@ export default function LiveTrackingPage() {
                 checked={showGeofence}
                 onCheckedChange={(v) => setShowGeofence(Boolean(v))}
               />
-              <span className="text-sm text-foreground">Mostrar Geovalla</span>
+              <span className="text-sm text-foreground">{t("dashboard.page.showGeofence", "Mostrar Geovalla")}</span>
             </label>
 
             <div className="ml-auto flex flex-wrap items-center gap-4 pb-2 text-xs text-muted-foreground">
@@ -612,8 +612,13 @@ export default function LiveTrackingPage() {
                     className="h-3.5 w-3.5"
                     style={{ color: "var(--ok-text)" }}
                   />
-                  {unidadesVisibles.length} en servicio
-                  {ultimaSenal ? ` · señal ${haceCuanto(ultimaSenal)}` : ""}
+                  {t("ui.LiveTracking.nEnServicio", {
+                    defaultValue: "{{count}} en servicio",
+                    count: unidadesVisibles.length,
+                  })}
+                  {ultimaSenal
+                    ? ` · ${t("ui.LiveTracking.senalHace", { defaultValue: "señal {{hace}}", hace: haceCuanto(ultimaSenal) })}`
+                    : ""}
                 </span>
               )}
               <span className="flex items-center gap-1.5">
@@ -621,7 +626,15 @@ export default function LiveTrackingPage() {
                   className="h-3.5 w-3.5"
                   style={{ color: "var(--brand-text)" }}
                 />
-                {visibleRoutes.length} rutas · {totalPoints} paradas
+                {t("ui.LiveTracking.nRutas", {
+                  defaultValue: "{{count}} rutas",
+                  count: visibleRoutes.length,
+                })}{" "}
+                ·{" "}
+                {t("ui.LiveTracking.nParadas", {
+                  defaultValue: "{{count}} paradas",
+                  count: totalPoints,
+                })}
               </span>
             </div>
           </div>
@@ -644,15 +657,15 @@ export default function LiveTrackingPage() {
               <table className="cg-tabla-fichas min-w-full text-sm text-left border-collapse">
                 <thead className="bg-muted/30">
                   <tr className="border-b">
-                    <th className="px-4 py-3 font-semibold">Ruta</th>
+                    <th className="px-4 py-3 font-semibold">{t("ui.LiveTracking.ruta", "Ruta")}</th>
                     <th className="px-4 py-3 font-semibold">
                       {t("comun.puestoDeSeguridad")}
                     </th>
                     <th className="px-4 py-3 font-semibold">
                       {t("ui.LiveTracking.direccion", "Dirección")}
                     </th>
-                    <th className="px-4 py-3 font-semibold">Parada</th>
-                    <th className="px-4 py-3 font-semibold">Pasadas</th>
+                    <th className="px-4 py-3 font-semibold">{t("ui.LiveTracking.parada", "Parada")}</th>
+                    <th className="px-4 py-3 font-semibold">{t("ui.LiveTracking.pasadas", "Pasadas")}</th>
                     <th className="px-4 py-3 font-semibold">
                       {t("comun.estado")}
                     </th>
@@ -672,13 +685,13 @@ export default function LiveTrackingPage() {
 
                       return (
                         <tr key={s.id} className="border-b hover:bg-muted/30">
-                          <td className="px-4 py-3" data-rotulo="Ruta">{s.routeName}</td>
+                          <td className="px-4 py-3" data-rotulo={t("ui.LiveTracking.ruta", "Ruta")}>{s.routeName}</td>
                           <td className="px-4 py-3" data-rotulo={t("comun.puestoDeSeguridad")}>{s.siteName}</td>
                           <td className="px-4 py-3 text-muted-foreground" data-rotulo={t("ui.LiveTracking.direccion", "Dirección")}>
                             {s.address || "—"}
                           </td>
-                          <td className="px-4 py-3" data-rotulo="Parada">#{s.order}</td>
-                          <td className="px-4 py-3" data-rotulo="Pasadas">
+                          <td className="px-4 py-3" data-rotulo={t("ui.LiveTracking.parada", "Parada")}>#{s.order}</td>
+                          <td className="px-4 py-3" data-rotulo={t("ui.LiveTracking.pasadas", "Pasadas")}>
                             {point?.scheduledHits != null
                               ? point.scheduledHits
                               : "—"}
@@ -687,11 +700,12 @@ export default function LiveTrackingPage() {
                             {s.done ? (
                               <StatusBadge tone="green">
                                 <CheckCircle2 className="mr-1 h-3 w-3" />{" "}
-                                Completada
+                                {t("ui.LiveTracking.completada", "Completada")}
                               </StatusBadge>
                             ) : (
                               <StatusBadge tone="orange">
-                                <Clock className="mr-1 h-3 w-3" /> Pendiente
+                                <Clock className="mr-1 h-3 w-3" />{" "}
+                                {t("comun.pendiente", "Pendiente")}
                               </StatusBadge>
                             )}
                           </td>
@@ -705,14 +719,14 @@ export default function LiveTrackingPage() {
                           className="border-0"
                           description={
                             loading
-                              ? "Obteniendo las rutas de patrulla del día."
-                              : "No hay rutas con paradas geolocalizadas para esta fecha. Agrega ubicaciones a los puestos de la ruta para verlas aquí."
+                              ? t("ui.LiveTracking.obteniendoLasRutasDePatrulla", "Obteniendo las rutas de patrulla del día.")
+                              : t("ui.LiveTracking.noHayRutasConParadas", "No hay rutas con paradas geolocalizadas para esta fecha. Agrega ubicaciones a los puestos de la ruta para verlas aquí.")
                           }
                           icon={<MapPin />}
                           title={
                             loading
-                              ? "Cargando rutas…"
-                              : "No se encontraron paradas"
+                              ? t("ui.LiveTracking.cargandoRutas", "Cargando rutas…")
+                              : t("ui.LiveTracking.noSeEncontraronParadas", "No se encontraron paradas")
                           }
                         />
                       </td>

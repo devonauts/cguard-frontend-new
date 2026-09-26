@@ -422,8 +422,17 @@ function MonthStationBlockInner({
         )}
         title={
           c.ext
-            ? `${c.fullName} DOBLA turno (${CODE_LABEL[c.code] ?? c.code})`
-            : `Cubre ${c.fullName} — ${CODE_LABEL[c.code] ?? c.code} · arrastra para moverlo · doble clic para editar el día`
+            ? t("ui.MonthStationBlock.doblaTurno", {
+                defaultValue: "{{nombre}} DOBLA turno ({{codigo}})",
+                nombre: c.fullName,
+                codigo: CODE_LABEL[c.code] ?? c.code,
+              })
+            : t("ui.MonthStationBlock.cubreArrastraParaMoverlo", {
+                defaultValue:
+                  "Cubre {{nombre}} — {{codigo}} · arrastra para moverlo · doble clic para editar el día",
+                nombre: c.fullName,
+                codigo: CODE_LABEL[c.code] ?? c.code,
+              })
         }
         onDragStart={(e) => h.onCoverageDragStart(e, c.id)}
         /* La cobertura también es la hoja de asistencia de alguien: se abre igual
@@ -564,7 +573,13 @@ function MonthStationBlockInner({
                       ...codePill(oType),
                       borderLeft: `2px solid ${color}`,
                     }}
-                    title={`${guardName} — ${CODE_LABEL[oType] ?? oType}${override.note ? ": " + override.note : ""} (doble clic para editar)`}
+                    title={t("ui.MonthStationBlock.novedadDobleClicParaEditar", {
+                      defaultValue:
+                        "{{nombre}} — {{codigo}}{{nota}} (doble clic para editar)",
+                      nombre: guardName,
+                      codigo: CODE_LABEL[oType] ?? oType,
+                      nota: override.note ? ": " + override.note : "",
+                    })}
                     onDoubleClick={() =>
                       h.setOverrideTarget({
                         guardId: assignment.guardId,
@@ -621,7 +636,11 @@ function MonthStationBlockInner({
                     {...cartaProps}
                     className={`relative flex min-h-[18px] flex-1 cursor-pointer items-center justify-center rounded${anillo}`}
                     style={{ background: "var(--glass-sunken)" }}
-                    title={`${guardName} — Libre (clic derecho: cubrir este día)`}
+                    title={t("ui.MonthStationBlock.libreClicDerechoCubrir", {
+                      defaultValue:
+                        "{{nombre}} — Libre (clic derecho: cubrir este día)",
+                      nombre: guardName,
+                    })}
                     onDoubleClick={() =>
                       h.setOverrideTarget({
                         guardId: assignment.guardId,
@@ -693,8 +712,18 @@ function MonthStationBlockInner({
                   }}
                   title={
                     esAprendiz
-                      ? `${guardName} — aprendiz en acompañamiento (no cuenta como cobertura)`
-                      : `${guardName} — ${CODE_LABEL[code] ?? code}${is24h ? " · 24 h" : ""} (doble clic para novedad)`
+                      ? t("ui.MonthStationBlock.aprendizEnAcompanamiento", {
+                          defaultValue:
+                            "{{nombre}} — aprendiz en acompañamiento (no cuenta como cobertura)",
+                          nombre: guardName,
+                        })
+                      : t("ui.MonthStationBlock.dobleClicParaNovedad", {
+                          defaultValue:
+                            "{{nombre}} — {{codigo}}{{extra}} (doble clic para novedad)",
+                          nombre: guardName,
+                          codigo: CODE_LABEL[code] ?? code,
+                          extra: is24h ? " · 24 h" : "",
+                        })
                   }
                   onDoubleClick={() =>
                     h.setOverrideTarget({
@@ -774,7 +803,7 @@ function MonthStationBlockInner({
             >
               {station.scheduleType
                 ? station.scheduleType.replace("-", " ").toUpperCase()
-                : "Sin configurar"}
+                : t("ui.MonthStationBlock.sinConfigurar", "Sin configurar")}
             </button>
             {stationAlert && (
               <div className="mt-1 flex items-center gap-1 flex-wrap">
@@ -784,7 +813,10 @@ function MonthStationBlockInner({
                     style={toneCard("bad")}
                   >
                     <AlertTriangle size={9} />
-                    {stationAlert.missingFijoCount} fijo(s) faltan
+                    {t("ui.MonthStationBlock.fijosFaltan", {
+                      defaultValue: "{{count}} fijo(s) faltan",
+                      count: stationAlert.missingFijoCount,
+                    })}
                   </span>
                 )}
                 {stationAlert.uncoveredDays > 0 && (
@@ -793,7 +825,10 @@ function MonthStationBlockInner({
                     style={toneCard("warn")}
                   >
                     <AlertTriangle size={9} />
-                    {stationAlert.uncoveredDays} día(s) sin cubrir
+                    {t("ui.MonthStationBlock.diasSinCubrir", {
+                      defaultValue: "{{count}} día(s) sin cubrir",
+                      count: stationAlert.uncoveredDays,
+                    })}
                   </span>
                 )}
               </div>
@@ -806,7 +841,7 @@ function MonthStationBlockInner({
               variant="outline"
               onClick={() => h.configureStation(station)}
             >
-              Configurar
+              {t("ui.MonthStationBlock.configurar", "Configurar")}
             </Button>
           )}
           {hasPositions && (
@@ -823,7 +858,10 @@ function MonthStationBlockInner({
               </button>
               <button
                 className="cg-btn-ghost cg-focus rounded p-1 transition-colors"
-                title="Agregar un puesto a esta estación (fijo o sacafranco)"
+                title={t(
+                  "ui.MonthStationBlock.agregarUnPuestoAEstaEstacion",
+                  "Agregar un puesto a esta estación (fijo o sacafranco)",
+                )}
                 onClick={() => h.addPosition(station.id)}
               >
                 <Plus size={14} />
@@ -870,7 +908,10 @@ function MonthStationBlockInner({
               <div className="min-w-0 flex-1">
                 <button
                   className="cg-focus block max-w-full truncate text-left text-xs font-semibold hover:underline"
-                  title="Editar el puesto (nombre, horas, plazas) sin rehacer la estación"
+                  title={t(
+                    "ui.MonthStationBlock.editarElPuestoSinRehacer",
+                    "Editar el puesto (nombre, horas, plazas) sin rehacer la estación",
+                  )}
                   type="button"
                   onClick={() => h.editPosition(station, pos)}
                 >
@@ -886,7 +927,10 @@ function MonthStationBlockInner({
                     // A 24h STATION is covered by two fijos doing 12h each,
                     // swapping day/night — label the fijo, not the station.
                     if (station.scheduleType === "24h" && !horasDecidenMitad)
-                      return "Turnos de 12h · D/N rotativo";
+                      return t(
+                        "ui.MonthStationBlock.turnosDe12hRotativo",
+                        "Turnos de 12h · D/N rotativo",
+                      );
                     const st5 = (pos.startTime || "").slice(0, 5);
                     const en5 = (pos.endTime || "").slice(0, 5);
 
@@ -920,7 +964,14 @@ function MonthStationBlockInner({
                           borderLeft: `2px solid ${color}`,
                           color: 'var(--ink)',
                         }}
-                        title={`${nombreDeVigilante(a.guard, 'Vigilante')} — Arrastra para mover · Clic para remover`}
+                        title={t("ui.MonthStationBlock.arrastraParaMoverClicParaRemover", {
+                          defaultValue:
+                            "{{nombre}} — Arrastra para mover · Clic para remover",
+                          nombre: nombreDeVigilante(
+                            a.guard,
+                            t("comun.vigilante", "Vigilante"),
+                          ),
+                        })}
                         onDragStart={e => h.onGuardDragStart(e, a.guardId, a)}
                         onClick={() => h.removeAssignment(a.id)}
                         /* Ficha arrastrable: el color de identidad
@@ -990,7 +1041,10 @@ function MonthStationBlockInner({
               variant="outline"
               onClick={() => h.configureStation(station)}
             >
-              Configurar posiciones
+              {t(
+                "ui.MonthStationBlock.configurarPosiciones",
+                "Configurar posiciones",
+              )}
             </Button>
           </div>
         </div>

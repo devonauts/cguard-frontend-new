@@ -131,7 +131,7 @@ export default function TrainingCatalogPage() {
                       dot={false}
                       tone="neutral"
                     >
-                      <Lock className="h-3 w-3" /> Addon
+                      <Lock className="h-3 w-3" /> {t("ui.TrainingCoursesPage.addon", "Addon")}
                     </StatusBadge>
                   </div>
                   {c.description && (
@@ -157,7 +157,10 @@ export default function TrainingCatalogPage() {
                         className="h-3.5 w-3.5"
                         style={{ color: "var(--brand-text)" }}
                       />{" "}
-                      {c.pointsValue ?? 0} pts
+                      {t("ui.TrainingCatalogPage.nPts", {
+                        defaultValue: "{{n}} pts",
+                        n: c.pointsValue ?? 0,
+                      })}
                     </span>
                   </div>
                   <div className="mt-4 flex gap-2">
@@ -167,7 +170,7 @@ export default function TrainingCatalogPage() {
                       variant="outline"
                       onClick={() => navigate(`/training/courses/${c.id}`)}
                     >
-                      Ver
+                      {t("ui.RoutesPage.ver", "Ver")}
                     </Button>
                     {canAssign && (
                       <Button
@@ -176,7 +179,7 @@ export default function TrainingCatalogPage() {
                         variant="brand"
                         onClick={() => navigate(`/training/courses/${c.id}`)}
                       >
-                        <Users /> Asignar
+                        <Users /> {t("ui.SecurityGuardsPage.asignar", "Asignar")}
                       </Button>
                     )}
                   </div>

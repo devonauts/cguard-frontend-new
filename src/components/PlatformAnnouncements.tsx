@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Megaphone, X, AlertTriangle, Info } from "lucide-react";
 
 import { ApiService } from "@/services/api/apiService";
@@ -39,6 +40,7 @@ const leerDescartados = (): string[] => {
 };
 
 export default function PlatformAnnouncements() {
+  const { t } = useTranslation();
   const [avisos, setAvisos] = useState<Aviso[]>([]);
 
   useEffect(() => {
@@ -122,7 +124,7 @@ export default function PlatformAnnouncements() {
             </div>
             {a.dismissible && (
               <button
-                aria-label="Cerrar aviso"
+                aria-label={t("ui.PlatformAnnouncements.cerrarAviso", "Cerrar aviso")}
                 className="cg-focus shrink-0 rounded p-1 opacity-60 hover:opacity-100"
                 onClick={() => cerrar(a.id)}
               >

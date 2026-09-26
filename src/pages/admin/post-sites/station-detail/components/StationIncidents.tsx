@@ -2,6 +2,8 @@ import type { Station } from "@/types";
 
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+
+import { localeActual } from "@/lib/localeActual";
 import { AlertTriangle } from "lucide-react";
 
 import { ApiService } from "@/services/api/apiService";
@@ -124,13 +126,27 @@ export default function StationIncidents({ stationId, postSiteId }: Props) {
   const fmt = (v: any) => {
     if (!v) return "-";
     try {
-      return new Intl.DateTimeFormat(undefined, {
+      return new Intl.DateTimeFormat(localeActual(), {
         dateStyle: "short",
         timeStyle: "short",
       }).format(new Date(v));
     } catch {
       return String(v);
     }
+  };
+
+  // Display label for the known status values; unknown ones render as stored.
+  const statusLabel = (status: string): string => {
+    const s = (status || "").toLowerCase();
+
+    if (s === "cerrado" || s === "closed")
+      return t("incidents.status.closed", "Cerrado");
+    if (s === "resolved")
+      return t("reports.panicLog.status.resolved", "Resuelto");
+    if (s === "abierto" || s === "open")
+      return t("incidents.status.open", "Abierto");
+
+    return status;
   };
 
   const statusTone = (status: string): "slate" | "orange" | "blue" => {
@@ -222,7 +238,7 @@ export default function StationIncidents({ stationId, postSiteId }: Props) {
                         className="capitalize"
                         tone={statusTone(status)}
                       >
-                        {status}
+                        {statusLabel(status)}
                       </StatusBadge>
                     </td>
                     <td className="px-2 py-2.5 text-muted-foreground font-mono text-xs">

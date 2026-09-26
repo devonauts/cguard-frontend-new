@@ -342,8 +342,11 @@ export default function PartnerBillingView({
         <div className="glass-flat glass-brand space-y-3 p-4">
           <div className="flex items-center justify-between gap-3 text-sm">
             <span style={{ color: "var(--ink-soft)" }}>
-              {dinero(data.price?.perUserCents || 0, moneda)} × {data.seatsNow}{" "}
-              {t("billing.users", { defaultValue: "usuarios" })}
+              {dinero(data.price?.perUserCents || 0, moneda)} ×{" "}
+              {t("ui.BillingPage.nUsuarios", {
+                defaultValue: "{{count}} usuarios",
+                count: data.seatsNow || 0,
+              })}
             </span>
             <span className="tabular-nums">
               {dinero(plan.porUsuarios, moneda)}

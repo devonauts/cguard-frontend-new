@@ -123,7 +123,15 @@ export default function ShiftTemplates() {
     shiftTemplateService
       .list({ "filter[category]": filters.category || undefined })
       .then((r) => setTemplates(r.rows || []))
-      .catch((e) => toast.error(e?.message || "Error al cargar plantillas"))
+      .catch((e) =>
+        toast.error(
+          e?.message ||
+            t(
+              "ui.ShiftTemplates.errorAlCargarPlantillas",
+              "Error al cargar plantillas",
+            ),
+        ),
+      )
       .finally(() => setLoading(false));
   }, [filters.category]);
   useEffect(loadTemplates, [loadTemplates]);
@@ -212,10 +220,14 @@ export default function ShiftTemplates() {
     try {
       if (editingId) {
         await shiftTemplateService.update(editingId, payload);
-        toast.success("Plantilla actualizada");
+        toast.success(
+          t("ui.ShiftTemplates.plantillaActualizada", "Plantilla actualizada"),
+        );
       } else {
         await shiftTemplateService.create(payload);
-        toast.success("Plantilla creada");
+        toast.success(
+          t("ui.ShiftTemplates.plantillaCreada", "Plantilla creada"),
+        );
       }
       setIsFormOpen(false);
       setForm({ ...emptyForm });
@@ -234,19 +246,26 @@ export default function ShiftTemplates() {
   const handleDelete = async (id: string) => {
     if (
       !(await confirmDialog({
-        title: "Eliminar plantilla",
-        message: "¿Eliminar esta plantilla de turno?",
-        confirmText: "Eliminar",
+        title: t("ui.ShiftTemplates.eliminarPlantilla", "Eliminar plantilla"),
+        message: t(
+          "ui.ShiftTemplates.eliminarEstaPlantillaDeTurno",
+          "¿Eliminar esta plantilla de turno?",
+        ),
+        confirmText: t("common.delete", "Eliminar"),
         tone: "danger",
       }))
     )
       return;
     try {
       await shiftTemplateService.remove(id);
-      toast.success("Plantilla eliminada");
+      toast.success(
+        t("ui.ShiftTemplates.plantillaEliminada", "Plantilla eliminada"),
+      );
       loadTemplates();
     } catch (e: any) {
-      toast.error(e?.message || "Error al eliminar");
+      toast.error(
+        e?.message || t("ui.ShiftTemplates.errorAlEliminar", "Error al eliminar"),
+      );
     }
   };
 
@@ -281,7 +300,8 @@ export default function ShiftTemplates() {
               <Sheet open={isFormOpen} onOpenChange={setIsFormOpen}>
                 <SheetTrigger asChild>
                   <Button variant="brand" onClick={openNew}>
-                    <Plus className="mr-1 h-4 w-4" /> Nueva plantilla
+                    <Plus className="mr-1 h-4 w-4" />{" "}
+                    {t("ui.ShiftTemplates.nuevaPlantilla", "Nueva plantilla")}
                   </Button>
                 </SheetTrigger>
                 <SheetContent className="w-full sm:w-[540px] overflow-y-auto">
@@ -360,9 +380,15 @@ export default function ShiftTemplates() {
                             />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="daily">Diario</SelectItem>
-                            <SelectItem value="weekly">Semanal</SelectItem>
-                            <SelectItem value="monthly">Mensual</SelectItem>
+                            <SelectItem value="daily">
+                              {t("ui.ShiftTemplates.diario", "Diario")}
+                            </SelectItem>
+                            <SelectItem value="weekly">
+                              {t("ui.ShiftTemplates.semanal", "Semanal")}
+                            </SelectItem>
+                            <SelectItem value="monthly">
+                              {t("ui.ShiftTemplates.mensual", "Mensual")}
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -383,8 +409,12 @@ export default function ShiftTemplates() {
                             <SelectItem value="day">
                               {t("ui.ShiftTemplates.dia", "Día")}
                             </SelectItem>
-                            <SelectItem value="week">Semana</SelectItem>
-                            <SelectItem value="month">Mes</SelectItem>
+                            <SelectItem value="week">
+                              {t("ui.ShiftTemplates.semana", "Semana")}
+                            </SelectItem>
+                            <SelectItem value="month">
+                              {t("ui.ShiftTemplates.mes", "Mes")}
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -417,7 +447,9 @@ export default function ShiftTemplates() {
                     </div>
 
                     <div className="grid gap-2">
-                      <Label>Nivel requerido</Label>
+                      <Label>
+                        {t("ui.ShiftTemplates.nivelRequerido", "Nivel requerido")}
+                      </Label>
                       <Select
                         value={form.skillSet}
                         onValueChange={(v) => setForm({ ...form, skillSet: v })}
@@ -431,13 +463,17 @@ export default function ShiftTemplates() {
                           <SelectItem value="basic">
                             {t("ui.ShiftTemplates.basico", "Básico")}
                           </SelectItem>
-                          <SelectItem value="advanced">Avanzado</SelectItem>
+                          <SelectItem value="advanced">
+                            {t("ui.ShiftTemplates.avanzado", "Avanzado")}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
 
                     <div className="grid gap-2">
-                      <Label>Departamento</Label>
+                      <Label>
+                        {t("ui.ShiftTemplates.departamento", "Departamento")}
+                      </Label>
                       <Select
                         value={form.department || NONE}
                         onValueChange={(v) =>
@@ -498,7 +534,7 @@ export default function ShiftTemplates() {
                     </div>
 
                     <div className="grid gap-2">
-                      <Label>Descansos</Label>
+                      <Label>{t("ui.ShiftTemplates.descansos", "Descansos")}</Label>
                       <Select
                         value={form.breakDuration}
                         onValueChange={(v) =>
@@ -511,14 +547,18 @@ export default function ShiftTemplates() {
                           />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="30min">30 minutos</SelectItem>
-                          <SelectItem value="1hour">1 hora</SelectItem>
+                          <SelectItem value="30min">
+                            {t("ui.ShiftTemplates.treintaMinutos", "30 minutos")}
+                          </SelectItem>
+                          <SelectItem value="1hour">
+                            {t("ui.ShiftTemplates.unaHora", "1 hora")}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
 
                     <div className="grid gap-2">
-                      <Label>Nota</Label>
+                      <Label>{t("ui.ShiftTemplates.nota", "Nota")}</Label>
                       <Textarea
                         value={form.note}
                         onChange={(e) =>
@@ -542,8 +582,12 @@ export default function ShiftTemplates() {
                           />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="regular">Regular</SelectItem>
-                          <SelectItem value="special">Especial</SelectItem>
+                          <SelectItem value="regular">
+                            {t("ui.ShiftTemplates.regular", "Regular")}
+                          </SelectItem>
+                          <SelectItem value="special">
+                            {t("ui.ShiftTemplates.especial", "Especial")}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -559,10 +603,10 @@ export default function ShiftTemplates() {
                           <Loader2 className="h-4 w-4 animate-spin mr-2" />
                         ) : null}
                         {saving
-                          ? "Guardando…"
+                          ? t("common.saving", "Guardando…")
                           : editingId
-                            ? "Actualizar"
-                            : "Guardar"}
+                            ? t("ui.ShiftTemplates.actualizar", "Actualizar")
+                            : t("common.save", "Guardar")}
                       </Button>
                       <Button
                         variant="outline"
@@ -570,7 +614,7 @@ export default function ShiftTemplates() {
                         onClick={() => setIsFormOpen(false)}
                         disabled={saving}
                       >
-                        Cancelar
+                        {t("common.cancel", "Cancelar")}
                       </Button>
                     </div>
                   </div>
@@ -580,12 +624,13 @@ export default function ShiftTemplates() {
               <Sheet open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
                 <SheetTrigger asChild>
                   <Button variant="outline">
-                    <Filter className="mr-2 h-4 w-4" /> Filtros
+                    <Filter className="mr-2 h-4 w-4" />{" "}
+                    {t("guards.list.filters", "Filtros")}
                   </Button>
                 </SheetTrigger>
                 <SheetContent className="w-full sm:w-[540px] overflow-y-auto">
                   <SheetHeader className="relative">
-                    <SheetTitle>Filtros</SheetTitle>
+                    <SheetTitle>{t("guards.list.filters", "Filtros")}</SheetTitle>
                     <Button
                       variant="ghost"
                       size="icon"
@@ -618,8 +663,12 @@ export default function ShiftTemplates() {
                           <SelectItem value={NONE}>
                             {t("ui.ShiftTemplates.todas")}
                           </SelectItem>
-                          <SelectItem value="regular">Regular</SelectItem>
-                          <SelectItem value="special">Especial</SelectItem>
+                          <SelectItem value="regular">
+                            {t("ui.ShiftTemplates.regular", "Regular")}
+                          </SelectItem>
+                          <SelectItem value="special">
+                            {t("ui.ShiftTemplates.especial", "Especial")}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -632,7 +681,7 @@ export default function ShiftTemplates() {
 
         {/* Tabla */}
         <Section
-          title="Plantillas"
+          title={t("ui.ShiftTemplates.plantillas", "Plantillas")}
           icon={<LayoutTemplate />}
           contentClassName="overflow-x-auto -mx-1"
         >
@@ -727,12 +776,13 @@ export default function ShiftTemplates() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => openEdit(template)}>
-                            <Edit className="mr-2 h-4 w-4" /> Editar
+                            <Edit className="mr-2 h-4 w-4" /> {t("common.edit", "Editar")}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => handleDelete(template.id)}
                           >
-                            <Trash2 className="mr-2 h-4 w-4" /> Eliminar
+                            <Trash2 className="mr-2 h-4 w-4" />{" "}
+                            {t("common.delete", "Eliminar")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

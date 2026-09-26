@@ -198,6 +198,15 @@ const ROLE_META: Record<
 
 export default function ClientStaff({ client }: { client: Client }) {
   const { t } = useTranslation();
+  /** Nombre del turno tal como llega del servidor («Diurno»…), traducido al pintar. */
+  const turnoTexto = (v?: string | null) =>
+    v === "Diurno"
+      ? t("ui.ClientCoverage.turno.diurno", "Diurno")
+      : v === "Vespertino"
+        ? t("ui.ClientCoverage.turno.vespertino", "Vespertino")
+        : v === "Nocturno"
+          ? t("ui.ClientCoverage.turno.nocturno", "Nocturno")
+          : v || "";
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -322,8 +331,13 @@ export default function ClientStaff({ client }: { client: Client }) {
     }
     const ok = await confirmDialog({
       title: t("ui.ClientStaff.quitarDeLaEstacion", "Quitar de la estación"),
-      message: `¿Quitar a ${p.name} de "${p.puesto || "su estación"}"? Volverá al grupo de vigilantes sin asignación y se eliminarán sus turnos futuros generados.`,
-      confirmText: "Quitar",
+      message: t("ui.ClientStaff.quitarDeEstacionConfirm", {
+        defaultValue:
+          "¿Quitar a {{name}} de \"{{station}}\"? Volverá al grupo de vigilantes sin asignación y se eliminarán sus turnos futuros generados.",
+        name: p.name,
+        station: p.puesto || t("ui.ClientStaff.suEstacion", "su estación"),
+      }),
+      confirmText: t("ui.ExtremoRutaField.quitar", "Quitar"),
       tone: "danger",
     });
 
@@ -334,7 +348,12 @@ export default function ClientStaff({ client }: { client: Client }) {
       await ApiService.delete(
         `/tenant/${tenantId}/guard-assignment/${p.assignmentId}`,
       );
-      toast.success(`${p.name} quedó sin asignación`);
+      toast.success(
+        t("ui.ClientStaff.quedoSinAsignacion", {
+          defaultValue: "{{name}} quedó sin asignación",
+          name: p.name,
+        }),
+      );
       load(true);
     } catch (e: any) {
       toast.error(
@@ -356,7 +375,10 @@ export default function ClientStaff({ client }: { client: Client }) {
           this tab — no duplicate per-tab KPI row here. */}
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.6fr_1fr]">
         {/* LEFT — filters + roster table */}
-        <Section icon={<Users className="h-4 w-4" />} title="Personal asignado">
+        <Section
+          icon={<Users className="h-4 w-4" />}
+          title={t("ui.ClientStaff.personalAsignado", "Personal asignado")}
+        >
           <div className="mb-3 grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
             <SearchInput
               className="col-span-2 md:col-span-3 xl:col-span-1"
@@ -385,10 +407,16 @@ export default function ClientStaff({ client }: { client: Client }) {
               onChange={(e) => resetPage(setRole)(e.target.value)}
             >
               <option value="todos">{t("ui.ClientStaff.rolTodos")}</option>
-              <option value="vigilante">Guardia</option>
+              <option value="vigilante">
+                {t("ui.ClientStaff.guardia", "Guardia")}
+              </option>
               <option value="supervisor">{t("comun.supervisor")}</option>
-              <option value="patrullero">Patrullero</option>
-              <option value="operador">Operador</option>
+              <option value="patrullero">
+                {t("ui.ClientStaff.patrullero", "Patrullero")}
+              </option>
+              <option value="operador">
+                {t("ui.ClientStaff.operador", "Operador")}
+              </option>
             </select>
             <select
               className={FIELD_CLS}
@@ -400,9 +428,15 @@ export default function ClientStaff({ client }: { client: Client }) {
               <option value="fuera_turno">
                 {t("ui.ClientStaff.fueraDeTurno")}
               </option>
-              <option value="descanso">Descanso</option>
-              <option value="ausente">Ausente</option>
-              <option value="en_ruta">En ruta</option>
+              <option value="descanso">
+                {t("ui.ClientStaff.descanso", "Descanso")}
+              </option>
+              <option value="ausente">
+                {t("ui.ClientStaff.ausente", "Ausente")}
+              </option>
+              <option value="en_ruta">
+                {t("ui.ClientStaff.enRuta", "En ruta")}
+              </option>
             </select>
             <select
               className={FIELD_CLS}
@@ -410,9 +444,9 @@ export default function ClientStaff({ client }: { client: Client }) {
               onChange={(e) => resetPage(setTurno)(e.target.value)}
             >
               <option value="todos">{t("comun.turnoTodos")}</option>
-              <option value="Diurno">Diurno</option>
-              <option value="Vespertino">Vespertino</option>
-              <option value="Nocturno">Nocturno</option>
+              <option value="Diurno">{turnoTexto("Diurno")}</option>
+              <option value="Vespertino">{turnoTexto("Vespertino")}</option>
+              <option value="Nocturno">{turnoTexto("Nocturno")}</option>
             </select>
           </div>
 
@@ -425,17 +459,17 @@ export default function ClientStaff({ client }: { client: Client }) {
           ) : (
             <TabTable>
               <THead>
-                <Th>Personal</Th>
-                <Th>Rol</Th>
+                <Th>{t("ui.ClientStaff.personal", "Personal")}</Th>
+                <Th>{t("ui.ClientStaff.rol", "Rol")}</Th>
                 <Th>{t("ui.ClientStaff.estacion", "Estación")}</Th>
-                <Th>Sede / Sitio</Th>
+                <Th>{t("ui.ClientCoverage.sedeSitio", "Sede / Sitio")}</Th>
                 <Th>{t("comun.turno")}</Th>
                 <Th>{t("comun.estado")}</Th>
-                <Th>Inicio</Th>
+                <Th>{t("ui.ClientProjects.inicio", "Inicio")}</Th>
                 <Th>
                   {t("ui.ClientStaff.ultimaActividad", "Última actividad")}
                 </Th>
-                <Th align="right">Acciones</Th>
+                <Th align="right">{t("ui.RouteForm.acciones", "Acciones")}</Th>
               </THead>
               <tbody>
                 {personal.map((p) => {
@@ -490,7 +524,7 @@ export default function ClientStaff({ client }: { client: Client }) {
                           <div>
                             <div>{p.turno.window}</div>
                             <div className="text-xs text-muted-foreground">
-                              {p.turno.label || ""}
+                              {turnoTexto(p.turno.label)}
                             </div>
                           </div>
                         ) : (
@@ -512,7 +546,8 @@ export default function ClientStaff({ client }: { client: Client }) {
                             style={{ color: "var(--ok-text)" }}
                           >
                             <RouteIcon className="h-3.5 w-3.5" />{" "}
-                            {p.ultimaActividad.label || "Ronda activa"}
+                            {p.ultimaActividad.label ||
+                              t("ui.ClientCoverage.rondaActiva", "Ronda activa")}
                           </span>
                         ) : p.ultimaActividad?.label ? (
                           <div>
@@ -542,7 +577,7 @@ export default function ClientStaff({ client }: { client: Client }) {
                               <button
                                 className="cg-focus rounded-md p-1.5 transition-opacity hover:opacity-70"
                                 style={{ color: "var(--ink-soft)" }}
-                                title="Acciones"
+                                title={t("ui.RouteForm.acciones", "Acciones")}
                               >
                                 <MoreVertical className="h-3.5 w-3.5" />
                               </button>
@@ -558,7 +593,8 @@ export default function ClientStaff({ client }: { client: Client }) {
                                     navigate(`/security-guards/edit/${p.id}`)
                                   }
                                 >
-                                  <Pencil className="mr-2 h-3.5 w-3.5" /> Editar
+                                  <Pencil className="mr-2 h-3.5 w-3.5" />{" "}
+                                  {t("actions.edit", "Editar")}
                                 </DropdownMenuItem>
                               )}
                               {p.role === "vigilante" && p.assignmentId && (
@@ -588,7 +624,7 @@ export default function ClientStaff({ client }: { client: Client }) {
           )}
 
           <Pager
-            noun="resultados"
+            noun={t("ui.tabkit.resultados", "resultados")}
             page={page}
             pageCount={pageCount}
             perPage={perPage}
@@ -612,7 +648,7 @@ export default function ClientStaff({ client }: { client: Client }) {
                   "ui.ClientStaff.distribucionPorRol",
                   "Distribución por rol",
                 )}
-                centerBottom="Total"
+                centerBottom={t("comun.total", "Total")}
                 centerTop={data?.total ?? dist.reduce((a, d) => a + d.count, 0)}
                 segments={donutSegments}
                 size={150}
@@ -744,8 +780,11 @@ export default function ClientStaff({ client }: { client: Client }) {
                       }}
                     >
                       {c.expiresInDays < 0
-                        ? "Vencida"
-                        : `Vence en ${c.expiresInDays} días`}
+                        ? t("ui.ClientStaff.vencida", "Vencida")
+                        : t("ui.ClientStaff.venceEnNDias", {
+                            defaultValue: "Vence en {{count}} días",
+                            count: c.expiresInDays,
+                          })}
                     </span>
                   </div>
                 ))}
@@ -755,7 +794,10 @@ export default function ClientStaff({ client }: { client: Client }) {
 
           <Section
             icon={<UserX className="h-4 w-4" />}
-            title={`Ausencias hoy (${ausencias.length})`}
+            title={t("ui.ClientStaff.ausenciasHoyN", {
+              defaultValue: "Ausencias hoy ({{n}})",
+              n: ausencias.length,
+            })}
           >
             {ausencias.length === 0 ? (
               <div className="py-2 text-sm" style={{ color: "var(--ok-text)" }}>
@@ -800,7 +842,10 @@ export default function ClientStaff({ client }: { client: Client }) {
 
       <TabFooter
         icon={<RefreshCw />}
-        note="Los estados se actualizan en tiempo real según la marcación de los vigilantes."
+        note={t(
+          "ui.ClientStaff.notaEstadosTiempoReal",
+          "Los estados se actualizan en tiempo real según la marcación de los vigilantes.",
+        )}
         updatedAt={fmtUpdated}
         onRefresh={() => load()}
       />

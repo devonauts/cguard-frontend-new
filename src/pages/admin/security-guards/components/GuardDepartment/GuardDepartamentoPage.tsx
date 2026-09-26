@@ -125,7 +125,9 @@ export default function GuardDepartamentoPage() {
       setCurrent(dept ? { id: dept.id, name: dept.name } : null);
       setPendingId("");
       toast.success(
-        departmentId ? "Departamento asignado" : "Departamento quitado",
+        departmentId
+          ? t("ui.GuardDepartamentoPage.departamentoAsignado", "Departamento asignado")
+          : t("ui.GuardDepartamentoPage.departamentoQuitado", "Departamento quitado"),
       );
     } catch (e: any) {
       toast.error(
@@ -153,8 +155,14 @@ export default function GuardDepartamentoPage() {
             icon={<Building2 />}
             subtitle={
               guard?.fullName
-                ? `Departamento interno al que pertenece · ${guard.fullName}`
-                : "Departamento interno al que pertenece el vigilante."
+                ? t("ui.GuardDepartamentoPage.subtituloNombre", {
+                    defaultValue: "Departamento interno al que pertenece · {{name}}",
+                    name: guard.fullName,
+                  })
+                : t(
+                    "ui.GuardDepartamentoPage.subtitulo",
+                    "Departamento interno al que pertenece el vigilante.",
+                  )
             }
             title={t("guards.department.title", {
               defaultValue: "Departamento",
@@ -164,7 +172,10 @@ export default function GuardDepartamentoPage() {
           {loading ? (
             <SkeletonCards count={2} />
           ) : guard ? (
-            <Section icon={<Building2 />} title="Departamento asignado">
+            <Section
+              icon={<Building2 />}
+              title={t("ui.GuardDepartamentoPage.departamentoAsignado", "Departamento asignado")}
+            >
               <div className="space-y-6">
                 {current ? (
                   <div className="flex items-center justify-between glass-flat px-4 py-3">
@@ -175,12 +186,14 @@ export default function GuardDepartamentoPage() {
                       <div>
                         <div className="font-medium">{current.name}</div>
                         <div className="text-xs text-muted-foreground">
-                          Departamento actual
+                          {t("ui.GuardDepartamentoPage.departamentoActual", "Departamento actual")}
                         </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <StatusBadge tone="green">Asignado</StatusBadge>
+                      <StatusBadge tone="green">
+                        {t("ui.GuardDepartamentoPage.asignado", "Asignado")}
+                      </StatusBadge>
                       {canEdit && (
                         <Button
                           disabled={saving}
@@ -189,7 +202,7 @@ export default function GuardDepartamentoPage() {
                           onClick={() => assign(null)}
                         >
                           <X className="mr-1 h-4 w-4" />
-                          Quitar
+                          {t("ui.ExtremoRutaField.quitar", "Quitar")}
                         </Button>
                       )}
                     </div>
@@ -219,8 +232,10 @@ export default function GuardDepartamentoPage() {
                     </div>
                     {departments.length === 0 ? (
                       <p className="text-sm text-muted-foreground">
-                        No hay departamentos creados. Créalos en Configuración ›
-                        Departamentos.
+                        {t(
+                          "ui.GuardDepartamentoPage.noHayDepartamentos",
+                          "No hay departamentos creados. Créalos en Configuración › Departamentos.",
+                        )}
                       </p>
                     ) : (
                       <div className="flex items-center gap-2 max-w-md">
@@ -245,13 +260,17 @@ export default function GuardDepartamentoPage() {
                           variant="brand"
                           onClick={() => assign(pendingId)}
                         >
-                          {saving ? "Guardando…" : "Asignar"}
+                          {saving
+                            ? t("common.saving", "Guardando…")
+                            : t("ui.SecurityGuardsPage.asignar", "Asignar")}
                         </Button>
                       </div>
                     )}
                     <p className="text-xs text-muted-foreground">
-                      Cada persona pertenece a un solo departamento; asignar uno
-                      nuevo reemplaza el actual.
+                      {t(
+                        "ui.GuardDepartamentoPage.unSoloDepartamento",
+                        "Cada persona pertenece a un solo departamento; asignar uno nuevo reemplaza el actual.",
+                      )}
                     </p>
                   </div>
                 )}

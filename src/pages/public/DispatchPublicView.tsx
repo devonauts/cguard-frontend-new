@@ -334,7 +334,7 @@ export default function DispatchPublicView() {
               <tbody>
                 <tr className="border-b">
                   <td className="py-3 px-4 text-xs font-medium text-muted-foreground">
-                    N.º de ticket
+                    {t("ui.DispatchPublicView.nDeTicket", "N.º de ticket")}
                   </td>
                   <td className="py-3 px-4 text-sm text-foreground">
                     {ticketShort}{" "}
@@ -347,11 +347,16 @@ export default function DispatchPublicView() {
                           : "green"
                       }
                     >
-                      {payload.status ?? ""}
+                      {payload.status === "open" || payload.status === "abierto"
+                        ? t("dispatcher.status_open", "Abierto")
+                        : payload.status === "closed" ||
+                            payload.status === "cerrado"
+                          ? t("dispatcher.status_closed", "Cerrado")
+                          : (payload.status ?? "")}
                     </StatusBadge>
                   </td>
                   <td className="py-3 px-4 text-xs font-medium text-muted-foreground">
-                    Date/Time
+                    {t("dispatcher.date_time", "Fecha/Hora")}
                   </td>
                   <td className="py-3 px-4 text-sm text-foreground">
                     {payload.createdAt
@@ -363,7 +368,7 @@ export default function DispatchPublicView() {
 
                 <tr className="border-b">
                   <td className="py-3 px-4 text-xs font-medium text-muted-foreground">
-                    Client Name
+                    {t("clients.overview.generalInfo.clientName", "Nombre del cliente")}
                   </td>
                   <td className="py-3 px-4 text-sm text-foreground">
                     {clientDisplayName(payload.client, "") ||
@@ -374,7 +379,7 @@ export default function DispatchPublicView() {
                       "-"}
                   </td>
                   <td className="py-3 px-4 text-xs font-medium text-muted-foreground">
-                    Post Site
+                    {t("dispatcher.post_site_label", "Puesto")}
                   </td>
                   <td className="py-3 px-4 text-sm text-foreground">
                     {(payload.site &&
@@ -386,13 +391,13 @@ export default function DispatchPublicView() {
 
                 <tr className="border-b">
                   <td className="py-3 px-4 text-xs font-medium text-muted-foreground">
-                    Caller Type
+                    {t("ui.DispatchPublicView.tipoDeLlamador", "Tipo de llamador")}
                   </td>
                   <td className="py-3 px-4 text-sm text-foreground">
                     {payload.callerType || "-"}
                   </td>
                   <td className="py-3 px-4 text-xs font-medium text-muted-foreground">
-                    Caller Name
+                    {t("ui.DispatchPublicView.nombreDelLlamador", "Nombre del llamador")}
                   </td>
                   <td className="py-3 px-4 text-sm text-foreground">
                     {payload.callerName || "-"}
@@ -401,13 +406,13 @@ export default function DispatchPublicView() {
 
                 <tr className="border-b">
                   <td className="py-3 px-4 text-xs font-medium text-muted-foreground">
-                    Incident Type
+                    {t("dispatcher.incident_type_label", "Tipo de incidente")}
                   </td>
                   <td className="py-3 px-4 text-sm text-foreground">
                     {incidentTypeDisplay}
                   </td>
                   <td className="py-3 px-4 text-xs font-medium text-muted-foreground">
-                    Incident Date/Time
+                    {t("dispatcher.incident_datetime", "Fecha y hora del incidente")}
                   </td>
                   <td className="py-3 px-4 text-sm text-foreground">
                     {payload.incidentAt || payload.dateTime
@@ -426,7 +431,7 @@ export default function DispatchPublicView() {
                     {payload.location || payload.incidentLocation || "-"}
                   </td>
                   <td className="py-3 px-4 text-xs font-medium text-muted-foreground">
-                    Dispatcher
+                    {t("dispatcher.dispatcher_label", "Despachador")}
                   </td>
                   <td className="py-3 px-4 text-sm text-foreground">
                     {(typeof payload.guardName === "string"
@@ -441,7 +446,7 @@ export default function DispatchPublicView() {
         </Section>
 
         <div className="space-y-4">
-          <Section icon={<FileText />} title="Incident Details">
+          <Section icon={<FileText />} title={t("comun.detallesDelIncidente", "Detalles del incidente")}>
             <div className="text-sm text-foreground">
               {payload?.content ||
                 payload?.incidentDetails ||
@@ -450,7 +455,7 @@ export default function DispatchPublicView() {
             </div>
           </Section>
 
-          <Section icon={<FileText />} title="Action Taken">
+          <Section icon={<FileText />} title={t("ui.PanicAlertOverlay.accionTomada", "Acción tomada")}>
             <div className="text-sm text-foreground">
               {payload?.actionsTaken ||
                 payload?.actionTaken ||
@@ -459,13 +464,13 @@ export default function DispatchPublicView() {
             </div>
           </Section>
 
-          <Section icon={<FileText />} title="Internal Notes">
+          <Section icon={<FileText />} title={t("comun.notasInternas", "Notas internas")}>
             <div className="text-sm text-foreground whitespace-pre-wrap">
               {payload?.internalNotes || payload?.notes || "-"}
             </div>
           </Section>
 
-          <Section icon={<FileText />} title="Files">
+          <Section icon={<FileText />} title={t("dispatcher.files", "Archivos")}>
             <div className="text-sm">
               {payload?.requestDocumentPDF &&
               payload.requestDocumentPDF.length > 0 ? (
@@ -508,13 +513,13 @@ export default function DispatchPublicView() {
                   <thead>
                     <tr className="bg-muted/40 text-left">
                       <th className="py-2 px-3 text-xs font-medium text-muted-foreground">
-                        Guard
+                        {t("dispatcher.guard", "Vigilante")}
                       </th>
                       <th className="py-2 px-3 text-xs font-medium text-muted-foreground">
                         {t("comun.estado")}
                       </th>
                       <th className="py-2 px-3 text-xs font-medium text-muted-foreground">
-                        Date/Time
+                        {t("dispatcher.date_time", "Fecha/Hora")}
                       </th>
                     </tr>
                   </thead>
@@ -536,7 +541,7 @@ export default function DispatchPublicView() {
         </div>
 
         <div className="mt-6 max-w-4xl mx-auto">
-          <Section icon={<FileText />} title="Ticket Summary">
+          <Section icon={<FileText />} title={t("dispatcher.ticket_summary", "Resumen del ticket")}>
             <div>
               {payload?.comments && payload.comments.length === 0 ? (
                 <div className="text-sm text-muted-foreground">
@@ -576,7 +581,7 @@ export default function DispatchPublicView() {
                               (c.author.name ||
                                 c.author.fullName ||
                                 c.author.username)) ||
-                              "Usuario"}{" "}
+                              t("comun.usuario", "Usuario")}{" "}
                             ·{" "}
                             {c.createdAt
                               ? new Date(c.createdAt).toLocaleString(
@@ -596,8 +601,10 @@ export default function DispatchPublicView() {
                                   rel="noreferrer"
                                   target="_blank"
                                 >
-                                  Adjunto:{" "}
-                                  {c.attachment.name || c.attachment.url}
+                                  {t("ui.DispatchPublicView.adjunto", {
+                                    defaultValue: "Adjunto: {{nombre}}",
+                                    nombre: c.attachment.name || c.attachment.url,
+                                  })}
                                 </a>
                               </div>
                             )}

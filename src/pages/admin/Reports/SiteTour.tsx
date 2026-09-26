@@ -31,12 +31,12 @@ interface TagScan {
 }
 
 /** El veredicto de la revisión manual, en una palabra. */
-const revisionTexto = (e?: VeredictoRevision | null) =>
+const revisionTexto = (t: (k: string, d: string) => string, e?: VeredictoRevision | null) =>
   e === "accepted"
-    ? "Aceptado"
+    ? t("ui.SiteTour.aceptado", "Aceptado")
     : e === "rejected"
-      ? "Rechazado"
-      : "Sin revisar";
+      ? t("ui.SiteTour.rechazado", "Rechazado")
+      : t("ui.SiteTour.sinRevisar", "Sin revisar");
 
 export default function SiteTour() {
   const { t } = useTranslation();
@@ -52,39 +52,39 @@ export default function SiteTour() {
     () => [
       {
         key: "scanned",
-        label: "Fecha/Hora",
+        label: t("ui.SiteTour.fechaHora", "Fecha/Hora"),
         value: (r) => formatDateTime(r.scannedAt),
       },
       {
         key: "tour",
-        label: "Recorrido",
+        label: t("ui.SiteTour.recorrido", "Recorrido"),
         value: (r) => r.tag?.siteTour?.name || "—",
       },
       {
         key: "tag",
-        label: "Punto (etiqueta)",
+        label: t("ui.SiteTour.puntoEtiqueta", "Punto (etiqueta)"),
         value: (r) => r.tag?.name || r.tag?.tagIdentifier || "—",
       },
       {
         key: "guard",
-        label: "Vigilante",
+        label: t("ui.SiteTour.vigilante", "Vigilante"),
         value: (r) => r.guard?.fullName || "—",
         privacy: "guardName",
       },
       {
         key: "station",
-        label: "Estación",
+        label: t("ui.SiteTour.estacion", "Estación"),
         value: (r) => r.station?.stationName || "—",
       },
       {
         key: "valid",
-        label: "Ubicación",
-        value: (r) => (r.validLocation ? "Válida" : "Fuera de rango"),
+        label: t("ui.SiteTour.ubicacion", "Ubicación"),
+        value: (r) => (r.validLocation ? t("ui.SiteTour.valida", "Válida") : t("ui.SiteTour.fueraDeRango", "Fuera de rango")),
         align: "center",
       },
       {
         key: "dist",
-        label: "Distancia (m)",
+        label: t("ui.SiteTour.distanciaM", "Distancia (m)"),
         value: (r) =>
           r.distanceMeters != null ? Number(r.distanceMeters).toFixed(0) : "—",
         align: "right",
@@ -94,7 +94,7 @@ export default function SiteTour() {
       {
         key: "review",
         label: t("ui.SiteTour.revision", "Revisión"),
-        value: (r) => revisionTexto(r.reviewStatus),
+        value: (r) => revisionTexto(t, r.reviewStatus),
         align: "center",
       },
     ],
@@ -126,7 +126,7 @@ export default function SiteTour() {
   return (
     <>
       <DataReport<TagScan>
-        description="Escaneos de rondas: pulsa una fila para ver la foto, la observación, la ubicación y aceptar o rechazar el punto."
+        description={t("ui.SiteTour.descripcion", "Escaneos de rondas: pulsa una fila para ver la foto, la observación, la ubicación y aceptar o rechazar el punto.")}
         icon={Route}
         load={cargar}
         columns={columns}

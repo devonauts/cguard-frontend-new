@@ -55,7 +55,7 @@ const columns: ReportColumn<AlarmCase>[] = [
     key: "title",
     label: "Título",
     labelKey: "reports.col.panicButtonLog.title",
-    value: (r) => r.title || "Alerta de pánico",
+    value: (r) => r.title || i18n.t("ui.PanicButtonLog.alertaDePanico", "Alerta de pánico"),
   },
   {
     key: "origin",

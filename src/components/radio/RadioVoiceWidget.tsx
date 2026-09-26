@@ -76,7 +76,9 @@ export default function RadioVoiceWidget() {
     setPaseBusy(true);
     try {
       await radioCheckService.start("all");
-      toast.success("Pase de novedades iniciado");
+      toast.success(
+        t("ui.RadioVoiceWidget.paseIniciado", "Pase de novedades iniciado"),
+      );
       await refreshPase();
     } catch {
       toast.error(t("radio.paseStartError", "No se pudo iniciar el pase"));
@@ -208,7 +210,8 @@ export default function RadioVoiceWidget() {
               que la empresa puede tener varios, «Canal general» mentía en
               cuanto el despachador cambiaba de canal en la pantalla de Radio. */}
           <p className="truncate text-sm font-semibold leading-tight">
-            {snap.channelName || "Canal general"}
+            {snap.channelName ||
+              t("ui.RadioVoiceWidget.canalGeneral", "Canal general")}
           </p>
           <p
             className="text-[11px] leading-tight"
@@ -216,11 +219,14 @@ export default function RadioVoiceWidget() {
           >
             {snap.on
               ? live
-                ? "En vivo · todos pueden hablar"
+                ? t(
+                    "ui.RadioVoiceWidget.enVivoTodosPuedenHablar",
+                    "En vivo · todos pueden hablar",
+                  )
                 : connecting
-                  ? "Conectando…"
-                  : "Sin conexión"
-              : "Apagado"}
+                  ? t("ui.RadioLiveChannelPanel.conectando", "Conectando…")
+                  : t("ui.RadioVoiceWidget.sinConexion", "Sin conexión")
+              : t("ui.RadioVoiceWidget.apagado", "Apagado")}
           </p>
         </div>
         {/* On/off switch */}
@@ -232,7 +238,11 @@ export default function RadioVoiceWidget() {
             background: snap.on ? "var(--ok)" : "var(--glass-sunken)",
             border: "1px solid var(--hairline)",
           }}
-          title={snap.on ? "Apagar canal" : "Encender canal"}
+          title={
+            snap.on
+              ? t("ui.RadioVoiceWidget.apagarCanal", "Apagar canal")
+              : t("ui.RadioVoiceWidget.encenderCanal", "Encender canal")
+          }
           onClick={toggleOn}
         >
           {/* La perilla es blanca a propósito: se desliza entre un verde de
@@ -250,7 +260,7 @@ export default function RadioVoiceWidget() {
         <button
           className="cg-focus grid h-9 w-9 shrink-0 place-items-center rounded-full transition-colors"
           style={{ color: "var(--ink-faint)" }}
-          title="Cerrar"
+          title={t("ui.MapPopup.cerrar", "Cerrar")}
           onClick={() => setWidgetOpen(false)}
         >
           <X size={16} />
@@ -261,8 +271,10 @@ export default function RadioVoiceWidget() {
         <div className="flex flex-col items-center gap-2 px-4 py-6 text-center">
           <Volume2 size={26} style={{ color: "var(--ink-faint)" }} />
           <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
-            Enciende el canal general para escuchar y hablar con los vigilantes
-            en tiempo real. Sigue activo aunque cierres esta ventana.
+            {t(
+              "ui.RadioVoiceWidget.enciendeElCanalGeneral",
+              "Enciende el canal general para escuchar y hablar con los vigilantes en tiempo real. Sigue activo aunque cierres esta ventana.",
+            )}
           </p>
         </div>
       ) : (
@@ -285,10 +297,15 @@ export default function RadioVoiceWidget() {
           >
             <span>
               {snap.speaker
-                ? `${snap.speaker.userId === myId ? "Estás hablando" : `${snap.speaker.name} está hablando`}…`
+                ? snap.speaker.userId === myId
+                  ? t("ui.RadioLiveChannelPanel.estasHablando", "Estás hablando…")
+                  : t("ui.RadioLiveChannelPanel.nombreEstaHablando", {
+                      defaultValue: "{{name}} está hablando…",
+                      name: snap.speaker.name,
+                    })
                 : live
-                  ? "Canal libre"
-                  : "Conectando…"}
+                  ? t("ui.RadioLiveChannelPanel.canalLibre", "Canal libre")
+                  : t("ui.RadioLiveChannelPanel.conectando", "Conectando…")}
             </span>
             <span className="flex items-center gap-1 text-[11px] font-normal">
               {connecting ? (
@@ -330,7 +347,9 @@ export default function RadioVoiceWidget() {
             onPointerUp={onPttUp}
           >
             <Mic size={18} />{" "}
-            {snap.talking ? "Transmitiendo…" : "Mantén para hablar"}
+            {snap.talking
+              ? t("ui.RadioLiveChannelPanel.transmitiendo", "Transmitiendo…")
+              : t("ui.RadioLiveChannelPanel.mantenParaHablar", "Mantén para hablar")}
           </button>
 
           {snap.hint && (
@@ -369,7 +388,9 @@ export default function RadioVoiceWidget() {
                   />
                   <span className="flex-1 truncate">
                     {m.name}
-                    {m.userId === myId ? " (tú)" : ""}
+                    {m.userId === myId
+                      ? ` ${t("ui.RadioLiveChannelPanel.tu", "(tú)")}`
+                      : ""}
                   </span>
                   {snap.speaker?.userId === m.userId && (
                     <Mic size={12} style={{ color: "var(--brand-text)" }} />
@@ -403,7 +424,7 @@ export default function RadioVoiceWidget() {
               ) : (
                 <Square size={16} />
               )}{" "}
-              Finalizar pase de novedades
+              {t("ui.RadioVoiceWidget.finalizarPase", "Finalizar pase de novedades")}
             </button>
           ) : (
             <button
@@ -416,7 +437,7 @@ export default function RadioVoiceWidget() {
               ) : (
                 <Megaphone size={16} />
               )}{" "}
-              Iniciar pase de novedades
+              {t("ui.RadioVoiceWidget.iniciarPase", "Iniciar pase de novedades")}
             </button>
           )}
         </div>

@@ -229,7 +229,7 @@ export function SaveBar({
       >
         {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         {saving
-          ? "Guardando…"
+          ? t("common.saving", "Guardando…")
           : (label ?? t("settings.form.saveConfig", "Guardar configuración"))}
       </Button>
     </div>

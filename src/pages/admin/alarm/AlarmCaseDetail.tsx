@@ -103,12 +103,24 @@ type AlarmCaseWithEcv = AlarmCase & {
   calls?: unknown[];
 };
 
-const DISPOSITIONS: { value: AlarmCaseDisposition; label: string }[] = [
-  { value: "real", label: "Real" },
-  { value: "false", label: "Falsa" },
-  { value: "test", label: "Prueba" },
-  { value: "runaway", label: "Reincidente" },
-  { value: "cancelled", label: "Cancelada" },
+const DISPOSITIONS: {
+  value: AlarmCaseDisposition;
+  labelKey: string;
+  label: string;
+}[] = [
+  { value: "real", labelKey: "ui.AlarmCaseDetail.disposition.real", label: "Real" },
+  { value: "false", labelKey: "ui.AlarmCaseDetail.disposition.false", label: "Falsa" },
+  { value: "test", labelKey: "ui.AlarmCaseDetail.disposition.test", label: "Prueba" },
+  {
+    value: "runaway",
+    labelKey: "ui.AlarmCaseDetail.disposition.runaway",
+    label: "Reincidente",
+  },
+  {
+    value: "cancelled",
+    labelKey: "ui.AlarmCaseDetail.disposition.cancelled",
+    label: "Cancelada",
+  },
 ];
 
 const selectClass =
@@ -154,7 +166,9 @@ export default function AlarmCaseDetail() {
       } catch (e) {
         const err = e as { data?: { message?: string }; message?: string };
         toast.error(
-          err?.data?.message || err?.message || "No se pudo cargar el caso",
+          err?.data?.message ||
+            err?.message ||
+            t("ui.AlarmCaseDetail.noSePudoCargarElCaso", "No se pudo cargar el caso"),
         );
       } finally {
         setLoading(false);
@@ -179,7 +193,9 @@ export default function AlarmCaseDetail() {
     } catch (e) {
       const err = e as { data?: { message?: string }; message?: string };
       toast.error(
-        err?.data?.message || err?.message || "No se pudo completar la acción",
+        err?.data?.message ||
+          err?.message ||
+          t("ui.AlarmCaseDetail.noSePudoCompletarLaAccion", "No se pudo completar la acción"),
       );
       return false;
     } finally {
@@ -188,10 +204,16 @@ export default function AlarmCaseDetail() {
   };
 
   const onAcknowledge = () =>
-    runAction(() => alarmService.acknowledge(id), "Caso reconocido");
+    runAction(
+      () => alarmService.acknowledge(id),
+      t("ui.AlarmCaseDetail.casoReconocido", "Caso reconocido"),
+    );
 
   const onResolve = () =>
-    runAction(() => alarmService.resolve(id), "Caso resuelto");
+    runAction(
+      () => alarmService.resolve(id),
+      t("ui.AlarmCaseDetail.casoResuelto", "Caso resuelto"),
+    );
 
   const onDispatch = async () => {
     if (!dTarget.trim()) {
@@ -205,7 +227,7 @@ export default function AlarmCaseDetail() {
           target: dTarget.trim(),
           note: dNote.trim() || undefined,
         }),
-      "Despacho solicitado",
+      t("ui.AlarmCaseDetail.despachoSolicitado", "Despacho solicitado"),
     );
     if (ok) {
       setDispatchOpen(false);
@@ -217,7 +239,7 @@ export default function AlarmCaseDetail() {
   const onClose = async () => {
     const ok = await runAction(
       () => alarmService.close(id, { disposition }),
-      "Caso cerrado",
+      t("ui.AlarmCaseDetail.casoCerrado", "Caso cerrado"),
     );
     if (ok) setCloseOpen(false);
   };
@@ -229,7 +251,7 @@ export default function AlarmCaseDetail() {
           title: incTitle.trim() || undefined,
           description: incDescription.trim() || undefined,
         }),
-      "Incidente creado",
+      t("ui.AlarmCaseDetail.incidenteCreado", "Incidente creado"),
     );
     if (ok) {
       setIncidentOpen(false);
@@ -245,7 +267,7 @@ export default function AlarmCaseDetail() {
     }
     const ok = await runAction(
       () => alarmService.addNote(id, { detail: noteText.trim() }),
-      "Nota agregada",
+      t("ui.AlarmCaseDetail.notaAgregada", "Nota agregada"),
     );
     if (ok) {
       setNoteOpen(false);
@@ -330,7 +352,11 @@ export default function AlarmCaseDetail() {
             className={critico ? "overflow-hidden" : undefined}
             icon={<Siren />}
             title={data.title || cat.label}
-            subtitle={`Caso #${String(data.id).slice(0, 8)} · creado ${formatWhen(data.createdAt)}`}
+            subtitle={t("ui.AlarmCaseDetail.casoNumeroCreado", {
+              defaultValue: "Caso #{{id}} · creado {{when}}",
+              id: String(data.id).slice(0, 8),
+              when: formatWhen(data.createdAt),
+            })}
             badges={
               <>
                 <PriorityPill p={data.priority} />
@@ -351,8 +377,12 @@ export default function AlarmCaseDetail() {
                 })()}
                 {data.disposition ? (
                   <Chip>
-                    {DISPOSITIONS.find((d) => d.value === data.disposition)
-                      ?.label || data.disposition}
+                    {(() => {
+                      const dp = DISPOSITIONS.find(
+                        (d) => d.value === data.disposition,
+                      );
+                      return dp ? t(dp.labelKey, dp.label) : data.disposition;
+                    })()}
                   </Chip>
                 ) : null}
                 {data.incidentId ? (
@@ -360,7 +390,7 @@ export default function AlarmCaseDetail() {
                      marca. Iba en el acento configurable. */
                   <StatusBadge tone="bad" dot={false}>
                     <AlertTriangle className="size-3.5" />
-                    Incidente
+                    {t("ui.AlarmCaseDetail.incidente", "Incidente")}
                   </StatusBadge>
                 ) : null}
               </>
@@ -384,7 +414,7 @@ export default function AlarmCaseDetail() {
                   ) : (
                     <RefreshCw className="size-4" />
                   )}
-                  Actualizar
+                  {t("ui.AlarmCaseDetail.actualizar", "Actualizar")}
                 </Button>
               </>
             }
@@ -404,7 +434,7 @@ export default function AlarmCaseDetail() {
               onClick={onAcknowledge}
             >
               <Check className="size-4" />
-              Reconocer
+              {t("ui.AlarmCaseDetail.reconocer", "Reconocer")}
             </Button>
             <Button
               size="sm"
@@ -413,7 +443,7 @@ export default function AlarmCaseDetail() {
               onClick={() => setDispatchOpen(true)}
             >
               <Radio className="size-4" />
-              Despachar
+              {t("ui.AlarmCaseDetail.despachar", "Despachar")}
             </Button>
             <Button
               variant="outline"
@@ -422,7 +452,7 @@ export default function AlarmCaseDetail() {
               onClick={onResolve}
             >
               <CheckCircle2 className="size-4" />
-              Resolver
+              {t("ui.AlarmCaseDetail.resolver", "Resolver")}
             </Button>
             <Button
               variant="outline"
@@ -431,7 +461,7 @@ export default function AlarmCaseDetail() {
               onClick={() => setCloseOpen(true)}
             >
               <Lock className="size-4" />
-              Cerrar
+              {t("actions.close", "Cerrar")}
             </Button>
             <Button
               variant="outline"
@@ -449,7 +479,7 @@ export default function AlarmCaseDetail() {
               onClick={() => setNoteOpen(true)}
             >
               <StickyNote className="size-4" />
-              Nota
+              {t("ui.AlarmCaseDetail.nota", "Nota")}
             </Button>
           </div>
         </GlassPanel>
@@ -480,31 +510,34 @@ export default function AlarmCaseDetail() {
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
           {/* Panel / site info */}
           <Section
-            title="Panel y sitio"
+            title={t("ui.AlarmCaseDetail.panelYSitio", "Panel y sitio")}
             icon={<Cpu />}
             className="lg:col-span-1"
           >
             {panel ? (
               <dl className="space-y-2.5 text-sm">
-                <PanelField label="Panel" value={panel.name} />
-                <PanelField label="Cuenta" value={panel.accountNumber} mono />
+                <PanelField label={t("ui.AlarmCaseDetail.panel", "Panel")} value={panel.name} />
+                <PanelField label={t("ui.AlarmCaseDetail.cuenta", "Cuenta")} value={panel.accountNumber} mono />
                 <PanelField
                   label={t("comun.tipo")}
                   value={
                     panel.panelType
                       ? {
-                          intrusion: "Intrusión",
-                          fire: "Incendio",
-                          holdup: "Atraco",
-                          access: "Acceso",
-                          environmental: "Ambiental",
+                          intrusion: t("ui.AlarmCaseDetail.panelType.intrusion", "Intrusión"),
+                          fire: t("ui.AlarmCaseDetail.panelType.fire", "Incendio"),
+                          holdup: t("ui.AlarmCaseDetail.panelType.holdup", "Atraco"),
+                          access: t("ui.AlarmCaseDetail.panelType.access", "Acceso"),
+                          environmental: t(
+                            "ui.AlarmCaseDetail.panelType.environmental",
+                            "Ambiental",
+                          ),
                         }[panel.panelType] || panel.panelType
                       : null
                   }
                 />
-                <PanelField label="Protocolo" value={panel.protocol} />
+                <PanelField label={t("ui.AlarmCaseDetail.protocolo", "Protocolo")} value={panel.protocol} />
                 <PanelField
-                  label="Equipo"
+                  label={t("ui.AlarmCaseDetail.equipo", "Equipo")}
                   value={
                     [panel.make, panel.model].filter(Boolean).join(" ") || null
                   }
@@ -513,7 +546,11 @@ export default function AlarmCaseDetail() {
                   label={t("ui.AlarmCaseDetail.comunicacion", "Comunicación")}
                   value={
                     panel.comms
-                      ? { ip: "IP", cellular: "Celular", dual: "Dual" }[
+                      ? {
+                          ip: "IP",
+                          cellular: t("ui.AlarmCaseDetail.comms.cellular", "Celular"),
+                          dual: t("ui.AlarmCaseDetail.comms.dual", "Dual"),
+                        }[
                           panel.comms
                         ] || panel.comms
                       : null
@@ -618,7 +655,10 @@ export default function AlarmCaseDetail() {
                             className="text-xs"
                             style={{ color: "var(--ink-faint)" }}
                           >
-                            Zona {ev.zoneNumber}
+                            {t("ui.AlarmCaseDetail.zonaN", {
+                              defaultValue: "Zona {{n}}",
+                              n: ev.zoneNumber,
+                            })}
                           </span>
                         ) : null}
                       </div>
@@ -682,7 +722,7 @@ export default function AlarmCaseDetail() {
                   >
                     <div className="min-w-0">
                       <span className="font-medium">
-                        {a.action || "Acción"}
+                        {a.action || t("actions.action", "Acción")}
                       </span>
                       {a.detail ? (
                         <span className="ml-2 text-sm text-muted-foreground">
@@ -706,7 +746,7 @@ export default function AlarmCaseDetail() {
       {/* Dispatch */}
       <Modal
         open={dispatchOpen}
-        title="Despachar"
+        title={t("ui.AlarmCaseDetail.despachar", "Despachar")}
         icon={<Radio className="size-4" />}
         onOpenChange={(o) => {
           if (!o) setDispatchOpen(false);
@@ -718,7 +758,7 @@ export default function AlarmCaseDetail() {
               onClick={() => setDispatchOpen(false)}
               disabled={busy}
             >
-              Cancelar
+              {t("actions.cancel", "Cancelar")}
             </Button>
             <Button onClick={onDispatch} variant="brand" disabled={busy}>
               {busy ? (
@@ -726,7 +766,7 @@ export default function AlarmCaseDetail() {
               ) : (
                 <Radio className="size-4" />
               )}
-              Despachar
+              {t("ui.AlarmCaseDetail.despachar", "Despachar")}
             </Button>
           </>
         }
@@ -748,7 +788,7 @@ export default function AlarmCaseDetail() {
             </select>
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="d-target">Destino</Label>
+            <Label htmlFor="d-target">{t("ui.AlarmCaseDetail.destino", "Destino")}</Label>
             <Input
               id="d-target"
               value={dTarget}
@@ -760,7 +800,9 @@ export default function AlarmCaseDetail() {
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="d-note">Nota (opcional)</Label>
+            <Label htmlFor="d-note">
+              {t("ui.AlarmCaseDetail.notaOpcional", "Nota (opcional)")}
+            </Label>
             <Textarea
               id="d-note"
               value={dNote}
@@ -787,7 +829,7 @@ export default function AlarmCaseDetail() {
               onClick={() => setCloseOpen(false)}
               disabled={busy}
             >
-              Cancelar
+              {t("actions.cancel", "Cancelar")}
             </Button>
             <Button onClick={onClose} variant="brand" disabled={busy}>
               {busy ? (
@@ -795,7 +837,7 @@ export default function AlarmCaseDetail() {
               ) : (
                 <Lock className="size-4" />
               )}
-              Cerrar caso
+              {t("ui.AlarmCaseDetail.cerrarCaso", "Cerrar caso")}
             </Button>
           </>
         }
@@ -814,7 +856,7 @@ export default function AlarmCaseDetail() {
           >
             {DISPOSITIONS.map((d) => (
               <option key={d.value} value={d.value}>
-                {d.label}
+                {t(d.labelKey, d.label)}
               </option>
             ))}
           </select>
@@ -842,7 +884,7 @@ export default function AlarmCaseDetail() {
               onClick={() => setIncidentOpen(false)}
               disabled={busy}
             >
-              Cancelar
+              {t("actions.cancel", "Cancelar")}
             </Button>
             <Button onClick={onIncident} variant="brand" disabled={busy}>
               {busy ? (
@@ -850,7 +892,7 @@ export default function AlarmCaseDetail() {
               ) : (
                 <AlertTriangle className="size-4" />
               )}
-              Crear incidente
+              {t("comun.crearIncidente", "Crear incidente")}
             </Button>
           </>
         }
@@ -897,7 +939,7 @@ export default function AlarmCaseDetail() {
               onClick={() => setNoteOpen(false)}
               disabled={busy}
             >
-              Cancelar
+              {t("actions.cancel", "Cancelar")}
             </Button>
             <Button onClick={onNote} variant="brand" disabled={busy}>
               {busy ? (
@@ -905,13 +947,13 @@ export default function AlarmCaseDetail() {
               ) : (
                 <StickyNote className="size-4" />
               )}
-              Guardar nota
+              {t("ui.AlarmCaseDetail.guardarNota", "Guardar nota")}
             </Button>
           </>
         }
       >
         <div className="space-y-1.5">
-          <Label htmlFor="note-text">Nota</Label>
+          <Label htmlFor="note-text">{t("ui.AlarmCaseDetail.nota", "Nota")}</Label>
           <Textarea
             id="note-text"
             value={noteText}

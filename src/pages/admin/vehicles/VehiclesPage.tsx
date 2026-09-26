@@ -219,14 +219,32 @@ export default function VehiclesPage() {
   const mixed = selectedCount > 0 && !allActive && !allInactive;
   const availableActions: Array<{ value: string; label: string }> = [];
   if (allActive) {
-    availableActions.push({ value: "inactivar", label: "Inactivar" });
+    availableActions.push({
+      value: "inactivar",
+      label: t("visitantes.action.deactivate", "Inactivar"),
+    });
   } else if (allInactive) {
-    availableActions.push({ value: "activar", label: "Activar" });
-    availableActions.push({ value: "eliminar", label: "Eliminar" });
+    availableActions.push({
+      value: "activar",
+      label: t("actions.activate", "Activar"),
+    });
+    availableActions.push({
+      value: "eliminar",
+      label: t("actions.delete", "Eliminar"),
+    });
   } else if (mixed) {
-    availableActions.push({ value: "activar", label: "Activar" });
-    availableActions.push({ value: "inactivar", label: "Inactivar" });
-    availableActions.push({ value: "eliminar", label: "Eliminar" });
+    availableActions.push({
+      value: "activar",
+      label: t("actions.activate", "Activar"),
+    });
+    availableActions.push({
+      value: "inactivar",
+      label: t("visitantes.action.deactivate", "Inactivar"),
+    });
+    availableActions.push({
+      value: "eliminar",
+      label: t("actions.delete", "Eliminar"),
+    });
   }
 
   const viewVehicle = async (id: string) => {
@@ -277,13 +295,13 @@ export default function VehiclesPage() {
     <RowActionsMenu
       actions={[
         {
-          label: "Ver detalles",
+          label: t("actions.viewDetails", "Ver detalles"),
           icon: <Eye />,
           onClick: () => viewVehicle(id),
         },
-        { label: "Editar", icon: <Edit />, onClick: () => editVehicle(id) },
+        { label: t("actions.edit", "Editar"), icon: <Edit />, onClick: () => editVehicle(id) },
         {
-          label: "Inactivar",
+          label: t("visitantes.action.deactivate", "Inactivar"),
           icon: <Archive />,
           onClick: () => archiveVehicle(id),
         },
@@ -301,10 +319,18 @@ export default function VehiclesPage() {
           subtitle={t("ui.VehiclesPage.flotaDeLaEmpresaY")}
           badges={
             <>
-              <StatusBadge tone="brand">{count} en la flota</StatusBadge>
+              <StatusBadge tone="brand">
+                {t("ui.VehiclesPage.enLaFlota", {
+                  count,
+                  defaultValue: "{{count}} en la flota",
+                })}
+              </StatusBadge>
               {selectedCount > 0 && (
                 <StatusBadge tone="info">
-                  {selectedCount} seleccionado{selectedCount === 1 ? "" : "s"}
+                  {t("ui.VehiclesPage.seleccionados", {
+                    count: selectedCount,
+                    defaultValue: "{{count}} seleccionados",
+                  })}
                 </StatusBadge>
               )}
             </>
@@ -321,7 +347,7 @@ export default function VehiclesPage() {
                 <SheetTrigger asChild>
                   <Button variant="outline">
                     <FilterIcon className="mr-2 h-4 w-4" />
-                    Filtros
+                    {t("clients.filters.title", "Filtros")}
                   </Button>
                 </SheetTrigger>
                 <SheetContent
@@ -329,12 +355,14 @@ export default function VehiclesPage() {
                   className="w-full overflow-y-auto sm:w-[460px]"
                 >
                   <SheetHeader>
-                    <SheetTitle>Filtros</SheetTitle>
+                    <SheetTitle>
+                      {t("clients.filters.title", "Filtros")}
+                    </SheetTitle>
                   </SheetHeader>
 
                   <div className="mt-6 space-y-5">
                     <div className="space-y-2">
-                      <Label>Sectores</Label>
+                      <Label>{t("clients.filters.categories", "Sectores")}</Label>
                       <Select
                         value={filters.categoryId ?? ""}
                         onValueChange={(v) =>
@@ -342,12 +370,20 @@ export default function VehiclesPage() {
                         }
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Default" />
+                          <SelectValue
+                            placeholder={t("ui.VehiclesPage.default", "Default")}
+                          />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="default">Default</SelectItem>
-                          <SelectItem value="flota-a">Flota A</SelectItem>
-                          <SelectItem value="flota-b">Flota B</SelectItem>
+                          <SelectItem value="default">
+                            {t("ui.VehiclesPage.default", "Default")}
+                          </SelectItem>
+                          <SelectItem value="flota-a">
+                            {t("ui.VehiclesPage.flotaA", "Flota A")}
+                          </SelectItem>
+                          <SelectItem value="flota-b">
+                            {t("ui.VehiclesPage.flotaB", "Flota B")}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -382,7 +418,7 @@ export default function VehiclesPage() {
                       className="w-full"
                       onClick={aplicarFiltros}
                     >
-                      Filtro
+                      {t("visitantes.filterButton", "Filtro")}
                     </Button>
                   </div>
                 </SheetContent>
@@ -399,14 +435,14 @@ export default function VehiclesPage() {
             accent="primary"
           />
           <StatCard
-            label="Activos"
+            label={t("clients.sections.active", "Activos")}
             value={activos}
             icon={<CheckCircle2 />}
             accent="ok"
             hint={t("ui.Vehicles.enEstaPagina", "En esta página")}
           />
           <StatCard
-            label="Inactivos"
+            label={t("ui.VehiclesPage.inactivos", "Inactivos")}
             value={inactivos}
             icon={<PauseCircle />}
             accent="neutral"
@@ -430,7 +466,7 @@ export default function VehiclesPage() {
             onValueChange={(v) => handleBulkActionSelect(v)}
           >
             <SelectTrigger className="w-40">
-              <SelectValue placeholder="Acciones" />
+              <SelectValue placeholder={t("actions.more", "Acciones")} />
             </SelectTrigger>
             <SelectContent>
               {availableActions.map((a) => (
@@ -445,8 +481,11 @@ export default function VehiclesPage() {
               value={vista}
               onChange={setVista}
               options={[
-                { value: "tarjetas", label: "Tarjetas" },
-                { value: "lista", label: "Lista" },
+                {
+                  value: "tarjetas",
+                  label: t("ui.VehiclesPage.tarjetas", "Tarjetas"),
+                },
+                { value: "lista", label: t("comun.lista", "Lista") },
               ]}
             />
           </div>
@@ -513,7 +552,13 @@ export default function VehiclesPage() {
                         onCheckedChange={(c) =>
                           handleSelectOne(r.id, c === true)
                         }
-                        aria-label={`Seleccionar ${r.licensePlate || r.name || "vehículo"}`}
+                        aria-label={t("ui.VehiclesPage.seleccionarX", {
+                          defaultValue: "Seleccionar {{name}}",
+                          name:
+                            r.licensePlate ||
+                            r.name ||
+                            t("ui.NewVehicle.vehiculo", "vehículo"),
+                        })}
                       />
                       <div className="min-w-0 flex-1">
                         <div className="truncate font-mono text-sm font-semibold text-foreground">
@@ -523,7 +568,7 @@ export default function VehiclesPage() {
                         <div className="cg-eyebrow mt-1 truncate">
                           {[r.make, r.model, r.year]
                             .filter(Boolean)
-                            .join(" · ") || "Sin datos"}
+                            .join(" · ") || t("clients.empty.alt", "Sin datos")}
                         </div>
                       </div>
                       {menuVehiculo(r.id)}
@@ -537,7 +582,12 @@ export default function VehiclesPage() {
                         borderColor: "var(--hairline)",
                         background: "var(--glass-sunken)",
                       }}
-                      aria-label={`Ver detalles de ${r.licensePlate || "vehículo"}`}
+                      aria-label={t("ui.VehiclesPage.verDetallesDeX", {
+                        defaultValue: "Ver detalles de {{name}}",
+                        name:
+                          r.licensePlate ||
+                          t("ui.NewVehicle.vehiculo", "vehículo"),
+                      })}
                     >
                       <SmartImage
                         src={foto}
@@ -556,7 +606,9 @@ export default function VehiclesPage() {
 
                     <div className="flex flex-wrap items-center gap-2">
                       <StatusBadge tone={r.active ? "ok" : "neutral"}>
-                        {r.active ? "Activo" : "Inactivo"}
+                        {r.active
+                          ? t("common.active", "Activo")
+                          : t("common.inactive", "Inactivo")}
                       </StatusBadge>
                       {r.ownership && (
                         <StatusBadge tone="info" dot={false}>
@@ -571,9 +623,12 @@ export default function VehiclesPage() {
                     </div>
 
                     <div className="glass-sunken mt-auto grid grid-cols-2 gap-3 p-3">
-                      <Field label="Color" value={r.color || "—"} />
                       <Field
-                        label="Kilometraje"
+                        label={t("ui.NewVehiclePage.color", "Color")}
+                        value={r.color || "—"}
+                      />
+                      <Field
+                        label={t("ui.VehiclesPage.kilometraje", "Kilometraje")}
                         value={
                           r.initialMileage != null
                             ? Number(r.initialMileage).toLocaleString(localeActual())
@@ -608,9 +663,15 @@ export default function VehiclesPage() {
                     <th className="px-4 py-2 font-semibold">
                       {t("ui.Vehicles.ano3", "Año")}
                     </th>
-                    <th className="px-4 py-2 font-semibold">Marca</th>
-                    <th className="px-4 py-2 font-semibold">Modelo</th>
-                    <th className="px-4 py-2 font-semibold">Placa</th>
+                    <th className="px-4 py-2 font-semibold">
+                      {t("ui.NewVehiclePage.marca", "Marca")}
+                    </th>
+                    <th className="px-4 py-2 font-semibold">
+                      {t("ui.NewVehiclePage.modelo", "Modelo")}
+                    </th>
+                    <th className="px-4 py-2 font-semibold">
+                      {t("station.parking.col.plate", "Placa")}
+                    </th>
                     <th className="px-4 py-2 font-semibold">
                       {t("comun.estado")}
                     </th>
@@ -635,7 +696,12 @@ export default function VehiclesPage() {
                           onCheckedChange={(c) =>
                             handleSelectOne(r.id, c === true)
                           }
-                          aria-label={`Seleccionar ${r.licensePlate || "vehículo"}`}
+                          aria-label={t("ui.VehiclesPage.seleccionarX", {
+                            defaultValue: "Seleccionar {{name}}",
+                            name:
+                              r.licensePlate ||
+                              t("ui.NewVehicle.vehiculo", "vehículo"),
+                          })}
                         />
                       </td>
                       <td className="px-4 py-3 tabular-nums">
@@ -648,7 +714,9 @@ export default function VehiclesPage() {
                       </td>
                       <td className="px-4 py-3">
                         <StatusBadge tone={r.active ? "ok" : "neutral"}>
-                          {r.active ? "Activo" : "Inactivo"}
+                          {r.active
+                            ? t("common.active", "Activo")
+                            : t("common.inactive", "Inactivo")}
                         </StatusBadge>
                       </td>
                       <td className="px-2 py-3 text-right">
@@ -672,7 +740,11 @@ export default function VehiclesPage() {
                 </AlertDialogTitle>
               </AlertDialogHeader>
               <div className="p-4 text-sm" style={{ color: "var(--ink-soft)" }}>
-                ¿Estás seguro de que deseas inactivar 1 vehículo(s)?
+                {t("ui.VehiclesPage.confirmarInactivar", {
+                  count: 1,
+                  defaultValue:
+                    "¿Estás seguro de que deseas inactivar {{count}} vehículo(s)?",
+                })}
               </div>
               <AlertDialogFooter>
                 <AlertDialogCancel onClick={() => setArchiveConfirmId(null)}>
@@ -683,7 +755,7 @@ export default function VehiclesPage() {
                   className="cg-btn-bad"
                   disabled={archiveLoading}
                 >
-                  Confirmar
+                  {t("actions.confirm", "Confirmar")}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -705,8 +777,23 @@ export default function VehiclesPage() {
                 </AlertDialogTitle>
               </AlertDialogHeader>
               <div className="p-4 text-sm" style={{ color: "var(--ink-soft)" }}>
-                ¿Estás seguro de que deseas {bulkActionConfirm}{" "}
-                {selectedIds.length} vehículo(s)?
+                {bulkActionConfirm === "activar"
+                  ? t("ui.VehiclesPage.confirmarActivar", {
+                      count: selectedIds.length,
+                      defaultValue:
+                        "¿Estás seguro de que deseas activar {{count}} vehículo(s)?",
+                    })
+                  : bulkActionConfirm === "eliminar"
+                    ? t("ui.VehiclesPage.confirmarEliminar", {
+                        count: selectedIds.length,
+                        defaultValue:
+                          "¿Estás seguro de que deseas eliminar {{count}} vehículo(s)?",
+                      })
+                    : t("ui.VehiclesPage.confirmarInactivar", {
+                        count: selectedIds.length,
+                        defaultValue:
+                          "¿Estás seguro de que deseas inactivar {{count}} vehículo(s)?",
+                      })}
               </div>
               <AlertDialogFooter>
                 <AlertDialogCancel onClick={() => setBulkActionConfirm(null)}>
@@ -729,7 +816,10 @@ export default function VehiclesPage() {
                         } else {
                           await vehicleService.destroy(idsToDelete);
                           toast.success(
-                            `${idsToDelete.length} vehículo(s) eliminados`,
+                            t("ui.VehiclesPage.vehiculosEliminados", {
+                              count: idsToDelete.length,
+                              defaultValue: "{{count}} vehículo(s) eliminados",
+                            }),
                           );
                         }
                       } else {
@@ -753,7 +843,7 @@ export default function VehiclesPage() {
                   className="cg-btn-bad"
                   disabled={bulkActionLoading}
                 >
-                  Confirmar
+                  {t("actions.confirm", "Confirmar")}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -806,7 +896,9 @@ export default function VehiclesPage() {
                     <StatusBadge
                       tone={detailsVehicle.active ? "ok" : "neutral"}
                     >
-                      {detailsVehicle.active ? "Activo" : "Inactivo"}
+                      {detailsVehicle.active
+                        ? t("common.active", "Activo")
+                        : t("common.inactive", "Inactivo")}
                     </StatusBadge>
                   </div>
 
@@ -835,12 +927,19 @@ export default function VehiclesPage() {
                       label={t("ui.Vehicles.ano", "Año")}
                       value={detailsVehicle.year || "—"}
                     />
-                    <Field label="Marca" value={detailsVehicle.make || "—"} />
-                    <Field label="Modelo" value={detailsVehicle.model || "—"} />
+                    <Field
+                      label={t("ui.NewVehiclePage.marca", "Marca")}
+                      value={detailsVehicle.make || "—"}
+                    />
+                    <Field
+                      label={t("ui.NewVehiclePage.modelo", "Modelo")}
+                      value={detailsVehicle.model || "—"}
+                    />
                     <Field
                       label={
                         <span className="inline-flex items-center gap-1">
-                          <Palette className="h-3 w-3" /> Color
+                          <Palette className="h-3 w-3" />{" "}
+                          {t("ui.NewVehiclePage.color", "Color")}
                         </span>
                       }
                       value={detailsVehicle.color || "—"}
@@ -864,7 +963,11 @@ export default function VehiclesPage() {
                     <Field
                       label={
                         <span className="inline-flex items-center gap-1">
-                          <Gauge className="h-3 w-3" /> Kilometraje inicial
+                          <Gauge className="h-3 w-3" />{" "}
+                          {t(
+                            "ui.NewVehiclePage.kilometrajeInicial",
+                            "Kilometraje inicial",
+                          )}
                         </span>
                       }
                       value={
@@ -876,7 +979,7 @@ export default function VehiclesPage() {
                       }
                     />
                     <Field
-                      label="Propiedad"
+                      label={t("ui.NewVehiclePage.propiedad", "Propiedad")}
                       value={
                         detailsVehicle.ownership
                           ? OWNERSHIP_LABELS[detailsVehicle.ownership]
@@ -968,7 +1071,12 @@ export default function VehiclesPage() {
             </div>
 
             <div className="tabular-nums">
-              {start} - {end} de {count}
+              {t("guards.list.pagination.range", {
+                start,
+                end,
+                total: count,
+                defaultValue: "{{start}} - {{end}} de {{total}}",
+              })}
             </div>
 
             <div className="flex items-center gap-2">

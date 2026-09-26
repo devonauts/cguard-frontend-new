@@ -427,10 +427,10 @@ export default function StationOverview({
         },
       });
       invalidateEntity("stations");
-      toast.success("Tolerancia guardada");
+      toast.success(t("ui.StationOverview.toleranciaGuardada", "Tolerancia guardada"));
       setEditing(false);
     } catch (e: any) {
-      toast.error(e?.message || "Error al guardar");
+      toast.error(e?.message || t("settings.rondas.saveError", "Error al guardar"));
     } finally {
       setSaving(false);
     }
@@ -484,9 +484,11 @@ export default function StationOverview({
     }
     if (
       !(await confirmDialog({
-        message:
+        message: t(
+          "ui.StationOverview.cambiarHorarioConfirm",
           "Cambiar el horario reconfigura los puestos del turno. Si hay vigilantes asignados a esta estación, deberán reasignarse. ¿Continuar?",
-        confirmText: "Continuar",
+        ),
+        confirmText: t("onboarding.wizard.continue", "Continuar"),
       }))
     )
       return;
@@ -601,9 +603,15 @@ export default function StationOverview({
       string,
       { label: string; tone: "green" | "orange" | "red" | "slate" | "primary" }
     > = {
-      on_time: { label: "A tiempo", tone: "green" },
-      late: { label: "Tarde", tone: "orange" },
-      early_departure: { label: "Salida temprana", tone: "orange" },
+      on_time: {
+        label: t("nomina.estado.on_time", "A tiempo"),
+        tone: "green",
+      },
+      late: { label: t("nomina.estado.late", "Tarde"), tone: "orange" },
+      early_departure: {
+        label: t("ui.StationOverview.salidaTemprana", "Salida temprana"),
+        tone: "orange",
+      },
       missed_clockout: {
         label: t("nomina.estado.missed_clockout", "Sin salida"),
         tone: "red",
@@ -612,7 +620,10 @@ export default function StationOverview({
         label: t("station.overview.status.noShow", "No asistió"),
         tone: "red",
       },
-      overtime: { label: "Horas extra", tone: "primary" },
+      overtime: {
+        label: t("ui.StationOverview.horasExtra", "Horas extra"),
+        tone: "primary",
+      },
       pending_review: {
         label: t("nomina.estado.pending_review", "En revisión"),
         tone: "slate",
@@ -655,9 +666,12 @@ export default function StationOverview({
             hint={
               openNow.length
                 ? openNow
-                    .map((r) => r.guardName?.fullName || "Vigilante")
+                    .map(
+                      (r) =>
+                        r.guardName?.fullName || t("guard.roleLabel", "Vigilante"),
+                    )
                     .join(", ")
-                : "Nadie fichado"
+                : t("ui.StationOverview.nadieFichado", "Nadie fichado")
             }
             icon={<ShieldCheck />}
             label={t("ui.StationOverview.deTurnoAhora")}
@@ -666,12 +680,12 @@ export default function StationOverview({
           <StatCard
             accent="info"
             icon={<Users />}
-            label="Fijos requeridos"
+            label={t("ui.StationOverview.fijosRequeridos", "Fijos requeridos")}
             value={fijos || "—"}
           />
           <StatCard
             icon={<Activity />}
-            label="Marcaciones hoy"
+            label={t("ui.StationOverview.marcacionesHoy", "Marcaciones hoy")}
             value={recentShifts === null ? "…" : todayCount}
           />
           <StatCard
@@ -708,11 +722,11 @@ export default function StationOverview({
                 )}
                 onClick={() => setEditing(true)}
               >
-                <Pencil size={14} /> Editar puesto
+                <Pencil size={14} /> {t("ui.StationOverview.editarPuesto", "Editar puesto")}
               </button>
             }
             icon={<Activity />}
-            title="Actividad reciente"
+            title={t("clients.overview.recent.title", "Actividad reciente")}
           >
             {recentShifts === null ? (
               <div
@@ -734,7 +748,8 @@ export default function StationOverview({
             ) : (
               <ul className="divide-y divide-border/40">
                 {rows.slice(0, 8).map((r) => {
-                  const gname = r.guardName?.fullName || "Vigilante";
+                  const gname =
+                    r.guardName?.fullName || t("guard.roleLabel", "Vigilante");
                   const st = r.status ? STATUS_TONE[r.status] : undefined;
 
                   return (
@@ -804,11 +819,17 @@ export default function StationOverview({
                   {stationAddress || `${lat}, ${lng}`}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Geocerca:{" "}
+                  {t("ui.StationHero.geocerca", "Geocerca:")}{" "}
                   {Array.isArray(station.geofencePolygon) &&
                   station.geofencePolygon.length >= 3
-                    ? `polígono de ${station.geofencePolygon.length} puntos`
-                    : `radio de ${station.geofenceRadius || 100} m`}
+                    ? t("ui.StationOverview.poligonoDeNPuntos", {
+                        defaultValue: "polígono de {{count}} puntos",
+                        count: station.geofencePolygon.length,
+                      })
+                    : t("ui.StationOverview.radioDeNMetros", {
+                        defaultValue: "radio de {{m}} m",
+                        m: station.geofenceRadius || 100,
+                      })}
                 </p>
               </>
             ) : (
@@ -842,7 +863,10 @@ export default function StationOverview({
         {assignedGuards.length > 0 && (
           <Section
             icon={<Users />}
-            title={`Vigilantes asignados (${assignedGuards.length})`}
+            title={t("ui.StationOverview.vigilantesAsignadosN", {
+              defaultValue: "Vigilantes asignados ({{n}})",
+              n: assignedGuards.length,
+            })}
           >
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {assignedGuards.map((g: any, i: number) => {
@@ -925,7 +949,7 @@ export default function StationOverview({
               className="cg-btn-ghost cg-focus rounded-lg px-3 py-1.5 text-xs font-medium transition-all"
               onClick={() => setEditing(false)}
             >
-              Cancelar
+              {t("common.cancel", "Cancelar")}
             </button>
             <button
               className="cg-btn-brand cg-focus flex items-center gap-1.5 rounded-lg px-4 py-1.5 text-xs font-semibold transition-all active:scale-95 disabled:opacity-50"
@@ -937,7 +961,7 @@ export default function StationOverview({
               ) : (
                 <Check size={12} />
               )}
-              Guardar
+              {t("common.save", "Guardar")}
             </button>
           </div>
         </div>
@@ -954,8 +978,10 @@ export default function StationOverview({
             </h3>
           </div>
           <p className="text-xs text-muted-foreground">
-            Define el turno del puesto. Los vigilantes asignados a esta estación
-            seguirán este horario. También editable en Programador › Horario.
+            {t(
+              "ui.StationOverview.defineElTurnoDelPuesto",
+              "Define el turno del puesto. Los vigilantes asignados a esta estación seguirán este horario. También editable en Programador › Horario.",
+            )}
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {TURNO_LABELS.map((o) => (
@@ -1027,10 +1053,16 @@ export default function StationOverview({
 
                     return (
                       <option key={h} disabled={!fits} value={String(h)}>
-                        {h}h
                         {fits
-                          ? ` → ${k} fijo${k > 1 ? "s" : ""}`
-                          : " (no divide la cobertura)"}
+                          ? t("ui.StationOverview.horasNFijos", {
+                              defaultValue: "{{h}}h → {{count}} fijos",
+                              h,
+                              count: k,
+                            })
+                          : t("ui.StationOverview.horasNoDivide", {
+                              defaultValue: "{{h}}h (no divide la cobertura)",
+                              h,
+                            })}
                       </option>
                     );
                   })}
@@ -1060,17 +1092,33 @@ export default function StationOverview({
                     className={`mt-1.5 text-[11px] ${alternateOk ? "text-muted-foreground" : "text-destructive"}`}
                   >
                     {alternateOk
-                      ? `Patrón ${rotWork}-${rotCycle - rotWork}: ${guardsPerBlock} fijos alternando por bloque, sin sacafranco. Total ${blockCount * guardsPerBlock} fijos.`
-                      : `El ciclo (${rotCycle}) debe ser múltiplo de los días de trabajo (${rotWork}). Usa 1-1, 2-2, 3-3…`}
+                      ? t("ui.StationOverview.patronAlternando", {
+                          defaultValue:
+                            "Patrón {{trabajo}}-{{descanso}}: {{porBloque}} fijos alternando por bloque, sin sacafranco. Total {{total}} fijos.",
+                          trabajo: rotWork,
+                          descanso: rotCycle - rotWork,
+                          porBloque: guardsPerBlock,
+                          total: blockCount * guardsPerBlock,
+                        })
+                      : t("ui.StationOverview.cicloDebeSerMultiplo", {
+                          defaultValue:
+                            "El ciclo ({{ciclo}}) debe ser múltiplo de los días de trabajo ({{trabajo}}). Usa 1-1, 2-2, 3-3…",
+                          ciclo: rotCycle,
+                          trabajo: rotWork,
+                        })}
                   </p>
                 )}
                 {restCoverage === "sacafranco" &&
                   blocksOk &&
                   blockCount > 1 && (
                     <p className="mt-1.5 text-[11px] text-muted-foreground">
-                      {winMin / 60}h de cobertura en {blockCount} bloques
-                      consecutivos de {Number(blockHours)}h — {blockCount} fijos
-                      + sacafranco.
+                      {t("ui.StationOverview.coberturaEnBloques", {
+                        defaultValue:
+                          "{{horas}}h de cobertura en {{count}} bloques consecutivos de {{bloque}}h — {{count}} fijos + sacafranco.",
+                        horas: winMin / 60,
+                        count: blockCount,
+                        bloque: Number(blockHours),
+                      })}
                     </p>
                   )}
               </div>
@@ -1188,7 +1236,7 @@ export default function StationOverview({
               ) : (
                 <Check size={13} />
               )}
-              Actualizar horario
+              {t("ui.StationOverview.actualizarHorario", "Actualizar horario")}
             </button>
           </div>
         </div>
@@ -1219,7 +1267,7 @@ export default function StationOverview({
               ) : (
                 <Check size={13} />
               )}
-              Guardar ubicación y geocerca
+              {t("ui.StationOverview.guardarUbicacionYGeocerca", "Guardar ubicación y geocerca")}
             </button>
           </div>
           <StationGeofencePolygon
@@ -1236,8 +1284,15 @@ export default function StationOverview({
           />
           <p className="text-[11px] text-muted-foreground font-mono">
             {editLat && editLng
-              ? `Punto: ${Number(editLat).toFixed(6)}, ${Number(editLng).toFixed(6)}`
-              : "Sin coordenadas — busca la dirección o usa la del sitio."}
+              ? t("ui.StationOverview.puntoCoords", {
+                  defaultValue: "Punto: {{lat}}, {{lng}}",
+                  lat: Number(editLat).toFixed(6),
+                  lng: Number(editLng).toFixed(6),
+                })
+              : t(
+                  "ui.StationOverview.sinCoordenadasBusca",
+                  "Sin coordenadas — busca la dirección o usa la del sitio.",
+                )}
           </p>
         </div>
 
@@ -1256,8 +1311,10 @@ export default function StationOverview({
             </h3>
           </div>
           <p className="text-xs text-muted-foreground">
-            Minutos antes/después de la hora de inicio en que el vigilante puede
-            marcar entrada. Vacío = usar el valor por defecto de la empresa.
+            {t(
+              "ui.StationOverview.minutosAntesDespues",
+              "Minutos antes/después de la hora de inicio en que el vigilante puede marcar entrada. Vacío = usar el valor por defecto de la empresa.",
+            )}
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>

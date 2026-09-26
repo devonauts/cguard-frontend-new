@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
   Modal,
@@ -96,13 +97,14 @@ function deLocalInput(v: string): string | null {
    hay que resolver, azul lo que ya está resuelto. No llevan fichajes, ni horas,
    ni mapas — enseñarlos vacíos hace pensar que falta un dato. */
 function FichaDeAusencia({ r }: { r: AttendanceRecord }) {
+  const { t } = useTranslation();
   const esFalta = r.status === "absent";
   const tono = esFalta ? "bad" : "info";
   const titulo = esFalta
-    ? "Falta"
+    ? t("ui.TimesheetModal.falta", "Falta")
     : r.status === "permission"
-      ? "Permiso"
-      : "Vacaciones";
+      ? t("ui.TimesheetModal.permiso", "Permiso")
+      : t("ui.TimesheetModal.vacaciones", "Vacaciones");
   const icono = esFalta ? (
     <AlertOctagon />
   ) : r.status === "permission" ? (
@@ -133,7 +135,7 @@ function FichaDeAusencia({ r }: { r: AttendanceRecord }) {
             {titulo}
           </p>
           <p className="mt-0.5 text-sm" style={{ color: "var(--ink-soft)" }}>
-            {r.guardName?.fullName || "Trabajador"} —{" "}
+            {r.guardName?.fullName || t("ui.NominaRecords.trabajador", "Trabajador")} —{" "}
             {fmtDateTime(r.scheduledStart)}
           </p>
         </div>
@@ -141,26 +143,36 @@ function FichaDeAusencia({ r }: { r: AttendanceRecord }) {
 
       <InfoNote tone={esFalta ? "bad" : "info"}>
         {esFalta
-          ? "Este día quedó registrado como FALTA: el puesto estaba programado y la persona no se presentó. El turno se conserva marcado como ausencia (es la constancia de que estaba programada) y el hueco queda abierto en Cobertura para que alguien lo tape. Si se justifica después, cámbialo a Permiso desde el Horario."
-          : "Ausencia aprobada. El turno de ese día queda marcado como ausencia y el hueco se abre en Cobertura para asignar un relevo. No cuenta como falta ni descuenta en desempeño."}
+          ? t(
+              "ui.TimesheetModal.esteDiaQuedoRegistradoComoFalta",
+              "Este día quedó registrado como FALTA: el puesto estaba programado y la persona no se presentó. El turno se conserva marcado como ausencia (es la constancia de que estaba programada) y el hueco queda abierto en Cobertura para que alguien lo tape. Si se justifica después, cámbialo a Permiso desde el Horario.",
+            )
+          : t(
+              "ui.TimesheetModal.ausenciaAprobada",
+              "Ausencia aprobada. El turno de ese día queda marcado como ausencia y el hueco se abre en Cobertura para asignar un relevo. No cuenta como falta ni descuenta en desempeño.",
+            )}
       </InfoNote>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-        <Field label="Trabajador" value={r.guardName?.fullName || "—"} />
         <Field
-          label="Día"
+          label={t("ui.NominaRecords.trabajador", "Trabajador")}
+          value={r.guardName?.fullName || "—"} />
+        <Field
+          label={t("ui.TimesheetModal.dia", "Día")}
           value={
             <span className="tabular-nums">
               {fmtDateTime(r.scheduledStart)}
             </span>
           }
         />
-        <Field label="Qué pasó" value={<StatusBadge status={r.status} />} />
+        <Field
+          label={t("ui.TimesheetModal.quePaso", "Qué pasó")}
+          value={<StatusBadge status={r.status} />} />
       </div>
 
       {r.observations && (
         <div>
-          <p className="cg-eyebrow">Nota</p>
+          <p className="cg-eyebrow">{t("ui.TimesheetModal.nota", "Nota")}</p>
           <p className="glass-sunken mt-1 whitespace-pre-wrap p-3 text-sm">
             {r.observations}
           </p>
@@ -168,8 +180,10 @@ function FichaDeAusencia({ r }: { r: AttendanceRecord }) {
       )}
 
       <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
-        Un día sin fichaje no se aprueba ni se paga desde aquí: se informa. Sale
-        en los reportes y en las exportaciones junto al resto del periodo.
+        {t(
+          "ui.TimesheetModal.unDiaSinFichajeNoSeAprueba",
+          "Un día sin fichaje no se aprueba ni se paga desde aquí: se informa. Sale en los reportes y en las exportaciones junto al resto del periodo.",
+        )}
       </p>
     </div>
   );
@@ -180,6 +194,7 @@ function FichaDeAusencia({ r }: { r: AttendanceRecord }) {
    por movimiento. Aquí lo que importa es QUIÉN, así que el autor va en negrita
    y la hora a la derecha. */
 function Bitacora({ id }: { id: string }) {
+  const { t } = useTranslation();
   const [rows, setRows] = useState<TimesheetEvent[] | null>(null);
   useEffect(() => {
     let vivo = true;
@@ -202,24 +217,27 @@ function Bitacora({ id }: { id: string }) {
         className="py-8 text-center text-sm"
         style={{ color: "var(--ink-soft)" }}
       >
-        Cargando…
+        {t("ui.NominaExceptions.cargando", "Cargando…")}
       </p>
     );
   if (!rows.length) {
     return (
       <EmptyState
         icon={<History />}
-        title="Sin movimientos"
-        description="Nadie ha corregido ni movido esta tarjeta."
+        title={t("ui.TimesheetModal.sinMovimientos", "Sin movimientos")}
+        description={t(
+          "ui.TimesheetModal.nadieHaCorregidoNiMovido",
+          "Nadie ha corregido ni movido esta tarjeta.",
+        )}
         className="py-10"
       />
     );
   }
 
   const ETIQUETA: Record<string, string> = {
-    create: "Se creó el registro",
-    update: "Se modificó",
-    delete: "Se eliminó",
+    create: t("ui.TimesheetModal.seCreoElRegistro", "Se creó el registro"),
+    update: t("ui.TimesheetModal.seModifico", "Se modificó"),
+    delete: t("ui.TimesheetModal.seElimino", "Se eliminó"),
   };
 
   return (
@@ -243,7 +261,9 @@ function Bitacora({ id }: { id: string }) {
           />
           <div className="flex flex-wrap items-baseline justify-between gap-x-3">
             <p className="text-sm font-medium">
-              {e.detail || ETIQUETA[String(e.action)] || "Movimiento"}
+              {e.detail ||
+                ETIQUETA[String(e.action)] ||
+                t("ui.TimesheetModal.movimiento", "Movimiento")}
             </p>
             <span
               className="text-xs tabular-nums"
@@ -253,7 +273,7 @@ function Bitacora({ id }: { id: string }) {
             </span>
           </div>
           <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
-            {e.actor || "Sistema"}
+            {e.actor || t("ui.TimesheetModal.sistema", "Sistema")}
           </p>
           {e.data && Object.keys(e.data).length > 0 && (
             <pre
@@ -282,6 +302,7 @@ export default function TimesheetModal({
   puedeEditar: boolean;
   puedeAprobar: boolean;
 }) {
+  const { t } = useTranslation();
   const [tab, setTab] = useState<Pestana>("detalle");
   const [busy, setBusy] = useState(false);
   const selfieUrl = useFileUrl(record?.punchInPhoto ?? null);
@@ -335,7 +356,9 @@ export default function TimesheetModal({
   const guardar = useCallback(async () => {
     if (!record) return;
     if (!motivo.trim()) {
-      toast.error("Escribe el motivo de la corrección");
+      toast.error(
+        t("ui.TimesheetModal.escribeElMotivoDeLaCorreccion", "Escribe el motivo de la corrección"),
+      );
       return;
     }
     setBusy(true);
@@ -353,15 +376,20 @@ export default function TimesheetModal({
         observations: obs || null,
         reason: motivo.trim(),
       });
-      toast.success("Corregida — vuelve a espera de revisión");
+      toast.success(
+        t("ui.TimesheetModal.corregidaVuelveAEsperaDeRevision", "Corregida — vuelve a espera de revisión"),
+      );
       onChanged();
       onClose();
     } catch (e: any) {
-      toast.error(e?.message || "No se pudo guardar la corrección");
+      toast.error(
+        e?.message ||
+          t("ui.TimesheetModal.noSePudoGuardarLaCorreccion", "No se pudo guardar la corrección"),
+      );
     } finally {
       setBusy(false);
     }
-  }, [record, entrada, salida, descansos, obs, motivo, onChanged, onClose]);
+  }, [record, entrada, salida, descansos, obs, motivo, onChanged, onClose, t]);
 
   const mover = useCallback(
     async (destino: string) => {
@@ -369,15 +397,23 @@ export default function TimesheetModal({
       setBusy(true);
       try {
         await attendanceService.setStatus(record.id, destino);
-        toast.success(`Ahora: ${PAYROLL_FLOW_META[destino]?.label || destino}`);
+        toast.success(
+          t("ui.NominaRecords.ahoraEstado", {
+            estado: PAYROLL_FLOW_META[destino]?.label || destino,
+            defaultValue: "Ahora: {{estado}}",
+          }),
+        );
         onChanged();
       } catch (e: any) {
-        toast.error(e?.message || "No se pudo cambiar el estado");
+        toast.error(
+          e?.message ||
+            t("ui.NominaRecords.noSePudoCambiarElEstado", "No se pudo cambiar el estado"),
+        );
       } finally {
         setBusy(false);
       }
     },
-    [record, onChanged],
+    [record, onChanged, t],
   );
 
   if (!record) return null;
@@ -393,16 +429,22 @@ export default function TimesheetModal({
       onOpenChange={(o) => !o && onClose()}
       size="xl"
       icon={<FileText />}
-      title={record.guardName?.fullName || "Trabajador"}
+      title={
+        record.guardName?.fullName ||
+        t("ui.NominaRecords.trabajador", "Trabajador")
+      }
       description={
         esAusencia
-          ? "Día sin fichaje"
-          : `${record.stationName?.stationName || "Sin puesto"} · ${fmtDateTime(record.punchInTime || record.scheduledStart)}`
+          ? t("ui.TimesheetModal.diaSinFichaje", "Día sin fichaje")
+          : `${record.stationName?.stationName || t("ui.TimesheetModal.sinPuesto", "Sin puesto")} · ${fmtDateTime(record.punchInTime || record.scheduledStart)}`
       }
       footer={
         esAusencia || !record.payrollStatus ? (
           <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
-            Un día sin fichaje se informa; no pasa por el ciclo de pago.
+            {t(
+              "ui.TimesheetModal.unDiaSinFichajeSeInforma",
+              "Un día sin fichaje se informa; no pasa por el ciclo de pago.",
+            )}
           </p>
         ) : (
           <div className="flex w-full flex-wrap items-center justify-between gap-2">
@@ -410,7 +452,8 @@ export default function TimesheetModal({
               className="flex items-center gap-2 text-xs"
               style={{ color: "var(--ink-soft)" }}
             >
-              Estado: <PayrollBadge status={record.payrollStatus} />
+              {t("ui.TimesheetModal.estadoLabel", "Estado:")}{" "}
+              <PayrollBadge status={record.payrollStatus} />
             </span>
             {puedeAprobar ? (
               <div className="flex flex-wrap gap-2">
@@ -428,7 +471,10 @@ export default function TimesheetModal({
               </div>
             ) : (
               <span className="text-xs" style={{ color: "var(--ink-faint)" }}>
-                No tienes permiso para mover el estado.
+                {t(
+                  "ui.TimesheetModal.noTienesPermisoParaMoverElEstado",
+                  "No tienes permiso para mover el estado.",
+                )}
               </span>
             )}
           </div>
@@ -444,17 +490,25 @@ export default function TimesheetModal({
             value={tab}
             onChange={setTab}
             items={[
-              { value: "detalle", label: "Detalle", icon: <FileText /> },
+              {
+                value: "detalle",
+                label: t("ui.TimesheetModal.detalle", "Detalle"),
+                icon: <FileText />,
+              },
               ...(puedeEditar
                 ? [
                     {
                       value: "corregir" as Pestana,
-                      label: "Corregir",
+                      label: t("ui.TimesheetModal.corregir", "Corregir"),
                       icon: <Pencil />,
                     },
                   ]
                 : []),
-              { value: "bitacora", label: "Bitácora", icon: <History /> },
+              {
+                value: "bitacora",
+                label: t("ui.TimesheetModal.bitacora", "Bitácora"),
+                icon: <History />,
+              },
             ]}
           />
 
@@ -468,18 +522,22 @@ export default function TimesheetModal({
                   />
                   <PayrollBadge status={record.payrollStatus} />
                   {record.punchInOutsideGeofence && (
-                    <ToneBadge tone="bad">Fuera de geocerca</ToneBadge>
+                    <ToneBadge tone="bad">
+                      {t("ui.TimesheetModal.fueraDeGeocerca", "Fuera de geocerca")}
+                    </ToneBadge>
                   )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                   <Field
-                    label="Puesto"
+                    label={t("comun.puesto", "Puesto")}
                     value={record.stationName?.stationName || "—"}
                   />
-                  <Field label="Turno" value={record.shiftSchedule || "—"} />
                   <Field
-                    label="Programado"
+                    label={t("comun.turno", "Turno")}
+                    value={record.shiftSchedule || "—"} />
+                  <Field
+                    label={t("ui.NominaRecords.programado", "Programado")}
                     value={
                       <span className="tabular-nums">
                         {fmtTime(record.scheduledStart)} –{" "}
@@ -488,14 +546,18 @@ export default function TimesheetModal({
                     }
                   />
                   <Field
-                    label={esOtroReloj ? "Horas (netas)" : "Horas en el puesto"}
+                    label={
+                      esOtroReloj
+                        ? t("ui.TimesheetModal.horasNetas", "Horas (netas)")
+                        : t("ui.TimesheetModal.horasEnElPuesto", "Horas en el puesto")
+                    }
                     value={
                       <span className="tabular-nums">{fmtHours(horas)}</span>
                     }
                     numeric
                   />
                   <Field
-                    label="Entrada"
+                    label={t("ui.NominaRecords.entrada", "Entrada")}
                     value={
                       <span className="tabular-nums">
                         {fmtDateTime(record.punchInTime)}
@@ -503,7 +565,7 @@ export default function TimesheetModal({
                     }
                   />
                   <Field
-                    label="Salida"
+                    label={t("ui.NominaRecords.salida", "Salida")}
                     value={
                       <span className="tabular-nums">
                         {fmtDateTime(record.punchOutTime)}
@@ -511,7 +573,7 @@ export default function TimesheetModal({
                     }
                   />
                   <Field
-                    label="Descanso"
+                    label={t("ui.TimesheetModal.descanso", "Descanso")}
                     value={
                       <span className="tabular-nums">
                         {desc ? `${desc} min` : "—"}
@@ -525,7 +587,7 @@ export default function TimesheetModal({
                       quitaría el almuerzo dos veces. */}
                   {!esOtroReloj && (
                     <Field
-                      label="Netas"
+                      label={t("ui.TimesheetModal.netas", "Netas")}
                       value={
                         <span className="tabular-nums">
                           {horas == null
@@ -537,7 +599,7 @@ export default function TimesheetModal({
                     />
                   )}
                   <Field
-                    label="Tarde"
+                    label={t("ui.TimesheetModal.tarde", "Tarde")}
                     value={
                       <span className="tabular-nums">
                         {record.lateMinutes || 0} min
@@ -546,7 +608,7 @@ export default function TimesheetModal({
                     numeric
                   />
                   <Field
-                    label="Extra"
+                    label={t("ui.NominaTimecards.extra", "Extra")}
                     value={
                       <span className="tabular-nums">
                         {record.overtimeMinutes || 0} min
@@ -555,7 +617,7 @@ export default function TimesheetModal({
                     numeric
                   />
                   <Field
-                    label="Rondas"
+                    label={t("postSites.tabs.tours", "Rondas")}
                     value={
                       <span className="tabular-nums">
                         {record.numberOfPatrolsDuringShift ?? 0}
@@ -564,7 +626,7 @@ export default function TimesheetModal({
                     numeric
                   />
                   <Field
-                    label="Incidentes"
+                    label={t("ui.NominaRecords.incidentes", "Incidentes")}
                     value={
                       <span className="tabular-nums">
                         {record.numberOfIncidentsDurindShift ?? 0}
@@ -576,7 +638,9 @@ export default function TimesheetModal({
 
                 {Array.isArray(record.breaks) && record.breaks.length > 0 && (
                   <div>
-                    <p className="cg-eyebrow mb-1">Descansos</p>
+                    <p className="cg-eyebrow mb-1">
+                      {t("ui.TimesheetModal.descansos", "Descansos")}
+                    </p>
                     <div
                       className="glass-flat divide-y overflow-hidden"
                       style={{ borderColor: "var(--hairline)" }}
@@ -587,11 +651,13 @@ export default function TimesheetModal({
                           className="flex items-center justify-between px-3 py-2 text-xs"
                         >
                           <span style={{ color: "var(--ink-soft)" }}>
-                            {b.kind === "lunch" ? "Almuerzo" : "Descanso"}
+                            {b.kind === "lunch"
+                              ? t("ui.TimesheetModal.almuerzo", "Almuerzo")
+                              : t("ui.TimesheetModal.descanso", "Descanso")}
                           </span>
                           <span className="font-medium tabular-nums">
                             {fmtTime(b.start)} →{" "}
-                            {b.end ? fmtTime(b.end) : "en curso"}
+                            {b.end ? fmtTime(b.end) : t("ui.TimesheetModal.enCurso", "en curso")}
                           </span>
                         </div>
                       ))}
@@ -601,7 +667,9 @@ export default function TimesheetModal({
 
                 {record.observations && (
                   <div>
-                    <p className="cg-eyebrow">Observaciones</p>
+                    <p className="cg-eyebrow">
+                      {t("ui.TimesheetModal.observaciones", "Observaciones")}
+                    </p>
                     <p className="glass-sunken mt-1 whitespace-pre-wrap p-3 text-sm">
                       {record.observations}
                     </p>
@@ -612,7 +680,10 @@ export default function TimesheetModal({
                   record.sessions.length > 0 && (
                     <div>
                       <p className="cg-eyebrow mb-1">
-                        Sesiones ({record.sessions.length})
+                        {t("ui.TimesheetModal.sesionesN", {
+                          count: record.sessions.length,
+                          defaultValue: "Sesiones ({{count}})",
+                        })}
                       </p>
                       <div
                         className="glass-flat divide-y overflow-hidden"
@@ -653,7 +724,7 @@ export default function TimesheetModal({
                                 size={13}
                                 style={{ color: "var(--ok-text)" }}
                               />{" "}
-                              Entrada
+                              {t("ui.NominaRecords.entrada", "Entrada")}
                             </span>
                             <span
                               className="font-normal tabular-nums"
@@ -667,7 +738,10 @@ export default function TimesheetModal({
                             lng={Number(record.punchInLongitude)}
                             zoom={16}
                             height="170px"
-                            alt="Ubicación de la marcación de entrada"
+                            alt={t(
+                              "ui.TimesheetModal.ubicacionDeLaMarcacionDeEntrada",
+                              "Ubicación de la marcación de entrada",
+                            )}
                             polygon={
                               record.stationName?.geofencePolygon || undefined
                             }
@@ -698,7 +772,7 @@ export default function TimesheetModal({
                                   id: "in",
                                   lat: Number(record.punchInLatitude),
                                   lng: Number(record.punchInLongitude),
-                                  label: "Entrada",
+                                  label: t("ui.NominaRecords.entrada", "Entrada"),
                                 },
                               ]}
                             />
@@ -712,8 +786,11 @@ export default function TimesheetModal({
                                 color: "var(--bad-text)",
                               }}
                             >
-                              Fuera de geocerca ·{" "}
-                              {record.punchInDistanceM ?? "?"} m del puesto
+                              {t("ui.TimesheetModal.fueraDeGeocercaDistancia", {
+                                distancia: record.punchInDistanceM ?? "?",
+                                defaultValue:
+                                  "Fuera de geocerca · {{distancia}} m del puesto",
+                              })}
                             </p>
                           )}
                         </div>
@@ -730,7 +807,7 @@ export default function TimesheetModal({
                                 size={13}
                                 style={{ color: "var(--warn-text)" }}
                               />{" "}
-                              Salida
+                              {t("ui.NominaRecords.salida", "Salida")}
                             </span>
                             <span
                               className="font-normal tabular-nums"
@@ -744,7 +821,10 @@ export default function TimesheetModal({
                             lng={Number(record.punchOutLongitude)}
                             zoom={16}
                             height="170px"
-                            alt="Ubicación de la marcación de salida"
+                            alt={t(
+                              "ui.TimesheetModal.ubicacionDeLaMarcacionDeSalida",
+                              "Ubicación de la marcación de salida",
+                            )}
                             polygon={
                               record.stationName?.geofencePolygon || undefined
                             }
@@ -775,7 +855,7 @@ export default function TimesheetModal({
                                   id: "out",
                                   lat: Number(record.punchOutLatitude),
                                   lng: Number(record.punchOutLongitude),
-                                  label: "Salida",
+                                  label: t("ui.NominaRecords.salida", "Salida"),
                                 },
                               ]}
                             />
@@ -788,7 +868,9 @@ export default function TimesheetModal({
 
               {/* Selfie del fichaje: la columna estrecha, para que no empuje los datos */}
               <div>
-                <p className="cg-eyebrow mb-1">Selfie de entrada</p>
+                <p className="cg-eyebrow mb-1">
+                  {t("ui.TimesheetModal.selfieDeEntrada", "Selfie de entrada")}
+                </p>
                 {selfieUrl ? (
                   <a
                     href={selfieUrl}
@@ -798,7 +880,7 @@ export default function TimesheetModal({
                   >
                     <img
                       src={selfieUrl}
-                      alt="Selfie de entrada"
+                      alt={t("ui.TimesheetModal.selfieDeEntrada", "Selfie de entrada")}
                       className="glass-flat w-full object-contain"
                     />
                     {record.punchInAddress && (
@@ -813,7 +895,7 @@ export default function TimesheetModal({
                 ) : (
                   <EmptyState
                     icon={<ImageOff />}
-                    title="Sin selfie"
+                    title={t("ui.TimesheetModal.sinSelfie", "Sin selfie")}
                     className="py-8"
                   />
                 )}
@@ -824,16 +906,25 @@ export default function TimesheetModal({
           {tab === "corregir" && (
             <div className="space-y-4">
               <InfoNote tone="warn">
-                Al guardar, la tarjeta vuelve a <b>espera de revisión</b> y las
-                horas se recalculan solas — no se escriben a mano. Queda
-                registrado quién corrigió y por qué.
+                {t("ui.TimesheetModal.alGuardarLaTarjetaVuelveA", "Al guardar, la tarjeta vuelve a")}{" "}
+                <b>{t("ui.TimesheetModal.esperaDeRevision", "espera de revisión")}</b>{" "}
+                {t(
+                  "ui.TimesheetModal.yLasHorasSeRecalculanSolas",
+                  "y las horas se recalculan solas — no se escriben a mano. Queda registrado quién corrigió y por qué.",
+                )}
                 {esOtroReloj &&
-                  " En supervisión y oficina las horas se guardan ya netas de descansos, como al cerrar el turno."}
+                  " " +
+                    t(
+                      "ui.TimesheetModal.enSupervisionYOficinaLasHoras",
+                      "En supervisión y oficina las horas se guardan ya netas de descansos, como al cerrar el turno.",
+                    )}
               </InfoNote>
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className="block">
-                  <span className="cg-eyebrow mb-1 block">Entrada</span>
+                  <span className="cg-eyebrow mb-1 block">
+                    {t("ui.NominaRecords.entrada", "Entrada")}
+                  </span>
                   <input
                     type="datetime-local"
                     className="cg-input cg-focus w-full px-3 py-2 text-sm tabular-nums"
@@ -842,7 +933,9 @@ export default function TimesheetModal({
                   />
                 </label>
                 <label className="block">
-                  <span className="cg-eyebrow mb-1 block">Salida</span>
+                  <span className="cg-eyebrow mb-1 block">
+                    {t("ui.NominaRecords.salida", "Salida")}
+                  </span>
                   <input
                     type="datetime-local"
                     className="cg-input cg-focus w-full px-3 py-2 text-sm tabular-nums"
@@ -855,7 +948,7 @@ export default function TimesheetModal({
               <div>
                 <div className="mb-1.5 flex items-center justify-between">
                   <span className="cg-eyebrow">
-                    Descansos y almuerzo
+                    {t("ui.TimesheetModal.descansosYAlmuerzo", "Descansos y almuerzo")}
                     {minutosDescanso ? ` · ${minutosDescanso} min` : ""}
                   </span>
                   <Button
@@ -869,14 +962,20 @@ export default function TimesheetModal({
                       ])
                     }
                   >
-                    <Plus size={14} /> Agregar
+                    <Plus size={14} /> {t("ui.TimesheetModal.agregar", "Agregar")}
                   </Button>
                 </div>
                 {descansos.length === 0 && (
                   <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
                     {esOtroReloj
-                      ? "Sin descansos registrados. Se descuentan de las horas al recalcular."
-                      : "Sin descansos registrados. Se descuentan de las horas netas, no de las horas en el puesto."}
+                      ? t(
+                          "ui.TimesheetModal.sinDescansosRegistradosRecalcular",
+                          "Sin descansos registrados. Se descuentan de las horas al recalcular.",
+                        )
+                      : t(
+                          "ui.TimesheetModal.sinDescansosRegistradosNetas",
+                          "Sin descansos registrados. Se descuentan de las horas netas, no de las horas en el puesto.",
+                        )}
                   </p>
                 )}
                 <div className="space-y-2">
@@ -897,8 +996,8 @@ export default function TimesheetModal({
                           )
                         }
                       >
-                        <option value="break">Descanso</option>
-                        <option value="lunch">Almuerzo</option>
+                        <option value="break">{t("ui.TimesheetModal.descanso", "Descanso")}</option>
+                        <option value="lunch">{t("ui.TimesheetModal.almuerzo", "Almuerzo")}</option>
                       </select>
                       <input
                         type="datetime-local"
@@ -939,7 +1038,9 @@ export default function TimesheetModal({
               </div>
 
               <label className="block">
-                <span className="cg-eyebrow mb-1 block">Observaciones</span>
+                <span className="cg-eyebrow mb-1 block">
+                  {t("ui.TimesheetModal.observaciones", "Observaciones")}
+                </span>
                 <textarea
                   rows={2}
                   maxLength={500}
@@ -951,25 +1052,28 @@ export default function TimesheetModal({
 
               <label className="block">
                 <span className="cg-eyebrow mb-1 block">
-                  Motivo de la corrección *
+                  {t("ui.TimesheetModal.motivoDeLaCorreccionReq", "Motivo de la corrección *")}
                 </span>
                 <input
                   className="cg-input cg-focus w-full px-3 py-2 text-sm"
                   value={motivo}
-                  placeholder="Ej.: el reloj no registró la salida; se confirmó con el supervisor"
+                  placeholder={t(
+                    "ui.TimesheetModal.ejElRelojNoRegistroLaSalida",
+                    "Ej.: el reloj no registró la salida; se confirmó con el supervisor",
+                  )}
                   onChange={(e) => setMotivo(e.target.value)}
                 />
               </label>
 
               <div className="flex justify-end gap-2">
                 <Button variant="ghost" onClick={onClose} disabled={busy}>
-                  Cancelar
+                  {t("ui.TimesheetModal.cancelar", "Cancelar")}
                 </Button>
                 <Button
                   onClick={() => void guardar()}
                   disabled={busy || !motivo.trim()}
                 >
-                  Guardar corrección
+                  {t("ui.TimesheetModal.guardarCorreccion", "Guardar corrección")}
                 </Button>
               </div>
             </div>

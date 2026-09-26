@@ -116,7 +116,8 @@ type Estimacion = {
 };
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
-const nf = new Intl.NumberFormat(localeActual());
+// Built per call so a language switch takes effect without a reload.
+const nf = { format: (n: number) => new Intl.NumberFormat(localeActual()).format(n) };
 
 function fecha(iso: string | null) {
   if (!iso) return null;

@@ -173,7 +173,7 @@ export default function GuardCardsGrid({
             <div className="flex items-start gap-3">
               <div className="pt-0.5" onClick={(e) => e.stopPropagation()}>
                 <Checkbox
-                  aria-label={`Seleccionar ${name}`}
+                  aria-label={t("guards.list.selectAria", { defaultValue: "Seleccionar {{name}}", name })}
                   checked={selectedIds.includes(g.id)}
                   onCheckedChange={(v) => onSelect(g.id, Boolean(v))}
                 />
@@ -201,7 +201,15 @@ export default function GuardCardsGrid({
                   {name}
                 </p>
                 <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                  <StatusBadge tone={tone}>{g.status}</StatusBadge>
+                  <StatusBadge tone={tone}>
+                    {g.status === "Activo"
+                      ? t("common.active", "Activo")
+                      : g.status === "Archivado"
+                        ? t("adminOfficeUsers.statuses.archived", "Archivado")
+                        : g.status === "Pendiente" || g.status === "Invitado"
+                          ? t("comun.pendiente", "Pendiente")
+                          : g.status}
+                  </StatusBadge>
                   {rating && (
                     <GuardRatingLevel
                       average={rating.average}

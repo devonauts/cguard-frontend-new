@@ -1,4 +1,5 @@
 import { localeActual } from "@/lib/localeActual";
+import i18n from "@/i18n";
 /**
  * ════════════════════════════════════════════════════════════════════════════
  * OPTIMIZACIÓN DE RUTAS — lo que el CRM sabe leer del servidor
@@ -393,7 +394,10 @@ export function fraseAhorro(a: AhorroRuta | null): string | null {
   if (a.min != null && a.min >= 0.5) trozos.push(`-${minutos(a.min)}`);
   if (!trozos.length) return null;
 
-  return `${trozos.join(" · ")} frente al orden manual`;
+  return i18n.t("ui.routeOptimizacion.frenteAlOrdenManual", {
+    defaultValue: "{{ahorro}} frente al orden manual",
+    ahorro: trozos.join(" · "),
+  });
 }
 
 /** «12 de agosto, 14:30» — cuándo se optimizó. */
@@ -479,7 +483,7 @@ export function motivoTrazado(reason: unknown): string {
   const clave = r.toLowerCase();
 
   if (clave.includes("key") || clave.includes("clave")) {
-    return "El servicio de mapas no está configurado, así que el recorrido se sigue mostrando en línea recta.";
+    return i18n.t("ui.routeOptimizacion.mapasNoConfigurado", "El servicio de mapas no está configurado, así que el recorrido se sigue mostrando en línea recta.");
   }
   if (
     clave.includes("stop") ||
@@ -487,10 +491,10 @@ export function motivoTrazado(reason: unknown): string {
     clave.includes("limit") ||
     clave.includes("parada")
   ) {
-    return "La ruta tiene demasiadas paradas para trazarla por calles. Se sigue mostrando en línea recta.";
+    return i18n.t("ui.routeOptimizacion.demasiadasParadas", "La ruta tiene demasiadas paradas para trazarla por calles. Se sigue mostrando en línea recta.");
   }
   // Si vino una frase de verdad, se enseña tal cual antes que taparla.
   if (r && /\s/.test(r)) return r;
 
-  return "No se pudo trazar el recorrido por calles. Se sigue mostrando en línea recta.";
+  return i18n.t("ui.routeOptimizacion.noSePudoTrazar", "No se pudo trazar el recorrido por calles. Se sigue mostrando en línea recta.");
 }

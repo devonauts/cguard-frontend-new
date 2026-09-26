@@ -192,7 +192,10 @@ export function CategorySelect({
               >
                 {s.name}
                 <span
-                  aria-label={`Quitar ${s.name}`}
+                  aria-label={t("ui.CategorySelect.quitarNombre", {
+                    defaultValue: "Quitar {{nombre}}",
+                    nombre: s.name,
+                  })}
                   className="-mr-0.5 rounded p-0.5 hover:bg-[var(--brand-line)]"
                   role="button"
                   onClick={(e) => {

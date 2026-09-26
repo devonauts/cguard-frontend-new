@@ -28,6 +28,7 @@
  */
 
 import { metrosEntre, rumboEntre, type Punto } from "@/utils/mapMotion";
+import i18n from "@/i18n";
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 /** Un ping del GPS tal y como lo entrega `securityGuardService.trail()`. */
@@ -472,22 +473,30 @@ export function fechaHora(
 export function haceCuanto(
   iso: string | number | Date | null | undefined,
 ): string {
-  if (iso == null) return "sin dato";
+  if (iso == null) return i18n.t("ui.trackGeometry.sinDato", "sin dato");
   const t = new Date(iso).getTime();
 
-  if (!Number.isFinite(t)) return "sin dato";
+  if (!Number.isFinite(t)) return i18n.t("ui.trackGeometry.sinDato", "sin dato");
   const s = Math.max(0, Math.round((Date.now() - t) / 1000));
 
-  if (s < 45) return "ahora mismo";
+  if (s < 45) return i18n.t("ui.trackGeometry.ahoraMismo", "ahora mismo");
   const m = Math.round(s / 60);
 
-  if (m < 60) return `hace ${m} min`;
+  if (m < 60)
+    return i18n.t("ui.trackGeometry.haceMin", { defaultValue: "hace {{m}} min", m });
   const h = Math.floor(m / 60);
 
-  if (h < 24) return `hace ${h} h${m % 60 ? ` ${m % 60} min` : ""}`;
+  if (h < 24)
+    return m % 60
+      ? i18n.t("ui.trackGeometry.haceHMin", {
+          defaultValue: "hace {{h}} h {{m}} min",
+          h,
+          m: m % 60,
+        })
+      : i18n.t("ui.trackGeometry.haceH", { defaultValue: "hace {{h}} h", h });
   const d = Math.floor(h / 24);
 
-  return `hace ${d} d`;
+  return i18n.t("ui.trackGeometry.haceD", { defaultValue: "hace {{d}} d", d });
 }
 
 /** Milisegundos → «1 h 20 min» / «45 min» / «30 s». */

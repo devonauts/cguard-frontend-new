@@ -794,7 +794,7 @@ export default function GuardAsignarSitiosPage() {
               <div className="space-y-2.5">
                 <label className="cg-eyebrow flex cursor-pointer select-none items-center gap-2 px-1">
                   <input
-                    aria-label="select all"
+                    aria-label={t("kit.table.selectAll", "Seleccionar todos")}
                     checked={allSelected}
                     className="h-4 w-4 rounded"
                     style={{ accentColor: "var(--brand)" }}

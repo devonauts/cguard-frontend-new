@@ -46,7 +46,10 @@ function CoverageGaugeBase({
     <div className="flex flex-col items-center px-5 pb-5 pt-4">
       <div className="relative grid place-items-center">
         <svg
-          aria-label={`Cobertura ${pct} por ciento`}
+          aria-label={t("ui.CoverageGauge.coberturaPorCiento", {
+            pct,
+            defaultValue: "Cobertura {{pct}} por ciento",
+          })}
           className="size-44 -rotate-[0deg]"
           role="img"
           viewBox="0 0 120 120"

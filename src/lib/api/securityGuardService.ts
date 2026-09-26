@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import api, { getAuthToken } from "../api";
 import { cachedFetch } from "@/lib/queryClient";
 
@@ -7,7 +8,10 @@ const getTenantId = (): string => {
 
   if (!t) {
     throw new Error(
-      "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+      i18n.t(
+        "ui.apiService.noPudimosIdentificarTuEmpresa",
+        "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+      ),
     );
   }
 
@@ -405,7 +409,7 @@ export const securityGuardService = {
 
     const uploadUrl =
       creds.data?.uploadCredentials?.url ?? creds.uploadCredentials?.url;
-    if (!uploadUrl) throw new Error("Upload URL not available");
+    if (!uploadUrl) throw new Error(i18n.t("ui.apiService.urlDeCargaNoDisponible", "URL de carga no disponible"));
 
     const form = new FormData();
     form.append("filename", filename);
@@ -414,7 +418,7 @@ export const securityGuardService = {
     const uploadResp = await fetch(uploadUrl, { method: "POST", body: form });
     if (!uploadResp.ok) {
       const text = await uploadResp.text().catch(() => null);
-      throw new Error(`Upload failed: ${uploadResp.status} ${text}`);
+      throw new Error(i18n.t("ui.apiService.errorAlSubirArchivo", { defaultValue: "Error al subir el archivo ({{status}}) {{detalle}}", status: uploadResp.status, detalle: text }).trim());
     }
 
     const fileObj = {
@@ -446,7 +450,7 @@ export const securityGuardService = {
       creds.uploadCredentials?.url;
     const fields = creds?.uploadCredentials?.fields ?? creds?.fields;
 
-    if (!uploadUrl) throw new Error("Upload URL not available");
+    if (!uploadUrl) throw new Error(i18n.t("ui.apiService.urlDeCargaNoDisponible", "URL de carga no disponible"));
 
     const isBackendFileUpload = uploadUrl.includes("/file/upload?token=");
 
@@ -466,14 +470,14 @@ export const securityGuardService = {
       const uploadResp = await fetch(uploadUrl, { method: "POST", body: form });
       if (!uploadResp.ok) {
         const text = await uploadResp.text().catch(() => null);
-        throw new Error(`Upload failed: ${uploadResp.status} ${text}`);
+        throw new Error(i18n.t("ui.apiService.errorAlSubirArchivo", { defaultValue: "Error al subir el archivo ({{status}}) {{detalle}}", status: uploadResp.status, detalle: text }).trim());
       }
     } else {
       // If backend expects direct PUT to uploadUrl
       const putResp = await fetch(uploadUrl, { method: "PUT", body: file });
       if (!putResp.ok) {
         const text = await putResp.text().catch(() => null);
-        throw new Error(`Upload failed: ${putResp.status} ${text}`);
+        throw new Error(i18n.t("ui.apiService.errorAlSubirArchivo", { defaultValue: "Error al subir el archivo ({{status}}) {{detalle}}", status: putResp.status, detalle: text }).trim());
       }
     }
 
@@ -514,7 +518,7 @@ export const securityGuardService = {
       creds.uploadCredentials?.url;
     const fields = creds?.uploadCredentials?.fields ?? creds?.fields;
 
-    if (!uploadUrl) throw new Error("Upload URL not available");
+    if (!uploadUrl) throw new Error(i18n.t("ui.apiService.urlDeCargaNoDisponible", "URL de carga no disponible"));
 
     return await new Promise<{
       new: boolean;
@@ -535,7 +539,7 @@ export const securityGuardService = {
       };
 
       xhr.onerror = function () {
-        reject(new Error("Upload failed"));
+        reject(new Error(i18n.t("ui.apiService.errorAlSubirArchivoSinCodigo", "Error al subir el archivo")));
       };
 
       xhr.onload = function () {
@@ -556,7 +560,7 @@ export const securityGuardService = {
           } catch (e) {}
           resolve(fileObj);
         } else {
-          reject(new Error(`Upload failed: ${xhr.status}`));
+          reject(new Error(i18n.t("ui.apiService.errorAlSubirArchivo", { defaultValue: "Error al subir el archivo ({{status}}) {{detalle}}", status: xhr.status, detalle: "" }).trim()));
         }
       };
 

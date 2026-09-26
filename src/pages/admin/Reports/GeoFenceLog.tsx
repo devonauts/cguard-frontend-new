@@ -11,6 +11,7 @@ import {
 } from "./reportFormat";
 
 import attendanceService from "@/lib/api/attendanceService";
+import i18n from "@/i18n";
 
 interface Rec {
   guardName?: { fullName?: string } | null;
@@ -54,7 +55,7 @@ const columns: ReportColumn<Rec>[] = [
     key: "in",
     label: "Entrada",
     labelKey: "reports.col.geoFenceLog.in",
-    value: (r) => (r.punchInOutsideGeofence ? "Fuera de valla" : "OK"),
+    value: (r) => (r.punchInOutsideGeofence ? i18n.t("ui.GeoFenceLog.fueraDeValla", "Fuera de valla") : "OK"),
     align: "center",
   },
   {
@@ -68,7 +69,7 @@ const columns: ReportColumn<Rec>[] = [
     key: "out",
     label: "Salida",
     labelKey: "reports.col.geoFenceLog.out",
-    value: (r) => (r.punchOutOutsideGeofence ? "Fuera de valla" : "OK"),
+    value: (r) => (r.punchOutOutsideGeofence ? i18n.t("ui.GeoFenceLog.fueraDeValla", "Fuera de valla") : "OK"),
     align: "center",
   },
 ];
@@ -79,8 +80,8 @@ export default function GeoFenceLog() {
   return (
     <DataReport<Rec>
       columns={columns}
-      description="Marcajes realizados FUERA del perímetro (geo valla) del puesto, con la distancia al centro."
-      emptyMessage="Sin marcajes fuera de la geo valla en este rango — todo dentro del perímetro."
+      description={t("ui.GeoFenceLog.descripcion", "Marcajes realizados FUERA del perímetro (geo valla) del puesto, con la distancia al centro.")}
+      emptyMessage={t("ui.GeoFenceLog.sinMarcajesFuera", "Sin marcajes fuera de la geo valla en este rango — todo dentro del perímetro.")}
       load={async ({ from, to }) => {
         // El rango ya viajaba en la consulta; lo que faltaba era que el tope
         // dejara de recortar en silencio.

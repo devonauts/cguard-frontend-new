@@ -85,7 +85,10 @@ export default function AlarmReports() {
             "ui.AlarmReports.reportesDeFalsasAlarmas",
             "Reportes de falsas alarmas",
           )}
-          subtitle="Cómo se cerró cada caso y qué proporción resultó ser falsa, panel por panel."
+          subtitle={t(
+            "ui.AlarmReports.comoSeCerroCadaCaso",
+            "Cómo se cerró cada caso y qué proporción resultó ser falsa, panel por panel.",
+          )}
           actions={
             <>
               <Segmented
@@ -93,11 +96,17 @@ export default function AlarmReports() {
                 onChange={(v) => setDays(Number(v))}
                 options={PERIODS.map((dd) => ({
                   value: String(dd),
-                  label: dd === 365 ? "1 año" : `${dd} días`,
+                  label:
+                    dd === 365
+                      ? t("ui.AlarmAnalytics.unAnio", "1 año")
+                      : t("ui.AlarmAnalytics.nDias", {
+                          defaultValue: "{{count}} días",
+                          count: dd,
+                        }),
                 }))}
               />
               <Button asChild variant="outline" size="sm">
-                <Link to="/alarm/queue">Cola</Link>
+                <Link to="/alarm/queue">{t("ui.AlarmReports.cola", "Cola")}</Link>
               </Button>
             </>
           }
@@ -109,31 +118,31 @@ export default function AlarmReports() {
           <>
             <StatsStrip className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
               <StatCard
-                label="Total"
+                label={t("comun.total", "Total")}
                 value={o.total}
                 icon={<BarChart3 />}
                 accent="neutral"
               />
               <StatCard
-                label="Reales"
+                label={t("ui.AlarmReports.reales", "Reales")}
                 value={o.real}
                 icon={<ShieldCheck />}
                 accent="ok"
               />
               <StatCard
-                label="Falsas"
+                label={t("ui.AlarmReports.falsas", "Falsas")}
                 value={o.false}
                 icon={<ShieldAlert />}
                 accent="warn"
               />
               <StatCard
-                label="Reincidentes"
+                label={t("ui.AlarmReports.reincidentes", "Reincidentes")}
                 value={o.runaway}
                 icon={<Siren />}
                 accent="bad"
               />
               <StatCard
-                label="Pruebas"
+                label={t("ui.AlarmReports.pruebas", "Pruebas")}
                 value={o.test}
                 icon={<FlaskConical />}
                 accent="neutral"
@@ -142,7 +151,7 @@ export default function AlarmReports() {
                   las celdas de la tabla de abajo (50 % / 25 %). Iba en el acento
                   de marca, contradiciendo su propia tabla en la misma página. */}
               <StatCard
-                label="Tasa falsas"
+                label={t("ui.AlarmReports.tasaFalsas", "Tasa falsas")}
                 value={`${o.falseRate}%`}
                 icon={<ShieldAlert />}
                 accent={
@@ -151,7 +160,7 @@ export default function AlarmReports() {
               />
             </StatsStrip>
 
-            <Section title="Por panel" icon={<BarChart3 />}>
+            <Section title={t("ui.AlarmReports.porPanel", "Por panel")} icon={<BarChart3 />}>
               {!data?.panels || data.panels.length === 0 ? (
                 <EmptyState
                   icon={<BarChart3 />}
@@ -172,22 +181,26 @@ export default function AlarmReports() {
                           color: "var(--ink-faint)",
                         }}
                       >
-                        <th className="px-4 py-2 font-medium">Panel</th>
-                        <th className="px-3 py-2 font-medium">Cuenta</th>
-                        <th className="px-3 py-2 text-right font-medium">
-                          Total
+                        <th className="px-4 py-2 font-medium">
+                          {t("ui.AlarmCaseDetail.panel", "Panel")}
+                        </th>
+                        <th className="px-3 py-2 font-medium">
+                          {t("ui.AlarmCaseDetail.cuenta", "Cuenta")}
                         </th>
                         <th className="px-3 py-2 text-right font-medium">
-                          Reales
+                          {t("comun.total", "Total")}
                         </th>
                         <th className="px-3 py-2 text-right font-medium">
-                          Falsas
+                          {t("ui.AlarmReports.reales", "Reales")}
                         </th>
                         <th className="px-3 py-2 text-right font-medium">
-                          Reincidentes
+                          {t("ui.AlarmReports.falsas", "Falsas")}
                         </th>
                         <th className="px-3 py-2 text-right font-medium">
-                          Tasa falsas
+                          {t("ui.AlarmReports.reincidentes", "Reincidentes")}
+                        </th>
+                        <th className="px-3 py-2 text-right font-medium">
+                          {t("ui.AlarmReports.tasaFalsas", "Tasa falsas")}
                         </th>
                       </tr>
                     </thead>
@@ -198,42 +211,42 @@ export default function AlarmReports() {
                           className="border-b transition-colors"
                           style={{ borderColor: "var(--hairline)" }}
                         >
-                          <td className="px-4 py-2 font-medium text-foreground" data-rotulo="Panel">
+                          <td className="px-4 py-2 font-medium text-foreground" data-rotulo={t("ui.AlarmCaseDetail.panel", "Panel")}>
                             {p.panelName}
                           </td>
                           <td
-                            data-rotulo="Cuenta"
+                            data-rotulo={t("ui.AlarmCaseDetail.cuenta", "Cuenta")}
                             className="px-3 py-2"
                             style={{ color: "var(--ink-soft)" }}
                           >
                             {p.accountNumber || "—"}
                           </td>
-                          <td className="px-3 py-2 text-right tabular-nums" data-rotulo="Total">
+                          <td className="px-3 py-2 text-right tabular-nums" data-rotulo={t("comun.total", "Total")}>
                             {p.total}
                           </td>
                           <td
-                            data-rotulo="Reales"
+                            data-rotulo={t("ui.AlarmReports.reales", "Reales")}
                             className="px-3 py-2 text-right tabular-nums"
                             style={{ color: "var(--ok-text)" }}
                           >
                             {p.real}
                           </td>
                           <td
-                            data-rotulo="Falsas"
+                            data-rotulo={t("ui.AlarmReports.falsas", "Falsas")}
                             className="px-3 py-2 text-right tabular-nums"
                             style={{ color: "var(--warn-text)" }}
                           >
                             {p.false}
                           </td>
                           <td
-                            data-rotulo="Reincidentes"
+                            data-rotulo={t("ui.AlarmReports.reincidentes", "Reincidentes")}
                             className="px-3 py-2 text-right tabular-nums"
                             style={{ color: "var(--bad-text)" }}
                           >
                             {p.runaway}
                           </td>
                           <td
-                            data-rotulo="Tasa falsas"
+                            data-rotulo={t("ui.AlarmReports.tasaFalsas", "Tasa falsas")}
                             className="px-3 py-2 text-right font-semibold tabular-nums"
                             style={{
                               color:

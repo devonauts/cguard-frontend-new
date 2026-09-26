@@ -214,7 +214,11 @@ export default function PermissionsEditor({
                         className="shrink-0 text-xs tabular-nums"
                         style={{ color: "var(--ink-faint)" }}
                       >
-                        {concedidos} de {items.length}
+                        {t("ui.PermissionsEditor.concedidosDeTotal", {
+                          defaultValue: "{{concedidos}} de {{total}}",
+                          concedidos,
+                          total: items.length,
+                        })}
                       </div>
                     </div>
                   </div>
@@ -300,7 +304,10 @@ export default function PermissionsEditor({
                                 className="mt-1 text-[10px] font-semibold uppercase tracking-wide"
                                 style={{ color: estado.tinta }}
                               >
-                                Obligatorio
+                                {t(
+                                  "settings.permissions.state.required",
+                                  "Obligatorio",
+                                )}
                               </div>
                             )}
                           </div>

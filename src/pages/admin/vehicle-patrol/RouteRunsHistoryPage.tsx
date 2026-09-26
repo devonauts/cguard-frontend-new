@@ -15,6 +15,7 @@ import {
   RUN_STATUS_TONE,
   fmtHora,
   fmtFecha,
+  runStatusLabel,
 } from "./runLabels";
 
 import AppLayout from "@/layouts/app-layout";
@@ -57,7 +58,7 @@ export default function RouteRunsHistoryPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  usePageTitle("Historial de rutas");
+  usePageTitle(t("ui.RouteRunsHistory.titulo", "Historial de rutas"));
   const [from, setFrom] = useState(() =>
     ymd(new Date(Date.now() - 30 * 86400000)),
   );
@@ -137,9 +138,9 @@ export default function RouteRunsHistoryPage() {
               <SelectItem value={TODOS}>
                 {t("ui.RouteRunsHistory.todos", "Todos los estados")}
               </SelectItem>
-              {Object.entries(RUN_STATUS_LABEL).map(([k, v]) => (
+              {Object.keys(RUN_STATUS_LABEL).map((k) => (
                 <SelectItem key={k} value={k}>
-                  {v}
+                  {runStatusLabel(k)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -192,7 +193,7 @@ export default function RouteRunsHistoryPage() {
                       <StatusBadge
                         tone={RUN_STATUS_TONE[r.status] || "neutral"}
                       >
-                        {RUN_STATUS_LABEL[r.status] || r.status}
+                        {runStatusLabel(r.status)}
                       </StatusBadge>
                     }
                     meta={meta}

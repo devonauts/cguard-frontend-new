@@ -51,19 +51,40 @@ import {
 
 type StatusFilter = "all" | "new" | "ack" | "resolved";
 
-const STATUS_FILTERS: { value: StatusFilter; label: string }[] = [
-  { value: "all", label: "Todos" },
-  { value: "new", label: "Nuevos" },
-  { value: "ack", label: "Reconocidos" },
-  { value: "resolved", label: "Resueltos" },
-];
+// Key + Spanish default; translated at render time.
+const STATUS_FILTERS: { value: StatusFilter; label: string; labelKey: string }[] =
+  [
+    { value: "all", label: "Todos", labelKey: "ui.VideoEvents.filtroTodos" },
+    { value: "new", label: "Nuevos", labelKey: "ui.VideoEvents.filtroNuevos" },
+    {
+      value: "ack",
+      label: "Reconocidos",
+      labelKey: "ui.VideoEvents.filtroReconocidos",
+    },
+    {
+      value: "resolved",
+      label: "Resueltos",
+      labelKey: "ui.VideoEvents.filtroResueltos",
+    },
+  ];
 
 /** Tonos SEMÁNTICOS fijos: el estado y la gravedad de un evento no cambian de
  *  color porque la empresa cambie su color de marca. */
-const STATUS_META: Record<string, { label: string; tone: string }> = {
-  new: { label: "Nuevo", tone: "warn" }, // sin atender: pide acción, no informa
-  ack: { label: "Reconocido", tone: "warn" },
-  resolved: { label: "Resuelto", tone: "ok" },
+const STATUS_META: Record<
+  string,
+  { label: string; labelKey: string; tone: string }
+> = {
+  new: { label: "Nuevo", labelKey: "ui.VideoEvents.estadoNuevo", tone: "warn" }, // sin atender: pide acción, no informa
+  ack: {
+    label: "Reconocido",
+    labelKey: "ui.VideoEvents.estadoReconocido",
+    tone: "warn",
+  },
+  resolved: {
+    label: "Resuelto",
+    labelKey: "ui.VideoEvents.estadoResuelto",
+    tone: "ok",
+  },
 };
 
 /**
@@ -73,26 +94,35 @@ const STATUS_META: Record<string, { label: string; tone: string }> = {
  */
 const TYPE_META: Record<
   string,
-  { label: string; icon: React.ReactNode; grave: boolean }
+  { label: string; labelKey: string; icon: React.ReactNode; grave: boolean }
 > = {
   motion: {
     label: "Movimiento",
+    labelKey: "ui.VideoEvents.tipoMovimiento",
     icon: <Activity className="size-3.5" />,
     grave: false,
   },
-  alarm: { label: "Alarma", icon: <Bell className="size-3.5" />, grave: true },
+  alarm: {
+    label: "Alarma",
+    labelKey: "ui.VideoEvents.tipoAlarma",
+    icon: <Bell className="size-3.5" />,
+    grave: true,
+  },
   manual: {
     label: "Manual",
+    labelKey: "ui.VideoEvents.tipoManual",
     icon: <Hand className="size-3.5" />,
     grave: false,
   },
   offline: {
     label: "Sin conexión",
+    labelKey: "ui.VideoEvents.tipoSinConexion",
     icon: <WifiOff className="size-3.5" />,
     grave: true,
   },
   tamper: {
     label: "Sabotaje",
+    labelKey: "ui.VideoEvents.tipoSabotaje",
     icon: <ShieldAlert className="size-3.5" />,
     grave: true,
   },
@@ -171,7 +201,10 @@ export default function VideoEvents() {
         toast.error(
           err?.data?.message ||
             err?.message ||
-            "No se pudieron cargar los eventos",
+            t(
+              "ui.VideoEvents.noSePudieronCargarLosEventos",
+              "No se pudieron cargar los eventos",
+            ),
         );
       } finally {
         setLoading(false);
@@ -205,12 +238,21 @@ export default function VideoEvents() {
             : e,
         ),
       );
-      toast.success(next === "ack" ? "Evento reconocido" : "Evento resuelto");
+      toast.success(
+        next === "ack"
+          ? t("ui.VideoEvents.eventoReconocido", "Evento reconocido")
+          : t("ui.VideoEvents.eventoResuelto", "Evento resuelto"),
+      );
     } catch (e) {
       const err = e as { data?: { message?: string }; message?: string };
 
       toast.error(
-        err?.data?.message || err?.message || "No se pudo actualizar el evento",
+        err?.data?.message ||
+          err?.message ||
+          t(
+            "ui.VideoEvents.noSePudoActualizarElEvento",
+            "No se pudo actualizar el evento",
+          ),
       );
     } finally {
       setBusyId(null);
@@ -240,11 +282,14 @@ export default function VideoEvents() {
               ) : (
                 <RefreshCw className="size-4" />
               )}
-              Actualizar
+              {t("ui.VideoEvents.actualizar", "Actualizar")}
             </Button>
           }
           icon={<Activity />}
-          subtitle="Alertas de movimiento, alarmas y sabotaje de sus cámaras"
+          subtitle={t(
+            "ui.VideoEvents.subtitulo",
+            "Alertas de movimiento, alarmas y sabotaje de sus cámaras",
+          )}
           title={t("ui.VideoEvents.eventosDeVideo", "Eventos de video")}
         />
 
@@ -256,14 +301,14 @@ export default function VideoEvents() {
               style={{ color: "var(--ink-soft)" }}
             >
               <Filter className="size-3.5" />
-              Estado
+              {t("ui.VideoEvents.estado", "Estado")}
             </span>
             <Segmented
               options={STATUS_FILTERS.map((f) => ({
                 value: f.value,
                 label: (
                   <span className="inline-flex items-center gap-1.5">
-                    {f.label}
+                    {t(f.labelKey, f.label)}
                     <span className="tabular-nums opacity-70">
                       {f.value === "all"
                         ? events.length
@@ -332,7 +377,7 @@ export default function VideoEvents() {
                           tone={type.grave ? "bad" : "neutral"}
                         >
                           {type.icon}
-                          {type.label}
+                          {t(type.labelKey, type.label)}
                         </StatusBadge>
                         <StatusBadge tone={sev.tone}>
                           {t(sev.labelKey, sev.label)}
@@ -341,19 +386,19 @@ export default function VideoEvents() {
                           dot={ev.status !== "resolved"}
                           tone={st.tone}
                         >
-                          {st.label}
+                          {t(st.labelKey, st.label)}
                         </StatusBadge>
                         {ev.incidentId ? (
                           /* Escalado a incidente: agravación, no realce de marca. */
                           <StatusBadge dot={false} tone="bad">
                             <AlertTriangle className="size-3.5" />
-                            Incidente
+                            {t("ui.VideoEvents.incidente", "Incidente")}
                           </StatusBadge>
                         ) : null}
                       </div>
 
                       <p className="truncate font-medium">
-                        {ev.title || type.label}
+                        {ev.title || t(type.labelKey, type.label)}
                       </p>
                       {ev.description ? (
                         <p
@@ -389,7 +434,7 @@ export default function VideoEvents() {
                         ) : (
                           <Check className="size-4" />
                         )}
-                        Reconocer
+                        {t("ui.VideoEvents.reconocer", "Reconocer")}
                       </Button>
                       <Button
                         disabled={rowBusy || isResolved}
@@ -398,7 +443,7 @@ export default function VideoEvents() {
                         onClick={() => setEventStatus(ev, "resolved")}
                       >
                         <CheckCircle2 className="size-4" />
-                        Resolver
+                        {t("ui.VideoEvents.resolver", "Resolver")}
                       </Button>
                       <Button
                         disabled={rowBusy || Boolean(ev.incidentId)}
@@ -407,7 +452,7 @@ export default function VideoEvents() {
                         onClick={() => setIncidentEvent(ev)}
                       >
                         <AlertTriangle className="size-4" />
-                        Crear incidente
+                        {t("ui.VideoEvents.crearIncidente", "Crear incidente")}
                       </Button>
                       <Button
                         disabled={rowBusy}
@@ -416,7 +461,7 @@ export default function VideoEvents() {
                         onClick={() => setDispatchEvent(ev)}
                       >
                         <Radio className="size-4" />
-                        Despachar
+                        {t("ui.VideoEvents.despachar", "Despachar")}
                       </Button>
                     </div>
                   </div>

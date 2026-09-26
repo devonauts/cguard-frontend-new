@@ -209,8 +209,8 @@ export default function EditRoutePage() {
           icon={<RouteIcon />}
           subtitle={
             routeData?.name
-              ? `Modifica «${routeData.name}»`
-              : "Modifica la configuración de la ruta"
+              ? t("ui.EditRoutePage.modificaNombre", { defaultValue: "Modifica «{{name}}»", name: routeData.name })
+              : t("ui.EditRoutePage.modificaLaConfiguracion", "Modifica la configuración de la ruta")
           }
           title={t("ui.EditRoutePage.editarRuta")}
         />

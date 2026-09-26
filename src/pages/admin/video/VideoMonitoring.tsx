@@ -58,10 +58,10 @@ function StatusDot({ status }: { status?: string }) {
       ? "var(--bad)"
       : "var(--ink-faint)";
   const label = enLinea
-    ? "En línea"
+    ? i18n.t("ui.VideoMonitoring.enLinea", "En línea")
     : status === "offline"
-      ? "Fuera de línea"
-      : "Estado desconocido";
+      ? i18n.t("ui.VideoMonitoring.fueraDeLinea", "Fuera de línea")
+      : i18n.t("ui.VideoMonitoring.estadoDesconocido", "Estado desconocido");
 
   return (
     <span aria-label={label} className="inline-flex items-center" title={label}>
@@ -139,7 +139,9 @@ function CameraTile({
           const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
 
           downloadDataUrl(dataUrl, `snapshot-${slug(camera.name)}.jpg`);
-          toast.success("Captura descargada");
+          toast.success(
+            i18n.t("ui.VideoMonitoring.capturaDescargada", "Captura descargada"),
+          );
 
           return;
         }
@@ -180,7 +182,10 @@ function CameraTile({
         >
           <TileButton
             icon={<Scissors className="size-3.5" />}
-            label="Recortar y compartir"
+            label={i18n.t(
+              "ui.VideoMonitoring.recortarYCompartir",
+              "Recortar y compartir",
+            )}
             onClick={() => onAction("trim", camera)}
           />
           <TileButton
@@ -190,12 +195,12 @@ function CameraTile({
           />
           <TileButton
             icon={<Radio className="size-3.5" />}
-            label="Despachar"
+            label={i18n.t("ui.VideoMonitoring.despachar", "Despachar")}
             onClick={() => onAction("dispatch", camera)}
           />
           <TileButton
             icon={<ImageDown className="size-3.5" />}
-            label="Capturar imagen"
+            label={i18n.t("ui.VideoMonitoring.capturarImagen", "Capturar imagen")}
             onClick={handleSnapshot}
           />
         </div>
@@ -205,7 +210,11 @@ function CameraTile({
         <StatusDot status={camera.status} />
         <div className="min-w-0 flex-1">
           <h3 className="truncate text-sm font-semibold leading-tight">
-            {camera.name || `Cámara ${camera.channel ?? ""}`}
+            {camera.name ||
+              i18n.t("ui.VideoMonitoring.camaraN", {
+                defaultValue: "Cámara {{n}}",
+                n: camera.channel ?? "",
+              })}
           </h3>
           {deviceName ? (
             <p
@@ -213,7 +222,9 @@ function CameraTile({
               style={{ color: "var(--ink-faint)" }}
             >
               {deviceName}
-              {camera.channel ? ` · Canal ${camera.channel}` : ""}
+              {camera.channel
+                ? ` · ${i18n.t("ui.VideoMonitoring.canalN", { defaultValue: "Canal {{n}}", n: camera.channel })}`
+                : ""}
             </p>
           ) : null}
         </div>
@@ -281,7 +292,10 @@ export default function VideoMonitoring() {
       setError(
         err?.data?.message ||
           err?.message ||
-          "No se pudieron cargar las cámaras",
+          t(
+            "ui.VideoMonitoring.noSePudieronCargarLas",
+            "No se pudieron cargar las cámaras",
+          ),
       );
     } finally {
       setLoading(false);
@@ -337,7 +351,9 @@ export default function VideoMonitoring() {
           actions={
             <Button disabled={loading} variant="outline" onClick={load}>
               <RefreshCw className={cn("size-4", loading && "animate-spin")} />
-              <span className="hidden sm:inline">Actualizar</span>
+              <span className="hidden sm:inline">
+                {t("ui.VideoMonitoring.actualizar", "Actualizar")}
+              </span>
             </Button>
           }
           badges={
@@ -345,9 +361,10 @@ export default function VideoMonitoring() {
               /* Misma píldora que el kit ya calcula; estaba pintada a mano sólo
                  en esta rama y con `StatusBadge` en la contraria. */
               <StatusBadge tone="ok">
-                {enLinea === 1
-                  ? "1 cámara transmitiendo"
-                  : `${enLinea} cámaras transmitiendo`}
+                {t("ui.VideoMonitoring.camarasTransmitiendo", {
+                  defaultValue: "{{count}} cámaras transmitiendo",
+                  count: enLinea,
+                })}
               </StatusBadge>
             ) : (
               <StatusBadge tone="neutral">
@@ -391,7 +408,10 @@ export default function VideoMonitoring() {
               </option>
               {siteOptions.map((s) => (
                 <option key={s} value={s}>
-                  Puesto {s.slice(0, 8)}
+                  {t("ui.VideoMonitoring.puestoN", {
+                    defaultValue: "Puesto {{id}}",
+                    id: s.slice(0, 8),
+                  })}
                 </option>
               ))}
             </select>
@@ -403,7 +423,10 @@ export default function VideoMonitoring() {
               style={{ color: "var(--ink-faint)" }}
             >
               <Video className="size-3.5" />
-              {visible.length} cámara{visible.length === 1 ? "" : "s"} en vista
+              {t("ui.VideoMonitoring.camarasEnVista", {
+                defaultValue: "{{count}} cámaras en vista",
+                count: visible.length,
+              })}
             </span>
           ) : null}
         </Toolbar>
@@ -416,7 +439,7 @@ export default function VideoMonitoring() {
             action={
               <Button variant="brand" onClick={load}>
                 <RefreshCw className="size-4" />
-                Reintentar
+                {t("ui.VideoMonitoring.reintentar", "Reintentar")}
               </Button>
             }
             description={error}
@@ -430,8 +453,14 @@ export default function VideoMonitoring() {
           <EmptyState
             description={
               cameras.length === 0
-                ? "Agrega un dispositivo y sincroniza sus cámaras para comenzar."
-                : "Ajusta los filtros para ver más cámaras."
+                ? t(
+                    "ui.VideoMonitoring.agregaUnDispositivo",
+                    "Agrega un dispositivo y sincroniza sus cámaras para comenzar.",
+                  )
+                : t(
+                    "ui.VideoMonitoring.ajustaLosFiltros",
+                    "Ajusta los filtros para ver más cámaras.",
+                  )
             }
             icon={<CameraIcon />}
             title={

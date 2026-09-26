@@ -257,7 +257,12 @@ export function VideoPlayer({
         setStream(null);
         onStream?.(null);
         setErrorMsg(
-          e?.data?.message || e?.message || "No se pudo obtener la transmisión",
+          e?.data?.message ||
+            e?.message ||
+            t(
+              "ui.VideoPlayer.noSePudoObtenerLaTransmision",
+              "No se pudo obtener la transmisión",
+            ),
         );
         setState("error");
       });
@@ -386,13 +391,26 @@ export function VideoPlayer({
                 setTimeout(() => {
                   if (!cancelled) attach();
                 }, 1500);
-              } else onErr("No se pudo reproducir la transmisión");
+              } else
+                onErr(
+                  t(
+                    "ui.VideoPlayer.noSePudoReproducirLaTransmision",
+                    "No se pudo reproducir la transmisión",
+                  ),
+                );
             });
           };
 
           attach();
         })
-        .catch(() => onErr("No se pudo cargar el reproductor de video"));
+        .catch(() =>
+          onErr(
+            t(
+              "ui.VideoPlayer.noSePudoCargarElReproductor",
+              "No se pudo cargar el reproductor de video",
+            ),
+          ),
+        );
     };
 
     // Start HLS right away (reliable, and it wakes/warms the on-demand stream). Then try
@@ -514,7 +532,9 @@ export function VideoPlayer({
               background: transport === "webrtc" ? "var(--ok)" : "var(--warn)",
             }}
           />
-          {transport === "webrtc" ? "EN VIVO" : "HLS"}
+          {transport === "webrtc"
+            ? t("ui.VideoPlayer.enVivo", "EN VIVO")
+            : "HLS"}
         </div>
       ) : null}
 
@@ -526,7 +546,9 @@ export function VideoPlayer({
             className="size-7 animate-spin"
             style={{ color: "var(--brand)" }}
           />
-          <p className="text-sm text-white/70">Conectando…</p>
+          <p className="text-sm text-white/70">
+            {t("ui.VideoPlayer.conectando", "Conectando…")}
+          </p>
         </Overlay>
       ) : null}
       {state === "offline" ? (
@@ -604,7 +626,7 @@ function PtzPad({ cameraId }: { cameraId: string }) {
     return (
       <button
         className="absolute bottom-2 right-2 z-20 grid h-9 w-9 place-items-center rounded-lg bg-black/55 text-white/85 opacity-100 backdrop-blur transition-opacity hover:bg-black/75 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
-        title="Control PTZ"
+        title={i18n.t("ui.VideoPlayer.controlPtz", "Control PTZ")}
         onClick={() => setOpen(true)}
       >
         <Move size={15} />
@@ -678,7 +700,8 @@ function RetryButton({ onClick }: { onClick: () => void }) {
       type="button"
       onClick={onClick}
     >
-      <RefreshCw className="size-3.5" /> Reintentar
+      <RefreshCw className="size-3.5" />{" "}
+      {i18n.t("ui.VideoPlayer.reintentar", "Reintentar")}
     </button>
   );
 }

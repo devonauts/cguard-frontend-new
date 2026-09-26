@@ -27,21 +27,22 @@ import {
 import RouteMap from "../routes/RouteMap";
 
 import {
-  RUN_STATUS_LABEL,
   RUN_STATUS_TONE,
-  VISIT_STATUS_LABEL,
   VISIT_STATUS_TONE,
-  SCHEDULE_LABEL,
   SCHEDULE_TONE,
-  EVENT_LABEL,
-  SKIP_REASON_LABEL,
-  SEVERITY_LABEL,
   SEVERITY_TONE,
+  runStatusLabel,
+  visitStatusLabel,
+  scheduleLabel,
+  eventLabel,
+  skipReasonLabel,
+  severityLabel,
   fmtHora,
   fmtDur,
   fmtFecha,
 } from "./runLabels";
 
+import i18n from "@/i18n";
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -121,16 +122,28 @@ const RESPUESTA_MEDIA: Record<string, string> = {
   warning: "Con reparos",
   partial: "Parcial",
 };
+/** Translation keys for `RESPUESTA_MEDIA` (translated at render time). */
+const RESPUESTA_MEDIA_CLAVE: Record<string, string> = {
+  na: "ui.RouteRunDetail.respuestaNA",
+  "n/a": "ui.RouteRunDetail.respuestaNA",
+  warning: "ui.RouteRunDetail.respuestaConReparos",
+  partial: "ui.RouteRunDetail.respuestaParcial",
+};
 
 function etiquetaRespuesta(valor: unknown): string {
   if (Array.isArray(valor)) return valor.map(etiquetaRespuesta).join(", ");
-  if (typeof valor === "boolean") return valor ? "Sí" : "No";
+  const si = () => i18n.t("ui.RouteRunDetail.respuestaSi", "Sí");
+  const no = () => i18n.t("ui.RouteRunDetail.respuestaNo", "No");
+
+  if (typeof valor === "boolean") return valor ? si() : no();
   const s = String(valor).trim().toLowerCase();
 
-  if (RESPUESTA_SI.has(s)) return "Sí";
-  if (RESPUESTA_NO.has(s)) return "No";
+  if (RESPUESTA_SI.has(s)) return si();
+  if (RESPUESTA_NO.has(s)) return no();
 
-  return RESPUESTA_MEDIA[s] || String(valor);
+  return RESPUESTA_MEDIA[s]
+    ? i18n.t(RESPUESTA_MEDIA_CLAVE[s], RESPUESTA_MEDIA[s])
+    : String(valor);
 }
 
 /** Estados de `guardVerifications` — valores de columna del servidor. */
@@ -147,7 +160,7 @@ export default function RouteRunDetailPage() {
   const { t } = useTranslation();
   const { runId = "" } = useParams<{ runId: string }>();
 
-  usePageTitle("Ejecución de ruta");
+  usePageTitle(t("ui.RouteRunDetail.titulo", "Ejecución de ruta"));
   const [data, setData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -274,8 +287,8 @@ export default function RouteRunDetailPage() {
         "ui.RouteRunDetail.omitirMsg",
         "El supervisor verá la parada como omitida por instrucción de operaciones. Indica el motivo.",
       ),
-      placeholder: "Motivo",
-      confirmText: "Omitir",
+      placeholder: t("comun.motivo", "Motivo"),
+      confirmText: t("ui.RouteRunDetail.omitir", "Omitir"),
     });
 
     if (notes === null) return;
@@ -297,8 +310,8 @@ export default function RouteRunDetailPage() {
         "ui.RouteRunDetail.quitarMsg",
         "Sale del recorrido de hoy (queda registrada como omitida por operaciones). La ruta base no cambia.",
       ),
-      placeholder: "Motivo",
-      confirmText: "Quitar",
+      placeholder: t("comun.motivo", "Motivo"),
+      confirmText: t("ui.RouteRunDetail.quitarBtn", "Quitar"),
     });
 
     if (reason === null) return;
@@ -333,8 +346,8 @@ export default function RouteRunDetailPage() {
         "ui.RouteRunDetail.abortarMsg",
         "Las paradas sin visitar quedan como no visitadas y el supervisor recibe el aviso. Esto no se deshace.",
       ),
-      placeholder: "Motivo (obligatorio)",
-      confirmText: "Abortar",
+      placeholder: t("ui.RouteRunDetail.motivoObligatorio", "Motivo (obligatorio)"),
+      confirmText: t("ui.RouteRunDetail.abortarBtn", "Abortar"),
     });
 
     if (!reason) return;
@@ -345,7 +358,7 @@ export default function RouteRunDetailPage() {
           "¿Abortar definitivamente?",
         ),
         message: reason,
-        confirmText: "Sí, abortar",
+        confirmText: t("ui.RouteRunDetail.siAbortar", "Sí, abortar"),
       }))
     )
       return;
@@ -375,8 +388,8 @@ export default function RouteRunDetailPage() {
           subtitle={data ? [fmtFecha(data.date, locale), data.supervisorName].filter(Boolean).join(' · ') : undefined}
           badges={ex ? (
             <>
-              <StatusBadge tone={RUN_STATUS_TONE[ex.status] || 'neutral'}>{RUN_STATUS_LABEL[ex.status] || ex.status}</StatusBadge>
-              {abierta && ex.scheduleState && ex.scheduleState !== 'on_time' && <StatusBadge tone={SCHEDULE_TONE[ex.scheduleState]}>{SCHEDULE_LABEL[ex.scheduleState]} · +{ex.varianceMinutes} min</StatusBadge>}
+              <StatusBadge tone={RUN_STATUS_TONE[ex.status] || 'neutral'}>{runStatusLabel(ex.status)}</StatusBadge>
+              {abierta && ex.scheduleState && ex.scheduleState !== 'on_time' && <StatusBadge tone={SCHEDULE_TONE[ex.scheduleState]}>{scheduleLabel(ex.scheduleState)} · +{ex.varianceMinutes} min</StatusBadge>}
               {ex.planVersion > 1 && <StatusBadge tone="brand" dot={false}>{t('ui.RouteRunDetail.planV', 'Plan v{{v}}', { v: ex.planVersion })}</StatusBadge>}
             </>
           ) : undefined}
@@ -629,7 +642,7 @@ function VisitaCard({
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-sm font-semibold">{s.name}</p>
             <StatusBadge tone={VISIT_STATUS_TONE[st] || "neutral"}>
-              {VISIT_STATUS_LABEL[st] || st}
+              {visitStatusLabel(st)}
             </StatusBadge>
             {s.priority &&
               (s.priority === "high" || s.priority === "critical") && (
@@ -711,7 +724,7 @@ function VisitaCard({
           {s.skip && (
             <p className="mt-1 text-xs" style={{ color: "var(--warn-text)" }}>
               <SkipForward className="mr-1 inline size-3" />
-              {SKIP_REASON_LABEL[s.skip.reason] ||
+              {(s.skip.reason && skipReasonLabel(s.skip.reason)) ||
                 s.skip.label ||
                 s.skip.reason}
               {s.skip.notes ? ` — ${s.skip.notes}` : ""}
@@ -801,7 +814,12 @@ function VisitaCard({
                     <p key={i} className="flex justify-between gap-4 text-sm">
                       <span>{g.name}</span>
                       <strong>
-                        {VERIFICACION[String(g.status)] || g.status}
+                        {VERIFICACION[String(g.status)]
+                          ? t(
+                              `ui.RouteRunDetail.verificacion.${String(g.status)}`,
+                              VERIFICACION[String(g.status)],
+                            )
+                          : g.status}
                         {g.note ? ` — ${g.note}` : ""}
                       </strong>
                     </p>
@@ -853,7 +871,7 @@ function VisitaCard({
                         dot={false}
                         tone={SEVERITY_TONE[o.severity] || "neutral"}
                       >
-                        {SEVERITY_LABEL[o.severity] || o.severity}
+                        {severityLabel(o.severity) || o.severity}
                       </StatusBadge>
                       <span className="min-w-0 flex-1">{o.text}</span>
                       {o.visibility === "client_visible" && (
@@ -970,7 +988,7 @@ function Eventos({
             : e.type === "stop.completed" && p.score != null
               ? `${Math.round(p.score)} %`
               : e.type === "stop.skipped"
-                ? p.notes || SKIP_REASON_LABEL[p.reason] || p.reason || ""
+                ? p.notes || skipReasonLabel(p.reason) || ""
                 : e.type === "route.plan_updated"
                   ? p.change || p.reason || ""
                   : e.type === "route.paused"
@@ -1017,7 +1035,7 @@ function Eventos({
             <StatusDot className="mt-[7px]" tone={tone} />
             <div className="min-w-0">
               <p className="font-medium">
-                {EVENT_LABEL[e.type] || e.type}
+                {eventLabel(e.type)}
                 {parada ? (
                   <span
                     className="font-normal"
@@ -1203,7 +1221,7 @@ function AgregarParadaModal({
             <SelectContent>
               {Object.entries(PRIORIDAD_LABEL).map(([k, v]) => (
                 <SelectItem key={k} value={k}>
-                  {v}
+                  {t(`ui.RouteRunDetail.prioridades.${k}`, v)}
                 </SelectItem>
               ))}
             </SelectContent>

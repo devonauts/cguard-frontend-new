@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { ApiService } from "./api/apiService";
 
 import {
@@ -120,7 +121,7 @@ const tenantService = {
 
     const uploadUrl = creds.uploadCredentials?.url;
 
-    if (!uploadUrl) throw new Error("Upload URL not available");
+    if (!uploadUrl) throw new Error(i18n.t("ui.apiService.urlDeCargaNoDisponible", "URL de carga no disponible"));
 
     const form = new FormData();
 
@@ -132,7 +133,7 @@ const tenantService = {
     if (!uploadResp.ok) {
       const text = await uploadResp.text().catch(() => null);
 
-      throw new Error(`Upload failed: ${uploadResp.status} ${text}`);
+      throw new Error(i18n.t("ui.apiService.errorAlSubirArchivo", { defaultValue: "Error al subir el archivo ({{status}}) {{detalle}}", status: uploadResp.status, detalle: text }).trim());
     }
 
     const fileObj = {
@@ -180,7 +181,7 @@ const tenantService = {
 
     const uploadUrl = creds.uploadCredentials?.url;
 
-    if (!uploadUrl) throw new Error("Upload URL not available");
+    if (!uploadUrl) throw new Error(i18n.t("ui.apiService.urlDeCargaNoDisponible", "URL de carga no disponible"));
 
     const form = new FormData();
 
@@ -192,7 +193,7 @@ const tenantService = {
     if (!uploadResp.ok) {
       const text = await uploadResp.text().catch(() => null);
 
-      throw new Error(`Upload failed: ${uploadResp.status} ${text}`);
+      throw new Error(i18n.t("ui.apiService.errorAlSubirArchivo", { defaultValue: "Error al subir el archivo ({{status}}) {{detalle}}", status: uploadResp.status, detalle: text }).trim());
     }
 
     // Componer objeto archivo para asociar en backend

@@ -572,8 +572,8 @@ export default function EditAdminUserPage() {
       if (clear) setOffice({ address: "", lat: "", lng: "", radius: "150" });
       toast.success(
         clear
-          ? "Ubicación de oficina eliminada"
-          : "Ubicación de oficina guardada",
+          ? t("ui.EditAdminUser.ubicacionEliminada", "Ubicación de oficina eliminada")
+          : t("ui.EditAdminUser.ubicacionGuardada", "Ubicación de oficina guardada"),
       );
     } catch (e: any) {
       toast.error(
@@ -598,7 +598,11 @@ export default function EditAdminUserPage() {
           lat: String(p.coords.latitude),
           lng: String(p.coords.longitude),
         })),
-      (e) => toast.error(e.message || "No se pudo obtener la ubicación"),
+      (e) =>
+        toast.error(
+          e.message ||
+            t("ui.EditAdminUser.noSePudoObtenerUbicacion", "No se pudo obtener la ubicación"),
+        ),
       { enableHighAccuracy: true, timeout: 10000 },
     );
   };
@@ -608,7 +612,10 @@ export default function EditAdminUserPage() {
       const tenantId = localStorage.getItem("tenantId") || "";
       if (!tenantId)
         throw new Error(
-          "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+          t(
+            "ui.EditAdminUser.noPudimosIdentificarTuEmpresa",
+            "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+          ),
         );
 
       const payload = {
@@ -671,14 +678,18 @@ export default function EditAdminUserPage() {
           const msg =
             err?.response?.data?.message ||
             err?.message ||
-            (typeof err === "string" ? err : "Error desconocido");
+            (typeof err === "string"
+              ? err
+              : t("adminOfficeUsers.newUser.errors.unknown", "Error desconocido"));
           toast.error(`${msg}`);
         }
       } catch (ex) {
         const msg =
           err?.response?.data?.message ||
           err?.message ||
-          (typeof err === "string" ? err : "Error desconocido");
+          (typeof err === "string"
+              ? err
+              : t("adminOfficeUsers.newUser.errors.unknown", "Error desconocido"));
         toast.error(`${msg}`);
       }
     }
@@ -786,7 +797,7 @@ export default function EditAdminUserPage() {
                     name="accessLevel"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Rol*</FormLabel>
+                        <FormLabel>{t("ui.EditAdminUser.rolReq", "Rol*")}</FormLabel>
                         <Select
                           value={field.value}
                           onValueChange={field.onChange}
@@ -841,7 +852,10 @@ export default function EditAdminUserPage() {
                         "toda la operación",
                       )}
                     </strong>{" "}
-                    por definición: no se puede acotar.
+                    {t(
+                      "ui.EditAdminUser.porDefinicionNoSePuedeAcotar",
+                      "por definición: no se puede acotar.",
+                    )}
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -917,13 +931,15 @@ export default function EditAdminUserPage() {
                           name="postSiteIds"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Sedes</FormLabel>
+                              <FormLabel>{t("ui.EditAdminUser.sedes", "Sedes")}</FormLabel>
                               <p
                                 className="mb-1.5 text-xs"
                                 style={{ color: "var(--ink-soft)" }}
                               >
-                                El alcance de verdad: limita turnos, nómina,
-                                cobertura, visitas y puestos.
+                                {t(
+                                  "ui.EditAdminUser.elAlcanceDeVerdad",
+                                  "El alcance de verdad: limita turnos, nómina, cobertura, visitas y puestos.",
+                                )}
                               </p>
                               <FormControl>
                                 <MultiSelectDeSedes
@@ -958,21 +974,22 @@ export default function EditAdminUserPage() {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>
-                                Clientes{" "}
+                                {t("ui.EditAdminUser.clientes", "Clientes")}{" "}
                                 <span
                                   className="font-normal"
                                   style={{ color: "var(--ink-soft)" }}
                                 >
-                                  (opcional)
+                                  {t("ui.EditAdminUser.opcionalParentesis", "(opcional)")}
                                 </span>
                               </FormLabel>
                               <p
                                 className="mb-1.5 text-xs"
                                 style={{ color: "var(--ink-soft)" }}
                               >
-                                Atajo: al elegir un cliente se marcan sus sedes.
-                                Por sí solo, hoy únicamente limita qué{" "}
-                                <strong>incidentes</strong> ve.
+                                {t(
+                                  "ui.EditAdminUser.atajoClientes",
+                                  "Atajo: al elegir un cliente se marcan sus sedes. Por sí solo, hoy únicamente limita qué incidentes ve.",
+                                )}
                               </p>
                               <FormControl>
                                 <MultiSelectDeSedes
@@ -1007,14 +1024,16 @@ export default function EditAdminUserPage() {
                       </IconTile>
                       <div className="min-w-0">
                         <div className="text-sm font-semibold">
-                          Permisos individuales
+                          {t("ui.EditAdminUser.permisosIndividuales", "Permisos individuales")}
                         </div>
                         <div
                           className="text-xs"
                           style={{ color: "var(--ink-soft)" }}
                         >
-                          Concede o revoca permisos específicos para este
-                          usuario, además de su rol.
+                          {t(
+                            "ui.EditAdminUser.concedeORevoca",
+                            "Concede o revoca permisos específicos para este usuario, además de su rol.",
+                          )}
                         </div>
                       </div>
                     </div>
@@ -1043,8 +1062,10 @@ export default function EditAdminUserPage() {
                             color: "var(--warn-text)",
                           }}
                         >
-                          Este usuario es administrador. Los permisos esenciales
-                          de administración no se pueden denegar.
+                          {t(
+                            "ui.EditAdminUser.esteUsuarioEsAdministrador",
+                            "Este usuario es administrador. Los permisos esenciales de administración no se pueden denegar.",
+                          )}
                         </div>
                       )}
                       <UserPermissionOverrides
@@ -1082,8 +1103,10 @@ export default function EditAdminUserPage() {
                           className="text-xs"
                           style={{ color: "var(--ink-soft)" }}
                         >
-                          Opcional. Si la defines, el reloj de asistencia valida
-                          que el usuario marque desde su oficina.
+                          {t(
+                            "ui.EditAdminUser.opcionalSiLaDefines",
+                            "Opcional. Si la defines, el reloj de asistencia valida que el usuario marque desde su oficina.",
+                          )}
                         </div>
                       </div>
                     </div>
@@ -1111,12 +1134,15 @@ export default function EditAdminUserPage() {
                               address: e.target.value,
                             }))
                           }
-                          placeholder="Ej. Oficina central, Av. Amazonas 123"
+                          placeholder={t(
+                            "ui.EditAdminUser.ejOficinaCentral",
+                            "Ej. Oficina central, Av. Amazonas 123",
+                          )}
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                         <div>
-                          <label className="cg-eyebrow">Latitud</label>
+                          <label className="cg-eyebrow">{t("ui.EditAdminUser.latitud", "Latitud")}</label>
                           <Input
                             value={office.lat}
                             onChange={(e) =>
@@ -1126,7 +1152,7 @@ export default function EditAdminUserPage() {
                           />
                         </div>
                         <div>
-                          <label className="cg-eyebrow">Longitud</label>
+                          <label className="cg-eyebrow">{t("ui.EditAdminUser.longitud", "Longitud")}</label>
                           <Input
                             value={office.lng}
                             onChange={(e) =>
@@ -1136,7 +1162,7 @@ export default function EditAdminUserPage() {
                           />
                         </div>
                         <div>
-                          <label className="cg-eyebrow">Radio (m)</label>
+                          <label className="cg-eyebrow">{t("ui.EditAdminUser.radioM", "Radio (m)")}</label>
                           <Input
                             value={office.radius}
                             onChange={(e) =>
@@ -1168,7 +1194,9 @@ export default function EditAdminUserPage() {
                           disabled={officeSaving}
                           onClick={() => saveOfficeLocation(false)}
                         >
-                          {officeSaving ? "Guardando..." : "Guardar ubicación"}
+                          {officeSaving
+                            ? t("adminOfficeUsers.editUser.form.savingEdit", "Guardando...")
+                            : t("ui.EditAdminUser.guardarUbicacion", "Guardar ubicación")}
                         </Button>
                         <Button
                           type="button"
@@ -1177,15 +1205,17 @@ export default function EditAdminUserPage() {
                           disabled={officeSaving}
                           onClick={() => saveOfficeLocation(true)}
                         >
-                          Quitar
+                          {t("ui.EditAdminUser.quitar", "Quitar")}
                         </Button>
                       </div>
                       <p
                         className="text-[11px]"
                         style={{ color: "var(--ink-faint)" }}
                       >
-                        Déjala vacía para permitir el marcaje sin geocerca.
-                        Puedes copiar las coordenadas desde Google Maps.
+                        {t(
+                          "ui.EditAdminUser.dejalaVacia",
+                          "Déjala vacía para permitir el marcaje sin geocerca. Puedes copiar las coordenadas desde Google Maps.",
+                        )}
                       </p>
                     </div>
                   )}

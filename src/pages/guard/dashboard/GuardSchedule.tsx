@@ -68,6 +68,24 @@ export default function GuardSchedule() {
 
   const now = Date.now();
 
+  // `type` is the value stored by the API; only its label is translated.
+  const typeLabel = (v?: string) => {
+    switch (v) {
+      case "vacaciones":
+        return t("coverage.reason.vacaciones", "Vacaciones");
+      case "enfermedad":
+        return t("coverage.reason.enfermedad", "Enfermedad");
+      case "personal":
+        return t("ui.GuardTimeOff.personal", "Personal");
+      case "calamidad":
+        return t("ui.GuardTimeOff.calamidadDomestica", "Calamidad doméstica");
+      case "otro":
+        return t("coverage.reason.otro", "Otro");
+      default:
+        return v || "";
+    }
+  };
+
   return (
     <PageContainer className="pt-4 sm:pt-6" width="narrow">
       <PageHeader
@@ -109,9 +127,14 @@ export default function GuardSchedule() {
                 >
                   <div className="flex items-center justify-between gap-3">
                     <p className="text-sm font-semibold text-foreground">
-                      {s.station?.stationName || "Puesto"}
+                      {s.station?.stationName ||
+                        t("incidents.columns.postSite", "Puesto")}
                     </p>
-                    {isActive && <StatusBadge tone="green">AHORA</StatusBadge>}
+                    {isActive && (
+                      <StatusBadge tone="green">
+                        {t("ui.GuardSchedule.ahora", "AHORA")}
+                      </StatusBadge>
+                    )}
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
                     {fmtDate(s.startTime)} — {fmtDate(s.endTime)}
@@ -156,7 +179,7 @@ export default function GuardSchedule() {
             {timeOff.map((to: any) => (
               <div key={to.id} className="rounded-xl border p-3.5">
                 <p className="text-sm font-semibold text-foreground capitalize">
-                  {to.type}
+                  {typeLabel(to.type)}
                 </p>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   {fmtDay(to.startDate)} — {fmtDay(to.endDate)}

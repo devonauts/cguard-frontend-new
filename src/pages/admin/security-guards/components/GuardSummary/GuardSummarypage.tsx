@@ -9,6 +9,7 @@ import type {
 
 import { useEffect, useState } from "react";
 import { format as dateFnsFormat } from "date-fns";
+import { localeActual } from "@/lib/localeActual";
 import { useTranslation } from "react-i18next";
 import { MapPin, Gauge, CalendarDays, Building2, Clock } from "lucide-react";
 
@@ -58,9 +59,13 @@ interface StationSummary {
 // Día / Noche / Libre no son estados semánticos (nada está «mal» de noche): el
 // día usa el azul informativo y la noche el acento de marca, que es lo único con
 // color en pantalla. Ambos salen de variables, así que siguen al tono elegido.
-const CELL: Record<string, { label: string; style: React.CSSProperties }> = {
+const CELL: Record<
+  string,
+  { label: string; labelKey?: string; style: React.CSSProperties }
+> = {
   day: {
     label: "D",
+    labelKey: "clients.coverage.cell.day.letter",
     style: {
       background: "color-mix(in oklab, var(--info) 16%, transparent)",
       color: "var(--info-text)",
@@ -68,10 +73,12 @@ const CELL: Record<string, { label: string; style: React.CSSProperties }> = {
   },
   night: {
     label: "N",
+    labelKey: "clients.coverage.cell.night.letter",
     style: { background: "var(--brand-wash)", color: "var(--brand-text)" },
   },
   rest: {
     label: "L",
+    labelKey: "clients.coverage.cell.rest.letter",
     style: { background: "var(--glass-sunken)", color: "var(--ink-soft)" },
   },
   none: {
@@ -95,6 +102,15 @@ const TIER_ACCENT: Record<string, "ok" | "warn" | "bad"> = {
   good: "ok",
   fair: "warn",
   needs_improvement: "bad",
+};
+
+/** «13 sept 2026, 10:50» en el idioma de la interfaz. */
+const FMT_MEMO: Intl.DateTimeFormatOptions = {
+  day: "2-digit",
+  month: "short",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
 };
 
 const ymd = (d: Date) =>
@@ -160,9 +176,9 @@ export default function GuardSummary({ guard }: Props) {
           initial,
           message: memo.content || memo.subject || "",
           timestamp: memo.dateTime
-            ? dateFnsFormat(new Date(memo.dateTime), "dd MMM yyyy HH:mm")
+            ? new Date(memo.dateTime).toLocaleString(localeActual(), FMT_MEMO)
             : memo.createdAt
-              ? dateFnsFormat(new Date(memo.createdAt), "dd MMM yyyy HH:mm")
+              ? new Date(memo.createdAt).toLocaleString(localeActual(), FMT_MEMO)
               : "",
           badge: memo.wasAccepted ? t("guards.summary.badge.accepted") : null,
           subject: memo.subject || "",
@@ -310,14 +326,17 @@ export default function GuardSummary({ guard }: Props) {
                   </IconTile>
                   <div className="min-w-0">
                     <div className="truncate text-sm font-semibold">
-                      {s.stationName || "Estación"}
+                      {s.stationName || t("ui.SiteTour.estacion", "Estación")}
                     </div>
                     {s.postSiteName && s.postSiteName !== s.stationName && (
                       <div
                         className="truncate text-xs"
                         style={{ color: "var(--ink-soft)" }}
                       >
-                        Sede: {s.postSiteName}
+                        {t("ui.GuardSummarypage.sedeNombre", {
+                          defaultValue: "Sede: {{name}}",
+                          name: s.postSiteName,
+                        })}
                       </div>
                     )}
                     {s.clientName && (
@@ -325,7 +344,10 @@ export default function GuardSummary({ guard }: Props) {
                         className="truncate text-xs"
                         style={{ color: "var(--ink-soft)" }}
                       >
-                        Cliente: {s.clientName}
+                        {t("ui.ClientReports.clienteNombre", {
+                          defaultValue: "Cliente: {{name}}",
+                          name: s.clientName,
+                        })}
                       </div>
                     )}
                     {s.window && (
@@ -365,8 +387,14 @@ export default function GuardSummary({ guard }: Props) {
           <EmptyState
             description={
               perf.disabledBy === "tenant"
-                ? "La medición está desactivada para toda la empresa en Configuración › Vigilantes en turno."
-                : "Puedes volver a activarlo desde la pestaña Desempeño de esta ficha."
+                ? t(
+                    "ui.GuardSummarypage.medicionDesactivadaEmpresa",
+                    "La medición está desactivada para toda la empresa en Configuración › Vigilantes en turno.",
+                  )
+                : t(
+                    "ui.GuardSummarypage.puedesVolverAActivarlo",
+                    "Puedes volver a activarlo desde la pestaña Desempeño de esta ficha.",
+                  )
             }
             icon={<Gauge />}
             title={
@@ -375,7 +403,10 @@ export default function GuardSummary({ guard }: Props) {
                     "performance.offTenantTitle",
                     "Tu empresa no está midiendo el desempeño",
                   )
-                : "A esta persona no se le mide el desempeño"
+                : t(
+                    "ui.GuardSummarypage.noSeLeMideElDesempeno",
+                    "A esta persona no se le mide el desempeño",
+                  )
             }
           />
         ) : !perf?.hasData ? (
@@ -400,12 +431,16 @@ export default function GuardSummary({ guard }: Props) {
                   : perf.tier
               }
               icon={<Gauge />}
-              label="Puntaje"
+              label={t("ui.GuardSummarypage.puntaje", "Puntaje")}
               value={`${perf.score}/100`}
             />
             <StatCard
               accent="info"
-              hint={`${stats.shiftsWorked ?? 0}/${stats.shiftsScheduled ?? 0} turnos`}
+              hint={t("ui.GuardSummarypage.turnosHint", {
+                defaultValue: "{{worked}}/{{scheduled}} turnos",
+                worked: stats.shiftsWorked ?? 0,
+                scheduled: stats.shiftsScheduled ?? 0,
+              })}
               label={t("comun.asistencia")}
               value={
                 stats.attendanceRate != null ? `${stats.attendanceRate}%` : "—"
@@ -413,7 +448,7 @@ export default function GuardSummary({ guard }: Props) {
             />
             <StatCard
               accent="brand"
-              label="Horas trabajadas"
+              label={t("ui.GuardSummarypage.horasTrabajadas", "Horas trabajadas")}
               value={stats.hoursWorked != null ? `${stats.hoursWorked} h` : "—"}
             />
             <StatCard
@@ -424,10 +459,14 @@ export default function GuardSummary({ guard }: Props) {
               }
               hint={
                 stats.clientRatingCount
-                  ? `Calif. cliente ${stats.clientRatingAvg ?? "—"} (${stats.clientRatingCount})`
+                  ? t("ui.GuardSummarypage.califCliente", {
+                      defaultValue: "Calif. cliente {{avg}} ({{count}})",
+                      avg: stats.clientRatingAvg ?? "—",
+                      count: stats.clientRatingCount,
+                    })
                   : undefined
               }
-              label="Faltas / Atrasos"
+              label={t("ui.GuardSummarypage.faltasAtrasos", "Faltas / Atrasos")}
               value={`${stats.absences ?? 0} / ${stats.tardies ?? 0}`}
             />
           </StatsStrip>
@@ -468,7 +507,7 @@ export default function GuardSummary({ guard }: Props) {
                         borderColor: "var(--hairline)",
                       }}
                     >
-                      Estación · Puesto
+                      {t("ui.GuardSummarypage.estacionPuesto", "Estación · Puesto")}
                     </th>
                     {days.map((d) => (
                       <th
@@ -483,7 +522,12 @@ export default function GuardSummary({ guard }: Props) {
                               : "var(--ink-soft)",
                         }}
                       >
-                        <div>{d.dow}</div>
+                        <div>
+                          {new Date(`${d.date}T00:00:00`).toLocaleDateString(
+                            localeActual(),
+                            { weekday: "short" },
+                          ) || d.dow}
+                        </div>
                         <div
                           className={`tabular-nums ${d.isToday ? "font-bold" : ""}`}
                         >
@@ -507,7 +551,7 @@ export default function GuardSummary({ guard }: Props) {
                         }}
                       >
                         <div className="truncate text-xs font-semibold">
-                          {r.stationName || "Estación"}
+                          {r.stationName || t("ui.SiteTour.estacion", "Estación")}
                         </div>
                         <div
                           className="truncate text-xs"
@@ -531,7 +575,7 @@ export default function GuardSummary({ guard }: Props) {
                               className="grid h-7 w-full min-w-[26px] place-items-center rounded-lg text-[11px] font-bold"
                               style={m.style}
                             >
-                              {m.label}
+                              {m.labelKey ? t(m.labelKey, m.label) : m.label}
                             </span>
                           </td>
                         );
@@ -546,16 +590,18 @@ export default function GuardSummary({ guard }: Props) {
               style={{ color: "var(--ink-soft)" }}
             >
               {[
-                { k: "day", label: "Día" },
-                { k: "night", label: "Noche" },
-                { k: "rest", label: "Libre" },
+                { k: "day", label: t("clients.coverage.cell.day.legend", "Día") },
+                { k: "night", label: t("clients.coverage.cell.night.legend", "Noche") },
+                { k: "rest", label: t("clients.coverage.cell.rest.legend", "Libre") },
               ].map(({ k, label }) => (
                 <span key={k} className="inline-flex items-center gap-1.5">
                   <span
                     className="grid h-4 w-4 place-items-center rounded text-[10px] font-bold"
                     style={CELL[k].style}
                   >
-                    {CELL[k].label}
+                    {CELL[k].labelKey
+                      ? t(CELL[k].labelKey!, CELL[k].label)
+                      : CELL[k].label}
                   </span>
                   {label}
                 </span>

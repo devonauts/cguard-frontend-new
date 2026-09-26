@@ -169,7 +169,7 @@ export default function ShiftAssignModal({
 
         return {
           id: p.id,
-          label: `Vigilante ${i + 1}`,
+          label: t("ui.AsignacionEditModal.vigilanteN", { defaultValue: "Vigilante {{n}}", n: i + 1 }),
           horas,
           tramo: variasVentanas && ini ? nombreDeTramo(ini) : "",
           type: "fijo" as const,
@@ -178,14 +178,17 @@ export default function ShiftAssignModal({
       }),
       ...sacas.map((p: PositionRow, i: number) => ({
         id: p.id,
-        label: sacas.length > 1 ? `Sacafranco ${i + 1}` : "Sacafranco",
+        label:
+          sacas.length > 1
+            ? t("ui.AsignacionEditModal.sacafrancoN", { defaultValue: "Sacafranco {{n}}", n: i + 1 })
+            : t("clients.assignGuards.roleSf", "Sacafranco"),
         horas: "",
         tramo: "",
         type: "sacafranco" as const,
         occupied: occupiedPositionIds.has(String(p.id)),
       })),
     ];
-  }, [positions, occupiedPositionIds]);
+  }, [positions, occupiedPositionIds, t]);
 
   // Vigilantes free to assign (drop anyone with an active rotation anywhere).
   const availableGuards = useMemo(
@@ -271,7 +274,7 @@ export default function ShiftAssignModal({
   }, [positions]);
 
   const etiquetaSegundoBloque = useMemo(() => {
-    if (bloques.length < 2) return "noche";
+    if (bloques.length < 2) return t("ui.AsignacionEditModal.noche", "noche");
     const posActual = positions.find((p) => p.id === selectedPositionId);
     const miIni = String(posActual?.startTime || bloques[0]).slice(0, 5);
     const i = bloques.indexOf(miIni);
@@ -282,7 +285,7 @@ export default function ShiftAssignModal({
 
   /** Y cómo se llama el tramo PROPIO de la plaza elegida (el primero del ciclo). */
   const etiquetaPrimerBloque = useMemo(() => {
-    if (bloques.length < 2) return "día";
+    if (bloques.length < 2) return t("ui.AsignacionEditModal.dia", "día");
     const posActual = positions.find((p) => p.id === selectedPositionId);
 
     return nombreDeTramo(
@@ -505,7 +508,9 @@ export default function ShiftAssignModal({
           toast.success(t("ui.ShiftAssignModal.elVigilanteYaEstabaAsignado"));
           onSaved(start);
         } else
-          toast.error(e?.data?.message || e?.message || "Error al crear turno");
+          toast.error(e?.data?.message ||
+              e?.message ||
+              t("ui.ShiftAssignModal.errorAlCrearTurno", "Error al crear turno"));
       } finally {
         setSaving(false);
       }
@@ -544,7 +549,9 @@ export default function ShiftAssignModal({
       toast.success(t("ui.ShiftAssignModal.vigilanteAsignadoSiEsFijo"));
       onSaved(new Date(rotationStartDate + "T12:00:00"));
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || "Error al asignar");
+      toast.error(e?.data?.message ||
+          e?.message ||
+          t("ui.ShiftAssignModal.errorAlAsignar", "Error al asignar"));
     } finally {
       setSaving(false);
     }
@@ -669,7 +676,9 @@ export default function ShiftAssignModal({
                       disabled={p.occupied}
                       onClick={() => setSelectedPositionId(p.id)}
                       title={
-                        p.occupied ? "Puesto ocupado" : p.horas || undefined
+                        p.occupied
+                          ? t("ui.ShiftAssignModal.puestoOcupado", "Puesto ocupado")
+                          : p.horas || undefined
                       }
                       className="cg-focus rounded-xl border px-3 py-2 text-left text-sm font-medium transition-all disabled:cursor-not-allowed"
                       style={
@@ -694,7 +703,7 @@ export default function ShiftAssignModal({
                       <span className={p.occupied ? "line-through" : undefined}>
                         {p.label}
                       </span>
-                      {p.occupied ? " · ocupado" : ""}
+                      {p.occupied ? ` · ${t("ui.AsignacionEditModal.ocupado", "ocupado")}` : ""}
                       {/* Las horas de la plaza: son las que va a trabajar quien se
                             asigne aquí, y sin ellas no hay forma de distinguir la
                             plaza de la mañana de la de la tarde. */}
@@ -726,8 +735,8 @@ export default function ShiftAssignModal({
                 <LabeledField
                   label={
                     estacionSinCiclo
-                      ? "¿Cada cuántos días libra?"
-                      : "Secuencia de este vigilante"
+                      ? t("ui.ShiftAssignModal.cadaCuantosDiasLibra", "¿Cada cuántos días libra?")
+                      : t("ui.AsignacionEditModal.secuenciaDeEsteVigilante", "Secuencia de este vigilante")
                   }
                 >
                   <SecuenciaPropiaSelect
@@ -742,17 +751,24 @@ export default function ShiftAssignModal({
                   <p className="mt-1 text-[10px] text-muted-foreground/70">
                     {estacionSinCiclo ? (
                       <>
-                        Este puesto todavía no tiene ciclo. El que elijas aquí
-                        pasa a ser el del puesto, y sus compañeros lo heredan.
+                        {t(
+                          "ui.ShiftAssignModal.puestoSinCiclo",
+                          "Este puesto todavía no tiene ciclo. El que elijas aquí pasa a ser el del puesto, y sus compañeros lo heredan.",
+                        )}
                       </>
                     ) : (
                       <>
-                        Déjalo en «la de la estación» salvo que este vigilante
-                        tenga un ciclo distinto al de sus compañeros
                         {bloques.length > 1
-                          ? ` (por ejemplo 2 de ${etiquetaPrimerBloque} y 2 de ${etiquetaSegundoBloque})`
-                          : ""}
-                        .
+                          ? t("ui.ShiftAssignModal.dejaloConEjemplo", {
+                              defaultValue:
+                                "Déjalo en «la de la estación» salvo que este vigilante tenga un ciclo distinto al de sus compañeros (por ejemplo 2 de {{primero}} y 2 de {{segundo}}).",
+                              primero: etiquetaPrimerBloque,
+                              segundo: etiquetaSegundoBloque,
+                            })
+                          : t(
+                              "ui.AsignacionEditModal.dejaloEnLaDeLaEstacion",
+                              "Déjalo en «la de la estación» salvo que este vigilante tenga un ciclo distinto al de sus compañeros.",
+                            )}
                       </>
                     )}
                   </p>
@@ -778,7 +794,8 @@ export default function ShiftAssignModal({
                   }}
                 >
                   <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <CalendarRange size={13} className="brand-text" /> Empieza{" "}
+                    <CalendarRange size={13} className="brand-text" />{" "}
+                    {t("ui.AsignacionEditModal.empieza", "Empieza")}{" "}
                     <span className="font-medium capitalize text-foreground">
                       {restPreview.startWeekday}
                     </span>
@@ -787,14 +804,14 @@ export default function ShiftAssignModal({
                     <Moon className="brand-text" size={13} />
                     {restPreview.weekday ? (
                       <span className="text-muted-foreground">
-                        Descansa:{" "}
+                        {t("ui.AsignacionEditModal.descansa", "Descansa:")}{" "}
                         <span className="font-semibold capitalize brand-text">
                           {restPreview.weekday}
                         </span>
                       </span>
                     ) : (
                       <span className="capitalize text-muted-foreground">
-                        Descanso:{" "}
+                        {t("ui.AsignacionEditModal.descanso", "Descanso:")}{" "}
                         {restPreview.dates.map(shortRestLabel).join(" · ")}
                       </span>
                     )}
@@ -824,7 +841,7 @@ export default function ShiftAssignModal({
           </>
         ) : (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <LabeledField label="Inicio">
+            <LabeledField label={t("postSites.stations.startTime", "Inicio")}>
               <input
                 type="datetime-local"
                 value={shiftStart}
@@ -832,7 +849,7 @@ export default function ShiftAssignModal({
                 className={FIELD_CLS_LG}
               />
             </LabeledField>
-            <LabeledField label="Fin">
+            <LabeledField label={t("postSites.stations.endTime", "Fin")}>
               <input
                 type="datetime-local"
                 value={shiftEnd}

@@ -85,7 +85,7 @@ export default function CheckInOut() {
   return (
     <DataReport<Rec>
       columns={columns}
-      description="Marcajes de asistencia (entrada, salida, horas y atrasos) por vigilante."
+      description={t("ui.CheckInOut.descripcion", "Marcajes de asistencia (entrada, salida, horas y atrasos) por vigilante.")}
       icon={LogIn}
       load={async ({ from, to }) => {
         // El rango ya viajaba en la consulta; lo que faltaba era que el tope

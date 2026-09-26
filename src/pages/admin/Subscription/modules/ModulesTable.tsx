@@ -1,5 +1,6 @@
 import { FileX, Boxes } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 
 import { Section, StatusBadge, EmptyState } from "@/components/kit";
 import { DataTable, type Column } from "@/components/table/DataTable";
@@ -12,10 +13,10 @@ export type ModuleRow = {
   status: "Activo" | "Inactivo";
 };
 
-const columns: Column<ModuleRow>[] = [
+const buildColumns = (t: TFunction): Column<ModuleRow>[] => [
   {
     key: "name",
-    header: "Módulo",
+    header: t("ui.ModulesTable.modulo", "Módulo"),
     className: "w-[45%]",
     render: (_v, m) => (
       <>
@@ -28,13 +29,23 @@ const columns: Column<ModuleRow>[] = [
       </>
     ),
   },
-  { key: "price", header: "Precio", className: "w-[25%]" },
+  {
+    key: "price",
+    header: t("settings.mobil.priceLabel", "Precio"),
+    className: "w-[25%]",
+  },
   {
     key: "status",
-    header: "Estado",
+    header: t("comun.estado", "Estado"),
     className: "w-[20%]",
     render: (v) => (
-      <StatusBadge tone={v === "Activo" ? "ok" : "neutral"}>{v}</StatusBadge>
+      <StatusBadge tone={v === "Activo" ? "ok" : "neutral"}>
+        {v === "Activo"
+          ? t("adminOfficeUsers.statuses.active", "Activo")
+          : v === "Inactivo"
+            ? t("common.inactive", "Inactivo")
+            : v}
+      </StatusBadge>
     ),
   },
 ];
@@ -47,6 +58,7 @@ export default function ModulesTable({
   onDisable?: (id: string) => void;
 }) {
   const { t } = useTranslation();
+  const columns = buildColumns(t);
 
   return (
     // `contentClassName` a secas: la tabla ya trae su propia superficie
@@ -73,7 +85,9 @@ export default function ModulesTable({
           />
         }
         rowActions={(m) => [
-          { label: "Deshabilitar", onClick: () => onDisable?.(m.id) },
+          {
+            label: t("ui.ModulesTable.deshabilitar", "Deshabilitar"),
+            onClick: () => onDisable?.(m.id) },
         ]}
       />
     </Section>

@@ -78,21 +78,19 @@ const EMPTY: Order = {
 };
 const API_BASE = resolveApiBase() || "";
 const fileUrl = (u?: string | null) => (u ? `${API_BASE}${u}` : null);
-const DOW = ["D", "L", "M", "X", "J", "V", "S"]; // Sun..Sat (index = JS getDay)
-const DOW_FULL = [
-  "Domingo",
-  "Lunes",
-  "Martes",
-  "Miércoles",
-  "Jueves",
-  "Viernes",
-  "Sábado",
-];
+// Weekday names in the user's language, index = JS getDay (0 = Sunday).
+// 2026-01-04 is a Sunday.
+const dowName = (i: number, weekday: "narrow" | "long") =>
+  new Date(2026, 0, 4 + i).toLocaleDateString(localeActual(), { weekday });
+const DOW = [0, 1, 2, 3, 4, 5, 6];
 // La prioridad de la consigna se lee con los semánticos fijos del sistema.
-const PRIO: Record<string, { label: string; tone: "bad" | "warn" | "info" }> = {
-  alta: { label: "Alta", tone: "bad" as const },
-  media: { label: "Media", tone: "warn" as const },
-  baja: { label: "Baja", tone: "info" as const },
+const PRIO: Record<
+  string,
+  { label: string; labelKey: string; tone: "bad" | "warn" | "info" }
+> = {
+  alta: { label: "Alta", labelKey: "comun.alta", tone: "bad" as const },
+  media: { label: "Media", labelKey: "comun.media", tone: "warn" as const },
+  baja: { label: "Baja", labelKey: "comun.baja", tone: "info" as const },
 };
 
 function recurrenceSummary(o: Order, t: any): string {
@@ -109,7 +107,7 @@ function recurrenceSummary(o: Order, t: any): string {
             days: o.days
               .slice()
               .sort()
-              .map((d) => DOW_FULL[d])
+              .map((d) => dowName(d, "long"))
               .join(", "),
           })
         : t("station.orders.rec.weekly", "Semanal");
@@ -197,9 +195,9 @@ export default function StationOrders({ stationId }: Props) {
     if (!o.id) return;
     if (
       !(await confirmDialog({
-        title: "Eliminar consigna",
+        title: t("ui.StationOrders.eliminarConsigna", "Eliminar consigna"),
         message: t("station.orders.confirmDelete", "¿Eliminar esta consigna?"),
-        confirmText: "Eliminar",
+        confirmText: t("common.delete", "Eliminar"),
         tone: "danger",
       }))
     )
@@ -223,7 +221,7 @@ export default function StationOrders({ stationId }: Props) {
         r.map((x) => (x.id === o.id ? { ...x, active: !o.active } : x)),
       );
     } catch (e: any) {
-      toast.error(e?.message || "Error");
+      toast.error(e?.message || t("radio.devices.status.error", "Error"));
     }
   };
 
@@ -305,7 +303,9 @@ export default function StationOrders({ stationId }: Props) {
                       dot={false}
                       className="shrink-0"
                     >
-                      {PRIO[o.priority]?.label || o.priority}
+                      {PRIO[o.priority]
+                        ? t(PRIO[o.priority].labelKey, PRIO[o.priority].label)
+                        : o.priority}
                     </StatusBadge>
                   </div>
                   {o.description && (
@@ -563,7 +563,7 @@ function OrderModal({
           {o.recurrence === "weekly" && (
             <LabeledField label={t("station.orders.fDays", "Días")}>
               <div className="flex gap-1.5">
-                {DOW.map((d, i) => (
+                {DOW.map((i) => (
                   <button
                     key={i}
                     type="button"
@@ -583,7 +583,7 @@ function OrderModal({
                           }
                     }
                   >
-                    {d}
+                    {dowName(i, "narrow")}
                   </button>
                 ))}
               </div>

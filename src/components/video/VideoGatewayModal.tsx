@@ -54,8 +54,11 @@ export default function VideoGatewayModal({
 
       toast.success(
         base.trim()
-          ? `Gateway configurado · ${r?.camerasUpdated ?? 0} cámaras`
-          : "Gateway desconectado",
+          ? t("ui.VideoGatewayModal.gatewayConfigurado", {
+              defaultValue: "Gateway configurado · {{count}} cámaras",
+              count: r?.camerasUpdated ?? 0,
+            })
+          : t("ui.VideoGatewayModal.gatewayDesconectado", "Gateway desconectado"),
       );
       onSaved?.();
       onClose();
@@ -118,13 +121,18 @@ export default function VideoGatewayModal({
                 {t("ui.VideoGatewayModal.gatewayDeVideo", "Gateway de video")}
               </h4>
               <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
-                {device.name} · convierte RTSP → WebRTC/HLS para el navegador
+                {device.name} ·{" "}
+                {t(
+                  "ui.VideoGatewayModal.convierteRtspParaElNavegador",
+                  "convierte RTSP → WebRTC/HLS para el navegador",
+                )}
               </p>
             </div>
           </div>
           <button
             className="cg-focus rounded-full p-1.5 transition-colors hover:bg-[var(--glass-sunken)]"
             style={{ color: "var(--ink-faint)" }}
+            aria-label={t("ui.MapPopup.cerrar", "Cerrar")}
             onClick={onClose}
           >
             <X size={16} />
@@ -138,7 +146,10 @@ export default function VideoGatewayModal({
             </label>
             <input
               className={inputCls}
-              placeholder="https://gateway.tu-dominio.com  (o http://IP-del-bridge:1984)"
+              placeholder={t(
+                "ui.VideoGatewayModal.placeholderUrlGateway",
+                "https://gateway.tu-dominio.com  (o http://IP-del-bridge:1984)",
+              )}
               value={base}
               onChange={(e) => setBase(e.target.value)}
             />
@@ -150,7 +161,9 @@ export default function VideoGatewayModal({
             </p>
           </div>
           <div>
-            <label className="cg-eyebrow mb-1.5 block">Formato</label>
+            <label className="cg-eyebrow mb-1.5 block">
+              {t("ui.VideoGatewayModal.formato", "Formato")}
+            </label>
             <div className="flex flex-wrap gap-2">
               {(["hls", "webrtc"] as const).map((f) => (
                 <button
@@ -170,7 +183,12 @@ export default function VideoGatewayModal({
                   }
                   onClick={() => setFormat(f)}
                 >
-                  {f === "hls" ? "HLS (compatible)" : "WebRTC (baja latencia)"}
+                  {f === "hls"
+                    ? t("ui.VideoGatewayModal.hlsCompatible", "HLS (compatible)")
+                    : t(
+                        "ui.VideoGatewayModal.webrtcBajaLatencia",
+                        "WebRTC (baja latencia)",
+                      )}
                 </button>
               ))}
             </div>
@@ -193,7 +211,7 @@ export default function VideoGatewayModal({
                 style={{ color: "var(--brand-text)" }}
                 onClick={copyYaml}
               >
-                <Copy size={12} /> Copiar
+                <Copy size={12} /> {t("ui.VideoGatewayModal.copiar", "Copiar")}
               </button>
             </div>
             {loadingYaml ? (
@@ -201,7 +219,8 @@ export default function VideoGatewayModal({
                 className="flex items-center gap-2 py-2 text-xs"
                 style={{ color: "var(--ink-soft)" }}
               >
-                <Loader2 className="animate-spin" size={12} /> Generando…
+                <Loader2 className="animate-spin" size={12} />{" "}
+                {t("ui.VideoGatewayModal.generando", "Generando…")}
               </div>
             ) : (
               <pre
@@ -245,7 +264,8 @@ export default function VideoGatewayModal({
             disabled={saving}
             onClick={save}
           >
-            {saving && <Loader2 className="animate-spin" size={14} />} Guardar
+            {saving && <Loader2 className="animate-spin" size={14} />}{" "}
+            {t("ui.VideoGatewayModal.guardar", "Guardar")}
           </button>
         </div>
       </div>

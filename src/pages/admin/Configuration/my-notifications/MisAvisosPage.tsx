@@ -193,7 +193,10 @@ export default function MisAvisosPage() {
       setPrefs((data && data.prefs) || {});
       toast.success(t("ui.MisAvisosPage.guardadoAplicaDesdeElProximo"));
     } catch (e: any) {
-      toast.error(e?.response?.data?.message || "No se pudo guardar.");
+      toast.error(
+        e?.response?.data?.message ||
+          t("settings.jornada.saveError", "No se pudo guardar."),
+      );
     } finally {
       setSaving(false);
     }
@@ -201,12 +204,15 @@ export default function MisAvisosPage() {
 
   return (
     <AppLayout>
-      <SettingsLayout navKey="configuracion" title="Mis avisos">
+      <SettingsLayout
+        navKey="configuracion"
+        title={t("settings.configuracion.mis-avisos", "Mis avisos")}
+      >
         <PageContainer width="narrow">
           <PageHeader
             icon={<BellRing />}
             subtitle={t("ui.MisAvisosPage.queQuieresRecibirTuY")}
-            title="Mis avisos"
+            title={t("settings.configuracion.mis-avisos", "Mis avisos")}
           />
 
           {loading ? (
@@ -215,8 +221,11 @@ export default function MisAvisosPage() {
             <div className="space-y-5">
               <InfoNote tone="info">
                 {t("ui.MisAvisosPage.aquiSoloPuedes", "Aquí sólo puedes")}{" "}
-                <strong>quitarte</strong> avisos de los que tu empresa ya envía.
-                Las emergencias llegan siempre, aunque las desmarques.
+                <strong>{t("ui.MisAvisosPage.quitarte", "quitarte")}</strong>{" "}
+                {t(
+                  "ui.MisAvisosPage.avisosDeLosQueTuEmpresaYaEnvia",
+                  "avisos de los que tu empresa ya envía. Las emergencias llegan siempre, aunque las desmarques.",
+                )}
               </InfoNote>
 
               <Section
@@ -229,7 +238,9 @@ export default function MisAvisosPage() {
                       className="glass-sunken grid grid-cols-[1fr_repeat(3,120px)] items-center gap-2 px-4 py-3"
                       style={{ borderRadius: "var(--r-md) var(--r-md) 0 0" }}
                     >
-                      <div className="cg-eyebrow">Aviso</div>
+                      <div className="cg-eyebrow">
+                        {t("ui.MisAvisosPage.aviso", "Aviso")}
+                      </div>
                       {VIAS.map((v) => (
                         <div
                           key={v.key}
@@ -274,7 +285,11 @@ export default function MisAvisosPage() {
                           {VIAS.map((v) => (
                             <div key={v.key} className="flex justify-center">
                               <Checkbox
-                                aria-label={`${t(f.labelKey, f.label)} por ${t(v.labelKey, v.label)}`}
+                                aria-label={t("ui.MisAvisosPage.avisoPorVia", {
+                                  defaultValue: "{{aviso}} por {{via}}",
+                                  aviso: t(f.labelKey, f.label),
+                                  via: t(v.labelKey, v.label),
+                                })}
                                 checked={
                                   f.bloqueada ? true : activo(f.id, v.key)
                                 }
@@ -297,7 +312,7 @@ export default function MisAvisosPage() {
                   ) : (
                     <Save className="mr-2 h-4 w-4" />
                   )}
-                  Guardar
+                  {t("actions.save", "Guardar")}
                 </Button>
               </div>
             </div>

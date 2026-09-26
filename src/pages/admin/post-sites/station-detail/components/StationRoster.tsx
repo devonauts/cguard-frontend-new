@@ -71,12 +71,16 @@ export default function StationRoster({
       const isRelief = !!a.isRelief || a.position?.type === "sacafranco";
 
       m[gid] = {
-        label: a.position?.name || (isRelief ? "Sacafranco" : "Fijo"),
+        label:
+          a.position?.name ||
+          (isRelief
+            ? t("clients.assignGuards.roleSf", "Sacafranco")
+            : t("ui.StationGuards.fijo", "Fijo")),
         isRelief,
       };
     }
     setRoles(m);
-  }, [asignaciones]);
+  }, [asignaciones, t]);
 
   const days = useMemo(() => {
     // Se cuenta en días de calendario desde HOY EN LA EMPRESA. Antes se partía
@@ -103,7 +107,7 @@ export default function StationRoster({
 
       (byGuard[gid] = byGuard[gid] || {
         id: gid,
-        name: ev.guardName || "Vigilante",
+        name: ev.guardName || t("guard.roleLabel", "Vigilante"),
         pattern: {},
       }).pattern[dateKey] = kind;
     }
@@ -115,7 +119,7 @@ export default function StationRoster({
           (a.role?.isRelief ? 1 : 0) - (b.role?.isRelief ? 1 : 0) ||
           a.name.localeCompare(b.name),
       );
-  }, [events, roles]);
+  }, [events, roles, t]);
 
   if (roster.length === 0) return null;
 
@@ -132,14 +136,15 @@ export default function StationRoster({
             {t("ui.StationRoster.dia", "Día")}
           </span>
           <span className="inline-flex items-center gap-0.5">
-            <Moon size={9} style={{ color: "var(--info-text)" }} /> Noche
+            <Moon size={9} style={{ color: "var(--info-text)" }} />{" "}
+            {t("clients.coverage.cell.night.legend", "Noche")}
           </span>
           <span className="inline-flex items-center gap-0.5">
             <span
               className="inline-block h-2 w-2 rounded-sm"
               style={{ background: "var(--glass-sunken)" }}
             />{" "}
-            Descanso
+            {t("ui.ClientStaff.descanso", "Descanso")}
           </span>
         </div>
       </div>
@@ -199,20 +204,24 @@ export default function StationRoster({
                     style={{ color: accentInk }}
                   >
                     {isSf ? <Shield size={10} /> : <User size={10} />}
-                    {g.role?.label || (isSf ? "Sacafranco" : "Fijo")}
+                    {g.role?.label ||
+                      (isSf
+                        ? t("clients.assignGuards.roleSf", "Sacafranco")
+                        : t("ui.StationGuards.fijo", "Fijo"))}
                   </p>
                   {!isSf && restLabel && (
                     <p
                       className="mt-0.5 flex items-center gap-1 truncate text-[10px] capitalize"
                       style={{ color: "var(--ink-soft)" }}
-                      title={`Descansa: ${restLabel}`}
+                      title={`${t("ui.AsignacionEditModal.descansa", "Descansa:")} ${restLabel}`}
                     >
                       <Moon
                         className="shrink-0"
                         size={9}
                         style={{ color: "var(--info-text)" }}
                       />{" "}
-                      Descansa: {restLabel}
+                      {t("ui.AsignacionEditModal.descansa", "Descansa:")}{" "}
+                      {restLabel}
                     </p>
                   )}
                 </div>
@@ -227,7 +236,12 @@ export default function StationRoster({
                       : k === "night"
                         ? "var(--info)"
                         : "var(--glass-sunken)";
-                  const lab = k === "day" ? "D" : k === "night" ? "N" : "L";
+                  const lab =
+                    k === "day"
+                      ? t("ui.StationRoster.letraDia", "D")
+                      : k === "night"
+                        ? t("ui.StationRoster.letraNoche", "N")
+                        : t("ui.StationRoster.letraLibre", "L");
 
                   return (
                     <div
@@ -237,7 +251,13 @@ export default function StationRoster({
                         background: fondo,
                         color: k ? "var(--brand-ink)" : "var(--ink-faint)",
                       }}
-                      title={`${d}: ${k === "day" ? "Día" : k === "night" ? "Noche" : "Descanso"}`}
+                      title={`${d}: ${
+                        k === "day"
+                          ? t("ui.StationRoster.dia", "Día")
+                          : k === "night"
+                            ? t("clients.coverage.cell.night.legend", "Noche")
+                            : t("ui.ClientStaff.descanso", "Descanso")
+                      }`}
                     >
                       {lab}
                     </div>

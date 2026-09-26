@@ -1929,7 +1929,7 @@ export default function PostSiteTours({
                 >
                   <option value="">
                     {loadingStations
-                      ? "Loading stations..."
+                      ? t("siteTourTag.form.loadingStations", "Cargando estaciones...")
                       : t("siteTour.form.selectStation", "Select station")}
                   </option>
                   {stations.map((s: any) => (

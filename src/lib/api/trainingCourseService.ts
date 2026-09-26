@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import api from "@/lib/api";
 
 export type TrainingCategory =
@@ -123,7 +124,10 @@ const getTenantId = (): string => {
 
   if (local) return local;
   throw new Error(
-    "El usuario debe estar vinculado a una empresa para continuar.",
+    i18n.t(
+      "ui.apiService.elUsuarioDebeEstarVinculado",
+      "El usuario debe estar vinculado a una empresa para continuar.",
+    ),
   );
 };
 

@@ -526,6 +526,7 @@ export function StatsStrip({
   /** Escalonado de entrada en escritorio, igual que `Stagger`. */
   gap?: number;
 }) {
+  const { t } = useTranslation();
   const esTelefono = useEsTelefono();
   const pista = React.useRef<HTMLDivElement | null>(null);
   const [pagina, setPagina] = React.useState(0);
@@ -598,7 +599,11 @@ export function StatsStrip({
           <button
             key={i}
             aria-current={i === pagina ? "true" : undefined}
-            aria-label={`Página ${i + 1} de ${paginas.length}`}
+            aria-label={t("ui.kit.paginaDe", {
+              defaultValue: "Página {{n}} de {{total}}",
+              n: i + 1,
+              total: paginas.length,
+            })}
             className="flex h-10 w-8 items-center justify-center"
             type="button"
             onClick={() => irA(i)}
@@ -957,6 +962,7 @@ export function NumberStepper({
   disabled?: boolean;
   className?: string;
 }) {
+  const { t } = useTranslation();
   const acotar = (n: number) => Math.min(max, Math.max(min, n));
   const v = acotar(Number.isFinite(value) ? Math.floor(value) : min);
   const boton =
@@ -976,7 +982,7 @@ export function NumberStepper({
       )}
       <div className="glass-sunken flex shrink-0 items-center gap-1 rounded-full p-1">
         <button
-          aria-label="Restar"
+          aria-label={t("ui.kit.restar", "Restar")}
           className={boton}
           disabled={disabled || v <= min}
           style={{ color: "var(--ink-soft)" }}
@@ -1009,7 +1015,7 @@ export function NumberStepper({
           </span>
         )}
         <button
-          aria-label="Sumar"
+          aria-label={t("ui.kit.sumar", "Sumar")}
           className={boton}
           disabled={disabled || v >= max}
           style={{ color: "var(--ink-soft)" }}

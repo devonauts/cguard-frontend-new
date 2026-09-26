@@ -61,7 +61,7 @@ export default function GuardTimeOff() {
     setSaving(true);
     try {
       await guardMeService.timeOffCreate({ type, startDate, endDate, reason });
-      toast.success("Solicitud enviada");
+      toast.success(t("ui.GuardTimeOff.solicitudEnviada", "Solicitud enviada"));
       setShowForm(false);
       setType("vacaciones");
       setStartDate("");
@@ -69,7 +69,8 @@ export default function GuardTimeOff() {
       setReason("");
       loadData();
     } catch (e: any) {
-      toast.error(e?.message || "Error al enviar solicitud");
+      toast.error(e?.message ||
+          t("ui.GuardTimeOff.errorAlEnviarSolicitud", "Error al enviar solicitud"));
     } finally {
       setSaving(false);
     }
@@ -89,11 +90,29 @@ export default function GuardTimeOff() {
   const statusLabel = (status: string) => {
     switch (status) {
       case "approved":
-        return "Aprobado";
+        return t("comun.aprobado", "Aprobado");
       case "rejected":
-        return "Rechazado";
+        return t("comun.rechazado", "Rechazado");
       default:
-        return "Pendiente";
+        return t("adminOfficeUsers.statuses.pending", "Pendiente");
+    }
+  };
+
+  // `type` is the value stored by the API; only its label is translated.
+  const typeLabel = (v?: string) => {
+    switch (v) {
+      case "vacaciones":
+        return t("coverage.reason.vacaciones", "Vacaciones");
+      case "enfermedad":
+        return t("coverage.reason.enfermedad", "Enfermedad");
+      case "personal":
+        return t("ui.GuardTimeOff.personal", "Personal");
+      case "calamidad":
+        return t("ui.GuardTimeOff.calamidadDomestica", "Calamidad doméstica");
+      case "otro":
+        return t("coverage.reason.otro", "Otro");
+      default:
+        return v || t("nomina.estado.permission", "Permiso");
     }
   };
 
@@ -123,11 +142,14 @@ export default function GuardTimeOff() {
       <PageHeader
         actions={
           <Button variant="brand" onClick={() => setShowForm(!showForm)}>
-            <Plus size={16} /> Solicitar
+            <Plus size={16} /> {t("ui.GuardTimeOff.solicitar", "Solicitar")}
           </Button>
         }
         icon={<CalendarOff />}
-        subtitle="Solicita y consulta tus permisos"
+        subtitle={t(
+          "ui.GuardTimeOff.solicitaYConsultaTusPermisos",
+          "Solicita y consulta tus permisos",
+        )}
         title={t("guard.timeOff.title", "Mis Permisos")}
       />
 
@@ -145,16 +167,16 @@ export default function GuardTimeOff() {
                   value={type}
                   onChange={(e) => setType(e.target.value)}
                 >
-                  <option value="vacaciones">Vacaciones</option>
-                  <option value="enfermedad">Enfermedad</option>
-                  <option value="personal">Personal</option>
+                  <option value="vacaciones">{typeLabel("vacaciones")}</option>
+                  <option value="enfermedad">{typeLabel("enfermedad")}</option>
+                  <option value="personal">{typeLabel("personal")}</option>
                   <option value="calamidad">
                     {t(
                       "ui.GuardTimeOff.calamidadDomestica",
                       "Calamidad doméstica",
                     )}
                   </option>
-                  <option value="otro">Otro</option>
+                  <option value="otro">{typeLabel("otro")}</option>
                 </select>
               </div>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -205,7 +227,7 @@ export default function GuardTimeOff() {
                   {saving ? (
                     <Loader2 className="animate-spin" size={16} />
                   ) : (
-                    "Enviar"
+                    t("actions.send", "Enviar")
                   )}
                 </Button>
               </div>
@@ -230,7 +252,7 @@ export default function GuardTimeOff() {
             <div key={r.id} className="cg-card cg-card-hover p-4">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm font-semibold text-foreground capitalize">
-                  {r.type || "Permiso"}
+                  {typeLabel(r.type)}
                 </p>
                 <span className="flex items-center gap-1.5 text-xs font-semibold">
                   {statusIcon(r.status)}

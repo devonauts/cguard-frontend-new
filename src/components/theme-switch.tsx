@@ -12,6 +12,7 @@
  */
 import { FC } from "react";
 import { Moon, Sun } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 
 import { useThemeContext } from "@/contexts/ThemeContext";
@@ -28,7 +29,10 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
 }) => {
   const { theme, toggleTheme } = useThemeContext();
   const oscuro = theme === "dark";
-  const etiqueta = oscuro ? "Cambiar a modo claro" : "Cambiar a modo oscuro";
+  const { t } = useTranslation();
+  const etiqueta = oscuro
+    ? t("sidebar.themeToLight", "Cambiar a modo claro")
+    : t("sidebar.themeToDark", "Cambiar a modo oscuro");
 
   if (compact) {
     return (

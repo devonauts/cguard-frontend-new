@@ -156,11 +156,15 @@ export default function TaskTracking() {
     try {
       if (kind === "approve") await taskService.approve(selected.id);
       else await taskService.reject(selected.id);
-      toast.success(kind === "approve" ? "Tarea aprobada" : "Tarea rechazada");
+      toast.success(
+        kind === "approve"
+          ? t("ui.TaskTracking.tareaAprobada", "Tarea aprobada")
+          : t("ui.TaskTracking.tareaRechazada", "Tarea rechazada"),
+      );
       setSelected(null);
       load();
     } catch (e: any) {
-      toast.error(e?.message || "Error");
+      toast.error(e?.message || t("ui.TaskTracking.error", "Error"));
     } finally {
       setActing(false);
     }
@@ -232,7 +236,7 @@ export default function TaskTracking() {
       setOpen(false);
       load();
     } catch (e: any) {
-      toast.error(e?.message || "Error");
+      toast.error(e?.message || t("ui.TaskTracking.error", "Error"));
     } finally {
       setSaving(false);
     }
@@ -241,12 +245,12 @@ export default function TaskTracking() {
   const columns: Column<TaskRow>[] = [
     {
       key: "taskToDo",
-      header: "Tarea",
+      header: t("reports.col.task.task", "Tarea"),
       render: (_v, r) => <span className="font-semibold">{r.taskToDo}</span>,
     },
     {
       key: "station",
-      header: "Puesto",
+      header: t("comun.puesto", "Puesto"),
       render: (_v, r) => (
         <span className="text-xs" style={{ color: "var(--ink-soft)" }}>
           {r.taskBelongsToStation?.stationName || "—"}
@@ -255,7 +259,7 @@ export default function TaskTracking() {
     },
     {
       key: "status",
-      header: "Estado",
+      header: t("comun.estado", "Estado"),
       render: (_v, r) => {
         const m = STATUS_META[r.status] || STATUS_META.pending_approval;
 
@@ -266,33 +270,33 @@ export default function TaskTracking() {
     },
     {
       key: "priority",
-      header: "Prioridad",
+      header: t("guards.reminders.table.priority", "Prioridad"),
       render: (_v, r) => {
         const k = r.priority || "media";
 
         return (
           <StatusBadge dot={false} tone={PRIORITY_TONE[k] ?? "neutral"}>
-            {PRIORITY_LABEL[k] ?? k}
+            {PRIORITY_LABEL[k] ? t(`comun.${k}`, PRIORITY_LABEL[k]) : k}
           </StatusBadge>
         );
       },
     },
     {
       key: "source",
-      header: "Origen",
+      header: t("clients.assignGuards.table.source", "Origen"),
       render: (_v, r) => (
         <span className="text-xs" style={{ color: "var(--ink-soft)" }}>
           {r.source === "client"
-            ? "Cliente"
+            ? t("clients.client", "Cliente")
             : r.source === "passdown"
-              ? "Pase de turno"
-              : "Operación"}
+              ? t("ui.PassdownsPage.paseDeTurno", "Pase de turno")
+              : t("ui.IntegrationsList.operacion", "Operación")}
         </span>
       ),
     },
     {
       key: "dateToDoTheTask",
-      header: "Fecha límite",
+      header: t("ui.TaskTracking.fechaLimite", "Fecha límite"),
       render: (_v, r) => (
         <span
           className="text-xs tabular-nums"
@@ -304,7 +308,7 @@ export default function TaskTracking() {
     },
     {
       key: "dateCompletedTask",
-      header: "Completada",
+      header: t("ui.TaskTracking.estado.completed", "Completada"),
       render: (_v, r) => (
         <span
           className="text-xs tabular-nums"
@@ -329,7 +333,7 @@ export default function TaskTracking() {
             }
             icon={<CheckSquare />}
             subtitle={t("ui.TaskTracking.seguimientoDeTareasDeLos")}
-            title="Tareas"
+            title={t("postSites.Details.Tasks", "Tareas")}
           />
 
           <Section
@@ -348,7 +352,7 @@ export default function TaskTracking() {
               </div>
             }
             icon={<ListChecks />}
-            title="Tareas"
+            title={t("postSites.Details.Tasks", "Tareas")}
           >
             {loading ? (
               <SkeletonCards count={4} />
@@ -411,7 +415,9 @@ export default function TaskTracking() {
                 onValueChange={(v) => setForm((f) => ({ ...f, priority: v }))}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Prioridad" />
+                  <SelectValue
+                    placeholder={t("guards.reminders.form.priority", "Prioridad")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="alta">{t("comun.alta")}</SelectItem>
@@ -430,7 +436,9 @@ export default function TaskTracking() {
               {t("actions.cancel")}
             </Button>
             <Button disabled={saving} onClick={submit}>
-              {saving ? "Creando…" : "Crear y asignar"}
+              {saving
+                ? t("clients.creating", "Creando…")
+                : t("ui.TaskTracking.crearYAsignar", "Crear y asignar")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -450,7 +458,9 @@ export default function TaskTracking() {
           {selected && (
             <div className="space-y-4">
               <div>
-                <p className="cg-eyebrow">Tarea</p>
+                <p className="cg-eyebrow">
+                  {t("reports.col.task.task", "Tarea")}
+                </p>
                 <p className="glass-sunken mt-1 whitespace-pre-wrap p-3 text-sm font-medium">
                   {selected.taskToDo}
                 </p>
@@ -469,7 +479,9 @@ export default function TaskTracking() {
                     );
                   })()}
                 </DetailField>
-                <DetailField label="Prioridad">
+                <DetailField
+                  label={t("guards.reminders.table.priority", "Prioridad")}
+                >
                   {(() => {
                     const k = selected.priority || "media";
 
@@ -478,7 +490,7 @@ export default function TaskTracking() {
                         dot={false}
                         tone={PRIORITY_TONE[k] ?? "neutral"}
                       >
-                        {PRIORITY_LABEL[k] ?? k}
+                        {PRIORITY_LABEL[k] ? t(`comun.${k}`, PRIORITY_LABEL[k]) : k}
                       </StatusBadge>
                     );
                   })()}
@@ -486,13 +498,15 @@ export default function TaskTracking() {
                 <DetailField label={t("comun.puesto")}>
                   {selected.taskBelongsToStation?.stationName || "—"}
                 </DetailField>
-                <DetailField label="Origen">
+                <DetailField
+                  label={t("clients.assignGuards.table.source", "Origen")}
+                >
                   {selected.source === "client"
-                    ? "Cliente"
+                    ? t("clients.client", "Cliente")
                     : selected.source === "passdown"
-                      ? "Pase de turno"
+                      ? t("ui.PassdownsPage.paseDeTurno", "Pase de turno")
                       : selected.source === "staff"
-                        ? "Operación"
+                        ? t("ui.IntegrationsList.operacion", "Operación")
                         : "—"}
                 </DetailField>
                 <DetailField
@@ -500,15 +514,19 @@ export default function TaskTracking() {
                 >
                   {fmtDate(selected.dateToDoTheTask)}
                 </DetailField>
-                <DetailField label="Creada">
+                <DetailField label={t("reports.col.task.created", "Creada")}>
                   {fmtDate(selected.createdAt)}
                 </DetailField>
                 <DetailField
                   label={t("ui.TaskTracking.realizada", "¿Realizada?")}
                 >
-                  {selected.wasItDone ? "Sí" : "No"}
+                  {selected.wasItDone
+                    ? t("guards.summary.onDutyYes", "Sí")
+                    : t("common.no", "No")}
                 </DetailField>
-                <DetailField label="Completada">
+                <DetailField
+                  label={t("ui.TaskTracking.estado.completed", "Completada")}
+                >
                   {fmtDate(selected.dateCompletedTask)}
                 </DetailField>
               </div>
@@ -548,14 +566,16 @@ export default function TaskTracking() {
                   variant="destructive"
                   onClick={() => doApproval("reject")}
                 >
-                  Rechazar
+                  {t("revision.rechazar", "Rechazar")}
                 </Button>
                 <Button
                   disabled={acting}
                   variant="brand"
                   onClick={() => doApproval("approve")}
                 >
-                  {acting ? "…" : "Aprobar"}
+                  {acting
+                    ? "…"
+                    : t("ui.DocumentPacketPublic.approveButton", "Aprobar")}
                 </Button>
               </>
             )}

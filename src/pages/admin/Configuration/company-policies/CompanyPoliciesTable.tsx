@@ -42,20 +42,27 @@ export default function CompanyPoliciesTable() {
       { key: "title", header: t("settings.policies.colTitle", "Título") },
       {
         key: "kindLabel",
-        header: "Tipo",
-        render: (v) => String(v || "Reglamento"),
+        header: t("dashboard.table.headers.type", "Tipo"),
+        render: (v) =>
+          String(v || t("ui.CompanyPoliciesTable.reglamento", "Reglamento")),
       },
       {
         // El dato por el que existe la pantalla: un reglamento publicado que nadie
         // ha firmado es un PDF en una carpeta.
         key: "firmadas",
-        header: "Firmado por",
+        header: t("ui.CompanyPoliciesTable.firmadoPor", "Firmado por"),
         render: (_v, row) =>
-          row.obligadas ? `${row.firmadas ?? 0} de ${row.obligadas}` : "—",
+          row.obligadas
+            ? t("ui.CompanyPoliciesTable.firmadasDeObligadas", {
+                defaultValue: "{{firmadas}} de {{obligadas}}",
+                firmadas: row.firmadas ?? 0,
+                obligadas: row.obligadas,
+              })
+            : "—",
       },
       {
         key: "createdAt",
-        header: "Creado",
+        header: t("ui.CompanyPoliciesTable.creado", "Creado"),
         align: "right",
         render: (v) => formatPolicyDate(v),
       },
@@ -113,7 +120,9 @@ export default function CompanyPoliciesTable() {
         status,
       });
       toast.success(
-        status === "published" ? "Documento publicado" : "Borrador guardado",
+        status === "published"
+          ? t("ui.CompanyPoliciesTable.documentoPublicado", "Documento publicado")
+          : t("ui.CompanyPoliciesTable.borradorGuardado", "Borrador guardado"),
       );
       setOpenNew(false);
       await cargar();
@@ -121,7 +130,11 @@ export default function CompanyPoliciesTable() {
       // Se dice QUÉ falló y el diálogo se queda abierto con lo escrito dentro:
       // cerrar y perder el texto es lo que hace que nadie vuelva a intentarlo.
       toast.error(
-        e?.response?.data?.message || "No pudimos guardar el documento.",
+        e?.response?.data?.message ||
+          t(
+            "ui.CompanyPoliciesTable.noPudimosGuardarElDocumento",
+            "No pudimos guardar el documento.",
+          ),
       );
     }
   };
@@ -137,16 +150,26 @@ export default function CompanyPoliciesTable() {
         canEdit
         query={query}
         onQueryChange={setQuery}
-        searchPlaceholder="Buscar política de empresa"
+        searchPlaceholder={t(
+          "ui.CompanyPoliciesTable.buscarPoliticaDeEmpresa",
+          "Buscar política de empresa",
+        )}
         page={1}
         pageSize={pageSize}
         total={filtered.length}
         onPageChange={() => {}}
         onPageSizeChange={setPageSize}
         bulkActions={[
-          { label: "Eliminar", destructive: true, onRun: () => {} },
-          { label: "Publicar", onRun: () => {} },
-          { label: "Mover a borrador", onRun: () => {} },
+          {
+            label: t("actions.delete", "Eliminar"),
+            destructive: true,
+            onRun: () => {},
+          },
+          { label: t("ui.CompanyPoliciesTable.publicar", "Publicar"), onRun: () => {} },
+          {
+            label: t("ui.CompanyPoliciesTable.moverABorrador", "Mover a borrador"),
+            onRun: () => {},
+          },
         ]}
         toolbarExtra={
           <Button
@@ -160,11 +183,17 @@ export default function CompanyPoliciesTable() {
         }
         empty={{
           title: query.trim()
-            ? "No se encontraron resultados"
-            : "Aún no hay políticas",
+            ? t("clients.empty.title", "No se encontraron resultados")
+            : t("ui.CompanyPoliciesTable.aunNoHayPoliticas", "Aún no hay políticas"),
           description: query.trim()
-            ? "No pudimos encontrar ningún elemento que coincida con tu búsqueda."
-            : "Publica el reglamento interno y sabrás quién lo ha firmado.",
+            ? t(
+                "ui.CompanyPoliciesTable.noPudimosEncontrarNingunElemento",
+                "No pudimos encontrar ningún elemento que coincida con tu búsqueda.",
+              )
+            : t(
+                "ui.CompanyPoliciesTable.publicaElReglamentoInterno",
+                "Publica el reglamento interno y sabrás quién lo ha firmado.",
+              ),
         }}
       />
 

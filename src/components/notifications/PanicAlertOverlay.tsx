@@ -319,7 +319,9 @@ export function PanicAlertOverlay({
           <Siren className="shrink-0 animate-pulse" size={36} />
           <div className="min-w-0">
             <div className="text-lg font-black leading-none tracking-tight sm:text-xl">
-              {isClient ? "ALERTA SOS — CLIENTE" : "ALERTA DE PÁNICO"}
+              {isClient
+                ? t("panic.overlay.titleClient", "ALERTA SOS — CLIENTE")
+                : t("panic.overlay.titleGuard", "ALERTA DE PÁNICO")}
             </div>
             <div
               className="mt-1 text-sm"
@@ -367,7 +369,11 @@ export function PanicAlertOverlay({
               />
               <Row
                 icon={<User size={18} />}
-                label={isClient ? "Cliente" : "Vigilante"}
+                label={
+                  isClient
+                    ? t("clients.client", "Cliente")
+                    : t("dashboard.table.headers.guard", "Vigilante")
+                }
                 value={isClient ? p.clientName || p.guardName : p.guardName}
               />
               <Row
@@ -420,7 +426,7 @@ export function PanicAlertOverlay({
                                 className="ml-2 text-xs font-semibold"
                                 style={{ color: "var(--warn-text)" }}
                               >
-                                pide clave
+                                {t("ui.PanicAlertOverlay.pideClave", "pide clave")}
                               </span>
                             )}
                           </span>
@@ -451,7 +457,11 @@ export function PanicAlertOverlay({
                         color: "var(--panic-ink)",
                       }}
                     >
-                      <Phone size={16} /> Llamar {numero}
+                      <Phone size={16} />{" "}
+                      {t("ui.PanicAlertOverlay.llamarNumero", {
+                        defaultValue: "Llamar {{numero}}",
+                        numero,
+                      })}
                     </a>
                   );
                 })()}
@@ -467,7 +477,8 @@ export function PanicAlertOverlay({
                       color: "var(--bad-text)",
                     }}
                   >
-                    <Phone size={16} /> Llamar al sitio
+                    <Phone size={16} />{" "}
+                    {t("ui.PanicAlertOverlay.llamarAlSitio", "Llamar al sitio")}
                   </a>
                 )}
               </div>
@@ -488,7 +499,7 @@ export function PanicAlertOverlay({
                         color: "var(--ink-soft)",
                       }}
                     >
-                      Abriendo el mapa…
+                      {t("ui.PanicAlertOverlay.abriendoElMapa", "Abriendo el mapa…")}
                     </div>
                   }
                 >
@@ -596,7 +607,12 @@ export function PanicAlertOverlay({
             }}
             onClick={handleAck}
           >
-            {saving ? "Registrando…" : "RECONOCER Y SILENCIAR"}
+            {saving
+              ? t("client.registering", "Registrando…")
+              : t(
+                  "ui.PanicAlertOverlay.reconocerYSilenciar",
+                  "RECONOCER Y SILENCIAR",
+                )}
           </button>
           {!action.trim() && (
             <p

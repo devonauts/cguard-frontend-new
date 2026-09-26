@@ -86,7 +86,7 @@ export default function Incident() {
 
   return (
     <DataReport<Incident>
-      description="Incidentes reportados: prioridad, estado, ubicación y descripción por puesto."
+      description={t("ui.Incident.descripcion", "Incidentes reportados: prioridad, estado, ubicación y descripción por puesto.")}
       icon={AlertTriangle}
       load={async ({ from, to }) => {
         const tenantId = localStorage.getItem("tenantId") || "";

@@ -115,7 +115,7 @@ export default function NominaDashboard() {
     attendanceService
       .dashboard()
       .then((d) => setData(d))
-      .catch((e) => setError(e?.message || "Error al cargar el panel"))
+      .catch((e) => setError(e?.message || t("ui.NominaDashboard.errorAlCargarElPanel", "Error al cargar el panel")))
       .finally(() => setLoading(false));
   };
 
@@ -128,12 +128,12 @@ export default function NominaDashboard() {
           actions={
             <Button disabled={loading} variant="brand" onClick={load}>
               <RefreshCw className={loading ? "animate-spin" : ""} />
-              Actualizar
+              {t("dashboard.refresh", "Actualizar")}
             </Button>
           }
           icon={<ClipboardList />}
-          subtitle="Resumen de asistencia de hoy"
-          title="Asistencia"
+          subtitle={t("ui.NominaDashboard.resumenDeAsistenciaDeHoy", "Resumen de asistencia de hoy")}
+          title={t("nomina.dashboard.cards.attendancePct", "Asistencia")}
         />
 
         {error && (
@@ -174,9 +174,13 @@ export default function NominaDashboard() {
         </StatsStrip>
 
         <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
-          Las excepciones (tarde, inasistencia, sin marcar salida) se detectan
-          automáticamente cada pocos minutos y aparecen en{" "}
-          <strong>Excepciones</strong> y <strong>Aprobaciones</strong>.
+          {t(
+            "ui.NominaDashboard.lasExcepcionesSeDetectan",
+            "Las excepciones (tarde, inasistencia, sin marcar salida) se detectan automáticamente cada pocos minutos y aparecen en",
+          )}{" "}
+          <strong>{t("ui.NominaDashboard.excepciones", "Excepciones")}</strong>{" "}
+          {t("ui.NominaDashboard.y", "y")}{" "}
+          <strong>{t("ui.NominaDashboard.aprobaciones", "Aprobaciones")}</strong>.
         </p>
       </PageContainer>
     </AppLayout>

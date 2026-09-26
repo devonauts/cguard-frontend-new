@@ -842,7 +842,7 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
                                   className="font-medium"
                                   style={{ color: "var(--ok-text)" }}
                                 >
-                                  En curso
+                                  {t("ui.GuardProfilepage.enCurso", "En curso")}
                                 </span>
                               )}
                             </div>
@@ -852,7 +852,7 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
                             dot={!punchOut}
                             tone={punchOut ? "neutral" : "ok"}
                           >
-                            {s.shiftSchedule || "Turno"}
+                            {s.shiftSchedule || t("comun.turno", "Turno")}
                           </StatusBadge>
                         </li>
                       );

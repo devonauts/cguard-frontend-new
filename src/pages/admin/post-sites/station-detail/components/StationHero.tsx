@@ -97,7 +97,8 @@ export default function StationHero({
   const [nickDraft, setNickDraft] = useState("");
   const [savingNick, setSavingNick] = useState(false);
 
-  const name = station?.stationName || station?.name || "Puesto";
+  const name =
+    station?.stationName || station?.name || t("ui.StationHero.puesto", "Puesto");
   const guards: { id: string; name: string }[] = useMemo(
     () =>
       (station?.assignedGuards || []).map((u: any) => ({
@@ -120,10 +121,10 @@ export default function StationHero({
             .filter((r) => !r.punchOutTime)
             .map((r) => ({
               id: r.id || "",
-              name: r.guardName?.fullName || "Vigilante",
+              name: r.guardName?.fullName || t("guard.roleLabel", "Vigilante"),
               since: r.punchInTime || undefined,
             })),
-    [recentShifts],
+    [recentShifts, t],
   );
 
   const saveRename = async () => {
@@ -366,10 +367,10 @@ export default function StationHero({
               {!station?.isMobile && (
                 <span className="flex items-center gap-1.5">
                   <MapPin className="h-3.5 w-3.5" />
-                  Geocerca:{" "}
+                  {t("ui.StationHero.geocerca", "Geocerca:")}{" "}
                   {Array.isArray(station?.geofencePolygon) &&
                   station.geofencePolygon.length >= 3
-                    ? "polígono"
+                    ? t("ui.StationHero.poligono", "polígono")
                     : `${station?.geofenceRadius || 100} m`}
                 </span>
               )}
@@ -386,7 +387,10 @@ export default function StationHero({
                     className="cc-dot"
                     style={{ background: "var(--ok)" }}
                   />
-                  De turno ahora: {onDuty.map((g) => g.name).join(", ")}
+                  {t("ui.StationHero.deTurnoAhora", {
+                    defaultValue: "De turno ahora: {{nombres}}",
+                    nombres: onDuty.map((g) => g.name).join(", "),
+                  })}
                 </span>
               ) : (
                 <span
@@ -429,7 +433,10 @@ export default function StationHero({
                       );
                     })}
                   </span>
-                  {guards.length} asignado(s)
+                  {t("ui.StationHero.nAsignados", {
+                    defaultValue: "{{count}} asignados",
+                    count: guards.length,
+                  })}
                 </span>
               )}
             </div>
@@ -441,7 +448,7 @@ export default function StationHero({
                 to={`/post-sites/${postSiteId}/stations/${stationId}/site-tours`}
               >
                 <RouteIcon className="mr-1.5 h-4 w-4" />
-                Rondas
+                {t("postSites.tabs.tours", "Rondas")}
               </Link>
             </Button>
             <Button asChild size="sm" variant="brand">
@@ -449,7 +456,7 @@ export default function StationHero({
                 to={`/post-sites/${postSiteId}/stations/${stationId}/guards`}
               >
                 <Users className="mr-1.5 h-4 w-4" />
-                Vigilantes
+                {t("postSites.tabs.guards", "Vigilantes")}
               </Link>
             </Button>
           </div>

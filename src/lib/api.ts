@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import axios, { AxiosError, AxiosInstance } from "axios";
 import { toast } from "sonner";
 
@@ -222,7 +223,11 @@ api.interceptors.response.use(
     // Subscription paywall: a blocked tenant gets a 402. Nudge them to billing.
     if (apiError.status === 402 && apiError.code === "subscription_required") {
       const now = Date.now();
-      const msg = apiError.message || "Activa tu suscripción para continuar";
+      const msg = apiError.message ||
+        i18n.t(
+          "ui.api.activaTuSuscripcionParaContinuar",
+          "Activa tu suscripción para continuar",
+        );
       const isSilent = !!cfg.toast?.silentError;
 
       if (

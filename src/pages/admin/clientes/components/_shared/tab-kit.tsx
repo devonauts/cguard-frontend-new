@@ -283,7 +283,7 @@ export function Pager({
   pageCount,
   total,
   perPage,
-  noun = "resultados",
+  noun,
   onPage,
   className,
 }: {
@@ -307,8 +307,13 @@ export function Pager({
       style={{ color: "var(--ink-soft)" }}
     >
       <span>
-        Mostrando {total === 0 ? 0 : (page - 1) * perPage + 1} a{" "}
-        {Math.min(page * perPage, total)} de {total} {noun}
+        {t("ui.tabkit.mostrandoRango", {
+          defaultValue: "Mostrando {{from}} a {{to}} de {{total}} {{noun}}",
+          from: total === 0 ? 0 : (page - 1) * perPage + 1,
+          to: Math.min(page * perPage, total),
+          total,
+          noun: noun ?? t("ui.tabkit.resultados", "resultados"),
+        })}
       </span>
       <div className="flex items-center gap-1">
         <button
@@ -377,6 +382,8 @@ export function TabFooter({
   updatedAt?: string;
   onRefresh?: () => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div
       className="glass-sunken flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 text-xs"
@@ -387,7 +394,14 @@ export function TabFooter({
         {note}
       </span>
       <span className="inline-flex items-center gap-2">
-        {updatedAt && <>Última actualización: {updatedAt}</>}
+        {updatedAt && (
+          <>
+            {t("ui.tabkit.ultimaActualizacion", {
+              defaultValue: "Última actualización: {{when}}",
+              when: updatedAt,
+            })}
+          </>
+        )}
         {onRefresh && (
           <button
             className="cg-focus inline-flex items-center gap-1 rounded-md font-semibold hover:underline"
@@ -395,7 +409,7 @@ export function TabFooter({
             type="button"
             onClick={onRefresh}
           >
-            <RefreshCw className="h-3.5 w-3.5" /> Actualizar
+            <RefreshCw className="h-3.5 w-3.5" /> {t("ui.tabkit.actualizar", "Actualizar")}
           </button>
         )}
       </span>

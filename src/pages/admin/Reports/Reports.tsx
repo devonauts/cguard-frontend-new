@@ -117,7 +117,7 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
         <PageHeader
           actions={searchField}
           icon={<BarChart3 />}
-          subtitle={`${totalReports} informes operativos, de incidentes, tiempo y nómina — todo en un solo lugar.`}
+          subtitle={t("ui.Reports.subtitulo", { defaultValue: "{{count}} informes operativos, de incidentes, tiempo y nómina — todo en un solo lugar.", count: totalReports })}
           title={t("ui.Reports.centroDeReportes", "Centro de Reportes")}
         />
 
@@ -129,7 +129,7 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
                 {t("ui.Reports.limpiarBusqueda", "Limpiar búsqueda")}
               </Button>
             }
-            description={`Ningún informe coincide con “${query}”.`}
+            description={t("ui.Reports.ningunInformeCoincide", { defaultValue: "Ningún informe coincide con “{{query}}”.", query })}
             icon={<SearchX />}
             title={t("kit.select.empty")}
           />
@@ -154,8 +154,10 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
                         className="text-[11px]"
                         style={{ color: "var(--ink-faint)" }}
                       >
-                        {section.reports.length} informe
-                        {section.reports.length !== 1 ? "s" : ""}
+                        {t("ui.Reports.nInformes", {
+                          defaultValue: "{{count}} informes",
+                          count: section.reports.length,
+                        })}
                       </p>
                     </div>
                   </div>
@@ -181,7 +183,7 @@ const Reports: React.FC<ReportsProps> = ({ onNavigate }) => {
                         variant="link"
                         onClick={() => go(section.viewAllHref)}
                       >
-                        Ver todo <ArrowRight size={14} />
+                        {t("ui.Reports.verTodo", "Ver todo")} <ArrowRight size={14} />
                       </Button>
                     )}
                   </div>

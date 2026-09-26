@@ -134,7 +134,9 @@ export function DispatchDetailsContent({
         } catch (err) {
           const msg = err instanceof Error ? err.message : String(err);
 
-          toast.error(`File upload failed${msg ? `: ${msg}` : ""}`);
+          toast.error(
+            `${t("ui.MessengerPage.noSePudoSubirElArchivo", "No se pudo subir el archivo")}${msg ? `: ${msg}` : ""}`,
+          );
         } finally {
           setFileUploading(false);
         }
@@ -224,14 +226,15 @@ export function DispatchDetailsContent({
             id: Date.now(),
             text: created.text || newComment,
             createdAt: created.createdAt || new Date().toISOString(),
-            author: created.author || author || { name: "Tú" },
+            author: created.author ||
+              author || { name: t("dispatcher.comment.you", "Tú") },
             attachment: created.attachment || attachment,
           },
         ]);
         setNewComment("");
         setSelectedFile(null);
         setShowCommentModal(false);
-        toast.success("Comentario agregado");
+        toast.success(t("dispatcher.comment.added", "Comentario agregado"));
       } catch (e) {
         setComments((c) => [
           ...c,
@@ -240,14 +243,18 @@ export function DispatchDetailsContent({
             text: newComment,
             createdAt: new Date().toISOString(),
             author:
-              typeof author !== "undefined" && author ? author : { name: "Tú" },
+              typeof author !== "undefined" && author
+                ? author
+                : { name: t("dispatcher.comment.you", "Tú") },
             attachment,
           },
         ]);
         setNewComment("");
         setSelectedFile(null);
         setShowCommentModal(false);
-        toast.success("Comentario agregado (local)");
+        toast.success(
+          t("dispatcher.comment.added_local", "Comentario agregado (local)"),
+        );
       }
     } catch (err) {
       toast.error(t("ui.DispatchDetailsPage.noSePudoAgregarComentario"));
@@ -554,6 +561,16 @@ export function DispatchDetailsContent({
     return String(s);
   })();
 
+  // The raw status is an API value ("abierto"/"open"…): translate only for display.
+  const statusLabel = (() => {
+    const s = statusDisplay.trim().toLowerCase();
+
+    if (s === "abierto" || s === "open") return t("dispatcher.status_open", "Abierto");
+    if (s === "cerrado" || s === "closed") return t("dispatcher.status_closed", "Cerrado");
+
+    return statusDisplay;
+  })();
+
   const statusIsOpen = (() => {
     const s = (statusDisplay || "").toLowerCase();
 
@@ -582,7 +599,7 @@ export function DispatchDetailsContent({
                   undefined
                 }
                 direccion={requestPayload.location || requestPayload.incidentLocation || undefined}
-                estado={statusDisplay || undefined}
+                estado={statusLabel || undefined}
                 lat={coords.lat}
                 lng={coords.lng}
                 prioridad={requestPayload.priority || undefined}
@@ -619,7 +636,7 @@ export function DispatchDetailsContent({
                         tone={statusIsOpen ? "warn" : "ok"}
                         className="ml-2"
                       >
-                        {statusDisplay || ""}
+                        {statusLabel || ""}
                       </StatusBadge>
                     </td>
                     <td className="py-3 px-4 text-xs font-medium text-muted-foreground">
@@ -914,7 +931,7 @@ export function DispatchDetailsContent({
                           (c.author.name ||
                             c.author.fullName ||
                             c.author.username)) ||
-                          "Usuario"}{" "}
+                          t("comun.usuario", "Usuario")}{" "}
                         ·{" "}
                         {c.createdAt
                           ? new Date(c.createdAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
@@ -932,7 +949,10 @@ export function DispatchDetailsContent({
                             target="_blank"
                             rel="noreferrer"
                           >
-                            Adjunto: {c.attachment.name || c.attachment.url}
+                            {t("ui.DispatchDetailsPage.adjunto", {
+                              defaultValue: "Adjunto: {{nombre}}",
+                              nombre: c.attachment.name || c.attachment.url,
+                            })}
                           </a>
                         </div>
                       )}

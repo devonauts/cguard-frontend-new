@@ -135,14 +135,12 @@ export default function Register() {
     }
 
     // Validación de política de contraseña en frontend
-    const { isStrongPassword, PASSWORD_POLICY_TEXT } = await import(
+    const { isStrongPassword, passwordPolicyMessage } = await import(
       "@/lib/passwordPolicy"
     );
 
     if (!isStrongPassword(password)) {
-      const msg = t("auth.weakPassword", {
-        defaultValue: `La contraseña es muy débil. Requisitos: ${PASSWORD_POLICY_TEXT}`,
-      });
+      const msg = passwordPolicyMessage();
 
       toast.error(msg);
 
@@ -172,7 +170,9 @@ export default function Register() {
       toast.success(t("auth.account_created_verify_email"));
       navigate("/login");
     } else {
-      const msg = res?.error || "Error al registrarse";
+      const msg =
+        res?.error ||
+        t("ui.AuthContext.errorAlRegistrarse", "Error al registrarse");
 
       toast.error(msg);
     }

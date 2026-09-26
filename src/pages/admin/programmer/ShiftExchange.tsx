@@ -266,9 +266,12 @@ export default function ShiftExchange() {
   const handleDelete = async (id: string) => {
     if (
       !(await confirmDialog({
-        title: "Eliminar solicitud",
-        message: "¿Eliminar esta solicitud de intercambio?",
-        confirmText: "Eliminar",
+        title: t("ui.ShiftExchange.eliminarSolicitud", "Eliminar solicitud"),
+        message: t(
+          "ui.ShiftExchange.eliminarEstaSolicitudDeIntercambio",
+          "¿Eliminar esta solicitud de intercambio?",
+        ),
+        confirmText: t("common.delete", "Eliminar"),
         tone: "danger",
       }))
     )
@@ -303,13 +306,16 @@ export default function ShiftExchange() {
             "ui.ShiftExchange.intercambioDeTurnos",
             "Intercambio de turnos",
           )}
-          subtitle="Solicitudes de intercambio de turnos entre vigilantes."
+          subtitle={t(
+            "ui.ShiftExchange.solicitudesDeIntercambioEntreVigilantes",
+            "Solicitudes de intercambio de turnos entre vigilantes.",
+          )}
         />
 
         {/* KPIs */}
         <StatsStrip className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <MetricTile
-            label="Pendientes"
+            label={t("ui.ShiftExchange.pendientes", "Pendientes")}
             value={stats.pending}
             icon={<Clock />}
             delta={
@@ -323,7 +329,7 @@ export default function ShiftExchange() {
             hint={t("comun.esperandoUnaDecision")}
           />
           <MetricTile
-            label="Aprobadas"
+            label={t("ui.ShiftExchange.aprobadas", "Aprobadas")}
             value={stats.approved}
             icon={<ThumbsUp />}
             delta={
@@ -337,7 +343,7 @@ export default function ShiftExchange() {
             hint={t("comun.delTotalDeSolicitudes")}
           />
           <MetricTile
-            label="Rechazadas"
+            label={t("ui.ShiftExchange.rechazadas", "Rechazadas")}
             value={stats.rejected}
             icon={<ThumbsDown />}
             delta={
@@ -363,10 +369,10 @@ export default function ShiftExchange() {
               setPage(1);
             }}
             options={[
-              { value: "all", label: "Todos" },
-              { value: "pending", label: "Pendiente" },
-              { value: "approved", label: "Aprobado" },
-              { value: "rejected", label: "Rechazado" },
+              { value: "all", label: t("ui.ShiftExchange.todos", "Todos") },
+              { value: "pending", label: t("comun.pendiente", "Pendiente") },
+              { value: "approved", label: t("comun.aprobado", "Aprobado") },
+              { value: "rejected", label: t("comun.rechazado", "Rechazado") },
             ]}
           />
 
@@ -392,7 +398,8 @@ export default function ShiftExchange() {
               >
                 <SheetTrigger asChild>
                   <Button variant="brand">
-                    <Plus className="h-4 w-4 mr-1" /> Nueva solicitud
+                    <Plus className="h-4 w-4 mr-1" />{" "}
+                    {t("ui.ShiftExchange.nuevaSolicitud", "Nueva solicitud")}
                   </Button>
                 </SheetTrigger>
                 <SheetContent className="w-full sm:w-[540px] overflow-y-auto">
@@ -490,7 +497,7 @@ export default function ShiftExchange() {
                       {saving ? (
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       ) : null}
-                      Crear solicitud
+                      {t("ui.ShiftExchange.crearSolicitud", "Crear solicitud")}
                     </Button>
                   </SheetFooter>
                 </SheetContent>
@@ -520,7 +527,9 @@ export default function ShiftExchange() {
                 <TableHead className="cg-eyebrow">
                   {t("ui.ShiftExchange.enviadaPor")}
                 </TableHead>
-                <TableHead className="cg-eyebrow">Enviada a</TableHead>
+                <TableHead className="cg-eyebrow">
+                  {t("ui.ShiftExchange.enviadaA", "Enviada a")}
+                </TableHead>
                 <TableHead className="cg-eyebrow">
                   {t("comun.estado")}
                 </TableHead>
@@ -560,7 +569,9 @@ export default function ShiftExchange() {
                     <TableCell className="font-medium" data-rotulo={t("ui.ShiftExchange.enviadaPor")} data-titulo>
                       {rec.fromGuard?.fullName ?? "—"}
                     </TableCell>
-                    <TableCell data-rotulo="Enviada a">{rec.toGuard?.fullName ?? "Abierto"}</TableCell>
+                    <TableCell data-rotulo={t("ui.ShiftExchange.enviadaA", "Enviada a")}>
+                      {rec.toGuard?.fullName ?? t("comun.abierto", "Abierto")}
+                    </TableCell>
                     <TableCell data-rotulo={t("comun.estado")}>{getStatusBadge(rec.status)}</TableCell>
                     <TableCell>
                       <DropdownMenu>
@@ -582,7 +593,7 @@ export default function ShiftExchange() {
                                   className="mr-2 h-4 w-4"
                                   style={{ color: "var(--ok-text)" }}
                                 />{" "}
-                                Aprobar
+                                {t("ui.ShiftExchange.aprobar", "Aprobar")}
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 onClick={() => handleReject(rec.id)}
@@ -591,7 +602,7 @@ export default function ShiftExchange() {
                                   className="mr-2 h-4 w-4"
                                   style={{ color: "var(--bad-text)" }}
                                 />{" "}
-                                Rechazar
+                                {t("ui.ShiftExchange.rechazar", "Rechazar")}
                               </DropdownMenuItem>
                             </>
                           )}
@@ -599,7 +610,8 @@ export default function ShiftExchange() {
                             onClick={() => handleDelete(rec.id)}
                             style={{ color: "var(--bad-text)" }}
                           >
-                            <Trash2 className="mr-2 h-4 w-4" /> Eliminar
+                            <Trash2 className="mr-2 h-4 w-4" />{" "}
+                            {t("common.delete", "Eliminar")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -637,8 +649,13 @@ export default function ShiftExchange() {
             style={{ color: "var(--ink-soft)" }}
           >
             {filtered.length === 0
-              ? "0 de 0"
-              : `${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, filtered.length)} de ${filtered.length}`}
+              ? t("ui.ShiftExchange.ceroDeCero", "0 de 0")
+              : t("ui.ShiftExchange.rangoDePagina", {
+                  defaultValue: "{{desde}}–{{hasta}} de {{total}}",
+                  desde: (page - 1) * pageSize + 1,
+                  hasta: Math.min(page * pageSize, filtered.length),
+                  total: filtered.length,
+                })}
           </div>
           <div className="flex items-center space-x-2">
             <Button

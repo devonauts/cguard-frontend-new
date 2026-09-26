@@ -160,7 +160,7 @@ export default function GuardFilesPage() {
                         <tr className="border-b bg-muted/30">
                           <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">
                             <input
-                              aria-label="select all files"
+                              aria-label={t("ui.GuardFilesPage.seleccionarTodosLosArchivos", "Seleccionar todos los archivos")}
                               checked={
                                 filesData.length > 0 &&
                                 selectedFileIds.length === filesData.length
@@ -417,7 +417,7 @@ export default function GuardFilesPage() {
                             {f.name}
                           </span>
                           <button
-                            aria-label={`Remove ${f.name}`}
+                            aria-label={t("ui.RouteForm.quitar", { defaultValue: "Quitar {{name}}", name: f.name })}
                             className="cg-focus rounded-full p-1 transition hover:opacity-80"
                             style={{ color: "var(--bad-text)" }}
                             onClick={() =>
@@ -450,7 +450,7 @@ export default function GuardFilesPage() {
                         Math.random().toString(36).slice(2, 7),
                       name: f.name,
                       date: hoyEnLaEmpresa(),
-                      addedBy: "You",
+                      addedBy: t("ui.ClientNotes.tu", "Tú"),
                     }));
 
                     setFilesData((prev) => [...newFiles, ...prev]);

@@ -55,7 +55,11 @@ export default function StepIndicator({
             >
               <button
                 aria-current={isActive ? "step" : undefined}
-                aria-label={`Paso ${i + 1}: ${step.label}`}
+                aria-label={t("ui.StepIndicator.pasoEtiqueta", {
+                  defaultValue: "Paso {{n}}: {{label}}",
+                  n: i + 1,
+                  label: step.label,
+                })}
                 className={cn(
                   "cg-focus group flex items-center gap-2.5 rounded-full",
                   clickable ? "cursor-pointer" : "cursor-default",

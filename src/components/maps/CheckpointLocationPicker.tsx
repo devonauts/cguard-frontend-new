@@ -81,32 +81,43 @@ function Recenter({ lat, lng }: { lat: number | null; lng: number | null }) {
  * escaneos legítimos —el vigilante está delante del punto y el sistema dice que
  * no—, y uno demasiado ancho da por bueno un escaneo desde la acera de enfrente.
  */
-function juzgarRadio(radio: number): { texto: string; color: string } {
+function juzgarRadio(
+  radio: number,
+  t: (key: string, def: string) => string,
+): { texto: string; color: string } {
   if (radio < 20) {
     return {
-      texto:
+      texto: t(
+        "ui.CheckpointLocationPicker.radioPorDebajoDelError",
         "Radio por debajo del error normal del GPS: puede rechazar escaneos válidos.",
+      ),
       color: "var(--bad-text)",
     };
   }
   if (radio < 30) {
     return {
-      texto:
+      texto: t(
+        "ui.CheckpointLocationPicker.radioJusto",
         "Radio justo: con GPS flojo o bajo techo puede fallar algún escaneo.",
+      ),
       color: "var(--warn-text)",
     };
   }
   if (radio > 150) {
     return {
-      texto:
+      texto: t(
+        "ui.CheckpointLocationPicker.radioMuyAmplio",
         "Radio muy amplio: daría por válido un escaneo desde fuera del edificio.",
+      ),
       color: "var(--warn-text)",
     };
   }
 
   return {
-    texto:
+    texto: t(
+      "ui.CheckpointLocationPicker.radioAdecuado",
       "Radio adecuado: absorbe el error del GPS sin dar por válido lo que está lejos.",
+    ),
     color: "var(--ok-text)",
   };
 }
@@ -155,7 +166,7 @@ export default function CheckpointLocationPicker({
       : null;
   const separacion = punto && refValida ? metrosEntre(refValida, punto) : null;
 
-  const veredicto = juzgarRadio(radius);
+  const veredicto = juzgarRadio(radius, (k, d) => t(k, d));
 
   /** Levanta el pin mientras va cogido: es la única señal de «lo tengo» que hay
    *  en una pantalla táctil. Se toca el SVG y no el nodo del marcador porque
@@ -267,8 +278,8 @@ export default function CheckpointLocationPicker({
                     "Suelta para fijar el punto",
                   )
                 : punto
-                  ? "Punto de control"
-                  : "Sin ubicación"}
+                  ? t("ui.CheckpointLocationPicker.puntoDeControl", "Punto de control")
+                  : t("ui.CheckpointLocationPicker.sinUbicacion", "Sin ubicación")}
             </div>
             {punto ? (
               <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px]">
@@ -286,8 +297,17 @@ export default function CheckpointLocationPicker({
                         separacion > 500 ? "var(--warn-text)" : "var(--ink)",
                     }}
                   >
-                    · a {formatearDistancia(separacion)}{" "}
-                    {reference?.label ? `de ${reference.label}` : "del puesto"}
+                    ·{" "}
+                    {reference?.label
+                      ? t("ui.CheckpointLocationPicker.aDistanciaDe", {
+                          defaultValue: "a {{distancia}} de {{lugar}}",
+                          distancia: formatearDistancia(separacion),
+                          lugar: reference.label,
+                        })
+                      : t("ui.CheckpointLocationPicker.aDistanciaDelPuesto", {
+                          defaultValue: "a {{distancia}} del puesto",
+                          distancia: formatearDistancia(separacion),
+                        })}
                   </span>
                 )}
               </div>
@@ -307,13 +327,19 @@ export default function CheckpointLocationPicker({
       </div>
 
       <p className="text-[11px]" style={{ color: "var(--ink-faint)" }}>
-        Toca el mapa o arrastra el pin para fijar la ubicación exacta del punto.
+        {t(
+          "ui.CheckpointLocationPicker.tocaElMapaOArrastra",
+          "Toca el mapa o arrastra el pin para fijar la ubicación exacta del punto.",
+        )}
       </p>
 
       {separacion != null && separacion > 500 && (
         <p className="text-[11px]" style={{ color: "var(--warn-text)" }}>
-          Este punto está a {formatearDistancia(separacion)} del puesto. Revisa
-          que pertenezca a esta ronda.
+          {t("ui.CheckpointLocationPicker.puntoLejosDelPuesto", {
+            defaultValue:
+              "Este punto está a {{distancia}} del puesto. Revisa que pertenezca a esta ronda.",
+            distancia: formatearDistancia(separacion),
+          })}
         </p>
       )}
 
@@ -351,8 +377,10 @@ export default function CheckpointLocationPicker({
           }
         />
         <p className="mt-1 text-[11px]" style={{ color: "var(--ink-faint)" }}>
-          El vigilante debe estar dentro de este radio para que el escaneo
-          cuente como válido.
+          {t(
+            "ui.CheckpointLocationPicker.elVigilanteDebeEstarDentro",
+            "El vigilante debe estar dentro de este radio para que el escaneo cuente como válido.",
+          )}
         </p>
         <p className="mt-1 text-[11px]" style={{ color: veredicto.color }}>
           {veredicto.texto}

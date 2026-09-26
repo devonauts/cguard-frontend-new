@@ -205,9 +205,12 @@ export default function RoutesPage() {
     }
     if (
       !(await confirmDialog({
-        title: "Eliminar rutas",
-        message: `¿Eliminar ${selectedIds.length} ruta(s)? Esta acción no se puede deshacer.`,
-        confirmText: "Eliminar",
+        title: t("ui.RoutesPage.eliminarRutas", "Eliminar rutas"),
+        message: t("ui.RoutesPage.eliminarNRutasConfirm", {
+          defaultValue: "¿Eliminar {{count}} ruta(s)? Esta acción no se puede deshacer.",
+          count: selectedIds.length,
+        }),
+        confirmText: t("actions.delete", "Eliminar"),
         tone: "danger",
       }))
     )
@@ -215,7 +218,12 @@ export default function RoutesPage() {
     try {
       setBulkBusy(true);
       await routeService.destroy(selectedIds);
-      toast.success(`${selectedIds.length} ruta(s) eliminada(s).`);
+      toast.success(
+        t("ui.RoutesPage.nRutasEliminadas", {
+          defaultValue: "{{count}} ruta(s) eliminada(s).",
+          count: selectedIds.length,
+        }),
+      );
       setSelectedIds([]);
       reload();
     } catch (e: any) {
@@ -254,13 +262,13 @@ export default function RoutesPage() {
                   }
                 })()}
               >
-                <Plus className="mr-1 h-4 w-4" /> Nueva ruta
+                <Plus className="mr-1 h-4 w-4" /> {t("ui.NewRoutePage.nuevaRuta", "Nueva ruta")}
               </Link>
             </Button>
           }
           icon={<RouteIcon />}
           subtitle={t("ui.RoutesPage.defineYGestionaLasRutas")}
-          title="Rutas"
+          title={t("ui.RoutesPage.rutas", "Rutas")}
         />
 
         <Toolbar className="justify-between">
@@ -274,8 +282,8 @@ export default function RoutesPage() {
                 <SelectValue
                   placeholder={
                     selectedIds.length > 0
-                      ? `Acción (${selectedIds.length})`
-                      : "Acción"
+                      ? t("ui.RoutesPage.accionN", { defaultValue: "Acción ({{n}})", n: selectedIds.length })
+                      : t("ui.RoutesPage.accion", "Acción")
                   }
                 />
               </SelectTrigger>
@@ -303,7 +311,7 @@ export default function RoutesPage() {
                   variant="outline"
                 >
                   <FilterIcon className="mr-2 h-4 w-4" />
-                  Filtros
+                  {t("ui.RoutesPage.filtros", "Filtros")}
                 </Button>
               </SheetTrigger>
 
@@ -312,12 +320,12 @@ export default function RoutesPage() {
                 side="right"
               >
                 <SheetHeader>
-                  <SheetTitle>Filtros</SheetTitle>
+                  <SheetTitle>{t("ui.RoutesPage.filtros", "Filtros")}</SheetTitle>
                 </SheetHeader>
 
                 <div className="mt-6 space-y-5">
                   <div className="space-y-2">
-                    <Label>Sectores</Label>
+                    <Label>{t("ui.RoutesPage.sectores", "Sectores")}</Label>
                     <Select
                       value={filters.categoryId ?? ""}
                       onValueChange={(v) =>
@@ -325,10 +333,10 @@ export default function RoutesPage() {
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Default" />
+                        <SelectValue placeholder={t("ui.RoutesPage.default", "Default")} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="default">Default</SelectItem>
+                        <SelectItem value="default">{t("ui.RoutesPage.default", "Default")}</SelectItem>
                         <SelectItem value="turno-dia">
                           {t("ui.Routes.turnoDia", "Turno día")}
                         </SelectItem>
@@ -365,11 +373,13 @@ export default function RoutesPage() {
                   </div>
 
                   <p className="text-xs text-muted-foreground">
-                    Los filtros por sector y estado estarán disponibles
-                    próximamente. Usa el buscador para filtrar rutas por nombre.
+                    {t(
+                      "ui.RoutesPage.filtrosProximamente",
+                      "Los filtros por sector y estado estarán disponibles próximamente. Usa el buscador para filtrar rutas por nombre.",
+                    )}
                   </p>
                   <Button disabled className="w-full" variant="brand">
-                    Filtro
+                    {t("ui.RoutesPage.filtro", "Filtro")}
                   </Button>
                 </div>
               </SheetContent>
@@ -476,7 +486,11 @@ export default function RoutesPage() {
                             if (names.length === 0) return r.address || "—";
                             if (names.length <= 2) return names.join(", ");
 
-                            return `${names.slice(0, 2).join(", ")} (+${names.length - 2} más)`;
+                            return t("ui.RoutesPage.nombresYMas", {
+                              defaultValue: "{{names}} (+{{count}} más)",
+                              names: names.slice(0, 2).join(", "),
+                              count: names.length - 2,
+                            });
                           }
 
                           return r.address || "—";
@@ -518,16 +532,21 @@ export default function RoutesPage() {
                             r.continuous !== undefined &&
                             r.continuous !== null
                           ) {
-                            return r.continuous ? "Continua" : "Programada";
+                            return r.continuous
+                              ? t("ui.RouteDetailModal.continua", "Continua")
+                              : t("ui.RouteDetailModal.programada", "Programada");
                           }
-                          const t = r.type || r.routeType;
+                          const tipo = r.type || r.routeType;
 
-                          if (!t) return r.isPatrol ? "Patrulla" : "—";
-                          if (typeof t === "string") return t;
-                          if (typeof t === "object")
-                            return t.name || t.label || t.type || "—";
+                          if (!tipo)
+                            return r.isPatrol
+                              ? t("ui.RoutesPage.patrulla", "Patrulla")
+                              : "—";
+                          if (typeof tipo === "string") return tipo;
+                          if (typeof tipo === "object")
+                            return tipo.name || tipo.label || tipo.type || "—";
 
-                          return String(t);
+                          return String(tipo);
                         })()}
                       </td>
                       <td className="px-4 py-3">
@@ -551,7 +570,7 @@ export default function RoutesPage() {
                             setDetailOpen(true);
                           }}
                         >
-                          Ver
+                          {t("ui.RoutesPage.ver", "Ver")}
                         </Button>
                       </td>
                     </tr>

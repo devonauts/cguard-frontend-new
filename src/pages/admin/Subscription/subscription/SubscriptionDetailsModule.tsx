@@ -56,12 +56,32 @@ const ANNUAL_PRICE: Record<PlanKey, number> = {
  * rojo aunque la empresa ponga el acento en rojo.
  */
 type BadgeTone = "info" | "ok" | "bad" | "warn" | "neutral";
-const STATUS_META: Record<string, { label: string; tone: BadgeTone }> = {
-  trialing: { label: "Prueba gratuita", tone: "info" },
-  active: { label: "Activo", tone: "ok" },
-  past_due: { label: "Pago vencido", tone: "bad" },
-  trial_expired: { label: "Prueba expirada", tone: "warn" },
-  canceled: { label: "Cancelado", tone: "neutral" },
+// Constante de módulo: guarda la CLAVE; se traduce donde se pinta.
+const STATUS_META: Record<
+  string,
+  { label: string; labelKey: string; tone: BadgeTone }
+> = {
+  trialing: {
+    label: "Prueba gratuita",
+    labelKey: "billing.statusTrialing",
+    tone: "info",
+  },
+  active: { label: "Activo", labelKey: "billing.statusActive", tone: "ok" },
+  past_due: {
+    label: "Pago vencido",
+    labelKey: "billing.statusPastDue",
+    tone: "bad",
+  },
+  trial_expired: {
+    label: "Prueba expirada",
+    labelKey: "billing.statusTrialExpired",
+    tone: "warn",
+  },
+  canceled: {
+    label: "Cancelado",
+    labelKey: "billing.statusCanceled",
+    tone: "neutral",
+  },
 };
 
 function fmtDate(iso: string | null | undefined): string {
@@ -166,15 +186,19 @@ export default function SubscriptionDetailsModule() {
             <Sparkles />
           </IconTile>
           <p className="text-sm leading-relaxed">
-            <span className="font-semibold">Oferta especial.</span> Mejora tu
-            plan ahora y obtén un 15 % de descuento durante los próximos 3
-            meses. El cobro se calcula sobre el número de usuarios activos.{" "}
+            <span className="font-semibold">
+              {t("ui.SubscriptionDetailsModule.ofertaEspecial", "Oferta especial.")}
+            </span>{" "}
+            {t(
+              "ui.SubscriptionDetailsModule.mejoraTuPlanAhora",
+              "Mejora tu plan ahora y obtén un 15 % de descuento durante los próximos 3 meses. El cobro se calcula sobre el número de usuarios activos.",
+            )}{" "}
             <button
               className="font-medium underline-offset-2 hover:underline"
               style={{ color: "var(--brand-text)" }}
               onClick={goToBilling}
             >
-              Ver detalles
+              {t("actions.viewDetails", "Ver detalles")}
             </button>
           </p>
         </div>
@@ -210,7 +234,7 @@ export default function SubscriptionDetailsModule() {
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
             <Field
-              label="Plan"
+              label={t("tenants.columns.plan", "Plan")}
               value={
                 nombreDelPlan(data?.plan) ||
                 (currentPlan ? PLAN_LABEL[currentPlan] : "—")
@@ -223,7 +247,10 @@ export default function SubscriptionDetailsModule() {
               )}
               value={
                 data?.trial?.endsAt
-                  ? `Termina el ${fmtDate(data.trial.endsAt)}`
+                  ? t("ui.SubscriptionDetailsModule.terminaEl", {
+                      defaultValue: "Termina el {{date}}",
+                      date: fmtDate(data.trial.endsAt),
+                    })
                   : "—"
               }
             />
@@ -234,10 +261,12 @@ export default function SubscriptionDetailsModule() {
                   "Estado de la Suscripción",
                 )}
               </div>
-              <StatusBadge tone={meta.tone}>{meta.label}</StatusBadge>
+              <StatusBadge tone={meta.tone}>
+                {t(meta.labelKey, meta.label)}
+              </StatusBadge>
             </div>
             <Field
-              label="Usuarios facturables"
+              label={t("billing.seats", "Usuarios facturables")}
               value={String(data?.seats ?? "—")}
             />
           </div>
@@ -249,8 +278,14 @@ export default function SubscriptionDetailsModule() {
         <div className="flex justify-center">
           <Segmented<BillingPeriod>
             options={[
-              { value: "monthly", label: "Mensual" },
-              { value: "annual", label: "Anual" },
+              {
+                value: "monthly",
+                label: t("guards.reminders.repeat.monthly", "Mensual"),
+              },
+              {
+                value: "annual",
+                label: t("ui.SubscriptionDetailsModule.anual", "Anual"),
+              },
             ]}
             value={period}
             onChange={setPeriod}
@@ -269,7 +304,10 @@ export default function SubscriptionDetailsModule() {
             color: "var(--ink-soft)",
           }}
         >
-          Los cambios de plan y pagos se gestionan en{" "}
+          {t(
+            "ui.SubscriptionDetailsModule.losCambiosDePlanYPagosSeGestionanEn",
+            "Los cambios de plan y pagos se gestionan en",
+          )}{" "}
           <button
             className="font-medium underline-offset-2 hover:underline"
             style={{ color: "var(--brand-text)" }}
@@ -309,7 +347,7 @@ export default function SubscriptionDetailsModule() {
                     <h3 className="font-semibold">{PLAN_LABEL[plan]}</h3>
                     {isPopular && (
                       <StatusBadge dot={false} tone="brand">
-                        POPULAR
+                        {t("ui.SubscriptionDetailsModule.popular", "POPULAR")}
                       </StatusBadge>
                     )}
                   </div>
@@ -319,12 +357,15 @@ export default function SubscriptionDetailsModule() {
                       {isAnnual ? `$${price.toFixed(2)}` : `$${price}`}
                       <span className="text-base font-normal text-muted-foreground">
                         {" "}
-                        / mes / usuario
+                        {t("ui.SubscriptionDetailsModule.mesUsuario", "/ mes / usuario")}
                       </span>
                     </div>
                     {isAnnual && (
                       <div className="text-xs text-muted-foreground">
-                        + 15% Descuento en todos los complementos
+                        {t(
+                          "ui.SubscriptionDetailsModule.descuentoEnComplementos",
+                          "+ 15% Descuento en todos los complementos",
+                        )}
                       </div>
                     )}
                   </div>
@@ -332,7 +373,8 @@ export default function SubscriptionDetailsModule() {
                   <div className="mt-auto">
                     {isCurrent ? (
                       <Button disabled className="w-full" variant="brand">
-                        <Check className="h-4 w-4 mr-1.5" /> Plan Actual
+                        <Check className="h-4 w-4 mr-1.5" />{" "}
+                        {t("ui.SubscriptionDetailsModule.planActual", "Plan Actual")}
                       </Button>
                     ) : (
                       <Button

@@ -111,7 +111,7 @@ export default function ExtremoRutaField({
         </span>
         <span className="text-sm font-semibold">{titulo}</span>
         <span className="text-xs" style={{ color: "var(--ink-faint)" }}>
-          Opcional
+          {t("ui.ExtremoRutaField.opcional", "Opcional")}
         </span>
       </div>
 
@@ -137,16 +137,16 @@ export default function ExtremoRutaField({
           {!soloLectura && (
             <div className="flex shrink-0 items-center gap-2">
               <Button size="lg" type="button" variant="outline" onClick={abrir}>
-                <Pencil className="size-4" /> Cambiar
+                <Pencil className="size-4" /> {t("ui.ExtremoRutaField.cambiar", "Cambiar")}
               </Button>
               <Button
-                aria-label={`Quitar ${titulo.toLowerCase()}`}
+                aria-label={t("ui.ExtremoRutaField.quitarX", { defaultValue: "Quitar {{what}}", what: titulo.toLowerCase() })}
                 size="lg"
                 type="button"
                 variant="danger-ghost"
                 onClick={() => onChange(null)}
               >
-                <X className="size-4" /> Quitar
+                <X className="size-4" /> {t("ui.ExtremoRutaField.quitar", "Quitar")}
               </Button>
             </div>
           )}
@@ -180,7 +180,7 @@ export default function ExtremoRutaField({
               variant="outline"
               onClick={() => setAbierto(false)}
             >
-              Cancelar
+              {t("actions.cancel", "Cancelar")}
             </Button>
             <Button
               disabled={!borrador}
@@ -213,8 +213,8 @@ export default function ExtremoRutaField({
               mapHeight="280px"
               placeholder={
                 clase === "origen"
-                  ? "Buscar el punto de partida…"
-                  : "Buscar el punto final…"
+                  ? t("ui.ExtremoRutaField.buscarPuntoDePartida", "Buscar el punto de partida…")
+                  : t("ui.ExtremoRutaField.buscarPuntoFinal", "Buscar el punto final…")
               }
               onAddressSelect={recoger}
               onGeocodeResult={recoger}
@@ -224,8 +224,12 @@ export default function ExtremoRutaField({
                 className="text-xs tabular-nums"
                 style={{ color: "var(--ink-soft)" }}
               >
-                Se guardará: {borrador.label} ({borrador.lat.toFixed(5)},{" "}
-                {borrador.lng.toFixed(5)})
+                {t("ui.ExtremoRutaField.seGuardara", {
+                  defaultValue: "Se guardará: {{label}} ({{lat}}, {{lng}})",
+                  label: borrador.label,
+                  lat: borrador.lat.toFixed(5),
+                  lng: borrador.lng.toFixed(5),
+                })}
               </p>
             )}
           </div>

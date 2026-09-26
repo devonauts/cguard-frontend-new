@@ -80,26 +80,40 @@ const ROLES_SUPERVISION = ["securitySupervisor", "operationsManager"];
 
 const PLANTILLAS: Record<
   RadioChannelType,
-  { nombre: string; descripcion: string; roles: string[] }
+  {
+    nombre: string;
+    nombreKey?: string;
+    descripcion: string;
+    descripcionKey?: string;
+    roles: string[];
+  }
 > = {
+  // Keys + Spanish defaults; translated when the template fills the form.
   general: {
     nombre: "General",
+    nombreKey: "ui.RadioChannelsManager.tipoGeneral",
     descripcion: "Canal abierto de toda la empresa.",
+    descripcionKey: "ui.RadioChannelsManager.plantillaGeneralDescripcion",
     roles: [],
   },
   admin: {
     nombre: "Administrativo",
+    nombreKey: "ui.RadioChannelsManager.tipoAdministrativo",
     descripcion: "Coordinación de oficina y dirección.",
+    descripcionKey: "ui.RadioChannelsManager.plantillaAdminDescripcion",
     roles: ROLES_ADMIN,
   },
   supervisors: {
     nombre: "Supervisores",
+    nombreKey: "ui.RadioChannelsManager.tipoSupervisores",
     descripcion: "Supervisión de campo y jefes de turno.",
+    descripcionKey: "ui.RadioChannelsManager.plantillaSupervisoresDescripcion",
     roles: ROLES_SUPERVISION,
   },
   stations: {
     nombre: "",
     descripcion: "Comunicación de los puestos seleccionados.",
+    descripcionKey: "ui.RadioChannelsManager.plantillaEstacionesDescripcion",
     roles: [],
   },
   custom: { nombre: "", descripcion: "", roles: [] },
@@ -113,12 +127,13 @@ const ICONO: Record<RadioChannelType, any> = {
   custom: Radio,
 };
 
-const ETIQUETA_TIPO: Record<RadioChannelType, string> = {
-  general: "General",
-  admin: "Administrativo",
-  supervisors: "Supervisores",
-  stations: "Por estaciones",
-  custom: "Personalizado",
+// Key + Spanish default; translated at render time.
+const ETIQUETA_TIPO: Record<RadioChannelType, [string, string]> = {
+  general: ["ui.RadioChannelsManager.tipoGeneral", "General"],
+  admin: ["ui.RadioChannelsManager.tipoAdministrativo", "Administrativo"],
+  supervisors: ["ui.RadioChannelsManager.tipoSupervisores", "Supervisores"],
+  stations: ["ui.RadioChannelsManager.tipoPorEstaciones", "Por estaciones"],
+  custom: ["ui.RadioChannelsManager.tipoPersonalizado", "Personalizado"],
 };
 
 type Form = {
@@ -159,16 +174,17 @@ function Selector({
   seleccion: string[];
   onToggle: (id: string) => void;
 }) {
+  const { t } = useTranslation();
   const [q, setQ] = useState("");
   const filtrados = useMemo(() => {
-    const t = q.trim().toLowerCase();
+    const needle = q.trim().toLowerCase();
 
-    if (!t) return items;
+    if (!needle) return items;
 
     return items.filter(
       (i) =>
-        i.label.toLowerCase().includes(t) ||
-        (i.hint || "").toLowerCase().includes(t),
+        i.label.toLowerCase().includes(needle) ||
+        (i.hint || "").toLowerCase().includes(needle),
     );
   }, [items, q]);
 
@@ -177,7 +193,10 @@ function Selector({
       <div className="mb-1.5 flex items-center justify-between">
         <Label>{titulo}</Label>
         <span className="text-[11px] text-muted-foreground">
-          {seleccion.length} seleccionado{seleccion.length === 1 ? "" : "s"}
+          {t("ui.RadioChannelsManager.seleccionados", {
+            defaultValue: "{{count}} seleccionados",
+            count: seleccion.length,
+          })}
         </span>
       </div>
       <div className="relative mb-1.5">
@@ -187,7 +206,7 @@ function Selector({
         />
         <Input
           className="h-8 pl-8 text-sm"
-          placeholder="Buscar…"
+          placeholder={t("ui.RadioChannelsManager.buscar", "Buscar…")}
           value={q}
           onChange={(e) => setQ(e.target.value)}
         />
@@ -313,8 +332,10 @@ export default function RadioChannelsManager({
     setForm((f) => ({
       ...f,
       type,
-      name: f.name || p.nombre,
-      description: f.description || p.descripcion,
+      name: f.name || (p.nombreKey ? t(p.nombreKey, p.nombre) : p.nombre),
+      description:
+        f.description ||
+        (p.descripcionKey ? t(p.descripcionKey, p.descripcion) : p.descripcion),
       roleSlugs: f.roleSlugs.length ? f.roleSlugs : p.roles,
       scope: type === "general" ? "everyone" : f.scope,
     }));
@@ -409,21 +430,31 @@ export default function RadioChannelsManager({
   };
 
   const resumen = (c: RadioChannel): string => {
-    if (c.scope === "everyone") return "Toda la empresa";
+    if (c.scope === "everyone")
+      return t("ui.RadioChannelsManager.todaLaEmpresa", "Toda la empresa");
     const partes: string[] = [];
 
     if (c.stationIds?.length)
       partes.push(
-        `${c.stationIds.length} estación${c.stationIds.length === 1 ? "" : "es"}`,
+        t("ui.RadioChannelsManager.nEstaciones", {
+          defaultValue: "{{count}} estaciones",
+          count: c.stationIds.length,
+        }),
       );
     if (c.roleSlugs?.length)
       partes.push(c.roleSlugs.map((r) => roleDisplayName(r)).join(", "));
     if (c.userIds?.length)
       partes.push(
-        `${c.userIds.length} persona${c.userIds.length === 1 ? "" : "s"}`,
+        t("ui.RadioChannelsManager.nPersonas", {
+          defaultValue: "{{count}} personas",
+          count: c.userIds.length,
+        }),
       );
 
-    return partes.join(" · ") || "Sin miembros";
+    return (
+      partes.join(" · ") ||
+      t("ui.RadioChannelsManager.sinMiembros", "Sin miembros")
+    );
   };
 
   return (
@@ -432,7 +463,8 @@ export default function RadioChannelsManager({
         action={
           puedeGestionar ? (
             <Button size="sm" variant="brand" onClick={nuevo}>
-              <Plus size={14} /> Nuevo canal
+              <Plus size={14} />{" "}
+              {t("ui.RadioChannelsManager.nuevoCanal", "Nuevo canal")}
             </Button>
           ) : undefined
         }
@@ -445,9 +477,15 @@ export default function RadioChannelsManager({
           </div>
         ) : sinPermiso ? (
           <EmptyState
-            description="Tu rol no tiene acceso a los canales de radio. Pídele a un administrador que te lo habilite en Configuración › Roles."
+            description={t(
+              "ui.RadioChannelsManager.sinAccesoDescripcion",
+              "Tu rol no tiene acceso a los canales de radio. Pídele a un administrador que te lo habilite en Configuración › Roles.",
+            )}
             icon={<Radio />}
-            title="Sin acceso a los canales"
+            title={t(
+              "ui.RadioChannelsManager.sinAccesoALosCanales",
+              "Sin acceso a los canales",
+            )}
           />
         ) : !rows.length ? (
           <EmptyState
@@ -474,14 +512,21 @@ export default function RadioChannelsManager({
                           {c.key}
                         </span>
                         {c.isDefault && (
-                          <StatusBadge tone="green">Predeterminado</StatusBadge>
+                          <StatusBadge tone="green">
+                            {t("ui.RadioChannelsManager.predeterminado", "Predeterminado")}
+                          </StatusBadge>
                         )}
                         {!c.active && (
-                          <StatusBadge tone="slate">Inactivo</StatusBadge>
+                          <StatusBadge tone="slate">
+                            {t("ui.RadioChannelsManager.inactivo", "Inactivo")}
+                          </StatusBadge>
                         )}
                       </div>
                       <p className="truncate text-xs text-muted-foreground">
-                        {ETIQUETA_TIPO[c.type] || c.type} · {resumen(c)}
+                        {ETIQUETA_TIPO[c.type]
+                          ? t(ETIQUETA_TIPO[c.type][0], ETIQUETA_TIPO[c.type][1])
+                          : c.type}{" "}
+                        · {resumen(c)}
                       </p>
                     </div>
                     {puedeGestionar && (
@@ -489,7 +534,10 @@ export default function RadioChannelsManager({
                         {!c.isDefault && (
                           <Button
                             size="icon"
-                            title="Hacer predeterminado"
+                            title={t(
+                              "ui.RadioChannelsManager.hacerPredeterminado",
+                              "Hacer predeterminado",
+                            )}
                             variant="outline"
                             onClick={() => hacerPredeterminado(c)}
                           >
@@ -498,7 +546,7 @@ export default function RadioChannelsManager({
                         )}
                         <Button
                           size="icon"
-                          title="Editar"
+                          title={t("ui.RadioChannelsManager.editar", "Editar")}
                           variant="outline"
                           onClick={() => editar(c)}
                         >
@@ -509,8 +557,11 @@ export default function RadioChannelsManager({
                           size="icon"
                           title={
                             c.isDefault
-                              ? "El canal predeterminado no se elimina"
-                              : "Eliminar"
+                              ? t(
+                                  "ui.RadioChannelsManager.predeterminadoNoSeElimina",
+                                  "El canal predeterminado no se elimina",
+                                )
+                              : t("ui.RadioChannelsManager.eliminar", "Eliminar")
                           }
                           variant="outline"
                           onClick={() => setABorrar(c)}
@@ -531,17 +582,21 @@ export default function RadioChannelsManager({
         <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editando ? "Editar canal" : "Nuevo canal de radio"}
+              {editando
+                ? t("ui.RadioChannelsManager.editarCanal", "Editar canal")
+                : t("ui.RadioChannelsManager.nuevoCanalDeRadio", "Nuevo canal de radio")}
             </DialogTitle>
             <DialogDescription>
-              Elige quién entra: estaciones, roles o personas concretas. Quien
-              cumpla una sola de las reglas ya pertenece al canal.
+              {t(
+                "ui.RadioChannelsManager.eligeQuienEntra",
+                "Elige quién entra: estaciones, roles o personas concretas. Quien cumpla una sola de las reglas ya pertenece al canal.",
+              )}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             <div>
-              <Label>Tipo</Label>
+              <Label>{t("ui.RadioChannelsManager.tipo", "Tipo")}</Label>
               <div className="mt-1.5 flex flex-wrap gap-2">
                 {(
                   [
@@ -567,7 +622,8 @@ export default function RadioChannelsManager({
                       type="button"
                       onClick={() => cambiarTipo(tp)}
                     >
-                      <Icono size={13} /> {ETIQUETA_TIPO[tp]}
+                      <Icono size={13} />{" "}
+                      {t(ETIQUETA_TIPO[tp][0], ETIQUETA_TIPO[tp][1])}
                     </button>
                   );
                 })}
@@ -576,16 +632,21 @@ export default function RadioChannelsManager({
 
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
-                <Label>Nombre</Label>
+                <Label>{t("ui.RadioChannelsManager.nombre", "Nombre")}</Label>
                 <Input
                   className="mt-1.5"
-                  placeholder="Canal de supervisores"
+                  placeholder={t(
+                    "ui.RadioChannelsManager.canalDeSupervisores",
+                    "Canal de supervisores",
+                  )}
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                 />
               </div>
               <div>
-                <Label>Descripción</Label>
+                <Label>
+                  {t("ui.RadioChannelsManager.descripcion", "Descripción")}
+                </Label>
                 <Textarea
                   className="mt-1.5"
                   rows={1}
@@ -610,11 +671,13 @@ export default function RadioChannelsManager({
                     })
                   }
                 />
-                Toda la empresa
+                {t("ui.RadioChannelsManager.todaLaEmpresa", "Toda la empresa")}
               </label>
               <p className="mt-1 pl-6 text-xs text-muted-foreground">
-                Entra todo el personal operativo (vigilante o superior). Es como
-                funciona el canal general.
+                {t(
+                  "ui.RadioChannelsManager.entraTodoElPersonal",
+                  "Entra todo el personal operativo (vigilante o superior). Es como funciona el canal general.",
+                )}
               </p>
             </div>
 
@@ -627,13 +690,16 @@ export default function RadioChannelsManager({
                     hint: s.nickname,
                   }))}
                   seleccion={form.stationIds}
-                  titulo="Estaciones"
-                  vacio="No hay estaciones registradas."
+                  titulo={t("ui.RadioChannelsManager.estaciones", "Estaciones")}
+                  vacio={t(
+                    "ui.RadioChannelsManager.noHayEstaciones",
+                    "No hay estaciones registradas.",
+                  )}
                   onToggle={(id) => alternar("stationIds", id)}
                 />
 
                 <div>
-                  <Label>Roles</Label>
+                  <Label>{t("ui.RadioChannelsManager.roles", "Roles")}</Label>
                   <div className="mt-1.5 flex flex-wrap gap-2">
                     {opciones.roles.map((r) => {
                       const puesto = form.roleSlugs.includes(r.slug);
@@ -663,8 +729,11 @@ export default function RadioChannelsManager({
                     hint: u.roles?.[0] ? roleDisplayName(u.roles[0]) : null,
                   }))}
                   seleccion={form.userIds}
-                  titulo="Personas"
-                  vacio="No hay personal con radio."
+                  titulo={t("ui.RadioChannelsManager.personas", "Personas")}
+                  vacio={t(
+                    "ui.RadioChannelsManager.noHayPersonalConRadio",
+                    "No hay personal con radio.",
+                  )}
                   onToggle={(id) => alternar("userIds", id)}
                 />
               </>
@@ -680,7 +749,7 @@ export default function RadioChannelsManager({
                     setForm({ ...form, isDefault: e.target.checked })
                   }
                 />
-                Canal predeterminado
+                {t("ui.RadioChannelsManager.canalPredeterminado", "Canal predeterminado")}
               </label>
               <label className="flex items-center gap-2 text-sm">
                 <input
@@ -691,18 +760,20 @@ export default function RadioChannelsManager({
                     setForm({ ...form, active: e.target.checked })
                   }
                 />
-                Activo
+                {t("ui.RadioChannelsManager.activo", "Activo")}
               </label>
             </div>
           </div>
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setAbierto(false)}>
-              Cancelar
+              {t("ui.RadioChannelsManager.cancelar", "Cancelar")}
             </Button>
             <Button disabled={guardando} variant="brand" onClick={guardar}>
               {guardando && <Loader2 className="animate-spin" size={14} />}{" "}
-              {editando ? "Guardar" : "Crear canal"}
+              {editando
+                ? t("ui.RadioChannelsManager.guardar", "Guardar")
+                : t("ui.RadioChannelsManager.crearCanal", "Crear canal")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -714,15 +785,24 @@ export default function RadioChannelsManager({
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Eliminar canal</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t("ui.RadioChannelsManager.eliminarCanal", "Eliminar canal")}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              «{aBorrar?.name}» dejará de existir. Quien esté dentro saldrá al
-              canal predeterminado en su próxima conexión.
+              {t("ui.RadioChannelsManager.dejaraDeExistir", {
+                defaultValue:
+                  "«{{name}}» dejará de existir. Quien esté dentro saldrá al canal predeterminado en su próxima conexión.",
+                name: aBorrar?.name ?? "",
+              })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={borrar}>Eliminar</AlertDialogAction>
+            <AlertDialogCancel>
+              {t("ui.RadioChannelsManager.cancelar", "Cancelar")}
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={borrar}>
+              {t("ui.RadioChannelsManager.eliminar", "Eliminar")}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

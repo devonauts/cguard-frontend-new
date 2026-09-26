@@ -47,17 +47,20 @@ function TrendPanelBase({
     }
   > = {
     incidentes: {
-      label: "Incidentes",
+      label: t("ui.TrendPanel.incidentes", "Incidentes"),
       icon: <AlertTriangle />,
       tone: "bad",
       data: incidents,
-      subtitle: "Incidentes reportados por mes",
+      subtitle: t(
+        "ui.TrendPanel.incidentesReportadosPorMes",
+        "Incidentes reportados por mes",
+      ),
       suffix: "",
       to: "/activities",
       mejorSi: "menor",
     },
     respuesta: {
-      label: "Respuesta",
+      label: t("dashboard.kpiCorto.response", "Respuesta"),
       icon: <Timer />,
       tone: "info",
       data: response,
@@ -70,11 +73,14 @@ function TrendPanelBase({
       mejorSi: "menor",
     },
     clientes: {
-      label: "Clientes",
+      label: t("dashboard.kpiCorto.clients", "Clientes"),
       icon: <Building2 />,
       tone: "brand",
       data: acquisition,
-      subtitle: "Clientes nuevos incorporados por mes",
+      subtitle: t(
+        "ui.TrendPanel.clientesNuevosIncorporadosPorMes",
+        "Clientes nuevos incorporados por mes",
+      ),
       suffix: "",
       to: "/clients",
       mejorSi: "mayor",
@@ -109,7 +115,7 @@ function TrendPanelBase({
       className={className}
       icon={s.icon}
       subtitle={s.subtitle}
-      title="Tendencia operativa"
+      title={t("ui.TrendPanel.tendenciaOperativa", "Tendencia operativa")}
       tone={s.tone}
     >
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
@@ -165,7 +171,7 @@ function TrendPanelBase({
 
       <div className="mt-4 grid grid-cols-3 gap-3">
         <Resumen
-          label="Promedio"
+          label={t("ui.TrendPanel.promedio", "Promedio")}
           value={
             promedio == null
               ? "—"
@@ -176,7 +182,10 @@ function TrendPanelBase({
           label={t("ui.TrendPanel.maximo", "Máximo")}
           value={maximo == null ? "—" : `${fmtValue(maximo)}${s.suffix}`}
         />
-        <Resumen label="Meses" value={String(vals.length)} />
+        <Resumen
+          label={t("ui.TrendPanel.meses", "Meses")}
+          value={String(vals.length)}
+        />
       </div>
     </Panel>
   );

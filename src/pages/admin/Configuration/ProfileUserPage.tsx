@@ -10,7 +10,10 @@ const ProfileUser = () => {
   return (
     <SettingsPageShell
       icon={<UserRound />}
-      subtitle="Tu foto, tus datos de contacto y el idioma con el que ves la plataforma."
+      subtitle={t(
+        "ui.ProfileUserPage.tuFotoTusDatosDeContacto",
+        "Tu foto, tus datos de contacto y el idioma con el que ves la plataforma.",
+      )}
       title={t("ui.ProfileUserPage.perfilDelUsuario", "Perfil del usuario")}
     >
       <ProfileUserForm />

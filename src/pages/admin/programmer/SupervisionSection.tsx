@@ -162,7 +162,9 @@ export default function SupervisionSection({
 
   const asignarSupervisor = async () => {
     if (!asignar || !asignar.userId) {
-      toast.error("Elige un supervisor");
+      toast.error(
+        t("ui.SupervisionSection.eligeUnSupervisor", "Elige un supervisor"),
+      );
 
       return;
     }
@@ -177,11 +179,20 @@ export default function SupervisionSection({
           },
         },
       );
-      toast.success("Supervisor asignado al puesto");
+      toast.success(
+        t(
+          "ui.SupervisionSection.supervisorAsignadoAlPuesto",
+          "Supervisor asignado al puesto",
+        ),
+      );
       setAsignar(null);
       cargar();
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || "No se pudo asignar");
+      toast.error(
+        e?.data?.message ||
+          e?.message ||
+          t("ui.SupervisionSection.noSePudoAsignar", "No se pudo asignar"),
+      );
     } finally {
       setGuardando(false);
     }
@@ -194,9 +205,13 @@ export default function SupervisionSection({
   ) => {
     if (
       !(await confirmDialog({
-        title: "Quitar del puesto",
-        message: `¿Quitar a ${nombre} de este puesto de supervisión? Se eliminan sus turnos planificados.`,
-        confirmText: "Quitar",
+        title: t("ui.SupervisionSection.quitarDelPuesto", "Quitar del puesto"),
+        message: t("ui.SupervisionSection.quitarADeEstePuestoConfirm", {
+          defaultValue:
+            "¿Quitar a {{nombre}} de este puesto de supervisión? Se eliminan sus turnos planificados.",
+          nombre,
+        }),
+        confirmText: t("ui.SupervisionSection.quitar", "Quitar"),
         tone: "danger",
       }))
     )
@@ -205,10 +220,19 @@ export default function SupervisionSection({
       await ApiService.delete(
         `/tenant/${tenantId()}/supervisor-positions/${positionId}/assignments/${assignmentId}`,
       );
-      toast.success("Supervisor quitado del puesto");
+      toast.success(
+        t(
+          "ui.SupervisionSection.supervisorQuitadoDelPuesto",
+          "Supervisor quitado del puesto",
+        ),
+      );
       cargar();
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || "No se pudo quitar");
+      toast.error(
+        e?.data?.message ||
+          e?.message ||
+          t("ui.SupervisionSection.noSePudoQuitar", "No se pudo quitar"),
+      );
     }
   };
 
@@ -271,8 +295,14 @@ export default function SupervisionSection({
             >
               <AlertTriangle size={11} />
               {faltan > 0
-                ? `faltan ${faltan}`
-                : `${sinPuesto.length} sin puesto`}
+                ? t("ui.SupervisionSection.faltanN", {
+                    defaultValue: "faltan {{n}}",
+                    n: faltan,
+                  })
+                : t("ui.SupervisionSection.nSinPuesto", {
+                    defaultValue: "{{n}} sin puesto",
+                    n: sinPuesto.length,
+                  })}
             </span>
           )}
           <Link
@@ -312,9 +342,10 @@ export default function SupervisionSection({
                 className="truncate text-xs font-medium"
                 style={{ color: "var(--warn-text)" }}
               >
-                {sinPuesto.length === 1
-                  ? "1 supervisor sin puesto"
-                  : `${sinPuesto.length} supervisores sin puesto`}
+                {t("ui.SupervisionSection.supervisoresSinPuesto", {
+                  defaultValue: "{{count}} supervisores sin puesto",
+                  count: sinPuesto.length,
+                })}
               </p>
               <p
                 className="truncate text-[11px]"
@@ -328,7 +359,7 @@ export default function SupervisionSection({
               style={{ color: "var(--brand-text)" }}
               to="/supervisor-positions"
             >
-              Crear puesto
+              {t("ui.SupervisionSection.crearPuesto", "Crear puesto")}
             </Link>
           </div>
           <div style={{ gridColumn: "2 / -1", ...columnRules(colWidth) }} />
@@ -351,7 +382,9 @@ export default function SupervisionSection({
               style={{ borderBottom: "1px solid var(--hairline)" }}
             >
               <div>
-                <h4 className="text-sm font-semibold">Asignar supervisor</h4>
+                <h4 className="text-sm font-semibold">
+                  {t("ui.SupervisionSection.asignarSupervisor", "Asignar supervisor")}
+                </h4>
                 <p
                   className="mt-0.5 text-[11px]"
                   style={{ color: "var(--ink-soft)" }}
@@ -371,7 +404,7 @@ export default function SupervisionSection({
                 className="block text-[10px] font-semibold uppercase tracking-wider"
                 style={{ color: "var(--ink-soft)" }}
               >
-                Supervisor
+                {t("comun.supervisor", "Supervisor")}
               </label>
               <select
                 className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:border-primary"
@@ -384,7 +417,9 @@ export default function SupervisionSection({
                   setAsignar((m) => (m ? { ...m, userId: e.target.value } : m))
                 }
               >
-                <option value="">Selecciona…</option>
+                <option value="">
+                  {t("ui.SupervisionSection.selecciona", "Selecciona…")}
+                </option>
                 {sinPuesto.map((u) => (
                   <option key={u.userId} value={u.userId}>
                     {u.name}
@@ -396,8 +431,10 @@ export default function SupervisionSection({
                   className="text-[11px]"
                   style={{ color: "var(--ink-faint)" }}
                 >
-                  Todos los supervisores con rol ya tienen puesto. Para añadir a
-                  alguien más, dale el rol de supervisor primero.
+                  {t(
+                    "ui.SupervisionSection.todosLosSupervisoresYaTienenPuesto",
+                    "Todos los supervisores con rol ya tienen puesto. Para añadir a alguien más, dale el rol de supervisor primero.",
+                  )}
                 </p>
               )}
             </div>
@@ -412,7 +449,7 @@ export default function SupervisionSection({
                 className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold"
                 onClick={() => setAsignar(null)}
               >
-                Cancelar
+                {t("common.cancel", "Cancelar")}
               </button>
               <button
                 className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold disabled:opacity-40"
@@ -422,7 +459,7 @@ export default function SupervisionSection({
                 {guardando ? (
                   <Loader2 className="animate-spin" size={14} />
                 ) : (
-                  "Asignar"
+                  t("ui.SupervisionSection.asignar", "Asignar")
                 )}
               </button>
             </div>
@@ -477,7 +514,10 @@ export default function SupervisionSection({
                           color: "var(--ok-text)",
                         }
                   }
-                  title="Supervisores asignados vs. necesarios"
+                  title={t(
+                    "ui.SupervisionSection.supervisoresAsignadosVsNecesarios",
+                    "Supervisores asignados vs. necesarios",
+                  )}
                 >
                   {p.coverage.assigned}/{p.coverage.needed}
                 </span>
@@ -486,7 +526,10 @@ export default function SupervisionSection({
                   pantalla — que es lo que hacía que esta sección no se usara. */}
                 <button
                   className="cg-btn-ghost cg-focus shrink-0 rounded p-1"
-                  title="Asignar un supervisor a este puesto"
+                  title={t(
+                    "ui.SupervisionSection.asignarUnSupervisorAEstePuesto",
+                    "Asignar un supervisor a este puesto",
+                  )}
                   onClick={() =>
                     setAsignar({
                       positionId: p.id,
@@ -534,13 +577,16 @@ export default function SupervisionSection({
                         className="shrink-0 text-[10px]"
                         style={{ color: "var(--ink-faint)" }}
                       >
-                        relevo
+                        {t("ui.SupervisionSection.relevo", "relevo")}
                       </span>
                     )}
                     <span className="flex-1" />
                     <button
                       className="cg-btn-ghost cg-focus shrink-0 rounded p-0.5 opacity-60 hover:opacity-100"
-                      title={`Quitar a ${s.name} de este puesto`}
+                      title={t("ui.SupervisionSection.quitarADeEstePuesto", {
+                        defaultValue: "Quitar a {{nombre}} de este puesto",
+                        nombre: s.name,
+                      })}
                       onClick={() =>
                         void quitarSupervisor(p.id, s.assignmentId, s.name)
                       }

@@ -101,6 +101,7 @@ import type { DispatchRow, DirectoryOption, DispatchApiError } from "./types";
 import { localeActual } from "@/lib/localeActual";
 import { hoyEnLaEmpresa, limitesDelDia, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
 import { resolveApiBase } from "@/lib/apiBase";
+import i18n from "@/i18n";
 
 // The list is paginated client-side over what we load. The backend hard-caps a
 // no-limit /request query at 1000 rows, which silently truncated tenants past
@@ -112,7 +113,12 @@ const DISPATCH_FETCH_LIMIT = 5000;
 /** Asunto por defecto del envío de despachos, con el nombre de LA empresa en sesión. */
 function asuntoPorDefecto(): string {
   const empresa = getStoredTenantBranding().name;
-  return empresa ? `Despachos | ${empresa}` : "Despachos";
+  return empresa
+    ? i18n.t("ui.DispatcherPage.asuntoDespachosEmpresa", {
+        defaultValue: "Despachos | {{empresa}}",
+        empresa,
+      })
+    : i18n.t("ui.DispatcherPage.despachos", "Despachos");
 }
 
 export default function DispatcherPage() {
@@ -1028,33 +1034,37 @@ export default function DispatcherPage() {
       const records: any[] = cuerpo?.rows ?? [];
 
       const rows = records.map((r: any) => ({
-        "Client Name": getClientDisplay(r),
-        "Post Site":
+        [t("dispatcher.client_name", "Cliente")]: getClientDisplay(r),
+        [t("dispatcher.post_site", "Puesto de seguridad")]:
           r.site?.name ||
           r.site?.companyName ||
           (typeof r.site === "string" ? r.site : "") ||
           "",
-        "Caller Type": r.callerType || "",
-        "Caller Name":
+        [t("dispatcher.caller_type", "Tipo de informador")]: r.callerType || "",
+        [t("dispatcher.caller_name", "Nombre del informante")]:
           r.callerName ||
           (r.guardName && (r.guardName.fullName || r.guardName.name)) ||
           "",
-        "Incident Type":
+        [t("dispatcher.incident_type", "Tipo de incidente")]:
           (r.incidentType && (r.incidentType.name || r.incidentType)) ||
           r.incidentTypeId ||
           "",
-        "Incident Details": r.content || r.description || "",
-        "Incident Location": r.location || "",
-        Notes: r.internalNotes || r.notes || "",
-        Priority: r.priority || "",
-        "Dispatch Status": r.status || "",
+        [t("dispatcher.incident_details", "Detalles del incidente")]: r.content || r.description || "",
+        [t("dispatcher.incident_location", "Ubicación del incidente")]: r.location || "",
+        [t("ui.DispatcherPage.notas", "Notas")]: r.internalNotes || r.notes || "",
+        [t("ui.DispatcherPage.prioridad", "Prioridad")]: r.priority || "",
+        [t("dispatcher.status", "Estado")]: r.status || "",
       }));
 
       // json_to_sheet defaults to starting at A1; avoid passing unsupported 'origin' option
       const XLSX = await loadXlsx();
       const ws = XLSX.utils.json_to_sheet(rows);
       const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Incidentes");
+      XLSX.utils.book_append_sheet(
+        wb,
+        ws,
+        t("ui.DispatcherPage.incidentes", "Incidentes"),
+      );
 
       const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" });
       const blob = new Blob([buf], {
@@ -1063,7 +1073,7 @@ export default function DispatcherPage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `Incidentes_${hoyEnLaEmpresa()}.xlsx`;
+      a.download = `${t("ui.DispatcherPage.incidentes", "Incidentes")}_${hoyEnLaEmpresa()}.xlsx`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -1204,7 +1214,7 @@ export default function DispatcherPage() {
     try {
       const tenantId = localStorage.getItem("tenantId");
       if (!tenantId) {
-        toast.error("Tenant no disponible");
+        toast.error(t("dispatcher.tenantUnavailable", "Tenant no disponible"));
         return;
       }
 
@@ -1259,8 +1269,10 @@ export default function DispatcherPage() {
           icon={<Siren />}
           title={t("dispatcher.breadcrumbList")}
           subtitle={
-            t("dispatcher.subtitle") ||
-            "Gestiona y da seguimiento a los despachos de tu operación."
+            t(
+              "dispatcher.subtitle",
+              "Recibe, despacha y da seguimiento a los avisos de tus puestos",
+            )
           }
         />
         {/* Acciones superiores */}
@@ -2181,7 +2193,7 @@ export default function DispatcherPage() {
 
             <div className="space-y-3 mt-4">
               <div>
-                <Label>Formato</Label>
+                <Label>{t("ui.DispatcherPage.formato", "Formato")}</Label>
                 <Select
                   value={emailFormat}
                   onValueChange={(v) => setEmailFormat(v as "pdf" | "xlsx")}
@@ -2197,7 +2209,9 @@ export default function DispatcherPage() {
               </div>
 
               <div>
-                <Label>Responder a (opcional)</Label>
+                <Label>
+                {t("ui.DispatcherPage.responderAOpcional", "Responder a (opcional)")}
+              </Label>
                 <Input
                   value={emailReplyTo}
                   onChange={(e) => setEmailReplyTo(e.target.value)}
@@ -2217,7 +2231,7 @@ export default function DispatcherPage() {
               </div>
 
               <div>
-                <Label>Asunto</Label>
+                <Label>{t("incidents.subject", "Asunto")}</Label>
                 <Input
                   value={emailSubject}
                   onChange={(e) => setEmailSubject(e.target.value)}
@@ -2225,7 +2239,7 @@ export default function DispatcherPage() {
               </div>
 
               <div>
-                <Label>Mensaje</Label>
+                <Label>{t("ui.DispatcherPage.mensaje", "Mensaje")}</Label>
                 <Textarea
                   value={emailMessage}
                   onChange={(e) => setEmailMessage(e.target.value)}
@@ -2263,11 +2277,13 @@ export default function DispatcherPage() {
             <div ref={shareDialogRef} onClick={(e) => e.stopPropagation()}>
               <AlertDialogHeader className="text-center">
                 <AlertDialogTitle className="text-center text-lg font-semibold">
-                  Generar enlace compartible
+                  {t("dispatcher.generate_share_link", "Generar enlace compartible")}
                 </AlertDialogTitle>
                 <AlertDialogDescription className="text-left">
-                  Seleccione el período de validez del enlace compartible.
-                  "Nunca" dejará el enlace sin expiración.
+                  {t(
+                    "ui.DispatcherPage.seleccioneElPeriodoDeValidez",
+                    'Seleccione el período de validez del enlace compartible. "Nunca" dejará el enlace sin expiración.',
+                  )}
                 </AlertDialogDescription>
               </AlertDialogHeader>
 
@@ -2279,7 +2295,7 @@ export default function DispatcherPage() {
                     checked={shareExpiry === "1h"}
                     onChange={() => setShareExpiry("1h")}
                   />
-                  <span>1 hora</span>
+                  <span>{t("ui.DispatcherPage.unaHora", "1 hora")}</span>
                 </label>
                 <label className="flex items-center gap-2">
                   <input
@@ -2288,7 +2304,7 @@ export default function DispatcherPage() {
                     checked={shareExpiry === "24h"}
                     onChange={() => setShareExpiry("24h")}
                   />
-                  <span>24 horas</span>
+                  <span>{t("ui.DocumentPackets.expiry24h", "24 horas")}</span>
                 </label>
                 <label className="flex items-center gap-2">
                   <input
@@ -2306,7 +2322,7 @@ export default function DispatcherPage() {
                     checked={shareExpiry === "never"}
                     onChange={() => setShareExpiry("never")}
                   />
-                  <span>Nunca</span>
+                  <span>{t("ui.DispatcherPage.nunca", "Nunca")}</span>
                 </label>
               </div>
 
@@ -2317,7 +2333,9 @@ export default function DispatcherPage() {
                   onClick={handleCreateShare}
                   disabled={shareLoading}
                 >
-                  {shareLoading ? "Creando..." : "Generar y copiar"}
+                  {shareLoading
+                    ? t("incidents.creating", "Creando...")
+                    : t("ui.DispatcherPage.generarYCopiar", "Generar y copiar")}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </div>
@@ -2337,8 +2355,11 @@ export default function DispatcherPage() {
                 )}
               </AlertDialogTitle>
               <AlertDialogDescription className="text-left">
-                ¿Está seguro de eliminar {selectedIds.length} Incidente(s)? Esta
-                acción no se puede deshacer.
+                {t("dispatcher.confirm_delete_desc", {
+                  defaultValue:
+                    "¿Estás seguro de eliminar {{count}} incidente(s)? Esta acción no se puede deshacer.",
+                  count: selectedIds.length,
+                })}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

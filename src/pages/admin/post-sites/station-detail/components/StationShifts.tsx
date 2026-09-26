@@ -80,21 +80,19 @@ function guardColor(i: number): GuardColor {
 /** Tinte por defecto cuando un turno no tiene vigilante identificado. */
 const GUARD_FALLBACK: GuardColor = guardColor(0);
 
-const DAYS_ES = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
-const MONTHS_ES = [
-  "Enero",
-  "Febrero",
-  "Marzo",
-  "Abril",
-  "Mayo",
-  "Junio",
-  "Julio",
-  "Agosto",
-  "Septiembre",
-  "Octubre",
-  "Noviembre",
-  "Diciembre",
-];
+// Short weekday names (Monday first) and month names in the user's language.
+// 2026-01-05 is a Monday.
+const dayShortNames = () =>
+  Array.from({ length: 7 }, (_, i) =>
+    new Date(2026, 0, 5 + i).toLocaleDateString(localeActual(), {
+      weekday: "short",
+    }),
+  );
+const monthName = (m: number, month: "long" | "short" = "long") => {
+  const s = new Date(2026, m, 1).toLocaleDateString(localeActual(), { month });
+
+  return s.charAt(0).toUpperCase() + s.slice(1);
+};
 
 // Map JS getDay() (0=Sun) to our day keys
 const DAY_INDEX_MAP = ["dom", "lun", "mar", "mie", "jue", "vie", "sab"];
@@ -258,7 +256,9 @@ export default function StationShifts({
         ),
       );
     } catch (e: any) {
-      setError(e?.message || "Error al cargar turnos");
+      setError(
+        e?.message || t("ui.StationShifts.errorAlCargarTurnos", "Error al cargar turnos"),
+      );
     } finally {
       setLoading(false);
     }
@@ -400,7 +400,7 @@ export default function StationShifts({
       }
     });
     return map;
-  }, [rows]);
+  }, [rows, t]);
 
   // Parse shifts into events
   const events = useMemo<ShiftEvent[]>(() => {
@@ -411,7 +411,7 @@ export default function StationShifts({
         g.name ||
         `${g.firstName || ""} ${g.lastName || ""}`.trim() ||
         r.guardName ||
-        "Sin asignar";
+        t("comun.sinAsignar", "Sin asignar");
       const guardId = g.id || r.guardId || r.guard || "unknown";
       const start = new Date(r.startTime || r.punchInTime || r.start);
       const end = new Date(r.endTime || r.punchOutTime || r.end);
@@ -428,7 +428,7 @@ export default function StationShifts({
               : "completed";
       return { id: r.id, guardName, guardId, start, end, status, raw: r };
     });
-  }, [rows]);
+  }, [rows, t]);
 
   const toDateKey = dateKey;
 
@@ -649,7 +649,7 @@ export default function StationShifts({
       }
     });
     return best;
-  }, [rows]);
+  }, [rows, t]);
 
   // The assign modal (ShiftAssignModal) initializes itself on open.
   const openForm = (_dateStr?: string) => {
@@ -691,9 +691,13 @@ export default function StationShifts({
   const removeGuard = async (ev: ShiftEvent) => {
     if (
       !(await confirmDialog({
-        title: "Quitar vigilante",
-        message: `¿Quitar a ${ev.guardName} de este puesto? Sus turnos futuros se anulan; los ya trabajados se conservan en el historial.`,
-        confirmText: "Quitar",
+        title: t("ui.AsignacionEditModal.quitarVigilante", "Quitar vigilante"),
+        message: t("ui.AsignacionEditModal.quitarConfirm", {
+          defaultValue:
+            "¿Quitar a {{nombre}} de este puesto? Sus turnos futuros se anulan; los ya trabajados se conservan en el historial.",
+          nombre: ev.guardName,
+        }),
+        confirmText: t("station.guards.remove", "Quitar"),
         tone: "danger",
       }))
     )
@@ -732,13 +736,13 @@ export default function StationShifts({
         year: "numeric",
       });
     if (viewMode === "month")
-      return `${MONTHS_ES[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+      return `${monthName(currentDate.getMonth())} ${currentDate.getFullYear()}`;
     const days = getWeekDays();
     const first = days[0],
       last = days[6];
     if (first.getMonth() === last.getMonth())
-      return `${first.getDate()} \u2013 ${last.getDate()} ${MONTHS_ES[first.getMonth()]} ${first.getFullYear()}`;
-    return `${first.getDate()} ${MONTHS_ES[first.getMonth()].slice(0, 3)} \u2013 ${last.getDate()} ${MONTHS_ES[last.getMonth()].slice(0, 3)} ${last.getFullYear()}`;
+      return `${first.getDate()} \u2013 ${last.getDate()} ${monthName(first.getMonth())} ${first.getFullYear()}`;
+    return `${first.getDate()} ${monthName(first.getMonth(), "short")} \u2013 ${last.getDate()} ${monthName(last.getMonth(), "short")} ${last.getFullYear()}`;
   }, [currentDate, viewMode, getWeekDays]);
 
   return (
@@ -795,12 +799,21 @@ export default function StationShifts({
           <div className="min-w-48 flex-1">
             <p className="text-sm font-semibold">
               {sinCiclo.length === 1
-                ? `${sinCiclo[0]} trabaja todos los días en este puesto`
-                : `${sinCiclo.length} vigilantes trabajan todos los días en este puesto`}
+                ? t("ui.StationShifts.unoTrabajaTodosLosDias", {
+                    defaultValue: "{{nombre}} trabaja todos los días en este puesto",
+                    nombre: sinCiclo[0],
+                  })
+                : t("ui.StationShifts.nTrabajanTodosLosDias", {
+                    defaultValue:
+                      "{{n}} vigilantes trabajan todos los días en este puesto",
+                    n: sinCiclo.length,
+                  })}
             </p>
             <p className="mt-0.5 text-xs" style={{ color: "var(--ink-soft)" }}>
-              Su horario no tiene ciclo de descanso, así que el día que libren
-              saldrá como ausencia. Ponles el ciclo que de verdad hacen.
+              {t(
+                "ui.StationShifts.sinCicloDeDescanso",
+                "Su horario no tiene ciclo de descanso, así que el día que libren saldrá como ausencia. Ponles el ciclo que de verdad hacen.",
+              )}
               {sinCiclo.length > 1 && ` (${sinCiclo.join(", ")})`}
             </p>
           </div>
@@ -808,7 +821,7 @@ export default function StationShifts({
             className="cg-btn-brand cg-focus flex-shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold"
             onClick={() => openForm()}
           >
-            Poner ciclo
+            {t("ui.StationShifts.ponerCiclo", "Poner ciclo")}
           </button>
         </div>
       )}
@@ -830,8 +843,10 @@ export default function StationShifts({
               className="text-sm font-semibold"
               style={{ color: "var(--bad-text)" }}
             >
-              {futureUncovered} turno{futureUncovered > 1 ? "s" : ""} por cubrir
-              (próximos 14 días)
+              {t("ui.StationShifts.turnosPorCubrir14", {
+                defaultValue: "{{count}} turnos por cubrir (próximos 14 días)",
+                count: futureUncovered,
+              })}
             </p>
             {/* El texto de antes explicaba la ARITMÉTICA del motor («2 fijos no
                 alcanzan a cubrir 24/7») a quien sólo quiere saber qué hacer. Y
@@ -856,7 +871,7 @@ export default function StationShifts({
               onClick={() => openForm()}
               className="cg-btn-bad cg-focus rounded-lg px-3 py-1.5 text-xs font-semibold transition-all"
             >
-              Asignar fijo
+              {t("ui.StationShifts.asignarFijo", "Asignar fijo")}
             </button>
           </div>
         </div>
@@ -882,16 +897,16 @@ export default function StationShifts({
               value={viewMode}
               onChange={(v) => setViewMode(v)}
               options={[
-                { value: "day", label: "Día" },
-                { value: "week", label: "Semana" },
-                { value: "month", label: "Mes" },
+                { value: "day", label: t("ui.StationShifts.dia", "Día") },
+                { value: "week", label: t("ui.StationShifts.semana", "Semana") },
+                { value: "month", label: t("ui.StationShifts.mes", "Mes") },
               ]}
             />
             <button
               onClick={goToday}
               className="cg-btn-glass cg-focus rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all"
             >
-              Hoy
+              {t("kit.dateRange.today", "Hoy")}
             </button>
           </div>
 
@@ -921,7 +936,8 @@ export default function StationShifts({
             onClick={() => openForm(selectedDate || undefined)}
             className="gap-1.5 active:scale-95"
           >
-            <Plus size={13} strokeWidth={2.5} /> Nuevo turno
+            <Plus size={13} strokeWidth={2.5} />{" "}
+            {t("ui.StationShifts.nuevoTurno", "Nuevo turno")}
           </Button>
         </div>
 
@@ -1084,7 +1100,9 @@ export default function StationShifts({
                       {/* Assigned shifts */}
                       {selectedDayEvents.length > 0 && (
                         <div className="space-y-1.5 pt-1">
-                          <h5 className="cg-eyebrow">Vigilantes asignados</h5>
+                          <h5 className="cg-eyebrow">
+                            {t("ui.StationOverview.vigilantesAsignados", "Vigilantes asignados")}
+                          </h5>
                           {selectedDayEvents.map((ev, i) => {
                             const color =
                               guardColorMap[ev.guardId] || GUARD_FALLBACK;
@@ -1158,10 +1176,22 @@ export default function StationShifts({
                                       >
                                         {nov.etiqueta}
                                         {nov.registradaPor
-                                          ? ` — lo registró ${nov.registradaPor}`
+                                          ? ` — ${t("ui.StationShifts.loRegistro", {
+                                              defaultValue: "lo registró {{quien}}",
+                                              quien: nov.registradaPor,
+                                            })}`
                                           : ""}
                                         {nov.registradaEl
-                                          ? ` el ${new Date(nov.registradaEl).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(), day: "numeric", month: "short" })}`
+                                          ? ` ${t("ui.StationShifts.elFecha", {
+                                              defaultValue: "el {{fecha}}",
+                                              fecha: new Date(
+                                                nov.registradaEl,
+                                              ).toLocaleDateString(localeActual(), {
+                                                timeZone: zonaDeLaEmpresa(),
+                                                day: "numeric",
+                                                month: "short",
+                                              }),
+                                            })}`
                                           : ""}
                                         {nov.nota ? ` · ${nov.nota}` : ""}
                                       </p>
@@ -1187,12 +1217,12 @@ export default function StationShifts({
                                       }}
                                     >
                                       {esNovedad
-                                        ? `No se presenta — ${nov?.etiqueta || "novedad"}`
+                                        ? `${t("ui.StationShifts.noSePresenta", "No se presenta")} — ${nov?.etiqueta || t("ui.StationShifts.novedadMin", "novedad")}`
                                         : ev.status === "active"
-                                          ? "En servicio"
+                                          ? t("guards.summary.onDuty", "En servicio")
                                           : ev.status === "upcoming"
-                                            ? "Programado"
-                                            : "Completado"}
+                                            ? t("settings.appearance.badgeScheduled", "Programado")
+                                            : t("projects.status.completed", "Completado")}
                                     </span>
                                     <span
                                       className="text-[9px]"
@@ -1222,7 +1252,8 @@ export default function StationShifts({
                                         color: "var(--ink-soft)",
                                       }}
                                     >
-                                      <Pencil size={10} /> Editar turno
+                                      <Pencil size={10} />{" "}
+                                      {t("station.guards.editShift", "Editar turno")}
                                     </div>
                                     <div
                                       role="button"
@@ -1424,7 +1455,9 @@ function WeekView({
                     : undefined
                 }
               >
-                <div className="cg-eyebrow transition-colors">{DAYS_ES[i]}</div>
+                <div className="cg-eyebrow transition-colors">
+                  {dayShortNames()[i]}
+                </div>
                 <div
                   className="mx-auto mt-1 flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold tabular-nums transition-all"
                   style={
@@ -1560,7 +1593,7 @@ function WeekView({
                                     }}
                                     title={
                                       ev.status === "novedad"
-                                        ? `${ev.raw?.novedad?.etiqueta || "Novedad"} — no se presenta`
+                                        ? `${ev.raw?.novedad?.etiqueta || t("ui.StationShifts.novedad", "Novedad")} — ${t("ui.StationShifts.noSePresentaMin", "no se presenta")}`
                                         : undefined
                                     }
                                   >
@@ -1597,7 +1630,10 @@ function WeekView({
                                 className="text-[9px]"
                                 style={{ color: "var(--ink-faint)" }}
                               >
-                                +{guards.length - 3} más
+                                {t("ui.StationShifts.masN", {
+                                  defaultValue: "+{{n}} más",
+                                  n: guards.length - 3,
+                                })}
                               </div>
                             )}
                           </div>
@@ -1618,7 +1654,8 @@ function WeekView({
                               color: "var(--bad-text)",
                             }}
                           >
-                            <Plus size={10} /> Asignar
+                            <Plus size={10} />{" "}
+                            {t("ui.SacafrancoAssignModal.asignar", "Asignar")}
                           </button>
                         )}
                       </div>
@@ -1697,8 +1734,11 @@ function DayView({
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold">
               {covered === slots.length
-                ? "Cobertura completa"
-                : `${slots.length - covered} turno(s) sin cubrir`}
+                ? t("ui.StationShifts.coberturaCompleta", "Cobertura completa")
+                : t("ui.StationShifts.turnosSinCubrir", {
+                    defaultValue: "{{count}} turnos sin cubrir",
+                    count: slots.length - covered,
+                  })}
             </p>
             <p className="text-[11px]" style={{ color: "var(--ink-soft)" }}>
               {t("ui.StationShifts.lineaDeTiempo24H", "Línea de tiempo · 24 h")}
@@ -1713,7 +1753,8 @@ function DayView({
               {t("ui.StationShifts.dia", "Día")}
             </span>
             <span className="inline-flex items-center gap-1">
-              <Moon size={11} style={{ color: "var(--info-text)" }} /> Noche
+              <Moon size={11} style={{ color: "var(--info-text)" }} />{" "}
+              {t("clients.coverage.cell.night.legend", "Noche")}
             </span>
           </div>
         </div>
@@ -1841,7 +1882,7 @@ function DayView({
                     }}
                     title={
                       ev.status === "novedad"
-                        ? `${ev.raw?.novedad?.etiqueta || "Novedad"} — no se presenta`
+                        ? `${ev.raw?.novedad?.etiqueta || t("ui.StationShifts.novedad", "Novedad")} — ${t("ui.StationShifts.noSePresentaMin", "no se presenta")}`
                         : undefined
                     }
                   >
@@ -1924,7 +1965,7 @@ function MonthView({
   return (
     <div className="p-3">
       <div className="grid grid-cols-7 mb-2">
-        {DAYS_ES.map((d) => (
+        {dayShortNames().map((d) => (
           <div key={d} className="cg-eyebrow py-2 text-center">
             {d}
           </div>

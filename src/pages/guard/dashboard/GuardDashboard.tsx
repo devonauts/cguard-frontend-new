@@ -37,7 +37,8 @@ export default function GuardDashboard() {
 
       setData(res);
     } catch (e: any) {
-      toast.error(e?.message || "Error cargando datos");
+      toast.error(e?.message ||
+          t("ui.GuardDashboard.errorCargandoDatos", "Error cargando datos"));
     } finally {
       setLoading(false);
     }
@@ -50,7 +51,9 @@ export default function GuardDashboard() {
   const getPosition = (): Promise<GeolocationPosition> =>
     new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
-        reject(new Error("GPS no disponible"));
+        reject(
+          new Error(t("ui.GuardDashboard.gpsNoDisponible", "GPS no disponible")),
+        );
 
         return;
       }
@@ -73,14 +76,23 @@ export default function GuardDashboard() {
       });
 
       if (res.success) {
-        toast.success("Entrada registrada correctamente");
+        toast.success(
+          t(
+            "ui.GuardDashboard.entradaRegistradaCorrectamente",
+            "Entrada registrada correctamente",
+          ),
+        );
         loadDashboard();
       } else {
         setGpsError(
           res.message ||
             t("ui.GuardDashboard.errorGeovalla", "Error de geovalla"),
         );
-        toast.error(res.message || "No pudiste marcar entrada");
+        toast.error(res.message ||
+            t(
+              "ui.GuardDashboard.noPudisteMarcarEntrada",
+              "No pudiste marcar entrada",
+            ),);
       }
     } catch (e: any) {
       const msg =
@@ -114,13 +126,19 @@ export default function GuardDashboard() {
       const res = await guardMeService.clockOut({ latitude, longitude });
 
       if (res.success) {
-        toast.success("Salida registrada correctamente");
+        toast.success(
+          t(
+            "ui.GuardDashboard.salidaRegistradaCorrectamente",
+            "Salida registrada correctamente",
+          ),
+        );
         loadDashboard();
       } else {
-        toast.error(res.message || "Error al marcar salida");
+        toast.error(res.message ||
+            t("ui.GuardDashboard.errorAlMarcarSalida", "Error al marcar salida"),);
       }
     } catch (e: any) {
-      toast.error(e?.message || "Error");
+      toast.error(e?.message || t("radio.devices.status.error", "Error"));
     } finally {
       setClockingOut(false);
     }
@@ -185,10 +203,13 @@ export default function GuardDashboard() {
                 className="text-sm font-semibold"
                 style={{ color: "var(--ok-text)" }}
               >
-                Entrada registrada
+                {t("ui.GuardDashboard.entradaRegistrada", "Entrada registrada")}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                Desde: {fmtTime(data?.activeClockIn?.punchInTime)}
+                {t("ui.GuardDashboard.desde", {
+                  defaultValue: "Desde: {{hora}}",
+                  hora: fmtTime(data?.activeClockIn?.punchInTime),
+                })}
               </p>
               <button
                 className="cg-btn-bad cg-focus mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3 text-base font-semibold transition disabled:opacity-50 motion-reduce:transition-none"
@@ -199,7 +220,8 @@ export default function GuardDashboard() {
                   <Loader2 className="animate-spin" size={18} />
                 ) : (
                   <>
-                    <LogOut size={18} /> Marcar Salida
+                    <LogOut size={18} />{" "}
+                    {t("ui.GuardDashboard.marcarSalida", "Marcar Salida")}
                   </>
                 )}
               </button>
@@ -226,7 +248,10 @@ export default function GuardDashboard() {
                       ) : (
                         <>
                           <LogIn size={18} />{" "}
-                          {`Marcar Entrada — ${st.stationName}`}
+                          {t("ui.GuardDashboard.marcarEntradaEn", {
+                            defaultValue: "Marcar Entrada — {{puesto}}",
+                            puesto: st.stationName,
+                          })}
                         </>
                       )}
                     </button>

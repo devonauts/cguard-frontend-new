@@ -46,7 +46,7 @@ export default function PostSite() {
             <MetricCard
               accent={TONES.info}
               icon={<ClipboardCheck size={16} />}
-              label="Cobertura promedio"
+              label={t("ui.PostSite.coberturaPromedio", "Cobertura promedio")}
               pct={k.coveragePct}
               sub={`${k.shiftsCovered}/${k.shiftsTotal}`}
               value={`${k.coveragePct}%`}
@@ -59,14 +59,21 @@ export default function PostSite() {
                 "Cumplimiento de ubicación",
               )}
               pct={k.locationCompliancePct}
-              sub={`${k.scansValid}/${k.scansTotal} escaneos`}
+              sub={t("ui.PostSite.escaneos", {
+                defaultValue: "{{valid}}/{{total}} escaneos",
+                valid: k.scansValid,
+                total: k.scansTotal,
+              })}
               value={`${k.locationCompliancePct}%`}
             />
             <MetricCard
               accent={TONES.bad}
               icon={<AlertTriangle size={16} />}
-              label="Incidentes"
-              sub={`${k.incidentsOpen} abiertos`}
+              label={t("ui.shared.incidentes", "Incidentes")}
+              sub={t("ui.AlarmAnalytics.nAbiertos", {
+                defaultValue: "{{count}} abiertos",
+                count: k.incidentsOpen,
+              })}
               value={k.incidentsTotal}
             />
           </StatsStrip>

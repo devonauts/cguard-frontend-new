@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { useCallback, useRef, useState } from "react";
 
 /**
@@ -69,7 +70,10 @@ export function useAudioRecorder() {
   const start = useCallback(async () => {
     if (!isRecordingSupported())
       throw new Error(
-        "La grabación de audio no es compatible con este navegador",
+        i18n.t(
+          "ui.useAudioRecorder.grabacionNoCompatible",
+          "La grabación de audio no es compatible con este navegador",
+        ),
       );
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 

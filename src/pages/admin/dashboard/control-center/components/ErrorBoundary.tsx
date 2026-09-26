@@ -39,7 +39,8 @@ export class DashboardErrorBoundary extends Component<
             className="cg-btn-brand cg-focus mt-5 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold"
             onClick={() => location.reload()}
           >
-            <RotateCcw className="size-4" /> Reintentar
+            <RotateCcw className="size-4" />{" "}
+            {i18n.t("ui.DashboardErrorBoundary.reintentar", "Reintentar")}
           </button>
         </div>
       );

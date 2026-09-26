@@ -64,11 +64,24 @@ const TYPE_OPTIONS = [
   "early_departure",
   "overtime",
 ];
-const STATUS_OPTIONS: { value: string; label: string }[] = [
-  { value: "open", label: "Abiertas" },
-  { value: "acknowledged", label: "Reconocidas" },
-  { value: "resolved", label: "Resueltas" },
-  { value: "all", label: "Todas (historial)" },
+// `labelKey` se traduce al pintar (t() aquí congelaría el idioma de arranque).
+const STATUS_OPTIONS: { value: string; label: string; labelKey: string }[] = [
+  { value: "open", label: "Abiertas", labelKey: "ui.NominaExceptions.abiertas" },
+  {
+    value: "acknowledged",
+    label: "Reconocidas",
+    labelKey: "ui.NominaExceptions.reconocidas",
+  },
+  {
+    value: "resolved",
+    label: "Resueltas",
+    labelKey: "ui.NominaExceptions.resueltas",
+  },
+  {
+    value: "all",
+    label: "Todas (historial)",
+    labelKey: "ui.NominaExceptions.todasHistorial",
+  },
 ];
 
 function fullName(
@@ -160,7 +173,10 @@ export default function NominaExceptions() {
         limit: 200,
       })
       .then((r) => setRows(r.rows || []))
-      .catch((e) => toast.error(e?.message || "Error al cargar excepciones"))
+      .catch((e) => toast.error(
+          e?.message ||
+            t("ui.NominaExceptions.errorAlCargarExcepciones", "Error al cargar excepciones"),
+        ))
       .finally(() => setLoading(false));
   }, [type, status]);
 
@@ -204,7 +220,12 @@ export default function NominaExceptions() {
 
     if (
       !window.confirm(
-        `Se darán por resueltas ${alcance} excepción(es) abiertas anteriores al ${fecha}. Esta acción queda registrada en auditoría. ¿Continuar?`,
+        t("ui.NominaExceptions.confirmarCierreEnBloque", {
+          count: alcance,
+          fecha,
+          defaultValue:
+            "Se darán por resueltas {{count}} excepción(es) abiertas anteriores al {{fecha}}. Esta acción queda registrada en auditoría. ¿Continuar?",
+        }),
       )
     )
       return;
@@ -215,13 +236,19 @@ export default function NominaExceptions() {
         type: type || undefined,
       });
 
-      toast.success(`${r?.resolved ?? 0} excepción(es) cerradas`);
+      toast.success(
+        t("ui.NominaExceptions.excepcionesCerradas", {
+          count: r?.resolved ?? 0,
+          defaultValue: "{{count}} excepción(es) cerradas",
+        }),
+      );
       setCorte("");
       setAlcance(null);
       load();
     } catch (e) {
       toast.error(
-        (e as { message?: string })?.message || "No se pudo cerrar el atraso",
+        (e as { message?: string })?.message ||
+          t("ui.NominaExceptions.noSePudoCerrarElAtraso", "No se pudo cerrar el atraso"),
       );
     } finally {
       setCerrando(false);
@@ -237,8 +264,8 @@ export default function NominaExceptions() {
       });
       toast.success(
         newStatus === "resolved"
-          ? "Excepción resuelta"
-          : "Excepción reconocida",
+          ? t("ui.NominaExceptions.excepcionResuelta", "Excepción resuelta")
+          : t("ui.NominaExceptions.excepcionReconocida", "Excepción reconocida"),
       );
       setSelected(null);
       load();
@@ -252,27 +279,27 @@ export default function NominaExceptions() {
   const columns: Column<ExceptionRow>[] = [
     {
       key: "severity",
-      header: "Severidad",
+      header: t("ui.NominaExceptions.severidad", "Severidad"),
       render: (_v, r) => <SeverityPill severity={r.severity} />,
     },
     {
       key: "type",
-      header: "Tipo",
+      header: t("ui.NominaExceptions.tipo", "Tipo"),
       render: (_v, r) => EXCEPTION_LABEL[r.type] || r.type,
     },
     {
       key: "guard",
-      header: "Vigilante",
+      header: t("comun.vigilante", "Vigilante"),
       render: (_v, r) => r.guard?.fullName || "—",
     },
     {
       key: "station",
-      header: "Puesto",
+      header: t("comun.puesto", "Puesto"),
       render: (_v, r) => r.station?.stationName || "—",
     },
     {
       key: "detectedAt",
-      header: "Detectado",
+      header: t("ui.NominaExceptions.detectado", "Detectado"),
       render: (_v, r) => (
         <span
           className="text-xs tabular-nums"
@@ -284,12 +311,12 @@ export default function NominaExceptions() {
     },
     {
       key: "status",
-      header: "Estado",
+      header: t("comun.estado", "Estado"),
       render: (_v, r) => <StatusPill status={r.status} />,
     },
     {
       key: "resolvedAt",
-      header: "Resuelto",
+      header: t("ui.NominaExceptions.resuelto", "Resuelto"),
       render: (_v, r) =>
         r.resolvedAt ? (
           <span
@@ -299,7 +326,10 @@ export default function NominaExceptions() {
             {fmtDateTime(r.resolvedAt)}
             {fullName(r.resolvedBy) ? (
               <span className="block opacity-70">
-                por {fullName(r.resolvedBy)}
+                {t("ui.NominaExceptions.porNombre", {
+                  nombre: fullName(r.resolvedBy),
+                  defaultValue: "por {{nombre}}",
+                })}
               </span>
             ) : null}
           </span>
@@ -314,7 +344,8 @@ export default function NominaExceptions() {
       header: "",
       render: (_v, r) => (
         <Button size="sm" variant="outline" onClick={() => openSheet(r)}>
-          <Eye className="mr-1 size-3.5" /> Revisar
+          <Eye className="mr-1 size-3.5" />{" "}
+          {t("ui.NominaExceptions.revisar", "Revisar")}
         </Button>
       ),
     },
@@ -330,7 +361,7 @@ export default function NominaExceptions() {
         <PageHeader
           icon={<AlertTriangle />}
           subtitle={t("ui.NominaExceptions.desviacionesDeAsistenciaRegistroE")}
-          title="Excepciones"
+          title={t("ui.NominaDashboard.excepciones", "Excepciones")}
         />
 
         <Toolbar>
@@ -341,7 +372,7 @@ export default function NominaExceptions() {
           >
             {STATUS_OPTIONS.map((s) => (
               <option key={s.value} value={s.value}>
-                {s.label}
+                {t(s.labelKey, s.label)}
               </option>
             ))}
           </FilterSelect>
@@ -358,7 +389,12 @@ export default function NominaExceptions() {
             className="ml-auto pr-1 text-xs tabular-nums"
             style={{ color: "var(--ink-soft)" }}
           >
-            {loading ? "Cargando…" : `${rows.length} excepción(es)`}
+            {loading
+              ? t("ui.NominaExceptions.cargando", "Cargando…")
+              : t("ui.NominaExceptions.excepcionesCount", {
+                  count: rows.length,
+                  defaultValue: "{{count}} excepción(es)",
+                })}
           </span>
         </Toolbar>
 
@@ -379,7 +415,7 @@ export default function NominaExceptions() {
               className="flex items-center gap-2 text-sm"
               style={{ color: "var(--ink-soft)" }}
             >
-              anteriores al
+              {t("ui.NominaExceptions.anterioresAl", "anteriores al")}
               <input
                 className="min-h-9 rounded-lg border px-2 py-1 text-sm"
                 style={{
@@ -397,8 +433,18 @@ export default function NominaExceptions() {
                 style={{ color: "var(--ink-soft)" }}
               >
                 {alcance === null
-                  ? "calculando…"
-                  : `alcanza a ${alcance} excepción(es)${type ? ` de tipo ${EXCEPTION_LABEL[type] || type}` : ""}`}
+                  ? t("ui.NominaExceptions.calculando", "calculando…")
+                  : type
+                    ? t("ui.NominaExceptions.alcanzaAExcepcionesDeTipo", {
+                        count: alcance,
+                        tipo: EXCEPTION_LABEL[type] || type,
+                        defaultValue:
+                          "alcanza a {{count}} excepción(es) de tipo {{tipo}}",
+                      })
+                    : t("ui.NominaExceptions.alcanzaAExcepciones", {
+                        count: alcance,
+                        defaultValue: "alcanza a {{count}} excepción(es)",
+                      })}
               </span>
             )}
             <Button
@@ -408,7 +454,9 @@ export default function NominaExceptions() {
               variant="outline"
               onClick={cerrarAtraso}
             >
-              {cerrando ? "Cerrando…" : "Cerrar en bloque"}
+              {cerrando
+                ? t("ui.NominaExceptions.cerrando", "Cerrando…")
+                : t("ui.NominaExceptions.cerrarEnBloque", "Cerrar en bloque")}
             </Button>
           </div>
         )}
@@ -416,8 +464,13 @@ export default function NominaExceptions() {
         <Section
           icon={<ListChecks />}
           title={
-            STATUS_OPTIONS.find((s) => s.value === status)?.label ||
-            "Excepciones"
+            (() => {
+              const opt = STATUS_OPTIONS.find((s) => s.value === status);
+
+              return opt
+                ? t(opt.labelKey, opt.label)
+                : t("ui.NominaDashboard.excepciones", "Excepciones");
+            })()
           }
         >
           {loading ? (
@@ -480,7 +533,7 @@ export default function NominaExceptions() {
                     value={selected.station?.stationName || "—"}
                   />
                   <Field
-                    label="Detectado"
+                    label={t("ui.NominaExceptions.detectado", "Detectado")}
                     value={fmtDateTime(selected.detectedAt)}
                   />
                   <Field
@@ -563,7 +616,7 @@ export default function NominaExceptions() {
                         disabled={busy}
                         onClick={() => act(selected.id, "resolved")}
                       >
-                        Resolver
+                        {t("ui.NominaExceptions.resolver", "Resolver")}
                       </Button>
                       {selected.status === "open" && (
                         <Button
@@ -571,7 +624,7 @@ export default function NominaExceptions() {
                           variant="outline"
                           onClick={() => act(selected.id, "acknowledged")}
                         >
-                          Reconocer
+                          {t("ui.NominaExceptions.reconocer", "Reconocer")}
                         </Button>
                       )}
                     </div>

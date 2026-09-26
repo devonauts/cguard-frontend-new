@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Maximize, X, Radio } from "lucide-react";
 
 import { useControlCenter } from "./useControlCenter";
@@ -16,6 +17,7 @@ import "./control-center.css";
  * renders the operations map filling the whole viewport.
  */
 export default function OperationsMapFull() {
+  const { t } = useTranslation();
   const prefs = useMemo(() => loadPrefs(), []);
   const demo = useMemo(() => {
     try {
@@ -37,13 +39,15 @@ export default function OperationsMapFull() {
 
   useEffect(() => {
     // Signed with THIS host's product name, never ours on a partner's host.
-    document.title = tituloConMarca("Operaciones en tiempo real");
+    document.title = tituloConMarca(
+      t("dashboard.map.title", "Operaciones en tiempo real"),
+    );
     const onResize = () => setH(window.innerHeight);
 
     window.addEventListener("resize", onResize);
 
     return () => window.removeEventListener("resize", onResize);
-  }, []);
+  }, [t]);
 
   const goFullscreen = () => {
     try {
@@ -80,7 +84,7 @@ export default function OperationsMapFull() {
           <span className="font-display flex items-center gap-2 text-sm font-semibold">
             {/* Verde semántico fijo: «esto está vivo» no cambia con el acento. */}
             <Radio className="size-4" style={{ color: "var(--ok-text)" }} />
-            Operaciones en tiempo real
+            {t("dashboard.map.title", "Operaciones en tiempo real")}
           </span>
           {demo && (
             <StatusBadge dot={false} tone="brand">
@@ -92,7 +96,10 @@ export default function OperationsMapFull() {
             style={{ background: "var(--hairline)" }}
           />
           <span className="text-[11px]" style={{ color: "var(--ink-soft)" }}>
-            {data.entities.length} elementos · filtros y leyenda sobre el mapa
+            {t("ui.OperationsMapFull.elementosFiltrosYLeyenda", {
+              count: data.entities.length,
+              defaultValue: "{{count}} elementos · filtros y leyenda sobre el mapa",
+            })}
           </span>
           {/* ── SIN LEYENDA AQUÍ ───────────────────────────────────────────────
               Había una con un punto de color por tipo sacado de «Personalizar».
@@ -104,17 +111,17 @@ export default function OperationsMapFull() {
         </div>
         <div className="pointer-events-auto flex items-center gap-2">
           <button
-            aria-label="Pantalla completa"
+            aria-label={t("ui.OperationsMapFull.pantallaCompleta", "Pantalla completa")}
             className="cg-btn-glass cg-focus grid size-9 place-items-center rounded-full transition active:scale-95"
-            title="Pantalla completa"
+            title={t("ui.OperationsMapFull.pantallaCompleta", "Pantalla completa")}
             onClick={goFullscreen}
           >
             <Maximize className="size-4" />
           </button>
           <button
-            aria-label="Cerrar"
+            aria-label={t("actions.close", "Cerrar")}
             className="cg-btn-glass cg-focus grid size-9 place-items-center rounded-full transition active:scale-95"
-            title="Cerrar"
+            title={t("actions.close", "Cerrar")}
             onClick={() => window.close()}
           >
             <X className="size-4" />

@@ -38,14 +38,14 @@ export interface HorarioDeRonda {
 }
 
 /** Los días como los escribe y los lee el servidor: números 0-6, domingo=0. */
-const DIAS: Array<{ n: number; corta: string }> = [
-  { n: 1, corta: "L" },
-  { n: 2, corta: "M" },
-  { n: 3, corta: "X" },
-  { n: 4, corta: "J" },
-  { n: 5, corta: "V" },
-  { n: 6, corta: "S" },
-  { n: 0, corta: "D" },
+const DIAS: Array<{ n: number; corta: string; k: string }> = [
+  { n: 1, corta: "L", k: "ui.RondaHorario.diaCortoLun" },
+  { n: 2, corta: "M", k: "ui.RondaHorario.diaCortoMar" },
+  { n: 3, corta: "X", k: "ui.RondaHorario.diaCortoMie" },
+  { n: 4, corta: "J", k: "ui.RondaHorario.diaCortoJue" },
+  { n: 5, corta: "V", k: "ui.RondaHorario.diaCortoVie" },
+  { n: 6, corta: "S", k: "ui.RondaHorario.diaCortoSab" },
+  { n: 0, corta: "D", k: "ui.RondaHorario.diaCortoDom" },
 ];
 
 /** Tolerante con lo que haya en la columna: array, JSON en texto, o lista. */
@@ -123,21 +123,20 @@ export function resumenDeHorario(
 
       return h === 1
         ? t("ronda.horario.cadaHora", "Cada hora")
-        : `${t("ronda.horario.cada", "Cada")} ${h} h`;
+        : t("ui.RondaHorario.cadaNHoras", { defaultValue: "Cada {{h}} h", h });
     }
 
-    return `${t("ronda.horario.cada", "Cada")} ${m} min`;
+    return t("ui.RondaHorario.cadaNMin", { defaultValue: "Cada {{m}} min", m });
   }
   if (modo === "timesPerShift") {
     const n = Number(r?.timesPerShift) || 0;
 
     if (!n) return t("ronda.horario.sinDefinir", "Sin horario");
 
-    return `${n} ${
-      n === 1
-        ? t("ronda.horario.vezPorTurno", "vez por turno")
-        : t("ronda.horario.vecesPorTurno", "veces por turno")
-    }`;
+    return t("ui.RondaHorario.nVecesPorTurno", {
+      defaultValue: "{{count}} veces por turno",
+      count: n,
+    });
   }
   if (modo === "fixedTimes") {
     const horas = leerHoras(r?.fixedTimes);
@@ -165,7 +164,7 @@ export function resumenDeDias(
     return t("ronda.horario.todosLosDias", "Todos los días");
 
   return DIAS.filter((d) => dias.includes(d.n))
-    .map((d) => d.corta)
+    .map((d) => t(d.k, d.corta))
     .join(" ");
 }
 
@@ -518,7 +517,7 @@ export function CamposDeHorario({
                   )
                 }
               >
-                {d.corta}
+                {t(d.k, d.corta)}
               </button>
             );
           })}

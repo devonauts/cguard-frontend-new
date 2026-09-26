@@ -45,6 +45,7 @@ const TIER: Record<
   string,
   {
     label: string;
+    labelKey: string;
     tone: "ok" | "info" | "warn" | "bad";
     color: string;
     ink: string;
@@ -53,6 +54,7 @@ const TIER: Record<
 > = {
   excellent: {
     label: "Excelente",
+    labelKey: "ui.Guard.tier.excellent",
     tone: "ok",
     color: CHART_VARS.ok,
     ink: toneInk(CHART_VARS.ok),
@@ -60,6 +62,7 @@ const TIER: Record<
   },
   good: {
     label: "Bueno",
+    labelKey: "ui.Guard.tier.good",
     tone: "info",
     color: CHART_VARS.info,
     ink: toneInk(CHART_VARS.info),
@@ -67,6 +70,7 @@ const TIER: Record<
   },
   fair: {
     label: "Regular",
+    labelKey: "ui.Guard.tier.fair",
     tone: "warn",
     color: CHART_VARS.warn,
     ink: toneInk(CHART_VARS.warn),
@@ -74,6 +78,7 @@ const TIER: Record<
   },
   poor: {
     label: "Bajo",
+    labelKey: "ui.Guard.tier.poor",
     tone: "bad",
     color: CHART_VARS.bad,
     ink: toneInk(CHART_VARS.bad),
@@ -81,6 +86,12 @@ const TIER: Record<
   },
 };
 const tierOf = (t: string) => TIER[t] || TIER.poor;
+/** Se traduce al pintar, no al importar el módulo. */
+const tierLabel = (t: string) => {
+  const tier = tierOf(t);
+
+  return i18n.t(tier.labelKey, tier.label);
+};
 
 /** Constante de módulo: guarda la CLAVE, no la etiqueta. Un t() aquí se
  *  evaluaría al importar el fichero y congelaría el idioma de arranque; el
@@ -136,16 +147,20 @@ function FactorBars({ g }: { g: GuardPerformance }) {
   if (g.enabled === false) {
     return (
       <p className="text-xs text-muted-foreground">
-        A esta persona no se le mide el desempeño. Puedes volver a activarlo
-        desde su ficha, en Desempeño.
+        {t(
+          "ui.Guard.aEstaPersonaNoSeLeMide",
+          "A esta persona no se le mide el desempeño. Puedes volver a activarlo desde su ficha, en Desempeño.",
+        )}
       </p>
     );
   }
   if (!g.components?.length) {
     return (
       <p className="text-xs text-muted-foreground">
-        Todavía no hay ningún factor medido en el período. La puntuación parte
-        de 100 y baja sólo por lo que se mide.
+        {t(
+          "ui.Guard.todaviaNoHayNingunFactor",
+          "Todavía no hay ningún factor medido en el período. La puntuación parte de 100 y baja sólo por lo que se mide.",
+        )}
       </p>
     );
   }
@@ -226,29 +241,40 @@ export default function Guard() {
               accent={GOLD}
               value={lb?.averageScore ?? "—"}
               label={t("ui.Guard.puntuacionPromedio", "Puntuación promedio")}
-              sub={`${counts?.scored ?? 0} vigilantes evaluados`}
+              sub={t("ui.Guard.nVigilantesEvaluados", {
+                defaultValue: "{{count}} vigilantes evaluados",
+                count: counts?.scored ?? 0,
+              })}
               pct={lb?.averageScore ?? undefined}
             />
             <MetricCard
               icon={<Shield size={16} />}
               accent={TONES.ok}
               value={counts?.excellent ?? 0}
-              label="Excelentes"
-              sub={`${counts?.good ?? 0} buenos · ${counts?.poor ?? 0} bajos`}
+              label={t("ui.Guard.excelentes", "Excelentes")}
+              sub={t("ui.Guard.buenosBajos", {
+                defaultValue: "{{good}} buenos · {{poor}} bajos",
+                good: counts?.good ?? 0,
+                poor: counts?.poor ?? 0,
+              })}
             />
             <MetricCard
               icon={<Shield size={16} />}
               accent={TONES.info}
               value={k.guardsOnDuty}
-              label="En servicio"
-              sub="ahora mismo"
+              label={t("ui.Guard.enServicio", "En servicio")}
+              sub={t("ui.Guard.ahoraMismo", "ahora mismo")}
             />
             <MetricCard
               icon={<Clock size={16} />}
               accent={TONES.warn}
               value={`${k.punctualityPct}%`}
-              label="Puntualidad"
-              sub={`${k.clockinsOnTime}/${k.clockinsTotal} a tiempo`}
+              label={t("performance.factor.punctuality", "Puntualidad")}
+              sub={t("ui.Guard.aTiempo", {
+                defaultValue: "{{onTime}}/{{total}} a tiempo",
+                onTime: k.clockinsOnTime,
+                total: k.clockinsTotal,
+              })}
               pct={k.punctualityPct}
             />
           </StatsStrip>
@@ -269,7 +295,7 @@ export default function Guard() {
                   return (
                     <div
                       key={t}
-                      title={`${tierOf(t).label}: ${v}`}
+                      title={`${tierLabel(t)}: ${v}`}
                       style={{
                         width: `${(v / tierTotal) * 100}%`,
                         background: tierOf(t).color,
@@ -285,7 +311,7 @@ export default function Guard() {
                       className="h-2.5 w-2.5 rounded"
                       style={{ background: tierOf(t).color }}
                     />{" "}
-                    {tierOf(t).label}:{" "}
+                    {tierLabel(t)}:{" "}
                     <span className="font-semibold text-foreground">
                       {counts![t]}
                     </span>
@@ -318,7 +344,10 @@ export default function Guard() {
                   "ui.Guard.tuEmpresaNoEstaMidiendo",
                   "Tu empresa no está midiendo el desempeño",
                 )}
-                description="La medición está desactivada para toda la empresa en Configuración › Vigilantes en turno. Mientras siga así, nadie tiene puntuación."
+                description={t(
+                  "ui.Guard.laMedicionEstaDesactivada",
+                  "La medición está desactivada para toda la empresa en Configuración › Vigilantes en turno. Mientras siga así, nadie tiene puntuación.",
+                )}
               />
             ) : !lb || lb.guards.length === 0 ? (
               <EmptyState
@@ -339,16 +368,16 @@ export default function Guard() {
                         {t("ui.Guard.puntuacion", "Puntuación")}
                       </th>
                       <th className="px-3 py-2 text-left font-semibold">
-                        Nivel
+                        {t("ui.Guard.nivel", "Nivel")}
                       </th>
                       <th className="px-3 py-2 text-right font-semibold">
                         {t("comun.asistencia")}
                       </th>
                       <th className="px-3 py-2 text-right font-semibold">
-                        Faltas
+                        {t("ui.Guard.faltas", "Faltas")}
                       </th>
                       <th className="px-3 py-2 text-right font-semibold">
-                        Atrasos
+                        {t("ui.Guard.atrasos", "Atrasos")}
                       </th>
                       <th className="px-3 py-2"></th>
                     </tr>
@@ -380,13 +409,13 @@ export default function Guard() {
                                 enabled={g.enabled !== false}
                               />
                             </td>
-                            <td className="px-3 py-2" data-rotulo="Nivel">
+                            <td className="px-3 py-2" data-rotulo={t("ui.Guard.nivel", "Nivel")}>
                               <span
                                 style={{ color: tierOf(g.tier).ink }}
                                 className="text-xs font-semibold"
                               >
                                 {g.enabled !== false && g.hasData
-                                  ? tierOf(g.tier).label
+                                  ? tierLabel(g.tier)
                                   : "—"}
                               </span>
                             </td>
@@ -401,10 +430,10 @@ export default function Guard() {
                                 <span className="text-muted-foreground">—</span>
                               )}
                             </td>
-                            <td className="px-3 py-2 text-right text-muted-foreground" data-rotulo="Faltas">
+                            <td className="px-3 py-2 text-right text-muted-foreground" data-rotulo={t("ui.Guard.faltas", "Faltas")}>
                               {g.absences}
                             </td>
-                            <td className="px-3 py-2 text-right text-muted-foreground" data-rotulo="Atrasos">
+                            <td className="px-3 py-2 text-right text-muted-foreground" data-rotulo={t("ui.Guard.atrasos", "Atrasos")}>
                               {g.tardies}
                             </td>
                             <td className="px-3 py-2 text-right text-muted-foreground">
@@ -419,7 +448,10 @@ export default function Guard() {
                             <tr style={{ background: "var(--glass-sunken)" }}>
                               <td colSpan={8} className="px-6 py-3">
                                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                                  Desglose de factores (puntaje × peso)
+                                  {t(
+                                    "ui.Guard.desgloseDeFactores",
+                                    "Desglose de factores (puntaje × peso)",
+                                  )}
                                 </p>
                                 <FactorBars g={g} />
                               </td>

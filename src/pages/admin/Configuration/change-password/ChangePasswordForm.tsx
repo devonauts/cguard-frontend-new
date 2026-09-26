@@ -233,7 +233,10 @@ export default function ChangePasswordForm({
                     <Check className="h-3.5 w-3.5" strokeWidth={3} />
                   ) : null}
                   {coinciden
-                    ? "Las contraseñas coinciden"
+                    ? t(
+                        "ui.ChangePasswordForm.lasContrasenasCoinciden",
+                        "Las contraseñas coinciden",
+                      )
                     : t("auth.validation_passwords_not_match")}
                 </p>
               )}

@@ -553,13 +553,13 @@ export default function MobilPage() {
             badges={
               <>
                 <StatusBadge tone={bannerItems.length ? 'ok' : 'neutral'}>
-                  {t('settings.mobil.bannersBadge', { defaultValue: '{{count}} banner{{plural}}', count: bannerItems.length, plural: bannerItems.length === 1 ? '' : 's' })}
+                  {t('settings.mobil.bannersBadge', { defaultValue: '{{count}} banner', defaultValue_other: '{{count}} banners', count: bannerItems.length })}
                 </StatusBadge>
                 <StatusBadge tone={publishedServices ? 'ok' : 'neutral'}>
-                  {t('settings.mobil.publishedServicesBadge', { defaultValue: '{{count}} servicio{{plural}} publicado{{plural}}', count: publishedServices, plural: publishedServices === 1 ? '' : 's' })}
+                  {t('settings.mobil.publishedServicesBadge', { defaultValue: '{{count}} servicio publicado', defaultValue_other: '{{count}} servicios publicados', count: publishedServices })}
                 </StatusBadge>
                 <StatusBadge tone={certItems.length ? 'ok' : 'neutral'}>
-                  {t('settings.mobil.certsBadge', { defaultValue: '{{count}} certificación{{plural}}', count: certItems.length, plural: certItems.length === 1 ? '' : 'es' })}
+                  {t('settings.mobil.certsBadge', { defaultValue: '{{count}} certificación', defaultValue_other: '{{count}} certificaciones', count: certItems.length })}
                 </StatusBadge>
               </>
             }
@@ -696,7 +696,7 @@ export default function MobilPage() {
                               <button
                                 key={tpl.title}
                                 type="button"
-                                onClick={() => setServiceForm((p) => ({ ...p, title: tplTitle, description: tpl.description, iconName: tpl.iconName, publishedOnMobile: true }))}
+                                onClick={() => setServiceForm((p) => ({ ...p, title: tplTitle, description: t(`ui.MobilPage.serviceTemplateDesc.${tpl.titleKey.split('.').pop()}`, tpl.description), iconName: tpl.iconName, publishedOnMobile: true }))}
                                 className="cg-focus inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition"
                                 style={{
                                   background: activa ? 'var(--brand-wash)' : 'var(--glass-sunken)',

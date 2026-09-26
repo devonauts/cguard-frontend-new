@@ -1948,11 +1948,17 @@ function SupervisorPreview({
           val="0"
         />
       </div>
-      <Estacion dir="Av. Ámsterdam 240, Condesa" nombre="Acceso de Servicio" />
-      <Estacion dir="Av. Universidad 2020, Copilco" nombre="Acceso Peatonal" />
+      <Estacion
+        dir="Av. Ámsterdam 240, Condesa"
+        nombre={t("ui.MobileHubPage.accesoDeServicio", "Acceso de Servicio")}
+      />
+      <Estacion
+        dir="Av. Universidad 2020, Copilco"
+        nombre={t("ui.MobileHubPage.accesoPeatonal", "Acceso Peatonal")}
+      />
       <Estacion
         dir="Calz. Vallejo 1055, Industrial Vallejo"
-        nombre="Andén de Carga"
+        nombre={t("ui.MobileHubPage.andenDeCarga", "Andén de Carga")}
       />
     </div>
   );

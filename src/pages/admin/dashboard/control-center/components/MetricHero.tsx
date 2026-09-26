@@ -62,7 +62,10 @@ function MetricHeroBase({
         ? {
             role: "button" as const,
             tabIndex: 0,
-            "aria-label": `Ver ${String(kpi.label)}`,
+            "aria-label": t("ui.MetricHero.verEtiqueta", {
+              etiqueta: String(kpi.label),
+              defaultValue: "Ver {{etiqueta}}",
+            }),
             onClick: ir,
             onKeyDown: (e: KeyboardEvent) => {
               if (e.key === "Enter" || e.key === " ") {
@@ -134,7 +137,9 @@ function MetricHeroBase({
         )}
         {kpi.fallback && (
           <TonePill className="mb-1.5" tone="warn">
-            <span title={kpi.hint || t("dashboard.noData")}>s/d</span>
+            <span title={kpi.hint || t("dashboard.noData")}>
+              {t("ui.MetricHero.sd", "s/d")}
+            </span>
           </TonePill>
         )}
       </div>
@@ -149,7 +154,10 @@ function MetricHeroBase({
         {spark && (
           <Sparkline
             area={false}
-            ariaLabel={`Tendencia de ${String(kpi.label)}`}
+            ariaLabel={t("ui.MetricHero.tendenciaDe", {
+              etiqueta: String(kpi.label),
+              defaultValue: "Tendencia de {{etiqueta}}",
+            })}
             className="w-20 shrink-0"
             data={spark}
             height={26}

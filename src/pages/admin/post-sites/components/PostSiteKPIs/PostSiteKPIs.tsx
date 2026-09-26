@@ -324,10 +324,14 @@ export default function PostSiteKPIs({ site }: Props) {
     try {
       if (editingId) {
         await KpiService.update(editingId, { data: payload });
-        toast.success("KPI actualizado correctamente");
+        toast.success(
+          t("guards.KPI.toasts.updated", "KPI actualizado correctamente"),
+        );
       } else {
         await KpiService.create({ data: payload });
-        toast.success("KPI creado correctamente");
+        toast.success(
+          t("guards.KPI.toasts.created", "KPI creado correctamente"),
+        );
       }
       await loadKpis();
       setShowModal(false);
@@ -671,7 +675,7 @@ export default function PostSiteKPIs({ site }: Props) {
                               );
                             }}
                             className="text-muted-foreground hover:text-foreground/70 p-1 rounded mr-2"
-                            title="Options"
+                            title={t("ui.PostSiteKPIs.opciones", "Opciones")}
                           >
                             <MoreVertical size={16} />
                           </button>
@@ -684,7 +688,9 @@ export default function PostSiteKPIs({ site }: Props) {
                               );
                             }}
                             title={
-                              expandedId === kpi.id ? "Collapse" : "Expand"
+                              expandedId === kpi.id
+                                ? t("ui.PostSiteKPIs.contraer", "Contraer")
+                                : t("ui.PostSiteKPIs.expandir", "Expandir")
                             }
                             className="text-muted-foreground hover:text-foreground p-1 rounded"
                           >
@@ -1053,7 +1059,7 @@ export default function PostSiteKPIs({ site }: Props) {
                     }}
                     className="px-3 py-1 bg-muted rounded text-sm"
                   >
-                    Edit
+                    {t("actions.edit", "Editar")}
                   </button>
                   <button
                     onClick={(e) => {

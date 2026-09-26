@@ -98,13 +98,16 @@ export default function UserPermissionOverrides({
       color: `var(--${token}-text)`,
     });
 
-    if (denySet.has(p)) return { label: "Denegado", style: tint("bad") };
-    if (grantSet.has(p)) return { label: "Concedido", style: tint("ok") };
-    if (isFloor(p)) return { label: "Obligatorio", style: tint("warn") };
+    if (denySet.has(p))
+      return { label: t("ui.UserPermissionOverrides.denegado", "Denegado"), style: tint("bad") };
+    if (grantSet.has(p))
+      return { label: t("ui.UserPermissionOverrides.concedido", "Concedido"), style: tint("ok") };
+    if (isFloor(p))
+      return { label: t("ui.UserPermissionOverrides.obligatorio", "Obligatorio"), style: tint("warn") };
 
     return inherited.has(p)
       ? {
-          label: "Heredado ✓",
+          label: t("ui.UserPermissionOverrides.heredadoSi", "Heredado ✓"),
           style: {
             background: "var(--glass-sunken)",
             borderColor: "var(--hairline)",
@@ -112,7 +115,7 @@ export default function UserPermissionOverrides({
           },
         }
       : {
-          label: "Heredado ✗",
+          label: t("ui.UserPermissionOverrides.heredadoNo", "Heredado ✗"),
           style: {
             background: "transparent",
             borderColor: "var(--hairline)",
@@ -124,8 +127,10 @@ export default function UserPermissionOverrides({
   return (
     <div className="space-y-4">
       <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
-        Haz clic en un permiso para alternar entre heredado del rol, concedido
-        (+) y denegado (−). Lo denegado tiene prioridad sobre el rol.
+        {t(
+          "ui.UserPermissionOverrides.hazClicEnUnPermiso",
+          "Haz clic en un permiso para alternar entre heredado del rol, concedido (+) y denegado (−). Lo denegado tiene prioridad sobre el rol.",
+        )}
       </p>
       {Object.keys(filtered).length === 0 ? (
         <EmptyState
@@ -164,7 +169,10 @@ export default function UserPermissionOverrides({
                       }}
                       title={
                         isFloor(p)
-                          ? "Requerido para el acceso de administrador (no se puede denegar)"
+                          ? t(
+                              "ui.UserPermissionOverrides.requeridoAdmin",
+                              "Requerido para el acceso de administrador (no se puede denegar)",
+                            )
                           : p
                       }
                       type="button"

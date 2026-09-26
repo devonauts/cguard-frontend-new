@@ -36,9 +36,11 @@ import { MeterBar } from "@/components/charts";
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 function Stars({ value, size = "h-4 w-4" }: { value: number; size?: string }) {
+  const { t } = useTranslation();
+
   return (
     <span
-      aria-label={`${value} de 5`}
+      aria-label={t("ui.GuardReviewsPage.nDe5", { defaultValue: "{{n}} de 5", n: value })}
       className="inline-flex items-center gap-0.5"
     >
       {[1, 2, 3, 4, 5].map((i) => (
@@ -133,12 +135,29 @@ export default function GuardReviewsPage() {
     review: GuardRatingRecord,
     type: "memo" | "observacion",
   ) => {
-    const label = type === "memo" ? "Memo" : "Observación";
+    const label =
+      type === "memo"
+        ? t("ui.GuardReviewsPage.memo", "Memo")
+        : t("ui.GuardReviewsPage.observacion", "Observación");
 
     setForm({
-      subject: `${label} · calificación ${review.rating}★${review.clientName ? " de " + review.clientName : ""}`,
+      subject: review.clientName
+        ? t("ui.GuardReviewsPage.asuntoCalificacionDe", {
+            defaultValue: "{{label}} · calificación {{rating}}★ de {{client}}",
+            label,
+            rating: review.rating,
+            client: review.clientName,
+          })
+        : t("ui.GuardReviewsPage.asuntoCalificacion", {
+            defaultValue: "{{label}} · calificación {{rating}}★",
+            label,
+            rating: review.rating,
+          }),
       content: review.comment
-        ? `En referencia a la reseña del cliente: "${review.comment}".\n\n`
+        ? t("ui.GuardReviewsPage.enReferenciaALaResena", {
+            defaultValue: "En referencia a la reseña del cliente: \"{{comment}}\".",
+            comment: review.comment,
+          }) + "\n\n"
         : "",
     });
     setAction({ review, type });
@@ -166,8 +185,8 @@ export default function GuardReviewsPage() {
       });
       toast.success(
         action.type === "memo"
-          ? "Memo enviado al vigilante"
-          : "Observación registrada",
+          ? t("ui.GuardReviewsPage.memoEnviado", "Memo enviado al vigilante")
+          : t("ui.GuardReviewsPage.observacionRegistrada", "Observación registrada"),
       );
       setAction(null);
     } catch (e: any) {
@@ -225,7 +244,10 @@ export default function GuardReviewsPage() {
                       style={{ fill: "var(--warn)", color: "var(--warn)" }}
                     />
                     <MeterBar
-                      ariaLabel={`${starVal} estrellas`}
+                      ariaLabel={t("ui.GuardReviewsPage.nEstrellas", {
+                        defaultValue: "{{count}} estrellas",
+                        count: starVal,
+                      })}
                       className="flex-1"
                       height={6}
                       pct={pct}
@@ -253,7 +275,10 @@ export default function GuardReviewsPage() {
           >
             {guardName && (
               <p className="mb-3 text-xs" style={{ color: "var(--ink-soft)" }}>
-                Calificaciones enviadas por los clientes sobre {guardName}.
+                {t("ui.GuardReviewsPage.calificacionesSobre", {
+                  defaultValue: "Calificaciones enviadas por los clientes sobre {{name}}.",
+                  name: guardName,
+                })}
               </p>
             )}
             {loading ? (
@@ -310,8 +335,8 @@ export default function GuardReviewsPage() {
                           variant="outline"
                           onClick={() => openAction(r, "memo")}
                         >
-                          <FileText className="mr-1.5 h-3.5 w-3.5" /> Generar
-                          memo
+                          <FileText className="mr-1.5 h-3.5 w-3.5" />{" "}
+                          {t("ui.GuardReviewsPage.generarMemo", "Generar memo")}
                         </Button>
                         <Button
                           size="sm"
@@ -345,12 +370,12 @@ export default function GuardReviewsPage() {
                 {saving ? (
                   <>
                     <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />{" "}
-                    Guardando…
+                    {t("common.saving", "Guardando…")}
                   </>
                 ) : action?.type === "memo" ? (
-                  "Enviar memo"
+                  t("ui.GuardReviewsPage.enviarMemo", "Enviar memo")
                 ) : (
-                  "Registrar"
+                  t("ui.GuardReviewsPage.registrar", "Registrar")
                 )}
               </Button>
             </>
@@ -365,7 +390,9 @@ export default function GuardReviewsPage() {
           open={!!action}
           size="md"
           title={
-            action?.type === "memo" ? "Generar memo" : "Registrar observación"
+            action?.type === "memo"
+              ? t("ui.GuardReviewsPage.generarMemo", "Generar memo")
+              : t("ui.GuardReviewsPage.registrarObservacion", "Registrar observación")
           }
           onOpenChange={(o) => {
             if (!o && !saving) setAction(null);
@@ -374,14 +401,25 @@ export default function GuardReviewsPage() {
           <div className="space-y-3">
             <p className="text-xs text-muted-foreground">
               {action?.type === "memo"
-                ? "El memo se envía al vigilante y queda en su historial (con acuse de recibo)."
-                : "La observación queda en el historial interno del vigilante para conversar sobre el servicio."}{" "}
-              Origen: reseña de {action?.review.clientName || "cliente"} (
-              {action?.review.rating}★).
+                ? t(
+                    "ui.GuardReviewsPage.memoExplicacion",
+                    "El memo se envía al vigilante y queda en su historial (con acuse de recibo).",
+                  )
+                : t(
+                    "ui.GuardReviewsPage.observacionExplicacion",
+                    "La observación queda en el historial interno del vigilante para conversar sobre el servicio.",
+                  )}{" "}
+              {t("ui.GuardReviewsPage.origenResena", {
+                defaultValue: "Origen: reseña de {{client}} ({{rating}}★).",
+                client:
+                  action?.review.clientName ||
+                  t("ui.GuardReviewsPage.cliente", "cliente"),
+                rating: action?.review.rating,
+              })}
             </p>
             <div>
               <label className="mb-1 block text-xs font-medium text-muted-foreground">
-                Asunto
+                {t("ui.GuardReviewsPage.asunto", "Asunto")}
               </label>
               <Input
                 value={form.subject}
@@ -390,7 +428,7 @@ export default function GuardReviewsPage() {
             </div>
             <div>
               <label className="mb-1 block text-xs font-medium text-muted-foreground">
-                Contenido
+                {t("ui.GuardReviewsPage.contenido", "Contenido")}
               </label>
               <textarea
                 className="cg-input w-full resize-none px-3 py-2 text-sm leading-relaxed"

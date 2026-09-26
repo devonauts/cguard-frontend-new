@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import {
   createContext,
   useContext,
@@ -641,13 +642,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         return { success: true };
       }
-      throw new Error("No se recibió token de autenticación");
+      throw new Error(
+        i18n.t(
+          "ui.AuthContext.noSeRecibioTokenDeAutenticacion",
+          "No se recibió token de autenticación",
+        ),
+      );
     } catch (err: any) {
-      const message = err?.message || "Error al iniciar sesión";
+      const message = err?.message || i18n.t("auth.login_failed", "Error al iniciar sesión");
 
       // Surface rate-limit errors more clearly
       if (err && err.status === 429) {
-        const m = "Demasiadas solicitudes. Intenta de nuevo en unos segundos.";
+        const m = i18n.t(
+          "ui.AuthContext.demasiadasSolicitudes",
+          "Demasiadas solicitudes. Intenta de nuevo en unos segundos.",
+        );
 
         setError(m);
 
@@ -677,7 +686,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       return { success: true };
     } catch (err: any) {
-      const m = err.message || "Error al registrarse";
+      const m = err.message || i18n.t("ui.AuthContext.errorAlRegistrarse", "Error al registrarse");
 
       setError(m);
 
@@ -887,7 +896,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       return { success: true };
     } catch (err: any) {
-      const message = err?.message || "Error al iniciar sesión con token";
+      const message = err?.message ||
+        i18n.t(
+          "ui.AuthContext.errorAlIniciarSesionConToken",
+          "Error al iniciar sesión con token",
+        );
 
       setError(message);
 

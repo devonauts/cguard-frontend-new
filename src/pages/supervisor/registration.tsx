@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import {
   AlertTriangle,
@@ -197,16 +197,25 @@ export default function SupervisorRegistration() {
           "La contraseña debe tener al menos 8 caracteres",
         );
       else if (!/[A-Z]/.test(password))
-        nextErrors.password =
-          "La contraseña debe contener al menos una letra mayúscula";
+        nextErrors.password = t(
+          "ui.registration.laContrasenaDebeContenerMayuscula",
+          "La contraseña debe contener al menos una letra mayúscula",
+        );
       else if (!/[a-z]/.test(password))
-        nextErrors.password =
-          "La contraseña debe contener al menos una letra minúscula";
+        nextErrors.password = t(
+          "ui.registration.laContrasenaDebeContenerMinuscula",
+          "La contraseña debe contener al menos una letra minúscula",
+        );
       else if (!/[0-9]/.test(password))
-        nextErrors.password = "La contraseña debe contener al menos un número";
+        nextErrors.password = t(
+          "ui.registration.laContrasenaDebeContenerNumero",
+          "La contraseña debe contener al menos un número",
+        );
       else if (!/[^A-Za-z0-9]/.test(password))
-        nextErrors.password =
-          "La contraseña debe contener al menos un carácter especial";
+        nextErrors.password = t(
+          "ui.registration.laContrasenaDebeContenerEspecial",
+          "La contraseña debe contener al menos un carácter especial",
+        );
     }
     if (!confirm)
       nextErrors.confirm = t(
@@ -271,7 +280,9 @@ export default function SupervisorRegistration() {
   }) => (
     <button
       aria-label={
-        visible ? "Ocultar contrase\u00f1a" : "Mostrar contrase\u00f1a"
+        visible
+          ? t("auth.hide_password", "Ocultar contraseña")
+          : t("auth.show_password", "Mostrar contraseña")
       }
       className="cg-focus absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md p-2.5"
       style={{ color: "var(--ink-faint)" }}
@@ -294,10 +305,13 @@ export default function SupervisorRegistration() {
       logoUrl={fetched?.tenant?.logoUrl || undefined}
       subtitle={
         done
-          ? 'Tu acceso qued\u00f3 listo.'
-          : 'Crea una contrase\u00f1a para tu cuenta. Supervisar\u00e1s tus recorridos y tu equipo desde la app de supervisor.'
+          ? t("invite.accessReady", "Tu acceso quedó listo.")
+          : t(
+              "ui.SupervisorRegistration.creaUnaContrasenaParaTuCuenta",
+              "Crea una contraseña para tu cuenta. Supervisarás tus recorridos y tu equipo desde la app de supervisor.",
+            )
       }
-      title={done ? '\u00a1Cuenta activada!' : t('supervisor.registration_title', { defaultValue: 'Registro de supervisor' })}
+      title={done ? t("ui.registration.cuentaActivada", "¡Cuenta activada!") : t('supervisor.registration_title', { defaultValue: 'Registro de supervisor' })}
       width="lg"
       /* Ya se ha ido a la red a por la invitaci\u00f3n: la cortina de 2,5 s s\u00f3lo
          retrasar\u00eda un formulario que el usuario est\u00e1 esperando. */
@@ -315,16 +329,19 @@ export default function SupervisorRegistration() {
             className="text-sm leading-relaxed"
             style={{ color: "var(--ink-soft)" }}
           >
-            {t("ui.SupervisorRegistration.tuCuentaCon", "Tu cuenta con")}{" "}
-            <strong style={{ color: "var(--ink)" }}>
-              {empresa || "tu empresa de seguridad"}
-            </strong>{" "}
-            est\u00e1 lista. Descarga la{" "}
-            <strong style={{ color: "var(--ink)" }}>
-              {t("ui.registration.appDeSupervisor")}
-            </strong>{" "}
-            para gestionar tus recorridos, tu equipo y las novedades desde tu
-            tel\u00e9fono.
+            <Trans
+              components={{ b: <strong style={{ color: "var(--ink)" }} /> }}
+              defaults="Tu cuenta con <b>{{empresa}}</b> está lista. Descarga la <b>app de supervisor</b> para gestionar tus recorridos, tu equipo y las novedades desde tu teléfono."
+              i18nKey="ui.SupervisorRegistration.tuCuentaConEstaListaDescarga"
+              values={{
+                empresa:
+                  empresa ||
+                  t(
+                    "ui.SupervisorRegistration.tuEmpresaDeSeguridad",
+                    "tu empresa de seguridad",
+                  ),
+              }}
+            />
           </p>
 
           <div className="mt-6 space-y-3 text-left">

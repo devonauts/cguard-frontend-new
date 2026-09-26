@@ -196,8 +196,11 @@ export function MobileCommandCenter({
         label: t("ui.MobileCommandCenter.demostracion", "Demostración"),
       }
     : data.health.sseConnected
-      ? { tone: "ok" as const, label: "En vivo" }
-      : { tone: "warn" as const, label: "Sondeo" };
+      ? { tone: "ok" as const, label: t("dashboard.live", "En vivo") }
+      : {
+          tone: "warn" as const,
+          label: t("ui.MobileCommandCenter.sondeo", "Sondeo"),
+        };
 
   if (data.error === "no-tenant") {
     return (
@@ -256,14 +259,14 @@ export function MobileCommandCenter({
             >
               {!demo && data.health.lastSync
                 ? clockOf(data.health.lastSync)
-                : "datos de muestra"}
+                : t("ui.MobileCommandCenter.datosDeMuestra", "datos de muestra")}
             </span>
           </div>
 
           <button
-            aria-label="Actualizar"
+            aria-label={t("dashboard.refresh", "Actualizar")}
             className="cg-tarjeta-mapa cg-focus pointer-events-auto grid size-11 shrink-0 place-items-center"
-            title="Actualizar"
+            title={t("dashboard.refresh", "Actualizar")}
             type="button"
             onClick={data.refresh}
           >
@@ -274,7 +277,7 @@ export function MobileCommandCenter({
             aria-label={t("ui.MobileCommandCenter.personalizarElPanel")}
             className="cg-tarjeta-mapa cg-focus pointer-events-auto grid size-11 shrink-0 place-items-center"
             style={{ color: "var(--brand-text)" }}
-            title="Personalizar"
+            title={t("dashboard.customize", "Personalizar")}
             type="button"
             onClick={onCustomize}
           >
@@ -332,7 +335,7 @@ export function MobileCommandCenter({
                 onClick={onFullMap}
               >
                 <Maximize2 className="size-3.5" />
-                Mapa completo
+                {t("dashboard.fullMap", "Mapa completo")}
               </button>
 
               {/* Demostración: deja que un negocio recién creado vea el panel
@@ -379,7 +382,11 @@ export function MobileCommandCenter({
             </div>
 
             <Panel
-              action={<PanelLink to="/live-tracking">Ver en vivo</PanelLink>}
+              action={
+                <PanelLink to="/live-tracking">
+                  {t("dashboard.viewLive", "Ver en vivo")}
+                </PanelLink>
+              }
               bodyClassName="pt-1"
               icon={<ShieldCheck />}
               subtitle={t("comun.ahoraMismoSobreElTerreno")}
@@ -395,7 +402,7 @@ export function MobileCommandCenter({
             <StatRail
               icon={<Boxes />}
               items={railItems}
-              subtitle="Puestos, mando y cartera"
+              subtitle={t("dashboard.resources.sub", "Puestos, mando y cartera")}
               title={t(
                 "ui.MobileCommandCenter.recursosDeLaOperacion",
                 "Recursos de la operación",

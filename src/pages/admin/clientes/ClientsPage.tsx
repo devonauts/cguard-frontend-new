@@ -133,7 +133,7 @@ const getServerErrorMessage = (error: any, defaultMessage = "Error") => {
 
 export default function ClientesPage() {
   const { t } = useTranslation();
-  usePageTitle("Clientes");
+  usePageTitle(t("clients.nav.title", "Clientes"));
   const { hasPermission } = usePermissions();
   const navigate = useNavigate();
   const [openFilter, setOpenFilter] = useState(false);
@@ -1131,7 +1131,8 @@ export default function ClientesPage() {
                       value: "cards",
                       label: (
                         <span className="flex items-center gap-1.5">
-                          <LayoutGrid className="h-3.5 w-3.5" /> Tarjetas
+                          <LayoutGrid className="h-3.5 w-3.5" />{" "}
+                            {t("ui.AdminOfficeUsersPage.tarjetas", "Tarjetas")}
                         </span>
                       ),
                     },
@@ -1750,15 +1751,12 @@ export default function ClientesPage() {
                 {sendAccessClient?.email ? (
                   <>
                     <p>
-                      Se enviará un correo de invitación a{" "}
-                      <span className="font-semibold text-foreground">
-                        {sendAccessClient?.email}
-                      </span>{" "}
-                      para que{" "}
-                      <span className="font-semibold text-foreground">
-                        {sendAccessClient?.name}
-                      </span>{" "}
-                      pueda acceder a la app móvil.
+                      {t("ui.ClientsPage.seEnviaraCorreoInvitacion", {
+                        defaultValue:
+                          "Se enviará un correo de invitación a {{email}} para que {{name}} pueda acceder a la app móvil.",
+                        email: sendAccessClient?.email,
+                        name: sendAccessClient?.name,
+                      })}
                     </p>
                     <div
                       className="space-y-1 rounded-xl border p-3 text-xs"
@@ -1836,7 +1834,10 @@ export default function ClientesPage() {
                       sendAccessClient.email || undefined,
                     );
                     toast.success(
-                      `Invitación enviada a ${sendAccessClient.email || sendAccessClient.name}`,
+                      t("ui.ClientsPage.invitacionEnviadaA", {
+                        defaultValue: "Invitación enviada a {{to}}",
+                        to: sendAccessClient.email || sendAccessClient.name,
+                      }),
                     );
                     // Update local state so the badge reflects the new status immediately
                     setClients((prev) =>
@@ -1861,7 +1862,9 @@ export default function ClientesPage() {
                   }
                 }}
               >
-                {sendingAccess ? "Enviando..." : "Enviar invitación"}
+                {sendingAccess
+                  ? t("ui.RouteForm.enviando", "Enviando...")
+                  : t("ui.ClientsPage.enviarInvitacion", "Enviar invitación")}
               </AlertDialogAction>
             )}
           </AlertDialogFooter>
@@ -1893,15 +1896,12 @@ export default function ClientesPage() {
                 {appInviteClient?.email ? (
                   <>
                     <p>
-                      Se enviará una invitación para descargar y usar la app{" "}
-                      <span className="font-semibold text-foreground">
-                        Mi Seguridad
-                      </span>{" "}
-                      a{" "}
-                      <span className="font-semibold text-foreground">
-                        {appInviteClient?.email}
-                      </span>
-                      .
+                      {t("ui.ClientsPage.seEnviaraInvitacionApp", {
+                        defaultValue:
+                          "Se enviará una invitación para descargar y usar la app {{app}} a {{email}}.",
+                        app: "Mi Seguridad",
+                        email: appInviteClient?.email,
+                      })}
                     </p>
                     <div
                       className="space-y-1 rounded-xl border p-3 text-xs"
@@ -1923,7 +1923,12 @@ export default function ClientesPage() {
                             "Presentación de la app Mi Seguridad",
                           )}
                         </li>
-                        <li>Enlaces a Google Play y App Store</li>
+                        <li>
+                          {t(
+                            "ui.ClientsPage.enlacesAGooglePlay",
+                            "Enlaces a Google Play y App Store",
+                          )}
+                        </li>
                         <li>
                           {t(
                             "ui.Clients.enlaceParaActivarSuCuenta",
@@ -1979,7 +1984,10 @@ export default function ClientesPage() {
                       appInviteClient.email || undefined,
                     );
                     toast.success(
-                      `Invitación a la app enviada a ${appInviteClient.email || appInviteClient.name}`,
+                      t("ui.ClientsPage.invitacionAppEnviadaA", {
+                        defaultValue: "Invitación a la app enviada a {{to}}",
+                        to: appInviteClient.email || appInviteClient.name,
+                      }),
                     );
                     setOpenAppInviteDialog(false);
                   } catch (err: any) {
@@ -1996,7 +2004,9 @@ export default function ClientesPage() {
                   }
                 }}
               >
-                {sendingAppInvite ? "Enviando..." : "Enviar invitación"}
+                {sendingAppInvite
+                  ? t("ui.RouteForm.enviando", "Enviando...")
+                  : t("ui.ClientsPage.enviarInvitacion", "Enviar invitación")}
               </AlertDialogAction>
             )}
           </AlertDialogFooter>

@@ -128,10 +128,14 @@ export default function DepartmentPage() {
 
       if (edit) {
         await departmentService.update(edit.id, payload);
-        toast.success("Departamento actualizado");
+        toast.success(
+          t("ui.DepartmentPage.departamentoActualizado", "Departamento actualizado"),
+        );
       } else {
         await departmentService.create(payload);
-        toast.success("Departamento creado");
+        toast.success(
+          t("ui.DepartmentPage.departamentoCreado", "Departamento creado"),
+        );
       }
       setOpen(false);
       setEdit(null);
@@ -158,8 +162,11 @@ export default function DepartmentPage() {
       });
       toast.success(
         row.status === "inactive"
-          ? "Departamento activado"
-          : "Departamento desactivado",
+          ? t("ui.DepartmentPage.departamentoActivado", "Departamento activado")
+          : t(
+              "ui.DepartmentPage.departamentoDesactivado",
+              "Departamento desactivado",
+            ),
       );
       await load();
     } catch (e: any) {
@@ -178,14 +185,19 @@ export default function DepartmentPage() {
   const handleDelete = async (row: DepartmentRow) => {
     if (
       !(await confirmDialog({
-        message: `¿Eliminar el departamento "${row.name}"?`,
+        message: t("ui.DepartmentPage.eliminarElDepartamento", {
+          defaultValue: '¿Eliminar el departamento "{{name}}"?',
+          name: row.name,
+        }),
         tone: "danger",
       }))
     )
       return;
     try {
       await departmentService.destroy(row.id);
-      toast.success("Departamento eliminado");
+      toast.success(
+        t("ui.DepartmentPage.departamentoEliminado", "Departamento eliminado"),
+      );
       await load();
     } catch (e: any) {
       // Backend blocks deletion while the department still has members.
@@ -205,7 +217,10 @@ export default function DepartmentPage() {
     if (ids.length === 0) return;
     if (
       !(await confirmDialog({
-        message: `¿Eliminar ${ids.length} departamento(s)?`,
+        message: t("ui.DepartmentPage.eliminarNDepartamentos", {
+          defaultValue: "¿Eliminar {{count}} departamentos?",
+          count: ids.length,
+        }),
         tone: "danger",
       }))
     )
@@ -228,13 +243,22 @@ export default function DepartmentPage() {
         );
       }
     }
-    if (ok > 0) toast.success(`${ok} departamento(s) eliminado(s)`);
+    if (ok > 0)
+      toast.success(
+        t("ui.DepartmentPage.nDepartamentosEliminados", {
+          defaultValue: "{{count}} departamentos eliminados",
+          count: ok,
+        }),
+      );
     await load();
   };
 
   return (
     <AppLayout>
-      <SettingsLayout navKey="configuracion" title="Departamentos">
+      <SettingsLayout
+        navKey="configuracion"
+        title={t("settings.configuracion.departamentos", "Departamentos")}
+      >
         <PageContainer width="wide">
           <PageHeader
             actions={
@@ -247,20 +271,25 @@ export default function DepartmentPage() {
                 }}
               >
                 <Plus className="mr-2 h-4 w-4" />
-                Nuevo departamento
+                {t("ui.DepartmentPage.nuevoDepartamento", "Nuevo departamento")}
               </Button>
             }
             badges={
               !loading && all.length > 0 ? (
                 <StatusBadge tone="neutral">
-                  {all.length}{" "}
-                  {all.length === 1 ? "departamento" : "departamentos"}
+                  {t("ui.DepartmentPage.nDepartamentos", {
+                    defaultValue: "{{count}} departamentos",
+                    count: all.length,
+                  })}
                 </StatusBadge>
               ) : undefined
             }
             icon={<Building2 />}
-            subtitle="Organiza tu equipo interno en departamentos (Operaciones, Talento Humano, Nómina…) y asigna un responsable a cada uno."
-            title="Departamentos"
+            subtitle={t(
+              "ui.DepartmentPage.organizaTuEquipoInterno",
+              "Organiza tu equipo interno en departamentos (Operaciones, Talento Humano, Nómina…) y asigna un responsable a cada uno.",
+            )}
+            title={t("settings.configuracion.departamentos", "Departamentos")}
           />
           <DepartmentsTable
             canEdit={canEdit}
@@ -300,7 +329,11 @@ export default function DepartmentPage() {
             managers={managers}
             open={open}
             saving={saving}
-            title={edit ? "Editar Departamento" : "Nuevo Departamento"}
+            title={
+              edit
+                ? t("ui.DepartmentPage.editarDepartamento", "Editar Departamento")
+                : t("ui.DepartmentDialog.nuevoDepartamento", "Nuevo Departamento")
+            }
             onOpenChange={(v) => {
               setOpen(v);
               if (!v) setEdit(null);

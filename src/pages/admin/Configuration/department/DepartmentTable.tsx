@@ -35,43 +35,6 @@ type Props = {
   canEdit?: boolean;
 };
 
-const columns: CatalogColumn<DepartmentRow>[] = [
-  {
-    key: "name",
-    header: "Departamento",
-    // Nombre y descripción en la misma celda: la descripción es el subtítulo
-    // del departamento, no un dato aparte que merezca su propia columna.
-    render: (_v, r) => (
-      <>
-        <div className="font-medium">{r.name}</div>
-        {r.description ? (
-          <div
-            className="line-clamp-1 text-xs"
-            style={{ color: "var(--ink-soft)" }}
-          >
-            {r.description}
-          </div>
-        ) : null}
-      </>
-    ),
-  },
-  { key: "managerName", header: "Responsable", render: (v) => v ?? "—" },
-  {
-    key: "members",
-    header: "Miembros",
-    render: (v) => (
-      <span className="inline-flex items-center gap-1.5 tabular-nums">
-        <Users className="h-3.5 w-3.5" style={{ color: "var(--ink-faint)" }} />
-        {v ?? 0}
-      </span>
-    ),
-  },
-  {
-    key: "status",
-    header: "Estado",
-    render: (v) => <ActiveBadge active={v !== "inactive"} />,
-  },
-];
 
 export default function DepartmentsTable({
   rows,
@@ -90,11 +53,53 @@ export default function DepartmentsTable({
   canEdit = true,
 }: Props) {
   const { t } = useTranslation();
+  // Built inside the component so the headers follow the current language.
+  const columns: CatalogColumn<DepartmentRow>[] = [
+    {
+      key: "name",
+      header: t("guards.department.title", "Departamento"),
+      // Nombre y descripción en la misma celda: la descripción es el subtítulo
+      // del departamento, no un dato aparte que merezca su propia columna.
+      render: (_v, r) => (
+        <>
+          <div className="font-medium">{r.name}</div>
+          {r.description ? (
+            <div
+              className="line-clamp-1 text-xs"
+              style={{ color: "var(--ink-soft)" }}
+            >
+              {r.description}
+            </div>
+          ) : null}
+        </>
+      ),
+    },
+    { key: "managerName", header: t("ui.DepartmentTable.responsable", "Responsable"), render: (v) => v ?? "—" },
+    {
+      key: "members",
+      header: t("ui.DepartmentTable.miembros", "Miembros"),
+      render: (v) => (
+        <span className="inline-flex items-center gap-1.5 tabular-nums">
+          <Users className="h-3.5 w-3.5" style={{ color: "var(--ink-faint)" }} />
+          {v ?? 0}
+        </span>
+      ),
+    },
+    {
+      key: "status",
+      header: t("clients.columns.status", "Estado"),
+      render: (v) => <ActiveBadge active={v !== "inactive"} />,
+    },
+  ];
 
   return (
     <CatalogTable<DepartmentRow>
       bulkActions={[
-        { label: "Eliminar", destructive: true, onRun: onBulkDelete },
+        {
+          label: t("actions.delete", "Eliminar"),
+          destructive: true,
+          onRun: onBulkDelete,
+        },
       ]}
       canEdit={canEdit}
       columns={columns}
@@ -110,15 +115,25 @@ export default function DepartmentsTable({
       pageSize={pageSize}
       query={query}
       rowActions={(r) => [
-        { label: "Editar", onClick: () => onEdit(r) },
+        { label: t("actions.edit", "Editar"), onClick: () => onEdit(r) },
         {
-          label: r.status === "inactive" ? "Activar" : "Desactivar",
+          label:
+            r.status === "inactive"
+              ? t("actions.activate", "Activar")
+              : t("actions.desactivate", "Desactivar"),
           onClick: () => onToggleStatus(r),
         },
-        { label: "Eliminar", destructive: true, onClick: () => onDelete(r) },
+        {
+          label: t("actions.delete", "Eliminar"),
+          destructive: true,
+          onClick: () => onDelete(r),
+        },
       ]}
       rows={rows}
-      searchPlaceholder="Buscar departamento"
+      searchPlaceholder={t(
+        "ui.DepartmentTable.buscarDepartamento",
+        "Buscar departamento",
+      )}
       total={total}
       onPageChange={onPageChange}
       onPageSizeChange={onPageSizeChange}

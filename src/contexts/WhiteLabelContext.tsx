@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import {
   createContext, useContext, useEffect, useRef, useState, type ReactNode,
 } from "react";
@@ -440,7 +441,7 @@ export function EsqueletoNeutro() {
     <div
       role="status"
       aria-live="polite"
-      aria-label="Cargando"
+      aria-label={i18n.t("ui.App.cargando", "Cargando")}
       style={{
         minHeight: "100dvh",
         display: "flex",

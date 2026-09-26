@@ -247,12 +247,15 @@ export default function ScheduleCard({
         }
         toast.success(
           editRow.positionType === "sacafranco"
-            ? "Sacafranco asignado (los turnos se colocan según los huecos de la operación)"
-            : "Vigilante asignado",
+            ? t(
+                "ui.ScheduleCard.sacafrancoAsignado",
+                "Sacafranco asignado (los turnos se colocan según los huecos de la operación)",
+              )
+            : t("ui.ScheduleCard.vigilanteAsignado", "Vigilante asignado"),
         );
       } else if (editRow.assignmentId) {
         await clientService.removeGuardAssignment(editRow.assignmentId);
-        toast.success("Asignación removida");
+        toast.success(t("ui.ScheduleCard.asignacionRemovida", "Asignación removida"));
       }
       setEditRow(null);
     } catch (e: any) {
@@ -277,7 +280,7 @@ export default function ScheduleCard({
     setSaving(true);
     try {
       await clientService.removeGuardAssignment(editRow.assignmentId);
-      toast.success("Asignación removida");
+      toast.success(t("ui.ScheduleCard.asignacionRemovida", "Asignación removida"));
       setEditRow(null);
       await load(true);
     } catch {
@@ -307,7 +310,7 @@ export default function ScheduleCard({
           <Button
             className="h-7 w-7"
             size="icon"
-            title="Quincena anterior"
+            title={t("ui.ScheduleCard.quincenaAnterior", "Quincena anterior")}
             variant="outline"
             onClick={() => shiftWindow(-14)}
           >
@@ -319,12 +322,12 @@ export default function ScheduleCard({
             variant="outline"
             onClick={() => setStart(undefined)}
           >
-            Hoy
+            {t("ui.ScheduleCard.hoy", "Hoy")}
           </Button>
           <Button
             className="h-7 w-7"
             size="icon"
-            title="Quincena siguiente"
+            title={t("ui.ScheduleCard.quincenaSiguiente", "Quincena siguiente")}
             variant="outline"
             onClick={() => shiftWindow(14)}
           >
@@ -333,7 +336,7 @@ export default function ScheduleCard({
           <Button
             className="h-7 w-7"
             size="icon"
-            title="Actualizar"
+            title={t("ui.tabkit.actualizar", "Actualizar")}
             variant="outline"
             onClick={() => load()}
           >
@@ -342,7 +345,7 @@ export default function ScheduleCard({
         </div>
       }
       icon={<CalendarDays />}
-      title="Horarios"
+      title={t("ui.ScheduleCard.horarios", "Horarios")}
     >
       {loading && !data ? (
         <div className="space-y-2 py-2">
@@ -352,7 +355,10 @@ export default function ScheduleCard({
         </div>
       ) : rows.length === 0 ? (
         <EmptyState
-          description="Esta sede no tiene puestos con rotación configurada. Configúralos en el Programador."
+          description={t(
+            "ui.ScheduleCard.sinPuestosConRotacion",
+            "Esta sede no tiene puestos con rotación configurada. Configúralos en el Programador.",
+          )}
           icon={<CalendarDays />}
           title={t("ui.ScheduleCard.sinHorario", "Sin horario")}
         />
@@ -369,7 +375,7 @@ export default function ScheduleCard({
                       background: "var(--glass-solid)",
                     }}
                   >
-                    Puesto · Posición · Vigilante
+                    {t("ui.ScheduleCard.puestoPosicionVigilante", "Puesto · Posición · Vigilante")}
                   </th>
                   {days.map((d) => (
                     <th
@@ -384,7 +390,12 @@ export default function ScheduleCard({
                             : "var(--ink-soft)",
                       }}
                     >
-                      <div>{d.dow}</div>
+                      <div>
+                        {new Date(`${d.date}T00:00:00`).toLocaleDateString(
+                          localeActual(),
+                          { weekday: "short" },
+                        ) || d.dow}
+                      </div>
                       <div
                         className={`tabular-nums ${d.isToday ? "font-bold" : ""}`}
                       >
@@ -417,12 +428,14 @@ export default function ScheduleCard({
                               style={{ color: "var(--ink-faint)" }}
                             >
                               {r.positionName}
-                              {r.positionType === "sacafranco" ? " · SF" : ""}
+                              {r.positionType === "sacafranco"
+                                ? ` · ${t("ui.ScheduleCard.abrevSacafranco", "SF")}`
+                                : ""}
                             </span>
                             {canEdit ? (
                               <button
                                 className="cg-focus block truncate rounded-md text-left text-sm font-medium hover:underline"
-                                title="Cambiar vigilante"
+                                title={t("ui.ScheduleCard.cambiarVigilante", "Cambiar vigilante")}
                                 onClick={() => openEdit(r)}
                               >
                                 {r.guardName || (
@@ -445,7 +458,7 @@ export default function ScheduleCard({
                             <button
                               className="cg-focus shrink-0 rounded-md p-1 transition-opacity hover:opacity-70"
                               style={{ color: "var(--ink-faint)" }}
-                              title="Cambiar vigilante"
+                              title={t("ui.ScheduleCard.cambiarVigilante", "Cambiar vigilante")}
                               onClick={() => openEdit(r)}
                             >
                               <UserPlus className="h-3.5 w-3.5" />
@@ -520,7 +533,7 @@ export default function ScheduleCard({
                 className="h-1.5 w-1.5 rounded-full"
                 style={{ background: "var(--warn)" }}
               />{" "}
-              Cubre otro vigilante
+              {t("ui.ScheduleCard.cubreOtroVigilante", "Cubre otro vigilante")}
             </span>
             {canEdit && (
               <span className="ml-auto">
@@ -543,7 +556,7 @@ export default function ScheduleCard({
               variant="outline"
               onClick={() => setEditRow(null)}
             >
-              Cancelar
+              {t("actions.cancel", "Cancelar")}
             </Button>
             {editRow?.assignmentId && (
               <Button
@@ -552,7 +565,8 @@ export default function ScheduleCard({
                 variant="outline"
                 onClick={removeGuard}
               >
-                <UserMinus className="mr-1.5 h-4 w-4" /> Quitar
+                <UserMinus className="mr-1.5 h-4 w-4" />{" "}
+                {t("ui.ExtremoRutaField.quitar", "Quitar")}
               </Button>
             )}
             <Button
@@ -561,10 +575,11 @@ export default function ScheduleCard({
             >
               {saving ? (
                 <>
-                  <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> Guardando…
+                  <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />{" "}
+                  {t("common.saving", "Guardando…")}
                 </>
               ) : (
-                "Guardar"
+                t("actions.save", "Guardar")
               )}
             </Button>
           </>
@@ -572,7 +587,7 @@ export default function ScheduleCard({
         icon={<UserPlus className="h-5 w-5" />}
         open={!!editRow}
         size="sm"
-        title="Cambiar vigilante"
+        title={t("ui.ScheduleCard.cambiarVigilante", "Cambiar vigilante")}
         onOpenChange={(o) => {
           if (!o && !saving) setEditRow(null);
         }}
@@ -591,13 +606,15 @@ export default function ScheduleCard({
               )}
             </div>
             <div>
-              <label className="cg-eyebrow mb-1 block">Vigilante</label>
+              <label className="cg-eyebrow mb-1 block">
+                {t("ui.SiteTour.vigilante", "Vigilante")}
+              </label>
               <select
                 className={FIELD_CLS}
                 value={pickGuard}
                 onChange={(e) => setPickGuard(e.target.value)}
               >
-                <option value="">— Sin asignar —</option>
+                <option value="">— {t("comun.sinAsignar", "Sin asignar")} —</option>
                 {guardOptions.map((g) => (
                   <option key={g.id} value={g.id}>
                     {g.label}
@@ -606,8 +623,10 @@ export default function ScheduleCard({
               </select>
             </div>
             <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
-              El vigilante seguirá la rotación del puesto. Cambiar reemplaza la
-              asignación actual del puesto.
+              {t(
+                "ui.ScheduleCard.elVigilanteSeguiraLaRotacion",
+                "El vigilante seguirá la rotación del puesto. Cambiar reemplaza la asignación actual del puesto.",
+              )}
             </p>
           </div>
         )}

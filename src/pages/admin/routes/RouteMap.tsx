@@ -197,7 +197,7 @@ export default function RouteMap({
         revisarZoom();
         setListo(true);
       })
-      .catch((e) => setError(e?.message || "No se pudo cargar el mapa"));
+      .catch((e) => setError(e?.message || t("ui.RouteMap.noSePudoCargarElMapa", "No se pudo cargar el mapa")));
 
     return () => {
       cancelado = true;
@@ -274,7 +274,7 @@ export default function RouteMap({
     const pintarExtremo = (e: ExtremoRuta, esOrigen: boolean) => {
       const color = esOrigen ? pal.info : pal.ok;
       const glifo = iconInnerSvg(esOrigen ? "Home" : "Flag");
-      const etiqueta = esOrigen ? "Origen" : "Destino";
+      const etiqueta = esOrigen ? t("ui.RouteMap.origen", "Origen") : t("ui.RouteMap.destino", "Destino");
       const asset = ficha
         ? chipPin({ etiqueta, color, glifo, piel, version })
         : orbPin({ color, glifo, piel, version, tamano: "md" });
@@ -294,9 +294,9 @@ export default function RouteMap({
           subtitle: e.label,
           tone: esOrigen ? "info" : "ok",
           fields: mapPopupItems(
-            { label: "Dirección", value: e.label, wide: true },
+            { label: t("ui.RouteMap.direccion", "Dirección"), value: e.label, wide: true },
             {
-              label: "Coordenadas",
+              label: t("ui.RouteMap.coordenadas", "Coordenadas"),
               value: `${e.lat.toFixed(5)}, ${e.lng.toFixed(5)}`,
               mono: true,
               wide: true,
@@ -345,17 +345,17 @@ export default function RouteMap({
           id: s.id,
           kind: "station",
           title: s.nombre,
-          subtitle: `Parada ${idx + 1} de ${stops.length}`,
+          subtitle: t("ui.RouteMap.paradaNDeM", { defaultValue: "Parada {{n}} de {{total}}", n: idx + 1, total: stops.length }),
           tone: optimizada ? "ok" : "brand",
           fields: mapPopupItems(
             s.direccion
-              ? { label: "Dirección", value: s.direccion, wide: true }
+              ? { label: t("ui.RouteMap.direccion", "Dirección"), value: s.direccion, wide: true }
               : null,
             s.duracion != null
-              ? { label: "Permanencia", value: `${s.duracion} min`, mono: true }
+              ? { label: t("ui.RouteMap.permanencia", "Permanencia"), value: `${s.duracion} min`, mono: true }
               : null,
             s.pasadas != null
-              ? { label: "Pasadas", value: String(s.pasadas), mono: true }
+              ? { label: t("ui.RouteMap.pasadas", "Pasadas"), value: String(s.pasadas), mono: true }
               : null,
           ),
           actions: mapPopupItems(
@@ -453,12 +453,12 @@ export default function RouteMap({
           <div className="cc-map-card px-3 py-2.5">
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
               <div>
-                <div className="cc-map-eyebrow">Paradas</div>
+                <div className="cc-map-eyebrow">{t("ui.RouteMap.paradas", "Paradas")}</div>
                 <div className="cc-map-metric">{stops.length}</div>
               </div>
               <div>
                 <div className="cc-map-eyebrow">
-                  {medida.porCalles ? "Por calles" : "En línea recta"}
+                  {medida.porCalles ? t("ui.RouteMap.porCalles", "Por calles") : t("ui.RouteMap.enLineaRecta", "En línea recta")}
                 </div>
                 <div className="cc-map-metric">
                   {formatearDistancia(medida.metros)}
@@ -482,19 +482,19 @@ export default function RouteMap({
                 {origen && (
                   <span className="cc-map-key">
                     <i style={{ color: "var(--info)" }} />
-                    Origen
+                    {t("ui.RouteMap.origen", "Origen")}
                   </span>
                 )}
                 <span className="cc-map-key">
                   <i
                     style={{ color: optimizada ? "var(--ok)" : "var(--brand)" }}
                   />
-                  {optimizada ? "Orden optimizado" : "Orden manual"}
+                  {optimizada ? t("ui.RouteMap.ordenOptimizado", "Orden optimizado") : t("ui.RouteMap.ordenManual", "Orden manual")}
                 </span>
                 {destino && (
                   <span className="cc-map-key">
                     <i style={{ color: "var(--ok)" }} />
-                    Destino
+                    {t("ui.RouteMap.destino", "Destino")}
                   </span>
                 )}
               </div>
@@ -509,8 +509,10 @@ export default function RouteMap({
             className="cc-map-card px-4 py-3 text-center text-sm"
             style={{ color: "var(--ink-soft)" }}
           >
-            Ninguna parada tiene ubicación todavía. En cuanto los puestos tengan
-            coordenadas, el recorrido se dibuja solo.
+            {t(
+              "ui.RouteMap.ningunaParadaTieneUbicacion",
+              "Ninguna parada tiene ubicación todavía. En cuanto los puestos tengan coordenadas, el recorrido se dibuja solo.",
+            )}
           </div>
         </div>
       )}

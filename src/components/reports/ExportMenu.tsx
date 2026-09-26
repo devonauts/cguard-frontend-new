@@ -24,6 +24,7 @@
 import type { ExportFormat } from "@/lib/export/reportExport";
 
 import { useState, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Download,
   FileSpreadsheet,
@@ -80,21 +81,24 @@ export interface ExportMenuProps {
 
 const META: Record<
   ExportFormat,
-  { label: string; hint: string; icon: ReactNode }
+  { label: string; hint: string; hintKey: string; icon: ReactNode }
 > = {
   excel: {
     label: "Excel",
     hint: "Hoja de cálculo .xlsx",
+    hintKey: "ui.ExportMenu.hintExcel",
     icon: <FileSpreadsheet className="h-4 w-4" />,
   },
   pdf: {
     label: "PDF",
     hint: "Documento .pdf listo para enviar",
+    hintKey: "ui.ExportMenu.hintPdf",
     icon: <FileType2 className="h-4 w-4" />,
   },
   csv: {
     label: "CSV",
     hint: "Texto plano .csv para otros sistemas",
+    hintKey: "ui.ExportMenu.hintCsv",
     icon: <FileText className="h-4 w-4" />,
   },
 };
@@ -112,9 +116,11 @@ export default function ExportMenu({
   busy = false,
   size = "default",
   showLabel = true,
-  label = "Exportar",
+  label: labelProp,
   className,
 }: ExportMenuProps) {
+  const { t } = useTranslation();
+  const label = labelProp ?? t("incidents.export", "Exportar");
   const [hojaAbierta, setHojaAbierta] = useState(false);
   const [trabajando, setTrabajando] = useState(false);
   const ocupado = busy || trabajando;
@@ -137,7 +143,7 @@ export default function ExportMenu({
     (f) => ({
       key: f,
       label: META[f].label,
-      hint: META[f].hint,
+      hint: t(META[f].hintKey, META[f].hint),
       icon: META[f].icon,
       run: () => void lanzar(f),
     }),
@@ -148,8 +154,11 @@ export default function ExportMenu({
   if (onPrint) {
     extras.push({
       key: "print",
-      label: "Imprimir",
-      hint: "Abre la vista de impresión del navegador",
+      label: t("common.print", "Imprimir"),
+      hint: t(
+        "ui.ExportMenu.hintImprimir",
+        "Abre la vista de impresión del navegador",
+      ),
       icon: <Printer className="h-4 w-4" />,
       run: () => {
         setHojaAbierta(false);
@@ -160,8 +169,11 @@ export default function ExportMenu({
   if (onEmail) {
     extras.push({
       key: "email",
-      label: "Enviar por correo",
-      hint: "Manda el informe a un destinatario",
+      label: t("ui.ExportMenu.enviarPorCorreo", "Enviar por correo"),
+      hint: t(
+        "ui.ExportMenu.hintEnviarPorCorreo",
+        "Manda el informe a un destinatario",
+      ),
       icon: <Mail className="h-4 w-4" />,
       run: () => {
         setHojaAbierta(false);
@@ -188,7 +200,7 @@ export default function ExportMenu({
       aria-label={showLabel ? undefined : label}
     >
       {icono}
-      {showLabel && <span>{ocupado ? "Exportando…" : label}</span>}
+      {showLabel && <span>{ocupado ? t("ui.ExportMenu.exportando", "Exportando…") : label}</span>}
     </Button>
   );
 

@@ -118,7 +118,12 @@ export default function GuardAsistenciaPage() {
         orderBy: "punchInTime_DESC",
       })
       .then((r) => setRows(r.rows || []))
-      .catch((e) => toast.error(e?.message || "Error al cargar la asistencia"))
+      .catch((e) =>
+        toast.error(
+          e?.message ||
+            t("ui.GuardAsistencia.errorAlCargar", "Error al cargar la asistencia"),
+        ),
+      )
       .finally(() => setLoading(false));
   }, [id, rangeStart, rangeEnd]);
 
@@ -157,45 +162,46 @@ export default function GuardAsistenciaPage() {
     align?: "left" | "right";
   }[] = [
     {
-      label: "Fecha",
+      label: t("comun.fecha", "Fecha"),
       get: (r) =>
         r.punchInTime
           ? new Date(r.punchInTime).toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() })
           : "",
     },
-    { label: "Puesto", get: (r) => r.stationName?.stationName || "" },
-    { label: "Programado inicio", get: (r) => fmtTime(r.scheduledStart) },
-    { label: "Programado fin", get: (r) => fmtTime(r.scheduledEnd) },
+    { label: t("comun.puesto", "Puesto"), get: (r) => r.stationName?.stationName || "" },
+    { label: t("ui.GuardAsistencia.programadoInicio", "Programado inicio"), get: (r) => fmtTime(r.scheduledStart) },
+    { label: t("ui.GuardAsistencia.programadoFin", "Programado fin"), get: (r) => fmtTime(r.scheduledEnd) },
     {
-      label: "Entrada",
+      label: t("ui.GuardAsistencia.entrada", "Entrada"),
       get: (r) =>
         r.punchInTime
           ? new Date(r.punchInTime).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
           : "",
     },
     {
-      label: "Salida",
+      label: t("ui.GuardAsistencia.salida", "Salida"),
       get: (r) =>
         r.punchOutTime
           ? new Date(r.punchOutTime).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
           : "",
     },
-    { label: "Horas", get: (r) => r.hoursWorked ?? "", align: "right" },
-    { label: "Tarde (min)", get: (r) => r.lateMinutes ?? 0, align: "right" },
+    { label: t("ui.GuardAsistencia.horas", "Horas"), get: (r) => r.hoursWorked ?? "", align: "right" },
+    { label: t("ui.GuardAsistencia.tardeMin", "Tarde (min)"), get: (r) => r.lateMinutes ?? 0, align: "right" },
     {
-      label: "Extra (min)",
+      label: t("ui.GuardAsistencia.extraMin", "Extra (min)"),
       get: (r) => r.overtimeMinutes ?? 0,
       align: "right",
     },
     {
-      label: "Fuera de geocerca",
-      get: (r) => (r.punchInOutsideGeofence ? "Sí" : "No"),
+      label: t("ui.GuardAsistencia.fueraDeGeocerca", "Fuera de geocerca"),
+      get: (r) =>
+        r.punchInOutsideGeofence ? t("ui.Task.si", "Sí") : t("ui.Task.no", "No"),
     },
     {
-      label: "Estado",
+      label: t("comun.estado", "Estado"),
       get: (r) => STATUS_META[r.status]?.label || r.status || "",
     },
-    { label: "Aprobación", get: (r) => approvalLabel(r.approvalStatus) },
+    { label: t("ui.GuardAsistencia.aprobacion", "Aprobación"), get: (r) => approvalLabel(r.approvalStatus) },
   ];
 
   const exportar = async (format: ExportFormat) => {
@@ -210,16 +216,25 @@ export default function GuardAsistenciaPage() {
         COLUMNAS_EXPORT.map((c) => c.label),
         rows.map((r) => COLUMNAS_EXPORT.map((c) => c.get(r))),
         {
-          title: "Hoja de asistencia",
-          subtitle: `${rangeLabel(period, anchor)} \u00b7 ${rows.length} registro(s)`,
+          title: t("ui.GuardAsistenciaPage.hojaDeAsistencia", "Hoja de asistencia"),
+          subtitle: t("ui.GuardAsistencia.rangoRegistros", {
+            defaultValue: "{{range}} · {{count}} registro(s)",
+            range: rangeLabel(period, anchor),
+            count: rows.length,
+          }),
           fileBase: `asistencia-${period}-${rangeStart.toISOString().slice(0, 10)}`,
         },
         COLUMNAS_EXPORT.map((c) => c.align || "left"),
       );
-      toast.success(`${rows.length} registro(s) exportado(s)`);
+      toast.success(
+        t("ui.GuardAsistencia.nRegistrosExportados", {
+          defaultValue: "{{count}} registro(s) exportado(s)",
+          count: rows.length,
+        }),
+      );
     } catch (e) {
       console.error("export asistencia vigilante", e);
-      toast.error("No se pudo generar el archivo");
+      toast.error(t("ui.DataReport.errorExportar", "No se pudo generar el archivo"));
     }
   };
 
@@ -231,7 +246,7 @@ export default function GuardAsistenciaPage() {
           <StatCard
             accent="blue"
             icon={<CalendarClock />}
-            label="Turnos"
+            label={t("ui.GuardAsistencia.turnos", "Turnos")}
             value={String(summary.shifts)}
           />
           <StatCard
@@ -243,13 +258,13 @@ export default function GuardAsistenciaPage() {
           <StatCard
             accent="primary"
             icon={<Clock />}
-            label="Horas totales"
+            label={t("ui.GuardAsistencia.horasTotales", "Horas totales")}
             value={summary.hours.toFixed(2)}
           />
           <StatCard
             accent="orange"
             icon={<Timer />}
-            label="Tardanzas"
+            label={t("ui.GuardAsistencia.tardanzas", "Tardanzas")}
             value={String(summary.late)}
           />
         </StatsStrip>
@@ -265,7 +280,9 @@ export default function GuardAsistenciaPage() {
                     className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${period === p ? "brand-fill" : "text-muted-foreground hover:text-foreground"}`}
                     onClick={() => setPeriod(p)}
                   >
-                    {p === "week" ? "Semana" : "Mes"}
+                    {p === "week"
+                      ? t("ui.GuardAsistencia.semana", "Semana")
+                      : t("ui.GuardAsistencia.mes", "Mes")}
                   </button>
                 ))}
               </div>
@@ -305,7 +322,10 @@ export default function GuardAsistenciaPage() {
             <SkeletonCards count={4} />
           ) : rows.length === 0 ? (
             <EmptyState
-              description={`Este vigilante no registró asistencia en ${rangeLabel(period, anchor)}.`}
+              description={t("ui.GuardAsistencia.sinAsistenciaEn", {
+                defaultValue: "Este vigilante no registró asistencia en {{range}}.",
+                range: rangeLabel(period, anchor),
+              })}
               icon={<CalendarClock />}
               title={t("ui.GuardAsistenciaPage.sinMarcaciones")}
             />
@@ -321,13 +341,13 @@ export default function GuardAsistenciaPage() {
                       {t("comun.puesto")}
                     </th>
                     <th className="px-3 py-2.5 text-left font-semibold">
-                      Entrada
+                      {t("ui.GuardAsistencia.entrada", "Entrada")}
                     </th>
                     <th className="px-3 py-2.5 text-left font-semibold">
-                      Salida
+                      {t("ui.GuardAsistencia.salida", "Salida")}
                     </th>
                     <th className="px-3 py-2.5 text-right font-semibold">
-                      Horas
+                      {t("ui.GuardAsistencia.horas", "Horas")}
                     </th>
                     <th className="px-3 py-2.5 text-left font-semibold">
                       {t("comun.estado")}
@@ -383,7 +403,8 @@ export default function GuardAsistenciaPage() {
                           title={t("ui.GuardAsistenciaPage.verEnAsistencia")}
                           to={`/nomina/records?focus=${r.id}`}
                         >
-                          Detalle <ExternalLink className="h-3 w-3" />
+                          {t("ui.GuardAsistencia.detalle", "Detalle")}{" "}
+                          <ExternalLink className="h-3 w-3" />
                         </Link>
                       </td>
                     </tr>

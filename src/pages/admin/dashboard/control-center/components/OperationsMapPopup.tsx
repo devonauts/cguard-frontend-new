@@ -114,7 +114,11 @@ function etiquetaSenal(iso?: string): string[] | undefined {
 
   return t === "ok"
     ? undefined
-    : [t === "bad" ? "Sin señal" : "Señal rezagada"];
+    : [
+        t === "bad"
+          ? i18n.t("tracking.unitState.noSignal", "Sin señal")
+          : i18n.t("ui.OperationsMapPopup.senalRezagada", "Señal rezagada"),
+      ];
 }
 
 /** Añade la fila sólo si hay dato. Ver la cabecera: nada de guiones de relleno. */
@@ -161,7 +165,9 @@ function centrarYSeguir(
     centrar,
     {
       id: "follow",
-      label: activo ? "Dejar de seguir" : "Seguir",
+      label: activo
+        ? i18n.t("ui.OperationsMapPopup.dejarDeSeguir", "Dejar de seguir")
+        : i18n.t("ui.OperationsMapPopup.seguir", "Seguir"),
       icon: <Crosshair />,
       tone: activo ? "warn" : undefined,
       onClick: () => mando.seguir(e),
@@ -188,21 +194,23 @@ export function globoDe(
     case "station": {
       const estado = cob?.estado ?? "sinDatos";
 
-      fila(campos, "Sede", m.postSiteName);
-      fila(campos, "Cliente", m.clientName);
+      fila(campos, i18n.t("maps.kind.site", "Sede"), m.postSiteName);
+      fila(campos, i18n.t("maps.kind.client", "Cliente"), m.clientName);
       fila(
         campos,
-        "Geocerca",
+        i18n.t("ui.OperationsMapPopup.geocerca", "Geocerca"),
         m.geofencePolygon?.length
-          ? "Perímetro trazado"
+          ? i18n.t("ui.OperationsMapPopup.perimetroTrazado", "Perímetro trazado")
           : `${cob?.radio ?? 150} m`,
         { mono: true },
       );
-      fila(campos, "Dirección", m.address, { wide: true });
+      fila(campos, i18n.t("clients.form.address", "Dirección"), m.address, {
+        wide: true,
+      });
       if (cob?.dentro.length) {
         fila(
           campos,
-          "En el puesto",
+          i18n.t("ui.OperationsMapPopup.enElPuesto", "En el puesto"),
           cob.dentro.map((v) => v.label).join(", "),
           { wide: true },
         );
@@ -219,7 +227,7 @@ export function globoDe(
         title: e.label,
         subtitle:
           [m.clientName, m.postSiteName].filter(Boolean).join(" · ") ||
-          "Puesto de servicio",
+          i18n.t("ui.OperationsMapPopup.puestoDeServicio", "Puesto de servicio"),
         status: {
           label: i18n.t(
             COBERTURA_LABEL[estado].labelKey,
@@ -236,14 +244,24 @@ export function globoDe(
             tone: COBERTURA_TONO[estado],
           },
           ...(m.guardsCount != null
-            ? [{ label: "Asignados", value: m.guardsCount }]
+            ? [
+                {
+                  label: i18n.t("ui.OperationsMapPopup.asignados", "Asignados"),
+                  value: m.guardsCount,
+                },
+              ]
             : []),
         ],
         fields: campos,
-        tags: m.isMobile ? ["Puesto móvil"] : undefined,
+        tags: m.isMobile
+          ? [i18n.t("ui.StationHero.puestoMovil", "Puesto móvil")]
+          : undefined,
         note:
           estado === "sinDatos"
-            ? "Nadie está enviando posición: el mapa no puede confirmar la cobertura."
+            ? i18n.t(
+                "ui.OperationsMapPopup.nadieEstaEnviandoPosicion",
+                "Nadie está enviando posición: el mapa no puede confirmar la cobertura.",
+              )
             : undefined,
         actions: acciones(
           rutaPuesto
@@ -252,7 +270,7 @@ export function globoDe(
           rutaPuesto
             ? mapPopupActions.tour(
                 () => mando.irA(`${rutaPuesto}/site-tours`),
-                "Ver rondas",
+                i18n.t("ui.OperationsMapPopup.verRondas", "Ver rondas"),
               )
             : null,
           ...centrarYSeguir(e, mando, false),
@@ -263,10 +281,16 @@ export function globoDe(
 
     /* ── CLIENTE / SEDE ────────────────────────────────────────────────── */
     case "client": {
-      fila(campos, "Cliente", m.clientName);
-      fila(campos, "Ciudad", m.city);
-      fila(campos, "Nivel de riesgo", m.riskLevel);
-      fila(campos, "Dirección", m.address, { wide: true });
+      fila(campos, i18n.t("maps.kind.client", "Cliente"), m.clientName);
+      fila(campos, i18n.t("clients.form.city", "Ciudad"), m.city);
+      fila(
+        campos,
+        i18n.t("clients.form.riskLevel", "Nivel de riesgo"),
+        m.riskLevel,
+      );
+      fila(campos, i18n.t("clients.form.address", "Dirección"), m.address, {
+        wide: true,
+      });
 
       // La ficha de una SEDE es la del sitio; la de un cliente sin sedes
       // ubicadas es la del cliente. `entityId` distingue una de otra.
@@ -281,26 +305,36 @@ export function globoDe(
         id: e.id,
         kind: "client",
         title: e.label,
-        subtitle: esSede ? `Sede · ${m.clientName || "Cliente"}` : "Cliente",
+        subtitle: esSede
+          ? `${i18n.t("maps.kind.site", "Sede")} · ${m.clientName || i18n.t("maps.kind.client", "Cliente")}`
+          : i18n.t("maps.kind.client", "Cliente"),
         tone: "neutral",
         metrics:
           m.stationsCount != null
-            ? [{ label: "Puestos", value: m.stationsCount }]
+            ? [
+                {
+                  label: i18n.t("dashboard.kpiCorto.stations", "Puestos"),
+                  value: m.stationsCount,
+                },
+              ]
             : undefined,
         fields: campos,
         actions: acciones(
           rutaSede
-            ? mapPopupActions.detail(() => mando.irA(rutaSede), "Ver sede")
+            ? mapPopupActions.detail(
+                () => mando.irA(rutaSede),
+                i18n.t("ui.OperationsMapPopup.verSede", "Ver sede"),
+              )
             : rutaCliente
               ? mapPopupActions.detail(
                   () => mando.irA(rutaCliente),
-                  "Ver cliente",
+                  i18n.t("ui.OperationsMapPopup.verCliente", "Ver cliente"),
                 )
               : null,
           rutaSede && rutaCliente
             ? {
                 id: "client",
-                label: "Ver cliente",
+                label: i18n.t("ui.OperationsMapPopup.verCliente", "Ver cliente"),
                 icon: <Users />,
                 onClick: () => mando.irA(rutaCliente),
               }
@@ -316,26 +350,41 @@ export function globoDe(
     case "guard": {
       const senal = m.lastSeenAt || m.punchInTime;
 
-      fila(campos, "Puesto", m.stationName || e.sub);
+      fila(campos, i18n.t("maps.kind.station", "Puesto"), m.stationName || e.sub);
       if (m.punchInTime)
-        fila(campos, "Entrada", clockOf(m.punchInTime), { mono: true });
+        fila(
+          campos,
+          i18n.t("ui.OperationsMapPopup.entrada", "Entrada"),
+          clockOf(m.punchInTime),
+          { mono: true },
+        );
       if (senal)
-        fila(campos, "Última señal", timeAgo(senal), {
-          mono: true,
-          tone: tonoSenal(senal),
-        });
+        fila(
+          campos,
+          i18n.t("ui.AlarmCaseDetail.ultimaSenal", "Última señal"),
+          timeAgo(senal),
+          {
+            mono: true,
+            tone: tonoSenal(senal),
+          },
+        );
       if (m.accuracy != null)
-        fila(campos, "Precisión", `± ${Math.round(m.accuracy)} m`, {
-          mono: true,
-        });
+        fila(
+          campos,
+          i18n.t("ui.TrailMap.precision", "Precisión"),
+          `± ${Math.round(m.accuracy)} m`,
+          {
+            mono: true,
+          },
+        );
 
       return {
         id: e.id,
         kind: "guard",
         title: e.label,
-        subtitle: `Vigilante · ${m.stationName || e.sub || "En servicio"}`,
+        subtitle: `${i18n.t("maps.kind.guard", "Vigilante")} · ${m.stationName || e.sub || i18n.t("dashboard.kpiCorto.onDuty", "En servicio")}`,
         status: {
-          label: STATUS_LABEL[e.status],
+          label: i18n.t(STATUS_LABEL[e.status]),
           tone: ESTADO_TONO[e.status],
           live: e.status !== "offline",
         },
@@ -344,7 +393,7 @@ export function globoDe(
           m.battery != null
             ? [
                 {
-                  label: "Batería",
+                  label: i18n.t("ui.TrailMap.bateria", "Batería"),
                   value: `${Math.round(m.battery)} %`,
                   tone: tonoBateria(m.battery),
                 },
@@ -358,7 +407,10 @@ export function globoDe(
             ? mapPopupActions.detail(() => mando.irA(`/guards/${id}/resumen`))
             : null,
           id
-            ? mapPopupActions.tour(() => mando.verRastro(e), "Ver recorrido")
+            ? mapPopupActions.tour(
+                () => mando.verRastro(e),
+                i18n.t("ui.OperationsMapPopup.verRecorrido", "Ver recorrido"),
+              )
             : null,
           mapPopupActions.call(m.phone),
           ...centrarYSeguir(e, mando, true),
@@ -370,30 +422,45 @@ export function globoDe(
     case "supervisor": {
       const senal = m.lastSeenAt;
 
-      fila(campos, "Zona", m.zone);
-      fila(campos, "Vehículo", m.vehicle);
+      fila(campos, i18n.t("maps.kind.zone", "Zona"), m.zone);
+      fila(campos, i18n.t("ui.OperationsMapPopup.vehiculo", "Vehículo"), m.vehicle);
       if (m.onDutySince)
-        fila(campos, "En servicio desde", clockOf(m.onDutySince), {
-          mono: true,
-        });
+        fila(
+          campos,
+          i18n.t("ui.OperationsMapPopup.enServicioDesde", "En servicio desde"),
+          clockOf(m.onDutySince),
+          {
+            mono: true,
+          },
+        );
       if (senal)
-        fila(campos, "Última señal", timeAgo(senal), {
-          mono: true,
-          tone: tonoSenal(senal),
-        });
+        fila(
+          campos,
+          i18n.t("ui.AlarmCaseDetail.ultimaSenal", "Última señal"),
+          timeAgo(senal),
+          {
+            mono: true,
+            tone: tonoSenal(senal),
+          },
+        );
       if (m.dutyLateMinutes)
-        fila(campos, "Retraso", `${m.dutyLateMinutes} min`, {
-          mono: true,
-          tone: "warn",
-        });
+        fila(
+          campos,
+          i18n.t("ui.OperationsMapPopup.retraso", "Retraso"),
+          `${m.dutyLateMinutes} min`,
+          {
+            mono: true,
+            tone: "warn",
+          },
+        );
 
       return {
         id: e.id,
         kind: "supervisor",
         title: e.label,
-        subtitle: `Supervisor · ${m.zone || "En patrulla"}`,
+        subtitle: `${i18n.t("maps.kind.supervisor", "Supervisor")} · ${m.zone || i18n.t("ui.useControlCenter.enPatrulla", "En patrulla")}`,
         status: {
-          label: STATUS_LABEL[e.status],
+          label: i18n.t(STATUS_LABEL[e.status]),
           tone: ESTADO_TONO[e.status],
           live: e.status !== "offline",
         },
@@ -408,7 +475,7 @@ export function globoDe(
           id
             ? mapPopupActions.tour(
                 () => mando.irA(`/supervisors/${id}/cobertura`),
-                "Cobertura",
+                i18n.t("dashboard.coverage.eyebrow", "Cobertura"),
               )
             : null,
           ...centrarYSeguir(e, mando, true),
@@ -418,16 +485,27 @@ export function globoDe(
 
     /* ── INCIDENTE ─────────────────────────────────────────────────────── */
     case "incident": {
-      fila(campos, "Ubicación", e.sub, { wide: true });
+      fila(campos, i18n.t("ui.OperationsMapPopup.ubicacion", "Ubicación"), e.sub, {
+        wide: true,
+      });
       if (m.lastSeenAt)
-        fila(campos, "Reportado", timeAgo(m.lastSeenAt), { mono: true });
+        fila(
+          campos,
+          i18n.t("ui.OperationsMapPopup.reportado", "Reportado"),
+          timeAgo(m.lastSeenAt),
+          { mono: true },
+        );
 
       return {
         id: e.id,
         kind: "incident",
         title: e.label,
-        subtitle: "Incidente",
-        status: { label: STATUS_LABEL[e.status], tone: "bad", live: true },
+        subtitle: i18n.t("maps.kind.incident", "Incidente"),
+        status: {
+          label: i18n.t(STATUS_LABEL[e.status]),
+          tone: "bad",
+          live: true,
+        },
         tone: "bad",
         fields: campos,
         actions: acciones(
@@ -442,13 +520,15 @@ export function globoDe(
 
     /* ── SEDE DEL NEGOCIO ──────────────────────────────────────────────── */
     default: {
-      fila(campos, "Dirección", m.address || e.sub, { wide: true });
+      fila(campos, i18n.t("clients.form.address", "Dirección"), m.address || e.sub, {
+        wide: true,
+      });
 
       return {
         id: e.id,
         kind: KIND_POPUP[e.kind],
         title: e.label,
-        subtitle: "Sede central",
+        subtitle: i18n.t("ui.useControlCenter.sedeCentral", "Sede central"),
         tone: "brand",
         fields: campos,
         actions: acciones(
@@ -473,19 +553,26 @@ export function globoDeRacimo(r: Racimo, mando: MandoGlobo): MapPopupData {
       count: r.miembros.length,
       defaultValue: "{{count}} sedes",
     }),
-    subtitle: "Agrupadas por cercanía",
+    subtitle: i18n.t("ui.OperationsMapPopup.agrupadasPorCercania", "Agrupadas por cercanía"),
     tone: "neutral",
     fields: [
       {
-        label: "Incluye",
-        value: nombres.join(", ") + (resto > 0 ? ` y ${resto} más` : ""),
+        label: i18n.t("ui.OperationsMapPopup.incluye", "Incluye"),
+        value:
+          nombres.join(", ") +
+          (resto > 0
+            ? i18n.t("ui.OperationsMapPopup.yNMas", {
+                n: resto,
+                defaultValue: " y {{n}} más",
+              })
+            : ""),
         wide: true,
       },
     ],
     actions: [
       {
         id: "expand",
-        label: "Ver por separado",
+        label: i18n.t("ui.OperationsMapPopup.verPorSeparado", "Ver por separado"),
         icon: <Crosshair />,
         variant: "primary",
         onClick: () => mando.abrirRacimo(r),
@@ -568,18 +655,33 @@ export function telemetriaDe(
   const frescas: MapPopupField[] = [];
 
   if (ultimo.at)
-    fila(frescas, "Última señal", timeAgo(ultimo.at), {
-      mono: true,
-      tone: tonoSenal(ultimo.at),
-    });
+    fila(
+      frescas,
+      i18n.t("ui.AlarmCaseDetail.ultimaSenal", "Última señal"),
+      timeAgo(ultimo.at),
+      {
+        mono: true,
+        tone: tonoSenal(ultimo.at),
+      },
+    );
   if (ultimo.speed != null)
-    fila(frescas, "Velocidad", `${Math.round(ultimo.speed * 3.6)} km/h`, {
-      mono: true,
-    });
+    fila(
+      frescas,
+      i18n.t("ui.OperationsMapPopup.velocidad", "Velocidad"),
+      `${Math.round(ultimo.speed * 3.6)} km/h`,
+      {
+        mono: true,
+      },
+    );
   if (ultimo.accuracy != null)
-    fila(frescas, "Precisión", `± ${Math.round(ultimo.accuracy)} m`, {
-      mono: true,
-    });
+    fila(
+      frescas,
+      i18n.t("ui.TrailMap.precision", "Precisión"),
+      `± ${Math.round(ultimo.accuracy)} m`,
+      {
+        mono: true,
+      },
+    );
 
   const porEtiqueta = new Map(frescas.map((f) => [f.label, f]));
   const fusionadas = (base.fields ?? []).map((f) => {
@@ -598,7 +700,7 @@ export function telemetriaDe(
       ultimo.battery != null
         ? [
             {
-              label: "Batería",
+              label: i18n.t("ui.TrailMap.bateria", "Batería"),
               value: `${Math.round(ultimo.battery)} %`,
               tone: tonoBateria(ultimo.battery),
             },

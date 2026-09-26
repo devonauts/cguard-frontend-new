@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+
+import { localeActual } from "@/lib/localeActual";
 import {
   Camera,
   Check,
@@ -80,13 +82,22 @@ interface VisitorRow {
 
 const LIMIT = 25;
 const PLACE_TYPES = ["Casa", "Departamento", "Oficina", "Parking", "Otro"];
+// The stored value stays Spanish (it is saved inside `placeType`); only the
+// option label is translated.
+const PLACE_TYPE_KEYS: Record<string, string> = {
+  Casa: "visitantes.placeType.house",
+  Departamento: "ui.StationVisitors.departamento",
+  Oficina: "visitantes.placeType.office",
+  Parking: "ui.StationVisitors.parking",
+  Otro: "coverage.reason.otro",
+};
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
 
 function fmt(v: any) {
   if (!v) return "-";
   try {
-    return new Intl.DateTimeFormat(undefined, {
+    return new Intl.DateTimeFormat(localeActual(), {
       dateStyle: "short",
       timeStyle: "short",
     }).format(new Date(v));
@@ -206,8 +217,8 @@ function CameraModal({
               "Permiso de cámara denegado.",
             )
           : e?.name === "NotFoundError"
-            ? "No se encontró cámara."
-            : "No se pudo acceder a la cámara.",
+            ? t("ui.StationVisitors.noSeEncontroCamara", "No se encontró cámara.")
+            : t("ui.StationVisitors.noSePudoAccederALaCamara", "No se pudo acceder a la cámara."),
       );
     }
   }, [mode, setCapturedPhoto]);
@@ -289,7 +300,7 @@ function CameraModal({
             <div className="space-y-3">
               <img
                 src={captured.url}
-                alt="Captura"
+                alt={t("ui.StationVisitors.captura", "Captura")}
                 className="w-full rounded border"
                 style={{ borderColor: "var(--hairline)" }}
               />
@@ -302,7 +313,7 @@ function CameraModal({
                   }}
                   className="flex-1 gap-1"
                 >
-                  <X size={14} /> Retomar
+                  <X size={14} /> {t("ui.StationVisitors.retomar", "Retomar")}
                 </Button>
                 <Button
                   variant="brand"
@@ -313,7 +324,7 @@ function CameraModal({
                   }}
                   className="flex-1 gap-1"
                 >
-                  <Check size={14} /> Usar foto
+                  <Check size={14} /> {t("ui.StationVisitors.usarFoto", "Usar foto")}
                 </Button>
               </div>
             </div>
@@ -362,7 +373,7 @@ function CameraModal({
                 disabled={!ready}
                 className="w-full gap-2"
               >
-                <Camera size={15} /> Capturar
+                <Camera size={15} /> {t("ui.StationVisitors.capturar", "Capturar")}
               </Button>
             </div>
           )}
@@ -532,28 +543,34 @@ function VisitorFormModal({
       if (idPhotoMeta) payload.idPhoto = idPhotoMeta;
       if (isEdit) {
         await visitorLogService.update(initialData.id, payload);
-        toast.success("Registro actualizado.");
+        toast.success(t("ui.StationVisitors.registroActualizado", "Registro actualizado."));
       } else {
         // Sin red: a la cola offline; se registra solo al reconectar.
         const { queued } = await runOrQueue(
           "visitorLog.create",
           payload,
           () => visitorLogService.create(payload),
-          "Visita",
+          t("ui.StationVisitors.visita", "Visita"),
         );
         if (queued)
           toast.warning(
             photoDroppedOffline
-              ? "Sin conexión: la visita quedó en cola y se registrará sola al reconectar. La foto del documento no se pudo adjuntar — agrégala después desde el registro."
-              : "Sin conexión: la visita quedó en cola y se registrará sola al reconectar.",
+              ? t(
+                  "ui.StationVisitors.sinConexionSinFoto",
+                  "Sin conexión: la visita quedó en cola y se registrará sola al reconectar. La foto del documento no se pudo adjuntar — agrégala después desde el registro.",
+                )
+              : t(
+                  "ui.StationVisitors.sinConexionEnCola",
+                  "Sin conexión: la visita quedó en cola y se registrará sola al reconectar.",
+                ),
             { duration: 9000 },
           );
-        else toast.success("Visitante registrado.");
+        else toast.success(t("ui.StationVisitors.visitanteRegistrado", "Visitante registrado."));
       }
       onSaved();
       onClose();
     } catch (e: any) {
-      toast.error(e?.message || "Error al guardar.");
+      toast.error(e?.message || t("ui.StationVisitors.errorAlGuardar", "Error al guardar."));
     } finally {
       setSaving(false);
     }
@@ -572,7 +589,9 @@ function VisitorFormModal({
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>
-              {isEdit ? "Editar visitante" : "Nuevo visitante"}
+              {isEdit
+                ? t("ui.StationVisitors.editarVisitante", "Editar visitante")
+                : t("ui.StationVisitors.nuevoVisitante", "Nuevo visitante")}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
@@ -606,11 +625,12 @@ function VisitorFormModal({
               >
                 {scanning ? (
                   <>
-                    <Loader2 size={13} className="animate-spin" /> Procesando…
+                    <Loader2 size={13} className="animate-spin" />{" "}
+                    {t("guards.list.buttons.processing", "Procesando…")}
                   </>
                 ) : (
                   <>
-                    <Camera size={13} /> Escanear
+                    <Camera size={13} /> {t("ui.StationVisitors.escanear", "Escanear")}
                   </>
                 )}
               </Button>
@@ -619,7 +639,8 @@ function VisitorFormModal({
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
                 <Label>
-                  Apellido <span style={{ color: "var(--bad-text)" }}>*</span>
+                  {t("invite.guard.lastname", "Apellido")}{" "}
+                  <span style={{ color: "var(--bad-text)" }}>*</span>
                 </Label>
                 <Input
                   value={form.lastName}
@@ -638,7 +659,7 @@ function VisitorFormModal({
                 <Input
                   value={form.firstName}
                   onChange={(e) => set("firstName", e.target.value)}
-                  placeholder="Juan Carlos"
+                  placeholder={t("ui.StationVisitors.juanCarlos", "Juan Carlos")}
                 />
               </div>
             </div>
@@ -658,7 +679,7 @@ function VisitorFormModal({
                 />
               </div>
               <div className="space-y-1">
-                <Label>N° Personas</Label>
+                <Label>{t("ui.StationVisitors.nPersonas", "N° Personas")}</Label>
                 <Input
                   type="number"
                   min={1}
@@ -681,7 +702,7 @@ function VisitorFormModal({
                   <SelectContent>
                     {PLACE_TYPES.map((p) => (
                       <SelectItem key={p} value={p}>
-                        {p}
+                        {t(PLACE_TYPE_KEYS[p], p)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -701,7 +722,7 @@ function VisitorFormModal({
             {/* Dates */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label>Entrada</Label>
+                <Label>{t("ui.StationVisitors.entrada", "Entrada")}</Label>
                 <Input
                   type="datetime-local"
                   value={form.visitDate}
@@ -709,7 +730,7 @@ function VisitorFormModal({
                 />
               </div>
               <div className="space-y-1">
-                <Label>Salida</Label>
+                <Label>{t("ui.StationVisitors.salida", "Salida")}</Label>
                 <Input
                   type="datetime-local"
                   value={form.exitTime}
@@ -739,7 +760,7 @@ function VisitorFormModal({
                   />
                   <button
                     type="button"
-                    aria-label="Quitar foto"
+                    aria-label={t("ui.StationVisitors.quitarFoto", "Quitar foto")}
                     onClick={() => {
                       setPhotoBlob(null);
                       setPhotoUrl(null);
@@ -759,7 +780,7 @@ function VisitorFormModal({
                   onClick={() => setCameraMode("photo")}
                   className="gap-1"
                 >
-                  <Camera size={13} /> Tomar foto
+                  <Camera size={13} /> {t("ui.StationVisitors.tomarFoto", "Tomar foto")}
                 </Button>
                 <Button
                   type="button"
@@ -768,7 +789,7 @@ function VisitorFormModal({
                   onClick={() => fileInputRef.current?.click()}
                   className="gap-1"
                 >
-                  <Upload size={13} /> Subir archivo
+                  <Upload size={13} /> {t("ui.StationVisitors.subirArchivo", "Subir archivo")}
                 </Button>
               </div>
               <input
@@ -806,7 +827,9 @@ function VisitorFormModal({
                 ) : (
                   <UserCheck size={13} />
                 )}
-                {isEdit ? "Actualizar" : "Registrar"}
+                {isEdit
+                  ? t("ui.StationVisitors.actualizar", "Actualizar")
+                  : t("ui.StationVisitors.registrar", "Registrar")}
               </Button>
             </div>
           </div>
@@ -867,7 +890,10 @@ export default function StationVisitors({ stationId }: Props) {
         nombreBase: `visitantes_${v.etiqueta}`,
       });
     } catch (e: any) {
-      toast.error(e?.message || "No se pudo generar el archivo");
+      toast.error(
+        e?.message ||
+          t("station.parking.exportError", "No se pudo generar el archivo"),
+      );
     }
   };
 
@@ -884,7 +910,9 @@ export default function StationVisitors({ stationId }: Props) {
       setRows(list);
       setTotal(typeof res?.count === "number" ? res.count : list.length);
     } catch (e: any) {
-      setError(e?.message || "Error al cargar visitantes");
+      setError(
+        e?.message || t("ui.StationVisitors.errorAlCargarVisitantes", "Error al cargar visitantes"),
+      );
     } finally {
       setLoading(false);
     }
@@ -897,9 +925,9 @@ export default function StationVisitors({ stationId }: Props) {
   const handleDelete = async (id: string) => {
     if (
       !(await confirmDialog({
-        title: "Eliminar registro",
-        message: "¿Eliminar este registro?",
-        confirmText: "Eliminar",
+        title: t("ui.StationVisitors.eliminarRegistro", "Eliminar registro"),
+        message: t("ui.StationVisitors.eliminarEsteRegistro", "¿Eliminar este registro?"),
+        confirmText: t("common.delete", "Eliminar"),
         tone: "danger",
       }))
     )
@@ -907,10 +935,10 @@ export default function StationVisitors({ stationId }: Props) {
     setDeleting(id);
     try {
       await visitorLogService.delete([id]);
-      toast.success("Eliminado.");
+      toast.success(t("ui.StationVisitors.eliminado", "Eliminado."));
       load();
     } catch (e: any) {
-      toast.error(e?.message || "Error al eliminar.");
+      toast.error(e?.message || t("ui.StationVisitors.errorAlEliminar", "Error al eliminar."));
     } finally {
       setDeleting(null);
     }
@@ -921,7 +949,7 @@ export default function StationVisitors({ stationId }: Props) {
       icon={<UserCheck />}
       title={
         <span>
-          Registro de visitantes{" "}
+          {t("ui.PostSiteWizard.deploy.visitorLog", "Registro de visitantes")}{" "}
           {total > 0 && (
             <span
               className="ml-1 text-sm font-normal"
@@ -946,7 +974,7 @@ export default function StationVisitors({ stationId }: Props) {
             }}
             className="gap-1"
           >
-            <Plus size={14} /> Nuevo visitante
+            <Plus size={14} /> {t("ui.StationVisitors.nuevoVisitante", "Nuevo visitante")}
           </Button>
         </div>
       }
@@ -983,13 +1011,15 @@ export default function StationVisitors({ stationId }: Props) {
                   <th className="cg-eyebrow px-2 py-2">
                     {t("ui.StationVisitors.cedula", "Cédula")}
                   </th>
-                  <th className="cg-eyebrow px-2 py-2">Lugar</th>
-                  <th className="cg-eyebrow px-2 py-2">Entrada</th>
-                  <th className="cg-eyebrow px-2 py-2">Salida</th>
+                  <th className="cg-eyebrow px-2 py-2">{t("ui.StationVisitors.lugar", "Lugar")}</th>
+                  <th className="cg-eyebrow px-2 py-2">{t("ui.StationVisitors.entrada", "Entrada")}</th>
+                  <th className="cg-eyebrow px-2 py-2">{t("ui.StationVisitors.salida", "Salida")}</th>
                   <th className="cg-eyebrow px-2 py-2">
                     {t("comun.vigilante")}
                   </th>
-                  <th className="cg-eyebrow px-2 py-2 text-right">Acciones</th>
+                  <th className="cg-eyebrow px-2 py-2 text-right">
+                    {t("postSites.actions", "Acciones")}
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -1096,8 +1126,12 @@ export default function StationVisitors({ stationId }: Props) {
               }}
             >
               <span>
-                Mostrando {page * LIMIT + 1}–
-                {Math.min((page + 1) * LIMIT, total)} de {total}
+                {t("ui.StationVisitors.mostrandoRango", {
+                  defaultValue: "Mostrando {{desde}}–{{hasta}} de {{total}}",
+                  desde: page * LIMIT + 1,
+                  hasta: Math.min((page + 1) * LIMIT, total),
+                  total,
+                })}
               </span>
               <div className="flex gap-1">
                 <button

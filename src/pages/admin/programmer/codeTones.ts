@@ -1,5 +1,7 @@
 import type React from "react";
 
+import i18n from "@/i18n";
+
 /**
  * LOS CÓDIGOS DEL HORARIO Y SU COLOR — EN UN SOLO SITIO.
  *
@@ -60,15 +62,29 @@ export const OVERRIDE_TONE: Record<string, Tone> = {
 };
 
 /** El nombre de cada código, en un solo sitio. */
-export const CODE_LABEL: Record<string, string> = {
-  D: "Diurno",
-  N: "Nocturno",
-  L: "Libre",
-  V: "Vacaciones",
-  PM: "Permiso",
-  F: "Falta",
-  "24": "24 horas",
+const CODE_LABEL_KEYS: Record<string, [string, string]> = {
+  D: ["ui.codeTones.diurno", "Diurno"],
+  N: ["ui.codeTones.nocturno", "Nocturno"],
+  L: ["ui.codeTones.libre", "Libre"],
+  V: ["ui.codeTones.vacaciones", "Vacaciones"],
+  PM: ["ui.codeTones.permiso", "Permiso"],
+  F: ["ui.codeTones.falta", "Falta"],
+  "24": ["ui.codeTones.veinticuatroHoras", "24 horas"],
 };
+
+/* Getters, not plain strings: a module constant is evaluated once at import,
+   so each read resolves the label in the language active at that moment. */
+export const CODE_LABEL: Record<string, string> = Object.keys(
+  CODE_LABEL_KEYS,
+).reduce(
+  (acc, code) =>
+    Object.defineProperty(acc, code, {
+      get: () => i18n.t(CODE_LABEL_KEYS[code][0], CODE_LABEL_KEYS[code][1]),
+      enumerable: true,
+      configurable: true,
+    }),
+  {} as Record<string, string>,
+);
 
 /** Orden de lectura de la leyenda. */
 export const CODE_ORDER = ["D", "N", "L", "V", "PM", "F", "24"] as const;

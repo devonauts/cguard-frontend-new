@@ -1,7 +1,8 @@
 import type { ProjectTypeValue } from "@/lib/projectTypes";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,8 +30,14 @@ import {
 import { clientService } from "@/lib/api/clientService";
 import { Section } from "@/components/kit";
 
-const schema = z.object({
-  name: z.string().trim().min(1, "Nombre requerido").max(200),
+// Factory so validation messages follow the current language.
+const makeSchema = (t: TFunction) =>
+  z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, t("clients.contacts.errors.requiredName", "Nombre requerido"))
+    .max(200),
   type: z.enum([
     "event",
     "investigation",
@@ -38,7 +45,10 @@ const schema = z.object({
     "consulting",
     "other",
   ]),
-  clientAccountId: z.string().trim().min(1, "Cliente requerido"),
+  clientAccountId: z
+    .string()
+    .trim()
+    .min(1, t("ui.ProjectForm.clienteRequerido", "Cliente requerido")),
   status: z.enum(["active", "completed", "cancelled", "on_hold"]),
   description: z.string().trim().max(5000).optional().or(z.literal("")),
   startDate: z.string().optional().or(z.literal("")),
@@ -48,7 +58,7 @@ const schema = z.object({
   notes: z.string().trim().max(5000).optional().or(z.literal("")),
 });
 
-type FormInput = z.infer<typeof schema>;
+type FormInput = z.infer<ReturnType<typeof makeSchema>>;
 
 interface ProjectFormProps {
   mode: "create" | "edit";
@@ -68,6 +78,8 @@ export default function ProjectForm({
 }: ProjectFormProps) {
   const { t } = useTranslation();
   const [clients, setClients] = useState<{ id: string; label: string }[]>([]);
+
+  const schema = useMemo(() => makeSchema(t), [t]);
 
   const form = useForm<FormInput, unknown, FormInput>({
     resolver: zodResolver(schema),
@@ -148,14 +160,17 @@ export default function ProjectForm({
 
       if (mode === "create") {
         result = await projectService.create(payload);
-        toast.success("Proyecto creado");
+        toast.success(t("projects.created", "Proyecto creado"));
       } else if (mode === "edit" && projectId) {
         result = await projectService.update(projectId, payload);
-        toast.success("Proyecto actualizado");
+        toast.success(t("projects.updated", "Proyecto actualizado"));
       }
       onSaved?.(result);
     } catch (e: any) {
-      toast.error(e?.response?.data?.message ?? "Error al guardar");
+      toast.error(
+        e?.response?.data?.message ??
+          t("settings.rondas.saveError", "Error al guardar"),
+      );
     }
   };
 
@@ -266,7 +281,7 @@ export default function ProjectForm({
           <Section
             contentClassName="space-y-4"
             icon={<CalendarRange />}
-            title="Fechas y lugar"
+            title={t("ui.ProjectForm.fechasYLugar", "Fechas y lugar")}
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField
@@ -325,7 +340,9 @@ export default function ProjectForm({
               name="estimatedHours"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Horas estimadas</FormLabel>
+                  <FormLabel>
+                    {t("projects.fields.estimatedHours", "Horas estimadas")}
+                  </FormLabel>
                   <FormControl>
                     <Input
                       min="0"
@@ -401,10 +418,10 @@ export default function ProjectForm({
               variant="outline"
               onClick={onCancel}
             >
-              Cancelar
+              {t("actions.cancel", "Cancelar")}
             </Button>
             <Button className="min-w-28" type="submit" variant="brand">
-              Guardar
+              {t("actions.save", "Guardar")}
             </Button>
           </div>
         </form>

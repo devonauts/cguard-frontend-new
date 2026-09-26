@@ -27,11 +27,11 @@ function fmtDate(s?: string | null): string {
 
 const PRIORITY_META: Record<
   string,
-  { label: string; tone: "bad" | "warn" | "neutral" }
+  { label: string; labelKey: string; tone: "bad" | "warn" | "neutral" }
 > = {
-  alta: { label: "Alta", tone: "bad" },
-  media: { label: "Media", tone: "warn" },
-  baja: { label: "Baja", tone: "neutral" },
+  alta: { label: "Alta", labelKey: "comun.alta", tone: "bad" },
+  media: { label: "Media", labelKey: "comun.media", tone: "warn" },
+  baja: { label: "Baja", labelKey: "comun.baja", tone: "neutral" },
 };
 
 export default function TaskApprovals() {
@@ -58,7 +58,7 @@ export default function TaskApprovals() {
       toast.success(t("ui.TaskApprovals.tareaAprobadaEnviadaALos"));
       load();
     } catch (e: any) {
-      toast.error(e?.message || "Error");
+      toast.error(e?.message || t("ui.TaskTracking.error", "Error"));
     } finally {
       setBusy(false);
     }
@@ -68,17 +68,20 @@ export default function TaskApprovals() {
     const notes =
       (await promptDialog({
         title: t("tasks.approvals.rejectReasonTitle", "Motivo del rechazo"),
-        message: "Opcional",
-        placeholder: "Ej.: falta la foto de evidencia",
+        message: t("clients.form.optional", "Opcional"),
+        placeholder: t(
+          "ui.TaskApprovals.ejFaltaLaFotoDeEvidencia",
+          "Ej.: falta la foto de evidencia",
+        ),
       })) ?? undefined;
 
     setBusy(true);
     try {
       await taskService.reject(r.id, notes);
-      toast.success("Tarea rechazada");
+      toast.success(t("ui.TaskTracking.tareaRechazada", "Tarea rechazada"));
       load();
     } catch (e: any) {
-      toast.error(e?.message || "Error");
+      toast.error(e?.message || t("ui.TaskTracking.error", "Error"));
     } finally {
       setBusy(false);
     }
@@ -87,12 +90,12 @@ export default function TaskApprovals() {
   const columns: Column<TaskRow>[] = [
     {
       key: "taskToDo",
-      header: "Tarea",
+      header: t("reports.col.task.task", "Tarea"),
       render: (_v, r) => <span className="font-semibold">{r.taskToDo}</span>,
     },
     {
       key: "station",
-      header: "Puesto",
+      header: t("comun.puesto", "Puesto"),
       render: (_v, r) => (
         <span className="text-xs" style={{ color: "var(--ink-soft)" }}>
           {r.taskBelongsToStation?.stationName || "—"}
@@ -101,20 +104,20 @@ export default function TaskApprovals() {
     },
     {
       key: "priority",
-      header: "Prioridad",
+      header: t("guards.reminders.table.priority", "Prioridad"),
       render: (_v, r) => {
         const m = PRIORITY_META[r.priority || "media"] || PRIORITY_META.media;
 
         return (
           <StatusBadge dot={false} tone={m.tone}>
-            {m.label}
+            {t(m.labelKey, m.label)}
           </StatusBadge>
         );
       },
     },
     {
       key: "dateToDoTheTask",
-      header: "Fecha límite",
+      header: t("ui.TaskTracking.fechaLimite", "Fecha límite"),
       render: (_v, r) => (
         <span
           className="text-xs tabular-nums"
@@ -126,7 +129,7 @@ export default function TaskApprovals() {
     },
     {
       key: "createdAt",
-      header: "Solicitada",
+      header: t("ui.TaskApprovals.solicitada", "Solicitada"),
       render: (_v, r) => (
         <span
           className="text-xs tabular-nums"
@@ -142,7 +145,7 @@ export default function TaskApprovals() {
       render: (_v, r) => (
         <div className="flex gap-2">
           <Button disabled={busy} size="sm" onClick={() => approve(r)}>
-            Aprobar
+            {t("ui.DocumentPacketPublic.approveButton", "Aprobar")}
           </Button>
           <Button
             disabled={busy}
@@ -150,7 +153,7 @@ export default function TaskApprovals() {
             variant="outline"
             onClick={() => reject(r)}
           >
-            Rechazar
+            {t("revision.rechazar", "Rechazar")}
           </Button>
         </div>
       ),
@@ -166,8 +169,11 @@ export default function TaskApprovals() {
               !loading ? (
                 <StatusBadge tone={rows.length > 0 ? "warn" : "ok"}>
                   {rows.length > 0
-                    ? `${rows.length} pendientes`
-                    : "Nada pendiente"}
+                    ? t("ui.TaskApprovals.nPendientes", {
+                        defaultValue: "{{count}} pendientes",
+                        count: rows.length,
+                      })
+                    : t("ui.TaskApprovals.nadaPendiente", "Nada pendiente")}
                 </StatusBadge>
               ) : undefined
             }

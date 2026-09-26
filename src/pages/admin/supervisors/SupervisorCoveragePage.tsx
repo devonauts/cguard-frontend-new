@@ -60,13 +60,15 @@ export default function SupervisorCoveragePage() {
       variant="outline"
       onClick={() => navigate("/supervisor-positions")}
     >
-      <Settings2 className="mr-2 h-4 w-4" /> Gestionar puestos
+      <Settings2 className="mr-2 h-4 w-4" />{" "}
+      {t("ui.SupervisorCoveragePage.gestionarPuestos", "Gestionar puestos")}
     </Button>
   );
 
   return (
     <AppLayout>
-      <GuardsLayout navKey="supervisors" title="Cobertura">
+      <GuardsLayout navKey="supervisors" title={t("ui.SupervisorCoveragePage.cobertura", "Cobertura")}
+      >
         <PageContainer>
           {loading ? (
             <SkeletonCards count={2} />
@@ -83,8 +85,10 @@ export default function SupervisorCoveragePage() {
             <>
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-                  Zonas y puestos que este supervisor cubre según sus
-                  asignaciones.
+                  {t(
+                    "ui.SupervisorCoveragePage.zonasYPuestosQueEsteSupervisorCubre",
+                    "Zonas y puestos que este supervisor cubre según sus asignaciones.",
+                  )}
                 </p>
                 {manageBtn}
               </div>
@@ -108,7 +112,8 @@ export default function SupervisorCoveragePage() {
                       <Field
                         label={
                           <span className="inline-flex items-center gap-1.5">
-                            <Navigation className="h-3.5 w-3.5" /> Zona
+                            <Navigation className="h-3.5 w-3.5" />{" "}
+                            {t("ui.SupervisorCoveragePage.zona", "Zona")}
                           </span>
                         }
                         value={p.zone}
@@ -134,7 +139,8 @@ export default function SupervisorCoveragePage() {
 
                     <div>
                       <div className="cg-eyebrow mb-2 flex items-center gap-1.5">
-                        <Building2 className="h-3.5 w-3.5" /> Puestos cubiertos
+                        <Building2 className="h-3.5 w-3.5" />{" "}
+                        {t("ui.SupervisorCoveragePage.puestosCubiertos", "Puestos cubiertos")}
                       </div>
                       {p.stations?.length ? (
                         <div className="flex flex-wrap gap-2">

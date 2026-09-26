@@ -16,7 +16,7 @@ export interface GuardPick {
 export default function GuardTypeahead({
   value,
   onSelect,
-  placeholder = "Busca por nombre…",
+  placeholder,
   excludeGuardId,
 }: {
   value: GuardPick | null;
@@ -83,7 +83,7 @@ export default function GuardTypeahead({
           <Check className="size-4 text-[var(--brand-text)]" /> {value.label}
         </span>
         <button
-          aria-label="Quitar"
+          aria-label={t("ui.GuardTypeahead.quitar", "Quitar")}
           className="cg-focus rounded p-1 text-[var(--ink-faint)] hover:text-[var(--ink)]"
           type="button"
           onClick={() => {
@@ -103,7 +103,10 @@ export default function GuardTypeahead({
         <Search className="size-4 shrink-0 text-[var(--ink-faint)]" />
         <input
           className="w-full bg-transparent py-2 text-sm text-[var(--ink)] outline-none placeholder:text-[var(--ink-faint)]"
-          placeholder={placeholder}
+          placeholder={
+            placeholder ??
+            t("ui.GuardTypeahead.buscaPorNombre", "Busca por nombre…")
+          }
           value={q}
           onChange={(e) => {
             setQ(e.target.value);
@@ -116,7 +119,7 @@ export default function GuardTypeahead({
         <div className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-xl border border-[var(--hairline)] bg-[var(--float)] shadow-lg">
           {loading && (
             <div className="px-3 py-2.5 text-sm text-[var(--ink-soft)]">
-              Buscando…
+              {t("ui.GuardTypeahead.buscando", "Buscando…")}
             </div>
           )}
           {!loading && !rows.length && (
@@ -132,7 +135,8 @@ export default function GuardTypeahead({
               onClick={() => {
                 onSelect({
                   guardId: String(r.guardId),
-                  label: r.label || r.fullName || "Vigilante",
+                  label:
+                    r.label || r.fullName || t("comun.vigilante", "Vigilante"),
                 });
                 setOpen(false);
                 setQ("");
@@ -142,9 +146,9 @@ export default function GuardTypeahead({
               {r.cuenta && (
                 <span className="text-[11px] text-[var(--ink-faint)]">
                   {r.cuenta === "active"
-                    ? "en la app"
+                    ? t("ui.GuardTypeahead.enLaApp", "en la app")
                     : r.cuenta === "invited"
-                      ? "invitado"
+                      ? t("ui.GuardTypeahead.invitado", "invitado")
                       : ""}
                 </span>
               )}

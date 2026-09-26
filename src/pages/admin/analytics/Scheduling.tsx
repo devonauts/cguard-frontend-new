@@ -30,6 +30,7 @@ function CoverageBars({
 }: {
   data: { date: string; scheduled: number; covered: number }[];
 }) {
+  const { t } = useTranslation();
   const max = Math.max(1, ...data.map((d) => d.scheduled));
 
   return (
@@ -44,7 +45,12 @@ function CoverageBars({
               minHeight: d.scheduled > 0 ? 2 : 0,
               background: "var(--glass-sunken)",
             }}
-            title={`${d.date}: ${d.covered}/${d.scheduled} cubiertos`}
+            title={t("ui.Scheduling.diaCubiertos", {
+              defaultValue: "{{date}}: {{covered}}/{{scheduled}} cubiertos",
+              date: d.date,
+              covered: d.covered,
+              scheduled: d.scheduled,
+            })}
           >
             {/* «Cubierto» es un ESTADO, no una serie: va en el verde semántico,
                 que tokens.css deja fijo aunque el acento cambie. */}
@@ -66,14 +72,14 @@ function CoverageBars({
               className="h-2.5 w-2.5 rounded"
               style={{ background: CHART_VARS.ok }}
             />{" "}
-            Cubiertos
+            {t("ui.Scheduling.cubiertos", "Cubiertos")}
           </span>
           <span className="flex items-center gap-1">
             <span
               className="h-2.5 w-2.5 rounded"
               style={{ background: alphaVar(CHART_VARS.inkFaint, 55) }}
             />{" "}
-            Programados
+            {t("ui.Scheduling.programados", "Programados")}
           </span>
         </span>
         <span>{data[data.length - 1]?.date.slice(5)}</span>
@@ -117,7 +123,7 @@ export default function Scheduling() {
             <MetricCard
               accent={TONES.ok}
               icon={<CheckCircle2 size={16} />}
-              label="Turnos cubiertos"
+              label={t("ui.Scheduling.turnosCubiertos", "Turnos cubiertos")}
               sub={t("ui.Scheduling.enElPeriodo", "en el período")}
               value={k.shiftsCovered}
             />
@@ -142,7 +148,10 @@ export default function Scheduling() {
 
           <Section
             icon={<ClipboardCheck size={16} />}
-            title="Cobertura diaria (programados vs cubiertos)"
+            title={t(
+              "ui.Scheduling.coberturaDiaria",
+              "Cobertura diaria (programados vs cubiertos)",
+            )}
           >
             {data.coverageTrend.every((d) => d.scheduled === 0) ? (
               <EmptyState

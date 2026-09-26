@@ -276,9 +276,12 @@ export default function TimeOff() {
   const handleDelete = async (id: string) => {
     if (
       !(await confirmDialog({
-        title: "Eliminar solicitud",
-        message: "¿Eliminar esta solicitud?",
-        confirmText: "Eliminar",
+        title: t("ui.TimeOff.eliminarSolicitud", "Eliminar solicitud"),
+        message: t(
+          "ui.TimeOff.eliminarEstaSolicitud",
+          "¿Eliminar esta solicitud?",
+        ),
+        confirmText: t("common.delete", "Eliminar"),
         tone: "danger",
       }))
     )
@@ -288,6 +291,24 @@ export default function TimeOff() {
       setRecords((prev) => prev.filter((r) => r.id !== id));
     } catch (err) {
       console.error("Failed to delete", err);
+    }
+  };
+
+  /* The type is an API enum; only its label is translated. */
+  const tipoLabel = (tipo: string | null | undefined): string => {
+    switch (tipo) {
+      case "vacation":
+        return t("ui.TimeOff.vacaciones", "Vacaciones");
+      case "sick":
+        return t("ui.TimeOff.enfermedad", "Enfermedad");
+      case "personal":
+        return t("ui.TimeOff.personal", "Personal");
+      case "training":
+        return t("ui.TimeOff.capacitacion", "Capacitación");
+      case "other":
+        return t("ui.TimeOff.otro", "Otro");
+      default:
+        return tipo ?? "—";
     }
   };
 
@@ -309,14 +330,14 @@ export default function TimeOff() {
       <PageContainer width="wide">
         <PageHeader
           icon={<CalendarOff />}
-          title="Tiempo libre"
+          title={t("sidebar.programador.tiempo-libre", "Tiempo libre")}
           subtitle={t("ui.TimeOff.solicitudesDeVacacionesEnfermedadY")}
         />
 
         {/* KPIs */}
         <StatsStrip className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <MetricTile
-            label="Pendientes"
+            label={t("ui.TimeOff.pendientes", "Pendientes")}
             value={stats.pending}
             icon={<Clock />}
             delta={
@@ -330,7 +351,7 @@ export default function TimeOff() {
             hint={t("comun.esperandoUnaDecision")}
           />
           <MetricTile
-            label="Aprobadas"
+            label={t("ui.TimeOff.aprobadas", "Aprobadas")}
             value={stats.approved}
             icon={<ThumbsUp />}
             delta={
@@ -341,7 +362,7 @@ export default function TimeOff() {
             hint={t("comun.delTotalDeSolicitudes")}
           />
           <MetricTile
-            label="Rechazadas"
+            label={t("ui.TimeOff.rechazadas", "Rechazadas")}
             value={stats.rejected}
             icon={<ThumbsDown />}
             delta={
@@ -368,10 +389,10 @@ export default function TimeOff() {
               setPage(1);
             }}
             options={[
-              { value: "all", label: "Todos" },
-              { value: "pending", label: "Pendiente" },
-              { value: "approved", label: "Aprobado" },
-              { value: "rejected", label: "Rechazado" },
+              { value: "all", label: t("ui.TimeOff.todos", "Todos") },
+              { value: "pending", label: t("comun.pendiente", "Pendiente") },
+              { value: "approved", label: t("comun.aprobado", "Aprobado") },
+              { value: "rejected", label: t("comun.rechazado", "Rechazado") },
             ]}
           />
 
@@ -397,7 +418,8 @@ export default function TimeOff() {
               >
                 <SheetTrigger asChild>
                   <Button variant="brand">
-                    <Plus className="h-4 w-4 mr-1" /> Nueva entrada
+                    <Plus className="h-4 w-4 mr-1" />{" "}
+                    {t("ui.TimeOff.nuevaEntrada", "Nueva entrada")}
                   </Button>
                 </SheetTrigger>
                 <SheetContent className="w-full sm:w-[540px] overflow-y-auto">
@@ -448,13 +470,21 @@ export default function TimeOff() {
                             />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="vacation">Vacaciones</SelectItem>
-                            <SelectItem value="sick">Enfermedad</SelectItem>
-                            <SelectItem value="personal">Personal</SelectItem>
+                            <SelectItem value="vacation">
+                              {tipoLabel("vacation")}
+                            </SelectItem>
+                            <SelectItem value="sick">
+                              {tipoLabel("sick")}
+                            </SelectItem>
+                            <SelectItem value="personal">
+                              {tipoLabel("personal")}
+                            </SelectItem>
                             <SelectItem value="training">
                               {t("ui.TimeOff.capacitacion", "Capacitación")}
                             </SelectItem>
-                            <SelectItem value="other">Otro</SelectItem>
+                            <SelectItem value="other">
+                              {tipoLabel("other")}
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -518,14 +548,17 @@ export default function TimeOff() {
                     </div>
 
                     <div className="grid gap-2">
-                      <Label>Comentario</Label>
+                      <Label>{t("ui.TimeOff.comentario", "Comentario")}</Label>
                       <Textarea
                         rows={3}
                         value={form.comment}
                         onChange={(e) =>
                           setForm({ ...form, comment: e.target.value })
                         }
-                        placeholder="Comentario adicional…"
+                        placeholder={t(
+                          "ui.TimeOff.comentarioAdicional",
+                          "Comentario adicional…",
+                        )}
                       />
                     </div>
 
@@ -541,7 +574,7 @@ export default function TimeOff() {
                         htmlFor="isPaid"
                         className="text-sm font-normal cursor-pointer"
                       >
-                        Pagado
+                        {t("ui.TimeOff.pagado", "Pagado")}
                       </Label>
                     </div>
                   </div>
@@ -555,7 +588,7 @@ export default function TimeOff() {
                       {saving ? (
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       ) : null}
-                      Crear solicitud
+                      {t("ui.TimeOff.crearSolicitud", "Crear solicitud")}
                     </Button>
                   </SheetFooter>
                 </SheetContent>
@@ -596,7 +629,7 @@ export default function TimeOff() {
                 key: "type",
                 header: t("comun.tipo"),
                 render: (_v: any, row: any) => (
-                  <span className="capitalize">{row.type ?? "—"}</span>
+                  <span className="capitalize">{tipoLabel(row.type)}</span>
                 ),
               },
               {
@@ -636,21 +669,21 @@ export default function TimeOff() {
               ...(row.status === "pending"
                 ? [
                     {
-                      label: "Aprobar",
+                      label: t("ui.TimeOff.aprobar", "Aprobar"),
                       icon: (
                         <CheckCircle style={{ color: "var(--ok-text)" }} />
                       ),
                       onClick: () => handleApprove(row.id),
                     },
                     {
-                      label: "Rechazar",
+                      label: t("ui.TimeOff.rechazar", "Rechazar"),
                       icon: <XCircle style={{ color: "var(--bad-text)" }} />,
                       onClick: () => handleReject(row.id),
                     },
                   ]
                 : []),
               {
-                label: "Eliminar",
+                label: t("common.delete", "Eliminar"),
                 icon: <Trash2 />,
                 destructive: true,
                 onClick: () => handleDelete(row.id),
@@ -685,8 +718,13 @@ export default function TimeOff() {
             style={{ color: "var(--ink-soft)" }}
           >
             {filtered.length === 0
-              ? "0 de 0"
-              : `${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, filtered.length)} de ${filtered.length}`}
+              ? t("ui.TimeOff.ceroDeCero", "0 de 0")
+              : t("ui.TimeOff.rangoDePagina", {
+                  defaultValue: "{{desde}}–{{hasta}} de {{total}}",
+                  desde: (page - 1) * pageSize + 1,
+                  hasta: Math.min(page * pageSize, filtered.length),
+                  total: filtered.length,
+                })}
           </div>
           <div className="flex items-center space-x-2">
             <Button

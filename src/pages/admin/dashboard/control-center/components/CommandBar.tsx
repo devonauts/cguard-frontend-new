@@ -67,13 +67,22 @@ export function CommandBar({
     : salud === "degradado"
       ? {
           tone: "bad" as const,
-          label: "Sin conexión en vivo — los datos pueden estar atrasados",
+          label: t(
+            "ui.CommandBar.sinConexionEnVivo",
+            "Sin conexión en vivo — los datos pueden estar atrasados",
+          ),
         }
       : salud === "reconectando"
-        ? { tone: "warn" as const, label: "Reconectando…" }
+        ? {
+            tone: "warn" as const,
+            label: t("ui.NotificationsPanel.reconectando", "Reconectando…"),
+          }
         : sseConnected
           ? { tone: "ok" as const, label: t("dashboard.liveLink") }
-          : { tone: "warn" as const, label: "Conectando…" };
+          : {
+              tone: "warn" as const,
+              label: t("comms.wa.connecting", "Conectando…"),
+            };
 
   return (
     <FadeIn className="glass cmd-sweep relative overflow-hidden">

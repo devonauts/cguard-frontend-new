@@ -172,7 +172,7 @@ function Calendar({
       }}
       formatters={{
         formatMonthDropdown: (date) =>
-          date.toLocaleString("default", { timeZone: zonaDeLaEmpresa(), month: "short" }),
+          date.toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa(), month: "short" }),
         ...formatters,
       }}
       showOutsideDays={showOutsideDays}

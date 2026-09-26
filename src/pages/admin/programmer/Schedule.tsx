@@ -118,6 +118,7 @@ import {
 } from "@/lib/appearanceSync";
 import { enLotes } from "@/lib/enLotes";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import i18n from "@/i18n";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -248,7 +249,14 @@ interface SelRow {
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
-const DAYS_ES = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+/** Short weekday label in the active UI language ("Lun", "Mon"…). */
+const diaCorto = (d: Date): string => {
+  const s = d
+    .toLocaleDateString(localeActual(), { weekday: "short" })
+    .replace(".", "");
+
+  return s.charAt(0).toUpperCase() + s.slice(1);
+};
 
 // Format a Date as a LOCAL date-only string (YYYY-MM-DD). Using toISOString() here
 // would convert local-midnight dates to UTC and shift the day back for users west of
@@ -399,15 +407,34 @@ const ranurasDelCiclo = (
 
 /** El texto que explica qué significa entrar por esa casilla. */
 const explicarRanura = (r?: RanuraDelCiclo): string => {
-  if (!r) return "Ese día trabaja el primer turno de día del ciclo.";
+  if (!r)
+    return i18n.t(
+      "ui.Schedule.ranuraPrimerTurnoDeDia",
+      "Ese día trabaja el primer turno de día del ciclo.",
+    );
   if (r.tipo === "libre")
-    return "Empieza librando: sus turnos arrancan cuando termine ese bloque de libres.";
+    return i18n.t(
+      "ui.Schedule.ranuraEmpiezaLibrando",
+      "Empieza librando: sus turnos arrancan cuando termine ese bloque de libres.",
+    );
   if (r.tipo === "noche")
-    return `Entra directo a la ${r.etiqueta} del ciclo, no por el primer turno de día.`;
+    return i18n.t("ui.Schedule.ranuraEntraDirectoALa", {
+      defaultValue:
+        "Entra directo a la {{etiqueta}} del ciclo, no por el primer turno de día.",
+      etiqueta: r.etiqueta,
+    });
 
   return r.i === 0
-    ? "Ese día trabaja el primer turno de día del ciclo — lo normal."
-    : `Entra por la ${r.etiqueta}: ese día ya lleva ${r.i} turno(s) de día corridos del ciclo.`;
+    ? i18n.t(
+        "ui.Schedule.ranuraPrimerTurnoDeDiaNormal",
+        "Ese día trabaja el primer turno de día del ciclo — lo normal.",
+      )
+    : i18n.t("ui.Schedule.ranuraEntraPorLa", {
+        defaultValue:
+          "Entra por la {{etiqueta}}: ese día ya lleva {{n}} turno(s) de día corridos del ciclo.",
+        etiqueta: r.etiqueta,
+        n: r.i,
+      });
 };
 
 /**
@@ -451,10 +478,19 @@ function SelectorDeRanura({
             }
             title={
               r.tipo === "dia"
-                ? `Turno de día ${r.i + 1} del ciclo`
+                ? i18n.t("ui.Schedule.turnoDeDiaNDelCiclo", {
+                    defaultValue: "Turno de día {{n}} del ciclo",
+                    n: r.i + 1,
+                  })
                 : r.tipo === "noche"
-                  ? `Turno de tarde/noche ${r.i + 1} del ciclo`
-                  : `Día libre ${r.i + 1} del ciclo`
+                  ? i18n.t("ui.Schedule.turnoDeNocheNDelCiclo", {
+                      defaultValue: "Turno de tarde/noche {{n}} del ciclo",
+                      n: r.i + 1,
+                    })
+                  : i18n.t("ui.Schedule.diaLibreNDelCiclo", {
+                      defaultValue: "Día libre {{n}} del ciclo",
+                      n: r.i + 1,
+                    })
             }
             type="button"
             onClick={() => onChange(r.i)}
@@ -1385,8 +1421,13 @@ export default function Schedule() {
 
         return {
           key: String(pos.id),
-          plaza: pos.name || "Plaza",
-          vigilante: a ? nombreDeVigilante(a.guard, "Sin nombre") : null,
+          plaza: pos.name || t("ui.Schedule.plaza", "Plaza"),
+          vigilante: a
+            ? nombreDeVigilante(
+                a.guard,
+                t("settings.companyPolicies.guardNoNameFallback", "Sin nombre"),
+              )
+            : null,
           asignacion: a,
           positionId: String(pos.id),
           ciclo: cicloDe(a),
@@ -1403,8 +1444,14 @@ export default function Schedule() {
       if (a.positionId && filas.some((f) => f.positionId === String(a.positionId))) continue;
       filas.push({
         key: String(a.id),
-        plaza: "Cuadrante diario (sin plaza)",
-        vigilante: nombreDeVigilante(a.guard, "Sin nombre"),
+        plaza: t(
+          "ui.Schedule.cuadranteDiarioSinPlaza",
+          "Cuadrante diario (sin plaza)",
+        ),
+        vigilante: nombreDeVigilante(
+          a.guard,
+          t("settings.companyPolicies.guardNoNameFallback", "Sin nombre"),
+        ),
         asignacion: a,
         positionId: null,
         ciclo: "",
@@ -1623,7 +1670,8 @@ export default function Schedule() {
       // El respaldo por `guardsPool` cubre el turno que llega sin objeto guard;
       // el segundo argumento cubre el que lo trae SIN nombre.
       const respaldo =
-        guardsPool.find((x) => x.id === s.guardId)?.label || "Cobertura";
+        guardsPool.find((x) => x.id === s.guardId)?.label ||
+        t("ui.Schedule.cobertura", "Cobertura");
       const fullName = nombreDeVigilante(g, respaldo);
       const initials = inicialesDeVigilante(
         g,
@@ -1795,11 +1843,13 @@ export default function Schedule() {
           } else if (turno) {
             estado = "ocupado";
             detalle =
-              stationsById.get(turno.stationId)?.stationName || "otro puesto";
+              stationsById.get(turno.stationId)?.stationName ||
+              t("ui.Coverage.otroPuesto", "otro puesto");
           } else if (propia && isWorkDay(propia, dia) !== "rest") {
             estado = "deTurno";
             detalle =
-              stationsById.get(propia.stationId)?.stationName || "su puesto";
+              stationsById.get(propia.stationId)?.stationName ||
+              t("ui.TransferShiftModal.suPuesto", "su puesto");
           }
 
           return { id: g.id, nombre: g.label, esSf, estado, detalle };
@@ -2248,10 +2298,17 @@ export default function Schedule() {
       });
 
     if (occupiedBy) {
-      const nm = nombreDeVigilante(occupiedBy.guard, "el fijo");
+      const nm = nombreDeVigilante(
+        occupiedBy.guard,
+        t("ui.Schedule.elFijo", "el fijo"),
+      );
 
       toast.error(
-        `Ese día ${nm} está de turno en este puesto. Primero libera el día (novedad de Libre/Vacaciones/Permiso, o elimina el turno con clic derecho) y luego arrastra el sacafranco.`,
+        t("ui.Schedule.eseDiaEstaDeTurno", {
+          defaultValue:
+            "Ese día {{nombre}} está de turno en este puesto. Primero libera el día (novedad de Libre/Vacaciones/Permiso, o elimina el turno con clic derecho) y luego arrastra el sacafranco.",
+          nombre: nm,
+        }),
       );
 
       return;
@@ -2308,7 +2365,7 @@ export default function Schedule() {
       g?.label ||
       primerNombre(
         assignments.find((a) => a.guardId === sfGuardId)?.guard,
-        "Sacafranco",
+        t("ui.PostSiteWizard.jornada.sacafranco", "Sacafranco"),
       );
 
     setSfCover({
@@ -2318,7 +2375,7 @@ export default function Schedule() {
       dateStr,
       startStr: hhmm(startMin),
       endStr: hhmm(endMin),
-      suggested: `${code} · ${hhmm(startMin)} – ${hhmm(endMin)}${endNextDay || endMin <= startMin ? " (día siguiente)" : ""}`,
+      suggested: `${code} · ${hhmm(startMin)} – ${hhmm(endMin)}${endNextDay || endMin <= startMin ? t("ui.Schedule.diaSiguienteParen", " (día siguiente)") : ""}`,
     });
   };
 
@@ -2362,7 +2419,12 @@ export default function Schedule() {
           postSiteId: sfCover.station.postSiteId,
         },
       });
-      toast.success(`Sacafranco cubre ${stationLabel(sfCover.station)}`);
+      toast.success(
+        t("ui.Schedule.sacafrancoCubre", {
+          defaultValue: "Sacafranco cubre {{estacion}}",
+          estacion: stationLabel(sfCover.station),
+        }),
+      );
       setSfCover(null);
       fetchAll({ silent: true });
     } catch (e: any) {
@@ -2381,23 +2443,32 @@ export default function Schedule() {
 
   const removeSfCoverage = async (shift: ShiftRecord) => {
     const stName =
-      stationsById.get(shift.stationId)?.stationName || "la estación";
+      stationsById.get(shift.stationId)?.stationName ||
+      t("ui.Schedule.laEstacion", "la estación");
 
     if (
       !(await confirmDialog({
-        title: "Quitar cobertura",
-        message: `¿Quitar la cobertura del sacafranco en ${stName} ese día? Se elimina el turno.`,
-        confirmText: "Quitar",
+        title: t("ui.Schedule.quitarCobertura", "Quitar cobertura"),
+        message: t("ui.Schedule.quitarCoberturaConfirm", {
+          defaultValue:
+            "¿Quitar la cobertura del sacafranco en {{estacion}} ese día? Se elimina el turno.",
+          estacion: stName,
+        }),
+        confirmText: t("ui.SupervisionSection.quitar", "Quitar"),
         tone: "danger",
       }))
     )
       return;
     try {
       await ApiService.delete(`/tenant/${tenantId}/shift/${shift.id}`);
-      toast.success("Cobertura eliminada");
+      toast.success(t("ui.Schedule.coberturaEliminada", "Cobertura eliminada"));
       fetchAll({ silent: true });
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || "Error al eliminar");
+      toast.error(
+        e?.data?.message ||
+          e?.message ||
+          t("ui.ShiftTemplates.errorAlEliminar", "Error al eliminar"),
+      );
     }
   };
 
@@ -2426,20 +2497,30 @@ export default function Schedule() {
       toast.success(t("ui.Schedule.turnoDuplicadoAlDiaSiguiente"));
       fetchAll({ silent: true });
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || "Error al duplicar");
+      toast.error(
+        e?.data?.message ||
+          e?.message ||
+          t("ui.Schedule.errorAlDuplicar", "Error al duplicar"),
+      );
     }
   };
 
   const deleteDayShift = async (s: ShiftRecord) => {
     const msg = s.positionId
-      ? "¿Eliminar el turno de este día? Fue generado por la rotación y puede regenerarse al reoptimizar o reasignar."
-      : "¿Eliminar el turno de este día?";
+      ? t(
+          "ui.Schedule.eliminarTurnoDelDiaGeneradoConfirm",
+          "¿Eliminar el turno de este día? Fue generado por la rotación y puede regenerarse al reoptimizar o reasignar.",
+        )
+      : t(
+          "ui.Schedule.eliminarTurnoDelDiaConfirm",
+          "¿Eliminar el turno de este día?",
+        );
 
     if (
       !(await confirmDialog({
-        title: "Eliminar turno",
+        title: t("ui.ScheduleTimeline.eliminarTurno", "Eliminar turno"),
         message: msg,
-        confirmText: "Eliminar",
+        confirmText: t("common.delete", "Eliminar"),
         tone: "danger",
       }))
     )
@@ -2449,7 +2530,11 @@ export default function Schedule() {
       toast.success(t("comun.turnoEliminado"));
       fetchAll({ silent: true });
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || "Error al eliminar");
+      toast.error(
+        e?.data?.message ||
+          e?.message ||
+          t("ui.ShiftTemplates.errorAlEliminar", "Error al eliminar"),
+      );
     }
   };
 
@@ -2475,12 +2560,20 @@ export default function Schedule() {
 
     for (const a of posAssignments) {
       const s = shiftByGuardDate.get(`${a.guardId}|${dateStr}`);
-      const nm = primerNombre(a.guard, "vigilante");
+      const nm = primerNombre(
+        a.guard,
+        t("ui.Schedule.vigilanteMinus", "vigilante"),
+      );
       const full = nombreDeVigilante(a.guard, nm);
-      const suf = varios ? ` de ${nm}` : "";
+      const suf = varios
+        ? t("ui.Schedule.sufijoDeNombre", { defaultValue: " de {{nombre}}", nombre: nm })
+        : "";
 
       items.push({
-        label: `Cambiar a V / PM / F / L${suf}…`,
+        label: t("ui.Schedule.menuCambiarACodigos", {
+          defaultValue: "Cambiar a V / PM / F / L{{suf}}…",
+          suf,
+        }),
         onClick: () =>
           abrirNovedad({
             guardId: a.guardId,
@@ -2491,15 +2584,24 @@ export default function Schedule() {
       });
       if (s && s.stationId === station.id) {
         items.push({
-          label: `Editar el turno${suf}…`,
+          label: t("ui.Schedule.menuEditarElTurno", {
+            defaultValue: "Editar el turno{{suf}}…",
+            suf,
+          }),
           onClick: () => openShiftEditor(s, full),
         });
         items.push({
-          label: `Duplicar el turno${suf} al día siguiente`,
+          label: t("ui.Schedule.menuDuplicarElTurno", {
+            defaultValue: "Duplicar el turno{{suf}} al día siguiente",
+            suf,
+          }),
           onClick: () => void duplicateShiftNextDay(s),
         });
         items.push({
-          label: `Eliminar el turno${suf} de este día`,
+          label: t("ui.Schedule.menuEliminarElTurno", {
+            defaultValue: "Eliminar el turno{{suf}} de este día",
+            suf,
+          }),
           danger: true,
           onClick: () => void deleteDayShift(s),
         });
@@ -2513,12 +2615,16 @@ export default function Schedule() {
       if (posAssignments.some((a) => a.guardId === cs.guardId)) continue;
       const nm = primerNombre(
         cs.guard,
-        guardsPool.find((x) => x.id === cs.guardId)?.label || "la cobertura",
+        guardsPool.find((x) => x.id === cs.guardId)?.label ||
+          t("ui.Schedule.laCobertura", "la cobertura"),
       );
       const full = nombreDeVigilante(cs.guard, nm);
 
       items.push({
-        label: `Cambiar a V / PM / F / L a ${nm} (cobertura)…`,
+        label: t("ui.Schedule.menuCambiarCodigosCobertura", {
+          defaultValue: "Cambiar a V / PM / F / L a {{nombre}} (cobertura)…",
+          nombre: nm,
+        }),
         onClick: () =>
           abrirNovedad({
             guardId: cs.guardId,
@@ -2527,7 +2633,10 @@ export default function Schedule() {
           }),
       });
       items.push({
-        label: `Eliminar la cobertura de ${nm}`,
+        label: t("ui.Schedule.menuEliminarLaCoberturaDe", {
+          defaultValue: "Eliminar la cobertura de {{nombre}}",
+          nombre: nm,
+        }),
         danger: true,
         onClick: () => void deleteDayShift(cs),
       });
@@ -2535,7 +2644,10 @@ export default function Schedule() {
     }
     if (posAssignments.length) {
       const a = posAssignments[0];
-      const guardName = nombreDeVigilante(a.guard, "Vigilante");
+      const guardName = nombreDeVigilante(
+        a.guard,
+        t("comun.vigilante", "Vigilante"),
+      );
       // On a rest (L) day the puesto is uncovered — offer to assign a sacafranco
       // to cover it (opens the picker modal). Skip when it's already covered.
       // ── QUIÉN CUBRE ESTE DÍA ──────────────────────────────────────────
@@ -2550,8 +2662,8 @@ export default function Schedule() {
       if (resting) {
         items.push({
           label: yaCubierto
-            ? "Añadir otro relevo este día…"
-            : "Cubrir este día…",
+            ? t("ui.Schedule.menuAnadirOtroRelevo", "Añadir otro relevo este día…")
+            : t("ui.Schedule.menuCubrirEsteDia", "Cubrir este día…"),
           onClick: () => {
             setSfPickQuery("");
             setSfPick({ station, pos, dateStr, assignment: a, guardName });
@@ -2564,7 +2676,13 @@ export default function Schedule() {
       // the tenant timezone. Gating this on a shift row hid it on most cells,
       // because the grid paints D/N/L from the rotation, not from shift rows.
       items.push({
-        label: `Trasladar a ${primerNombre(a.guard, "vigilante")} a otra estación…`,
+        label: t("ui.Schedule.menuTrasladarAOtraEstacion", {
+          defaultValue: "Trasladar a {{nombre}} a otra estación…",
+          nombre: primerNombre(
+            a.guard,
+            t("ui.Schedule.vigilanteMinus", "vigilante"),
+          ),
+        }),
         onClick: () =>
           setTransferTarget({
             guardId: a.guardId,
@@ -2582,7 +2700,13 @@ export default function Schedule() {
       // los libres del titular— y no cuenta como cobertura: si el titular falta
       // y sólo ficha el aprendiz, el puesto sale descubierto, que es la verdad.
       items.push({
-        label: `Poner un aprendiz con ${primerNombre(a.guard, "este vigilante")}…`,
+        label: t("ui.Schedule.menuPonerUnAprendiz", {
+          defaultValue: "Poner un aprendiz con {{nombre}}…",
+          nombre: primerNombre(
+            a.guard,
+            t("ui.Schedule.esteVigilante", "este vigilante"),
+          ),
+        }),
         onClick: () =>
           setShadowFor({
             assignmentId: a.id,
@@ -2604,7 +2728,7 @@ export default function Schedule() {
       const suShift = shiftByGuardDate.get(`${a.guardId}|${dateStr}`);
 
       items.push({
-        label: "Extender turno…",
+        label: t("ui.Schedule.menuExtenderTurno", "Extender turno…"),
         onClick: () =>
           setExtendTarget({
             guardId: a.guardId,
@@ -2633,13 +2757,23 @@ export default function Schedule() {
       const hayNovedad = ov && ["F", "V", "PM"].includes(String(ov.type));
 
       if (hayNovedad) {
-        const queEs = (CODE_LABEL[String(ov!.type)] || "novedad").toLowerCase();
-        const quien = primerNombre(a.guard, "este vigilante");
+        const queEs = (
+          CODE_LABEL[String(ov!.type)] || t("ui.Schedule.novedadMinus", "novedad")
+        ).toLowerCase();
+        const quien = primerNombre(
+          a.guard,
+          t("ui.Schedule.esteVigilante", "este vigilante"),
+        );
 
         items.push({
           // «Cubrir el turno de X (vacaciones) con otro vigilante…»: lo que se
           // cubre es el TURNO, y entre paréntesis por qué está libre.
-          label: `Cubrir el turno de ${quien} (${queEs}) con otro vigilante…`,
+          label: t("ui.Schedule.menuCubrirElTurnoDe", {
+            defaultValue:
+              "Cubrir el turno de {{nombre}} ({{motivo}}) con otro vigilante…",
+            nombre: quien,
+            motivo: queEs,
+          }),
           // Se pasa a QUIÉN se cubre para que el modal precargue el rango
           // completo de su novedad: unas vacaciones son quince días, y hasta
           // ahora había que repetir el diálogo día por día.
@@ -2651,7 +2785,16 @@ export default function Schedule() {
         // El código crudo no significa nada para quien no lo escribió: «(V)» se
         // lee como una letra, «Vacaciones» se lee como lo que es.
         items.push({
-          label: `Quitar ${(CODE_LABEL[String(ov.type)] || `novedad (${ov.type})`).toLowerCase()}`,
+          label: t("ui.Schedule.menuQuitarCodigo", {
+            defaultValue: "Quitar {{codigo}}",
+            codigo: (
+              CODE_LABEL[String(ov.type)] ||
+              t("ui.Schedule.novedadConTipo", {
+                defaultValue: "novedad ({{tipo}})",
+                tipo: ov.type,
+              })
+            ).toLowerCase(),
+          }),
           danger: true,
           onClick: () => void removeOverride(ov.id),
         });
@@ -2668,13 +2811,19 @@ export default function Schedule() {
       if (!resting) {
         items.push({ label: "—" });
         items.push({
-          label: "Añadir un turno suelto aquí…",
+          label: t(
+            "ui.Schedule.menuAnadirUnTurnoSuelto",
+            "Añadir un turno suelto aquí…",
+          ),
           onClick: () => openAssignForm(station.id, pos.id, dateStr),
         });
       }
     } else {
       items.push({
-        label: "Cubrir este día con un vigilante…",
+        label: t(
+          "ui.Schedule.menuCubrirEsteDiaConUnVigilante",
+          "Cubrir este día con un vigilante…",
+        ),
         onClick: () => openAssignForm(station.id, pos.id, dateStr),
       });
     }
@@ -2728,7 +2877,10 @@ export default function Schedule() {
 
       if (covShift) {
         items.push({
-          label: "Editar cobertura (vista Día)…",
+          label: t(
+            "ui.Schedule.menuEditarCoberturaVistaDia",
+            "Editar cobertura (vista Día)…",
+          ),
           onClick: () => jumpToDay(dateStr),
         });
         items.push({
@@ -2739,18 +2891,24 @@ export default function Schedule() {
           onClick: () => void duplicateShiftNextDay(covShift),
         });
         items.push({
-          label: "Quitar cobertura",
+          label: t("ui.Schedule.quitarCobertura", "Quitar cobertura"),
           danger: true,
           onClick: () => void removeSfCoverage(covShift),
         });
         items.push({ label: "—" });
       }
-      const gName = nombreDeVigilante(sfGuard.guard, "Sacafranco");
+      const gName = nombreDeVigilante(
+        sfGuard.guard,
+        t("ui.PostSiteWizard.jornada.sacafranco", "Sacafranco"),
+      );
 
       // Cambiarle el patrón o las estaciones que cubre sin tener que borrarlo y
       // volver a crearlo, que era la única vía.
       items.push({
-        label: "Editar sacafranco (patrón y estaciones)…",
+        label: t(
+          "ui.Schedule.menuEditarSacafranco",
+          "Editar sacafranco (patrón y estaciones)…",
+        ),
         onClick: () =>
           openAssignForm(
             pos.stationId,
@@ -2762,7 +2920,10 @@ export default function Schedule() {
           ),
       });
       items.push({
-        label: "Trasladar a otra estación…",
+        label: t(
+          "ui.Schedule.menuTrasladarAOtraEstacionSf",
+          "Trasladar a otra estación…",
+        ),
         onClick: () =>
           setTransferTarget({
             guardId: sfGuard.guardId,
@@ -2777,7 +2938,10 @@ export default function Schedule() {
           }),
       });
       items.push({
-        label: "Marcar el día (V / PM / F / L)…",
+        label: t(
+          "ui.Schedule.menuMarcarElDia",
+          "Marcar el día (V / PM / F / L)…",
+        ),
         onClick: () =>
           abrirNovedad({
             guardId: sfGuard.guardId,
@@ -2787,7 +2951,7 @@ export default function Schedule() {
           }),
       });
       items.push({
-        label: "Extender turno…",
+        label: t("ui.Schedule.menuExtenderTurno", "Extender turno…"),
         onClick: () =>
           setExtendTarget({
             guardId: sfGuard.guardId,
@@ -2804,7 +2968,10 @@ export default function Schedule() {
 
       if (ov)
         items.push({
-          label: `Deshacer ${(CODE_LABEL[String(ov.type)] || ov.type).toLowerCase()} — volver a su turno`,
+          label: t("ui.Schedule.menuDeshacerCodigo", {
+            defaultValue: "Deshacer {{codigo}} — volver a su turno",
+            codigo: (CODE_LABEL[String(ov.type)] || ov.type).toLowerCase(),
+          }),
           danger: true,
           onClick: () => void removeOverride(ov.id),
         });
@@ -2813,7 +2980,10 @@ export default function Schedule() {
       // suelto) o dejar a alguien fijo en la posición (rotación). El diálogo
       // pregunta cuál; el nombre ya no promete sólo una.
       items.push({
-        label: "Asignar a esta posición…",
+        label: t(
+          "ui.Schedule.menuAsignarAEstaPosicion",
+          "Asignar a esta posición…",
+        ),
         onClick: () => openAssignForm(pos.stationId, pos.id, dateStr),
       });
     }
@@ -2927,15 +3097,29 @@ export default function Schedule() {
     setMoveSaving(false);
     if (!movidos) {
       toast.error(
-        `No se pudo mover${fallados.length ? ` (${fallados.length} día(s) con error)` : ""}.`,
+        fallados.length
+          ? t("ui.Schedule.noSePudoMoverConErrores", {
+              defaultValue: "No se pudo mover ({{n}} día(s) con error).",
+              n: fallados.length,
+            })
+          : t("ui.Schedule.noSePudoMover", "No se pudo mover."),
       );
     } else if (fallados.length) {
       toast.warning(
-        `${movidos} día(s) movido(s). Falló en: ${fallados.join(", ")}.`,
+        t("ui.Schedule.diasMovidosFalloEn", {
+          defaultValue: "{{n}} día(s) movido(s). Falló en: {{dias}}.",
+          n: movidos,
+          dias: fallados.join(", "),
+        }),
       );
     } else {
       toast.success(
-        movidos === 1 ? "Cobertura movida" : `${movidos} días movidos`,
+        movidos === 1
+          ? t("ui.Schedule.coberturaMovida", "Cobertura movida")
+          : t("ui.Schedule.nDiasMovidos", {
+              defaultValue: "{{n}} días movidos",
+              n: movidos,
+            }),
       );
     }
     if (movidos) {
@@ -3046,13 +3230,23 @@ export default function Schedule() {
         const n = diasEntre(assignStartDate, assignEndDate);
 
         if (n < 1) {
-          toast.error("El último día no puede ser anterior al primero.");
+          toast.error(
+            t(
+              "ui.Schedule.elUltimoDiaNoPuedeSerAnterior",
+              "El último día no puede ser anterior al primero.",
+            ),
+          );
 
           return;
         }
         if (n > TOPE_DIAS) {
           toast.error(
-            `El rango son ${n} días; el máximo es ${TOPE_DIAS}. Divídelo en tramos.`,
+            t("ui.Schedule.elRangoSonNDias", {
+              defaultValue:
+                "El rango son {{n}} días; el máximo es {{max}}. Divídelo en tramos.",
+              n,
+              max: TOPE_DIAS,
+            }),
           );
 
           return;
@@ -3109,22 +3303,48 @@ export default function Schedule() {
 
         if (!creados) {
           toast.error(
-            `No se pudo crear ningún turno${fallados.length ? ` (${fallados.length} día(s) con error)` : ""}.`,
+            fallados.length
+              ? t("ui.Schedule.noSePudoCrearNingunTurnoConErrores", {
+                  defaultValue:
+                    "No se pudo crear ningún turno ({{n}} día(s) con error).",
+                  n: fallados.length,
+                })
+              : t(
+                  "ui.Schedule.noSePudoCrearNingunTurno",
+                  "No se pudo crear ningún turno.",
+                ),
           );
         } else if (fallados.length) {
           // Se dicen las fechas: sin ellas hay que revisar el cuadrante a mano.
           toast.warning(
-            `${creados} turno(s) creado(s). Falló en: ${fallados.join(", ")}.`,
+            t("ui.Schedule.turnosCreadosFalloEn", {
+              defaultValue: "{{n}} turno(s) creado(s). Falló en: {{dias}}.",
+              n: creados,
+              dias: fallados.join(", "),
+            }),
           );
         } else if (dias.length > 1) {
           toast.success(
-            `${creados} turnos creados${reemplazados ? ` (reemplazaron ${reemplazados} solapado(s))` : ""}`,
+            reemplazados
+              ? t("ui.Schedule.nTurnosCreadosReemplazaron", {
+                  defaultValue:
+                    "{{n}} turnos creados (reemplazaron {{r}} solapado(s))",
+                  n: creados,
+                  r: reemplazados,
+                })
+              : t("ui.Schedule.nTurnosCreados", {
+                  defaultValue: "{{n}} turnos creados",
+                  n: creados,
+                }),
           );
         } else {
           toast.success(
             reemplazados
-              ? "Turno creado (reemplazó turnos solapados)"
-              : "Turno creado para ese día",
+              ? t(
+                  "ui.ScheduleTimeline.turnoCreadoReemplazo",
+                  "Turno creado (reemplazó turnos solapados)",
+                )
+              : t("ui.Schedule.turnoCreadoParaEseDia", "Turno creado para ese día"),
           );
         }
 
@@ -3179,16 +3399,20 @@ export default function Schedule() {
       });
       toast.success(
         moveFrom
-          ? "Vigilante movido de puesto"
+          ? t("ui.Schedule.vigilanteMovidoDePuesto", "Vigilante movido de puesto")
           : assignEditing
-            ? "Sacafranco actualizado"
-            : "Vigilante asignado",
+            ? t("ui.Schedule.sacafrancoActualizado", "Sacafranco actualizado")
+            : t("ui.Schedule.vigilanteAsignado", "Vigilante asignado"),
       );
       setShowAssignForm(false);
       setMoveFrom(null);
       fetchAll();
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || "Error al asignar");
+      toast.error(
+        e?.data?.message ||
+          e?.message ||
+          t("ui.Schedule.errorAlAsignar", "Error al asignar"),
+      );
     } finally {
       setAssignSaving(false);
     }
@@ -3198,9 +3422,11 @@ export default function Schedule() {
     if (
       !(await confirmDialog({
         title: t("ui.Schedule.removerAsignacion", "Remover asignación"),
-        message:
+        message: t(
+          "ui.Schedule.removerAsignacionConfirm",
           "¿Remover esta asignación? Los turnos futuros se anulan; los ya trabajados se conservan en el historial.",
-        confirmText: "Remover",
+        ),
+        confirmText: t("ui.Schedule.remover", "Remover"),
         tone: "danger",
       }))
     )
@@ -3212,7 +3438,7 @@ export default function Schedule() {
       toast.success(t("ui.Schedule.asignacionRemovida"));
       fetchAll();
     } catch (e: any) {
-      toast.error(e?.message || "Error");
+      toast.error(e?.message || t("ui.Schedule.error", "Error"));
     }
   };
 
@@ -3295,7 +3521,12 @@ export default function Schedule() {
        bloques; en el resto lo dicen las ruedas del paso 2. */
     if (configType !== "custom" && cfgRotMode === "rotativo") {
       if (cfgDias + cfgNoches < 1) {
-        toast.error("El ciclo necesita al menos un turno de trabajo.");
+        toast.error(
+          t(
+            "ui.Schedule.elCicloNecesitaAlMenosUnTurno",
+            "El ciclo necesita al menos un turno de trabajo.",
+          ),
+        );
 
         return;
       }
@@ -3317,12 +3548,15 @@ export default function Schedule() {
           { data: { rotationStyleId: cicloElegido } },
         );
         toast.success(
-          "Ciclo actualizado — los turnos futuros se rehicieron y nadie perdió su puesto",
+          t(
+            "ui.Schedule.cicloActualizado",
+            "Ciclo actualizado — los turnos futuros se rehicieron y nadie perdió su puesto",
+          ),
         );
         setConfigStation(null);
         fetchAll();
       } catch (e: any) {
-        toast.error(e?.data?.message || e?.message || "Error");
+        toast.error(e?.data?.message || e?.message || t("ui.Schedule.error", "Error"));
       } finally {
         setConfigSaving(false);
       }
@@ -3332,9 +3566,11 @@ export default function Schedule() {
 
     if (
       !(await confirmDialog({
-        message:
+        message: t(
+          "ui.Schedule.cambiarElHorarioReconfiguraConfirm",
           "Cambiar el horario reconfigura los puestos del turno. Si hay vigilantes asignados a esta estación, deberán reasignarse. ¿Continuar?",
-        confirmText: "Continuar",
+        ),
+        confirmText: t("ui.Schedule.continuar", "Continuar"),
       }))
     )
       return;
@@ -3361,7 +3597,7 @@ export default function Schedule() {
       setConfigStation(null);
       fetchAll();
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || "Error");
+      toast.error(e?.data?.message || e?.message || t("ui.Schedule.error", "Error"));
     } finally {
       setConfigSaving(false);
     }
@@ -3396,12 +3632,17 @@ export default function Schedule() {
   const saveShadow = async () => {
     if (!shadowFor) return;
     if (!shadowFor.guardId) {
-      toast.error("Elige al aprendiz");
+      toast.error(t("ui.Schedule.eligeAlAprendiz", "Elige al aprendiz"));
 
       return;
     }
     if (!shadowFor.endDate) {
-      toast.error("Un acompañamiento necesita fecha de fin");
+      toast.error(
+        t(
+          "ui.Schedule.unAcompanamientoNecesitaFechaDeFin",
+          "Un acompañamiento necesita fecha de fin",
+        ),
+      );
 
       return;
     }
@@ -3418,7 +3659,10 @@ export default function Schedule() {
         },
       );
       toast.success(
-        "Aprendiz en acompañamiento — sigue los días del titular y no cuenta como cobertura",
+        t(
+          "ui.Schedule.aprendizEnAcompanamientoToast",
+          "Aprendiz en acompañamiento — sigue los días del titular y no cuenta como cobertura",
+        ),
       );
       setShadowFor(null);
       fetchAll({ silent: true });
@@ -3426,7 +3670,10 @@ export default function Schedule() {
       toast.error(
         e?.data?.message ||
           e?.message ||
-          "No se pudo registrar el acompañamiento",
+          t(
+            "ui.Schedule.noSePudoRegistrarElAcompanamiento",
+            "No se pudo registrar el acompañamiento",
+          ),
       );
     } finally {
       setShadowSaving(false);
@@ -3670,7 +3917,12 @@ export default function Schedule() {
     const l = Math.max(0, Math.floor(libre || 0));
 
     if (d + n < 1) {
-      toast.error("El ciclo necesita al menos un turno de trabajo.");
+      toast.error(
+        t(
+          "ui.Schedule.elCicloNecesitaAlMenosUnTurno",
+          "El ciclo necesita al menos un turno de trabajo.",
+        ),
+      );
 
       return null;
     }
@@ -3706,7 +3958,12 @@ export default function Schedule() {
     const creado = res?.data ?? res;
 
     if (!creado?.id) {
-      toast.error("No se pudo guardar el ciclo de rotación.");
+      toast.error(
+        t(
+          "ui.Schedule.noSePudoGuardarElCiclo",
+          "No se pudo guardar el ciclo de rotación.",
+        ),
+      );
 
       return null;
     }
@@ -3731,12 +3988,16 @@ export default function Schedule() {
           : [];
 
     if (!ids.length) {
-      toast.error("Elige al menos una estación");
+      toast.error(
+        t("ui.Schedule.eligeAlMenosUnaEstacion", "Elige al menos una estación"),
+      );
 
       return;
     }
     if (!posEditor.name.trim()) {
-      toast.error("Ponle un nombre al puesto");
+      toast.error(
+        t("ui.Schedule.ponleUnNombreAlPuesto", "Ponle un nombre al puesto"),
+      );
 
       return;
     }
@@ -3801,8 +4062,12 @@ export default function Schedule() {
 
         toast.success(
           ids.length > 1
-            ? `Sacafranco actualizado — rota por ${ids.length} estaciones`
-            : "Sacafranco actualizado",
+            ? t("ui.Schedule.sacafrancoActualizadoRota", {
+                defaultValue:
+                  "Sacafranco actualizado — rota por {{n}} estaciones",
+                n: ids.length,
+              })
+            : t("ui.Schedule.sacafrancoActualizado", "Sacafranco actualizado"),
         );
         setPosEditor(null);
         fetchAll({ silent: true });
@@ -3866,8 +4131,14 @@ export default function Schedule() {
            prometía lo mismo pasara lo que pasara. */
         toast.success(
           cambioElCiclo
-            ? "Puesto y ciclo actualizados — los turnos futuros se rehicieron y nadie perdió su asignación"
-            : "Puesto actualizado — los turnos futuros se rehicieron con las horas nuevas",
+            ? t(
+                "ui.Schedule.puestoYCicloActualizados",
+                "Puesto y ciclo actualizados — los turnos futuros se rehicieron y nadie perdió su asignación",
+              )
+            : t(
+                "ui.Schedule.puestoActualizado",
+                "Puesto actualizado — los turnos futuros se rehicieron con las horas nuevas",
+              ),
         );
         setPosEditor(null);
         fetchAll({ silent: true });
@@ -3945,8 +4216,16 @@ export default function Schedule() {
           setPosEditor(null);
           toast.success(
             posEditor.rotMode === "rotativo"
-              ? `Sacafranco creado y asignado — cubre ${ids.length} estación(es). Sus turnos tardan unos segundos.`
-              : `Sacafranco creado y asignado — cubre ${ids.length} estación(es). Su mes empieza en blanco: coloca sus días arrastrándolos o con «Optimizar sacafrancos».`,
+              ? t("ui.Schedule.sacafrancoCreadoRotativo", {
+                  defaultValue:
+                    "Sacafranco creado y asignado — cubre {{n}} estación(es). Sus turnos tardan unos segundos.",
+                  n: ids.length,
+                })
+              : t("ui.Schedule.sacafrancoCreadoManual", {
+                  defaultValue:
+                    "Sacafranco creado y asignado — cubre {{n}} estación(es). Su mes empieza en blanco: coloca sus días arrastrándolos o con «Optimizar sacafrancos».",
+                  n: ids.length,
+                }),
           );
           fetchAll();
 
@@ -3980,8 +4259,11 @@ export default function Schedule() {
            que de verdad ha pasado. */
         toast.success(
           ids.length > 1
-            ? `Sacafranco creado. Asígnale un vigilante: hasta entonces no se guarda en qué estaciones cubre ni cada cuántos días.`
-            : "Sacafranco creado",
+            ? t(
+                "ui.Schedule.sacafrancoCreadoAsignaleUnVigilante",
+                "Sacafranco creado. Asígnale un vigilante: hasta entonces no se guarda en qué estaciones cubre ni cada cuántos días.",
+              )
+            : t("ui.Schedule.sacafrancoCreado", "Sacafranco creado"),
         );
         if (nuevoId) {
           openAssignForm(base, nuevoId, undefined, null, undefined, null, ids);
@@ -4006,13 +4288,20 @@ export default function Schedule() {
         });
       }
       toast.success(
-        ids.length > 1 ? `${ids.length} puestos agregados` : "Puesto agregado",
+        ids.length > 1
+          ? t("ui.Schedule.nPuestosAgregados", {
+              defaultValue: "{{n}} puestos agregados",
+              n: ids.length,
+            })
+          : t("ui.Schedule.puestoAgregado", "Puesto agregado"),
       );
       setPosEditor(null);
       fetchAll({ silent: true });
     } catch (e: any) {
       toast.error(
-        e?.data?.message || e?.message || "No se pudo guardar el puesto",
+        e?.data?.message ||
+          e?.message ||
+          t("ui.Schedule.noSePudoGuardarElPuesto", "No se pudo guardar el puesto"),
       );
     } finally {
       setPosSaving(false);
@@ -4023,8 +4312,11 @@ export default function Schedule() {
     if (
       !(await confirmDialog({
         title: t("ui.Schedule.eliminarPosicion", "Eliminar posición"),
-        message: "¿Eliminar esta posición?",
-        confirmText: "Eliminar",
+        message: t(
+          "ui.Schedule.eliminarEstaPosicionConfirm",
+          "¿Eliminar esta posición?",
+        ),
+        confirmText: t("common.delete", "Eliminar"),
         tone: "danger",
       }))
     )
@@ -4036,7 +4328,9 @@ export default function Schedule() {
       toast.success(t("ui.Schedule.posicionEliminada"));
       fetchAll();
     } catch (e: any) {
-      toast.error(e?.message || "Error al eliminar");
+      toast.error(
+        e?.message || t("ui.ShiftTemplates.errorAlEliminar", "Error al eliminar"),
+      );
     }
   };
 
@@ -4059,7 +4353,13 @@ export default function Schedule() {
       );
       const id = gen?.proposalId || gen?.data?.proposalId;
 
-      if (!id) throw new Error("No se pudo generar el borrador");
+      if (!id)
+        throw new Error(
+          t(
+            "ui.Schedule.noSePudoGenerarElBorrador",
+            "No se pudo generar el borrador",
+          ),
+        );
       const detail = await ApiService.get(
         `/tenant/${tenantId}/scheduler/proposals/${id}`,
       );
@@ -4093,7 +4393,10 @@ export default function Schedule() {
         res?.plan?.notifiedGuards ?? res?.data?.plan?.notifiedGuards ?? 0;
 
       toast.success(
-        `Horario publicado · ${notified} vigilante${notified === 1 ? "" : "s"} notificado${notified === 1 ? "" : "s"}`,
+        t("ui.Schedule.horarioPublicado", {
+          defaultValue: "Horario publicado · {{count}} vigilantes notificados",
+          count: notified,
+        }),
       );
       // Switch the modal to the implementation plan (who was notified).
       try {
@@ -4107,7 +4410,11 @@ export default function Schedule() {
       }
       fetchAll();
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || "Error al publicar");
+      toast.error(
+        e?.data?.message ||
+          e?.message ||
+          t("ui.Schedule.errorAlPublicar", "Error al publicar"),
+      );
     } finally {
       setPublishing(false);
     }
@@ -4147,11 +4454,26 @@ export default function Schedule() {
       const rem = res?.remaining ?? res?.data?.remaining ?? 0;
 
       toast.success(
-        `${g} vigilante(s) geolocalizados${rem > 0 ? ` · ${rem} pendientes (ejecuta de nuevo)` : ""}`,
+        rem > 0
+          ? t("ui.Schedule.vigilantesGeolocalizadosPendientes", {
+              defaultValue:
+                "{{n}} vigilante(s) geolocalizados · {{rem}} pendientes (ejecuta de nuevo)",
+              n: g,
+              rem,
+            })
+          : t("ui.Schedule.vigilantesGeolocalizados", {
+              defaultValue: "{{n}} vigilante(s) geolocalizados",
+              n: g,
+            }),
       );
     } catch (e: any) {
       toast.error(
-        e?.data?.message || e?.message || "Error al geolocalizar vigilantes",
+        e?.data?.message ||
+          e?.message ||
+          t(
+            "ui.Schedule.errorAlGeolocalizarVigilantes",
+            "Error al geolocalizar vigilantes",
+          ),
       );
     } finally {
       setGeocoding(false);
@@ -4173,11 +4495,11 @@ export default function Schedule() {
       const rec =
         result?.recommendation ||
         result?.data?.recommendation ||
-        "Sin respuesta";
+        t("ui.RadioDispatch.status.no_response", "Sin respuesta");
 
       setAiRecommendation(rec);
     } catch (e: any) {
-      toast.error("Error al consultar IA");
+      toast.error(t("ui.Schedule.errorAlConsultarIa", "Error al consultar IA"));
       console.error(e);
     } finally {
       setAiLoading(false);
@@ -4187,9 +4509,11 @@ export default function Schedule() {
   const runAutoAssign = async () => {
     if (
       !(await confirmDialog({
-        message:
+        message: t(
+          "ui.Schedule.autoAsignarConfirm",
           "¿Asignar automáticamente vigilantes a todas las estaciones sin cubrir?\n\nSolo se cubren los puestos VACÍOS con vigilantes sin asignar (por cercanía, configurando rotaciones y sacafrancos). NO se moverá ni reasignará ningún vigilante que ya esté asignado a un puesto.",
-        confirmText: "Asignar",
+        ),
+        confirmText: t("ui.SupervisionSection.asignar", "Asignar"),
       }))
     )
       return;
@@ -4202,7 +4526,12 @@ export default function Schedule() {
       );
 
       setAutoResult(res);
-      toast.success(`${res.assignmentsCreated} asignaciones creadas`);
+      toast.success(
+        t("ui.Schedule.nAsignacionesCreadas", {
+          defaultValue: "{{n}} asignaciones creadas",
+          n: res.assignmentsCreated,
+        }),
+      );
       fetchAll();
     } catch (e: any) {
       toast.error(
@@ -4218,9 +4547,11 @@ export default function Schedule() {
   const runOptimizeSacafrancos = async () => {
     if (
       !(await confirmDialog({
-        message:
+        message: t(
+          "ui.Schedule.optimizarSacafrancosConfirm",
           "¿Optimizar la rotación de sacafrancos?\n\nATENCIÓN: esto MOVERÁ vigilantes sacafranco ya asignados a otros puestos/estaciones y regenerará sus turnos para maximizar cobertura. Los vigilantes fijos NO se tocan.",
-        confirmText: "Optimizar",
+        ),
+        confirmText: t("ui.Schedule.optimizar", "Optimizar"),
       }))
     )
       return;
@@ -4231,7 +4562,10 @@ export default function Schedule() {
         { data: {} },
       );
 
-      toast.success(res?.message || "Sacafrancos optimizados");
+      toast.success(
+        res?.message ||
+          t("ui.Schedule.sacafrancosOptimizados", "Sacafrancos optimizados"),
+      );
       fetchAll();
     } catch (e: any) {
       toast.error(
@@ -4268,9 +4602,11 @@ export default function Schedule() {
     }) => {
       if (!sePuedeMarcar(target.date, getTenantTimezone())) {
         toast.error(
-          `Ese día ya está cerrado. El horario se edita desde el ${fechaMinimaEditable(
-            getTenantTimezone(),
-          )} en adelante, para no cambiar turnos ya trabajados ni pagos ya emitidos.`,
+          i18n.t("ui.Schedule.eseDiaYaEstaCerrado", {
+            defaultValue:
+              "Ese día ya está cerrado. El horario se edita desde el {{fecha}} en adelante, para no cambiar turnos ya trabajados ni pagos ya emitidos.",
+            fecha: fechaMinimaEditable(getTenantTimezone()),
+          }),
         );
 
         return;
@@ -4338,21 +4674,39 @@ export default function Schedule() {
           );
           const blockHuman =
             rot.restDays === 1
-              ? `el ${fmtHuman(blockStart)}`
-              : `${rot.restDays} días de descanso (${blockDates.map(fmtHuman).join(" y ")})`;
+              ? t("ui.Schedule.elFecha", {
+                  defaultValue: "el {{fecha}}",
+                  fecha: fmtHuman(blockStart),
+                })
+              : t("ui.Schedule.nDiasDeDescanso", {
+                  defaultValue: "{{n}} días de descanso ({{fechas}})",
+                  n: rot.restDays,
+                  fechas: blockDates
+                    .map(fmtHuman)
+                    .join(t("ui.Schedule.separadorY", " y ")),
+                });
 
           const applyForward = await confirmDialog({
             title: t(
               "ui.Schedule.ajustarLaRotacionDesdeEsteLibre",
               "Ajustar la rotación desde este libre",
             ),
-            message:
-              `El puesto usa el patrón ${rot.name}${rot.restDays > 1 ? ` (${rot.restDays} libres seguidos)` : ""}. ` +
-              `¿Quieres que ${target.guardName} descanse ${blockHuman} y la secuencia continúe automáticamente desde ahí?\n\n` +
-              `Se recalculan solo los turnos futuros de este vigilante — los demás no se tocan.\n\n` +
-              `«Solo este día» registra únicamente una novedad de libre en esa fecha.`,
-            confirmText: "Aplicar en adelante",
-            cancelText: "Solo este día",
+            message: t("ui.Schedule.ajustarRotacionConfirm", {
+              defaultValue:
+                "El puesto usa el patrón {{patron}}{{libres}}. ¿Quieres que {{nombre}} descanse {{bloque}} y la secuencia continúe automáticamente desde ahí?\n\nSe recalculan solo los turnos futuros de este vigilante — los demás no se tocan.\n\n«Solo este día» registra únicamente una novedad de libre en esa fecha.",
+              patron: rot.name,
+              libres:
+                rot.restDays > 1
+                  ? t("ui.Schedule.nLibresSeguidos", {
+                      defaultValue: " ({{n}} libres seguidos)",
+                      n: rot.restDays,
+                    })
+                  : "",
+              nombre: target.guardName,
+              bloque: blockHuman,
+            }),
+            confirmText: t("ui.Schedule.aplicarEnAdelante", "Aplicar en adelante"),
+            cancelText: t("ui.ScheduleTimeline.soloEsteDia", "Solo este día"),
           });
 
           if (applyForward) {
@@ -4393,7 +4747,11 @@ export default function Schedule() {
                 ),
               );
               toast.success(
-                `Rotación ${rot.name} reajustada — la secuencia sigue desde este libre`,
+                t("ui.Schedule.rotacionReajustada", {
+                  defaultValue:
+                    "Rotación {{patron}} reajustada — la secuencia sigue desde este libre",
+                  patron: rot.name,
+                }),
               );
               setOverrideTarget(null);
               fetchAll();
@@ -4425,12 +4783,15 @@ export default function Schedule() {
           },
         });
         toast.success(
-          `Ese día queda como ${(CODE_LABEL[type] || type).toLowerCase()}`,
+          t("ui.Schedule.eseDiaQuedaComo", {
+            defaultValue: "Ese día queda como {{codigo}}",
+            codigo: (CODE_LABEL[type] || type).toLowerCase(),
+          }),
         );
         setOverrideTarget(null);
         fetchAll();
       } catch (e: any) {
-        toast.error(e?.message || "Error");
+        toast.error(e?.message || t("ui.Schedule.error", "Error"));
       }
     },
     [
@@ -4446,11 +4807,13 @@ export default function Schedule() {
   const removeOverride = async (id: string) => {
     try {
       await ApiService.delete(`/tenant/${tenantId}/schedule-overrides/${id}`);
-      toast.success("Ese día vuelve a su turno");
+      toast.success(
+        t("ui.Schedule.eseDiaVuelveASuTurno", "Ese día vuelve a su turno"),
+      );
       setOverrideTarget(null);
       fetchAll();
     } catch (e: any) {
-      toast.error(e?.message || "Error");
+      toast.error(e?.message || t("ui.Schedule.error", "Error"));
     }
   };
 
@@ -4497,7 +4860,10 @@ export default function Schedule() {
       if (cells.length === 1 && type === "L") {
         const { dateStr, asigs } = cells[0];
         const a = asigs[0];
-        const guardName = nombreDeVigilante(a.guard, "Vigilante");
+        const guardName = nombreDeVigilante(
+          a.guard,
+          t("comun.vigilante", "Vigilante"),
+        );
 
         await performOverrideSave(
           { guardId: a.guardId, guardName, date: dateStr, assignmentId: a.id },
@@ -4559,10 +4925,20 @@ export default function Schedule() {
       const results = await enLotes(jobs, (encargo) => encargo());
       const failed = results.filter((r) => r.status === "rejected").length;
 
-      if (failed) toast.error(`${failed} día(s) no se pudieron marcar`);
+      if (failed)
+        toast.error(
+          t("ui.Schedule.diasNoSePudieronMarcar", {
+            defaultValue: "{{n}} día(s) no se pudieron marcar",
+            n: failed,
+          }),
+        );
       else
         toast.success(
-          `${jobs.length} día(s) marcados como ${(CODE_LABEL[type] || type).toLowerCase()}`,
+          t("ui.Schedule.diasMarcadosComo", {
+            defaultValue: "{{n}} día(s) marcados como {{codigo}}",
+            n: jobs.length,
+            codigo: (CODE_LABEL[type] || type).toLowerCase(),
+          }),
         );
       fetchAll({ silent: true });
     },
@@ -4711,13 +5087,12 @@ export default function Schedule() {
       if (proyectado) {
         if (
           !(await confirmDialog({
-            title: "Bloquear esos días",
-            message:
-              "Ahí la rejilla enseña el patrón proyectado: el turno todavía no" +
-              " está creado, así que no hay nada que borrar. Se marcan como" +
-              " LIBRE para que la rotación no los cree cuando avance el" +
-              " horizonte.",
-            confirmText: "Marcar libres",
+            title: t("ui.Schedule.bloquearEsosDias", "Bloquear esos días"),
+            message: t(
+              "ui.Schedule.bloquearEsosDiasConfirm",
+              "Ahí la rejilla enseña el patrón proyectado: el turno todavía no está creado, así que no hay nada que borrar. Se marcan como LIBRE para que la rotación no los cree cuando avance el horizonte.",
+            ),
+            confirmText: t("ui.Schedule.marcarLibres", "Marcar libres"),
           }))
         )
           return;
@@ -4727,8 +5102,14 @@ export default function Schedule() {
       }
       toast.info(
         filaVacia
-          ? "Ese puesto no tiene vigilante asignado: no hay turno que borrar."
-          : "En esas celdas no hay turno ni novedad — están libres (L). Doble clic para registrar una novedad.",
+          ? t(
+              "ui.Schedule.esePuestoNoTieneVigilante",
+              "Ese puesto no tiene vigilante asignado: no hay turno que borrar.",
+            )
+          : t(
+              "ui.Schedule.enEsasCeldasNoHayTurno",
+              "En esas celdas no hay turno ni novedad — están libres (L). Doble clic para registrar una novedad.",
+            ),
       );
 
       return;
@@ -4738,8 +5119,16 @@ export default function Schedule() {
     // volviéndola a escribir, así que ésa sigue sin preguntar.
     if (turnos.length) {
       const partes = [
-        `${turnos.length} turno(s)`,
-        victims.length ? `${victims.length} novedad(es)` : "",
+        t("ui.Schedule.nTurnosParte", {
+          defaultValue: "{{n}} turno(s)",
+          n: turnos.length,
+        }),
+        victims.length
+          ? t("ui.Schedule.nNovedadesParte", {
+              defaultValue: "{{n}} novedad(es)",
+              n: victims.length,
+            })
+          : "",
       ]
         .filter(Boolean)
         .join(" y ");
@@ -4755,15 +5144,17 @@ export default function Schedule() {
          la estación entera y cambiarle el ciclo dejan los días borrados a cero.
          `ShiftRepository.destroy` firma con `pinned` y la supresión del
          generador respeta esa firma. */
-      const msg =
-        `Se eliminarán ${partes}. Los días quedan libres y la rotación NO los` +
-        ` vuelve a crear: el borrado se respeta al regenerar.`;
+      const msg = t("ui.Schedule.eliminarSeleccionConfirm", {
+        defaultValue:
+          "Se eliminarán {{partes}}. Los días quedan libres y la rotación NO los vuelve a crear: el borrado se respeta al regenerar.",
+        partes,
+      });
 
       if (
         !(await confirmDialog({
-          title: "Eliminar la selección",
+          title: t("ui.Schedule.eliminarLaSeleccion", "Eliminar la selección"),
           message: msg,
-          confirmText: "Eliminar",
+          confirmText: t("common.delete", "Eliminar"),
           tone: "danger",
         }))
       )
@@ -4805,16 +5196,36 @@ export default function Schedule() {
     const failed = results.filter((r) => r.status === "rejected").length;
 
     if (failed)
-      toast.error(`${failed} eliminación(es) no se pudieron completar`);
+      toast.error(
+        t("ui.Schedule.eliminacionesNoCompletadas", {
+          defaultValue: "{{n}} eliminación(es) no se pudieron completar",
+          n: failed,
+        }),
+      );
     else {
       const partes = [
-        turnos.length ? `${turnos.length} turno(s)` : "",
-        victims.length ? `${victims.length} novedad(es)` : "",
+        turnos.length
+          ? t("ui.Schedule.nTurnosParte", {
+              defaultValue: "{{n}} turno(s)",
+              n: turnos.length,
+            })
+          : "",
+        victims.length
+          ? t("ui.Schedule.nNovedadesParte", {
+              defaultValue: "{{n}} novedad(es)",
+              n: victims.length,
+            })
+          : "",
       ]
         .filter(Boolean)
-        .join(" y ");
+        .join(t("ui.Schedule.separadorY", " y "));
 
-      toast.success(`${partes} eliminado(s)`);
+      toast.success(
+        t("ui.Schedule.partesEliminadas", {
+          defaultValue: "{{partes}} eliminado(s)",
+          partes,
+        }),
+      );
     }
     fetchAll({ silent: true });
   }, [
@@ -4850,7 +5261,10 @@ export default function Schedule() {
       return;
     }
     const a = asigsDeFila(row)[0] || row.assignments[0];
-    const guardName = nombreDeVigilante(a.guard, "Vigilante");
+    const guardName = nombreDeVigilante(
+      a.guard,
+      t("comun.vigilante", "Vigilante"),
+    );
 
     abrirNovedad({
       guardId: a.guardId,
@@ -5198,12 +5612,17 @@ export default function Schedule() {
               : {}),
         },
       });
-      toast.success("Turno actualizado");
+      toast.success(t("ui.Schedule.turnoActualizado", "Turno actualizado"));
       setShiftEdit(null);
       fetchAll({ silent: true });
     } catch (e: any) {
       toast.error(
-        e?.data?.message || e?.message || "No se pudo actualizar el turno",
+        e?.data?.message ||
+          e?.message ||
+          t(
+            "ui.Schedule.noSePudoActualizarElTurno",
+            "No se pudo actualizar el turno",
+          ),
       );
     } finally {
       setShiftEditSaving(false);
@@ -5622,9 +6041,18 @@ export default function Schedule() {
     const count =
       (selBounds.r2 - selBounds.r1 + 1) * (selBounds.c2 - selBounds.c1 + 1);
     const guard = row.assignments[0]?.guard;
-    const who = nombreDeVigilante(guard, "sin vigilante");
+    const who = nombreDeVigilante(
+      guard,
+      t("ui.Schedule.sinVigilante", "sin vigilante"),
+    );
 
-    return `${count} celda${count === 1 ? "" : "s"} · ${row.station?.stationName || ""} — ${row.pos.name} (${who})`;
+    return t("ui.Schedule.selInfo", {
+      defaultValue: "{{count}} celdas · {{estacion}} — {{puesto}} ({{quien}})",
+      count,
+      estacion: row.station?.stationName || "",
+      puesto: row.pos.name,
+      quien: who,
+    });
   }, [sel, selBounds, selectableRows]);
 
   // ─── Cell renderers ──────────────────────────────────────────────────────
@@ -5648,7 +6076,7 @@ export default function Schedule() {
                 className="hidden text-[10px] sm:block"
                 style={{ color: "var(--ink-soft)" }}
               >
-                Rotaciones y coberturas
+                {t("ui.Schedule.rotacionesYCoberturas", "Rotaciones y coberturas")}
               </div>
             </div>
           </div>
@@ -5667,7 +6095,7 @@ export default function Schedule() {
               <ChevronLeft size={16} />
             </Button>
             <Button size="sm" variant="outline" onClick={goToday}>
-              Hoy
+              {t("kit.dateRange.today", "Hoy")}
             </Button>
             <span className="min-w-[130px] flex-1 text-center text-sm font-semibold sm:flex-none">
               {rangeLabel}
@@ -5695,15 +6123,21 @@ export default function Schedule() {
             options={
               pantallaEstrecha
                 ? [
-                    { value: "agenda", label: "Agenda" },
-                    { value: "calendar", label: "Calendario" },
+                    { value: "agenda", label: t("ui.Schedule.vistaAgenda", "Agenda") },
+                    {
+                      value: "calendar",
+                      label: t("ui.Schedule.vistaCalendario", "Calendario"),
+                    },
                   ]
                 : [
-                    { value: "month", label: "Hoja" },
-                    { value: "calendar", label: "Calendario" },
-                    { value: "week", label: "Semana" },
-                    { value: "day", label: "Día" },
-                    { value: "agenda", label: "Agenda" },
+                    { value: "month", label: t("ui.Schedule.vistaHoja", "Hoja") },
+                    {
+                      value: "calendar",
+                      label: t("ui.Schedule.vistaCalendario", "Calendario"),
+                    },
+                    { value: "week", label: t("ui.Schedule.vistaSemana", "Semana") },
+                    { value: "day", label: t("ui.Schedule.vistaDia", "Día") },
+                    { value: "agenda", label: t("ui.Schedule.vistaAgenda", "Agenda") },
                   ]
             }
             /* En el teléfono ocupa el ancho: pegado a la izquierda sobraba
@@ -5734,7 +6168,7 @@ export default function Schedule() {
                 onClick={() => setElegirPuesto(true)}
               >
                 <Shield className="mr-1.5" size={15} />
-                Puestos
+                {t("ui.Coverage.puestos", "Puestos")}
               </Button>
               <Button
                 className="flex-1"
@@ -5743,7 +6177,7 @@ export default function Schedule() {
                 onClick={addSacafranco}
               >
                 <Plus className="mr-1.5" size={15} />
-                Sacafranco
+                {t("ui.PostSiteWizard.jornada.sacafranco", "Sacafranco")}
               </Button>
             </div>
           )}
@@ -5774,9 +6208,17 @@ export default function Schedule() {
                   ) : (
                     <AlertTriangle size={13} />
                   )}
-                  Cobertura {coverage.coveredPct}%
+                  {t("ui.Schedule.coberturaPct", {
+                    defaultValue: "Cobertura {{pct}}%",
+                    pct: coverage.coveredPct,
+                  })}
                   {(coverage.gapCount || 0) > 0 && (
-                    <span>· {coverage.gapCount} sin cubrir</span>
+                    <span>
+                      {t("ui.Schedule.nSinCubrir", {
+                        defaultValue: "· {{n}} sin cubrir",
+                        n: coverage.gapCount,
+                      })}
+                    </span>
                   )}
                 </StatusBadge>
               );
@@ -5797,8 +6239,11 @@ export default function Schedule() {
             size="sm"
             title={
               panelOpen
-                ? "Ocultar panel lateral"
-                : "Mostrar panel (vigilantes, IA, personal)"
+                ? t("ui.Schedule.ocultarPanelLateral", "Ocultar panel lateral")
+                : t(
+                    "ui.Schedule.mostrarPanel",
+                    "Mostrar panel (vigilantes, IA, personal)",
+                  )
             }
             variant="outline"
             onClick={alternarPanel}
@@ -5808,7 +6253,9 @@ export default function Schedule() {
             ) : (
               <PanelRightOpen size={15} />
             )}
-            <span className="hidden md:inline">Panel</span>
+            <span className="hidden md:inline">
+              {t("ui.Schedule.panel", "Panel")}
+            </span>
           </Button>
         </div>
 
@@ -5852,9 +6299,10 @@ export default function Schedule() {
                         "Tus puestos aún no tienen horario.",
                       )}{" "}
                     </span>
-                    Genera la asignación automática para crear los puestos,
-                    asignar vigilantes por cercanía y escalonar los turnos
-                    (sacafrancos incluidos).
+                    {t(
+                      "ui.Schedule.generaLaAsignacionAutomatica",
+                      "Genera la asignación automática para crear los puestos, asignar vigilantes por cercanía y escalonar los turnos (sacafrancos incluidos).",
+                    )}
                   </p>
                 </div>
                 <Button
@@ -5869,8 +6317,11 @@ export default function Schedule() {
                     <Zap size={16} />
                   )}
                   {autoAssigning
-                    ? "Asignando…"
-                    : "Generar asignación automática"}
+                    ? t("ui.Schedule.asignando", "Asignando…")
+                    : t(
+                        "ui.Schedule.generarAsignacionAutomatica",
+                        "Generar asignación automática",
+                      )}
                 </Button>
               </div>
             )}
@@ -6029,7 +6480,7 @@ export default function Schedule() {
                           borderRight: "1px solid var(--hairline)",
                         }}
                       >
-                        Puesto
+                        {t("comun.puesto", "Puesto")}
                       </div>
                       <div style={{ background: "var(--glass-solid)" }} />
                       {monthDays.slice(colA, colB).map((day, k) => {
@@ -6060,7 +6511,7 @@ export default function Schedule() {
                               />
                             )}
                             <div className="cg-eyebrow relative">
-                              {DAYS_ES[day.getDay()]}
+                              {diaCorto(day)}
                             </div>
                             <div
                               className="relative mt-0.5 text-xs font-semibold tabular-nums"
@@ -6235,18 +6686,24 @@ export default function Schedule() {
                                   className="text-sm font-semibold"
                                   style={{ color: "var(--ok-text)" }}
                                 >
-                                  Sacafrancos
+                                  {t("ui.Schedule.sacafrancos", "Sacafrancos")}
                                 </div>
                                 <div
                                   className="text-[10px]"
                                   style={{ color: "var(--ink-soft)" }}
                                 >
                                   {sfPositions.length === 0
-                                    ? "ninguno todavía"
-                                    : `${sfPositions.length} ${sfPositions.length === 1 ? "posición" : "posiciones"}`}{" "}
+                                    ? t("ui.Schedule.ningunoTodavia", "ninguno todavía")
+                                    : t("ui.Schedule.nPosiciones", {
+                                        defaultValue: "{{count}} posiciones",
+                                        count: sfPositions.length,
+                                      })}{" "}
                                   {sfSectionOpen
                                     ? "▾"
-                                    : "▸ (clic para expandir)"}
+                                    : t(
+                                        "ui.Schedule.clicParaExpandir",
+                                        "▸ (clic para expandir)",
+                                      )}
                                 </div>
                               </div>
                               {/* Crear un sacafranco desde aquí: el modal pregunta
@@ -6254,13 +6711,16 @@ export default function Schedule() {
                               <button
                                 className="cg-focus flex shrink-0 items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold"
                                 style={tonePill("ok", 14)}
-                                title="Crear un sacafranco y elegir en qué estación va"
+                                title={t(
+                                  "ui.Schedule.crearUnSacafrancoYElegirEstacion",
+                                  "Crear un sacafranco y elegir en qué estación va",
+                                )}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   addSacafranco();
                                 }}
                               >
-                                <Plus size={11} /> Agregar
+                                <Plus size={11} /> {t("ui.Schedule.agregar", "Agregar")}
                               </button>
                             </div>
                             <div
@@ -6281,8 +6741,10 @@ export default function Schedule() {
                                 borderTop: "1px solid var(--hairline)",
                               }}
                             >
-                              No hay sacafrancos. Con «Agregar» creas uno y
-                              eliges en qué estación va.
+                              {t(
+                                "ui.Schedule.noHaySacafrancos",
+                                "No hay sacafrancos. Con «Agregar» creas uno y eliges en qué estación va.",
+                              )}
                             </div>
                           )}
 
@@ -6334,7 +6796,10 @@ export default function Schedule() {
                                           mismo con el que se creó. */}
                                       <button
                                         className="cg-focus block max-w-full truncate text-left text-xs font-semibold hover:underline"
-                                        title="Editar este sacafranco: su ciclo y por qué estaciones rota"
+                                        title={t(
+                                          "ui.Schedule.editarEsteSacafranco",
+                                          "Editar este sacafranco: su ciclo y por qué estaciones rota",
+                                        )}
                                         type="button"
                                         onClick={() => {
                                           const st = stationsById.get(
@@ -6411,7 +6876,10 @@ export default function Schedule() {
                                         muerta en la hoja: se puede quitar aquí. */}
                                         <button
                                           className="cg-btn-ghost cg-focus rounded-md p-1"
-                                          title="Eliminar esta posición de sacafranco"
+                                          title={t(
+                                            "ui.Schedule.eliminarEstaPosicionDeSacafranco",
+                                            "Eliminar esta posición de sacafranco",
+                                          )}
                                           onClick={() =>
                                             deletePosition(
                                               pos.stationId,
@@ -6515,7 +6983,20 @@ export default function Schedule() {
                                           <div
                                             className="flex flex-1 cursor-pointer items-center justify-center rounded"
                                             style={codePill(override.type)}
-                                            title={`${gName} — ${CODE_LABEL[override.type] ?? override.type}${override.note ? ": " + override.note : ""} (doble clic para editar)`}
+                                            title={t(
+                                              "ui.MonthStationBlock.novedadDobleClicParaEditar",
+                                              {
+                                                defaultValue:
+                                                  "{{nombre}} — {{codigo}}{{nota}} (doble clic para editar)",
+                                                nombre: gName,
+                                                codigo:
+                                                  CODE_LABEL[override.type] ??
+                                                  override.type,
+                                                nota: override.note
+                                                  ? ": " + override.note
+                                                  : "",
+                                              },
+                                            )}
                                             onDoubleClick={() =>
                                               abrirNovedad({
                                                 guardId: sfGuard.guardId,
@@ -6589,8 +7070,14 @@ export default function Schedule() {
                                             }
                                             title={
                                               assigned
-                                                ? "Libre — arrastra este día sobre una L de un puesto para cubrirlo"
-                                                : "Sin vigilante — doble clic para asignar sacafranco"
+                                                ? t(
+                                                    "ui.Schedule.libreArrastraEsteDia",
+                                                    "Libre — arrastra este día sobre una L de un puesto para cubrirlo",
+                                                  )
+                                                : t(
+                                                    "ui.Schedule.sinVigilanteDobleClicParaAsignar",
+                                                    "Sin vigilante — doble clic para asignar sacafranco",
+                                                  )
                                             }
                                             onDoubleClick={openSfDetail}
                                             onDragStart={
@@ -6643,7 +7130,12 @@ export default function Schedule() {
                                         <div
                                           className="flex flex-1 cursor-pointer flex-col items-center justify-center rounded"
                                           style={codePill(code)}
-                                          title={`Cubre: ${covStName} — ${CODE_LABEL[code]} · doble clic para quitar la cobertura`}
+                                          title={t("ui.Schedule.cubreDobleClicParaQuitar", {
+                                            defaultValue:
+                                              "Cubre: {{estacion}} — {{codigo}} · doble clic para quitar la cobertura",
+                                            estacion: covStName,
+                                            codigo: CODE_LABEL[code],
+                                          })}
                                           onDoubleClick={() =>
                                             removeSfCoverage(covShift)
                                           }
@@ -6680,7 +7172,9 @@ export default function Schedule() {
                   <div className="glass p-3">
                     <div className="mb-2 flex items-center gap-2">
                       <Users size={14} style={{ color: "var(--brand-text)" }} />
-                      <h3 className="cg-eyebrow">Vigilantes disponibles</h3>
+                      <h3 className="cg-eyebrow">
+                        {t("ui.Schedule.vigilantesDisponibles", "Vigilantes disponibles")}
+                      </h3>
                       <span
                         className="text-[10px] tabular-nums"
                         style={{ color: "var(--ink-faint)" }}
@@ -6731,7 +7225,9 @@ export default function Schedule() {
                         size={14}
                         style={{ color: "var(--brand-text)" }}
                       />
-                      <h3 className="cg-eyebrow">Herramientas</h3>
+                      <h3 className="cg-eyebrow">
+                        {t("ui.Schedule.herramientas", "Herramientas")}
+                      </h3>
                     </div>
                     {/* RETIRADOS (2026-08-05, a pedido): "Generar borrador de
                         horario" y "Auto-asignar puestos vacíos".
@@ -6781,7 +7277,9 @@ export default function Schedule() {
                       ) : (
                         <Sparkles size={12} />
                       )}
-                      {aiLoading ? "Analizando…" : "Recomendación IA"}
+                      {aiLoading
+                        ? t("ui.Schedule.analizando", "Analizando…")
+                        : t("ui.Schedule.recomendacionIa", "Recomendación IA")}
                     </button>
                     {aiRecommendation && (
                       <div className="glass-sunken mt-2 max-h-[240px] overflow-y-auto p-3">
@@ -6804,7 +7302,9 @@ export default function Schedule() {
 
                   {/* Personal necesario */}
                   <div className="glass space-y-2 p-3">
-                    <h3 className="cg-eyebrow">Personal necesario</h3>
+                    <h3 className="cg-eyebrow">
+                      {t("ui.Schedule.personalNecesario", "Personal necesario")}
+                    </h3>
                     {staffing ? (
                       <>
                         <div className="grid grid-cols-3 gap-2">
@@ -6819,7 +7319,7 @@ export default function Schedule() {
                               className="text-[9px]"
                               style={{ color: "var(--ink-soft)" }}
                             >
-                              Fijos
+                              {t("ui.Schedule.fijos", "Fijos")}
                             </div>
                           </div>
                           <div
@@ -6833,7 +7333,7 @@ export default function Schedule() {
                               className="text-[9px]"
                               style={{ color: "var(--ink-soft)" }}
                             >
-                              Sacafrancos
+                              {t("ui.Schedule.sacafrancos", "Sacafrancos")}
                             </div>
                           </div>
                           <div
@@ -6866,7 +7366,7 @@ export default function Schedule() {
                               className="text-[9px]"
                               style={{ color: "var(--ink-soft)" }}
                             >
-                              Fijos asignados
+                              {t("ui.Schedule.fijosAsignados", "Fijos asignados")}
                             </div>
                           </div>
                           <div className="glass-sunken p-2 text-center">
@@ -6883,7 +7383,7 @@ export default function Schedule() {
                               className="text-[9px]"
                               style={{ color: "var(--ink-soft)" }}
                             >
-                              SF asignados
+                              {t("ui.Schedule.sfAsignados", "SF asignados")}
                             </div>
                           </div>
                         </div>
@@ -6900,16 +7400,19 @@ export default function Schedule() {
                           >
                             <div className="text-[10px] font-semibold">
                               <AlertTriangle className="mr-1 inline h-3 w-3" />
-                              Hace falta contratar:
+                              {t("ui.Schedule.haceFaltaContratar", "Hace falta contratar:")}
                             </div>
                             {(staffing.fijosNeeded || 0) -
                               (staffing.currentFijoGuards || 0) >
                               0 && (
                               <div className="text-[10px] tabular-nums">
                                 •{" "}
-                                {(staffing.fijosNeeded || 0) -
-                                  (staffing.currentFijoGuards || 0)}{" "}
-                                fijos más
+                                {t("ui.Schedule.nFijosMas", {
+                                  defaultValue: "{{n}} fijos más",
+                                  n:
+                                    (staffing.fijosNeeded || 0) -
+                                    (staffing.currentFijoGuards || 0),
+                                })}
                               </div>
                             )}
                             {(staffing.sacafrancosNeeded || 0) -
@@ -6917,9 +7420,12 @@ export default function Schedule() {
                               0 && (
                               <div className="text-[10px] tabular-nums">
                                 •{" "}
-                                {(staffing.sacafrancosNeeded || 0) -
-                                  (staffing.currentSfGuards || 0)}{" "}
-                                sacafrancos más
+                                {t("ui.Schedule.nSacafrancosMas", {
+                                  defaultValue: "{{n}} sacafrancos más",
+                                  n:
+                                    (staffing.sacafrancosNeeded || 0) -
+                                    (staffing.currentSfGuards || 0),
+                                })}
                               </div>
                             )}
                           </div>
@@ -6948,14 +7454,14 @@ export default function Schedule() {
                           className="text-[10px]"
                           style={{ color: "var(--ink-soft)" }}
                         >
-                          Demanda pico:{" "}
+                          {t("ui.Schedule.demandaPico", "Demanda pico:")}{" "}
                           <span
                             className="font-semibold tabular-nums"
                             style={{ color: "var(--ink)" }}
                           >
                             {staffing.peakDemand}
                           </span>{" "}
-                          puestos simultáneos
+                          {t("ui.Schedule.puestosSimultaneos", "puestos simultáneos")}
                         </div>
 
                         {stationAlerts.length > 0 && (
@@ -6968,7 +7474,10 @@ export default function Schedule() {
                               style={{ color: "var(--bad-text)" }}
                             >
                               <AlertTriangle size={11} />
-                              Alertas por puesto ({stationAlerts.length})
+                              {t("ui.Schedule.alertasPorPuesto", {
+                                defaultValue: "Alertas por puesto ({{n}})",
+                                n: stationAlerts.length,
+                              })}
                             </div>
                             <div className="max-h-[160px] space-y-1 overflow-y-auto pr-1">
                               {stationAlerts.map((alert) => (
@@ -6985,14 +7494,20 @@ export default function Schedule() {
                                   </div>
                                   {alert.missingFijoCount > 0 && (
                                     <div className="tabular-nums">
-                                      • {alert.missingFijoCount} fijo(s) sin
-                                      vigilante
+                                      •{" "}
+                                      {t("ui.Schedule.fijosSinVigilante", {
+                                        defaultValue: "{{n}} fijo(s) sin vigilante",
+                                        n: alert.missingFijoCount,
+                                      })}
                                     </div>
                                   )}
                                   {alert.uncoveredDays > 0 && (
                                     <div className="tabular-nums">
-                                      • {alert.uncoveredDays} día(s) sin cubrir
-                                      cubriendo
+                                      •{" "}
+                                      {t("ui.Schedule.diasSinCubrirCubriendo", {
+                                        defaultValue: "{{n}} día(s) sin cubrir cubriendo",
+                                        n: alert.uncoveredDays,
+                                      })}
                                     </div>
                                   )}
                                 </div>
@@ -7011,7 +7526,7 @@ export default function Schedule() {
                             className="text-[9px]"
                             style={{ color: "var(--ink-soft)" }}
                           >
-                            Puestos
+                            {t("ui.Coverage.puestos", "Puestos")}
                           </div>
                         </div>
                         <div className="glass-sunken p-2 text-center">
@@ -7022,7 +7537,7 @@ export default function Schedule() {
                             className="text-[9px]"
                             style={{ color: "var(--ink-soft)" }}
                           >
-                            Asignados
+                            {t("ui.Schedule.asignados", "Asignados")}
                           </div>
                         </div>
                       </div>
@@ -7071,8 +7586,11 @@ export default function Schedule() {
                             className="mt-1 text-[9px] tabular-nums"
                             style={{ color: "var(--ink-soft)" }}
                           >
-                            {covered}/{fijoPositions.length} posiciones
-                            cubiertas
+                            {t("ui.Schedule.posicionesCubiertas", {
+                              defaultValue: "{{cubiertas}}/{{total}} posiciones cubiertas",
+                              cubiertas: covered,
+                              total: fijoPositions.length,
+                            })}
                           </div>
                         </div>
                       );
@@ -7085,7 +7603,10 @@ export default function Schedule() {
                       <div className="mb-2 flex items-center gap-1.5">
                         <Shield size={12} style={{ color: "var(--ok-text)" }} />
                         <h3 className="cg-eyebrow tabular-nums">
-                          Sacafrancos ({sacafrancoData.length})
+                          {t("ui.Schedule.sacafrancosN", {
+                            defaultValue: "Sacafrancos ({{n}})",
+                            n: sacafrancoData.length,
+                          })}
                         </h3>
                       </div>
                       <div className="space-y-1.5">
@@ -7117,13 +7638,19 @@ export default function Schedule() {
                                     className="rounded px-1.5 py-0.5 text-[9px] font-semibold tabular-nums"
                                     style={tonePill("ok", 12)}
                                   >
-                                    {availDays} libre
+                                    {t("ui.Schedule.nLibre", {
+                                      defaultValue: "{{n}} libre",
+                                      n: availDays,
+                                    })}
                                   </span>
                                   <span
                                     className="rounded px-1.5 py-0.5 text-[9px] font-semibold tabular-nums"
                                     style={tonePill("warn", 12)}
                                   >
-                                    {coverDays} cubre
+                                    {t("ui.Schedule.nCubre", {
+                                      defaultValue: "{{n}} cubre",
+                                      n: coverDays,
+                                    })}
                                   </span>
                                 </span>
                               </div>
@@ -7132,7 +7659,10 @@ export default function Schedule() {
                                   className="truncate text-[9px]"
                                   style={{ color: "var(--ink-soft)" }}
                                 >
-                                  Cubre: {stationsCovering.join(", ")}
+                                  {t("ui.Schedule.cubreEstaciones", {
+                                    defaultValue: "Cubre: {{estaciones}}",
+                                    estaciones: stationsCovering.join(", "),
+                                  })}
                                 </div>
                               )}
                             </div>
@@ -7155,16 +7685,24 @@ export default function Schedule() {
                   className="font-medium"
                   style={{ color: "var(--ink-soft)" }}
                 >
-                  Lista por día · toca un turno para abrir ese día ·{" "}
-                  <b>Re/Av Pág</b> cambia de mes
+                  {t(
+                    "ui.Schedule.ayudaAgenda",
+                    "Lista por día · toca un turno para abrir ese día ·",
+                  )}{" "}
+                  <b>{t("ui.Schedule.reAvPag", "Re/Av Pág")}</b>{" "}
+                  {t("ui.Schedule.cambiaDeMes", "cambia de mes")}
                 </span>
               ) : view === "calendar" ? (
                 <span
                   className="font-medium"
                   style={{ color: "var(--ink-soft)" }}
                 >
-                  El mes de un vistazo · Clic en un turno o en «+N más» para
-                  abrir ese día · <b>Re/Av Pág</b> cambia de mes
+                  {t(
+                    "ui.Schedule.ayudaCalendario",
+                    "El mes de un vistazo · Clic en un turno o en «+N más» para abrir ese día ·",
+                  )}{" "}
+                  <b>{t("ui.Schedule.reAvPag", "Re/Av Pág")}</b>{" "}
+                  {t("ui.Schedule.cambiaDeMes", "cambia de mes")}
                 </span>
               ) : view === "month" ? (
                 <>
@@ -7196,17 +7734,18 @@ export default function Schedule() {
                     </button>
                   )}
                   <span className="hidden md:inline">
-                    <b>Clic derecho</b>
+                    <b>{t("ui.Schedule.clicDerecho", "Clic derecho")}</b>
                     {t("ui.Schedule.editarDuplicarEliminarTurnoY")}{" "}
                     <b>D N L V F P 2</b> {t("ui.Schedule.paraNovedad")}{" "}
-                    <b>Supr</b>{" "}
+                    <b>{t("ui.Schedule.teclaSupr", "Supr")}</b>{" "}
                     {t(
                       "ui.Schedule.borraArrastraUnDia",
                       "borra · Arrastra un día",
                     )}{" "}
                     <b>{t("ui.Schedule.lDelSacafranco")}</b>{" "}
                     {t("ui.Schedule.sobreUnLDelPuesto")}{" "}
-                    <b>{t("ui.Schedule.reAvPag", "Re/Av Pág")}</b> cambia mes
+                    <b>{t("ui.Schedule.reAvPag", "Re/Av Pág")}</b>{" "}
+                    {t("ui.Schedule.cambiaMes", "cambia mes")}
                   </span>
                 </>
               ) : (
@@ -7218,11 +7757,15 @@ export default function Schedule() {
                     "ui.Schedule.arrastraSobreLaFilaDeUnPuestoPara",
                     "Arrastra sobre la fila de un puesto para",
                   )}{" "}
-                  <b>{t("ui.Schedule.dibujarUnBloqueDeTrabajo")}</b> (p. ej.
-                  07:00 → 07:00 del día siguiente) · Clic en un bloque: detalle
-                  / eliminar · Suelta un vigilante del panel sobre la línea ·{" "}
-                  <b>{t("ui.Schedule.reAvPag2", "Re/Av Pág")}</b> cambia{" "}
-                  {view === "week" ? "de semana" : "de día"}
+                  <b>{t("ui.Schedule.dibujarUnBloqueDeTrabajo")}</b>{" "}
+                  {t(
+                    "ui.Schedule.ayudaLineaDeTiempo",
+                    "(p. ej. 07:00 → 07:00 del día siguiente) · Clic en un bloque: detalle / eliminar · Suelta un vigilante del panel sobre la línea ·",
+                  )}{" "}
+                  <b>{t("ui.Schedule.reAvPag2", "Re/Av Pág")}</b>{" "}
+                  {view === "week"
+                    ? t("ui.Schedule.cambiaDeSemana", "cambia de semana")
+                    : t("ui.Schedule.cambiaDeDia", "cambia de día")}
                 </span>
               )}
               <span className="flex-1" />
@@ -7283,13 +7826,17 @@ export default function Schedule() {
                 >
                   <div>
                     <h4 className="text-sm font-semibold">
-                      Aprendiz en acompañamiento
+                      {t("ui.Schedule.aprendizEnAcompanamiento", "Aprendiz en acompañamiento")}
                     </h4>
                     <p
                       className="mt-0.5 text-[11px]"
                       style={{ color: "var(--ink-soft)" }}
                     >
-                      Junto a {shadowFor.titularName} · {shadowFor.stationName}
+                      {t("ui.Schedule.juntoA", {
+                        defaultValue: "Junto a {{titular}} · {{estacion}}",
+                        titular: shadowFor.titularName,
+                        estacion: shadowFor.stationName,
+                      })}
                     </p>
                   </div>
                   <button
@@ -7305,10 +7852,22 @@ export default function Schedule() {
                     style={toneCard("ok", 8, 26)}
                   >
                     <p className="text-[11px]">
-                      Trabaja <b>los mismos días que {shadowFor.titularName}</b>{" "}
-                      y ficha con normalidad, pero{" "}
-                      <b>no cuenta como cobertura</b>: si el titular falta, el
-                      puesto sigue apareciendo descubierto.
+                      {t("ui.Schedule.trabaja", "Trabaja")}{" "}
+                      <b>
+                        {t("ui.Schedule.losMismosDiasQue", {
+                          defaultValue: "los mismos días que {{titular}}",
+                          titular: shadowFor.titularName,
+                        })}
+                      </b>{" "}
+                      {t(
+                        "ui.Schedule.yFichaConNormalidadPero",
+                        "y ficha con normalidad, pero",
+                      )}{" "}
+                      <b>{t("ui.Schedule.noCuentaComoCobertura", "no cuenta como cobertura")}</b>
+                      {t(
+                        "ui.Schedule.siElTitularFalta",
+                        ": si el titular falta, el puesto sigue apareciendo descubierto.",
+                      )}
                     </p>
                   </div>
                   <div>
@@ -7316,7 +7875,7 @@ export default function Schedule() {
                       className="mb-1 block text-[10px] font-semibold uppercase tracking-wider"
                       style={{ color: "var(--ink-soft)" }}
                     >
-                      Aprendiz
+                      {t("ui.Schedule.aprendiz", "Aprendiz")}
                     </label>
                     <select
                       className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:border-primary"
@@ -7327,7 +7886,9 @@ export default function Schedule() {
                       value={shadowFor.guardId}
                       onChange={(e) => set({ guardId: e.target.value })}
                     >
-                      <option value="">Selecciona…</option>
+                      <option value="">
+                        {t("ui.SupervisionSection.selecciona", "Selecciona…")}
+                      </option>
                       {disponibles.map((g) => (
                         <option key={g.id} value={g.id}>
                           {g.label}
@@ -7341,7 +7902,7 @@ export default function Schedule() {
                         className="mb-1 block text-[10px] font-semibold uppercase tracking-wider"
                         style={{ color: "var(--ink-soft)" }}
                       >
-                        Desde
+                        {t("comun.desde", "Desde")}
                       </label>
                       <input
                         className="w-full rounded-lg border px-2 py-2 text-sm tabular-nums outline-none focus:border-primary"
@@ -7359,7 +7920,7 @@ export default function Schedule() {
                         className="mb-1 block text-[10px] font-semibold uppercase tracking-wider"
                         style={{ color: "var(--ink-soft)" }}
                       >
-                        Hasta
+                        {t("comun.hasta", "Hasta")}
                       </label>
                       <input
                         className="w-full rounded-lg border px-2 py-2 text-sm tabular-nums outline-none focus:border-primary"
@@ -7378,9 +7939,10 @@ export default function Schedule() {
                     className="text-[10px]"
                     style={{ color: "var(--ink-faint)" }}
                   >
-                    El acompañamiento tiene final: cuando termine, el aprendiz
-                    deja de seguir este puesto. Para que se quede, asígnalo a su
-                    propia plaza.
+                    {t(
+                      "ui.Schedule.elAcompanamientoTieneFinal",
+                      "El acompañamiento tiene final: cuando termine, el aprendiz deja de seguir este puesto. Para que se quede, asígnalo a su propia plaza.",
+                    )}
                   </p>
                 </div>
                 <div
@@ -7394,7 +7956,7 @@ export default function Schedule() {
                     className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold"
                     onClick={() => setShadowFor(null)}
                   >
-                    Cancelar
+                    {t("common.cancel", "Cancelar")}
                   </button>
                   <button
                     className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40"
@@ -7406,7 +7968,7 @@ export default function Schedule() {
                     {shadowSaving ? (
                       <Loader2 className="animate-spin" size={14} />
                     ) : (
-                      "Poner en acompañamiento"
+                      t("ui.Schedule.ponerEnAcompanamiento", "Poner en acompañamiento")
                     )}
                   </button>
                 </div>
@@ -7596,15 +8158,23 @@ export default function Schedule() {
                             que decir cuál está haciendo: abrirlo sobre uno que
                             ya existe y leer «Agregar» hace dudar de si se va a
                             crear otro. */}
-                        {editando ? "Editar sacafranco" : "Agregar sacafranco"}
+                        {editando
+                          ? t("ui.Schedule.editarSacafranco", "Editar sacafranco")
+                          : t("ui.Schedule.agregarSacafranco", "Agregar sacafranco")}
                       </h4>
                       <p
                         className="mt-0.5 text-[11px]"
                         style={{ color: "var(--ink-soft)" }}
                       >
                         {marcadas.length
-                          ? `Cubre ${marcadas.length} estación(es)`
-                          : "El relevo que cubre los descansos de los fijos"}
+                          ? t("ui.Schedule.cubreNEstaciones", {
+                              defaultValue: "Cubre {{n}} estación(es)",
+                              n: marcadas.length,
+                            })
+                          : t(
+                              "ui.Schedule.elRelevoQueCubreLosDescansos",
+                              "El relevo que cubre los descansos de los fijos",
+                            )}
                       </p>
                     </div>
                     <button
@@ -7621,9 +8191,12 @@ export default function Schedule() {
                         a lo ya contestado sin perderlo. */}
                     <div className="flex items-center gap-1.5">
                       {[
-                        { n: 1 as const, t: "Quién" },
-                        { n: 2 as const, t: "Su ciclo" },
-                        { n: 3 as const, t: "Dónde cubre" },
+                        { n: 1 as const, t: t("ui.Schedule.pasoQuien", "Quién") },
+                        { n: 2 as const, t: t("ui.Schedule.pasoSuCiclo", "Su ciclo") },
+                        {
+                          n: 3 as const,
+                          t: t("ui.Schedule.pasoDondeCubre", "Dónde cubre"),
+                        },
                       ].map((x) => (
                         <button
                           key={x.n}
@@ -7641,7 +8214,7 @@ export default function Schedule() {
                     {/* Quién */}
                     <div>
                       <label className="cg-eyebrow mb-1.5 block">
-                        Vigilante
+                        {t("comun.vigilante", "Vigilante")}
                       </label>
                       <select
                         className="cg-input cg-focus w-full px-3 py-2.5 text-sm"
@@ -7649,7 +8222,10 @@ export default function Schedule() {
                         onChange={(e) => set({ guardId: e.target.value })}
                       >
                         <option value="">
-                          Sin vigilante por ahora — sólo crear la fila
+                          {t(
+                            "ui.Schedule.sinVigilantePorAhora",
+                            "Sin vigilante por ahora — sólo crear la fila",
+                          )}
                         </option>
                         {libres.map((g) => (
                           <option key={g.id} value={g.id}>
@@ -7662,19 +8238,25 @@ export default function Schedule() {
                         style={{ color: "var(--ink-faint)" }}
                       >
                         {posEditor.guardId
-                          ? "Se crea la fila y se le asigna en un solo paso."
-                          : "Sólo aparecen quienes no tienen ya una rotación activa. Sin elegir a nadie se crea la fila vacía y se asigna después."}
+                          ? t(
+                              "ui.Schedule.seCreaLaFilaYSeLeAsigna",
+                              "Se crea la fila y se le asigna en un solo paso.",
+                            )
+                          : t(
+                              "ui.Schedule.soloAparecenQuienesNoTienen",
+                              "Sólo aparecen quienes no tienen ya una rotación activa. Sin elegir a nadie se crea la fila vacía y se asigna después.",
+                            )}
                       </p>
                     </div>
 
                     {/* Nombre */}
                     <div>
                       <label className="cg-eyebrow mb-1.5 block">
-                        Nombre de la fila
+                        {t("ui.Schedule.nombreDeLaFila", "Nombre de la fila")}
                       </label>
                       <input
                         className="cg-input cg-focus w-full px-3 py-2.5 text-sm"
-                        placeholder="Sacafranco"
+                        placeholder={t("ui.PostSiteWizard.jornada.sacafranco", "Sacafranco")}
                         value={posEditor.name}
                         onChange={(e) => set({ name: e.target.value })}
                       />
@@ -7691,12 +8273,18 @@ export default function Schedule() {
                       ESE hueco (así lo calcula el generador). */}
                     <div>
                       <label className="cg-eyebrow mb-1.5 block">
-                        Tipo de turno
+                        {t("ui.Schedule.tipoDeTurno", "Tipo de turno")}
                       </label>
                       <Segmented<"rotativo" | "manual">
                         options={[
-                          { value: "rotativo", label: "Turno rotativo" },
-                          { value: "manual", label: "Turno fijo" },
+                          {
+                            value: "rotativo",
+                            label: t("ui.Schedule.turnoRotativo", "Turno rotativo"),
+                          },
+                          {
+                            value: "manual",
+                            label: t("ui.Schedule.turnoFijo", "Turno fijo"),
+                          },
                         ]}
                         value={posEditor.rotMode || "manual"}
                         onChange={(v) => set({ rotMode: v })}
@@ -7704,7 +8292,7 @@ export default function Schedule() {
                       {(posEditor.rotMode || "manual") === "rotativo" ? (
                         <div className="mt-2">
                           <label className="cg-eyebrow mb-1.5 block">
-                            Estilo de rotación
+                            {t("ui.Schedule.estiloDeRotacion", "Estilo de rotación")}
                           </label>
                           {/* TRES RUEDAS, NO UN DESPLEGABLE. El ciclo de un
                               sacafranco casi nunca es uno de los que ya están
@@ -7717,8 +8305,11 @@ export default function Schedule() {
                             style={{ border: "1px solid var(--hairline)" }}
                           >
                             <NumberStepper
-                              hint="Seguidos, antes de cambiar de bloque"
-                              label="Turnos de día"
+                              hint={t(
+                                "ui.Schedule.seguidosAntesDeCambiarDeBloque",
+                                "Seguidos, antes de cambiar de bloque",
+                              )}
+                              label={t("ui.Schedule.turnosDeDia", "Turnos de día")}
                               max={31}
                               min={0}
                               suffix="D"
@@ -7726,8 +8317,14 @@ export default function Schedule() {
                               onChange={(v) => set({ rotDays: v })}
                             />
                             <NumberStepper
-                              hint="El segundo bloque del puesto"
-                              label="Turnos de tarde o noche"
+                              hint={t(
+                                "ui.Schedule.elSegundoBloqueDelPuesto",
+                                "El segundo bloque del puesto",
+                              )}
+                              label={t(
+                                "ui.Schedule.turnosDeTardeONoche",
+                                "Turnos de tarde o noche",
+                              )}
                               max={31}
                               min={0}
                               suffix="T/N"
@@ -7735,8 +8332,11 @@ export default function Schedule() {
                               onChange={(v) => set({ rotNights: v })}
                             />
                             <NumberStepper
-                              hint="Los que libra al cerrar el ciclo"
-                              label="Días libres"
+                              hint={t(
+                                "ui.Schedule.losQueLibraAlCerrarElCiclo",
+                                "Los que libra al cerrar el ciclo",
+                              )}
+                              label={t("ui.Schedule.diasLibres", "Días libres")}
                               max={31}
                               min={0}
                               suffix="L"
@@ -7750,10 +8350,14 @@ export default function Schedule() {
                                 color: "var(--ink-soft)",
                               }}
                             >
-                              <span>Ciclo</span>
+                              <span>{t("ui.Schedule.ciclo", "Ciclo")}</span>
                               <span className="font-semibold tabular-nums">
                                 {sfCicloLen > 0
-                                  ? `${sfNombreCiclo} · ${sfCicloLen} día${sfCicloLen === 1 ? "" : "s"}`
+                                  ? t("ui.Schedule.cicloNombreNDias", {
+                                      defaultValue: "{{nombre}} · {{count}} días",
+                                      nombre: sfNombreCiclo,
+                                      count: sfCicloLen,
+                                    })
                                   : "—"}
                               </span>
                             </div>
@@ -7763,8 +8367,14 @@ export default function Schedule() {
                             style={{ color: "var(--ink-faint)" }}
                           >
                             {sfDias + sfNoches < 1
-                              ? "Necesita al menos un turno de trabajo."
-                              : "Se le generan sus turnos con este ciclo, con su propio compás (no el de la estación). Tarda unos segundos."}
+                              ? t(
+                                  "ui.Schedule.necesitaAlMenosUnTurno",
+                                  "Necesita al menos un turno de trabajo.",
+                                )
+                              : t(
+                                  "ui.Schedule.seLeGeneranSusTurnos",
+                                  "Se le generan sus turnos con este ciclo, con su propio compás (no el de la estación). Tarda unos segundos.",
+                                )}
                           </p>
                         </div>
                       ) : (
@@ -7772,9 +8382,10 @@ export default function Schedule() {
                           className="mt-1.5 text-[10px]"
                           style={{ color: "var(--ink-faint)" }}
                         >
-                          Sin patrón propio: su mes empieza en blanco y sus días
-                          se colocan sobre los descansos —arrastrándolos o con
-                          «Optimizar sacafrancos».
+                          {t(
+                            "ui.Schedule.sinPatronPropio",
+                            "Sin patrón propio: su mes empieza en blanco y sus días se colocan sobre los descansos —arrastrándolos o con «Optimizar sacafrancos».",
+                          )}
                         </p>
                       )}
                     </div>
@@ -7788,7 +8399,7 @@ export default function Schedule() {
                     <div>
                       <div className="mb-1.5 flex items-center justify-between gap-2">
                         <label className="cg-eyebrow block">
-                          En qué estaciones cubre
+                          {t("ui.Schedule.enQueEstacionesCubre", "En qué estaciones cubre")}
                         </label>
                         {marcadas.length > 0 && (
                           <button
@@ -7802,7 +8413,7 @@ export default function Schedule() {
                               })
                             }
                           >
-                            Limpiar
+                            {t("ui.Schedule.limpiar", "Limpiar")}
                           </button>
                         )}
                       </div>
@@ -7815,7 +8426,7 @@ export default function Schedule() {
                             className="px-2 py-1.5 text-[11px]"
                             style={{ color: "var(--ink-faint)" }}
                           >
-                            No hay estaciones.
+                            {t("ui.Schedule.noHayEstaciones", "No hay estaciones.")}
                           </p>
                         )}
                         {stations.map((st) => {
@@ -7867,7 +8478,7 @@ export default function Schedule() {
                                     className="text-[10px]"
                                     style={{ color: "var(--ink-faint)" }}
                                   >
-                                    días
+                                    {t("ui.ScheduleTimeline.dias", "días")}
                                   </span>
                                 </div>
                               )}
@@ -7887,10 +8498,16 @@ export default function Schedule() {
                             una tira que la enseña es peor que no decir
                             nada. */}
                         {!marcadas.length
-                          ? "Marca al menos una."
+                          ? t("ui.Schedule.marcaAlMenosUna", "Marca al menos una.")
                           : marcadas.length === 1
-                            ? "Todos sus días de trabajo van a esta estación."
-                            : "El orden y los días de abajo dicen cómo alterna: se recorre tal cual, sin adivinar huecos."}
+                            ? t(
+                                "ui.Schedule.todosSusDiasVanAEstaEstacion",
+                                "Todos sus días de trabajo van a esta estación.",
+                              )
+                            : t(
+                                "ui.Schedule.elOrdenYLosDiasDicenComoAlterna",
+                                "El orden y los días de abajo dicen cómo alterna: se recorre tal cual, sin adivinar huecos.",
+                              )}
                       </p>
 
                       {/* ── SIN VIGILANTE, LA RONDA NO SE GUARDA ───────────
@@ -7904,9 +8521,21 @@ export default function Schedule() {
                           className="mt-1.5 rounded-lg px-2 py-1.5 text-[10px]"
                           style={toneCard("warn", 8, 26)}
                         >
-                          Sin vigilante, la fila se crea vacía y esto
-                          <b> se vuelve a preguntar al asignarlo</b>: es su
-                          asignación la que lo guarda.
+                          {t(
+                            "ui.Schedule.sinVigilanteLaFilaSeCreaVacia",
+                            "Sin vigilante, la fila se crea vacía y esto",
+                          )}
+                          <b>
+                            {" "}
+                            {t(
+                              "ui.Schedule.seVuelveAPreguntarAlAsignarlo",
+                              "se vuelve a preguntar al asignarlo",
+                            )}
+                          </b>
+                          {t(
+                            "ui.Schedule.esSuAsignacionLaQueLoGuarda",
+                            ": es su asignación la que lo guarda.",
+                          )}
                         </p>
                       )}
                     </div>
@@ -7926,25 +8555,25 @@ export default function Schedule() {
                     {marcadas.length > 1 && (
                       <div>
                         <label className="cg-eyebrow mb-1.5 block">
-                          Cómo alterna entre ellas
+                          {t("ui.Schedule.comoAlternaEntreEllas", "Cómo alterna entre ellas")}
                         </label>
                         <div
                           className="space-y-1 rounded-xl px-2 py-2"
                           style={{ border: "1px solid var(--hairline)" }}
                         >
-                          {tramosPorEstacion.map((t, idx) => {
-                            const st = stationsById.get(t.id);
+                          {tramosPorEstacion.map((tramo, idx) => {
+                            const st = stationsById.get(tramo.id);
 
                             return (
                               <div
-                                key={t.id}
+                                key={tramo.id}
                                 className="flex items-center gap-2 rounded-lg px-1.5 py-1 text-xs"
                               >
                                 <span
                                   className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-[10px] font-bold"
                                   style={tonePill("ok", 14)}
                                 >
-                                  {letraDe(t.id)}
+                                  {letraDe(tramo.id)}
                                 </span>
                                 <span className="min-w-0 flex-1 truncate">
                                   {st ? stationLabel(st) : "—"}
@@ -7954,12 +8583,12 @@ export default function Schedule() {
                                   max={31}
                                   min={1}
                                   suffix="d"
-                                  value={t.dias}
+                                  value={tramo.dias}
                                   onChange={(v) =>
                                     set({
                                       stationDays: {
                                         ...(posEditor.stationDays || {}),
-                                        [t.id]: Math.max(1, v),
+                                        [tramo.id]: Math.max(1, v),
                                       },
                                     })
                                   }
@@ -7970,7 +8599,7 @@ export default function Schedule() {
                                     todas y volver a marcarlas en otro orden. */}
                                 <div className="flex shrink-0 flex-col">
                                   <button
-                                    aria-label="Subir"
+                                    aria-label={t("ui.Schedule.subir", "Subir")}
                                     className="cg-btn-ghost cg-focus rounded px-1 text-[9px] leading-tight disabled:opacity-30"
                                     disabled={idx === 0}
                                     type="button"
@@ -7984,7 +8613,7 @@ export default function Schedule() {
                                     ▲
                                   </button>
                                   <button
-                                    aria-label="Bajar"
+                                    aria-label={t("ui.Schedule.bajar", "Bajar")}
                                     className="cg-btn-ghost cg-focus rounded px-1 text-[9px] leading-tight disabled:opacity-30"
                                     disabled={idx === tramosPorEstacion.length - 1}
                                     type="button"
@@ -8016,11 +8645,15 @@ export default function Schedule() {
                           style={toneCard("ok", 8, 26)}
                         >
                           <div className="mb-1.5 flex items-center justify-between gap-2">
-                            <span className="cg-eyebrow">Cómo queda repartido</span>
+                            <span className="cg-eyebrow">
+                              {t("ui.Schedule.comoQuedaRepartido", "Cómo queda repartido")}
+                            </span>
                             <span className="text-[11px] font-semibold tabular-nums">
-                              {secuenciaDeTurnos.length} turno
-                              {secuenciaDeTurnos.length === 1 ? "" : "s"} ·{" "}
-                              {ciclosHastaRepetir * sfCicloLen} días
+                              {t("ui.Schedule.nTurnosNDias", {
+                                defaultValue: "{{count}} turnos · {{dias}} días",
+                                count: secuenciaDeTurnos.length,
+                                dias: ciclosHastaRepetir * sfCicloLen,
+                              })}
                             </span>
                           </div>
 
@@ -8044,8 +8677,8 @@ export default function Schedule() {
                                     {st ? stationLabel(st) : "—"}
                                   </span>
                                   <span className="shrink-0 tabular-nums">
-                                    <b>{r.dia}</b> de día ·{" "}
-                                    <b>{r.noche}</b> de noche
+                                    <b>{r.dia}</b> {t("ui.Schedule.deDia", "de día")} ·{" "}
+                                    <b>{r.noche}</b> {t("ui.Schedule.deNoche", "de noche")}
                                   </span>
                                 </div>
                               );
@@ -8065,7 +8698,7 @@ export default function Schedule() {
                                   title={(() => {
                                     const st = stationsById.get(t.id);
 
-                                    return `${st ? stationLabel(st) : ""} · ${t.noche ? "noche" : "día"}`;
+                                    return `${st ? stationLabel(st) : ""} · ${t.noche ? i18n.t("ui.tramos.noche", "noche") : i18n.t("ui.tramos.dia", "día")}`;
                                   })()}
                                 >
                                   <span className="text-[10px] font-bold">
@@ -8080,7 +8713,7 @@ export default function Schedule() {
                                 className="self-center text-[10px]"
                                 style={{ color: "var(--ink-faint)" }}
                               >
-                                · y se repite
+                                {t("ui.Schedule.yseRepite", "· y se repite")}
                               </span>
                             </div>
                           )}
@@ -8099,14 +8732,34 @@ export default function Schedule() {
                                 cuando el ciclo no tiene ninguno. Se dice sólo
                                 lo que se ve. */}
                             {ciclosHastaRepetir > 1
-                              ? `Su ciclo (${sfNombreCiclo}) y la alternancia (${cadencia}) no encajan a la primera: tardan ${ciclosHastaRepetir} ciclos en volver a coincidir.`
-                              : `Su ciclo (${sfNombreCiclo}) y la alternancia (${cadencia}) encajan a la primera.`}
+                              ? t("ui.Schedule.cicloYAlternanciaNoEncajan", {
+                                  defaultValue:
+                                    "Su ciclo ({{ciclo}}) y la alternancia ({{cadencia}}) no encajan a la primera: tardan {{n}} ciclos en volver a coincidir.",
+                                  ciclo: sfNombreCiclo,
+                                  cadencia,
+                                  n: ciclosHastaRepetir,
+                                })
+                              : t("ui.Schedule.cicloYAlternanciaEncajan", {
+                                  defaultValue:
+                                    "Su ciclo ({{ciclo}}) y la alternancia ({{cadencia}}) encajan a la primera.",
+                                  ciclo: sfNombreCiclo,
+                                  cadencia,
+                                })}
                             {ciclosHastaRepetir > 1 && sfNoches > 0 && sfDias > 0
-                              ? " Por eso la misma estación le toca unas veces de día y otras de noche."
+                              ? t(
+                                  "ui.Schedule.porEsoLaMismaEstacion",
+                                  " Por eso la misma estación le toca unas veces de día y otras de noche.",
+                                )
                               : ""}
                             {sfLibres > 0
-                              ? " Los días de descanso no gastan turno de estación."
-                              : " Sin descansos, cada día del ciclo gasta un paso de la alternancia."}
+                              ? t(
+                                  "ui.Schedule.losDiasDeDescansoNoGastan",
+                                  " Los días de descanso no gastan turno de estación.",
+                                )
+                              : t(
+                                  "ui.Schedule.sinDescansosCadaDiaGasta",
+                                  " Sin descansos, cada día del ciclo gasta un paso de la alternancia.",
+                                )}
                           </p>
                         </div>
                       </div>
@@ -8116,7 +8769,7 @@ export default function Schedule() {
                     {marcadas.length > 1 && (
                       <div>
                         <label className="cg-eyebrow mb-1.5 block">
-                          Empieza su horario en
+                          {t("ui.Schedule.empiezaSuHorarioEn", "Empieza su horario en")}
                         </label>
                         <select
                           className="cg-input cg-focus w-full px-3 py-2.5 text-sm"
@@ -8144,8 +8797,10 @@ export default function Schedule() {
                           className="mt-1 text-[10px]"
                           style={{ color: "var(--ink-faint)" }}
                         >
-                          Su fila vive en esta estación y desde aquí arranca su
-                          horario. Cubre igual todas las marcadas.
+                          {t(
+                            "ui.Schedule.suFilaViveEnEstaEstacion",
+                            "Su fila vive en esta estación y desde aquí arranca su horario. Cubre igual todas las marcadas.",
+                          )}
                         </p>
                       </div>
                     )}
@@ -8153,7 +8808,7 @@ export default function Schedule() {
                     {/* Desde cuándo — y CON QUÉ DÍA DE SU CICLO */}
                     <div>
                       <label className="cg-eyebrow mb-1.5 block">
-                        Primer día
+                        {t("ui.Schedule.primerDia", "Primer día")}
                       </label>
                       <input
                         className="cg-input cg-focus w-full px-3 py-2.5 text-sm"
@@ -8173,7 +8828,10 @@ export default function Schedule() {
                         sfRanuras.length > 0 && (
                           <div className="mt-2.5">
                             <label className="cg-eyebrow mb-1.5 block">
-                              Ese día, ¿qué turno de la rotación hace?
+                              {t(
+                                "ui.Schedule.eseDiaQueTurnoDeLaRotacionHace",
+                                "Ese día, ¿qué turno de la rotación hace?",
+                              )}
                             </label>
                             <SelectorDeRanura
                               ranuras={sfRanuras}
@@ -8209,7 +8867,9 @@ export default function Schedule() {
                           : set({ sfPaso: (paso - 1) as 1 | 2 })
                       }
                     >
-                      {paso === 1 ? "Cancelar" : "Atrás"}
+                      {paso === 1
+                        ? t("common.cancel", "Cancelar")
+                        : t("ui.Schedule.atras", "Atrás")}
                     </button>
                     {paso < 3 ? (
                       <button
@@ -8227,7 +8887,7 @@ export default function Schedule() {
                         }
                         onClick={() => set({ sfPaso: (paso + 1) as 2 | 3 })}
                       >
-                        Siguiente
+                        {t("ui.Schedule.siguiente", "Siguiente")}
                       </button>
                     ) : (
                       <button
@@ -8244,9 +8904,9 @@ export default function Schedule() {
                         {posSaving ? (
                           <Loader2 className="animate-spin" size={14} />
                         ) : editando ? (
-                          "Guardar cambios"
+                          t("settings.mobileHub.saveChanges", "Guardar cambios")
                         ) : (
-                          "Crear sacafranco"
+                          t("ui.Schedule.crearSacafranco", "Crear sacafranco")
                         )}
                       </button>
                     )}
@@ -8273,8 +8933,8 @@ export default function Schedule() {
                   <div>
                     <h4 className="text-sm font-semibold">
                       {posEditor.positionId
-                        ? "Editar puesto"
-                        : "Agregar puesto"}
+                        ? t("ui.Schedule.editarPuesto", "Editar puesto")
+                        : t("ui.Schedule.agregarPuesto", "Agregar puesto")}
                     </h4>
                     <p
                       className="mt-0.5 text-[11px]"
@@ -8296,7 +8956,7 @@ export default function Schedule() {
                       className="mb-1 block text-[10px] font-semibold uppercase tracking-wider"
                       style={{ color: "var(--ink-soft)" }}
                     >
-                      Nombre
+                      {t("comun.nombre", "Nombre")}
                     </label>
                     <input
                       className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:border-primary"
@@ -8313,19 +8973,19 @@ export default function Schedule() {
                       className="mb-1 block text-[10px] font-semibold uppercase tracking-wider"
                       style={{ color: "var(--ink-soft)" }}
                     >
-                      Tipo
+                      {t("comun.tipo", "Tipo")}
                     </label>
                     <div className="grid grid-cols-2 gap-2">
                       {[
                         {
                           v: "fijo",
-                          label: "Fijo",
-                          sub: "trabaja su rotación",
+                          label: t("ui.Schedule.fijo", "Fijo"),
+                          sub: t("ui.Schedule.trabajaSuRotacion", "trabaja su rotación"),
                         },
                         {
                           v: "sacafranco",
-                          label: "Sacafranco",
-                          sub: "cubre descansos",
+                          label: t("ui.PostSiteWizard.jornada.sacafranco", "Sacafranco"),
+                          sub: t("ui.Schedule.cubreDescansos", "cubre descansos"),
                         },
                       ].map((o) => (
                         <button
@@ -8348,15 +9008,20 @@ export default function Schedule() {
                     siguen siendo libres debajo. */}
                   <div className="grid grid-cols-3 gap-2">
                     {[
-                      { label: "Diurno", sub: "07–19", s: "07:00", e: "19:00" },
                       {
-                        label: "Nocturno",
+                        label: t("ui.codeTones.diurno", "Diurno"),
+                        sub: "07–19",
+                        s: "07:00",
+                        e: "19:00",
+                      },
+                      {
+                        label: t("ui.codeTones.nocturno", "Nocturno"),
                         sub: "19–07",
                         s: "19:00",
                         e: "07:00",
                       },
                       {
-                        label: "24 horas",
+                        label: t("ui.codeTones.veinticuatroHoras", "24 horas"),
                         sub: "07→07",
                         s: "07:00",
                         e: "07:00",
@@ -8389,7 +9054,7 @@ export default function Schedule() {
                         className="mb-1 block text-[10px] font-semibold uppercase tracking-wider"
                         style={{ color: "var(--ink-soft)" }}
                       >
-                        Entra
+                        {t("ui.StaffSchedule.entra", "Entra")}
                       </label>
                       <input
                         className="w-full rounded-lg border px-2 py-2 text-sm tabular-nums outline-none focus:border-primary"
@@ -8407,7 +9072,7 @@ export default function Schedule() {
                         className="mb-1 block text-[10px] font-semibold uppercase tracking-wider"
                         style={{ color: "var(--ink-soft)" }}
                       >
-                        Sale
+                        {t("ui.StaffSchedule.sale", "Sale")}
                       </label>
                       <input
                         className="w-full rounded-lg border px-2 py-2 text-sm tabular-nums outline-none focus:border-primary"
@@ -8425,7 +9090,7 @@ export default function Schedule() {
                         className="mb-1 block text-[10px] font-semibold uppercase tracking-wider"
                         style={{ color: "var(--ink-soft)" }}
                       >
-                        Plazas
+                        {t("ui.Schedule.plazas", "Plazas")}
                       </label>
                       <input
                         className="w-full rounded-lg border px-2 py-2 text-sm tabular-nums outline-none focus:border-primary"
@@ -8452,21 +9117,21 @@ export default function Schedule() {
                         className="mb-1 block text-[10px] font-semibold uppercase tracking-wider"
                         style={{ color: "var(--ink-soft)" }}
                       >
-                        Ciclo de rotación
+                        {t("ui.Schedule.cicloDeRotacion", "Ciclo de rotación")}
                       </label>
                       <div className="grid grid-cols-2 gap-2">
                         {[
                           {
                             v: false,
-                            label: "El de la estación",
+                            label: t("ui.Schedule.elDeLaEstacion", "El de la estación"),
                             sub: estiloDeLaEstacion
                               ? estiloDeLaEstacion.name
-                              : "sin ciclo",
+                              : t("ui.Schedule.sinCiclo", "sin ciclo"),
                           },
                           {
                             v: true,
-                            label: "Propio",
-                            sub: "sólo este puesto",
+                            label: t("ui.Schedule.propio", "Propio"),
+                            sub: t("ui.Schedule.soloEstePuesto", "sólo este puesto"),
                           },
                         ].map((o) => (
                           <button
@@ -8492,8 +9157,11 @@ export default function Schedule() {
                           style={{ border: "1px solid var(--hairline)" }}
                         >
                           <NumberStepper
-                            hint="Seguidos, antes de cambiar de bloque"
-                            label="Turnos de día"
+                            hint={t(
+                              "ui.Schedule.seguidosAntesDeCambiarDeBloque",
+                              "Seguidos, antes de cambiar de bloque",
+                            )}
+                            label={t("ui.Schedule.turnosDeDia", "Turnos de día")}
                             max={31}
                             min={0}
                             suffix="D"
@@ -8501,8 +9169,14 @@ export default function Schedule() {
                             onChange={(v) => set({ rotDays: v })}
                           />
                           <NumberStepper
-                            hint="El segundo bloque del puesto"
-                            label="Turnos de tarde o noche"
+                            hint={t(
+                              "ui.Schedule.elSegundoBloqueDelPuesto",
+                              "El segundo bloque del puesto",
+                            )}
+                            label={t(
+                              "ui.Schedule.turnosDeTardeONoche",
+                              "Turnos de tarde o noche",
+                            )}
                             max={31}
                             min={0}
                             suffix="T/N"
@@ -8510,8 +9184,11 @@ export default function Schedule() {
                             onChange={(v) => set({ rotNights: v })}
                           />
                           <NumberStepper
-                            hint="Los que libra al cerrar el ciclo"
-                            label="Días libres"
+                            hint={t(
+                              "ui.Schedule.losQueLibraAlCerrarElCiclo",
+                              "Los que libra al cerrar el ciclo",
+                            )}
+                            label={t("ui.Schedule.diasLibres", "Días libres")}
                             max={31}
                             min={0}
                             suffix="L"
@@ -8525,10 +9202,14 @@ export default function Schedule() {
                               color: "var(--ink-soft)",
                             }}
                           >
-                            <span>Ciclo</span>
+                            <span>{t("ui.Schedule.ciclo", "Ciclo")}</span>
                             <span className="font-semibold tabular-nums">
                               {rotLen > 0
-                                ? `${rotNombre} · ${rotLen} día${rotLen === 1 ? "" : "s"}`
+                                ? t("ui.Schedule.cicloNombreNDias", {
+                                    defaultValue: "{{nombre}} · {{count}} días",
+                                    nombre: rotNombre,
+                                    count: rotLen,
+                                  })
                                 : "—"}
                             </span>
                           </div>
@@ -8537,15 +9218,20 @@ export default function Schedule() {
                               className="text-[11px]"
                               style={{ color: "var(--danger)" }}
                             >
-                              El ciclo necesita al menos un turno de trabajo.
+                              {t(
+                                "ui.Schedule.elCicloNecesitaAlMenosUnTurno",
+                                "El ciclo necesita al menos un turno de trabajo.",
+                              )}
                             </p>
                           ) : rotL === 0 ? (
                             <p
                               className="text-[11px]"
                               style={{ color: "var(--ink-soft)" }}
                             >
-                              Sin descanso: se trabaja todos los días y no hace
-                              falta sacafranco que releve.
+                              {t(
+                                "ui.Schedule.sinDescansoSeTrabajaTodosLosDias",
+                                "Sin descanso: se trabaja todos los días y no hace falta sacafranco que releve.",
+                              )}
                             </p>
                           ) : null}
                         </div>
@@ -8557,11 +9243,20 @@ export default function Schedule() {
                     style={toneCard("ok", 8, 26)}
                   >
                     <p className="text-[11px]">
-                      Jornada de{" "}
+                      {t("ui.Schedule.jornadaDe", "Jornada de")}{" "}
                       <b>{durH % 1 === 0 ? durH : durH.toFixed(1)} h</b>
-                      {eMin <= sMin ? " (termina al día siguiente)" : ""}.
+                      {eMin <= sMin
+                        ? t(
+                            "ui.Schedule.terminaAlDiaSiguienteParen",
+                            " (termina al día siguiente)",
+                          )
+                        : ""}
+                      .
                       {posEditor.positionId
-                        ? " Los turnos futuros se rehacen con estas horas; las asignaciones no se tocan."
+                        ? t(
+                            "ui.Schedule.losTurnosFuturosSeRehacen",
+                            " Los turnos futuros se rehacen con estas horas; las asignaciones no se tocan.",
+                          )
                         : ""}
                     </p>
                   </div>
@@ -8577,7 +9272,7 @@ export default function Schedule() {
                     className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold"
                     onClick={() => setPosEditor(null)}
                   >
-                    Cancelar
+                    {t("common.cancel", "Cancelar")}
                   </button>
                   <button
                     className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40"
@@ -8593,9 +9288,9 @@ export default function Schedule() {
                     {posSaving ? (
                       <Loader2 className="animate-spin" size={14} />
                     ) : posEditor.positionId ? (
-                      "Guardar"
+                      t("common.save", "Guardar")
                     ) : (
-                      "Agregar"
+                      t("ui.Schedule.agregar", "Agregar")
                     )}
                   </button>
                 </div>
@@ -8675,15 +9370,20 @@ export default function Schedule() {
                   {/* Quick shapes */}
                   <div className="grid grid-cols-3 gap-2">
                     {[
-                      { label: "Diurno", sub: "07–19", s: "07:00", e: "19:00" },
                       {
-                        label: "Nocturno",
+                        label: t("ui.codeTones.diurno", "Diurno"),
+                        sub: "07–19",
+                        s: "07:00",
+                        e: "19:00",
+                      },
+                      {
+                        label: t("ui.codeTones.nocturno", "Nocturno"),
                         sub: "19–07",
                         s: "19:00",
                         e: "07:00",
                       },
                       {
-                        label: "24 horas",
+                        label: t("ui.codeTones.veinticuatroHoras", "24 horas"),
                         sub: "07→07",
                         s: "07:00",
                         e: "07:00",
@@ -8712,7 +9412,9 @@ export default function Schedule() {
                   {/* Custom hours */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="cg-eyebrow mb-1.5 block">Inicio</label>
+                      <label className="cg-eyebrow mb-1.5 block">
+                        {t("ui.ScheduleTimeline.inicio", "Inicio")}
+                      </label>
                       <input
                         className="cg-input cg-focus w-full px-3 py-2.5 font-mono text-sm tabular-nums"
                         type="time"
@@ -8725,7 +9427,9 @@ export default function Schedule() {
                       />
                     </div>
                     <div>
-                      <label className="cg-eyebrow mb-1.5 block">Fin</label>
+                      <label className="cg-eyebrow mb-1.5 block">
+                        {t("ui.ScheduleTimeline.fin", "Fin")}
+                      </label>
                       <input
                         className="cg-input cg-focus w-full px-3 py-2.5 font-mono text-sm tabular-nums"
                         type="time"
@@ -8743,7 +9447,7 @@ export default function Schedule() {
                     style={{ color: "var(--ink-soft)" }}
                   >
                     <Clock size={12} />
-                    Duración:{" "}
+                    {t("ui.ScheduleTimeline.duracion", "Duración:")}{" "}
                     <b className="tabular-nums" style={{ color: "var(--ink)" }}>
                       {durH % 1 === 0 ? durH : durH.toFixed(1)}h
                     </b>
@@ -8779,7 +9483,7 @@ export default function Schedule() {
                     {sfCoverSaving ? (
                       <Loader2 className="animate-spin" size={14} />
                     ) : (
-                      "Cubrir puesto"
+                      t("ui.Schedule.cubrirPuesto", "Cubrir puesto")
                     )}
                   </button>
                 </div>
@@ -8811,7 +9515,7 @@ export default function Schedule() {
                   className="text-[10px] font-semibold"
                   style={{ color: "var(--ok-text)" }}
                 >
-                  Libre
+                  {t("ui.codeTones.libre", "Libre")}
                 </span>
               );
             if (r.estado === "deTurno")
@@ -8820,7 +9524,10 @@ export default function Schedule() {
                   className="text-[10px]"
                   style={{ color: "var(--warn-text)" }}
                 >
-                  De turno · {r.detalle}
+                  {t("ui.Schedule.deTurno", {
+                    defaultValue: "De turno · {{detalle}}",
+                    detalle: r.detalle,
+                  })}
                 </span>
               );
             if (r.estado === "ocupado")
@@ -8829,7 +9536,10 @@ export default function Schedule() {
                   className="text-[10px]"
                   style={{ color: "var(--ink-faint)" }}
                 >
-                  Cubre {r.detalle}
+                  {t("ui.Schedule.cubreDetalle", {
+                    defaultValue: "Cubre {{detalle}}",
+                    detalle: r.detalle,
+                  })}
                 </span>
               );
 
@@ -8838,7 +9548,10 @@ export default function Schedule() {
                 className="text-[10px]"
                 style={{ color: "var(--bad-text)" }}
               >
-                Ausente · {r.detalle}
+                {t("ui.Schedule.ausente", {
+                  defaultValue: "Ausente · {{detalle}}",
+                  detalle: CODE_LABEL[r.detalle] ?? r.detalle,
+                })}
               </span>
             );
           };
@@ -8878,7 +9591,7 @@ export default function Schedule() {
                     className="cg-eyebrow"
                     style={{ color: "var(--ok-text)" }}
                   >
-                    Sacafranco
+                    {t("ui.PostSiteWizard.jornada.sacafranco", "Sacafranco")}
                   </span>
                 )}
               </span>
@@ -8987,7 +9700,7 @@ export default function Schedule() {
                       });
                     }}
                   >
-                    Marcar novedad…
+                    {t("ui.Schedule.marcarNovedad", "Marcar novedad…")}
                   </button>
                   <button
                     className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all"
@@ -9012,7 +9725,7 @@ export default function Schedule() {
         (() => {
           const nombre = nombreDeVigilante(
             moveCover.shift.guard,
-            "la cobertura",
+            t("ui.Schedule.laCobertura", "la cobertura"),
           );
           const stDestino = stationsById.get(moveCover.stationId);
           const origen = diaDelTurno(moveCover.shift);
@@ -9043,7 +9756,10 @@ export default function Schedule() {
                   style={{ borderBottom: "1px solid var(--hairline)" }}
                 >
                   <h4 className="text-sm font-semibold">
-                    Mover la cobertura de {nombre}
+                    {t("ui.Schedule.moverLaCoberturaDe", {
+                      defaultValue: "Mover la cobertura de {{nombre}}",
+                      nombre,
+                    })}
                   </h4>
                   <button
                     className="cg-btn-ghost cg-focus rounded-lg p-1.5"
@@ -9068,18 +9784,23 @@ export default function Schedule() {
                         className="mt-1"
                         style={{ color: "var(--ink-soft)" }}
                       >
-                        Cambia al puesto{" "}
+                        {t("ui.Schedule.cambiaAlPuesto", "Cambia al puesto")}{" "}
                         <span
                           className="font-semibold"
                           style={{ color: "var(--ink)" }}
                         >
-                          {stDestino ? stationLabel(stDestino) : "destino"}
+                          {stDestino
+                            ? stationLabel(stDestino)
+                            : t("ui.Schedule.destino", "destino")}
                         </span>
                         .
                       </div>
                     )}
                     <div className="mt-1" style={{ color: "var(--ink-faint)" }}>
-                      Conserva su horario y las horas que se pagan.
+                      {t(
+                        "ui.Schedule.conservaSuHorario",
+                        "Conserva su horario y las horas que se pagan.",
+                      )}
                     </div>
                   </div>
 
@@ -9089,18 +9810,30 @@ export default function Schedule() {
                   >
                     {nDias > 1 ? (
                       <>
-                        Esta cobertura se agregó junto a otras: son{" "}
+                        {t(
+                          "ui.Schedule.estaCoberturaSeAgregoJunto",
+                          "Esta cobertura se agregó junto a otras: son",
+                        )}{" "}
                         <span
                           className="font-semibold"
                           style={{ color: "var(--ink)" }}
                         >
-                          {nDias} días seguidos
+                          {t("ui.Schedule.nDiasSeguidos", {
+                            defaultValue: "{{n}} días seguidos",
+                            n: nDias,
+                          })}
                         </span>
-                        , del {fmtDia(primero)} al {fmtDia(ultimo)}. ¿Qué
-                        mueves?
+                        {t("ui.Schedule.delAlQueMueves", {
+                          defaultValue: ", del {{desde}} al {{hasta}}. ¿Qué mueves?",
+                          desde: fmtDia(primero),
+                          hasta: fmtDia(ultimo),
+                        })}
                       </>
                     ) : (
-                      "Es un día suelto: no hay más días que mover con él."
+                      t(
+                        "ui.Schedule.esUnDiaSuelto",
+                        "Es un día suelto: no hay más días que mover con él.",
+                      )
                     )}
                   </p>
                 </div>
@@ -9121,7 +9854,10 @@ export default function Schedule() {
                       {moveSaving ? (
                         <Loader2 className="mx-auto animate-spin" size={14} />
                       ) : (
-                        `Mover los ${nDias} días`
+                        t("ui.Schedule.moverLosNDias", {
+                          defaultValue: "Mover los {{n}} días",
+                          n: nDias,
+                        })
                       )}
                     </button>
                   )}
@@ -9133,7 +9869,7 @@ export default function Schedule() {
                     {moveSaving ? (
                       <Loader2 className="mx-auto animate-spin" size={14} />
                     ) : (
-                      "Mover sólo este día"
+                      t("ui.Schedule.moverSoloEsteDia", "Mover sólo este día")
                     )}
                   </button>
                 </div>
@@ -9167,7 +9903,7 @@ export default function Schedule() {
                       "Mover vigilante de puesto",
                     )
                   : assignEditing
-                    ? "Editar sacafranco"
+                    ? t("ui.Schedule.editarSacafranco", "Editar sacafranco")
                     : assignMode === "single"
                       ? t("ui.Schedule.cubrirEsteDia", "Cubrir este día")
                       : puestoRota
@@ -9175,7 +9911,10 @@ export default function Schedule() {
                             "ui.Schedule.asignarVigilanteALaRotacion",
                             "Asignar vigilante a la rotación",
                           )
-                        : "Asignar vigilante al turno fijo"}
+                        : t(
+                            "ui.Schedule.asignarVigilanteAlTurnoFijo",
+                            "Asignar vigilante al turno fijo",
+                          )}
               </h4>
               <button
                 className="cg-btn-ghost cg-focus rounded-lg p-1.5"
@@ -9242,8 +9981,19 @@ export default function Schedule() {
                       {pos.type === "fijo" && (
                         <div className="mt-1 text-[11px] font-semibold">
                           {rota
-                            ? "Rota día y noche según el patrón del puesto"
-                            : `Turno fijo de ${esNoche ? "NOCHE" : "DÍA"} — siempre en este horario`}
+                            ? t(
+                                "ui.Schedule.rotaDiaYNoche",
+                                "Rota día y noche según el patrón del puesto",
+                              )
+                            : esNoche
+                              ? t(
+                                  "ui.Schedule.turnoFijoDeNoche",
+                                  "Turno fijo de NOCHE — siempre en este horario",
+                                )
+                              : t(
+                                  "ui.Schedule.turnoFijoDeDia",
+                                  "Turno fijo de DÍA — siempre en este horario",
+                                )}
                         </div>
                       )}
                     </div>
@@ -9257,9 +10007,12 @@ export default function Schedule() {
                     {t("ui.Schedule.seMoveraDesde", "Se moverá desde")}{" "}
                     <span className="font-semibold">
                       {stationsById.get(moveFrom.stationId)?.stationName ||
-                        "su puesto actual"}
+                        t("ui.Schedule.suPuestoActual", "su puesto actual")}
                     </span>{" "}
-                    — sus turnos futuros allí se eliminan.
+                    {t(
+                      "ui.Schedule.susTurnosFuturosAlliSeEliminan",
+                      "— sus turnos futuros allí se eliminan.",
+                    )}
                   </p>
                 </div>
               )}
@@ -9277,12 +10030,15 @@ export default function Schedule() {
                       },
                       // Cubrir unas vacaciones son QUINCE días, no uno. Antes había
                       // que repetir el diálogo día por día.
-                      { value: "rango", label: "Varios días" },
+                      {
+                        value: "rango",
+                        label: t("ui.Schedule.variosDias", "Varios días"),
+                      },
                       {
                         value: "rotation",
                         label: puestoRota
                           ? t("ui.ShiftAssignModal.rotacion", "Rotación")
-                          : "Turno fijo",
+                          : t("ui.Schedule.turnoFijo", "Turno fijo"),
                       },
                     ]}
                     value={assignMode}
@@ -9293,12 +10049,34 @@ export default function Schedule() {
                     style={{ color: "var(--ink-faint)" }}
                   >
                     {assignMode === "single"
-                      ? "Un turno suelto para la fecha elegida. No entra en el horario del puesto."
+                      ? t(
+                          "ui.Schedule.ayudaModoUnDia",
+                          "Un turno suelto para la fecha elegida. No entra en el horario del puesto.",
+                        )
                       : assignMode === "rango"
-                        ? `Un turno suelto por cada día del rango, con las mismas horas. ${diasEntre(assignStartDate, assignEndDate) > 0 ? `Se crearán ${diasEntre(assignStartDate, assignEndDate)} turno(s).` : "El último día no puede ser anterior al primero."}`
+                        ? `${t(
+                            "ui.Schedule.ayudaModoRango",
+                            "Un turno suelto por cada día del rango, con las mismas horas.",
+                          )} ${
+                            diasEntre(assignStartDate, assignEndDate) > 0
+                              ? t("ui.Schedule.seCrearanNTurnos", {
+                                  defaultValue: "Se crearán {{n}} turno(s).",
+                                  n: diasEntre(assignStartDate, assignEndDate),
+                                })
+                              : t(
+                                  "ui.Schedule.elUltimoDiaNoPuedeSerAnterior",
+                                  "El último día no puede ser anterior al primero.",
+                                )
+                          }`
                         : puestoRota
-                          ? "Entra en la rotación del puesto: se generan sus turnos y irá alternando día y noche. Tarda unos segundos."
-                          : "Se queda en este horario todos sus días de trabajo, sin alternar. Tarda unos segundos."}
+                          ? t(
+                              "ui.Schedule.ayudaModoRotacion",
+                              "Entra en la rotación del puesto: se generan sus turnos y irá alternando día y noche. Tarda unos segundos.",
+                            )
+                          : t(
+                              "ui.Schedule.ayudaModoFijo",
+                              "Se queda en este horario todos sus días de trabajo, sin alternar. Tarda unos segundos.",
+                            )}
                   </p>
                 </div>
               )}
@@ -9344,7 +10122,10 @@ export default function Schedule() {
                         <option key={g.id} value={g.id}>
                           {g.label}
                           {assignMode === "single" && conTurnoEseDia(g.id)
-                            ? " · ya tiene turno ese día"
+                            ? t(
+                                "ui.Schedule.yaTieneTurnoEseDiaSufijo",
+                                " · ya tiene turno ese día",
+                              )
                             : ""}
                         </option>
                       ))}
@@ -9366,8 +10147,10 @@ export default function Schedule() {
                       className="mt-1 text-[10px]"
                       style={{ color: "var(--warn-text)" }}
                     >
-                      Ya tiene turno ese día: el nuevo reemplazará al que se
-                      solape.
+                      {t(
+                        "ui.Schedule.yaTieneTurnoEseDiaAviso",
+                        "Ya tiene turno ese día: el nuevo reemplazará al que se solape.",
+                      )}
                     </p>
                   )}
                 {assignMode === "rotation" &&
@@ -9397,9 +10180,9 @@ export default function Schedule() {
               <div>
                 <label className="cg-eyebrow mb-1.5 block">
                   {assignMode === "single"
-                    ? "Día que cubre"
+                    ? t("ui.Schedule.diaQueCubre", "Día que cubre")
                     : assignMode === "rango"
-                      ? "Desde"
+                      ? t("comun.desde", "Desde")
                       : t(
                           "ui.Schedule.primerDiaDeTurno",
                           "Primer día de turno",
@@ -9419,7 +10202,7 @@ export default function Schedule() {
                 {assignMode === "rango" && (
                   <>
                     <label className="cg-eyebrow mb-1.5 mt-3 block">
-                      Hasta
+                      {t("comun.hasta", "Hasta")}
                     </label>
                     <input
                       className="cg-input cg-focus w-full px-3 py-2.5 text-sm"
@@ -9439,7 +10222,10 @@ export default function Schedule() {
                         "ui.Schedule.horaDeLaEmpresaPunto",
                         "Hora de la empresa.",
                       )
-                    : "Los turnos se generan desde esta fecha (hora de la empresa)."}
+                    : t(
+                        "ui.Schedule.losTurnosSeGeneranDesdeEstaFecha",
+                        "Los turnos se generan desde esta fecha (hora de la empresa).",
+                      )}
                 </p>
 
                 {/* ── Y QUÉ TURNO DE LA ROTACIÓN HACE ESE DÍA ──────────────
@@ -9465,7 +10251,10 @@ export default function Schedule() {
                     return (
                       <div className="mt-3">
                         <label className="cg-eyebrow mb-1.5 block">
-                          Ese día, ¿qué turno de la rotación hace?
+                          {t(
+                            "ui.Schedule.eseDiaQueTurnoDeLaRotacionHace",
+                            "Ese día, ¿qué turno de la rotación hace?",
+                          )}
                         </label>
                         <SelectorDeRanura
                           ranuras={ranuras}
@@ -9535,7 +10324,7 @@ export default function Schedule() {
                     return (
                       <>
                         <label className="cg-eyebrow mb-1.5 block">
-                          Qué turno cubre
+                          {t("ui.Schedule.queTurnoCubre", "Qué turno cubre")}
                         </label>
                         <div
                           className="mb-3 grid gap-2"
@@ -9559,7 +10348,13 @@ export default function Schedule() {
                                 }}
                               >
                                 <div className="text-xs font-semibold">
-                                  {b.etiqueta}
+                                  {b.etiqueta === "Diurno"
+                                    ? t("ui.codeTones.diurno", "Diurno")
+                                    : b.etiqueta === "Nocturno"
+                                      ? t("ui.codeTones.nocturno", "Nocturno")
+                                      : b.etiqueta === "24 horas"
+                                        ? t("ui.codeTones.veinticuatroHoras", "24 horas")
+                                        : b.etiqueta}
                                 </div>
                                 <div
                                   className="text-[10px] tabular-nums"
@@ -9576,7 +10371,9 @@ export default function Schedule() {
                   })()}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="cg-eyebrow mb-1.5 block">Entra</label>
+                      <label className="cg-eyebrow mb-1.5 block">
+                        {t("ui.StaffSchedule.entra", "Entra")}
+                      </label>
                       <input
                         className="cg-input cg-focus w-full px-3 py-2 font-mono text-sm tabular-nums"
                         type="time"
@@ -9585,7 +10382,9 @@ export default function Schedule() {
                       />
                     </div>
                     <div>
-                      <label className="cg-eyebrow mb-1.5 block">Sale</label>
+                      <label className="cg-eyebrow mb-1.5 block">
+                        {t("ui.StaffSchedule.sale", "Sale")}
+                      </label>
                       <input
                         className="cg-input cg-focus w-full px-3 py-2 font-mono text-sm tabular-nums"
                         type="time"
@@ -9605,9 +10404,15 @@ export default function Schedule() {
                             "ui.Schedule.terminaAlDiaSiguientePunto",
                             "Termina al día siguiente.",
                           )
-                      : "Horas tomadas del puesto; puedes cambiarlas."}
+                      : t(
+                          "ui.Schedule.horasTomadasDelPuesto",
+                          "Horas tomadas del puesto; puedes cambiarlas.",
+                        )}
                     {assignMode === "rango"
-                      ? " Las mismas para todos los días del rango."
+                      ? t(
+                          "ui.Schedule.lasMismasParaTodosLosDias",
+                          " Las mismas para todos los días del rango.",
+                        )
                       : ""}
                   </p>
                 </div>
@@ -9656,9 +10461,9 @@ export default function Schedule() {
                             className="font-semibold"
                             style={{ color: "var(--ink)" }}
                           >
-                            {rot?.name || "el del puesto"}
+                            {rot?.name || t("ui.Schedule.elDelPuesto", "el del puesto")}
                           </span>{" "}
-                          · se hereda del puesto.
+                          {t("ui.Schedule.seHeredaDelPuesto", "· se hereda del puesto.")}
                         </p>
                       </div>
                     );
@@ -9668,7 +10473,7 @@ export default function Schedule() {
                     <>
                       <div>
                         <label className="cg-eyebrow mb-1.5 block">
-                          Su patrón de rotación
+                          {t("ui.Schedule.suPatronDeRotacion", "Su patrón de rotación")}
                         </label>
                         <select
                           className="cg-input cg-focus w-full px-3 py-2.5 text-sm"
@@ -9681,16 +10486,20 @@ export default function Schedule() {
                           }}
                         >
                           <option value="">
-                            {rot
-                              ? `Sin patrón propio — mes libre, se cubre a mano`
-                              : "Sin patrón propio — mes libre, se cubre a mano"}
+                            {t(
+                              "ui.Schedule.sinPatronPropioMesLibre",
+                              "Sin patrón propio — mes libre, se cubre a mano",
+                            )}
                           </option>
                           {rotationStyles.map((r) => (
                             <option key={r.id} value={r.id}>
                               {r.name}
                               {ciclo(r) ? ` · ${ciclo(r)}` : ""}
                               {st?.rotationStyleId === r.id
-                                ? " (el de esta estación)"
+                                ? t(
+                                    "ui.Schedule.elDeEstaEstacionParen",
+                                    " (el de esta estación)",
+                                  )
                                 : ""}
                             </option>
                           ))}
@@ -9704,14 +10513,20 @@ export default function Schedule() {
                           }}
                         >
                           {assignRotation
-                            ? "Se le generan sus turnos con este ciclo. Tarda unos segundos."
-                            : "Empieza con el mes en blanco: sus días se colocan arrastrándolos sobre los descansos, o con «Optimizar sacafrancos»."}
+                            ? t(
+                                "ui.Schedule.seLeGeneranSusTurnosCorto",
+                                "Se le generan sus turnos con este ciclo. Tarda unos segundos.",
+                              )
+                            : t(
+                                "ui.Schedule.empiezaConElMesEnBlanco",
+                                "Empieza con el mes en blanco: sus días se colocan arrastrándolos sobre los descansos, o con «Optimizar sacafrancos».",
+                              )}
                         </p>
                       </div>
 
                       <div>
                         <label className="cg-eyebrow mb-1.5 block">
-                          Estaciones que cubre
+                          {t("ui.Schedule.estacionesQueCubre", "Estaciones que cubre")}
                         </label>
                         <div
                           className="max-h-40 overflow-y-auto rounded-xl px-1 py-1"
@@ -9752,8 +10567,15 @@ export default function Schedule() {
                             style={{ color: "var(--ink-faint)" }}
                           >
                             {assignCovered.length
-                              ? `Sólo buscará descansos que cubrir en ${assignCovered.length} estación(es).`
-                              : "Sin marcar ninguna cubre TODAS las estaciones con puestos fijos."}
+                              ? t("ui.Schedule.soloBuscaraDescansosEn", {
+                                  defaultValue:
+                                    "Sólo buscará descansos que cubrir en {{n}} estación(es).",
+                                  n: assignCovered.length,
+                                })
+                              : t(
+                                  "ui.Schedule.sinMarcarNingunaCubreTodas",
+                                  "Sin marcar ninguna cubre TODAS las estaciones con puestos fijos.",
+                                )}
                           </p>
                           {assignCovered.length > 0 && (
                             <button
@@ -9761,7 +10583,7 @@ export default function Schedule() {
                               type="button"
                               onClick={() => setAssignCovered([])}
                             >
-                              Todas
+                              {t("ui.ShiftTemplates.todas", "Todas")}
                             </button>
                           )}
                         </div>
@@ -9795,13 +10617,13 @@ export default function Schedule() {
                 {assignSaving ? (
                   <Loader2 className="animate-spin" size={14} />
                 ) : moveFrom ? (
-                  "Mover"
+                  t("ui.Schedule.mover", "Mover")
                 ) : assignEditing ? (
-                  "Guardar cambios"
+                  t("settings.mobileHub.saveChanges", "Guardar cambios")
                 ) : assignMode === "single" ? (
-                  "Cubrir el día"
+                  t("ui.Schedule.cubrirElDia", "Cubrir el día")
                 ) : (
-                  "Asignar a la rotación"
+                  t("ui.Schedule.asignarALaRotacion", "Asignar a la rotación")
                 )}
               </button>
             </div>
@@ -9830,12 +10652,17 @@ export default function Schedule() {
               style={{ borderBottom: "1px solid var(--hairline)" }}
             >
               <div>
-                <h4 className="text-sm font-semibold">Puestos</h4>
+                <h4 className="text-sm font-semibold">
+                  {t("ui.Coverage.puestos", "Puestos")}
+                </h4>
                 <p
                   className="mt-0.5 text-[11px]"
                   style={{ color: "var(--ink-soft)" }}
                 >
-                  Entra a uno para asignar, cambiar o quitar vigilantes
+                  {t(
+                    "ui.Schedule.entraAUnoParaAsignar",
+                    "Entra a uno para asignar, cambiar o quitar vigilantes",
+                  )}
                 </p>
               </div>
               <button
@@ -9886,10 +10713,16 @@ export default function Schedule() {
                         className="block truncate text-[11px]"
                         style={{ color: "var(--ink-soft)" }}
                       >
-                        {dentro} vigilante{dentro === 1 ? "" : "s"}
+                        {t("ui.Schedule.nVigilantes", {
+                          defaultValue: "{{count}} vigilantes",
+                          count: dentro,
+                        })}
                         {vacias
-                          ? ` · ${vacias} plaza${vacias === 1 ? "" : "s"} sin cubrir`
-                          : " · completo"}
+                          ? t("ui.Schedule.nPlazasSinCubrir", {
+                              defaultValue: " · {{count}} plazas sin cubrir",
+                              count: vacias,
+                            })
+                          : t("ui.Schedule.completo", " · completo")}
                       </span>
                     </span>
                     <ChevronRight
@@ -9904,7 +10737,7 @@ export default function Schedule() {
                   className="px-3 py-6 text-center text-[11px]"
                   style={{ color: "var(--ink-faint)" }}
                 >
-                  No hay puestos todavía.
+                  {t("ui.Schedule.noHayPuestosTodavia", "No hay puestos todavía.")}
                 </p>
               )}
             </div>
@@ -9935,8 +10768,14 @@ export default function Schedule() {
                   style={{ color: "var(--ink-soft)" }}
                 >
                   {cfgVigilantes.length
-                    ? `${cfgVigilantes.length} vigilante${cfgVigilantes.length === 1 ? "" : "s"} en este puesto`
-                    : "Todavía no hay nadie asignado"}
+                    ? t("ui.Schedule.nVigilantesEnEstePuesto", {
+                        defaultValue: "{{count}} vigilantes en este puesto",
+                        count: cfgVigilantes.length,
+                      })
+                    : t(
+                        "ui.Schedule.todaviaNoHayNadieAsignado",
+                        "Todavía no hay nadie asignado",
+                      )}
                 </p>
               </div>
               <button
@@ -9950,9 +10789,9 @@ export default function Schedule() {
               {/* Los tres pasos, igual que en el alta del sacafranco. */}
               <div className="flex items-center gap-1.5">
                 {[
-                  { n: 1 as const, t: "Quiénes" },
-                  { n: 2 as const, t: "Su ciclo" },
-                  { n: 3 as const, t: "Su jornada" },
+                  { n: 1 as const, t: t("ui.Schedule.pasoQuienes", "Quiénes") },
+                  { n: 2 as const, t: t("ui.Schedule.pasoSuCiclo", "Su ciclo") },
+                  { n: 3 as const, t: t("ui.Schedule.pasoSuJornada", "Su jornada") },
                 ].map((x) => (
                   <button
                     key={x.n}
@@ -9972,15 +10811,17 @@ export default function Schedule() {
               {configPaso === 1 && (
                 <div>
                   <label className="cg-eyebrow mb-1.5 block">
-                    Vigilantes asignados
+                    {t("ui.Schedule.vigilantesAsignados", "Vigilantes asignados")}
                   </label>
                   {cfgFilas.length === 0 ? (
                     <p
                       className="rounded-xl px-3 py-2 text-[11px]"
                       style={toneCard("warn", 8, 26)}
                     >
-                      Este puesto todavía no tiene plazas. Créalas en el paso 3,
-                      eligiendo su jornada.
+                      {t(
+                        "ui.Schedule.estePuestoTodaviaNoTienePlazas",
+                        "Este puesto todavía no tiene plazas. Créalas en el paso 3, eligiendo su jornada.",
+                      )}
                     </p>
                   ) : (
                     <div
@@ -10016,7 +10857,7 @@ export default function Schedule() {
                                   : { color: "var(--ink-faint)" }
                               }
                             >
-                              {f.vigilante || "Sin asignar"}
+                              {f.vigilante || t("comun.sinAsignar", "Sin asignar")}
                             </div>
                             <div
                               className="truncate text-[10px]"
@@ -10024,10 +10865,13 @@ export default function Schedule() {
                             >
                               {f.plaza}
                               {f.adhoc
-                                ? " · día a día, sin descansos"
+                                ? t(
+                                    "ui.Schedule.diaADiaSinDescansos",
+                                    " · día a día, sin descansos",
+                                  )
                                 : f.ciclo
                                   ? ` · ${f.ciclo}`
-                                  : " · sin ciclo"}
+                                  : t("ui.Schedule.sinCicloSufijo", " · sin ciclo")}
                             </div>
                           </div>
                           {/* ── QUITAR Y CAMBIAR ─────────────────────────
@@ -10042,7 +10886,10 @@ export default function Schedule() {
                               {f.positionId && (
                                 <button
                                   className="cg-btn-ghost cg-focus rounded-lg px-2 py-1 text-[10px] font-semibold"
-                                  title="Poner a otro vigilante en esta plaza"
+                                  title={t(
+                                    "ui.Schedule.ponerAOtroVigilanteEnEstaPlaza",
+                                    "Poner a otro vigilante en esta plaza",
+                                  )}
                                   type="button"
                                   onClick={() => {
                                     const asg = f.asignacion;
@@ -10060,12 +10907,15 @@ export default function Schedule() {
                                     );
                                   }}
                                 >
-                                  Cambiar
+                                  {t("ui.Schedule.cambiar", "Cambiar")}
                                 </button>
                               )}
                               <button
                                 className="cg-btn-ghost cg-focus rounded-lg p-1"
-                                title="Quitar a este vigilante del puesto"
+                                title={t(
+                                  "ui.Schedule.quitarAEsteVigilanteDelPuesto",
+                                  "Quitar a este vigilante del puesto",
+                                )}
                                 type="button"
                                 onClick={async () => {
                                   const id = String(f.asignacion!.id);
@@ -10080,7 +10930,10 @@ export default function Schedule() {
                           ) : (
                             <button
                               className="cg-btn-ghost cg-focus shrink-0 rounded-lg px-2 py-1 text-[10px] font-semibold"
-                              title="Asignar un vigilante a esta plaza"
+                              title={t(
+                                "ui.Schedule.asignarUnVigilanteAEstaPlaza",
+                                "Asignar un vigilante a esta plaza",
+                              )}
                               type="button"
                               onClick={() => {
                                 setConfigStation(null);
@@ -10090,7 +10943,7 @@ export default function Schedule() {
                                 );
                               }}
                             >
-                              Asignar
+                              {t("ui.SupervisionSection.asignar", "Asignar")}
                             </button>
                           )}
                         </div>
@@ -10101,8 +10954,10 @@ export default function Schedule() {
                     className="mt-1 text-[10px]"
                     style={{ color: "var(--ink-faint)" }}
                   >
-                    El ciclo del paso siguiente es el de la ESTACIÓN: lo heredan
-                    quienes no tengan uno propio.
+                    {t(
+                      "ui.Schedule.elCicloDelPasoSiguiente",
+                      "El ciclo del paso siguiente es el de la ESTACIÓN: lo heredan quienes no tengan uno propio.",
+                    )}
                   </p>
                 </div>
               )}
@@ -10111,12 +10966,18 @@ export default function Schedule() {
               {configPaso === 2 && (
                 <div>
                   <label className="cg-eyebrow mb-1.5 block">
-                    Tipo de turno
+                    {t("ui.Schedule.tipoDeTurno", "Tipo de turno")}
                   </label>
                   <Segmented<"rotativo" | "manual">
                     options={[
-                      { value: "rotativo", label: "Turno rotativo" },
-                      { value: "manual", label: "Turno fijo" },
+                      {
+                        value: "rotativo",
+                        label: t("ui.Schedule.turnoRotativo", "Turno rotativo"),
+                      },
+                      {
+                        value: "manual",
+                        label: t("ui.Schedule.turnoFijo", "Turno fijo"),
+                      },
                     ]}
                     value={cfgRotMode}
                     onChange={setCfgRotMode}
@@ -10124,15 +10985,18 @@ export default function Schedule() {
                   {cfgRotMode === "rotativo" ? (
                     <div className="mt-2">
                       <label className="cg-eyebrow mb-1.5 block">
-                        Estilo de rotación
+                        {t("ui.Schedule.estiloDeRotacion", "Estilo de rotación")}
                       </label>
                       <div
                         className="space-y-2.5 rounded-xl px-3 py-2.5"
                         style={{ border: "1px solid var(--hairline)" }}
                       >
                         <NumberStepper
-                          hint="Seguidos, antes de cambiar de bloque"
-                          label="Turnos de día"
+                          hint={t(
+                            "ui.Schedule.seguidosAntesDeCambiarDeBloque",
+                            "Seguidos, antes de cambiar de bloque",
+                          )}
+                          label={t("ui.Schedule.turnosDeDia", "Turnos de día")}
                           max={31}
                           min={0}
                           suffix="D"
@@ -10140,8 +11004,14 @@ export default function Schedule() {
                           onChange={setCfgDias}
                         />
                         <NumberStepper
-                          hint="El segundo bloque del puesto"
-                          label="Turnos de tarde o noche"
+                          hint={t(
+                            "ui.Schedule.elSegundoBloqueDelPuesto",
+                            "El segundo bloque del puesto",
+                          )}
+                          label={t(
+                            "ui.Schedule.turnosDeTardeONoche",
+                            "Turnos de tarde o noche",
+                          )}
                           max={31}
                           min={0}
                           suffix="T/N"
@@ -10149,8 +11019,11 @@ export default function Schedule() {
                           onChange={setCfgNoches}
                         />
                         <NumberStepper
-                          hint="Los que libra al cerrar el ciclo"
-                          label="Días libres"
+                          hint={t(
+                            "ui.Schedule.losQueLibraAlCerrarElCiclo",
+                            "Los que libra al cerrar el ciclo",
+                          )}
+                          label={t("ui.Schedule.diasLibres", "Días libres")}
                           max={31}
                           min={0}
                           suffix="L"
@@ -10164,10 +11037,14 @@ export default function Schedule() {
                             color: "var(--ink-soft)",
                           }}
                         >
-                          <span>Ciclo</span>
+                          <span>{t("ui.Schedule.ciclo", "Ciclo")}</span>
                           <span className="font-semibold tabular-nums">
                             {cfgCicloLen > 0
-                              ? `${cfgNombreCiclo} · ${cfgCicloLen} día${cfgCicloLen === 1 ? "" : "s"}`
+                              ? t("ui.Schedule.cicloNombreNDias", {
+                                  defaultValue: "{{nombre}} · {{count}} días",
+                                  nombre: cfgNombreCiclo,
+                                  count: cfgCicloLen,
+                                })
                               : "—"}
                           </span>
                         </div>
@@ -10176,15 +11053,20 @@ export default function Schedule() {
                             className="text-[11px]"
                             style={{ color: "var(--danger)" }}
                           >
-                            El ciclo necesita al menos un turno de trabajo.
+                            {t(
+                              "ui.Schedule.elCicloNecesitaAlMenosUnTurno",
+                              "El ciclo necesita al menos un turno de trabajo.",
+                            )}
                           </p>
                         ) : cfgLibres === 0 ? (
                           <p
                             className="text-[11px]"
                             style={{ color: "var(--ink-soft)" }}
                           >
-                            Sin descanso: se trabaja todos los días y no hace
-                            falta sacafranco que releve.
+                            {t(
+                              "ui.Schedule.sinDescansoSeTrabajaTodosLosDias",
+                              "Sin descanso: se trabaja todos los días y no hace falta sacafranco que releve.",
+                            )}
                           </p>
                         ) : null}
                       </div>
@@ -10193,9 +11075,12 @@ export default function Schedule() {
                           className="mt-2 rounded-lg px-2 py-1.5 text-[10px]"
                           style={toneCard("ok", 8, 26)}
                         >
-                          Se aplica a {cfgVigilantes.length} vigilante
-                          {cfgVigilantes.length === 1 ? "" : "s"} y se rehacen
-                          sus turnos futuros. <b>Nadie pierde su puesto.</b>
+                          {t("ui.Schedule.seAplicaANVigilantes", {
+                            defaultValue:
+                              "Se aplica a {{count}} vigilantes y se rehacen sus turnos futuros.",
+                            count: cfgVigilantes.length,
+                          })}{" "}
+                          <b>{t("ui.Schedule.nadiePierdeSuPuesto", "Nadie pierde su puesto.")}</b>
                         </p>
                       )}
                     </div>
@@ -10204,8 +11089,10 @@ export default function Schedule() {
                       className="mt-1.5 text-[10px]"
                       style={{ color: "var(--ink-faint)" }}
                     >
-                      Sin ciclo de estación, cada vigilante necesita el suyo
-                      propio o su mes sale en blanco.
+                      {t(
+                        "ui.Schedule.sinCicloDeEstacion",
+                        "Sin ciclo de estación, cada vigilante necesita el suyo propio o su mes sale en blanco.",
+                      )}
                     </p>
                   )}
                 </div>
@@ -10221,23 +11108,35 @@ export default function Schedule() {
                 {[
                   {
                     value: "24h",
-                    label: "24 Horas",
-                    desc: "Fijo 1 + Fijo 2 + Sacafranco",
+                    label: t("ui.Schedule.tipo24Horas", "24 Horas"),
+                    desc: t(
+                      "ui.Schedule.tipo24HorasDesc",
+                      "Fijo 1 + Fijo 2 + Sacafranco",
+                    ),
                   },
                   {
                     value: "12h-day",
-                    label: "12h Diurno",
-                    desc: "Fijo 1 (día) + Sacafranco",
+                    label: t("ui.Schedule.tipo12hDiurno", "12h Diurno"),
+                    desc: t(
+                      "ui.Schedule.tipo12hDiurnoDesc",
+                      "Fijo 1 (día) + Sacafranco",
+                    ),
                   },
                   {
                     value: "12h-night",
-                    label: "12h Nocturno",
-                    desc: "Fijo 1 (noche) + Sacafranco",
+                    label: t("ui.Schedule.tipo12hNocturno", "12h Nocturno"),
+                    desc: t(
+                      "ui.Schedule.tipo12hNocturnoDesc",
+                      "Fijo 1 (noche) + Sacafranco",
+                    ),
                   },
                   {
                     value: "custom",
-                    label: "Personalizado",
-                    desc: "Ventana propia, bloques, 24×24…",
+                    label: t("ui.RotationStyleSelect.personalizado", "Personalizado"),
+                    desc: t(
+                      "ui.Schedule.tipoPersonalizadoDesc",
+                      "Ventana propia, bloques, 24×24…",
+                    ),
                   },
                 ].map((opt) => (
                   <button
@@ -10285,7 +11184,10 @@ export default function Schedule() {
                     }}
                   >
                     <div className="text-xs font-semibold">
-                      Plantilla 24×24 (alternancia diaria)
+                      {t(
+                        "ui.Schedule.plantilla24x24",
+                        "Plantilla 24×24 (alternancia diaria)",
+                      )}
                     </div>
                     <div
                       className="text-[10px]"
@@ -10331,8 +11233,15 @@ export default function Schedule() {
                       onChange={(e) => setCfgBlockHours(e.target.value)}
                     >
                       <option value="">
-                        Toda la jornada (1 fijo
-                        {cfgWinMin === 1440 ? " · 24h" : ""})
+                        {cfgWinMin === 1440
+                          ? t(
+                              "ui.Schedule.todaLaJornada1Fijo24h",
+                              "Toda la jornada (1 fijo · 24h)",
+                            )
+                          : t(
+                              "ui.Schedule.todaLaJornada1Fijo",
+                              "Toda la jornada (1 fijo)",
+                            )}
                       </option>
                       {[4, 6, 8, 12].map((h) => {
                         const fits =
@@ -10343,8 +11252,14 @@ export default function Schedule() {
                           <option key={h} disabled={!fits} value={String(h)}>
                             {h}h
                             {fits
-                              ? ` → ${k} fijo${k > 1 ? "s" : ""}`
-                              : " (no divide la cobertura)"}
+                              ? t("ui.Schedule.flechaNFijos", {
+                                  defaultValue: " → {{count}} fijos",
+                                  count: k,
+                                })
+                              : t(
+                                  "ui.Schedule.noDivideLaCobertura",
+                                  " (no divide la cobertura)",
+                                )}
                           </option>
                         );
                       })}
@@ -10383,10 +11298,25 @@ export default function Schedule() {
                         }}
                       >
                         {!cfgRotStyle
-                          ? "Sin patrón elegido se usa 1-1: cada fijo trabaja su bloque completo y alterna con el siguiente, sin libres."
+                          ? t(
+                              "ui.Schedule.sinPatronElegidoSeUsa11",
+                              "Sin patrón elegido se usa 1-1: cada fijo trabaja su bloque completo y alterna con el siguiente, sin libres.",
+                            )
                           : cfgAlternateOk
-                            ? `Patrón ${cfgRotWork}-${cfgRotCycle - cfgRotWork}: ${cfgGuardsPerBlock} fijos alternando por bloque, sin sacafranco. Total ${cfgBlockCount * cfgGuardsPerBlock} fijos.`
-                            : `El ciclo (${cfgRotCycle}) debe ser múltiplo de los días de trabajo (${cfgRotWork}). Usa 1-1, 2-2, 3-3…`}
+                            ? t("ui.Schedule.patronFijosAlternando", {
+                                defaultValue:
+                                  "Patrón {{trabajo}}-{{libres}}: {{porBloque}} fijos alternando por bloque, sin sacafranco. Total {{total}} fijos.",
+                                trabajo: cfgRotWork,
+                                libres: cfgRotCycle - cfgRotWork,
+                                porBloque: cfgGuardsPerBlock,
+                                total: cfgBlockCount * cfgGuardsPerBlock,
+                              })
+                            : t("ui.Schedule.elCicloDebeSerMultiplo", {
+                                defaultValue:
+                                  "El ciclo ({{ciclo}}) debe ser múltiplo de los días de trabajo ({{trabajo}}). Usa 1-1, 2-2, 3-3…",
+                                ciclo: cfgRotCycle,
+                                trabajo: cfgRotWork,
+                              })}
                       </p>
                     )}
                     {cfgRestCoverage === "sacafranco" &&
@@ -10396,9 +11326,13 @@ export default function Schedule() {
                           className="mt-1.5 text-[11px]"
                           style={{ color: "var(--ink-soft)" }}
                         >
-                          {cfgWinMin / 60}h de cobertura en {cfgBlockCount}{" "}
-                          bloques consecutivos de {Number(cfgBlockHours)}h —{" "}
-                          {cfgBlockCount} fijos + sacafranco.
+                          {t("ui.Schedule.hDeCoberturaEnBloques", {
+                            defaultValue:
+                              "{{horas}}h de cobertura en {{bloques}} bloques consecutivos de {{horasBloque}}h — {{bloques}} fijos + sacafranco.",
+                            horas: cfgWinMin / 60,
+                            bloques: cfgBlockCount,
+                            horasBloque: Number(cfgBlockHours),
+                          })}
                         </p>
                       )}
                   </div>
@@ -10430,11 +11364,18 @@ export default function Schedule() {
                   className="rounded-xl px-3 py-2 text-[11px]"
                   style={toneCard("ok", 8, 26)}
                 >
-                  Su ciclo es el del paso 2:{" "}
+                  {t("ui.Schedule.suCicloEsElDelPaso2", "Su ciclo es el del paso 2:")}{" "}
                   <b>
                     {cfgRotMode === "rotativo"
-                      ? `${cfgNombreCiclo} · ${cfgCicloLen} día${cfgCicloLen === 1 ? "" : "s"}`
-                      : "turno fijo, sin ciclo de estación"}
+                      ? t("ui.Schedule.cicloNombreNDias", {
+                          defaultValue: "{{nombre}} · {{count}} días",
+                          nombre: cfgNombreCiclo,
+                          count: cfgCicloLen,
+                        })
+                      : t(
+                          "ui.Schedule.turnoFijoSinCicloDeEstacion",
+                          "turno fijo, sin ciclo de estación",
+                        )}
                   </b>
                   .
                 </p>
@@ -10458,7 +11399,9 @@ export default function Schedule() {
                     : setConfigPaso((configPaso - 1) as 1 | 2)
                 }
               >
-                {configPaso === 1 ? t("actions.cancel") : "Atrás"}
+                {configPaso === 1
+                  ? t("actions.cancel")
+                  : t("ui.Schedule.atras", "Atrás")}
               </button>
               <div className="flex items-center gap-2">
                 {/* Desde el paso 2 se puede guardar SÓLO el ciclo: es el cambio
@@ -10476,7 +11419,7 @@ export default function Schedule() {
                     {configSaving ? (
                       <Loader2 className="animate-spin" size={14} />
                     ) : (
-                      "Guardar el ciclo"
+                      t("ui.Schedule.guardarElCiclo", "Guardar el ciclo")
                     )}
                   </button>
                 )}
@@ -10491,7 +11434,7 @@ export default function Schedule() {
                     type="button"
                     onClick={() => setConfigPaso((configPaso + 1) as 2 | 3)}
                   >
-                    Siguiente
+                    {t("ui.Schedule.siguiente", "Siguiente")}
                   </button>
                 ) : (
                   <button
@@ -10502,7 +11445,7 @@ export default function Schedule() {
                     {configSaving ? (
                       <Loader2 className="animate-spin" size={14} />
                     ) : (
-                      "Guardar"
+                      t("common.save", "Guardar")
                     )}
                   </button>
                 )}
@@ -10560,7 +11503,9 @@ export default function Schedule() {
                   className="px-5 py-4"
                   style={{ borderBottom: "1px solid var(--hairline)" }}
                 >
-                  <h4 className="text-sm font-semibold">Qué pasó ese día</h4>
+                  <h4 className="text-sm font-semibold">
+                    {t("ui.Schedule.quePasoEseDia", "Qué pasó ese día")}
+                  </h4>
                   <p
                     className="mt-0.5 text-[11px]"
                     style={{ color: "var(--ink-soft)" }}
@@ -10575,8 +11520,13 @@ export default function Schedule() {
                     style={toneCard("brand", 10, 26)}
                   >
                     <div className="text-[11px] font-semibold">
-                      Turno registrado
-                      {stTurno ? ` en ${stationLabel(stTurno)}` : ""}
+                      {t("ui.Schedule.turnoRegistrado", "Turno registrado")}
+                      {stTurno
+                        ? t("ui.Schedule.enEstacion", {
+                            defaultValue: " en {{estacion}}",
+                            estacion: stationLabel(stTurno),
+                          })
+                        : ""}
                     </div>
                     <div className="text-[10px] tabular-nums opacity-80">
                       {hm(turnoDelDia.startTime)} – {hm(turnoDelDia.endTime)}
@@ -10591,8 +11541,11 @@ export default function Schedule() {
                     style={{ color: "var(--ink-faint)" }}
                   >
                     {turnoDelDia
-                      ? "V, PM y F dejan el día marcado así en la hoja de asistencia (Nómina) y abren el hueco en Cobertura. El turno se conserva como constancia de que estaba programado — «Deshacer» lo devuelve."
-                      : "Marca lo que pasó ese día."}
+                      ? t(
+                          "ui.Schedule.vPmYFDejanElDiaMarcado",
+                          "V, PM y F dejan el día marcado así en la hoja de asistencia (Nómina) y abren el hueco en Cobertura. El turno se conserva como constancia de que estaba programado — «Deshacer» lo devuelve.",
+                        )
+                      : t("ui.Schedule.marcaLoQuePasoEseDia", "Marca lo que pasó ese día.")}
                   </p>
                   {CODE_ORDER.map((c) => (
                     <button
@@ -10622,8 +11575,10 @@ export default function Schedule() {
                         onClick={() => removeOverride(existing.id)}
                       >
                         <X className="inline h-3.5 w-3.5 mr-1" />
-                        Deshacer — volver a su turno (
-                        {CODE_LABEL[existing.type] || existing.type})
+                        {t("ui.Schedule.deshacerVolverASuTurno", {
+                          defaultValue: "Deshacer — volver a su turno ({{codigo}})",
+                          codigo: CODE_LABEL[existing.type] || existing.type,
+                        })}
                       </button>
                     );
                   })()}
@@ -10645,7 +11600,10 @@ export default function Schedule() {
                           openShiftEditor(turnoDelDia, g);
                         }}
                       >
-                        Editar este turno (horas y estación)…
+                        {t(
+                          "ui.Schedule.editarEsteTurnoHorasYEstacion",
+                          "Editar este turno (horas y estación)…",
+                        )}
                       </button>
                       <button
                         className="cg-focus col-span-2 rounded-xl px-3 py-2 text-xs font-semibold transition-all"
@@ -10656,7 +11614,7 @@ export default function Schedule() {
                         }}
                       >
                         <X className="inline h-3.5 w-3.5 mr-1" />
-                        Eliminar este turno
+                        {t("ui.Schedule.eliminarEsteTurno", "Eliminar este turno")}
                       </button>
                     </>
                   )}
@@ -10736,7 +11694,9 @@ export default function Schedule() {
                   style={{ borderBottom: "1px solid var(--hairline)" }}
                 >
                   <div>
-                    <h4 className="text-sm font-semibold">Editar el turno</h4>
+                    <h4 className="text-sm font-semibold">
+                      {t("ui.Schedule.editarElTurno", "Editar el turno")}
+                    </h4>
                     <p
                       className="mt-0.5 text-[11px]"
                       style={{ color: "var(--ink-soft)" }}
@@ -10755,7 +11715,9 @@ export default function Schedule() {
 
                 <div className="space-y-4 p-5">
                   <div>
-                    <label className="cg-eyebrow mb-1.5 block">Estación</label>
+                    <label className="cg-eyebrow mb-1.5 block">
+                      {t("ui.Schedule.estacion", "Estación")}
+                    </label>
                     <select
                       className="cg-input cg-focus w-full px-3 py-2.5 text-sm"
                       value={shiftEdit.stationId}
@@ -10772,14 +11734,18 @@ export default function Schedule() {
                         className="mt-1 text-[10px]"
                         style={{ color: "var(--warn-text)" }}
                       >
-                        El turno se mueve de estación. Deja de contar como
-                        cobertura de su plaza anterior.
+                        {t(
+                          "ui.Schedule.elTurnoSeMueveDeEstacion",
+                          "El turno se mueve de estación. Deja de contar como cobertura de su plaza anterior.",
+                        )}
                       </p>
                     )}
                   </div>
 
                   <div>
-                    <label className="cg-eyebrow mb-1.5 block">Turno</label>
+                    <label className="cg-eyebrow mb-1.5 block">
+                      {t("comun.turno", "Turno")}
+                    </label>
                     <div
                       className="mb-2 grid gap-2"
                       style={{
@@ -10798,7 +11764,13 @@ export default function Schedule() {
                             onClick={() => set({ start: b.ini, end: b.fin })}
                           >
                             <div className="text-xs font-semibold">
-                              {b.etiqueta}
+                              {b.etiqueta === "Diurno"
+                                ? t("ui.codeTones.diurno", "Diurno")
+                                : b.etiqueta === "Nocturno"
+                                  ? t("ui.codeTones.nocturno", "Nocturno")
+                                  : b.etiqueta === "24 horas"
+                                    ? t("ui.codeTones.veinticuatroHoras", "24 horas")
+                                    : b.etiqueta}
                             </div>
                             <div
                               className="text-[10px] tabular-nums"
@@ -10812,7 +11784,9 @@ export default function Schedule() {
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="cg-eyebrow mb-1 block">Entra</label>
+                        <label className="cg-eyebrow mb-1 block">
+                          {t("ui.StaffSchedule.entra", "Entra")}
+                        </label>
                         <input
                           className="cg-input cg-focus w-full px-2 py-2 font-mono text-sm tabular-nums"
                           type="time"
@@ -10821,7 +11795,9 @@ export default function Schedule() {
                         />
                       </div>
                       <div>
-                        <label className="cg-eyebrow mb-1 block">Sale</label>
+                        <label className="cg-eyebrow mb-1 block">
+                          {t("ui.StaffSchedule.sale", "Sale")}
+                        </label>
                         <input
                           className="cg-input cg-focus w-full px-2 py-2 font-mono text-sm tabular-nums"
                           type="time"
@@ -10834,9 +11810,15 @@ export default function Schedule() {
                       className="mt-1 text-[10px]"
                       style={{ color: "var(--ink-faint)" }}
                     >
-                      Jornada de{" "}
+                      {t("ui.Schedule.jornadaDe", "Jornada de")}{" "}
                       <b>{durH % 1 === 0 ? durH : durH.toFixed(1)} h</b>
-                      {eMin <= sMin ? " (termina al día siguiente)" : ""}.
+                      {eMin <= sMin
+                        ? t(
+                            "ui.Schedule.terminaAlDiaSiguienteParen",
+                            " (termina al día siguiente)",
+                          )
+                        : ""}
+                      .
                     </p>
                   </div>
 
@@ -10846,10 +11828,10 @@ export default function Schedule() {
                       style={toneCard("warn", 10, 26)}
                     >
                       <p className="text-[11px]">
-                        Este turno lo generó la rotación. El cambio se queda
-                        hasta que se reoptimice o se reasigne el puesto; para
-                        que no vuelva, corrige las horas de la plaza en la
-                        cabecera de la estación.
+                        {t(
+                          "ui.Schedule.esteTurnoLoGeneroLaRotacion",
+                          "Este turno lo generó la rotación. El cambio se queda hasta que se reoptimice o se reasigne el puesto; para que no vuelva, corrige las horas de la plaza en la cabecera de la estación.",
+                        )}
                       </p>
                     </div>
                   )}
@@ -10874,7 +11856,7 @@ export default function Schedule() {
                     }}
                   >
                     <X className="inline h-3.5 w-3.5 mr-1" />
-                    Eliminar
+                    {t("common.delete", "Eliminar")}
                   </button>
                   <div className="flex items-center gap-2">
                     <button
@@ -10882,7 +11864,7 @@ export default function Schedule() {
                       disabled={shiftEditSaving}
                       onClick={() => setShiftEdit(null)}
                     >
-                      Cancelar
+                      {t("common.cancel", "Cancelar")}
                     </button>
                     <button
                       className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40"
@@ -10892,7 +11874,7 @@ export default function Schedule() {
                       {shiftEditSaving ? (
                         <Loader2 className="animate-spin" size={14} />
                       ) : (
-                        "Guardar"
+                        t("common.save", "Guardar")
                       )}
                     </button>
                   </div>
@@ -10930,8 +11912,14 @@ export default function Schedule() {
               </div>
               <p className="mt-1 text-xs" style={{ color: "var(--ink-soft)" }}>
                 {planData
-                  ? "Horario publicado. Estos vigilantes fueron notificados de sus cambios."
-                  : "Revisa los cambios propuestos. Nada se aplica hasta que publiques."}
+                  ? t(
+                      "ui.Schedule.horarioPublicadoNotificados",
+                      "Horario publicado. Estos vigilantes fueron notificados de sus cambios.",
+                    )
+                  : t(
+                      "ui.Schedule.revisaLosCambiosPropuestos",
+                      "Revisa los cambios propuestos. Nada se aplica hasta que publiques.",
+                    )}
               </p>
             </div>
 
@@ -10944,11 +11932,14 @@ export default function Schedule() {
                 >
                   <Users size={16} />
                   <span className="text-sm font-semibold">
-                    {planData?.plan?.notifiedGuards ?? 0} de{" "}
-                    {planData?.plan?.totalGuards ??
-                      planData?.items?.length ??
-                      0}{" "}
-                    vigilantes notificados
+                    {t("ui.Schedule.nDeNVigilantesNotificados", {
+                      defaultValue: "{{n}} de {{total}} vigilantes notificados",
+                      n: planData?.plan?.notifiedGuards ?? 0,
+                      total:
+                        planData?.plan?.totalGuards ??
+                        planData?.items?.length ??
+                        0,
+                    })}
                   </span>
                 </div>
                 {(planData?.items || []).length ? (
@@ -10982,7 +11973,7 @@ export default function Schedule() {
                             )}
                           </span>
                           <span className="min-w-0 flex-1 truncate text-sm">
-                            {it.guardName || "Vigilante"}
+                            {it.guardName || t("comun.vigilante", "Vigilante")}
                           </span>
                           <span
                             className="shrink-0 font-mono text-xs tabular-nums"
@@ -11013,25 +12004,25 @@ export default function Schedule() {
                   const s = proposalData?.proposal?.summary || {};
                   const cards = [
                     {
-                      label: "Nuevos",
+                      label: t("ui.Schedule.nuevos", "Nuevos"),
                       value: s.added || 0,
                       icon: <PlusIcon size={14} />,
                       tone: "ok" as Tone,
                     },
                     {
-                      label: "Eliminados",
+                      label: t("ui.Schedule.eliminados", "Eliminados"),
                       value: s.removed || 0,
                       icon: <MinusCircle size={14} />,
                       tone: "bad" as Tone,
                     },
                     {
-                      label: "Modificados",
+                      label: t("ui.Schedule.modificados", "Modificados"),
                       value: s.changed || 0,
                       icon: <RefreshCw size={14} />,
                       tone: "warn" as Tone,
                     },
                     {
-                      label: "Vigilantes afectados",
+                      label: t("ui.Schedule.vigilantesAfectados", "Vigilantes afectados"),
                       value: s.guardsAffected || 0,
                       icon: <Users size={14} />,
                       tone: "neutral" as Tone,
@@ -11120,7 +12111,10 @@ export default function Schedule() {
                             className="font-semibold tabular-nums"
                             style={{ color: "var(--bad-text)" }}
                           >
-                            {cov.gapCount} sin cubrir
+                            {t("ui.Schedule.nSinCubrirCorto", {
+                              defaultValue: "{{n}} sin cubrir",
+                              n: cov.gapCount,
+                            })}
                           </span>
                         )}
                         {(cov.overstaffCount || 0) > 0 && (
@@ -11128,7 +12122,10 @@ export default function Schedule() {
                             className="tabular-nums"
                             style={{ color: "var(--warn-text)" }}
                           >
-                            {cov.overstaffCount} sobre-cubierto
+                            {t("ui.Schedule.nSobreCubierto", {
+                              defaultValue: "{{n}} sobre-cubierto",
+                              n: cov.overstaffCount,
+                            })}
                           </span>
                         )}
                       </div>
@@ -11154,11 +12151,20 @@ export default function Schedule() {
 
                   if (w.doubleBookings?.length)
                     lines.push(
-                      `${w.doubleBookings.length} vigilante(s) con doble asignación el mismo día`,
+                      t("ui.Schedule.avisoDobleAsignacion", {
+                        defaultValue:
+                          "{{n}} vigilante(s) con doble asignación el mismo día",
+                        n: w.doubleBookings.length,
+                      }),
                     );
                   if (w.restViolations?.length)
                     lines.push(
-                      `${w.restViolations.length} vigilante(s) sin descanso semanal (más de ${w.maxConsecutiveAllowed || 7} días seguidos)`,
+                      t("ui.Schedule.avisoSinDescansoSemanal", {
+                        defaultValue:
+                          "{{n}} vigilante(s) sin descanso semanal (más de {{max}} días seguidos)",
+                        n: w.restViolations.length,
+                        max: w.maxConsecutiveAllowed || 7,
+                      }),
                     );
                   // Estos dos SE CALCULABAN y viajaban en la respuesta, y esta lista
                   // no los leía: se podía fijar «descanso mínimo 12 h» y «tope 40 h
@@ -11167,15 +12173,27 @@ export default function Schedule() {
                   // el motor existía, y no llegaba a la pantalla.
                   if (w.shortRests?.length)
                     lines.push(
-                      `${w.shortRests.length} vigilante(s) con menos del descanso mínimo entre turnos`,
+                      t("ui.Schedule.avisoDescansoMinimo", {
+                        defaultValue:
+                          "{{n}} vigilante(s) con menos del descanso mínimo entre turnos",
+                        n: w.shortRests.length,
+                      }),
                     );
                   if (w.weeklyOverloads?.length)
                     lines.push(
-                      `${w.weeklyOverloads.length} vigilante(s) por encima del tope de horas semanales`,
+                      t("ui.Schedule.avisoTopeHorasSemanales", {
+                        defaultValue:
+                          "{{n}} vigilante(s) por encima del tope de horas semanales",
+                        n: w.weeklyOverloads.length,
+                      }),
                     );
                   if (w.sfStyleInconsistencies?.length)
                     lines.push(
-                      `${w.sfStyleInconsistencies.length} sitio(s) con sacafrancos en estilos de turno distintos`,
+                      t("ui.Schedule.avisoEstilosSacafranco", {
+                        defaultValue:
+                          "{{n}} sitio(s) con sacafrancos en estilos de turno distintos",
+                        n: w.sfStyleInconsistencies.length,
+                      }),
                     );
                   if (!lines.length) return null;
 
@@ -11255,9 +12273,9 @@ export default function Schedule() {
                       change: "warn",
                     };
                     const label: Record<string, string> = {
-                      add: "Nuevo",
-                      remove: "Eliminar",
-                      change: "Cambio",
+                      add: t("ui.Schedule.cambioNuevo", "Nuevo"),
+                      remove: t("common.delete", "Eliminar"),
+                      change: t("ui.Schedule.cambioCambio", "Cambio"),
                     };
 
                     return (
@@ -11283,7 +12301,7 @@ export default function Schedule() {
                               <p className="truncate text-sm tabular-nums">
                                 {fmt(c.startTime || "")}{" "}
                                 {c.meta?.shiftType
-                                  ? `· ${c.meta.shiftType === "night" ? "Nocturno" : c.meta.shiftType === "day" ? "Diurno" : c.meta.shiftType}`
+                                  ? `· ${c.meta.shiftType === "night" ? t("ui.codeTones.nocturno", "Nocturno") : c.meta.shiftType === "day" ? t("ui.codeTones.diurno", "Diurno") : c.meta.shiftType}`
                                   : ""}
                               </p>
                             </div>
@@ -11294,7 +12312,10 @@ export default function Schedule() {
                             className="py-2 text-center text-[11px]"
                             style={{ color: "var(--ink-soft)" }}
                           >
-                            +{changes.length - 300} cambios más…
+                            {t("ui.Schedule.nCambiosMas", {
+                              defaultValue: "+{{n}} cambios más…",
+                              n: changes.length - 300,
+                            })}
                           </p>
                         )}
                       </div>
@@ -11316,7 +12337,7 @@ export default function Schedule() {
                   className="cg-btn-brand cg-focus ml-auto rounded-full px-6 py-2.5 text-sm font-semibold transition-all"
                   onClick={closeProposalModal}
                 >
-                  Listo
+                  {t("ui.Schedule.listo", "Listo")}
                 </button>
               ) : (
                 <>
@@ -11326,7 +12347,7 @@ export default function Schedule() {
                     style={{ color: "var(--bad-text)" }}
                     onClick={discardProposal}
                   >
-                    <Trash2 size={14} /> Descartar
+                    <Trash2 size={14} /> {t("ui.Schedule.descartar", "Descartar")}
                   </button>
                   {(() => {
                     const gaps =
@@ -11346,10 +12367,10 @@ export default function Schedule() {
                           <CheckCircle2 size={14} />
                         )}
                         {publishing
-                          ? "Publicando..."
+                          ? t("ui.Schedule.publicando", "Publicando...")
                           : hasGaps
-                            ? "Publicar con faltantes"
-                            : "Publicar y aplicar"}
+                            ? t("ui.Schedule.publicarConFaltantes", "Publicar con faltantes")
+                            : t("ui.Schedule.publicarYAplicar", "Publicar y aplicar")}
                       </button>
                     );
                   })()}

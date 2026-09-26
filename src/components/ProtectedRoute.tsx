@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { esVistaPrevia } from "@/lib/vistaPrevia";
 import { Navigate, useLocation } from "react-router-dom";
 
@@ -84,6 +85,7 @@ function RedirectToSuperadminApp() {
 }
 
 function LoadingScreen() {
+  const { t } = useTranslation();
   let tenantLogo: string | null = null;
 
   try {
@@ -106,7 +108,9 @@ function LoadingScreen() {
       )}
       <div className="flex flex-col items-center gap-3">
         <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
-        <p className="text-sm text-muted-foreground">Cargando…</p>
+        <p className="text-sm text-muted-foreground">
+          {t("common.loading", "Cargando…")}
+        </p>
       </div>
     </div>
   );

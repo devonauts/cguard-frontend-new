@@ -26,6 +26,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useTranslation } from "react-i18next";
+import { localeActual } from "@/lib/localeActual";
 import { EmptyState, SkeletonCards, Segmented, Field } from "@/components/kit";
 import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import type { PostSite } from "@/types";
@@ -52,6 +53,14 @@ const ETIQUETA_JORNADA: Record<string, string> = {
   "24 horas": "24 horas",
   sacafranco: "Relevo",
   personalizada: "Personalizada",
+};
+// Translation keys for ETIQUETA_JORNADA (the Spanish text is the fallback).
+const ETIQUETA_JORNADA_KEY: Record<string, string> = {
+  diurno: "settings.jornada.diurna",
+  nocturno: "ui.PostSiteWizard.jornada.nocturna",
+  "24 horas": "stations.scheduleType.24h",
+  sacafranco: "settings.jornada.relevo",
+  personalizada: "ui.PostSiteWizard.jornada.personalizada",
 };
 
 // El tinte de la jornada sale de los semánticos del sistema: día = warn,
@@ -511,7 +520,7 @@ export default function Stations({ site }: { site?: SiteProp }) {
         }
       }
       if (!dt || isNaN(dt.getTime())) return value;
-      return new Intl.DateTimeFormat(undefined, {
+      return new Intl.DateTimeFormat(localeActual(), {
         hour: "2-digit",
         minute: "2-digit",
       }).format(dt);
@@ -1156,7 +1165,10 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                     type="checkbox"
                                     className="h-5 w-5"
                                     style={{ accentColor: "var(--brand)" }}
-                                    aria-label={`Seleccionar ${name}`}
+                                    aria-label={t("guards.list.selectAria", {
+                    defaultValue: "Seleccionar {{name}}",
+                    name,
+                  })}
                                     checked={selectedIds.includes(id)}
                                     onChange={() => {
                                       setSelectedIds((prev) =>
@@ -1192,7 +1204,9 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                           className="inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium"
                                           style={jornadaChip(j.tipo)}
                                         >
-                                          {j.nombre || j.tipo}
+                                          {ETIQUETA_JORNADA_KEY[j.tipo]
+                                            ? t(ETIQUETA_JORNADA_KEY[j.tipo], j.nombre)
+                                            : j.nombre || j.tipo}
                                           {j.startTime && j.endTime && (
                                             <span className="font-mono opacity-60 ml-1">
                                               {j.startTime}–{j.endTime}
@@ -1308,7 +1322,10 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                 type="checkbox"
                                 className="h-5 w-5"
                                 style={{ accentColor: "var(--brand)" }}
-                                aria-label={`Seleccionar ${name}`}
+                                aria-label={t("guards.list.selectAria", {
+                    defaultValue: "Seleccionar {{name}}",
+                    name,
+                  })}
                                 checked={selectedIds.includes(id)}
                                 onClick={(e) => e.stopPropagation()}
                                 onChange={() =>
@@ -1329,7 +1346,9 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                     className="inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium"
                                     style={jornadaChip(j.tipo)}
                                   >
-                                    {j.nombre || j.tipo}
+                                    {ETIQUETA_JORNADA_KEY[j.tipo]
+                                      ? t(ETIQUETA_JORNADA_KEY[j.tipo], j.nombre)
+                                      : j.nombre || j.tipo}
                                     {j.startTime && j.endTime && (
                                       <span className="font-mono opacity-60 ml-1">
                                         {j.startTime}–{j.endTime}

@@ -118,8 +118,10 @@ export default function AlarmActionPlan({ caseId }: { caseId: string }) {
           {t("ui.AlarmActionPlan.planDeAccion", "Plan de acción")}
         </div>
         <p className="text-xs text-muted-foreground">
-          Sin plan de acción configurado para este caso. Crea uno en Paneles
-          para guiar la respuesta del operador.
+          {t(
+            "ui.AlarmActionPlan.sinPlanConfigurado",
+            "Sin plan de acción configurado para este caso. Crea uno en Paneles para guiar la respuesta del operador.",
+          )}
         </p>
       </Card>
     );
@@ -166,7 +168,14 @@ export default function AlarmActionPlan({ caseId }: { caseId: string }) {
                 className="cg-focus relative mt-0.5 flex size-5 shrink-0 items-center justify-center rounded border transition-colors after:absolute after:-inset-2 after:content-['']"
                 // Marcado: relleno de marca con tinta `--brand-ink`. Blanco sobre
                 // `--brand` (L 0.72/0.78) daría ~2,2:1 — ver tokens.css.
-                title={done ? "Desmarcar" : "Marcar como completado"}
+                title={
+                  done
+                    ? t("ui.AlarmActionPlan.desmarcar", "Desmarcar")
+                    : t(
+                        "ui.AlarmActionPlan.marcarComoCompletado",
+                        "Marcar como completado",
+                      )
+                }
                 onClick={() => toggle(i, !done)}
               >
                 {savingIdx === i ? (

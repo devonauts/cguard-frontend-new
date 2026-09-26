@@ -99,9 +99,19 @@ export default function AlarmECV({
         outcome,
       });
 
-      toast.success(`Llamada registrada — ${OUTCOME_LABEL[outcome]}`);
+      toast.success(
+        t("ui.AlarmECV.llamadaRegistrada", {
+          defaultValue: "Llamada registrada — {{outcome}}",
+          outcome: t(OUTCOME_LABEL_KEY[outcome], OUTCOME_LABEL[outcome]),
+        }),
+      );
       if (r.ecvSatisfied)
-        toast.success("ECV satisfecho — despacho policial habilitado");
+        toast.success(
+          t(
+            "ui.AlarmECV.ecvSatisfechoDespachoHabilitado",
+            "ECV satisfecho — despacho policial habilitado",
+          ),
+        );
       onChanged?.();
     } catch (e: any) {
       toast.error(
@@ -118,7 +128,10 @@ export default function AlarmECV({
     try {
       const r = await alarmService.dispatchPolice(caseId, {});
 
-      toast.success(r?.police?.message || "Despacho policial registrado");
+      toast.success(
+        r?.police?.message ||
+          t("ui.AlarmECV.despachoPolicialRegistrado", "Despacho policial registrado"),
+      );
       onChanged?.();
     } catch (e: any) {
       toast.error(
@@ -150,20 +163,26 @@ export default function AlarmECV({
           </StatusBadge>
         ) : ecvSatisfied ? (
           <StatusBadge dot={false} tone="ok">
-            <ShieldCheck className="size-3" /> ECV satisfecho
+            <ShieldCheck className="size-3" />{" "}
+            {t("ui.AlarmECV.ecvSatisfecho", "ECV satisfecho")}
           </StatusBadge>
         ) : (
           <StatusBadge dot={false} tone="warn">
-            <ShieldAlert className="size-3" /> ECV pendiente ({calls.length}/2
-            llamadas)
+            <ShieldAlert className="size-3" />{" "}
+            {t("ui.AlarmECV.ecvPendiente", {
+              defaultValue: "ECV pendiente ({{n}}/2 llamadas)",
+              n: calls.length,
+            })}
           </StatusBadge>
         )}
       </div>
 
       {!exempt && (
         <p className="mb-2 text-xs text-muted-foreground">
-          Antes de despachar a la policía, intente contactar al menos 2 números
-          de la lista (reduce falsas alarmas).
+          {t(
+            "ui.AlarmECV.antesDeDespachar",
+            "Antes de despachar a la policía, intente contactar al menos 2 números de la lista (reduce falsas alarmas).",
+          )}
         </p>
       )}
 
@@ -241,7 +260,7 @@ export default function AlarmECV({
                 <Check className="size-3" />
               )}
               <span style={{ color: "var(--ink)" }}>
-                {c.contactName || "Contacto"}
+                {c.contactName || t("ui.AlarmECV.contacto", "Contacto")}
               </span>
               <span>
                 ·{" "}
@@ -265,7 +284,10 @@ export default function AlarmECV({
             title={
               canDispatch
                 ? t("alarm.ecv.dispatchPolice", "Despachar a la policía")
-                : "Complete la ECV (2 llamadas) primero"
+                : t(
+                    "ui.AlarmECV.completeLaEcvPrimero",
+                    "Complete la ECV (2 llamadas) primero",
+                  )
             }
             variant="destructive"
             onClick={dispatchPolice}
@@ -275,11 +297,11 @@ export default function AlarmECV({
             ) : (
               <Siren className="size-3.5" />
             )}
-            Despachar policía
+            {t("ui.AlarmECV.despacharPolicia", "Despachar policía")}
           </Button>
           {!canDispatch && (
             <span className="text-[11px]" style={{ color: "var(--warn-text)" }}>
-              Requiere ECV
+              {t("ui.AlarmECV.requiereEcv", "Requiere ECV")}
             </span>
           )}
         </div>

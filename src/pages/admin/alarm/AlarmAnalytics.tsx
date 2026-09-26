@@ -166,7 +166,10 @@ export default function AlarmAnalytics() {
                 onChange={(v) => setDays(Number(v))}
                 options={PERIODS.map((p) => ({
                   value: String(p),
-                  label: p === 365 ? "1 año" : `${p} días`,
+                  label:
+                    p === 365
+                      ? t("ui.AlarmAnalytics.unAnio", "1 año")
+                      : t("ui.AlarmAnalytics.nDias", { defaultValue: "{{count}} días", count: p }),
                 }))}
               />
               <ExportMenu
@@ -176,7 +179,9 @@ export default function AlarmAnalytics() {
                 label={t("alarm.analytics.exportAudit", "Exportar historial")}
               />
               <Button asChild variant="ghost" size="sm">
-                <Link to="/alarm/reports">Falsas alarmas →</Link>
+                <Link to="/alarm/reports">
+                  {t("ui.AlarmAnalytics.falsasAlarmasFlecha", "Falsas alarmas →")}
+                </Link>
               </Button>
             </>
           }
@@ -191,22 +196,25 @@ export default function AlarmAnalytics() {
                 icon={<BarChart3 size={16} />}
                 accent={GOLD}
                 value={d.total}
-                label="Casos"
-                sub={`${d.open} abiertos`}
+                label={t("ui.AlarmAnalytics.casos", "Casos")}
+                sub={t("ui.AlarmAnalytics.nAbiertos", {
+                  defaultValue: "{{count}} abiertos",
+                  count: d.open,
+                })}
               />
               <MetricCard
                 icon={<Clock size={16} />}
                 accent={TONES.info}
                 value={fmtDur(d.avgTtaSec)}
-                label="Reconocimiento prom."
-                sub="tiempo a reconocer"
+                label={t("ui.AlarmAnalytics.reconocimientoProm", "Reconocimiento prom.")}
+                sub={t("ui.AlarmAnalytics.tiempoAReconocer", "tiempo a reconocer")}
               />
               <MetricCard
                 icon={<Send size={16} />}
                 accent={TONES.serie2}
                 value={fmtDur(d.avgTtdSec)}
-                label="Despacho prom."
-                sub="tiempo a despachar"
+                label={t("ui.AlarmAnalytics.despachoProm", "Despacho prom.")}
+                sub={t("ui.AlarmAnalytics.tiempoADespachar", "tiempo a despachar")}
               />
               <MetricCard
                 icon={<TrendingUp size={16} />}
@@ -216,14 +224,14 @@ export default function AlarmAnalytics() {
                   "ui.AlarmAnalytics.resolucionProm",
                   "Resolución prom.",
                 )}
-                sub="tiempo a resolver"
+                sub={t("ui.AlarmAnalytics.tiempoAResolver", "tiempo a resolver")}
               />
               <MetricCard
                 icon={<ShieldCheck size={16} />}
                 accent={TONES.ok}
                 value={`${d.slaAckCompliance}%`}
-                label="Plazos cumplidos"
-                sub="reconocidos a tiempo"
+                label={t("ui.AlarmAnalytics.plazosCumplidos", "Plazos cumplidos")}
+                sub={t("ui.AlarmAnalytics.reconocidosATiempo", "reconocidos a tiempo")}
                 pct={d.slaAckCompliance}
               />
               <MetricCard
@@ -242,7 +250,7 @@ export default function AlarmAnalytics() {
                 accent={TONES.bad}
                 value={`${d.falseRate}%`}
                 label={t("ui.AlarmAnalytics.tasaDeFalsas", "Tasa de falsas")}
-                sub="falsas y reincidentes"
+                sub={t("ui.AlarmAnalytics.falsasYReincidentes", "falsas y reincidentes")}
                 pct={d.falseRate}
               />
               <MetricCard
@@ -253,7 +261,10 @@ export default function AlarmAnalytics() {
                   "ui.AlarmAnalytics.verificacionPorLlamada",
                   "Verificación por llamada",
                 )}
-                sub={`${d.totalCalls} llamadas`}
+                sub={t("ui.AlarmAnalytics.nLlamadas", {
+                  defaultValue: "{{count}} llamadas",
+                  count: d.totalCalls,
+                })}
               />
             </StatsStrip>
 
@@ -294,16 +305,16 @@ export default function AlarmAnalytics() {
                   }))}
                 />
               </Section>
-              <Section title="Despachos" icon={<Send size={16} />}>
+              <Section title={t("ui.AlarmAnalytics.despachos", "Despachos")} icon={<Send size={16} />}>
                 <HBars
                   items={toItems(
                     d.dispatchByType,
                     (k) =>
                       ({
-                        guard: "Vigilante",
-                        police: "Policía",
-                        fire: "Bomberos",
-                        medical: "Médico",
+                        guard: t("ui.AlarmCaseDetail.dispatch.guard", "Vigilante"),
+                        police: t("ui.AlarmCaseDetail.dispatch.police", "Policía"),
+                        fire: t("ui.AlarmCaseDetail.dispatch.fire", "Bomberos"),
+                        medical: t("ui.AlarmCaseDetail.dispatch.medical", "Médico"),
                       })[k] || k,
                   )}
                   color={TONES.info}
@@ -333,13 +344,13 @@ export default function AlarmAnalytics() {
                     <table className="cg-tabla-fichas w-full text-sm">
                       <thead>
                         <tr className="border-b border-border text-left text-xs text-muted-foreground">
-                          <th className="px-2 py-2">Operador</th>
-                          <th className="px-2 py-2 text-right">Casos</th>
+                          <th className="px-2 py-2">{t("ui.AlarmAnalytics.operador", "Operador")}</th>
+                          <th className="px-2 py-2 text-right">{t("ui.AlarmAnalytics.casos", "Casos")}</th>
                           <th className="px-2 py-2 text-right">
-                            Reconoc. prom.
+                            {t("ui.AlarmAnalytics.reconocProm", "Reconoc. prom.")}
                           </th>
                           <th className="px-2 py-2 text-right">
-                            Despacho prom.
+                            {t("ui.AlarmAnalytics.despachoProm", "Despacho prom.")}
                           </th>
                         </tr>
                       </thead>
@@ -350,21 +361,21 @@ export default function AlarmAnalytics() {
                             className="border-b"
                             style={{ borderColor: "var(--hairline)" }}
                           >
-                            <td className="px-2 py-2 font-medium text-foreground" data-rotulo="Operador">
+                            <td className="px-2 py-2 font-medium text-foreground" data-rotulo={t("ui.AlarmAnalytics.operador", "Operador")}>
                               {o.name}
                             </td>
-                            <td className="px-2 py-2 text-right tabular-nums" data-rotulo="Casos">
+                            <td className="px-2 py-2 text-right tabular-nums" data-rotulo={t("ui.AlarmAnalytics.casos", "Casos")}>
                               {o.handled}
                             </td>
                             <td
-                              data-rotulo="Reconoc. prom."
+                              data-rotulo={t("ui.AlarmAnalytics.reconocProm", "Reconoc. prom.")}
                               className="px-2 py-2 text-right tabular-nums"
                               style={{ color: "var(--ink-soft)" }}
                             >
                               {fmtDur(o.avgTtaSec)}
                             </td>
                             <td
-                              data-rotulo="Despacho prom."
+                              data-rotulo={t("ui.AlarmAnalytics.despachoProm", "Despacho prom.")}
                               className="px-2 py-2 text-right tabular-nums"
                               style={{ color: "var(--ink-soft)" }}
                             >

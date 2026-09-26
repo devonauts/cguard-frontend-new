@@ -96,10 +96,19 @@ export default function ProfilePhotoCapture({
     } catch (err: any) {
       const msg =
         err?.name === "NotAllowedError"
-          ? "Permiso de cámara denegado. Por favor, permita el acceso a la cámara en su navegador."
+          ? t(
+              "ui.ProfilePhotoCapture.permisoDeCamaraDenegado",
+              "Permiso de cámara denegado. Por favor, permita el acceso a la cámara en su navegador.",
+            )
           : err?.name === "NotFoundError"
-            ? "No se encontró una cámara en este dispositivo."
-            : "No se pudo acceder a la cámara. Intente usar 'Seleccionar archivo' en su lugar.";
+            ? t(
+                "ui.ProfilePhotoCapture.noSeEncontroCamara",
+                "No se encontró una cámara en este dispositivo.",
+              )
+            : t(
+                "ui.ProfilePhotoCapture.noSePudoAccederCamara",
+                "No se pudo acceder a la cámara. Intente usar 'Seleccionar archivo' en su lugar.",
+              );
 
       setCameraError(msg);
       setCameraReady(false);
@@ -197,7 +206,7 @@ export default function ProfilePhotoCapture({
           >
             {currentPreview ? (
               <img
-                alt="Foto de perfil"
+                alt={t("ui.ProfilePhotoCapture.fotoDePerfil", "Foto de perfil")}
                 className="w-full h-full object-cover"
                 src={currentPreview}
               />
@@ -208,7 +217,7 @@ export default function ProfilePhotoCapture({
               >
                 <Shield className="h-10 w-10" />
                 <span className="text-[10px] font-medium tracking-wide uppercase">
-                  Foto
+                  {t("ui.ProfilePhotoCapture.foto", "Foto")}
                 </span>
               </div>
             )}
@@ -246,7 +255,7 @@ export default function ProfilePhotoCapture({
             onClick={startCamera}
           >
             <Camera className="w-4 h-4" />
-            Tomar foto
+            {t("ui.ProfilePhotoCapture.tomarFoto", "Tomar foto")}
           </Button>
           <Button
             className="gap-1.5"
@@ -303,11 +312,14 @@ export default function ProfilePhotoCapture({
             <ul className="list-disc list-inside space-y-0.5 text-xs">
               <li>
                 {t("ui.ProfilePhotoCapture.elVigilanteDebeVestir")}{" "}
-                <strong>uniforme completo</strong> y presentable
+                <strong>
+                  {t("ui.ProfilePhotoCapture.uniformeCompleto", "uniforme completo")}
+                </strong>{" "}
+                {t("ui.ProfilePhotoCapture.yPresentable", "y presentable")}
               </li>
               <li>
-                {t("ui.ProfilePhotoCapture.useUnFondo")} <strong>neutro</strong>{" "}
-                (pared blanca o gris)
+                {t("ui.ProfilePhotoCapture.useUnFondo")} <strong>{t("ui.ProfilePhotoCapture.neutro", "neutro")}</strong>{" "}
+                {t("ui.ProfilePhotoCapture.paredBlancaOGris", "(pared blanca o gris)")}
               </li>
               <li>
                 {t("ui.ProfilePhotoCapture.laFotoDebeMostrar")}{" "}
@@ -337,7 +349,7 @@ export default function ProfilePhotoCapture({
           <div className="glass-sunken relative aspect-video overflow-hidden rounded-xl">
             {capturedUrl ? (
               <img
-                alt="Foto capturada"
+                alt={t("ui.ProfilePhotoCapture.fotoCapturada", "Foto capturada")}
                 className="w-full h-full object-contain"
                 src={capturedUrl}
               />
@@ -354,7 +366,7 @@ export default function ProfilePhotoCapture({
                 className="absolute inset-0 flex items-center justify-center text-sm"
                 style={{ color: "var(--ink-soft)" }}
               >
-                Iniciando cámara…
+                {t("ui.ProfilePhotoCapture.iniciandoCamara", "Iniciando cámara…")}
               </div>
             )}
           </div>
@@ -371,7 +383,7 @@ export default function ProfilePhotoCapture({
                   onClick={retakePhoto}
                 >
                   <RotateCcw className="w-4 h-4" />
-                  Retomar
+                  {t("ui.ProfilePhotoCapture.retomar", "Retomar")}
                 </Button>
                 <Button
                   className="gap-1.5"
@@ -386,7 +398,7 @@ export default function ProfilePhotoCapture({
             ) : (
               <>
                 <Button type="button" variant="ghost" onClick={closeCamera}>
-                  Cancelar
+                  {t("actions.cancel", "Cancelar")}
                 </Button>
                 <Button
                   className="gap-1.5"
@@ -395,7 +407,7 @@ export default function ProfilePhotoCapture({
                   onClick={capturePhoto}
                 >
                   <Camera className="w-4 h-4" />
-                  Capturar
+                  {t("ui.ProfilePhotoCapture.capturar", "Capturar")}
                 </Button>
               </>
             )}

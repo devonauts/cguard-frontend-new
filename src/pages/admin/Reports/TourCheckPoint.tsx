@@ -8,7 +8,7 @@ export default function TourCheckPoint() {
 
   return (
     <ReportPageShell
-      description="Puntos de control escaneados durante las rondas, con fecha y ubicación."
+      description={t("ui.TourCheckPoint.descripcion", "Puntos de control escaneados durante las rondas, con fecha y ubicación.")}
       icon={Route}
       title={t(
         "ui.TourCheckPoint.registrosDePuntosDeControl",

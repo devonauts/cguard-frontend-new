@@ -109,7 +109,7 @@ function scheduledOn(route: any, weekday: number): boolean {
 export default function PatrullaBoardPage() {
   const { t } = useTranslation();
 
-  usePageTitle("Patrulla vehicular");
+  usePageTitle(t("sidebar.patrulla.patrulla-board", "Patrulla vehicular"));
   const navigate = useNavigate();
   const [date, setDate] = useState(() => hoyEnLaEmpresa());
   const [routes, setRoutes] = useState<any[]>([]);
@@ -132,7 +132,10 @@ export default function PatrullaBoardPage() {
       setRoutes(r?.rows ?? []);
       setRuns(runRes || []);
     } catch (e: any) {
-      toast.error(e?.message || "No se pudieron cargar las rutas");
+      toast.error(
+        e?.message ||
+          t("routes.live.loadError", "No se pudieron cargar las rutas"),
+      );
     } finally {
       setLoading(false);
     }
@@ -179,10 +182,15 @@ export default function PatrullaBoardPage() {
   const optimize = async (route: any) => {
     if (
       !(await confirmDialog({
-        title: `Optimizar «${route.name}»`,
-        message:
+        title: t("ui.PatrullaBoard.optimizarTitulo", {
+          defaultValue: "Optimizar «{{name}}»",
+          name: route.name,
+        }),
+        message: t(
+          "ui.PatrullaBoard.optimizarMsg",
           "Se reordenarán las paradas para recortar kilómetros y minutos. El orden manual actual se reemplaza; puedes volver a cambiarlo a mano cuando quieras.",
-        confirmText: "Optimizar",
+        ),
+        confirmText: t("ui.PatrullaBoard.optimizar", "Optimizar"),
       }))
     ) {
       return;
@@ -206,19 +214,24 @@ export default function PatrullaBoardPage() {
         if (ahorro.min != null && ahorro.min >= 0.5)
           trozos.push(`-${fmtMin(ahorro.min)}`);
         toast.success(
-          `Ruta optimizada: ${trozos.join(" · ")} frente al orden manual.`,
+          t("ui.PatrullaBoard.rutaOptimizadaAhorro", {
+            defaultValue: "Ruta optimizada: {{ahorro}} frente al orden manual.",
+            ahorro: trozos.join(" · "),
+          }),
         );
       } else {
-        toast.success("Ruta optimizada.");
+        toast.success(t("ui.PatrullaBoard.rutaOptimizada", "Ruta optimizada."));
       }
 
       const sinCoords = ahorro?.sinCoordenadas ?? 0;
 
       if (sinCoords > 0) {
         toast.info(
-          sinCoords === 1
-            ? "Una parada no tiene ubicación: se quedó en su sitio y las demás se repartieron alrededor."
-            : `${sinCoords} paradas no tienen ubicación: se quedaron en su sitio y las demás se repartieron alrededor.`,
+          t("ui.PatrullaBoard.paradasSinUbicacion", {
+            defaultValue:
+              "{{count}} paradas no tienen ubicación: se quedaron en su sitio y las demás se repartieron alrededor.",
+            count: sinCoords,
+          }),
         );
       }
       await load();
@@ -247,14 +260,15 @@ export default function PatrullaBoardPage() {
       <PageContainer width="wide">
         <PageHeader
           icon={<Car />}
-          title="Patrulla vehicular"
+          title={t("sidebar.patrulla.patrulla-board", "Patrulla vehicular")}
           subtitle={t('ui.PatrullaBoardPage.rutasQueElSupervisorDebe')}
           /* UNA acción primaria en la cabecera. Las demás (historial, plantillas,
              gestionar rutas) van en la barra de abajo: cinco botones aquí
              aplastaban el título a una letra por línea en un portátil. */
           actions={(
             <Button variant="brand" onClick={goCreate}>
-              <Plus className="size-4" /> Crear patrulla vehicular
+              <Plus className="size-4" />{" "}
+              {t("ui.PatrullaBoard.crearPatrullaVehicular", "Crear patrulla vehicular")}
             </Button>
           )}
         />
@@ -297,7 +311,8 @@ export default function PatrullaBoardPage() {
             variant="outline"
             onClick={() => navigate("/vehicle-patrol/routes")}
           >
-            <RouteIcon className="size-4" /> Gestionar rutas
+            <RouteIcon className="size-4" />{" "}
+            {t("ui.PatrullaBoard.gestionarRutas", "Gestionar rutas")}
           </Button>
         </Toolbar>
 
@@ -305,13 +320,13 @@ export default function PatrullaBoardPage() {
           <StatCard
             accent="brand"
             icon={<ListChecks />}
-            label="Programadas hoy"
+            label={t("ui.PatrullaBoard.programadasHoy", "Programadas hoy")}
             value={todays.length}
           />
           <StatCard
             accent="ok"
             icon={<CheckCircle2 />}
-            label="Completadas"
+            label={t("ui.PatrullaBoard.completadas", "Completadas")}
             value={doneCount}
           />
         </StatsStrip>
@@ -385,7 +400,9 @@ export default function PatrullaBoardPage() {
                             {route.name}
                           </p>
                           {done ? (
-                            <StatusBadge tone="ok">Completada</StatusBadge>
+                            <StatusBadge tone="ok">
+                              {t("ui.LiveTracking.completada", "Completada")}
+                            </StatusBadge>
                           ) : (
                             <StatusBadge tone="warn">
                               {t("comun.pendiente")}
@@ -407,7 +424,10 @@ export default function PatrullaBoardPage() {
                               className="size-3.5"
                               style={{ color: "var(--brand-text)" }}
                             />
-                            {stops} paradas
+                            {t("ui.LiveTracking.nParadas", {
+                              defaultValue: "{{count}} paradas",
+                              count: stops,
+                            })}
                           </span>
                           {route.vehicleName || route.vehicle?.name ? (
                             <span className="flex items-center gap-1">
@@ -454,7 +474,9 @@ export default function PatrullaBoardPage() {
                         ) : (
                           <CheckCircle2 className="size-3.5" />
                         )}
-                        {done ? "Deshacer" : "Marcar completada"}
+                        {done
+                          ? t("revision.deshacer", "Deshacer")
+                          : t("ui.PatrullaBoard.marcarCompletada", "Marcar completada")}
                       </Button>
                       <Button
                         disabled={busyId === route.id}
@@ -462,14 +484,16 @@ export default function PatrullaBoardPage() {
                         variant="outline"
                         onClick={() => optimize(route)}
                       >
-                        <Wand2 className="size-3.5" /> Optimizar
+                        <Wand2 className="size-3.5" />{" "}
+                        {t("ui.PatrullaBoard.optimizar", "Optimizar")}
                       </Button>
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => setDetailId(route.id)}
                       >
-                        <Eye className="size-3.5" /> Ver ruta
+                        <Eye className="size-3.5" />{" "}
+                        {t("ui.PatrullaBoard.verRuta", "Ver ruta")}
                       </Button>
                     </div>
                   </GlassPanel>

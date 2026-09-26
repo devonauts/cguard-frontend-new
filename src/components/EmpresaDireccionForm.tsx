@@ -42,12 +42,12 @@ export default function EmpresaDireccionForm() {
       <div className="my-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="min-w-0">
           <label className="cg-eyebrow mb-1.5 block" htmlFor="empresa-lat">
-            Latitud
+            {t("clients.stations.lat", "Latitud")}
           </label>
           <input
             className="cg-input cg-focus w-full px-3 py-2 text-sm tabular-nums"
             id="empresa-lat"
-            placeholder="Latitud"
+            placeholder={t("clients.stations.lat", "Latitud")}
             type="number"
             value={lat ?? ""}
             onChange={(e) => setLat(Number(e.target.value))}
@@ -55,12 +55,12 @@ export default function EmpresaDireccionForm() {
         </div>
         <div className="min-w-0">
           <label className="cg-eyebrow mb-1.5 block" htmlFor="empresa-lng">
-            Longitud
+            {t("clients.stations.lng", "Longitud")}
           </label>
           <input
             className="cg-input cg-focus w-full px-3 py-2 text-sm tabular-nums"
             id="empresa-lng"
-            placeholder="Longitud"
+            placeholder={t("clients.stations.lng", "Longitud")}
             type="number"
             value={lng ?? ""}
             onChange={(e) => setLng(Number(e.target.value))}

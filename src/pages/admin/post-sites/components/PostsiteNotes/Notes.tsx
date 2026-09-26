@@ -361,7 +361,10 @@ export default function PostSiteNotes({ site }: Props) {
                         (notesData || []).length > 0 &&
                         selectedIds.length === (notesData || []).length
                       }
-                      aria-label="Select all notes"
+                      aria-label={t(
+                        "ui.PostSiteNotes.seleccionarTodasLasNotas",
+                        "Seleccionar todas las notas",
+                      )}
                     />
                   </th>
                   <th className="cg-eyebrow px-2 py-2">
@@ -604,7 +607,10 @@ export default function PostSiteNotes({ site }: Props) {
                                 }}
                                 className="cg-focus rounded p-1"
                                 style={{ color: "var(--bad-text)" }}
-                                aria-label={`Remove ${f.name}`}
+                                aria-label={t("ui.PostSiteNotes.quitarArchivo", {
+                                  defaultValue: "Quitar {{nombre}}",
+                                  nombre: f.name,
+                                })}
                               >
                                 <X size={14} />
                               </button>

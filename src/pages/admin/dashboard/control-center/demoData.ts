@@ -19,8 +19,12 @@ import type {
 } from "./types";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { DEFAULT_PREFS } from "./prefs";
+
+import i18n from "@/i18n";
+import { localeActual } from "@/lib/localeActual";
 
 /* La API de marcadores de Google exige un color literal —no resuelve `var(--…)`—,
    así que estos pines no pueden salir de los tokens. Lo que sí se evita es tener
@@ -30,20 +34,14 @@ const GREEN = DEFAULT_PREFS.pinColors.guard; // cubierto
 const RED = DEFAULT_PREFS.pinColors.incident; // incidente
 const PURPLE = DEFAULT_PREFS.pinColors.supervisor;
 
-const MONTHS = [
-  "Ene",
-  "Feb",
-  "Mar",
-  "Abr",
-  "May",
-  "Jun",
-  "Jul",
-  "Ago",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dic",
-];
+/** Short month name in the UI language (was a hard-coded Spanish list). */
+function monthLabel(i: number): string {
+  const s = new Date(2024, i % 12, 1).toLocaleDateString(localeActual(), {
+    month: "short",
+  });
+
+  return s.charAt(0).toUpperCase() + s.slice(1).replace(/\.$/, "");
+}
 const CENTER = { lat: -0.1807, lng: -78.4678 };
 
 type LL = { lat: number; lng: number };
@@ -87,7 +85,7 @@ const SUPERVISOR_NAMES = [
 const STATION_COORDS: LL[] = STATION_NAMES.map((_, i) => around(i + 1, 0.05));
 
 function monthSeries(values: number[]): MonthPoint[] {
-  return values.map((v, i) => ({ month: MONTHS[i % 12], value: v }));
+  return values.map((v, i) => ({ month: monthLabel(i), value: v }));
 }
 
 function buildStations(): MapEntity[] {
@@ -104,10 +102,10 @@ function buildStations(): MapEntity[] {
       status: incident ? "incident" : uncovered ? "delayed" : "online",
       label: name,
       sub: incident
-        ? "Incidente activo"
+        ? i18n.t("ui.demoData.incidenteActivo", "Incidente activo")
         : uncovered
-          ? "Sin cobertura"
-          : "Cubierto · 1 vigilante",
+          ? i18n.t("dashboard.coverage.none", "Sin cobertura")
+          : i18n.t("ui.demoData.cubierto1Vigilante", "Cubierto · 1 vigilante"),
       meta: { geofenceRadius: 80, ...(color ? { color } : {}) },
     };
   });
@@ -162,16 +160,25 @@ function buildClients(): MapEntity[] {
       lat: base.lat + (juntas ? 0.0006 * (i % 2) : 0.004),
       lng: base.lng + (juntas ? 0.0006 : -0.004),
       status: "online",
-      label: `Sede ${name}`,
+      label: i18n.t("ui.demoData.sedeNombre", {
+        nombre: name,
+        defaultValue: "Sede {{nombre}}",
+      }),
       sub: name,
       meta: {
         entityId: `demo-cl-${i}`,
         clientId: `demo-cli-${i}`,
         clientName: name,
-        address: `Av. Demostración ${100 + i * 7}, Quito`,
+        address: i18n.t("ui.demoData.direccionDemo", {
+          numero: 100 + i * 7,
+          defaultValue: "Av. Demostración {{numero}}, Quito",
+        }),
         city: "Quito",
         phone: "+593 2 250 00" + (10 + i),
-        riskLevel: i % 3 === 0 ? "Alto" : "Medio",
+        riskLevel:
+          i % 3 === 0
+            ? i18n.t("clients.riskLevel.high", "Alto")
+            : i18n.t("clients.riskLevel.medium", "Medio"),
         stationsCount: 1 + (i % 3),
       },
     };
@@ -219,12 +226,19 @@ function supervisorsAt(step: number): MapEntity[] {
       lng: pos.lng,
       status: "patrol",
       label: name,
-      sub: "Recorrido de supervisión",
+      sub: i18n.t("ui.demoData.recorridoDeSupervision", "Recorrido de supervisión"),
       meta: {
         color: PURPLE,
         entityId: `demo-sup-${i}`,
-        zone: ["Norte", "Centro", "Valles"][i % 3],
-        vehicle: `Camioneta ${["PDA-120", "PBX-455", "PCT-981"][i % 3]}`,
+        zone: [
+          i18n.t("ui.demoData.norte", "Norte"),
+          i18n.t("ui.demoData.centro", "Centro"),
+          i18n.t("ui.demoData.valles", "Valles"),
+        ][i % 3],
+        vehicle: i18n.t("ui.demoData.camioneta", {
+          placa: ["PDA-120", "PBX-455", "PCT-981"][i % 3],
+          defaultValue: "Camioneta {{placa}}",
+        }),
         phone: "+593 99 111 11" + (10 + i),
         onDutySince: new Date(Date.now() - (i + 2) * 36e5).toISOString(),
         // Se está moviendo AHORA: su marca de tiempo es de este instante.
@@ -259,7 +273,7 @@ function buildActivity(): ActivityItem[] {
     {
       id: "d1",
       kind: "alert",
-      title: "Botón de pánico activado",
+      title: i18n.t("ui.demoData.botonDePanicoActivado", "Botón de pánico activado"),
       sub: "Bodegas Cumbayá",
       at: min(3),
       status: "emergency",
@@ -267,7 +281,10 @@ function buildActivity(): ActivityItem[] {
     {
       id: "d2",
       kind: "checkin",
-      title: "Carlos Méndez inició turno",
+      title: i18n.t("ui.demoData.inicioTurno", {
+        nombre: "Carlos Méndez",
+        defaultValue: "{{nombre}} inició turno",
+      }),
       sub: "Plaza Foch",
       at: min(9),
       status: "online",
@@ -275,15 +292,18 @@ function buildActivity(): ActivityItem[] {
     {
       id: "d3",
       kind: "patrol",
-      title: "Sup. Patricio Vélez en recorrido",
-      sub: "Sector La Carolina",
+      title: i18n.t("ui.demoData.enRecorrido", {
+        nombre: "Sup. Patricio Vélez",
+        defaultValue: "{{nombre}} en recorrido",
+      }),
+      sub: i18n.t("ui.demoData.sectorLaCarolina", "Sector La Carolina"),
       at: min(14),
       status: "patrol",
     },
     {
       id: "d4",
       kind: "incident",
-      title: "Acceso no autorizado",
+      title: i18n.t("ui.demoData.accesoNoAutorizado", "Acceso no autorizado"),
       sub: "Bodegas Cumbayá",
       at: min(18),
       status: "incident",
@@ -291,7 +311,11 @@ function buildActivity(): ActivityItem[] {
     {
       id: "d5",
       kind: "patrol",
-      title: "Ronda completada (12/12 puntos)",
+      title: i18n.t("ui.demoData.rondaCompletada", {
+        hechos: 12,
+        total: 12,
+        defaultValue: "Ronda completada ({{hechos}}/{{total}} puntos)",
+      }),
       sub: "Quicentro Shopping",
       at: min(26),
       status: "online",
@@ -299,7 +323,10 @@ function buildActivity(): ActivityItem[] {
     {
       id: "d6",
       kind: "checkin",
-      title: "Andrea Salazar fichó salida",
+      title: i18n.t("ui.demoData.fichoSalida", {
+        nombre: "Andrea Salazar",
+        defaultValue: "{{nombre}} fichó salida",
+      }),
       sub: "Torre Z",
       at: min(41),
       status: "online",
@@ -307,7 +334,7 @@ function buildActivity(): ActivityItem[] {
     {
       id: "d7",
       kind: "event",
-      title: "Visitante registrado",
+      title: i18n.t("ui.demoData.visitanteRegistrado", "Visitante registrado"),
       sub: "Mall El Jardín",
       at: min(55),
       status: "online",
@@ -315,7 +342,7 @@ function buildActivity(): ActivityItem[] {
     {
       id: "d8",
       kind: "incident",
-      title: "Incidente resuelto",
+      title: i18n.t("ui.demoData.incidenteResuelto", "Incidente resuelto"),
       sub: "Hospital Metropolitano",
       at: min(95),
       status: "online",
@@ -332,15 +359,19 @@ function kpi(
   return { key, label, value, status: "neutral", trend: null, ...extra };
 }
 
-function buildBase(): ControlCenterData {
+/**
+ * `idioma` is not read here: it is an argument so the memo in `useDemoData`
+ * rebuilds the sample (all its labels go through i18n) when the language changes.
+ */
+function buildBase(_idioma?: string): ControlCenterData {
   const tenant: MapEntity = {
     id: "demo-tenant",
     kind: "tenant",
     lat: CENTER.lat,
     lng: CENTER.lng,
     status: "online",
-    label: "Sede central",
-    sub: "Oficina principal · Quito",
+    label: i18n.t("ui.useControlCenter.sedeCentral", "Sede central"),
+    sub: i18n.t("ui.demoData.oficinaPrincipalQuito", "Oficina principal · Quito"),
   };
   const stations = buildStations();
   const guards = buildGuards();
@@ -354,46 +385,65 @@ function buildBase(): ControlCenterData {
 
   return {
     kpis: [
-      kpi("onDuty", "Vigilantes en servicio", guards.length, {
+      kpi("onDuty", i18n.t("dashboard.kpi.onDuty"), guards.length, {
         status: "online",
         trend: 0.09,
-        sub: `de ${guards.length + 4} vigilantes`,
+        sub: i18n.t("dashboard.kpi.onDutySub", { count: guards.length + 4 }),
       }),
-      kpi("stations", "Puestos activos", stations.length, {
+      kpi("stations", i18n.t("dashboard.kpi.stations"), stations.length, {
         status: "patrol",
-        sub: "6 sedes",
+        sub: i18n.t("dashboard.kpi.sites", { count: 6 }),
       }),
-      kpi("openIncidents", "Incidentes abiertos", 1, {
+      kpi("openIncidents", i18n.t("dashboard.kpi.incidents"), 1, {
         status: "incident",
         trend: -0.33,
-        sub: "2 hoy",
+        sub: i18n.t("dashboard.kpi.today", { count: 2 }),
         spark: [3, 4, 2, 5, 3, 2, 1, 1],
       }),
-      kpi("patrolsToday", "Rondas hoy", 27, {
+      kpi("patrolsToday", i18n.t("dashboard.kpi.patrols"), 27, {
         status: "patrol",
         trend: 0.21,
-        sub: "puntos escaneados",
+        sub: i18n.t("dashboard.kpi.scanned"),
       }),
-      kpi("coverage", "Cobertura de puestos", 92, {
+      kpi("coverage", i18n.t("dashboard.coverage.title"), 92, {
         unit: "%",
         status: "online",
-        sub: `${guards.length}/${stations.length} cubiertos`,
+        sub: i18n.t("dashboard.kpi.coveredOf", {
+          cubiertos: guards.length,
+          total: stations.length,
+        }),
       }),
-      kpi("supervisors", "Supervisores", SUPERVISOR_NAMES.length, {
-        status: "online",
-        sub: "equipo de 18",
-      }),
-      kpi("response", "Tiempo de respuesta", 4.2, {
-        unit: "min",
-        status: "neutral",
-        trend: -0.12,
-        sub: "promedio mensual",
-        spark: [6.1, 5.4, 5.8, 4.9, 4.6, 4.4, 4.5, 4.2],
-      }),
-      kpi("clients", "Clientes", 14, {
+      kpi(
+        "supervisors",
+        i18n.t("dashboard.kpi.supervisors", "Supervisores"),
+        SUPERVISOR_NAMES.length,
+        {
+          status: "online",
+          sub: i18n.t("dashboard.kpi.teamOf", {
+            total: 18,
+            defaultValue: "equipo de {{total}}",
+          }),
+        },
+      ),
+      kpi(
+        "response",
+        i18n.t("dashboard.kpi.response", "Tiempo de respuesta"),
+        4.2,
+        {
+          unit: "min",
+          status: "neutral",
+          trend: -0.12,
+          sub: i18n.t("dashboard.kpi.monthlyAverage", "promedio mensual"),
+          spark: [6.1, 5.4, 5.8, 4.9, 4.6, 4.4, 4.5, 4.2],
+        },
+      ),
+      kpi("clients", i18n.t("dashboard.kpi.clients", "Clientes"), 14, {
         status: "neutral",
         trend: 0.16,
-        sub: `${stations.length} puestos`,
+        sub: i18n.t("dashboard.kpi.clientsSub", {
+          count: stations.length,
+          defaultValue: "{{count}} puestos",
+        }),
       }),
     ],
     entities: [tenant, ...clients, ...stations, ...guards],
@@ -436,7 +486,10 @@ export function buildDemoData(): ControlCenterData {
  * move across the map.
  */
 export function useDemoData(active: boolean): ControlCenterData {
-  const base = useMemo(() => buildBase(), []);
+  // Labels are translated when built: rebuild on a language switch.
+  const { i18n: i18nVivo } = useTranslation();
+  const idioma = i18nVivo.language;
+  const base = useMemo(() => buildBase(idioma), [idioma]);
   const [sups, setSups] = useState<MapEntity[]>(() => supervisorsAt(0));
 
   useEffect(() => {
@@ -450,7 +503,7 @@ export function useDemoData(active: boolean): ControlCenterData {
     }, 1200);
 
     return () => clearInterval(id);
-  }, [active]);
+  }, [active, idioma]);
 
   return useMemo(
     () => ({ ...base, entities: [...base.entities, ...sups] }),

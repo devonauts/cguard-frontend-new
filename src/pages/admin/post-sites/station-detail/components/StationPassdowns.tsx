@@ -245,8 +245,9 @@ export default function StationPassdowns({ station, stationId }: Props) {
                   // Pase antiguo: sus consignas son tareas y sólo vienen en
                   // la ficha completa.
                   <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
-                    {t("passdown.instructionsInDetail", "{{n}} consigna(s): ábrelo para verlas.", {
-                      n: p.instructionCount,
+                    {t("ui.StationPassdowns.consignasEnDetalle", {
+                      defaultValue: "{{count}} consignas: ábrelo para verlas.",
+                      count: p.instructionCount,
                     })}
                   </p>
                 ) : null}

@@ -110,14 +110,16 @@ const ORDEN_CAPAS: EntityKind[] = [
   "tenant",
 ];
 
-const CAPA_LABEL: Record<EntityKind, string> = {
-  station: "Puestos",
-  guard: "Vigilantes",
-  supervisor: "Supervisores",
-  client: "Clientes",
-  incident: "Incidentes",
-  tenant: "Sede central",
+/** Translation keys + Spanish defaults; resolved at render time (`capaLabel`). */
+const CAPA_LABEL: Record<EntityKind, [string, string]> = {
+  station: ["dashboard.kpiCorto.stations", "Puestos"],
+  guard: ["ui.OperationsMap.vigilantes", "Vigilantes"],
+  supervisor: ["dashboard.kpiCorto.supervisors", "Supervisores"],
+  client: ["dashboard.kpiCorto.clients", "Clientes"],
+  incident: ["ui.TrendPanel.incidentes", "Incidentes"],
+  tenant: ["ui.useControlCenter.sedeCentral", "Sede central"],
 };
+const capaLabel = (k: EntityKind) => i18n.t(CAPA_LABEL[k][0], CAPA_LABEL[k][1]);
 
 const CAPA_ICONO: Record<EntityKind, typeof Shield> = {
   station: Shield,
@@ -575,7 +577,12 @@ export function OperationsMap({
         revisarZoom();
         setReady(true);
       })
-      .catch((e) => setErr(e?.message || "No se pudo cargar el mapa"));
+      .catch((e) =>
+        setErr(
+          e?.message ||
+            i18n.t("ui.OperationsMap.noSePudoCargarElMapa", "No se pudo cargar el mapa"),
+        ),
+      );
 
     return () => {
       cancelled = true;
@@ -970,7 +977,8 @@ export function OperationsMap({
         <div>
           <p>{err}</p>
           <p className="mt-1 text-xs">
-            Verifica <code>VITE_GOOGLE_MAPS_API_KEY</code>.
+            {t("ui.OperationsMap.verifica", "Verifica")}{" "}
+            <code>VITE_GOOGLE_MAPS_API_KEY</code>.
           </p>
         </div>
       </div>
@@ -1002,7 +1010,17 @@ export function OperationsMap({
               return (
                 <button
                   key={k}
-                  aria-label={`${on ? "Ocultar" : "Mostrar"} ${CAPA_LABEL[k]}`}
+                  aria-label={
+                    on
+                      ? t("ui.OperationsMap.ocultarCapa", {
+                          capa: capaLabel(k),
+                          defaultValue: "Ocultar {{capa}}",
+                        })
+                      : t("ui.OperationsMap.mostrarCapa", {
+                          capa: capaLabel(k),
+                          defaultValue: "Mostrar {{capa}}",
+                        })
+                  }
                   aria-pressed={on}
                   className="cg-focus grid size-9 place-items-center transition"
                   style={{
@@ -1011,12 +1029,12 @@ export function OperationsMap({
                     background: on ? "var(--glass-sunken)" : "transparent",
                     opacity: on ? 1 : 0.55,
                   }}
-                  title={`${CAPA_LABEL[k]} (${porTipo[k]})`}
+                  title={`${capaLabel(k)} (${porTipo[k]})`}
                   type="button"
                   onClick={() => alternarCapa(k)}
                 >
                   <Icono className="size-4" />
-                  <span className="sr-only">{CAPA_LABEL[k]}</span>
+                  <span className="sr-only">{capaLabel(k)}</span>
                 </button>
               );
             })}
@@ -1027,7 +1045,9 @@ export function OperationsMap({
             />
 
             <button
-              aria-label={geocercas ? "Ocultar geocercas" : "Mostrar geocercas"}
+              aria-label={geocercas
+                  ? t("ui.OperationsMap.ocultarGeocercas", "Ocultar geocercas")
+                  : t("ui.OperationsMap.mostrarGeocercas", "Mostrar geocercas")}
               aria-pressed={geocercas}
               className="cg-focus grid size-9 place-items-center transition"
               style={{
@@ -1035,7 +1055,9 @@ export function OperationsMap({
                 color: geocercas ? "var(--brand-text)" : "var(--ink-faint)",
                 background: geocercas ? "var(--brand-wash)" : "transparent",
               }}
-              title={geocercas ? "Ocultar geocercas" : "Mostrar geocercas"}
+              title={geocercas
+                  ? t("ui.OperationsMap.ocultarGeocercas", "Ocultar geocercas")
+                  : t("ui.OperationsMap.mostrarGeocercas", "Mostrar geocercas")}
               type="button"
               onClick={() => setGeocercas((v) => !v)}
             >
@@ -1046,8 +1068,11 @@ export function OperationsMap({
               <button
                 aria-label={
                   seguidoNombre
-                    ? `Dejar de seguir a ${seguidoNombre}`
-                    : "Quitar el recorrido"
+                    ? t("ui.OperationsMap.dejarDeSeguirA", {
+                        nombre: seguidoNombre,
+                        defaultValue: "Dejar de seguir a {{nombre}}",
+                      })
+                    : t("ui.OperationsMap.quitarElRecorrido", "Quitar el recorrido")
                 }
                 className="cg-focus grid size-9 place-items-center transition"
                 style={{
@@ -1058,8 +1083,11 @@ export function OperationsMap({
                 }}
                 title={
                   seguidoNombre
-                    ? `Dejar de seguir a ${seguidoNombre}`
-                    : "Quitar el recorrido"
+                    ? t("ui.OperationsMap.dejarDeSeguirA", {
+                        nombre: seguidoNombre,
+                        defaultValue: "Dejar de seguir a {{nombre}}",
+                      })
+                    : t("ui.OperationsMap.quitarElRecorrido", "Quitar el recorrido")
                 }
                 type="button"
                 onClick={() => {
@@ -1088,7 +1116,10 @@ export function OperationsMap({
           <div className="cg-tarjeta-mapa flex items-center gap-2 px-2.5 py-1.5">
             <span className="cc-dot" style={{ background: "var(--brand)" }} />
             <span className="truncate text-[11px] font-semibold">
-              Siguiendo a {seguidoNombre}
+              {t("ui.OperationsMap.siguiendoA", {
+                nombre: seguidoNombre,
+                defaultValue: "Siguiendo a {{nombre}}",
+              })}
             </span>
           </div>
         </div>
@@ -1121,7 +1152,9 @@ export function OperationsMap({
               </div>
 
               <div>
-                <div className="cc-map-eyebrow">Cobertura</div>
+                <div className="cc-map-eyebrow">
+                  {t("dashboard.coverage.eyebrow", "Cobertura")}
+                </div>
                 <div className="cc-map-metric">
                   {resumen.cubiertos}
                   <span style={{ color: "var(--ink-faint)", fontWeight: 600 }}>
@@ -1131,7 +1164,9 @@ export function OperationsMap({
               </div>
 
               <div className="hidden sm:block">
-                <div className="cc-map-eyebrow">En servicio</div>
+                <div className="cc-map-eyebrow">
+                  {t("dashboard.kpiCorto.onDuty", "En servicio")}
+                </div>
                 <div className="cc-map-metric">
                   {resumen.vigilantes + resumen.supervisores}
                 </div>
@@ -1139,7 +1174,9 @@ export function OperationsMap({
 
               {resumen.incidentes > 0 && (
                 <div>
-                  <div className="cc-map-eyebrow">Incidentes</div>
+                  <div className="cc-map-eyebrow">
+                    {t("ui.TrendPanel.incidentes", "Incidentes")}
+                  </div>
                   <div
                     className="cc-map-metric"
                     style={{ color: "var(--bad-text)" }}
@@ -1151,7 +1188,9 @@ export function OperationsMap({
 
               <div className="ml-auto flex items-center gap-1.5">
                 <span className="cc-dot" style={{ background: "var(--ok)" }} />
-                <span className="cc-map-eyebrow">En vivo</span>
+                <span className="cc-map-eyebrow">
+                  {t("dashboard.live", "En vivo")}
+                </span>
               </div>
             </div>
 
@@ -1161,11 +1200,11 @@ export function OperationsMap({
             >
               <span className="cc-map-key">
                 <i style={{ color: "var(--ok)" }} />
-                Cubierto
+                {t("coverage.status.covered", "Cubierto")}
               </span>
               <span className="cc-map-key">
                 <i style={{ color: "var(--warn)" }} />
-                En riesgo
+                {t("coverage.status.at_risk", "En riesgo")}
               </span>
               <span className="cc-map-key">
                 <i style={{ color: "var(--bad)" }} />
@@ -1180,7 +1219,10 @@ export function OperationsMap({
                   )}
                 >
                   <i style={{ color: "var(--ink-faint)" }} />
-                  Sin datos ({resumen.sinDatos})
+                  {t("ui.OperationsMap.sinDatosN", {
+                    n: resumen.sinDatos,
+                    defaultValue: "Sin datos ({{n}})",
+                  })}
                 </span>
               )}
               <span className="cc-map-key">
@@ -1189,7 +1231,7 @@ export function OperationsMap({
               </span>
               <span className="cc-map-key">
                 <i style={{ color: "var(--brand)" }} />
-                Sede
+                {t("maps.kind.site", "Sede")}
               </span>
             </div>
           </div>

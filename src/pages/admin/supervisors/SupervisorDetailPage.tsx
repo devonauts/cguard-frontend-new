@@ -78,6 +78,17 @@ const FIELD_OPTIONS: Record<string, OpcionCampo[]> = {
   ],
 };
 
+/** Display label for a stored option value (the stored value stays Spanish). */
+function optionLabel(
+  field: string,
+  v: string | null | undefined,
+): string | null | undefined {
+  if (!v) return v;
+  const o = (FIELD_OPTIONS[field] || []).find((x) => x.value === v);
+
+  return o?.labelKey ? i18n.t(o.labelKey, o.value) : v;
+}
+
 function toDateInput(v: string | number | Date | null | undefined): string {
   if (!v) return "";
   const d = new Date(v);
@@ -210,12 +221,14 @@ function SedesAsignadas({ userId }: { userId: string }) {
       title={t("ui.SupervisorDetail.sedesAsignadas", "Sedes asignadas")}
     >
       <p className="mb-3 text-sm" style={{ color: "var(--ink-soft)" }}>
-        Limita lo que este supervisor ve en su app: excepciones de asistencia y
-        solicitudes de fichaje.
+        {t(
+          "ui.SupervisorDetail.limitaLoQueEsteSupervisorVe",
+          "Limita lo que este supervisor ve en su app: excepciones de asistencia y solicitudes de fichaje.",
+        )}
       </p>
       {cargando ? (
         <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-          Cargando…
+          {t("common.loading", "Cargando…")}
         </p>
       ) : (
         <>
@@ -239,7 +252,9 @@ function SedesAsignadas({ userId }: { userId: string }) {
             size="sm"
             onClick={guardar}
           >
-            {guardando ? "Guardando…" : "Guardar sedes"}
+            {guardando
+              ? t("common.saving", "Guardando…")
+              : t("ui.SupervisorDetail.guardarSedes", "Guardar sedes")}
           </Button>
         </>
       )}
@@ -375,7 +390,7 @@ export default function SupervisorDetailPage() {
 
       hydrate(updated);
       setEditing(false);
-      toast.success("Perfil actualizado");
+      toast.success(t("ui.SupervisorDetail.perfilActualizado", "Perfil actualizado"));
     } catch (e: any) {
       toast.error(
         e?.message || t("comun.noSePudoGuardar", "No se pudo guardar"),
@@ -410,7 +425,7 @@ export default function SupervisorDetailPage() {
                 <div className="flex flex-wrap items-center gap-2">
                   {!editing ? (
                     <Button size="sm" variant="brand" onClick={beginEdit}>
-                      <Pencil className="mr-2 h-4 w-4" /> Editar
+                      <Pencil className="mr-2 h-4 w-4" /> {t("actions.edit", "Editar")}
                     </Button>
                   ) : (
                     <>
@@ -433,7 +448,9 @@ export default function SupervisorDetailPage() {
                         ) : (
                           <Check className="mr-2 h-4 w-4" />
                         )}
-                        {saving ? "Guardando…" : "Guardar"}
+                        {saving
+                          ? t("common.saving", "Guardando…")
+                          : t("actions.save", "Guardar")}
                       </Button>
                     </>
                   )}
@@ -451,9 +468,10 @@ export default function SupervisorDetailPage() {
                     color: "var(--warn-text)",
                   }}
                 >
-                  El nombre, el correo y el teléfono son la identidad del
-                  supervisor y se gestionan desde la invitación de acceso
-                  (Usuarios de administración).
+                  {t(
+                    "ui.SupervisorDetail.elNombreElCorreoYElTelefono",
+                    "El nombre, el correo y el teléfono son la identidad del supervisor y se gestionan desde la invitación de acceso (Usuarios de administración).",
+                  )}
                 </div>
               )}
 
@@ -471,11 +489,16 @@ export default function SupervisorDetailPage() {
                     color: "var(--ink-soft)",
                   }}
                 >
-                  Este supervisor también presta servicios con otra empresa
-                  {nombreDelProducto() ? ` en ${nombreDelProducto()}` : ""}. Su
-                  nombre, correo y foto son de su cuenta personal; lo que
-                  configures aquí (zona, vehículo, turno, rutas) aplica solo a
-                  tu empresa.
+                  {nombreDelProducto()
+                    ? t("ui.SupervisorDetail.cuentaCompartidaEnProducto", {
+                        producto: nombreDelProducto(),
+                        defaultValue:
+                          "Este supervisor también presta servicios con otra empresa en {{producto}}. Su nombre, correo y foto son de su cuenta personal; lo que configures aquí (zona, vehículo, turno, rutas) aplica solo a tu empresa.",
+                      })
+                    : t(
+                        "ui.SupervisorDetail.cuentaCompartida",
+                        "Este supervisor también presta servicios con otra empresa. Su nombre, correo y foto son de su cuenta personal; lo que configures aquí (zona, vehículo, turno, rutas) aplica solo a tu empresa.",
+                      )}
                 </div>
               )}
 
@@ -491,8 +514,12 @@ export default function SupervisorDetailPage() {
                     )}
                   >
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <ReadField label="Nombres" value={sup.firstName} />
-                      <ReadField label="Apellidos" value={sup.lastName} />
+                      <ReadField
+                        label={t("ui.SupervisorDetail.nombres", "Nombres")}
+                        value={sup.firstName} />
+                      <ReadField
+                        label={t("guards.list.details.fields.lastName", "Apellidos")}
+                        value={sup.lastName} />
                       {editing ? (
                         <>
                           <EditText
@@ -596,7 +623,10 @@ export default function SupervisorDetailPage() {
                             onChange={(v) => setField("academicInstruction", v)}
                           />
                           <EditText
-                            label="Credencial"
+                            label={t(
+                              "guards.profile.fields.guardCredentials",
+                              "Credencial",
+                            )}
                             value={form.guardCredentials}
                             onChange={(v) => setField("guardCredentials", v)}
                           />
@@ -614,7 +644,7 @@ export default function SupervisorDetailPage() {
                         <>
                           <ReadField
                             label={t("ui.SupervisorDetail.genero2", "Género")}
-                            value={sup.gender}
+                            value={optionLabel("gender", sup.gender)}
                           />
                           <ReadField
                             label={t("comun.tipoDeSangre")}
@@ -622,17 +652,23 @@ export default function SupervisorDetailPage() {
                           />
                           <ReadField
                             label={t("comun.estadoCivil")}
-                            value={sup.maritalStatus}
+                            value={optionLabel("maritalStatus", sup.maritalStatus)}
                           />
                           <ReadField
                             label={t(
                               "ui.SupervisorDetail.instruccionAcademica2",
                               "Instrucción académica",
                             )}
-                            value={sup.academicInstruction}
+                            value={optionLabel(
+                              "academicInstruction",
+                              sup.academicInstruction,
+                            )}
                           />
                           <ReadField
-                            label="Credencial"
+                            label={t(
+                              "guards.profile.fields.guardCredentials",
+                              "Credencial",
+                            )}
                             value={sup.guardCredentials}
                           />
                           <ReadField
@@ -652,8 +688,10 @@ export default function SupervisorDetailPage() {
                     title={t("ui.SupervisorDetailPage.coberturaYHorario")}
                   >
                     <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-                      La zona y los puestos que cubre este supervisor, y su
-                      horario generado, se ven en sus pestañas dedicadas.
+                      {t(
+                        "ui.SupervisorDetail.laZonaYLosPuestosQueCubre",
+                        "La zona y los puestos que cubre este supervisor, y su horario generado, se ven en sus pestañas dedicadas.",
+                      )}
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2">
                       <Button
@@ -661,14 +699,16 @@ export default function SupervisorDetailPage() {
                         variant="outline"
                         onClick={() => navigate(`/supervisors/${id}/cobertura`)}
                       >
-                        <MapPin className="mr-2 h-4 w-4" /> Cobertura
+                        <MapPin className="mr-2 h-4 w-4" />{" "}
+                        {t("supervisors.nav.cobertura", "Cobertura")}
                       </Button>
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => navigate(`/supervisors/${id}/horario`)}
                       >
-                        <CalendarClock className="mr-2 h-4 w-4" /> Horario
+                        <CalendarClock className="mr-2 h-4 w-4" />{" "}
+                        {t("comun.horario", "Horario")}
                       </Button>
                     </div>
                   </Section>

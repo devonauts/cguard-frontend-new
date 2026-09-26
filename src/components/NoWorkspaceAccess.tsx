@@ -76,9 +76,10 @@ export default function NoWorkspaceAccess() {
           className="mt-3 text-center text-sm leading-relaxed"
           style={{ color: "var(--ink-soft)" }}
         >
-          Tu cuenta no está asociada a ninguna empresa. Pídele a un
-          administrador que te asigne a un espacio de trabajo para poder
-          ingresar.
+          {t(
+            "ui.NoWorkspaceAccess.tuCuentaNoEstaAsociada",
+            "Tu cuenta no está asociada a ninguna empresa. Pídele a un administrador que te asigne a un espacio de trabajo para poder ingresar.",
+          )}
         </p>
 
         {email && (
@@ -107,7 +108,7 @@ export default function NoWorkspaceAccess() {
             type="button"
             onClick={() => window.location.reload()}
           >
-            Reintentar
+            {t("ui.AppErrorBoundary.reintentar", "Reintentar")}
           </button>
         </div>
       </div>

@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 /**
  * ════════════════════════════════════════════════════════════════════════════
  * C-GUARD PRO — CHINCHETAS DE CRISTAL
@@ -295,7 +296,10 @@ const F_CIFRA = `700 15px ${PILA}`;
 export function chipPin(o: ChipOpts): PinAsset {
   // 18 caracteres: por encima, dos fichas vecinas se solapan antes de que el
   // nombre aporte nada — el nombre completo sigue en el globo y en el `title`.
-  const etiqueta = recortar(o.etiqueta || "Puesto", 18);
+  const etiqueta = recortar(
+    o.etiqueta || i18n.t("incidents.columns.postSite", "Puesto"),
+    18,
+  );
   const cifra = o.cifra == null || o.cifra === "" ? "" : String(o.cifra);
   const clave = `chip|${etiqueta}|${cifra}|${o.color}|${o.glifo ? "g" : o.insignia || ""}|${o.vivo ? 1 : 0}|${o.version || ""}|${o.piel.oscuro ? "d" : "l"}|${calma() ? "q" : "m"}`;
 

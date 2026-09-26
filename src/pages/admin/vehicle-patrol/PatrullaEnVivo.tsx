@@ -12,12 +12,12 @@ import {
 } from "lucide-react";
 
 import {
-  RUN_STATUS_LABEL,
   RUN_STATUS_TONE,
-  SCHEDULE_LABEL,
   SCHEDULE_TONE,
-  VISIT_STATUS_LABEL,
   fmtHora,
+  runStatusLabel,
+  scheduleLabel,
+  visitStatusLabel,
 } from "./runLabels";
 
 import {
@@ -169,7 +169,7 @@ export default function PatrullaEnVivo() {
                       <StatusBadge
                         tone={RUN_STATUS_TONE[r.status] || "neutral"}
                       >
-                        {RUN_STATUS_LABEL[r.status] || r.status}
+                        {runStatusLabel(r.status)}
                       </StatusBadge>
                       {!paused &&
                         r.scheduleState &&
@@ -183,7 +183,7 @@ export default function PatrullaEnVivo() {
                             ) : (
                               <Clock className="size-3" />
                             )}
-                            {SCHEDULE_LABEL[r.scheduleState]}
+                            {scheduleLabel(r.scheduleState)}
                             {r.varianceMinutes
                               ? ` · +${r.varianceMinutes} min`
                               : ""}
@@ -225,8 +225,7 @@ export default function PatrullaEnVivo() {
                           {r.currentStop.name ||
                             t("ui.PatrullaEnVivo.parada", "Parada")}{" "}
                           ·{" "}
-                          {VISIT_STATUS_LABEL[r.currentStop.status] ||
-                            r.currentStop.status}
+                          {visitStatusLabel(r.currentStop.status)}
                         </span>
                       )}
                     </div>

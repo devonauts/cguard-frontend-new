@@ -283,7 +283,7 @@ export default function StationPatrolQR({ station, stationId }: Props) {
           const cuerpo = img
             ? `<img src="${img}" style="width:230px;height:230px;display:block;margin:0 auto;" />`
             : `<div style="width:230px;height:230px;margin:0 auto;display:grid;place-items:center;border:1px dashed #999;font:12px sans-serif;color:#999;">
-               No se pudo generar<br/>este código
+               ${esc(t("ui.StationPatrolQR.noSePudoGenerar", "No se pudo generar"))}<br/>${esc(t("ui.StationPatrolQR.esteCodigo", "este código"))}
              </div>`;
 
           return `
@@ -298,7 +298,7 @@ export default function StationPatrolQR({ station, stationId }: Props) {
         .join("");
 
       w.document.write(`<!doctype html><html><head><meta charset="utf-8">
-        <title>QR de rondas — ${rotulo}</title>
+        <title>${esc(t("ui.StationPatrolQR.qrDeRondas", "QR de rondas"))} — ${rotulo}</title>
         <style>
           @page { margin: 12mm; }
           body { font-family: system-ui, sans-serif; margin: 0; color: #000; background: #fff; }
@@ -315,13 +315,10 @@ export default function StationPatrolQR({ station, stationId }: Props) {
           .pie    { font-size: 10px; color: #888; margin-top: 4px; }
           @media print { .aviso { border-color: #bbb; } }
         </style></head><body>
-        <h1>Puntos de control — ${rotulo}</h1>
-        <p class="sub">${list.length} etiqueta(s) · impreso ${esc(new Date().toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() }))}</p>
+        <h1>${esc(t("ui.StationPatrolQR.puntosDeControl", "Puntos de control"))} — ${rotulo}</h1>
+        <p class="sub">${esc(t("ui.StationPatrolQR.nEtiquetas", { defaultValue: "{{count}} etiquetas", count: list.length }))} · ${esc(t("ui.StationPatrolQR.impreso", { defaultValue: "impreso {{fecha}}", fecha: new Date().toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa() }) }))}</p>
         <p class="aviso">
-          Corta por la línea de puntos y <strong>plastifica cada etiqueta</strong> antes de
-          pegarla: van a la intemperie y sin proteger no aguantan una temporada de lluvia.
-          Pega cada una en el sitio que dice su nombre. El código de abajo sirve para
-          teclearlo a mano si la etiqueta se raya y el lector no la reconoce.
+          ${esc(t("ui.StationPatrolQR.avisoCorta", "Corta por la línea de puntos y"))} <strong>${esc(t("ui.StationPatrolQR.avisoPlastifica", "plastifica cada etiqueta"))}</strong> ${esc(t("ui.StationPatrolQR.avisoResto", "antes de pegarla: van a la intemperie y sin proteger no aguantan una temporada de lluvia. Pega cada una en el sitio que dice su nombre. El código de abajo sirve para teclearlo a mano si la etiqueta se raya y el lector no la reconoce."))}
         </p>
         <div class="rejilla">${cards}</div>
         <script>window.focus();window.print();<\/script>

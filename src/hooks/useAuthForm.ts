@@ -2,7 +2,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
-import { isStrongPassword, PASSWORD_POLICY_TEXT } from "@/lib/passwordPolicy";
+import { isStrongPassword, passwordPolicyMessage } from "@/lib/passwordPolicy";
 interface UseAuthFormReturn {
   email: string;
   password: string;
@@ -73,7 +73,7 @@ export const useAuthForm = (): UseAuthFormReturn => {
     if (password.length < minLength) {
       toast.error(
         t("auth.password_min_length", {
-          defaultValue: `Password must be at least ${minLength} characters`,
+          defaultValue: `La contraseña debe tener al menos ${minLength} caracteres`,
         }),
       );
 
@@ -94,9 +94,7 @@ export const useAuthForm = (): UseAuthFormReturn => {
       return false;
     }
     if (!isStrongPassword(password)) {
-      const msg = t("auth.weakPassword", {
-        defaultValue: `La contraseña es muy débil. Requisitos: ${PASSWORD_POLICY_TEXT}`,
-      });
+      const msg = passwordPolicyMessage();
 
       toast.error(msg);
 

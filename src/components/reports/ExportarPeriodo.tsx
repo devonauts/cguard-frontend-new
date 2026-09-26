@@ -22,6 +22,7 @@
  * ════════════════════════════════════════════════════════════════════════════
  */
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CalendarDays } from 'lucide-react';
 import ExportMenu from '@/components/reports/ExportMenu';
 import type { ExportFormat } from '@/lib/export/reportExport';
@@ -59,13 +60,14 @@ interface Props {
   className?: string;
 }
 
-const OPCIONES: Array<{ id: Periodo; label: string }> = [
-  { id: 'dia', label: 'Hoy' },
-  { id: 'semana', label: 'Semana' },
-  { id: 'rango', label: 'Rango' },
+const OPCIONES: Array<{ id: Periodo; label: string; labelKey: string }> = [
+  { id: 'dia', label: 'Hoy', labelKey: 'kit.dateRange.today' },
+  { id: 'semana', label: 'Semana', labelKey: 'ui.ExportarPeriodo.semana' },
+  { id: 'rango', label: 'Rango', labelKey: 'ui.ExportarPeriodo.rango' },
 ];
 
 export default function ExportarPeriodo({ onExport, disabled = false, className }: Props) {
+  const { t } = useTranslation();
   const [periodo, setPeriodo] = useState<Periodo>('dia');
   const [desde, setDesde] = useState<string>(haceDias(29));
   const [hasta, setHasta] = useState<string>(ymd(new Date()));
@@ -96,7 +98,7 @@ export default function ExportarPeriodo({ onExport, disabled = false, className 
         className="inline-flex items-center rounded-xl p-0.5"
         style={{ background: 'var(--glass-sunken)' }}
         role="group"
-        aria-label="Periodo a exportar"
+        aria-label={t('ui.ExportarPeriodo.periodoAExportar', 'Periodo a exportar')}
       >
         {OPCIONES.map((o) => {
           const activo = periodo === o.id;
@@ -113,7 +115,7 @@ export default function ExportarPeriodo({ onExport, disabled = false, className 
                   : { color: 'var(--ink-soft)' }
               }
             >
-              {o.label}
+              {t(o.labelKey, o.label)}
             </button>
           );
         })}
@@ -124,7 +126,7 @@ export default function ExportarPeriodo({ onExport, disabled = false, className 
           <CalendarDays className="h-4 w-4" style={{ color: 'var(--ink-faint)' }} aria-hidden />
           <input
             type="date"
-            aria-label="Desde"
+            aria-label={t('guards.availability.table.from', 'Desde')}
             className={campo}
             style={estiloCampo}
             value={desde}
@@ -134,7 +136,7 @@ export default function ExportarPeriodo({ onExport, disabled = false, className 
           <span className="text-xs" style={{ color: 'var(--ink-faint)' }}>a</span>
           <input
             type="date"
-            aria-label="Hasta"
+            aria-label={t('guards.availability.table.to', 'Hasta')}
             className={campo}
             style={estiloCampo}
             value={hasta}

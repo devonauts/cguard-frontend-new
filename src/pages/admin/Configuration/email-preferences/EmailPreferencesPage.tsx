@@ -68,6 +68,7 @@ function ToggleRow({
   onCheckedChange: (b: boolean) => void;
   onVerEjemplo: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="glass-flat flex items-center justify-between gap-4 px-4 py-3">
       <div className="min-w-0">
@@ -79,7 +80,7 @@ function ToggleRow({
               dot={false}
               className="px-2 py-0.5 text-[10px]"
             >
-              <Lock size={10} /> Siempre activo
+              <Lock size={10} /> {t("ui.EmailPreferencesPage.siempreActivo", "Siempre activo")}
             </StatusBadge>
           )}
         </div>
@@ -95,7 +96,7 @@ function ToggleRow({
           className="cg-focus mt-1.5 inline-flex items-center gap-1.5 text-xs font-semibold transition-colors hover:underline"
           style={{ color: "var(--brand-text)" }}
         >
-          <Eye size={13} /> Ver ejemplo
+          <Eye size={13} /> {t("ui.EmailPreferencesPage.verEjemplo", "Ver ejemplo")}
         </button>
       </div>
       <Switch
@@ -178,19 +179,24 @@ function EjemploDeCorreo({
       {!cargando && datos && datos.disponible && (
         <div className="space-y-3">
           <div className="glass-sunken px-3 py-2">
-            <p className="cg-eyebrow">Asunto</p>
+            <p className="cg-eyebrow">{t("ui.EmailPreferencesPage.asunto", "Asunto")}</p>
             <p className="mt-0.5 text-sm font-semibold">{datos.asunto}</p>
           </div>
 
           {datos.avisoSendgrid && (
             <InfoNote tone="warn" icon={<TriangleAlert />}>
-              Este correo se está enviando con una plantilla externa, así que lo
-              que llega puede no coincidir con este ejemplo.
+              {t(
+                "ui.EmailPreferencesPage.esteCorreoSeEstaEnviandoConUnaPlantilla",
+                "Este correo se está enviando con una plantilla externa, así que lo que llega puede no coincidir con este ejemplo.",
+              )}
             </InfoNote>
           )}
 
           <iframe
-            title={`Ejemplo — ${item.label}`}
+            title={t("ui.EmailPreferencesPage.ejemploLabel", {
+              defaultValue: "Ejemplo — {{label}}",
+              label: item.label,
+            })}
             srcDoc={datos.html}
             sandbox=""
             className="h-[28rem] w-full rounded-xl border"
@@ -198,8 +204,10 @@ function EjemploDeCorreo({
           />
 
           <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
-            Con datos de ejemplo. El nombre, el logotipo y los colores son los
-            de tu organización; el enlace de este ejemplo no es válido.
+            {t(
+              "ui.EmailPreferencesPage.conDatosDeEjemploElNombre",
+              "Con datos de ejemplo. El nombre, el logotipo y los colores son los de tu organización; el enlace de este ejemplo no es válido.",
+            )}
           </p>
         </div>
       )}
@@ -216,6 +224,7 @@ function Swatches({
   value: string;
   onPick: (c: string) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-wrap items-center gap-2">
       {presets.map((c) => (
@@ -223,7 +232,10 @@ function Swatches({
           key={c}
           type="button"
           onClick={() => onPick(c)}
-          aria-label={`Color ${c}`}
+          aria-label={t("ui.EmailPreferencesPage.colorHex", {
+            defaultValue: "Color {{color}}",
+            color: c,
+          })}
           aria-pressed={value.toLowerCase() === c.toLowerCase()}
           className={`cg-focus h-9 w-9 rounded-full border-2 transition-transform hover:scale-110 ${value.toLowerCase() === c.toLowerCase() ? "scale-110" : ""}`}
           style={{
@@ -245,7 +257,7 @@ function Swatches({
           onChange={(e) => onPick(e.target.value)}
           className="h-6 w-8 cursor-pointer border-0 bg-transparent p-0"
         />
-        Personalizado
+        {t("ui.EmailPreferencesPage.personalizado", "Personalizado")}
       </label>
     </div>
   );
@@ -384,7 +396,11 @@ export default function EmailPreferencesPage() {
             badges={
               !loading && catalog.length ? (
                 <StatusBadge tone="ok">
-                  {activos} de {catalog.length} avisos activos
+                  {t("ui.EmailPreferencesPage.avisosActivos", {
+                    defaultValue: "{{active}} de {{total}} avisos activos",
+                    active: activos,
+                    total: catalog.length,
+                  })}
                 </StatusBadge>
               ) : undefined
             }

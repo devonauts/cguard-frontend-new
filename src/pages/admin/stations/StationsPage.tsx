@@ -93,9 +93,9 @@ export default function StationsPage() {
           badges={
             !loading ? (
               <span className="text-sm" style={{ color: "var(--ink-soft)" }}>
-                {t("stations.count", {
-                  defaultValue: "{{n}} estación(es)",
-                  n: filtered.length,
+                {t("ui.StationsPage.nEstaciones", {
+                  defaultValue: "{{count}} estaciones",
+                  count: filtered.length,
                 })}
               </span>
             ) : undefined

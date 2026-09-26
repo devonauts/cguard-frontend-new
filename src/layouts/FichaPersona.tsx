@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { createContext, useContext, useEffect, useState } from "react";
 import { Outlet, useParams } from "react-router-dom";
 
@@ -86,7 +87,7 @@ export function useDatosDeFicha(
             name:
               s.fullName ||
               `${s.firstName || ""} ${s.lastName || ""}`.trim() ||
-              "Supervisor",
+              i18n.t("adminOfficeUsers.roleNames.supervisor", "Supervisor"),
             photo: s.photoUrl || null,
             onDuty: !!s.isOnDuty,
             email: s.email,
@@ -111,7 +112,7 @@ export function useDatosDeFicha(
             name:
               g?.fullName ||
               `${g?.firstName || ""} ${g?.lastName || ""}`.trim() ||
-              "Vigilante",
+              i18n.t("dashboard.table.headers.guard", "Vigilante"),
             photo,
             onDuty: !!g?.isOnDuty,
             activated: !!g?.hasPassword && g?.status === "active",

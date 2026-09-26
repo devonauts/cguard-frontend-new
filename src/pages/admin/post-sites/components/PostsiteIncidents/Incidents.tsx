@@ -164,7 +164,9 @@ export default function Incidents({ site }: { site?: SiteProp }) {
         document.execCommand("copy");
         document.body.removeChild(ta);
       }
-      toast.success("Link copiado al portapapeles");
+      toast.success(
+        t("ui.Incidents.linkCopiado", "Link copiado al portapapeles"),
+      );
     } catch (err) {
       console.error("Copy failed", err);
       toast.error(t("comun.noSePudoCopiarEl"));
@@ -405,18 +407,20 @@ export default function Incidents({ site }: { site?: SiteProp }) {
   ): Promise<void> {
     const postSiteId = site?.id || "";
     if (!postSiteId) {
-      toast.error("Post site missing");
+      toast.error(t("ui.Incidents.faltaElSitio", "Falta el sitio de servicio"));
       return;
     }
     if (!newSubject && !newContent) {
-      toast.error("Provide a subject or description");
+      toast.error(
+        t("ui.Incidents.indicaAsuntoODescripcion", "Indica un asunto o una descripción"),
+      );
       return;
     }
     try {
       setCreating(true);
       const tenantId = site?.tenantId || localStorage.getItem("tenantId") || "";
       if (!tenantId) {
-        toast.error("Tenant missing");
+        toast.error(t("ui.Incidents.faltaLaEmpresa", "No se encontró la empresa"));
         return;
       }
       const payload: any = {
@@ -438,10 +442,10 @@ export default function Incidents({ site }: { site?: SiteProp }) {
       setNewSubject("");
       setNewContent("");
       setSelectedStationId(undefined);
-      toast.success("Dispatch created");
+      toast.success(t("ui.Incidents.despachoCreado", "Despacho creado"));
     } catch (err) {
       console.error("Create dispatch failed", err);
-      toast.error("Failed to create dispatch");
+      toast.error(t("ui.Incidents.noSePudoCrearDespacho", "No se pudo crear el despacho"));
     } finally {
       setCreating(false);
     }
@@ -866,7 +870,12 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                     setActionSelectValue("");
                     return;
                   }
-                  toast("Acción eliminar no implementada aquí");
+                  toast(
+                    t(
+                      "ui.Incidents.accionEliminarNoImplementada",
+                      "Acción eliminar no implementada aquí",
+                    ),
+                  );
                   setActionSelectValue("");
                 }
               }}
@@ -998,7 +1007,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <div>
                         <label className="block text-sm font-medium text-foreground mb-2">
-                          Informador
+                          {t("incidents.columns.caller", "Informador")}
                         </label>
                         <Select
                           value={filterInformer ?? "__none"}
@@ -1219,7 +1228,12 @@ export default function Incidents({ site }: { site?: SiteProp }) {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuItem
                   onClick={() =>
-                    toast(t("incidents.export") + " not implemented")
+                    toast(
+                      t("ui.Incidents.noImplementado", {
+                        defaultValue: "{{accion}}: no implementado",
+                        accion: t("incidents.export"),
+                      }),
+                    )
                   }
                 >
                   <FileSpreadsheet className="mr-2 h-4 w-4" />{" "}
@@ -1227,14 +1241,24 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() =>
-                    toast(t("incidents.filters") + " not implemented")
+                    toast(
+                      t("ui.Incidents.noImplementado", {
+                        defaultValue: "{{accion}}: no implementado",
+                        accion: t("incidents.filters"),
+                      }),
+                    )
                   }
                 >
                   <Printer className="mr-2 h-4 w-4" /> {t("incidents.filters")}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() =>
-                    toast(t("incidents.email") + " not implemented")
+                    toast(
+                      t("ui.Incidents.noImplementado", {
+                        defaultValue: "{{accion}}: no implementado",
+                        accion: t("incidents.email"),
+                      }),
+                    )
                   }
                 >
                   <Mail className="mr-2 h-4 w-4" /> {t("incidents.email")}
@@ -1440,13 +1464,13 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                               if (ws === "inProgress")
                                 return (
                                   <StatusBadge tone="amber">
-                                    En progreso
+                                    {t("training.enrollmentStatus.inProgress", "En progreso")}
                                   </StatusBadge>
                                 );
                               if (ws === "resolved")
                                 return (
                                   <StatusBadge tone="green">
-                                    Resuelto
+                                    {t("reports.panicLog.status.resolved", "Resuelto")}
                                   </StatusBadge>
                                 );
                               if (ws === "closed")
@@ -1797,7 +1821,7 @@ export default function Incidents({ site }: { site?: SiteProp }) {
               {sups.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.fullName}
-                  {s.isOnDuty ? " • en turno" : ""}
+                  {s.isOnDuty ? ` • ${t("ui.Incidents.enTurnoMinus", "en turno")}` : ""}
                 </option>
               ))}
             </select>
@@ -1813,7 +1837,9 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                 const tid =
                   site?.tenantId || localStorage.getItem("tenantId") || "";
                 if (!tid) {
-                  toast.error("Tenant missing");
+                  toast.error(
+                    t("ui.Incidents.faltaLaEmpresa", "No se encontró la empresa"),
+                  );
                   return;
                 }
                 setDispatching(true);
@@ -1840,7 +1866,10 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                   );
                   setDispatchFor(null);
                 } catch (e: any) {
-                  toast.error(e?.message || "No se pudo despachar");
+                  toast.error(
+                    e?.message ||
+                      t("ui.Incidents.noSePudoDespachar", "No se pudo despachar"),
+                  );
                 } finally {
                   setDispatching(false);
                 }

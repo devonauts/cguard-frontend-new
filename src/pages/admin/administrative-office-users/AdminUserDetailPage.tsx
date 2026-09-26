@@ -138,7 +138,7 @@ export default function AdminUserDetailPage() {
     [user?.firstName, user?.lastName].filter(Boolean).join(" ") ||
     user?.name ||
     user?.email ||
-    "Usuario";
+    t("ui.AdminUserDetailPage.usuario", "Usuario");
   const photo = photoOf(user);
   const nm = String(name || "?");
   const statusKey = String(user?.status || "active").toLowerCase();
@@ -175,8 +175,8 @@ export default function AdminUserDetailPage() {
     label: string;
     icon: LucideIcon;
   }> = [
-    { id: "perfil", label: "Perfil", icon: IdCard },
-    { id: "permisos", label: "Permisos", icon: KeyRound },
+    { id: "perfil", label: t("ui.AdminUserDetailPage.perfil", "Perfil"), icon: IdCard },
+    { id: "permisos", label: t("ui.AdminUserDetailPage.permisos", "Permisos"), icon: KeyRound },
     /* Los fichajes que el reloj le RECHAZÓ. El personal de oficina también
        ficha (`staffShifts`), así que también se le puede quedar en la puerta.
        Misma pantalla que en la ficha del vigilante y en la del supervisor:
@@ -193,7 +193,7 @@ export default function AdminUserDetailPage() {
           style={{ color: "var(--ink-soft)" }}
         >
           <Link to="/back-office" className="shrink-0 hover:underline">
-            Usuarios administrativos
+            {t("ui.AdminUserDetailPage.usuariosAdministrativos", "Usuarios administrativos")}
           </Link>
           <ChevronRight className="h-3.5 w-3.5 shrink-0" />
           <Link
@@ -205,7 +205,7 @@ export default function AdminUserDetailPage() {
           </Link>
           <ChevronRight className="h-3.5 w-3.5 shrink-0" />
           <span className="shrink-0 font-medium text-foreground">
-            {TABS.find((x) => x.id === tab)?.label ?? "Perfil"}
+            {TABS.find((x) => x.id === tab)?.label ?? t("ui.AdminUserDetailPage.perfil", "Perfil")}
           </span>
         </div>
 
@@ -284,7 +284,7 @@ export default function AdminUserDetailPage() {
                   size="sm"
                   onClick={() => navigate(`/back-office/edit/${id}`)}
                 >
-                  <Pencil className="mr-1 h-4 w-4" /> Editar
+                  <Pencil className="mr-1 h-4 w-4" /> {t("actions.edit", "Editar")}
                 </Button>
               </div>
             )}
@@ -409,7 +409,7 @@ export default function AdminUserDetailPage() {
                         className="text-xs"
                         style={{ color: "var(--ink-soft)" }}
                       >
-                        Geocerca: {user.officeGeofenceRadiusM} m
+                        {t("ui.AdminUserDetailPage.geocercaM", { defaultValue: "Geocerca: {{m}} m", m: user.officeGeofenceRadiusM })}
                       </div>
                     )}
                   </div>
@@ -426,7 +426,7 @@ export default function AdminUserDetailPage() {
           </div>
         ) : (
           <Section
-            title="Permisos"
+            title={t("ui.AdminUserDetailPage.permisos", "Permisos")}
             icon={<KeyRound />}
             action={
               <Button
@@ -434,18 +434,22 @@ export default function AdminUserDetailPage() {
                 size="sm"
                 onClick={() => navigate(`/back-office/edit/${id}`)}
               >
-                <KeyRound className="mr-1.5 h-3.5 w-3.5" /> Gestionar permisos
+                <KeyRound className="mr-1.5 h-3.5 w-3.5" />{" "}
+                {t("ui.AdminUserDetailPage.gestionarPermisos", "Gestionar permisos")}
               </Button>
             }
           >
             <div className="space-y-4">
               <div className="glass-sunken px-3 py-2.5 text-sm">
-                Rol base:{" "}
+                {t("ui.AdminUserDetailPage.rolBase", "Rol base:")}{" "}
                 <span className="font-semibold text-foreground">
                   {roleName || "—"}
                 </span>
-                . Los permisos se heredan del rol y pueden ajustarse por
-                usuario.
+                .{" "}
+                {t(
+                  "ui.AdminUserDetailPage.permisosSeHeredan",
+                  "Los permisos se heredan del rol y pueden ajustarse por usuario.",
+                )}
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <GlassPanel flat className="p-4">
@@ -453,8 +457,11 @@ export default function AdminUserDetailPage() {
                     className="flex items-center gap-2 text-sm font-semibold"
                     style={{ color: "var(--ok-text)" }}
                   >
-                    <CheckCircle2 className="h-4 w-4" /> Concedidos (
-                    {overrides.grant.length})
+                    <CheckCircle2 className="h-4 w-4" />{" "}
+                    {t("ui.AdminUserDetailPage.concedidosN", {
+                      defaultValue: "Concedidos ({{n}})",
+                      n: overrides.grant.length,
+                    })}
                   </div>
                   {overrides.grant.length ? (
                     <div className="mt-2 flex flex-wrap gap-1.5">
@@ -476,7 +483,10 @@ export default function AdminUserDetailPage() {
                           className="text-[11px]"
                           style={{ color: "var(--ink-faint)" }}
                         >
-                          +{overrides.grant.length - 12} más
+                          {t("ui.AdminUserDetailPage.masN", {
+                            defaultValue: "+{{n}} más",
+                            n: overrides.grant.length - 12,
+                          })}
                         </span>
                       )}
                     </div>
@@ -494,8 +504,11 @@ export default function AdminUserDetailPage() {
                     className="flex items-center gap-2 text-sm font-semibold"
                     style={{ color: "var(--bad-text)" }}
                   >
-                    <XCircle className="h-4 w-4" /> Denegados (
-                    {overrides.deny.length})
+                    <XCircle className="h-4 w-4" />{" "}
+                    {t("ui.AdminUserDetailPage.denegadosN", {
+                      defaultValue: "Denegados ({{n}})",
+                      n: overrides.deny.length,
+                    })}
                   </div>
                   {overrides.deny.length ? (
                     <div className="mt-2 flex flex-wrap gap-1.5">
@@ -517,7 +530,10 @@ export default function AdminUserDetailPage() {
                           className="text-[11px]"
                           style={{ color: "var(--ink-faint)" }}
                         >
-                          +{overrides.deny.length - 12} más
+                          {t("ui.AdminUserDetailPage.masN", {
+                            defaultValue: "+{{n}} más",
+                            n: overrides.deny.length - 12,
+                          })}
                         </span>
                       )}
                     </div>

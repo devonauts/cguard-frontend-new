@@ -11,6 +11,7 @@ import {
   Modal,
   SkeletonBlock,
 } from "@/components/kit";
+import i18n from "@/i18n";
 import { localeActual } from "@/lib/localeActual";
 import {
   communicationService,
@@ -60,7 +61,10 @@ async function loadFacebookSdk(appId: string, graphVersion: string) {
           script.remove();
           reject(
             new Error(
-              "No se pudo cargar el SDK de Meta. Revisa tu conexión o bloqueadores de anuncios.",
+              i18n.t("ui.WhatsAppBusinessCard.noSePudoCargarElSdkDeMeta", {
+                defaultValue:
+                  "No se pudo cargar el SDK de Meta. Revisa tu conexión o bloqueadores de anuncios.",
+              }),
             ),
           );
         };
@@ -83,17 +87,27 @@ async function loadFacebookSdk(appId: string, graphVersion: string) {
 /** Humanize Meta messaging limit tiers. */
 function messagingLimitLabel(limit?: string | null): string {
   if (!limit) return "—";
-  const map: Record<string, string> = {
-    TIER_50: "50/día",
-    TIER_250: "250/día",
-    TIER_1K: "1,000/día",
-    TIER_10K: "10,000/día",
-    TIER_100K: "100,000/día",
-    TIER_UNLIMITED: "Ilimitado",
-    UNLIMITED: "Ilimitado",
+  const tiers: Record<string, number> = {
+    TIER_50: 50,
+    TIER_250: 250,
+    TIER_1K: 1000,
+    TIER_10K: 10000,
+    TIER_100K: 100000,
   };
+  const key = limit.toUpperCase();
 
-  return map[limit.toUpperCase()] || limit;
+  if (key === "TIER_UNLIMITED" || key === "UNLIMITED")
+    return i18n.t("ui.WhatsAppBusinessCard.ilimitado", {
+      defaultValue: "Ilimitado",
+    });
+  const n = tiers[key];
+
+  if (n == null) return limit;
+
+  return i18n.t("ui.WhatsAppBusinessCard.nPorDia", {
+    defaultValue: "{{n}}/día",
+    n: new Intl.NumberFormat(localeActual()).format(n),
+  });
 }
 
 /** Calidad de la cuenta según Meta → tono del sistema (nunca el acento). */

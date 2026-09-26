@@ -335,9 +335,15 @@ export default function TenantJoinModal({
       // Si empieza con 0, quitarlo (caso nacional)
       if (d.startsWith("0")) d = d.slice(1);
       if (d.length !== 7)
-        return "El teléfono fijo ecuatoriano debe tener 7 dígitos (sin incluir el código de país).";
+        return t(
+          "ui.TenantJoinModal.fijoEcuadorSieteDigitos",
+          "El teléfono fijo ecuatoriano debe tener 7 dígitos (sin incluir el código de país).",
+        );
       if (!/^[2-7]/.test(d))
-        return "El teléfono fijo ecuatoriano debe comenzar con un dígito entre 2 y 7.";
+        return t(
+          "ui.TenantJoinModal.fijoEcuadorPrimerDigito",
+          "El teléfono fijo ecuatoriano debe comenzar con un dígito entre 2 y 7.",
+        );
 
       return null;
     }
@@ -359,7 +365,10 @@ export default function TenantJoinModal({
       }
     }
     if (d.length < 5 || d.length > 12)
-      return "Número de teléfono fijo inválido.";
+      return t(
+        "ui.TenantJoinModal.numeroDeTelefonoFijoInvalido",
+        "Número de teléfono fijo inválido.",
+      );
 
     return null;
   };
@@ -403,21 +412,31 @@ export default function TenantJoinModal({
       // If starts with 0 -> expect 10 digits starting with 09
       if (local.startsWith("0")) {
         if (!(local.length === 10 && local.startsWith("09"))) {
-          return "El celular debe tener 10 dígitos y comenzar con 09.";
+          return t(
+            "ui.TenantJoinModal.celularDiezDigitos",
+            "El celular debe tener 10 dígitos y comenzar con 09.",
+          );
         }
 
         return null;
       }
       // otherwise expect 9 digits starting with 9
       if (!(local.length === 9 && local.startsWith("9"))) {
-        return "El celular debe tener 9 dígitos y comenzar con 9.";
+        return t(
+          "ui.TenantJoinModal.celularNueveDigitos",
+          "El celular debe tener 9 dígitos y comenzar con 9.",
+        );
       }
 
       return null;
     }
 
     // generic fallback: require 7-15 digits
-    if (d.length < 7 || d.length > 15) return "Número de teléfono inválido.";
+    if (d.length < 7 || d.length > 15)
+      return t(
+        "ui.OnboardingWizard.numeroDeTelefonoInvalido",
+        "Número de teléfono inválido.",
+      );
 
     return null;
   };
@@ -468,7 +487,10 @@ export default function TenantJoinModal({
     const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailRe.test(v))
-      return "Correo electrónico inválido. Ej: nombre@dominio.com";
+      return t(
+        "ui.TenantJoinModal.correoElectronicoInvalido",
+        "Correo electrónico inválido. Ej: nombre@dominio.com",
+      );
 
     return null;
   };
@@ -1097,7 +1119,7 @@ export default function TenantJoinModal({
                 </div>
                 <div>
                   <label className="text-sm">
-                    Email
+                    {t("auth.email_label", "Correo electrónico")}
                     <span className="ml-1" style={{ color: "var(--bad-text)" }}>
                       *
                     </span>
@@ -1247,7 +1269,10 @@ export default function TenantJoinModal({
                             "ui.TenantJoinModal.ingresarDireccionManual",
                             "Ingresar dirección manualmente",
                           )
-                        : "Volver a búsqueda automática"}
+                        : t(
+                            "ui.TenantJoinModal.volverABusquedaAutomatica",
+                            "Volver a búsqueda automática",
+                          )}
                     </span>
                   </Button>
                 </div>
@@ -1395,7 +1420,9 @@ export default function TenantJoinModal({
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="text-sm">Latitud</label>
+                    <label className="text-sm">
+                      {t("clients.stations.lat", "Latitud")}
+                    </label>
                     <Input
                       value={form.latitude}
                       onChange={(e) =>
@@ -1408,7 +1435,9 @@ export default function TenantJoinModal({
                     />
                   </div>
                   <div>
-                    <label className="text-sm">Longitud</label>
+                    <label className="text-sm">
+                      {t("clients.stations.lng", "Longitud")}
+                    </label>
                     <Input
                       value={form.longitude}
                       onChange={(e) =>

@@ -54,7 +54,7 @@ export default function OfflineBanner() {
       ) : reconnecting ? (
         <>
           <RefreshCw className="animate-spin" size={14} />
-          <span>Reconectando…</span>
+          <span>{t("ui.NotificationsPanel.reconectando", "Reconectando…")}</span>
         </>
       ) : (
         <CloudUpload size={14} />
@@ -66,7 +66,10 @@ export default function OfflineBanner() {
           type="button"
           onClick={() => void flush()}
         >
-          {pending} {pending === 1 ? "cambio pendiente" : "cambios pendientes"}
+          {t("ui.OfflineBanner.cambiosPendientes", {
+            defaultValue: "{{count}} cambios pendientes",
+            count: pending,
+          })}
         </button>
       )}
     </div>

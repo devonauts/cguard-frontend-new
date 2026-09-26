@@ -66,7 +66,9 @@ export default function SupervisorSchedulePage() {
     supervisorService
       .getSchedule(id)
       .then((res) => setRows((res?.rows ?? []) as ScheduleRow[]))
-      .catch(() => toast.error("No se pudo cargar el horario"))
+      .catch(() => toast.error(
+          t("ui.SupervisorSchedulePage.noSePudoCargarElHorario", "No se pudo cargar el horario"),
+        ))
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -99,14 +101,18 @@ export default function SupervisorSchedulePage() {
 
   return (
     <AppLayout>
-      <GuardsLayout navKey="supervisors" title="Horario">
+      <GuardsLayout navKey="supervisors" title={t("comun.horario", "Horario")}
+      >
         <PageContainer>
           {loading ? (
             <SkeletonCards count={3} />
           ) : !rows || rows.length === 0 ? (
             <EmptyState
               action={manageBtn}
-              description="Depende del puesto asignado y su rotación. La rotación (día/noche) se configura en el puesto."
+              description={t(
+                "ui.SupervisorSchedulePage.dependeDelPuestoAsignado",
+                "Depende del puesto asignado y su rotación. La rotación (día/noche) se configura en el puesto.",
+              )}
               icon={<CalendarClock />}
               title={t(
                 "ui.SupervisorSchedulePage.sinHorarioGenerado",
@@ -117,8 +123,10 @@ export default function SupervisorSchedulePage() {
             <>
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-                  Próximos turnos generados a partir del puesto asignado y su
-                  rotación.
+                  {t(
+                    "ui.SupervisorSchedulePage.proximosTurnosGenerados",
+                    "Próximos turnos generados a partir del puesto asignado y su rotación.",
+                  )}
                 </p>
                 {manageBtn}
               </div>
@@ -153,7 +161,9 @@ export default function SupervisorSchedulePage() {
                               ) : (
                                 <Sun className="h-3 w-3" />
                               )}
-                              {night ? "Noche" : "Día"}
+                              {night
+                                ? t("ui.SupervisorSchedulePage.noche", "Noche")
+                                : t("ui.SupervisorSchedulePage.dia", "Día")}
                             </StatusBadge>
                             <span className="text-sm font-semibold tabular-nums">
                               {fmtTime(r.start)} – {fmtTime(r.end)}

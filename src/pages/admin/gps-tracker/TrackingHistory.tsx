@@ -81,7 +81,8 @@ export default function TrackingHistoryPage() {
           rows
             .map((g) => ({
               id: g.id,
-              name: g.fullName || g.name || g.email || "Vigilante",
+              name:
+                g.fullName || g.name || g.email || t("comun.vigilante", "Vigilante"),
             }))
             .filter((g) => g.id),
         );
@@ -155,12 +156,12 @@ export default function TrackingHistoryPage() {
       await exportMatrix(
         format,
         [
-          "Fecha/Hora",
-          "Latitud",
-          "Longitud",
-          "Velocidad (m/s)",
-          "Precisión (m)",
-          "Batería (%)",
+          t("dispatcher.date_time", "Fecha/Hora"),
+          t("revision.latitud", "Latitud"),
+          t("revision.longitud", "Longitud"),
+          t("ui.TrackingHistory.velocidadMs", "Velocidad (m/s)"),
+          t("ui.TrackingHistory.precisionM", "Precisión (m)"),
+          t("ui.TrackingHistory.bateriaPct", "Batería (%)"),
         ],
         points.map((p) => [
           new Date(p.at).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() }),
@@ -172,8 +173,8 @@ export default function TrackingHistoryPage() {
         ]),
         {
           title: t("sidebar.rastreador.historial", "Historial de seguimiento"),
-          subtitle: `${nombre ? `${nombre} \u00b7 ` : ""}${from} a ${to} \u00b7 ${points.length} punto(s)`,
-          fileBase: `recorrido-${nombre || "gps"}-${to}`,
+          subtitle: `${nombre ? `${nombre} \u00b7 ` : ""}${t("ui.TrackingHistory.rangoFechas", { defaultValue: "{{from}} a {{to}}", from, to })} \u00b7 ${t("ui.TrackingHistory.nPuntos", { defaultValue: "{{count}} punto(s)", count: points.length })}`,
+          fileBase: `${t("ui.TrackingHistory.archivoRecorrido", "recorrido")}-${nombre || "gps"}-${to}`,
         },
         // Sólo la fecha es texto; las cinco coordenadas y medidas son números y
         // se leen mucho mejor alineadas a la derecha.
@@ -181,7 +182,9 @@ export default function TrackingHistoryPage() {
       );
     } catch (e) {
       console.error("export recorrido", e);
-      toast.error("No se pudo generar el archivo");
+      toast.error(
+        t("ui.TrackingHistory.noSePudoGenerarElArchivo", "No se pudo generar el archivo"),
+      );
     }
   };
 
@@ -247,7 +250,7 @@ export default function TrackingHistoryPage() {
         />
 
         {/* Filters */}
-        <Section icon={<MapPin />} title="Filtros">
+        <Section icon={<MapPin />} title={t("incidents.filters", "Filtros")}>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
             <div className="lg:col-span-2">
               <label className="cg-eyebrow mb-2 block">
@@ -304,7 +307,7 @@ export default function TrackingHistoryPage() {
                 ) : (
                   <MapIcon className="h-4 w-4" />
                 )}
-                Ver recorrido
+                {t("ui.TrackingHistory.verRecorrido", "Ver recorrido")}
               </Button>
             </div>
           </div>
@@ -330,12 +333,21 @@ export default function TrackingHistoryPage() {
                 <SelectItem value="hybrid">
                   {t("ui.TrackingHistory.hibrido", "Híbrido")}
                 </SelectItem>
-                <SelectItem value="terrain">Terreno</SelectItem>
+                <SelectItem value="terrain">
+                  {t("ui.LiveTracking.terreno", "Terreno")}
+                </SelectItem>
               </SelectContent>
             </Select>
           }
           icon={<MapIcon />}
-          title={guardName ? `Recorrido · ${guardName}` : "Vista del mapa"}
+          title={
+            guardName
+              ? t("ui.TrackingHistory.recorridoDe", {
+                  defaultValue: "Recorrido · {{name}}",
+                  name: guardName,
+                })
+              : t("ui.TrackingHistory.vistaDelMapa", "Vista del mapa")
+          }
         >
           <div className="mt-1 flex h-[520px] overflow-hidden rounded-2xl border">
             <div className="flex-[2] bg-muted">
@@ -362,8 +374,12 @@ export default function TrackingHistoryPage() {
               <div className="flex border-b bg-muted/30 px-3 py-2.5 text-xs font-semibold text-foreground">
                 <span className="w-10">#</span>
                 <span className="flex-1">{t("comun.hora")}</span>
-                <span className="w-20 text-right">Velocidad</span>
-                <span className="w-10 text-right">Bat.</span>
+                <span className="w-20 text-right">
+                  {t("ui.RouteTrackingMap.velocidad", "Velocidad")}
+                </span>
+                <span className="w-10 text-right">
+                  {t("ui.TrackingHistory.bat", "Bat.")}
+                </span>
               </div>
 
               <div
@@ -445,8 +461,12 @@ export default function TrackingHistoryPage() {
 
               {points.length > 0 && (
                 <div className="border-t px-3 py-2 text-xs text-muted-foreground">
-                  {points.length.toLocaleString(localeActual())} punto(s) ·
-                  pulsa uno para verlo en el mapa
+                  {t("ui.TrackingHistory.nPuntosPulsaUno", {
+                    defaultValue:
+                      "{{n}} punto(s) · pulsa uno para verlo en el mapa",
+                    n: points.length.toLocaleString(localeActual()),
+                    count: points.length,
+                  })}
                 </div>
               )}
             </div>

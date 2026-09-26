@@ -1,7 +1,16 @@
 import * as React from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { format, subDays, startOfDay, endOfDay } from "date-fns";
-import { es } from "date-fns/locale";
+import { subDays, startOfDay, endOfDay, type Locale } from "date-fns";
+import {
+  de,
+  enUS,
+  es,
+  fr,
+  it as itLocale,
+  nl,
+  pl,
+  ptBR,
+} from "date-fns/locale";
 import { DateRange } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
@@ -13,6 +22,29 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import i18n from "@/i18n";
+import { localeActual } from "@/lib/localeActual";
+
+/** date-fns locale for the calendar, following the UI language (was fixed to `es`). */
+const LOCALES_CALENDARIO: Record<string, Locale> = {
+  es,
+  en: enUS,
+  pt: ptBR,
+  fr,
+  de,
+  it: itLocale,
+  nl,
+  pl,
+};
+const localeCalendario = (): Locale =>
+  LOCALES_CALENDARIO[String(i18n.language || "es").slice(0, 2).toLowerCase()] ??
+  es;
+
+const fechaCorta = (d: Date) =>
+  d.toLocaleDateString(localeActual(), {
+    day: "numeric",
+    month: "2-digit",
+    year: "numeric",
+  });
 
 interface DateRangePickerProps {
   dateRange: DateRange | undefined;
@@ -114,14 +146,10 @@ export function DateRangePicker({
       return i18n.t("kit.dateRange.placeholder");
     }
     if (!dateRange.to) {
-      return format(dateRange.from, "d/MM/yyyy", { locale: es });
+      return fechaCorta(dateRange.from);
     }
 
-    return `${format(dateRange.from, "d/MM/yyyy", { locale: es })} – ${format(
-      dateRange.to,
-      "d/MM/yyyy",
-      { locale: es },
-    )}`;
+    return `${fechaCorta(dateRange.from)} – ${fechaCorta(dateRange.to)}`;
   };
 
   return (
@@ -165,7 +193,7 @@ export function DateRangePicker({
                 initialFocus
                 className="[--cell-size:1.75rem]"
                 defaultMonth={dateRange?.from}
-                locale={es}
+                locale={localeCalendario()}
                 mode="range"
                 numberOfMonths={1}
                 selected={dateRange}

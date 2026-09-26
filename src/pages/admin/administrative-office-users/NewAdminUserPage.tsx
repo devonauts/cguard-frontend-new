@@ -667,7 +667,8 @@ export default function NewAdminUserPage() {
       setLoading(true);
       try {
         const tenantId = localStorage.getItem("tenantId") || "";
-        if (!tenantId) throw new Error("Tenant no configurado");
+        if (!tenantId)
+          throw new Error(t("ui.NewAdminUser.tenantNoConfigurado", "Tenant no configurado"));
         const resp = await userService.fetchUser(editUserId);
         // resp may include tenants array, search by tenant
         const tenantObj = resp?.tenants
@@ -728,7 +729,10 @@ export default function NewAdminUserPage() {
       const tenantId = localStorage.getItem("tenantId") || "";
       if (!tenantId)
         throw new Error(
-          "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+          t(
+            "ui.EditAdminUser.noPudimosIdentificarTuEmpresa",
+            "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+          ),
         );
 
       // local validation for UUIDs
@@ -835,7 +839,10 @@ export default function NewAdminUserPage() {
       const tenantId = localStorage.getItem("tenantId") || "";
       if (!tenantId)
         throw new Error(
-          "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+          t(
+            "ui.EditAdminUser.noPudimosIdentificarTuEmpresa",
+            "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+          ),
         );
       setInviteLoading(true);
       setGeneratedToken(null);
@@ -1016,7 +1023,7 @@ export default function NewAdminUserPage() {
                     name="accessLevel"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Rol*</FormLabel>
+                        <FormLabel>{t("ui.EditAdminUser.rolReq", "Rol*")}</FormLabel>
                         <Select
                           value={field.value}
                           onValueChange={field.onChange}
@@ -1078,7 +1085,10 @@ export default function NewAdminUserPage() {
                         "toda la operación",
                       )}
                     </strong>{" "}
-                    por definición: no se puede acotar.
+                    {t(
+                      "ui.EditAdminUser.porDefinicionNoSePuedeAcotar",
+                      "por definición: no se puede acotar.",
+                    )}
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -1110,8 +1120,10 @@ export default function NewAdminUserPage() {
                           className="block text-xs"
                           style={{ color: "var(--ink-soft)" }}
                         >
-                          Ve todos los clientes y todas las sedes. Es lo normal
-                          para la oficina.
+                          {t(
+                            "ui.NewAdminUser.veTodosLosClientes",
+                            "Ve todos los clientes y todas las sedes. Es lo normal para la oficina.",
+                          )}
                         </span>
                       </button>
                       <button
@@ -1134,8 +1146,10 @@ export default function NewAdminUserPage() {
                           className="block text-xs"
                           style={{ color: "var(--ink-soft)" }}
                         >
-                          Para quien lleva unas cuentas concretas y no debe ver
-                          el resto.
+                          {t(
+                            "ui.NewAdminUser.paraQuienLlevaUnasCuentas",
+                            "Para quien lleva unas cuentas concretas y no debe ver el resto.",
+                          )}
                         </span>
                       </button>
                     </div>
@@ -1150,14 +1164,15 @@ export default function NewAdminUserPage() {
                           name="postSiteIds"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Sedes</FormLabel>
+                              <FormLabel>{t("ui.EditAdminUser.sedes", "Sedes")}</FormLabel>
                               <p
                                 className="mb-1.5 text-xs"
                                 style={{ color: "var(--ink-soft)" }}
                               >
-                                Es el alcance de verdad: limita los turnos, la
-                                nómina, la cobertura, las visitas y los puestos
-                                que esta persona puede ver y tocar.
+                                {t(
+                                  "ui.NewAdminUser.esElAlcanceDeVerdad",
+                                  "Es el alcance de verdad: limita los turnos, la nómina, la cobertura, las visitas y los puestos que esta persona puede ver y tocar.",
+                                )}
                               </p>
                               <FormControl>
                                 <MultiSelectDeSedes
@@ -1177,8 +1192,10 @@ export default function NewAdminUserPage() {
                                     color: "var(--warn-text, var(--ink-soft))",
                                   }}
                                 >
-                                  Sin ninguna sede marcada seguirá viendo TODO.
-                                  Marca al menos una.
+                                  {t(
+                                    "ui.NewAdminUser.sinSedeMarcaAlMenosUna",
+                                    "Sin ninguna sede marcada seguirá viendo TODO. Marca al menos una.",
+                                  )}
                                 </p>
                               )}
                               <FormMessage />
@@ -1192,21 +1209,22 @@ export default function NewAdminUserPage() {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>
-                                Clientes{" "}
+                                {t("ui.EditAdminUser.clientes", "Clientes")}{" "}
                                 <span
                                   className="font-normal"
                                   style={{ color: "var(--ink-soft)" }}
                                 >
-                                  (opcional)
+                                  {t("ui.EditAdminUser.opcionalParentesis", "(opcional)")}
                                 </span>
                               </FormLabel>
                               <p
                                 className="mb-1.5 text-xs"
                                 style={{ color: "var(--ink-soft)" }}
                               >
-                                Atajo: al elegir un cliente se marcan sus sedes.
-                                Por sí solo, hoy únicamente limita qué{" "}
-                                <strong>incidentes</strong> ve.
+                                {t(
+                                  "ui.EditAdminUser.atajoClientes",
+                                  "Atajo: al elegir un cliente se marcan sus sedes. Por sí solo, hoy únicamente limita qué incidentes ve.",
+                                )}
                               </p>
                               <FormControl>
                                 <MultiSelectDeSedes

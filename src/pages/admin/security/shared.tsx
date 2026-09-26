@@ -143,12 +143,15 @@ export function fmtStamp(d?: string): string {
 export function AuditSearch({
   value,
   onChange,
-  placeholder = "Buscar…",
+  placeholder: placeholderProp,
 }: {
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
 }) {
+  const { t } = useTranslation();
+  const placeholder = placeholderProp ?? t("ui.shared.buscar", "Buscar…");
+
   return (
     <SearchInput
       aria-label={placeholder}
@@ -294,7 +297,8 @@ export function InfiniteFooter({
     >
       {loading && count > 0 ? (
         <span className="flex items-center gap-2">
-          <Loader2 className="size-4 animate-spin" /> Cargando más…
+          <Loader2 className="size-4 animate-spin" />{" "}
+          {t("ui.shared.cargandoMas", "Cargando más…")}
         </span>
       ) : hasMore ? (
         <span>

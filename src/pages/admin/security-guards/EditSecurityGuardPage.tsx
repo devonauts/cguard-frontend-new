@@ -15,6 +15,25 @@ import {
   SkeletonCards,
 } from "@/components/kit";
 
+// Valores que viajan al API tal cual (en español); sólo se traducen al pintar.
+const ESTADO_CIVIL_KEY: Record<string, string> = {
+  Soltero: "invite.guard.single",
+  Casado: "invite.guard.married",
+  "Unión libre": "invite.guard.freeUnion",
+  Divorciado: "invite.guard.divorced",
+};
+const INSTRUCCION_KEY: Record<string, string> = {
+  Secundaria: "guards.profile.academic.secondary",
+  Universitaria: "guards.profile.academic.university",
+  Universidad: "guards.profile.academic.universityDegree",
+  Especial: "guards.profile.academic.special",
+  Primaria: "guards.profile.academic.primary",
+};
+const GENERO_KEY: Record<string, string> = {
+  Masculino: "invite.guard.male",
+  Femenino: "invite.guard.female",
+};
+
 export default function EditSecurityGuardPage() {
   const { t } = useTranslation();
   // Deduplicate toasts across component remounts (React StrictMode may mount twice)
@@ -125,7 +144,7 @@ export default function EditSecurityGuardPage() {
           });
           showToastOnce(
             "edit-guard-not-found",
-            "No se encontró el vigilante solicitado.",
+            t("ui.EditSecurityGuard.noSeEncontroElVigilante", "No se encontró el vigilante solicitado."),
           );
           navigate("/security-guards", { replace: true });
         } else if (!generalErrorShown.current) {
@@ -138,10 +157,11 @@ export default function EditSecurityGuardPage() {
           }
           showToastOnce(
             "edit-guard-general-error",
-            `Error cargando vigilante: ${msg}`,
+            t("guards.list.error.loading", { defaultValue: "Error cargando vigilantes: {{msg}}", msg }),
           );
           setError(
-            `Error cargando vigilante: ${msg}${details ? "\n" + details : ""}`,
+            t("guards.list.error.loading", { defaultValue: "Error cargando vigilantes: {{msg}}", msg }) +
+              (details ? "\n" + details : ""),
           );
           setRedirecting(true);
           navigate("/security-guards", { replace: true });
@@ -211,7 +231,12 @@ export default function EditSecurityGuardPage() {
         navigate("/security-guards");
       } catch (err: any) {
         const msg = err?.message || String(err);
-        toast.error("Error guardando cambios: " + msg);
+        toast.error(
+          t("ui.EditSecurityGuard.errorGuardandoCambios", {
+            defaultValue: "Error guardando cambios: {{msg}}",
+            msg,
+          }),
+        );
       } finally {
         setLoading(false);
       }
@@ -248,7 +273,10 @@ export default function EditSecurityGuardPage() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* ── Datos personales ─────────────────────────────────── */}
-            <Section title="Datos personales" icon={<User />}>
+            <Section
+              title={t("ui.EditSecurityGuard.datosPersonales", "Datos personales")}
+              icon={<User />}
+            >
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                   <label className="block text-sm font-medium mb-1">
@@ -263,7 +291,7 @@ export default function EditSecurityGuardPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">
-                    Apellidos *
+                    {t("clients.form.lastName", "Apellidos *")}
                   </label>
                   <Input
                     name="lastName"
@@ -310,7 +338,7 @@ export default function EditSecurityGuardPage() {
                     {["Soltero", "Casado", "Unión libre", "Divorciado"].map(
                       (o) => (
                         <option key={o} value={o}>
-                          {o}
+                          {t(ESTADO_CIVIL_KEY[o], o)}
                         </option>
                       ),
                     )}
@@ -358,7 +386,7 @@ export default function EditSecurityGuardPage() {
                       "Primaria",
                     ].map((o) => (
                       <option key={o} value={o}>
-                        {o}
+                        {t(INSTRUCCION_KEY[o], o)}
                       </option>
                     ))}
                   </select>
@@ -376,7 +404,7 @@ export default function EditSecurityGuardPage() {
                     <option value="">{t("comun.seleccionar")}</option>
                     {["Masculino", "Femenino"].map((o) => (
                       <option key={o} value={o}>
-                        {o}
+                        {t(GENERO_KEY[o], o)}
                       </option>
                     ))}
                   </select>
@@ -450,7 +478,7 @@ export default function EditSecurityGuardPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">
-                    Contrato
+                    {t("guards.list.details.fields.hiringContractDate", "Contrato")}
                   </label>
                   <Input
                     name="hiringContractDate"
@@ -498,10 +526,10 @@ export default function EditSecurityGuardPage() {
                 variant="outline"
                 onClick={() => navigate(-1)}
               >
-                Cancelar
+                {t("actions.cancel", "Cancelar")}
               </Button>
               <Button type="submit" variant="brand" disabled={loading}>
-                Guardar cambios
+                {t("ui.EditSecurityGuard.guardarCambios", "Guardar cambios")}
               </Button>
             </div>
             {/* error display removed per UX request; errors now shown via toast */}

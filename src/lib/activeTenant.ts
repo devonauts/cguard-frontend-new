@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 /**
  * Empresa activa del CRM.
  *
@@ -132,7 +133,7 @@ export function syncTenantsFromProfile(user: any): void {
       continue;
     next.push({
       tenantId,
-      name: t?.tenant?.name || "Mi empresa",
+      name: t?.tenant?.name || i18n.t("ui.activeTenant.miEmpresa", "Mi empresa"),
       logoUrl: t?.tenant?.logoUrl || null,
     });
   }
@@ -146,7 +147,7 @@ export function syncTenantsFromProfile(user: any): void {
       if (t?.tenantId && !porId.has(t.tenantId)) {
         next.push({
           tenantId: t.tenantId,
-          name: t.name || "Mi empresa",
+          name: t.name || i18n.t("ui.activeTenant.miEmpresa", "Mi empresa"),
           logoUrl: t.logoUrl || null,
         });
       }

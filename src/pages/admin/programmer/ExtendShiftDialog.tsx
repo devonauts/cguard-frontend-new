@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Clock3 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -15,6 +16,7 @@ import { Modal } from "@/components/kit";
 import { coverageService, coverageErrorCode } from "@/lib/api/coverageService";
 import { ApiService } from "@/services/api/apiService";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { localeActual } from "@/lib/localeActual";
 
 /**
  * «Extender turno» desde el Horario: el vigilante que ya cubrió el día se queda
@@ -47,14 +49,39 @@ export interface ExtendTarget {
   scheduledStart?: string | null;
 }
 
-const MOTIVOS: { v: string; label: string }[] = [
-  { v: "no_call_no_show", label: "El relevo no llegó ni avisó" },
-  { v: "enfermedad", label: "El relevo se reportó enfermo" },
-  { v: "permiso_con_sueldo", label: "El relevo tenía permiso" },
-  { v: "calamidad_domestica", label: "Calamidad doméstica del relevo" },
-  { v: "transporte", label: "Problema de transporte" },
-  { v: "refuerzo_cliente", label: "El cliente pidió horas adicionales" },
-  { v: "otro", label: "Otro motivo" },
+/* `v` is the API value; `clave` is the i18n key for the displayed label. */
+const MOTIVOS: { v: string; label: string; clave: string }[] = [
+  {
+    v: "no_call_no_show",
+    label: "El relevo no llegó ni avisó",
+    clave: "ui.ExtendShiftDialog.motivoNoLlegoNiAviso",
+  },
+  {
+    v: "enfermedad",
+    label: "El relevo se reportó enfermo",
+    clave: "ui.ExtendShiftDialog.motivoEnfermo",
+  },
+  {
+    v: "permiso_con_sueldo",
+    label: "El relevo tenía permiso",
+    clave: "ui.ExtendShiftDialog.motivoPermiso",
+  },
+  {
+    v: "calamidad_domestica",
+    label: "Calamidad doméstica del relevo",
+    clave: "ui.ExtendShiftDialog.motivoCalamidad",
+  },
+  {
+    v: "transporte",
+    label: "Problema de transporte",
+    clave: "ui.ExtendShiftDialog.motivoTransporte",
+  },
+  {
+    v: "refuerzo_cliente",
+    label: "El cliente pidió horas adicionales",
+    clave: "ui.ExtendShiftDialog.motivoRefuerzoCliente",
+  },
+  { v: "otro", label: "Otro motivo", clave: "ui.ExtendShiftDialog.motivoOtro" },
 ];
 
 const SIN_AUSENTE = "__nadie__";
@@ -75,6 +102,7 @@ export default function ExtendShiftDialog({
   onClose: () => void;
   onDone?: () => void;
 }) {
+  const { t } = useTranslation();
   // Doce horas más allá de donde termina lo suyo: es lo que dura el turno que
   // va a cubrir. Se puede cambiar.
   const inicial = useMemo(() => {
@@ -164,28 +192,39 @@ export default function ExtendShiftDialog({
     if (horas != null && horas > 0)
       out.push({
         code: "horas_extra",
-        text: `Son ${Math.round(horas)} h más de las previstas.`,
+        text: t("ui.ExtendShiftDialog.sonNHorasMas", {
+          defaultValue: "Son {{n}} h más de las previstas.",
+          n: Math.round(horas),
+        }),
       });
     if (horas != null && horas >= 12)
       out.push({
         code: "jornada_24h",
-        text: "Contando su turno, quedarían cerca de 24 h seguidas.",
+        text: t(
+          "ui.ExtendShiftDialog.quedarianCercaDe24h",
+          "Contando su turno, quedarían cerca de 24 h seguidas.",
+        ),
       });
     if (horas != null && horas <= 0)
       out.push({
         code: "fin_antes_del_inicio",
-        text: "La hora de fin es anterior al inicio del tramo.",
+        text: t(
+          "ui.ExtendShiftDialog.finAnteriorAlInicio",
+          "La hora de fin es anterior al inicio del tramo.",
+        ),
       });
 
     return out;
-  }, [horas]);
+  }, [horas, t]);
 
   const guardar = async () => {
     if (!target) return;
     const fin = new Date(hasta);
 
     if (Number.isNaN(fin.getTime())) {
-      toast.error("Revisa la hora de fin.");
+      toast.error(
+        t("ui.ExtendShiftDialog.revisaLaHoraDeFin", "Revisa la hora de fin."),
+      );
 
       return;
     }
@@ -205,8 +244,15 @@ export default function ExtendShiftDialog({
         acknowledgedWarnings: avisos.map((a) => a.code),
       });
       toast.success(
-        `${target.guardName} queda cubriendo hasta las ` +
-          `${fin.toLocaleTimeString([], { timeZone: zonaDeLaEmpresa(), hour: "2-digit", minute: "2-digit" })}`,
+        t("ui.ExtendShiftDialog.quedaCubriendoHasta", {
+          defaultValue: "{{nombre}} queda cubriendo hasta las {{hora}}",
+          nombre: target.guardName,
+          hora: fin.toLocaleTimeString(localeActual(), {
+            timeZone: zonaDeLaEmpresa(),
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        }),
       );
       onDone?.();
       onClose();
@@ -216,8 +262,14 @@ export default function ExtendShiftDialog({
       toast.error(
         e?.response?.data?.message ||
           (codigo === "post_ya_cubierto"
-            ? "Ese puesto ya tiene a otro vigilante en esa franja."
-            : "No se pudo registrar la extensión."),
+            ? t(
+                "ui.ExtendShiftDialog.puestoYaCubierto",
+                "Ese puesto ya tiene a otro vigilante en esa franja.",
+              )
+            : t(
+                "ui.ExtendShiftDialog.noSePudoRegistrarLaExtension",
+                "No se pudo registrar la extensión.",
+              )),
       );
     } finally {
       setGuardando(false);
@@ -230,28 +282,40 @@ export default function ExtendShiftDialog({
         `${target?.guardName || ""}` +
         `${target?.stationName ? ` · ${target.stationName}` : ""}` +
         (desde
-          ? ` · el tramo nuevo empieza a las ${desde.toLocaleTimeString([], { timeZone: zonaDeLaEmpresa(), hour: "2-digit", minute: "2-digit" })}`
-          : " · se crea el tramo en el horario desde donde terminó el suyo")
+          ? t("ui.ExtendShiftDialog.elTramoNuevoEmpiezaALas", {
+              defaultValue: " · el tramo nuevo empieza a las {{hora}}",
+              hora: desde.toLocaleTimeString(localeActual(), {
+                timeZone: zonaDeLaEmpresa(),
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+            })
+          : t(
+              "ui.ExtendShiftDialog.seCreaElTramoDesdeDondeTermino",
+              " · se crea el tramo en el horario desde donde terminó el suyo",
+            ))
       }
       footer={
         <>
           <Button disabled={guardando} variant="outline" onClick={onClose}>
-            Cancelar
+            {t("common.cancel", "Cancelar")}
           </Button>
           <Button disabled={guardando} onClick={() => void guardar()}>
-            {guardando ? "Registrando…" : "Autorizar"}
+            {guardando
+              ? t("ui.ExtendShiftDialog.registrando", "Registrando…")
+              : t("ui.ExtendShiftDialog.autorizar", "Autorizar")}
           </Button>
         </>
       }
       icon={<Clock3 />}
       open={!!target}
-      title="Extender turno"
+      title={t("ui.ExtendShiftDialog.extenderTurno", "Extender turno")}
       onOpenChange={(o) => !o && onClose()}
     >
       <div className="space-y-4">
         <div>
           <label className="cg-eyebrow mb-1.5 block" htmlFor="ext-hasta">
-            Se queda hasta
+            {t("ui.ExtendShiftDialog.seQuedaHasta", "Se queda hasta")}
           </label>
           <input
             className="cg-input w-full px-3 py-2 text-sm"
@@ -263,7 +327,9 @@ export default function ExtendShiftDialog({
         </div>
 
         <div>
-          <label className="cg-eyebrow mb-1.5 block">Motivo</label>
+          <label className="cg-eyebrow mb-1.5 block">
+            {t("comun.motivo", "Motivo")}
+          </label>
           <Select value={motivo} onValueChange={setMotivo}>
             <SelectTrigger>
               <SelectValue />
@@ -271,7 +337,7 @@ export default function ExtendShiftDialog({
             <SelectContent>
               {MOTIVOS.map((m) => (
                 <SelectItem key={m.v} value={m.v}>
-                  {m.label}
+                  {t(m.clave, m.label)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -281,14 +347,16 @@ export default function ExtendShiftDialog({
         {companeros.length > 0 && (
           <div>
             <label className="cg-eyebrow mb-1.5 block">
-              ¿Quién faltó? (opcional)
+              {t("ui.ExtendShiftDialog.quienFaltoOpcional", "¿Quién faltó? (opcional)")}
             </label>
             <Select value={ausenteId} onValueChange={setAusenteId}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={SIN_AUSENTE}>Nadie / no aplica</SelectItem>
+                <SelectItem value={SIN_AUSENTE}>
+                  {t("ui.ExtendShiftDialog.nadieNoAplica", "Nadie / no aplica")}
+                </SelectItem>
                 {companeros.map((c) => (
                   <SelectItem key={c.id} value={String(c.id)}>
                     {c.label}
@@ -297,19 +365,27 @@ export default function ExtendShiftDialog({
               </SelectContent>
             </Select>
             <p className="mt-1 text-xs text-muted-foreground">
-              Si lo indicas, su turno de esa noche se marca como falta y queda
-              en su historial.
+              {t(
+                "ui.ExtendShiftDialog.siLoIndicasSeMarcaComoFalta",
+                "Si lo indicas, su turno de esa noche se marca como falta y queda en su historial.",
+              )}
             </p>
           </div>
         )}
 
         <div>
           <label className="cg-eyebrow mb-1.5 block" htmlFor="ext-nota">
-            Qué gestión se hizo (opcional)
+            {t(
+              "ui.ExtendShiftDialog.queGestionSeHizo",
+              "Qué gestión se hizo (opcional)",
+            )}
           </label>
           <Textarea
             id="ext-nota"
-            placeholder="Se llamó a tres vigilantes, ninguno pudo cubrir…"
+            placeholder={t(
+              "ui.ExtendShiftDialog.placeholderGestion",
+              "Se llamó a tres vigilantes, ninguno pudo cubrir…",
+            )}
             rows={2}
             value={nota}
             onChange={(e) => setNota(e.target.value)}
@@ -327,10 +403,14 @@ export default function ExtendShiftDialog({
             onChange={(e) => setAvisarCliente(e.target.checked)}
           />
           <span className="text-sm">
-            <span className="font-medium">Avisar al cliente</span>
+            <span className="font-medium">
+              {t("ui.ExtendShiftDialog.avisarAlCliente", "Avisar al cliente")}
+            </span>
             <span className="block text-xs text-muted-foreground">
-              Se le informa de que su puesto queda cubierto y hasta qué hora. No
-              se le dice quién faltó ni por qué.
+              {t(
+                "ui.ExtendShiftDialog.seLeInformaQueSuPuestoQuedaCubierto",
+                "Se le informa de que su puesto queda cubierto y hasta qué hora. No se le dice quién faltó ni por qué.",
+              )}
             </span>
           </span>
         </label>
@@ -343,7 +423,7 @@ export default function ExtendShiftDialog({
             }}
           >
             <p className="cg-eyebrow" style={{ color: "var(--warn-text)" }}>
-              Antes de confirmar
+              {t("ui.ExtendShiftDialog.antesDeConfirmar", "Antes de confirmar")}
             </p>
             <ul className="mt-1 space-y-0.5">
               {avisos.map((a) => (
@@ -360,10 +440,27 @@ export default function ExtendShiftDialog({
         )}
 
         <p className="text-xs text-muted-foreground">
-          El turno del día <strong>no se toca</strong>. Se añade el tramo nuevo
-          al horario en ámbar, marcado <strong>2×</strong>, y el vigilante ya
-          puede fichar en él. Las horas entran a su rol como{" "}
-          <strong>tiempo extra autorizado</strong>, con este motivo y tu nombre.
+          {t("ui.ExtendShiftDialog.elTurnoDelDia", "El turno del día")}{" "}
+          <strong>{t("ui.ExtendShiftDialog.noSeToca", "no se toca")}</strong>
+          {t(
+            "ui.ExtendShiftDialog.seAnadeElTramoNuevoMarcado",
+            ". Se añade el tramo nuevo al horario en ámbar, marcado",
+          )}{" "}
+          <strong>2×</strong>
+          {t(
+            "ui.ExtendShiftDialog.yElVigilanteYaPuedeFichar",
+            ", y el vigilante ya puede fichar en él. Las horas entran a su rol como",
+          )}{" "}
+          <strong>
+            {t(
+              "ui.ExtendShiftDialog.tiempoExtraAutorizado",
+              "tiempo extra autorizado",
+            )}
+          </strong>
+          {t(
+            "ui.ExtendShiftDialog.conEsteMotivoYTuNombre",
+            ", con este motivo y tu nombre.",
+          )}
         </p>
       </div>
     </Modal>

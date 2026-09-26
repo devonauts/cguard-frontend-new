@@ -217,8 +217,15 @@ export default function RadioLiveChannelPanel() {
             {canales.map((c) => (
               <option key={c.key} value={c.key}>
                 {c.name}
-                {c.online ? ` · ${c.online} en línea` : ""}
-                {c.isDefault ? " · predeterminado" : ""}
+                {c.online
+                  ? ` · ${t("ui.RadioLiveChannelPanel.nEnLinea", {
+                      defaultValue: "{{count}} en línea",
+                      count: c.online,
+                    })}`
+                  : ""}
+                {c.isDefault
+                  ? ` · ${t("ui.RadioLiveChannelPanel.predeterminado", "predeterminado")}`
+                  : ""}
               </option>
             ))}
           </select>
@@ -260,7 +267,7 @@ export default function RadioLiveChannelPanel() {
             ) : (
               <Radio size={15} />
             )}{" "}
-            Unirse al canal
+            {t("ui.RadioLiveChannelPanel.unirseAlCanal", "Unirse al canal")}
           </button>
           {shownHint && (
             <p className="text-[11px]" style={{ color: "var(--bad-text)" }}>
@@ -286,10 +293,15 @@ export default function RadioLiveChannelPanel() {
             }
           >
             {speaker
-              ? `${speaker.userId === myId ? "Estás hablando" : `${speaker.name} está hablando`}…`
+              ? speaker.userId === myId
+                ? t("ui.RadioLiveChannelPanel.estasHablando", "Estás hablando…")
+                : t("ui.RadioLiveChannelPanel.nombreEstaHablando", {
+                    defaultValue: "{{name}} está hablando…",
+                    name: speaker.name,
+                  })
               : state === "connected"
-                ? "Canal libre"
-                : "Conectando…"}
+                ? t("ui.RadioLiveChannelPanel.canalLibre", "Canal libre")
+                : t("ui.RadioLiveChannelPanel.conectando", "Conectando…")}
           </div>
 
           <div className="flex items-center justify-center gap-3 py-1">
@@ -320,7 +332,9 @@ export default function RadioLiveChannelPanel() {
               onPointerUp={onPttUp}
             >
               <Mic size={18} />{" "}
-              {talking ? "Transmitiendo…" : "Mantén para hablar"}
+              {talking
+                ? t("ui.RadioLiveChannelPanel.transmitiendo", "Transmitiendo…")
+                : t("ui.RadioLiveChannelPanel.mantenParaHablar", "Mantén para hablar")}
             </button>
             <button
               className="cg-btn-glass cg-focus rounded-lg p-2.5"
@@ -357,7 +371,9 @@ export default function RadioLiveChannelPanel() {
                   />
                   <span className="flex-1 truncate">
                     {m.name}
-                    {m.userId === myId ? " (tú)" : ""}
+                    {m.userId === myId
+                      ? ` ${t("ui.RadioLiveChannelPanel.tu", "(tú)")}`
+                      : ""}
                   </span>
                   {speaker?.userId === m.userId && (
                     <Mic size={13} style={{ color: "var(--brand-text)" }} />

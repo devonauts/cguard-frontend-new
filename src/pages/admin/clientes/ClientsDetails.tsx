@@ -51,7 +51,7 @@ export default function ClientsDetails() {
         if (!mounted) return;
         console.error("Error cargando cliente:", err);
         setClient(null);
-        toast.error("No se pudo cargar cliente");
+        toast.error(t("ui.ClientsDetails.noSePudoCargarCliente", "No se pudo cargar cliente"));
       })
       .finally(() => {
         if (!mounted) return;

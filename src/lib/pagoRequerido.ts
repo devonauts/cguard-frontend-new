@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { toast } from "sonner";
 
 /**
@@ -70,7 +71,10 @@ export function manejarPagoRequerido(
     if (!silencioso)
       avisar(
         mensaje ||
-          "El servicio de esta cuenta está pausado hasta que tu proveedor registre su método de pago.",
+          i18n.t(
+            "ui.pagoRequerido.servicioPausadoPorProveedor",
+            "El servicio de esta cuenta está pausado hasta que tu proveedor registre su método de pago.",
+          ),
       );
 
     return true;
@@ -83,7 +87,10 @@ export function manejarPagoRequerido(
 
   avisar(
     mensaje ||
-      "Tu suscripción está pausada por falta de pago. Añade o actualiza tu tarjeta en Facturación.",
+      i18n.t(
+        "ui.pagoRequerido.suscripcionPausadaPorFaltaDePago",
+        "Tu suscripción está pausada por falta de pago. Añade o actualiza tu tarjeta en Facturación.",
+      ),
   );
   try {
     // Mismo patrón que `subscription_required`: primero un evento que el router

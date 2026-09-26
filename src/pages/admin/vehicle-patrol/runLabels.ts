@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 /**
  * Etiquetas y tonos compartidos por el tablero en vivo, el historial y el
@@ -105,6 +106,29 @@ export const SEVERITY_TONE: Record<string, string> = {
   high: "bad",
   critical: "bad",
 };
+
+/**
+ * The maps above keep the Spanish text as the default; these translate at
+ * render time (never at module load, which would freeze the startup language).
+ * Unknown values fall back to the raw value, like `MAP[v] || v` did.
+ */
+const traductor =
+  (grupo: string, mapa: Record<string, string>) =>
+  (v: string | null | undefined): string => {
+    if (v == null || v === "") return "";
+    const s = String(v);
+
+    return i18n.t(`ui.runLabels.${grupo}.${s.replace(/\./g, "_")}`, {
+      defaultValue: mapa[s] ?? s,
+    });
+  };
+
+export const runStatusLabel = traductor("runStatus", RUN_STATUS_LABEL);
+export const visitStatusLabel = traductor("visitStatus", VISIT_STATUS_LABEL);
+export const scheduleLabel = traductor("schedule", SCHEDULE_LABEL);
+export const eventLabel = traductor("event", EVENT_LABEL);
+export const skipReasonLabel = traductor("skipReason", SKIP_REASON_LABEL);
+export const severityLabel = traductor("severity", SEVERITY_LABEL);
 
 export const fmtHora = (iso: string | null | undefined, locale: string) =>
   iso

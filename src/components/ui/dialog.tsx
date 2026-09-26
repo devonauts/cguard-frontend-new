@@ -3,6 +3,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { XIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import i18n from "@/i18n";
 
 const Dialog = (props: React.ComponentProps<typeof DialogPrimitive.Root>) => {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />;
@@ -137,7 +138,7 @@ const DialogContent = React.forwardRef<
               data-slot="dialog-close"
             >
               <XIcon />
-              <span className="sr-only">Close</span>
+              <span className="sr-only">{i18n.t("actions.close", "Cerrar")}</span>
             </DialogPrimitive.Close>
           )}
         </DialogPrimitive.Content>

@@ -156,6 +156,39 @@ const PLANTILLAS: Array<{
   },
 ];
 
+/** Template texts are Spanish source strings; this maps each one to its
+ *  translation key so the templates render (and get created) in the
+ *  user's language. */
+const PLANTILLA_KEYS: Record<string, string> = {
+  "Ronda perimetral": "ui.RondaWizard.rondaPerimetral",
+  "El contorno de la instalación. La más común en bodegas y plantas.": "ui.RondaWizard.plantillaPerimetralDesc",
+  "Acceso principal": "ui.RondaWizard.accesoPrincipal",
+  "Perímetro norte": "ui.RondaWizard.perimetroNorte",
+  "Perímetro sur": "ui.RondaWizard.perimetroSur",
+  "Perímetro posterior": "ui.RondaWizard.perimetroPosterior",
+  "Estacionamiento": "ui.RondaWizard.estacionamiento",
+  "Salida de emergencia": "ui.RondaWizard.salidaDeEmergencia",
+  "Ronda interna": "ui.RondaWizard.rondaInterna",
+  "Recorrido por dentro del edificio, planta por planta.": "ui.RondaWizard.plantillaInternaDesc",
+  "Recepción": "ui.RondaWizard.recepcion",
+  "Pasillo central": "ui.RondaWizard.pasilloCentral",
+  "Bodega": "ui.RondaWizard.bodega",
+  "Cuarto eléctrico": "ui.RondaWizard.cuartoElectrico",
+  "Cuarto de máquinas": "ui.RondaWizard.cuartoDeMaquinas",
+  "Azotea": "ui.RondaWizard.azotea",
+  "Ronda nocturna": "ui.RondaWizard.rondaNocturna",
+  "Los puntos críticos, para repetir varias veces en la madrugada.": "ui.RondaWizard.plantillaNocturnaDesc",
+  "Perímetro": "ui.RondaWizard.perimetro",
+  "Ronda residencial": "ui.RondaWizard.rondaResidencial",
+  "Urbanización o conjunto: garita, áreas comunes y accesos.": "ui.RondaWizard.plantillaResidencialDesc",
+  "Garita": "ui.RondaWizard.garita",
+  "Portón vehicular": "ui.RondaWizard.portonVehicular",
+  "Área social": "ui.RondaWizard.areaSocial",
+  "Piscina": "ui.RondaWizard.piscina",
+  "Juegos infantiles": "ui.RondaWizard.juegosInfantiles",
+  "Portón peatonal": "ui.RondaWizard.portonPeatonal",
+};
+
 let contador = 0;
 const nuevaClave = () => `p${++contador}`;
 
@@ -173,6 +206,7 @@ export default function RondaWizard({
   onPrint,
 }: Props) {
   const { t } = useTranslation();
+  const tx = (s: string) => (PLANTILLA_KEYS[s] ? t(PLANTILLA_KEYS[s], s) : s);
   const [paso, setPaso] = useState<1 | 2 | 3>(1);
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
@@ -238,8 +272,8 @@ export default function RondaWizard({
     const p = PLANTILLAS.find((x) => x.id === id);
 
     if (!p) return;
-    if (!nombre.trim()) setNombre(p.nombre);
-    setPuntos(p.puntos.map((n) => puntoVacio(n)));
+    if (!nombre.trim()) setNombre(tx(p.nombre));
+    setPuntos(p.puntos.map((n) => puntoVacio(tx(n))));
     // Una plantilla también salta al paso 2, así que pasa por la misma
     // comprobación del horario; si no, sería la puerta de atrás.
     const problema = validaHorario(horario, t as any);
@@ -400,8 +434,9 @@ export default function RondaWizard({
           <div className="flex items-center justify-between gap-2">
             <span className="text-xs" style={{ color: "var(--ink-faint)" }}>
               {paso === 2 &&
-                t("ronda.wizard.count", "{{n}} punto(s)", {
-                  n: validos.length,
+                t("ui.RondaWizard.nPuntos", {
+                  defaultValue: "{{count}} puntos",
+                  count: validos.length,
                 })}
             </span>
             <div className="flex gap-2">
@@ -522,20 +557,24 @@ export default function RondaWizard({
                     className="block text-sm font-semibold"
                     style={{ color: "var(--ink)" }}
                   >
-                    {p.nombre}
+                    {tx(p.nombre)}
                   </span>
                   <span
                     className="mt-0.5 block text-xs"
                     style={{ color: "var(--ink-soft)" }}
                   >
-                    {p.descripcion}
+                    {tx(p.descripcion)}
                   </span>
                   <span
                     className="mt-1.5 block text-[11px]"
                     style={{ color: "var(--ink-faint)" }}
                   >
-                    {p.puntos.length} {t("ronda.wizard.points", "puntos")} ·{" "}
-                    {p.puntos.slice(0, 3).join(", ")}…
+                    {t("ui.RondaWizard.nPuntos", {
+                      defaultValue: "{{count}} puntos",
+                      count: p.puntos.length,
+                    })}{" "}
+                    ·{" "}
+                    {p.puntos.slice(0, 3).map(tx).join(", ")}…
                   </span>
                 </button>
               ))}
@@ -766,9 +805,12 @@ export default function RondaWizard({
           {!sinCoordenadas && sinColocar > 0 && (
             <InfoNote tone="warn">
               {t(
-                "ronda.wizard.pendingPlacement",
-                "{{n}} punto(s) siguen en la coordenada del puesto. Mientras compartan sitio, la comprobación de cercanía no distingue un punto de otro: estar en la entrada daría por válida la azotea. Puedes crearlos igual y colocarlos después.",
-                { n: sinColocar },
+                "ui.RondaWizard.pendingPlacement",
+                {
+                  defaultValue:
+                    "{{count}} puntos siguen en la coordenada del puesto. Mientras compartan sitio, la comprobación de cercanía no distingue un punto de otro: estar en la entrada daría por válida la azotea. Puedes crearlos igual y colocarlos después.",
+                  count: sinColocar,
+                },
               )}
             </InfoNote>
           )}
@@ -783,17 +825,23 @@ export default function RondaWizard({
           >
             <Check className="h-4 w-4" />
             {t(
-              "ronda.wizard.created",
-              "«{{nombre}}» con {{n}} punto(s) de control",
-              { nombre: nombre.trim(), n: resultado.creados },
+              "ui.RondaWizard.created",
+              {
+                defaultValue: "«{{nombre}}» con {{count}} puntos de control",
+                nombre: nombre.trim(),
+                count: resultado.creados,
+              },
             )}
           </div>
           {resultado.fallidos > 0 && (
             <InfoNote tone="warn">
               {t(
-                "ronda.wizard.someFailed",
-                "No se pudieron crear {{n}} punto(s). La ronda y el resto sí quedaron guardados: añade los que falten desde la lista.",
-                { n: resultado.fallidos },
+                "ui.RondaWizard.someFailed",
+                {
+                  defaultValue:
+                    "No se pudieron crear {{count}} puntos. La ronda y el resto sí quedaron guardados: añade los que falten desde la lista.",
+                  count: resultado.fallidos,
+                },
               )}
             </InfoNote>
           )}

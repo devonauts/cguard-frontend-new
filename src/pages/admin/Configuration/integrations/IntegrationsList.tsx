@@ -39,16 +39,22 @@ export default function IntegrationsList() {
 
   return (
     <AppLayout>
-      <SettingsLayout navKey="configuracion" title="Conexiones y API">
+      <SettingsLayout
+        navKey="configuracion"
+        title={t("settings.configuracion.integraciones", "Conexiones y API")}
+      >
         <PageContainer width="narrow">
           <PageHeader
             icon={<Plug />}
             subtitle={t("ui.IntegrationsList.conectarCGuardProCon", { marca: nombreDeMarca })}
-            title="Conexiones y API"
+            title={t("settings.configuracion.integraciones", "Conexiones y API")}
           />
 
           <EmptyState
-            description="Las integraciones con catálogo aparecerán aquí cuando existan. Si necesitas conectar uno concreto hoy, dínoslo — saber cuál decide en qué orden se construyen."
+            description={t(
+              "ui.IntegrationsList.lasIntegracionesConCatalogoApareceran",
+              "Las integraciones con catálogo aparecerán aquí cuando existan. Si necesitas conectar uno concreto hoy, dínoslo — saber cuál decide en qué orden se construyen.",
+            )}
             icon={<Plug />}
             title={t(
               "ui.IntegrationsList.buscasConectarOtroSistema",
@@ -57,13 +63,25 @@ export default function IntegrationsList() {
           />
 
           <InfoNote className="mt-5" icon={<Info />} tone="info">
-            ¿Necesitas mover datos hoy? Los informes de{" "}
-            <strong>{t("ui.IntegrationsList.operacion", "Operación")}</strong> y
-            los del portal de tu cliente se exportan en CSV y PDF, y el detalle
-            de qué incluyen se configura en{" "}
-            <strong>Datos y conexiones › Informes</strong>. Si tienes un sistema
-            concreto con el que necesitas integrarte, dínoslo: saber cuál es lo
-            que decide en qué orden se construyen.
+            {t(
+              "ui.IntegrationsList.necesitasMoverDatosHoy",
+              "¿Necesitas mover datos hoy? Los informes de",
+            )}{" "}
+            <strong>{t("ui.IntegrationsList.operacion", "Operación")}</strong>{" "}
+            {t(
+              "ui.IntegrationsList.yLosDelPortalDeTuCliente",
+              "y los del portal de tu cliente se exportan en CSV y PDF, y el detalle de qué incluyen se configura en",
+            )}{" "}
+            <strong>
+              {t(
+                "ui.IntegrationsList.datosYConexionesInformes",
+                "Datos y conexiones › Informes",
+              )}
+            </strong>
+            {t(
+              "ui.IntegrationsList.siTienesUnSistemaConcreto",
+              ". Si tienes un sistema concreto con el que necesitas integrarte, dínoslo: saber cuál es lo que decide en qué orden se construyen.",
+            )}
           </InfoNote>
         </PageContainer>
       </SettingsLayout>

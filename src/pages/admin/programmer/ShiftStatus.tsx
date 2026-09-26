@@ -161,7 +161,8 @@ export default function ShiftStatus() {
     ...r,
     _status: computeStatus(r),
     _guardName: r.guard?.fullName ?? t("comun.sinAsignar", "Sin asignar"),
-    _stationName: r.station?.stationName ?? "Sin estación",
+    _stationName:
+      r.station?.stationName ?? t("ui.ShiftStatus.sinEstacion", "Sin estación"),
   }));
 
   const stats = {
@@ -200,11 +201,23 @@ export default function ShiftStatus() {
       case "pending":
         return <StatusBadge tone="warn">{t("comun.pendiente")}</StatusBadge>;
       case "in-progress":
-        return <StatusBadge tone="info">En curso</StatusBadge>;
+        return (
+          <StatusBadge tone="info">
+            {t("ui.ShiftStatus.enCurso", "En curso")}
+          </StatusBadge>
+        );
       case "completed":
-        return <StatusBadge tone="ok">Completado</StatusBadge>;
+        return (
+          <StatusBadge tone="ok">
+            {t("ui.ShiftStatus.completado", "Completado")}
+          </StatusBadge>
+        );
       case "cancelled":
-        return <StatusBadge tone="bad">Cancelado</StatusBadge>;
+        return (
+          <StatusBadge tone="bad">
+            {t("ui.ShiftStatus.cancelado", "Cancelado")}
+          </StatusBadge>
+        );
     }
   };
 
@@ -220,7 +233,7 @@ export default function ShiftStatus() {
         {/* KPIs */}
         <StatsStrip className="grid grid-cols-2 gap-4 md:grid-cols-4">
           <MetricTile
-            label="Pendientes"
+            label={t("ui.ShiftStatus.pendientes", "Pendientes")}
             value={stats.pending}
             icon={<Clock />}
             delta={
@@ -231,7 +244,7 @@ export default function ShiftStatus() {
             hint={t("ui.ShiftStatus.aunNoEmpiezan")}
           />
           <MetricTile
-            label="En curso"
+            label={t("ui.ShiftStatus.enCurso", "En curso")}
             value={stats.inProgress}
             icon={<PlayCircle />}
             delta={
@@ -239,10 +252,10 @@ export default function ShiftStatus() {
                 ? { value: `${pctTurnos(stats.inProgress)} %`, direction: "up" }
                 : undefined
             }
-            hint="Sucediendo ahora mismo"
+            hint={t("ui.ShiftStatus.sucediendoAhoraMismo", "Sucediendo ahora mismo")}
           />
           <MetricTile
-            label="Completados"
+            label={t("ui.ShiftStatus.completados", "Completados")}
             value={stats.completed}
             icon={<CheckCircle2 />}
             delta={
@@ -253,7 +266,7 @@ export default function ShiftStatus() {
             hint={t("ui.ShiftStatus.turnosYaCerrados")}
           />
           <MetricTile
-            label="Cancelados"
+            label={t("ui.ShiftStatus.cancelados", "Cancelados")}
             value={stats.cancelled}
             icon={<XCircle />}
             delta={
@@ -286,9 +299,15 @@ export default function ShiftStatus() {
                   {t("comun.todosLosEstados")}
                 </SelectItem>
                 <SelectItem value="pending">{t("comun.pendiente")}</SelectItem>
-                <SelectItem value="in-progress">En Progreso</SelectItem>
-                <SelectItem value="completed">Completado</SelectItem>
-                <SelectItem value="cancelled">Cancelado</SelectItem>
+                <SelectItem value="in-progress">
+                  {t("ui.ShiftStatus.enProgreso", "En Progreso")}
+                </SelectItem>
+                <SelectItem value="completed">
+                  {t("ui.ShiftStatus.completado", "Completado")}
+                </SelectItem>
+                <SelectItem value="cancelled">
+                  {t("ui.ShiftStatus.cancelado", "Cancelado")}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -308,12 +327,13 @@ export default function ShiftStatus() {
               <Sheet open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
                 <SheetTrigger asChild>
                   <Button variant="outline">
-                    <Filter className="h-4 w-4 mr-2" /> Filtros
+                    <Filter className="h-4 w-4 mr-2" />{" "}
+                    {t("guards.list.filters", "Filtros")}
                   </Button>
                 </SheetTrigger>
                 <SheetContent className="w-full sm:w-[540px] overflow-y-auto">
                   <SheetHeader className="relative">
-                    <SheetTitle>Filtros</SheetTitle>
+                    <SheetTitle>{t("guards.list.filters", "Filtros")}</SheetTitle>
                     <Button
                       variant="ghost"
                       size="icon"
@@ -386,7 +406,7 @@ export default function ShiftStatus() {
                           setPage(1);
                         }}
                       >
-                        Aplicar Filtros
+                        {t("guards.list.applyFilters", "Aplicar filtros")}
                       </Button>
                       <Button
                         variant="outline"
@@ -403,7 +423,7 @@ export default function ShiftStatus() {
                           setPage(1);
                         }}
                       >
-                        Limpiar filtros
+                        {t("guards.list.clearFilters", "Limpiar filtros")}
                       </Button>
                     </div>
                   </div>
@@ -415,7 +435,7 @@ export default function ShiftStatus() {
 
         {/* Tabla */}
         <Section
-          title="Turnos"
+          title={t("ui.ShiftStatus.turnos", "Turnos")}
           icon={<ListChecks />}
           contentClassName="overflow-x-auto -mx-1"
         >
@@ -498,8 +518,13 @@ export default function ShiftStatus() {
             style={{ color: "var(--ink-soft)" }}
           >
             {filtered.length === 0
-              ? "0 de 0"
-              : `${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, filtered.length)} de ${filtered.length}`}
+              ? t("ui.ShiftStatus.ceroDeCero", "0 de 0")
+              : t("ui.ShiftStatus.rangoDePagina", {
+                  defaultValue: "{{desde}}–{{hasta}} de {{total}}",
+                  desde: (page - 1) * pageSize + 1,
+                  hasta: Math.min(page * pageSize, filtered.length),
+                  total: filtered.length,
+                })}
           </div>
           <div className="flex items-center space-x-2">
             <Button

@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import { useChartColors } from "@/lib/chartColors";
 import { topRoundedRect } from "@/components/charts/internals";
 
@@ -28,6 +30,9 @@ export default function KpiBarChart({
   height = 300,
 }: Props) {
   const paleta = useChartColors();
+  const { t } = useTranslation();
+  const etiquetaObjetivo = t("postSites.KPI.table.target", "Objetivo");
+  const etiquetaActual = t("postSites.KPI.table.actual", "Actual");
 
   if (!data || !data.length) return null;
 
@@ -91,7 +96,7 @@ export default function KpiBarChart({
                   )}
                   fill="url(#kpiGradTarget)"
                 >
-                  <title>{`${d.name} - Target\n${d.target}`}</title>
+                  <title>{`${d.name} - ${etiquetaObjetivo}\n${d.target}`}</title>
                 </path>
 
                 {/* Actual bar (right, accent — the measured value) */}
@@ -105,7 +110,7 @@ export default function KpiBarChart({
                   )}
                   fill="url(#kpiGradActual)"
                 >
-                  <title>{`${d.name} - Actual\n${d.actual}`}</title>
+                  <title>{`${d.name} - ${etiquetaActual}\n${d.actual}`}</title>
                 </path>
 
                 {/* label */}
@@ -210,7 +215,9 @@ export default function KpiBarChart({
                 borderRadius: 3,
               }}
             />
-            <div style={{ fontSize: 13, color: "var(--ink-soft)" }}>Target</div>
+            <div style={{ fontSize: 13, color: "var(--ink-soft)" }}>
+              {etiquetaObjetivo}
+            </div>
           </div>
           <div style={{ height: 8 }} />
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -222,7 +229,9 @@ export default function KpiBarChart({
                 borderRadius: 3,
               }}
             />
-            <div style={{ fontSize: 13, color: "var(--ink-soft)" }}>Actual</div>
+            <div style={{ fontSize: 13, color: "var(--ink-soft)" }}>
+              {etiquetaActual}
+            </div>
           </div>
         </div>
       </div>

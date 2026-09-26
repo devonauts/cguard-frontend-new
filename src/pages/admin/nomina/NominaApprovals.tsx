@@ -114,8 +114,8 @@ export default function NominaApprovals() {
       await attendanceService.approveCorrection(id, { decision });
       toast.success(
         decision === "approved"
-          ? "Corrección aplicada"
-          : "Corrección rechazada",
+          ? t("ui.NominaApprovals.correccionAplicada", "Corrección aplicada")
+          : t("ui.NominaApprovals.correccionRechazada", "Corrección rechazada"),
       );
       load();
     } catch (e) {
@@ -133,7 +133,9 @@ export default function NominaApprovals() {
     try {
       await attendanceService.decideClockOutRequest(id, { status });
       toast.success(
-        status === "approved" ? "Salida aprobada" : "Salida rechazada",
+        status === "approved"
+          ? t("ui.NominaApprovals.salidaAprobada", "Salida aprobada")
+          : t("ui.NominaApprovals.salidaRechazada", "Salida rechazada"),
       );
       load();
     } catch (e) {
@@ -151,17 +153,23 @@ export default function NominaApprovals() {
       });
 
       if (status !== "approved") {
-        toast.success("Entrada rechazada");
+        toast.success(t("ui.NominaApprovals.entradaRechazada", "Entrada rechazada"));
       } else if (r?.autoClockIn?.registrada) {
         // Aprobar YA registra la entrada con la selfie y el GPS que el vigilante
         // tomó al llegar. Decirlo importa: quien aprueba tiene que saber si el
         // turno quedó abierto o si la persona todavía tiene que marcar.
         toast.success(
-          "Entrada aprobada y registrada — el vigilante ya está en turno",
+          t(
+            "ui.NominaApprovals.entradaAprobadaYRegistrada",
+            "Entrada aprobada y registrada — el vigilante ya está en turno",
+          ),
         );
       } else {
         toast.success(
-          "Entrada aprobada. El vigilante debe marcar su entrada en la app",
+          t(
+            "ui.NominaApprovals.entradaAprobadaElVigilanteDebeMarcar",
+            "Entrada aprobada. El vigilante debe marcar su entrada en la app",
+          ),
         );
       }
       load();
@@ -175,14 +183,14 @@ export default function NominaApprovals() {
   const ciColumns: Column<ClockInReqRow>[] = [
     {
       key: "guard",
-      header: "Vigilante",
+      header: t("dashboard.table.headers.guard", "Vigilante"),
       render: (_v, r) => (
         <span className="font-semibold">{r.guard?.fullName || "—"}</span>
       ),
     },
     {
       key: "station",
-      header: "Puesto",
+      header: t("incidents.columns.postSite", "Puesto"),
       render: (_v, r) => (
         <span className="text-xs" style={{ color: "var(--ink-soft)" }}>
           {r.station?.stationName || "—"}
@@ -191,7 +199,7 @@ export default function NominaApprovals() {
     },
     {
       key: "scheduledStart",
-      header: "Inicio de turno",
+      header: t("ui.NominaApprovals.inicioDeTurno", "Inicio de turno"),
       render: (_v, r) =>
         r.scheduledStart ? (
           <span
@@ -214,7 +222,7 @@ export default function NominaApprovals() {
     },
     {
       key: "lateBy",
-      header: "Retraso",
+      header: t("ui.NominaApprovals.retraso", "Retraso"),
       render: (_v, r) => (
         <span
           className="text-xs font-semibold tabular-nums"
@@ -226,7 +234,7 @@ export default function NominaApprovals() {
     },
     {
       key: "reason",
-      header: "Motivo",
+      header: t("comun.motivo", "Motivo"),
       render: (_v, r) => (
         <span className="text-xs" style={{ color: "var(--ink-soft)" }}>
           {r.reason || "—"}
@@ -235,7 +243,7 @@ export default function NominaApprovals() {
     },
     {
       key: "createdAt",
-      header: "Solicitado",
+      header: t("ui.NominaApprovals.solicitado", "Solicitado"),
       render: (_v, r) => fmtDateTime(r.createdAt),
     },
     {
@@ -248,7 +256,7 @@ export default function NominaApprovals() {
             size="sm"
             onClick={() => decideClockIn(r.id, "approved")}
           >
-            Aprobar
+            {t("ui.DocumentPacketPublic.approveButton", "Aprobar")}
           </Button>
           <Button
             disabled={busy}
@@ -256,7 +264,7 @@ export default function NominaApprovals() {
             variant="outline"
             onClick={() => decideClockIn(r.id, "rejected")}
           >
-            Rechazar
+            {t("revision.rechazar", "Rechazar")}
           </Button>
         </div>
       ),
@@ -266,14 +274,14 @@ export default function NominaApprovals() {
   const coColumns: Column<ClockOutReqRow>[] = [
     {
       key: "guard",
-      header: "Vigilante",
+      header: t("dashboard.table.headers.guard", "Vigilante"),
       render: (_v, r) => (
         <span className="font-semibold">{r.guard?.fullName || "—"}</span>
       ),
     },
     {
       key: "station",
-      header: "Puesto",
+      header: t("incidents.columns.postSite", "Puesto"),
       render: (_v, r) => (
         <span className="text-xs" style={{ color: "var(--ink-soft)" }}>
           {r.station?.stationName || "—"}
@@ -282,7 +290,7 @@ export default function NominaApprovals() {
     },
     {
       key: "scheduledEnd",
-      header: "Fin de turno",
+      header: t("ui.NominaApprovals.finDeTurno", "Fin de turno"),
       render: (_v, r) => (
         <span
           className="text-xs tabular-nums"
@@ -294,7 +302,7 @@ export default function NominaApprovals() {
     },
     {
       key: "reason",
-      header: "Motivo",
+      header: t("comun.motivo", "Motivo"),
       render: (_v, r) => (
         <span className="text-xs" style={{ color: "var(--ink-soft)" }}>
           {r.reason || "—"}
@@ -303,7 +311,7 @@ export default function NominaApprovals() {
     },
     {
       key: "createdAt",
-      header: "Solicitado",
+      header: t("ui.NominaApprovals.solicitado", "Solicitado"),
       render: (_v, r) => fmtDateTime(r.createdAt),
     },
     {
@@ -316,7 +324,7 @@ export default function NominaApprovals() {
             size="sm"
             onClick={() => decideClockOut(r.id, "approved")}
           >
-            Aprobar
+            {t("ui.DocumentPacketPublic.approveButton", "Aprobar")}
           </Button>
           <Button
             disabled={busy}
@@ -324,7 +332,7 @@ export default function NominaApprovals() {
             variant="outline"
             onClick={() => decideClockOut(r.id, "rejected")}
           >
-            Rechazar
+            {t("revision.rechazar", "Rechazar")}
           </Button>
         </div>
       ),
@@ -332,10 +340,10 @@ export default function NominaApprovals() {
   ];
 
   const columns: Column<CorrectionRow>[] = [
-    { key: "field", header: "Campo" },
+    { key: "field", header: t("ui.NominaApprovals.campo", "Campo") },
     {
       key: "originalValue",
-      header: "Original",
+      header: t("ui.NominaApprovals.original", "Original"),
       render: (_v, r) => (
         <span className="text-xs" style={{ color: "var(--ink-soft)" }}>
           {r.originalValue || "—"}
@@ -344,7 +352,7 @@ export default function NominaApprovals() {
     },
     {
       key: "correctedValue",
-      header: "Corregido",
+      header: t("ui.NominaApprovals.corregido", "Corregido"),
       render: (_v, r) => (
         <span className="text-xs font-semibold tabular-nums">
           {r.correctedValue || "—"}
@@ -353,7 +361,7 @@ export default function NominaApprovals() {
     },
     {
       key: "reason",
-      header: "Motivo",
+      header: t("comun.motivo", "Motivo"),
       render: (_v, r) => (
         <span className="text-xs" style={{ color: "var(--ink-soft)" }}>
           {r.reason}
@@ -362,7 +370,7 @@ export default function NominaApprovals() {
     },
     {
       key: "createdAt",
-      header: "Solicitado",
+      header: t("ui.NominaApprovals.solicitado", "Solicitado"),
       render: (_v, r) => fmtDateTime(r.createdAt),
     },
     {
@@ -375,7 +383,7 @@ export default function NominaApprovals() {
             size="sm"
             onClick={() => decide(r.id, "approved")}
           >
-            Aprobar
+            {t("ui.DocumentPacketPublic.approveButton", "Aprobar")}
           </Button>
           <Button
             disabled={busy}
@@ -383,7 +391,7 @@ export default function NominaApprovals() {
             variant="outline"
             onClick={() => decide(r.id, "rejected")}
           >
-            Rechazar
+            {t("revision.rechazar", "Rechazar")}
           </Button>
         </div>
       ),
@@ -404,14 +412,17 @@ export default function NominaApprovals() {
                 }
               >
                 {ciRows.length + coRows.length + rows.length > 0
-                  ? `${ciRows.length + coRows.length + rows.length} en espera`
-                  : "Todo al día"}
+                  ? t("ui.NominaApprovals.enEspera", {
+                      count: ciRows.length + coRows.length + rows.length,
+                      defaultValue: "{{count}} en espera",
+                    })
+                  : t("ui.NominaApprovals.todoAlDia", "Todo al día")}
               </StatusBadge>
             )
           }
           icon={<CheckCircle2 />}
           subtitle={t("ui.NominaApprovals.entradasTardiasSalidasAnticipadasY")}
-          title="Aprobaciones"
+          title={t("sidebar.nomina.nomina-approvals", "Aprobaciones")}
         />
 
         {loading ? (
@@ -423,7 +434,10 @@ export default function NominaApprovals() {
               action={
                 ciRows.length > 0 && (
                   <StatusBadge dot={false} tone="warn">
-                    {ciRows.length} pendiente(s)
+                    {t("ui.NominaApprovals.pendientes", {
+                      count: ciRows.length,
+                      defaultValue: "{{count}} pendiente(s)",
+                    })}
                   </StatusBadge>
                 )
               }
@@ -456,12 +470,15 @@ export default function NominaApprovals() {
               action={
                 coRows.length > 0 && (
                   <StatusBadge dot={false} tone="warn">
-                    {coRows.length} pendiente(s)
+                    {t("ui.NominaApprovals.pendientes", {
+                      count: coRows.length,
+                      defaultValue: "{{count}} pendiente(s)",
+                    })}
                   </StatusBadge>
                 )
               }
               icon={<LogOut />}
-              title="Salidas anticipadas"
+              title={t("ui.NominaApprovals.salidasAnticipadas", "Salidas anticipadas")}
             >
               <DataTable
                 columns={coColumns}
@@ -485,12 +502,15 @@ export default function NominaApprovals() {
               action={
                 rows.length > 0 && (
                   <StatusBadge dot={false} tone="brand">
-                    {rows.length} pendiente(s)
+                    {t("ui.NominaApprovals.pendientes", {
+                      count: rows.length,
+                      defaultValue: "{{count}} pendiente(s)",
+                    })}
                   </StatusBadge>
                 )
               }
               icon={<PencilLine />}
-              title="Correcciones manuales"
+              title={t("ui.NominaApprovals.correccionesManuales", "Correcciones manuales")}
             >
               <DataTable
                 columns={columns}

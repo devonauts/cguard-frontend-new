@@ -32,6 +32,7 @@ import {
 } from "@/components/kit";
 import { fileUrlFromPrivate } from "@/lib/fileUrl";
 import i18n from "@/i18n";
+import { localeActual } from "@/lib/localeActual";
 import { resolveApiBase } from "@/lib/apiBase";
 
 interface StationDetail extends Station {
@@ -106,7 +107,7 @@ interface RondaDetail {
 const fmt = (v: any) => {
   if (!v) return "—";
   try {
-    return new Intl.DateTimeFormat(undefined, {
+    return new Intl.DateTimeFormat(localeActual(), {
       dateStyle: "short",
       timeStyle: "short",
     }).format(new Date(v));
@@ -117,7 +118,7 @@ const fmt = (v: any) => {
 const fmtTime = (v: any) => {
   if (!v) return "—";
   try {
-    return new Intl.DateTimeFormat(undefined, { timeStyle: "short" }).format(
+    return new Intl.DateTimeFormat(localeActual(), { timeStyle: "short" }).format(
       new Date(v),
     );
   } catch {
@@ -176,13 +177,13 @@ function statusBadge(status: string) {
   if (s === "completed")
     return (
       <StatusBadge dot={false} tone="ok">
-        <CheckCircle2 size={12} /> Completada
+        <CheckCircle2 size={12} /> {i18n.t("tasks.estado.completed", "Completada")}
       </StatusBadge>
     );
   if (s === "assigned" || s === "in_progress" || s === "started")
     return (
       <StatusBadge dot={false} tone="warn">
-        En progreso
+        {i18n.t("training.enrollmentStatus.inProgress", "En progreso")}
       </StatusBadge>
     );
 
@@ -194,7 +195,11 @@ function statusBadge(status: string) {
 }
 
 function locationBadge(s: Scan) {
-  return geoBadge(s.validLocation, s.distanceMeters, "En ubicación");
+  return geoBadge(
+    s.validLocation,
+    s.distanceMeters,
+    i18n.t("revision.enUbicacion", "En ubicación"),
+  );
 }
 
 // Veredicto de geocerca a partir de validLocation/distancia. Los tres estados
@@ -203,7 +208,7 @@ function locationBadge(s: Scan) {
 function geoBadge(
   validLocation: boolean | null,
   distanceMeters: number | null,
-  etiquetaValida = "Ubicación válida",
+  etiquetaValida = i18n.t("ui.StationRondaHistory.ubicacionValida", "Ubicación válida"),
 ) {
   const sufijo =
     distanceMeters != null ? ` · ${Math.round(distanceMeters)} m` : "";
@@ -219,7 +224,9 @@ function geoBadge(
   if (validLocation === false) {
     return (
       <StatusBadge dot={false} tone="bad">
-        <MapPinOff size={11} /> Fuera de rango{sufijo}
+        <MapPinOff size={11} />{" "}
+        {i18n.t("revision.fueraDeRango", "Fuera de rango")}
+        {sufijo}
       </StatusBadge>
     );
   }
@@ -289,7 +296,8 @@ function RondaDetailModal({
     };
   }, [open, assignmentId, tenantId]);
 
-  const routeName = detail?.tour?.name || fallbackName || "Ronda";
+  const routeName =
+    detail?.tour?.name || fallbackName || t("maps.kind.route", "Ronda");
   const scanCount = detail?.scanCount ?? 0;
   const total = detail?.totalCheckpoints ?? 0;
   const pct = total > 0 ? Math.round((scanCount / total) * 100) : 0;
@@ -343,12 +351,19 @@ function RondaDetailModal({
             {/* Progress */}
             <div>
               <div className="mb-1 flex items-center justify-between text-xs">
-                <span className="font-medium">Progreso</span>
+                <span className="font-medium">
+                  {t("ui.StationRondaHistory.progreso", "Progreso")}
+                </span>
                 <span
                   className="tabular-nums"
                   style={{ color: "var(--ink-soft)" }}
                 >
-                  {scanCount}/{total || "—"} puntos ({pct}%)
+                  {t("ui.StationRondaHistory.progresoPuntos", {
+                    defaultValue: "{{hechos}}/{{total}} puntos ({{pct}}%)",
+                    hechos: scanCount,
+                    total: total || "—",
+                    pct,
+                  })}
                 </span>
               </div>
               <MeterBar height={6} pct={pct} />
@@ -435,7 +450,10 @@ function RondaDetailModal({
                                   type="button"
                                   onClick={() => setEscaneoRevisar(c.scan!.id)}
                                 >
-                                  Ver detalle y revisar
+                                  {t(
+                                    "ui.StationRondaHistory.verDetalleYRevisar",
+                                    "Ver detalle y revisar",
+                                  )}
                                 </button>
                               </div>
                               {note && (
@@ -455,7 +473,10 @@ function RondaDetailModal({
                                   onClick={() => setPhoto(url)}
                                 >
                                   <SmartImage
-                                    alt={`Foto de ${c.name}`}
+                                    alt={t("ui.StationRondaHistory.fotoDe", {
+                                      defaultValue: "Foto de {{nombre}}",
+                                      nombre: c.name,
+                                    })}
                                     className="h-28 w-40"
                                     rounded="rounded-none"
                                     src={url}
@@ -501,7 +522,7 @@ function RondaDetailModal({
                           <div className="min-w-0 flex-1">
                             <div className="flex flex-wrap items-center gap-2">
                               <span className="text-sm font-medium">
-                                Escaneo
+                                {t("revision.escaneo", "Escaneo")}
                               </span>
                               <span
                                 className="text-xs"
@@ -768,18 +789,24 @@ export default function StationRondaHistory({ station, stationId }: Props) {
                         className="font-normal"
                         style={{ color: "var(--ink-soft)" }}
                       >
-                        puntos
+                        {t("ui.StationRondaHistory.puntos", "puntos")}
                       </span>
                     </div>
                     <div className="mt-0.5 flex items-center justify-end gap-2 text-[11px]">
                       {r.validCount > 0 && (
                         <span style={{ color: "var(--ok-text)" }}>
-                          {r.validCount} en ubicación
+                          {t("ui.StationRondaHistory.nEnUbicacion", {
+                            defaultValue: "{{n}} en ubicación",
+                            n: r.validCount,
+                          })}
                         </span>
                       )}
                       {r.outCount > 0 && (
                         <span style={{ color: "var(--bad-text)" }}>
-                          {r.outCount} fuera
+                          {t("ui.StationRondaHistory.nFuera", {
+                            defaultValue: "{{n}} fuera",
+                            n: r.outCount,
+                          })}
                         </span>
                       )}
                     </div>

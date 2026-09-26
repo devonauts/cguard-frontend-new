@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -50,15 +50,23 @@ type Props = {
 export default function DepartmentDialog({
   open,
   onOpenChange,
-  title = "Nuevo Departamento",
+  title,
   defaultValues,
   managers = [],
   saving = false,
   onSubmit,
 }: Props) {
   const { t } = useTranslation();
+  // Same shape as `schema`, but with the validation message in the current language.
+  const localizedSchema = useMemo(
+    () =>
+      schema.extend({
+        name: z.string().min(1, t("ui.DepartmentDialog.requerido", "Requerido")),
+      }),
+    [t],
+  );
   const form = useForm<DepartmentDialogValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(localizedSchema),
     defaultValues: { name: "", description: "", managerId: null },
   });
 
@@ -76,7 +84,9 @@ export default function DepartmentDialog({
       description={t("ui.DepartmentDialog.losDepartamentosOrganizanATu")}
       icon={<Building2 />}
       open={open}
-      title={title}
+      title={
+        title ?? t("ui.DepartmentDialog.nuevoDepartamento", "Nuevo Departamento")
+      }
       onOpenChange={onOpenChange}
     >
       <Form {...form}>
@@ -88,7 +98,13 @@ export default function DepartmentDialog({
               <FormItem>
                 <FormLabel>{t("comun.nombreReq")}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Ej. Operaciones" {...field} />
+                  <Input
+                    placeholder={t(
+                      "ui.DepartmentDialog.ejOperaciones",
+                      "Ej. Operaciones",
+                    )}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -122,7 +138,12 @@ export default function DepartmentDialog({
             name="managerId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Responsable (opcional)</FormLabel>
+                <FormLabel>
+                  {t(
+                    "ui.DepartmentDialog.responsableOpcional",
+                    "Responsable (opcional)",
+                  )}
+                </FormLabel>
                 <Select
                   value={field.value ?? NONE}
                   onValueChange={(v) => field.onChange(v === NONE ? null : v)}
@@ -146,8 +167,10 @@ export default function DepartmentDialog({
                   </SelectContent>
                 </Select>
                 <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
-                  Persona a cargo del departamento; recibirá escalamientos y
-                  aprobaciones en futuras versiones.
+                  {t(
+                    "ui.DepartmentDialog.personaACargoDelDepartamento",
+                    "Persona a cargo del departamento; recibirá escalamientos y aprobaciones en futuras versiones.",
+                  )}
                 </p>
                 <FormMessage />
               </FormItem>
@@ -162,10 +185,12 @@ export default function DepartmentDialog({
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Cancelar
+              {t("actions.cancel", "Cancelar")}
             </Button>
             <Button disabled={saving} type="submit" variant="brand">
-              {saving ? "Guardando…" : "Guardar"}
+              {saving
+                ? t("common.saving", "Guardando…")
+                : t("actions.save", "Guardar")}
             </Button>
           </div>
         </form>

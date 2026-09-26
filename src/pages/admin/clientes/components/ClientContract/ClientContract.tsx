@@ -161,53 +161,67 @@ interface ContractForm {
 // Por eso guarda la CLAVE (nameKey) y el nombre se traduce donde se pinta.
 const SERVICE_PRESETS: Record<
   string,
-  { nameKey?: string; name: string; unit: string; icon: LucideIcon }
+  {
+    nameKey?: string;
+    name: string;
+    unitKey?: string;
+    unit: string;
+    icon: LucideIcon;
+  }
 > = {
   fixed_guard: {
     nameKey: "clients.contract.service.fixedGuard",
     name: "Vigilancia fija 24/7",
+    unitKey: "ui.ClientContract.unidad.estacion",
     unit: "Estación",
     icon: Shield,
   },
   mobile_patrol: {
     nameKey: "clients.contract.service.mobilePatrol",
     name: "Patrullaje móvil",
+    unitKey: "ui.ClientContract.unidad.rondas",
     unit: "Rondas",
     icon: Car,
   },
   camera_monitoring: {
     nameKey: "clients.contract.service.cameraMonitoring",
     name: "Monitoreo de cámaras",
+    unitKey: "ui.ClientContract.unidad.camaras",
     unit: "Cámaras",
     icon: Monitor,
   },
   access_control: {
     nameKey: "clients.contract.service.accessControl",
     name: "Control de acceso",
+    unitKey: "ui.ClientContract.unidad.estacion",
     unit: "Estación",
     icon: UserCheck,
   },
   visitor_management: {
     nameKey: "clients.contract.service.visitorManagement",
     name: "Gestión de visitantes",
+    unitKey: "ui.ClientContract.unidad.visitantes",
     unit: "Visitantes",
     icon: Users,
   },
   alarm_response: {
     nameKey: "clients.contract.service.alarmResponse",
     name: "Respuesta a alarmas",
+    unitKey: "ui.ClientContract.unidad.eventos",
     unit: "Eventos",
     icon: Bell,
   },
   asset_custody: {
     nameKey: "clients.contract.service.assetCustody",
     name: "Custodia de activos",
+    unitKey: "ui.ClientContract.unidad.servicio",
     unit: "Servicio",
     icon: Lock,
   },
   event_security: {
     nameKey: "clients.contract.service.eventSecurity",
     name: "Seguridad para eventos",
+    unitKey: "ui.ClientContract.unidad.eventos",
     unit: "Eventos",
     icon: CalendarCheck,
   },
@@ -341,7 +355,7 @@ export default function ClientContract({ client }: { client: Client }) {
     setSaving(true);
     try {
       await clientService.updateClientContract(client.id, form);
-      toast.success("Contrato actualizado");
+      toast.success(t("ui.ClientContract.contratoActualizado", "Contrato actualizado"));
       setEditOpen(false);
       await load();
     } catch {
@@ -355,6 +369,9 @@ export default function ClientContract({ client }: { client: Client }) {
   /** El nombre del preset se traduce AQUÍ, no en la constante de módulo. */
   const nombrePreset = (p?: { nameKey?: string; name: string }) =>
     p?.nameKey ? t(p.nameKey, p.name) : (p?.name ?? "");
+  /** Igual con la unidad: se rellena ya traducida en el formulario. */
+  const unidadPreset = (p?: { unitKey?: string; unit: string }) =>
+    p?.unitKey ? t(p.unitKey, p.unit) : (p?.unit ?? "");
   const openSvc = (s?: ContractServiceRow) => {
     setSvcForm(
       s
@@ -362,7 +379,7 @@ export default function ClientContract({ client }: { client: Client }) {
         : {
             serviceKey: "fixed_guard",
             name: nombrePreset(SERVICE_PRESETS.fixed_guard),
-            unit: SERVICE_PRESETS.fixed_guard.unit,
+            unit: unidadPreset(SERVICE_PRESETS.fixed_guard),
             description: "",
             contractedQty: "",
             slaTarget: "",
@@ -397,7 +414,10 @@ export default function ClientContract({ client }: { client: Client }) {
   const delSvc = async (s: ContractServiceRow) => {
     if (
       !(await confirmDialog({
-        message: `¿Eliminar el servicio "${s.name}"?`,
+        message: t("ui.ClientContract.eliminarElServicioConfirm", {
+          defaultValue: "¿Eliminar el servicio \"{{name}}\"?",
+          name: s.name,
+        }),
         tone: "danger",
       }))
     )
@@ -446,7 +466,10 @@ export default function ClientContract({ client }: { client: Client }) {
   const delRen = async (r: ContractRenewalRow) => {
     if (
       !(await confirmDialog({
-        message: "¿Eliminar este periodo del historial?",
+        message: t(
+          "ui.ClientContract.eliminarPeriodoConfirm",
+          "¿Eliminar este periodo del historial?",
+        ),
         tone: "danger",
       }))
     )
@@ -475,7 +498,9 @@ export default function ClientContract({ client }: { client: Client }) {
               </div>
               <div className="mt-1">
                 <StatusBadge tone={c.active ? "ok" : "neutral"}>
-                  {c.active ? "Activo" : "Inactivo"}
+                  {c.active
+                    ? t("common.active", "Activo")
+                    : t("common.inactive", "Inactivo")}
                 </StatusBadge>
               </div>
             </div>
@@ -493,7 +518,10 @@ export default function ClientContract({ client }: { client: Client }) {
                 }}
               >
                 {derived.daysRemaining != null
-                  ? `${derived.daysRemaining} días`
+                  ? t("ui.DataReport.nDias", {
+                      defaultValue: "{{count}} días",
+                      count: derived.daysRemaining,
+                    })
                   : "—"}
               </div>
             </div>
@@ -536,7 +564,10 @@ export default function ClientContract({ client }: { client: Client }) {
               label={t("ui.ClientContract.tipoDeContrato")}
               value={orDash(c.contractType)}
             />
-            <Field label="Moneda" value={orDash(c.currency)} />
+            <Field
+              label={t("ui.ClientContract.moneda", "Moneda")}
+              value={orDash(c.currency)}
+            />
             <Field
               label={t("ui.ClientContract.formaDePago", "Forma de pago")}
               value={orDash(c.paymentTerms)}
@@ -544,7 +575,10 @@ export default function ClientContract({ client }: { client: Client }) {
           </div>
         </Section>
 
-        <Section icon={<Calendar className="h-4 w-4" />} title="Fechas">
+        <Section
+          icon={<Calendar className="h-4 w-4" />}
+          title={t("ui.ClientContract.fechas", "Fechas")}
+        >
           <div className="space-y-2.5">
             <Field
               label={t("comun.fechaDeInicio")}
@@ -558,7 +592,10 @@ export default function ClientContract({ client }: { client: Client }) {
               label={t("ui.ClientContract.duracion", "Duración")}
               value={
                 derived.durationMonths != null
-                  ? `${derived.durationMonths} meses`
+                  ? t("ui.ClientContract.nMeses", {
+                      defaultValue: "{{count}} meses",
+                      count: derived.durationMonths,
+                    })
                   : "—"
               }
             />
@@ -569,8 +606,13 @@ export default function ClientContract({ client }: { client: Client }) {
               )}
               value={
                 c.autoRenew
-                  ? `Sí${c.autoRenewDaysBefore ? ` (${c.autoRenewDaysBefore} días antes)` : ""}`
-                  : "No"
+                  ? c.autoRenewDaysBefore
+                    ? t("ui.ClientContract.siNDiasAntes", {
+                        defaultValue: "Sí ({{count}} días antes)",
+                        count: Number(c.autoRenewDaysBefore),
+                      })
+                    : t("ui.Task.si", "Sí")
+                  : t("ui.Task.no", "No")
               }
             />
           </div>
@@ -585,10 +627,13 @@ export default function ClientContract({ client }: { client: Client }) {
         >
           <div className="space-y-2.5">
             <Field
-              label="SLA acordado"
+              label={t("ui.ClientContract.slaAcordado", "SLA acordado")}
               value={
                 c.slaUptimeTarget != null
-                  ? `${c.slaUptimeTarget}% de cumplimiento`
+                  ? t("ui.ClientContract.pctCumplimiento", {
+                      defaultValue: "{{pct}}% de cumplimiento",
+                      pct: c.slaUptimeTarget,
+                    })
                   : "—"
               }
             />
@@ -636,7 +681,7 @@ export default function ClientContract({ client }: { client: Client }) {
                   <span className="flex min-w-0 items-center gap-2 text-sm text-foreground">
                     <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
                     <span className="truncate">
-                      {d.name || d.filename || "Documento"}
+                      {d.name || d.filename || t("ui.ClientContract.documento", "Documento")}
                     </span>
                   </span>
                   <span className="shrink-0 text-xs text-muted-foreground">
@@ -660,7 +705,7 @@ export default function ClientContract({ client }: { client: Client }) {
           </Button>
         }
         icon={<ClipboardCheck className="h-4 w-4" />}
-        title="Servicios contratados"
+        title={t("ui.ClientContract.serviciosContratados", "Servicios contratados")}
       >
         {services.length === 0 ? (
           <EmptyState
@@ -680,21 +725,25 @@ export default function ClientContract({ client }: { client: Client }) {
         ) : (
           <TabTable>
             <THead>
-              <Th>Servicio</Th>
+              <Th>{t("ui.ClientContract.servicio", "Servicio")}</Th>
               <Th>{t("ui.ClientContract.descripcion", "Descripción")}</Th>
-              <Th>Unidad</Th>
-              <Th align="right">Contratado</Th>
-              <Th align="right">Utilizado (mes)</Th>
-              <Th>Cumplimiento</Th>
+              <Th>{t("ui.ClientContract.unidadCol", "Unidad")}</Th>
+              <Th align="right">{t("ui.ClientContract.contratado", "Contratado")}</Th>
+              <Th align="right">
+                {t("ui.ClientContract.utilizadoMes", "Utilizado (mes)")}
+              </Th>
+              <Th>{t("ui.ClientContract.cumplimiento", "Cumplimiento")}</Th>
               <Th>{t("comun.estado")}</Th>
-              <Th aria-label="Acciones" />
+              <Th aria-label={t("ui.RouteForm.acciones", "Acciones")} />
             </THead>
             <tbody>
               {services.map((s) => {
                 const Icon =
                   SERVICE_PRESETS[s.serviceKey]?.icon || ClipboardList;
                 const contracted =
-                  s.contractedQty == null ? "Ilimitado" : s.contractedQty;
+                  s.contractedQty == null
+                    ? t("ui.ClientContract.ilimitado", "Ilimitado")
+                    : s.contractedQty;
                 const used =
                   s.used == null ? "—" : s.used.toLocaleString(localeActual());
                 const comp = s.compliance;
@@ -756,7 +805,11 @@ export default function ClientContract({ client }: { client: Client }) {
                               : "slate"
                         }
                       >
-                        {estado}
+                        {estado === "Cumple"
+                          ? t("ui.ClientContract.cumple", "Cumple")
+                          : estado === "Atención"
+                            ? t("ui.ClientContract.atencion", "Atención")
+                            : t("common.active", "Activo")}
                       </StatusBadge>
                     </td>
                     <td className="px-2 py-2.5">
@@ -789,7 +842,7 @@ export default function ClientContract({ client }: { client: Client }) {
         <StatCard
           hint={t("ui.ClientContract.segunElContrato", "Según el contrato")}
           icon={<Clock className="h-4 w-4" />}
-          label="Horas contratadas / mes"
+          label={t("ui.ClientContract.horasContratadasMes", "Horas contratadas / mes")}
           value={
             derived.hoursContracted != null
               ? `${derived.hoursContracted.toLocaleString(localeActual())} h`
@@ -797,22 +850,22 @@ export default function ClientContract({ client }: { client: Client }) {
           }
         />
         <StatCard
-          hint="De turnos reales"
+          hint={t("ui.ClientContract.deTurnosReales", "De turnos reales")}
           icon={<Timer className="h-4 w-4" />}
-          label="Horas utilizadas (mes)"
+          label={t("ui.ClientContract.horasUtilizadasMes", "Horas utilizadas (mes)")}
           value={`${(derived.hoursUsed || 0).toLocaleString(localeActual())} h`}
         />
         <StatCard
           accent={diff != null && diff < 0 ? "red" : "green"}
           hint={
             diff == null
-              ? "Define horas contratadas"
+              ? t("ui.ClientContract.defineHorasContratadas", "Define horas contratadas")
               : diff < 0
-                ? "Por debajo de lo contratado"
-                : "Dentro / sobre lo contratado"
+                ? t("ui.ClientContract.porDebajoDeLoContratado", "Por debajo de lo contratado")
+                : t("ui.ClientContract.dentroSobreLoContratado", "Dentro / sobre lo contratado")
           }
           icon={<Gauge className="h-4 w-4" />}
-          label="Diferencia"
+          label={t("ui.ClientContract.diferencia", "Diferencia")}
           value={
             diff == null
               ? "—"
@@ -871,7 +924,7 @@ export default function ClientContract({ client }: { client: Client }) {
             />
             <SlaCell
               icon={<FileText className="h-4 w-4" />}
-              label="Reportes entregados"
+              label={t("ui.ClientContract.reportesEntregados", "Reportes entregados")}
               suffix="%"
               value={c.slaReportsTarget}
             />
@@ -921,12 +974,12 @@ export default function ClientContract({ client }: { client: Client }) {
           ) : (
             <TabTable minWidth={560}>
               <THead>
-                <Th>Periodo</Th>
+                <Th>{t("ui.ClientContract.periodo", "Periodo")}</Th>
                 <Th>{t("comun.desde")}</Th>
                 <Th>{t("comun.hasta")}</Th>
                 <Th>{t("ui.ClientContract.duracion", "Duración")}</Th>
                 <Th>{t("comun.estado")}</Th>
-                <Th aria-label="Acciones" />
+                <Th aria-label={t("ui.RouteForm.acciones", "Acciones")} />
               </THead>
               <tbody>
                 {renewals.map((r) => (
@@ -941,13 +994,20 @@ export default function ClientContract({ client }: { client: Client }) {
                       {fmtDate(r.toDate)}
                     </td>
                     <td className="px-2 py-2.5">
-                      {r.durationMonths ? `${r.durationMonths} meses` : "—"}
+                      {r.durationMonths
+                        ? t("ui.ClientContract.nMeses", {
+                            defaultValue: "{{count}} meses",
+                            count: Number(r.durationMonths),
+                          })
+                        : "—"}
                     </td>
                     <td className="px-2 py-2.5">
                       <StatusBadge
                         tone={r.status === "active" ? "green" : "slate"}
                       >
-                        {r.status === "active" ? "Activo" : "Finalizado"}
+                        {r.status === "active"
+                          ? t("common.active", "Activo")
+                          : t("ui.ClientContract.finalizado", "Finalizado")}
                       </StatusBadge>
                     </td>
                     <td className="px-2 py-2.5">
@@ -983,7 +1043,9 @@ export default function ClientContract({ client }: { client: Client }) {
               {t("actions.cancel")}
             </Button>
             <Button disabled={saving} onClick={saveContract}>
-              {saving ? "Guardando…" : "Guardar"}
+              {saving
+                ? t("common.saving", "Guardando…")
+                : t("actions.save", "Guardar")}
             </Button>
           </>
         }
@@ -1011,14 +1073,14 @@ export default function ClientContract({ client }: { client: Client }) {
           <LabeledField label={t("ui.ClientContract.tipoDeContrato")}>
             <input
               className={FIELD_CLS}
-              placeholder="Servicio integral"
+              placeholder={t("ui.ClientContract.phServicioIntegral", "Servicio integral")}
               value={form.contractType}
               onChange={(e) =>
                 setForm({ ...form, contractType: e.target.value })
               }
             />
           </LabeledField>
-          <LabeledField label="Moneda">
+          <LabeledField label={t("ui.ClientContract.moneda", "Moneda")}>
             <input
               className={FIELD_CLS}
               placeholder="USD"
@@ -1031,7 +1093,7 @@ export default function ClientContract({ client }: { client: Client }) {
           >
             <input
               className={FIELD_CLS}
-              placeholder="Mensual"
+              placeholder={t("ui.ClientContract.phMensual", "Mensual")}
               value={form.paymentTerms}
               onChange={(e) =>
                 setForm({ ...form, paymentTerms: e.target.value })
@@ -1100,7 +1162,9 @@ export default function ClientContract({ client }: { client: Client }) {
               }
             />
           </LabeledField>
-          <LabeledField label="Horas contratadas / mes">
+          <LabeledField
+            label={t("ui.ClientContract.horasContratadasMes", "Horas contratadas / mes")}
+          >
             <input
               className={FIELD_CLS}
               type="number"
@@ -1115,7 +1179,7 @@ export default function ClientContract({ client }: { client: Client }) {
           >
             <input
               className={FIELD_CLS}
-              placeholder="Ecuador"
+              placeholder={t("ui.ClientContract.phJurisdiccion", "Ecuador")}
               value={form.jurisdiction}
               onChange={(e) =>
                 setForm({ ...form, jurisdiction: e.target.value })
@@ -1161,7 +1225,7 @@ export default function ClientContract({ client }: { client: Client }) {
             />
           </LabeledField>
           <div className="sm:col-span-2 mt-1 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <LabeledField label="SLA uptime (%)">
+            <LabeledField label={t("ui.ClientContract.slaUptimePct", "SLA uptime (%)")}>
               <input
                 className={FIELD_CLS}
                 type="number"
@@ -1171,7 +1235,7 @@ export default function ClientContract({ client }: { client: Client }) {
                 }
               />
             </LabeledField>
-            <LabeledField label="Respuesta (min)">
+            <LabeledField label={t("ui.ClientContract.respuestaMin", "Respuesta (min)")}>
               <input
                 className={FIELD_CLS}
                 type="number"
@@ -1181,7 +1245,7 @@ export default function ClientContract({ client }: { client: Client }) {
                 }
               />
             </LabeledField>
-            <LabeledField label="Rondas (%)">
+            <LabeledField label={t("ui.ClientContract.rondasPct", "Rondas (%)")}>
               <input
                 className={FIELD_CLS}
                 type="number"
@@ -1191,7 +1255,7 @@ export default function ClientContract({ client }: { client: Client }) {
                 }
               />
             </LabeledField>
-            <LabeledField label="Reportes (%)">
+            <LabeledField label={t("ui.ClientContract.reportesPct", "Reportes (%)")}>
               <input
                 className={FIELD_CLS}
                 type="number"
@@ -1223,13 +1287,19 @@ export default function ClientContract({ client }: { client: Client }) {
               {t("actions.cancel")}
             </Button>
             <Button disabled={saving} onClick={saveSvc}>
-              {saving ? "Guardando…" : "Guardar"}
+              {saving
+                ? t("common.saving", "Guardando…")
+                : t("actions.save", "Guardar")}
             </Button>
           </>
         }
         icon={<ClipboardCheck className="h-5 w-5" />}
         open={svcOpen}
-        title={svcForm?.id ? "Editar servicio" : "Agregar servicio"}
+        title={
+          svcForm?.id
+            ? t("ui.ClientContract.editarServicio", "Editar servicio")
+            : t("ui.ClientContract.agregarServicio", "Agregar servicio")
+        }
         onOpenChange={setSvcOpen}
       >
         {svcForm && (
@@ -1248,7 +1318,9 @@ export default function ClientContract({ client }: { client: Client }) {
                     name:
                       (svcForm.id ? svcForm.name : nombrePreset(p)) ||
                       svcForm.name,
-                    unit: (svcForm.id ? svcForm.unit : p.unit) || svcForm.unit,
+                    unit:
+                      (svcForm.id ? svcForm.unit : unidadPreset(p)) ||
+                      svcForm.unit,
                   });
                 }}
               >
@@ -1282,7 +1354,7 @@ export default function ClientContract({ client }: { client: Client }) {
                 }
               />
             </LabeledField>
-            <LabeledField label="Unidad">
+            <LabeledField label={t("ui.ClientContract.unidadCol", "Unidad")}>
               <input
                 className={FIELD_CLS}
                 placeholder={t(
@@ -1295,7 +1367,9 @@ export default function ClientContract({ client }: { client: Client }) {
                 }
               />
             </LabeledField>
-            <LabeledField label="Cantidad contratada">
+            <LabeledField
+              label={t("ui.ClientContract.cantidadContratada", "Cantidad contratada")}
+            >
               <input
                 className={FIELD_CLS}
                 placeholder={t(
@@ -1309,7 +1383,7 @@ export default function ClientContract({ client }: { client: Client }) {
                 }
               />
             </LabeledField>
-            <LabeledField label="Objetivo SLA (%)">
+            <LabeledField label={t("ui.ClientContract.objetivoSlaPct", "Objetivo SLA (%)")}>
               <input
                 className={FIELD_CLS}
                 type="number"
@@ -1331,18 +1405,24 @@ export default function ClientContract({ client }: { client: Client }) {
               {t("actions.cancel")}
             </Button>
             <Button disabled={saving} onClick={saveRen}>
-              {saving ? "Guardando…" : "Guardar"}
+              {saving
+                ? t("common.saving", "Guardando…")
+                : t("actions.save", "Guardar")}
             </Button>
           </>
         }
         icon={<History className="h-5 w-5" />}
         open={renOpen}
-        title={renForm?.id ? "Editar periodo" : "Agregar periodo"}
+        title={
+          renForm?.id
+            ? t("ui.ClientContract.editarPeriodo", "Editar periodo")
+            : t("ui.ClientContract.agregarPeriodo", "Agregar periodo")
+        }
         onOpenChange={setRenOpen}
       >
         {renForm && (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <LabeledField full label="Periodo">
+            <LabeledField full label={t("ui.ClientContract.periodo", "Periodo")}>
               <input
                 className={FIELD_CLS}
                 placeholder={t("ui.ClientContract.actualAnterior")}
@@ -1393,7 +1473,9 @@ export default function ClientContract({ client }: { client: Client }) {
                 }
               >
                 <option value="active">{t("common.active")}</option>
-                <option value="finished">Finalizado</option>
+                <option value="finished">
+                  {t("ui.ClientContract.finalizado", "Finalizado")}
+                </option>
               </select>
             </LabeledField>
           </div>
@@ -1416,6 +1498,8 @@ function SlaCell({
   suffix?: string;
   actual?: number | null;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div>
       <div className="cg-eyebrow flex items-center gap-1.5 [&_svg]:size-3.5">
@@ -1427,7 +1511,7 @@ function SlaCell({
       </div>
       {actual != null && (
         <div className="text-xs" style={{ color: "var(--ink-faint)" }}>
-          Real: {actual}%
+          {t("ui.ClientContract.realPct", { defaultValue: "Real: {{pct}}%", pct: actual })}
         </div>
       )}
     </div>

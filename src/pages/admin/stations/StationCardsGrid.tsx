@@ -420,8 +420,9 @@ export default function StationCardsGrid({
                 <span className="font-semibold text-foreground">
                   {s.guardCount}
                 </span>{" "}
-                {t("stations.guardsAssignedLabel", {
-                  defaultValue: "asignado(s)",
+                {t("ui.StationCardsGrid.asignados", {
+                  defaultValue: "asignados",
+                  count: Number(s.guardCount) || 0,
                 })}
               </span>
 

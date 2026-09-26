@@ -166,7 +166,7 @@ export default function RadioDispatch() {
     setBusy(true);
     try {
       await radioCheckService.start(scope, stationId);
-      toast.success("Pase iniciado");
+      toast.success(t("ui.RadioDispatch.paseIniciado", "Pase iniciado"));
       await refresh();
     } catch {
       toast.error(t("ui.RadioDispatch.noSePudoIniciar"));
@@ -241,7 +241,7 @@ export default function RadioDispatch() {
             <>
               <Button
                 size="icon"
-                title="Actualizar"
+                title={t("ui.RadioDispatch.actualizar", "Actualizar")}
                 variant="outline"
                 onClick={refresh}
               >
@@ -253,7 +253,7 @@ export default function RadioDispatch() {
                 variant="outline"
                 onClick={() => navigate("/radio/channels")}
               >
-                <Radio size={15} /> Canales
+                <Radio size={15} /> {t("ui.RadioDispatch.canales", "Canales")}
               </Button>
               <Button
                 size="icon"
@@ -270,7 +270,7 @@ export default function RadioDispatch() {
                   ) : (
                     <Square size={14} />
                   )}{" "}
-                  Cancelar
+                  {t("ui.RadioDispatch.cancelar", "Cancelar")}
                 </Button>
               ) : (
                 <Button
@@ -283,19 +283,21 @@ export default function RadioDispatch() {
                   ) : (
                     <Play size={15} />
                   )}{" "}
-                  Iniciar pase
+                  {t("ui.RadioDispatch.iniciarPase", "Iniciar pase")}
                 </Button>
               )}
             </>
           }
           badges={
             <StatusBadge tone={connected ? "green" : "slate"}>
-              {connected ? "En tiempo real" : "Reconectando…"}
+              {connected
+                ? t("ui.RadioDispatch.enTiempoReal", "En tiempo real")
+                : t("ui.RadioDispatch.reconectando", "Reconectando…")}
             </StatusBadge>
           }
           icon={<Radio />}
           subtitle={t("ui.RadioDispatch.coordinaElPaseDeNovedades")}
-          title="Radio · Pase de novedades"
+          title={t("ui.RadioDispatch.tituloPaseDeNovedades", "Radio · Pase de novedades")}
         />
 
         {showSettings && settings && (
@@ -312,10 +314,10 @@ export default function RadioDispatch() {
                     setSettings({ ...settings, enabled: e.target.checked })
                   }
                 />{" "}
-                Activado
+                {t("ui.RadioDispatch.activado", "Activado")}
               </label>
               <label className="text-sm">
-                Intervalo (min)
+                {t("ui.RadioDispatch.intervaloMin", "Intervalo (min)")}
                 <input
                   className="mt-1 w-full rounded-lg border border-border bg-background px-2 py-1.5"
                   min={1}
@@ -399,8 +401,15 @@ export default function RadioDispatch() {
           <div className="mb-5 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
             <div className="mb-2 flex flex-wrap items-center justify-between gap-3 text-sm">
               <span className="font-semibold">
-                {done >= total ? "Finalizando…" : "Reportes entrantes"} ·{" "}
-                {running.respondedCount || 0}/{total} recibidos
+                {done >= total
+                  ? t("ui.RadioDispatch.finalizando", "Finalizando…")
+                  : t("ui.RadioDispatch.reportesEntrantes", "Reportes entrantes")}{" "}
+                ·{" "}
+                {t("ui.RadioDispatch.recibidos", {
+                  defaultValue: "{{n}}/{{total}} recibidos",
+                  n: running.respondedCount || 0,
+                  total,
+                })}
               </span>
               <div className="flex flex-wrap items-center gap-3">
                 {countdown && (
@@ -414,12 +423,16 @@ export default function RadioDispatch() {
                   >
                     {(remainingSec ?? 0) > 0
                       ? `⏱ ${countdown}`
-                      : "Tiempo agotado"}
+                      : t("ui.RadioDispatch.tiempoAgotado", "Tiempo agotado")}
                   </span>
                 )}
                 <span className="text-muted-foreground">
-                  {running.respondedCount || 0} respondieron ·{" "}
-                  {running.noResponseCount || 0} sin respuesta
+                  {t("ui.RadioDispatch.respondieronSinRespuesta", {
+                    defaultValue:
+                      "{{respondieron}} respondieron · {{sinRespuesta}} sin respuesta",
+                    respondieron: running.respondedCount || 0,
+                    sinRespuesta: running.noResponseCount || 0,
+                  })}
                 </span>
               </div>
             </div>
@@ -499,7 +512,7 @@ export default function RadioDispatch() {
                           <p className="text-sm">{e.transcript}</p>
                         ) : e.transcriptStatus === "pending" ? (
                           <p className="text-xs italic text-muted-foreground">
-                            Transcribiendo…
+                            {t("ui.RadioDispatch.transcribiendo", "Transcribiendo…")}
                           </p>
                         ) : null}
                         {e.hasAudio && e.audioUrl !== undefined && (
@@ -565,7 +578,8 @@ function RecentSessions() {
   return (
     <div className="mt-8">
       <h2 className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-muted-foreground">
-        <FileText size={15} /> Pases recientes
+        <FileText size={15} />{" "}
+        {t("ui.RadioDispatch.pasesRecientes", "Pases recientes")}
       </h2>
       <div className="space-y-2">
         {rows.map((s) => (
@@ -592,7 +606,9 @@ function RecentSessions() {
               <span
                 className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${s.status === "completed" ? "bg-emerald-500/15 text-emerald-600" : s.status === "running" ? "bg-amber-500/15 text-amber-600" : "bg-zinc-500/15 text-zinc-500"}`}
               >
-                {s.status}
+                {t(`ui.RadioDispatch.estadoSesion.${s.status}`, {
+                  defaultValue: s.status,
+                })}
               </span>
             </button>
             {openId === s.id && detail?.session?.id === s.id && (

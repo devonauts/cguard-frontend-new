@@ -30,10 +30,12 @@ const CELL: Record<
     style: React.CSSProperties;
     title: string;
     titleKey?: string;
+    labelKey?: string;
   }
 > = {
   day: {
     label: "D",
+    labelKey: "clients.coverage.cell.day.letter",
     style: {
       background: "color-mix(in oklab, var(--info) 16%, transparent)",
       color: "var(--info-text)",
@@ -43,14 +45,17 @@ const CELL: Record<
   },
   night: {
     label: "N",
+    labelKey: "clients.coverage.cell.night.letter",
     style: { background: "var(--brand-wash)", color: "var(--brand-text)" },
     title: "Turno de noche",
     titleKey: "ui.GuardHorario.turnoDeNoche",
   },
   rest: {
     label: "L",
+    labelKey: "clients.coverage.cell.rest.letter",
     style: { background: "var(--glass-sunken)", color: "var(--ink-soft)" },
     title: "Libre",
+    titleKey: "clients.coverage.cell.rest.title",
   },
   gap: {
     label: "!",
@@ -152,7 +157,7 @@ export default function GuardHorarioPage() {
                   variant="outline"
                   onClick={() => setStart(undefined)}
                 >
-                  Hoy
+                  {t("ui.ScheduleCard.hoy", "Hoy")}
                 </Button>
                 <Button
                   size="icon-sm"
@@ -164,7 +169,7 @@ export default function GuardHorarioPage() {
                 </Button>
                 <Button
                   size="icon-sm"
-                  title="Actualizar"
+                  title={t("ui.tabkit.actualizar", "Actualizar")}
                   variant="outline"
                   onClick={() => load()}
                 >
@@ -218,7 +223,12 @@ export default function GuardHorarioPage() {
                                   : "var(--ink-soft)",
                             }}
                           >
-                            <div>{d.dow}</div>
+                            <div>
+                              {new Date(`${d.date}T00:00:00`).toLocaleDateString(
+                                localeActual(),
+                                { weekday: "short" },
+                              ) || d.dow}
+                            </div>
                             <div
                               className={`tabular-nums ${d.isToday ? "font-bold" : ""}`}
                             >
@@ -290,7 +300,7 @@ export default function GuardHorarioPage() {
                                   style={m.style}
                                   title={tip}
                                 >
-                                  {m.label}
+                                  {m.labelKey ? t(m.labelKey, m.label) : m.label}
                                   {c.covering && (
                                     <span
                                       className="absolute right-0.5 top-0.5 h-1.5 w-1.5 rounded-full"
@@ -311,9 +321,9 @@ export default function GuardHorarioPage() {
                   style={{ color: "var(--ink-soft)" }}
                 >
                   {[
-                    { k: "day", label: "Día" },
-                    { k: "night", label: "Noche" },
-                    { k: "rest", label: "Libre" },
+                    { k: "day", label: t("clients.coverage.cell.day.legend", "Día") },
+                    { k: "night", label: t("clients.coverage.cell.night.legend", "Noche") },
+                    { k: "rest", label: t("clients.coverage.cell.rest.legend", "Libre") },
                     {
                       k: "gap",
                       label: t(
@@ -327,7 +337,9 @@ export default function GuardHorarioPage() {
                         className="grid h-4 w-4 place-items-center rounded text-[10px] font-bold"
                         style={CELL[k].style}
                       >
-                        {CELL[k].label}
+                        {CELL[k].labelKey
+                          ? t(CELL[k].labelKey!, CELL[k].label)
+                          : CELL[k].label}
                       </span>{" "}
                       {label}
                     </span>

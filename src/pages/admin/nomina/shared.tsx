@@ -62,11 +62,19 @@ export const PAYROLL_FLOW_META: Record<
   string,
   { label: string; tone: PillTone }
 > = {
-  pending_review: { label: "Espera de revisión", tone: "neutral" },
-  reviewed: { label: "Revisada", tone: "info" },
-  approved: { label: "Aprobada — a gestionar pago", tone: "brand" },
-  paid: { label: "Pagada", tone: "ok" },
-  rejected: { label: "Rechazada", tone: "bad" },
+  pending_review: conEtiqueta("ui.NominaShared.esperaDeRevision", {
+    tone: "neutral" as PillTone,
+  }),
+  reviewed: conEtiqueta("ui.NominaShared.revisada", {
+    tone: "info" as PillTone,
+  }),
+  approved: conEtiqueta("ui.NominaShared.aprobadaAGestionarPago", {
+    tone: "brand" as PillTone,
+  }),
+  paid: conEtiqueta("ui.NominaShared.pagada", { tone: "ok" as PillTone }),
+  rejected: conEtiqueta("ui.NominaShared.rechazada", {
+    tone: "bad" as PillTone,
+  }),
 };
 
 /** A qué estados se puede pasar desde cada uno (espejo del servidor). */

@@ -18,7 +18,6 @@ import {
 } from "@/components/kit";
 import { BarChart, MeterBar } from "@/components/charts";
 import { CHART_VARS, alphaVar } from "@/lib/chartColors";
-import i18n from "@/i18n";
 
 /**
  * `hover:text-[var(--brand-text)]` y NO `hover:text-primary`.
@@ -188,9 +187,9 @@ export function AnalyticsShell({
                 onChange={(v) => setDays(Number(v))}
               />
               <Button
-                aria-label="Actualizar"
+                aria-label={t("ui.shared.actualizar", "Actualizar")}
                 size="icon"
-                title="Actualizar"
+                title={t("ui.shared.actualizar", "Actualizar")}
                 variant="outline"
                 onClick={reload}
               >
@@ -219,7 +218,7 @@ export function AnalyticsShell({
             </IconTile>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold">
-                {i18n.t("ui.shared.noSePudieronCargarLos")}
+                {t("ui.shared.noSePudieronCargarLos")}
               </p>
               <p
                 className="mt-0.5 text-sm"
@@ -234,7 +233,7 @@ export function AnalyticsShell({
               variant="outline"
               onClick={reload}
             >
-              <RefreshCw size={14} /> Reintentar
+              <RefreshCw size={14} /> {t("ui.shared.reintentar", "Reintentar")}
             </Button>
           </div>
         ) : (
@@ -319,6 +318,7 @@ export function DayBars({
   points: { k: string; v: number }[];
   color: string;
 }) {
+  const { t } = useTranslation();
   const total = points.reduce((s, p) => s + p.v, 0);
 
   return (
@@ -329,7 +329,7 @@ export function DayBars({
           <span className="font-semibold tabular-nums text-foreground">
             {total}
           </span>{" "}
-          total
+          {t("ui.shared.total", "total")}
         </p>
       </div>
       {/* La etiqueta del globo lleva la fecha COMPLETA; abajo sólo caben los extremos. */}
@@ -447,39 +447,49 @@ export function PerSiteTable({
       <table className="cg-tabla-fichas min-w-full text-sm">
         <thead className="border-b text-xs uppercase tracking-wide text-muted-foreground">
           <tr>
-            <th className="px-3 py-2 text-left font-semibold">Sitio</th>
-            <th className="px-3 py-2 text-right font-semibold">Vigilantes</th>
+            <th className="px-3 py-2 text-left font-semibold">{t("ui.shared.sitio", "Sitio")}</th>
+            <th className="px-3 py-2 text-right font-semibold">
+              {t("ui.shared.vigilantes", "Vigilantes")}
+            </th>
             {showShifts && (
-              <th className="px-3 py-2 text-right font-semibold">Turnos</th>
+              <th className="px-3 py-2 text-right font-semibold">
+                {t("ui.shared.turnos", "Turnos")}
+              </th>
             )}
-            <th className="px-3 py-2 text-right font-semibold">Cobertura</th>
-            <th className="px-3 py-2 text-right font-semibold">Rondas</th>
+            <th className="px-3 py-2 text-right font-semibold">
+              {t("ui.shared.cobertura", "Cobertura")}
+            </th>
+            <th className="px-3 py-2 text-right font-semibold">
+              {t("ui.shared.rondas", "Rondas")}
+            </th>
             <th className="px-3 py-2 text-right font-semibold">
               {t("ui.shared.ubicacion", "Ubicación")}
             </th>
-            <th className="px-3 py-2 text-right font-semibold">Incidentes</th>
+            <th className="px-3 py-2 text-right font-semibold">
+              {t("ui.shared.incidentes", "Incidentes")}
+            </th>
           </tr>
         </thead>
         <tbody className="divide-y">
           {visibles.map((s, i) => (
             <tr key={i} className="hover:bg-[var(--glass-sunken)]">
-              <td className="px-3 py-2" data-rotulo="Sitio">
+              <td className="px-3 py-2" data-rotulo={t("ui.shared.sitio", "Sitio")}>
                 <SiteLink id={s.id} name={s.site} />
               </td>
-              <td className="px-3 py-2 text-right tabular-nums text-muted-foreground" data-rotulo="Vigilantes">
+              <td className="px-3 py-2 text-right tabular-nums text-muted-foreground" data-rotulo={t("ui.shared.vigilantes", "Vigilantes")}>
                 {s.guards}
               </td>
               {showShifts && (
-                <td className="px-3 py-2 text-right tabular-nums text-muted-foreground" data-rotulo="Turnos">
+                <td className="px-3 py-2 text-right tabular-nums text-muted-foreground" data-rotulo={t("ui.shared.turnos", "Turnos")}>
                   {s.shiftsCovered}/{s.shiftsTotal}
                 </td>
               )}
-              <td className="px-3 py-2 text-right tabular-nums" data-rotulo="Cobertura">
+              <td className="px-3 py-2 text-right tabular-nums" data-rotulo={t("ui.shared.cobertura", "Cobertura")}>
                 <span style={{ color: pctColor(s.coveragePct) }}>
                   {s.coveragePct}%
                 </span>
               </td>
-              <td className="px-3 py-2 text-right tabular-nums text-muted-foreground" data-rotulo="Rondas">
+              <td className="px-3 py-2 text-right tabular-nums text-muted-foreground" data-rotulo={t("ui.shared.rondas", "Rondas")}>
                 {s.rondasCompleted}
               </td>
               <td className="px-3 py-2 text-right tabular-nums" data-rotulo={t("ui.shared.ubicacion", "Ubicación")}>
@@ -487,7 +497,7 @@ export function PerSiteTable({
                   {s.locationCompliancePct}%
                 </span>
               </td>
-              <td className="px-3 py-2 text-right font-semibold tabular-nums text-foreground" data-rotulo="Incidentes">
+              <td className="px-3 py-2 text-right font-semibold tabular-nums text-foreground" data-rotulo={t("ui.shared.incidentes", "Incidentes")}>
                 {s.incidents}
               </td>
             </tr>
@@ -547,10 +557,16 @@ export function AttendanceTiles({
 }
 
 export function RangeFooter({ data }: { data: OpsAnalytics }) {
+  const { t } = useTranslation();
+
   return (
     <p className="text-center text-xs" style={{ color: "var(--ink-faint)" }}>
-      Período: {data.range.start.slice(0, 10)} → {data.range.end.slice(0, 10)} ·{" "}
-      {data.range.days} días
+      {t("ui.shared.periodoRango", {
+        defaultValue: "Período: {{start}} → {{end}} · {{count}} días",
+        start: data.range.start.slice(0, 10),
+        end: data.range.end.slice(0, 10),
+        count: data.range.days,
+      })}
     </p>
   );
 }

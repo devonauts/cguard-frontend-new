@@ -249,9 +249,10 @@ export default function NewVehiclePage() {
                     <Info />
                   </span>
                   <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-                    Al editar un vehículo sólo se pueden cambiar la fotografía,
-                    la propiedad y las notas. Los datos de identificación quedan
-                    fijos desde el alta.
+                    {t(
+                      "ui.NewVehiclePage.alEditarUnVehiculoSoloSePueden",
+                      "Al editar un vehículo sólo se pueden cambiar la fotografía, la propiedad y las notas. Los datos de identificación quedan fijos desde el alta.",
+                    )}
                   </p>
                 </GlassPanel>
               )}
@@ -383,7 +384,7 @@ export default function NewVehiclePage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Marca <Obligatorio />
+                        {t("ui.NewVehiclePage.marca", "Marca")} <Obligatorio />
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -403,7 +404,7 @@ export default function NewVehiclePage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Modelo <Obligatorio />
+                        {t("ui.NewVehiclePage.modelo", "Modelo")} <Obligatorio />
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -423,11 +424,11 @@ export default function NewVehiclePage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Color <Obligatorio />
+                        {t("ui.NewVehiclePage.color", "Color")} <Obligatorio />
                       </FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Blanco"
+                          placeholder={t("ui.NewVehiclePage.blanco", "Blanco")}
                           {...field}
                           disabled={isEditing}
                         />
@@ -443,7 +444,7 @@ export default function NewVehiclePage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Placa <Obligatorio />
+                        {t("station.parking.col.plate", "Placa")} <Obligatorio />
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -488,7 +489,7 @@ export default function NewVehiclePage() {
               <Section
                 contentClassName="grid grid-cols-1 gap-4 md:grid-cols-2"
                 icon={<Gauge />}
-                title="Datos operativos"
+                title={t("ui.NewVehiclePage.datosOperativos", "Datos operativos")}
               >
                 <FormField
                   control={form.control}
@@ -496,7 +497,11 @@ export default function NewVehiclePage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Kilometraje inicial <Obligatorio />
+                        {t(
+                          "ui.NewVehiclePage.kilometrajeInicial",
+                          "Kilometraje inicial",
+                        )}{" "}
+                        <Obligatorio />
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -517,7 +522,8 @@ export default function NewVehiclePage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Propiedad <Obligatorio />
+                        {t("ui.NewVehiclePage.propiedad", "Propiedad")}{" "}
+                        <Obligatorio />
                       </FormLabel>
                       <Select
                         value={field.value}
@@ -584,10 +590,10 @@ export default function NewVehiclePage() {
                   variant="brand"
                 >
                   {form.formState.isSubmitting
-                    ? "Guardando..."
+                    ? t("clients.saving", "Guardando...")
                     : isEditing
-                      ? "Guardar cambios"
-                      : "Crear vehículo"}
+                      ? t("comms.save", "Guardar cambios")
+                      : t("ui.NewVehiclePage.crearVehiculo", "Crear vehículo")}
                 </Button>
               </div>
             </form>

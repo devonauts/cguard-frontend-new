@@ -6,6 +6,7 @@ import ChartTooltip from "./ChartTooltip";
 
 import { resolveColor, toneColor, type ChartTone } from "@/lib/chartColors";
 import { localeActual } from "@/lib/localeActual";
+import i18n from "@/i18n";
 export interface BarDatum {
   /** Etiqueta de la categoría — es lo que sale en el globo. */
   label: string;
@@ -94,7 +95,12 @@ export default function BarChart({
     <div ref={ref} className={className} style={{ position: "relative" }}>
       <svg
         aria-label={
-          ariaLabel ?? `${data.length} valores, máximo ${formatValue(max)}`
+          ariaLabel ??
+          i18n.t("ui.BarChart.valoresMaximo", {
+            defaultValue: "{{n}} valores, máximo {{max}}",
+            n: data.length,
+            max: formatValue(max),
+          })
         }
         className="block"
         height={height}

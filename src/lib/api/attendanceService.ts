@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import type { ExportFormat } from "@/lib/export/reportExport";
 
 import api from "../api";
@@ -15,7 +16,10 @@ const getTenantId = (): string => {
 
   if (!t)
     throw new Error(
-      "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+      i18n.t(
+        "ui.apiService.noPudimosIdentificarTuEmpresa",
+        "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+      ),
     );
 
   return t;
@@ -511,7 +515,7 @@ const attendanceService = {
     const d = creds?.data ?? creds;
     const uploadUrl = d?.uploadCredentials?.url;
 
-    if (!uploadUrl) throw new Error("No se pudo preparar la subida de la foto");
+    if (!uploadUrl) throw new Error(i18n.t("ui.apiService.noSePudoPrepararLaSubidaDeLaFoto", "No se pudo preparar la subida de la foto"));
 
     const form = new FormData();
 
@@ -519,7 +523,7 @@ const attendanceService = {
     form.append("file", file);
     const resp = await fetch(uploadUrl, { method: "POST", body: form });
 
-    if (!resp.ok) throw new Error("No se pudo subir la foto");
+    if (!resp.ok) throw new Error(i18n.t("ui.apiService.noSePudoSubirLaFoto", "No se pudo subir la foto"));
 
     return d?.privateUrl as string;
   },

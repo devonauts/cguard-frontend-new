@@ -1,4 +1,5 @@
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import GuardLicenses from "@/pages/admin/security-guards/components/GuardLicenses/GuardLicensespage";
 import api from "@/lib/api";
@@ -9,6 +10,7 @@ import api from "@/lib/api";
  * supervisor sidebar. Guard usage of GuardLicenses is unchanged.
  */
 export default function SupervisorLicensesPage() {
+  const { t } = useTranslation();
   const { id = "" } = useParams();
   const tid = localStorage.getItem("tenantId") || "";
   const base = `/tenant/${tid}/supervisors/${id}/licenses`;
@@ -38,14 +40,16 @@ export default function SupervisorLicensesPage() {
       Promise.all((ids || []).map((lid) => api.delete(`${base}/${lid}`))),
     // No PDF report for supervisors (yet).
     download: (_licenseId: string) =>
-      Promise.reject(new Error("Reporte no disponible")),
+      Promise.reject(
+        new Error(t("ui.SupervisorLicensesPage.reporteNoDisponible", "Reporte no disponible")),
+      ),
   };
 
   return (
     <GuardLicenses
       licensesApi={licensesApi}
       navKey="supervisors"
-      title="Licencias"
+      title={t("ui.SupervisorLicensesPage.licencias", "Licencias")}
     />
   );
 }

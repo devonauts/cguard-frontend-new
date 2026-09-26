@@ -42,18 +42,24 @@ export function ImportDialog({
     link.download = "plantilla-clientes.csv";
     link.click();
     window.URL.revokeObjectURL(url);
-    toast.success("Plantilla descargada");
+    toast.success(
+      t("guards.list.importDialog.templateDownloaded", "Plantilla descargada"),
+    );
   }
 
   async function handleImport() {
     if (!file) {
-      toast.error("Selecciona un archivo");
+      toast.error(
+        t("guards.list.importDialog.errors.selectFile", "Selecciona un archivo"),
+      );
 
       return;
     }
 
     setLoading(true);
-    const toastId = toast.loading("Procesando archivo...");
+    const toastId = toast.loading(
+      t("guards.list.importDialog.processing", "Procesando archivo..."),
+    );
 
     try {
       const result = await clientService.importExcel(file);
@@ -62,13 +68,21 @@ export function ImportDialog({
 
       if (result.imported > 0) {
         toast.success(
-          `${result.imported} clientes guardados en la base de datos exitosamente`,
+          t("ui.ImportDialog.clientesGuardados", {
+            defaultValue:
+              "{{count}} clientes guardados en la base de datos exitosamente",
+            count: result.imported,
+          }),
         );
       }
 
       if (result.errors && result.errors.length > 0) {
         toast.error(
-          `${result.errors.length} filas no se pudieron importar. Revisa los detalles.`,
+          t("ui.ImportDialog.filasNoImportadas", {
+            defaultValue:
+              "{{count}} filas no se pudieron importar. Revisa los detalles.",
+            count: result.errors.length,
+          }),
         );
       }
 
@@ -77,7 +91,7 @@ export function ImportDialog({
       setFile(null);
     } catch (error: any) {
       toast.dismiss(toastId);
-      let errorMessage: string = "Error al importar";
+      let errorMessage: string = t("ui.ImportDialog.errorAlImportar", "Error al importar");
       const candidate =
         error?.details ??
         error?.response?.data?.message ??
@@ -91,7 +105,7 @@ export function ImportDialog({
         try {
           errorMessage = String(candidate);
         } catch {
-          errorMessage = "Error al importar";
+          errorMessage = t("ui.ImportDialog.errorAlImportar", "Error al importar");
         }
       }
 
@@ -102,12 +116,15 @@ export function ImportDialog({
             ? errorMessage
             : String(errorMessage);
       } catch (e) {
-        errorMessage = "Error al importar";
+        errorMessage = t("ui.ImportDialog.errorAlImportar", "Error al importar");
       }
 
       if (errorMessage.includes("cannot be null")) {
         toast.error(
-          "Algunos campos obligatorios están vacíos. Verifica: name, lastName, email, phoneNumber, address, zipCode, city, country.",
+          t(
+            "ui.ImportDialog.camposObligatoriosVacios",
+            "Algunos campos obligatorios están vacíos. Verifica: name, lastName, email, phoneNumber, address, zipCode, city, country.",
+          ),
         );
       } else {
         toast.error(errorMessage);
@@ -121,7 +138,12 @@ export function ImportDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Importar Clientes desde Excel</DialogTitle>
+          <DialogTitle>
+            {t(
+              "ui.ImportDialog.importarClientesDesdeExcel",
+              "Importar Clientes desde Excel",
+            )}
+          </DialogTitle>
           <DialogDescription>
             {t(
               "clients.importDialog.description",
@@ -146,12 +168,20 @@ export function ImportDialog({
                 )}
               </li>
               <li>
-                <strong>Columnas obligatorias:</strong> name, lastName, email,
-                phoneNumber, address, zipCode, city, country
+                <strong>
+                  {t(
+                    "guards.list.importDialog.requiredColumnsLabel",
+                    "Columnas obligatorias:",
+                  )}
+                </strong>{" "}
+                name, lastName, email, phoneNumber, address, zipCode, city,
+                country
               </li>
               <li>
-                <strong>Columnas opcionales:</strong> addressLine2, faxNumber,
-                website, categoryId
+                <strong>
+                  {t("ui.ImportDialog.columnasOpcionales", "Columnas opcionales:")}
+                </strong>{" "}
+                addressLine2, faxNumber, website, categoryId
               </li>
             </ul>
             <Button
@@ -195,10 +225,12 @@ export function ImportDialog({
 
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => onOpenChange(false)}>
-              Cancelar
+              {t("actions.cancel", "Cancelar")}
             </Button>
             <Button disabled={!file || loading} onClick={handleImport}>
-              {loading ? "Importando..." : "Importar"}
+              {loading
+                ? t("guards.list.importDialog.importing", "Importando...")
+                : t("actions.import", "Importar")}
             </Button>
           </div>
         </div>

@@ -63,7 +63,11 @@ export default function DocumentUpload({
 
     if (file.size > MAX_MB * 1024 * 1024) {
       toast.error(
-        `El archivo "${file.name}" excede el tamaño máximo de ${MAX_MB} MB.`,
+        t("ui.DocumentUpload.archivoExcedeTamanoNombre", {
+          defaultValue: "El archivo \"{{name}}\" excede el tamaño máximo de {{mb}} MB.",
+          name: file.name,
+          mb: MAX_MB,
+        }),
       );
 
       return;
@@ -82,7 +86,12 @@ export default function DocumentUpload({
 
     if (!file) return;
     if (file.size > MAX_MB * 1024 * 1024) {
-      toast.error(`El archivo excede el tamaño máximo de ${MAX_MB} MB.`);
+      toast.error(
+        t("ui.DocumentUpload.archivoExcedeTamano", {
+          defaultValue: "El archivo excede el tamaño máximo de {{mb}} MB.",
+          mb: MAX_MB,
+        }),
+      );
 
       return;
     }
@@ -160,12 +169,12 @@ export default function DocumentUpload({
               variant="ghost"
               onClick={() => inputRef.current?.click()}
             >
-              Cambiar
+              {t("ui.ExtremoRutaField.cambiar", "Cambiar")}
             </Button>
             <button
               className="cg-focus rounded-full p-1 transition-colors hover:[color:var(--bad-text)]"
               style={{ color: "var(--ink-faint)" }}
-              title="Eliminar archivo"
+              title={t("ui.DocumentUpload.eliminarArchivo", "Eliminar archivo")}
               type="button"
               onClick={handleRemove}
             >
@@ -197,7 +206,10 @@ export default function DocumentUpload({
               )}
             </p>
             <p className="mt-0.5 text-xs" style={{ color: "var(--ink-faint)" }}>
-              PDF, PNG, JPG, WebP — máx. {MAX_MB} MB
+              {t("ui.DocumentUpload.formatosMax", {
+                defaultValue: "PDF, PNG, JPG, WebP — máx. {{mb}} MB",
+                mb: MAX_MB,
+              })}
             </p>
           </div>
         </div>

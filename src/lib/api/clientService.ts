@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import api, { getAuthToken } from "../api";
 import { descargarInforme } from "@/lib/export/serverDownload";
 import type { ExportFormat } from "@/lib/export/reportExport";
@@ -68,7 +69,10 @@ const getTenantId = (): string => {
     // persists the resolved tenantId to localStorage (and calls setTenantId), so
     // the localStorage lookup above is the canonical source.
 
-    throw new Error("El usuario debe estar vinculado a una empresa para continuar");
+    throw new Error(i18n.t(
+      "ui.apiService.elUsuarioDebeEstarVinculado",
+      "El usuario debe estar vinculado a una empresa para continuar.",
+    ));
 };
 
 export const clientService = {
@@ -274,7 +278,7 @@ export const clientService = {
 
         const credData = creds.data ?? creds;
         const uploadUrl = credData?.uploadCredentials?.url;
-        if (!uploadUrl) throw new Error('Upload URL not available');
+        if (!uploadUrl) throw new Error(i18n.t("ui.apiService.urlDeCargaNoDisponible", "URL de carga no disponible"));
 
         const form = new FormData();
         form.append('filename', filename);
@@ -283,7 +287,7 @@ export const clientService = {
         const uploadResp = await fetch(uploadUrl, { method: 'POST', body: form });
         if (!uploadResp.ok) {
             const text = await uploadResp.text().catch(() => null);
-            throw new Error(`Upload failed: ${uploadResp.status} ${text}`);
+            throw new Error(i18n.t("ui.apiService.errorAlSubirArchivo", { defaultValue: "Error al subir el archivo ({{status}}) {{detalle}}", status: uploadResp.status, detalle: text }).trim());
         }
 
         return {

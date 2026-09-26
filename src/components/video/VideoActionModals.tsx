@@ -272,7 +272,7 @@ export function TrimShareModal({
     try {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
-      toast.success("Enlace copiado");
+      toast.success(t("ui.VideoActionModals.enlaceCopiado", "Enlace copiado"));
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
       copyTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -291,23 +291,26 @@ export function TrimShareModal({
         ) : (
           <>
             <Button disabled={busy} variant="outline" onClick={onClose}>
-              Cancelar
+              {t("ui.VideoActionModals.cancelar", "Cancelar")}
             </Button>
             <GoldButton busy={busy} onClick={handleCreate}>
               <Share2 className="size-4" />
-              Generar enlace
+              {t("ui.VideoActionModals.generarEnlace", "Generar enlace")}
             </GoldButton>
           </>
         )
       }
       icon={<Scissors className="size-4" />}
       open={open}
-      title="Recortar y compartir clip"
+      title={t(
+        "ui.VideoActionModals.recortarYCompartirClip",
+        "Recortar y compartir clip",
+      )}
       onClose={onClose}
     >
       {camera?.name ? (
         <p className="mb-4 text-sm text-muted-foreground">
-          Cámara:{" "}
+          {t("ui.VideoActionModals.camara", "Cámara:")}{" "}
           <span className="font-medium text-foreground">{camera.name}</span>
         </p>
       ) : null}
@@ -315,7 +318,9 @@ export function TrimShareModal({
       {!shareUrl ? (
         <div className="space-y-4">
           <div className="space-y-1.5">
-            <Label htmlFor="clip-label">Etiqueta</Label>
+            <Label htmlFor="clip-label">
+              {t("ui.VideoActionModals.etiqueta", "Etiqueta")}
+            </Label>
             <Input
               id="clip-label"
               placeholder={i18n.t(
@@ -327,7 +332,9 @@ export function TrimShareModal({
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label htmlFor="clip-start">Inicio</Label>
+              <Label htmlFor="clip-start">
+                {t("ui.VideoActionModals.inicio", "Inicio")}
+              </Label>
               <Input
                 id="clip-start"
                 type="datetime-local"
@@ -336,7 +343,9 @@ export function TrimShareModal({
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="clip-end">Fin</Label>
+              <Label htmlFor="clip-end">
+                {t("ui.VideoActionModals.fin", "Fin")}
+              </Label>
               <Input
                 id="clip-end"
                 type="datetime-local"
@@ -375,13 +384,17 @@ export function TrimShareModal({
             ) : (
               <Copy className="size-4" />
             )}
-            {copied ? "Copiado" : "Copiar enlace"}
+            {copied
+              ? t("ui.VideoActionModals.copiado", "Copiado")
+              : t("ui.VideoActionModals.copiarEnlace", "Copiar enlace")}
           </Button>
           {expiresAt ? (
             <p className="text-center text-xs text-muted-foreground">
-              Expira el{" "}
-              {new Date(expiresAt).toLocaleString(localeActual(), {
-                timeZone: zonaDeLaEmpresa(),
+              {t("ui.VideoActionModals.expiraEl", {
+                defaultValue: "Expira el {{fecha}}",
+                fecha: new Date(expiresAt).toLocaleString(localeActual(), {
+                  timeZone: zonaDeLaEmpresa(),
+                }),
               })}
             </p>
           ) : null}
@@ -495,7 +508,7 @@ export function CreateIncidentModal({
       footer={
         <>
           <Button disabled={busy} variant="outline" onClick={onClose}>
-            Cancelar
+            {t("ui.VideoActionModals.cancelar", "Cancelar")}
           </Button>
           <GoldButton busy={busy} onClick={handleCreate}>
             <AlertTriangle className="size-4" />{" "}
@@ -511,7 +524,7 @@ export function CreateIncidentModal({
       <div className="space-y-4">
         {camera?.name ? (
           <p className="text-sm text-muted-foreground">
-            Origen:{" "}
+            {t("ui.VideoActionModals.origen", "Origen:")}{" "}
             <span className="font-medium text-foreground">{camera.name}</span>
           </p>
         ) : null}
@@ -545,7 +558,9 @@ export function CreateIncidentModal({
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="inc-priority">Prioridad</Label>
+          <Label htmlFor="inc-priority">
+            {t("ui.VideoActionModals.prioridad", "Prioridad")}
+          </Label>
           <select
             className={selectClass}
             id="inc-priority"
@@ -623,11 +638,11 @@ export function DispatchModal({
       footer={
         <>
           <Button disabled={busy} variant="outline" onClick={onClose}>
-            Cancelar
+            {t("ui.VideoActionModals.cancelar", "Cancelar")}
           </Button>
           <GoldButton busy={busy} onClick={handleDispatch}>
             <Radio className="size-4" />
-            Notificar supervisor
+            {t("ui.VideoActionModals.notificarSupervisor", "Notificar supervisor")}
           </GoldButton>
         </>
       }
@@ -642,7 +657,7 @@ export function DispatchModal({
       <div className="space-y-4">
         {camera?.name ? (
           <p className="text-sm text-muted-foreground">
-            Cámara:{" "}
+            {t("ui.VideoActionModals.camara", "Cámara:")}{" "}
             <span className="font-medium text-foreground">{camera.name}</span>
           </p>
         ) : null}

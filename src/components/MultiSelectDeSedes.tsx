@@ -62,7 +62,14 @@ export function MultiSelectDeSedes({
         <div className="p-2">
           <Command>
             <CommandInput
-              placeholder={`Buscar ${placeholder || t("adminOfficeUsers.editUser.form.searchPlaceholder", { defaultValue: "opción" })}…`}
+              placeholder={t("ui.MultiSelectDeSedes.buscar", {
+                defaultValue: "Buscar {{que}}…",
+                que:
+                  placeholder ||
+                  t("adminOfficeUsers.editUser.form.searchPlaceholder", {
+                    defaultValue: "opción",
+                  }),
+              })}
             />
             <CommandList>
               <CommandGroup>

@@ -478,12 +478,12 @@ export default function GoogleMapEmbed({
     const base: MapPopupData = {
       id: m.id,
       kind: m.kind ?? "point",
-      title: m.label || "Punto",
+      title: m.label || i18n.t("maps.kind.point", "Punto"),
       subtitle: m.subtitle,
       tone: tonoRol(m.role),
       status: m.status,
       fields: mapPopupItems({
-        label: "Coordenadas",
+        label: i18n.t("ui.GoogleMapEmbed.coordenadas", "Coordenadas"),
         value: formatearCoord(m.lat, m.lng),
         mono: true,
         wide: true,
@@ -791,7 +791,7 @@ export default function GoogleMapEmbed({
             markerRef.current = new google.maps.marker.AdvancedMarkerElement({
               position: center,
               map: mapInstance.current,
-              title: address || "Location",
+              title: address || i18n.t("ui.PanicAlertOverlay.ubicacion", "Ubicación"),
               gmpDraggable: draggable,
               content: pinPrincipal(google, palRef.current),
             });
@@ -1082,15 +1082,23 @@ export default function GoogleMapEmbed({
     popRef.current.open(markerRef.current, {
       id: "principal",
       kind: "point",
-      title: p?.direccion || address || "Ubicación seleccionada",
-      subtitle: draggable ? "Arrastra la chincheta para ajustarla" : undefined,
+      title:
+        p?.direccion ||
+        address ||
+        i18n.t("ui.GoogleMapEmbed.ubicacionSeleccionada", "Ubicación seleccionada"),
+      subtitle: draggable
+        ? i18n.t(
+            "ui.GoogleMapEmbed.arrastraLaChinchetaParaAjustarla",
+            "Arrastra la chincheta para ajustarla",
+          )
+        : undefined,
       tone: "brand",
       status: p?.precision
         ? { label: p.precision, tone: p.tonoPrecision }
         : undefined,
       fields: [
         {
-          label: "Coordenadas",
+          label: i18n.t("ui.GoogleMapEmbed.coordenadas", "Coordenadas"),
           value: formatearCoord(laN, lnN),
           mono: true,
           wide: true,
@@ -1347,7 +1355,7 @@ export default function GoogleMapEmbed({
     if (markerRef.current) {
       markerRef.current.position = center;
       markerRef.current.gmpDraggable = draggable;
-      markerRef.current.title = address || "Location";
+      markerRef.current.title = address || i18n.t("ui.PanicAlertOverlay.ubicacion", "Ubicación");
     } else {
       // Only create a main marker if no explicit markers list was provided
       if (!Array.isArray(markers) || markers.length === 0) {
@@ -1356,7 +1364,7 @@ export default function GoogleMapEmbed({
             position: center,
             map,
             gmpDraggable: draggable,
-            title: address || "Location",
+            title: address || i18n.t("ui.PanicAlertOverlay.ubicacion", "Ubicación"),
             content: pinPrincipal(google, palRef.current),
           });
           alPulsarMarcador(markerRef.current, () => abrirGloboPrincipal());
@@ -1477,10 +1485,10 @@ export default function GoogleMapEmbed({
           <div className="cc-map-card max-w-full p-2.5 sm:max-w-[22rem]">
             <div className="cc-map-eyebrow">
               {lectura.arrastrando
-                ? "Suelta para fijar el punto"
+                ? t("maps.checkpointPicker.dropToPin", "Suelta para fijar el punto")
                 : lectura.resolviendo
-                  ? "Resolviendo dirección…"
-                  : "Punto fijado"}
+                  ? t("ui.GoogleMapEmbed.resolviendoDireccion", "Resolviendo dirección…")
+                  : t("ui.GoogleMapEmbed.puntoFijado", "Punto fijado")}
             </div>
             <div
               className="mt-1 truncate text-[12.5px] font-semibold leading-snug"

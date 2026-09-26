@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import {
   AlertTriangle,
@@ -207,16 +207,25 @@ export default function ClientRegistration() {
           "La contraseña debe tener al menos 8 caracteres",
         );
       else if (!/[A-Z]/.test(password))
-        nextErrors.password =
-          "La contraseña debe contener al menos una letra mayúscula";
+        nextErrors.password = t(
+          "ui.registration.laContrasenaDebeContenerMayuscula",
+          "La contraseña debe contener al menos una letra mayúscula",
+        );
       else if (!/[a-z]/.test(password))
-        nextErrors.password =
-          "La contraseña debe contener al menos una letra minúscula";
+        nextErrors.password = t(
+          "ui.registration.laContrasenaDebeContenerMinuscula",
+          "La contraseña debe contener al menos una letra minúscula",
+        );
       else if (!/[0-9]/.test(password))
-        nextErrors.password = "La contraseña debe contener al menos un número";
+        nextErrors.password = t(
+          "ui.registration.laContrasenaDebeContenerNumero",
+          "La contraseña debe contener al menos un número",
+        );
       else if (!/[^A-Za-z0-9]/.test(password))
-        nextErrors.password =
-          "La contraseña debe contener al menos un carácter especial";
+        nextErrors.password = t(
+          "ui.registration.laContrasenaDebeContenerEspecial",
+          "La contraseña debe contener al menos un carácter especial",
+        );
     }
     if (!confirm)
       nextErrors.confirm = t(
@@ -304,13 +313,22 @@ export default function ClientRegistration() {
         roles.includes("supervisor") ||
         roles.includes("securitySupervisor")
       ) {
-        return "Estás completando tu registro como Supervisor. Por favor, ingresa una contraseña para tu cuenta.";
+        return t(
+          "ui.registration.completandoRegistroSupervisor",
+          "Estás completando tu registro como Supervisor. Por favor, ingresa una contraseña para tu cuenta.",
+        );
       }
       if (roles.includes("customer")) {
-        return "Estás completando tu registro como Cliente. Por favor, ingresa una contraseña para tu cuenta.";
+        return t(
+          "ui.registration.completandoRegistroCliente",
+          "Estás completando tu registro como Cliente. Por favor, ingresa una contraseña para tu cuenta.",
+        );
       }
       if (roles.includes("admin")) {
-        return "Estás completando tu registro como Administrador. Por favor, ingresa una contraseña para tu cuenta.";
+        return t(
+          "ui.registration.completandoRegistroAdministrador",
+          "Estás completando tu registro como Administrador. Por favor, ingresa una contraseña para tu cuenta.",
+        );
       }
     }
     return t(
@@ -334,7 +352,11 @@ export default function ClientRegistration() {
       onClick={onToggle}
       className="cg-focus absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md p-2.5"
       style={{ color: "var(--ink-faint)" }}
-      aria-label={visible ? "Ocultar contraseña" : "Mostrar contraseña"}
+      aria-label={
+        visible
+          ? t("auth.hide_password", "Ocultar contraseña")
+          : t("auth.show_password", "Mostrar contraseña")
+      }
     >
       {visible ? <EyeOff size={18} /> : <Eye size={18} />}
     </button>
@@ -342,7 +364,9 @@ export default function ClientRegistration() {
 
   return (
     <AuthShell
-      title={done ? "¡Cuenta activada!" : getTitle()}
+      title={
+        done ? t("ui.registration.cuentaActivada", "¡Cuenta activada!") : getTitle()
+      }
       subtitle={
         done
           ? t("invite.accessReady", "Tu acceso quedó listo.")
@@ -382,13 +406,19 @@ export default function ClientRegistration() {
             className="text-sm leading-relaxed"
             style={{ color: "var(--ink-soft)" }}
           >
-            {t("client.done.accountWith", "Tu cuenta con")}{" "}
-            <strong style={{ color: "var(--ink)" }}>
-              {empresa || "tu proveedor de seguridad"}
-            </strong>{" "}
-            está lista. Descarga{" "}
-            <strong style={{ color: "var(--ink)" }}>Mi Seguridad</strong> para
-            monitorear y gestionar tu servicio de seguridad desde tu teléfono.
+            <Trans
+              components={{ b: <strong style={{ color: "var(--ink)" }} /> }}
+              defaults="Tu cuenta con <b>{{empresa}}</b> está lista. Descarga <b>Mi Seguridad</b> para monitorear y gestionar tu servicio de seguridad desde tu teléfono."
+              i18nKey="ui.registration.tuCuentaConEstaListaDescarga"
+              values={{
+                empresa:
+                  empresa ||
+                  t(
+                    "ui.registration.tuProveedorDeSeguridad",
+                    "tu proveedor de seguridad",
+                  ),
+              }}
+            />
           </p>
 
           <div className="glass-sunken mt-6 flex items-center gap-3 p-4 text-left">
@@ -400,8 +430,10 @@ export default function ClientRegistration() {
             <div className="min-w-0">
               <p className="text-sm font-bold">Mi Seguridad</p>
               <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
-                Vigilantes y puestos en tiempo real, rondas con GPS, incidentes
-                y reportes.
+                {t(
+                  "ui.registration.vigilantesYPuestosEnTiempoReal",
+                  "Vigilantes y puestos en tiempo real, rondas con GPS, incidentes y reportes.",
+                )}
               </p>
             </div>
           </div>
@@ -415,7 +447,10 @@ export default function ClientRegistration() {
             >
               <img
                 src="/assets/badges/google-play.png"
-                alt="Descargar en Google Play"
+                alt={t(
+                  "ui.registration.descargarEnGooglePlay",
+                  "Descargar en Google Play",
+                )}
                 className="h-12 w-auto"
               />
             </a>
@@ -437,8 +472,10 @@ export default function ClientRegistration() {
           </div>
 
           <p className="mt-5 text-xs" style={{ color: "var(--ink-faint)" }}>
-            Inicia sesión en la app con el correo y la contraseña que acabas de
-            crear.
+            {t(
+              "ui.registration.iniciaSesionEnLaAppConElCorreo",
+              "Inicia sesión en la app con el correo y la contraseña que acabas de crear.",
+            )}
           </p>
         </FadeIn>
       ) : (

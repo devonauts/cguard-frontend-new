@@ -81,8 +81,10 @@ export class AppErrorBoundary extends Component<Props, State> {
             )}
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            El resto de la plataforma sigue funcionando. Puedes reintentar o
-            volver a la pantalla anterior.
+            {i18n.t(
+              "ui.AppErrorBoundary.elRestoDeLaPlataformaSigueFuncionando",
+              "El resto de la plataforma sigue funcionando. Puedes reintentar o volver a la pantalla anterior.",
+            )}
           </p>
           {/* El mensaje técnico se muestra pero sin protagonismo: le sirve a quien
               reporta el problema y no le dice nada a quien sólo quiere seguir. */}
@@ -98,13 +100,15 @@ export class AppErrorBoundary extends Component<Props, State> {
               className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
               onClick={this.retry}
             >
-              <RotateCcw className="size-4" /> Reintentar
+              <RotateCcw className="size-4" />{" "}
+              {i18n.t("ui.AppErrorBoundary.reintentar", "Reintentar")}
             </button>
             <button
               className="inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-muted/50"
               onClick={() => window.history.back()}
             >
-              <ArrowLeft className="size-4" /> Volver
+              <ArrowLeft className="size-4" />{" "}
+              {i18n.t("ui.AppErrorBoundary.volver", "Volver")}
             </button>
           </div>
         </div>

@@ -165,7 +165,9 @@ export default function PostSiteDetailsDialog({
                       type="button"
                       onClick={() => setClientCollapsed(!clientCollapsed)}
                     >
-                      {clientCollapsed ? "Mostrar" : "Ocultar"}
+                      {clientCollapsed
+                        ? t("ui.PostSiteDetailsDialog.mostrar", "Mostrar")
+                        : t("ui.PostSiteDetailsDialog.ocultar", "Ocultar")}
                     </button>
                   </div>
                   {clientCollapsed ? (
@@ -214,7 +216,7 @@ export default function PostSiteDetailsDialog({
               )}
               <div className="sm:col-span-2">
                 <p className="text-xs text-foreground/70 font-semibold">
-                  Sectores
+                  {t("clients.filters.categories", "Sectores")}
                 </p>
                 <p className="text-sm">
                   {categories.length > 0
@@ -237,7 +239,9 @@ export default function PostSiteDetailsDialog({
                   type="button"
                   onClick={() => setAddressCollapsed(!addressCollapsed)}
                 >
-                  {addressCollapsed ? "Mostrar" : "Ocultar"}
+                  {addressCollapsed
+                    ? t("ui.PostSiteDetailsDialog.mostrar", "Mostrar")
+                    : t("ui.PostSiteDetailsDialog.ocultar", "Ocultar")}
                 </button>
               </div>
               {addressCollapsed ? (
@@ -287,19 +291,19 @@ export default function PostSiteDetailsDialog({
                   </div>
                   <div>
                     <p className="text-xs text-foreground/70 font-semibold">
-                      Latitud
+                      {t("clients.stations.lat", "Latitud")}
                     </p>
                     <p className="text-sm">{(site as any).latitud ?? "-"}</p>
                   </div>
                   <div>
                     <p className="text-xs text-foreground/70 font-semibold">
-                      Longitud
+                      {t("clients.stations.lng", "Longitud")}
                     </p>
                     <p className="text-sm">{(site as any).longitud ?? "-"}</p>
                   </div>
                   <div>
                     <p className="text-xs text-foreground/70 font-semibold">
-                      Vigilantes asignados
+                      {t("clients.overview.cards.guardsAssigned", "Vigilantes asignados")}
                     </p>
                     <p className="text-sm">
                       {(site as any).guardsCount ??
@@ -318,7 +322,7 @@ export default function PostSiteDetailsDialog({
                 variant="outline"
                 onClick={() => onOpenChange(false)}
               >
-                Cerrar
+                {t("actions.close", "Cerrar")}
               </Button>
               <Button
                 asChild

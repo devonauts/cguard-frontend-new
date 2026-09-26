@@ -50,6 +50,7 @@ import {
 } from "lucide-react";
 
 import { Segmented } from "@/components/kit";
+import { localeActual } from "@/lib/localeActual";
 
 /** Named icons templated services can pass to the app (no upload needed). */
 export const SERVICE_ICONS: Record<string, LucideIcon> = {
@@ -194,7 +195,7 @@ export default function CustomerAppPreview({
             value: "dark",
             label: (
               <span className="inline-flex items-center gap-1">
-                <Moon className="size-3.5" /> Oscuro
+                <Moon className="size-3.5" /> {tr("settings.mobileHub.themeDark", "Oscuro")}
               </span>
             ),
           },
@@ -202,7 +203,7 @@ export default function CustomerAppPreview({
             value: "light",
             label: (
               <span className="inline-flex items-center gap-1">
-                <Sun className="size-3.5" /> Claro
+                <Sun className="size-3.5" /> {tr("settings.mobileHub.themeLight", "Claro")}
               </span>
             ),
           },
@@ -235,7 +236,9 @@ export default function CustomerAppPreview({
               {/* greeting */}
               <div className="flex items-center justify-between">
                 <div>
-                  <div className={`text-xs ${t.sub}`}>Good evening 🌙</div>
+                  <div className={`text-xs ${t.sub}`}>
+                    {tr("ui.CustomerAppPreview.buenasNoches", "Buenas noches")} 🌙
+                  </div>
                   <div className="text-lg font-bold leading-tight">
                     Michael Urresta
                   </div>
@@ -257,34 +260,40 @@ export default function CustomerAppPreview({
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-emerald-500">
                     <span className="size-2 rounded-full bg-emerald-500" />{" "}
-                    Protected
+                    {tr("ui.CustomerAppPreview.protegido", "Protegido")}
                   </span>
                   <ShieldCheck className="size-5 text-emerald-500" />
                 </div>
                 <div className="mt-2 text-[15px] font-bold leading-snug">
-                  Innovation Grounds · Puerta principal
+                  Innovation Grounds ·{" "}
+                  {tr("ui.CustomerAppPreview.puertaPrincipal", "Puerta principal")}
                 </div>
-                <div className={`mt-0.5 text-xs ${t.sub}`}>1 guard on duty</div>
+                <div className={`mt-0.5 text-xs ${t.sub}`}>
+                  {tr("ui.CustomerAppPreview.vigilantesDeTurno", {
+                    defaultValue: "{{count}} vigilante de turno",
+                    count: 1,
+                  })}
+                </div>
               </div>
 
               {/* stats */}
               <div className="grid grid-cols-4 gap-2">
                 {[
-                  { icon: <User2 className="size-4" />, n: "1", l: "On duty" },
+                  { icon: <User2 className="size-4" />, n: "1", l: tr("ui.CustomerAppPreview.deTurno", "De turno") },
                   {
                     icon: <AlertTriangle className="size-4" />,
                     n: "7",
-                    l: "Incidents",
+                    l: tr("ui.CustomerAppPreview.novedades", "Novedades"),
                   },
                   {
                     icon: <Footprints className="size-4" />,
                     n: "0",
-                    l: "Patrols",
+                    l: tr("ui.CustomerAppPreview.rondas", "Rondas"),
                   },
                   {
                     icon: <Building2 className="size-4" />,
                     n: "1",
-                    l: "Sites",
+                    l: tr("ui.CustomerAppPreview.sitios", "Sitios"),
                   },
                 ].map((s, i) => (
                   <div
@@ -306,7 +315,7 @@ export default function CustomerAppPreview({
                   {active.image ? (
                     <div className="relative h-32 w-full">
                       <img
-                        alt={active.title || "Banner"}
+                        alt={active.title || tr("ui.CustomerAppPreview.banner", "Banner")}
                         className="h-full w-full object-cover"
                         src={active.image}
                       />
@@ -355,7 +364,7 @@ export default function CustomerAppPreview({
                 <HCollection
                   arrow={t.arrow}
                   sub={t.sub}
-                  title="Nuestros servicios"
+                  title={tr("ui.CustomerAppPreview.nuestrosServicios", "Nuestros servicios")}
                 >
                   {services.map((s, i) => (
                     <div
@@ -364,7 +373,7 @@ export default function CustomerAppPreview({
                     >
                       {s.image ? (
                         <img
-                          alt={s.title || "Servicio"}
+                          alt={s.title || tr("ui.CustomerAppPreview.servicio", "Servicio")}
                           className="h-16 w-full object-cover"
                           src={s.image}
                         />
@@ -392,7 +401,7 @@ export default function CustomerAppPreview({
                               );
                             })()}
                           <div className="truncate text-[11px] font-semibold">
-                            {s.title || "Servicio"}
+                            {s.title || tr("ui.CustomerAppPreview.servicio", "Servicio")}
                           </div>
                         </div>
                         {s.description && (
@@ -413,7 +422,7 @@ export default function CustomerAppPreview({
                 <HCollection
                   arrow={t.arrow}
                   sub={t.sub}
-                  title="Certificaciones"
+                  title={tr("settings.mobil.certSectionTitle", "Certificaciones")}
                 >
                   {certifications.map((c, i) => (
                     <div
@@ -465,7 +474,7 @@ export default function CustomerAppPreview({
                 <div
                   className={`mb-2 text-[10px] font-semibold uppercase tracking-wider ${t.sub}`}
                 >
-                  Recent activity
+                  {tr("ui.CustomerAppPreview.actividadReciente", "Actividad reciente")}
                 </div>
                 <div className="space-y-2">
                   {[1, 2].map((i) => (
@@ -478,10 +487,22 @@ export default function CustomerAppPreview({
                       </span>
                       <div className="min-w-0 flex-1">
                         <div className="truncate text-[11px] font-medium">
-                          SOS — Solicitud de emergencia
+                          SOS —{" "}
+                          {tr(
+                            "ui.CustomerAppPreview.solicitudDeEmergencia",
+                            "Solicitud de emergencia",
+                          )}
                         </div>
                         <div className={`text-[9px] ${t.sub}`}>
-                          28 jun, 22:38
+                          {new Date(2026, 5, 28, 22, 38).toLocaleString(
+                            localeActual(),
+                            {
+                              day: "numeric",
+                              month: "short",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            },
+                          )}
                         </div>
                       </div>
                       <ChevronRight className={`size-4 ${t.sub}`} />
@@ -497,7 +518,7 @@ export default function CustomerAppPreview({
             className={`flex shrink-0 items-center justify-around border-t px-2 py-2 ${t.nav}`}
           >
             {[
-              { icon: <Home className="size-4" />, l: "Inicio", active: true },
+              { icon: <Home className="size-4" />, l: tr("ui.CustomerAppPreview.inicio", "Inicio"), active: true },
               {
                 icon: <ShieldCheck className="size-4" />,
                 l: "Mi Seguridad",
@@ -505,7 +526,7 @@ export default function CustomerAppPreview({
               },
               {
                 icon: <User2 className="size-4" />,
-                l: "Mi Cuenta",
+                l: tr("ui.CustomerAppPreview.miCuenta", "Mi Cuenta"),
                 active: false,
               },
             ].map((n, i) => (
@@ -520,7 +541,10 @@ export default function CustomerAppPreview({
         </div>
       </div>
       <p className="text-center text-xs" style={{ color: "var(--ink-faint)" }}>
-        Vista previa · app Mi Seguridad (cliente)
+        {tr(
+          "ui.CustomerAppPreview.vistaPreviaAppMiSeguridadCliente",
+          "Vista previa · app Mi Seguridad (cliente)",
+        )}
       </p>
     </div>
   );
@@ -538,6 +562,7 @@ function HCollection({
   arrow: string;
   children: React.ReactNode;
 }) {
+  const { t: tr } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
   const page = (dir: number) =>
     ref.current?.scrollBy({
@@ -555,14 +580,14 @@ function HCollection({
         </div>
         <div className="flex gap-1">
           <button
-            aria-label="Anterior"
+            aria-label={tr("clients.pagination.prev", "Anterior")}
             className={`grid size-5 place-items-center rounded-full ${arrow}`}
             onClick={() => page(-1)}
           >
             <ChevronLeft className="size-3" />
           </button>
           <button
-            aria-label="Siguiente"
+            aria-label={tr("clients.pagination.next", "Siguiente")}
             className={`grid size-5 place-items-center rounded-full ${arrow}`}
             onClick={() => page(1)}
           >

@@ -1938,7 +1938,7 @@ export default function App() {
                                 element={
                                   <GuardDispositivoPage
                                     navKey="supervisors"
-                                    title="Dispositivo"
+                                    title="supervisors.nav.dispositivo"
                                   />
                                 }
                                 path="dispositivo"
@@ -2646,7 +2646,7 @@ function NotFound() {
           className="mt-6 inline-block rounded-lg bg-emerald-600 px-6 py-2 text-white font-semibold shadow hover:bg-emerald-700 transition-all"
           href="/dashboard"
         >
-          Ir al Dashboard
+          {t("ui.App.irAlDashboard", "Ir al Dashboard")}
         </a>
       </div>
     </div>

@@ -238,12 +238,12 @@ export default function SupervisorPositionsPage() {
   };
 
   const removePos = async (posId: string) => {
-    if (!confirm("¿Eliminar este puesto?")) return;
+    if (!confirm(t("ui.SupervisorPositionsPage.eliminarEstePuesto", "¿Eliminar este puesto?"))) return;
     try {
       await supervisorPositionService.remove(posId);
       setRows((prev) => prev.filter((p) => p.id !== posId));
     } catch (e: any) {
-      toast.error(e?.message || "No se pudo eliminar");
+      toast.error(e?.message || t("comun.noSePudoEliminar", "No se pudo eliminar"));
     }
   };
 
@@ -261,16 +261,22 @@ export default function SupervisorPositionsPage() {
               </Button>
             }
             icon={<MapPin />}
-            subtitle="Configura los puestos (turno + rotación) y asigna supervisores. La rotación del puesto define el horario — el supervisor la sigue."
+            subtitle={t(
+              "ui.SupervisorPositionsPage.configuraLosPuestosTurnoRotacion",
+              "Configura los puestos (turno + rotación) y asigna supervisores. La rotación del puesto define el horario — el supervisor la sigue.",
+            )}
             title={t("ui.SupervisorPositionsPage.puestosDeSupervisor")}
           />
 
           <StatsStrip className="mb-4 grid grid-cols-2 gap-3 sm:max-w-md">
-            <StatCard icon={<MapPin />} label="Puestos" value={rows.length} />
+            <StatCard
+              icon={<MapPin />}
+              label={t("ui.SupervisorPositionsPage.puestos", "Puestos")}
+              value={rows.length} />
             <StatCard
               accent="ok"
               icon={<Users />}
-              label="Supervisores asignados"
+              label={t("ui.SupervisorPositionsPage.supervisoresAsignados", "Supervisores asignados")}
               value={totalAssigned}
             />
           </StatsStrip>
@@ -278,7 +284,7 @@ export default function SupervisorPositionsPage() {
           {loading ? (
             <SkeletonCards count={3} />
           ) : rows.length === 0 ? (
-            <Section icon={<MapPin />} title="Puestos">
+            <Section icon={<MapPin />} title={t("ui.SupervisorPositionsPage.puestos", "Puestos")}>
               <EmptyState
                 action={
                   <Button
@@ -337,11 +343,14 @@ export default function SupervisorPositionsPage() {
                       {rotationSummary(p)}
                     </StatusBadge>
                     <span style={{ color: "var(--ink-soft)" }}>
-                      {p.scheduleType}
+                      {SCHEDULE_TYPES.find((x) => x.value === p.scheduleType)
+                        ?.label ?? p.scheduleType}
                     </span>
                   </div>
 
-                  <div className="cg-eyebrow mb-2">Supervisores asignados</div>
+                  <div className="cg-eyebrow mb-2">
+                    {t("ui.SupervisorPositionsPage.supervisoresAsignados", "Supervisores asignados")}
+                  </div>
                   <div className="mb-3 flex flex-wrap gap-1.5">
                     {p.assignments.length === 0 && (
                       <span
@@ -363,7 +372,10 @@ export default function SupervisorPositionsPage() {
                               color: "var(--brand-text)",
                             }}
                           >
-                            desfase {a.platoonOffset}
+                            {t("ui.SupervisorPositionsPage.desfaseN", {
+                              n: a.platoonOffset,
+                              defaultValue: "desfase {{n}}",
+                            })}
                           </span>
                         ) : null}
                         <button
@@ -405,7 +417,9 @@ export default function SupervisorPositionsPage() {
                         ))}
                     </select>
                     <div className="flex items-center gap-1">
-                      <label className="cg-eyebrow">Desfase</label>
+                      <label className="cg-eyebrow">
+                        {t("ui.SupervisorPositionsPage.desfase", "Desfase")}
+                      </label>
                       <input
                         className="cg-input cg-focus h-9 w-16 px-2 text-sm"
                         min={0}
@@ -426,7 +440,7 @@ export default function SupervisorPositionsPage() {
                       variant="outline"
                       onClick={() => assign(p.id)}
                     >
-                      Asignar
+                      {t("ui.SupervisorPositionsPage.asignar", "Asignar")}
                     </Button>
                   </div>
                   {p.rotationStyle && (
@@ -434,8 +448,10 @@ export default function SupervisorPositionsPage() {
                       className="mt-1.5 text-[11px]"
                       style={{ color: "var(--ink-faint)" }}
                     >
-                      El desfase escalona la rotación. Para el turno opuesto
-                      (noche mientras otro está en día), usa{" "}
+                      {t(
+                        "ui.SupervisorPositionsPage.elDesfaseEscalonaLaRotacion",
+                        "El desfase escalona la rotación. Para el turno opuesto (noche mientras otro está en día), usa",
+                      )}{" "}
                       <span className="font-semibold text-foreground">
                         {p.rotationStyle.dayShifts}
                       </span>
@@ -449,7 +465,10 @@ export default function SupervisorPositionsPage() {
                   >
                     <div className="mb-2 flex items-center justify-between">
                       <span className="cg-eyebrow tabular-nums">
-                        Puestos bajo protección ({p.stationIds.length})
+                        {t("ui.SupervisorPositionsPage.puestosBajoProteccion", {
+                          count: p.stationIds.length,
+                          defaultValue: "Puestos bajo protección ({{count}})",
+                        })}
                       </span>
                       <button
                         className="cg-focus rounded-md text-xs font-semibold hover:underline"
@@ -458,7 +477,9 @@ export default function SupervisorPositionsPage() {
                           setStationEdit(stationEdit === p.id ? null : p.id)
                         }
                       >
-                        {stationEdit === p.id ? "Listo" : "Editar"}
+                        {stationEdit === p.id
+                          ? t("ui.SupervisorPositionsPage.listo", "Listo")
+                          : t("actions.edit", "Editar")}
                       </button>
                     </div>
                     {stationEdit === p.id ? (
@@ -554,7 +575,7 @@ export default function SupervisorPositionsPage() {
               {t("actions.cancel")}
             </Button>
             <Button disabled={saving} variant="brand" onClick={create}>
-              {saving ? "Creando…" : "Crear puesto"}
+              {saving ? t("ui.SupervisorPositionsPage.creando", "Creando…") : t("ui.SupervisorPositionsPage.crearPuesto", "Crear puesto")}
             </Button>
           </>
         }
@@ -571,7 +592,7 @@ export default function SupervisorPositionsPage() {
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
             />
             <Input
-              placeholder="Zona / sector"
+              placeholder={t("ui.SupervisorPositionsPage.zonaSector", "Zona / sector")}
               value={form.zone}
               onChange={(e) => setForm((f) => ({ ...f, zone: e.target.value }))}
             />
@@ -628,7 +649,7 @@ export default function SupervisorPositionsPage() {
               />
             </label>
             <label className="cg-eyebrow">
-              Supervisores por turno
+              {t("ui.SupervisorPositionsPage.supervisoresPorTurno", "Supervisores por turno")}
               <Input
                 className="mt-1"
                 min={1}
@@ -645,7 +666,10 @@ export default function SupervisorPositionsPage() {
           </div>
           <div>
             <label className="cg-eyebrow mb-1 block">
-              Puestos bajo protección ({form.stationIds.length})
+              {t("ui.SupervisorPositionsPage.puestosBajoProteccion", {
+                count: form.stationIds.length,
+                defaultValue: "Puestos bajo protección ({{count}})",
+              })}
             </label>
             <div className="glass-sunken max-h-48 space-y-1 overflow-y-auto p-1">
               {stations.length === 0 && (

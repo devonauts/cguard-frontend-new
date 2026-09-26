@@ -45,6 +45,12 @@ const CONDITION_DISPLAY: Record<string, string> = {
   danado: "Da\u00f1ado",
 };
 // El estado del artículo sale de los semánticos fijos del sistema.
+// Translation keys for the condition labels (CONDITION_DISPLAY is the fallback).
+const CONDITION_KEY: Record<string, string> = {
+  bueno: "inventory.itemCondition.bueno",
+  regular: "inventory.itemCondition.regular",
+  danado: "inventory.itemCondition.danado",
+};
 const CONDITION_TONE: Record<string, "ok" | "warn" | "bad"> = {
   bueno: "ok",
   regular: "warn",
@@ -151,11 +157,18 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
         conditionAtCheckout: CONDITION_MAP[condKey],
         notes: notes || undefined,
       });
-      toast.success(selectedItem.name + " asignado correctamente");
+      toast.success(
+        t("ui.Inventory.asignadoCorrectamente", {
+          defaultValue: "{{nombre}} asignado correctamente",
+          nombre: selectedItem.name,
+        }),
+      );
       onDone();
     } catch (e: any) {
       toast.error(
-        e?.response?.data?.message || e?.message || "Error al asignar",
+        e?.response?.data?.message ||
+          e?.message ||
+          t("ui.Inventory.errorAlAsignar", "Error al asignar"),
       );
     } finally {
       setSaving(false);
@@ -184,7 +197,9 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
             onClick={handleAssign}
             disabled={saving || !selectedItem}
           >
-            {saving ? "Asignando..." : "Asignar"}
+            {saving
+              ? t("ui.Inventory.asignando", "Asignando...")
+              : t("station.guards.assignBtn", "Asignar")}
           </Button>
         </>
       }
@@ -235,7 +250,7 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
               <div className="border border-border rounded-lg max-h-40 overflow-y-auto">
                 {loadingItems ? (
                   <div className="text-center text-xs text-muted-foreground py-4">
-                    Buscando...
+                    {t("ui.Inventory.buscando", "Buscando...")}
                   </div>
                 ) : items.length === 0 ? (
                   <div className="text-center text-xs text-muted-foreground py-4 flex flex-col items-center gap-1">
@@ -297,7 +312,7 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
                 <div className="border border-border rounded-lg max-h-32 overflow-y-auto">
                   {loadingGuards ? (
                     <div className="text-center text-xs text-muted-foreground py-3">
-                      Buscando...
+                      {t("ui.Inventory.buscando", "Buscando...")}
                     </div>
                   ) : (
                     guards.map((g) => (
@@ -335,7 +350,7 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
             <SelectContent>
               {CONDITIONS.map((c) => (
                 <SelectItem key={c} value={c}>
-                  {CONDITION_DISPLAY[c]}
+                  {t(CONDITION_KEY[c], CONDITION_DISPLAY[c])}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -350,7 +365,7 @@ function AssignModal({ postSiteId, onClose, onDone }: AssignModalProps) {
             rows={2}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Observaciones..."
+            placeholder={t("ui.Inventory.observaciones", "Observaciones...")}
           />
         </div>
       </div>
@@ -384,14 +399,18 @@ function ReturnModal({ assignment, onClose, onDone }: ReturnModalProps) {
       onDone();
     } catch (e: any) {
       toast.error(
-        e?.response?.data?.message || e?.message || "Error al devolver",
+        e?.response?.data?.message ||
+          e?.message ||
+          t("ui.Inventory.errorAlDevolver", "Error al devolver"),
       );
     } finally {
       setSaving(false);
     }
   };
 
-  const itemName = (assignment as any).inventoryItem?.name || "artículo";
+  const itemName =
+    (assignment as any).inventoryItem?.name ||
+    t("ui.Inventory.articuloGenerico", "artículo");
 
   return (
     <Modal
@@ -408,14 +427,16 @@ function ReturnModal({ assignment, onClose, onDone }: ReturnModalProps) {
             {t("actions.cancel")}
           </Button>
           <Button variant="brand" onClick={handleReturn} disabled={saving}>
-            {saving ? "Procesando..." : "Confirmar devolución"}
+            {saving
+              ? t("adminOfficeUsers.dialogs.common.processing", "Procesando...")
+              : t("ui.Inventory.confirmarDevolucion", "Confirmar devolución")}
           </Button>
         </>
       }
     >
       <div className="space-y-4">
         <p className="text-sm text-foreground/70">
-          Devolviendo:{" "}
+          {t("ui.Inventory.devolviendo", "Devolviendo:")}{" "}
           <span className="font-medium text-foreground">{itemName}</span>
         </p>
         <div className="space-y-1">
@@ -432,7 +453,7 @@ function ReturnModal({ assignment, onClose, onDone }: ReturnModalProps) {
             <SelectContent>
               {CONDITIONS.map((c) => (
                 <SelectItem key={c} value={c}>
-                  {CONDITION_DISPLAY[c]}
+                  {t(CONDITION_KEY[c], CONDITION_DISPLAY[c])}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -445,7 +466,7 @@ function ReturnModal({ assignment, onClose, onDone }: ReturnModalProps) {
             rows={2}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Observaciones..."
+            placeholder={t("ui.Inventory.observaciones", "Observaciones...")}
           />
         </div>
       </div>
@@ -560,19 +581,18 @@ export default function Inventory({ site }: { site?: PostSite }) {
       });
 
   const countMsg = loading
-    ? "Cargando…"
-    : assignments.length +
-      " artículo" +
-      (assignments.length !== 1 ? "s" : "") +
-      " asignado" +
-      (assignments.length !== 1 ? "s" : "");
+    ? t("common.loading", "Cargando…")
+    : t("ui.Inventory.nArticulosAsignados", {
+        defaultValue: "{{count}} artículos asignados",
+        count: assignments.length,
+      });
 
   return (
     <div ref={containerRef} className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-lg font-semibold text-foreground">
-            Inventario asignado
+            {t("ui.Inventory.inventarioAsignado", "Inventario asignado")}
           </h2>
           <p className="text-sm text-muted-foreground">{countMsg}</p>
         </div>
@@ -604,7 +624,12 @@ export default function Inventory({ site }: { site?: PostSite }) {
           <EmptyState
             icon={<Package />}
             title={
-              query ? "Sin resultados" : "Sin artículos asignados a este puesto"
+              query
+                ? t("kit.select.empty", "Sin resultados")
+                : t(
+                    "ui.Inventory.sinArticulosAsignados",
+                    "Sin artículos asignados a este puesto",
+                  )
             }
             action={
               !query ? (
@@ -637,9 +662,11 @@ export default function Inventory({ site }: { site?: PostSite }) {
                   <th className="cg-eyebrow px-2 py-2 hidden md:table-cell">
                     {t("ui.Inventory.condicion", "Condición")}
                   </th>
-                  <th className="cg-eyebrow px-2 py-2">Responsable</th>
+                  <th className="cg-eyebrow px-2 py-2">
+                    {t("ui.Inventory.responsable", "Responsable")}
+                  </th>
                   <th className="cg-eyebrow px-2 py-2 hidden lg:table-cell">
-                    Asignado
+                    {t("ui.Inventory.asignado", "Asignado")}
                   </th>
                   <th className="cg-eyebrow px-2 py-2 text-right">
                     {t("ui.Inventory.accion", "Acción")}
@@ -673,7 +700,9 @@ export default function Inventory({ site }: { site?: PostSite }) {
                           className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
                           style={conditionStyle(ck)}
                         >
-                          {CONDITION_DISPLAY[ck] || ck}
+                          {CONDITION_KEY[ck]
+                            ? t(CONDITION_KEY[ck], CONDITION_DISPLAY[ck])
+                            : ck}
                         </span>
                       </td>
                       <td className="px-2 py-2.5">
@@ -699,7 +728,7 @@ export default function Inventory({ site }: { site?: PostSite }) {
                           onClick={() => setReturnTarget(a)}
                         >
                           <RotateCcw className="w-3.5 h-3.5" />
-                          Devolver
+                          {t("ui.Inventory.devolver", "Devolver")}
                         </button>
                       </td>
                     </tr>

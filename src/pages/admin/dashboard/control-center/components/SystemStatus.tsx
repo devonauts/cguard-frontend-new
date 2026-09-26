@@ -49,7 +49,9 @@ function SystemStatusBase({
       icon: Radio,
       label: "Enlace en tiempo real",
       labelKey: "dashboard.controlCenter.systemStatus.realtime.label",
-      value: sseConnected ? "Conectado" : "Sondeo",
+      value: sseConnected
+        ? t("ui.SystemStatus.conectado", "Conectado")
+        : t("ui.MobileCommandCenter.sondeo", "Sondeo"),
       hint: sseConnected
         ? "Los eventos llegan al instante"
         : "Actualizando cada pocos segundos",

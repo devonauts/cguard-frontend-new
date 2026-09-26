@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 /**
  * Cierre de sesión por inactividad — el motor del ajuste de Configuración ›
  * Seguridad (settings.sessionPolicy.idleTimeoutMinutes).
@@ -108,7 +109,10 @@ export async function startIdleLogout(
       ) {
         avisado = true;
         toast.warning(
-          "Tu sesión se cerrará en 2 minutos por inactividad. Mueve el ratón para seguir dentro.",
+          i18n.t(
+            "ui.idleLogout.tuSesionSeCerraraEn2Minutos",
+            "Tu sesión se cerrará en 2 minutos por inactividad. Mueve el ratón para seguir dentro.",
+          ),
           { duration: 110_000 },
         );
 
@@ -122,7 +126,10 @@ export async function startIdleLogout(
           /* el 401 posterior termina el trabajo */
         }
         toast.info(
-          "Cerramos tu sesión por inactividad. Vuelve a entrar cuando quieras.",
+          i18n.t(
+            "ui.idleLogout.cerramosTuSesionPorInactividad",
+            "Cerramos tu sesión por inactividad. Vuelve a entrar cuando quieras.",
+          ),
         );
       }
     }, CHECK_MS);

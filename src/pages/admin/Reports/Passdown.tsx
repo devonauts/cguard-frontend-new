@@ -10,11 +10,13 @@ import {
 } from "./reportFormat";
 
 import passdownService, { type Passdown } from "@/lib/api/passdownService";
+import i18n from "@/i18n";
 
-const STATUS: Record<string, string> = {
-  pending: "Pendiente",
-  received: "Recibido",
-  acknowledged: "Reconocido",
+// Clave i18n + texto en español; se traduce al pintar, dentro de `value()`.
+const STATUS: Record<string, [key: string, es: string]> = {
+  pending: ["ui.Passdown.estadoPendiente", "Pendiente"],
+  received: ["ui.Passdown.estadoRecibido", "Recibido"],
+  acknowledged: ["ui.Passdown.estadoReconocido", "Reconocido"],
 };
 
 const columns: ReportColumn<Passdown>[] = [
@@ -52,7 +54,7 @@ const columns: ReportColumn<Passdown>[] = [
         ? r.notes.length > 60
           ? r.notes.slice(0, 60) + "…"
           : r.notes
-        : "Sin novedad",
+        : i18n.t("ui.Passdown.sinNovedad", "Sin novedad"),
   },
   {
     key: "instr",
@@ -65,7 +67,11 @@ const columns: ReportColumn<Passdown>[] = [
     key: "status",
     label: "Estado",
     labelKey: "reports.col.passdown.status",
-    value: (r) => STATUS[String(r.status || "")] || r.status || "—",
+    value: (r) => {
+      const st = STATUS[String(r.status || "")];
+
+      return st ? i18n.t(st[0], st[1]) : r.status || "—";
+    },
   },
   {
     key: "received",
@@ -81,7 +87,7 @@ export default function Passdown() {
   return (
     <DataReport<Passdown>
       columns={columns}
-      description="Pases de turno (relevos): novedades, instrucciones y recepción por el vigilante entrante."
+      description={t("ui.Passdown.descripcion", "Pases de turno (relevos): novedades, instrucciones y recepción por el vigilante entrante.")}
       icon={Package}
       load={async ({ from, to }) => {
         // El rango va EN LA CONSULTA. Antes se pedían los 2000 relevos más

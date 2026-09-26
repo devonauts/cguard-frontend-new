@@ -2,6 +2,8 @@ import type { Station } from "@/types";
 
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+
+import { localeActual } from "@/lib/localeActual";
 import {
   Loader2,
   UserPlus,
@@ -76,7 +78,6 @@ const today = () => {
 // Local YYYY-MM-DD key (don't use toISOString — it shifts by timezone).
 const dk = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-const WEEKDAY = ["D", "L", "M", "M", "J", "V", "S"];
 // The next 4 weeks (28 days), starting today.
 const NEXT_DAYS: Date[] = Array.from({ length: 28 }, (_, i) => {
   const d = new Date();
@@ -91,6 +92,8 @@ const NEXT_DAYS: Date[] = Array.from({ length: 28 }, (_, i) => {
  *  fijo, the muted (rest) days are exactly what the sacafranco should fill. A
  *  small gap separates each week. */
 function CoverageStrip({ work, type }: { work: Set<string>; type: PosType }) {
+  const { t } = useTranslation();
+
   if (!work || work.size === 0) return null;
   // El sacafranco (relevo) se lee siempre en el semántico «info»; el fijo, en el
   // acento de la marca. Ninguno es un color escrito a mano.
@@ -114,9 +117,17 @@ function CoverageStrip({ work, type }: { work: Set<string>; type: PosType }) {
                 ? "inset 0 0 0 1px var(--ink-soft)"
                 : undefined,
             }}
-            title={`${dk(d)} — ${on ? (type === "sacafranco" ? "cubre" : "trabaja") : "descansa"}`}
+            title={`${dk(d)} — ${
+              on
+                ? type === "sacafranco"
+                  ? t("ui.StationGuards.cubre", "cubre")
+                  : t("ui.StationGuards.trabaja", "trabaja")
+                : t("ui.StationGuards.descansa", "descansa")
+            }`}
           >
-            <span className="opacity-60">{WEEKDAY[d.getDay()]}</span>
+            <span className="opacity-60">
+              {d.toLocaleDateString(localeActual(), { weekday: "narrow" })}
+            </span>
             <span>{d.getDate()}</span>
           </div>
         );
@@ -285,7 +296,10 @@ export default function StationGuards({
             "—",
           positionId: a.positionId || pos.id || null,
           positionName:
-            pos.name || (type === "sacafranco" ? "Sacafranco" : "Fijo"),
+            pos.name ||
+            (type === "sacafranco"
+              ? t("clients.assignGuards.roleSf", "Sacafranco")
+              : t("ui.StationGuards.fijo", "Fijo")),
           type,
           rotation: a.rotationStyle?.name || a.rotationStyle?.pattern || "",
           workDays: workByGuard[uid] || new Set(),
@@ -449,9 +463,13 @@ export default function StationGuards({
     // avisar: el operador cree haber destruido algo y desconfía de lo que ve.
     if (
       !(await confirmDialog({
-        title: "Quitar vigilante",
-        message: `¿Quitar a ${a.guardName} de este puesto? Sus turnos futuros se anulan; los ya trabajados se conservan en el historial.`,
-        confirmText: "Quitar",
+        title: t("ui.AsignacionEditModal.quitarVigilante", "Quitar vigilante"),
+        message: t("ui.AsignacionEditModal.quitarConfirm", {
+          defaultValue:
+            "¿Quitar a {{nombre}} de este puesto? Sus turnos futuros se anulan; los ya trabajados se conservan en el historial.",
+          nombre: a.guardName,
+        }),
+        confirmText: t("station.guards.remove", "Quitar"),
         tone: "danger",
       }))
     )
@@ -578,17 +596,19 @@ export default function StationGuards({
                 {t("ui.StationGuards.proximas4Semanas", "Próximas 4 semanas:")}
               </span>
               <span className="inline-flex items-center gap-1">
-                <span className="h-3 w-3 rounded bg-primary" /> Fijo trabaja
+                <span className="h-3 w-3 rounded bg-primary" />{" "}
+                {t("ui.StationGuards.fijoTrabaja", "Fijo trabaja")}
               </span>
               <span className="inline-flex items-center gap-1">
                 <span
                   className="h-3 w-3 rounded"
                   style={{ background: "var(--info)" }}
                 />{" "}
-                Sacafranco cubre
+                {t("ui.StationGuards.sacafrancoCubre", "Sacafranco cubre")}
               </span>
               <span className="inline-flex items-center gap-1">
-                <span className="h-3 w-3 rounded bg-muted/40" /> Descanso
+                <span className="h-3 w-3 rounded bg-muted/40" />{" "}
+                {t("ui.ClientStaff.descanso", "Descanso")}
               </span>
             </div>
           )}
@@ -660,7 +680,9 @@ export default function StationGuards({
                       dot={false}
                       tone={a.type === "sacafranco" ? "blue" : "primary"}
                     >
-                      {a.type === "sacafranco" ? "Sacafranco" : "Fijo"}
+                      {a.type === "sacafranco"
+                        ? t("clients.assignGuards.roleSf", "Sacafranco")
+                        : t("ui.StationGuards.fijo", "Fijo")}
                     </StatusBadge>
                     {a.rotation ? (
                       <span className="text-xs text-muted-foreground">
@@ -676,7 +698,10 @@ export default function StationGuards({
                 {a.assignmentId && (
                   <button
                     className="inline-flex shrink-0 items-center gap-1 rounded-md border border-border px-2.5 py-1.5 text-xs font-medium hover:bg-muted/40"
-                    title="Editar el turno (plaza, secuencia, fechas)"
+                    title={t(
+                      "ui.StationGuards.editarElTurnoTitle",
+                      "Editar el turno (plaza, secuencia, fechas)",
+                    )}
                     onClick={() => setEditando(a.assignmentId)}
                   >
                     <Pencil size={13} />{" "}

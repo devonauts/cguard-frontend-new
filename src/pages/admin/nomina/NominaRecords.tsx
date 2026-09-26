@@ -239,7 +239,7 @@ export default function NominaRecords() {
           const m = new Map<string, string>();
           for (const f of filas) {
             const id = f.guardName?.id;
-            if (id) m.set(String(id), f.guardName?.fullName || "Trabajador");
+            if (id) m.set(String(id), f.guardName?.fullName || t("ui.NominaRecords.trabajador", "Trabajador"));
           }
           setGuardOptions(
             [...m.entries()]
@@ -248,7 +248,9 @@ export default function NominaRecords() {
           );
         }
       })
-      .catch((e) => toast.error(e?.message || "Error al cargar registros"))
+      .catch((e) => toast.error(
+          e?.message || t("ui.NominaRecords.errorAlCargarRegistros", "Error al cargar registros"),
+        ))
       .finally(() => setLoading(false));
   }, [status, departmentId, guardId, rangeStart, rangeEnd]);
   useEffect(load, [load]);
@@ -334,7 +336,7 @@ export default function NominaRecords() {
   const columns: Column<AttendanceRecord>[] = [
     {
       key: "guard",
-      header: "Vigilante",
+      header: t("comun.vigilante", "Vigilante"),
       render: (_v, r) => (
         <span className="flex items-center gap-1.5">
           {r.guardName?.fullName || "—"}
@@ -345,7 +347,7 @@ export default function NominaRecords() {
           )}
           {r.role === "administrative" && (
             <ToneBadge tone="info" dot={false}>
-              Administrativo
+              {t("ui.NominaHoursSummary.administrativo", "Administrativo")}
             </ToneBadge>
           )}
         </span>
@@ -353,24 +355,24 @@ export default function NominaRecords() {
     },
     {
       key: "station",
-      header: "Puesto",
+      header: t("comun.puesto", "Puesto"),
       render: (_v, r) =>
         r.stationName?.stationName ||
         (r.role === "supervisor"
           ? t("ui.SupervisionSection.supervision", "Supervisión")
           : r.role === "administrative"
-            ? "Oficina"
+            ? t("ui.NominaRecords.oficina", "Oficina")
             : "—"),
     },
     {
       key: "scheduledStart",
-      header: "Programado",
+      header: t("ui.NominaRecords.programado", "Programado"),
       render: (_v, r) =>
         `${fmtTime(r.scheduledStart)} – ${fmtTime(r.scheduledEnd)}`,
     },
     {
       key: "punchInTime",
-      header: "Entrada",
+      header: t("ui.NominaRecords.entrada", "Entrada"),
       render: (_v, r) => (
         <span>
           {fmtTime(r.punchInTime)}
@@ -380,7 +382,11 @@ export default function NominaRecords() {
               className="ml-1 text-[10px] font-medium tabular-nums"
               style={{ color: "var(--ink-faint)" }}
             >
-              ·{r.sessions.length} sesiones
+              ·
+              {t("ui.NominaRecords.sesiones", {
+                count: r.sessions.length,
+                defaultValue: "{{count}} sesiones",
+              })}
             </span>
           )}
         </span>
@@ -388,7 +394,7 @@ export default function NominaRecords() {
     },
     {
       key: "punchOutTime",
-      header: "Salida",
+      header: t("ui.NominaRecords.salida", "Salida"),
       numeric: true,
       render: (_v, r) => (
         <span>
@@ -404,13 +410,13 @@ export default function NominaRecords() {
        Con `render` propio, DataTable ya no lo deduce solo. */
     {
       key: "hoursWorked",
-      header: "Horas",
+      header: t("ui.NominaRecords.horas", "Horas"),
       numeric: true,
       render: (_v, r) => fmtHours(r.hoursWorked),
     },
     {
       key: "patrols",
-      header: "Rondas",
+      header: t("postSites.tabs.tours", "Rondas"),
       numeric: true,
       render: (_v, r) => (
         <span
@@ -423,7 +429,7 @@ export default function NominaRecords() {
     },
     {
       key: "incidents",
-      header: "Incidentes",
+      header: t("ui.NominaRecords.incidentes", "Incidentes"),
       numeric: true,
       render: (_v, r) =>
         (r.numberOfIncidentsDurindShift ?? 0) > 0 ? (
@@ -441,24 +447,27 @@ export default function NominaRecords() {
     },
     {
       key: "geo",
-      header: "Ubicación",
+      header: t("ui.NominaRecords.ubicacion", "Ubicación"),
       render: (_v, r) =>
         r.punchInOutsideGeofence ? (
           <ToneBadge tone="bad" dot={false}>
             <MapPin size={12} />{" "}
             <span className="tabular-nums">
-              Fuera ({r.punchInDistanceM ?? "?"} m)
+              {t("ui.NominaRecords.fueraDistancia", {
+                distancia: r.punchInDistanceM ?? "?",
+                defaultValue: "Fuera ({{distancia}} m)",
+              })}
             </span>
           </ToneBadge>
         ) : (
           <ToneBadge tone="ok" dot={false}>
-            Dentro
+            {t("ui.NominaRecords.dentro", "Dentro")}
           </ToneBadge>
         ),
     },
     {
       key: "status",
-      header: "Estado",
+      header: t("comun.estado", "Estado"),
       render: (_v, r) => (
         <StatusBadge status={r.status} approval={r.approvalStatus} />
       ),
@@ -471,7 +480,7 @@ export default function NominaRecords() {
          servidor acepta, así que no se puede llegar a «pagada» sin pasar por la
          revisión. */
       key: "payrollStatus",
-      header: "Estado de nómina",
+      header: t("ui.NominaRecords.estadoDeNomina", "Estado de nómina"),
       render: (_v, r) => {
         const actual = String(r.payrollStatus || "");
         const siguientes = PAYROLL_FLOW_NEXT[actual] || [];
@@ -488,7 +497,10 @@ export default function NominaRecords() {
               if (destino === actual) return;
               void act(
                 () => attendanceService.setStatus(r.id, destino),
-                `Ahora: ${PAYROLL_FLOW_META[destino]?.label || destino}`,
+                t("ui.NominaRecords.ahoraEstado", {
+                  estado: PAYROLL_FLOW_META[destino]?.label || destino,
+                  defaultValue: "Ahora: {{estado}}",
+                }),
               );
             }}
           >
@@ -510,14 +522,19 @@ export default function NominaRecords() {
   const bulk = async (destino: string) => {
     setBulkKey((k) => k + 1);
     if (!selectedIds.length) {
-      toast.error("No hay tarjetas seleccionadas");
+      toast.error(t("ui.NominaRecords.noHayTarjetasSeleccionadas", "No hay tarjetas seleccionadas"));
       return;
     }
     const etiqueta = PAYROLL_FLOW_META[destino]?.label || destino;
     const ok = await confirmDialog({
-      title: "Cambiar el estado",
-      message: `Se pondrán ${selectedIds.length} tarjeta(s) en «${etiqueta}». Las que no admitan ese paso se quedan como están y te digo cuáles.`,
-      confirmText: "Cambiar",
+      title: t("ui.NominaRecords.cambiarElEstado", "Cambiar el estado"),
+      message: t("ui.NominaRecords.confirmarCambioEnBloque", {
+        count: selectedIds.length,
+        etiqueta,
+        defaultValue:
+          "Se pondrán {{count}} tarjeta(s) en «{{etiqueta}}». Las que no admitan ese paso se quedan como están y te digo cuáles.",
+      }),
+      confirmText: t("ui.NominaRecords.cambiar", "Cambiar"),
     });
     if (!ok) return;
     setBusy(true);
@@ -525,13 +542,27 @@ export default function NominaRecords() {
       const r = await attendanceService.bulkSetStatus(selectedIds, destino);
       if (r.fallidas?.length)
         toast.warning(
-          `${r.actualizadas} actualizada(s); ${r.fallidas.length} no admitían ese paso`,
+          t("ui.NominaRecords.actualizadasYFallidas", {
+            count: r.actualizadas,
+            fallidas: r.fallidas.length,
+            defaultValue:
+              "{{count}} actualizada(s); {{fallidas}} no admitían ese paso",
+          }),
         );
-      else toast.success(`${r.actualizadas} tarjeta(s) en «${etiqueta}»`);
+      else
+        toast.success(
+          t("ui.NominaRecords.tarjetasEnEstado", {
+            count: r.actualizadas,
+            etiqueta,
+            defaultValue: "{{count}} tarjeta(s) en «{{etiqueta}}»",
+          }),
+        );
       setSelectedIds([]);
       load();
     } catch (e: any) {
-      toast.error(e?.message || "No se pudo cambiar el estado");
+      toast.error(
+        e?.message || t("ui.NominaRecords.noSePudoCambiarElEstado", "No se pudo cambiar el estado"),
+      );
     } finally {
       setBusy(false);
     }
@@ -552,11 +583,17 @@ export default function NominaRecords() {
       });
       toast.success(
         selectedIds.length
-          ? `${selectedIds.length} registro(s) exportado(s)`
-          : "Registro exportado",
+          ? t("ui.NominaRecords.registrosExportados", {
+              count: selectedIds.length,
+              defaultValue: "{{count}} registro(s) exportado(s)",
+            })
+          : t("ui.NominaRecords.registroExportado", "Registro exportado"),
       );
     } catch (e: any) {
-      toast.error(e?.message || "No se pudo generar el archivo");
+      toast.error(
+        e?.message ||
+          t("ui.NominaHoursSummary.noSePudoGenerarElArchivo", "No se pudo generar el archivo"),
+      );
     } finally {
       setBusy(false);
     }
@@ -568,7 +605,7 @@ export default function NominaRecords() {
         <PageHeader
           icon={<ClipboardCheck />}
           title={t("ui.NominaRecords.registrosDeAsistencia")}
-          subtitle="Marcaciones de entrada / salida"
+          subtitle={t("ui.NominaRecords.marcacionesDeEntradaSalida", "Marcaciones de entrada / salida")}
           actions={
             /* Tres formatos y UNA fuente: el archivo lo arma el servidor con el
                mismo filtro que la pantalla, así que incluye también los días de
@@ -585,8 +622,11 @@ export default function NominaRecords() {
               busy={busy}
               label={
                 selectedIds.length
-                  ? `Exportar ${selectedIds.length}`
-                  : "Exportar"
+                  ? t("ui.NominaRecords.exportarN", {
+                      count: selectedIds.length,
+                      defaultValue: "Exportar {{count}}",
+                    })
+                  : t("ui.NominaRecords.exportar", "Exportar")
               }
             />
           }
@@ -603,7 +643,9 @@ export default function NominaRecords() {
               value={guardId}
               onChange={(e) => setGuardId(e.target.value)}
             >
-              <option value="">Todos los trabajadores</option>
+              <option value="">
+                {t("ui.NominaRecords.todosLosTrabajadores", "Todos los trabajadores")}
+              </option>
               {guardOptions.map((g) => (
                 <option key={g.id} value={g.id}>
                   {g.label}
@@ -618,7 +660,9 @@ export default function NominaRecords() {
             value={payrollStatus}
             onChange={(e) => setPayrollStatus(e.target.value)}
           >
-            <option value="">Cualquier estado de nómina</option>
+            <option value="">
+              {t("ui.NominaRecords.cualquierEstadoDeNomina", "Cualquier estado de nómina")}
+            </option>
             {Object.entries(PAYROLL_FLOW_META).map(([k, m]) => (
               <option key={k} value={k}>
                 {m.label}
@@ -632,8 +676,8 @@ export default function NominaRecords() {
             onChange={setPeriod}
             options={[
               { value: "day", label: t("comun.periodo.dia", "Día") },
-              { value: "week", label: "Semana" },
-              { value: "month", label: "Mes" },
+              { value: "week", label: t("ui.NominaRecords.semana", "Semana") },
+              { value: "month", label: t("ui.NominaRecords.mes", "Mes") },
             ]}
           />
 
@@ -648,7 +692,7 @@ export default function NominaRecords() {
             </button>
             <button
               onClick={() => setAnchor(new Date())}
-              title="Ir a hoy"
+              title={t("ui.NominaRecords.irAHoy", "Ir a hoy")}
               className="cg-focus min-w-[9rem] rounded-full px-2 text-center text-sm font-medium capitalize"
             >
               {rangeLabel(period, anchor)}
@@ -707,7 +751,9 @@ export default function NominaRecords() {
           )}
         </Toolbar>
 
-        <Section title="Marcaciones" icon={<ClipboardList />}>
+        <Section
+          title={t("ui.NominaRecords.marcaciones", "Marcaciones")}
+          icon={<ClipboardList />}>
           {!loading && (
             <div
               className="mb-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm"
@@ -720,10 +766,13 @@ export default function NominaRecords() {
                 >
                   {rows.length}
                 </span>{" "}
-                registro(s)
+                {t("ui.NominaRecords.registrosSufijo", {
+                  count: rows.length,
+                  defaultValue: "registro(s)",
+                })}
               </span>
               <span>
-                Horas totales:{" "}
+                {t("ui.NominaRecords.horasTotales", "Horas totales:")}{" "}
                 <span
                   className="font-semibold tabular-nums"
                   style={{ color: "var(--ink)" }}
@@ -758,18 +807,30 @@ export default function NominaRecords() {
                 puedeAprobar && selectedIds.length > 0 ? (
                   <div className="flex items-center gap-2">
                     <ToneBadge tone="brand">
-                      {selectedIds.length} seleccionada(s)
+                      {t("ui.NominaRecords.seleccionadas", {
+                        count: selectedIds.length,
+                        defaultValue: "{{count}} seleccionada(s)",
+                      })}
                     </ToneBadge>
                     <BulkActionsSelect
                       key={bulkKey}
                       actions={[
-                        { value: "reviewed", label: "Marcar revisadas" },
-                        { value: "approved", label: "Aprobar y enviar a pago" },
-                        { value: "paid", label: "Marcar pagadas" },
-                        { value: "rejected", label: "Rechazar" },
+                        {
+                          value: "reviewed",
+                          label: t("ui.NominaRecords.marcarRevisadas", "Marcar revisadas"),
+                        },
+                        {
+                          value: "approved",
+                          label: t("ui.NominaRecords.aprobarYEnviarAPago", "Aprobar y enviar a pago"),
+                        },
+                        {
+                          value: "paid",
+                          label: t("ui.NominaRecords.marcarPagadas", "Marcar pagadas"),
+                        },
+                        { value: "rejected", label: t("revision.rechazar", "Rechazar") },
                         {
                           value: "pending_review",
-                          label: "Devolver a revisión",
+                          label: t("ui.NominaRecords.devolverARevision", "Devolver a revisión"),
                         },
                       ]}
                       onChange={(v) => void bulk(v)}

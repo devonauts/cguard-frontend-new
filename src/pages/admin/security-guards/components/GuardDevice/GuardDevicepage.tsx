@@ -353,7 +353,7 @@ function DeviceCard({
             {device.hasPush && (
               <StatusBadge dot={false} tone="neutral">
                 <BellRing className="h-3 w-3" />
-                Notificaciones
+                {t("ui.GuardDevicepage.notificaciones", "Notificaciones")}
               </StatusBadge>
             )}
           </div>

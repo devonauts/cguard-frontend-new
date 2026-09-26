@@ -557,7 +557,17 @@ export function DispatchDetailsContent({
                         }
                         className="ml-2"
                       >
-                        {requestPayload.status ?? ""}
+                        {(() => {
+                          // Raw API status: translate only the known values for display.
+                          const st = String(requestPayload.status ?? "").toLowerCase();
+
+                          if (st === "abierto" || st === "open")
+                            return t("dispatcher.status_open", "Abierto");
+                          if (st === "cerrado" || st === "closed")
+                            return t("dispatcher.status_closed", "Cerrado");
+
+                          return requestPayload.status ?? "";
+                        })()}
                       </StatusBadge>
                     </td>
                     <td className="py-3 px-4 text-xs font-medium text-muted-foreground">
@@ -813,13 +823,13 @@ export function DispatchDetailsContent({
                 <thead>
                   <tr className="bg-muted/30 text-left">
                     <th className="py-2 px-3 text-xs font-medium text-muted-foreground">
-                      Guard
+                      {t("dispatcher.guard", "Vigilante")}
                     </th>
                     <th className="py-2 px-3 text-xs font-medium text-muted-foreground">
-                      Status
+                      {t("dispatcher.status", "Estado")}
                     </th>
                     <th className="py-2 px-3 text-xs font-medium text-muted-foreground">
-                      Date/Time
+                      {t("dispatcher.date_time", "Fecha/Hora")}
                     </th>
                   </tr>
                 </thead>
@@ -873,7 +883,7 @@ export function DispatchDetailsContent({
                           (c.author.name ||
                             c.author.fullName ||
                             c.author.username)) ||
-                          "Usuario"}{" "}
+                          t("comun.usuario", "Usuario")}{" "}
                         ·{" "}
                         {c.createdAt
                           ? new Date(c.createdAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
@@ -891,7 +901,10 @@ export function DispatchDetailsContent({
                             target="_blank"
                             rel="noreferrer"
                           >
-                            Adjunto: {c.attachment.name || c.attachment.url}
+                            {t("ui.DispatchDetailsPage.adjunto", {
+                              defaultValue: "Adjunto: {{nombre}}",
+                              nombre: c.attachment.name || c.attachment.url,
+                            })}
                           </a>
                         </div>
                       )}

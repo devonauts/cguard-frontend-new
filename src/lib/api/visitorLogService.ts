@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import api from "@/lib/api";
 import { descargarInforme } from "@/lib/export/serverDownload";
 import type { ExportFormat } from "@/lib/export/reportExport";
@@ -6,7 +7,10 @@ const getTenantId = (): string => {
   const t = localStorage.getItem("tenantId");
   if (!t)
     throw new Error(
-      "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+      i18n.t(
+        "ui.apiService.noPudimosIdentificarTuEmpresa",
+        "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+      ),
     );
   return t;
 };
@@ -201,14 +205,14 @@ export const visitorLogService = {
       `/tenant/${tenantId}/file/credentials?filename=${encodeURIComponent(filename)}&storageId=visitorLogIdPhoto`,
     );
     const uploadUrl = credData?.uploadCredentials?.url;
-    if (!uploadUrl) throw new Error("Upload URL not available");
+    if (!uploadUrl) throw new Error(i18n.t("ui.apiService.urlDeCargaNoDisponible", "URL de carga no disponible"));
     // 2. Upload file
     const form = new FormData();
     const fields = credData?.uploadCredentials?.fields || {};
     Object.entries(fields).forEach(([k, v]) => form.append(k, v as string));
     form.append("file", file);
     const uploadResp = await fetch(uploadUrl, { method: "POST", body: form });
-    if (!uploadResp.ok) throw new Error(`Upload failed: ${uploadResp.status}`);
+    if (!uploadResp.ok) throw new Error(i18n.t("ui.apiService.errorAlSubirArchivo", { defaultValue: "Error al subir el archivo ({{status}}) {{detalle}}", status: uploadResp.status, detalle: "" }).trim());
     return {
       name: file.name,
       privateUrl: credData.privateUrl,

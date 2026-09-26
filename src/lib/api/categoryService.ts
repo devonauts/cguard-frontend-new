@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import api from "@/lib/api";
 import { cachedFetch, invalidateEntity } from "@/lib/queryClient";
 
@@ -39,7 +40,7 @@ export const getTenantId = (): string => {
     }
   }
 
-  throw new Error("TenantId not set. Please login first.");
+  throw new Error(i18n.t("ui.apiService.noPudimosIdentificarTuEmpresa", "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar."));
 };
 
 class CategoryService {

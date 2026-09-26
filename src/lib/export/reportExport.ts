@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 /**
  * ════════════════════════════════════════════════════════════════════════════
  * C-GUARD PRO — LAS TRES SALIDAS DE UN INFORME (CSV · EXCEL · PDF)
@@ -50,7 +51,12 @@ import { nombreDelProducto } from "@/hooks/usePageTitle";
  * footer is left empty rather than falling back to ours.
  */
 export function pieDeInforme(nombreApp: string = nombreDelProducto()): string {
-  return nombreApp ? `Generado por ${nombreApp}` : "";
+  return nombreApp
+    ? i18n.t("ui.reportExport.generadoPor", {
+        defaultValue: "Generado por {{nombreApp}}",
+        nombreApp,
+      })
+    : "";
 }
 
 export type ExportFormat = "csv" | "excel" | "pdf";
@@ -283,7 +289,7 @@ async function buildXlsxBlob(
 
   // El nombre de la hoja tiene tope duro de 31 caracteres en el formato; pasarse
   // genera un archivo que Excel se niega a abrir.
-  XLSX.utils.book_append_sheet(wb, ws, meta.title.slice(0, 31) || "Informe");
+  XLSX.utils.book_append_sheet(wb, ws, meta.title.slice(0, 31) || i18n.t("ui.reportExport.informe", "Informe"));
   const out = XLSX.write(wb, { bookType: "xlsx", type: "array" });
 
   return new Blob([out], {
@@ -371,7 +377,10 @@ async function buildPdfBlob(
     doc.setFontSize(10);
     doc.setTextColor(140, 140, 140);
     doc.text(
-      "Sin datos en el rango seleccionado.",
+      i18n.t(
+        "ui.reportExport.sinDatosEnElRangoSeleccionado",
+        "Sin datos en el rango seleccionado.",
+      ),
       32,
       (meta.subtitle ? 70 : 54) + 40,
     );

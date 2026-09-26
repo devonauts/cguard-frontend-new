@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { AlertTriangle, Loader2, Plus, Users, UserCog } from "lucide-react";
 
@@ -68,6 +69,7 @@ export default function RotacionDeLaEstacion({
   etiquetaPrimerBloque?: string;
   etiquetaSegundoBloque?: string;
 }) {
+  const { t } = useTranslation();
   const [estilos, setEstilos] = useState<EstiloRotacion[]>([]);
   const [cargando, setCargando] = useState(false);
   const es24h = entrada.scheduleType === "24h";
@@ -191,9 +193,13 @@ export default function RotacionDeLaEstacion({
         largo: largos[0],
         desigual,
         tramos: [
-          { nombre: "Día", cubierto: dia, falta: Math.max(0, largos[0] - dia) },
           {
-            nombre: "Noche",
+            nombre: t("ui.RotacionDeLaEstacion.dia", "Día"),
+            cubierto: dia,
+            falta: Math.max(0, largos[0] - dia),
+          },
+          {
+            nombre: t("ui.RotacionDeLaEstacion.noche", "Noche"),
             cubierto: noche,
             falta: Math.max(0, largos[0] - noche),
           },
@@ -261,7 +267,10 @@ export default function RotacionDeLaEstacion({
             className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider"
             style={{ color: "var(--ink-soft)" }}
           >
-            ¿Los {plazas.length} vigilantes hacen el mismo ciclo?
+            {t("ui.RotacionDeLaEstacion.losNVigilantesHacenElMismoCiclo", {
+              defaultValue: "¿Los {{n}} vigilantes hacen el mismo ciclo?",
+              n: plazas.length,
+            })}
           </div>
           <div className="grid grid-cols-2 gap-1.5">
             <button
@@ -270,11 +279,17 @@ export default function RotacionDeLaEstacion({
               onClick={() => onPorPlazaChange(null)}
             >
               <span className="inline-flex items-center gap-1.5">
-                <Users size={12} /> Rotación compartida
+                <Users size={12} />{" "}
+                {t(
+                  "ui.RotacionDeLaEstacion.rotacionCompartida",
+                  "Rotación compartida",
+                )}
               </span>
               <span className="mt-0.5 block text-[10px] font-normal opacity-75">
-                Un solo ciclo para todo el puesto. El motor escalona a los
-                vigilantes entre sí.
+                {t(
+                  "ui.RotacionDeLaEstacion.unSoloCicloParaTodoElPuesto",
+                  "Un solo ciclo para todo el puesto. El motor escalona a los vigilantes entre sí.",
+                )}
               </span>
             </button>
             <button
@@ -287,11 +302,17 @@ export default function RotacionDeLaEstacion({
               }
             >
               <span className="inline-flex items-center gap-1.5">
-                <UserCog size={12} /> Rotación individual
+                <UserCog size={12} />{" "}
+                {t(
+                  "ui.RotacionDeLaEstacion.rotacionIndividual",
+                  "Rotación individual",
+                )}
               </span>
               <span className="mt-0.5 block text-[10px] font-normal opacity-75">
-                Cada plaza con su ciclo — uno hace 2 mañanas y 3 tardes, otro 3
-                y 2.
+                {t(
+                  "ui.RotacionDeLaEstacion.cadaPlazaConSuCiclo",
+                  "Cada plaza con su ciclo — uno hace 2 mañanas y 3 tardes, otro 3 y 2.",
+                )}
               </span>
             </button>
           </div>
@@ -316,11 +337,15 @@ export default function RotacionDeLaEstacion({
             className="text-[10px] font-semibold uppercase tracking-wider"
             style={{ color: "var(--ink-soft)" }}
           >
-            El ciclo de cada plaza
+            {t(
+              "ui.RotacionDeLaEstacion.elCicloDeCadaPlaza",
+              "El ciclo de cada plaza",
+            )}
           </div>
           {cargando ? (
             <div className="flex items-center gap-2 py-2 text-xs text-muted-foreground">
-              <Loader2 className="animate-spin" size={12} /> Cargando ciclos…
+              <Loader2 className="animate-spin" size={12} />{" "}
+              {t("ui.RotacionDeLaEstacion.cargandoCiclos", "Cargando ciclos…")}
             </div>
           ) : (
             plazas.map((p, i) => (
@@ -328,7 +353,7 @@ export default function RotacionDeLaEstacion({
                 key={p.indice}
                 cicloEfectivo={cicloDe(i)}
                 estilos={estilos}
-                etiquetaPropia={es24h ? "día" : p.tramo}
+                etiquetaPropia={es24h ? t("ui.tramos.dia", "día") : p.tramo}
                 etiquetaSiguiente={tramoSiguiente(plazas, i, es24h)}
                 patronDeLaEstacion={porId.get(String(value))?.name || null}
                 plaza={p}
@@ -372,23 +397,38 @@ export default function RotacionDeLaEstacion({
         >
           {resumen.desigual ? (
             <span>
-              Los ciclos tienen <strong>largos distintos</strong>: el cuadrante
-              no se repite cada semana y los descansos caen en días diferentes
-              cada vuelta. Revisa la cobertura en Programador › Horario antes de
-              darlo por bueno.
+              {t("ui.RotacionDeLaEstacion.losCiclosTienen", "Los ciclos tienen")}{" "}
+              <strong>
+                {t("ui.RotacionDeLaEstacion.largosDistintos", "largos distintos")}
+              </strong>
+              {t(
+                "ui.RotacionDeLaEstacion.elCuadranteNoSeRepite",
+                ": el cuadrante no se repite cada semana y los descansos caen en días diferentes cada vuelta. Revisa la cobertura en Programador › Horario antes de darlo por bueno.",
+              )}
             </span>
           ) : (
             <>
               <span className="font-semibold">
-                Ciclo de {resumen.largo} días.
+                {t("ui.RotacionDeLaEstacion.cicloDeNDias", {
+                  defaultValue: "Ciclo de {{n}} días.",
+                  n: resumen.largo,
+                })}
               </span>{" "}
-              {resumen.tramos.map((t, i) => (
-                <span key={t.nombre}>
+              {resumen.tramos.map((tr, i) => (
+                <span key={tr.nombre}>
                   {i > 0 ? " · " : ""}
-                  <span className="font-mono">{t.nombre}</span>:{" "}
-                  {Math.min(t.cubierto, resumen.largo)}/{resumen.largo} días con
-                  fijo
-                  {t.falta > 0 ? ` (${t.falta} para el sacafranco)` : ""}
+                  <span className="font-mono">{tr.nombre}</span>:{" "}
+                  {t("ui.RotacionDeLaEstacion.diasConFijo", {
+                    defaultValue: "{{cubierto}}/{{largo}} días con fijo",
+                    cubierto: Math.min(tr.cubierto, resumen.largo),
+                    largo: resumen.largo,
+                  })}
+                  {tr.falta > 0
+                    ? t("ui.RotacionDeLaEstacion.nParaElSacafranco", {
+                        defaultValue: " ({{n}} para el sacafranco)",
+                        n: tr.falta,
+                      })
+                    : ""}
                 </span>
               ))}
             </>
@@ -423,6 +463,7 @@ function PlazaFila({
   cicloEfectivo: CicloRotacion | null;
   patronDeLaEstacion: string | null;
 }) {
+  const { t } = useTranslation();
   const [abierto, setAbierto] = useState(false);
   const [creando, setCreando] = useState(false);
   const [cPropio, setCPropio] = useState("2");
@@ -447,8 +488,11 @@ function PlazaFila({
   const describir = (s: EstiloRotacion) => {
     const descanso =
       s.restDays === 0
-        ? "sin descanso"
-        : `${s.restDays} libre${s.restDays > 1 ? "s" : ""}`;
+        ? t("ui.RotationStyleSelect.sinDescanso", "sin descanso")
+        : t("ui.RotacionDeLaEstacion.nLibres", {
+            defaultValue: "{{count}} libres",
+            count: s.restDays,
+          });
 
     return (s.nightShifts || 0) > 0
       ? `${s.name} — ${s.dayShifts} ${etiquetaPropia} · ${s.nightShifts} ${etiquetaSiguiente} · ${descanso}`
@@ -461,7 +505,12 @@ function PlazaFila({
     const libres = Math.max(0, parseInt(cLibres, 10) || 0);
 
     if (propio + siguiente < 1) {
-      toast.error("El ciclo necesita al menos un día de trabajo.");
+      toast.error(
+        t(
+          "ui.RotacionDeLaEstacion.elCicloNecesitaAlMenos",
+          "El ciclo necesita al menos un día de trabajo.",
+        ),
+      );
 
       return;
     }
@@ -504,7 +553,9 @@ function PlazaFila({
       }
     } catch (e: any) {
       toast.error(
-        e?.data?.message || e?.message || "No se pudo crear el ciclo",
+        e?.data?.message ||
+          e?.message ||
+          t("ui.RotacionDeLaEstacion.noSePudoCrearElCiclo", "No se pudo crear el ciclo"),
       );
     } finally {
       setCreando(false);
@@ -553,15 +604,20 @@ function PlazaFila({
       >
         <option value="">
           {patronDeLaEstacion
-            ? `La de la estación (${patronDeLaEstacion})`
-            : "La de la estación"}
+            ? t("ui.RotacionDeLaEstacion.laDeLaEstacionCon", {
+                defaultValue: "La de la estación ({{patron}})",
+                patron: patronDeLaEstacion,
+              })
+            : t("ui.RotacionDeLaEstacion.laDeLaEstacion", "La de la estación")}
         </option>
         {opciones.map((s) => (
           <option key={s.id} value={s.id}>
             {describir(s)}
           </option>
         ))}
-        <option value="__nuevo__">+ Crear un ciclo…</option>
+        <option value="__nuevo__">
+          {t("ui.RotacionDeLaEstacion.crearUnCiclo", "+ Crear un ciclo…")}
+        </option>
       </select>
 
       {abierto && (
@@ -574,7 +630,10 @@ function PlazaFila({
         >
           <div className="grid grid-cols-3 gap-2">
             <label className="text-[10px] text-muted-foreground">
-              Días de {etiquetaPropia}
+              {t("ui.RotacionDeLaEstacion.diasDe", {
+                defaultValue: "Días de {{tramo}}",
+                tramo: etiquetaPropia,
+              })}
               <input
                 className={`${campo} mt-1`}
                 min={0}
@@ -585,7 +644,10 @@ function PlazaFila({
               />
             </label>
             <label className="text-[10px] text-muted-foreground">
-              Días de {etiquetaSiguiente}
+              {t("ui.RotacionDeLaEstacion.diasDe", {
+                defaultValue: "Días de {{tramo}}",
+                tramo: etiquetaSiguiente,
+              })}
               <input
                 className={`${campo} mt-1`}
                 min={0}
@@ -596,7 +658,7 @@ function PlazaFila({
               />
             </label>
             <label className="text-[10px] text-muted-foreground">
-              Libres
+              {t("ui.RotacionDeLaEstacion.libres", "Libres")}
               <input
                 className={`${campo} mt-1`}
                 min={0}
@@ -618,7 +680,7 @@ function PlazaFila({
             ) : (
               <Plus size={12} />
             )}{" "}
-            Crear y usar
+            {t("ui.RotationStyleSelect.crearYUsar", "Crear y usar")}
           </button>
         </div>
       )}
@@ -652,11 +714,15 @@ function PlazaFila({
             className="ml-1 text-[10px]"
             style={{ color: "var(--ink-soft)" }}
           >
-            {semana.filter((d) => d.tipo === "propio").length} de{" "}
-            {etiquetaPropia},{" "}
-            {semana.filter((d) => d.tipo === "siguiente").length} de{" "}
-            {etiquetaSiguiente},{" "}
-            {semana.filter((d) => d.tipo === "libre").length} libre(s)
+            {t("ui.RotacionDeLaEstacion.resumenSemana", {
+              defaultValue:
+                "{{propio}} de {{tramoPropio}}, {{siguiente}} de {{tramoSiguiente}}, {{libres}} libre(s)",
+              propio: semana.filter((d) => d.tipo === "propio").length,
+              tramoPropio: etiquetaPropia,
+              siguiente: semana.filter((d) => d.tipo === "siguiente").length,
+              tramoSiguiente: etiquetaSiguiente,
+              libres: semana.filter((d) => d.tipo === "libre").length,
+            })}
           </span>
         </div>
       )}

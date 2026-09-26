@@ -138,8 +138,11 @@ export default function CustomerRequests() {
       );
       toast.success(
         status === "cerrado"
-          ? "Solicitud marcada como atendida"
-          : "Solicitud reabierta",
+          ? t(
+              "ui.CustomerRequests.solicitudMarcadaComoAtendida",
+              "Solicitud marcada como atendida",
+            )
+          : t("ui.CustomerRequests.solicitudReabierta", "Solicitud reabierta"),
       );
     } catch (err) {
       console.error("Failed to update request status", err);
@@ -150,9 +153,17 @@ export default function CustomerRequests() {
   const getStatusBadge = (status: string | null) => {
     switch (status) {
       case "abierto":
-        return <StatusBadge tone="warn">Abierta</StatusBadge>;
+        return (
+          <StatusBadge tone="warn">
+            {t("ui.CustomerRequests.abierta", "Abierta")}
+          </StatusBadge>
+        );
       case "cerrado":
-        return <StatusBadge tone="ok">Atendida</StatusBadge>;
+        return (
+          <StatusBadge tone="ok">
+            {t("ui.CustomerRequests.atendida", "Atendida")}
+          </StatusBadge>
+        );
       default:
         return <StatusBadge tone="neutral">{status ?? "—"}</StatusBadge>;
     }
@@ -170,7 +181,7 @@ export default function CustomerRequests() {
         {/* Stats */}
         <StatsStrip className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <MetricTile
-            label="Abiertas"
+            label={t("ui.CustomerRequests.abiertas", "Abiertas")}
             value={stats.open}
             icon={<MailQuestion />}
             delta={
@@ -184,7 +195,7 @@ export default function CustomerRequests() {
             hint={t("ui.CustomerRequests.sobreElTotalRecibido")}
           />
           <MetricTile
-            label="Atendidas"
+            label={t("ui.CustomerRequests.atendidas", "Atendidas")}
             value={stats.closed}
             icon={<MailOpen />}
             hint={t("ui.CustomerRequests.solicitudesYaCerradas")}
@@ -214,8 +225,12 @@ export default function CustomerRequests() {
                 <SelectItem value="all">
                   {t("comun.todosLosEstados")}
                 </SelectItem>
-                <SelectItem value="abierto">Abierta</SelectItem>
-                <SelectItem value="cerrado">Atendida</SelectItem>
+                <SelectItem value="abierto">
+                  {t("ui.CustomerRequests.abierta", "Abierta")}
+                </SelectItem>
+                <SelectItem value="cerrado">
+                  {t("ui.CustomerRequests.atendida", "Atendida")}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -231,7 +246,9 @@ export default function CustomerRequests() {
           />
         </Toolbar>
 
-        <Section title="Solicitudes" icon={<Inbox />}>
+        <Section
+          title={t("ui.CustomerRequests.solicitudes", "Solicitudes")}
+          icon={<Inbox />}>
           {/* Tabla */}
           <div
             className="overflow-hidden rounded-2xl"
@@ -260,13 +277,13 @@ export default function CustomerRequests() {
                 },
                 {
                   key: "subject",
-                  header: "Asunto",
+                  header: t("guards.memos.form.subject", "Asunto"),
                   titulo: true,
                   render: (_v: any, row: any) => row.subject ?? "—",
                 },
                 {
                   key: "content",
-                  header: "Mensaje",
+                  header: t("ui.CustomerRequests.mensaje", "Mensaje"),
                   render: (_v: any, row: any) => (
                     <span style={{ color: "var(--ink-soft)" }}>
                       {row.content ?? "—"}
@@ -291,7 +308,10 @@ export default function CustomerRequests() {
                 row.status !== "cerrado"
                   ? [
                       {
-                        label: "Marcar como atendida",
+                        label: t(
+                          "ui.CustomerRequests.marcarComoAtendida",
+                          "Marcar como atendida",
+                        ),
                         icon: (
                           <CheckCircle style={{ color: "var(--ok-text)" }} />
                         ),
@@ -300,7 +320,7 @@ export default function CustomerRequests() {
                     ]
                   : [
                       {
-                        label: "Reabrir",
+                        label: t("ui.CustomerRequests.reabrir", "Reabrir"),
                         icon: (
                           <RotateCcw style={{ color: "var(--warn-text)" }} />
                         ),
@@ -340,8 +360,13 @@ export default function CustomerRequests() {
               style={{ color: "var(--ink-soft)" }}
             >
               {filtered.length === 0
-                ? "0 de 0"
-                : `${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, filtered.length)} de ${filtered.length}`}
+                ? t("guards.list.pagination.emptyRange", "0 – 0 de 0")
+                : t("guards.list.pagination.range", {
+                    defaultValue: "{{start}} - {{end}} de {{total}}",
+                    start: (page - 1) * pageSize + 1,
+                    end: Math.min(page * pageSize, filtered.length),
+                    total: filtered.length,
+                  })}
             </div>
             <div className="flex items-center space-x-2">
               <Button

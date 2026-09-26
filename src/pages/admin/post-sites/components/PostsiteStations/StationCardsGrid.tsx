@@ -64,7 +64,10 @@ export default function StationCardsGrid({
   if (!stations.length) {
     return (
       <EmptyState
-        description="Agrega la primera estación con “Crear estación”."
+        description={t(
+          "ui.StationCardsGrid.agregaLaPrimeraEstacion",
+          "Agrega la primera estación con “Crear estación”.",
+        )}
         icon={<Building2 />}
         title={t("stations.empty.title", "Sin estaciones")}
       />
@@ -75,7 +78,7 @@ export default function StationCardsGrid({
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {stations.map((st, i) => {
         const id = st.id || st.stationId || "";
-        const name = st.name || "Estación";
+        const name = st.name || t("station.details.station", "Estación");
         const guards =
           st.numberOfGuardsInStation ??
           (Array.isArray(st.assignedGuards) ? st.assignedGuards.length : null);
@@ -87,12 +90,13 @@ export default function StationCardsGrid({
             ? t(schedEntry.labelKey, schedEntry.label)
             : st.scheduleType
           : Array.isArray(st.jornadas) && st.jornadas.length
-            ? t("stations.card.jornadas", "{{n}} jornada(s)", {
-                n: st.jornadas.length,
+            ? t("ui.StationCardsGrid.nJornadas", {
+                defaultValue: "{{count}} jornadas",
+                count: st.jornadas.length,
               })
             : null;
         const geo = st.hasPolygon
-          ? "Polígono"
+          ? t("ui.StationCardsGrid.poligono", "Polígono")
           : st.geofenceRadius
             ? `${st.geofenceRadius} m`
             : null;
@@ -147,13 +151,15 @@ export default function StationCardsGrid({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-44">
                     <DropdownMenuItem onClick={() => onOpen(id)}>
-                      <Eye className="mr-2 h-4 w-4" /> Ver detalles
+                      <Eye className="mr-2 h-4 w-4" />{" "}
+                      {t("siteTour.actions.view", "Ver detalles")}
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       className="text-destructive focus:text-destructive"
                       onClick={() => onDelete(id)}
                     >
-                      <Trash className="mr-2 h-4 w-4" /> Eliminar
+                      <Trash className="mr-2 h-4 w-4" />{" "}
+                      {t("common.delete", "Eliminar")}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -175,7 +181,10 @@ export default function StationCardsGrid({
                 <span className="font-semibold" style={{ color: "var(--ink)" }}>
                   {guards ?? "—"}
                 </span>{" "}
-                vigilante(s)
+                {t("ui.StationCardsGrid.vigilantesSufijo", {
+                  defaultValue: "vigilantes",
+                  count: Number(guards) || 0,
+                })}
               </span>
               {sched && (
                 <span className="flex items-center gap-1.5">

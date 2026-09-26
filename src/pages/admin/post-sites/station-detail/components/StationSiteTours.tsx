@@ -237,12 +237,12 @@ export default function StationSiteTours({
   const deleteTour = async (tourId: string) => {
     if (
       !(await confirmDialog({
-        title: "Eliminar ronda",
+        title: t("ui.StationSiteTours.eliminarRonda", "Eliminar ronda"),
         message: t(
           "station.siteTours.confirmDelete",
           "¿Eliminar esta ronda y sus puntos de control?",
         ),
-        confirmText: "Eliminar",
+        confirmText: t("common.delete", "Eliminar"),
         tone: "danger",
       }))
     )
@@ -325,11 +325,12 @@ export default function StationSiteTours({
     if (
       !(await confirmDialog({
         title: t("station.siteTours.duplicate", "Duplicar ronda"),
-        message: t(
-          "station.siteTours.confirmDuplicate",
-          `Se creará una copia de «${nombre}» con los MISMOS puntos de control. No hay que reimprimir ningún QR: sólo tendrás que ponerle su horario.`,
-        ),
-        confirmText: t("station.siteTours.duplicate", "Duplicar"),
+        message: t("ui.StationSiteTours.confirmDuplicate", {
+          defaultValue:
+            "Se creará una copia de «{{nombre}}» con los MISMOS puntos de control. No hay que reimprimir ningún QR: sólo tendrás que ponerle su horario.",
+          nombre,
+        }),
+        confirmText: t("ui.StationSiteTours.duplicar", "Duplicar"),
       }))
     )
       return;
@@ -341,10 +342,10 @@ export default function StationSiteTours({
       const copia = res?.data ?? res;
 
       toast.success(
-        t(
-          "station.siteTours.duplicated",
-          `Ronda duplicada con ${copia?.puntosHeredados ?? 0} punto(s)`,
-        ),
+        t("ui.StationSiteTours.duplicated", {
+          defaultValue: "Ronda duplicada con {{count}} puntos",
+          count: copia?.puntosHeredados ?? 0,
+        }),
       );
       await loadTours();
       // Se abre la copia: duplicar sin cambiarle la hora no sirve de nada, y
@@ -459,7 +460,7 @@ export default function StationSiteTours({
           "station.siteTours.confirmDeleteCp",
           "¿Eliminar este punto de control?",
         ),
-        confirmText: "Eliminar",
+        confirmText: t("common.delete", "Eliminar"),
         tone: "danger",
       }))
     )
@@ -583,10 +584,10 @@ export default function StationSiteTours({
                       </StatusBadge>
                       {cps[id] && (
                         <span className="text-xs text-muted-foreground">
-                          {list.length}{" "}
-                          {list.length === 1
-                            ? t("station.siteTours.point", "punto")
-                            : t("station.siteTours.points", "puntos")}
+                          {t("ui.RondaWizard.nPuntos", {
+                            defaultValue: "{{count}} puntos",
+                            count: list.length,
+                          })}
                         </span>
                       )}
                       {/* CUÁNDO corre, sin tener que desplegar. Una ronda sin
@@ -900,7 +901,7 @@ export default function StationSiteTours({
                                     ? {
                                         lat: stationLat,
                                         lng: stationLng,
-                                        label: "el puesto",
+                                        label: t("ui.StationSiteTours.elPuesto", "el puesto"),
                                       }
                                     : null
                                 }

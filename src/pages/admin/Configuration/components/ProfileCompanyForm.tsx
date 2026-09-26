@@ -281,7 +281,10 @@ export default function ProfileCompanyForm() {
       try {
         const tenantId = resolvedTenantId;
 
-        if (!tenantId) throw new Error("Tenant no definido");
+        if (!tenantId)
+          throw new Error(
+            t("ui.ProfileCompanyForm.empresaNoDefinida", "Empresa no definida"),
+          );
 
         const payload: TenantUpdatePayload = {
           name: form.name,

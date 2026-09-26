@@ -11,6 +11,7 @@ import type {
 } from "./types";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { resolveDefaultCenter, companyCenter } from "./defaultCenter";
 
@@ -325,7 +326,10 @@ export function calcularCobertura(
       totalPuestos > 0
         ? Math.min(100, Math.round((onDuty / totalPuestos) * 100))
         : null,
-    coverageSub: `${onDuty}/${totalPuestos} cubiertos`,
+    coverageSub: i18n.t("dashboard.kpi.coveredOf", {
+      cubiertos: onDuty,
+      total: totalPuestos,
+    }),
   };
 }
 
@@ -359,6 +363,10 @@ export function useControlCenter(
     AUTHORITY.MANAGEMENT,
     tenantId(),
   );
+  // The KPI labels and the map fallbacks are translated while loading, so a
+  // language switch has to re-run the load or the cards keep the old language.
+  const { i18n: i18nVivo } = useTranslation();
+  const idioma = i18nVivo.language;
   const sseRef = useRef<EventSource | null>(null);
   const locSeqRef = useRef(0);
   const [tick, setTick] = useState(0);
@@ -466,8 +474,12 @@ export function useControlCenter(
           lat: tLat,
           lng: tLng,
           status: "online",
-          label: tenant?.name || "Sede central",
-          sub: tenant?.address || "Oficina principal",
+          label:
+            tenant?.name ||
+            i18n.t("ui.useControlCenter.sedeCentral", "Sede central"),
+          sub:
+            tenant?.address ||
+            i18n.t("ui.useControlCenter.oficinaPrincipal", "Oficina principal"),
           meta: {
             address: texto(tenant?.address),
             phone: texto(tenant?.phoneNumber ?? tenant?.phone),
@@ -504,7 +516,8 @@ export function useControlCenter(
           lat: la,
           lng: ln,
           status: "online",
-          label: s.stationName || s.name || "Puesto",
+          label:
+            s.stationName || s.name || i18n.t("maps.kind.station", "Puesto"),
           sub: cliente || sitio || "",
           meta: {
             entityId: texto(s.id),
@@ -551,8 +564,12 @@ export function useControlCenter(
           lat: la,
           lng: ln,
           status: "online",
-          label: texto(p.companyName ?? p.businessName ?? p.name) || "Sede",
-          sub: nombreCliente || "Sede del cliente",
+          label:
+            texto(p.companyName ?? p.businessName ?? p.name) ||
+            i18n.t("maps.kind.site", "Sede"),
+          sub:
+            nombreCliente ||
+            i18n.t("ui.useControlCenter.sedeDelCliente", "Sede del cliente"),
           meta: {
             entityId: texto(p.id),
             clientId: clienteId,
@@ -584,8 +601,10 @@ export function useControlCenter(
           lat: la,
           lng: ln,
           status: "online",
-          label: texto(c.commercialName ?? c.name) || "Cliente",
-          sub: texto(c.city) || "Cliente",
+          label:
+            texto(c.commercialName ?? c.name) ||
+            i18n.t("maps.kind.client", "Cliente"),
+          sub: texto(c.city) || i18n.t("maps.kind.client", "Cliente"),
           meta: {
             entityId: id,
             clientId: id,
@@ -623,7 +642,9 @@ export function useControlCenter(
           lat: la,
           lng: ln,
           status: critico ? "emergency" : "incident",
-          label: texto(i.title ?? i.subject) || "Incidente",
+          label:
+            texto(i.title ?? i.subject) ||
+            i18n.t("maps.kind.incident", "Incidente"),
           sub: texto(i.location ?? i.stationName) || "",
           meta: {
             entityId: texto(i.id),
@@ -647,8 +668,12 @@ export function useControlCenter(
           lat: la,
           lng: ln,
           status: "online",
-          label: g.fullName || g.name || "Vigilante",
-          sub: g.postSiteName || g.stationName || "En servicio",
+          label:
+            g.fullName || g.name || i18n.t("maps.kind.guard", "Vigilante"),
+          sub:
+            g.postSiteName ||
+            g.stationName ||
+            i18n.t("dashboard.kpiCorto.onDuty", "En servicio"),
           meta: guardMeta(g),
         });
       });
@@ -670,8 +695,11 @@ export function useControlCenter(
           lat: la,
           lng: ln,
           status: "patrol",
-          label: sup.fullName || "Supervisor",
-          sub: texto(sup.zone) || "En patrulla",
+          label:
+            sup.fullName || i18n.t("maps.kind.supervisor", "Supervisor"),
+          sub:
+            texto(sup.zone) ||
+            i18n.t("ui.useControlCenter.enPatrulla", "En patrulla"),
           meta: {
             entityId: texto(sup.id),
             userId: texto(sup.id),
@@ -830,25 +858,55 @@ export function useControlCenter(
           sub: coverageSub,
           fallback: coverage == null,
         }),
-        kpi("supervisors", "Supervisores", supervisors, {
+        kpi(
+          "supervisors",
+          i18n.t("dashboard.kpi.supervisors", "Supervisores"),
+          supervisors,
+          {
           status: "online",
-          sub: `equipo de ${counts.team || 0}`,
-          hint: "Estado en línea no disponible en backend.",
+          sub: i18n.t("dashboard.kpi.teamOf", {
+            total: counts.team || 0,
+            defaultValue: "equipo de {{total}}",
+          }),
+          hint: i18n.t(
+            "dashboard.kpi.supervisorsHint",
+            "Estado en línea no disponible en backend.",
+          ),
           fallback: supervisors === 0,
-        }),
-        kpi("response", "Tiempo de respuesta", lastResponse ?? "—", {
+          },
+        ),
+        kpi(
+          "response",
+          i18n.t("dashboard.kpi.response", "Tiempo de respuesta"),
+          lastResponse ?? "—",
+          {
           unit: lastResponse != null ? "min" : "",
           status: "neutral",
           trend: trendOf(responseTrend, true),
           spark: respSpark,
-          sub: "promedio mensual",
+          sub: i18n.t("dashboard.kpi.monthlyAverage", "promedio mensual"),
           fallback: lastResponse == null,
-          hint: lastResponse == null ? "Sin datos de desempeño." : undefined,
-        }),
-        kpi("clients", "Clientes", counts.clients, {
-          status: "neutral",
-          sub: `${counts.stations} puestos`,
-        }),
+          hint:
+            lastResponse == null
+              ? i18n.t(
+                  "dashboard.kpi.noPerformanceData",
+                  "Sin datos de desempeño.",
+                )
+              : undefined,
+          },
+        ),
+        kpi(
+          "clients",
+          i18n.t("dashboard.kpi.clients", "Clientes"),
+          counts.clients,
+          {
+            status: "neutral",
+            sub: i18n.t("dashboard.kpi.clientsSub", {
+              count: counts.stations,
+              defaultValue: "{{count}} puestos",
+            }),
+          },
+        ),
       ];
 
       // Primary feed: recent platform events (the rich activity stream). Falls back
@@ -861,7 +919,11 @@ export function useControlCenter(
         return {
           id: `ev-${e.id}`,
           kind: mapEventKind(type),
-          title: e.title || e.body || type || "Evento",
+          title:
+            e.title ||
+            e.body ||
+            type ||
+            i18n.t("ui.useControlCenter.evento", "Evento"),
           sub:
             e.body ||
             p.stationName ||
@@ -885,7 +947,8 @@ export function useControlCenter(
         .map((i: IncidentRow) => ({
           id: `inc-${i.id}`,
           kind: "incident",
-          title: i.title || i.subject || "Incidente",
+          title:
+            i.title || i.subject || i18n.t("maps.kind.incident", "Incidente"),
           sub: i.location || i.stationName || "",
           at: i.incidentAt || i.createdAt || new Date().toISOString(),
           status:
@@ -952,7 +1015,7 @@ export function useControlCenter(
        `cargandoAuth` en la guarda, el efecto corre UNA vez y ya con el nivel
        correcto. La dependencia se queda por si el usuario cambia de verdad
        (cambio de empresa), que es el único caso en que debe rehacerse. */
-  }, [tick, puedeVerPanelEjecutivo, cargandoAuth]);
+  }, [tick, puedeVerPanelEjecutivo, cargandoAuth, idioma]);
 
   // ── live polling of on-duty guard locations ─────────────────────────────
   /* Refresca QUIÉN está en servicio y cómo va la cobertura.
@@ -994,8 +1057,11 @@ export function useControlCenter(
           lat: la,
           lng: ln,
           status: "online",
-          label: g.fullName || "Vigilante",
-          sub: g.postSiteName || g.stationName || "En servicio",
+          label: g.fullName || i18n.t("maps.kind.guard", "Vigilante"),
+          sub:
+            g.postSiteName ||
+            g.stationName ||
+            i18n.t("dashboard.kpiCorto.onDuty", "En servicio"),
           meta: guardMeta(g),
         });
       });
@@ -1109,7 +1175,11 @@ export function useControlCenter(
         const item: ActivityItem = {
           id: data.id || `ev-${Date.now()}`,
           kind: mapEventKind(data.type),
-          title: data.title || data.message || data.type || "Evento",
+          title:
+            data.title ||
+            data.message ||
+            data.type ||
+            i18n.t("ui.useControlCenter.evento", "Evento"),
           sub: data.subtitle || data.stationName || "",
           at: data.createdAt || new Date().toISOString(),
           status: data.severity === "critical" ? "emergency" : "online",
@@ -1177,8 +1247,8 @@ export function useControlCenter(
           lat: la,
           lng: ln,
           status: e.status || "patrol",
-          label: e.label || "Supervisor",
-          sub: e.sub || "Patrulla",
+          label: e.label || i18n.t("maps.kind.supervisor", "Supervisor"),
+          sub: e.sub || i18n.t("ui.useControlCenter.patrulla", "Patrulla"),
           // Se conserva lo que ya se sabía (teléfono, zona, vehículo: el emit de
           // posición no los repite) y se SELLA la hora: esta coordenada acaba de
           // llegar por el socket, así que su marca de tiempo es AHORA. De ahí

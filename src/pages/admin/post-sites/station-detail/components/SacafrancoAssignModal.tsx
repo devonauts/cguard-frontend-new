@@ -155,7 +155,8 @@ export default function SacafrancoAssignModal({
       const cands: Candidate[] = guards
         .map((g: GuardAutoRow) => ({
           id: String(g.guardId || g.id || ""),
-          name: g.fullName || g.label || g.name || "Vigilante",
+          name:
+            g.fullName || g.label || g.name || t("guard.roleLabel", "Vigilante"),
         }))
         .filter((g) => g.id && !occupied.has(g.id))
         .map((g) => {
@@ -180,7 +181,7 @@ export default function SacafrancoAssignModal({
     } finally {
       setLoading(false);
     }
-  }, [tenantId, gapDates]);
+  }, [tenantId, gapDates, t]);
 
   useEffect(() => {
     if (open) load();
@@ -267,14 +268,28 @@ export default function SacafrancoAssignModal({
       }
 
       if (turnos === null) {
-        toast.success(`${g.name} quedó asignado como sacafranco.`);
+        toast.success(
+          t("ui.SacafrancoAssignModal.asignadoComoSacafranco", {
+            defaultValue: "{{nombre}} quedó asignado como sacafranco.",
+            nombre: g.name,
+          }),
+        );
       } else if (turnos > 0) {
         toast.success(
-          `${g.name} quedó como sacafranco — ${turnos} turno${turnos === 1 ? "" : "s"} generado${turnos === 1 ? "" : "s"} en los próximos 30 días.`,
+          t("ui.SacafrancoAssignModal.quedoConTurnos", {
+            defaultValue:
+              "{{nombre}} quedó como sacafranco — {{count}} turnos generados en los próximos 30 días.",
+            nombre: g.name,
+            count: turnos,
+          }),
         );
       } else {
         toast.warning(
-          `${g.name} quedó como sacafranco, pero no hay ningún descanso que tapar en los próximos 30 días, así que no se generó ningún turno. Revisa que los fijos de la estación tengan descansos en su ciclo, o dale un ciclo propio.`,
+          t("ui.SacafrancoAssignModal.quedoSinTurnos", {
+            defaultValue:
+              "{{nombre}} quedó como sacafranco, pero no hay ningún descanso que tapar en los próximos 30 días, así que no se generó ningún turno. Revisa que los fijos de la estación tengan descansos en su ciclo, o dale un ciclo propio.",
+            nombre: g.name,
+          }),
           { duration: 9000 },
         );
       }
@@ -300,7 +315,7 @@ export default function SacafrancoAssignModal({
       icon={<Shield className="h-5 w-5" />}
       open={open}
       size="lg"
-      title="Asignar sacafranco"
+      title={t("ui.SacafrancoAssignModal.asignarSacafranco", "Asignar sacafranco")}
       onOpenChange={(o) => {
         if (!o) onClose();
       }}
@@ -309,9 +324,14 @@ export default function SacafrancoAssignModal({
         {/* Ciclo del sacafranco. El defecto —sin ciclo propio— es lo que la
             palabra significa: va donde los fijos libran. */}
         <div>
-          <p className="cg-eyebrow mb-1.5">Cómo trabaja</p>
+          <p className="cg-eyebrow mb-1.5">
+            {t("ui.SacafrancoAssignModal.comoTrabaja", "Cómo trabaja")}
+          </p>
           <SecuenciaPropiaSelect
-            etiquetaPorDefecto="Hereda el ciclo de la estación"
+            etiquetaPorDefecto={t(
+              "ui.SacafrancoAssignModal.heredaElCicloDeLaEstacion",
+              "Hereda el ciclo de la estación",
+            )}
             tenantId={tenantId}
             value={cicloPropio}
             onChange={setCicloPropio}
@@ -321,9 +341,10 @@ export default function SacafrancoAssignModal({
               ciclo en su puesto, igual que un fijo. Quien lo lea tiene que
               saber que colocarlo en otro puesto es un acto suyo. */}
           <p className="mt-1 text-[10px]" style={{ color: "var(--ink-soft)" }}>
-            Corre su ciclo en este puesto, igual que un fijo. Sin ciclo propio
-            hereda el de la estación. Para cubrir el descanso de un compañero,
-            arrastra su día al puesto que quieras en el Programador.
+            {t(
+              "ui.SacafrancoAssignModal.correSuCiclo",
+              "Corre su ciclo en este puesto, igual que un fijo. Sin ciclo propio hereda el de la estación. Para cubrir el descanso de un compañero, arrastra su día al puesto que quieras en el Programador.",
+            )}
           </p>
         </div>
 
@@ -360,7 +381,7 @@ export default function SacafrancoAssignModal({
                 background: "color-mix(in oklab, var(--ok) 45%, transparent)",
               }}
             />{" "}
-            Libre
+            {t("ui.SacafrancoAssignModal.libre", "Libre")}
           </span>
         </div>
 
@@ -406,8 +427,17 @@ export default function SacafrancoAssignModal({
                         style={{ color: "var(--ink-soft)" }}
                       >
                         <CalendarDays className="inline mr-1" size={11} />
-                        Libre {g.freeForGaps}/{gapDates.length} días a cubrir
-                        {g.busyOnGaps > 0 ? ` · ocupado ${g.busyOnGaps}` : ""}
+                        {t("ui.SacafrancoAssignModal.libreDiasACubrir", {
+                          defaultValue: "Libre {{libres}}/{{total}} días a cubrir",
+                          libres: g.freeForGaps,
+                          total: gapDates.length,
+                        })}
+                        {g.busyOnGaps > 0
+                          ? ` · ${t("ui.SacafrancoAssignModal.ocupadoN", {
+                              defaultValue: "ocupado {{n}}",
+                              n: g.busyOnGaps,
+                            })}`
+                          : ""}
                       </p>
                     </div>
                   </div>
@@ -425,7 +455,7 @@ export default function SacafrancoAssignModal({
                     ) : (
                       <CheckCircle2 size={13} />
                     )}
-                    Asignar
+                    {t("ui.SacafrancoAssignModal.asignar", "Asignar")}
                   </button>
                 </div>
                 {/* 14-day availability strip */}
@@ -444,7 +474,7 @@ export default function SacafrancoAssignModal({
                         key={d}
                         className="h-4 flex-1 rounded-sm"
                         style={{ background: fondo }}
-                        title={`${d}${isGap ? " · descanso del fijo" : ""}${isBusy ? " · ocupado" : ""}`}
+                        title={`${d}${isGap ? ` · ${t("ui.SacafrancoAssignModal.descansoDelFijo", "descanso del fijo")}` : ""}${isBusy ? ` · ${t("ui.SacafrancoAssignModal.ocupado", "ocupado")}` : ""}`}
                       />
                     );
                   })}

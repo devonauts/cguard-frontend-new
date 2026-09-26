@@ -289,7 +289,11 @@ export default function RegistroDeIntentos({
 
               {f.subjectType !== "guard" && (
                 <span style={{ color: "var(--ink-faint)" }}>
-                  {RELOJ[f.subjectType] ?? f.subjectType}
+                  {RELOJ[f.subjectType]
+                    ? t(`ui.RegistroDeIntentos.reloj.${f.subjectType}`, {
+                        defaultValue: RELOJ[f.subjectType],
+                      })
+                    : f.subjectType}
                 </span>
               )}
             </div>

@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { ApiService } from "@/services/api/apiService";
 
 /**
@@ -17,7 +18,10 @@ const tenantId = (): string => {
 
   if (!t)
     throw new Error(
-      "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+      i18n.t(
+        "ui.apiService.noPudimosIdentificarTuEmpresa",
+        "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+      ),
     );
 
   return t;

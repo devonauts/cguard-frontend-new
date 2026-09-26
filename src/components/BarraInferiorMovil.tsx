@@ -1,4 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { AlertTriangle, CalendarDays, Gauge, Menu, Radio } from "lucide-react";
 
 /**
@@ -39,10 +40,10 @@ import { AlertTriangle, CalendarDays, Gauge, Menu, Radio } from "lucide-react";
  */
 
 const DESTINOS = [
-  { to: "/dashboard", etiqueta: "Panel", Icono: Gauge },
-  { to: "/schedule", etiqueta: "Horario", Icono: CalendarDays },
-  { to: "/alarm/queue", etiqueta: "Alertas", Icono: AlertTriangle },
-  { to: "/radio", etiqueta: "Radio", Icono: Radio },
+  { to: "/dashboard", clave: "ui.BarraInferiorMovil.panel", etiqueta: "Panel", Icono: Gauge },
+  { to: "/schedule", clave: "ui.BarraInferiorMovil.horario", etiqueta: "Horario", Icono: CalendarDays },
+  { to: "/alarm/queue", clave: "ui.BarraInferiorMovil.alertas", etiqueta: "Alertas", Icono: AlertTriangle },
+  { to: "/radio", clave: "ui.BarraInferiorMovil.radio", etiqueta: "Radio", Icono: Radio },
 ];
 
 export default function BarraInferiorMovil({
@@ -51,10 +52,11 @@ export default function BarraInferiorMovil({
   onAbrirMenu: () => void;
 }) {
   const { pathname } = useLocation();
+  const { t } = useTranslation();
 
   return (
     <nav
-      aria-label="Navegación principal"
+      aria-label={t("ui.sidebar.navegacionPrincipal", "Navegación principal")}
       /* El cristal va SEPARADO de los cantos: 5 px a los lados y 2 abajo. Con
          las esquinas redondeadas pegadas al filo de la pantalla, el redondeo no
          se lee —queda cortado por el borde del aparato—; con este aire la barra
@@ -68,7 +70,7 @@ export default function BarraInferiorMovil({
           aquí los hijos se estiran con `items-stretch` y no hace falta pelearse
           con `!important`. */}
       <div className="glass-raised cg-bottom-bar flex min-h-[3.5rem] items-stretch border-t pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">
-        {DESTINOS.map(({ to, etiqueta, Icono }) => {
+        {DESTINOS.map(({ to, clave, etiqueta, Icono }) => {
           const activo = pathname === to || pathname.startsWith(`${to}/`);
 
           return (
@@ -82,7 +84,7 @@ export default function BarraInferiorMovil({
             >
               <Icono size={20} strokeWidth={activo ? 2.4 : 1.9} />
               <span className="text-[10px] font-semibold leading-none">
-                {etiqueta}
+                {t(clave, etiqueta)}
               </span>
             </NavLink>
           );
@@ -95,7 +97,9 @@ export default function BarraInferiorMovil({
           onClick={onAbrirMenu}
         >
           <Menu size={20} strokeWidth={1.9} />
-          <span className="text-[10px] font-semibold leading-none">Menú</span>
+          <span className="text-[10px] font-semibold leading-none">
+            {t("ui.BarraInferiorMovil.menu", "Menú")}
+          </span>
         </button>
       </div>
     </nav>

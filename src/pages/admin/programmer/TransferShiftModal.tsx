@@ -104,7 +104,10 @@ export default function TransferShiftModal({
             asked.rest_day = true;
             if (
               !(await confirmDialog(
-                "Ese vigilante está en descanso ese día. ¿Asignarlo de todos modos?",
+                t(
+                  "ui.TransferShiftModal.vigilanteEnDescansoConfirm",
+                  "Ese vigilante está en descanso ese día. ¿Asignarlo de todos modos?",
+                ),
               ))
             )
               return;
@@ -115,14 +118,20 @@ export default function TransferShiftModal({
             asked.double_booking = true;
             if (
               !(await confirmDialog(
-                "Ya tiene otro turno que se cruza con ese horario. ¿Doblar turno?",
+                t(
+                  "ui.TransferShiftModal.doblarTurnoConfirm",
+                  "Ya tiene otro turno que se cruza con ese horario. ¿Doblar turno?",
+                ),
               ))
             )
               return;
             flags.allowDoubleShift = true;
             continue;
           }
-          toast.error(e?.response?.data?.message || "No se pudo trasladar");
+          toast.error(
+            e?.response?.data?.message ||
+              t("ui.TransferShiftModal.noSePudoTrasladar", "No se pudo trasladar"),
+          );
 
           return;
         }
@@ -130,8 +139,15 @@ export default function TransferShiftModal({
 
       toast.success(
         mode === "range" && until
-          ? `${target.guardName} trasladado hasta el ${until}`
-          : `${target.guardName} trasladado`,
+          ? t("ui.TransferShiftModal.trasladadoHasta", {
+              defaultValue: "{{nombre}} trasladado hasta el {{fecha}}",
+              nombre: target.guardName,
+              fecha: until,
+            })
+          : t("ui.TransferShiftModal.trasladado", {
+              defaultValue: "{{nombre}} trasladado",
+              nombre: target.guardName,
+            }),
       );
       close();
       onDone();
@@ -144,14 +160,21 @@ export default function TransferShiftModal({
 
   return (
     <Modal
-      description={`${target?.guardName || ""}${target?.stationName ? ` · desde ${target.stationName}` : ""}`}
+      description={`${target?.guardName || ""}${
+        target?.stationName
+          ? t("ui.TransferShiftModal.desdeEstacion", {
+              defaultValue: " · desde {{estacion}}",
+              estacion: target.stationName,
+            })
+          : ""
+      }`}
       footer={
         <>
           <Button variant="outline" onClick={close}>
             {t("actions.cancel")}
           </Button>
           <Button disabled={busy || !toStationId} onClick={submit}>
-            Trasladar
+            {t("ui.TransferShiftModal.trasladar", "Trasladar")}
           </Button>
         </>
       }
@@ -236,16 +259,33 @@ export default function TransferShiftModal({
         <div className="glass-brand rounded-xl p-3 text-xs">
           <p className="font-semibold">
             {mode === "range" && until
-              ? `Cubre ${dest ? stationLabel(dest) : "el destino"} hasta el ${until}.`
-              : `Cubre ${dest ? stationLabel(dest) : "el destino"} solo en este turno.`}
+              ? t("ui.TransferShiftModal.cubreHasta", {
+                  defaultValue: "Cubre {{destino}} hasta el {{fecha}}.",
+                  destino: dest
+                    ? stationLabel(dest)
+                    : t("ui.TransferShiftModal.elDestino", "el destino"),
+                  fecha: until,
+                })
+              : t("ui.TransferShiftModal.cubreSoloEsteTurno", {
+                  defaultValue: "Cubre {{destino}} solo en este turno.",
+                  destino: dest
+                    ? stationLabel(dest)
+                    : t("ui.TransferShiftModal.elDestino", "el destino"),
+                })}
           </p>
           <p className="mt-1" style={{ color: "var(--ink-soft)" }}>
             {t(
               "ui.TransferShiftModal.despuesVuelveAutomaticamenteA",
               "Después vuelve automáticamente a",
             )}{" "}
-            <strong>{target?.stationName || "su puesto"}</strong>. Podrá marcar
-            entrada en el destino como en cualquier turno normal.
+            <strong>
+              {target?.stationName ||
+                t("ui.TransferShiftModal.suPuesto", "su puesto")}
+            </strong>
+            {t(
+              "ui.TransferShiftModal.podraMarcarEntradaEnElDestino",
+              ". Podrá marcar entrada en el destino como en cualquier turno normal.",
+            )}
           </p>
         </div>
       </div>

@@ -53,10 +53,14 @@ export default function AlarmVideoVerification({ caseId }: { caseId: string }) {
   return (
     <Card className="p-4">
       <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-foreground">
-        <Video className="size-4 text-primary" /> Verificación por video
+        <Video className="size-4 text-primary" />{" "}
+        {t("alarm.actionPlan.step.video", "Verificación por video")}
         {clips.length > 0 && (
           <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-medium text-primary">
-            {clips.length} clip{clips.length > 1 ? "s" : ""} de verificación
+            {t("ui.AlarmVideoVerification.clipsDeVerificacion", {
+              defaultValue: "{{count}} clips de verificación",
+              count: clips.length,
+            })}
           </span>
         )}
       </div>
@@ -82,7 +86,8 @@ export default function AlarmVideoVerification({ caseId }: { caseId: string }) {
                   variant="outline"
                   onClick={() => setTrimCam(cam)}
                 >
-                  <Scissors className="size-3.5" /> Recortar y enviar
+                  <Scissors className="size-3.5" />{" "}
+                  {t("ui.AlarmVideoVerification.recortarYEnviar", "Recortar y enviar")}
                 </Button>
               </div>
             </div>
@@ -118,7 +123,8 @@ export default function AlarmVideoVerification({ caseId }: { caseId: string }) {
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <ExternalLink className="size-3" /> Enlace
+                  <ExternalLink className="size-3" />{" "}
+                  {t("ui.AlarmVideoVerification.enlace", "Enlace")}
                 </a>
               )}
             </div>

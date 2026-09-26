@@ -1,5 +1,7 @@
 import { aHHMM, aMinutos, nombreDeTramo } from "./tramos";
 
+import i18n from "@/i18n";
+
 /**
  * ════════════════════════════════════════════════════════════════════════════
  * QUÉ PLAZAS VA A CREAR ESTA ESTACIÓN
@@ -83,12 +85,17 @@ export function porQueNoSePuede(e: EntradaDePlazas): string | null {
 
   if (e.scheduleType === "custom" && e.restCoverage === "alternate") {
     if (trabajo <= 0)
-      return "La alternancia necesita un patrón con días de trabajo.";
-    if (largo % trabajo !== 0) {
-      return (
-        `El patrón (${trabajo} de trabajo / ${libres} de descanso) no permite alternancia exacta: ` +
-        "el ciclo tiene que ser múltiplo de los días de trabajo."
+      return i18n.t(
+        "ui.plazas.laAlternanciaNecesitaUnPatron",
+        "La alternancia necesita un patrón con días de trabajo.",
       );
+    if (largo % trabajo !== 0) {
+      return i18n.t("ui.plazas.elPatronNoPermiteAlternancia", {
+        defaultValue:
+          "El patrón ({{trabajo}} de trabajo / {{libres}} de descanso) no permite alternancia exacta: el ciclo tiene que ser múltiplo de los días de trabajo.",
+        trabajo,
+        libres,
+      });
     }
   }
   return null;
@@ -109,7 +116,10 @@ export function plazasPrevistas(e: EntradaDePlazas): PlazaPrevista[] {
     endTime: string,
   ): PlazaPrevista => ({
     indice,
-    nombre: `Fijo ${indice + 1}`,
+    nombre: i18n.t("ui.plazas.fijoN", {
+      defaultValue: "Fijo {{n}}",
+      n: indice + 1,
+    }),
     startTime,
     endTime,
     tramo: nombreDeTramo(startTime),
@@ -216,7 +226,10 @@ export function tramoSiguiente(
   indice: number,
   es24h: boolean,
 ): string {
-  return bloqueSiguiente(plazas, indice, es24h)?.nombre || "noche";
+  return (
+    bloqueSiguiente(plazas, indice, es24h)?.nombre ||
+    i18n.t("ui.tramos.noche", "noche")
+  );
 }
 
 /**
@@ -250,8 +263,8 @@ export function secuenciaDelCiclo(
       tipo: "siguiente" as const,
     })),
     ...Array.from({ length: libres }, () => ({
-      letra: "L",
-      nombre: "libre",
+      letra: i18n.t("ui.plazas.letraLibre", "L"),
+      nombre: i18n.t("ui.plazas.libre", "libre"),
       tipo: "libre" as const,
     })),
   ];

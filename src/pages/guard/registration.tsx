@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import MeterBar from "@/components/charts/MeterBar";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { NavLink, useSearchParams, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, CheckCircle2, Smartphone, Clock } from "lucide-react";
 import { toast } from "sonner";
@@ -14,6 +14,7 @@ import userService from "@/lib/api/userService";
 import { AuthService } from "@/services/auth/authService";
 import { PhoneInput } from "@/components/phone/PhoneInput";
 import { InfoNote } from "@/components/kit";
+import i18n from "@/i18n";
 
 /**
  * Mirror the BACKEND password policy (securityGuardCreate.isStrongPassword):
@@ -23,12 +24,30 @@ import { InfoNote } from "@/components/kit";
  */
 function passwordPolicyError(pw: string): string | undefined {
   if (!pw || pw.length < 8)
-    return "La contraseña debe tener al menos 8 caracteres";
-  if (!/[A-Z]/.test(pw)) return "Debe contener al menos una letra mayúscula";
-  if (!/[a-z]/.test(pw)) return "Debe contener al menos una letra minúscula";
-  if (!/[0-9]/.test(pw)) return "Debe contener al menos un número";
+    return i18n.t(
+      "invite.val.password_short",
+      "La contraseña debe tener al menos 8 caracteres",
+    );
+  if (!/[A-Z]/.test(pw))
+    return i18n.t(
+      "ui.GuardRegistration.debeContenerMayuscula",
+      "Debe contener al menos una letra mayúscula",
+    );
+  if (!/[a-z]/.test(pw))
+    return i18n.t(
+      "ui.GuardRegistration.debeContenerMinuscula",
+      "Debe contener al menos una letra minúscula",
+    );
+  if (!/[0-9]/.test(pw))
+    return i18n.t(
+      "ui.GuardRegistration.debeContenerNumero",
+      "Debe contener al menos un número",
+    );
   if (!/[^A-Za-z0-9]/.test(pw))
-    return "Debe contener al menos un carácter especial (p. ej. ! @ # $ %)";
+    return i18n.t(
+      "ui.GuardRegistration.debeContenerEspecial",
+      "Debe contener al menos un carácter especial (p. ej. ! @ # $ %)",
+    );
 
   return undefined;
 }
@@ -317,7 +336,10 @@ export default function GuardRegistration() {
             shownToastRef.current = msg;
             toast.error(
               msg ||
-                "La cuenta ya fue creada — serás redirigido al inicio de sesión.",
+                t(
+                  "ui.GuardRegistration.laCuentaYaFueCreada",
+                  "La cuenta ya fue creada — serás redirigido al inicio de sesión.",
+                ),
             );
             // clear ref after short delay to allow future toasts
             setTimeout(() => (shownToastRef.current = null), 3000);
@@ -483,9 +505,15 @@ export default function GuardRegistration() {
       }
       if (stepNum === 2) {
         if (!governmentId?.trim())
-          nextErrors.governmentId = "El documento de identidad es obligatorio";
+          nextErrors.governmentId = t(
+            "ui.GuardRegistration.elDocumentoDeIdentidadEsObligatorio",
+            "El documento de identidad es obligatorio",
+          );
         if (!birthDate)
-          nextErrors.birthDate = "La fecha de nacimiento es obligatoria";
+          nextErrors.birthDate = t(
+            "ui.GuardRegistration.laFechaDeNacimientoEsObligatoria",
+            "La fecha de nacimiento es obligatoria",
+          );
         if (!birthPlace?.trim())
           nextErrors.birthPlace = t(
             "invite.val.birthplace_required",
@@ -759,9 +787,11 @@ export default function GuardRegistration() {
               setErrors((p) => ({ ...p, ...result.fieldErrors }));
             if (result && result.messages && result.messages.length)
               result.messages.forEach((m) => toast.error(m));
-            else toast.error(uErr?.message || "Error al crear usuario");
+            else toast.error(uErr?.message ||
+              t("ui.GuardRegistration.errorAlCrearUsuario", "Error al crear usuario"));
           } catch (e) {
-            toast.error(uErr?.message || "Error al crear usuario");
+            toast.error(uErr?.message ||
+              t("ui.GuardRegistration.errorAlCrearUsuario", "Error al crear usuario"));
           }
           setIsLoading(false);
 
@@ -931,16 +961,20 @@ export default function GuardRegistration() {
             if (backendMsg) {
               toast.error(String(backendMsg));
             } else {
-              toast.error(err.message || "Error al registrar");
+              toast.error(
+                err.message || t("invite.error.register", "Error al registrar"),
+              );
             }
           } else {
-            const msg = err?.message || "Error al registrar";
+            const msg =
+              err?.message || t("invite.error.register", "Error al registrar");
 
             toast.error(msg);
           }
         }
       } catch (e) {
-        const msg = err?.message || "Error al registrar";
+        const msg =
+          err?.message || t("invite.error.register", "Error al registrar");
 
         toast.error(msg);
       }
@@ -955,7 +989,10 @@ export default function GuardRegistration() {
     <GuardInviteLayout
       subtitle={
         done
-          ? "Tu solicitud fue enviada a tu empresa de seguridad."
+          ? t(
+              "ui.GuardRegistration.tuSolicitudFueEnviada",
+              "Tu solicitud fue enviada a tu empresa de seguridad.",
+            )
           : t("guard.registration_subtitle", {
               defaultValue: "Completa tus datos para activar tu cuenta.",
             })
@@ -964,7 +1001,7 @@ export default function GuardRegistration() {
       tenantName={fetched?.tenantName || fetched?.tenant?.name}
       title={
         done
-          ? "¡Registro completado!"
+          ? t("guard.registration_success", "¡Registro completado!")
           : t("guard.registration_title", {
               defaultValue: "Registro de vigilante",
             })
@@ -976,13 +1013,23 @@ export default function GuardRegistration() {
             <CheckCircle2 className="h-9 w-9 text-primary" />
           </div>
           <p className="text-sm leading-relaxed text-muted-foreground">
-            Gracias{firstName ? `, ${firstName}` : ""}. Tu información fue
-            enviada a{" "}
-            <strong className="text-foreground">
-              {fetched?.tenantName || fetched?.tenant?.name || "tu empresa"}
-            </strong>
-            . El equipo revisará tu registro y se pondrá en contacto contigo con
-            las instrucciones para empezar.
+            {firstName
+              ? t("ui.GuardRegistration.graciasNombre", {
+                  defaultValue: "Gracias, {{nombre}}.",
+                  nombre: firstName,
+                })
+              : t("ui.GuardRegistration.gracias", "Gracias.")}{" "}
+            <Trans
+              components={{ b: <strong className="text-foreground" /> }}
+              defaults="Tu información fue enviada a <b>{{empresa}}</b>. El equipo revisará tu registro y se pondrá en contacto contigo con las instrucciones para empezar."
+              i18nKey="ui.GuardRegistration.tuInformacionFueEnviadaA"
+              values={{
+                empresa:
+                  fetched?.tenantName ||
+                  fetched?.tenant?.name ||
+                  t("ui.GuardRegistration.tuEmpresa", "tu empresa"),
+              }}
+            />
           </p>
           <div className="mt-6 space-y-3 text-left">
             <div className="flex items-start gap-3 rounded-xl border border-border bg-muted/30 p-3.5">
@@ -1323,9 +1370,15 @@ export default function GuardRegistration() {
                   onChange={(e) => setAcademicInstruction(e.target.value)}
                 >
                   <option value="">{t("invite.select", "Seleccione")}</option>
-                  <option>Primaria</option>
-                  <option>Secundaria</option>
-                  <option>Universidad</option>
+                  <option value="Primaria">
+                    {t("invite.guard.edu.primary", "Primaria")}
+                  </option>
+                  <option value="Secundaria">
+                    {t("invite.guard.edu.secondary", "Secundaria")}
+                  </option>
+                  <option value="Universidad">
+                    {t("invite.guard.edu.university", "Universidad")}
+                  </option>
                 </select>
               </div>
             </div>
@@ -1563,7 +1616,7 @@ export default function GuardRegistration() {
                   type="button"
                   onClick={handlePrev}
                 >
-                  Volver
+                  {t("ui.GuardRegistration.volver", "Volver")}
                 </button>
               )}
             </div>
@@ -1593,7 +1646,9 @@ export default function GuardRegistration() {
                       }}
                     />
                   )}
-                  {isLoading ? "Registrando…" : "Registrarse"}
+                  {isLoading
+                      ? t("client.registering", "Registrando…")
+                      : t("ui.GuardRegistration.registrarse", "Registrarse")}
                 </button>
               )}
             </div>

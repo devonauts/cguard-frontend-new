@@ -1,9 +1,10 @@
+import i18n from "@/i18n";
 import { ApiService } from "./api/apiService";
 
 function getTenantId(): string {
   const t = localStorage.getItem("tenantId");
 
-  if (!t) throw new Error("Tenant not available");
+  if (!t) throw new Error(i18n.t("ui.apiService.noPudimosIdentificarTuEmpresa", "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar."));
 
   return t;
 }

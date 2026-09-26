@@ -196,7 +196,9 @@ export default function GuardsLayout({ navKey, title, children }: Props) {
                   </StatusBadge>
                 )}
                 <StatusBadge tone={entity?.onDuty ? "ok" : "neutral"}>
-                  {entity?.onDuty ? "En servicio" : "Fuera de servicio"}
+                  {entity?.onDuty
+                    ? t("guards.summary.onDuty", "En servicio")
+                    : t("guards.summary.offDuty", "Fuera de servicio")}
                 </StatusBadge>
                 {entity?.zone && (
                   <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-0.5 font-medium text-muted-foreground">

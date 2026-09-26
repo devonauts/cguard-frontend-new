@@ -58,7 +58,9 @@ export function InsigniaOptimizada({
 
   return (
     <StatusBadge tone="ok">
-      {fecha ? `Optimizada · ${fecha}` : "Optimizada"}
+      {fecha
+        ? t("ui.OptimizacionPanel.optimizadaFecha", { defaultValue: "Optimizada · {{fecha}}", fecha })
+        : t("ui.OptimizacionPanel.optimizada", "Optimizada")}
     </StatusBadge>
   );
 }
@@ -96,8 +98,10 @@ export function PanelAhorro({
         )}
         tone="neutral"
       >
-        Se recalculó el recorrido y no hizo falta mover ninguna parada. El orden
-        que había ya era el más corto.
+        {t(
+          "ui.OptimizacionPanel.seRecalculoSinMover",
+          "Se recalculó el recorrido y no hizo falta mover ninguna parada. El orden que había ya era el más corto.",
+        )}
       </InfoNote>
     );
   }
@@ -134,13 +138,19 @@ export function PanelAhorro({
             className="text-sm font-semibold tabular-nums"
             style={{ color: "var(--ok-text)" }}
           >
-            {Math.round(ahorro.porcentaje)} % menos de recorrido
+            {t("ui.OptimizacionPanel.porcentajeMenos", {
+              defaultValue: "{{pct}} % menos de recorrido",
+              pct: Math.round(ahorro.porcentaje),
+            })}
           </div>
         )}
         {fecha && (
           <div className="text-xs" style={{ color: "var(--ink-soft)" }}>
-            Calculado el {fecha}. Si cambias las paradas o los extremos, el
-            orden vuelve a ser manual.
+            {t("ui.OptimizacionPanel.calculadoEl", {
+              defaultValue:
+                "Calculado el {{fecha}}. Si cambias las paradas o los extremos, el orden vuelve a ser manual.",
+              fecha,
+            })}
           </div>
         )}
       </div>
@@ -150,14 +160,20 @@ export function PanelAhorro({
       {ahorro.sinCoordenadas != null && ahorro.sinCoordenadas > 0 && (
         <InfoNote className="mt-3" icon={<Info />} tone="info">
           {ahorro.sinCoordenadas === 1
-            ? "Una parada no tiene ubicación: conserva su posición en la lista y las demás se repartieron por los huecos."
-            : `${ahorro.sinCoordenadas} paradas no tienen ubicación: conservan su posición en la lista y las demás se repartieron por los huecos.`}
+            ? t("ui.OptimizacionPanel.unaParadaSinUbicacion", "Una parada no tiene ubicación: conserva su posición en la lista y las demás se repartieron por los huecos.")
+            : t("ui.OptimizacionPanel.nParadasSinUbicacion", {
+                defaultValue:
+                  "{{count}} paradas no tienen ubicación: conservan su posición en la lista y las demás se repartieron por los huecos.",
+                count: ahorro.sinCoordenadas,
+              })}
         </InfoNote>
       )}
       {ahorro.truncado && (
         <InfoNote className="mt-3" icon={<Info />} tone="warn">
-          La ruta tiene demasiadas paradas y el cálculo no las cubrió todas.
-          Revisa el orden del final del recorrido.
+          {t(
+            "ui.OptimizacionPanel.demasiadasParadas",
+            "La ruta tiene demasiadas paradas y el cálculo no las cubrió todas. Revisa el orden del final del recorrido.",
+          )}
         </InfoNote>
       )}
 
@@ -172,7 +188,7 @@ export function PanelAhorro({
               }
               hint={
                 ahorro.kmAntes != null
-                  ? `Antes: ${km(ahorro.kmAntes)}`
+                  ? t("ui.OptimizacionPanel.antes", { defaultValue: "Antes: {{v}}", v: km(ahorro.kmAntes) })
                   : undefined
               }
               icon={<RouteIcon />}
@@ -197,11 +213,15 @@ export function PanelAhorro({
               }
               hint={
                 ahorro.minAntes != null
-                  ? `Antes: ${minutos(ahorro.minAntes)} · incluye la permanencia en cada parada, a marcha de tráfico urbano`
+                  ? t("ui.OptimizacionPanel.antesMinutos", {
+                      defaultValue:
+                        "Antes: {{v}} · incluye la permanencia en cada parada, a marcha de tráfico urbano",
+                      v: minutos(ahorro.minAntes),
+                    })
                   : undefined
               }
               icon={<Timer />}
-              label="Tiempo en ruta"
+              label={t("ui.OptimizacionPanel.tiempoEnRuta", "Tiempo en ruta")}
               value={<Cifra valor={Math.round(ahorro.minDespues)} />}
             />
           )}

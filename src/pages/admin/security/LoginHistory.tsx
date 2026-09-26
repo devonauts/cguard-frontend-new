@@ -43,17 +43,39 @@ type Row = {
 const PAGE_SIZE = 100;
 
 // Chip key → backend `event` param (comma-separated allowed).
+// `labelKey` se traduce donde se pinta: esta constante se evalúa al importar.
 const FILTERS = [
-  { key: "", label: "Todos", event: "" },
-  { key: "login", label: "Inicios", event: "login" },
-  { key: "login_failed", label: "Fallidos", event: "login_failed" },
-  { key: "logout", label: "Cierres", event: "logout" },
+  { key: "", label: "Todos", labelKey: "ui.LoginHistory.filter.all", event: "" },
+  {
+    key: "login",
+    label: "Inicios",
+    labelKey: "ui.LoginHistory.filter.login",
+    event: "login",
+  },
+  {
+    key: "login_failed",
+    label: "Fallidos",
+    labelKey: "ui.LoginHistory.filter.loginFailed",
+    event: "login_failed",
+  },
+  {
+    key: "logout",
+    label: "Cierres",
+    labelKey: "ui.LoginHistory.filter.logout",
+    event: "logout",
+  },
   {
     key: "device",
     label: "Dispositivos",
+    labelKey: "ui.LoginHistory.filter.device",
     event: "device_registered,device_evicted",
   },
-  { key: "provider", label: "Soporte", event: "provider_access" },
+  {
+    key: "provider",
+    label: "Soporte",
+    labelKey: "ui.LoginHistory.filter.provider",
+    event: "provider_access",
+  },
 ];
 
 export default function LoginHistory() {
@@ -102,9 +124,16 @@ export default function LoginHistory() {
           badges={
             !primeraCarga ? (
               <StatusBadge dot={false} tone="neutral">
-                {items.length}
-                {total ? ` de ${total}` : ""} evento
-                {items.length === 1 ? "" : "s"}
+                {total
+                  ? t("ui.LoginHistory.nDeTotalEventos", {
+                      defaultValue: "{{count}} de {{total}} eventos",
+                      count: items.length,
+                      total,
+                    })
+                  : t("ui.LoginHistory.nEventos", {
+                      defaultValue: "{{count}} eventos",
+                      count: items.length,
+                    })}
               </StatusBadge>
             ) : undefined
           }
@@ -128,16 +157,19 @@ export default function LoginHistory() {
 
           <Segmented
             className="max-w-full overflow-x-auto"
-            options={FILTERS.map((f) => ({ value: f.key, label: f.label }))}
+            options={FILTERS.map((f) => ({
+              value: f.key,
+              label: t(f.labelKey, f.label),
+            }))}
             value={filter}
             onChange={setFilter}
           />
 
           <Button
-            aria-label="Recargar"
+            aria-label={t("ui.AuditLogs.recargar", "Recargar")}
             className="ml-auto"
             size="icon"
-            title="Recargar"
+            title={t("ui.AuditLogs.recargar", "Recargar")}
             variant="outline"
             onClick={() => load(true)}
           >
@@ -156,8 +188,14 @@ export default function LoginHistory() {
                 className="border-0"
                 description={
                   q.trim() || filter
-                    ? "Ningún evento coincide con la búsqueda o el filtro elegido."
-                    : "Todavía no se ha registrado ningún acceso."
+                    ? t(
+                        "ui.LoginHistory.ningunEventoCoincide",
+                        "Ningún evento coincide con la búsqueda o el filtro elegido.",
+                      )
+                    : t(
+                        "ui.LoginHistory.todaviaNoSeHaRegistrado",
+                        "Todavía no se ha registrado ningún acceso.",
+                      )
                 }
                 icon={<Inbox />}
                 title={t("ui.LoginHistory.sinEventos")}
@@ -167,12 +205,12 @@ export default function LoginHistory() {
             <AuditTable
               head={
                 <>
-                  <th className="px-4 py-3">Evento</th>
+                  <th className="px-4 py-3">{t("ui.AuditLogs.evento", "Evento")}</th>
                   <th className="px-3 py-3">{t("comun.usuario")}</th>
                   <th className="px-3 py-3">
                     {t("ui.LoginHistory.direccion", "Dirección")}
                   </th>
-                  <th className="px-3 py-3">Plataforma</th>
+                  <th className="px-3 py-3">{t("ui.AuditLogs.plataforma", "Plataforma")}</th>
                   <th className="px-3 py-3">{t("comun.detalle")}</th>
                   <th className="px-3 py-3 text-right">{t("comun.fecha")}</th>
                 </>
@@ -183,7 +221,7 @@ export default function LoginHistory() {
 
                 return (
                   <AuditRow key={r.id} tone={m.tone}>
-                    <td className="relative px-4 py-2.5" data-rotulo="Evento">
+                    <td className="relative px-4 py-2.5" data-rotulo={t("ui.AuditLogs.evento", "Evento")}>
                       <SeverityRail tone={m.tone} />
                       <StatusBadge dot={false} tone={m.tone}>
                         {m.icon}
@@ -205,7 +243,7 @@ export default function LoginHistory() {
                       {r.ip || "—"}
                     </td>
                     <td
-                      data-rotulo="Plataforma"
+                      data-rotulo={t("ui.AuditLogs.plataforma", "Plataforma")}
                       className="px-3 py-2.5"
                       style={{ color: "var(--ink-soft)" }}
                     >
@@ -234,7 +272,7 @@ export default function LoginHistory() {
 
           <InfiniteFooter
             count={items.length}
-            endLabel="Fin del historial"
+            endLabel={t("ui.LoginHistory.finDelHistorial", "Fin del historial")}
             hasMore={hasMore}
             loading={loading}
             sentinelRef={sentinelRef}

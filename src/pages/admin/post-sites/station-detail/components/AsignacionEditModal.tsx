@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { CalendarRange, Loader2, Moon, Pencil, Trash2 } from "lucide-react";
 
 import { ApiService } from "@/services/api/apiService";
@@ -67,6 +68,7 @@ export default function AsignacionEditModal({
   assignmentId: string | null;
   stationRotationStyleId?: string | null;
 }) {
+  const { t } = useTranslation();
   const [cargando, setCargando] = useState(false);
   const [guardando, setGuardando] = useState(false);
   const [asignacion, setAsignacion] = useState<any | null>(null);
@@ -123,7 +125,7 @@ export default function AsignacionEditModal({
         setInicio(String(mia?.startDate || "").slice(0, 10));
         setFin(String(mia?.endDate || "").slice(0, 10));
       } catch (e: any) {
-        toast.error(e?.message || "No se pudo cargar la asignación");
+        toast.error(e?.message || t("ui.AsignacionEditModal.noSePudoCargarLaAsignacion", "No se pudo cargar la asignación"));
       } finally {
         if (vivo) setCargando(false);
       }
@@ -151,7 +153,7 @@ export default function AsignacionEditModal({
     return [
       ...fijos.map((p, i) => ({
         id: String(p.id),
-        label: `Vigilante ${i + 1}`,
+        label: t("ui.AsignacionEditModal.vigilanteN", { defaultValue: "Vigilante {{n}}", n: i + 1 }),
         horas:
           hhmm(p.startTime) && hhmm(p.endTime)
             ? `${hhmm(p.startTime)}–${hhmm(p.endTime)}`
@@ -164,13 +166,16 @@ export default function AsignacionEditModal({
       })),
       ...sacas.map((p, i) => ({
         id: String(p.id),
-        label: sacas.length > 1 ? `Sacafranco ${i + 1}` : "Sacafranco",
+        label:
+          sacas.length > 1
+            ? t("ui.AsignacionEditModal.sacafrancoN", { defaultValue: "Sacafranco {{n}}", n: i + 1 })
+            : t("clients.assignGuards.roleSf", "Sacafranco"),
         horas: "",
         tramo: "",
         ocupada: ocupadas.has(String(p.id)),
       })),
     ];
-  }, [positions, ocupadas]);
+  }, [positions, ocupadas, t]);
 
   /* Cómo se llaman los dos tramos del ciclo EN LA PLAZA ELEGIDA: el propio y el
      siguiente. En un puesto de 24 h el segundo es la noche; en 07:00–15:00 +
@@ -191,13 +196,13 @@ export default function AsignacionEditModal({
     return Array.from(vistos.values()).sort();
   }, [positions]);
   const etiquetaPrimerBloque = useMemo(() => {
-    if (bloques.length < 2) return "día";
+    if (bloques.length < 2) return t("ui.AsignacionEditModal.dia", "día");
     const p = positions.find((x) => String(x.id) === positionId);
 
     return nombreDeTramo(String(p?.startTime || bloques[0]).slice(0, 5));
   }, [bloques, positions, positionId]);
   const etiquetaSegundoBloque = useMemo(() => {
-    if (bloques.length < 2) return "noche";
+    if (bloques.length < 2) return t("ui.AsignacionEditModal.noche", "noche");
     const p = positions.find((x) => String(x.id) === positionId);
     const mio = String(p?.startTime || bloques[0]).slice(0, 5);
     const i = bloques.indexOf(mio);
@@ -266,12 +271,12 @@ export default function AsignacionEditModal({
     g.fullName ||
     `${g.firstName || ""} ${g.lastName || ""}`.trim() ||
     g.email ||
-    "este vigilante";
+    t("ui.AsignacionEditModal.esteVigilante", "este vigilante");
 
   const guardar = async () => {
     if (!assignmentId) return;
     if (!inicio) {
-      toast.error("Pon la fecha de inicio del turno");
+      toast.error(t("ui.AsignacionEditModal.ponLaFechaDeInicioDelTurno", "Pon la fecha de inicio del turno"));
 
       return;
     }
@@ -290,12 +295,16 @@ export default function AsignacionEditModal({
           },
         },
       );
-      toast.success("Turno actualizado — el cuadrante se rehizo con el cambio");
+      toast.success(
+        t("ui.AsignacionEditModal.turnoActualizado", "Turno actualizado — el cuadrante se rehizo con el cambio"),
+      );
       onSaved();
       onClose();
     } catch (e: any) {
       toast.error(
-        e?.data?.message || e?.message || "No se pudo guardar el cambio",
+        e?.data?.message ||
+          e?.message ||
+          t("ui.AsignacionEditModal.noSePudoGuardarElCambio", "No se pudo guardar el cambio"),
       );
     } finally {
       setGuardando(false);
@@ -306,9 +315,13 @@ export default function AsignacionEditModal({
     if (!assignmentId) return;
     if (
       !(await confirmDialog({
-        title: "Quitar vigilante",
-        message: `¿Quitar a ${nombre} de este puesto? Sus turnos futuros se anulan; los ya trabajados se conservan en el historial.`,
-        confirmText: "Quitar",
+        title: t("ui.AsignacionEditModal.quitarVigilante", "Quitar vigilante"),
+        message: t("ui.AsignacionEditModal.quitarConfirm", {
+          defaultValue:
+            "¿Quitar a {{nombre}} de este puesto? Sus turnos futuros se anulan; los ya trabajados se conservan en el historial.",
+          nombre,
+        }),
+        confirmText: t("station.guards.remove", "Quitar"),
         tone: "danger",
       }))
     )
@@ -318,11 +331,13 @@ export default function AsignacionEditModal({
       await ApiService.delete(
         `/tenant/${tenantId}/guard-assignment/${encodeURIComponent(assignmentId)}`,
       );
-      toast.success("Vigilante quitado del puesto — su historial se conserva");
+      toast.success(
+        t("ui.AsignacionEditModal.vigilanteQuitado", "Vigilante quitado del puesto — su historial se conserva"),
+      );
       onSaved();
       onClose();
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || "No se pudo quitar");
+      toast.error(e?.data?.message || e?.message || t("ui.AsignacionEditModal.noSePudoQuitar", "No se pudo quitar"));
     } finally {
       setGuardando(false);
     }
@@ -332,13 +347,13 @@ export default function AsignacionEditModal({
     <Modal
       description={
         asignacion
-          ? `Rotación de ${nombre} en este puesto`
-          : "Rotación del vigilante en este puesto"
+          ? t("ui.AsignacionEditModal.rotacionDeNombre", { defaultValue: "Rotación de {{nombre}} en este puesto", nombre })
+          : t("ui.AsignacionEditModal.rotacionDelVigilante", "Rotación del vigilante en este puesto")
       }
       footer={
         <>
           <Button variant="outline" onClick={onClose}>
-            Cancelar
+            {t("common.cancel", "Cancelar")}
           </Button>
           <Button
             disabled={guardando || cargando || !asignacion}
@@ -349,30 +364,33 @@ export default function AsignacionEditModal({
             ) : (
               <Pencil size={14} />
             )}{" "}
-            Guardar cambios
+            {t("comms.save", "Guardar cambios")}
           </Button>
         </>
       }
       icon={<Pencil className="h-5 w-5" />}
       open={open}
       size="md"
-      title="Editar turno"
+      title={t("ui.AsignacionEditModal.editarTurno", "Editar turno")}
       onOpenChange={(o) => {
         if (!o) onClose();
       }}
     >
       {cargando ? (
         <div className="flex items-center gap-2 py-8 text-xs text-muted-foreground">
-          <Loader2 className="animate-spin" size={13} /> Cargando la asignación…
+          <Loader2 className="animate-spin" size={13} />{" "}
+          {t("ui.AsignacionEditModal.cargandoLaAsignacion", "Cargando la asignación…")}
         </div>
       ) : !asignacion ? (
         <p className="py-6 text-sm" style={{ color: "var(--warn-text)" }}>
-          Este turno no viene de una rotación, así que no hay asignación que
-          editar. Bórralo y vuelve a crearlo desde «Asignar vigilante».
+          {t(
+            "ui.AsignacionEditModal.noVieneDeRotacion",
+            "Este turno no viene de una rotación, así que no hay asignación que editar. Bórralo y vuelve a crearlo desde «Asignar vigilante».",
+          )}
         </p>
       ) : (
         <div className="space-y-4">
-          <LabeledField label="Puesto">
+          <LabeledField label={t("ui.AsignacionEditModal.puesto", "Puesto")}>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
               {opcionesPlaza.map((p) => (
                 <button
@@ -399,7 +417,7 @@ export default function AsignacionEditModal({
                   }
                   title={
                     p.ocupada
-                      ? "Puesto ocupado por otro vigilante"
+                      ? t("ui.AsignacionEditModal.puestoOcupadoPorOtro", "Puesto ocupado por otro vigilante")
                       : p.horas || undefined
                   }
                   type="button"
@@ -408,7 +426,7 @@ export default function AsignacionEditModal({
                   <span className={p.ocupada ? "line-through" : undefined}>
                     {p.label}
                   </span>
-                  {p.ocupada ? " · ocupado" : ""}
+                  {p.ocupada ? ` · ${t("ui.AsignacionEditModal.ocupado", "ocupado")}` : ""}
                   {p.horas && (
                     <span className="mt-0.5 block text-[10px] font-normal tabular-nums opacity-80">
                       {p.horas}
@@ -421,7 +439,7 @@ export default function AsignacionEditModal({
           </LabeledField>
 
           {!esRelevo && (
-            <LabeledField label="Secuencia de este vigilante">
+            <LabeledField label={t("ui.AsignacionEditModal.secuenciaDeEsteVigilante", "Secuencia de este vigilante")}>
               <SecuenciaPropiaSelect
                 etiquetaPrimerBloque={etiquetaPrimerBloque}
                 etiquetaSegundoBloque={etiquetaSegundoBloque}
@@ -431,17 +449,22 @@ export default function AsignacionEditModal({
                 onChange={setSecuencia}
               />
               <p className="mt-1 text-[10px] text-muted-foreground/70">
-                Déjalo en «la de la estación» salvo que este vigilante tenga un
-                ciclo distinto al de sus compañeros
                 {bloques.length > 1
-                  ? ` (por ejemplo 2 de ${etiquetaPrimerBloque} y 3 de ${etiquetaSegundoBloque})`
-                  : ""}
-                .
+                  ? t("ui.AsignacionEditModal.dejaloConEjemplo", {
+                      defaultValue:
+                        "Déjalo en «la de la estación» salvo que este vigilante tenga un ciclo distinto al de sus compañeros (por ejemplo 2 de {{primero}} y 3 de {{segundo}}).",
+                      primero: etiquetaPrimerBloque,
+                      segundo: etiquetaSegundoBloque,
+                    })
+                  : t(
+                      "ui.AsignacionEditModal.dejaloEnLaDeLaEstacion",
+                      "Déjalo en «la de la estación» salvo que este vigilante tenga un ciclo distinto al de sus compañeros.",
+                    )}
               </p>
             </LabeledField>
           )}
 
-          <LabeledField label="Fecha de inicio del turno">
+          <LabeledField label={t("ui.AsignacionEditModal.fechaDeInicioDelTurno", "Fecha de inicio del turno")}>
             <input
               className={FIELD_CLS_LG}
               type="date"
@@ -457,7 +480,8 @@ export default function AsignacionEditModal({
                 }}
               >
                 <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <CalendarRange className="brand-text" size={13} /> Empieza{" "}
+                  <CalendarRange className="brand-text" size={13} />{" "}
+                  {t("ui.AsignacionEditModal.empieza", "Empieza")}{" "}
                   <span className="font-medium capitalize text-foreground">
                     {vistaDescanso.startWeekday}
                   </span>
@@ -466,14 +490,14 @@ export default function AsignacionEditModal({
                   <Moon className="brand-text" size={13} />
                   {vistaDescanso.weekday ? (
                     <span className="text-muted-foreground">
-                      Descansa:{" "}
+                      {t("ui.AsignacionEditModal.descansa", "Descansa:")}{" "}
                       <span className="font-semibold capitalize brand-text">
                         {vistaDescanso.weekday}
                       </span>
                     </span>
                   ) : (
                     <span className="capitalize text-muted-foreground">
-                      Descanso:{" "}
+                      {t("ui.AsignacionEditModal.descanso", "Descanso:")}{" "}
                       {vistaDescanso.dates.map(shortRestLabel).join(" · ")}
                     </span>
                   )}
@@ -481,12 +505,14 @@ export default function AsignacionEditModal({
               </div>
             )}
             <p className="mt-1 text-[10px] text-muted-foreground/70">
-              La fecha de inicio es el día 0 del ciclo — muévela para correr el
-              día de descanso.
+              {t(
+                "ui.AsignacionEditModal.fechaInicioDia0",
+                "La fecha de inicio es el día 0 del ciclo — muévela para correr el día de descanso.",
+              )}
             </p>
           </LabeledField>
 
-          <LabeledField label="Hasta (opcional)">
+          <LabeledField label={t("ui.AsignacionEditModal.hastaOpcional", "Hasta (opcional)")}>
             <input
               className={FIELD_CLS_LG}
               min={inicio}
@@ -495,7 +521,10 @@ export default function AsignacionEditModal({
               onChange={(e) => setFin(e.target.value)}
             />
             <p className="mt-1 text-[10px] text-muted-foreground/70">
-              Vacío = asignación indefinida; con fecha, una cobertura temporal.
+              {t(
+                "ui.AsignacionEditModal.vacioIndefinida",
+                "Vacío = asignación indefinida; con fecha, una cobertura temporal.",
+              )}
             </p>
           </LabeledField>
 
@@ -514,7 +543,7 @@ export default function AsignacionEditModal({
               type="button"
               onClick={() => void quitar()}
             >
-              <Trash2 size={12} /> Quitar del puesto
+              <Trash2 size={12} /> {t("ui.AsignacionEditModal.quitarDelPuesto", "Quitar del puesto")}
             </button>
           </div>
         </div>

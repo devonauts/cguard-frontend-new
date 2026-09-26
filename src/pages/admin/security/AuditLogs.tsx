@@ -118,15 +118,17 @@ export default function AuditLogs() {
             !loading && !error ? (
               <>
                 <StatusBadge dot={false} tone="neutral">
-                  {filtered.length === 1
-                    ? "1 evento"
-                    : `${filtered.length} eventos`}
+                  {t("ui.AuditLogs.nEventos", {
+                    defaultValue: "{{count}} eventos",
+                    count: filtered.length,
+                  })}
                 </StatusBadge>
                 {fallidos > 0 && (
                   <StatusBadge tone="bad">
-                    {fallidos === 1
-                      ? "1 intento fallido"
-                      : `${fallidos} intentos fallidos`}
+                    {t("ui.AuditLogs.nIntentosFallidos", {
+                      defaultValue: "{{count}} intentos fallidos",
+                      count: fallidos,
+                    })}
                   </StatusBadge>
                 )}
               </>
@@ -155,9 +157,9 @@ export default function AuditLogs() {
             />
           </div>
           <Button
-            aria-label="Recargar"
+            aria-label={t("ui.AuditLogs.recargar", "Recargar")}
             size="icon"
-            title="Recargar"
+            title={t("ui.AuditLogs.recargar", "Recargar")}
             variant="outline"
             onClick={load}
           >
@@ -173,11 +175,15 @@ export default function AuditLogs() {
               <EmptyState
                 action={
                   <Button className="gap-2" variant="outline" onClick={load}>
-                    <RefreshCw className="size-4" /> Reintentar
+                    <RefreshCw className="size-4" />{" "}
+                    {t("ui.shared.reintentar", "Reintentar")}
                   </Button>
                 }
                 className="border-0"
-                description="Vuelve a intentarlo en unos segundos."
+                description={t(
+                  "ui.AuditLogs.vuelveAIntentarloEnUnosSegundos",
+                  "Vuelve a intentarlo en unos segundos.",
+                )}
                 icon={<AlertTriangle />}
                 title={t("ui.AuditLogs.noSePudoCargarEl")}
               />
@@ -188,8 +194,14 @@ export default function AuditLogs() {
                 className="border-0"
                 description={
                   q.trim()
-                    ? `Ningún evento coincide con “${q}”.`
-                    : "Todavía no hay eventos de seguridad."
+                    ? t("ui.AuditLogs.ningunEventoCoincide", {
+                        defaultValue: "Ningún evento coincide con “{{q}}”.",
+                        q,
+                      })
+                    : t(
+                        "ui.AuditLogs.todaviaNoHayEventosDeSeguridad",
+                        "Todavía no hay eventos de seguridad.",
+                      )
                 }
                 icon={<Inbox />}
                 title={t("comun.sinRegistros")}
@@ -200,12 +212,12 @@ export default function AuditLogs() {
               flush
               head={
                 <>
-                  <th className="px-4 py-3">Evento</th>
+                  <th className="px-4 py-3">{t("ui.AuditLogs.evento", "Evento")}</th>
                   <th className="px-3 py-3">{t("comun.usuario")}</th>
                   <th className="px-3 py-3">
                     {t("ui.AuditLogs.direccion", "Dirección")}
                   </th>
-                  <th className="px-3 py-3">Plataforma</th>
+                  <th className="px-3 py-3">{t("ui.AuditLogs.plataforma", "Plataforma")}</th>
                   <th className="px-3 py-3">{t("comun.detalle")}</th>
                   <th className="px-3 py-3 text-right">{t("comun.fecha")}</th>
                 </>
@@ -216,7 +228,7 @@ export default function AuditLogs() {
 
                 return (
                   <AuditTr key={r.id} tone={m.tone}>
-                    <td className="relative px-4 py-2.5" data-rotulo="Evento">
+                    <td className="relative px-4 py-2.5" data-rotulo={t("ui.AuditLogs.evento", "Evento")}>
                       <SeverityRail tone={m.tone} />
                       <StatusBadge dot={false} tone={m.tone}>
                         {m.icon}
@@ -238,7 +250,7 @@ export default function AuditLogs() {
                       {r.ip || "—"}
                     </td>
                     <td
-                      data-rotulo="Plataforma"
+                      data-rotulo={t("ui.AuditLogs.plataforma", "Plataforma")}
                       className="px-3 py-2.5"
                       style={{ color: "var(--ink-soft)" }}
                     >

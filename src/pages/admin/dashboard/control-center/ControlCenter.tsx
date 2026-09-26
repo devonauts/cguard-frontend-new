@@ -81,6 +81,7 @@ import { DashboardErrorBoundary } from "./components/ErrorBoundary";
 import { MobileCommandCenter } from "./components/MobileCommandCenter";
 import { useEsMovil } from "./useMovil";
 
+import i18n from "@/i18n";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import AppLayout from "@/layouts/app-layout";
@@ -120,7 +121,9 @@ function nombreDe(
   if (apellido) return apellido;
   const correo = user?.email || "";
 
-  return correo.split("@")[0] || "operador";
+  return (
+    correo.split("@")[0] || i18n.t("ui.ControlCenter.operador", "operador")
+  );
 }
 
 export default function ControlCenter() {

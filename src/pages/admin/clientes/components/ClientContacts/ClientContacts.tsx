@@ -774,7 +774,7 @@ export default function ClientContacts({
                           aria-expanded={openMenuId === c.id}
                           aria-controls={`actions-${c.id}-menu`}
                           className={`${isCompact ? "p-1" : "p-2"} rounded-full hover:bg-muted focus:outline-none`}
-                          title="Actions"
+                          title={t("actions.more", "Acciones")}
                         >
                           <EllipsisVertical size={isCompact ? 14 : 18} />
                         </button>

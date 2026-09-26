@@ -56,6 +56,7 @@ import { Button } from "@/components/ui/button";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import i18n from "@/i18n";
 // ── Shape of GET /client-account/:id/documents (clientAccountDocuments.ts) ──
 interface DocRow {
   id: string;
@@ -142,6 +143,30 @@ const CATEGORIES = [
   "Planos",
   "Otros",
 ];
+/** La categoría se guarda en español (es un valor del API); se traduce al pintar. */
+const CAT_KEY: Record<string, string> = {
+  "Post Orders": "ui.ClientDocuments.cat.postOrders",
+  Manuales: "ui.ClientDocuments.cat.manuales",
+  Procedimientos: "ui.ClientDocuments.cat.procedimientos",
+  Reportes: "ui.ClientDocuments.cat.reportes",
+  Políticas: "ui.ClientDocuments.cat.politicas",
+  Contratos: "ui.ClientDocuments.cat.contratos",
+  Mapas: "ui.ClientDocuments.cat.mapas",
+  Capacitación: "ui.ClientDocuments.cat.capacitacion",
+  Planos: "ui.ClientDocuments.cat.planos",
+  Otros: "ui.ClientDocuments.cat.otros",
+};
+const catLabel = (c?: string | null) =>
+  c && CAT_KEY[c] ? i18n.t(CAT_KEY[c], c) : c || "";
+/** Igual con el tipo de archivo que calcula el servidor. */
+const TYPE_KEY: Record<string, string> = {
+  Imagen: "ui.ClientDocuments.tipo.imagen",
+  Video: "ui.ClientDocuments.tipo.video",
+  Comprimido: "ui.ClientDocuments.tipo.comprimido",
+  Texto: "ui.ClientDocuments.tipo.texto",
+};
+const typeLabel = (v?: string | null) =>
+  v && TYPE_KEY[v] ? i18n.t(TYPE_KEY[v], v) : v || "";
 /* Cuatro tipos de archivo: categorías sin orden, a los escalones de serie del
    acento y siempre en la misma posición. */
 // Constante de módulo: guarda la CLAVE junto al texto por defecto. Se traduce
@@ -189,11 +214,22 @@ const fmtDT = (iso: string) => {
 const ago = (iso: string) => {
   const s = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000);
 
-  if (s < 60) return "hace instantes";
-  if (s < 3600) return `hace ${Math.floor(s / 60)} min`;
-  if (s < 86400) return `hace ${Math.floor(s / 3600)} h`;
+  if (s < 60) return i18n.t("ui.ClientDocuments.haceInstantes", "hace instantes");
+  if (s < 3600)
+    return i18n.t("ui.ClientDocuments.haceMin", {
+      defaultValue: "hace {{n}} min",
+      n: Math.floor(s / 60),
+    });
+  if (s < 86400)
+    return i18n.t("ui.ClientDocuments.haceH", {
+      defaultValue: "hace {{n}} h",
+      n: Math.floor(s / 3600),
+    });
 
-  return `hace ${Math.floor(s / 86400)} días`;
+  return i18n.t("ui.ClientDocuments.haceDias", {
+    defaultValue: "hace {{count}} días",
+    count: Math.floor(s / 86400),
+  });
 };
 
 export default function ClientDocuments({ client }: { client: Client }) {
@@ -309,7 +345,12 @@ export default function ClientDocuments({ client }: { client: Client }) {
 
     for (const f of pending) {
       if (f.size > 100 * 1024 * 1024) {
-        toast.error(`Archivo mayor a 100MB: ${f.name}`);
+        toast.error(
+          t("ui.ClientDocuments.archivoMayorA100", {
+            defaultValue: "Archivo mayor a 100MB: {{name}}",
+            name: f.name,
+          }),
+        );
         continue;
       }
       try {
@@ -334,7 +375,12 @@ export default function ClientDocuments({ client }: { client: Client }) {
         });
         ok++;
       } catch {
-        toast.error(`No se pudo subir ${f.name}`);
+        toast.error(
+          t("ui.ClientDocuments.noSePudoSubir", {
+            defaultValue: "No se pudo subir {{name}}",
+            name: f.name,
+          }),
+        );
       }
     }
     setUploading(false);
@@ -342,7 +388,12 @@ export default function ClientDocuments({ client }: { client: Client }) {
     setProgress({});
     setUploadOpen(false);
     if (ok) {
-      toast.success(`${ok} documento(s) subido(s)`);
+      toast.success(
+        t("ui.ClientDocuments.nDocumentosSubidos", {
+          defaultValue: "{{count}} documento(s) subido(s)",
+          count: ok,
+        }),
+      );
       setPage(1);
       await load();
     }
@@ -360,7 +411,12 @@ export default function ClientDocuments({ client }: { client: Client }) {
     const ymd = (d: Date) =>
       `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
-    setGNombre(`Documentación ${mes}`);
+    setGNombre(
+      t("ui.ClientDocuments.documentacionMes", {
+        defaultValue: "Documentación {{mes}}",
+        mes,
+      }),
+    );
     setGDesde(ymd(primero));
     setGHasta(ymd(ultimo));
     setGNota("");
@@ -378,12 +434,19 @@ export default function ClientDocuments({ client }: { client: Client }) {
         notes: gNota.trim() || null,
         attachmentIds: marcadosIds,
       });
-      toast.success(`Carpeta creada con ${marcadosIds.length} documento(s)`);
+      toast.success(
+        t("ui.ClientDocuments.carpetaCreadaCon", {
+          defaultValue: "Carpeta creada con {{count}} documento(s)",
+          count: marcadosIds.length,
+        }),
+      );
       setAgruparOpen(false);
       setMarcados({});
       setPacketsKey((k) => k + 1);
     } catch {
-      toast.error("No se pudo crear la carpeta");
+      toast.error(
+        t("ui.ClientDocuments.noSePudoCrearLaCarpeta", "No se pudo crear la carpeta"),
+      );
     } finally {
       setCreando(false);
     }
@@ -392,14 +455,17 @@ export default function ClientDocuments({ client }: { client: Client }) {
   const doDelete = async (d: DocRow) => {
     if (
       !(await confirmDialog({
-        message: `¿Eliminar "${d.name}"?`,
+        message: t("ui.ClientDocuments.eliminarConfirm", {
+          defaultValue: "¿Eliminar \"{{name}}\"?",
+          name: d.name,
+        }),
         tone: "danger",
       }))
     )
       return;
     try {
       await clientService.deleteClientDocument(d.id);
-      toast.success("Documento eliminado");
+      toast.success(t("ui.ClientDocuments.documentoEliminado", "Documento eliminado"));
       await load(true);
     } catch {
       toast.error(t("comun.noSePudoEliminar"));
@@ -424,10 +490,14 @@ export default function ClientDocuments({ client }: { client: Client }) {
           {marcadosIds.length > 0 && (
             <>
               <Button size="sm" variant="ghost" onClick={() => setMarcados({})}>
-                Quitar selección ({marcadosIds.length})
+                {t("ui.ClientDocuments.quitarSeleccionN", {
+                  defaultValue: "Quitar selección ({{n}})",
+                  n: marcadosIds.length,
+                })}
               </Button>
               <Button size="sm" variant="brand" onClick={abrirAgrupar}>
-                <FolderPlus className="mr-1.5 h-4 w-4" /> Agrupar y entregar
+                <FolderPlus className="mr-1.5 h-4 w-4" />{" "}
+                {t("ui.ClientDocuments.agruparYEntregar", "Agrupar y entregar")}
               </Button>
             </>
           )}
@@ -436,7 +506,8 @@ export default function ClientDocuments({ client }: { client: Client }) {
             variant={marcadosIds.length ? "outline" : "brand"}
             onClick={() => setUploadOpen(true)}
           >
-            <Upload className="mr-1.5 h-4 w-4" /> Subir documento
+            <Upload className="mr-1.5 h-4 w-4" />{" "}
+            {t("ui.ClientDocuments.subirDocumento", "Subir documento")}
           </Button>
         </div>
       </div>
@@ -472,7 +543,10 @@ export default function ClientDocuments({ client }: { client: Client }) {
                 : "ok"
           }
           icon={<HardDrive />}
-          label={`de ${kpis.capLabel ?? "100 GB"}`}
+          label={t("ui.ClientDocuments.deCapacidad", {
+            defaultValue: "de {{cap}}",
+            cap: kpis.capLabel ?? "100 GB",
+          })}
           sub={
             <span className="text-xs" style={{ color: "var(--ink-soft)" }}>
               {kpis.usedPct ?? 0}%
@@ -489,7 +563,10 @@ export default function ClientDocuments({ client }: { client: Client }) {
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.7fr_1fr]">
         {/* LEFT — filters + table */}
-        <Section icon={<Files />} title="Documentos">
+        <Section
+          icon={<Files />}
+          title={t("ui.ClientDocuments.documentos", "Documentos")}
+        >
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <SearchInput
               className="min-w-[200px] flex-1"
@@ -507,7 +584,7 @@ export default function ClientDocuments({ client }: { client: Client }) {
               </option>
               {categories.map((c) => (
                 <option key={c.name} value={c.name}>
-                  {c.name}
+                  {catLabel(c.name)}
                 </option>
               ))}
             </select>
@@ -519,7 +596,7 @@ export default function ClientDocuments({ client }: { client: Client }) {
               <option value="">{t("comun.tipoTodos")}</option>
               {types.map((t) => (
                 <option key={t} value={t}>
-                  {t}
+                  {typeLabel(t)}
                 </option>
               ))}
             </select>
@@ -529,7 +606,8 @@ export default function ClientDocuments({ client }: { client: Client }) {
             <EmptyState
               action={
                 <Button size="sm" onClick={() => setUploadOpen(true)}>
-                  <Upload className="mr-1.5 h-4 w-4" /> Subir documento
+                  <Upload className="mr-1.5 h-4 w-4" />{" "}
+            {t("ui.ClientDocuments.subirDocumento", "Subir documento")}
                 </Button>
               }
               description={t("ui.ClientDocuments.subeElPrimerDocumentoDe")}
@@ -543,7 +621,10 @@ export default function ClientDocuments({ client }: { client: Client }) {
                   {/* Marca los de ESTA página. La selección de las otras se
                         conserva: se está armando una entrega, no filtrando. */}
                   <input
-                    aria-label="Marcar los documentos de esta página"
+                    aria-label={t(
+                      "ui.ClientDocuments.marcarLosDocumentosDeEstaPagina",
+                      "Marcar los documentos de esta página",
+                    )}
                     checked={
                       docs.length > 0 && docs.every((d) => marcados[d.id])
                     }
@@ -570,7 +651,7 @@ export default function ClientDocuments({ client }: { client: Client }) {
                 <Th>{t("ui.ClientDocuments.tamano", "Tamaño")}</Th>
                 <Th>{t("ui.ClientDocuments.actualizadoPor")}</Th>
                 <Th>{t("comun.fecha")}</Th>
-                <Th align="right">Acciones</Th>
+                <Th align="right">{t("ui.RouteForm.acciones", "Acciones")}</Th>
               </THead>
               <tbody>
                 {docs.map((d) => {
@@ -581,7 +662,10 @@ export default function ClientDocuments({ client }: { client: Client }) {
                     <Tr key={d.id} selected={!!marcados[d.id]}>
                       <td className="px-2 py-2.5">
                         <input
-                          aria-label={`Marcar ${d.name}`}
+                          aria-label={t("ui.ClientDocuments.marcarNombre", {
+                            defaultValue: "Marcar {{name}}",
+                            name: d.name,
+                          })}
                           checked={!!marcados[d.id]}
                           type="checkbox"
                           onChange={(e) =>
@@ -616,10 +700,10 @@ export default function ClientDocuments({ client }: { client: Client }) {
                       </td>
                       <td className="px-2 py-2.5">
                         <StatusBadge dot={false} tone="neutral">
-                          {d.category}
+                          {catLabel(d.category)}
                         </StatusBadge>
                       </td>
-                      <td className="px-2 py-2.5">{d.type}</td>
+                      <td className="px-2 py-2.5">{typeLabel(d.type)}</td>
                       <td className="px-2 py-2.5 tabular-nums">
                         {d.sizeLabel}
                       </td>
@@ -634,7 +718,7 @@ export default function ClientDocuments({ client }: { client: Client }) {
                           <RowAction
                             disabled={!d.downloadUrl}
                             href={d.downloadUrl || undefined}
-                            title="Descargar"
+                            title={t("common.download", "Descargar")}
                           >
                             <Download className="h-3.5 w-3.5" />
                           </RowAction>
@@ -655,7 +739,7 @@ export default function ClientDocuments({ client }: { client: Client }) {
           )}
 
           <Pager
-            noun="documentos"
+            noun={t("ui.ClientDocuments.nounDocumentos", "documentos")}
             page={page}
             pageCount={pageCount}
             perPage={perPage}
@@ -666,13 +750,19 @@ export default function ClientDocuments({ client }: { client: Client }) {
 
         {/* RIGHT — storage + categories + activity */}
         <div className="space-y-4">
-          <Section icon={<HardDrive />} title="Almacenamiento">
+          <Section
+            icon={<HardDrive />}
+            title={t("ui.ClientDocuments.almacenamiento", "Almacenamiento")}
+          >
             <div className="flex items-center gap-4">
               {/* Sin datos el anillo se dibuja igual, sólo el canal: un hueco en
                   blanco haría saltar la maquetación al llegar el primer archivo. */}
               <Donut
-                ariaLabel="Almacenamiento por tipo de archivo"
-                centerBottom="Usado"
+                ariaLabel={t(
+                  "ui.ClientDocuments.almacenamientoPorTipo",
+                  "Almacenamiento por tipo de archivo",
+                )}
+                centerBottom={t("ui.ClientDocuments.usado", "Usado")}
                 centerTop={kpis.storageUsedLabel ?? "0 B"}
                 segments={donutSegments}
                 size={140}
@@ -706,13 +796,16 @@ export default function ClientDocuments({ client }: { client: Client }) {
                 style={{ color: "var(--ink-soft)" }}
               >
                 <span>
-                  {kpis.storageUsedLabel ?? "0 B"} de{" "}
-                  {kpis.capLabel ?? "100 GB"}
+                  {t("ui.ClientDocuments.usadoDeCapacidad", {
+                    defaultValue: "{{used}} de {{cap}}",
+                    used: kpis.storageUsedLabel ?? "0 B",
+                    cap: kpis.capLabel ?? "100 GB",
+                  })}
                 </span>
                 <span>{kpis.usedPct ?? 0}%</span>
               </div>
               <MeterBar
-                ariaLabel="Almacenamiento usado"
+                ariaLabel={t("ui.ClientDocuments.almacenamientoUsado", "Almacenamiento usado")}
                 height={6}
                 minVisiblePct={1}
                 pct={kpis.usedPct ?? 0}
@@ -749,7 +842,7 @@ export default function ClientDocuments({ client }: { client: Client }) {
                     className="cg-focus flex w-full items-center justify-between py-2 text-left text-sm transition-opacity hover:opacity-70"
                     onClick={() => resetPage(setCategory)(c.name)}
                   >
-                    <span>{c.name}</span>
+                    <span>{catLabel(c.name)}</span>
                     <span
                       className="tabular-nums"
                       style={{ color: "var(--ink-soft)" }}
@@ -762,7 +855,10 @@ export default function ClientDocuments({ client }: { client: Client }) {
             )}
           </Section>
 
-          <Section icon={<Clock />} title="Actividad reciente">
+          <Section
+            icon={<Clock />}
+            title={t("ui.ClientDocuments.actividadReciente", "Actividad reciente")}
+          >
             {activity.length === 0 ? (
               <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
                 {t("ui.ClientDocuments.sinActividadReciente")}
@@ -799,7 +895,10 @@ export default function ClientDocuments({ client }: { client: Client }) {
 
       <TabFooter
         icon={<HardDrive />}
-        note="Los documentos se almacenan de forma segura y cumplen con los estándares de protección de datos."
+        note={t(
+          "ui.ClientDocuments.notaSeguridad",
+          "Los documentos se almacenan de forma segura y cumplen con los estándares de protección de datos.",
+        )}
         updatedAt={fmtUpdated}
         onRefresh={() => load()}
       />
@@ -816,13 +915,18 @@ export default function ClientDocuments({ client }: { client: Client }) {
               {t("actions.cancel")}
             </Button>
             <Button disabled={uploading || !pending.length} onClick={doUpload}>
-              {uploading ? "Subiendo…" : `Subir ${pending.length || ""}`}
+              {uploading
+                ? t("ui.ClientDocuments.subiendo", "Subiendo…")
+                : t("ui.ClientDocuments.subirN", {
+                    defaultValue: "Subir {{n}}",
+                    n: pending.length || "",
+                  })}
             </Button>
           </>
         }
         icon={<Upload className="h-5 w-5" />}
         open={uploadOpen}
-        title="Subir documento"
+        title={t("ui.ClientDocuments.subirDocumento", "Subir documento")}
         onOpenChange={(o) => {
           if (!uploading) setUploadOpen(o);
         }}
@@ -836,7 +940,7 @@ export default function ClientDocuments({ client }: { client: Client }) {
             >
               {CATEGORIES.map((c) => (
                 <option key={c} value={c}>
-                  {c}
+                  {catLabel(c)}
                 </option>
               ))}
             </select>

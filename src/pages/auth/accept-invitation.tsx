@@ -321,8 +321,10 @@ export default function AcceptInvitation() {
             className="max-w-sm text-sm leading-relaxed"
             style={{ color: "var(--ink-soft)" }}
           >
-            Pide a tu administrador que te reenvíe la invitación y vuelve a
-            abrir el enlace del correo.
+            {t(
+              "ui.acceptinvitation.pideATuAdministradorQueTeReenvie",
+              "Pide a tu administrador que te reenvíe la invitación y vuelve a abrir el enlace del correo.",
+            )}
           </p>
           <button
             className={BOTON_PRINCIPAL}
@@ -441,7 +443,9 @@ export default function AcceptInvitation() {
           {password && (
             <div className="mt-2.5">
               <div className="flex items-center justify-between text-[11px] font-medium">
-                <span style={{ color: "var(--ink-faint)" }}>Seguridad</span>
+                <span style={{ color: "var(--ink-faint)" }}>
+                  {t("ui.acceptinvitation.seguridad", "Seguridad")}
+                </span>
                 <span style={{ color: `var(--${strengthTone}-text)` }}>
                   {strengthLabel}
                 </span>
@@ -514,7 +518,11 @@ export default function AcceptInvitation() {
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <>
-              Activar y entrar al panel <ArrowRight className="h-4 w-4" />
+              {t(
+                "ui.acceptinvitation.activarYEntrarAlPanel",
+                "Activar y entrar al panel",
+              )}{" "}
+              <ArrowRight className="h-4 w-4" />
             </>
           )}
         </button>

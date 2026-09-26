@@ -214,9 +214,14 @@ function ActividadChart({
 
   return (
     <AreaChart
-      ariaLabel="Actividades por día"
+      ariaLabel={t("ui.ClientReports.actividadesPorDia", "Actividades por día")}
       data={data.map((d) => ({ label: dia(d.date), value: d.value }))}
-      formatValue={(v) => `${v.toLocaleString(localeActual())} actividades`}
+      formatValue={(v) =>
+        t("ui.ClientReports.nActividades", {
+          defaultValue: "{{n}} actividades",
+          n: v.toLocaleString(localeActual()),
+        })
+      }
       height={190}
     />
   );
@@ -274,7 +279,10 @@ function Kpi({ icon, k }: { icon: ReactNode; k: ReportKpi }) {
       </div>
       <div className="mt-1.5">
         <Sparkline
-          ariaLabel={`Tendencia de ${k.label}`}
+          ariaLabel={t("ui.ClientReports.tendenciaDe", {
+            defaultValue: "Tendencia de {{label}}",
+            label: k.label,
+          })}
           color={toneVar(k.tone)}
           data={k.spark || []}
         />
@@ -416,7 +424,10 @@ export default function ClientReports({
   const delSchedule = async (s: ProgramadoRow) => {
     if (
       !(await confirmDialog({
-        message: `¿Eliminar "${s.name}"?`,
+        message: t("ui.ClientDocuments.eliminarConfirm", {
+          defaultValue: "¿Eliminar \"{{name}}\"?",
+          name: s.name,
+        }),
         tone: "danger",
       }))
     )
@@ -476,7 +487,11 @@ export default function ClientReports({
           </div>
           {cumplimiento.hasData === false ? (
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-              <Donut centerBottom="Sin datos" centerTop="—" segments={[]} />
+              <Donut
+                centerBottom={t("ui.RouteDetailModal.sinDatos", "Sin datos")}
+                centerTop="—"
+                segments={[]}
+              />
               <p className="min-w-0 flex-1 text-xs text-muted-foreground">
                 {t(
                   "ui.ClientReports.noHayTurnosProgramadosNi",
@@ -488,23 +503,23 @@ export default function ClientReports({
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
               {/* Cumplido / parcial / incumplido es un ESTADO: verde, ámbar y rojo semánticos. */}
               <Donut
-                centerBottom="Cumplim."
+                centerBottom={t("ui.ClientReports.cumplimAbrev", "Cumplim.")}
                 centerTop={`${cumplimiento.pct ?? 0}%`}
                 segments={[
                   {
                     value: cumplimiento.cumplidos || 0,
                     tone: "ok",
-                    label: "Cumplidos",
+                    label: t("ui.ClientReports.cumplidos", "Cumplidos"),
                   },
                   {
                     value: cumplimiento.parciales || 0,
                     tone: "warn",
-                    label: "Parciales",
+                    label: t("ui.ClientReports.parciales", "Parciales"),
                   },
                   {
                     value: cumplimiento.incumplidos || 0,
                     tone: "bad",
-                    label: "Incumplidos",
+                    label: t("ui.ClientReports.incumplidos", "Incumplidos"),
                   },
                 ]}
               />
@@ -514,7 +529,9 @@ export default function ClientReports({
                     className="h-2 w-2 shrink-0 rounded-full"
                     style={{ background: CHART_VARS.ok }}
                   />
-                  <span className="truncate">Cumplidos</span>
+                  <span className="truncate">
+                    {t("ui.ClientReports.cumplidos", "Cumplidos")}
+                  </span>
                   <b className="ml-auto tabular-nums">
                     {cumplimiento.cumplidosPct ?? 0}%
                   </b>
@@ -524,7 +541,9 @@ export default function ClientReports({
                     className="h-2 w-2 shrink-0 rounded-full"
                     style={{ background: CHART_VARS.warn }}
                   />
-                  <span className="truncate">Parciales</span>
+                  <span className="truncate">
+                    {t("ui.ClientReports.parciales", "Parciales")}
+                  </span>
                   <b className="ml-auto tabular-nums">
                     {cumplimiento.parcialesPct ?? 0}%
                   </b>
@@ -534,7 +553,9 @@ export default function ClientReports({
                     className="h-2 w-2 shrink-0 rounded-full"
                     style={{ background: CHART_VARS.bad }}
                   />
-                  <span className="truncate">Incumplidos</span>
+                  <span className="truncate">
+                    {t("ui.ClientReports.incumplidos", "Incumplidos")}
+                  </span>
                   <b className="ml-auto tabular-nums">
                     {cumplimiento.incumplidosPct ?? 0}%
                   </b>
@@ -567,7 +588,7 @@ export default function ClientReports({
                     hacia el gris lo dice mejor que siete colores sin relación, y
                     admite tantos tipos como haya sin inventar tonos nuevos. */}
                 <Donut
-                  centerBottom="Total"
+                  centerBottom={t("comun.total", "Total")}
                   centerTop={String(data?.incidentesTotal ?? 0)}
                   segments={porTipo.map((t, i) => ({
                     value: t.count,
@@ -649,14 +670,21 @@ export default function ClientReports({
         <div className="space-y-4">
           <Section
             icon={<Search className="h-4 w-4" />}
-            title="Filtros aplicados"
+            title={t("ui.ClientReports.filtrosAplicados", "Filtros aplicados")}
           >
             <div className="flex flex-wrap gap-2">
               <StatusBadge dot={false} tone="neutral">
-                Período: {fmtD(from)} – {fmtD(to)}
+                {t("ui.ClientReports.periodoRango", {
+                  defaultValue: "Período: {{from}} – {{to}}",
+                  from: fmtD(from),
+                  to: fmtD(to),
+                })}
               </StatusBadge>
               <StatusBadge dot={false} tone="neutral">
-                Cliente: {clientDisplayName(client, "Cliente")}
+                {t("ui.ClientReports.clienteNombre", {
+                  defaultValue: "Cliente: {{name}}",
+                  name: clientDisplayName(client, t("comun.cliente", "Cliente")),
+                })}
               </StatusBadge>
             </div>
           </Section>
@@ -709,11 +737,11 @@ export default function ClientReports({
                 style={{ color: "var(--brand-text)" }}
                 onClick={() => setSchedOpen(true)}
               >
-                <Plus className="h-3.5 w-3.5" /> Programar
+                <Plus className="h-3.5 w-3.5" /> {t("ui.ClientReports.programar", "Programar")}
               </button>
             }
             icon={<CalendarClock className="h-4 w-4" />}
-            title="Reportes programados"
+            title={t("ui.ClientReports.reportesProgramados", "Reportes programados")}
           >
             {programados.length === 0 ? (
               <EmptyState
@@ -743,7 +771,9 @@ export default function ClientReports({
                         dot={false}
                         tone={s.active ? "ok" : "neutral"}
                       >
-                        {s.active ? "Activo" : "Pausado"}
+                        {s.active
+                          ? t("common.active", "Activo")
+                          : t("ui.ClientReports.pausado", "Pausado")}
                       </StatusBadge>
                       <RowAction
                         title={t(
@@ -795,7 +825,7 @@ export default function ClientReports({
               <Th>{t("ui.ClientReports.sedeEstacion", "Sede / Estación")}</Th>
               <Th>{t("ui.ClientReports.generadoPor")}</Th>
               <Th>{t("ui.ClientReports.generadoEl")}</Th>
-              <Th>Formato</Th>
+              <Th>{t("ui.ClientReports.formato", "Formato")}</Th>
             </THead>
             <tbody>
               {reportsList.map((r) => (
@@ -844,7 +874,7 @@ export default function ClientReports({
           </TabTable>
         )}
         <Pager
-          noun="reportes"
+          noun={t("ui.ClientReports.nounReportes", "reportes")}
           page={page}
           pageCount={pageCount}
           perPage={perPage}
@@ -855,7 +885,10 @@ export default function ClientReports({
 
       <TabFooter
         icon={<FileBarChart />}
-        note="Las métricas se calculan sobre la operación real del cliente en el período seleccionado."
+        note={t(
+          "ui.ClientReports.notaMetricas",
+          "Las métricas se calculan sobre la operación real del cliente en el período seleccionado.",
+        )}
         updatedAt={fmtUpdated}
         onRefresh={() => load()}
       />
@@ -875,7 +908,9 @@ export default function ClientReports({
               disabled={saving || !schedForm.name.trim()}
               onClick={saveSchedule}
             >
-              {saving ? "Guardando…" : "Programar"}
+              {saving
+                ? t("common.saving", "Guardando…")
+                : t("ui.ClientReports.programar", "Programar")}
             </Button>
           </>
         }
@@ -928,7 +963,7 @@ export default function ClientReports({
               </option>
             </select>
           </LabeledField>
-          <LabeledField label="Frecuencia">
+          <LabeledField label={t("ui.ClientReports.frecuencia", "Frecuencia")}>
             <select
               className={FIELD_CLS}
               value={schedForm.frequency}
@@ -936,7 +971,9 @@ export default function ClientReports({
                 setSchedForm({ ...schedForm, frequency: e.target.value })
               }
             >
-              <option value="daily">Diario (07:00)</option>
+              <option value="daily">
+                {t("ui.ClientReports.diario0700", "Diario (07:00)")}
+              </option>
               <option value="weekly">
                 {t("ui.ClientReports.semanalLunes0800")}
               </option>

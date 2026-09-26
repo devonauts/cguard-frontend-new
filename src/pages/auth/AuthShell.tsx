@@ -190,7 +190,7 @@ export default function AuthShell({
         <div className="mb-7 flex flex-col items-center text-center">
           {logoUrl ? (
             <img
-              alt={brandName || "Logotipo"}
+              alt={brandName || t("ui.AuthShell.logotipo", "Logotipo")}
               className="mb-5 h-14 max-w-[220px] object-contain"
               src={logoUrl}
             />

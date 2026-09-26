@@ -106,7 +106,7 @@ const SIEMPRE = "__siempre__";
 export default function InspectionTemplatesPage() {
   const { t } = useTranslation();
 
-  usePageTitle("Plantillas de inspección");
+  usePageTitle(t("ui.InspectionTemplates.titulo", "Plantillas de inspección"));
   const [rows, setRows] = useState<InspectionTemplate[] | null>(null);
   const [editing, setEditing] = useState<InspectionTemplate | "new" | null>(
     null,
@@ -158,7 +158,7 @@ export default function InspectionTemplatesPage() {
           "ui.InspectionTemplates.borrarMsg",
           "Las paradas que la usan pasarán a la plantilla por defecto. Las visitas ya hechas conservan su copia.",
         ),
-        confirmText: "Desactivar",
+        confirmText: t("ui.InspectionTemplates.desactivar", "Desactivar"),
       }))
     )
       return;
@@ -176,7 +176,10 @@ export default function InspectionTemplatesPage() {
     setEditing({
       ...tpl,
       id: "",
-      name: `${tpl.name} (copia)`,
+      name: t("ui.InspectionTemplates.nombreCopia", {
+        defaultValue: "{{name}} (copia)",
+        name: tpl.name,
+      }),
       isDefault: false,
       version: 1,
     });
@@ -396,7 +399,16 @@ function EditorModal({
         ? JSON.parse(JSON.stringify(factory))
         : {
             settings: {},
-            sections: [{ id: nuevoId("sec"), title: "Sección 1", items: [] }],
+            sections: [
+              {
+                id: nuevoId("sec"),
+                title: t("ui.InspectionTemplates.seccionN", {
+                  defaultValue: "Sección {{n}}",
+                  n: 1,
+                }),
+                items: [],
+              },
+            ],
           },
   );
   const [saving, setSaving] = useState(false);
@@ -739,7 +751,10 @@ function EditorModal({
                 ...c.sections,
                 {
                   id: nuevoId("sec"),
-                  title: `Sección ${c.sections.length + 1}`,
+                  title: t("ui.InspectionTemplates.seccionN", {
+                    defaultValue: "Sección {{n}}",
+                    n: c.sections.length + 1,
+                  }),
                   items: [],
                 },
               ],
@@ -830,8 +845,16 @@ function ItemEditor({
                 : undefined,
               options: CON_OPCIONES.has(v)
                 ? it.options || [
-                    { value: "a", label: "Opción A", score: 1 },
-                    { value: "b", label: "Opción B", score: 0 },
+                    {
+                      value: "a",
+                      label: t("ui.InspectionTemplates.opcionA", "Opción A"),
+                      score: 1,
+                    },
+                    {
+                      value: "b",
+                      label: t("ui.InspectionTemplates.opcionB", "Opción B"),
+                      score: 0,
+                    },
                   ]
                 : undefined,
             })
@@ -845,7 +868,7 @@ function ItemEditor({
           <SelectContent>
             {TIPOS.map((tp) => (
               <SelectItem key={tp.value} value={tp.value}>
-                {tp.label}
+                {t(`ui.InspectionTemplates.tipos.${tp.value}`, tp.label)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -1239,7 +1262,7 @@ function ItemEditor({
                     <SelectContent>
                       {GRAVEDAD.map((g) => (
                         <SelectItem key={g.value} value={g.value}>
-                          {g.label}
+                          {t(`ui.InspectionTemplates.nivelGravedad.${g.value}`, g.label)}
                         </SelectItem>
                       ))}
                     </SelectContent>

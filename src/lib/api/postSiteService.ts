@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import api from "@/lib/api";
 import { PostSiteInput } from "@/lib/validators/post-site";
 import { cachedFetch } from "@/lib/queryClient";
@@ -177,7 +178,10 @@ const getTenantId = (): string => {
   } catch (e) {}
 
   throw new Error(
-    "El usuario debe estar vinculado a una empresa para continuar.",
+    i18n.t(
+      "ui.apiService.elUsuarioDebeEstarVinculado",
+      "El usuario debe estar vinculado a una empresa para continuar.",
+    ),
   );
 };
 

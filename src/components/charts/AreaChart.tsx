@@ -6,6 +6,7 @@ import ChartTooltip from "./ChartTooltip";
 
 import { alphaVar, type ChartTone } from "@/lib/chartColors";
 import { localeActual } from "@/lib/localeActual";
+import i18n from "@/i18n";
 export interface AreaPoint {
   /** Etiqueta del eje X — lo que se enseña en el globo. */
   label: string;
@@ -113,7 +114,11 @@ export default function AreaChart({
       <svg
         aria-label={
           ariaLabel ??
-          `Serie de ${data.length} puntos, máximo ${formatValue(geo.max)}`
+          i18n.t("ui.AreaChart.serieDePuntos", {
+            defaultValue: "Serie de {{n}} puntos, máximo {{max}}",
+            n: data.length,
+            max: formatValue(geo.max),
+          })
         }
         className="block touch-none"
         height={height}

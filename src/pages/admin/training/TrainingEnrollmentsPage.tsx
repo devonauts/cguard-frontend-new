@@ -139,7 +139,7 @@ export default function TrainingEnrollmentsPage() {
   const enrollmentColumns: Column<EnrollmentRow>[] = [
     {
       key: "guardName",
-      header: "Vigilante",
+      header: t("ui.SiteTour.vigilante", "Vigilante"),
       render: (_v, r) =>
         r.assignmentType === "all_guards" && !r.guardId ? (
           <StatusBadge dot={false} tone="neutral">
@@ -151,7 +151,7 @@ export default function TrainingEnrollmentsPage() {
     },
     {
       key: "status",
-      header: "Estado",
+      header: t("comun.estado", "Estado"),
       render: (_v, r) => (
         <StatusBadge dot={false} tone={ENROLLMENT_STATUS_TONE[r.status]}>
           {enrollmentStatusLabel(r.status)}
@@ -160,11 +160,11 @@ export default function TrainingEnrollmentsPage() {
     },
     {
       key: "progressPercentage",
-      header: "Progreso",
+      header: t("ui.TrainingEnrollmentsPage.progreso", "Progreso"),
       render: (_v, r) => (
         <div className="flex items-center gap-2">
           <MeterBar
-            ariaLabel="Progreso"
+            ariaLabel={t("ui.TrainingEnrollmentsPage.progreso", "Progreso")}
             className="w-24"
             height={6}
             pct={r.progressPercentage ?? 0}
@@ -180,12 +180,13 @@ export default function TrainingEnrollmentsPage() {
     },
     {
       key: "quizPassed",
-      header: "Cuestionario",
+      header: t("ui.TrainingCourseDetailPage.cuestionario", "Cuestionario"),
       render: (_v, r) =>
         r.quizPassed ? (
           <StatusBadge dot={false} tone="ok">
             <span className="tabular-nums">
-              Aprobado{r.quizScore != null ? ` (${r.quizScore}%)` : ""}
+              {t("ui.TrainingEnrollmentsPage.aprobado", "Aprobado")}
+              {r.quizScore != null ? ` (${r.quizScore}%)` : ""}
             </span>
           </StatusBadge>
         ) : (
@@ -194,7 +195,7 @@ export default function TrainingEnrollmentsPage() {
     },
     {
       key: "dueDate",
-      header: "Fecha límite",
+      header: t("ui.TrainingEnrollmentsPage.fechaLimite", "Fecha límite"),
       render: (_v, r) => (
         <span className="tabular-nums" style={{ color: "var(--ink-soft)" }}>
           {r.dueDate
@@ -205,7 +206,7 @@ export default function TrainingEnrollmentsPage() {
     },
     {
       key: "completedAt",
-      header: "Completado",
+      header: t("ui.TrainingEnrollmentsPage.completado", "Completado"),
       render: (_v, r) => (
         <span className="tabular-nums" style={{ color: "var(--ink-soft)" }}>
           {r.completedAt
@@ -216,12 +217,12 @@ export default function TrainingEnrollmentsPage() {
     },
     {
       key: "detalle",
-      header: "Detalle",
+      header: t("ui.GuardAsistencia.detalle", "Detalle"),
       align: "right",
       render: (_v, r) =>
         r.assignmentType === "all_guards" && !r.guardId ? null : (
           <Button size="sm" variant="ghost" onClick={() => openDetail(r.id)}>
-            Ver
+            {t("ui.RoutesPage.ver", "Ver")}
           </Button>
         ),
     },
@@ -258,7 +259,11 @@ export default function TrainingEnrollmentsPage() {
             </>
           }
           icon={<GraduationCap />}
-          subtitle={`${completedCount} de ${realEnrollments.length} vigilantes completaron el curso.`}
+          subtitle={t("ui.TrainingEnrollmentsPage.nDeMCompletaron", {
+            defaultValue: "{{done}} de {{total}} vigilantes completaron el curso.",
+            done: completedCount,
+            total: realEnrollments.length,
+          })}
           title={
             course?.title ??
             t("training.enrollments.title", "Progreso del curso")
@@ -269,19 +274,19 @@ export default function TrainingEnrollmentsPage() {
           <StatCard
             accent="info"
             icon={<Users />}
-            label="Inscripciones"
+            label={t("ui.TrainingEnrollmentsPage.inscripciones", "Inscripciones")}
             value={realEnrollments.length}
           />
           <StatCard
             accent="ok"
             icon={<BadgeCheck />}
-            label="Completaron"
+            label={t("ui.TrainingEnrollmentsPage.completaron", "Completaron")}
             value={completedCount}
           />
           <StatCard
             accent="warn"
             icon={<Clock />}
-            label="Pendientes"
+            label={t("guards.list.filter.statusPending", "Pendientes")}
             value={Math.max(realEnrollments.length - completedCount, 0)}
           />
         </StatsStrip>
@@ -351,7 +356,7 @@ export default function TrainingEnrollmentsPage() {
               </div>
               <div className="flex items-center gap-2">
                 <MeterBar
-                  ariaLabel="Progreso"
+                  ariaLabel={t("ui.TrainingEnrollmentsPage.progreso", "Progreso")}
                   className="flex-1"
                   height={8}
                   pct={detail.progressPercentage ?? 0}
@@ -361,13 +366,13 @@ export default function TrainingEnrollmentsPage() {
                 </span>
               </div>
               <div className="text-sm">
-                Cuestionario:{" "}
+                {t("ui.TrainingEnrollmentsPage.cuestionarioDosPuntos", "Cuestionario:")}{" "}
                 {detail.quizPassed ? (
                   <span
                     className="font-medium tabular-nums"
                     style={{ color: "var(--ok-text)" }}
                   >
-                    Aprobado
+                    {t("ui.TrainingEnrollmentsPage.aprobado", "Aprobado")}
                     {detail.quizScore != null ? ` (${detail.quizScore}%)` : ""}
                   </span>
                 ) : (
@@ -378,7 +383,7 @@ export default function TrainingEnrollmentsPage() {
               </div>
               <div>
                 <h4 className="mb-2 text-sm font-semibold tracking-tight">
-                  Lecciones
+                  {t("ui.TrainingEnrollmentsPage.lecciones", "Lecciones")}
                 </h4>
                 <div className="space-y-2">
                   {detail.lessonCompletions.length === 0 && (
@@ -413,7 +418,7 @@ export default function TrainingEnrollmentsPage() {
                         {lc.completedAt
                           ? new Date(lc.completedAt).toLocaleDateString(
                               localeActual(), { timeZone: zonaDeLaEmpresa() })
-                          : "Pendiente"}
+                          : t("comun.pendiente", "Pendiente")}
                       </span>
                     </div>
                   ))}

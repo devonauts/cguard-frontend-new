@@ -269,7 +269,7 @@ export default function OpenShifts() {
         <PageHeader
           icon={<CalendarClock />}
           subtitle={t("ui.OpenShifts.turnosSinVigilanteAsignadoAsignalos")}
-          title="Turnos abiertos"
+          title={t("sidebar.programador.turnos-abiertos", "Turnos abiertos")}
         />
 
         {/* KPIs */}
@@ -291,7 +291,7 @@ export default function OpenShifts() {
             }
             hint={t("ui.OpenShifts.delTotalAbierto")}
             icon={<CalendarDays />}
-            label="Hoy"
+            label={t("kit.dateRange.today", "Hoy")}
             value={stats.today}
           />
           <MetricTile
@@ -327,12 +327,13 @@ export default function OpenShifts() {
               <Sheet open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
                 <SheetTrigger asChild>
                   <Button variant="outline">
-                    <Filter className="mr-2 h-4 w-4" /> Filtros
+                    <Filter className="mr-2 h-4 w-4" />{" "}
+                    {t("guards.list.filters", "Filtros")}
                   </Button>
                 </SheetTrigger>
                 <SheetContent className="w-full sm:w-[540px] overflow-y-auto">
                   <SheetHeader className="relative">
-                    <SheetTitle>Filtros</SheetTitle>
+                    <SheetTitle>{t("guards.list.filters", "Filtros")}</SheetTitle>
                     <Button
                       className="absolute right-0 top-0"
                       size="icon"
@@ -405,7 +406,7 @@ export default function OpenShifts() {
                           setPage(1);
                         }}
                       >
-                        Aplicar Filtros
+                        {t("guards.list.applyFilters", "Aplicar filtros")}
                       </Button>
                       <Button
                         className="w-full"
@@ -423,7 +424,7 @@ export default function OpenShifts() {
                           setPage(1);
                         }}
                       >
-                        Limpiar filtros
+                        {t("guards.list.clearFilters", "Limpiar filtros")}
                       </Button>
                     </div>
                   </div>
@@ -437,7 +438,7 @@ export default function OpenShifts() {
         <Section
           contentClassName="overflow-x-auto -mx-1"
           icon={<CalendarClock />}
-          title="Turnos abiertos"
+          title={t("sidebar.programador.turnos-abiertos", "Turnos abiertos")}
         >
           {/* `DataTable` y no el primitivo `<Table>`: se pliega sola en fichas
               en el teléfono. La casilla de la primera columna no tenía
@@ -533,8 +534,13 @@ export default function OpenShifts() {
             style={{ color: "var(--ink-soft)" }}
           >
             {filtered.length === 0
-              ? "0 de 0"
-              : `${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, filtered.length)} de ${filtered.length}`}
+              ? t("ui.OpenShifts.ceroDeCero", "0 de 0")
+              : t("ui.OpenShifts.rangoDePagina", {
+                  defaultValue: "{{desde}}–{{hasta}} de {{total}}",
+                  desde: (page - 1) * pageSize + 1,
+                  hasta: Math.min(page * pageSize, filtered.length),
+                  total: filtered.length,
+                })}
           </div>
           <div className="flex items-center space-x-2">
             <Button
@@ -599,7 +605,7 @@ export default function OpenShifts() {
                 setGuardSearch("");
               }}
             >
-              Cancelar
+              {t("common.cancel", "Cancelar")}
             </Button>
             <Button
               disabled={!selectedGuard || assigning}
@@ -609,7 +615,7 @@ export default function OpenShifts() {
               {assigning ? (
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
               ) : null}
-              Confirmar asignación
+              {t("ui.OpenShifts.confirmarAsignacion", "Confirmar asignación")}
             </Button>
           </>
         }
@@ -655,8 +661,11 @@ export default function OpenShifts() {
                   style={{ color: "var(--ink-soft)" }}
                 >
                   {allGuards.length === 0
-                    ? "Cargando vigilantes…"
-                    : "No se encontraron vigilantes"}
+                    ? t("ui.OpenShifts.cargandoVigilantes", "Cargando vigilantes…")
+                    : t(
+                        "guards.list.empty.noneFoundTitle",
+                        "No se encontraron vigilantes",
+                      )}
                 </div>
               ) : (
                 filteredGuards.map((g) => {

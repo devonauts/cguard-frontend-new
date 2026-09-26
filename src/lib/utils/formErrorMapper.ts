@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 export function applyValidationErrorsToForm(
   err: any,
   setError?: (name: string, error: any) => void,
@@ -13,23 +14,39 @@ export function applyValidationErrorsToForm(
   if (!backendErrors) return { messages, fieldErrors };
 
   if (backendErrors.invalidClientIds) {
-    const msg = `Clientes inválidos: ${JSON.stringify(backendErrors.invalidClientIds)}`;
+    const msg = i18n.t("ui.formErrorMapper.clientesInvalidos", {
+      defaultValue: "Clientes inválidos: {{ids}}",
+      ids: JSON.stringify(backendErrors.invalidClientIds),
+    });
 
     fieldErrors.clientIds = msg;
     try {
       setError?.("clientIds", { type: "server", message: msg });
     } catch (_) {}
-    messages.push("Clientes inválidos en la asignación");
+    messages.push(
+      i18n.t(
+        "ui.formErrorMapper.clientesInvalidosEnLaAsignacion",
+        "Clientes inválidos en la asignación",
+      ),
+    );
   }
 
   if (backendErrors.invalidPostSiteIds) {
-    const msg = `Sitios inválidos: ${JSON.stringify(backendErrors.invalidPostSiteIds)}`;
+    const msg = i18n.t("ui.formErrorMapper.sitiosInvalidos", {
+      defaultValue: "Sitios inválidos: {{ids}}",
+      ids: JSON.stringify(backendErrors.invalidPostSiteIds),
+    });
 
     fieldErrors.postSiteIds = msg;
     try {
       setError?.("postSiteIds", { type: "server", message: msg });
     } catch (_) {}
-    messages.push("Sitios inválidos en la asignación");
+    messages.push(
+      i18n.t(
+        "ui.formErrorMapper.sitiosInvalidosEnLaAsignacion",
+        "Sitios inválidos en la asignación",
+      ),
+    );
   }
 
   // Generic mapping for other fields if backend returns { fieldName: ['msg', ...] }

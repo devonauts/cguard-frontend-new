@@ -257,15 +257,25 @@ export default function SecurityGuardsPage() {
     "Arma y municiones",
     "Llaves y accesos",
   ];
+  // El nombre del equipo viaja tal cual al expediente (`equipmentReturn`); sólo
+  // se traduce al pintarlo.
+  const EQUIPO_LABEL: Record<string, string> = {
+    Uniforme: t("ui.SecurityGuardsPage.equipo.uniforme", "Uniforme"),
+    Credencial: t("ui.SecurityGuardsPage.equipo.credencial", "Credencial"),
+    Radio: t("ui.SecurityGuardsPage.equipo.radio", "Radio"),
+    "Chaleco antibalas": t("ui.SecurityGuardsPage.equipo.chaleco", "Chaleco antibalas"),
+    "Arma y municiones": t("ui.SecurityGuardsPage.equipo.arma", "Arma y municiones"),
+    "Llaves y accesos": t("ui.SecurityGuardsPage.equipo.llaves", "Llaves y accesos"),
+  };
   const MOTIVOS_BAJA: Array<[string, string]> = [
-    ["resignation", "Renuncia voluntaria"],
-    ["dismissal_with_cause", "Despido con causa"],
-    ["dismissal_without_cause", "Despido sin causa"],
-    ["end_of_contract", "Fin de contrato"],
-    ["abandonment", "Abandono del puesto"],
-    ["retirement", "Jubilación"],
-    ["death", "Fallecimiento"],
-    ["other", "Otro"],
+    ["resignation", t("ui.SecurityGuardsPage.motivo.resignation", "Renuncia voluntaria")],
+    ["dismissal_with_cause", t("ui.SecurityGuardsPage.motivo.dismissalWithCause", "Despido con causa")],
+    ["dismissal_without_cause", t("ui.SecurityGuardsPage.motivo.dismissalWithoutCause", "Despido sin causa")],
+    ["end_of_contract", t("ui.SecurityGuardsPage.motivo.endOfContract", "Fin de contrato")],
+    ["abandonment", t("ui.SecurityGuardsPage.motivo.abandonment", "Abandono del puesto")],
+    ["retirement", t("ui.SecurityGuardsPage.motivo.retirement", "Jubilación")],
+    ["death", t("ui.SecurityGuardsPage.motivo.death", "Fallecimiento")],
+    ["other", t("ui.SecurityGuardsPage.motivo.other", "Otro")],
   ];
   const abrirDialogoDeBaja = () => {
     setBajaFecha(hoyEnLaEmpresa());
@@ -306,13 +316,25 @@ export default function SecurityGuardsPage() {
     { id: string; name: string; postSiteId: string }[]
   >([]);
 
+  // Estado legible para las exportaciones: `g.status` es el valor interno.
+  function statusText(s: GuardStatus): string {
+    switch (s) {
+      case "Activo":
+        return t("common.active", "Activo");
+      case "Archivado":
+        return t("adminOfficeUsers.statuses.archived", "Archivado");
+      default:
+        return t("comun.pendiente", "Pendiente");
+    }
+  }
+
   // Export helpers
   function exportCSV(list: SecurityGuard[]) {
     const rows = list.map((g) => ({
       name: g.name,
       email: g.email,
       phone: g.phone,
-      status: g.status,
+      status: statusText(g.status),
     }));
     const header = ["name", "email", "phone", "status"];
     const csv = [header.join(",")]
@@ -348,10 +370,10 @@ export default function SecurityGuardsPage() {
     const htmlRows = list
       .map(
         (g) =>
-          `<tr><td>${escapeHtml(g.name)}</td><td>${escapeHtml(g.email)}</td><td>${escapeHtml(g.phone)}</td><td>${escapeHtml(g.status)}</td></tr>`,
+          `<tr><td>${escapeHtml(g.name)}</td><td>${escapeHtml(g.email)}</td><td>${escapeHtml(g.phone)}</td><td>${escapeHtml(statusText(g.status))}</td></tr>`,
       )
       .join("\n");
-    const html = `<!doctype html><html><head><meta charset="utf-8"><title>Vigilantes</title><style>table{width:100%;border-collapse:collapse}td,th{border:1px solid;padding:8px}</style></head><body><h2>Vigilantes</h2><table><thead><tr><th>{t('comun.nombre')}</th><th>{t('comun.correo')}</th><th>{t('ui.SecurityGuardsPage.telefono')}</th><th>{t('comun.estado')}</th></tr></thead><tbody>${htmlRows}</tbody></table></body></html>`;
+    const html = `<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(t("guards.list.title", "Vigilantes"))}</title><style>table{width:100%;border-collapse:collapse}td,th{border:1px solid;padding:8px}</style></head><body><h2>${escapeHtml(t("guards.list.title", "Vigilantes"))}</h2><table><thead><tr><th>${escapeHtml(t("comun.nombre", "Nombre"))}</th><th>${escapeHtml(t("comun.correo", "Correo"))}</th><th>${escapeHtml(t("ui.SecurityGuardsPage.telefono", "Teléfono"))}</th><th>${escapeHtml(t("comun.estado", "Estado"))}</th></tr></thead><tbody>${htmlRows}</tbody></table></body></html>`;
     const w = window.open("", "_blank");
     if (!w) {
       toast.error(
@@ -714,7 +736,11 @@ export default function SecurityGuardsPage() {
         // Compatibilidad: el antiguo «Invitado» se muestra como «Pendiente».
         return <StatusBadge tone="warn">{t("comun.pendiente")}</StatusBadge>;
       case "Archivado":
-        return <StatusBadge tone="neutral">Archivado</StatusBadge>;
+        return (
+          <StatusBadge tone="neutral">
+            {t("adminOfficeUsers.statuses.archived", "Archivado")}
+          </StatusBadge>
+        );
       default:
         return null;
     }
@@ -823,7 +849,7 @@ export default function SecurityGuardsPage() {
       const acts: GuardCardAction[] = [];
       if (hasPermission("securityGuardRead")) {
         acts.push({
-          label: "Ver detalles",
+          label: t("guards.list.actions.viewDetails", "Ver Detalles"),
           icon: <Eye className="h-4 w-4" />,
           onClick: () => navigate(`/guards/${realId}/resumen`),
         });
@@ -854,7 +880,7 @@ export default function SecurityGuardsPage() {
           });
         }
         acts.push({
-          label: "Restablecer contraseña",
+          label: t("guards.list.actions.resetPassword", "Restablecer contraseña"),
           icon: <KeyRound className="h-4 w-4" />,
           onClick: async () => {
             try {
@@ -863,15 +889,25 @@ export default function SecurityGuardsPage() {
               try {
                 if (r?.link) await navigator.clipboard.writeText(r.link);
               } catch {}
-              const via = [r?.emailed && "correo", r?.pushed && "push"]
+              const via = [r?.emailed && t("ui.SecurityGuardsPage.viaCorreo", "correo"), r?.pushed && "push"]
                 .filter(Boolean)
                 .join(" + ");
               toast.success(
-                `Enlace de restablecimiento ${via ? `enviado por ${via} y ` : ""}copiado al portapapeles`,
+                via
+                  ? t("ui.SecurityGuardsPage.enlaceEnviadoYCopiado", {
+                      defaultValue:
+                        "Enlace de restablecimiento enviado por {{via}} y copiado al portapapeles",
+                      via,
+                    })
+                  : t(
+                      "ui.SecurityGuardsPage.enlaceCopiado",
+                      "Enlace de restablecimiento copiado al portapapeles",
+                    ),
               );
             } catch (err: any) {
               toast.error(
-                err?.message || "No se pudo restablecer la contraseña",
+                err?.message ||
+                  t("guards.list.toasts.resetError", "No se pudo restablecer la contraseña"),
               );
             }
           },
@@ -880,7 +916,7 @@ export default function SecurityGuardsPage() {
       if (hasPermission("securityGuardEdit")) {
         if (guard.status === "Archivado") {
           acts.push({
-            label: "Restaurar",
+            label: t("guards.list.actions.restore", "Restaurar"),
             icon: <RotateCw className="h-4 w-4" />,
             onClick: () => {
               setGuardToRestore(guard);
@@ -889,7 +925,7 @@ export default function SecurityGuardsPage() {
           });
         } else {
           acts.push({
-            label: "Archivar",
+            label: t("guards.list.actions.archive", "Archivar"),
             icon: <Archive className="h-4 w-4" />,
             onClick: () => {
               setGuardToArchive(guard);
@@ -900,7 +936,7 @@ export default function SecurityGuardsPage() {
       }
       if (hasPermission("securityGuardDestroy")) {
         acts.push({
-          label: "Remover",
+          label: t("guards.list.actions.remove", "Remover"),
           icon: <Trash className="h-4 w-4" />,
           destructive: true,
           onClick: () => {
@@ -968,19 +1004,19 @@ export default function SecurityGuardsPage() {
           <StatCard
             icon={<ShieldCheck />}
             accent="ok"
-            label="Activos"
+            label={t("guards.list.filter.statusActive", "Activos")}
             value={activeCount}
           />
           <StatCard
             icon={<Clock />}
             accent="warn"
-            label="Pendientes"
+            label={t("guards.list.filter.statusPending", "Pendientes")}
             value={pendingCount}
           />
           <StatCard
             icon={<Archive />}
             accent="neutral"
-            label="Archivados"
+            label={t("guards.list.filter.statusArchived", "Archivados")}
             value={archivedCount}
           />
         </StatsStrip>
@@ -997,12 +1033,12 @@ export default function SecurityGuardsPage() {
                 setCurrentPage(1);
               }}
               options={[
-                { key: "todos", label: "Todos", count: guards.length },
-                { key: "activos", label: "Activos", count: activeCount },
-                { key: "pendientes", label: "Pendientes", count: pendingCount },
+                { key: "todos", label: t("guards.list.filter.clientAll", "Todos"), count: guards.length },
+                { key: "activos", label: t("guards.list.filter.statusActive", "Activos"), count: activeCount },
+                { key: "pendientes", label: t("guards.list.filter.statusPending", "Pendientes"), count: pendingCount },
                 {
                   key: "archivados",
-                  label: "Archivados",
+                  label: t("guards.list.filter.statusArchived", "Archivados"),
                   count: archivedCount,
                 },
               ].map((tab) => ({
@@ -1244,7 +1280,8 @@ export default function SecurityGuardsPage() {
                     value: "cards" as const,
                     label: (
                       <span className="flex items-center gap-1.5">
-                        <LayoutGrid className="h-3.5 w-3.5" /> Tarjetas
+                        <LayoutGrid className="h-3.5 w-3.5" />{" "}
+                        {t("ui.AdminOfficeUsersPage.tarjetas", "Tarjetas")}
                       </span>
                     ),
                   },
@@ -1452,7 +1489,7 @@ export default function SecurityGuardsPage() {
                                 <td className="px-4 py-3 text-sm">
                                   {guard.station || (
                                     <span style={{ color: "var(--ink-faint)" }}>
-                                      Ninguna
+                                      {t("ui.SecurityGuardsPage.ninguna", "Ninguna")}
                                     </span>
                                   )}
                                 </td>
@@ -1505,13 +1542,22 @@ export default function SecurityGuardsPage() {
                                                     );
                                                 } catch {}
                                                 const via = [
-                                                  r?.emailed && "correo",
+                                                  r?.emailed && t("ui.SecurityGuardsPage.viaCorreo", "correo"),
                                                   r?.pushed && "push",
                                                 ]
                                                   .filter(Boolean)
                                                   .join(" + ");
                                                 toast.success(
-                                                  `Enlace de restablecimiento ${via ? `enviado por ${via} y ` : ""}copiado al portapapeles`,
+                                                  via
+                  ? t("ui.SecurityGuardsPage.enlaceEnviadoYCopiado", {
+                      defaultValue:
+                        "Enlace de restablecimiento enviado por {{via}} y copiado al portapapeles",
+                      via,
+                    })
+                  : t(
+                      "ui.SecurityGuardsPage.enlaceCopiado",
+                      "Enlace de restablecimiento copiado al portapapeles",
+                    ),
                                                 );
                                               } catch (err: any) {
                                                 toast.error(
@@ -1557,7 +1603,10 @@ export default function SecurityGuardsPage() {
                                                   link,
                                                 );
                                                 toast.success(
-                                                  "Enlace de registro copiado",
+                                                  t(
+                                                    "guards.list.toasts.copyLinkSuccess",
+                                                    "Enlace de registro copiado",
+                                                  ),
                                                 );
                                               } catch (err) {
                                                 if (import.meta.env.DEV)
@@ -1649,13 +1698,22 @@ export default function SecurityGuardsPage() {
                                                       );
                                                   } catch {}
                                                   const via = [
-                                                    r?.emailed && "correo",
+                                                    r?.emailed && t("ui.SecurityGuardsPage.viaCorreo", "correo"),
                                                     r?.pushed && "push",
                                                   ]
                                                     .filter(Boolean)
                                                     .join(" + ");
                                                   toast.success(
-                                                    `Enlace de restablecimiento ${via ? `enviado por ${via} y ` : ""}copiado al portapapeles`,
+                                                    via
+                  ? t("ui.SecurityGuardsPage.enlaceEnviadoYCopiado", {
+                      defaultValue:
+                        "Enlace de restablecimiento enviado por {{via}} y copiado al portapapeles",
+                      via,
+                    })
+                  : t(
+                      "ui.SecurityGuardsPage.enlaceCopiado",
+                      "Enlace de restablecimiento copiado al portapapeles",
+                    ),
                                                   );
                                                 } catch (err: any) {
                                                   toast.error(
@@ -1795,10 +1853,10 @@ export default function SecurityGuardsPage() {
                                   }
                                   description={
                                     filterStatus !== "todos"
-                                      ? "Prueba con otro filtro de estado."
+                                      ? t("ui.SecurityGuardsPage.pruebaConOtroFiltro", "Prueba con otro filtro de estado.")
                                       : searchQuery
-                                        ? "Ningún vigilante coincide con tu búsqueda."
-                                        : "Agrega tu primer vigilante para comenzar."
+                                        ? t("ui.SecurityGuardsPage.ningunVigilanteCoincide", "Ningún vigilante coincide con tu búsqueda.")
+                                        : t("ui.SecurityGuardsPage.agregaTuPrimerVigilante", "Agrega tu primer vigilante para comenzar.")
                                   }
                                   action={
                                     hasPermission("securityGuardCreate") &&
@@ -1807,7 +1865,7 @@ export default function SecurityGuardsPage() {
                                       <Button variant="brand" asChild>
                                         <Link to="/security-guards/new">
                                           <UserPlus className="mr-2 h-4 w-4" />
-                                          Nuevo Vigilante
+                                          {t("guards.list.newGuard", "Nuevo Vigilante")}
                                         </Link>
                                       </Button>
                                     ) : undefined
@@ -1992,7 +2050,7 @@ export default function SecurityGuardsPage() {
                         )
                       }
                     />
-                    {eq.item}
+                    {EQUIPO_LABEL[eq.item] ?? eq.item}
                   </label>
                 ))}
               </div>
@@ -3113,7 +3171,7 @@ export default function SecurityGuardsPage() {
                       error?.details ||
                       error?.response?.data?.message ||
                       error?.message ||
-                      "Error al importar";
+                      t("ui.SecurityGuardsPage.errorAlImportar", "Error al importar");
                     toast.error(msg);
                   } finally {
                     setImportLoading(false);
@@ -3139,7 +3197,10 @@ export default function SecurityGuardsPage() {
             </DialogTitle>
             <DialogDescription>
               {assignGuard
-                ? `Asignar a ${assignGuard.name} a una estación`
+                ? t("ui.SecurityGuardsPage.asignarAEstacionNombre", {
+                    defaultValue: "Asignar a {{name}} a una estación",
+                    name: assignGuard.name,
+                  })
                 : ""}
             </DialogDescription>
           </DialogHeader>
@@ -3165,8 +3226,10 @@ export default function SecurityGuardsPage() {
               </SelectContent>
             </Select>
             <p className="mt-2 text-xs" style={{ color: "var(--ink-soft)" }}>
-              Se asignará al primer puesto disponible de la estación y aparecerá
-              en el Horario.
+              {t(
+                "ui.SecurityGuardsPage.seAsignaraAlPrimerPuesto",
+                "Se asignará al primer puesto disponible de la estación y aparecerá en el Horario.",
+              )}
             </p>
           </div>
           <DialogFooter>
@@ -3178,7 +3241,9 @@ export default function SecurityGuardsPage() {
               onClick={handleAssignStation}
               disabled={!assignStationId || assignLoading}
             >
-              {assignLoading ? "Asignando..." : "Asignar"}
+              {assignLoading
+                ? t("ui.SecurityGuardsPage.asignando", "Asignando...")
+                : t("ui.SecurityGuardsPage.asignar", "Asignar")}
             </Button>
           </DialogFooter>
         </DialogContent>

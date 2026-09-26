@@ -6,7 +6,10 @@ const getTenantId = (): string => {
   const t = localStorage.getItem("tenantId");
   if (!t)
     throw new Error(
-      "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+      i18n.t(
+        "ui.apiService.noPudimosIdentificarTuEmpresa",
+        "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+      ),
     );
   return t;
 };
@@ -229,7 +232,7 @@ const inventoryItemService = {
 
     const uploadUrl = creds?.uploadCredentials?.url ?? creds?.url;
     const fields = creds?.uploadCredentials?.fields;
-    if (!uploadUrl) throw new Error("Upload URL not available");
+    if (!uploadUrl) throw new Error(i18n.t("ui.apiService.urlDeCargaNoDisponible", "URL de carga no disponible"));
 
     const form = new FormData();
     if (fields) Object.keys(fields).forEach((k) => form.append(k, fields[k]));
@@ -237,7 +240,7 @@ const inventoryItemService = {
     form.append("file", file);
 
     const resp = await fetch(uploadUrl, { method: "POST", body: form });
-    if (!resp.ok) throw new Error(`Upload failed: ${resp.status}`);
+    if (!resp.ok) throw new Error(i18n.t("ui.apiService.errorAlSubirArchivo", { defaultValue: "Error al subir el archivo ({{status}}) {{detalle}}", status: resp.status, detalle: "" }).trim());
 
     return {
       new: true,

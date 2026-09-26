@@ -78,7 +78,7 @@ function MessageAttachmentView({ att }: { att: MessageAttachment }) {
     <a href={url || "#"} rel="noreferrer" target="_blank">
       <img
         src={url || undefined}
-        alt={att.name || "imagen"}
+        alt={att.name || i18n.t("ui.MessengerPage.imagen", "imagen")}
         loading="lazy"
         className="max-h-72 max-w-full rounded-lg object-cover"
       />
@@ -146,7 +146,9 @@ export default function MessengerPage({
 }) {
   const { t } = useTranslation();
   const isClient = scope === "client";
-  const pageTitle = isClient ? "Mensajes de Clientes" : "Mensajes Operativos";
+  const pageTitle = isClient
+    ? t("sidebar.mensajeria.msg-clientes", "Mensajes de Clientes")
+    : t("sidebar.mensajeria.msg-operativos", "Mensajes Operativos");
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selected, setSelected] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -342,8 +344,12 @@ export default function MessengerPage({
           "ui.MessengerPage.eliminarConversacion",
           "Eliminar conversación",
         ),
-        message: `¿Eliminar la conversación con ${selected.recipientName}? Esta acción no se puede deshacer.`,
-        confirmText: "Eliminar",
+        message: t("ui.MessengerPage.eliminarLaConversacionCon", {
+          defaultValue:
+            "¿Eliminar la conversación con {{name}}? Esta acción no se puede deshacer.",
+          name: selected.recipientName,
+        }),
+        confirmText: t("actions.delete", "Eliminar"),
         tone: "danger",
       }))
     )
@@ -416,11 +422,21 @@ export default function MessengerPage({
     try {
       for (const file of Array.from(files).slice(0, 10)) {
         if (!/^image\/|^video\/|^audio\//.test(file.type)) {
-          toast.error(`${file.name}: solo imágenes, videos o audio`);
+          toast.error(
+            t("ui.MessengerPage.soloImagenesVideosOAudio", {
+              defaultValue: "{{name}}: solo imágenes, videos o audio",
+              name: file.name,
+            }),
+          );
           continue;
         }
         if (file.size > 100 * 1024 * 1024) {
-          toast.error(`${file.name}: máximo 100 MB`);
+          toast.error(
+            t("ui.MessengerPage.maximo100Mb", {
+              defaultValue: "{{name}}: máximo 100 MB",
+              name: file.name,
+            }),
+          );
           continue;
         }
         const att = await messageService.uploadAttachment(file);
@@ -533,10 +549,13 @@ export default function MessengerPage({
                         >
                           {c.lastMessagePreview ||
                             (c.isGroup
-                              ? `Grupo · ${c.memberCount || 0} miembros`
+                              ? t("ui.MessengerPage.grupoNMiembros", {
+                                  defaultValue: "Grupo · {{count}} miembros",
+                                  count: c.memberCount || 0,
+                                })
                               : c.recipientType === "guard"
-                                ? "Vigilante"
-                                : "Cliente")}
+                                ? t("dashboard.table.headers.guard", "Vigilante")
+                                : t("clients.client", "Cliente"))}
                         </p>
                       </div>
                       {(c.unreadCount || 0) > 0 && (
@@ -607,15 +626,18 @@ export default function MessengerPage({
                       style={{ color: "var(--ink-soft)" }}
                     >
                       {selected.isGroup
-                        ? `Grupo · ${selected.memberCount || 0} miembros`
+                        ? t("ui.MessengerPage.grupoNMiembros", {
+                            defaultValue: "Grupo · {{count}} miembros",
+                            count: selected.memberCount || 0,
+                          })
                         : selected.recipientType === "guard"
-                          ? "Vigilante"
-                          : "Cliente"}
+                          ? t("dashboard.table.headers.guard", "Vigilante")
+                          : t("clients.client", "Cliente")}
                     </p>
                   </div>
                   {selected.isOneWay && (
                     <StatusBadge className="ml-2 shrink-0" tone="info">
-                      Solo lectura
+                      {t("ui.MessengerPage.soloLectura", "Solo lectura")}
                     </StatusBadge>
                   )}
                   {selected.isGroup && (
@@ -747,7 +769,7 @@ export default function MessengerPage({
                             <PendingThumb att={a} />
                           )}
                           <button
-                            aria-label="Quitar adjunto"
+                            aria-label={t("ui.MessengerPage.quitarAdjunto", "Quitar adjunto")}
                             className="cg-focus absolute right-0 top-0 grid h-5 w-5 place-items-center rounded-bl"
                             style={{ background: 'oklch(0 0 0 / 0.62)', color: 'oklch(1 0 0)' }}
                             onClick={() => setPending((p) => p.filter((_, j) => j !== i))}
@@ -770,7 +792,10 @@ export default function MessengerPage({
                     <button
                       className="cg-btn-glass cg-focus grid h-10 w-10 shrink-0 place-items-center rounded-xl disabled:opacity-50"
                       disabled={uploading || recorder.recording}
-                      title="Adjuntar imagen, video o audio"
+                      title={t(
+                        "ui.MessengerPage.adjuntarImagenVideoOAudio",
+                        "Adjuntar imagen, video o audio",
+                      )}
                       onClick={() => fileRef.current?.click()}
                     >
                       {uploading ? (
@@ -803,7 +828,10 @@ export default function MessengerPage({
                           ).padStart(2, "0")}
                         </span>
                         <span style={{ color: "var(--ink-soft)" }}>
-                          Grabando nota de voz…
+                          {t(
+                            "ui.MessengerPage.grabandoNotaDeVoz",
+                            "Grabando nota de voz…",
+                          )}
                         </span>
                         <button
                           className="cg-focus ml-auto"
@@ -830,7 +858,11 @@ export default function MessengerPage({
                         <button
                           className={`cg-focus grid h-10 w-10 shrink-0 place-items-center rounded-xl disabled:opacity-50 ${recorder.recording ? "cg-btn-bad" : "cg-btn-brand"}`}
                         disabled={uploading}
-                        title={recorder.recording ? "Detener y enviar" : "Grabar nota de voz"}
+                        title={
+                          recorder.recording
+                            ? t("ui.MessengerPage.detenerYEnviar", "Detener y enviar")
+                            : t("ui.MessengerPage.grabarNotaDeVoz", "Grabar nota de voz")
+                        }
                         onClick={onToggleRecord}
                         >
                           {recorder.recording ? (
@@ -938,7 +970,7 @@ function ComposeDialog({
                 .filter((r) => r && r.id)
                 .map((r) => ({
                   id: r.id,
-                  label: r.label || r.name || "Cliente",
+                  label: r.label || r.name || i18n.t("clients.client", "Cliente"),
                 })),
             );
         } else {
@@ -953,7 +985,10 @@ function ComposeDialog({
                 )
                 .map((r: AcRow) => ({
                   id: r.id,
-                  label: r.label || r.name || "Vigilante",
+                  label:
+                    r.label ||
+                    r.name ||
+                    i18n.t("dashboard.table.headers.guard", "Vigilante"),
                 })),
             );
         }
@@ -990,7 +1025,11 @@ function ComposeDialog({
               .filter((r) => r && r.id)
               .map((r) => ({
                 id: r.id,
-                label: r.label || r.companyName || r.name || "Puesto",
+                label:
+                  r.label ||
+                  r.companyName ||
+                  r.name ||
+                  i18n.t("incidents.columns.postSite", "Puesto"),
               })),
           );
       } catch {
@@ -1077,11 +1116,13 @@ function ComposeDialog({
           <Button variant="outline" onClick={onClose}>{i18n.t('actions.cancel')}</Button>
           {mode === "direct" ? (
             <Button onClick={sendDirect} disabled={!picked || !body.trim() || sending}>
-              {sending ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />} Enviar
+              {sending ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}{" "}
+              {t("actions.send", "Enviar")}
             </Button>
           ) : (
             <Button onClick={createGroup} disabled={!groupName.trim() || !site || sending}>
-              {sending ? <Loader2 size={14} className="animate-spin" /> : <Users size={14} />} Crear grupo
+              {sending ? <Loader2 size={14} className="animate-spin" /> : <Users size={14} />}{" "}
+              {t("ui.MessengerPage.crearGrupo", "Crear grupo")}
             </Button>
           )}
         </>
@@ -1098,11 +1139,14 @@ function ComposeDialog({
             options={[
               {
                 value: "direct" as const,
-                label: tabLabel(<UserCircle2 size={14} />, "Directo"),
+                label: tabLabel(
+                  <UserCircle2 size={14} />,
+                  t("ui.MessengerPage.directo", "Directo"),
+                ),
               },
               {
                 value: "group" as const,
-                label: tabLabel(<Users size={14} />, "Grupo"),
+                label: tabLabel(<Users size={14} />, t("ui.MessengerPage.grupo", "Grupo")),
               },
             ]}
             value={mode}
@@ -1127,7 +1171,9 @@ function ComposeDialog({
               <div>
                 <SearchInput
                   placeholder={
-                      isClient ? "Buscar cliente…" : "Buscar vigilante…"
+                      isClient
+                      ? t("ui.MessengerPage.buscarCliente", "Buscar cliente…")
+                      : t("comun.buscarVigilante", "Buscar vigilante…")
                     }
                   value={q}
                   onChange={(v) => setQ(v)}
@@ -1157,7 +1203,7 @@ function ComposeDialog({
             <textarea
               value={body}
               onChange={(e) => setBody(e.target.value)}
-              placeholder="Mensaje…"
+              placeholder={t("ui.MessengerPage.mensaje", "Mensaje…")}
               rows={4}
               className="cg-input w-full resize-none px-3 py-2 text-sm"
             />
@@ -1173,7 +1219,10 @@ function ComposeDialog({
             {site ? (
               <div className="glass-flat glass-brand flex items-center justify-between px-3 py-2">
                 <span className="text-sm font-medium">
-                  Puesto: {site.label}
+                  {t("ui.MessengerPage.puestoLabel", {
+                    defaultValue: "Puesto: {{label}}",
+                    label: site.label,
+                  })}
                 </span>
                 <button
                   onClick={() => setSite(null)}
@@ -1231,7 +1280,10 @@ function ComposeDialog({
             <textarea
               value={body}
               onChange={(e) => setBody(e.target.value)}
-              placeholder="Primer mensaje (opcional)…"
+              placeholder={t(
+                "ui.MessengerPage.primerMensajeOpcional",
+                "Primer mensaje (opcional)…",
+              )}
               rows={3}
               className="cg-input w-full resize-none px-3 py-2 text-sm"
             />
@@ -1300,7 +1352,10 @@ function MembersPanel({
               )
               .map((r: AcRow) => ({
                 id: r.id,
-                label: r.label || r.name || "Vigilante",
+                label:
+                    r.label ||
+                    r.name ||
+                    i18n.t("dashboard.table.headers.guard", "Vigilante"),
               })),
           );
       } catch {
@@ -1339,7 +1394,9 @@ function MembersPanel({
       setMembers(res?.rows || []);
       onChanged();
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || "No se pudo quitar");
+      toast.error(e?.data?.message || e?.message ||
+          t("station.guards.removeFailed", "No se pudo quitar"),
+      );
     } finally {
       setBusy(false);
     }
@@ -1383,7 +1440,10 @@ function MembersPanel({
               {conversation.recipientName}
             </h3>
             <p className="text-[11px]" style={{ color: "var(--ink-soft)" }}>
-              {members.length} miembros
+              {t("ui.MessengerPage.nMiembros", {
+                defaultValue: "{{count}} miembros",
+                count: members.length,
+              })}
             </p>
           </div>
           <button
@@ -1475,7 +1535,9 @@ function MembersPanel({
                     className="text-[10px]"
                     style={{ color: "var(--ink-faint)" }}
                   >
-                    {m.participantType === "staff" ? "Operador" : "Vigilante"}
+                    {m.participantType === "staff"
+                      ? t("ui.ClientStaff.operador", "Operador")
+                      : t("dashboard.table.headers.guard", "Vigilante")}
                     {m.role === "admin" ? " · Admin" : ""}
                     {m.source === "auto" ? " · Auto" : ""}
                   </p>
@@ -1485,7 +1547,7 @@ function MembersPanel({
                     className="cg-focus grid h-7 w-7 place-items-center rounded-lg disabled:opacity-50"
                     disabled={busy}
                     style={{ color: 'var(--bad-text)' }}
-                    title="Quitar"
+                    title={t("station.guards.remove", "Quitar")}
                     onClick={() => removeMember(m.userId)}
                   >
                     <X size={14} />

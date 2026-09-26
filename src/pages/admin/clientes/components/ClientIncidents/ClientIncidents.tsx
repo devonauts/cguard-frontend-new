@@ -46,6 +46,7 @@ import { Button } from "@/components/ui/button";
 import { localeActual } from "@/lib/localeActual";
 import { useEventoEnVivo } from "@/hooks/useEventoEnVivo";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import i18n from "@/i18n";
 type BadgeTone = "bad" | "warn" | "info" | "ok";
 
 // ── Shape of GET /client-account/:id/incidents-board (clientAccountIncidentsBoard.ts) ──
@@ -122,10 +123,10 @@ interface IncidentBoardData {
   updatedAt: string;
 }
 
-const PRIO: Record<string, { label: string; tone: BadgeTone }> = {
-  alta: { label: "Alta", tone: "bad" },
-  media: { label: "Media", tone: "warn" },
-  baja: { label: "Baja", tone: "info" },
+const PRIO: Record<string, { label: string; labelKey: string; tone: BadgeTone }> = {
+  alta: { label: "Alta", labelKey: "comun.alta", tone: "bad" },
+  media: { label: "Media", labelKey: "comun.media", tone: "warn" },
+  baja: { label: "Baja", labelKey: "comun.baja", tone: "info" },
 };
 /** El punto sale del semántico: nunca de un color escrito a mano. */
 /* Estas tablas se evalúan al CARGAR el módulo, antes de que el idioma esté
@@ -135,23 +136,28 @@ const ESTADO: Record<
   string,
   { label: string; labelKey?: string; tone: BadgeTone; dot: string }
 > = {
-  abierto: { label: "Abierto", tone: "bad", dot: "var(--bad)" },
+  abierto: { label: "Abierto", labelKey: "comun.abierto", tone: "bad", dot: "var(--bad)" },
   investigacion: {
     label: "En investigación",
     labelKey: "ui.ClientIncidents.enInvestigacion",
     tone: "warn",
     dot: "var(--warn)",
   },
-  resuelto: { label: "Resuelto", tone: "ok", dot: "var(--ok)" },
+  resuelto: {
+    label: "Resuelto",
+    labelKey: "ui.ClientIncidents.resuelto",
+    tone: "ok",
+    dot: "var(--ok)",
+  },
 };
 const WS_OPTIONS: { v: string; l: string; lKey?: string }[] = [
-  { v: "open", l: "Abierto" },
+  { v: "open", l: "Abierto", lKey: "comun.abierto" },
   {
     v: "inProgress",
     l: "En investigación",
     lKey: "ui.ClientIncidents.enInvestigacion",
   },
-  { v: "resolved", l: "Resuelto" },
+  { v: "resolved", l: "Resuelto", lKey: "ui.ClientIncidents.resuelto" },
 ];
 
 const fmtDT = (iso: string) => {
@@ -195,7 +201,10 @@ const resLabel = (ms: number | null) => {
   if (h < 1) return `${Math.max(1, Math.round(ms / 60000))} min`;
   if (h < 24) return `${Math.round(h)} h`;
 
-  return `${Math.round((h / 24) * 10) / 10} días`;
+  return i18n.t("ui.ClientIncidents.nDias", {
+    defaultValue: "{{n}} días",
+    n: Math.round((h / 24) * 10) / 10,
+  });
 };
 const ymd = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -323,7 +332,7 @@ export default function ClientIncidents({ client }: { client: Client }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2 text-sm">
           <span className="text-xs font-medium text-muted-foreground">
-            Rango
+            {t("ui.ClientIncidents.rango", "Rango")}
           </span>
           <input
             className={`${FIELD_CLS} w-auto`}
@@ -360,7 +369,7 @@ export default function ClientIncidents({ client }: { client: Client }) {
         <KpiTile
           accent={(kpis.abiertos ?? 0) > 0 ? "red" : "slate"}
           icon={<ShieldAlert />}
-          label="Incidentes abiertos"
+          label={t("ui.ClientIncidents.incidentesAbiertos", "Incidentes abiertos")}
           sub={
             <StatusBadge
               dot={false}
@@ -385,7 +394,7 @@ export default function ClientIncidents({ client }: { client: Client }) {
         <KpiTile
           accent="green"
           icon={<CheckCircle2 />}
-          label="Resueltos"
+          label={t("ui.ClientIncidents.resueltos", "Resueltos")}
           sub={
             <StatusBadge dot={false} tone="ok">
               {kpis.resueltosPct ?? 0}%
@@ -408,7 +417,10 @@ export default function ClientIncidents({ client }: { client: Client }) {
               : null
           }
           icon={<Clock />}
-          label={`Resp. prom. (Meta ${kpis.metaResponseMin ?? 15} min)`}
+          label={t("ui.ClientIncidents.respPromMeta", {
+            defaultValue: "Resp. prom. (Meta {{n}} min)",
+            n: kpis.metaResponseMin ?? 15,
+          })}
           value={
             kpis.avgResponseMin != null ? `${kpis.avgResponseMin} min` : "—"
           }
@@ -428,10 +440,16 @@ export default function ClientIncidents({ client }: { client: Client }) {
               : null
           }
           icon={<Timer />}
-          label={`Resol. prom. (Meta ${kpis.metaResolutionDays ?? 3} días)`}
+          label={t("ui.ClientIncidents.resolPromMeta", {
+            defaultValue: "Resol. prom. (Meta {{n}} días)",
+            n: kpis.metaResolutionDays ?? 3,
+          })}
           value={
             kpis.avgResolutionDays != null
-              ? `${kpis.avgResolutionDays} días`
+              ? t("ui.ClientIncidents.nDias", {
+                  defaultValue: "{{n}} días",
+                  n: kpis.avgResolutionDays,
+                })
               : "—"
           }
         />
@@ -441,14 +459,20 @@ export default function ClientIncidents({ client }: { client: Client }) {
           }
           bar={kpis.slaPct ?? 0}
           icon={<Gauge />}
-          label={`Cumplimiento SLA (Meta ${kpis.metaSlaPct ?? 95}%)`}
+          label={t("ui.ClientIncidents.cumplimientoSlaMeta", {
+            defaultValue: "Cumplimiento SLA (Meta {{n}}%)",
+            n: kpis.metaSlaPct ?? 95,
+          })}
           value={`${kpis.slaPct ?? 0}%`}
         />
       </div>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.55fr_1fr]">
         {/* LEFT — filters + table */}
-        <Section icon={<AlertTriangle />} title="Incidentes">
+        <Section
+          icon={<AlertTriangle />}
+          title={t("ui.ClientIncidents.incidentes", "Incidentes")}
+        >
           <div className="mb-3 grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
             <SearchInput
               className="col-span-2 md:col-span-3 xl:col-span-1"
@@ -507,7 +531,9 @@ export default function ClientIncidents({ client }: { client: Client }) {
               <option value="investigacion">
                 {t("ui.ClientIncidents.enInvestigacion", "En investigación")}
               </option>
-              <option value="resuelto">Resuelto</option>
+              <option value="resuelto">
+                {t("ui.ClientIncidents.resuelto", "Resuelto")}
+              </option>
             </select>
             <select
               className={FIELD_CLS}
@@ -537,9 +563,9 @@ export default function ClientIncidents({ client }: { client: Client }) {
                   {t("ui.ClientIncidents.sedeEstacion", "Sede / Estación")}
                 </Th>
                 <Th>{t("ui.ClientIncidents.reportadoPor")}</Th>
-                <Th>Prioridad</Th>
+                <Th>{t("ui.ClientIncidents.prioridad", "Prioridad")}</Th>
                 <Th>{t("comun.estado")}</Th>
-                <Th>Respuesta</Th>
+                <Th>{t("ui.ClientIncidents.respuesta", "Respuesta")}</Th>
                 <Th>{t("ui.ClientIncidents.resolucion", "Resolución")}</Th>
               </THead>
               <tbody>
@@ -610,7 +636,7 @@ export default function ClientIncidents({ client }: { client: Client }) {
                       <td className="px-2 py-2.5">
                         {pm ? (
                           <StatusBadge dot={false} tone={pm.tone}>
-                            {pm.label}
+                            {t(pm.labelKey, pm.label)}
                           </StatusBadge>
                         ) : (
                           <span style={{ color: "var(--ink-faint)" }}>—</span>
@@ -635,7 +661,7 @@ export default function ClientIncidents({ client }: { client: Client }) {
           )}
 
           <Pager
-            noun="incidentes"
+            noun={t("ui.ClientIncidents.nounIncidentes", "incidentes")}
             page={page}
             pageCount={pageCount}
             perPage={perPage}
@@ -717,13 +743,18 @@ export default function ClientIncidents({ client }: { client: Client }) {
                   </div>
                 </div>
                 <div>
-                  <div className="cg-eyebrow mb-0.5">Prioridad</div>
+                  <div className="cg-eyebrow mb-0.5">
+                    {t("ui.ClientIncidents.prioridad", "Prioridad")}
+                  </div>
                   {selected.priority ? (
                     <StatusBadge
                       dot={false}
                       tone={(PRIO[selected.priority] || PRIO.media).tone}
                     >
-                      {(PRIO[selected.priority] || PRIO.media).label}
+                      {t(
+                        (PRIO[selected.priority] || PRIO.media).labelKey,
+                        (PRIO[selected.priority] || PRIO.media).label,
+                      )}
                     </StatusBadge>
                   ) : (
                     <span style={{ color: "var(--ink-faint)" }}>—</span>
@@ -738,7 +769,9 @@ export default function ClientIncidents({ client }: { client: Client }) {
                   </div>
                 </div>
                 <div>
-                  <div className="cg-eyebrow mb-0.5">Respuesta</div>
+                  <div className="cg-eyebrow mb-0.5">
+                    {t("ui.ClientIncidents.respuesta", "Respuesta")}
+                  </div>
                   <div className="font-medium tabular-nums">
                     {selected.responseMin != null
                       ? `${selected.responseMin} min`
@@ -757,9 +790,11 @@ export default function ClientIncidents({ client }: { client: Client }) {
                   </div>
                 </div>
                 <div>
-                  <div className="cg-eyebrow mb-0.5">Asignado a</div>
+                  <div className="cg-eyebrow mb-0.5">
+                    {t("ui.ClientIncidents.asignadoA", "Asignado a")}
+                  </div>
                   <div className="font-medium">
-                    {selected.assignedName || "Sin asignar"}
+                    {selected.assignedName || t("comun.sinAsignar", "Sin asignar")}
                   </div>
                 </div>
               </div>
@@ -772,11 +807,20 @@ export default function ClientIncidents({ client }: { client: Client }) {
               >
                 {(
                   [
-                    ["detalles", "Detalles"],
-                    ["evidencia", `Evidencia (${selected.evidenceCount || 0})`],
+                    ["detalles", t("ui.ClientIncidents.detalles", "Detalles")],
+                    [
+                      "evidencia",
+                      t("ui.ClientIncidents.evidenciaN", {
+                        defaultValue: "Evidencia ({{n}})",
+                        n: selected.evidenceCount || 0,
+                      }),
+                    ],
                     [
                       "bitacora",
-                      `Bitácora (${(selected.comments || []).length})`,
+                      t("ui.ClientIncidents.bitacoraN", {
+                        defaultValue: "Bitácora ({{n}})",
+                        n: (selected.comments || []).length,
+                      }),
                     ],
                   ] as const
                 ).map(([k, l]) => (
@@ -820,7 +864,9 @@ export default function ClientIncidents({ client }: { client: Client }) {
                   )}
                   {selected.causaProbable && (
                     <div>
-                      <div className="cg-eyebrow mb-1">Causa probable</div>
+                      <div className="cg-eyebrow mb-1">
+                        {t("ui.ClientIncidents.causaProbable", "Causa probable")}
+                      </div>
                       <p
                         className="text-sm"
                         style={{ color: "var(--ink-soft)" }}
@@ -831,7 +877,9 @@ export default function ClientIncidents({ client }: { client: Client }) {
                   )}
                   {selected.actionsTaken?.length > 0 && (
                     <div>
-                      <div className="cg-eyebrow mb-1">Acciones tomadas</div>
+                      <div className="cg-eyebrow mb-1">
+                        {t("ui.ClientIncidents.accionesTomadas", "Acciones tomadas")}
+                      </div>
                       <ul
                         className="list-disc space-y-0.5 pl-5 text-sm"
                         style={{ color: "var(--ink-soft)" }}
@@ -870,7 +918,7 @@ export default function ClientIncidents({ client }: { client: Client }) {
                       >
                         <span className="inline-flex items-center gap-1">
                           <MapPin className="h-3.5 w-3.5" />{" "}
-                          {selected.location || "Ubicación"}
+                          {selected.location || t("ui.SiteTour.ubicacion", "Ubicación")}
                         </span>
                         <span className="tabular-nums">
                           {selected.lat!.toFixed(4)}, {selected.lng!.toFixed(4)}
@@ -895,8 +943,11 @@ export default function ClientIncidents({ client }: { client: Client }) {
                     <EmptyState
                       description={
                         selected.evidenceCount
-                          ? "Cargando…"
-                          : "Este incidente no tiene evidencia adjunta."
+                          ? t("common.loading", "Cargando…")
+                          : t(
+                              "ui.ClientIncidents.sinEvidenciaAdjunta",
+                              "Este incidente no tiene evidencia adjunta.",
+                            )
                       }
                       icon={<Paperclip />}
                       title={t("ui.ClientIncidents.sinEvidencia")}
@@ -998,7 +1049,10 @@ export default function ClientIncidents({ client }: { client: Client }) {
 
       <TabFooter
         icon={<ShieldCheck />}
-        note="Los tiempos de respuesta se calculan desde el reporte hasta el despacho al supervisor."
+        note={t(
+          "ui.ClientIncidents.notaTiemposRespuesta",
+          "Los tiempos de respuesta se calculan desde el reporte hasta el despacho al supervisor.",
+        )}
         updatedAt={fmtUpdated}
         onRefresh={() => load()}
       />

@@ -123,7 +123,12 @@ export default function QuizManager({
     }
     for (const q of cleaned) {
       if (q.correctIndex < 0 || q.correctIndex >= q.options.length) {
-        toast.error("Cada pregunta debe tener una respuesta correcta válida.");
+        toast.error(
+          t(
+            "ui.QuizManager.cadaPreguntaRespuestaCorrecta",
+            "Cada pregunta debe tener una respuesta correcta válida.",
+          ),
+        );
 
         return;
       }
@@ -135,7 +140,7 @@ export default function QuizManager({
         questionsPerAttempt: Number(questionsPerAttempt) || cleaned.length,
         questions: cleaned,
       });
-      toast.success("Cuestionario guardado.");
+      toast.success(t("ui.QuizManager.cuestionarioGuardado", "Cuestionario guardado."));
       setEditing(false);
       onChange();
     } catch (err: any) {
@@ -157,7 +162,10 @@ export default function QuizManager({
   if (!editing) {
     return (
       <FadeIn>
-        <Section icon={<ClipboardList />} title="Cuestionario">
+        <Section
+          icon={<ClipboardList />}
+          title={t("ui.TrainingCourseDetailPage.cuestionario", "Cuestionario")}
+        >
           {quiz ? (
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
@@ -166,7 +174,7 @@ export default function QuizManager({
                     className="h-5 w-5"
                     style={{ color: "var(--ok-text)" }}
                   />{" "}
-                  Cuestionario configurado
+                  {t("ui.QuizManager.cuestionarioConfigurado", "Cuestionario configurado")}
                 </div>
                 <p
                   className="mt-1 flex items-center gap-2 text-sm"
@@ -189,7 +197,7 @@ export default function QuizManager({
                     setEditing(true);
                   }}
                 >
-                  Editar / reemplazar preguntas
+                  {t("ui.QuizManager.editarReemplazarPreguntas", "Editar / reemplazar preguntas")}
                 </Button>
               )}
             </div>
@@ -198,11 +206,15 @@ export default function QuizManager({
               action={
                 !readOnly ? (
                   <Button variant="brand" onClick={() => setEditing(true)}>
-                    <Plus className="h-4 w-4 mr-1" /> Crear cuestionario
+                    <Plus className="h-4 w-4 mr-1" />{" "}
+                    {t("ui.QuizManager.crearCuestionario", "Crear cuestionario")}
                   </Button>
                 ) : undefined
               }
-              description="Un cuestionario es opcional. Si lo agregas, el vigilante debe aprobarlo para completar el curso."
+              description={t(
+                "ui.QuizManager.cuestionarioOpcional",
+                "Un cuestionario es opcional. Si lo agregas, el vigilante debe aprobarlo para completar el curso.",
+              )}
               icon={<HelpCircle />}
               title={t("ui.QuizManager.sinCuestionario", "Sin cuestionario")}
             />
@@ -217,7 +229,7 @@ export default function QuizManager({
       <Section
         contentClassName="space-y-4"
         icon={<ClipboardList />}
-        title="Editar cuestionario"
+        title={t("ui.QuizManager.editarCuestionario", "Editar cuestionario")}
       >
         <div className="grid max-w-md grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="space-y-2">
@@ -233,7 +245,9 @@ export default function QuizManager({
             />
           </div>
           <div className="space-y-2">
-            <Label>Preguntas por intento</Label>
+            <Label>
+              {t("ui.QuizManager.preguntasPorIntento", "Preguntas por intento")}
+            </Label>
             <Input
               min={1}
               type="number"
@@ -245,8 +259,10 @@ export default function QuizManager({
 
         {quiz && (
           <p className="text-xs" style={{ color: "var(--warn-text)" }}>
-            Al guardar se reemplazarán las preguntas existentes del
-            cuestionario.
+            {t(
+              "ui.QuizManager.alGuardarSeReemplazaran",
+              "Al guardar se reemplazarán las preguntas existentes del cuestionario.",
+            )}
           </p>
         )}
 
@@ -254,10 +270,15 @@ export default function QuizManager({
           {questions.map((q, qi) => (
             <div key={qi} className="glass-sunken space-y-3 p-4">
               <div className="flex items-start justify-between gap-2">
-                <Label className="pt-2">Pregunta {qi + 1}</Label>
+                <Label className="pt-2">
+                  {t("ui.QuizManager.preguntaN", {
+                    defaultValue: "Pregunta {{n}}",
+                    n: qi + 1,
+                  })}
+                </Label>
                 {questions.length > 1 && (
                   <button
-                    aria-label="Eliminar"
+                    aria-label={t("actions.delete", "Eliminar")}
                     className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md"
                     style={{ color: "var(--bad-text)" }}
                     onClick={() => removeQuestion(qi)}
@@ -281,18 +302,21 @@ export default function QuizManager({
                       checked={q.correctIndex === oi}
                       className="h-4 w-4 shrink-0 cursor-pointer"
                       name={`correct-${qi}`}
-                      title="Marcar como correcta"
+                      title={t("ui.QuizManager.marcarComoCorrecta", "Marcar como correcta")}
                       type="radio"
                       onChange={() => setQ(qi, { correctIndex: oi })}
                     />
                     <Input
-                      placeholder={`Opción ${oi + 1}`}
+                      placeholder={t("ui.QuizManager.opcionN", {
+                        defaultValue: "Opción {{n}}",
+                        n: oi + 1,
+                      })}
                       value={o}
                       onChange={(e) => setOption(qi, oi, e.target.value)}
                     />
                     {q.options.length > 2 && (
                       <button
-                        aria-label="Eliminar"
+                        aria-label={t("actions.delete", "Eliminar")}
                         className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md"
                         style={{ color: "var(--bad-text)" }}
                         onClick={() => removeOption(qi, oi)}
@@ -317,15 +341,18 @@ export default function QuizManager({
         </div>
 
         <Button type="button" variant="outline" onClick={addQuestion}>
-          <Plus className="h-4 w-4 mr-1" /> Agregar pregunta
+          <Plus className="h-4 w-4 mr-1" />{" "}
+          {t("ui.QuizManager.agregarPregunta", "Agregar pregunta")}
         </Button>
 
         <div className="flex justify-end gap-2 pt-2">
           <Button variant="outline" onClick={() => setEditing(false)}>
-            Cancelar
+            {t("actions.cancel", "Cancelar")}
           </Button>
           <Button disabled={saving} variant="brand" onClick={handleSave}>
-            {saving ? "Guardando..." : "Guardar cuestionario"}
+            {saving
+              ? t("adminOfficeUsers.editUser.form.savingEdit", "Guardando...")
+              : t("ui.QuizManager.guardarCuestionario", "Guardar cuestionario")}
           </Button>
         </div>
       </Section>

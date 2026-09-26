@@ -55,11 +55,13 @@ export function needsOperationSetup(site?: SiteWithSetup | null): boolean {
 
 /** Píldora corta para listas y tablas. */
 export function OperationSetupBadge({ site }: { site?: SiteWithSetup | null }) {
+  const { t } = useTranslation();
+
   if (!needsOperationSetup(site)) return null;
 
   return (
     <StatusBadge dot={false} tone="warn">
-      Falta configurar
+      {t("ui.OperationSetupAlert.faltaConfigurar", "Falta configurar")}
     </StatusBadge>
   );
 }
@@ -85,12 +87,24 @@ export default function OperationSetupAlert({
 
   const cuerpo =
     context === "station"
-      ? "Estás por crear un puesto en una sede que todavía no dice qué servicio se presta ni con qué equipamiento y capacitación. Puedes continuar, pero el puesto quedará sin esas reglas hasta que la configures."
+      ? t(
+          "ui.OperationSetupAlert.cuerpoStation",
+          "Estás por crear un puesto en una sede que todavía no dice qué servicio se presta ni con qué equipamiento y capacitación. Puedes continuar, pero el puesto quedará sin esas reglas hasta que la configures.",
+        )
       : context === "guard"
-        ? "Estás por asignar personal a una sede que todavía no dice qué servicio se presta ni con qué equipamiento y capacitación. Puedes continuar, pero el vigilante no tendrá esas reglas hasta que la configures."
+        ? t(
+          "ui.OperationSetupAlert.cuerpoGuard",
+          "Estás por asignar personal a una sede que todavía no dice qué servicio se presta ni con qué equipamiento y capacitación. Puedes continuar, pero el vigilante no tendrá esas reglas hasta que la configures.",
+        )
         : context === "client"
-          ? "Esta sede se creó automáticamente al dar de alta al cliente, con sus datos de contacto. Falta lo operativo: qué servicio se presta, con qué equipamiento y qué capacitación. Conviene configurarlo antes de crear puestos y asignar vigilantes."
-          : "Esta sede no tiene configuración operativa: falta indicar qué servicio se presta, con qué equipamiento y qué capacitación. Conviene hacerlo antes de crear puestos y asignar vigilantes.";
+          ? t(
+          "ui.OperationSetupAlert.cuerpoClient",
+          "Esta sede se creó automáticamente al dar de alta al cliente, con sus datos de contacto. Falta lo operativo: qué servicio se presta, con qué equipamiento y qué capacitación. Conviene configurarlo antes de crear puestos y asignar vigilantes.",
+        )
+          : t(
+          "ui.OperationSetupAlert.cuerpoSite",
+          "Esta sede no tiene configuración operativa: falta indicar qué servicio se presta, con qué equipamiento y qué capacitación. Conviene hacerlo antes de crear puestos y asignar vigilantes.",
+        );
 
   return (
     <InfoNote

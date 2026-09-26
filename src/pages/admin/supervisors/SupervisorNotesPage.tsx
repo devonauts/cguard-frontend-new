@@ -1,4 +1,5 @@
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import GuardNotes from "@/pages/admin/security-guards/components/GuardNotes/GuardNotespage";
 import api from "@/lib/api";
@@ -10,6 +11,7 @@ import api from "@/lib/api";
  * of these props).
  */
 export default function SupervisorNotesPage() {
+  const { t } = useTranslation();
   const { id = "" } = useParams();
   const tid = localStorage.getItem("tenantId") || "";
   const notesApi = {
@@ -26,7 +28,7 @@ export default function SupervisorNotesPage() {
       entityId={id}
       navKey="supervisors"
       notesApi={notesApi}
-      title="Notas"
+      title={t("comun.notas", "Notas")}
     />
   );
 }

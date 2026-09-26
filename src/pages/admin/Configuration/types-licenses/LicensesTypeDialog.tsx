@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -39,8 +39,16 @@ export default function LicenseTypeDialog({
   onSubmit,
 }: Props) {
   const { t } = useTranslation();
+  // Same shape as `schema`, but with the validation message in the current language.
+  const localizedSchema = useMemo(
+    () =>
+      z.object({
+        name: z.string().min(1, t("ui.DepartmentDialog.requerido", "Requerido")),
+      }),
+    [t],
+  );
   const form = useForm<LicenseTypeDialogValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(localizedSchema),
     defaultValues: { name: "" },
   });
 

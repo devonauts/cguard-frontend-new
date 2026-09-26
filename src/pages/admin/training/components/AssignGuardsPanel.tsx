@@ -28,6 +28,7 @@ import {
 } from "@/lib/api/trainingEnrollmentService";
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import i18n from "@/i18n";
 interface GuardOption {
   id: string;
   name: string;
@@ -43,7 +44,7 @@ function extractGuard(g: any): GuardOption | null {
     g.displayName ||
     g.name ||
     `${g.firstName ?? g.firstname ?? ""} ${g.lastName ?? g.lastname ?? ""}`.trim() ||
-    "Sin nombre";
+    i18n.t("ui.AssignGuardsPanel.sinNombre", "Sin nombre");
 
   return { id, name };
 }
@@ -143,8 +144,14 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
       });
       toast.success(
         assignmentType === "all_guards"
-          ? "Curso asignado a todos los vigilantes."
-          : `Curso asignado a ${selected!.name}.`,
+          ? t(
+              "ui.AssignGuardsPanel.asignadoATodos",
+              "Curso asignado a todos los vigilantes.",
+            )
+          : t("ui.AssignGuardsPanel.asignadoA", {
+              defaultValue: "Curso asignado a {{name}}.",
+              name: selected!.name,
+            }),
       );
       setSelected(null);
       setQuery("");
@@ -169,7 +176,7 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
   const assignedColumns: Column<EnrollmentRow>[] = [
     {
       key: "guardName",
-      header: "Vigilante",
+      header: t("ui.SiteTour.vigilante", "Vigilante"),
       render: (_v, e) =>
         e.assignmentType === "all_guards" && !e.guardId ? (
           <StatusBadge dot={false} tone="neutral">
@@ -181,7 +188,7 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
     },
     {
       key: "status",
-      header: "Estado",
+      header: t("comun.estado", "Estado"),
       render: (_v, e) => (
         <StatusBadge dot={false} tone={ENROLLMENT_STATUS_TONE[e.status]}>
           {enrollmentStatusLabel(e.status)}
@@ -190,13 +197,13 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
     },
     {
       key: "progressPercentage",
-      header: "Progreso",
+      header: t("ui.TrainingEnrollmentsPage.progreso", "Progreso"),
       /* La página hermana pinta este mismo dato con `MeterBar`; una columna que
          sólo dice «40 %» y otra que lo dibuja son dos idiomas para lo mismo. */
       render: (_v, e) => (
         <div className="flex items-center gap-2">
           <MeterBar
-            ariaLabel="Progreso"
+            ariaLabel={t("ui.TrainingEnrollmentsPage.progreso", "Progreso")}
             className="w-24"
             height={6}
             pct={e.progressPercentage ?? 0}
@@ -212,12 +219,13 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
     },
     {
       key: "quizPassed",
-      header: "Cuestionario",
+      header: t("ui.TrainingCourseDetailPage.cuestionario", "Cuestionario"),
       render: (_v, e) =>
         e.quizPassed ? (
           <StatusBadge dot={false} tone="ok">
             <span className="tabular-nums">
-              Aprobado{e.quizScore != null ? ` (${e.quizScore}%)` : ""}
+              {t("ui.TrainingEnrollmentsPage.aprobado", "Aprobado")}
+              {e.quizScore != null ? ` (${e.quizScore}%)` : ""}
             </span>
           </StatusBadge>
         ) : (
@@ -226,7 +234,7 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
     },
     {
       key: "completedAt",
-      header: "Completado",
+      header: t("ui.TrainingEnrollmentsPage.completado", "Completado"),
       render: (_v, e) => (
         <span className="tabular-nums" style={{ color: "var(--ink-soft)" }}>
           {e.completedAt
@@ -239,7 +247,10 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
 
   return (
     <FadeIn className="space-y-4">
-      <Section icon={<UserPlus />} title="Asignar curso">
+      <Section
+        icon={<UserPlus />}
+        title={t("ui.AssignGuardsPanel.asignarCurso", "Asignar curso")}
+      >
         <div className="space-y-4 max-w-2xl">
           {!published && (
             <p className="text-sm" style={{ color: "var(--warn-text)" }}>
@@ -287,7 +298,7 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
                     variant="ghost"
                     onClick={() => setSelected(null)}
                   >
-                    Cambiar
+                    {t("ui.ExtremoRutaField.cambiar", "Cambiar")}
                   </Button>
                 </div>
               ) : (
@@ -309,7 +320,7 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
                           className="px-3 py-2 text-sm"
                           style={{ color: "var(--ink-soft)" }}
                         >
-                          Buscando…
+                          {t("ui.AssignGuardsPanel.buscando", "Buscando…")}
                         </div>
                       )}
                       {options.map((o) => (
@@ -352,7 +363,9 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
             onClick={handleAssign}
           >
             <UserPlus className="h-4 w-4 mr-1" />{" "}
-            {assigning ? "Asignando..." : "Asignar curso"}
+            {assigning
+              ? t("ui.SecurityGuardsPage.asignando", "Asignando...")
+              : t("ui.AssignGuardsPanel.asignarCurso", "Asignar curso")}
           </Button>
         </div>
       </Section>
@@ -360,7 +373,7 @@ export default function AssignGuardsPanel({ courseId, published }: Props) {
       <Section
         contentClassName="-mx-5 -mb-5"
         icon={<Users />}
-        title="Vigilantes asignados"
+        title={t("ui.ClientCoverage.vigilantesAsignados", "Vigilantes asignados")}
       >
         <DataTable
           columns={assignedColumns}

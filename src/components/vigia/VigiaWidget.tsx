@@ -529,14 +529,37 @@ export default function VigiaWidget() {
 
       const resumen = [
         campos.firstName || campos.lastName
-          ? `Nombre: ${[campos.firstName, campos.middleName, campos.lastName].filter(Boolean).join(" ")}`
+          ? t("ui.VigiaWidget.cvNombre", {
+              defaultValue: "Nombre: {{valor}}",
+              valor: [campos.firstName, campos.middleName, campos.lastName]
+                .filter(Boolean)
+                .join(" "),
+            })
           : null,
         campos.identificationNumber
-          ? `Documento: ${campos.identificationNumber}`
+          ? t("ui.VigiaWidget.cvDocumento", {
+              defaultValue: "Documento: {{valor}}",
+              valor: campos.identificationNumber,
+            })
           : null,
-        campos.birthDate ? `Nacimiento: ${campos.birthDate}` : null,
-        campos.email ? `Correo: ${campos.email}` : null,
-        campos.phone ? `Teléfono: ${campos.phone}` : null,
+        campos.birthDate
+          ? t("ui.VigiaWidget.cvNacimiento", {
+              defaultValue: "Nacimiento: {{valor}}",
+              valor: campos.birthDate,
+            })
+          : null,
+        campos.email
+          ? t("ui.VigiaWidget.cvCorreo", {
+              defaultValue: "Correo: {{valor}}",
+              valor: campos.email,
+            })
+          : null,
+        campos.phone
+          ? t("ui.VigiaWidget.cvTelefono", {
+              defaultValue: "Teléfono: {{valor}}",
+              valor: campos.phone,
+            })
+          : null,
       ]
         .filter(Boolean)
         .join("\n");
@@ -1017,10 +1040,19 @@ export default function VigiaWidget() {
                     <p>{t("vigia.emptyHint", "Puedo, por ejemplo:")}</p>
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       {[
-                        "¿Cómo va la cobertura ahora?",
-                        "¿Qué incidentes hubo hoy?",
-                        "Agrega un vigilante nuevo",
-                        "Llévame al horario",
+                        t(
+                          "ui.VigiaWidget.ejemploCobertura",
+                          "¿Cómo va la cobertura ahora?",
+                        ),
+                        t(
+                          "ui.VigiaWidget.ejemploIncidentes",
+                          "¿Qué incidentes hubo hoy?",
+                        ),
+                        t(
+                          "ui.VigiaWidget.ejemploAgregarVigilante",
+                          "Agrega un vigilante nuevo",
+                        ),
+                        t("ui.VigiaWidget.ejemploHorario", "Llévame al horario"),
                       ].map((ej) => (
                         <button
                           key={ej}

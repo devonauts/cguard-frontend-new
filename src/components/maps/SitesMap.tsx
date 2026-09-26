@@ -154,7 +154,7 @@ export default function SitesMap({
         style={{ borderColor: "var(--hairline)" }}
       >
         <StaticMapImage
-          alt="Mapa del cliente"
+          alt={t("ui.SitesMap.mapaDelCliente", "Mapa del cliente")}
           className="w-full"
           height={height}
           lat={fbLat}
@@ -179,7 +179,10 @@ export default function SitesMap({
             border: "1px solid var(--hairline)",
           }}
         >
-          Dirección del cliente · las sedes aún no tienen ubicación
+          {t(
+            "ui.SitesMap.direccionDelClienteSinSedes",
+            "Dirección del cliente · las sedes aún no tienen ubicación",
+          )}
         </span>
       </div>
     );
@@ -192,7 +195,7 @@ export default function SitesMap({
       style={{ borderColor: "var(--hairline)" }}
     >
       <StaticMapImage
-        alt="Mapa de las sedes del cliente"
+        alt={t("ui.SitesMap.mapaDeLasSedesDelCliente", "Mapa de las sedes del cliente")}
         className="w-full"
         height={height}
         points={puntos}
@@ -218,14 +221,20 @@ export default function SitesMap({
                     : null,
                 ),
                 metrics: [
-                  { label: "Estaciones", value: s.stations ?? 0 },
-                  { label: "Vigilantes", value: s.guards ?? 0 },
+                  {
+                    label: t("ui.SitesMap.estaciones", "Estaciones"),
+                    value: s.stations ?? 0,
+                  },
+                  {
+                    label: t("ui.SitesMap.vigilantes", "Vigilantes"),
+                    value: s.guards ?? 0,
+                  },
                 ],
                 actions: mapPopupItems(
                   onSedeClick
                     ? mapPopupActions.detail(
                         () => onSedeClick(String(s.id)),
-                        "Ver sede",
+                        t("ui.SitesMap.verSede", "Ver sede"),
                       )
                     : null,
                   mapPopupActions.directions(m.lat, m.lng),

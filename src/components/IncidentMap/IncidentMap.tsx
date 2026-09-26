@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import GoogleMapEmbed from "@/components/GoogleMap/GoogleMapEmbed";
 import StaticMapImage from "@/components/maps/StaticMapImage";
 
@@ -30,12 +32,18 @@ export default function IncidentMap({
   lng?: number;
   label?: string;
 }) {
+  const { t } = useTranslation();
+
   if (!lat || !lng) return null;
 
   return (
     <div className="w-full h-64 rounded-md overflow-hidden mb-4">
       <StaticMapImage
-        alt={label ? `Mapa de ${label}` : "Mapa de la ubicación"}
+        alt={
+          label
+            ? t("ui.IncidentMap.mapaDe", { defaultValue: "Mapa de {{label}}", label })
+            : t("ui.IncidentMap.mapaDeLaUbicacion", "Mapa de la ubicación")
+        }
         className="h-full w-full"
         height="100%"
         lat={lat}

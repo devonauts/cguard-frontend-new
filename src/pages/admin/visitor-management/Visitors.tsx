@@ -474,7 +474,7 @@ export default function Visitors() {
     if (
       !(await confirmDialog({
         message: t("visitantes.confirmArchive") || "Archivar este registro?",
-        confirmText: "Archivar",
+        confirmText: t("actions.archive", "Archivar"),
       }))
     )
       return;
@@ -619,7 +619,10 @@ export default function Visitors() {
         filas.map((r) => COLUMNAS_BITACORA.map((c) => c.get(r))),
         {
           title: t("visitantes.bitacoras", "Bitácoras"),
-          subtitle: `${filas.length} registro(s)`,
+          subtitle: t("ui.Visitors.registrosCount", {
+            count: filas.length,
+            defaultValue: "{{count}} registro(s)",
+          }),
           fileBase: `bitacoras_export_${hoyEnLaEmpresa()}`,
         },
       );
@@ -1014,14 +1017,20 @@ export default function Visitors() {
         "visitorLog.create",
         payload,
         () => visitorLogService.create(payload),
-        "Visita",
+        t("ui.Visitors.visita", "Visita"),
       );
 
       if (queued) {
         toast.warning(
           idImageFile
-            ? "Sin conexión: la visita quedó en cola y se registrará sola al reconectar. La foto del documento no viaja en la cola — agrégala después desde el registro."
-            : "Sin conexión: la visita quedó en cola y se registrará sola al reconectar.",
+            ? t(
+                "ui.Visitors.sinConexionVisitaEnColaSinFoto",
+                "Sin conexión: la visita quedó en cola y se registrará sola al reconectar. La foto del documento no viaja en la cola — agrégala después desde el registro.",
+              )
+            : t(
+                "ui.Visitors.sinConexionVisitaEnCola",
+                "Sin conexión: la visita quedó en cola y se registrará sola al reconectar.",
+              ),
           { duration: 9000 },
         );
         setOpenAddVisitor(false);
@@ -1504,7 +1513,7 @@ export default function Visitors() {
                                     className="cc-dot"
                                     style={{ background: "var(--ok)" }}
                                   />
-                                  En curso
+                                  {t("ui.Visitors.enCurso", "En curso")}
                                 </StatusBadge>
                               )}
                             </td>
@@ -1599,7 +1608,7 @@ export default function Visitors() {
                               className="cc-dot"
                               style={{ background: "var(--ok)" }}
                             />
-                            En curso
+                            {t("ui.Visitors.enCurso", "En curso")}
                           </StatusBadge>
                         )}
                       </div>
@@ -1690,9 +1699,15 @@ export default function Visitors() {
 
               <div className="flex items-center gap-4">
                 <div className="text-sm text-muted-foreground">
-                  {logsCount === 0
-                    ? `0 - 0 de 0`
-                    : `${Math.min(logsOffset + 1, logsCount)} - ${Math.min(logsOffset + logsLimit, logsCount)} de ${logsCount}`}
+                  {t("guards.list.pagination.range", {
+                    defaultValue: "{{start}} - {{end}} de {{total}}",
+                    start: logsCount === 0 ? 0 : Math.min(logsOffset + 1, logsCount),
+                    end:
+                      logsCount === 0
+                        ? 0
+                        : Math.min(logsOffset + logsLimit, logsCount),
+                    total: logsCount,
+                  })}
                 </div>
 
                 <div className="flex items-center space-x-2">

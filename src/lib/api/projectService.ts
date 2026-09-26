@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import api from "@/lib/api";
 
 export interface ClientProject {
@@ -48,7 +49,7 @@ const getTenantId = (): string => {
   const local = localStorage.getItem("tenantId");
 
   if (local) return local;
-  throw new Error("tenantId not set");
+  throw new Error(i18n.t("ui.apiService.noPudimosIdentificarTuEmpresa", "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar."));
 };
 
 export const projectService = {

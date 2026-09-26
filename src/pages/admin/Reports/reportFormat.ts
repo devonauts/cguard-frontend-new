@@ -16,6 +16,7 @@
 import { toast } from "sonner";
 
 import { localeActual } from "@/lib/localeActual";
+import i18n from "@/i18n";
 import { fechaYHora, limitesDelDia, soloFecha } from "@/lib/horaDeLaEmpresa";
 
 /** Fecha y hora — el formato por defecto de las columnas de un informe. */
@@ -103,7 +104,11 @@ export function warnIfCapped<T>(
 ): T[] {
   if (rows.length >= limit) {
     toast.warning(
-      `Se alcanzó el máximo de ${limit.toLocaleString(localeActual())} registros: el informe puede estar incompleto. Reduce el rango de fechas.`,
+      i18n.t("ui.reportFormat.maximoAlcanzado", {
+        defaultValue:
+          "Se alcanzó el máximo de {{limit}} registros: el informe puede estar incompleto. Reduce el rango de fechas.",
+        limit: limit.toLocaleString(localeActual()),
+      }),
       { duration: 8000 },
     );
   }

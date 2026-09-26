@@ -12,6 +12,7 @@
  */
 import type { LiveStatus } from "./types";
 
+import i18n from "@/i18n";
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 export type Tone = "brand" | "neutral" | "ok" | "warn" | "bad" | "info";
@@ -72,17 +73,30 @@ export function toneGlow(t: Tone, pct = 26): string {
 
 // ── Formato ────────────────────────────────────────────────────────────────
 /** Números con la coma decimal y el punto de millar de la región. */
-const NUM = new Intl.NumberFormat(localeActual(), { maximumFractionDigits: 1 });
+// Built lazily and per locale: a formatter created at import time kept the
+// language the app booted with, even after the user switched it.
+const NUM_CACHE = new Map<string, Intl.NumberFormat>();
+function NUM(): Intl.NumberFormat {
+  const loc = localeActual();
+  let f = NUM_CACHE.get(loc);
+
+  if (!f) {
+    f = new Intl.NumberFormat(loc, { maximumFractionDigits: 1 });
+    NUM_CACHE.set(loc, f);
+  }
+
+  return f;
+}
 
 export function fmtValue(v: number | string): string {
-  if (typeof v === "number") return Number.isFinite(v) ? NUM.format(v) : "—";
+  if (typeof v === "number") return Number.isFinite(v) ? NUM().format(v) : "—";
 
   return v === "" ? "—" : v;
 }
 
 /** −0,124 → «12,4 %». El signo lo lleva la flecha de la píldora, no el número. */
 export function fmtDelta(trend: number): string {
-  return `${NUM.format(Math.abs(trend) * 100)} %`;
+  return `${NUM().format(Math.abs(trend) * 100)} %`;
 }
 
 export function deltaDirection(trend?: number | null): "up" | "down" | "flat" {
@@ -97,11 +111,22 @@ export function timeAgo(iso: string): string {
   const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
 
   if (!Number.isFinite(s)) return "—";
-  if (s < 60) return "ahora";
-  if (s < 3600) return `hace ${Math.floor(s / 60)} min`;
-  if (s < 86400) return `hace ${Math.floor(s / 3600)} h`;
+  if (s < 60) return i18n.t("activity.time.now", "ahora");
+  if (s < 3600)
+    return i18n.t("ui.tone.haceMin", {
+      n: Math.floor(s / 60),
+      defaultValue: "hace {{n}} min",
+    });
+  if (s < 86400)
+    return i18n.t("ui.tone.haceH", {
+      n: Math.floor(s / 3600),
+      defaultValue: "hace {{n}} h",
+    });
 
-  return `hace ${Math.floor(s / 86400)} d`;
+  return i18n.t("ui.tone.haceD", {
+    n: Math.floor(s / 86400),
+    defaultValue: "hace {{n}} d",
+  });
 }
 
 export function clockOf(iso: string): string {

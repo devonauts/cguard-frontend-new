@@ -38,6 +38,7 @@ import {
 import { useFileUrl } from "@/lib/fileUrl";
 import { useNotificationStream } from "@/hooks/useNotificationStream";
 import { targetForNotification } from "@/components/notifications/notificationToast";
+import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -182,7 +183,7 @@ export default function ActivitiesPage() {
       map.set(n.id, {
         id: n.id,
         eventType: n.eventType,
-        title: n.title || n.eventType || "Evento",
+        title: n.title || n.eventType || t("ui.ActivitiesPage.evento", "Evento"),
         body: n.body,
         createdAt: n.createdAt,
         read: !!n.read,
@@ -195,7 +196,7 @@ export default function ActivitiesPage() {
     return Array.from(map.values()).sort(
       (a, b) => +new Date(b.createdAt) - +new Date(a.createdAt),
     );
-  }, [live]);
+  }, [live, t]);
 
   const isRead = useCallback(
     (e: ActivityEvent) => e.read || readIds.has(e.id),
@@ -275,11 +276,7 @@ export default function ActivitiesPage() {
 
   // group filtered events by day bucket (today / yesterday / explicit date)
   const groups = useMemo(() => {
-    const locale = i18n.language?.startsWith("en")
-      ? "en-US"
-      : i18n.language?.startsWith("pt")
-        ? "pt-BR"
-        : "es-ES";
+    const locale = localeActual();
     const startOfDay = (d: Date) =>
       new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
     const now = new Date();
@@ -334,11 +331,7 @@ export default function ActivitiesPage() {
 
   const absoluteTime = useCallback(
     (iso: string) => {
-      const locale = i18n.language?.startsWith("en")
-        ? "en-US"
-        : i18n.language?.startsWith("pt")
-          ? "pt-BR"
-          : "es-ES";
+      const locale = localeActual();
 
       return new Date(iso).toLocaleString(locale, { timeZone: zonaDeLaEmpresa(),
         dateStyle: "medium",

@@ -27,6 +27,7 @@ import { cn } from "@/lib/utils";
 import { useFileUrl } from "@/lib/fileUrl";
 import { SmartImage } from "@/components/kit";
 import { useAgente } from "@/lib/agenteDeMarca";
+import i18n from "@/i18n";
 
 interface NotificationsPanelProps {
   notifications: PlatformNotification[];
@@ -40,13 +41,24 @@ function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const m = Math.floor(diff / 60_000);
 
-  if (m < 1) return "Ahora";
-  if (m < 60) return `Hace ${m} min`;
+  if (m < 1) return i18n.t("ui.NotificationsPanel.ahora", "Ahora");
+  if (m < 60)
+    return i18n.t("ui.NotificationsPanel.haceMin", {
+      defaultValue: "Hace {{n}} min",
+      n: m,
+    });
   const h = Math.floor(m / 60);
 
-  if (h < 24) return `Hace ${h}h`;
+  if (h < 24)
+    return i18n.t("ui.NotificationsPanel.haceHoras", {
+      defaultValue: "Hace {{n}}h",
+      n: h,
+    });
 
-  return `Hace ${Math.floor(h / 24)}d`;
+  return i18n.t("ui.NotificationsPanel.haceDias", {
+    defaultValue: "Hace {{n}}d",
+    n: Math.floor(h / 24),
+  });
 }
 
 export function NotificationsPanel({
@@ -122,10 +134,24 @@ export function NotificationsPanel({
             contador cuelga del canto y late con `.cc-dot` mientras haya algo sin
             leer — el mismo latido que usan los estados del sistema. */}
         <button
-          aria-label={`Notificaciones${unreadCount > 0 ? ` (${unreadCount} sin leer)` : ""}`}
+          aria-label={
+            unreadCount > 0
+              ? t("ui.NotificationsPanel.notificacionesSinLeer", {
+                  defaultValue: "Notificaciones ({{n}} sin leer)",
+                  n: unreadCount,
+                })
+              : t("ui.NotificationsPanel.titulo", "Notificaciones")
+          }
           className="cg-focus cg-btn-glass relative grid h-9 w-9 shrink-0 place-items-center transition-all duration-200 active:scale-95"
           style={{ borderRadius: 9999, color: "var(--ink-soft)" }}
-          title={connected ? "Notificaciones" : "Notificaciones — reconectando"}
+          title={
+            connected
+              ? t("ui.NotificationsPanel.titulo", "Notificaciones")
+              : t(
+                  "ui.NotificationsPanel.notificacionesReconectando",
+                  "Notificaciones — reconectando",
+                )
+          }
           type="button"
         >
           {connected ? (
@@ -446,9 +472,15 @@ function NotificationItem({
                   window.dispatchEvent(
                     new CustomEvent("vigia:abrir", {
                       detail: {
-                        mensaje: `Aviso recibido: ${n.title}. Puedo mostrarte la cobertura en vivo y sugerir reemplazos — dime «muéstrame» y lo hago.`,
-                        escribir:
+                        mensaje: t("ui.NotificationsPanel.avisoRecibidoVigia", {
+                          defaultValue:
+                            "Aviso recibido: {{titulo}}. Puedo mostrarte la cobertura en vivo y sugerir reemplazos — dime «muéstrame» y lo hago.",
+                          titulo: n.title,
+                        }),
+                        escribir: t(
+                          "ui.NotificationsPanel.muestrameLaCobertura",
                           "Muéstrame la cobertura y sugiere reemplazos para lo que esté sin cubrir",
+                        ),
                       },
                     }),
                   );

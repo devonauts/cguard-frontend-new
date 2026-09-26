@@ -115,7 +115,10 @@ export default function VigiaUsagePage() {
                 (datos.mes?.gratisRestanteCents ?? 0) > 0 ? "ok" : "neutral"
               }
               icon={<Bot />}
-              label="Mensajes gratis restantes (aprox.)"
+              label={t(
+                "ui.VigiaUsagePage.mensajesGratisRestantesAprox",
+                "Mensajes gratis restantes (aprox.)",
+              )}
               value={`≈${(() => {
                 const resto = datos.mes?.gratisRestanteCents ?? 0;
                 const msgs = datos.mes?.mensajes || 0;
@@ -137,20 +140,23 @@ export default function VigiaUsagePage() {
             <StatCard
               accent={(datos.saldoCents ?? 0) > 0 ? "ok" : "warn"}
               icon={<Wallet />}
-              label="Saldo disponible"
+              label={t("ui.VigiaUsagePage.saldoDisponible", "Saldo disponible")}
               value={dinero(datos.saldoCents ?? 0)}
             />
           </StatsStrip>
 
           <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
-            {agente.nombre} comparte el monedero de Comunicaciones: la misma recarga sirve
-            para SMS, WhatsApp y el asistente.{" "}
+            {t("ui.VigiaUsagePage.comparteElMonederoDeComunicaciones", {
+              defaultValue:
+                "{{agente}} comparte el monedero de Comunicaciones: la misma recarga sirve para SMS, WhatsApp y el asistente.",
+              agente: agente.nombre,
+            })}{" "}
             <Link
               className="-my-3 inline-block py-3 font-semibold underline"
               style={{ color: "var(--brand-text)" }}
               to="/setting/comunicaciones?tab=saldo"
             >
-              Recargar saldo
+              {t("comms.rechargeTitle", "Recargar saldo")}
             </Link>
           </p>
 
@@ -189,7 +195,10 @@ export default function VigiaUsagePage() {
                           : // Un día sin uso es un tic en la base, no una barra.
                             { height: 3, background: "var(--hairline)" }
                       }
-                      title={`${etiqueta(d.dia)}: ${d.mensajes} ${d.mensajes === 1 ? "mensaje" : "mensajes"}${d.costCentiCents > 0 ? ` · ≈ ${dineroDesdeCenti(d.costCentiCents)}` : ""}`}
+                      title={`${etiqueta(d.dia)}: ${t("ui.VigiaUsagePage.nMensajes", {
+                        defaultValue: "{{count}} mensajes",
+                        count: d.mensajes,
+                      })}${d.costCentiCents > 0 ? ` · ≈ ${dineroDesdeCenti(d.costCentiCents)}` : ""}`}
                     />
                   ))}
                 </div>
@@ -205,9 +214,12 @@ export default function VigiaUsagePage() {
             )}
             {typeof datos.tokens30d === "number" && datos.tokens30d > 0 && (
               <p className="mt-2 text-xs" style={{ color: "var(--ink-faint)" }}>
-                {datos.tokens30d.toLocaleString(localeActual())} tokens
-                procesados en 30 días · gasto ≈{" "}
-                {dineroDesdeCenti(costo30dCenti)}.
+                {t("ui.VigiaUsagePage.tokensProcesadosEn30Dias", {
+                  defaultValue:
+                    "{{tokens}} tokens procesados en 30 días · gasto ≈ {{gasto}}.",
+                  tokens: datos.tokens30d.toLocaleString(localeActual()),
+                  gasto: dineroDesdeCenti(costo30dCenti),
+                })}
               </p>
             )}
           </section>
@@ -215,7 +227,8 @@ export default function VigiaUsagePage() {
           {/* Bitácora de acciones — quién le pidió qué */}
           <section className="glass-flat rounded-2xl p-5">
             <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold">
-              <ListChecks size={15} /> Acciones ejecutadas
+              <ListChecks size={15} />{" "}
+              {t("ui.VigiaUsagePage.accionesEjecutadas", "Acciones ejecutadas")}
             </h3>
             {!datos.acciones?.length ? (
               <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
@@ -247,11 +260,16 @@ export default function VigiaUsagePage() {
           </section>
 
           <p className="text-[11px]" style={{ color: "var(--ink-faint)" }}>
-            Costo real del mes:{" "}
-            {dineroDesdeCenti(datos.mes?.costCentiCents ?? 0)} en el proveedor
-            de IA. La cuota gratis se renueva cada mes.
+            {t("ui.VigiaUsagePage.costoRealDelMes", {
+              defaultValue:
+                "Costo real del mes: {{costo}} en el proveedor de IA. La cuota gratis se renueva cada mes.",
+              costo: dineroDesdeCenti(datos.mes?.costCentiCents ?? 0),
+            })}
             {moneda.aproximada &&
-              " Montos convertidos de USD al tipo de cambio del día."}
+              ` ${t(
+                "ui.VigiaUsagePage.montosConvertidosDeUsd",
+                "Montos convertidos de USD al tipo de cambio del día.",
+              )}`}
           </p>
         </div>
       )}

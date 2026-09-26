@@ -191,7 +191,7 @@ function metricasDe(
     },
     u.bateria != null
       ? {
-          label: "Batería",
+          label: t("ui.TrailMap.bateria", "Batería"),
           value: `${Math.round(u.bateria)}%`,
           tone: u.bateria <= 20 ? "bad" : undefined,
         }
@@ -309,7 +309,12 @@ export default function RouteTrackingMap({
         revisarZoom();
         setReady(true);
       })
-      .catch((e) => setErr(e?.message || "No se pudo cargar el mapa"));
+      .catch((e) =>
+        setErr(
+          e?.message ||
+            t("ui.RouteTrackingMap.noSePudoCargarElMapa", "No se pudo cargar el mapa"),
+        ),
+      );
 
     return () => {
       cancelled = true;
@@ -381,16 +386,26 @@ export default function RouteTrackingMap({
             id: s.id,
             kind: "station",
             title: s.siteName,
-            subtitle: `${s.routeName} · parada ${idx + 1}`,
+            subtitle: `${s.routeName} · ${t("ui.RouteTrackingMap.paradaN", { defaultValue: "parada {{n}}", n: idx + 1 })}`,
             status: {
-              label: s.done ? "Completada" : "Pendiente",
+              label: s.done
+                ? t("ui.LiveTracking.completada", "Completada")
+                : t("comun.pendiente", "Pendiente"),
               tone: s.done ? "ok" : "warn",
             },
             fields: mapPopupItems(
-              { label: "Ruta", value: s.routeName },
-              { label: "Orden", value: `#${s.order}`, mono: true },
+              { label: t("ui.LiveTracking.ruta", "Ruta"), value: s.routeName },
+              {
+                label: t("ui.RouteTrackingMap.orden", "Orden"),
+                value: `#${s.order}`,
+                mono: true,
+              },
               s.address
-                ? { label: "Dirección", value: s.address, wide: true }
+                ? {
+                    label: t("ui.LiveTracking.direccion", "Dirección"),
+                    value: s.address,
+                    wide: true,
+                  }
                 : null,
             ),
             actions: mapPopupItems(
@@ -523,7 +538,7 @@ export default function RouteTrackingMap({
 
             motor?.camara.volarA(p, { zoom: 17 });
           }),
-          label: "Centrar y seguir",
+          label: t("ui.RouteTrackingMap.centrarYSeguir", "Centrar y seguir"),
         },
         mapPopupActions.call(u.telefono),
         mapPopupActions.directions(rec.lat, rec.lng),
@@ -533,7 +548,7 @@ export default function RouteTrackingMap({
         id,
         kind: u.kind === "supervisor" ? "supervisor" : "guard",
         title: u.nombre,
-        subtitle: `${u.kind === "supervisor" ? "Supervisor" : "Vigilante"}${u.sub ? ` · ${u.sub}` : ""}`,
+        subtitle: `${u.kind === "supervisor" ? t("comun.supervisor", "Supervisor") : t("comun.vigilante", "Vigilante")}${u.sub ? ` · ${u.sub}` : ""}`,
         status: {
           label: t(e.clave, e.etiqueta),
           tone: e.pop,
@@ -541,14 +556,18 @@ export default function RouteTrackingMap({
         },
         metrics: metricasDe(u, rec.estado, t),
         fields: mapPopupItems(
-          { label: "Velocidad", value: kmh(u.velocidad ?? null), mono: true },
           {
-            label: "En servicio desde",
+            label: t("ui.RouteTrackingMap.velocidad", "Velocidad"),
+            value: kmh(u.velocidad ?? null),
+            mono: true,
+          },
+          {
+            label: t("ui.RouteTrackingMap.enServicioDesde", "En servicio desde"),
             value: u.desde ? fechaHora(u.desde) : "—",
             mono: true,
           },
           {
-            label: "Coordenadas",
+            label: t("ui.RouteTrackingMap.coordenadas", "Coordenadas"),
             value: `${rec.lat.toFixed(5)}, ${rec.lng.toFixed(5)}`,
             mono: true,
             wide: true,
@@ -556,7 +575,10 @@ export default function RouteTrackingMap({
         ),
         note:
           rec.estado === "sinSenal"
-            ? "El dispositivo lleva más de cinco minutos sin reportar. La chincheta muestra la última posición conocida."
+            ? t(
+                "ui.RouteTrackingMap.elDispositivoLlevaMasDe",
+                "El dispositivo lleva más de cinco minutos sin reportar. La chincheta muestra la última posición conocida.",
+              )
             : undefined,
         actions: acciones,
         // El orbe está anclado por su CENTRO: sin subir el globo, saldría encima.
@@ -813,7 +835,8 @@ export default function RouteTrackingMap({
         <div>
           <p>{err}</p>
           <p className="mt-1 text-xs">
-            Verifica <code>VITE_GOOGLE_MAPS_API_KEY</code>.
+            {t("ui.RouteTrackingMap.verifica", "Verifica")}{" "}
+            <code>VITE_GOOGLE_MAPS_API_KEY</code>.
           </p>
         </div>
       </div>
@@ -849,7 +872,9 @@ export default function RouteTrackingMap({
                     <span>{resumen.pct}%</span>
                   </div>
                   <div>
-                    <div className="cc-map-eyebrow">Paradas</div>
+                    <div className="cc-map-eyebrow">
+                      {t("ui.RouteTrackingMap.paradas", "Paradas")}
+                    </div>
                     <div className="cc-map-metric">
                       {resumen.paradasHechas}
                       <span
@@ -860,14 +885,18 @@ export default function RouteTrackingMap({
                     </div>
                   </div>
                   <div className="hidden sm:block">
-                    <div className="cc-map-eyebrow">Rutas</div>
+                    <div className="cc-map-eyebrow">
+                      {t("sidebar.patrulla.rutas", "Rutas")}
+                    </div>
                     <div className="cc-map-metric">{resumen.rutas}</div>
                   </div>
                 </>
               )}
               {units.length > 0 && (
                 <div>
-                  <div className="cc-map-eyebrow">En servicio</div>
+                  <div className="cc-map-eyebrow">
+                    {t("tracking.unitState.active", "En servicio")}
+                  </div>
                   <div
                     className="cc-map-metric"
                     style={{ color: "var(--ok-text)" }}
@@ -881,11 +910,12 @@ export default function RouteTrackingMap({
                   <>
                     <span className="cc-map-key">
                       <i style={{ color: "var(--ok)" }} />
-                      En servicio · {conteo.activos}
+                      {t("tracking.unitState.active", "En servicio")} · {conteo.activos}
                     </span>
                     <span className="cc-map-key">
                       <i style={{ color: "var(--info)" }} />
-                      Detenido · {conteo.detenidos}
+                      {t("tracking.unitState.stopped", "Detenido")} ·{" "}
+                      {conteo.detenidos}
                     </span>
                     <span className="cc-map-key">
                       <i style={{ color: "var(--ink-faint)" }} />
@@ -897,11 +927,11 @@ export default function RouteTrackingMap({
                   <>
                     <span className="cc-map-key">
                       <i style={{ color: "var(--ok)" }} />
-                      Completada
+                      {t("ui.LiveTracking.completada", "Completada")}
                     </span>
                     <span className="cc-map-key">
                       <i style={{ color: "var(--warn)" }} />
-                      Pendiente
+                      {t("comun.pendiente", "Pendiente")}
                     </span>
                   </>
                 )}
@@ -917,7 +947,10 @@ export default function RouteTrackingMap({
             className="cc-map-card px-4 py-3 text-center text-sm"
             style={{ color: "var(--ink-soft)" }}
           >
-            No hay paradas con ubicación ni personal en servicio para mostrar.
+            {t(
+              "ui.RouteTrackingMap.noHayParadasConUbicacion",
+              "No hay paradas con ubicación ni personal en servicio para mostrar.",
+            )}
           </div>
         </div>
       )}

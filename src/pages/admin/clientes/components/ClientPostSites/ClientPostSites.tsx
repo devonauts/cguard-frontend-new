@@ -254,9 +254,13 @@ export default function ClientPostSites({ client }: { client: Client }) {
 
   const deleteSede = async (s: Sede) => {
     const ok = await confirmDialog({
-      title: "Eliminar sede",
-      message: `¿Eliminar la sede "${s.name}"? Sus estaciones, horarios y asignaciones dejarán de estar disponibles.`,
-      confirmText: "Eliminar",
+      title: t("ui.ClientPostSites.eliminarSede", "Eliminar sede"),
+      message: t("ui.ClientPostSites.eliminarSedeConfirm", {
+        defaultValue:
+          "¿Eliminar la sede \"{{name}}\"? Sus estaciones, horarios y asignaciones dejarán de estar disponibles.",
+        name: s.name,
+      }),
+      confirmText: t("actions.delete", "Eliminar"),
       tone: "danger",
     });
 
@@ -265,7 +269,7 @@ export default function ClientPostSites({ client }: { client: Client }) {
       await postSiteService.delete([s.id]);
       setSedes((prev) => prev.filter((x) => x.id !== s.id));
       if (selectedId === s.id) setSelectedId(null);
-      toast.success("Sede eliminada");
+      toast.success(t("ui.ClientPostSites.sedeEliminada", "Sede eliminada"));
     } catch (e: any) {
       toast.error(
         e?.message ||
@@ -302,7 +306,10 @@ export default function ClientPostSites({ client }: { client: Client }) {
             siteId={pendientes.length === 1 ? pendientes[0].id : null}
           />
         )}
-        <Section icon={<Building2 />} title="Sedes">
+        <Section
+          icon={<Building2 />}
+          title={t("ui.ClientPostSites.sedes", "Sedes")}
+        >
           {/* Filters */}
           <div className="mb-4 flex flex-wrap items-center gap-2">
             <SearchInput
@@ -355,12 +362,12 @@ export default function ClientPostSites({ client }: { client: Client }) {
           ) : (
             <TabTable minWidth={640}>
               <THead>
-                <Th>Sede</Th>
+                <Th>{t("ui.ClientPostSites.sede", "Sede")}</Th>
                 <Th>{t("ui.ClientPostSites.direccion", "Dirección")}</Th>
                 <Th>{t("comun.ciudad")}</Th>
-                {risk && <Th>Riesgo</Th>}
-                <Th>Guardias</Th>
-                <Th>Estaciones</Th>
+                {risk && <Th>{t("ui.ClientPostSites.riesgo", "Riesgo")}</Th>}
+                <Th>{t("ui.ClientCoverage.guardias", "Guardias")}</Th>
+                <Th>{t("ui.ClientPostSites.estaciones", "Estaciones")}</Th>
                 <Th>{t("comun.estado")}</Th>
                 <Th
                   title={t(
@@ -370,7 +377,7 @@ export default function ClientPostSites({ client }: { client: Client }) {
                 >
                   {t("ui.ClientPostSites.asignacion", "Asignación")}
                 </Th>
-                <Th aria-label="Acciones" />
+                <Th aria-label={t("ui.RouteForm.acciones", "Acciones")} />
               </THead>
               <tbody>
                 {filtered.map((s, i) => (
@@ -474,7 +481,9 @@ export default function ClientPostSites({ client }: { client: Client }) {
                         dot={false}
                         tone={s.active ? "ok" : "neutral"}
                       >
-                        {s.active ? "Activa" : "Inactiva"}
+                        {s.active
+                          ? t("ui.ClientPostSites.activa", "Activa")
+                          : t("ui.ClientPostSites.inactiva", "Inactiva")}
                       </StatusBadge>
                     </td>
                     <td className="px-2 py-2.5">
@@ -484,7 +493,10 @@ export default function ClientPostSites({ client }: { client: Client }) {
                             <span>{s.coverage}%</span>
                           </div>
                           <MeterBar
-                            ariaLabel={`Cobertura ${s.coverage}%`}
+                            ariaLabel={t("ui.ClientPostSites.coberturaPct", {
+                              defaultValue: "Cobertura {{pct}}%",
+                              pct: s.coverage,
+                            })}
                             className="mt-0.5"
                             height={6}
                             pct={s.coverage}
@@ -501,7 +513,7 @@ export default function ClientPostSites({ client }: { client: Client }) {
                           <button
                             className="cg-focus rounded-lg p-1.5 transition-opacity hover:opacity-70"
                             style={{ color: "var(--ink-faint)" }}
-                            title="Acciones"
+                            title={t("ui.RouteForm.acciones", "Acciones")}
                             onClick={(e) => e.stopPropagation()}
                           >
                             <MoreVertical className="h-4 w-4" />
@@ -514,8 +526,8 @@ export default function ClientPostSites({ client }: { client: Client }) {
                           <DropdownMenuItem
                             onClick={() => navigate(`/post-sites/${s.id}`)}
                           >
-                            <ExternalLink className="mr-2 h-3.5 w-3.5" /> Abrir
-                            sede
+                            <ExternalLink className="mr-2 h-3.5 w-3.5" />{" "}
+                            {t("ui.ClientPostSites.abrirSede", "Abrir sede")}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() =>
@@ -536,13 +548,13 @@ export default function ClientPostSites({ client }: { client: Client }) {
                           <DropdownMenuItem
                             onClick={() => navigate(`/post-sites/${s.id}/edit`)}
                           >
-                            <Pencil className="mr-2 h-3.5 w-3.5" /> Editar
+                            <Pencil className="mr-2 h-3.5 w-3.5" /> {t("actions.edit", "Editar")}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             style={{ color: "var(--bad-text)" }}
                             onClick={() => void deleteSede(s)}
                           >
-                            <Trash2 className="mr-2 h-3.5 w-3.5" /> Eliminar
+                            <Trash2 className="mr-2 h-3.5 w-3.5" /> {t("actions.delete", "Eliminar")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -648,7 +660,9 @@ export default function ClientPostSites({ client }: { client: Client }) {
                       {selected.name}
                     </p>
                     <StatusBadge tone={selected.active ? "ok" : "bad"}>
-                      {selected.active ? "Activa" : "Inactiva"}
+                      {selected.active
+                        ? t("ui.ClientPostSites.activa", "Activa")
+                        : t("ui.ClientPostSites.inactiva", "Inactiva")}
                     </StatusBadge>
                   </div>
                   <p
@@ -692,22 +706,22 @@ export default function ClientPostSites({ client }: { client: Client }) {
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <Stat
                   icon={<Building2 className="h-4 w-4" />}
-                  label="Estaciones"
+                  label={t("ui.ClientPostSites.estaciones", "Estaciones")}
                   value={selected.stations}
                 />
                 <Stat
                   icon={<Users className="h-4 w-4" />}
-                  label="Vigilantes asignados"
+                  label={t("ui.ClientCoverage.vigilantesAsignados", "Vigilantes asignados")}
                   value={`${selected.guards} / ${selected.required}`}
                 />
                 <Stat
                   icon={<BarChart3 className="h-4 w-4" />}
-                  label="Cobertura"
+                  label={t("ui.ClientCoverage.cobertura", "Cobertura")}
                   value={`${selected.coverage}%`}
                 />
                 <Stat
                   icon={<Clock className="h-4 w-4" />}
-                  label="Zona horaria"
+                  label={t("ui.ClientPostSites.zonaHoraria", "Zona horaria")}
                   value={tz || "—"}
                 />
               </div>

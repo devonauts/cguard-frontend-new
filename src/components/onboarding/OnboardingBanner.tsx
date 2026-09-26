@@ -98,7 +98,10 @@ export default function OnboardingBanner({
           {missing.length > 0 && (
             <span style={{ color: "var(--ink-soft)" }}>
               {" "}
-              — falta: {missing.join(", ")}
+              {t("ui.OnboardingBanner.falta", {
+                defaultValue: "— falta: {{campos}}",
+                campos: missing.join(", "),
+              })}
               {getMissingFields(tenant).length > 3 ? "…" : ""}
             </span>
           )}
@@ -109,8 +112,11 @@ export default function OnboardingBanner({
             >
               ·{" "}
               {days > 0
-                ? `Te quedan ${days} día${days === 1 ? "" : "s"} de prueba`
-                : "Tu prueba termina hoy"}
+                ? t("ui.OnboardingBanner.teQuedanDiasDePrueba", {
+                    defaultValue: "Te quedan {{count}} días de prueba",
+                    count: days,
+                  })
+                : t("ui.OnboardingBanner.tuPruebaTerminaHoy", "Tu prueba termina hoy")}
             </span>
           )}
         </div>

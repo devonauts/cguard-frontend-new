@@ -221,8 +221,8 @@ export default function SupervisorsPage() {
       }
       toast.success(
         r?.emailed
-          ? "Invitación reenviada por correo y enlace copiado"
-          : "Enlace de invitación copiado al portapapeles",
+          ? t("ui.SupervisorsPage.invitacionReenviadaPorCorreo", "Invitación reenviada por correo y enlace copiado")
+          : t("ui.SupervisorsPage.enlaceDeInvitacionCopiado", "Enlace de invitación copiado al portapapeles"),
       );
     } catch (e: any) {
       toast.error(
@@ -244,12 +244,24 @@ export default function SupervisorsPage() {
       } catch {
         /* clipboard optional */
       }
-      const via = [r?.emailed && "correo", r?.pushed && "push"]
+      const via = [
+        r?.emailed && t("ui.SupervisorsPage.viaCorreo", "correo"),
+        r?.pushed && t("ui.SupervisorsPage.viaPush", "push"),
+      ]
         .filter(Boolean)
         .join(" + ");
 
       toast.success(
-        `Enlace de restablecimiento ${via ? `enviado por ${via} y ` : ""}copiado al portapapeles`,
+        via
+          ? t("ui.SupervisorsPage.enlaceDeRestablecimientoEnviado", {
+              via,
+              defaultValue:
+                "Enlace de restablecimiento enviado por {{via}} y copiado al portapapeles",
+            })
+          : t(
+              "ui.SupervisorsPage.enlaceDeRestablecimientoCopiado",
+              "Enlace de restablecimiento copiado al portapapeles",
+            ),
       );
     } catch (e: any) {
       toast.error(
@@ -264,11 +276,16 @@ export default function SupervisorsPage() {
 
   // Remove a supervisor from this business (revokes access; account may live in other tenants).
   const removeSupervisor = async (s: Supervisor) => {
-    const name = s.fullName || s.email || "este supervisor";
+    const name =
+      s.fullName || s.email || t("ui.SupervisorsPage.esteSupervisor", "este supervisor");
 
     if (
       !(await confirmDialog({
-        message: `¿Eliminar a ${name}? Perderá el acceso a este negocio. Esta acción no se puede deshacer.`,
+        message: t("ui.SupervisorsPage.confirmarEliminar", {
+          name,
+          defaultValue:
+            "¿Eliminar a {{name}}? Perderá el acceso a este negocio. Esta acción no se puede deshacer.",
+        }),
         tone: "danger",
       }))
     )
@@ -293,7 +310,7 @@ export default function SupervisorsPage() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          aria-label="Acciones"
+          aria-label={t("ui.SupervisorsPage.acciones", "Acciones")}
           size="icon"
           variant="ghost"
           onClick={(e) => e.stopPropagation()}
@@ -303,7 +320,7 @@ export default function SupervisorsPage() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
         <DropdownMenuItem onClick={() => navigate(`/supervisors/${s.id}`)}>
-          <Eye className="mr-2 h-4 w-4" /> Ver detalles
+          <Eye className="mr-2 h-4 w-4" /> {t("ui.SupervisorsPage.verDetalles", "Ver detalles")}
         </DropdownMenuItem>
         {/* «Enviar acceso a la app» describía el efecto pero no lo que es:
             quien la busca la busca como «reenviar la invitación», que es como
@@ -320,7 +337,8 @@ export default function SupervisorsPage() {
           style={{ color: "var(--bad-text)" }}
           onClick={() => removeSupervisor(s)}
         >
-          <Trash2 className="mr-2 h-4 w-4" /> Eliminar supervisor
+          <Trash2 className="mr-2 h-4 w-4" />{" "}
+          {t("ui.SupervisorsPage.eliminarSupervisor", "Eliminar supervisor")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -329,14 +347,14 @@ export default function SupervisorsPage() {
   const columns: Column<Supervisor & { id: string }>[] = [
     {
       key: "fullName",
-      header: "Nombre",
+      header: t("comun.nombre", "Nombre"),
       render: (_v, r) => (
         <span className="font-medium text-foreground">{r.fullName}</span>
       ),
     },
     {
       key: "zone",
-      header: "Zona",
+      header: t("ui.SupervisorCoveragePage.zona", "Zona"),
       render: (_v, r) => (
         <span className="text-xs" style={{ color: "var(--ink-soft)" }}>
           {r.zone || "—"}
@@ -345,7 +363,7 @@ export default function SupervisorsPage() {
     },
     {
       key: "assignedVehicle",
-      header: "Vehículo",
+      header: t("ui.SupervisorsPage.vehiculo", "Vehículo"),
       render: (_v, r) => (
         <span className="text-xs" style={{ color: "var(--ink-soft)" }}>
           {r.assignedVehicle || "—"}
@@ -354,19 +372,19 @@ export default function SupervisorsPage() {
     },
     {
       key: "isOnDuty",
-      header: "Estado",
+      header: t("comun.estado", "Estado"),
       render: (_v, r) =>
         r.isOnDuty ? (
           <StatusBadge tone="ok">{t("comun.enTurno")}</StatusBadge>
         ) : (
           <StatusBadge dot={false} tone="neutral">
-            Fuera
+            {t("ui.SupervisorsPage.fuera", "Fuera")}
           </StatusBadge>
         ),
     },
     {
       key: "email",
-      header: "Correo",
+      header: t("comun.correo", "Correo"),
       render: (_v, r) => (
         <span className="text-xs" style={{ color: "var(--ink-soft)" }}>
           {r.email || "—"}
@@ -391,7 +409,8 @@ export default function SupervisorsPage() {
                 variant="outline"
                 onClick={() => navigate("/supervisor-positions")}
               >
-                <MapPin className="mr-2 h-4 w-4" /> Puestos
+                <MapPin className="mr-2 h-4 w-4" />{" "}
+                {t("ui.SupervisorPositionsPage.puestos", "Puestos")}
               </Button>
               <Button variant="brand" onClick={() => setOpen(true)}>
                 <Plus className="mr-2 h-4 w-4" />{" "}
@@ -403,7 +422,7 @@ export default function SupervisorsPage() {
             subtitle={t(
               "ui.SupervisorsPage.gestionaLosSupervisoresDeSeguridad",
             )}
-            title="Supervisores"
+            title={t("ui.SupervisorsPage.supervisores", "Supervisores")}
           />
 
           {/* Stats — clic en una tarjeta filtra la lista (clic de nuevo: todos) */}
@@ -411,21 +430,21 @@ export default function SupervisorsPage() {
             {[
               {
                 f: "todos" as StatFilter,
-                label: "Supervisores",
+                label: t("ui.SupervisorsPage.supervisores", "Supervisores"),
                 value: rows.length,
                 icon: <Users />,
                 accent: "brand" as const,
               },
               {
                 f: "enTurno" as StatFilter,
-                label: "En turno",
+                label: t("comun.enTurno", "En turno"),
                 value: onDuty,
                 icon: <Radar />,
                 accent: "ok" as const,
               },
               {
                 f: "fuera" as StatFilter,
-                label: "Fuera de turno",
+                label: t("ui.SupervisorsPage.fueraDeTurno", "Fuera de turno"),
                 value: offDuty,
                 icon: <Clock />,
                 accent: "neutral" as const,
@@ -451,8 +470,8 @@ export default function SupervisorsPage() {
                 }
                 title={
                   statFilter === c.f && c.f !== "todos"
-                    ? "Quitar filtro"
-                    : "Filtrar la lista"
+                    ? t("ui.SupervisorsPage.quitarFiltro", "Quitar filtro")
+                    : t("ui.SupervisorsPage.filtrarLaLista", "Filtrar la lista")
                 }
                 onClick={() => toggleStat(c.f)}
               >
@@ -490,7 +509,8 @@ export default function SupervisorsPage() {
                       value: "cards",
                       label: (
                         <span className="flex items-center gap-1.5">
-                          <LayoutGrid className="h-3.5 w-3.5" /> Tarjetas
+                          <LayoutGrid className="h-3.5 w-3.5" />{" "}
+                          {t("ui.SupervisorsPage.tarjetas", "Tarjetas")}
                         </span>
                       ),
                     },
@@ -510,7 +530,7 @@ export default function SupervisorsPage() {
               </div>
             }
             icon={<ShieldCheck />}
-            title="Supervisores"
+            title={t("ui.SupervisorsPage.supervisores", "Supervisores")}
           >
             {loading ? (
               <SkeletonCards count={4} />
@@ -530,8 +550,14 @@ export default function SupervisorsPage() {
                 }
                 description={
                   rows.length === 0
-                    ? "Los supervisores que des de alta aparecerán aquí con su zona, vehículo y estado en turno."
-                    : "Prueba con otro texto de búsqueda o quita el filtro de las tarjetas de arriba."
+                    ? t(
+                        "ui.SupervisorsPage.losSupervisoresQueDesDeAlta",
+                        "Los supervisores que des de alta aparecerán aquí con su zona, vehículo y estado en turno.",
+                      )
+                    : t(
+                        "ui.SupervisorsPage.pruebaConOtroTextoDeBusqueda",
+                        "Prueba con otro texto de búsqueda o quita el filtro de las tarjetas de arriba.",
+                      )
                 }
                 icon={<ShieldCheck />}
                 title={
@@ -540,7 +566,10 @@ export default function SupervisorsPage() {
                         "ui.Supervisors.aunNoHaySupervisores",
                         "Aún no hay supervisores",
                       )
-                    : "Ningún supervisor coincide con el filtro"
+                    : t(
+                        "ui.SupervisorsPage.ningunSupervisorCoincide",
+                        "Ningún supervisor coincide con el filtro",
+                      )
                 }
               />
             ) : viewMode === "list" ? (
@@ -596,7 +625,7 @@ export default function SupervisorsPage() {
                               </StatusBadge>
                             ) : (
                               <StatusBadge dot={false} tone="neutral">
-                                Fuera
+                                {t("ui.SupervisorsPage.fuera", "Fuera")}
                               </StatusBadge>
                             )}
                             {rowActions(s)}
@@ -661,7 +690,9 @@ export default function SupervisorsPage() {
               {t("actions.cancel")}
             </Button>
             <Button disabled={saving} variant="brand" onClick={submit}>
-              {saving ? "Creando…" : "Crear supervisor"}
+              {saving
+                ? t("ui.SupervisorPositionsPage.creando", "Creando…")
+                : t("ui.SupervisorsPage.crearSupervisor", "Crear supervisor")}
             </Button>
           </>
         }
@@ -679,14 +710,14 @@ export default function SupervisorsPage() {
             onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
           />
           <Input
-            placeholder="Nombres"
+            placeholder={t("ui.SupervisorDetail.nombres", "Nombres")}
             value={form.firstName}
             onChange={(e) =>
               setForm((f) => ({ ...f, firstName: e.target.value }))
             }
           />
           <Input
-            placeholder="Apellidos"
+            placeholder={t("guards.list.details.fields.lastName", "Apellidos")}
             value={form.lastName}
             onChange={(e) =>
               setForm((f) => ({ ...f, lastName: e.target.value }))
@@ -774,7 +805,7 @@ export default function SupervisorsPage() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <label className="cg-eyebrow">
-              Entrada
+              {t("ui.SupervisorsPage.entrada", "Entrada")}
               <Input
                 className="mt-1"
                 type="time"
@@ -785,7 +816,7 @@ export default function SupervisorsPage() {
               />
             </label>
             <label className="cg-eyebrow">
-              Salida
+              {t("ui.SupervisorsPage.salida", "Salida")}
               <Input
                 className="mt-1"
                 type="time"

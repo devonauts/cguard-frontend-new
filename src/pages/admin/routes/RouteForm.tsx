@@ -683,7 +683,7 @@ export default function RouteForm({
             String(
               (e as any)?.message ||
                 (e as any)?.toString() ||
-                "Error cargando supervisores",
+                t("ui.RouteForm.errorCargandoSupervisores", "Error cargando supervisores"),
             ),
           );
         } catch {}
@@ -835,7 +835,7 @@ export default function RouteForm({
             String(
               (e as any)?.message ||
                 (e as any)?.toString() ||
-                "Error cargando vehículos",
+                t("ui.RouteForm.errorCargandoVehiculos", "Error cargando vehículos"),
             ),
           );
         } catch {}
@@ -1145,9 +1145,11 @@ export default function RouteForm({
           "ui.RouteForm.optimizarElOrdenDeLasParadas",
           "Optimizar el orden de las paradas",
         ),
-        message:
+        message: t(
+          "ui.RouteForm.optimizarConfirmMensaje",
           "Se reordenarán las paradas para recortar kilómetros y minutos, contando el tiempo de permanencia en cada una y una marcha efectiva de tráfico urbano. El orden manual actual se reemplaza; puedes volver a cambiarlo a mano cuando quieras.",
-        confirmText: "Optimizar",
+        ),
+        confirmText: t("ui.RouteForm.optimizar", "Optimizar"),
       }))
     ) {
       return;
@@ -1175,10 +1177,13 @@ export default function RouteForm({
         if (nuevoAhorro.min != null && nuevoAhorro.min >= 0.5)
           trozos.push(`-${fmtMin(nuevoAhorro.min)}`);
         toast.success(
-          `Ruta optimizada: ${trozos.join(" · ")} frente al orden manual.`,
+          t("ui.RouteForm.rutaOptimizadaAhorro", {
+            defaultValue: "Ruta optimizada: {{ahorro}} frente al orden manual.",
+            ahorro: trozos.join(" · "),
+          }),
         );
       } else {
-        toast.success("Ruta optimizada.");
+        toast.success(t("ui.RouteForm.rutaOptimizada", "Ruta optimizada."));
       }
 
       const sinCoords = nuevoAhorro?.sinCoordenadas ?? 0;
@@ -1186,8 +1191,12 @@ export default function RouteForm({
       if (sinCoords > 0) {
         toast.info(
           sinCoords === 1
-            ? "Una parada no tiene ubicación: se ha quedado en su sitio y las demás se repartieron alrededor."
-            : `${sinCoords} paradas no tienen ubicación: se han quedado en su sitio y las demás se repartieron alrededor.`,
+            ? t("ui.RouteForm.unaParadaSinUbicacionOptimizar", "Una parada no tiene ubicación: se ha quedado en su sitio y las demás se repartieron alrededor.")
+            : t("ui.RouteForm.nParadasSinUbicacionOptimizar", {
+                defaultValue:
+                  "{{count}} paradas no tienen ubicación: se han quedado en su sitio y las demás se repartieron alrededor.",
+                count: sinCoords,
+              }),
         );
       }
     } catch (err: any) {
@@ -1222,12 +1231,14 @@ export default function RouteForm({
     if (
       !(await confirmDialog({
         title: rehacerTrazado
-          ? "Volver a trazar por calles"
-          : "Trazar el recorrido por calles",
+          ? t("ui.RouteForm.volverATrazarPorCalles", "Volver a trazar por calles")
+          : t("ui.RouteForm.trazarElRecorridoPorCalles", "Trazar el recorrido por calles"),
         message: rehacerTrazado
-          ? "Esta ruta ya tiene su recorrido trazado. Volver a calcularlo consulta otra vez el servicio de mapas y eso se factura. Hazlo sólo si el recorrido cambió."
-          : "Se dibujará el camino real que sigue el vehículo en vez de la línea recta entre paradas. La primera vez consulta el servicio de mapas, que tiene coste; después queda guardado.",
-        confirmText: rehacerTrazado ? "Volver a trazar" : "Trazar",
+          ? t("ui.RouteForm.rehacerTrazadoMensaje", "Esta ruta ya tiene su recorrido trazado. Volver a calcularlo consulta otra vez el servicio de mapas y eso se factura. Hazlo sólo si el recorrido cambió.")
+          : t("ui.RouteForm.trazarMensaje", "Se dibujará el camino real que sigue el vehículo en vez de la línea recta entre paradas. La primera vez consulta el servicio de mapas, que tiene coste; después queda guardado."),
+        confirmText: rehacerTrazado
+          ? t("ui.RouteForm.volverATrazar", "Volver a trazar")
+          : t("ui.RouteForm.trazar", "Trazar"),
       }))
     ) {
       return;
@@ -1251,8 +1262,8 @@ export default function RouteForm({
       setTrazado(String(linea));
       toast.success(
         r.source === "cache"
-          ? "Recorrido por calles recuperado del último trazado. No hizo falta consultar el servicio de mapas."
-          : "Recorrido trazado por calles.",
+          ? t("ui.RouteForm.recorridoRecuperado", "Recorrido por calles recuperado del último trazado. No hizo falta consultar el servicio de mapas.")
+          : t("ui.RouteForm.recorridoTrazado", "Recorrido trazado por calles."),
       );
     } catch (err: any) {
       console.error("Error trazando ruta", err);
@@ -1338,7 +1349,11 @@ export default function RouteForm({
         desoptimizar();
       }
 
-      toast.success(mode === "edit" ? "Ruta actualizada" : "Ruta creada");
+      toast.success(
+        mode === "edit"
+          ? t("ui.RouteForm.rutaActualizada", "Ruta actualizada")
+          : t("ui.RouteForm.rutaCreada", "Ruta creada"),
+      );
       onSuccess?.();
     } catch (err: any) {
       console.error("Error guardando ruta", err);
@@ -1347,7 +1362,7 @@ export default function RouteForm({
           err?.message ||
           err?.toString() ||
           (err?.details && JSON.stringify(err.details)) ||
-          "Error guardando ruta";
+          t("ui.RouteForm.errorGuardandoRuta", "Error guardando ruta");
 
         toast.error(String(msg));
       } catch {}
@@ -1369,7 +1384,7 @@ export default function RouteForm({
         <Section
           contentClassName="space-y-6"
           icon={<RouteIcon />}
-          title="Datos generales"
+          title={t("ui.RouteForm.datosGenerales", "Datos generales")}
         >
           <FormField
             control={form.control}
@@ -1412,7 +1427,7 @@ export default function RouteForm({
           />
         </Section>
 
-        <Section contentClassName="space-y-4" title="Programar Ruta">
+        <Section contentClassName="space-y-4" title={t("ui.RouteForm.programarRuta", "Programar Ruta")}>
           <div className="flex items-center gap-3">
             <Switch
               checked={form.watch("continuous")}
@@ -1420,7 +1435,7 @@ export default function RouteForm({
               onCheckedChange={(v) => form.setValue("continuous", v)}
             />
             <Label className="text-base" htmlFor="continuous">
-              Ruta Continua
+              {t("ui.RouteForm.rutaContinua", "Ruta Continua")}
             </Label>
           </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
@@ -1653,7 +1668,7 @@ export default function RouteForm({
                               )
                               .filter((n): n is string => Boolean(n))
                               .join(", ")
-                          : "Seleccionar"}
+                          : t("ui.RouteForm.seleccionar", "Seleccionar")}
                       </span>
                       <ChevronDown className="h-4 w-4 opacity-60" />
                     </button>
@@ -1718,7 +1733,7 @@ export default function RouteForm({
           }
           contentClassName="space-y-4"
           icon={<MapPin />}
-          title="Definir ruta"
+          title={t("ui.RouteForm.definirRuta", "Definir ruta")}
         >
           {/* LA CIFRA. Va lo primero y a tamaño grande: es lo que justifica el
               botón de optimizar y lo que el operador enseña a su jefe. */}
@@ -1739,7 +1754,9 @@ export default function RouteForm({
               ) : (
                 <Wand2 className="size-4" />
               )}
-              {optimizando ? "Optimizando…" : "Optimizar"}
+              {optimizando
+                ? t("ui.RouteForm.optimizando", "Optimizando…")
+                : t("ui.RouteForm.optimizar", "Optimizar")}
             </Button>
             <Button
               disabled={
@@ -1756,35 +1773,43 @@ export default function RouteForm({
                 <Waypoints className="size-4" />
               )}
               {trazando
-                ? "Trazando…"
+                ? t("ui.RouteForm.trazando", "Trazando…")
                 : rehacerTrazado
-                  ? "Volver a trazar por calles"
-                  : "Trazar por calles"}
+                  ? t("ui.RouteForm.volverATrazarPorCalles", "Volver a trazar por calles")
+                  : t("ui.RouteForm.trazarPorCalles", "Trazar por calles")}
             </Button>
             <span className="text-xs" style={{ color: "var(--ink-faint)" }}>
               {rehacerTrazado
-                ? "Ya hay recorrido trazado. Volver a calcularlo consulta el servicio de mapas otra vez y se factura."
-                : "El trazado por calles usa el servicio de mapas y tiene coste. Por omisión la línea va recta."}
+                ? t("ui.RouteForm.yaHayRecorridoTrazado", "Ya hay recorrido trazado. Volver a calcularlo consulta el servicio de mapas otra vez y se factura.")
+                : t("ui.RouteForm.trazadoTieneCoste", "El trazado por calles usa el servicio de mapas y tiene coste. Por omisión la línea va recta.")}
             </span>
           </div>
 
           {mode !== "edit" && (
             <InfoNote tone="neutral">
-              Guarda la ruta para poder optimizar el orden de las paradas y
-              trazar el recorrido real.
+              {t(
+                "ui.RouteForm.guardaLaRutaParaOptimizar",
+                "Guarda la ruta para poder optimizar el orden de las paradas y trazar el recorrido real.",
+              )}
             </InfoNote>
           )}
           {mode === "edit" && recorridoSucio && (
             <InfoNote tone="warn">
-              Has cambiado el recorrido. Guarda los cambios para optimizar o
-              trazar sobre el orden nuevo.
+              {t(
+                "ui.RouteForm.hasCambiadoElRecorrido",
+                "Has cambiado el recorrido. Guarda los cambios para optimizar o trazar sobre el orden nuevo.",
+              )}
             </InfoNote>
           )}
           {sinUbicacion > 0 && (
             <InfoNote tone="info">
               {sinUbicacion === 1
-                ? "Una parada no tiene ubicación: no se dibuja en el mapa y la optimización la deja en su sitio, repartiendo las demás alrededor."
-                : `${sinUbicacion} paradas no tienen ubicación: no se dibujan en el mapa y la optimización las deja en su sitio, repartiendo las demás alrededor.`}
+                ? t("ui.RouteForm.unaParadaSinUbicacionMapa", "Una parada no tiene ubicación: no se dibuja en el mapa y la optimización la deja en su sitio, repartiendo las demás alrededor.")
+                : t("ui.RouteForm.nParadasSinUbicacionMapa", {
+                    defaultValue:
+                      "{{count}} paradas no tienen ubicación: no se dibujan en el mapa y la optimización las deja en su sitio, repartiendo las demás alrededor.",
+                    count: sinUbicacion,
+                  })}
             </InfoNote>
           )}
 
@@ -1819,10 +1844,14 @@ export default function RouteForm({
                 background: "var(--glass-sunken)",
               }}
             >
-              <div className="text-sm font-medium">Puntos y tiempos</div>
+              <div className="text-sm font-medium">
+                {t("ui.RouteForm.puntosYTiempos", "Puntos y tiempos")}
+              </div>
               <div className="text-xs" style={{ color: "var(--ink-faint)" }}>
-                Arrastra una fila para cambiar el orden. Cambiarlo a mano apaga
-                la marca de optimizada.
+                {t(
+                  "ui.RouteForm.arrastraUnaFila",
+                  "Arrastra una fila para cambiar el orden. Cambiarlo a mano apaga la marca de optimizada.",
+                )}
               </div>
             </div>
             <div className="overflow-x-auto">
@@ -1839,11 +1868,15 @@ export default function RouteForm({
                     <th className="px-4 py-3 font-semibold">
                       {t("ui.RouteForm.direccion", "Dirección")}
                     </th>
-                    <th className="px-4 py-3 font-semibold">Pasadas</th>
+                    <th className="px-4 py-3 font-semibold">
+                      {t("ui.RouteForm.pasadas", "Pasadas")}
+                    </th>
                     <th className="px-4 py-3 font-semibold">
                       {t("ui.RouteForm.duracionMin", "Duración (min)")}
                     </th>
-                    <th className="px-4 py-3 font-semibold">Acciones</th>
+                    <th className="px-4 py-3 font-semibold">
+                      {t("ui.RouteForm.acciones", "Acciones")}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1961,7 +1994,7 @@ export default function RouteForm({
                             </td>
                             <td className="px-4 py-3">
                               <input
-                                aria-label={`Pasadas en ${p.siteName || p.siteId}`}
+                                aria-label={t("ui.RouteForm.pasadasEn", { defaultValue: "Pasadas en {{name}}", name: p.siteName || p.siteId })}
                                 className="cg-input cg-focus h-11 w-20 px-2 text-sm"
                                 min={0}
                                 type="number"
@@ -1977,7 +2010,7 @@ export default function RouteForm({
                             </td>
                             <td className="px-4 py-3">
                               <input
-                                aria-label={`Duración en ${p.siteName || p.siteId}`}
+                                aria-label={t("ui.RouteForm.duracionEn", { defaultValue: "Duración en {{name}}", name: p.siteName || p.siteId })}
                                 className="cg-input cg-focus h-11 w-24 px-2 text-sm"
                                 min={0}
                                 type="number"
@@ -1997,7 +2030,7 @@ export default function RouteForm({
                                 sería inalcanzable ahí. 44 px de alto. */}
                               <div className="flex gap-2">
                                 <Button
-                                  aria-label={`Subir ${p.siteName || p.siteId}`}
+                                  aria-label={t("ui.RouteForm.subir", { defaultValue: "Subir {{name}}", name: p.siteName || p.siteId })}
                                   className="size-11"
                                   disabled={idx === 0}
                                   size="icon-lg"
@@ -2008,7 +2041,7 @@ export default function RouteForm({
                                   <ChevronUp className="size-4" />
                                 </Button>
                                 <Button
-                                  aria-label={`Bajar ${p.siteName || p.siteId}`}
+                                  aria-label={t("ui.RouteForm.bajar", { defaultValue: "Bajar {{name}}", name: p.siteName || p.siteId })}
                                   className="size-11"
                                   disabled={idx === points.length - 1}
                                   size="icon-lg"
@@ -2019,7 +2052,7 @@ export default function RouteForm({
                                   <ChevronDown className="size-4" />
                                 </Button>
                                 <Button
-                                  aria-label={`Quitar ${p.siteName || p.siteId}`}
+                                  aria-label={t("ui.RouteForm.quitar", { defaultValue: "Quitar {{name}}", name: p.siteName || p.siteId })}
                                   className="size-11"
                                   size="icon-lg"
                                   type="button"
@@ -2029,7 +2062,7 @@ export default function RouteForm({
                                   <Trash2 className="size-4" />
                                 </Button>
                                 <Button
-                                  aria-label={`Detalle de ${p.siteName || p.siteId}`}
+                                  aria-label={t("ui.RouteForm.detalleDe", { defaultValue: "Detalle de {{name}}", name: p.siteName || p.siteId })}
                                   className="size-11"
                                   size="icon-lg"
                                   type="button"
@@ -2215,7 +2248,7 @@ export default function RouteForm({
                   onCheckedChange={field.onChange}
                 />
                 <Label className="cursor-pointer" htmlFor="syncHits">
-                  Sincronizar pasadas entre supervisores
+                  {t("ui.RouteForm.sincronizarPasadas", "Sincronizar pasadas entre supervisores")}
                   <span
                     className="rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
                     style={{
@@ -2227,7 +2260,7 @@ export default function RouteForm({
                       "Se guarda con la ruta, pero todavía no cambia el comportamiento del recorrido.",
                     )}
                   >
-                    aún no activo
+                    {t("ui.RouteForm.aunNoActivo", "aún no activo")}
                   </span>
                 </Label>
               </div>
@@ -2245,8 +2278,10 @@ export default function RouteForm({
                   onCheckedChange={field.onChange}
                 />
                 <Label className="cursor-pointer" htmlFor="forceOrder">
-                  Forzar al supervisor a seguir la ruta de patrulla vehicular en
-                  orden
+                  {t(
+                    "ui.RouteForm.forzarOrden",
+                    "Forzar al supervisor a seguir la ruta de patrulla vehicular en orden",
+                  )}
                   <span
                     className="rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
                     style={{
@@ -2258,7 +2293,7 @@ export default function RouteForm({
                       "Se guarda con la ruta, pero todavía no cambia el comportamiento del recorrido.",
                     )}
                   >
-                    aún no activo
+                    {t("ui.RouteForm.aunNoActivo", "aún no activo")}
                   </span>
                 </Label>
               </div>
@@ -2296,7 +2331,7 @@ export default function RouteForm({
                       "Se guarda con la ruta, pero todavía no cambia el comportamiento del recorrido.",
                     )}
                   >
-                    aún no activo
+                    {t("ui.RouteForm.aunNoActivo", "aún no activo")}
                   </span>
                 </Label>
                 <Select value={field.value} onValueChange={field.onChange}>
@@ -2326,8 +2361,10 @@ export default function RouteForm({
                   onCheckedChange={field.onChange}
                 />
                 <Label className="cursor-pointer" htmlFor="autocheck">
-                  Registro automático de entrada y salida en Puestos de
-                  Vigilancia según geocerca
+                  {t(
+                    "ui.RouteForm.registroAutomaticoGeocerca",
+                    "Registro automático de entrada y salida en Puestos de Vigilancia según geocerca",
+                  )}
                   <span
                     className="rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
                     style={{
@@ -2339,7 +2376,7 @@ export default function RouteForm({
                       "Se guarda con la ruta, pero todavía no cambia el comportamiento del recorrido.",
                     )}
                   >
-                    aún no activo
+                    {t("ui.RouteForm.aunNoActivo", "aún no activo")}
                   </span>
                 </Label>
               </div>
@@ -2372,7 +2409,7 @@ export default function RouteForm({
                       "Se guarda con la ruta, pero todavía no cambia el comportamiento del recorrido.",
                     )}
                   >
-                    aún no activo
+                    {t("ui.RouteForm.aunNoActivo", "aún no activo")}
                   </span>
                 </Label>
               </div>
@@ -2386,7 +2423,7 @@ export default function RouteForm({
             variant="outline"
             onClick={() => window.history.back()}
           >
-            Cancelar
+            {t("actions.cancel", "Cancelar")}
           </Button>
           <Button
             disabled={submitting || form.formState.isSubmitting}
@@ -2394,10 +2431,10 @@ export default function RouteForm({
             variant="brand"
           >
             {submitting
-              ? "Enviando..."
+              ? t("ui.RouteForm.enviando", "Enviando...")
               : mode === "edit"
-                ? "Actualizar"
-                : "Enviar"}
+                ? t("ui.RouteForm.actualizar", "Actualizar")
+                : t("ui.RouteForm.enviar", "Enviar")}
           </Button>
         </div>
       </form>

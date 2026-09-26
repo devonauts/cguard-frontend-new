@@ -212,6 +212,19 @@ function Bar({ pct, status }: { pct: number; status: string }) {
 
 export default function ClientCoverage({ client }: { client: Client }) {
   const { t } = useTranslation();
+  /** El turno llega del servidor en español («Diurno»…); se traduce al pintar. */
+  const turnoTexto = (v?: string | null) =>
+    v === "Diurno"
+      ? t("ui.ClientCoverage.turno.diurno", "Diurno")
+      : v === "Vespertino"
+        ? t("ui.ClientCoverage.turno.vespertino", "Vespertino")
+        : v === "Nocturno"
+          ? t("ui.ClientCoverage.turno.nocturno", "Nocturno")
+          : v || "";
+  const tipoTexto = (v?: string | null) =>
+    v === "patrulla"
+      ? t("ui.ClientCoverage.patrulla", "Patrulla")
+      : t("ui.ClientCoverage.fijo", "Fijo");
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -271,8 +284,12 @@ export default function ClientCoverage({ client }: { client: Client }) {
   const deleteStation = async (p: CoveragePuesto) => {
     const ok = await confirmDialog({
       title: t("ui.ClientCoverage.eliminarEstacion", "Eliminar estación"),
-      message: `¿Eliminar la estación "${p.name}"? Sus horarios, asignaciones y rondas (QR) quedan huérfanos — si la vuelves a crear, las rondas NO se reconectan solas. Considera editarla en su lugar.`,
-      confirmText: "Eliminar",
+      message: t("ui.ClientCoverage.eliminarEstacionConfirm", {
+        defaultValue:
+          "¿Eliminar la estación \"{{name}}\"? Sus horarios, asignaciones y rondas (QR) quedan huérfanos — si la vuelves a crear, las rondas NO se reconectan solas. Considera editarla en su lugar.",
+        name: p.name,
+      }),
+      confirmText: t("actions.delete", "Eliminar"),
       tone: "danger",
     });
 
@@ -356,7 +373,12 @@ export default function ClientCoverage({ client }: { client: Client }) {
     if (!placing || !selected) return;
     try {
       await clientService.setStationLocation(selected.id, { lat, lng });
-      toast.success(`Ubicación de "${selected.name}" fijada`);
+      toast.success(
+        t("ui.ClientCoverage.ubicacionFijada", {
+          defaultValue: "Ubicación de \"{{name}}\" fijada",
+          name: selected.name,
+        }),
+      );
       setPlacing(false);
       await load(sedeId, true);
       setCenterReq((n) => n + 1);
@@ -400,7 +422,9 @@ export default function ClientCoverage({ client }: { client: Client }) {
           )}
         </div>
         <div className="flex items-center gap-2">
-          <label className="cg-eyebrow">Sede / Sitio</label>
+          <label className="cg-eyebrow">
+            {t("ui.ClientCoverage.sedeSitio", "Sede / Sitio")}
+          </label>
           <select
             className={`${FIELD_CLS} min-w-[220px]`}
             value={sedeId}
@@ -452,8 +476,12 @@ export default function ClientCoverage({ client }: { client: Client }) {
                 }}
               >
                 <option value="todos">{t("comun.estadoTodos")}</option>
-                <option value="cubierto">Cubierto</option>
-                <option value="parcial">Parcial</option>
+                <option value="cubierto">
+                  {t("coverage.status.covered", "Cubierto")}
+                </option>
+                <option value="parcial">
+                  {t("ui.ClientCoverage.parcial", "Parcial")}
+                </option>
                 <option value="asignado_sin_marcar">
                   {t("ui.ClientCoverage.asignadoSinMarcar")}
                 </option>
@@ -473,8 +501,8 @@ export default function ClientCoverage({ client }: { client: Client }) {
                 }}
               >
                 <option value="todos">{t("comun.tipoTodos")}</option>
-                <option value="fijo">Fijo</option>
-                <option value="patrulla">Patrulla</option>
+                <option value="fijo">{tipoTexto("fijo")}</option>
+                <option value="patrulla">{tipoTexto("patrulla")}</option>
               </select>
               <select
                 className={FIELD_CLS}
@@ -485,9 +513,9 @@ export default function ClientCoverage({ client }: { client: Client }) {
                 }}
               >
                 <option value="todos">{t("comun.turnoTodos")}</option>
-                <option value="Diurno">Diurno</option>
-                <option value="Vespertino">Vespertino</option>
-                <option value="Nocturno">Nocturno</option>
+                <option value="Diurno">{turnoTexto("Diurno")}</option>
+                <option value="Vespertino">{turnoTexto("Vespertino")}</option>
+                <option value="Nocturno">{turnoTexto("Nocturno")}</option>
               </select>
               <select
                 className={FIELD_CLS}
@@ -497,8 +525,12 @@ export default function ClientCoverage({ client }: { client: Client }) {
                 <option value="nombre">
                   {t("ui.ClientCoverage.nombreAZ")}
                 </option>
-                <option value="cobertura_desc">Cobertura ↓</option>
-                <option value="cobertura_asc">Cobertura ↑</option>
+                <option value="cobertura_desc">
+                  {t("ui.ClientCoverage.coberturaDesc", "Cobertura ↓")}
+                </option>
+                <option value="cobertura_asc">
+                  {t("ui.ClientCoverage.coberturaAsc", "Cobertura ↑")}
+                </option>
                 <option value="estado">{t("comun.estado")}</option>
               </select>
             </div>
@@ -515,13 +547,13 @@ export default function ClientCoverage({ client }: { client: Client }) {
                   <Th>{t("ui.ClientCoverage.estacion", "Estación")}</Th>
                   <Th>{t("comun.tipo")}</Th>
                   <Th>{t("comun.turnoActual")}</Th>
-                  <Th>Guardias</Th>
-                  <Th>Cobertura</Th>
+                  <Th>{t("ui.ClientCoverage.guardias", "Guardias")}</Th>
+                  <Th>{t("ui.ClientCoverage.cobertura", "Cobertura")}</Th>
                   <Th>{t("comun.estado")}</Th>
                   <Th>
                     {t("ui.ClientCoverage.ultimaActividad", "Última actividad")}
                   </Th>
-                  <Th aria-label="Acciones" />
+                  <Th aria-label={t("ui.RouteForm.acciones", "Acciones")} />
                 </THead>
                 <tbody>
                   {pageItems.map((p) => {
@@ -581,7 +613,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                               borderColor: "var(--hairline)",
                             }}
                           >
-                            {p.type === "patrulla" ? "Patrulla" : "Fijo"}
+                            {tipoTexto(p.type)}
                           </span>
                         </td>
                         <td className="px-2 py-2.5 whitespace-nowrap">
@@ -593,7 +625,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                                   className="text-xs"
                                   style={{ color: "var(--ink-faint)" }}
                                 >
-                                  {p.turno}
+                                  {turnoTexto(p.turno)}
                                 </div>
                               )}
                             </div>
@@ -621,13 +653,18 @@ export default function ClientCoverage({ client }: { client: Client }) {
                             ) : p.assigned?.length ? (
                               <span
                                 style={{ color: "var(--warn-text)" }}
-                                title={`Asignados (aún sin marcar entrada): ${p.assigned.join(", ")}`}
+                                title={t("ui.ClientCoverage.asignadosSinMarcarEntrada", {
+                                  defaultValue: "Asignados (aún sin marcar entrada): {{names}}",
+                                  names: p.assigned.join(", "),
+                                })}
                               >
                                 {p.assigned.join(", ")}
                               </span>
                             ) : (
                               <span style={{ color: "var(--ink-faint)" }}>
-                                {p.status === "sin_turno" ? "—" : "Sin asignar"}
+                                {p.status === "sin_turno"
+                                  ? "—"
+                                  : t("comun.sinAsignar", "Sin asignar")}
                               </span>
                             )}
                           </div>
@@ -670,7 +707,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                                 className="text-xs"
                                 style={{ color: "var(--ink-faint)" }}
                               >
-                                Entrada marcada
+                                {t("ui.ClientCoverage.entradaMarcada", "Entrada marcada")}
                               </div>
                             </div>
                           ) : (
@@ -688,7 +725,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                               <button
                                 className="cg-focus rounded-lg p-1.5 hover:opacity-80"
                                 style={{ color: "var(--ink-faint)" }}
-                                title="Acciones"
+                                title={t("ui.RouteForm.acciones", "Acciones")}
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 <MoreVertical className="h-4 w-4" />
@@ -719,13 +756,13 @@ export default function ClientCoverage({ client }: { client: Client }) {
                                 }
                               >
                                 <Users className="mr-2 h-3.5 w-3.5" />{" "}
-                                Vigilantes asignados
+                                {t("ui.ClientCoverage.vigilantesAsignados", "Vigilantes asignados")}
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 onClick={() => navigate("/schedule")}
                               >
                                 <CalendarDays className="mr-2 h-3.5 w-3.5" />{" "}
-                                Horario en Programador
+                                {t("ui.ClientCoverage.horarioEnProgramador", "Horario en Programador")}
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem onClick={() => selectPuesto(p)}>
@@ -766,7 +803,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
             )}
 
             <Pager
-              noun="estaciones"
+              noun={t("ui.ClientCoverage.nounEstaciones", "estaciones")}
               page={page}
               pageCount={pageCount}
               perPage={PER}
@@ -796,7 +833,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                       value: "roadmap",
                       label: (
                         <span className="flex items-center gap-1">
-                          <MapIcon className="h-3.5 w-3.5" /> Mapa
+                          <MapIcon className="h-3.5 w-3.5" /> {t("ui.ClientCoverage.mapa", "Mapa")}
                         </span>
                       ),
                     },
@@ -893,7 +930,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                     className="mt-0.5 text-xs"
                     style={{ color: "var(--ink-soft)" }}
                   >
-                    {selected.type === "patrulla" ? "Patrulla" : "Fijo"} ·{" "}
+                    {tipoTexto(selected.type)} ·{" "}
                     {selected.window ||
                       t("ui.ClientCoverage.sinTurno", "Sin turno")}
                   </div>
@@ -938,7 +975,9 @@ export default function ClientCoverage({ client }: { client: Client }) {
                     onClick={() => setPlacing((v) => !v)}
                   >
                     <Crosshair className="mr-1.5 h-4 w-4" />{" "}
-                    {placing ? "Fijando…" : "Fijar ubicación exacta"}
+                    {placing
+                      ? t("ui.ClientCoverage.fijando", "Fijando…")
+                      : t("ui.ClientCoverage.fijarUbicacionExacta", "Fijar ubicación exacta")}
                   </Button>
                   <Button
                     size="sm"
@@ -1029,7 +1068,10 @@ export default function ClientCoverage({ client }: { client: Client }) {
           {/* Estaciones sin cobertura */}
           <Section
             icon={<ShieldAlert />}
-            title={`Estaciones sin cobertura (${sinCobertura.length})`}
+            title={t("ui.ClientCoverage.estacionesSinCoberturaN", {
+              defaultValue: "Estaciones sin cobertura ({{n}})",
+              n: sinCobertura.length,
+            })}
           >
             {sinCobertura.length === 0 ? (
               <div
@@ -1067,9 +1109,11 @@ export default function ClientCoverage({ client }: { client: Client }) {
                         >
                           {p.window ||
                             t("ui.ClientCoverage.sinTurno", "Sin turno")}{" "}
-                          {p.turno ? `(${p.turno})` : ""} · Requiere{" "}
-                          {p.requiredGuards}{" "}
-                          {p.requiredGuards === 1 ? "vigilante" : "vigilantes"}
+                          {p.turno ? `(${turnoTexto(p.turno)})` : ""} ·{" "}
+                          {t("ui.ClientCoverage.requiereNVigilantes", {
+                            defaultValue: "Requiere {{count}} vigilantes",
+                            count: p.requiredGuards,
+                          })}
                         </div>
                       </div>
                     </div>
@@ -1094,7 +1138,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                 style={{ color: "var(--brand-text)" }}
                 onClick={() => navigate("/schedule")}
               >
-                Ver calendario
+                {t("ui.ClientCoverage.verCalendario", "Ver calendario")}
               </button>
             }
             icon={<Clock />}
@@ -1138,7 +1182,7 @@ export default function ClientCoverage({ client }: { client: Client }) {
                           className="text-xs"
                           style={{ color: "var(--ink-soft)" }}
                         >
-                          {p.window} ({p.turno})
+                          {p.window} ({turnoTexto(p.turno)})
                         </div>
                       </div>
                     </div>
@@ -1147,10 +1191,14 @@ export default function ClientCoverage({ client }: { client: Client }) {
                       style={{ color: "var(--ink-soft)" }}
                     >
                       {p.startsInMin <= 0
-                        ? "Ahora"
-                        : p.startsInMin < 60
-                          ? `En ${p.startsInMin}m`
-                          : `En ${Math.floor(p.startsInMin / 60)}h ${p.startsInMin % 60}m`}
+                        ? t("ui.ClientCoverage.ahora", "Ahora")
+                        : t("ui.ClientCoverage.enTiempo", {
+                            defaultValue: "En {{time}}",
+                            time:
+                              p.startsInMin < 60
+                                ? `${p.startsInMin}m`
+                                : `${Math.floor(p.startsInMin / 60)}h ${p.startsInMin % 60}m`,
+                          })}
                     </span>
                   </button>
                 ))}
@@ -1162,7 +1210,10 @@ export default function ClientCoverage({ client }: { client: Client }) {
 
       <TabFooter
         icon={<RefreshCw />}
-        note="La cobertura se actualiza en vivo con las entradas de los vigilantes y las asignaciones de turno."
+        note={t(
+          "ui.ClientCoverage.notaCoberturaEnVivo",
+          "La cobertura se actualiza en vivo con las entradas de los vigilantes y las asignaciones de turno.",
+        )}
         updatedAt={fmtUpdated}
         onRefresh={() => load(sedeId)}
       />

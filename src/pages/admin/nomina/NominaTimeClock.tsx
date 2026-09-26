@@ -142,7 +142,9 @@ export default function NominaTimeClock() {
   const getPosition = (): Promise<{ latitude: number; longitude: number }> =>
     new Promise((resolve, reject) => {
       if (!navigator.geolocation)
-        return reject(new Error("Geolocalización no disponible"));
+        return reject(
+          new Error(t("ui.NominaTimeClock.geolocalizacionNoDisponible", "Geolocalización no disponible")),
+        );
       navigator.geolocation.getCurrentPosition(
         (p) =>
           resolve({
@@ -150,7 +152,12 @@ export default function NominaTimeClock() {
             longitude: p.coords.longitude,
           }),
         (e) =>
-          reject(new Error(e.message || "No se pudo obtener la ubicación")),
+          reject(
+            new Error(
+              e.message ||
+                t("ui.NominaTimeClock.noSePudoObtenerLaUbicacion", "No se pudo obtener la ubicación"),
+            ),
+          ),
         { enableHighAccuracy: true, timeout: 10000 },
       );
     });
@@ -168,7 +175,10 @@ export default function NominaTimeClock() {
       if (!navigator.mediaDevices?.getUserMedia) {
         return reject(
           new Error(
-            "Este navegador no puede usar la cámara. Marca desde la app.",
+            t(
+              "ui.NominaTimeClock.esteNavegadorNoPuedeUsarLaCamara",
+              "Este navegador no puede usar la cámara. Marca desde la app.",
+            ),
           ),
         );
       }
@@ -195,7 +205,9 @@ export default function NominaTimeClock() {
               canvas.toBlob(
                 (blob) => {
                   if (!blob)
-                    return reject(new Error("No se pudo tomar la foto"));
+                    return reject(
+                      new Error(t("ui.NominaTimeClock.noSePudoTomarLaFoto", "No se pudo tomar la foto")),
+                    );
                   resolve(
                     new File([blob], "selfie.jpg", { type: "image/jpeg" }),
                   );
@@ -209,7 +221,10 @@ export default function NominaTimeClock() {
         .catch(() =>
           reject(
             new Error(
-              "No se pudo abrir la cámara. Revisa los permisos del navegador.",
+              t(
+                "ui.NominaTimeClock.noSePudoAbrirLaCamara",
+                "No se pudo abrir la cámara. Revisa los permisos del navegador.",
+              ),
             ),
           ),
         );
@@ -256,7 +271,7 @@ export default function NominaTimeClock() {
             t("nomina.timeClock.clockInError", "No se pudo marcar entrada"),
         );
       } else {
-        toast.success("Entrada registrada");
+        toast.success(t("ui.NominaTimeClock.entradaRegistrada", "Entrada registrada"));
         refresh();
       }
     } catch (e) {
@@ -282,9 +297,12 @@ export default function NominaTimeClock() {
           : await attendanceService.staffClockOut(coords);
 
       if (res && res.success === false)
-        toast.error(res.message || "No se pudo marcar salida");
+        toast.error(
+          res.message ||
+            t("ui.NominaTimeClock.noSePudoMarcarSalida", "No se pudo marcar salida"),
+        );
       else {
-        toast.success("Salida registrada");
+        toast.success(t("ui.NominaTimeClock.salidaRegistrada", "Salida registrada"));
         refresh();
       }
     } catch (e) {
@@ -317,7 +335,10 @@ export default function NominaTimeClock() {
             <div className="mt-4">
               <EmptyState
                 className="border-none py-6"
-                description="Tu cuenta no puede registrar asistencia desde aquí. Si eres personal administrativo y necesitas marcar tu horario, pide a un administrador que te habilite el reloj."
+                description={t(
+                  "ui.NominaTimeClock.tuCuentaNoPuedeRegistrarAsistencia",
+                  "Tu cuenta no puede registrar asistencia desde aquí. Si eres personal administrativo y necesitas marcar tu horario, pide a un administrador que te habilite el reloj.",
+                )}
                 icon={<UserX />}
                 title={t("ui.NominaTimeClock.relojDeAsistencia")}
               />
@@ -326,7 +347,9 @@ export default function NominaTimeClock() {
             <>
               <div className="mt-2 flex justify-center">
                 <StatusBadge tone={isClockedIn ? "ok" : "neutral"}>
-                  {isClockedIn ? "En servicio" : "Fuera de servicio"}
+                  {isClockedIn
+                    ? t("ui.NominaTimeClock.enServicio", "En servicio")
+                    : t("ui.NominaTimeClock.fueraDeServicio", "Fuera de servicio")}
                 </StatusBadge>
               </div>
 
@@ -356,7 +379,7 @@ export default function NominaTimeClock() {
                       type="button"
                       onClick={() => setMode("guard")}
                     >
-                      En un puesto
+                      {t("ui.NominaTimeClock.enUnPuesto", "En un puesto")}
                     </button>
                     <button
                       className="cg-focus rounded-xl border px-3 py-2 text-sm transition"
@@ -381,7 +404,7 @@ export default function NominaTimeClock() {
               {mode === "guard" && !isClockedIn && (
                 <div className="mt-5 text-left">
                   <label className="cg-eyebrow flex items-center gap-1">
-                    <MapPin className="h-3.5 w-3.5" /> Puesto
+                    <MapPin className="h-3.5 w-3.5" /> {t("comun.puesto", "Puesto")}
                   </label>
                   <select
                     className="cg-input cg-focus mt-1.5 w-full px-3 py-2.5 text-sm"
@@ -407,10 +430,27 @@ export default function NominaTimeClock() {
                   className="mt-4 text-xs"
                   style={{ color: "var(--ink-soft)" }}
                 >
-                  Registro de asistencia administrativa.
+                  {t(
+                    "ui.NominaTimeClock.registroDeAsistenciaAdministrativa",
+                    "Registro de asistencia administrativa.",
+                  )}{" "}
                   {office
-                    ? ` Se valida tu ubicación contra tu oficina${office.address ? ` (${office.address})` : ""} (máx. ${office.radiusM} m).`
-                    : " Tu cuenta no tiene una oficina configurada, así que se registra sin geocerca."}
+                    ? office.address
+                      ? t("ui.NominaTimeClock.seValidaTuUbicacionConDireccion", {
+                          address: office.address,
+                          radius: office.radiusM,
+                          defaultValue:
+                            "Se valida tu ubicación contra tu oficina ({{address}}) (máx. {{radius}} m).",
+                        })
+                      : t("ui.NominaTimeClock.seValidaTuUbicacion", {
+                          radius: office.radiusM,
+                          defaultValue:
+                            "Se valida tu ubicación contra tu oficina (máx. {{radius}} m).",
+                        })
+                    : t(
+                        "ui.NominaTimeClock.tuCuentaNoTieneOficina",
+                        "Tu cuenta no tiene una oficina configurada, así que se registra sin geocerca.",
+                      )}
                 </p>
               )}
 
@@ -427,7 +467,7 @@ export default function NominaTimeClock() {
                     ) : (
                       <LogOut className="mr-2 h-5 w-5" />
                     )}
-                    Marcar salida
+                    {t("ui.NominaTimeClock.marcarSalida", "Marcar salida")}
                   </Button>
                 ) : (
                   <Button
@@ -441,7 +481,7 @@ export default function NominaTimeClock() {
                     ) : (
                       <LogIn className="mr-2 h-5 w-5" />
                     )}
-                    Marcar entrada
+                    {t("ui.NominaTimeClock.marcarEntrada", "Marcar entrada")}
                   </Button>
                 )}
               </div>
@@ -450,8 +490,10 @@ export default function NominaTimeClock() {
                   className="mt-3 text-[11px]"
                   style={{ color: "var(--ink-faint)" }}
                 >
-                  Se solicitará tu ubicación para confirmar que estás dentro del
-                  área del puesto.
+                  {t(
+                    "ui.NominaTimeClock.seSolicitaraTuUbicacion",
+                    "Se solicitará tu ubicación para confirmar que estás dentro del área del puesto.",
+                  )}
                 </p>
               )}
             </>

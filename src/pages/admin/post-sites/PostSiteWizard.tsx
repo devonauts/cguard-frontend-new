@@ -60,7 +60,6 @@ import AddressAutocomplete, {
 import { useClientSelection } from "@/contexts/ClientSelectionContext";
 import { getServiceType } from "@/lib/serviceTypes";
 import { Section, EmptyState, IconTile } from "@/components/kit";
-import i18n from "@/i18n";
 import CampoSucursalDeSede from "@/components/post-sites/CampoSucursalDeSede";
 
 // ─── types ────────────────────────────────────────────────────────────────────
@@ -141,7 +140,13 @@ function deriveScheduleType(
 
 // ─── tiny helpers ─────────────────────────────────────────────────────────────
 
-const STEP_LABELS = ["Tipo", "Sitio", "Config.", "Estaciones", "Crear"];
+const STEP_LABELS: { key: string; label: string }[] = [
+  { key: "ui.PostSiteWizard.step.tipo", label: "Tipo" },
+  { key: "ui.PostSiteWizard.step.sitio", label: "Sitio" },
+  { key: "ui.PostSiteWizard.step.config", label: "Config." },
+  { key: "ui.PostSiteWizard.step.estaciones", label: "Estaciones" },
+  { key: "ui.PostSiteWizard.step.crear", label: "Crear" },
+];
 const SCHEDULES = [
   "1 hora",
   "4 horas",
@@ -403,7 +408,10 @@ function ChipGroup({
             <Tag className="h-3 w-3 shrink-0" />
             {item}
             <button
-              aria-label={`Quitar ${item}`}
+              aria-label={t("ui.PostSiteWizard.quitarItem", {
+                item,
+                defaultValue: "Quitar {{item}}",
+              })}
               className="cg-focus ml-0.5 rounded-full transition-colors"
               style={{ color: "var(--bad-text)" }}
               type="button"
@@ -439,7 +447,7 @@ function ChipGroup({
           onClick={addCustom}
         >
           <Plus className="h-3 w-3" />
-          Agregar
+          {t("actions.add", "Agregar")}
         </button>
       </div>
     </div>
@@ -449,9 +457,11 @@ function ChipGroup({
 // ─── Step indicator ───────────────────────────────────────────────────────────
 
 function StepBar({ current, total }: { current: number; total: number }) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex items-center gap-1.5">
-      {STEP_LABELS.map((label, i) => {
+      {STEP_LABELS.map(({ key: labelKey, label }, i) => {
         const idx = i + 1;
         const done = idx < current;
         const active = idx === current;
@@ -494,7 +504,7 @@ function StepBar({ current, total }: { current: number; total: number }) {
                       : "var(--ink-faint)",
                 }}
               >
-                {label}
+                {t(labelKey, label)}
               </span>
             </div>
             {i < total - 1 && (
@@ -524,6 +534,8 @@ function JornadaRow({
   onChange: (d: Partial<JornadaDraft>) => void;
   onRemove: () => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     /* La fila (etiqueta + nombre + dos horas + vigilantes + quitar) pide unos
        300 px de ancho fijo: en un teléfono se parte en dos líneas. */
@@ -537,13 +549,17 @@ function JornadaRow({
         style={jornadaChip(jornada.tipo)}
       >
         {jornada.tipo === "sacafranco"
-          ? "SF"
-          : jornada.tipo.slice(0, 3).toUpperCase()}
+          ? t("ui.PostSiteWizard.abrev.sacafranco", "SF")
+          : jornada.tipo === "matutina"
+            ? t("ui.PostSiteWizard.abrev.matutina", "MAT")
+            : jornada.tipo === "nocturna"
+              ? t("ui.PostSiteWizard.abrev.nocturna", "NOC")
+              : t("ui.PostSiteWizard.abrev.personalizada", "PER")}
       </span>
       {/* Editable name */}
       <Input
         className="h-7 min-w-32 flex-1 text-xs font-medium border-0 bg-transparent px-0 focus-visible:ring-0 shadow-none"
-        placeholder={i18n.t("ui.PostSiteWizard.nombreDelTurno")}
+        placeholder={t("ui.PostSiteWizard.nombreDelTurno", "Nombre del turno")}
         value={jornada.nombre}
         onChange={(e) => onChange({ nombre: e.target.value })}
       />
@@ -575,7 +591,7 @@ function JornadaRow({
         />
       </div>
       <button
-        aria-label="Quitar jornada"
+        aria-label={t("ui.PostSiteWizard.quitarJornada", "Quitar jornada")}
         className="cg-focus shrink-0 rounded-md transition-colors"
         style={{ color: "var(--bad-text)" }}
         type="button"
@@ -602,7 +618,7 @@ function StationRow({
   const addJornada = (preset: (typeof JORNADA_PRESETS)[number]) => {
     const j: JornadaDraft = {
       id: Math.random().toString(36).slice(2),
-      nombre: preset.label,
+      nombre: t(preset.labelKey, preset.label),
       tipo: preset.tipo,
       startTime: preset.startTime,
       endTime: preset.endTime,
@@ -667,7 +683,8 @@ function StationRow({
       >
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <span className="cg-eyebrow flex items-center gap-1">
-            <Clock className="h-3 w-3" /> Jornadas / Turnos
+            <Clock className="h-3 w-3" />{" "}
+            {t("ui.PostSiteWizard.jornadasTurnos", "Jornadas / Turnos")}
           </span>
           <div className="flex gap-1.5 flex-wrap">
             {JORNADA_PRESETS.map((p) => (
@@ -690,8 +707,10 @@ function StationRow({
             className="py-3 text-center text-xs italic"
             style={{ color: "var(--ink-faint)" }}
           >
-            Sin jornadas — añade Diurna, Nocturna o Relevo con los botones de
-            arriba.
+            {t(
+              "ui.PostSiteWizard.sinJornadasAnade",
+              "Sin jornadas — añade Diurna, Nocturna o Relevo con los botones de arriba.",
+            )}
           </p>
         ) : (
           <div className="space-y-1.5">
@@ -708,7 +727,10 @@ function StationRow({
 
         {draft.jornadas.length > 0 && (
           <p className="pt-1 text-[10px]" style={{ color: "var(--ink-faint)" }}>
-            Cada jornada se guarda como un registro independiente en el puesto.
+            {t(
+              "ui.PostSiteWizard.cadaJornadaSeGuarda",
+              "Cada jornada se guarda como un registro independiente en el puesto.",
+            )}
           </p>
         )}
       </div>
@@ -924,7 +946,9 @@ export default function PostSiteWizard({
                     // ventana son una jornada de dos personas), así que no
                     // hereda el id de ninguna: la identifica su ventana.
                     id: `${j.startTime}-${j.endTime}`,
-                    nombre: esNoche ? "Nocturna" : "Diurna",
+                    nombre: esNoche
+                      ? t("ui.PostSiteWizard.jornada.nocturna", "Nocturna")
+                      : t("ui.PostSiteWizard.jornada.diurna", "Diurna"),
                     tipo: (esNoche
                       ? "nocturna"
                       : "matutina") as JornadaDraft["tipo"],
@@ -941,7 +965,7 @@ export default function PostSiteWizard({
                 if ((p.type || "fijo") !== "sacafranco") continue;
                 jornadas.push({
                   id: String(p.id),
-                  nombre: "Relevo",
+                  nombre: t("ui.PostSiteWizard.jornada.relevo", "Relevo"),
                   tipo: "sacafranco",
                   startTime: p.startTime || "",
                   endTime: p.endTime || "",
@@ -958,7 +982,10 @@ export default function PostSiteWizard({
             if (!jornadas.length) {
               jornadas = jornadasPorTipo((r as any).scheduleType).map((j) => ({
                 id: `${j.startTime}-${j.endTime}`,
-                nombre: j.tipo === "Nocturno" ? "Nocturna" : "Diurna",
+                nombre:
+                  j.tipo === "Nocturno"
+                    ? t("ui.PostSiteWizard.jornada.nocturna", "Nocturna")
+                    : t("ui.PostSiteWizard.jornada.diurna", "Diurna"),
                 tipo: (j.tipo === "Nocturno"
                   ? "nocturna"
                   : "matutina") as JornadaDraft["tipo"],
@@ -1163,14 +1190,21 @@ export default function PostSiteWizard({
           await syncStationRecords(id!);
           invalidateEntity("stations");
         } catch {
-          toast.error("Cambios guardados, pero algunas estaciones fallaron");
+          toast.error(
+            t(
+              "ui.PostSiteWizard.cambiosGuardadosEstacionesFallaron",
+              "Cambios guardados, pero algunas estaciones fallaron",
+            ),
+          );
         }
         try {
           await uploadSitePhoto(id!);
         } catch {
           /* already toasted inside */
         }
-        toast.success("Cambios guardados");
+        toast.success(
+          t("ui.PostSiteWizard.cambiosGuardados", "Cambios guardados"),
+        );
         setStep(6);
 
         return;
@@ -1377,17 +1411,28 @@ export default function PostSiteWizard({
           </div>
           <div>
             <h2 className="font-display text-2xl font-bold">
-              {isEdit ? "¡Cambios guardados!" : "¡Puesto creado!"}
+              {isEdit
+                ? t("ui.PostSiteWizard.cambiosGuardadosExcl", "¡Cambios guardados!")
+                : t("ui.PostSiteWizard.puestoCreadoExcl", "¡Puesto creado!")}
             </h2>
             <p
               className="mx-auto mt-2 max-w-sm text-sm"
               style={{ color: "var(--ink-soft)" }}
             >
               {isEdit
-                ? "El sitio fue actualizado correctamente."
+                ? t(
+                    "ui.PostSiteWizard.sitioActualizado",
+                    "El sitio fue actualizado correctamente.",
+                  )
                 : stationCount > 0
-                  ? `${stationCount} estación${stationCount !== 1 ? "es" : ""} configurada${stationCount !== 1 ? "s" : ""} y lista${stationCount !== 1 ? "s" : ""}.`
-                  : "El sitio fue creado. Puedes añadir estaciones desde su perfil."}
+                  ? t("ui.PostSiteWizard.estacionesConfiguradas", {
+                      count: stationCount,
+                      defaultValue: "{{count}} estaciones configuradas y listas.",
+                    })
+                  : t(
+                      "ui.PostSiteWizard.sitioCreadoSinEstaciones",
+                      "El sitio fue creado. Puedes añadir estaciones desde su perfil.",
+                    )}
             </p>
           </div>
           <div className="flex gap-3">
@@ -1402,7 +1447,9 @@ export default function PostSiteWizard({
                 )
               }
             >
-              {clientLocked ? "Volver al cliente" : "Ver todos los sitios"}
+              {clientLocked
+                ? t("ui.PostSiteWizard.volverAlCliente", "Volver al cliente")
+                : t("ui.PostSiteWizard.verTodosLosSitios", "Ver todos los sitios")}
             </Button>
             <Button
               className="gap-2"
@@ -1411,7 +1458,7 @@ export default function PostSiteWizard({
               onClick={() => navigate(`/post-sites/${targetId}/profile`)}
             >
               <MapPin className="h-4 w-4" />
-              Ir al perfil
+              {t("ui.PostSiteWizard.irAlPerfil", "Ir al perfil")}
             </Button>
           </div>
         </div>
@@ -1430,8 +1477,10 @@ export default function PostSiteWizard({
               )}
             </h2>
             <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-              Esto nos permite preparar los campos de configuración adecuados.
-              Puede cambiar después.
+              {t(
+                "ui.PostSiteWizard.estoNosPermitePreparar",
+                "Esto nos permite preparar los campos de configuración adecuados. Puede cambiar después.",
+              )}
             </p>
           </div>
           <ServiceTypePicker
@@ -1478,8 +1527,14 @@ export default function PostSiteWizard({
             </h2>
             <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
               {clientLocked
-                ? "Busca la dirección de la sede en el mapa. El cliente ya está asignado."
-                : "Busca la dirección en el mapa y asigna el sitio a un cliente."}
+                ? t(
+                    "ui.PostSiteWizard.buscaDireccionClienteAsignado",
+                    "Busca la dirección de la sede en el mapa. El cliente ya está asignado.",
+                  )
+                : t(
+                    "ui.PostSiteWizard.buscaDireccionAsignaCliente",
+                    "Busca la dirección en el mapa y asigna el sitio a un cliente.",
+                  )}
             </p>
           </div>
 
@@ -1519,7 +1574,8 @@ export default function PostSiteWizard({
                       type="button"
                       onClick={() => setClientId("")}
                     >
-                      <Edit3 className="h-3 w-3" /> Cambiar
+                      <Edit3 className="h-3 w-3" />{" "}
+                      {t("ui.PostSiteWizard.cambiar", "Cambiar")}
                     </button>
                   )}
                 </div>
@@ -1644,7 +1700,7 @@ export default function PostSiteWizard({
                         style={{ color: "var(--ok-text)" }}
                       >
                         <Hash className="h-3 w-3" />
-                        CP {postalCode}
+                        {t("ui.PostSiteWizard.cpAbrev", "CP")} {postalCode}
                       </span>
                     )}
                     {coordsLabel && (
@@ -1665,7 +1721,7 @@ export default function PostSiteWizard({
                   onClick={() => setShowAddressFields((v) => !v)}
                 >
                   <Edit3 className="h-3 w-3" />
-                  Editar
+                  {t("actions.edit", "Editar")}
                   {showAddressFields ? (
                     <ChevronUp className="h-3 w-3" />
                   ) : (
@@ -1700,10 +1756,13 @@ export default function PostSiteWizard({
                     </div>
                     <div className="sm:col-span-2">
                       <label className="block text-xs font-medium text-foreground/70 mb-1">
-                        Complemento
+                        {t("ui.PostSiteWizard.complemento", "Complemento")}
                       </label>
                       <Input
-                        placeholder="Apto., piso, referencia…"
+                        placeholder={t(
+                          "ui.PostSiteWizard.aptoPisoReferencia",
+                          "Apto., piso, referencia…",
+                        )}
                         value={addressLine2}
                         onChange={(e) => setAddressLine2(e.target.value)}
                       />
@@ -1738,7 +1797,7 @@ export default function PostSiteWizard({
                     <div className="grid grid-cols-2 gap-2">
                       <div>
                         <label className="block text-xs font-medium text-foreground/70 mb-1">
-                          Latitud
+                          {t("postSites.stations.lat", "Latitud")}
                         </label>
                         <Input
                           className="font-mono text-xs"
@@ -1749,7 +1808,7 @@ export default function PostSiteWizard({
                       </div>
                       <div>
                         <label className="block text-xs font-medium text-foreground/70 mb-1">
-                          Longitud
+                          {t("postSites.stations.lng", "Longitud")}
                         </label>
                         <Input
                           className="font-mono text-xs"
@@ -1868,7 +1927,7 @@ export default function PostSiteWizard({
                     setPlaceExisting(null);
                   }}
                 >
-                  Quitar
+                  {t("ui.PostSiteWizard.quitar", "Quitar")}
                 </button>
               )}
             </div>
@@ -1885,7 +1944,10 @@ export default function PostSiteWizard({
         <div className="space-y-6">
           <div>
             <h2 className="font-display mb-1 text-xl font-bold">
-              Configuración operativa
+              {t(
+                "ui.PostSiteWizard.configuracionOperativa",
+                "Configuración operativa",
+              )}
               {typeDef && (
                 <span
                   className="ml-2 text-base font-normal"
@@ -1907,7 +1969,7 @@ export default function PostSiteWizard({
           <Section
             contentClassName="space-y-3"
             icon={<Zap />}
-            title="Equipamiento"
+            title={t("ui.PostSiteWizard.equipamiento", "Equipamiento")}
           >
             <ChipGroup
               customItems={customEquipment}
@@ -1949,7 +2011,10 @@ export default function PostSiteWizard({
           <Section
             contentClassName="space-y-4"
             icon={<Shield />}
-            title="Despliegue operativo"
+            title={t(
+              "ui.PostSiteWizard.despliegueOperativo",
+              "Despliegue operativo",
+            )}
           >
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -1963,13 +2028,13 @@ export default function PostSiteWizard({
                 >
                   <option value="">{t("comun.seleccionar")}</option>
                   {[
-                    ["low", "Bajo"],
-                    ["medium", "Medio"],
-                    ["high", "Alto"],
-                    ["critical", "Crítico"],
-                  ].map(([v, l]) => (
+                    ["low", "clients.riskLevel.low", "Bajo"],
+                    ["medium", "clients.riskLevel.medium", "Medio"],
+                    ["high", "clients.riskLevel.high", "Alto"],
+                    ["critical", "ui.PostSiteWizard.riesgoCritico", "Crítico"],
+                  ].map(([v, k, l]) => (
                     <option key={v} value={v}>
-                      {l}
+                      {t(k, l)}
                     </option>
                   ))}
                 </select>
@@ -1983,7 +2048,7 @@ export default function PostSiteWizard({
                 </label>
                 <Input
                   min={1}
-                  placeholder="Ej. 2"
+                  placeholder={t("ui.PostSiteWizard.ejemplo2", "Ej. 2")}
                   type="number"
                   value={cfgGet("stationsRequired")}
                   onChange={(e) =>
@@ -2084,8 +2149,10 @@ export default function PostSiteWizard({
               )}
             </h2>
             <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-              Define los puestos de vigilante. Cada estación tiene su propio
-              horario y número de vigilantes.
+              {t(
+                "ui.PostSiteWizard.defineLosPuestosDeVigilante",
+                "Define los puestos de vigilante. Cada estación tiene su propio horario y número de vigilantes.",
+              )}
             </p>
           </div>
 
@@ -2152,7 +2219,9 @@ export default function PostSiteWizard({
                     type="button"
                     onClick={() => setStatus(s)}
                   >
-                    {s === "active" ? "Activo" : "Inactivo"}
+                    {s === "active"
+                      ? t("common.active", "Activo")
+                      : t("common.inactive", "Inactivo")}
                   </button>
                 );
               })}
@@ -2238,7 +2307,7 @@ export default function PostSiteWizard({
                   className="text-sm font-semibold"
                   style={{ color: "var(--brand-text)" }}
                 >
-                  {typeDef.label}
+                  {t(typeDef.labelKey, typeDef.label)}
                 </span>
               </div>
             )}
@@ -2260,10 +2329,13 @@ export default function PostSiteWizard({
               />
               <SummaryRow
                 icon={<Shield className="h-4 w-4" />}
-                label="Estaciones"
+                label={t("ui.PostSiteWizard.step.estaciones", "Estaciones")}
                 value={
                   stations.filter((s) => s.name.trim()).length > 0
-                    ? `${stations.filter((s) => s.name.trim()).length} definida${stations.filter((s) => s.name.trim()).length !== 1 ? "s" : ""}`
+                    ? t("ui.PostSiteWizard.estacionesDefinidas", {
+                        count: stations.filter((s) => s.name.trim()).length,
+                        defaultValue: "{{count}} definidas",
+                      })
                     : undefined
                 }
               />
@@ -2274,7 +2346,10 @@ export default function PostSiteWizard({
           {(allEquip.length > 0 || allTraining.length > 0) && (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {allEquip.length > 0 && (
-                <Section icon={<Zap />} title="Equipamiento">
+                <Section
+                  icon={<Zap />}
+                  title={t("ui.PostSiteWizard.equipamiento", "Equipamiento")}
+                >
                   <div className="flex flex-wrap gap-1.5">
                     {allEquip.map((e) => {
                       const opt = equipmentOptions.find((o) => o.value === e);
@@ -2337,7 +2412,10 @@ export default function PostSiteWizard({
                   style={{ color: "var(--brand-text)" }}
                 />
                 <span className="text-sm font-semibold">
-                  Estaciones ({stations.filter((s) => s.name.trim()).length})
+                  {t("ui.PostSiteWizard.estacionesConteo", {
+                    count: stations.filter((s) => s.name.trim()).length,
+                    defaultValue: "Estaciones ({{count}})",
+                  })}
                 </span>
               </div>
               <div>
@@ -2453,7 +2531,9 @@ export default function PostSiteWizard({
                 }}
               >
                 <ChevronLeft className="h-4 w-4" />
-                {step <= (isEdit ? 2 : 1) ? "Cancelar" : "Atrás"}
+                {step <= (isEdit ? 2 : 1)
+                  ? t("actions.cancel", "Cancelar")
+                  : t("actions.back", "Atrás")}
               </Button>
 
               {isLastMainStep ? (
@@ -2467,12 +2547,16 @@ export default function PostSiteWizard({
                   {submitting ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />{" "}
-                      {isEdit ? "Guardando…" : "Creando…"}
+                      {isEdit
+                        ? t("common.saving", "Guardando…")
+                        : t("clients.creating", "Creando…")}
                     </>
                   ) : (
                     <>
                       <CheckCircle2 className="h-4 w-4" />{" "}
-                      {isEdit ? "Guardar cambios" : "Crear Sitio"}
+                      {isEdit
+                        ? t("ui.PostSiteWizard.guardarCambios", "Guardar cambios")
+                        : t("ui.PostSiteWizard.crearSitio", "Crear Sitio")}
                     </>
                   )}
                 </Button>
@@ -2484,7 +2568,7 @@ export default function PostSiteWizard({
                   variant="brand"
                   onClick={() => setStep((s) => s + 1)}
                 >
-                  Siguiente
+                  {t("kit.pagination.next", "Siguiente")}
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               )}

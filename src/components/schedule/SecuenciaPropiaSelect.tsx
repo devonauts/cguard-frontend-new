@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Loader2, Plus, X } from "lucide-react";
 
@@ -33,9 +34,9 @@ export default function SecuenciaPropiaSelect({
   value,
   onChange,
   /** Cómo describir el primer tramo del ciclo en esta estación. */
-  etiquetaPrimerBloque = "día",
+  etiquetaPrimerBloque: etiquetaPrimerBloqueProp,
   /** Cómo describir el segundo tramo del ciclo en esta estación. */
-  etiquetaSegundoBloque = "noche",
+  etiquetaSegundoBloque: etiquetaSegundoBloqueProp,
   /** Nombre del patrón de la estación, para nombrar la opción heredada. */
   patronDeLaEstacion,
   /** Texto de la opción vacía. Un sacafranco no «hereda» nada: tapa huecos. */
@@ -55,6 +56,12 @@ export default function SecuenciaPropiaSelect({
   etiquetaPorDefecto?: string;
   obligatorio?: boolean;
 }) {
+  const { t } = useTranslation();
+  // Defaults resolved here (not as parameter defaults) so they follow the active language.
+  const etiquetaPrimerBloque =
+    etiquetaPrimerBloqueProp ?? t("ui.tramos.dia", "día");
+  const etiquetaSegundoBloque =
+    etiquetaSegundoBloqueProp ?? t("ui.tramos.noche", "noche");
   const [styles, setStyles] = useState<RotationStyle[]>([]);
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -91,11 +98,20 @@ export default function SecuenciaPropiaSelect({
 
   const describir = (s: RotationStyle) => {
     const descanso =
-      s.restDays === 0 ? "sin descanso" : `${s.restDays} descansa`;
+      s.restDays === 0
+        ? t("ui.RotationStyleSelect.sinDescanso", "sin descanso")
+        : t("ui.RotationStyleSelect.nDescansa", {
+            defaultValue: "{{n}} descansa",
+            n: s.restDays,
+          });
 
     return (s.nightShifts || 0) > 0
       ? `${s.name} — ${s.dayShifts} ${etiquetaPrimerBloque} · ${s.nightShifts} ${etiquetaSegundoBloque} · ${descanso}`
-      : `${s.name} — ${s.dayShifts} trabaja · ${descanso}`;
+      : `${s.name} — ${t("ui.RotationStyleSelect.nTrabaja", {
+          defaultValue: "{{n}} trabaja · {{descanso}}",
+          n: s.dayShifts,
+          descanso,
+        })}`;
   };
 
   // Un mismo ciclo puede estar duplicado en la empresa (pasa: los patrones se
@@ -119,7 +135,12 @@ export default function SecuenciaPropiaSelect({
     const rest = Math.max(0, parseInt(cRest, 10) || 0);
 
     if (work + night < 1) {
-      toast.error("La secuencia necesita al menos un día de trabajo.");
+      toast.error(
+        t(
+          "ui.SecuenciaPropiaSelect.laSecuenciaNecesitaAlMenos",
+          "La secuencia necesita al menos un día de trabajo.",
+        ),
+      );
 
       return;
     }
@@ -159,7 +180,12 @@ export default function SecuenciaPropiaSelect({
       }
     } catch (e: any) {
       toast.error(
-        e?.data?.message || e?.message || "No se pudo crear la secuencia",
+        e?.data?.message ||
+          e?.message ||
+          t(
+            "ui.SecuenciaPropiaSelect.noSePudoCrearLaSecuencia",
+            "No se pudo crear la secuencia",
+          ),
       );
     } finally {
       setCreating(false);
@@ -176,7 +202,11 @@ export default function SecuenciaPropiaSelect({
     <div className="space-y-2">
       {loading ? (
         <div className="flex items-center gap-2 py-2 text-xs text-muted-foreground">
-          <Loader2 className="animate-spin" size={12} /> Cargando secuencias…
+          <Loader2 className="animate-spin" size={12} />{" "}
+          {t(
+            "ui.SecuenciaPropiaSelect.cargandoSecuencias",
+            "Cargando secuencias…",
+          )}
         </div>
       ) : (
         <select
@@ -193,18 +223,32 @@ export default function SecuenciaPropiaSelect({
         >
           <option value="">
             {obligatorio
-              ? "Elige cada cuántos días libra…"
+              ? t(
+                  "ui.SecuenciaPropiaSelect.eligeCadaCuantosDiasLibra",
+                  "Elige cada cuántos días libra…",
+                )
               : etiquetaPorDefecto ||
                 (patronDeLaEstacion
-                  ? `La de la estación (${patronDeLaEstacion})`
-                  : "La de la estación")}
+                  ? t("ui.RotacionDeLaEstacion.laDeLaEstacionCon", {
+                      defaultValue: "La de la estación ({{patron}})",
+                      patron: patronDeLaEstacion,
+                    })
+                  : t(
+                      "ui.RotacionDeLaEstacion.laDeLaEstacion",
+                      "La de la estación",
+                    ))}
           </option>
           {opciones.map((s) => (
             <option key={s.id} value={s.id}>
               {describir(s)}
             </option>
           ))}
-          <option value="__nueva__">+ Crear una secuencia…</option>
+          <option value="__nueva__">
+            {t(
+              "ui.SecuenciaPropiaSelect.crearUnaSecuencia",
+              "+ Crear una secuencia…",
+            )}
+          </option>
         </select>
       )}
 
@@ -217,9 +261,11 @@ export default function SecuenciaPropiaSelect({
           }}
         >
           <div className="mb-2 flex items-center justify-between">
-            <span className="text-xs font-semibold">Nueva secuencia</span>
+            <span className="text-xs font-semibold">
+              {t("ui.SecuenciaPropiaSelect.nuevaSecuencia", "Nueva secuencia")}
+            </span>
             <button
-              aria-label="Cerrar"
+              aria-label={t("common.close", "Cerrar")}
               className="cg-focus rounded-md p-1"
               type="button"
               onClick={() => setAbierto(false)}
@@ -229,7 +275,10 @@ export default function SecuenciaPropiaSelect({
           </div>
           <div className="grid grid-cols-3 gap-2">
             <label className="text-[11px] text-muted-foreground">
-              Turnos de {etiquetaPrimerBloque}
+              {t("ui.RotationStyleSelect.turnosDe", {
+                defaultValue: "Turnos de {{tramo}}",
+                tramo: etiquetaPrimerBloque,
+              })}
               <input
                 className={`${campo} mt-1`}
                 min={0}
@@ -240,7 +289,10 @@ export default function SecuenciaPropiaSelect({
               />
             </label>
             <label className="text-[11px] text-muted-foreground">
-              Turnos de {etiquetaSegundoBloque}
+              {t("ui.RotationStyleSelect.turnosDe", {
+                defaultValue: "Turnos de {{tramo}}",
+                tramo: etiquetaSegundoBloque,
+              })}
               <input
                 className={`${campo} mt-1`}
                 min={0}
@@ -251,7 +303,7 @@ export default function SecuenciaPropiaSelect({
               />
             </label>
             <label className="text-[11px] text-muted-foreground">
-              Descansos
+              {t("ui.SecuenciaPropiaSelect.descansos", "Descansos")}
               <input
                 className={`${campo} mt-1`}
                 min={0}
@@ -274,7 +326,7 @@ export default function SecuenciaPropiaSelect({
             ) : (
               <Plus size={12} />
             )}{" "}
-            Crear y usar
+            {t("ui.RotationStyleSelect.crearYUsar", "Crear y usar")}
           </button>
         </div>
       )}

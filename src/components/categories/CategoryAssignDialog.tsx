@@ -72,8 +72,8 @@ export default function CategoryAssignDialog({
       );
       toast.success(
         targetIds.length > 1
-          ? "Sectores actualizadas"
-          : "Categoría actualizada",
+          ? t("clients.categoriesUpdated", "Sectores actualizadas")
+          : t("ui.CategoryAssignDialog.categoriaActualizada", "Categoría actualizada"),
       );
       onOpenChange(false);
       onDone?.();
@@ -137,7 +137,9 @@ export default function CategoryAssignDialog({
               {t("actions.cancel")}
             </Button>
             <Button disabled={loading} onClick={submit}>
-              {loading ? "Guardando..." : "Guardar"}
+              {loading
+                ? t("clients.saving", "Guardando...")
+                : t("actions.save", "Guardar")}
             </Button>
           </div>
         </div>

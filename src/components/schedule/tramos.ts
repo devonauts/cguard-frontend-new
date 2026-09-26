@@ -1,3 +1,5 @@
+import i18n from "@/i18n";
+
 /**
  * ════════════════════════════════════════════════════════════════════════════
  * CÓMO SE LLAMA CADA TRAMO DE UNA ESTACIÓN
@@ -37,12 +39,24 @@ export function aHHMM(min: number): string {
 }
 
 /** Cómo llama la gente al tramo que EMPIEZA a esa hora. */
-export function nombreDeTramo(hhmm: string): "mañana" | "tarde" | "noche" {
+export function nombreDeTramo(hhmm: string): string {
   const h = Math.floor(aMinutos(hhmm) / 60);
 
-  if (h >= 18 || h < 6) return "noche";
+  if (h >= 18 || h < 6) return etiquetaNoche();
 
-  return h >= 12 ? "tarde" : "mañana";
+  return h >= 12
+    ? i18n.t("ui.tramos.tarde", "tarde")
+    : i18n.t("ui.tramos.manana", "mañana");
+}
+
+/** Translated display label for the night segment. */
+function etiquetaNoche(): string {
+  return i18n.t("ui.tramos.noche", "noche");
+}
+
+/** Translated display label for the day segment. */
+function etiquetaDia(): string {
+  return i18n.t("ui.tramos.dia", "día");
 }
 
 /** Las ventanas de los `bloques` tramos en que se parte una cobertura. */
@@ -78,10 +92,10 @@ export function etiquetaSegundoTramo(
   minutosPorBloque: number,
   bloques: number,
 ): string {
-  if (bloques < 2) return "noche";
+  if (bloques < 2) return etiquetaNoche();
   const vs = ventanasDeBloques(inicio, minutosPorBloque, bloques);
 
-  return vs[1]?.nombre || "noche";
+  return vs[1]?.nombre || etiquetaNoche();
 }
 
 /** El nombre del PRIMER tramo. Con un solo bloque no hay tramos que nombrar. */
@@ -90,9 +104,10 @@ export function etiquetaPrimerTramo(
   minutosPorBloque: number,
   bloques: number,
 ): string {
-  if (bloques < 2) return "día";
+  if (bloques < 2) return etiquetaDia();
 
   return (
-    ventanasDeBloques(inicio, minutosPorBloque, bloques)[0]?.nombre || "día"
+    ventanasDeBloques(inicio, minutosPorBloque, bloques)[0]?.nombre ||
+    etiquetaDia()
   );
 }

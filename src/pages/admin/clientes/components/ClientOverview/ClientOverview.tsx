@@ -323,7 +323,10 @@ export default function ClientOverview({
                   ? {
                       lat,
                       lng,
-                      label: clientDisplayName(client, "Client location"),
+                      label: clientDisplayName(
+                        client,
+                        t("ui.ClientOverview.ubicacionDelCliente", "Ubicación del cliente"),
+                      ),
                     }
                   : null
               }

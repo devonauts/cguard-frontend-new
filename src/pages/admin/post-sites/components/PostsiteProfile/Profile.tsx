@@ -458,18 +458,18 @@ export default function PostSiteProfile({ site }: { site?: any }) {
             const DESPLIEGUE: Array<[string, string]> = [
               // MISMAS etiquetas que DEPLOY_CHECKS del asistente:
               // el operador reencuentra las palabras que marcó.
-              ["armedService", "Vigilante armado"],
-              ["uniformRequired", "Uniforme obligatorio"],
-              ["periodicPatrol", "Patrullaje perimetral"],
-              ["k9Service", "Canes / K9"],
-              ["vehicleControl", "Control acceso vehicular"],
-              ["cctvMonitoring", "Monitoreo CCTV"],
-              ["visitorLog", "Registro de visitantes"],
-              ["incidentLog", "Libro de novedades"],
-              ["formalHandover", "Entrega de turno formal"],
-              ["keyCustody", "Custodia de llaves"],
-              ["alarmResponse", "Respuesta a alarmas"],
-              ["radioComms", "Comunicación por radio"],
+              ["armedService", t("ui.PostSiteWizard.deploy.armedService", "Vigilante armado")],
+              ["uniformRequired", t("ui.PostSiteWizard.deploy.uniformRequired", "Uniforme obligatorio")],
+              ["periodicPatrol", t("ui.PostSiteWizard.deploy.periodicPatrol", "Patrullaje perimetral")],
+              ["k9Service", t("ui.PostSiteWizard.deploy.k9Service", "Canes / K9")],
+              ["vehicleControl", t("ui.PostSiteWizard.deploy.vehicleControl", "Control acceso vehicular")],
+              ["cctvMonitoring", t("ui.PostSiteWizard.deploy.cctvMonitoring", "Monitoreo CCTV")],
+              ["visitorLog", t("ui.PostSiteWizard.deploy.visitorLog", "Registro de visitantes")],
+              ["incidentLog", t("ui.PostSiteWizard.deploy.incidentLog", "Libro de novedades")],
+              ["formalHandover", t("ui.PostSiteWizard.deploy.formalHandover", "Entrega de turno formal")],
+              ["keyCustody", t("ui.PostSiteWizard.deploy.keyCustody", "Custodia de llaves")],
+              ["alarmResponse", t("ui.PostSiteWizard.deploy.alarmResponse", "Respuesta a alarmas")],
+              ["radioComms", t("ui.PostSiteWizard.deploy.radioComms", "Comunicación por radio")],
             ];
             const despliegueActivo = DESPLIEGUE.filter(
               ([k]) => cfg[k] === true,
@@ -492,17 +492,30 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                 {cfg.riskLevel && (
                   <InfoRow
                     label={t("clients.form.riskLevel", "Nivel de riesgo")}
-                    value={String(cfg.riskLevel)}
+                    value={(() => {
+                      const RIESGO: Record<string, [string, string]> = {
+                        low: ["clients.riskLevel.low", "Bajo"],
+                        medium: ["clients.riskLevel.medium", "Medio"],
+                        high: ["clients.riskLevel.high", "Alto"],
+                        critical: ["ui.PostSiteWizard.riesgoCritico", "Crítico"],
+                      };
+                      const r = RIESGO[String(cfg.riskLevel)];
+
+                      return r ? t(r[0], r[1]) : String(cfg.riskLevel);
+                    })()}
                   />
                 )}
                 {cfg.stationsRequired ? (
                   <InfoRow
-                    label="Puestos requeridos"
+                    label={t("ui.Profile.puestosRequeridos", "Puestos requeridos")}
                     value={String(cfg.stationsRequired)}
                   />
                 ) : null}
                 {equipo.length ? (
-                  <InfoRow label="Equipo especial" value={equipo.join(", ")} />
+                  <InfoRow
+                    label={t("ui.Profile.equipoEspecial", "Equipo especial")}
+                    value={equipo.join(", ")}
+                  />
                 ) : null}
                 {formacion.length ? (
                   <InfoRow
@@ -515,7 +528,9 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                 ) : null}
                 {despliegueActivo.length ? (
                   <div>
-                    <p className="cg-eyebrow mb-1">Servicio contratado</p>
+                    <p className="cg-eyebrow mb-1">
+                      {t("ui.Profile.servicioContratado", "Servicio contratado")}
+                    </p>
                     <div className="flex flex-wrap gap-1.5">
                       {despliegueActivo.map(([k, label]) => (
                         <span
@@ -738,7 +753,7 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                 rel="noreferrer"
                 target="_blank"
               >
-                Abrir en Google Maps
+                {t("postSites.overview.Map.openInMaps", "Abrir en Google Maps")}
               </a>
             </div>
           ) : null}
@@ -812,7 +827,9 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                     className="ml-auto"
                     tone={station.isActive ? "ok" : "neutral"}
                   >
-                    {station.isActive ? "Activo" : "Sin cobertura"}
+                    {station.isActive
+                      ? t("common.active", "Activo")
+                      : t("dashboard.coverage.none", "Sin cobertura")}
                   </StatusBadge>
                 </div>
 
@@ -868,7 +885,7 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                               className="h-1.5 w-1.5 animate-pulse rounded-full"
                               style={{ background: "var(--ok)" }}
                             />
-                            En turno
+                            {t("comun.enTurno", "En turno")}
                           </span>
                         </div>
                       ))}
@@ -911,7 +928,7 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                           className="ml-1 text-xs"
                           style={{ color: "var(--ink-soft)" }}
                         >
-                          hasta{" "}
+                          {t("ui.Profile.hasta", "hasta")}{" "}
                           {new Date(
                             station.nextShift.endTime,
                           ).toLocaleTimeString(localeActual(), {

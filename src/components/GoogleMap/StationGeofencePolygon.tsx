@@ -377,7 +377,10 @@ export default function StationGeofencePolygon({
           strokeColor: pal.glassSolid,
           strokeWeight: 2,
         },
-        title: `Vértice ${i + 1} · arrástralo para ajustar`,
+        title: t("ui.StationGeofencePolygon.verticeArrastraloParaAjustar", {
+          defaultValue: "Vértice {{n}} · arrástralo para ajustar",
+          n: i + 1,
+        }),
         zIndex: 1000 + i,
         cursor: "grab",
       });
@@ -408,12 +411,19 @@ export default function StationGeofencePolygon({
         popRef.current.open(marker, {
           id: `v${i}`,
           kind: "zone",
-          title: `Vértice ${i + 1} de ${ptsRef.current.length}`,
-          subtitle: "Arrástralo para ajustar el contorno",
+          title: t("ui.StationGeofencePolygon.verticeDeTotal", {
+            defaultValue: "Vértice {{n}} de {{total}}",
+            n: i + 1,
+            total: ptsRef.current.length,
+          }),
+          subtitle: t(
+            "ui.StationGeofencePolygon.arrastraloParaAjustarElContorno",
+            "Arrástralo para ajustar el contorno",
+          ),
           tone: "brand",
           fields: [
             {
-              label: "Coordenadas",
+              label: t("ui.GoogleMapEmbed.coordenadas", "Coordenadas"),
               value: formatearCoord(pt.lat, pt.lng),
               mono: true,
               wide: true,
@@ -422,7 +432,7 @@ export default function StationGeofencePolygon({
           actions: [
             {
               id: "quitar",
-              label: "Quitar punto",
+              label: t("ui.StationGeofencePolygon.quitarPunto", "Quitar punto"),
               icon: <Trash2 />,
               tone: "bad",
               variant: "primary",
@@ -488,29 +498,37 @@ export default function StationGeofencePolygon({
     if (r < 15) {
       return {
         tono: "bad",
-        texto:
+        texto: t(
+          "ui.StationGeofencePolygon.demasiadoPequena",
           "Demasiado pequeña: cabe dentro del error normal del GPS de un teléfono y marcaría fuera a quien está dentro.",
+        ),
       };
     }
     if (r < 25) {
       return {
         tono: "warn",
-        texto:
+        texto: t(
+          "ui.StationGeofencePolygon.muyJusta",
           "Muy justa: con GPS flojo puede dar falsas salidas. Amplíala un poco si puedes.",
+        ),
       };
     }
     if (r > 500) {
       return {
         tono: "bad",
-        texto:
+        texto: t(
+          "ui.StationGeofencePolygon.demasiadoGrande",
           "Demasiado grande: daría por válida una entrada desde una manzana de distancia.",
+        ),
       };
     }
     if (r > 250) {
       return {
         tono: "warn",
-        texto:
+        texto: t(
+          "ui.StationGeofencePolygon.bastanteAmplia",
           "Bastante amplia: revisa que no se salga de la propiedad del cliente.",
+        ),
       };
     }
     return {
@@ -574,14 +592,20 @@ export default function StationGeofencePolygon({
       )}
       {showLocation && (
         <p className="text-[11px] text-muted-foreground">
-          Busca la dirección o arrastra el pin para fijar dónde marca entrada el
-          vigilante; luego toca el mapa para dibujar la geocerca.
+          {t(
+            "ui.StationGeofencePolygon.buscaLaDireccionOArrastraElPin",
+            "Busca la dirección o arrastra el pin para fijar dónde marca entrada el vigilante; luego toca el mapa para dibujar la geocerca.",
+          )}
         </p>
       )}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <span className="flex items-center gap-1 text-xs text-muted-foreground">
-          <MapPin size={12} /> {pts.length} punto(s) · toca el mapa para agregar
-          vértices, arrastra los círculos para ajustar
+          <MapPin size={12} />{" "}
+          {t("ui.StationGeofencePolygon.puntosTocaElMapa", {
+            defaultValue:
+              "{{count}} punto(s) · toca el mapa para agregar vértices, arrastra los círculos para ajustar",
+            count: pts.length,
+          })}
         </span>
         <div className="flex gap-2">
           <button
@@ -590,7 +614,7 @@ export default function StationGeofencePolygon({
             disabled={pts.length < 2}
             className="inline-flex min-h-9 items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs disabled:opacity-40"
           >
-            <Maximize2 size={12} /> Encuadrar
+            <Maximize2 size={12} /> {t("ui.StationGeofencePolygon.encuadrar", "Encuadrar")}
           </button>
           <button
             type="button"
@@ -598,7 +622,7 @@ export default function StationGeofencePolygon({
             disabled={!pts.length}
             className="inline-flex min-h-9 items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs disabled:opacity-40"
           >
-            <Undo2 size={12} /> Deshacer
+            <Undo2 size={12} /> {t("revision.deshacer", "Deshacer")}
           </button>
           <button
             type="button"
@@ -607,7 +631,7 @@ export default function StationGeofencePolygon({
             className="inline-flex min-h-9 items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs disabled:opacity-40"
             style={{ color: "var(--bad-text)" }}
           >
-            <Trash2 size={12} /> Limpiar
+            <Trash2 size={12} /> {t("common.clear", "Limpiar")}
           </button>
         </div>
       </div>
@@ -633,7 +657,9 @@ export default function StationGeofencePolygon({
               </div>
               <div style={{ width: 1, background: "var(--hairline)" }} />
               <div>
-                <div className="cc-map-eyebrow">Radio equiv.</div>
+                <div className="cc-map-eyebrow">
+                  {t("ui.StationGeofencePolygon.radioEquiv", "Radio equiv.")}
+                </div>
                 <div className="cc-map-metric">
                   {formatearDistancia(medidas.radio)}
                 </div>
@@ -657,7 +683,9 @@ export default function StationGeofencePolygon({
             onClick={() => setAlto((a) => (a > 420 ? 340 : 560))}
             className="cc-map-card px-2.5 py-1.5 text-[11px] font-semibold"
           >
-            {alto > 420 ? "Reducir mapa" : "Ampliar mapa"}
+            {alto > 420
+              ? t("ui.StationGeofencePolygon.reducirMapa", "Reducir mapa")
+              : t("ui.StationGeofencePolygon.ampliarMapa", "Ampliar mapa")}
           </button>
         </div>
 

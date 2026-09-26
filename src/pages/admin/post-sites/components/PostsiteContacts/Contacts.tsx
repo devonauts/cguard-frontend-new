@@ -639,7 +639,7 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
                                   setOpenMenuId(null);
                                 }}
                                 className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted/30 focus:outline-none"
-                                aria-label="Edit"
+                                aria-label={t("actions.edit", "Editar")}
                                 title={t("actions.edit") || "Edit"}
                               >
                                 <Pencil size={16} />
@@ -654,7 +654,7 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
                                 }}
                                 className="cg-btn-ghost cg-focus flex w-full items-center gap-2 px-3 py-2"
                                 style={{ color: "var(--bad-text)" }}
-                                aria-label="Delete"
+                                aria-label={t("actions.delete", "Eliminar")}
                                 title={t("actions.delete") || "Delete"}
                               >
                                 <Trash size={16} />
@@ -697,7 +697,7 @@ export default function PostSiteContacts({ site }: { site?: SiteProp }) {
                       }}
                       className="px-3 py-2 bg-muted rounded-md text-sm"
                     >
-                      Edit
+                      {t("actions.edit", "Editar")}
                     </button>
                   </div>
                 </div>

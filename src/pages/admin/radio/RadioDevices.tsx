@@ -154,7 +154,13 @@ export default function RadioDevices() {
       .list()
       .then(setDevices)
       .catch((e: any) =>
-        setError(e?.message || "No se pudieron cargar los radios IP"),
+        setError(
+          e?.message ||
+            t(
+              "ui.RadioDevices.noSePudieronCargarLosRadiosIp",
+              "No se pudieron cargar los radios IP",
+            ),
+        ),
       )
       .finally(() => setLoading(false));
   };
@@ -223,10 +229,10 @@ export default function RadioDevices() {
     try {
       if (editing) {
         await radioDeviceService.update(editing.id, payload);
-        toast.success("Radio IP actualizado");
+        toast.success(t("ui.RadioDevices.radioIpActualizado", "Radio IP actualizado"));
       } else {
         await radioDeviceService.create(payload);
-        toast.success("Radio IP agregado");
+        toast.success(t("ui.RadioDevices.radioIpAgregado", "Radio IP agregado"));
       }
       setDialogOpen(false);
       setForm({ ...emptyForm });
@@ -246,11 +252,13 @@ export default function RadioDevices() {
     if (!deleteTarget) return;
     try {
       await radioDeviceService.remove(deleteTarget.id);
-      toast.success("Radio IP eliminado");
+      toast.success(t("ui.RadioDevices.radioIpEliminado", "Radio IP eliminado"));
       setDeleteTarget(null);
       load();
     } catch (e: any) {
-      toast.error(e?.message || "No se pudo eliminar");
+      toast.error(
+        e?.message || t("station.orders.deleteError", "No se pudo eliminar"),
+      );
     }
   };
 
@@ -261,8 +269,14 @@ export default function RadioDevices() {
 
       toast.success(
         res.dispatched
-          ? "Solicitud de registro enviada al puente SIP"
-          : "Guardado. El puente SIP aún no está activo (Fase 2).",
+          ? t(
+              "ui.RadioDevices.solicitudDeRegistroEnviada",
+              "Solicitud de registro enviada al puente SIP",
+            )
+          : t(
+              "ui.RadioDevices.guardadoElPuenteSipAunNoActivo",
+              "Guardado. El puente SIP aún no está activo (Fase 2).",
+            ),
       );
       load();
     } catch (e: any) {
@@ -293,7 +307,8 @@ export default function RadioDevices() {
         <PageHeader
           actions={
             <Button variant="brand" onClick={openNew}>
-              <Plus className="mr-2 h-4 w-4" /> Agregar radio IP
+              <Plus className="mr-2 h-4 w-4" />{" "}
+              {t("ui.RadioDevices.agregarRadioIp", "Agregar radio IP")}
             </Button>
           }
           badges={
@@ -302,9 +317,10 @@ export default function RadioDevices() {
                  mano en la rama «hay enlaces» y con `StatusBadge` en la otra,
                  así que el mismo indicador tenía dos anatomías. */
               <StatusBadge tone="ok">
-                {counts.registered === 1
-                  ? "Un enlace al aire"
-                  : `${counts.registered} enlaces al aire`}
+                {t("ui.RadioDevices.enlacesAlAire", {
+                  defaultValue: "{{count}} enlaces al aire",
+                  count: counts.registered,
+                })}
               </StatusBadge>
             ) : (
               <StatusBadge tone="neutral">
@@ -314,7 +330,7 @@ export default function RadioDevices() {
           }
           icon={<Radio />}
           subtitle={t("ui.RadioDevices.conectaUnaPasarelaRoipSip")}
-          title="Radios IP"
+          title={t("sidebar.radio.radio-dispositivos", "Radios IP")}
         />
 
         {/* Summary */}
@@ -328,7 +344,7 @@ export default function RadioDevices() {
           <StatCard
             accent="ok"
             icon={<Wifi />}
-            label="Registrados"
+            label={t("ui.RadioDevices.registrados", "Registrados")}
             value={counts.registered}
           />
           <StatCard
@@ -353,7 +369,7 @@ export default function RadioDevices() {
               </p>
               <Button variant="outline" onClick={load}>
                 <RefreshCw className="mr-2 h-4 w-4" />
-                Reintentar
+                {t("guards.documents.retry", "Reintentar")}
               </Button>
             </div>
           </Section>
@@ -362,7 +378,7 @@ export default function RadioDevices() {
             action={
               <Button variant="brand" onClick={openNew}>
                 <Plus className="mr-2 h-4 w-4" />
-                Agregar radio IP
+                {t("ui.RadioDevices.agregarRadioIp", "Agregar radio IP")}
               </Button>
             }
             description={t("ui.RadioDevices.agregaLaPasarelaRoipSip")}
@@ -447,7 +463,7 @@ export default function RadioDevices() {
                           ) : (
                             <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
                           )}
-                          Probar
+                          {t("ui.RadioDevices.probar", "Probar")}
                         </Button>
                         <Button
                           size="sm"
@@ -455,7 +471,7 @@ export default function RadioDevices() {
                           onClick={() => openEdit(d)}
                         >
                           <Pencil className="mr-1.5 h-3.5 w-3.5" />
-                          Editar
+                          {t("actions.edit", "Editar")}
                         </Button>
                         <Button
                           size="sm"
@@ -492,7 +508,9 @@ export default function RadioDevices() {
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>
-              {editing ? "Editar radio IP" : "Agregar radio IP"}
+              {editing
+                ? t("ui.RadioDevices.editarRadioIp", "Editar radio IP")
+                : t("ui.RadioDevices.agregarRadioIp", "Agregar radio IP")}
             </DialogTitle>
             <DialogDescription>
               {t(
@@ -506,14 +524,14 @@ export default function RadioDevices() {
             <div className="grid gap-1.5">
               <Label>{t("comun.nombreReq")}</Label>
               <Input
-                placeholder="Radio Central Norte"
+                placeholder={t("ui.RadioDevices.radioCentralNorte", "Radio Central Norte")}
                 value={form.name}
                 onChange={(e) => set({ name: e.target.value })}
               />
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="grid gap-1.5">
-                <Label>IP / Host *</Label>
+                <Label>{t("ui.RadioDevices.ipHost", "IP / Host *")}</Label>
                 <Input
                   placeholder="192.168.1.50"
                   value={form.host}
@@ -521,7 +539,7 @@ export default function RadioDevices() {
                 />
               </div>
               <div className="grid gap-1.5">
-                <Label>Puerto SIP</Label>
+                <Label>{t("ui.RadioDevices.puertoSip", "Puerto SIP")}</Label>
                 <Input
                   type="number"
                   value={form.sipPort}
@@ -531,7 +549,7 @@ export default function RadioDevices() {
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="grid gap-1.5">
-                <Label>Transporte</Label>
+                <Label>{t("ui.RadioDevices.transporte", "Transporte")}</Label>
                 <Select
                   value={form.transport}
                   onValueChange={(v) => set({ transport: v as RadioTransport })}
@@ -576,7 +594,9 @@ export default function RadioDevices() {
                 <Input
                   autoComplete="new-password"
                   placeholder={
-                    editing?.sipPasswordConfigured ? "•••• (sin cambios)" : ""
+                    editing?.sipPasswordConfigured
+                      ? t("ui.RadioDevices.sinCambios", "•••• (sin cambios)")
+                      : ""
                   }
                   type="password"
                   value={form.sipPassword}
@@ -590,7 +610,12 @@ export default function RadioDevices() {
               </div>
             </div>
             <div className="grid gap-1.5">
-              <Label>Dominio / Registrar (opcional)</Label>
+              <Label>
+                {t(
+                  "ui.RadioDevices.dominioRegistrarOpcional",
+                  "Dominio / Registrar (opcional)",
+                )}
+              </Label>
               <Input
                 placeholder={t("ui.RadioDevices.porDefectoElHost")}
                 value={form.sipDomain}
@@ -599,7 +624,9 @@ export default function RadioDevices() {
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="grid gap-1.5">
-                <Label>Puerto RTP inicial</Label>
+                <Label>
+                  {t("ui.RadioDevices.puertoRtpInicial", "Puerto RTP inicial")}
+                </Label>
                 <Input
                   type="number"
                   value={form.rtpPortStart}
@@ -607,7 +634,9 @@ export default function RadioDevices() {
                 />
               </div>
               <div className="grid gap-1.5">
-                <Label>Puerto RTP final</Label>
+                <Label>
+                  {t("ui.RadioDevices.puertoRtpFinal", "Puerto RTP final")}
+                </Label>
                 <Input
                   type="number"
                   value={form.rtpPortEnd}
@@ -631,7 +660,10 @@ export default function RadioDevices() {
                 type="checkbox"
                 onChange={(e) => set({ registerRequired: e.target.checked })}
               />
-              Requiere registro SIP (REGISTER)
+              {t(
+                "ui.RadioDevices.requiereRegistroSip",
+                "Requiere registro SIP (REGISTER)",
+              )}
             </label>
             <label className="glass-sunken flex cursor-pointer items-center gap-2.5 p-3 text-sm">
               <input
@@ -658,7 +690,7 @@ export default function RadioDevices() {
             </Button>
             <Button disabled={saving} variant="brand" onClick={save}>
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {editing ? "Guardar" : "Agregar"}
+              {editing ? t("actions.save", "Guardar") : t("actions.add", "Agregar")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -675,7 +707,11 @@ export default function RadioDevices() {
               {t("ui.RadioDevices.eliminarRadioIp")}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              ¿Eliminar “{deleteTarget?.name}”? El puente dejará de conectarlo.
+              {t("ui.RadioDevices.eliminarElPuenteDejaraDeConectarlo", {
+                defaultValue:
+                  "¿Eliminar “{{name}}”? El puente dejará de conectarlo.",
+                name: deleteTarget?.name ?? "",
+              })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

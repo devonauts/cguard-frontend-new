@@ -31,13 +31,14 @@ import {
 } from "@/contexts/AccentContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
 
-const KIND_LABEL: Record<EntityKind, string> = {
-  tenant: "Sede / negocio",
-  station: "Puesto",
-  supervisor: "Supervisor",
-  guard: "Vigilante",
-  incident: "Incidente",
-  client: "Cliente / sede",
+/** Translation keys + Spanish defaults; resolved with `t()` at render time. */
+const KIND_LABEL: Record<EntityKind, [string, string]> = {
+  tenant: ["ui.CustomizePanel.sedeNegocio", "Sede / negocio"],
+  station: ["maps.kind.station", "Puesto"],
+  supervisor: ["maps.kind.supervisor", "Supervisor"],
+  guard: ["maps.kind.guard", "Vigilante"],
+  incident: ["maps.kind.incident", "Incidente"],
+  client: ["ui.CustomizePanel.clienteSede", "Cliente / sede"],
 };
 
 export function CustomizePanel({
@@ -74,7 +75,7 @@ export function CustomizePanel({
               {t("dashboard.commandCenter", "Centro de mando")}
             </div>
             <h2 className="font-display text-base font-semibold">
-              Personalizar
+              {t("dashboard.customize", "Personalizar")}
             </h2>
           </div>
           <button
@@ -128,7 +129,8 @@ export function CustomizePanel({
           </div>
           <label className="mt-3 block">
             <div className="cg-eyebrow mb-1.5">
-              Tono — {Math.round(accent.h)}°
+              {t("settings.appearance.hueLabel", "Tono")} —{" "}
+              {Math.round(accent.h)}°
             </div>
             <input
               className="w-full"
@@ -155,7 +157,10 @@ export function CustomizePanel({
         </Group>
 
         {/* ── Mapa ────────────────────────────────────────────────────────── */}
-        <Group icon={<MapPin className="size-4" />} title="Mapa">
+        <Group
+          icon={<MapPin className="size-4" />}
+          title={t("ui.CustomizePanel.mapa", "Mapa")}
+        >
           <Row label={t("ui.CustomizePanel.estiloDelMapa")}>
             <select
               className="cg-input px-2 py-1.5 text-sm"
@@ -164,8 +169,12 @@ export function CustomizePanel({
                 set({ mapTheme: e.target.value as DashboardPrefs["mapTheme"] })
               }
             >
-              <option value="dark">Oscuro</option>
-              <option value="night">Noche</option>
+              <option value="dark">
+                {t("ui.CustomizePanel.oscuro", "Oscuro")}
+              </option>
+              <option value="night">
+                {t("ui.CustomizePanel.noche", "Noche")}
+              </option>
               <option value="roadmap">
                 {t("ui.CustomizePanel.estandar", "Estándar")}
               </option>
@@ -191,7 +200,7 @@ export function CustomizePanel({
                         strokeWidth={2.6}
                       />
                     </span>
-                    {KIND_LABEL[k]}
+                    {t(KIND_LABEL[k][0], KIND_LABEL[k][1])}
                   </span>
                   <ColorInput
                     value={p.pinColors[k]}
@@ -242,7 +251,7 @@ export function CustomizePanel({
           title={t("ui.CustomizePanel.coloresDeEstadoSeveridad")}
         >
           {(Object.keys(p.statusColors) as LiveStatus[]).map((k) => (
-            <Row key={k} label={STATUS_LABEL[k]}>
+            <Row key={k} label={t(STATUS_LABEL[k])}>
               <ColorInput
                 value={p.statusColors[k]}
                 onChange={(v) =>
@@ -365,9 +374,10 @@ export function CustomizePanel({
         </Group>
 
         <p className="mb-20 text-[11px]" style={{ color: "var(--ink-faint)" }}>
-          El color de acento se guarda en tu cuenta y te sigue a cualquier
-          dispositivo. El resto de estas preferencias se guardan en este
-          navegador y sólo afectan a tu vista del panel.
+          {t(
+            "ui.CustomizePanel.elColorDeAcentoSeGuarda",
+            "El color de acento se guarda en tu cuenta y te sigue a cualquier dispositivo. El resto de estas preferencias se guardan en este navegador y sólo afectan a tu vista del panel.",
+          )}
         </p>
 
         <div
@@ -381,13 +391,14 @@ export function CustomizePanel({
             className="cg-btn-glass cg-focus inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-semibold"
             onClick={() => setP({ ...DEFAULT_PREFS })}
           >
-            <RotateCcw className="size-4" /> Restablecer
+            <RotateCcw className="size-4" />{" "}
+            {t("ui.CustomizePanel.restablecer", "Restablecer")}
           </button>
           <button
             className="cg-btn-brand cg-focus ml-auto inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold"
             onClick={() => onSave(p)}
           >
-            <Save className="size-4" /> Guardar
+            <Save className="size-4" /> {t("actions.save", "Guardar")}
           </button>
         </div>
       </div>

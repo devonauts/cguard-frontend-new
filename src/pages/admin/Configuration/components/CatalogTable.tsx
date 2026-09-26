@@ -108,7 +108,12 @@ export function Pagination({
       </div>
 
       <div className="tabular-nums">
-        {total === 0 ? "0 de 0" : `${from} – ${to} de ${total}`}
+        {t("ui.CatalogTable.rangoDeTotal", {
+          defaultValue: "{{from}} – {{to}} de {{total}}",
+          from,
+          to,
+          total,
+        })}
       </div>
 
       <div className="flex items-center gap-2">
@@ -118,7 +123,7 @@ export function Pagination({
           variant="outline"
           onClick={() => onPageChange(Math.max(1, page - 1))}
         >
-          Anterior
+          {t("clients.pagination.prev", "Anterior")}
         </Button>
         <Button
           disabled={disabled || page >= maxPage}
@@ -126,7 +131,7 @@ export function Pagination({
           variant="outline"
           onClick={() => onPageChange(Math.min(maxPage, page + 1))}
         >
-          Siguiente
+          {t("clients.pagination.next", "Siguiente")}
         </Button>
       </div>
     </div>
@@ -139,9 +144,13 @@ export function Pagination({
  * los seis catálogos la repetían con la misma decisión tomada a mano.
  */
 export function ActiveBadge({ active }: { active: boolean }) {
+  const { t } = useTranslation();
+
   return (
     <StatusBadge tone={active ? "ok" : "neutral"}>
-      {active ? "Activo" : "Inactivo"}
+      {active
+        ? t("clients.status.active", "Activo")
+        : t("common.inactive", "Inactivo")}
     </StatusBadge>
   );
 }
@@ -184,7 +193,7 @@ export function CatalogTable<T extends { id: string }>({
   loading,
   query,
   onQueryChange,
-  searchPlaceholder = "Buscar…",
+  searchPlaceholder,
   page,
   pageSize,
   total,
@@ -197,6 +206,7 @@ export function CatalogTable<T extends { id: string }>({
   toolbarExtra,
   notice,
 }: CatalogTableProps<T>) {
+  const { t } = useTranslation();
   const [selected, setSelected] = React.useState<string[]>([]);
 
   // Al cambiar de página o de búsqueda, una selección de filas que ya no se ven
@@ -243,7 +253,7 @@ export function CatalogTable<T extends { id: string }>({
         search={
           onQueryChange ? (
             <TableSearch
-              placeholder={searchPlaceholder}
+              placeholder={searchPlaceholder ?? t("kit.search.placeholder", "Buscar…")}
               value={query ?? ""}
               onChange={onQueryChange}
             />
@@ -263,7 +273,10 @@ export function CatalogTable<T extends { id: string }>({
             className="border-0"
             description={empty?.description}
             icon={<Search />}
-            title={empty?.title ?? "No se encontraron resultados"}
+            title={
+              empty?.title ??
+              t("clients.empty.title", "No se encontraron resultados")
+            }
           />
         }
         loading={loading}

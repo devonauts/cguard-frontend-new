@@ -8,7 +8,7 @@ export default function WatchMode() {
 
   return (
     <ReportPageShell
-      description="Sesiones de modo vigilancia iniciadas desde la aplicación del vigilante."
+      description={t("ui.WatchMode.descripcion", "Sesiones de modo vigilancia iniciadas desde la aplicación del vigilante.")}
       icon={Video}
       title={t(
         "ui.WatchMode.registrosDeModoVigilancia",

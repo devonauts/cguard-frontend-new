@@ -92,13 +92,19 @@ export default function ClientUserAccess({ client }: Props) {
       if (form.channel === "portal")
         await clientService.sendClientPortalInvitation(client.id, email);
       else await clientService.sendClientAppInvitation(client.id, email);
-      toast.success(`Invitación enviada a ${email}`);
+      toast.success(
+        t("ui.ClientsPage.invitacionEnviadaA", {
+          defaultValue: "Invitación enviada a {{to}}",
+          to: email,
+        }),
+      );
       setInviteOpen(false);
       setForm({ email: "", channel: appInviteEnabled ? "app" : "portal" });
       await load();
     } catch (e: any) {
       toast.error(
-        e?.response?.data?.message || "No se pudo enviar la invitación",
+        e?.response?.data?.message ||
+          t("ui.ClientsPage.errorEnviarInvitacion", "No se pudo enviar la invitación"),
       );
     } finally {
       setSending(false);
@@ -112,14 +118,17 @@ export default function ClientUserAccess({ client }: Props) {
     }
     if (
       !(await confirmDialog({
-        message: `¿Revocar el acceso de ${u.name}?`,
+        message: t("ui.ClientUserAccess.revocarAccesoConfirm", {
+          defaultValue: "¿Revocar el acceso de {{name}}?",
+          name: u.name,
+        }),
         tone: "danger",
       }))
     )
       return;
     try {
       await clientService.revokeClientAccess(client.id, u.pivotId);
-      toast.success("Acceso revocado");
+      toast.success(t("ui.ClientUserAccess.accesoRevocado", "Acceso revocado"));
       await load();
     } catch {
       toast.error(t("ui.ClientUserAccess.noSePudoRevocar"));
@@ -135,7 +144,8 @@ export default function ClientUserAccess({ client }: Props) {
         icon={<Users className="h-4 w-4" />}
         action={
           <Button size="sm" variant="brand" onClick={() => setInviteOpen(true)}>
-            <UserPlus className="mr-1.5 h-4 w-4" /> Invitar acceso
+            <UserPlus className="mr-1.5 h-4 w-4" />{" "}
+            {t("ui.ClientUserAccess.invitarAcceso", "Invitar acceso")}
           </Button>
         }
       >
@@ -153,7 +163,8 @@ export default function ClientUserAccess({ client }: Props) {
             description={t("ui.ClientUserAccess.invitaAlTitularOAgrega")}
             action={
               <Button size="sm" onClick={() => setInviteOpen(true)}>
-                <UserPlus className="mr-1.5 h-4 w-4" /> Invitar acceso
+                <UserPlus className="mr-1.5 h-4 w-4" />{" "}
+            {t("ui.ClientUserAccess.invitarAcceso", "Invitar acceso")}
               </Button>
             }
           />
@@ -179,11 +190,11 @@ export default function ClientUserAccess({ client }: Props) {
                     tone={u.isTitular ? "green" : "blue"}
                     dot={false}
                   >
-                    {u.role || "Acceso"}
+                    {u.role || t("ui.ClientPortal.acceso", "Acceso")}
                   </StatusBadge>
                   {!u.isTitular && u.pivotId && (
                     <RowAction
-                      title="Revocar acceso"
+                      title={t("ui.ClientUserAccess.revocarAcceso", "Revocar acceso")}
                       tone="bad"
                       onClick={() => revoke(u)}
                     >
@@ -208,7 +219,7 @@ export default function ClientUserAccess({ client }: Props) {
         onOpenChange={(o) => {
           if (!sending) setInviteOpen(o);
         }}
-        title="Invitar acceso"
+        title={t("ui.ClientUserAccess.invitarAcceso", "Invitar acceso")}
         icon={<UserPlus className="h-5 w-5" />}
         footer={
           <>
@@ -226,7 +237,8 @@ export default function ClientUserAccess({ client }: Props) {
             >
               {sending ? (
                 <>
-                  <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> Enviando…
+                  <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />{" "}
+                  {t("ui.ClientPortal.enviando", "Enviando…")}
                 </>
               ) : (
                 t("ui.ClientPortal.enviarInvitacion", "Enviar invitación")
@@ -251,8 +263,8 @@ export default function ClientUserAccess({ client }: Props) {
             >
               {(
                 [
-                  ["app", "App Mi Seguridad"],
-                  ["portal", "Portal web"],
+                  ["app", t("ui.ClientUserAccess.appMiSeguridad", "App Mi Seguridad")],
+                  ["portal", t("ui.ClientUserAccess.portalWeb", "Portal web")],
                 ] as const
               )
                 .filter(([canal]) => canal !== "app" || appInviteEnabled)

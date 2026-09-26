@@ -186,7 +186,10 @@ export default function ClientPortal({ client }: Props) {
   useScrollToTopOnMount(containerRef);
 
   const email = client?.email || client?.contactEmail || "";
-  const name = clientDisplayName(client, client?.contactName || "este cliente");
+  const name = clientDisplayName(
+    client,
+    client?.contactName || t("ui.ClientPortal.esteCliente", "este cliente"),
+  );
   const linked = !!client?.userId;
   // Real access roster from /access-users (client.portalUsers never existed in
   // the backend — this card always said 0/1 while Accesos showed the truth).
@@ -271,8 +274,8 @@ export default function ClientPortal({ client }: Props) {
       setConfirm(null);
       toast.success(
         kind === "portal"
-          ? "Invitación al portal enviada"
-          : "Invitación a la app enviada",
+          ? t("ui.ClientPortal.invitacionPortalEnviada", "Invitación al portal enviada")
+          : t("ui.ClientPortal.invitacionAppEnviada", "Invitación a la app enviada"),
       );
     } catch (err: any) {
       setErrorMsg(
@@ -292,8 +295,10 @@ export default function ClientPortal({ client }: Props) {
   const initial = (name || "?").charAt(0).toUpperCase();
   const kindLabel = useMemo(
     () =>
-      confirm === "app" ? "a la app Mi Seguridad" : "al portal del cliente",
-    [confirm],
+      confirm === "app"
+        ? t("ui.ClientPortal.aLaAppMiSeguridad", "a la app Mi Seguridad")
+        : t("ui.ClientPortal.alPortalDelCliente", "al portal del cliente"),
+    [confirm, t],
   );
 
   return (
@@ -302,8 +307,12 @@ export default function ClientPortal({ client }: Props) {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Kpi
           icon={<Globe />}
-          value={linked ? "Vinculado" : "Sin usuario"}
-          label="Acceso al portal"
+          value={
+            linked
+              ? t("ui.ClientPortal.vinculado", "Vinculado")
+              : t("ui.ClientPortal.sinUsuario", "Sin usuario")
+          }
+          label={t("ui.ClientPortal.accesoAlPortal", "Acceso al portal")}
           accent={linked ? "green" : "slate"}
         />
         <Kpi
@@ -328,7 +337,9 @@ export default function ClientPortal({ client }: Props) {
               ? t("ui.ClientPortal.withEmail", "Con correo")
               : t("ui.ClientPortal.withoutEmail", "Sin correo")
           }
-          label={email || "Agrega un correo al cliente"}
+          label={
+            email || t("ui.ClientPortal.agregaUnCorreo", "Agrega un correo al cliente")
+          }
           accent={email ? "green" : "orange"}
         />
       </div>
@@ -367,7 +378,9 @@ export default function ClientPortal({ client }: Props) {
                 </p>
               </div>
               <StatusBadge tone={linked ? "ok" : "neutral"}>
-                {linked ? "Usuario vinculado" : "Sin usuario"}
+                {linked
+                  ? t("ui.ClientPortal.usuarioVinculado", "Usuario vinculado")
+                  : t("ui.ClientPortal.sinUsuario", "Sin usuario")}
               </StatusBadge>
             </div>
 
@@ -391,9 +404,15 @@ export default function ClientPortal({ client }: Props) {
                     )}
                   </p>
                   <p>
-                    Se envió la invitación{" "}
-                    {result.kind === "app" ? "a la app" : "al portal"} a{" "}
-                    <strong>{result.recipient}</strong>
+                    {result.kind === "app"
+                      ? t("ui.ClientPortal.seEnvioInvitacionApp", {
+                          defaultValue: "Se envió la invitación a la app a {{to}}",
+                          to: result.recipient,
+                        })
+                      : t("ui.ClientPortal.seEnvioInvitacionPortal", {
+                          defaultValue: "Se envió la invitación al portal a {{to}}",
+                          to: result.recipient,
+                        })}
                     {t("ui.ClientPortal.elClienteDebeRevisarSu")}
                   </p>
                 </div>
@@ -477,7 +496,8 @@ export default function ClientPortal({ client }: Props) {
                 className="cg-focus inline-flex items-center gap-1 rounded-md text-xs font-semibold hover:underline"
                 style={{ color: "var(--brand-text)" }}
               >
-                Gestionar accesos <ArrowRight className="h-3.5 w-3.5" />
+                {t("ui.ClientPortal.gestionarAccesos", "Gestionar accesos")}{" "}
+                <ArrowRight className="h-3.5 w-3.5" />
               </button>
             }
           >
@@ -520,7 +540,7 @@ export default function ClientPortal({ client }: Props) {
                       </div>
                     </div>
                     <StatusBadge tone="ok" dot={false} className="shrink-0">
-                      Titular
+                      {t("ui.ClientPortal.titular", "Titular")}
                     </StatusBadge>
                   </div>
                 )}
@@ -560,7 +580,7 @@ export default function ClientPortal({ client }: Props) {
                       dot={false}
                       className="shrink-0"
                     >
-                      {u.role || u.status || "Acceso"}
+                      {u.role || u.status || t("ui.ClientPortal.acceso", "Acceso")}
                     </StatusBadge>
                   </div>
                 ))}
@@ -618,10 +638,10 @@ export default function ClientPortal({ client }: Props) {
           >
             <ol className="space-y-2.5">
               {[
-                "Se envía un correo de invitación al cliente.",
-                "El cliente abre el enlace y crea su contraseña.",
-                "Inicia sesión en el portal web o en la app Mi Seguridad.",
-                "Accede en tiempo real a su operación de seguridad.",
+                t("ui.ClientPortal.paso1", "Se envía un correo de invitación al cliente."),
+                t("ui.ClientPortal.paso2", "El cliente abre el enlace y crea su contraseña."),
+                t("ui.ClientPortal.paso3", "Inicia sesión en el portal web o en la app Mi Seguridad."),
+                t("ui.ClientPortal.paso4", "Accede en tiempo real a su operación de seguridad."),
               ].map((s, i) => (
                 <li key={i} className="flex items-start gap-3 text-sm">
                   <span
@@ -641,9 +661,11 @@ export default function ClientPortal({ client }: Props) {
               className="glass-sunken mt-3 flex items-start gap-2 p-2.5 text-xs"
               style={{ color: "var(--ink-soft)" }}
             >
-              <Building2 className="mt-0.5 h-3.5 w-3.5 shrink-0" /> El acceso
-              muestra únicamente la información de este cliente; nunca datos de
-              otros clientes.
+              <Building2 className="mt-0.5 h-3.5 w-3.5 shrink-0" />{" "}
+              {t(
+                "ui.ClientPortal.elAccesoMuestraUnicamente",
+                "El acceso muestra únicamente la información de este cliente; nunca datos de otros clientes.",
+              )}
             </div>
           </Section>
         </div>
@@ -674,10 +696,11 @@ export default function ClientPortal({ client }: Props) {
             >
               {sending ? (
                 <>
-                  <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> Enviando…
+                  <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />{" "}
+                  {t("ui.ClientPortal.enviando", "Enviando…")}
                 </>
               ) : (
-                "Enviar"
+                t("ui.RouteForm.enviar", "Enviar")
               )}
             </Button>
           </>
@@ -688,7 +711,7 @@ export default function ClientPortal({ client }: Props) {
             "ui.ClientPortal.seEnviaraUnaInvitacion",
             "Se enviará una invitación",
           )}{" "}
-          <b>{kindLabel}</b> a:
+          <b>{kindLabel}</b> {t("ui.ClientPortal.aDosPuntos", "a:")}
         </p>
         <div className="glass-sunken mt-3 px-4 py-3 text-center">
           <p className="text-sm font-semibold">{name}</p>
@@ -696,7 +719,7 @@ export default function ClientPortal({ client }: Props) {
             className="text-sm font-semibold"
             style={{ color: "var(--brand-text)" }}
           >
-            {email || "(sin correo registrado)"}
+            {email || t("ui.ClientPortal.sinCorreoRegistrado", "(sin correo registrado)")}
           </p>
         </div>
         <p className="mt-3 text-xs" style={{ color: "var(--ink-faint)" }}>

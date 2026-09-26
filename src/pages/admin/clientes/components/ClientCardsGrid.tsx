@@ -107,7 +107,10 @@ export default function ClientCardsGrid({
   if (!cards.length) {
     return (
       <EmptyState
-        description="Da de alta al primer cliente con «Agregar cliente»."
+        description={t(
+          "ui.ClientCardsGrid.daDeAltaAlPrimerCliente",
+          "Da de alta al primer cliente con «Agregar cliente».",
+        )}
         icon={<Building2 />}
         title={t("ui.ClientCardsGrid.sinClientes", "Sin clientes")}
       />
@@ -165,7 +168,9 @@ export default function ClientCardsGrid({
                 <p className="truncate font-semibold leading-tight">{name}</p>
                 <div className="mt-1 flex flex-wrap items-center gap-1.5">
                   <StatusBadge tone={isActive ? "ok" : "bad"}>
-                    {isActive ? "Activo" : "Archivado"}
+                    {isActive
+                      ? t("common.active", "Activo")
+                      : t("adminOfficeUsers.statuses.archived", "Archivado")}
                   </StatusBadge>
                   <StatusBadge tone={app.tone}>
                     {t(app.labelKey, app.label)}

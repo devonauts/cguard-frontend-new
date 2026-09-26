@@ -8,7 +8,7 @@ export default function GuardIdleLog() {
 
   return (
     <ReportPageShell
-      description="Periodos en los que un vigilante dejó de reportar actividad estando de servicio."
+      description={t("ui.GuardIdleLog.descripcion", "Periodos en los que un vigilante dejó de reportar actividad estando de servicio.")}
       icon={PauseCircle}
       title={t(
         "ui.GuardIdleLog.registrosDeVigilanteInactivo",

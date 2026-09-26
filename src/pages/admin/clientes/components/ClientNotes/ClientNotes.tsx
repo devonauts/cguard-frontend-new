@@ -23,8 +23,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import MobileCardList from "@/components/responsive/MobileCardList";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { localeActual } from "@/lib/localeActual";
 import { Button } from "@/components/ui/button";
 import { Section, EmptyState, Modal, SearchInput } from "@/components/kit";
 import {
@@ -238,7 +237,7 @@ export default function ClientNotes({ client }: Props) {
 
     if (!client || !client.id) {
       // local-only
-      const local = { id: String(Date.now()), ...payload, addedBy: "You" };
+      const local = { id: String(Date.now()), ...payload, addedBy: t("ui.ClientNotes.tu", "Tú") };
       setNotesData((prev) => [local, ...prev]);
       setShowModal(false);
       setFormData({
@@ -380,13 +379,13 @@ export default function ClientNotes({ client }: Props) {
                       selectedNoteIds.length === filtered.length &&
                       filtered.length > 0
                     }
-                    aria-label="Select all notes"
+                    aria-label={t("ui.ClientNotes.seleccionarTodasLasNotas", "Seleccionar todas las notas")}
                   />
                 </Th>
                 <Th>{t("clients.notes.Title", "Title")}</Th>
                 <Th>{t("clients.notes.Date", "Date")}</Th>
                 <Th>{t("clients.notes.Added By", "Added By")}</Th>
-                <Th aria-label="Acciones" />
+                <Th aria-label={t("ui.RouteForm.acciones", "Acciones")} />
               </THead>
               <tbody>
                 {filtered.length === 0 ? (
@@ -411,7 +410,10 @@ export default function ClientNotes({ client }: Props) {
                           className="rounded"
                           checked={selectedNoteIds.includes(note.id)}
                           onChange={() => toggleSelect(note.id)}
-                          aria-label={`Select note ${note.id}`}
+                          aria-label={t("ui.ClientNotes.seleccionarNota", {
+                            defaultValue: "Seleccionar nota {{id}}",
+                            id: note.id,
+                          })}
                         />
                       </td>
                       <td className="px-2 py-2.5 font-medium">{note.title}</td>
@@ -597,8 +599,10 @@ export default function ClientNotes({ client }: Props) {
                   className="w-full justify-between text-left font-normal"
                 >
                   {formData.date ? (
-                    format(new Date(formData.date), "MMM dd, yyyy", {
-                      locale: es,
+                    new Date(formData.date).toLocaleDateString(localeActual(), {
+                      month: "short",
+                      day: "2-digit",
+                      year: "numeric",
                     })
                   ) : (
                     <span>{t("clients.notes.form.selectDate", "Select")}</span>
@@ -654,7 +658,7 @@ export default function ClientNotes({ client }: Props) {
                             }}
                             className="cg-focus rounded p-1"
                             style={{ color: "var(--bad-text)" }}
-                            aria-label={`Quitar ${f.name}`}
+                            aria-label={t("ui.RouteForm.quitar", { defaultValue: "Quitar {{name}}", name: f.name })}
                           >
                             <X size={14} />
                           </button>

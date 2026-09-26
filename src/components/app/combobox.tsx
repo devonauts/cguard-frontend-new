@@ -69,7 +69,7 @@ export function Combobox({
       </PopoverTrigger>
       <PopoverContent className="w-[var(--radix-popper-anchor-width)] min-w-[var(--radix-popper-anchor-width)] p-0">
         <Command>
-          <CommandInput placeholder="Buscar..." />
+          <CommandInput placeholder={i18n.t("categories.searchPlaceholder", "Buscar...")} />
           <CommandList className="max-h-60 overflow-y-auto">
             <CommandEmpty>{empty}</CommandEmpty>
             <CommandGroup>

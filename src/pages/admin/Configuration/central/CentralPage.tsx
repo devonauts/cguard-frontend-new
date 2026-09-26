@@ -31,6 +31,7 @@ import { Section, Stagger, SkeletonCards, StatusBadge } from "@/components/kit";
 import { usePermissions } from "@/hooks/usePermissions";
 import api from "@/lib/api";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { localeActual } from "@/lib/localeActual";
 
 type Central = {
   habilitada: boolean;
@@ -244,7 +245,7 @@ export default function CentralPage() {
                             ? t("settings.central.sinceTime", {
                                 defaultValue: " · desde {{time}}",
                                 time: new Date(o.desde).toLocaleTimeString(
-                                  undefined,
+                                  localeActual(),
                                   { timeZone: zonaDeLaEmpresa(), hour: "2-digit", minute: "2-digit" },
                                 ),
                               })

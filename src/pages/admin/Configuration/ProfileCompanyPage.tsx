@@ -10,7 +10,10 @@ const ProfileCompany = () => {
   return (
     <SettingsPageShell
       icon={<Building2 />}
-      subtitle="Los datos con los que tu empresa aparece en informes, correos y documentos."
+      subtitle={t(
+        "ui.ProfileCompanyPage.losDatosConLosQueTuEmpresaAparece",
+        "Los datos con los que tu empresa aparece en informes, correos y documentos.",
+      )}
       title={t("settings.configuracion.perfil-empresa", "Perfil de la empresa")}
     >
       <ProfileCompanyForm />

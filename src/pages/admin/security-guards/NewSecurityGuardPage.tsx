@@ -69,6 +69,21 @@ import {
   ACADEMIC_INSTRUCTION_OPTIONS,
 } from "@/lib/validators/create-profile.schema";
 
+// Las opciones viajan al API en español; sólo se traducen al pintarlas.
+const OPTION_KEY: Record<string, string> = {
+  Masculino: "invite.guard.male",
+  Femenino: "invite.guard.female",
+  Soltero: "invite.guard.single",
+  Casado: "invite.guard.married",
+  "Unión libre": "invite.guard.freeUnion",
+  Divorciado: "invite.guard.divorced",
+  Primaria: "guards.profile.academic.primary",
+  Secundaria: "guards.profile.academic.secondary",
+  Universidad: "guards.profile.academic.universityDegree",
+  Universitaria: "guards.profile.academic.university",
+  Especial: "guards.profile.academic.special",
+};
+
 import { GuardTabsHeader } from "@/components/app/guard-tabs";
 import { FormBlock } from "@/components/app/form-block";
 import { Combobox } from "@/components/app/combobox";
@@ -577,7 +592,10 @@ export default function NewSecurityGuardPage() {
             err,
           );
           toast.warning(
-            "Creamos el vigilante, pero no pudimos archivar la hoja de vida.",
+            t(
+              "ui.NewSecurityGuard.creamosPeroSinHojaDeVida",
+              "Creamos el vigilante, pero no pudimos archivar la hoja de vida.",
+            ),
             {
               description: t(
                 "guards.create.cvUploadHint",
@@ -1048,7 +1066,10 @@ export default function NewSecurityGuardPage() {
                               <span className="text-destructive">*</span>
                             </FormLabel>
                             <FormControl>
-                              <Input placeholder="Ej. Carlos" {...field} />
+                              <Input
+                                placeholder={t("ui.NewSecurityGuard.ejCarlos", "Ej. Carlos")}
+                                {...field}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -1063,7 +1084,10 @@ export default function NewSecurityGuardPage() {
                               {t("ui.NewSecurityGuardPage.segundoNombre")}
                             </FormLabel>
                             <FormControl>
-                              <Input placeholder="Opcional" {...field} />
+                              <Input
+                                placeholder={t("ui.ExtremoRutaField.opcional", "Opcional")}
+                                {...field}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -1075,7 +1099,7 @@ export default function NewSecurityGuardPage() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>
-                              Apellidos{" "}
+                              {t("guards.list.details.fields.lastName", "Apellidos")}{" "}
                               <span className="text-destructive">*</span>
                             </FormLabel>
                             <FormControl>
@@ -1120,7 +1144,7 @@ export default function NewSecurityGuardPage() {
                               <SelectContent>
                                 {GENDER_OPTIONS.map((g) => (
                                   <SelectItem key={g} value={g}>
-                                    {g}
+                                    {t(OPTION_KEY[g], g)}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
@@ -1188,7 +1212,7 @@ export default function NewSecurityGuardPage() {
                               <SelectContent>
                                 {MARITAL_STATUS_OPTIONS.map((m) => (
                                   <SelectItem key={m} value={m}>
-                                    {m}
+                                    {t(OPTION_KEY[m], m)}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
@@ -1229,7 +1253,7 @@ export default function NewSecurityGuardPage() {
                             </FormLabel>
                             <FormControl>
                               <Input
-                                placeholder="Ej. Quito, Ecuador"
+                                placeholder={t("ui.NewSecurityGuard.ejQuitoEcuador", "Ej. Quito, Ecuador")}
                                 {...field}
                               />
                             </FormControl>
@@ -1266,7 +1290,7 @@ export default function NewSecurityGuardPage() {
                               <SelectContent>
                                 {ACADEMIC_INSTRUCTION_OPTIONS.map((a) => (
                                   <SelectItem key={a} value={a}>
-                                    {a}
+                                    {t(OPTION_KEY[a], a)}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
@@ -1338,7 +1362,7 @@ export default function NewSecurityGuardPage() {
                         name="homeAddress"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Domicilio</FormLabel>
+                            <FormLabel>{t("ui.NewSecurityGuard.domicilio", "Domicilio")}</FormLabel>
                             <FormControl>
                               <AddressAutocomplete
                                 defaultValue={field.value || ""}
@@ -1449,7 +1473,9 @@ export default function NewSecurityGuardPage() {
                         name="guardCredentials"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Credenciales / Licencias</FormLabel>
+                            <FormLabel>
+                              {t("ui.NewSecurityGuard.credencialesLicencias", "Credenciales / Licencias")}
+                            </FormLabel>
                             <FormControl>
                               <Input
                                 placeholder={t(
@@ -1468,12 +1494,15 @@ export default function NewSecurityGuardPage() {
 
                   {/* ── Section 4: Certifications ─────────────────────────────── */}
                   <Section
-                    title="Certificaciones y Documentos Profesionales"
+                    title={t(
+                      "ui.NewSecurityGuard.certificacionesYDocumentos",
+                      "Certificaciones y Documentos Profesionales",
+                    )}
                     icon={<ShieldCheck />}
                   >
                     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                       <DocumentUpload
-                        label="Certificado AFIS"
+                        label={t("ui.NewSecurityGuard.certificadoAfis", "Certificado AFIS")}
                         description={t(
                           "ui.NewSecurityGuardPage.sistemaAutomatizadoDeIdentificacionDe",
                         )}
@@ -1507,7 +1536,7 @@ export default function NewSecurityGuardPage() {
                         }
                       />
                       <DocumentUpload
-                        label="Credencial"
+                        label={t("ui.NewSecurityGuard.credencial", "Credencial")}
                         description={t(
                           "ui.NewSecurityGuardPage.documentoDeCredencialProfesional",
                           "Documento de credencial profesional",
@@ -1544,7 +1573,10 @@ export default function NewSecurityGuardPage() {
                         }
                       />
                       <DocumentUpload
-                        label="Certificado Violencia Intrafamiliar"
+                        label={t(
+                          "ui.NewSecurityGuard.certificadoViolenciaIntrafamiliar",
+                          "Certificado Violencia Intrafamiliar",
+                        )}
                         description={t(
                           "ui.NewSecurityGuardPage.certificadoDeNoAntecedentesDeViolenciaFamiliar",
                           "Certificado de no antecedentes de violencia familiar",
@@ -1567,7 +1599,7 @@ export default function NewSecurityGuardPage() {
                         style={{ color: "var(--ink-soft)" }}
                       >
                         <Loader2 className="h-4 w-4 animate-spin" />
-                        Subiendo documentos…
+                        {t("ui.NewSecurityGuard.subiendoDocumentos", "Subiendo documentos…")}
                       </span>
                     )}
                     <SubmitBar

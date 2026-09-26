@@ -135,7 +135,7 @@ export default function AssignGuards({ site }: { site?: SiteProp }) {
             "—",
           type,
           positionName:
-            pos.name || (type === "sacafranco" ? "Sacafranco" : "Fijo"),
+            pos.name || "",
           rotation: a.rotationStyle?.name || a.rotationStyle?.pattern || "",
           stationId: sid,
           stationName: stationById.get(sid) || "—",
@@ -292,10 +292,10 @@ export default function AssignGuards({ site }: { site?: SiteProp }) {
                     {grp.stationName}
                   </span>
                   <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-                    {grp.guards.length}{" "}
-                    {grp.guards.length === 1
-                      ? t("clients.assignGuards.guardOne", "vigilante")
-                      : t("clients.assignGuards.guardMany", "vigilantes")}
+                    {t("ui.AssignGuards.guardCount", {
+                      count: grp.guards.length,
+                      defaultValue: "{{count}} vigilantes",
+                    })}
                   </span>
                 </div>
                 <span className="inline-flex shrink-0 items-center gap-1 text-xs font-medium brand-text">
@@ -319,7 +319,8 @@ export default function AssignGuards({ site }: { site?: SiteProp }) {
                       <p className="text-xs text-muted-foreground">
                         {r.type === "sacafranco"
                           ? t("clients.assignGuards.roleSf", "Sacafranco")
-                          : r.positionName}
+                          : r.positionName ||
+                            t("ui.AssignGuards.fijo", "Fijo")}
                         {r.rotation ? ` · ${r.rotation}` : ""}
                       </p>
                     </div>

@@ -532,7 +532,12 @@ export default function ClientForm({
       }
     } catch (uploadErr: any) {
       toast.error(
-        `Error al subir imagen: ${uploadErr?.message || "Error desconocido"}`,
+        t("ui.ClientForm.errorAlSubirImagen", {
+          defaultValue: "Error al subir imagen: {{msg}}",
+          msg:
+            uploadErr?.message ||
+            t("adminOfficeUsers.newUser.errors.unknown", "Error desconocido"),
+        }),
       );
       return;
     }
@@ -629,7 +634,10 @@ export default function ClientForm({
 
       // Normalize backend error shapes
       const respData = e?.response?.data ?? e?.details ?? e;
-      const message = respData?.message || e?.message || "Error al guardar";
+      const message =
+        respData?.message ||
+        e?.message ||
+        t("ui.ClientForm.errorAlGuardar", "Error al guardar");
 
       // backend may populate errors.existingId and also include email/phoneNumber
       const existingId =
@@ -1193,7 +1201,7 @@ export default function ClientForm({
                       <>
                         <img
                           src={logoPreview}
-                          alt="logo"
+                          alt={t("ui.ClientForm.logo", "Logo")}
                           className="max-h-24 max-w-full object-contain rounded"
                         />
                         <button
@@ -1270,7 +1278,7 @@ export default function ClientForm({
                       <>
                         <img
                           src={placePicPreview}
-                          alt="place"
+                          alt={t("ui.ClientForm.fotoDelLugar", "Foto del lugar")}
                           className="max-h-24 max-w-full object-contain rounded"
                         />
                         <button
@@ -1827,7 +1835,7 @@ export default function ClientForm({
                             <input
                               type="text"
                               className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm font-mono disabled:opacity-50"
-                              placeholder="-90 a 90"
+                              placeholder={t("ui.ClientForm.rangoLatitud", "-90 a 90")}
                               {...field}
                               value={String(field.value ?? "")}
                               maxLength={20}
@@ -1849,7 +1857,7 @@ export default function ClientForm({
                             <input
                               type="text"
                               className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm font-mono disabled:opacity-50"
-                              placeholder="-180 a 180"
+                              placeholder={t("ui.ClientForm.rangoLongitud", "-180 a 180")}
                               {...field}
                               value={String(field.value ?? "")}
                               maxLength={20}

@@ -197,7 +197,10 @@ function AgendaViewInner({
                   />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-medium">
-                      {nombreDeVigilante(s.guard, "Vigilante")}
+                      {nombreDeVigilante(
+                        s.guard,
+                        t("comun.vigilante", "Vigilante"),
+                      )}
                       {aprendiz && (
                         <span
                           className="ml-1.5 text-[10px] font-semibold"

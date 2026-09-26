@@ -372,7 +372,12 @@ export default function ProfileUserForm() {
         }
       }
       if (didUpdate) {
-        toast.success("Perfil actualizado correctamente.");
+        toast.success(
+          t(
+            "ui.ProfileUserForm.perfilActualizadoCorrectamente",
+            "Perfil actualizado correctamente.",
+          ),
+        );
       } else {
         toast.success(t("ui.ProfileUserForm.noHuboCambiosParaGuardar"));
       }
@@ -485,7 +490,7 @@ export default function ProfileUserForm() {
         <Section
           contentClassName="space-y-6"
           icon={<UserRound />}
-          title="Identidad"
+          title={t("settings.companyProfile.sectionIdentity", "Identidad")}
         >
           <div className="flex justify-center">
             <AvatarUploader
@@ -502,7 +507,10 @@ export default function ProfileUserForm() {
               onChange={(e) => setFullName(e.target.value)}
             />
             <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
-              Es el nombre con el que te ve el resto del equipo.
+              {t(
+                "ui.ProfileUserForm.esElNombreConEl",
+                "Es el nombre con el que te ve el resto del equipo.",
+              )}
             </p>
           </div>
         </Section>
@@ -517,7 +525,9 @@ export default function ProfileUserForm() {
             <div className="flex flex-wrap items-center gap-2">
               <Label className="mb-0">{t("profile.email")}</Label>
               <StatusBadge tone={emailVerified ? "ok" : "warn"}>
-                {emailVerified ? "Verificado" : "Sin verificar"}
+                {emailVerified
+                  ? t("ui.ProfileUserForm.verificado", "Verificado")
+                  : t("revision.sinVerificar", "Sin verificar")}
               </StatusBadge>
             </div>
             <Input disabled className="cursor-not-allowed" value={email} />
@@ -636,7 +646,7 @@ export default function ProfileUserForm() {
         description={t("profile.changeEmailDesc")}
         footer={
           <Button variant="brand" onClick={handleChangeEmail}>
-            Guardar
+            {t("actions.save", "Guardar")}
           </Button>
         }
         icon={<Mail />}

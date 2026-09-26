@@ -1,7 +1,8 @@
+import i18n from "@/i18n";
 import { localeActual } from "@/lib/localeActual";
 export function getServerErrorMessage(
   error: any,
-  fallback = "Error desconocido",
+  fallback = i18n.t("adminOfficeUsers.newUser.errors.unknown", "Error desconocido"),
 ) {
   try {
     if (!error) return fallback;

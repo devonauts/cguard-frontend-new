@@ -18,6 +18,7 @@
  *     después.
  */
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
   CalendarDays,
@@ -84,13 +85,21 @@ const TONO: Record<EstadoTarjeta, "info" | "ok" | "neutral"> = {
   exportada: "neutral",
 };
 
-const ETIQUETA_ROL: Record<string, string> = {
-  vigilante: "Vigilante",
-  supervisor: "Supervisor",
-  oficina: "Administrativo",
+// [i18n key, Spanish default] — translated at render time.
+const ETIQUETA_ROL: Record<string, [string, string]> = {
+  vigilante: ["comun.vigilante", "Vigilante"],
+  supervisor: ["comun.supervisor", "Supervisor"],
+  oficina: ["ui.NominaHoursSummary.administrativo", "Administrativo"],
+};
+
+const ETIQUETA_ESTADO: Record<EstadoTarjeta, [string, string]> = {
+  borrador: ["ui.NominaTimecards.estado.borrador", "borrador"],
+  aprobada: ["ui.NominaTimecards.estado.aprobada", "aprobada"],
+  exportada: ["ui.NominaTimecards.estado.exportada", "exportada"],
 };
 
 export default function NominaTimecards() {
+  const { t } = useTranslation();
   const [desde, setDesde] = useState(isoDay(new Date(Date.now() - 14 * 864e5)));
   const [hasta, setHasta] = useState(isoDay(new Date()));
   const [rows, setRows] = useState<TarjetaDeNomina[]>([]);
@@ -106,7 +115,10 @@ export default function NominaTimecards() {
         setRows(d.rows || []);
         setSel([]);
       })
-      .catch((e) => toast.error(e?.message || "No se pudieron cargar las tarjetas"))
+      .catch((e) => toast.error(
+          e?.message ||
+            t("ui.NominaTimecards.noSePudieronCargarLasTarjetas", "No se pudieron cargar las tarjetas"),
+        ))
       .finally(() => setCargando(false));
   }, [desde, hasta]);
 
@@ -164,13 +176,26 @@ export default function NominaTimecards() {
       // que volver a esta pantalla, y en un toast que desaparece no se leen.
       if (rech.length) {
         toast.warning(
-          `${rech.length} sin procesar — ${rech[0].motivo}${rech.length > 1 ? " (y otras)" : ""}`,
+          rech.length > 1
+            ? t("ui.NominaTimecards.sinProcesarYOtras", {
+                count: rech.length,
+                motivo: rech[0].motivo,
+                defaultValue: "{{count}} sin procesar — {{motivo}} (y otras)",
+              })
+            : t("ui.NominaTimecards.sinProcesar", {
+                count: rech.length,
+                motivo: rech[0].motivo,
+                defaultValue: "{{count}} sin procesar — {{motivo}}",
+              }),
           { duration: 8000 },
         );
       }
       cargar();
     } catch (e) {
-      toast.error((e as Error)?.message || "No se pudo completar la acción");
+      toast.error(
+        (e as Error)?.message ||
+          t("ui.NominaTimecards.noSePudoCompletarLaAccion", "No se pudo completar la acción"),
+      );
     } finally {
       setTrabajando(false);
     }
@@ -181,11 +206,17 @@ export default function NominaTimecards() {
       const out = await payrollService.generar({ desde, hasta });
 
       toast.info(
-        `${out.creadas} creadas · ${out.actualizadas} actualizadas · ${out.intactas} intactas`,
+        t("ui.NominaTimecards.resultadoGenerar", {
+          creadas: out.creadas,
+          actualizadas: out.actualizadas,
+          intactas: out.intactas,
+          defaultValue:
+            "{{creadas}} creadas · {{actualizadas}} actualizadas · {{intactas}} intactas",
+        }),
       );
 
       return {};
-    }, "Periodo generado");
+    }, t("ui.NominaTimecards.periodoGenerado", "Periodo generado"));
 
   const aprobar = async () => {
     if (!sel.length) return;
@@ -193,12 +224,13 @@ export default function NominaTimecards() {
 
     if (conPendientes.length) {
       const ok = await confirmDialog({
-        title: "Hay días sin resolver",
-        message:
-          `${conPendientes.length} tarjeta(s) tienen días con turno, sin marcaje y sin decisión. ` +
-          "Aprobarlas es afirmar que esos días valen cero. Puedes cerrarlos primero, " +
-          "o forzar la aprobación: quedará escrito que se forzó y quién lo hizo.",
-        confirmText: "Forzar la aprobación",
+        title: t("ui.NominaTimecards.hayDiasSinResolver", "Hay días sin resolver"),
+        message: t("ui.NominaTimecards.confirmarForzarAprobacion", {
+          count: conPendientes.length,
+          defaultValue:
+            "{{count}} tarjeta(s) tienen días con turno, sin marcaje y sin decisión. Aprobarlas es afirmar que esos días valen cero. Puedes cerrarlos primero, o forzar la aprobación: quedará escrito que se forzó y quién lo hizo.",
+        }),
+        confirmText: t("ui.NominaTimecards.forzarLaAprobacion", "Forzar la aprobación"),
         tone: "danger",
       });
 
@@ -206,15 +238,24 @@ export default function NominaTimecards() {
 
       return conAviso(
         () => payrollService.aprobar(sel, { forzar: true }),
-        "Tarjetas aprobadas (con excepción registrada)",
+        t(
+          "ui.NominaTimecards.tarjetasAprobadasConExcepcion",
+          "Tarjetas aprobadas (con excepción registrada)",
+        ),
       );
     }
 
-    return conAviso(() => payrollService.aprobar(sel), "Tarjetas aprobadas");
+    return conAviso(
+      () => payrollService.aprobar(sel),
+      t("ui.NominaTimecards.tarjetasAprobadas", "Tarjetas aprobadas"),
+    );
   };
 
   const reabrir = () =>
-    conAviso(() => payrollService.reabrir(sel), "Tarjetas reabiertas");
+    conAviso(
+      () => payrollService.reabrir(sel),
+      t("ui.NominaTimecards.tarjetasReabiertas", "Tarjetas reabiertas"),
+    );
 
   const exportar = async () => {
     if (!sel.length) return;
@@ -222,7 +263,11 @@ export default function NominaTimecards() {
 
     if (borradores.length) {
       toast.error(
-        `${borradores.length} de las seleccionadas están sin aprobar. No se manda a pagar lo que nadie revisó.`,
+        t("ui.NominaTimecards.seleccionadasSinAprobar", {
+          count: borradores.length,
+          defaultValue:
+            "{{count}} de las seleccionadas están sin aprobar. No se manda a pagar lo que nadie revisó.",
+        }),
       );
 
       return;
@@ -230,10 +275,12 @@ export default function NominaTimecards() {
     setTrabajando(true);
     try {
       await payrollService.exportar(sel, { desde, hasta });
-      toast.success("Nómina exportada");
+      toast.success(t("ui.NominaTimecards.nominaExportada", "Nómina exportada"));
       cargar();
     } catch (e) {
-      toast.error((e as Error)?.message || "No se pudo exportar");
+      toast.error(
+        (e as Error)?.message || t("ui.NominaTimecards.noSePudoExportar", "No se pudo exportar"),
+      );
     } finally {
       setTrabajando(false);
     }
@@ -244,9 +291,14 @@ export default function NominaTimecards() {
     setTrabajando(true);
     try {
       await payrollService.exportarDetalle(sel, { desde, hasta });
-      toast.success("Detalle día a día descargado");
+      toast.success(
+        t("ui.NominaTimecards.detalleDiaADiaDescargado", "Detalle día a día descargado"),
+      );
     } catch (e) {
-      toast.error((e as Error)?.message || "No se pudo descargar el detalle");
+      toast.error(
+        (e as Error)?.message ||
+          t("ui.NominaTimecards.noSePudoDescargarElDetalle", "No se pudo descargar el detalle"),
+      );
     } finally {
       setTrabajando(false);
     }
@@ -265,11 +317,23 @@ export default function NominaTimecards() {
         { userId: r.userId, hourlyRateCents: centavos },
       ]);
       toast.success(
-        `Tarifa de ${r.nombre || "la persona"} guardada. Vuelve a generar el periodo para aplicarla.`,
+        r.nombre
+          ? t("ui.NominaTimecards.tarifaGuardada", {
+              nombre: r.nombre,
+              defaultValue:
+                "Tarifa de {{nombre}} guardada. Vuelve a generar el periodo para aplicarla.",
+            })
+          : t(
+              "ui.NominaTimecards.tarifaGuardadaSinNombre",
+              "Tarifa de la persona guardada. Vuelve a generar el periodo para aplicarla.",
+            ),
       );
       cargar();
     } catch (e) {
-      toast.error((e as Error)?.message || "No se pudo guardar la tarifa");
+      toast.error(
+        (e as Error)?.message ||
+          t("ui.NominaTimecards.noSePudoGuardarLaTarifa", "No se pudo guardar la tarifa"),
+      );
     }
   };
 
@@ -279,13 +343,15 @@ export default function NominaTimecards() {
   const columns: Column<TarjetaDeNomina>[] = [
     {
       key: "nombre",
-      header: "Persona",
+      header: t("ui.NominaTimecards.persona", "Persona"),
       render: (_v, r) => (
         <span className="inline-flex items-center gap-1.5">
           <span className="truncate">{r.nombre || "—"}</span>
           {r.rol !== "vigilante" && (
             <StatusBadge dot={false} tone={r.rol === "supervisor" ? "warn" : "info"}>
-              {ETIQUETA_ROL[r.rol]}
+              {ETIQUETA_ROL[r.rol]
+                ? t(ETIQUETA_ROL[r.rol][0], ETIQUETA_ROL[r.rol][1])
+                : r.rol}
             </StatusBadge>
           )}
         </span>
@@ -293,7 +359,7 @@ export default function NominaTimecards() {
     },
     {
       key: "documento",
-      header: "Documento",
+      header: t("ui.NominaTimecards.documento", "Documento"),
       render: (_v, r) => (
         <span className="tabular-nums" style={{ color: "var(--ink-faint)" }}>
           {r.documento || "—"}
@@ -302,46 +368,46 @@ export default function NominaTimecards() {
     },
     {
       key: "diasTrabajados",
-      header: "Días trab.",
+      header: t("ui.NominaTimecards.diasTrab", "Días trab."),
       render: (_v, r) => <Num strong v={r.diasTrabajados} />,
     },
     {
       key: "horas",
-      header: "Horas",
+      header: t("ui.NominaRecords.horas", "Horas"),
       render: (_v, r) => <Num strong v={num(r.horas).toFixed(2)} />,
     },
     {
       key: "horasOrdinarias",
-      header: "Ordinarias",
+      header: t("ui.NominaTimecards.ordinarias", "Ordinarias"),
       render: (_v, r) => <Num v={num(r.horasOrdinarias).toFixed(2)} />,
     },
     {
       key: "horasExtra",
-      header: "Extra",
+      header: t("ui.NominaTimecards.extra", "Extra"),
       render: (_v, r) => <Num v={num(r.horasExtra).toFixed(2)} />,
     },
     {
       key: "horasNocturnas",
-      header: "Nocturnas",
+      header: t("ui.NominaTimecards.nocturnas", "Nocturnas"),
       render: (_v, r) => <Num v={num(r.horasNocturnas).toFixed(2)} />,
     },
     {
       key: "faltas",
-      header: "Faltas",
+      header: t("ui.NominaTimecards.faltas", "Faltas"),
       render: (_v, r) => (
         <Num v={r.faltas} tone={r.faltas > 0 ? "warn" : undefined} />
       ),
     },
     {
       key: "sinResolver",
-      header: "Sin resolver",
+      header: t("ui.NominaTimecards.sinResolver", "Sin resolver"),
       render: (_v, r) => (
         <Num v={r.sinResolver} tone={r.sinResolver > 0 ? "bad" : undefined} />
       ),
     },
     {
       key: "tarifaCentavos",
-      header: "Tarifa/h",
+      header: t("ui.NominaTimecards.tarifaH", "Tarifa/h"),
       /* Se edita AQUÍ, que es donde alguien se da cuenta de que falta. Mandarle
          a otra pantalla a arreglarlo es la forma más segura de que no se
          arregle — y de que el periodo se exporte con importes en blanco. */
@@ -356,8 +422,14 @@ export default function NominaTimecards() {
           disabled={r.estado !== "borrador"}
           title={
             r.estado !== "borrador"
-              ? "La tarjeta ya está aprobada: su importe no se recalcula."
-              : "Tarifa por hora. Se aplica al volver a generar el periodo."
+              ? t(
+                  "ui.NominaTimecards.laTarjetaYaEstaAprobada",
+                  "La tarjeta ya está aprobada: su importe no se recalcula.",
+                )
+              : t(
+                  "ui.NominaTimecards.tarifaPorHoraSeAplica",
+                  "Tarifa por hora. Se aplica al volver a generar el periodo.",
+                )
           }
           onBlur={(e) => guardarTarifa(r, e.target.value)}
         />
@@ -365,7 +437,7 @@ export default function NominaTimecards() {
     },
     {
       key: "importeCentavos",
-      header: "Importe",
+      header: t("ui.NominaTimecards.importe", "Importe"),
       render: (_v, r) =>
         // Sin tarifa NO se pinta un cero: un cero se lee como «se le paga
         // cero», que es distinto de «aquí no se calcula el dinero».
@@ -373,9 +445,12 @@ export default function NominaTimecards() {
           <span
             className="block text-right text-xs"
             style={{ color: "var(--ink-faint)" }}
-            title="Esta persona no tiene tarifa cargada: sus horas están, el importe lo calcula quien pague."
+            title={t(
+              "ui.NominaTimecards.estaPersonaNoTieneTarifa",
+              "Esta persona no tiene tarifa cargada: sus horas están, el importe lo calcula quien pague.",
+            )}
           >
-            sin tarifa
+            {t("ui.NominaTimecards.sinTarifa", "sin tarifa")}
           </span>
         ) : (
           <Num strong v={dinero(r.importeCentavos, r.moneda)} />
@@ -383,9 +458,13 @@ export default function NominaTimecards() {
     },
     {
       key: "estado",
-      header: "Estado",
+      header: t("comun.estado", "Estado"),
       render: (_v, r) => (
-        <StatusBadge tone={TONO[r.estado]}>{r.estado}</StatusBadge>
+        <StatusBadge tone={TONO[r.estado]}>
+          {ETIQUETA_ESTADO[r.estado]
+            ? t(ETIQUETA_ESTADO[r.estado][0], ETIQUETA_ESTADO[r.estado][1])
+            : r.estado}
+        </StatusBadge>
       ),
     },
   ];
@@ -397,8 +476,11 @@ export default function NominaTimecards() {
     <AppLayout>
       <PageContainer>
         <PageHeader
-          title="Tarjetas de nómina"
-          subtitle="Revisa el periodo, apruébalo y expórtalo para pagar."
+          title={t("ui.NominaTimecards.tarjetasDeNomina", "Tarjetas de nómina")}
+          subtitle={t(
+            "ui.NominaTimecards.revisaElPeriodo",
+            "Revisa el periodo, apruébalo y expórtalo para pagar.",
+          )}
         />
 
         <Toolbar>
@@ -412,7 +494,9 @@ export default function NominaTimecards() {
             />
           </label>
           <label className="flex items-center gap-2 text-sm">
-            <span style={{ color: "var(--ink-faint)" }}>a</span>
+            <span style={{ color: "var(--ink-faint)" }}>
+              {t("ui.NominaTimecards.a", "a")}
+            </span>
             <input
               type="date"
               value={hasta}
@@ -422,50 +506,68 @@ export default function NominaTimecards() {
           </label>
 
           <Button onClick={generar} disabled={trabajando}>
-            <RefreshCw size={15} /> Generar periodo
+            <RefreshCw size={15} /> {t("ui.NominaTimecards.generarPeriodo", "Generar periodo")}
           </Button>
           <Button
             variant="outline"
             onClick={aprobar}
             disabled={trabajando || !hayBorradores}
           >
-            <CheckCircle2 size={15} /> Aprobar ({sel.length})
+            <CheckCircle2 size={15} />{" "}
+            {t("ui.NominaTimecards.aprobarN", {
+              count: sel.length,
+              defaultValue: "Aprobar ({{count}})",
+            })}
           </Button>
           <Button
             variant="outline"
             onClick={reabrir}
             disabled={trabajando || !hayAprobadas}
           >
-            <RotateCcw size={15} /> Reabrir
+            <RotateCcw size={15} /> {t("ui.NominaTimecards.reabrir", "Reabrir")}
           </Button>
           <Button variant="outline" onClick={exportar} disabled={trabajando || !sel.length}>
-            <Download size={15} /> Exportar
+            <Download size={15} /> {t("ui.NominaRecords.exportar", "Exportar")}
           </Button>
           <Button
             variant="outline"
             onClick={exportarDetalle}
             disabled={trabajando || !sel.length}
           >
-            <FileSpreadsheet size={15} /> Detalle día a día
+            <FileSpreadsheet size={15} /> {t("ui.NominaTimecards.detalleDiaADia", "Detalle día a día")}
           </Button>
         </Toolbar>
 
         <Stagger>
-          <MetricTile label="Personas" value={resumen.personas} icon={<CalendarDays />} />
-          <MetricTile label="Horas del periodo" value={resumen.horas.toFixed(2)} />
-          <MetricTile label="Aprobadas" value={`${resumen.aprobadas} / ${resumen.personas}`} />
           <MetricTile
-            label="Con días sin resolver"
+            label={t("ui.NominaTimecards.personas", "Personas")}
+            value={resumen.personas} icon={<CalendarDays />} />
+          <MetricTile
+            label={t("ui.NominaTimecards.horasDelPeriodo", "Horas del periodo")}
+            value={resumen.horas.toFixed(2)} />
+          <MetricTile
+            label={t("ui.NominaTimecards.aprobadas", "Aprobadas")}
+            value={`${resumen.aprobadas} / ${resumen.personas}`} />
+          <MetricTile
+            label={t("ui.NominaTimecards.conDiasSinResolver", "Con días sin resolver")}
             value={resumen.trabadas}
-            hint={resumen.trabadas ? "No se pueden aprobar sin cerrarlos" : undefined}
+            hint={
+              resumen.trabadas
+                ? t("ui.NominaTimecards.noSePuedenAprobarSinCerrarlos", "No se pueden aprobar sin cerrarlos")
+                : undefined
+            }
           />
           <MetricTile
-            label="Sin tarifa cargada"
+            label={t("ui.NominaTimecards.sinTarifaCargada", "Sin tarifa cargada")}
             value={resumen.sinTarifa}
-            hint={resumen.sinTarifa ? "Su importe sale en blanco" : undefined}
+            hint={
+              resumen.sinTarifa
+                ? t("ui.NominaTimecards.suImporteSaleEnBlanco", "Su importe sale en blanco")
+                : undefined
+            }
           />
           <MetricTile
-            label="Importe calculado"
+            label={t("ui.NominaTimecards.importeCalculado", "Importe calculado")}
             value={resumen.importe ? dinero(resumen.importe, resumen.moneda) : "—"}
             icon={<Wallet />}
           />
@@ -483,8 +585,11 @@ export default function NominaTimecards() {
             onSelectAll={(checked) => setSel(checked ? rows.map((r) => r.id) : [])}
             emptyState={
               <EmptyState
-                title="Sin tarjetas en este periodo"
-                description="Pulsa «Generar periodo» para calcularlo."
+                title={t("ui.NominaTimecards.sinTarjetasEnEstePeriodo", "Sin tarjetas en este periodo")}
+                description={t(
+                  "ui.NominaTimecards.pulsaGenerarPeriodo",
+                  "Pulsa «Generar periodo» para calcularlo.",
+                )}
                 icon={<Wallet />}
               />
             }

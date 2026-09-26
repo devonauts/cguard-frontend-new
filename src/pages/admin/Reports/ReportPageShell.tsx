@@ -3,6 +3,7 @@ import type { ExportFormat } from "@/lib/export/reportExport";
 import type { ReportTone } from "./reportIcons";
 
 import { useState, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { Filter, Inbox } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -124,6 +125,7 @@ export default function ReportPageShell({
   /** Paginación real. Omitirla oculta el pie por completo. */
   pagination?: ReportPagination;
 }) {
+  const { t } = useTranslation();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [localSearch, setLocalSearch] = useState("");
   const search = searchProp !== undefined ? searchProp : localSearch;
@@ -150,7 +152,7 @@ export default function ReportPageShell({
           badges={
             !loading ? (
               <StatusBadge dot={false} tone={count > 0 ? tone : "neutral"}>
-                {count === 1 ? "1 registro" : `${count} registros`}
+                {t("ui.ReportPageShell.nRegistros", { defaultValue: "{{count}} registros", count })}
               </StatusBadge>
             ) : undefined
           }
@@ -174,7 +176,7 @@ export default function ReportPageShell({
             {showSearch && (
               <SearchInput
                 className="w-full min-w-0 sm:w-auto sm:flex-1 sm:max-w-xs"
-                placeholder="Buscar…"
+                placeholder={t("ui.ReportPageShell.buscar", "Buscar…")}
                 value={search}
                 onChange={(v) => setSearch(v)}
               />
@@ -190,7 +192,7 @@ export default function ReportPageShell({
                 <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
                   <SheetTrigger asChild>
                     <Button className="gap-2" variant="outline">
-                      <Filter className="h-4 w-4" /> Filtros
+                      <Filter className="h-4 w-4" /> {t("ui.ReportPageShell.filtros", "Filtros")}
                     </Button>
                   </SheetTrigger>
                   <SheetContent
@@ -198,7 +200,7 @@ export default function ReportPageShell({
                     side="right"
                   >
                     <SheetHeader>
-                      <SheetTitle>Filtros</SheetTitle>
+                      <SheetTitle>{t("ui.ReportPageShell.filtros", "Filtros")}</SheetTitle>
                     </SheetHeader>
                     <div className="mt-6 space-y-5">
                       {filters}
@@ -210,7 +212,7 @@ export default function ReportPageShell({
                           setFiltersOpen(false);
                         }}
                       >
-                        {onApplyFilters ? "Aplicar filtros" : "Listo"}
+                        {onApplyFilters ? t("ui.ReportPageShell.aplicarFiltros", "Aplicar filtros") : t("ui.ReportPageShell.listo", "Listo")}
                       </Button>
                     </div>
                   </SheetContent>
@@ -252,7 +254,7 @@ export default function ReportPageShell({
                       variant="outline"
                       onClick={() => setFiltersOpen(true)}
                     >
-                      <Filter className="h-4 w-4" /> Configurar filtros
+                      <Filter className="h-4 w-4" /> {t("ui.ReportPageShell.configurarFiltros", "Configurar filtros")}
                     </Button>
                   ) : undefined
                 }
@@ -260,11 +262,11 @@ export default function ReportPageShell({
                 description={
                   empty?.message ||
                   (hasFilters
-                    ? "Ajusta los filtros o el rango de fechas para ver resultados en este informe."
-                    : "Este informe todavía no tiene datos que mostrar.")
+                    ? t("ui.ReportPageShell.ajustaLosFiltros", "Ajusta los filtros o el rango de fechas para ver resultados en este informe.")
+                    : t("ui.ReportPageShell.informeSinDatos", "Este informe todavía no tiene datos que mostrar."))
                 }
                 icon={<Inbox />}
-                title={empty?.title || "Sin datos para mostrar"}
+                title={empty?.title || t("ui.ReportPageShell.sinDatosParaMostrar", "Sin datos para mostrar")}
               />
             </div>
           )}
@@ -280,7 +282,7 @@ export default function ReportPageShell({
             >
               <Pagination
                 numbered
-                noun="registros"
+                noun={t("ui.ReportPageShell.registros", "registros")}
                 page={footerPager.page}
                 pageSize={footerPager.pageSize}
                 total={footerPager.total}

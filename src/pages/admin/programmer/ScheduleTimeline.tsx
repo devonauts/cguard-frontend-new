@@ -61,7 +61,14 @@ interface Props {
 // ─── Tenant-timezone wall-clock helpers ─────────────────────────────────────
 
 const DAY_MS = 86400000;
-const DAYS_ES = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+/** Short weekday label in the active UI language ("Lun", "Mon"…). */
+const diaCorto = (d: Date): string => {
+  const s = d
+    .toLocaleDateString(localeActual(), { weekday: "short" })
+    .replace(".", "");
+
+  return s.charAt(0).toUpperCase() + s.slice(1);
+};
 /* La aritmética de tiempo vive en `scheduleTime.ts` — una sola copia y con
    pruebas. Estaba duplicada aquí y en `Schedule.tsx`: dos versiones de la misma
    matemática, ninguna probada, justo donde un error de una hora no se ve hasta
@@ -486,8 +493,11 @@ export default function ScheduleTimeline({
           await ApiService.post(`/tenant/${tenantId}/shift`, { data: cuerpo });
           toast.success(
             overlapping.length
-              ? "Turno creado (reemplazó turnos solapados)"
-              : "Turno creado",
+              ? t(
+                  "ui.ScheduleTimeline.turnoCreadoReemplazo",
+                  "Turno creado (reemplazó turnos solapados)",
+                )
+              : t("ui.ShiftAssignModal.turnoCreado", "Turno creado"),
           );
         } else {
           // La serie la expande el servidor: un día que choque se omite y se
@@ -506,8 +516,16 @@ export default function ScheduleTimeline({
 
           toast.success(
             om
-              ? `${d.creados} turno(s) creados · ${om} día(s) omitido(s) por choque`
-              : `${d.creados} turno(s) creados`,
+              ? t("ui.ScheduleTimeline.turnosCreadosConOmitidos", {
+                  defaultValue:
+                    "{{creados}} turno(s) creados · {{omitidos}} día(s) omitido(s) por choque",
+                  creados: d.creados,
+                  omitidos: om,
+                })
+              : t("ui.ScheduleTimeline.turnosCreados", {
+                  defaultValue: "{{count}} turno(s) creados",
+                  count: d.creados,
+                }),
           );
         }
       }
@@ -536,11 +554,14 @@ export default function ScheduleTimeline({
   const deleteShift = async (target: ShiftRecord) => {
     const isEngine = !!target.positionId;
     const ok = await confirmDialog({
-      title: "Eliminar turno",
+      title: t("ui.ScheduleTimeline.eliminarTurno", "Eliminar turno"),
       message: isEngine
-        ? "Este turno fue generado por la rotación de la estación. Puedes eliminarlo, pero puede regenerarse al reoptimizar o reasignar. ¿Eliminar?"
-        : "¿Eliminar este turno?",
-      confirmText: "Eliminar",
+        ? t(
+            "ui.ScheduleTimeline.eliminarTurnoGeneradoConfirm",
+            "Este turno fue generado por la rotación de la estación. Puedes eliminarlo, pero puede regenerarse al reoptimizar o reasignar. ¿Eliminar?",
+          )
+        : t("ui.ScheduleTimeline.eliminarEsteTurno", "¿Eliminar este turno?"),
+      confirmText: t("common.delete", "Eliminar"),
       tone: "danger",
     });
 
@@ -552,7 +573,11 @@ export default function ScheduleTimeline({
       setDetail(null);
       onChanged();
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || "Error al eliminar");
+      toast.error(
+        e?.data?.message ||
+          e?.message ||
+          t("ui.ShiftTemplates.errorAlEliminar", "Error al eliminar"),
+      );
     } finally {
       setDeleting(false);
     }
@@ -569,11 +594,23 @@ export default function ScheduleTimeline({
   const deleteShiftAndFuture = async (target: ShiftRecord) => {
     const isEngine = !!target.positionId;
     const ok = await confirmDialog({
-      title: "Eliminar éste y los siguientes",
+      title: t(
+        "ui.ScheduleTimeline.eliminarEsteYLosSiguientes",
+        "Eliminar éste y los siguientes",
+      ),
       message: isEngine
-        ? "Se eliminarán este turno y todos los del mismo vigilante en este puesto de aquí en adelante. Lo ya ocurrido no se toca. Ojo: esto NO da de baja su asignación, así que la rotación puede volver a generarlos."
-        : "Se eliminarán este turno y todos los del mismo vigilante en este puesto de aquí en adelante. Lo ya ocurrido no se toca.",
-      confirmText: "Eliminar los siguientes",
+        ? t(
+            "ui.ScheduleTimeline.eliminarSiguientesGeneradoConfirm",
+            "Se eliminarán este turno y todos los del mismo vigilante en este puesto de aquí en adelante. Lo ya ocurrido no se toca. Ojo: esto NO da de baja su asignación, así que la rotación puede volver a generarlos.",
+          )
+        : t(
+            "ui.ScheduleTimeline.eliminarSiguientesConfirm",
+            "Se eliminarán este turno y todos los del mismo vigilante en este puesto de aquí en adelante. Lo ya ocurrido no se toca.",
+          ),
+      confirmText: t(
+        "ui.ScheduleTimeline.eliminarLosSiguientes",
+        "Eliminar los siguientes",
+      ),
       tone: "danger",
     });
 
@@ -587,12 +624,19 @@ export default function ScheduleTimeline({
       const n = d?.eliminados ?? 0;
 
       toast.success(
-        `${n} turno${n === 1 ? "" : "s"} eliminado${n === 1 ? "" : "s"}`,
+        t("ui.ScheduleTimeline.turnosEliminados", {
+          defaultValue: "{{count}} turnos eliminados",
+          count: n,
+        }),
       );
       setDetail(null);
       onChanged();
     } catch (e: any) {
-      toast.error(e?.data?.message || e?.message || "Error al eliminar");
+      toast.error(
+        e?.data?.message ||
+          e?.message ||
+          t("ui.ShiftTemplates.errorAlEliminar", "Error al eliminar"),
+      );
     } finally {
       setDeleting(false);
     }
@@ -605,20 +649,32 @@ export default function ScheduleTimeline({
       x: e.clientX,
       y: e.clientY,
       items: [
-        { label: "Editar turno…", onClick: () => openEditModal(s) },
         {
-          label: "Duplicar (día siguiente)…",
+          label: t("ui.ScheduleTimeline.editarTurnoMenu", "Editar turno…"),
+          onClick: () => openEditModal(s),
+        },
+        {
+          label: t(
+            "ui.ScheduleTimeline.duplicarDiaSiguiente",
+            "Duplicar (día siguiente)…",
+          ),
           onClick: () => openDuplicateModal(s),
         },
-        { label: "Ver detalle", onClick: () => setDetail(s) },
+        {
+          label: t("common.viewDetail", "Ver detalle"),
+          onClick: () => setDetail(s),
+        },
         { label: "—" },
         {
-          label: "Eliminar turno",
+          label: t("ui.ScheduleTimeline.eliminarTurno", "Eliminar turno"),
           danger: true,
           onClick: () => void deleteShift(s),
         },
         {
-          label: "Eliminar éste y los siguientes…",
+          label: t(
+            "ui.ScheduleTimeline.eliminarEsteYLosSiguientesMenu",
+            "Eliminar éste y los siguientes…",
+          ),
           danger: true,
           onClick: () => void deleteShiftAndFuture(s),
         },
@@ -798,12 +854,19 @@ export default function ScheduleTimeline({
       else b += prev.delta;
 
       if (b - a < 30) {
-        toast.error("Un turno no puede durar menos de 30 minutos");
+        toast.error(
+          t(
+            "ui.ScheduleTimeline.unTurnoNoPuedeDurarMenosDe30",
+            "Un turno no puede durar menos de 30 minutos",
+          ),
+        );
 
         return;
       }
       if (b - a > 1440) {
-        toast.error("Un turno no puede durar más de 24 horas");
+        toast.error(
+          t("comun.unTurnoNoPuedeDurar", "Un turno no puede durar más de 24 horas"),
+        );
 
         return;
       }
@@ -825,12 +888,16 @@ export default function ScheduleTimeline({
           },
         });
         toast.success(
-          prev.modo === "mover" ? "Turno movido" : "Turno ajustado",
+          prev.modo === "mover"
+            ? t("ui.ScheduleTimeline.turnoMovido", "Turno movido")
+            : t("ui.ScheduleTimeline.turnoAjustado", "Turno ajustado"),
         );
         onChanged?.();
       } catch (err: any) {
         toast.error(
-          err?.data?.message || err?.message || "No se pudo mover el turno",
+          err?.data?.message ||
+            err?.message ||
+            t("ui.ScheduleTimeline.noSePudoMoverElTurno", "No se pudo mover el turno"),
         );
       }
     };
@@ -908,7 +975,7 @@ export default function ScheduleTimeline({
                   borderRight: "1px solid var(--hairline)",
                 }}
               >
-                Hora
+                {t("comun.hora", "Hora")}
               </div>
               <div className="relative" style={{ width: canvasW }}>
                 {days.map((day, di) => {
@@ -931,7 +998,7 @@ export default function ScheduleTimeline({
                           color: isToday ? "var(--brand-text)" : "var(--ink)",
                         }}
                       >
-                        {DAYS_ES[day.getDay()]} {day.getDate()}{" "}
+                        {diaCorto(day)} {day.getDate()}{" "}
                         <span
                           className="font-normal"
                           style={{ color: "var(--ink-faint)" }}
@@ -1170,7 +1237,24 @@ export default function ScheduleTimeline({
                          `backdrop-filter` aquí multiplica el coste por cada
                          bloque de la rejilla. */
                       className={`absolute overflow-hidden px-1.5 py-0.5 transition-[filter] hover:brightness-110 ${arrastrando ? 'cursor-grabbing border-2 border-dashed' : `cursor-grab ${isEngine ? 'border border-dashed' : 'border'}`} ${seg.first ? 'rounded-t-md' : ''} ${seg.last ? 'rounded-b-md' : ''}`}
-                      title={`${name} · ${timeLbl}${anulado ? ` · ${String(s.status)} — NO cubre el puesto` : ''}${isEngine ? ' · generado por rotación' : ' · turno manual'} — arrastra para mover · tira de los bordes para ajustar · clic derecho: opciones`}
+                      title={t("ui.ScheduleTimeline.bloqueTooltip", {
+                        defaultValue:
+                          "{{nombre}} · {{horas}}{{anulado}}{{origen}} — arrastra para mover · tira de los bordes para ajustar · clic derecho: opciones",
+                        nombre: name,
+                        horas: timeLbl,
+                        anulado: anulado
+                          ? t("ui.ScheduleTimeline.noCubreElPuesto", {
+                              defaultValue: " · {{estado}} — NO cubre el puesto",
+                              estado: String(s.status),
+                            })
+                          : "",
+                        origen: isEngine
+                          ? t(
+                              "ui.ScheduleTimeline.generadoPorRotacion",
+                              " · generado por rotación",
+                            )
+                          : t("ui.ScheduleTimeline.turnoManualCorto", " · turno manual"),
+                      })}
                       /* LOS DOS. `onMouseDown` impide que el lienzo empiece a
                          DIBUJAR debajo (secuencia de ratón); `onPointerDown`
                          arranca el arrastre (secuencia de puntero, la que
@@ -1182,7 +1266,10 @@ export default function ScheduleTimeline({
                         <div
                           className="absolute inset-x-0 top-0 h-2 cursor-ns-resize"
                           style={{ touchAction: "none" }}
-                          title="Ajustar la hora de entrada"
+                          title={t(
+                            "ui.ScheduleTimeline.ajustarLaHoraDeEntrada",
+                            "Ajustar la hora de entrada",
+                          )}
                           onMouseDown={(e) => {
                             if (e.button === 0) e.stopPropagation();
                           }}
@@ -1193,7 +1280,10 @@ export default function ScheduleTimeline({
                         <div
                           className="absolute inset-x-0 bottom-0 h-2 cursor-ns-resize"
                           style={{ touchAction: "none" }}
-                          title="Ajustar la hora de salida"
+                          title={t(
+                            "ui.ScheduleTimeline.ajustarLaHoraDeSalida",
+                            "Ajustar la hora de salida",
+                          )}
                           onMouseDown={(e) => {
                             if (e.button === 0) e.stopPropagation();
                           }}
@@ -1209,7 +1299,9 @@ export default function ScheduleTimeline({
                               : "var(--ink)",
                           }}
                         >
-                          {arrastrando ? "Estaba aquí" : name.split(" ")[0]}
+                          {arrastrando
+                            ? t("ui.ScheduleTimeline.estabaAqui", "Estaba aquí")
+                            : name.split(" ")[0]}
                         </span>
                       )}
                       {seg.first && h > 38 && (
@@ -1340,7 +1432,12 @@ export default function ScheduleTimeline({
                   style={{ borderBottom: "1px solid var(--hairline)" }}
                 >
                   <h4 className="text-sm font-semibold">
-                    {editing ? "Editar turno" : "Nuevo bloque de trabajo"}
+                    {editing
+                      ? t("postSites.stations.editShift", "Editar turno")
+                      : t(
+                          "ui.ScheduleTimeline.nuevoBloqueDeTrabajo",
+                          "Nuevo bloque de trabajo",
+                        )}
                   </h4>
                   <button
                     className="cg-btn-ghost cg-focus rounded-lg p-1.5"
@@ -1375,7 +1472,9 @@ export default function ScheduleTimeline({
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="cg-eyebrow mb-1.5 block">Inicio</label>
+                      <label className="cg-eyebrow mb-1.5 block">
+                        {t("ui.ScheduleTimeline.inicio", "Inicio")}
+                      </label>
                       <input
                         className={inputCls}
                         type="datetime-local"
@@ -1388,7 +1487,9 @@ export default function ScheduleTimeline({
                       />
                     </div>
                     <div>
-                      <label className="cg-eyebrow mb-1.5 block">Fin</label>
+                      <label className="cg-eyebrow mb-1.5 block">
+                        {t("ui.ScheduleTimeline.fin", "Fin")}
+                      </label>
                       <input
                         className={inputCls}
                         type="datetime-local"
@@ -1415,8 +1516,13 @@ export default function ScheduleTimeline({
                         >
                           {hours % 1 === 0 ? hours : hours.toFixed(1)}h
                         </b>
-                        {hours === 24 ? " (turno completo)" : ""} · hora de la
-                        empresa
+                        {hours === 24
+                          ? t("ui.ScheduleTimeline.turnoCompleto", " (turno completo)")
+                          : ""}
+                        {t(
+                          "ui.ScheduleTimeline.horaDeLaEmpresa",
+                          " · hora de la empresa",
+                        )}
                       </span>
                     ) : (
                       <span
@@ -1460,8 +1566,10 @@ export default function ScheduleTimeline({
                         className="mt-1.5 text-[10px]"
                         style={{ color: "var(--ink-faint)" }}
                       >
-                        Si el vigilante tiene turnos que se solapan con este
-                        bloque, se reemplazan.
+                        {t(
+                          "ui.ScheduleTimeline.siElVigilanteTieneTurnosQueSeSolapan",
+                          "Si el vigilante tiene turnos que se solapan con este bloque, se reemplazan.",
+                        )}
                       </p>
                     )}
                   </div>
@@ -1475,15 +1583,38 @@ export default function ScheduleTimeline({
                         background: "var(--glass-sunken)",
                       }}
                     >
-                      <label className="cg-eyebrow mb-1.5 block">Repetir</label>
+                      <label className="cg-eyebrow mb-1.5 block">
+                        {t("ui.ScheduleTimeline.repetir", "Repetir")}
+                      </label>
                       <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
                         {(
                           [
-                            { v: "unica", l: "Solo este día" },
-                            { v: "diaria", l: "Todos los días" },
-                            { v: "dias", l: "Días de la semana" },
-                            { v: "intervalo", l: "Cada N días" },
-                            { v: "patron", l: "Trabaja / descansa" },
+                            {
+                              v: "unica",
+                              l: t("ui.ScheduleTimeline.soloEsteDia", "Solo este día"),
+                            },
+                            {
+                              v: "diaria",
+                              l: t("ui.ScheduleTimeline.todosLosDias", "Todos los días"),
+                            },
+                            {
+                              v: "dias",
+                              l: t(
+                                "ui.ScheduleTimeline.diasDeLaSemana",
+                                "Días de la semana",
+                              ),
+                            },
+                            {
+                              v: "intervalo",
+                              l: t("ui.ScheduleTimeline.cadaNDias", "Cada N días"),
+                            },
+                            {
+                              v: "patron",
+                              l: t(
+                                "ui.ScheduleTimeline.trabajaDescansa",
+                                "Trabaja / descansa",
+                              ),
+                            },
                             // Sólo si el puesto TIENE rotación: ofrecerla en un puesto
                             // sin ciclo configurado lleva a un error que el usuario no
                             // puede resolver desde este diálogo.
@@ -1492,7 +1623,10 @@ export default function ScheduleTimeline({
                               ? [
                                   {
                                     v: "rotacion" as const,
-                                    l: "Seguir la rotación del puesto",
+                                    l: t(
+                                      "ui.ScheduleTimeline.seguirLaRotacionDelPuesto",
+                                      "Seguir la rotación del puesto",
+                                    ),
                                   },
                                 ]
                               : []),
@@ -1514,24 +1648,33 @@ export default function ScheduleTimeline({
                           className="mt-2.5 text-[11px] leading-snug"
                           style={{ color: "var(--ink-soft)" }}
                         >
-                          El vigilante seguirá el ciclo del puesto: pasará de
-                          día a noche y librará cuando toque.{" "}
-                          <strong>Las horas las pone el puesto</strong>, no el
-                          bloque que dibujaste, y entra en el mismo compás que
-                          sus compañeros.
+                          {t(
+                            "ui.ScheduleTimeline.elVigilanteSeguiraElCiclo",
+                            "El vigilante seguirá el ciclo del puesto: pasará de día a noche y librará cuando toque.",
+                          )}{" "}
+                          <strong>
+                            {t(
+                              "ui.ScheduleTimeline.lasHorasLasPoneElPuesto",
+                              "Las horas las pone el puesto",
+                            )}
+                          </strong>
+                          {t(
+                            "ui.ScheduleTimeline.noElBloqueQueDibujaste",
+                            ", no el bloque que dibujaste, y entra en el mismo compás que sus compañeros.",
+                          )}
                         </p>
                       )}
 
                       {rep.tipo === "dias" && (
                         <div className="mt-2.5 flex gap-1">
                           {[
-                            { n: 1, l: "L" },
-                            { n: 2, l: "M" },
-                            { n: 3, l: "X" },
-                            { n: 4, l: "J" },
-                            { n: 5, l: "V" },
-                            { n: 6, l: "S" },
-                            { n: 0, l: "D" },
+                            { n: 1, l: t("ui.RotationStyleSelect.lunesCorto", "L") },
+                            { n: 2, l: t("ui.RotationStyleSelect.martesCorto", "M") },
+                            { n: 3, l: t("ui.RotationStyleSelect.miercolesCorto", "X") },
+                            { n: 4, l: t("ui.RotationStyleSelect.juevesCorto", "J") },
+                            { n: 5, l: t("ui.RotationStyleSelect.viernesCorto", "V") },
+                            { n: 6, l: t("ui.RotationStyleSelect.sabadoCorto", "S") },
+                            { n: 0, l: t("ui.RotationStyleSelect.domingoCorto", "D") },
                           ].map((d) => {
                             const on = rep.weekdays.includes(d.n);
 
@@ -1559,7 +1702,7 @@ export default function ScheduleTimeline({
                       {rep.tipo === "intervalo" && (
                         <div className="mt-2.5 flex items-center gap-2 text-[11px]">
                           <span style={{ color: "var(--ink-soft)" }}>
-                            Uno de cada
+                            {t("ui.ScheduleTimeline.unoDeCada", "Uno de cada")}
                           </span>
                           <input
                             className="w-16 rounded-lg border px-2 py-1 text-sm tabular-nums outline-none focus:border-primary"
@@ -1578,7 +1721,9 @@ export default function ScheduleTimeline({
                               }))
                             }
                           />
-                          <span style={{ color: "var(--ink-soft)" }}>días</span>
+                          <span style={{ color: "var(--ink-soft)" }}>
+                            {t("ui.ScheduleTimeline.dias", "días")}
+                          </span>
                         </div>
                       )}
 
@@ -1602,7 +1747,7 @@ export default function ScheduleTimeline({
                             }
                           />
                           <span style={{ color: "var(--ink-soft)" }}>
-                            trabaja ·
+                            {t("ui.ScheduleTimeline.trabajaSep", "trabaja ·")}
                           </span>
                           <input
                             className="w-16 rounded-lg border px-2 py-1 text-sm tabular-nums outline-none focus:border-primary"
@@ -1622,14 +1767,16 @@ export default function ScheduleTimeline({
                             }
                           />
                           <span style={{ color: "var(--ink-soft)" }}>
-                            descansa
+                            {t("ui.ScheduleTimeline.descansa", "descansa")}
                           </span>
                         </div>
                       )}
 
                       {rep.tipo !== "unica" && (
                         <div className="mt-2.5">
-                          <label className="cg-eyebrow mb-1 block">Hasta</label>
+                          <label className="cg-eyebrow mb-1 block">
+                            {t("comun.hasta", "Hasta")}
+                          </label>
                           <input
                             className={inputCls}
                             type="date"
@@ -1643,8 +1790,14 @@ export default function ScheduleTimeline({
                             style={{ color: "var(--ink-faint)" }}
                           >
                             {rep.hasta
-                              ? "El ciclo empieza el día dibujado. Un día que choque con otro turno del vigilante se omite y se te dice cuál."
-                              : "Pon una fecha de fin: sin ella sólo se crea el turno de este día."}
+                              ? t(
+                                  "ui.ScheduleTimeline.elCicloEmpiezaElDiaDibujado",
+                                  "El ciclo empieza el día dibujado. Un día que choque con otro turno del vigilante se omite y se te dice cuál.",
+                                )
+                              : t(
+                                  "ui.ScheduleTimeline.ponUnaFechaDeFin",
+                                  "Pon una fecha de fin: sin ella sólo se crea el turno de este día.",
+                                )}
                           </p>
                         </div>
                       )}
@@ -1678,11 +1831,11 @@ export default function ScheduleTimeline({
                     {blockSaving ? (
                       <Loader2 className="animate-spin" size={14} />
                     ) : editing ? (
-                      "Guardar cambios"
+                      t("settings.mobileHub.saveChanges", "Guardar cambios")
                     ) : rep.tipo === "unica" || !rep.hasta ? (
-                      "Crear turno"
+                      t("ui.ShiftAssignModal.crearTurno", "Crear turno")
                     ) : (
-                      "Crear la serie"
+                      t("ui.ScheduleTimeline.crearLaSerie", "Crear la serie")
                     )}
                   </button>
                 </div>
@@ -1732,7 +1885,9 @@ export default function ScheduleTimeline({
                   </div>
                   <div className="flex items-center gap-2">
                     <MapPin size={14} style={{ color: "var(--ink-faint)" }} />
-                    <span>{station ? stationLabel(station) : "Puesto"}</span>
+                    <span>
+                      {station ? stationLabel(station) : t("comun.puesto", "Puesto")}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock size={14} style={{ color: "var(--ink-faint)" }} />
@@ -1778,7 +1933,7 @@ export default function ScheduleTimeline({
                     ) : (
                       <Trash2 size={13} />
                     )}{" "}
-                    Eliminar
+                    {t("common.delete", "Eliminar")}
                   </button>
                   {/* Desde aquí se llega tras pinchar un turno en la Agenda, y es
                     donde se notaba que sólo se podía borrar de uno en uno. */}
@@ -1793,7 +1948,7 @@ export default function ScheduleTimeline({
                     ) : (
                       <Trash2 size={13} />
                     )}{" "}
-                    Éste y los siguientes
+                    {t("ui.ScheduleTimeline.esteYLosSiguientes", "Éste y los siguientes")}
                   </button>
                   <div className="flex items-center gap-2">
                     <button
@@ -1804,7 +1959,7 @@ export default function ScheduleTimeline({
                         openEditModal(detail);
                       }}
                     >
-                      <Pencil size={13} /> Editar
+                      <Pencil size={13} /> {t("common.edit", "Editar")}
                     </button>
                     <button
                       className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all"

@@ -158,14 +158,26 @@ const DEVICE_HEALTH: Record<
     label: "En línea",
     labelKey: "ui.VideoDevices.enLinea",
   },
-  offline: { health: "down", label: "Sin conexión" },
-  auth_failed: { health: "auth", label: "Credenciales" },
+  offline: {
+    health: "down",
+    label: "Sin conexión",
+    labelKey: "ui.VideoDevices.sinConexion",
+  },
+  auth_failed: {
+    health: "auth",
+    label: "Credenciales",
+    labelKey: "ui.VideoDevices.credenciales",
+  },
   unreachable: {
     health: "unreachable",
     label: "Sin stream",
     labelKey: "ui.VideoDevices.sinStream",
   },
-  unknown: { health: "unknown", label: "Desconocido" },
+  unknown: {
+    health: "unknown",
+    label: "Desconocido",
+    labelKey: "ui.VideoDevices.desconocido",
+  },
 };
 
 function deviceHealth(status?: DeviceStatus): {
@@ -306,10 +318,14 @@ export default function VideoDevices() {
     try {
       if (editing) {
         await videoService.updateDevice(editing.id, buildPayload());
-        toast.success("Dispositivo actualizado");
+        toast.success(
+          t("ui.VideoDevices.dispositivoActualizado", "Dispositivo actualizado"),
+        );
       } else {
         await videoService.createDevice(buildPayload());
-        toast.success("Dispositivo agregado");
+        toast.success(
+          t("ui.VideoDevices.dispositivoAgregado", "Dispositivo agregado"),
+        );
       }
       setDialogOpen(false);
       await load();
@@ -350,16 +366,23 @@ export default function VideoDevices() {
       );
       if (status === "online") toast.success(`${d.name}: stream OK`);
       else if (status === "auth_failed")
-        toast.error(`${d.name}: ${message || "credenciales incorrectas"}`, {
-          duration: 9000,
-        });
+        toast.error(
+          `${d.name}: ${message || t("ui.VideoDevices.credencialesIncorrectas", "credenciales incorrectas")}`,
+          { duration: 9000 },
+        );
       else if (status === "unreachable")
-        toast.error(`${d.name}: ${message || "no se pudo leer el stream"}`, {
-          duration: 9000,
-        });
+        toast.error(
+          `${d.name}: ${message || t("ui.VideoDevices.noSePudoLeerElStream", "no se pudo leer el stream")}`,
+          { duration: 9000 },
+        );
       else if (status === "offline")
-        toast.error(`${d.name}: ${message || "sin conexión"}`);
-      else toast(`${d.name}: estado desconocido`);
+        toast.error(
+          `${d.name}: ${message || t("ui.VideoDevices.sinConexionMinus", "sin conexión")}`,
+        );
+      else
+        toast(
+          `${d.name}: ${t("ui.VideoDevices.estadoDesconocido", "estado desconocido")}`,
+        );
     } catch (e) {
       toast.error(
         (e as Error)?.message ||
@@ -376,7 +399,9 @@ export default function VideoDevices() {
       const cams = await videoService.syncCameras(d.id);
       const n = Array.isArray(cams) ? cams.length : 0;
 
-      toast.success(`${d.name}: ${n} cámara(s) sincronizada(s)`);
+      toast.success(
+        `${d.name}: ${t("ui.VideoDevices.camarasSincronizadas", { defaultValue: "{{count}} cámaras sincronizadas", count: n })}`,
+      );
     } catch (e) {
       toast.error(
         (e as Error)?.message ||
@@ -395,7 +420,9 @@ export default function VideoDevices() {
     setDeleting(true);
     try {
       await videoService.deleteDevice(deleteTarget.id);
-      toast.success("Dispositivo eliminado");
+      toast.success(
+        t("ui.VideoDevices.dispositivoEliminado", "Dispositivo eliminado"),
+      );
       setDevices((prev) => prev.filter((x) => x.id !== deleteTarget.id));
       setDeleteTarget(null);
     } catch (e) {
@@ -433,11 +460,13 @@ export default function VideoDevices() {
           actions={
             <>
               <Button asChild variant="outline">
-                <Link to="/video/monitoring">Monitoreo</Link>
+                <Link to="/video/monitoring">
+                  {t("ui.VideoDevices.monitoreo", "Monitoreo")}
+                </Link>
               </Button>
               <Button variant="brand" onClick={openCreate}>
                 <Plus className="mr-1.5 h-4 w-4" />
-                Agregar dispositivo
+                {t("ui.VideoDevices.agregarDispositivo", "Agregar dispositivo")}
               </Button>
             </>
           }
@@ -472,7 +501,7 @@ export default function VideoDevices() {
           <StatCard
             accent="neutral"
             icon={<Server />}
-            label="Desconocido"
+            label={t("ui.VideoDevices.desconocido", "Desconocido")}
             value={counts.unknown}
           />
         </StatsStrip>
@@ -485,7 +514,7 @@ export default function VideoDevices() {
             action={
               <Button variant="brand" onClick={openCreate}>
                 <Plus className="mr-1.5 h-4 w-4" />
-                Agregar dispositivo
+                {t("ui.VideoDevices.agregarDispositivo", "Agregar dispositivo")}
               </Button>
             }
             description={t("ui.VideoDevices.agregaTuPrimerDvrNvr")}
@@ -536,7 +565,7 @@ export default function VideoDevices() {
                           {d.host ? `:${d.port ?? 554}` : ""}
                           {d.protocol ? ` · ${d.protocol.toUpperCase()}` : ""}
                           {d.channels != null
-                            ? ` · ${d.channels} canal(es)`
+                            ? ` · ${t("ui.VideoDevices.nCanales", { defaultValue: "{{count}} canales", count: d.channels })}`
                             : ""}
                         </div>
                       </div>
@@ -558,7 +587,7 @@ export default function VideoDevices() {
                       ) : (
                         <Wifi className="mr-1.5 h-3.5 w-3.5" />
                       )}
-                      Probar conexión
+                      {t("ui.VideoDevices.probarConexion", "Probar conexión")}
                     </Button>
                     <Button
                       disabled={!!b}
@@ -571,7 +600,7 @@ export default function VideoDevices() {
                       ) : (
                         <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
                       )}
-                      Sincronizar cámaras
+                      {t("ui.VideoDevices.sincronizarCamaras", "Sincronizar cámaras")}
                     </Button>
                     <Button
                       size="sm"
@@ -613,7 +642,9 @@ export default function VideoDevices() {
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>
-              {editing ? "Editar dispositivo" : "Agregar dispositivo"}
+              {editing
+                ? t("ui.VideoDevices.editarDispositivo", "Editar dispositivo")
+                : t("ui.VideoDevices.agregarDispositivo", "Agregar dispositivo")}
             </DialogTitle>
             <DialogDescription>
               {t(
@@ -659,7 +690,10 @@ export default function VideoDevices() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="direct">
-                      Directa (misma red / accesible)
+                      {t(
+                        "ui.VideoDevices.directaMismaRed",
+                        "Directa (misma red / accesible)",
+                      )}
                     </SelectItem>
                     <SelectItem value="relay">
                       {t(
@@ -672,7 +706,9 @@ export default function VideoDevices() {
               </div>
               {form.connectionMode === "relay" && (
                 <div>
-                  <Label htmlFor="vd-relay">Sitio relay</Label>
+                  <Label htmlFor="vd-relay">
+                    {t("ui.VideoDevices.sitioRelay", "Sitio relay")}
+                  </Label>
                   <Select
                     value={form.relaySiteId}
                     onValueChange={(v) => set("relaySiteId", v)}
@@ -692,9 +728,13 @@ export default function VideoDevices() {
               )}
               {form.connectionMode === "relay" && (
                 <p className="sm:col-span-2 -mt-2 text-xs text-muted-foreground">
-                  La IP/host de abajo es la del DVR en la red local del sitio.
-                  El equipo relay instalado en el sitio se encarga de enviar el
-                  video a {nombreDelProducto() || "la plataforma"}.
+                  {t("ui.VideoDevices.laIpHostDeAbajo", {
+                    defaultValue:
+                      "La IP/host de abajo es la del DVR en la red local del sitio. El equipo relay instalado en el sitio se encarga de enviar el video a {{producto}}.",
+                    producto:
+                      nombreDelProducto() ||
+                      t("ui.VideoDevices.laPlataforma", "la plataforma"),
+                  })}
                 </p>
               )}
 
@@ -718,7 +758,9 @@ export default function VideoDevices() {
               </div>
 
               <div>
-                <Label htmlFor="vd-protocol">Protocolo</Label>
+                <Label htmlFor="vd-protocol">
+                  {t("ui.VideoDevices.protocolo", "Protocolo")}
+                </Label>
                 <Select
                   value={form.protocol}
                   onValueChange={(v) => set("protocol", v as DeviceProtocol)}
@@ -737,7 +779,9 @@ export default function VideoDevices() {
               </div>
 
               <div>
-                <Label htmlFor="vd-brand">Marca</Label>
+                <Label htmlFor="vd-brand">
+                  {t("ui.VideoDevices.marca", "Marca")}
+                </Label>
                 <Input
                   id="vd-brand"
                   placeholder="Hikvision"
@@ -747,7 +791,9 @@ export default function VideoDevices() {
               </div>
 
               <div>
-                <Label htmlFor="vd-model">Modelo</Label>
+                <Label htmlFor="vd-model">
+                  {t("ui.VideoDevices.modelo", "Modelo")}
+                </Label>
                 <Input
                   id="vd-model"
                   placeholder="DS-7608NI"
@@ -767,7 +813,9 @@ export default function VideoDevices() {
               </div>
 
               <div>
-                <Label htmlFor="vd-port">Puerto RTSP</Label>
+                <Label htmlFor="vd-port">
+                  {t("ui.VideoDevices.puertoRtsp", "Puerto RTSP")}
+                </Label>
                 <Input
                   id="vd-port"
                   placeholder="554"
@@ -778,7 +826,9 @@ export default function VideoDevices() {
               </div>
 
               <div>
-                <Label htmlFor="vd-httpPort">Puerto HTTP</Label>
+                <Label htmlFor="vd-httpPort">
+                  {t("ui.VideoDevices.puertoHttp", "Puerto HTTP")}
+                </Label>
                 <Input
                   id="vd-httpPort"
                   placeholder="80"
@@ -821,7 +871,9 @@ export default function VideoDevices() {
               </div>
 
               <div>
-                <Label htmlFor="vd-channels">Canales</Label>
+                <Label htmlFor="vd-channels">
+                  {t("ui.VideoDevices.canales", "Canales")}
+                </Label>
                 <Input
                   id="vd-channels"
                   min={1}
@@ -891,7 +943,9 @@ export default function VideoDevices() {
               </Button>
               <Button disabled={saving} type="submit" variant="brand">
                 {saving && <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />}
-                {editing ? "Guardar cambios" : "Agregar dispositivo"}
+                {editing
+                  ? t("ui.VideoDevices.guardarCambios", "Guardar cambios")
+                  : t("ui.VideoDevices.agregarDispositivo", "Agregar dispositivo")}
               </Button>
             </DialogFooter>
           </form>
@@ -909,9 +963,11 @@ export default function VideoDevices() {
               {t("ui.VideoDevices.eliminarDispositivo")}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              ¿Seguro que deseas eliminar{" "}
-              <span className="font-semibold">{deleteTarget?.name}</span>? Esta
-              acción no se puede deshacer.
+              {t("ui.VideoDevices.seguroQueDeseasEliminar", {
+                defaultValue:
+                  "¿Seguro que deseas eliminar {{name}}? Esta acción no se puede deshacer.",
+                name: deleteTarget?.name ?? "",
+              })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -927,7 +983,7 @@ export default function VideoDevices() {
               }}
             >
               {deleting && <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />}
-              Eliminar
+              {t("ui.VideoDevices.eliminar", "Eliminar")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -110,10 +110,11 @@ export default function DemoDataBanner() {
         "ui.DemoDataBanner.quitarDatosDeEjemplo",
         "Quitar datos de ejemplo",
       ),
-      message:
-        "Se quitarán los datos de ejemplo (la sede, los puestos y los vigilantes de muestra). " +
-        "Lo que tú hayas creado se conserva.",
-      confirmText: "Quitar",
+      message: t(
+        "ui.DemoDataBanner.seQuitaranLosDatosDeEjemplo",
+        "Se quitarán los datos de ejemplo (la sede, los puestos y los vigilantes de muestra). Lo que tú hayas creado se conserva.",
+      ),
+      confirmText: t("ui.DemoDataBanner.quitar", "Quitar"),
       tone: "danger",
     });
 
@@ -154,8 +155,10 @@ export default function DemoDataBanner() {
           <strong>
             {t("ui.DemoDataBanner.operacionDeEjemplo", "operación de ejemplo")}
           </strong>{" "}
-          — puestos, vigilantes y novedades de muestra para que veas el sistema
-          vivo.
+          {t(
+            "ui.DemoDataBanner.puestosVigilantesYNovedadesDeMuestra",
+            "— puestos, vigilantes y novedades de muestra para que veas el sistema vivo.",
+          )}
         </span>
       </span>
       {ayuda ? (
@@ -167,7 +170,10 @@ export default function DemoDataBanner() {
           target="_blank"
         >
           <MessageCircle size={13} />
-          ¿Te lo configuramos contigo?
+          {t(
+            "ui.DemoDataBanner.teLoConfiguramosContigo",
+            "¿Te lo configuramos contigo?",
+          )}
         </a>
       ) : null}
       <button
@@ -213,7 +219,7 @@ export default function DemoDataBanner() {
       >
         <Trash2 size={13} />
         {removing
-          ? "Quitando…"
+          ? t("ui.DemoDataBanner.quitando", "Quitando…")
           : t(
               "ui.DemoDataBanner.quitarDatosDeEjemplo",
               "Quitar datos de ejemplo",

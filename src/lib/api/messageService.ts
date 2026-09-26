@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import api from "../api";
 
 const getTenantId = (): string => {
@@ -5,7 +6,10 @@ const getTenantId = (): string => {
 
   if (!t)
     throw new Error(
-      "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+      i18n.t(
+        "ui.apiService.noPudimosIdentificarTuEmpresa",
+        "No pudimos identificar tu empresa. Cierra sesión y vuelve a entrar.",
+      ),
     );
 
   return t;
@@ -130,7 +134,7 @@ export const messageService = {
     const uploadUrl = creds?.uploadCredentials?.url ?? creds?.url;
     const fields = creds?.uploadCredentials?.fields;
 
-    if (!uploadUrl) throw new Error("No se pudo obtener la URL de carga");
+    if (!uploadUrl) throw new Error(i18n.t("ui.apiService.noSePudoObtenerLaUrlDeCarga", "No se pudo obtener la URL de carga"));
     const form = new FormData();
 
     if (fields) Object.keys(fields).forEach((k) => form.append(k, fields[k]));
@@ -138,7 +142,7 @@ export const messageService = {
     form.append("file", file);
     const resp = await fetch(uploadUrl, { method: "POST", body: form });
 
-    if (!resp.ok) throw new Error(`Error al subir el archivo (${resp.status})`);
+    if (!resp.ok) throw new Error(i18n.t("ui.apiService.errorAlSubirElArchivo", { defaultValue: "Error al subir el archivo ({{status}})", status: resp.status }));
 
     return {
       url: creds?.privateUrl ?? "",

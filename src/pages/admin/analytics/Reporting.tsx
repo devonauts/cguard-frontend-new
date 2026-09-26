@@ -74,8 +74,8 @@ export default function Reporting() {
             <MetricCard
               accent={GOLD}
               icon={<Shield size={16} />}
-              label="Vigilantes en servicio"
-              sub="ahora mismo"
+              label={t("ui.Reporting.vigilantesEnServicio", "Vigilantes en servicio")}
+              sub={t("ui.Guard.ahoraMismo", "ahora mismo")}
               value={k.guardsOnDuty}
             />
             <MetricCard
@@ -83,13 +83,17 @@ export default function Reporting() {
               icon={<ClipboardCheck size={16} />}
               label={t("ui.Reporting.coberturaDeTurnos", "Cobertura de turnos")}
               pct={k.coveragePct}
-              sub={`${k.shiftsCovered}/${k.shiftsTotal} cubiertos`}
+              sub={t("ui.Reporting.cubiertos", {
+                defaultValue: "{{covered}}/{{total}} cubiertos",
+                covered: k.shiftsCovered,
+                total: k.shiftsTotal,
+              })}
               value={`${k.coveragePct}%`}
             />
             <MetricCard
               accent={TONES.ok}
               icon={<TrendingUp size={16} />}
-              label="Rondas completadas"
+              label={t("ui.Reporting.rondasCompletadas", "Rondas completadas")}
               pct={k.rondaCompletionPct}
               sub={`${k.rondasCompleted}/${k.rondasTotal}`}
               value={`${k.rondaCompletionPct}%`}
@@ -102,22 +106,33 @@ export default function Reporting() {
                 "Cumplimiento de ubicación",
               )}
               pct={k.locationCompliancePct}
-              sub={`${k.scansValid}/${k.scansTotal} escaneos`}
+              sub={t("ui.PostSite.escaneos", {
+                defaultValue: "{{valid}}/{{total}} escaneos",
+                valid: k.scansValid,
+                total: k.scansTotal,
+              })}
               value={`${k.locationCompliancePct}%`}
             />
             <MetricCard
               accent={TONES.bad}
               icon={<AlertTriangle size={16} />}
-              label="Incidentes"
-              sub={`${k.incidentsOpen} abiertos`}
+              label={t("ui.shared.incidentes", "Incidentes")}
+              sub={t("ui.AlarmAnalytics.nAbiertos", {
+                defaultValue: "{{count}} abiertos",
+                count: k.incidentsOpen,
+              })}
               value={k.incidentsTotal}
             />
             <MetricCard
               accent={TONES.warn}
               icon={<Clock size={16} />}
-              label="Puntualidad"
+              label={t("performance.factor.punctuality", "Puntualidad")}
               pct={k.punctualityPct}
-              sub={`${k.clockinsOnTime}/${k.clockinsTotal} a tiempo`}
+              sub={t("ui.Guard.aTiempo", {
+                defaultValue: "{{onTime}}/{{total}} a tiempo",
+                onTime: k.clockinsOnTime,
+                total: k.clockinsTotal,
+              })}
               value={`${k.punctualityPct}%`}
             />
           </StatsStrip>
@@ -154,8 +169,12 @@ export default function Reporting() {
                     className="mt-1 text-xs"
                     style={{ color: "var(--ink-faint)" }}
                   >
-                    {lb.counts.scored} vigilantes evaluados ·{" "}
-                    {lb.counts.excellent} excelentes
+                    {t("ui.Reporting.evaluadosExcelentes", {
+                      defaultValue:
+                        "{{scored}} vigilantes evaluados · {{excellent}} excelentes",
+                      scored: lb.counts.scored,
+                      excellent: lb.counts.excellent,
+                    })}
                   </p>
                 </div>
                 <div className="md:col-span-2">
@@ -171,7 +190,8 @@ export default function Reporting() {
                       style={{ color: "var(--brand-text)" }}
                       to="/analytics/guard"
                     >
-                      Ver ranking completo <ArrowRight size={12} />
+                      {t("ui.Reporting.verRankingCompleto", "Ver ranking completo")}{" "}
+                      <ArrowRight size={12} />
                     </Link>
                   </div>
                   {lb.guards.filter((g) => g.hasData).length === 0 ? (

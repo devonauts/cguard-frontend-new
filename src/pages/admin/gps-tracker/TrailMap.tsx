@@ -212,7 +212,12 @@ export default function TrailMap({
         mapRef.current.addListener("dragstart", () => setSeguir(false));
         setReady(true);
       })
-      .catch((e) => setErr(e?.message || "No se pudo cargar el mapa"));
+      .catch((e) =>
+        setErr(
+          e?.message ||
+            tr("ui.RouteTrackingMap.noSePudoCargarElMapa", "No se pudo cargar el mapa"),
+        ),
+      );
 
     return () => {
       cancelled = true;
@@ -244,10 +249,10 @@ export default function TrailMap({
       const datos: MapPopupData = {
         id: `punto-${i}`,
         kind: "point",
-        title: `Punto #${i + 1}`,
+        title: tr("ui.TrailMap.puntoN", { defaultValue: "Punto #{{n}}", n: i + 1 }),
         subtitle: fechaHora(p.at),
         metrics: mapPopupItems<MapPopupMetric>(
-          { label: "Velocidad", value: kmh(v) },
+          { label: tr("ui.RouteTrackingMap.velocidad", "Velocidad"), value: kmh(v) },
           bat != null
             ? {
                 label: tr("ui.TrailMap.bateria", "Batería"),
@@ -257,7 +262,7 @@ export default function TrailMap({
             : null,
         ),
         fields: mapPopupItems(
-          { label: "Hora", value: hora(p.at), mono: true },
+          { label: tr("comun.hora", "Hora"), value: hora(p.at), mono: true },
           {
             label: tr("ui.TrailMap.precision", "Precisión"),
             value:
@@ -279,7 +284,7 @@ export default function TrailMap({
             wide: true,
           },
           {
-            label: "Coordenadas",
+            label: tr("ui.RouteTrackingMap.coordenadas", "Coordenadas"),
             value: `${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}`,
             mono: true,
             wide: true,
@@ -310,9 +315,9 @@ export default function TrailMap({
       const datos: MapPopupData = {
         id: `parada-${parada.desde}`,
         kind: "point",
-        title: `Parada ${numero}`,
+        title: tr("ui.LiveTracking.paradaN", { defaultValue: "Parada {{n}}", n: numero }),
         subtitle: `${hora(parada.inicio)} – ${hora(parada.fin)}`,
-        status: { label: "Detenido", tone: "warn" },
+        status: { label: tr("tracking.unitState.stopped", "Detenido"), tone: "warn" },
         metrics: mapPopupItems<MapPopupMetric>(
           {
             label: tr("ui.TrailMap.duracion", "Duración"),
@@ -322,10 +327,18 @@ export default function TrailMap({
           { label: "Pings", value: parada.hasta - parada.desde + 1 },
         ),
         fields: mapPopupItems(
-          { label: "Llegada", value: fechaHora(parada.inicio), mono: true },
-          { label: "Salida", value: fechaHora(parada.fin), mono: true },
           {
-            label: "Coordenadas",
+            label: tr("ui.TrailMap.llegada", "Llegada"),
+            value: fechaHora(parada.inicio),
+            mono: true,
+          },
+          {
+            label: tr("ui.TrailMap.salida", "Salida"),
+            value: fechaHora(parada.fin),
+            mono: true,
+          },
+          {
+            label: tr("ui.RouteTrackingMap.coordenadas", "Coordenadas"),
             value: `${parada.lat.toFixed(5)}, ${parada.lng.toFixed(5)}`,
             mono: true,
             wide: true,
@@ -488,7 +501,7 @@ export default function TrailMap({
     const inicio = validos[0];
     const fin = validos[validos.length - 1];
 
-    hito(inicio, pal.ok, "A", `Inicio · ${fechaHora(inicio.at)}`, () =>
+    hito(inicio, pal.ok, "A", `${tr("ui.TrailMap.inicio", "Inicio")} · ${fechaHora(inicio.at)}`, () =>
       globoDePunto(0),
     );
     if (validos.length > 1) {
@@ -496,7 +509,7 @@ export default function TrailMap({
         fin,
         pal.brand,
         "B",
-        `Fin · ${fechaHora(fin.at)}`,
+        `${tr("ui.TrailMap.fin", "Fin")} · ${fechaHora(fin.at)}`,
         () => globoDePunto(validos.length - 1),
         true,
       );
@@ -506,7 +519,7 @@ export default function TrailMap({
         parada,
         pal.warn,
         String(i + 1),
-        `Parada ${i + 1} · ${duracion(parada.ms)}`,
+        `${tr("ui.LiveTracking.paradaN", { defaultValue: "Parada {{n}}", n: i + 1 })} · ${duracion(parada.ms)}`,
         () => globoDeParada(parada, i + 1),
       );
     });
@@ -704,7 +717,9 @@ export default function TrailMap({
             <div className="cc-map-card px-3 py-2.5">
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                 <div>
-                  <div className="cc-map-eyebrow">Recorrido</div>
+                  <div className="cc-map-eyebrow">
+                    {tr("ui.TrailMap.recorrido", "Recorrido")}
+                  </div>
                   <div className="cc-map-metric">
                     {km.toFixed(km >= 10 ? 1 : 2)}
                     <span
@@ -744,7 +759,9 @@ export default function TrailMap({
                   </div>
                 </div>
                 <div>
-                  <div className="cc-map-eyebrow">Paradas</div>
+                  <div className="cc-map-eyebrow">
+                    {tr("ui.RouteTrackingMap.paradas", "Paradas")}
+                  </div>
                   <div
                     className="cc-map-metric"
                     style={{
@@ -776,20 +793,29 @@ export default function TrailMap({
               <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
                 <span className="cc-map-key">
                   <i style={{ color: "var(--ok)" }} />
-                  Inicio
+                  {tr("ui.TrailMap.inicio", "Inicio")}
                 </span>
                 <span className="cc-map-key">
                   <i style={{ color: "var(--warn)" }} />
-                  Parada
+                  {tr("ui.LiveTracking.parada", "Parada")}
                 </span>
                 <span className="cc-map-key">
                   <i style={{ color: "var(--brand)" }} />
-                  Fin
+                  {tr("ui.TrailMap.fin", "Fin")}
                 </span>
                 <span style={{ fontSize: 10, color: "var(--ink-faint)" }}>
-                  {validos.length.toLocaleString(localeActual())} puntos
+                  {tr("ui.TrailMap.nPuntos", {
+                    defaultValue: "{{n}} puntos",
+                    n: validos.length.toLocaleString(localeActual()),
+                    count: validos.length,
+                  })}
                   {trazo.toleranciaM > 0
-                    ? ` · trazo simplificado a ${trazo.indices.length.toLocaleString(localeActual())} vértices (±${trazo.toleranciaM} m)`
+                    ? ` · ${tr("ui.TrailMap.trazoSimplificado", {
+                        defaultValue:
+                          "trazo simplificado a {{n}} vértices (±{{tol}} m)",
+                        n: trazo.indices.length.toLocaleString(localeActual()),
+                        tol: trazo.toleranciaM,
+                      })}`
                     : ""}
                 </span>
               </div>
@@ -805,14 +831,20 @@ export default function TrailMap({
               <div className="cc-map-card flex items-center gap-3 px-3 py-2">
                 <button
                   aria-label={
-                    reproduciendo ? "Pausar" : "Reproducir el recorrido"
+                    reproduciendo
+                      ? tr("ui.TrailMap.pausar", "Pausar")
+                      : tr("ui.TrailMap.reproducirElRecorrido", "Reproducir el recorrido")
                   }
                   className="cg-focus grid size-8 flex-none place-items-center rounded-full"
                   style={{
                     background: "var(--brand)",
                     color: "var(--brand-ink)",
                   }}
-                  title={reproduciendo ? "Pausar" : "Reproducir el recorrido"}
+                  title={
+                    reproduciendo
+                      ? tr("ui.TrailMap.pausar", "Pausar")
+                      : tr("ui.TrailMap.reproducirElRecorrido", "Reproducir el recorrido")
+                  }
                   type="button"
                   onClick={alternarReproduccion}
                 >
@@ -830,7 +862,7 @@ export default function TrailMap({
                     border: "1px solid var(--hairline)",
                     color: "var(--ink-soft)",
                   }}
-                  title="Volver al inicio"
+                  title={tr("ui.TrailMap.volverAlInicio", "Volver al inicio")}
                   type="button"
                   onClick={() => {
                     setReproduciendo(false);
@@ -943,7 +975,12 @@ export default function TrailMap({
       {/* Lectura para quien no ve el mapa: el instante que se está mostrando. */}
       <span aria-live="polite" className="sr-only">
         {posActual
-          ? `Punto ${posActual.indice + 1} de ${validos.length}, ${hora(t)}`
+          ? tr("ui.TrailMap.puntoNDeM", {
+              defaultValue: "Punto {{n}} de {{total}}, {{hora}}",
+              n: posActual.indice + 1,
+              total: validos.length,
+              hora: hora(t),
+            })
           : ""}
       </span>
     </div>

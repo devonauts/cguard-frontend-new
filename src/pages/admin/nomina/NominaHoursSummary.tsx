@@ -93,6 +93,7 @@ export default function NominaHoursSummary() {
   const [to, setTo] = useState(isoDay(new Date()));
   const [periodo, setPeriodo] = useState<{
     label: string;
+    periodType?: string;
     from: string;
     to: string;
   } | null>(null);
@@ -118,7 +119,10 @@ export default function NominaHoursSummary() {
         );
         setTotals(d.totals || null);
       })
-      .catch((e) => toast.error(e?.message || "Error al generar el resumen"))
+      .catch((e) => toast.error(
+          e?.message ||
+            t("ui.NominaHoursSummary.errorAlGenerarElResumen", "Error al generar el resumen"),
+        ))
       .finally(() => setLoading(false));
   }, [from, to]);
 
@@ -132,7 +136,12 @@ export default function NominaHoursSummary() {
       .currentPeriod()
       .then((p) => {
         if (!vivo || !p?.from || !p?.to) return;
-        setPeriodo({ label: p.label, from: p.from, to: p.to });
+        setPeriodo({
+          label: p.label,
+          periodType: p.periodType,
+          from: p.from,
+          to: p.to,
+        });
         setFrom(p.from);
         setTo(p.to);
       })
@@ -147,12 +156,24 @@ export default function NominaHoursSummary() {
 
   useEffect(load, [from, to]);
 
+  // The server's `label` comes in Spanish; translate from `periodType` and keep
+  // the label only as a fallback for unknown types.
+  const periodoNombre = periodo
+    ? t(`ui.NominaHoursSummary.periodo.${periodo.periodType || "unknown"}`, {
+        defaultValue: periodo.label.toLowerCase(),
+      })
+    : "";
+
   const closePeriod = async () => {
     if (
       !(await confirmDialog({
-        title: "Cerrar periodo",
-        message: `Cerrar el periodo hasta ${to}? Los registros quedarán bloqueados (solo lectura).`,
-        confirmText: "Cerrar periodo",
+        title: t("ui.NominaHoursSummary.cerrarPeriodo", "Cerrar periodo"),
+        message: t("ui.NominaHoursSummary.cerrarElPeriodoHasta", {
+          to,
+          defaultValue:
+            "¿Cerrar el periodo hasta {{to}}? Los registros quedarán bloqueados (solo lectura).",
+        }),
+        confirmText: t("ui.NominaHoursSummary.cerrarPeriodo", "Cerrar periodo"),
         tone: "danger",
       }))
     )
@@ -162,11 +183,15 @@ export default function NominaHoursSummary() {
       const r = await attendanceService.closePeriod(limitesDelDia(to).end);
 
       toast.success(
-        `Periodo cerrado · ${r.lockedCount} registro(s) bloqueado(s)`,
+        t("ui.NominaHoursSummary.periodoCerrado", {
+          count: r.lockedCount,
+          defaultValue: "Periodo cerrado · {{count}} registro(s) bloqueado(s)",
+        }),
       );
     } catch (e) {
       toast.error(
-        (e as { message?: string })?.message || "Error al cerrar el periodo",
+        (e as { message?: string })?.message ||
+          t("ui.NominaHoursSummary.errorAlCerrarElPeriodo", "Error al cerrar el periodo"),
       );
     } finally {
       setClosing(false);
@@ -185,16 +210,16 @@ export default function NominaHoursSummary() {
     label: string;
     get: (r: SummaryRow) => string | number;
   }[] = [
-    { label: "Vigilante", get: (r) => r.guardName },
-    { label: "Días trabajados", get: (r) => r.daysWorked ?? 0 },
-    { label: "Turnos", get: (r) => r.shifts },
-    { label: "Horas regulares", get: (r) => Number(r.regularHours).toFixed(2) },
-    { label: "Horas extra", get: (r) => Number(r.overtimeHours).toFixed(2) },
-    { label: "Horas totales", get: (r) => Number(r.totalHours).toFixed(2) },
-    { label: "Tardanzas", get: (r) => r.lateCount },
-    { label: "Sin salida", get: (r) => r.missedClockouts },
-    { label: "Inasistencias", get: (r) => r.noShows },
-    { label: "Correcciones", get: (r) => r.approvedCorrections },
+    { label: t("comun.vigilante", "Vigilante"), get: (r) => r.guardName },
+    { label: t("ui.NominaHoursSummary.diasTrabajados", "Días trabajados"), get: (r) => r.daysWorked ?? 0 },
+    { label: t("ui.NominaHoursSummary.turnos", "Turnos"), get: (r) => r.shifts },
+    { label: t("ui.NominaHoursSummary.horasRegulares", "Horas regulares"), get: (r) => Number(r.regularHours).toFixed(2) },
+    { label: t("ui.NominaHoursSummary.horasExtra", "Horas extra"), get: (r) => Number(r.overtimeHours).toFixed(2) },
+    { label: t("ui.NominaHoursSummary.horasTotales", "Horas totales"), get: (r) => Number(r.totalHours).toFixed(2) },
+    { label: t("ui.NominaHoursSummary.tardanzas", "Tardanzas"), get: (r) => r.lateCount },
+    { label: t("ui.NominaHoursSummary.sinSalida", "Sin salida"), get: (r) => r.missedClockouts },
+    { label: t("ui.NominaHoursSummary.inasistencias", "Inasistencias"), get: (r) => r.noShows },
+    { label: t("ui.NominaHoursSummary.correcciones", "Correcciones"), get: (r) => r.approvedCorrections },
   ];
 
   const exportar = async (format: ExportFormat) => {
@@ -206,35 +231,47 @@ export default function NominaHoursSummary() {
         rows.map((r) => COLUMNAS_EXPORT.map((c) => c.get(r))),
         {
           title: t("ui.NominaHoursSummary.resumenDeHoras", "Resumen de horas"),
-          subtitle: `${from} a ${to} \u00b7 ${rows.length} persona(s)`,
+          subtitle: t("ui.NominaHoursSummary.subtituloExport", {
+            from,
+            to,
+            count: rows.length,
+            defaultValue: "{{from}} a {{to}} · {{count}} persona(s)",
+          }),
           fileBase: `horas-trabajadas-${from}_${to}`,
         },
         // Todo lo que no sea el nombre es un número: alineado a la derecha se
         // compara de un vistazo columna abajo.
         COLUMNAS_EXPORT.map((_, i) => (i === 0 ? "left" : "right")),
       );
-      toast.success(`${rows.length} fila(s) exportada(s)`);
+      toast.success(
+        t("ui.NominaHoursSummary.filasExportadas", {
+          count: rows.length,
+          defaultValue: "{{count}} fila(s) exportada(s)",
+        }),
+      );
     } catch (e) {
       console.error("export horas", e);
-      toast.error("No se pudo generar el archivo");
+      toast.error(
+        t("ui.NominaHoursSummary.noSePudoGenerarElArchivo", "No se pudo generar el archivo"),
+      );
     }
   };
 
   const columns: Column<SummaryRow>[] = [
     {
       key: "guardName",
-      header: "Vigilante",
+      header: t("comun.vigilante", "Vigilante"),
       render: (_v, r) => (
         <span className="inline-flex items-center gap-1.5">
           {r.guardName}
           {r.role === "supervisor" && (
             <StatusBadge dot={false} tone="warn">
-              Supervisor
+              {t("comun.supervisor", "Supervisor")}
             </StatusBadge>
           )}
           {r.role === "administrative" && (
             <StatusBadge dot={false} tone="info">
-              Administrativo
+              {t("ui.NominaHoursSummary.administrativo", "Administrativo")}
             </StatusBadge>
           )}
         </span>
@@ -242,22 +279,22 @@ export default function NominaHoursSummary() {
     },
     {
       key: "daysWorked",
-      header: "Días trabajados",
+      header: t("ui.NominaHoursSummary.diasTrabajados", "Días trabajados"),
       render: (_v, r) => <Num strong v={r.daysWorked ?? 0} />,
     },
     {
       key: "shifts",
-      header: "Turnos",
+      header: t("ui.NominaHoursSummary.turnos", "Turnos"),
       render: (_v, r) => <Num v={r.shifts} />,
     },
     {
       key: "regularHours",
-      header: "H. regulares",
+      header: t("ui.NominaHoursSummary.hRegulares", "H. regulares"),
       render: (_v, r) => <Num v={r.regularHours.toFixed(2)} />,
     },
     {
       key: "overtimeHours",
-      header: "H. extra",
+      header: t("ui.NominaHoursSummary.hExtra", "H. extra"),
       render: (_v, r) => (
         <Num
           tone={r.overtimeHours > 0 ? "warn" : undefined}
@@ -267,26 +304,26 @@ export default function NominaHoursSummary() {
     },
     {
       key: "totalHours",
-      header: "H. totales",
+      header: t("ui.NominaHoursSummary.hTotales", "H. totales"),
       render: (_v, r) => <Num strong v={r.totalHours.toFixed(2)} />,
     },
     {
       key: "lateCount",
-      header: "Tardanzas",
+      header: t("ui.NominaHoursSummary.tardanzas", "Tardanzas"),
       render: (_v, r) => (
         <Num tone={r.lateCount > 0 ? "warn" : undefined} v={r.lateCount} />
       ),
     },
     {
       key: "noShows",
-      header: "Inasistencias",
+      header: t("ui.NominaHoursSummary.inasistencias", "Inasistencias"),
       render: (_v, r) => (
         <Num tone={r.noShows > 0 ? "bad" : undefined} v={r.noShows} />
       ),
     },
     {
       key: "approvedCorrections",
-      header: "Correcciones",
+      header: t("ui.NominaHoursSummary.correcciones", "Correcciones"),
       render: (_v, r) => <Num v={r.approvedCorrections} />,
     },
   ];
@@ -298,8 +335,15 @@ export default function NominaHoursSummary() {
           icon={<Clock />}
           subtitle={
             periodo
-              ? `Días trabajados y horas por persona · periodo ${periodo.label.toLowerCase()}`
-              : "Días trabajados y horas por persona en el periodo"
+              ? t("ui.NominaHoursSummary.subtituloConPeriodo", {
+                  periodo: periodoNombre,
+                  defaultValue:
+                    "Días trabajados y horas por persona · periodo {{periodo}}",
+                })
+              : t(
+                  "ui.NominaHoursSummary.diasTrabajadosYHorasPorPersona",
+                  "Días trabajados y horas por persona en el periodo",
+                )
           }
           title={t("ui.NominaHoursSummary.resumenDeHoras", "Resumen de horas")}
         />
@@ -308,7 +352,7 @@ export default function NominaHoursSummary() {
         <Toolbar className="justify-between gap-3 p-3">
           <div className="flex flex-wrap items-end gap-2">
             <label className="cg-eyebrow">
-              Desde
+              {t("comun.desde", "Desde")}
               <input
                 className="cg-input cg-focus mt-1 block px-3 py-1.5 text-sm tabular-nums"
                 type="date"
@@ -317,7 +361,7 @@ export default function NominaHoursSummary() {
               />
             </label>
             <label className="cg-eyebrow">
-              Hasta
+              {t("comun.hasta", "Hasta")}
               <input
                 className="cg-input cg-focus mt-1 block px-3 py-1.5 text-sm tabular-nums"
                 type="date"
@@ -326,7 +370,9 @@ export default function NominaHoursSummary() {
               />
             </label>
             <Button disabled={loading} variant="brand" onClick={load}>
-              {loading ? "Generando…" : "Generar"}
+              {loading
+                ? t("ui.NominaHoursSummary.generando", "Generando…")
+                : t("ui.NominaHoursSummary.generar", "Generar")}
             </Button>
             {/* El periodo que la empresa configuró. Antes esta pantalla abría
                 siempre en 14 días fijos, así que el ajuste no se notaba en
@@ -342,7 +388,10 @@ export default function NominaHoursSummary() {
                   setTo(periodo.to);
                 }}
               >
-                Volver al periodo {periodo.label.toLowerCase()}
+                {t("ui.NominaHoursSummary.volverAlPeriodo", {
+                  periodo: periodoNombre,
+                  defaultValue: "Volver al periodo {{periodo}}",
+                })}
               </Button>
             )}
           </div>
@@ -358,7 +407,9 @@ export default function NominaHoursSummary() {
               onClick={closePeriod}
             >
               <Lock className="mr-1.5 h-4 w-4" />{" "}
-              {closing ? "Cerrando…" : "Cerrar periodo"}
+              {closing
+                ? t("ui.NominaExceptions.cerrando", "Cerrando…")
+                : t("ui.NominaHoursSummary.cerrarPeriodo", "Cerrar periodo")}
             </Button>
           </div>
         </Toolbar>
@@ -366,15 +417,18 @@ export default function NominaHoursSummary() {
         {totals && (
           <StatsStrip className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <MetricTile
-              hint="Turnos con marcación en el periodo"
+              hint={t(
+                "ui.NominaHoursSummary.turnosConMarcacionEnElPeriodo",
+                "Turnos con marcación en el periodo",
+              )}
               icon={<CalendarDays />}
-              label="Turnos"
+              label={t("ui.NominaHoursSummary.turnos", "Turnos")}
               value={totals.shifts}
             />
             <MetricTile
-              hint="Suma de horas trabajadas"
+              hint={t("ui.NominaHoursSummary.sumaDeHorasTrabajadas", "Suma de horas trabajadas")}
               icon={<Clock />}
-              label="Horas totales"
+              label={t("ui.NominaHoursSummary.horasTotales", "Horas totales")}
               value={Number(totals.totalHours).toFixed(2)}
             />
             <MetricTile
@@ -386,21 +440,21 @@ export default function NominaHoursSummary() {
                     }
                   : undefined
               }
-              hint="Sobre el total de horas"
+              hint={t("ui.NominaHoursSummary.sobreElTotalDeHoras", "Sobre el total de horas")}
               icon={<Timer />}
-              label="Horas extra"
+              label={t("ui.NominaHoursSummary.horasExtra", "Horas extra")}
               value={Number(totals.overtimeHours).toFixed(2)}
             />
             <MetricTile
-              hint="Incidencias de puntualidad"
+              hint={t("ui.NominaHoursSummary.incidenciasDePuntualidad", "Incidencias de puntualidad")}
               icon={<UserX />}
-              label="Tardanzas / Inasist."
+              label={t("ui.NominaHoursSummary.tardanzasInasist", "Tardanzas / Inasist.")}
               value={`${totals.lateCount} / ${totals.noShows}`}
             />
           </StatsStrip>
         )}
 
-        <Section icon={<Clock />} title="Detalle por persona">
+        <Section icon={<Clock />} title={t("ui.NominaHoursSummary.detallePorPersona", "Detalle por persona")}>
           <div className="overflow-x-auto">
             <DataTable
               columns={columns}
