@@ -36,6 +36,8 @@ export interface AgenteDeMarca {
   avatarUrl: string | null;
   /** Silhouette key (see `formasDelAgente`). The shield only on our companies. */
   forma: string;
+  /** Icon inside the shape (see `formasDelAgente`), or null for initials. */
+  icono: string | null;
 }
 
 /* Before the answer arrives: the shield only on our own planes. On a partner's
@@ -59,6 +61,7 @@ export const AGENTE_POR_DEFECTO: AgenteDeMarca = {
   saludo: null,
   avatarUrl: null,
   forma: formaInicial(),
+  icono: null,
 };
 
 const formaValida = (v: unknown): string =>
@@ -90,6 +93,7 @@ export function agenteGuardado(tenantId: string): AgenteDeMarca {
       avatarUrl:
         typeof d.avatarUrl === "string" && d.avatarUrl ? d.avatarUrl : null,
       forma: formaValida(d.forma),
+      icono: typeof d.icono === "string" && d.icono ? d.icono : null,
     };
   } catch {
     /* Modo privado, almacenamiento lleno, JSON de otra versión. Cualquiera de
@@ -122,6 +126,7 @@ export async function cargarAgente(tenantId: string): Promise<AgenteDeMarca> {
         avatarUrl:
           typeof d?.avatarUrl === "string" && d.avatarUrl ? d.avatarUrl : null,
         forma: formaValida(d?.forma),
+        icono: typeof d?.icono === "string" && d.icono ? d.icono : null,
       };
       enMemoria = { tid: tenantId, valor };
       for (const o of oyentes) o(valor);

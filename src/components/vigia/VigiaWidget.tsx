@@ -13,7 +13,7 @@
  *  - La conversación vive en el estado del armazón (persiste al navegar,
  *    muere al recargar — un chat operativo no necesita más memoria que esa).
  */
-import { siluetaDe } from "@/lib/formasDelAgente";
+import { iconoDe, siluetaDe } from "@/lib/formasDelAgente";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -169,10 +169,12 @@ function LogoVigia({
   size = 18,
   avatarUrl,
   forma = "escudo",
+  icono,
 }: {
   size?: number;
   avatarUrl?: string | null;
   forma?: string;
+  icono?: string | null;
 }) {
   if (avatarUrl) {
     return (
@@ -183,6 +185,26 @@ function LogoVigia({
         height={size}
         src={avatarUrl}
         style={{ width: size, height: size }}
+        width={size}
+      />
+    );
+  }
+  /* The partner's chosen icon, as in its bubble. */
+  const glifo = iconoDe(icono);
+
+  if (glifo) {
+    return (
+      <svg
+        aria-hidden
+        color="currentColor"
+        dangerouslySetInnerHTML={{ __html: glifo }}
+        fill="none"
+        height={size}
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        viewBox="0 0 24 24"
         width={size}
       />
     );
@@ -252,6 +274,7 @@ export default function VigiaWidget() {
      server says so, which is only for our own companies. */
   const silueta = siluetaDe(agente.forma);
   const esEscudo = agente.forma === "escudo";
+  const icono = iconoDe(agente.icono);
 
   useEffect(() => {
     if (open) return;
@@ -761,6 +784,18 @@ export default function VigiaWidget() {
                     y={silueta.cy - 9}
                   />
                 </>
+              ) : icono ? (
+                /* The partner's icon inside its shape (instead of the initials). */
+                <g
+                  color="var(--brand-ink)"
+                  dangerouslySetInnerHTML={{ __html: icono }}
+                  fill="none"
+                  stroke="var(--brand-ink)"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.9}
+                  transform={`translate(13 ${silueta.cy - 11}) scale(0.92)`}
+                />
               ) : (
                 <text
                   fill="var(--brand-ink)"
@@ -869,7 +904,11 @@ export default function VigiaWidget() {
                     <History size={16} />
                   )}
                 </button>
-                <LogoVigia avatarUrl={agente.avatarUrl} forma={agente.forma} />
+                <LogoVigia
+                  avatarUrl={agente.avatarUrl}
+                  forma={agente.forma}
+                  icono={agente.icono}
+                />
                 <div>
                   <p
                     className="text-sm font-bold leading-none"
@@ -1052,7 +1091,10 @@ export default function VigiaWidget() {
                           "ui.VigiaWidget.ejemploAgregarVigilante",
                           "Agrega un vigilante nuevo",
                         ),
-                        t("ui.VigiaWidget.ejemploHorario", "Llévame al horario"),
+                        t(
+                          "ui.VigiaWidget.ejemploHorario",
+                          "Llévame al horario",
+                        ),
                       ].map((ej) => (
                         <button
                           key={ej}
