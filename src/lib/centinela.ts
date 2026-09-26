@@ -67,6 +67,9 @@ const ANFITRIONES_PROPIOS = [
  */
 const ESQUEMAS_PROPIOS = ['app:', 'capacitor:', 'ionic:'];
 
+/** Our neutral infrastructure domain (API, radio): requests there are ours. */
+const INFRAESTRUCTURA = 'mainconnector.com';
+
 /**
  * ¿Este paquete está donde debe? Se saca aparte y se exporta para poder
  * probarlo: es la decisión que dispara la única señal de copia que hay, y
@@ -130,6 +133,7 @@ function esNuestro(u: string): boolean {
     if (url.origin === location.origin) return true;
     if (ANFITRIONES_PROPIOS.includes(url.hostname)) return true;
     if (url.hostname.endsWith('.cguardpro.com')) return true;
+    if (url.hostname === INFRAESTRUCTURA || url.hostname.endsWith(`.${INFRAESTRUCTURA}`)) return true;
 
     return CONOCIDOS.includes(url.origin);
   } catch {

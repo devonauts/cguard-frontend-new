@@ -19,6 +19,15 @@ describe("which hosts keep our API and which go same-origin", () => {
       expect(esAnfitrionDePlataforma(h, API)).toBe(false);
     }
   });
+  it("with the API on the neutral domain, our planes are still ours", () => {
+    const NEUTRA = "https://api.mainconnector.com/api";
+
+    expect(esAnfitrionDePlataforma("app.cguardpro.com", NEUTRA)).toBe(true);
+    expect(esAnfitrionDePlataforma("demo-x.cguardpro.com", NEUTRA)).toBe(false);
+    expect(esAnfitrionDePlataforma("admin.vanderbluedesign.com", NEUTRA)).toBe(
+      false,
+    );
+  });
   it("a relative base is already same-origin", () => {
     expect(esAnfitrionDePlataforma("admin.vanderbluedesign.com", "/api")).toBe(
       true,

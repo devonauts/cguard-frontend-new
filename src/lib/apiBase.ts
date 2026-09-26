@@ -13,14 +13,12 @@
 
 const PLANOS_PROPIOS = new Set(["app", "www", "api", "partners", "domains"]);
 
-function zonaDe(url: string | undefined): string {
-  try {
-    const host = new URL(String(url || "")).hostname.toLowerCase();
-    return host.split(".").slice(-2).join(".");
-  } catch {
-    return "";
-  }
-}
+/**
+ * Our own web domain. It is NOT derived from the API URL: the API lives on a
+ * neutral infrastructure domain (api.mainconnector.com), so its zone says
+ * nothing about which hosts are ours and which are a partner's.
+ */
+export const DOMINIO_DE_PLATAFORMA = "cguardpro.com";
 
 /** Our own planes keep the configured API; everything else is a partner host. */
 export function esAnfitrionDePlataforma(
@@ -28,21 +26,25 @@ export function esAnfitrionDePlataforma(
   configurada?: string,
 ): boolean {
   const h = String(hostname || "").toLowerCase();
+
   if (
     !h ||
     h === "localhost" ||
     h === "127.0.0.1" ||
     h === "[::1]" ||
     h.endsWith(".localhost")
-  )
+  ) {
     return true;
-  const zona = zonaDe(configurada);
-  if (!zona) return true; // relative or unset base: already same-origin
-  if (h === zona) return true;
-  if (h.endsWith(`.${zona}`)) {
-    const etiqueta = h.slice(0, -(zona.length + 1));
+  }
+  // A relative or unset base is already same-origin.
+  if (!/^https?:\/\//i.test(String(configurada || ""))) return true;
+  if (h === DOMINIO_DE_PLATAFORMA) return true;
+  if (h.endsWith(`.${DOMINIO_DE_PLATAFORMA}`)) {
+    const etiqueta = h.slice(0, -(DOMINIO_DE_PLATAFORMA.length + 1));
+
     return PLANOS_PROPIOS.has(etiqueta);
   }
+
   return false;
 }
 
