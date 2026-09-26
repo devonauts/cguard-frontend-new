@@ -6048,7 +6048,8 @@
     "restoreUserFailed": "Nie udało się ponownie aktywować",
     "restoreUserOk": "Nadaj dostęp",
     "restoreUserShort": "Nadaj dostęp",
-    "restoredUser": "Dostęp przywrócony; ponownie na fakturze"
+    "restoredUser": "Dostęp przywrócony; ponownie na fakturze",
+    "invStatusRefunded": "Zwrócona"
   },
   "brand": {
     "tagline": "Inteligentna ochrona"

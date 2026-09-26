@@ -534,7 +534,8 @@
     "restoreUserFailed": "No se pudo reactivar",
     "restoreUserOk": "Dar acceso",
     "restoreUserShort": "Dar acceso",
-    "restoredUser": "Acceso devuelto; vuelve a la factura"
+    "restoredUser": "Acceso devuelto; vuelve a la factura",
+    "invStatusRefunded": "Reembolsada"
   },
   "categories": {
     "Understood": "Entendido",

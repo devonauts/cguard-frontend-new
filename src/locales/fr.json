@@ -6048,7 +6048,8 @@
     "restoreUserFailed": "Impossible de réactiver",
     "restoreUserOk": "Donner l'accès",
     "restoreUserShort": "Donner l'accès",
-    "restoredUser": "Accès rétabli ; de retour sur la facture"
+    "restoredUser": "Accès rétabli ; de retour sur la facture",
+    "invStatusRefunded": "Remboursée"
   },
   "brand": {
     "tagline": "Sécurité intelligente"

@@ -6048,7 +6048,8 @@
     "restoreUserFailed": "Impossibile riattivare",
     "restoreUserOk": "Concedi l'accesso",
     "restoreUserShort": "Concedi l'accesso",
-    "restoredUser": "Accesso ripristinato; torna in fattura"
+    "restoredUser": "Accesso ripristinato; torna in fattura",
+    "invStatusRefunded": "Rimborsata"
   },
   "brand": {
     "tagline": "Sicurezza Intelligente"

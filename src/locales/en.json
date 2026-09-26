@@ -534,7 +534,8 @@
     "restoreUserFailed": "Could not reactivate",
     "restoreUserOk": "Grant access",
     "restoreUserShort": "Grant access",
-    "restoredUser": "Access restored; back on the invoice"
+    "restoredUser": "Access restored; back on the invoice",
+    "invStatusRefunded": "Refunded"
   },
   "categories": {
     "Understood": "Understood",

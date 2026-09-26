@@ -6048,7 +6048,8 @@
     "restoreUserFailed": "Kon niet opnieuw worden geactiveerd",
     "restoreUserOk": "Toegang geven",
     "restoreUserShort": "Toegang geven",
-    "restoredUser": "Toegang hersteld; weer op de factuur"
+    "restoredUser": "Toegang hersteld; weer op de factuur",
+    "invStatusRefunded": "Terugbetaald"
   },
   "brand": {
     "tagline": "Intelligente beveiliging"

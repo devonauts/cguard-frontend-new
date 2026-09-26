@@ -129,6 +129,8 @@ export default function PartnerBillingView({
     paid: t("billing.invStatusPaid", { defaultValue: "Pagada" }),
     open: t("billing.invStatusOpen", { defaultValue: "Pendiente" }),
     void: t("billing.invStatusVoid", { defaultValue: "Anulada" }),
+    // The provider refunded it in its own gateway.
+    refunded: t("billing.invStatusRefunded", { defaultValue: "Reembolsada" }),
   };
 
   /**
@@ -546,7 +548,7 @@ export default function PartnerBillingView({
                 </div>
                 <span className="shrink-0 text-sm font-semibold tabular-nums">
                   {dinero(
-                    inv.status === "paid"
+                    inv.status === "paid" || inv.status === "refunded"
                       ? inv.amountPaidCents || inv.totalCents
                       : inv.totalCents - (inv.amountPaidCents || 0),
                     inv.currency || moneda,

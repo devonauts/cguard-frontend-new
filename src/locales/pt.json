@@ -6976,7 +6976,8 @@
     "restoreUserFailed": "Não foi possível reativar",
     "restoreUserOk": "Dar acesso",
     "restoreUserShort": "Dar acesso",
-    "restoredUser": "Acesso devolvido; volta à fatura"
+    "restoredUser": "Acesso devolvido; volta à fatura",
+    "invStatusRefunded": "Reembolsada"
   },
   "suscripcion": {
     "detalle": "Detalhes da assinatura",

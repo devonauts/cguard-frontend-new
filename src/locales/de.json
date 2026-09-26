@@ -6048,7 +6048,8 @@
     "restoreUserFailed": "Konnte nicht reaktiviert werden",
     "restoreUserOk": "Zugang gewähren",
     "restoreUserShort": "Zugang gewähren",
-    "restoredUser": "Zugang wiederhergestellt; wird wieder abgerechnet"
+    "restoredUser": "Zugang wiederhergestellt; wird wieder abgerechnet",
+    "invStatusRefunded": "Erstattet"
   },
   "brand": {
     "tagline": "Intelligente Sicherheit"
