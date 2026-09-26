@@ -24,6 +24,26 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * El idioma ELEGIDO en el CRM, no el del navegador. Sin esto el servidor
+ * contestaba en el idioma del sistema operativo: quien eligió italiano en un
+ * portátil en español leía la bitácora —y cualquier texto del servidor— en
+ * español. `Accept-Language` es una cabecera que el navegador deja mandar sin
+ * permiso previo (no añade preflight de CORS).
+ */
+function cabeceraDeIdioma(): Record<string, string> {
+  try {
+    const lang =
+      i18n?.language ||
+      localStorage.getItem("app_language") ||
+      localStorage.getItem("language") ||
+      "";
+    return lang ? { "Accept-Language": lang } : {};
+  } catch {
+    return {};
+  }
+}
+
 export class ApiService {
   static async request(endpoint: string, options: any = {}) {
     // Global client-side rate-limit pause timestamp (ms since epoch).
@@ -47,6 +67,7 @@ export class ApiService {
       Accept: "application/json",
       "Content-Type": "application/json",
       ...cabeceraDeSucursal(),
+      ...cabeceraDeIdioma(),
       ...(options.headers || {}),
     };
 
@@ -269,6 +290,7 @@ export class ApiService {
 
     const headers: Record<string, string> = {
       ...cabeceraDeSucursal(),
+      ...cabeceraDeIdioma(),
       ...(options.headers || {}),
     };
 

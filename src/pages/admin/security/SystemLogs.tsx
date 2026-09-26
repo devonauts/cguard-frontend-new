@@ -168,9 +168,9 @@ function aplicarTipo(p: URLSearchParams, tipo: Tipo) {
 
 const vacio = (v: any) => v === null || v === undefined || v === "";
 
-function valorLegible(v: any): string {
+function valorLegible(v: any, t: (k: string, d: string) => string): string {
   if (vacio(v)) return "—";
-  if (typeof v === "boolean") return v ? "sí" : "no";
+  if (typeof v === "boolean") return v ? t("ui.SystemLogs.si", "sí") : t("ui.SystemLogs.no", "no");
   if (typeof v === "object") {
     try { return JSON.stringify(v); } catch { return String(v); }
   }
@@ -204,37 +204,28 @@ function copiaDeBorrado(changes: any): any[] | null {
   return Array.isArray(c) && Array.isArray(c[0]) ? c[0] : null;
 }
 
-/** Nombre de campo legible: los comunes por nombre, el resto deletreado. */
-const CAMPOS: Record<string, string> = {
-  name: "nombre", title: "título", fullName: "nombre", firstName: "nombre", lastName: "apellido",
-  email: "correo", phoneNumber: "teléfono", status: "estado", workStatus: "estado de trabajo",
-  priority: "prioridad", description: "descripción", notes: "notas", internalNotes: "notas internas",
-  startTime: "inicio", endTime: "fin", punchInTime: "entrada", punchOutTime: "salida",
-  scheduledEnd: "fin previsto", scheduledStart: "inicio previsto", stationId: "puesto",
-  stationNameId: "puesto", guardId: "vigilante", guardNameId: "vigilante", postSiteId: "sede",
-  roles: "roles", billingStatus: "estado de cobro", plan: "plan", suspendedAt: "suspendida el",
-  hourlyRateCents: "tarifa por hora (centavos)", monthlyRateCents: "sueldo mensual (centavos)",
-  assignedToUserId: "asignado a", dispatchStatus: "estado del despacho", forcedClockOut: "cierre forzado",
-  address: "dirección", active: "activo", archived: "archivado", reason: "motivo", module: "módulo",
-  acknowledgedAt: "atendido el", dunningStage: "aviso de impago nº", password: "contraseña",
-  observations: "observaciones", filas: "registros", turnos: "turnos",
-};
-const nombreCampo = (c: string) =>
-  CAMPOS[c] || c.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/[_-]/g, " ").toLowerCase();
+/** Campos con nombre propio en los diccionarios (`ui.SystemLogs.campos.*`);
+ *  el resto se deletrea. Se traducen en el render: esta lista sólo guarda claves. */
+const CAMPOS_CONOCIDOS = new Set([
+  "name", "title", "fullName", "firstName", "lastName", "email", "phoneNumber", "status", "workStatus", "priority", "description", "notes", "internalNotes", "startTime", "endTime", "punchInTime", "punchOutTime", "scheduledEnd", "scheduledStart", "stationId", "stationNameId", "guardId", "guardNameId", "postSiteId", "roles", "billingStatus", "plan", "suspendedAt", "hourlyRateCents", "monthlyRateCents", "assignedToUserId", "dispatchStatus", "forcedClockOut", "address", "active", "archived", "reason", "module", "acknowledgedAt", "dunningStage", "password", "observations", "filas", "turnos", "language", "languageChoice", "timezone", "appearance",
+]);
+const deletrear = (c: string) =>
+  c.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/[_-]/g, " ").toLowerCase();
 
-function dispositivo(ua?: string | null): string {
-  if (!ua) return "—";
-  if (/iPhone|iPad/i.test(ua)) return "iPhone / iPad";
-  if (/Android/i.test(ua)) return "Android";
-  if (/Electron/i.test(ua)) return "CRM de escritorio";
-  if (/Windows/i.test(ua)) return "Windows";
-  if (/Macintosh|Mac OS/i.test(ua)) return "Mac";
-  if (/curl|node|axios|python/i.test(ua)) return "Integración";
-  return ua.slice(0, 40);
+/** Dispositivo a partir del navegador: devuelve [clave, respaldo]. */
+function dispositivo(ua?: string | null): [string | null, string] {
+  if (!ua) return [null, "—"];
+  if (/iPhone|iPad/i.test(ua)) return [null, "iPhone / iPad"];
+  if (/Android/i.test(ua)) return [null, "Android"];
+  if (/Electron/i.test(ua)) return ["ui.SystemLogs.disp.escritorio", "CRM de escritorio"];
+  if (/Windows/i.test(ua)) return [null, "Windows"];
+  if (/Macintosh|Mac OS/i.test(ua)) return [null, "Mac"];
+  if (/curl|node|axios|python/i.test(ua)) return ["ui.SystemLogs.disp.integracion", "Integración"];
+  return [null, ua.slice(0, 40)];
 }
 
 export default function SystemLogs() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [q, setQ] = useState("");
   const [debouncedQ, setDebouncedQ] = useState("");
   const [tipo, setTipo] = useState<Tipo>("");
@@ -267,7 +258,8 @@ export default function SystemLogs() {
       endpoint: `/tenant/${tid()}/audit-log`,
       pageSize: PAGE_SIZE,
       buildParams,
-      deps: [tipo, canal, debouncedQ],
+      // El idioma también: la frase la escribe el servidor en el de quien lee.
+      deps: [tipo, canal, debouncedQ, i18n.language],
       onReset: () => setExpanded(null),
     });
 
@@ -294,6 +286,13 @@ export default function SystemLogs() {
 
   const quienDe = (r: LogRow) =>
     r.actorName || r.createdByEmail || t("ui.SystemLogs.desconocido", "Desconocido");
+
+  const nombreCampo = (c: string) =>
+    CAMPOS_CONOCIDOS.has(c) ? t(`ui.SystemLogs.campos.${c}`, deletrear(c)) : deletrear(c);
+  const nombreDispositivo = (ua?: string | null) => {
+    const [clave, respaldo] = dispositivo(ua);
+    return clave ? t(clave, respaldo) : respaldo;
+  };
 
   const esAutomatico = (r: LogRow) =>
     ["sistema", "webhook", "receptora"].includes(String(r.channel || "")) ||
@@ -408,7 +407,7 @@ export default function SystemLogs() {
                           <div className="mt-0.5 line-clamp-2 text-xs [overflow-wrap:anywhere]" style={{ color: "var(--ink-soft)" }}>
                             {pares.slice(0, 2).map((p, i) => (
                               <span key={i} className="mr-3">
-                                {nombreCampo(p.campo)}: {valorLegible(p.antes)} → {valorLegible(p.despues)}
+                                {nombreCampo(p.campo)}: {valorLegible(p.antes, t)} → {valorLegible(p.despues, t)}
                               </span>
                             ))}
                             {pares.length > 2 && `+${pares.length - 2}`}
@@ -472,8 +471,8 @@ export default function SystemLogs() {
                                 {pares.map((p, i) => (
                                   <Fragment key={i}>
                                     <div className="border-t py-1" style={{ borderColor: "var(--hairline)" }}>{nombreCampo(p.campo)}</div>
-                                    <div className="border-t py-1 [overflow-wrap:anywhere]" style={{ borderColor: "var(--hairline)", color: "var(--ink-soft)" }}>{valorLegible(p.antes)}</div>
-                                    <div className="border-t py-1 [overflow-wrap:anywhere]" style={{ borderColor: "var(--hairline)" }}>{valorLegible(p.despues)}</div>
+                                    <div className="border-t py-1 [overflow-wrap:anywhere]" style={{ borderColor: "var(--hairline)", color: "var(--ink-soft)" }}>{valorLegible(p.antes, t)}</div>
+                                    <div className="border-t py-1 [overflow-wrap:anywhere]" style={{ borderColor: "var(--hairline)" }}>{valorLegible(p.despues, t)}</div>
                                   </Fragment>
                                 ))}
                               </div>
@@ -498,7 +497,7 @@ export default function SystemLogs() {
                               [t("ui.SystemLogs.canalTitulo", "Desde dónde"), etiquetaCanal(r.channel) || "—"],
                               [t("ui.SystemLogs.correo", "Cuenta"), r.createdByEmail || "—"],
                               [t("ui.SystemLogs.ip", "Dirección IP"), r.ip || "—"],
-                              [t("ui.SystemLogs.dispositivo", "Dispositivo"), dispositivo(r.userAgent)],
+                              [t("ui.SystemLogs.dispositivo", "Dispositivo"), nombreDispositivo(r.userAgent)],
                               [t("ui.SystemLogs.codigoHttp", "Respuesta"), r.statusCode ? String(r.statusCode) : "—"],
                               [t("ui.SystemLogs.peticion", "Referencia"), r.requestId || "—"],
                             ].map(([k, v]) => (
