@@ -41,6 +41,7 @@ import {
   type CobroDelSocioActivo,
   type ResultadoDelCobro,
 } from "@/lib/api/partnerBillingService";
+import { formatMoney } from "@/lib/formatMoney";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -61,16 +62,9 @@ import {
  * ════════════════════════════════════════════════════════════════════════════
  */
 
+/** Amounts in the partner's currency, punctuated as in its country (lib/formatMoney). */
 function dinero(cents: number, currency = "USD") {
-  // Igual que el resto de Facturación: punto decimal, coma de miles.
-  try {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: (currency || "USD").toUpperCase(),
-    }).format((cents || 0) / 100);
-  } catch {
-    return `${((cents || 0) / 100).toFixed(2)} ${currency}`;
-  }
+  return formatMoney(cents || 0, currency);
 }
 
 /** Un día civil (`YYYY-MM-DD`) o un instante, cada uno con su función. */
