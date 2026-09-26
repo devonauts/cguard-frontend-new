@@ -12467,5 +12467,15 @@
       "hecho": "Canal radio prêt : {{estaciones}} postes et {{personas}} personnes.",
       "error": "Impossible de préparer le canal radio."
     }
+  },
+  "soporte": {
+    "entrando": "Connexion en tant que support…",
+    "espera": "Un instant, nous ouvrons le CRM de l'entreprise.",
+    "vencioTitulo": "L'accès support a expiré",
+    "vencioTexto": "Ces liens durent une minute et ne servent qu'une fois. Rouvrez-le depuis votre panneau.",
+    "barra": "Vous êtes dans {{empresa}} en tant que support de {{socio}}",
+    "minutos_one": "{{count}} minute restante",
+    "minutos_other": "{{count}} minutes restantes",
+    "salir": "Quitter"
   }
 }

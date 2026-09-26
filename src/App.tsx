@@ -16,6 +16,8 @@ import AppErrorBoundary from "./components/AppErrorBoundary";
 import Login from "./pages/auth/login";
 import ForgotPassword from "./pages/auth/forgot-password";
 import ResetPassword from "./pages/auth/reset-password";
+import AccesoSoporte from "./pages/auth/AccesoSoporte";
+import BarraDeSoporte from "./components/soporte/BarraDeSoporte";
 const DashboardPage = lazy(
   () => import("./pages/admin/dashboard/control-center/ControlCenter"),
 );
@@ -604,6 +606,7 @@ const NO_CHROME_PREFIXES = [
   "/register",
   "/forgot-password",
   "/reset-password",
+  "/acceso-soporte",
   "/guard_registration",
   "/auth/",
   "/client/registration",
@@ -687,6 +690,7 @@ export default function App() {
               <IdentidadEfectivaProvider>
               <ClientSelectionProvider>
                 <CoBrowseAgent />
+                <BarraDeSoporte />
                 <BrowserRouter>
                   {/* ── EL CONTEXTO DE RADIO, POR ENCIMA DE LAS RUTAS ──────────────
                 Estaba dentro de `AppLayout`, envolviendo SÓLO al widget
@@ -832,6 +836,11 @@ export default function App() {
                             <Route
                               element={<ResetPassword />}
                               path="/reset-password"
+                            />
+                            {/* A partner's support entering from its panel. */}
+                            <Route
+                              element={<AccesoSoporte />}
+                              path="/acceso-soporte"
                             />
                             <Route
                               element={<ResetPassword />}

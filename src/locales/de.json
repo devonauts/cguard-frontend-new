@@ -12467,5 +12467,15 @@
       "hecho": "Funkkanal bereit: {{estaciones}} Posten und {{personas}} Personen.",
       "error": "Der Funkkanal konnte nicht eingerichtet werden."
     }
+  },
+  "soporte": {
+    "entrando": "Anmeldung als Support…",
+    "espera": "Einen Moment, das CRM des Unternehmens wird geöffnet.",
+    "vencioTitulo": "Der Support-Zugang ist abgelaufen",
+    "vencioTexto": "Diese Links gelten eine Minute und nur einmal. Öffnen Sie ihn erneut in Ihrem Panel.",
+    "barra": "Sie sind in {{empresa}} als Support von {{socio}}",
+    "minutos_one": "Noch {{count}} Minute",
+    "minutos_other": "Noch {{count}} Minuten",
+    "salir": "Beenden"
   }
 }

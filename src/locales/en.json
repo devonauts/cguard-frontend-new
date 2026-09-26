@@ -12520,5 +12520,15 @@
       "hecho": "Radio channel ready: {{estaciones}} posts and {{personas}} people.",
       "error": "The radio channel couldn't be set up."
     }
+  },
+  "soporte": {
+    "entrando": "Signing in as support…",
+    "espera": "One moment, opening the company's CRM.",
+    "vencioTitulo": "The support access has expired",
+    "vencioTexto": "These links last one minute and work only once. Open it again from your panel.",
+    "barra": "You are inside {{empresa}} as {{socio}} support",
+    "minutos_one": "{{count}} minute left",
+    "minutos_other": "{{count}} minutes left",
+    "salir": "Exit"
   }
 }

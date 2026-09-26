@@ -12467,5 +12467,15 @@
       "hecho": "Canale radio pronto: {{estaciones}} postazioni e {{personas}} persone.",
       "error": "Impossibile preparare il canale radio."
     }
+  },
+  "soporte": {
+    "entrando": "Accesso come supporto…",
+    "espera": "Un momento, apriamo il CRM dell'azienda.",
+    "vencioTitulo": "L'accesso di supporto è scaduto",
+    "vencioTexto": "Questi link durano un minuto e funzionano una sola volta. Riaprilo dal tuo pannello.",
+    "barra": "Sei dentro {{empresa}} come supporto di {{socio}}",
+    "minutos_one": "Resta {{count}} minuto",
+    "minutos_other": "Restano {{count}} minuti",
+    "salir": "Esci"
   }
 }

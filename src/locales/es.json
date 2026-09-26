@@ -12520,5 +12520,15 @@
       "hecho": "Canal de radio listo: {{estaciones}} puestos y {{personas}} personas.",
       "error": "No se pudo preparar el canal de radio."
     }
+  },
+  "soporte": {
+    "entrando": "Entrando como soporte…",
+    "espera": "Un momento, abrimos el CRM de la empresa.",
+    "vencioTitulo": "El acceso de soporte venció",
+    "vencioTexto": "Estos enlaces duran un minuto y sirven una sola vez. Vuelve a abrirlo desde tu panel.",
+    "barra": "Estás dentro de {{empresa}} como soporte de {{socio}}",
+    "minutos_one": "Queda {{count}} minuto",
+    "minutos_other": "Quedan {{count}} minutos",
+    "salir": "Salir"
   }
 }

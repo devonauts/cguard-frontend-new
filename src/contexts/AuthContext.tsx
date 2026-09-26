@@ -50,7 +50,7 @@ const CLAVES_DE_DISPOSITIVO = ["radio.deviceId"];
  * una a una: así lo que se añada mañana queda cubierto sin tocar esta función.
  * `sessionStorage` va también — el token no puede sobrevivir en ningún cajón.
  */
-function borrarAlmacenamientoDeSesion(): void {
+export function borrarAlmacenamientoDeSesion(): void {
   try {
     const salvados: Array<[string, string]> = [];
 

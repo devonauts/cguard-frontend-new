@@ -12467,5 +12467,15 @@
       "hecho": "Radiokanaal klaar: {{estaciones}} posten en {{personas}} personen.",
       "error": "Het radiokanaal kon niet worden ingericht."
     }
+  },
+  "soporte": {
+    "entrando": "Inloggen als support…",
+    "espera": "Een moment, we openen het CRM van het bedrijf.",
+    "vencioTitulo": "De supporttoegang is verlopen",
+    "vencioTexto": "Deze links zijn één minuut en één keer geldig. Open hem opnieuw vanuit je paneel.",
+    "barra": "Je bent in {{empresa}} als support van {{socio}}",
+    "minutos_one": "Nog {{count}} minuut",
+    "minutos_other": "Nog {{count}} minuten",
+    "salir": "Afsluiten"
   }
 }

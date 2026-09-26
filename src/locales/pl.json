@@ -12467,5 +12467,17 @@
       "hecho": "Kanał radiowy gotowy — posterunki: {{estaciones}}, osoby: {{personas}}.",
       "error": "Nie udało się przygotować kanału radiowego."
     }
+  },
+  "soporte": {
+    "entrando": "Logowanie jako wsparcie…",
+    "espera": "Chwileczkę, otwieramy CRM firmy.",
+    "vencioTitulo": "Dostęp wsparcia wygasł",
+    "vencioTexto": "Te linki działają przez minutę i tylko raz. Otwórz go ponownie ze swojego panelu.",
+    "barra": "Jesteś w {{empresa}} jako wsparcie {{socio}}",
+    "minutos_one": "Została {{count}} minuta",
+    "minutos_few": "Zostały {{count}} minuty",
+    "minutos_many": "Zostało {{count}} minut",
+    "minutos_other": "Zostało {{count}} minut",
+    "salir": "Wyjdź"
   }
 }
