@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
 
 import App from "./App.tsx";
 import { iniciarCentinela } from "./lib/centinela";
+import { instalarIdiomaEnFetch } from "./lib/idiomaElegido";
 
 // import { Provider } from "./provider.tsx";
 // Tipografía AUTOALOJADA (empaquetada — sin depender del CDN de Google, que puede
@@ -113,6 +114,7 @@ window.addEventListener("vite:preloadError", (event) => {
    render y fuera de React a propósito: mira el documento tal y como llegó,
    antes de que la aplicación empiece a añadirle cosas. No bloquea, no avisa al
    usuario y no manda nada si todo está en orden. Ver `lib/centinela`. */
+instalarIdiomaEnFetch();
 iniciarCentinela();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

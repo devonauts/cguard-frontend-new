@@ -1,3 +1,4 @@
+import { idiomaElegido } from "@/lib/idiomaElegido";
 import { getAuthToken } from "@/lib/api";
 import { resolveApiBase } from "@/lib/apiBase";
 
@@ -24,7 +25,7 @@ export function openEventStream(tenantId: string): EventSource | null {
   if (!tenantId || !token || !base) return null;
   try {
     return new EventSource(
-      `${base}/${encodeURIComponent(tenantId)}/events/stream?token=${encodeURIComponent(token)}`,
+      `${base}/${encodeURIComponent(tenantId)}/events/stream?token=${encodeURIComponent(token)}&lang=${encodeURIComponent(idiomaElegido())}`,
     );
   } catch {
     // SSE unsupported in this environment.

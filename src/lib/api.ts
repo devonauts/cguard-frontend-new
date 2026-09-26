@@ -1,3 +1,4 @@
+import { idiomaElegido } from "@/lib/idiomaElegido";
 import i18n from "@/i18n";
 import axios, { AxiosError, AxiosInstance } from "axios";
 import { toast } from "sonner";
@@ -93,12 +94,7 @@ api.interceptors.request.use((config) => {
     // 'app_language' es la clave que escribe el selector de idioma
     // (LanguageContext). 'i18nextLng' no la escribía nadie: el backend
     // localizaba con el idioma del NAVEGADOR, no con el elegido.
-    const lang =
-      localStorage.getItem("app_language") ||
-      localStorage.getItem("language") ||
-      localStorage.getItem("i18nextLng") ||
-      (typeof navigator !== "undefined" && navigator.language) ||
-      "es";
+    const lang = idiomaElegido();
 
     if (!config.headers) config.headers = {} as any;
     (config.headers as any)["Accept-Language"] = lang;
