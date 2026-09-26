@@ -11073,7 +11073,8 @@
       "y": "e",
       "yNLibres": " e {{count}} folgas",
       "yNLibres_one": " e {{count}} folga",
-      "yNLibres_other": " e {{count}} folgas"
+      "yNLibres_other": " e {{count}} folgas",
+      "fijoSinDescanso": "Fixo sem folga"
     },
     "RouteForm": {
       "asignacion": "Atribuição",

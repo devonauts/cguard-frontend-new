@@ -11595,7 +11595,8 @@
       "y": "e",
       "yNLibres": " e {{count}} giorni di riposo",
       "yNLibres_one": " e {{count}} giorno di riposo",
-      "yNLibres_other": " e {{count}} giorni di riposo"
+      "yNLibres_other": " e {{count}} giorni di riposo",
+      "fijoSinDescanso": "Fisso senza riposo"
     },
     "RouteForm": {
       "asignacion": "Assegnazione",

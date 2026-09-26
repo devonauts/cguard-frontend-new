@@ -323,8 +323,12 @@ export default function RotationStyleSelect({
         `/tenant/${tenantId}/rotation-style`,
         {
           data: {
-            name: "Fijo sin descanso",
-            description: "Trabaja todos los días",
+            // Created in the creator's language (it is saved as the company's style).
+            name: t("ui.RotationStyleSelect.fijoSinDescanso", "Fijo sin descanso"),
+            description: t(
+              "ui.RotationStyleSelect.trabajaTodosLosDias",
+              "Trabaja todos los días",
+            ),
             dayShifts: 1,
             nightShifts: 0,
             restDays: 0,

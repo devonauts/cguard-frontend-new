@@ -11595,7 +11595,8 @@
       "y": "et",
       "yNLibres": " et {{count}} jours de repos",
       "yNLibres_one": " et {{count}} jour de repos",
-      "yNLibres_other": " et {{count}} jours de repos"
+      "yNLibres_other": " et {{count}} jours de repos",
+      "fijoSinDescanso": "Fixe sans repos"
     },
     "RouteForm": {
       "asignacion": "Affectation",

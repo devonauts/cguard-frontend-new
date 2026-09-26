@@ -11637,7 +11637,8 @@
       "yNLibres_few": " i {{count}} dni wolne",
       "yNLibres_many": " i {{count}} dni wolnych",
       "yNLibres_one": " i {{count}} dzień wolny",
-      "yNLibres_other": " i {{count}} dnia wolnego"
+      "yNLibres_other": " i {{count}} dnia wolnego",
+      "fijoSinDescanso": "Stały bez dni wolnych"
     },
     "RouteForm": {
       "asignacion": "Przypisanie",

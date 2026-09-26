@@ -11595,7 +11595,8 @@
       "y": "en",
       "yNLibres": " en {{count}} vrije dagen",
       "yNLibres_one": " en {{count}} vrije dag",
-      "yNLibres_other": " en {{count}} vrije dagen"
+      "yNLibres_other": " en {{count}} vrije dagen",
+      "fijoSinDescanso": "Vast zonder rustdag"
     },
     "RouteForm": {
       "asignacion": "Toewijzing",

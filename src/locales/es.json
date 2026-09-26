@@ -11073,7 +11073,8 @@
       "y": "y",
       "yNLibres": " y {{count}} libres",
       "yNLibres_one": " y {{count}} libre",
-      "yNLibres_other": " y {{count}} libres"
+      "yNLibres_other": " y {{count}} libres",
+      "fijoSinDescanso": "Fijo sin descanso"
     },
     "RouteForm": {
       "asignacion": "Asignación",

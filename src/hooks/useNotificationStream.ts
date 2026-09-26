@@ -8,6 +8,7 @@
  * Returns the list of recent notifications and the live unread count.
  */
 
+import { idiomaElegido } from "@/lib/idiomaElegido";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { type Socket } from "socket.io-client";
 
@@ -28,6 +29,23 @@ import {
 import { resolveApiBase } from "@/lib/apiBase";
 
 const API_URL = (resolveApiBase() as string | undefined) || "";
+
+/**
+ * The server sends each live event in all eight languages (`i18n`); show the
+ * one the person chose. Without it the toast came in the company's language.
+ */
+function enMiIdioma(n: PlatformNotification): PlatformNotification {
+  const variantes = (n as any)?.i18n as
+    | Record<string, { title?: string; body?: string }>
+    | undefined;
+
+  if (!variantes) return n;
+  const elegido = idiomaElegido();
+  const base = elegido.split("-")[0].toLowerCase();
+  const v = variantes[elegido] || variantes[base === "pt" ? "pt-BR" : base];
+
+  return v && v.title ? { ...n, title: v.title, body: v.body ?? n.body } : n;
+}
 
 export interface PlatformNotification {
   id: string;
@@ -318,8 +336,9 @@ export function useNotificationStream(
         });
     });
 
-    socket.on("notification", (n: PlatformNotification) => {
-      if (destroyed || !n || !n.id) return;
+    socket.on("notification", (entrante: PlatformNotification) => {
+      if (destroyed || !entrante || !entrante.id) return;
+      const n = enMiIdioma(entrante);
       addNotification(n, false); // list dedups by id internally
 
       // Un mensaje nuevo cambia el contador del buzón: se avisa al menú lateral

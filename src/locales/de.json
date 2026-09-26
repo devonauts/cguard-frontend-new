@@ -11595,7 +11595,8 @@
       "y": "und",
       "yNLibres": " und {{count}} freie Tage",
       "yNLibres_one": " und {{count}} freier Tag",
-      "yNLibres_other": " und {{count}} freie Tage"
+      "yNLibres_other": " und {{count}} freie Tage",
+      "fijoSinDescanso": "Fest ohne Ruhetag"
     },
     "RouteForm": {
       "asignacion": "Zuweisung",
