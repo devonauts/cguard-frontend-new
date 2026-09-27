@@ -103,7 +103,9 @@ export default function AvisoDeRecarga() {
       role="alert"
       aria-live="assertive"
       className="fixed inset-x-0 top-0 z-[10000] flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 px-4 py-2 text-[13px] font-semibold text-white shadow-lg"
-      style={{ background: "var(--brand, #1d4ed8)" }}
+      // Fondo oscuro FIJO y no el color de la marca: con una marca clara (un gris,
+      // un amarillo) el texto blanco no se leía, y este aviso tiene que leerse.
+      style={{ background: "#111827" }}
     >
       <RefreshCw aria-hidden className="size-4 shrink-0 animate-spin [animation-duration:3s]" />
       <span className="text-center">
@@ -118,7 +120,7 @@ export default function AvisoDeRecarga() {
       <span className="flex items-center gap-2">
         <button
           type="button"
-          className="rounded-full bg-white px-3 py-1 text-[12.5px] font-bold text-[var(--brand,#1d4ed8)] hover:opacity-90"
+          className="rounded-full bg-white px-3 py-1 text-[12.5px] font-bold text-[#111827] hover:opacity-90"
           onClick={() => { recargando.current = true; void recargarAhora(); }}
         >
           {t("avisoDeRecarga.ahora", "Recargar ahora")}
