@@ -17351,5 +17351,12 @@
     "minutos_one": "Queda {{count}} minuto",
     "minutos_other": "Quedan {{count}} minutos",
     "salir": "Salir"
+  },
+  "avisoDeRecarga": {
+    "version": "Hay una versión nueva de {{marca}}.",
+    "plataforma": "Estamos actualizando {{marca}}.",
+    "enX": "La página se recargará en {{t}}. Guarda lo que estés escribiendo.",
+    "ahora": "Recargar ahora",
+    "esperar": "Esperar 5 min"
   }
 }

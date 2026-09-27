@@ -17351,5 +17351,12 @@
     "minutos_one": "Nog {{count}} minuut",
     "minutos_other": "Nog {{count}} minuten",
     "salir": "Afsluiten"
+  },
+  "avisoDeRecarga": {
+    "version": "Er is een nieuwe versie van {{marca}}.",
+    "plataforma": "We werken {{marca}} bij.",
+    "enX": "De pagina wordt over {{t}} opnieuw geladen. Sla op wat je aan het typen bent.",
+    "ahora": "Nu herladen",
+    "esperar": "5 min wachten"
   }
 }

@@ -17537,5 +17537,12 @@
     "minutos_many": "Zostało {{count}} minut",
     "minutos_other": "Zostało {{count}} minut",
     "salir": "Wyjdź"
+  },
+  "avisoDeRecarga": {
+    "version": "Jest nowa wersja {{marca}}.",
+    "plataforma": "Aktualizujemy {{marca}}.",
+    "enX": "Strona odświeży się za {{t}}. Zapisz to, co piszesz.",
+    "ahora": "Odśwież teraz",
+    "esperar": "Poczekaj 5 min"
   }
 }

@@ -17351,5 +17351,12 @@
     "minutos_one": "{{count}} minute left",
     "minutos_other": "{{count}} minutes left",
     "salir": "Exit"
+  },
+  "avisoDeRecarga": {
+    "version": "A new version of {{marca}} is available.",
+    "plataforma": "We're updating {{marca}}.",
+    "enX": "The page will reload in {{t}}. Save what you're typing.",
+    "ahora": "Reload now",
+    "esperar": "Wait 5 min"
   }
 }

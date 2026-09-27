@@ -43,6 +43,8 @@ import "@/styles/glass.css";
 import { Toaster } from "sonner";
 
 import OfflineBanner from "@/components/OfflineBanner";
+import AvisoDeRecarga from "@/components/AvisoDeRecarga";
+import { marcarVersionNueva, registrarActualizador } from "@/lib/recarga/recarga";
 import { startCachePersistence } from "@/lib/offline/persistCache";
 import { adelantarPerfil } from "@/lib/perfilDeLaCuenta";
 
@@ -73,10 +75,17 @@ import { PromptHost } from "@/components/ui/promptDialog";
 // SW solo duplicaría el caché sin aportar nada. window.cguardDesktop lo expone
 // el preload de Electron antes de que corra este módulo.
 if (!(window as any).cguardDesktop) {
-  registerSW({
+  /* La versión nueva ya NO recarga sola (`registerType: "prompt"` en
+     vite.config): se queda esperando y `AvisoDeRecarga` avisa con 60 s de
+     cuenta atrás antes de activarla. Ver `lib/recarga/recarga.ts`. */
+  const actualizar = registerSW({
     immediate: true,
-    // Con `autoUpdate`, en cuanto el SW nuevo toma control la página se recarga
-    // sola. Pero por defecto solo se busca actualización al CARGAR — si dejas la
+    onNeedRefresh() {
+      marcarVersionNueva();
+    },
+    // Cuando el SW encuentra versión nueva, `onNeedRefresh` abre el aviso con
+    // cuenta atrás (antes, con autoUpdate, recargaba sin avisar). Por defecto
+    // solo se busca actualización al CARGAR — si dejas la
     // pestaña abierta, un deploy nuevo no llega hasta que recargas a mano. Aquí
     // se busca cada 60 s y al volver el foco a la pestaña, para que una versión
     // nueva aparezca sola en ~1 min sin tener que cerrar nada.
@@ -95,6 +104,7 @@ if (!(window as any).cguardDesktop) {
       });
     },
   });
+  registrarActualizador(actualizar);
 }
 startCachePersistence();
 /* La identidad sale YA, en paralelo con la marca del anfitrión, en vez de
@@ -131,6 +141,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     {/* Estado de red global: solo visible sin conexión / reconectando /
             con escrituras encoladas. */}
     <OfflineBanner />
+    <AvisoDeRecarga />
     {/* Platform-styled confirm() replacement (see confirmDialog.tsx). */}
     <ConfirmHost />
     <PromptHost />

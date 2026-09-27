@@ -17351,5 +17351,12 @@
     "minutos_one": "Noch {{count}} Minute",
     "minutos_other": "Noch {{count}} Minuten",
     "salir": "Beenden"
+  },
+  "avisoDeRecarga": {
+    "version": "Eine neue Version von {{marca}} ist verfügbar.",
+    "plataforma": "Wir aktualisieren {{marca}}.",
+    "enX": "Die Seite wird in {{t}} neu geladen. Speichere, was du gerade eingibst.",
+    "ahora": "Jetzt neu laden",
+    "esperar": "5 Min. warten"
   }
 }

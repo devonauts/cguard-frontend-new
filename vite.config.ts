@@ -25,7 +25,10 @@ export default defineConfig({
       // El SW nuevo toma control apenas se publica un deploy (sin pedirle al
       // usuario que cierre pestañas). Combinado con el manejador de
       // vite:preloadError de main.tsx, un deploy a mitad de sesión ya no rompe.
-      registerType: "autoUpdate",
+      // «prompt» y no «autoUpdate»: la versión nueva ESPERA y el CRM avisa con
+      // cuenta atrás antes de recargar (ver src/lib/recarga/recarga.ts). Con
+      // autoUpdate la página se recargaba sola, sin aviso, a mitad de un parte.
+      registerType: "prompt",
       // Los iconos NO se agregan aparte al precache: el glob de abajo ya los
       // recoge desde public/, y la entrada duplicada (una sin revisión por los
       // iconos del manifest + una con revisión por el glob) hacía reventar la
