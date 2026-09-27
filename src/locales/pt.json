@@ -17358,5 +17358,10 @@
     "enX": "A página será recarregada em {{t}}. Salve o que estiver digitando.",
     "ahora": "Recarregar agora",
     "esperar": "Esperar 5 min"
+  },
+  "anuncios": {
+    "eyebrow": "Novidades de {{marca}}",
+    "entendido": "Entendi",
+    "cerrar": "Fechar"
   }
 }

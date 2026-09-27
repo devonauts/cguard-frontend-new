@@ -17358,5 +17358,10 @@
     "enX": "Die Seite wird in {{t}} neu geladen. Speichere, was du gerade eingibst.",
     "ahora": "Jetzt neu laden",
     "esperar": "5 Min. warten"
+  },
+  "anuncios": {
+    "eyebrow": "Neuigkeiten von {{marca}}",
+    "entendido": "Verstanden",
+    "cerrar": "Schließen"
   }
 }

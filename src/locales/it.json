@@ -17358,5 +17358,10 @@
     "enX": "La pagina si ricaricherà tra {{t}}. Salva quello che stai scrivendo.",
     "ahora": "Ricarica ora",
     "esperar": "Attendi 5 min"
+  },
+  "anuncios": {
+    "eyebrow": "Novità di {{marca}}",
+    "entendido": "Ho capito",
+    "cerrar": "Chiudi"
   }
 }

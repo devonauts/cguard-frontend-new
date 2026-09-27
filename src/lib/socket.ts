@@ -197,6 +197,11 @@ export function crearSocket(token: string, tenantId: string): Socket {
     }),
   );
 
+  // «Enviar ahora» de un aviso: la ventana y la franja se refrescan al momento.
+  socket.on("platform:announcement", (p: any) =>
+    window.dispatchEvent(new CustomEvent("cg:anuncio", { detail: p })),
+  );
+
   compartido = { socket, clave, usos: 1, salaMapa: 0, reengancheMapa: null };
 
   return envolver(socket);

@@ -10,6 +10,7 @@ import TenantJoinModal from "@/components/TenantJoinModal";
 import TrialBanner from "@/components/TrialBanner";
 import DemoDataBanner from "@/components/DemoDataBanner";
 import PlatformAnnouncements from "@/components/PlatformAnnouncements";
+import AnuncioEmergente from "@/components/AnuncioEmergente";
 import Breadcrumb from "@/components/ui/breadcrumb";
 import { RadioRealtimeProvider } from "@/components/radio/RadioRealtimeProvider";
 import RadioVoiceWidget from "@/components/radio/RadioVoiceWidget";
@@ -428,6 +429,8 @@ function AppLayoutShell({ children }: AppLayoutProps) {
             <DemoDataBanner />
             {/* Lo que la plataforma quiere decirle a ESTA empresa. */}
             <PlatformAnnouncements />
+            {/* La ventana con imagen y botón (avisos «popup» del superadmin). */}
+            <AnuncioEmergente />
             {/* La miga se pinta UNA vez, aquí, y sale del menú. Antes la ponía
                 cada pantalla por su cuenta: 50 copias del mismo array, con sus
                 rutas caducadas y sus nombres propios, y 87 pantallas sin

@@ -17358,5 +17358,10 @@
     "enX": "De pagina wordt over {{t}} opnieuw geladen. Sla op wat je aan het typen bent.",
     "ahora": "Nu herladen",
     "esperar": "5 min wachten"
+  },
+  "anuncios": {
+    "eyebrow": "Nieuws van {{marca}}",
+    "entendido": "Begrepen",
+    "cerrar": "Sluiten"
   }
 }

@@ -17358,5 +17358,10 @@
     "enX": "The page will reload in {{t}}. Save what you're typing.",
     "ahora": "Reload now",
     "esperar": "Wait 5 min"
+  },
+  "anuncios": {
+    "eyebrow": "News from {{marca}}",
+    "entendido": "Got it",
+    "cerrar": "Close"
   }
 }

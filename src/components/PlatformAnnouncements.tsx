@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Megaphone, X, AlertTriangle, Info } from "lucide-react";
 
-import { ApiService } from "@/services/api/apiService";
+import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
+import { acusar, cargarAvisos, conMarca, EVENTO } from "@/lib/anuncios/anuncios";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -43,34 +44,32 @@ export default function PlatformAnnouncements() {
   const { t } = useTranslation();
   const [avisos, setAvisos] = useState<Aviso[]>([]);
 
+  // La marca del anfitrión: en el dominio de un socio, su nombre (nunca el nuestro).
+  const marca = useWhiteLabel()?.platformName || "";
+
   useEffect(() => {
     let vivo = true;
-    const tenantId = localStorage.getItem("tenantId");
-
-    if (!tenantId) return;
-    (async () => {
-      try {
-        const r: any = await ApiService.get(
-          `/tenant/${tenantId}/announcements`,
-        );
-        const rows: Aviso[] = (r?.rows || r?.data?.rows || []) as Aviso[];
-
-        if (!vivo) return;
-        const fuera = leerDescartados();
-
-        setAvisos(rows.filter((a) => !a.dismissible || !fuera.includes(a.id)));
-      } catch {
-        /* sin avisos, sin ruido */
-      }
-    })();
+    const cargar = async () => {
+      const rows = (await cargarAvisos()).filter((a) => a.format !== "popup");
+      if (!vivo) return;
+      const fuera = leerDescartados();
+      setAvisos(rows.filter((a) => !a.dismissible || !fuera.includes(a.id)) as any);
+    };
+    void cargar();
+    // «Enviar ahora» desde el superadmin: aparece sin recargar.
+    const alLlegar = () => void cargar();
+    window.addEventListener(EVENTO, alLlegar);
 
     return () => {
       vivo = false;
+      window.removeEventListener(EVENTO, alLlegar);
     };
   }, []);
 
   const cerrar = (id: string) => {
     setAvisos((prev) => prev.filter((a) => a.id !== id));
+    // En el servidor: así no vuelve en otro equipo, y el superadmin sabe quién lo cerró.
+    acusar(id, "dismissed");
     try {
       const fuera = leerDescartados();
 
@@ -119,8 +118,8 @@ export default function PlatformAnnouncements() {
               )}
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold">{a.title}</p>
-              <p className="whitespace-pre-wrap text-sm opacity-80">{a.body}</p>
+              <p className="text-sm font-semibold">{conMarca(a.title, marca)}</p>
+              <p className="whitespace-pre-wrap text-sm opacity-80">{conMarca(a.body, marca)}</p>
             </div>
             {a.dismissible && (
               <button
