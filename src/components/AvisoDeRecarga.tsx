@@ -2,9 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RefreshCw } from "lucide-react";
 
-import { crearSocket, cerrarSocket } from "@/lib/socket";
 import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
-import { getAuthToken } from "@/lib/api";
 import {
   EVENTO,
   formatoCuentaAtras,
@@ -16,8 +14,8 @@ import {
  * El aviso de arriba: «La página se recargará en 0:42» con «Recargar ahora» y,
  * una sola vez, «Esperar 5 min» (para quien está a mitad de algo).
  *
- * Escucha las dos fuentes de `lib/recarga`: la versión nueva del service worker
- * y el `platform:reload` del superadmin por el socket compartido. Si llegan dos
+ * Escucha `cg:recarga`, al que llegan las dos fuentes: la versión nueva del
+ * service worker y el `platform:reload` del superadmin (lo reenvía `lib/socket`). Si llegan dos
  * peticiones, manda la que vence antes.
  */
 const POSPONER_MS = 5 * 60_000;
@@ -55,31 +53,8 @@ export default function AvisoDeRecarga() {
     return () => window.removeEventListener(EVENTO, alPedir);
   }, []);
 
-  // El socket compartido: se engancha en cuanto hay sesión (y se reintenta si todavía no).
-  useEffect(() => {
-    let socket: any = null;
-    const alRecargar = (p: any) =>
-      window.dispatchEvent(new CustomEvent(EVENTO, {
-        detail: { id: String(p?.id || Date.now()), segundos: Number(p?.segundos) || 60, motivo: "plataforma", mensaje: p?.mensaje || null },
-      }));
-    const intentar = () => {
-      if (socket) return;
-      const token = getAuthToken() || "";
-      const tenantId = localStorage.getItem("tenantId") || "";
-      if (!token || !tenantId) return;
-      socket = crearSocket(token, tenantId);
-      socket.on("platform:reload", alRecargar);
-    };
-    intentar();
-    const reintento = setInterval(intentar, 10_000);
-    return () => {
-      clearInterval(reintento);
-      if (socket) {
-        socket.off("platform:reload", alRecargar);
-        cerrarSocket(socket);
-      }
-    };
-  }, []);
+  /* El `platform:reload` del superadmin lo recoge el propio socket del CRM
+     (`lib/socket.ts`) y llega aquí como `cg:recarga`, igual que la versión nueva. */
 
   // La cuenta atrás.
   useEffect(() => {

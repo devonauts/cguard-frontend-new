@@ -1,5 +1,6 @@
 import { io, type Socket } from "socket.io-client";
 import { resolveApiBase } from "@/lib/apiBase";
+import { pedirRecarga } from "@/lib/recarga/recarga";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -180,6 +181,21 @@ export function crearSocket(token: string, tenantId: string): Socket {
     withCredentials: true,
     auth: { token, tenantId },
   });
+
+  /* «Recargar paneles» (superadmin) viaja en ESTE socket, y el oyente se pone
+     aquí, al nacer el socket, y no en un componente: el aviso escuchaba desde
+     `AvisoDeRecarga` con su propio `crearSocket`, y cuando el token cambiaba
+     (o otro consumidor reabría el compartido) su oyente moría con el socket
+     viejo y nadie lo volvía a poner — el aviso no salía. Aquí cada socket nuevo
+     lo lleva de serie. `cerrarDeVerdad` lo retira con todo lo demás. */
+  socket.on("platform:reload", (p: any) =>
+    pedirRecarga({
+      id: String(p?.id || Date.now()),
+      segundos: Number(p?.segundos) || 60,
+      motivo: "plataforma",
+      mensaje: p?.mensaje || null,
+    }),
+  );
 
   compartido = { socket, clave, usos: 1, salaMapa: 0, reengancheMapa: null };
 
