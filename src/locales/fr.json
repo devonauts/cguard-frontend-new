@@ -2783,7 +2783,8 @@
       "outside_geofence": "Hors géorepérage",
       "overtime": "Heures supplémentaires",
       "correction_pending": "Correction en attente",
-      "missing_location": "Sans localisation"
+      "missing_location": "Sans localisation",
+      "selfie_no_face": "Selfie sans visage"
     },
     "excEstado": {
       "open": "Ouverte",
@@ -10952,7 +10953,12 @@
       "semanal": "Hebdomadaire",
       "separadosPorComasReciben": "Séparés par des virgules. Ils reçoivent les alertes de présence en plus des superviseurs.",
       "sirvenParaEstimarElCosto": "Servent à estimer le coût d'un planning AVANT de le publier. Sans taux, ce panneau affiche zéro. Ils ne servent pas à calculer les salaires.",
-      "unDomingoPorLaNoche": "Un dimanche soir qui est aussi un jour férié. Dans certains pays les majorations S'ADDITIONNENT, dans d'autres seule la plus élevée s'applique : les montants sont très différents."
+      "unDomingoPorLaNoche": "Un dimanche soir qui est aussi un jour férié. Dans certains pays les majorations S'ADDITIONNENT, dans d'autres seule la plus élevée s'applique : les montants sont très différents.",
+      "comprobarCaraEnSelfie": "Vérifier que le visage est visible sur le selfie",
+      "caraOff": "Ne pas vérifier",
+      "caraFlag": "Prévenir le superviseur (pointe quand même)",
+      "caraEnforce": "Exiger : demander de refaire le selfie",
+      "caraAyuda": "Vérifie que la photo montre un visage et non le mur, le plafond ou un doigt sur la caméra. Ne reconnaît pas la personne. Avec « Exiger », la troisième tentative pointe et reste à vérifier."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Où allez-vous travailler ?",
@@ -17085,7 +17091,9 @@
       "selfie_required": "Selfie manquant",
       "station_not_found": "Le poste n’existe pas",
       "time_clock_disabled": "La pointeuse était désactivée",
-      "too_early": "Trop tôt"
+      "too_early": "Trop tôt",
+      "selfie_no_face": "Selfie sans visage (à refaire)",
+      "selfie_no_face_allowed": "Selfie sans visage (pointage accepté)"
     },
     "scheduled": "Son service : {{h}}",
     "title": "Tentatives de pointage refusées",

@@ -61,6 +61,7 @@ const TYPE_OPTIONS = [
   "missed_clockout",
   "outside_geofence",
   "missing_location",
+  "selfie_no_face",
   "early_departure",
   "overtime",
 ];

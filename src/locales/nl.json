@@ -2783,7 +2783,8 @@
       "outside_geofence": "Buiten de geofence",
       "overtime": "Overuren",
       "correction_pending": "Correctie in behandeling",
-      "missing_location": "Zonder locatie"
+      "missing_location": "Zonder locatie",
+      "selfie_no_face": "Selfie zonder gezicht"
     },
     "excEstado": {
       "open": "Open",
@@ -10952,7 +10953,12 @@
       "semanal": "Wekelijks",
       "separadosPorComasReciben": "Gescheiden door komma's. Ze ontvangen aanwezigheidsmeldingen naast de supervisors.",
       "sirvenParaEstimarElCosto": "Dienen om de kosten van een rooster te schatten VOORDAT je het publiceert. Zonder tarief toont dat paneel nul. Ze worden niet gebruikt voor de salarisberekening.",
-      "unDomingoPorLaNoche": "Een zondagavond die ook een feestdag is. In sommige landen worden toeslagen OPGETELD en in andere geldt alleen de hoogste: de bedragen verschillen sterk."
+      "unDomingoPorLaNoche": "Een zondagavond die ook een feestdag is. In sommige landen worden toeslagen OPGETELD en in andere geldt alleen de hoogste: de bedragen verschillen sterk.",
+      "comprobarCaraEnSelfie": "Controleren of het gezicht op de selfie te zien is",
+      "caraOff": "Niet controleren",
+      "caraFlag": "Leidinggevende waarschuwen (klokt toch in)",
+      "caraEnforce": "Vereisen: selfie opnieuw laten maken",
+      "caraAyuda": "Controleert of de foto een gezicht toont en niet de muur, het plafond of een vinger op de camera. Herkent de persoon niet. Bij „Vereisen” klokt de derde poging in en blijft ter controle."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Waar gaat u werken?",
@@ -17085,7 +17091,9 @@
       "selfie_required": "Selfie ontbrak",
       "station_not_found": "De post bestaat niet",
       "time_clock_disabled": "De prikklok stond uit",
-      "too_early": "Te vroeg"
+      "too_early": "Te vroeg",
+      "selfie_no_face": "Selfie zonder gezicht (opnieuw gevraagd)",
+      "selfie_no_face_allowed": "Selfie zonder gezicht (inklokken toegestaan)"
     },
     "scheduled": "Zijn dienst: {{h}}",
     "title": "Geweigerde klokpogingen",

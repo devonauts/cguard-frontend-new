@@ -10430,7 +10430,12 @@
       "semanal": "Semanal",
       "separadosPorComasReciben": "Separados por vírgulas. Recebem as ocorrências de presença além dos supervisores.",
       "sirvenParaEstimarElCosto": "Servem para estimar o custo de uma escala ANTES de publicá-la. Sem uma tarifa, esse painel mostra zero. Não são usados para calcular salários.",
-      "unDomingoPorLaNoche": "Um domingo à noite que também é feriado. Há países onde os adicionais se SOMAM e países onde vale só o maior: dão valores muito diferentes."
+      "unDomingoPorLaNoche": "Um domingo à noite que também é feriado. Há países onde os adicionais se SOMAM e países onde vale só o maior: dão valores muito diferentes.",
+      "comprobarCaraEnSelfie": "Verificar se o rosto aparece na selfie",
+      "caraOff": "Não verificar",
+      "caraFlag": "Avisar o supervisor (deixa registrar)",
+      "caraEnforce": "Exigir: pedir para repetir a selfie",
+      "caraAyuda": "Verifica se a foto mostra um rosto, e não a parede, o teto ou um dedo sobre a câmera. Não reconhece a pessoa. Com «Exigir», na terceira tentativa deixa registrar e fica para revisão."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Onde você vai trabalhar?",
@@ -15835,7 +15840,8 @@
       "outside_geofence": "Fora da cerca virtual",
       "overtime": "Hora extra",
       "correction_pending": "Correção pendente",
-      "missing_location": "Sem localização"
+      "missing_location": "Sem localização",
+      "selfie_no_face": "Selfie sem rosto"
     },
     "excEstado": {
       "open": "Aberta",
@@ -17162,7 +17168,9 @@
       "time_clock_disabled": "O relógio de ponto estava desativado",
       "license_expired": "Credencial caducada",
       "guard_profile_not_found": "Sem ficha de vigilante",
-      "station_not_found": "O posto não existe"
+      "station_not_found": "O posto não existe",
+      "selfie_no_face": "Selfie sem rosto (pediu-se repetir)",
+      "selfie_no_face_allowed": "Selfie sem rosto (deixou-se registrar)"
     },
     "scheduled": "O seu turno: {{h}}",
     "tab": "Registos",

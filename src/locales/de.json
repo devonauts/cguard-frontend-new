@@ -2783,7 +2783,8 @@
       "outside_geofence": "Außerhalb des Geofence",
       "overtime": "Überstunden",
       "correction_pending": "Korrektur offen",
-      "missing_location": "Ohne Standort"
+      "missing_location": "Ohne Standort",
+      "selfie_no_face": "Selfie ohne Gesicht"
     },
     "excEstado": {
       "open": "Offen",
@@ -10952,7 +10953,12 @@
       "semanal": "Wöchentlich",
       "separadosPorComasReciben": "Durch Kommas getrennt. Sie erhalten Anwesenheitsmeldungen zusätzlich zu den Vorgesetzten.",
       "sirvenParaEstimarElCosto": "Dienen dazu, die Kosten eines Dienstplans VOR der Veröffentlichung zu schätzen. Ohne Satz zeigt dieses Feld null. Sie werden nicht zur Lohnabrechnung verwendet.",
-      "unDomingoPorLaNoche": "Ein Sonntagabend, der zugleich Feiertag ist. In manchen Ländern werden Zuschläge ADDIERT, in anderen gilt nur der höchste: Die Beträge unterscheiden sich stark."
+      "unDomingoPorLaNoche": "Ein Sonntagabend, der zugleich Feiertag ist. In manchen Ländern werden Zuschläge ADDIERT, in anderen gilt nur der höchste: Die Beträge unterscheiden sich stark.",
+      "comprobarCaraEnSelfie": "Prüfen, ob das Gesicht auf dem Selfie zu sehen ist",
+      "caraOff": "Nicht prüfen",
+      "caraFlag": "Vorgesetzten benachrichtigen (stempelt trotzdem)",
+      "caraEnforce": "Verlangen: Selfie wiederholen lassen",
+      "caraAyuda": "Prüft, ob das Foto ein Gesicht zeigt und nicht die Wand, die Decke oder einen Finger auf der Kamera. Erkennt die Person nicht. Bei „Verlangen“ wird beim dritten Versuch gestempelt und zur Prüfung markiert."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Wo werden Sie arbeiten?",
@@ -17085,7 +17091,9 @@
       "selfie_required": "Selfie fehlte",
       "station_not_found": "Der Posten existiert nicht",
       "time_clock_disabled": "Die Stechuhr war deaktiviert",
-      "too_early": "Zu früh"
+      "too_early": "Zu früh",
+      "selfie_no_face": "Selfie ohne Gesicht (Wiederholung verlangt)",
+      "selfie_no_face_allowed": "Selfie ohne Gesicht (Stempeln erlaubt)"
     },
     "scheduled": "Seine Schicht: {{h}}",
     "title": "Abgelehnte Stempelversuche",

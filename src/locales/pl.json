@@ -2783,7 +2783,8 @@
       "outside_geofence": "Poza strefą",
       "overtime": "Nadgodziny",
       "correction_pending": "Korekta w toku",
-      "missing_location": "Bez lokalizacji"
+      "missing_location": "Bez lokalizacji",
+      "selfie_no_face": "Selfie bez twarzy"
     },
     "excEstado": {
       "open": "Otwarta",
@@ -10986,7 +10987,12 @@
       "semanal": "Tygodniowy",
       "separadosPorComasReciben": "Oddzielone przecinkami. Otrzymują powiadomienia o obecności oprócz przełożonych.",
       "sirvenParaEstimarElCosto": "Służą do oszacowania kosztu grafiku PRZED jego opublikowaniem. Bez stawki ten panel pokazuje zero. Nie są używane do rozliczania wynagrodzeń.",
-      "unDomingoPorLaNoche": "Niedzielna noc, która jest też świętem. W niektórych krajach dodatki się SUMUJĄ, a w innych obowiązuje tylko najwyższy: kwoty bardzo się różnią."
+      "unDomingoPorLaNoche": "Niedzielna noc, która jest też świętem. W niektórych krajach dodatki się SUMUJĄ, a w innych obowiązuje tylko najwyższy: kwoty bardzo się różnią.",
+      "comprobarCaraEnSelfie": "Sprawdzaj, czy na selfie widać twarz",
+      "caraOff": "Nie sprawdzaj",
+      "caraFlag": "Powiadom przełożonego (i tak odbija)",
+      "caraEnforce": "Wymagaj: poproś o ponowne selfie",
+      "caraAyuda": "Sprawdza, czy zdjęcie pokazuje twarz, a nie ścianę, sufit lub palec na aparacie. Nie rozpoznaje osoby. Przy „Wymagaj” trzecia próba odbija wejście i trafia do weryfikacji."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Gdzie odbędzie się służba?",
@@ -17269,7 +17275,9 @@
       "selfie_required": "Brak selfie",
       "station_not_found": "Posterunek nie istnieje",
       "time_clock_disabled": "Zegar był wyłączony",
-      "too_early": "Za wcześnie"
+      "too_early": "Za wcześnie",
+      "selfie_no_face": "Selfie bez twarzy (poproszono o powtórzenie)",
+      "selfie_no_face_allowed": "Selfie bez twarzy (pozwolono odbić)"
     },
     "scheduled": "Jego zmiana: {{h}}",
     "title": "Odrzucone próby rejestracji",

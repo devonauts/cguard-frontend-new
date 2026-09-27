@@ -2783,7 +2783,8 @@
       "outside_geofence": "Fuori dal geofence",
       "overtime": "Straordinario",
       "correction_pending": "Correzione in sospeso",
-      "missing_location": "Senza posizione"
+      "missing_location": "Senza posizione",
+      "selfie_no_face": "Selfie senza viso"
     },
     "excEstado": {
       "open": "Aperta",
@@ -10952,7 +10953,12 @@
       "semanal": "Settimanale",
       "separadosPorComasReciben": "Separati da virgole. Ricevono gli avvisi di presenza oltre ai supervisori.",
       "sirvenParaEstimarElCosto": "Servono a stimare il costo di un orario PRIMA di pubblicarlo. Senza una tariffa, quel pannello mostra zero. Non si usano per liquidare gli stipendi.",
-      "unDomingoPorLaNoche": "Una domenica sera che è anche festiva. In alcuni paesi le maggiorazioni si SOMMANO e in altri vale solo la più alta: gli importi sono molto diversi."
+      "unDomingoPorLaNoche": "Una domenica sera che è anche festiva. In alcuni paesi le maggiorazioni si SOMMANO e in altri vale solo la più alta: gli importi sono molto diversi.",
+      "comprobarCaraEnSelfie": "Verificare che il viso si veda nel selfie",
+      "caraOff": "Non verificare",
+      "caraFlag": "Avvisare il supervisore (timbra comunque)",
+      "caraEnforce": "Richiedere: far ripetere il selfie",
+      "caraAyuda": "Verifica che la foto mostri un viso e non il muro, il soffitto o un dito sulla fotocamera. Non riconosce la persona. Con «Richiedere», al terzo tentativo timbra e resta da verificare."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Dove vai a lavorare?",
@@ -17085,7 +17091,9 @@
       "selfie_required": "Mancava il selfie",
       "station_not_found": "Il posto non esiste",
       "time_clock_disabled": "Il timbratore era disattivato",
-      "too_early": "Troppo presto"
+      "too_early": "Troppo presto",
+      "selfie_no_face": "Selfie senza viso (chiesto di ripeterlo)",
+      "selfie_no_face_allowed": "Selfie senza viso (timbratura consentita)"
     },
     "scheduled": "Il suo turno: {{h}}",
     "title": "Tentativi di timbratura rifiutati",

@@ -10430,7 +10430,12 @@
       "semanal": "Weekly",
       "separadosPorComasReciben": "Comma-separated. They receive attendance updates in addition to supervisors.",
       "sirvenParaEstimarElCosto": "Used to estimate a schedule's cost BEFORE publishing it. Without a rate, that panel shows zero. They are not used to run payroll.",
-      "unDomingoPorLaNoche": "A Sunday night that is also a holiday. In some countries premiums ADD UP and in others only the highest applies: the amounts differ a lot."
+      "unDomingoPorLaNoche": "A Sunday night that is also a holiday. In some countries premiums ADD UP and in others only the highest applies: the amounts differ a lot.",
+      "comprobarCaraEnSelfie": "Check that the face is visible in the selfie",
+      "caraOff": "Don't check",
+      "caraFlag": "Notify the supervisor (still clocks in)",
+      "caraEnforce": "Require: ask to retake the selfie",
+      "caraAyuda": "Checks that the photo shows a face, not the wall, the ceiling or a finger over the camera. It doesn't recognize the person. With “Require”, the third attempt clocks in and is left for review."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Where will you be working?",
@@ -15835,7 +15840,8 @@
       "outside_geofence": "Outside geofence",
       "overtime": "Overtime",
       "correction_pending": "Correction pending",
-      "missing_location": "No location"
+      "missing_location": "No location",
+      "selfie_no_face": "Selfie without a face"
     },
     "excEstado": {
       "open": "Open",
@@ -17162,7 +17168,9 @@
       "time_clock_disabled": "Time clock was off",
       "license_expired": "Licence expired",
       "guard_profile_not_found": "No guard profile",
-      "station_not_found": "Post does not exist"
+      "station_not_found": "Post does not exist",
+      "selfie_no_face": "Selfie without a face (asked to retake)",
+      "selfie_no_face_allowed": "Selfie without a face (allowed to clock in)"
     },
     "scheduled": "Their shift: {{h}}",
     "tab": "Logs",

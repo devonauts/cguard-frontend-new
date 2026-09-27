@@ -10430,7 +10430,12 @@
       "semanal": "Semanal",
       "separadosPorComasReciben": "Separados por comas. Reciben las novedades de asistencia además de los supervisores.",
       "sirvenParaEstimarElCosto": "Sirven para estimar el costo de un horario ANTES de publicarlo. Sin una tarifa, ese panel muestra cero. No se usan para liquidar sueldos.",
-      "unDomingoPorLaNoche": "Un domingo por la noche que además es feriado. Hay países donde los recargos se SUMAN y países donde gana sólo el mayor: dan importes muy distintos."
+      "unDomingoPorLaNoche": "Un domingo por la noche que además es feriado. Hay países donde los recargos se SUMAN y países donde gana sólo el mayor: dan importes muy distintos.",
+      "comprobarCaraEnSelfie": "Comprobar que se vea la cara en la selfie",
+      "caraOff": "No comprobar",
+      "caraFlag": "Avisar al supervisor (deja marcar)",
+      "caraEnforce": "Exigir: pedir que repita la selfie",
+      "caraAyuda": "Revisa que en la foto haya una cara y no la pared, el techo o un dedo sobre la cámara. No reconoce a la persona. Con «Exigir», al tercer intento deja marcar y queda para revisión."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "¿Dónde vas a trabajar?",
@@ -15835,7 +15840,8 @@
       "outside_geofence": "Fuera de geocerca",
       "overtime": "Tiempo extra",
       "correction_pending": "Corrección pendiente",
-      "missing_location": "Sin ubicación"
+      "missing_location": "Sin ubicación",
+      "selfie_no_face": "Selfie sin cara"
     },
     "excEstado": {
       "open": "Abierta",
@@ -17162,7 +17168,9 @@
       "time_clock_disabled": "El reloj estaba desactivado",
       "license_expired": "Credencial vencida",
       "guard_profile_not_found": "Sin ficha de vigilante",
-      "station_not_found": "El puesto no existe"
+      "station_not_found": "El puesto no existe",
+      "selfie_no_face": "Selfie sin cara (se pidió repetirla)",
+      "selfie_no_face_allowed": "Selfie sin cara (se dejó marcar)"
     },
     "scheduled": "Su turno: {{h}}",
     "tab": "Registros",
