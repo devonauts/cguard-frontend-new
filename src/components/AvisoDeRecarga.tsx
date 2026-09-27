@@ -80,7 +80,9 @@ export default function AvisoDeRecarga() {
       className="fixed inset-x-0 top-0 z-[10000] flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 px-4 py-2 text-[13px] font-semibold text-white shadow-lg"
       // Fondo oscuro FIJO y no el color de la marca: con una marca clara (un gris,
       // un amarillo) el texto blanco no se leía, y este aviso tiene que leerse.
-      style={{ background: "#111827" }}
+      // `pointerEvents: auto`: con un diálogo de Radix abierto, el <body> queda
+      // sin clics y «Recargar ahora» no respondía.
+      style={{ background: "#111827", pointerEvents: "auto" }}
     >
       <RefreshCw aria-hidden className="size-4 shrink-0 animate-spin [animation-duration:3s]" />
       <span className="text-center">
