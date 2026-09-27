@@ -3763,7 +3763,8 @@
       },
       "toasts": {
         "updated": "Guarda atualizado com sucesso",
-        "updateError": "Erro ao atualizar guarda"
+        "updateError": "Erro ao atualizar guarda",
+        "firstNameRequired": "Escreva pelo menos o nome."
       },
       "cards": {
         "general": "Informação geral",
@@ -3838,7 +3839,7 @@
         "tokenExpired": "O link do convite expirou",
         "tokenExpires": "Convite válido até"
       },
-      "editHint": "Edite os dados pessoais e trabalhistas do vigilante.",
+      "editHint": "O e-mail e o telefone são a identidade do vigilante e se gerenciam pelo convite de acesso.",
       "nav": "Perfil",
       "noAttendance": "Sem registros de presença",
       "academic": {
@@ -8399,7 +8400,11 @@
       "radioM": "Raio (m)",
       "guardarUbicacion": "Salvar localização",
       "quitar": "Remover",
-      "dejalaVacia": "Deixe vazio para permitir a marcação sem cerca virtual. Você pode copiar as coordenadas do Google Maps."
+      "dejalaVacia": "Deixe vazio para permitir a marcação sem cerca virtual. Você pode copiar as coordenadas do Google Maps.",
+      "nombres": "Nomes*",
+      "nombresEj": "Ex.: Pablo Andrés",
+      "apellidos": "Sobrenomes",
+      "apellidosEj": "Ex.: Osorio García"
     },
     "GuardDashboard": {
       "proximoTurno": "Próximo turno",

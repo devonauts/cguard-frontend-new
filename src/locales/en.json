@@ -2338,14 +2338,15 @@
       },
       "toasts": {
         "updateError": "Error updating guard",
-        "updated": "Guard updated successfully"
+        "updated": "Guard updated successfully",
+        "firstNameRequired": "Enter at least the first name."
       },
       "values": {
         "background": "Background",
         "disabled": "Disabled",
         "enabled": "Enabled"
       },
-      "editHint": "Edit the guard's personal and employment details.",
+      "editHint": "Email and phone are the guard's identity and are managed from the access invitation.",
       "nav": "Profile",
       "noAttendance": "No attendance records",
       "academic": {
@@ -8399,7 +8400,11 @@
       "radioM": "Radius (m)",
       "guardarUbicacion": "Save location",
       "quitar": "Remove",
-      "dejalaVacia": "Leave it empty to allow clocking in without a geofence. You can copy the coordinates from Google Maps."
+      "dejalaVacia": "Leave it empty to allow clocking in without a geofence. You can copy the coordinates from Google Maps.",
+      "nombres": "First names*",
+      "nombresEj": "E.g. Pablo Andrés",
+      "apellidos": "Last names",
+      "apellidosEj": "E.g. Osorio García"
     },
     "GuardDashboard": {
       "proximoTurno": "Next shift",

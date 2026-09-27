@@ -2155,14 +2155,15 @@
       },
       "toasts": {
         "updateError": "Impossible de mettre à jour l'agent",
-        "updated": "Agent mis à jour"
+        "updated": "Agent mis à jour",
+        "firstNameRequired": "Saisissez au moins le prénom."
       },
       "values": {
         "background": "Arrière-plan",
         "disabled": "Désactivé",
         "enabled": "Activé"
       },
-      "editHint": "Modifiez les données personnelles et professionnelles de l'agent.",
+      "editHint": "L'e-mail et le téléphone sont l'identité de l'agent et se gèrent depuis l'invitation d'accès.",
       "nav": "Profil",
       "noAttendance": "Aucun pointage enregistré",
       "academic": {
@@ -8922,7 +8923,11 @@
       "radioM": "Rayon (m)",
       "guardarUbicacion": "Enregistrer l'emplacement",
       "quitar": "Retirer",
-      "dejalaVacia": "Laissez vide pour autoriser le pointage sans géorepérage. Vous pouvez copier les coordonnées depuis Google Maps."
+      "dejalaVacia": "Laissez vide pour autoriser le pointage sans géorepérage. Vous pouvez copier les coordonnées depuis Google Maps.",
+      "nombres": "Prénoms*",
+      "nombresEj": "Ex. : Pablo Andrés",
+      "apellidos": "Noms",
+      "apellidosEj": "Ex. : Osorio García"
     },
     "GuardDashboard": {
       "proximoTurno": "Prochaine vacation",

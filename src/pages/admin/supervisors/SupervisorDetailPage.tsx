@@ -335,6 +335,9 @@ export default function SupervisorDetailPage() {
   const hydrate = (s: Supervisor) => {
     setSup(s);
     setForm({
+      // El nombre vive en la cuenta: se guarda aparte (ver `save`).
+      firstName: s.firstName ?? "",
+      lastName: s.lastName ?? "",
       governmentId: s.governmentId ?? "",
       birthDate: toDateInput(s.birthDate),
       birthPlace: s.birthPlace ?? "",
@@ -381,14 +384,35 @@ export default function SupervisorDetailPage() {
     try {
       const body: Record<string, string | null> = {};
 
-      for (const k of Object.keys(form))
+      for (const k of Object.keys(form)) {
+        if (k === "firstName" || k === "lastName") continue;
         body[k] = form[k] === "" ? null : form[k];
+      }
+
+      /* EL NOMBRE, APARTE (nombres y apellidos separados): vive en la cuenta y
+         antes no se podía cambiar desde aquí. */
+      const nombres = String(form.firstName || "").trim();
+      const apellidos = String(form.lastName || "").trim();
+      const cambioDeNombre =
+        !!sup && (nombres !== (sup.firstName || "") || apellidos !== (sup.lastName || ""));
+
+      if (cambioDeNombre && !nombres) {
+        toast.error(t("guards.profile.toasts.firstNameRequired", "Escribe al menos el nombre."));
+
+        return;
+      }
+      if (cambioDeNombre && sup) await userService.cambiarNombre(sup.id, nombres, apellidos);
+
       const updated = await supervisorService.update(
         id,
         body as Partial<Supervisor>,
       );
 
-      hydrate(updated);
+      hydrate(
+        cambioDeNombre
+          ? { ...updated, firstName: nombres, lastName: apellidos, fullName: [nombres, apellidos].filter(Boolean).join(" ") }
+          : updated,
+      );
       setEditing(false);
       toast.success(t("ui.SupervisorDetail.perfilActualizado", "Perfil actualizado"));
     } catch (e: any) {
@@ -514,12 +538,29 @@ export default function SupervisorDetailPage() {
                     )}
                   >
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <ReadField
-                        label={t("ui.SupervisorDetail.nombres", "Nombres")}
-                        value={sup.firstName} />
-                      <ReadField
-                        label={t("guards.list.details.fields.lastName", "Apellidos")}
-                        value={sup.lastName} />
+                      {editing ? (
+                        <>
+                          <EditText
+                            label={t("ui.SupervisorDetail.nombres", "Nombres")}
+                            value={form.firstName}
+                            onChange={(v) => setField("firstName", v)}
+                          />
+                          <EditText
+                            label={t("guards.list.details.fields.lastName", "Apellidos")}
+                            value={form.lastName}
+                            onChange={(v) => setField("lastName", v)}
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <ReadField
+                            label={t("ui.SupervisorDetail.nombres", "Nombres")}
+                            value={sup.firstName} />
+                          <ReadField
+                            label={t("guards.list.details.fields.lastName", "Apellidos")}
+                            value={sup.lastName} />
+                        </>
+                      )}
                       {editing ? (
                         <>
                           <EditText

@@ -8,6 +8,7 @@ import { Pencil, Mail, Loader2 } from "lucide-react";
 
 import { getTenantTimezone } from "@/utils/tenantLocation";
 import securityGuardService from "@/lib/api/securityGuardService";
+import { userService } from "@/lib/api/userService";
 import { useRegistroDeFicha } from "@/layouts/FichaPersona";
 import { ApiService } from "@/services/api/apiService";
 import { Input } from "@/components/ui/input";
@@ -254,6 +255,9 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
     EDITABLE_DATE.forEach((f) => {
       next[f] = toDateInput(src[f] as string | undefined);
     });
+    // El nombre vive en el USUARIO (la cuenta), no en la ficha: se edita aparte.
+    next.firstName = src.guard?.firstName ?? "";
+    next.lastName = src.guard?.lastName ?? "";
     next.languages = Array.isArray(src.languages)
       ? src.languages.join(", ")
       : src.languages || "";
@@ -291,8 +295,29 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
         .map((s: string) => s.trim())
         .filter(Boolean);
 
+      /* EL NOMBRE, APARTE. Vive en la cuenta de la persona, no en la ficha:
+         por eso antes no se podía cambiar desde aquí. Nombres y apellidos
+         viajan separados para que un segundo nombre no acabe en los apellidos. */
+      const nombres = String(form.firstName || "").trim();
+      const apellidos = String(form.lastName || "").trim();
+      const cambioDeNombre =
+        !!data?.guard?.id &&
+        (nombres !== (data?.guard?.firstName || "") || apellidos !== (data?.guard?.lastName || ""));
+
+      if (cambioDeNombre && !nombres) {
+        toast.error(t("guards.profile.toasts.firstNameRequired", "Escribe al menos el nombre."));
+
+        return;
+      }
+      if (cambioDeNombre) await userService.cambiarNombre(String(data!.guard!.id), nombres, apellidos);
+
       await securityGuardService.update(id, payload);
-      const merged = { ...data, ...payload };
+      const merged: any = { ...data, ...payload };
+
+      if (cambioDeNombre) {
+        merged.guard = { ...(data?.guard || {}), firstName: nombres, lastName: apellidos };
+        merged.fullName = [nombres, apellidos].filter(Boolean).join(" ");
+      }
 
       setData(merged);
       savedRef.current = merged;
@@ -468,7 +493,7 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
               }}
             >
               {t("guards.profile.editHint") ||
-                "El nombre, correo y teléfono son la identidad del vigilante y se gestionan desde la invitación de acceso."}
+                "El correo y el teléfono son la identidad del vigilante y se gestionan desde la invitación de acceso."}
             </div>
           )}
 
@@ -482,14 +507,31 @@ export default function GuardProfile({ guard, onGuardUpdate }: Props) {
                 }
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <ReadField
-                    label={t("guards.profile.fields.firstName") || "Nombres"}
-                    value={data?.guard?.firstName}
-                  />
-                  <ReadField
-                    label={t("guards.profile.fields.lastName") || "Apellidos"}
-                    value={data?.guard?.lastName}
-                  />
+                  {editing && data?.guard?.id ? (
+                    <>
+                      <EditText
+                        label={t("guards.profile.fields.firstName") || "Nombres"}
+                        value={form.firstName}
+                        onChange={(v) => setField("firstName", v)}
+                      />
+                      <EditText
+                        label={t("guards.profile.fields.lastName") || "Apellidos"}
+                        value={form.lastName}
+                        onChange={(v) => setField("lastName", v)}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <ReadField
+                        label={t("guards.profile.fields.firstName") || "Nombres"}
+                        value={data?.guard?.firstName}
+                      />
+                      <ReadField
+                        label={t("guards.profile.fields.lastName") || "Apellidos"}
+                        value={data?.guard?.lastName}
+                      />
+                    </>
+                  )}
                   {editing ? (
                     <>
                       <EditText

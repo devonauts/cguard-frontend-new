@@ -334,6 +334,12 @@ export default function EditAdminUserPage() {
             [user.firstName, user.lastName].filter(Boolean).join(" ") ||
             "",
         );
+        // Nombres y apellidos por SEPARADO: con un solo campo, «Pablo Andrés
+        // Osorio García» se guardaba con «Andrés» dentro de los apellidos.
+        const [n0, ...a0] = String(user.fullName || "").trim().split(/\s+/);
+        setNombres(user.firstName ?? n0 ?? "");
+        setApellidos(user.lastName ?? a0.join(" ") ?? "");
+        setNombreOriginal({ first: user.firstName ?? "", last: user.lastName ?? "" });
         setValue("email", user.email || "");
         // Prefill the optional office location (self-attendance geofence).
         setOffice({
@@ -607,6 +613,15 @@ export default function EditAdminUserPage() {
     );
   };
 
+  const [nombres, setNombres] = useState("");
+  const [apellidos, setApellidos] = useState("");
+  const [nombreOriginal, setNombreOriginal] = useState<{ first: string; last: string } | null>(null);
+  const cambiarNombreDelFormulario = (n: string, a: string) => {
+    setNombres(n);
+    setApellidos(a);
+    setValue("name", [n.trim(), a.trim()].filter(Boolean).join(" "), { shouldValidate: true, shouldDirty: true });
+  };
+
   const onSubmit = async (values: NewAdminUserValues) => {
     try {
       const tenantId = localStorage.getItem("tenantId") || "";
@@ -646,6 +661,17 @@ export default function EditAdminUserPage() {
             // rethrow to be handled by outer catch which maps validation errors
             throw e;
           }
+        }
+        /* El PUT sólo sabe del nombre COMPLETO y lo parte por el primer espacio;
+           aquí se deja con nombres y apellidos tal cual se escribieron. */
+        if (
+          nombres.trim() &&
+          (!nombreOriginal ||
+            nombres.trim() !== nombreOriginal.first ||
+            apellidos.trim() !== nombreOriginal.last)
+        ) {
+          await userService.cambiarNombre(id, nombres.trim(), apellidos.trim());
+          setNombreOriginal({ first: nombres.trim(), last: apellidos.trim() });
         }
         toast.success(
           t("adminOfficeUsers.editUser.toasts.updated", {
@@ -737,29 +763,40 @@ export default function EditAdminUserPage() {
           <Form {...form}>
             <form onSubmit={handleSubmit(onSubmit)} className="grid gap-6">
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                {/* Nombres y apellidos separados. `name` (el nombre completo que
+                    valida el formulario) se mantiene a partir de los dos. */}
                 <FormField
                   control={control}
                   name="name"
-                  render={({ field }) => (
+                  render={() => (
                     <FormItem>
                       <FormLabel>
-                        {t("adminOfficeUsers.editUser.form.nameLabel", {
-                          defaultValue: "Nombre*",
-                        })}
+                        {t("ui.EditAdminUser.nombres", { defaultValue: "Nombres*" })}
                       </FormLabel>
                       <FormControl>
                         <Input
-                          placeholder={t(
-                            "adminOfficeUsers.editUser.form.namePlaceholder",
-                            { defaultValue: "Nombre*" },
-                          )}
-                          {...field}
+                          placeholder={t("ui.EditAdminUser.nombresEj", { defaultValue: "Ej.: Pablo Andrés" })}
+                          value={nombres}
+                          onChange={(e) => cambiarNombreDelFormulario(e.target.value, apellidos)}
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+                {/* Fuera de <FormField> a propósito: no es un campo del esquema,
+                    y `FormLabel` sin su FormField revienta en tiempo de ejecución. */}
+                <div className="grid gap-2">
+                  <label htmlFor="apellidos-usuario" className="text-sm font-medium leading-none">
+                    {t("ui.EditAdminUser.apellidos", { defaultValue: "Apellidos" })}
+                  </label>
+                  <Input
+                    id="apellidos-usuario"
+                    placeholder={t("ui.EditAdminUser.apellidosEj", { defaultValue: "Ej.: Osorio García" })}
+                    value={apellidos}
+                    onChange={(e) => cambiarNombreDelFormulario(nombres, e.target.value)}
+                  />
+                </div>
 
                 <FormField
                   control={control}

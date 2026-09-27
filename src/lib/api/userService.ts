@@ -41,6 +41,15 @@ export const userService = {
     }
   },
 
+  /** Sólo el nombre, con nombres y apellidos SEPARADOS («Pablo Andrés» /
+   *  «Osorio García»). No toca roles ni sedes. Ver backend api/user/userName.ts. */
+  async cambiarNombre(id: string, firstName: string, lastName: string) {
+    const tenantId = getTenantId();
+    const { data } = await api.patch(`/tenant/${tenantId}/user/${id}/name`, { firstName, lastName });
+
+    return data;
+  },
+
   async updateUser(id: string, data: Partial<UserUpdateData>) {
     const tenantId = getTenantId();
     const url = `/tenant/${tenantId}/user/${id}`;

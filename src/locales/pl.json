@@ -2155,14 +2155,15 @@
       },
       "toasts": {
         "updateError": "Nie udało się zaktualizować pracownika ochrony",
-        "updated": "Pracownik ochrony zaktualizowany"
+        "updated": "Pracownik ochrony zaktualizowany",
+        "firstNameRequired": "Wpisz przynajmniej imię."
       },
       "values": {
         "background": "W tle",
         "disabled": "Wyłączone",
         "enabled": "Włączone"
       },
-      "editHint": "Edytuj dane osobowe i kadrowe pracownika ochrony.",
+      "editHint": "E-mail i telefon to tożsamość pracownika ochrony i zarządza się nimi z zaproszenia do dostępu.",
       "nav": "Profil",
       "noAttendance": "Brak wpisów obecności",
       "academic": {
@@ -8924,7 +8925,11 @@
       "radioM": "Promień (m)",
       "guardarUbicacion": "Zapisz lokalizację",
       "quitar": "Usuń",
-      "dejalaVacia": "Pozostaw puste, aby zezwolić na odbijanie bez geofencingu. Współrzędne możesz skopiować z Google Maps."
+      "dejalaVacia": "Pozostaw puste, aby zezwolić na odbijanie bez geofencingu. Współrzędne możesz skopiować z Google Maps.",
+      "nombres": "Imiona*",
+      "nombresEj": "Np. Pablo Andrés",
+      "apellidos": "Nazwiska",
+      "apellidosEj": "Np. Osorio García"
     },
     "GuardDashboard": {
       "proximoTurno": "Następna zmiana",

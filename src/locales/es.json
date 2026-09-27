@@ -2338,14 +2338,15 @@
       },
       "toasts": {
         "updateError": "Error al actualizar la vigilante",
-        "updated": "Vigilante actualizado correctamente"
+        "updated": "Vigilante actualizado correctamente",
+        "firstNameRequired": "Escribe al menos el nombre."
       },
       "values": {
         "background": "Background",
         "disabled": "Deshabilitado",
         "enabled": "Habilitado"
       },
-      "editHint": "Edita los datos personales y laborales del vigilante.",
+      "editHint": "El correo y el teléfono son la identidad del vigilante y se gestionan desde la invitación de acceso.",
       "nav": "Perfil",
       "noAttendance": "Sin registros de asistencia",
       "academic": {
@@ -8399,7 +8400,11 @@
       "radioM": "Radio (m)",
       "guardarUbicacion": "Guardar ubicación",
       "quitar": "Quitar",
-      "dejalaVacia": "Déjala vacía para permitir el marcaje sin geocerca. Puedes copiar las coordenadas desde Google Maps."
+      "dejalaVacia": "Déjala vacía para permitir el marcaje sin geocerca. Puedes copiar las coordenadas desde Google Maps.",
+      "nombres": "Nombres*",
+      "nombresEj": "Ej.: Pablo Andrés",
+      "apellidos": "Apellidos",
+      "apellidosEj": "Ej.: Osorio García"
     },
     "GuardDashboard": {
       "proximoTurno": "Próximo turno",

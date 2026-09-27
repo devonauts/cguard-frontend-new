@@ -2155,14 +2155,15 @@
       },
       "toasts": {
         "updateError": "Die Wachkraft konnte nicht aktualisiert werden",
-        "updated": "Wachkraft erfolgreich aktualisiert"
+        "updated": "Wachkraft erfolgreich aktualisiert",
+        "firstNameRequired": "Gib mindestens den Vornamen ein."
       },
       "values": {
         "background": "Im Hintergrund",
         "disabled": "Deaktiviert",
         "enabled": "Aktiviert"
       },
-      "editHint": "Bearbeiten Sie die persönlichen und beruflichen Daten der Sicherheitskraft.",
+      "editHint": "E-Mail und Telefon sind die Identität der Wachkraft und werden über die Zugangseinladung verwaltet.",
       "nav": "Profil",
       "noAttendance": "Keine Anwesenheitseinträge",
       "academic": {
@@ -8922,7 +8923,11 @@
       "radioM": "Radius (m)",
       "guardarUbicacion": "Standort speichern",
       "quitar": "Entfernen",
-      "dejalaVacia": "Leer lassen, um Stempeln ohne Geozaun zu erlauben. Die Koordinaten können Sie aus Google Maps kopieren."
+      "dejalaVacia": "Leer lassen, um Stempeln ohne Geozaun zu erlauben. Die Koordinaten können Sie aus Google Maps kopieren.",
+      "nombres": "Vornamen*",
+      "nombresEj": "z. B. Pablo Andrés",
+      "apellidos": "Nachnamen",
+      "apellidosEj": "z. B. Osorio García"
     },
     "GuardDashboard": {
       "proximoTurno": "Nächste Schicht",

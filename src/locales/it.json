@@ -2155,14 +2155,15 @@
       },
       "toasts": {
         "updateError": "Errore nell'aggiornamento della guardia",
-        "updated": "Guardia aggiornata correttamente"
+        "updated": "Guardia aggiornata correttamente",
+        "firstNameRequired": "Scrivi almeno il nome."
       },
       "values": {
         "background": "In background",
         "disabled": "Disattivato",
         "enabled": "Attivato"
       },
-      "editHint": "Modifica i dati personali e lavorativi della guardia.",
+      "editHint": "L'email e il telefono sono l'identità della guardia e si gestiscono dall'invito di accesso.",
       "nav": "Profilo",
       "noAttendance": "Nessun record di presenza",
       "academic": {
@@ -8922,7 +8923,11 @@
       "radioM": "Raggio (m)",
       "guardarUbicacion": "Salva posizione",
       "quitar": "Rimuovi",
-      "dejalaVacia": "Lasciala vuota per consentire la timbratura senza geofence. Puoi copiare le coordinate da Google Maps."
+      "dejalaVacia": "Lasciala vuota per consentire la timbratura senza geofence. Puoi copiare le coordinate da Google Maps.",
+      "nombres": "Nomi*",
+      "nombresEj": "Es.: Pablo Andrés",
+      "apellidos": "Cognomi",
+      "apellidosEj": "Es.: Osorio García"
     },
     "GuardDashboard": {
       "proximoTurno": "Prossimo turno",

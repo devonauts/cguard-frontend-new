@@ -2155,14 +2155,15 @@
       },
       "toasts": {
         "updateError": "Beveiliger bijwerken mislukt",
-        "updated": "Beveiliger bijgewerkt"
+        "updated": "Beveiliger bijgewerkt",
+        "firstNameRequired": "Vul minstens de voornaam in."
       },
       "values": {
         "background": "Achtergrond",
         "disabled": "Uitgeschakeld",
         "enabled": "Ingeschakeld"
       },
-      "editHint": "Bewerk de persoons- en dienstverbandgegevens van de beveiliger.",
+      "editHint": "E-mail en telefoon zijn de identiteit van de bewaker en worden beheerd via de toegangsuitnodiging.",
       "nav": "Profiel",
       "noAttendance": "Geen aanwezigheidsregistraties",
       "academic": {
@@ -8922,7 +8923,11 @@
       "radioM": "Straal (m)",
       "guardarUbicacion": "Locatie opslaan",
       "quitar": "Verwijderen",
-      "dejalaVacia": "Laat leeg om inklokken zonder geofence toe te staan. Je kunt de coördinaten uit Google Maps kopiëren."
+      "dejalaVacia": "Laat leeg om inklokken zonder geofence toe te staan. Je kunt de coördinaten uit Google Maps kopiëren.",
+      "nombres": "Voornamen*",
+      "nombresEj": "Bijv. Pablo Andrés",
+      "apellidos": "Achternamen",
+      "apellidosEj": "Bijv. Osorio García"
     },
     "GuardDashboard": {
       "proximoTurno": "Volgende dienst",
