@@ -185,7 +185,108 @@ export function showNotificationToast(
               {n.body}
             </p>
           )}
-          <p className="cg-eyebrow mt-1.5">Ahora</p>
+          <p className="cg-eyebrow mt-1.5">
+            {i18n.t("ui.NotificationsPanel.ahora", "Ahora")}
+          </p>
+        </div>
+        <button
+          aria-label={i18n.t("actions.close", "Cerrar")}
+          className="cg-focus -m-1 grid size-9 shrink-0 place-items-center rounded-full transition-colors"
+          style={{ color: "var(--ink-faint)" }}
+          onClick={(e) => {
+            e.stopPropagation();
+            toast.dismiss(id);
+          }}
+        >
+          <X size={16} />
+        </button>
+      </div>
+    ),
+    { duration: 8000 },
+  );
+}
+
+/** Evento para abrir la bandeja desde fuera (el resumen de una ráfaga). */
+export const ABRIR_BANDEJA = "avisos:abrir";
+
+/**
+ * VARIOS AVISOS A LA VEZ = UN SOLO AVISO EMERGENTE.
+ *
+ * Los barridos del servidor escriben en el mismo tic todo lo que encuentran: a
+ * las 07:00 llegaban diecisiete tarjetas seguidas, tres a la vista y catorce en
+ * cola durante dos minutos. Ahora sale una: cuántos son, los tres primeros y
+ * un botón que abre la bandeja, donde ya están ordenados.
+ */
+export function showBurstToast(ns: PlatformNotification[]) {
+  if (!ns.length) return;
+  // Los iconos distintos de lo que llegó, como las pilas de iOS.
+  const vistos = new Set<string>();
+  const iconos = ns
+    .map((n) => ({ n, ...iconFor(n.eventType) }))
+    .filter(({ tone, Icon }) => {
+      const k = `${tone}|${Icon.displayName || Icon.name}`;
+
+      if (vistos.has(k)) return false;
+      vistos.add(k);
+
+      return true;
+    })
+    .slice(0, 3);
+  const abrir = () => window.dispatchEvent(new CustomEvent(ABRIR_BANDEJA));
+
+  toast.custom(
+    (id) => (
+      <div
+        className="glass-raised glass-hover flex w-[360px] max-w-[88vw] cursor-pointer items-start gap-3 p-3"
+        role="button"
+        tabIndex={0}
+        onClick={() => {
+          abrir();
+          toast.dismiss(id);
+        }}
+      >
+        <span className="relative mt-0.5 flex h-12 w-12 shrink-0 items-center justify-center">
+          {iconos.map(({ Icon, tone }, i) => (
+            <span
+              key={i}
+              aria-hidden
+              className="absolute grid h-8 w-8 place-items-center rounded-lg"
+              style={{
+                background: `color-mix(in oklab, ${TONE_INK[tone].fill} 18%, var(--glass-solid))`,
+                color: TONE_INK[tone].ink,
+                transform: `translate(${(i - (iconos.length - 1) / 2) * 9}px, ${(i - (iconos.length - 1) / 2) * 5}px)`,
+                boxShadow: "0 0 0 2px var(--glass-solid)",
+                zIndex: 3 - i,
+              }}
+            >
+              <Icon size={16} />
+            </span>
+          ))}
+        </span>
+        <div className="min-w-0 flex-1">
+          <p
+            className="text-sm font-semibold leading-snug"
+            style={{ color: "var(--ink)" }}
+          >
+            {i18n.t("ui.NotificationsPanel.nuevosAvisos", {
+              defaultValue: "{{n}} avisos nuevos",
+              n: ns.length,
+            })}
+          </p>
+          <ul className="mt-0.5 space-y-0.5">
+            {ns.slice(0, 3).map((n) => (
+              <li
+                key={n.id}
+                className="truncate text-xs"
+                style={{ color: "var(--ink-soft)" }}
+              >
+                {tituloLimpio(n.title)}
+              </li>
+            ))}
+          </ul>
+          <p className="cg-eyebrow mt-1.5">
+            {i18n.t("ui.NotificationsPanel.verEnLaBandeja", "Ver en la bandeja")}
+          </p>
         </div>
         <button
           aria-label={i18n.t("actions.close", "Cerrar")}

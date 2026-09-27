@@ -936,6 +936,28 @@ export const PESO_DE_PRIORIDAD: Record<PrioridadDeAviso, number> = {
   low: 0,
 };
 
+/**
+ * El nombre de cada familia, para la cabecera de su pila en la bandeja («Asistencia · 5»).
+ * Como las apps en el centro de notificaciones de iOS.
+ */
+export const NOMBRE_DE_FAMILIA: Record<FamiliaDeAviso, { etiqueta: string; claveI18n: string }> = {
+  sos: { etiqueta: "Pánico y SOS", claveI18n: "ui.avisos.familia.sos" },
+  dispatch: { etiqueta: "Despachos", claveI18n: "ui.avisos.familia.dispatch" },
+  incident: { etiqueta: "Incidentes", claveI18n: "ui.avisos.familia.incident" },
+  coverage: { etiqueta: "Cobertura", claveI18n: "ui.avisos.familia.coverage" },
+  attendance: { etiqueta: "Asistencia", claveI18n: "ui.avisos.familia.attendance" },
+  shift: { etiqueta: "Turnos", claveI18n: "ui.avisos.familia.shift" },
+  patrol: { etiqueta: "Rondas", claveI18n: "ui.avisos.familia.patrol" },
+  checkpoint: { etiqueta: "Puntos de control", claveI18n: "ui.avisos.familia.checkpoint" },
+  task: { etiqueta: "Tareas", claveI18n: "ui.avisos.familia.task" },
+  radio_report: { etiqueta: "Radio", claveI18n: "ui.avisos.familia.radio_report" },
+  memo: { etiqueta: "Memos", claveI18n: "ui.avisos.familia.memo" },
+  announcement: { etiqueta: "Comunicados", claveI18n: "ui.avisos.familia.announcement" },
+  message: { etiqueta: "Mensajes", claveI18n: "ui.avisos.familia.message" },
+  visitor: { etiqueta: "Visitas", claveI18n: "ui.avisos.familia.visitor" },
+  generic: { etiqueta: "Otros", claveI18n: "ui.avisos.familia.generic" },
+};
+
 /** La prioridad declarada de un evento; `normal` si no se conoce. */
 export function prioridadDe(eventType: string): PrioridadDeAviso {
   const e = String(eventType || "").toLowerCase();

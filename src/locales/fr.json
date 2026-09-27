@@ -14322,7 +14322,16 @@
       "notificacionesSinLeer": "Notifications ({{n}} non lues)",
       "notificacionesReconectando": "Notifications — reconnexion",
       "avisoRecibidoVigia": "Alerte reçue : {{titulo}}. Je peux vous montrer la couverture en direct et suggérer des remplaçants — dites « montre-moi » et je le fais.",
-      "muestrameLaCobertura": "Montre-moi la couverture et suggère des remplaçants pour ce qui n'est pas couvert"
+      "muestrameLaCobertura": "Montre-moi la couverture et suggère des remplaçants pour ce qui n'est pas couvert",
+      "requiereAtencion": "Requiert votre attention",
+      "hoy": "Aujourd’hui",
+      "ayer": "Hier",
+      "mostrarMenos": "Afficher moins",
+      "leerPila": "Marquer cette pile comme lue",
+      "masAvisos": "{{n}} de plus",
+      "pasoALas": "Survenu à {{hora}}",
+      "nuevosAvisos": "{{n}} nouvelles notifications",
+      "verEnLaBandeja": "Voir dans la liste"
     },
     "Passdown": {
       "registrosDeEntrega": "Registres de relève",
@@ -14818,6 +14827,23 @@
         "tareas": "Tâches et avis",
         "comunicacion": "Communication",
         "otros": "Autres"
+      },
+      "familia": {
+        "sos": "Panique et SOS",
+        "dispatch": "Interventions",
+        "incident": "Incidents",
+        "coverage": "Couverture",
+        "attendance": "Présence",
+        "shift": "Services",
+        "patrol": "Rondes",
+        "checkpoint": "Points de contrôle",
+        "task": "Tâches",
+        "radio_report": "Radio",
+        "memo": "Notes",
+        "announcement": "Annonces",
+        "message": "Messages",
+        "visitor": "Visiteurs",
+        "generic": "Autres"
       }
     },
     "MobileHubPage": {

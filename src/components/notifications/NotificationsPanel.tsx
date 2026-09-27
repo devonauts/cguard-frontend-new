@@ -1,11 +1,21 @@
 import type { PlatformNotification } from "@/hooks/useNotificationStream";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Bell, BellOff, History, Trash2, Wifi, WifiOff } from "lucide-react";
+import {
+  Bell,
+  BellOff,
+  ChevronUp,
+  History,
+  Trash2,
+  Wifi,
+  WifiOff,
+  X,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import {
+  ABRIR_BANDEJA,
   targetForNotification,
   iconFor,
   tituloLimpio,
@@ -14,11 +24,17 @@ import {
 
 import {
   GRUPOS_DE_BANDEJA,
-  PESO_DE_PRIORIDAD,
+  NOMBRE_DE_FAMILIA,
   grupoDe,
-  prioridadDe,
   type GrupoDeBandeja,
 } from "./catalogoDeAvisos";
+import {
+  organizarBandeja,
+  pasoAntesDeLlegar,
+  type Pila,
+} from "./organizarBandeja";
+
+import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -37,8 +53,8 @@ interface NotificationsPanelProps {
   onMarkAllRead: () => void;
 }
 
-function timeAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
+function timeAgo(dateStr: string, ahora = Date.now()): string {
+  const diff = ahora - new Date(dateStr).getTime();
   const m = Math.floor(diff / 60_000);
 
   if (m < 1) return i18n.t("ui.NotificationsPanel.ahora", "Ahora");
@@ -61,6 +77,36 @@ function timeAgo(dateStr: string): string {
   });
 }
 
+/** `HH:MM` en la zona de la EMPRESA, en el idioma de la persona. */
+function horaDe(v: string | undefined): string {
+  if (!v) return "";
+  try {
+    return new Intl.DateTimeFormat(i18n.language || "es", {
+      timeZone: zonaDeLaEmpresa(),
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date(v));
+  } catch {
+    return "";
+  }
+}
+
+/** Cabecera de un día: «Hoy», «Ayer» o «jueves, 24 sept.». */
+function etiquetaDeDia(dia: string, tipo: "hoy" | "ayer" | "antes"): string {
+  if (tipo === "hoy") return i18n.t("ui.NotificationsPanel.hoy", "Hoy");
+  if (tipo === "ayer") return i18n.t("ui.NotificationsPanel.ayer", "Ayer");
+  try {
+    return new Intl.DateTimeFormat(i18n.language || "es", {
+      timeZone: "UTC",
+      weekday: "long",
+      day: "numeric",
+      month: "short",
+    }).format(new Date(`${dia}T12:00:00Z`));
+  } catch {
+    return dia;
+  }
+}
+
 export function NotificationsPanel({
   notifications,
   unreadCount,
@@ -71,6 +117,34 @@ export function NotificationsPanel({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+
+  // «Hace 3 min» tiene que seguir siendo verdad un minuto después: sin esto la
+  // etiqueta se quedaba congelada hasta que algo más repintaba.
+  const [ahora, setAhora] = useState(() => Date.now());
+
+  useEffect(() => {
+    if (!open) return;
+    setAhora(Date.now());
+    const id = window.setInterval(() => setAhora(Date.now()), 30_000);
+
+    return () => window.clearInterval(id);
+  }, [open]);
+
+  // El resumen de una ráfaga abre la bandeja.
+  useEffect(() => {
+    const abrir = () => setOpen(true);
+
+    window.addEventListener(ABRIR_BANDEJA, abrir);
+
+    return () => window.removeEventListener(ABRIR_BANDEJA, abrir);
+  }, []);
+
+  // Qué pilas ha desplegado la persona (se olvida al cerrar la bandeja).
+  const [desplegadas, setDesplegadas] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (!open) setDesplegadas(new Set());
+  }, [open]);
   // The bell is an UNREAD inbox: reading or clearing removes items from here
   // (they remain in the Actividad history). "Clear all" persists to the DB.
   const visible = notifications.filter((n) => !n.read);
@@ -81,51 +155,55 @@ export function NotificationsPanel({
     navigate(targetForNotification(n));
   };
 
-  /* ── LA BANDEJA SE ORDENA POR LO QUE IMPORTA, NO POR LA HORA ────────────
-     Antes era una lista plana por hora: un pánico de hace media hora quedaba
-     enterrado bajo catorce fichajes de hace dos minutos. Ahora cada aviso cae
-     en su grupo (`grupoDe`, espejo del catálogo del servidor), los grupos van
-     en orden de urgencia y DENTRO de cada uno manda la prioridad declarada y
-     luego la hora. */
-  const porGrupo = useMemo(() => {
-    const mapa = new Map<GrupoDeBandeja, PlatformNotification[]>();
+  /* ── LA BANDEJA COMO LA DE iOS ─────────────────────────────────────────
+     Antes: por grupo y, dentro, por prioridad. El pánico no se enterraba,
+     pero las horas saltaban en cada cambio de grupo («hace 4 h, ahora, hace
+     1 h») y la bandeja se leía desordenada. Ahora: lo que requiere atención
+     arriba; lo demás por tiempo, por días, y en pilas por familia. Ver
+     `organizarBandeja`. Las pestañas siguen filtrando por grupo. */
+  const cuentaPorGrupo = useMemo(() => {
+    const m = new Map<GrupoDeBandeja, number>();
 
     for (const n of visible) {
       const g = grupoDe(n.eventType);
 
-      if (!mapa.has(g)) mapa.set(g, []);
-      mapa.get(g)!.push(n);
-    }
-    for (const lista of mapa.values()) {
-      lista.sort((a, b) => {
-        const pa = PESO_DE_PRIORIDAD[prioridadDe(a.eventType)];
-        const pb = PESO_DE_PRIORIDAD[prioridadDe(b.eventType)];
-
-        if (pa !== pb) return pb - pa;
-
-        return (
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-      });
+      m.set(g, (m.get(g) || 0) + 1);
     }
 
-    return mapa;
+    return m;
   }, [visible]);
 
   /* Sólo se ofrecen las pestañas que tienen algo. Una fila de seis filtros de
      los que cinco están vacíos es ruido, y además miente sobre lo que hay. */
   const gruposConAvisos = GRUPOS_DE_BANDEJA.filter(
-    (g) => (porGrupo.get(g.id)?.length ?? 0) > 0,
+    (g) => (cuentaPorGrupo.get(g.id) ?? 0) > 0,
   );
   const [filtro, setFiltro] = useState<GrupoDeBandeja | "todos">("todos");
   const filtroVivo =
     filtro !== "todos" && gruposConAvisos.some((g) => g.id === filtro)
       ? filtro
       : "todos";
-  const aMostrar =
-    filtroVivo === "todos"
-      ? gruposConAvisos
-      : gruposConAvisos.filter((g) => g.id === filtroVivo);
+
+  const bandeja = useMemo(
+    () =>
+      organizarBandeja(
+        filtroVivo === "todos"
+          ? visible
+          : visible.filter((n) => grupoDe(n.eventType) === filtroVivo),
+        { ahora, zona: zonaDeLaEmpresa() },
+      ),
+    [visible, filtroVivo, ahora],
+  );
+
+  const alternar = (clave: string) =>
+    setDesplegadas((prev) => {
+      const sig = new Set(prev);
+
+      if (sig.has(clave)) sig.delete(clave);
+      else sig.add(clave);
+
+      return sig;
+    });
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -246,7 +324,7 @@ export function NotificationsPanel({
                     key={g.id}
                     activo={filtroVivo === g.id}
                     etiqueta={t(g.claveI18n, g.etiqueta)}
-                    n={porGrupo.get(g.id)!.length}
+                    n={cuentaPorGrupo.get(g.id) ?? 0}
                     urgente={g.id === "emergencia"}
                     onClick={() => setFiltro(g.id)}
                   />
@@ -285,39 +363,55 @@ export function NotificationsPanel({
               </span>
             </div>
           ) : (
-            aMostrar.map((g) => (
-              <section key={g.id}>
-                {/* La cabecera sólo aparece con «Todo»: filtrando por un grupo,
-                    repetir su nombre encima de su única lista no dice nada. */}
-                {filtroVivo === "todos" && (
-                  <h3
-                    className="cg-eyebrow sticky top-0 z-10 px-4 py-2"
-                    style={{
-                      background: "var(--glass-solid)",
-                      borderBottom: "1px solid var(--hairline)",
-                      color:
-                        g.id === "emergencia"
-                          ? "var(--bad-text)"
-                          : "var(--ink-faint)",
-                    }}
+            <>
+              {bandeja.atencion.length > 0 && (
+                <section>
+                  <CabeceraDeSeccion
+                    texto={t(
+                      "ui.NotificationsPanel.requiereAtencion",
+                      "Requiere atención",
+                    )}
+                    urgente
+                  />
+                  <div
+                    className="divide-y"
+                    style={{ borderColor: "var(--hairline)" }}
                   >
-                    {t(g.claveI18n, g.etiqueta)} · {porGrupo.get(g.id)!.length}
-                  </h3>
-                )}
-                <div
-                  className="divide-y"
-                  style={{ borderColor: "var(--hairline)" }}
-                >
-                  {porGrupo.get(g.id)!.map((n) => (
-                    <NotificationItem
-                      key={n.id}
-                      notification={n}
-                      onOpen={handleOpen}
-                    />
-                  ))}
-                </div>
-              </section>
-            ))
+                    {bandeja.atencion.map((n) => (
+                      <NotificationItem
+                        key={n.id}
+                        ahora={ahora}
+                        notification={n}
+                        onOpen={handleOpen}
+                      />
+                    ))}
+                  </div>
+                </section>
+              )}
+              {bandeja.secciones.map((sec) => (
+                <section key={sec.dia}>
+                  <CabeceraDeSeccion texto={etiquetaDeDia(sec.dia, sec.tipo)} />
+                  <div
+                    className="divide-y"
+                    style={{ borderColor: "var(--hairline)" }}
+                  >
+                    {sec.pilas.map((pila) => (
+                      <PilaDeAvisos
+                        key={pila.clave}
+                        ahora={ahora}
+                        desplegada={desplegadas.has(pila.clave)}
+                        pila={pila}
+                        onAlternar={() => alternar(pila.clave)}
+                        onLeerPila={() =>
+                          pila.avisos.forEach((n) => onMarkRead(n.id))
+                        }
+                        onOpen={handleOpen}
+                      />
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </>
           )}
         </ScrollArea>
 
@@ -386,12 +480,157 @@ function ChipDeGrupo({
   );
 }
 
+/** Cabecera fija de una sección («Hoy», «Requiere atención»…). */
+function CabeceraDeSeccion({
+  texto,
+  urgente,
+}: {
+  texto: string;
+  urgente?: boolean;
+}) {
+  return (
+    <h3
+      className="cg-eyebrow sticky top-0 z-10 px-4 py-2"
+      style={{
+        background: "var(--glass-solid)",
+        borderBottom: "1px solid var(--hairline)",
+        color: urgente ? "var(--bad-text)" : "var(--ink-faint)",
+      }}
+    >
+      {texto}
+    </h3>
+  );
+}
+
+/**
+ * Una pila de avisos de la misma familia, como las de iOS: cerrada enseña el
+ * último y deja ver que hay más debajo; al pulsar se despliega entera.
+ * Con un solo aviso es una fila normal.
+ */
+function PilaDeAvisos({
+  pila,
+  desplegada,
+  ahora,
+  onAlternar,
+  onLeerPila,
+  onOpen,
+}: {
+  pila: Pila<PlatformNotification>;
+  desplegada: boolean;
+  ahora: number;
+  onAlternar: () => void;
+  onLeerPila: () => void;
+  onOpen: (n: PlatformNotification) => void;
+}) {
+  const { t } = useTranslation();
+  const [primero, ...resto] = pila.avisos;
+
+  if (!resto.length) {
+    return <NotificationItem ahora={ahora} notification={primero} onOpen={onOpen} />;
+  }
+  const nombre = NOMBRE_DE_FAMILIA[pila.familia];
+
+  return (
+    <div>
+      <div className="flex items-center justify-between gap-2 px-4 pt-2">
+        <span
+          className="truncate text-[11px] font-semibold"
+          style={{ color: "var(--ink-soft)" }}
+        >
+          {t(nombre.claveI18n, nombre.etiqueta)} · {pila.avisos.length}
+        </span>
+        <div className="flex shrink-0 items-center gap-1">
+          {desplegada && (
+            <button
+              className="cg-focus flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px]"
+              style={{
+                background: "var(--glass-sunken)",
+                color: "var(--ink-soft)",
+              }}
+              type="button"
+              onClick={onAlternar}
+            >
+              <ChevronUp className="h-3 w-3" />
+              {t("ui.NotificationsPanel.mostrarMenos", "Mostrar menos")}
+            </button>
+          )}
+          <button
+            aria-label={t(
+              "ui.NotificationsPanel.leerPila",
+              "Marcar esta pila como leída",
+            )}
+            className="cg-focus grid h-6 w-6 place-items-center rounded-full"
+            style={{
+              background: "var(--glass-sunken)",
+              color: "var(--ink-faint)",
+            }}
+            title={t(
+              "ui.NotificationsPanel.leerPila",
+              "Marcar esta pila como leída",
+            )}
+            type="button"
+            onClick={onLeerPila}
+          >
+            <X className="h-3 w-3" />
+          </button>
+        </div>
+      </div>
+      <NotificationItem ahora={ahora} notification={primero} onOpen={onOpen} />
+      {desplegada ? (
+        resto.map((n) => (
+          <NotificationItem
+            key={n.id}
+            ahora={ahora}
+            notification={n}
+            onOpen={onOpen}
+          />
+        ))
+      ) : (
+        /* Los cantos de las tarjetas de debajo, como en iOS, y la cuenta. */
+        <button
+          className="cg-focus group relative block w-full px-4 pb-2.5 text-left"
+          type="button"
+          onClick={onAlternar}
+        >
+          <span
+            aria-hidden
+            className="mx-3 block h-1.5 rounded-b-lg"
+            style={{
+              background: "color-mix(in oklab, var(--ink) 7%, transparent)",
+            }}
+          />
+          {resto.length > 1 && (
+            <span
+              aria-hidden
+              className="mx-6 block h-1.5 rounded-b-lg"
+              style={{
+                background: "color-mix(in oklab, var(--ink) 4%, transparent)",
+              }}
+            />
+          )}
+          <span
+            className="mt-1 block text-center text-[11px] font-medium group-hover:underline"
+            style={{ color: "var(--brand-text)" }}
+          >
+            {t("ui.NotificationsPanel.masAvisos", {
+              defaultValue: "{{n}} más",
+              n: resto.length,
+            })}
+          </span>
+        </button>
+      )}
+    </div>
+  );
+}
+
 function NotificationItem({
   notification: n,
   onOpen,
+  ahora,
 }: {
   notification: PlatformNotification;
   onOpen: (n: PlatformNotification) => void;
+  ahora: number;
 }) {
   // Migrated to token URLs: NotificationItem is a component, so a hook is safe.
   // payload carries only a raw privateUrl string, so useFileUrl fetches a token.
@@ -502,13 +741,28 @@ function NotificationItem({
               {n.body}
             </p>
           )}
+          {/* Llegó ahora, pero PASÓ antes: una falta se detecta a la media
+              hora de empezar el turno. Sin esta línea «hace 2 min» parecía
+              decir que el vigilante faltó hace dos minutos. */}
+          {pasoAntesDeLlegar(n) && (
+            <p
+              className="mt-0.5 text-[11px]"
+              style={{ color: "var(--ink-faint)" }}
+            >
+              {t("ui.NotificationsPanel.pasoALas", {
+                defaultValue: "Pasó a las {{hora}}",
+                hora: horaDe(n.occurredAt),
+              })}
+            </p>
+          )}
         </div>
         <div className="flex shrink-0 flex-col items-end gap-1">
           <span
             className="whitespace-nowrap text-[10px] tabular-nums"
             style={{ color: "var(--ink-faint)" }}
+            title={horaDe(n.createdAt)}
           >
-            {timeAgo(n.createdAt)}
+            {timeAgo(n.createdAt, ahora)}
           </span>
           {!n.read && (
             <span

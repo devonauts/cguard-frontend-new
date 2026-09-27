@@ -27,6 +27,9 @@ import {
   type LectorCompartido,
 } from "@/lib/lecturaCompartida";
 import { resolveApiBase } from "@/lib/apiBase";
+import { prioridadDe } from "@/components/notifications/catalogoDeAvisos";
+import { crearRafaga, type Rafaga } from "@/lib/rafaga";
+import i18n from "@/i18n";
 
 const API_URL = (resolveApiBase() as string | undefined) || "";
 
@@ -55,8 +58,26 @@ export interface PlatformNotification {
   payload?: any;
   sourceEntityType?: string;
   sourceEntityId?: string;
+  /** Cuándo LLEGÓ el aviso (cuándo lo detectó el sistema). Ordena la bandeja. */
   createdAt: string;
+  /** Cuándo PASÓ lo que avisa. Una falta se detecta a la media hora de empezar
+   *  el turno: llega «ahora», pero pasó a las 07:00. Sin él, igual a createdAt. */
+  occurredAt?: string;
   read?: boolean;
+}
+
+/**
+ * ── UNA RÁFAGA ES UN SOLO AVISO ───────────────────────────────────────────────
+ * Los barridos del servidor escriben todo lo que encuentran en el mismo tic:
+ * a las 07:00 caían diecisiete a la vez y salían diecisiete tarjetas, diecisiete
+ * campanadas. Lo que llega dentro de esta ventana se junta: uno solo sale como
+ * siempre; varios, como UN resumen («12 avisos nuevos») con UNA campanada.
+ * Las emergencias no esperan: salen en el acto y solas.
+ */
+const VENTANA_DE_RAFAGA_MS = 1_200;
+
+function esEmergencia(n: PlatformNotification): boolean {
+  return n.eventType === "panic.alert" || prioridadDe(n.eventType) === "emergency";
 }
 
 interface UseNotificationStreamResult {
@@ -74,6 +95,15 @@ interface UseNotificationStreamResult {
 }
 
 const MAX_STORED = 50;
+
+/** Reproduce la campanada sin romper nada si el navegador la bloquea. */
+function campanada(): void {
+  try {
+    playNotificationChime();
+  } catch {
+    /* best-effort */
+  }
+}
 
 // Sonido + aviso del SISTEMA deduplicados a nivel de MÓDULO: el hook se monta
 // en más de un consumidor a la vez (la campana del header y RadioRealtimeProvider)
@@ -143,6 +173,9 @@ export function olvidarSiembraDeAvisos(): void {
 export function useNotificationStream(
   tenantId: string | null | undefined,
   onLive?: (n: PlatformNotification) => void,
+  /** Varios avisos en la misma ráfaga: un solo resumen en vez de N tarjetas.
+   *  Sin él, cada uno pasa por `onLive` como siempre. */
+  onBurst?: (ns: PlatformNotification[]) => void,
 ): UseNotificationStreamResult {
   const [notifications, setNotifications] = useState<PlatformNotification[]>(
     [],
@@ -158,6 +191,11 @@ export function useNotificationStream(
   const onLiveRef = useRef(onLive);
 
   onLiveRef.current = onLive;
+  const onBurstRef = useRef(onBurst);
+
+  onBurstRef.current = onBurst;
+  // La ráfaga en curso (se crea con el socket, se cancela al desmontar).
+  const rafagaRef = useRef<Rafaga<PlatformNotification> | null>(null);
   // Event ids already alerted in this session. The backend emits one event to
   // several rooms the socket belongs to (tenant `:all` + each target role room
   // in separate io.to().emit() calls — see backend lib/realtime.ts), so the same
@@ -198,6 +236,7 @@ export function useNotificationStream(
             sourceEntityType: ev.sourceEntityType,
             sourceEntityId: ev.sourceEntityId,
             createdAt: ev.createdAt,
+            occurredAt: ev.occurredAt || ev.createdAt,
           },
           ev.deliveryStatus === "read",
         );
@@ -291,8 +330,69 @@ export function useNotificationStream(
 
     socketRef.current = socket;
 
+    /* ── AL RECONECTAR, SE RECUPERA LO PERDIDO ─────────────────────────────
+       El servidor se reinicia varias veces al día y cada reinicio corta el
+       socket. Lo que se emitió en ese hueco no llega nunca en vivo: antes
+       aparecía de golpe en la siguiente carga de página, con horas viejas y
+       sin avisar. Ahora cada reconexión vuelve a leer el historial y lo funde
+       (sin sonar: son avisos que ya pasaron). */
+    let yaConecto = false;
+
+    rafagaRef.current = crearRafaga<PlatformNotification>(
+      VENTANA_DE_RAFAGA_MS,
+      (lote) => {
+        if (destroyed) return;
+        // Audible cue for live events only — the REST backlog seed above stays
+        // silent so we don't chime on every page load. UNA por ráfaga.
+        campanada();
+        // Aviso NATIVO del sistema cuando el CRM no está a la vista (minimizado /
+        // otra pestaña / app de escritorio en segundo plano). notifyNative ya se
+        // auto-silencia con la ventana visible, así que nunca duplica el toast.
+        try {
+          if (lote.length === 1) {
+            notifyNative(lote[0].title, lote[0].body, undefined, lote[0].id);
+          } else {
+            notifyNative(
+              i18n.t("ui.NotificationsPanel.nuevosAvisos", {
+                defaultValue: "{{n}} avisos nuevos",
+                n: lote.length,
+              }),
+              lote
+                .slice(0, 3)
+                .map((x) => x.title)
+                .join(" · "),
+              undefined,
+              `rafaga-${lote[0].id}`,
+            );
+          }
+        } catch {
+          /* best-effort */
+        }
+        try {
+          if (lote.length > 1 && onBurstRef.current) {
+            onBurstRef.current(lote);
+          } else {
+            lote.forEach((x) => onLiveRef.current?.(x));
+          }
+        } catch {
+          /* best-effort */
+        }
+      },
+    );
+
     socket.on("connect", () => {
-      if (!destroyed) setConnected(true);
+      if (destroyed) return;
+      setConnected(true);
+      if (yaConecto) {
+        leerHistorial(tenantId, getAuthToken() || token, true)
+          .then((rows) => {
+            if (!destroyed) sembrar(rows);
+          })
+          .catch(() => {
+            /* la próxima reconexión lo vuelve a intentar */
+          });
+      }
+      yaConecto = true;
     });
     socket.on("disconnect", () => {
       if (!destroyed) setConnected(false);
@@ -359,43 +459,56 @@ export function useNotificationStream(
           Array.from(alertedRef.current).slice(-500),
         );
       }
-      // Chime + aviso nativo UNA sola vez por evento en toda la app (ver
-      // globallyAlerted arriba) — sin importar cuántos consumidores del stream
-      // estén montados.
-      if (!globallyAlerted.has(n.id)) {
-        globallyAlerted.add(n.id);
-        if (globallyAlerted.size > 1000) {
-          const keep = Array.from(globallyAlerted).slice(-500);
-
-          globallyAlerted.clear();
-          keep.forEach((id) => globallyAlerted.add(id));
-        }
-        // Audible cue for live events only — the REST backlog seed above stays
-        // silent so we don't chime on every page load.
+      // Un consumidor de sólo-datos con reacción propia (la radio) recibe cada
+      // evento al momento y en silencio: sonar y resumir es cosa de la campana,
+      // que es la que pasa `onBurst`.
+      if (!onBurstRef.current) {
         try {
-          playNotificationChime();
+          onLiveRef.current(n);
         } catch {
           /* best-effort */
         }
-        // Aviso NATIVO del sistema cuando el CRM no está a la vista (minimizado /
-        // otra pestaña / app de escritorio en segundo plano). notifyNative ya se
-        // auto-silencia con la ventana visible, así que nunca duplica el toast.
+
+        return;
+      }
+
+      // Chime + aviso nativo UNA sola vez por evento en toda la app (ver
+      // globallyAlerted arriba) — sin importar cuántos consumidores del stream
+      // estén montados.
+      if (globallyAlerted.has(n.id)) return;
+      globallyAlerted.add(n.id);
+      if (globallyAlerted.size > 1000) {
+        const keep = Array.from(globallyAlerted).slice(-500);
+
+        globallyAlerted.clear();
+        keep.forEach((id) => globallyAlerted.add(id));
+      }
+
+      // Emergencia: en el acto, sola, con su campanada y su aviso nativo.
+      if (esEmergencia(n)) {
+        campanada();
         try {
           notifyNative(n.title, n.body, undefined, n.id);
         } catch {
           /* best-effort */
         }
+        try {
+          onLiveRef.current(n);
+        } catch {
+          /* best-effort */
+        }
+
+        return;
       }
-      // Fire the in-CRM custom alert for the live arrival.
-      try {
-        onLiveRef.current(n);
-      } catch {
-        /* best-effort */
-      }
+
+      // Lo demás se junta con lo que llegue en el mismo instante.
+      rafagaRef.current?.meter(n);
     });
 
     return () => {
       destroyed = true;
+      rafagaRef.current?.cancelar();
+      rafagaRef.current = null;
       setConnected(false);
       cerrarSocket(socket);
       socketRef.current = null;

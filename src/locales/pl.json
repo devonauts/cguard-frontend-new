@@ -14444,7 +14444,16 @@
       "notificacionesSinLeer": "Powiadomienia (nieprzeczytane: {{n}})",
       "notificacionesReconectando": "Powiadomienia — ponowne łączenie",
       "avisoRecibidoVigia": "Otrzymano alert: {{titulo}}. Mogę pokazać obsadę na żywo i zaproponować zastępstwa — powiedz „pokaż” i to zrobię.",
-      "muestrameLaCobertura": "Pokaż obsadę i zaproponuj zastępstwa tam, gdzie brakuje obsady"
+      "muestrameLaCobertura": "Pokaż obsadę i zaproponuj zastępstwa tam, gdzie brakuje obsady",
+      "requiereAtencion": "Wymaga uwagi",
+      "hoy": "Dzisiaj",
+      "ayer": "Wczoraj",
+      "mostrarMenos": "Pokaż mniej",
+      "leerPila": "Oznacz ten stos jako przeczytany",
+      "masAvisos": "Jeszcze {{n}}",
+      "pasoALas": "Miało miejsce o {{hora}}",
+      "nuevosAvisos": "Nowe powiadomienia: {{n}}",
+      "verEnLaBandeja": "Zobacz na liście"
     },
     "Passdown": {
       "registrosDeEntrega": "Rejestry zdania służby",
@@ -14946,6 +14955,23 @@
         "tareas": "Zadania i komunikaty",
         "comunicacion": "Komunikacja",
         "otros": "Inne"
+      },
+      "familia": {
+        "sos": "Alarm i SOS",
+        "dispatch": "Wysłania",
+        "incident": "Incydenty",
+        "coverage": "Obsada",
+        "attendance": "Obecność",
+        "shift": "Zmiany",
+        "patrol": "Obchody",
+        "checkpoint": "Punkty kontrolne",
+        "task": "Zadania",
+        "radio_report": "Radio",
+        "memo": "Notatki",
+        "announcement": "Ogłoszenia",
+        "message": "Wiadomości",
+        "visitor": "Odwiedzający",
+        "generic": "Inne"
       }
     },
     "MobileHubPage": {

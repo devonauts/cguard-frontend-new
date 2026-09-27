@@ -13799,7 +13799,16 @@
       "notificacionesSinLeer": "Notificaciones ({{n}} sin leer)",
       "notificacionesReconectando": "Notificaciones — reconectando",
       "avisoRecibidoVigia": "Aviso recibido: {{titulo}}. Puedo mostrarte la cobertura en vivo y sugerir reemplazos — dime «muéstrame» y lo hago.",
-      "muestrameLaCobertura": "Muéstrame la cobertura y sugiere reemplazos para lo que esté sin cubrir"
+      "muestrameLaCobertura": "Muéstrame la cobertura y sugiere reemplazos para lo que esté sin cubrir",
+      "requiereAtencion": "Requiere atención",
+      "hoy": "Hoy",
+      "ayer": "Ayer",
+      "mostrarMenos": "Mostrar menos",
+      "leerPila": "Marcar esta pila como leída",
+      "masAvisos": "{{n}} más",
+      "pasoALas": "Pasó a las {{hora}}",
+      "nuevosAvisos": "{{n}} avisos nuevos",
+      "verEnLaBandeja": "Ver en la bandeja"
     },
     "Passdown": {
       "registrosDeEntrega": "Registros de Entrega",
@@ -14295,6 +14304,23 @@
         "tareas": "Tareas y avisos",
         "comunicacion": "Comunicación",
         "otros": "Otros"
+      },
+      "familia": {
+        "sos": "Pánico y SOS",
+        "dispatch": "Despachos",
+        "incident": "Incidentes",
+        "coverage": "Cobertura",
+        "attendance": "Asistencia",
+        "shift": "Turnos",
+        "patrol": "Rondas",
+        "checkpoint": "Puntos de control",
+        "task": "Tareas",
+        "radio_report": "Radio",
+        "memo": "Memos",
+        "announcement": "Comunicados",
+        "message": "Mensajes",
+        "visitor": "Visitas",
+        "generic": "Otros"
       }
     },
     "MobileHubPage": {

@@ -14322,7 +14322,16 @@
       "notificacionesSinLeer": "Benachrichtigungen ({{n}} ungelesen)",
       "notificacionesReconectando": "Benachrichtigungen — Verbindung wird wiederhergestellt",
       "avisoRecibidoVigia": "Meldung erhalten: {{titulo}}. Ich kann dir die Live-Abdeckung zeigen und Ersatz vorschlagen — sag „zeig es mir“ und ich mache es.",
-      "muestrameLaCobertura": "Zeig mir die Abdeckung und schlage Ersatz für alles Unbesetzte vor"
+      "muestrameLaCobertura": "Zeig mir die Abdeckung und schlage Ersatz für alles Unbesetzte vor",
+      "requiereAtencion": "Erfordert Aufmerksamkeit",
+      "hoy": "Heute",
+      "ayer": "Gestern",
+      "mostrarMenos": "Weniger anzeigen",
+      "leerPila": "Diesen Stapel als gelesen markieren",
+      "masAvisos": "{{n}} weitere",
+      "pasoALas": "Geschehen um {{hora}}",
+      "nuevosAvisos": "{{n}} neue Benachrichtigungen",
+      "verEnLaBandeja": "In der Liste ansehen"
     },
     "Passdown": {
       "registrosDeEntrega": "Protokolle der Schichtübergabe",
@@ -14818,6 +14827,23 @@
         "tareas": "Aufgaben und Hinweise",
         "comunicacion": "Kommunikation",
         "otros": "Sonstige"
+      },
+      "familia": {
+        "sos": "Panik und SOS",
+        "dispatch": "Einsätze",
+        "incident": "Vorfälle",
+        "coverage": "Besetzung",
+        "attendance": "Anwesenheit",
+        "shift": "Schichten",
+        "patrol": "Rundgänge",
+        "checkpoint": "Kontrollpunkte",
+        "task": "Aufgaben",
+        "radio_report": "Funk",
+        "memo": "Mitteilungen",
+        "announcement": "Ankündigungen",
+        "message": "Nachrichten",
+        "visitor": "Besucher",
+        "generic": "Sonstiges"
       }
     },
     "MobileHubPage": {

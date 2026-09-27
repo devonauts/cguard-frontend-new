@@ -14322,7 +14322,16 @@
       "notificacionesSinLeer": "Meldingen ({{n}} ongelezen)",
       "notificacionesReconectando": "Meldingen — opnieuw verbinden",
       "avisoRecibidoVigia": "Melding ontvangen: {{titulo}}. Ik kan je de live dekking tonen en vervangers voorstellen — zeg ‘laat zien’ en ik doe het.",
-      "muestrameLaCobertura": "Laat de dekking zien en stel vervangers voor wat niet bezet is"
+      "muestrameLaCobertura": "Laat de dekking zien en stel vervangers voor wat niet bezet is",
+      "requiereAtencion": "Vereist aandacht",
+      "hoy": "Vandaag",
+      "ayer": "Gisteren",
+      "mostrarMenos": "Minder tonen",
+      "leerPila": "Deze stapel als gelezen markeren",
+      "masAvisos": "Nog {{n}}",
+      "pasoALas": "Gebeurd om {{hora}}",
+      "nuevosAvisos": "{{n}} nieuwe meldingen",
+      "verEnLaBandeja": "Bekijken in de lijst"
     },
     "Passdown": {
       "registrosDeEntrega": "Registraties van dienstoverdracht",
@@ -14818,6 +14827,23 @@
         "tareas": "Taken en meldingen",
         "comunicacion": "Communicatie",
         "otros": "Overig"
+      },
+      "familia": {
+        "sos": "Paniek en SOS",
+        "dispatch": "Uitrukken",
+        "incident": "Incidenten",
+        "coverage": "Bezetting",
+        "attendance": "Aanwezigheid",
+        "shift": "Diensten",
+        "patrol": "Rondes",
+        "checkpoint": "Controlepunten",
+        "task": "Taken",
+        "radio_report": "Radio",
+        "memo": "Memo’s",
+        "announcement": "Mededelingen",
+        "message": "Berichten",
+        "visitor": "Bezoekers",
+        "generic": "Overig"
       }
     },
     "MobileHubPage": {

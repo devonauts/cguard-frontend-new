@@ -66,7 +66,10 @@ import {
   type PlatformNotification,
 } from "@/hooks/useNotificationStream";
 import { NotificationsPanel } from "@/components/notifications/NotificationsPanel";
-import { showNotificationToast } from "@/components/notifications/notificationToast";
+import {
+  showBurstToast,
+  showNotificationToast,
+} from "@/components/notifications/notificationToast";
 import { PanicAlertOverlay } from "@/components/notifications/PanicAlertOverlay";
 import AppErrorBoundary from "@/components/AppErrorBoundary";
 import TrialDaysBadge from "@/components/TrialDaysBadge";
@@ -332,15 +335,20 @@ export default function Header({
   }, [tenantId]);
 
   const { notifications, unreadCount, connected, markRead, markAllRead } =
-    useNotificationStream(tenantId, (n) => {
-      if (n.eventType === "panic.alert") {
-        setPanicAlerts((prev) =>
-          prev.some((a) => a.id === n.id) ? prev : [n, ...prev],
-        );
-      } else {
-        showNotificationToast(n, navigate);
-      }
-    });
+    useNotificationStream(
+      tenantId,
+      (n) => {
+        if (n.eventType === "panic.alert") {
+          setPanicAlerts((prev) =>
+            prev.some((a) => a.id === n.id) ? prev : [n, ...prev],
+          );
+        } else {
+          showNotificationToast(n, navigate);
+        }
+      },
+      // Varios a la vez: un solo resumen que abre la bandeja.
+      (ns) => showBurstToast(ns),
+    );
 
   const [openUser, setOpenUser] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);

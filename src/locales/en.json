@@ -13799,7 +13799,16 @@
       "notificacionesSinLeer": "Notifications ({{n}} unread)",
       "notificacionesReconectando": "Notifications — reconnecting",
       "avisoRecibidoVigia": "Alert received: {{titulo}}. I can show you live coverage and suggest replacements — just say “show me” and I'll do it.",
-      "muestrameLaCobertura": "Show me the coverage and suggest replacements for anything uncovered"
+      "muestrameLaCobertura": "Show me the coverage and suggest replacements for anything uncovered",
+      "requiereAtencion": "Needs attention",
+      "hoy": "Today",
+      "ayer": "Yesterday",
+      "mostrarMenos": "Show less",
+      "leerPila": "Mark this stack as read",
+      "masAvisos": "{{n}} more",
+      "pasoALas": "Happened at {{hora}}",
+      "nuevosAvisos": "{{n}} new notifications",
+      "verEnLaBandeja": "View in the tray"
     },
     "Passdown": {
       "registrosDeEntrega": "Shift Handover Logs",
@@ -14295,6 +14304,23 @@
         "tareas": "Tasks and notices",
         "comunicacion": "Communication",
         "otros": "Other"
+      },
+      "familia": {
+        "sos": "Panic and SOS",
+        "dispatch": "Dispatches",
+        "incident": "Incidents",
+        "coverage": "Coverage",
+        "attendance": "Attendance",
+        "shift": "Shifts",
+        "patrol": "Rounds",
+        "checkpoint": "Checkpoints",
+        "task": "Tasks",
+        "radio_report": "Radio",
+        "memo": "Memos",
+        "announcement": "Announcements",
+        "message": "Messages",
+        "visitor": "Visitors",
+        "generic": "Other"
       }
     },
     "MobileHubPage": {
