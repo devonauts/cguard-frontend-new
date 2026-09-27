@@ -75,6 +75,10 @@ export default function AnuncioEmergente() {
   return createPortal(
     <div
       className="fixed inset-0 z-[9000] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
+      // Si hay OTRO diálogo abierto (el asistente de alta es de Radix), Radix
+      // pone `pointer-events: none` en el <body> y esta ventana, aunque se vea
+      // encima, no recibía los clics: nadie podía pulsar «Entendido».
+      style={{ pointerEvents: "auto" }}
       onClick={() => puedeCerrar && cerrarCon("dismissed")}
     >
       <div
