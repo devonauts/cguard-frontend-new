@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { CalendarDays, Gift, Info, Megaphone, Rocket, ShieldCheck, Sparkles, Wrench, X } from "lucide-react";
@@ -68,7 +69,10 @@ export default function AnuncioEmergente() {
     else if (url) window.open(url, "_blank", "noopener,noreferrer");
   };
 
-  return (
+  /* Por PORTAL al <body>: dentro de <main> quedaba en su capa y cualquier otra
+     ventana (el asistente de alta, un diálogo) la tapaba aunque tuviera menos
+     z-index. Por debajo del aviso de recarga (10000), que manda sobre todo. */
+  return createPortal(
     <div
       className="fixed inset-0 z-[9000] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
       onClick={() => puedeCerrar && cerrarCon("dismissed")}
@@ -138,6 +142,7 @@ export default function AnuncioEmergente() {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
