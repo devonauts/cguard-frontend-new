@@ -43,7 +43,22 @@ export default function AnuncioEmergente() {
     return () => window.removeEventListener(EVENTO, alLlegar);
   }, [cargar]);
 
-  const aviso = cola[0] || null;
+  /* ── NO SE APILA ENCIMA DE OTRA VENTANA ──────────────────────────────────
+     Si ya hay un diálogo abierto (el asistente de alta, cualquier modal de
+     Radix), Radix deja fuera de juego los clics de todo lo demás: la ventana se
+     veía encima y «Entendido» no respondía. Y dos ventanas a la vez es mal
+     diseño igual. Así que espera: en cuanto la otra se cierra, aparece. */
+  const [otraVentana, setOtraVentana] = useState(false);
+  useEffect(() => {
+    const mirar = () =>
+      setOtraVentana(!!document.querySelector('[role="dialog"][data-state="open"]:not([data-aviso-plataforma]), [role="alertdialog"][data-state="open"]'));
+    mirar();
+    const obs = new MutationObserver(mirar);
+    obs.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["data-state"] });
+    return () => obs.disconnect();
+  }, []);
+
+  const aviso = otraVentana ? null : cola[0] || null;
 
   useEffect(() => {
     if (aviso && !mostrados.current.has(aviso.id)) {
@@ -84,6 +99,7 @@ export default function AnuncioEmergente() {
       <div
         role="dialog"
         aria-modal="true"
+        data-aviso-plataforma=""
         aria-labelledby={`aviso-${aviso.id}`}
         className="relative w-full max-w-lg overflow-hidden rounded-2xl bg-[var(--surface,#fff)] text-[var(--text-primary,#111827)] shadow-2xl"
         onClick={(e) => e.stopPropagation()}
