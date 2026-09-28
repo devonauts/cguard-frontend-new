@@ -14331,7 +14331,8 @@
       "masAvisos": "Nog {{n}}",
       "pasoALas": "Gebeurd om {{hora}}",
       "nuevosAvisos": "{{n}} nieuwe meldingen",
-      "verEnLaBandeja": "Bekijken in de lijst"
+      "verEnLaBandeja": "Bekijken in de lijst",
+      "borrar": "Verwijderen"
     },
     "Passdown": {
       "registrosDeEntrega": "Registraties van dienstoverdracht",

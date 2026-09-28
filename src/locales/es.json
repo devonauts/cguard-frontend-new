@@ -13808,7 +13808,8 @@
       "masAvisos": "{{n}} más",
       "pasoALas": "Pasó a las {{hora}}",
       "nuevosAvisos": "{{n}} avisos nuevos",
-      "verEnLaBandeja": "Ver en la bandeja"
+      "verEnLaBandeja": "Ver en la bandeja",
+      "borrar": "Borrar"
     },
     "Passdown": {
       "registrosDeEntrega": "Registros de Entrega",

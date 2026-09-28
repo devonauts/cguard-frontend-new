@@ -14453,7 +14453,8 @@
       "masAvisos": "Jeszcze {{n}}",
       "pasoALas": "Miało miejsce o {{hora}}",
       "nuevosAvisos": "Nowe powiadomienia: {{n}}",
-      "verEnLaBandeja": "Zobacz na liście"
+      "verEnLaBandeja": "Zobacz na liście",
+      "borrar": "Usuń"
     },
     "Passdown": {
       "registrosDeEntrega": "Rejestry zdania służby",

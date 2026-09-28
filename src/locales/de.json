@@ -14331,7 +14331,8 @@
       "masAvisos": "{{n}} weitere",
       "pasoALas": "Geschehen um {{hora}}",
       "nuevosAvisos": "{{n}} neue Benachrichtigungen",
-      "verEnLaBandeja": "In der Liste ansehen"
+      "verEnLaBandeja": "In der Liste ansehen",
+      "borrar": "Löschen"
     },
     "Passdown": {
       "registrosDeEntrega": "Protokolle der Schichtübergabe",

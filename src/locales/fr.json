@@ -14331,7 +14331,8 @@
       "masAvisos": "{{n}} de plus",
       "pasoALas": "Survenu à {{hora}}",
       "nuevosAvisos": "{{n}} nouvelles notifications",
-      "verEnLaBandeja": "Voir dans la liste"
+      "verEnLaBandeja": "Voir dans la liste",
+      "borrar": "Supprimer"
     },
     "Passdown": {
       "registrosDeEntrega": "Registres de relève",

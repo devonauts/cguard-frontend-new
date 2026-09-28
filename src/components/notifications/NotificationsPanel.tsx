@@ -28,6 +28,7 @@ import {
   grupoDe,
   type GrupoDeBandeja,
 } from "./catalogoDeAvisos";
+import { Deslizable } from "./Deslizable";
 import {
   organizarBandeja,
   pasoAntesDeLlegar,
@@ -51,6 +52,8 @@ interface NotificationsPanelProps {
   connected: boolean;
   onMarkRead: (id: string) => void;
   onMarkAllRead: () => void;
+  /** Deslizar a la izquierda: quitar de la bandeja para esta persona. */
+  onDismiss: (ids: string[]) => void;
 }
 
 function timeAgo(dateStr: string, ahora = Date.now()): string {
@@ -113,6 +116,7 @@ export function NotificationsPanel({
   connected,
   onMarkRead,
   onMarkAllRead,
+  onDismiss,
 }: NotificationsPanelProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -378,12 +382,13 @@ export function NotificationsPanel({
                     style={{ borderColor: "var(--hairline)" }}
                   >
                     {bandeja.atencion.map((n) => (
-                      <NotificationItem
-                        key={n.id}
-                        ahora={ahora}
-                        notification={n}
-                        onOpen={handleOpen}
-                      />
+                      <Deslizable key={n.id} onQuitar={() => onDismiss([n.id])}>
+                        <NotificationItem
+                          ahora={ahora}
+                          notification={n}
+                          onOpen={handleOpen}
+                        />
+                      </Deslizable>
                     ))}
                   </div>
                 </section>
@@ -402,6 +407,7 @@ export function NotificationsPanel({
                         desplegada={desplegadas.has(pila.clave)}
                         pila={pila}
                         onAlternar={() => alternar(pila.clave)}
+                        onQuitar={(ids) => onDismiss(ids)}
                         onLeerPila={() =>
                           pila.avisos.forEach((n) => onMarkRead(n.id))
                         }
@@ -513,6 +519,7 @@ function PilaDeAvisos({
   ahora,
   onAlternar,
   onLeerPila,
+  onQuitar,
   onOpen,
 }: {
   pila: Pila<PlatformNotification>;
@@ -520,13 +527,19 @@ function PilaDeAvisos({
   ahora: number;
   onAlternar: () => void;
   onLeerPila: () => void;
+  /** Deslizar: una fila suelta, o la pila entera si está cerrada (como iOS). */
+  onQuitar: (ids: string[]) => void;
   onOpen: (n: PlatformNotification) => void;
 }) {
   const { t } = useTranslation();
   const [primero, ...resto] = pila.avisos;
 
   if (!resto.length) {
-    return <NotificationItem ahora={ahora} notification={primero} onOpen={onOpen} />;
+    return (
+      <Deslizable onQuitar={() => onQuitar([primero.id])}>
+        <NotificationItem ahora={ahora} notification={primero} onOpen={onOpen} />
+      </Deslizable>
+    );
   }
   const nombre = NOMBRE_DE_FAMILIA[pila.familia];
 
@@ -575,17 +588,19 @@ function PilaDeAvisos({
           </button>
         </div>
       </div>
-      <NotificationItem ahora={ahora} notification={primero} onOpen={onOpen} />
       {desplegada ? (
-        resto.map((n) => (
-          <NotificationItem
-            key={n.id}
-            ahora={ahora}
-            notification={n}
-            onOpen={onOpen}
-          />
+        pila.avisos.map((n) => (
+          <Deslizable key={n.id} onQuitar={() => onQuitar([n.id])}>
+            <NotificationItem ahora={ahora} notification={n} onOpen={onOpen} />
+          </Deslizable>
         ))
       ) : (
+        /* Cerrada, se desliza la pila ENTERA, como en iOS. */
+        <Deslizable onQuitar={() => onQuitar(pila.avisos.map((n) => n.id))}>
+          <NotificationItem ahora={ahora} notification={primero} onOpen={onOpen} />
+        </Deslizable>
+      )}
+      {!desplegada && (
         /* Los cantos de las tarjetas de debajo, como en iOS, y la cuenta. */
         <button
           className="cg-focus group relative block w-full px-4 pb-2.5 text-left"

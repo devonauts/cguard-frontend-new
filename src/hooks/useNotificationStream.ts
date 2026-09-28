@@ -85,6 +85,8 @@ interface UseNotificationStreamResult {
   unreadCount: number;
   markRead: (id: string) => void;
   markAllRead: () => void;
+  /** Quitar de la bandeja PARA ESTA PERSONA (deslizar a la izquierda). */
+  dismiss: (ids: string[]) => void;
   connected: boolean;
   /** true mientras se lee el historial inicial (para pintar el esqueleto). */
   seeding: boolean;
@@ -274,6 +276,27 @@ export function useNotificationStream(
         method: "POST",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       }).catch(() => {});
+    },
+    [tenantId],
+  );
+
+  const dismiss = useCallback(
+    (ids: string[]) => {
+      if (!ids.length) return;
+      const quitar = new Set(ids);
+
+      setNotifications((prev) => prev.filter((n) => !quitar.has(n.id)));
+      if (!tenantId) return;
+      const token = getAuthToken();
+
+      // Por persona (`platform_event_dismissals`): a los compañeros no se les
+      // quita nada. Una petición por aviso; una pila son pocas.
+      for (const id of ids) {
+        fetch(`${API_URL}/${tenantId}/events/${id}`, {
+          method: "DELETE",
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        }).catch(() => {});
+      }
     },
     [tenantId],
   );
@@ -541,6 +564,7 @@ export function useNotificationStream(
     unreadCount,
     markRead,
     markAllRead,
+    dismiss,
     connected,
     seeding,
     seedError,

@@ -13808,7 +13808,8 @@
       "masAvisos": "{{n}} more",
       "pasoALas": "Happened at {{hora}}",
       "nuevosAvisos": "{{n}} new notifications",
-      "verEnLaBandeja": "View in the tray"
+      "verEnLaBandeja": "View in the tray",
+      "borrar": "Delete"
     },
     "Passdown": {
       "registrosDeEntrega": "Shift Handover Logs",

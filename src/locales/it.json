@@ -14331,7 +14331,8 @@
       "masAvisos": "Altre {{n}}",
       "pasoALas": "Avvenuto alle {{hora}}",
       "nuevosAvisos": "{{n}} nuove notifiche",
-      "verEnLaBandeja": "Vedi nell’elenco"
+      "verEnLaBandeja": "Vedi nell’elenco",
+      "borrar": "Elimina"
     },
     "Passdown": {
       "registrosDeEntrega": "Registri dei cambi turno",

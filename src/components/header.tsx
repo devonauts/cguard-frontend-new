@@ -334,7 +334,7 @@ export default function Header({
     };
   }, [tenantId]);
 
-  const { notifications, unreadCount, connected, markRead, markAllRead } =
+  const { notifications, unreadCount, connected, markRead, markAllRead, dismiss } =
     useNotificationStream(
       tenantId,
       (n) => {
@@ -962,6 +962,7 @@ export default function Header({
             connected={connected}
             notifications={notifications}
             unreadCount={unreadCount}
+            onDismiss={dismiss}
             onMarkAllRead={markAllRead}
             onMarkRead={markRead}
           />
