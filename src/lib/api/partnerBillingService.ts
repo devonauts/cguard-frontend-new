@@ -1,5 +1,6 @@
 import i18n from "@/i18n";
 import { ApiService } from "@/services/api/apiService";
+import api from "@/lib/api";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -67,7 +68,13 @@ export interface ReciboDelSocio {
   amountPaidCents: number;
   issuedAt: string | null;
   paidAt: string | null;
+  /** Ya no trae el texto de la pasarela: siempre null. El motivo va en `lastErrorKind`/`lastErrorCode`. */
   lastError: string | null;
+  /** De quién es el último fallo: tarjeta · autenticacion · configuracion (de tu proveedor) · temporal. */
+  lastErrorKind?: string | null;
+  lastErrorCode?: string | null;
+  /** Con qué tarjeta se pagó (sellada al cobrar). */
+  paidCard?: { brand: string | null; last4: string } | null;
   lines: LineaDeRecibo[];
 }
 
@@ -124,6 +131,21 @@ export interface PreparacionDeTarjeta {
 export const partnerBillingService = {
   resumen(): Promise<CobroDelSocio> {
     return ApiService.get(`/tenant/${tenantId()}/partner-billing`);
+  },
+  /** Tu factura en PDF (la misma que te llega por correo al pagarla). */
+  async descargarRecibo(id: string, numero: string | null): Promise<void> {
+    const { data } = await api.get(
+      `/tenant/${tenantId()}/partner-billing/invoices/${encodeURIComponent(id)}/pdf`,
+      { responseType: "blob" },
+    );
+    const url = URL.createObjectURL(data as Blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${(numero || id).replace(/[^A-Za-z0-9._-]+/g, "_")}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
   },
   /** SetupIntent en la cuenta de Stripe DEL SOCIO (su clave pública). */
   prepararTarjeta(): Promise<PreparacionDeTarjeta> {

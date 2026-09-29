@@ -162,7 +162,9 @@ describe("la vista pintada", () => {
             amountPaidCents: 0,
             issuedAt: "2026-09-01T12:00:00.000Z",
             paidAt: null,
-            lastError: "Fondos insuficientes",
+            lastError: null,
+            lastErrorKind: "tarjeta",
+            lastErrorCode: "insufficient_funds",
             lines: [],
           },
         ],
@@ -175,7 +177,8 @@ describe("la vista pintada", () => {
     expect(html).toContain("Pagar ahora");
     expect(html).toContain("R-0007");
     expect(html).toContain("Renovación mensual");
-    expect(html).toContain("Fondos insuficientes");
+    // El motivo en palabras de persona (nunca el texto de la pasarela).
+    expect(html).toContain("Tu tarjeta no tiene fondos suficientes.");
     expect(html).toContain("visa");
     expect(html).toContain("4242");
   });

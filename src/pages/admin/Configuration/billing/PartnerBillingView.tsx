@@ -85,6 +85,43 @@ async function cargarStripe(publicKey: string): Promise<Stripe> {
   return stripe;
 }
 
+/** El motivo de un cobro fallido, en el idioma de la persona. */
+function motivoDelFallo(t: (k: string, o?: any) => string, kind?: string | null, code?: string | null): string {
+  const c = String(code || "");
+  if (c === "gateway_unavailable" || kind === "temporal") {
+    return t("billing.partner.failTemporary", { defaultValue: "El sistema de pagos no respondió. Se reintentará automáticamente." });
+  }
+  if (kind === "configuracion" || c.startsWith("gateway_")) {
+    return t("billing.partner.failProvider", {
+      defaultValue: "No se pudo procesar el cobro por un problema del sistema de pagos de tu proveedor. No es tu tarjeta: ya le avisamos y se reintentará.",
+    });
+  }
+  const porCodigo: Record<string, [string, string]> = {
+    insufficient_funds: ["billing.partner.failFunds", "Tu tarjeta no tiene fondos suficientes."],
+    expired_card: ["billing.partner.failExpired", "Tu tarjeta está vencida. Añade otra para pagar."],
+    incorrect_details: ["billing.partner.failDetails", "Los datos de tu tarjeta no son correctos. Vuelve a añadirla."],
+    card_blocked: ["billing.partner.failBlocked", "Tu banco bloqueó la tarjeta. Añade otra para pagar."],
+    card_missing: ["billing.partner.failMissing", "Tu tarjeta guardada ya no está disponible. Vuelve a añadirla."],
+    authentication_required: ["billing.partner.failAuth", "Tu banco pide confirmar el pago. Pulsa «Pagar ahora» para confirmarlo."],
+  };
+  const [clave, texto] = porCodigo[c] || ["billing.partner.failCard", "Tu banco rechazó la tarjeta. Paga o actualiza tu tarjeta."];
+  return t(clave, { defaultValue: texto });
+}
+
+const MARCAS: Record<string, string> = {
+  visa: "Visa", mastercard: "Mastercard", amex: "American Express", discover: "Discover",
+  diners: "Diners Club", jcb: "JCB", unionpay: "UnionPay",
+};
+const marcaDeTarjeta = (b: string | null) => MARCAS[String(b || "").toLowerCase()] || b || "";
+
+async function descargarRecibo(id: string, numero: string | null) {
+  try {
+    await partnerBillingService.descargarRecibo(id, numero);
+  } catch {
+    /* el apiService ya enseña el aviso de error */
+  }
+}
+
 export default function PartnerBillingView({
   data,
   onRefresh,
@@ -554,16 +591,28 @@ export default function PartnerBillingView({
                     {fecha(inv.paidAt || inv.issuedAt)} ·{" "}
                     {conceptos[inv.kind] || inv.kind}
                   </div>
-                  {inv.status === "open" && inv.lastError && (
+                  {/* El motivo en palabras de persona, NUNCA el texto de la
+                      pasarela («Invalid API Key provided…» llegaba tal cual). */}
+                  {inv.status === "open" && (inv.lastErrorKind || inv.lastErrorCode) && (
                     <div
                       className="mt-1 text-xs"
-                      style={{ color: "var(--bad-text)" }}
+                      style={{ color: inv.lastErrorKind === "configuracion" ? "var(--ink-soft)" : "var(--bad-text)" }}
                     >
-                      {inv.lastError}
+                      {motivoDelFallo(t, inv.lastErrorKind, inv.lastErrorCode)}
+                    </div>
+                  )}
+                  {inv.status === "paid" && inv.paidCard && (
+                    <div className="mt-1 text-xs" style={{ color: "var(--ink-soft)" }}>
+                      {t("billing.partner.paidWith", {
+                        defaultValue: "Pagado con {{marca}} ···· {{ultimos}}",
+                        marca: marcaDeTarjeta(inv.paidCard.brand),
+                        ultimos: inv.paidCard.last4,
+                      })}
                     </div>
                   )}
                 </div>
-                <span className="shrink-0 text-sm font-semibold tabular-nums">
+                <div className="flex shrink-0 items-center gap-3">
+                  <span className="shrink-0 text-sm font-semibold tabular-nums">
                   {dinero(
                     inv.status === "paid" || inv.status === "refunded"
                       ? inv.amountPaidCents || inv.totalCents
@@ -571,6 +620,16 @@ export default function PartnerBillingView({
                     inv.currency || moneda,
                   )}
                 </span>
+                  <button
+                    type="button"
+                    className="rounded-md border px-2 py-1 text-xs font-semibold"
+                    style={{ borderColor: "var(--line)", color: "var(--ink-soft)" }}
+                    onClick={() => void descargarRecibo(inv.id, inv.number)}
+                    aria-label={t("billing.partner.downloadReceipt", { defaultValue: "Descargar la factura en PDF" })}
+                  >
+                    PDF
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -658,8 +717,17 @@ function FormularioDeTarjeta({
         setListo({ stripe, card, clientSecret: prep.clientSecret });
       } catch (e: any) {
         if (!vivo) return;
+        /* Un fallo del SERVIDOR al preparar la tarjeta (la pasarela del
+           proveedor no acepta sus claves, o no responde) se dice en palabras
+           de persona; su texto técnico no le sirve a nadie aquí. */
+        const delServidor = !!(e?.response || e?.status);
         setError(
-          e?.message && e.message !== "stripe-unavailable"
+          delServidor
+            ? t("billing.partner.cardProviderNotReady", {
+                defaultValue:
+                  "Ahora mismo no se puede añadir una tarjeta: el sistema de pagos de tu proveedor no está disponible. Ya le avisamos; vuelve a intentarlo más tarde.",
+              })
+            : e?.message && e.message !== "stripe-unavailable"
             ? e.message
             : t("billing.partner.stripeLoadError", {
                 defaultValue:
