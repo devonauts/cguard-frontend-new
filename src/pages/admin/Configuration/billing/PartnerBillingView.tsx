@@ -279,7 +279,24 @@ export default function PartnerBillingView({
             })}
           </InfoNote>
         )}
-        {status === "paused" && (
+        {/* PAUSADA SIN DEUDA: se acabó la prueba y no había tarjeta. Decir
+            «por falta de pago… hay $0.00 pendientes» confundía (E2E de
+            facturas del socio, 2026-09-29): no debe nada, le falta la tarjeta. */}
+        {status === "paused" && !(data.amountDueCents > 0) && (
+          <InfoNote
+            icon={<PauseCircle />}
+            title={t("billing.partner.pausedTrialTitle", {
+              defaultValue: "Tu periodo de prueba terminó",
+            })}
+            tone="bad"
+          >
+            {t("billing.partner.pausedTrialMsg", {
+              defaultValue:
+                "Para seguir usando este panel, añade una tarjeta. Mientras tanto las apps de campo (vigilantes, supervisores y clientes) siguen funcionando con normalidad. En cuanto la pongas, se reactiva al momento.",
+            })}
+          </InfoNote>
+        )}
+        {status === "paused" && data.amountDueCents > 0 && (
           <InfoNote
             icon={<PauseCircle />}
             title={t("billing.partner.pausedTitle", {

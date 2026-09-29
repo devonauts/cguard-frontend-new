@@ -6016,6 +6016,8 @@
       "paidOk": "Zahlung erhalten. Vielen Dank!",
       "pastDueMsg": "Sie haben eine offene Zahlung von {{importe}}. Wird sie nicht innerhalb von {{dias}} Tagen beglichen, wird das System pausiert.",
       "pausedMsg": "{{importe}} sind offen. Bis dahin kann dieses Panel nicht genutzt werden, die Außendienst-Apps (Sicherheitskräfte, Einsatzleiter und Auftraggeber) funktionieren jedoch normal weiter. Bezahlen Sie oder aktualisieren Sie Ihre Karte, um es sofort wieder freizuschalten.",
+      "pausedTrialTitle": "Ihr Testzeitraum ist abgelaufen",
+      "pausedTrialMsg": "Um dieses Panel weiter zu nutzen, hinterlegen Sie eine Karte. Bis dahin funktionieren die Außendienst-Apps (Sicherheitskräfte, Einsatzleiter und Auftraggeber) normal weiter. Sobald Sie sie hinzufügen, wird es sofort wieder freigeschaltet.",
       "pausedNoData": "Ihr Abonnement ist wegen Zahlungsverzug pausiert und die Details konnten nicht geladen werden. Laden Sie die Seite neu oder wenden Sie sich an Ihren Anbieter.",
       "pausedTitle": "Das System ist wegen Zahlungsverzug pausiert",
       "payError": "Die Zahlung konnte nicht verarbeitet werden",

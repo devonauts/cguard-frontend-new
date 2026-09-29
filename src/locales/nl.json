@@ -6016,6 +6016,8 @@
       "paidOk": "Betaling ontvangen. Bedankt!",
       "pastDueMsg": "Je hebt een openstaande betaling van {{importe}}. Als deze niet binnen {{dias}} dagen wordt betaald, wordt het systeem gepauzeerd.",
       "pausedMsg": "Er staat {{importe}} open. Tot dan kan dit paneel niet worden gebruikt, maar de veldapps (beveiligers, supervisors en opdrachtgevers) blijven gewoon werken. Betaal of werk je kaart bij om het direct weer te activeren.",
+      "pausedTrialTitle": "Je proefperiode is afgelopen",
+      "pausedTrialMsg": "Voeg een kaart toe om dit paneel te blijven gebruiken. Intussen blijven de veldapps (beveiligers, supervisors en opdrachtgevers) gewoon werken. Zodra je hem toevoegt, wordt het direct weer geactiveerd.",
       "pausedNoData": "Je abonnement is gepauzeerd wegens niet-betaling en we konden de details niet laden. Laad de pagina opnieuw of neem contact op met je leverancier.",
       "pausedTitle": "Het systeem is gepauzeerd wegens niet-betaling",
       "payError": "De betaling kon niet worden verwerkt",

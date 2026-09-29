@@ -1002,13 +1002,19 @@ function WelcomeStep({
       </div>
 
       <div className="mx-auto flex max-w-sm flex-col items-center gap-1.5">
-        <Badge
-          className="gap-1.5 border-0 px-3 py-1 text-sm"
-          style={{ background: "var(--brand)", color: "var(--brand-ink)" }}
-        >
-          <Gift className="h-3.5 w-3.5" />{" "}
-          {t("onboarding.wizard.welcome.trialBadge", "Prueba gratis")}
-        </Badge>
+        {/* «Prueba gratis» SÓLO con días de prueba por delante. Una empresa
+            con la prueba vencida (o pausada por su proveedor) lo veía igual —
+            lo destapó la E2E de facturas del socio, 2026-09-29. La prueba de
+            una empresa de socio se explica en Plan y facturación. */}
+        {days !== null && days > 0 && (
+          <Badge
+            className="gap-1.5 border-0 px-3 py-1 text-sm"
+            style={{ background: "var(--brand)", color: "var(--brand-ink)" }}
+          >
+            <Gift className="h-3.5 w-3.5" />{" "}
+            {t("onboarding.wizard.welcome.trialBadge", "Prueba gratis")}
+          </Badge>
+        )}
         {trialEnd && (
           <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <CalendarClock className="h-3.5 w-3.5" />

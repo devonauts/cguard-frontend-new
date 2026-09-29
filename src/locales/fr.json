@@ -6016,6 +6016,8 @@
       "paidOk": "Paiement effectué. Merci !",
       "pastDueMsg": "Vous avez un paiement en attente de {{importe}}. S'il n'est pas réglé sous {{dias}} jours, le système sera suspendu.",
       "pausedMsg": "{{importe}} reste à régler. En attendant, ce panneau est inutilisable, mais les applications de terrain (agents, superviseurs et clients) continuent de fonctionner normalement. Payez ou mettez à jour votre carte pour le réactiver immédiatement.",
+      "pausedTrialTitle": "Votre période d'essai est terminée",
+      "pausedTrialMsg": "Pour continuer à utiliser ce panneau, ajoutez une carte. En attendant, les applications de terrain (agents, superviseurs et clients) continuent de fonctionner normalement. Dès que vous l'ajoutez, il est réactivé immédiatement.",
       "pausedNoData": "Votre abonnement est suspendu pour défaut de paiement et nous n'avons pas pu charger le détail. Rechargez la page ou contactez votre fournisseur.",
       "pausedTitle": "Le système est suspendu pour défaut de paiement",
       "payError": "Impossible de traiter le paiement",

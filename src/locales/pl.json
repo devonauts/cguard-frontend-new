@@ -6016,6 +6016,8 @@
       "paidOk": "Płatność zrealizowana. Dziękujemy!",
       "pastDueMsg": "Masz zaległą płatność w wysokości {{importe}}. Jeśli nie zostanie opłacona w ciągu {{dias}} dni, system zostanie wstrzymany.",
       "pausedMsg": "Do zapłaty pozostaje {{importe}}. Do tego czasu tego panelu nie można używać, ale aplikacje terenowe (ochroniarze, nadzorcy i zleceniodawcy) działają normalnie. Zapłać lub zaktualizuj kartę, aby od razu go odblokować.",
+      "pausedTrialTitle": "Twój okres próbny się zakończył",
+      "pausedTrialMsg": "Aby dalej korzystać z tego panelu, dodaj kartę. W międzyczasie aplikacje terenowe (ochroniarze, nadzorcy i zleceniodawcy) działają normalnie. Gdy tylko ją dodasz, panel zostanie od razu odblokowany.",
       "pausedNoData": "Twoja subskrypcja jest wstrzymana z powodu braku płatności i nie udało się wczytać szczegółów. Odśwież stronę lub skontaktuj się z dostawcą.",
       "pausedTitle": "System jest wstrzymany z powodu braku płatności",
       "payError": "Nie udało się przetworzyć płatności",

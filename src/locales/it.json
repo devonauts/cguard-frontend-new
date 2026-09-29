@@ -6016,6 +6016,8 @@
       "paidOk": "Pagamento effettuato. Grazie!",
       "pastDueMsg": "Hai un pagamento in sospeso di {{importe}}. Se non viene saldato entro {{dias}} giorni, il sistema verrà sospeso.",
       "pausedMsg": "Ci sono {{importe}} in sospeso. Nel frattempo questo pannello non è utilizzabile, ma le app sul campo (guardie, supervisori e committenti) continuano a funzionare normalmente. Paga o aggiorna la carta per riattivarlo subito.",
+      "pausedTrialTitle": "Il tuo periodo di prova è terminato",
+      "pausedTrialMsg": "Per continuare a usare questo pannello, aggiungi una carta. Nel frattempo le app sul campo (guardie, supervisori e committenti) continuano a funzionare normalmente. Appena la aggiungi, si riattiva subito.",
       "pausedNoData": "Il tuo abbonamento è sospeso per mancato pagamento e non è stato possibile caricare i dettagli. Ricarica la pagina o contatta il tuo fornitore.",
       "pausedTitle": "Il sistema è sospeso per mancato pagamento",
       "payError": "Impossibile elaborare il pagamento",

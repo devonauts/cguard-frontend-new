@@ -480,6 +480,8 @@
       "pastDueMsg": "Tienes un pago pendiente de {{importe}}. Si no se paga en {{dias}} días, el sistema se pausará.",
       "pausedTitle": "El sistema está en pausa por falta de pago",
       "pausedMsg": "Hay {{importe}} pendientes. Mientras tanto no se puede usar este panel, pero las apps de campo (vigilantes, supervisores y clientes) siguen funcionando con normalidad. Paga o actualiza tu tarjeta para reactivarlo al momento.",
+      "pausedTrialTitle": "Tu periodo de prueba terminó",
+      "pausedTrialMsg": "Para seguir usando este panel, añade una tarjeta. Mientras tanto las apps de campo (vigilantes, supervisores y clientes) siguen funcionando con normalidad. En cuanto la pongas, se reactiva al momento.",
       "exemptMsg": "Tu proveedor no te cobra en línea por ahora. Si tienes dudas sobre tu plan, escríbele directamente.",
       "amountDue": "Pendiente de pago",
       "payNow": "Pagar ahora",

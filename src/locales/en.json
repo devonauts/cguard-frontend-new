@@ -480,6 +480,8 @@
       "pastDueMsg": "You have a pending payment of {{importe}}. If it is not paid within {{dias}} days, the system will be paused.",
       "pausedTitle": "The system is paused due to non-payment",
       "pausedMsg": "{{importe}} is pending. Until it is paid this panel cannot be used, but the field apps (guards, supervisors and clients) keep working normally. Pay or update your card to reactivate it right away.",
+      "pausedTrialTitle": "Your trial period has ended",
+      "pausedTrialMsg": "To keep using this panel, add a card. In the meantime the field apps (guards, supervisors and clients) keep working normally. As soon as you add it, it reactivates right away.",
       "exemptMsg": "Your provider does not bill you online for now. If you have questions about your plan, contact them directly.",
       "amountDue": "Amount due",
       "payNow": "Pay now",
