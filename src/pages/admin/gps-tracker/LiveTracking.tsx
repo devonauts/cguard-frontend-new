@@ -253,7 +253,9 @@ export default function LiveTrackingPage() {
           sub: s.zone || s.assignedVehicle || undefined,
           lat,
           lng,
-          at: s.onDutySince || null,
+          // La ÚLTIMA POSICIÓN recibida, no el fichaje: con el fichaje, un
+          // teléfono que dejó de reportar se veía igual que uno que reporta.
+          at: s.lastLocationAt || s.onDutySince || null,
           telefono: s.phoneNumber || null,
           desde: s.onDutySince || null,
         });

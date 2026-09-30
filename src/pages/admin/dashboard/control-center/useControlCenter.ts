@@ -708,6 +708,8 @@ export function useControlCenter(
             vehicle: texto(sup.assignedVehicle),
             photoUrl: texto(sup.photoUrl),
             onDutySince: texto(sup.onDutySince),
+            // Sin esto el supervisor no «latía» nunca en el mapa, reportara o no.
+            lastSeenAt: texto(sup.lastLocationAt ?? sup.onDutySince),
             dutyLateMinutes: entero(sup.dutyLateMinutes),
           },
         });

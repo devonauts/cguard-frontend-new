@@ -48,6 +48,8 @@ export interface Supervisor {
   // Live attendance
   isOnDuty: boolean;
   onDutySince?: string | null;
+  /** Hora de la última posición recibida del teléfono (o del fichaje). */
+  lastLocationAt?: string | null;
   dutyStatus?: string | null;
   dutyLateMinutes?: number;
   dutyScheduledEnd?: string | null;
