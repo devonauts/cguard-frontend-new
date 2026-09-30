@@ -181,7 +181,8 @@ function LogoVigia({
       <img
         alt=""
         aria-hidden
-        className="rounded-full object-cover"
+        /* Sin forma, la imagen se ve entera; con forma, redonda y recortada. */
+        className={forma === "ninguna" ? "object-contain" : "rounded-full object-cover"}
         height={size}
         src={avatarUrl}
         style={{ width: size, height: size }}
@@ -274,6 +275,9 @@ export default function VigiaWidget() {
      server says so, which is only for our own companies. */
   const silueta = siluetaDe(agente.forma);
   const esEscudo = agente.forma === "escudo";
+  /* «Ninguna» (sólo imagen) sólo vale con imagen; el servidor ya cae al orbe
+     si no la hay, esto es por si llega un valor viejo del caché. */
+  const sinForma = agente.forma === "ninguna" && !!agente.avatarUrl;
   const icono = iconoDe(agente.icono);
 
   useEffect(() => {
@@ -761,6 +765,19 @@ export default function VigiaWidget() {
             @media (prefers-reduced-motion: reduce) { .vigia-burbuja { transition: none } }
           `}</style>
           <span className="relative block">
+            {sinForma ? (
+              /* «Ninguna»: la imagen del socio sola, sin silueta ni recorte
+                 (también un GIF animado). */
+              <img
+                alt=""
+                aria-hidden
+                className="block"
+                height={74}
+                src={agente.avatarUrl!}
+                style={{ width: 74, height: 74, objectFit: "contain" }}
+                width={74}
+              />
+            ) : (
             <svg aria-hidden height={83} viewBox="0 0 48 54" width={74}>
               <path d={silueta.d} fill="var(--brand)" />
               {/* Con cara, la cara; sin ella, el nombre —o su sigla, si no
@@ -820,6 +837,7 @@ export default function VigiaWidget() {
                 />
               )}
             </svg>
+            )}
             {/* En línea y listo: la manita saluda dentro de un anillo de presencia. */}
             <span
               className="vigia-online absolute grid place-items-center rounded-full border"
