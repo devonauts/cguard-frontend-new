@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
 
 import App from "./App.tsx";
 import { iniciarCentinela } from "./lib/centinela";
+import { atenderVueltaDeGusto } from "./lib/vueltaDeGusto";
 import { instalarIdiomaEnFetch } from "./lib/idiomaElegido";
 
 // import { Provider } from "./provider.tsx";
@@ -127,6 +128,8 @@ window.addEventListener("vite:preloadError", (event) => {
 instalarIdiomaEnFetch();
 iniciarCentinela();
 
+/* La vuelta de Gusto dentro de su ventanita: se cierra sin montar el CRM. */
+if (!atenderVueltaDeGusto())
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     {/* LA MARCA PRIMERO. `WhiteLabelProvider` no pinta a sus hijos hasta que ha

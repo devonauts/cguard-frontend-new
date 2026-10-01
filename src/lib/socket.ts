@@ -197,6 +197,11 @@ export function crearSocket(token: string, tenantId: string): Socket {
     }),
   );
 
+  // Gusto: la vuelta de la autorización (la tarjeta de Conexiones y API escucha).
+  socket.on("gusto:conexion", (p: any) =>
+    window.dispatchEvent(new CustomEvent("cg:gusto", { detail: p })),
+  );
+
   // «Enviar ahora» de un aviso: la ventana y la franja se refrescan al momento.
   socket.on("platform:announcement", (p: any) =>
     window.dispatchEvent(new CustomEvent("cg:anuncio", { detail: p })),

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -68,43 +68,39 @@ export default function ConexionGusto() {
     void cargar();
   }, [cargar]);
 
-  // El resultado que manda la ventanita al terminar.
+  /* El resultado llega EN VIVO por el websocket de la empresa (`gusto:conexion`
+     → `cg:gusto`, ver lib/socket). No se depende de la ventanita: Gusto corta
+     su vínculo con esta pestaña (Cross-Origin-Opener-Policy), así que ni
+     `window.opener` ni `postMessage` sirven a la vuelta. */
+  const ventanaRef = useRef<Window | null>(null);
+
   useEffect(() => {
-    const alRecibir = (e: MessageEvent) => {
-      if (e.origin !== window.location.origin || e.data?.tipo !== "gusto-oauth") return;
-      avisar(String(e.data.resultado || ""), e.data.motivo);
+    const alRecibir = (e: Event) => {
+      const d = (e as CustomEvent).detail || {};
+
+      avisar(String(d.resultado || ""), d.motivo);
       setOcupado(false);
+      try {
+        ventanaRef.current?.close();
+      } catch {
+        /* ya cerrada o sin vínculo */
+      }
       void cargar();
     };
 
-    window.addEventListener("message", alRecibir);
+    window.addEventListener("cg:gusto", alRecibir);
 
-    return () => window.removeEventListener("message", alRecibir);
+    return () => window.removeEventListener("cg:gusto", alRecibir);
   }, [cargar]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  /* La vuelta de Gusto.
-     · Si esta página se abrió DENTRO de la ventanita de autorización (la
-       abre `conectar`), le pasa el resultado a la pestaña del CRM que la
-       abrió y se cierra sola: la persona nunca sale de su pantalla.
-     · Si no (bloqueador de ventanas → se fue en la misma pestaña), se avisa
-       aquí y se limpia la dirección. */
+  /* La vuelta de Gusto en la MISMA pestaña (el navegador bloqueó la
+     ventanita): se avisa aquí y se limpia la dirección. La vuelta DENTRO de la
+     ventanita (`?ventana=1`) ni siquiera monta el CRM: la atiende
+     `lib/vueltaDeGusto` antes de arrancar la app. */
   useEffect(() => {
     const r = params.get("gusto");
 
     if (!r) return;
-    if (window.opener && window.name === VENTANA) {
-      try {
-        window.opener.postMessage(
-          { tipo: "gusto-oauth", resultado: r, motivo: params.get("motivo") },
-          window.location.origin,
-        );
-      } catch {
-        /* la pestaña de origen ya no está: se queda aquí con el aviso */
-      }
-      window.close();
-
-      return;
-    }
     avisar(r, params.get("motivo"));
     params.delete("gusto");
     params.delete("motivo");
@@ -132,13 +128,14 @@ export default function ConexionGusto() {
     );
 
     try {
-      const { url } = await gustoService.conectar();
+      const { url } = await gustoService.conectar(!!ventana && !ventana.closed);
 
       if (!ventana || ventana.closed) {
         window.location.assign(url);
 
         return;
       }
+      ventanaRef.current = ventana;
       ventana.location.href = url;
       // Si la cierran a mano, se vuelve a mirar el estado igual.
       const reloj = window.setInterval(() => {

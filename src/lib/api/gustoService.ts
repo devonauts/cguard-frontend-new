@@ -39,8 +39,9 @@ const base = () => `/tenant/${getTenantId()}/integrations/gusto`;
 
 export const gustoService = {
   estado: async (): Promise<EstadoDeGusto> => unwrap(await api.get(base())),
-  conectar: async (): Promise<{ url: string }> =>
-    unwrap(await api.post(`${base()}/connect`, {})),
+  /** `ventana`: se autoriza en una ventanita (la vuelta lo sabrá por el state). */
+  conectar: async (ventana = false): Promise<{ url: string }> =>
+    unwrap(await api.post(`${base()}/connect`, { ventana })),
   desconectar: async (): Promise<{ desconectado: boolean }> =>
     unwrap(await api.delete(base())),
 };
