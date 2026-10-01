@@ -72,6 +72,58 @@ export interface ListadoDeGusto {
   };
 }
 
+export type ReglaDeExtras = "federal" | "california" | "none";
+
+export interface AjustesDeHoras {
+  regla: ReglaDeExtras;
+  semanaEmpieza: number;
+  zona: string;
+}
+
+export interface PeriodoDePago {
+  payScheduleUuid: string;
+  calendario: string | null;
+  inicio: string;
+  fin: string;
+  procesada: boolean;
+  fechaDePago: string | null;
+  fechaLimite: string | null;
+}
+
+export interface VistaPreviaDeHoras {
+  periodo: { inicio: string; fin: string };
+  ajustes: AjustesDeHoras;
+  personas: Array<{
+    userId: string;
+    nombre: string;
+    rol: RolEnNomina;
+    vinculado: boolean;
+    turnos: number;
+    regular: number;
+    extra: number;
+    doble: number;
+    porRevisar: number;
+  }>;
+  resumen: {
+    personas: number; turnos: number; regular: number; extra: number; doble: number;
+    sinVincular: number; porRevisar: number;
+  };
+}
+
+export interface EnvioDeHoras {
+  id: string;
+  inicio: string;
+  fin: string;
+  estado: "running" | "done" | "failed";
+  cuenta: {
+    creados: number; actualizados: number; borrados: number; iguales: number; fallidos: number; sinVincular: number;
+  } | null;
+  errores: Array<{ userId?: string; turno?: string; mensaje: string }>;
+  sincronizacion: string | null;
+  empezadoEn: string | null;
+  terminadoEn: string | null;
+}
+
 const base = () => `/tenant/${getTenantId()}/integrations/gusto`;
 
 export const gustoService = {
@@ -91,6 +143,16 @@ export const gustoService = {
     unwrap(await api.put(`${base()}/employees/${userId}`, { gustoEmployeeUuid, ...extra })),
   aceptarSugerencias: async (): Promise<{ aceptadas: number }> =>
     unwrap(await api.post(`${base()}/employees/accept-suggestions`, {})),
+  /** Fase 3: las horas aprobadas a la nómina de Gusto. */
+  ajustesDeHoras: async (): Promise<AjustesDeHoras> => unwrap(await api.get(`${base()}/hours/settings`)),
+  guardarAjustesDeHoras: async (cambios: Partial<Pick<AjustesDeHoras, "regla" | "semanaEmpieza">>): Promise<AjustesDeHoras> =>
+    unwrap(await api.put(`${base()}/hours/settings`, cambios)),
+  periodosDePago: async (): Promise<PeriodoDePago[]> => unwrap(await api.get(`${base()}/hours/pay-periods`)),
+  vistaPrevia: async (inicio: string, fin: string): Promise<VistaPreviaDeHoras> =>
+    unwrap(await api.get(`${base()}/hours/preview`, { params: { start: inicio, end: fin } })),
+  enviarHoras: async (inicio: string, fin: string, payScheduleUuid: string | null): Promise<{ envioId: string }> =>
+    unwrap(await api.post(`${base()}/hours/send`, { start: inicio, end: fin, payScheduleUuid })),
+  envios: async (): Promise<EnvioDeHoras[]> => unwrap(await api.get(`${base()}/hours/runs`)),
 };
 
 export default gustoService;

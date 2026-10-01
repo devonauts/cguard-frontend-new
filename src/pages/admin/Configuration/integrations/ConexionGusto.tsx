@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
-import { Link2, Unlink, RefreshCw, Info, Users } from "lucide-react";
+import { Clock, Link2, Unlink, RefreshCw, Info, Users } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { confirmDialog } from "@/components/ui/confirmDialog";
@@ -222,6 +222,13 @@ export default function ConexionGusto() {
                   <Button asChild variant="outline">
                     <Link to="/setting/integraciones/gusto">
                       <Users /> {t("ui.Gusto.emparejar", "Empleados")}
+                    </Link>
+                  </Button>
+                )}
+                {estado.conectado && (
+                  <Button asChild variant="outline">
+                    <Link to="/setting/integraciones/gusto?tab=horas">
+                      <Clock /> {t("ui.Gusto.enviarHoras", "Enviar horas")}
                     </Link>
                   </Button>
                 )}

@@ -201,6 +201,10 @@ export function crearSocket(token: string, tenantId: string): Socket {
   socket.on("gusto:conexion", (p: any) =>
     window.dispatchEvent(new CustomEvent("cg:gusto", { detail: p })),
   );
+  // Progreso del envío de horas a Gusto (fase 3), para la pestaña «Horas».
+  socket.on("gusto:envio", (p: any) =>
+    window.dispatchEvent(new CustomEvent("cg:gusto-envio", { detail: p })),
+  );
 
   // «Enviar ahora» de un aviso: la ventana y la franja se refrescan al momento.
   socket.on("platform:announcement", (p: any) =>
