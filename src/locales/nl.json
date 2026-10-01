@@ -16270,7 +16270,9 @@
       "pruebas": "Test",
       "reconectar": "Opnieuw koppelen",
       "requisitos": "Je hebt een primaire beheerder (of een met volledige toegang) van je Gusto-account nodig. Je medewerkers moeten in Gusto staan; hier koppelen we ze aan je personeel.",
-      "sinPermiso": "Alleen een beheerder of HR kan Gusto koppelen of ontkoppelen."
+      "sinPermiso": "Alleen een beheerder of HR kan Gusto koppelen of ontkoppelen.",
+      "motivoCodigo": "Gusto heeft de autorisatie niet geaccepteerd (verlopen of al gebruikt). Koppel opnieuw.",
+      "requisitosEntrar": "Log in het Gusto-venster in met de Gusto-gebruiker van je BEDRIJF, niet met een ontwikkelaarsaccount."
     }
   },
   "visitantes": {

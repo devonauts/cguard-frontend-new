@@ -16270,7 +16270,9 @@
       "pruebas": "Test",
       "reconectar": "Se reconnecter",
       "requisitos": "Il faut un administrateur principal (ou avec accès complet) de votre compte Gusto. Vos employés doivent être enregistrés dans Gusto ; nous les associerons ici à votre personnel.",
-      "sinPermiso": "Seul un administrateur ou les RH peuvent connecter ou déconnecter Gusto."
+      "sinPermiso": "Seul un administrateur ou les RH peuvent connecter ou déconnecter Gusto.",
+      "motivoCodigo": "Gusto n’a pas accepté l’autorisation (expirée ou déjà utilisée). Reconnectez-vous.",
+      "requisitosEntrar": "Dans la fenêtre Gusto, connectez-vous avec l’utilisateur de votre ENTREPRISE sur Gusto, pas avec un compte développeur."
     }
   },
   "visitantes": {

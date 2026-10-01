@@ -15747,7 +15747,9 @@
       "pruebas": "Testes",
       "reconectar": "Reconectar",
       "requisitos": "É necessário um administrador principal (ou com acesso total) da sua conta do Gusto. Seus funcionários devem estar cadastrados no Gusto; aqui vamos associá-los à sua equipe.",
-      "sinPermiso": "Apenas um administrador ou o RH pode conectar ou desconectar o Gusto."
+      "sinPermiso": "Apenas um administrador ou o RH pode conectar ou desconectar o Gusto.",
+      "motivoCodigo": "O Gusto não aceitou a autorização (expirou ou já foi usada). Reconecte.",
+      "requisitosEntrar": "Na janela do Gusto, entre com o usuário da sua EMPRESA no Gusto, não com uma conta de desenvolvedor."
     }
   },
   "map": {

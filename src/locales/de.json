@@ -16270,7 +16270,9 @@
       "pruebas": "Test",
       "reconectar": "Erneut verbinden",
       "requisitos": "Sie benötigen einen primären Administrator (oder einen mit Vollzugriff) Ihres Gusto-Kontos. Ihre Mitarbeiter müssen in Gusto angelegt sein; hier ordnen wir sie Ihrem Personal zu.",
-      "sinPermiso": "Nur ein Administrator oder die Personalabteilung kann Gusto verbinden oder trennen."
+      "sinPermiso": "Nur ein Administrator oder die Personalabteilung kann Gusto verbinden oder trennen.",
+      "motivoCodigo": "Gusto hat die Autorisierung nicht akzeptiert (abgelaufen oder bereits verwendet). Bitte erneut verbinden.",
+      "requisitosEntrar": "Melden Sie sich im Gusto-Fenster mit dem Gusto-Benutzer Ihres UNTERNEHMENS an, nicht mit einem Entwicklerkonto."
     }
   },
   "visitantes": {

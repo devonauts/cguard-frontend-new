@@ -15747,7 +15747,9 @@
       "pruebas": "Test mode",
       "reconectar": "Reconnect",
       "requisitos": "You need a primary admin (or one with full access) of your Gusto account. Your employees must be set up in Gusto; we'll match them with your staff here.",
-      "sinPermiso": "Only an administrator or HR can connect or disconnect Gusto."
+      "sinPermiso": "Only an administrator or HR can connect or disconnect Gusto.",
+      "motivoCodigo": "Gusto didn't accept the authorization (it expired or was already used). Please reconnect.",
+      "requisitosEntrar": "In the Gusto window, sign in with your COMPANY's Gusto user, not a developer account."
     }
   },
   "map": {

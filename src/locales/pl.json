@@ -16450,7 +16450,9 @@
       "pruebas": "Test",
       "reconectar": "Połącz ponownie",
       "requisitos": "Potrzebny jest główny administrator (lub z pełnym dostępem) konta Gusto. Twoi pracownicy muszą być zarejestrowani w Gusto; tutaj połączymy ich z Twoim personelem.",
-      "sinPermiso": "Tylko administrator lub dział kadr może połączyć lub odłączyć Gusto."
+      "sinPermiso": "Tylko administrator lub dział kadr może połączyć lub odłączyć Gusto.",
+      "motivoCodigo": "Gusto nie zaakceptowało autoryzacji (wygasła lub została już użyta). Połącz ponownie.",
+      "requisitosEntrar": "W oknie Gusto zaloguj się użytkownikiem swojej FIRMY w Gusto, a nie kontem dewelopera."
     }
   },
   "visitantes": {

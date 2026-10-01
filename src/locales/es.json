@@ -15747,7 +15747,9 @@
       "pruebas": "Pruebas",
       "reconectar": "Volver a conectar",
       "requisitos": "Hace falta un administrador principal (o con acceso completo) de tu cuenta de Gusto. Tus empleados deben estar dados de alta en Gusto: aquí los emparejaremos con tu personal.",
-      "sinPermiso": "Sólo un administrador o Recursos Humanos puede conectar o desconectar Gusto."
+      "sinPermiso": "Sólo un administrador o Recursos Humanos puede conectar o desconectar Gusto.",
+      "motivoCodigo": "Gusto no aceptó la autorización (caducó o ya se usó). Vuelve a conectar.",
+      "requisitosEntrar": "En la ventana de Gusto entra con el usuario de tu EMPRESA en Gusto, no con una cuenta de desarrollador."
     }
   },
   "map": {

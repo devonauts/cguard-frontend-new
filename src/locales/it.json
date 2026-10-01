@@ -16270,7 +16270,9 @@
       "pruebas": "Test",
       "reconectar": "Ricollega",
       "requisitos": "Serve un amministratore principale (o con accesso completo) del tuo account Gusto. I tuoi dipendenti devono essere registrati in Gusto; qui li abbineremo al tuo personale.",
-      "sinPermiso": "Solo un amministratore o le Risorse Umane possono collegare o scollegare Gusto."
+      "sinPermiso": "Solo un amministratore o le Risorse Umane possono collegare o scollegare Gusto.",
+      "motivoCodigo": "Gusto non ha accettato l’autorizzazione (scaduta o già usata). Ricollega.",
+      "requisitosEntrar": "Nella finestra di Gusto accedi con l’utente della tua AZIENDA su Gusto, non con un account sviluppatore."
     }
   },
   "visitantes": {

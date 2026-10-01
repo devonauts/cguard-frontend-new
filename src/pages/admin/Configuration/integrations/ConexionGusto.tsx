@@ -24,8 +24,12 @@ const MOTIVOS: Record<string, [string, string]> = {
   forbidden_scope: ["ui.Gusto.motivoPermisos", "Gusto no nos dio todos los permisos necesarios. Vuelve a conectar con un administrador principal de Gusto."],
   not_us: ["ui.Gusto.motivoNoEEUU", "Gusto sólo está disponible para empresas de Estados Unidos."],
   bad_state: ["ui.Gusto.motivoCaducado", "La solicitud caducó. Vuelve a intentarlo."],
+  code_invalid: ["ui.Gusto.motivoCodigo", "Gusto no aceptó la autorización (caducó o ya se usó). Vuelve a conectar."],
   not_configured: ["ui.Gusto.motivoNoConfigurado", "La integración con Gusto todavía no está disponible."],
 };
+
+/** El nombre de la ventanita: así la página sabe que está DENTRO de ella. */
+const VENTANA = "gusto-oauth";
 
 export default function ConexionGusto() {
   const { t, i18n } = useTranslation();
@@ -44,6 +48,12 @@ export default function ConexionGusto() {
       : t("ui.Gusto.motivoGenerico", "Gusto no respondió como esperábamos. Inténtalo de nuevo en unos minutos.");
   };
 
+  const avisar = (r: string, m?: string | null) => {
+    if (r === "conectado") toast.success(t("ui.Gusto.conectado", "Gusto conectado."));
+    else if (r === "cancelado") toast(t("ui.Gusto.cancelado", "No se conectó: se canceló la autorización en Gusto."));
+    else toast.error(motivo(m));
+  };
+
   const cargar = useCallback(async () => {
     try {
       setEstado(await gustoService.estado());
@@ -58,14 +68,44 @@ export default function ConexionGusto() {
     void cargar();
   }, [cargar]);
 
-  // La vuelta de Gusto: se avisa una vez y se limpia la dirección.
+  // El resultado que manda la ventanita al terminar.
+  useEffect(() => {
+    const alRecibir = (e: MessageEvent) => {
+      if (e.origin !== window.location.origin || e.data?.tipo !== "gusto-oauth") return;
+      avisar(String(e.data.resultado || ""), e.data.motivo);
+      setOcupado(false);
+      void cargar();
+    };
+
+    window.addEventListener("message", alRecibir);
+
+    return () => window.removeEventListener("message", alRecibir);
+  }, [cargar]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /* La vuelta de Gusto.
+     · Si esta página se abrió DENTRO de la ventanita de autorización (la
+       abre `conectar`), le pasa el resultado a la pestaña del CRM que la
+       abrió y se cierra sola: la persona nunca sale de su pantalla.
+     · Si no (bloqueador de ventanas → se fue en la misma pestaña), se avisa
+       aquí y se limpia la dirección. */
   useEffect(() => {
     const r = params.get("gusto");
 
     if (!r) return;
-    if (r === "conectado") toast.success(t("ui.Gusto.conectado", "Gusto conectado."));
-    else if (r === "cancelado") toast(t("ui.Gusto.cancelado", "No se conectó: se canceló la autorización en Gusto."));
-    else toast.error(motivo(params.get("motivo")));
+    if (window.opener && window.name === VENTANA) {
+      try {
+        window.opener.postMessage(
+          { tipo: "gusto-oauth", resultado: r, motivo: params.get("motivo") },
+          window.location.origin,
+        );
+      } catch {
+        /* la pestaña de origen ya no está: se queda aquí con el aviso */
+      }
+      window.close();
+
+      return;
+    }
+    avisar(r, params.get("motivo"));
     params.delete("gusto");
     params.delete("motivo");
     setParams(params, { replace: true });
@@ -75,13 +115,41 @@ export default function ConexionGusto() {
   // Fuera de EE. UU., o sin la integración configurada: no se ofrece.
   if (!estado || !estado.disponible || !estado.configurado) return null;
 
+  /* Gusto se abre en una VENTANITA centrada, como cualquier «Conectar con…».
+     Se abre YA, dentro del clic, para que el bloqueador no la frene; la
+     dirección llega después. Si el navegador la bloquea igualmente, se va en
+     la misma pestaña y la vuelta trae a la persona a esta pantalla. */
   const conectar = async () => {
     setOcupado(true);
+    const ancho = 520;
+    const alto = 720;
+    const izq = window.screenX + Math.max(0, (window.outerWidth - ancho) / 2);
+    const arriba = window.screenY + Math.max(0, (window.outerHeight - alto) / 2);
+    const ventana = window.open(
+      "",
+      VENTANA,
+      `width=${ancho},height=${alto},left=${izq},top=${arriba},resizable=yes,scrollbars=yes`,
+    );
+
     try {
       const { url } = await gustoService.conectar();
 
-      window.location.assign(url);
+      if (!ventana || ventana.closed) {
+        window.location.assign(url);
+
+        return;
+      }
+      ventana.location.href = url;
+      // Si la cierran a mano, se vuelve a mirar el estado igual.
+      const reloj = window.setInterval(() => {
+        if (ventana.closed) {
+          window.clearInterval(reloj);
+          setOcupado(false);
+          void cargar();
+        }
+      }, 800);
     } catch (e: any) {
+      ventana?.close();
       toast.error(e?.message || motivo(null));
       setOcupado(false);
     }
@@ -195,6 +263,10 @@ export default function ConexionGusto() {
           {t(
             "ui.Gusto.requisitos",
             "Hace falta un administrador principal (o con acceso completo) de tu cuenta de Gusto. Tus empleados deben estar dados de alta en Gusto: aquí los emparejaremos con tu personal.",
+          )}{" "}
+          {t(
+            "ui.Gusto.requisitosEntrar",
+            "En la ventana de Gusto entra con el usuario de tu EMPRESA en Gusto, no con una cuenta de desarrollador.",
           )}
         </InfoNote>
       )}
