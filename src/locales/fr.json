@@ -608,7 +608,7 @@
       "cityExample": "Quito",
       "countryExample": "Équateur",
       "emailExample": "exemple@email.com",
-      "phoneExample": "+593 123456789"
+      "phoneExample": "{{ejemplo}}"
     },
     "stations": {
       "add": "Ajouter un poste",
@@ -7179,7 +7179,7 @@
     "newEmail": "Nouvelle adresse e-mail*",
     "password": "Mot de passe*",
     "phone": "Numéro de mobile*",
-    "phoneExample": "p. ex. +593991234567",
+    "phoneExample": "p. ex. {{ejemplo}}",
     "save": "Enregistrer",
     "saving": "Enregistrement...",
     "selectLanguage": "Sélectionner la langue",
@@ -7890,7 +7890,7 @@
       "sectionContact": "Contact",
       "companyPhoneLabel": "Téléphone de l'entreprise*",
       "phoneInvalidHint": "Numéro invalide. Utilisez le format international, par exemple +12015550123.",
-      "phoneExample": "Exemple : {{dialCode}}2015550123",
+      "phoneExample": "Exemple : {{ejemplo}}",
       "companyEmailLabel": "E-mail de l'entreprise",
       "emailPlaceholder": "contact@entreprise.com",
       "emailHint": "C'est l'expéditeur et le contact que voient vos clients.",
@@ -17556,7 +17556,11 @@
     "barra": "Vous êtes dans {{empresa}} en tant que support de {{socio}}",
     "minutos_one": "{{count}} minute restante",
     "minutos_other": "{{count}} minutes restantes",
-    "salir": "Quitter"
+    "salir": "Quitter",
+    "enVivo": "Le support de {{quien}} est connecté en direct",
+    "enVivoTicket": "Le support de {{quien}} est connecté en direct pour votre ticket {{ticket}}",
+    "barraPlataforma": "Vous êtes dans {{empresa}} en tant que support de {{marca}}",
+    "ticket": "Ticket {{ticket}}"
   },
   "avisoDeRecarga": {
     "version": "Une nouvelle version de {{marca}} est disponible.",

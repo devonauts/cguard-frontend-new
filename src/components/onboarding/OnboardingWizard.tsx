@@ -57,6 +57,7 @@ import { timezoneOptions } from "@/lib/timezones";
 import { cacheTenantTimezone } from "@/utils/tenantLocation";
 import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
 import { agenteGuardado } from "@/lib/agenteDeMarca";
+import { paisDeLaEmpresa } from "@/lib/telefonoDeLaEmpresa";
 
 interface OnboardingWizardProps {
   open: boolean;
@@ -116,7 +117,7 @@ const emptyForm: WizardForm = {
   businessTitle: "",
   taxNumber: "",
   phone: "",
-  phoneCountry: "EC",
+  phoneCountry: paisDeLaEmpresa(),
   email: "",
   address: "",
   addressLine2: "",
@@ -230,7 +231,7 @@ export default function OnboardingWizard({
       businessTitle: tenant.businessTitle ?? "",
       taxNumber: tenant.taxNumber ?? "",
       phone: tenant.phone ?? "",
-      phoneCountry: "EC",
+      phoneCountry: paisDeLaEmpresa(),
       email: tenant.email ?? defaultEmail ?? "",
       address: tenant.address ?? "",
       addressLine2: tenant.addressLine2 ?? "",
@@ -676,7 +677,7 @@ export default function OnboardingWizard({
                     value={form.phone}
                     onChange={(v) => set({ phone: v })}
                     onCountryChange={(c: any) =>
-                      set({ phoneCountry: c?.code || c?.name || "EC" })
+                      set({ phoneCountry: c?.code || c?.name || paisDeLaEmpresa() })
                     }
                   />
                   {form.phone && !phoneValid && (

@@ -608,7 +608,7 @@
       "cityExample": "Warszawa",
       "countryExample": "Polska",
       "emailExample": "przyklad@poczta.com",
-      "phoneExample": "+48 123 456 789"
+      "phoneExample": "{{ejemplo}}"
     },
     "stations": {
       "add": "Dodaj posterunek",
@@ -7181,7 +7181,7 @@
     "newEmail": "Nowy adres e-mail*",
     "password": "Hasło*",
     "phone": "Numer telefonu komórkowego*",
-    "phoneExample": "np. +593991234567",
+    "phoneExample": "np. {{ejemplo}}",
     "save": "Zapisz",
     "saving": "Zapisywanie...",
     "selectLanguage": "Wybierz język",
@@ -7892,7 +7892,7 @@
       "sectionContact": "Kontakt",
       "companyPhoneLabel": "Telefon firmy*",
       "phoneInvalidHint": "Nieprawidłowy numer. Prosimy użyć formatu międzynarodowego, na przykład +12015550123.",
-      "phoneExample": "Przykład: {{dialCode}}2015550123",
+      "phoneExample": "Przykład: {{ejemplo}}",
       "companyEmailLabel": "Adres e-mail firmy",
       "emailPlaceholder": "kontakt@firma.pl",
       "emailHint": "To adres nadawcy i kontakt, który widzą zleceniodawcy.",
@@ -17744,7 +17744,11 @@
     "minutos_few": "Zostały {{count}} minuty",
     "minutos_many": "Zostało {{count}} minut",
     "minutos_other": "Zostało {{count}} minut",
-    "salir": "Wyjdź"
+    "salir": "Wyjdź",
+    "enVivo": "Wsparcie {{quien}} jest połączone na żywo",
+    "enVivoTicket": "Wsparcie {{quien}} jest połączone na żywo i zajmuje się Twoim zgłoszeniem {{ticket}}",
+    "barraPlataforma": "Jesteś w {{empresa}} jako wsparcie {{marca}}",
+    "ticket": "Zgłoszenie {{ticket}}"
   },
   "avisoDeRecarga": {
     "version": "Jest nowa wersja {{marca}}.",

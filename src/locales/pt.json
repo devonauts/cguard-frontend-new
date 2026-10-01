@@ -5,7 +5,7 @@
     "changeEmail": "Alterar e-mail",
     "verifyEmail": "Verificar e-mail",
     "phone": "Número de celular*",
-    "phoneExample": "e.g. +593991234567",
+    "phoneExample": "e.g. {{ejemplo}}",
     "confirmNumber": "Confirmar número",
     "selectLanguage": "Selecionar idioma",
     "languageSaved": "O idioma é salvo automaticamente no seu navegador",
@@ -3188,7 +3188,7 @@
       "sectionContact": "Contato",
       "companyPhoneLabel": "Telefone da empresa*",
       "phoneInvalidHint": "Número inválido. Use o formato internacional, por exemplo +12015550123.",
-      "phoneExample": "Exemplo: {{dialCode}}2015550123",
+      "phoneExample": "Exemplo: {{ejemplo}}",
       "companyEmailLabel": "E-mail da empresa",
       "emailPlaceholder": "email@empresa.com",
       "emailHint": "É o remetente e o contato que seus clientes veem.",
@@ -4976,7 +4976,7 @@
     },
     "placeholders": {
       "emailExample": "exemplo@email.com",
-      "phoneExample": "+1 555 1234567",
+      "phoneExample": "{{ejemplo}}",
       "cityExample": "Quito",
       "countryExample": "Equador"
     },
@@ -17556,7 +17556,11 @@
     "barra": "Você está dentro de {{empresa}} como suporte de {{socio}}",
     "minutos_one": "Resta {{count}} minuto",
     "minutos_other": "Restam {{count}} minutos",
-    "salir": "Sair"
+    "salir": "Sair",
+    "enVivo": "O suporte de {{quien}} está conectado ao vivo",
+    "enVivoTicket": "O suporte de {{quien}} está conectado ao vivo atendendo seu ticket {{ticket}}",
+    "barraPlataforma": "Você está dentro de {{empresa}} como suporte de {{marca}}",
+    "ticket": "Ticket {{ticket}}"
   },
   "avisoDeRecarga": {
     "version": "Há uma nova versão do {{marca}}.",

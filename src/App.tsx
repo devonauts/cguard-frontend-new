@@ -18,6 +18,7 @@ import ForgotPassword from "./pages/auth/forgot-password";
 import ResetPassword from "./pages/auth/reset-password";
 import AccesoSoporte from "./pages/auth/AccesoSoporte";
 import BarraDeSoporte from "./components/soporte/BarraDeSoporte";
+import SoporteEnVivo from "./components/soporte/SoporteEnVivo";
 const DashboardPage = lazy(
   () => import("./pages/admin/dashboard/control-center/ControlCenter"),
 );
@@ -695,6 +696,7 @@ export default function App() {
               <ClientSelectionProvider>
                 <CoBrowseAgent />
                 <BarraDeSoporte />
+                <SoporteEnVivo />
                 <BrowserRouter>
                   {/* ── EL CONTEXTO DE RADIO, POR ENCIMA DE LAS RUTAS ──────────────
                 Estaba dentro de `AppLayout`, envolviendo SÓLO al widget

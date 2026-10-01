@@ -608,7 +608,7 @@
       "cityExample": "Quito",
       "countryExample": "Ecuador",
       "emailExample": "voorbeeld@mail.nl",
-      "phoneExample": "+593 123456789"
+      "phoneExample": "{{ejemplo}}"
     },
     "stations": {
       "add": "Post toevoegen",
@@ -7179,7 +7179,7 @@
     "newEmail": "Nieuw e-mailadres*",
     "password": "Wachtwoord*",
     "phone": "Mobiel nummer*",
-    "phoneExample": "bijv. +593991234567",
+    "phoneExample": "bijv. {{ejemplo}}",
     "save": "Opslaan",
     "saving": "Opslaan...",
     "selectLanguage": "Taal selecteren",
@@ -7890,7 +7890,7 @@
       "sectionContact": "Contact",
       "companyPhoneLabel": "Telefoon van het bedrijf*",
       "phoneInvalidHint": "Ongeldig nummer. Gebruik het internationale formaat, bijvoorbeeld +12015550123.",
-      "phoneExample": "Voorbeeld: {{dialCode}}2015550123",
+      "phoneExample": "Voorbeeld: {{ejemplo}}",
       "companyEmailLabel": "E-mailadres van het bedrijf",
       "emailPlaceholder": "post@bedrijf.com",
       "emailHint": "Dit is de afzender en het contactadres dat uw opdrachtgevers zien.",
@@ -17556,7 +17556,11 @@
     "barra": "Je bent in {{empresa}} als support van {{socio}}",
     "minutos_one": "Nog {{count}} minuut",
     "minutos_other": "Nog {{count}} minuten",
-    "salir": "Afsluiten"
+    "salir": "Afsluiten",
+    "enVivo": "Support van {{quien}} is live verbonden",
+    "enVivoTicket": "Support van {{quien}} is live verbonden en werkt aan je ticket {{ticket}}",
+    "barraPlataforma": "Je bent in {{empresa}} als support van {{marca}}",
+    "ticket": "Ticket {{ticket}}"
   },
   "avisoDeRecarga": {
     "version": "Er is een nieuwe versie van {{marca}}.",
