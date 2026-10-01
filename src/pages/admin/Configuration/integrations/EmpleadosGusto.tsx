@@ -257,6 +257,13 @@ export default function EmpleadosGusto() {
                               <span className="truncate">
                                 {nombreDeGusto.get(p.vinculo.gustoUuid)?.nombre || p.vinculo.gustoNombre}
                               </span>
+                              {p.vinculo.comoPaga && p.vinculo.comoPaga !== "hora" && (
+                                <StatusBadge tone={p.vinculo.comoPaga === "exento" ? "bad" : "warn"}>
+                                  {p.vinculo.comoPaga === "exento"
+                                    ? t("ui.GustoEmpleados.exento", "Sueldo fijo exento: Gusto no pagará sus horas")
+                                    : t("ui.GustoEmpleados.asalariado", "Sueldo fijo: sólo se pagan las extra")}
+                                </StatusBadge>
+                              )}
                             </div>
                           ) : p.sugerencia ? (
                             <div className="text-sm">
@@ -308,6 +315,9 @@ export default function EmpleadosGusto() {
                                 <option key={e.uuid} value={e.uuid}>
                                   {e.nombre}
                                   {e.email ? ` · ${e.email}` : ""}
+                                  {e.comoPaga && e.comoPaga !== "hora"
+                                    ? ` · ${t("ui.GustoEmpleados.opcionAsalariado", "sueldo fijo")}`
+                                    : ""}
                                 </option>
                               ))}
                             </select>

@@ -15790,7 +15790,10 @@
       "elegirUno": "Escolher funcionário…",
       "desvincular": "Desvincular",
       "notaGustoLibres": "Há {{n}} funcionários no Gusto sem par aqui. Se algum trabalha com você, vincule-o pela pessoa; se faltar alguém no Gusto, cadastre-o lá (o Gusto pede SSN e conta bancária).",
-      "subtituloHoras": "Envie ao Gusto as horas aprovadas em Folha, já separadas em normais e extras."
+      "subtituloHoras": "Envie ao Gusto as horas aprovadas em Folha, já separadas em normais e extras.",
+      "exento": "Salário fixo isento: o Gusto não pagará as horas",
+      "asalariado": "Salário fixo: só as extras são pagas",
+      "opcionAsalariado": "salário fixo"
     },
     "GustoHoras": {
       "reglaFederal": "Federal: mais de 40 h por semana (Texas e a maioria dos estados)",
@@ -15836,7 +15839,21 @@
       "syncFallo": "Folha sem sincronizar",
       "syncPedida": "Sincronização solicitada",
       "cuenta": "{{creados}} novos · {{actualizados}} atualizados · {{borrados}} removidos · {{iguales}} sem mudanças · {{fallidos}} com erro",
-      "syncNada": "Nada novo para a folha"
+      "syncNada": "Nada novo para a folha",
+      "paso1": "Conexão",
+      "paso1Hecho": "Conectado a {{compania}} · funcionários vinculados",
+      "paso1Falta": "Conecte o Gusto e vincule sua equipe",
+      "paso2": "Aprovar em Registros",
+      "paso2Falta": "{{n}} turnos por aprovar",
+      "paso2Hecho": "Tudo aprovado neste período",
+      "paso3": "Enviar ao Gusto",
+      "paso3Detalle": "{{n}} turnos prontos para enviar",
+      "pagoAsalariado": "Salário fixo no Gusto: só as extras são pagas",
+      "pagoExento": "Salário fixo isento no Gusto: o Gusto não paga essas horas",
+      "avisoExentos": "{{n}} pessoas recebem salário fixo isento no Gusto: o Gusto NÃO pagará essas horas. Mude para pagamento por hora no Gusto (a pessoa › Job & pay) e envie de novo.",
+      "avisoAsalariados": "{{n}} pessoas recebem salário fixo (não isento) no Gusto: o Gusto só pagará as horas extras.",
+      "insigniaExento": "Assalariado isento",
+      "insigniaAsalariado": "Assalariado"
     },
     "NominaGusto": {
       "empleados": "Funcionários vinculados",

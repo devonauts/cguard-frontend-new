@@ -16313,7 +16313,10 @@
       "elegirUno": "Choisir un employé…",
       "desvincular": "Délier",
       "notaGustoLibres": "Il y a {{n}} employés Gusto sans correspondance ici. Si l’un d’eux travaille pour vous, liez-le depuis sa personne ; s’il manque quelqu’un dans Gusto, ajoutez-le là-bas (Gusto demande son SSN et son compte bancaire).",
-      "subtituloHoras": "Envoyez à Gusto les heures approuvées dans Paie, déjà séparées en normales et supplémentaires."
+      "subtituloHoras": "Envoyez à Gusto les heures approuvées dans Paie, déjà séparées en normales et supplémentaires.",
+      "exento": "Salaire fixe exempté : Gusto ne paiera pas ses heures",
+      "asalariado": "Salaire fixe : seules les heures sup. sont payées",
+      "opcionAsalariado": "salaire fixe"
     },
     "GustoHoras": {
       "reglaFederal": "Fédéral : plus de 40 h par semaine (Texas et la plupart des États)",
@@ -16359,7 +16362,21 @@
       "syncFallo": "Paie non synchronisée",
       "syncPedida": "Synchronisation demandée",
       "cuenta": "{{creados}} nouveaux · {{actualizados}} mis à jour · {{borrados}} retirés · {{iguales}} inchangés · {{fallidos}} en erreur",
-      "syncNada": "Rien de nouveau pour la paie"
+      "syncNada": "Rien de nouveau pour la paie",
+      "paso1": "Connexion",
+      "paso1Hecho": "Connecté à {{compania}} · employés liés",
+      "paso1Falta": "Connectez Gusto et liez votre personnel",
+      "paso2": "Approuver dans Registres",
+      "paso2Falta": "{{n}} services à approuver",
+      "paso2Hecho": "Tout est approuvé sur cette période",
+      "paso3": "Envoyer à Gusto",
+      "paso3Detalle": "{{n}} services prêts à envoyer",
+      "pagoAsalariado": "Salaire fixe dans Gusto : seules les heures sup. sont payées",
+      "pagoExento": "Salaire fixe exempté dans Gusto : Gusto ne paie pas ces heures",
+      "avisoExentos": "{{n}} personnes ont un salaire fixe exempté dans Gusto : Gusto ne paiera PAS ces heures. Passez-les en paiement horaire dans Gusto (la personne › Job & pay) et renvoyez.",
+      "avisoAsalariados": "{{n}} personnes ont un salaire fixe (non exempté) dans Gusto : Gusto ne paiera que leurs heures sup.",
+      "insigniaExento": "Salarié exempté",
+      "insigniaAsalariado": "Salarié"
     },
     "NominaGusto": {
       "empleados": "Employés liés",

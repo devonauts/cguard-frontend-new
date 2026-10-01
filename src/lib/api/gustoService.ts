@@ -37,6 +37,8 @@ export interface EstadoDeGusto {
 
 export type Senal = "email" | "name" | "dob";
 export type RolEnNomina = "vigilante" | "supervisor" | "oficina";
+/** Cómo le paga Gusto: por hora, sueldo fijo (sólo extras) o sueldo fijo exento (ninguna hora). */
+export type ComoPaga = "hora" | "asalariado" | "exento";
 
 export interface FilaDePersona {
   userId: string;
@@ -50,6 +52,7 @@ export interface FilaDePersona {
     senales: Senal[];
     confirmadoEn: string | null;
     huerfano: boolean;
+    comoPaga: ComoPaga | null;
   } | null;
   sugerencia: { gustoUuid: string; nombre: string; senales: Senal[]; fuerza: "solida" | "posible" } | null;
 }
@@ -61,6 +64,7 @@ export interface EmpleadoDeGusto {
   incorporado: boolean;
   trabajos: Array<{ uuid: string; titulo: string | null; principal: boolean; tarifa: string | null; unidad: string | null }>;
   vinculadoA: string | null;
+  comoPaga: ComoPaga | null;
 }
 
 export interface ListadoDeGusto {
@@ -103,10 +107,11 @@ export interface VistaPreviaDeHoras {
     extra: number;
     doble: number;
     porRevisar: number;
+    comoPaga: ComoPaga | null;
   }>;
   resumen: {
     personas: number; turnos: number; regular: number; extra: number; doble: number;
-    sinVincular: number; porRevisar: number;
+    sinVincular: number; porRevisar: number; exentos: number; asalariados: number;
   };
 }
 

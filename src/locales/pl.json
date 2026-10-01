@@ -16493,7 +16493,10 @@
       "elegirUno": "Wybierz pracownika…",
       "desvincular": "Rozłącz",
       "notaGustoLibres": "W Gusto jest {{n}} pracowników bez pary. Jeśli ktoś z nich u Ciebie pracuje, połącz go z poziomu osoby; jeśli kogoś brakuje w Gusto, dodaj go tam (Gusto wymaga SSN i konta bankowego).",
-      "subtituloHoras": "Wyślij do Gusto godziny zatwierdzone w Płacach, już podzielone na zwykłe i nadgodziny."
+      "subtituloHoras": "Wyślij do Gusto godziny zatwierdzone w Płacach, już podzielone na zwykłe i nadgodziny.",
+      "exento": "Stała pensja (zwolniona): Gusto nie zapłaci godzin",
+      "asalariado": "Stała pensja: płatne są tylko nadgodziny",
+      "opcionAsalariado": "stała pensja"
     },
     "GustoHoras": {
       "reglaFederal": "Federalna: ponad 40 h tygodniowo (Teksas i większość stanów)",
@@ -16539,7 +16542,21 @@
       "syncFallo": "Płace niezsynchronizowane",
       "syncPedida": "Poproszono o synchronizację",
       "cuenta": "{{creados}} nowych · {{actualizados}} zaktualizowanych · {{borrados}} usuniętych · {{iguales}} bez zmian · {{fallidos}} z błędem",
-      "syncNada": "Nic nowego dla płac"
+      "syncNada": "Nic nowego dla płac",
+      "paso1": "Połączenie",
+      "paso1Hecho": "Połączono z {{compania}} · pracownicy połączeni",
+      "paso1Falta": "Połącz Gusto i swój personel",
+      "paso2": "Zatwierdź w Rejestrach",
+      "paso2Falta": "{{n}} zmian do zatwierdzenia",
+      "paso2Hecho": "Wszystko zatwierdzone w tym okresie",
+      "paso3": "Wyślij do Gusto",
+      "paso3Detalle": "{{n}} zmian gotowych do wysłania",
+      "pagoAsalariado": "Stała pensja w Gusto: płatne są tylko nadgodziny",
+      "pagoExento": "Stała pensja (zwolniona) w Gusto: Gusto nie zapłaci tych godzin",
+      "avisoExentos": "{{n}} osób ma w Gusto stałą pensję (zwolnioną): Gusto NIE zapłaci tych godzin. Zmień je w Gusto na stawkę godzinową (osoba › Job & pay) i wyślij ponownie.",
+      "avisoAsalariados": "{{n}} osób ma w Gusto stałą pensję (niezwolnioną): Gusto zapłaci tylko nadgodziny.",
+      "insigniaExento": "Pensja (zwolniona)",
+      "insigniaAsalariado": "Pensja"
     },
     "NominaGusto": {
       "empleados": "Połączeni pracownicy",

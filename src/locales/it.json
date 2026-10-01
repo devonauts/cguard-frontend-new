@@ -16313,7 +16313,10 @@
       "elegirUno": "Scegli dipendente…",
       "desvincular": "Scollega",
       "notaGustoLibres": "Ci sono {{n}} dipendenti Gusto senza abbinamento. Se qualcuno lavora con te, collegalo dalla sua persona; se manca qualcuno in Gusto, aggiungilo lì (Gusto chiede SSN e conto bancario).",
-      "subtituloHoras": "Invia a Gusto le ore approvate in Paghe, già separate in ordinarie e straordinarie."
+      "subtituloHoras": "Invia a Gusto le ore approvate in Paghe, già separate in ordinarie e straordinarie.",
+      "exento": "Stipendio fisso esente: Gusto non pagherà le ore",
+      "asalariado": "Stipendio fisso: si pagano solo gli straordinari",
+      "opcionAsalariado": "stipendio fisso"
     },
     "GustoHoras": {
       "reglaFederal": "Federale: oltre 40 h a settimana (Texas e la maggior parte degli stati)",
@@ -16359,7 +16362,21 @@
       "syncFallo": "Paga non sincronizzata",
       "syncPedida": "Sincronizzazione richiesta",
       "cuenta": "{{creados}} nuovi · {{actualizados}} aggiornati · {{borrados}} rimossi · {{iguales}} invariati · {{fallidos}} con errore",
-      "syncNada": "Niente di nuovo per la paga"
+      "syncNada": "Niente di nuovo per la paga",
+      "paso1": "Connessione",
+      "paso1Hecho": "Collegato a {{compania}} · dipendenti collegati",
+      "paso1Falta": "Collega Gusto e collega il personale",
+      "paso2": "Approvare in Registri",
+      "paso2Falta": "{{n}} turni da approvare",
+      "paso2Hecho": "Tutto approvato in questo periodo",
+      "paso3": "Invia a Gusto",
+      "paso3Detalle": "{{n}} turni pronti da inviare",
+      "pagoAsalariado": "Stipendio fisso in Gusto: si pagano solo gli straordinari",
+      "pagoExento": "Stipendio fisso esente in Gusto: Gusto non paga queste ore",
+      "avisoExentos": "{{n}} persone hanno stipendio fisso esente in Gusto: Gusto NON pagherà queste ore. Passale a paga oraria in Gusto (la persona › Job & pay) e invia di nuovo.",
+      "avisoAsalariados": "{{n}} persone hanno stipendio fisso (non esente) in Gusto: Gusto pagherà solo gli straordinari.",
+      "insigniaExento": "Stipendiato esente",
+      "insigniaAsalariado": "Stipendiato"
     },
     "NominaGusto": {
       "empleados": "Dipendenti collegati",

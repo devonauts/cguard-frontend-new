@@ -16313,7 +16313,10 @@
       "elegirUno": "Medewerker kiezen…",
       "desvincular": "Ontkoppelen",
       "notaGustoLibres": "Er zijn {{n}} Gusto-medewerkers zonder match. Werkt iemand van hen voor je, koppel hem via zijn persoon; ontbreekt iemand in Gusto, voeg hem daar toe (Gusto vraagt om SSN en bankrekening).",
-      "subtituloHoras": "Stuur de in Salaris goedgekeurde uren naar Gusto, al gesplitst in regulier en overuren."
+      "subtituloHoras": "Stuur de in Salaris goedgekeurde uren naar Gusto, al gesplitst in regulier en overuren.",
+      "exento": "Vast salaris (exempt): Gusto betaalt de uren niet",
+      "asalariado": "Vast salaris: alleen overuren worden betaald",
+      "opcionAsalariado": "vast salaris"
     },
     "GustoHoras": {
       "reglaFederal": "Federaal: meer dan 40 uur per week (Texas en de meeste staten)",
@@ -16359,7 +16362,21 @@
       "syncFallo": "Salaris niet gesynchroniseerd",
       "syncPedida": "Synchronisatie aangevraagd",
       "cuenta": "{{creados}} nieuw · {{actualizados}} bijgewerkt · {{borrados}} verwijderd · {{iguales}} ongewijzigd · {{fallidos}} met fout",
-      "syncNada": "Niets nieuws voor salaris"
+      "syncNada": "Niets nieuws voor salaris",
+      "paso1": "Koppeling",
+      "paso1Hecho": "Gekoppeld aan {{compania}} · medewerkers gekoppeld",
+      "paso1Falta": "Koppel Gusto en je personeel",
+      "paso2": "Goedkeuren in Registraties",
+      "paso2Falta": "{{n}} diensten goed te keuren",
+      "paso2Hecho": "Alles goedgekeurd in deze periode",
+      "paso3": "Naar Gusto verzenden",
+      "paso3Detalle": "{{n}} diensten klaar om te verzenden",
+      "pagoAsalariado": "Vast salaris in Gusto: alleen overuren worden betaald",
+      "pagoExento": "Vast salaris (exempt) in Gusto: Gusto betaalt deze uren niet",
+      "avisoExentos": "{{n}} personen hebben in Gusto een vast salaris (exempt): Gusto betaalt deze uren NIET. Zet ze in Gusto op uurloon (persoon › Job & pay) en verstuur opnieuw.",
+      "avisoAsalariados": "{{n}} personen hebben in Gusto een vast salaris (niet exempt): Gusto betaalt alleen hun overuren.",
+      "insigniaExento": "Vast salaris (exempt)",
+      "insigniaAsalariado": "Vast salaris"
     },
     "NominaGusto": {
       "empleados": "Gekoppelde medewerkers",

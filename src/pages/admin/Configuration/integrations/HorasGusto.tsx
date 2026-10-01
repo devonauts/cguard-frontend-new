@@ -2,7 +2,14 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { CheckCircle2, Clock, Info, Send, TriangleAlert } from "lucide-react";
+import {
+  CheckCircle2,
+  ChevronRight,
+  Clock,
+  Info,
+  Send,
+  TriangleAlert,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { confirmDialog } from "@/components/ui/confirmDialog";
@@ -16,9 +23,11 @@ import {
   StatusBadge,
 } from "@/components/kit";
 import { usePermissions } from "@/hooks/usePermissions";
+import { useGusto } from "@/hooks/useGusto";
 import {
   gustoService,
   type AjustesDeHoras,
+  type ComoPaga,
   type EnvioDeHoras,
   type PeriodoDePago,
   type ReglaDeExtras,
@@ -36,43 +45,82 @@ import {
 
 const ymd = (d: Date) => d.toISOString().slice(0, 10);
 
-export default function HorasGusto({ alIrAEmpleados }: { alIrAEmpleados: () => void }) {
+export default function HorasGusto({
+  alIrAEmpleados,
+}: {
+  alIrAEmpleados: () => void;
+}) {
   const { t, i18n } = useTranslation();
   const { hasPermission } = usePermissions();
   const puede = hasPermission("payrollIntegrationManage");
+  const { data: conexion } = useGusto();
 
   const [ajustes, setAjustes] = useState<AjustesDeHoras | null>(null);
   const [periodos, setPeriodos] = useState<PeriodoDePago[] | null>(null);
   const [errorPeriodos, setErrorPeriodos] = useState<string | null>(null);
   const [elegido, setElegido] = useState<string>("");
-  const [inicio, setInicio] = useState(() => ymd(new Date(Date.now() - 13 * 86_400_000)));
+  const [inicio, setInicio] = useState(() =>
+    ymd(new Date(Date.now() - 13 * 86_400_000)),
+  );
   const [fin, setFin] = useState(() => ymd(new Date()));
   const [vista, setVista] = useState<VistaPreviaDeHoras | null>(null);
   const [cargandoVista, setCargandoVista] = useState(false);
   const [errorVista, setErrorVista] = useState<string | null>(null);
   const [envios, setEnvios] = useState<EnvioDeHoras[]>([]);
-  const [progreso, setProgreso] = useState<{ envioId: string; hechos: number; total: number } | null>(null);
+  const [progreso, setProgreso] = useState<{
+    envioId: string;
+    hechos: number;
+    total: number;
+  } | null>(null);
   const [enviando, setEnviando] = useState(false);
 
   const fecha = useCallback(
     (v: string) =>
-      new Intl.DateTimeFormat(i18n.language, { month: "short", day: "numeric", timeZone: "UTC" }).format(
-        new Date(`${v}T00:00:00Z`),
-      ),
+      new Intl.DateTimeFormat(i18n.language, {
+        month: "short",
+        day: "numeric",
+        timeZone: "UTC",
+      }).format(new Date(`${v}T00:00:00Z`)),
     [i18n.language],
   );
   const momento = (v: string | null) =>
-    v ? new Intl.DateTimeFormat(i18n.language, { dateStyle: "medium", timeStyle: "short" }).format(new Date(v)) : "—";
+    v
+      ? new Intl.DateTimeFormat(i18n.language, {
+          dateStyle: "medium",
+          timeStyle: "short",
+        }).format(new Date(v))
+      : "—";
 
   const REGLAS: Array<{ value: ReglaDeExtras; label: string }> = [
-    { value: "federal", label: t("ui.GustoHoras.reglaFederal", "Federal: más de 40 h a la semana (Texas y la mayoría de estados)") },
-    { value: "california", label: t("ui.GustoHoras.reglaCalifornia", "California: también por día (más de 8 h) y 7.º día") },
-    { value: "none", label: t("ui.GustoHoras.reglaNinguna", "Sin horas extra (todo ordinario)") },
+    {
+      value: "federal",
+      label: t(
+        "ui.GustoHoras.reglaFederal",
+        "Federal: más de 40 h a la semana (Texas y la mayoría de estados)",
+      ),
+    },
+    {
+      value: "california",
+      label: t(
+        "ui.GustoHoras.reglaCalifornia",
+        "California: también por día (más de 8 h) y 7.º día",
+      ),
+    },
+    {
+      value: "none",
+      label: t(
+        "ui.GustoHoras.reglaNinguna",
+        "Sin horas extra (todo ordinario)",
+      ),
+    },
   ];
   const DIAS = useMemo(
     () =>
       Array.from({ length: 7 }, (_, d) =>
-        new Intl.DateTimeFormat(i18n.language, { weekday: "long", timeZone: "UTC" }).format(
+        new Intl.DateTimeFormat(i18n.language, {
+          weekday: "long",
+          timeZone: "UTC",
+        }).format(
           new Date(Date.UTC(2026, 9, 4 + d)), // 4 oct 2026 es domingo
         ),
       ),
@@ -102,7 +150,9 @@ export default function HorasGusto({ alIrAEmpleados }: { alIrAEmpleados: () => v
         setPeriodos(p);
         // El periodo abierto más reciente que ya terminó o está en curso.
         const hoy = ymd(new Date());
-        const abierto = p.find((x) => !x.procesada && x.inicio <= hoy) || p.find((x) => !x.procesada);
+        const abierto =
+          p.find((x) => !x.procesada && x.inicio <= hoy) ||
+          p.find((x) => !x.procesada);
 
         if (abierto) elegirPeriodo(abierto);
       } catch (e: any) {
@@ -114,7 +164,8 @@ export default function HorasGusto({ alIrAEmpleados }: { alIrAEmpleados: () => v
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const claveDe = (p: PeriodoDePago) => `${p.payScheduleUuid}|${p.inicio}|${p.fin}`;
+  const claveDe = (p: PeriodoDePago) =>
+    `${p.payScheduleUuid}|${p.inicio}|${p.fin}`;
   const periodo = periodos?.find((p) => claveDe(p) === elegido) || null;
 
   function elegirPeriodo(p: PeriodoDePago | null) {
@@ -136,7 +187,10 @@ export default function HorasGusto({ alIrAEmpleados }: { alIrAEmpleados: () => v
       setVista(await gustoService.vistaPrevia(inicio, fin));
     } catch (e: any) {
       setVista(null);
-      setErrorVista(e?.message || t("ui.GustoHoras.noCargo", "No pudimos calcular las horas."));
+      setErrorVista(
+        e?.message ||
+          t("ui.GustoHoras.noCargo", "No pudimos calcular las horas."),
+      );
     } finally {
       setCargandoVista(false);
     }
@@ -152,13 +206,24 @@ export default function HorasGusto({ alIrAEmpleados }: { alIrAEmpleados: () => v
       const d: any = (e as CustomEvent).detail || {};
 
       if (d.estado === "running") {
-        setProgreso({ envioId: d.envioId, hechos: d.hechos || 0, total: d.total || 0 });
+        setProgreso({
+          envioId: d.envioId,
+          hechos: d.hechos || 0,
+          total: d.total || 0,
+        });
       } else if (d.estado === "done" || d.estado === "failed") {
         setProgreso(null);
         setEnviando(false);
         void cargarEnvios();
-        if (d.estado === "done") toast.success(t("ui.GustoHoras.enviado", "Horas enviadas a Gusto."));
-        else toast.error(t("ui.GustoHoras.envioFallo", "El envío a Gusto falló. Mira el detalle abajo."));
+        if (d.estado === "done")
+          toast.success(t("ui.GustoHoras.enviado", "Horas enviadas a Gusto."));
+        else
+          toast.error(
+            t(
+              "ui.GustoHoras.envioFallo",
+              "El envío a Gusto falló. Mira el detalle abajo.",
+            ),
+          );
       }
     };
 
@@ -186,11 +251,15 @@ export default function HorasGusto({ alIrAEmpleados }: { alIrAEmpleados: () => v
     return () => window.clearInterval(id);
   }, [enCurso]);
 
-  const guardarAjuste = async (cambios: Partial<Pick<AjustesDeHoras, "regla" | "semanaEmpieza">>) => {
+  const guardarAjuste = async (
+    cambios: Partial<Pick<AjustesDeHoras, "regla" | "semanaEmpieza">>,
+  ) => {
     try {
       setAjustes(await gustoService.guardarAjustesDeHoras(cambios));
     } catch (e: any) {
-      toast.error(e?.message || t("ui.GustoHoras.noGuardo", "No se pudo guardar."));
+      toast.error(
+        e?.message || t("ui.GustoHoras.noGuardo", "No se pudo guardar."),
+      );
     }
   };
 
@@ -212,23 +281,161 @@ export default function HorasGusto({ alIrAEmpleados }: { alIrAEmpleados: () => v
     if (!ok) return;
     setEnviando(true);
     try {
-      const r = await gustoService.enviarHoras(inicio, fin, periodo?.payScheduleUuid || null);
+      const r = await gustoService.enviarHoras(
+        inicio,
+        fin,
+        periodo?.payScheduleUuid || null,
+      );
 
-      setProgreso({ envioId: r.envioId, hechos: 0, total: vista.resumen.turnos });
+      setProgreso({
+        envioId: r.envioId,
+        hechos: 0,
+        total: vista.resumen.turnos,
+      });
       void cargarEnvios();
     } catch (e: any) {
       setEnviando(false);
-      toast.error(e?.message || t("ui.GustoHoras.envioFallo", "El envío a Gusto falló. Mira el detalle abajo."));
+      toast.error(
+        e?.message ||
+          t(
+            "ui.GustoHoras.envioFallo",
+            "El envío a Gusto falló. Mira el detalle abajo.",
+          ),
+      );
     }
   };
 
   const r = vista?.resumen;
 
+  /* Los tres pasos, en el orden en que se hacen: conectar y vincular (una vez,
+     en Ajustes), aprobar en Registros (cada periodo) y enviar (aquí). Cada uno
+     dice en qué está y lleva a donde se hace. */
+  const pasos: Array<{
+    n: number;
+    titulo: string;
+    detalle: string;
+    listo: boolean;
+    to?: string;
+    onClick?: () => void;
+  }> = [
+    {
+      n: 1,
+      titulo: t("ui.GustoHoras.paso1", "Conexión"),
+      detalle: conexion?.compania?.nombre
+        ? t("ui.GustoHoras.paso1Hecho", {
+            compania: conexion.compania.nombre,
+            defaultValue: "Conectado a {{compania}} · empleados vinculados",
+          })
+        : t(
+            "ui.GustoHoras.paso1Falta",
+            "Conecta Gusto y vincula a tu personal",
+          ),
+      listo:
+        !!conexion?.conectado && !(r && (r.sinVincular > 0 || r.exentos > 0)),
+      onClick: alIrAEmpleados,
+    },
+    {
+      n: 2,
+      titulo: t("ui.GustoHoras.paso2", "Aprobar en Registros"),
+      detalle:
+        r && r.porRevisar > 0
+          ? t("ui.GustoHoras.paso2Falta", {
+              n: r.porRevisar,
+              defaultValue: "{{n}} turnos por aprobar",
+            })
+          : t("ui.GustoHoras.paso2Hecho", "Todo aprobado en este periodo"),
+      listo: !!r && r.porRevisar === 0,
+      to: "/nomina/records",
+    },
+    {
+      n: 3,
+      titulo: t("ui.GustoHoras.paso3", "Enviar a Gusto"),
+      detalle: r
+        ? t("ui.GustoHoras.paso3Detalle", {
+            n: r.turnos,
+            defaultValue: "{{n}} turnos listos para enviar",
+          })
+        : "—",
+      listo: !!envios.find(
+        (e) => e.estado === "done" && e.inicio === inicio && e.fin === fin,
+      ),
+    },
+  ];
+
+  const PAGO: Record<ComoPaga, string> = {
+    hora: "",
+    asalariado: t(
+      "ui.GustoHoras.pagoAsalariado",
+      "Sueldo fijo en Gusto: sólo se pagan las extra",
+    ),
+    exento: t(
+      "ui.GustoHoras.pagoExento",
+      "Sueldo fijo exento en Gusto: Gusto no paga sus horas",
+    ),
+  };
+
   return (
     <div className="space-y-4">
+      {/* ── 1 · 2 · 3 ── */}
+      <ol className="grid gap-2 sm:grid-cols-3">
+        {pasos.map((p) => {
+          const cuerpo = (
+            <>
+              <span
+                className="grid size-7 shrink-0 place-items-center rounded-full text-xs font-semibold"
+                style={{
+                  background: p.listo
+                    ? "var(--ok)"
+                    : "var(--surface-2, var(--hairline))",
+                  color: p.listo ? "var(--on-ok, #fff)" : "var(--ink-soft)",
+                }}
+              >
+                {p.listo ? <CheckCircle2 className="size-4" /> : p.n}
+              </span>
+              <span className="min-w-0 flex-1 text-left">
+                <span className="block text-sm font-medium">{p.titulo}</span>
+                <span
+                  className="block truncate text-xs"
+                  style={{ color: "var(--ink-faint)" }}
+                >
+                  {p.detalle}
+                </span>
+              </span>
+              {(p.to || p.onClick) && (
+                <ChevronRight
+                  className="size-4 shrink-0"
+                  style={{ color: "var(--ink-faint)" }}
+                />
+              )}
+            </>
+          );
+          const cls = "flex w-full items-center gap-3 p-3";
+
+          return (
+            <li key={p.n}>
+              <GlassPanel className="h-full">
+                {p.to ? (
+                  <Link className={cls} to={p.to}>
+                    {cuerpo}
+                  </Link>
+                ) : p.onClick ? (
+                  <button className={cls} type="button" onClick={p.onClick}>
+                    {cuerpo}
+                  </button>
+                ) : (
+                  <div className={cls}>{cuerpo}</div>
+                )}
+              </GlassPanel>
+            </li>
+          );
+        })}
+      </ol>
+
       {/* ── Ajustes: cómo se parten las horas extra ── */}
       <GlassPanel className="p-4">
-        <div className="mb-3 font-medium">{t("ui.GustoHoras.reglaTitulo", "Horas extra")}</div>
+        <div className="mb-3 font-medium">
+          {t("ui.GustoHoras.reglaTitulo", "Horas extra")}
+        </div>
         <div className="grid gap-3 sm:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
           <label className="text-sm">
             <span className="mb-1 block" style={{ color: "var(--ink-soft)" }}>
@@ -238,7 +445,9 @@ export default function HorasGusto({ alIrAEmpleados }: { alIrAEmpleados: () => v
               className={FIELD_CLS}
               disabled={!puede || !ajustes}
               value={ajustes?.regla || "federal"}
-              onChange={(e) => guardarAjuste({ regla: e.target.value as ReglaDeExtras })}
+              onChange={(e) =>
+                guardarAjuste({ regla: e.target.value as ReglaDeExtras })
+              }
             >
               {REGLAS.map((x) => (
                 <option key={x.value} value={x.value}>
@@ -255,7 +464,9 @@ export default function HorasGusto({ alIrAEmpleados }: { alIrAEmpleados: () => v
               className={FIELD_CLS}
               disabled={!puede || !ajustes}
               value={ajustes?.semanaEmpieza ?? 0}
-              onChange={(e) => guardarAjuste({ semanaEmpieza: Number(e.target.value) })}
+              onChange={(e) =>
+                guardarAjuste({ semanaEmpieza: Number(e.target.value) })
+              }
             >
               {DIAS.map((d, i) => (
                 <option key={i} value={i}>
@@ -275,7 +486,9 @@ export default function HorasGusto({ alIrAEmpleados }: { alIrAEmpleados: () => v
 
       {/* ── El periodo ── */}
       <GlassPanel className="p-4">
-        <div className="mb-3 font-medium">{t("ui.GustoHoras.periodoTitulo", "Periodo")}</div>
+        <div className="mb-3 font-medium">
+          {t("ui.GustoHoras.periodoTitulo", "Periodo")}
+        </div>
         <div className="grid gap-3 sm:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)]">
           <label className="text-sm">
             <span className="mb-1 block" style={{ color: "var(--ink-soft)" }}>
@@ -285,14 +498,25 @@ export default function HorasGusto({ alIrAEmpleados }: { alIrAEmpleados: () => v
               className={FIELD_CLS}
               disabled={periodos === null}
               value={elegido}
-              onChange={(e) => elegirPeriodo(periodos?.find((p) => claveDe(p) === e.target.value) || null)}
+              onChange={(e) =>
+                elegirPeriodo(
+                  periodos?.find((p) => claveDe(p) === e.target.value) || null,
+                )
+              }
             >
-              <option value="">{t("ui.GustoHoras.fechasAMano", "Fechas a mano (sin sincronizar la nómina)")}</option>
+              <option value="">
+                {t(
+                  "ui.GustoHoras.fechasAMano",
+                  "Fechas a mano (sin sincronizar la nómina)",
+                )}
+              </option>
               {(periodos || []).map((p) => (
                 <option key={claveDe(p)} value={claveDe(p)}>
                   {fecha(p.inicio)} – {fecha(p.fin)}
                   {p.calendario ? ` · ${p.calendario}` : ""}
-                  {p.procesada ? ` · ${t("ui.GustoHoras.yaPagado", "ya pagado")}` : ""}
+                  {p.procesada
+                    ? ` · ${t("ui.GustoHoras.yaPagado", "ya pagado")}`
+                    : ""}
                 </option>
               ))}
             </select>
@@ -324,7 +548,11 @@ export default function HorasGusto({ alIrAEmpleados }: { alIrAEmpleados: () => v
         </div>
         {errorPeriodos && (
           <InfoNote className="mt-3" icon={<Info />} tone="warn">
-            {t("ui.GustoHoras.sinPeriodos", "No pudimos leer los periodos de pago de Gusto:")} {errorPeriodos}
+            {t(
+              "ui.GustoHoras.sinPeriodos",
+              "No pudimos leer los periodos de pago de Gusto:",
+            )}{" "}
+            {errorPeriodos}
           </InfoNote>
         )}
         {periodo?.procesada && (
@@ -356,8 +584,14 @@ export default function HorasGusto({ alIrAEmpleados }: { alIrAEmpleados: () => v
         <>
           <div className="grid gap-3 sm:grid-cols-4">
             {[
-              [t("ui.GustoHoras.cifraTurnos", "Turnos aprobados"), `${r.turnos}`],
-              [t("ui.GustoHoras.cifraOrdinarias", "Ordinarias"), `${r.regular} h`],
+              [
+                t("ui.GustoHoras.cifraTurnos", "Turnos aprobados"),
+                `${r.turnos}`,
+              ],
+              [
+                t("ui.GustoHoras.cifraOrdinarias", "Ordinarias"),
+                `${r.regular} h`,
+              ],
               [t("ui.GustoHoras.cifraExtra", "Extra"), `${r.extra} h`],
               [t("ui.GustoHoras.cifraDoble", "Doble"), `${r.doble} h`],
             ].map(([etiqueta, valor]) => (
@@ -374,20 +608,44 @@ export default function HorasGusto({ alIrAEmpleados }: { alIrAEmpleados: () => v
             <InfoNote icon={<Clock />} tone="warn">
               {t("ui.GustoHoras.porRevisar", {
                 n: r.porRevisar,
-                defaultValue: "{{n}} turnos de este periodo aún no están aprobados y no se enviarán.",
+                defaultValue:
+                  "{{n}} turnos de este periodo aún no están aprobados y no se enviarán.",
               })}{" "}
               <Link className="underline" to="/nomina/records">
                 {t("ui.GustoHoras.irAAprobar", "Revisarlos en Nómina")}
               </Link>
             </InfoNote>
           )}
+          {r.exentos > 0 && (
+            <InfoNote icon={<TriangleAlert />} tone="bad">
+              {t("ui.GustoHoras.avisoExentos", {
+                n: r.exentos,
+                defaultValue:
+                  "{{n}} personas cobran sueldo fijo exento en Gusto: Gusto NO pagará estas horas. Cámbialas a pago por hora en Gusto (la persona › Job & pay) y vuelve a enviar.",
+              })}
+            </InfoNote>
+          )}
+          {r.asalariados > 0 && (
+            <InfoNote icon={<Info />} tone="warn">
+              {t("ui.GustoHoras.avisoAsalariados", {
+                n: r.asalariados,
+                defaultValue:
+                  "{{n}} personas cobran sueldo fijo (no exento) en Gusto: Gusto sólo pagará sus horas extra.",
+              })}
+            </InfoNote>
+          )}
           {r.sinVincular > 0 && (
             <InfoNote icon={<TriangleAlert />} tone="warn">
               {t("ui.GustoHoras.sinVincular", {
                 n: r.sinVincular,
-                defaultValue: "{{n}} personas con horas no están vinculadas a Gusto; sus horas no se enviarán.",
+                defaultValue:
+                  "{{n}} personas con horas no están vinculadas a Gusto; sus horas no se enviarán.",
               })}{" "}
-              <button className="underline" type="button" onClick={alIrAEmpleados}>
+              <button
+                className="underline"
+                type="button"
+                onClick={alIrAEmpleados}
+              >
                 {t("ui.GustoHoras.irAVincular", "Vincularlas")}
               </button>
             </InfoNote>
@@ -406,34 +664,81 @@ export default function HorasGusto({ alIrAEmpleados }: { alIrAEmpleados: () => v
             <GlassPanel className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-xs" style={{ color: "var(--ink-faint)" }}>
-                    <th className="p-3 font-medium">{t("ui.GustoHoras.colPersona", "Persona")}</th>
-                    <th className="p-3 text-right font-medium">{t("ui.GustoHoras.colTurnos", "Turnos")}</th>
-                    <th className="p-3 text-right font-medium">{t("ui.GustoHoras.cifraOrdinarias", "Ordinarias")}</th>
-                    <th className="p-3 text-right font-medium">{t("ui.GustoHoras.cifraExtra", "Extra")}</th>
-                    <th className="p-3 text-right font-medium">{t("ui.GustoHoras.cifraDoble", "Doble")}</th>
+                  <tr
+                    className="text-left text-xs"
+                    style={{ color: "var(--ink-faint)" }}
+                  >
+                    <th className="p-3 font-medium">
+                      {t("ui.GustoHoras.colPersona", "Persona")}
+                    </th>
+                    <th className="p-3 text-right font-medium">
+                      {t("ui.GustoHoras.colTurnos", "Turnos")}
+                    </th>
+                    <th className="p-3 text-right font-medium">
+                      {t("ui.GustoHoras.cifraOrdinarias", "Ordinarias")}
+                    </th>
+                    <th className="p-3 text-right font-medium">
+                      {t("ui.GustoHoras.cifraExtra", "Extra")}
+                    </th>
+                    <th className="p-3 text-right font-medium">
+                      {t("ui.GustoHoras.cifraDoble", "Doble")}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {vista.personas.map((p) => (
-                    <tr key={p.userId} className="border-t" style={{ borderColor: "var(--hairline)" }}>
+                    <tr
+                      key={p.userId}
+                      className="border-t"
+                      style={{ borderColor: "var(--hairline)" }}
+                    >
                       <td className="p-3">
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="font-medium">{p.nombre}</span>
                           {!p.vinculado && (
-                            <StatusBadge tone="warn">{t("ui.GustoHoras.noVinculado", "Sin vincular")}</StatusBadge>
+                            <StatusBadge tone="warn">
+                              {t("ui.GustoHoras.noVinculado", "Sin vincular")}
+                            </StatusBadge>
+                          )}
+                          {p.comoPaga && p.comoPaga !== "hora" && (
+                            <span title={PAGO[p.comoPaga]}>
+                              <StatusBadge
+                                tone={p.comoPaga === "exento" ? "bad" : "warn"}
+                              >
+                                {p.comoPaga === "exento"
+                                  ? t(
+                                      "ui.GustoHoras.insigniaExento",
+                                      "Asalariado exento",
+                                    )
+                                  : t(
+                                      "ui.GustoHoras.insigniaAsalariado",
+                                      "Asalariado",
+                                    )}
+                              </StatusBadge>
+                            </span>
                           )}
                           {p.porRevisar > 0 && (
                             <StatusBadge dot={false} tone="neutral">
-                              {t("ui.GustoHoras.pendientes", { n: p.porRevisar, defaultValue: "{{n}} por aprobar" })}
+                              {t("ui.GustoHoras.pendientes", {
+                                n: p.porRevisar,
+                                defaultValue: "{{n}} por aprobar",
+                              })}
                             </StatusBadge>
                           )}
                         </div>
                       </td>
-                      <td className="p-3 text-right tabular-nums">{p.turnos}</td>
-                      <td className="p-3 text-right tabular-nums">{p.regular}</td>
-                      <td className="p-3 text-right tabular-nums">{p.extra || "—"}</td>
-                      <td className="p-3 text-right tabular-nums">{p.doble || "—"}</td>
+                      <td className="p-3 text-right tabular-nums">
+                        {p.turnos}
+                      </td>
+                      <td className="p-3 text-right tabular-nums">
+                        {p.regular}
+                      </td>
+                      <td className="p-3 text-right tabular-nums">
+                        {p.extra || "—"}
+                      </td>
+                      <td className="p-3 text-right tabular-nums">
+                        {p.doble || "—"}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -458,7 +763,9 @@ export default function HorasGusto({ alIrAEmpleados }: { alIrAEmpleados: () => v
               )}
               <Button disabled={enCurso || r.turnos === 0} onClick={enviar}>
                 <Send />
-                {enCurso ? t("ui.GustoHoras.enCurso", "Enviando…") : t("ui.GustoHoras.enviar", "Enviar a Gusto")}
+                {enCurso
+                  ? t("ui.GustoHoras.enCurso", "Enviando…")
+                  : t("ui.GustoHoras.enviar", "Enviar a Gusto")}
               </Button>
             </div>
           )}
@@ -468,38 +775,64 @@ export default function HorasGusto({ alIrAEmpleados }: { alIrAEmpleados: () => v
       {/* ── Envíos anteriores ── */}
       {envios.length > 0 && (
         <GlassPanel className="p-4">
-          <div className="mb-3 font-medium">{t("ui.GustoHoras.historial", "Envíos anteriores")}</div>
+          <div className="mb-3 font-medium">
+            {t("ui.GustoHoras.historial", "Envíos anteriores")}
+          </div>
           <ul className="space-y-3">
             {envios.map((e) => (
               <li key={e.id} className="text-sm">
                 <div className="flex flex-wrap items-center gap-2">
                   {e.estado === "done" && (e.cuenta?.fallidos || 0) === 0 ? (
-                    <CheckCircle2 className="size-4" style={{ color: "var(--ok)" }} />
+                    <CheckCircle2
+                      className="size-4"
+                      style={{ color: "var(--ok)" }}
+                    />
                   ) : e.estado === "running" ? (
-                    <Clock className="size-4" style={{ color: "var(--ink-faint)" }} />
+                    <Clock
+                      className="size-4"
+                      style={{ color: "var(--ink-faint)" }}
+                    />
                   ) : (
-                    <TriangleAlert className="size-4" style={{ color: "var(--warn)" }} />
+                    <TriangleAlert
+                      className="size-4"
+                      style={{ color: "var(--warn)" }}
+                    />
                   )}
                   <span className="font-medium">
                     {fecha(e.inicio)} – {fecha(e.fin)}
                   </span>
-                  <span style={{ color: "var(--ink-faint)" }}>{momento(e.empezadoEn)}</span>
+                  <span style={{ color: "var(--ink-faint)" }}>
+                    {momento(e.empezadoEn)}
+                  </span>
                   {e.sincronizacion && (
                     <StatusBadge
                       tone={
-                        e.sincronizacion === "failure" ? "bad" : e.sincronizacion === "nothing_to_sync" ? "neutral" : "info"
+                        e.sincronizacion === "failure"
+                          ? "bad"
+                          : e.sincronizacion === "nothing_to_sync"
+                            ? "neutral"
+                            : "info"
                       }
                     >
                       {e.sincronizacion === "failure"
                         ? t("ui.GustoHoras.syncFallo", "Nómina sin sincronizar")
                         : e.sincronizacion === "nothing_to_sync"
-                          ? t("ui.GustoHoras.syncNada", "Nada nuevo para la nómina")
-                          : t("ui.GustoHoras.syncPedida", "Sincronización pedida")}
+                          ? t(
+                              "ui.GustoHoras.syncNada",
+                              "Nada nuevo para la nómina",
+                            )
+                          : t(
+                              "ui.GustoHoras.syncPedida",
+                              "Sincronización pedida",
+                            )}
                     </StatusBadge>
                   )}
                 </div>
                 {e.cuenta && (
-                  <div className="mt-0.5 text-xs" style={{ color: "var(--ink-soft)" }}>
+                  <div
+                    className="mt-0.5 text-xs"
+                    style={{ color: "var(--ink-soft)" }}
+                  >
                     {t("ui.GustoHoras.cuenta", {
                       creados: e.cuenta.creados,
                       actualizados: e.cuenta.actualizados,
@@ -512,7 +845,10 @@ export default function HorasGusto({ alIrAEmpleados }: { alIrAEmpleados: () => v
                   </div>
                 )}
                 {e.errores?.length > 0 && (
-                  <ul className="mt-1 list-disc pl-5 text-xs" style={{ color: "var(--bad)" }}>
+                  <ul
+                    className="mt-1 list-disc pl-5 text-xs"
+                    style={{ color: "var(--bad)" }}
+                  >
                     {e.errores.slice(0, 5).map((x, i) => (
                       <li key={i}>{x.mensaje}</li>
                     ))}

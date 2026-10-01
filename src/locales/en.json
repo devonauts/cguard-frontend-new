@@ -15790,7 +15790,10 @@
       "elegirUno": "Choose employee…",
       "desvincular": "Unlink",
       "notaGustoLibres": "There are {{n}} Gusto employees with no match here. If any of them work for you, link them from their person; if someone is missing in Gusto, add them there (Gusto asks for their SSN and bank account).",
-      "subtituloHoras": "Send the hours approved in Payroll to Gusto, already split into regular and overtime."
+      "subtituloHoras": "Send the hours approved in Payroll to Gusto, already split into regular and overtime.",
+      "exento": "Salaried exempt: Gusto won't pay their hours",
+      "asalariado": "Salaried: only overtime is paid",
+      "opcionAsalariado": "salaried"
     },
     "GustoHoras": {
       "reglaFederal": "Federal: over 40 h per week (Texas and most states)",
@@ -15836,7 +15839,21 @@
       "syncFallo": "Payroll not synced",
       "syncPedida": "Sync requested",
       "cuenta": "{{creados}} new · {{actualizados}} updated · {{borrados}} removed · {{iguales}} unchanged · {{fallidos}} with errors",
-      "syncNada": "Nothing new for payroll"
+      "syncNada": "Nothing new for payroll",
+      "paso1": "Connection",
+      "paso1Hecho": "Connected to {{compania}} · employees linked",
+      "paso1Falta": "Connect Gusto and link your staff",
+      "paso2": "Approve in Records",
+      "paso2Falta": "{{n}} shifts to approve",
+      "paso2Hecho": "Everything approved for this period",
+      "paso3": "Send to Gusto",
+      "paso3Detalle": "{{n}} shifts ready to send",
+      "pagoAsalariado": "Salaried in Gusto: only overtime is paid",
+      "pagoExento": "Salaried exempt in Gusto: Gusto won't pay these hours",
+      "avisoExentos": "{{n}} people are salaried exempt in Gusto: Gusto will NOT pay these hours. Switch them to hourly in Gusto (the person › Job & pay) and send again.",
+      "avisoAsalariados": "{{n}} people are salaried (non-exempt) in Gusto: Gusto will only pay their overtime.",
+      "insigniaExento": "Salaried exempt",
+      "insigniaAsalariado": "Salaried"
     },
     "NominaGusto": {
       "empleados": "Linked employees",
