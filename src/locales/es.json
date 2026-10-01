@@ -15791,9 +15791,10 @@
       "desvincular": "Desvincular",
       "notaGustoLibres": "Hay {{n}} empleados en Gusto sin pareja aquí. Si alguno trabaja contigo, vincúlalo desde su persona; si falta alguien en Gusto, dalo de alta allí (Gusto pide su SSN y su cuenta bancaria).",
       "subtituloHoras": "Envía a Gusto las horas aprobadas en Nómina, ya separadas en ordinarias y extra.",
-      "exento": "Sueldo fijo exento: Gusto no pagará sus horas",
-      "asalariado": "Sueldo fijo: sólo se pagan las extra",
-      "opcionAsalariado": "sueldo fijo"
+      "exento": "Exento en Gusto: sus horas no se envían",
+      "asalariado": "Sueldo fijo: Gusto paga las horas enviadas",
+      "opcionAsalariado": "sueldo fijo",
+      "opcionExento": "exento"
     },
     "GustoHoras": {
       "reglaFederal": "Federal: más de 40 h a la semana (Texas y la mayoría de estados)",
@@ -15848,12 +15849,15 @@
       "paso2Hecho": "Todo aprobado en este periodo",
       "paso3": "Enviar a Gusto",
       "paso3Detalle": "{{n}} turnos listos para enviar",
-      "pagoAsalariado": "Sueldo fijo en Gusto: sólo se pagan las extra",
-      "pagoExento": "Sueldo fijo exento en Gusto: Gusto no paga sus horas",
-      "avisoExentos": "{{n}} personas cobran sueldo fijo exento en Gusto: Gusto NO pagará estas horas. Cámbialas a pago por hora en Gusto (la persona › Job & pay) y vuelve a enviar.",
-      "avisoAsalariados": "{{n}} personas cobran sueldo fijo (no exento) en Gusto: Gusto sólo pagará sus horas extra.",
-      "insigniaExento": "Asalariado exento",
-      "insigniaAsalariado": "Asalariado"
+      "pagoAsalariado": "Sueldo fijo no exento: Gusto paga las horas enviadas al valor hora del sueldo",
+      "pagoExento": "Exento en Gusto: sus horas no se envían (Gusto las ignora)",
+      "avisoExentos": "{{n}} personas son exentas en Gusto: Gusto no usa sus horas (paga su sueldo o 80 h por defecto), así que no se envían. Si deben cobrar por horas, márcalas como no exentas en Gusto (la persona › Job & pay).",
+      "avisoAsalariados": "{{n}} personas tienen sueldo fijo no exento en Gusto: Gusto les paga SÓLO las horas que envíes, al valor hora de su sueldo. Aprueba y envía todas las del periodo o cobrarán de menos.",
+      "insigniaExento": "Exento · no se envía",
+      "insigniaAsalariado": "Sueldo fijo",
+      "cuentaExentos": "{{n}} de exentos sin enviar",
+      "syncOk": "En la nómina de Gusto",
+      "syncParcial": "En la nómina, con avisos"
     },
     "NominaGusto": {
       "empleados": "Empleados vinculados",

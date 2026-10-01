@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -24,6 +24,7 @@ import {
 } from "@/components/kit";
 import { usePermissions } from "@/hooks/usePermissions";
 import { useGusto } from "@/hooks/useGusto";
+import { hoyEnLaEmpresa, sumaDias } from "@/lib/horaDeLaEmpresa";
 import {
   gustoService,
   type AjustesDeHoras,
@@ -43,7 +44,6 @@ import {
  * websocket. Lo que no está aprobado no sale: se cuenta para que se vea.
  */
 
-const ymd = (d: Date) => d.toISOString().slice(0, 10);
 
 export default function HorasGusto({
   alIrAEmpleados,
@@ -59,10 +59,8 @@ export default function HorasGusto({
   const [periodos, setPeriodos] = useState<PeriodoDePago[] | null>(null);
   const [errorPeriodos, setErrorPeriodos] = useState<string | null>(null);
   const [elegido, setElegido] = useState<string>("");
-  const [inicio, setInicio] = useState(() =>
-    ymd(new Date(Date.now() - 13 * 86_400_000)),
-  );
-  const [fin, setFin] = useState(() => ymd(new Date()));
+  const [inicio, setInicio] = useState(() => sumaDias(hoyEnLaEmpresa(), -13));
+  const [fin, setFin] = useState(() => hoyEnLaEmpresa());
   const [vista, setVista] = useState<VistaPreviaDeHoras | null>(null);
   const [cargandoVista, setCargandoVista] = useState(false);
   const [errorVista, setErrorVista] = useState<string | null>(null);
@@ -149,7 +147,8 @@ export default function HorasGusto({
 
         setPeriodos(p);
         // El periodo abierto más reciente que ya terminó o está en curso.
-        const hoy = ymd(new Date());
+        // «Hoy» de la EMPRESA, no el UTC: a las 21:00 en Texas el UTC ya es mañana.
+        const hoy = hoyEnLaEmpresa();
         const abierto =
           p.find((x) => !x.procesada && x.inicio <= hoy) ||
           p.find((x) => !x.procesada);
@@ -179,22 +178,35 @@ export default function HorasGusto({
     setFin(p.fin);
   }
 
+  /* Sólo vale la ÚLTIMA vista previa pedida. Antes, la del rango por defecto
+     podía llegar DESPUÉS de la del periodo de Gusto recién elegido y pisarla:
+     la pantalla enseñaba cifras de otro rango (visto: «23 turnos» en un
+     periodo con 6). Y no se pide nada hasta saber los periodos de Gusto, que
+     son los que deciden el rango inicial. */
+  const ultimoPedido = useRef(0);
   const cargarVista = useCallback(async () => {
-    if (!inicio || !fin || inicio > fin) return;
+    if (periodos === null || !inicio || !fin || inicio > fin) return;
+    const mio = ++ultimoPedido.current;
     setCargandoVista(true);
     setErrorVista(null);
     try {
-      setVista(await gustoService.vistaPrevia(inicio, fin));
+      const v = await gustoService.vistaPrevia(inicio, fin);
+
+      if (mio === ultimoPedido.current) setVista(v);
     } catch (e: any) {
+      if (mio !== ultimoPedido.current) return;
       setVista(null);
       setErrorVista(
         e?.message ||
           t("ui.GustoHoras.noCargo", "No pudimos calcular las horas."),
       );
     } finally {
-      setCargandoVista(false);
+      if (mio === ultimoPedido.current) setCargandoVista(false);
     }
-  }, [inicio, fin, t]);
+  }, [inicio, fin, t, periodos]);
+
+  // Lo que se ve es del periodo elegido (si no, no se deja enviar).
+  const vistaAlDia = !!vista && vista.periodo.inicio === inicio && vista.periodo.fin === fin;
 
   useEffect(() => {
     void cargarVista();
@@ -330,8 +342,7 @@ export default function HorasGusto({
             "ui.GustoHoras.paso1Falta",
             "Conecta Gusto y vincula a tu personal",
           ),
-      listo:
-        !!conexion?.conectado && !(r && (r.sinVincular > 0 || r.exentos > 0)),
+      listo: !!conexion?.conectado && !(r && r.sinVincular > 0),
       onClick: alIrAEmpleados,
     },
     {
@@ -362,15 +373,25 @@ export default function HorasGusto({
     },
   ];
 
+  // Cómo acabó la sincronización con la nómina (lo dice Gusto; ver `envios`).
+  const SYNC: Record<string, ["ok" | "warn" | "bad" | "info" | "neutral", string]> = {
+    pending: ["info", t("ui.GustoHoras.syncPedida", "Sincronización pedida")],
+    in_progress: ["info", t("ui.GustoHoras.syncPedida", "Sincronización pedida")],
+    success: ["ok", t("ui.GustoHoras.syncOk", "En la nómina de Gusto")],
+    partial_success: ["warn", t("ui.GustoHoras.syncParcial", "En la nómina, con avisos")],
+    failure: ["bad", t("ui.GustoHoras.syncFallo", "Nómina sin sincronizar")],
+    nothing_to_sync: ["neutral", t("ui.GustoHoras.syncNada", "Nada nuevo para la nómina")],
+  };
+
   const PAGO: Record<ComoPaga, string> = {
     hora: "",
     asalariado: t(
       "ui.GustoHoras.pagoAsalariado",
-      "Sueldo fijo en Gusto: sólo se pagan las extra",
+      "Sueldo fijo no exento: Gusto paga las horas enviadas al valor hora del sueldo",
     ),
     exento: t(
       "ui.GustoHoras.pagoExento",
-      "Sueldo fijo exento en Gusto: Gusto no paga sus horas",
+      "Exento en Gusto: sus horas no se envían (Gusto las ignora)",
     ),
   };
 
@@ -617,11 +638,11 @@ export default function HorasGusto({
             </InfoNote>
           )}
           {r.exentos > 0 && (
-            <InfoNote icon={<TriangleAlert />} tone="bad">
+            <InfoNote icon={<TriangleAlert />} tone="warn">
               {t("ui.GustoHoras.avisoExentos", {
                 n: r.exentos,
                 defaultValue:
-                  "{{n}} personas cobran sueldo fijo exento en Gusto: Gusto NO pagará estas horas. Cámbialas a pago por hora en Gusto (la persona › Job & pay) y vuelve a enviar.",
+                  "{{n}} personas son exentas en Gusto: Gusto no usa sus horas (paga su sueldo o 80 h por defecto), así que no se envían. Si deben cobrar por horas, márcalas como no exentas en Gusto (la persona › Job & pay).",
               })}
             </InfoNote>
           )}
@@ -630,7 +651,7 @@ export default function HorasGusto({
               {t("ui.GustoHoras.avisoAsalariados", {
                 n: r.asalariados,
                 defaultValue:
-                  "{{n}} personas cobran sueldo fijo (no exento) en Gusto: Gusto sólo pagará sus horas extra.",
+                  "{{n}} personas tienen sueldo fijo no exento en Gusto: Gusto les paga SÓLO las horas que envíes, al valor hora de su sueldo. Aprueba y envía todas las del periodo o cobrarán de menos.",
               })}
             </InfoNote>
           )}
@@ -761,7 +782,7 @@ export default function HorasGusto({
                   />
                 </div>
               )}
-              <Button disabled={enCurso || r.turnos === 0} onClick={enviar}>
+              <Button disabled={enCurso || r.turnos === 0 || !vistaAlDia || cargandoVista} onClick={enviar}>
                 <Send />
                 {enCurso
                   ? t("ui.GustoHoras.enCurso", "Enviando…")
@@ -805,26 +826,8 @@ export default function HorasGusto({
                     {momento(e.empezadoEn)}
                   </span>
                   {e.sincronizacion && (
-                    <StatusBadge
-                      tone={
-                        e.sincronizacion === "failure"
-                          ? "bad"
-                          : e.sincronizacion === "nothing_to_sync"
-                            ? "neutral"
-                            : "info"
-                      }
-                    >
-                      {e.sincronizacion === "failure"
-                        ? t("ui.GustoHoras.syncFallo", "Nómina sin sincronizar")
-                        : e.sincronizacion === "nothing_to_sync"
-                          ? t(
-                              "ui.GustoHoras.syncNada",
-                              "Nada nuevo para la nómina",
-                            )
-                          : t(
-                              "ui.GustoHoras.syncPedida",
-                              "Sincronización pedida",
-                            )}
+                    <StatusBadge tone={SYNC[e.sincronizacion]?.[0] || "info"}>
+                      {SYNC[e.sincronizacion]?.[1] || SYNC.pending[1]}
                     </StatusBadge>
                   )}
                 </div>
@@ -842,6 +845,8 @@ export default function HorasGusto({
                       defaultValue:
                         "{{creados}} nuevos · {{actualizados}} actualizados · {{borrados}} retirados · {{iguales}} sin cambios · {{fallidos}} con error",
                     })}
+                  {(e.cuenta.exentos || 0) > 0 &&
+                      ` · ${t("ui.GustoHoras.cuentaExentos", { n: e.cuenta.exentos, defaultValue: "{{n}} de exentos sin enviar" })}`}
                   </div>
                 )}
                 {e.errores?.length > 0 && (

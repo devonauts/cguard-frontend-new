@@ -16314,9 +16314,10 @@
       "desvincular": "Ontkoppelen",
       "notaGustoLibres": "Er zijn {{n}} Gusto-medewerkers zonder match. Werkt iemand van hen voor je, koppel hem via zijn persoon; ontbreekt iemand in Gusto, voeg hem daar toe (Gusto vraagt om SSN en bankrekening).",
       "subtituloHoras": "Stuur de in Salaris goedgekeurde uren naar Gusto, al gesplitst in regulier en overuren.",
-      "exento": "Vast salaris (exempt): Gusto betaalt de uren niet",
-      "asalariado": "Vast salaris: alleen overuren worden betaald",
-      "opcionAsalariado": "vast salaris"
+      "exento": "Exempt in Gusto: uren worden niet verzonden",
+      "asalariado": "Vast salaris: Gusto betaalt de verzonden uren",
+      "opcionAsalariado": "vast salaris",
+      "opcionExento": "exempt"
     },
     "GustoHoras": {
       "reglaFederal": "Federaal: meer dan 40 uur per week (Texas en de meeste staten)",
@@ -16371,12 +16372,15 @@
       "paso2Hecho": "Alles goedgekeurd in deze periode",
       "paso3": "Naar Gusto verzenden",
       "paso3Detalle": "{{n}} diensten klaar om te verzenden",
-      "pagoAsalariado": "Vast salaris in Gusto: alleen overuren worden betaald",
-      "pagoExento": "Vast salaris (exempt) in Gusto: Gusto betaalt deze uren niet",
-      "avisoExentos": "{{n}} personen hebben in Gusto een vast salaris (exempt): Gusto betaalt deze uren NIET. Zet ze in Gusto op uurloon (persoon › Job & pay) en verstuur opnieuw.",
-      "avisoAsalariados": "{{n}} personen hebben in Gusto een vast salaris (niet exempt): Gusto betaalt alleen hun overuren.",
-      "insigniaExento": "Vast salaris (exempt)",
-      "insigniaAsalariado": "Vast salaris"
+      "pagoAsalariado": "Vast salaris (niet exempt): Gusto betaalt de verzonden uren tegen het uurtarief van het salaris",
+      "pagoExento": "Exempt in Gusto: uren worden niet verzonden (Gusto negeert ze)",
+      "avisoExentos": "{{n}} personen zijn exempt in Gusto: Gusto gebruikt hun uren niet (betaalt het salaris of standaard 80 uur), dus ze worden niet verzonden. Moeten ze per uur betaald worden, markeer ze dan als niet exempt in Gusto (persoon › Job & pay).",
+      "avisoAsalariados": "{{n}} personen hebben in Gusto een vast salaris (niet exempt): Gusto betaalt ALLEEN de uren die je stuurt, tegen het uurtarief van het salaris. Keur alle uren van de periode goed en verstuur ze, anders krijgen ze te weinig.",
+      "insigniaExento": "Exempt · niet verzonden",
+      "insigniaAsalariado": "Vast salaris",
+      "cuentaExentos": "{{n}} van exempt-personen niet verzonden",
+      "syncOk": "In het Gusto-salaris",
+      "syncParcial": "In het salaris, met waarschuwingen"
     },
     "NominaGusto": {
       "empleados": "Gekoppelde medewerkers",

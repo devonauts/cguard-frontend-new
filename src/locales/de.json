@@ -16314,9 +16314,10 @@
       "desvincular": "Trennen",
       "notaGustoLibres": "Es gibt {{n}} Gusto-Mitarbeitende ohne Zuordnung. Arbeitet jemand davon für dich, verknüpfe ihn über seine Person; fehlt jemand in Gusto, lege ihn dort an (Gusto verlangt SSN und Bankkonto).",
       "subtituloHoras": "Sende die in der Lohnabrechnung genehmigten Stunden an Gusto, bereits in regulär und Überstunden aufgeteilt.",
-      "exento": "Festgehalt (exempt): Gusto bezahlt die Stunden nicht",
-      "asalariado": "Festgehalt: nur Überstunden werden bezahlt",
-      "opcionAsalariado": "Festgehalt"
+      "exento": "Exempt in Gusto: Stunden werden nicht gesendet",
+      "asalariado": "Festgehalt: Gusto zahlt die gesendeten Stunden",
+      "opcionAsalariado": "Festgehalt",
+      "opcionExento": "exempt"
     },
     "GustoHoras": {
       "reglaFederal": "Bundesrecht: über 40 h pro Woche (Texas und die meisten Bundesstaaten)",
@@ -16371,12 +16372,15 @@
       "paso2Hecho": "Alles genehmigt in diesem Zeitraum",
       "paso3": "An Gusto senden",
       "paso3Detalle": "{{n}} Schichten bereit zum Senden",
-      "pagoAsalariado": "Festgehalt in Gusto: nur Überstunden werden bezahlt",
-      "pagoExento": "Festgehalt (exempt) in Gusto: Gusto bezahlt diese Stunden nicht",
-      "avisoExentos": "{{n}} Personen haben in Gusto ein Festgehalt (exempt): Gusto bezahlt diese Stunden NICHT. Stelle sie in Gusto auf Stundenlohn um (Person › Job & pay) und sende erneut.",
-      "avisoAsalariados": "{{n}} Personen haben in Gusto ein Festgehalt (nicht exempt): Gusto bezahlt nur ihre Überstunden.",
-      "insigniaExento": "Festgehalt (exempt)",
-      "insigniaAsalariado": "Festgehalt"
+      "pagoAsalariado": "Festgehalt (nicht exempt): Gusto zahlt die gesendeten Stunden zum Stundenwert des Gehalts",
+      "pagoExento": "Exempt in Gusto: Stunden werden nicht gesendet (Gusto ignoriert sie)",
+      "avisoExentos": "{{n}} Personen sind in Gusto exempt: Gusto nutzt ihre Stunden nicht (zahlt das Gehalt oder standardmäßig 80 h), daher werden sie nicht gesendet. Sollen sie nach Stunden bezahlt werden, markiere sie in Gusto als nicht exempt (Person › Job & pay).",
+      "avisoAsalariados": "{{n}} Personen haben in Gusto ein Festgehalt (nicht exempt): Gusto zahlt NUR die gesendeten Stunden, zum Stundenwert des Gehalts. Genehmige und sende alle Stunden des Zeitraums, sonst wird zu wenig gezahlt.",
+      "insigniaExento": "Exempt · nicht gesendet",
+      "insigniaAsalariado": "Festgehalt",
+      "cuentaExentos": "{{n}} von Exempt-Personen nicht gesendet",
+      "syncOk": "In der Gusto-Abrechnung",
+      "syncParcial": "In der Abrechnung, mit Hinweisen"
     },
     "NominaGusto": {
       "empleados": "Verknüpfte Mitarbeitende",

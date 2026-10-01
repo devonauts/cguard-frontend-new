@@ -16314,9 +16314,10 @@
       "desvincular": "Délier",
       "notaGustoLibres": "Il y a {{n}} employés Gusto sans correspondance ici. Si l’un d’eux travaille pour vous, liez-le depuis sa personne ; s’il manque quelqu’un dans Gusto, ajoutez-le là-bas (Gusto demande son SSN et son compte bancaire).",
       "subtituloHoras": "Envoyez à Gusto les heures approuvées dans Paie, déjà séparées en normales et supplémentaires.",
-      "exento": "Salaire fixe exempté : Gusto ne paiera pas ses heures",
-      "asalariado": "Salaire fixe : seules les heures sup. sont payées",
-      "opcionAsalariado": "salaire fixe"
+      "exento": "Exempté dans Gusto : ses heures ne sont pas envoyées",
+      "asalariado": "Salaire fixe : Gusto paie les heures envoyées",
+      "opcionAsalariado": "salaire fixe",
+      "opcionExento": "exempté"
     },
     "GustoHoras": {
       "reglaFederal": "Fédéral : plus de 40 h par semaine (Texas et la plupart des États)",
@@ -16371,12 +16372,15 @@
       "paso2Hecho": "Tout est approuvé sur cette période",
       "paso3": "Envoyer à Gusto",
       "paso3Detalle": "{{n}} services prêts à envoyer",
-      "pagoAsalariado": "Salaire fixe dans Gusto : seules les heures sup. sont payées",
-      "pagoExento": "Salaire fixe exempté dans Gusto : Gusto ne paie pas ces heures",
-      "avisoExentos": "{{n}} personnes ont un salaire fixe exempté dans Gusto : Gusto ne paiera PAS ces heures. Passez-les en paiement horaire dans Gusto (la personne › Job & pay) et renvoyez.",
-      "avisoAsalariados": "{{n}} personnes ont un salaire fixe (non exempté) dans Gusto : Gusto ne paiera que leurs heures sup.",
-      "insigniaExento": "Salarié exempté",
-      "insigniaAsalariado": "Salarié"
+      "pagoAsalariado": "Salaire fixe non exempté : Gusto paie les heures envoyées au taux horaire du salaire",
+      "pagoExento": "Exempté dans Gusto : ses heures ne sont pas envoyées (Gusto les ignore)",
+      "avisoExentos": "{{n}} personnes sont exemptées dans Gusto : Gusto n’utilise pas leurs heures (il paie leur salaire ou 80 h par défaut), elles ne sont donc pas envoyées. Si elles doivent être payées à l’heure, marquez-les non exemptées dans Gusto (la personne › Job & pay).",
+      "avisoAsalariados": "{{n}} personnes ont un salaire fixe non exempté dans Gusto : Gusto ne leur paie QUE les heures envoyées, au taux horaire du salaire. Approuvez et envoyez toutes celles de la période, sinon elles seront sous-payées.",
+      "insigniaExento": "Exempté · non envoyé",
+      "insigniaAsalariado": "Salaire fixe",
+      "cuentaExentos": "{{n}} d’exemptés non envoyés",
+      "syncOk": "Dans la paie Gusto",
+      "syncParcial": "Dans la paie, avec avertissements"
     },
     "NominaGusto": {
       "empleados": "Employés liés",

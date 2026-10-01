@@ -16494,9 +16494,10 @@
       "desvincular": "Rozłącz",
       "notaGustoLibres": "W Gusto jest {{n}} pracowników bez pary. Jeśli ktoś z nich u Ciebie pracuje, połącz go z poziomu osoby; jeśli kogoś brakuje w Gusto, dodaj go tam (Gusto wymaga SSN i konta bankowego).",
       "subtituloHoras": "Wyślij do Gusto godziny zatwierdzone w Płacach, już podzielone na zwykłe i nadgodziny.",
-      "exento": "Stała pensja (zwolniona): Gusto nie zapłaci godzin",
-      "asalariado": "Stała pensja: płatne są tylko nadgodziny",
-      "opcionAsalariado": "stała pensja"
+      "exento": "Zwolniony w Gusto: godziny nie są wysyłane",
+      "asalariado": "Stała pensja: Gusto płaci za wysłane godziny",
+      "opcionAsalariado": "stała pensja",
+      "opcionExento": "zwolniony"
     },
     "GustoHoras": {
       "reglaFederal": "Federalna: ponad 40 h tygodniowo (Teksas i większość stanów)",
@@ -16551,12 +16552,15 @@
       "paso2Hecho": "Wszystko zatwierdzone w tym okresie",
       "paso3": "Wyślij do Gusto",
       "paso3Detalle": "{{n}} zmian gotowych do wysłania",
-      "pagoAsalariado": "Stała pensja w Gusto: płatne są tylko nadgodziny",
-      "pagoExento": "Stała pensja (zwolniona) w Gusto: Gusto nie zapłaci tych godzin",
-      "avisoExentos": "{{n}} osób ma w Gusto stałą pensję (zwolnioną): Gusto NIE zapłaci tych godzin. Zmień je w Gusto na stawkę godzinową (osoba › Job & pay) i wyślij ponownie.",
-      "avisoAsalariados": "{{n}} osób ma w Gusto stałą pensję (niezwolnioną): Gusto zapłaci tylko nadgodziny.",
-      "insigniaExento": "Pensja (zwolniona)",
-      "insigniaAsalariado": "Pensja"
+      "pagoAsalariado": "Stała pensja (niezwolniona): Gusto płaci za wysłane godziny według stawki godzinowej pensji",
+      "pagoExento": "Zwolniony w Gusto: godziny nie są wysyłane (Gusto je ignoruje)",
+      "avisoExentos": "{{n}} osób jest zwolnionych w Gusto: Gusto nie używa ich godzin (płaci pensję lub domyślne 80 h), więc nie są wysyłane. Jeśli mają być płatni za godziny, oznacz ich w Gusto jako niezwolnionych (osoba › Job & pay).",
+      "avisoAsalariados": "{{n}} osób ma w Gusto stałą pensję (niezwolnioną): Gusto płaci im TYLKO za wysłane godziny, według stawki godzinowej pensji. Zatwierdź i wyślij wszystkie godziny okresu, inaczej dostaną za mało.",
+      "insigniaExento": "Zwolniony · nie wysłano",
+      "insigniaAsalariado": "Stała pensja",
+      "cuentaExentos": "{{n}} zwolnionych nie wysłano",
+      "syncOk": "Na liście płac Gusto",
+      "syncParcial": "Na liście płac, z ostrzeżeniami"
     },
     "NominaGusto": {
       "empleados": "Połączeni pracownicy",

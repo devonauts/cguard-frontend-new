@@ -15791,9 +15791,10 @@
       "desvincular": "Desvincular",
       "notaGustoLibres": "Há {{n}} funcionários no Gusto sem par aqui. Se algum trabalha com você, vincule-o pela pessoa; se faltar alguém no Gusto, cadastre-o lá (o Gusto pede SSN e conta bancária).",
       "subtituloHoras": "Envie ao Gusto as horas aprovadas em Folha, já separadas em normais e extras.",
-      "exento": "Salário fixo isento: o Gusto não pagará as horas",
-      "asalariado": "Salário fixo: só as extras são pagas",
-      "opcionAsalariado": "salário fixo"
+      "exento": "Isento no Gusto: as horas não são enviadas",
+      "asalariado": "Salário fixo: o Gusto paga as horas enviadas",
+      "opcionAsalariado": "salário fixo",
+      "opcionExento": "isento"
     },
     "GustoHoras": {
       "reglaFederal": "Federal: mais de 40 h por semana (Texas e a maioria dos estados)",
@@ -15848,12 +15849,15 @@
       "paso2Hecho": "Tudo aprovado neste período",
       "paso3": "Enviar ao Gusto",
       "paso3Detalle": "{{n}} turnos prontos para enviar",
-      "pagoAsalariado": "Salário fixo no Gusto: só as extras são pagas",
-      "pagoExento": "Salário fixo isento no Gusto: o Gusto não paga essas horas",
-      "avisoExentos": "{{n}} pessoas recebem salário fixo isento no Gusto: o Gusto NÃO pagará essas horas. Mude para pagamento por hora no Gusto (a pessoa › Job & pay) e envie de novo.",
-      "avisoAsalariados": "{{n}} pessoas recebem salário fixo (não isento) no Gusto: o Gusto só pagará as horas extras.",
-      "insigniaExento": "Assalariado isento",
-      "insigniaAsalariado": "Assalariado"
+      "pagoAsalariado": "Salário fixo não isento: o Gusto paga as horas enviadas pelo valor-hora do salário",
+      "pagoExento": "Isento no Gusto: as horas não são enviadas (o Gusto as ignora)",
+      "avisoExentos": "{{n}} pessoas são isentas no Gusto: o Gusto não usa as horas delas (paga o salário ou 80 h padrão), então não são enviadas. Se devem receber por hora, marque-as como não isentas no Gusto (a pessoa › Job & pay).",
+      "avisoAsalariados": "{{n}} pessoas têm salário fixo não isento no Gusto: o Gusto paga SÓ as horas que você enviar, pelo valor-hora do salário. Aprove e envie todas as do período ou receberão a menos.",
+      "insigniaExento": "Isento · não enviado",
+      "insigniaAsalariado": "Salário fixo",
+      "cuentaExentos": "{{n}} de isentos não enviados",
+      "syncOk": "Na folha do Gusto",
+      "syncParcial": "Na folha, com avisos"
     },
     "NominaGusto": {
       "empleados": "Funcionários vinculados",

@@ -260,8 +260,8 @@ export default function EmpleadosGusto() {
                               {p.vinculo.comoPaga && p.vinculo.comoPaga !== "hora" && (
                                 <StatusBadge tone={p.vinculo.comoPaga === "exento" ? "bad" : "warn"}>
                                   {p.vinculo.comoPaga === "exento"
-                                    ? t("ui.GustoEmpleados.exento", "Sueldo fijo exento: Gusto no pagará sus horas")
-                                    : t("ui.GustoEmpleados.asalariado", "Sueldo fijo: sólo se pagan las extra")}
+                                    ? t("ui.GustoEmpleados.exento", "Exento en Gusto: sus horas no se envían")
+                                    : t("ui.GustoEmpleados.asalariado", "Sueldo fijo: Gusto paga las horas enviadas")}
                                 </StatusBadge>
                               )}
                             </div>
@@ -315,9 +315,11 @@ export default function EmpleadosGusto() {
                                 <option key={e.uuid} value={e.uuid}>
                                   {e.nombre}
                                   {e.email ? ` · ${e.email}` : ""}
-                                  {e.comoPaga && e.comoPaga !== "hora"
-                                    ? ` · ${t("ui.GustoEmpleados.opcionAsalariado", "sueldo fijo")}`
-                                    : ""}
+                                  {e.comoPaga === "exento"
+                                    ? ` · ${t("ui.GustoEmpleados.opcionExento", "exento")}`
+                                    : e.comoPaga === "asalariado"
+                                      ? ` · ${t("ui.GustoEmpleados.opcionAsalariado", "sueldo fijo")}`
+                                      : ""}
                                 </option>
                               ))}
                             </select>

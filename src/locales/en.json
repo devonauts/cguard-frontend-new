@@ -15791,9 +15791,10 @@
       "desvincular": "Unlink",
       "notaGustoLibres": "There are {{n}} Gusto employees with no match here. If any of them work for you, link them from their person; if someone is missing in Gusto, add them there (Gusto asks for their SSN and bank account).",
       "subtituloHoras": "Send the hours approved in Payroll to Gusto, already split into regular and overtime.",
-      "exento": "Salaried exempt: Gusto won't pay their hours",
-      "asalariado": "Salaried: only overtime is paid",
-      "opcionAsalariado": "salaried"
+      "exento": "Exempt in Gusto: their hours aren't sent",
+      "asalariado": "Salaried: Gusto pays the hours sent",
+      "opcionAsalariado": "salaried",
+      "opcionExento": "exempt"
     },
     "GustoHoras": {
       "reglaFederal": "Federal: over 40 h per week (Texas and most states)",
@@ -15848,12 +15849,15 @@
       "paso2Hecho": "Everything approved for this period",
       "paso3": "Send to Gusto",
       "paso3Detalle": "{{n}} shifts ready to send",
-      "pagoAsalariado": "Salaried in Gusto: only overtime is paid",
-      "pagoExento": "Salaried exempt in Gusto: Gusto won't pay these hours",
-      "avisoExentos": "{{n}} people are salaried exempt in Gusto: Gusto will NOT pay these hours. Switch them to hourly in Gusto (the person › Job & pay) and send again.",
-      "avisoAsalariados": "{{n}} people are salaried (non-exempt) in Gusto: Gusto will only pay their overtime.",
-      "insigniaExento": "Salaried exempt",
-      "insigniaAsalariado": "Salaried"
+      "pagoAsalariado": "Salaried non-exempt: Gusto pays the hours sent at the salary's hourly rate",
+      "pagoExento": "Exempt in Gusto: their hours aren't sent (Gusto ignores them)",
+      "avisoExentos": "{{n}} people are exempt in Gusto: Gusto doesn't use their hours (it pays their salary or a default 80 h), so they aren't sent. If they should be paid by the hour, mark them non-exempt in Gusto (the person › Job & pay).",
+      "avisoAsalariados": "{{n}} people are salaried non-exempt in Gusto: Gusto pays them ONLY the hours you send, at the salary's hourly rate. Approve and send all of the period's hours or they'll be underpaid.",
+      "insigniaExento": "Exempt · not sent",
+      "insigniaAsalariado": "Salaried",
+      "cuentaExentos": "{{n}} from exempt people not sent",
+      "syncOk": "In Gusto payroll",
+      "syncParcial": "In payroll, with warnings"
     },
     "NominaGusto": {
       "empleados": "Linked employees",

@@ -16314,9 +16314,10 @@
       "desvincular": "Scollega",
       "notaGustoLibres": "Ci sono {{n}} dipendenti Gusto senza abbinamento. Se qualcuno lavora con te, collegalo dalla sua persona; se manca qualcuno in Gusto, aggiungilo lì (Gusto chiede SSN e conto bancario).",
       "subtituloHoras": "Invia a Gusto le ore approvate in Paghe, già separate in ordinarie e straordinarie.",
-      "exento": "Stipendio fisso esente: Gusto non pagherà le ore",
-      "asalariado": "Stipendio fisso: si pagano solo gli straordinari",
-      "opcionAsalariado": "stipendio fisso"
+      "exento": "Esente in Gusto: le ore non vengono inviate",
+      "asalariado": "Stipendio fisso: Gusto paga le ore inviate",
+      "opcionAsalariado": "stipendio fisso",
+      "opcionExento": "esente"
     },
     "GustoHoras": {
       "reglaFederal": "Federale: oltre 40 h a settimana (Texas e la maggior parte degli stati)",
@@ -16371,12 +16372,15 @@
       "paso2Hecho": "Tutto approvato in questo periodo",
       "paso3": "Invia a Gusto",
       "paso3Detalle": "{{n}} turni pronti da inviare",
-      "pagoAsalariado": "Stipendio fisso in Gusto: si pagano solo gli straordinari",
-      "pagoExento": "Stipendio fisso esente in Gusto: Gusto non paga queste ore",
-      "avisoExentos": "{{n}} persone hanno stipendio fisso esente in Gusto: Gusto NON pagherà queste ore. Passale a paga oraria in Gusto (la persona › Job & pay) e invia di nuovo.",
-      "avisoAsalariados": "{{n}} persone hanno stipendio fisso (non esente) in Gusto: Gusto pagherà solo gli straordinari.",
-      "insigniaExento": "Stipendiato esente",
-      "insigniaAsalariado": "Stipendiato"
+      "pagoAsalariado": "Stipendio fisso non esente: Gusto paga le ore inviate al valore orario dello stipendio",
+      "pagoExento": "Esente in Gusto: le ore non vengono inviate (Gusto le ignora)",
+      "avisoExentos": "{{n}} persone sono esenti in Gusto: Gusto non usa le loro ore (paga lo stipendio o 80 h predefinite), quindi non vengono inviate. Se devono essere pagate a ore, segnale come non esenti in Gusto (la persona › Job & pay).",
+      "avisoAsalariados": "{{n}} persone hanno stipendio fisso non esente in Gusto: Gusto paga SOLO le ore che invii, al valore orario dello stipendio. Approva e invia tutte quelle del periodo o verranno pagate meno.",
+      "insigniaExento": "Esente · non inviato",
+      "insigniaAsalariado": "Stipendio fisso",
+      "cuentaExentos": "{{n}} di esenti non inviati",
+      "syncOk": "Nella paga di Gusto",
+      "syncParcial": "Nella paga, con avvisi"
     },
     "NominaGusto": {
       "empleados": "Dipendenti collegati",

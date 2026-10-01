@@ -122,6 +122,8 @@ export interface EnvioDeHoras {
   estado: "running" | "done" | "failed";
   cuenta: {
     creados: number; actualizados: number; borrados: number; iguales: number; fallidos: number; sinVincular: number;
+    /** Turnos de personas exentas en Gusto: no se envían (Gusto ignora sus horas). */
+    exentos?: number;
   } | null;
   errores: Array<{ userId?: string; turno?: string; mensaje: string }>;
   sincronizacion: string | null;
