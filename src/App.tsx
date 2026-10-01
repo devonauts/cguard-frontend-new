@@ -88,6 +88,9 @@ const SettingsHome = lazy(
 const IntegrationsList = lazy(
   () => import("./pages/admin/Configuration/integrations/IntegrationsList"),
 );
+const EmpleadosGusto = lazy(
+  () => import("./pages/admin/Configuration/integrations/EmpleadosGusto"),
+);
 const ProfileFieldsPage = lazy(
   () => import("./pages/admin/Configuration/profile-fields/ProfileFieldsPage"),
 );
@@ -2391,6 +2394,14 @@ export default function App() {
                                 </ProtectedRoute>
                               }
                               path="/setting/integraciones"
+                            />
+                            <Route
+                              element={
+                                <ProtectedRoute>
+                                  <EmpleadosGusto />
+                                </ProtectedRoute>
+                              }
+                              path="/setting/integraciones/gusto"
                             />
 
                             {/* The real payroll/nómina config lives at /nomina/settings (salary basis,

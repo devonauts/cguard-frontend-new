@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
-import { Link2, Unlink, RefreshCw, Info } from "lucide-react";
+import { Link2, Unlink, RefreshCw, Info, Users } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { confirmDialog } from "@/components/ui/confirmDialog";
@@ -218,6 +218,13 @@ export default function ConexionGusto() {
           <div className="flex shrink-0 gap-2">
             {estado.conectado || conError ? (
               <>
+                {estado.conectado && (
+                  <Button asChild variant="outline">
+                    <Link to="/setting/integraciones/gusto">
+                      <Users /> {t("ui.Gusto.emparejar", "Empleados")}
+                    </Link>
+                  </Button>
+                )}
                 {conError && (
                   <Button disabled={ocupado} onClick={conectar}>
                     <RefreshCw /> {t("ui.Gusto.reconectar", "Volver a conectar")}
