@@ -15863,7 +15863,12 @@
       "avisoFueraDeNomina": "{{n}} pessoas não entrarão na folha do Gusto mesmo recebendo as horas: o cadastro no Gusto está incompleto ou trabalharam antes da data de contratação. Corrija no Gusto (a pessoa › Onboarding / Job) e envie de novo.",
       "insigniaSinAlta": "Cadastro incompleto no Gusto",
       "insigniaAntesDeContratar": "Antes da contratação no Gusto",
-      "cuentaSobrantes": "{{n}} horas sobrando corrigidas no Gusto"
+      "cuentaSobrantes": "{{n}} horas sobrando corrigidas no Gusto",
+      "paso3Pendiente": "{{count}} alterações a enviar",
+      "paso3AlDia": "Tudo enviado ao Gusto",
+      "notaSobrante": "O Gusto ainda tinha {{horas}} h de «{{clase}}» de um envio anterior para {{persona}}: zeradas.",
+      "paso3Pendiente_one": "{{count}} alteração a enviar",
+      "paso3Pendiente_other": "{{count}} alterações a enviar"
     },
     "NominaGusto": {
       "empleados": "Funcionários vinculados",

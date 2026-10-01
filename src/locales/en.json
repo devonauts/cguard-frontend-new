@@ -15863,7 +15863,12 @@
       "avisoFueraDeNomina": "{{n}} people won't make it into Gusto payroll even though their hours arrive: their onboarding in Gusto is incomplete or they worked before their hire date. Fix it in Gusto (the person › Onboarding / Job) and send again.",
       "insigniaSinAlta": "Onboarding incomplete in Gusto",
       "insigniaAntesDeContratar": "Before their hire date in Gusto",
-      "cuentaSobrantes": "{{n}} leftover hours corrected in Gusto"
+      "cuentaSobrantes": "{{n}} leftover hours corrected in Gusto",
+      "paso3Pendiente": "{{count}} changes to send",
+      "paso3AlDia": "Everything sent to Gusto",
+      "notaSobrante": "Gusto still had {{horas}} h of “{{clase}}” from an earlier upload for {{persona}}: set to 0.",
+      "paso3Pendiente_one": "{{count}} change to send",
+      "paso3Pendiente_other": "{{count}} changes to send"
     },
     "NominaGusto": {
       "empleados": "Linked employees",

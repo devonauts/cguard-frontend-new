@@ -114,6 +114,8 @@ export interface VistaPreviaDeHoras {
   resumen: {
     personas: number; turnos: number; regular: number; extra: number; doble: number;
     sinVincular: number; porRevisar: number; exentos: number; asalariados: number; fueraDeNomina: number;
+    /** Lo que falta por mandar respecto a lo ya enviado. */
+    porEnviar: { nuevos: number; cambiados: number; retirar: number };
   };
 }
 
@@ -129,7 +131,8 @@ export interface EnvioDeHoras {
     /** Clasificaciones que Gusto conservaba de un envío anterior y se pusieron a 0. */
     sobrantes?: number;
   } | null;
-  errores: Array<{ userId?: string; turno?: string; mensaje: string }>;
+  /** Errores, y notas (`tipo: "sobrante"`) de lo que se corrigió en Gusto. */
+  errores: Array<{ userId?: string; turno?: string; mensaje: string; tipo?: "sobrante"; persona?: string; clase?: string; horas?: number }>;
   sincronizacion: string | null;
   empezadoEn: string | null;
   terminadoEn: string | null;

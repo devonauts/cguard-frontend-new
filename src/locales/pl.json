@@ -16566,7 +16566,14 @@
       "avisoFueraDeNomina": "{{n}} osób nie trafi na listę płac Gusto, mimo że ich godziny dotrą: ich rejestracja w Gusto jest niepełna lub pracowali przed datą zatrudnienia. Popraw to w Gusto (osoba › Onboarding / Job) i wyślij ponownie.",
       "insigniaSinAlta": "Niepełna rejestracja w Gusto",
       "insigniaAntesDeContratar": "Przed zatrudnieniem w Gusto",
-      "cuentaSobrantes": "{{n}} pozostałych godzin poprawionych w Gusto"
+      "cuentaSobrantes": "{{n}} pozostałych godzin poprawionych w Gusto",
+      "paso3Pendiente": "{{count}} zmian do wysłania",
+      "paso3AlDia": "Wszystko wysłane do Gusto",
+      "notaSobrante": "Gusto wciąż miało {{horas}} h „{{clase}}” z wcześniejszej wysyłki dla {{persona}}: wyzerowano.",
+      "paso3Pendiente_one": "{{count}} zmiana do wysłania",
+      "paso3Pendiente_other": "{{count}} zmian do wysłania",
+      "paso3Pendiente_few": "{{count}} zmiany do wysłania",
+      "paso3Pendiente_many": "{{count}} zmian do wysłania"
     },
     "NominaGusto": {
       "empleados": "Połączeni pracownicy",

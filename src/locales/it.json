@@ -16386,7 +16386,12 @@
       "avisoFueraDeNomina": "{{n}} persone non entreranno nella paga di Gusto anche se le ore arrivano: l’inserimento in Gusto è incompleto o hanno lavorato prima della data di assunzione. Correggi in Gusto (la persona › Onboarding / Job) e invia di nuovo.",
       "insigniaSinAlta": "Inserimento incompleto in Gusto",
       "insigniaAntesDeContratar": "Prima dell’assunzione in Gusto",
-      "cuentaSobrantes": "{{n}} ore residue corrette in Gusto"
+      "cuentaSobrantes": "{{n}} ore residue corrette in Gusto",
+      "paso3Pendiente": "{{count}} modifiche da inviare",
+      "paso3AlDia": "Tutto inviato a Gusto",
+      "notaSobrante": "Gusto conservava {{horas}} h di «{{clase}}» da un invio precedente per {{persona}}: azzerate.",
+      "paso3Pendiente_one": "{{count}} modifica da inviare",
+      "paso3Pendiente_other": "{{count}} modifiche da inviare"
     },
     "NominaGusto": {
       "empleados": "Dipendenti collegati",

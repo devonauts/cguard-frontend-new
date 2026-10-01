@@ -16386,7 +16386,12 @@
       "avisoFueraDeNomina": "{{n}} Personen kommen nicht in die Gusto-Abrechnung, obwohl ihre Stunden ankommen: ihr Onboarding in Gusto ist unvollständig oder sie haben vor dem Einstellungsdatum gearbeitet. Korrigiere es in Gusto (Person › Onboarding / Job) und sende erneut.",
       "insigniaSinAlta": "Onboarding in Gusto unvollständig",
       "insigniaAntesDeContratar": "Vor dem Einstellungsdatum in Gusto",
-      "cuentaSobrantes": "{{n}} übrig gebliebene Stunden in Gusto korrigiert"
+      "cuentaSobrantes": "{{n}} übrig gebliebene Stunden in Gusto korrigiert",
+      "paso3Pendiente": "{{count}} Änderungen zu senden",
+      "paso3AlDia": "Alles an Gusto gesendet",
+      "notaSobrante": "Gusto hatte noch {{horas}} h „{{clase}}“ aus einer früheren Übertragung für {{persona}}: auf 0 gesetzt.",
+      "paso3Pendiente_one": "{{count}} Änderung zu senden",
+      "paso3Pendiente_other": "{{count}} Änderungen zu senden"
     },
     "NominaGusto": {
       "empleados": "Verknüpfte Mitarbeitende",

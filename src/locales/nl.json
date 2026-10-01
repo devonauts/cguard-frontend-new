@@ -16386,7 +16386,12 @@
       "avisoFueraDeNomina": "{{n}} personen komen niet in het Gusto-salaris, ook al komen hun uren aan: hun onboarding in Gusto is onvolledig of ze werkten vóór hun startdatum. Pas het aan in Gusto (persoon › Onboarding / Job) en verstuur opnieuw.",
       "insigniaSinAlta": "Onboarding in Gusto onvolledig",
       "insigniaAntesDeContratar": "Vóór de startdatum in Gusto",
-      "cuentaSobrantes": "{{n}} overgebleven uren gecorrigeerd in Gusto"
+      "cuentaSobrantes": "{{n}} overgebleven uren gecorrigeerd in Gusto",
+      "paso3Pendiente": "{{count}} wijzigingen te verzenden",
+      "paso3AlDia": "Alles naar Gusto verzonden",
+      "notaSobrante": "Gusto had nog {{horas}} u „{{clase}}” van een eerdere verzending voor {{persona}}: op 0 gezet.",
+      "paso3Pendiente_one": "{{count}} wijziging te verzenden",
+      "paso3Pendiente_other": "{{count}} wijzigingen te verzenden"
     },
     "NominaGusto": {
       "empleados": "Gekoppelde medewerkers",

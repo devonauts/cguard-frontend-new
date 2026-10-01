@@ -15863,7 +15863,12 @@
       "avisoFueraDeNomina": "{{n}} personas no entrarán en la nómina de Gusto aunque les lleguen las horas: tienen el alta sin terminar en Gusto o trabajaron antes de su fecha de contratación. Complétalo en Gusto (la persona › Onboarding / Job) y vuelve a enviar.",
       "insigniaSinAlta": "Alta sin terminar en Gusto",
       "insigniaAntesDeContratar": "Antes de su contratación en Gusto",
-      "cuentaSobrantes": "{{n}} horas sobrantes corregidas en Gusto"
+      "cuentaSobrantes": "{{n}} horas sobrantes corregidas en Gusto",
+      "paso3Pendiente": "{{count}} cambios por enviar",
+      "paso3AlDia": "Todo enviado a Gusto",
+      "notaSobrante": "Gusto conservaba {{horas}} h de «{{clase}}» de un envío anterior para {{persona}}: puestas a 0.",
+      "paso3Pendiente_one": "{{count}} cambio por enviar",
+      "paso3Pendiente_other": "{{count}} cambios por enviar"
     },
     "NominaGusto": {
       "empleados": "Empleados vinculados",

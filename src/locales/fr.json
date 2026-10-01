@@ -16386,7 +16386,12 @@
       "avisoFueraDeNomina": "{{n}} personnes n’entreront pas dans la paie Gusto même si leurs heures arrivent : leur intégration dans Gusto est incomplète ou elles ont travaillé avant leur date d’embauche. Corrigez dans Gusto (la personne › Onboarding / Job) et renvoyez.",
       "insigniaSinAlta": "Intégration incomplète dans Gusto",
       "insigniaAntesDeContratar": "Avant l’embauche dans Gusto",
-      "cuentaSobrantes": "{{n}} heures résiduelles corrigées dans Gusto"
+      "cuentaSobrantes": "{{n}} heures résiduelles corrigées dans Gusto",
+      "paso3Pendiente": "{{count}} changements à envoyer",
+      "paso3AlDia": "Tout est envoyé à Gusto",
+      "notaSobrante": "Gusto gardait {{horas}} h de « {{clase}} » d’un envoi précédent pour {{persona}} : remises à 0.",
+      "paso3Pendiente_one": "{{count}} changement à envoyer",
+      "paso3Pendiente_other": "{{count}} changements à envoyer"
     },
     "NominaGusto": {
       "empleados": "Employés liés",

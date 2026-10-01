@@ -227,6 +227,9 @@ export default function HorasGusto({
         setProgreso(null);
         setEnviando(false);
         void cargarEnvios();
+        // Lo pendiente cambia al enviar: sin esto el paso 3 seguía diciendo
+        // «1 cambio por enviar» con todo ya en Gusto (visto en el navegador).
+        void cargarVista();
         if (d.estado === "done")
           toast.success(t("ui.GustoHoras.enviado", "Horas enviadas a Gusto."));
         else
@@ -242,7 +245,7 @@ export default function HorasGusto({
     window.addEventListener("cg:gusto-envio", oir);
 
     return () => window.removeEventListener("cg:gusto-envio", oir);
-  }, [cargarEnvios, t]);
+  }, [cargarEnvios, cargarVista, t]);
 
   // Por si el websocket no llega: se mira el historial mientras haya un envío en curso.
   const enCurso = enviando || envios.some((e) => e.estado === "running");
@@ -257,11 +260,12 @@ export default function HorasGusto({
       if (!lista.some((e) => e.estado === "running")) {
         setEnviando(false);
         setProgreso(null);
+        void cargarVista();
       }
     }, 5000);
 
     return () => window.clearInterval(id);
-  }, [enCurso]);
+  }, [enCurso, cargarVista]);
 
   const guardarAjuste = async (
     cambios: Partial<Pick<AjustesDeHoras, "regla" | "semanaEmpieza">>,
@@ -322,6 +326,9 @@ export default function HorasGusto({
   /* Los tres pasos, en el orden en que se hacen: conectar y vincular (una vez,
      en Ajustes), aprobar en Registros (cada periodo) y enviar (aquí). Cada uno
      dice en qué está y lleva a donde se hace. */
+  // Notas de corrección: las nuevas traen `tipo`; las guardadas antes, sólo el texto.
+  const esNota = (x: { tipo?: string; mensaje: string }) => x.tipo === "sobrante" || /^Gusto conservaba /.test(x.mensaje);
+  const pendientes = r ? r.porEnviar.nuevos + r.porEnviar.cambiados + r.porEnviar.retirar : 0;
   const pasos: Array<{
     n: number;
     titulo: string;
@@ -361,15 +368,16 @@ export default function HorasGusto({
     {
       n: 3,
       titulo: t("ui.GustoHoras.paso3", "Enviar a Gusto"),
-      detalle: r
-        ? t("ui.GustoHoras.paso3Detalle", {
-            n: r.turnos,
-            defaultValue: "{{n}} turnos listos para enviar",
-          })
-        : "—",
-      listo: !!envios.find(
-        (e) => e.estado === "done" && e.inicio === inicio && e.fin === fin,
-      ),
+      // «Hecho» = no queda NADA por mandar respecto a lo enviado (no basta con
+      // que haya un envío del periodo: después se pudo rechazar o corregir algo).
+      detalle: !r
+        ? "—"
+        : pendientes > 0
+          ? t("ui.GustoHoras.paso3Pendiente", { count: pendientes, defaultValue: "{{count}} cambios por enviar" })
+          : r.turnos > 0
+            ? t("ui.GustoHoras.paso3AlDia", "Todo enviado a Gusto")
+            : t("ui.GustoHoras.paso3Detalle", { n: 0, defaultValue: "{{n}} turnos listos para enviar" }),
+      listo: !!r && r.turnos > 0 && pendientes === 0,
     },
   ];
 
@@ -867,14 +875,32 @@ export default function HorasGusto({
                       ` · ${t("ui.GustoHoras.cuentaExentos", { n: e.cuenta.exentos, defaultValue: "{{n}} de exentos sin enviar" })}`}
                   </div>
                 )}
-                {e.errores?.length > 0 && (
-                  <ul
-                    className="mt-1 list-disc pl-5 text-xs"
-                    style={{ color: "var(--bad)" }}
-                  >
-                    {e.errores.slice(0, 5).map((x, i) => (
-                      <li key={i}>{x.mensaje}</li>
-                    ))}
+                {/* Notas (correcciones hechas en Gusto) aparte de los errores, y en su idioma. */}
+                {e.errores?.some((x) => esNota(x)) && (
+                  <ul className="mt-1 list-disc pl-5 text-xs" style={{ color: "var(--ink-soft)" }}>
+                    {e.errores
+                      .filter((x) => esNota(x))
+                      .slice(0, 5)
+                      .map((x, i) => (
+                        <li key={i}>
+                          {x.tipo !== "sobrante" ? x.mensaje : t("ui.GustoHoras.notaSobrante", {
+                            horas: x.horas,
+                            clase: x.clase,
+                            persona: x.persona,
+                            defaultValue: "Gusto conservaba {{horas}} h de «{{clase}}» de un envío anterior para {{persona}}: puestas a 0.",
+                          })}
+                        </li>
+                      ))}
+                  </ul>
+                )}
+                {e.errores?.some((x) => !esNota(x)) && (
+                  <ul className="mt-1 list-disc pl-5 text-xs" style={{ color: "var(--bad)" }}>
+                    {e.errores
+                      .filter((x) => !esNota(x))
+                      .slice(0, 5)
+                      .map((x, i) => (
+                        <li key={i}>{x.mensaje}</li>
+                      ))}
                   </ul>
                 )}
               </li>
