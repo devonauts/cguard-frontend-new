@@ -53,6 +53,7 @@ import {
 } from "@/lib/api/communicationService";
 import { localeActual } from "@/lib/localeActual";
 import { useAgente } from "@/lib/agenteDeMarca";
+import { prefijoDeLaEmpresa } from "@/lib/telefonoDeLaEmpresa";
 const RECHARGE_PRESETS = [10, 25, 50, 100];
 const CHANNEL_OPTIONS = ["push", "whatsapp", "sms", "email"];
 const PROVIDER_OPTIONS = ["fcm", "meta", "twilio", "smtp"];
@@ -915,7 +916,7 @@ export default function CommunicationsPage() {
                             })}
                           </Label>
                           <Input
-                            placeholder="+593"
+                            placeholder={prefijoDeLaEmpresa()}
                             value={settings.default_country_code || ""}
                             onChange={(e) =>
                               patch("default_country_code", e.target.value)

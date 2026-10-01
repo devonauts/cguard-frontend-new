@@ -956,7 +956,7 @@
       "cityExample": "Quito",
       "countryExample": "Ecuador",
       "emailExample": "example@email.com",
-      "phoneExample": "+1 555 1234567"
+      "phoneExample": "{{ejemplo}}"
     },
     "stations": {
       "add": "Add Station",
@@ -3335,7 +3335,7 @@
     "newEmail": "New Email Address*",
     "password": "Password*",
     "phone": "Mobile Number*",
-    "phoneExample": "e.g. +593991234567",
+    "phoneExample": "e.g. {{ejemplo}}",
     "save": "Save",
     "saving": "Saving...",
     "selectLanguage": "Select language",
@@ -7414,7 +7414,7 @@
       "sectionContact": "Contact",
       "companyPhoneLabel": "Company phone*",
       "phoneInvalidHint": "Invalid number. Use the international format, for example +12015550123.",
-      "phoneExample": "Example: {{dialCode}}2015550123",
+      "phoneExample": "Example: {{ejemplo}}",
       "companyEmailLabel": "Company email",
       "emailPlaceholder": "email@company.com",
       "emailHint": "It's the sender and the contact your clients see.",

@@ -57,6 +57,7 @@ import {
   cacheTenantTimezone,
 } from "@/utils/tenantLocation";
 import { geocodeRaw, parseGeocodeResult } from "@/utils/geocodeAddress";
+import { ejemploDeTelefono } from "@/lib/telefonoDeLaEmpresa";
 
 // useEffect imported above
 
@@ -895,8 +896,8 @@ export default function ProfileCompanyForm() {
             ) : (
               <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
                 {t("settings.companyProfile.phoneExample", {
-                  defaultValue: "Ejemplo: {{dialCode}}2015550123",
-                  dialCode: country.dialCode,
+                  defaultValue: "Ejemplo: {{ejemplo}}",
+                  ejemplo: ejemploDeTelefono(country.code),
                 })}
               </p>
             )}

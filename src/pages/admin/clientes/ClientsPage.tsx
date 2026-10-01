@@ -117,6 +117,7 @@ import { useDebouncedValue } from "@/hooks/useDebounce";
 import { enLotes } from "@/lib/enLotes";
 import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { useVistaGuardada } from "@/hooks/useVistaGuardada";
+import { ejemploDeTelefono } from "@/lib/telefonoDeLaEmpresa";
 
 // Guard against the literal string 'undefined' that some legacy records persisted
 // for lastName (from a String(undefined) concat on save). Hides bad data until cleaned.
@@ -984,7 +985,7 @@ export default function ClientesPage() {
                       <div className="space-y-2">
                         <Label>{t("clients.filters.phone")}</Label>
                         <Input
-                          placeholder={t("clients.placeholders.phoneExample")}
+                          placeholder={t("clients.placeholders.phoneExample", { ejemplo: ejemploDeTelefono() })}
                           value={filters.phoneNumber || ""}
                           onChange={(e) =>
                             setFilters({

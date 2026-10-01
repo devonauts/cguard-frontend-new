@@ -608,7 +608,7 @@
       "cityExample": "Quito",
       "countryExample": "Ecuador",
       "emailExample": "esempio@email.com",
-      "phoneExample": "+39 123 4567890"
+      "phoneExample": "{{ejemplo}}"
     },
     "stations": {
       "add": "Aggiungi postazione",
@@ -7179,7 +7179,7 @@
     "newEmail": "Nuova email*",
     "password": "Password*",
     "phone": "Numero di cellulare*",
-    "phoneExample": "es. +393391234567",
+    "phoneExample": "es. {{ejemplo}}",
     "save": "Salva",
     "saving": "Salvataggio...",
     "selectLanguage": "Seleziona la lingua",
@@ -7890,7 +7890,7 @@
       "sectionContact": "Contatto",
       "companyPhoneLabel": "Telefono dell'azienda*",
       "phoneInvalidHint": "Numero non valido. Usa il formato internazionale, per esempio +393391234567.",
-      "phoneExample": "Esempio: {{dialCode}}3391234567",
+      "phoneExample": "Esempio: {{ejemplo}}",
       "companyEmailLabel": "Email dell'azienda",
       "emailPlaceholder": "email@azienda.com",
       "emailHint": "È il mittente e il contatto che vedono i tuoi committenti.",

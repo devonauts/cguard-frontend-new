@@ -956,7 +956,7 @@
       "cityExample": "Quito",
       "countryExample": "Ecuador",
       "emailExample": "ejemplo@correo.com",
-      "phoneExample": "+593 123456789"
+      "phoneExample": "{{ejemplo}}"
     },
     "stations": {
       "add": "Agregar estación",
@@ -3335,7 +3335,7 @@
     "newEmail": "Nuevo correo electrónico*",
     "password": "Contraseña*",
     "phone": "Número móvil*",
-    "phoneExample": "p. ej. +593991234567",
+    "phoneExample": "p. ej. {{ejemplo}}",
     "save": "Guardar",
     "saving": "Guardando...",
     "selectLanguage": "Seleccionar idioma",
@@ -7414,7 +7414,7 @@
       "sectionContact": "Contacto",
       "companyPhoneLabel": "Teléfono de la empresa*",
       "phoneInvalidHint": "Número inválido. Usa el formato internacional, por ejemplo +12015550123.",
-      "phoneExample": "Ejemplo: {{dialCode}}2015550123",
+      "phoneExample": "Ejemplo: {{ejemplo}}",
       "companyEmailLabel": "Correo electrónico de la empresa",
       "emailPlaceholder": "correo@empresa.com",
       "emailHint": "Es el remitente y el contacto que ven tus clientes.",

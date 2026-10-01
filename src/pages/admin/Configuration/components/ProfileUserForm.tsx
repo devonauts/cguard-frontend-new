@@ -21,6 +21,7 @@ import {
   StatusBadge,
   SkeletonCards,
 } from "@/components/kit";
+import { ejemploDeTelefono } from "@/lib/telefonoDeLaEmpresa";
 
 type MeTenantSetting = { theme?: string; logoUrl?: string | null };
 type MeTenant = { name?: string; phone?: string; settings?: MeTenantSetting[] };
@@ -556,7 +557,7 @@ export default function ProfileUserForm() {
             />
             <div className="flex items-center justify-between gap-2">
               <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
-                {t("profile.phoneExample")}
+                {t("profile.phoneExample", { ejemplo: ejemploDeTelefono() })}
               </p>
               <Button
                 className="h-auto p-0 text-xs"
