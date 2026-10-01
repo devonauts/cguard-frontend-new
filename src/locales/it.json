@@ -16317,7 +16317,9 @@
       "exento": "Esente in Gusto: le ore non vengono inviate",
       "asalariado": "Stipendio fisso: Gusto paga le ore inviate",
       "opcionAsalariado": "stipendio fisso",
-      "opcionExento": "esente"
+      "opcionExento": "esente",
+      "sinAlta": "Inserimento incompleto in Gusto: fuori dalla paga",
+      "opcionSinAlta": "inserimento incompleto"
     },
     "GustoHoras": {
       "reglaFederal": "Federale: oltre 40 h a settimana (Texas e la maggior parte degli stati)",
@@ -16380,7 +16382,11 @@
       "insigniaAsalariado": "Stipendio fisso",
       "cuentaExentos": "{{n}} di esenti non inviati",
       "syncOk": "Nella paga di Gusto",
-      "syncParcial": "Nella paga, con avvisi"
+      "syncParcial": "Nella paga, con avvisi",
+      "avisoFueraDeNomina": "{{n}} persone non entreranno nella paga di Gusto anche se le ore arrivano: l’inserimento in Gusto è incompleto o hanno lavorato prima della data di assunzione. Correggi in Gusto (la persona › Onboarding / Job) e invia di nuovo.",
+      "insigniaSinAlta": "Inserimento incompleto in Gusto",
+      "insigniaAntesDeContratar": "Prima dell’assunzione in Gusto",
+      "cuentaSobrantes": "{{n}} ore residue corrette in Gusto"
     },
     "NominaGusto": {
       "empleados": "Dipendenti collegati",

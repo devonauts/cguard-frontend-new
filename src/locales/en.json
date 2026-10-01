@@ -15794,7 +15794,9 @@
       "exento": "Exempt in Gusto: their hours aren't sent",
       "asalariado": "Salaried: Gusto pays the hours sent",
       "opcionAsalariado": "salaried",
-      "opcionExento": "exempt"
+      "opcionExento": "exempt",
+      "sinAlta": "Onboarding incomplete in Gusto: not included in payroll",
+      "opcionSinAlta": "onboarding incomplete"
     },
     "GustoHoras": {
       "reglaFederal": "Federal: over 40 h per week (Texas and most states)",
@@ -15857,7 +15859,11 @@
       "insigniaAsalariado": "Salaried",
       "cuentaExentos": "{{n}} from exempt people not sent",
       "syncOk": "In Gusto payroll",
-      "syncParcial": "In payroll, with warnings"
+      "syncParcial": "In payroll, with warnings",
+      "avisoFueraDeNomina": "{{n}} people won't make it into Gusto payroll even though their hours arrive: their onboarding in Gusto is incomplete or they worked before their hire date. Fix it in Gusto (the person › Onboarding / Job) and send again.",
+      "insigniaSinAlta": "Onboarding incomplete in Gusto",
+      "insigniaAntesDeContratar": "Before their hire date in Gusto",
+      "cuentaSobrantes": "{{n}} leftover hours corrected in Gusto"
     },
     "NominaGusto": {
       "empleados": "Linked employees",

@@ -646,6 +646,15 @@ export default function HorasGusto({
               })}
             </InfoNote>
           )}
+          {r.fueraDeNomina > 0 && (
+            <InfoNote icon={<TriangleAlert />} tone="bad">
+              {t("ui.GustoHoras.avisoFueraDeNomina", {
+                n: r.fueraDeNomina,
+                defaultValue:
+                  "{{n}} personas no entrarán en la nómina de Gusto aunque les lleguen las horas: tienen el alta sin terminar en Gusto o trabajaron antes de su fecha de contratación. Complétalo en Gusto (la persona › Onboarding / Job) y vuelve a enviar.",
+              })}
+            </InfoNote>
+          )}
           {r.asalariados > 0 && (
             <InfoNote icon={<Info />} tone="warn">
               {t("ui.GustoHoras.avisoAsalariados", {
@@ -719,6 +728,13 @@ export default function HorasGusto({
                           {!p.vinculado && (
                             <StatusBadge tone="warn">
                               {t("ui.GustoHoras.noVinculado", "Sin vincular")}
+                            </StatusBadge>
+                          )}
+                          {p.fueraDeNomina && (
+                            <StatusBadge tone="bad">
+                              {p.fueraDeNomina === "sin_alta"
+                                ? t("ui.GustoHoras.insigniaSinAlta", "Alta sin terminar en Gusto")
+                                : t("ui.GustoHoras.insigniaAntesDeContratar", "Antes de su contratación en Gusto")}
                             </StatusBadge>
                           )}
                           {p.comoPaga && p.comoPaga !== "hora" && (
@@ -845,6 +861,8 @@ export default function HorasGusto({
                       defaultValue:
                         "{{creados}} nuevos · {{actualizados}} actualizados · {{borrados}} retirados · {{iguales}} sin cambios · {{fallidos}} con error",
                     })}
+                  {(e.cuenta.sobrantes || 0) > 0 &&
+                      ` · ${t("ui.GustoHoras.cuentaSobrantes", { n: e.cuenta.sobrantes, defaultValue: "{{n}} horas sobrantes corregidas en Gusto" })}`}
                   {(e.cuenta.exentos || 0) > 0 &&
                       ` · ${t("ui.GustoHoras.cuentaExentos", { n: e.cuenta.exentos, defaultValue: "{{n}} de exentos sin enviar" })}`}
                   </div>

@@ -16317,7 +16317,9 @@
       "exento": "Exempt in Gusto: uren worden niet verzonden",
       "asalariado": "Vast salaris: Gusto betaalt de verzonden uren",
       "opcionAsalariado": "vast salaris",
-      "opcionExento": "exempt"
+      "opcionExento": "exempt",
+      "sinAlta": "Onboarding in Gusto onvolledig: niet in het salaris",
+      "opcionSinAlta": "onboarding onvolledig"
     },
     "GustoHoras": {
       "reglaFederal": "Federaal: meer dan 40 uur per week (Texas en de meeste staten)",
@@ -16380,7 +16382,11 @@
       "insigniaAsalariado": "Vast salaris",
       "cuentaExentos": "{{n}} van exempt-personen niet verzonden",
       "syncOk": "In het Gusto-salaris",
-      "syncParcial": "In het salaris, met waarschuwingen"
+      "syncParcial": "In het salaris, met waarschuwingen",
+      "avisoFueraDeNomina": "{{n}} personen komen niet in het Gusto-salaris, ook al komen hun uren aan: hun onboarding in Gusto is onvolledig of ze werkten vóór hun startdatum. Pas het aan in Gusto (persoon › Onboarding / Job) en verstuur opnieuw.",
+      "insigniaSinAlta": "Onboarding in Gusto onvolledig",
+      "insigniaAntesDeContratar": "Vóór de startdatum in Gusto",
+      "cuentaSobrantes": "{{n}} overgebleven uren gecorrigeerd in Gusto"
     },
     "NominaGusto": {
       "empleados": "Gekoppelde medewerkers",

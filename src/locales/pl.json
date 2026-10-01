@@ -16497,7 +16497,9 @@
       "exento": "Zwolniony w Gusto: godziny nie są wysyłane",
       "asalariado": "Stała pensja: Gusto płaci za wysłane godziny",
       "opcionAsalariado": "stała pensja",
-      "opcionExento": "zwolniony"
+      "opcionExento": "zwolniony",
+      "sinAlta": "Niepełna rejestracja w Gusto: poza listą płac",
+      "opcionSinAlta": "niepełna rejestracja"
     },
     "GustoHoras": {
       "reglaFederal": "Federalna: ponad 40 h tygodniowo (Teksas i większość stanów)",
@@ -16560,7 +16562,11 @@
       "insigniaAsalariado": "Stała pensja",
       "cuentaExentos": "{{n}} zwolnionych nie wysłano",
       "syncOk": "Na liście płac Gusto",
-      "syncParcial": "Na liście płac, z ostrzeżeniami"
+      "syncParcial": "Na liście płac, z ostrzeżeniami",
+      "avisoFueraDeNomina": "{{n}} osób nie trafi na listę płac Gusto, mimo że ich godziny dotrą: ich rejestracja w Gusto jest niepełna lub pracowali przed datą zatrudnienia. Popraw to w Gusto (osoba › Onboarding / Job) i wyślij ponownie.",
+      "insigniaSinAlta": "Niepełna rejestracja w Gusto",
+      "insigniaAntesDeContratar": "Przed zatrudnieniem w Gusto",
+      "cuentaSobrantes": "{{n}} pozostałych godzin poprawionych w Gusto"
     },
     "NominaGusto": {
       "empleados": "Połączeni pracownicy",

@@ -16317,7 +16317,9 @@
       "exento": "Exempté dans Gusto : ses heures ne sont pas envoyées",
       "asalariado": "Salaire fixe : Gusto paie les heures envoyées",
       "opcionAsalariado": "salaire fixe",
-      "opcionExento": "exempté"
+      "opcionExento": "exempté",
+      "sinAlta": "Intégration incomplète dans Gusto : hors paie",
+      "opcionSinAlta": "intégration incomplète"
     },
     "GustoHoras": {
       "reglaFederal": "Fédéral : plus de 40 h par semaine (Texas et la plupart des États)",
@@ -16380,7 +16382,11 @@
       "insigniaAsalariado": "Salaire fixe",
       "cuentaExentos": "{{n}} d’exemptés non envoyés",
       "syncOk": "Dans la paie Gusto",
-      "syncParcial": "Dans la paie, avec avertissements"
+      "syncParcial": "Dans la paie, avec avertissements",
+      "avisoFueraDeNomina": "{{n}} personnes n’entreront pas dans la paie Gusto même si leurs heures arrivent : leur intégration dans Gusto est incomplète ou elles ont travaillé avant leur date d’embauche. Corrigez dans Gusto (la personne › Onboarding / Job) et renvoyez.",
+      "insigniaSinAlta": "Intégration incomplète dans Gusto",
+      "insigniaAntesDeContratar": "Avant l’embauche dans Gusto",
+      "cuentaSobrantes": "{{n}} heures résiduelles corrigées dans Gusto"
     },
     "NominaGusto": {
       "empleados": "Employés liés",

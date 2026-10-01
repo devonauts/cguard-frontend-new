@@ -108,10 +108,12 @@ export interface VistaPreviaDeHoras {
     doble: number;
     porRevisar: number;
     comoPaga: ComoPaga | null;
+    /** Gusto le acepta las horas pero lo deja FUERA de la nómina. */
+    fueraDeNomina: "sin_alta" | "antes_de_contratar" | null;
   }>;
   resumen: {
     personas: number; turnos: number; regular: number; extra: number; doble: number;
-    sinVincular: number; porRevisar: number; exentos: number; asalariados: number;
+    sinVincular: number; porRevisar: number; exentos: number; asalariados: number; fueraDeNomina: number;
   };
 }
 
@@ -124,6 +126,8 @@ export interface EnvioDeHoras {
     creados: number; actualizados: number; borrados: number; iguales: number; fallidos: number; sinVincular: number;
     /** Turnos de personas exentas en Gusto: no se envían (Gusto ignora sus horas). */
     exentos?: number;
+    /** Clasificaciones que Gusto conservaba de un envío anterior y se pusieron a 0. */
+    sobrantes?: number;
   } | null;
   errores: Array<{ userId?: string; turno?: string; mensaje: string }>;
   sincronizacion: string | null;

@@ -15794,7 +15794,9 @@
       "exento": "Isento no Gusto: as horas não são enviadas",
       "asalariado": "Salário fixo: o Gusto paga as horas enviadas",
       "opcionAsalariado": "salário fixo",
-      "opcionExento": "isento"
+      "opcionExento": "isento",
+      "sinAlta": "Cadastro incompleto no Gusto: não entra na folha",
+      "opcionSinAlta": "cadastro incompleto"
     },
     "GustoHoras": {
       "reglaFederal": "Federal: mais de 40 h por semana (Texas e a maioria dos estados)",
@@ -15857,7 +15859,11 @@
       "insigniaAsalariado": "Salário fixo",
       "cuentaExentos": "{{n}} de isentos não enviados",
       "syncOk": "Na folha do Gusto",
-      "syncParcial": "Na folha, com avisos"
+      "syncParcial": "Na folha, com avisos",
+      "avisoFueraDeNomina": "{{n}} pessoas não entrarão na folha do Gusto mesmo recebendo as horas: o cadastro no Gusto está incompleto ou trabalharam antes da data de contratação. Corrija no Gusto (a pessoa › Onboarding / Job) e envie de novo.",
+      "insigniaSinAlta": "Cadastro incompleto no Gusto",
+      "insigniaAntesDeContratar": "Antes da contratação no Gusto",
+      "cuentaSobrantes": "{{n}} horas sobrando corrigidas no Gusto"
     },
     "NominaGusto": {
       "empleados": "Funcionários vinculados",

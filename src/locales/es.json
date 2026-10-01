@@ -15794,7 +15794,9 @@
       "exento": "Exento en Gusto: sus horas no se envían",
       "asalariado": "Sueldo fijo: Gusto paga las horas enviadas",
       "opcionAsalariado": "sueldo fijo",
-      "opcionExento": "exento"
+      "opcionExento": "exento",
+      "sinAlta": "Alta sin terminar en Gusto: no entra en la nómina",
+      "opcionSinAlta": "alta sin terminar"
     },
     "GustoHoras": {
       "reglaFederal": "Federal: más de 40 h a la semana (Texas y la mayoría de estados)",
@@ -15857,7 +15859,11 @@
       "insigniaAsalariado": "Sueldo fijo",
       "cuentaExentos": "{{n}} de exentos sin enviar",
       "syncOk": "En la nómina de Gusto",
-      "syncParcial": "En la nómina, con avisos"
+      "syncParcial": "En la nómina, con avisos",
+      "avisoFueraDeNomina": "{{n}} personas no entrarán en la nómina de Gusto aunque les lleguen las horas: tienen el alta sin terminar en Gusto o trabajaron antes de su fecha de contratación. Complétalo en Gusto (la persona › Onboarding / Job) y vuelve a enviar.",
+      "insigniaSinAlta": "Alta sin terminar en Gusto",
+      "insigniaAntesDeContratar": "Antes de su contratación en Gusto",
+      "cuentaSobrantes": "{{n}} horas sobrantes corregidas en Gusto"
     },
     "NominaGusto": {
       "empleados": "Empleados vinculados",

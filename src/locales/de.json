@@ -16317,7 +16317,9 @@
       "exento": "Exempt in Gusto: Stunden werden nicht gesendet",
       "asalariado": "Festgehalt: Gusto zahlt die gesendeten Stunden",
       "opcionAsalariado": "Festgehalt",
-      "opcionExento": "exempt"
+      "opcionExento": "exempt",
+      "sinAlta": "Onboarding in Gusto unvollständig: nicht in der Abrechnung",
+      "opcionSinAlta": "Onboarding unvollständig"
     },
     "GustoHoras": {
       "reglaFederal": "Bundesrecht: über 40 h pro Woche (Texas und die meisten Bundesstaaten)",
@@ -16380,7 +16382,11 @@
       "insigniaAsalariado": "Festgehalt",
       "cuentaExentos": "{{n}} von Exempt-Personen nicht gesendet",
       "syncOk": "In der Gusto-Abrechnung",
-      "syncParcial": "In der Abrechnung, mit Hinweisen"
+      "syncParcial": "In der Abrechnung, mit Hinweisen",
+      "avisoFueraDeNomina": "{{n}} Personen kommen nicht in die Gusto-Abrechnung, obwohl ihre Stunden ankommen: ihr Onboarding in Gusto ist unvollständig oder sie haben vor dem Einstellungsdatum gearbeitet. Korrigiere es in Gusto (Person › Onboarding / Job) und sende erneut.",
+      "insigniaSinAlta": "Onboarding in Gusto unvollständig",
+      "insigniaAntesDeContratar": "Vor dem Einstellungsdatum in Gusto",
+      "cuentaSobrantes": "{{n}} übrig gebliebene Stunden in Gusto korrigiert"
     },
     "NominaGusto": {
       "empleados": "Verknüpfte Mitarbeitende",
