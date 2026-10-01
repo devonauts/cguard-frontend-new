@@ -17396,7 +17396,11 @@
     "barra": "Sei dentro {{empresa}} come supporto di {{socio}}",
     "minutos_one": "Resta {{count}} minuto",
     "minutos_other": "Restano {{count}} minuti",
-    "salir": "Esci"
+    "salir": "Esci",
+    "enVivo": "Il supporto di {{quien}} è collegato in diretta",
+    "enVivoTicket": "Il supporto di {{quien}} è collegato in diretta per il tuo ticket {{ticket}}",
+    "barraPlataforma": "Sei dentro {{empresa}} come supporto di {{marca}}",
+    "ticket": "Ticket {{ticket}}"
   },
   "avisoDeRecarga": {
     "version": "È disponibile una nuova versione di {{marca}}.",

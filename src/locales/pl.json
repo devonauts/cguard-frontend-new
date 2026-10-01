@@ -17582,7 +17582,11 @@
     "minutos_few": "Zostały {{count}} minuty",
     "minutos_many": "Zostało {{count}} minut",
     "minutos_other": "Zostało {{count}} minut",
-    "salir": "Wyjdź"
+    "salir": "Wyjdź",
+    "enVivo": "Wsparcie {{quien}} jest połączone na żywo",
+    "enVivoTicket": "Wsparcie {{quien}} jest połączone na żywo i zajmuje się Twoim zgłoszeniem {{ticket}}",
+    "barraPlataforma": "Jesteś w {{empresa}} jako wsparcie {{marca}}",
+    "ticket": "Zgłoszenie {{ticket}}"
   },
   "avisoDeRecarga": {
     "version": "Jest nowa wersja {{marca}}.",

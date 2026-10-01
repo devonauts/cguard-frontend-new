@@ -17396,7 +17396,11 @@
     "barra": "Você está dentro de {{empresa}} como suporte de {{socio}}",
     "minutos_one": "Resta {{count}} minuto",
     "minutos_other": "Restam {{count}} minutos",
-    "salir": "Sair"
+    "salir": "Sair",
+    "enVivo": "O suporte de {{quien}} está conectado ao vivo",
+    "enVivoTicket": "O suporte de {{quien}} está conectado ao vivo atendendo seu ticket {{ticket}}",
+    "barraPlataforma": "Você está dentro de {{empresa}} como suporte de {{marca}}",
+    "ticket": "Ticket {{ticket}}"
   },
   "avisoDeRecarga": {
     "version": "Há uma nova versão do {{marca}}.",

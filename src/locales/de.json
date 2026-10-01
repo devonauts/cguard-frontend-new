@@ -17396,7 +17396,11 @@
     "barra": "Sie sind in {{empresa}} als Support von {{socio}}",
     "minutos_one": "Noch {{count}} Minute",
     "minutos_other": "Noch {{count}} Minuten",
-    "salir": "Beenden"
+    "salir": "Beenden",
+    "enVivo": "Der Support von {{quien}} ist live verbunden",
+    "enVivoTicket": "Der Support von {{quien}} ist live verbunden und bearbeitet Ihr Ticket {{ticket}}",
+    "barraPlataforma": "Sie sind in {{empresa}} als Support von {{marca}}",
+    "ticket": "Ticket {{ticket}}"
   },
   "avisoDeRecarga": {
     "version": "Eine neue Version von {{marca}} ist verfügbar.",
