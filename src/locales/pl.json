@@ -10926,7 +10926,8 @@
       "tarjetasEnEstado_one": "{{count}} karta w „{{etiqueta}}”",
       "tarjetasEnEstado_other": "{{count}} kart w „{{etiqueta}}”",
       "todosLosTrabajadores": "Wszyscy pracownicy",
-      "trabajador": "Pracownik"
+      "trabajador": "Pracownik",
+      "enviarAGusto": "Wyślij do Gusto"
     },
     "NominaSettings": {
       "alMultiploDe5Minutos": "Do pełnych 5 minut",
@@ -16492,9 +16493,6 @@
       "elegirUno": "Wybierz pracownika…",
       "desvincular": "Rozłącz",
       "notaGustoLibres": "W Gusto jest {{n}} pracowników bez pary. Jeśli ktoś z nich u Ciebie pracuje, połącz go z poziomu osoby; jeśli kogoś brakuje w Gusto, dodaj go tam (Gusto wymaga SSN i konta bankowego).",
-      "tituloPagina": "Płace w Gusto",
-      "pestanaEmpleados": "Pracownicy",
-      "pestanaHoras": "Godziny",
       "subtituloHoras": "Wyślij do Gusto godziny zatwierdzone w Płacach, już podzielone na zwykłe i nadgodziny."
     },
     "GustoHoras": {
@@ -16542,6 +16540,13 @@
       "syncPedida": "Poproszono o synchronizację",
       "cuenta": "{{creados}} nowych · {{actualizados}} zaktualizowanych · {{borrados}} usuniętych · {{iguales}} bez zmian · {{fallidos}} z błędem",
       "syncNada": "Nic nowego dla płac"
+    },
+    "NominaGusto": {
+      "empleados": "Połączeni pracownicy",
+      "conectar": "Połącz Gusto",
+      "sinConectar": "Gusto nie jest połączone",
+      "sinConectarTexto": "Połącz konto Gusto w Ustawienia › Połączenia i API i połącz swój personel. Potem zatwierdzone godziny wysyłasz stąd.",
+      "noDisponible": "Gusto jest dostępne tylko dla firm z USA."
     }
   },
   "visitantes": {

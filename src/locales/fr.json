@@ -10892,7 +10892,8 @@
       "tarjetasEnEstado_one": "{{count}} fiche en « {{etiqueta}} »",
       "tarjetasEnEstado_other": "{{count}} fiches en « {{etiqueta}} »",
       "todosLosTrabajadores": "Tous les employés",
-      "trabajador": "Employé"
+      "trabajador": "Employé",
+      "enviarAGusto": "Envoyer à Gusto"
     },
     "NominaSettings": {
       "alMultiploDe5Minutos": "Au multiple de 5 minutes",
@@ -16312,9 +16313,6 @@
       "elegirUno": "Choisir un employé…",
       "desvincular": "Délier",
       "notaGustoLibres": "Il y a {{n}} employés Gusto sans correspondance ici. Si l’un d’eux travaille pour vous, liez-le depuis sa personne ; s’il manque quelqu’un dans Gusto, ajoutez-le là-bas (Gusto demande son SSN et son compte bancaire).",
-      "tituloPagina": "Paie dans Gusto",
-      "pestanaEmpleados": "Employés",
-      "pestanaHoras": "Heures",
       "subtituloHoras": "Envoyez à Gusto les heures approuvées dans Paie, déjà séparées en normales et supplémentaires."
     },
     "GustoHoras": {
@@ -16362,6 +16360,13 @@
       "syncPedida": "Synchronisation demandée",
       "cuenta": "{{creados}} nouveaux · {{actualizados}} mis à jour · {{borrados}} retirés · {{iguales}} inchangés · {{fallidos}} en erreur",
       "syncNada": "Rien de nouveau pour la paie"
+    },
+    "NominaGusto": {
+      "empleados": "Employés liés",
+      "conectar": "Connecter Gusto",
+      "sinConectar": "Gusto n’est pas connecté",
+      "sinConectarTexto": "Connectez votre compte Gusto dans Paramètres › Connexions et API et liez votre personnel. Les heures approuvées s’envoient ensuite d’ici.",
+      "noDisponible": "Gusto n’est disponible que pour les entreprises des États-Unis."
     }
   },
   "visitantes": {

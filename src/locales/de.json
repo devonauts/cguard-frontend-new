@@ -10892,7 +10892,8 @@
       "tarjetasEnEstado_one": "{{count}} Zeitkarte in „{{etiqueta}}“",
       "tarjetasEnEstado_other": "{{count}} Zeitkarten in „{{etiqueta}}“",
       "todosLosTrabajadores": "Alle Mitarbeiter",
-      "trabajador": "Mitarbeiter"
+      "trabajador": "Mitarbeiter",
+      "enviarAGusto": "An Gusto senden"
     },
     "NominaSettings": {
       "alMultiploDe5Minutos": "Auf 5 Minuten",
@@ -16312,9 +16313,6 @@
       "elegirUno": "Mitarbeitende/n wählen…",
       "desvincular": "Trennen",
       "notaGustoLibres": "Es gibt {{n}} Gusto-Mitarbeitende ohne Zuordnung. Arbeitet jemand davon für dich, verknüpfe ihn über seine Person; fehlt jemand in Gusto, lege ihn dort an (Gusto verlangt SSN und Bankkonto).",
-      "tituloPagina": "Lohnabrechnung in Gusto",
-      "pestanaEmpleados": "Mitarbeitende",
-      "pestanaHoras": "Stunden",
       "subtituloHoras": "Sende die in der Lohnabrechnung genehmigten Stunden an Gusto, bereits in regulär und Überstunden aufgeteilt."
     },
     "GustoHoras": {
@@ -16362,6 +16360,13 @@
       "syncPedida": "Synchronisierung angefordert",
       "cuenta": "{{creados}} neu · {{actualizados}} aktualisiert · {{borrados}} entfernt · {{iguales}} unverändert · {{fallidos}} mit Fehler",
       "syncNada": "Nichts Neues für die Abrechnung"
+    },
+    "NominaGusto": {
+      "empleados": "Verknüpfte Mitarbeitende",
+      "conectar": "Gusto verbinden",
+      "sinConectar": "Gusto ist nicht verbunden",
+      "sinConectarTexto": "Verbinde dein Gusto-Konto unter Einstellungen › Verbindungen und API und verknüpfe dein Personal. Danach werden genehmigte Stunden von hier gesendet.",
+      "noDisponible": "Gusto ist nur für Unternehmen in den USA verfügbar."
     }
   },
   "visitantes": {

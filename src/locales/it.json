@@ -10892,7 +10892,8 @@
       "tarjetasEnEstado_one": "{{count}} scheda in «{{etiqueta}}»",
       "tarjetasEnEstado_other": "{{count}} schede in «{{etiqueta}}»",
       "todosLosTrabajadores": "Tutti i lavoratori",
-      "trabajador": "Lavoratore"
+      "trabajador": "Lavoratore",
+      "enviarAGusto": "Invia a Gusto"
     },
     "NominaSettings": {
       "alMultiploDe5Minutos": "Al multiplo di 5 minuti",
@@ -16312,9 +16313,6 @@
       "elegirUno": "Scegli dipendente…",
       "desvincular": "Scollega",
       "notaGustoLibres": "Ci sono {{n}} dipendenti Gusto senza abbinamento. Se qualcuno lavora con te, collegalo dalla sua persona; se manca qualcuno in Gusto, aggiungilo lì (Gusto chiede SSN e conto bancario).",
-      "tituloPagina": "Paghe in Gusto",
-      "pestanaEmpleados": "Dipendenti",
-      "pestanaHoras": "Ore",
       "subtituloHoras": "Invia a Gusto le ore approvate in Paghe, già separate in ordinarie e straordinarie."
     },
     "GustoHoras": {
@@ -16362,6 +16360,13 @@
       "syncPedida": "Sincronizzazione richiesta",
       "cuenta": "{{creados}} nuovi · {{actualizados}} aggiornati · {{borrados}} rimossi · {{iguales}} invariati · {{fallidos}} con errore",
       "syncNada": "Niente di nuovo per la paga"
+    },
+    "NominaGusto": {
+      "empleados": "Dipendenti collegati",
+      "conectar": "Collega Gusto",
+      "sinConectar": "Gusto non è collegato",
+      "sinConectarTexto": "Collega il tuo account Gusto in Impostazioni › Connessioni e API e collega il personale. Poi le ore approvate si inviano da qui.",
+      "noDisponible": "Gusto è disponibile solo per aziende degli Stati Uniti."
     }
   },
   "visitantes": {

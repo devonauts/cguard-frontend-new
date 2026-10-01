@@ -227,7 +227,7 @@ export default function ConexionGusto() {
                 )}
                 {estado.conectado && (
                   <Button asChild variant="outline">
-                    <Link to="/setting/integraciones/gusto?tab=horas">
+                    <Link to="/nomina/gusto">
                       <Clock /> {t("ui.Gusto.enviarHoras", "Enviar horas")}
                     </Link>
                   </Button>

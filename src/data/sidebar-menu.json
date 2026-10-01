@@ -309,6 +309,12 @@
         "path": "/nomina/records"
       },
       {
+        "id": "nomina-gusto",
+        "name": "Gusto",
+        "path": "/nomina/gusto",
+        "gusto": true
+      },
+      {
         "id": "nomina-exceptions",
         "name": "Excepciones",
         "path": "/nomina/exceptions"

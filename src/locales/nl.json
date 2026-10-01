@@ -10892,7 +10892,8 @@
       "tarjetasEnEstado_one": "{{count}} tijdkaart in ‘{{etiqueta}}’",
       "tarjetasEnEstado_other": "{{count}} tijdkaarten in ‘{{etiqueta}}’",
       "todosLosTrabajadores": "Alle medewerkers",
-      "trabajador": "Medewerker"
+      "trabajador": "Medewerker",
+      "enviarAGusto": "Naar Gusto verzenden"
     },
     "NominaSettings": {
       "alMultiploDe5Minutos": "Op 5 minuten nauwkeurig",
@@ -16312,9 +16313,6 @@
       "elegirUno": "Medewerker kiezen…",
       "desvincular": "Ontkoppelen",
       "notaGustoLibres": "Er zijn {{n}} Gusto-medewerkers zonder match. Werkt iemand van hen voor je, koppel hem via zijn persoon; ontbreekt iemand in Gusto, voeg hem daar toe (Gusto vraagt om SSN en bankrekening).",
-      "tituloPagina": "Salaris in Gusto",
-      "pestanaEmpleados": "Medewerkers",
-      "pestanaHoras": "Uren",
       "subtituloHoras": "Stuur de in Salaris goedgekeurde uren naar Gusto, al gesplitst in regulier en overuren."
     },
     "GustoHoras": {
@@ -16362,6 +16360,13 @@
       "syncPedida": "Synchronisatie aangevraagd",
       "cuenta": "{{creados}} nieuw · {{actualizados}} bijgewerkt · {{borrados}} verwijderd · {{iguales}} ongewijzigd · {{fallidos}} met fout",
       "syncNada": "Niets nieuws voor salaris"
+    },
+    "NominaGusto": {
+      "empleados": "Gekoppelde medewerkers",
+      "conectar": "Gusto koppelen",
+      "sinConectar": "Gusto is niet gekoppeld",
+      "sinConectarTexto": "Koppel je Gusto-account in Instellingen › Koppelingen en API en koppel je personeel. Daarna verstuur je goedgekeurde uren vanaf hier.",
+      "noDisponible": "Gusto is alleen beschikbaar voor bedrijven in de Verenigde Staten."
     }
   },
   "visitantes": {

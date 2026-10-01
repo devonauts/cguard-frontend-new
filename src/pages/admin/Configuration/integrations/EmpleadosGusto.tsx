@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { ArrowLeft, Check, Clock, Info, Sparkles, Unlink, Users } from "lucide-react";
 
@@ -18,7 +18,6 @@ import {
   Segmented,
   SkeletonCards,
   StatusBadge,
-  TabNav,
 } from "@/components/kit";
 import { usePermissions } from "@/hooks/usePermissions";
 import {
@@ -28,7 +27,6 @@ import {
   type Senal,
 } from "@/lib/api/gustoService";
 
-import HorasGusto from "./HorasGusto";
 
 /**
  * GUSTO · EMPLEADOS — quién es quién (fase 2).
@@ -51,11 +49,6 @@ export default function EmpleadosGusto() {
   const [filtro, setFiltro] = useState<Filtro>("todas");
   const [busca, setBusca] = useState("");
   const [ocupado, setOcupado] = useState<string | null>(null);
-  // Dos pestañas: quién es quién (fase 2) y las horas (fase 3). En la URL, para
-  // poder enlazar «Enviar horas» directamente.
-  const [params, setParams] = useSearchParams();
-  const pestana: "empleados" | "horas" = params.get("tab") === "horas" ? "horas" : "empleados";
-  const irA = (v: "empleados" | "horas") => setParams(v === "horas" ? { tab: "horas" } : {}, { replace: true });
 
   const ROL: Record<string, string> = {
     vigilante: t("ui.GustoEmpleados.rolVigilante", "Vigilante"),
@@ -135,7 +128,7 @@ export default function EmpleadosGusto() {
 
   return (
     <AppLayout>
-      <SettingsLayout navKey="configuracion" title={t("ui.GustoEmpleados.tituloPagina", "Nómina en Gusto")}>
+      <SettingsLayout navKey="configuracion" title={t("ui.GustoEmpleados.titulo", "Empleados en Gusto")}>
         <PageContainer>
           <Link
             className="mb-3 inline-flex items-center gap-1.5 text-sm"
@@ -146,34 +139,22 @@ export default function EmpleadosGusto() {
             {t("settings.configuracion.integraciones", "Conexiones y API")}
           </Link>
           <PageHeader
-            icon={<Users />}
-            subtitle={
-              pestana === "horas"
-                ? t(
-                    "ui.GustoEmpleados.subtituloHoras",
-                    "Envía a Gusto las horas aprobadas en Nómina, ya separadas en ordinarias y extra.",
-                  )
-                : t(
-                    "ui.GustoEmpleados.subtitulo",
-                    "Empareja a tu personal con sus empleados de Gusto. Sólo las horas de quien esté vinculado llegarán a tu nómina.",
-                  )
+            actions={
+              <Button asChild variant="outline">
+                <Link to="/nomina/gusto">
+                  <Clock /> {t("ui.Gusto.enviarHoras", "Enviar horas")}
+                </Link>
+              </Button>
             }
-            title={t("ui.GustoEmpleados.tituloPagina", "Nómina en Gusto")}
+            icon={<Users />}
+            subtitle={t(
+              "ui.GustoEmpleados.subtitulo",
+              "Empareja a tu personal con sus empleados de Gusto. Sólo las horas de quien esté vinculado llegarán a tu nómina.",
+            )}
+            title={t("ui.GustoEmpleados.titulo", "Empleados en Gusto")}
           />
 
-          <TabNav
-            className="mb-4"
-            items={[
-              { value: "empleados", label: t("ui.GustoEmpleados.pestanaEmpleados", "Empleados"), icon: <Users /> },
-              { value: "horas", label: t("ui.GustoEmpleados.pestanaHoras", "Horas"), icon: <Clock /> },
-            ]}
-            value={pestana}
-            onChange={irA}
-          />
-
-          {pestana === "horas" ? (
-            <HorasGusto alIrAEmpleados={() => irA("empleados")} />
-          ) : cargando ? (
+          {cargando ? (
             <SkeletonCards count={4} />
           ) : error ? (
             <InfoNote icon={<Info />} tone="bad">

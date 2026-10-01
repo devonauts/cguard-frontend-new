@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import AppLayout from "@/layouts/app-layout";
 import { DataTable, type Column } from "@/components/table/DataTable";
 import { toast } from "sonner";
@@ -39,11 +39,14 @@ import {
   ChevronLeft,
   ChevronRight,
   MapPin,
+  Send,
   Users,
 } from "lucide-react";
 import { BulkActionsSelect } from "@/components/table/BulkActionsSelect";
 import TimesheetModal from "./TimesheetModal";
 import { usePermissions } from "@/hooks/usePermissions";
+import { useGusto } from "@/hooks/useGusto";
+import { Button } from "@/components/ui/button";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import ExportMenu from "@/components/reports/ExportMenu";
 import type { ExportFormat } from "@/lib/export/reportExport";
@@ -167,6 +170,7 @@ function rangeLabel(period: Period, anchor: Date): string {
 
 export default function NominaRecords() {
   const { t } = useTranslation();
+  const gusto = useGusto();
   // Deep-link from a clock-in notification: ?focus=<id> auto-opens that record's
   // detail once the list loads (carried over from the old Programador · Asistencia).
   const [searchParams] = useSearchParams();
@@ -617,6 +621,15 @@ export default function NominaRecords() {
                al lado, un botón «CSV» que exportaba OTRA cosa —sólo las filas
                que el navegador había alcanzado a cargar—. Dos botones de
                exportar que daban archivos distintos era la peor parte. */
+            <div className="flex flex-wrap items-center gap-2">
+            {/* Empresas de EE. UU. con Gusto: lo aprobado aquí se manda desde Nómina › Gusto. */}
+            {gusto.conectado && (
+              <Button asChild variant="outline">
+                <Link to="/nomina/gusto">
+                  <Send /> {t("ui.NominaRecords.enviarAGusto", "Enviar a Gusto")}
+                </Link>
+              </Button>
+            )}
             <ExportMenu
               onExport={exportar}
               busy={busy}
@@ -629,6 +642,7 @@ export default function NominaRecords() {
                   : t("ui.NominaRecords.exportar", "Exportar")
               }
             />
+            </div>
           }
         />
 

@@ -75,6 +75,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { useMessagesUnread } from "@/hooks/useMessagesUnread";
 import { useTiendaDeModulos } from "@/hooks/useTiendaDeModulos";
+import { useGusto } from "@/hooks/useGusto";
 import tenantService from "@/services/tenant.service";
 import {
   getStoredTenantBranding,
@@ -82,7 +83,13 @@ import {
   setTenantBranding,
 } from "@/lib/tenantBranding";
 
-type SubMenuItem = { id: string; name: string; path: string };
+type SubMenuItem = {
+  id: string;
+  name: string;
+  path: string;
+  /** Nómina › Gusto: sólo si la empresa tiene Gusto disponible (ver useGusto). */
+  gusto?: boolean;
+};
 type MenuItem = {
   id: string;
   name: string;
@@ -669,6 +676,8 @@ export default function Sidebar({
   // «Módulos adicionales» sólo aparece si esta empresa tiene tienda: algo a la
   // venta y la implementación pagada, o algo ya suyo. Ver `tiendaVisible`.
   const { visible: hayTienda } = useTiendaDeModulos();
+  // Nómina › Gusto: sólo empresas de EE. UU. con la integración disponible.
+  const { disponible: hayGusto } = useGusto();
 
   // Visibilidad por rol — misma regla que antes, sin cambios de permisos.
   const visibleItems = useMemo(
@@ -693,8 +702,13 @@ export default function Sidebar({
         return item.allowedRoles.some((ar: string) =>
           normalized.includes(ar.toLowerCase()),
         );
-      }),
-    [menuItems, user, isGlobalAdmin, hayTienda],
+      })
+        .map((item) =>
+          item.subItems?.some((s) => s.gusto)
+            ? { ...item, subItems: item.subItems.filter((s) => !s.gusto || hayGusto) }
+            : item,
+        ),
+    [menuItems, user, isGlobalAdmin, hayTienda, hayGusto],
   );
 
   // Etiquetas i18n — mismo orden de resolución que la versión anterior.

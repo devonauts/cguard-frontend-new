@@ -10369,7 +10369,8 @@
       "tarjetasEnEstado_one": "{{count}} cartão em «{{etiqueta}}»",
       "tarjetasEnEstado_other": "{{count}} cartões em «{{etiqueta}}»",
       "todosLosTrabajadores": "Todos os trabalhadores",
-      "trabajador": "Trabalhador"
+      "trabajador": "Trabalhador",
+      "enviarAGusto": "Enviar ao Gusto"
     },
     "NominaSettings": {
       "alMultiploDe5Minutos": "Para o múltiplo de 5 minutos",
@@ -15789,9 +15790,6 @@
       "elegirUno": "Escolher funcionário…",
       "desvincular": "Desvincular",
       "notaGustoLibres": "Há {{n}} funcionários no Gusto sem par aqui. Se algum trabalha com você, vincule-o pela pessoa; se faltar alguém no Gusto, cadastre-o lá (o Gusto pede SSN e conta bancária).",
-      "tituloPagina": "Folha no Gusto",
-      "pestanaEmpleados": "Funcionários",
-      "pestanaHoras": "Horas",
       "subtituloHoras": "Envie ao Gusto as horas aprovadas em Folha, já separadas em normais e extras."
     },
     "GustoHoras": {
@@ -15839,6 +15837,13 @@
       "syncPedida": "Sincronização solicitada",
       "cuenta": "{{creados}} novos · {{actualizados}} atualizados · {{borrados}} removidos · {{iguales}} sem mudanças · {{fallidos}} com erro",
       "syncNada": "Nada novo para a folha"
+    },
+    "NominaGusto": {
+      "empleados": "Funcionários vinculados",
+      "conectar": "Conectar Gusto",
+      "sinConectar": "O Gusto não está conectado",
+      "sinConectarTexto": "Conecte sua conta do Gusto em Ajustes › Conexões e API e vincule sua equipe. Depois, as horas aprovadas são enviadas daqui.",
+      "noDisponible": "O Gusto só está disponível para empresas dos Estados Unidos."
     }
   },
   "map": {

@@ -1,12 +1,32 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
 import { sinComentariosHtml } from "./build/sinComentariosHtml";
 
+/* En producción nginx pone la API detrás del MISMO origen (`/api`), y hay dos
+   peticiones que cuentan con eso: `/api/platform/context` (la marca del
+   anfitrión, ver WhiteLabelContext) y `/api/security/integridad` (el
+   centinela). En local el servidor de Vite no tenía `/api` y respondía 404 —
+   ruido en la consola y, en el contexto, un rodeo hasta el anfitrión fijo.
+   Este proxy SÓLO existe en `vite dev` y conserva el Host del navegador, como
+   nginx, para que la marca se resuelva igual que en producción. */
+const API_LOCAL = (() => {
+  try {
+    return new URL(loadEnv("development", process.cwd(), "VITE_").VITE_API_URL || "").origin;
+  } catch {
+    return "http://localhost:8080";
+  }
+})();
+
 // https://vitejs.dev/config/
 export default defineConfig({
+  server: {
+    proxy: {
+      "/api": { target: API_LOCAL, changeOrigin: false },
+    },
+  },
   plugins: [
     react(),
     tsconfigPaths(),
