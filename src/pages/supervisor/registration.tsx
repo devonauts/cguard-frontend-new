@@ -83,16 +83,13 @@ export default function SupervisorRegistration() {
 
   useEffect(() => {
     const fetchInvite = async () => {
-      // Clear any active session so the invite flow starts clean and this
-      // account never inherits a CRM session.
-      if (inviteToken) {
-        try {
-          localStorage.removeItem("authToken");
-          localStorage.removeItem("user");
-        } catch (e) {
-          console.warn("[supervisor-registration] could not clear session:", e);
-        }
-      }
+      /* NO se borra la sesión del navegador. Antes se hacía «para empezar limpio»,
+         pero `localStorage` es COMPARTIDO por todas las pestañas: el admin que
+         abría un enlace de invitación (para probarlo o reenviarlo) quedaba
+         expulsado, y como esto se re-ejecuta en cada repintado, lo volvía a
+         echar CADA vez que entraba — el bucle «me manda al login» de Prueba
+         Strategos (2026-10-01). Esta página no usa la sesión: todas sus
+         peticiones van con `skipAuth`. */
 
       if (!inviteToken) return;
       // Defensive: honor other invite types if an old link reaches this page.
@@ -246,14 +243,9 @@ export default function SupervisorRegistration() {
 
       await AuthService.signUp(payload);
       // A supervisor is NOT a CRM web-admin — do NOT sign them in or send them to
-      // /login. Clear any token that signUp may have set and show the supervisor
-      // app confirmation.
-      try {
-        localStorage.removeItem("authToken");
-        localStorage.removeItem("user");
-      } catch {
-        /* ignore */
-      }
+      // /login: show the supervisor app confirmation. `signUp` no guarda sesión,
+      // así que aquí no hay nada que borrar (borrar echaba al admin de las demás
+      // pestañas).
       toast.success(t("ui.registration.cuentaActivada"));
       setDone(true);
       try {

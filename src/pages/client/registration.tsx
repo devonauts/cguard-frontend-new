@@ -75,18 +75,13 @@ export default function ClientRegistration() {
 
   useEffect(() => {
     const fetchInvite = async () => {
-      // Si hay un token de invitación, limpiar cualquier sesión activa para evitar conflictos
-      if (inviteToken) {
-        try {
-          localStorage.removeItem("authToken");
-          localStorage.removeItem("user");
-          console.log(
-            "[client-registration] cleared any active session for invitation flow",
-          );
-        } catch (e) {
-          console.warn("[client-registration] could not clear session:", e);
-        }
-      }
+      /* NO se borra la sesión del navegador. Antes se hacía «para empezar limpio»,
+         pero `localStorage` es COMPARTIDO por todas las pestañas: el admin que
+         abría un enlace de invitación (para probarlo o reenviarlo) quedaba
+         expulsado, y como esto se re-ejecuta en cada repintado, lo volvía a
+         echar CADA vez que entraba — el bucle «me manda al login» de Prueba
+         Strategos (2026-10-01). Esta página no usa la sesión: todas sus
+         peticiones van con `skipAuth`. */
 
       if (!inviteToken) return;
       if (inviteType === "guard") {

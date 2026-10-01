@@ -139,13 +139,13 @@ export default function AcceptInvitation() {
 
         return;
       }
-      // Clear any stale session so the invite flow starts clean.
-      try {
-        localStorage.removeItem("authToken");
-        localStorage.removeItem("user");
-      } catch {
-        /* ignore */
-      }
+      /* NO se borra la sesión del navegador. Antes se hacía «para empezar limpio»,
+         pero `localStorage` es COMPARTIDO por todas las pestañas: el admin que
+         abría un enlace de invitación (para probarlo o reenviarlo) quedaba
+         expulsado, y como esto se re-ejecuta en cada repintado, lo volvía a
+         echar CADA vez que entraba — el bucle «me manda al login» de Prueba
+         Strategos (2026-10-01). Esta página no usa la sesión: todas sus
+         peticiones van con `skipAuth`. */
       try {
         const res = await ApiService.get(
           `/user/public?token=${encodeURIComponent(inviteToken)}`,
