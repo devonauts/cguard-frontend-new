@@ -15723,6 +15723,31 @@
       "supervisor": "Supervisor",
       "titulo": "Supervision history by post",
       "todosLosPuestos": "All posts"
+    },
+    "Gusto": {
+      "cancelado": "Not connected: the authorization was cancelled in Gusto.",
+      "compania": "Gusto company",
+      "conectado": "Gusto connected.",
+      "conectadoEl": "Connected on",
+      "conectar": "Connect with Gusto",
+      "desconectado": "Gusto disconnected.",
+      "desconectar": "Disconnect",
+      "desconectarTexto": "We'll stop sending hours to your Gusto payroll. Anything already sent stays in Gusto. You can reconnect anytime.",
+      "desconectarTitulo": "Disconnect Gusto?",
+      "descripcion": "Send the approved hours of your guards, supervisors and office staff to your Gusto payroll.",
+      "estadoConectado": "Connected",
+      "estadoError": "Needs attention",
+      "estadoSinConectar": "Not connected",
+      "motivoCaducado": "The request expired. Please try again.",
+      "motivoGenerico": "Gusto didn't respond as expected. Please try again in a few minutes.",
+      "motivoNoConfigurado": "The Gusto integration isn't available yet.",
+      "motivoNoEEUU": "Gusto is only available for companies in the United States.",
+      "motivoPermisos": "Gusto didn't grant all the permissions we need. Reconnect with a primary Gusto admin.",
+      "motivoRevocado": "Gusto stopped accepting the connection (access was revoked). Please reconnect.",
+      "pruebas": "Test mode",
+      "reconectar": "Reconnect",
+      "requisitos": "You need a primary admin (or one with full access) of your Gusto account. Your employees must be set up in Gusto; we'll match them with your staff here.",
+      "sinPermiso": "Only an administrator or HR can connect or disconnect Gusto."
     }
   },
   "map": {

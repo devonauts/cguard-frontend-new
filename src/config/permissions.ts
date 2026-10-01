@@ -36,6 +36,8 @@ export const PERMISSIONS: string[] = [
   // ── Nómina / asistencia ──
   "attendanceRead","attendanceEdit","attendanceApprove","attendanceCorrect","attendanceDestroy",
   "attendanceSettingsRead","attendanceSettingsEdit",
+  // Conectar la nómina externa (Gusto, EE. UU.).
+  "payrollIntegrationManage",
   "timeOffRequestCreate","timeOffRequestRead","timeOffRequestEdit","timeOffRequestDestroy",
   // ── Programador ──
   "shiftExchangeRequestCreate","shiftExchangeRequestRead","shiftExchangeRequestEdit","shiftExchangeRequestDestroy",

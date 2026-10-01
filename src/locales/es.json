@@ -15723,6 +15723,31 @@
       "supervisor": "Supervisor",
       "titulo": "Historial de supervisión por puesto",
       "todosLosPuestos": "Todos los puestos"
+    },
+    "Gusto": {
+      "cancelado": "No se conectó: se canceló la autorización en Gusto.",
+      "compania": "Compañía en Gusto",
+      "conectado": "Gusto conectado.",
+      "conectadoEl": "Conectado el",
+      "conectar": "Conectar con Gusto",
+      "desconectado": "Gusto desconectado.",
+      "desconectar": "Desconectar",
+      "desconectarTexto": "Dejaremos de enviar horas a la nómina de Gusto. Lo ya enviado se queda en Gusto. Puedes volver a conectar cuando quieras.",
+      "desconectarTitulo": "¿Desconectar Gusto?",
+      "descripcion": "Envía las horas aprobadas de tus vigilantes, supervisores y personal de oficina a tu nómina de Gusto.",
+      "estadoConectado": "Conectado",
+      "estadoError": "Necesita atención",
+      "estadoSinConectar": "Sin conectar",
+      "motivoCaducado": "La solicitud caducó. Vuelve a intentarlo.",
+      "motivoGenerico": "Gusto no respondió como esperábamos. Inténtalo de nuevo en unos minutos.",
+      "motivoNoConfigurado": "La integración con Gusto todavía no está disponible.",
+      "motivoNoEEUU": "Gusto sólo está disponible para empresas de Estados Unidos.",
+      "motivoPermisos": "Gusto no nos dio todos los permisos necesarios. Vuelve a conectar con un administrador principal de Gusto.",
+      "motivoRevocado": "Gusto dejó de aceptar la conexión (se revocó el acceso). Vuelve a conectar.",
+      "pruebas": "Pruebas",
+      "reconectar": "Volver a conectar",
+      "requisitos": "Hace falta un administrador principal (o con acceso completo) de tu cuenta de Gusto. Tus empleados deben estar dados de alta en Gusto: aquí los emparejaremos con tu personal.",
+      "sinPermiso": "Sólo un administrador o Recursos Humanos puede conectar o desconectar Gusto."
     }
   },
   "map": {

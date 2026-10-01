@@ -16246,6 +16246,31 @@
       "supervisor": "Supervisor",
       "titulo": "Kontrollverlauf nach Objekt",
       "todosLosPuestos": "Alle Objekte"
+    },
+    "Gusto": {
+      "cancelado": "Nicht verbunden: Die Autorisierung wurde in Gusto abgebrochen.",
+      "compania": "Firma in Gusto",
+      "conectado": "Gusto verbunden.",
+      "conectadoEl": "Verbunden am",
+      "conectar": "Mit Gusto verbinden",
+      "desconectado": "Gusto getrennt.",
+      "desconectar": "Trennen",
+      "desconectarTexto": "Wir senden keine Stunden mehr an Ihre Gusto-Lohnabrechnung. Bereits Gesendetes bleibt in Gusto. Sie können sich jederzeit wieder verbinden.",
+      "desconectarTitulo": "Gusto trennen?",
+      "descripcion": "Senden Sie die genehmigten Stunden Ihrer Wachleute, Supervisoren und Büromitarbeiter an Ihre Gusto-Lohnabrechnung.",
+      "estadoConectado": "Verbunden",
+      "estadoError": "Braucht Aufmerksamkeit",
+      "estadoSinConectar": "Nicht verbunden",
+      "motivoCaducado": "Die Anfrage ist abgelaufen. Bitte versuchen Sie es erneut.",
+      "motivoGenerico": "Gusto hat nicht wie erwartet geantwortet. Bitte versuchen Sie es in ein paar Minuten erneut.",
+      "motivoNoConfigurado": "Die Gusto-Integration ist noch nicht verfügbar.",
+      "motivoNoEEUU": "Gusto ist nur für Unternehmen in den USA verfügbar.",
+      "motivoPermisos": "Gusto hat nicht alle nötigen Berechtigungen erteilt. Verbinden Sie sich erneut mit einem primären Gusto-Administrator.",
+      "motivoRevocado": "Gusto akzeptiert die Verbindung nicht mehr (Zugriff widerrufen). Bitte erneut verbinden.",
+      "pruebas": "Test",
+      "reconectar": "Erneut verbinden",
+      "requisitos": "Sie benötigen einen primären Administrator (oder einen mit Vollzugriff) Ihres Gusto-Kontos. Ihre Mitarbeiter müssen in Gusto angelegt sein; hier ordnen wir sie Ihrem Personal zu.",
+      "sinPermiso": "Nur ein Administrator oder die Personalabteilung kann Gusto verbinden oder trennen."
     }
   },
   "visitantes": {

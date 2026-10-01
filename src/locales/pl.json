@@ -16426,6 +16426,31 @@
       "supervisor": "Nadzorca",
       "titulo": "Historia nadzoru według posterunku",
       "todosLosPuestos": "Wszystkie posterunki"
+    },
+    "Gusto": {
+      "cancelado": "Nie połączono: autoryzacja została anulowana w Gusto.",
+      "compania": "Firma w Gusto",
+      "conectado": "Gusto połączone.",
+      "conectadoEl": "Połączono",
+      "conectar": "Połącz z Gusto",
+      "desconectado": "Gusto odłączone.",
+      "desconectar": "Odłącz",
+      "desconectarTexto": "Przestaniemy wysyłać godziny do Twojej listy płac w Gusto. To, co już wysłano, zostaje w Gusto. Możesz połączyć ponownie w dowolnym momencie.",
+      "desconectarTitulo": "Odłączyć Gusto?",
+      "descripcion": "Wysyłaj zatwierdzone godziny ochroniarzy, przełożonych i pracowników biurowych do swojej listy płac w Gusto.",
+      "estadoConectado": "Połączono",
+      "estadoError": "Wymaga uwagi",
+      "estadoSinConectar": "Nie połączono",
+      "motivoCaducado": "Żądanie wygasło. Spróbuj ponownie.",
+      "motivoGenerico": "Gusto nie odpowiedziało zgodnie z oczekiwaniami. Spróbuj ponownie za kilka minut.",
+      "motivoNoConfigurado": "Integracja z Gusto nie jest jeszcze dostępna.",
+      "motivoNoEEUU": "Gusto jest dostępne tylko dla firm w Stanach Zjednoczonych.",
+      "motivoPermisos": "Gusto nie przyznało wszystkich potrzebnych uprawnień. Połącz ponownie z głównym administratorem Gusto.",
+      "motivoRevocado": "Gusto przestało akceptować połączenie (dostęp cofnięto). Połącz ponownie.",
+      "pruebas": "Test",
+      "reconectar": "Połącz ponownie",
+      "requisitos": "Potrzebny jest główny administrator (lub z pełnym dostępem) konta Gusto. Twoi pracownicy muszą być zarejestrowani w Gusto; tutaj połączymy ich z Twoim personelem.",
+      "sinPermiso": "Tylko administrator lub dział kadr może połączyć lub odłączyć Gusto."
     }
   },
   "visitantes": {

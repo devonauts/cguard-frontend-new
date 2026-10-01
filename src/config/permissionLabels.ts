@@ -295,6 +295,11 @@ const SPECIAL_PERMISSION_LABELS: Record<string, Localized3> = {
     en: 'Access the supervisor app',
     pt: 'Acesso ao app do supervisor',
   },
+  payrollIntegrationManage: {
+    es: 'Conectar y gestionar la nómina externa (Gusto)',
+    en: 'Connect and manage external payroll (Gusto)',
+    pt: 'Conectar e gerenciar a folha externa (Gusto)',
+  },
 };
 
 type Localized3 = { es: string; en: string; pt: string };

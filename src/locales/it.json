@@ -16246,6 +16246,31 @@
       "supervisor": "Supervisore",
       "titulo": "Cronologia delle supervisioni per posto",
       "todosLosPuestos": "Tutti i posti"
+    },
+    "Gusto": {
+      "cancelado": "Non collegato: l’autorizzazione è stata annullata in Gusto.",
+      "compania": "Azienda su Gusto",
+      "conectado": "Gusto collegato.",
+      "conectadoEl": "Collegato il",
+      "conectar": "Collega con Gusto",
+      "desconectado": "Gusto scollegato.",
+      "desconectar": "Scollega",
+      "desconectarTexto": "Smetteremo di inviare ore alla tua busta paga di Gusto. Ciò che è già stato inviato resta in Gusto. Puoi ricollegarti quando vuoi.",
+      "desconectarTitulo": "Scollegare Gusto?",
+      "descripcion": "Invia le ore approvate di guardie, supervisori e personale d’ufficio alla tua busta paga di Gusto.",
+      "estadoConectado": "Collegato",
+      "estadoError": "Richiede attenzione",
+      "estadoSinConectar": "Non collegato",
+      "motivoCaducado": "La richiesta è scaduta. Riprova.",
+      "motivoGenerico": "Gusto non ha risposto come previsto. Riprova tra qualche minuto.",
+      "motivoNoConfigurado": "L’integrazione con Gusto non è ancora disponibile.",
+      "motivoNoEEUU": "Gusto è disponibile solo per le aziende degli Stati Uniti.",
+      "motivoPermisos": "Gusto non ci ha concesso tutte le autorizzazioni necessarie. Ricollega con un amministratore principale di Gusto.",
+      "motivoRevocado": "Gusto non accetta più la connessione (accesso revocato). Ricollega.",
+      "pruebas": "Test",
+      "reconectar": "Ricollega",
+      "requisitos": "Serve un amministratore principale (o con accesso completo) del tuo account Gusto. I tuoi dipendenti devono essere registrati in Gusto; qui li abbineremo al tuo personale.",
+      "sinPermiso": "Solo un amministratore o le Risorse Umane possono collegare o scollegare Gusto."
     }
   },
   "visitantes": {

@@ -16246,6 +16246,31 @@
       "supervisor": "Supervisor",
       "titulo": "Supervisiegeschiedenis per post",
       "todosLosPuestos": "Alle posten"
+    },
+    "Gusto": {
+      "cancelado": "Niet gekoppeld: de autorisatie is in Gusto geannuleerd.",
+      "compania": "Bedrijf in Gusto",
+      "conectado": "Gusto gekoppeld.",
+      "conectadoEl": "Gekoppeld op",
+      "conectar": "Koppelen met Gusto",
+      "desconectado": "Gusto ontkoppeld.",
+      "desconectar": "Ontkoppelen",
+      "desconectarTexto": "We sturen geen uren meer naar je Gusto-salarisadministratie. Wat al is verstuurd, blijft in Gusto. Je kunt altijd opnieuw koppelen.",
+      "desconectarTitulo": "Gusto ontkoppelen?",
+      "descripcion": "Stuur de goedgekeurde uren van je bewakers, supervisors en kantoorpersoneel naar je Gusto-salarisadministratie.",
+      "estadoConectado": "Gekoppeld",
+      "estadoError": "Vraagt aandacht",
+      "estadoSinConectar": "Niet gekoppeld",
+      "motivoCaducado": "Het verzoek is verlopen. Probeer het opnieuw.",
+      "motivoGenerico": "Gusto reageerde niet zoals verwacht. Probeer het over een paar minuten opnieuw.",
+      "motivoNoConfigurado": "De Gusto-integratie is nog niet beschikbaar.",
+      "motivoNoEEUU": "Gusto is alleen beschikbaar voor bedrijven in de Verenigde Staten.",
+      "motivoPermisos": "Gusto heeft niet alle benodigde rechten gegeven. Koppel opnieuw met een primaire Gusto-beheerder.",
+      "motivoRevocado": "Gusto accepteert de koppeling niet meer (toegang ingetrokken). Koppel opnieuw.",
+      "pruebas": "Test",
+      "reconectar": "Opnieuw koppelen",
+      "requisitos": "Je hebt een primaire beheerder (of een met volledige toegang) van je Gusto-account nodig. Je medewerkers moeten in Gusto staan; hier koppelen we ze aan je personeel.",
+      "sinPermiso": "Alleen een beheerder of HR kan Gusto koppelen of ontkoppelen."
     }
   },
   "visitantes": {

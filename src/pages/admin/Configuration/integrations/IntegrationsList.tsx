@@ -30,6 +30,7 @@ import {
   EmptyState,
   InfoNote,
 } from "@/components/kit";
+import ConexionGusto from "./ConexionGusto";
 
 export default function IntegrationsList() {
   const { t } = useTranslation();
@@ -49,6 +50,9 @@ export default function IntegrationsList() {
             subtitle={t("ui.IntegrationsList.conectarCGuardProCon", { marca: nombreDeMarca })}
             title={t("settings.configuracion.integraciones", "Conexiones y API")}
           />
+
+          {/* Gusto (nómina de EE. UU.): sólo se pinta a empresas de EE. UU. */}
+          <ConexionGusto />
 
           <EmptyState
             description={t(

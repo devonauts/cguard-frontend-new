@@ -16246,6 +16246,31 @@
       "supervisor": "Superviseur",
       "titulo": "Historique de supervision par poste",
       "todosLosPuestos": "Tous les postes"
+    },
+    "Gusto": {
+      "cancelado": "Non connecté : l’autorisation a été annulée dans Gusto.",
+      "compania": "Société sur Gusto",
+      "conectado": "Gusto connecté.",
+      "conectadoEl": "Connecté le",
+      "conectar": "Se connecter à Gusto",
+      "desconectado": "Gusto déconnecté.",
+      "desconectar": "Déconnecter",
+      "desconectarTexto": "Nous n’enverrons plus d’heures à votre paie Gusto. Ce qui a déjà été envoyé reste dans Gusto. Vous pouvez vous reconnecter à tout moment.",
+      "desconectarTitulo": "Déconnecter Gusto ?",
+      "descripcion": "Envoyez les heures approuvées de vos agents, superviseurs et personnel de bureau à votre paie Gusto.",
+      "estadoConectado": "Connecté",
+      "estadoError": "À vérifier",
+      "estadoSinConectar": "Non connecté",
+      "motivoCaducado": "La demande a expiré. Réessayez.",
+      "motivoGenerico": "Gusto n’a pas répondu comme prévu. Réessayez dans quelques minutes.",
+      "motivoNoConfigurado": "L’intégration Gusto n’est pas encore disponible.",
+      "motivoNoEEUU": "Gusto n’est disponible que pour les entreprises des États-Unis.",
+      "motivoPermisos": "Gusto ne nous a pas accordé toutes les autorisations nécessaires. Reconnectez-vous avec un administrateur principal de Gusto.",
+      "motivoRevocado": "Gusto n’accepte plus la connexion (l’accès a été révoqué). Reconnectez-vous.",
+      "pruebas": "Test",
+      "reconectar": "Se reconnecter",
+      "requisitos": "Il faut un administrateur principal (ou avec accès complet) de votre compte Gusto. Vos employés doivent être enregistrés dans Gusto ; nous les associerons ici à votre personnel.",
+      "sinPermiso": "Seul un administrateur ou les RH peuvent connecter ou déconnecter Gusto."
     }
   },
   "visitantes": {
