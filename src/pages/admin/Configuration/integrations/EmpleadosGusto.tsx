@@ -257,6 +257,11 @@ export default function EmpleadosGusto() {
                               <span className="truncate">
                                 {nombreDeGusto.get(p.vinculo.gustoUuid)?.nombre || p.vinculo.gustoNombre}
                               </span>
+                              {["terminated", "termination_effective", "deleted"].includes(p.vinculo.gustoEstado || "") && (
+                                <StatusBadge tone="bad">
+                                  {t("ui.GustoEmpleados.bajaEnGusto", "Dado de baja en Gusto")}
+                                </StatusBadge>
+                              )}
                               {nombreDeGusto.get(p.vinculo.gustoUuid)?.incorporado === false && (
                                 <StatusBadge tone="bad">
                                   {t("ui.GustoEmpleados.sinAlta", "Alta sin terminar en Gusto: no entra en la nómina")}

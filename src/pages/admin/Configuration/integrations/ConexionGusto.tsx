@@ -26,6 +26,7 @@ const MOTIVOS: Record<string, [string, string]> = {
   bad_state: ["ui.Gusto.motivoCaducado", "La solicitud caducó. Vuelve a intentarlo."],
   code_invalid: ["ui.Gusto.motivoCodigo", "Gusto no aceptó la autorización (caducó o ya se usó). Vuelve a conectar."],
   not_configured: ["ui.Gusto.motivoNoConfigurado", "La integración con Gusto todavía no está disponible."],
+  deprovisioned: ["ui.Gusto.motivoDesdeGusto", "Se desconectó desde Gusto: alguien retiró el acceso de la aplicación. Vuelve a conectar para seguir enviando horas."],
 };
 
 /** El nombre de la ventanita: así la página sabe que está DENTRO de ella. */
@@ -232,7 +233,13 @@ export default function ConexionGusto() {
                     </Link>
                   </Button>
                 )}
-                {conError && (
+                {!estado.conectado && estado.errorCodigo === "deprovisioned" && (
+        <InfoNote className="mt-4" icon={<Info />} tone="warn">
+          {motivo("deprovisioned")}
+        </InfoNote>
+      )}
+
+      {conError && (
                   <Button disabled={ocupado} onClick={conectar}>
                     <RefreshCw /> {t("ui.Gusto.reconectar", "Volver a conectar")}
                   </Button>
@@ -259,6 +266,20 @@ export default function ConexionGusto() {
           <div>
             <dt style={{ color: "var(--ink-faint)" }}>{t("ui.Gusto.conectadoEl", "Conectado el")}</dt>
             <dd className="font-medium">{fecha(estado.conectadoEn) || "—"}</dd>
+          </div>
+          {/* Los avisos de Gusto (fase 4): si llegan, lo que se paga en Gusto se
+              marca solo en Nómina y una desconexión se ve al momento. */}
+          <div>
+            <dt style={{ color: "var(--ink-faint)" }}>{t("ui.Gusto.avisos", "Avisos de Gusto")}</dt>
+            <dd className="font-medium">
+              {estado.avisos?.estado === "verified"
+                ? estado.avisos.ultimoAviso
+                  ? t("ui.Gusto.avisosUltimo", { cuando: fecha(estado.avisos.ultimoAviso), defaultValue: "Activos · último el {{cuando}}" })
+                  : t("ui.Gusto.avisosActivos", "Activos")
+                : estado.avisos
+                  ? t("ui.Gusto.avisosPendientes", "Pendientes de verificar")
+                  : t("ui.Gusto.avisosNo", "Sin avisos: marca lo pagado a mano en Nómina")}
+            </dd>
           </div>
         </dl>
       )}

@@ -16275,7 +16275,13 @@
       "motivoCodigo": "Gusto non ha accettato l’autorizzazione (scaduta o già usata). Ricollega.",
       "requisitosEntrar": "Nella finestra di Gusto accedi con l’utente della tua AZIENDA su Gusto, non con un account sviluppatore.",
       "emparejar": "Dipendenti",
-      "enviarHoras": "Invia ore"
+      "enviarHoras": "Invia ore",
+      "motivoDesdeGusto": "Scollegato da Gusto: qualcuno ha revocato l’accesso dell’app. Ricollega per continuare a inviare le ore.",
+      "avisos": "Avvisi di Gusto",
+      "avisosUltimo": "Attivi · ultimo il {{cuando}}",
+      "avisosActivos": "Attivi",
+      "avisosPendientes": "In attesa di verifica",
+      "avisosNo": "Nessun avviso: segna il pagato a mano in Paghe"
     },
     "GustoEmpleados": {
       "titulo": "Dipendenti in Gusto",
@@ -16319,7 +16325,8 @@
       "opcionAsalariado": "stipendio fisso",
       "opcionExento": "esente",
       "sinAlta": "Inserimento incompleto in Gusto: fuori dalla paga",
-      "opcionSinAlta": "inserimento incompleto"
+      "opcionSinAlta": "inserimento incompleto",
+      "bajaEnGusto": "Cessato in Gusto"
     },
     "GustoHoras": {
       "reglaFederal": "Federale: oltre 40 h a settimana (Texas e la maggior parte degli stati)",

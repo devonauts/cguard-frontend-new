@@ -57,6 +57,11 @@ export function targetForNotification(n: PlatformNotification): string {
     return p.caseId ? `/alarm/case/${p.caseId}` : "/alarm/queue";
   }
 
+  // ── Gusto (fase 4): la conexión, a Ajustes; el resto, a Nómina › Gusto.
+  if (type === "gusto.disconnected") return "/setting/integraciones";
+  if (type === "gusto.employee_terminated") return "/setting/integraciones/gusto";
+  if (type.startsWith("gusto.")) return "/nomina/gusto";
+
   // ── Things that need a supervisor DECISION → the right approvals queue, focused.
   if (
     type === "attendance.clockin_requested" ||

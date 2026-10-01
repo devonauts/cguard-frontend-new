@@ -15752,7 +15752,13 @@
       "motivoCodigo": "Gusto no aceptó la autorización (caducó o ya se usó). Vuelve a conectar.",
       "requisitosEntrar": "En la ventana de Gusto entra con el usuario de tu EMPRESA en Gusto, no con una cuenta de desarrollador.",
       "emparejar": "Empleados",
-      "enviarHoras": "Enviar horas"
+      "enviarHoras": "Enviar horas",
+      "motivoDesdeGusto": "Se desconectó desde Gusto: alguien retiró el acceso de la aplicación. Vuelve a conectar para seguir enviando horas.",
+      "avisos": "Avisos de Gusto",
+      "avisosUltimo": "Activos · último el {{cuando}}",
+      "avisosActivos": "Activos",
+      "avisosPendientes": "Pendientes de verificar",
+      "avisosNo": "Sin avisos: marca lo pagado a mano en Nómina"
     },
     "GustoEmpleados": {
       "titulo": "Empleados en Gusto",
@@ -15796,7 +15802,8 @@
       "opcionAsalariado": "sueldo fijo",
       "opcionExento": "exento",
       "sinAlta": "Alta sin terminar en Gusto: no entra en la nómina",
-      "opcionSinAlta": "alta sin terminar"
+      "opcionSinAlta": "alta sin terminar",
+      "bajaEnGusto": "Dado de baja en Gusto"
     },
     "GustoHoras": {
       "reglaFederal": "Federal: más de 40 h a la semana (Texas y la mayoría de estados)",

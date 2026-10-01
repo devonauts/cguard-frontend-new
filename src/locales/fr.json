@@ -16275,7 +16275,13 @@
       "motivoCodigo": "Gusto n’a pas accepté l’autorisation (expirée ou déjà utilisée). Reconnectez-vous.",
       "requisitosEntrar": "Dans la fenêtre Gusto, connectez-vous avec l’utilisateur de votre ENTREPRISE sur Gusto, pas avec un compte développeur.",
       "emparejar": "Employés",
-      "enviarHoras": "Envoyer les heures"
+      "enviarHoras": "Envoyer les heures",
+      "motivoDesdeGusto": "Déconnecté depuis Gusto : quelqu’un a retiré l’accès de l’application. Reconnectez pour continuer à envoyer les heures.",
+      "avisos": "Avis de Gusto",
+      "avisosUltimo": "Actifs · dernier le {{cuando}}",
+      "avisosActivos": "Actifs",
+      "avisosPendientes": "En attente de vérification",
+      "avisosNo": "Pas d’avis : marquez le payé à la main dans Paie"
     },
     "GustoEmpleados": {
       "titulo": "Employés dans Gusto",
@@ -16319,7 +16325,8 @@
       "opcionAsalariado": "salaire fixe",
       "opcionExento": "exempté",
       "sinAlta": "Intégration incomplète dans Gusto : hors paie",
-      "opcionSinAlta": "intégration incomplète"
+      "opcionSinAlta": "intégration incomplète",
+      "bajaEnGusto": "Départ dans Gusto"
     },
     "GustoHoras": {
       "reglaFederal": "Fédéral : plus de 40 h par semaine (Texas et la plupart des États)",

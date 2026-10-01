@@ -16275,7 +16275,13 @@
       "motivoCodigo": "Gusto hat die Autorisierung nicht akzeptiert (abgelaufen oder bereits verwendet). Bitte erneut verbinden.",
       "requisitosEntrar": "Melden Sie sich im Gusto-Fenster mit dem Gusto-Benutzer Ihres UNTERNEHMENS an, nicht mit einem Entwicklerkonto.",
       "emparejar": "Mitarbeitende",
-      "enviarHoras": "Stunden senden"
+      "enviarHoras": "Stunden senden",
+      "motivoDesdeGusto": "Von Gusto aus getrennt: jemand hat der App den Zugriff entzogen. Neu verbinden, um weiter Stunden zu senden.",
+      "avisos": "Gusto-Benachrichtigungen",
+      "avisosUltimo": "Aktiv · zuletzt am {{cuando}}",
+      "avisosActivos": "Aktiv",
+      "avisosPendientes": "Ausstehende Verifizierung",
+      "avisosNo": "Keine Benachrichtigungen: Bezahltes in der Lohnabrechnung von Hand markieren"
     },
     "GustoEmpleados": {
       "titulo": "Mitarbeitende in Gusto",
@@ -16319,7 +16325,8 @@
       "opcionAsalariado": "Festgehalt",
       "opcionExento": "exempt",
       "sinAlta": "Onboarding in Gusto unvollständig: nicht in der Abrechnung",
-      "opcionSinAlta": "Onboarding unvollständig"
+      "opcionSinAlta": "Onboarding unvollständig",
+      "bajaEnGusto": "In Gusto ausgeschieden"
     },
     "GustoHoras": {
       "reglaFederal": "Bundesrecht: über 40 h pro Woche (Texas und die meisten Bundesstaaten)",

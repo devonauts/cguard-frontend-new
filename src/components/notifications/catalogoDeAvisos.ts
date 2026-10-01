@@ -103,6 +103,24 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
     catalogado: true,
   },
   {
+    evento: "gusto.disconnected",
+    familia: "attendance",
+    prioridad: "important",
+    catalogado: true,
+  },
+  {
+    evento: "gusto.payroll_paid",
+    familia: "attendance",
+    prioridad: "normal",
+    catalogado: true,
+  },
+  {
+    evento: "gusto.employee_terminated",
+    familia: "attendance",
+    prioridad: "normal",
+    catalogado: true,
+  },
+  {
     evento: "attendance.approved",
     familia: "attendance",
     prioridad: "normal",

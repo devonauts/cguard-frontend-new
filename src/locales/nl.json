@@ -16275,7 +16275,13 @@
       "motivoCodigo": "Gusto heeft de autorisatie niet geaccepteerd (verlopen of al gebruikt). Koppel opnieuw.",
       "requisitosEntrar": "Log in het Gusto-venster in met de Gusto-gebruiker van je BEDRIJF, niet met een ontwikkelaarsaccount.",
       "emparejar": "Medewerkers",
-      "enviarHoras": "Uren verzenden"
+      "enviarHoras": "Uren verzenden",
+      "motivoDesdeGusto": "Ontkoppeld vanuit Gusto: iemand heeft de toegang van de app ingetrokken. Koppel opnieuw om uren te blijven verzenden.",
+      "avisos": "Gusto-meldingen",
+      "avisosUltimo": "Actief · laatste op {{cuando}}",
+      "avisosActivos": "Actief",
+      "avisosPendientes": "Wacht op verificatie",
+      "avisosNo": "Geen meldingen: markeer betaald handmatig in Salaris"
     },
     "GustoEmpleados": {
       "titulo": "Medewerkers in Gusto",
@@ -16319,7 +16325,8 @@
       "opcionAsalariado": "vast salaris",
       "opcionExento": "exempt",
       "sinAlta": "Onboarding in Gusto onvolledig: niet in het salaris",
-      "opcionSinAlta": "onboarding onvolledig"
+      "opcionSinAlta": "onboarding onvolledig",
+      "bajaEnGusto": "Uit dienst in Gusto"
     },
     "GustoHoras": {
       "reglaFederal": "Federaal: meer dan 40 uur per week (Texas en de meeste staten)",

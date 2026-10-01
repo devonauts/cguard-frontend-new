@@ -33,6 +33,8 @@ export interface EstadoDeGusto {
   conectadoEn: string | null;
   ultimaSync: string | null;
   errorCodigo: string | null;
+  /** Los avisos de Gusto (webhooks) de la plataforma: si llegan y el último. */
+  avisos?: { estado: string; ultimoAviso: string | null } | null;
 }
 
 export type Senal = "email" | "name" | "dob";
@@ -53,6 +55,7 @@ export interface FilaDePersona {
     confirmadoEn: string | null;
     huerfano: boolean;
     comoPaga: ComoPaga | null;
+    gustoEstado?: string | null;
   } | null;
   sugerencia: { gustoUuid: string; nombre: string; senales: Senal[]; fuerza: "solida" | "posible" } | null;
 }

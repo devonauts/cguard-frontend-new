@@ -15752,7 +15752,13 @@
       "motivoCodigo": "O Gusto não aceitou a autorização (expirou ou já foi usada). Reconecte.",
       "requisitosEntrar": "Na janela do Gusto, entre com o usuário da sua EMPRESA no Gusto, não com uma conta de desenvolvedor.",
       "emparejar": "Funcionários",
-      "enviarHoras": "Enviar horas"
+      "enviarHoras": "Enviar horas",
+      "motivoDesdeGusto": "Desconectado pelo Gusto: alguém removeu o acesso do aplicativo. Conecte de novo para continuar enviando horas.",
+      "avisos": "Avisos do Gusto",
+      "avisosUltimo": "Ativos · último em {{cuando}}",
+      "avisosActivos": "Ativos",
+      "avisosPendientes": "Aguardando verificação",
+      "avisosNo": "Sem avisos: marque o pago à mão na Folha"
     },
     "GustoEmpleados": {
       "titulo": "Funcionários no Gusto",
@@ -15796,7 +15802,8 @@
       "opcionAsalariado": "salário fixo",
       "opcionExento": "isento",
       "sinAlta": "Cadastro incompleto no Gusto: não entra na folha",
-      "opcionSinAlta": "cadastro incompleto"
+      "opcionSinAlta": "cadastro incompleto",
+      "bajaEnGusto": "Desligado no Gusto"
     },
     "GustoHoras": {
       "reglaFederal": "Federal: mais de 40 h por semana (Texas e a maioria dos estados)",

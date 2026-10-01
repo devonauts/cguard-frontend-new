@@ -16455,7 +16455,13 @@
       "motivoCodigo": "Gusto nie zaakceptowało autoryzacji (wygasła lub została już użyta). Połącz ponownie.",
       "requisitosEntrar": "W oknie Gusto zaloguj się użytkownikiem swojej FIRMY w Gusto, a nie kontem dewelopera.",
       "emparejar": "Pracownicy",
-      "enviarHoras": "Wyślij godziny"
+      "enviarHoras": "Wyślij godziny",
+      "motivoDesdeGusto": "Odłączono z poziomu Gusto: ktoś cofnął dostęp aplikacji. Połącz ponownie, aby dalej wysyłać godziny.",
+      "avisos": "Powiadomienia Gusto",
+      "avisosUltimo": "Aktywne · ostatnie {{cuando}}",
+      "avisosActivos": "Aktywne",
+      "avisosPendientes": "Oczekuje na weryfikację",
+      "avisosNo": "Brak powiadomień: oznacz opłacone ręcznie w Płacach"
     },
     "GustoEmpleados": {
       "titulo": "Pracownicy w Gusto",
@@ -16499,7 +16505,8 @@
       "opcionAsalariado": "stała pensja",
       "opcionExento": "zwolniony",
       "sinAlta": "Niepełna rejestracja w Gusto: poza listą płac",
-      "opcionSinAlta": "niepełna rejestracja"
+      "opcionSinAlta": "niepełna rejestracja",
+      "bajaEnGusto": "Zwolniony w Gusto"
     },
     "GustoHoras": {
       "reglaFederal": "Federalna: ponad 40 h tygodniowo (Teksas i większość stanów)",

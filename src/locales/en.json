@@ -15752,7 +15752,13 @@
       "motivoCodigo": "Gusto didn't accept the authorization (it expired or was already used). Please reconnect.",
       "requisitosEntrar": "In the Gusto window, sign in with your COMPANY's Gusto user, not a developer account.",
       "emparejar": "Employees",
-      "enviarHoras": "Send hours"
+      "enviarHoras": "Send hours",
+      "motivoDesdeGusto": "Disconnected from Gusto: someone removed the app's access. Reconnect to keep sending hours.",
+      "avisos": "Gusto events",
+      "avisosUltimo": "Active · last on {{cuando}}",
+      "avisosActivos": "Active",
+      "avisosPendientes": "Pending verification",
+      "avisosNo": "No events: mark paid shifts by hand in Payroll"
     },
     "GustoEmpleados": {
       "titulo": "Employees in Gusto",
@@ -15796,7 +15802,8 @@
       "opcionAsalariado": "salaried",
       "opcionExento": "exempt",
       "sinAlta": "Onboarding incomplete in Gusto: not included in payroll",
-      "opcionSinAlta": "onboarding incomplete"
+      "opcionSinAlta": "onboarding incomplete",
+      "bajaEnGusto": "Terminated in Gusto"
     },
     "GustoHoras": {
       "reglaFederal": "Federal: over 40 h per week (Texas and most states)",
