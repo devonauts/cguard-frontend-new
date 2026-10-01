@@ -275,9 +275,13 @@ export default function VigiaWidget() {
      server says so, which is only for our own companies. */
   const silueta = siluetaDe(agente.forma);
   const esEscudo = agente.forma === "escudo";
-  /* «Ninguna» (sólo imagen) sólo vale con imagen; el servidor ya cae al orbe
-     si no la hay, esto es por si llega un valor viejo del caché. */
-  const sinForma = agente.forma === "ninguna" && !!agente.avatarUrl;
+  /* CON IMAGEN, SIN FORMA. Si el socio subió una imagen, la burbuja ES esa
+     imagen, a tamaño completo: antes se dibujaba la forma y la imagen iba
+     recortada en un círculo de 18 px dentro, y se veía como un sello diminuto
+     sobre un disco de color (queja de un socio, 2026-09-30). La forma sólo se
+     dibuja cuando no hay imagen; «ninguna» sin imagen cae al orbe en el
+     servidor. */
+  const sinForma = !!agente.avatarUrl;
   const icono = iconoDe(agente.icono);
 
   useEffect(() => {
@@ -766,8 +770,8 @@ export default function VigiaWidget() {
           `}</style>
           <span className="relative block">
             {sinForma ? (
-              /* «Ninguna»: la imagen del socio sola, sin silueta ni recorte
-                 (también un GIF animado). */
+              /* Con imagen: la imagen del socio sola, sin silueta ni recorte,
+                 ocupando todo el tamaño de la burbuja (también un GIF animado). */
               <img
                 alt=""
                 aria-hidden
