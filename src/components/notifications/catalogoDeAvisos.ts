@@ -746,6 +746,14 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
     catalogado: true,
   },
   {
+    // Un caso del seguimiento de VigIA Pro que necesita a una persona: es
+    // asistencia, no un resumen (por eso no cae con los `vigia.*` de abajo).
+    evento: "vigia.caso_escalado",
+    familia: "attendance",
+    prioridad: "important",
+    catalogado: true,
+  },
+  {
     evento: "vigia.nightly",
     familia: "announcement",
     prioridad: "low",

@@ -5495,7 +5495,8 @@
     "unreadMessages": "{{count}} messages non lus",
     "emergencias": "Centre des urgences",
     "pases-de-turno": "Relèves",
-    "modulos-adicionales": "Modules complémentaires"
+    "modulos-adicionales": "Modules complémentaires",
+    "vigia-pro": "{{agente}} Pro"
   },
   "siteTour": {
     "newTour": "Nouvelle ronde",
@@ -17830,5 +17831,165 @@
     "eyebrow": "Nouveautés de {{marca}}",
     "entendido": "Compris",
     "cerrar": "Fermer"
+  },
+  "vigiaPro": {
+    "titulo": "{{agente}} Pro",
+    "subtitulo": "{{agente}} écrit de lui-même à vos agents quand quelque chose cloche et clôt le cas : attend celui qui est en retard, enregistre l’absence et cherche un remplaçant, ou vous le transmet.",
+    "errorCarga": "Impossible de charger. Réessayez dans un instant.",
+    "sinModulo": {
+      "titulo": "Activez {{agente}} Pro pour lancer le suivi",
+      "desc": "Vous pouvez consulter et préparer les réglages ; pour que {{agente}} commence à écrire à vos agents, il faut le module.",
+      "enlace": "Voir les Modules complémentaires"
+    },
+    "apagado": {
+      "titulo": "Le suivi est désactivé",
+      "desc": "Activez-le dans les réglages ci-dessous et {{agente}} commencera à écrire à vos agents."
+    },
+    "resumen": {
+      "titulo": "Ce que {{agente}} a résolu · {{dias}} derniers jours",
+      "casos": "Cas",
+      "resueltosSolos": "Résolus par {{agente}}",
+      "porcentaje": "{{pct}} % sans que personne n’ait à intervenir",
+      "escalados": "Transmis à une personne",
+      "faltas": "Absences enregistrées",
+      "relevos": "Remplaçants cherchés",
+      "llegaron": "Arrivés après le message"
+    },
+    "casos": {
+      "titulo": "Cas",
+      "filtro": {
+        "abiertos": "En cours",
+        "escalado": "Pour vous",
+        "todos": "Tous"
+      },
+      "vacio": {
+        "titulo": "Rien ici",
+        "abiertos": "Aucun cas en cours. {{agente}} veille.",
+        "escalado": "Rien n’attend une personne.",
+        "todos": "Pas encore de cas."
+      },
+      "sinNombre": "Agent",
+      "verNovedad": "Voir l’absence",
+      "cerrar": "Marquer comme clos",
+      "errorCerrar": "Impossible de clore le cas. Réessayez."
+    },
+    "estado": {
+      "abierto": "En attente de réponse",
+      "esperando": "En attente",
+      "resuelto": "Résolu par {{agente}}",
+      "escalado": "Requiert une personne",
+      "cerrado": "Clos"
+    },
+    "tipo": {
+      "sin_fichar": "N’a pas pointé",
+      "salio_de_zona": "A quitté la zone",
+      "salida_anticipada": "Parti avant l’heure",
+      "sin_actividad": "Pas de signal du téléphone",
+      "confirmar_turno": "Confirmer le service"
+    },
+    "canal": {
+      "whatsapp": "WhatsApp",
+      "push": "notification de l’application",
+      "sms": "SMS"
+    },
+    "evento": {
+      "detectado": "{{agente}} l’a détecté",
+      "esperando": "Attente de {{minutos}} min",
+      "aclarar": "La réponse n’a pas été comprise ; {{agente}} a reposé la question",
+      "recordatorio": "{{agente}} lui a rappelé de pointer",
+      "falta": "Absence enregistrée : {{motivo}}",
+      "relevo": "Remplacement : {{texto}}",
+      "escalado": "Transmis à une personne : {{motivo}}",
+      "resuelto": "Résolu : {{resolucion}}",
+      "cerrado": "Clos",
+      "cerradoPorPersona": "Clos par {{nombre}}",
+      "error": "Un problème est survenu à l’enregistrement ; vérifiez le cas"
+    },
+    "motivoFalta": {
+      "enfermedad": "maladie",
+      "calamidad_domestica": "urgence familiale",
+      "transporte": "transport",
+      "otro": "autre motif",
+      "no_call_no_show": "n’a ni pointé ni répondu"
+    },
+    "motivo": {
+      "respuesta_no_entendida": "sa réponse n’a pas été comprise",
+      "llega_muy_tarde": "dit qu’il arrivera très en retard",
+      "avisa_que_llegara_tarde": "prévient qu’il arrivera en retard",
+      "dejo_el_puesto": "dit qu’il ne retourne pas au poste",
+      "explicacion_de_salida": "a expliqué pourquoi il est parti",
+      "sin_respuesta": "n’a pas répondu",
+      "no_contactable": "injoignable (ni téléphone ni application)",
+      "no_llego": "a dit qu’il arrivait et n’a pas pointé",
+      "no_regreso": "a dit qu’il revenait et est toujours dehors",
+      "sin_responsable": "aucune personne du bureau au nom de qui agir",
+      "falta_no_registrada": "l’absence n’a pas pu être enregistrée",
+      "relevo_sin_candidatos": "absence enregistrée ; aucun remplaçant disponible",
+      "falta_espera_relevo": "absence enregistrée ; le remplacement attend votre accord",
+      "falta_registrada": "absence enregistrée"
+    },
+    "resolucion": {
+      "dice_que_esta": "a dit être déjà sur place",
+      "llega_tarde": "arrive en retard",
+      "llego": "a pointé",
+      "volvio": "est retourné au poste",
+      "volvio_la_senal": "le téléphone capte de nouveau",
+      "turno_cerrado": "le service est déjà terminé",
+      "confirmo": "a confirmé le service",
+      "respondio": "a répondu",
+      "regresa": "a dit qu’il revenait",
+      "falta_y_relevo": "absence enregistrée et remplaçant recherché",
+      "falta_registrada": "absence enregistrée",
+      "sin_respuesta": "sans réponse",
+      "cerrado_por_persona": "clos par une personne"
+    },
+    "ajustes": {
+      "titulo": "Réglages du suivi",
+      "activo": "{{agente}} assure le suivi",
+      "activoHint": "Écrit à l’agent dès que quelque chose cloche et poursuit la conversation jusqu’à la clore.",
+      "casoHint": {
+        "sin_fichar": "S’il n’y a pas de pointage {{minutos}} min après le début, il lui écrit.",
+        "salio_de_zona": "Quand il quitte la zone de son poste (selon les alertes de géorepérage des Règles de postes).",
+        "salida_anticipada": "S’il pointe sa sortie {{minutos}} min ou plus avant la fin, il demande ce qui s’est passé et le transmet au superviseur.",
+        "sin_actividad": "Quand son téléphone ne donne plus de signal (selon l’alerte d’inactivité).",
+        "confirmar_turno": "{{minutos}} min avant le service, il lui demande de confirmer. Un message par service."
+      },
+      "minutos": {
+        "sin_fichar": "Minutes après le début",
+        "salida_anticipada": "Minutes avant la fin",
+        "confirmar_turno": "Minutes avant le début"
+      },
+      "min": "min",
+      "espera": "Attente de réponse",
+      "esperaHint": "Combien de temps il attend avant de réécrire ou de transmettre à une personne.",
+      "reintentos": "Relances",
+      "reintentosHint": "Combien de fois il insiste sans réponse.",
+      "llegada": "Attente maximale pour un retard",
+      "llegadaHint": "S’il annonce arriver plus tard que cela, il vous le transmet.",
+      "cobertura": "Quand l’agent ne vient pas",
+      "coberturaOpcion": {
+        "autonoma": "{{agente}} cherche un remplaçant",
+        "aprobacion": "Enregistrer l’absence et me prévenir",
+        "no": "Me prévenir seulement"
+      },
+      "coberturaHint": {
+        "autonoma": "Enregistre l’absence avec son motif et écrit aux meilleurs candidats sur WhatsApp ; le premier qui accepte prend le service.",
+        "aprobacion": "Enregistre l’absence et vous prévient ; vous choisissez le remplaçant.",
+        "no": "N’enregistre rien : vous prévient pour que vous décidiez."
+      },
+      "responsable": "Au nom de qui agit {{agente}}",
+      "responsableAuto": "L’administrateur principal",
+      "responsableHint": "L’absence et le remplacement sont enregistrés comme faits par cette personne, avec ses droits. Actuellement : {{nombre}}.",
+      "whatsapp": "WhatsApp",
+      "whatsappHint": "Le canal par lequel l’agent peut répondre.",
+      "whatsappHintSinPlantilla": "Le canal par lequel l’agent peut répondre. S’il n’a pas écrit sur WhatsApp ces dernières 24 heures, le premier message lui arrive par l’application.",
+      "push": "Notification de l’application",
+      "pushHint": "Lui parvient même sans WhatsApp. On ne peut pas y répondre : au pointage, le cas se clôt seul.",
+      "sms": "SMS",
+      "smsHint": "Secours quand WhatsApp ne passe pas. Chaque SMS a un coût.",
+      "guardar": "Enregistrer les réglages",
+      "guardado": "Réglages enregistrés.",
+      "error": "Impossible d’enregistrer les réglages."
+    }
   }
 }

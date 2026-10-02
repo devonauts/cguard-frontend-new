@@ -57,6 +57,11 @@ export function targetForNotification(n: PlatformNotification): string {
     return p.caseId ? `/alarm/case/${p.caseId}` : "/alarm/queue";
   }
 
+  // ── VigIA Pro: el caso, con su conversación.
+  if (type === "vigia.caso_escalado") {
+    return p.casoId ? `/vigia-pro?caso=${p.casoId}` : "/vigia-pro";
+  }
+
   // ── Gusto (fase 4): la conexión, a Ajustes; el resto, a Nómina › Gusto.
   if (type === "gusto.disconnected") return "/setting/integraciones";
   if (type === "gusto.employee_terminated") return "/setting/integraciones/gusto";

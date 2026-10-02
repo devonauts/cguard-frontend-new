@@ -5495,7 +5495,8 @@
     "unreadMessages": "{{count}} ungelesene Nachrichten",
     "emergencias": "Notfallzentrale",
     "pases-de-turno": "Schichtübergaben",
-    "modulos-adicionales": "Zusatzmodule"
+    "modulos-adicionales": "Zusatzmodule",
+    "vigia-pro": "{{agente}} Pro"
   },
   "siteTour": {
     "newTour": "Neuer Rundgang",
@@ -17830,5 +17831,165 @@
     "eyebrow": "Neuigkeiten von {{marca}}",
     "entendido": "Verstanden",
     "cerrar": "Schließen"
+  },
+  "vigiaPro": {
+    "titulo": "{{agente}} Pro",
+    "subtitulo": "{{agente}} schreibt Ihren Sicherheitskräften von sich aus, wenn etwas nicht stimmt, und schließt den Fall ab: wartet auf Verspätete, erfasst die Abwesenheit und sucht Ersatz oder gibt ihn an Sie weiter.",
+    "errorCarga": "Konnte nicht geladen werden. Versuchen Sie es gleich noch einmal.",
+    "sinModulo": {
+      "titulo": "Aktivieren Sie {{agente}} Pro, um die Nachverfolgung einzuschalten",
+      "desc": "Sie können die Einstellungen ansehen und vorbereiten; damit {{agente}} Ihren Sicherheitskräften schreibt, wird das Modul benötigt.",
+      "enlace": "Zusatzmodule ansehen"
+    },
+    "apagado": {
+      "titulo": "Die Nachverfolgung ist ausgeschaltet",
+      "desc": "Schalten Sie sie unten in den Einstellungen ein, dann schreibt {{agente}} Ihren Sicherheitskräften."
+    },
+    "resumen": {
+      "titulo": "Was {{agente}} gelöst hat · letzte {{dias}} Tage",
+      "casos": "Fälle",
+      "resueltosSolos": "Von {{agente}} gelöst",
+      "porcentaje": "{{pct}} % ohne dass jemand eingreifen musste",
+      "escalados": "An einen Menschen übergeben",
+      "faltas": "Erfasste Abwesenheiten",
+      "relevos": "Gesuchte Vertretungen",
+      "llegaron": "Nach der Nachricht eingetroffen"
+    },
+    "casos": {
+      "titulo": "Fälle",
+      "filtro": {
+        "abiertos": "Laufend",
+        "escalado": "Für Sie",
+        "todos": "Alle"
+      },
+      "vacio": {
+        "titulo": "Nichts hier",
+        "abiertos": "Keine laufenden Fälle. {{agente}} passt auf.",
+        "escalado": "Nichts wartet auf einen Menschen.",
+        "todos": "Noch keine Fälle."
+      },
+      "sinNombre": "Sicherheitskraft",
+      "verNovedad": "Abwesenheit ansehen",
+      "cerrar": "Als erledigt markieren",
+      "errorCerrar": "Der Fall konnte nicht geschlossen werden. Versuchen Sie es erneut."
+    },
+    "estado": {
+      "abierto": "Wartet auf Antwort",
+      "esperando": "Wartet",
+      "resuelto": "Von {{agente}} gelöst",
+      "escalado": "Braucht einen Menschen",
+      "cerrado": "Geschlossen"
+    },
+    "tipo": {
+      "sin_fichar": "Nicht eingestempelt",
+      "salio_de_zona": "Bereich verlassen",
+      "salida_anticipada": "Früher gegangen",
+      "sin_actividad": "Kein Signal vom Telefon",
+      "confirmar_turno": "Schicht bestätigen"
+    },
+    "canal": {
+      "whatsapp": "WhatsApp",
+      "push": "App-Benachrichtigung",
+      "sms": "SMS"
+    },
+    "evento": {
+      "detectado": "{{agente}} hat es erkannt",
+      "esperando": "Wartet {{minutos}} Min.",
+      "aclarar": "Die Antwort wurde nicht verstanden; {{agente}} hat nachgefragt",
+      "recordatorio": "{{agente}} hat ans Einstempeln erinnert",
+      "falta": "Abwesenheit erfasst: {{motivo}}",
+      "relevo": "Vertretung: {{texto}}",
+      "escalado": "An einen Menschen übergeben: {{motivo}}",
+      "resuelto": "Gelöst: {{resolucion}}",
+      "cerrado": "Geschlossen",
+      "cerradoPorPersona": "Geschlossen von {{nombre}}",
+      "error": "Beim Erfassen ist etwas schiefgelaufen; prüfen Sie den Fall"
+    },
+    "motivoFalta": {
+      "enfermedad": "Krankheit",
+      "calamidad_domestica": "familiärer Notfall",
+      "transporte": "Verkehr",
+      "otro": "anderer Grund",
+      "no_call_no_show": "weder eingestempelt noch geantwortet"
+    },
+    "motivo": {
+      "respuesta_no_entendida": "die Antwort wurde nicht verstanden",
+      "llega_muy_tarde": "sagt, er/sie kommt sehr spät",
+      "avisa_que_llegara_tarde": "meldet, später zu kommen",
+      "dejo_el_puesto": "sagt, er/sie kehrt nicht zum Posten zurück",
+      "explicacion_de_salida": "hat erklärt, warum er/sie gegangen ist",
+      "sin_respuesta": "hat nicht geantwortet",
+      "no_contactable": "nicht erreichbar (kein Telefon, keine App)",
+      "no_llego": "sagte, er/sie komme, und hat nicht eingestempelt",
+      "no_regreso": "sagte, er/sie kehre zurück, und ist noch draußen",
+      "sin_responsable": "keine Büroperson, in deren Namen gehandelt werden kann",
+      "falta_no_registrada": "die Abwesenheit konnte nicht erfasst werden",
+      "relevo_sin_candidatos": "Abwesenheit erfasst; keine Vertretung verfügbar",
+      "falta_espera_relevo": "Abwesenheit erfasst; die Vertretung wartet auf Ihre Freigabe",
+      "falta_registrada": "Abwesenheit erfasst"
+    },
+    "resolucion": {
+      "dice_que_esta": "sagte, er/sie sei schon da",
+      "llega_tarde": "kommt später",
+      "llego": "hat eingestempelt",
+      "volvio": "ist zum Posten zurückgekehrt",
+      "volvio_la_senal": "das Telefon hat wieder Signal",
+      "turno_cerrado": "die Schicht ist schon beendet",
+      "confirmo": "hat die Schicht bestätigt",
+      "respondio": "hat geantwortet",
+      "regresa": "sagte, er/sie kehre zurück",
+      "falta_y_relevo": "Abwesenheit erfasst und Vertretung gesucht",
+      "falta_registrada": "Abwesenheit erfasst",
+      "sin_respuesta": "keine Antwort",
+      "cerrado_por_persona": "von einem Menschen geschlossen"
+    },
+    "ajustes": {
+      "titulo": "Einstellungen der Nachverfolgung",
+      "activo": "{{agente}} verfolgt nach",
+      "activoHint": "Schreibt der Sicherheitskraft, sobald etwas nicht stimmt, und führt das Gespräch bis zum Abschluss.",
+      "casoHint": {
+        "sin_fichar": "Ist {{minutos}} Min. nach Beginn kein Arbeitsbeginn erfasst, schreibt er.",
+        "salio_de_zona": "Wenn sie den Bereich ihres Postens verlässt (laut Geofence-Warnungen in den Postenregeln).",
+        "salida_anticipada": "Stempelt sie {{minutos}} Min. oder mehr vor Ende aus, fragt er nach dem Grund und gibt es an den Vorgesetzten weiter.",
+        "sin_actividad": "Wenn ihr Telefon kein Signal mehr sendet (laut Inaktivitätswarnung).",
+        "confirmar_turno": "{{minutos}} Min. vor der Schicht bittet er um Bestätigung. Eine Nachricht pro Schicht."
+      },
+      "minutos": {
+        "sin_fichar": "Minuten nach Beginn",
+        "salida_anticipada": "Minuten vor Ende",
+        "confirmar_turno": "Minuten vor Beginn"
+      },
+      "min": "Min.",
+      "espera": "Wartezeit auf Antwort",
+      "esperaHint": "Wie lange gewartet wird, bevor erneut geschrieben oder an einen Menschen übergeben wird.",
+      "reintentos": "Wiederholungen",
+      "reintentosHint": "Wie oft nachgehakt wird, wenn keine Antwort kommt.",
+      "llegada": "Längste Wartezeit bei Verspätung",
+      "llegadaHint": "Kündigt jemand eine spätere Ankunft an, wird es an Sie übergeben.",
+      "cobertura": "Wenn die Sicherheitskraft nicht kommt",
+      "coberturaOpcion": {
+        "autonoma": "{{agente}} sucht Ersatz",
+        "aprobacion": "Abwesenheit erfassen und mich benachrichtigen",
+        "no": "Nur benachrichtigen"
+      },
+      "coberturaHint": {
+        "autonoma": "Erfasst die Abwesenheit mit Grund und schreibt den besten Kandidaten per WhatsApp; wer zuerst zusagt, übernimmt die Schicht.",
+        "aprobacion": "Erfasst die Abwesenheit und benachrichtigt Sie; den Ersatz wählen Sie.",
+        "no": "Erfasst nichts: benachrichtigt Sie, damit Sie entscheiden."
+      },
+      "responsable": "In wessen Namen {{agente}} handelt",
+      "responsableAuto": "Der Hauptadministrator",
+      "responsableHint": "Abwesenheit und Vertretung werden als von dieser Person erledigt erfasst, mit ihren Berechtigungen. Aktuell: {{nombre}}.",
+      "whatsapp": "WhatsApp",
+      "whatsappHint": "Der Kanal, über den die Sicherheitskraft antworten kann.",
+      "whatsappHintSinPlantilla": "Der Kanal, über den die Sicherheitskraft antworten kann. Hat sie in den letzten 24 Stunden nicht per WhatsApp geschrieben, kommt die erste Nachricht über die App.",
+      "push": "App-Benachrichtigung",
+      "pushHint": "Kommt auch ohne WhatsApp an. Man kann nicht darauf antworten: beim Einstempeln schließt sich der Fall von selbst.",
+      "sms": "SMS",
+      "smsHint": "Reserve, wenn WhatsApp nicht ankommt. Jede SMS kostet.",
+      "guardar": "Einstellungen speichern",
+      "guardado": "Einstellungen gespeichert.",
+      "error": "Die Einstellungen konnten nicht gespeichert werden."
+    }
   }
 }

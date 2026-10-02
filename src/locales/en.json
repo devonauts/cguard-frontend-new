@@ -5940,7 +5940,8 @@
     "unreadMessages": "{{count}} unread messages",
     "emergencias": "Emergency Center",
     "pases-de-turno": "Shift handovers",
-    "modulos-adicionales": "Add-on modules"
+    "modulos-adicionales": "Add-on modules",
+    "vigia-pro": "{{agente}} Pro"
   },
   "siteTour": {
     "newTour": "New Tour",
@@ -17830,5 +17831,165 @@
     "eyebrow": "News from {{marca}}",
     "entendido": "Got it",
     "cerrar": "Close"
+  },
+  "vigiaPro": {
+    "titulo": "{{agente}} Pro",
+    "subtitulo": "{{agente}} messages your officers on its own when something is off and closes the case: waits for whoever is running late, records the absence and finds a replacement, or hands it to you.",
+    "errorCarga": "Could not load. Try again in a moment.",
+    "sinModulo": {
+      "titulo": "Turn on {{agente}} Pro to start follow-ups",
+      "desc": "You can review and prepare the settings; for {{agente}} to start messaging your officers you need the module.",
+      "enlace": "See Add-on modules"
+    },
+    "apagado": {
+      "titulo": "Follow-ups are off",
+      "desc": "Turn them on in the settings below and {{agente}} will start messaging your officers."
+    },
+    "resumen": {
+      "titulo": "What {{agente}} resolved · last {{dias}} days",
+      "casos": "Cases",
+      "resueltosSolos": "Resolved by {{agente}}",
+      "porcentaje": "{{pct}}% without anyone having to step in",
+      "escalados": "Handed to a person",
+      "faltas": "Absences recorded",
+      "relevos": "Replacements sought",
+      "llegaron": "Arrived after the message"
+    },
+    "casos": {
+      "titulo": "Cases",
+      "filtro": {
+        "abiertos": "In progress",
+        "escalado": "For you",
+        "todos": "All"
+      },
+      "vacio": {
+        "titulo": "Nothing here",
+        "abiertos": "No cases in progress. {{agente}} is watching.",
+        "escalado": "Nothing is waiting for a person.",
+        "todos": "No cases yet."
+      },
+      "sinNombre": "Officer",
+      "verNovedad": "See the absence",
+      "cerrar": "Mark as closed",
+      "errorCerrar": "Could not close the case. Try again."
+    },
+    "estado": {
+      "abierto": "Waiting for a reply",
+      "esperando": "Waiting",
+      "resuelto": "Resolved by {{agente}}",
+      "escalado": "Needs a person",
+      "cerrado": "Closed"
+    },
+    "tipo": {
+      "sin_fichar": "Did not clock in",
+      "salio_de_zona": "Left the area",
+      "salida_anticipada": "Left early",
+      "sin_actividad": "No signal from the phone",
+      "confirmar_turno": "Confirm the shift"
+    },
+    "canal": {
+      "whatsapp": "WhatsApp",
+      "push": "app notification",
+      "sms": "SMS"
+    },
+    "evento": {
+      "detectado": "{{agente}} detected it",
+      "esperando": "Waiting {{minutos}} min",
+      "aclarar": "The reply was not understood; {{agente}} asked again",
+      "recordatorio": "{{agente}} reminded them to clock in",
+      "falta": "Absence recorded: {{motivo}}",
+      "relevo": "Replacement: {{texto}}",
+      "escalado": "Handed to a person: {{motivo}}",
+      "resuelto": "Resolved: {{resolucion}}",
+      "cerrado": "Closed",
+      "cerradoPorPersona": "Closed by {{nombre}}",
+      "error": "Something failed while recording it; check the case"
+    },
+    "motivoFalta": {
+      "enfermedad": "illness",
+      "calamidad_domestica": "family emergency",
+      "transporte": "transport",
+      "otro": "other reason",
+      "no_call_no_show": "did not clock in or reply"
+    },
+    "motivo": {
+      "respuesta_no_entendida": "their reply was not understood",
+      "llega_muy_tarde": "says they will be very late",
+      "avisa_que_llegara_tarde": "says they will be late",
+      "dejo_el_puesto": "says they are not going back to the post",
+      "explicacion_de_salida": "explained why they left",
+      "sin_respuesta": "did not reply",
+      "no_contactable": "could not be reached (no phone or app)",
+      "no_llego": "said they were coming and did not clock in",
+      "no_regreso": "said they were going back and is still outside",
+      "sin_responsable": "there is no office person to act on behalf of",
+      "falta_no_registrada": "the absence could not be recorded",
+      "relevo_sin_candidatos": "absence recorded; no replacement available",
+      "falta_espera_relevo": "absence recorded; the replacement awaits your approval",
+      "falta_registrada": "absence recorded"
+    },
+    "resolucion": {
+      "dice_que_esta": "said they were already there",
+      "llega_tarde": "running late",
+      "llego": "clocked in",
+      "volvio": "went back to the post",
+      "volvio_la_senal": "the phone has a signal again",
+      "turno_cerrado": "the shift already ended",
+      "confirmo": "confirmed the shift",
+      "respondio": "replied",
+      "regresa": "said they were going back",
+      "falta_y_relevo": "absence recorded and replacement being sought",
+      "falta_registrada": "absence recorded",
+      "sin_respuesta": "no reply",
+      "cerrado_por_persona": "closed by a person"
+    },
+    "ajustes": {
+      "titulo": "Follow-up settings",
+      "activo": "{{agente}} follows up",
+      "activoHint": "Messages the officer as soon as something is off and keeps the conversation going until it is closed.",
+      "casoHint": {
+        "sin_fichar": "If there is no clock-in {{minutos}} min after the start, it messages them.",
+        "salio_de_zona": "When they leave their post area (per the geofence alerts in Post rules).",
+        "salida_anticipada": "If they clock out {{minutos}} min or more before the end, it asks what happened and passes it to the supervisor.",
+        "sin_actividad": "When their phone stops sending a signal (per the inactivity alert).",
+        "confirmar_turno": "{{minutos}} min before the shift it asks them to confirm. One message per shift."
+      },
+      "minutos": {
+        "sin_fichar": "Minutes after the start",
+        "salida_anticipada": "Minutes before the end",
+        "confirmar_turno": "Minutes before the start"
+      },
+      "min": "min",
+      "espera": "Wait for a reply",
+      "esperaHint": "How long it waits before messaging again or handing it to a person.",
+      "reintentos": "Retries",
+      "reintentosHint": "How many times it insists if there is no reply.",
+      "llegada": "Longest wait for someone running late",
+      "llegadaHint": "If they say they will arrive later than this, it hands it to you.",
+      "cobertura": "When the officer is not coming",
+      "coberturaOpcion": {
+        "autonoma": "{{agente}} finds a replacement",
+        "aprobacion": "Record the absence and tell me",
+        "no": "Just tell me"
+      },
+      "coberturaHint": {
+        "autonoma": "Records the absence with its reason and messages the best candidates on WhatsApp; the first to accept takes the shift.",
+        "aprobacion": "Records the absence and tells you; you pick the replacement.",
+        "no": "Records nothing: it tells you so you can decide."
+      },
+      "responsable": "Who {{agente}} acts on behalf of",
+      "responsableAuto": "The main administrator",
+      "responsableHint": "The absence and the replacement are recorded as done by this person, with their permissions. Now: {{nombre}}.",
+      "whatsapp": "WhatsApp",
+      "whatsappHint": "The channel the officer can reply on.",
+      "whatsappHintSinPlantilla": "The channel the officer can reply on. If they have not written on WhatsApp in the last 24 hours, the first message reaches them through the app.",
+      "push": "App notification",
+      "pushHint": "Reaches them even if they do not use WhatsApp. It cannot be answered: when they clock in, the case closes on its own.",
+      "sms": "SMS",
+      "smsHint": "Backup when WhatsApp does not get through. Each SMS has a cost.",
+      "guardar": "Save settings",
+      "guardado": "Settings saved.",
+      "error": "Could not save the settings."
+    }
   }
 }

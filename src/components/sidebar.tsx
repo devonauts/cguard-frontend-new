@@ -31,6 +31,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import i18n from "@/i18n";
+import { hasFeature } from "@/lib/entitlements";
+import { useAgente } from "@/lib/agenteDeMarca";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
@@ -67,6 +69,7 @@ import {
   ClipboardSignature,
   Puzzle,
   type LucideIcon,
+  Sparkles,
 } from "lucide-react";
 
 import sidebarMenuData from "../data/sidebar-menu.json";
@@ -102,6 +105,8 @@ type MenuItem = {
   allowedRoles?: string[];
   /** «Módulos adicionales»: sólo si la empresa tiene tienda (ver useTiendaDeModulos). */
   tienda?: boolean;
+  /** Sólo si la empresa tiene este módulo de pago (VigIA Pro…). Falla cerrado. */
+  modulo?: string;
 };
 
 // Mapa de nombres de iconos a componentes de iconos
@@ -132,6 +137,7 @@ const iconMap: Record<string, LucideIcon> = {
   Star,
   ClipboardSignature,
   Puzzle,
+  Sparkles,
 };
 
 /* ── GRUPOS DEL MENÚ ──────────────────────────────────────────────────────────
@@ -159,6 +165,7 @@ const GROUPS: GroupDef[] = [
     icon: Siren,
     ids: [
       "despachador",
+      "vigia-pro",
       "monitoreo-alarmas",
       "videovigilancia",
       "patrulla",
@@ -689,6 +696,7 @@ export default function Sidebar({
   // «Módulos adicionales» sólo aparece si esta empresa tiene tienda: algo a la
   // venta y la implementación pagada, o algo ya suyo. Ver `tiendaVisible`.
   const { visible: hayTienda } = useTiendaDeModulos();
+  const agente = useAgente();
   // Nómina › Gusto: sólo empresas de EE. UU. con la integración disponible.
   const { disponible: hayGusto } = useGusto();
 
@@ -698,6 +706,7 @@ export default function Sidebar({
       menuItems.filter((item) => {
         if ((item as any).disabled) return false;
         if (item.tienda && !hayTienda) return false;
+        if (item.modulo && !hasFeature(user, item.modulo)) return false;
         if (!item.allowedRoles || item.allowedRoles.length === 0) return true;
         if (item.allowedRoles.includes("superadmin")) return isGlobalAdmin;
         const raw = user?.roles ?? user?.role ?? [];
@@ -725,9 +734,11 @@ export default function Sidebar({
   );
 
   // Etiquetas i18n — mismo orden de resolución que la versión anterior.
+  // `agente`: el nombre del asistente de ESTA empresa («VigIA» o el del socio);
+  // una etiqueta como «{{agente}} Pro» no puede decir el nuestro en un CRM ajeno.
   const labelOf = (item: MenuItem) =>
-    t(`sidebar.${item.id}.label`, { defaultValue: "" }) ||
-    t(`sidebar.${item.id}`, { defaultValue: "" }) ||
+    t(`sidebar.${item.id}.label`, { defaultValue: "", agente: agente.nombre }) ||
+    t(`sidebar.${item.id}`, { defaultValue: "", agente: agente.nombre }) ||
     item.name;
   const subLabelOf = (item: MenuItem, sub: SubMenuItem) =>
     t(`sidebar.${item.id}.${sub.id}`, { defaultValue: "" }) ||

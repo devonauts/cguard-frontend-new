@@ -5495,7 +5495,8 @@
     "unreadMessages": "{{count}} nieprzeczytanych",
     "emergencias": "Centrum alarmowe",
     "pases-de-turno": "Zdania służby",
-    "modulos-adicionales": "Moduły dodatkowe"
+    "modulos-adicionales": "Moduły dodatkowe",
+    "vigia-pro": "{{agente}} Pro"
   },
   "siteTour": {
     "newTour": "Nowy obchód",
@@ -18024,5 +18025,165 @@
     "eyebrow": "Nowości od {{marca}}",
     "entendido": "Rozumiem",
     "cerrar": "Zamknij"
+  },
+  "vigiaPro": {
+    "titulo": "{{agente}} Pro",
+    "subtitulo": "{{agente}} sam pisze do Twoich pracowników ochrony, gdy coś się nie zgadza, i zamyka sprawę: czeka na spóźnionych, rejestruje nieobecność i szuka zastępstwa albo przekazuje sprawę Tobie.",
+    "errorCarga": "Nie udało się wczytać. Spróbuj ponownie za chwilę.",
+    "sinModulo": {
+      "titulo": "Włącz {{agente}} Pro, aby uruchomić monitorowanie",
+      "desc": "Możesz przejrzeć i przygotować ustawienia; aby {{agente}} zaczął pisać do pracowników, potrzebny jest moduł.",
+      "enlace": "Zobacz Moduły dodatkowe"
+    },
+    "apagado": {
+      "titulo": "Monitorowanie jest wyłączone",
+      "desc": "Włącz je w ustawieniach poniżej, a {{agente}} zacznie pisać do Twoich pracowników."
+    },
+    "resumen": {
+      "titulo": "Co rozwiązał {{agente}} · ostatnie {{dias}} dni",
+      "casos": "Sprawy",
+      "resueltosSolos": "Rozwiązane przez {{agente}}",
+      "porcentaje": "{{pct}}% bez potrzeby czyjejkolwiek interwencji",
+      "escalados": "Przekazane człowiekowi",
+      "faltas": "Zarejestrowane nieobecności",
+      "relevos": "Szukane zastępstwa",
+      "llegaron": "Przyszli po wiadomości"
+    },
+    "casos": {
+      "titulo": "Sprawy",
+      "filtro": {
+        "abiertos": "W toku",
+        "escalado": "Dla Ciebie",
+        "todos": "Wszystkie"
+      },
+      "vacio": {
+        "titulo": "Nic tu nie ma",
+        "abiertos": "Brak spraw w toku. {{agente}} czuwa.",
+        "escalado": "Nic nie czeka na człowieka.",
+        "todos": "Jeszcze brak spraw."
+      },
+      "sinNombre": "Pracownik ochrony",
+      "verNovedad": "Zobacz nieobecność",
+      "cerrar": "Oznacz jako zamkniętą",
+      "errorCerrar": "Nie udało się zamknąć sprawy. Spróbuj ponownie."
+    },
+    "estado": {
+      "abierto": "Czeka na odpowiedź",
+      "esperando": "Oczekuje",
+      "resuelto": "Rozwiązane przez {{agente}}",
+      "escalado": "Wymaga człowieka",
+      "cerrado": "Zamknięta"
+    },
+    "tipo": {
+      "sin_fichar": "Brak wejścia",
+      "salio_de_zona": "Opuścił(a) strefę",
+      "salida_anticipada": "Wyszedł(-ła) przed czasem",
+      "sin_actividad": "Brak sygnału z telefonu",
+      "confirmar_turno": "Potwierdzenie zmiany"
+    },
+    "canal": {
+      "whatsapp": "WhatsApp",
+      "push": "powiadomienie w aplikacji",
+      "sms": "SMS"
+    },
+    "evento": {
+      "detectado": "{{agente}} to wykrył",
+      "esperando": "Oczekiwanie {{minutos}} min",
+      "aclarar": "Nie zrozumiano odpowiedzi; {{agente}} zapytał ponownie",
+      "recordatorio": "{{agente}} przypomniał o rejestracji wejścia",
+      "falta": "Zarejestrowano nieobecność: {{motivo}}",
+      "relevo": "Zastępstwo: {{texto}}",
+      "escalado": "Przekazano człowiekowi: {{motivo}}",
+      "resuelto": "Rozwiązano: {{resolucion}}",
+      "cerrado": "Zamknięta",
+      "cerradoPorPersona": "Zamknięta przez: {{nombre}}",
+      "error": "Coś poszło nie tak przy rejestracji; sprawdź sprawę"
+    },
+    "motivoFalta": {
+      "enfermedad": "choroba",
+      "calamidad_domestica": "sprawa rodzinna",
+      "transporte": "transport",
+      "otro": "inny powód",
+      "no_call_no_show": "brak wejścia i brak odpowiedzi"
+    },
+    "motivo": {
+      "respuesta_no_entendida": "nie zrozumiano odpowiedzi",
+      "llega_muy_tarde": "mówi, że bardzo się spóźni",
+      "avisa_que_llegara_tarde": "uprzedza, że się spóźni",
+      "dejo_el_puesto": "mówi, że nie wróci na posterunek",
+      "explicacion_de_salida": "wyjaśnił(a), dlaczego wyszedł(-ła)",
+      "sin_respuesta": "nie odpowiedział(a)",
+      "no_contactable": "brak kontaktu (bez telefonu i aplikacji)",
+      "no_llego": "mówił(a), że jedzie, i nie zarejestrował(a) wejścia",
+      "no_regreso": "mówił(a), że wraca, i nadal jest poza strefą",
+      "sin_responsable": "brak osoby z biura, w imieniu której można działać",
+      "falta_no_registrada": "nie udało się zarejestrować nieobecności",
+      "relevo_sin_candidatos": "nieobecność zarejestrowana; brak dostępnego zastępstwa",
+      "falta_espera_relevo": "nieobecność zarejestrowana; zastępstwo czeka na Twoją zgodę",
+      "falta_registrada": "nieobecność zarejestrowana"
+    },
+    "resolucion": {
+      "dice_que_esta": "mówi, że już jest na miejscu",
+      "llega_tarde": "spóźni się",
+      "llego": "zarejestrował(a) wejście",
+      "volvio": "wrócił(a) na posterunek",
+      "volvio_la_senal": "telefon znów ma sygnał",
+      "turno_cerrado": "zmiana już się skończyła",
+      "confirmo": "potwierdził(a) zmianę",
+      "respondio": "odpowiedział(a)",
+      "regresa": "mówi, że wraca",
+      "falta_y_relevo": "nieobecność zarejestrowana, trwa szukanie zastępstwa",
+      "falta_registrada": "nieobecność zarejestrowana",
+      "sin_respuesta": "brak odpowiedzi",
+      "cerrado_por_persona": "zamknięta przez człowieka"
+    },
+    "ajustes": {
+      "titulo": "Ustawienia monitorowania",
+      "activo": "{{agente}} monitoruje",
+      "activoHint": "Pisze do pracownika, gdy tylko coś się nie zgadza, i prowadzi rozmowę do jej zamknięcia.",
+      "casoHint": {
+        "sin_fichar": "Jeśli {{minutos}} min po rozpoczęciu nie ma wejścia, pisze do niego.",
+        "salio_de_zona": "Gdy opuszcza strefę posterunku (wg alertów geofence w Regułach posterunków).",
+        "salida_anticipada": "Jeśli zarejestruje wyjście {{minutos}} min lub więcej przed końcem, pyta, co się stało, i przekazuje przełożonemu.",
+        "sin_actividad": "Gdy telefon przestaje dawać sygnał (wg alertu bezczynności).",
+        "confirmar_turno": "{{minutos}} min przed zmianą prosi o potwierdzenie. Jedna wiadomość na zmianę."
+      },
+      "minutos": {
+        "sin_fichar": "Minuty po rozpoczęciu",
+        "salida_anticipada": "Minuty przed końcem",
+        "confirmar_turno": "Minuty przed rozpoczęciem"
+      },
+      "min": "min",
+      "espera": "Czekanie na odpowiedź",
+      "esperaHint": "Ile czeka, zanim napisze ponownie lub przekaże sprawę człowiekowi.",
+      "reintentos": "Ponowienia",
+      "reintentosHint": "Ile razy ponawia, gdy brak odpowiedzi.",
+      "llegada": "Najdłuższe czekanie na spóźnionego",
+      "llegadaHint": "Jeśli ktoś zapowie późniejsze przybycie, przekaże sprawę Tobie.",
+      "cobertura": "Gdy pracownik nie przyjdzie",
+      "coberturaOpcion": {
+        "autonoma": "{{agente}} szuka zastępstwa",
+        "aprobacion": "Zarejestruj nieobecność i daj znać",
+        "no": "Tylko daj znać"
+      },
+      "coberturaHint": {
+        "autonoma": "Rejestruje nieobecność z powodem i pisze do najlepszych kandydatów na WhatsAppie; pierwszy, kto się zgodzi, bierze zmianę.",
+        "aprobacion": "Rejestruje nieobecność i daje znać; zastępstwo wybierasz Ty.",
+        "no": "Nic nie rejestruje: daje znać, żebyś zdecydował(a)."
+      },
+      "responsable": "W czyim imieniu działa {{agente}}",
+      "responsableAuto": "Główny administrator",
+      "responsableHint": "Nieobecność i zastępstwo są rejestrowane jako wykonane przez tę osobę, z jej uprawnieniami. Teraz: {{nombre}}.",
+      "whatsapp": "WhatsApp",
+      "whatsappHint": "Kanał, przez który pracownik może odpowiedzieć.",
+      "whatsappHintSinPlantilla": "Kanał, przez który pracownik może odpowiedzieć. Jeśli nie pisał na WhatsAppie w ciągu ostatnich 24 godzin, pierwsza wiadomość przyjdzie przez aplikację.",
+      "push": "Powiadomienie w aplikacji",
+      "pushHint": "Dociera nawet bez WhatsAppa. Nie można na nie odpowiedzieć: po rejestracji wejścia sprawa zamyka się sama.",
+      "sms": "SMS",
+      "smsHint": "Zapas, gdy WhatsApp nie dociera. Każdy SMS kosztuje.",
+      "guardar": "Zapisz ustawienia",
+      "guardado": "Ustawienia zapisane.",
+      "error": "Nie udało się zapisać ustawień."
+    }
   }
 }

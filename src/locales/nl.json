@@ -5495,7 +5495,8 @@
     "unreadMessages": "{{count}} ongelezen berichten",
     "emergencias": "Noodcentrale",
     "pases-de-turno": "Dienstoverdrachten",
-    "modulos-adicionales": "Extra modules"
+    "modulos-adicionales": "Extra modules",
+    "vigia-pro": "{{agente}} Pro"
   },
   "siteTour": {
     "newTour": "Nieuwe ronde",
@@ -17830,5 +17831,165 @@
     "eyebrow": "Nieuws van {{marca}}",
     "entendido": "Begrepen",
     "cerrar": "Sluiten"
+  },
+  "vigiaPro": {
+    "titulo": "{{agente}} Pro",
+    "subtitulo": "{{agente}} schrijft uit zichzelf je beveiligers als er iets niet klopt en sluit de zaak af: wacht op wie te laat is, legt de afwezigheid vast en zoekt een vervanger, of geeft het aan jou door.",
+    "errorCarga": "Kon niet laden. Probeer het zo opnieuw.",
+    "sinModulo": {
+      "titulo": "Activeer {{agente}} Pro om de opvolging aan te zetten",
+      "desc": "Je kunt de instellingen bekijken en voorbereiden; om {{agente}} je beveiligers te laten schrijven is de module nodig.",
+      "enlace": "Bekijk Extra modules"
+    },
+    "apagado": {
+      "titulo": "De opvolging staat uit",
+      "desc": "Zet hem hieronder in de instellingen aan en {{agente}} begint je beveiligers te schrijven."
+    },
+    "resumen": {
+      "titulo": "Wat {{agente}} oploste · laatste {{dias}} dagen",
+      "casos": "Zaken",
+      "resueltosSolos": "Opgelost door {{agente}}",
+      "porcentaje": "{{pct}}% zonder dat iemand hoefde in te grijpen",
+      "escalados": "Doorgegeven aan een mens",
+      "faltas": "Vastgelegde afwezigheden",
+      "relevos": "Gezochte vervangers",
+      "llegaron": "Kwamen na het bericht"
+    },
+    "casos": {
+      "titulo": "Zaken",
+      "filtro": {
+        "abiertos": "Lopend",
+        "escalado": "Voor jou",
+        "todos": "Alle"
+      },
+      "vacio": {
+        "titulo": "Niets hier",
+        "abiertos": "Geen lopende zaken. {{agente}} let op.",
+        "escalado": "Niets wacht op een mens.",
+        "todos": "Nog geen zaken."
+      },
+      "sinNombre": "Beveiliger",
+      "verNovedad": "Bekijk de afwezigheid",
+      "cerrar": "Als gesloten markeren",
+      "errorCerrar": "De zaak kon niet worden gesloten. Probeer het opnieuw."
+    },
+    "estado": {
+      "abierto": "Wacht op antwoord",
+      "esperando": "Wacht",
+      "resuelto": "Opgelost door {{agente}}",
+      "escalado": "Heeft een mens nodig",
+      "cerrado": "Gesloten"
+    },
+    "tipo": {
+      "sin_fichar": "Niet ingeklokt",
+      "salio_de_zona": "Gebied verlaten",
+      "salida_anticipada": "Te vroeg vertrokken",
+      "sin_actividad": "Geen signaal van de telefoon",
+      "confirmar_turno": "Dienst bevestigen"
+    },
+    "canal": {
+      "whatsapp": "WhatsApp",
+      "push": "app-melding",
+      "sms": "sms"
+    },
+    "evento": {
+      "detectado": "{{agente}} zag het",
+      "esperando": "Wacht {{minutos}} min",
+      "aclarar": "Het antwoord werd niet begrepen; {{agente}} vroeg opnieuw",
+      "recordatorio": "{{agente}} herinnerde aan inklokken",
+      "falta": "Afwezigheid vastgelegd: {{motivo}}",
+      "relevo": "Vervanging: {{texto}}",
+      "escalado": "Doorgegeven aan een mens: {{motivo}}",
+      "resuelto": "Opgelost: {{resolucion}}",
+      "cerrado": "Gesloten",
+      "cerradoPorPersona": "Gesloten door {{nombre}}",
+      "error": "Er ging iets mis bij het vastleggen; controleer de zaak"
+    },
+    "motivoFalta": {
+      "enfermedad": "ziekte",
+      "calamidad_domestica": "familienoodgeval",
+      "transporte": "vervoer",
+      "otro": "andere reden",
+      "no_call_no_show": "niet ingeklokt en niet geantwoord"
+    },
+    "motivo": {
+      "respuesta_no_entendida": "het antwoord werd niet begrepen",
+      "llega_muy_tarde": "zegt veel te laat te komen",
+      "avisa_que_llegara_tarde": "meldt later te komen",
+      "dejo_el_puesto": "zegt niet terug te gaan naar de post",
+      "explicacion_de_salida": "heeft uitgelegd waarom hij/zij vertrok",
+      "sin_respuesta": "heeft niet geantwoord",
+      "no_contactable": "niet bereikbaar (geen telefoon of app)",
+      "no_llego": "zei eraan te komen en heeft niet ingeklokt",
+      "no_regreso": "zei terug te gaan en is nog buiten",
+      "sin_responsable": "geen kantoormedewerker namens wie gehandeld kan worden",
+      "falta_no_registrada": "de afwezigheid kon niet worden vastgelegd",
+      "relevo_sin_candidatos": "afwezigheid vastgelegd; geen vervanger beschikbaar",
+      "falta_espera_relevo": "afwezigheid vastgelegd; de vervanging wacht op je akkoord",
+      "falta_registrada": "afwezigheid vastgelegd"
+    },
+    "resolucion": {
+      "dice_que_esta": "zei er al te zijn",
+      "llega_tarde": "komt later",
+      "llego": "heeft ingeklokt",
+      "volvio": "is terug op de post",
+      "volvio_la_senal": "de telefoon heeft weer signaal",
+      "turno_cerrado": "de dienst is al afgelopen",
+      "confirmo": "heeft de dienst bevestigd",
+      "respondio": "heeft geantwoord",
+      "regresa": "zei terug te gaan",
+      "falta_y_relevo": "afwezigheid vastgelegd en vervanger gezocht",
+      "falta_registrada": "afwezigheid vastgelegd",
+      "sin_respuesta": "geen antwoord",
+      "cerrado_por_persona": "gesloten door een mens"
+    },
+    "ajustes": {
+      "titulo": "Instellingen van de opvolging",
+      "activo": "{{agente}} volgt op",
+      "activoHint": "Schrijft de beveiliger zodra er iets niet klopt en voert het gesprek tot het is afgesloten.",
+      "casoHint": {
+        "sin_fichar": "Is er {{minutos}} min na de start geen inklokken, dan schrijft hij.",
+        "salio_de_zona": "Als hij/zij het gebied van de post verlaat (volgens de geofence-meldingen in Postregels).",
+        "salida_anticipada": "Klokt hij/zij {{minutos}} min of meer voor het einde uit, dan vraagt hij wat er was en geeft het door aan de leidinggevende.",
+        "sin_actividad": "Als de telefoon geen signaal meer geeft (volgens de inactiviteitsmelding).",
+        "confirmar_turno": "{{minutos}} min voor de dienst vraagt hij om bevestiging. Eén bericht per dienst."
+      },
+      "minutos": {
+        "sin_fichar": "Minuten na de start",
+        "salida_anticipada": "Minuten voor het einde",
+        "confirmar_turno": "Minuten voor de start"
+      },
+      "min": "min",
+      "espera": "Wachten op antwoord",
+      "esperaHint": "Hoe lang hij wacht voor hij opnieuw schrijft of het aan een mens doorgeeft.",
+      "reintentos": "Herhalingen",
+      "reintentosHint": "Hoe vaak hij aandringt zonder antwoord.",
+      "llegada": "Langste wachttijd bij te laat komen",
+      "llegadaHint": "Zegt iemand later te komen dan dit, dan geeft hij het aan jou door.",
+      "cobertura": "Als de beveiliger niet komt",
+      "coberturaOpcion": {
+        "autonoma": "{{agente}} zoekt een vervanger",
+        "aprobacion": "Afwezigheid vastleggen en mij melden",
+        "no": "Alleen melden"
+      },
+      "coberturaHint": {
+        "autonoma": "Legt de afwezigheid met reden vast en schrijft de beste kandidaten via WhatsApp; wie het eerst accepteert, krijgt de dienst.",
+        "aprobacion": "Legt de afwezigheid vast en meldt het je; de vervanger kies jij.",
+        "no": "Legt niets vast: meldt het je zodat jij beslist."
+      },
+      "responsable": "Namens wie {{agente}} handelt",
+      "responsableAuto": "De hoofdbeheerder",
+      "responsableHint": "De afwezigheid en de vervanging worden vastgelegd als gedaan door deze persoon, met diens rechten. Nu: {{nombre}}.",
+      "whatsapp": "WhatsApp",
+      "whatsappHint": "Het kanaal waarop de beveiliger kan antwoorden.",
+      "whatsappHintSinPlantilla": "Het kanaal waarop de beveiliger kan antwoorden. Heeft hij/zij de laatste 24 uur niet via WhatsApp geschreven, dan komt het eerste bericht via de app.",
+      "push": "App-melding",
+      "pushHint": "Komt ook aan zonder WhatsApp. Je kunt er niet op antwoorden: bij het inklokken sluit de zaak vanzelf.",
+      "sms": "Sms",
+      "smsHint": "Reserve als WhatsApp niet aankomt. Elke sms kost geld.",
+      "guardar": "Instellingen opslaan",
+      "guardado": "Instellingen opgeslagen.",
+      "error": "De instellingen konden niet worden opgeslagen."
+    }
   }
 }

@@ -32,7 +32,7 @@ export type FeatureKey = (typeof FEATURE_KEYS)[number];
  * FALLAN CERRADO: sin constancia de compra, no se tienen. Por eso no están en
  * `FEATURE_KEYS`.
  */
-export const MODULE_KEYS = ["sucursales"] as const;
+export const MODULE_KEYS = ["sucursales", "vigia_pro"] as const;
 
 export type ModuleKey = (typeof MODULE_KEYS)[number];
 

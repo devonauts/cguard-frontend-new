@@ -5495,7 +5495,8 @@
     "unreadMessages": "{{count}} messaggi non letti",
     "emergencias": "Centrale emergenze",
     "pases-de-turno": "Consegne di turno",
-    "modulos-adicionales": "Moduli aggiuntivi"
+    "modulos-adicionales": "Moduli aggiuntivi",
+    "vigia-pro": "{{agente}} Pro"
   },
   "siteTour": {
     "newTour": "Nuovo percorso",
@@ -17830,5 +17831,165 @@
     "eyebrow": "Novità di {{marca}}",
     "entendido": "Ho capito",
     "cerrar": "Chiudi"
+  },
+  "vigiaPro": {
+    "titulo": "{{agente}} Pro",
+    "subtitulo": "{{agente}} scrive da solo alle tue guardie quando qualcosa non va e chiude il caso: aspetta chi è in ritardo, registra l’assenza e cerca un sostituto, oppure lo passa a te.",
+    "errorCarga": "Impossibile caricare. Riprova tra un momento.",
+    "sinModulo": {
+      "titulo": "Attiva {{agente}} Pro per accendere il monitoraggio",
+      "desc": "Puoi vedere e preparare le impostazioni; perché {{agente}} inizi a scrivere alle tue guardie serve il modulo.",
+      "enlace": "Vedi Moduli aggiuntivi"
+    },
+    "apagado": {
+      "titulo": "Il monitoraggio è spento",
+      "desc": "Accendilo nelle impostazioni qui sotto e {{agente}} inizierà a scrivere alle tue guardie."
+    },
+    "resumen": {
+      "titulo": "Cosa ha risolto {{agente}} · ultimi {{dias}} giorni",
+      "casos": "Casi",
+      "resueltosSolos": "Risolti da {{agente}}",
+      "porcentaje": "{{pct}} % senza che nessuno dovesse intervenire",
+      "escalados": "Passati a una persona",
+      "faltas": "Assenze registrate",
+      "relevos": "Sostituti cercati",
+      "llegaron": "Arrivati dopo l’avviso"
+    },
+    "casos": {
+      "titulo": "Casi",
+      "filtro": {
+        "abiertos": "In corso",
+        "escalado": "Per te",
+        "todos": "Tutti"
+      },
+      "vacio": {
+        "titulo": "Niente qui",
+        "abiertos": "Nessun caso in corso. {{agente}} è all’erta.",
+        "escalado": "Niente aspetta una persona.",
+        "todos": "Ancora nessun caso."
+      },
+      "sinNombre": "Guardia",
+      "verNovedad": "Vedi l’assenza",
+      "cerrar": "Segna come chiuso",
+      "errorCerrar": "Impossibile chiudere il caso. Riprova."
+    },
+    "estado": {
+      "abierto": "In attesa di risposta",
+      "esperando": "In attesa",
+      "resuelto": "Risolto da {{agente}}",
+      "escalado": "Serve una persona",
+      "cerrado": "Chiuso"
+    },
+    "tipo": {
+      "sin_fichar": "Non ha timbrato",
+      "salio_de_zona": "È uscito dall’area",
+      "salida_anticipada": "È uscito in anticipo",
+      "sin_actividad": "Nessun segnale dal telefono",
+      "confirmar_turno": "Confermare il turno"
+    },
+    "canal": {
+      "whatsapp": "WhatsApp",
+      "push": "notifica dell’app",
+      "sms": "SMS"
+    },
+    "evento": {
+      "detectado": "{{agente}} l’ha rilevato",
+      "esperando": "In attesa da {{minutos}} min",
+      "aclarar": "La risposta non è stata capita; {{agente}} ha chiesto di nuovo",
+      "recordatorio": "{{agente}} gli ha ricordato di timbrare",
+      "falta": "Assenza registrata: {{motivo}}",
+      "relevo": "Sostituto: {{texto}}",
+      "escalado": "Passato a una persona: {{motivo}}",
+      "resuelto": "Risolto: {{resolucion}}",
+      "cerrado": "Chiuso",
+      "cerradoPorPersona": "Chiuso da {{nombre}}",
+      "error": "Qualcosa è andato storto nella registrazione; controlla il caso"
+    },
+    "motivoFalta": {
+      "enfermedad": "malattia",
+      "calamidad_domestica": "emergenza familiare",
+      "transporte": "trasporto",
+      "otro": "altro motivo",
+      "no_call_no_show": "non ha timbrato né risposto"
+    },
+    "motivo": {
+      "respuesta_no_entendida": "la risposta non è stata capita",
+      "llega_muy_tarde": "dice che arriverà molto in ritardo",
+      "avisa_que_llegara_tarde": "avvisa che arriverà in ritardo",
+      "dejo_el_puesto": "dice che non torna al posto",
+      "explicacion_de_salida": "ha spiegato perché è uscito",
+      "sin_respuesta": "non ha risposto",
+      "no_contactable": "non raggiungibile (né telefono né app)",
+      "no_llego": "ha detto che arrivava e non ha timbrato",
+      "no_regreso": "ha detto che tornava ed è ancora fuori",
+      "sin_responsable": "nessuna persona dell’ufficio a nome di cui agire",
+      "falta_no_registrada": "non è stato possibile registrare l’assenza",
+      "relevo_sin_candidatos": "assenza registrata; nessun sostituto disponibile",
+      "falta_espera_relevo": "assenza registrata; il sostituto attende la tua approvazione",
+      "falta_registrada": "assenza registrata"
+    },
+    "resolucion": {
+      "dice_que_esta": "ha detto di essere già lì",
+      "llega_tarde": "arriva in ritardo",
+      "llego": "ha timbrato",
+      "volvio": "è tornato al posto",
+      "volvio_la_senal": "il telefono ha di nuovo segnale",
+      "turno_cerrado": "il turno è già finito",
+      "confirmo": "ha confermato il turno",
+      "respondio": "ha risposto",
+      "regresa": "ha detto che tornava",
+      "falta_y_relevo": "assenza registrata e sostituto in cerca",
+      "falta_registrada": "assenza registrata",
+      "sin_respuesta": "nessuna risposta",
+      "cerrado_por_persona": "chiuso da una persona"
+    },
+    "ajustes": {
+      "titulo": "Impostazioni del monitoraggio",
+      "activo": "{{agente}} fa il monitoraggio",
+      "activoHint": "Scrive alla guardia appena qualcosa non va e porta avanti la conversazione fino a chiuderla.",
+      "casoHint": {
+        "sin_fichar": "Se {{minutos}} min dopo l’inizio non c’è l’entrata, gli scrive.",
+        "salio_de_zona": "Quando esce dall’area del posto (secondo gli avvisi di geofence delle Regole dei posti).",
+        "salida_anticipada": "Se timbra l’uscita {{minutos}} min o più prima della fine, chiede cosa è successo e lo passa al supervisore.",
+        "sin_actividad": "Quando il telefono smette di dare segnale (secondo l’avviso di inattività).",
+        "confirmar_turno": "{{minutos}} min prima del turno chiede di confermare. Un messaggio per turno."
+      },
+      "minutos": {
+        "sin_fichar": "Minuti dopo l’inizio",
+        "salida_anticipada": "Minuti prima della fine",
+        "confirmar_turno": "Minuti prima dell’inizio"
+      },
+      "min": "min",
+      "espera": "Attesa della risposta",
+      "esperaHint": "Quanto aspetta prima di riscrivere o passarlo a una persona.",
+      "reintentos": "Nuovi tentativi",
+      "reintentosHint": "Quante volte insiste se non risponde.",
+      "llegada": "Attesa massima per chi è in ritardo",
+      "llegadaHint": "Se dice che arriverà più tardi di così, lo passa a te.",
+      "cobertura": "Quando la guardia non viene",
+      "coberturaOpcion": {
+        "autonoma": "{{agente}} cerca un sostituto",
+        "aprobacion": "Registra l’assenza e avvisami",
+        "no": "Avvisami soltanto"
+      },
+      "coberturaHint": {
+        "autonoma": "Registra l’assenza con il motivo e scrive ai migliori candidati su WhatsApp; il primo che accetta prende il turno.",
+        "aprobacion": "Registra l’assenza e ti avvisa; il sostituto lo scegli tu.",
+        "no": "Non registra nulla: ti avvisa perché tu decida."
+      },
+      "responsable": "A nome di chi agisce {{agente}}",
+      "responsableAuto": "L’amministratore principale",
+      "responsableHint": "L’assenza e il sostituto risultano fatti da questa persona, con i suoi permessi. Ora: {{nombre}}.",
+      "whatsapp": "WhatsApp",
+      "whatsappHint": "Il canale da cui la guardia può rispondere.",
+      "whatsappHintSinPlantilla": "Il canale da cui la guardia può rispondere. Se non ha scritto su WhatsApp nelle ultime 24 ore, il primo avviso gli arriva dall’app.",
+      "push": "Notifica dell’app",
+      "pushHint": "Arriva anche senza WhatsApp. Non si può rispondere: quando timbra, il caso si chiude da solo.",
+      "sms": "SMS",
+      "smsHint": "Riserva quando WhatsApp non arriva. Ogni SMS ha un costo.",
+      "guardar": "Salva impostazioni",
+      "guardado": "Impostazioni salvate.",
+      "error": "Impossibile salvare le impostazioni."
+    }
   }
 }

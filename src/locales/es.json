@@ -5940,7 +5940,8 @@
     "unreadMessages": "{{count}} mensajes sin leer",
     "emergencias": "Centro de Emergencias",
     "pases-de-turno": "Pases de turno",
-    "modulos-adicionales": "Módulos adicionales"
+    "modulos-adicionales": "Módulos adicionales",
+    "vigia-pro": "{{agente}} Pro"
   },
   "siteTour": {
     "newTour": "Nuevo Recorrido",
@@ -17830,5 +17831,165 @@
     "eyebrow": "Novedades de {{marca}}",
     "entendido": "Entendido",
     "cerrar": "Cerrar"
+  },
+  "vigiaPro": {
+    "titulo": "{{agente}} Pro",
+    "subtitulo": "{{agente}} escribe por su cuenta a tus vigilantes cuando algo no cuadra y cierra el caso: espera al que llega tarde, registra la falta y busca relevo, o te lo pasa a ti.",
+    "errorCarga": "No se pudo cargar. Vuelve a intentarlo en un momento.",
+    "sinModulo": {
+      "titulo": "Activa {{agente}} Pro para encender el seguimiento",
+      "desc": "Puedes ver y preparar los ajustes; para que {{agente}} empiece a escribir a tus vigilantes hace falta el módulo.",
+      "enlace": "Ver Módulos adicionales"
+    },
+    "apagado": {
+      "titulo": "El seguimiento está apagado",
+      "desc": "Enciéndelo en los ajustes de abajo y {{agente}} empezará a escribir a tus vigilantes."
+    },
+    "resumen": {
+      "titulo": "Lo que {{agente}} resolvió · últimos {{dias}} días",
+      "casos": "Casos",
+      "resueltosSolos": "Resueltos por {{agente}}",
+      "porcentaje": "{{pct}} % sin que nadie tuviera que intervenir",
+      "escalados": "Pasados a una persona",
+      "faltas": "Faltas registradas",
+      "relevos": "Relevos buscados",
+      "llegaron": "Llegaron tras el aviso"
+    },
+    "casos": {
+      "titulo": "Casos",
+      "filtro": {
+        "abiertos": "En curso",
+        "escalado": "Para ti",
+        "todos": "Todos"
+      },
+      "vacio": {
+        "titulo": "Nada por aquí",
+        "abiertos": "No hay casos en curso. {{agente}} está pendiente.",
+        "escalado": "Nada espera a una persona.",
+        "todos": "Aún no hay casos."
+      },
+      "sinNombre": "Vigilante",
+      "verNovedad": "Ver la novedad",
+      "cerrar": "Dar por cerrado",
+      "errorCerrar": "No se pudo cerrar el caso. Inténtalo de nuevo."
+    },
+    "estado": {
+      "abierto": "Esperando respuesta",
+      "esperando": "En espera",
+      "resuelto": "Resuelto por {{agente}}",
+      "escalado": "Necesita a una persona",
+      "cerrado": "Cerrado"
+    },
+    "tipo": {
+      "sin_fichar": "No fichó",
+      "salio_de_zona": "Salió de la zona",
+      "salida_anticipada": "Se fue antes de hora",
+      "sin_actividad": "Sin señal del teléfono",
+      "confirmar_turno": "Confirmar el turno"
+    },
+    "canal": {
+      "whatsapp": "WhatsApp",
+      "push": "notificación de la app",
+      "sms": "SMS"
+    },
+    "evento": {
+      "detectado": "{{agente}} lo detectó",
+      "esperando": "Esperando {{minutos}} min",
+      "aclarar": "No se entendió la respuesta; {{agente}} volvió a preguntar",
+      "recordatorio": "{{agente}} le recordó marcar la entrada",
+      "falta": "Falta registrada: {{motivo}}",
+      "relevo": "Relevo: {{texto}}",
+      "escalado": "Pasado a una persona: {{motivo}}",
+      "resuelto": "Resuelto: {{resolucion}}",
+      "cerrado": "Cerrado",
+      "cerradoPorPersona": "Cerrado por {{nombre}}",
+      "error": "Algo falló al registrarlo; revisa el caso"
+    },
+    "motivoFalta": {
+      "enfermedad": "enfermedad",
+      "calamidad_domestica": "calamidad doméstica",
+      "transporte": "transporte",
+      "otro": "otro motivo",
+      "no_call_no_show": "no fichó ni respondió"
+    },
+    "motivo": {
+      "respuesta_no_entendida": "no se entendió su respuesta",
+      "llega_muy_tarde": "dice que llegará muy tarde",
+      "avisa_que_llegara_tarde": "avisa que llegará tarde",
+      "dejo_el_puesto": "dice que no vuelve al puesto",
+      "explicacion_de_salida": "explicó por qué salió",
+      "sin_respuesta": "no respondió",
+      "no_contactable": "no se le pudo escribir (sin teléfono ni app)",
+      "no_llego": "dijo que llegaba y no fichó",
+      "no_regreso": "dijo que volvía y sigue fuera",
+      "sin_responsable": "no hay una persona de la oficina en cuyo nombre actuar",
+      "falta_no_registrada": "no se pudo registrar la falta",
+      "relevo_sin_candidatos": "falta registrada; no hubo relevo disponible",
+      "falta_espera_relevo": "falta registrada; el relevo espera tu visto bueno",
+      "falta_registrada": "falta registrada"
+    },
+    "resolucion": {
+      "dice_que_esta": "dijo que ya estaba",
+      "llega_tarde": "llega tarde",
+      "llego": "fichó su entrada",
+      "volvio": "volvió a su puesto",
+      "volvio_la_senal": "el teléfono volvió a dar señal",
+      "turno_cerrado": "el turno ya se cerró",
+      "confirmo": "confirmó el turno",
+      "respondio": "respondió",
+      "regresa": "dijo que regresaba",
+      "falta_y_relevo": "falta registrada y relevo en busca",
+      "falta_registrada": "falta registrada",
+      "sin_respuesta": "sin respuesta",
+      "cerrado_por_persona": "cerrado por una persona"
+    },
+    "ajustes": {
+      "titulo": "Ajustes del seguimiento",
+      "activo": "{{agente}} hace seguimiento",
+      "activoHint": "Escribe al vigilante en cuanto algo no cuadra y sigue la conversación hasta cerrarla.",
+      "casoHint": {
+        "sin_fichar": "Si a los {{minutos}} min del inicio no hay entrada, le escribe.",
+        "salio_de_zona": "Cuando sale del área de su puesto (según las alertas de geocerca de Reglas de puestos).",
+        "salida_anticipada": "Si marca salida {{minutos}} min o más antes del fin, le pregunta qué pasó y se lo pasa al supervisor.",
+        "sin_actividad": "Cuando su teléfono deja de dar señal (según la alerta de inactividad).",
+        "confirmar_turno": "{{minutos}} min antes del turno le pide que confirme. Un mensaje por turno."
+      },
+      "minutos": {
+        "sin_fichar": "Minutos tras el inicio",
+        "salida_anticipada": "Minutos antes del fin",
+        "confirmar_turno": "Minutos antes del inicio"
+      },
+      "min": "min",
+      "espera": "Espera de respuesta",
+      "esperaHint": "Cuánto espera antes de volver a escribir o pasarlo a una persona.",
+      "reintentos": "Reintentos",
+      "reintentosHint": "Cuántas veces insiste si no contesta.",
+      "llegada": "Lo más que espera a quien llega tarde",
+      "llegadaHint": "Si dice que llegará más tarde que esto, te lo pasa.",
+      "cobertura": "Cuando el vigilante no viene",
+      "coberturaOpcion": {
+        "autonoma": "{{agente}} busca relevo",
+        "aprobacion": "Registra la falta y me avisa",
+        "no": "Sólo me avisa"
+      },
+      "coberturaHint": {
+        "autonoma": "Registra la falta con su motivo y escribe a los mejores candidatos por WhatsApp; el primero que acepta se queda el turno.",
+        "aprobacion": "Registra la falta y te avisa; el relevo lo eliges tú.",
+        "no": "No registra nada: te avisa para que decidas."
+      },
+      "responsable": "En nombre de quién actúa {{agente}}",
+      "responsableAuto": "El administrador principal",
+      "responsableHint": "La falta y el relevo quedan registrados como hechos por esta persona, con sus permisos. Ahora: {{nombre}}.",
+      "whatsapp": "WhatsApp",
+      "whatsappHint": "El canal por el que el vigilante puede contestar.",
+      "whatsappHintSinPlantilla": "El canal por el que el vigilante puede contestar. Si no ha escrito por WhatsApp en las últimas 24 horas, el primer aviso le llega por la app.",
+      "push": "Notificación de la app",
+      "pushHint": "Le llega aunque no use WhatsApp. No se puede contestar: al fichar, el caso se cierra solo.",
+      "sms": "SMS",
+      "smsHint": "Respaldo cuando WhatsApp no llega. Cada SMS tiene costo.",
+      "guardar": "Guardar ajustes",
+      "guardado": "Ajustes guardados.",
+      "error": "No se pudieron guardar los ajustes."
+    }
   }
 }

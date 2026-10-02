@@ -169,6 +169,9 @@ const CommunicationsPage = lazy(
 const BillingPage = lazy(
   () => import("./pages/admin/Configuration/billing/BillingPage"),
 );
+const VigiaProPage = lazy(
+  () => import("./pages/admin/vigiaPro/VigiaProPage"),
+);
 const ModulosAdicionalesPage = lazy(
   () => import("./pages/admin/modulos/ModulosAdicionalesPage"),
 );
@@ -2613,6 +2616,14 @@ export default function App() {
                                   </ProtectedRoute>
                                 }
                                 path="/modulos-adicionales"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <VigiaProPage />
+                                  </ProtectedRoute>
+                                }
+                                path="/vigia-pro"
                               />
                               <Route
                                 element={

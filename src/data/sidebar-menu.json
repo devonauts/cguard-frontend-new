@@ -366,6 +366,13 @@
     "path": "/dispatch-tickets"
   },
   {
+    "id": "vigia-pro",
+    "name": "VigIA Pro",
+    "icon": "Sparkles",
+    "path": "/vigia-pro",
+    "modulo": "vigia_pro"
+  },
+  {
     "id": "solicitudes-clientes",
     "name": "Solicitudes de clientes",
     "icon": "FileText",
