@@ -5661,7 +5661,9 @@
     "cvRead": "Das habe ich gelesen:",
     "cvReview": "Öffnen Sie es zum Prüfen und Speichern.",
     "cvSent": "Lebenslauf: {{n}}",
-    "cvTitle": "Lebenslauf ausgelesen"
+    "cvTitle": "Lebenslauf ausgelesen",
+    "downloadExcel": "Excel herunterladen",
+    "downloadPdf": "PDF herunterladen"
   },
   "actions": {
     "action": "Aktion",

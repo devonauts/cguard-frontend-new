@@ -6723,7 +6723,9 @@
     "cvRead": "Foi isto que li:",
     "cvReview": "Abra para revisar e salvar.",
     "cvSent": "Currículo: {{n}}",
-    "cvTitle": "Currículo lido"
+    "cvTitle": "Currículo lido",
+    "downloadExcel": "Baixar Excel",
+    "downloadPdf": "Baixar PDF"
   },
   "auth": {
     "account_created_verify_email": "Conta criada. Verifique seu e-mail para entrar.",

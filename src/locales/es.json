@@ -7935,7 +7935,9 @@
     "cvRead": "Esto es lo que leí:",
     "cvReview": "Ábrelo para revisarlo y guardarlo.",
     "cvSent": "Hoja de vida: {{n}}",
-    "cvTitle": "Hoja de vida leída"
+    "cvTitle": "Hoja de vida leída",
+    "downloadExcel": "Descargar Excel",
+    "downloadPdf": "Descargar PDF"
   },
   "kit": {
     "pagination": {

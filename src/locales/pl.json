@@ -5661,7 +5661,9 @@
     "cvRead": "Oto co odczytałem:",
     "cvReview": "Proszę otworzyć, aby sprawdzić i zapisać.",
     "cvSent": "CV: {{n}}",
-    "cvTitle": "CV odczytane"
+    "cvTitle": "CV odczytane",
+    "downloadExcel": "Pobierz Excel",
+    "downloadPdf": "Pobierz PDF"
   },
   "actions": {
     "action": "Akcja",

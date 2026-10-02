@@ -29,6 +29,9 @@ import {
   ArrowLeft,
   Trash2,
   Paperclip,
+  FileText,
+  FileSpreadsheet,
+  Download,
 } from "lucide-react";
 
 import api from "@/lib/api";
@@ -145,9 +148,29 @@ function sinMarkdown(t: string): string {
     .replace(/^\s*[-*]\s+/gm, "• ");
 }
 
+interface Archivo {
+  nombre: string;
+  url: string;
+  tipo?: string;
+}
 interface Msg {
   role: "user" | "assistant";
   content: string;
+  /** Lo que VigIA generó en ese turno (un PDF, un Excel): se pinta como botón. */
+  archivos?: Archivo[];
+}
+
+/** La respuesta del asistente como mensaje, con sus archivos si los trae. */
+function mensajeDeRespuesta(d: any): Msg | null {
+  const archivos: Archivo[] = Array.isArray(d?.archivos)
+    ? d.archivos.filter((x: any) => x?.url && x?.nombre)
+    : [];
+  if (!d?.reply && !archivos.length) return null;
+  return {
+    role: "assistant",
+    content: String(d?.reply || ""),
+    ...(archivos.length ? { archivos } : {}),
+  };
 }
 interface Propuesta {
   tool: string;
@@ -639,15 +662,21 @@ export default function VigiaWidget() {
     setMsgs(historia);
     setOcupado(true);
     try {
-      const d = await llamar({ messages: historia, conversationId: hiloId });
+      // Al servidor sólo viaja la conversación: los archivos son de esta pantalla.
+      const d = await llamar({
+        messages: historia.map(({ role, content }) => ({ role, content })),
+        conversationId: hiloId,
+      });
 
       if (d?.error) {
         setAviso(d.error);
 
         return;
       }
-      if (d?.reply)
-        setMsgs((m) => [...m, { role: "assistant", content: d.reply }]);
+      {
+        const nuevo = mensajeDeRespuesta(d);
+        if (nuevo) setMsgs((m) => [...m, nuevo]);
+      }
       if (d?.proposal) setPropuesta(d.proposal);
       if (d?.navigate) {
         navigate(d.navigate);
@@ -703,8 +732,10 @@ export default function VigiaWidget() {
         return;
       }
       setPropuesta(d?.proposal || null);
-      if (d?.reply)
-        setMsgs((m) => [...m, { role: "assistant", content: d.reply }]);
+      {
+        const nuevo = mensajeDeRespuesta(d);
+        if (nuevo) setMsgs((m) => [...m, nuevo]);
+      }
       if (d?.navigate) navigate(d.navigate);
     } catch (e: any) {
       // La tarjeta SIGUE AHÍ: si fue un corte de red, reintentar con la misma
@@ -1172,6 +1203,43 @@ export default function VigiaWidget() {
                       {m.role === "assistant"
                         ? sinMarkdown(m.content)
                         : m.content}
+                      {m.archivos?.length ? (
+                        <div className="mt-2 flex flex-col gap-1.5 whitespace-normal">
+                          {m.archivos.map((a) => {
+                            const esExcel =
+                              a.tipo === "excel" || /\.xlsx?$/i.test(a.nombre);
+                            const Icono = esExcel ? FileSpreadsheet : FileText;
+
+                            return (
+                              <a
+                                key={a.url}
+                                className="flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium no-underline"
+                                download={a.nombre}
+                                href={a.url}
+                                rel="noopener noreferrer"
+                                style={{
+                                  borderColor: "var(--brand)",
+                                  color: "var(--ink)",
+                                  background:
+                                    "color-mix(in oklab, var(--brand) 8%, transparent)",
+                                }}
+                                target="_blank"
+                              >
+                                <Icono aria-hidden size={16} />
+                                <span className="flex-1 truncate">
+                                  {esExcel
+                                    ? t("vigia.downloadExcel", "Descargar Excel")
+                                    : t("vigia.downloadPdf", "Descargar PDF")}
+                                  <span className="ml-1 opacity-60">
+                                    {a.nombre}
+                                  </span>
+                                </span>
+                                <Download aria-hidden size={14} />
+                              </a>
+                            );
+                          })}
+                        </div>
+                      ) : null}
                     </div>
                   </div>
                 ))}

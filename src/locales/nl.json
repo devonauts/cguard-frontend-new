@@ -5661,7 +5661,9 @@
     "cvRead": "Dit heb ik gelezen:",
     "cvReview": "Open het om het na te kijken en op te slaan.",
     "cvSent": "Cv: {{n}}",
-    "cvTitle": "Cv gelezen"
+    "cvTitle": "Cv gelezen",
+    "downloadExcel": "Excel downloaden",
+    "downloadPdf": "PDF downloaden"
   },
   "actions": {
     "action": "Actie",

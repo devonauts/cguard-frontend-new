@@ -5661,7 +5661,9 @@
     "cvRead": "Ecco cosa ho letto:",
     "cvReview": "Aprilo per rivederlo e salvarlo.",
     "cvSent": "Curriculum: {{n}}",
-    "cvTitle": "Curriculum letto"
+    "cvTitle": "Curriculum letto",
+    "downloadExcel": "Scarica Excel",
+    "downloadPdf": "Scarica PDF"
   },
   "actions": {
     "action": "Azione",

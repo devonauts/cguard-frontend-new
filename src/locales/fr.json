@@ -5661,7 +5661,9 @@
     "cvRead": "Voici ce que j'ai lu :",
     "cvReview": "Ouvrez-le pour le vérifier et l'enregistrer.",
     "cvSent": "CV : {{n}}",
-    "cvTitle": "CV analysé"
+    "cvTitle": "CV analysé",
+    "downloadExcel": "Télécharger Excel",
+    "downloadPdf": "Télécharger PDF"
   },
   "actions": {
     "action": "Action",

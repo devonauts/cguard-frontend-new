@@ -7935,7 +7935,9 @@
     "cvRead": "This is what I read:",
     "cvReview": "Open it to review and save it.",
     "cvSent": "CV: {{n}}",
-    "cvTitle": "CV read"
+    "cvTitle": "CV read",
+    "downloadExcel": "Download Excel",
+    "downloadPdf": "Download PDF"
   },
   "kit": {
     "pagination": {
