@@ -134,18 +134,13 @@ export default function GuardRegistration() {
           inviteType,
         });
 
-      // Si hay un token de invitación, limpiar cualquier sesión activa para evitar conflictos
-      if (inviteToken) {
-        try {
-          localStorage.removeItem("authToken");
-          localStorage.removeItem("user");
-          console.log(
-            "[registration] cleared any active session for invitation flow",
-          );
-        } catch (e) {
-          console.warn("[registration] could not clear session:", e);
-        }
-      }
+      /* NO se borra la sesión del navegador. Antes se hacía «para empezar limpio»,
+         pero `localStorage` es COMPARTIDO por todas las pestañas: el admin que
+         abría un enlace de invitación (para probarlo o reenviarlo) quedaba
+         expulsado, y como esto se re-ejecuta en cada repintado, lo volvía a
+         echar CADA vez que entraba — el bucle «me manda al login» de Prueba
+         Strategos (2026-10-01). Esta página no usa la sesión: todas sus
+         peticiones van con `skipAuth`. */
 
       if (!inviteToken && !securityGuardId) return;
       if (inviteType === "client" && inviteToken) {
@@ -723,17 +718,18 @@ export default function GuardRegistration() {
               token = (signUpResp as any).token;
 
             if (token) {
-              // Temporarily set token to fetch profile and obtain user id
+              // El perfil del recién creado, con SU token en la cabecera de esta
+              // petición. Antes se metía en localStorage —compartido por todas
+              // las pestañas— y echaba al admin que tuviera el CRM abierto.
               try {
-                localStorage.setItem("authToken", token);
-                const profile = await AuthService.getProfile();
+                const profile: any = await ApiService.get("/auth/me", {
+                  skipAuth: true,
+                  headers: { Authorization: `Bearer ${token}` },
+                });
 
                 createdUser = profile?.data || profile || null;
-              } finally {
-                // Remove token to avoid leaving user signed in
-                try {
-                  localStorage.removeItem("authToken");
-                } catch (e) {}
+              } catch {
+                /* sin perfil: se usa la respuesta del alta (abajo) */
               }
             }
 
