@@ -28,6 +28,8 @@ import { hoyEnLaEmpresa, sumaDias } from "@/lib/horaDeLaEmpresa";
 import {
   gustoService,
   type AjustesDeHoras,
+  type CategoriaLibre,
+  type OpcionesDeAjustes,
   type ComoPaga,
   type EnvioDeHoras,
   type PeriodoDePago,
@@ -56,6 +58,7 @@ export default function HorasGusto({
   const { data: conexion } = useGusto();
 
   const [ajustes, setAjustes] = useState<AjustesDeHoras | null>(null);
+  const [opciones, setOpciones] = useState<OpcionesDeAjustes | null>(null);
   const [periodos, setPeriodos] = useState<PeriodoDePago[] | null>(null);
   const [errorPeriodos, setErrorPeriodos] = useState<string | null>(null);
   const [elegido, setElegido] = useState<string>("");
@@ -137,6 +140,7 @@ export default function HorasGusto({
     void (async () => {
       try {
         setAjustes(await gustoService.ajustesDeHoras());
+        setOpciones(await gustoService.opcionesDeAjustes().catch(() => null));
       } catch {
         /* sin ajustes se usa la regla federal del servidor */
       }
@@ -268,7 +272,7 @@ export default function HorasGusto({
   }, [enCurso, cargarVista]);
 
   const guardarAjuste = async (
-    cambios: Partial<Pick<AjustesDeHoras, "regla" | "semanaEmpieza">>,
+    cambios: Partial<Pick<AjustesDeHoras, "regla" | "semanaEmpieza" | "reglasPorPuesto" | "politicasDeTiempoLibre">>,
   ) => {
     try {
       setAjustes(await gustoService.guardarAjustesDeHoras(cambios));
@@ -393,6 +397,8 @@ export default function HorasGusto({
 
   const PAGO: Record<ComoPaga, string> = {
     hora: "",
+    contratista: t("ui.GustoHoras.pagoContratista", "Contratista 1099 por hora: todas sus horas van como ordinarias (sin horas extra)"),
+    contratista_fijo: t("ui.GustoHoras.pagoContratistaFijo", "Contratista 1099 de pago fijo: Gusto no usa horas, no se envían"),
     asalariado: t(
       "ui.GustoHoras.pagoAsalariado",
       "Sueldo fijo no exento: Gusto paga las horas enviadas al valor hora del sueldo",
@@ -512,6 +518,84 @@ export default function HorasGusto({
           )}
         </p>
       </GlassPanel>
+
+      {/* ── Por puesto y tiempo libre ── */}
+      {ajustes && opciones && (
+        <GlassPanel className="p-4">
+          <div className="mb-1 font-medium">{t("ui.GustoHoras.porPuestoTitulo", "Regla por puesto")}</div>
+          <p className="mb-3 text-xs" style={{ color: "var(--ink-faint)" }}>
+            {t(
+              "ui.GustoHoras.porPuestoNota",
+              "Si tienes puestos en otro estado (p. ej. California), elige su regla. Las 40 h semanales suman todos los puestos; el límite diario de California sólo cuenta lo trabajado allí.",
+            )}
+          </p>
+          {opciones.puestos.length === 0 ? (
+            <p className="text-sm" style={{ color: "var(--ink-faint)" }}>{t("ui.GustoHoras.sinPuestos", "No hay puestos.")}</p>
+          ) : (
+            <div className="grid gap-2 sm:grid-cols-2">
+              {opciones.puestos.map((pu) => (
+                <label key={pu.id} className="flex items-center justify-between gap-3 text-sm">
+                  <span className="min-w-0">
+                    <span className="block truncate font-medium">{pu.nombre}</span>
+                    {pu.ciudad && <span className="block truncate text-xs" style={{ color: "var(--ink-faint)" }}>{pu.ciudad}</span>}
+                  </span>
+                  <select
+                    className={`${FIELD_CLS} max-w-56`}
+                    disabled={!puede}
+                    value={ajustes.reglasPorPuesto?.[pu.id] || ""}
+                    onChange={(e) =>
+                      guardarAjuste({
+                        reglasPorPuesto: { ...(ajustes.reglasPorPuesto || {}), [pu.id]: (e.target.value || null) as any },
+                      })
+                    }
+                  >
+                    <option value="">{t("ui.GustoHoras.reglaDeLaEmpresa", "La de la empresa")}</option>
+                    <option value="federal">{t("ui.GustoHoras.reglaFederalCorta", "Federal (40 h/semana)")}</option>
+                    <option value="california">{t("ui.GustoHoras.reglaCaliforniaCorta", "California (diaria y 7.º día)")}</option>
+                    <option value="none">{t("ui.GustoHoras.reglaNingunaCorta", "Sin horas extra")}</option>
+                  </select>
+                </label>
+              ))}
+            </div>
+          )}
+
+          <div className="mb-1 mt-5 font-medium">{t("ui.GustoHoras.libreTitulo", "Tiempo libre pagado")}</div>
+          <p className="mb-3 text-xs" style={{ color: "var(--ink-faint)" }}>
+            {t(
+              "ui.GustoHoras.libreNota",
+              "Vacaciones (V), enfermedad y permisos pagados de Nómina se envían a la política de Gusto que elijas, con las horas del turno programado ese día. Sin política, no se envían.",
+            )}
+          </p>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {(["vacaciones", "enfermedad", "permiso"] as CategoriaLibre[]).map((cat) => (
+              <label key={cat} className="text-sm">
+                <span className="mb-1 block" style={{ color: "var(--ink-soft)" }}>
+                  {cat === "vacaciones"
+                    ? t("ui.GustoHoras.libreVacaciones", "Vacaciones")
+                    : cat === "enfermedad"
+                      ? t("ui.GustoHoras.libreEnfermedad", "Enfermedad")
+                      : t("ui.GustoHoras.librePermiso", "Permiso pagado")}
+                </span>
+                <select
+                  className={FIELD_CLS}
+                  disabled={!puede}
+                  value={ajustes.politicasDeTiempoLibre?.[cat] || ""}
+                  onChange={(e) =>
+                    guardarAjuste({
+                      politicasDeTiempoLibre: { ...(ajustes.politicasDeTiempoLibre || {}), [cat]: e.target.value || null } as any,
+                    })
+                  }
+                >
+                  <option value="">{t("ui.GustoHoras.libreNoEnviar", "No enviar")}</option>
+                  {opciones.politicas.map((po) => (
+                    <option key={po.uuid} value={po.uuid}>{po.nombre}</option>
+                  ))}
+                </select>
+              </label>
+            ))}
+          </div>
+        </GlassPanel>
+      )}
 
       {/* ── El periodo ── */}
       <GlassPanel className="p-4">
@@ -654,6 +738,22 @@ export default function HorasGusto({
               })}
             </InfoNote>
           )}
+          {(r.libre?.diasSinPolitica || 0) > 0 && (
+            <InfoNote icon={<Info />} tone="info">
+              {t("ui.GustoHoras.avisoLibreSinPolitica", {
+                n: r.libre!.diasSinPolitica,
+                defaultValue: "{{n}} días de tiempo libre no se enviarán porque su clase no tiene política de Gusto elegida (arriba, «Tiempo libre pagado»).",
+              })}
+            </InfoNote>
+          )}
+          {(r.contratistasFijos || 0) > 0 && (
+            <InfoNote icon={<Info />} tone="warn">
+              {t("ui.GustoHoras.avisoContratistasFijos", {
+                n: r.contratistasFijos,
+                defaultValue: "{{n}} contratistas 1099 cobran pago fijo en Gusto: sus horas no se envían.",
+              })}
+            </InfoNote>
+          )}
           {r.fueraDeNomina > 0 && (
             <InfoNote icon={<TriangleAlert />} tone="bad">
               {t("ui.GustoHoras.avisoFueraDeNomina", {
@@ -721,6 +821,9 @@ export default function HorasGusto({
                     <th className="p-3 text-right font-medium">
                       {t("ui.GustoHoras.cifraDoble", "Doble")}
                     </th>
+                    <th className="p-3 text-right font-medium">
+                      {t("ui.GustoHoras.cifraLibre", "Libre")}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -745,7 +848,16 @@ export default function HorasGusto({
                                 : t("ui.GustoHoras.insigniaAntesDeContratar", "Antes de su contratación en Gusto")}
                             </StatusBadge>
                           )}
-                          {p.comoPaga && p.comoPaga !== "hora" && (
+                          {(p.comoPaga === "contratista" || p.comoPaga === "contratista_fijo") && (
+                            <span title={PAGO[p.comoPaga]}>
+                              <StatusBadge tone={p.comoPaga === "contratista_fijo" ? "bad" : "info"}>
+                                {p.comoPaga === "contratista_fijo"
+                                  ? t("ui.GustoHoras.insigniaContratistaFijo", "1099 · pago fijo · no se envía")
+                                  : t("ui.GustoHoras.insigniaContratista", "Contratista 1099")}
+                              </StatusBadge>
+                            </span>
+                          )}
+                          {p.comoPaga && ["asalariado", "exento"].includes(p.comoPaga) && (
                             <span title={PAGO[p.comoPaga]}>
                               <StatusBadge
                                 tone={p.comoPaga === "exento" ? "bad" : "warn"}
@@ -783,6 +895,11 @@ export default function HorasGusto({
                       </td>
                       <td className="p-3 text-right tabular-nums">
                         {p.doble || "—"}
+                      </td>
+                      <td className="p-3 text-right tabular-nums" title={p.libre ? `V ${p.libre.vacaciones} · E ${p.libre.enfermedad} · P ${p.libre.permiso}` : ""}>
+                        {p.libre && p.libre.vacaciones + p.libre.enfermedad + p.libre.permiso > 0
+                          ? Math.round((p.libre.vacaciones + p.libre.enfermedad + p.libre.permiso) * 100) / 100
+                          : "—"}
                       </td>
                     </tr>
                   ))}
@@ -869,6 +986,12 @@ export default function HorasGusto({
                       defaultValue:
                         "{{creados}} nuevos · {{actualizados}} actualizados · {{borrados}} retirados · {{iguales}} sin cambios · {{fallidos}} con error",
                     })}
+                  {(e.cuenta.libreEnviados || 0) + (e.cuenta.libreRetirados || 0) > 0 &&
+                      ` · ${t("ui.GustoHoras.cuentaLibre", {
+                        enviados: e.cuenta.libreEnviados || 0,
+                        retirados: e.cuenta.libreRetirados || 0,
+                        defaultValue: "tiempo libre: {{enviados}} días enviados, {{retirados}} retirados",
+                      })}${e.cuenta.libreVia === "nomina" ? ` (${t("ui.GustoHoras.libreViaNomina", "directo en la nómina")})` : ""}`}
                   {(e.cuenta.sobrantes || 0) > 0 &&
                       ` · ${t("ui.GustoHoras.cuentaSobrantes", { n: e.cuenta.sobrantes, defaultValue: "{{n}} horas sobrantes corregidas en Gusto" })}`}
                   {(e.cuenta.exentos || 0) > 0 &&

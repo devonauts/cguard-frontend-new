@@ -267,12 +267,58 @@ export default function EmpleadosGusto() {
                                   {t("ui.GustoEmpleados.sinAlta", "Alta sin terminar en Gusto: no entra en la nómina")}
                                 </StatusBadge>
                               )}
-                              {p.vinculo.comoPaga && p.vinculo.comoPaga !== "hora" && (
+                              {(p.vinculo.comoPaga === "contratista" || p.vinculo.comoPaga === "contratista_fijo") && (
+                                <StatusBadge tone={p.vinculo.comoPaga === "contratista_fijo" ? "bad" : "info"}>
+                                  {p.vinculo.comoPaga === "contratista_fijo"
+                                    ? t("ui.GustoEmpleados.contratistaFijo", "Contratista 1099 de pago fijo: no se envían horas")
+                                    : t("ui.GustoEmpleados.contratista", "Contratista 1099: horas todas ordinarias")}
+                                </StatusBadge>
+                              )}
+                              {p.vinculo.comoPaga && ["asalariado", "exento"].includes(p.vinculo.comoPaga) && (
                                 <StatusBadge tone={p.vinculo.comoPaga === "exento" ? "bad" : "warn"}>
                                   {p.vinculo.comoPaga === "exento"
                                     ? t("ui.GustoEmpleados.exento", "Exento en Gusto: sus horas no se envían")
                                     : t("ui.GustoEmpleados.asalariado", "Sueldo fijo: Gusto paga las horas enviadas")}
                                 </StatusBadge>
+                              )}
+                              {/* Varios trabajos en Gusto: qué trabajo cobra cada clase de turno. */}
+                              {puede && (nombreDeGusto.get(p.vinculo.gustoUuid)?.trabajos?.length || 0) > 1 && (
+                                <div className="mt-2 grid w-full gap-2 sm:grid-cols-3">
+                                  {(["guard", "supervisor", "staff"] as const).map((fuente) => (
+                                    <label key={fuente} className="text-xs">
+                                      <span className="mb-0.5 block" style={{ color: "var(--ink-faint)" }}>
+                                        {fuente === "guard"
+                                          ? t("ui.GustoEmpleados.trabajoVigilante", "Turnos de vigilante →")
+                                          : fuente === "supervisor"
+                                            ? t("ui.GustoEmpleados.trabajoSupervisor", "Turnos de supervisor →")
+                                            : t("ui.GustoEmpleados.trabajoOficina", "Turnos de oficina →")}
+                                      </span>
+                                      <select
+                                        className={FIELD_CLS}
+                                        disabled={!!ocupado}
+                                        value={p.vinculo?.jobsPorFuente?.[fuente] || ""}
+                                        onChange={async (e) => {
+                                          setOcupado(p.userId);
+                                          try {
+                                            await gustoService.asignarTrabajos(p.userId, { ...(p.vinculo?.jobsPorFuente || {}), [fuente]: e.target.value || null });
+                                            await cargar();
+                                          } catch (err: any) {
+                                            toast.error(err?.message || t("ui.GustoEmpleados.noGuardo", "No se pudo guardar la pareja."));
+                                          } finally {
+                                            setOcupado(null);
+                                          }
+                                        }}
+                                      >
+                                        <option value="">{t("ui.GustoEmpleados.trabajoPrincipal", "El principal")}</option>
+                                        {nombreDeGusto.get(p.vinculo!.gustoUuid)!.trabajos.map((tr) => (
+                                          <option key={tr.uuid} value={tr.uuid}>
+                                            {tr.titulo || "—"}{tr.tarifa ? ` · $${tr.tarifa}` : ""}{tr.principal ? ` (${t("ui.GustoEmpleados.principal", "principal")})` : ""}
+                                          </option>
+                                        ))}
+                                      </select>
+                                    </label>
+                                  ))}
+                                </div>
                               )}
                             </div>
                           ) : p.sugerencia ? (
@@ -325,6 +371,7 @@ export default function EmpleadosGusto() {
                                 <option key={e.uuid} value={e.uuid}>
                                   {e.nombre}
                                   {e.email ? ` · ${e.email}` : ""}
+                                  {e.tipo === "Contractor" ? ` · ${t("ui.GustoEmpleados.opcionContratista", "1099")}` : ""}
                                   {e.incorporado === false
                                     ? ` · ${t("ui.GustoEmpleados.opcionSinAlta", "alta sin terminar")}`
                                     : ""}
