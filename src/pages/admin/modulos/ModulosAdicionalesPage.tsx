@@ -22,11 +22,13 @@ import {
   modulosAdicionalesService,
   type ModuloEnTienda,
 } from "@/lib/api/modulosAdicionalesService";
+import TarjetaModuloMensual from "./TarjetaModuloMensual";
 
 /**
  * MÓDULOS ADICIONALES — lo que la empresa compra aparte.
  *
- * Cada módulo se paga UNA vez y queda para siempre. Se cobra a la tarjeta que
+ * Un módulo de pago ÚNICO queda para siempre; uno MENSUAL (VigIA Pro) tiene
+ * su propia tarjeta (`TarjetaModuloMensual`). Se cobra a la tarjeta que
  * la empresa ya tiene en su suscripción: aquí sólo se confirma. Si el banco
  * pide verificación, se abre el pago de Stripe y el módulo se activa al
  * completarlo.
@@ -121,7 +123,7 @@ export default function ModulosAdicionalesPage() {
                 </p>
               </Section>
             )}
-            {!data.canPurchase && !esDeSocio && data.reason && (
+            {!data.canPurchase && !esDeSocio && data.reason && data.modules.some((m) => m.billingType !== "monthly_tiers") && (
               <Section>
                 <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
                   {textoDeMotivo(data.reason)}{" "}
@@ -133,6 +135,18 @@ export default function ModulosAdicionalesPage() {
             )}
 
             {data.modules.map((m) => {
+              // Los mensuales (VigIA Pro) tienen su propia tarjeta: tramos, prueba y renovación.
+              if (m.billingType === "monthly_tiers") {
+                return (
+                  <TarjetaModuloMensual
+                    key={m.key}
+                    canPurchase={data.canPurchase}
+                    esDeSocio={esDeSocio}
+                    m={m}
+                    reason={data.reason}
+                  />
+                );
+              }
               const tiene = m.owned;
               const pendiente = m.status === "pending_payment";
 

@@ -36,4 +36,11 @@ describe("módulos adicionales · cuándo se ve la tienda", () => {
     expect(tiendaVisible({ canPurchase: false, reason: "suscripcion_no_activa", modules: [modulo({ owned: true, status: "comp" })] })).toBe(true);
     expect(tiendaVisible({ canPurchase: false, reason: "suscripcion_no_activa", modules: [modulo({ status: "pending_payment" })] })).toBe(true);
   });
+
+  it("con una PRUEBA gratis disponible (VigIA Pro) se ve aunque la empresa esté en su prueba", () => {
+    const pro = modulo({ key: "vigia_pro", billingType: "monthly_tiers", canStartTrial: true });
+    expect(tiendaVisible({ canPurchase: false, reason: "implementacion_sin_pagar", modules: [pro] })).toBe(true);
+    const enPrueba = modulo({ key: "vigia_pro", billingType: "monthly_tiers", status: "trial", canStartTrial: false });
+    expect(tiendaVisible({ canPurchase: false, reason: "implementacion_sin_pagar", modules: [enPrueba] })).toBe(true);
+  });
 });
