@@ -17989,7 +17989,9 @@
       "smsHint": "Reserva quando o WhatsApp não chega. Cada SMS tem custo.",
       "guardar": "Salvar ajustes",
       "guardado": "Ajustes salvos.",
-      "error": "Não foi possível salvar os ajustes."
+      "error": "Não foi possível salvar os ajustes.",
+      "vigilantes": "Os vigilantes podem escrever para {{agente}} pelo WhatsApp",
+      "vigilantesHint": "Perguntam seu horário e suas horas, pedem folgas, registram ocorrências (também por áudio) e se oferecem para turnos. Só veem o que é deles, e o que enviam confirmam com um SIM."
     },
     "partes": {
       "traducirTitulo": "Traduzir este relatório",

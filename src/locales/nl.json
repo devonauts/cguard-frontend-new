@@ -17989,7 +17989,9 @@
       "smsHint": "Reserve als WhatsApp niet aankomt. Elke sms kost geld.",
       "guardar": "Instellingen opslaan",
       "guardado": "Instellingen opgeslagen.",
-      "error": "De instellingen konden niet worden opgeslagen."
+      "error": "De instellingen konden niet worden opgeslagen.",
+      "vigilantes": "Beveiligers kunnen {{agente}} via WhatsApp berichten",
+      "vigilantesHint": "Ze vragen naar hun rooster en uren, vragen verlof aan, melden voorvallen (ook met een spraakbericht) en bieden zich aan voor diensten. Ze zien alleen hun eigen gegevens en bevestigen alles wat ze versturen met JA."
     },
     "partes": {
       "traducirTitulo": "Dit rapport vertalen",

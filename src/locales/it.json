@@ -17989,7 +17989,9 @@
       "smsHint": "Riserva quando WhatsApp non arriva. Ogni SMS ha un costo.",
       "guardar": "Salva impostazioni",
       "guardado": "Impostazioni salvate.",
-      "error": "Impossibile salvare le impostazioni."
+      "error": "Impossibile salvare le impostazioni.",
+      "vigilantes": "Le guardie possono scrivere a {{agente}} su WhatsApp",
+      "vigilantesHint": "Chiedono turni e ore, richiedono permessi, segnalano eventi (anche con un vocale) e si propongono per i turni. Vedono solo i propri dati e confermano ogni invio con un SÌ."
     },
     "partes": {
       "traducirTitulo": "Traduci questo rapporto",

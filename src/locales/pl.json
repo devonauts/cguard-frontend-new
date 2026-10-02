@@ -18183,7 +18183,9 @@
       "smsHint": "Zapas, gdy WhatsApp nie dociera. Każdy SMS kosztuje.",
       "guardar": "Zapisz ustawienia",
       "guardado": "Ustawienia zapisane.",
-      "error": "Nie udało się zapisać ustawień."
+      "error": "Nie udało się zapisać ustawień.",
+      "vigilantes": "Pracownicy ochrony mogą pisać do {{agente}} na WhatsAppie",
+      "vigilantesHint": "Pytają o grafik i godziny, składają wnioski o urlop, zgłaszają zdarzenia (także wiadomością głosową) i zgłaszają się na zmiany. Widzą tylko swoje dane, a każde wysłanie potwierdzają słowem TAK."
     },
     "partes": {
       "traducirTitulo": "Przetłumacz ten raport",

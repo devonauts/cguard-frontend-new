@@ -54,6 +54,8 @@ export interface ResumenDelSeguimiento {
 export interface EstadoDelSeguimiento {
   tieneModulo: boolean;
   ajustes: AjustesDelSeguimiento;
+  /** Los vigilantes pueden escribirle al asistente por WhatsApp. */
+  vigilantes: { activo: boolean };
   responsables: Array<{ id: string; nombre: string }>;
   responsableEfectivo: { id: string; nombre: string } | null;
   plantillaWhatsApp: boolean;
@@ -129,8 +131,11 @@ export const vigiaProService = {
   leer(): Promise<EstadoDelSeguimiento> {
     return ApiService.get(`/tenant/${tenantId()}/vigia-pro/despachador`);
   },
-  guardar(ajustes: AjustesDelSeguimiento): Promise<{ ajustes: AjustesDelSeguimiento }> {
-    return ApiService.put(`/tenant/${tenantId()}/vigia-pro/despachador`, ajustes);
+  guardar(
+    ajustes: AjustesDelSeguimiento,
+    vigilantes?: { activo: boolean },
+  ): Promise<{ ajustes: AjustesDelSeguimiento; vigilantes: { activo: boolean } }> {
+    return ApiService.put(`/tenant/${tenantId()}/vigia-pro/despachador`, { ...ajustes, ...(vigilantes ? { vigilantes } : {}) });
   },
   casos(filtro: FiltroDeCasos): Promise<{ rows: CasoDelSeguimiento[] }> {
     const estado = filtro === "todos" ? "" : filtro;

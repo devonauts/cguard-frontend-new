@@ -17989,7 +17989,9 @@
       "smsHint": "Respaldo cuando WhatsApp no llega. Cada SMS tiene costo.",
       "guardar": "Guardar ajustes",
       "guardado": "Ajustes guardados.",
-      "error": "No se pudieron guardar los ajustes."
+      "error": "No se pudieron guardar los ajustes.",
+      "vigilantes": "Los vigilantes pueden escribirle a {{agente}} por WhatsApp",
+      "vigilantesHint": "Preguntan su horario y sus horas, piden permisos, reportan novedades (también con nota de voz) y se ofrecen para turnos. Sólo ven lo suyo, y lo que envían lo confirman con un SÍ."
     },
     "partes": {
       "traducirTitulo": "Traducir este parte",

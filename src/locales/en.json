@@ -17989,7 +17989,9 @@
       "smsHint": "Backup when WhatsApp does not get through. Each SMS has a cost.",
       "guardar": "Save settings",
       "guardado": "Settings saved.",
-      "error": "Could not save the settings."
+      "error": "Could not save the settings.",
+      "vigilantes": "Officers can message {{agente}} on WhatsApp",
+      "vigilantesHint": "They ask about their schedule and hours, request leave, report incidents (also by voice note) and volunteer for shifts. They only see their own information, and they confirm anything they send with a YES."
     },
     "partes": {
       "traducirTitulo": "Translate this report",

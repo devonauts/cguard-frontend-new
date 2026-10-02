@@ -90,6 +90,7 @@ export default function VigiaProPage() {
   const [filtro, setFiltro] = useState<FiltroDeCasos>(casoPedido ? "todos" : "abiertos");
   const [abierto, setAbierto] = useState<string | null>(casoPedido);
   const [borrador, setBorrador] = useState<AjustesDelSeguimiento | null>(null);
+  const [vigilantes, setVigilantes] = useState<boolean | null>(null);
   const [guardando, setGuardando] = useState(false);
   const [cerrando, setCerrando] = useState<string | null>(null);
   const a = { agente: agente.nombre };
@@ -107,11 +108,15 @@ export default function VigiaProPage() {
 
   useEffect(() => {
     if (info.data && !borrador) setBorrador(info.data.ajustes);
-  }, [info.data, borrador]);
+    if (info.data && vigilantes === null) setVigilantes(!!info.data.vigilantes?.activo);
+  }, [info.data, borrador, vigilantes]);
 
   const sinGuardar = useMemo(
-    () => !!borrador && !!info.data && JSON.stringify(borrador) !== JSON.stringify(info.data.ajustes),
-    [borrador, info.data],
+    () =>
+      !!borrador &&
+      !!info.data &&
+      (JSON.stringify(borrador) !== JSON.stringify(info.data.ajustes) || !!vigilantes !== !!info.data.vigilantes?.activo),
+    [borrador, info.data, vigilantes],
   );
 
   const tipoDe = (tipo: string) => t(`vigiaPro.tipo.${tipo}`, { defaultValue: tipo });
@@ -120,9 +125,10 @@ export default function VigiaProPage() {
     if (!borrador) return;
     setGuardando(true);
     try {
-      const r = await vigiaProService.guardar(borrador);
+      const r = await vigiaProService.guardar(borrador, { activo: !!vigilantes });
 
       setBorrador(r.ajustes);
+      setVigilantes(!!r.vigilantes?.activo);
       toast.success(t("vigiaPro.ajustes.guardado"));
       await qc.invalidateQueries({ queryKey: ["vigia-pro", "estado"] });
     } catch (e: any) {
@@ -313,6 +319,13 @@ export default function VigiaProPage() {
                 hint={t("vigiaPro.ajustes.activoHint", a)}
                 label={t("vigiaPro.ajustes.activo", a)}
                 onCheckedChange={(v) => cambiar({ activo: v })}
+              />
+              <ToggleRow
+                checked={!!vigilantes}
+                disabled={!info.data.tieneModulo}
+                hint={t("vigiaPro.ajustes.vigilantesHint", a)}
+                label={t("vigiaPro.ajustes.vigilantes", a)}
+                onCheckedChange={(v) => setVigilantes(v)}
               />
               {TIPOS_DE_CASO.map((tipo) => (
                 <ToggleRow

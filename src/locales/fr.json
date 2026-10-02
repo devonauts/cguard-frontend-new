@@ -17989,7 +17989,9 @@
       "smsHint": "Secours quand WhatsApp ne passe pas. Chaque SMS a un coût.",
       "guardar": "Enregistrer les réglages",
       "guardado": "Réglages enregistrés.",
-      "error": "Impossible d’enregistrer les réglages."
+      "error": "Impossible d’enregistrer les réglages.",
+      "vigilantes": "Les agents peuvent écrire à {{agente}} sur WhatsApp",
+      "vigilantesHint": "Ils consultent leur planning et leurs heures, demandent des congés, signalent des incidents (aussi par message vocal) et se proposent pour des services. Ils ne voient que ce qui les concerne et confirment tout envoi par un OUI."
     },
     "partes": {
       "traducirTitulo": "Traduire ce rapport",

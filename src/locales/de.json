@@ -17989,7 +17989,9 @@
       "smsHint": "Reserve, wenn WhatsApp nicht ankommt. Jede SMS kostet.",
       "guardar": "Einstellungen speichern",
       "guardado": "Einstellungen gespeichert.",
-      "error": "Die Einstellungen konnten nicht gespeichert werden."
+      "error": "Die Einstellungen konnten nicht gespeichert werden.",
+      "vigilantes": "Sicherheitskräfte können {{agente}} per WhatsApp schreiben",
+      "vigilantesHint": "Sie fragen nach Dienstplan und Stunden, beantragen Urlaub, melden Vorfälle (auch per Sprachnachricht) und bieten sich für Schichten an. Sie sehen nur ihre eigenen Daten und bestätigen alles, was gesendet wird, mit JA."
     },
     "partes": {
       "traducirTitulo": "Diesen Bericht übersetzen",
