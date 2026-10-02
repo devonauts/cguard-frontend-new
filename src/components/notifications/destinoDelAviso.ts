@@ -57,6 +57,9 @@ export function targetForNotification(n: PlatformNotification): string {
     return p.caseId ? `/alarm/case/${p.caseId}` : "/alarm/queue";
   }
 
+  // ── Un módulo cuya prueba termina: a la tienda, donde se elige seguir o no.
+  if (type === "addon.trial_ending") return "/modulos-adicionales";
+
   // ── VigIA Pro: el caso, con su conversación.
   if (type === "vigia.caso_escalado") {
     return p.casoId ? `/vigia-pro?caso=${p.casoId}` : "/vigia-pro";
