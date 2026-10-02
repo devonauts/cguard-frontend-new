@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import MejorarRedaccion from "@/components/vigia/partes/MejorarRedaccion";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -937,6 +938,19 @@ export default function EditDispatchPage() {
                         <Textarea rows={4} {...field} />
                       </FormControl>
                       <FormMessage />
+                      <MejorarRedaccion
+                        className="mt-2"
+                        aplicar={(nuevo) => {
+                          if (nuevo.titulo) form.setValue("subject" as any, nuevo.titulo, { shouldDirty: true });
+                          form.setValue("incidentDetails", nuevo.descripcion, { shouldDirty: true });
+                          if (nuevo.acciones) form.setValue("actionsTaken", nuevo.acciones, { shouldDirty: true });
+                        }}
+                        obtener={() => ({
+                          titulo: String((form.getValues() as any).subject || ""),
+                          descripcion: String(form.getValues("incidentDetails") || ""),
+                          acciones: String(form.getValues("actionsTaken") || ""),
+                        })}
+                      />
                     </FormItem>
                   )}
                 />

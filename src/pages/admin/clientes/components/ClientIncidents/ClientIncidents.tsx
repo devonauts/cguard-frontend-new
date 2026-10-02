@@ -1,4 +1,5 @@
 import type { Client } from "@/types/client";
+import ResumenParaCliente from "@/components/vigia/partes/ResumenParaCliente";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -348,14 +349,17 @@ export default function ClientIncidents({ client }: { client: Client }) {
             onChange={(e) => resetPage(setTo)(e.target.value)}
           />
         </div>
-        <Button
-          size="sm"
-          variant="brand"
-          onClick={() => window.location.assign("/dispatch-tickets/new")}
-        >
-          <AlertTriangle className="mr-1.5 h-4 w-4" />{" "}
-          {t("ui.ClientIncidents.nuevoIncidente")}
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <ResumenParaCliente clientId={client?.id} />
+          <Button
+            size="sm"
+            variant="brand"
+            onClick={() => window.location.assign("/dispatch-tickets/new")}
+          >
+            <AlertTriangle className="mr-1.5 h-4 w-4" />{" "}
+            {t("ui.ClientIncidents.nuevoIncidente")}
+          </Button>
+        </div>
       </div>
 
       {/* KPI row */}

@@ -1,4 +1,5 @@
 import type { DirectoryOption, NamedEntity, DispatchComment, CommentAttachment } from './types';
+import TraducirParte from "@/components/vigia/partes/TraducirParte";
 import { Avatar } from "@/components/kit";
 import React, { useEffect, useState } from 'react';
 import { clientDisplayName } from '@/lib/clientName';
@@ -798,6 +799,7 @@ export function DispatchDetailsContent({
       </Modal>
       {/* Additional detail sections */}
       <div className="mt-4 space-y-4">
+        <TraducirParte incidentId={requestPayload?.id || requestId} />
         <div className="cg-card overflow-hidden p-0">
           <div className="bg-muted/40 border-b px-4 py-2.5 text-sm font-semibold">
             {t("dispatcher.incident_details")}

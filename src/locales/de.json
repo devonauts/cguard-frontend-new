@@ -17990,6 +17990,54 @@
       "guardar": "Einstellungen speichern",
       "guardado": "Einstellungen gespeichert.",
       "error": "Die Einstellungen konnten nicht gespeichert werden."
+    },
+    "partes": {
+      "traducirTitulo": "Diesen Bericht übersetzen",
+      "traducir": "Übersetzen",
+      "traduciendo": "Wird übersetzt…",
+      "traducidoPor": "Übersetzt von {{agente}}. Der Originalbericht bleibt unverändert.",
+      "error": "Konnte nicht abgeschlossen werden. Versuchen Sie es erneut.",
+      "mejorar": "Formulierung verbessern",
+      "mejorarDesc": "{{agente}} korrigiert Rechtschreibung und Formulierung, ohne die Fakten zu ändern. Prüfen Sie es vor der Übernahme.",
+      "redactando": "{{agente}} korrigiert den Text…",
+      "quedarme": "Meinen behalten",
+      "usar": "Diesen Text verwenden",
+      "antes": "Ihr Text",
+      "despues": "Korrigiert",
+      "faltanTitulo": "Vor der Übernahme prüfen",
+      "faltanDesc": "Das stand in Ihrem Text und fehlt in der korrigierten Fassung: {{lista}}.",
+      "escribePrimero": "Schreiben Sie zuerst die Details des Berichts."
+    },
+    "prioridad": {
+      "low": "Niedrig",
+      "medium": "Mittel",
+      "high": "Hoch",
+      "critical": "Kritisch"
+    },
+    "idiomas": {
+      "es": "Español",
+      "en": "English",
+      "pt-BR": "Português",
+      "fr": "Français",
+      "de": "Deutsch",
+      "it": "Italiano",
+      "nl": "Nederlands",
+      "pl": "Polski"
+    },
+    "resumenCliente": {
+      "boton": "Zusammenfassung für den Kunden",
+      "desc": "{{agente}} schreibt die Zusammenfassung des Zeitraums. Die Zahlen sind exakt; Sie prüfen den Text vor dem Senden.",
+      "dias": "{{n}} Tage",
+      "generar": "Erstellen",
+      "generando": "{{agente}} schreibt…",
+      "sinNovedades": "Keine Vorfälle zwischen {{desde}} und {{hasta}}.",
+      "cifras": "{{total}} Vorfälle zwischen {{desde}} und {{hasta}}.",
+      "revisa": "Sie können den Text bearbeiten. Er wird genau so gesendet, mit Name und Logo Ihres Unternehmens.",
+      "copiar": "Kopieren",
+      "enviar": "An den Kunden senden",
+      "enviando": "Wird gesendet…",
+      "enviado": "Zusammenfassung an {{correo}} gesendet.",
+      "copiado": "Kopiert."
     }
   }
 }

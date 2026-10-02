@@ -18184,6 +18184,54 @@
       "guardar": "Zapisz ustawienia",
       "guardado": "Ustawienia zapisane.",
       "error": "Nie udało się zapisać ustawień."
+    },
+    "partes": {
+      "traducirTitulo": "Przetłumacz ten raport",
+      "traducir": "Przetłumacz",
+      "traduciendo": "Tłumaczenie…",
+      "traducidoPor": "Przetłumaczone przez {{agente}}. Oryginalny raport się nie zmienia.",
+      "error": "Nie udało się ukończyć. Spróbuj ponownie.",
+      "mejorar": "Popraw redakcję",
+      "mejorarDesc": "{{agente}} poprawia pisownię i styl, nie zmieniając faktów. Sprawdź przed użyciem.",
+      "redactando": "{{agente}} poprawia tekst…",
+      "quedarme": "Zostaw mój",
+      "usar": "Użyj tego tekstu",
+      "antes": "Twój tekst",
+      "despues": "Poprawiony",
+      "faltanTitulo": "Sprawdź przed użyciem",
+      "faltanDesc": "To było w Twoim tekście i nie ma tego w poprawionym: {{lista}}.",
+      "escribePrimero": "Najpierw wpisz szczegóły raportu."
+    },
+    "prioridad": {
+      "low": "Niski",
+      "medium": "Średni",
+      "high": "Wysoki",
+      "critical": "Krytyczny"
+    },
+    "idiomas": {
+      "es": "Español",
+      "en": "English",
+      "pt-BR": "Português",
+      "fr": "Français",
+      "de": "Deutsch",
+      "it": "Italiano",
+      "nl": "Nederlands",
+      "pl": "Polski"
+    },
+    "resumenCliente": {
+      "boton": "Podsumowanie dla klienta",
+      "desc": "{{agente}} pisze podsumowanie okresu. Liczby są dokładne; tekst sprawdzasz przed wysłaniem.",
+      "dias": "{{n}} dni",
+      "generar": "Utwórz",
+      "generando": "{{agente}} pisze…",
+      "sinNovedades": "Brak zdarzeń między {{desde}} a {{hasta}}.",
+      "cifras": "{{total}} zdarzeń między {{desde}} a {{hasta}}.",
+      "revisa": "Możesz edytować tekst. Zostanie wysłany dokładnie w tej postaci, z nazwą i logo Twojej firmy.",
+      "copiar": "Kopiuj",
+      "enviar": "Wyślij do klienta",
+      "enviando": "Wysyłanie…",
+      "enviado": "Podsumowanie wysłane na {{correo}}.",
+      "copiado": "Skopiowano."
     }
   }
 }

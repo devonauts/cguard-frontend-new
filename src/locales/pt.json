@@ -17990,6 +17990,54 @@
       "guardar": "Salvar ajustes",
       "guardado": "Ajustes salvos.",
       "error": "Não foi possível salvar os ajustes."
+    },
+    "partes": {
+      "traducirTitulo": "Traduzir este relatório",
+      "traducir": "Traduzir",
+      "traduciendo": "Traduzindo…",
+      "traducidoPor": "Traduzido por {{agente}}. O relatório original não muda.",
+      "error": "Não foi possível concluir. Tente de novo.",
+      "mejorar": "Melhorar a redação",
+      "mejorarDesc": "{{agente}} corrige ortografia e redação sem mudar os fatos. Revise antes de usar.",
+      "redactando": "{{agente}} está corrigindo o texto…",
+      "quedarme": "Manter o meu",
+      "usar": "Usar este texto",
+      "antes": "Seu texto",
+      "despues": "Corrigido",
+      "faltanTitulo": "Revise antes de usar",
+      "faltanDesc": "Isto estava no seu texto e não aparece no corrigido: {{lista}}.",
+      "escribePrimero": "Escreva primeiro os detalhes do relatório."
+    },
+    "prioridad": {
+      "low": "Baixa",
+      "medium": "Média",
+      "high": "Alta",
+      "critical": "Crítica"
+    },
+    "idiomas": {
+      "es": "Español",
+      "en": "English",
+      "pt-BR": "Português",
+      "fr": "Français",
+      "de": "Deutsch",
+      "it": "Italiano",
+      "nl": "Nederlands",
+      "pl": "Polski"
+    },
+    "resumenCliente": {
+      "boton": "Resumo para o cliente",
+      "desc": "{{agente}} redige o resumo do período. Os números são exatos; você revisa o texto antes de enviar.",
+      "dias": "{{n}} dias",
+      "generar": "Gerar",
+      "generando": "{{agente}} está redigindo…",
+      "sinNovedades": "Sem ocorrências entre {{desde}} e {{hasta}}.",
+      "cifras": "{{total}} ocorrências entre {{desde}} e {{hasta}}.",
+      "revisa": "Você pode editar o texto. Ele é enviado exatamente como estiver aqui, com o nome e o logo da sua empresa.",
+      "copiar": "Copiar",
+      "enviar": "Enviar ao cliente",
+      "enviando": "Enviando…",
+      "enviado": "Resumo enviado para {{correo}}.",
+      "copiado": "Copiado."
     }
   }
 }

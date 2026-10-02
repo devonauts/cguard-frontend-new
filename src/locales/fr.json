@@ -17990,6 +17990,54 @@
       "guardar": "Enregistrer les réglages",
       "guardado": "Réglages enregistrés.",
       "error": "Impossible d’enregistrer les réglages."
+    },
+    "partes": {
+      "traducirTitulo": "Traduire ce rapport",
+      "traducir": "Traduire",
+      "traduciendo": "Traduction…",
+      "traducidoPor": "Traduit par {{agente}}. Le rapport original ne change pas.",
+      "error": "Impossible de terminer. Réessayez.",
+      "mejorar": "Améliorer la rédaction",
+      "mejorarDesc": "{{agente}} corrige l’orthographe et la rédaction sans changer les faits. Relisez avant de l’utiliser.",
+      "redactando": "{{agente}} corrige le texte…",
+      "quedarme": "Garder le mien",
+      "usar": "Utiliser ce texte",
+      "antes": "Votre texte",
+      "despues": "Corrigé",
+      "faltanTitulo": "Relisez avant de l’utiliser",
+      "faltanDesc": "Ceci figurait dans votre texte et n’apparaît pas dans la version corrigée : {{lista}}.",
+      "escribePrimero": "Rédigez d’abord les détails du rapport."
+    },
+    "prioridad": {
+      "low": "Basse",
+      "medium": "Moyenne",
+      "high": "Haute",
+      "critical": "Critique"
+    },
+    "idiomas": {
+      "es": "Español",
+      "en": "English",
+      "pt-BR": "Português",
+      "fr": "Français",
+      "de": "Deutsch",
+      "it": "Italiano",
+      "nl": "Nederlands",
+      "pl": "Polski"
+    },
+    "resumenCliente": {
+      "boton": "Résumé pour le client",
+      "desc": "{{agente}} rédige le résumé de la période. Les chiffres sont exacts ; vous relisez le texte avant de l’envoyer.",
+      "dias": "{{n}} jours",
+      "generar": "Générer",
+      "generando": "{{agente}} rédige…",
+      "sinNovedades": "Aucun incident entre le {{desde}} et le {{hasta}}.",
+      "cifras": "{{total}} incidents entre le {{desde}} et le {{hasta}}.",
+      "revisa": "Vous pouvez modifier le texte. Il est envoyé tel quel, avec le nom et le logo de votre entreprise.",
+      "copiar": "Copier",
+      "enviar": "Envoyer au client",
+      "enviando": "Envoi…",
+      "enviado": "Résumé envoyé à {{correo}}.",
+      "copiado": "Copié."
     }
   }
 }

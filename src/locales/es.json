@@ -17990,6 +17990,54 @@
       "guardar": "Guardar ajustes",
       "guardado": "Ajustes guardados.",
       "error": "No se pudieron guardar los ajustes."
+    },
+    "partes": {
+      "traducirTitulo": "Traducir este parte",
+      "traducir": "Traducir",
+      "traduciendo": "Traduciendo…",
+      "traducidoPor": "Traducido por {{agente}}. El parte original no cambia.",
+      "error": "No se pudo completar. Inténtalo de nuevo.",
+      "mejorar": "Mejorar redacción",
+      "mejorarDesc": "{{agente}} corrige ortografía y redacción sin cambiar los hechos. Revísalo antes de usarlo.",
+      "redactando": "{{agente}} está corrigiendo el texto…",
+      "quedarme": "Dejar el mío",
+      "usar": "Usar este texto",
+      "antes": "Tu texto",
+      "despues": "Corregido",
+      "faltanTitulo": "Revísalo antes de usarlo",
+      "faltanDesc": "Esto estaba en tu texto y no aparece en el corregido: {{lista}}.",
+      "escribePrimero": "Escribe primero los detalles del parte."
+    },
+    "prioridad": {
+      "low": "Baja",
+      "medium": "Media",
+      "high": "Alta",
+      "critical": "Crítica"
+    },
+    "idiomas": {
+      "es": "Español",
+      "en": "English",
+      "pt-BR": "Português",
+      "fr": "Français",
+      "de": "Deutsch",
+      "it": "Italiano",
+      "nl": "Nederlands",
+      "pl": "Polski"
+    },
+    "resumenCliente": {
+      "boton": "Resumen para el cliente",
+      "desc": "{{agente}} redacta el resumen del periodo. Las cifras son exactas; el texto lo revisas tú antes de enviarlo.",
+      "dias": "{{n}} días",
+      "generar": "Generar",
+      "generando": "{{agente}} está redactando…",
+      "sinNovedades": "Sin novedades entre {{desde}} y {{hasta}}.",
+      "cifras": "{{total}} novedades entre {{desde}} y {{hasta}}.",
+      "revisa": "Puedes editar el texto. Se envía tal como quede aquí, con el nombre y el logo de tu empresa.",
+      "copiar": "Copiar",
+      "enviar": "Enviar al cliente",
+      "enviando": "Enviando…",
+      "enviado": "Resumen enviado a {{correo}}.",
+      "copiado": "Copiado."
     }
   }
 }

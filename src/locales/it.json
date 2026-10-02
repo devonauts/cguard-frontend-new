@@ -17990,6 +17990,54 @@
       "guardar": "Salva impostazioni",
       "guardado": "Impostazioni salvate.",
       "error": "Impossibile salvare le impostazioni."
+    },
+    "partes": {
+      "traducirTitulo": "Traduci questo rapporto",
+      "traducir": "Traduci",
+      "traduciendo": "Traduzione…",
+      "traducidoPor": "Tradotto da {{agente}}. Il rapporto originale non cambia.",
+      "error": "Impossibile completare. Riprova.",
+      "mejorar": "Migliora la stesura",
+      "mejorarDesc": "{{agente}} corregge ortografia e stesura senza cambiare i fatti. Controlla prima di usarlo.",
+      "redactando": "{{agente}} sta correggendo il testo…",
+      "quedarme": "Tieni il mio",
+      "usar": "Usa questo testo",
+      "antes": "Il tuo testo",
+      "despues": "Corretto",
+      "faltanTitulo": "Controlla prima di usarlo",
+      "faltanDesc": "Questo era nel tuo testo e non compare in quello corretto: {{lista}}.",
+      "escribePrimero": "Scrivi prima i dettagli del rapporto."
+    },
+    "prioridad": {
+      "low": "Bassa",
+      "medium": "Media",
+      "high": "Alta",
+      "critical": "Critica"
+    },
+    "idiomas": {
+      "es": "Español",
+      "en": "English",
+      "pt-BR": "Português",
+      "fr": "Français",
+      "de": "Deutsch",
+      "it": "Italiano",
+      "nl": "Nederlands",
+      "pl": "Polski"
+    },
+    "resumenCliente": {
+      "boton": "Riepilogo per il cliente",
+      "desc": "{{agente}} scrive il riepilogo del periodo. I numeri sono esatti; il testo lo controlli tu prima di inviarlo.",
+      "dias": "{{n}} giorni",
+      "generar": "Genera",
+      "generando": "{{agente}} sta scrivendo…",
+      "sinNovedades": "Nessun evento tra il {{desde}} e il {{hasta}}.",
+      "cifras": "{{total}} eventi tra il {{desde}} e il {{hasta}}.",
+      "revisa": "Puoi modificare il testo. Viene inviato così com’è, con il nome e il logo della tua azienda.",
+      "copiar": "Copia",
+      "enviar": "Invia al cliente",
+      "enviando": "Invio…",
+      "enviado": "Riepilogo inviato a {{correo}}.",
+      "copiado": "Copiato."
     }
   }
 }

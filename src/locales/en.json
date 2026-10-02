@@ -17990,6 +17990,54 @@
       "guardar": "Save settings",
       "guardado": "Settings saved.",
       "error": "Could not save the settings."
+    },
+    "partes": {
+      "traducirTitulo": "Translate this report",
+      "traducir": "Translate",
+      "traduciendo": "Translating…",
+      "traducidoPor": "Translated by {{agente}}. The original report does not change.",
+      "error": "Could not complete. Try again.",
+      "mejorar": "Improve wording",
+      "mejorarDesc": "{{agente}} fixes spelling and wording without changing the facts. Review it before using it.",
+      "redactando": "{{agente}} is correcting the text…",
+      "quedarme": "Keep mine",
+      "usar": "Use this text",
+      "antes": "Your text",
+      "despues": "Corrected",
+      "faltanTitulo": "Review it before using it",
+      "faltanDesc": "This was in your text and is missing from the corrected one: {{lista}}.",
+      "escribePrimero": "Write the report details first."
+    },
+    "prioridad": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    },
+    "idiomas": {
+      "es": "Español",
+      "en": "English",
+      "pt-BR": "Português",
+      "fr": "Français",
+      "de": "Deutsch",
+      "it": "Italiano",
+      "nl": "Nederlands",
+      "pl": "Polski"
+    },
+    "resumenCliente": {
+      "boton": "Summary for the client",
+      "desc": "{{agente}} writes the summary for the period. The figures are exact; you review the text before sending it.",
+      "dias": "{{n}} days",
+      "generar": "Generate",
+      "generando": "{{agente}} is writing…",
+      "sinNovedades": "No incidents between {{desde}} and {{hasta}}.",
+      "cifras": "{{total}} incidents between {{desde}} and {{hasta}}.",
+      "revisa": "You can edit the text. It is sent exactly as it is here, with your company’s name and logo.",
+      "copiar": "Copy",
+      "enviar": "Send to the client",
+      "enviando": "Sending…",
+      "enviado": "Summary sent to {{correo}}.",
+      "copiado": "Copied."
     }
   }
 }

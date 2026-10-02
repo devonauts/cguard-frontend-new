@@ -90,6 +90,41 @@ export interface CasoDelSeguimiento {
 
 export type FiltroDeCasos = "abiertos" | "escalado" | "todos";
 
+export interface TextoDeParte {
+  titulo: string;
+  descripcion: string;
+  acciones: string;
+}
+
+export interface ParteMejorado extends TextoDeParte {
+  /** Lo que tenía número (horas, placas, cifras) en el original y no está en el nuevo. */
+  faltan: string[];
+}
+
+export interface ResumenParaCliente {
+  texto: string;
+  desde: string;
+  hasta: string;
+  idioma: string;
+  conteos: {
+    total: number;
+    porPrioridad: Record<string, number>;
+    porEstado: Record<string, number>;
+    porTipo: Record<string, number>;
+    porPuesto: Record<string, number>;
+  };
+}
+
+/** Los idiomas a los que se traduce un parte (códigos del servidor). */
+export const IDIOMAS_DE_PARTE = ["es", "en", "pt-BR", "fr", "de", "it", "nl", "pl"] as const;
+
+/** El idioma de la interfaz en código del servidor (el CRM usa «pt»). */
+export const idiomaDelServidor = (lang: string): string => {
+  const base = String(lang || "es").split("-")[0];
+
+  return base === "pt" ? "pt-BR" : (IDIOMAS_DE_PARTE as readonly string[]).includes(base) ? base : "es";
+};
+
 export const vigiaProService = {
   leer(): Promise<EstadoDelSeguimiento> {
     return ApiService.get(`/tenant/${tenantId()}/vigia-pro/despachador`);
@@ -104,5 +139,18 @@ export const vigiaProService = {
   },
   cerrar(id: string): Promise<{ ok: boolean }> {
     return ApiService.post(`/tenant/${tenantId()}/vigia-pro/casos/${id}/cerrar`, {});
+  },
+  /** Mejora ortografía y redacción de un parte sin tocar los hechos. */
+  redactar(parte: TextoDeParte): Promise<ParteMejorado> {
+    return ApiService.post(`/tenant/${tenantId()}/vigia-pro/partes/redactar`, parte);
+  },
+  traducir(incidentId: string, idioma: string): Promise<TextoDeParte & { idioma: string; enCache: boolean }> {
+    return ApiService.post(`/tenant/${tenantId()}/vigia-pro/partes/${incidentId}/traducir`, { idioma });
+  },
+  resumen(clientId: string, datos: { dias: number; idioma: string }): Promise<ResumenParaCliente> {
+    return ApiService.post(`/tenant/${tenantId()}/vigia-pro/clientes/${clientId}/resumen`, datos);
+  },
+  enviarResumen(clientId: string, datos: { texto: string; desde: string; hasta: string; idioma: string }): Promise<{ enviado: boolean; a: string }> {
+    return ApiService.post(`/tenant/${tenantId()}/vigia-pro/clientes/${clientId}/resumen/enviar`, datos);
   },
 };

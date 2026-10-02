@@ -17990,6 +17990,54 @@
       "guardar": "Instellingen opslaan",
       "guardado": "Instellingen opgeslagen.",
       "error": "De instellingen konden niet worden opgeslagen."
+    },
+    "partes": {
+      "traducirTitulo": "Dit rapport vertalen",
+      "traducir": "Vertalen",
+      "traduciendo": "Bezig met vertalen…",
+      "traducidoPor": "Vertaald door {{agente}}. Het originele rapport verandert niet.",
+      "error": "Kon niet worden voltooid. Probeer het opnieuw.",
+      "mejorar": "Formulering verbeteren",
+      "mejorarDesc": "{{agente}} verbetert spelling en formulering zonder de feiten te veranderen. Controleer het voor gebruik.",
+      "redactando": "{{agente}} verbetert de tekst…",
+      "quedarme": "Mijn tekst houden",
+      "usar": "Deze tekst gebruiken",
+      "antes": "Jouw tekst",
+      "despues": "Verbeterd",
+      "faltanTitulo": "Controleer het voor gebruik",
+      "faltanDesc": "Dit stond in je tekst en ontbreekt in de verbeterde versie: {{lista}}.",
+      "escribePrimero": "Schrijf eerst de details van het rapport."
+    },
+    "prioridad": {
+      "low": "Laag",
+      "medium": "Gemiddeld",
+      "high": "Hoog",
+      "critical": "Kritiek"
+    },
+    "idiomas": {
+      "es": "Español",
+      "en": "English",
+      "pt-BR": "Português",
+      "fr": "Français",
+      "de": "Deutsch",
+      "it": "Italiano",
+      "nl": "Nederlands",
+      "pl": "Polski"
+    },
+    "resumenCliente": {
+      "boton": "Overzicht voor de klant",
+      "desc": "{{agente}} schrijft het overzicht van de periode. De cijfers zijn exact; jij controleert de tekst voor verzending.",
+      "dias": "{{n}} dagen",
+      "generar": "Maken",
+      "generando": "{{agente}} is aan het schrijven…",
+      "sinNovedades": "Geen meldingen tussen {{desde}} en {{hasta}}.",
+      "cifras": "{{total}} meldingen tussen {{desde}} en {{hasta}}.",
+      "revisa": "Je kunt de tekst aanpassen. Hij wordt precies zo verstuurd, met de naam en het logo van je bedrijf.",
+      "copiar": "Kopiëren",
+      "enviar": "Naar de klant sturen",
+      "enviando": "Bezig met versturen…",
+      "enviado": "Overzicht verstuurd naar {{correo}}.",
+      "copiado": "Gekopieerd."
     }
   }
 }
