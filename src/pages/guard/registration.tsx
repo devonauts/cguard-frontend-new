@@ -75,7 +75,6 @@ export default function GuardRegistration() {
   const [lockedFirstName, setLockedFirstName] = useState(false);
   const [lockedLastName, setLockedLastName] = useState(false);
   const [governmentId, setGovernmentId] = useState("");
-  const [hiringContractDate, setHiringContractDate] = useState("");
   const [gender, setGender] = useState("");
   const [isOnDuty, setIsOnDuty] = useState(false);
   const [bloodType, setBloodType] = useState("");
@@ -404,11 +403,6 @@ export default function GuardRegistration() {
           );
       }
       if (stepNum === 3) {
-        if (!hiringContractDate)
-          nextErrors.hiringContractDate = t(
-            "invite.val.hire_required",
-            "La fecha de contratación es obligatoria",
-          );
         if (!bloodType)
           nextErrors.bloodType = t(
             "invite.val.blood_required",
@@ -531,11 +525,6 @@ export default function GuardRegistration() {
           );
       }
       if (stepNum === 3) {
-        if (!hiringContractDate)
-          nextErrors.hiringContractDate = t(
-            "invite.val.hire_required",
-            "La fecha de contratación es obligatoria",
-          );
         if (!bloodType)
           nextErrors.bloodType = t(
             "invite.val.blood_required",
@@ -607,8 +596,10 @@ export default function GuardRegistration() {
         payload.maritalStatus = maritalStatus || payload.maritalStatus;
         payload.academicInstruction =
           academicInstruction || payload.academicInstruction;
-        payload.hiringContractDate =
-          hiringContractDate || payload.hiringContractDate;
+        /* La fecha de CONTRATACIÓN no se le pide al vigilante: no la sabe, y
+           en 4 fichas de producción repitió su fecha de nacimiento (que luego
+           daba 28 o 56 años de antigüedad al calcular vacaciones). La pone la
+           empresa en la ficha; si ya la había cargado, viaja tal cual en `fetched`. */
         payload.bloodType = bloodType || payload.bloodType;
         payload.guardCredentials = guardCredentials || payload.guardCredentials;
         payload.address = address || payload.address;
@@ -641,7 +632,6 @@ export default function GuardRegistration() {
           gender: gender || undefined,
           maritalStatus: maritalStatus || undefined,
           academicInstruction: academicInstruction || undefined,
-          hiringContractDate: hiringContractDate || undefined,
           bloodType: bloodType || undefined,
           guardCredentials: guardCredentials || undefined,
           address: address || undefined,
@@ -1382,29 +1372,6 @@ export default function GuardRegistration() {
 
           {step === 3 && (
             <div className="grid grid-cols-1 gap-x-4 gap-y-4 md:grid-cols-2">
-              <div>
-                <label className={labelClass}>
-                  {t(
-                    "ui.registration.fechaDeContratacion",
-                    "Fecha de contratación",
-                  )}
-                  <span
-                    aria-hidden
-                    className="ml-0.5"
-                    style={{ color: "var(--brand-text)" }}
-                  >
-                    *
-                  </span>
-                </label>
-                <Input
-                  className={formControl}
-                  disabled={isLoading}
-                  style={errorStyle("hiringContractDate")}
-                  type="date"
-                  value={hiringContractDate}
-                  onChange={(e: any) => setHiringContractDate(e.target.value)}
-                />
-              </div>
               <div>
                 <label className={labelClass}>
                   {t("ui.registration.grupoSanguineo", "Grupo sanguíneo")}
