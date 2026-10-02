@@ -17890,7 +17890,8 @@
     "canal": {
       "whatsapp": "WhatsApp",
       "push": "app notification",
-      "sms": "SMS"
+      "sms": "SMS",
+      "llamada": "call"
     },
     "evento": {
       "detectado": "{{agente}} detected it",
@@ -17903,7 +17904,11 @@
       "resuelto": "Resolved: {{resolucion}}",
       "cerrado": "Closed",
       "cerradoPorPersona": "Closed by {{nombre}}",
-      "error": "Something failed while recording it; check the case"
+      "error": "Something failed while recording it; check the case",
+      "llamada": "{{agente}} called them",
+      "tecla": "Pressed {{tecla}} on the call",
+      "llamadaFin": "The call ended",
+      "llamadaFallida": "The call could not be made"
     },
     "motivoFalta": {
       "enfermedad": "illness",
@@ -17926,7 +17931,8 @@
       "falta_no_registrada": "the absence could not be recorded",
       "relevo_sin_candidatos": "absence recorded; no replacement available",
       "falta_espera_relevo": "absence recorded; the replacement awaits your approval",
-      "falta_registrada": "absence recorded"
+      "falta_registrada": "absence recorded",
+      "pide_ayuda": "asks for help (pressed 3 on the call)"
     },
     "resolucion": {
       "dice_que_esta": "said they were already there",
@@ -17991,7 +17997,9 @@
       "guardado": "Settings saved.",
       "error": "Could not save the settings.",
       "vigilantes": "Officers can message {{agente}} on WhatsApp",
-      "vigilantesHint": "They ask about their schedule and hours, request leave, report incidents (also by voice note) and volunteer for shifts. They only see their own information, and they confirm anything they send with a YES."
+      "vigilantesHint": "They ask about their schedule and hours, request leave, report incidents (also by voice note) and volunteer for shifts. They only see their own information, and they confirm anything they send with a YES.",
+      "llamada": "Voice call",
+      "llamadaHint": "If they do not reply in writing, a voice calls them and they press 1, 2 or 3. Billed per minute from the company’s messaging balance; without balance, no call is made."
     },
     "partes": {
       "traducirTitulo": "Translate this report",

@@ -17890,7 +17890,8 @@
     "canal": {
       "whatsapp": "WhatsApp",
       "push": "notifica dell’app",
-      "sms": "SMS"
+      "sms": "SMS",
+      "llamada": "chiamata"
     },
     "evento": {
       "detectado": "{{agente}} l’ha rilevato",
@@ -17903,7 +17904,11 @@
       "resuelto": "Risolto: {{resolucion}}",
       "cerrado": "Chiuso",
       "cerradoPorPersona": "Chiuso da {{nombre}}",
-      "error": "Qualcosa è andato storto nella registrazione; controlla il caso"
+      "error": "Qualcosa è andato storto nella registrazione; controlla il caso",
+      "llamada": "{{agente}} lo ha chiamato",
+      "tecla": "Ha premuto {{tecla}} nella chiamata",
+      "llamadaFin": "La chiamata è terminata",
+      "llamadaFallida": "Non è stato possibile chiamare"
     },
     "motivoFalta": {
       "enfermedad": "malattia",
@@ -17926,7 +17931,8 @@
       "falta_no_registrada": "non è stato possibile registrare l’assenza",
       "relevo_sin_candidatos": "assenza registrata; nessun sostituto disponibile",
       "falta_espera_relevo": "assenza registrata; il sostituto attende la tua approvazione",
-      "falta_registrada": "assenza registrata"
+      "falta_registrada": "assenza registrata",
+      "pide_ayuda": "chiede aiuto (ha premuto 3 nella chiamata)"
     },
     "resolucion": {
       "dice_que_esta": "ha detto di essere già lì",
@@ -17991,7 +17997,9 @@
       "guardado": "Impostazioni salvate.",
       "error": "Impossibile salvare le impostazioni.",
       "vigilantes": "Le guardie possono scrivere a {{agente}} su WhatsApp",
-      "vigilantesHint": "Chiedono turni e ore, richiedono permessi, segnalano eventi (anche con un vocale) e si propongono per i turni. Vedono solo i propri dati e confermano ogni invio con un SÌ."
+      "vigilantesHint": "Chiedono turni e ore, richiedono permessi, segnalano eventi (anche con un vocale) e si propongono per i turni. Vedono solo i propri dati e confermano ogni invio con un SÌ.",
+      "llamada": "Chiamata vocale",
+      "llamadaHint": "Se non risponde per iscritto, una voce lo chiama e lui preme 1, 2 o 3. Addebitata al minuto dal credito comunicazioni dell’azienda; senza credito non si chiama."
     },
     "partes": {
       "traducirTitulo": "Traduci questo rapporto",

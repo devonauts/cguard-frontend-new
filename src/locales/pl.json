@@ -18084,7 +18084,8 @@
     "canal": {
       "whatsapp": "WhatsApp",
       "push": "powiadomienie w aplikacji",
-      "sms": "SMS"
+      "sms": "SMS",
+      "llamada": "połączenie"
     },
     "evento": {
       "detectado": "{{agente}} to wykrył",
@@ -18097,7 +18098,11 @@
       "resuelto": "Rozwiązano: {{resolucion}}",
       "cerrado": "Zamknięta",
       "cerradoPorPersona": "Zamknięta przez: {{nombre}}",
-      "error": "Coś poszło nie tak przy rejestracji; sprawdź sprawę"
+      "error": "Coś poszło nie tak przy rejestracji; sprawdź sprawę",
+      "llamada": "{{agente}} zadzwonił",
+      "tecla": "Nacisnął {{tecla}} podczas rozmowy",
+      "llamadaFin": "Rozmowa zakończona",
+      "llamadaFallida": "Nie udało się zadzwonić"
     },
     "motivoFalta": {
       "enfermedad": "choroba",
@@ -18120,7 +18125,8 @@
       "falta_no_registrada": "nie udało się zarejestrować nieobecności",
       "relevo_sin_candidatos": "nieobecność zarejestrowana; brak dostępnego zastępstwa",
       "falta_espera_relevo": "nieobecność zarejestrowana; zastępstwo czeka na Twoją zgodę",
-      "falta_registrada": "nieobecność zarejestrowana"
+      "falta_registrada": "nieobecność zarejestrowana",
+      "pide_ayuda": "prosi o pomoc (nacisnął 3 podczas rozmowy)"
     },
     "resolucion": {
       "dice_que_esta": "mówi, że już jest na miejscu",
@@ -18185,7 +18191,9 @@
       "guardado": "Ustawienia zapisane.",
       "error": "Nie udało się zapisać ustawień.",
       "vigilantes": "Pracownicy ochrony mogą pisać do {{agente}} na WhatsAppie",
-      "vigilantesHint": "Pytają o grafik i godziny, składają wnioski o urlop, zgłaszają zdarzenia (także wiadomością głosową) i zgłaszają się na zmiany. Widzą tylko swoje dane, a każde wysłanie potwierdzają słowem TAK."
+      "vigilantesHint": "Pytają o grafik i godziny, składają wnioski o urlop, zgłaszają zdarzenia (także wiadomością głosową) i zgłaszają się na zmiany. Widzą tylko swoje dane, a każde wysłanie potwierdzają słowem TAK.",
+      "llamada": "Połączenie głosowe",
+      "llamadaHint": "Jeśli nie odpowie na piśmie, dzwoni głos, a pracownik naciska 1, 2 lub 3. Rozliczane za minutę z salda komunikacji firmy; bez salda nie dzwonimy."
     },
     "partes": {
       "traducirTitulo": "Przetłumacz ten raport",

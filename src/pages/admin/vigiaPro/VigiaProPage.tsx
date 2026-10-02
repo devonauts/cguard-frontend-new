@@ -439,6 +439,12 @@ export default function VigiaProPage() {
                 label={t("vigiaPro.ajustes.sms")}
                 onCheckedChange={(v) => cambiar({ canales: { ...borrador.canales, sms: v } })}
               />
+              <ToggleRow
+                checked={!!borrador.canales.llamada}
+                hint={t("vigiaPro.ajustes.llamadaHint", a)}
+                label={t("vigiaPro.ajustes.llamada")}
+                onCheckedChange={(v) => cambiar({ canales: { ...borrador.canales, llamada: v } })}
+              />
             </Section>
             <SaveBar
               disabled={!sinGuardar}
@@ -543,6 +549,14 @@ function textoDeEvento(t: (k: string, o?: any) => string, l: CasoDelSeguimiento[
       return t("vigiaPro.evento.cerrado");
     case "cerrado_por_persona":
       return t("vigiaPro.evento.cerradoPorPersona", { nombre: l.texto || "" });
+    case "llamada":
+      return t("vigiaPro.evento.llamada", a);
+    case "tecla":
+      return t("vigiaPro.evento.tecla", { tecla: l.texto || "" });
+    case "llamada_fin":
+      return t("vigiaPro.evento.llamadaFin");
+    case "llamada_fallida":
+      return t("vigiaPro.evento.llamadaFallida");
     case "error":
       return t("vigiaPro.evento.error");
     default:

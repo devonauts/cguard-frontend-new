@@ -17890,7 +17890,8 @@
     "canal": {
       "whatsapp": "WhatsApp",
       "push": "App-Benachrichtigung",
-      "sms": "SMS"
+      "sms": "SMS",
+      "llamada": "Anruf"
     },
     "evento": {
       "detectado": "{{agente}} hat es erkannt",
@@ -17903,7 +17904,11 @@
       "resuelto": "Gelöst: {{resolucion}}",
       "cerrado": "Geschlossen",
       "cerradoPorPersona": "Geschlossen von {{nombre}}",
-      "error": "Beim Erfassen ist etwas schiefgelaufen; prüfen Sie den Fall"
+      "error": "Beim Erfassen ist etwas schiefgelaufen; prüfen Sie den Fall",
+      "llamada": "{{agente}} hat angerufen",
+      "tecla": "Hat im Anruf {{tecla}} gedrückt",
+      "llamadaFin": "Der Anruf ist beendet",
+      "llamadaFallida": "Der Anruf war nicht möglich"
     },
     "motivoFalta": {
       "enfermedad": "Krankheit",
@@ -17926,7 +17931,8 @@
       "falta_no_registrada": "die Abwesenheit konnte nicht erfasst werden",
       "relevo_sin_candidatos": "Abwesenheit erfasst; keine Vertretung verfügbar",
       "falta_espera_relevo": "Abwesenheit erfasst; die Vertretung wartet auf Ihre Freigabe",
-      "falta_registrada": "Abwesenheit erfasst"
+      "falta_registrada": "Abwesenheit erfasst",
+      "pide_ayuda": "bittet um Hilfe (hat im Anruf die 3 gedrückt)"
     },
     "resolucion": {
       "dice_que_esta": "sagte, er/sie sei schon da",
@@ -17991,7 +17997,9 @@
       "guardado": "Einstellungen gespeichert.",
       "error": "Die Einstellungen konnten nicht gespeichert werden.",
       "vigilantes": "Sicherheitskräfte können {{agente}} per WhatsApp schreiben",
-      "vigilantesHint": "Sie fragen nach Dienstplan und Stunden, beantragen Urlaub, melden Vorfälle (auch per Sprachnachricht) und bieten sich für Schichten an. Sie sehen nur ihre eigenen Daten und bestätigen alles, was gesendet wird, mit JA."
+      "vigilantesHint": "Sie fragen nach Dienstplan und Stunden, beantragen Urlaub, melden Vorfälle (auch per Sprachnachricht) und bieten sich für Schichten an. Sie sehen nur ihre eigenen Daten und bestätigen alles, was gesendet wird, mit JA.",
+      "llamada": "Sprachanruf",
+      "llamadaHint": "Antwortet die Person nicht schriftlich, ruft eine Stimme an und sie drückt 1, 2 oder 3. Abgerechnet pro Minute vom Kommunikationsguthaben des Unternehmens; ohne Guthaben wird nicht angerufen."
     },
     "partes": {
       "traducirTitulo": "Diesen Bericht übersetzen",

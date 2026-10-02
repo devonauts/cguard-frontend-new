@@ -17890,7 +17890,8 @@
     "canal": {
       "whatsapp": "WhatsApp",
       "push": "app-melding",
-      "sms": "sms"
+      "sms": "sms",
+      "llamada": "oproep"
     },
     "evento": {
       "detectado": "{{agente}} zag het",
@@ -17903,7 +17904,11 @@
       "resuelto": "Opgelost: {{resolucion}}",
       "cerrado": "Gesloten",
       "cerradoPorPersona": "Gesloten door {{nombre}}",
-      "error": "Er ging iets mis bij het vastleggen; controleer de zaak"
+      "error": "Er ging iets mis bij het vastleggen; controleer de zaak",
+      "llamada": "{{agente}} heeft gebeld",
+      "tecla": "Drukte {{tecla}} tijdens het gesprek",
+      "llamadaFin": "Het gesprek is beëindigd",
+      "llamadaFallida": "Bellen lukte niet"
     },
     "motivoFalta": {
       "enfermedad": "ziekte",
@@ -17926,7 +17931,8 @@
       "falta_no_registrada": "de afwezigheid kon niet worden vastgelegd",
       "relevo_sin_candidatos": "afwezigheid vastgelegd; geen vervanger beschikbaar",
       "falta_espera_relevo": "afwezigheid vastgelegd; de vervanging wacht op je akkoord",
-      "falta_registrada": "afwezigheid vastgelegd"
+      "falta_registrada": "afwezigheid vastgelegd",
+      "pide_ayuda": "vraagt om hulp (drukte 3 tijdens het gesprek)"
     },
     "resolucion": {
       "dice_que_esta": "zei er al te zijn",
@@ -17991,7 +17997,9 @@
       "guardado": "Instellingen opgeslagen.",
       "error": "De instellingen konden niet worden opgeslagen.",
       "vigilantes": "Beveiligers kunnen {{agente}} via WhatsApp berichten",
-      "vigilantesHint": "Ze vragen naar hun rooster en uren, vragen verlof aan, melden voorvallen (ook met een spraakbericht) en bieden zich aan voor diensten. Ze zien alleen hun eigen gegevens en bevestigen alles wat ze versturen met JA."
+      "vigilantesHint": "Ze vragen naar hun rooster en uren, vragen verlof aan, melden voorvallen (ook met een spraakbericht) en bieden zich aan voor diensten. Ze zien alleen hun eigen gegevens en bevestigen alles wat ze versturen met JA.",
+      "llamada": "Spraakoproep",
+      "llamadaHint": "Antwoordt de persoon niet schriftelijk, dan belt een stem en drukt hij/zij 1, 2 of 3. Per minuut afgerekend van het communicatietegoed van het bedrijf; zonder tegoed wordt niet gebeld."
     },
     "partes": {
       "traducirTitulo": "Dit rapport vertalen",

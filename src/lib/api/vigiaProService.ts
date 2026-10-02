@@ -36,7 +36,7 @@ export interface AjustesDelSeguimiento {
   esperaLlegadaMaxMin: number;
   cobertura: "autonoma" | "aprobacion" | "no";
   responsableUserId: string | null;
-  canales: { whatsapp: boolean; push: boolean; sms: boolean };
+  canales: { whatsapp: boolean; push: boolean; sms: boolean; llamada: boolean };
 }
 
 export interface ResumenDelSeguimiento {

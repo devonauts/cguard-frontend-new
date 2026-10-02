@@ -17890,7 +17890,8 @@
     "canal": {
       "whatsapp": "WhatsApp",
       "push": "notificação do app",
-      "sms": "SMS"
+      "sms": "SMS",
+      "llamada": "ligação"
     },
     "evento": {
       "detectado": "{{agente}} detectou",
@@ -17903,7 +17904,11 @@
       "resuelto": "Resolvido: {{resolucion}}",
       "cerrado": "Encerrado",
       "cerradoPorPersona": "Encerrado por {{nombre}}",
-      "error": "Algo falhou ao registrar; revise o caso"
+      "error": "Algo falhou ao registrar; revise o caso",
+      "llamada": "{{agente}} ligou",
+      "tecla": "Teclou {{tecla}} na ligação",
+      "llamadaFin": "A ligação terminou",
+      "llamadaFallida": "Não foi possível ligar"
     },
     "motivoFalta": {
       "enfermedad": "doença",
@@ -17926,7 +17931,8 @@
       "falta_no_registrada": "não foi possível registrar a falta",
       "relevo_sin_candidatos": "falta registrada; não houve substituto disponível",
       "falta_espera_relevo": "falta registrada; o substituto aguarda sua aprovação",
-      "falta_registrada": "falta registrada"
+      "falta_registrada": "falta registrada",
+      "pide_ayuda": "pede ajuda (teclou 3 na ligação)"
     },
     "resolucion": {
       "dice_que_esta": "disse que já estava lá",
@@ -17991,7 +17997,9 @@
       "guardado": "Ajustes salvos.",
       "error": "Não foi possível salvar os ajustes.",
       "vigilantes": "Os vigilantes podem escrever para {{agente}} pelo WhatsApp",
-      "vigilantesHint": "Perguntam seu horário e suas horas, pedem folgas, registram ocorrências (também por áudio) e se oferecem para turnos. Só veem o que é deles, e o que enviam confirmam com um SIM."
+      "vigilantesHint": "Perguntam seu horário e suas horas, pedem folgas, registram ocorrências (também por áudio) e se oferecem para turnos. Só veem o que é deles, e o que enviam confirmam com um SIM.",
+      "llamada": "Ligação de voz",
+      "llamadaHint": "Se não responder por escrito, uma voz liga e ele tecla 1, 2 ou 3. É cobrado por minuto do saldo de comunicações da empresa; sem saldo, não se liga."
     },
     "partes": {
       "traducirTitulo": "Traduzir este relatório",

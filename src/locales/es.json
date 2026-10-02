@@ -17890,7 +17890,8 @@
     "canal": {
       "whatsapp": "WhatsApp",
       "push": "notificación de la app",
-      "sms": "SMS"
+      "sms": "SMS",
+      "llamada": "llamada"
     },
     "evento": {
       "detectado": "{{agente}} lo detectó",
@@ -17903,7 +17904,11 @@
       "resuelto": "Resuelto: {{resolucion}}",
       "cerrado": "Cerrado",
       "cerradoPorPersona": "Cerrado por {{nombre}}",
-      "error": "Algo falló al registrarlo; revisa el caso"
+      "error": "Algo falló al registrarlo; revisa el caso",
+      "llamada": "{{agente}} le llamó",
+      "tecla": "Marcó {{tecla}} en la llamada",
+      "llamadaFin": "Terminó la llamada",
+      "llamadaFallida": "No se pudo llamar"
     },
     "motivoFalta": {
       "enfermedad": "enfermedad",
@@ -17926,7 +17931,8 @@
       "falta_no_registrada": "no se pudo registrar la falta",
       "relevo_sin_candidatos": "falta registrada; no hubo relevo disponible",
       "falta_espera_relevo": "falta registrada; el relevo espera tu visto bueno",
-      "falta_registrada": "falta registrada"
+      "falta_registrada": "falta registrada",
+      "pide_ayuda": "pide ayuda (marcó 3 en la llamada)"
     },
     "resolucion": {
       "dice_que_esta": "dijo que ya estaba",
@@ -17991,7 +17997,9 @@
       "guardado": "Ajustes guardados.",
       "error": "No se pudieron guardar los ajustes.",
       "vigilantes": "Los vigilantes pueden escribirle a {{agente}} por WhatsApp",
-      "vigilantesHint": "Preguntan su horario y sus horas, piden permisos, reportan novedades (también con nota de voz) y se ofrecen para turnos. Sólo ven lo suyo, y lo que envían lo confirman con un SÍ."
+      "vigilantesHint": "Preguntan su horario y sus horas, piden permisos, reportan novedades (también con nota de voz) y se ofrecen para turnos. Sólo ven lo suyo, y lo que envían lo confirman con un SÍ.",
+      "llamada": "Llamada de voz",
+      "llamadaHint": "Si no contesta por escrito, una voz le llama y él marca 1, 2 o 3. Se cobra por minuto del saldo de comunicaciones de la empresa; sin saldo, no se llama."
     },
     "partes": {
       "traducirTitulo": "Traducir este parte",

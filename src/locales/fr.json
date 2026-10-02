@@ -17890,7 +17890,8 @@
     "canal": {
       "whatsapp": "WhatsApp",
       "push": "notification de l’application",
-      "sms": "SMS"
+      "sms": "SMS",
+      "llamada": "appel"
     },
     "evento": {
       "detectado": "{{agente}} l’a détecté",
@@ -17903,7 +17904,11 @@
       "resuelto": "Résolu : {{resolucion}}",
       "cerrado": "Clos",
       "cerradoPorPersona": "Clos par {{nombre}}",
-      "error": "Un problème est survenu à l’enregistrement ; vérifiez le cas"
+      "error": "Un problème est survenu à l’enregistrement ; vérifiez le cas",
+      "llamada": "{{agente}} l’a appelé",
+      "tecla": "A tapé {{tecla}} pendant l’appel",
+      "llamadaFin": "L’appel est terminé",
+      "llamadaFallida": "L’appel n’a pas pu être passé"
     },
     "motivoFalta": {
       "enfermedad": "maladie",
@@ -17926,7 +17931,8 @@
       "falta_no_registrada": "l’absence n’a pas pu être enregistrée",
       "relevo_sin_candidatos": "absence enregistrée ; aucun remplaçant disponible",
       "falta_espera_relevo": "absence enregistrée ; le remplacement attend votre accord",
-      "falta_registrada": "absence enregistrée"
+      "falta_registrada": "absence enregistrée",
+      "pide_ayuda": "demande de l’aide (a tapé 3 pendant l’appel)"
     },
     "resolucion": {
       "dice_que_esta": "a dit être déjà sur place",
@@ -17991,7 +17997,9 @@
       "guardado": "Réglages enregistrés.",
       "error": "Impossible d’enregistrer les réglages.",
       "vigilantes": "Les agents peuvent écrire à {{agente}} sur WhatsApp",
-      "vigilantesHint": "Ils consultent leur planning et leurs heures, demandent des congés, signalent des incidents (aussi par message vocal) et se proposent pour des services. Ils ne voient que ce qui les concerne et confirment tout envoi par un OUI."
+      "vigilantesHint": "Ils consultent leur planning et leurs heures, demandent des congés, signalent des incidents (aussi par message vocal) et se proposent pour des services. Ils ne voient que ce qui les concerne et confirment tout envoi par un OUI.",
+      "llamada": "Appel vocal",
+      "llamadaHint": "S’il ne répond pas par écrit, une voix l’appelle et il tape 1, 2 ou 3. Facturé à la minute sur le solde de communications de l’entreprise ; sans solde, pas d’appel."
     },
     "partes": {
       "traducirTitulo": "Traduire ce rapport",
