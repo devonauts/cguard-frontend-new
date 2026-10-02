@@ -10980,7 +10980,16 @@
       "caraOff": "Niet controleren",
       "caraFlag": "Leidinggevende waarschuwen (klokt toch in)",
       "caraEnforce": "Vereisen: selfie opnieuw laten maken",
-      "caraAyuda": "Controleert of de foto een gezicht toont en niet de muur, het plafond of een vinger op de camera. Herkent de persoon niet. Bij „Vereisen” klokt de derde poging in en blijft ter controle."
+      "caraAyuda": "Controleert of de foto een gezicht toont en niet de muur, het plafond of een vinger op de camera. Herkent de persoon niet. Bij „Vereisen” klokt de derde poging in en blijft ter controle.",
+      "vacacionesYDescanso": "Verlof en rust",
+      "vacacionesYDescansoAyuda": "Laat leeg om de wet van uw land te gebruiken (op basis van dienstjaren). Vul een getal in als uw bedrijf iets anders toekent via cao of contract.",
+      "diasDeVacacionesPorAnio": "Vakantiedagen per jaar",
+      "descansoMinimoEntreTurnos": "Minimale rust tussen diensten (uren)",
+      "maximoDeHorasSeguidas": "Maximaal aantal uren achter elkaar",
+      "segunLaLey": "Volgens de wet",
+      "losDiasDeVacacionesSon": "Vakantiedagen zijn",
+      "diasNaturales": "Kalenderdagen",
+      "diasLaborables": "Werkdagen"
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Waar gaat u werken?",

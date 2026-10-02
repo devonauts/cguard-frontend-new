@@ -9,6 +9,7 @@ import {
   BellRing,
   CheckSquare,
   CalendarRange,
+  Palmtree,
 } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
@@ -69,6 +70,10 @@ interface NominaSettings {
     nightEndHour?: number;
     overtimeThresholdHours?: number;
     roundingMinutes?: number;
+    /** Vacío = lo de la ley del país, por antigüedad. */
+    vacaciones?: { diasPorAnio: number | null; unidad: "naturales" | "laborables" };
+    /** Vacío = lo del país (UE 11 h de descanso; resto 8 h) y 16 h seguidas. */
+    descanso?: { minimoHoras: number | null; maxHorasSeguidas: number | null };
   };
 }
 
@@ -750,6 +755,88 @@ export default function NominaSettings() {
                 label={t("ui.NominaSettings.laNocheTerminaALas")}
                 path="payroll.nightEndHour"
               />
+            </SettingsSection>
+
+            {/* ── VACACIONES Y DESCANSO: LO DE LA EMPRESA, O LO DE SU PAÍS ──────
+                VigIA calcula cuántos días le tocan a cada uno y avisa cuando un
+                reemplazo se queda sin descanso. Vacío NO es cero: es «lo que
+                diga la ley del país de la empresa» (vacaciones por antigüedad;
+                11 h de descanso en la UE, 8 h en el resto). Lo que se escriba
+                aquí manda: convenio, contrato o política propia. */}
+            <SettingsSection
+              icon={<Palmtree />}
+              title={t("ui.NominaSettings.vacacionesYDescanso", "Vacaciones y descanso")}
+            >
+              <p className="mb-3 text-xs sm:col-span-2" style={{ color: "var(--ink-faint)" }}>
+                {t(
+                  "ui.NominaSettings.vacacionesYDescansoAyuda",
+                  "Déjalo vacío para usar lo que dice la ley de tu país (por antigüedad). Escribe un número si tu empresa da otra cosa por convenio o contrato.",
+                )}
+              </p>
+              {(
+                [
+                  ["vacaciones", "diasPorAnio", t("ui.NominaSettings.diasDeVacacionesPorAnio", "Días de vacaciones por año")],
+                  ["descanso", "minimoHoras", t("ui.NominaSettings.descansoMinimoEntreTurnos", "Descanso mínimo entre turnos (horas)")],
+                  ["descanso", "maxHorasSeguidas", t("ui.NominaSettings.maximoDeHorasSeguidas", "Máximo de horas seguidas")],
+                ] as const
+              ).map(([grupo, campo, etiqueta]) => (
+                <label key={`${grupo}.${campo}`} className="block">
+                  <span className="cg-eyebrow">{etiqueta}</span>
+                  <input
+                    className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm tabular-nums"
+                    min={0}
+                    placeholder={t("ui.NominaSettings.segunLaLey", "Según la ley")}
+                    type="number"
+                    value={
+                      ((s.payroll as any)?.[grupo]?.[campo] ?? "") as number | string
+                    }
+                    onChange={(e) => {
+                      const v = e.target.value === "" ? null : Number(e.target.value);
+
+                      setS((prev) => {
+                        const p = (prev ?? {}) as NominaSettings;
+                        const payroll: any = { ...(p.payroll || {}) };
+
+                        payroll[grupo] = { ...(payroll[grupo] || {}), [campo]: v };
+
+                        return { ...p, payroll };
+                      });
+                    }}
+                  />
+                </label>
+              ))}
+              <label className="block">
+                <span className="cg-eyebrow">
+                  {t("ui.NominaSettings.losDiasDeVacacionesSon", "Los días de vacaciones son")}
+                </span>
+                <select
+                  className="cg-input cg-focus mt-1.5 w-full px-3 py-2 text-sm"
+                  value={s.payroll?.vacaciones?.unidad ?? "naturales"}
+                  onChange={(e) =>
+                    setS((prev) => {
+                      const p = (prev ?? {}) as NominaSettings;
+
+                      return {
+                        ...p,
+                        payroll: {
+                          ...(p.payroll || {}),
+                          vacaciones: {
+                            diasPorAnio: p.payroll?.vacaciones?.diasPorAnio ?? null,
+                            unidad: e.target.value as "naturales" | "laborables",
+                          },
+                        },
+                      };
+                    })
+                  }
+                >
+                  <option value="naturales">
+                    {t("ui.NominaSettings.diasNaturales", "Días naturales (de calendario)")}
+                  </option>
+                  <option value="laborables">
+                    {t("ui.NominaSettings.diasLaborables", "Días laborables")}
+                  </option>
+                </select>
+              </label>
             </SettingsSection>
 
             <div className="fixed bottom-6 right-6 z-10">

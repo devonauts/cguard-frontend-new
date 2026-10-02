@@ -10457,7 +10457,16 @@
       "caraOff": "Não verificar",
       "caraFlag": "Avisar o supervisor (deixa registrar)",
       "caraEnforce": "Exigir: pedir para repetir a selfie",
-      "caraAyuda": "Verifica se a foto mostra um rosto, e não a parede, o teto ou um dedo sobre a câmera. Não reconhece a pessoa. Com «Exigir», na terceira tentativa deixa registrar e fica para revisão."
+      "caraAyuda": "Verifica se a foto mostra um rosto, e não a parede, o teto ou um dedo sobre a câmera. Não reconhece a pessoa. Com «Exigir», na terceira tentativa deixa registrar e fica para revisão.",
+      "vacacionesYDescanso": "Férias e descanso",
+      "vacacionesYDescansoAyuda": "Deixe vazio para usar o que diz a lei do seu país (por antiguidade). Escreva um número se sua empresa concede outra coisa por acordo ou contrato.",
+      "diasDeVacacionesPorAnio": "Dias de férias por ano",
+      "descansoMinimoEntreTurnos": "Descanso mínimo entre turnos (horas)",
+      "maximoDeHorasSeguidas": "Máximo de horas seguidas",
+      "segunLaLey": "Conforme a lei",
+      "losDiasDeVacacionesSon": "Os dias de férias são",
+      "diasNaturales": "Dias corridos",
+      "diasLaborables": "Dias úteis"
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Onde você vai trabalhar?",

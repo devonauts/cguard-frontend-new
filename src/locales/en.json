@@ -10457,7 +10457,16 @@
       "caraOff": "Don't check",
       "caraFlag": "Notify the supervisor (still clocks in)",
       "caraEnforce": "Require: ask to retake the selfie",
-      "caraAyuda": "Checks that the photo shows a face, not the wall, the ceiling or a finger over the camera. It doesn't recognize the person. With “Require”, the third attempt clocks in and is left for review."
+      "caraAyuda": "Checks that the photo shows a face, not the wall, the ceiling or a finger over the camera. It doesn't recognize the person. With “Require”, the third attempt clocks in and is left for review.",
+      "vacacionesYDescanso": "Time off and rest",
+      "vacacionesYDescansoAyuda": "Leave it empty to use your country’s law (by seniority). Enter a number if your company grants something different by agreement or contract.",
+      "diasDeVacacionesPorAnio": "Vacation days per year",
+      "descansoMinimoEntreTurnos": "Minimum rest between shifts (hours)",
+      "maximoDeHorasSeguidas": "Maximum consecutive hours",
+      "segunLaLey": "Per the law",
+      "losDiasDeVacacionesSon": "Vacation days are",
+      "diasNaturales": "Calendar days",
+      "diasLaborables": "Working days"
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Where will you be working?",

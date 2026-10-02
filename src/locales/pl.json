@@ -11014,7 +11014,16 @@
       "caraOff": "Nie sprawdzaj",
       "caraFlag": "Powiadom przełożonego (i tak odbija)",
       "caraEnforce": "Wymagaj: poproś o ponowne selfie",
-      "caraAyuda": "Sprawdza, czy zdjęcie pokazuje twarz, a nie ścianę, sufit lub palec na aparacie. Nie rozpoznaje osoby. Przy „Wymagaj” trzecia próba odbija wejście i trafia do weryfikacji."
+      "caraAyuda": "Sprawdza, czy zdjęcie pokazuje twarz, a nie ścianę, sufit lub palec na aparacie. Nie rozpoznaje osoby. Przy „Wymagaj” trzecia próba odbija wejście i trafia do weryfikacji.",
+      "vacacionesYDescanso": "Urlop i odpoczynek",
+      "vacacionesYDescansoAyuda": "Zostaw puste, aby stosować prawo Twojego kraju (wg stażu). Wpisz liczbę, jeśli firma przyznaje coś innego z układu lub umowy.",
+      "diasDeVacacionesPorAnio": "Dni urlopu rocznie",
+      "descansoMinimoEntreTurnos": "Minimalny odpoczynek między zmianami (godz.)",
+      "maximoDeHorasSeguidas": "Maksymalna liczba godzin z rzędu",
+      "segunLaLey": "Wg przepisów",
+      "losDiasDeVacacionesSon": "Dni urlopu to",
+      "diasNaturales": "Dni kalendarzowe",
+      "diasLaborables": "Dni robocze"
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Gdzie odbędzie się służba?",
