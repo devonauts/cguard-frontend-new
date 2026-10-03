@@ -304,7 +304,9 @@
       "enviamosEnlace": "Se esiste un account per {{correo}}, riceverai un link per creare una nuova password.",
       "enviarDeNuevo": "Invia di nuovo",
       "procesando": "Elaborazione…",
-      "listo": "Fatto"
+      "listo": "Fatto",
+      "bienvenidoA": "Benvenuto,",
+      "bienvenido": "Benvenuto"
     }
   },
   "client": {

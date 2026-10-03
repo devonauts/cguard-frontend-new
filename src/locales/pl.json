@@ -304,7 +304,9 @@
       "enviamosEnlace": "Jeśli istnieje konto dla {{correo}}, otrzymasz link do utworzenia nowego hasła.",
       "enviarDeNuevo": "Wyślij ponownie",
       "procesando": "Przetwarzanie…",
-      "listo": "Gotowe"
+      "listo": "Gotowe",
+      "bienvenidoA": "Witaj,",
+      "bienvenido": "Witaj"
     }
   },
   "client": {

@@ -434,7 +434,9 @@
       "enviamosEnlace": "Si hay una cuenta con {{correo}}, te llegará un enlace para crear una contraseña nueva.",
       "enviarDeNuevo": "Enviarlo de nuevo",
       "procesando": "Procesando…",
-      "listo": "Listo"
+      "listo": "Listo",
+      "bienvenidoA": "Bienvenido,",
+      "bienvenido": "Bienvenido"
     }
   },
   "billing": {

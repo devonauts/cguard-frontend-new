@@ -24,6 +24,7 @@ import {
   cacheTenantTimezone,
 } from "@/utils/tenantLocation";
 import { resolveCountryCode } from "@/lib/validators/id";
+import { consumirEntradaAlCrm } from "@/lib/entradaAlCrm";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -72,6 +73,17 @@ function AppLayoutInterno({ children }: AppLayoutProps) {
 }
 
 function AppLayoutShell({ children }: AppLayoutProps) {
+  /* La entrada por partes (menú → barra → contenido) al llegar desde el inicio
+     de sesión: una sola vez, ver lib/entradaAlCrm.ts. La clase se quita al
+     terminar para no dejar animaciones colgando en el armazón. */
+  const [entrando, setEntrando] = useState(consumirEntradaAlCrm);
+
+  useEffect(() => {
+    if (!entrando) return;
+    const reloj = setTimeout(() => setEntrando(false), 1800);
+
+    return () => clearTimeout(reloj);
+  }, [entrando]);
   const [sidebarOpen, setSidebarOpen] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth >= 1024 : true,
   );
@@ -360,7 +372,9 @@ function AppLayoutShell({ children }: AppLayoutProps) {
        `env(safe-area-inset-*)` vale `0px` mientras el `<meta viewport>` no
        lleve `viewport-fit=cover`, que hoy NO lo lleva: todo esto mide lo mismo
        que antes hasta que alguien active el borde a borde. */}
-      <div className="app-shell h-screen w-full bg-background supports-[height:100dvh]:h-[100dvh]">
+      <div
+        className={`app-shell h-screen w-full bg-background supports-[height:100dvh]:h-[100dvh]${entrando ? " cg-entrada" : ""}`}
+      >
         {/* No pinta nada: avisa al panel del dueño de que esta sesión está viva. */}
         <VisitBeacon />
         {/* El velo de los menús flotantes vive AQUÍ DENTRO, no en el <body>.

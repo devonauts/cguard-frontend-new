@@ -6879,7 +6879,9 @@
       "enviamosEnlace": "Se houver uma conta com {{correo}}, você receberá um link para criar uma nova senha.",
       "enviarDeNuevo": "Enviar novamente",
       "procesando": "Processando…",
-      "listo": "Pronto"
+      "listo": "Pronto",
+      "bienvenidoA": "Bem-vindo,",
+      "bienvenido": "Bem-vindo"
     }
   },
   "billing": {

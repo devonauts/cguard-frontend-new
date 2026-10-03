@@ -11,6 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { getBillingState } from "@/lib/entitlements";
 import { canAccessCrm } from "@/lib/access";
 import AppAccessPending from "@/pages/auth/AppAccessPending";
+import { useEntradaEnCurso } from "@/lib/entradaAlCrm";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -211,6 +212,9 @@ export function PublicOnlyRoute({
 }) {
   const { isAuthenticated, loading, user } = useAuth();
   const location = useLocation();
+  /* Mientras el acceso enseña el visto verde y la bienvenida, la sesión ya
+     existe pero todavía no se redirige (lib/entradaAlCrm.ts). */
+  const entrando = useEntradaEnCurso();
 
   // The partner's login preview always shows the login, session or not.
   if (esVistaPrevia()) return <>{children}</>;
@@ -237,6 +241,7 @@ export function PublicOnlyRoute({
   }
 
   // Si ya está autenticado y NO es flujo de invitación, redirigir al dashboard
+  if (isAuthenticated && entrando) return <>{children}</>;
   if (isAuthenticated) {
     if (redirectByRole) {
       const raw = (user as any)?.roles ?? (user as any)?.role ?? [];

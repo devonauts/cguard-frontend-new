@@ -484,6 +484,32 @@ h1, h2, h3, h4, h5, .font-display,
   font-family: var(--font-display);
 }
 
+/* ── LA ENTRADA AL CRM (opción 14, 2026-10-03) ─────────────────────────────────
+   Al llegar desde el inicio de sesión el armazón se construye por partes: el
+   menú desde la izquierda, la barra desde arriba y el contenido de la página
+   pieza a pieza. La clase `.cg-entrada` la pone `app-layout` UNA vez
+   (lib/entradaAlCrm.ts) y la quita al terminar. Sólo transform y opacity. */
+.app-shell.cg-entrada > aside,
+.app-shell.cg-entrada > .app-header,
+.app-shell.cg-entrada > main > *,
+.app-shell.cg-entrada > main > :last-child > * {
+  animation: cg-entrada-pieza 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.app-shell.cg-entrada > aside { --de: translateX(-100%); animation-delay: 0s; }
+.app-shell.cg-entrada > .app-header { --de: translateY(-100%); animation-delay: 0.12s; }
+.app-shell.cg-entrada > main > * { --de: translateY(14px); animation-delay: 0.24s; }
+.app-shell.cg-entrada > main > :last-child { animation: none; }
+.app-shell.cg-entrada > main > :last-child > * { --de: translateY(18px) scale(0.98); animation-delay: 0.3s; }
+.app-shell.cg-entrada > main > :last-child > :nth-child(2) { animation-delay: 0.38s; }
+.app-shell.cg-entrada > main > :last-child > :nth-child(3) { animation-delay: 0.46s; }
+.app-shell.cg-entrada > main > :last-child > :nth-child(4) { animation-delay: 0.54s; }
+.app-shell.cg-entrada > main > :last-child > :nth-child(5) { animation-delay: 0.62s; }
+.app-shell.cg-entrada > main > :last-child > :nth-child(n + 6) { animation-delay: 0.7s; }
+@keyframes cg-entrada-pieza { from { opacity: 0; transform: var(--de, translateY(14px)); } }
+@media (prefers-reduced-motion: reduce) {
+  .app-shell.cg-entrada *, .app-shell.cg-entrada > * { animation: none !important; }
+}
+
 /* ── LA CONTRASEÑA OCULTA ──────────────────────────────────────────────────────
    Urbanist dibuja el «•» diminuto: medido a 100 px, 12 de alto contra 29 en
    Inter (2026-10-03). Con texto escrito, el campo de contraseña usa el punto de

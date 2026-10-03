@@ -304,7 +304,9 @@
       "enviamosEnlace": "Als er een account is voor {{correo}}, ontvang je een link om een nieuw wachtwoord te maken.",
       "enviarDeNuevo": "Opnieuw versturen",
       "procesando": "Bezig…",
-      "listo": "Klaar"
+      "listo": "Klaar",
+      "bienvenidoA": "Welkom,",
+      "bienvenido": "Welkom"
     }
   },
   "client": {
