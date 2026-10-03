@@ -562,7 +562,7 @@ describe("Etapa E · el respaldo de plataforma no se le presta a un socio", () =
     );
     expect(fuente).toMatch(/if \(!puedeUsarArteDePlataforma\)/);
     // Y el arte de CGuardPro sigue existiendo para la plataforma.
-    expect(fuente).toMatch(/c-guard-lockup-light\.png/);
+    expect(fuente).toMatch(/assets\/logo\/escudo\.png/);
   });
 });
 

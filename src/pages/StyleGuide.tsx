@@ -565,7 +565,7 @@ export default function StyleGuide() {
           titulo="Bloque de marca"
           uso="El logotipo con el lema. Se usa en el acceso y en el arranque; en cualquier otro sitio, consúltalo antes."
           api={["BrandLockup", "cg-lockup"]}
-          nota="El lema NO es parte de la imagen. Estaba dibujado dentro del PNG, y por eso decía «Seguridad Inteligente» también en inglés y en portugués: ahora sale de `brand.tagline` y se estira al ancho del wordmark, porque cada idioma mide distinto y si no el bloque bailaría al cambiarlo. El arte tiene dos versiones, clara y oscura, porque el cristal lleva color propio: el viejo truco de invertir el PNG negro con `dark:brightness-0 dark:invert` ya no sirve. Las medidas del hueco del lema salen del alfa del arte original (6477×1119), no de ajustarlas a ojo — si se rehace el logo, hay que volver a medirlas."
+          nota="El escudo, «C-GUARD» y el lema son tres piezas. El lema NO es imagen: sale de `brand.tagline` y se estira al ancho del wordmark, porque cada idioma mide distinto y si no el bloque bailaría al cambiarlo. Las letras tienen dos versiones, clara y oscura, y van cortadas en siete tramos para la entrada. Al cargar la página el primer logo entra con «Enfoque» (se enfoca desde desenfocado, las letras se juntan y el ojo brilla, 1 s) y luego queda el barrido de cristal cada 6 s; los siguientes logos ya aparecen quietos."
         >
           <div className="space-y-6">
             <div>
