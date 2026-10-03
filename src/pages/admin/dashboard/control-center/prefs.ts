@@ -25,15 +25,8 @@ export interface DashboardPrefs {
   statusColors: Record<LiveStatus, string>;
   liveTracking: boolean;
   locationIntervalSec: number; // map refresh interval
-  // security operations (mirror ronda-settings where backend supports it)
-  requirePhotoCheckpoint: boolean;
-  requireGpsCheckpoint: boolean;
-  requireQrRonda: boolean;
-  geofenceRadius: number;
-  lateCheckpointThresholdMin: number;
+  /** Minutos sin señal a partir de los cuales un marcador deja de verse vivo. */
   offlineDeviceWarningMin: number;
-  alertEscalationLevels: number;
-  emergencyAutoNotify: boolean;
 }
 
 export const DEFAULT_PREFS: DashboardPrefs = {
@@ -65,14 +58,7 @@ export const DEFAULT_PREFS: DashboardPrefs = {
   },
   liveTracking: true,
   locationIntervalSec: 15,
-  requirePhotoCheckpoint: true,
-  requireGpsCheckpoint: true,
-  requireQrRonda: true,
-  geofenceRadius: 100,
-  lateCheckpointThresholdMin: 10,
   offlineDeviceWarningMin: 15,
-  alertEscalationLevels: 3,
-  emergencyAutoNotify: true,
 };
 
 const keyFor = () =>

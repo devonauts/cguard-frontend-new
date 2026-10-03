@@ -262,12 +262,13 @@ export function CustomizePanel({
           ))}
         </Group>
 
+        {/* Sólo lo que el tablero LEE de verdad. Aquí había siete ajustes más
+            («exigir foto», «radio de geocerca», «escalación»…) que se guardaban
+            y nadie leía: parecían reglas de operación y no lo eran. Las reglas
+            reales de las rondas viven en Configuración › Rondas. */}
         <Group
           icon={<ShieldCheck className="size-4" />}
-          title={t(
-            "ui.CustomizePanel.operacionesDeSeguridad",
-            "Operaciones de seguridad",
-          )}
+          title={t("ui.CustomizePanel.mapaEnVivo", "Mapa en vivo")}
         >
           <Toggle
             checked={p.liveTracking}
@@ -290,57 +291,10 @@ export function CustomizePanel({
               onChange={(v) => set({ locationIntervalSec: v })}
             />
           </Row>
-          <Toggle
-            checked={p.requirePhotoCheckpoint}
-            label={t(
-              "ui.CustomizePanel.exigirFotoEnPuntoDeControl",
-              "Exigir foto en punto de control",
-            )}
-            onChange={(v) => set({ requirePhotoCheckpoint: v })}
-          />
-          <Toggle
-            checked={p.requireGpsCheckpoint}
-            label={t(
-              "ui.CustomizePanel.exigirGpsEnPuntoDeControl",
-              "Exigir GPS en punto de control",
-            )}
-            onChange={(v) => set({ requireGpsCheckpoint: v })}
-          />
-          <Toggle
-            checked={p.requireQrRonda}
-            label={t("ui.CustomizePanel.exigirEscaneoQrEnRonda")}
-            onChange={(v) => set({ requireQrRonda: v })}
-          />
           <Row
             label={t(
-              "ui.CustomizePanel.radioDeGeocercaM",
-              "Radio de geocerca (m)",
-            )}
-          >
-            <NumInput
-              max={2000}
-              min={20}
-              value={p.geofenceRadius}
-              onChange={(v) => set({ geofenceRadius: v })}
-            />
-          </Row>
-          <Row
-            label={t(
-              "ui.CustomizePanel.umbralPuntoDeControlTardio",
-              "Umbral punto de control tardío (min)",
-            )}
-          >
-            <NumInput
-              max={120}
-              min={1}
-              value={p.lateCheckpointThresholdMin}
-              onChange={(v) => set({ lateCheckpointThresholdMin: v })}
-            />
-          </Row>
-          <Row
-            label={t(
-              "ui.CustomizePanel.avisoDispositivoSinConexionMin",
-              "Aviso dispositivo sin conexión (min)",
+              "ui.CustomizePanel.sinSenalTrasMin",
+              "Marcar sin señal después de (min)",
             )}
           >
             <NumInput
@@ -350,33 +304,12 @@ export function CustomizePanel({
               onChange={(v) => set({ offlineDeviceWarningMin: v })}
             />
           </Row>
-          <Row
-            label={t(
-              "ui.CustomizePanel.nivelesDeEscalacionDeAlerta",
-              "Niveles de escalación de alerta",
-            )}
-          >
-            <NumInput
-              max={5}
-              min={1}
-              value={p.alertEscalationLevels}
-              onChange={(v) => set({ alertEscalationLevels: v })}
-            />
-          </Row>
-          <Toggle
-            checked={p.emergencyAutoNotify}
-            label={t(
-              "ui.CustomizePanel.notificacionAutomaticaDeEmergencia",
-              "Notificación automática de emergencia",
-            )}
-            onChange={(v) => set({ emergencyAutoNotify: v })}
-          />
         </Group>
 
         <p className="mb-20 text-[11px]" style={{ color: "var(--ink-faint)" }}>
           {t(
-            "ui.CustomizePanel.elColorDeAcentoSeGuarda",
-            "El color de acento se guarda en tu cuenta y te sigue a cualquier dispositivo. El resto de estas preferencias se guardan en este navegador y sólo afectan a tu vista del panel.",
+            "ui.CustomizePanel.notaDePreferencias",
+            "Estas preferencias se guardan en tu cuenta y te siguen a cualquier dispositivo. Sólo cambian cómo ves tú el panel; no cambian las reglas de la operación.",
           )}
         </p>
 
