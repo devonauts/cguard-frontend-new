@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Escena 3D de ronda</title>
+<style>
+  body{margin:0;background:#04060c;color:#eef2f8;font:14px system-ui,sans-serif;padding:24px 16px}
+  .mapa{max-width:900px;margin:0 auto;aspect-ratio:16/11;border-radius:18px;border:1px solid rgba(143,184,255,.16);background:linear-gradient(180deg,#0e1628,#070b14)}
+  p{max-width:900px;margin:12px auto;color:#8e98ad}
+</style>
+</head>
+<body>
+<!-- Abrir con un servidor local (los módulos no cargan desde file://), p. ej.: npx serve src/components/escena-ronda-3d -->
+<div class="mapa" id="mapa"></div>
+<p id="estado">0 puntos</p>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script type="module">
+  import { montarEscenaRonda3D } from "./escenaRonda3d.js";
+  const estado = document.getElementById("estado");
+  montarEscenaRonda3D(document.getElementById("mapa"), {
+    THREE: window.THREE,
+    onPunto: ({ vigilante, punto, hechos, total }) => {
+      estado.textContent = `${hechos} / ${total} · ${vigilante.id} ${vigilante.nombre} pasó por «${punto}»`;
+    },
+  });
+</script>
+</body>
+</html>
