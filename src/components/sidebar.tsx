@@ -262,7 +262,11 @@ const CGSB_CSS = `
 /* Anclada a la placa (absolute + inset): con width/height: 100% dentro de una
    rejilla de pista automática, una imagen que NO carga se pintaba con el
    tamaño de su texto alternativo y se salía de la placa (57×78 en una de 34). */
-.cgsb-logo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 3px; }
+.cgsb-logo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+/* Con logo, la placa desaparece: la imagen se ve ENTERA y con sus esquinas,
+   sin recorte redondeado, sin marco y sin fondo (pedido del dueño). La placa
+   redondeada con el acento queda sólo para las iniciales. */
+.cgsb-logo.con-logo { border-radius: 0; background: none; border: 0; box-shadow: none; overflow: visible; }
 
 /* ── BUSCADOR ─────────────────────────────────────────────────────────────── */
 .cgsb-search {
@@ -456,8 +460,8 @@ const CGSB_CSS = `
 }
 .cgsb-orb-brand { background: var(--brand-wash); border-color: var(--brand-line); color: var(--brand-text); }
 .cgsb-orb-brand:hover { color: var(--brand-ink); background: var(--brand); border-color: transparent; }
-.cgsb-orb-avatar { position: relative; padding: 0; overflow: hidden; }
-.cgsb-orb-avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.cgsb-orb-avatar { position: relative; padding: 0; border-radius: 0; background: none; border: 0; box-shadow: none; }
+.cgsb-orb-avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
 
 .cgsb-sep { width: 22px; height: 1px; background: var(--hairline); margin: 2px 0; flex: 0 0 auto; }
 /* El botón de tema del bloque de usuario. Sin caja propia se quedaba en 16 px
@@ -1083,7 +1087,7 @@ export default function Sidebar({
   };
 
   const brandTile = (
-    <span className="cgsb-logo">
+    <span className={`cgsb-logo ${logoVisible ? "con-logo" : ""}`}>
       {logoVisible ? (
         <img
           alt={tenantName || t("onboarding.requiredFields.logo", "Logo")}
