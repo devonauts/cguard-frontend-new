@@ -284,7 +284,6 @@
       "claveSegura": "Sterk wachtwoord",
       "ver": "Toon",
       "ocultar": "Verberg",
-      "gratis14": "14 dagen gratis",
       "sinTarjeta": "Geen creditcard",
       "sinCompromiso": "Vrijblijvend",
       "idioma": "Taal",
@@ -311,7 +310,8 @@
       "confirmaTexto": "We hebben een link gestuurd naar {{correo}}. Open hem om je account te activeren en in te loggen.",
       "entendido": "Begrepen",
       "teLlevamos": "Je gaat over {{s}} s naar inloggen",
-      "revisaSpam": "Zie je hem niet? Kijk in je spam- of promotiemap."
+      "revisaSpam": "Zie je hem niet? Kijk in je spam- of promotiemap.",
+      "diasGratis": "{{dias}} dagen gratis"
     }
   },
   "client": {

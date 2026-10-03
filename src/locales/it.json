@@ -284,7 +284,6 @@
       "claveSegura": "Password sicura",
       "ver": "Mostra",
       "ocultar": "Nascondi",
-      "gratis14": "14 giorni gratis",
       "sinTarjeta": "Senza carta",
       "sinCompromiso": "Senza impegno",
       "idioma": "Lingua",
@@ -311,7 +310,8 @@
       "confirmaTexto": "Abbiamo inviato un link a {{correo}}. Aprilo per attivare il tuo account e accedere.",
       "entendido": "Ho capito",
       "teLlevamos": "Ti portiamo all’accesso tra {{s}} s",
-      "revisaSpam": "Non lo vedi? Controlla la cartella spam o promozioni."
+      "revisaSpam": "Non lo vedi? Controlla la cartella spam o promozioni.",
+      "diasGratis": "{{dias}} giorni gratis"
     }
   },
   "client": {

@@ -6859,7 +6859,6 @@
       "claveSegura": "Senha segura",
       "ver": "Ver",
       "ocultar": "Ocultar",
-      "gratis14": "14 dias grátis",
       "sinTarjeta": "Sem cartão",
       "sinCompromiso": "Sem compromisso",
       "idioma": "Idioma",
@@ -6886,7 +6885,8 @@
       "confirmaTexto": "Enviamos um link para {{correo}}. Abra-o para ativar sua conta e poder entrar.",
       "entendido": "Entendi",
       "teLlevamos": "Levando você ao login em {{s}} s",
-      "revisaSpam": "Não encontrou? Verifique a pasta de spam ou promoções."
+      "revisaSpam": "Não encontrou? Verifique a pasta de spam ou promoções.",
+      "diasGratis": "{{dias}} dias grátis"
     }
   },
   "billing": {

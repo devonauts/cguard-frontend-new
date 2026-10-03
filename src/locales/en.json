@@ -414,7 +414,6 @@
       "claveSegura": "Strong password",
       "ver": "Show",
       "ocultar": "Hide",
-      "gratis14": "14 days free",
       "sinTarjeta": "No card required",
       "sinCompromiso": "No commitment",
       "idioma": "Language",
@@ -441,7 +440,8 @@
       "confirmaTexto": "We sent a link to {{correo}}. Open it to activate your account and sign in.",
       "entendido": "Got it",
       "teLlevamos": "Taking you to sign in in {{s}} s",
-      "revisaSpam": "Don’t see it? Check your spam or promotions folder."
+      "revisaSpam": "Don’t see it? Check your spam or promotions folder.",
+      "diasGratis": "{{dias}} days free"
     }
   },
   "billing": {

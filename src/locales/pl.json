@@ -284,7 +284,6 @@
       "claveSegura": "Silne hasło",
       "ver": "Pokaż",
       "ocultar": "Ukryj",
-      "gratis14": "14 dni za darmo",
       "sinTarjeta": "Bez karty",
       "sinCompromiso": "Bez zobowiązań",
       "idioma": "Język",
@@ -311,7 +310,8 @@
       "confirmaTexto": "Wysłaliśmy link na {{correo}}. Otwórz go, aby aktywować konto i się zalogować.",
       "entendido": "Rozumiem",
       "teLlevamos": "Przejście do logowania za {{s}} s",
-      "revisaSpam": "Nie widzisz? Sprawdź folder spam lub oferty."
+      "revisaSpam": "Nie widzisz? Sprawdź folder spam lub oferty.",
+      "diasGratis": "{{dias}} dni za darmo"
     }
   },
   "client": {

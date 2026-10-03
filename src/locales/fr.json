@@ -284,7 +284,6 @@
       "claveSegura": "Mot de passe sûr",
       "ver": "Afficher",
       "ocultar": "Masquer",
-      "gratis14": "14 jours gratuits",
       "sinTarjeta": "Sans carte bancaire",
       "sinCompromiso": "Sans engagement",
       "idioma": "Langue",
@@ -311,7 +310,8 @@
       "confirmaTexto": "Nous avons envoyé un lien à {{correo}}. Ouvrez-le pour activer votre compte et vous connecter.",
       "entendido": "Compris",
       "teLlevamos": "Redirection vers la connexion dans {{s}} s",
-      "revisaSpam": "Vous ne le voyez pas ? Vérifiez vos spams ou promotions."
+      "revisaSpam": "Vous ne le voyez pas ? Vérifiez vos spams ou promotions.",
+      "diasGratis": "{{dias}} jours gratuits"
     }
   },
   "client": {

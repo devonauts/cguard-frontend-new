@@ -284,7 +284,6 @@
       "claveSegura": "Sicheres Passwort",
       "ver": "Anzeigen",
       "ocultar": "Verbergen",
-      "gratis14": "14 Tage kostenlos",
       "sinTarjeta": "Keine Kreditkarte",
       "sinCompromiso": "Unverbindlich",
       "idioma": "Sprache",
@@ -311,7 +310,8 @@
       "confirmaTexto": "Wir haben einen Link an {{correo}} gesendet. Öffnen Sie ihn, um Ihr Konto zu aktivieren und sich anzumelden.",
       "entendido": "Verstanden",
       "teLlevamos": "Weiter zur Anmeldung in {{s}} s",
-      "revisaSpam": "Nicht gefunden? Prüfen Sie den Spam- oder Werbeordner."
+      "revisaSpam": "Nicht gefunden? Prüfen Sie den Spam- oder Werbeordner.",
+      "diasGratis": "{{dias}} Tage kostenlos"
     }
   },
   "client": {

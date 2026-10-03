@@ -57,6 +57,10 @@ function reglasDeClave(v: string) {
   };
 }
 
+/** La prueba gratis de un cliente directo (servidor: lib/billingModel.ts,
+ *  BILLING_TRIAL_DAYS). Bajó de 14 a 7 el 2026-10-03. */
+const DIAS_DE_PRUEBA = 7;
+
 export default function Register() {
   const { t, i18n } = useTranslation();
   const { signUp } = useAuth();
@@ -103,7 +107,7 @@ export default function Register() {
   }, [paso]);
   const marca = useWhiteLabel();
   const dePlataforma = !!marca.puedeUsarArteDePlataforma;
-  /* Las tres frases de abajo (14 días, sin tarjeta, la cifra) son promesas de
+  /* Las tres frases de abajo (los días gratis, sin tarjeta, la cifra) son promesas de
      la plataforma: en el anfitrión de un socio no se dicen. */
   const nombreDeMarca = marca.platformName || "";
   const [isLoading, setIsLoading] = useState(false);
@@ -545,14 +549,15 @@ export default function Register() {
               {t("onboarding.wizard.continue", "Continuar")}{" "}
               <ArrowRight className="h-4 w-4" />
             </button>
-            {/* La prueba de 14 días es de la plataforma: un socio pone
+            {/* La prueba gratis es de la plataforma: un socio pone
                     sus propias condiciones, así que en su anfitrión no se
                     promete nada. */}
             {dePlataforma && (
               <div className="cg-reg-suave flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs">
                 {[
-                  t("auth.signup.gratis14", {
-                    defaultValue: "14 días gratis",
+                  t("auth.signup.diasGratis", {
+                    defaultValue: "{{dias}} días gratis",
+                    dias: DIAS_DE_PRUEBA,
                   }),
                   t("auth.signup.sinTarjeta", {
                     defaultValue: "Sin tarjeta",

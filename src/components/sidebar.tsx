@@ -259,7 +259,10 @@ const CGSB_CSS = `
   box-shadow: 0 0 18px -6px var(--brand-glow), inset 0 1px 0 0 var(--hairline-lit);
   color: var(--brand-text); font-weight: 700; font-size: 12px; letter-spacing: .02em;
 }
-.cgsb-logo img { width: 100%; height: 100%; object-fit: contain; padding: 3px; }
+/* Anclada a la placa (absolute + inset): con width/height: 100% dentro de una
+   rejilla de pista automática, una imagen que NO carga se pintaba con el
+   tamaño de su texto alternativo y se salía de la placa (57×78 en una de 34). */
+.cgsb-logo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 3px; }
 
 /* ── BUSCADOR ─────────────────────────────────────────────────────────────── */
 .cgsb-search {
@@ -453,8 +456,8 @@ const CGSB_CSS = `
 }
 .cgsb-orb-brand { background: var(--brand-wash); border-color: var(--brand-line); color: var(--brand-text); }
 .cgsb-orb-brand:hover { color: var(--brand-ink); background: var(--brand); border-color: transparent; }
-.cgsb-orb-avatar { padding: 0; overflow: hidden; }
-.cgsb-orb-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.cgsb-orb-avatar { position: relative; padding: 0; overflow: hidden; }
+.cgsb-orb-avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
 .cgsb-sep { width: 22px; height: 1px; background: var(--hairline); margin: 2px 0; flex: 0 0 auto; }
 /* El botón de tema del bloque de usuario. Sin caja propia se quedaba en 16 px
@@ -582,6 +585,12 @@ export default function Sidebar({
   const [tenantLogo, setTenantLogo] = useState<string | null>(
     () => getStoredTenantBranding().logo,
   );
+  /* Un logo que no carga (archivo borrado, enlace caducado) no enseña el icono
+     de imagen rota: se cae a las iniciales, como si no hubiera logo. */
+  const [logoRoto, setLogoRoto] = useState(false);
+
+  useEffect(() => setLogoRoto(false), [tenantLogo]);
+  const logoVisible = tenantLogo && !logoRoto ? tenantLogo : null;
 
   useEffect(() => {
     const tenantId =
@@ -1075,8 +1084,12 @@ export default function Sidebar({
 
   const brandTile = (
     <span className="cgsb-logo">
-      {tenantLogo ? (
-        <img alt={tenantName || t("onboarding.requiredFields.logo", "Logo")} src={tenantLogo} />
+      {logoVisible ? (
+        <img
+          alt={tenantName || t("onboarding.requiredFields.logo", "Logo")}
+          src={logoVisible}
+          onError={() => setLogoRoto(true)}
+        />
       ) : (
         <span>
           {tenantName ? tenantName.substring(0, 2).toUpperCase() : "CG"}
@@ -1248,13 +1261,17 @@ export default function Sidebar({
     <div className="cgsb-rail">
       <button
         aria-label={t("sidebar.goToDashboard")}
-        className={`cgsb-orb cg-focus ${tenantLogo ? "cgsb-orb-avatar" : "cgsb-orb-brand"}`}
+        className={`cgsb-orb cg-focus ${logoVisible ? "cgsb-orb-avatar" : "cgsb-orb-brand"}`}
         title={`${tenantName || nombreDeMarca} · ${t("sidebar.brandTooltip")}`}
         type="button"
         onClick={() => go("/dashboard")}
       >
-        {tenantLogo ? (
-          <img alt={tenantName || t("onboarding.requiredFields.logo", "Logo")} src={tenantLogo} />
+        {logoVisible ? (
+          <img
+            alt={tenantName || t("onboarding.requiredFields.logo", "Logo")}
+            src={logoVisible}
+            onError={() => setLogoRoto(true)}
+          />
         ) : (
           <Shield className="h-[18px] w-[18px]" />
         )}
