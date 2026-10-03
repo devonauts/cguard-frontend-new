@@ -55,14 +55,18 @@ export default function Boveda({
   /* Los hooks, antes del `return` de la cortina: si no, el primer render y el
      siguiente llaman a un número distinto y React avisa al cerrar sesión. */
   const marca = useWhiteLabel();
-  const [cargando, setCargando] = useState(splash);
+  /* La cortina de bienvenida sale UNA vez por pestaña: al abrir el CRM. Antes
+     salía cada vez que se entraba a esta pantalla —también desde el enlace
+     del registro— y eran 2,5 s de espera sin cargar nada (2026-10-03). */
+  const [cargando, setCargando] = useState(() => splash && !cortinaYaVista());
 
   useEffect(() => {
-    if (!splash) return;
+    if (!cargando) return;
+    marcarCortinaVista();
     const reloj = setTimeout(() => setCargando(false), 2500);
 
     return () => clearTimeout(reloj);
-  }, [splash]);
+  }, [cargando]);
 
   if (cargando) return <SplashScreen />;
 
@@ -237,6 +241,24 @@ export default function Boveda({
 
     </div>
   );
+}
+
+const CLAVE_CORTINA = "cg-cortina-vista";
+
+function cortinaYaVista(): boolean {
+  try {
+    return sessionStorage.getItem(CLAVE_CORTINA) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function marcarCortinaVista(): void {
+  try {
+    sessionStorage.setItem(CLAVE_CORTINA, "1");
+  } catch {
+    /* sin almacenamiento: la cortina saldrá otra vez, nada más */
+  }
 }
 
 function iniciales(nombre: string): string {
