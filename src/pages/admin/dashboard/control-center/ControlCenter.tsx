@@ -65,7 +65,6 @@ import {
   hidratarDesdeLaCuenta,
   type DashboardPrefs,
 } from "./prefs";
-import { useDemoData } from "./demoData";
 import { useControlCenter } from "./useControlCenter";
 import { CommandBar } from "./components/CommandBar";
 import { MetricHero } from "./components/MetricHero";
@@ -148,29 +147,10 @@ export default function ControlCenter() {
     };
   }, []);
   const [customizeOpen, setCustomizeOpen] = useState(false);
-  const [demo, setDemo] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem("cc_demo") === "1";
-    } catch {
-      return false;
-    }
-  });
-  const toggleDemo = (v: boolean) => {
-    setDemo(v);
-    try {
-      localStorage.setItem("cc_demo", v ? "1" : "0");
-    } catch {
-      /* ignore */
-    }
-  };
-
   const live = useControlCenter(
     prefs.liveTracking ? prefs.locationIntervalSec : 3600,
   );
-  const demoData = useDemoData(demo);
-  // En modo demo se muestra la muestra poblada para que un negocio nuevo pueda
-  // ver el panel en operación. El refresco sigue siendo el real.
-  const data = demo ? { ...demoData, refresh: live.refresh } : live;
+  const data = live;
 
   // Módulo SUCURSALES: con la operación dividida, el mapa general deja paso al
   // carrusel de sucursales. Sin el módulo no se pide nada y todo sigue igual.
@@ -233,7 +213,6 @@ export default function ControlCenter() {
             cifras={[...vitales, ...recursos]}
             cobertura={cobertura}
             data={data}
-            demo={demo}
             prefs={prefs}
             railItems={railItems}
             resumen={resumen}
@@ -244,7 +223,6 @@ export default function ControlCenter() {
             }
             userName={nombreDe(user)}
             onCustomize={() => setCustomizeOpen(true)}
-            onDemo={toggleDemo}
             onFullMap={openFullMap}
           />
           <CustomizePanel
@@ -267,13 +245,11 @@ export default function ControlCenter() {
       <DashboardErrorBoundary>
         <div className="cc-root cmd-shell mx-auto w-full max-w-[1680px] space-y-5 p-4 pb-16 sm:p-6">
           <CommandBar
-            demo={demo}
             lastSync={data.health.lastSync}
             resumen={resumen}
             sseConnected={data.health.sseConnected}
             userName={nombreDe(user)}
             onCustomize={() => setCustomizeOpen(true)}
-            onDemo={toggleDemo}
             onFullMap={openFullMap}
             onRefresh={data.refresh}
           />

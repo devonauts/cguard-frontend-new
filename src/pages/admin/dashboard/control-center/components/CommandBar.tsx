@@ -6,7 +6,6 @@
 import {
   RefreshCw,
   SlidersHorizontal,
-  Sparkles,
   Maximize2,
   Radar,
 } from "lucide-react";
@@ -33,8 +32,6 @@ export function CommandBar({
   userName,
   sseConnected,
   lastSync,
-  demo,
-  onDemo,
   onRefresh,
   onCustomize,
   onFullMap,
@@ -43,8 +40,6 @@ export function CommandBar({
   userName: string;
   sseConnected: boolean;
   lastSync: string;
-  demo: boolean;
-  onDemo: (v: boolean) => void;
   onRefresh: () => void;
   onCustomize: () => void;
   onFullMap: () => void;
@@ -62,9 +57,8 @@ export function CommandBar({
      lo anuncia y aquí se pinta en rojo, no en ámbar: un tablero ciego que
      parece vivo es peor que uno que avisa. */
   const salud = useSaludEnVivo();
-  const enlace = demo
-    ? { tone: "brand" as const, label: t("dashboard.demoData") }
-    : salud === "degradado"
+  const enlace =
+    salud === "degradado"
       ? {
           tone: "bad" as const,
           label: t(
@@ -122,7 +116,7 @@ export function CommandBar({
             tone={enlace.tone}
           >
             {enlace.label}
-            {!demo && lastSync && (
+            {lastSync && (
               <span
                 className="font-medium normal-case tracking-normal tabular-nums"
                 style={{ color: "var(--ink-faint)" }}
@@ -137,44 +131,6 @@ export function CommandBar({
             style={{ background: "var(--hairline)" }}
           />
 
-          {/* Demo: deja que un negocio recién creado vea el panel poblado. */}
-          <button
-            aria-checked={demo}
-            aria-label={t(
-              "ui.CommandBar.datosDeDemostracion",
-              "Datos de demostración",
-            )}
-            className="cg-btn-glass cg-focus inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold"
-            role="switch"
-            style={
-              demo
-                ? {
-                    color: "var(--brand-text)",
-                    borderColor: "var(--brand-line)",
-                  }
-                : undefined
-            }
-            type="button"
-            onClick={() => onDemo(!demo)}
-          >
-            <Sparkles className="size-3.5" />
-            Demo
-            <span
-              className="relative inline-flex h-4 w-7 items-center rounded-full transition-colors"
-              style={{
-                background: demo ? "var(--brand)" : "var(--glass-sunken)",
-                boxShadow: "inset 0 0 0 1px var(--hairline)",
-              }}
-            >
-              <span
-                className="absolute size-3 rounded-full transition-transform"
-                style={{
-                  background: demo ? "var(--brand-ink)" : "var(--ink-faint)",
-                  transform: demo ? "translateX(14px)" : "translateX(2px)",
-                }}
-              />
-            </span>
-          </button>
 
           <button
             className="cg-btn-glass cg-focus inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold"

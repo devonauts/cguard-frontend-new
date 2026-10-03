@@ -3,35 +3,24 @@ import { useTranslation } from "react-i18next";
 import { Maximize, X, Radio } from "lucide-react";
 
 import { useControlCenter } from "./useControlCenter";
-import { useDemoData } from "./demoData";
 import { loadPrefs } from "./prefs";
 import { OperationsMap } from "./components/OperationsMap";
 
-import { StatusBadge } from "@/components/kit";
 import { tituloConMarca } from "@/hooks/usePageTitle";
 import "./control-center.css";
 
 /**
  * Full-screen "Operaciones en tiempo real" — opened in its own tab from the
- * dashboard. Reuses the same live data hook (and demo mode) as the panel, and
+ * dashboard. Reuses the same live data hook as the panel, and
  * renders the operations map filling the whole viewport.
  */
 export default function OperationsMapFull() {
   const { t } = useTranslation();
   const prefs = useMemo(() => loadPrefs(), []);
-  const demo = useMemo(() => {
-    try {
-      return localStorage.getItem("cc_demo") === "1";
-    } catch {
-      return false;
-    }
-  }, []);
-
   const live = useControlCenter(
     prefs.liveTracking ? prefs.locationIntervalSec : 3600,
   );
-  const demoData = useDemoData(demo);
-  const data = demo ? demoData : live;
+  const data = live;
 
   const [h, setH] = useState(() =>
     typeof window !== "undefined" ? window.innerHeight : 800,
@@ -86,11 +75,6 @@ export default function OperationsMapFull() {
             <Radio className="size-4" style={{ color: "var(--ok-text)" }} />
             {t("dashboard.map.title", "Operaciones en tiempo real")}
           </span>
-          {demo && (
-            <StatusBadge dot={false} tone="brand">
-              Demo
-            </StatusBadge>
-          )}
           <span
             className="hidden h-5 w-px sm:block"
             style={{ background: "var(--hairline)" }}

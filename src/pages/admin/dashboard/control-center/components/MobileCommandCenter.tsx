@@ -17,7 +17,7 @@
  * ── LO QUE NO CAMBIA ───────────────────────────────────────────────────────
  * De dónde salen los datos. Esta pieza no pide nada: recibe lo que
  * `useControlCenter` ya trae (mismos endpoints, mismo sondeo, mismo SSE, mismo
- * socket de posiciones), los mismos ajustes, el mismo modo demostración y las
+ * socket de posiciones), los mismos ajustes y las
  * mismas rutas de `navigation.ts`. Cambia la composición, no la maquinaria.
  *
  * ── EL HILO ENTRE LA HOJA Y EL CARRUSEL ────────────────────────────────────
@@ -39,7 +39,6 @@ import {
   RefreshCw,
   ShieldCheck,
   SlidersHorizontal,
-  Sparkles,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
@@ -90,8 +89,6 @@ function saludoKey(): { key: string; fallback: string } {
 export function MobileCommandCenter({
   data,
   prefs,
-  demo,
-  onDemo,
   onCustomize,
   onFullMap,
   cifras,
@@ -104,8 +101,6 @@ export function MobileCommandCenter({
 }: {
   data: ControlCenterData & { refresh: () => void };
   prefs: DashboardPrefs;
-  demo: boolean;
-  onDemo: (v: boolean) => void;
   onCustomize: () => void;
   onFullMap: () => void;
   /** Las cifras del carrusel, ya ordenadas (vitales primero). */
@@ -190,12 +185,7 @@ export function MobileCommandCenter({
     if (car) car.dataset.oculto = px > umbralRef.current ? "1" : "0";
   }, []);
 
-  const enlace = demo
-    ? {
-        tone: "brand" as const,
-        label: t("ui.MobileCommandCenter.demostracion", "Demostración"),
-      }
-    : data.health.sseConnected
+  const enlace = data.health.sseConnected
       ? { tone: "ok" as const, label: t("dashboard.live", "En vivo") }
       : {
           tone: "warn" as const,
@@ -257,9 +247,7 @@ export function MobileCommandCenter({
               className="truncate text-[11px] tabular-nums"
               style={{ color: "var(--ink-faint)" }}
             >
-              {!demo && data.health.lastSync
-                ? clockOf(data.health.lastSync)
-                : t("ui.MobileCommandCenter.datosDeMuestra", "datos de muestra")}
+              {data.health.lastSync ? clockOf(data.health.lastSync) : ""}
             </span>
           </div>
 
@@ -338,47 +326,6 @@ export function MobileCommandCenter({
                 {t("dashboard.fullMap", "Mapa completo")}
               </button>
 
-              {/* Demostración: deja que un negocio recién creado vea el panel
-                  poblado. Mismo estado y mismo `localStorage` que en escritorio. */}
-              <button
-                aria-checked={demo}
-                aria-label={t(
-                  "ui.MobileCommandCenter.datosDeDemostracion",
-                  "Datos de demostración",
-                )}
-                className="cg-btn-glass cg-focus inline-flex items-center gap-2 rounded-full px-3 py-2.5 text-xs font-semibold"
-                role="switch"
-                style={
-                  demo
-                    ? {
-                        color: "var(--brand-text)",
-                        borderColor: "var(--brand-line)",
-                      }
-                    : undefined
-                }
-                type="button"
-                onClick={() => onDemo(!demo)}
-              >
-                <Sparkles className="size-3.5" />
-                Demo
-                <span
-                  className="relative inline-flex h-4 w-7 items-center rounded-full transition-colors"
-                  style={{
-                    background: demo ? "var(--brand)" : "var(--glass-sunken)",
-                    boxShadow: "inset 0 0 0 1px var(--hairline)",
-                  }}
-                >
-                  <span
-                    className="absolute size-3 rounded-full transition-transform"
-                    style={{
-                      background: demo
-                        ? "var(--brand-ink)"
-                        : "var(--ink-faint)",
-                      transform: demo ? "translateX(14px)" : "translateX(2px)",
-                    }}
-                  />
-                </span>
-              </button>
             </div>
 
             <Panel
