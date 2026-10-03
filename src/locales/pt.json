@@ -6839,7 +6839,12 @@
     "chooseAccountNoCompany": "Conta sem empresa atribuída",
     "company_label": "Nome da sua empresa",
     "company_placeholder": "Ex.: Segurança Atlântica",
-    "country_label": "País"
+    "country_label": "País",
+    "must_accept_terms": "Para criar a sua conta tem de aceitar a Política de Privacidade e os Termos e Condições.",
+    "accept_prefix": "Aceito a",
+    "accept_and": "e os",
+    "privacy_policy": "Política de Privacidade",
+    "terms_conditions": "Termos e Condições"
   },
   "billing": {
     "activate": "Ativar assinatura",

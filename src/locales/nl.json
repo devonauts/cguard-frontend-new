@@ -264,7 +264,12 @@
     "chooseAccountNoCompany": "Account zonder toegewezen bedrijf",
     "company_label": "Naam van je bedrijf",
     "company_placeholder": "Bijv. Delta Beveiliging",
-    "country_label": "Land"
+    "country_label": "Land",
+    "must_accept_terms": "Om je account aan te maken moet je het Privacybeleid en de Algemene voorwaarden accepteren.",
+    "accept_prefix": "Ik ga akkoord met het",
+    "accept_and": "en de",
+    "privacy_policy": "Privacybeleid",
+    "terms_conditions": "Algemene voorwaarden"
   },
   "client": {
     "invite_not_found": "Uitnodiging niet gevonden of ongeldig.",

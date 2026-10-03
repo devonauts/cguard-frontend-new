@@ -1107,6 +1107,14 @@ button, [role="button"] { transition: transform 0.09s var(--ease); }
      flujo; éste no. */
   [data-sonner-toast] [data-close-button] { min-height: 0; }
 
+  /* ── LOS INTERRUPTORES NO SE ESTIRAN ─────────────────────────────────────
+     Un interruptor también es un <button>, y la regla de arriba lo subía de
+     24 a 44 px de alto con su ancho de 44: la pista quedaba CUADRADA, el
+     redondeo la volvía un círculo y la perilla flotaba en una esquina («una
+     bola inservible», 2026-10-03). Como con las casillas, el dibujo conserva
+     su tamaño y lo que crece es la zona que responde al dedo (::after, abajo). */
+  [role="switch"] { min-height: 0; min-width: 0; }
+
   /* 16 px en los campos, y no es una decisión tipográfica: por debajo de eso
      iOS AMPLÍA la página al enfocar un campo, y luego no vuelve. El formulario
      se queda a 1,3x y desalineado, y quien está rellenando un parte en la calle
@@ -1152,11 +1160,17 @@ button, [role="button"] { transition: transform 0.09s var(--ease); }
      convierte en un cuadro enorme al lado de una línea de texto. Lo que se
      estira es la zona que responde al dedo, con una capa invisible alrededor
      — 16 + 14 + 14 = 44. */
-  [role="checkbox"], [role="radio"] { position: relative; }
+  [role="checkbox"], [role="radio"], [role="switch"] { position: relative; }
   [role="checkbox"]::after, [role="radio"]::after {
     content: "";
     position: absolute;
     inset: -14px;
+  }
+  /* El interruptor mide 24 de alto: 10 px por arriba y por abajo dan 44. */
+  [role="switch"]::after {
+    content: "";
+    position: absolute;
+    inset: -10px -4px;
   }
   /* Las nativas no admiten pseudo-elementos, así que aquí el dibujo SÍ crece:
      de 16 a 24 px. No llega a 44 —para eso habría que separarlas de su etiqueta
@@ -1172,7 +1186,7 @@ button, [role="button"] { transition: transform 0.09s var(--ease); }
      lado. La regla se escribe con `:has` y no botón por botón porque son
      decenas repartidas por todo el CRM, y el que se escriba mañana también lo
      necesita. Las casillas quedan fuera: ahí el ancho ES el dibujo. */
-  button:has(> svg:only-child):not([role="checkbox"]):not([role="radio"]) {
+  button:has(> svg:only-child):not([role="checkbox"]):not([role="radio"]):not([role="switch"]) {
     min-width: 44px;
   }
 

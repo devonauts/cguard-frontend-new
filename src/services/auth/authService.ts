@@ -27,6 +27,15 @@ export interface SignUpData {
   companyName?: string;
   /** País de la empresa, código ISO («MX»). */
   country?: string;
+  /** Más campos trampa: siempre vacíos en un envío humano. */
+  faxNumber?: string;
+  homepageUrl?: string;
+  /** Aceptó la Política de privacidad y los Términos. */
+  acceptedTerms?: boolean;
+  /** Versión de los textos aceptados. */
+  termsVersion?: string;
+  /** Canal desde el que se da de alta ('web' = CRM). */
+  app?: string;
 }
 
 export interface AuthResponse {

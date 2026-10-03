@@ -394,7 +394,12 @@
     "chooseAccountNoCompany": "Cuenta sin empresa asignada",
     "company_label": "Nombre de tu empresa",
     "company_placeholder": "Ej. Seguridad Andina",
-    "country_label": "País"
+    "country_label": "País",
+    "must_accept_terms": "Para crear tu cuenta tienes que aceptar la Política de privacidad y los Términos y condiciones.",
+    "accept_prefix": "Acepto la",
+    "accept_and": "y los",
+    "privacy_policy": "Política de privacidad",
+    "terms_conditions": "Términos y condiciones"
   },
   "billing": {
     "title": "Estado de la suscripción",

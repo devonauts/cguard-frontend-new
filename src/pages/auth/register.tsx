@@ -59,6 +59,14 @@ export default function Register() {
   // formulario sirve para descartar el envío instantáneo. Ninguna de las dos
   // molesta a nadie real, y las dos funcionan sin configurar nada.
   const [trampa, setTrampa] = useState("");
+  // Dos trampas más (fax y web): con una sola, el robot que ya pasó por aquí
+  // aprende a esquivarla. Mismo diseño que la primera: nombre sin significado
+  // y sólo lectura, para que ningún autocompletado las pise.
+  const [trampa2, setTrampa2] = useState("");
+  const [trampa3, setTrampa3] = useState("");
+  /* Aceptar la Política de privacidad y los Términos: obligatorio. El servidor
+     también lo exige y guarda cuándo se aceptó. */
+  const [acepta, setAcepta] = useState(false);
   const pintadoEn = useRef<number>(Date.now());
 
   const [captchaToken, setCaptchaToken] = useState("");
@@ -139,6 +147,17 @@ export default function Register() {
       return;
     }
 
+    if (!acepta) {
+      toast.error(
+        t("auth.must_accept_terms", {
+          defaultValue:
+            "Para crear tu cuenta tienes que aceptar la Política de privacidad y los Términos y condiciones.",
+        }),
+      );
+
+      return;
+    }
+
     // Mismo criterio que el servidor (lib/validators/telefono): entre 8 y 15
     // dígitos. Se comprueba aquí para no gastar un viaje y dar el mensaje ya.
     const digitos = phone.replace(/\D/g, "");
@@ -192,6 +211,13 @@ export default function Register() {
       country: pais,
       captchaToken: captchaToken || undefined,
       companyWebsite: trampa,
+      faxNumber: trampa2,
+      homepageUrl: trampa3,
+      acceptedTerms: acepta,
+      // El canal, como en el inicio de sesión: el servidor exige la casilla a
+      // las altas del CRM.
+      app: "web",
+      termsVersion: "2026-10",
       elapsedMs: Date.now() - pintadoEn.current,
     });
 
@@ -467,7 +493,73 @@ export default function Register() {
             value={trampa}
             onChange={(e) => setTrampa(e.target.value)}
           />
+          <input
+            readOnly
+            autoComplete="off"
+            data-1p-ignore
+            data-lpignore="true"
+            id="cg-f2"
+            name="cg-f2"
+            tabIndex={-1}
+            type="text"
+            value={trampa2}
+            onChange={(e) => setTrampa2(e.target.value)}
+          />
+          <input
+            readOnly
+            autoComplete="off"
+            data-1p-ignore
+            data-lpignore="true"
+            id="cg-h9"
+            name="cg-h9"
+            tabIndex={-1}
+            type="text"
+            value={trampa3}
+            onChange={(e) => setTrampa3(e.target.value)}
+          />
         </div>
+
+        {/* Consentimiento: sin marcarlo no se crea la cuenta. */}
+        <label
+          className="flex cursor-pointer items-start gap-2.5 text-sm"
+          htmlFor="acepta"
+        >
+          <input
+            checked={acepta}
+            className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--brand)]"
+            disabled={isLoading}
+            id="acepta"
+            type="checkbox"
+            onChange={(e) => setAcepta(e.target.checked)}
+          />
+          <span style={{ color: "var(--ink-soft)" }}>
+            {t("auth.accept_prefix", { defaultValue: "Acepto la" })}{" "}
+            <a
+              className="font-semibold underline"
+              href="https://cguardpro.com/privacy"
+              rel="noopener noreferrer"
+              style={{ color: "var(--brand-text)" }}
+              target="_blank"
+            >
+              {t("auth.privacy_policy", {
+                defaultValue: "Política de privacidad",
+              })}
+            </a>{" "}
+            {t("auth.accept_and", { defaultValue: "y los" })}{" "}
+            <a
+              className="font-semibold underline"
+              href="https://cguardpro.com/terms"
+              rel="noopener noreferrer"
+              style={{ color: "var(--brand-text)" }}
+              target="_blank"
+            >
+              {t("auth.terms_conditions", {
+                defaultValue: "Términos y condiciones",
+              })}
+            </a>
+            .
+          </span>
+        </label>
 
         {captcha.enabled && captcha.siteKey ? (
           <Captcha

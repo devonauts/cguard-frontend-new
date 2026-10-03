@@ -264,7 +264,12 @@
     "chooseAccountNoCompany": "Konto ohne zugewiesenes Unternehmen",
     "company_label": "Name Ihres Unternehmens",
     "company_placeholder": "z. B. Nordwacht Sicherheit",
-    "country_label": "Land"
+    "country_label": "Land",
+    "must_accept_terms": "Um Ihr Konto zu erstellen, müssen Sie die Datenschutzerklärung und die AGB akzeptieren.",
+    "accept_prefix": "Ich akzeptiere die",
+    "accept_and": "und die",
+    "privacy_policy": "Datenschutzerklärung",
+    "terms_conditions": "Allgemeinen Geschäftsbedingungen"
   },
   "client": {
     "invite_not_found": "Die Einladung wurde nicht gefunden oder ist ungültig.",

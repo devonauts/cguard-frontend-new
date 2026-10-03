@@ -264,7 +264,12 @@
     "chooseAccountNoCompany": "Compte sans entreprise attribuée",
     "company_label": "Nom de votre entreprise",
     "company_placeholder": "Ex. Sécurité Lumière",
-    "country_label": "Pays"
+    "country_label": "Pays",
+    "must_accept_terms": "Pour créer votre compte, vous devez accepter la Politique de confidentialité et les Conditions générales.",
+    "accept_prefix": "J'accepte la",
+    "accept_and": "et les",
+    "privacy_policy": "Politique de confidentialité",
+    "terms_conditions": "Conditions générales"
   },
   "client": {
     "invite_not_found": "Invitation introuvable ou non valide.",

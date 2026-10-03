@@ -394,7 +394,12 @@
     "chooseAccountNoCompany": "Account with no company assigned",
     "company_label": "Company name",
     "company_placeholder": "e.g. Lone Star Security",
-    "country_label": "Country"
+    "country_label": "Country",
+    "must_accept_terms": "To create your account you need to accept the Privacy Policy and the Terms and Conditions.",
+    "accept_prefix": "I accept the",
+    "accept_and": "and the",
+    "privacy_policy": "Privacy Policy",
+    "terms_conditions": "Terms and Conditions"
   },
   "billing": {
     "title": "Subscription status",

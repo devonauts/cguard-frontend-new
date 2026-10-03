@@ -264,7 +264,12 @@
     "chooseAccountNoCompany": "Konto bez przypisanej firmy",
     "company_label": "Nazwa Twojej firmy",
     "company_placeholder": "Np. Ochrona Wisła",
-    "country_label": "Kraj"
+    "country_label": "Kraj",
+    "must_accept_terms": "Aby utworzyć konto, musisz zaakceptować Politykę prywatności oraz Regulamin.",
+    "accept_prefix": "Akceptuję",
+    "accept_and": "oraz",
+    "privacy_policy": "Politykę prywatności",
+    "terms_conditions": "Regulamin"
   },
   "client": {
     "invite_not_found": "Nie znaleziono zaproszenia lub jest ono nieprawidłowe.",

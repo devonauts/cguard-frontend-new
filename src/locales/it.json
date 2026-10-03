@@ -264,7 +264,12 @@
     "chooseAccountNoCompany": "Account senza azienda assegnata",
     "company_label": "Nome della tua azienda",
     "company_placeholder": "Es. Vigilanza Adriatica",
-    "country_label": "Paese"
+    "country_label": "Paese",
+    "must_accept_terms": "Per creare il tuo account devi accettare l'Informativa sulla privacy e i Termini e condizioni.",
+    "accept_prefix": "Accetto",
+    "accept_and": "e i",
+    "privacy_policy": "l'Informativa sulla privacy",
+    "terms_conditions": "Termini e condizioni"
   },
   "client": {
     "invite_not_found": "Invito non trovato o non valido.",
