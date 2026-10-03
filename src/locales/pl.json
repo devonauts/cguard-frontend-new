@@ -261,7 +261,10 @@
     "passwordRequirements": "Musi mieć co najmniej 8 znaków, wielką literę, małą literę, cyfrę i znak specjalny.",
     "chooseAccountTitle": "Do której firmy chcesz się zalogować?",
     "chooseAccountHint": "Ten adres e-mail ma konto w każdej z nich. Wybierz, którego chcesz teraz użyć.",
-    "chooseAccountNoCompany": "Konto bez przypisanej firmy"
+    "chooseAccountNoCompany": "Konto bez przypisanej firmy",
+    "company_label": "Nazwa Twojej firmy",
+    "company_placeholder": "Np. Ochrona Wisła",
+    "country_label": "Kraj"
   },
   "client": {
     "invite_not_found": "Nie znaleziono zaproszenia lub jest ono nieprawidłowe.",
@@ -11135,7 +11138,9 @@
       "subBienvenida": "Zacznijmy od Twojego kraju.",
       "subTuEmpresa": "Tak zobaczą Cię Twoi pracownicy i klienci.",
       "subContacto": "Gdzie jest Twoja firma i jak się z nią skontaktować.",
-      "subRevisar": "Sprawdź wszystko przed zakończeniem."
+      "subRevisar": "Sprawdź wszystko przed zakończeniem.",
+      "guardandoBorrador": "Zapisywanie…",
+      "borradorGuardado": "Wersja robocza zapisana"
     },
     "OpenShifts": {
       "accion": "Akcja",

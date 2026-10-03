@@ -1,7 +1,15 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { tituloConMarca } from "@/hooks/usePageTitle";
-import { Mail, Lock, Eye, EyeOff, User, ArrowRight } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import {
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  User,
+  ArrowRight,
+  Building2,
+} from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
@@ -13,9 +21,12 @@ import Captcha from "@/components/auth/Captcha";
 import { ApiService } from "@/services/api/apiService";
 import { EVENTOS, medir } from "@/lib/analiticaDeMarca";
 import { resolveApiBase } from "@/lib/apiBase";
+import { Combobox } from "@/components/app/combobox";
+import { listaDePaises } from "@/lib/paisDeLaEmpresa";
+import { paisConocido } from "@/lib/paisDelVisitante";
 
 export default function Register() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { signUp } = useAuth();
   const navigate = useNavigate();
 
@@ -24,6 +35,20 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [phone, setPhone] = useState("");
+  /* El nombre de la empresa y el país, desde el alta (2026-10-03): la empresa
+     nace con ellos y el asistente de configuración abre con los dos puestos.
+     El país arranca en el del visitante y del país sale el prefijo. */
+  const [empresa, setEmpresa] = useState("");
+  const [pais, setPais] = useState<string>(() =>
+    (paisConocido() || "").toUpperCase(),
+  );
+  const opcionesPais = useMemo(
+    () =>
+      listaDePaises(i18n.resolvedLanguage || i18n.language || "en").map(
+        (p) => ({ value: p.code, label: `${p.bandera} ${p.nombre}` }),
+      ),
+    [i18n.resolvedLanguage, i18n.language],
+  );
   const [showPwd, setShowPwd] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -48,7 +73,9 @@ export default function Register() {
   });
 
   useEffect(() => {
-    document.title = tituloConMarca(t("auth.register_title") || "Registro | Cguard");
+    document.title = tituloConMarca(
+      t("auth.register_title") || "Registro | Cguard",
+    );
   }, []);
 
   // ATRIBUCIÓN ENTRE DOMINIOS. El sitio vive en cguardpro.com y el alta aquí,
@@ -98,7 +125,15 @@ export default function Register() {
   const handleRegister = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
 
-    if (!name || !email || !phone || !password || !confirm) {
+    if (
+      !name ||
+      !empresa.trim() ||
+      !pais ||
+      !email ||
+      !phone ||
+      !password ||
+      !confirm
+    ) {
       toast.error(t("auth.fill_all_fields"));
 
       return;
@@ -153,6 +188,8 @@ export default function Register() {
       password,
       name,
       phoneNumber: phone,
+      companyName: empresa.trim(),
+      country: pais,
       captchaToken: captchaToken || undefined,
       companyWebsite: trampa,
       elapsedMs: Date.now() - pintadoEn.current,
@@ -230,6 +267,47 @@ export default function Register() {
           </div>
         </div>
 
+        {/* Empresa */}
+        <div>
+          <Etiqueta htmlFor="empresa">
+            {t("auth.company_label", { defaultValue: "Nombre de tu empresa" })}
+          </Etiqueta>
+          <div className="relative">
+            <Building2
+              className="pointer-events-none absolute left-3.5 top-1/2 h-4.5 w-4.5 -translate-y-1/2"
+              style={{ color: "var(--ink-faint)" }}
+            />
+            <input
+              autoComplete="organization"
+              className={CAMPO_ICONO}
+              disabled={isLoading}
+              id="empresa"
+              maxLength={120}
+              placeholder={t("auth.company_placeholder", {
+                defaultValue: "Ej. Seguridad Andina",
+              })}
+              type="text"
+              value={empresa}
+              onChange={(e) => setEmpresa(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleRegister()}
+            />
+          </div>
+        </div>
+
+        {/* País */}
+        <div>
+          <Etiqueta htmlFor="pais">
+            {t("auth.country_label", { defaultValue: "País" })}
+          </Etiqueta>
+          <Combobox
+            aria-label={t("auth.country_label", { defaultValue: "País" })}
+            options={opcionesPais}
+            placeholder={t("ui.OnboardingWizard.buscarPais", "Buscar país…")}
+            value={pais}
+            onChange={(v) => setPais(String(v || ""))}
+          />
+        </div>
+
         {/* Correo */}
         <div>
           <Etiqueta htmlFor="email">
@@ -261,7 +339,10 @@ export default function Register() {
           <Etiqueta htmlFor="phone">
             {t("auth.phone_label", { defaultValue: "Teléfono" })}
           </Etiqueta>
+          {/* El prefijo sigue al país elegido arriba. */}
           <PhoneInput
+            key={pais || "sin-pais"}
+            defaultCountry={pais || undefined}
             value={phone}
             onChange={setPhone}
           />

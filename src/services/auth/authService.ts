@@ -23,6 +23,10 @@ export interface SignUpData {
   companyWebsite?: string;
   /** Milisegundos entre pintar el formulario y enviarlo. */
   elapsedMs?: number;
+  /** Nombre de la empresa que nace con el alta. */
+  companyName?: string;
+  /** País de la empresa, código ISO («MX»). */
+  country?: string;
 }
 
 export interface AuthResponse {

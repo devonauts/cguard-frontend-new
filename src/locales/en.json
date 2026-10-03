@@ -391,7 +391,10 @@
     "passwordRequirements": "It must have at least 8 characters, an uppercase letter, a lowercase letter, a number and a special character.",
     "chooseAccountTitle": "Which company do you want to sign in to?",
     "chooseAccountHint": "This email has an account in each. Choose the one you want to use now.",
-    "chooseAccountNoCompany": "Account with no company assigned"
+    "chooseAccountNoCompany": "Account with no company assigned",
+    "company_label": "Company name",
+    "company_placeholder": "e.g. Lone Star Security",
+    "country_label": "Country"
   },
   "billing": {
     "title": "Subscription status",
@@ -10578,7 +10581,9 @@
       "subBienvenida": "Let's start with your country.",
       "subTuEmpresa": "This is how your officers and clients will see you.",
       "subContacto": "Where your company is and how to reach it.",
-      "subRevisar": "Check everything before you finish."
+      "subRevisar": "Check everything before you finish.",
+      "guardandoBorrador": "Saving…",
+      "borradorGuardado": "Draft saved"
     },
     "OpenShifts": {
       "accion": "Action",

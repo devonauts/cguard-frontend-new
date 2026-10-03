@@ -152,7 +152,8 @@ const detectBrowser = (): Language | null => {
 const IP_CACHE_KEY = "app_language_ip";
 const IP_CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
-const ipCacheado = (): Language | null => {
+/** La respuesta de la IP guardada, si sigue fresca (aunque dijera «no sé»). */
+const cacheIp = (): { idioma: Language | null } | null => {
   try {
     const crudo = localStorage.getItem(IP_CACHE_KEY);
 
@@ -161,11 +162,12 @@ const ipCacheado = (): Language | null => {
 
     if (!ts || Date.now() - ts > IP_CACHE_TTL_MS) return null;
 
-    return norm(idioma);
+    return { idioma: norm(idioma) };
   } catch {
     return null;
   }
 };
+const ipCacheado = (): Language | null => cacheIp()?.idioma ?? null;
 
 /** Pregunta al servidor por el país de la IP. Nunca lanza; null si no se sabe. */
 const idiomaPorIp = async (): Promise<Language | null> => {
@@ -176,15 +178,15 @@ const idiomaPorIp = async (): Promise<Language | null> => {
     const d = resp && resp.data !== undefined ? resp.data : resp;
     const m = norm(d?.idioma);
 
-    if (m) {
-      try {
-        localStorage.setItem(
-          IP_CACHE_KEY,
-          JSON.stringify({ idioma: m, pais: d?.pais || null, ts: Date.now() }),
-        );
-      } catch {
-        /* nada */
-      }
+    // Se guarda también el «no sé» (país con varios idiomas, IP desconocida):
+    // si no, cada carga volvería a esperar a la red para la misma respuesta.
+    try {
+      localStorage.setItem(
+        IP_CACHE_KEY,
+        JSON.stringify({ idioma: m, pais: d?.pais || null, ts: Date.now() }),
+      );
+    } catch {
+      /* nada */
     }
 
     return m;
@@ -219,33 +221,15 @@ const storedChoice = (): LanguageChoice => {
 };
 
 /**
- * El idioma que viene en la URL, puesto por el sitio público al mandar aquí.
- *
- * cguardpro.com es un sitio de NUEVE mercados y cada botón de «empieza tu
- * prueba» sale de una página en su idioma. Esta app arrancaba siempre en
- * español (`lng: 'es'` en i18n.ts), así que un comprador que pulsaba «Start
- * Free Trial» en la página inglesa aterrizaba en una pantalla titulada
- * «Acceso» — con los ocho diccionarios ya en el repositorio, sin usar.
- *
- * El sitio añade `?lang=` a todos los enlaces a app.cguardpro.com (junto a
- * `cg` y `lp`, que son los de atribución). Aquí se lee una sola vez.
- *
- * Va por DEBAJO de la elección guardada —quien ya eligió su idioma dentro del
- * CRM no debe perderlo por abrir un enlace de marketing— y por ENCIMA de la
- * IP: el idioma de la página desde la que vino dice más sobre en qué idioma
- * lee que el país desde el que se conecta.
+ * El automático, con lo que se sabe SIN red: IP (cacheada) → navegador →
+ * INGLÉS. Regla del dueño (2026-10-03): un cliente nuevo ve el CRM en el
+ * idioma de su IP; si no, el de su navegador; y si ninguno es de los nuestros,
+ * inglés. El `?lang=` de la web ya no manda por encima de la IP.
  */
-const idiomaDeLaUrl = (): Language | null => {
-  try {
-    return norm(new URLSearchParams(window.location.search).get("lang"));
-  } catch {
-    return null;
-  }
-};
+const autoSinRed = (): Language => ipCacheado() || detectBrowser() || "en";
 
-/** El automático, con lo que se sabe SIN red: URL → IP cacheada → navegador → español. */
-const autoSinRed = (): Language =>
-  idiomaDeLaUrl() || ipCacheado() || detectBrowser() || "es";
+/** Cuánto se espera a la IP antes del primer pintado, como mucho. */
+const ESPERA_IP_MS = 1500;
 
 /** El idioma del PRIMER pintado (síncrono): elección → automático sin red. */
 const resolveInitial = (): Language => {
@@ -258,6 +242,15 @@ const resolveInitial = (): Language => {
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>(resolveInitial);
+  /* ── LA PRIMERA VEZ NO SE PINTA EN EL IDIOMA EQUIVOCADO ─────────────────
+     Sin elección y sin respuesta de IP guardada, el idioma correcto todavía
+     no se sabe: antes se pintaba con el del navegador y la pantalla cambiaba
+     de idioma debajo en cuanto contestaba la red. Ahora se espera a la IP —con
+     techo de ESPERA_IP_MS, nunca sin límite: React ya está montado y, pase lo
+     que pase, a los 1,5 s se pinta con el navegador o en inglés—. */
+  const [listo, setListo] = useState<boolean>(
+    () => storedChoice() !== "auto" || cacheIp() !== null,
+  );
   const [choice, setChoiceState] = useState<LanguageChoice>(storedChoice);
   const detected = autoSinRed();
 
@@ -314,20 +307,22 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     // Se pide SIEMPRE que no haya elección, con o sin sesión: la pantalla de
     // acceso es justo donde más importa (es lo primero que ve un prospecto)
     // y este endpoint es público.
-    // `!idiomaDeLaUrl()`: si el sitio público mandó el idioma en la URL, ya
-    // se pintó con él y la IP no debe cambiarlo. El caso concreto es un
-    // comprador que lee la página inglesa desde Guayaquil: la IP diría
-    // español y le voltearía la pantalla debajo, después del primer pintado.
-    if (local === "auto" && !ipCacheado() && !idiomaDeLaUrl()) {
-      void idiomaPorIp().then((porIp) => {
-        if (!porIp) return;
+    // La IP no se pisa con el idioma de la URL de la web: manda la IP.
+    if (local === "auto" && cacheIp() === null) {
+      void Promise.race([
+        idiomaPorIp(),
+        new Promise<null>((ok) => setTimeout(() => ok(null), ESPERA_IP_MS)),
+      ]).then((porIp) => {
+        setListo(true);
         // Si mientras tanto la persona eligió, no se le pisa.
         if (storedChoice() !== "auto") return;
-        setLanguageState(porIp);
-        void setAppLanguage(porIp);
+        const efectivo = porIp || detectBrowser() || "en";
+
+        setLanguageState(efectivo);
+        void setAppLanguage(efectivo);
         try {
-          localStorage.setItem("app_language", porIp);
-          localStorage.setItem("language", porIp);
+          localStorage.setItem("app_language", efectivo);
+          localStorage.setItem("language", efectivo);
         } catch {
           /* nada */
         }
@@ -397,7 +392,20 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     <LanguageContext.Provider
       value={{ language, choice, setChoice, detected, setLanguage }}
     >
-      {children}
+      {listo ? (
+        children
+      ) : (
+        /* Fondo neutro, sin texto: no hay nada que leer en un idioma que
+           todavía no se sabe. Dura como mucho ESPERA_IP_MS. */
+        <div
+          aria-busy="true"
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "var(--background, #0a0a0a)",
+          }}
+        />
+      )}
     </LanguageContext.Provider>
   );
 }

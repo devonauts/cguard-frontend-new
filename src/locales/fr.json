@@ -261,7 +261,10 @@
     "passwordRequirements": "Il doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.",
     "chooseAccountTitle": "Dans quelle entreprise voulez-vous vous connecter ?",
     "chooseAccountHint": "Cette adresse e-mail a un compte dans chacune. Choisissez celui que vous voulez utiliser maintenant.",
-    "chooseAccountNoCompany": "Compte sans entreprise attribuée"
+    "chooseAccountNoCompany": "Compte sans entreprise attribuée",
+    "company_label": "Nom de votre entreprise",
+    "company_placeholder": "Ex. Sécurité Lumière",
+    "country_label": "Pays"
   },
   "client": {
     "invite_not_found": "Invitation introuvable ou non valide.",
@@ -11101,7 +11104,9 @@
       "subBienvenida": "Commençons par votre pays.",
       "subTuEmpresa": "C'est ainsi que vos agents et vos clients vous verront.",
       "subContacto": "Où se trouve votre entreprise et comment la joindre.",
-      "subRevisar": "Vérifiez que tout est correct avant de terminer."
+      "subRevisar": "Vérifiez que tout est correct avant de terminer.",
+      "guardandoBorrador": "Enregistrement…",
+      "borradorGuardado": "Brouillon enregistré"
     },
     "OpenShifts": {
       "accion": "Action",

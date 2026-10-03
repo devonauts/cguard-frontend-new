@@ -288,7 +288,21 @@ export default function OnboardingWizard({
     setLogoPreview(tenant.logoUrl ?? null);
     setLogoFile(null);
     setLogoError(null);
-    setStep(0);
+    /* Se retoma donde se quedó: cada paso se guarda en el servidor al pulsar
+       «Continuar» (ver `guardarBorrador`), así que quien sale y vuelve —o
+       entra desde otro equipo— cae en el primer paso que le falta. */
+    const vacio = (v: any) => v == null || String(v).trim() === "";
+    const faltaEmpresa =
+      vacio(tenant.name) ||
+      vacio(tenant.businessTitle) ||
+      vacio(tenant.taxNumber) ||
+      (vacio(tenant.logoUrl) && vacio((tenant as any).logoId));
+    const faltaContacto =
+      vacio(tenant.phone) || vacio(tenant.email) || vacio(tenant.address);
+
+    setStep(
+      vacio(tenant.country) ? 0 : faltaEmpresa ? 1 : faltaContacto ? 2 : 3,
+    );
   }, [open, tenant, defaultEmail]);
 
   // Allow re-hydration next time it opens.
@@ -441,7 +455,65 @@ export default function OnboardingWizard({
   };
 
   // ── Navigation ───────────────────────────────────────────────────────────
-  const next = () => setStep((s) => Math.min(s + 1, STEPS.length - 1));
+  /* ── BORRADOR EN CADA PASO ────────────────────────────────────────────────
+     Pedido del dueño (2026-10-03): lo escrito no se puede perder si la
+     persona se va y vuelve. Se guarda EN LA EMPRESA (servidor), no en el
+     navegador: cerrar sesión ahora vacía el navegador entero, y un borrador
+     local se iría con él. Sólo se envía lo que ya es válido, para que un
+     campo a medias no haga fallar el guardado de los demás. */
+  const [guardando, setGuardando] = useState(false);
+  const [guardadoA, setGuardadoA] = useState<number | null>(null);
+
+  const guardarBorrador = async (paso: number) => {
+    if (!tenant?.id) return;
+    const datos: Record<string, any> = {};
+
+    if (paso === 0) {
+      if (form.country) datos.country = form.country;
+    } else if (paso === 1) {
+      if (form.name.trim()) datos.name = form.name.trim();
+      if (form.businessTitle.trim())
+        datos.businessTitle = form.businessTitle.trim();
+      if (taxValid) datos.taxNumber = form.taxNumber.trim();
+    } else if (paso === 2) {
+      if (phoneValid) datos.phone = form.phone;
+      if (emailValid) datos.email = form.email.trim();
+      if (form.address.trim()) {
+        datos.address = form.address.trim();
+        datos.city = form.city || undefined;
+        datos.postalCode = form.postalCode || undefined;
+        if (form.latitude) datos.latitude = parseFloat(form.latitude);
+        if (form.longitude) datos.longitude = parseFloat(form.longitude);
+      }
+      if (form.timezone) datos.timezone = form.timezone;
+      if (form.website.trim()) datos.website = form.website.trim();
+    }
+    if (!Object.keys(datos).length && !(paso === 1 && logoFile)) return;
+    setGuardando(true);
+    try {
+      if (Object.keys(datos).length)
+        await tenantService.update(tenant.id, datos);
+      if (datos.timezone) cacheTenantTimezone(datos.timezone);
+      // El logo también: subirlo al final era perderlo si la persona salía.
+      if (paso === 1 && logoFile) {
+        await tenantService.uploadLogo(logoFile, tenant.id);
+        setLogoFile(null);
+      }
+      setGuardadoA(Date.now());
+    } catch {
+      // Un borrador que no se guarda no bloquea el paso: lo escrito sigue en
+      // pantalla y se vuelve a intentar al continuar o al terminar.
+    } finally {
+      setGuardando(false);
+    }
+  };
+
+  const next = () => {
+    const paso = step;
+
+    setStep((s) => Math.min(s + 1, STEPS.length - 1));
+    void guardarBorrador(paso);
+  };
   const back = () => setStep((s) => Math.max(s - 1, 0));
 
   const snoozeAndClose = () => {
@@ -1244,6 +1316,22 @@ export default function OnboardingWizard({
               </button>
 
               <div className="ml-auto flex items-center gap-2">
+                {/* Que se vea que lo escrito no se pierde. */}
+                {(guardando || guardadoA) && (
+                  <span className="hidden items-center gap-1 text-xs text-muted-foreground sm:inline-flex">
+                    {guardando ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <Check className="h-3 w-3" />
+                    )}
+                    {guardando
+                      ? t("ui.OnboardingWizard.guardandoBorrador", "Guardando…")
+                      : t(
+                          "ui.OnboardingWizard.borradorGuardado",
+                          "Borrador guardado",
+                        )}
+                  </span>
+                )}
                 {step > 0 && (
                   <Button
                     disabled={submitting}
