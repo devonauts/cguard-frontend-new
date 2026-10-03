@@ -21,6 +21,8 @@ import Boveda, {
 } from "./Boveda";
 import RevisaTuCorreo from "./RevisaTuCorreo";
 
+import { enlaceLegal } from "@/lib/enlacesLegales";
+
 import { tituloConMarca } from "@/hooks/usePageTitle";
 import { useAuth } from "@/contexts/AuthContext";
 import { PhoneInput } from "@/components/phone/PhoneInput";
@@ -676,7 +678,7 @@ export default function Register() {
                 {t("auth.accept_prefix", { defaultValue: "Acepto la" })}{" "}
                 <a
                   className="cg-reg-enlace"
-                  href="https://cguardpro.com/privacy"
+                  href={enlaceLegal("privacy", language)}
                   rel="noopener noreferrer"
                   target="_blank"
                 >
@@ -687,7 +689,7 @@ export default function Register() {
                 {t("auth.accept_and", { defaultValue: "y los" })}{" "}
                 <a
                   className="cg-reg-enlace"
-                  href="https://cguardpro.com/terms"
+                  href={enlaceLegal("terms", language)}
                   rel="noopener noreferrer"
                   target="_blank"
                 >
