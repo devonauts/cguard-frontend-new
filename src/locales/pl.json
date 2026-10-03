@@ -306,7 +306,12 @@
       "procesando": "Przetwarzanie…",
       "listo": "Gotowe",
       "bienvenidoA": "Witaj,",
-      "bienvenido": "Witaj"
+      "bienvenido": "Witaj",
+      "confirmaTuCorreo": "Potwierdź swój e-mail",
+      "confirmaTexto": "Wysłaliśmy link na {{correo}}. Otwórz go, aby aktywować konto i się zalogować.",
+      "entendido": "Rozumiem",
+      "teLlevamos": "Przejście do logowania za {{s}} s",
+      "revisaSpam": "Nie widzisz? Sprawdź folder spam lub oferty."
     }
   },
   "client": {

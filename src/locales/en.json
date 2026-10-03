@@ -436,7 +436,12 @@
       "procesando": "Processing…",
       "listo": "Done",
       "bienvenidoA": "Welcome,",
-      "bienvenido": "Welcome"
+      "bienvenido": "Welcome",
+      "confirmaTuCorreo": "Confirm your email",
+      "confirmaTexto": "We sent a link to {{correo}}. Open it to activate your account and sign in.",
+      "entendido": "Got it",
+      "teLlevamos": "Taking you to sign in in {{s}} s",
+      "revisaSpam": "Don’t see it? Check your spam or promotions folder."
     }
   },
   "billing": {

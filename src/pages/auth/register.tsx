@@ -8,7 +8,7 @@ import {
   Building2,
   Check,
 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
@@ -19,6 +19,7 @@ import Boveda, {
   Campo,
   useBotonDeAccion,
 } from "./Boveda";
+import RevisaTuCorreo from "./RevisaTuCorreo";
 
 import { tituloConMarca } from "@/hooks/usePageTitle";
 import { useAuth } from "@/contexts/AuthContext";
@@ -58,8 +59,12 @@ export default function Register() {
   const { t, i18n } = useTranslation();
   const { signUp } = useAuth();
   const accion = useBotonDeAccion();
+  /* Tras crear la cuenta: «Confirma tu correo» con el correo, y al inicio de
+     sesión con «Entendido» o solo a los 7 s. */
+  const [registradoCon, setRegistradoCon] = useState<string | null>(null);
   const { language } = useLanguage();
   const navigate = useNavigate();
+  const alInicioDeSesion = useCallback(() => navigate("/login"), [navigate]);
 
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -282,8 +287,7 @@ export default function Register() {
          (`sign_up` es el nombre recomendado de GA4). En el de la plataforma
          no hay medición de socio y esto no hace nada. */
       medir(EVENTOS.registro, { method: "email" });
-      toast.success(t("auth.account_created_verify_email"));
-      navigate("/login");
+      setRegistradoCon(email.trim());
     }
   };
 
@@ -314,6 +318,29 @@ export default function Register() {
   }
 
   const primerNombre = name.trim().split(/\s+/)[0] || "";
+
+  if (registradoCon)
+    return (
+      <Boveda
+        estado={t("auth.signup.altaDeEmpresa", {
+          defaultValue: "Alta de empresa",
+        })}
+      >
+        <RevisaTuCorreo
+          autoSegundos={7}
+          texto={t("auth.signup.confirmaTexto", {
+            defaultValue:
+              "Te enviamos un enlace a {{correo}}. Ábrelo para activar tu cuenta y poder entrar.",
+            correo: registradoCon,
+          })}
+          textoBoton={t("auth.signup.entendido", { defaultValue: "Entendido" })}
+          titulo={t("auth.signup.confirmaTuCorreo", {
+            defaultValue: "Confirma tu correo",
+          })}
+          onContinuar={alInicioDeSesion}
+        />
+      </Boveda>
+    );
 
   return (
     <Boveda

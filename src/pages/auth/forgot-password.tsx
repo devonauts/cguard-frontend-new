@@ -1,10 +1,16 @@
-import { useEffect, useState } from "react";
-import { ArrowLeft, Check, Mail, Send } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { ArrowLeft, Mail, Send } from "lucide-react";
 import { toast } from "sonner";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import Boveda, { BotonDeAccion, CAMPO, Campo, useBotonDeAccion } from "./Boveda";
+import RevisaTuCorreo from "./RevisaTuCorreo";
+import Boveda, {
+  BotonDeAccion,
+  CAMPO,
+  Campo,
+  useBotonDeAccion,
+} from "./Boveda";
 
 import { tituloConMarca } from "@/hooks/usePageTitle";
 import { AuthService } from "@/services/auth/authService";
@@ -19,6 +25,8 @@ export default function ForgotPassword() {
   const [isLoading, setIsLoading] = useState(false);
   const [formError, setFormError] = useState("");
   const accion = useBotonDeAccion();
+  const navigate = useNavigate();
+  const volverAlAcceso = useCallback(() => navigate("/login"), [navigate]);
 
   useEffect(() => {
     document.title = tituloConMarca(
@@ -58,7 +66,8 @@ export default function ForgotPassword() {
   const avisoEnviado = () =>
     toast.success(
       t("auth.reset_sent", {
-        defaultValue: "Enlace enviado correctamente. Revisa tu correo electrónico",
+        defaultValue:
+          "Enlace enviado correctamente. Revisa tu correo electrónico",
       }),
     );
 
@@ -99,48 +108,34 @@ export default function ForgotPassword() {
       })}
     >
       {enviadoA ? (
-        <div className="flex flex-col items-center gap-3 py-2 text-center">
-          <span
-            aria-hidden
-            className="grid h-14 w-14 place-items-center rounded-full"
-            style={{
-              background: "color-mix(in oklab, var(--brand) 20%, transparent)",
-              color: "var(--brand)",
-            }}
-          >
-            <Check className="h-7 w-7" />
-          </span>
-          <h1 className="font-display text-[1.6rem] font-semibold leading-tight tracking-tight">
-            {t("auth.signup.revisaTuCorreo", {
-              defaultValue: "Revisa tu correo",
-            })}
-          </h1>
-          <p className="cg-reg-suave text-sm">
-            {t("auth.signup.enviamosEnlace", {
-              defaultValue:
-                "Si hay una cuenta con {{correo}}, te llegará un enlace para crear una contraseña nueva.",
-              correo: enviadoA,
-            })}
-          </p>
-          <button
-            className="cg-reg-enlace mt-1 text-sm"
-            disabled={isLoading}
-            type="button"
-            onClick={() => reenviar(enviadoA)}
-          >
-            {isLoading
-              ? t("auth.sending", { defaultValue: "Enviando enlace…" })
-              : t("auth.signup.enviarDeNuevo", {
-                  defaultValue: "Enviarlo de nuevo",
-                })}
-          </button>
-          <NavLink className="cg-reg-boton mt-3" to="/login">
-            <ArrowLeft className="h-4 w-4" />
-            {t("auth.back_to_login", {
-              defaultValue: "Volver a iniciar sesión",
-            })}
-          </NavLink>
-        </div>
+        <RevisaTuCorreo
+          extra={
+            <button
+              className="cg-reg-enlace text-sm"
+              disabled={isLoading}
+              type="button"
+              onClick={() => reenviar(enviadoA)}
+            >
+              {isLoading
+                ? t("auth.sending", { defaultValue: "Enviando enlace…" })
+                : t("auth.signup.enviarDeNuevo", {
+                    defaultValue: "Enviarlo de nuevo",
+                  })}
+            </button>
+          }
+          texto={t("auth.signup.enviamosEnlace", {
+            defaultValue:
+              "Si hay una cuenta con {{correo}}, te llegará un enlace para crear una contraseña nueva.",
+            correo: enviadoA,
+          })}
+          textoBoton={t("auth.back_to_login", {
+            defaultValue: "Volver a iniciar sesión",
+          })}
+          titulo={t("auth.signup.revisaTuCorreo", {
+            defaultValue: "Revisa tu correo",
+          })}
+          onContinuar={volverAlAcceso}
+        />
       ) : (
         <>
           <h1 className="font-display text-[1.6rem] font-semibold leading-tight tracking-tight">

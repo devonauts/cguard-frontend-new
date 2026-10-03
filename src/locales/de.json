@@ -306,7 +306,12 @@
       "procesando": "Wird verarbeitet…",
       "listo": "Fertig",
       "bienvenidoA": "Willkommen,",
-      "bienvenido": "Willkommen"
+      "bienvenido": "Willkommen",
+      "confirmaTuCorreo": "Bestätigen Sie Ihre E-Mail",
+      "confirmaTexto": "Wir haben einen Link an {{correo}} gesendet. Öffnen Sie ihn, um Ihr Konto zu aktivieren und sich anzumelden.",
+      "entendido": "Verstanden",
+      "teLlevamos": "Weiter zur Anmeldung in {{s}} s",
+      "revisaSpam": "Nicht gefunden? Prüfen Sie den Spam- oder Werbeordner."
     }
   },
   "client": {

@@ -306,7 +306,12 @@
       "procesando": "Elaborazione…",
       "listo": "Fatto",
       "bienvenidoA": "Benvenuto,",
-      "bienvenido": "Benvenuto"
+      "bienvenido": "Benvenuto",
+      "confirmaTuCorreo": "Conferma la tua email",
+      "confirmaTexto": "Abbiamo inviato un link a {{correo}}. Aprilo per attivare il tuo account e accedere.",
+      "entendido": "Ho capito",
+      "teLlevamos": "Ti portiamo all’accesso tra {{s}} s",
+      "revisaSpam": "Non lo vedi? Controlla la cartella spam o promozioni."
     }
   },
   "client": {

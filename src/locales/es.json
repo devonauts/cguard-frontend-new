@@ -436,7 +436,12 @@
       "procesando": "Procesando…",
       "listo": "Listo",
       "bienvenidoA": "Bienvenido,",
-      "bienvenido": "Bienvenido"
+      "bienvenido": "Bienvenido",
+      "confirmaTuCorreo": "Confirma tu correo",
+      "confirmaTexto": "Te enviamos un enlace a {{correo}}. Ábrelo para activar tu cuenta y poder entrar.",
+      "entendido": "Entendido",
+      "teLlevamos": "Te llevamos al inicio de sesión en {{s}} s",
+      "revisaSpam": "¿No lo ves? Revisa la carpeta de spam o promociones."
     }
   },
   "billing": {
