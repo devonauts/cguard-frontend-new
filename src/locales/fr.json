@@ -10434,7 +10434,9 @@
       "quitar": "Supprimer",
       "puestosVigilantesYNovedadesDeMuestra": "— des postes, agents et rapports d'incident d'exemple pour voir le système en action.",
       "teLoConfiguramosContigo": "Voulez-vous que nous le configurions avec vous ?",
-      "quitando": "Suppression…"
+      "quitando": "Suppression…",
+      "seBorraSola": "— 3 postes avec des agents autour de votre adresse. Elle est supprimée automatiquement dès votre premier client, poste ou agent.",
+      "retiradosSolos": "Nous avons retiré les données d’exemple : vous travaillez maintenant avec vos propres données."
     },
     "DepartmentDialog": {
       "descripcion": "Description",
@@ -16842,6 +16844,10 @@
         "trialEnds": "Votre essai gratuit se termine le {{date}}",
         "daysLeft_one": "{{count}} jour restant",
         "daysLeft_other": "{{count}} jours restants"
+      },
+      "demo": {
+        "title": "Commencer avec des données d’exemple",
+        "desc": "Nous créons 3 postes avec leurs agents autour de votre adresse pour que vous voyiez le système en action. Ils sont supprimés automatiquement dès que vous ajoutez votre premier client, poste ou agent."
       }
     }
   },

@@ -9911,7 +9911,9 @@
       "quitar": "Remove",
       "puestosVigilantesYNovedadesDeMuestra": "— sample posts, guards and incident reports so you can see the system in action.",
       "teLoConfiguramosContigo": "Want us to set it up with you?",
-      "quitando": "Removing…"
+      "quitando": "Removing…",
+      "seBorraSola": "— 3 posts with guards around your address. It is removed automatically when you add your first client, post or guard.",
+      "retiradosSolos": "We removed the sample data: you are now working with your own data."
     },
     "DepartmentDialog": {
       "descripcion": "Description",
@@ -16842,6 +16844,10 @@
         "trialEnds": "Your free trial ends on {{date}}",
         "daysLeft_one": "{{count}} day left",
         "daysLeft_other": "{{count}} days left"
+      },
+      "demo": {
+        "title": "Start with sample data",
+        "desc": "We create 3 posts with their guards around your address so you can see the system working. They are removed automatically as soon as you add your first client, post or guard."
       }
     }
   },

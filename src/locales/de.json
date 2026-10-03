@@ -10434,7 +10434,9 @@
       "quitar": "Entfernen",
       "puestosVigilantesYNovedadesDeMuestra": "— Beispielposten, -wachleute und -vorfallberichte, damit du das System in Aktion siehst.",
       "teLoConfiguramosContigo": "Sollen wir es gemeinsam mit dir einrichten?",
-      "quitando": "Wird entfernt…"
+      "quitando": "Wird entfernt…",
+      "seBorraSola": "— 3 Posten mit Wachleuten rund um Ihre Adresse. Wird automatisch entfernt, sobald Sie Ihren ersten Kunden, Posten oder Wachmann hinzufügen.",
+      "retiradosSolos": "Wir haben die Beispieldaten entfernt: Sie arbeiten jetzt mit Ihren eigenen Daten."
     },
     "DepartmentDialog": {
       "descripcion": "Beschreibung",
@@ -16842,6 +16844,10 @@
         "trialEnds": "Ihre kostenlose Testphase endet am {{date}}",
         "daysLeft_one": "noch {{count}} Tag",
         "daysLeft_other": "noch {{count}} Tage"
+      },
+      "demo": {
+        "title": "Mit Beispieldaten starten",
+        "desc": "Wir legen 3 Posten mit ihren Wachleuten rund um Ihre Adresse an, damit Sie das System in Aktion sehen. Sie werden automatisch entfernt, sobald Sie Ihren ersten Kunden, Posten oder Wachmann hinzufügen."
       }
     }
   },

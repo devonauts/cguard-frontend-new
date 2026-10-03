@@ -40,6 +40,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { ApiService } from "@/services/api/apiService";
 import { PhoneInput } from "@/components/phone/PhoneInput";
 import AddressAutocomplete, {
   AddressComponents,
@@ -241,6 +243,10 @@ export default function OnboardingWizard({
   const [form, setForm] = useState<WizardForm>(emptyForm);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  /* «Empezar con datos de ejemplo»: al terminar, el servidor crea 3 puestos con
+     sus vigilantes alrededor de la dirección recién guardada. Se borran solos
+     cuando la empresa crea su primer cliente, puesto o vigilante. */
+  const [conEjemplo, setConEjemplo] = useState(true);
   const [logoError, setLogoError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [showManualAddress, setShowManualAddress] = useState(false);
@@ -584,6 +590,16 @@ export default function OnboardingWizard({
         await onboardingService.completeOnboarding(tenant.id);
       } catch (e) {
         // non-fatal: the business is set up; backend may auto-complete too.
+      }
+
+      // Datos de ejemplo, sólo si se pidieron y DESPUÉS de guardar la dirección
+      // (el servidor los coloca alrededor de ella). Si falla, se entra vacío.
+      try {
+        sessionStorage.removeItem("cg_demo_data_status");
+        if (conEjemplo)
+          await ApiService.post(`/tenant/${tenant.id}/demo-data/enable`, {});
+      } catch (e) {
+        /* sin datos de ejemplo: el CRM arranca vacío */
       }
 
       // Company name/logo just changed -> bust the sidebar branding cache so it
@@ -1291,7 +1307,9 @@ export default function OnboardingWizard({
                   form={form}
                   terminos={terminos}
                   logoPreview={logoPreview}
+                  conEjemplo={conEjemplo}
                   trialEnd={trialEnd}
+                  onConEjemplo={setConEjemplo}
                   onEdit={(s) => setStep(s)}
                 />
               )}
@@ -1591,7 +1609,11 @@ function ReviewStep({
   trialEnd,
   onEdit,
   terminos,
+  conEjemplo,
+  onConEjemplo,
 }: {
+  conEjemplo: boolean;
+  onConEjemplo: (v: boolean) => void;
   terminos: { razonSocial: string; idFiscal: string };
   form: WizardForm;
   logoPreview: string | null;
@@ -1685,6 +1707,29 @@ function ReviewStep({
           />
         )}
       </div>
+
+      <label
+        className="flex cursor-pointer items-start gap-3 rounded-xl border p-3"
+        htmlFor="con-ejemplo"
+      >
+        <Switch
+          checked={conEjemplo}
+          className="mt-0.5"
+          id="con-ejemplo"
+          onCheckedChange={onConEjemplo}
+        />
+        <span className="min-w-0">
+          <span className="block text-sm font-semibold">
+            {t("onboarding.wizard.demo.title", "Empezar con datos de ejemplo")}
+          </span>
+          <span className="block text-xs text-muted-foreground">
+            {t(
+              "onboarding.wizard.demo.desc",
+              "Creamos 3 puestos con sus vigilantes alrededor de tu dirección para que veas el sistema funcionando. Se borran solos en cuanto agregues tu primer cliente, puesto o vigilante.",
+            )}
+          </span>
+        </span>
+      </label>
 
       {trialEnd && (
         <div className="flex items-center gap-2 rounded-lg bg-muted/40 px-3 py-2 text-xs text-muted-foreground">

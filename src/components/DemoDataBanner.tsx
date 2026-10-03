@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { MessageCircle, Sparkles, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -11,20 +13,19 @@ import { useAgente } from "@/lib/agenteDeMarca";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
- * «ESTÁS EXPLORANDO CON UNA OPERACIÓN DE EJEMPLO»
+ * «ESTÁS VIENDO DATOS DE EJEMPLO»
  *
- * Toda instancia nueva del CRM nace con datos de muestra dentro —cliente, sede,
- * puestos, vigilantes, turnos, rondas, novedades— porque trece de dieciocho
- * registros murieron en un dashboard vacío. Este banner es la otra mitad del
- * trato: decir SIEMPRE que lo que se ve es ejemplo, y hacer que quitarlo sea un
- * botón.
+ * El CRM nace VACÍO (2026-10-03). Los datos de ejemplo existen sólo si la
+ * empresa los pidió en el asistente de configuración: 3 puestos con sus
+ * vigilantes alrededor de SU dirección. Este aviso sale sólo mientras existen
+ * —nunca antes de configurar la empresa— y dice las dos formas de quitarlos:
+ * solos, al crear el primer cliente, puesto o vigilante; o con el botón.
  *
- * Persistente a propósito (no se puede descartar sin quitar los datos): un
- * administrador que olvida que sus cifras son de muestra y se las enseña a un
- * cliente real es un problema peor que un banner pesado.
+ * Persistente a propósito: un administrador que olvida que sus cifras son de
+ * muestra y se las enseña a un cliente real es peor que un aviso pesado.
  *
- * El borrado del servidor toca SÓLO las filas registradas por el sembrador
- * (demoSeedRows) — nunca puede llevarse un dato real.
+ * Mientras está activo se vuelve a preguntar al navegar: así desaparece en
+ * cuanto el servidor retira el ejemplo por su cuenta, y se refrescan las listas.
  * ════════════════════════════════════════════════════════════════════════════
  */
 
@@ -38,38 +39,51 @@ export default function DemoDataBanner() {
   const [active, setActive] = useState(false);
   const [removing, setRemoving] = useState(false);
 
+  const { pathname } = useLocation();
+  const queryClient = useQueryClient();
+  const eraActivo = useRef(false);
+
   useEffect(() => {
     let mounted = true;
 
-    try {
-      const raw = sessionStorage.getItem(CACHE_KEY);
+    // Con el aviso APAGADO vale la caché (5 min). Con el aviso ENCENDIDO se
+    // pregunta en cada navegación: el servidor puede haberlo retirado solo.
+    if (!eraActivo.current) {
+      try {
+        const raw = sessionStorage.getItem(CACHE_KEY);
 
-      if (raw) {
-        const { ts, data } = JSON.parse(raw);
+        if (raw) {
+          const { ts, data } = JSON.parse(raw);
 
-        if (Date.now() - ts < TTL_MS && data) {
-          setActive(!!data.active);
-
-          return;
+          if (Date.now() - ts < TTL_MS && data && !data.active) return;
         }
+      } catch {
+        /* sin caché, se consulta */
       }
-    } catch {
-      /* sin caché, se consulta */
     }
 
     const tenantId = localStorage.getItem("tenantId");
 
     if (!tenantId) return;
 
-    // Esta llamada además SIEMBRA en la primera visita de un tenant encendido
-    // y vacío (siembra perezosa del servidor): quien vuelva tras el correo de
-    // seguimiento también encuentra el CRM vivo.
     ApiService.get(`/tenant/${tenantId}/demo-data/status`)
       .then((data: any) => {
         if (!mounted) return;
         const payload = data?.active !== undefined ? data : data?.data;
+        const ahora = !!payload?.active;
 
-        setActive(!!payload?.active);
+        if (eraActivo.current && !ahora) {
+          // Se fueron solos: la empresa creó algo suyo.
+          toast.success(
+            t(
+              "ui.DemoDataBanner.retiradosSolos",
+              "Quitamos los datos de ejemplo: ya estás trabajando con tus propios datos.",
+            ),
+          );
+          queryClient.invalidateQueries();
+        }
+        eraActivo.current = ahora;
+        setActive(ahora);
         try {
           sessionStorage.setItem(
             CACHE_KEY,
@@ -86,7 +100,7 @@ export default function DemoDataBanner() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [pathname]);
 
   if (!active) return null;
 
@@ -156,8 +170,8 @@ export default function DemoDataBanner() {
             {t("ui.DemoDataBanner.operacionDeEjemplo", "operación de ejemplo")}
           </strong>{" "}
           {t(
-            "ui.DemoDataBanner.puestosVigilantesYNovedadesDeMuestra",
-            "— puestos, vigilantes y novedades de muestra para que veas el sistema vivo.",
+            "ui.DemoDataBanner.seBorraSola",
+            "— 3 puestos con vigilantes alrededor de tu dirección. Se borra sola cuando agregues tu primer cliente, puesto o vigilante.",
           )}
         </span>
       </span>

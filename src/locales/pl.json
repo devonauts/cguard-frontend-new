@@ -10462,7 +10462,9 @@
       "quitar": "Usuń",
       "puestosVigilantesYNovedadesDeMuestra": "— przykładowe posterunki, pracownicy ochrony i raporty zdarzeń, abyś zobaczył system w działaniu.",
       "teLoConfiguramosContigo": "Chcesz, żebyśmy skonfigurowali to razem z Tobą?",
-      "quitando": "Usuwanie…"
+      "quitando": "Usuwanie…",
+      "seBorraSola": "— 3 posterunki z pracownikami ochrony wokół Twojego adresu. Znika automatycznie, gdy dodasz pierwszego klienta, posterunek lub pracownika.",
+      "retiradosSolos": "Usunęliśmy dane przykładowe: pracujesz już na własnych danych."
     },
     "DepartmentDialog": {
       "descripcion": "Opis",
@@ -17034,6 +17036,10 @@
         "daysLeft_few": "pozostały {{count}} dni",
         "daysLeft_many": "pozostało {{count}} dni",
         "daysLeft_other": "pozostało {{count}} dni"
+      },
+      "demo": {
+        "title": "Zacznij z danymi przykładowymi",
+        "desc": "Tworzymy 3 posterunki z pracownikami ochrony wokół Twojego adresu, abyś zobaczył działający system. Znikają automatycznie, gdy dodasz pierwszego klienta, posterunek lub pracownika."
       }
     }
   },

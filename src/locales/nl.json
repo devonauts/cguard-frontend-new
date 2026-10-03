@@ -10434,7 +10434,9 @@
       "quitar": "Verwijderen",
       "puestosVigilantesYNovedadesDeMuestra": "— voorbeeldposten, -bewakers en -incidentmeldingen zodat je het systeem in actie ziet.",
       "teLoConfiguramosContigo": "Zullen we het samen met je instellen?",
-      "quitando": "Bezig met verwijderen…"
+      "quitando": "Bezig met verwijderen…",
+      "seBorraSola": "— 3 posten met beveiligers rond je adres. Wordt automatisch verwijderd wanneer je je eerste klant, post of beveiliger toevoegt.",
+      "retiradosSolos": "We hebben de voorbeeldgegevens verwijderd: je werkt nu met je eigen gegevens."
     },
     "DepartmentDialog": {
       "descripcion": "Omschrijving",
@@ -16842,6 +16844,10 @@
         "trialEnds": "Je gratis proefperiode eindigt op {{date}}",
         "daysLeft_one": "nog {{count}} dag",
         "daysLeft_other": "nog {{count}} dagen"
+      },
+      "demo": {
+        "title": "Starten met voorbeeldgegevens",
+        "desc": "We maken 3 posten met hun beveiligers rond je adres zodat je het systeem in werking ziet. Ze worden automatisch verwijderd zodra je je eerste klant, post of beveiliger toevoegt."
       }
     }
   },

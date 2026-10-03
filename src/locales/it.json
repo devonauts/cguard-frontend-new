@@ -10434,7 +10434,9 @@
       "quitar": "Rimuovi",
       "puestosVigilantesYNovedadesDeMuestra": "— postazioni, guardie e segnalazioni di esempio per vedere il sistema in azione.",
       "teLoConfiguramosContigo": "Vuoi che lo configuriamo insieme a te?",
-      "quitando": "Rimozione…"
+      "quitando": "Rimozione…",
+      "seBorraSola": "— 3 postazioni con guardie intorno al tuo indirizzo. Viene rimossa automaticamente quando aggiungi il tuo primo cliente, postazione o guardia.",
+      "retiradosSolos": "Abbiamo rimosso i dati di esempio: ora lavori con i tuoi dati."
     },
     "DepartmentDialog": {
       "descripcion": "Descrizione",
@@ -16842,6 +16844,10 @@
         "trialEnds": "La tua prova gratuita termina il {{date}}",
         "daysLeft_one": "{{count}} giorno rimanente",
         "daysLeft_other": "{{count}} giorni rimanenti"
+      },
+      "demo": {
+        "title": "Inizia con dati di esempio",
+        "desc": "Creiamo 3 postazioni con le loro guardie intorno al tuo indirizzo per mostrarti il sistema in funzione. Vengono rimosse automaticamente appena aggiungi il tuo primo cliente, postazione o guardia."
       }
     }
   },
