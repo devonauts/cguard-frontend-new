@@ -118,6 +118,8 @@ import {
 } from "@/lib/appearanceSync";
 import { enLotes } from "@/lib/enLotes";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { crearSocket, cerrarSocket } from "@/lib/socket";
+import { getAuthToken } from "@/lib/api";
 import i18n from "@/i18n";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -1192,6 +1194,56 @@ export default function Schedule() {
   useEffect(() => {
     fetchAll();
   }, [fetchAll]);
+
+  /* ── EL HORARIO SE ENTERA SOLO DE LOS TURNOS NUEVOS ──────────────────────
+     Al crear una estación o asignar a alguien, los turnos se generan EN
+     SEGUNDO PLANO: el Horario se cargaba antes de que terminaran y se quedaba
+     sin ellos hasta que se recargaba la página a mano (2026-10-02, «no está
+     automarcando los turnos creados, toca dar refresh»). El servidor ya avisa
+     con `schedule:changed` al terminar cada generación; nadie lo escuchaba.
+     Ahora se recarga en silencio —la rejilla no se desmonta— agrupando la
+     ráfaga de avisos de una estación con varias plazas en una sola consulta,
+     y al reconectar el socket se recupera lo que pudo pasar mientras estaba
+     caído. */
+  const fetchAllRef = useRef(fetchAll);
+
+  useEffect(() => {
+    fetchAllRef.current = fetchAll;
+  }, [fetchAll]);
+  useEffect(() => {
+    if (!tenantId) return;
+    let espera: ReturnType<typeof setTimeout> | null = null;
+    let yaConecto = false;
+    const recargar = () => {
+      if (espera) clearTimeout(espera);
+      espera = setTimeout(() => {
+        espera = null;
+        void fetchAllRef.current({ silent: true });
+      }, 1200);
+    };
+    const alConectar = () => {
+      if (yaConecto) recargar();
+      yaConecto = true;
+    };
+    let socket: ReturnType<typeof crearSocket> | null = null;
+
+    try {
+      socket = crearSocket(getAuthToken() || "", String(tenantId));
+      socket.on("schedule:changed", recargar);
+      socket.on("connect", alConectar);
+    } catch {
+      /* sin socket: el Horario sigue funcionando como antes */
+    }
+
+    return () => {
+      if (espera) clearTimeout(espera);
+      if (socket) {
+        socket.off("schedule:changed", recargar);
+        socket.off("connect", alConectar);
+        cerrarSocket(socket);
+      }
+    };
+  }, [tenantId]);
 
   /* ── LAS ALERTAS SON DEL MES QUE SE MIRA ─────────────────────────────────
      `/scheduler/staffing` se pedía sin `year`/`month`, así que el servidor
