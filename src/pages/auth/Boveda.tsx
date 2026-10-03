@@ -72,7 +72,7 @@ export default function Boveda({
 
   return (
     <div
-      className="app-shell cg-reg relative min-h-screen overflow-x-clip"
+      className="app-shell cg-reg relative flex min-h-[100dvh] flex-col overflow-x-clip"
       data-modo={claro ? "claro" : "oscuro"}
     >
       <style>{ESTILOS_BOVEDA}</style>
@@ -153,7 +153,9 @@ export default function Boveda({
         </DropdownMenu>
       </div>
 
-      <main className="relative mx-auto flex min-h-screen w-full max-w-[460px] flex-col items-center justify-center gap-5 px-4 py-14">
+      {/* Se centran SÓLO el logo y la tarjeta: el pie va aparte, abajo. Antes el
+          pie contaba en el centrado y empujaba el bloque hacia arriba. */}
+      <main className="cg-reg-centro relative mx-auto flex w-full max-w-[460px] flex-1 flex-col items-center justify-center gap-5 px-4 py-12">
         {/* ── LA MARCA DEL ANFITRIÓN ──────────────────────────────────────
             Plataforma: el bloque de marca de la web. Socio: su logotipo; sin
             logotipo, sus iniciales y su nombre — nunca el nuestro. */}
@@ -204,10 +206,12 @@ export default function Boveda({
 
         {bajoLaTarjeta}
 
+      </main>
+
         {/* ── LA ATRIBUCIÓN, DONDE ESTÁ PERMITIDA ──────────────────────────
             Misma regla que `AuthShell`: con la atribución apagada el socio
             paga justamente por no vernos, así que el pie es suyo. */}
-        <p className="cg-reg-tenue text-center text-xs">
+        <p className="cg-reg-tenue relative px-4 pb-5 text-center text-xs">
           {!esMarcaDeSocio(marca)
             ? t("auth.landing.copyright", {
                 defaultValue:
@@ -230,7 +234,7 @@ export default function Boveda({
                   })
                 : null}
         </p>
-      </main>
+
     </div>
   );
 }
@@ -307,6 +311,23 @@ export function BotonVer({
 }
 
 const ESTILOS_BOVEDA = `
+/* TIPOGRAFÍA DEL ACCESO (2026-10-03): el dueño quería una letra tipo Gilroy.
+   Gilroy es de pago; se eligió Urbanist (OFL, libre para uso comercial;
+   public/assets/fonts/urbanist). Sólo en estas dos pantallas: el resto del CRM
+   sigue con Inter y Saira. La fuente de un socio manda: la suya va con !important. */
+@font-face { font-family: "Urbanist"; font-style: normal; font-weight: 100 900; font-display: swap;
+  src: url("/assets/fonts/urbanist/urbanist-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Urbanist"; font-style: normal; font-weight: 100 900; font-display: swap;
+  src: url("/assets/fonts/urbanist/urbanist-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+.cg-reg, .cg-reg *, .cg-reg-menu, .cg-reg-menu * { font-family: "Urbanist", "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif; }
+.cg-reg { --font-display: "Urbanist", ui-sans-serif, system-ui, sans-serif; }
+/* El CRM fija Saira en h1 y .font-display con más peso de selector
+   (.app-shell h1): se duplica la clase para ganarle sólo aquí. */
+.cg-reg.cg-reg h1, .cg-reg.cg-reg .font-display { font-family: "Urbanist", ui-sans-serif, system-ui, sans-serif; font-weight: 700; letter-spacing: -.02em; }
+.cg-reg.cg-reg { font-weight: 500; }
+.cg-reg.cg-reg .cg-reg-campo { font-weight: 500; }
 /* Las dos paletas, como variables: nada de color suelto en las reglas. */
 .cg-reg {
   --rg-ink: #fff; --rg-medio: rgba(255,255,255,.72); --rg-suave: rgba(255,255,255,.58); --rg-tenue: rgba(255,255,255,.4);
@@ -406,11 +427,16 @@ const ESTILOS_BOVEDA = `
 .cg-reg-tarjeta::after { content: ""; position: absolute; left: 1px; right: 1px; top: 1px; height: 46%; border-radius: 25px 25px 60% 60% / 25px 25px 30px 30px;
   background: linear-gradient(180deg, var(--rg-reflejo), transparent); pointer-events: none; z-index: -1; }
 @media (max-width: 480px) { .cg-reg-tarjeta { padding: 22px; } }
+/* Pantallas bajas (portátiles de 13"): menos aire para que todo entre centrado. */
+@media (max-height: 780px) and (min-width: 601px) {
+  .cg-reg-centro { gap: 14px; padding-top: 28px; padding-bottom: 20px; }
+  .cg-reg-centro .cg-reg-tarjeta { padding: 24px 30px; }
+}
 /* En el teléfono los controles van en su propia fila (no encima del logo) y
    la línea de estado se queda sólo con «Conexión cifrada». */
 @media (max-width: 600px) {
   .cg-reg-ajustes { position: relative; top: auto; right: auto; justify-content: flex-end; padding: max(12px, env(safe-area-inset-top, 0px)) 16px 0; }
-  .cg-reg-ajustes + main { min-height: auto; padding-top: 20px; }
+  .cg-reg-ajustes + .cg-reg-centro { padding-top: 20px; }
   .cg-reg-estado > span:last-child { display: none; }
 }
 .cg-reg-esq { position: absolute; width: 22px; height: 22px; border: 0 solid var(--brand); pointer-events: none; }
