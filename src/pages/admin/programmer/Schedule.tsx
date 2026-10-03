@@ -68,7 +68,11 @@ import MonthStationBlock, {
 } from "./MonthStationBlock";
 import BloqueVisible from "./BloqueVisible";
 import MonthCalendar from "./MonthCalendar";
+import { stationService } from "@/lib/api/stationService";
+import { clientDisplayName, isPersonFallback } from "@/lib/clientName";
+
 import AgendaView from "./AgendaView";
+import OrganigramaView, { type SedeInfo } from "./OrganigramaView";
 import { COL_W, COL_STICKY_W } from "./gridBand";
 import {
   type Tone,
@@ -511,7 +515,14 @@ function SelectorDeRanura({
  *  el usuario elegiría Agenda y el CRM abriría en la hoja sin decir por qué.
  *  (El backend tiene su propia lista en `lib/uiAppearance`: es una frontera de
  *  confianza distinta, y ahí sanear es obligatorio aunque el cliente ya filtre.) */
-const VISTAS = ["month", "calendar", "week", "day", "agenda"] as const;
+const VISTAS = [
+  "month",
+  "calendar",
+  "week",
+  "day",
+  "agenda",
+  "organigrama",
+] as const;
 
 /* ── UNA HOJA DE CÁLCULO NO ES UNA PREFERENCIA EN UN TELÉFONO ──────────────
    La caída a Agenda en pantalla estrecha estaba escrita, pero iba LA ÚLTIMA:
@@ -527,7 +538,12 @@ const VISTAS = ["month", "calendar", "week", "day", "agenda"] as const;
    ordenador sigue en su vista. */
 const vistaUsableAqui = (v: ViewMode): ViewMode => {
   try {
-    if (v !== "agenda" && window.matchMedia("(max-width: 767px)").matches)
+    // El organigrama también es una lista: sirve igual en el teléfono.
+    if (
+      v !== "agenda" &&
+      v !== "organigrama" &&
+      window.matchMedia("(max-width: 767px)").matches
+    )
       return "agenda";
   } catch {
     /* SSR o navegador sin matchMedia */
@@ -860,6 +876,47 @@ export default function Schedule() {
      puerta que NO da de baja a nadie (`PUT /station/:id/rotation`). */
   /** Móvil: hoja para elegir a qué puesto entrar (la rejilla no está). */
   const [elegirPuesto, setElegirPuesto] = useState(false);
+
+  /* ── LAS SEDES, SÓLO PARA EL ORGANIGRAMA ───────────────────────────────────
+     El resumen del programador trae de cada estación el `postSiteId`, no el
+     nombre de la sede. El organigrama agrupa por sede, así que se pide la lista
+     de sedes una vez —la misma lectura cacheada que usan las demás pantallas—
+     y sólo cuando alguien abre esa vista. */
+  const [sedesDelOrganigrama, setSedesDelOrganigrama] = useState<
+    Map<string, SedeInfo>
+  >(() => new Map());
+  const sedesPedidas = useRef(false);
+
+  useEffect(() => {
+    if (view !== "organigrama" || sedesPedidas.current) return;
+    sedesPedidas.current = true;
+    stationService
+      .list({}, { limit: 1000, offset: 0 })
+      .then((res) => {
+        const m = new Map<string, SedeInfo>();
+
+        for (const r of res?.rows || []) {
+          const c: any = (r as any).client;
+
+          m.set(String(r.id), {
+            nombre: r.name || (r as any).companyName || "",
+            // Si el cliente no tiene nombre de empresa, `clientDisplayName`
+            // cae al de la persona de contacto, que debajo de una sede se
+            // lee como si fuera el cliente. Mejor nada.
+            cliente:
+              c && !isPersonFallback(c)
+                ? clientDisplayName(c) || undefined
+                : undefined,
+          });
+        }
+        setSedesDelOrganigrama(m);
+      })
+      .catch(() => {
+        // Sin nombres de sede el árbol se agrupa igual; vuelve a intentarlo
+        // la próxima vez que se abra la vista.
+        sedesPedidas.current = false;
+      });
+  }, [view]);
   const [configPaso, setConfigPaso] = useState<1 | 2 | 3>(1);
   const [cfgRotMode, setCfgRotMode] = useState<"rotativo" | "manual">("rotativo");
   const [cfgDias, setCfgDias] = useState(4);
@@ -1118,13 +1175,13 @@ export default function Schedule() {
      semana y la que viene», y pedir el año para una lista sería traerse 20.000
      filas por una pantalla de teléfono. */
   const startDateStr =
-    view === "calendar" || view === "agenda"
+    view === "calendar" || view === "agenda" || view === "organigrama"
       ? calRange.desde
       : view === "month"
         ? fmtDate(rango.desde)
         : fmtDate(addDays(timelineDays[0], -1));
   const endDateStr =
-    view === "calendar" || view === "agenda"
+    view === "calendar" || view === "agenda" || view === "organigrama"
       ? calRange.hasta
       : view === "month"
         ? fmtDate(rango.hasta)
@@ -5548,7 +5605,7 @@ export default function Schedule() {
       }
       // El calendario navega por MESES, y su mes vivo es `visibleMonth` — el mismo
       // que la hoja del año, para que cambiar de vista no te mueva de sitio.
-      if (view === "calendar" || view === "agenda") {
+      if (view === "calendar" || view === "agenda" || view === "organigrama") {
         setVisibleMonth(
           (prev) => new Date(prev.getFullYear(), prev.getMonth() + dir, 1),
         );
@@ -5571,7 +5628,7 @@ export default function Schedule() {
     const [y, mo, d] = tzToday().split("-").map(Number);
 
     setCurrentDate(clampToYear(new Date(y, mo - 1, d)));
-    if (view === "calendar" || view === "agenda") {
+    if (view === "calendar" || view === "agenda" || view === "organigrama") {
       setVisibleMonth(new Date(y, mo - 1, 1));
 
       return;
@@ -5996,7 +6053,12 @@ export default function Schedule() {
   }, [visibleMonth]);
 
   const rangeLabel = useMemo(() => {
-    if (view === "month" || view === "calendar" || view === "agenda")
+    if (
+      view === "month" ||
+      view === "calendar" ||
+      view === "agenda" ||
+      view === "organigrama"
+    )
       return monthLabel;
     const fmt = (d: Date) =>
       d.toLocaleDateString(localeActual(), { day: "numeric", month: "short" });
@@ -6176,6 +6238,7 @@ export default function Schedule() {
               pantallaEstrecha
                 ? [
                     { value: "agenda", label: t("ui.Schedule.vistaAgenda", "Agenda") },
+                    { value: "organigrama", label: t("ui.Organigrama.vista") },
                     {
                       value: "calendar",
                       label: t("ui.Schedule.vistaCalendario", "Calendario"),
@@ -6190,6 +6253,7 @@ export default function Schedule() {
                     { value: "week", label: t("ui.Schedule.vistaSemana", "Semana") },
                     { value: "day", label: t("ui.Schedule.vistaDia", "Día") },
                     { value: "agenda", label: t("ui.Schedule.vistaAgenda", "Agenda") },
+                    { value: "organigrama", label: t("ui.Organigrama.vista") },
                   ]
             }
             /* En el teléfono ocupa el ancho: pegado a la izquierda sobraba
@@ -6388,7 +6452,31 @@ export default function Schedule() {
               }}
             >
               {/* ─── Mes = spreadsheet sheet · Semana/Día = draw-a-block timeline ─── */}
-              {view === "agenda" ? (
+              {view === "organigrama" ? (
+                <OrganigramaView
+                  assignments={assignments}
+                  dateStrOf={(iso) => dateToWall(new Date(iso), tzName).dateStr}
+                  guardColorMap={guardColorMap}
+                  positionsByStation={positionsByStation}
+                  sedes={sedesDelOrganigrama}
+                  shifts={shifts}
+                  stations={stations}
+                  timeOf={(iso) => {
+                    const w = dateToWall(new Date(iso), tzName);
+
+                    return `${String(Math.floor(w.minutes / 60)).padStart(2, "0")}:${String(w.minutes % 60).padStart(2, "0")}`;
+                  }}
+                  todayStr={todayStr}
+                  onConfigurarPuesto={configureStation}
+                  onPickShift={(sh, punto) =>
+                    punto
+                      ? accionesDelTurno(sh, punto)
+                      : jumpToDay(
+                          dateToWall(new Date(sh.startTime), tzName).dateStr,
+                        )
+                  }
+                />
+              ) : view === "agenda" ? (
                 <AgendaView
                   dateStrOf={(iso) => dateToWall(new Date(iso), tzName).dateStr}
                   days={monthDays.filter((d) => {
