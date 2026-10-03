@@ -74,8 +74,7 @@ function userIsSuperadmin(u: any): boolean {
  * user snoozed it. Mounts the banner and wizard; exposes openWizard().
  */
 export function OnboardingProvider({ children }: { children: ReactNode }) {
-  const { user, loading, refreshProfile, isAdmin, tenantAdmin, permissions } =
-    useAuth() as any;
+  const { user, loading, refreshProfile, isAdmin, hasPermission } = useAuth();
   const [wizardOpen, setWizardOpen] = useState(false);
   const autoOpenedRef = useRef(false);
 
@@ -88,10 +87,10 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
      volvía. Pero guardar la empresa exige `tenantEdit`: obligar a un
      operador sin ese permiso lo dejaría encerrado delante de un formulario
      que el servidor le rechaza. A él se le sigue ofreciendo, sin forzar. */
-  const puedeEditarEmpresa =
-    !!isAdmin ||
-    !!tenantAdmin ||
-    (Array.isArray(permissions) && permissions.includes("tenantEdit"));
+  // El contexto expone `hasPermission`, no la lista: leer `permissions` o
+  // `tenantAdmin` daba siempre `undefined` y el asistente nunca se volvía
+  // obligatorio.
+  const puedeEditarEmpresa = !!isAdmin || !!hasPermission?.("tenantEdit");
   const obligatorio = incomplete && puedeEditarEmpresa;
 
   // Auto-open once: first login OR onboarding incomplete, unless snoozed.

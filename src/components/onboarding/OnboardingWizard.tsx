@@ -1129,8 +1129,10 @@ function WelcomeStep({
       // «legal business name, EIN» en EE. UU.
       text: t("onboarding.wizard.welcome.companyDataPais", {
         defaultValue: "Los datos de tu empresa (nombre, {{legal}}, {{fiscal}})",
-        legal: terminos.razonSocial,
-        fiscal: terminos.idFiscal,
+        // En la frase, el término local a secas: «(nombre, Legal business
+        // name, EIN)». Con el genérico y el paréntesis quedaba ilegible.
+        legal: terminos.razonSocialLocal || terminos.razonSocial,
+        fiscal: terminos.idFiscalLocal || terminos.idFiscal,
       }),
     },
     {
