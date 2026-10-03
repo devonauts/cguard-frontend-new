@@ -39,6 +39,14 @@ export interface AddressAutocompleteProps {
   onQueryChange?: (query: string) => void;
   onGeocodeResult?: (address: AddressComponents) => void;
   countryCodes?: string[];
+  /**
+   * País (ISO) en el que centrar el mapa mientras no hay dirección ni
+   * coordenadas: sin esto se abría en la empresa o en el respaldo fijo, que
+   * para una empresa nueva de otro país es el sitio equivocado.
+   */
+  paisPorDefecto?: string;
+  /** Centro del país recién encuadrado, para quien quiera deducir la zona. */
+  onCentroDelPais?: (lat: number, lng: number) => void;
 }
 
 /**
@@ -62,6 +70,17 @@ interface Lectura {
   arrastrando: boolean;
 }
 
+/**
+ * Los eventos `gmp-*` del marcador avanzado se escuchan con `addEventListener`;
+ * `addListener` funciona pero Google avisa en consola de que está obsoleto.
+ * Se mantiene como respaldo para versiones de la API que no lo tienen.
+ */
+function escuchar(marcador: any, evento: string, fn: () => void) {
+  if (typeof marcador?.addEventListener === "function")
+    marcador.addEventListener(evento, fn);
+  else marcador?.addListener?.(evento, fn);
+}
+
 export default function AddressAutocomplete({
   onAddressSelect,
   defaultValue = "",
@@ -74,6 +93,8 @@ export default function AddressAutocomplete({
   onQueryChange,
   onGeocodeResult,
   countryCodes,
+  paisPorDefecto,
+  onCentroDelPais,
 }: AddressAutocompleteProps) {
   const { t } = useTranslation();
   const { isLoaded, loadError, google } = useGoogleMaps();
@@ -247,6 +268,24 @@ export default function AddressAutocomplete({
     };
   }, [isLoaded, google]);
 
+  /* El autocompletado se crea UNA vez; si luego cambia el país permitido (el
+     asistente pregunta el país antes que la dirección), se le cambia la
+     restricción en vez de seguir sugiriendo calles de otro país. */
+  const clavePaises = (countryCodes || []).join(",");
+
+  useEffect(() => {
+    const ac = autocompleteRef.current;
+
+    if (!ac?.setComponentRestrictions) return;
+    try {
+      ac.setComponentRestrictions(
+        clavePaises ? { country: clavePaises.split(",") } : { country: [] },
+      );
+    } catch {
+      /* versión de la API sin el método: se queda la del alta */
+    }
+  }, [clavePaises, isLoaded]);
+
   // ── Map setup ─────────────────────────────────────────────────────────────
   //
   // AHORRO: este efecto NO puede depender de `initialLat`/`initialLng`.
@@ -315,12 +354,18 @@ export default function AddressAutocomplete({
     let contenido: HTMLElement | undefined;
 
     try {
-      contenido = new google.maps.marker.PinElement({
+      const pin: any = new google.maps.marker.PinElement({
         background: palRef.current.brand,
         borderColor: palRef.current.brandInk,
         glyphColor: palRef.current.brandInk,
         scale: 1.1,
-      }).element as HTMLElement;
+      });
+
+      // Las versiones nuevas hacen del PinElement el propio elemento y avisan
+      // de que `.element` está obsoleto; las viejas sólo tienen `.element`.
+      contenido = (
+        pin instanceof HTMLElement ? pin : pin.element
+      ) as HTMLElement;
       contenido.style.transition =
         "transform .16s var(--ease, ease), filter .16s var(--ease, ease)";
       contenido.style.transformOrigin = "50% 100%";
@@ -370,7 +415,7 @@ export default function AddressAutocomplete({
         : "";
     };
 
-    markerRef.current.addListener("gmp-dragstart", () => {
+    escuchar(markerRef.current, "gmp-dragstart", () => {
       popRef.current.close();
       levantar(true);
       const ll = leerPos();
@@ -382,7 +427,7 @@ export default function AddressAutocomplete({
     // pantalla para no pelearse con el propio gesto.
     let pendiente = 0;
 
-    markerRef.current.addListener("gmp-drag", () => {
+    escuchar(markerRef.current, "gmp-drag", () => {
       const ll = leerPos();
 
       if (!ll) return;
@@ -393,7 +438,7 @@ export default function AddressAutocomplete({
     });
 
     // Debounced drag handler — no reverse-geocoding (Geocoding API not required)
-    markerRef.current.addListener("gmp-dragend", () => {
+    escuchar(markerRef.current, "gmp-dragend", () => {
       cancelAnimationFrame(pendiente);
       levantar(false);
       if (dragDebounceRef.current) clearTimeout(dragDebounceRef.current);
@@ -472,7 +517,7 @@ export default function AddressAutocomplete({
       /* versión antigua */
     }
     try {
-      markerRef.current.addListener("gmp-click", abrirGlobo);
+      escuchar(markerRef.current, "gmp-click", abrirGlobo);
     } catch {
       /* versión antigua */
     }
@@ -501,6 +546,50 @@ export default function AddressAutocomplete({
       setMapaListo(false);
     };
   }, [isLoaded, google, showMap]);
+
+  /* ── SIN DIRECCIÓN TODAVÍA, EL MAPA ENSEÑA EL PAÍS ────────────────────────
+     Mientras no hay ni dirección elegida ni coordenadas guardadas, el mapa se
+     encuadra en el país pedido (y la chincheta va a su centro). En cuanto se
+     elige una dirección, manda la dirección y esto deja de tocar el mapa. */
+  const centroDelPaisRef = useRef(onCentroDelPais);
+
+  centroDelPaisRef.current = onCentroDelPais;
+
+  useEffect(() => {
+    if (!isLoaded || !google || !paisPorDefecto) return;
+    const { lat: iLat, lng: iLng } = initialCoordsRef.current;
+
+    if (Number.isFinite(iLat) && Number.isFinite(iLng)) return;
+    if (lastAddressRef.current) return;
+    let vivo = true;
+
+    try {
+      new google.maps.Geocoder().geocode(
+        { componentRestrictions: { country: paisPorDefecto } },
+        (res: any, estado: string) => {
+          if (!vivo || estado !== "OK" || !res?.[0]?.geometry) return;
+          if (lastAddressRef.current) return;
+          const g = res[0].geometry;
+          const centro = g.location;
+          const map = mapInstanceRef.current;
+
+          if (map) {
+            if (g.viewport) map.fitBounds(g.viewport);
+            else map.setCenter(centro);
+          }
+          if (markerRef.current) markerRef.current.position = centro;
+          anclaRef.current = { lat: centro.lat(), lng: centro.lng() };
+          centroDelPaisRef.current?.(centro.lat(), centro.lng());
+        },
+      );
+    } catch {
+      /* sin geocodificador: el mapa se queda donde estaba */
+    }
+
+    return () => {
+      vivo = false;
+    };
+  }, [isLoaded, google, paisPorDefecto]);
 
   // ── Coordenadas nuevas por props → desplazar, nunca reconstruir ────────────
   useEffect(() => {

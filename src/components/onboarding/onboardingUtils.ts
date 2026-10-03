@@ -48,6 +48,12 @@ export const REQUIRED_FIELDS: Array<{
     labelKey: "onboarding.requiredFields.name",
   },
   {
+    // El país va primero en el asistente y de él dependen los demás campos.
+    key: "country",
+    label: "País",
+    labelKey: "onboarding.requiredFields.country",
+  },
+  {
     key: "businessTitle",
     label: "Razón social",
     labelKey: "onboarding.requiredFields.businessTitle",

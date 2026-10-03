@@ -58,6 +58,15 @@ import { cacheTenantTimezone } from "@/utils/tenantLocation";
 import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
 import { agenteGuardado } from "@/lib/agenteDeMarca";
 import { paisDeLaEmpresa } from "@/lib/telefonoDeLaEmpresa";
+import { paisConocido } from "@/lib/paisDelVisitante";
+import {
+  bandera,
+  listaDePaises,
+  nombreDePais,
+  terminosFiscales,
+  zonaPorCoordenadas,
+} from "@/lib/paisDeLaEmpresa";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface OnboardingWizardProps {
   open: boolean;
@@ -67,6 +76,12 @@ interface OnboardingWizardProps {
   onRefresh: () => Promise<any>;
   /** Default email to pre-fill (user email at signup). */
   defaultEmail?: string;
+  /**
+   * Sin salida: ni «Completar más tarde» ni cerrar. Pedido del dueño
+   * (2026-10-03): con salida, casi nadie volvía a poner sus datos. Sólo se
+   * pide a quien PUEDE guardarlos (ver OnboardingProvider).
+   */
+  obligatorio?: boolean;
 }
 
 interface WizardForm {
@@ -203,8 +218,11 @@ export default function OnboardingWizard({
   tenant,
   onRefresh,
   defaultEmail,
+  obligatorio = false,
 }: OnboardingWizardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { signOut } = useAuth();
+  const idioma = i18n.resolvedLanguage || i18n.language || "es";
   /* El nombre del anfitrión: «C-Guard Pro» en el de la plataforma, el del
      socio en el suyo. Por eso estos textos ya no lo llevan escrito. */
   const { platformName: nombreDeMarca } = useWhiteLabel();
@@ -226,21 +244,33 @@ export default function OnboardingWizard({
     if (hydratedFor.current === key) return;
     hydratedFor.current = key;
 
+    /* El país se guarda como código ISO («MX»): es lo que leen el teléfono, la
+       validación fiscal y el resto del CRM (`resolveCountryCode` acepta las dos
+       formas, así que los nombres guardados antes siguen valiendo). Sin país,
+       el del visitante: casi siempre acierta y siempre se puede cambiar. */
+    const paisInicial =
+      resolveCountryCode(tenant.country ?? undefined) ||
+      (paisConocido() || "").toUpperCase() ||
+      paisDeLaEmpresa();
+
     setForm({
       name: tenant.name ?? "",
       businessTitle: tenant.businessTitle ?? "",
       taxNumber: tenant.taxNumber ?? "",
       phone: tenant.phone ?? "",
-      phoneCountry: paisDeLaEmpresa(),
+      phoneCountry: paisInicial,
       email: tenant.email ?? defaultEmail ?? "",
       address: tenant.address ?? "",
       addressLine2: tenant.addressLine2 ?? "",
       city: tenant.city ?? "",
-      country: tenant.country ?? "",
+      country: paisInicial,
       postalCode: tenant.postalCode ?? "",
       latitude: tenant.latitude != null ? String(tenant.latitude) : "",
       longitude: tenant.longitude != null ? String(tenant.longitude) : "",
-      timezone: tenant.timezone || DEFAULT_TIMEZONE,
+      timezone:
+        tenant.timezone ||
+        zonaPorCoordenadas(tenant.latitude, tenant.longitude) ||
+        DEFAULT_TIMEZONE,
       website: tenant.website ?? "",
     });
     setLogoPreview(tenant.logoUrl ?? null);
@@ -277,10 +307,48 @@ export default function OnboardingWizard({
     [form.timezone],
   );
 
-  const { taxLabel, taxPlaceholder, taxHint } = useMemo(
+  const { taxPlaceholder, taxHint } = useMemo(
     () => taxFieldTexts(form.country, t),
     [form.country, t],
   );
+  const terminos = useMemo(
+    () =>
+      terminosFiscales(form.country, idioma, {
+        razonSocial: t(
+          "ui.OnboardingWizard.nombreLegal",
+          "Nombre legal de la empresa",
+        ),
+        idFiscal: t(
+          "ui.OnboardingWizard.identificacionFiscal",
+          "Identificación fiscal",
+        ),
+      }),
+    [form.country, idioma, t],
+  );
+  const paises = useMemo(() => listaDePaises(idioma), [idioma]);
+  const opcionesPais = useMemo(
+    () =>
+      paises.map((p) => ({ value: p.code, label: `${p.bandera} ${p.nombre}` })),
+    [paises],
+  );
+
+  /** Cambiar de país rehace lo que dependía del anterior. */
+  const elegirPais = (code: string) => {
+    if (!code || code === form.country) return;
+    setForm((f) => ({
+      ...f,
+      country: code,
+      phoneCountry: code,
+      // Una dirección de otro país ya no sirve, y con ella sus coordenadas:
+      // el mapa vuelve a encuadrar el país nuevo.
+      address: "",
+      addressLine2: "",
+      city: "",
+      postalCode: "",
+      latitude: "",
+      longitude: "",
+    }));
+  };
 
   const phoneCountryForValidation = useMemo(() => {
     const d = digitsOnly(form.phone);
@@ -305,6 +373,7 @@ export default function OnboardingWizard({
   const hasLogo = Boolean(logoFile || logoPreview);
 
   const step2Valid =
+    Boolean(form.country) &&
     Boolean(form.name.trim()) &&
     Boolean(form.businessTitle.trim()) &&
     taxValid &&
@@ -316,7 +385,7 @@ export default function OnboardingWizard({
     Boolean(form.timezone);
 
   const canAdvance = (s: number) => {
-    if (s === 0) return true;
+    if (s === 0) return Boolean(form.country);
     if (s === 1) return step2Valid;
     if (s === 2) return step3Valid;
 
@@ -335,12 +404,19 @@ export default function OnboardingWizard({
     ];
 
     if (!allowed.includes(file.type)) {
-      setLogoError("El logo debe ser PNG, JPG, SVG o WEBP.");
+      setLogoError(
+        t(
+          "ui.OnboardingWizard.logoFormato",
+          "El logo debe ser PNG, JPG, SVG o WEBP.",
+        ),
+      );
 
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      setLogoError("El logo no debe superar 5MB.");
+      setLogoError(
+        t("ui.OnboardingWizard.logoPeso", "El logo no debe superar 5MB."),
+      );
 
       return;
     }
@@ -357,6 +433,7 @@ export default function OnboardingWizard({
   const back = () => setStep((s) => Math.max(s - 1, 0));
 
   const snoozeAndClose = () => {
+    if (obligatorio) return;
     try {
       if (tenant?.id) localStorage.setItem(snoozeKey(tenant.id), "1");
     } catch {}
@@ -483,6 +560,13 @@ export default function OnboardingWizard({
       <DialogContent
         className="max-w-[calc(100%-2rem)] gap-0 overflow-hidden p-0 max-h-[92vh] sm:max-w-[680px]"
         showCloseButton={false}
+        /* Obligatorio: ni Escape ni un clic fuera lo cierran. */
+        onEscapeKeyDown={(e) => {
+          if (obligatorio) e.preventDefault();
+        }}
+        onInteractOutside={(e) => {
+          if (obligatorio) e.preventDefault();
+        }}
       >
         {/* Header */}
         {/* El degradado oro fijo (#C8860A → #F5C300) se sustituye por el acento:
@@ -524,24 +608,26 @@ export default function OnboardingWizard({
                 · {t(STEPS[step].labelKey, STEPS[step].label)}
               </DialogDescription>
             </div>
-            <button
-              aria-label={t("actions.close")}
-              className="ml-auto rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-              type="button"
-              onClick={snoozeAndClose}
-            >
-              <svg
-                fill="none"
-                height="18"
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                width="18"
+            {!obligatorio && (
+              <button
+                aria-label={t("actions.close")}
+                className="ml-auto rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                type="button"
+                onClick={snoozeAndClose}
               >
-                <path d="M18 6 6 18M6 6l12 12" />
-              </svg>
-            </button>
+                <svg
+                  fill="none"
+                  height="18"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  width="18"
+                >
+                  <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
+              </button>
+            )}
           </div>
           <div className="pt-4">
             <StepIndicator
@@ -556,7 +642,42 @@ export default function OnboardingWizard({
 
         {/* Body (scrollable) */}
         <div className="max-h-[58vh] overflow-y-auto px-4 py-5 sm:px-6">
-          {step === 0 && <WelcomeStep days={days} trialEnd={trialEnd} />}
+          {step === 0 && (
+            <WelcomeStep
+              days={days}
+              obligatorio={obligatorio}
+              terminos={terminos}
+              trialEnd={trialEnd}
+            >
+              {/* EL PAÍS, LO PRIMERO: de él salen los nombres de los campos
+                  fiscales, el prefijo del teléfono, el mapa y la zona. */}
+              <div className="mx-auto max-w-md space-y-1.5 text-left">
+                <Label>
+                  {t(
+                    "ui.OnboardingWizard.paisDeLaEmpresa",
+                    "¿En qué país está tu empresa?",
+                  )}{" "}
+                  <span style={{ color: "var(--bad-text)" }}>*</span>
+                </Label>
+                <Combobox
+                  aria-label={t("ui.OnboardingWizard.pais", "País")}
+                  options={opcionesPais}
+                  placeholder={t(
+                    "ui.OnboardingWizard.buscarPais",
+                    "Buscar país…",
+                  )}
+                  value={form.country}
+                  onChange={(v) => elegirPais(String(v || ""))}
+                />
+                <p className="text-xs text-muted-foreground">
+                  {t(
+                    "ui.OnboardingWizard.paisAyuda",
+                    "Con él adaptamos los datos fiscales, el teléfono, el mapa y la zona horaria.",
+                  )}
+                </p>
+              </div>
+            </WelcomeStep>
+          )}
 
           {step === 1 && (
             <div className="space-y-4 animate-in fade-in-50 duration-300">
@@ -573,13 +694,13 @@ export default function OnboardingWizard({
               </div>
               <div className="space-y-1.5">
                 <Label>
-                  {t("ui.OnboardingWizard.razonSocial", "Razón social")}{" "}
+                  {terminos.razonSocial}{" "}
                   <span style={{ color: "var(--bad-text)" }}>*</span>
                 </Label>
                 <Input
                   placeholder={t(
-                    "ui.OnboardingWizard.razonSocialRegistrada",
-                    "Razón social registrada",
+                    "ui.OnboardingWizard.nombreLegalAyuda",
+                    "Tal como aparece en el registro oficial",
                   )}
                   value={form.businessTitle}
                   onChange={(e) => set({ businessTitle: e.target.value })}
@@ -587,7 +708,8 @@ export default function OnboardingWizard({
               </div>
               <div className="space-y-1.5">
                 <Label>
-                  {taxLabel} <span style={{ color: "var(--bad-text)" }}>*</span>
+                  {terminos.idFiscal}{" "}
+                  <span style={{ color: "var(--bad-text)" }}>*</span>
                 </Label>
                 <Input
                   maxLength={24}
@@ -624,7 +746,10 @@ export default function OnboardingWizard({
                       )}
                     </div>
                     <button
-                      aria-label="Subir logo"
+                      aria-label={t(
+                        "ui.OnboardingWizard.subirLogo",
+                        "Subir logo",
+                      )}
                       className="absolute -bottom-1.5 -right-1.5 grid h-7 w-7 place-items-center rounded-full border border-border bg-background shadow-sm transition-colors hover:bg-accent"
                       type="button"
                       onClick={() => logoInputRef.current?.click()}
@@ -639,7 +764,9 @@ export default function OnboardingWizard({
                       variant="outline"
                       onClick={() => logoInputRef.current?.click()}
                     >
-                      {logoPreview ? "Cambiar logo" : "Subir logo"}
+                      {logoPreview
+                        ? t("ui.OnboardingWizard.cambiarLogo", "Cambiar logo")
+                        : t("ui.OnboardingWizard.subirLogo", "Subir logo")}
                     </Button>
                     <p className="mt-1.5 text-xs">
                       {t(
@@ -673,11 +800,17 @@ export default function OnboardingWizard({
                     {t("ui.OnboardingWizard.telefono", "Teléfono")}{" "}
                     <span style={{ color: "var(--bad-text)" }}>*</span>
                   </Label>
+                  {/* El prefijo sale del país elegido; cambiar de país vuelve a
+                      montar el campo con el suyo. */}
                   <PhoneInput
+                    key={form.country}
+                    defaultCountry={form.country || undefined}
                     value={form.phone}
                     onChange={(v) => set({ phone: v })}
                     onCountryChange={(c: any) =>
-                      set({ phoneCountry: c?.code || c?.name || paisDeLaEmpresa() })
+                      set({
+                        phoneCountry: c?.code || c?.name || paisDeLaEmpresa(),
+                      })
                     }
                   />
                   {form.phone && !phoneValid && (
@@ -737,7 +870,11 @@ export default function OnboardingWizard({
 
                 {!showManualAddress ? (
                   <AddressAutocomplete
+                    key={form.country}
                     showMap
+                    countryCodes={
+                      form.country ? [form.country.toLowerCase()] : undefined
+                    }
                     defaultValue={form.address}
                     initialLat={
                       form.latitude ? parseFloat(form.latitude) : undefined
@@ -750,14 +887,26 @@ export default function OnboardingWizard({
                       "ui.OnboardingWizard.buscarDireccion",
                       "Buscar dirección...",
                     )}
+                    paisPorDefecto={form.country || undefined}
+                    /* Sin dirección todavía, la zona es la del centro del
+                       país; en cuanto hay dirección, la de la dirección. */
+                    onCentroDelPais={(lat, lng) => {
+                      const tz = zonaPorCoordenadas(lat, lng);
+
+                      setForm((f) =>
+                        f.latitude || !tz ? f : { ...f, timezone: tz },
+                      );
+                    }}
                     onAddressSelect={(data: AddressComponents) => {
-                      const tz = tzFromText(data.country) || form.timezone;
+                      const tz =
+                        zonaPorCoordenadas(data.latitude, data.longitude) ||
+                        tzFromText(data.country) ||
+                        form.timezone;
 
                       set({
                         address: data.address || form.address,
                         city: data.city || form.city,
                         postalCode: data.postalCode || form.postalCode,
-                        country: data.country || form.country,
                         latitude: String(data.latitude ?? ""),
                         longitude: String(data.longitude ?? ""),
                         timezone: tz,
@@ -786,13 +935,6 @@ export default function OnboardingWizard({
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label>{t("ui.OnboardingWizard.pais", "País")}</Label>
-                    <Input
-                      value={form.country}
-                      onChange={(e) => set({ country: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-1.5">
                     <Label>
                       {t("ui.OnboardingWizard.codigoPostal", "Código postal")}
                     </Label>
@@ -807,11 +949,14 @@ export default function OnboardingWizard({
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
                   <Label>
-                    Zona horaria{" "}
+                    {t("onboarding.wizard.review.timezone", "Zona horaria")}{" "}
                     <span style={{ color: "var(--bad-text)" }}>*</span>
                   </Label>
                   <Combobox
-                    aria-label="Zona horaria"
+                    aria-label={t(
+                      "onboarding.wizard.review.timezone",
+                      "Zona horaria",
+                    )}
                     options={opcionesZona}
                     placeholder={t(
                       "ui.OnboardingWizard.seleccionarZonaHoraria",
@@ -823,11 +968,18 @@ export default function OnboardingWizard({
                     className="text-xs font-medium text-primary hover:underline"
                     type="button"
                     onClick={() => {
-                      const tz = tzFromText(form.country, form.address);
+                      const tz =
+                        zonaPorCoordenadas(form.latitude, form.longitude) ||
+                        tzFromText(form.country, form.address);
 
                       if (tz) {
                         set({ timezone: tz });
-                        toast.success(`Zona horaria detectada: ${tz}`);
+                        toast.success(
+                          t("ui.OnboardingWizard.zonaDetectada", {
+                            defaultValue: "Zona horaria detectada: {{tz}}",
+                            tz,
+                          }),
+                        );
                       } else
                         toast.info(
                           t("ui.OnboardingWizard.noSePudoDetectarSeleccionala"),
@@ -842,9 +994,9 @@ export default function OnboardingWizard({
                 </div>
                 <div className="space-y-1.5">
                   <Label>
-                    Sitio web{" "}
+                    {t("onboarding.wizard.review.website", "Sitio web")}{" "}
                     <span className="text-muted-foreground text-xs font-normal">
-                      (opcional)
+                      ({t("ui.OnboardingWizard.opcional", "opcional")})
                     </span>
                   </Label>
                   <Input
@@ -862,6 +1014,7 @@ export default function OnboardingWizard({
             <ReviewStep
               days={days}
               form={form}
+              terminos={terminos}
               logoPreview={logoPreview}
               trialEnd={trialEnd}
               onEdit={(s) => setStep(s)}
@@ -871,13 +1024,20 @@ export default function OnboardingWizard({
 
         {/* Footer */}
         <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-border bg-muted/30 px-4 py-3.5 sm:px-6">
+          {/* Obligatorio: la única salida es cerrar la sesión (quien se
+              equivocó de cuenta no puede quedarse encerrado aquí). */}
           <button
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
             disabled={submitting}
             type="button"
-            onClick={snoozeAndClose}
+            onClick={obligatorio ? () => void signOut() : snoozeAndClose}
           >
-            {t("ui.OnboardingWizard.completarMasTarde", "Completar más tarde")}
+            {obligatorio
+              ? t("ui.OnboardingWizard.cerrarSesion", "Cerrar sesión")
+              : t(
+                  "ui.OnboardingWizard.completarMasTarde",
+                  "Completar más tarde",
+                )}
           </button>
 
           <div className="ml-auto flex items-center gap-2">
@@ -943,9 +1103,20 @@ export default function OnboardingWizard({
 function WelcomeStep({
   days,
   trialEnd,
+  terminos,
+  obligatorio,
+  children,
 }: {
   days: number | null;
   trialEnd: string | null;
+  terminos: {
+    razonSocialLocal: string | null;
+    idFiscalLocal: string | null;
+    razonSocial: string;
+    idFiscal: string;
+  };
+  obligatorio: boolean;
+  children?: React.ReactNode;
 }) {
   const { t } = useTranslation();
   /* El nombre del anfitrión: «C-Guard Pro» en el de la plataforma, el del
@@ -954,10 +1125,13 @@ function WelcomeStep({
   const items = [
     {
       icon: Building2,
-      text: t(
-        "onboarding.wizard.welcome.companyData",
-        "Los datos de tu empresa (nombre, razón social, RUC)",
-      ),
+      // Con los nombres del país elegido: «razón social, RUC» en Ecuador,
+      // «legal business name, EIN» en EE. UU.
+      text: t("onboarding.wizard.welcome.companyDataPais", {
+        defaultValue: "Los datos de tu empresa (nombre, {{legal}}, {{fiscal}})",
+        legal: terminos.razonSocial,
+        fiscal: terminos.idFiscal,
+      }),
     },
     {
       icon: Camera,
@@ -994,6 +1168,17 @@ function WelcomeStep({
             marca: nombreDeMarca,
           })}
         </h2>
+        {obligatorio && (
+          <p
+            className="mx-auto max-w-md text-sm font-medium"
+            style={{ color: "var(--brand-text)" }}
+          >
+            {t("ui.OnboardingWizard.obligatorioAviso", {
+              defaultValue:
+                "Antes de empezar, completa los datos de tu empresa: tus vigilantes y clientes los verán.",
+            })}
+          </p>
+        )}
         <p className="mx-auto max-w-md text-sm text-muted-foreground">
           {t(
             "onboarding.wizard.welcome.intro",
@@ -1032,6 +1217,8 @@ function WelcomeStep({
           </p>
         )}
       </div>
+
+      {children}
 
       <div className="mx-auto max-w-md space-y-2.5 rounded-xl border border-border bg-muted/30 p-4 text-left">
         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -1076,18 +1263,22 @@ function ReviewStep({
   days,
   trialEnd,
   onEdit,
+  terminos,
 }: {
+  terminos: { razonSocial: string; idFiscal: string };
   form: WizardForm;
   logoPreview: string | null;
   days: number | null;
   trialEnd: string | null;
   onEdit: (step: number) => void;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const tzLabel =
     TIMEZONE_OPTIONS.find((o) => o.value === form.timezone)?.label ||
     form.timezone;
-  const { taxLabel } = taxFieldTexts(form.country, t);
+  const paisTexto = form.country
+    ? `${bandera(form.country)} ${nombreDePais(form.country, i18n.resolvedLanguage || i18n.language || "es")}`
+    : "";
 
   return (
     <div className="space-y-4 animate-in fade-in-50 duration-300">
@@ -1126,7 +1317,12 @@ function ReviewStep({
             {t("actions.edit")}
           </button>
         </div>
-        <ReviewRow label={taxLabel} value={form.taxNumber} />
+        <ReviewRow
+          label={t("ui.OnboardingWizard.pais", "País")}
+          value={paisTexto}
+        />
+        <ReviewRow label={terminos.razonSocial} value={form.businessTitle} />
+        <ReviewRow label={terminos.idFiscal} value={form.taxNumber} />
         <div className="flex items-center justify-between py-2">
           <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             {t(

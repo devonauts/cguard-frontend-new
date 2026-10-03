@@ -11116,7 +11116,20 @@
       "rucPeruInvalido": "RUC ma 11 cyfr i zaczyna się od 10, 15, 17 lub 20.",
       "identificacionFiscal": "Numer identyfikacji podatkowej",
       "identificacionFiscalEjemplo": "Tak jak w rejestrze Twojej firmy",
-      "identificacionInvalida": "Wpisz od 5 do 20 liter lub cyfr, tak jak w rejestrze Twojej firmy."
+      "identificacionInvalida": "Wpisz od 5 do 20 liter lub cyfr, tak jak w rejestrze Twojej firmy.",
+      "nombreLegal": "Pełna nazwa prawna firmy",
+      "nombreLegalAyuda": "Dokładnie tak jak w oficjalnym rejestrze",
+      "paisDeLaEmpresa": "W jakim kraju działa Twoja firma?",
+      "buscarPais": "Szukaj kraju…",
+      "paisAyuda": "Na jego podstawie dopasowujemy dane podatkowe, telefon, mapę i strefę czasową.",
+      "logoFormato": "Logo musi być w formacie PNG, JPG, SVG lub WEBP.",
+      "logoPeso": "Logo nie może być większe niż 5 MB.",
+      "cambiarLogo": "Zmień logo",
+      "subirLogo": "Prześlij logo",
+      "zonaDetectada": "Wykryta strefa czasowa: {{tz}}",
+      "opcional": "opcjonalnie",
+      "cerrarSesion": "Wyloguj się",
+      "obligatorioAviso": "Zanim zaczniesz, uzupełnij dane firmy: zobaczą je Twoi pracownicy ochrony i klienci."
     },
     "OpenShifts": {
       "accion": "Akcja",
@@ -16923,7 +16936,8 @@
       "taxNumber": "RUC / nr dowodu",
       "timezone": "Strefa czasowa",
       "logo": "Logotyp",
-      "taxNumberGeneric": "Numer podatkowy"
+      "taxNumberGeneric": "Numer podatkowy",
+      "country": "Kraj"
     },
     "wizard": {
       "autoSearch": "Wyszukiwanie automatyczne",
@@ -16946,7 +16960,8 @@
         "daysLeft_one": "został {{count}} dzień",
         "daysLeft_few": "zostały {{count}} dni",
         "daysLeft_many": "zostało {{count}} dni",
-        "daysLeft_other": "zostało {{count}} dni"
+        "daysLeft_other": "zostało {{count}} dni",
+        "companyDataPais": "Dane Twojej firmy (nazwa, {{legal}}, {{fiscal}})"
       },
       "stepOf": "Krok {{current}} z {{total}}",
       "start": "Zaczynamy",

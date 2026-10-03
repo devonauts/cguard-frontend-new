@@ -11082,7 +11082,20 @@
       "rucPeruInvalido": "Il RUC ha 11 cifre e inizia con 10, 15, 17 o 20.",
       "identificacionFiscal": "Codice fiscale",
       "identificacionFiscalEjemplo": "Come appare nella registrazione della tua azienda",
-      "identificacionInvalida": "Inserisci da 5 a 20 lettere o cifre, come appare nella registrazione della tua azienda."
+      "identificacionInvalida": "Inserisci da 5 a 20 lettere o cifre, come appare nella registrazione della tua azienda.",
+      "nombreLegal": "Denominazione legale dell'azienda",
+      "nombreLegalAyuda": "Esattamente come risulta dal registro ufficiale",
+      "paisDeLaEmpresa": "In quale paese si trova la tua azienda?",
+      "buscarPais": "Cerca paese…",
+      "paisAyuda": "Lo usiamo per adattare i dati fiscali, il telefono, la mappa e il fuso orario.",
+      "logoFormato": "Il logo deve essere PNG, JPG, SVG o WEBP.",
+      "logoPeso": "Il logo non deve superare 5 MB.",
+      "cambiarLogo": "Cambia logo",
+      "subirLogo": "Carica logo",
+      "zonaDetectada": "Fuso orario rilevato: {{tz}}",
+      "opcional": "facoltativo",
+      "cerrarSesion": "Esci",
+      "obligatorioAviso": "Prima di iniziare, completa i dati della tua azienda: le tue guardie e i tuoi clienti li vedranno."
     },
     "OpenShifts": {
       "accion": "Azione",
@@ -16735,7 +16748,8 @@
       "taxNumber": "Partita IVA / Documento d'identità",
       "timezone": "Fuso orario",
       "logo": "Logo",
-      "taxNumberGeneric": "Codice fiscale"
+      "taxNumberGeneric": "Codice fiscale",
+      "country": "Paese"
     },
     "wizard": {
       "autoSearch": "Ricerca automatica",
@@ -16756,7 +16770,8 @@
         "trialEnds": "La tua prova termina il {{date}}",
         "weWillSetUp": "Cosa configureremo",
         "daysLeft_one": "resta {{count}} giorno",
-        "daysLeft_other": "restano {{count}} giorni"
+        "daysLeft_other": "restano {{count}} giorni",
+        "companyDataPais": "I dati della tua azienda (nome, {{legal}}, {{fiscal}})"
       },
       "stepOf": "Passo {{current}} di {{total}}",
       "start": "Inizia",

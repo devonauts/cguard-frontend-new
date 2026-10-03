@@ -10559,7 +10559,20 @@
       "rucPeruInvalido": "The RUC is 11 digits and starts with 10, 15, 17 or 20.",
       "identificacionFiscal": "Tax ID",
       "identificacionFiscalEjemplo": "As it appears in your company registration",
-      "identificacionInvalida": "Enter 5 to 20 letters or numbers, as it appears in your company registration."
+      "identificacionInvalida": "Enter 5 to 20 letters or numbers, as it appears in your company registration.",
+      "nombreLegal": "Legal business name",
+      "nombreLegalAyuda": "Exactly as it appears in the official registry",
+      "paisDeLaEmpresa": "Which country is your company in?",
+      "buscarPais": "Search country…",
+      "paisAyuda": "We use it to adapt tax details, phone format, map and time zone.",
+      "logoFormato": "The logo must be PNG, JPG, SVG or WEBP.",
+      "logoPeso": "The logo can't be larger than 5MB.",
+      "cambiarLogo": "Change logo",
+      "subirLogo": "Upload logo",
+      "zonaDetectada": "Time zone detected: {{tz}}",
+      "opcional": "optional",
+      "cerrarSesion": "Sign out",
+      "obligatorioAviso": "Before you start, complete your company details: your officers and clients will see them."
     },
     "OpenShifts": {
       "accion": "Action",
@@ -16735,7 +16748,8 @@
       "taxNumber": "Tax ID / Government ID",
       "taxNumberGeneric": "Tax ID",
       "timezone": "Time zone",
-      "logo": "Logo"
+      "logo": "Logo",
+      "country": "Country"
     },
     "wizard": {
       "autoSearch": "Automatic search",
@@ -16756,7 +16770,8 @@
         "trialEnds": "Your trial ends on {{date}}",
         "weWillSetUp": "What we'll set up",
         "daysLeft_one": "{{count}} day left",
-        "daysLeft_other": "{{count}} days left"
+        "daysLeft_other": "{{count}} days left",
+        "companyDataPais": "Your company details (name, {{legal}}, {{fiscal}})"
       },
       "stepOf": "Step {{current}} of {{total}}",
       "start": "Get started",

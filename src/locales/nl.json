@@ -11082,7 +11082,20 @@
       "rucPeruInvalido": "Het RUC heeft 11 cijfers en begint met 10, 15, 17 of 20.",
       "identificacionFiscal": "Fiscaal nummer",
       "identificacionFiscalEjemplo": "Zoals vermeld in de registratie van je bedrijf",
-      "identificacionInvalida": "Voer 5 tot 20 letters of cijfers in, zoals vermeld in de registratie van je bedrijf."
+      "identificacionInvalida": "Voer 5 tot 20 letters of cijfers in, zoals vermeld in de registratie van je bedrijf.",
+      "nombreLegal": "Statutaire bedrijfsnaam",
+      "nombreLegalAyuda": "Precies zoals in het officiële register",
+      "paisDeLaEmpresa": "In welk land is je bedrijf gevestigd?",
+      "buscarPais": "Land zoeken…",
+      "paisAyuda": "Hiermee passen we fiscale gegevens, telefoonnotatie, kaart en tijdzone aan.",
+      "logoFormato": "Het logo moet PNG, JPG, SVG of WEBP zijn.",
+      "logoPeso": "Het logo mag niet groter zijn dan 5 MB.",
+      "cambiarLogo": "Logo wijzigen",
+      "subirLogo": "Logo uploaden",
+      "zonaDetectada": "Tijdzone gedetecteerd: {{tz}}",
+      "opcional": "optioneel",
+      "cerrarSesion": "Uitloggen",
+      "obligatorioAviso": "Vul eerst je bedrijfsgegevens in: je beveiligers en klanten zien ze."
     },
     "OpenShifts": {
       "accion": "Actie",
@@ -16735,7 +16748,8 @@
       "taxNumber": "Fiscaal nummer / ID-nummer",
       "timezone": "Tijdzone",
       "logo": "Logo",
-      "taxNumberGeneric": "Fiscaal nummer"
+      "taxNumberGeneric": "Fiscaal nummer",
+      "country": "Land"
     },
     "wizard": {
       "autoSearch": "Automatisch zoeken",
@@ -16756,7 +16770,8 @@
         "trialEnds": "Je proefperiode eindigt op {{date}}",
         "weWillSetUp": "Dit stellen we in",
         "daysLeft_one": "nog {{count}} dag",
-        "daysLeft_other": "nog {{count}} dagen"
+        "daysLeft_other": "nog {{count}} dagen",
+        "companyDataPais": "Je bedrijfsgegevens (naam, {{legal}}, {{fiscal}})"
       },
       "stepOf": "Stap {{current}} van {{total}}",
       "start": "Beginnen",

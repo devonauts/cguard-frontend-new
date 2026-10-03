@@ -11082,7 +11082,20 @@
       "rucPeruInvalido": "Le RUC comporte 11 chiffres et commence par 10, 15, 17 ou 20.",
       "identificacionFiscal": "Identifiant fiscal",
       "identificacionFiscalEjemplo": "Tel qu'il figure dans l'immatriculation de votre entreprise",
-      "identificacionInvalida": "Saisissez 5 à 20 lettres ou chiffres, tel qu'il figure dans l'immatriculation de votre entreprise."
+      "identificacionInvalida": "Saisissez 5 à 20 lettres ou chiffres, tel qu'il figure dans l'immatriculation de votre entreprise.",
+      "nombreLegal": "Dénomination légale de l'entreprise",
+      "nombreLegalAyuda": "Telle qu'elle figure au registre officiel",
+      "paisDeLaEmpresa": "Dans quel pays se trouve votre entreprise ?",
+      "buscarPais": "Rechercher un pays…",
+      "paisAyuda": "Il nous sert à adapter les données fiscales, le téléphone, la carte et le fuseau horaire.",
+      "logoFormato": "Le logo doit être au format PNG, JPG, SVG ou WEBP.",
+      "logoPeso": "Le logo ne doit pas dépasser 5 Mo.",
+      "cambiarLogo": "Changer le logo",
+      "subirLogo": "Téléverser le logo",
+      "zonaDetectada": "Fuseau horaire détecté : {{tz}}",
+      "opcional": "facultatif",
+      "cerrarSesion": "Se déconnecter",
+      "obligatorioAviso": "Avant de commencer, complétez les informations de votre entreprise : vos agents et vos clients les verront."
     },
     "OpenShifts": {
       "accion": "Action",
@@ -16735,7 +16748,8 @@
       "taxNumber": "RUC / Pièce d'identité",
       "timezone": "Fuseau horaire",
       "logo": "Logo",
-      "taxNumberGeneric": "Identifiant fiscal"
+      "taxNumberGeneric": "Identifiant fiscal",
+      "country": "Pays"
     },
     "wizard": {
       "autoSearch": "Recherche automatique",
@@ -16756,7 +16770,8 @@
         "trialEnds": "Votre essai se termine le {{date}}",
         "weWillSetUp": "Ce que nous allons configurer",
         "daysLeft_one": "il reste {{count}} jour",
-        "daysLeft_other": "il reste {{count}} jours"
+        "daysLeft_other": "il reste {{count}} jours",
+        "companyDataPais": "Les informations de votre entreprise (nom, {{legal}}, {{fiscal}})"
       },
       "stepOf": "Étape {{current}} sur {{total}}",
       "start": "Commencer",

@@ -11082,7 +11082,20 @@
       "rucPeruInvalido": "Die RUC hat 11 Ziffern und beginnt mit 10, 15, 17 oder 20.",
       "identificacionFiscal": "Steuernummer",
       "identificacionFiscalEjemplo": "Wie im Register Ihres Unternehmens eingetragen",
-      "identificacionInvalida": "Geben Sie 5 bis 20 Buchstaben oder Ziffern ein, wie im Register Ihres Unternehmens eingetragen."
+      "identificacionInvalida": "Geben Sie 5 bis 20 Buchstaben oder Ziffern ein, wie im Register Ihres Unternehmens eingetragen.",
+      "nombreLegal": "Rechtlicher Firmenname",
+      "nombreLegalAyuda": "Genau wie im offiziellen Register eingetragen",
+      "paisDeLaEmpresa": "In welchem Land ist Ihr Unternehmen?",
+      "buscarPais": "Land suchen…",
+      "paisAyuda": "Damit passen wir Steuerdaten, Telefonformat, Karte und Zeitzone an.",
+      "logoFormato": "Das Logo muss PNG, JPG, SVG oder WEBP sein.",
+      "logoPeso": "Das Logo darf höchstens 5 MB groß sein.",
+      "cambiarLogo": "Logo ändern",
+      "subirLogo": "Logo hochladen",
+      "zonaDetectada": "Erkannte Zeitzone: {{tz}}",
+      "opcional": "optional",
+      "cerrarSesion": "Abmelden",
+      "obligatorioAviso": "Bevor Sie loslegen, vervollständigen Sie Ihre Firmendaten: Ihre Mitarbeiter und Kunden sehen sie."
     },
     "OpenShifts": {
       "accion": "Aktion",
@@ -16735,7 +16748,8 @@
       "taxNumber": "Steuernummer / Ausweis",
       "timezone": "Zeitzone",
       "logo": "Logo",
-      "taxNumberGeneric": "Steuernummer"
+      "taxNumberGeneric": "Steuernummer",
+      "country": "Land"
     },
     "wizard": {
       "autoSearch": "Automatische Suche",
@@ -16756,7 +16770,8 @@
         "trialEnds": "Ihre Testphase endet am {{date}}",
         "weWillSetUp": "Das richten wir ein",
         "daysLeft_one": "noch {{count}} Tag",
-        "daysLeft_other": "noch {{count}} Tage"
+        "daysLeft_other": "noch {{count}} Tage",
+        "companyDataPais": "Ihre Firmendaten (Name, {{legal}}, {{fiscal}})"
       },
       "stepOf": "Schritt {{current}} von {{total}}",
       "start": "Loslegen",

@@ -10559,7 +10559,20 @@
       "rucPeruInvalido": "El RUC son 11 dígitos y empieza por 10, 15, 17 o 20.",
       "identificacionFiscal": "Identificación fiscal",
       "identificacionFiscalEjemplo": "Como aparece en el registro de tu empresa",
-      "identificacionInvalida": "Escribe entre 5 y 20 letras o números, como aparece en el registro de tu empresa."
+      "identificacionInvalida": "Escribe entre 5 y 20 letras o números, como aparece en el registro de tu empresa.",
+      "nombreLegal": "Nombre legal de la empresa",
+      "nombreLegalAyuda": "Tal como aparece en el registro oficial",
+      "paisDeLaEmpresa": "¿En qué país está tu empresa?",
+      "buscarPais": "Buscar país…",
+      "paisAyuda": "Con él adaptamos los datos fiscales, el teléfono, el mapa y la zona horaria.",
+      "logoFormato": "El logo debe ser PNG, JPG, SVG o WEBP.",
+      "logoPeso": "El logo no debe superar 5MB.",
+      "cambiarLogo": "Cambiar logo",
+      "subirLogo": "Subir logo",
+      "zonaDetectada": "Zona horaria detectada: {{tz}}",
+      "opcional": "opcional",
+      "cerrarSesion": "Cerrar sesión",
+      "obligatorioAviso": "Antes de empezar, completa los datos de tu empresa: tus vigilantes y clientes los verán."
     },
     "OpenShifts": {
       "accion": "Acción",
@@ -16735,7 +16748,8 @@
       "taxNumber": "RUC / Cédula",
       "taxNumberGeneric": "Identificación fiscal",
       "timezone": "Zona horaria",
-      "logo": "Logo"
+      "logo": "Logo",
+      "country": "País"
     },
     "wizard": {
       "autoSearch": "Búsqueda automática",
@@ -16756,7 +16770,8 @@
         "trialEnds": "Tu prueba termina el {{date}}",
         "weWillSetUp": "Vamos a configurar",
         "daysLeft_one": "te queda {{count}} día",
-        "daysLeft_other": "te quedan {{count}} días"
+        "daysLeft_other": "te quedan {{count}} días",
+        "companyDataPais": "Los datos de tu empresa (nombre, {{legal}}, {{fiscal}})"
       },
       "stepOf": "Paso {{current}} de {{total}}",
       "start": "Comenzar",

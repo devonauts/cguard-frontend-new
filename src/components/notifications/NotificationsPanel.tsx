@@ -37,7 +37,13 @@ import {
 
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -287,9 +293,14 @@ export function NotificationsPanel({
           {/* `pr-10`: la hoja pone su propia X arriba a la derecha. */}
           <div className="flex items-center justify-between gap-2 pr-10">
             <div className="flex min-w-0 items-center gap-2">
-              <h2 className="truncate text-base font-semibold">
+              {/* Título de la hoja (Radix exige uno para lectores de
+                  pantalla); el aspecto es el mismo que el <h2> que había. */}
+              <SheetTitle className="truncate text-base font-semibold">
                 {t("ui.NotificationsPanel.titulo", "Notificaciones")}
-              </h2>
+              </SheetTitle>
+              <SheetDescription className="sr-only">
+                {t("ui.NotificationsPanel.titulo", "Notificaciones")}
+              </SheetDescription>
               <span
                 className="flex shrink-0 items-center gap-1 text-xs"
                 style={{

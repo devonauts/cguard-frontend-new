@@ -74,7 +74,8 @@ function userIsSuperadmin(u: any): boolean {
  * user snoozed it. Mounts the banner and wizard; exposes openWizard().
  */
 export function OnboardingProvider({ children }: { children: ReactNode }) {
-  const { user, loading, refreshProfile } = useAuth();
+  const { user, loading, refreshProfile, isAdmin, tenantAdmin, permissions } =
+    useAuth() as any;
   const [wizardOpen, setWizardOpen] = useState(false);
   const autoOpenedRef = useRef(false);
 
@@ -82,6 +83,16 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const isSuper = useMemo(() => userIsSuperadmin(user), [user]);
 
   const incomplete = !isSuper && needsOnboarding(tenant);
+  /* ── OBLIGATORIO, PERO SÓLO PARA QUIEN PUEDE GUARDARLO ──────────────────
+     Pedido del dueño (2026-10-03): con «Completar más tarde» casi nadie
+     volvía. Pero guardar la empresa exige `tenantEdit`: obligar a un
+     operador sin ese permiso lo dejaría encerrado delante de un formulario
+     que el servidor le rechaza. A él se le sigue ofreciendo, sin forzar. */
+  const puedeEditarEmpresa =
+    !!isAdmin ||
+    !!tenantAdmin ||
+    (Array.isArray(permissions) && permissions.includes("tenantEdit"));
+  const obligatorio = incomplete && puedeEditarEmpresa;
 
   // Auto-open once: first login OR onboarding incomplete, unless snoozed.
   useEffect(() => {
@@ -99,12 +110,25 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
 
     const firstLogin = user?.isFirstLogin === true;
 
-    // First login forces the wizard regardless of snooze. Otherwise honor snooze.
-    if (firstLogin || !snoozed) {
+    // Obligatorio o primer acceso: se abre aunque se haya pospuesto antes.
+    if (obligatorio || firstLogin || !snoozed) {
       autoOpenedRef.current = true;
       setWizardOpen(true);
     }
-  }, [loading, isSuper, tenant?.id, incomplete, user?.isFirstLogin]);
+  }, [
+    loading,
+    isSuper,
+    tenant?.id,
+    incomplete,
+    user?.isFirstLogin,
+    obligatorio,
+  ]);
+
+  /* Si es obligatorio no se puede quedar cerrado (p. ej. otro componente
+     llamó a cerrar): se vuelve a abrir. */
+  useEffect(() => {
+    if (obligatorio && !wizardOpen && !loading) setWizardOpen(true);
+  }, [obligatorio, wizardOpen, loading]);
 
   const value = useMemo<OnboardingContextValue>(
     () => ({ tenant, openWizard: () => setWizardOpen(true) }),
@@ -125,6 +149,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       {!isSuper && tenant?.id && (
         <OnboardingWizard
           defaultEmail={user?.email}
+          obligatorio={obligatorio}
           open={wizardOpen}
           tenant={tenant}
           onOpenChange={setWizardOpen}

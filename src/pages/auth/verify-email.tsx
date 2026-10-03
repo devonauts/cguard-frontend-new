@@ -84,13 +84,14 @@ export default function VerifyEmail() {
         return false;
       };
 
-      const redirected = await redirectInvite();
-
-      if (redirected) return;
-
+      /* ── PRIMERO, LO QUE CASI SIEMPRE ES: VERIFICAR EL CORREO ────────────
+         Antes se probaba primero si el código era de una invitación de
+         vigilante o de cliente, y en un alta normal esas dos consultas
+         respondían 400 SIEMPRE: dos errores en consola en cada verificación.
+         Ahora se verifica primero; sólo si el servidor no reconoce el código
+         como verificación se prueba si es una invitación. */
       try {
-        const base =
-          resolveApiBase() ?? "http://localhost:3001/api";
+        const base = resolveApiBase() ?? "http://localhost:3001/api";
         const url = `${base.replace(/\/+$/, "")}/auth/verify-email?token=${encodeURIComponent(token)}`;
         const res = await fetch(url, { method: "PUT", credentials: "include" });
 
@@ -100,18 +101,22 @@ export default function VerifyEmail() {
               "Correo verificado, puedes iniciar sesión",
           );
           navigate("/login", { replace: true });
-        } else {
-          let err = await res.json().catch(() => ({}));
-          const message =
-            err && err.message
-              ? err.message
-              : t("auth.verify_email_failed") ||
-                "No se pudo verificar el correo";
 
-          toast.error(message);
-          navigate("/login", { replace: true });
+          return;
         }
+        const err = await res.json().catch(() => ({}));
+        const redirected = await redirectInvite();
+
+        if (redirected) return;
+        const message =
+          err && err.message
+            ? err.message
+            : t("auth.verify_email_failed") || "No se pudo verificar el correo";
+
+        toast.error(message);
+        navigate("/login", { replace: true });
       } catch (error) {
+        if (await redirectInvite()) return;
         toast.error(
           t("auth.verify_email_failed") || "No se pudo verificar el correo",
         );

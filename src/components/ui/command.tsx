@@ -11,6 +11,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogTitle,
 } from "@/components/ui/dialog";
 
 /* Transparente a propósito: el paleta de comandos siempre va dentro de un
@@ -35,6 +36,9 @@ const CommandDialog = ({ children, ...props }: DialogProps) => {
   return (
     <Dialog {...props}>
       <DialogContent className="overflow-hidden p-0">
+        <DialogTitle className="sr-only">
+          {i18n.t("ui.command.paletaDeComandos", "Paleta de comandos")}
+        </DialogTitle>
         <DialogDescription className="sr-only">
           {i18n.t("ui.command.paletaDeComandos", "Paleta de comandos")}
         </DialogDescription>

@@ -10559,7 +10559,20 @@
       "rucPeruInvalido": "O RUC tem 11 dígitos e começa com 10, 15, 17 ou 20.",
       "identificacionFiscal": "Identificação fiscal",
       "identificacionFiscalEjemplo": "Como aparece no registro da sua empresa",
-      "identificacionInvalida": "Digite de 5 a 20 letras ou números, como aparece no registro da sua empresa."
+      "identificacionInvalida": "Digite de 5 a 20 letras ou números, como aparece no registro da sua empresa.",
+      "nombreLegal": "Nome legal da empresa",
+      "nombreLegalAyuda": "Exatamente como aparece no registo oficial",
+      "paisDeLaEmpresa": "Em que país fica a sua empresa?",
+      "buscarPais": "Pesquisar país…",
+      "paisAyuda": "Usamo-lo para adaptar os dados fiscais, o telefone, o mapa e o fuso horário.",
+      "logoFormato": "O logótipo deve ser PNG, JPG, SVG ou WEBP.",
+      "logoPeso": "O logótipo não pode ter mais de 5MB.",
+      "cambiarLogo": "Alterar logótipo",
+      "subirLogo": "Carregar logótipo",
+      "zonaDetectada": "Fuso horário detetado: {{tz}}",
+      "opcional": "opcional",
+      "cerrarSesion": "Terminar sessão",
+      "obligatorioAviso": "Antes de começar, preencha os dados da sua empresa: os seus vigilantes e clientes vão vê-los."
     },
     "OpenShifts": {
       "accion": "Ação",
@@ -16735,7 +16748,8 @@
       "taxNumber": "RUC / Cédula",
       "timezone": "Fuso horário",
       "logo": "Logotipo",
-      "taxNumberGeneric": "Identificação fiscal"
+      "taxNumberGeneric": "Identificação fiscal",
+      "country": "País"
     },
     "wizard": {
       "autoSearch": "Busca automática",
@@ -16756,7 +16770,8 @@
         "trialEnds": "Seu teste termina em {{date}}",
         "weWillSetUp": "Vamos configurar",
         "daysLeft_one": "resta {{count}} dia",
-        "daysLeft_other": "restam {{count}} dias"
+        "daysLeft_other": "restam {{count}} dias",
+        "companyDataPais": "Os dados da sua empresa (nome, {{legal}}, {{fiscal}})"
       },
       "stepOf": "Etapa {{current}} de {{total}}",
       "start": "Começar",
