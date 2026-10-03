@@ -432,7 +432,9 @@
       "recuperarAcceso": "Recuperar acceso",
       "revisaTuCorreo": "Revisa tu correo",
       "enviamosEnlace": "Si hay una cuenta con {{correo}}, te llegará un enlace para crear una contraseña nueva.",
-      "enviarDeNuevo": "Enviarlo de nuevo"
+      "enviarDeNuevo": "Enviarlo de nuevo",
+      "procesando": "Procesando…",
+      "listo": "Listo"
     }
   },
   "billing": {

@@ -6877,7 +6877,9 @@
       "recuperarAcceso": "Recuperar acesso",
       "revisaTuCorreo": "Verifique seu e-mail",
       "enviamosEnlace": "Se houver uma conta com {{correo}}, você receberá um link para criar uma nova senha.",
-      "enviarDeNuevo": "Enviar novamente"
+      "enviarDeNuevo": "Enviar novamente",
+      "procesando": "Processando…",
+      "listo": "Pronto"
     }
   },
   "billing": {

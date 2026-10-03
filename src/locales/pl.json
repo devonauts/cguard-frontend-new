@@ -302,7 +302,9 @@
       "recuperarAcceso": "Odzyskiwanie dostępu",
       "revisaTuCorreo": "Sprawdź pocztę",
       "enviamosEnlace": "Jeśli istnieje konto dla {{correo}}, otrzymasz link do utworzenia nowego hasła.",
-      "enviarDeNuevo": "Wyślij ponownie"
+      "enviarDeNuevo": "Wyślij ponownie",
+      "procesando": "Przetwarzanie…",
+      "listo": "Gotowe"
     }
   },
   "client": {

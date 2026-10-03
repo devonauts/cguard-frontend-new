@@ -302,7 +302,9 @@
       "recuperarAcceso": "Recupero accesso",
       "revisaTuCorreo": "Controlla la tua email",
       "enviamosEnlace": "Se esiste un account per {{correo}}, riceverai un link per creare una nuova password.",
-      "enviarDeNuevo": "Invia di nuovo"
+      "enviarDeNuevo": "Invia di nuovo",
+      "procesando": "Elaborazione…",
+      "listo": "Fatto"
     }
   },
   "client": {

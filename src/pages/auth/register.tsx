@@ -12,7 +12,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
-import Boveda, { BotonVer, CAMPO, Campo } from "./Boveda";
+import Boveda, {
+  BotonDeAccion,
+  BotonVer,
+  CAMPO,
+  Campo,
+  useBotonDeAccion,
+} from "./Boveda";
 
 import { tituloConMarca } from "@/hooks/usePageTitle";
 import { useAuth } from "@/contexts/AuthContext";
@@ -51,6 +57,7 @@ function reglasDeClave(v: string) {
 export default function Register() {
   const { t, i18n } = useTranslation();
   const { signUp } = useAuth();
+  const accion = useBotonDeAccion();
   const { language } = useLanguage();
   const navigate = useNavigate();
 
@@ -237,27 +244,39 @@ export default function Register() {
       return;
     }
 
-    setIsLoading(true);
-    const res = await signUp({
-      email,
-      password,
-      name,
-      phoneNumber: phone,
-      companyName: empresa.trim(),
-      country: pais,
-      captchaToken: captchaToken || undefined,
-      companyWebsite: trampa,
-      faxNumber: trampa2,
-      homepageUrl: trampa3,
-      acceptedTerms: acepta,
-      app: "web",
-      termsVersion: "2026-10",
-      elapsedMs: Date.now() - pintadoEn.current,
+    const ok = await accion.ejecutar(async () => {
+      setIsLoading(true);
+      const res = await signUp({
+        email,
+        password,
+        name,
+        phoneNumber: phone,
+        companyName: empresa.trim(),
+        country: pais,
+        captchaToken: captchaToken || undefined,
+        companyWebsite: trampa,
+        faxNumber: trampa2,
+        homepageUrl: trampa3,
+        acceptedTerms: acepta,
+        app: "web",
+        termsVersion: "2026-10",
+        elapsedMs: Date.now() - pintadoEn.current,
+      });
+
+      setIsLoading(false);
+      if (!res?.success) {
+        toast.error(
+          res?.error ||
+            t("ui.AuthContext.errorAlRegistrarse", "Error al registrarse"),
+        );
+
+        return false;
+      }
+
+      return true;
     });
 
-    setIsLoading(false);
-
-    if (res?.success) {
+    if (ok) {
       pistaDeAlta("signup_completed");
       /* El embudo del SOCIO: en su anfitrión, este registro es su conversión
          (`sign_up` es el nombre recomendado de GA4). En el de la plataforma
@@ -265,12 +284,6 @@ export default function Register() {
       medir(EVENTOS.registro, { method: "email" });
       toast.success(t("auth.account_created_verify_email"));
       navigate("/login");
-    } else {
-      const msg =
-        res?.error ||
-        t("ui.AuthContext.errorAlRegistrarse", "Error al registrarse");
-
-      toast.error(msg);
     }
   };
 
@@ -682,20 +695,13 @@ export default function Register() {
               >
                 <ArrowLeft className="h-4 w-4" />
               </button>
-              <button
-                className="cg-reg-boton flex-1"
-                disabled={isLoading}
+              <BotonDeAccion
+                className="flex-1"
+                estado={accion.estado}
                 type="submit"
               >
-                {isLoading ? (
-                  t("auth.creating_account")
-                ) : (
-                  <>
-                    {t("auth.create_account")}{" "}
-                    <ArrowRight className="h-4 w-4" />
-                  </>
-                )}
-              </button>
+                {t("auth.create_account")} <ArrowRight className="h-4 w-4" />
+              </BotonDeAccion>
             </div>
           </div>
         )}

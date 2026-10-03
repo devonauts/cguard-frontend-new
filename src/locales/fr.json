@@ -302,7 +302,9 @@
       "recuperarAcceso": "Récupération du compte",
       "revisaTuCorreo": "Vérifiez vos e-mails",
       "enviamosEnlace": "S’il existe un compte pour {{correo}}, vous recevrez un lien pour créer un nouveau mot de passe.",
-      "enviarDeNuevo": "Renvoyer le lien"
+      "enviarDeNuevo": "Renvoyer le lien",
+      "procesando": "Traitement…",
+      "listo": "Terminé"
     }
   },
   "client": {

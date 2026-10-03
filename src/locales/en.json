@@ -432,7 +432,9 @@
       "recuperarAcceso": "Account recovery",
       "revisaTuCorreo": "Check your email",
       "enviamosEnlace": "If there is an account for {{correo}}, you will receive a link to create a new password.",
-      "enviarDeNuevo": "Send it again"
+      "enviarDeNuevo": "Send it again",
+      "procesando": "Processing…",
+      "listo": "Done"
     }
   },
   "billing": {

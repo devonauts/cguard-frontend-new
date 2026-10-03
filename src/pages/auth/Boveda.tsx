@@ -15,9 +15,15 @@
  * pie respeta `showPlatformAttribution` igual que hacía `AuthShell`.
  * ════════════════════════════════════════════════════════════════════════════
  */
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import {
+  ButtonHTMLAttributes,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronDown, Globe, Lock, Moon, Sun } from "lucide-react";
+import { Check, ChevronDown, Globe, Lock, Moon, Sun } from "lucide-react";
 
 import CortinaDescifrado from "./CortinaDescifrado";
 
@@ -307,6 +313,77 @@ export function Campo({
   );
 }
 
+/* ── EL BOTÓN DE ACCIÓN (opción 6, «Cargando → listo», elegida por el dueño) ──
+   Para lo que espera al servidor: entrar, crear la cuenta, enviar el enlace.
+   Al pulsar se encoge a un círculo que carga y, si sale bien, termina en un
+   visto verde antes de seguir; si sale mal, vuelve a su forma. */
+export type EstadoDeAccion = "reposo" | "cargando" | "listo";
+
+/** El estado del botón y una forma de ejecutar la acción con él. `fn` devuelve
+ *  `true` si salió bien. Lo cargando dura al menos 450 ms (un servidor rápido
+ *  haría parpadear el círculo) y el visto se ve 700 ms antes de seguir. */
+export function useBotonDeAccion() {
+  const [estado, setEstado] = useState<EstadoDeAccion>("reposo");
+  const ejecutar = useCallback(async (fn: () => Promise<boolean>) => {
+    setEstado("cargando");
+    const minimo = new Promise((r) => setTimeout(r, 450));
+    let ok = false;
+
+    try {
+      ok = await fn();
+    } catch (err) {
+      await minimo;
+      setEstado("reposo");
+      throw err;
+    }
+    await minimo;
+    if (!ok) {
+      setEstado("reposo");
+
+      return false;
+    }
+    setEstado("listo");
+    await new Promise((r) => setTimeout(r, 700));
+
+    return true;
+  }, []);
+  const reiniciar = useCallback(() => setEstado("reposo"), []);
+
+  return { estado, ejecutar, reiniciar };
+}
+
+export function BotonDeAccion({
+  estado,
+  children,
+  className = "",
+  disabled,
+  ...props
+}: ButtonHTMLAttributes<HTMLButtonElement> & { estado: EstadoDeAccion }) {
+  const { t } = useTranslation();
+
+  return (
+    <button
+      {...props}
+      aria-busy={estado === "cargando"}
+      className={`cg-reg-boton cg-accion ${estado !== "reposo" ? `is-${estado}` : ""} ${className}`}
+      disabled={disabled || estado !== "reposo"}
+    >
+      <span className="cg-accion-txt">{children}</span>
+      <span aria-hidden className="cg-accion-giro" />
+      <span aria-hidden className="cg-accion-ok">
+        <Check className="h-5 w-5" />
+      </span>
+      <span aria-live="polite" className="sr-only">
+        {estado === "cargando"
+          ? t("auth.signup.procesando", { defaultValue: "Procesando…" })
+          : estado === "listo"
+            ? t("auth.signup.listo", { defaultValue: "Listo" })
+            : ""}
+      </span>
+    </button>
+  );
+}
+
 /** El botón «Ver / Ocultar» dentro del campo de contraseña. */
 export function BotonVer({
   visible,
@@ -490,13 +567,23 @@ const ESTILOS_BOVEDA = `
   color: var(--rg-suave); background: var(--rg-control); border: 1px solid var(--rg-campo-borde); transition: color .2s, border-color .2s, background .2s; }
 .cg-reg-reglas span.is-ok { color: var(--rg-ok); border-color: var(--rg-ok-borde); background: var(--rg-ok-fondo); }
 
-.cg-reg-boton { display: inline-flex; width: 100%; height: 52px; align-items: center; justify-content: center; gap: .5rem;
-  border-radius: 12px; font-family: var(--font-display); font-weight: 700; font-size: 16px; letter-spacing: .01em; color: var(--brand-ink);
+.cg-reg-boton { display: inline-flex; width: 100%; height: 54px; align-items: center; justify-content: center; gap: .5rem;
+  border-radius: 12px; font-family: var(--font-display); font-weight: 700; font-size: 19px; letter-spacing: .01em; color: var(--brand-ink);
   background: linear-gradient(180deg, color-mix(in oklab, var(--brand) 82%, white), var(--brand));
   box-shadow: 0 12px 30px -12px var(--brand-glow), inset 0 1px 0 rgba(255,255,255,.5); transition: filter .15s; }
 .cg-reg-boton:hover { filter: brightness(1.05); }
 .cg-reg-boton:disabled { opacity: .6; }
-.cg-reg-boton-sec { display: grid; place-items: center; width: 52px; height: 52px; flex: none; border-radius: 12px; color: var(--rg-ink);
+.cg-accion { position: relative; display: flex; margin-inline: auto; transition: width .35s cubic-bezier(.6,0,.3,1), flex-basis .35s cubic-bezier(.6,0,.3,1), border-radius .35s, background .3s, color .3s; }
+.cg-accion .cg-accion-txt { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; white-space: nowrap; transition: opacity .2s, transform .3s; }
+.cg-accion .cg-accion-giro, .cg-accion .cg-accion-ok { position: absolute; display: grid; place-items: center; opacity: 0; transform: scale(.6); transition: opacity .2s, transform .3s; }
+.cg-accion .cg-accion-giro { width: 22px; height: 22px; border-radius: 50%; border: 2.5px solid color-mix(in oklab, var(--brand-ink) 25%, transparent); border-top-color: var(--brand-ink); animation: cgAccionGira .7s linear infinite; }
+.cg-accion.is-cargando, .cg-accion.is-listo { width: 54px; flex: 0 0 54px; border-radius: 27px; opacity: 1; }
+.cg-accion.is-cargando .cg-accion-txt, .cg-accion.is-listo .cg-accion-txt { opacity: 0; transform: scale(.8); }
+.cg-accion.is-cargando .cg-accion-giro { opacity: 1; transform: none; }
+.cg-accion.is-listo { background: #22c55e; color: #fff; box-shadow: 0 12px 30px -12px rgba(34,197,94,.6); }
+.cg-accion.is-listo .cg-accion-ok { opacity: 1; transform: none; }
+@keyframes cgAccionGira { to { transform: rotate(360deg); } }
+.cg-reg-boton-sec { display: grid; place-items: center; width: 54px; height: 54px; flex: none; border-radius: 12px; color: var(--rg-ink);
   background: var(--rg-control); border: 1px solid var(--rg-control-borde); }
 /* Enlaces sin subrayado (pedido del dueño): se distinguen por el color de la
    marca y el peso. */
@@ -507,6 +594,7 @@ const ESTILOS_BOVEDA = `
 .cg-reg-vivo { width: 6px; height: 6px; border-radius: 9999px; background: #22c55e; box-shadow: 0 0 8px #22c55e; }
 
 @media (prefers-reduced-motion: reduce) {
+  .cg-accion, .cg-accion * { transition: none !important; }
   .cg-reg-modo > i, .cg-reg-pestanas > i, .cg-reg-campo, .cg-reg-fuerza i, .cg-reg-reglas span { transition: none !important; }
 }
 `;

@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import Boveda, { CAMPO, Campo } from "./Boveda";
+import Boveda, { BotonDeAccion, CAMPO, Campo, useBotonDeAccion } from "./Boveda";
 
 import { tituloConMarca } from "@/hooks/usePageTitle";
 import { AuthService } from "@/services/auth/authService";
@@ -18,6 +18,7 @@ export default function ForgotPassword() {
   const [enviadoA, setEnviadoA] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [formError, setFormError] = useState("");
+  const accion = useBotonDeAccion();
 
   useEffect(() => {
     document.title = tituloConMarca(
@@ -27,17 +28,13 @@ export default function ForgotPassword() {
     );
   }, []);
 
-  const enviar = async (value: string) => {
+  /** Pide el enlace. Devuelve si salió bien (para el botón de acción). */
+  const pedirEnlace = async (value: string): Promise<boolean> => {
     setIsLoading(true);
     try {
       await AuthService.sendPasswordResetEmail(value);
-      toast.success(
-        t("auth.reset_sent", {
-          defaultValue:
-            "Enlace enviado correctamente. Revisa tu correo electrónico",
-        }),
-      );
-      setEnviadoA(value);
+
+      return true;
     } catch (err: any) {
       console.error("Error al enviar enlace:", err);
       const errorMessage =
@@ -51,9 +48,31 @@ export default function ForgotPassword() {
             defaultValue: "Error al enviar enlace. Intenta nuevamente",
           }),
       );
+
+      return false;
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const avisoEnviado = () =>
+    toast.success(
+      t("auth.reset_sent", {
+        defaultValue: "Enlace enviado correctamente. Revisa tu correo electrónico",
+      }),
+    );
+
+  const enviar = async (value: string) => {
+    if (await accion.ejecutar(() => pedirEnlace(value))) {
+      avisoEnviado();
+      setEnviadoA(value);
+      accion.reiniciar();
+    }
+  };
+
+  /** «Enviarlo de nuevo», desde la confirmación: sin el botón grande. */
+  const reenviar = async (value: string) => {
+    if (await pedirEnlace(value)) avisoEnviado();
   };
 
   const handleSubmit = async (e?: React.FormEvent) => {
@@ -107,7 +126,7 @@ export default function ForgotPassword() {
             className="cg-reg-enlace mt-1 text-sm"
             disabled={isLoading}
             type="button"
-            onClick={() => enviar(enviadoA)}
+            onClick={() => reenviar(enviadoA)}
           >
             {isLoading
               ? t("auth.sending", { defaultValue: "Enviando enlace…" })
@@ -159,16 +178,10 @@ export default function ForgotPassword() {
               />
             </Campo>
 
-            <button className="cg-reg-boton" disabled={isLoading} type="submit">
-              {isLoading ? (
-                t("auth.sending", { defaultValue: "Enviando enlace…" })
-              ) : (
-                <>
-                  <Send className="h-4 w-4" />
-                  {t("auth.send_reset", { defaultValue: "Enviar enlace" })}
-                </>
-              )}
-            </button>
+            <BotonDeAccion estado={accion.estado} type="submit">
+              <Send className="h-4 w-4" />
+              {t("auth.send_reset", { defaultValue: "Enviar enlace" })}
+            </BotonDeAccion>
 
             <div className="flex items-center justify-between pt-1 text-sm">
               <NavLink

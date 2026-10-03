@@ -4,7 +4,13 @@ import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import Boveda, { BotonVer, CAMPO, Campo } from "./Boveda";
+import Boveda, {
+  BotonDeAccion,
+  BotonVer,
+  CAMPO,
+  Campo,
+  useBotonDeAccion,
+} from "./Boveda";
 
 import { tituloConMarca } from "@/hooks/usePageTitle";
 import { esVistaPrevia } from "@/lib/vistaPrevia";
@@ -23,6 +29,7 @@ export default function Login() {
   const [cuentaElegida, setCuentaElegida] = useState<string | null>(null);
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const accion = useBotonDeAccion();
   const [searchParams] = useSearchParams();
   const rawInviteToken =
     searchParams.get("token") ||
@@ -138,25 +145,33 @@ export default function Login() {
     if (e) e.preventDefault();
     // use validation helpers from the hook (they show localized toasts)
     if (!validateEmail() || !validatePassword(6)) return;
-    setIsLoading(true);
-    const result = await signIn({
-      email,
-      password,
-      realm: cuentaElegida || undefined,
+    const ok = await accion.ejecutar(async () => {
+      setIsLoading(true);
+      const result = await signIn({
+        email,
+        password,
+        realm: cuentaElegida || undefined,
+      });
+
+      setIsLoading(false);
+      if (result.chooseAccount?.length) {
+        // Same email and password in several worlds: ask, never pick blindly.
+        setCuentas(result.chooseAccount);
+
+        return false;
+      }
+      if (!result.success) {
+        toast.error(result.error || t("auth.login_failed"));
+
+        return false;
+      }
+
+      return true;
     });
 
-    setIsLoading(false);
-    if (result.chooseAccount?.length) {
-      // Same email and password in several worlds: ask, never pick blindly.
-      setCuentas(result.chooseAccount);
-
-      return;
-    }
-    if (result.success) {
+    if (ok) {
       toast.success(t("auth.login_success"));
       navigate("/dashboard");
-    } else {
-      toast.error(result.error || t("auth.login_failed"));
     }
   };
 
@@ -276,15 +291,9 @@ export default function Login() {
           </NavLink>
         </div>
 
-        <button className="cg-reg-boton" disabled={isLoading} type="submit">
-          {isLoading ? (
-            t("auth.signing_in")
-          ) : (
-            <>
-              {t("auth.login")} <ArrowRight className="h-4 w-4" />
-            </>
-          )}
-        </button>
+        <BotonDeAccion estado={accion.estado} type="submit">
+          {t("auth.login")} <ArrowRight className="h-4 w-4" />
+        </BotonDeAccion>
 
         <p className="cg-reg-suave pt-1 text-center text-sm">
           {t("auth.no_account_text")}{" "}
