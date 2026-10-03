@@ -14283,7 +14283,10 @@
       "errorDeRenderizado": "Błąd wyświetlania",
       "elRestoDeLaPlataformaSigueFuncionando": "Reszta platformy nadal działa. Możesz spróbować ponownie lub wrócić do poprzedniego ekranu.",
       "reintentar": "Spróbuj ponownie",
-      "volver": "Wstecz"
+      "volver": "Wstecz",
+      "hayUnaVersionNueva": "Jest nowa wersja",
+      "actualizandoLaPlataforma": "Wczytujemy aktualną wersję. Jeśli nic się nie stanie w ciągu kilku sekund, naciśnij Odśwież.",
+      "recargar": "Odśwież"
     },
     "BottomSheet": {
       "ajustarLaAlturaDelPanel": "Dostosuj wysokość panelu"

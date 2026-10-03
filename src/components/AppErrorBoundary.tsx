@@ -5,6 +5,7 @@ import { AlertTriangle, RotateCcw, ArrowLeft } from "lucide-react";
 // entra por la instancia de i18next, siempre dentro de render (nunca en el
 // cuerpo del módulo, donde se congelaría en el idioma de arranque).
 import i18n from "@/i18n";
+import { esFicheroDeVersionVieja, recargarAhora } from "@/lib/recarga/recarga";
 
 /**
  * Red de seguridad de toda la aplicación.
@@ -57,6 +58,18 @@ export class AppErrorBoundary extends Component<Props, State> {
     );
   }
 
+  componentDidUpdate(_: Props, prev: State) {
+    // Versión vieja: un fichero que falta no se arregla reintentando. Se pasa a
+    // la versión actual sola, una vez por pestaña cada 30 s (sin bucles).
+    if (this.state.error && !prev.error && esFicheroDeVersionVieja(this.state.error)) {
+      const ultima = Number(sessionStorage.getItem("cg:versionViejaAt") || 0);
+      if (Date.now() - ultima > 30_000) {
+        sessionStorage.setItem("cg:versionViejaAt", String(Date.now()));
+        void recargarAhora({ forzar: true });
+      }
+    }
+  }
+
   private retry = () => {
     this.setState((s) => ({ error: null, resetKey: s.resetKey + 1 }));
   };
@@ -66,6 +79,35 @@ export class AppErrorBoundary extends Component<Props, State> {
 
     if (!error) {
       return <div key={this.state.resetKey}>{this.props.children}</div>;
+    }
+
+    if (esFicheroDeVersionVieja(error)) {
+      return (
+        <div className="flex min-h-[60vh] items-center justify-center p-6">
+          <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 text-center">
+            <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-primary/10">
+              <RotateCcw className="size-6 text-primary" />
+            </div>
+            <h2 className="mt-4 text-lg font-semibold text-foreground">
+              {i18n.t("ui.AppErrorBoundary.hayUnaVersionNueva", "Hay una versión nueva")}
+            </h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {i18n.t(
+                "ui.AppErrorBoundary.actualizandoLaPlataforma",
+                "Estamos cargando la versión actual. Si no pasa en unos segundos, pulsa Recargar.",
+              )}
+            </p>
+            <div className="mt-5 flex justify-center">
+              <button
+                className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
+                onClick={() => void recargarAhora({ forzar: true })}
+              >
+                <RotateCcw className="size-4" /> {i18n.t("ui.AppErrorBoundary.recargar", "Recargar")}
+              </button>
+            </div>
+          </div>
+        </div>
+      );
     }
 
     return (

@@ -14161,7 +14161,10 @@
       "errorDeRenderizado": "Weergavefout",
       "elRestoDeLaPlataformaSigueFuncionando": "De rest van het platform werkt nog. Je kunt het opnieuw proberen of teruggaan naar het vorige scherm.",
       "reintentar": "Opnieuw proberen",
-      "volver": "Terug"
+      "volver": "Terug",
+      "hayUnaVersionNueva": "Er is een nieuwe versie",
+      "actualizandoLaPlataforma": "We laden de huidige versie. Gebeurt er na een paar seconden niets, druk dan op Herladen.",
+      "recargar": "Herladen"
     },
     "BottomSheet": {
       "ajustarLaAlturaDelPanel": "De hoogte van het paneel aanpassen"

@@ -13638,7 +13638,10 @@
       "errorDeRenderizado": "Erro ao exibir a tela",
       "elRestoDeLaPlataformaSigueFuncionando": "O restante da plataforma continua funcionando. Você pode tentar novamente ou voltar à tela anterior.",
       "reintentar": "Tentar novamente",
-      "volver": "Voltar"
+      "volver": "Voltar",
+      "hayUnaVersionNueva": "Há uma versão nova",
+      "actualizandoLaPlataforma": "Estamos a carregar a versão atual. Se nada acontecer em alguns segundos, prima Recarregar.",
+      "recargar": "Recarregar"
     },
     "BottomSheet": {
       "ajustarLaAlturaDelPanel": "Ajustar a altura do painel"

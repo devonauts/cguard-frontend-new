@@ -13638,7 +13638,10 @@
       "errorDeRenderizado": "Error de renderizado",
       "elRestoDeLaPlataformaSigueFuncionando": "El resto de la plataforma sigue funcionando. Puedes reintentar o volver a la pantalla anterior.",
       "reintentar": "Reintentar",
-      "volver": "Volver"
+      "volver": "Volver",
+      "hayUnaVersionNueva": "Hay una versión nueva",
+      "actualizandoLaPlataforma": "Estamos cargando la versión actual. Si no pasa en unos segundos, pulsa Recargar.",
+      "recargar": "Recargar"
     },
     "BottomSheet": {
       "ajustarLaAlturaDelPanel": "Ajustar la altura del panel"

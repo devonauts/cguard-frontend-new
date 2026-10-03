@@ -14161,7 +14161,10 @@
       "errorDeRenderizado": "Anzeigefehler",
       "elRestoDeLaPlataformaSigueFuncionando": "Der Rest der Plattform funktioniert weiterhin. Du kannst es erneut versuchen oder zum vorherigen Bildschirm zurückkehren.",
       "reintentar": "Erneut versuchen",
-      "volver": "Zurück"
+      "volver": "Zurück",
+      "hayUnaVersionNueva": "Es gibt eine neue Version",
+      "actualizandoLaPlataforma": "Die aktuelle Version wird geladen. Wenn in ein paar Sekunden nichts passiert, auf Neu laden drücken.",
+      "recargar": "Neu laden"
     },
     "BottomSheet": {
       "ajustarLaAlturaDelPanel": "Höhe des Panels anpassen"

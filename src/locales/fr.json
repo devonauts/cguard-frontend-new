@@ -14161,7 +14161,10 @@
       "errorDeRenderizado": "Erreur d'affichage",
       "elRestoDeLaPlataformaSigueFuncionando": "Le reste de la plateforme fonctionne toujours. Vous pouvez réessayer ou revenir à l'écran précédent.",
       "reintentar": "Réessayer",
-      "volver": "Retour"
+      "volver": "Retour",
+      "hayUnaVersionNueva": "Une nouvelle version est disponible",
+      "actualizandoLaPlataforma": "Nous chargeons la version actuelle. Si rien ne se passe dans quelques secondes, appuyez sur Recharger.",
+      "recargar": "Recharger"
     },
     "BottomSheet": {
       "ajustarLaAlturaDelPanel": "Ajuster la hauteur du panneau"

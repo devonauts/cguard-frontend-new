@@ -13638,7 +13638,10 @@
       "errorDeRenderizado": "Display error",
       "elRestoDeLaPlataformaSigueFuncionando": "The rest of the platform is still working. You can try again or go back to the previous screen.",
       "reintentar": "Try again",
-      "volver": "Go back"
+      "volver": "Go back",
+      "hayUnaVersionNueva": "There is a new version",
+      "actualizandoLaPlataforma": "We're loading the current version. If nothing happens in a few seconds, press Reload.",
+      "recargar": "Reload"
     },
     "BottomSheet": {
       "ajustarLaAlturaDelPanel": "Adjust the panel height"

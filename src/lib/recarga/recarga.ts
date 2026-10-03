@@ -51,8 +51,22 @@ export function pedirRecarga(p: PeticionDeRecarga): void {
  * que falta YA es la prueba de que hay versión nueva en el servidor.
  */
 export async function recargarAhora(opciones: { forzar?: boolean } = {}): Promise<void> {
+  if (opciones.forzar) {
+    // Un fichero de la versión vieja falta en el servidor: hay que salir de esa
+    // versión SÍ O SÍ. Primero se intenta activar la nueva; si en 3 s no hubo
+    // recarga, se suelta el service worker y su caché y se recarga desde la red.
+    try {
+      if (actualizarSW) await actualizarSW(true);
+    } catch {
+      /* seguimos con la salida segura */
+    }
+    setTimeout(() => {
+      void soltarVersionVieja().finally(() => window.location.reload());
+    }, 3000);
+    return;
+  }
   try {
-    if ((hayVersionNueva || opciones.forzar) && actualizarSW) {
+    if (hayVersionNueva && actualizarSW) {
       await actualizarSW(true);
       // Si en 3 s el SW no recargó (otra pestaña ya lo activó, por ejemplo), se recarga a mano.
       setTimeout(() => window.location.reload(), 3000);
@@ -64,7 +78,35 @@ export async function recargarAhora(opciones: { forzar?: boolean } = {}): Promis
   window.location.reload();
 }
 
-/** Lo que el aviso muestra del tiempo que queda: «1:00», «0:07». */
+/**
+ * Salida de emergencia de una versión vieja: da de baja el service worker y
+ * borra la Cache Storage (sólo guarda el bundle precacheado; los datos offline
+ * viven en IndexedDB y no se tocan). La siguiente carga va a la red, recibe la
+ * versión actual y vuelve a registrar el SW.
+ */
+export async function soltarVersionVieja(): Promise<void> {
+  try {
+    const regs = (await navigator.serviceWorker?.getRegistrations?.()) ?? [];
+    await Promise.all(regs.map((r) => r.unregister()));
+  } catch {
+    /* sin SW */
+  }
+  try {
+    if ("caches" in window) {
+      const claves = await caches.keys();
+      await Promise.all(claves.map((k) => caches.delete(k)));
+    }
+  } catch {
+    /* sin Cache Storage */
+  }
+}
+
+/** ¿Este error es un fichero de una versión anterior que ya no está en el servidor? */
+export function esFicheroDeVersionVieja(error: unknown): boolean {
+  const m = String((error as { message?: string })?.message ?? error ?? "");
+  return /dynamically imported module|Importing a module script failed|error loading dynamically imported module|Unable to preload CSS|Failed to fetch dynamically/i.test(m);
+}
+
 export function formatoCuentaAtras(ms: number): string {
   const s = Math.max(0, Math.ceil(ms / 1000));
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
