@@ -510,6 +510,30 @@ h1, h2, h3, h4, h5, .font-display,
   .app-shell.cg-entrada *, .app-shell.cg-entrada > * { animation: none !important; }
 }
 
+/* ── EL AUTORRELLENO DEL NAVEGADOR ──────────────────────────────────────────────
+   Al recargar, Chrome rellena correo y contraseña guardados pero NO entrega el
+   valor a la página hasta que la persona interactúa: mientras, pinta una vista
+   previa con SU fuente del sistema (y su fondo amarillento/azul). Al hacer
+   clic «cambiaba de letra». Se fija aquí, una vez, para todo el CRM:
+   - `::first-line` es lo único que alcanza a esa vista previa (font-family).
+   - El fondo propio de Chrome no se puede quitar: se tapa con una sombra
+     interior del color del campo y se retrasa su transición para siempre. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  font-family: var(--font-sans);
+  -webkit-text-fill-color: currentColor;
+  caret-color: currentColor;
+  transition: background-color 600000s 0s, color 600000s 0s;
+}
+input:-webkit-autofill::first-line {
+  font-family: var(--font-sans);
+  font-size: inherit;
+  font-weight: inherit;
+}
+
 /* ── LA CONTRASEÑA OCULTA ──────────────────────────────────────────────────────
    Urbanist dibuja el «•» diminuto: medido a 100 px, 12 de alto contra 29 en
    Inter (2026-10-03). Con texto escrito, el campo de contraseña usa el punto de
