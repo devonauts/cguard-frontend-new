@@ -4,9 +4,7 @@
  * cuándo fue la última sincronización — con las acciones a mano derecha.
  */
 import {
-  RefreshCw,
   SlidersHorizontal,
-  Maximize2,
   Radar,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -32,17 +30,13 @@ export function CommandBar({
   userName,
   sseConnected,
   lastSync,
-  onRefresh,
   onCustomize,
-  onFullMap,
   resumen,
 }: {
   userName: string;
   sseConnected: boolean;
   lastSync: string;
-  onRefresh: () => void;
   onCustomize: () => void;
-  onFullMap: () => void;
   resumen: string;
 }) {
   const { t } = useTranslation();
@@ -131,26 +125,6 @@ export function CommandBar({
             style={{ background: "var(--hairline)" }}
           />
 
-
-          <button
-            className="cg-btn-glass cg-focus inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold"
-            title={t("ui.CommandBar.abrirElMapaAPantalla")}
-            type="button"
-            onClick={onFullMap}
-          >
-            <Maximize2 className="size-3.5" />
-            <span className="hidden sm:inline">{t("dashboard.fullMap")}</span>
-          </button>
-
-          <button
-            aria-label={t("dashboard.refresh")}
-            className="cg-btn-glass cg-focus grid size-9 place-items-center rounded-full"
-            title={t("dashboard.refresh")}
-            type="button"
-            onClick={onRefresh}
-          >
-            <RefreshCw className="size-4" />
-          </button>
 
           <button
             className="cg-btn-brand cg-focus inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-xs font-semibold"

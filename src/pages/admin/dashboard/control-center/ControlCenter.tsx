@@ -250,8 +250,6 @@ export default function ControlCenter() {
             sseConnected={data.health.sseConnected}
             userName={nombreDe(user)}
             onCustomize={() => setCustomizeOpen(true)}
-            onFullMap={openFullMap}
-            onRefresh={data.refresh}
           />
 
           {data.error === "no-tenant" ? (
