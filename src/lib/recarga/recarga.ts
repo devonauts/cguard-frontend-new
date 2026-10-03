@@ -45,10 +45,14 @@ export function pedirRecarga(p: PeticionDeRecarga): void {
   window.dispatchEvent(new CustomEvent<PeticionDeRecarga>(EVENTO, { detail: p }));
 }
 
-/** Recarga YA. Con versión nueva esperando, la activa antes (y el propio SW recarga). */
-export async function recargarAhora(): Promise<void> {
+/**
+ * Recarga YA. Con versión nueva esperando, la activa antes (y el propio SW recarga).
+ * `forzar`: intenta activarla aunque el SW aún no la haya anunciado — un fichero
+ * que falta YA es la prueba de que hay versión nueva en el servidor.
+ */
+export async function recargarAhora(opciones: { forzar?: boolean } = {}): Promise<void> {
   try {
-    if (hayVersionNueva && actualizarSW) {
+    if ((hayVersionNueva || opciones.forzar) && actualizarSW) {
       await actualizarSW(true);
       // Si en 3 s el SW no recargó (otra pestaña ya lo activó, por ejemplo), se recarga a mano.
       setTimeout(() => window.location.reload(), 3000);

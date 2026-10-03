@@ -45,7 +45,7 @@ import { Toaster } from "sonner";
 
 import OfflineBanner from "@/components/OfflineBanner";
 import AvisoDeRecarga from "@/components/AvisoDeRecarga";
-import { marcarVersionNueva, registrarActualizador } from "@/lib/recarga/recarga";
+import { marcarVersionNueva, recargarAhora, registrarActualizador } from "@/lib/recarga/recarga";
 import { startCachePersistence } from "@/lib/offline/persistCache";
 import { adelantarPerfil } from "@/lib/perfilDeLaCuenta";
 
@@ -118,7 +118,13 @@ window.addEventListener("vite:preloadError", (event) => {
   if (Date.now() - last < 10_000) return; // already retried — let it surface
   sessionStorage.setItem("chunkReloadAt", String(Date.now()));
   event.preventDefault();
-  window.location.reload();
+  /* NO un `location.reload()` a secas: con el SW en modo `prompt`, la versión
+     nueva espera y una recarga normal la deja esperando — la página vuelve a
+     cargar la versión VIEJA y el mismo fichero vuelve a faltar. Pasó en Grupo
+     Centinela (2026-10-02): «Failed to fetch dynamically imported module …
+     PostSiteDetailsPage» y no había forma de entrar a Sedes. `recargarAhora`
+     activa primero la versión que espera y luego recarga. */
+  void recargarAhora({ forzar: true });
 });
 
 /* El centinela de integridad (Fase 2 del plan anti-copia). Va ANTES del
