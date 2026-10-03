@@ -1,18 +1,38 @@
-import { useCallback, useLayoutEffect, useRef } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type AnimationEvent,
+  type CSSProperties,
+} from "react";
 import { useTranslation } from "react-i18next";
 
 import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
 
+/** Dónde empieza y acaba cada letra de «C-GUARD» en c-guard-letras-*.png
+ *  (770 px de ancho), medido sobre su alfa. Sirve para cortar la imagen en
+ *  tramos que entran por separado. Si se rehace el arte, hay que volver a medir. */
+const ANCHO_LETRAS = 770;
+const TRAMOS: ReadonlyArray<readonly [number, number]> = [
+  [0, 109], [119, 178], [188, 295], [311, 416], [422, 538], [545, 648], [664, 770],
+];
+
+/** La entrada se ve UNA vez por carga de página: la pantalla de arranque la
+ *  hace y el login que viene después ya aparece quieto, con su barrido. Se marca
+ *  al TERMINAR, no al empezar: si el arranque se desmonta a medias, el siguiente
+ *  logo la hace entera. */
+let entradaVista = false;
+
 /**
- * Bloque de marca: el ojo + «C-GUARD» como imagen, y el lema como TEXTO.
+ * Bloque de marca: el escudo + «C-GUARD» como imágenes, y el lema como TEXTO.
  *
  * El lema venía dibujado dentro del PNG, así que decía «Seguridad Inteligente»
  * también en inglés y en portugués. Aquí sale de `brand.tagline`, se puede
  * buscar y lo lee un lector de pantalla.
  *
- * Va colocado sobre la imagen en el hueco exacto que ocupaba en el arte
- * original — las medidas de abajo salen del alfa del PNG de 6477x1119, no de
- * ajustarlo a ojo — y se estira al ancho del wordmark, porque «Intelligent
+ * Va debajo de las letras y se estira al ancho del wordmark, porque «Intelligent
  * Security» es bastante más corto que «Segurança Inteligente» y sin eso el
  * bloque bailaría al cambiar de idioma.
  *
@@ -24,8 +44,8 @@ import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
  * plataforma»: la pregunta por el ámbito se hace UNA sola vez en todo el CRM y
  * vive dentro de `WhiteLabelProvider`. Aquí sólo se lee un dato ya resuelto.
  *
- * El bloque de plataforma no se puede reutilizar tal cual para un socio: son dos
- * imágenes (clara y oscura) con un lema medido sobre el alfa del PNG original.
+ * El bloque de plataforma no se puede reutilizar tal cual para un socio: son el
+ * escudo y unas letras en dos versiones (clara y oscura) con el lema debajo.
  * Un logotipo de socio es una sola imagen y no trae lema, así que se pinta como
  * lo que es — centrado y a la misma altura — en vez de forzarlo dentro de una
  * maqueta hecha para otro arte.
@@ -44,6 +64,36 @@ export default function BrandLockup({
   const tagline = t("brand.tagline", { defaultValue: "Seguridad Inteligente" });
   const slotRef = useRef<HTMLSpanElement>(null);
   const textRef = useRef<HTMLSpanElement>(null);
+  const [entrando, setEntrando] = useState(
+    () =>
+      animated &&
+      !entradaVista &&
+      !(typeof window !== "undefined" &&
+        window.matchMedia?.("(prefers-reduced-motion: reduce)").matches),
+  );
+  /** Lo último que llega es el lema (180 ms + 1 s), o las letras si no lo hay:
+   *  cuando acaba eso, acaba la entrada. Los `animationend` del resto de piezas
+   *  también suben hasta aquí y se descartan. */
+  const ultimaPieza = showTagline ? "cg-lockup__slot" : "cg-lockup__letras";
+  const terminarLaEntrada = useCallback(() => {
+    entradaVista = true;
+    setEntrando(false);
+  }, []);
+  const alTerminarLaEntrada = useCallback(
+    (e: AnimationEvent<HTMLSpanElement>) => {
+      if ((e.target as HTMLElement).classList.contains(ultimaPieza)) terminarLaEntrada();
+    },
+    [ultimaPieza, terminarLaEntrada],
+  );
+
+  // Por si el `animationend` no llega nunca (pestaña en segundo plano, CSS que
+  // no cargó): el logo no puede quedarse sin barrido para siempre.
+  useEffect(() => {
+    if (!entrando) return;
+    const id = window.setTimeout(terminarLaEntrada, 2000);
+
+    return () => window.clearTimeout(id);
+  }, [entrando, terminarLaEntrada]);
 
   /** Lleva el lema al ancho del wordmark repartiendo el espacio ENTRE LETRAS.
    *
@@ -59,8 +109,10 @@ export default function BrandLockup({
 
     if (!slot || !text) return;
     text.style.letterSpacing = "0px";
-    const box = slot.getBoundingClientRect().width;
-    const own = text.getBoundingClientRect().width;
+    // offsetWidth y no getBoundingClientRect: durante la entrada el bloque va
+    // escalado, y el tracking medido sobre la caja escalada saldría un 7 % largo.
+    const box = slot.offsetWidth;
+    const own = text.offsetWidth;
     const gaps = (text.textContent?.length ?? 1) - 1;
 
     if (box > 0 && own > 0 && gaps > 0) {
@@ -129,28 +181,48 @@ export default function BrandLockup({
 
   return (
     <span
-      className={`cg-lockup ${animated ? "is-animated" : ""} ${className}`.trim()}
+      className={`cg-lockup ${animated ? "is-animated" : ""} ${entrando ? "is-entering" : ""} ${className}`.trim()}
+      onAnimationEnd={entrando ? alTerminarLaEntrada : undefined}
     >
-      <img
-        alt={t("auth.landing.logo_alt", { defaultValue: platformName, marca: platformName })}
-        className="cg-lockup__mark cg-lockup__mark--light"
-        src="/assets/logo/c-guard-lockup-light.png"
-      />
-      <img
-        aria-hidden
-        alt=""
-        className="cg-lockup__mark cg-lockup__mark--dark"
-        src="/assets/logo/c-guard-lockup-dark.png"
-      />
-      {showTagline && (
-        <span ref={slotRef} aria-hidden className="cg-lockup__slot">
-          <span ref={textRef} className="cg-lockup__tagline">
-            {tagline}
-          </span>
+      <span className="cg-lockup__fila">
+        <span className="cg-lockup__escudo">
+          <img
+            alt={t("auth.landing.logo_alt", { defaultValue: platformName, marca: platformName })}
+            src="/assets/logo/escudo.png"
+          />
+          <span aria-hidden className="cg-lockup__ojo" />
         </span>
-      )}
-      {/* El lema visible es aria-hidden porque va escalado con transform; esta
-          copia es la que anuncia el lector de pantalla. */}
+        <span className="cg-lockup__texto">
+          {/* «C-GUARD»: una imagen por tema (c-guard-letras-light.png y
+              -dark.png, la elige glass.css), cortada en sus siete tramos. */}
+          <span aria-hidden className="cg-lockup__letras">
+            {TRAMOS.map(([a, b], i) => (
+              <span
+                key={a}
+                className="cg-lockup__l"
+                style={
+                  {
+                    "--i": i,
+                    left: `${(a / ANCHO_LETRAS) * 100}%`,
+                    width: `${((b - a) / ANCHO_LETRAS) * 100}%`,
+                    backgroundSize: `${(ANCHO_LETRAS / (b - a)) * 100}% 100%`,
+                    backgroundPosition: `${(a / (ANCHO_LETRAS - (b - a))) * 100}% 0`,
+                  } as CSSProperties
+                }
+              />
+            ))}
+          </span>
+          {showTagline && (
+            <span ref={slotRef} aria-hidden className="cg-lockup__slot">
+              <span ref={textRef} className="cg-lockup__tagline">
+                {tagline}
+              </span>
+            </span>
+          )}
+        </span>
+      </span>
+      {/* El lema visible es aria-hidden porque lleva el tracking estirado;
+          esta copia es la que anuncia el lector de pantalla. */}
       {showTagline && <span className="sr-only">{tagline}</span>}
     </span>
   );

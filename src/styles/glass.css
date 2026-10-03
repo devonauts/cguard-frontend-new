@@ -1324,104 +1324,187 @@ button, [role="button"] { transition: transform 0.09s var(--ease); }
   .cg-carrusel { scroll-behavior: auto; }
 }
 
-/* ── BLOQUE DE MARCA ─────────────────────────────────────────────────────────
-   El ojo y «C-GUARD» son imagen; el lema es TEXTO, para que se traduzca.
+/* ── El bloque de marca: escudo + «C-GUARD» + lema ──────────────────────────
+   Tres piezas en fila, no un PNG entero: el escudo, las letras (una imagen por
+   tema, cortada en siete tramos para que puedan moverse una a una) y el lema
+   como TEXTO. Todo se mide en `--h`, la altura del escudo, que sale del ancho
+   que le dé quien lo usa: escudo 0,923·h + hueco 0,16·h + letras 2,497·h =
+   3,58·h → h = 100/3,58 = 27,93 cqw.
 
-   Las medidas del hueco del lema salen del alfa del arte original (6477x1119):
-   el bloque de tipografía empieza en x=3363 → 51,9 % del ancho, y el lema
-   arranca bajo el hueco de y=739..861 → 75,5 % del alto. No están ajustadas a
-   ojo: si algún día se rehace el logo, hay que volver a medirlas.
+   ENTRADA «ENFOQUE», UNA SOLA VEZ: todo llega desenfocado y se enfoca como una
+   cámara, las letras se juntan en su sitio y, al quedar nítido, el ojo del
+   escudo brilla una vez. Dura 1 s. La clase `is-entering` la pone y la quita
+   BrandLockup.tsx — sólo la primera vez que se pinta un logo en la carga de la
+   página, para que pasar de la pantalla de carga al login no la repita.
 
-   El cuerpo del lema (2,75 % del ancho) también sale de ahí: 156 px de alto
-   sobre 6477 de ancho. Al ponerlo por instinto quedó cuatro veces más grande y
-   se salía del bloque.
-
-   El vidrio lleva color propio, así que el viejo truco de invertir el PNG negro
-   (`dark:brightness-0 dark:invert`) ya no vale: son dos archivos, y aquí se
-   elige uno u otro según el tema. */
+   DESPUÉS, EL BARRIDO DE SIEMPRE: la banda de cristal cruza escudo, letras y
+   lema cada 6 s y se está quieta el resto. No corre mientras entra: las dos
+   cosas a la vez se pisan. */
 .cg-lockup {
   position: relative;
   display: inline-block;
   container-type: inline-size;
   line-height: 0;
+  --cg-sale: cubic-bezier(.16, 1, .3, 1);
+  --cg-letras: url("/assets/logo/c-guard-letras-light.png");
 }
-.cg-lockup__mark { width: 100%; height: auto; display: block; }
-.cg-lockup__mark--dark { display: none; }
-html.dark .cg-lockup__mark--light { display: none; }
-html.dark .cg-lockup__mark--dark { display: block; }
+html.dark .cg-lockup { --cg-letras: url("/assets/logo/c-guard-letras-dark.png"); }
 
-.cg-lockup__slot {
-  position: absolute;
-  left: 51.9%;
-  right: 0;
-  top: 76.9%;
+.cg-lockup__fila {
+  --h: 27.93cqw;
+  display: flex;
+  align-items: center;
+  gap: calc(var(--h) * .16);
+}
+.cg-lockup__escudo {
+  position: relative;
   display: block;
+  flex: none;
+  height: var(--h);
+  aspect-ratio: 458 / 496;
+}
+.cg-lockup__escudo > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 calc(var(--h) * .06) calc(var(--h) * .12) rgba(20, 24, 60, .22));
+}
+html.dark .cg-lockup__escudo > img {
+  filter: drop-shadow(0 calc(var(--h) * .08) calc(var(--h) * .14) rgba(0, 0, 0, .45));
+}
+/* El brillo del ojo: recortado por el METAL del escudo (filo y emblema), no
+   por su silueta entera, para que la luz salga del oro y no del azul. */
+.cg-lockup__ojo {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  -webkit-mask: url("/assets/logo/escudo-oro.png") center / 100% 100% no-repeat;
+  mask: url("/assets/logo/escudo-oro.png") center / 100% 100% no-repeat;
+  background: radial-gradient(28% 16% at 50% 49%, rgba(255,250,230,1), rgba(255,214,120,.6) 55%, rgba(255,214,120,0) 100%);
+  mix-blend-mode: screen;
+}
+
+.cg-lockup__texto {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--h) * .085);
+}
+.cg-lockup__letras {
+  position: relative;
+  display: block;
+  height: calc(var(--h) * .6);
+  aspect-ratio: 770 / 185;
+}
+/* Cada tramo enseña SU trozo de la misma imagen (posición y tamaño los pone el
+   componente, sacados de dónde empieza y acaba cada letra en el PNG). */
+.cg-lockup__l {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background-image: var(--cg-letras);
+  background-repeat: no-repeat;
+}
+
+/* `width: 0; min-width: 100%`: el hueco mide lo que miden las letras y el lema
+   NO empuja la columna mientras aún no se ha ajustado su tracking. */
+.cg-lockup__slot {
+  display: block;
+  width: 0;
+  min-width: 100%;
   line-height: 1;
 }
 .cg-lockup__tagline {
   display: block;
+  width: max-content;
   /* El token, no el nombre a pelo: la familia cargada se llama "Saira Variable",
-     así que `font-family: Saira` caía al system-ui de reserva sin avisar — el
-     lema salía con otra tipografía distinta a la de la marca. */
+     así que `font-family: Saira` caía al system-ui de reserva sin avisar. */
   font-family: var(--font-display);
   font-weight: 700;
   text-transform: uppercase;
   white-space: nowrap;
-  /* 2,42 % del ancho es la ALTURA DE LA MAYÚSCULA del lema en el arte original
-     (157 px sobre 6477). El cuerpo es esa altura entre el cap-ratio de la fuente
-     de la fuente, MEDIDO con canvas y no supuesto: 0,694 para Saira → 3,49.
-     Con 2,75 el lema salía un 18 % corto. */
-  font-size: 3.49cqw;
+  font-size: calc(var(--h) * .15);
   line-height: 1;
   color: #0b0d2e;
 }
 html.dark .cg-lockup__tagline { color: #eef1fb; }
 
-/* ── Destello de cristal ─────────────────────────────────────────────────────
-   El mismo barrido especular que llevan los iconos. Sobre la imagen va
-   recortado por la silueta del propio PNG (`mask-image`), para que la luz corra
-   por el logo y no por su caja; sobre el lema va con `background-clip: text`,
-   que es la única forma de recortarlo a unas letras.
+/* ── Entrada (una vez) ── */
+.cg-lockup.is-entering .cg-lockup__escudo,
+.cg-lockup.is-entering .cg-lockup__letras,
+.cg-lockup.is-entering .cg-lockup__slot {
+  animation: cg-logo-enfoca 1000ms var(--cg-sale) both;
+}
+.cg-lockup.is-entering .cg-lockup__letras { animation-delay: 90ms; }
+.cg-lockup.is-entering .cg-lockup__slot { animation-delay: 180ms; }
+.cg-lockup.is-entering .cg-lockup__l {
+  animation: cg-logo-cierra 1000ms var(--cg-sale) 90ms both;
+}
+.cg-lockup.is-entering .cg-lockup__ojo {
+  animation: cg-logo-ojo 900ms ease-out 620ms both;
+}
+@keyframes cg-logo-enfoca {
+  0%   { opacity: 0; filter: blur(14px); transform: scale(1.07); }
+  100% { opacity: 1; filter: none; transform: none; }
+}
+/* Las letras llegan separadas desde el centro (la «U», tramo 3) y se juntan. */
+@keyframes cg-logo-cierra {
+  0%   { transform: translateX(calc((var(--i) - 3) * 9%)); }
+  100% { transform: none; }
+}
+@keyframes cg-logo-ojo {
+  0%   { opacity: 0; }
+  30%  { opacity: 1; }
+  100% { opacity: 0; }
+}
 
-   Cambia de signo con el tema, y no por gusto: en claro el logo es oscuro sobre
-   fondo claro y la banda tiene que ser LUZ; en oscuro es al revés y quien lee es
-   una banda de SOMBRA. Es el mismo principio por el que el icono lleva contorno
-   oscuro y filo claro a la vez.
-
-   Las dos capas comparten duración y curva, así que la banda cruza el conjunto
-   como una sola. Pasa una vez cada 6 s y se está quieta el resto: el producto se
-   mira ocho horas seguidas. */
-.cg-lockup.is-animated .cg-lockup__mark::after,
-.cg-lockup.is-animated::after {
+/* ── Destello de cristal (después, cada 6 s) ─────────────────────────────────
+   Recortado por la silueta de cada pieza (`mask-image`) para que la luz corra
+   por el logo y no por su caja; sobre el lema va con `background-clip: text`.
+   En las letras cambia de signo con el tema: en claro son oscuras y la banda
+   tiene que ser LUZ; en oscuro son perla y lo que se lee es una banda de
+   SOMBRA. El escudo es azul y oro en los dos temas: siempre luz.
+   Cada pieza arranca un poco después que la anterior, para que la banda cruce
+   el conjunto de izquierda a derecha como una sola. */
+.cg-lockup.is-animated:not(.is-entering) .cg-lockup__escudo::after,
+.cg-lockup.is-animated:not(.is-entering) .cg-lockup__letras::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  -webkit-mask-image: url("/assets/logo/c-guard-lockup-light.png");
-  mask-image: url("/assets/logo/c-guard-lockup-light.png");
   -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-  background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.9) 50%, transparent 62%);
+  background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.75) 50%, transparent 62%);
   background-size: 300% 100%;
+  background-position: 140% 0;
   mix-blend-mode: screen;
   animation: cg-logo-sweep 6s cubic-bezier(.4, 0, .2, 1) infinite;
 }
-html.dark .cg-lockup.is-animated::after {
-  -webkit-mask-image: url("/assets/logo/c-guard-lockup-dark.png");
-  mask-image: url("/assets/logo/c-guard-lockup-dark.png");
-  background: linear-gradient(105deg, transparent 38%, rgba(8,12,24,.72) 50%, transparent 62%);
+.cg-lockup.is-animated:not(.is-entering) .cg-lockup__escudo::after {
+  -webkit-mask-image: url("/assets/logo/escudo.png");
+  mask-image: url("/assets/logo/escudo.png");
+}
+.cg-lockup.is-animated:not(.is-entering) .cg-lockup__letras::after {
+  -webkit-mask-image: var(--cg-letras);
+  mask-image: var(--cg-letras);
+  background-image: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.9) 50%, transparent 62%);
+  animation-delay: 160ms;
+}
+html.dark .cg-lockup.is-animated:not(.is-entering) .cg-lockup__letras::after {
+  background-image: linear-gradient(105deg, transparent 38%, rgba(8,12,24,.72) 50%, transparent 62%);
   mix-blend-mode: multiply;
 }
-.cg-lockup.is-animated .cg-lockup__tagline {
+.cg-lockup.is-animated:not(.is-entering) .cg-lockup__tagline {
   background-image: linear-gradient(105deg,
     currentColor 38%, rgba(255,255,255,.95) 50%, currentColor 62%);
   background-size: 300% 100%;
+  background-position: 140% 0;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: cg-logo-sweep 6s cubic-bezier(.4, 0, .2, 1) infinite;
+  animation: cg-logo-sweep 6s cubic-bezier(.4, 0, .2, 1) 220ms infinite;
 }
-html.dark .cg-lockup.is-animated .cg-lockup__tagline {
+html.dark .cg-lockup.is-animated:not(.is-entering) .cg-lockup__tagline {
   background-image: linear-gradient(105deg,
     currentColor 38%, rgba(80,90,130,.95) 50%, currentColor 62%);
 }
@@ -1431,7 +1514,10 @@ html.dark .cg-lockup.is-animated .cg-lockup__tagline {
   100%     { background-position: -40% 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .cg-lockup.is-animated::after { animation: none; opacity: 0; }
+  .cg-lockup.is-entering *,
+  .cg-lockup.is-entering { animation: none !important; }
+  .cg-lockup.is-animated .cg-lockup__escudo::after,
+  .cg-lockup.is-animated .cg-lockup__letras::after { animation: none; opacity: 0; }
   .cg-lockup.is-animated .cg-lockup__tagline {
     animation: none;
     -webkit-text-fill-color: currentColor;
