@@ -62,7 +62,7 @@ export default function Register() {
   const { signUp } = useAuth();
   const accion = useBotonDeAccion();
   /* Tras crear la cuenta: «Confirma tu correo» con el correo, y al inicio de
-     sesión con «Entendido» o solo a los 7 s. */
+     sesión con «Entendido» o solo a los 20 s. */
   const [registradoCon, setRegistradoCon] = useState<string | null>(null);
   const { language } = useLanguage();
   const navigate = useNavigate();
@@ -329,7 +329,7 @@ export default function Register() {
         })}
       >
         <RevisaTuCorreo
-          autoSegundos={7}
+          autoSegundos={20}
           texto={t("auth.signup.confirmaTexto", {
             defaultValue:
               "Te enviamos un enlace a {{correo}}. Ábrelo para activar tu cuenta y poder entrar.",

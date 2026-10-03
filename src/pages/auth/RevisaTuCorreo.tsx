@@ -1,7 +1,7 @@
 /**
  * «Revisa tu correo» — la confirmación de que se envió un enlace, dentro de la
  * tarjeta de la Bóveda. La usan el registro (confirmar el correo para poder
- * entrar, con cuenta atrás de 7 s que lleva al inicio de sesión) y «Olvidé mi
+ * entrar, con cuenta atrás (20 s) que lleva al inicio de sesión) y «Olvidé mi
  * contraseña» (sin cuenta atrás, con «Enviarlo de nuevo»).
  *
  * La animación: el sobre llega, la carta con el escudo entra, la solapa se
