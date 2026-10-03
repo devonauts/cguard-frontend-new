@@ -567,8 +567,8 @@ const ESTILOS_BOVEDA = `
   color: var(--rg-suave); background: var(--rg-control); border: 1px solid var(--rg-campo-borde); transition: color .2s, border-color .2s, background .2s; }
 .cg-reg-reglas span.is-ok { color: var(--rg-ok); border-color: var(--rg-ok-borde); background: var(--rg-ok-fondo); }
 
-.cg-reg-boton { display: inline-flex; width: 100%; height: 54px; align-items: center; justify-content: center; gap: .5rem;
-  border-radius: 12px; font-family: var(--font-display); font-weight: 700; font-size: 19px; letter-spacing: .01em; color: var(--brand-ink);
+.cg-reg-boton { display: inline-flex; width: 100%; height: 52px; align-items: center; justify-content: center; gap: .5rem;
+  border-radius: 12px; font-family: var(--font-display); font-weight: 700; font-size: 16px; letter-spacing: .01em; color: var(--brand-ink);
   background: linear-gradient(180deg, color-mix(in oklab, var(--brand) 82%, white), var(--brand));
   box-shadow: 0 12px 30px -12px var(--brand-glow), inset 0 1px 0 rgba(255,255,255,.5); transition: filter .15s; }
 .cg-reg-boton:hover { filter: brightness(1.05); }
@@ -577,13 +577,13 @@ const ESTILOS_BOVEDA = `
 .cg-accion .cg-accion-txt { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; white-space: nowrap; transition: opacity .2s, transform .3s; }
 .cg-accion .cg-accion-giro, .cg-accion .cg-accion-ok { position: absolute; display: grid; place-items: center; opacity: 0; transform: scale(.6); transition: opacity .2s, transform .3s; }
 .cg-accion .cg-accion-giro { width: 22px; height: 22px; border-radius: 50%; border: 2.5px solid color-mix(in oklab, var(--brand-ink) 25%, transparent); border-top-color: var(--brand-ink); animation: cgAccionGira .7s linear infinite; }
-.cg-accion.is-cargando, .cg-accion.is-listo { width: 54px; flex: 0 0 54px; border-radius: 27px; opacity: 1; }
+.cg-accion.is-cargando, .cg-accion.is-listo { width: 52px; flex: 0 0 52px; border-radius: 26px; opacity: 1; }
 .cg-accion.is-cargando .cg-accion-txt, .cg-accion.is-listo .cg-accion-txt { opacity: 0; transform: scale(.8); }
 .cg-accion.is-cargando .cg-accion-giro { opacity: 1; transform: none; }
 .cg-accion.is-listo { background: #22c55e; color: #fff; box-shadow: 0 12px 30px -12px rgba(34,197,94,.6); }
 .cg-accion.is-listo .cg-accion-ok { opacity: 1; transform: none; }
 @keyframes cgAccionGira { to { transform: rotate(360deg); } }
-.cg-reg-boton-sec { display: grid; place-items: center; width: 54px; height: 54px; flex: none; border-radius: 12px; color: var(--rg-ink);
+.cg-reg-boton-sec { display: grid; place-items: center; width: 52px; height: 52px; flex: none; border-radius: 12px; color: var(--rg-ink);
   background: var(--rg-control); border: 1px solid var(--rg-control-borde); }
 /* Enlaces sin subrayado (pedido del dueño): se distinguen por el color de la
    marca y el peso. */
