@@ -309,7 +309,7 @@ export default function DataReport<T>({
 
     return `<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>
       <style>
-        body{font-family:'Inter Variable','Inter','Segoe UI',Arial,sans-serif;color:oklch(0.17 0 0);margin:28px}
+        body{font-family:'Urbanist Variable','Urbanist','Segoe UI',Arial,sans-serif;color:oklch(0.17 0 0);margin:28px}
         h1{font-size:18px;margin:0 0 2px} .sub{color:oklch(0.47 0 0);font-size:12px;margin:0 0 16px}
         table{border-collapse:collapse;width:100%;font-size:12px}
         th{background:oklch(0.20 0 0);color:oklch(1 0 0);text-align:left;padding:7px 9px}

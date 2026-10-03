@@ -8,9 +8,13 @@
 
 @theme inline {
 
-  /* Tipografía de marca — Inter para interfaz densa, Saira para titulares y mando. */
-  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-display: "Saira Variable", "Saira", ui-sans-serif, system-ui, sans-serif;
+  /* Tipografía de marca — Urbanist en TODO el CRM (elegida por el dueño,
+     2026-10-03). Éste y el `:root` de @layer base son los ÚNICOS sitios con el
+     nombre de la familia: el resto de reglas usan var(--font-sans) /
+     var(--font-display). La fuente de un socio sobrescribe estas dos variables
+     (lib/fuentesDeMarca.ts). */
+  --font-sans: "Urbanist Variable", "Urbanist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Urbanist Variable", "Urbanist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
   /* Elevation scale — soft, layered shadows (the "expensive" look). */
   --shadow-xs: 0 1px 2px 0 oklch(0 0 0 / 0.04);
@@ -134,10 +138,10 @@
      and INCLUDING form controls, which browsers otherwise render in the system font.
      los controles de formulario, que el navegador rendería con la fuente del
      sistema. Es la razón por la que botones y campos no cogían la tipografía. */
-  :root { --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-          --font-display: "Saira Variable", "Saira", ui-sans-serif, system-ui, sans-serif; }
+  :root { --font-sans: "Urbanist Variable", "Urbanist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+          --font-display: "Urbanist Variable", "Urbanist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
   html, body, button, input, select, textarea, optgroup, [class*="font-sans"] {
-    font-family: "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-family: var(--font-sans);
   }
   html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
   /* El recuadro gris que pinta el móvil al tocar. Ignora el `border-radius`, así
@@ -149,6 +153,10 @@
      ancha y redonda. Inter ya viene compensada: apretarla tanto le come el
      contrapunzón a 12 px, justo donde más falta hace. */
   body { letter-spacing: -0.005em; }
+  /* Urbanist a 400 se queda fina en pantalla (más que Inter): el texto corrido
+     va a 500 para que se lea lleno. Lo que pide otro peso (font-semibold…) lo
+     sigue teniendo. */
+  body { font-weight: 500; }
 
   /* Un dato que el usuario escribió no cabe siempre: un correo largo, una URL de
      un adjunto o un nombre de archivo sin espacios se salen de su caja y, en una
@@ -165,7 +173,7 @@
   .tabular-nums, [class*="tabular-nums"], td, th, time, code, kbd, samp {
     font-variant-numeric: tabular-nums slashed-zero;
   }
-  h1, h2, h3, h4, h5, .font-display { font-family: "Saira Variable", "Saira", ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.028em; }
+  h1, h2, h3, h4, h5, .font-display { font-family: var(--font-display); letter-spacing: -0.02em; }
 
   /* Refined scrollbars — thin, neutral, on-brand. */
   * { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }

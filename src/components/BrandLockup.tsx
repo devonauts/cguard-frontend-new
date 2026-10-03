@@ -125,7 +125,7 @@ export default function BrandLockup({
 
   useLayoutEffect(() => {
     fit();
-    // La fuente de marca (Saira) suele llegar DESPUÉS del primer pintado: si no
+    // La fuente de marca suele llegar DESPUÉS del primer pintado: si no
     // se vuelve a medir, el lema se queda con el ancho de la fuente de reserva.
     document.fonts?.ready.then(fit).catch(() => {});
     const slot = slotRef.current;

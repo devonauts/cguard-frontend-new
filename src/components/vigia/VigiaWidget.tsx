@@ -853,7 +853,7 @@ export default function VigiaWidget() {
                   fill="var(--brand-ink)"
                   fontSize="11"
                   fontWeight="800"
-                  style={{ fontFamily: "Saira, Inter, sans-serif" }}
+                  style={{ fontFamily: "var(--font-display)" }}
                   textAnchor="middle"
                   x="24"
                   y={silueta.cy + 4}
@@ -965,7 +965,7 @@ export default function VigiaWidget() {
                 <div>
                   <p
                     className="text-sm font-bold leading-none"
-                    style={{ fontFamily: "Saira, Inter, sans-serif" }}
+                    style={{ fontFamily: "var(--font-display)" }}
                   >
                     {agente.nombre}
                   </p>

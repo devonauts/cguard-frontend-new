@@ -9,18 +9,11 @@ import { instalarIdiomaEnFetch } from "./lib/idiomaElegido";
 
 // import { Provider } from "./provider.tsx";
 // Tipografía AUTOALOJADA (empaquetada — sin depender del CDN de Google, que puede
-// caerse o estar bloqueado). Dos familias variables, una sola petición cada una:
-//
-//   Inter          — interfaz, tablas y texto. Es la que mejor aguanta 11-13 px,
-//                    que es donde vive un CRM denso, y trae numerales tabulares
-//                    de verdad (los de Poppins bailaban en las columnas).
-//   Saira          — titulares, cifras, botones y navegación. Semi-condensada y
-//                    con terminaciones CUADRADAS. La elección anterior (Sora)
-//                    falló por una razón medible: era geométrica-redonda igual
-//                    que Poppins y medía 275,42 px contra 274,86 — cambiar de
-//                    fuente dentro del mismo esqueleto no se nota. Aquí cambia
-//                    el esqueleto, y por eso sí se ve.
-import "@fontsource-variable/inter";
+// caerse o estar bloqueado). Una sola familia variable para todo el CRM:
+// Urbanist (elegida por el dueño, 2026-10-03; antes Inter para el texto y Saira
+// para titulares). El nombre de la familia vive SÓLO en las variables
+// --font-sans / --font-display de globals.css.
+import "@fontsource-variable/urbanist";
 /* Las 3 fuentes que la empresa puede elegir para las apps móviles — cargadas
    aquí SOLO para que la vista previa del Hub Móvil las muestre de verdad. */
 import "@fontsource/poppins/400.css";
@@ -35,7 +28,6 @@ import "@fontsource/manrope/400.css";
 import "@fontsource/manrope/500.css";
 import "@fontsource/manrope/600.css";
 import "@fontsource/manrope/700.css";
-import "@fontsource-variable/saira";
 // Orden IMPORTANTE: tokens (color) → globals (tipografía/animación) → glass
 // (superficies). glass.css va sin @layer para ganar el cascade a Tailwind.
 import "@/styles/tokens.css";

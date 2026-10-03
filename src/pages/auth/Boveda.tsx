@@ -336,23 +336,6 @@ export function BotonVer({
 }
 
 const ESTILOS_BOVEDA = `
-/* TIPOGRAFÍA DEL ACCESO (2026-10-03): el dueño quería una letra tipo Gilroy.
-   Gilroy es de pago; se eligió Urbanist (OFL, libre para uso comercial;
-   public/assets/fonts/urbanist). Sólo en estas dos pantallas: el resto del CRM
-   sigue con Inter y Saira. La fuente de un socio manda: la suya va con !important. */
-@font-face { font-family: "Urbanist"; font-style: normal; font-weight: 100 900; font-display: swap;
-  src: url("/assets/fonts/urbanist/urbanist-latin-ext.woff2") format("woff2");
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
-@font-face { font-family: "Urbanist"; font-style: normal; font-weight: 100 900; font-display: swap;
-  src: url("/assets/fonts/urbanist/urbanist-latin.woff2") format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-.cg-reg, .cg-reg *, .cg-reg-menu, .cg-reg-menu * { font-family: "Urbanist", "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif; }
-.cg-reg { --font-display: "Urbanist", ui-sans-serif, system-ui, sans-serif; }
-/* El CRM fija Saira en h1 y .font-display con más peso de selector
-   (.app-shell h1): se duplica la clase para ganarle sólo aquí. */
-.cg-reg.cg-reg h1, .cg-reg.cg-reg .font-display { font-family: "Urbanist", ui-sans-serif, system-ui, sans-serif; font-weight: 700; letter-spacing: -.02em; }
-.cg-reg.cg-reg { font-weight: 500; }
-.cg-reg.cg-reg .cg-reg-campo { font-weight: 500; }
 /* Las dos paletas, como variables: nada de color suelto en las reglas. */
 .cg-reg {
   --rg-ink: #fff; --rg-medio: rgba(255,255,255,.72); --rg-suave: rgba(255,255,255,.58); --rg-tenue: rgba(255,255,255,.4);
@@ -482,8 +465,8 @@ const ESTILOS_BOVEDA = `
   color: var(--rg-suave); transition: color .3s; }
 .cg-reg-pestanas button[aria-selected="true"] { color: var(--brand-ink); }
 
-.cg-reg-etiqueta { display: block; margin-bottom: .45rem; font-size: .8rem; font-weight: 600; color: var(--rg-medio); }
-.cg-reg-campo { width: 100%; height: 50px; padding-left: 2.6rem; padding-right: 1rem; border-radius: 12px; color: var(--rg-ink); font-size: 15px;
+.cg-reg-etiqueta { display: block; margin-bottom: .45rem; font-size: .875rem; font-weight: 600; color: var(--rg-medio); }
+.cg-reg-campo { width: 100%; height: 50px; padding-left: 2.6rem; padding-right: 1rem; border-radius: 12px; color: var(--rg-ink); font-size: 16px;
   background: var(--rg-campo); border: 1px solid var(--rg-campo-borde); outline: none;
   box-shadow: inset 0 1px 2px rgba(0,0,0,.12), inset 0 -1px 0 rgba(255,255,255,.06);
   backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
@@ -492,7 +475,7 @@ const ESTILOS_BOVEDA = `
 .cg-reg-campo:focus { border-color: var(--brand); background: var(--rg-campo-foco);
   box-shadow: 0 0 0 4px color-mix(in oklab, var(--brand) 18%, transparent); }
 .cg-reg-ver { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); padding: 8px 10px; border-radius: 8px;
-  font-size: .82rem; font-weight: 600; color: var(--rg-medio); }
+  font-size: .875rem; font-weight: 600; color: var(--rg-medio); }
 .cg-reg-ver:hover { color: var(--rg-ink); }
 
 .cg-reg-fuerza { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-top: 8px; }
@@ -503,7 +486,7 @@ const ESTILOS_BOVEDA = `
 .cg-reg-fuerza[data-n="4"] i:nth-child(-n+4) { background: #a3c43a; }
 .cg-reg-fuerza[data-n="5"] i { background: #22c55e; }
 .cg-reg-reglas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-.cg-reg-reglas span { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 9999px; font-size: .72rem;
+.cg-reg-reglas span { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 9999px; font-size: .75rem;
   color: var(--rg-suave); background: var(--rg-control); border: 1px solid var(--rg-campo-borde); transition: color .2s, border-color .2s, background .2s; }
 .cg-reg-reglas span.is-ok { color: var(--rg-ok); border-color: var(--rg-ok-borde); background: var(--rg-ok-fondo); }
 
@@ -515,7 +498,10 @@ const ESTILOS_BOVEDA = `
 .cg-reg-boton:disabled { opacity: .6; }
 .cg-reg-boton-sec { display: grid; place-items: center; width: 52px; height: 52px; flex: none; border-radius: 12px; color: var(--rg-ink);
   background: var(--rg-control); border: 1px solid var(--rg-control-borde); }
-.cg-reg-enlace { font-weight: 600; color: var(--rg-ink); text-decoration: underline; text-decoration-color: var(--brand); text-underline-offset: 3px; }
+/* Enlaces sin subrayado (pedido del dueño): se distinguen por el color de la
+   marca y el peso. */
+.cg-reg-enlace { font-weight: 700; color: var(--brand-text, var(--brand)); text-decoration: none; transition: opacity .15s; }
+.cg-reg-enlace:hover { opacity: .8; }
 .cg-reg-aviso { padding: 12px; border-radius: 12px; font-size: .85rem; color: var(--rg-medio); background: var(--rg-hueco); border: 1px solid var(--rg-hueco-borde); }
 
 .cg-reg-vivo { width: 6px; height: 6px; border-radius: 9999px; background: #22c55e; box-shadow: 0 0 8px #22c55e; }
