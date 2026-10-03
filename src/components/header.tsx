@@ -920,15 +920,6 @@ export default function Header({
 
           <span className="hidden sm:inline-flex">
             <GlassButton
-              label={t("header.feedback")}
-              onClick={() => setFeedbackOpen(true)}
-            >
-              <MessageSquare />
-            </GlassButton>
-          </span>
-
-          <span className="hidden sm:inline-flex">
-            <GlassButton
               label={t("header.help")}
               onClick={() => setHelpOpen(true)}
             >
@@ -1120,6 +1111,20 @@ export default function Header({
                       />
                       {t("header.login_history")}
                     </NavLink>
+                    {/* «Enviar comentarios» vivía como botón suelto en la barra;
+                        el dueño lo quiso aquí, con el resto de la cuenta. */}
+                    <button
+                      className={`${enlaceMenu} w-full text-left`}
+                      style={{ color: "var(--ink)" }}
+                      type="button"
+                      onClick={() => setFeedbackOpen(true)}
+                    >
+                      <MessageSquare
+                        className="h-4 w-4"
+                        style={{ color: "var(--ink-faint)" }}
+                      />
+                      {t("header.feedback")}
+                    </button>
                   </div>
 
                   <div
