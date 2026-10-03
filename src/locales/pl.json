@@ -298,7 +298,11 @@
       "reglaMinuscula": "Jedna mała litera",
       "reglaNumero": "Jedna cyfra",
       "reglaSimbolo": "Jeden symbol (!?#…)",
-      "apariencia": "Wygląd"
+      "apariencia": "Wygląd",
+      "recuperarAcceso": "Odzyskiwanie dostępu",
+      "revisaTuCorreo": "Sprawdź pocztę",
+      "enviamosEnlace": "Jeśli istnieje konto dla {{correo}}, otrzymasz link do utworzenia nowego hasła.",
+      "enviarDeNuevo": "Wyślij ponownie"
     }
   },
   "client": {

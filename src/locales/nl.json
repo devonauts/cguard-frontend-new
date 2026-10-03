@@ -298,7 +298,11 @@
       "reglaMinuscula": "Eén kleine letter",
       "reglaNumero": "Eén cijfer",
       "reglaSimbolo": "Eén symbool (!?#…)",
-      "apariencia": "Weergave"
+      "apariencia": "Weergave",
+      "recuperarAcceso": "Toegang herstellen",
+      "revisaTuCorreo": "Controleer je e-mail",
+      "enviamosEnlace": "Als er een account is voor {{correo}}, ontvang je een link om een nieuw wachtwoord te maken.",
+      "enviarDeNuevo": "Opnieuw versturen"
     }
   },
   "client": {

@@ -298,7 +298,11 @@
       "reglaMinuscula": "Una minuscola",
       "reglaNumero": "Un numero",
       "reglaSimbolo": "Un simbolo (!?#…)",
-      "apariencia": "Aspetto"
+      "apariencia": "Aspetto",
+      "recuperarAcceso": "Recupero accesso",
+      "revisaTuCorreo": "Controlla la tua email",
+      "enviamosEnlace": "Se esiste un account per {{correo}}, riceverai un link per creare una nuova password.",
+      "enviarDeNuevo": "Invia di nuovo"
     }
   },
   "client": {

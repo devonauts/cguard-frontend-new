@@ -298,7 +298,11 @@
       "reglaMinuscula": "Une minuscule",
       "reglaNumero": "Un chiffre",
       "reglaSimbolo": "Un symbole (!?#…)",
-      "apariencia": "Apparence"
+      "apariencia": "Apparence",
+      "recuperarAcceso": "Récupération du compte",
+      "revisaTuCorreo": "Vérifiez vos e-mails",
+      "enviamosEnlace": "S’il existe un compte pour {{correo}}, vous recevrez un lien pour créer un nouveau mot de passe.",
+      "enviarDeNuevo": "Renvoyer le lien"
     }
   },
   "client": {

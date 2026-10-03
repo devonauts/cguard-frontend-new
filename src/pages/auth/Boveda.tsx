@@ -15,11 +15,12 @@
  * pie respeta `showPlatformAttribution` igual que hacía `AuthShell`.
  * ════════════════════════════════════════════════════════════════════════════
  */
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronDown, Globe, Lock, Moon, Sun } from "lucide-react";
 
-import SplashScreen from "@/components/SplashScreen";
+import CortinaDescifrado from "./CortinaDescifrado";
+
 import BrandLockup from "@/components/BrandLockup";
 import {
   DropdownMenu,
@@ -61,14 +62,19 @@ export default function Boveda({
   const [cargando, setCargando] = useState(() => splash && !cortinaYaVista());
 
   useEffect(() => {
-    if (!cargando) return;
-    marcarCortinaVista();
-    const reloj = setTimeout(() => setCargando(false), 2500);
-
-    return () => clearTimeout(reloj);
+    if (cargando) marcarCortinaVista();
   }, [cargando]);
+  const terminarCortina = useCallback(() => setCargando(false), []);
 
-  if (cargando) return <SplashScreen />;
+  /* La cortina «Descifrado» (opción 8, elegida por el dueño). Va con los
+     estilos de la Bóveda para que tenga la tipografía del acceso. */
+  if (cargando)
+    return (
+      <>
+        <style>{ESTILOS_BOVEDA}</style>
+        <CortinaDescifrado onFin={terminarCortina} />
+      </>
+    );
 
   const dePlataforma = !!marca.puedeUsarArteDePlataforma;
   const nombreDeMarca = marca.platformName || "";
@@ -209,36 +215,33 @@ export default function Boveda({
         </div>
 
         {bajoLaTarjeta}
-
       </main>
 
-        {/* ── LA ATRIBUCIÓN, DONDE ESTÁ PERMITIDA ──────────────────────────
+      {/* ── LA ATRIBUCIÓN, DONDE ESTÁ PERMITIDA ──────────────────────────
             Misma regla que `AuthShell`: con la atribución apagada el socio
             paga justamente por no vernos, así que el pie es suyo. */}
-        <p className="cg-reg-tenue relative px-4 pb-5 text-center text-xs">
-          {!esMarcaDeSocio(marca)
-            ? t("auth.landing.copyright", {
-                defaultValue:
-                  "© {{year}} C-GUARD. Todos los derechos reservados.",
+      <p className="cg-reg-tenue relative px-4 pb-5 text-center text-xs">
+        {!esMarcaDeSocio(marca)
+          ? t("auth.landing.copyright", {
+              defaultValue:
+                "© {{year}} C-GUARD. Todos los derechos reservados.",
+              year: anio,
+            })
+          : marca.showPlatformAttribution && nombreDeMarca
+            ? t("auth.landing.copyright_partner", {
+                defaultValue: "© {{year}} {{marca}} · Distribuidor autorizado",
                 year: anio,
+                marca: nombreDeMarca,
               })
-            : marca.showPlatformAttribution && nombreDeMarca
-              ? t("auth.landing.copyright_partner", {
+            : nombreDeMarca
+              ? t("auth.footer_copyright", {
                   defaultValue:
-                    "© {{year}} {{marca}} · Distribuidor autorizado",
+                    "© {{year}} {{marca}}. Todos los derechos reservados.",
                   year: anio,
                   marca: nombreDeMarca,
                 })
-              : nombreDeMarca
-                ? t("auth.footer_copyright", {
-                    defaultValue:
-                      "© {{year}} {{marca}}. Todos los derechos reservados.",
-                    year: anio,
-                    marca: nombreDeMarca,
-                  })
-                : null}
-        </p>
-
+              : null}
+      </p>
     </div>
   );
 }

@@ -298,7 +298,11 @@
       "reglaMinuscula": "Ein Kleinbuchstabe",
       "reglaNumero": "Eine Zahl",
       "reglaSimbolo": "Ein Sonderzeichen (!?#…)",
-      "apariencia": "Darstellung"
+      "apariencia": "Darstellung",
+      "recuperarAcceso": "Zugang wiederherstellen",
+      "revisaTuCorreo": "Prüfen Sie Ihr Postfach",
+      "enviamosEnlace": "Wenn es ein Konto für {{correo}} gibt, erhalten Sie einen Link zum Erstellen eines neuen Passworts.",
+      "enviarDeNuevo": "Erneut senden"
     }
   },
   "client": {

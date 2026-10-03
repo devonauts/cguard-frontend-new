@@ -428,7 +428,11 @@
       "reglaMinuscula": "One lowercase letter",
       "reglaNumero": "One number",
       "reglaSimbolo": "One symbol (!?#…)",
-      "apariencia": "Appearance"
+      "apariencia": "Appearance",
+      "recuperarAcceso": "Account recovery",
+      "revisaTuCorreo": "Check your email",
+      "enviamosEnlace": "If there is an account for {{correo}}, you will receive a link to create a new password.",
+      "enviarDeNuevo": "Send it again"
     }
   },
   "billing": {
