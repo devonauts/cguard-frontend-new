@@ -1,13 +1,13 @@
 import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
-import { esVistaPrevia } from "@/lib/vistaPrevia";
-import { tituloConMarca } from "@/hooks/usePageTitle";
-import { Lock, Mail, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Lock, Mail, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import AuthShell, { CAMPO_ICONO, BOTON_PRINCIPAL, Etiqueta } from "./AuthShell";
+import Boveda, { BotonVer, CAMPO, Campo } from "./Boveda";
 
+import { tituloConMarca } from "@/hooks/usePageTitle";
+import { esVistaPrevia } from "@/lib/vistaPrevia";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAuthForm } from "@/hooks/useAuthForm";
 import { ApiService } from "@/services/api/apiService";
@@ -16,7 +16,10 @@ export default function Login() {
   const { signIn } = useAuth();
   /* The same email can have one account per realm (platform, or a partner).
      When the password opens several, the server lists them and we ask. */
-  const [cuentas, setCuentas] = useState<Array<{ realm: string; companies: string[] }> | null>(null);
+  const [cuentas, setCuentas] = useState<Array<{
+    realm: string;
+    companies: string[];
+  }> | null>(null);
   const [cuentaElegida, setCuentaElegida] = useState<string | null>(null);
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -48,7 +51,9 @@ export default function Login() {
   } = useAuthForm();
 
   useEffect(() => {
-    document.title = tituloConMarca(t("auth.login_title") || "Iniciar Sesión | Cguard");
+    document.title = tituloConMarca(
+      t("auth.login_title") || "Iniciar Sesión | Cguard",
+    );
   }, []);
 
   useEffect(() => {
@@ -134,7 +139,11 @@ export default function Login() {
     // use validation helpers from the hook (they show localized toasts)
     if (!validateEmail() || !validatePassword(6)) return;
     setIsLoading(true);
-    const result = await signIn({ email, password, realm: cuentaElegida || undefined });
+    const result = await signIn({
+      email,
+      password,
+      realm: cuentaElegida || undefined,
+    });
 
     setIsLoading(false);
     if (result.chooseAccount?.length) {
@@ -171,122 +180,103 @@ export default function Login() {
     }
   });
 
+  /* El mismo marco «Bóveda» que el registro (2026-10-03): entrar y darse de
+     alta se sienten el mismo sitio, con el mismo cristal, el mismo selector
+     de idioma y de modo claro/oscuro, y la marca del anfitrión. */
   return (
-    <AuthShell title={t("auth.login_prompt") || "Inicia sesión en tu cuenta"}>
-      {motivoSalida && (
-        <div
-          className="mb-4 rounded-2xl border p-3 text-sm"
-          style={{
-            background: "color-mix(in oklab, var(--info) 12%, transparent)",
-            borderColor: "color-mix(in oklab, var(--info) 28%, transparent)",
-            color: "var(--info-text)",
-          }}
-        >
-          {motivoSalida}
-        </div>
-      )}
+    <Boveda splash estado={t("auth.signup.acceso", { defaultValue: "Acceso" })}>
+      <h1 className="font-display text-[1.7rem] font-semibold leading-tight tracking-tight">
+        {t("auth.login_prompt") || "Inicia sesión en tu cuenta"}
+      </h1>
+      <p className="cg-reg-suave mb-5 mt-1.5 text-sm">
+        {t("auth.signup.loginSub", {
+          defaultValue: "Bienvenido de nuevo. Entra para ver tu operación.",
+        })}
+      </p>
+      {motivoSalida && <div className="cg-reg-aviso mb-4">{motivoSalida}</div>}
       {cuentas && (
-        <div className="mb-4 space-y-2 rounded-xl border p-4" role="dialog" aria-labelledby="elegir-cuenta" style={{ borderColor: "var(--hairline)" }}>
+        <div
+          aria-labelledby="elegir-cuenta"
+          className="cg-reg-aviso mb-4 space-y-2"
+          role="dialog"
+        >
           <p className="text-sm font-semibold" id="elegir-cuenta">
             {t("auth.chooseAccountTitle", "¿Con qué empresa quieres entrar?")}
           </p>
-          <p className="text-xs opacity-80">
-            {t("auth.chooseAccountHint", "Este correo tiene una cuenta en cada una. Elige la que quieres usar ahora.")}
+          <p className="text-xs">
+            {t(
+              "auth.chooseAccountHint",
+              "Este correo tiene una cuenta en cada una. Elige la que quieres usar ahora.",
+            )}
           </p>
           {cuentas.map((c) => (
             <button
               key={c.realm}
-              className="w-full rounded-lg border px-3 py-2 text-left text-sm hover:opacity-90 disabled:opacity-60"
+              className="cg-reg-campo !h-auto py-2.5 !pl-3 text-left text-sm disabled:opacity-60"
               disabled={isLoading}
-              style={{ borderColor: "var(--hairline)" }}
               type="button"
               onClick={() => entrarCon(c.realm)}
             >
-              {c.companies.length ? c.companies.join(" · ") : t("auth.chooseAccountNoCompany", "Cuenta sin empresa asignada")}
+              {c.companies.length
+                ? c.companies.join(" · ")
+                : t(
+                    "auth.chooseAccountNoCompany",
+                    "Cuenta sin empresa asignada",
+                  )}
             </button>
           ))}
           <button
-            className="text-xs underline opacity-80"
+            className="text-xs underline"
             type="button"
-            onClick={() => { setCuentas(null); setCuentaElegida(null); }}
+            onClick={() => {
+              setCuentas(null);
+              setCuentaElegida(null);
+            }}
           >
             {t("common.cancel", "Cancelar")}
           </button>
         </div>
       )}
       <form className="space-y-4" onSubmit={handleLogin}>
-        <div>
-          <Etiqueta>{t("auth.email_label")}</Etiqueta>
-          <div className="relative">
-            <Mail
-              className="pointer-events-none absolute left-3.5 top-1/2 h-4.5 w-4.5 -translate-y-1/2"
-              style={{ color: "var(--ink-faint)" }}
-            />
-            <input
-              autoComplete="email"
-              className={CAMPO_ICONO}
-              disabled={isLoading}
-              placeholder={t("auth.email_placeholder")}
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-            />
-          </div>
-        </div>
+        <Campo Icono={Mail} etiqueta={t("auth.email_label")} htmlFor="email">
+          <input
+            autoComplete="email"
+            className={CAMPO}
+            disabled={isLoading}
+            id="email"
+            inputMode="email"
+            placeholder={t("auth.email_placeholder")}
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </Campo>
 
-        <div>
-          <Etiqueta>{t("auth.password_label")}</Etiqueta>
-          <div className="relative">
-            <Lock
-              className="pointer-events-none absolute left-3.5 top-1/2 h-4.5 w-4.5 -translate-y-1/2"
-              style={{ color: "var(--ink-faint)" }}
-            />
-            <input
-              autoComplete="current-password"
-              className={`${CAMPO_ICONO} pr-12`}
-              disabled={isLoading}
-              placeholder={t("auth.password_placeholder")}
-              type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-            />
-            <button
-              aria-label={
-                showPassword
-                  ? t("auth.hide_password", {
-                      defaultValue: "Ocultar contraseña",
-                    })
-                  : t("auth.show_password", {
-                      defaultValue: "Mostrar contraseña",
-                    })
-              }
-              className="cg-focus absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md p-2.5 transition-colors"
-              style={{ color: "var(--ink-faint)" }}
-              type="button"
-              onClick={toggleShowPassword}
-            >
-              {showPassword ? (
-                <EyeOff className="h-4.5 w-4.5" />
-              ) : (
-                <Eye className="h-4.5 w-4.5" />
-              )}
-            </button>
-          </div>
-        </div>
+        <Campo
+          Icono={Lock}
+          etiqueta={t("auth.password_label")}
+          htmlFor="password"
+        >
+          <input
+            autoComplete="current-password"
+            className={`${CAMPO} pr-20`}
+            disabled={isLoading}
+            id="password"
+            placeholder={t("auth.password_placeholder")}
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <BotonVer visible={showPassword} onClick={toggleShowPassword} />
+        </Campo>
 
         <div className="text-right">
-          <NavLink
-            className="text-sm font-medium hover:underline"
-            style={{ color: "var(--brand-text)" }}
-            to="/forgot-password"
-          >
+          <NavLink className="cg-reg-enlace text-sm" to="/forgot-password">
             {t("auth.forgot_password")}
           </NavLink>
         </div>
 
-        <button className={BOTON_PRINCIPAL} disabled={isLoading} type="submit">
+        <button className="cg-reg-boton" disabled={isLoading} type="submit">
           {isLoading ? (
             t("auth.signing_in")
           ) : (
@@ -296,19 +286,16 @@ export default function Login() {
           )}
         </button>
 
-        <div className="pt-1 text-center text-sm">
-          <span style={{ color: "var(--ink-soft)" }}>
-            {t("auth.no_account_text")}{" "}
-          </span>
+        <p className="cg-reg-suave pt-1 text-center text-sm">
+          {t("auth.no_account_text")}{" "}
           <NavLink
-            className="-my-2 inline-block py-2 font-semibold hover:underline"
-            style={{ color: "var(--brand-text)" }}
+            className="cg-reg-enlace -my-2 inline-block py-2"
             to="/register"
           >
             {t("auth.create_account")}
           </NavLink>
-        </div>
+        </p>
       </form>
-    </AuthShell>
+    </Boveda>
   );
 }
