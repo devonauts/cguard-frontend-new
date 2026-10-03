@@ -10572,7 +10572,13 @@
       "zonaDetectada": "Time zone detected: {{tz}}",
       "opcional": "optional",
       "cerrarSesion": "Sign out",
-      "obligatorioAviso": "Before you start, complete your company details: your officers and clients will see them."
+      "obligatorioAviso": "Before you start, complete your company details: your officers and clients will see them.",
+      "vistaPrevia": "Preview",
+      "arrastraLogo": "or drag it here",
+      "subBienvenida": "Let's start with your country.",
+      "subTuEmpresa": "This is how your officers and clients will see you.",
+      "subContacto": "Where your company is and how to reach it.",
+      "subRevisar": "Check everything before you finish."
     },
     "OpenShifts": {
       "accion": "Action",

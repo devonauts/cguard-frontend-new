@@ -10572,7 +10572,13 @@
       "zonaDetectada": "Fuso horário detetado: {{tz}}",
       "opcional": "opcional",
       "cerrarSesion": "Terminar sessão",
-      "obligatorioAviso": "Antes de começar, preencha os dados da sua empresa: os seus vigilantes e clientes vão vê-los."
+      "obligatorioAviso": "Antes de começar, preencha os dados da sua empresa: os seus vigilantes e clientes vão vê-los.",
+      "vistaPrevia": "Pré-visualização",
+      "arrastraLogo": "ou arraste-o para aqui",
+      "subBienvenida": "Comecemos pelo seu país.",
+      "subTuEmpresa": "É assim que os seus vigilantes e clientes o vão ver.",
+      "subContacto": "Onde fica a sua empresa e como contactá-la.",
+      "subRevisar": "Confirme que está tudo certo antes de terminar."
     },
     "OpenShifts": {
       "accion": "Ação",

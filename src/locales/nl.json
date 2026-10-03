@@ -11095,7 +11095,13 @@
       "zonaDetectada": "Tijdzone gedetecteerd: {{tz}}",
       "opcional": "optioneel",
       "cerrarSesion": "Uitloggen",
-      "obligatorioAviso": "Vul eerst je bedrijfsgegevens in: je beveiligers en klanten zien ze."
+      "obligatorioAviso": "Vul eerst je bedrijfsgegevens in: je beveiligers en klanten zien ze.",
+      "vistaPrevia": "Voorbeeld",
+      "arrastraLogo": "of sleep het hierheen",
+      "subBienvenida": "Laten we beginnen met je land.",
+      "subTuEmpresa": "Zo zien je beveiligers en klanten je.",
+      "subContacto": "Waar je bedrijf is en hoe je het bereikt.",
+      "subRevisar": "Controleer alles voordat je afrondt."
     },
     "OpenShifts": {
       "accion": "Actie",

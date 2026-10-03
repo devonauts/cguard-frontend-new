@@ -11129,7 +11129,13 @@
       "zonaDetectada": "Wykryta strefa czasowa: {{tz}}",
       "opcional": "opcjonalnie",
       "cerrarSesion": "Wyloguj się",
-      "obligatorioAviso": "Zanim zaczniesz, uzupełnij dane firmy: zobaczą je Twoi pracownicy ochrony i klienci."
+      "obligatorioAviso": "Zanim zaczniesz, uzupełnij dane firmy: zobaczą je Twoi pracownicy ochrony i klienci.",
+      "vistaPrevia": "Podgląd",
+      "arrastraLogo": "lub przeciągnij tutaj",
+      "subBienvenida": "Zacznijmy od Twojego kraju.",
+      "subTuEmpresa": "Tak zobaczą Cię Twoi pracownicy i klienci.",
+      "subContacto": "Gdzie jest Twoja firma i jak się z nią skontaktować.",
+      "subRevisar": "Sprawdź wszystko przed zakończeniem."
     },
     "OpenShifts": {
       "accion": "Akcja",

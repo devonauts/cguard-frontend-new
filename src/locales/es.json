@@ -10572,7 +10572,13 @@
       "zonaDetectada": "Zona horaria detectada: {{tz}}",
       "opcional": "opcional",
       "cerrarSesion": "Cerrar sesión",
-      "obligatorioAviso": "Antes de empezar, completa los datos de tu empresa: tus vigilantes y clientes los verán."
+      "obligatorioAviso": "Antes de empezar, completa los datos de tu empresa: tus vigilantes y clientes los verán.",
+      "vistaPrevia": "Vista previa",
+      "arrastraLogo": "o arrástralo aquí",
+      "subBienvenida": "Empecemos por tu país.",
+      "subTuEmpresa": "Así te verán tus vigilantes y tus clientes.",
+      "subContacto": "Dónde está tu empresa y cómo contactarla.",
+      "subRevisar": "Comprueba que todo esté bien antes de terminar."
     },
     "OpenShifts": {
       "accion": "Acción",

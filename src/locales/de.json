@@ -11095,7 +11095,13 @@
       "zonaDetectada": "Erkannte Zeitzone: {{tz}}",
       "opcional": "optional",
       "cerrarSesion": "Abmelden",
-      "obligatorioAviso": "Bevor Sie loslegen, vervollständigen Sie Ihre Firmendaten: Ihre Mitarbeiter und Kunden sehen sie."
+      "obligatorioAviso": "Bevor Sie loslegen, vervollständigen Sie Ihre Firmendaten: Ihre Mitarbeiter und Kunden sehen sie.",
+      "vistaPrevia": "Vorschau",
+      "arrastraLogo": "oder hierher ziehen",
+      "subBienvenida": "Beginnen wir mit Ihrem Land.",
+      "subTuEmpresa": "So sehen Sie Ihre Mitarbeiter und Kunden.",
+      "subContacto": "Wo Ihr Unternehmen ist und wie man es erreicht.",
+      "subRevisar": "Prüfen Sie alles, bevor Sie abschließen."
     },
     "OpenShifts": {
       "accion": "Aktion",

@@ -11095,7 +11095,13 @@
       "zonaDetectada": "Fuseau horaire détecté : {{tz}}",
       "opcional": "facultatif",
       "cerrarSesion": "Se déconnecter",
-      "obligatorioAviso": "Avant de commencer, complétez les informations de votre entreprise : vos agents et vos clients les verront."
+      "obligatorioAviso": "Avant de commencer, complétez les informations de votre entreprise : vos agents et vos clients les verront.",
+      "vistaPrevia": "Aperçu",
+      "arrastraLogo": "ou glissez-le ici",
+      "subBienvenida": "Commençons par votre pays.",
+      "subTuEmpresa": "C'est ainsi que vos agents et vos clients vous verront.",
+      "subContacto": "Où se trouve votre entreprise et comment la joindre.",
+      "subRevisar": "Vérifiez que tout est correct avant de terminer."
     },
     "OpenShifts": {
       "accion": "Action",

@@ -13,10 +13,13 @@ import {
   Check,
   CalendarClock,
   Edit,
+  FileText,
+  Map as MapIcon,
+  Phone,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 
-import StepIndicator from "./StepIndicator";
 import {
   OnboardingTenant,
   TIMEZONE_OPTIONS,
@@ -30,7 +33,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
@@ -67,6 +69,7 @@ import {
   zonaPorCoordenadas,
 } from "@/lib/paisDeLaEmpresa";
 import { useAuth } from "@/contexts/AuthContext";
+import { getCountryCallingCode, type CountryCode } from "libphonenumber-js";
 
 interface OnboardingWizardProps {
   open: boolean;
@@ -108,21 +111,29 @@ const STEPS = [
   {
     labelKey: "onboarding.wizard.step.bienvenida",
     label: "Bienvenida",
+    subKey: "ui.OnboardingWizard.subBienvenida",
+    sub: "Empecemos por tu país.",
     icon: Sparkles,
   },
   {
     labelKey: "onboarding.wizard.step.tuEmpresa",
     label: "Tu empresa",
+    subKey: "ui.OnboardingWizard.subTuEmpresa",
+    sub: "Así te verán tus vigilantes y tus clientes.",
     icon: Building2,
   },
   {
     labelKey: "onboarding.wizard.step.contacto",
     label: "Contacto",
+    subKey: "ui.OnboardingWizard.subContacto",
+    sub: "Dónde está tu empresa y cómo contactarla.",
     icon: MapPin,
   },
   {
     labelKey: "onboarding.wizard.step.revisar",
     label: "Revisar",
+    subKey: "ui.OnboardingWizard.subRevisar",
+    sub: "Comprueba que todo esté bien antes de terminar.",
     icon: ClipboardCheck,
   },
 ];
@@ -233,6 +244,7 @@ export default function OnboardingWizard({
   const [logoError, setLogoError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [showManualAddress, setShowManualAddress] = useState(false);
+  const [arrastrandoLogo, setArrastrandoLogo] = useState(false);
   const logoInputRef = useRef<HTMLInputElement | null>(null);
   const hydratedFor = useRef<string | null>(null);
 
@@ -547,8 +559,6 @@ export default function OnboardingWizard({
     }
   };
 
-  const StepCurrentIcon = STEPS[step].icon;
-
   return (
     <Dialog
       open={open}
@@ -558,7 +568,7 @@ export default function OnboardingWizard({
       }}
     >
       <DialogContent
-        className="max-w-[calc(100%-2rem)] gap-0 overflow-hidden p-0 max-h-[92vh] sm:max-w-[680px]"
+        className="max-w-[calc(100%-2rem)] gap-0 overflow-hidden p-0 max-h-[92vh] sm:max-w-[960px]"
         showCloseButton={false}
         /* Obligatorio: ni Escape ni un clic fuera lo cierran. */
         onEscapeKeyDown={(e) => {
@@ -568,534 +578,771 @@ export default function OnboardingWizard({
           if (obligatorio) e.preventDefault();
         }}
       >
-        {/* Header */}
-        {/* El degradado oro fijo (#C8860A → #F5C300) se sustituye por el acento:
-            un relleno de `--brand` con tinta `--brand-ink`. El blanco encima del
-            oro daba ~2,2:1 (ver la medición en tokens.css) y además el degradado
-            se quedaba dorado aunque el CRM entero pasara a otro tono. */}
-        <DialogHeader
-          className="space-y-0 border-b px-4 py-4 text-left sm:px-6"
-          style={{
-            borderColor: "var(--hairline)",
-            background:
-              "linear-gradient(90deg, var(--brand-wash) 0%, transparent 100%)",
-          }}
-        >
-          <div className="flex items-center gap-3">
-            <div
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl"
-              style={{
-                background: "var(--brand)",
-                color: "var(--brand-ink)",
-                boxShadow: "0 6px 20px -8px var(--brand-glow)",
-              }}
-            >
-              <StepCurrentIcon className="h-5 w-5" />
+        {/* ── DISEÑO A DOS COLUMNAS (2026-10-03) ──────────────────────────────
+            Izquierda, la columna de marca: el escudo (o el logo del socio), los
+            pasos en vertical con su marca de hecho, y la empresa tal como la
+            verán vigilantes y clientes, llenándose mientras se escribe.
+            Derecha, sólo el paso en curso. En el teléfono la columna de marca
+            se pliega a una cabecera con la barra de progreso. */}
+        <div className="grid max-h-[92vh] md:grid-cols-[300px_1fr]">
+          <aside
+            className="relative flex flex-col gap-5 overflow-hidden p-5 text-white md:p-6"
+            style={{
+              background:
+                "radial-gradient(120% 80% at 0% 0%, color-mix(in oklab, var(--brand) 30%, transparent) 0%, transparent 60%), linear-gradient(165deg, #121a2b 0%, #0a0f1a 100%)",
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <MarcaDelAsistente tam={52} />
+              <div className="min-w-0">
+                <DialogTitle className="text-base font-bold leading-tight text-white">
+                  {t(
+                    "ui.OnboardingWizard.configuraTuEmpresa",
+                    "Configura tu empresa",
+                  )}
+                </DialogTitle>
+                <DialogDescription className="text-xs text-white/60">
+                  {t("onboarding.wizard.stepOf", {
+                    defaultValue: "Paso {{current}} de {{total}}",
+                    current: step + 1,
+                    total: STEPS.length,
+                  })}
+                </DialogDescription>
+              </div>
             </div>
-            <div className="min-w-0">
-              <DialogTitle className="text-base font-semibold">
-                {t(
-                  "ui.OnboardingWizard.configuraTuEmpresa",
-                  "Configura tu empresa",
-                )}
-              </DialogTitle>
-              <DialogDescription className="text-xs">
-                {t("onboarding.wizard.stepOf", {
-                  defaultValue: "Paso {{current}} de {{total}}",
-                  current: step + 1,
-                  total: STEPS.length,
-                })}{" "}
-                · {t(STEPS[step].labelKey, STEPS[step].label)}
-              </DialogDescription>
+
+            {/* Teléfono: progreso en una barra. */}
+            <div className="h-1.5 overflow-hidden rounded-full bg-white/10 md:hidden">
+              <div
+                className="h-full rounded-full transition-all duration-500"
+                style={{
+                  width: `${((step + 1) / STEPS.length) * 100}%`,
+                  background: "var(--brand)",
+                }}
+              />
             </div>
+
+            {/* Escritorio: los pasos en vertical. */}
+            <ol className="hidden space-y-1 md:block">
+              {STEPS.map((p, i) => {
+                const Icono = p.icon;
+                const hecho = i < step;
+                const actual = i === step;
+
+                return (
+                  <li key={p.labelKey}>
+                    <button
+                      className="flex w-full items-center gap-3 rounded-xl px-2.5 py-2 text-left text-sm transition-colors disabled:cursor-default"
+                      disabled={!hecho}
+                      style={{
+                        background: actual
+                          ? "rgba(255,255,255,0.08)"
+                          : undefined,
+                      }}
+                      type="button"
+                      onClick={() => hecho && setStep(i)}
+                    >
+                      <span
+                        className="grid h-8 w-8 shrink-0 place-items-center rounded-full transition-colors"
+                        style={{
+                          background:
+                            hecho || actual
+                              ? "var(--brand)"
+                              : "rgba(255,255,255,0.08)",
+                          color:
+                            hecho || actual
+                              ? "var(--brand-ink)"
+                              : "rgba(255,255,255,0.55)",
+                        }}
+                      >
+                        {hecho ? (
+                          <Check className="h-4 w-4" />
+                        ) : (
+                          <Icono className="h-4 w-4" />
+                        )}
+                      </span>
+                      <span
+                        className={cn(
+                          "font-medium",
+                          actual ? "text-white" : "text-white/60",
+                        )}
+                      >
+                        {t(p.labelKey, p.label)}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ol>
+
+            {/* La empresa como la verán los demás, en vivo. */}
+            <div className="mt-auto hidden rounded-2xl border border-white/10 bg-white/[0.04] p-3 md:block">
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-white/45">
+                {t("ui.OnboardingWizard.vistaPrevia", "Vista previa")}
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-xl bg-white/10">
+                  {logoPreview ? (
+                    <img
+                      alt=""
+                      className="h-full w-full object-cover"
+                      src={logoPreview}
+                    />
+                  ) : (
+                    <Building2 className="h-5 w-5 text-white/50" />
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-white">
+                    {form.name.trim() ||
+                      t("ui.OnboardingWizard.miEmpresaDeSeguridad")}
+                  </p>
+                  <p className="flex items-center gap-1 truncate text-xs text-white/55">
+                    {form.country ? (
+                      <MapPin className="h-3 w-3 shrink-0" />
+                    ) : null}
+                    {form.country
+                      ? nombreDePais(form.country, idioma)
+                      : terminos.razonSocial}
+                  </p>
+                </div>
+              </div>
+              {trialEnd && (
+                <p className="mt-3 flex items-center gap-1.5 text-[11px] text-white/50">
+                  <Gift className="h-3 w-3" />
+                  {t("onboarding.wizard.review.trialEnds", {
+                    defaultValue: "Tu prueba gratuita termina el {{date}}",
+                    date: trialEnd,
+                  })}
+                </p>
+              )}
+            </div>
+          </aside>
+
+          <section className="flex min-h-0 min-w-0 flex-col">
             {!obligatorio && (
               <button
                 aria-label={t("actions.close")}
-                className="ml-auto rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                className="absolute right-3 top-3 z-10 rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                 type="button"
                 onClick={snoozeAndClose}
               >
-                <svg
-                  fill="none"
-                  height="18"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  width="18"
-                >
-                  <path d="M18 6 6 18M6 6l12 12" />
-                </svg>
+                <X className="h-[18px] w-[18px]" />
               </button>
             )}
-          </div>
-          <div className="pt-4">
-            <StepIndicator
-              current={step}
-              steps={STEPS.map((s) => ({ label: t(s.labelKey, s.label) }))}
-              onStepClick={(i) => {
-                if (i < step) setStep(i);
-              }}
-            />
-          </div>
-        </DialogHeader>
-
-        {/* Body (scrollable) */}
-        <div className="max-h-[58vh] overflow-y-auto px-4 py-5 sm:px-6">
-          {step === 0 && (
-            <WelcomeStep
-              days={days}
-              obligatorio={obligatorio}
-              terminos={terminos}
-              trialEnd={trialEnd}
-            >
-              {/* EL PAÍS, LO PRIMERO: de él salen los nombres de los campos
-                  fiscales, el prefijo del teléfono, el mapa y la zona. */}
-              <div className="mx-auto max-w-md space-y-1.5 text-left">
-                <Label>
-                  {t(
-                    "ui.OnboardingWizard.paisDeLaEmpresa",
-                    "¿En qué país está tu empresa?",
-                  )}{" "}
-                  <span style={{ color: "var(--bad-text)" }}>*</span>
-                </Label>
-                <Combobox
-                  aria-label={t("ui.OnboardingWizard.pais", "País")}
-                  options={opcionesPais}
-                  placeholder={t(
-                    "ui.OnboardingWizard.buscarPais",
-                    "Buscar país…",
-                  )}
-                  value={form.country}
-                  onChange={(v) => elegirPais(String(v || ""))}
-                />
-                <p className="text-xs text-muted-foreground">
-                  {t(
-                    "ui.OnboardingWizard.paisAyuda",
-                    "Con él adaptamos los datos fiscales, el teléfono, el mapa y la zona horaria.",
-                  )}
+            {/* Título del paso (en la bienvenida lo pone el propio saludo). */}
+            {step > 0 && (
+              <div className="px-5 pt-5 sm:px-7 sm:pt-6">
+                <h3 className="text-lg font-bold">
+                  {t(STEPS[step].labelKey, STEPS[step].label)}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t(STEPS[step].subKey, STEPS[step].sub)}
                 </p>
               </div>
-            </WelcomeStep>
-          )}
+            )}
 
-          {step === 1 && (
-            <div className="space-y-4 animate-in fade-in-50 duration-300">
-              <div className="space-y-1.5">
-                <Label>
-                  {t("ui.OnboardingWizard.nombreDeLaEmpresa")}{" "}
-                  <span style={{ color: "var(--bad-text)" }}>*</span>
-                </Label>
-                <Input
-                  placeholder={t("ui.OnboardingWizard.miEmpresaDeSeguridad")}
-                  value={form.name}
-                  onChange={(e) => set({ name: e.target.value })}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label>
-                  {terminos.razonSocial}{" "}
-                  <span style={{ color: "var(--bad-text)" }}>*</span>
-                </Label>
-                <Input
-                  placeholder={t(
-                    "ui.OnboardingWizard.nombreLegalAyuda",
-                    "Tal como aparece en el registro oficial",
-                  )}
-                  value={form.businessTitle}
-                  onChange={(e) => set({ businessTitle: e.target.value })}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label>
-                  {terminos.idFiscal}{" "}
-                  <span style={{ color: "var(--bad-text)" }}>*</span>
-                </Label>
-                <Input
-                  maxLength={24}
-                  placeholder={taxPlaceholder}
-                  value={form.taxNumber}
-                  onChange={(e) =>
-                    set({ taxNumber: e.target.value.slice(0, 24) })
-                  }
-                />
-                {form.taxNumber && !taxValid && (
-                  <p className="text-xs" style={{ color: "var(--bad-text)" }}>
-                    {taxHint}
-                  </p>
-                )}
-              </div>
-
-              {/* Logo */}
-              <div className="space-y-1.5">
-                <Label>
-                  {t("ui.OnboardingWizard.logoDeLaEmpresa")}{" "}
-                  <span style={{ color: "var(--bad-text)" }}>*</span>
-                </Label>
-                <div className="flex flex-wrap items-center gap-4">
-                  <div className="relative">
-                    <div className="grid h-20 w-20 place-items-center overflow-hidden rounded-2xl border-2 border-dashed border-border bg-muted">
-                      {logoPreview ? (
-                        <img
-                          alt="logo"
-                          className="h-full w-full object-cover"
-                          src={logoPreview}
-                        />
-                      ) : (
-                        <Building2 className="h-7 w-7 text-muted-foreground" />
-                      )}
-                    </div>
-                    <button
-                      aria-label={t(
-                        "ui.OnboardingWizard.subirLogo",
-                        "Subir logo",
-                      )}
-                      className="absolute -bottom-1.5 -right-1.5 grid h-7 w-7 place-items-center rounded-full border border-border bg-background shadow-sm transition-colors hover:bg-accent"
-                      type="button"
-                      onClick={() => logoInputRef.current?.click()}
-                    >
-                      <Camera className="h-3.5 w-3.5 text-primary" />
-                    </button>
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    <Button
-                      size="sm"
-                      type="button"
-                      variant="outline"
-                      onClick={() => logoInputRef.current?.click()}
-                    >
-                      {logoPreview
-                        ? t("ui.OnboardingWizard.cambiarLogo", "Cambiar logo")
-                        : t("ui.OnboardingWizard.subirLogo", "Subir logo")}
-                    </Button>
-                    <p className="mt-1.5 text-xs">
+            {/* Body (scrollable) */}
+            <div className="max-h-[60vh] flex-1 overflow-y-auto px-5 py-5 sm:px-7">
+              {step === 0 && (
+                <WelcomeStep
+                  days={days}
+                  obligatorio={obligatorio}
+                  terminos={terminos}
+                  trialEnd={trialEnd}
+                >
+                  {/* EL PAÍS, LO PRIMERO: de él salen los nombres de los campos
+                  fiscales, el prefijo del teléfono, el mapa y la zona. */}
+                  <div className="space-y-1.5 text-left">
+                    <Label>
                       {t(
-                        "ui.OnboardingWizard.pngJpgSvgOWebp",
-                        "PNG, JPG, SVG o WEBP · máx. 5MB",
+                        "ui.OnboardingWizard.paisDeLaEmpresa",
+                        "¿En qué país está tu empresa?",
+                      )}{" "}
+                      <span style={{ color: "var(--bad-text)" }}>*</span>
+                    </Label>
+                    <Combobox
+                      aria-label={t("ui.OnboardingWizard.pais", "País")}
+                      options={opcionesPais}
+                      placeholder={t(
+                        "ui.OnboardingWizard.buscarPais",
+                        "Buscar país…",
+                      )}
+                      value={form.country}
+                      onChange={(v) => elegirPais(String(v || ""))}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {t(
+                        "ui.OnboardingWizard.paisAyuda",
+                        "Con él adaptamos los datos fiscales, el teléfono, el mapa y la zona horaria.",
                       )}
                     </p>
-                  </div>
-                  <input
-                    ref={logoInputRef}
-                    accept=".png,.jpg,.jpeg,.webp,.svg"
-                    className="hidden"
-                    type="file"
-                    onChange={(e) => handleLogo(e.target.files?.[0] || null)}
-                  />
-                </div>
-                {logoError && (
-                  <p className="text-xs" style={{ color: "var(--bad-text)" }}>
-                    {logoError}
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div className="space-y-4 animate-in fade-in-50 duration-300">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="space-y-1.5">
-                  <Label>
-                    {t("ui.OnboardingWizard.telefono", "Teléfono")}{" "}
-                    <span style={{ color: "var(--bad-text)" }}>*</span>
-                  </Label>
-                  {/* El prefijo sale del país elegido; cambiar de país vuelve a
-                      montar el campo con el suyo. */}
-                  <PhoneInput
-                    key={form.country}
-                    defaultCountry={form.country || undefined}
-                    value={form.phone}
-                    onChange={(v) => set({ phone: v })}
-                    onCountryChange={(c: any) =>
-                      set({
-                        phoneCountry: c?.code || c?.name || paisDeLaEmpresa(),
-                      })
-                    }
-                  />
-                  {form.phone && !phoneValid && (
-                    <p className="text-xs" style={{ color: "var(--bad-text)" }}>
-                      {t(
-                        "ui.OnboardingWizard.numeroDeTelefonoInvalido",
-                        "Número de teléfono inválido.",
-                      )}
-                    </p>
-                  )}
-                </div>
-                <div className="space-y-1.5">
-                  <Label>
-                    {t(
-                      "ui.OnboardingWizard.correoElectronico",
-                      "Correo electrónico",
-                    )}{" "}
-                    <span style={{ color: "var(--bad-text)" }}>*</span>
-                  </Label>
-                  <Input
-                    placeholder={t("ui.OnboardingWizard.correoEmpresaCom")}
-                    type="email"
-                    value={form.email}
-                    onChange={(e) => set({ email: e.target.value })}
-                  />
-                  {form.email && !emailValid && (
-                    <p className="text-xs" style={{ color: "var(--bad-text)" }}>
-                      {t(
-                        "ui.OnboardingWizard.correoElectronicoInvalido",
-                        "Correo electrónico inválido.",
-                      )}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <Label>
-                    {t("ui.OnboardingWizard.direccion", "Dirección")}{" "}
-                    <span style={{ color: "var(--bad-text)" }}>*</span>
-                  </Label>
-                  <button
-                    className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
-                    type="button"
-                    onClick={() => setShowManualAddress((v) => !v)}
-                  >
-                    <Edit className="h-3 w-3" />
-                    {showManualAddress
-                      ? t("onboarding.wizard.autoSearch", "Búsqueda automática")
-                      : t(
-                          "onboarding.wizard.manualEntry",
-                          "Ingresar manualmente",
-                        )}
-                  </button>
-                </div>
-
-                {!showManualAddress ? (
-                  <AddressAutocomplete
-                    key={form.country}
-                    showMap
-                    countryCodes={
-                      form.country ? [form.country.toLowerCase()] : undefined
-                    }
-                    defaultValue={form.address}
-                    initialLat={
-                      form.latitude ? parseFloat(form.latitude) : undefined
-                    }
-                    initialLng={
-                      form.longitude ? parseFloat(form.longitude) : undefined
-                    }
-                    mapHeight="220px"
-                    placeholder={t(
-                      "ui.OnboardingWizard.buscarDireccion",
-                      "Buscar dirección...",
+                    {/* Lo que el país acaba de cambiar, a la vista: se elige y se
+                    ve el efecto en el acto, en vez de descubrirlo dos pasos
+                    después. */}
+                    {form.country && (
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        {[
+                          {
+                            Icono: Phone,
+                            texto: `+${(() => {
+                              try {
+                                return getCountryCallingCode(
+                                  form.country as CountryCode,
+                                );
+                              } catch {
+                                return "";
+                              }
+                            })()}`,
+                          },
+                          {
+                            Icono: FileText,
+                            texto: terminos.idFiscalLocal || terminos.idFiscal,
+                          },
+                          {
+                            Icono: MapIcon,
+                            texto: nombreDePais(form.country, idioma),
+                          },
+                        ].map(({ Icono, texto }) => (
+                          <span
+                            key={texto}
+                            className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium animate-in fade-in-50 zoom-in-95 duration-300"
+                            style={{
+                              background: "var(--brand-wash)",
+                              color: "var(--brand-text)",
+                              border: "1px solid var(--hairline)",
+                            }}
+                          >
+                            <Icono className="h-3.5 w-3.5" />
+                            {texto}
+                          </span>
+                        ))}
+                      </div>
                     )}
-                    paisPorDefecto={form.country || undefined}
-                    /* Sin dirección todavía, la zona es la del centro del
-                       país; en cuanto hay dirección, la de la dirección. */
-                    onCentroDelPais={(lat, lng) => {
-                      const tz = zonaPorCoordenadas(lat, lng);
+                  </div>
+                </WelcomeStep>
+              )}
 
-                      setForm((f) =>
-                        f.latitude || !tz ? f : { ...f, timezone: tz },
-                      );
-                    }}
-                    onAddressSelect={(data: AddressComponents) => {
-                      const tz =
-                        zonaPorCoordenadas(data.latitude, data.longitude) ||
-                        tzFromText(data.country) ||
-                        form.timezone;
-
-                      set({
-                        address: data.address || form.address,
-                        city: data.city || form.city,
-                        postalCode: data.postalCode || form.postalCode,
-                        latitude: String(data.latitude ?? ""),
-                        longitude: String(data.longitude ?? ""),
-                        timezone: tz,
-                      });
-                    }}
-                  />
-                ) : (
-                  <Input
-                    placeholder={t(
-                      "ui.OnboardingWizard.direccionCompleta",
-                      "Dirección completa",
-                    )}
-                    value={form.address}
-                    onChange={(e) => set({ address: e.target.value })}
-                  />
-                )}
-              </div>
-
-              {showManualAddress && (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {step === 1 && (
+                <div className="space-y-4 animate-in fade-in-50 duration-300">
                   <div className="space-y-1.5">
-                    <Label>{t("comun.ciudad")}</Label>
+                    <Label>
+                      {t("ui.OnboardingWizard.nombreDeLaEmpresa")}{" "}
+                      <span style={{ color: "var(--bad-text)" }}>*</span>
+                    </Label>
                     <Input
-                      value={form.city}
-                      onChange={(e) => set({ city: e.target.value })}
+                      placeholder={t(
+                        "ui.OnboardingWizard.miEmpresaDeSeguridad",
+                      )}
+                      value={form.name}
+                      onChange={(e) => set({ name: e.target.value })}
                     />
                   </div>
                   <div className="space-y-1.5">
                     <Label>
-                      {t("ui.OnboardingWizard.codigoPostal", "Código postal")}
+                      {terminos.razonSocial}{" "}
+                      <span style={{ color: "var(--bad-text)" }}>*</span>
                     </Label>
                     <Input
-                      value={form.postalCode}
-                      onChange={(e) => set({ postalCode: e.target.value })}
+                      placeholder={t(
+                        "ui.OnboardingWizard.nombreLegalAyuda",
+                        "Tal como aparece en el registro oficial",
+                      )}
+                      value={form.businessTitle}
+                      onChange={(e) => set({ businessTitle: e.target.value })}
                     />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>
+                      {terminos.idFiscal}{" "}
+                      <span style={{ color: "var(--bad-text)" }}>*</span>
+                    </Label>
+                    <Input
+                      maxLength={24}
+                      placeholder={taxPlaceholder}
+                      value={form.taxNumber}
+                      onChange={(e) =>
+                        set({ taxNumber: e.target.value.slice(0, 24) })
+                      }
+                    />
+                    {form.taxNumber && !taxValid && (
+                      <p
+                        className="text-xs"
+                        style={{ color: "var(--bad-text)" }}
+                      >
+                        {taxHint}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Logo */}
+                  <div className="space-y-1.5">
+                    <Label>
+                      {t("ui.OnboardingWizard.logoDeLaEmpresa")}{" "}
+                      <span style={{ color: "var(--bad-text)" }}>*</span>
+                    </Label>
+                    <div
+                      className="flex flex-wrap items-center gap-4 rounded-2xl p-2 transition-colors"
+                      style={
+                        arrastrandoLogo
+                          ? {
+                              background: "var(--brand-wash)",
+                              outline: "2px dashed var(--brand)",
+                            }
+                          : undefined
+                      }
+                      /* Se puede soltar el archivo encima, además de elegirlo. */
+                      onDragLeave={() => setArrastrandoLogo(false)}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        setArrastrandoLogo(true);
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        setArrastrandoLogo(false);
+                        handleLogo(e.dataTransfer.files?.[0] || null);
+                      }}
+                    >
+                      <div className="relative">
+                        <div className="grid h-20 w-20 place-items-center overflow-hidden rounded-2xl border-2 border-dashed border-border bg-muted">
+                          {logoPreview ? (
+                            <img
+                              alt="logo"
+                              className="h-full w-full object-cover"
+                              src={logoPreview}
+                            />
+                          ) : (
+                            <Building2 className="h-7 w-7 text-muted-foreground" />
+                          )}
+                        </div>
+                        <button
+                          aria-label={t(
+                            "ui.OnboardingWizard.subirLogo",
+                            "Subir logo",
+                          )}
+                          className="absolute -bottom-1.5 -right-1.5 grid h-7 w-7 place-items-center rounded-full border border-border bg-background shadow-sm transition-colors hover:bg-accent"
+                          type="button"
+                          onClick={() => logoInputRef.current?.click()}
+                        >
+                          <Camera className="h-3.5 w-3.5 text-primary" />
+                        </button>
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        <Button
+                          size="sm"
+                          type="button"
+                          variant="outline"
+                          onClick={() => logoInputRef.current?.click()}
+                        >
+                          {logoPreview
+                            ? t(
+                                "ui.OnboardingWizard.cambiarLogo",
+                                "Cambiar logo",
+                              )
+                            : t("ui.OnboardingWizard.subirLogo", "Subir logo")}
+                        </Button>
+                        <p className="mt-1.5 text-xs">
+                          {t(
+                            "ui.OnboardingWizard.pngJpgSvgOWebp",
+                            "PNG, JPG, SVG o WEBP · máx. 5MB",
+                          )}
+                        </p>
+                        <p className="text-xs">
+                          {t(
+                            "ui.OnboardingWizard.arrastraLogo",
+                            "o arrástralo aquí",
+                          )}
+                        </p>
+                      </div>
+                      <input
+                        ref={logoInputRef}
+                        accept=".png,.jpg,.jpeg,.webp,.svg"
+                        className="hidden"
+                        type="file"
+                        onChange={(e) =>
+                          handleLogo(e.target.files?.[0] || null)
+                        }
+                      />
+                    </div>
+                    {logoError && (
+                      <p
+                        className="text-xs"
+                        style={{ color: "var(--bad-text)" }}
+                      >
+                        {logoError}
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
 
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="space-y-1.5">
-                  <Label>
-                    {t("onboarding.wizard.review.timezone", "Zona horaria")}{" "}
-                    <span style={{ color: "var(--bad-text)" }}>*</span>
-                  </Label>
-                  <Combobox
-                    aria-label={t(
-                      "onboarding.wizard.review.timezone",
-                      "Zona horaria",
-                    )}
-                    options={opcionesZona}
-                    placeholder={t(
-                      "ui.OnboardingWizard.seleccionarZonaHoraria",
-                    )}
-                    value={form.timezone}
-                    onChange={(v) => set({ timezone: v })}
-                  />
-                  <button
-                    className="text-xs font-medium text-primary hover:underline"
-                    type="button"
-                    onClick={() => {
-                      const tz =
-                        zonaPorCoordenadas(form.latitude, form.longitude) ||
-                        tzFromText(form.country, form.address);
+              {step === 2 && (
+                <div className="space-y-4 animate-in fade-in-50 duration-300">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="space-y-1.5">
+                      <Label>
+                        {t("ui.OnboardingWizard.telefono", "Teléfono")}{" "}
+                        <span style={{ color: "var(--bad-text)" }}>*</span>
+                      </Label>
+                      {/* El prefijo sale del país elegido; cambiar de país vuelve a
+                      montar el campo con el suyo. */}
+                      <PhoneInput
+                        key={form.country}
+                        defaultCountry={form.country || undefined}
+                        value={form.phone}
+                        onChange={(v) => set({ phone: v })}
+                        onCountryChange={(c: any) =>
+                          set({
+                            phoneCountry:
+                              c?.code || c?.name || paisDeLaEmpresa(),
+                          })
+                        }
+                      />
+                      {form.phone && !phoneValid && (
+                        <p
+                          className="text-xs"
+                          style={{ color: "var(--bad-text)" }}
+                        >
+                          {t(
+                            "ui.OnboardingWizard.numeroDeTelefonoInvalido",
+                            "Número de teléfono inválido.",
+                          )}
+                        </p>
+                      )}
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>
+                        {t(
+                          "ui.OnboardingWizard.correoElectronico",
+                          "Correo electrónico",
+                        )}{" "}
+                        <span style={{ color: "var(--bad-text)" }}>*</span>
+                      </Label>
+                      <Input
+                        placeholder={t("ui.OnboardingWizard.correoEmpresaCom")}
+                        type="email"
+                        value={form.email}
+                        onChange={(e) => set({ email: e.target.value })}
+                      />
+                      {form.email && !emailValid && (
+                        <p
+                          className="text-xs"
+                          style={{ color: "var(--bad-text)" }}
+                        >
+                          {t(
+                            "ui.OnboardingWizard.correoElectronicoInvalido",
+                            "Correo electrónico inválido.",
+                          )}
+                        </p>
+                      )}
+                    </div>
+                  </div>
 
-                      if (tz) {
-                        set({ timezone: tz });
-                        toast.success(
-                          t("ui.OnboardingWizard.zonaDetectada", {
-                            defaultValue: "Zona horaria detectada: {{tz}}",
-                            tz,
-                          }),
-                        );
-                      } else
-                        toast.info(
-                          t("ui.OnboardingWizard.noSePudoDetectarSeleccionala"),
-                        );
-                    }}
-                  >
-                    {t(
-                      "ui.OnboardingWizard.detectarPorDireccion",
-                      "Detectar por dirección",
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <Label>
+                        {t("ui.OnboardingWizard.direccion", "Dirección")}{" "}
+                        <span style={{ color: "var(--bad-text)" }}>*</span>
+                      </Label>
+                      <button
+                        className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+                        type="button"
+                        onClick={() => setShowManualAddress((v) => !v)}
+                      >
+                        <Edit className="h-3 w-3" />
+                        {showManualAddress
+                          ? t(
+                              "onboarding.wizard.autoSearch",
+                              "Búsqueda automática",
+                            )
+                          : t(
+                              "onboarding.wizard.manualEntry",
+                              "Ingresar manualmente",
+                            )}
+                      </button>
+                    </div>
+
+                    {!showManualAddress ? (
+                      <AddressAutocomplete
+                        key={form.country}
+                        showMap
+                        countryCodes={
+                          form.country
+                            ? [form.country.toLowerCase()]
+                            : undefined
+                        }
+                        defaultValue={form.address}
+                        initialLat={
+                          form.latitude ? parseFloat(form.latitude) : undefined
+                        }
+                        initialLng={
+                          form.longitude
+                            ? parseFloat(form.longitude)
+                            : undefined
+                        }
+                        mapHeight="220px"
+                        placeholder={t(
+                          "ui.OnboardingWizard.buscarDireccion",
+                          "Buscar dirección...",
+                        )}
+                        paisPorDefecto={form.country || undefined}
+                        /* Sin dirección todavía, la zona es la del centro del
+                       país; en cuanto hay dirección, la de la dirección. */
+                        onCentroDelPais={(lat, lng) => {
+                          const tz = zonaPorCoordenadas(lat, lng);
+
+                          setForm((f) =>
+                            f.latitude || !tz ? f : { ...f, timezone: tz },
+                          );
+                        }}
+                        onAddressSelect={(data: AddressComponents) => {
+                          const tz =
+                            zonaPorCoordenadas(data.latitude, data.longitude) ||
+                            tzFromText(data.country) ||
+                            form.timezone;
+
+                          set({
+                            address: data.address || form.address,
+                            city: data.city || form.city,
+                            postalCode: data.postalCode || form.postalCode,
+                            latitude: String(data.latitude ?? ""),
+                            longitude: String(data.longitude ?? ""),
+                            timezone: tz,
+                          });
+                        }}
+                      />
+                    ) : (
+                      <Input
+                        placeholder={t(
+                          "ui.OnboardingWizard.direccionCompleta",
+                          "Dirección completa",
+                        )}
+                        value={form.address}
+                        onChange={(e) => set({ address: e.target.value })}
+                      />
                     )}
-                  </button>
+                  </div>
+
+                  {showManualAddress && (
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <div className="space-y-1.5">
+                        <Label>{t("comun.ciudad")}</Label>
+                        <Input
+                          value={form.city}
+                          onChange={(e) => set({ city: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label>
+                          {t(
+                            "ui.OnboardingWizard.codigoPostal",
+                            "Código postal",
+                          )}
+                        </Label>
+                        <Input
+                          value={form.postalCode}
+                          onChange={(e) => set({ postalCode: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="space-y-1.5">
+                      <Label>
+                        {t("onboarding.wizard.review.timezone", "Zona horaria")}{" "}
+                        <span style={{ color: "var(--bad-text)" }}>*</span>
+                      </Label>
+                      <Combobox
+                        aria-label={t(
+                          "onboarding.wizard.review.timezone",
+                          "Zona horaria",
+                        )}
+                        options={opcionesZona}
+                        placeholder={t(
+                          "ui.OnboardingWizard.seleccionarZonaHoraria",
+                        )}
+                        value={form.timezone}
+                        onChange={(v) => set({ timezone: v })}
+                      />
+                      <button
+                        className="text-xs font-medium text-primary hover:underline"
+                        type="button"
+                        onClick={() => {
+                          const tz =
+                            zonaPorCoordenadas(form.latitude, form.longitude) ||
+                            tzFromText(form.country, form.address);
+
+                          if (tz) {
+                            set({ timezone: tz });
+                            toast.success(
+                              t("ui.OnboardingWizard.zonaDetectada", {
+                                defaultValue: "Zona horaria detectada: {{tz}}",
+                                tz,
+                              }),
+                            );
+                          } else
+                            toast.info(
+                              t(
+                                "ui.OnboardingWizard.noSePudoDetectarSeleccionala",
+                              ),
+                            );
+                        }}
+                      >
+                        {t(
+                          "ui.OnboardingWizard.detectarPorDireccion",
+                          "Detectar por dirección",
+                        )}
+                      </button>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>
+                        {t("onboarding.wizard.review.website", "Sitio web")}{" "}
+                        <span className="text-muted-foreground text-xs font-normal">
+                          ({t("ui.OnboardingWizard.opcional", "opcional")})
+                        </span>
+                      </Label>
+                      <Input
+                        placeholder={t("comun.empresaCom")}
+                        type="url"
+                        value={form.website}
+                        onChange={(e) => set({ website: e.target.value })}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-1.5">
-                  <Label>
-                    {t("onboarding.wizard.review.website", "Sitio web")}{" "}
-                    <span className="text-muted-foreground text-xs font-normal">
-                      ({t("ui.OnboardingWizard.opcional", "opcional")})
-                    </span>
-                  </Label>
-                  <Input
-                    placeholder={t("comun.empresaCom")}
-                    type="url"
-                    value={form.website}
-                    onChange={(e) => set({ website: e.target.value })}
-                  />
-                </div>
-              </div>
+              )}
+
+              {step === 3 && (
+                <ReviewStep
+                  days={days}
+                  form={form}
+                  terminos={terminos}
+                  logoPreview={logoPreview}
+                  trialEnd={trialEnd}
+                  onEdit={(s) => setStep(s)}
+                />
+              )}
             </div>
-          )}
 
-          {step === 3 && (
-            <ReviewStep
-              days={days}
-              form={form}
-              terminos={terminos}
-              logoPreview={logoPreview}
-              trialEnd={trialEnd}
-              onEdit={(s) => setStep(s)}
-            />
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-border bg-muted/30 px-4 py-3.5 sm:px-6">
-          {/* Obligatorio: la única salida es cerrar la sesión (quien se
+            {/* Footer */}
+            <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-border px-5 py-4 sm:px-7">
+              {/* Obligatorio: la única salida es cerrar la sesión (quien se
               equivocó de cuenta no puede quedarse encerrado aquí). */}
-          <button
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
-            disabled={submitting}
-            type="button"
-            onClick={obligatorio ? () => void signOut() : snoozeAndClose}
-          >
-            {obligatorio
-              ? t("ui.OnboardingWizard.cerrarSesion", "Cerrar sesión")
-              : t(
-                  "ui.OnboardingWizard.completarMasTarde",
-                  "Completar más tarde",
-                )}
-          </button>
-
-          <div className="ml-auto flex items-center gap-2">
-            {step > 0 && (
-              <Button
+              <button
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
                 disabled={submitting}
                 type="button"
-                variant="outline"
-                onClick={back}
+                onClick={obligatorio ? () => void signOut() : snoozeAndClose}
               >
-                <ArrowLeft className="mr-1.5 h-4 w-4" />{" "}
-                {t("actions.back", "Atrás")}
-              </Button>
-            )}
-            {step === 0 && (
-              <Button className="px-6" type="button" onClick={next}>
-                {t("onboarding.wizard.start", "Comenzar")}{" "}
-                <ArrowRight className="ml-1.5 h-4 w-4" />
-              </Button>
-            )}
-            {step > 0 && step < STEPS.length - 1 && (
-              <Button
-                className="px-6"
-                disabled={!canAdvance(step)}
-                type="button"
-                onClick={next}
-              >
-                {t("onboarding.wizard.continue", "Continuar")}{" "}
-                <ArrowRight className="ml-1.5 h-4 w-4" />
-              </Button>
-            )}
-            {step === STEPS.length - 1 && (
-              <Button
-                className="px-6"
-                disabled={submitting || !step2Valid || !step3Valid}
-                type="button"
-                onClick={handleFinish}
-              >
-                {submitting ? (
-                  <>
-                    <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />{" "}
-                    {t("onboarding.wizard.saving", "Guardando...")}
-                  </>
-                ) : (
-                  <>
-                    <Check className="mr-1.5 h-4 w-4" />{" "}
-                    {t(
-                      "ui.OnboardingWizard.finalizarConfiguracion",
-                      "Finalizar configuración",
+                {obligatorio
+                  ? t("ui.OnboardingWizard.cerrarSesion", "Cerrar sesión")
+                  : t(
+                      "ui.OnboardingWizard.completarMasTarde",
+                      "Completar más tarde",
                     )}
-                  </>
+              </button>
+
+              <div className="ml-auto flex items-center gap-2">
+                {step > 0 && (
+                  <Button
+                    disabled={submitting}
+                    type="button"
+                    variant="outline"
+                    onClick={back}
+                  >
+                    <ArrowLeft className="mr-1.5 h-4 w-4" />{" "}
+                    {t("actions.back", "Atrás")}
+                  </Button>
                 )}
-              </Button>
-            )}
-          </div>
+                {step === 0 && (
+                  <Button className="px-6" type="button" onClick={next}>
+                    {t("onboarding.wizard.start", "Comenzar")}{" "}
+                    <ArrowRight className="ml-1.5 h-4 w-4" />
+                  </Button>
+                )}
+                {step > 0 && step < STEPS.length - 1 && (
+                  <Button
+                    className="px-6"
+                    disabled={!canAdvance(step)}
+                    type="button"
+                    onClick={next}
+                  >
+                    {t("onboarding.wizard.continue", "Continuar")}{" "}
+                    <ArrowRight className="ml-1.5 h-4 w-4" />
+                  </Button>
+                )}
+                {step === STEPS.length - 1 && (
+                  <Button
+                    className="px-6"
+                    disabled={submitting || !step2Valid || !step3Valid}
+                    type="button"
+                    onClick={handleFinish}
+                  >
+                    {submitting ? (
+                      <>
+                        <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />{" "}
+                        {t("onboarding.wizard.saving", "Guardando...")}
+                      </>
+                    ) : (
+                      <>
+                        <Check className="mr-1.5 h-4 w-4" />{" "}
+                        {t(
+                          "ui.OnboardingWizard.finalizarConfiguracion",
+                          "Finalizar configuración",
+                        )}
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
+            </div>
+          </section>
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+// ── La marca del anfitrión ──────────────────────────────────────────────────
+/**
+ * El escudo de la plataforma, o el logo del socio en sus empresas: una empresa
+ * de un socio NUNCA ve nuestro arte (ver `puedeUsarArteDePlataforma`). Sin
+ * ninguno de los dos, el icono neutro de empresa.
+ */
+function MarcaDelAsistente({ tam }: { tam: number }) {
+  const marca: any = useWhiteLabel();
+  const src = marca?.puedeUsarArteDePlataforma
+    ? "/assets/logo/escudo.png"
+    : marca?.logo || null;
+
+  if (!src)
+    return (
+      <span
+        className="grid place-items-center rounded-xl"
+        style={{
+          width: tam,
+          height: tam,
+          background: "var(--brand)",
+          color: "var(--brand-ink)",
+        }}
+      >
+        <Building2 style={{ width: tam * 0.5, height: tam * 0.5 }} />
+      </span>
+    );
+
+  return (
+    <img
+      alt=""
+      className="object-contain"
+      draggable={false}
+      src={src}
+      style={{
+        width: tam,
+        height: tam,
+        filter: "drop-shadow(0 8px 18px var(--brand-glow))",
+      }}
+    />
   );
 }
 
@@ -1152,17 +1399,7 @@ function WelcomeStep({
   ];
 
   return (
-    <div className="space-y-5 text-center animate-in fade-in-50 duration-300">
-      <div
-        className="mx-auto grid h-16 w-16 place-items-center rounded-2xl"
-        style={{
-          background: "var(--brand)",
-          color: "var(--brand-ink)",
-          boxShadow: "0 10px 30px -10px var(--brand-glow)",
-        }}
-      >
-        <Sparkles className="h-8 w-8" />
-      </div>
+    <div className="space-y-5 text-left animate-in fade-in-50 duration-300">
       <div className="space-y-1.5">
         <h2 className="text-xl font-bold text-foreground">
           {t("ui.OnboardingWizard.teDamosLaBienvenidaA", {
@@ -1172,7 +1409,7 @@ function WelcomeStep({
         </h2>
         {obligatorio && (
           <p
-            className="mx-auto max-w-md text-sm font-medium"
+            className="text-sm font-medium"
             style={{ color: "var(--brand-text)" }}
           >
             {t("ui.OnboardingWizard.obligatorioAviso", {
@@ -1181,7 +1418,7 @@ function WelcomeStep({
             })}
           </p>
         )}
-        <p className="mx-auto max-w-md text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           {t(
             "onboarding.wizard.welcome.intro",
             "En menos de 2 minutos dejaremos lista tu empresa para que empieces a gestionar tus vigilantes, turnos y rondas.",
@@ -1189,7 +1426,7 @@ function WelcomeStep({
         </p>
       </div>
 
-      <div className="mx-auto flex max-w-sm flex-col items-center gap-1.5">
+      <div className="flex flex-col items-start gap-1.5">
         {/* «Prueba gratis» SÓLO con días de prueba por delante. Una empresa
             con la prueba vencida (o pausada por su proveedor) lo veía igual —
             lo destapó la E2E de facturas del socio, 2026-09-29. La prueba de
@@ -1222,7 +1459,7 @@ function WelcomeStep({
 
       {children}
 
-      <div className="mx-auto max-w-md space-y-2.5 rounded-xl border border-border bg-muted/30 p-4 text-left">
+      <div className="space-y-2.5 rounded-xl border border-border bg-muted/30 p-4 text-left">
         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           {t("onboarding.wizard.welcome.weWillSetUp", "Vamos a configurar")}
         </p>
