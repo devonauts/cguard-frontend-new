@@ -103,6 +103,14 @@ export default function AuthShell({
     return () => clearTimeout(timer);
   }, [splash]);
 
+  /* La identidad YA contrastada contra la empresa de la sesión: en el árbol
+     autenticado la sirve `IdentidadEfectivaProvider`, y antes de entrar es la
+     del anfitrión. Aquí sólo se lee un dato ya resuelto.
+     VA ANTES DEL `return` de la cortina: leída después, el primer render
+     (cortina) llamaba a 15 hooks y el siguiente a 16, y React avisaba del
+     cambio de orden al cerrar sesión. */
+  const marcaDelAnfitrion = useWhiteLabel();
+
   if (cargando) return <SplashScreen />;
 
   const esCampo = variant === "field";
@@ -136,11 +144,8 @@ export default function AuthShell({
           { icon: BarChart3, label: t("auth.landing.tag_analytics") },
         ]);
 
-  /* La identidad YA contrastada contra la empresa de la sesión: en el árbol
-     autenticado la sirve `IdentidadEfectivaProvider`, y antes de entrar es la
-     del anfitrión. Aquí sólo se lee un dato ya resuelto. */
-  const marcaDelAnfitrion = useWhiteLabel();
-  const { platformName: nombreDeMarca, showPlatformAttribution } = marcaDelAnfitrion;
+  const { platformName: nombreDeMarca, showPlatformAttribution } =
+    marcaDelAnfitrion;
 
   const cintillo =
     eyebrow ??
@@ -155,14 +160,14 @@ export default function AuthShell({
           defaultValue:
             "Vuelve a entrar a la app C-Guard Pro con tu nueva contraseña.",
         })
-      /* ── EL NOMBRE DEL PRODUCTO LO PONE EL ANFITRIÓN ────────────────────
+      : /* ── EL NOMBRE DEL PRODUCTO LO PONE EL ANFITRIÓN ────────────────────
          La frase ya venía con un hueco `{{product}}` en los ocho idiomas —con
          la estructura de cada lengua intacta—, pero aquí se rellenaba con
          «C-GUARD» escrito a mano. Así que en el anfitrión de un socio la
          pantalla de acceso decía en voz alta de quién es la plataforma que su
          cliente cree suya. Se rellena con el nombre resuelto; si no hubiera
          ninguno, no se pinta la frase en vez de poner el nuestro. */
-      : nombreDeMarca
+        nombreDeMarca
         ? t("auth.landing.desc", { product: nombreDeMarca })
         : "");
 
@@ -276,20 +281,23 @@ export default function AuthShell({
         >
           {!esMarcaDeSocio(marcaDelAnfitrion)
             ? t("auth.landing.copyright", {
-                defaultValue: "© {{year}} C-GUARD. Todos los derechos reservados.",
+                defaultValue:
+                  "© {{year}} C-GUARD. Todos los derechos reservados.",
                 year: new Date().getFullYear(),
               })
             : showPlatformAttribution && nombreDeMarca
-              /* The partner's name as an authorized reseller — and nothing of
+              ? /* The partner's name as an authorized reseller — and nothing of
                  ours: a partner's customers never read our name. */
-              ? t("auth.landing.copyright_partner", {
-                  defaultValue: "© {{year}} {{marca}} · Distribuidor autorizado",
+                t("auth.landing.copyright_partner", {
+                  defaultValue:
+                    "© {{year}} {{marca}} · Distribuidor autorizado",
                   year: new Date().getFullYear(),
                   marca: nombreDeMarca,
                 })
               : nombreDeMarca
                 ? t("auth.footer_copyright", {
-                    defaultValue: "© {{year}} {{marca}}. Todos los derechos reservados.",
+                    defaultValue:
+                      "© {{year}} {{marca}}. Todos los derechos reservados.",
                     year: new Date().getFullYear(),
                     marca: nombreDeMarca,
                   })

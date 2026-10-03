@@ -77,6 +77,97 @@ export function borrarAlmacenamientoDeSesion(): void {
 }
 
 /**
+ * Lo que `localStorage.clear()` no alcanza, al cerrar sesión.
+ *
+ * Pedido del dueño (2026-10-03): «no debe quedar nada con signout». Además del
+ * almacenamiento ya vaciado, quedaban tres cajones:
+ *   - las cookies visibles desde JS de este dominio (la de traducción de
+ *     Google, las de analítica…);
+ *   - TODAS las bases IndexedDB, no sólo la caché offline propia: Firebase y
+ *     otras librerías crean las suyas;
+ *   - Cache Storage, salvo el precache del service worker, que es el código de
+ *     la app (no datos de nadie) y es lo que permite abrirla sin red.
+ * Va con un techo de tiempo: un navegador que no responde no puede dejar a la
+ * persona atrapada en la sesión.
+ */
+export async function borrarRestoDelNavegador(techoMs = 1500): Promise<void> {
+  const tareas: Promise<unknown>[] = [];
+
+  try {
+    const host = window.location.hostname;
+    const partes = host.split(".");
+    // El dominio y sus padres (app.cguardpro.com → cguardpro.com), que es donde
+    // suelen colgar las cookies compartidas.
+    const dominios = [""].concat(
+      partes
+        .map((_, i) => partes.slice(i).join("."))
+        .filter((d) => d.includes(".")),
+    );
+
+    for (const c of document.cookie.split(";")) {
+      const nombre = c.split("=")[0]?.trim();
+
+      if (!nombre) continue;
+      for (const d of dominios) {
+        document.cookie = `${nombre}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/${d ? `; domain=${d}` : ""}`;
+      }
+    }
+  } catch {
+    /* sin document */
+  }
+
+  try {
+    const idb: any = (globalThis as any).indexedDB;
+
+    if (idb?.databases) {
+      tareas.push(
+        idb.databases().then((dbs: Array<{ name?: string }>) =>
+          Promise.all(
+            dbs
+              .filter((d) => d.name)
+              .map(
+                (d) =>
+                  new Promise<void>((ok) => {
+                    const r = idb.deleteDatabase(d.name);
+
+                    r.onsuccess = r.onerror = r.onblocked = () => ok();
+                  }),
+              ),
+          ),
+        ),
+      );
+    }
+  } catch {
+    /* navegador sin IndexedDB */
+  }
+
+  try {
+    const cs: any = (globalThis as any).caches;
+
+    if (cs?.keys) {
+      tareas.push(
+        cs
+          .keys()
+          .then((nombres: string[]) =>
+            Promise.all(
+              nombres
+                .filter((n) => !n.includes("precache"))
+                .map((n) => cs.delete(n)),
+            ),
+          ),
+      );
+    }
+  } catch {
+    /* sin Cache Storage */
+  }
+
+  await Promise.race([
+    Promise.allSettled(tareas),
+    new Promise((ok) => setTimeout(ok, techoMs)),
+  ]);
+}
+
+/**
  * Higiene de máquina compartida: si el usuario que ENTRA no es el mismo que
  * dejó datos offline (caché IDB, cola de escrituras, perfil), se limpian antes
  * de hidratar. El signOut ya limpia — esto cubre los cierres que NO pasan por
@@ -651,7 +742,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         ),
       );
     } catch (err: any) {
-      const message = err?.message || i18n.t("auth.login_failed", "Error al iniciar sesión");
+      const message =
+        err?.message || i18n.t("auth.login_failed", "Error al iniciar sesión");
 
       // Surface rate-limit errors more clearly
       if (err && err.status === 429) {
@@ -673,8 +765,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (codigo === "auth.emailNotVerified") {
         return { success: false, error: message, needVerification: true };
       }
-      if (codigo === "auth.chooseAccount" && Array.isArray(err?.data?.accounts)) {
-        return { success: false, error: message, chooseAccount: err.data.accounts };
+      if (
+        codigo === "auth.chooseAccount" &&
+        Array.isArray(err?.data?.accounts)
+      ) {
+        return {
+          success: false,
+          error: message,
+          chooseAccount: err.data.accounts,
+        };
       }
       setError(message);
 
@@ -691,7 +790,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       return { success: true };
     } catch (err: any) {
-      const m = err.message || i18n.t("ui.AuthContext.errorAlRegistrarse", "Error al registrarse");
+      const m =
+        err.message ||
+        i18n.t("ui.AuthContext.errorAlRegistrarse", "Error al registrarse");
 
       setError(m);
 
@@ -769,7 +870,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         clearQueue();
       } catch {}
       try {
-        void clearPersistedCache();
+        // Esperada: vacía su base abriéndola, y si el barrido final corriera
+        // antes, la volvería a crear detrás.
+        await Promise.race([
+          clearPersistedCache(),
+          new Promise((ok) => setTimeout(ok, 1000)),
+        ]);
       } catch {}
       // El contador del icono es de la sesión que se va.
       try {
@@ -791,6 +897,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // cual. Es exactamente lo que se vio, un color elegido en otra empresa
       // apareciendo en Ecuaseguridad, y por eso no se arregla borrando claves.
       // Una carga limpia deja a todos los proveedores partiendo de cero.
+      // ── EL BARRIDO VA EL ÚLTIMO ─────────────────────────────────────────────
+      // Varias limpiezas de arriba ESCRIBEN al limpiar —la cola guarda una
+      // lista vacía, el selector de empresas otra, la caché offline abre su
+      // base para vaciarla— y el `tenantId` lo vuelve a poner un efecto al
+      // reiniciarse el estado. Vaciar al final, justo antes de recargar, es lo
+      // que deja el navegador de verdad sin nada de esta sesión.
+      try {
+        borrarAlmacenamientoDeSesion();
+        await borrarRestoDelNavegador();
+      } catch {
+        /* best-effort: la recarga de abajo sigue */
+      }
       try {
         window.location.replace("/login");
       } catch {
@@ -901,7 +1019,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       return { success: true };
     } catch (err: any) {
-      const message = err?.message ||
+      const message =
+        err?.message ||
         i18n.t(
           "ui.AuthContext.errorAlIniciarSesionConToken",
           "Error al iniciar sesión con token",
