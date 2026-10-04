@@ -6,9 +6,10 @@ import {
   useRef,
   useState,
   ReactNode,
+  lazy,
+  Suspense,
 } from "react";
 
-import OnboardingWizard from "./OnboardingWizard";
 import OnboardingBanner from "./OnboardingBanner";
 import {
   extractOnboardingTenant,
@@ -18,6 +19,12 @@ import {
 } from "./onboardingUtils";
 
 import { useAuth } from "@/contexts/AuthContext";
+
+/* El asistente (61 kB + el autocompletado de direcciones y la tabla de husos)
+   iba en el archivo de arranque de TODAS las sesiones, y sólo lo ve una empresa
+   que aún no ha terminado de configurarse. Se descarga la primera vez que se
+   abre. */
+const OnboardingWizard = lazy(() => import("./OnboardingWizard"));
 
 interface OnboardingContextValue {
   tenant: OnboardingTenant | null;
@@ -76,6 +83,10 @@ function userIsSuperadmin(u: any): boolean {
 export function OnboardingProvider({ children }: { children: ReactNode }) {
   const { user, loading, refreshProfile, isAdmin, hasPermission } = useAuth();
   const [wizardOpen, setWizardOpen] = useState(false);
+  // Una vez abierto se queda montado (cerrarlo conserva lo que se escribió).
+  const asistenteAbierto = useRef(false);
+
+  if (wizardOpen) asistenteAbierto.current = true;
   const autoOpenedRef = useRef(false);
 
   const tenant = useMemo(() => extractOnboardingTenant(user), [user]);
@@ -145,15 +156,17 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         />
       )}
       {children}
-      {!isSuper && tenant?.id && (
-        <OnboardingWizard
-          defaultEmail={user?.email}
-          obligatorio={obligatorio}
-          open={wizardOpen}
-          tenant={tenant}
-          onOpenChange={setWizardOpen}
-          onRefresh={refreshProfile}
-        />
+      {!isSuper && tenant?.id && (wizardOpen || asistenteAbierto.current) && (
+        <Suspense fallback={null}>
+          <OnboardingWizard
+            defaultEmail={user?.email}
+            obligatorio={obligatorio}
+            open={wizardOpen}
+            tenant={tenant}
+            onOpenChange={setWizardOpen}
+            onRefresh={refreshProfile}
+          />
+        </Suspense>
       )}
     </OnboardingContext.Provider>
   );

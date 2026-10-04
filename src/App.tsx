@@ -14,9 +14,6 @@ import { ArrowLeftCircle } from "lucide-react";
 
 import AppErrorBoundary from "./components/AppErrorBoundary";
 import Login from "./pages/auth/login";
-import ForgotPassword from "./pages/auth/forgot-password";
-import ResetPassword from "./pages/auth/reset-password";
-import AccesoSoporte from "./pages/auth/AccesoSoporte";
 import BarraDeSoporte from "./components/soporte/BarraDeSoporte";
 import SoporteEnVivo from "./components/soporte/SoporteEnVivo";
 const DashboardPage = lazy(
@@ -38,9 +35,17 @@ import { LanguageProvider } from "./contexts/LanguageContext";
 import { queryClient } from "./lib/queryClient";
 import { FichaPersonaProvider } from "./layouts/FichaPersona";
 import "./i18n";
-import Register from "./pages/auth/register";
-import VerifyEmail from "./pages/auth/verify-email";
-import AcceptInvitation from "./pages/auth/accept-invitation";
+
+/* Sólo `Login` va en el archivo de arranque: es la primera pantalla de quien
+   no tiene sesión. El resto de pantallas de acceso (registro, recuperar,
+   invitación…) las abre una fracción de las visitas y pesaban ~100 kB que
+   descargaba todo el mundo, con sesión o sin ella. */
+const ForgotPassword = lazy(() => import("./pages/auth/forgot-password"));
+const ResetPassword = lazy(() => import("./pages/auth/reset-password"));
+const AccesoSoporte = lazy(() => import("./pages/auth/AccesoSoporte"));
+const Register = lazy(() => import("./pages/auth/register"));
+const VerifyEmail = lazy(() => import("./pages/auth/verify-email"));
+const AcceptInvitation = lazy(() => import("./pages/auth/accept-invitation"));
 
 const ProfileUser = lazy(
   () => import("./pages/admin/Configuration/ProfileUserPage"),

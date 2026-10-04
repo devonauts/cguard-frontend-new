@@ -1,23 +1,36 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import {
+  createContext,
+  lazy,
+  Suspense,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+
 import Header from "@/components/header";
 import Sidebar from "@/components/sidebar";
 import BarraInferiorMovil from "@/components/BarraInferiorMovil";
 import { useAuth } from "@/contexts/AuthContext";
 import { setTenantId } from "@/lib/api/clientService";
 import { setTenantId as setCategoryTenantId } from "@/lib/api/categoryService";
-import { useLocation, useNavigate } from "react-router-dom";
-import TenantJoinModal from "@/components/TenantJoinModal";
 import TrialBanner from "@/components/TrialBanner";
 import DemoDataBanner from "@/components/DemoDataBanner";
 import PlatformAnnouncements from "@/components/PlatformAnnouncements";
 import AnuncioEmergente from "@/components/AnuncioEmergente";
 import Breadcrumb from "@/components/ui/breadcrumb";
-import { RadioRealtimeProvider } from "@/components/radio/RadioRealtimeProvider";
 import RadioVoiceWidget from "@/components/radio/RadioVoiceWidget";
-import VigiaWidget from "@/components/vigia/VigiaWidget";
 import VisitBeacon from "@/components/VisitBeacon";
 import OnboardingProvider from "@/components/onboarding/OnboardingProvider";
 import tenantService from "@/services/tenant.service";
+
+/* Fuera del archivo de arranque: el asistente (52 kB) se descarga cuando el
+   armazón ya está pintado, y el modal de «crea o únete a una empresa» (41 kB)
+   sólo si de verdad hay que enseñarlo. */
+const VigiaWidget = lazy(() => import("@/components/vigia/VigiaWidget"));
+const TenantJoinModal = lazy(() => import("@/components/TenantJoinModal"));
+
 import {
   cacheTenantLocation,
   cacheTenantCountry,
@@ -56,7 +69,9 @@ const YaHayArmazon = createContext(false);
 
 export default function AppLayout({ children }: AppLayoutProps) {
   const anidado = useContext(YaHayArmazon);
+
   if (anidado) return <>{children}</>;
+
   return (
     <YaHayArmazon.Provider value={true}>
       <AppLayoutInterno>{children}</AppLayoutInterno>
@@ -66,9 +81,11 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
 function AppLayoutInterno({ children }: AppLayoutProps) {
   const alreadyInShell = useContext(AppLayoutMountedContext);
+
   // Nested (page-level) AppLayout → passthrough. No hooks below run here, so the
   // persistent shell above owns all the shell state/effects exactly once.
   if (alreadyInShell) return <>{children}</>;
+
   return <AppLayoutShell>{children}</AppLayoutShell>;
 }
 
@@ -99,7 +116,9 @@ function AppLayoutShell({ children }: AppLayoutProps) {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const isMobile = window.matchMedia("(max-width: 1023px)").matches;
+
     document.body.style.overflow = isMobile && sidebarOpen ? "hidden" : "";
+
     return () => {
       document.body.style.overflow = "";
     };
@@ -109,7 +128,9 @@ function AppLayoutShell({ children }: AppLayoutProps) {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const handleResize = () => setSidebarOpen(window.innerWidth >= 1024);
+
     window.addEventListener("resize", handleResize);
+
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
@@ -117,9 +138,11 @@ function AppLayoutShell({ children }: AppLayoutProps) {
   useEffect(() => {
     try {
       let tenantId: string | null = null;
+
       if (user) {
         if (Array.isArray(user.tenants) && user.tenants.length > 0) {
           const t = user.tenants[0];
+
           tenantId =
             t.tenantId ||
             t.id ||
@@ -161,6 +184,7 @@ function AppLayoutShell({ children }: AppLayoutProps) {
           (user.tenant ||
             (Array.isArray(user.tenants) && user.tenants.length > 0))),
     );
+
     if (!hasTenant && location.pathname !== "/dashboard") {
       navigate("/dashboard", { replace: true });
     }
@@ -185,6 +209,7 @@ function AppLayoutShell({ children }: AppLayoutProps) {
         t.id ||
         t._id ||
         (t.tenant && (t.tenant.id || t.tenant.tenantId));
+
       if (tid) return true;
     }
 
@@ -201,6 +226,7 @@ function AppLayoutShell({ children }: AppLayoutProps) {
           tu._id ||
           (tu.tenant && (tu.tenant.id || tu.tenant.tenantId));
         const status = tu.status || null;
+
         return Boolean(tid) && status !== "invited";
       });
     }
@@ -224,6 +250,7 @@ function AppLayoutShell({ children }: AppLayoutProps) {
           )
           .filter(Boolean);
       if (typeof r === "string") return [r];
+
       return [];
     };
 
@@ -237,6 +264,7 @@ function AppLayoutShell({ children }: AppLayoutProps) {
     const all = [...global, ...tenantsArr, ...singleTenant].map((s) =>
       (s || "").toString().toLowerCase(),
     );
+
     return all.some((n) => n.includes("superadmin"));
   };
 
@@ -250,9 +278,11 @@ function AppLayoutShell({ children }: AppLayoutProps) {
 
     // Derive tenantId from `user` shape
     let derived: string | null = null;
+
     try {
       if (user.tenant) {
         const t = user.tenant;
+
         derived =
           t.tenantId ||
           t.id ||
@@ -262,6 +292,7 @@ function AppLayoutShell({ children }: AppLayoutProps) {
       }
       if (!derived && Array.isArray(user.tenants) && user.tenants.length > 0) {
         const first = user.tenants[0];
+
         derived =
           first.tenantId ||
           first.id ||
@@ -283,7 +314,6 @@ function AppLayoutShell({ children }: AppLayoutProps) {
       try {
         setCategoryTenantId(derived);
       } catch {}
-
     }
   }, [user]);
 
@@ -299,12 +329,16 @@ function AppLayoutShell({ children }: AppLayoutProps) {
      petición por carga, cacheada en `localStorage`. */
   useEffect(() => {
     const id = tenantIdNow;
+
     if (!id) return;
     let vivo = true;
+
     (async () => {
       try {
         const res: any = await tenantService.findById(String(id));
-        const t = res && (res.data || res.tenant) ? res.data || res.tenant : res;
+        const t =
+          res && (res.data || res.tenant) ? res.data || res.tenant : res;
+
         if (!vivo || !t) return;
         cacheTenantLocation((t as any)?.latitude, (t as any)?.longitude);
         // La columna se llama `country` y guarda texto libre («México»,
@@ -340,6 +374,7 @@ function AppLayoutShell({ children }: AppLayoutProps) {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const isMobile = window.matchMedia("(max-width: 1023px)").matches;
+
     if (isMobile) {
       setSidebarOpen(false);
     }
@@ -383,7 +418,7 @@ function AppLayoutShell({ children }: AppLayoutProps) {
           ENTERO —cabecera y menú incluidos— y desenfocaba también el menú que
           venía a destacar. Dentro, con z-40, queda por debajo de la cabecera
           (z-50) y por encima del contenido, que es exactamente lo que hace falta. */}
-        <div className="cg-scrim-menu" aria-hidden />
+        <div aria-hidden className="cg-scrim-menu" />
         {/* La cabecera RESERVA la muesca con `padding-top` y crece lo mismo en
           `height`: con `box-sizing: border-box` su caja de contenido sigue
           midiendo 3,5rem exactas, así que los botones no se mueven ni un píxel.
@@ -395,7 +430,7 @@ function AppLayoutShell({ children }: AppLayoutProps) {
             sidebarOpen ? "lg:ml-[17rem]" : "lg:ml-16",
           ].join(" ")}
         >
-          <Header toggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} />
+          <Header sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
         </div>
 
         {/* 17rem es el menú SOLO: la barra ya no lleva un riel de secciones de
@@ -472,17 +507,23 @@ function AppLayoutShell({ children }: AppLayoutProps) {
         {/* VigIA — el asistente, abajo a la derecha. Solo para el equipo (el
           armazón del CRM ya es de staff); las acciones corren con los permisos
           del usuario y toda escritura se confirma en el chat. */}
-        <VigiaWidget />
+        <Suspense fallback={null}>
+          <VigiaWidget />
+        </Suspense>
 
         {/* Toaster lives once globally in main.tsx — a second one here made every
           toast (notifications included) render twice. */}
 
-        <TenantJoinModal
-          open={showTenantModal}
-          onOpenChange={() => {
-            /* noop - modal controlled by presence */
-          }}
-        />
+        {showTenantModal && (
+          <Suspense fallback={null}>
+            <TenantJoinModal
+              open={showTenantModal}
+              onOpenChange={() => {
+                /* noop - modal controlled by presence */
+              }}
+            />
+          </Suspense>
+        )}
       </div>
     </AppLayoutMountedContext.Provider>
   );
