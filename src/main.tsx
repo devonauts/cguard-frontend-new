@@ -42,6 +42,7 @@ import {
   recargarAhora,
   registrarActualizador,
 } from "@/lib/recarga/recarga";
+import { idiomaListo } from "@/i18n";
 import { startCachePersistence } from "@/lib/offline/persistCache";
 import { precargarDashboard } from "@/pages/admin/dashboard/control-center/consultas";
 import { adelantarPerfil } from "@/lib/perfilDeLaCuenta";
@@ -137,7 +138,15 @@ instalarIdiomaEnFetch();
 iniciarCentinela();
 
 /* La vuelta de Gusto dentro de su ventanita: se cierra sin montar el CRM. */
-if (!atenderVueltaDeGusto())
+/* MONTAR ESPERA AL IDIOMA — CON LÍMITE.
+   El diccionario ya no viene dentro de este archivo (ver `src/i18n.ts`): llega
+   aparte, y `index.html` lo empieza a bajar a la vez que el código. Montar sin
+   él pintaría las claves en crudo, así que se le espera… como mucho
+   ESPERA_IDIOMA_MS. Nada bloquea el montaje sin plazo: si la red no contesta
+   se monta igual y el texto se repinta cuando llegue. */
+const ESPERA_IDIOMA_MS = 3000;
+const montar = () => {
+  if (atenderVueltaDeGusto()) return;
   ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
       {/* LA MARCA PRIMERO. `WhiteLabelProvider` no pinta a sus hijos hasta que ha
@@ -173,3 +182,17 @@ if (!atenderVueltaDeGusto())
       </WhiteLabelProvider>
     </React.StrictMode>,
   );
+};
+let montado = false;
+const montarUnaVez = () => {
+  if (montado) return;
+  montado = true;
+  try {
+    montar();
+  } catch (e) {
+    console.error("[arranque] no se pudo montar:", e);
+  }
+};
+
+setTimeout(montarUnaVez, ESPERA_IDIOMA_MS);
+idiomaListo.then(montarUnaVez, montarUnaVez);

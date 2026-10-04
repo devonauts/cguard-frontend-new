@@ -4,6 +4,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
 import { sinComentariosHtml } from "./build/sinComentariosHtml";
+import { precargaDeIdioma } from "./build/precargaDeIdioma";
 
 /* En producción nginx pone la API detrás del MISMO origen (`/api`), y hay dos
    peticiones que cuentan con eso: `/api/platform/context` (la marca del
@@ -32,6 +33,7 @@ export default defineConfig({
     tsconfigPaths(),
     tailwindcss(),
     sinComentariosHtml(),
+    precargaDeIdioma(),
     // ── PWA / offline ───────────────────────────────────────────────────────
     // Convierte el CRM en app INSTALABLE (Chrome/Edge "Instalar aplicación" en
     // Mac/Windows/Linux) y le da arranque sin red: el service worker pre-cachea
