@@ -16027,6 +16027,29 @@
       "sinConectar": "O Gusto não está conectado",
       "sinConectarTexto": "Conecte sua conta do Gusto em Ajustes › Conexões e API e vincule sua equipe. Depois, as horas aprovadas são enviadas daqui.",
       "noDisponible": "O Gusto só está disponível para empresas dos Estados Unidos."
+    },
+    "SesionesActivas": {
+      "titulo": "Onde você está conectado",
+      "esteDispositivo": "Este dispositivo",
+      "ahora": "Ativa agora",
+      "canalWeb": "Painel web",
+      "canalWorker": "App do vigilante",
+      "canalSupervisor": "App do supervisor",
+      "canalClient": "App do cliente",
+      "dispositivoDesconocido": "Dispositivo não identificado",
+      "cerrarSesion": "Encerrar sessão",
+      "cerrarTodas": "Encerrar as demais",
+      "cerrarTitulo": "Encerrar esta sessão",
+      "cerrarMensaje": "A sessão em {{dispositivo}} será encerrada. Será preciso digitar a senha para entrar de novo.",
+      "cerrarTodasTitulo": "Encerrar as demais sessões",
+      "cerrarTodasMensaje": "Sua sessão será encerrada em todos os outros dispositivos. Este continua conectado.",
+      "cerrada": "Sessão encerrada nesse dispositivo.",
+      "cerradasTodas": "Sessões encerradas nos demais dispositivos.",
+      "noSePudo": "Não foi possível encerrar a sessão.",
+      "anteriores": "Dispositivos anteriores ({{count}})",
+      "motivoRevoked": "Encerrada remotamente",
+      "motivoSignout": "Encerrou a sessão",
+      "motivoSuperseded": "Substituída por outro login"
     }
   },
   "map": {

@@ -16550,6 +16550,29 @@
       "sinConectar": "Gusto ist nicht verbunden",
       "sinConectarTexto": "Verbinde dein Gusto-Konto unter Einstellungen › Verbindungen und API und verknüpfe dein Personal. Danach werden genehmigte Stunden von hier gesendet.",
       "noDisponible": "Gusto ist nur für Unternehmen in den USA verfügbar."
+    },
+    "SesionesActivas": {
+      "titulo": "Wo Sie angemeldet sind",
+      "esteDispositivo": "Dieses Gerät",
+      "ahora": "Jetzt aktiv",
+      "canalWeb": "Web-Panel",
+      "canalWorker": "Wachmann-App",
+      "canalSupervisor": "Supervisor-App",
+      "canalClient": "Kunden-App",
+      "dispositivoDesconocido": "Nicht identifiziertes Gerät",
+      "cerrarSesion": "Abmelden",
+      "cerrarTodas": "Alle anderen abmelden",
+      "cerrarTitulo": "Diese Sitzung beenden",
+      "cerrarMensaje": "Die Sitzung auf {{dispositivo}} wird beendet. Für die erneute Anmeldung ist das Passwort nötig.",
+      "cerrarTodasTitulo": "Alle anderen Sitzungen beenden",
+      "cerrarTodasMensaje": "Sie werden auf allen anderen Geräten abgemeldet. Dieses bleibt angemeldet.",
+      "cerrada": "Auf diesem Gerät abgemeldet.",
+      "cerradasTodas": "Auf allen anderen Geräten abgemeldet.",
+      "noSePudo": "Die Sitzung konnte nicht beendet werden.",
+      "anteriores": "Frühere Geräte ({{count}})",
+      "motivoRevoked": "Aus der Ferne abgemeldet",
+      "motivoSignout": "Abgemeldet",
+      "motivoSuperseded": "Durch eine andere Anmeldung ersetzt"
     }
   },
   "visitantes": {

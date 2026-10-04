@@ -16550,6 +16550,29 @@
       "sinConectar": "Gusto n’est pas connecté",
       "sinConectarTexto": "Connectez votre compte Gusto dans Paramètres › Connexions et API et liez votre personnel. Les heures approuvées s’envoient ensuite d’ici.",
       "noDisponible": "Gusto n’est disponible que pour les entreprises des États-Unis."
+    },
+    "SesionesActivas": {
+      "titulo": "Où vous êtes connecté",
+      "esteDispositivo": "Cet appareil",
+      "ahora": "Active maintenant",
+      "canalWeb": "Panneau web",
+      "canalWorker": "App de l’agent",
+      "canalSupervisor": "App du superviseur",
+      "canalClient": "App du client",
+      "dispositivoDesconocido": "Appareil non identifié",
+      "cerrarSesion": "Déconnecter",
+      "cerrarTodas": "Déconnecter les autres",
+      "cerrarTitulo": "Fermer cette session",
+      "cerrarMensaje": "La session sur {{dispositivo}} sera fermée. Il faudra saisir le mot de passe pour se reconnecter.",
+      "cerrarTodasTitulo": "Fermer les autres sessions",
+      "cerrarTodasMensaje": "Votre session sera fermée sur tous les autres appareils. Celui-ci reste connecté.",
+      "cerrada": "Session fermée sur cet appareil.",
+      "cerradasTodas": "Sessions fermées sur les autres appareils.",
+      "noSePudo": "Impossible de fermer la session.",
+      "anteriores": "Appareils précédents ({{count}})",
+      "motivoRevoked": "Fermée à distance",
+      "motivoSignout": "Déconnecté",
+      "motivoSuperseded": "Remplacée par une autre connexion"
     }
   },
   "visitantes": {

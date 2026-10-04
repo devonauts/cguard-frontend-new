@@ -16027,6 +16027,29 @@
       "sinConectar": "Gusto isn't connected",
       "sinConectarTexto": "Connect your Gusto account in Settings › Connections & API and link your staff. Then approved hours are sent from here.",
       "noDisponible": "Gusto is only available for companies in the United States."
+    },
+    "SesionesActivas": {
+      "titulo": "Where you’re signed in",
+      "esteDispositivo": "This device",
+      "ahora": "Active now",
+      "canalWeb": "Web panel",
+      "canalWorker": "Guard app",
+      "canalSupervisor": "Supervisor app",
+      "canalClient": "Client app",
+      "dispositivoDesconocido": "Unidentified device",
+      "cerrarSesion": "Sign out",
+      "cerrarTodas": "Sign out of all others",
+      "cerrarTitulo": "Sign out this session",
+      "cerrarMensaje": "The session on {{dispositivo}} will be signed out. The password will be needed to sign in again.",
+      "cerrarTodasTitulo": "Sign out of all other sessions",
+      "cerrarTodasMensaje": "You will be signed out on every other device. This one stays signed in.",
+      "cerrada": "Signed out on that device.",
+      "cerradasTodas": "Signed out on all other devices.",
+      "noSePudo": "Could not sign out the session.",
+      "anteriores": "Previous devices ({{count}})",
+      "motivoRevoked": "Signed out remotely",
+      "motivoSignout": "Signed out",
+      "motivoSuperseded": "Replaced by another sign-in"
     }
   },
   "map": {

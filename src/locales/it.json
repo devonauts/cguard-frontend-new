@@ -16550,6 +16550,29 @@
       "sinConectar": "Gusto non è collegato",
       "sinConectarTexto": "Collega il tuo account Gusto in Impostazioni › Connessioni e API e collega il personale. Poi le ore approvate si inviano da qui.",
       "noDisponible": "Gusto è disponibile solo per aziende degli Stati Uniti."
+    },
+    "SesionesActivas": {
+      "titulo": "Dove hai effettuato l’accesso",
+      "esteDispositivo": "Questo dispositivo",
+      "ahora": "Attiva ora",
+      "canalWeb": "Pannello web",
+      "canalWorker": "App della guardia",
+      "canalSupervisor": "App del supervisore",
+      "canalClient": "App del cliente",
+      "dispositivoDesconocido": "Dispositivo non identificato",
+      "cerrarSesion": "Disconnetti",
+      "cerrarTodas": "Disconnetti le altre",
+      "cerrarTitulo": "Chiudi questa sessione",
+      "cerrarMensaje": "La sessione su {{dispositivo}} verrà chiusa. Per rientrare servirà la password.",
+      "cerrarTodasTitulo": "Chiudi le altre sessioni",
+      "cerrarTodasMensaje": "La tua sessione verrà chiusa su tutti gli altri dispositivi. Questo resta connesso.",
+      "cerrada": "Sessione chiusa su quel dispositivo.",
+      "cerradasTodas": "Sessioni chiuse sugli altri dispositivi.",
+      "noSePudo": "Impossibile chiudere la sessione.",
+      "anteriores": "Dispositivi precedenti ({{count}})",
+      "motivoRevoked": "Chiusa da remoto",
+      "motivoSignout": "Disconnesso",
+      "motivoSuperseded": "Sostituita da un altro accesso"
     }
   },
   "visitantes": {

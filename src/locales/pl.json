@@ -16738,6 +16738,29 @@
       "sinConectar": "Gusto nie jest połączone",
       "sinConectarTexto": "Połącz konto Gusto w Ustawienia › Połączenia i API i połącz swój personel. Potem zatwierdzone godziny wysyłasz stąd.",
       "noDisponible": "Gusto jest dostępne tylko dla firm z USA."
+    },
+    "SesionesActivas": {
+      "titulo": "Gdzie jesteś zalogowany",
+      "esteDispositivo": "To urządzenie",
+      "ahora": "Aktywna teraz",
+      "canalWeb": "Panel WWW",
+      "canalWorker": "Aplikacja pracownika ochrony",
+      "canalSupervisor": "Aplikacja supervisora",
+      "canalClient": "Aplikacja klienta",
+      "dispositivoDesconocido": "Niezidentyfikowane urządzenie",
+      "cerrarSesion": "Wyloguj",
+      "cerrarTodas": "Wyloguj pozostałe",
+      "cerrarTitulo": "Zakończ tę sesję",
+      "cerrarMensaje": "Sesja na {{dispositivo}} zostanie zakończona. Do ponownego logowania potrzebne będzie hasło.",
+      "cerrarTodasTitulo": "Zakończ pozostałe sesje",
+      "cerrarTodasMensaje": "Zostaniesz wylogowany na wszystkich pozostałych urządzeniach. To pozostaje zalogowane.",
+      "cerrada": "Wylogowano na tym urządzeniu.",
+      "cerradasTodas": "Wylogowano na pozostałych urządzeniach.",
+      "noSePudo": "Nie udało się zakończyć sesji.",
+      "anteriores": "Poprzednie urządzenia ({{count}})",
+      "motivoRevoked": "Wylogowano zdalnie",
+      "motivoSignout": "Wylogowano",
+      "motivoSuperseded": "Zastąpiona innym logowaniem"
     }
   },
   "visitantes": {

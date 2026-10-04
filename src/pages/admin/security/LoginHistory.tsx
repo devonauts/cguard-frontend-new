@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { RefreshCw, History, Inbox } from "lucide-react";
 
 import { useInfiniteAuditList } from "./useInfiniteAuditList";
+import SesionesActivas from "./SesionesActivas";
 import {
   AuditRow,
   AuditSearch,
@@ -45,7 +46,12 @@ const PAGE_SIZE = 100;
 // Chip key → backend `event` param (comma-separated allowed).
 // `labelKey` se traduce donde se pinta: esta constante se evalúa al importar.
 const FILTERS = [
-  { key: "", label: "Todos", labelKey: "ui.LoginHistory.filter.all", event: "" },
+  {
+    key: "",
+    label: "Todos",
+    labelKey: "ui.LoginHistory.filter.all",
+    event: "",
+  },
   {
     key: "login",
     label: "Inicios",
@@ -145,6 +151,9 @@ export default function LoginHistory() {
           )}
         />
 
+        {/* Los dispositivos de MI cuenta, y cerrar sus sesiones a distancia. */}
+        <SesionesActivas />
+
         <Toolbar>
           <AuditSearch
             placeholder={t(
@@ -205,12 +214,16 @@ export default function LoginHistory() {
             <AuditTable
               head={
                 <>
-                  <th className="px-4 py-3">{t("ui.AuditLogs.evento", "Evento")}</th>
+                  <th className="px-4 py-3">
+                    {t("ui.AuditLogs.evento", "Evento")}
+                  </th>
                   <th className="px-3 py-3">{t("comun.usuario")}</th>
                   <th className="px-3 py-3">
                     {t("ui.LoginHistory.direccion", "Dirección")}
                   </th>
-                  <th className="px-3 py-3">{t("ui.AuditLogs.plataforma", "Plataforma")}</th>
+                  <th className="px-3 py-3">
+                    {t("ui.AuditLogs.plataforma", "Plataforma")}
+                  </th>
                   <th className="px-3 py-3">{t("comun.detalle")}</th>
                   <th className="px-3 py-3 text-right">{t("comun.fecha")}</th>
                 </>
@@ -221,7 +234,10 @@ export default function LoginHistory() {
 
                 return (
                   <AuditRow key={r.id} tone={m.tone}>
-                    <td className="relative px-4 py-2.5" data-rotulo={t("ui.AuditLogs.evento", "Evento")}>
+                    <td
+                      className="relative px-4 py-2.5"
+                      data-rotulo={t("ui.AuditLogs.evento", "Evento")}
+                    >
                       <SeverityRail tone={m.tone} />
                       <StatusBadge dot={false} tone={m.tone}>
                         {m.icon}
@@ -229,37 +245,37 @@ export default function LoginHistory() {
                       </StatusBadge>
                     </td>
                     <td
-                      data-rotulo={t("comun.usuario")}
                       className="px-3 py-2.5"
+                      data-rotulo={t("comun.usuario")}
                       style={{ color: "var(--ink-soft)" }}
                     >
                       {r.email || "—"}
                     </td>
                     <td
-                      data-rotulo={t("ui.LoginHistory.direccion", "Dirección")}
                       className="px-3 py-2.5 font-mono text-xs"
+                      data-rotulo={t("ui.LoginHistory.direccion", "Dirección")}
                       style={{ color: "var(--ink-soft)" }}
                     >
                       {r.ip || "—"}
                     </td>
                     <td
-                      data-rotulo={t("ui.AuditLogs.plataforma", "Plataforma")}
                       className="px-3 py-2.5"
+                      data-rotulo={t("ui.AuditLogs.plataforma", "Plataforma")}
                       style={{ color: "var(--ink-soft)" }}
                     >
                       {r.platform || "—"}
                     </td>
                     <td
-                      data-rotulo={t("comun.detalle")}
                       className="px-3 py-2.5 text-xs"
+                      data-rotulo={t("comun.detalle")}
                       style={{ color: "var(--ink-faint)" }}
                       title={r.detail || ""}
                     >
                       {(r.detail || "").slice(0, 60)}
                     </td>
                     <td
-                      data-rotulo={t("comun.fecha")}
                       className="px-3 py-2.5 text-right text-xs tabular-nums"
+                      data-rotulo={t("comun.fecha")}
                       style={{ color: "var(--ink-faint)" }}
                     >
                       {fmtStamp(r.at)}

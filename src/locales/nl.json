@@ -16550,6 +16550,29 @@
       "sinConectar": "Gusto is niet gekoppeld",
       "sinConectarTexto": "Koppel je Gusto-account in Instellingen › Koppelingen en API en koppel je personeel. Daarna verstuur je goedgekeurde uren vanaf hier.",
       "noDisponible": "Gusto is alleen beschikbaar voor bedrijven in de Verenigde Staten."
+    },
+    "SesionesActivas": {
+      "titulo": "Waar je bent ingelogd",
+      "esteDispositivo": "Dit apparaat",
+      "ahora": "Nu actief",
+      "canalWeb": "Webpaneel",
+      "canalWorker": "Beveiligersapp",
+      "canalSupervisor": "Supervisorapp",
+      "canalClient": "Klantenapp",
+      "dispositivoDesconocido": "Onbekend apparaat",
+      "cerrarSesion": "Uitloggen",
+      "cerrarTodas": "Overige uitloggen",
+      "cerrarTitulo": "Deze sessie beëindigen",
+      "cerrarMensaje": "De sessie op {{dispositivo}} wordt beëindigd. Om opnieuw in te loggen is het wachtwoord nodig.",
+      "cerrarTodasTitulo": "Overige sessies beëindigen",
+      "cerrarTodasMensaje": "Je wordt op alle andere apparaten uitgelogd. Dit apparaat blijft ingelogd.",
+      "cerrada": "Uitgelogd op dat apparaat.",
+      "cerradasTodas": "Uitgelogd op alle andere apparaten.",
+      "noSePudo": "De sessie kon niet worden beëindigd.",
+      "anteriores": "Eerdere apparaten ({{count}})",
+      "motivoRevoked": "Op afstand uitgelogd",
+      "motivoSignout": "Uitgelogd",
+      "motivoSuperseded": "Vervangen door een andere login"
     }
   },
   "visitantes": {
