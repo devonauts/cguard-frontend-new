@@ -14,15 +14,18 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { resolveDefaultCenter, companyCenter } from "./defaultCenter";
+import {
+  fuenteEnCache,
+  leerFuente,
+  tableroEnCache,
+  type FuenteDelTablero,
+} from "./consultas";
 
 import i18n from "@/i18n";
 import api, { getAuthToken } from "@/lib/api";
 import { crearSocket, cerrarSocket, entrarEnSalaDelMapa } from "@/lib/socket";
 import { openEventStream } from "@/lib/api/eventStream";
-import { leerHistorialDeAvisos } from "@/hooks/useNotificationStream";
 import securityGuardService from "@/lib/api/securityGuardService";
-import { supervisorService } from "@/lib/api/supervisorService";
-import tenantService from "@/services/tenant.service";
 import { useAuth } from "@/contexts/AuthContext";
 import { hasMinAuthority, AUTHORITY } from "@/lib/access";
 
@@ -372,6 +375,7 @@ export function useControlCenter(
   const locSeqRef = useRef(0);
   const [tick, setTick] = useState(0);
   const refresh = useCallback(() => setTick((t) => t + 1), []);
+  const ultimoTick = useRef(0);
 
   /* INCIDENTES EN VIVO — PENDIENTE, y con motivo medido.
      `incident:changed` existe en el backend y nadie lo escucha, así que los
@@ -397,8 +401,23 @@ export function useControlCenter(
     if (cargandoAuth) return;
     let alive = true;
 
-    (async () => {
+    // Refrescar (el botón, o el socket al reconectar) = red sí o sí. Montar
+    // la pantalla o cambiar de idioma = lo que haya fresco en el caché.
+    const forzar = tick !== ultimoTick.current;
+
+    ultimoTick.current = tick;
+
+    /* SE PINTA DOS VECES, Y A PROPÓSITO.
+       Primero con lo último conocido (el caché, que sobrevive a recargar la
+       página) y después con lo que diga la red. Quien recarga ve su tablero al
+       instante en vez de una pantalla vacía mientras vuelven catorce listas.
+       Ver `consultas.ts`. */
+    const pintar = async (desdeCache: boolean) => {
       const gaps: string[] = [];
+      const f = <T>(nombre: FuenteDelTablero, respaldo: T): Promise<T> =>
+        desdeCache
+          ? Promise.resolve((fuenteEnCache(nombre) ?? respaldo) as T)
+          : safe<T>(leerFuente(nombre, forzar), respaldo);
       const [
         stats,
         active,
@@ -416,44 +435,21 @@ export function useControlCenter(
         cobR,
       ] = await Promise.all([
         puedeVerPanelEjecutivo
-          ? safe<DashboardStats>(get("/dashboard/stats"), {})
+          ? f<DashboardStats>("stats", {})
           : Promise.resolve({} as DashboardStats),
-        safe(securityGuardService.activeLocations(), null as any),
-        safe(get("/station?limit=500"), null),
-        safe(get("/post-site?limit=500"), null),
-        safe(get("/client-account?limit=500"), null),
-        safe(get("/security-guard?limit=1"), null),
-        safe(get("/incident?limit=50&orderBy=createdAt_DESC"), null),
-        // Server-side OPEN count — counting client-side inside the latest 50
-        // undercounted tenants with older open incidents.
-        safe(get("/incident?limit=1&filter[status]=abierto"), null),
-        safe(get("/user"), null),
-        safe(tenantService.findById(tenantId()), null as any),
-        // Recent platform events (clock-ins, visitors, patrols, incidents, memos…) —
-        // this is the real "Actividad reciente". NOTE: the events route is
-        // /:tenantId/events (no /tenant/ prefix), so it bypasses the get() helper.
-        // Compartida con la campana: no se vuelve a pedir lo que acaba de llegar.
-        safe(
-          leerHistorialDeAvisos(tenantId()).then((rows) => ({
-            rows: rows.slice(0, 40),
-          })),
-          null,
-        ),
-        // Operational "today" counters (incidents today, rondas/tag-scans today) —
-        // computed server-side with correct day boundaries. Route has no /tenant/ prefix.
-        safe(
-          api.get(`/operations/kpis`).then((r) => r.data),
-          null,
-        ),
-        // On-duty supervisors with a live position — so a clocked-in supervisor
-        // shows on the map immediately (not only when a socket ping happens to
-        // land while the map is open). Mirrors the guard activeLocations feed.
-        safe(supervisorService.list(), null as any),
-        // Cobertura EN VIVO, por estado. Es lo que permite que un puesto fuera
-        // de turno deje de contar como puesto sin cubrir — ver el cálculo de
-        // `coverage` más abajo. `summaryOnly` para traer sólo los cuatro
-        // recuentos y no la ficha de cada puesto.
-        safe(get("/coverage/live?summaryOnly=1"), null),
+        f<any>("active", null),
+        f<any>("stations", null),
+        f<any>("posts", null),
+        f<any>("clients", null),
+        f<any>("guards", null),
+        f<any>("incidents", null),
+        f<any>("openIncidents", null),
+        f<any>("users", null),
+        f<any>("tenant", null),
+        f<any>("events", null),
+        f<any>("ops", null),
+        f<any>("sups", null),
+        f<any>("coverage", null),
       ]);
 
       if (!alive) return;
@@ -986,9 +982,11 @@ export function useControlCenter(
         health: {
           ...s.health,
           onlineDevices: onDuty,
-          lastSync: new Date().toISOString(),
+          // La copia del caché no es «sincronizado ahora».
+          lastSync: desdeCache ? s.health.lastSync : new Date().toISOString(),
         },
       }));
+      if (desdeCache) return;
 
       // Default map center: company coords → company address → IP country → fallback.
       resolveDefaultCenter(tenant)
@@ -998,6 +996,11 @@ export function useControlCenter(
         .catch(() => {
           /* never blocks the dashboard */
         });
+    };
+
+    (async () => {
+      if (!forzar && tableroEnCache()) await pintar(true);
+      if (alive) await pintar(false);
     })();
 
     return () => {

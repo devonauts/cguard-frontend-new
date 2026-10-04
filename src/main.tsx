@@ -37,8 +37,13 @@ import { Toaster } from "sonner";
 
 import OfflineBanner from "@/components/OfflineBanner";
 import AvisoDeRecarga from "@/components/AvisoDeRecarga";
-import { marcarVersionNueva, recargarAhora, registrarActualizador } from "@/lib/recarga/recarga";
+import {
+  marcarVersionNueva,
+  recargarAhora,
+  registrarActualizador,
+} from "@/lib/recarga/recarga";
 import { startCachePersistence } from "@/lib/offline/persistCache";
+import { precargarDashboard } from "@/pages/admin/dashboard/control-center/consultas";
 import { adelantarPerfil } from "@/lib/perfilDeLaCuenta";
 
 // Registra los replayers de la cola offline (efecto secundario, una vez).
@@ -97,12 +102,17 @@ if (!(window as any).cguardDesktop) {
       });
     },
   });
+
   registrarActualizador(actualizar);
 }
 startCachePersistence();
 /* La identidad sale YA, en paralelo con la marca del anfitrión, en vez de
    encolarse detrás de ella. El porqué medido está en `perfilDeLaCuenta.ts`. */
 adelantarPerfil();
+/* Y las listas del tablero también, si es ahí adonde se va: salían a los 2,1 s
+   (detrás de la identidad y del trozo del dashboard) y ahora salen con ella.
+   Ver `control-center/consultas.ts`. */
+if (/^\/(dashboard\/?)?$/.test(window.location.pathname)) precargarDashboard();
 
 window.addEventListener("vite:preloadError", (event) => {
   const last = Number(sessionStorage.getItem("chunkReloadAt") || 0);
@@ -128,38 +138,38 @@ iniciarCentinela();
 
 /* La vuelta de Gusto dentro de su ventanita: se cierra sin montar el CRM. */
 if (!atenderVueltaDeGusto())
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    {/* LA MARCA PRIMERO. `WhiteLabelProvider` no pinta a sus hijos hasta que ha
+  ReactDOM.createRoot(document.getElementById("root")!).render(
+    <React.StrictMode>
+      {/* LA MARCA PRIMERO. `WhiteLabelProvider` no pinta a sus hijos hasta que ha
         resuelto de quién es este anfitrión, así que nadie que entre por la URL
         de un socio ve un parpadeo con el logotipo de CGuardPro. Mientras espera
         hay un esqueleto NEUTRO — sin marca de nadie —, y si el contexto no se
         puede leer se sigue con la identidad de plataforma: esto es identidad
         visual, no una dependencia para poder entrar a trabajar. */}
-    <WhiteLabelProvider>
-      {/* <BrowserRouter> */}
-      <App />
-    {/* Estado de red global: solo visible sin conexión / reconectando /
+      <WhiteLabelProvider>
+        {/* <BrowserRouter> */}
+        <App />
+        {/* Estado de red global: solo visible sin conexión / reconectando /
             con escrituras encoladas. */}
-    <OfflineBanner />
-    <AvisoDeRecarga />
-    {/* Platform-styled confirm() replacement (see confirmDialog.tsx). */}
-    <ConfirmHost />
-    <PromptHost />
-    {/* Notifications must sit at the very top of the stacking context so the
+        <OfflineBanner />
+        <AvisoDeRecarga />
+        {/* Platform-styled confirm() replacement (see confirmDialog.tsx). */}
+        <ConfirmHost />
+        <PromptHost />
+        {/* Notifications must sit at the very top of the stacking context so the
             live alert is never hidden behind a dialog/overlay. */}
-    {/* Sin `richColors`: pintaba la caja entera de verde/rojo con la paleta
+        {/* Sin `richColors`: pintaba la caja entera de verde/rojo con la paleta
             propia de sonner, que ni es cristal ni conoce el acento elegido. El
             tono ahora lo lleva la placa del icono (ver glass.css › AVISOS
             FLOTANTES), con los colores de estado FIJOS de tokens.css. */}
-    <Toaster
-      expand
-      duration={8000}
-      position="top-center"
-      style={{ zIndex: 2147483647 }}
-      toastOptions={{ style: { zIndex: 2147483647 } }}
-    />
-      {/* </BrowserRouter> */}
-    </WhiteLabelProvider>
-  </React.StrictMode>,
-);
+        <Toaster
+          expand
+          duration={8000}
+          position="top-center"
+          style={{ zIndex: 2147483647 }}
+          toastOptions={{ style: { zIndex: 2147483647 } }}
+        />
+        {/* </BrowserRouter> */}
+      </WhiteLabelProvider>
+    </React.StrictMode>,
+  );
