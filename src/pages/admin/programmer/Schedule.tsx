@@ -2645,20 +2645,33 @@ export default function Schedule() {
       // Se le pasa el PUESTO y el fin de su turno: son los dos datos que el
       // servidor tendría que adivinar de «su último turno», y adivinarlos
       // fallaba en cuanto el vigilante tenía turno al día siguiente.
-      items.push({
-        label: t("ui.Schedule.menuExtenderTurno", {
-          defaultValue: "Extender turno{{suf}}…",
-          suf,
-        }),
-        onClick: () =>
-          setExtendTarget({
-            guardId: a.guardId,
-            guardName: full,
-            stationId: station.id,
-            stationName: stationLabel(station),
-            scheduledEnd: s?.endTime ?? null,
+      //
+      // Y SÓLO a quien trabaja ese día, con su NOMBRE en la entrada. La segunda
+      // vuelta del mismo caso: Flavio (el fijo) libraba y lo cubría Dino; el
+      // menú decía «Extender turno…» a secas en la casilla de Flavio, eso es lo
+      // que se pulsa, y se volvía a extender a quien estaba en su casa.
+      const trabajaHoy =
+        !!s &&
+        s.stationId === station.id &&
+        cuentaComoCobertura(s) &&
+        !getOverride(a.guardId, dateStr) &&
+        isWorkDay(a, new Date(dateStr + "T00:00:00")) !== "rest";
+
+      if (trabajaHoy)
+        items.push({
+          label: t("ui.Schedule.menuExtenderTurnoDe", {
+            defaultValue: "Extender turno de {{nombre}}…",
+            nombre: nm,
           }),
-      });
+          onClick: () =>
+            setExtendTarget({
+              guardId: a.guardId,
+              guardName: full,
+              stationId: station.id,
+              stationName: stationLabel(station),
+              scheduledEnd: s?.endTime ?? null,
+            }),
+        });
       if (s && s.stationId === station.id) {
         items.push({
           label: t("ui.Schedule.menuEditarElTurno", {

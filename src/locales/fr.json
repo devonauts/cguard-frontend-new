@@ -12071,6 +12071,7 @@
       "menuEliminarLaCoberturaDe": "Supprimer la couverture de {{nombre}}",
       "menuExtenderTurno": "Prolonger le poste{{suf}}…",
       "menuExtenderTurnoCobertura": "Prolonger le poste de {{nombre}} (couverture)…",
+      "menuExtenderTurnoDe": "Prolonger le poste de {{nombre}}…",
       "menuMarcarElDia": "Marquer le jour (V / PM / F / L)…",
       "menuPonerUnAprendiz": "Ajouter un stagiaire avec {{nombre}}…",
       "menuQuitarCodigo": "Retirer {{codigo}}",

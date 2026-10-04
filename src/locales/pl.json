@@ -12121,6 +12121,7 @@
       "menuEliminarLaCoberturaDe": "Usuń obsadę {{nombre}}",
       "menuExtenderTurno": "Przedłuż zmianę{{suf}}…",
       "menuExtenderTurnoCobertura": "Przedłuż zmianę {{nombre}} (obsada)…",
+      "menuExtenderTurnoDe": "Przedłuż zmianę {{nombre}}…",
       "menuMarcarElDia": "Oznacz dzień (V / PM / F / L)…",
       "menuPonerUnAprendiz": "Dodaj praktykanta do {{nombre}}…",
       "menuQuitarCodigo": "Usuń {{codigo}}",

@@ -12071,6 +12071,7 @@
       "menuEliminarLaCoberturaDe": "Dekking van {{nombre}} verwijderen",
       "menuExtenderTurno": "Dienst verlengen{{suf}}…",
       "menuExtenderTurnoCobertura": "Dienst van {{nombre}} verlengen (dekking)…",
+      "menuExtenderTurnoDe": "Dienst van {{nombre}} verlengen…",
       "menuMarcarElDia": "Dag markeren (V / PM / F / L)…",
       "menuPonerUnAprendiz": "Een stagiair bij {{nombre}} plaatsen…",
       "menuQuitarCodigo": "{{codigo}} verwijderen",
