@@ -1,4 +1,8 @@
 import { ApiService } from "@/services/api/apiService";
+import {
+  crearLecturaCompartida,
+  type LectorCompartido,
+} from "@/lib/lecturaCompartida";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -38,12 +42,30 @@ export const EVENTO = "cg:anuncio";
 
 const tenantId = () => localStorage.getItem("tenantId") || "";
 
+// La franja y la ventana emergente montan a la vez y cada una pedía la lista:
+// dos peticiones idénticas en cada carga. Comparten la lectura mientras está
+// en vuelo (y 3 s después); quien pregunte más tarde vuelve a leer.
+const lectores = new Map<string, LectorCompartido<Aviso[]>>();
+
 export async function cargarAvisos(): Promise<Aviso[]> {
   const t = tenantId();
+
   if (!t) return [];
+  let lector = lectores.get(t);
+
+  if (!lector) {
+    lector = crearLecturaCompartida<Aviso[]>(async () => {
+      const r: any = await ApiService.get(`/tenant/${t}/announcements`);
+
+      return ((r?.rows || r?.data?.rows || []) as Aviso[]).map((a) => ({
+        ...a,
+        format: a.format || "banner",
+      }));
+    }, 3_000);
+    lectores.set(t, lector);
+  }
   try {
-    const r: any = await ApiService.get(`/tenant/${t}/announcements`);
-    return ((r?.rows || r?.data?.rows || []) as Aviso[]).map((a) => ({ ...a, format: a.format || "banner" }));
+    return await lector.leer();
   } catch {
     return [];
   }
@@ -52,9 +74,12 @@ export async function cargarAvisos(): Promise<Aviso[]> {
 /** El acuse de esta persona. Nunca lanza: un acuse perdido no rompe nada. */
 export function acusar(id: string, event: EventoDeAcuse): void {
   const t = tenantId();
+
   if (!t || !id) return;
   try {
-    Promise.resolve(ApiService.post(`/tenant/${t}/announcements/${id}/receipt`, { event })).catch(() => undefined);
+    Promise.resolve(
+      ApiService.post(`/tenant/${t}/announcements/${id}/receipt`, { event }),
+    ).catch(() => undefined);
   } catch {
     /* sin red: da igual */
   }

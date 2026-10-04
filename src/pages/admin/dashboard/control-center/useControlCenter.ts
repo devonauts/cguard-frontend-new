@@ -19,6 +19,7 @@ import i18n from "@/i18n";
 import api, { getAuthToken } from "@/lib/api";
 import { crearSocket, cerrarSocket, entrarEnSalaDelMapa } from "@/lib/socket";
 import { openEventStream } from "@/lib/api/eventStream";
+import { leerHistorialDeAvisos } from "@/hooks/useNotificationStream";
 import securityGuardService from "@/lib/api/securityGuardService";
 import { supervisorService } from "@/lib/api/supervisorService";
 import tenantService from "@/services/tenant.service";
@@ -431,8 +432,11 @@ export function useControlCenter(
         // Recent platform events (clock-ins, visitors, patrols, incidents, memos…) —
         // this is the real "Actividad reciente". NOTE: the events route is
         // /:tenantId/events (no /tenant/ prefix), so it bypasses the get() helper.
+        // Compartida con la campana: no se vuelve a pedir lo que acaba de llegar.
         safe(
-          api.get(`/${tenantId()}/events?limit=40`).then((r) => r.data),
+          leerHistorialDeAvisos(tenantId()).then((rows) => ({
+            rows: rows.slice(0, 40),
+          })),
           null,
         ),
         // Operational "today" counters (incidents today, rondas/tag-scans today) —
@@ -668,8 +672,7 @@ export function useControlCenter(
           lat: la,
           lng: ln,
           status: "online",
-          label:
-            g.fullName || g.name || i18n.t("maps.kind.guard", "Vigilante"),
+          label: g.fullName || g.name || i18n.t("maps.kind.guard", "Vigilante"),
           sub:
             g.postSiteName ||
             g.stationName ||
@@ -695,8 +698,7 @@ export function useControlCenter(
           lat: la,
           lng: ln,
           status: "patrol",
-          label:
-            sup.fullName || i18n.t("maps.kind.supervisor", "Supervisor"),
+          label: sup.fullName || i18n.t("maps.kind.supervisor", "Supervisor"),
           sub:
             texto(sup.zone) ||
             i18n.t("ui.useControlCenter.enPatrulla", "En patrulla"),
@@ -865,16 +867,16 @@ export function useControlCenter(
           i18n.t("dashboard.kpi.supervisors", "Supervisores"),
           supervisors,
           {
-          status: "online",
-          sub: i18n.t("dashboard.kpi.teamOf", {
-            total: counts.team || 0,
-            defaultValue: "equipo de {{total}}",
-          }),
-          hint: i18n.t(
-            "dashboard.kpi.supervisorsHint",
-            "Estado en línea no disponible en backend.",
-          ),
-          fallback: supervisors === 0,
+            status: "online",
+            sub: i18n.t("dashboard.kpi.teamOf", {
+              total: counts.team || 0,
+              defaultValue: "equipo de {{total}}",
+            }),
+            hint: i18n.t(
+              "dashboard.kpi.supervisorsHint",
+              "Estado en línea no disponible en backend.",
+            ),
+            fallback: supervisors === 0,
           },
         ),
         kpi(
@@ -882,19 +884,19 @@ export function useControlCenter(
           i18n.t("dashboard.kpi.response", "Tiempo de respuesta"),
           lastResponse ?? "—",
           {
-          unit: lastResponse != null ? "min" : "",
-          status: "neutral",
-          trend: trendOf(responseTrend, true),
-          spark: respSpark,
-          sub: i18n.t("dashboard.kpi.monthlyAverage", "promedio mensual"),
-          fallback: lastResponse == null,
-          hint:
-            lastResponse == null
-              ? i18n.t(
-                  "dashboard.kpi.noPerformanceData",
-                  "Sin datos de desempeño.",
-                )
-              : undefined,
+            unit: lastResponse != null ? "min" : "",
+            status: "neutral",
+            trend: trendOf(responseTrend, true),
+            spark: respSpark,
+            sub: i18n.t("dashboard.kpi.monthlyAverage", "promedio mensual"),
+            fallback: lastResponse == null,
+            hint:
+              lastResponse == null
+                ? i18n.t(
+                    "dashboard.kpi.noPerformanceData",
+                    "Sin datos de desempeño.",
+                  )
+                : undefined,
           },
         ),
         kpi(

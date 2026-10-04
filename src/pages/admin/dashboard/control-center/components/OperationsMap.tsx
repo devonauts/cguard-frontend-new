@@ -534,7 +534,7 @@ export function OperationsMap({
   useEffect(() => {
     let cancelled = false;
 
-    loadGoogleMaps()
+    loadGoogleMaps({ soloMapa: true })
       .then(() => {
         if (cancelled || !ref.current) return;
         const g = (window as any).google;

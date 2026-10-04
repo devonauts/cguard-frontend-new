@@ -8,12 +8,12 @@
  * Returns the list of recent notifications and the live unread count.
  */
 
-import { idiomaElegido } from "@/lib/idiomaElegido";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { type Socket } from "socket.io-client";
 
 import { notifyMessagesChanged } from "./useMessagesUnread";
 
+import { idiomaElegido } from "@/lib/idiomaElegido";
 import { getAuthToken } from "@/lib/api";
 import { playNotificationChime } from "@/lib/notificationSound";
 import {
@@ -77,7 +77,9 @@ export interface PlatformNotification {
 const VENTANA_DE_RAFAGA_MS = 1_200;
 
 function esEmergencia(n: PlatformNotification): boolean {
-  return n.eventType === "panic.alert" || prioridadDe(n.eventType) === "emergency";
+  return (
+    n.eventType === "panic.alert" || prioridadDe(n.eventType) === "emergency"
+  );
 }
 
 interface UseNotificationStreamResult {
@@ -165,6 +167,15 @@ function leerHistorial(
   if (forzar) lector.olvidar();
 
   return lector.leer();
+}
+
+/**
+ * El historial reciente para quien NO es este hook (la «Actividad reciente»
+ * del dashboard pedía `GET /:tenantId/events` por su cuenta, un segundo
+ * después de que la campana ya lo hubiera traído).
+ */
+export function leerHistorialDeAvisos(tenantId: string): Promise<any[]> {
+  return leerHistorial(tenantId, getAuthToken() || "");
 }
 
 /** Al cerrar sesión o cambiar de empresa: que la siguiente no herede nada. */
@@ -462,6 +473,7 @@ export function useNotificationStream(
     socket.on("notification", (entrante: PlatformNotification) => {
       if (destroyed || !entrante || !entrante.id) return;
       const n = enMiIdioma(entrante);
+
       addNotification(n, false); // list dedups by id internally
 
       // Un mensaje nuevo cambia el contador del buzón: se avisa al menú lateral
