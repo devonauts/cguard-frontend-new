@@ -15,8 +15,12 @@ import { initReactI18next } from "react-i18next";
  *     red no contesta se monta igual y el texto llega cuando llegue;
  *   · `index.html` empieza a bajarlo a la vez que el código (ver el plugin
  *     `precargaDeIdioma` en vite.config.ts), no detrás de él;
- *   · el español sigue siendo el respaldo, pero se trae sólo si de verdad
- *     falta una clave (`missingKeyHandler`).
+ *   · NO se descarga el español «de respaldo». Los ocho diccionarios tienen
+ *     exactamente las mismas claves (lo vigila la prueba de paridad), así que
+ *     una clave que falta en el idioma activo falta también en español: el
+ *     respaldo no la habría encontrado, y traerlo «por si acaso» costaba
+ *     200 kB a cada usuario que no lee en español. Medido: bastaba UNA clave
+ *     dinámica sin traducir para que se descargara en cada carga.
  *
  * Las pruebas cargan el español de forma síncrona en `src/pruebas/idioma.ts`.
  */
@@ -107,12 +111,6 @@ i18n.use(initReactI18next).init({
   // venció su límite, o hizo falta el respaldo) repinta lo que ya está en
   // pantalla, en vez de dejar las claves a la vista hasta navegar.
   react: { useSuspense: false, bindI18nStore: "added" },
-  // El respaldo, bajo demanda: sólo si se pide una clave que el idioma activo
-  // no tiene. Con el diccionario completo —lo normal— no se descarga nunca.
-  saveMissing: true,
-  missingKeyHandler: () => {
-    if (import.meta.env.MODE !== "test") void registrar("es");
-  },
 });
 
 /** Se resuelve cuando el idioma del primer pintado está cargado (o falló). */
