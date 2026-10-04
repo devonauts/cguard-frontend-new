@@ -16572,7 +16572,8 @@
       "anteriores": "Frühere Geräte ({{count}})",
       "motivoRevoked": "Aus der Ferne abgemeldet",
       "motivoSignout": "Abgemeldet",
-      "motivoSuperseded": "Durch eine andere Anmeldung ersetzt"
+      "motivoSuperseded": "Durch eine andere Anmeldung ersetzt",
+      "huella": "Geräte-Fingerabdruck"
     }
   },
   "visitantes": {

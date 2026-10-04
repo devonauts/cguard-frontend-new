@@ -16760,7 +16760,8 @@
       "anteriores": "Poprzednie urządzenia ({{count}})",
       "motivoRevoked": "Wylogowano zdalnie",
       "motivoSignout": "Wylogowano",
-      "motivoSuperseded": "Zastąpiona innym logowaniem"
+      "motivoSuperseded": "Zastąpiona innym logowaniem",
+      "huella": "Odcisk urządzenia"
     }
   },
   "visitantes": {

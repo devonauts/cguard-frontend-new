@@ -16049,7 +16049,8 @@
       "anteriores": "Previous devices ({{count}})",
       "motivoRevoked": "Signed out remotely",
       "motivoSignout": "Signed out",
-      "motivoSuperseded": "Replaced by another sign-in"
+      "motivoSuperseded": "Replaced by another sign-in",
+      "huella": "Device fingerprint"
     }
   },
   "map": {

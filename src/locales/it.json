@@ -16572,7 +16572,8 @@
       "anteriores": "Dispositivi precedenti ({{count}})",
       "motivoRevoked": "Chiusa da remoto",
       "motivoSignout": "Disconnesso",
-      "motivoSuperseded": "Sostituita da un altro accesso"
+      "motivoSuperseded": "Sostituita da un altro accesso",
+      "huella": "Impronta del dispositivo"
     }
   },
   "visitantes": {

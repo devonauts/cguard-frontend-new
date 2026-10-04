@@ -16572,7 +16572,8 @@
       "anteriores": "Eerdere apparaten ({{count}})",
       "motivoRevoked": "Op afstand uitgelogd",
       "motivoSignout": "Uitgelogd",
-      "motivoSuperseded": "Vervangen door een andere login"
+      "motivoSuperseded": "Vervangen door een andere login",
+      "huella": "Apparaatvingerafdruk"
     }
   },
   "visitantes": {

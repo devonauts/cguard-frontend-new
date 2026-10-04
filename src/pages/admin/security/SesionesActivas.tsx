@@ -28,6 +28,7 @@ type Sesion = {
   device: string | null;
   location: string | null;
   ip: string | null;
+  deviceId: string | null;
   createdAt: string | null;
   lastSeenAt: string | null;
   endedAt: string | null;
@@ -58,7 +59,7 @@ export default function SesionesActivas() {
       setAnteriores(
         (Array.isArray(d.anteriores) ? (d.anteriores as Sesion[]) : []).filter(
           (s) => {
-            const clave = `${s.channel}|${s.device}|${s.location || s.ip}`;
+            const clave = s.deviceId || `${s.channel}|${s.device}|${s.location || s.ip}`;
 
             if (vistos.has(clave)) return false;
             vistos.add(clave);
@@ -231,6 +232,11 @@ export default function SesionesActivas() {
             style={{ color: "var(--ink-soft)" }}
           >
             <span>{canal(s.channel)}</span>
+            {s.deviceId && (
+              <span title={t("ui.SesionesActivas.huella", "Huella del dispositivo")}>
+                · <span className="font-mono">{s.deviceId.slice(0, 8)}</span>
+              </span>
+            )}
             {(s.location || s.ip) && (
               <span className="inline-flex items-center gap-1">
                 · <MapPin aria-hidden className="size-3" />

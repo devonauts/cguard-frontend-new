@@ -16572,7 +16572,8 @@
       "anteriores": "Appareils précédents ({{count}})",
       "motivoRevoked": "Fermée à distance",
       "motivoSignout": "Déconnecté",
-      "motivoSuperseded": "Remplacée par une autre connexion"
+      "motivoSuperseded": "Remplacée par une autre connexion",
+      "huella": "Empreinte de l’appareil"
     }
   },
   "visitantes": {

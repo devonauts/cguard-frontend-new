@@ -36,6 +36,8 @@ type Row = {
   userAgent?: string | null;
   deviceId?: string | null;
   platform?: string | null;
+  /** «Chrome · macOS», leído del user-agent por el servidor. */
+  device?: string | null;
   detail?: string | null;
   at: string;
   userId?: string | null;
@@ -263,7 +265,7 @@ export default function LoginHistory() {
                       data-rotulo={t("ui.AuditLogs.plataforma", "Plataforma")}
                       style={{ color: "var(--ink-soft)" }}
                     >
-                      {r.platform || "—"}
+                      {r.device || r.platform || "—"}
                     </td>
                     <td
                       className="px-3 py-2.5 text-xs"

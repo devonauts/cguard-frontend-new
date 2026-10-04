@@ -16049,7 +16049,8 @@
       "anteriores": "Dispositivos anteriores ({{count}})",
       "motivoRevoked": "Cerrada a distancia",
       "motivoSignout": "Cerró sesión",
-      "motivoSuperseded": "Sustituida por otro inicio de sesión"
+      "motivoSuperseded": "Sustituida por otro inicio de sesión",
+      "huella": "Huella del dispositivo"
     }
   },
   "map": {
