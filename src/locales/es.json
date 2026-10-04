@@ -10197,7 +10197,13 @@
       "nDeTotalEventos_other": "{{count}} de {{total}} eventos",
       "ningunEventoCoincide": "Ningún evento coincide con la búsqueda o el filtro elegido.",
       "todaviaNoSeHaRegistrado": "Todavía no se ha registrado ningún acceso.",
-      "finDelHistorial": "Fin del historial"
+      "finDelHistorial": "Fin del historial",
+      "alcance": {
+        "mios": "Mis accesos",
+        "empresa": "Esta empresa"
+      },
+      "empresa": "Empresa",
+      "soloTu": "Tus inicios, cierres, intentos fallidos y dispositivos, en cada empresa a la que perteneces. Sólo tú los ves."
     },
     "MapPanel": {
       "abrirEnPantallaCompletaNueva": "Abrir en pantalla completa (nueva pestaña)",

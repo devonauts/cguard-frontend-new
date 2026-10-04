@@ -10720,7 +10720,13 @@
       "nDeTotalEventos_other": "{{count}} van {{total}} gebeurtenissen",
       "ningunEventoCoincide": "Geen gebeurtenissen komen overeen met de zoekopdracht of het gekozen filter.",
       "todaviaNoSeHaRegistrado": "Er is nog geen toegang geregistreerd.",
-      "finDelHistorial": "Einde van de geschiedenis"
+      "finDelHistorial": "Einde van de geschiedenis",
+      "alcance": {
+        "mios": "Mijn aanmeldingen",
+        "empresa": "Dit bedrijf"
+      },
+      "empresa": "Bedrijf",
+      "soloTu": "Je aan- en afmeldingen, mislukte pogingen en apparaten, in elk bedrijf waar je bij hoort. Alleen jij ziet ze."
     },
     "MapPanel": {
       "abrirEnPantallaCompletaNueva": "Op volledig scherm openen (nieuw tabblad)",

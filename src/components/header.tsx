@@ -1103,7 +1103,7 @@ export default function Header({
                     <NavLink
                       className={enlaceMenu}
                       style={{ color: "var(--ink)" }}
-                      to="/historial-inicio-sesion"
+                      to="/sign-in-history"
                     >
                       <History
                         className="h-4 w-4"

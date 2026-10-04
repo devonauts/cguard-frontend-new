@@ -17,6 +17,7 @@ import {
 
 import AppLayout from "@/layouts/app-layout";
 import { Button } from "@/components/ui/button";
+import { usePermissions } from "@/hooks/usePermissions";
 import {
   PageContainer,
   PageHeader,
@@ -40,6 +41,8 @@ type Row = {
   device?: string | null;
   detail?: string | null;
   at: string;
+  /** Sólo en «Mis accesos»: la empresa a la que entró esa sesión. */
+  company?: string | null;
   userId?: string | null;
 };
 
@@ -91,6 +94,12 @@ export default function LoginHistory() {
   const [q, setQ] = useState("");
   const [debouncedQ, setDebouncedQ] = useState("");
   const [filter, setFilter] = useState("");
+  // De QUIÉN son los accesos: los míos (en todas mis empresas, sólo los veo
+  // yo) o los de esta empresa (sólo lo que pasó en ella; dirección para arriba).
+  const { hasPermission } = usePermissions();
+  const puedeVerEmpresa = hasPermission("businessInfoRead");
+  const [alcance, setAlcance] = useState<"mios" | "empresa">("mios");
+  const mios = alcance === "mios" || !puedeVerEmpresa;
 
   const tid = () => localStorage.getItem("tenantId") || "";
 
@@ -117,10 +126,12 @@ export default function LoginHistory() {
 
   const { items, total, loading, hasMore, load, sentinelRef } =
     useInfiniteAuditList<Row>({
-      endpoint: `/tenant/${tid()}/security/audit-logs`,
+      endpoint: mios
+        ? "/auth/access-history"
+        : `/tenant/${tid()}/security/audit-logs`,
       pageSize: PAGE_SIZE,
       buildParams,
-      deps: [filter, debouncedQ],
+      deps: [filter, debouncedQ, mios],
     });
 
   const primeraCarga = loading && items.length === 0;
@@ -146,7 +157,14 @@ export default function LoginHistory() {
             ) : undefined
           }
           icon={<History />}
-          subtitle={t("ui.LoginHistory.iniciosYCierresDeSesion")}
+          subtitle={
+            mios
+              ? t(
+                  "ui.LoginHistory.soloTu",
+                  "Tus inicios, cierres, intentos fallidos y dispositivos, en cada empresa a la que perteneces. Sólo tú los ves.",
+                )
+              : t("ui.LoginHistory.iniciosYCierresDeSesion")
+          }
           title={t(
             "ui.LoginHistory.historialDeInicioDeSesion",
             "Historial de Inicio de Sesión",
@@ -155,6 +173,24 @@ export default function LoginHistory() {
 
         {/* Los dispositivos de MI cuenta, y cerrar sus sesiones a distancia. */}
         <SesionesActivas />
+
+        {puedeVerEmpresa && (
+          <Segmented
+            className="self-start"
+            options={[
+              {
+                value: "mios",
+                label: t("ui.LoginHistory.alcance.mios", "Mis accesos"),
+              },
+              {
+                value: "empresa",
+                label: t("ui.LoginHistory.alcance.empresa", "Esta empresa"),
+              },
+            ]}
+            value={alcance}
+            onChange={(v) => setAlcance(v as "mios" | "empresa")}
+          />
+        )}
 
         <Toolbar>
           <AuditSearch
@@ -168,10 +204,12 @@ export default function LoginHistory() {
 
           <Segmented
             className="max-w-full overflow-x-auto"
-            options={FILTERS.map((f) => ({
-              value: f.key,
-              label: t(f.labelKey, f.label),
-            }))}
+            options={FILTERS.filter((f) => !mios || f.key !== "provider").map(
+              (f) => ({
+                value: f.key,
+                label: t(f.labelKey, f.label),
+              }),
+            )}
             value={filter}
             onChange={setFilter}
           />
@@ -219,7 +257,11 @@ export default function LoginHistory() {
                   <th className="px-4 py-3">
                     {t("ui.AuditLogs.evento", "Evento")}
                   </th>
-                  <th className="px-3 py-3">{t("comun.usuario")}</th>
+                  <th className="px-3 py-3">
+                    {mios
+                      ? t("ui.LoginHistory.empresa", "Empresa")
+                      : t("comun.usuario")}
+                  </th>
                   <th className="px-3 py-3">
                     {t("ui.LoginHistory.direccion", "Dirección")}
                   </th>
@@ -248,10 +290,14 @@ export default function LoginHistory() {
                     </td>
                     <td
                       className="px-3 py-2.5"
-                      data-rotulo={t("comun.usuario")}
+                      data-rotulo={
+                        mios
+                          ? t("ui.LoginHistory.empresa", "Empresa")
+                          : t("comun.usuario")
+                      }
                       style={{ color: "var(--ink-soft)" }}
                     >
-                      {r.email || "—"}
+                      {(mios ? r.company : r.email) || "—"}
                     </td>
                     <td
                       className="px-3 py-2.5 font-mono text-xs"

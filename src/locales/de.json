@@ -10720,7 +10720,13 @@
       "nDeTotalEventos_other": "{{count}} von {{total}} Ereignissen",
       "ningunEventoCoincide": "Keine Ereignisse passen zur Suche oder zum gewählten Filter.",
       "todaviaNoSeHaRegistrado": "Es wurde noch kein Zugriff protokolliert.",
-      "finDelHistorial": "Ende des Verlaufs"
+      "finDelHistorial": "Ende des Verlaufs",
+      "alcance": {
+        "mios": "Meine Anmeldungen",
+        "empresa": "Dieses Unternehmen"
+      },
+      "empresa": "Unternehmen",
+      "soloTu": "Ihre An- und Abmeldungen, Fehlversuche und Geräte in jedem Unternehmen, dem Sie angehören. Nur Sie sehen sie."
     },
     "MapPanel": {
       "abrirEnPantallaCompletaNueva": "Im Vollbild öffnen (neuer Tab)",

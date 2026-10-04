@@ -3,7 +3,7 @@
  *
  * EL PROBLEMA QUE RESUELVE: el registro existía TRES VECES y ninguna estaba
  * donde se busca. `/security/audit` y `/registros-sistema` estaban enrutadas y
- * no aparecían en ningún menú; sólo `/historial-inicio-sesion` tenía enlace, y
+ * no aparecían en ningún menú; sólo `/sign-in-history` tenía enlace, y
  * colgado del menú del avatar. Una función de cumplimiento que existe y nadie
  * encuentra vale lo mismo que no tenerla — y es lo primero que pide un auditor.
  *
@@ -40,7 +40,7 @@ export default function ActivityLogHubPage() {
       }),
     },
     {
-      to: "/historial-inicio-sesion",
+      to: "/sign-in-history",
       icon: <KeyRound />,
       titulo: t("settings.activityLog.accessTitle", {
         defaultValue: "Accesos a la plataforma",

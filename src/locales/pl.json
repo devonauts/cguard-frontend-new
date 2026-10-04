@@ -10754,7 +10754,13 @@
       "nDeTotalEventos_many": "{{count}} z {{total}} zdarzeń",
       "ningunEventoCoincide": "Żadne zdarzenie nie pasuje do wyszukiwania ani wybranego filtra.",
       "todaviaNoSeHaRegistrado": "Nie zarejestrowano jeszcze żadnego dostępu.",
-      "finDelHistorial": "Koniec historii"
+      "finDelHistorial": "Koniec historii",
+      "alcance": {
+        "mios": "Moje logowania",
+        "empresa": "Ta firma"
+      },
+      "empresa": "Firma",
+      "soloTu": "Twoje logowania, wylogowania, nieudane próby i urządzenia w każdej firmie, do której należysz. Widzisz je tylko Ty."
     },
     "MapPanel": {
       "abrirEnPantallaCompletaNueva": "Otwórz na pełnym ekranie (nowa karta)",
