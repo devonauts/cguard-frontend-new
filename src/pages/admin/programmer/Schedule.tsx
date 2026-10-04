@@ -2634,6 +2634,31 @@ export default function Schedule() {
             assignmentId: a.id,
           }),
       });
+      // ── DOBLAR TURNO: UNA ENTRADA POR PERSONA ─────────────────────────
+      // Antes salía UNA sola vez, siempre para la PRIMERA persona de la plaza.
+      // En una plaza con varios (día/noche, rotativa) eso extendía a quien no
+      // era: EcuaSeguridad, 03/10, pidió doblar a Dino Soffe y el diálogo se
+      // abrió con Flavio, que libraba — sin turno ese día, el tramo empezaba
+      // «ahora», chocaba con el turno de otro y el servidor respondía «ese
+      // puesto ya tiene a otro vigilante». Cada persona, con SU turno.
+      //
+      // Se le pasa el PUESTO y el fin de su turno: son los dos datos que el
+      // servidor tendría que adivinar de «su último turno», y adivinarlos
+      // fallaba en cuanto el vigilante tenía turno al día siguiente.
+      items.push({
+        label: t("ui.Schedule.menuExtenderTurno", {
+          defaultValue: "Extender turno{{suf}}…",
+          suf,
+        }),
+        onClick: () =>
+          setExtendTarget({
+            guardId: a.guardId,
+            guardName: full,
+            stationId: station.id,
+            stationName: stationLabel(station),
+            scheduledEnd: s?.endTime ?? null,
+          }),
+      });
       if (s && s.stationId === station.id) {
         items.push({
           label: t("ui.Schedule.menuEditarElTurno", {
@@ -2682,6 +2707,21 @@ export default function Schedule() {
             guardId: cs.guardId,
             guardName: full,
             date: dateStr,
+          }),
+      });
+      // Quien vino a cubrir también puede tener que doblar.
+      items.push({
+        label: t("ui.Schedule.menuExtenderTurnoCobertura", {
+          defaultValue: "Extender turno de {{nombre}} (cobertura)…",
+          nombre: nm,
+        }),
+        onClick: () =>
+          setExtendTarget({
+            guardId: cs.guardId,
+            guardName: full,
+            stationId: station.id,
+            stationName: stationLabel(station),
+            scheduledEnd: cs.endTime ?? null,
           }),
       });
       items.push({
@@ -2770,26 +2810,8 @@ export default function Schedule() {
           }),
       });
 
-      // Doblar turno: el que está en el puesto se queda porque su relevo no
-      // llegó. Va junto a «novedad» porque es la misma familia — lo que pasó de
-      // verdad, no lo que estaba planificado.
-      //
-      // Se le pasa el PUESTO y el fin de su turno: son los dos datos que el
-      // servidor tendría que adivinar de «su último turno», y adivinarlos
-      // fallaba en cuanto el vigilante tenía turno al día siguiente.
+      // «Extender turno…» va arriba, una entrada por persona del casillero.
       const suShift = shiftByGuardDate.get(`${a.guardId}|${dateStr}`);
-
-      items.push({
-        label: t("ui.Schedule.menuExtenderTurno", "Extender turno…"),
-        onClick: () =>
-          setExtendTarget({
-            guardId: a.guardId,
-            guardName,
-            stationId: station.id,
-            stationName: stationLabel(station),
-            scheduledEnd: suShift?.endTime ?? null,
-          }),
-      });
       const ov = getOverride(a.guardId, dateStr);
       // ── LA FALTA TIENE QUE TENER SALIDA ───────────────────────────────
       // Registrar la novedad es la mitad del trabajo: el puesto sigue vacío.
@@ -3003,7 +3025,10 @@ export default function Schedule() {
           }),
       });
       items.push({
-        label: t("ui.Schedule.menuExtenderTurno", "Extender turno…"),
+        label: t("ui.Schedule.menuExtenderTurno", {
+          defaultValue: "Extender turno{{suf}}…",
+          suf: "",
+        }),
         onClick: () =>
           setExtendTarget({
             guardId: sfGuard.guardId,
