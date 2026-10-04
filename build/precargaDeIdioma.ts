@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+
 import type { Plugin } from "vite";
 
 /**
@@ -6,8 +8,8 @@ import type { Plugin } from "vite";
  * El idioma ya no va dentro del archivo de arranque (ver `src/i18n.ts`): es un
  * trozo aparte que `i18n.ts` pide al ejecutarse. Pero «al ejecutarse» es
  * DESPUÉS de haber bajado y evaluado el arranque — dos descargas en fila donde
- * antes había una. Este plugin las pone en paralelo: escribe en `index.html`
- * un guión mínimo que mira qué idioma toca (la misma regla que
+ * antes había una. Este plugin las pone en paralelo: añade a `index.html` un
+ * guión mínimo (en su propio archivo) que mira qué idioma toca (la misma regla que
  * `idiomaDeArranque`) y deja un `<link rel="modulepreload">` a su archivo.
  *
  * Los nombres llevan huella y sólo se conocen al terminar el build, por eso es
@@ -37,8 +39,31 @@ export function precargaDeIdioma(): Plugin {
           `n=(navigator.language||"").slice(0,2).toLowerCase(),` +
           `u=m[g]||m[n]||m.en,k=document.createElement("link");` +
           `k.rel="modulepreload";k.href=u;document.head.appendChild(k)}catch(e){}})();`;
+        /* EN UN ARCHIVO, NO EN LÍNEA. La política de contenido del panel
+           lleva la huella del único guión en línea del index.html; uno nuevo
+           —y con contenido distinto en cada build— daría un aviso de política
+           en cada carga de cada usuario. Como archivo propio entra por
+           `script-src 'self'`, igual que el resto del código. */
+        const huella = createHash("sha256").update(guion).digest("hex").slice(0, 8);
+        const fileName = `assets/precarga-idioma-${huella}.js`;
 
-        return html.replace("</head>", `<script>${guion}</script></head>`);
+        (ctx.bundle as any)[fileName] = {
+          type: "asset",
+          fileName,
+          name: "precarga-idioma.js",
+          names: ["precarga-idioma.js"],
+          originalFileName: null,
+          originalFileNames: [],
+          needsCodeReference: false,
+          source: guion,
+        };
+
+        return {
+          html,
+          tags: [
+            { tag: "script", attrs: { src: "/" + fileName }, injectTo: "head" },
+          ],
+        };
       },
     },
   };
