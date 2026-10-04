@@ -11617,6 +11617,7 @@
       "menuEliminarLaCoberturaDe": "Delete {{nombre}}'s coverage",
       "menuExtenderTurno": "Extend shift{{suf}}…",
       "menuExtenderTurnoCobertura": "Extend {{nombre}}'s shift (coverage)…",
+      "menuExtenderTurnoDe": "Extend {{nombre}}'s shift…",
       "menuMarcarElDia": "Mark the day (V / PM / F / L)…",
       "menuPonerUnAprendiz": "Add a trainee with {{nombre}}…",
       "menuQuitarCodigo": "Remove {{codigo}}",

@@ -12140,6 +12140,7 @@
       "menuEliminarLaCoberturaDe": "Abdeckung von {{nombre}} löschen",
       "menuExtenderTurno": "Schicht verlängern{{suf}}…",
       "menuExtenderTurnoCobertura": "Schicht von {{nombre}} verlängern (Abdeckung)…",
+      "menuExtenderTurnoDe": "Schicht von {{nombre}} verlängern…",
       "menuMarcarElDia": "Tag markieren (V / PM / F / L)…",
       "menuPonerUnAprendiz": "Einen Auszubildenden mit {{nombre}} einteilen…",
       "menuQuitarCodigo": "{{codigo}} entfernen",

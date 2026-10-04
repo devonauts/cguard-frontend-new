@@ -11617,6 +11617,7 @@
       "menuEliminarLaCoberturaDe": "Excluir a cobertura de {{nombre}}",
       "menuExtenderTurno": "Estender turno{{suf}}…",
       "menuExtenderTurnoCobertura": "Estender turno de {{nombre}} (cobertura)…",
+      "menuExtenderTurnoDe": "Estender turno de {{nombre}}…",
       "menuMarcarElDia": "Marcar o dia (V / PM / F / L)…",
       "menuPonerUnAprendiz": "Colocar um aprendiz com {{nombre}}…",
       "menuQuitarCodigo": "Remover {{codigo}}",
