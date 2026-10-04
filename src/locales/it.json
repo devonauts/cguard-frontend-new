@@ -10721,10 +10721,6 @@
       "ningunEventoCoincide": "Nessun evento corrisponde alla ricerca o al filtro scelto.",
       "todaviaNoSeHaRegistrado": "Non è stato ancora registrato alcun accesso.",
       "finDelHistorial": "Fine della cronologia",
-      "alcance": {
-        "mios": "I miei accessi",
-        "empresa": "Questa azienda"
-      },
       "empresa": "Azienda",
       "soloTu": "I tuoi accessi, disconnessioni, tentativi falliti e dispositivi, in ogni azienda di cui fai parte. Li vedi solo tu."
     },

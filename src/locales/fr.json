@@ -10721,10 +10721,6 @@
       "ningunEventoCoincide": "Aucun événement ne correspond à la recherche ou au filtre choisi.",
       "todaviaNoSeHaRegistrado": "Aucun accès n'a encore été enregistré.",
       "finDelHistorial": "Fin de l'historique",
-      "alcance": {
-        "mios": "Mes connexions",
-        "empresa": "Cette entreprise"
-      },
       "empresa": "Entreprise",
       "soloTu": "Vos connexions, déconnexions, tentatives échouées et appareils, dans chaque entreprise dont vous faites partie. Vous seul les voyez."
     },

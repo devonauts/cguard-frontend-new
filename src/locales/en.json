@@ -10198,10 +10198,6 @@
       "ningunEventoCoincide": "No events match the search or the selected filter.",
       "todaviaNoSeHaRegistrado": "No sign-ins have been recorded yet.",
       "finDelHistorial": "End of history",
-      "alcance": {
-        "mios": "My sign-ins",
-        "empresa": "This company"
-      },
       "empresa": "Company",
       "soloTu": "Your sign-ins, sign-outs, failed attempts and devices, in every company you belong to. Only you can see them."
     },

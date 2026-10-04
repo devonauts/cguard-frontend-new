@@ -10198,10 +10198,6 @@
       "ningunEventoCoincide": "Nenhum evento corresponde à pesquisa ou ao filtro escolhido.",
       "todaviaNoSeHaRegistrado": "Ainda não foi registrado nenhum acesso.",
       "finDelHistorial": "Fim do histórico",
-      "alcance": {
-        "mios": "Meus acessos",
-        "empresa": "Esta empresa"
-      },
       "empresa": "Empresa",
       "soloTu": "Seus acessos, saídas, tentativas falhas e dispositivos, em cada empresa a que você pertence. Só você os vê."
     },
