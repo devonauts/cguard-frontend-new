@@ -432,6 +432,10 @@
   border-radius: var(--r-md); padding: 0.6rem 0.75rem; min-width: 180px;
   color: var(--ink); box-shadow: var(--lift-4); font-size: 12px;
 }
+/* Las barras del «al aire» del pase de novedades (RadioPasePopup). */
+@keyframes cg-onda { 0%, 100% { transform: scaleY(0.3); } 50% { transform: scaleY(1); } }
+.cg-onda { animation: cg-onda 0.9s ease-in-out infinite; transform-origin: center; }
+@media (prefers-reduced-motion: reduce) { .cg-onda { animation: none; } }
 @keyframes cc-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 .cc-rise { animation: cc-rise 0.5s var(--ease) both; }
 @keyframes cc-scan { 0% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }

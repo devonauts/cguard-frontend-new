@@ -78,6 +78,8 @@ export class VoiceChannel {
   private cb: VoiceCallbacks = {};
   private selfId = "";
   private attached = new Map<string, HTMLMediaElement>();
+  /** Volumen de ESCUCHA (0–1). Sólo afecta a lo que oye este equipo. */
+  private volume = 1;
   /** identity of whoever we last reported as the active speaker (for prompt clearing). */
   private speakerId: string | null = null;
   /**
@@ -223,6 +225,7 @@ export class VoiceChannel {
             const el = track.attach();
 
             el.style.display = "none";
+            el.volume = this.volume;
             document.body.appendChild(el);
             this.attached.set(sid, el);
           }
@@ -445,6 +448,22 @@ export class VoiceChannel {
     } catch {
       /* ignore */
     }
+  }
+
+  /**
+   * Volumen de lo que ESTE equipo oye del canal. No toca lo que se transmite ni
+   * lo que oyen los demás: cada pista remota suena por su propio `<audio>`, y
+   * es ése el que se regula — incluidos los que lleguen después.
+   */
+  setVolume(v: number): void {
+    this.volume = Math.max(0, Math.min(1, Number.isFinite(v) ? v : 1));
+    this.attached.forEach((el) => {
+      try {
+        el.volume = this.volume;
+      } catch {
+        /* ignore */
+      }
+    });
   }
 
   leave(): void {

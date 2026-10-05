@@ -97,6 +97,18 @@ export const radioCheckService = {
       ),
     );
   },
+  /**
+   * La central da el pase por TERMINADO: quien no contestó queda «sin
+   * respuesta» y el reporte se escribe en el historial. No es cancelar.
+   */
+  async finishSession(id: string) {
+    return unwrap(
+      await api.post(
+        `/tenant/${getTenantId()}/radio-check/sessions/${id}/finish`,
+        { data: {} },
+      ),
+    );
+  },
   async regenerateSummary(id: string) {
     return unwrap(
       await api.post(

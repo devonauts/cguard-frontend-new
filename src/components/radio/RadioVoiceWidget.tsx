@@ -25,7 +25,15 @@ import {
   radioResume,
   radioStartTalk,
   radioStopTalk,
+  encenderRadioYEsperar,
 } from "@/lib/radioVoiceManager";
+import {
+  abrirPase,
+  cerrarPase,
+  subscribePase,
+  getPaseSnapshot,
+} from "@/lib/pasePopup";
+import { useRadioRealtime } from "@/components/radio/RadioRealtimeProvider";
 
 /**
  * Floating radio panel, opened from the header radio icon. One general channel
@@ -68,17 +76,26 @@ export default function RadioVoiceWidget() {
     }
   };
 
+  // El botón «Iniciar / Finalizar» tiene que decir la verdad EN VIVO. Sólo se
+  // consultaba al abrir el panel: un pase terminado desde el panel en vivo, por
+  // otro operador o por el servidor dejaba aquí «Finalizar pase» para siempre.
+  // Ahora se vuelve a mirar con cada evento de radio y cuando el panel del pase
+  // cambia de pase (o lo suelta).
+  const { version: radioVersion } = useRadioRealtime();
+  const paseSeguido = useSyncExternalStore(subscribePase, getPaseSnapshot);
+
   useEffect(() => {
     if (snap.open) refreshPase();
-  }, [snap.open]);
+  }, [snap.open, radioVersion, paseSeguido.sessionId]);
 
   const startPase = async () => {
     setPaseBusy(true);
     try {
-      await radioCheckService.start("all");
-      toast.success(
-        t("ui.RadioVoiceWidget.paseIniciado", "Pase de novedades iniciado"),
-      );
+      // Dentro del canal ANTES de iniciar: la central habla nada más arrancar.
+      await encenderRadioYEsperar();
+      const s: any = await radioCheckService.start("all");
+
+      if (s?.id) abrirPase(s.id, { oculto: false });
       await refreshPase();
     } catch {
       toast.error(t("radio.paseStartError", "No se pudo iniciar el pase"));
@@ -90,8 +107,11 @@ export default function RadioVoiceWidget() {
     if (!runningId) return;
     setPaseBusy(true);
     try {
-      await radioCheckService.cancelSession(runningId);
+      // Terminar, no cancelar: quien no contestó queda «sin respuesta» y el
+      // reporte se escribe en el historial.
+      await radioCheckService.finishSession(runningId);
       setRunningId(null);
+      cerrarPase();
     } catch {
       toast.error(t("radio.paseEndError", "No se pudo finalizar el pase"));
     } finally {

@@ -21,6 +21,7 @@ import PlatformAnnouncements from "@/components/PlatformAnnouncements";
 import AnuncioEmergente from "@/components/AnuncioEmergente";
 import Breadcrumb from "@/components/ui/breadcrumb";
 import RadioVoiceWidget from "@/components/radio/RadioVoiceWidget";
+import RadioPasePopup from "@/components/radio/RadioPasePopup";
 import VisitBeacon from "@/components/VisitBeacon";
 import OnboardingProvider from "@/components/onboarding/OnboardingProvider";
 import tenantService from "@/services/tenant.service";
@@ -503,6 +504,9 @@ function AppLayoutShell({ children }: AppLayoutProps) {
         <BarraInferiorMovil onAbrirMenu={() => setSidebarOpen(true)} />
 
         <RadioVoiceWidget />
+        {/* El pase de novedades en vivo. Aquí y no en /radio: el pase se inicia
+          también desde el widget, estando en cualquier pantalla. */}
+        <RadioPasePopup />
 
         {/* VigIA — el asistente, abajo a la derecha. Solo para el equipo (el
           armazón del CRM ya es de staff); las acciones corren con los permisos

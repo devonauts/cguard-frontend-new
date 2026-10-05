@@ -41,6 +41,17 @@ const socketOrigin = () => {
 const ON_KEY = "radioVoiceOn";
 const CHANNEL_KEY = "radioVoiceChannel";
 const CHANNEL_NAME_KEY = "radioVoiceChannelName";
+const VOLUME_KEY = "radioVoiceVolume";
+
+function volumenGuardado(): number {
+  try {
+    const v = parseFloat(localStorage.getItem(VOLUME_KEY) || "");
+
+    return Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : 1;
+  } catch {
+    return 1;
+  }
+}
 
 /** El canal al que se entra si nadie ha elegido otro. */
 export const CANAL_POR_DEFECTO = "general";
@@ -58,6 +69,8 @@ export type RadioVoiceSnapshot = {
   channel: string;
   /** Su nombre visible, para no pintar la clave cruda en la cabecera. */
   channelName: string;
+  /** Volumen de escucha del canal en ESTE equipo (0–1). */
+  volume: number;
 };
 
 function canalGuardado(): { key: string; name: string } {
@@ -210,6 +223,7 @@ let snap: RadioVoiceSnapshot = {
   hint: null,
   channel: canalGuardado().key,
   channelName: canalGuardado().name,
+  volume: volumenGuardado(),
 };
 
 const listeners = new Set<() => void>();
@@ -301,6 +315,7 @@ async function doConnect() {
   const v = new VoiceChannelCtor();
 
   vc = v;
+  v.setVolume(snap.volume);
   v.connect(
     {
       url: socketOrigin(),
@@ -442,6 +457,58 @@ export function setRadioChannel(key: string, name?: string) {
   if (estaba) doDisconnect();
   set({ channel: clave, channelName: name || clave, hint: null });
   if (estaba) doConnect();
+}
+
+/**
+ * Volumen de lo que el despachador OYE. Se recuerda entre recargas, igual que
+ * el encendido: quien lo bajó para una llamada no quiere que la radio vuelva a
+ * gritarle al recargar.
+ */
+export function setRadioVolume(v: number) {
+  const vol = Math.max(0, Math.min(1, Number.isFinite(v) ? v : 1));
+
+  try {
+    localStorage.setItem(VOLUME_KEY, String(vol));
+  } catch {
+    /* ignore */
+  }
+  try {
+    vc?.setVolume(vol);
+  } catch {
+    /* ignore */
+  }
+  set({ volume: vol });
+}
+
+/**
+ * Enciende la radio y espera a estar DENTRO del canal (o a que venza el plazo).
+ *
+ * Para el pase de novedades: la central habla por el canal nada más iniciarlo,
+ * y quien lo inicia con la radio apagada se perdía el anuncio. Hay que llamarlo
+ * desde el propio clic — es el gesto que el navegador exige para dejar sonar.
+ * Nunca rechaza: sin canal el pase se inicia igual, sólo que no se oye.
+ */
+export function encenderRadioYEsperar(ms = 4000): Promise<boolean> {
+  radioResume();
+  if (!snap.on || !vc) setRadioOn(true);
+  radioResume();
+  if (snap.joined) return Promise.resolve(true);
+
+  return new Promise((resolve) => {
+    let hecho = false;
+    const fin = (ok: boolean) => {
+      if (hecho) return;
+      hecho = true;
+      clearTimeout(tope);
+      quitar();
+      resolve(ok);
+    };
+    const quitar = subscribeRadio(() => {
+      if (snap.joined) fin(true);
+      else if (snap.state === "error") fin(false);
+    });
+    const tope = setTimeout(() => fin(snap.joined), ms);
+  });
 }
 
 /** Restore the on-state after a reload / first mount (best-effort). */

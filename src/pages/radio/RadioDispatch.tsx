@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
@@ -10,6 +10,7 @@ import {
   AlertTriangle,
   RefreshCw,
   FileText,
+  CheckCircle2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -31,6 +32,8 @@ import RadioCoveragePanel from "@/components/radio/RadioCoveragePanel";
 import { useSondeoVisible } from "@/hooks/useSondeoVisible";
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { encenderRadioYEsperar } from "@/lib/radioVoiceManager";
+import { abrirPase, subscribePase, getPaseSnapshot } from "@/lib/pasePopup";
 
 const statusBadge: Record<
   string,
@@ -154,6 +157,14 @@ export default function RadioDispatch() {
   useEffect(() => {
     if (version > 0) refresh();
   }, [version, refresh]);
+  // El panel en vivo termina el pase por su cuenta: en cuanto suelta el pase
+  // (o coge otro) esta consola se vuelve a leer, sin esperar al websocket. Si
+  // no, la cabecera seguía ofreciendo «Terminar pase» de un pase ya cerrado.
+  const paseSeguido = useSyncExternalStore(subscribePase, getPaseSnapshot);
+
+  useEffect(() => {
+    refresh();
+  }, [paseSeguido.sessionId, refresh]);
   // Tick every second while a pase is running to drive the report countdown.
   useEffect(() => {
     if (!running) return;
@@ -165,11 +176,36 @@ export default function RadioDispatch() {
   const start = async (scope: "all" | "station", stationId?: string) => {
     setBusy(true);
     try {
-      await radioCheckService.start(scope, stationId);
-      toast.success(t("ui.RadioDispatch.paseIniciado", "Pase iniciado"));
+      // Dentro del canal ANTES de iniciar: la central habla nada más arrancar,
+      // y quien inicia con la radio apagada se perdía el anuncio. Va en el
+      // propio clic — es el gesto que el navegador exige para dejar sonar.
+      await encenderRadioYEsperar();
+      const s: any = await radioCheckService.start(scope, stationId);
+
+      if (s?.id) abrirPase(s.id, { oculto: false });
       await refresh();
     } catch {
       toast.error(t("ui.RadioDispatch.noSePudoIniciar"));
+    } finally {
+      setBusy(false);
+    }
+  };
+  const finish = async () => {
+    if (!running) return;
+    setBusy(true);
+    try {
+      await radioCheckService.finishSession(running.id);
+      toast.success(
+        t(
+          "ui.RadioPasePopup.paseTerminado",
+          "Pase terminado. El reporte queda en «Pases recientes».",
+        ),
+      );
+      await refresh();
+    } catch {
+      toast.error(
+        t("ui.RadioPasePopup.noSePudoTerminar", "No se pudo terminar el pase."),
+      );
     } finally {
       setBusy(false);
     }
@@ -264,14 +300,27 @@ export default function RadioDispatch() {
                 <Settings2 size={16} />
               </Button>
               {running ? (
-                <Button disabled={busy} variant="outline" onClick={cancel}>
-                  {busy ? (
-                    <Loader2 className="animate-spin" size={15} />
-                  ) : (
-                    <Square size={14} />
-                  )}{" "}
-                  {t("ui.RadioDispatch.cancelar", "Cancelar")}
-                </Button>
+                <>
+                  <Button
+                    variant="outline"
+                    onClick={() => abrirPase(running.id, { oculto: false })}
+                  >
+                    <Radio size={15} />{" "}
+                    {t("ui.RadioPasePopup.verEnVivo", "Ver pase en vivo")}
+                  </Button>
+                  <Button disabled={busy} variant="outline" onClick={cancel}>
+                    <Square size={14} />{" "}
+                    {t("ui.RadioDispatch.cancelar", "Cancelar")}
+                  </Button>
+                  <Button disabled={busy} variant="brand" onClick={finish}>
+                    {busy ? (
+                      <Loader2 className="animate-spin" size={15} />
+                    ) : (
+                      <CheckCircle2 size={15} />
+                    )}{" "}
+                    {t("ui.RadioPasePopup.terminarPase", "Terminar pase")}
+                  </Button>
+                </>
               ) : (
                 <Button
                   disabled={busy || !stations.length}
