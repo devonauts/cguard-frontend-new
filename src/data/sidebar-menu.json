@@ -261,6 +261,11 @@
         "path": "/schedule"
       },
       {
+        "id": "planificador",
+        "name": "Planificador",
+        "path": "/planificador"
+      },
+      {
         "id": "cobertura",
         "name": "Cobertura en vivo",
         "path": "/coverage"

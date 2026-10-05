@@ -58,6 +58,7 @@
     "programador": {
       "label": "Agendador",
       "horario": "Agenda",
+      "planificador": "Planejador",
       "plantillas": "Modelos de turno",
       "asistencia": "Presença",
       "estado": "Status do turno",

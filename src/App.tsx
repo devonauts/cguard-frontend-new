@@ -392,6 +392,9 @@ const ShiftExchange = lazy(
 const ShiftStatus = lazy(() => import("./pages/admin/programmer/ShiftStatus"));
 const OpenShifts = lazy(() => import("./pages/admin/programmer/OpenShifts"));
 const Coverage = lazy(() => import("./pages/admin/programmer/Coverage"));
+const Planificador = lazy(
+  () => import("./pages/admin/programmer/Planificador"),
+);
 const CheckInOut = lazy(() => import("./pages/admin/Reports/CheckInOut"));
 const SiteTour = lazy(() => import("./pages/admin/Reports/SiteTour"));
 const Task = lazy(() => import("./pages/admin/Reports/Task"));
@@ -2118,6 +2121,14 @@ export default function App() {
                                   </ProtectedRoute>
                                 }
                                 path="/coverage"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <Planificador />
+                                  </ProtectedRoute>
+                                }
+                                path="/planificador"
                               />
                               {/* FIN PROGRAMADOR */}
 

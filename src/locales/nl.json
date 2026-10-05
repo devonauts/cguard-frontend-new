@@ -5208,6 +5208,7 @@
       "asistencia": "Aanwezigheid",
       "estado": "Dienststatus",
       "horario": "Rooster",
+      "planificador": "Planner",
       "intercambio": "Dienstruil",
       "label": "Planner",
       "plantillas": "Dienstsjablonen",

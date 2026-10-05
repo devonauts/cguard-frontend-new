@@ -5653,6 +5653,7 @@
       "asistencia": "Asistencia",
       "estado": "Estado del turno",
       "horario": "Horario",
+      "planificador": "Planificador",
       "intercambio": "Intercambio de turno",
       "label": "Programador",
       "plantillas": "Plantillas de turno",

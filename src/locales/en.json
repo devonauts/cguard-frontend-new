@@ -5652,6 +5652,7 @@
       "asistencia": "Attendance",
       "estado": "Shift Status",
       "horario": "Schedule",
+      "planificador": "Planner",
       "intercambio": "Shift Exchange",
       "label": "Scheduler",
       "plantillas": "Shift Templates",
