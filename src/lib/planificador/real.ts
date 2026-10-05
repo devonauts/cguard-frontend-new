@@ -21,6 +21,7 @@ import {
   FRANCO,
   LIBRE,
   REGLAS_POR_DEFECTO,
+  sanear,
   type Franja,
   type Persona,
   type Plan,
@@ -60,22 +61,40 @@ function franjaDe(ini: number, fin: number): Franja {
   return { id: `${hhmm(ini)}-${hhmm(fin)}`.replace(/:/g, ""), nombre: `${hhmm(ini)}–${hhmm(fin)}`, ini, fin };
 }
 
+/**
+ * Un formateador por zona, no uno por turno: crearlo es lo caro, y una lectura
+ * trae cientos de turnos. `null` si la zona no existe.
+ */
+const FORMATOS = new Map<string, Intl.DateTimeFormat | null>();
+
+function formato(tz: string): Intl.DateTimeFormat | null {
+  if (!FORMATOS.has(tz)) {
+    let f: Intl.DateTimeFormat | null = null;
+
+    try {
+      f = new Intl.DateTimeFormat("en-CA", {
+        timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit",
+        hour: "2-digit", minute: "2-digit", hourCycle: "h23",
+      });
+    } catch {
+      f = null;
+    }
+    FORMATOS.set(tz, f);
+  }
+
+  return FORMATOS.get(tz) ?? null;
+}
+
 /** Día (entero, 0 = `base`) y minuto local de un instante, en la zona de la empresa. */
 function diaYMinuto(iso: string, base: string, tz: string): { d: number; min: number } | null {
   const t = new Date(iso);
 
   if (Number.isNaN(t.getTime())) return null;
-  let partes: Record<string, string> = {};
+  const partes: Record<string, string> = {};
+  const fmt = formato(tz);
 
-  try {
-    for (const p of new Intl.DateTimeFormat("en-CA", {
-      timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit",
-      hour: "2-digit", minute: "2-digit", hourCycle: "h23",
-    }).formatToParts(t))
-      partes[p.type] = p.value;
-  } catch {
-    return null;
-  }
+  if (!fmt) return null;
+  for (const p of fmt.formatToParts(t)) partes[p.type] = p.value;
   const dia = Date.UTC(Number(partes.year), Number(partes.month) - 1, Number(partes.day));
   const [by, bm, bd] = base.split("-").map(Number);
 
@@ -92,6 +111,15 @@ const diasEntre = (base: string, fecha: string) => {
   return Math.round((Date.UTC(y, m - 1, d) - Date.UTC(by, bm - 1, bd)) / 86_400_000);
 };
 
+/** Un número de días de ciclo que se pueda usar: entero, ni negativo ni enorme. */
+const diasDeCiclo = (x: unknown): number => {
+  const n = Math.round(Number(x));
+
+  return Number.isFinite(n) ? Math.min(60, Math.max(0, n)) : 0;
+};
+/** El motor usa `|` para separar sus claves: un id no puede llevarlo. */
+const idLimpio = (x: unknown): string => String(x ?? "").replace(/\|/g, "¦");
+
 const TIPOS: Record<string, string> = { V: "vacaciones", P: "permiso", I: "incapacidad", M: "incapacidad" };
 
 /**
@@ -105,6 +133,17 @@ export function planDesdeHorarioReal(
   tz: string,
   dias = 28,
 ): PlanReal {
+  // Lo que llega del servidor se toma con pinzas: una lista que no es lista, o
+  // un elemento nulo dentro, no puede tumbar la pantalla.
+  const lista = (x: unknown): any[] => (Array.isArray(x) ? x.filter((o) => o && typeof o === "object") : []);
+
+  ov = {
+    stations: lista(ov?.stations), positions: lista(ov?.positions), assignments: lista(ov?.assignments),
+    shifts: lista(ov?.shifts), overrides: lista(ov?.overrides),
+  };
+  rotaciones = lista(rotaciones);
+  dias = Math.min(60, Math.max(1, Math.round(Number(dias)) || 28));
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(base))) base = "1970-01-05";
   const rotPorId = new Map<string, any>((rotaciones || []).map((r) => [String(r.id), r]));
   const franjas: Record<string, Franja> = {};
   const puestos: Puesto[] = [];
@@ -113,14 +152,14 @@ export function planDesdeHorarioReal(
 
   for (const p of ov.positions || []) {
     if (p.deletedAt) continue;
-    const l = plazasDe.get(String(p.stationId)) || [];
+    const l = plazasDe.get(idLimpio(p.stationId)) || [];
 
     l.push(p);
-    plazasDe.set(String(p.stationId), l);
+    plazasDe.set(idLimpio(p.stationId), l);
   }
 
   for (const st of ov.stations || []) {
-    const plazas = (plazasDe.get(String(st.id)) || []).filter((p) => p.type !== "sacafranco");
+    const plazas = (plazasDe.get(idLimpio(st.id)) || []).filter((p) => p.type !== "sacafranco");
     const ventanas = new Map<string, { f: Franja; n: number }>();
 
     for (const p of plazas) {
@@ -147,8 +186,8 @@ export function planDesdeHorarioReal(
     // sí, uno no» son dos personas que se turnan, no dos a la vez. La señal es
     // que el ciclo reparte justo entre las plazas (largo ÷ días de trabajo).
     const rotSt = rotPorId.get(String(st.rotationStyleId || ""));
-    const trabajo = rotSt ? (Number(rotSt.dayShifts) || 0) + (Number(rotSt.nightShifts) || 0) : 0;
-    const largo = trabajo + (rotSt ? Number(rotSt.restDays) || 0 : 0);
+    const trabajo = rotSt ? diasDeCiclo(rotSt.dayShifts) + diasDeCiclo(rotSt.nightShifts) : 0;
+    const largo = trabajo + (rotSt ? diasDeCiclo(rotSt.restDays) : 0);
 
     if (st.scheduleType !== "24h" && trabajo > 0)
       lista = lista.map((v) => (v.n > 1 && largo / trabajo === v.n ? { f: v.f, n: 1 } : v));
@@ -161,7 +200,7 @@ export function planDesdeHorarioReal(
         : [{ f: d, n: 1 }];
     }
     const pu: Puesto = {
-      id: String(st.id),
+      id: idLimpio(st.id),
       nombre: st.stationName || "Puesto",
       detalle: st.nickname || undefined,
       franjas: lista.map((v) => v.f.id),
@@ -186,7 +225,7 @@ export function planDesdeHorarioReal(
     const g = String(s.guardId);
 
     if (!real.has(g)) real.set(g, new Map());
-    real.get(g)!.set(dm.d, { st: String(s.stationId), min: dm.min });
+    real.get(g)!.set(dm.d, { st: idLimpio(s.stationId), min: dm.min });
   }
   /** La franja del puesto cuya entrada queda más cerca de esa hora. */
   const franjaMasCercana = (pu: Puesto, min: number) => {
@@ -216,8 +255,8 @@ export function planDesdeHorarioReal(
 
   for (const a of ov.assignments || []) {
     if (a.deletedAt || (a.status && a.status !== "active")) continue;
-    const st = (ov.stations || []).find((s) => String(s.id) === String(a.stationId));
-    const pu = puestoPorId.get(String(a.stationId));
+    const st = (ov.stations || []).find((s) => idLimpio(s.id) === idLimpio(a.stationId));
+    const pu = puestoPorId.get(idLimpio(a.stationId));
 
     if (!st || !pu) continue;
     const rot = rotPorId.get(String(a.rotationStyleId || st.rotationStyleId || ""));
@@ -261,11 +300,11 @@ export function planDesdeHorarioReal(
       }
     // 2) Si no hay patrón claro, el ciclo declarado, arrancando donde más acierta.
     if (!patron) {
-      if (rot && (rot.dayShifts || rot.nightShifts)) {
+      if (rot && diasDeCiclo(rot.dayShifts) + diasDeCiclo(rot.nightShifts) > 0) {
         patron = [
-          ...Array(Number(rot.dayShifts) || 0).fill(relevo ? LIBRE : d1),
-          ...Array(Number(rot.nightShifts) || 0).fill(relevo ? LIBRE : d2),
-          ...Array(Number(rot.restDays) || 0).fill(FRANCO),
+          ...Array(diasDeCiclo(rot.dayShifts)).fill(relevo ? LIBRE : d1),
+          ...Array(diasDeCiclo(rot.nightShifts)).fill(relevo ? LIBRE : d2),
+          ...Array(diasDeCiclo(rot.restDays)).fill(FRANCO),
         ];
       } else {
         patron = Array.from({ length: 7 }, (_, d) => visto[d] ?? FRANCO);
@@ -296,7 +335,7 @@ export function planDesdeHorarioReal(
     if (!relevo && hechos.size) { aciertos += horizonte - errores; comparados += horizonte; }
 
     const persona: Persona = {
-      id: String(a.id),
+      id: idLimpio(a.id),
       nombre,
       puesto: relevo ? null : pu.id,
       patron,
@@ -306,13 +345,13 @@ export function planDesdeHorarioReal(
     };
 
     if (relevo) {
-      const cubiertos: string[] = (a.coveredStationIds || []).map(String).filter((id: string) => puestoPorId.has(id));
+      const cubiertos: string[] = (Array.isArray(a.coveredStationIds) ? a.coveredStationIds : []).map(idLimpio).filter((id: string) => puestoPorId.has(id));
 
       // Sin lista propia cubre las estaciones de su misma sede, que es como
       // encadena el generador a un sacafranco.
       persona.fijos = cubiertos.length
         ? cubiertos
-        : (ov.stations || []).filter((s) => s.postSiteId && s.postSiteId === st.postSiteId).map((s) => String(s.id));
+        : (ov.stations || []).filter((s) => s.postSiteId && s.postSiteId === st.postSiteId).map((s) => idLimpio(s.id));
     }
     for (const o of ov.overrides || []) {
       if (String(o.guardId) !== guardId) continue;
@@ -323,9 +362,13 @@ export function planDesdeHorarioReal(
     personas.push(persona);
   }
 
+  const plan: Plan = { franjas, puestos, personas, cubre: {}, auto: {}, no: {}, reglas: { ...REGLAS_POR_DEFECTO } };
+
+  sanear(plan);
+
   return {
-    plan: { franjas, puestos, personas, cubre: {}, auto: {}, no: {}, reglas: { ...REGLAS_POR_DEFECTO } },
-    coincidencia: comparados ? aciertos / comparados : 1,
+    plan,
+    coincidencia: comparados ? Math.min(1, Math.max(0, aciertos / comparados)) : 1,
     comparados,
   };
 }

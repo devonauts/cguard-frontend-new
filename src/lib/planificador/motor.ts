@@ -349,7 +349,10 @@ export function impedimento(
   const [ini, fin] = intervalo(plan, franja, d);
   const min = plan.reglas.descansoMin;
 
-  for (const dd of [d - 1, d + 1]) {
+  // Dos días a cada lado, no uno: un turno de 24 horas que empieza a las 20:00
+  // de anteayer acaba a las 20:00 de ayer, y contra uno de madrugada de hoy sólo
+  // deja cuatro horas — con ayer «libre» en el calendario.
+  for (const dd of [d - 2, d - 1, d + 1, d + 2]) {
     const t = turnoDe(plan, p, dd);
 
     if (!t) continue;
@@ -364,6 +367,20 @@ export function impedimento(
     return `Pasaría de ${plan.reglas.maxHorasSemana} h esa semana`;
 
   return null;
+}
+
+/** Lo mismo, para alguien que YA cubre ese turno: se juzga sin contar esa cobertura. */
+export function impedimentoSinContar(plan: Plan, p: Persona, pu: Puesto, franja: string, d: number): string | null {
+  const idx = indice(plan);
+  const ik = `${p.id}|${d}`;
+  const suya = idx[ik];
+
+  delete idx[ik];
+  try {
+    return impedimento(plan, p, pu, franja, d);
+  } finally {
+    if (suya) idx[ik] = suya;
+  }
 }
 
 /** Los sacafrancos que tienen ese puesto como fijo. */
@@ -446,12 +463,145 @@ export function aplicarFijos(plan: Plan, d0: number, d1: number): void {
     }
 }
 
+const entero = (x: unknown, min: number, max: number, defecto: number): number => {
+  const n = Math.round(Number(x));
+
+  return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : defecto;
+};
+
+/**
+ * SANEAR: deja cualquier plan en un estado que el motor puede manejar, venga
+ * de donde venga — una lectura del servidor con datos raros, un borrador
+ * guardado por una versión anterior, o un `JSON.parse` de algo a medias.
+ *
+ * No «arregla» el horario: sólo quita lo que no puede significar nada (una
+ * cobertura de alguien que no existe, un día de rotación en una franja que no
+ * existe, un «pide −3») para que el resto de funciones no tengan que
+ * defenderse una por una. Nunca lanza.
+ */
+export function sanear(plan: Plan): void {
+  const obj = (x: any) => (x && typeof x === "object" && !Array.isArray(x) ? x : {});
+
+  plan.franjas = obj(plan.franjas);
+  plan.puestos = Array.isArray(plan.puestos) ? plan.puestos.filter((p) => p && typeof p.id === "string" && p.id && !p.id.includes("|")) : [];
+  plan.personas = Array.isArray(plan.personas) ? plan.personas.filter((p) => p && typeof p.id === "string" && p.id && !p.id.includes("|")) : [];
+  plan.cubre = obj(plan.cubre);
+  plan.auto = obj(plan.auto);
+  plan.no = obj(plan.no);
+  const r = obj(plan.reglas);
+
+  plan.reglas = {
+    descansoMin: entero(r.descansoMin, 0, 2880, REGLAS_POR_DEFECTO.descansoMin),
+    maxSeguidos: entero(r.maxSeguidos, 1, 60, REGLAS_POR_DEFECTO.maxSeguidos),
+    maxHorasSemana: entero(r.maxHorasSemana, 1, 168, REGLAS_POR_DEFECTO.maxHorasSemana),
+  };
+  for (const id of Object.keys(plan.franjas)) {
+    const f = plan.franjas[id];
+
+    if (!f || id.includes("|") || id === FRANCO || id === LIBRE) {
+      delete plan.franjas[id];
+      continue;
+    }
+    f.id = id;
+    f.nombre = typeof f.nombre === "string" && f.nombre ? f.nombre : id;
+    f.ini = entero(f.ini, 0, 1439, 420);
+    f.fin = entero(f.fin, 0, 1439, 1140);
+  }
+  // Ids repetidos: se queda el primero. Dos personas con el mismo id serían la
+  // misma para el índice de coberturas, y una taparía a la otra.
+  const vistos = new Set<string>();
+
+  plan.puestos = plan.puestos.filter((p) => (vistos.has(p.id) ? false : (vistos.add(p.id), true)));
+  vistos.clear();
+  plan.personas = plan.personas.filter((p) => (vistos.has(p.id) ? false : (vistos.add(p.id), true)));
+
+  const puestos = new Map<string, Puesto>();
+
+  for (const pu of plan.puestos) {
+    pu.nombre = typeof pu.nombre === "string" && pu.nombre ? pu.nombre : "Puesto";
+    pu.franjas = [...new Set((Array.isArray(pu.franjas) ? pu.franjas : []).filter((f) => typeof f === "string" && plan.franjas[f]))];
+    const pedido = obj(pu.pide);
+
+    pu.pide = {};
+    for (const f of pu.franjas) {
+      const v = Array.isArray(pedido[f]) ? pedido[f] : [];
+
+      pu.pide[f] = [0, 1, 2, 3, 4, 5, 6].map((i) => entero(v[i], 0, 20, 0));
+    }
+    pu.requiere = Array.isArray(pu.requiere) ? pu.requiere.filter((x) => typeof x === "string" && x) : undefined;
+    puestos.set(pu.id, pu);
+  }
+  for (const p of plan.personas) {
+    p.nombre = typeof p.nombre === "string" && p.nombre ? p.nombre : "Vigilante";
+    if (p.puesto !== null && typeof p.puesto !== "string") p.puesto = null;
+    const pu = p.puesto ? puestos.get(p.puesto) : undefined;
+    // Sin puesto que exista, no puede trabajar en él: se queda sin turnos (no se
+    // convierte en sacafranco por su cuenta, que sería inventarle un papel).
+    const vale = (c: unknown) =>
+      c === FRANCO || (p.puesto === null ? c === LIBRE : !!pu && typeof c === "string" && pu.franjas.includes(c));
+
+    p.patron = (Array.isArray(p.patron) ? p.patron : []).slice(0, 366).map((c) => (vale(c) ? c : FRANCO));
+    p.desfase = entero(p.desfase, -1e6, 1e6, 0);
+    const manual = obj(p.manual);
+
+    p.manual = {};
+    for (const k of Object.keys(manual)) if (Number.isInteger(Number(k)) && vale(manual[k])) p.manual[Number(k)] = manual[k];
+    p.fijos = p.puesto === null ? [...new Set((Array.isArray(p.fijos) ? p.fijos : []).filter((f) => puestos.has(f)))] : undefined;
+    p.ausencias = (Array.isArray(p.ausencias) ? p.ausencias : [])
+      .map((a) => {
+        const x = Number(a?.desde);
+        const y = Number(a?.hasta);
+
+        return { desde: Math.round(Math.min(x, y)), hasta: Math.round(Math.max(x, y)), tipo: typeof a?.tipo === "string" && a.tipo ? a.tipo : "permiso" };
+      })
+      .filter((a) => Number.isFinite(a.desde) && Number.isFinite(a.hasta));
+    p.aptitudes = Array.isArray(p.aptitudes) ? p.aptitudes.filter((x) => typeof x === "string" && x) : undefined;
+  }
+  const personas = new Set(plan.personas.map((p) => p.id));
+  const claveBuena = (k: string) => {
+    const a = k.split("|");
+    const pu = puestos.get(a[0]);
+
+    return a.length === 3 && !!pu && pu.franjas.includes(a[1]) && /^-?\d+$/.test(a[2]);
+  };
+
+  for (const k of Object.keys(plan.cubre)) {
+    const lista = Array.isArray(plan.cubre[k]) ? [...new Set(plan.cubre[k].filter((id) => personas.has(id)))] : [];
+
+    if (!claveBuena(k) || !lista.length) delete plan.cubre[k];
+    else plan.cubre[k] = lista;
+  }
+  for (const x of Object.keys(plan.auto)) {
+    const i = x.lastIndexOf("|");
+    const k = x.slice(0, i);
+
+    if (i < 0 || !(plan.cubre[k] || []).includes(x.slice(i + 1))) delete plan.auto[x];
+  }
+  for (const k of Object.keys(plan.no)) if (!claveBuena(k)) delete plan.no[k];
+  // Las coberturas pudieron cambiar por debajo: el índice se rehace.
+  INDICES.delete(plan);
+  // Y una persona no puede cubrir dos cosas el mismo día: se queda la primera.
+  const dia = new Set<string>();
+
+  for (const k of Object.keys(plan.cubre)) {
+    const d = k.split("|")[2];
+
+    for (const id of [...plan.cubre[k]]) {
+      if (dia.has(`${id}|${d}`)) quitar(plan, k, id);
+      else dia.add(`${id}|${d}`);
+    }
+  }
+}
+
 /**
  * Deja el plan coherente tras un cambio: quita la cobertura que ya no hace
  * falta y la de quien ya no puede hacerla, y vuelve a poner a los fijos.
  */
 export function limpiar(plan: Plan, d0: number, d1: number): void {
-  for (const k of Object.keys(plan.cubre)) {
+  sanear(plan);
+  // En orden fijo (por clave), no en el que estén guardadas: así el resultado no
+  // depende de por dónde se llegó a este plan.
+  for (const k of Object.keys(plan.cubre).sort()) {
     const { puesto, franja, d } = partir(k);
     const pu = puestoDe(plan, puesto);
 
@@ -463,11 +613,10 @@ export function limpiar(plan: Plan, d0: number, d1: number): void {
         continue;
       }
       // ¿Sigue pudiendo? Se mira SIN su propia cobertura, que si no siempre
-      // diría «ya trabaja ese día».
-      const eraAuto = !!plan.auto[`${k}|${id}`];
-
-      quitar(plan, k, id);
-      if (!impedimento(plan, p, pu, franja, d)) poner(plan, k, id, eraAuto);
+      // diría «ya trabaja ese día». Sólo se aparta del índice un momento: quitarla
+      // y volverla a poner la cambiaría de sitio, y limpiar dos veces dejaría de
+      // dar lo mismo que limpiar una.
+      if (impedimentoSinContar(plan, p, pu, franja, d)) quitar(plan, k, id);
     }
   }
   aplicarFijos(plan, d0, d1);
@@ -575,18 +724,19 @@ export function acomodar(
   const antes = costo(plan, d0, d1);
   let actual = antes;
 
-  for (let pasada = 0; pasada < 2 && actual > 0; pasada++) {
+  const norm = (x: number, n: number) => ((x % n) + n) % n;
+  /** Una pasada persona a persona. Devuelve si algo mejoró. */
+  const pasada = (): boolean => {
     let mejoro = false;
 
     for (const p of mover) {
       const n = p.patron.length;
 
       if (n < 2) continue;
-      const norm = (x: number) => ((x % n) + n) % n;
       let mejor = p.desfase;
 
       for (let o = 0; o < n; o++) {
-        if (o === norm(mejor)) continue;
+        if (o === norm(mejor, n)) continue;
         p.desfase = o;
         const c = costo(plan, d0, d1);
 
@@ -598,7 +748,51 @@ export function acomodar(
       }
       p.desfase = mejor;
     }
-    if (!mejoro) break;
+
+    return mejoro;
+  };
+  /**
+   * De dos en dos. Persona a persona se atasca cuando hay que mover a DOS a la
+   * vez para mejorar (tres francos repartidos «casi bien»: mover a cualquiera
+   * solo empeora). Sólo con grupos pequeños: son n² arranques por pareja.
+   */
+  const porParejas = (): boolean => {
+    const g = mover.filter((p) => p.patron.length >= 2 && p.patron.length <= 14);
+
+    // Tope de trabajo: cada pareja prueba (largo × largo) arranques, y cada
+    // prueba recalcula el plan. Pasado el tope no se intenta — el botón tiene
+    // que contestar en un par de segundos, no «pensar» medio minuto.
+    let pruebas = 0;
+
+    for (let i = 0; i < g.length; i++) for (let j = i + 1; j < g.length; j++) pruebas += g[i].patron.length * g[j].patron.length;
+    if (g.length > 8 || pruebas > 1500) return false;
+    for (let i = 0; i < g.length; i++)
+      for (let j = i + 1; j < g.length; j++) {
+        const [a, b] = [g[i], g[j]];
+        const [a0, b0] = [a.desfase, b.desfase];
+        let mejor: [number, number] | null = null;
+
+        for (let x = 0; x < a.patron.length; x++)
+          for (let y = 0; y < b.patron.length; y++) {
+            a.desfase = x;
+            b.desfase = y;
+            const c = costo(plan, d0, d1);
+
+            if (c < actual - 1e-9) {
+              actual = c;
+              mejor = [x, y];
+            }
+          }
+        [a.desfase, b.desfase] = mejor || [a0, b0];
+        if (mejor) return true;
+      }
+
+    return false;
+  };
+
+  for (let vuelta = 0, parejas = 0; vuelta < 10 && actual > 0; vuelta++) {
+    if (pasada()) continue;
+    if (parejas++ >= 3 || !porParejas()) break;
   }
   const despues = costo(plan, d0, d1);
 
@@ -637,12 +831,8 @@ export function incoherencias(plan: Plan): string[] {
         mal.push(`${k}: cubre alguien que no existe (${id})`);
         continue;
       }
-      const eraAuto = !!plan.auto[`${k}|${id}`];
+      const imp = impedimentoSinContar(plan, p, pu, franja, d);
 
-      quitar(plan, k, id);
-      const imp = impedimento(plan, p, pu, franja, d);
-
-      poner(plan, k, id, eraAuto);
       if (imp) mal.push(`${k}: ${p.nombre} no puede (${imp})`);
     }
   }

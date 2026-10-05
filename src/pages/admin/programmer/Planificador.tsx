@@ -7,6 +7,8 @@ import {
   Loader2,
   RotateCcw,
   Search,
+  SlidersHorizontal,
+  UserPlus,
   Undo2,
   Wand2,
 } from "lucide-react";
@@ -74,6 +76,8 @@ type Hoja =
   | { tipo: "cobertura"; puesto: string }
   | { tipo: "rotacion"; persona: string }
   | { tipo: "fijos"; persona: string }
+  | { tipo: "ausencia"; persona: string }
+  | { tipo: "reglas" }
   | null;
 
 const FRANJAS_EXTRA: Record<string, Franja> = {
@@ -135,7 +139,17 @@ export default function Planificador() {
     return Math.round((Date.UTC(y, m - 1, d) - Date.UTC(by, bm - 1, bd)) / 86_400_000);
   }, [base]);
 
-  const [plan, setPlan] = useState<Plan | null>(null);
+  const [plan, setPlanEstado] = useState<Plan | null>(null);
+  // El plan vigente, también fuera del estado: los botones necesitan el
+  // RESULTADO de un cambio en el acto (cuántos turnos cubrió, si el acomodo
+  // mejoró) para decírselo a quien lo pulsó. Dentro de un actualizador de
+  // estado ese resultado llega tarde — el aviso salía antes que la cuenta y
+  // decía «no hay nadie libre» habiendo cubierto cinco turnos.
+  const planRef = useRef<Plan | null>(null);
+  const setPlan = (p: Plan | null) => {
+    planRef.current = p;
+    setPlanEstado(p);
+  };
   const [parecido, setParecido] = useState<number | null>(null);
   const [cargando, setCargando] = useState(true);
   const [semana, setSemana] = useState(0);
@@ -177,17 +191,16 @@ export default function Planificador() {
   /** Todo cambio pasa por aquí: copia, aplica, limpia y guarda para deshacer. */
   const cambiar = useCallback(
     (fn: (p: Plan) => void) => {
-      setPlan((actual) => {
-        if (!actual) return actual;
-        pila.current.push(JSON.stringify(actual));
-        if (pila.current.length > 40) pila.current.shift();
-        const p = copiar(actual);
+      const actual = planRef.current;
 
-        fn(p);
-        limpiar(p, d0 - 7, d0 + 14);
+      if (!actual) return;
+      pila.current.push(JSON.stringify(actual));
+      if (pila.current.length > 40) pila.current.shift();
+      const p = copiar(actual);
 
-        return p;
-      });
+      fn(p);
+      limpiar(p, d0 - 7, d0 + 14);
+      setPlan(p);
       setCambios((n) => n + 1);
     },
     [d0],
@@ -202,14 +215,13 @@ export default function Planificador() {
   const irA = (s: number) => {
     setSemana(s);
     // Los fijos se calculan para la semana a la vista; al moverse, se rehacen ahí.
-    setPlan((actual) => {
-      if (!actual) return actual;
-      const p = copiar(actual);
+    const actual = planRef.current;
 
-      limpiar(p, s * 7 - 7, s * 7 + 14);
+    if (!actual) return;
+    const p = copiar(actual);
 
-      return p;
-    });
+    limpiar(p, s * 7 - 7, s * 7 + 14);
+    setPlan(p);
   };
 
   const r = useMemo(() => (plan ? resumen(plan, d0, d0 + 7) : null), [plan, d0]);
@@ -359,6 +371,9 @@ export default function Planificador() {
               <Button disabled={!r.sin} variant="outline" onClick={hacerCubrir}>
                 {t("ui.Planificador.cubrirLoQueFalta", "Cubrir lo que falta")}
               </Button>
+              <Button title={t("ui.Planificador.reglasTitulo", "Descanso entre turnos, días seguidos y horas por semana")} variant="outline" onClick={() => setHoja({ tipo: "reglas" })}>
+                <SlidersHorizontal size={15} /> {t("ui.Planificador.reglas", "Reglas")}
+              </Button>
             </div>
 
             <div className="mb-3 flex flex-wrap items-center gap-3">
@@ -402,14 +417,25 @@ export default function Planificador() {
                   {puestosVisibles.map((pu) => (
                     <FilasDePuesto key={pu.id} d0={d0} plan={plan} pu={pu} cambiar={cambiar} setHoja={setHoja} />
                   ))}
-                  {sacas.length > 0 && (
-                    <tr>
-                      <td className="sticky left-0 px-3 py-2 text-xs font-bold" colSpan={8} style={{ background: "var(--glass-sunken)" }}>
-                        {t("ui.Planificador.sacafrancos", "Sacafrancos")}{" "}
-                        <span className="font-normal" style={{ color: "var(--ink-soft)" }}>· {t("ui.Planificador.cubrenSusPuestos", "cubren lo que falta en sus puestos fijos")}</span>
-                      </td>
-                    </tr>
-                  )}
+                  <tr>
+                    <td className="sticky left-0 px-3 py-2 text-xs font-bold" colSpan={8} style={{ background: "var(--glass-sunken)" }}>
+                      {t("ui.Planificador.sacafrancos", "Sacafrancos")}{" "}
+                      <span className="font-normal" style={{ color: "var(--ink-soft)" }}>· {t("ui.Planificador.cubrenSusPuestos", "cubren lo que falta en sus puestos fijos")}</span>
+                      <button
+                        className="cg-btn-glass cg-focus ml-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                        title={t("ui.Planificador.probarOtroTitulo", "Prueba cómo quedaría con un sacafranco más")}
+                        onClick={() =>
+                          cambiar((x) => {
+                            const n = x.personas.filter((y) => y.id.startsWith("nuevo-")).length + 1;
+
+                            x.personas.push({ id: `nuevo-${Date.now()}`, nombre: `${t("ui.Planificador.sacafrancoNuevo", "Sacafranco nuevo")} ${n}`, puesto: null, patron: [LIBRE, LIBRE, LIBRE, LIBRE, LIBRE, LIBRE, FRANCO], desfase: 0, manual: {}, fijos: [], ausencias: [] });
+                          })
+                        }
+                      >
+                        <UserPlus size={12} /> {t("ui.Planificador.probarOtro", "Probar con uno más")}
+                      </button>
+                    </td>
+                  </tr>
                   {sacas.map((s) => (
                     <FilaDeSacafranco key={s.id} d0={d0} plan={plan} s={s} cambiar={cambiar} setHoja={setHoja} />
                   ))}
@@ -426,6 +452,8 @@ export default function Planificador() {
         {plan && hoja?.tipo === "cobertura" && <HojaCobertura plan={plan} puestoId={hoja.puesto} cambiar={cambiar} cerrar={() => setHoja(null)} />}
         {plan && hoja?.tipo === "rotacion" && <HojaRotacion personaId={hoja.persona} plan={plan} cambiar={cambiar} cerrar={() => setHoja(null)} />}
         {plan && hoja?.tipo === "fijos" && <HojaFijos personaId={hoja.persona} plan={plan} cambiar={cambiar} cerrar={() => setHoja(null)} />}
+        {plan && hoja?.tipo === "ausencia" && <HojaAusencia d0={d0} fechaDe={(d) => sumaDias(base, d)} personaId={hoja.persona} plan={plan} cambiar={cambiar} cerrar={() => setHoja(null)} />}
+        {plan && hoja?.tipo === "reglas" && <HojaReglas plan={plan} cambiar={cambiar} cerrar={() => setHoja(null)} />}
       </PageContainer>
     </AppLayout>
   );
@@ -516,6 +544,9 @@ function FilasDePuesto({ plan, pu, d0, cambiar, setHoja }: { plan: Plan; pu: Pue
                   {t("ui.Planificador.correr", "correr →")}
                 </button>
               )}
+              <button className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold" title={t("ui.Planificador.ausenciaTitulo", "Vacaciones, permiso o incapacidad")} onClick={() => setHoja({ tipo: "ausencia", persona: p.id })}>
+                {t("ui.Planificador.ausencia", "ausencia")}
+              </button>
             </span>
           </td>
           {Array.from({ length: 7 }, (_, i) => {
@@ -590,6 +621,14 @@ function FilaDeSacafranco({ plan, s, d0, cambiar, setHoja }: { plan: Plan; s: Pe
           <button className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 font-semibold" style={{ color: "var(--ink)" }} onClick={() => setHoja({ tipo: "rotacion", persona: s.id })}>
             {etiquetaDe(plan, s)}
           </button>
+          <button className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 font-semibold" style={{ color: "var(--ink)" }} onClick={() => setHoja({ tipo: "ausencia", persona: s.id })}>
+            {t("ui.Planificador.ausencia", "ausencia")}
+          </button>
+          {s.id.startsWith("nuevo-") && (
+            <button className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 font-semibold" style={{ color: "var(--bad-text)" }} onClick={() => cambiar((x) => { x.personas = x.personas.filter((y) => y.id !== s.id); })}>
+              {t("ui.Planificador.quitar", "quitar")}
+            </button>
+          )}
           {t("ui.Planificador.diasYHoras", { defaultValue: "{{d}} días · {{h}} h", d: dias, h: horas })}
           {dias < 4 && <span className="rounded-full px-1.5 font-semibold" style={AMBAR}>{t("ui.Planificador.leSobranDias", "le sobran días")}</span>}
           {max > plan.reglas.maxSeguidos && <span className="rounded-full px-1.5 font-semibold" style={ROJO}>{t("ui.Planificador.muchosSeguidos", "muchos días seguidos")}</span>}
@@ -865,6 +904,95 @@ function HojaFijos({ plan, personaId, cambiar, cerrar }: { plan: Plan; personaId
           );
         })}
       </div>
+      <div className="flex justify-end">
+        <Button size="sm" variant="brand" onClick={cerrar}>{t("ui.Planificador.listo", "Listo")}</Button>
+      </div>
+    </Marco>
+  );
+}
+
+function HojaAusencia({ plan, personaId, d0, fechaDe, cambiar, cerrar }: { plan: Plan; personaId: string; d0: number; fechaDe: (d: number) => string; cambiar: Cambiar; cerrar: () => void }) {
+  const { t } = useTranslation();
+  const p = plan.personas.find((x) => x.id === personaId);
+  const [tipo, setTipo] = useState("vacaciones");
+  const [desde, setDesde] = useState(d0);
+  const [dias, setDias] = useState(7);
+
+  if (!p) return null;
+  const dia = (d: number, largo = false) => {
+    const [y, m, dd] = fechaDe(d).split("-").map(Number);
+
+    return new Date(Date.UTC(y, m - 1, dd)).toLocaleDateString(localeActual(), largo ? { day: "numeric", month: "short", timeZone: "UTC" } : { weekday: "short", day: "numeric", timeZone: "UTC" });
+  };
+  const TIPOS = [
+    ["vacaciones", t("ui.Planificador.vacaciones", "Vacaciones")],
+    ["permiso", t("ui.Planificador.permiso", "Permiso")],
+    ["incapacidad", t("ui.Planificador.incapacidad", "Incapacidad")],
+  ];
+
+  return (
+    <Marco cerrar={cerrar} detalle={t("ui.Planificador.ausenciaDetalle", "Esos días no trabaja ni puede cubrir. La hoja enseña los turnos que quedan sin cubrir.")} titulo={t("ui.Planificador.ausenciaDe", { defaultValue: "Ausencia de {{nombre}}", nombre: corto(p.nombre) })}>
+      {(p.ausencias || []).length > 0 && (
+        <div className="flex flex-col gap-1.5">
+          {(p.ausencias || []).map((a, i) => (
+            <button key={i} className={OPCION} style={estiloOpcion(true)} onClick={() => cambiar((x) => { const q = x.personas.find((y) => y.id === personaId)!; q.ausencias = (q.ausencias || []).filter((_, j) => j !== i); })}>
+              {marca(true)}
+              <span className="min-w-0 flex-1">
+                <b className="capitalize">{a.tipo}</b> · {dia(a.desde, true)}{a.hasta > a.desde ? ` – ${dia(a.hasta, true)}` : ""}
+                <span className="block text-xs" style={{ color: "var(--ink-soft)" }}>{t("ui.Planificador.tocaParaQuitar", "Toca para quitarla.")}</span>
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+      <div className="flex flex-wrap gap-1.5">
+        {TIPOS.map(([id, nombre]) => (
+          <button key={id} className="cg-focus rounded-full border px-3 py-1 text-sm font-semibold" style={estiloOpcion(tipo === id)} onClick={() => setTipo(id)}>{nombre}</button>
+        ))}
+      </div>
+      <p className="text-sm font-semibold">{t("ui.Planificador.empieza", "Empieza el")}</p>
+      <div className="grid grid-cols-7 gap-1.5">
+        {Array.from({ length: 7 }, (_, i) => (
+          <button key={i} className={`${BTN} border capitalize`} style={estiloOpcion(desde === d0 + i)} onClick={() => setDesde(d0 + i)}>{dia(d0 + i)}</button>
+        ))}
+      </div>
+      <div className="flex flex-wrap items-center gap-2 text-sm">
+        <span className="font-semibold">{t("ui.Planificador.dura", "Dura")}</span>
+        <Button disabled={dias <= 1} size="sm" variant="outline" onClick={() => setDias((n) => Math.max(1, n - 1))}>−</Button>
+        <span className="min-w-[4.5rem] text-center tabular-nums">{dias === 1 ? t("ui.Planificador.unDia", "1 día") : t("ui.Planificador.nDias", { defaultValue: "{{n}} días", n: dias })}</span>
+        <Button disabled={dias >= 60} size="sm" variant="outline" onClick={() => setDias((n) => Math.min(60, n + 1))}>+</Button>
+        {[7, 14, 30].map((n) => (
+          <Button key={n} size="sm" variant="outline" onClick={() => setDias(n)}>{n}</Button>
+        ))}
+        <span className="flex-1" />
+        <Button size="sm" variant="brand" onClick={() => { cambiar((x) => { const q = x.personas.find((y) => y.id === personaId)!; (q.ausencias = q.ausencias || []).push({ desde, hasta: desde + dias - 1, tipo }); }); cerrar(); }}>
+          {t("ui.Planificador.anadirAusencia", "Añadir ausencia")}
+        </Button>
+      </div>
+    </Marco>
+  );
+}
+
+function HojaReglas({ plan, cambiar, cerrar }: { plan: Plan; cambiar: Cambiar; cerrar: () => void }) {
+  const { t } = useTranslation();
+  const r = plan.reglas;
+  const fila = (titulo: string, detalle: string, valor: number, opciones: Array<[number, string]>, poner: (n: number) => void) => (
+    <div>
+      <p className="text-sm font-semibold">{titulo}</p>
+      <p className="mb-1.5 text-xs" style={{ color: "var(--ink-soft)" }}>{detalle}</p>
+      <div className="flex flex-wrap gap-1.5">
+        {opciones.map(([n, nombre]) => (
+          <button key={n} className="cg-focus rounded-full border px-3 py-1 text-sm font-semibold" style={estiloOpcion(valor === n)} onClick={() => poner(n)}>{nombre}</button>
+        ))}
+      </div>
+    </div>
+  );
+
+  return (
+    <Marco cerrar={cerrar} detalle={t("ui.Planificador.reglasDetalle", "Lo que el Planificador no deja hacer al cubrir un turno. Al cambiarlas se retira la cobertura que ya no las cumpla.")} titulo={t("ui.Planificador.reglasDeCobertura", "Reglas para cubrir")}>
+      {fila(t("ui.Planificador.reglaDescanso", "Descanso mínimo entre dos turnos"), t("ui.Planificador.reglaDescansoDetalle", "Con 10 horas, quien sale de noche no entra de día esa mañana."), r.descansoMin, [[480, "8 h"], [600, "10 h"], [720, "12 h"], [1440, "24 h"]], (n) => cambiar((x) => { x.reglas.descansoMin = n; }))}
+      {fila(t("ui.Planificador.reglaSeguidos", "Días seguidos, como mucho"), t("ui.Planificador.reglaSeguidosDetalle", "Contando su turno propio y lo que cubra."), r.maxSeguidos, [[5, "5"], [6, "6"], [7, "7"], [12, "12"]], (n) => cambiar((x) => { x.reglas.maxSeguidos = n; }))}
+      {fila(t("ui.Planificador.reglaHoras", "Horas por semana, como mucho"), t("ui.Planificador.reglaHorasDetalle", "De lunes a domingo."), r.maxHorasSemana, [[48, "48 h"], [60, "60 h"], [72, "72 h"], [84, "84 h"]], (n) => cambiar((x) => { x.reglas.maxHorasSemana = n; }))}
       <div className="flex justify-end">
         <Button size="sm" variant="brand" onClick={cerrar}>{t("ui.Planificador.listo", "Listo")}</Button>
       </div>
