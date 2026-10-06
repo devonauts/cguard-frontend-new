@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import {
+  useParams,
+  useNavigate,
+  Link,
+  useSearchParams,
+} from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
   ChevronLeft,
+  ChevronRight,
   Loader2,
   Sun,
   Moon,
@@ -16,6 +22,8 @@ import {
 import OperationSetupAlert, {
   needsOperationSetup,
 } from "./components/OperationSetup/OperationSetupAlert";
+
+import { HiloDePuesta } from "@/components/onboarding/PuestaEnMarcha";
 
 import PostSiteLayout from "@/layouts/PostSiteLayout";
 import {
@@ -190,6 +198,13 @@ export default function AddStationPage() {
 
   const [site, setSite] = useState<any | null>(null);
   const [loadingSite, setLoadingSite] = useState(false);
+  /* PUESTA EN MARCHA: se llega desde el asistente de la sede. Cada estación
+     se crea con este formulario completo; al guardar una, se queda aquí
+     para la siguiente (la lista de arriba va creciendo) y, cuando están
+     todas, se sigue a asignar vigilantes. */
+  const [searchParams] = useSearchParams();
+  const enPuesta = searchParams.get("puesta") === "1";
+  const [creadas, setCreadas] = useState<{ id: string; name: string }[]>([]);
   const [saving, setSaving] = useState(false);
 
   // Form state (same fields as the previous modal).
@@ -288,6 +303,8 @@ export default function AddStationPage() {
   const [clockInLateGraceMin, setClockInLateGraceMin] = useState("");
 
   const stationsUrl = `/post-sites/${id}/stations`;
+  const clienteDeLaSede =
+    site?.client?.id || site?.clientAccount?.id || site?.clientAccountId || "";
 
   useEffect(() => {
     if (!id) return;
@@ -471,7 +488,21 @@ export default function AddStationPage() {
         }
       }
       toast.success(t("postSites.stations.created", "Station created"));
-      navigate(stationsUrl);
+      if (enPuesta) {
+        setCreadas((c) => [...c, { id: newStationId || "", name: newName }]);
+        setNewName("");
+        setNickname("");
+        setNewDescription("");
+        setTurnoType("");
+        setRotationStyleId("");
+        setStartingTimeInDay("");
+        setFinishTimeInDay("");
+        setBlockHours("");
+        setGeofencePolygon([]);
+        setClockInEarlyBufferMin("");
+        setClockInLateGraceMin("");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else navigate(stationsUrl);
     } catch (err: any) {
       console.error("Failed creating station", err);
       toast.error(
@@ -505,12 +536,82 @@ export default function AddStationPage() {
           </Link>
           <PageHeader
             icon={<ShieldPlus />}
-            subtitle={t(
-              "postSites.stations.createSubtitle",
-              "Define el turno, horario y la geocerca del puesto.",
-            )}
-            title={t("postSites.stations.createTitle", "Crear estación")}
+            subtitle={
+              enPuesta
+                ? t(
+                    "ui.AddStationPage.subtituloPuesta",
+                    "Crea cada estación con su nombre, nominativo, horario y geocerca. Cuando estén todas, sigue a asignar vigilantes.",
+                  )
+                : t(
+                    "postSites.stations.createSubtitle",
+                    "Define el turno, horario y la geocerca del puesto.",
+                  )
+            }
+            title={
+              enPuesta
+                ? t("ui.AddStationPage.tituloPuesta", "Estaciones de la sede")
+                : t("postSites.stations.createTitle", "Crear estación")
+            }
           />
+
+          {enPuesta && (
+            <div className="mb-4 space-y-3">
+              <HiloDePuesta
+                pasos={[
+                  {
+                    clave: "cliente",
+                    hecho: true,
+                    href: clienteDeLaSede
+                      ? `/clients/${clienteDeLaSede}/overview`
+                      : undefined,
+                  },
+                  {
+                    clave: "sede",
+                    hecho: true,
+                    href: `/post-sites/${id}/edit?step=1&puesta=1`,
+                  },
+                  { clave: "puestos", hecho: creadas.length > 0 },
+                  { clave: "vigilantes", hecho: false },
+                  { clave: "horario", hecho: false },
+                ]}
+              />
+              {creadas.length > 0 && (
+                <div className="glass flex flex-wrap items-center gap-3 p-4">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold">
+                      {t("ui.AddStationPage.creadasN", {
+                        defaultValue: "{{n}} estación(es) creada(s)",
+                        n: creadas.length,
+                      })}
+                    </p>
+                    <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+                      {creadas.map((c) => c.name).join(" · ")}
+                    </p>
+                    <p
+                      className="mt-1 text-xs"
+                      style={{ color: "var(--ink-faint)" }}
+                    >
+                      {t(
+                        "ui.AddStationPage.otraOSeguir",
+                        "¿Falta alguna? Rellena el formulario de abajo. Si ya están todas, sigue a asignar vigilantes.",
+                      )}
+                    </p>
+                  </div>
+                  <Button
+                    className="gap-2"
+                    variant="brand"
+                    onClick={() => navigate(`/post-sites/${id}/stations`)}
+                  >
+                    {t(
+                      "ui.AddStationPage.asignarVigilantes",
+                      "Asignar vigilantes",
+                    )}
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Aquí es donde el hueco hace daño: se está creando un puesto sobre una
             sede que no dice qué servicio presta. Se CIERRA: el formulario no se

@@ -327,7 +327,7 @@ export default function ClientOverview({
       clave: "puestos",
       hecho: estaciones.length > 0,
       href: primera
-        ? `/post-sites/${primera.id}/edit?step=4&puesta=1`
+        ? `/post-sites/${primera.id}/stations/new?puesta=1`
         : undefined,
       detalle: estaciones.length
         ? t("clients.overview.nPuestos", {

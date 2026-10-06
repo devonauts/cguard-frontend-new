@@ -457,8 +457,6 @@ export default function ClientForm({
       basePayload.contractDate = values.contractDate || null;
     if (values.contractEndDate !== undefined)
       basePayload.contractEndDate = values.contractEndDate || null;
-    if (values.riskLevel !== undefined)
-      basePayload.riskLevel = values.riskLevel || null;
     if (values.purchaseOrder !== undefined)
       basePayload.purchaseOrder =
         String(values.purchaseOrder || "").trim() || null;
@@ -1109,43 +1107,8 @@ export default function ClientForm({
                     </FormItem>
                   )}
                 />
-                <FormField<ClientInput>
-                  control={form.control}
-                  name={"riskLevel" as any}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">
-                        {t("clients.form.riskLevel", "Nivel de riesgo")}
-                        <span className="ml-2 text-[10px] font-normal text-muted-foreground normal-case tracking-normal">
-                          {t("clients.form.optional", "Opcional")}
-                        </span>
-                      </FormLabel>
-                      <FormControl>
-                        <select
-                          className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm"
-                          {...field}
-                          value={
-                            typeof field.value === "string" ? field.value : ""
-                          }
-                        >
-                          <option value="">
-                            {t("clients.form.selectRisk", "Sin definir")}
-                          </option>
-                          <option value="Bajo">
-                            {t("clients.riskLevel.low", "Bajo")}
-                          </option>
-                          <option value="Medio">
-                            {t("clients.riskLevel.medium", "Medio")}
-                          </option>
-                          <option value="Alto">
-                            {t("clients.riskLevel.high", "Alto")}
-                          </option>
-                        </select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {/* «Nivel de riesgo» ya no se pregunta aquí: se pregunta en cada
+                    sede (donde se sabe) y el del cliente es el promedio. */}
                 <FormField<ClientInput>
                   control={form.control}
                   name={"purchaseOrder" as any}
