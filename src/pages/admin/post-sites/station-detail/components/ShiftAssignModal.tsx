@@ -8,7 +8,15 @@ import {
   type RotationCycle,
 } from "@/lib/utils";
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, UserPlus, Repeat, CalendarRange, Moon } from "lucide-react";
+import {
+  CalendarRange,
+  Check,
+  Loader2,
+  Moon,
+  Repeat,
+  Search,
+  UserPlus,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { ApiService } from "@/services/api/apiService";
@@ -149,6 +157,20 @@ export default function ShiftAssignModal({
   const [secuenciaPropia, setSecuenciaPropia] = useState("");
   const [rotationStyles, setRotationStyles] = useState<RotationStyleRow[]>([]);
   const [selectedPositionId, setSelectedPositionId] = useState("");
+  /* En qué día de su ciclo entra el vigilante en la fecha de inicio (0 = el
+     primer día de trabajo). «Entro hoy en la noche 3» es lo normal cuando se
+     releva a alguien a mitad de ciclo; sin esto había que falsear la fecha. */
+  const [cycleStartIndex, setCycleStartIndex] = useState(0);
+  /** Enseñar el selector de ciclo propio (escondido: el puesto ya tiene el suyo). */
+  const [mostrarSecuencia, setMostrarSecuencia] = useState(false);
+  /* El ciclo de la estación cuando quien abre el popup no lo trae (el
+     Planificador sólo conoce el puesto): se pide a la ficha. */
+  const [rotEstacion, setRotEstacion] = useState<string | null>(null);
+  const rotacionEstacion = (station as any)?.rotationStyleId ?? rotEstacion;
+  /* El desplegable de vigilantes es propio: un buscador sobre los DISPONIBLES
+     (sin asignación activa), no un <select> con doscientos nombres. */
+  const [filtroVigilante, setFiltroVigilante] = useState("");
+  const [listaAbierta, setListaAbierta] = useState(false);
   const [shiftStart, setShiftStart] = useState("");
   const [shiftEnd, setShiftEnd] = useState("");
   const [positions, setPositions] = useState<PositionRow[]>([]);
@@ -234,11 +256,12 @@ export default function ShiftAssignModal({
 
     if (!pos || (pos.type || "fijo") === "sacafranco") return null;
     // La vista previa tiene que mirar el MISMO ciclo que va a generar el
-    // backend: con secuencia propia elegida, la suya; si no, la de la estación.
+    // backend: con secuencia propia elegida, la suya; si no, la de la plaza
+    // (ciclo por plaza); si no, la de la estación.
     const style = rotationStyles.find(
       (s) =>
         String(s.id) ===
-        String(secuenciaPropia || (station as any).rotationStyleId),
+        String(secuenciaPropia || pos.rotationStyleId || rotacionEstacion),
     );
 
     if (!style) return null;
@@ -246,7 +269,10 @@ export default function ShiftAssignModal({
 
     if (cycle <= 0 || !rotationStartDate) return null;
     const start = new Date(rotationStartDate + "T12:00:00");
-    const offset = ((rotationDseOf(start) % cycle) + cycle) % cycle; // phase = startDate
+    // La fase es la fecha de inicio MENOS el día de ciclo en que entra (como
+    // `phaseFromStartDate` en el servidor).
+    const offset =
+      (((rotationDseOf(start) - cycleStartIndex) % cycle) + cycle) % cycle;
     /* Las REGLAS y el ANCLA: con descanso dominical el ciclo se corre un día en
        cada domingo, y sin pasarlas esta vista previa prometía francos que el
        cuadrante no iba a cumplir. */
@@ -283,7 +309,79 @@ export default function ShiftAssignModal({
     station,
     rotationStartDate,
     secuenciaPropia,
+    cycleStartIndex,
   ]);
+
+  /* ── LOS DÍAS DEL CICLO, CON NOMBRE ─────────────────────────────────────
+     Para elegir en cuál entra: «día 1 de 4 … noche 3 de 4 … libre 2 de 2».
+     El primer bloque es el tramo PROPIO de la plaza y el segundo el espejo
+     (así cuenta el motor `dayShifts`/`nightShifts`); el espejo empieza donde
+     acaba la ventana propia. */
+  const diasDelCiclo = useMemo(() => {
+    const pos = positions.find((p) => p.id === selectedPositionId);
+
+    if (!pos || (pos.type || "fijo") === "sacafranco") return [];
+    const style = rotationStyles.find(
+      (s) =>
+        String(s.id) ===
+        String(secuenciaPropia || pos.rotationStyleId || rotacionEstacion),
+    );
+
+    if (!style) return [];
+    const propio = nombreDeTramo(
+      pos.startTime || station?.startingTimeInDay || "07:00",
+    );
+    const espejo = nombreDeTramo(
+      pos.endTime || station?.finishTimeInDay || "19:00",
+    );
+    const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+    const out: { k: number; label: string }[] = [];
+    let k = 0;
+    // Plaza de día entero (24×24) o un solo tramo: no hay espejo, los dos
+    // bloques son trabajo seguido en la misma ventana.
+    const unSoloTramo = propio === espejo;
+    const trabajo = (style.dayShifts || 0) + (style.nightShifts || 0);
+
+    for (let i = 0; i < (style.dayShifts || 0); i++, k++)
+      out.push({
+        k,
+        label: unSoloTramo
+          ? `${t("ui.ShiftAssignModal.trabajo", "Trabajo")} ${i + 1} de ${trabajo}`
+          : `${cap(propio)} ${i + 1} de ${style.dayShifts}`,
+      });
+    for (let i = 0; i < (style.nightShifts || 0); i++, k++)
+      out.push({
+        k,
+        label: unSoloTramo
+          ? `${t("ui.ShiftAssignModal.trabajo", "Trabajo")} ${(style.dayShifts || 0) + i + 1} de ${trabajo}`
+          : `${cap(espejo)} ${i + 1} de ${style.nightShifts}`,
+      });
+    for (let i = 0; i < (style.restDays || 0); i++, k++)
+      out.push({
+        k,
+        label: `${t("ui.ShiftAssignModal.libre", "Libre")} ${i + 1} de ${style.restDays}`,
+      });
+
+    return out;
+  }, [
+    positions,
+    selectedPositionId,
+    rotationStyles,
+    station,
+    secuenciaPropia,
+    t,
+  ]);
+
+  // Lo que se enseña en el desplegable: los disponibles que casen con lo escrito.
+  const vigilantesFiltrados = useMemo(() => {
+    const q = filtroVigilante.trim().toLowerCase();
+    const elegido = guardsOptions.find((g) => g.id === shiftGuard);
+
+    if (!q || (elegido && q === elegido.label.toLowerCase()))
+      return availableGuards;
+
+    return availableGuards.filter((g) => g.label.toLowerCase().includes(q));
+  }, [availableGuards, filtroVigilante, guardsOptions, shiftGuard]);
 
   /* ── CÓMO SE LLAMA EL SEGUNDO TRAMO DEL CICLO EN ESTA ESTACIÓN ────────────
      En un puesto de 24 h es la NOCHE. En una estación partida en dos tramos
@@ -327,7 +425,8 @@ export default function ShiftAssignModal({
      pregunta. El ciclo ya no se inventa al crear el puesto —se preguntaba antes
      de que existiera nadie a quien aplicárselo— y sin él el generador no
      escribe un solo turno. */
-  const estacionSinCiclo = !(station as any)?.rotationStyleId;
+  // Con el ciclo resuelto (la ficha lo trae; el Planificador lo pide aparte).
+  const estacionSinCiclo = !rotacionEstacion;
 
   const patronDeLaEstacion = useMemo(
     () =>
@@ -351,6 +450,10 @@ export default function ShiftAssignModal({
     setAssignMode("rotation");
     setSelectedPositionId("");
     setSecuenciaPropia("");
+    setCycleStartIndex(0);
+    setMostrarSecuencia(false);
+    setFiltroVigilante("");
+    setListaAbierta(false);
 
     (async () => {
       setLoadingGuards(true);
@@ -374,6 +477,14 @@ export default function ShiftAssignModal({
         setLoadingGuards(false);
       }
     })();
+    if ((station as any)?.rotationStyleId === undefined)
+      ApiService.get(`/tenant/${tenantId}/station/${stationId}`)
+        .then((r: any) =>
+          setRotEstacion(
+            r?.rotationStyleId || r?.data?.rotationStyleId || null,
+          ),
+        )
+        .catch(() => setRotEstacion(null));
     ApiService.get(`/tenant/${tenantId}/station/${stationId}/positions`)
       .then((r: any) => setPositions(Array.isArray(r) ? r : (r?.rows ?? [])))
       .catch(() => {});
@@ -394,11 +505,10 @@ export default function ShiftAssignModal({
         const op = new Set<string>();
 
         for (const a of rows) {
-          const isRotation = a.kind
-            ? a.kind === "rotation"
-            : !!a.positionId || !!a.isRelief;
-
-          if (!isRotation) continue;
+          /* Quien tiene CUALQUIER asignación activa —fijo o sacafranco— no se
+             ofrece: aquí se filtraba por `kind === "rotation"` y los
+             sacafrancos (kind «relief») seguían saliendo como disponibles
+             (medido: 47 vigilantes, 20 asignados, el popup ofrecía 31). */
           const gid = String(a.guardId || a.guard?.id || "");
 
           if (gid) og.add(gid);
@@ -579,6 +689,8 @@ export default function ShiftAssignModal({
           // hereda el de la estación, que es el comportamiento de siempre.
           rotationStyleId: secuenciaPropia || null,
           isRelief,
+          // En qué día de su ciclo cae la fecha de inicio («entra en la noche 3»).
+          cycleStartIndex: isRelief ? 0 : cycleStartIndex,
         },
       });
       toast.success(t("ui.ShiftAssignModal.vigilanteAsignadoSiEsFijo"));
@@ -668,20 +780,79 @@ export default function ShiftAssignModal({
               {t("common.loading")}
             </div>
           ) : (
-            <select
-              value={shiftGuard}
-              onChange={(e) => setShiftGuard(e.target.value)}
-              className={FIELD_CLS_LG}
-            >
-              <option value="">
-                {t("ui.ShiftAssignModal.seleccionarVigilante")}
-              </option>
-              {availableGuards.map((g) => (
-                <option key={g.id} value={g.id}>
-                  {g.label}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <Search
+                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2"
+                size={14}
+                style={{ color: "var(--ink-faint)" }}
+              />
+              <input
+                autoComplete="off"
+                className={`${FIELD_CLS_LG} pl-9`}
+                placeholder={t(
+                  "ui.ShiftAssignModal.buscarDisponible",
+                  "Buscar entre los vigilantes disponibles…",
+                )}
+                value={
+                  filtroVigilante ||
+                  guardsOptions.find((g) => g.id === shiftGuard)?.label ||
+                  ""
+                }
+                onBlur={() => setTimeout(() => setListaAbierta(false), 150)}
+                onChange={(e) => {
+                  setFiltroVigilante(e.target.value);
+                  setShiftGuard("");
+                  setListaAbierta(true);
+                }}
+                onFocus={() => setListaAbierta(true)}
+              />
+              {listaAbierta && (
+                <div
+                  className="glass absolute left-0 right-0 z-20 mt-1 max-h-56 overflow-y-auto rounded-xl p-1"
+                  style={{ background: "var(--background)" }}
+                >
+                  {vigilantesFiltrados.map((g) => (
+                    <button
+                      key={g.id}
+                      className="cg-focus flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm hover:bg-[var(--brand-wash)]"
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => {
+                        setShiftGuard(g.id);
+                        setFiltroVigilante("");
+                        setListaAbierta(false);
+                      }}
+                    >
+                      <span className="truncate">{g.label}</span>
+                      {g.id === shiftGuard && (
+                        <Check className="h-4 w-4 shrink-0 brand-text" />
+                      )}
+                    </button>
+                  ))}
+                  {!vigilantesFiltrados.length && (
+                    <p
+                      className="px-3 py-2 text-xs"
+                      style={{ color: "var(--ink-soft)" }}
+                    >
+                      {t(
+                        "ui.ShiftAssignModal.nadieDisponibleConEseNombre",
+                        "Ningún vigilante disponible con ese nombre.",
+                      )}
+                    </p>
+                  )}
+                </div>
+              )}
+              <p
+                className="mt-1 text-[11px]"
+                style={{ color: "var(--ink-soft)" }}
+              >
+                {t("ui.ShiftAssignModal.nDisponibles", {
+                  defaultValue:
+                    "{{n}} disponible(s) · sólo quienes no tienen ya una asignación activa",
+                  n: availableGuards.length,
+                })}
+              </p>
+            </div>
           )}
           {!loadingGuards && availableGuards.length === 0 && (
             <p
@@ -773,9 +944,34 @@ export default function ShiftAssignModal({
               </p>
             </LabeledField>
 
-            {/* Secuencia propia — sólo para un fijo; un sacafranco no corre
-                  ciclo de puesto, tapa los descansos que dejen los fijos. */}
+            {/* El ciclo ya se eligió al crear la estación: aquí NO se vuelve a
+                preguntar (el dueño: «se ve redundante»). Sólo si el puesto no
+                tiene ciclo, o si se pide a propósito un ciclo distinto para
+                este vigilante. */}
             {selectedPositionId &&
+              !estacionSinCiclo &&
+              !mostrarSecuencia &&
+              (positions.find((p) => p.id === selectedPositionId)?.type ||
+                "fijo") !== "sacafranco" && (
+                <p className="text-[11px]" style={{ color: "var(--ink-soft)" }}>
+                  {t(
+                    "ui.ShiftAssignModal.heredaElCicloDelPuesto",
+                    "Hereda el ciclo del puesto.",
+                  )}{" "}
+                  <button
+                    className="cg-focus underline"
+                    type="button"
+                    onClick={() => setMostrarSecuencia(true)}
+                  >
+                    {t(
+                      "ui.ShiftAssignModal.esteVigilanteLlevaOtro",
+                      "¿Este vigilante lleva otro ciclo?",
+                    )}
+                  </button>
+                </p>
+              )}
+            {selectedPositionId &&
+              (estacionSinCiclo || mostrarSecuencia) &&
               (positions.find((p) => p.id === selectedPositionId)?.type ||
                 "fijo") !== "sacafranco" && (
                 <LabeledField
@@ -837,6 +1033,30 @@ export default function ShiftAssignModal({
                 onChange={(e) => setRotationStartDate(e.target.value)}
                 className={FIELD_CLS_LG}
               />
+              {diasDelCiclo.length > 1 && (
+                <div className="mt-2">
+                  <label
+                    className="mb-1 block text-xs font-medium"
+                    style={{ color: "var(--ink-soft)" }}
+                  >
+                    {t(
+                      "ui.ShiftAssignModal.enQueDiaDelCicloEntra",
+                      "¿En qué día de su ciclo entra ese día?",
+                    )}
+                  </label>
+                  <select
+                    className={FIELD_CLS_LG}
+                    value={cycleStartIndex}
+                    onChange={(e) => setCycleStartIndex(Number(e.target.value))}
+                  >
+                    {diasDelCiclo.map((o) => (
+                      <option key={o.k} value={o.k}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
               {restPreview && (
                 <div
                   className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border px-3 py-2"

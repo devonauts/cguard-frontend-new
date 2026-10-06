@@ -460,29 +460,49 @@ export function planDesdeHorarioReal(
               : FRANCO,
       );
     }
+    // Antes de su fecha de inicio no hay nada que comparar: la ventana empieza
+    // diez días antes del lunes activo, y para quien entró después esos días
+    // eran «francos» falsos que torcían la fase. Medido 2026-10-06: fijos de
+    // 4-4-2 que entraron el 2 de octubre salían con la N en el día equivocado
+    // y el borrador «se parecía al real en un 89 %».
+    const desdeInicio =
+      a.startDate && /^\d{4}-\d{2}-\d{2}/.test(String(a.startDate))
+        ? Math.min(horizonte, Math.max(0, diasEntre(base, String(a.startDate))))
+        : 0;
+    // …y tampoco antes de su PRIMER turno real: el generador escribe desde
+    // hoy, así que entre el lunes de la ventana y hoy no hay nada, y ese
+    // «franco» falso impedía reconocer el patrón corto (un 4-4-2 del motor es
+    // DDDD FF NNNN, que el ciclo declarado DDDD NNNN FF no reproduce girándolo).
+    const desde = hechos.size
+      ? Math.min(horizonte, Math.max(desdeInicio, Math.min(...hechos.keys())))
+      : desdeInicio;
+    const comparables = horizonte - desde;
     const fallos = (pat: string[], o: number) => {
       let n = 0;
 
-      for (let d = 0; d < horizonte; d++)
+      for (let d = desde; d < horizonte; d++)
         if (pat[(d + o) % pat.length] !== visto[d]) n++;
 
       return n;
     };
     let patron: string[] | null = null;
     let desfase = 0;
-    let errores = horizonte;
+    let errores = comparables;
 
-    // 1) La rotación que de verdad lleva: el tramo más corto que, repetido,
-    //    reproduce sus turnos (se le perdonan dos días sueltos: un cambio, una
-    //    falta). Manda sobre el ciclo declarado, porque es lo que pasa en el puesto.
+    // 1) La rotación que de verdad lleva: el tramo más corto que, repetido
+    //    desde su primer día, reproduce sus turnos (se le perdonan dos días
+    //    sueltos: un cambio, una falta). Manda sobre el ciclo declarado, porque
+    //    es lo que pasa en el puesto.
     if (hechos.size)
       for (let n = 1; n <= 14 && !patron; n++) {
-        const pat = visto.slice(0, n);
-        const e = fallos(pat, 0);
+        const pat = visto.slice(desde, desde + n);
+        const o = (n - (desde % n)) % n;
+        const e = fallos(pat, o);
 
-        if (e <= 2 && pat.some((c) => c !== FRANCO)) {
+        if (pat.length === n && e <= 2 && pat.some((c) => c !== FRANCO)) {
           patron = pat;
           errores = e;
+          desfase = o;
         }
       }
     // 2) Si no hay patrón claro, el ciclo declarado, arrancando donde más acierta.
@@ -517,16 +537,30 @@ export function planDesdeHorarioReal(
           desfase = o;
         }
       }
+      // Un sacafranco casi no tiene turnos reales con los que leer su fase, así
+      // que «donde más acierta» los dejaba a todos en la fase 0: tres
+      // sacafrancos de un condominio librando los mismos dos días y nadie
+      // cubriendo esos huecos. Su fase es su FECHA DE INICIO, como en el motor.
+      if (
+        relevo &&
+        a.startDate &&
+        /^\d{4}-\d{2}-\d{2}/.test(String(a.startDate))
+      ) {
+        const L = patron.length;
+        const ini = ((diasEntre(base, String(a.startDate)) % L) + L) % L;
+
+        desfase = (L - ini) % L;
+      }
       // 3) ¿Y si el ciclo declarado no es lo que hace? (Pasa: ciclos con
       //    variantes que esta lectura no interpreta, o un vigilante al que se
       //    le cambió el turno a mano.) Entonces, lo que MÁS hace cada día de la
       //    semana — y se queda lo que más se parezca a sus turnos reales.
-      if (hechos.size && errores > horizonte * 0.15) {
+      if (hechos.size && errores > comparables * 0.15) {
         const semanal = Array.from({ length: 7 }, (_, w) => {
           const cuenta: Record<string, number> = {};
 
           for (let d = w; d < horizonte; d += 7)
-            cuenta[visto[d]] = (cuenta[visto[d]] || 0) + 1;
+            if (d >= desde) cuenta[visto[d]] = (cuenta[visto[d]] || 0) + 1;
 
           return (
             Object.keys(cuenta).sort(
@@ -543,9 +577,9 @@ export function planDesdeHorarioReal(
         }
       }
     }
-    if (!relevo && hechos.size) {
-      aciertos += horizonte - errores;
-      comparados += horizonte;
+    if (!relevo && hechos.size && comparables > 0) {
+      aciertos += comparables - errores;
+      comparados += comparables;
     }
 
     const pid = idLimpio(a.id);

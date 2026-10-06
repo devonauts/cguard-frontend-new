@@ -13,6 +13,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Loader2,
+  Pencil,
   RotateCcw,
   Search,
   Send,
@@ -21,6 +22,8 @@ import {
   Undo2,
   Wand2,
 } from "lucide-react";
+import { Link } from "react-router-dom";
+import ShiftAssignModal from "@/pages/admin/post-sites/station-detail/components/ShiftAssignModal";
 import { toast } from "sonner";
 
 import AppLayout from "@/layouts/app-layout";
@@ -461,6 +464,50 @@ export default function Planificador() {
      la hoja cerrada ya dice dónde hay huecos. Buscando o filtrando se abre
      todo; con dos puestos o menos, también. */
   const [abiertos, setAbiertos] = useState<Record<string, boolean>>({});
+  /** El puesto al que se le está asignando gente (popup de la ficha). */
+  const [asignando, setAsignando] = useState<Puesto | null>(null);
+  /* «Quitar» a alguien de su puesto cierra su asignación en el servidor. Se
+     pide dos veces (sin diálogo del navegador) y se relee el horario. */
+  const [confirmarQuitar, setConfirmarQuitar] = useState<string | null>(null);
+  const quitarVigilante = async (p: Persona) => {
+    const a = leido?.enlace.personas[p.id]?.assignmentId;
+
+    if (!a) {
+      toast.error(
+        t(
+          "ui.Planificador.sinAsignacionGuardada",
+          "Esta persona todavía no tiene asignación guardada; publica primero.",
+        ),
+      );
+
+      return;
+    }
+    if (confirmarQuitar !== p.id) {
+      setConfirmarQuitar(p.id);
+      toast.message(
+        t("ui.Planificador.confirmaQuitar", {
+          defaultValue:
+            "Vuelve a pulsar «quitar» para sacar a {{nombre}} del puesto.",
+          nombre: p.nombre,
+        }),
+      );
+
+      return;
+    }
+    try {
+      await ApiService.delete(`/tenant/${tenantId}/guard-assignment/${a}`);
+      toast.success(
+        t("ui.Planificador.quitado", {
+          defaultValue: "{{nombre}} ya no está en este puesto.",
+          nombre: p.nombre,
+        }),
+      );
+      setConfirmarQuitar(null);
+      void cargar();
+    } catch (e: any) {
+      toast.error(e?.data?.message || e?.message || "Error");
+    }
+  };
   const abrirTodo =
     busca.trim() !== "" || soloHuecos || puestosVisibles.length <= 2;
   const estaAbierto = (k: string) => abiertos[k] ?? abrirTodo;
@@ -903,6 +950,9 @@ export default function Planificador() {
                                       pu={pu}
                                       cambiar={cambiar}
                                       setHoja={setHoja}
+                                      asignar={setAsignando}
+                                      confirmando={confirmarQuitar}
+                                      quitar={quitarVigilante}
                                       onToggle={() => alternar(`p:${pu.id}`)}
                                     />
                                   ))}
@@ -1002,6 +1052,28 @@ export default function Planificador() {
           </>
         )}
 
+        {/* El mismo popup de asignar de la ficha de la estación, abierto desde
+            aquí (pedido del dueño: «debemos reutilizar ese componente»). Al
+            guardar se relee el horario real. */}
+        {asignando && (
+          <ShiftAssignModal
+            open
+            postSiteId={asignando.sedeId || ""}
+            station={
+              {
+                id: asignando.id,
+                tenantId,
+                stationName: asignando.nombre,
+              } as any
+            }
+            stationId={asignando.id}
+            onClose={() => setAsignando(null)}
+            onSaved={() => {
+              setAsignando(null);
+              void cargar();
+            }}
+          />
+        )}
         {plan && hoja?.tipo === "hueco" && (
           <HojaHueco
             k={hoja.k}
@@ -1201,6 +1273,9 @@ function FilasDePuesto({
   setHoja,
   abierto,
   onToggle,
+  asignar,
+  quitar,
+  confirmando,
 }: {
   plan: Plan;
   pu: Puesto;
@@ -1210,6 +1285,9 @@ function FilasDePuesto({
   setHoja: (h: Hoja) => void;
   abierto: boolean;
   onToggle: () => void;
+  asignar: (pu: Puesto) => void;
+  quitar: (p: Persona, confirmando: boolean) => void;
+  confirmando: string | null;
 }) {
   const { t } = useTranslation();
   const fijos = fijosDe(plan, pu.id);
@@ -1277,6 +1355,28 @@ function FilasDePuesto({
                 ? `↔ ${fijos.map((s) => corto(s.nombre)).join(", ")}`
                 : t("ui.Planificador.sinSacafranco", "sin sacafranco")}
             </span>
+            {/* Desde aquí se actúa sobre el puesto: asignarle gente o editarlo
+                (pedido del dueño: «no hay cómo hacer nada dentro del Planificador»). */}
+            {pu.sedeId && (
+              <>
+                <button
+                  className="cg-btn-glass cg-focus inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                  style={{ color: "var(--brand-text)" }}
+                  type="button"
+                  onClick={() => asignar(pu)}
+                >
+                  <UserPlus className="h-3 w-3" />
+                  {t("ui.Planificador.asignarVigilante", "Asignar vigilante")}
+                </button>
+                <Link
+                  className="cg-btn-glass cg-focus inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                  to={`/post-sites/${pu.sedeId}/stations/${pu.id}/overview`}
+                >
+                  <Pencil className="h-3 w-3" />
+                  {t("ui.Planificador.editarEstacion", "Editar")}
+                </Link>
+              </>
+            )}
           </span>
         </td>
         {/* La cobertura va EN la fila de la estación (pedido del dueño): por
@@ -1428,6 +1528,19 @@ function FilasDePuesto({
                   >
                     {t("ui.Planificador.ausencia", "ausencia")}
                   </button>
+                  <button
+                    className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                    style={{ color: "var(--danger-text, #e5484d)" }}
+                    title={t(
+                      "ui.Planificador.quitarTitulo",
+                      "Sacar a esta persona del puesto (cierra su asignación)",
+                    )}
+                    onClick={() => quitar(p, confirmando === p.id)}
+                  >
+                    {confirmando === p.id
+                      ? t("ui.Planificador.quitarSeguro", "¿seguro? quitar")
+                      : t("ui.Planificador.quitar", "quitar")}
+                  </button>
                 </span>
               </td>
               {Array.from({ length: dias.length }, (_, i) => {
@@ -1513,6 +1626,20 @@ function FilasDePuesto({
                   {t(
                     "ui.Planificador.nadieAsignado",
                     "Nadie asignado a este puesto.",
+                  )}
+                  {pu.sedeId && (
+                    <button
+                      className="cg-btn-glass cg-focus ml-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold not-italic"
+                      style={{ color: "var(--brand-text)" }}
+                      type="button"
+                      onClick={() => asignar(pu)}
+                    >
+                      <UserPlus className="h-3 w-3" />
+                      {t(
+                        "ui.Planificador.asignarVigilante",
+                        "Asignar vigilante",
+                      )}
+                    </button>
                   )}
                 </div>
               </td>
