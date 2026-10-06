@@ -266,7 +266,7 @@ export default function StationCardsGrid({
         icon={<RadioTower />}
         title={t("stations.empty.title", { defaultValue: "Sin estaciones" })}
         description={t("stations.empty.description", {
-          defaultValue: "Las estaciones se crean dentro de cada puesto.",
+          defaultValue: "Pulsa «Agregar estación» y elige el cliente y la sede; también se crean desde la sede.",
         })}
       />
     );

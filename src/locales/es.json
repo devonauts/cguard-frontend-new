@@ -8283,7 +8283,7 @@
     "searchPlaceholder": "Buscar por nominativo, puesto o cliente…",
     "empty": {
       "title": "Sin estaciones",
-      "description": "Las estaciones se crean dentro de cada puesto."
+      "description": "Pulsa «Agregar estación» y elige el cliente y la sede; también se crean desde la sede."
     },
     "covered": "Con cobertura",
     "uncovered": "Sin vigilantes",

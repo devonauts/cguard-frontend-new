@@ -7,9 +7,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { RadioTower } from "lucide-react";
+import { Plus, RadioTower } from "lucide-react";
 
 import StationCardsGrid from "./StationCardsGrid";
+
+import ElegirSedeParaEstacion from "@/components/stations/ElegirSedeParaEstacion";
+import { Button } from "@/components/ui/button";
 
 import AppLayout from "@/layouts/app-layout";
 import { usePageTitle } from "@/hooks/usePageTitle";
@@ -35,6 +38,8 @@ export default function StationsPage() {
   const [stations, setStations] = useState<StationCard[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
+  // «Agregar estación»: primero de qué cliente y sede, luego el formulario.
+  const [eligiendo, setEligiendo] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -90,6 +95,16 @@ export default function StationsPage() {
     <AppLayout>
       <PageContainer width="wide">
         <PageHeader
+          actions={
+            <Button
+              className="gap-2"
+              variant="brand"
+              onClick={() => setEligiendo(true)}
+            >
+              <Plus className="h-4 w-4" />
+              {t("ui.StationsPage.agregarEstacion", "Agregar estación")}
+            </Button>
+          }
           badges={
             !loading ? (
               <span className="text-sm" style={{ color: "var(--ink-soft)" }}>
@@ -129,6 +144,7 @@ export default function StationsPage() {
           onOpen={openStation}
           onOpenTab={openStationTab}
         />
+        <ElegirSedeParaEstacion open={eligiendo} onOpenChange={setEligiendo} />
       </PageContainer>
     </AppLayout>
   );
