@@ -10,6 +10,7 @@ import StationGeofencePolygon, {
   type PolyPoint,
 } from "@/components/GoogleMap/StationGeofencePolygon";
 import { FIELD_CLS_LG } from "@/pages/admin/clientes/components/_shared/tab-kit";
+import RotationStyleSelect from "@/components/schedule/RotationStyleSelect";
 
 /* ════════════════════════════════════════════════════════════════════════════
    LA COBERTURA DEL PUESTO, CON NÚMEROS.
@@ -170,6 +171,11 @@ export default function StationCreateForm({
   // La cobertura: franjas con cuántos a la vez. Nace vacía: se elige un atajo
   // o se escriben las horas.
   const [franjas, setFranjas] = useState<Franja[]>([]);
+  /* LA ROTACIÓN POR DEFECTO DEL PUESTO (opcional). Es una plantilla: «aquí
+     se rota 3 D · 3 N · 2 L». Cada vigilante la hereda al asignarlo, con su
+     propio desfase, y en el Planificador se puede cambiar persona a persona.
+     Vacía = se decide al asignar al primero. */
+  const [rotationStyleId, setRotationStyleId] = useState("");
   const seats = franjas.reduce((acc, f) => acc + Math.max(1, f.guards), 0);
   const franjasOk =
     franjas.length > 0 &&
@@ -314,6 +320,7 @@ export default function StationCreateForm({
             {
               data: {
                 scheduleType: tipo,
+                rotationStyleId: rotationStyleId || undefined,
                 franjas: ordenadas.map((f) => ({
                   start: f.start,
                   end: f.end,
@@ -633,6 +640,35 @@ export default function StationCreateForm({
               )}
             </div>
           </div>
+
+          {/* ¿Cómo rotan? — la plantilla del puesto, opcional */}
+          {franjasOk && (
+            <div>
+              <label className="mb-1 block text-sm font-medium">
+                {t(
+                  "ui.StationCreateForm.comoRotan",
+                  "¿Cómo rotan los vigilantes de este puesto?",
+                )}
+                <span
+                  className="ml-2 text-xs font-normal"
+                  style={{ color: "var(--ink-faint)" }}
+                >
+                  {t("ui.StationCreateForm.opcional", "Opcional")}
+                </span>
+              </label>
+              <p className="mb-3 text-xs" style={{ color: "var(--ink-soft)" }}>
+                {t(
+                  "ui.StationCreateForm.comoRotanExplica",
+                  "El ciclo que siguen quienes cubren este puesto (por ejemplo 3 de día, 3 de noche, 2 de descanso). Cada vigilante lo hereda al asignarlo, con su propio desfase para que entre ellos se cubran; los descansos los tapa el sacafranco. Si lo dejas vacío, se decide al asignar al primero.",
+                )}
+              </p>
+              <RotationStyleSelect
+                scheduleType={tipoDeFranjas(franjas)}
+                value={rotationStyleId}
+                onChange={setRotationStyleId}
+              />
+            </div>
+          )}
 
           {/* Geofence radius */}
           <div>
