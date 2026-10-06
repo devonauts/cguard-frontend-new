@@ -62,6 +62,9 @@ import { getServiceType } from "@/lib/serviceTypes";
 import { Section, EmptyState, IconTile } from "@/components/kit";
 import CampoSucursalDeSede from "@/components/post-sites/CampoSucursalDeSede";
 import { HiloDePuesta } from "@/components/onboarding/PuestaEnMarcha";
+import StationCreateForm, {
+  type StationCreada,
+} from "@/components/stations/StationCreateForm";
 
 // ─── types ────────────────────────────────────────────────────────────────────
 
@@ -144,8 +147,8 @@ function deriveScheduleType(
 const STEP_LABELS: { key: string; label: string }[] = [
   { key: "ui.PostSiteWizard.step.tipo", label: "Tipo" },
   { key: "ui.PostSiteWizard.step.sitio", label: "Sitio" },
-  { key: "ui.PostSiteWizard.step.config", label: "Config." },
-  { key: "ui.PostSiteWizard.step.crear", label: "Crear" },
+  { key: "ui.PostSiteWizard.step.estaciones", label: "Estaciones" },
+  { key: "ui.PostSiteWizard.step.listo", label: "Listo" },
 ];
 const SCHEDULES = [
   "1 hora",
@@ -971,6 +974,10 @@ export default function PostSiteWizard({
   const enPuesta = searchParams.get("puesta") === "1";
   const [submitting, setSubmitting] = useState(false);
   const [createdId, setCreatedId] = useState<string | null>(null);
+  /* La sede tal como quedó guardada (la lee el formulario de estación para el
+     tenant y las coordenadas) y las estaciones creadas en este recorrido. */
+  const [sedeGuardada, setSedeGuardada] = useState<any | null>(null);
+  const [creadas, setCreadas] = useState<StationCreada[]>([]);
   const [loadingEdit, setLoadingEdit] = useState(isEdit);
 
   // Step 1
@@ -1088,6 +1095,8 @@ export default function PostSiteWizard({
       try {
         const data = await stationService.get(id!);
         const d = data as any;
+
+        setSedeGuardada(d);
 
         setServiceType(d.serviceType ?? undefined);
         setClientId(d.clientAccountId ?? d.clientId ?? "");
@@ -1407,43 +1416,36 @@ export default function PostSiteWizard({
     setSubmitting(true);
     try {
       const payload = buildPayload();
+      let sedeId = id || "";
 
-      /* Las estaciones YA NO se crean desde aquí. El bloque de «estaciones»
-         del asistente era demasiado general (nombre y horas) para lo que es
-         una estación de verdad: nominativo, geocerca, plazas, ciclo… Eso lo
-         pide el formulario de crear estación, y es a donde se sigue al
-         guardar la sede (puesta en marcha o sede nueva). */
+      /* Las estaciones no se crean aquí: se crean una a una en el paso 3,
+         con el formulario completo (nominativo, geocerca, plazas, ciclo…),
+         una vez que la sede existe. */
       if (isEdit) {
         await stationService.update(id!, payload as any);
-        invalidateEntity("stations");
-        try {
-          await uploadSitePhoto(id!);
-        } catch {
-          /* already toasted inside */
-        }
-        toast.success(
-          t("ui.PostSiteWizard.cambiosGuardados", "Cambios guardados"),
-        );
-        if (enPuesta) navigate(`/post-sites/${id}/stations/new?puesta=1`);
-        else setStep(6);
+      } else {
+        const data = await stationService.create(payload as any);
 
-        return;
+        sedeId = (data as any).id || (data as any).data?.id || "";
+        setCreatedId(sedeId);
       }
-      const data = await stationService.create(payload as any);
-      const newId = (data as any).id || (data as any).data?.id;
-
-      setCreatedId(newId);
       invalidateEntity("stations");
-      if (newId) {
-        try {
-          await uploadSitePhoto(newId);
-        } catch {
-          /* already toasted inside */
-        }
+      try {
+        await uploadSitePhoto(sedeId);
+      } catch {
+        /* already toasted inside */
       }
-      toast.success(t("ui.PostSiteWizard.puestoDeVigilanciaCreado"));
-      if (newId) navigate(`/post-sites/${newId}/stations/new?puesta=1`);
-      else setStep(6);
+      try {
+        setSedeGuardada(await stationService.get(sedeId));
+      } catch {
+        setSedeGuardada({ id: sedeId, latitud, longitud });
+      }
+      toast.success(
+        isEdit
+          ? t("ui.PostSiteWizard.cambiosGuardados", "Cambios guardados")
+          : t("ui.PostSiteWizard.sedeCreada", "Sede creada"),
+      );
+      setStep(3);
     } catch (e: any) {
       toast.error(
         e?.response?.data?.message ??
@@ -1455,253 +1457,7 @@ export default function PostSiteWizard({
     }
   };
 
-  const addStationDraft = () => {
-    setStations((prev) => [
-      ...prev,
-      { name: "", description: "", jornadas: [] },
-    ]);
-  };
-
-  const updateStation = (i: number, delta: Partial<StationDraft>) => {
-    setStations((prev) =>
-      prev.map((s, idx) => (idx === i ? { ...s, ...delta } : s)),
-    );
-  };
-
-  const removeStation = (i: number) => {
-    setStations((prev) => prev.filter((_, idx) => idx !== i));
-  };
-
-  // ── selected client label ────────────────────────────────────────────────────
-  const selectedClientLabel = resolvedClientName;
-
-  // ── equipment / training option lists ────────────────────────────────────────
-  const equipmentOptions = [
-    {
-      value: "radio",
-      label: t("ui.PostSiteWizard.equipment.radio", "Radio comunicador"),
-    },
-    {
-      value: "metalDetector",
-      label: t(
-        "ui.PostSiteWizard.equipment.metalDetector",
-        "Detector de metales",
-      ),
-    },
-    {
-      value: "flashlight",
-      label: t("ui.PostSiteWizard.equipment.flashlight", "Linterna táctica"),
-    },
-    {
-      value: "vehicle",
-      label: t("ui.PostSiteWizard.equipment.vehicle", "Vehículo asignado"),
-    },
-    {
-      value: "bodycam",
-      label: t("ui.PostSiteWizard.equipment.bodycam", "Bodycam"),
-    },
-    { value: "baton", label: t("ui.PostSiteWizard.equipment.baton", "Bastón") },
-    {
-      value: "handcuffs",
-      label: t("ui.PostSiteWizard.equipment.handcuffs", "Esposas"),
-    },
-    {
-      value: "gloves",
-      label: t("ui.PostSiteWizard.equipment.gloves", "Guantes anticorte"),
-    },
-    {
-      value: "firstAidKit",
-      label: t(
-        "ui.PostSiteWizard.equipment.firstAidKit",
-        "Botiquín de primeros auxilios",
-      ),
-    },
-    {
-      value: "umbrella",
-      label: t(
-        "ui.PostSiteWizard.equipment.umbrella",
-        "Impermeable / paraguas",
-      ),
-    },
-    {
-      value: "torch",
-      label: t("ui.PostSiteWizard.equipment.torch", "Linterna de búsqueda"),
-    },
-    {
-      value: "binoculars",
-      label: t("ui.PostSiteWizard.equipment.binoculars", "Binoculares"),
-    },
-  ];
-
-  const trainingOptions = [
-    {
-      value: "firstAid",
-      label: t("ui.PostSiteWizard.training.firstAid", "Primeros auxilios"),
-    },
-    {
-      value: "crowdControl",
-      label: t(
-        "ui.PostSiteWizard.training.crowdControl",
-        "Control de multitudes",
-      ),
-    },
-    {
-      value: "firearms",
-      label: t("ui.PostSiteWizard.training.firearms", "Manejo de armas"),
-    },
-    {
-      value: "evacuation",
-      label: t("ui.PostSiteWizard.training.evacuation", "Evacuación"),
-    },
-    {
-      value: "accessControl",
-      label: t("ui.PostSiteWizard.training.accessControl", "Control de acceso"),
-    },
-    {
-      value: "cctv",
-      label: t("ui.PostSiteWizard.training.cctv", "Circuito cerrado (CCTV)"),
-    },
-    {
-      value: "customerService",
-      label: t(
-        "ui.PostSiteWizard.training.customerService",
-        "Servicio al cliente",
-      ),
-    },
-    {
-      value: "defensiveTactics",
-      label: t(
-        "ui.PostSiteWizard.training.defensiveTactics",
-        "Tácticas defensivas",
-      ),
-    },
-    {
-      value: "fireExtinguisher",
-      label: t(
-        "ui.PostSiteWizard.training.fireExtinguisher",
-        "Manejo de extintores",
-      ),
-    },
-    {
-      value: "panicProtocol",
-      label: t(
-        "ui.PostSiteWizard.training.panicProtocol",
-        "Protocolo antipánico",
-      ),
-    },
-    {
-      value: "communication",
-      label: t(
-        "ui.PostSiteWizard.training.communication",
-        "Comunicación por radio",
-      ),
-    },
-    {
-      value: "reportWriting",
-      label: t(
-        "ui.PostSiteWizard.training.reportWriting",
-        "Redacción de informes",
-      ),
-    },
-  ];
-
-  // ── render step content ───────────────────────────────────────────────────────
   const renderStep = () => {
-    // ── Step 6: Éxito ─────────────────────────────────────────────────────────
-    if (step === 6) {
-      const stationCount = stations.filter((s) => s.name.trim()).length;
-      const targetId = isEdit ? id! : (createdId ?? "");
-      const siteNameForPlan = (
-        resolvedClientName ||
-        stations.find((s) => s.name.trim())?.name ||
-        ""
-      ).trim();
-
-      return (
-        <div className="flex flex-col items-center gap-6 py-8 text-center">
-          <div
-            className="flex h-20 w-20 items-center justify-center rounded-full"
-            style={{
-              background: "color-mix(in oklab, var(--ok) 16%, transparent)",
-              boxShadow:
-                "0 0 0 8px color-mix(in oklab, var(--ok) 8%, transparent)",
-              color: "var(--ok-text)",
-            }}
-          >
-            <CheckCircle2 className="h-10 w-10" />
-          </div>
-          <div>
-            <h2 className="font-display text-2xl font-bold">
-              {isEdit && !enPuesta
-                ? t(
-                    "ui.PostSiteWizard.cambiosGuardadosExcl",
-                    "¡Cambios guardados!",
-                  )
-                : t("ui.PostSiteWizard.sedeListaExcl", "¡Sede lista!")}
-            </h2>
-            <p
-              className="mx-auto mt-2 max-w-sm text-sm"
-              style={{ color: "var(--ink-soft)" }}
-            >
-              {isEdit
-                ? t(
-                    "ui.PostSiteWizard.sitioActualizado",
-                    "El sitio fue actualizado correctamente.",
-                  )
-                : stationCount > 0
-                  ? t("ui.PostSiteWizard.estacionesConfiguradas", {
-                      count: stationCount,
-                      defaultValue:
-                        "{{count}} estaciones configuradas y listas.",
-                    })
-                  : t(
-                      "ui.PostSiteWizard.sitioCreadoSinEstaciones",
-                      "El sitio fue creado. Puedes añadir estaciones desde su perfil.",
-                    )}
-            </p>
-          </div>
-          <div className="flex gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() =>
-                navigate(
-                  clientLocked
-                    ? `/clients/${presetClientId}/post-sites`
-                    : "/post-sites",
-                )
-              }
-            >
-              {clientLocked
-                ? t("ui.PostSiteWizard.volverAlCliente", "Volver al cliente")
-                : t(
-                    "ui.PostSiteWizard.verTodosLosSitios",
-                    "Ver todos los sitios",
-                  )}
-            </Button>
-            <Button
-              className="gap-2"
-              type="button"
-              variant="brand"
-              onClick={() => navigate(`/post-sites/${targetId}/stations/new`)}
-            >
-              <Plus className="h-4 w-4" />
-              {t("ui.PostSiteWizard.crearEstacion", "Crear estación")}
-            </Button>
-            <Button
-              className="gap-2"
-              type="button"
-              variant="outline"
-              onClick={() => navigate(`/post-sites/${targetId}/profile`)}
-            >
-              <MapPin className="h-4 w-4" />
-              {t("ui.PostSiteWizard.irAlPerfil", "Ir al perfil")}
-            </Button>
-          </div>
-        </div>
-      );
-    }
-
     // ── Step 1: Service type ───────────────────────────────────────────────────
     if (step === 1) {
       return (
@@ -2104,23 +1860,28 @@ export default function PostSiteWizard({
             </>
           )}
 
-          {/* ── Description ─────────────────────────────────────────── */}
-          <div>
-            <label className="mb-1.5 block text-sm font-semibold">
-              {t(
-                "ui.PostSiteWizard.descripcionDelSitio",
-                "Descripción del sitio",
-              )}
+          {/* ── Nivel de riesgo de la sede (el del cliente es el promedio) ── */}
+          <div className="glass p-4">
+            <label className="cg-eyebrow mb-1 block">
+              {t("clients.form.riskLevel", "Nivel de riesgo")}
             </label>
-            <Textarea
-              placeholder={t(
-                "ui.PostSiteWizard.descripcionGeneralIndicacionesEspeciales",
-                "Descripción general, indicaciones especiales…",
-              )}
-              rows={3}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
+            <select
+              className="cg-input cg-focus flex h-9 w-full max-w-xs px-3 py-1 text-sm"
+              value={cfgGet("riskLevel")}
+              onChange={(e) => cfgSet("riskLevel", e.target.value)}
+            >
+              <option value="">{t("comun.seleccionar")}</option>
+              {[
+                ["low", "clients.riskLevel.low", "Bajo"],
+                ["medium", "clients.riskLevel.medium", "Medio"],
+                ["high", "clients.riskLevel.high", "Alto"],
+                ["critical", "ui.PostSiteWizard.riesgoCritico", "Crítico"],
+              ].map(([v, k, l]) => (
+                <option key={v} value={v}>
+                  {t(k, l)}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* ── Site Photo ────────────────────────────────────────── */}
@@ -2192,440 +1953,209 @@ export default function PostSiteWizard({
               )}
             </div>
           </div>
-        </div>
-      );
-    }
-
-    // ── Step 3: Config (equipment / training + type-specific) ─────────────────
-    if (step === 3) {
-      const typeDef = serviceType ? getServiceType(serviceType) : null;
-
-      return (
-        <div className="space-y-6">
-          <div>
-            <h2 className="font-display mb-1 text-xl font-bold">
-              {t(
-                "ui.PostSiteWizard.configuracionOperativa",
-                "Configuración operativa",
-              )}
-              {typeDef && (
-                <span
-                  className="ml-2 text-base font-normal"
-                  style={{ color: "var(--brand-text)" }}
-                >
-                  — {t(typeDef.labelKey, typeDef.label)}
-                </span>
-              )}
-            </h2>
-            <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-              {t(
-                "ui.PostSiteWizard.equipamientoCapacitacionYParametrosDel",
-                "Equipamiento, capacitación y parámetros del servicio.",
-              )}
-            </p>
-          </div>
-
-          {/* Equipment */}
-          <Section
-            contentClassName="space-y-3"
-            icon={<Zap />}
-            title={t("ui.PostSiteWizard.equipamiento", "Equipamiento")}
-          >
-            <ChipGroup
-              customItems={customEquipment}
-              options={equipmentOptions}
-              placeholder={t("ui.PostSiteWizard.agregarOtroEquipo")}
-              value={equipment}
-              onChange={(sel, cust) => {
-                setEquipment(sel);
-                setCustomEquipment(cust);
-              }}
-            />
-          </Section>
-
-          {/* Training */}
-          <Section
-            contentClassName="space-y-3"
-            icon={<Star />}
-            title={t(
-              "ui.PostSiteWizard.capacitacionRequerida",
-              "Capacitación requerida",
-            )}
-          >
-            <ChipGroup
-              customItems={customTraining}
-              options={trainingOptions}
-              placeholder={t(
-                "ui.PostSiteWizard.agregarOtraCapacitacion",
-                "Agregar otra capacitación…",
-              )}
-              value={training}
-              onChange={(sel, cust) => {
-                setTraining(sel);
-                setCustomTraining(cust);
-              }}
-            />
-          </Section>
-
-          {/* Deployment checks */}
-          <Section
-            contentClassName="space-y-4"
-            icon={<Shield />}
-            title={t(
-              "ui.PostSiteWizard.despliegueOperativo",
-              "Despliegue operativo",
-            )}
-          >
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="cg-eyebrow mb-1 block">
-                  {t("clients.form.riskLevel", "Nivel de riesgo")}
-                </label>
-                <select
-                  className="cg-input cg-focus flex h-9 w-full px-3 py-1 text-sm"
-                  value={cfgGet("riskLevel")}
-                  onChange={(e) => cfgSet("riskLevel", e.target.value)}
-                >
-                  <option value="">{t("comun.seleccionar")}</option>
-                  {[
-                    ["low", "clients.riskLevel.low", "Bajo"],
-                    ["medium", "clients.riskLevel.medium", "Medio"],
-                    ["high", "clients.riskLevel.high", "Alto"],
-                    ["critical", "ui.PostSiteWizard.riesgoCritico", "Crítico"],
-                  ].map(([v, k, l]) => (
-                    <option key={v} value={v}>
-                      {t(k, l)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
-              {DEPLOY_CHECKS.map(
-                ({ key, label, labelKey, defaultOn = false }) => {
-                  const on = !!cfgGet(key, defaultOn);
+          {isEdit && (
+            <Section title={t("ui.PostSiteWizard.estadoDelSitio")}>
+              <div className="flex max-w-xs gap-2">
+                {(["active", "inactive"] as const).map((s) => {
+                  const sel = status === s;
+                  const fill =
+                    s === "active" ? "var(--ok)" : "var(--ink-faint)";
 
                   return (
                     <button
-                      key={key}
-                      aria-pressed={on}
-                      className="cg-focus flex items-center gap-2 rounded-lg border px-3 py-2.5 text-left transition-colors"
+                      key={s}
+                      aria-pressed={sel}
+                      className="cg-focus h-9 flex-1 rounded-md border text-sm font-medium transition-colors"
                       style={
-                        on
+                        sel
                           ? {
-                              background: "var(--brand-wash)",
-                              borderColor: "var(--brand-line)",
-                              color: "var(--brand-text)",
+                              background: `color-mix(in oklab, ${fill} 14%, transparent)`,
+                              borderColor: `color-mix(in oklab, ${fill} 34%, transparent)`,
+                              color:
+                                s === "active"
+                                  ? "var(--ok-text)"
+                                  : "var(--ink-soft)",
                             }
                           : {
                               background: "var(--glass-sunken)",
                               borderColor: "var(--hairline)",
-                              color: "var(--ink-soft)",
+                              color: "var(--ink-faint)",
                             }
                       }
                       type="button"
-                      onClick={() => cfgSet(key, !on)}
+                      onClick={() => setStatus(s)}
                     >
-                      <span
-                        className="flex h-4 w-4 shrink-0 items-center justify-center rounded border-2"
-                        style={
-                          on
-                            ? {
-                                background: "var(--brand)",
-                                borderColor: "var(--brand)",
-                                color: "var(--brand-ink)",
-                              }
-                            : { borderColor: "var(--hairline)" }
-                        }
-                      >
-                        {on && <Check className="h-2.5 w-2.5" />}
-                      </span>
-                      <span className="text-xs font-medium leading-tight">
-                        {t(labelKey, label)}
-                      </span>
+                      {s === "active"
+                        ? t("common.active", "Activo")
+                        : t("common.inactive", "Inactivo")}
                     </button>
                   );
-                },
-              )}
-            </div>
-          </Section>
-
-          {/* SOP field */}
-          <div>
-            <label className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold">
-              <AlertTriangle
-                className="h-4 w-4"
-                style={{ color: "var(--warn-text)" }}
-              />
-              {t(
-                "ui.PostSiteWizard.instruccionesDelPuestoSop",
-                "Instrucciones del puesto (SOP)",
-              )}
-            </label>
-            <Textarea
-              placeholder={t(
-                "ui.PostSiteWizard.protocoloDeAccesoManejoDe",
-                "Protocolo de acceso, manejo de visitantes, emergencias, comunicación con supervisores…",
-              )}
-              rows={3}
-              value={cfgGet("postInstructions")}
-              onChange={(e) => cfgSet("postInstructions", e.target.value)}
-            />
-          </div>
-          {/* Status */}
-          <Section title={t("ui.PostSiteWizard.estadoDelSitio")}>
-            <div className="flex max-w-xs gap-2">
-              {(["active", "inactive"] as const).map((s) => {
-                const sel = status === s;
-                const fill = s === "active" ? "var(--ok)" : "var(--ink-faint)";
-
-                return (
-                  <button
-                    key={s}
-                    aria-pressed={sel}
-                    className="cg-focus h-9 flex-1 rounded-md border text-sm font-medium transition-colors"
-                    style={
-                      sel
-                        ? {
-                            background: `color-mix(in oklab, ${fill} 14%, transparent)`,
-                            borderColor: `color-mix(in oklab, ${fill} 34%, transparent)`,
-                            color:
-                              s === "active"
-                                ? "var(--ok-text)"
-                                : "var(--ink-soft)",
-                          }
-                        : {
-                            background: "var(--glass-sunken)",
-                            borderColor: "var(--hairline)",
-                            color: "var(--ink-faint)",
-                          }
-                    }
-                    type="button"
-                    onClick={() => setStatus(s)}
-                  >
-                    {s === "active"
-                      ? t("common.active", "Activo")
-                      : t("common.inactive", "Inactivo")}
-                  </button>
-                );
-              })}
-            </div>
-          </Section>
+                })}
+              </div>
+            </Section>
+          )}
         </div>
       );
     }
 
-    // ── Step 4: Estaciones + Contacto ──────────────────────────────────────────
-    if (step === 4) {
-      return (
-        <div className="space-y-6">
-          <div>
-            <h2 className="font-display mb-1 text-xl font-bold">
-              {t(
-                "ui.PostSiteWizard.estacionesDeVigilancia",
-                "Estaciones de vigilancia",
-              )}
-            </h2>
-            <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-              {t(
-                "ui.PostSiteWizard.defineLosPuestosDeVigilante",
-                "Define los puestos de vigilante. Cada estación tiene su propio horario y número de vigilantes.",
-              )}
-            </p>
-          </div>
-
-          {/* Station builder */}
-          <div className="space-y-3">
-            {stations.length === 0 ? (
-              <EmptyState
-                description={t("ui.PostSiteWizard.puedesAnadirlasAhoraODesde")}
-                icon={<Shield />}
-                title={t("ui.PostSiteWizard.sinEstacionesDefinidas")}
-              />
-            ) : (
-              stations.map((s, i) => (
-                <StationRow
-                  key={i}
-                  draft={s}
-                  onChange={(d) => updateStation(i, d)}
-                  onRemove={() => removeStation(i)}
-                />
-              ))
-            )}
-            <button
-              className="cg-focus flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed py-3 text-sm font-medium transition-colors"
-              style={{
-                borderColor: "var(--hairline)",
-                color: "var(--ink-soft)",
-              }}
-              type="button"
-              onClick={addStationDraft}
-            >
-              <Plus className="h-4 w-4" />
-              {t("ui.PostSiteWizard.anadirEstacion", "Añadir estación")}
-            </button>
-          </div>
-        </div>
-      );
-    }
-
-    // ── Step 5: Review & Create ────────────────────────────────────────────────
-    if (step === 5) {
-      const typeDef = serviceType ? getServiceType(serviceType) : null;
-      const allEquip = [...equipment, ...customEquipment];
-      const allTraining = [...training, ...customTraining];
-
-      const SummaryRow = ({
-        icon,
-        label,
-        value,
-      }: {
-        icon: React.ReactNode;
-        label: string;
-        value?: string;
-      }) =>
-        value ? (
-          <div
-            className="flex items-start gap-3 border-b py-2 last:border-0"
-            style={{ borderColor: "var(--hairline)" }}
-          >
-            <span
-              className="mt-0.5 shrink-0"
-              style={{ color: "var(--brand-text)" }}
-            >
-              {icon}
-            </span>
-            <span
-              className="w-28 shrink-0 text-xs"
-              style={{ color: "var(--ink-soft)" }}
-            >
-              {label}
-            </span>
-            <span className="text-sm font-medium">{value}</span>
-          </div>
-        ) : null;
+    // ── Step 3: Estaciones — el formulario completo, una a una ────────────────
+    if (step === 3) {
+      const sedeId = isEdit ? id! : (createdId ?? "");
+      const existentes = stations
+        .filter((x) => x.existingId)
+        .map((x) => ({ id: x.existingId!, name: x.name }));
+      const todas = [...existentes, ...creadas];
 
       return (
         <div className="space-y-5">
           <div>
-            <h2 className="font-display mb-1 text-xl font-bold">
-              {t("ui.PostSiteWizard.revisarYCrear")}
+            <h2 className="font-display mb-0.5 text-xl font-bold">
+              {t(
+                "ui.PostSiteWizard.estacionesDeLaSede",
+                "Estaciones de la sede",
+              )}
             </h2>
             <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
               {t(
-                "ui.PostSiteWizard.compruebaAntesDeGuardarSede",
-                "Comprueba la información antes de guardar la sede. Las estaciones se crean después, una a una, con todo su detalle.",
+                "ui.PostSiteWizard.creaCadaEstacion",
+                "Crea cada estación con su nombre, nominativo, horario y geocerca. Cuando estén todas, pulsa «Terminar».",
               )}
             </p>
           </div>
 
-          {/* Summary card */}
-          <div className="glass overflow-hidden">
-            {typeDef && (
-              <div
-                className="flex items-center gap-3 border-b px-5 py-3"
-                style={{
-                  background: "var(--brand-wash)",
-                  borderColor: "var(--brand-line)",
-                }}
-              >
-                <span
-                  className="flex h-8 w-8 items-center justify-center rounded-full border"
-                  style={{
-                    background: "var(--brand-wash)",
-                    borderColor: "var(--brand-line)",
-                    color: "var(--brand-text)",
-                  }}
-                >
-                  {React.createElement(SERVICE_ICONS[typeDef.icon] ?? Shield, {
-                    className: "h-4 w-4",
-                  })}
-                </span>
-                <span
-                  className="text-sm font-semibold"
-                  style={{ color: "var(--brand-text)" }}
-                >
-                  {t(typeDef.labelKey, typeDef.label)}
-                </span>
-              </div>
-            )}
-            <div className="px-5 py-4 space-y-0">
-              <SummaryRow
-                icon={<Building2 className="h-4 w-4" />}
-                label={t("comun.cliente")}
-                value={selectedClientLabel ?? undefined}
-              />
-              <SummaryRow
-                icon={<MapPin className="h-4 w-4" />}
-                label={t("ui.PostSiteWizard.direccion", "Dirección")}
-                value={address || undefined}
-              />
-              <SummaryRow
-                icon={<MapPin className="h-4 w-4" />}
-                label={t("comun.ciudad")}
-                value={city || undefined}
-              />
-            </div>
-          </div>
-
-          {/* Equipment & training chips */}
-          {(allEquip.length > 0 || allTraining.length > 0) && (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {allEquip.length > 0 && (
-                <Section
-                  icon={<Zap />}
-                  title={t("ui.PostSiteWizard.equipamiento", "Equipamiento")}
-                >
-                  <div className="flex flex-wrap gap-1.5">
-                    {allEquip.map((e) => {
-                      const opt = equipmentOptions.find((o) => o.value === e);
-
-                      return (
-                        <span
-                          key={e}
-                          className="rounded-full border px-2 py-0.5 text-[11px]"
-                          style={{
-                            background: "var(--brand-wash)",
-                            borderColor: "var(--brand-line)",
-                            color: "var(--brand-text)",
-                          }}
-                        >
-                          {opt?.label ?? e}
-                        </span>
-                      );
-                    })}
-                  </div>
-                </Section>
-              )}
-              {allTraining.length > 0 && (
-                <Section
-                  icon={<Star />}
-                  title={t("ui.PostSiteWizard.capacitacion", "Capacitación")}
-                >
-                  <div className="flex flex-wrap gap-1.5">
-                    {allTraining.map((t) => {
-                      const opt = trainingOptions.find((o) => o.value === t);
-
-                      return (
-                        <span
-                          key={t}
-                          className="rounded-full border px-2 py-0.5 text-[11px]"
-                          style={{
-                            background: "var(--brand-wash)",
-                            borderColor: "var(--brand-line)",
-                            color: "var(--brand-text)",
-                          }}
-                        >
-                          {opt?.label ?? t}
-                        </span>
-                      );
-                    })}
-                  </div>
-                </Section>
-              )}
+          {todas.length > 0 && (
+            <div className="glass p-4">
+              <p className="text-sm font-semibold">
+                {t("ui.PostSiteWizard.estacionesConteo", {
+                  defaultValue: "Estaciones ({{count}})",
+                  count: todas.length,
+                })}
+              </p>
+              <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+                {todas.map((x) => x.name).join(" · ")}
+              </p>
             </div>
           )}
+
+          {sedeGuardada && sedeId ? (
+            /* `key` remonta el formulario tras cada alta: queda limpio para la
+               siguiente estación sin que el componente sepa nada de esto. */
+            <StationCreateForm
+              key={creadas.length}
+              site={sedeGuardada}
+              siteId={sedeId}
+              submitLabel={t(
+                "ui.PostSiteWizard.guardarEstacion",
+                "Guardar estación",
+              )}
+              onCreated={(st) => {
+                setCreadas((c) => [...c, st]);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            />
+          ) : (
+            <div className="flex items-center justify-center py-16">
+              <Loader2
+                className="h-6 w-6 animate-spin"
+                style={{ color: "var(--brand-text)" }}
+              />
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ── Step 4: Listo ─────────────────────────────────────────────────────────
+    if (step === 4) {
+      const sedeId = isEdit ? id! : (createdId ?? "");
+      const n = stations.filter((x) => x.existingId).length + creadas.length;
+      const nombreParaPlan = (resolvedClientName || "").trim();
+
+      return (
+        <div className="flex flex-col items-center gap-6 py-10 text-center">
+          <div
+            className="flex h-20 w-20 items-center justify-center rounded-full border-2"
+            style={{
+              background: "color-mix(in oklab, var(--ok) 14%, transparent)",
+              borderColor: "color-mix(in oklab, var(--ok) 40%, transparent)",
+              color: "var(--ok-text)",
+            }}
+          >
+            <CheckCircle2 className="h-10 w-10" />
+          </div>
+          <div>
+            <h2 className="font-display text-2xl font-bold">
+              {t("ui.PostSiteWizard.sedeListaExcl", "¡Sede lista!")}
+            </h2>
+            <p
+              className="mx-auto mt-2 max-w-sm text-sm"
+              style={{ color: "var(--ink-soft)" }}
+            >
+              {n > 0
+                ? t("ui.PostSiteWizard.sedeConEstaciones", {
+                    defaultValue:
+                      "{{count}} estación(es). Siguiente: pon a cada una su vigilante; con eso el horario se arma solo y lo cuadras en el Planificador.",
+                    count: n,
+                  })
+                : t(
+                    "ui.PostSiteWizard.sedeSinEstacionesAun",
+                    "Sin estaciones todavía. Puedes crearlas desde la sede cuando quieras.",
+                  )}
+            </p>
+          </div>
+          <div className="flex flex-wrap justify-center gap-3">
+            {n > 0 ? (
+              <>
+                <Button
+                  className="gap-2"
+                  type="button"
+                  variant="brand"
+                  onClick={() => navigate(`/post-sites/${sedeId}/stations`)}
+                >
+                  <Users className="h-4 w-4" />
+                  {t(
+                    "ui.PostSiteWizard.asignarVigilantes",
+                    "Asignar vigilantes",
+                  )}
+                </Button>
+                <Button
+                  className="gap-2"
+                  type="button"
+                  variant="outline"
+                  onClick={() =>
+                    navigate(
+                      `/planificador?busca=${encodeURIComponent(nombreParaPlan)}`,
+                    )
+                  }
+                >
+                  <CalendarRange className="h-4 w-4" />
+                  {t(
+                    "ui.PostSiteWizard.abrirPlanificador",
+                    "Abrir en el Planificador",
+                  )}
+                </Button>
+              </>
+            ) : (
+              <Button
+                className="gap-2"
+                type="button"
+                variant="brand"
+                onClick={() => setStep(3)}
+              >
+                <Plus className="h-4 w-4" />
+                {t("ui.PostSiteWizard.crearEstacion", "Crear estación")}
+              </Button>
+            )}
+            <Button
+              className="gap-2"
+              type="button"
+              variant="outline"
+              onClick={() => navigate(`/post-sites/${sedeId}/profile`)}
+            >
+              <MapPin className="h-4 w-4" />
+              {t("ui.PostSiteWizard.irAlPerfil", "Ir al perfil")}
+            </Button>
+          </div>
         </div>
       );
     }
@@ -2634,8 +2164,6 @@ export default function PostSiteWizard({
   };
 
   // ── nav ────────────────────────────────────────────────────────────────────
-  const isLastMainStep = step === 5;
-  const isStationStep = step === 6;
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -2660,10 +2188,10 @@ export default function PostSiteWizard({
                       ? `/clients/${clientId}/overview`
                       : undefined,
                   },
-                  { clave: "sede", hecho: step > 3 },
+                  { clave: "sede", hecho: step >= 3 },
                   {
                     clave: "puestos",
-                    hecho: false,
+                    hecho: step >= 4 || creadas.length > 0,
                   },
                   { clave: "vigilantes", hecho: false },
                   { clave: "horario", hecho: false },
@@ -2671,21 +2199,17 @@ export default function PostSiteWizard({
               />
             </div>
           )}
-          {/* Progress bar (only on main steps) */}
-          {!isStationStep && (
-            <div className="mb-8">
-              <StepBar
-                current={step >= 5 ? step - 1 : step}
-                total={STEP_LABELS.length}
-              />
-            </div>
-          )}
+          <div className="mb-8">
+            <StepBar current={step} total={STEP_LABELS.length} />
+          </div>
 
           {/* Content */}
           <div className="min-h-[420px]">{renderStep()}</div>
 
-          {/* Navigation footer (not shown on station step — has own buttons) */}
-          {!isStationStep && (
+          {/* Pie: en los dos primeros pasos se navega; el 2 guarda la sede. En
+              el 3 el formulario de estación tiene sus botones y aquí sólo
+              queda «Terminar». El 4 no tiene pie. */}
+          {step <= 2 && (
             <div
               className="mt-8 flex items-center justify-between border-t pt-5"
               style={{ borderColor: "var(--hairline)" }}
@@ -2705,7 +2229,7 @@ export default function PostSiteWizard({
                           ? `/clients/${presetClientId}/post-sites`
                           : "/post-sites",
                     );
-                  } else setStep((s) => (s === 5 ? 3 : s - 1));
+                  } else setStep((s) => s - 1);
                 }}
               >
                 <ChevronLeft className="h-4 w-4" />
@@ -2714,7 +2238,7 @@ export default function PostSiteWizard({
                   : t("actions.back", "Atrás")}
               </Button>
 
-              {isLastMainStep ? (
+              {step === 2 ? (
                 <Button
                   className="gap-2 min-w-36"
                   disabled={submitting || !address.trim()}
@@ -2725,19 +2249,15 @@ export default function PostSiteWizard({
                   {submitting ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />{" "}
-                      {isEdit
-                        ? t("common.saving", "Guardando…")
-                        : t("clients.creating", "Creando…")}
+                      {t("common.saving", "Guardando…")}
                     </>
                   ) : (
                     <>
                       <CheckCircle2 className="h-4 w-4" />{" "}
-                      {isEdit
-                        ? t(
-                            "ui.PostSiteWizard.guardarCambios",
-                            "Guardar cambios",
-                          )
-                        : t("ui.PostSiteWizard.crearSitio", "Crear Sitio")}
+                      {t(
+                        "ui.PostSiteWizard.guardarSedeYSeguir",
+                        "Guardar sede y seguir",
+                      )}
                     </>
                   )}
                 </Button>
@@ -2747,12 +2267,28 @@ export default function PostSiteWizard({
                   disabled={!canGoNext()}
                   type="button"
                   variant="brand"
-                  onClick={() => setStep((s) => (s === 3 ? 5 : s + 1))}
+                  onClick={() => setStep((s) => s + 1)}
                 >
                   {t("kit.pagination.next", "Siguiente")}
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               )}
+            </div>
+          )}
+          {step === 3 && (
+            <div
+              className="mt-8 flex items-center justify-end border-t pt-5"
+              style={{ borderColor: "var(--hairline)" }}
+            >
+              <Button
+                className="gap-1.5"
+                type="button"
+                variant="brand"
+                onClick={() => setStep(4)}
+              >
+                {t("ui.PostSiteWizard.terminar", "Terminar")}
+                <ChevronRight className="h-4 w-4" />
+              </Button>
             </div>
           )}
         </>
