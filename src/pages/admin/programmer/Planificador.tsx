@@ -736,7 +736,7 @@ export default function Planificador() {
                       className="sticky left-0 z-[1] w-56 min-w-[13rem] border-b px-3 py-2 text-left text-xs font-semibold"
                       style={{
                         borderColor: "var(--hairline)",
-                        background: "var(--glass-raised, var(--background))",
+                        background: "var(--background)",
                         color: "var(--ink-soft)",
                       }}
                     >
@@ -820,7 +820,13 @@ export default function Planificador() {
                       colSpan={diasVista.length + 1}
                       style={{ background: "var(--glass-sunken)" }}
                     >
-                      <div className="sticky left-0 w-max max-w-[min(60rem,calc(100vw-22rem))] px-3 py-2">
+                      <div
+                        className="sticky left-0 w-max max-w-[min(60rem,calc(100vw-22rem))] rounded-r-md px-3 py-2"
+                        style={{
+                          background:
+                            "color-mix(in oklab, var(--background) 88%, var(--ink) 12%)",
+                        }}
+                      >
                         {t("ui.Planificador.sacafrancos", "Sacafrancos")}{" "}
                         <span
                           className="font-normal"
@@ -995,7 +1001,7 @@ function FilasDePuesto({
   );
   const fondo = {
     borderColor: "var(--hairline)",
-    background: "var(--glass-raised, var(--background))",
+    background: "var(--background)",
   };
 
   return (
@@ -1006,7 +1012,13 @@ function FilasDePuesto({
           colSpan={dias.length + 1}
           style={{ background: "var(--glass-sunken)" }}
         >
-          <div className="sticky left-0 w-max max-w-[min(60rem,calc(100vw-22rem))] px-3 py-2">
+          <div
+            className="sticky left-0 w-max max-w-[min(60rem,calc(100vw-22rem))] rounded-r-md px-3 py-2"
+            style={{
+              background:
+                "color-mix(in oklab, var(--background) 88%, var(--ink) 12%)",
+            }}
+          >
             {pu.nombre}
             {pu.detalle && (
               <span
@@ -1266,7 +1278,10 @@ function FilasDePuesto({
             colSpan={dias.length + 1}
             style={{ borderColor: "var(--hairline)", color: "var(--ink-soft)" }}
           >
-            <div className="sticky left-0 w-max px-3 py-1.5">
+            <div
+              className="sticky left-0 w-max px-3 py-1.5"
+              style={{ background: "var(--background)" }}
+            >
               {t(
                 "ui.Planificador.nadieAsignado",
                 "Nadie asignado a este puesto.",
@@ -1318,7 +1333,7 @@ function FilaDeSacafranco({
       max = Math.max(max, seguidos(plan, s, d0 + i));
   const fondo = {
     borderColor: "var(--hairline)",
-    background: "var(--glass-raised, var(--background))",
+    background: "var(--background)",
   };
   const n = (s.fijos || []).length;
 
