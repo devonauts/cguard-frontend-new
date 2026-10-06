@@ -13,6 +13,10 @@ import { toast } from "sonner";
 
 import { ApiService } from "@/services/api/apiService";
 import { Modal, Segmented } from "@/components/kit";
+import { postSiteService } from "@/lib/api/postSiteService";
+import OperationSetupAlert, {
+  needsOperationSetup,
+} from "@/pages/admin/post-sites/components/OperationSetup/OperationSetupAlert";
 import {
   FIELD_CLS_LG,
   LabeledField,
@@ -108,6 +112,25 @@ export default function ShiftAssignModal({
   const [assignMode, setAssignMode] = useState<"single" | "rotation">(
     "rotation",
   );
+  /* La sede del puesto. Si no dice qué servicio presta, aquí no se asigna a
+     nadie: se enseña el aviso con el camino y el botón queda cerrado. Es el
+     mismo candado que pone el servidor (`exigirSedeConfigurada`). */
+  const [sede, setSede] = useState<any | null>(null);
+  const sedeSinConfigurar = !!sede && needsOperationSetup(sede);
+
+  useEffect(() => {
+    if (!open || !postSiteId) return;
+    let viva = true;
+
+    postSiteService
+      .get(String(postSiteId))
+      .then((d) => viva && setSede(d))
+      .catch(() => viva && setSede(null));
+
+    return () => {
+      viva = false;
+    };
+  }, [open, postSiteId]);
   const [shiftGuard, setShiftGuard] = useState("");
   const [guardsOptions, setGuardsOptions] = useState<
     { id: string; label: string }[]
@@ -169,7 +192,10 @@ export default function ShiftAssignModal({
 
         return {
           id: p.id,
-          label: t("ui.AsignacionEditModal.vigilanteN", { defaultValue: "Vigilante {{n}}", n: i + 1 }),
+          label: t("ui.AsignacionEditModal.vigilanteN", {
+            defaultValue: "Vigilante {{n}}",
+            n: i + 1,
+          }),
           horas,
           tramo: variasVentanas && ini ? nombreDeTramo(ini) : "",
           type: "fijo" as const,
@@ -180,7 +206,10 @@ export default function ShiftAssignModal({
         id: p.id,
         label:
           sacas.length > 1
-            ? t("ui.AsignacionEditModal.sacafrancoN", { defaultValue: "Sacafranco {{n}}", n: i + 1 })
+            ? t("ui.AsignacionEditModal.sacafrancoN", {
+                defaultValue: "Sacafranco {{n}}",
+                n: i + 1,
+              })
             : t("clients.assignGuards.roleSf", "Sacafranco"),
         horas: "",
         tramo: "",
@@ -240,7 +269,8 @@ export default function ShiftAssignModal({
         sundayDoubleRest: (style as any).sundayDoubleRest,
       }),
       dates,
-      startWeekday: start.toLocaleDateString(localeActual(), { timeZone: zonaDeLaEmpresa(),
+      startWeekday: start.toLocaleDateString(localeActual(), {
+        timeZone: zonaDeLaEmpresa(),
         weekday: "long",
         day: "numeric",
         month: "short",
@@ -508,9 +538,14 @@ export default function ShiftAssignModal({
           toast.success(t("ui.ShiftAssignModal.elVigilanteYaEstabaAsignado"));
           onSaved(start);
         } else
-          toast.error(e?.data?.message ||
+          toast.error(
+            e?.data?.message ||
               e?.message ||
-              t("ui.ShiftAssignModal.errorAlCrearTurno", "Error al crear turno"));
+              t(
+                "ui.ShiftAssignModal.errorAlCrearTurno",
+                "Error al crear turno",
+              ),
+          );
       } finally {
         setSaving(false);
       }
@@ -549,9 +584,11 @@ export default function ShiftAssignModal({
       toast.success(t("ui.ShiftAssignModal.vigilanteAsignadoSiEsFijo"));
       onSaved(new Date(rotationStartDate + "T12:00:00"));
     } catch (e: any) {
-      toast.error(e?.data?.message ||
+      toast.error(
+        e?.data?.message ||
           e?.message ||
-          t("ui.ShiftAssignModal.errorAlAsignar", "Error al asignar"));
+          t("ui.ShiftAssignModal.errorAlAsignar", "Error al asignar"),
+      );
     } finally {
       setSaving(false);
     }
@@ -569,6 +606,7 @@ export default function ShiftAssignModal({
             onClick={saveShift}
             disabled={
               saving ||
+              sedeSinConfigurar ||
               !shiftGuard ||
               (assignMode === "rotation" &&
                 (!selectedPositionId || (estacionSinCiclo && !secuenciaPropia)))
@@ -593,7 +631,10 @@ export default function ShiftAssignModal({
         if (!o) onClose();
       }}
     >
-      <div className="space-y-4">
+      {sedeSinConfigurar && (
+        <OperationSetupAlert context="guard" site={sede} siteId={postSiteId} />
+      )}
+      <div className="space-y-4" hidden={sedeSinConfigurar}>
         <Segmented
           className="w-full [&>button]:flex-1"
           options={[
@@ -677,7 +718,10 @@ export default function ShiftAssignModal({
                       onClick={() => setSelectedPositionId(p.id)}
                       title={
                         p.occupied
-                          ? t("ui.ShiftAssignModal.puestoOcupado", "Puesto ocupado")
+                          ? t(
+                              "ui.ShiftAssignModal.puestoOcupado",
+                              "Puesto ocupado",
+                            )
                           : p.horas || undefined
                       }
                       className="cg-focus rounded-xl border px-3 py-2 text-left text-sm font-medium transition-all disabled:cursor-not-allowed"
@@ -703,7 +747,9 @@ export default function ShiftAssignModal({
                       <span className={p.occupied ? "line-through" : undefined}>
                         {p.label}
                       </span>
-                      {p.occupied ? ` · ${t("ui.AsignacionEditModal.ocupado", "ocupado")}` : ""}
+                      {p.occupied
+                        ? ` · ${t("ui.AsignacionEditModal.ocupado", "ocupado")}`
+                        : ""}
                       {/* Las horas de la plaza: son las que va a trabajar quien se
                             asigne aquí, y sin ellas no hay forma de distinguir la
                             plaza de la mañana de la de la tarde. */}
@@ -735,8 +781,14 @@ export default function ShiftAssignModal({
                 <LabeledField
                   label={
                     estacionSinCiclo
-                      ? t("ui.ShiftAssignModal.cadaCuantosDiasLibra", "¿Cada cuántos días libra?")
-                      : t("ui.AsignacionEditModal.secuenciaDeEsteVigilante", "Secuencia de este vigilante")
+                      ? t(
+                          "ui.ShiftAssignModal.cadaCuantosDiasLibra",
+                          "¿Cada cuántos días libra?",
+                        )
+                      : t(
+                          "ui.AsignacionEditModal.secuenciaDeEsteVigilante",
+                          "Secuencia de este vigilante",
+                        )
                   }
                 >
                   <SecuenciaPropiaSelect

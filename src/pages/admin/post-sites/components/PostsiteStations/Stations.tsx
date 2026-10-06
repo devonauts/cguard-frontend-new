@@ -26,6 +26,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useTranslation } from "react-i18next";
+
+import { needsOperationSetup } from "@/pages/admin/post-sites/components/OperationSetup/OperationSetupAlert";
 import { localeActual } from "@/lib/localeActual";
 import { EmptyState, SkeletonCards, Segmented, Field } from "@/components/kit";
 import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
@@ -1029,15 +1031,31 @@ export default function Stations({ site }: { site?: SiteProp }) {
                   ]}
                 />
               </div>
-              <button
-                onClick={() =>
-                  navigate(`/post-sites/${site?.id || ""}/stations/new`)
-                }
-                className="cg-btn-brand cg-focus flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors"
-              >
-                <Plus size={16} />{" "}
-                {t("postSites.stations.add", "Crear estación")}
-              </button>
+              {/* Sede sin tipo de servicio: no se crean puestos; el botón
+                 lleva a configurarla (el servidor también lo rechazaría). */}
+              {needsOperationSetup(site) ? (
+                <button
+                  className="cg-btn-brand cg-focus flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors"
+                  onClick={() =>
+                    navigate(`/post-sites/${site?.id || ""}/edit?step=1`)
+                  }
+                >
+                  {t(
+                    "ui.OperationSetupAlert.configurarLaSede",
+                    "Configurar la sede",
+                  )}
+                </button>
+              ) : (
+                <button
+                  onClick={() =>
+                    navigate(`/post-sites/${site?.id || ""}/stations/new`)
+                  }
+                  className="cg-btn-brand cg-focus flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors"
+                >
+                  <Plus size={16} />{" "}
+                  {t("postSites.stations.add", "Crear estación")}
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -1166,9 +1184,9 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                     className="h-5 w-5"
                                     style={{ accentColor: "var(--brand)" }}
                                     aria-label={t("guards.list.selectAria", {
-                    defaultValue: "Seleccionar {{name}}",
-                    name,
-                  })}
+                                      defaultValue: "Seleccionar {{name}}",
+                                      name,
+                                    })}
                                     checked={selectedIds.includes(id)}
                                     onChange={() => {
                                       setSelectedIds((prev) =>
@@ -1205,7 +1223,10 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                           style={jornadaChip(j.tipo)}
                                         >
                                           {ETIQUETA_JORNADA_KEY[j.tipo]
-                                            ? t(ETIQUETA_JORNADA_KEY[j.tipo], j.nombre)
+                                            ? t(
+                                                ETIQUETA_JORNADA_KEY[j.tipo],
+                                                j.nombre,
+                                              )
                                             : j.nombre || j.tipo}
                                           {j.startTime && j.endTime && (
                                             <span className="font-mono opacity-60 ml-1">
@@ -1323,9 +1344,9 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                 className="h-5 w-5"
                                 style={{ accentColor: "var(--brand)" }}
                                 aria-label={t("guards.list.selectAria", {
-                    defaultValue: "Seleccionar {{name}}",
-                    name,
-                  })}
+                                  defaultValue: "Seleccionar {{name}}",
+                                  name,
+                                })}
                                 checked={selectedIds.includes(id)}
                                 onClick={(e) => e.stopPropagation()}
                                 onChange={() =>
@@ -1347,7 +1368,10 @@ export default function Stations({ site }: { site?: SiteProp }) {
                                     style={jornadaChip(j.tipo)}
                                   >
                                     {ETIQUETA_JORNADA_KEY[j.tipo]
-                                      ? t(ETIQUETA_JORNADA_KEY[j.tipo], j.nombre)
+                                      ? t(
+                                          ETIQUETA_JORNADA_KEY[j.tipo],
+                                          j.nombre,
+                                        )
                                       : j.nombre || j.tipo}
                                     {j.startTime && j.endTime && (
                                       <span className="font-mono opacity-60 ml-1">

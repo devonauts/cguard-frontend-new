@@ -4,6 +4,11 @@ import type { ReactNode } from "react";
 
 import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
+
+import {
+  AvisoDePuesta,
+  type PasoDePuesta,
+} from "@/components/onboarding/PuestaEnMarcha";
 import { Link, useNavigate } from "react-router-dom";
 import {
   MapPin,
@@ -106,7 +111,8 @@ const fmtTime = (d: string | number | Date) => {
 
   return Number.isNaN(dt.getTime())
     ? ""
-    : dt.toLocaleTimeString(localeActual(), { timeZone: zonaDeLaEmpresa(),
+    : dt.toLocaleTimeString(localeActual(), {
+        timeZone: zonaDeLaEmpresa(),
         hour: "2-digit",
         minute: "2-digit",
       });
@@ -291,8 +297,60 @@ export default function ClientOverview({
       tone: "info",
     });
 
+  /**
+   * PUESTA EN MARCHA. El alta del cliente crea su primera sede, pero sin
+   * servicio, sin puestos y sin gente. Mientras falte algo, la ficha lo dice
+   * arriba y lleva al paso que toca; cuando está todo, el aviso desaparece.
+   */
+  const sedesReales = sites.filter((s) => s.id !== "__loose__");
+  const primera = sedesReales[0] as
+    | (Site & { setup?: { pending?: boolean } })
+    | undefined;
+  const sedeLista =
+    sedesReales.length > 0 &&
+    !sedesReales.some((s) => (s as any).setup?.pending);
+  const estaciones = sedesReales.flatMap((s) => s.stations || []);
+  const conGente = estaciones.some((st) => (st.guards || []).length > 0);
+  const pasosDePuesta: PasoDePuesta[] = [
+    { clave: "cliente", hecho: true, href: `/clients/${client?.id}/profile` },
+    {
+      clave: "sede",
+      hecho: sedeLista,
+      href: primera
+        ? `/post-sites/${primera.id}/edit?step=1&puesta=1`
+        : `/post-sites/new?clientId=${client?.id}`,
+      detalle: sedesReales.length
+        ? undefined
+        : t("clients.overview.sinSede", "sin sede todavía"),
+    },
+    {
+      clave: "puestos",
+      hecho: estaciones.length > 0,
+      href: primera
+        ? `/post-sites/${primera.id}/edit?step=4&puesta=1`
+        : undefined,
+      detalle: estaciones.length
+        ? t("clients.overview.nPuestos", {
+            defaultValue: "{{n}} puestos",
+            n: estaciones.length,
+          })
+        : undefined,
+    },
+    {
+      clave: "vigilantes",
+      hecho: conGente,
+      href: primera ? `/post-sites/${primera.id}/stations` : undefined,
+    },
+    {
+      clave: "horario",
+      hecho: conGente,
+      href: `/planificador?busca=${encodeURIComponent(clientDisplayName(client, ""))}`,
+    },
+  ];
+
   return (
     <div ref={containerRef} className="space-y-4">
+      <AvisoDePuesta pasos={pasosDePuesta} />
       {/* Two columns: operations (map + sites table) · contact + alerts + activity */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
@@ -325,7 +383,10 @@ export default function ClientOverview({
                       lng,
                       label: clientDisplayName(
                         client,
-                        t("ui.ClientOverview.ubicacionDelCliente", "Ubicación del cliente"),
+                        t(
+                          "ui.ClientOverview.ubicacionDelCliente",
+                          "Ubicación del cliente",
+                        ),
                       ),
                     }
                   : null

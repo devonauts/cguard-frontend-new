@@ -21,6 +21,7 @@ import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { StatusBadge, SmartImage } from "@/components/kit";
+import { needsOperationSetup } from "@/pages/admin/post-sites/components/OperationSetup/OperationSetupAlert";
 import AppLayout from "@/layouts/app-layout";
 import i18n from "@/i18n";
 
@@ -296,14 +297,30 @@ export default function PostSiteLayout({ title, children, site }: Props) {
                   <Pencil className="mr-1 h-4 w-4" />{" "}
                   {t("common.edit", "Editar sede")}
                 </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => navigate(`${base}/stations/new`)}
-                >
-                  <Plus className="mr-1 h-4 w-4" />{" "}
-                  {t("postSites.Details.newStation", "Crear estación")}
-                </Button>
+                {needsOperationSetup(site) ? (
+                  /* Sin tipo de servicio no se crean puestos: el botón que
+                     toca es el que configura la sede. */
+                  <Button
+                    size="sm"
+                    variant="brand"
+                    onClick={() => navigate(`${base}/edit?step=1`)}
+                  >
+                    <Pencil className="mr-1 h-4 w-4" />{" "}
+                    {t(
+                      "ui.OperationSetupAlert.configurarLaSede",
+                      "Configurar la sede",
+                    )}
+                  </Button>
+                ) : (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => navigate(`${base}/stations/new`)}
+                  >
+                    <Plus className="mr-1 h-4 w-4" />{" "}
+                    {t("postSites.Details.newStation", "Crear estación")}
+                  </Button>
+                )}
                 <Button
                   size="sm"
                   variant="brand"

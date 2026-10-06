@@ -17,10 +17,12 @@ import { InfoNote, StatusBadge } from "@/components/kit";
  * vigilantes encima. Este aviso es lo que faltaba: dice qué hueco hay y lleva
  * directo a taparlo.
  *
- * AVISA, NO BLOQUEA — a propósito. En producción hay 17 sedes sin tipo de
- * servicio que YA tienen estaciones funcionando: un candado aquí las dejaría sin
- * poder operar mañana por una regla que llega tarde. Se señala el hueco y se
- * ofrece el camino; seguir o no es de quien opera.
+ * Hasta 2026-10 sólo avisaba (había 17 sedes en producción con estaciones
+ * encima y sin tipo de servicio). El dueño lo cerró: «no deberías permitir que
+ * se hagan acciones en sedes o estaciones sin configurarlo». Ahora CIERRA lo
+ * que empieza —crear un puesto, asignar un vigilante— y el servidor lo rechaza
+ * igual (`exigirSedeConfigurada`); lo ya montado sigue funcionando. Abrirlo es
+ * un paso del asistente, y a eso lleva el enlace.
  * ────────────────────────────────────────────────────────────────────────────
  */
 
@@ -88,23 +90,23 @@ export default function OperationSetupAlert({
   const cuerpo =
     context === "station"
       ? t(
-          "ui.OperationSetupAlert.cuerpoStation",
-          "Estás por crear un puesto en una sede que todavía no dice qué servicio se presta ni con qué equipamiento y capacitación. Puedes continuar, pero el puesto quedará sin esas reglas hasta que la configures.",
+          "ui.OperationSetupAlert.cuerpoStationCerrado",
+          "No se pueden crear puestos todavía: la sede no dice qué servicio se presta ni con qué equipamiento y capacitación. Configúrala y vuelve.",
         )
       : context === "guard"
         ? t(
-          "ui.OperationSetupAlert.cuerpoGuard",
-          "Estás por asignar personal a una sede que todavía no dice qué servicio se presta ni con qué equipamiento y capacitación. Puedes continuar, pero el vigilante no tendrá esas reglas hasta que la configures.",
-        )
+            "ui.OperationSetupAlert.cuerpoGuardCerrado",
+            "No se pueden asignar vigilantes todavía: la sede no dice qué servicio se presta ni con qué equipamiento y capacitación. Configúrala y vuelve.",
+          )
         : context === "client"
           ? t(
-          "ui.OperationSetupAlert.cuerpoClient",
-          "Esta sede se creó automáticamente al dar de alta al cliente, con sus datos de contacto. Falta lo operativo: qué servicio se presta, con qué equipamiento y qué capacitación. Conviene configurarlo antes de crear puestos y asignar vigilantes.",
-        )
+              "ui.OperationSetupAlert.cuerpoClientCerrado",
+              "Esta sede se creó al dar de alta al cliente, con sus datos de contacto. Falta lo operativo: qué servicio se presta, con qué equipamiento y qué capacitación. Hasta entonces no se pueden crear puestos ni asignar vigilantes.",
+            )
           : t(
-          "ui.OperationSetupAlert.cuerpoSite",
-          "Esta sede no tiene configuración operativa: falta indicar qué servicio se presta, con qué equipamiento y qué capacitación. Conviene hacerlo antes de crear puestos y asignar vigilantes.",
-        );
+              "ui.OperationSetupAlert.cuerpoSiteCerrado",
+              "Esta sede no tiene configuración operativa: falta indicar qué servicio se presta, con qué equipamiento y qué capacitación. Hasta entonces no se pueden crear puestos ni asignar vigilantes.",
+            );
 
   return (
     <InfoNote

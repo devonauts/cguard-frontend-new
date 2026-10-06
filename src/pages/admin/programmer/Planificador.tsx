@@ -16,7 +16,12 @@ import {
 import { toast } from "sonner";
 
 import AppLayout from "@/layouts/app-layout";
-import { PageContainer, PageHeader, StatusBadge, EmptyState } from "@/components/kit";
+import {
+  PageContainer,
+  PageHeader,
+  StatusBadge,
+  EmptyState,
+} from "@/components/kit";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -26,7 +31,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ApiService } from "@/services/api/apiService";
-import { hoyEnLaEmpresa, instanteEnLaEmpresa, sumaDias, zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import {
+  hoyEnLaEmpresa,
+  instanteEnLaEmpresa,
+  sumaDias,
+  zonaDeLaEmpresa,
+} from "@/lib/horaDeLaEmpresa";
 import { localeActual } from "@/lib/localeActual";
 import {
   FRANCO,
@@ -59,7 +69,11 @@ import {
   type Puesto,
 } from "@/lib/planificador/motor";
 import { planDesdeHorarioReal, type PlanReal } from "@/lib/planificador/real";
-import { planificarPublicacion, publicar, type Publicacion } from "@/lib/planificador/publicar";
+import {
+  planificarPublicacion,
+  publicar,
+  type Publicacion,
+} from "@/lib/planificador/publicar";
 
 /**
  * PROGRAMADOR › PLANIFICADOR
@@ -92,20 +106,79 @@ const FRANJAS_EXTRA: Record<string, Franja> = {
   X24: { id: "X24", nombre: "24 horas", ini: 420, fin: 420 },
 };
 const siete = (n: number) => [n, n, n, n, n, n, n];
-const COBERTURAS: Array<{ id: string; nombre: string; detalle: string; franjas: string[]; pide: Record<string, number[]> }> = [
-  { id: "24h", nombre: "24 horas", detalle: "1 de día y 1 de noche, todos los días", franjas: ["D", "N"], pide: { D: siete(1), N: siete(1) } },
-  { id: "24h2", nombre: "24 horas reforzado", detalle: "2 de día y 1 de noche, todos los días", franjas: ["D", "N"], pide: { D: siete(2), N: siete(1) } },
-  { id: "dia", nombre: "Sólo de día", detalle: "1 de día, todos los días", franjas: ["D"], pide: { D: siete(1) } },
-  { id: "noche", nombre: "Sólo de noche", detalle: "1 de noche, todos los días", franjas: ["N"], pide: { N: siete(1) } },
-  { id: "lv", nombre: "Día, lunes a viernes", detalle: "1 de día; sábado y domingo cerrado", franjas: ["D"], pide: { D: [1, 1, 1, 1, 1, 0, 0] } },
-  { id: "3x8", nombre: "Tres turnos de 8 horas", detalle: "Mañana, tarde y noche, 1 en cada uno", franjas: ["M8", "T8", "N8"], pide: { M8: siete(1), T8: siete(1), N8: siete(1) } },
-  { id: "24x24", nombre: "Turno de 24 horas", detalle: "1 persona el día entero (24×24, 24×48)", franjas: ["X24"], pide: { X24: siete(1) } },
+const COBERTURAS: Array<{
+  id: string;
+  nombre: string;
+  detalle: string;
+  franjas: string[];
+  pide: Record<string, number[]>;
+}> = [
+  {
+    id: "24h",
+    nombre: "24 horas",
+    detalle: "1 de día y 1 de noche, todos los días",
+    franjas: ["D", "N"],
+    pide: { D: siete(1), N: siete(1) },
+  },
+  {
+    id: "24h2",
+    nombre: "24 horas reforzado",
+    detalle: "2 de día y 1 de noche, todos los días",
+    franjas: ["D", "N"],
+    pide: { D: siete(2), N: siete(1) },
+  },
+  {
+    id: "dia",
+    nombre: "Sólo de día",
+    detalle: "1 de día, todos los días",
+    franjas: ["D"],
+    pide: { D: siete(1) },
+  },
+  {
+    id: "noche",
+    nombre: "Sólo de noche",
+    detalle: "1 de noche, todos los días",
+    franjas: ["N"],
+    pide: { N: siete(1) },
+  },
+  {
+    id: "lv",
+    nombre: "Día, lunes a viernes",
+    detalle: "1 de día; sábado y domingo cerrado",
+    franjas: ["D"],
+    pide: { D: [1, 1, 1, 1, 1, 0, 0] },
+  },
+  {
+    id: "3x8",
+    nombre: "Tres turnos de 8 horas",
+    detalle: "Mañana, tarde y noche, 1 en cada uno",
+    franjas: ["M8", "T8", "N8"],
+    pide: { M8: siete(1), T8: siete(1), N8: siete(1) },
+  },
+  {
+    id: "24x24",
+    nombre: "Turno de 24 horas",
+    detalle: "1 persona el día entero (24×24, 24×48)",
+    franjas: ["X24"],
+    pide: { X24: siete(1) },
+  },
 ];
 
-const hhmm = (min: number) => `${String(Math.floor(min / 60)).padStart(2, "0")}:${String(min % 60).padStart(2, "0")}`;
+const hhmm = (min: number) =>
+  `${String(Math.floor(min / 60)).padStart(2, "0")}:${String(min % 60).padStart(2, "0")}`;
 const horario = (f?: Franja) => (f ? `${hhmm(f.ini)}–${hhmm(f.fin)}` : "");
-const letra = (f?: Franja) => (!f ? "?" : f.id === "D" ? "D" : f.id === "N" ? "N" : f.ini === f.fin ? "24" : f.nombre.slice(0, 1).toUpperCase());
-const esNoche = (f?: Franja) => !!f && f.ini !== f.fin && (f.ini >= 1080 || f.ini < 300);
+const letra = (f?: Franja) =>
+  !f
+    ? "?"
+    : f.id === "D"
+      ? "D"
+      : f.id === "N"
+        ? "N"
+        : f.ini === f.fin
+          ? "24"
+          : f.nombre.slice(0, 1).toUpperCase();
+const esNoche = (f?: Franja) =>
+  !!f && f.ini !== f.fin && (f.ini >= 1080 || f.ini < 300);
 const corto = (n: string) => {
   const a = n.trim().split(/\s+/);
 
@@ -115,13 +188,31 @@ const corto = (n: string) => {
 /** Colores de una celda según la franja: día cálido, noche fría. */
 function tono(f?: Franja): React.CSSProperties {
   return esNoche(f)
-    ? { background: "color-mix(in oklab, var(--brand) 18%, transparent)", color: "var(--brand-text)" }
-    : { background: "color-mix(in oklab, var(--warn) 22%, transparent)", color: "var(--warn-text, var(--ink))" };
+    ? {
+        background: "color-mix(in oklab, var(--brand) 18%, transparent)",
+        color: "var(--brand-text)",
+      }
+    : {
+        background: "color-mix(in oklab, var(--warn) 22%, transparent)",
+        color: "var(--warn-text, var(--ink))",
+      };
 }
-const ROJO: React.CSSProperties = { background: "color-mix(in oklab, var(--bad) 14%, transparent)", color: "var(--bad-text)" };
-const VERDE: React.CSSProperties = { background: "color-mix(in oklab, var(--ok) 16%, transparent)", color: "var(--ok-text, var(--ok))" };
-const AMBAR: React.CSSProperties = { background: "color-mix(in oklab, var(--warn) 20%, transparent)", color: "var(--warn-text, var(--ink))" };
-const GRIS: React.CSSProperties = { background: "var(--glass-sunken)", color: "var(--ink-soft)" };
+const ROJO: React.CSSProperties = {
+  background: "color-mix(in oklab, var(--bad) 14%, transparent)",
+  color: "var(--bad-text)",
+};
+const VERDE: React.CSSProperties = {
+  background: "color-mix(in oklab, var(--ok) 16%, transparent)",
+  color: "var(--ok-text, var(--ok))",
+};
+const AMBAR: React.CSSProperties = {
+  background: "color-mix(in oklab, var(--warn) 20%, transparent)",
+  color: "var(--warn-text, var(--ink))",
+};
+const GRIS: React.CSSProperties = {
+  background: "var(--glass-sunken)",
+  color: "var(--ink-soft)",
+};
 
 /** El lunes de la semana de `dia` (YYYY-MM-DD), sin pasar por la zona del navegador. */
 function lunesDe(dia: string): string {
@@ -139,7 +230,9 @@ export default function Planificador() {
     const [y, m, d] = hoyEnLaEmpresa().split("-").map(Number);
     const [by, bm, bd] = base.split("-").map(Number);
 
-    return Math.round((Date.UTC(y, m - 1, d) - Date.UTC(by, bm - 1, bd)) / 86_400_000);
+    return Math.round(
+      (Date.UTC(y, m - 1, d) - Date.UTC(by, bm - 1, bd)) / 86_400_000,
+    );
   }, [base]);
 
   const [plan, setPlanEstado] = useState<Plan | null>(null);
@@ -159,7 +252,14 @@ export default function Planificador() {
   const [cargando, setCargando] = useState(true);
   const [semana, setSemana] = useState(0);
   const [cambios, setCambios] = useState(0);
-  const [busca, setBusca] = useState("");
+  // `?busca=` llega desde la puesta en marcha de un cliente: abre ya filtrado.
+  const [busca, setBusca] = useState(() => {
+    try {
+      return new URLSearchParams(window.location.search).get("busca") || "";
+    } catch {
+      return "";
+    }
+  });
   const [soloHuecos, setSoloHuecos] = useState(false);
   const [hoja, setHoja] = useState<Hoja>(null);
   const [pensando, setPensando] = useState(false);
@@ -171,10 +271,17 @@ export default function Planificador() {
     setCargando(true);
     try {
       const [ov, rot]: any[] = await Promise.all([
-        ApiService.get(`/tenant/${tenantId}/scheduler/overview?startDate=${base}&endDate=${sumaDias(base, 27)}`),
+        ApiService.get(
+          `/tenant/${tenantId}/scheduler/overview?startDate=${base}&endDate=${sumaDias(base, 27)}`,
+        ),
         ApiService.get(`/tenant/${tenantId}/rotation-styles`),
       ]);
-      const r = planDesdeHorarioReal(ov?.data || ov || {}, rot?.rows || rot?.data?.rows || [], base, zonaDeLaEmpresa());
+      const r = planDesdeHorarioReal(
+        ov?.data || ov || {},
+        rot?.rows || rot?.data?.rows || [],
+        base,
+        zonaDeLaEmpresa(),
+      );
 
       limpiar(r.plan, -7, 14);
       pila.current = [];
@@ -184,7 +291,9 @@ export default function Planificador() {
       setCambios(0);
       setSemana(0);
     } catch {
-      toast.error(t("ui.Planificador.noSePudoCargar", "No se pudo cargar el horario."));
+      toast.error(
+        t("ui.Planificador.noSePudoCargar", "No se pudo cargar el horario."),
+      );
     } finally {
       setCargando(false);
     }
@@ -230,16 +339,27 @@ export default function Planificador() {
     setPlan(p);
   };
 
-  const r = useMemo(() => (plan ? resumen(plan, d0, d0 + 7) : null), [plan, d0]);
+  const r = useMemo(
+    () => (plan ? resumen(plan, d0, d0 + 7) : null),
+    [plan, d0],
+  );
   // Qué habría que publicar AHORA. No es el contador de toques: lo que los
   // sacafrancos fijos cubren solos al cargar también es nuevo para el horario.
   const publicacion = useMemo(
     () =>
       plan && leido
         ? planificarPublicacion(leido.plan, plan, leido.enlace, {
-            tenantId, base, hoy: hoyIdx, dias: 28,
+            tenantId,
+            base,
+            hoy: hoyIdx,
+            dias: 28,
             fechaDe: (d) => sumaDias(base, d),
-            instanteDe: (d, min) => instanteEnLaEmpresa(sumaDias(base, d + Math.floor(min / 1440)), Math.floor((min % 1440) / 60), min % 60).toISOString(),
+            instanteDe: (d, min) =>
+              instanteEnLaEmpresa(
+                sumaDias(base, d + Math.floor(min / 1440)),
+                Math.floor((min % 1440) / 60),
+                min % 60,
+              ).toISOString(),
           })
         : null,
     [plan, leido, tenantId, base, hoyIdx],
@@ -253,9 +373,20 @@ export default function Planificador() {
 
         return {
           num: d,
-          nombre: f.toLocaleDateString(localeActual(), { weekday: "short", timeZone: "UTC" }),
-          largo: f.toLocaleDateString(localeActual(), { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }),
-          mes: f.toLocaleDateString(localeActual(), { month: "short", timeZone: "UTC" }),
+          nombre: f.toLocaleDateString(localeActual(), {
+            weekday: "short",
+            timeZone: "UTC",
+          }),
+          largo: f.toLocaleDateString(localeActual(), {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            timeZone: "UTC",
+          }),
+          mes: f.toLocaleDateString(localeActual(), {
+            month: "short",
+            timeZone: "UTC",
+          }),
         };
       }),
     [base, d0],
@@ -269,13 +400,18 @@ export default function Planificador() {
       if (soloHuecos) {
         let hay = false;
 
-        for (let i = 0; i < 7 && !hay; i++) for (const f of pu.franjas) if (falta(plan, pu, f, d0 + i) > 0) hay = true;
+        for (let i = 0; i < 7 && !hay; i++)
+          for (const f of pu.franjas)
+            if (falta(plan, pu, f, d0 + i) > 0) hay = true;
         if (!hay) return false;
       }
       if (!q) return true;
-      if (`${pu.nombre} ${pu.detalle || ""}`.toLowerCase().includes(q)) return true;
+      if (`${pu.nombre} ${pu.detalle || ""}`.toLowerCase().includes(q))
+        return true;
 
-      return plan.personas.some((p) => p.puesto === pu.id && p.nombre.toLowerCase().includes(q));
+      return plan.personas.some(
+        (p) => p.puesto === pu.id && p.nombre.toLowerCase().includes(q),
+      );
     });
   }, [plan, busca, soloHuecos, d0]);
 
@@ -293,10 +429,19 @@ export default function Planificador() {
       setPensando(false);
       toast.message(
         res.despues === 0
-          ? t("ui.Planificador.acomodadoCompleto", "Acomodado: las próximas 4 semanas quedan completas.")
+          ? t(
+              "ui.Planificador.acomodadoCompleto",
+              "Acomodado: las próximas 4 semanas quedan completas.",
+            )
           : res.despues < res.antes
-            ? t("ui.Planificador.acomodadoParcial", "Acomodado. Con esta gente y estas rotaciones aún quedan huecos: hace falta otro sacafranco o cambiar una rotación.")
-            : t("ui.Planificador.acomodadoIgual", "Ya estaba en su mejor acomodo con esta gente y estas rotaciones."),
+            ? t(
+                "ui.Planificador.acomodadoParcial",
+                "Acomodado. Con esta gente y estas rotaciones aún quedan huecos: hace falta otro sacafranco o cambiar una rotación.",
+              )
+            : t(
+                "ui.Planificador.acomodadoIgual",
+                "Ya estaba en su mejor acomodo con esta gente y estas rotaciones.",
+              ),
       );
     }, 30);
   };
@@ -308,8 +453,16 @@ export default function Planificador() {
     });
     toast.message(
       res.hechos
-        ? t("ui.Planificador.cubiertosN", { defaultValue: "Cubiertos {{n}} turnos. Quedan {{q}} sin sacafranco libre.", n: res.hechos, q: res.quedan })
-        : t("ui.Planificador.nadieLibre", "No hay sacafranco libre para lo que falta. Se puede cubrir a mano con hora extra."),
+        ? t("ui.Planificador.cubiertosN", {
+            defaultValue:
+              "Cubiertos {{n}} turnos. Quedan {{q}} sin sacafranco libre.",
+            n: res.hechos,
+            q: res.quedan,
+          })
+        : t(
+            "ui.Planificador.nadieLibre",
+            "No hay sacafranco libre para lo que falta. Se puede cubrir a mano con hora extra.",
+          ),
     );
   };
 
@@ -321,34 +474,62 @@ export default function Planificador() {
         <PageHeader
           actions={
             <>
-              <Button disabled={!pila.current.length} variant="outline" onClick={deshacer}>
+              <Button
+                disabled={!pila.current.length}
+                variant="outline"
+                onClick={deshacer}
+              >
                 <Undo2 size={15} /> {t("ui.Planificador.deshacer", "Deshacer")}
               </Button>
               <Button disabled={cargando} variant="outline" onClick={cargar}>
-                <RotateCcw size={15} /> {t("ui.Planificador.volverAlReal", "Volver al horario real")}
+                <RotateCcw size={15} />{" "}
+                {t("ui.Planificador.volverAlReal", "Volver al horario real")}
               </Button>
-              <Button disabled={!publicacion?.cambios.length} variant="brand" onClick={() => setHoja({ tipo: "publicar" })}>
-                <Send size={15} /> {publicacion?.cambios.length ? t("ui.Planificador.publicarN", { defaultValue: "Publicar {{n}}", n: publicacion.cambios.length }) : t("ui.Planificador.publicar", "Publicar")}
+              <Button
+                disabled={!publicacion?.cambios.length}
+                variant="brand"
+                onClick={() => setHoja({ tipo: "publicar" })}
+              >
+                <Send size={15} />{" "}
+                {publicacion?.cambios.length
+                  ? t("ui.Planificador.publicarN", {
+                      defaultValue: "Publicar {{n}}",
+                      n: publicacion.cambios.length,
+                    })
+                  : t("ui.Planificador.publicar", "Publicar")}
               </Button>
             </>
           }
           badges={
             <>
-              <StatusBadge tone="amber">{t("ui.Planificador.borrador", "Borrador hasta que publiques")}</StatusBadge>
+              <StatusBadge tone="amber">
+                {t("ui.Planificador.borrador", "Borrador hasta que publiques")}
+              </StatusBadge>
               {parecido != null && (
                 <StatusBadge tone={parecido >= 0.9 ? "green" : "slate"}>
-                  {t("ui.Planificador.parecido", { defaultValue: "Se parece al horario real en un {{n}} %", n: Math.round(parecido * 100) })}
+                  {t("ui.Planificador.parecido", {
+                    defaultValue: "Se parece al horario real en un {{n}} %",
+                    n: Math.round(parecido * 100),
+                  })}
                 </StatusBadge>
               )}
               {cambios > 0 && (
                 <StatusBadge tone="slate">
-                  {cambios === 1 ? t("ui.Planificador.unCambio", "1 cambio en el borrador") : t("ui.Planificador.cambios", { defaultValue: "{{n}} cambios en el borrador", n: cambios })}
+                  {cambios === 1
+                    ? t("ui.Planificador.unCambio", "1 cambio en el borrador")
+                    : t("ui.Planificador.cambios", {
+                        defaultValue: "{{n}} cambios en el borrador",
+                        n: cambios,
+                      })}
                 </StatusBadge>
               )}
             </>
           }
           icon={<CalendarRange />}
-          subtitle={t("ui.Planificador.subtitulo", "Di qué pide cada puesto, dale a cada quien su rotación y deja que los sacafrancos cubran lo que falta.")}
+          subtitle={t(
+            "ui.Planificador.subtitulo",
+            "Di qué pide cada puesto, dale a cada quien su rotación y deja que los sacafrancos cubran lo que falta.",
+          )}
           title={t("ui.Planificador.titulo", "Planificador")}
         />
 
@@ -357,63 +538,140 @@ export default function Planificador() {
             <Loader2 className="animate-spin text-muted-foreground" />
           </div>
         ) : !plan.puestos.length ? (
-          <EmptyState icon={<CalendarRange />} title={t("ui.Planificador.sinPuestos", "Todavía no hay puestos que planificar.")} />
+          <EmptyState
+            icon={<CalendarRange />}
+            title={t(
+              "ui.Planificador.sinPuestos",
+              "Todavía no hay puestos que planificar.",
+            )}
+          />
         ) : (
           <>
             <div className="glass mb-4 flex flex-wrap items-center gap-3 p-3">
               <div className="flex items-center gap-1.5 font-semibold">
-                <Button aria-label={t("ui.Planificador.semanaAnterior", "Semana anterior")} size="icon" variant="outline" onClick={() => irA(semana - 1)}>
+                <Button
+                  aria-label={t(
+                    "ui.Planificador.semanaAnterior",
+                    "Semana anterior",
+                  )}
+                  size="icon"
+                  variant="outline"
+                  onClick={() => irA(semana - 1)}
+                >
                   <ChevronLeft size={16} />
                 </Button>
                 <span className="min-w-[9.5rem] text-center text-sm tabular-nums">
-                  {fechas[0].num} {fechas[0].mes} – {fechas[6].num} {fechas[6].mes}
+                  {fechas[0].num} {fechas[0].mes} – {fechas[6].num}{" "}
+                  {fechas[6].mes}
                 </span>
-                <Button aria-label={t("ui.Planificador.semanaSiguiente", "Semana siguiente")} size="icon" variant="outline" onClick={() => irA(semana + 1)}>
+                <Button
+                  aria-label={t(
+                    "ui.Planificador.semanaSiguiente",
+                    "Semana siguiente",
+                  )}
+                  size="icon"
+                  variant="outline"
+                  onClick={() => irA(semana + 1)}
+                >
                   <ChevronRight size={16} />
                 </Button>
               </div>
               <div className="flex min-w-0 flex-1 flex-wrap gap-2">
-                <span className="rounded-full px-3 py-1 text-xs font-semibold" style={r.sin ? GRIS : VERDE}>
-                  {t("ui.Planificador.cubiertos", { defaultValue: "{{n}} de {{total}} turnos cubiertos", n: r.total - r.sin, total: r.total })}
+                <span
+                  className="rounded-full px-3 py-1 text-xs font-semibold"
+                  style={r.sin ? GRIS : VERDE}
+                >
+                  {t("ui.Planificador.cubiertos", {
+                    defaultValue: "{{n}} de {{total}} turnos cubiertos",
+                    n: r.total - r.sin,
+                    total: r.total,
+                  })}
                 </span>
                 {r.sin > 0 && (
-                  <span className="rounded-full px-3 py-1 text-xs font-semibold" style={ROJO}>
-                    {t("ui.Planificador.sinCubrir", { defaultValue: "{{n}} sin cubrir", n: r.sin })}
+                  <span
+                    className="rounded-full px-3 py-1 text-xs font-semibold"
+                    style={ROJO}
+                  >
+                    {t("ui.Planificador.sinCubrir", {
+                      defaultValue: "{{n}} sin cubrir",
+                      n: r.sin,
+                    })}
                   </span>
                 )}
                 {r.sobran > 0 && (
-                  <span className="rounded-full px-3 py-1 text-xs font-semibold" style={AMBAR}>
-                    {t("ui.Planificador.sobran", { defaultValue: "{{n}} de sobra", n: r.sobran })}
+                  <span
+                    className="rounded-full px-3 py-1 text-xs font-semibold"
+                    style={AMBAR}
+                  >
+                    {t("ui.Planificador.sobran", {
+                      defaultValue: "{{n}} de sobra",
+                      n: r.sobran,
+                    })}
                   </span>
                 )}
               </div>
-              <Button disabled={pensando} variant="brand" onClick={hacerAcomodo}>
-                {pensando ? <Loader2 className="animate-spin" size={15} /> : <Wand2 size={15} />} {t("ui.Planificador.acomodar", "Acomodar")}
+              <Button
+                disabled={pensando}
+                variant="brand"
+                onClick={hacerAcomodo}
+              >
+                {pensando ? (
+                  <Loader2 className="animate-spin" size={15} />
+                ) : (
+                  <Wand2 size={15} />
+                )}{" "}
+                {t("ui.Planificador.acomodar", "Acomodar")}
               </Button>
               <Button disabled={!r.sin} variant="outline" onClick={hacerCubrir}>
                 {t("ui.Planificador.cubrirLoQueFalta", "Cubrir lo que falta")}
               </Button>
-              <Button title={t("ui.Planificador.reglasTitulo", "Descanso entre turnos, días seguidos y horas por semana")} variant="outline" onClick={() => setHoja({ tipo: "reglas" })}>
-                <SlidersHorizontal size={15} /> {t("ui.Planificador.reglas", "Reglas")}
+              <Button
+                title={t(
+                  "ui.Planificador.reglasTitulo",
+                  "Descanso entre turnos, días seguidos y horas por semana",
+                )}
+                variant="outline"
+                onClick={() => setHoja({ tipo: "reglas" })}
+              >
+                <SlidersHorizontal size={15} />{" "}
+                {t("ui.Planificador.reglas", "Reglas")}
               </Button>
             </div>
 
             <div className="mb-3 flex flex-wrap items-center gap-3">
               <label className="relative min-w-0 flex-1 sm:max-w-xs">
-                <Search className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2" size={14} style={{ color: "var(--ink-soft)" }} />
+                <Search
+                  className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2"
+                  size={14}
+                  style={{ color: "var(--ink-soft)" }}
+                />
                 <input
                   className="cg-input h-9 w-full pl-8 pr-3 text-sm"
-                  placeholder={t("ui.Planificador.buscar", "Buscar puesto o vigilante")}
+                  placeholder={t(
+                    "ui.Planificador.buscar",
+                    "Buscar puesto o vigilante",
+                  )}
                   value={busca}
                   onChange={(e) => setBusca(e.target.value)}
                 />
               </label>
               <label className="flex cursor-pointer items-center gap-2 text-sm">
-                <input checked={soloHuecos} type="checkbox" onChange={(e) => setSoloHuecos(e.target.checked)} />
-                {t("ui.Planificador.soloConHuecos", "Sólo puestos con algo sin cubrir")}
+                <input
+                  checked={soloHuecos}
+                  type="checkbox"
+                  onChange={(e) => setSoloHuecos(e.target.checked)}
+                />
+                {t(
+                  "ui.Planificador.soloConHuecos",
+                  "Sólo puestos con algo sin cubrir",
+                )}
               </label>
               <span className="text-xs" style={{ color: "var(--ink-soft)" }}>
-                {t("ui.Planificador.nPuestos", { defaultValue: "{{n}} de {{total}} puestos", n: puestosVisibles.length, total: plan.puestos.length })}
+                {t("ui.Planificador.nPuestos", {
+                  defaultValue: "{{n}} de {{total}} puestos",
+                  n: puestosVisibles.length,
+                  total: plan.puestos.length,
+                })}
               </span>
             </div>
 
@@ -421,15 +679,51 @@ export default function Planificador() {
               <table className="w-full min-w-[900px] border-separate border-spacing-0 text-sm tabular-nums">
                 <thead>
                   <tr>
-                    <th className="sticky left-0 z-[1] w-56 min-w-[13rem] border-b px-3 py-2 text-left text-xs font-semibold" style={{ borderColor: "var(--hairline)", background: "var(--glass-raised, var(--background))", color: "var(--ink-soft)" }}>
-                      {t("ui.Planificador.puestoYVigilante", "Puesto y vigilante")}
+                    <th
+                      className="sticky left-0 z-[1] w-56 min-w-[13rem] border-b px-3 py-2 text-left text-xs font-semibold"
+                      style={{
+                        borderColor: "var(--hairline)",
+                        background: "var(--glass-raised, var(--background))",
+                        color: "var(--ink-soft)",
+                      }}
+                    >
+                      {t(
+                        "ui.Planificador.puestoYVigilante",
+                        "Puesto y vigilante",
+                      )}
                     </th>
                     {fechas.map((f, i) => (
-                      <th key={i} className="border-b px-1.5 py-2 text-center text-xs font-semibold" style={{ borderColor: "var(--hairline)", color: "var(--ink-soft)" }} title={f.largo}>
+                      <th
+                        key={i}
+                        className="border-b px-1.5 py-2 text-center text-xs font-semibold"
+                        style={{
+                          borderColor: "var(--hairline)",
+                          color: "var(--ink-soft)",
+                        }}
+                        title={f.largo}
+                      >
                         <span className="capitalize">{f.nombre}</span>
-                        <span className="block text-base" style={{ color: d0 + i === hoyIdx ? "var(--brand-text)" : "var(--ink)" }}>{f.num}</span>
-                        <span className="mt-0.5 inline-block rounded-full px-1.5 text-[10px] font-bold" style={r.porDia[i] ? ROJO : VERDE}>
-                          {r.porDia[i] ? t("ui.Planificador.nSinCubrir", { defaultValue: "{{n}} sin cubrir", n: r.porDia[i] }) : t("ui.Planificador.completo", "completo")}
+                        <span
+                          className="block text-base"
+                          style={{
+                            color:
+                              d0 + i === hoyIdx
+                                ? "var(--brand-text)"
+                                : "var(--ink)",
+                          }}
+                        >
+                          {f.num}
+                        </span>
+                        <span
+                          className="mt-0.5 inline-block rounded-full px-1.5 text-[10px] font-bold"
+                          style={r.porDia[i] ? ROJO : VERDE}
+                        >
+                          {r.porDia[i]
+                            ? t("ui.Planificador.nSinCubrir", {
+                                defaultValue: "{{n}} sin cubrir",
+                                n: r.porDia[i],
+                              })
+                            : t("ui.Planificador.completo", "completo")}
                         </span>
                       </th>
                     ))}
@@ -437,50 +731,151 @@ export default function Planificador() {
                 </thead>
                 <tbody>
                   {puestosVisibles.map((pu) => (
-                    <FilasDePuesto key={pu.id} d0={d0} plan={plan} pu={pu} cambiar={cambiar} setHoja={setHoja} />
+                    <FilasDePuesto
+                      key={pu.id}
+                      d0={d0}
+                      plan={plan}
+                      pu={pu}
+                      cambiar={cambiar}
+                      setHoja={setHoja}
+                    />
                   ))}
                   <tr>
-                    <td className="sticky left-0 px-3 py-2 text-xs font-bold" colSpan={8} style={{ background: "var(--glass-sunken)" }}>
+                    <td
+                      className="sticky left-0 px-3 py-2 text-xs font-bold"
+                      colSpan={8}
+                      style={{ background: "var(--glass-sunken)" }}
+                    >
                       {t("ui.Planificador.sacafrancos", "Sacafrancos")}{" "}
-                      <span className="font-normal" style={{ color: "var(--ink-soft)" }}>· {t("ui.Planificador.cubrenSusPuestos", "cubren lo que falta en sus puestos fijos")}</span>
+                      <span
+                        className="font-normal"
+                        style={{ color: "var(--ink-soft)" }}
+                      >
+                        ·{" "}
+                        {t(
+                          "ui.Planificador.cubrenSusPuestos",
+                          "cubren lo que falta en sus puestos fijos",
+                        )}
+                      </span>
                       <button
                         className="cg-btn-glass cg-focus ml-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
-                        title={t("ui.Planificador.probarOtroTitulo", "Prueba cómo quedaría con un sacafranco más")}
+                        title={t(
+                          "ui.Planificador.probarOtroTitulo",
+                          "Prueba cómo quedaría con un sacafranco más",
+                        )}
                         onClick={() =>
                           cambiar((x) => {
-                            const n = x.personas.filter((y) => y.id.startsWith("nuevo-")).length + 1;
+                            const n =
+                              x.personas.filter((y) =>
+                                y.id.startsWith("nuevo-"),
+                              ).length + 1;
 
-                            x.personas.push({ id: `nuevo-${Date.now()}`, nombre: `${t("ui.Planificador.sacafrancoNuevo", "Sacafranco nuevo")} ${n}`, puesto: null, patron: [LIBRE, LIBRE, LIBRE, LIBRE, LIBRE, LIBRE, FRANCO], desfase: 0, manual: {}, fijos: [], ausencias: [] });
+                            x.personas.push({
+                              id: `nuevo-${Date.now()}`,
+                              nombre: `${t("ui.Planificador.sacafrancoNuevo", "Sacafranco nuevo")} ${n}`,
+                              puesto: null,
+                              patron: [
+                                LIBRE,
+                                LIBRE,
+                                LIBRE,
+                                LIBRE,
+                                LIBRE,
+                                LIBRE,
+                                FRANCO,
+                              ],
+                              desfase: 0,
+                              manual: {},
+                              fijos: [],
+                              ausencias: [],
+                            });
                           })
                         }
                       >
-                        <UserPlus size={12} /> {t("ui.Planificador.probarOtro", "Probar con uno más")}
+                        <UserPlus size={12} />{" "}
+                        {t("ui.Planificador.probarOtro", "Probar con uno más")}
                       </button>
                     </td>
                   </tr>
                   {sacas.map((s) => (
-                    <FilaDeSacafranco key={s.id} d0={d0} plan={plan} s={s} cambiar={cambiar} setHoja={setHoja} />
+                    <FilaDeSacafranco
+                      key={s.id}
+                      d0={d0}
+                      plan={plan}
+                      s={s}
+                      cambiar={cambiar}
+                      setHoja={setHoja}
+                    />
                   ))}
                 </tbody>
               </table>
             </div>
             <p className="mt-3 text-xs" style={{ color: "var(--ink-soft)" }}>
-              {t("ui.Planificador.pie", "Toca un turno para cambiar ese día, la rotación para cambiarla entera, y lo rojo para ver quién puede cubrirlo. El punto ● marca lo que cubre el sacafranco fijo del puesto.")}
+              {t(
+                "ui.Planificador.pie",
+                "Toca un turno para cambiar ese día, la rotación para cambiarla entera, y lo rojo para ver quién puede cubrirlo. El punto ● marca lo que cubre el sacafranco fijo del puesto.",
+              )}
             </p>
           </>
         )}
 
-        {plan && hoja?.tipo === "hueco" && <HojaHueco k={hoja.k} plan={plan} cambiar={cambiar} cerrar={() => setHoja(null)} fechaDe={(d) => sumaDias(base, d)} />}
-        {plan && hoja?.tipo === "cobertura" && <HojaCobertura plan={plan} puestoId={hoja.puesto} cambiar={cambiar} cerrar={() => setHoja(null)} />}
-        {plan && hoja?.tipo === "rotacion" && <HojaRotacion personaId={hoja.persona} plan={plan} cambiar={cambiar} cerrar={() => setHoja(null)} />}
-        {plan && hoja?.tipo === "fijos" && <HojaFijos personaId={hoja.persona} plan={plan} cambiar={cambiar} cerrar={() => setHoja(null)} />}
-        {plan && hoja?.tipo === "ausencia" && <HojaAusencia d0={d0} fechaDe={(d) => sumaDias(base, d)} personaId={hoja.persona} plan={plan} cambiar={cambiar} cerrar={() => setHoja(null)} />}
-        {plan && hoja?.tipo === "reglas" && <HojaReglas plan={plan} cambiar={cambiar} cerrar={() => setHoja(null)} />}
+        {plan && hoja?.tipo === "hueco" && (
+          <HojaHueco
+            k={hoja.k}
+            plan={plan}
+            cambiar={cambiar}
+            cerrar={() => setHoja(null)}
+            fechaDe={(d) => sumaDias(base, d)}
+          />
+        )}
+        {plan && hoja?.tipo === "cobertura" && (
+          <HojaCobertura
+            plan={plan}
+            puestoId={hoja.puesto}
+            cambiar={cambiar}
+            cerrar={() => setHoja(null)}
+          />
+        )}
+        {plan && hoja?.tipo === "rotacion" && (
+          <HojaRotacion
+            personaId={hoja.persona}
+            plan={plan}
+            cambiar={cambiar}
+            cerrar={() => setHoja(null)}
+          />
+        )}
+        {plan && hoja?.tipo === "fijos" && (
+          <HojaFijos
+            personaId={hoja.persona}
+            plan={plan}
+            cambiar={cambiar}
+            cerrar={() => setHoja(null)}
+          />
+        )}
+        {plan && hoja?.tipo === "ausencia" && (
+          <HojaAusencia
+            d0={d0}
+            fechaDe={(d) => sumaDias(base, d)}
+            personaId={hoja.persona}
+            plan={plan}
+            cambiar={cambiar}
+            cerrar={() => setHoja(null)}
+          />
+        )}
+        {plan && hoja?.tipo === "reglas" && (
+          <HojaReglas
+            plan={plan}
+            cambiar={cambiar}
+            cerrar={() => setHoja(null)}
+          />
+        )}
         {publicacion && hoja?.tipo === "publicar" && (
           <HojaPublicar
             publicacion={publicacion}
             cerrar={() => setHoja(null)}
-            publicado={() => { setHoja(null); void cargar(); }}
+            publicado={() => {
+              setHoja(null);
+              void cargar();
+            }}
           />
         )}
       </PageContainer>
@@ -490,34 +885,82 @@ export default function Planificador() {
 
 type Cambiar = (fn: (p: Plan) => void) => void;
 const CELDA = "flex min-h-[3.25rem] flex-col gap-1";
-const BTN = "cg-focus w-full rounded-lg px-1 py-1.5 text-xs font-bold leading-tight";
+const BTN =
+  "cg-focus w-full rounded-lg px-1 py-1.5 text-xs font-bold leading-tight";
 const TD = "border-b px-1 py-1 align-top";
 const QUIEN = "sticky left-0 z-[1] border-b border-r px-3 py-1.5 text-left";
 
-function FilasDePuesto({ plan, pu, d0, cambiar, setHoja }: { plan: Plan; pu: Puesto; d0: number; cambiar: Cambiar; setHoja: (h: Hoja) => void }) {
+function FilasDePuesto({
+  plan,
+  pu,
+  d0,
+  cambiar,
+  setHoja,
+}: {
+  plan: Plan;
+  pu: Puesto;
+  d0: number;
+  cambiar: Cambiar;
+  setHoja: (h: Hoja) => void;
+}) {
   const { t } = useTranslation();
   const fijos = fijosDe(plan, pu.id);
   const gente = plan.personas.filter((p) => p.puesto === pu.id);
-  const cob = COBERTURAS.find((c) => c.franjas.join() === pu.franjas.join() && JSON.stringify(c.pide) === JSON.stringify(pu.pide));
-  const fondo = { borderColor: "var(--hairline)", background: "var(--glass-raised, var(--background))" };
+  const cob = COBERTURAS.find(
+    (c) =>
+      c.franjas.join() === pu.franjas.join() &&
+      JSON.stringify(c.pide) === JSON.stringify(pu.pide),
+  );
+  const fondo = {
+    borderColor: "var(--hairline)",
+    background: "var(--glass-raised, var(--background))",
+  };
 
   return (
     <>
       <tr>
-        <td className="sticky left-0 px-3 py-2 text-xs font-bold" colSpan={8} style={{ background: "var(--glass-sunken)" }}>
+        <td
+          className="sticky left-0 px-3 py-2 text-xs font-bold"
+          colSpan={8}
+          style={{ background: "var(--glass-sunken)" }}
+        >
           {pu.nombre}
-          {pu.detalle && <span className="font-normal" style={{ color: "var(--ink-soft)" }}> · {pu.detalle}</span>}{" "}
-          <button className="cg-btn-glass cg-focus ml-1 rounded-full px-2 py-0.5 text-[11px] font-semibold" title={t("ui.Planificador.cambiarCobertura", "Cambiar lo que pide el puesto")} onClick={() => setHoja({ tipo: "cobertura", puesto: pu.id })}>
-            {cob ? cob.nombre : pu.franjas.map((f) => plan.franjas[f]?.nombre || f).join(" + ")}
+          {pu.detalle && (
+            <span className="font-normal" style={{ color: "var(--ink-soft)" }}>
+              {" "}
+              · {pu.detalle}
+            </span>
+          )}{" "}
+          <button
+            className="cg-btn-glass cg-focus ml-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
+            title={t(
+              "ui.Planificador.cambiarCobertura",
+              "Cambiar lo que pide el puesto",
+            )}
+            onClick={() => setHoja({ tipo: "cobertura", puesto: pu.id })}
+          >
+            {cob
+              ? cob.nombre
+              : pu.franjas.map((f) => plan.franjas[f]?.nombre || f).join(" + ")}
           </button>
-          <span className="ml-2 font-normal" style={{ color: "var(--ink-soft)" }}>
-            {fijos.length ? `↔ ${fijos.map((s) => corto(s.nombre)).join(", ")}` : t("ui.Planificador.sinSacafranco", "sin sacafranco")}
+          <span
+            className="ml-2 font-normal"
+            style={{ color: "var(--ink-soft)" }}
+          >
+            {fijos.length
+              ? `↔ ${fijos.map((s) => corto(s.nombre)).join(", ")}`
+              : t("ui.Planificador.sinSacafranco", "sin sacafranco")}
           </span>
         </td>
       </tr>
       <tr>
         <td className={QUIEN} style={fondo}>
-          <span className="text-xs font-semibold" style={{ color: "var(--ink-soft)" }}>{t("ui.Planificador.cobertura", "Cobertura")}</span>
+          <span
+            className="text-xs font-semibold"
+            style={{ color: "var(--ink-soft)" }}
+          >
+            {t("ui.Planificador.cobertura", "Cobertura")}
+          </span>
         </td>
         {Array.from({ length: 7 }, (_, i) => {
           const d = d0 + i;
@@ -534,27 +977,84 @@ function FilasDePuesto({ plan, pu, d0, cambiar, setHoja }: { plan: Plan; pu: Pue
             if (!n && !pr) continue;
             if (fa > 0)
               celdas.push(
-                <button key={f} className={BTN} style={ROJO} title={horario(fr)} onClick={() => setHoja({ tipo: "hueco", k })}>
-                  {letra(fr)} {t("ui.Planificador.faltaN", { defaultValue: "falta {{n}}", n: fa })}
+                <button
+                  key={f}
+                  className={BTN}
+                  style={ROJO}
+                  title={horario(fr)}
+                  onClick={() => setHoja({ tipo: "hueco", k })}
+                >
+                  {letra(fr)}{" "}
+                  {t("ui.Planificador.faltaN", {
+                    defaultValue: "falta {{n}}",
+                    n: fa,
+                  })}
                 </button>,
               );
             else if (cu.length) {
               const q = plan.personas.find((p) => p.id === cu[0]);
 
               celdas.push(
-                <button key={f} className={BTN} style={q && !esSacafranco(q) ? AMBAR : VERDE} title={horario(fr)} onClick={() => setHoja({ tipo: "hueco", k })}>
-                  {letra(fr)} · {plan.auto[`${k}|${cu[0]}`] ? "● " : ""}{q ? corto(q.nombre) : "?"}{cu.length > 1 ? ` +${cu.length - 1}` : ""}
+                <button
+                  key={f}
+                  className={BTN}
+                  style={q && !esSacafranco(q) ? AMBAR : VERDE}
+                  title={horario(fr)}
+                  onClick={() => setHoja({ tipo: "hueco", k })}
+                >
+                  {letra(fr)} · {plan.auto[`${k}|${cu[0]}`] ? "● " : ""}
+                  {q ? corto(q.nombre) : "?"}
+                  {cu.length > 1 ? ` +${cu.length - 1}` : ""}
                 </button>,
               );
             } else if (pr > n)
-              celdas.push(<span key={f} className={`${BTN} block text-center`} style={AMBAR} title={horario(fr)}>{letra(fr)} {t("ui.Planificador.sobraN", { defaultValue: "sobra {{n}}", n: pr - n })}</span>);
-            else celdas.push(<span key={f} className={`${BTN} block text-center font-semibold`} style={GRIS} title={horario(fr)}>{letra(fr)} ✓</span>);
+              celdas.push(
+                <span
+                  key={f}
+                  className={`${BTN} block text-center`}
+                  style={AMBAR}
+                  title={horario(fr)}
+                >
+                  {letra(fr)}{" "}
+                  {t("ui.Planificador.sobraN", {
+                    defaultValue: "sobra {{n}}",
+                    n: pr - n,
+                  })}
+                </span>,
+              );
+            else
+              celdas.push(
+                <span
+                  key={f}
+                  className={`${BTN} block text-center font-semibold`}
+                  style={GRIS}
+                  title={horario(fr)}
+                >
+                  {letra(fr)} ✓
+                </span>,
+              );
           }
 
           return (
-            <td key={i} className={TD} style={{ borderColor: "var(--hairline)" }}>
+            <td
+              key={i}
+              className={TD}
+              style={{ borderColor: "var(--hairline)" }}
+            >
               <div className={CELDA}>
-                {celdas.length ? celdas : <span className={`${BTN} block border border-dashed text-center font-medium`} style={{ borderColor: "var(--hairline)", color: "var(--ink-soft)" }}>{t("ui.Planificador.cerrado", "cerrado")}</span>}
+                {celdas.length ? (
+                  celdas
+                ) : (
+                  <span
+                    className={`${BTN} block border border-dashed text-center font-medium`}
+                    style={{
+                      borderColor: "var(--hairline)",
+                      color: "var(--ink-soft)",
+                    }}
+                  >
+                    {t("ui.Planificador.cerrado", "cerrado")}
+                  </span>
+                )}
               </div>
             </td>
           );
@@ -565,42 +1065,103 @@ function FilasDePuesto({ plan, pu, d0, cambiar, setHoja }: { plan: Plan; pu: Pue
           <td className={QUIEN} style={fondo}>
             <span className="block truncate font-semibold">{p.nombre}</span>
             <span className="mt-0.5 flex flex-wrap items-center gap-1">
-              <button className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold" title={t("ui.Planificador.cambiarRotacion", "Cambiar su rotación")} onClick={() => setHoja({ tipo: "rotacion", persona: p.id })}>
+              <button
+                className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                title={t(
+                  "ui.Planificador.cambiarRotacion",
+                  "Cambiar su rotación",
+                )}
+                onClick={() => setHoja({ tipo: "rotacion", persona: p.id })}
+              >
                 {etiquetaDe(plan, p)}
               </button>
               {p.patron.length > 1 && (
-                <button className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold" title={t("ui.Planificador.correrTitulo", "Empezar la rotación un día después")} onClick={() => cambiar((x) => { const q = x.personas.find((y) => y.id === p.id)!; q.desfase -= 1; q.manual = {}; })}>
+                <button
+                  className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                  title={t(
+                    "ui.Planificador.correrTitulo",
+                    "Empezar la rotación un día después",
+                  )}
+                  onClick={() =>
+                    cambiar((x) => {
+                      const q = x.personas.find((y) => y.id === p.id)!;
+                      q.desfase -= 1;
+                      q.manual = {};
+                    })
+                  }
+                >
                   {t("ui.Planificador.correr", "correr →")}
                 </button>
               )}
-              <button className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold" title={t("ui.Planificador.ausenciaTitulo", "Vacaciones, permiso o incapacidad")} onClick={() => setHoja({ tipo: "ausencia", persona: p.id })}>
+              <button
+                className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                title={t(
+                  "ui.Planificador.ausenciaTitulo",
+                  "Vacaciones, permiso o incapacidad",
+                )}
+                onClick={() => setHoja({ tipo: "ausencia", persona: p.id })}
+              >
                 {t("ui.Planificador.ausencia", "ausencia")}
               </button>
             </span>
           </td>
           {Array.from({ length: 7 }, (_, i) => {
             const d = d0 + i;
-            const aus = (p.ausencias || []).find((a) => d >= a.desde && d <= a.hasta);
+            const aus = (p.ausencias || []).find(
+              (a) => d >= a.desde && d <= a.hasta,
+            );
             const c = propio(p, d);
             const fr = plan.franjas[c];
             const extra = c === FRANCO ? turnoDe(plan, p, d) : null;
             const orden = [...pu.franjas, FRANCO];
-            const sig = () => cambiar((x) => { const q = x.personas.find((y) => y.id === p.id)!; q.manual[d] = orden[(orden.indexOf(propio(q, d)) + 1) % orden.length]; });
+            const sig = () =>
+              cambiar((x) => {
+                const q = x.personas.find((y) => y.id === p.id)!;
+                q.manual[d] =
+                  orden[(orden.indexOf(propio(q, d)) + 1) % orden.length];
+              });
 
             return (
-              <td key={i} className={TD} style={{ borderColor: "var(--hairline)" }}>
+              <td
+                key={i}
+                className={TD}
+                style={{ borderColor: "var(--hairline)" }}
+              >
                 <div className={CELDA}>
                   {aus ? (
-                    <span className={`${BTN} block text-center font-medium capitalize`} style={GRIS}>{aus.tipo}</span>
+                    <span
+                      className={`${BTN} block text-center font-medium capitalize`}
+                      style={GRIS}
+                    >
+                      {aus.tipo}
+                    </span>
                   ) : c === FRANCO || !fr ? (
-                    <button className={`${BTN} border border-dashed font-medium`} style={{ borderColor: "var(--hairline)", color: "var(--ink-soft)" }} onClick={sig}>
+                    <button
+                      className={`${BTN} border border-dashed font-medium`}
+                      style={{
+                        borderColor: "var(--hairline)",
+                        color: "var(--ink-soft)",
+                      }}
+                      onClick={sig}
+                    >
                       {t("ui.Planificador.franco", "Franco")}
-                      {extra && <small className="block font-normal">{t("ui.Planificador.extraEn", { defaultValue: "extra en {{puesto}}", puesto: plan.puestos.find((x) => x.id === extra.puesto)?.nombre || "" })}</small>}
+                      {extra && (
+                        <small className="block font-normal">
+                          {t("ui.Planificador.extraEn", {
+                            defaultValue: "extra en {{puesto}}",
+                            puesto:
+                              plan.puestos.find((x) => x.id === extra.puesto)
+                                ?.nombre || "",
+                          })}
+                        </small>
+                      )}
                     </button>
                   ) : (
                     <button className={BTN} style={tono(fr)} onClick={sig}>
                       {letra(fr)}
-                      <small className="block font-normal opacity-80">{horario(fr)}</small>
+                      <small className="block font-normal opacity-80">
+                        {horario(fr)}
+                      </small>
                     </button>
                   )}
                 </div>
@@ -611,8 +1172,15 @@ function FilasDePuesto({ plan, pu, d0, cambiar, setHoja }: { plan: Plan; pu: Pue
       ))}
       {!gente.length && (
         <tr>
-          <td className="border-b px-3 py-1.5 text-xs italic" colSpan={8} style={{ borderColor: "var(--hairline)", color: "var(--ink-soft)" }}>
-            {t("ui.Planificador.nadieAsignado", "Nadie asignado a este puesto.")}
+          <td
+            className="border-b px-3 py-1.5 text-xs italic"
+            colSpan={8}
+            style={{ borderColor: "var(--hairline)", color: "var(--ink-soft)" }}
+          >
+            {t(
+              "ui.Planificador.nadieAsignado",
+              "Nadie asignado a este puesto.",
+            )}
           </td>
         </tr>
       )}
@@ -621,51 +1189,115 @@ function FilasDePuesto({ plan, pu, d0, cambiar, setHoja }: { plan: Plan; pu: Pue
 }
 
 function etiquetaDe(plan: Plan, p: Persona): string {
-  if (p.patron.length === 1 && p.patron[0] !== FRANCO) return esSacafranco(p) ? "Siempre disponible" : "Todos los días";
+  if (p.patron.length === 1 && p.patron[0] !== FRANCO)
+    return esSacafranco(p) ? "Siempre disponible" : "Todos los días";
   const nombres: Record<string, string> = {};
 
-  for (const id of Object.keys(plan.franjas)) nombres[id] = letra(plan.franjas[id]);
+  for (const id of Object.keys(plan.franjas))
+    nombres[id] = letra(plan.franjas[id]);
 
-  return (etiqueta(p.patron, nombres) || "Sin rotación") + (p.francoDobleDomingo ? " · dom" : "");
+  return (
+    (etiqueta(p.patron, nombres) || "Sin rotación") +
+    (p.francoDobleDomingo ? " · dom" : "")
+  );
 }
 
-function FilaDeSacafranco({ plan, s, d0, cambiar, setHoja }: { plan: Plan; s: Persona; d0: number; cambiar: Cambiar; setHoja: (h: Hoja) => void }) {
+function FilaDeSacafranco({
+  plan,
+  s,
+  d0,
+  cambiar,
+  setHoja,
+}: {
+  plan: Plan;
+  s: Persona;
+  d0: number;
+  cambiar: Cambiar;
+  setHoja: (h: Hoja) => void;
+}) {
   const { t } = useTranslation();
   const dias = diasTrabajados(plan, s, d0, d0 + 7);
   const horas = horasSemana(plan, s, d0);
   let max = 0;
 
-  for (let i = 0; i < 7; i++) if (turnoDe(plan, s, d0 + i)) max = Math.max(max, seguidos(plan, s, d0 + i));
-  const fondo = { borderColor: "var(--hairline)", background: "var(--glass-raised, var(--background))" };
+  for (let i = 0; i < 7; i++)
+    if (turnoDe(plan, s, d0 + i))
+      max = Math.max(max, seguidos(plan, s, d0 + i));
+  const fondo = {
+    borderColor: "var(--hairline)",
+    background: "var(--glass-raised, var(--background))",
+  };
   const n = (s.fijos || []).length;
 
   return (
     <tr>
       <td className={QUIEN} style={fondo}>
         <span className="block truncate font-semibold">{s.nombre}</span>
-        <span className="mt-0.5 flex flex-wrap items-center gap-1 text-[11px]" style={{ color: "var(--ink-soft)" }}>
-          <button className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 font-semibold" style={{ color: "var(--ink)" }} onClick={() => setHoja({ tipo: "fijos", persona: s.id })}>
-            {n === 1 ? t("ui.Planificador.unPuestoFijo", "1 puesto fijo") : t("ui.Planificador.nPuestosFijos", { defaultValue: "{{n}} puestos fijos", n })}
+        <span
+          className="mt-0.5 flex flex-wrap items-center gap-1 text-[11px]"
+          style={{ color: "var(--ink-soft)" }}
+        >
+          <button
+            className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 font-semibold"
+            style={{ color: "var(--ink)" }}
+            onClick={() => setHoja({ tipo: "fijos", persona: s.id })}
+          >
+            {n === 1
+              ? t("ui.Planificador.unPuestoFijo", "1 puesto fijo")
+              : t("ui.Planificador.nPuestosFijos", {
+                  defaultValue: "{{n}} puestos fijos",
+                  n,
+                })}
           </button>
-          <button className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 font-semibold" style={{ color: "var(--ink)" }} onClick={() => setHoja({ tipo: "rotacion", persona: s.id })}>
+          <button
+            className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 font-semibold"
+            style={{ color: "var(--ink)" }}
+            onClick={() => setHoja({ tipo: "rotacion", persona: s.id })}
+          >
             {etiquetaDe(plan, s)}
           </button>
-          <button className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 font-semibold" style={{ color: "var(--ink)" }} onClick={() => setHoja({ tipo: "ausencia", persona: s.id })}>
+          <button
+            className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 font-semibold"
+            style={{ color: "var(--ink)" }}
+            onClick={() => setHoja({ tipo: "ausencia", persona: s.id })}
+          >
             {t("ui.Planificador.ausencia", "ausencia")}
           </button>
           {s.id.startsWith("nuevo-") && (
-            <button className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 font-semibold" style={{ color: "var(--bad-text)" }} onClick={() => cambiar((x) => { x.personas = x.personas.filter((y) => y.id !== s.id); })}>
+            <button
+              className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 font-semibold"
+              style={{ color: "var(--bad-text)" }}
+              onClick={() =>
+                cambiar((x) => {
+                  x.personas = x.personas.filter((y) => y.id !== s.id);
+                })
+              }
+            >
               {t("ui.Planificador.quitar", "quitar")}
             </button>
           )}
-          {t("ui.Planificador.diasYHoras", { defaultValue: "{{d}} días · {{h}} h", d: dias, h: horas })}
-          {dias < 4 && <span className="rounded-full px-1.5 font-semibold" style={AMBAR}>{t("ui.Planificador.leSobranDias", "le sobran días")}</span>}
-          {max > plan.reglas.maxSeguidos && <span className="rounded-full px-1.5 font-semibold" style={ROJO}>{t("ui.Planificador.muchosSeguidos", "muchos días seguidos")}</span>}
+          {t("ui.Planificador.diasYHoras", {
+            defaultValue: "{{d}} días · {{h}} h",
+            d: dias,
+            h: horas,
+          })}
+          {dias < 4 && (
+            <span className="rounded-full px-1.5 font-semibold" style={AMBAR}>
+              {t("ui.Planificador.leSobranDias", "le sobran días")}
+            </span>
+          )}
+          {max > plan.reglas.maxSeguidos && (
+            <span className="rounded-full px-1.5 font-semibold" style={ROJO}>
+              {t("ui.Planificador.muchosSeguidos", "muchos días seguidos")}
+            </span>
+          )}
         </span>
       </td>
       {Array.from({ length: 7 }, (_, i) => {
         const d = d0 + i;
-        const aus = (s.ausencias || []).find((a) => d >= a.desde && d <= a.hasta);
+        const aus = (s.ausencias || []).find(
+          (a) => d >= a.desde && d <= a.hasta,
+        );
         const tu = turnoDe(plan, s, d);
         const fr = tu ? plan.franjas[tu.franja] : undefined;
 
@@ -673,15 +1305,49 @@ function FilaDeSacafranco({ plan, s, d0, cambiar, setHoja }: { plan: Plan; s: Pe
           <td key={i} className={TD} style={{ borderColor: "var(--hairline)" }}>
             <div className={CELDA}>
               {aus ? (
-                <span className={`${BTN} block text-center font-medium capitalize`} style={GRIS}>{aus.tipo}</span>
+                <span
+                  className={`${BTN} block text-center font-medium capitalize`}
+                  style={GRIS}
+                >
+                  {aus.tipo}
+                </span>
               ) : tu ? (
-                <button className={BTN} style={tono(fr)} title={t("ui.Planificador.quitarCobertura", "Quitar esta cobertura")} onClick={() => cambiar((x) => { quitar(x, tu.k!, s.id); x.no[tu.k!] = 1; })}>
+                <button
+                  className={BTN}
+                  style={tono(fr)}
+                  title={t(
+                    "ui.Planificador.quitarCobertura",
+                    "Quitar esta cobertura",
+                  )}
+                  onClick={() =>
+                    cambiar((x) => {
+                      quitar(x, tu.k!, s.id);
+                      x.no[tu.k!] = 1;
+                    })
+                  }
+                >
                   {letra(fr)}
-                  <small className="block truncate font-normal opacity-80">{plan.puestos.find((x) => x.id === tu.puesto)?.nombre}</small>
+                  <small className="block truncate font-normal opacity-80">
+                    {plan.puestos.find((x) => x.id === tu.puesto)?.nombre}
+                  </small>
                 </button>
               ) : (
-                <button className={`${BTN} border border-dashed font-medium`} style={{ borderColor: "var(--hairline)", color: "var(--ink-soft)" }} onClick={() => cambiar((x) => { const q = x.personas.find((y) => y.id === s.id)!; q.manual[d] = propio(q, d) === FRANCO ? LIBRE : FRANCO; })}>
-                  {propio(s, d) === FRANCO ? t("ui.Planificador.franco", "Franco") : t("ui.Planificador.disponible", "Disponible")}
+                <button
+                  className={`${BTN} border border-dashed font-medium`}
+                  style={{
+                    borderColor: "var(--hairline)",
+                    color: "var(--ink-soft)",
+                  }}
+                  onClick={() =>
+                    cambiar((x) => {
+                      const q = x.personas.find((y) => y.id === s.id)!;
+                      q.manual[d] = propio(q, d) === FRANCO ? LIBRE : FRANCO;
+                    })
+                  }
+                >
+                  {propio(s, d) === FRANCO
+                    ? t("ui.Planificador.franco", "Franco")
+                    : t("ui.Planificador.disponible", "Disponible")}
                 </button>
               )}
             </div>
@@ -696,7 +1362,17 @@ function FilaDeSacafranco({ plan, s, d0, cambiar, setHoja }: { plan: Plan; s: Pe
 /* Las hojas                                                           */
 /* ------------------------------------------------------------------ */
 
-function Marco({ titulo, detalle, cerrar, children }: { titulo: string; detalle?: string; cerrar: () => void; children: React.ReactNode }) {
+function Marco({
+  titulo,
+  detalle,
+  cerrar,
+  children,
+}: {
+  titulo: string;
+  detalle?: string;
+  cerrar: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <Dialog open onOpenChange={(a) => !a && cerrar()}>
       <DialogContent className="max-w-lg gap-3">
@@ -709,13 +1385,37 @@ function Marco({ titulo, detalle, cerrar, children }: { titulo: string; detalle?
     </Dialog>
   );
 }
-const OPCION = "cg-focus flex w-full items-center gap-3 rounded-xl border p-2.5 text-left text-sm";
+const OPCION =
+  "cg-focus flex w-full items-center gap-3 rounded-xl border p-2.5 text-left text-sm";
 const marca = (on: boolean) => (
-  <span className="grid h-5 w-5 flex-none place-items-center rounded-md border-2 text-xs font-extrabold" style={{ borderColor: on ? "var(--brand)" : "var(--hairline)", color: "var(--brand-text)" }}>{on ? "✓" : ""}</span>
+  <span
+    className="grid h-5 w-5 flex-none place-items-center rounded-md border-2 text-xs font-extrabold"
+    style={{
+      borderColor: on ? "var(--brand)" : "var(--hairline)",
+      color: "var(--brand-text)",
+    }}
+  >
+    {on ? "✓" : ""}
+  </span>
 );
-const estiloOpcion = (on: boolean): React.CSSProperties => (on ? { borderColor: "var(--brand)", background: "var(--brand-wash)" } : { borderColor: "var(--hairline)" });
+const estiloOpcion = (on: boolean): React.CSSProperties =>
+  on
+    ? { borderColor: "var(--brand)", background: "var(--brand-wash)" }
+    : { borderColor: "var(--hairline)" };
 
-function HojaHueco({ plan, k, cambiar, cerrar, fechaDe }: { plan: Plan; k: string; cambiar: Cambiar; cerrar: () => void; fechaDe: (d: number) => string }) {
+function HojaHueco({
+  plan,
+  k,
+  cambiar,
+  cerrar,
+  fechaDe,
+}: {
+  plan: Plan;
+  k: string;
+  cambiar: Cambiar;
+  cerrar: () => void;
+  fechaDe: (d: number) => string;
+}) {
   const { t } = useTranslation();
   const { puesto, franja, d } = partir(k);
   const pu = plan.puestos.find((p) => p.id === puesto);
@@ -725,17 +1425,29 @@ function HojaHueco({ plan, k, cambiar, cerrar, fechaDe }: { plan: Plan; k: strin
   const ya = plan.cubre[k] || [];
   const fa = falta(plan, pu, franja, d);
   const [y, m, dd] = fechaDe(d).split("-").map(Number);
-  const dia = new Date(Date.UTC(y, m - 1, dd)).toLocaleDateString(localeActual(), { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" });
+  const dia = new Date(Date.UTC(y, m - 1, dd)).toLocaleDateString(
+    localeActual(),
+    { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" },
+  );
   const lista = fa > 0 ? candidatos(plan, pu, franja, d) : [];
   const fijo = fijosDe(plan, pu.id).find((s) => !ya.includes(s.id));
   const porque = fijo && fa > 0 ? impedimento(plan, fijo, pu, franja, d) : null;
   let primero = true;
 
   return (
-    <Marco cerrar={cerrar} detalle={`${dia} · ${t("ui.Planificador.pideN", { defaultValue: "pide {{n}}", n: pide(pu, franja, d) })}, ${fa > 0 ? t("ui.Planificador.faltaN", { defaultValue: "falta {{n}}", n: fa }) : t("ui.Planificador.completo", "completo")}`} titulo={`${pu.nombre} · ${fr && fr.nombre !== horario(fr) ? `${fr.nombre} ` : ""}${horario(fr)}`}>
+    <Marco
+      cerrar={cerrar}
+      detalle={`${dia} · ${t("ui.Planificador.pideN", { defaultValue: "pide {{n}}", n: pide(pu, franja, d) })}, ${fa > 0 ? t("ui.Planificador.faltaN", { defaultValue: "falta {{n}}", n: fa }) : t("ui.Planificador.completo", "completo")}`}
+      titulo={`${pu.nombre} · ${fr && fr.nombre !== horario(fr) ? `${fr.nombre} ` : ""}${horario(fr)}`}
+    >
       {porque && (
         <p className="rounded-lg p-2.5 text-sm" style={AMBAR}>
-          {t("ui.Planificador.suFijoNoPuede", { defaultValue: "Su sacafranco fijo es {{nombre}}, pero ese día no puede: {{motivo}}.", nombre: fijo!.nombre, motivo: porque.toLowerCase() })}
+          {t("ui.Planificador.suFijoNoPuede", {
+            defaultValue:
+              "Su sacafranco fijo es {{nombre}}, pero ese día no puede: {{motivo}}.",
+            nombre: fijo!.nombre,
+            motivo: porque.toLowerCase(),
+          })}
         </p>
       )}
       <div className="flex max-h-[50dvh] flex-col gap-2 overflow-y-auto">
@@ -743,11 +1455,30 @@ function HojaHueco({ plan, k, cambiar, cerrar, fechaDe }: { plan: Plan; k: strin
           const p = plan.personas.find((x) => x.id === id);
 
           return (
-            <button key={id} className={OPCION} style={estiloOpcion(true)} onClick={() => { cambiar((x) => { quitar(x, k, id); x.no[k] = 1; }); cerrar(); }}>
+            <button
+              key={id}
+              className={OPCION}
+              style={estiloOpcion(true)}
+              onClick={() => {
+                cambiar((x) => {
+                  quitar(x, k, id);
+                  x.no[k] = 1;
+                });
+                cerrar();
+              }}
+            >
               {marca(true)}
               <span className="min-w-0 flex-1">
                 <b>{p?.nombre}</b>
-                <span className="block text-xs" style={{ color: "var(--ink-soft)" }}>{t("ui.Planificador.cubreEsteTurno", "Cubre este turno. Toca para quitarlo.")}</span>
+                <span
+                  className="block text-xs"
+                  style={{ color: "var(--ink-soft)" }}
+                >
+                  {t(
+                    "ui.Planificador.cubreEsteTurno",
+                    "Cubre este turno. Toca para quitarlo.",
+                  )}
+                </span>
               </span>
             </button>
           );
@@ -758,40 +1489,110 @@ function HojaHueco({ plan, k, cambiar, cerrar, fechaDe }: { plan: Plan; k: strin
           if (!c.impedimento) primero = false;
 
           return (
-            <button key={c.persona.id} className={OPCION} disabled={!!c.impedimento} style={{ ...estiloOpcion(false), opacity: c.impedimento ? 0.55 : 1 }} onClick={() => { cambiar((x) => { delete x.no[k]; poner(x, k, c.persona.id); }); cerrar(); }}>
-              <span className="grid h-8 w-8 flex-none place-items-center rounded-full text-xs font-bold" style={{ background: "var(--brand-wash)", color: "var(--brand-text)" }}>
-                {c.persona.nombre.split(/\s+/).map((x) => x.charAt(0)).join("").slice(0, 2)}
+            <button
+              key={c.persona.id}
+              className={OPCION}
+              disabled={!!c.impedimento}
+              style={{
+                ...estiloOpcion(false),
+                opacity: c.impedimento ? 0.55 : 1,
+              }}
+              onClick={() => {
+                cambiar((x) => {
+                  delete x.no[k];
+                  poner(x, k, c.persona.id);
+                });
+                cerrar();
+              }}
+            >
+              <span
+                className="grid h-8 w-8 flex-none place-items-center rounded-full text-xs font-bold"
+                style={{
+                  background: "var(--brand-wash)",
+                  color: "var(--brand-text)",
+                }}
+              >
+                {c.persona.nombre
+                  .split(/\s+/)
+                  .map((x) => x.charAt(0))
+                  .join("")
+                  .slice(0, 2)}
               </span>
               <span className="min-w-0 flex-1">
                 <b>{c.persona.nombre}</b>
-                <span className="block text-xs" style={{ color: "var(--ink-soft)" }}>
+                <span
+                  className="block text-xs"
+                  style={{ color: "var(--ink-soft)" }}
+                >
                   {c.impedimento ||
                     (c.extra
-                      ? t("ui.Planificador.horaExtra", "Está en franco: se paga como hora extra")
+                      ? t(
+                          "ui.Planificador.horaExtra",
+                          "Está en franco: se paga como hora extra",
+                        )
                       : `${c.suyo ? t("ui.Planificador.esSuPuesto", "Es su puesto fijo") + " · " : t("ui.Planificador.sacafranco", "Sacafranco") + " · "}${c.dias === 1 ? t("ui.Planificador.unDiaSemana", "1 día esta semana") : t("ui.Planificador.nDiasSemana", { defaultValue: "{{n}} días esta semana", n: c.dias })}`)}
                 </span>
               </span>
-              {mejor && <span className="rounded-full px-2 py-0.5 text-[11px] font-bold" style={{ background: "var(--brand)", color: "var(--brand-ink)" }}>{t("ui.Planificador.mejorOpcion", "Mejor opción")}</span>}
+              {mejor && (
+                <span
+                  className="rounded-full px-2 py-0.5 text-[11px] font-bold"
+                  style={{
+                    background: "var(--brand)",
+                    color: "var(--brand-ink)",
+                  }}
+                >
+                  {t("ui.Planificador.mejorOpcion", "Mejor opción")}
+                </span>
+              )}
             </button>
           );
         })}
-        {fa > 0 && !lista.length && <p className="text-sm" style={{ color: "var(--ink-soft)" }}>{t("ui.Planificador.nadieDisponible", "No hay nadie disponible ese día.")}</p>}
+        {fa > 0 && !lista.length && (
+          <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+            {t(
+              "ui.Planificador.nadieDisponible",
+              "No hay nadie disponible ese día.",
+            )}
+          </p>
+        )}
       </div>
     </Marco>
   );
 }
 
-function HojaCobertura({ plan, puestoId, cambiar, cerrar }: { plan: Plan; puestoId: string; cambiar: Cambiar; cerrar: () => void }) {
+function HojaCobertura({
+  plan,
+  puestoId,
+  cambiar,
+  cerrar,
+}: {
+  plan: Plan;
+  puestoId: string;
+  cambiar: Cambiar;
+  cerrar: () => void;
+}) {
   const { t } = useTranslation();
   const pu = plan.puestos.find((p) => p.id === puestoId);
 
   if (!pu) return null;
 
   return (
-    <Marco cerrar={cerrar} detalle={t("ui.Planificador.coberturaDetalle", "Cuánta gente pide el puesto. La hoja marca en rojo lo que falte y en ámbar lo que sobre.")} titulo={t("ui.Planificador.coberturaDe", { defaultValue: "Qué pide {{puesto}}", puesto: pu.nombre })}>
+    <Marco
+      cerrar={cerrar}
+      detalle={t(
+        "ui.Planificador.coberturaDetalle",
+        "Cuánta gente pide el puesto. La hoja marca en rojo lo que falte y en ámbar lo que sobre.",
+      )}
+      titulo={t("ui.Planificador.coberturaDe", {
+        defaultValue: "Qué pide {{puesto}}",
+        puesto: pu.nombre,
+      })}
+    >
       <div className="flex flex-col gap-2">
         {COBERTURAS.map((c) => {
-          const on = c.franjas.join() === pu.franjas.join() && JSON.stringify(c.pide) === JSON.stringify(pu.pide);
+          const on =
+            c.franjas.join() === pu.franjas.join() &&
+            JSON.stringify(c.pide) === JSON.stringify(pu.pide);
 
           return (
             <button
@@ -803,19 +1604,26 @@ function HojaCobertura({ plan, puestoId, cambiar, cerrar }: { plan: Plan; puesto
                   const q = x.puestos.find((y) => y.id === puestoId)!;
                   const antes = q.franjas;
 
-                  for (const f of c.franjas) x.franjas[f] = x.franjas[f] || FRANJAS_EXTRA[f];
+                  for (const f of c.franjas)
+                    x.franjas[f] = x.franjas[f] || FRANJAS_EXTRA[f];
                   q.franjas = [...c.franjas];
                   q.pide = JSON.parse(JSON.stringify(c.pide));
                   // La rotación de su gente hablaba en las franjas de antes: se
                   // traduce por posición (la 1.ª de antes pasa a la 1.ª de ahora).
                   for (const p of x.personas) {
                     if (p.puesto !== puestoId) continue;
-                    const tr = (cod: string) => { const i = antes.indexOf(cod); return i < 0 ? cod : c.franjas[Math.min(i, c.franjas.length - 1)]; };
+                    const tr = (cod: string) => {
+                      const i = antes.indexOf(cod);
+                      return i < 0
+                        ? cod
+                        : c.franjas[Math.min(i, c.franjas.length - 1)];
+                    };
 
                     p.patron = p.patron.map(tr);
                     p.manual = {};
                   }
-                  for (const k of Object.keys(x.no)) if (k.startsWith(`${puestoId}|`)) delete x.no[k];
+                  for (const k of Object.keys(x.no))
+                    if (k.startsWith(`${puestoId}|`)) delete x.no[k];
                 });
                 cerrar();
               }}
@@ -823,7 +1631,12 @@ function HojaCobertura({ plan, puestoId, cambiar, cerrar }: { plan: Plan; puesto
               {marca(on)}
               <span className="min-w-0 flex-1">
                 <b>{c.nombre}</b>
-                <span className="block text-xs" style={{ color: "var(--ink-soft)" }}>{c.detalle}</span>
+                <span
+                  className="block text-xs"
+                  style={{ color: "var(--ink-soft)" }}
+                >
+                  {c.detalle}
+                </span>
               </span>
             </button>
           );
@@ -833,7 +1646,17 @@ function HojaCobertura({ plan, puestoId, cambiar, cerrar }: { plan: Plan; puesto
   );
 }
 
-function HojaRotacion({ plan, personaId, cambiar, cerrar }: { plan: Plan; personaId: string; cambiar: Cambiar; cerrar: () => void }) {
+function HojaRotacion({
+  plan,
+  personaId,
+  cambiar,
+  cerrar,
+}: {
+  plan: Plan;
+  personaId: string;
+  cambiar: Cambiar;
+  cerrar: () => void;
+}) {
   const { t } = useTranslation();
   const p = plan.personas.find((x) => x.id === personaId);
   const [pat, setPat] = useState<string[]>(() => (p ? [...p.patron] : []));
@@ -841,41 +1664,92 @@ function HojaRotacion({ plan, personaId, cambiar, cerrar }: { plan: Plan; person
 
   if (!p) return null;
   const saca = esSacafranco(p);
-  const fr = saca ? [] : plan.puestos.find((x) => x.id === p.puesto)?.franjas || [];
+  const fr = saca
+    ? []
+    : plan.puestos.find((x) => x.id === p.puesto)?.franjas || [];
   const a = saca ? LIBRE : fr[0] || "D";
   const b = saca ? LIBRE : fr[1] || a;
   const orden = saca ? [LIBRE, FRANCO] : [...fr, FRANCO];
   const rep = (c: string, n: number) => Array<string>(n).fill(c);
   const listas: Array<{ n: string; p: string[] }> = [
-    { n: t("ui.Planificador.rot52", "5 días de trabajo, 2 de franco"), p: [...rep(a, 5), FRANCO, FRANCO] },
-    { n: t("ui.Planificador.rot61", "6 días de trabajo, 1 de franco"), p: [...rep(a, 6), FRANCO] },
-    { n: t("ui.Planificador.rot44", "4 días de trabajo, 4 de franco"), p: [...rep(a, 4), ...rep(FRANCO, 4)] },
+    {
+      n: t("ui.Planificador.rot52", "5 días de trabajo, 2 de franco"),
+      p: [...rep(a, 5), FRANCO, FRANCO],
+    },
+    {
+      n: t("ui.Planificador.rot61", "6 días de trabajo, 1 de franco"),
+      p: [...rep(a, 6), FRANCO],
+    },
+    {
+      n: t("ui.Planificador.rot44", "4 días de trabajo, 4 de franco"),
+      p: [...rep(a, 4), ...rep(FRANCO, 4)],
+    },
     { n: t("ui.Planificador.rot11", "Un día sí y un día no"), p: [a, FRANCO] },
     ...(a !== b
       ? [
-          { n: t("ui.Planificador.rot222", "2-2-2 rotativo"), p: [a, a, b, b, FRANCO, FRANCO] },
-          { n: t("ui.Planificador.rot442", "4-4-2 rotativo"), p: [...rep(a, 4), ...rep(b, 4), FRANCO, FRANCO] },
-          { n: t("ui.Planificador.rot71dn", "7-1 que alterna día y noche (rol peruano)"), p: [...rep(a, 7), FRANCO, ...rep(b, 7), FRANCO] },
-          { n: t("ui.Planificador.rot771", "7 de día, 7 de noche, 1 de franco"), p: [...rep(a, 7), ...rep(b, 7), FRANCO] },
+          {
+            n: t("ui.Planificador.rot222", "2-2-2 rotativo"),
+            p: [a, a, b, b, FRANCO, FRANCO],
+          },
+          {
+            n: t("ui.Planificador.rot442", "4-4-2 rotativo"),
+            p: [...rep(a, 4), ...rep(b, 4), FRANCO, FRANCO],
+          },
+          {
+            n: t(
+              "ui.Planificador.rot71dn",
+              "7-1 que alterna día y noche (rol peruano)",
+            ),
+            p: [...rep(a, 7), FRANCO, ...rep(b, 7), FRANCO],
+          },
+          {
+            n: t("ui.Planificador.rot771", "7 de día, 7 de noche, 1 de franco"),
+            p: [...rep(a, 7), ...rep(b, 7), FRANCO],
+          },
         ]
       : []),
   ];
   const nombres: Record<string, string> = {};
 
-  for (const id of Object.keys(plan.franjas)) nombres[id] = letra(plan.franjas[id]);
+  for (const id of Object.keys(plan.franjas))
+    nombres[id] = letra(plan.franjas[id]);
 
   return (
-    <Marco cerrar={cerrar} detalle={t("ui.Planificador.rotacionDetalle", "Elige una lista o arma la tuya tocando cada día. Se repite sola hacia adelante.")} titulo={t("ui.Planificador.rotacionDe", { defaultValue: "Rotación de {{nombre}}", nombre: corto(p.nombre) })}>
+    <Marco
+      cerrar={cerrar}
+      detalle={t(
+        "ui.Planificador.rotacionDetalle",
+        "Elige una lista o arma la tuya tocando cada día. Se repite sola hacia adelante.",
+      )}
+      titulo={t("ui.Planificador.rotacionDe", {
+        defaultValue: "Rotación de {{nombre}}",
+        nombre: corto(p.nombre),
+      })}
+    >
       <div className="flex max-h-[32dvh] flex-col gap-2 overflow-y-auto">
         {listas.map((l, i) => {
           const on = l.p.join() === pat.join();
 
           return (
-            <button key={i} className={OPCION} style={estiloOpcion(on)} onClick={() => setPat([...l.p])}>
+            <button
+              key={i}
+              className={OPCION}
+              style={estiloOpcion(on)}
+              onClick={() => setPat([...l.p])}
+            >
               {marca(on)}
               <span className="min-w-0 flex-1">
                 <b>{l.n}</b>
-                <span className="block text-xs" style={{ color: "var(--ink-soft)" }}>{t("ui.Planificador.seRepiteCada", { defaultValue: "{{etq}} · se repite cada {{n}} días", etq: etiqueta(l.p, nombres), n: l.p.length })}</span>
+                <span
+                  className="block text-xs"
+                  style={{ color: "var(--ink-soft)" }}
+                >
+                  {t("ui.Planificador.seRepiteCada", {
+                    defaultValue: "{{etq}} · se repite cada {{n}} días",
+                    etq: etiqueta(l.p, nombres),
+                    n: l.p.length,
+                  })}
+                </span>
               </span>
             </button>
           );
@@ -883,34 +1757,116 @@ function HojaRotacion({ plan, personaId, cambiar, cerrar }: { plan: Plan; person
       </div>
       <p className="text-sm">
         <b>{t("ui.Planificador.aTuMedida", "A tu medida")}</b>{" "}
-        <span style={{ color: "var(--ink-soft)" }}>· {etiqueta(pat, nombres) || "—"} · {t("ui.Planificador.cadaNDias", { defaultValue: "cada {{n}} días", n: pat.length })}</span>
+        <span style={{ color: "var(--ink-soft)" }}>
+          · {etiqueta(pat, nombres) || "—"} ·{" "}
+          {t("ui.Planificador.cadaNDias", {
+            defaultValue: "cada {{n}} días",
+            n: pat.length,
+          })}
+        </span>
       </p>
-      <div className="grid gap-1.5" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(3.4rem, 1fr))" }}>
+      <div
+        className="grid gap-1.5"
+        style={{
+          gridTemplateColumns: "repeat(auto-fill, minmax(3.4rem, 1fr))",
+        }}
+      >
         {pat.map((c, i) => {
           const f = plan.franjas[c];
 
           return (
-            <button key={i} className={`${BTN} ${c === FRANCO || c === LIBRE ? "border border-dashed font-medium" : ""}`} style={c === FRANCO || c === LIBRE ? { borderColor: "var(--hairline)", color: "var(--ink-soft)" } : tono(f)} onClick={() => setPat((x) => x.map((y, j) => (j === i ? orden[(orden.indexOf(y) + 1) % orden.length] || FRANCO : y)))}>
-              {c === FRANCO ? t("ui.Planificador.franco", "Franco") : c === LIBRE ? t("ui.Planificador.disp", "Disp.") : letra(f)}
-              <small className="block font-normal opacity-80">{t("ui.Planificador.diaN", { defaultValue: "día {{n}}", n: i + 1 })}</small>
+            <button
+              key={i}
+              className={`${BTN} ${c === FRANCO || c === LIBRE ? "border border-dashed font-medium" : ""}`}
+              style={
+                c === FRANCO || c === LIBRE
+                  ? { borderColor: "var(--hairline)", color: "var(--ink-soft)" }
+                  : tono(f)
+              }
+              onClick={() =>
+                setPat((x) =>
+                  x.map((y, j) =>
+                    j === i
+                      ? orden[(orden.indexOf(y) + 1) % orden.length] || FRANCO
+                      : y,
+                  ),
+                )
+              }
+            >
+              {c === FRANCO
+                ? t("ui.Planificador.franco", "Franco")
+                : c === LIBRE
+                  ? t("ui.Planificador.disp", "Disp.")
+                  : letra(f)}
+              <small className="block font-normal opacity-80">
+                {t("ui.Planificador.diaN", {
+                  defaultValue: "día {{n}}",
+                  n: i + 1,
+                })}
+              </small>
             </button>
           );
         })}
       </div>
       {!saca && (
         <label className="flex cursor-pointer items-start gap-2 text-sm">
-          <input checked={dobleDomingo} className="mt-1" type="checkbox" onChange={(e) => setDobleDomingo(e.target.checked)} />
+          <input
+            checked={dobleDomingo}
+            className="mt-1"
+            type="checkbox"
+            onChange={(e) => setDobleDomingo(e.target.checked)}
+          />
           <span>
-            <b>{t("ui.Planificador.dobleDomingo", "Si el franco cae en domingo, el lunes también descansa")}</b>
-            <span className="block text-xs" style={{ color: "var(--ink-soft)" }}>{t("ui.Planificador.dobleDomingoDetalle", "La regla del rol peruano: el libre se va corriendo y la vuelta completa de un 7-1 son 49 días.")}</span>
+            <b>
+              {t(
+                "ui.Planificador.dobleDomingo",
+                "Si el franco cae en domingo, el lunes también descansa",
+              )}
+            </b>
+            <span
+              className="block text-xs"
+              style={{ color: "var(--ink-soft)" }}
+            >
+              {t(
+                "ui.Planificador.dobleDomingoDetalle",
+                "La regla del rol peruano: el libre se va corriendo y la vuelta completa de un 7-1 son 49 días.",
+              )}
+            </span>
           </span>
         </label>
       )}
       <div className="flex flex-wrap gap-2">
-        <Button disabled={pat.length < 2} size="sm" variant="outline" onClick={() => setPat((x) => x.slice(0, -1))}>{t("ui.Planificador.quitarDia", "− quitar día")}</Button>
-        <Button disabled={pat.length > 27} size="sm" variant="outline" onClick={() => setPat((x) => [...x, FRANCO])}>{t("ui.Planificador.anadirDia", "+ añadir día")}</Button>
+        <Button
+          disabled={pat.length < 2}
+          size="sm"
+          variant="outline"
+          onClick={() => setPat((x) => x.slice(0, -1))}
+        >
+          {t("ui.Planificador.quitarDia", "− quitar día")}
+        </Button>
+        <Button
+          disabled={pat.length > 27}
+          size="sm"
+          variant="outline"
+          onClick={() => setPat((x) => [...x, FRANCO])}
+        >
+          {t("ui.Planificador.anadirDia", "+ añadir día")}
+        </Button>
         <span className="flex-1" />
-        <Button size="sm" variant="brand" onClick={() => { cambiar((x) => { const q = x.personas.find((y) => y.id === personaId)!; q.patron = [...pat]; q.desfase = 0; q.manual = {}; q.francoDobleDomingo = dobleDomingo || undefined; }); cerrar(); }}>
+        <Button
+          size="sm"
+          variant="brand"
+          onClick={() => {
+            cambiar((x) => {
+              const q = x.personas.find((y) => y.id === personaId)!;
+              q.patron = [...pat];
+              q.desfase = 0;
+              q.manual = {};
+              q.francoDobleDomingo = dobleDomingo || undefined;
+            });
+            cerrar();
+          }}
+        >
           {t("ui.Planificador.usarRotacion", "Usar esta rotación")}
         </Button>
       </div>
@@ -918,27 +1874,66 @@ function HojaRotacion({ plan, personaId, cambiar, cerrar }: { plan: Plan; person
   );
 }
 
-function HojaFijos({ plan, personaId, cambiar, cerrar }: { plan: Plan; personaId: string; cambiar: Cambiar; cerrar: () => void }) {
+function HojaFijos({
+  plan,
+  personaId,
+  cambiar,
+  cerrar,
+}: {
+  plan: Plan;
+  personaId: string;
+  cambiar: Cambiar;
+  cerrar: () => void;
+}) {
   const { t } = useTranslation();
   const s = plan.personas.find((x) => x.id === personaId);
 
   if (!s) return null;
 
   return (
-    <Marco cerrar={cerrar} detalle={t("ui.Planificador.fijosDetalle", "Cubre solo lo que falte en estos puestos.")} titulo={t("ui.Planificador.fijosDe", { defaultValue: "Puestos fijos de {{nombre}}", nombre: corto(s.nombre) })}>
+    <Marco
+      cerrar={cerrar}
+      detalle={t(
+        "ui.Planificador.fijosDetalle",
+        "Cubre solo lo que falte en estos puestos.",
+      )}
+      titulo={t("ui.Planificador.fijosDe", {
+        defaultValue: "Puestos fijos de {{nombre}}",
+        nombre: corto(s.nombre),
+      })}
+    >
       <div className="flex max-h-[55dvh] flex-col gap-2 overflow-y-auto">
         {plan.puestos.map((pu) => {
           const on = (s.fijos || []).includes(pu.id);
           const otros = fijosDe(plan, pu.id).filter((x) => x.id !== s.id);
 
           return (
-            <button key={pu.id} className={OPCION} style={estiloOpcion(on)} onClick={() => cambiar((x) => { const q = x.personas.find((y) => y.id === personaId)!; q.fijos = (q.fijos || []).includes(pu.id) ? q.fijos!.filter((z) => z !== pu.id) : [...(q.fijos || []), pu.id]; })}>
+            <button
+              key={pu.id}
+              className={OPCION}
+              style={estiloOpcion(on)}
+              onClick={() =>
+                cambiar((x) => {
+                  const q = x.personas.find((y) => y.id === personaId)!;
+                  q.fijos = (q.fijos || []).includes(pu.id)
+                    ? q.fijos!.filter((z) => z !== pu.id)
+                    : [...(q.fijos || []), pu.id];
+                })
+              }
+            >
               {marca(on)}
               <span className="min-w-0 flex-1">
                 <b>{pu.nombre}</b>
-                <span className="block text-xs" style={{ color: "var(--ink-soft)" }}>
-                  {pu.franjas.map((f) => plan.franjas[f]?.nombre || f).join(" + ")}
-                  {otros.length ? ` · ${t("ui.Planificador.tambienLoCubre", { defaultValue: "también lo cubre {{nombre}}", nombre: otros.map((o) => corto(o.nombre)).join(", ") })}` : ""}
+                <span
+                  className="block text-xs"
+                  style={{ color: "var(--ink-soft)" }}
+                >
+                  {pu.franjas
+                    .map((f) => plan.franjas[f]?.nombre || f)
+                    .join(" + ")}
+                  {otros.length
+                    ? ` · ${t("ui.Planificador.tambienLoCubre", { defaultValue: "también lo cubre {{nombre}}", nombre: otros.map((o) => corto(o.nombre)).join(", ") })}`
+                    : ""}
                 </span>
               </span>
             </button>
@@ -946,13 +1941,29 @@ function HojaFijos({ plan, personaId, cambiar, cerrar }: { plan: Plan; personaId
         })}
       </div>
       <div className="flex justify-end">
-        <Button size="sm" variant="brand" onClick={cerrar}>{t("ui.Planificador.listo", "Listo")}</Button>
+        <Button size="sm" variant="brand" onClick={cerrar}>
+          {t("ui.Planificador.listo", "Listo")}
+        </Button>
       </div>
     </Marco>
   );
 }
 
-function HojaAusencia({ plan, personaId, d0, fechaDe, cambiar, cerrar }: { plan: Plan; personaId: string; d0: number; fechaDe: (d: number) => string; cambiar: Cambiar; cerrar: () => void }) {
+function HojaAusencia({
+  plan,
+  personaId,
+  d0,
+  fechaDe,
+  cambiar,
+  cerrar,
+}: {
+  plan: Plan;
+  personaId: string;
+  d0: number;
+  fechaDe: (d: number) => string;
+  cambiar: Cambiar;
+  cerrar: () => void;
+}) {
   const { t } = useTranslation();
   const p = plan.personas.find((x) => x.id === personaId);
   const [tipo, setTipo] = useState("vacaciones");
@@ -963,7 +1974,12 @@ function HojaAusencia({ plan, personaId, d0, fechaDe, cambiar, cerrar }: { plan:
   const dia = (d: number, largo = false) => {
     const [y, m, dd] = fechaDe(d).split("-").map(Number);
 
-    return new Date(Date.UTC(y, m - 1, dd)).toLocaleDateString(localeActual(), largo ? { day: "numeric", month: "short", timeZone: "UTC" } : { weekday: "short", day: "numeric", timeZone: "UTC" });
+    return new Date(Date.UTC(y, m - 1, dd)).toLocaleDateString(
+      localeActual(),
+      largo
+        ? { day: "numeric", month: "short", timeZone: "UTC" }
+        : { weekday: "short", day: "numeric", timeZone: "UTC" },
+    );
   };
   const TIPOS = [
     ["vacaciones", t("ui.Planificador.vacaciones", "Vacaciones")],
@@ -972,15 +1988,41 @@ function HojaAusencia({ plan, personaId, d0, fechaDe, cambiar, cerrar }: { plan:
   ];
 
   return (
-    <Marco cerrar={cerrar} detalle={t("ui.Planificador.ausenciaDetalle", "Esos días no trabaja ni puede cubrir. La hoja enseña los turnos que quedan sin cubrir.")} titulo={t("ui.Planificador.ausenciaDe", { defaultValue: "Ausencia de {{nombre}}", nombre: corto(p.nombre) })}>
+    <Marco
+      cerrar={cerrar}
+      detalle={t(
+        "ui.Planificador.ausenciaDetalle",
+        "Esos días no trabaja ni puede cubrir. La hoja enseña los turnos que quedan sin cubrir.",
+      )}
+      titulo={t("ui.Planificador.ausenciaDe", {
+        defaultValue: "Ausencia de {{nombre}}",
+        nombre: corto(p.nombre),
+      })}
+    >
       {(p.ausencias || []).length > 0 && (
         <div className="flex flex-col gap-1.5">
           {(p.ausencias || []).map((a, i) => (
-            <button key={i} className={OPCION} style={estiloOpcion(true)} onClick={() => cambiar((x) => { const q = x.personas.find((y) => y.id === personaId)!; q.ausencias = (q.ausencias || []).filter((_, j) => j !== i); })}>
+            <button
+              key={i}
+              className={OPCION}
+              style={estiloOpcion(true)}
+              onClick={() =>
+                cambiar((x) => {
+                  const q = x.personas.find((y) => y.id === personaId)!;
+                  q.ausencias = (q.ausencias || []).filter((_, j) => j !== i);
+                })
+              }
+            >
               {marca(true)}
               <span className="min-w-0 flex-1">
-                <b className="capitalize">{a.tipo}</b> · {dia(a.desde, true)}{a.hasta > a.desde ? ` – ${dia(a.hasta, true)}` : ""}
-                <span className="block text-xs" style={{ color: "var(--ink-soft)" }}>{t("ui.Planificador.tocaParaQuitar", "Toca para quitarla.")}</span>
+                <b className="capitalize">{a.tipo}</b> · {dia(a.desde, true)}
+                {a.hasta > a.desde ? ` – ${dia(a.hasta, true)}` : ""}
+                <span
+                  className="block text-xs"
+                  style={{ color: "var(--ink-soft)" }}
+                >
+                  {t("ui.Planificador.tocaParaQuitar", "Toca para quitarla.")}
+                </span>
               </span>
             </button>
           ))}
@@ -988,25 +2030,85 @@ function HojaAusencia({ plan, personaId, d0, fechaDe, cambiar, cerrar }: { plan:
       )}
       <div className="flex flex-wrap gap-1.5">
         {TIPOS.map(([id, nombre]) => (
-          <button key={id} className="cg-focus rounded-full border px-3 py-1 text-sm font-semibold" style={estiloOpcion(tipo === id)} onClick={() => setTipo(id)}>{nombre}</button>
+          <button
+            key={id}
+            className="cg-focus rounded-full border px-3 py-1 text-sm font-semibold"
+            style={estiloOpcion(tipo === id)}
+            onClick={() => setTipo(id)}
+          >
+            {nombre}
+          </button>
         ))}
       </div>
-      <p className="text-sm font-semibold">{t("ui.Planificador.empieza", "Empieza el")}</p>
+      <p className="text-sm font-semibold">
+        {t("ui.Planificador.empieza", "Empieza el")}
+      </p>
       <div className="grid grid-cols-7 gap-1.5">
         {Array.from({ length: 7 }, (_, i) => (
-          <button key={i} className={`${BTN} border capitalize`} style={estiloOpcion(desde === d0 + i)} onClick={() => setDesde(d0 + i)}>{dia(d0 + i)}</button>
+          <button
+            key={i}
+            className={`${BTN} border capitalize`}
+            style={estiloOpcion(desde === d0 + i)}
+            onClick={() => setDesde(d0 + i)}
+          >
+            {dia(d0 + i)}
+          </button>
         ))}
       </div>
       <div className="flex flex-wrap items-center gap-2 text-sm">
-        <span className="font-semibold">{t("ui.Planificador.dura", "Dura")}</span>
-        <Button disabled={dias <= 1} size="sm" variant="outline" onClick={() => setDias((n) => Math.max(1, n - 1))}>−</Button>
-        <span className="min-w-[4.5rem] text-center tabular-nums">{dias === 1 ? t("ui.Planificador.unDia", "1 día") : t("ui.Planificador.nDias", { defaultValue: "{{n}} días", n: dias })}</span>
-        <Button disabled={dias >= 60} size="sm" variant="outline" onClick={() => setDias((n) => Math.min(60, n + 1))}>+</Button>
+        <span className="font-semibold">
+          {t("ui.Planificador.dura", "Dura")}
+        </span>
+        <Button
+          disabled={dias <= 1}
+          size="sm"
+          variant="outline"
+          onClick={() => setDias((n) => Math.max(1, n - 1))}
+        >
+          −
+        </Button>
+        <span className="min-w-[4.5rem] text-center tabular-nums">
+          {dias === 1
+            ? t("ui.Planificador.unDia", "1 día")
+            : t("ui.Planificador.nDias", {
+                defaultValue: "{{n}} días",
+                n: dias,
+              })}
+        </span>
+        <Button
+          disabled={dias >= 60}
+          size="sm"
+          variant="outline"
+          onClick={() => setDias((n) => Math.min(60, n + 1))}
+        >
+          +
+        </Button>
         {[7, 14, 30].map((n) => (
-          <Button key={n} size="sm" variant="outline" onClick={() => setDias(n)}>{n}</Button>
+          <Button
+            key={n}
+            size="sm"
+            variant="outline"
+            onClick={() => setDias(n)}
+          >
+            {n}
+          </Button>
         ))}
         <span className="flex-1" />
-        <Button size="sm" variant="brand" onClick={() => { cambiar((x) => { const q = x.personas.find((y) => y.id === personaId)!; (q.ausencias = q.ausencias || []).push({ desde, hasta: desde + dias - 1, tipo }); }); cerrar(); }}>
+        <Button
+          size="sm"
+          variant="brand"
+          onClick={() => {
+            cambiar((x) => {
+              const q = x.personas.find((y) => y.id === personaId)!;
+              (q.ausencias = q.ausencias || []).push({
+                desde,
+                hasta: desde + dias - 1,
+                tipo,
+              });
+            });
+            cerrar();
+          }}
+        >
           {t("ui.Planificador.anadirAusencia", "Añadir ausencia")}
         </Button>
       </div>
@@ -1014,34 +2116,122 @@ function HojaAusencia({ plan, personaId, d0, fechaDe, cambiar, cerrar }: { plan:
   );
 }
 
-function HojaReglas({ plan, cambiar, cerrar }: { plan: Plan; cambiar: Cambiar; cerrar: () => void }) {
+function HojaReglas({
+  plan,
+  cambiar,
+  cerrar,
+}: {
+  plan: Plan;
+  cambiar: Cambiar;
+  cerrar: () => void;
+}) {
   const { t } = useTranslation();
   const r = plan.reglas;
-  const fila = (titulo: string, detalle: string, valor: number, opciones: Array<[number, string]>, poner: (n: number) => void) => (
+  const fila = (
+    titulo: string,
+    detalle: string,
+    valor: number,
+    opciones: Array<[number, string]>,
+    poner: (n: number) => void,
+  ) => (
     <div>
       <p className="text-sm font-semibold">{titulo}</p>
-      <p className="mb-1.5 text-xs" style={{ color: "var(--ink-soft)" }}>{detalle}</p>
+      <p className="mb-1.5 text-xs" style={{ color: "var(--ink-soft)" }}>
+        {detalle}
+      </p>
       <div className="flex flex-wrap gap-1.5">
         {opciones.map(([n, nombre]) => (
-          <button key={n} className="cg-focus rounded-full border px-3 py-1 text-sm font-semibold" style={estiloOpcion(valor === n)} onClick={() => poner(n)}>{nombre}</button>
+          <button
+            key={n}
+            className="cg-focus rounded-full border px-3 py-1 text-sm font-semibold"
+            style={estiloOpcion(valor === n)}
+            onClick={() => poner(n)}
+          >
+            {nombre}
+          </button>
         ))}
       </div>
     </div>
   );
 
   return (
-    <Marco cerrar={cerrar} detalle={t("ui.Planificador.reglasDetalle", "Lo que el Planificador no deja hacer al cubrir un turno. Al cambiarlas se retira la cobertura que ya no las cumpla.")} titulo={t("ui.Planificador.reglasDeCobertura", "Reglas para cubrir")}>
-      {fila(t("ui.Planificador.reglaDescanso", "Descanso mínimo entre dos turnos"), t("ui.Planificador.reglaDescansoDetalle", "Con 10 horas, quien sale de noche no entra de día esa mañana."), r.descansoMin, [[480, "8 h"], [600, "10 h"], [720, "12 h"], [1440, "24 h"]], (n) => cambiar((x) => { x.reglas.descansoMin = n; }))}
-      {fila(t("ui.Planificador.reglaSeguidos", "Días seguidos, como mucho"), t("ui.Planificador.reglaSeguidosDetalle", "Contando su turno propio y lo que cubra."), r.maxSeguidos, [[5, "5"], [6, "6"], [7, "7"], [12, "12"]], (n) => cambiar((x) => { x.reglas.maxSeguidos = n; }))}
-      {fila(t("ui.Planificador.reglaHoras", "Horas por semana, como mucho"), t("ui.Planificador.reglaHorasDetalle", "De lunes a domingo."), r.maxHorasSemana, [[48, "48 h"], [60, "60 h"], [72, "72 h"], [84, "84 h"]], (n) => cambiar((x) => { x.reglas.maxHorasSemana = n; }))}
+    <Marco
+      cerrar={cerrar}
+      detalle={t(
+        "ui.Planificador.reglasDetalle",
+        "Lo que el Planificador no deja hacer al cubrir un turno. Al cambiarlas se retira la cobertura que ya no las cumpla.",
+      )}
+      titulo={t("ui.Planificador.reglasDeCobertura", "Reglas para cubrir")}
+    >
+      {fila(
+        t("ui.Planificador.reglaDescanso", "Descanso mínimo entre dos turnos"),
+        t(
+          "ui.Planificador.reglaDescansoDetalle",
+          "Con 10 horas, quien sale de noche no entra de día esa mañana.",
+        ),
+        r.descansoMin,
+        [
+          [480, "8 h"],
+          [600, "10 h"],
+          [720, "12 h"],
+          [1440, "24 h"],
+        ],
+        (n) =>
+          cambiar((x) => {
+            x.reglas.descansoMin = n;
+          }),
+      )}
+      {fila(
+        t("ui.Planificador.reglaSeguidos", "Días seguidos, como mucho"),
+        t(
+          "ui.Planificador.reglaSeguidosDetalle",
+          "Contando su turno propio y lo que cubra.",
+        ),
+        r.maxSeguidos,
+        [
+          [5, "5"],
+          [6, "6"],
+          [7, "7"],
+          [12, "12"],
+        ],
+        (n) =>
+          cambiar((x) => {
+            x.reglas.maxSeguidos = n;
+          }),
+      )}
+      {fila(
+        t("ui.Planificador.reglaHoras", "Horas por semana, como mucho"),
+        t("ui.Planificador.reglaHorasDetalle", "De lunes a domingo."),
+        r.maxHorasSemana,
+        [
+          [48, "48 h"],
+          [60, "60 h"],
+          [72, "72 h"],
+          [84, "84 h"],
+        ],
+        (n) =>
+          cambiar((x) => {
+            x.reglas.maxHorasSemana = n;
+          }),
+      )}
       <div className="flex justify-end">
-        <Button size="sm" variant="brand" onClick={cerrar}>{t("ui.Planificador.listo", "Listo")}</Button>
+        <Button size="sm" variant="brand" onClick={cerrar}>
+          {t("ui.Planificador.listo", "Listo")}
+        </Button>
       </div>
     </Marco>
   );
 }
 
-function HojaPublicar({ publicacion, cerrar, publicado }: { publicacion: Publicacion; cerrar: () => void; publicado: () => void }) {
+function HojaPublicar({
+  publicacion,
+  cerrar,
+  publicado,
+}: {
+  publicacion: Publicacion;
+  cerrar: () => void;
+  publicado: () => void;
+}) {
   const { t } = useTranslation();
   const [enCurso, setEnCurso] = useState<[number, number] | null>(null);
   const [fallos, setFallos] = useState<string[] | null>(null);
@@ -1056,39 +2246,137 @@ function HojaPublicar({ publicacion, cerrar, publicado }: { publicacion: Publica
     const f = await publicar(publicacion, api, (h, n) => setEnCurso([h, n]));
 
     setEnCurso(null);
-    if (f.length) { setFallos(f); toast.error(t("ui.Planificador.publicadoConFallos", { defaultValue: "Publicado con {{n}} fallos. El resto ya está en el horario.", n: f.length })); }
-    else { toast.success(t("ui.Planificador.publicadoOk", { defaultValue: "Publicado: {{n}} cambios ya están en el horario.", n: cambios.length })); publicado(); }
+    if (f.length) {
+      setFallos(f);
+      toast.error(
+        t("ui.Planificador.publicadoConFallos", {
+          defaultValue:
+            "Publicado con {{n}} fallos. El resto ya está en el horario.",
+          n: f.length,
+        }),
+      );
+    } else {
+      toast.success(
+        t("ui.Planificador.publicadoOk", {
+          defaultValue: "Publicado: {{n}} cambios ya están en el horario.",
+          n: cambios.length,
+        }),
+      );
+      publicado();
+    }
   };
 
   return (
-    <Marco cerrar={cerrar} detalle={t("ui.Planificador.publicarDetalle", "Esto escribe en el horario real: lo verán la central, el Horario y los vigilantes en su app.")} titulo={t("ui.Planificador.publicarTitulo", "Publicar el borrador")}>
+    <Marco
+      cerrar={cerrar}
+      detalle={t(
+        "ui.Planificador.publicarDetalle",
+        "Esto escribe en el horario real: lo verán la central, el Horario y los vigilantes en su app.",
+      )}
+      titulo={t("ui.Planificador.publicarTitulo", "Publicar el borrador")}
+    >
       {fallos ? (
         <div className="flex flex-col gap-2">
-          <p className="rounded-lg p-2.5 text-sm" style={ROJO}>{t("ui.Planificador.noSePudieron", { defaultValue: "{{n}} cambios no se pudieron publicar:", n: fallos.length })}</p>
-          <ul className="max-h-[40dvh] overflow-y-auto pl-5 text-sm" style={{ listStyle: "disc" }}>{fallos.map((f, i) => <li key={i}>{f}</li>)}</ul>
-          <div className="flex justify-end"><Button size="sm" variant="brand" onClick={publicado}>{t("ui.Planificador.verHorario", "Ver cómo quedó")}</Button></div>
+          <p className="rounded-lg p-2.5 text-sm" style={ROJO}>
+            {t("ui.Planificador.noSePudieron", {
+              defaultValue: "{{n}} cambios no se pudieron publicar:",
+              n: fallos.length,
+            })}
+          </p>
+          <ul
+            className="max-h-[40dvh] overflow-y-auto pl-5 text-sm"
+            style={{ listStyle: "disc" }}
+          >
+            {fallos.map((f, i) => (
+              <li key={i}>{f}</li>
+            ))}
+          </ul>
+          <div className="flex justify-end">
+            <Button size="sm" variant="brand" onClick={publicado}>
+              {t("ui.Planificador.verHorario", "Ver cómo quedó")}
+            </Button>
+          </div>
         </div>
       ) : (
         <>
           {cambios.length ? (
             <div>
-              <p className="mb-1.5 text-sm font-semibold">{t("ui.Planificador.seVaAPublicar", { defaultValue: "Se va a publicar ({{n}})", n: cambios.length })}</p>
-              <ul className="max-h-[36dvh] overflow-y-auto pl-5 text-sm" style={{ listStyle: "disc" }}>{cambios.map((c, i) => <li key={i}>{c.texto}</li>)}</ul>
+              <p className="mb-1.5 text-sm font-semibold">
+                {t("ui.Planificador.seVaAPublicar", {
+                  defaultValue: "Se va a publicar ({{n}})",
+                  n: cambios.length,
+                })}
+              </p>
+              <ul
+                className="max-h-[36dvh] overflow-y-auto pl-5 text-sm"
+                style={{ listStyle: "disc" }}
+              >
+                {cambios.map((c, i) => (
+                  <li key={i}>{c.texto}</li>
+                ))}
+              </ul>
             </div>
           ) : (
-            <p className="text-sm" style={{ color: "var(--ink-soft)" }}>{t("ui.Planificador.nadaQuePublicar", "No hay nada que el horario real pueda recibir de este borrador.")}</p>
+            <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+              {t(
+                "ui.Planificador.nadaQuePublicar",
+                "No hay nada que el horario real pueda recibir de este borrador.",
+              )}
+            </p>
           )}
           {noPublicables.length > 0 && (
             <div>
-              <p className="mb-1.5 text-sm font-semibold" style={{ color: "var(--warn-text, var(--ink))" }}>{t("ui.Planificador.seQuedaEnBorrador", { defaultValue: "Se queda en el borrador ({{n}})", n: noPublicables.length })}</p>
-              <ul className="max-h-[24dvh] overflow-y-auto pl-5 text-sm" style={{ listStyle: "disc", color: "var(--ink-soft)" }}>{noPublicables.map((x, i) => <li key={i}>{x}</li>)}</ul>
+              <p
+                className="mb-1.5 text-sm font-semibold"
+                style={{ color: "var(--warn-text, var(--ink))" }}
+              >
+                {t("ui.Planificador.seQuedaEnBorrador", {
+                  defaultValue: "Se queda en el borrador ({{n}})",
+                  n: noPublicables.length,
+                })}
+              </p>
+              <ul
+                className="max-h-[24dvh] overflow-y-auto pl-5 text-sm"
+                style={{ listStyle: "disc", color: "var(--ink-soft)" }}
+              >
+                {noPublicables.map((x, i) => (
+                  <li key={i}>{x}</li>
+                ))}
+              </ul>
             </div>
           )}
           <div className="flex flex-wrap items-center justify-end gap-2">
-            {enCurso && <span className="text-sm tabular-nums" style={{ color: "var(--ink-soft)" }}>{enCurso[0]} / {enCurso[1]}</span>}
-            <Button disabled={!!enCurso} size="sm" variant="outline" onClick={cerrar}>{t("ui.Planificador.cancelar", "Cancelar")}</Button>
-            <Button disabled={!cambios.length || !!enCurso} size="sm" variant="brand" onClick={ir}>
-              {enCurso ? <Loader2 className="animate-spin" size={14} /> : <Send size={14} />} {t("ui.Planificador.publicarN", { defaultValue: "Publicar {{n}}", n: cambios.length })}
+            {enCurso && (
+              <span
+                className="text-sm tabular-nums"
+                style={{ color: "var(--ink-soft)" }}
+              >
+                {enCurso[0]} / {enCurso[1]}
+              </span>
+            )}
+            <Button
+              disabled={!!enCurso}
+              size="sm"
+              variant="outline"
+              onClick={cerrar}
+            >
+              {t("ui.Planificador.cancelar", "Cancelar")}
+            </Button>
+            <Button
+              disabled={!cambios.length || !!enCurso}
+              size="sm"
+              variant="brand"
+              onClick={ir}
+            >
+              {enCurso ? (
+                <Loader2 className="animate-spin" size={14} />
+              ) : (
+                <Send size={14} />
+              )}{" "}
+              {t("ui.Planificador.publicarN", {
+                defaultValue: "Publicar {{n}}",
+                n: cambios.length,
+              })}
             </Button>
           </div>
         </>

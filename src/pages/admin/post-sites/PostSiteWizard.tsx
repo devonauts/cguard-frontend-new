@@ -43,7 +43,7 @@ import {
   Edit3,
   ArrowRight,
 } from "lucide-react";
-import { ImagePlus, Upload } from "lucide-react";
+import { ImagePlus, Upload, CalendarRange } from "lucide-react";
 
 import { invalidateEntity } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
@@ -61,6 +61,7 @@ import { useClientSelection } from "@/contexts/ClientSelectionContext";
 import { getServiceType } from "@/lib/serviceTypes";
 import { Section, EmptyState, IconTile } from "@/components/kit";
 import CampoSucursalDeSede from "@/components/post-sites/CampoSucursalDeSede";
+import { HiloDePuesta } from "@/components/onboarding/PuestaEnMarcha";
 
 // ─── types ────────────────────────────────────────────────────────────────────
 
@@ -640,6 +641,104 @@ function StationRow({
     onChange({ jornadas: draft.jornadas.filter((j) => j.id !== id) });
   };
 
+  /* ── LA COBERTURA, EN UNA PREGUNTA ──────────────────────────────────────
+     Antes el puesto nacía sin turnos y había que ir añadiendo «Diurna»,
+     «Nocturna» con unos chips que no explicaban nada. Lo que el dueño sabe
+     del puesto es otra cosa: ¿se cubre las 24 horas, sólo de día o sólo de
+     noche? ¿Y cuántos vigilantes a la vez? Eso se pregunta; las jornadas se
+     derivan solas con las horas del Horario (07–19 / 19–07). «A medida»
+     abre el editor de siempre para los casos raros. */
+  const [aMedida, setAMedida] = useState(false);
+  const cobertura: "24h" | "dia" | "noche" | "custom" | null = (() => {
+    const tipos = draft.jornadas.map((j) => j.tipo);
+    const raras = tipos.some(
+      (x) => x === "personalizada" || x === "sacafranco",
+    );
+    const dia = tipos.filter((x) => x === "matutina").length;
+    const noche = tipos.filter((x) => x === "nocturna").length;
+
+    if (!tipos.length) return null;
+    if (raras || dia > 1 || noche > 1) return "custom";
+    if (dia && noche) return "24h";
+    if (dia) return "dia";
+
+    return "noche";
+  })();
+  const aLaVez = Math.max(1, Number(draft.jornadas[0]?.guardsCount) || 1);
+  const jornadaDe = (
+    tipo: "matutina" | "nocturna",
+    n: number,
+  ): JornadaDraft => {
+    const preset = JORNADA_PRESETS.find((x) => x.tipo === tipo)!;
+    const previa = draft.jornadas.find((j) => j.tipo === tipo);
+
+    return {
+      id: previa?.id ?? Math.random().toString(36).slice(2),
+      nombre: previa?.nombre ?? t(preset.labelKey, preset.label),
+      tipo,
+      startTime: preset.startTime,
+      endTime: preset.endTime,
+      guardsCount: String(n),
+    };
+  };
+  const elegirCobertura = (c: "24h" | "dia" | "noche" | "custom") => {
+    if (c === "custom") {
+      setAMedida(true);
+
+      return;
+    }
+    setAMedida(false);
+    const n = aLaVez;
+
+    onChange({
+      jornadas:
+        c === "24h"
+          ? [jornadaDe("matutina", n), jornadaDe("nocturna", n)]
+          : c === "dia"
+            ? [jornadaDe("matutina", n)]
+            : [jornadaDe("nocturna", n)],
+    });
+  };
+  const cambiarALaVez = (n: number) => {
+    const v = String(Math.max(1, Math.min(20, n)));
+
+    onChange({
+      jornadas: draft.jornadas.map((j) => ({ ...j, guardsCount: v })),
+    });
+  };
+  const COBERTURAS: {
+    c: "24h" | "dia" | "noche" | "custom";
+    k: string;
+    d: string;
+    horas: string;
+  }[] = [
+    {
+      c: "24h",
+      k: "ui.PostSiteWizard.cobertura.24h",
+      d: "24 horas",
+      horas: "07:00 → 07:00",
+    },
+    {
+      c: "dia",
+      k: "ui.PostSiteWizard.cobertura.dia",
+      d: "Sólo de día",
+      horas: "07:00 → 19:00",
+    },
+    {
+      c: "noche",
+      k: "ui.PostSiteWizard.cobertura.noche",
+      d: "Sólo de noche",
+      horas: "19:00 → 07:00",
+    },
+    {
+      c: "custom",
+      k: "ui.PostSiteWizard.cobertura.aMedida",
+      d: "A medida",
+      horas: "",
+    },
+  ];
+  const editorVisible = aMedida || cobertura === "custom";
+
   return (
     <div className="glass-flat overflow-hidden">
       {/* Station name + delete */}
@@ -673,9 +772,109 @@ function StationRow({
         />
       </div>
 
+      {/* Cobertura: la pregunta que sí sabe contestar el dueño */}
+      <div
+        className="border-t px-4 py-3 space-y-3"
+        style={{
+          borderColor: "var(--hairline)",
+          background: "var(--glass-sunken)",
+        }}
+      >
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0 flex-1 space-y-1.5">
+            <span className="cg-eyebrow flex items-center gap-1">
+              <Clock className="h-3 w-3" />{" "}
+              {t("ui.PostSiteWizard.cobertura.titulo", "¿Qué horas se cubre?")}
+            </span>
+            <div className="flex flex-wrap gap-1.5">
+              {COBERTURAS.map((o) => {
+                const activa =
+                  o.c === "custom"
+                    ? editorVisible
+                    : cobertura === o.c && !aMedida;
+
+                return (
+                  <button
+                    key={o.c}
+                    className="cg-focus rounded-full border px-3 py-1 text-xs font-semibold transition-opacity hover:opacity-80"
+                    style={
+                      activa
+                        ? {
+                            background: "var(--brand)",
+                            color: "var(--brand-ink)",
+                            borderColor: "var(--brand)",
+                          }
+                        : {
+                            background: "var(--glass)",
+                            color: "var(--ink)",
+                            borderColor: "var(--hairline)",
+                          }
+                    }
+                    type="button"
+                    onClick={() => elegirCobertura(o.c)}
+                  >
+                    {t(o.k, o.d)}
+                    {o.horas && (
+                      <span className="ml-1 font-mono text-[10px] opacity-70">
+                        {o.horas}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          {draft.jornadas.length > 0 && !editorVisible && (
+            <div className="space-y-1.5">
+              <span className="cg-eyebrow flex items-center gap-1">
+                <Users className="h-3 w-3" />{" "}
+                {t("ui.PostSiteWizard.cobertura.aLaVez", "Vigilantes a la vez")}
+              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  aria-label="−"
+                  className="cg-focus glass h-7 w-7 rounded-md text-sm"
+                  type="button"
+                  onClick={() => cambiarALaVez(aLaVez - 1)}
+                >
+                  −
+                </button>
+                <span className="w-8 text-center text-sm font-semibold tabular-nums">
+                  {aLaVez}
+                </span>
+                <button
+                  aria-label="+"
+                  className="cg-focus glass h-7 w-7 rounded-md text-sm"
+                  type="button"
+                  onClick={() => cambiarALaVez(aLaVez + 1)}
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+        {draft.jornadas.length > 0 && !editorVisible && (
+          <p className="text-[11px]" style={{ color: "var(--ink-soft)" }}>
+            {cobertura === "24h"
+              ? t("ui.PostSiteWizard.cobertura.explica24h", {
+                  defaultValue:
+                    "Dos turnos de 12 h (día y noche) con {{n}} vigilante(s) cada uno. Las rotaciones y los francos se cuadran en el Planificador.",
+                  n: aLaVez,
+                })
+              : t("ui.PostSiteWizard.cobertura.explica12h", {
+                  defaultValue:
+                    "Un turno de 12 h con {{n}} vigilante(s). Las rotaciones y los francos se cuadran en el Planificador.",
+                  n: aLaVez,
+                })}
+          </p>
+        )}
+      </div>
+
       {/* Jornadas section */}
       <div
         className="border-t px-4 py-3 space-y-2"
+        hidden={!editorVisible}
         style={{
           borderColor: "var(--hairline)",
           background: "var(--glass-sunken)",
@@ -769,6 +968,8 @@ export default function PostSiteWizard({
 
   // ── form state ──────────────────────────────────────────────────────────────
   const [step, setStep] = useState(pasoPedido ?? (isEdit ? 2 : 1));
+  /** Se llegó aquí desde el alta del cliente: el hilo de puesta en marcha se enseña y el final sigue hacia los vigilantes. */
+  const enPuesta = searchParams.get("puesta") === "1";
   const [submitting, setSubmitting] = useState(false);
   const [createdId, setCreatedId] = useState<string | null>(null);
   const [loadingEdit, setLoadingEdit] = useState(isEdit);
@@ -841,6 +1042,22 @@ export default function PostSiteWizard({
         const data = await clientService.getClient(clientId);
 
         setClientData(data as ClientDetail);
+        // La sede que crea el alta del cliente lleva SU dirección. Volver a
+        // pedirla aquí era el campo repetido que más se notaba: se da por
+        // hecha y se enseña plegada; «usar otra dirección» la abre.
+        const d = data as ClientDetail;
+
+        if (d?.address && (!address || address === d.address)) {
+          setUseClientAddress(true);
+          setAddress(d.address || "");
+          setAddressLine2(d.addressLine2 || "");
+          setCity(d.city || "");
+          setCountry(d.country || "");
+          setPostalCode(d.postalCode || "");
+          if (d.latitude) setLatitud(String(d.latitude));
+          if (d.longitude) setLongitud(String(d.longitude));
+          setAddressConfirmed(true);
+        }
       } catch {
         setClientData(null);
       }
@@ -1068,8 +1285,16 @@ export default function PostSiteWizard({
       city,
       country,
       postalCode,
-      latitud,
-      longitud,
+      // Una dirección escrita a mano no trae coordenadas: «» en una columna
+      // DECIMAL es «Data truncated» (500). Sin coordenadas va null.
+      latitud:
+        latitud !== "" && Number.isFinite(Number(latitud))
+          ? Number(latitud)
+          : null,
+      longitud:
+        longitud !== "" && Number.isFinite(Number(longitud))
+          ? Number(longitud)
+          : null,
       serviceType,
       serviceConfig: finalConfig,
       status,
@@ -1395,6 +1620,11 @@ export default function PostSiteWizard({
     if (step === 6) {
       const stationCount = stations.filter((s) => s.name.trim()).length;
       const targetId = isEdit ? id! : (createdId ?? "");
+      const siteNameForPlan = (
+        resolvedClientName ||
+        stations.find((s) => s.name.trim())?.name ||
+        ""
+      ).trim();
 
       return (
         <div className="flex flex-col items-center gap-6 py-8 text-center">
@@ -1411,9 +1641,12 @@ export default function PostSiteWizard({
           </div>
           <div>
             <h2 className="font-display text-2xl font-bold">
-              {isEdit
-                ? t("ui.PostSiteWizard.cambiosGuardadosExcl", "¡Cambios guardados!")
-                : t("ui.PostSiteWizard.puestoCreadoExcl", "¡Puesto creado!")}
+              {isEdit && !enPuesta
+                ? t(
+                    "ui.PostSiteWizard.cambiosGuardadosExcl",
+                    "¡Cambios guardados!",
+                  )
+                : t("ui.PostSiteWizard.sedeListaExcl", "¡Sede lista!")}
             </h2>
             <p
               className="mx-auto mt-2 max-w-sm text-sm"
@@ -1427,7 +1660,8 @@ export default function PostSiteWizard({
                 : stationCount > 0
                   ? t("ui.PostSiteWizard.estacionesConfiguradas", {
                       count: stationCount,
-                      defaultValue: "{{count}} estaciones configuradas y listas.",
+                      defaultValue:
+                        "{{count}} estaciones configuradas y listas.",
                     })
                   : t(
                       "ui.PostSiteWizard.sitioCreadoSinEstaciones",
@@ -1449,18 +1683,65 @@ export default function PostSiteWizard({
             >
               {clientLocked
                 ? t("ui.PostSiteWizard.volverAlCliente", "Volver al cliente")
-                : t("ui.PostSiteWizard.verTodosLosSitios", "Ver todos los sitios")}
+                : t(
+                    "ui.PostSiteWizard.verTodosLosSitios",
+                    "Ver todos los sitios",
+                  )}
             </Button>
-            <Button
-              className="gap-2"
-              type="button"
-              variant="brand"
-              onClick={() => navigate(`/post-sites/${targetId}/profile`)}
-            >
-              <MapPin className="h-4 w-4" />
-              {t("ui.PostSiteWizard.irAlPerfil", "Ir al perfil")}
-            </Button>
+            {stationCount > 0 ? (
+              <>
+                <Button
+                  className="gap-2"
+                  type="button"
+                  variant="brand"
+                  onClick={() => navigate(`/post-sites/${targetId}/stations`)}
+                >
+                  <Users className="h-4 w-4" />
+                  {t(
+                    "ui.PostSiteWizard.asignarVigilantes",
+                    "Asignar vigilantes",
+                  )}
+                </Button>
+                <Button
+                  className="gap-2"
+                  type="button"
+                  variant="outline"
+                  onClick={() =>
+                    navigate(
+                      `/planificador?busca=${encodeURIComponent(siteNameForPlan)}`,
+                    )
+                  }
+                >
+                  <CalendarRange className="h-4 w-4" />
+                  {t(
+                    "ui.PostSiteWizard.abrirPlanificador",
+                    "Abrir en el Planificador",
+                  )}
+                </Button>
+              </>
+            ) : (
+              <Button
+                className="gap-2"
+                type="button"
+                variant="brand"
+                onClick={() => navigate(`/post-sites/${targetId}/profile`)}
+              >
+                <MapPin className="h-4 w-4" />
+                {t("ui.PostSiteWizard.irAlPerfil", "Ir al perfil")}
+              </Button>
+            )}
           </div>
+          {stationCount > 0 && (
+            <p
+              className="max-w-sm text-xs"
+              style={{ color: "var(--ink-soft)" }}
+            >
+              {t(
+                "ui.PostSiteWizard.siguienteAsignar",
+                "Siguiente: pon a cada puesto su vigilante. Con eso el horario se arma solo y lo cuadras en el Planificador.",
+              )}
+            </p>
+          )}
         </div>
       );
     }
@@ -1490,21 +1771,25 @@ export default function PostSiteWizard({
               setStep(2);
             }}
           />
-          <div className="text-center">
-            <button
-              className="cg-btn-link cg-focus rounded-md text-sm underline underline-offset-4 transition-colors"
-              type="button"
-              onClick={() => {
-                setServiceType(undefined);
-                setStep(2);
-              }}
-            >
-              {t(
-                "ui.PostSiteWizard.continuarSinSeleccionarTipo",
-                "Continuar sin seleccionar tipo",
-              )}
-            </button>
-          </div>
+          {/* En la puesta en marcha no hay atajo: sin tipo de servicio la sede
+             queda cerrada (no se crean puestos ni se asigna a nadie). */}
+          {!enPuesta && (
+            <div className="text-center">
+              <button
+                className="cg-btn-link cg-focus rounded-md text-sm underline underline-offset-4 transition-colors"
+                type="button"
+                onClick={() => {
+                  setServiceType(undefined);
+                  setStep(2);
+                }}
+              >
+                {t(
+                  "ui.PostSiteWizard.continuarSinSeleccionarTipo",
+                  "Continuar sin seleccionar tipo",
+                )}
+              </button>
+            </div>
+          )}
         </div>
       );
     }
@@ -1645,203 +1930,222 @@ export default function PostSiteWizard({
             )}
           </div>
 
-          {/* ── Map hero block ──────────────────────────────────────── */}
-          <div className="glass">
-            <div className="px-4 pt-4 pb-0">
-              <AddressAutocomplete
-                showMap
-                suppressInitialReverse
-                defaultValue={address}
-                initialLat={latitud ? Number(latitud) : undefined}
-                initialLng={longitud ? Number(longitud) : undefined}
-                mapHeight="300px"
-                placeholder={t(
-                  "ui.PostSiteWizard.buscarCalleNumeroCiudadLugar",
-                  "Buscar calle, número, ciudad, lugar…",
-                )}
-                onAddressSelect={handleAddressSelect}
-              />
-            </div>
-          </div>
-
-          {/* ── Address confirmation card — appears after selection ─── */}
-          {addressConfirmed && (address || city) && (
-            <div
-              className="glass overflow-hidden"
-              style={{
-                borderColor: "color-mix(in oklab, var(--ok) 32%, transparent)",
-                background: "color-mix(in oklab, var(--ok) 10%, transparent)",
-              }}
-            >
-              <div className="flex items-start gap-3 px-4 py-3">
-                <div
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
-                  style={{ background: "var(--ok)", color: "var(--brand-ink)" }}
-                >
-                  <Check className="h-5 w-5" />
+          {/* Con «Misma dirección del cliente» marcada, el mapa y los campos
+             sobran: es el dato que ya se escribió en el alta del cliente. Se
+             pliegan; desmarcar los abre para una sede en otro sitio. */}
+          {!useClientAddress && (
+            <>
+              {/* ── Map hero block ──────────────────────────────────────── */}
+              <div className="glass">
+                <div className="px-4 pt-4 pb-0">
+                  <AddressAutocomplete
+                    showMap
+                    suppressInitialReverse
+                    defaultValue={address}
+                    initialLat={latitud ? Number(latitud) : undefined}
+                    initialLng={longitud ? Number(longitud) : undefined}
+                    mapHeight="300px"
+                    placeholder={t(
+                      "ui.PostSiteWizard.buscarCalleNumeroCiudadLugar",
+                      "Buscar calle, número, ciudad, lugar…",
+                    )}
+                    onAddressSelect={handleAddressSelect}
+                  />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold leading-snug">
-                    {address || city}
-                  </p>
-                  <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
-                    {city && (
-                      <span
-                        className="inline-flex items-center gap-1 text-xs"
-                        style={{ color: "var(--ok-text)" }}
-                      >
-                        <Globe className="h-3 w-3" />
-                        {[city, country].filter(Boolean).join(", ")}
-                      </span>
-                    )}
-                    {postalCode && (
-                      <span
-                        className="inline-flex items-center gap-1 text-xs"
-                        style={{ color: "var(--ok-text)" }}
-                      >
-                        <Hash className="h-3 w-3" />
-                        {t("ui.PostSiteWizard.cpAbrev", "CP")} {postalCode}
-                      </span>
-                    )}
-                    {coordsLabel && (
-                      <span
-                        className="inline-flex items-center gap-1 font-mono text-xs"
-                        style={{ color: "var(--ok-text)" }}
-                      >
-                        <Navigation2 className="h-3 w-3" />
-                        {coordsLabel}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <button
-                  className="cg-focus flex shrink-0 items-center gap-1 rounded-md text-xs transition-colors"
-                  style={{ color: "var(--ok-text)" }}
-                  type="button"
-                  onClick={() => setShowAddressFields((v) => !v)}
-                >
-                  <Edit3 className="h-3 w-3" />
-                  {t("actions.edit", "Editar")}
-                  {showAddressFields ? (
-                    <ChevronUp className="h-3 w-3" />
-                  ) : (
-                    <ChevronDown className="h-3 w-3" />
-                  )}
-                </button>
               </div>
 
-              {/* Collapsible manual fields */}
-              {showAddressFields && (
+              {/* ── Address confirmation card — appears after selection ─── */}
+              {addressConfirmed && (address || city) && (
                 <div
-                  className="space-y-3 border-t px-4 py-4"
+                  className="glass overflow-hidden"
                   style={{
                     borderColor:
-                      "color-mix(in oklab, var(--ok) 28%, transparent)",
-                    background: "var(--glass-sunken)",
+                      "color-mix(in oklab, var(--ok) 32%, transparent)",
+                    background:
+                      "color-mix(in oklab, var(--ok) 10%, transparent)",
                   }}
                 >
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="sm:col-span-2">
-                      <label className="block text-xs font-medium text-foreground/70 mb-1">
-                        {t("ui.PostSiteWizard.direccion", "Dirección")}
-                      </label>
-                      <Input
-                        placeholder={t(
-                          "ui.PostSiteWizard.calleYNumero",
-                          "Calle y número",
+                  <div className="flex items-start gap-3 px-4 py-3">
+                    <div
+                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
+                      style={{
+                        background: "var(--ok)",
+                        color: "var(--brand-ink)",
+                      }}
+                    >
+                      <Check className="h-5 w-5" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold leading-snug">
+                        {address || city}
+                      </p>
+                      <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
+                        {city && (
+                          <span
+                            className="inline-flex items-center gap-1 text-xs"
+                            style={{ color: "var(--ok-text)" }}
+                          >
+                            <Globe className="h-3 w-3" />
+                            {[city, country].filter(Boolean).join(", ")}
+                          </span>
                         )}
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                      />
-                    </div>
-                    <div className="sm:col-span-2">
-                      <label className="block text-xs font-medium text-foreground/70 mb-1">
-                        {t("ui.PostSiteWizard.complemento", "Complemento")}
-                      </label>
-                      <Input
-                        placeholder={t(
-                          "ui.PostSiteWizard.aptoPisoReferencia",
-                          "Apto., piso, referencia…",
+                        {postalCode && (
+                          <span
+                            className="inline-flex items-center gap-1 text-xs"
+                            style={{ color: "var(--ok-text)" }}
+                          >
+                            <Hash className="h-3 w-3" />
+                            {t("ui.PostSiteWizard.cpAbrev", "CP")} {postalCode}
+                          </span>
                         )}
-                        value={addressLine2}
-                        onChange={(e) => setAddressLine2(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-foreground/70 mb-1">
-                        {t("comun.ciudad")}
-                      </label>
-                      <Input
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-foreground/70 mb-1">
-                        {t("ui.PostSiteWizard.pais", "País")}
-                      </label>
-                      <Input
-                        value={country}
-                        onChange={(e) => setCountry(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-foreground/70 mb-1">
-                        {t("ui.PostSiteWizard.codigoPostal", "Código postal")}
-                      </label>
-                      <Input
-                        value={postalCode}
-                        onChange={(e) => setPostalCode(e.target.value)}
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="block text-xs font-medium text-foreground/70 mb-1">
-                          {t("postSites.stations.lat", "Latitud")}
-                        </label>
-                        <Input
-                          className="font-mono text-xs"
-                          placeholder="0.000000"
-                          value={latitud}
-                          onChange={(e) => setLatitud(e.target.value)}
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-medium text-foreground/70 mb-1">
-                          {t("postSites.stations.lng", "Longitud")}
-                        </label>
-                        <Input
-                          className="font-mono text-xs"
-                          placeholder="0.000000"
-                          value={longitud}
-                          onChange={(e) => setLongitud(e.target.value)}
-                        />
+                        {coordsLabel && (
+                          <span
+                            className="inline-flex items-center gap-1 font-mono text-xs"
+                            style={{ color: "var(--ok-text)" }}
+                          >
+                            <Navigation2 className="h-3 w-3" />
+                            {coordsLabel}
+                          </span>
+                        )}
                       </div>
                     </div>
+                    <button
+                      className="cg-focus flex shrink-0 items-center gap-1 rounded-md text-xs transition-colors"
+                      style={{ color: "var(--ok-text)" }}
+                      type="button"
+                      onClick={() => setShowAddressFields((v) => !v)}
+                    >
+                      <Edit3 className="h-3 w-3" />
+                      {t("actions.edit", "Editar")}
+                      {showAddressFields ? (
+                        <ChevronUp className="h-3 w-3" />
+                      ) : (
+                        <ChevronDown className="h-3 w-3" />
+                      )}
+                    </button>
+                  </div>
+
+                  {/* Collapsible manual fields */}
+                  {showAddressFields && (
+                    <div
+                      className="space-y-3 border-t px-4 py-4"
+                      style={{
+                        borderColor:
+                          "color-mix(in oklab, var(--ok) 28%, transparent)",
+                        background: "var(--glass-sunken)",
+                      }}
+                    >
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="sm:col-span-2">
+                          <label className="block text-xs font-medium text-foreground/70 mb-1">
+                            {t("ui.PostSiteWizard.direccion", "Dirección")}
+                          </label>
+                          <Input
+                            placeholder={t(
+                              "ui.PostSiteWizard.calleYNumero",
+                              "Calle y número",
+                            )}
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                          />
+                        </div>
+                        <div className="sm:col-span-2">
+                          <label className="block text-xs font-medium text-foreground/70 mb-1">
+                            {t("ui.PostSiteWizard.complemento", "Complemento")}
+                          </label>
+                          <Input
+                            placeholder={t(
+                              "ui.PostSiteWizard.aptoPisoReferencia",
+                              "Apto., piso, referencia…",
+                            )}
+                            value={addressLine2}
+                            onChange={(e) => setAddressLine2(e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-foreground/70 mb-1">
+                            {t("comun.ciudad")}
+                          </label>
+                          <Input
+                            value={city}
+                            onChange={(e) => setCity(e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-foreground/70 mb-1">
+                            {t("ui.PostSiteWizard.pais", "País")}
+                          </label>
+                          <Input
+                            value={country}
+                            onChange={(e) => setCountry(e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-foreground/70 mb-1">
+                            {t(
+                              "ui.PostSiteWizard.codigoPostal",
+                              "Código postal",
+                            )}
+                          </label>
+                          <Input
+                            value={postalCode}
+                            onChange={(e) => setPostalCode(e.target.value)}
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-xs font-medium text-foreground/70 mb-1">
+                              {t("postSites.stations.lat", "Latitud")}
+                            </label>
+                            <Input
+                              className="font-mono text-xs"
+                              placeholder="0.000000"
+                              value={latitud}
+                              onChange={(e) => setLatitud(e.target.value)}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-foreground/70 mb-1">
+                              {t("postSites.stations.lng", "Longitud")}
+                            </label>
+                            <Input
+                              className="font-mono text-xs"
+                              placeholder="0.000000"
+                              value={longitud}
+                              onChange={(e) => setLongitud(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  <CampoSucursalDeSede
+                    ciudad={city}
+                    value={branchId}
+                    onChange={setBranchId}
+                  />
+                </div>
+              )}
+
+              {/* Fallback: show bare fields if no address confirmed yet */}
+              {!addressConfirmed && address && (
+                <div className="glass-sunken space-y-3 px-4 py-3">
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-medium text-foreground/70 mb-1">
+                      {t("ui.PostSiteWizard.direccion2", "Dirección")}
+                    </label>
+                    <Input
+                      placeholder={t(
+                        "ui.PostSiteWizard.calleYNumero2",
+                        "Calle y número",
+                      )}
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                    />
                   </div>
                 </div>
               )}
-              <CampoSucursalDeSede ciudad={city} value={branchId} onChange={setBranchId} />
-            </div>
-          )}
-
-          {/* Fallback: show bare fields if no address confirmed yet */}
-          {!addressConfirmed && address && (
-            <div className="glass-sunken space-y-3 px-4 py-3">
-              <div className="sm:col-span-2">
-                <label className="block text-xs font-medium text-foreground/70 mb-1">
-                  {t("ui.PostSiteWizard.direccion2", "Dirección")}
-                </label>
-                <Input
-                  placeholder={t(
-                    "ui.PostSiteWizard.calleYNumero2",
-                    "Calle y número",
-                  )}
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                />
-              </div>
-            </div>
+            </>
           )}
 
           {/* ── Description ─────────────────────────────────────────── */}
@@ -2480,7 +2784,6 @@ export default function PostSiteWizard({
   // ── nav ────────────────────────────────────────────────────────────────────
   const isLastMainStep = step === 5;
   const isStationStep = step === 6;
-  const TOTAL_MAIN_STEPS = isEdit ? 4 : 5; // edit skips step 1
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -2493,13 +2796,33 @@ export default function PostSiteWizard({
         </div>
       ) : (
         <>
+          {/* Puesta en marcha: se entró desde el alta del cliente */}
+          {enPuesta && (
+            <div className="mb-4">
+              <HiloDePuesta
+                pasos={[
+                  {
+                    clave: "cliente",
+                    hecho: true,
+                    href: clientId
+                      ? `/clients/${clientId}/overview`
+                      : undefined,
+                  },
+                  { clave: "sede", hecho: step > 3 },
+                  {
+                    clave: "puestos",
+                    hecho: step >= 6 && stations.some((s) => s.name.trim()),
+                  },
+                  { clave: "vigilantes", hecho: false },
+                  { clave: "horario", hecho: false },
+                ]}
+              />
+            </div>
+          )}
           {/* Progress bar (only on main steps) */}
           {!isStationStep && (
             <div className="mb-8">
-              <StepBar
-                current={isEdit ? step - 1 : step}
-                total={TOTAL_MAIN_STEPS}
-              />
+              <StepBar current={step} total={STEP_LABELS.length} />
             </div>
           )}
 
@@ -2555,7 +2878,10 @@ export default function PostSiteWizard({
                     <>
                       <CheckCircle2 className="h-4 w-4" />{" "}
                       {isEdit
-                        ? t("ui.PostSiteWizard.guardarCambios", "Guardar cambios")
+                        ? t(
+                            "ui.PostSiteWizard.guardarCambios",
+                            "Guardar cambios",
+                          )
                         : t("ui.PostSiteWizard.crearSitio", "Crear Sitio")}
                     </>
                   )}

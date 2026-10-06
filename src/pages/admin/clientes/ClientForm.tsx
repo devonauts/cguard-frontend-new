@@ -570,14 +570,31 @@ export default function ClientForm({
           {
             description: t("clients.clientCreatedSiteHint", {
               defaultValue:
-                "Se creó también su primera sede con estos datos. Falta configurar su operación antes de crear puestos y asignar vigilantes.",
+                "Su primera sede ya tiene estos datos. Sigue: qué servicio se presta, los puestos y quién los cubre.",
             }) as string,
-            duration: 9000,
+            duration: 7000,
           },
         );
         onSaved?.({ id: data.id, data: values as unknown as ClientInput });
         form.reset();
-        if (!keepOnSave) navigate("/clients");
+        if (!keepOnSave) {
+          // UN SOLO RECORRIDO. El alta no termina en la lista: sigue en la sede
+          // que el servidor acaba de crear con estos mismos datos, en el paso
+          // que falta (el tipo de servicio). Si la sede no se creó, a la ficha
+          // del cliente, cuyo aviso de puesta en marcha dirá qué falta.
+          let destino = `/clients/${data.id}/overview`;
+
+          try {
+            const op = await clientService.getOperation(data.id);
+            const sede = op.sites?.[0];
+
+            if (sede?.id)
+              destino = `/post-sites/${sede.id}/edit?step=1&puesta=1`;
+          } catch {
+            /* a la ficha */
+          }
+          navigate(destino);
+        }
       } else if (mode === "edit" && id) {
         // Compute diff against initially loaded data so we only PATCH changed fields
         const initial = initialDataRef.current ?? ({} as ClientInput);
@@ -1278,7 +1295,10 @@ export default function ClientForm({
                       <>
                         <img
                           src={placePicPreview}
-                          alt={t("ui.ClientForm.fotoDelLugar", "Foto del lugar")}
+                          alt={t(
+                            "ui.ClientForm.fotoDelLugar",
+                            "Foto del lugar",
+                          )}
                           className="max-h-24 max-w-full object-contain rounded"
                         />
                         <button
@@ -1835,7 +1855,10 @@ export default function ClientForm({
                             <input
                               type="text"
                               className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm font-mono disabled:opacity-50"
-                              placeholder={t("ui.ClientForm.rangoLatitud", "-90 a 90")}
+                              placeholder={t(
+                                "ui.ClientForm.rangoLatitud",
+                                "-90 a 90",
+                              )}
                               {...field}
                               value={String(field.value ?? "")}
                               maxLength={20}
@@ -1857,7 +1880,10 @@ export default function ClientForm({
                             <input
                               type="text"
                               className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm font-mono disabled:opacity-50"
-                              placeholder={t("ui.ClientForm.rangoLongitud", "-180 a 180")}
+                              placeholder={t(
+                                "ui.ClientForm.rangoLongitud",
+                                "-180 a 180",
+                              )}
                               {...field}
                               value={String(field.value ?? "")}
                               maxLength={20}

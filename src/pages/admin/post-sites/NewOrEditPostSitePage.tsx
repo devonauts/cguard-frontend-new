@@ -30,6 +30,9 @@ export default function NewOrEditPostSitePage() {
     : searchParams.get("clientId") || undefined;
   const presetClientName = (location.state as { clientName?: string } | null)
     ?.clientName;
+  // Puesta en marcha: se viene del alta del cliente a terminar SU sede. El
+  // título dice eso, no «Editar», que suena a volver sobre algo ya hecho.
+  const enPuesta = searchParams.get("puesta") === "1";
 
   useEffect(() => {
     // Con el cliente ya fijado la lista completa no se usa: no se pide.
@@ -73,21 +76,28 @@ export default function NewOrEditPostSitePage() {
           <PageHeader
             icon={id ? <Pencil /> : <MapPin />}
             subtitle={
-              presetClientName
+              enPuesta
                 ? t(
-                    "postSites.wizardSubtitleForClient",
-                    "Nueva sede para {{client}}: ubicación, servicio y estaciones paso a paso.",
-                    { client: presetClientName },
+                    "postSites.wizardSubtitlePuesta",
+                    "Qué servicio se presta, los puestos y quién los cubre. Al terminar, el horario.",
                   )
-                : t(
-                    "postSites.wizardSubtitle",
-                    "Configura el sitio, su ubicación, servicio y estaciones paso a paso.",
-                  )
+                : presetClientName
+                  ? t(
+                      "postSites.wizardSubtitleForClient",
+                      "Nueva sede para {{client}}: ubicación, servicio y estaciones paso a paso.",
+                      { client: presetClientName },
+                    )
+                  : t(
+                      "postSites.wizardSubtitle",
+                      "Configura el sitio, su ubicación, servicio y estaciones paso a paso.",
+                    )
             }
             title={
-              id
-                ? t("postSites.editPostSite", "Editar Puesto de seguridad")
-                : t("postSites.newPostSite", "Nuevo Puesto de seguridad")
+              enPuesta
+                ? t("postSites.configurarLaSede", "Configurar la sede")
+                : id
+                  ? t("postSites.editPostSite", "Editar Puesto de seguridad")
+                  : t("postSites.newPostSite", "Nuevo Puesto de seguridad")
             }
           />
           {loading ? (

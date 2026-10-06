@@ -13,7 +13,9 @@ import {
   ChevronDown,
 } from "lucide-react";
 
-import OperationSetupAlert from "./components/OperationSetup/OperationSetupAlert";
+import OperationSetupAlert, {
+  needsOperationSetup,
+} from "./components/OperationSetup/OperationSetupAlert";
 
 import PostSiteLayout from "@/layouts/PostSiteLayout";
 import {
@@ -511,9 +513,8 @@ export default function AddStationPage() {
           />
 
           {/* Aquí es donde el hueco hace daño: se está creando un puesto sobre una
-            sede que no dice qué servicio presta. AVISA y deja seguir — hay
-            operaciones vivas montadas sobre sedes sin configurar, y un candado
-            las pararía hoy por una regla que llega tarde. */}
+            sede que no dice qué servicio presta. Se CIERRA: el formulario no se
+            enseña y el servidor rechazaría igual (`exigirSedeConfigurada`). */}
           <OperationSetupAlert
             className="mb-4"
             context="station"
@@ -528,7 +529,7 @@ export default function AddStationPage() {
                 style={{ color: "var(--brand-text)" }}
               />
             </div>
-          ) : (
+          ) : needsOperationSetup(site) ? null : (
             <div className="glass">
               <div className="space-y-6 p-6">
                 {/* Name */}
@@ -590,58 +591,61 @@ export default function AddStationPage() {
                     {t("postSites.stations.form.schedule", "Turno (horario) *")}
                   </label>
                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                    {TURNO_OPTIONS.map(({ key, label, labelKey, sub, subKey, Icon }) => {
-                      const selected = turnoType === key;
+                    {TURNO_OPTIONS.map(
+                      ({ key, label, labelKey, sub, subKey, Icon }) => {
+                        const selected = turnoType === key;
 
-                      return (
-                        <button
-                          key={key}
-                          aria-pressed={selected}
-                          className="cg-focus flex flex-col items-start gap-2 rounded-xl border p-3 text-left transition-all"
-                          style={
-                            selected
-                              ? {
-                                  background: "var(--brand-wash)",
-                                  borderColor: "var(--brand-line)",
-                                  boxShadow: "0 0 22px -10px var(--brand-glow)",
+                        return (
+                          <button
+                            key={key}
+                            aria-pressed={selected}
+                            className="cg-focus flex flex-col items-start gap-2 rounded-xl border p-3 text-left transition-all"
+                            style={
+                              selected
+                                ? {
+                                    background: "var(--brand-wash)",
+                                    borderColor: "var(--brand-line)",
+                                    boxShadow:
+                                      "0 0 22px -10px var(--brand-glow)",
+                                  }
+                                : {
+                                    background: "var(--glass-sunken)",
+                                    borderColor: "var(--hairline)",
+                                  }
+                            }
+                            type="button"
+                            onClick={() => selectTurno(key)}
+                          >
+                            <Icon
+                              className="h-5 w-5"
+                              style={{
+                                color: selected
+                                  ? "var(--brand-text)"
+                                  : "var(--ink-faint)",
+                              }}
+                            />
+                            <div>
+                              <p
+                                className="text-sm font-semibold"
+                                style={
+                                  selected
+                                    ? { color: "var(--brand-text)" }
+                                    : undefined
                                 }
-                              : {
-                                  background: "var(--glass-sunken)",
-                                  borderColor: "var(--hairline)",
-                                }
-                          }
-                          type="button"
-                          onClick={() => selectTurno(key)}
-                        >
-                          <Icon
-                            className="h-5 w-5"
-                            style={{
-                              color: selected
-                                ? "var(--brand-text)"
-                                : "var(--ink-faint)",
-                            }}
-                          />
-                          <div>
-                            <p
-                              className="text-sm font-semibold"
-                              style={
-                                selected
-                                  ? { color: "var(--brand-text)" }
-                                  : undefined
-                              }
-                            >
-                              {t(labelKey, label)}
-                            </p>
-                            <p
-                              className="text-[11px]"
-                              style={{ color: "var(--ink-soft)" }}
-                            >
-                              {subKey ? t(subKey, sub) : sub}
-                            </p>
-                          </div>
-                        </button>
-                      );
-                    })}
+                              >
+                                {t(labelKey, label)}
+                              </p>
+                              <p
+                                className="text-[11px]"
+                                style={{ color: "var(--ink-soft)" }}
+                              >
+                                {subKey ? t(subKey, sub) : sub}
+                              </p>
+                            </div>
+                          </button>
+                        );
+                      },
+                    )}
                   </div>
                 </div>
 
@@ -791,7 +795,8 @@ export default function AddStationPage() {
                                   ? t("ui.AddStationPage.horasBloques", {
                                       count: k,
                                       h,
-                                      defaultValue: "{{h}}h → {{count}} bloques",
+                                      defaultValue:
+                                        "{{h}}h → {{count}} bloques",
                                     })
                                   : t("ui.AddStationPage.horasNoDivide", {
                                       h,
@@ -862,7 +867,10 @@ export default function AddStationPage() {
                           >
                             {jornadaType(startingTimeInDay, finishTimeInDay) ===
                             "nocturno"
-                              ? t("ui.AddStationPage.jornadaNocturno", "Nocturno")
+                              ? t(
+                                  "ui.AddStationPage.jornadaNocturno",
+                                  "Nocturno",
+                                )
                               : t("ui.AddStationPage.jornadaDiurno", "Diurno")}
                           </span>
                         ) : null}
@@ -994,8 +1002,8 @@ export default function AddStationPage() {
                           className="h-3.5 w-3.5"
                           style={{ color: "var(--warn-text)" }}
                         />{" "}
-                        {t("ui.AddStationPage.jornadaDiurno", "Diurno")} ·
-                        07:00 – 19:00
+                        {t("ui.AddStationPage.jornadaDiurno", "Diurno")} · 07:00
+                        – 19:00
                       </span>
                       <span className="inline-flex items-center gap-1.5">
                         <Moon
@@ -1165,25 +1173,27 @@ export default function AddStationPage() {
             </div>
           )}
 
-          {/* Sticky action bar */}
-          <div className="glass sticky bottom-0 mt-4 flex items-center justify-end gap-3 p-3">
-            <Button
-              disabled={saving}
-              variant="outline"
-              onClick={() => navigate(stationsUrl)}
-            >
-              {t("actions.cancel", "Cancelar")}
-            </Button>
-            <Button
-              className="gap-2"
-              disabled={!newName.trim() || !turnoType || saving}
-              variant="brand"
-              onClick={createStation}
-            >
-              {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-              {t("actions.save", "Guardar")}
-            </Button>
-          </div>
+          {/* Sticky action bar (no hay nada que guardar con la sede cerrada) */}
+          {!needsOperationSetup(site) && (
+            <div className="glass sticky bottom-0 mt-4 flex items-center justify-end gap-3 p-3">
+              <Button
+                disabled={saving}
+                variant="outline"
+                onClick={() => navigate(stationsUrl)}
+              >
+                {t("actions.cancel", "Cancelar")}
+              </Button>
+              <Button
+                className="gap-2"
+                disabled={!newName.trim() || !turnoType || saving}
+                variant="brand"
+                onClick={createStation}
+              >
+                {saving && <Loader2 className="h-4 w-4 animate-spin" />}
+                {t("actions.save", "Guardar")}
+              </Button>
+            </div>
+          )}
         </PageContainer>
       </div>
     </PostSiteLayout>
