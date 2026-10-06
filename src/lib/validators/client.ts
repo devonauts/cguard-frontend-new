@@ -224,6 +224,43 @@ export const crearEsquemaCliente = (paisDeLaEmpresa?: string) =>
     .superRefine((data, ctx) => {
       const personType = data.personType || "PN";
       const doc = (data.documentNumber || "").toString().trim();
+
+      /* PERSONA NATURAL: el contacto ES la persona. Su teléfono y su correo
+         personales son obligatorios y son los del cliente (el formulario los
+         copia a email/phoneNumber), así que no se pregunta dos veces. */
+      if (personType === "PN") {
+        if (!(data.legalRepPhone || "").toString().trim()) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["legalRepPhone"],
+            message: i18n.t(
+              "validation.client.phoneRequired",
+              "Teléfono requerido",
+            ),
+          });
+        }
+        const correo = (data.legalRepEmail || "").toString().trim();
+
+        if (!correo) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["legalRepEmail"],
+            message: i18n.t(
+              "validation.client.emailRequired",
+              "Email requerido",
+            ),
+          });
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["legalRepEmail"],
+            message: i18n.t(
+              "clients.contacts.errors.invalidEmail",
+              "Correo inválido",
+            ),
+          });
+        }
+      }
       // El país del cliente manda; mientras no esté escrito, el de la empresa.
       const pais =
         (data.country || "").toString().trim() || paisDeLaEmpresa || "";
