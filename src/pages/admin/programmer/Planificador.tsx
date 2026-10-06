@@ -1233,7 +1233,8 @@ function FilasDePuesto({
           className={QUIEN}
           style={{
             ...fondo,
-            background: "var(--glass-sunken)",
+            background:
+              "color-mix(in oklab, var(--background) 94%, var(--ink) 6%)",
             paddingLeft: SANGRIA[3],
           }}
         >
@@ -1359,7 +1360,8 @@ function FilasDePuesto({
               className={TD}
               style={{
                 borderColor: "var(--hairline)",
-                background: "var(--glass-sunken)",
+                background:
+                  "color-mix(in oklab, var(--background) 94%, var(--ink) 6%)",
               }}
             >
               <div className={CELDA}>
