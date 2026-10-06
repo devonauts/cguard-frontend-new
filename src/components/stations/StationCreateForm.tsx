@@ -198,7 +198,23 @@ export default function StationCreateForm({
     );
   })?.key;
 
-  const [geofenceRadius, setGeofenceRadius] = useState("100");
+  /* EL RADIO EN LA UNIDAD DE LA EMPRESA. En EE. UU. se piensa en pies; el
+     servidor sigue guardando metros. Y el PUNTO EXACTO del puesto: nace en
+     la sede y se arrastra en el mapa (la caseta no siempre está en la puerta). */
+  const usaPies =
+    (localStorage.getItem("tenantCountry") || "").toUpperCase() === "US";
+  const [geofenceRadius, setGeofenceRadius] = useState(usaPies ? "330" : "100");
+  const radioEnMetros = usaPies
+    ? Math.round((Number(geofenceRadius) || 0) * 0.3048)
+    : Math.round(Number(geofenceRadius) || 0);
+  const sedeLat = Number(site?.latitud || site?.latitude);
+  const sedeLng = Number(site?.longitud || site?.longitude);
+  const [punto, setPunto] = useState<{ lat: number; lng: number } | null>(null);
+  const puntoFinal =
+    punto ??
+    (Number.isFinite(sedeLat) && Number.isFinite(sedeLng) && sedeLat !== 0
+      ? { lat: sedeLat, lng: sedeLng }
+      : null);
   const [geofencePolygon, setGeofencePolygon] = useState<PolyPoint[]>([]);
   // Per-station clock-in tolerance windows (minutes). Empty = use tenant default.
   const [clockInEarlyBufferMin, setClockInEarlyBufferMin] = useState("");
@@ -232,8 +248,10 @@ export default function StationCreateForm({
     }
     setSaving(true);
     try {
-      const latitud = site?.latitud || site?.latitude || "";
-      const longitud = site?.longitud || site?.longitude || "";
+      const latitud =
+        puntoFinal?.lat ?? (site?.latitud || site?.latitude || "");
+      const longitud =
+        puntoFinal?.lng ?? (site?.longitud || site?.longitude || "");
       const tipo = tipoDeFranjas(franjas);
       const ordenadas = [...franjas].sort(
         (x, y) => toMin(x.start) - toMin(y.start),
@@ -254,7 +272,7 @@ export default function StationCreateForm({
         numberOfGuardsInStation: String(seats),
         startingTimeInDay: primera.start,
         finishTimeInDay: tipo === "24h" ? primera.start : ultima.end,
-        geofenceRadius: Number(geofenceRadius) || 100,
+        geofenceRadius: radioEnMetros || 100,
         geofencePolygon: geofencePolygon.length >= 3 ? geofencePolygon : null,
         // Empty input → null so the tenant Nómina default applies.
         clockInEarlyBufferMin:
@@ -619,10 +637,15 @@ export default function StationCreateForm({
           {/* Geofence radius */}
           <div>
             <label className="mb-2 block text-sm font-medium">
-              {t(
-                "postSites.stations.form.geofenceRadius",
-                "Radio geovalla (metros)",
-              )}
+              {usaPies
+                ? t(
+                    "ui.StationCreateForm.radioPies",
+                    "Radio de la geocerca (pies)",
+                  )
+                : t(
+                    "ui.StationCreateForm.radioMetros",
+                    "Radio de la geocerca (metros)",
+                  )}
             </label>
             <input
               className={FIELD_CLS_LG}
@@ -633,6 +656,11 @@ export default function StationCreateForm({
               value={geofenceRadius}
               onChange={(e) => setGeofenceRadius(e.target.value)}
             />
+            {usaPies && (
+              <p className="mt-1 text-xs" style={{ color: "var(--ink-faint)" }}>
+                ≈ {radioEnMetros} m
+              </p>
+            )}
             <p className="mt-1 text-xs" style={{ color: "var(--ink-soft)" }}>
               {t(
                 "postSites.stations.form.geofenceHint",
@@ -688,24 +716,34 @@ export default function StationCreateForm({
             </p>
           </div>
 
-          {/* Geofence polygon — now has full page width + height to work with */}
+          {/* Dónde está el puesto y hasta dónde llega su geocerca */}
           <div>
             <label className="mb-2 block text-sm font-medium">
               {t(
-                "ui.AddStationPage.geocercaPoligonalOpcional",
-                "Geocerca poligonal (opcional)",
+                "ui.StationCreateForm.ubicacionYGeocerca",
+                "Ubicación exacta y geocerca",
               )}
             </label>
             <p className="mb-2 text-xs" style={{ color: "var(--ink-soft)" }}>
               {t(
-                "ui.AddStationPage.siDefinesUnPoligono",
-                "Si defines un polígono (3+ puntos), se usa en lugar del radio para validar la marcación.",
+                "ui.StationCreateForm.ubicacionYGeocercaExplica",
+                "Arrastra el pin al punto exacto del puesto. La línea punteada es el radio de arriba: dentro de ella el vigilante puede marcar entrada. Si dibujas un polígono (3+ puntos), manda el polígono.",
               )}
             </p>
             <StationGeofencePolygon
-              centerLat={Number(site?.latitud || site?.latitude) || undefined}
-              centerLng={Number(site?.longitud || site?.longitude) || undefined}
+              showLocation
+              centerLat={puntoFinal?.lat}
+              centerLng={puntoFinal?.lng}
+              radiusMeters={geofencePolygon.length >= 3 ? 0 : radioEnMetros}
+              siteLocation={
+                Number.isFinite(sedeLat) &&
+                Number.isFinite(sedeLng) &&
+                sedeLat !== 0
+                  ? { lat: sedeLat, lng: sedeLng }
+                  : null
+              }
               value={geofencePolygon}
+              onCenterChange={(lat, lng) => setPunto({ lat, lng })}
               onChange={setGeofencePolygon}
             />
           </div>

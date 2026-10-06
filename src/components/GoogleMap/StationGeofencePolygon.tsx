@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { loadGoogleMaps } from "@/utils/loadGoogleMaps";
-import { getTenantLocation,
-  CENTRO_DE_RESPALDO,
-} from "@/utils/tenantLocation";
+import { getTenantLocation, CENTRO_DE_RESPALDO } from "@/utils/tenantLocation";
 import { useMapPalette } from "@/utils/mapTheme";
 import {
   useMapPopup,
@@ -69,6 +67,7 @@ export default function StationGeofencePolygon({
   showLocation = false,
   onCenterChange,
   siteLocation,
+  radiusMeters,
 }: {
   value: PolyPoint[];
   onChange: (pts: PolyPoint[]) => void;
@@ -79,6 +78,9 @@ export default function StationGeofencePolygon({
   showLocation?: boolean;
   onCenterChange?: (lat: number, lng: number) => void;
   siteLocation?: { lat: number; lng: number } | null;
+  /** Radio de la geocerca: se dibuja como línea punteada alrededor del pin
+   *  (o del centro), para VER el área antes de guardarla. */
+  radiusMeters?: number;
 }) {
   const { t } = useTranslation();
   const pts = value || [];
@@ -92,6 +94,11 @@ export default function StationGeofencePolygon({
   const centerMarkerRef = useRef<any>(null);
   const onCenterChangeRef = useRef(onCenterChange);
   onCenterChangeRef.current = onCenterChange;
+  // El radio punteado: un relleno tenue (Circle) + el borde a rayas (Polyline
+  // con iconos, porque Circle no sabe dibujarse punteado).
+  const circleRef = useRef<any>(null);
+  const dashRef = useRef<any>(null);
+  const pintarRadioRef = useRef<(lat: number, lng: number) => void>(() => {});
   const [ready, setReady] = useState(false);
   const [alto, setAlto] = useState(340);
 
@@ -189,6 +196,10 @@ export default function StationGeofencePolygon({
             }
             popRef.current.close();
           });
+          centerMarkerRef.current.addListener("drag", (e: any) => {
+            if (e?.latLng)
+              pintarRadioRef.current(e.latLng.lat(), e.latLng.lng());
+          });
           centerMarkerRef.current.addListener("dragend", (e: any) => {
             try {
               centerMarkerRef.current.setAnimation(null);
@@ -196,6 +207,7 @@ export default function StationGeofencePolygon({
               /* sin animación */
             }
             if (!e?.latLng) return;
+            pintarRadioRef.current(e.latLng.lat(), e.latLng.lng());
             onCenterChangeRef.current?.(e.latLng.lat(), e.latLng.lng());
           });
 
@@ -232,6 +244,8 @@ export default function StationGeofencePolygon({
           centerMarkerRef.current.setMap(null);
           centerMarkerRef.current = null;
         }
+        if (circleRef.current) circleRef.current.setMap(null);
+        if (dashRef.current) dashRef.current.setMap(null);
         mapRef.current = null;
       } catch {
         /* ignore */
@@ -239,6 +253,77 @@ export default function StationGeofencePolygon({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // ── El radio punteado ──────────────────────────────────────────────────────
+  // Se redibuja cuando cambia el radio o el centro, y mientras se arrastra el
+  // pin (vía `pintarRadioRef`), para que el área se vea donde va a quedar.
+  const pintarRadio = (lat: number, lng: number) => {
+    const g = (window as any).google;
+    const map = mapRef.current;
+
+    if (!g?.maps || !map) return;
+    const r = Number(radiusMeters) || 0;
+
+    if (circleRef.current) circleRef.current.setMap(null);
+    if (dashRef.current) dashRef.current.setMap(null);
+    circleRef.current = null;
+    dashRef.current = null;
+    if (!(r > 0)) return;
+
+    const puntos: { lat: number; lng: number }[] = [];
+    const kLat = r / 111_320;
+    const kLng =
+      r / (111_320 * Math.max(0.05, Math.cos((lat * Math.PI) / 180)));
+
+    for (let k = 0; k <= 72; k++) {
+      const a = (k * 5 * Math.PI) / 180;
+
+      puntos.push({
+        lat: lat + kLat * Math.cos(a),
+        lng: lng + kLng * Math.sin(a),
+      });
+    }
+    circleRef.current = new g.maps.Circle({
+      map,
+      center: { lat, lng },
+      radius: r,
+      clickable: false,
+      strokeOpacity: 0,
+      fillColor: pal.brand,
+      fillOpacity: 0.07,
+      zIndex: 1,
+    });
+    dashRef.current = new g.maps.Polyline({
+      map,
+      path: puntos,
+      clickable: false,
+      strokeOpacity: 0,
+      zIndex: 2,
+      icons: [
+        {
+          icon: {
+            path: "M 0,-1 0,1",
+            strokeOpacity: 0.95,
+            strokeColor: pal.brand,
+            scale: 2.5,
+          },
+          offset: "0",
+          repeat: "12px",
+        },
+      ],
+    });
+  };
+
+  pintarRadioRef.current = pintarRadio;
+  useEffect(() => {
+    if (!ready) return;
+    const pos = centerMarkerRef.current?.getPosition?.();
+    const lat = pos ? pos.lat() : hasCenter ? (centerLat as number) : NaN;
+    const lng = pos ? pos.lng() : hasCenter ? (centerLng as number) : NaN;
+
+    if (Number.isFinite(lat) && Number.isFinite(lng)) pintarRadio(lat, lng);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, radiusMeters, centerLat, centerLng, pal.brand]);
 
   // ── Recenter + move the center pin when coords change ──────────────────────
   useEffect(() => {
@@ -614,7 +699,8 @@ export default function StationGeofencePolygon({
             disabled={pts.length < 2}
             className="inline-flex min-h-9 items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs disabled:opacity-40"
           >
-            <Maximize2 size={12} /> {t("ui.StationGeofencePolygon.encuadrar", "Encuadrar")}
+            <Maximize2 size={12} />{" "}
+            {t("ui.StationGeofencePolygon.encuadrar", "Encuadrar")}
           </button>
           <button
             type="button"

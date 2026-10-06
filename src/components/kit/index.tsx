@@ -211,14 +211,16 @@ export function PageContainer({
 }: {
   children: React.ReactNode;
   className?: string;
-  width?: "default" | "wide" | "narrow";
+  width?: "default" | "wide" | "narrow" | "full";
 }) {
   const w =
-    width === "wide"
-      ? "max-w-7xl"
-      : width === "narrow"
-        ? "max-w-3xl"
-        : "max-w-5xl";
+    width === "full"
+      ? "max-w-none"
+      : width === "wide"
+        ? "max-w-7xl"
+        : width === "narrow"
+          ? "max-w-3xl"
+          : "max-w-5xl";
 
   return (
     /* EL MARGEN LATERAL VIVE AQUÍ, y sólo aquí. Antes lo ponía cada página por
@@ -228,7 +230,11 @@ export function PageContainer({
        Como `cn` es tailwind-merge, una página que aún pase el suyo lo sigue
        ganando; pero ya no hace falta que lo pase. */
     <div
-      className={cn("mx-auto w-full space-y-6 px-4 pb-16 sm:px-6", w, className)}
+      className={cn(
+        "mx-auto w-full space-y-6 px-4 pb-16 sm:px-6",
+        w,
+        className,
+      )}
     >
       {children}
     </div>

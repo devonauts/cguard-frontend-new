@@ -222,6 +222,14 @@ function lunesDe(dia: string): string {
   return sumaDias(dia, -dow);
 }
 
+/* LA VENTANA DE LA HOJA: diez días hacia atrás y seis semanas hacia delante
+   (un mes y pico) desde el lunes de la semana activa. Es lo que hace la
+   mayoría de tableros de dotación: una semana de foco, el mes a la vista y
+   un poco de margen a los lados para ver de dónde viene y a dónde va cada
+   rotación. El motor trabaja sobre esta misma ventana. */
+const ANTES = 10;
+const DESPUES = 42;
+
 export default function Planificador() {
   const { t } = useTranslation();
   const tenantId = localStorage.getItem("tenantId") || "";
@@ -265,6 +273,23 @@ export default function Planificador() {
   const [pensando, setPensando] = useState(false);
   const pila = useRef<string[]>([]);
   const d0 = semana * 7;
+  /* LA REJILLA ES UNA HOJA QUE SE DESPLAZA: se pintan tres semanas seguidas
+     (la anterior, la de la vista y la siguiente) y se mueve a izquierda y
+     derecha, con hoy marcado. Los botones de semana cambian la ventana del
+     motor y desplazan la hoja hasta su lunes. */
+  const diasVista = useMemo(
+    () => Array.from({ length: ANTES + DESPUES }, (_, i) => d0 - ANTES + i),
+    [d0],
+  );
+  const rejillaRef = useRef<HTMLDivElement | null>(null);
+  const ANCHO_DIA = 104;
+
+  useEffect(() => {
+    const el = rejillaRef.current;
+
+    if (!el) return;
+    el.scrollTo({ left: ANTES * ANCHO_DIA, behavior: "smooth" });
+  }, [semana, cargando]);
 
   const cargar = useCallback(async () => {
     if (!tenantId) return;
@@ -272,7 +297,7 @@ export default function Planificador() {
     try {
       const [ov, rot]: any[] = await Promise.all([
         ApiService.get(
-          `/tenant/${tenantId}/scheduler/overview?startDate=${base}&endDate=${sumaDias(base, 27)}`,
+          `/tenant/${tenantId}/scheduler/overview?startDate=${sumaDias(base, -ANTES)}&endDate=${sumaDias(base, 59)}`,
         ),
         ApiService.get(`/tenant/${tenantId}/rotation-styles`),
       ]);
@@ -281,9 +306,10 @@ export default function Planificador() {
         rot?.rows || rot?.data?.rows || [],
         base,
         zonaDeLaEmpresa(),
+        60,
       );
 
-      limpiar(r.plan, -7, 14);
+      limpiar(r.plan, -ANTES, DESPUES);
       pila.current = [];
       setLeido({ ...r, plan: copiar(r.plan) });
       setPlan(r.plan);
@@ -314,7 +340,7 @@ export default function Planificador() {
       const p = copiar(actual);
 
       fn(p);
-      limpiar(p, d0 - 7, d0 + 14);
+      limpiar(p, d0 - ANTES, d0 + DESPUES);
       setPlan(p);
       setCambios((n) => n + 1);
     },
@@ -335,12 +361,17 @@ export default function Planificador() {
     if (!actual) return;
     const p = copiar(actual);
 
-    limpiar(p, s * 7 - 7, s * 7 + 14);
+    limpiar(p, s * 7 - ANTES, s * 7 + DESPUES);
     setPlan(p);
   };
 
   const r = useMemo(
     () => (plan ? resumen(plan, d0, d0 + 7) : null),
+    [plan, d0],
+  );
+  // Lo mismo para las tres semanas a la vista: los rótulos de cada columna.
+  const rv = useMemo(
+    () => (plan ? resumen(plan, d0 - ANTES, d0 + DESPUES) : null),
     [plan, d0],
   );
   // Qué habría que publicar AHORA. No es el contador de toques: lo que los
@@ -352,7 +383,7 @@ export default function Planificador() {
             tenantId,
             base,
             hoy: hoyIdx,
-            dias: 28,
+            dias: DESPUES,
             fechaDe: (d) => sumaDias(base, d),
             instanteDe: (d, min) =>
               instanteEnLaEmpresa(
@@ -366,8 +397,8 @@ export default function Planificador() {
   );
   const fechas = useMemo(
     () =>
-      Array.from({ length: 7 }, (_, i) => {
-        const dia = sumaDias(base, d0 + i);
+      Array.from({ length: ANTES + DESPUES }, (_, i) => {
+        const dia = sumaDias(base, d0 - ANTES + i);
         const [y, m, d] = dia.split("-").map(Number);
         const f = new Date(Date.UTC(y, m - 1, d));
 
@@ -470,7 +501,7 @@ export default function Planificador() {
 
   return (
     <AppLayout>
-      <PageContainer>
+      <PageContainer width="full">
         <PageHeader
           actions={
             <>
@@ -561,8 +592,8 @@ export default function Planificador() {
                   <ChevronLeft size={16} />
                 </Button>
                 <span className="min-w-[9.5rem] text-center text-sm tabular-nums">
-                  {fechas[0].num} {fechas[0].mes} – {fechas[6].num}{" "}
-                  {fechas[6].mes}
+                  {fechas[ANTES].num} {fechas[ANTES].mes} –{" "}
+                  {fechas[ANTES + 6].num} {fechas[ANTES + 6].mes}
                 </span>
                 <Button
                   aria-label={t(
@@ -675,8 +706,30 @@ export default function Planificador() {
               </span>
             </div>
 
-            <div className="glass overflow-x-auto">
-              <table className="w-full min-w-[900px] border-separate border-spacing-0 text-sm tabular-nums">
+            <div ref={rejillaRef} className="glass overflow-x-auto">
+              <table
+                className="border-separate border-spacing-0 text-sm tabular-nums"
+                style={{
+                  minWidth: `calc(13rem + ${(ANTES + DESPUES) * ANCHO_DIA}px)`,
+                }}
+              >
+                <colgroup>
+                  <col style={{ width: "13rem" }} />
+                  {diasVista.map((d) => (
+                    <col
+                      key={d}
+                      style={{
+                        width: ANCHO_DIA,
+                        background:
+                          d === hoyIdx
+                            ? "color-mix(in oklab, var(--brand) 10%, transparent)"
+                            : d < d0 || d >= d0 + 7
+                              ? "color-mix(in oklab, var(--ink) 4%, transparent)"
+                              : undefined,
+                      }}
+                    />
+                  ))}
+                </colgroup>
                 <thead>
                   <tr>
                     <th
@@ -702,26 +755,46 @@ export default function Planificador() {
                         }}
                         title={f.largo}
                       >
+                        <span
+                          className="block text-[10px] font-bold uppercase tracking-wide"
+                          style={{
+                            color: "var(--brand-text)",
+                            minHeight: "0.9rem",
+                          }}
+                        >
+                          {i === 0 || f.num === 1 ? f.mes : ""}
+                        </span>
                         <span className="capitalize">{f.nombre}</span>
                         <span
                           className="block text-base"
                           style={{
                             color:
-                              d0 + i === hoyIdx
+                              diasVista[i] === hoyIdx
                                 ? "var(--brand-text)"
                                 : "var(--ink)",
                           }}
                         >
                           {f.num}
+                          {diasVista[i] === hoyIdx && (
+                            <span
+                              className="ml-1 rounded-full px-1.5 align-middle text-[9px] font-bold uppercase"
+                              style={{
+                                background: "var(--brand)",
+                                color: "var(--brand-ink)",
+                              }}
+                            >
+                              {t("ui.Planificador.hoy", "hoy")}
+                            </span>
+                          )}
                         </span>
                         <span
                           className="mt-0.5 inline-block rounded-full px-1.5 text-[10px] font-bold"
-                          style={r.porDia[i] ? ROJO : VERDE}
+                          style={rv && rv.porDia[i] ? ROJO : VERDE}
                         >
-                          {r.porDia[i]
+                          {rv && rv.porDia[i]
                             ? t("ui.Planificador.nSinCubrir", {
                                 defaultValue: "{{n}} sin cubrir",
-                                n: r.porDia[i],
+                                n: rv.porDia[i],
                               })
                             : t("ui.Planificador.completo", "completo")}
                         </span>
@@ -734,6 +807,7 @@ export default function Planificador() {
                     <FilasDePuesto
                       key={pu.id}
                       d0={d0}
+                      dias={diasVista}
                       plan={plan}
                       pu={pu}
                       cambiar={cambiar}
@@ -742,64 +816,70 @@ export default function Planificador() {
                   ))}
                   <tr>
                     <td
-                      className="sticky left-0 px-3 py-2 text-xs font-bold"
-                      colSpan={8}
+                      className="p-0 text-xs font-bold"
+                      colSpan={diasVista.length + 1}
                       style={{ background: "var(--glass-sunken)" }}
                     >
-                      {t("ui.Planificador.sacafrancos", "Sacafrancos")}{" "}
-                      <span
-                        className="font-normal"
-                        style={{ color: "var(--ink-soft)" }}
-                      >
-                        ·{" "}
-                        {t(
-                          "ui.Planificador.cubrenSusPuestos",
-                          "cubren lo que falta en sus puestos fijos",
-                        )}
-                      </span>
-                      <button
-                        className="cg-btn-glass cg-focus ml-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
-                        title={t(
-                          "ui.Planificador.probarOtroTitulo",
-                          "Prueba cómo quedaría con un sacafranco más",
-                        )}
-                        onClick={() =>
-                          cambiar((x) => {
-                            const n =
-                              x.personas.filter((y) =>
-                                y.id.startsWith("nuevo-"),
-                              ).length + 1;
+                      <div className="sticky left-0 w-max max-w-[min(60rem,calc(100vw-22rem))] px-3 py-2">
+                        {t("ui.Planificador.sacafrancos", "Sacafrancos")}{" "}
+                        <span
+                          className="font-normal"
+                          style={{ color: "var(--ink-soft)" }}
+                        >
+                          ·{" "}
+                          {t(
+                            "ui.Planificador.cubrenSusPuestos",
+                            "cubren lo que falta en sus puestos fijos",
+                          )}
+                        </span>
+                        <button
+                          className="cg-btn-glass cg-focus ml-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                          title={t(
+                            "ui.Planificador.probarOtroTitulo",
+                            "Prueba cómo quedaría con un sacafranco más",
+                          )}
+                          onClick={() =>
+                            cambiar((x) => {
+                              const n =
+                                x.personas.filter((y) =>
+                                  y.id.startsWith("nuevo-"),
+                                ).length + 1;
 
-                            x.personas.push({
-                              id: `nuevo-${Date.now()}`,
-                              nombre: `${t("ui.Planificador.sacafrancoNuevo", "Sacafranco nuevo")} ${n}`,
-                              puesto: null,
-                              patron: [
-                                LIBRE,
-                                LIBRE,
-                                LIBRE,
-                                LIBRE,
-                                LIBRE,
-                                LIBRE,
-                                FRANCO,
-                              ],
-                              desfase: 0,
-                              manual: {},
-                              fijos: [],
-                              ausencias: [],
-                            });
-                          })
-                        }
-                      >
-                        <UserPlus size={12} />{" "}
-                        {t("ui.Planificador.probarOtro", "Probar con uno más")}
-                      </button>
+                              x.personas.push({
+                                id: `nuevo-${Date.now()}`,
+                                nombre: `${t("ui.Planificador.sacafrancoNuevo", "Sacafranco nuevo")} ${n}`,
+                                puesto: null,
+                                patron: [
+                                  LIBRE,
+                                  LIBRE,
+                                  LIBRE,
+                                  LIBRE,
+                                  LIBRE,
+                                  LIBRE,
+                                  FRANCO,
+                                ],
+                                desfase: 0,
+                                manual: {},
+                                fijos: [],
+                                ausencias: [],
+                              });
+                            })
+                          }
+                        >
+                          <UserPlus size={12} />{" "}
+                          {t(
+                            "ui.Planificador.probarOtro",
+                            "Probar con uno más",
+                          )}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                   {sacas.map((s) => (
                     <FilaDeSacafranco
                       key={s.id}
                       d0={d0}
+                      dias={diasVista}
                       plan={plan}
                       s={s}
                       cambiar={cambiar}
@@ -894,12 +974,14 @@ function FilasDePuesto({
   plan,
   pu,
   d0,
+  dias,
   cambiar,
   setHoja,
 }: {
   plan: Plan;
   pu: Puesto;
   d0: number;
+  dias: number[];
   cambiar: Cambiar;
   setHoja: (h: Hoja) => void;
 }) {
@@ -920,37 +1002,44 @@ function FilasDePuesto({
     <>
       <tr>
         <td
-          className="sticky left-0 px-3 py-2 text-xs font-bold"
-          colSpan={8}
+          className="p-0 text-xs font-bold"
+          colSpan={dias.length + 1}
           style={{ background: "var(--glass-sunken)" }}
         >
-          {pu.nombre}
-          {pu.detalle && (
-            <span className="font-normal" style={{ color: "var(--ink-soft)" }}>
-              {" "}
-              · {pu.detalle}
+          <div className="sticky left-0 w-max max-w-[min(60rem,calc(100vw-22rem))] px-3 py-2">
+            {pu.nombre}
+            {pu.detalle && (
+              <span
+                className="font-normal"
+                style={{ color: "var(--ink-soft)" }}
+              >
+                {" "}
+                · {pu.detalle}
+              </span>
+            )}{" "}
+            <button
+              className="cg-btn-glass cg-focus ml-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
+              title={t(
+                "ui.Planificador.cambiarCobertura",
+                "Cambiar lo que pide el puesto",
+              )}
+              onClick={() => setHoja({ tipo: "cobertura", puesto: pu.id })}
+            >
+              {cob
+                ? cob.nombre
+                : pu.franjas
+                    .map((f) => plan.franjas[f]?.nombre || f)
+                    .join(" + ")}
+            </button>
+            <span
+              className="ml-2 font-normal"
+              style={{ color: "var(--ink-soft)" }}
+            >
+              {fijos.length
+                ? `↔ ${fijos.map((s) => corto(s.nombre)).join(", ")}`
+                : t("ui.Planificador.sinSacafranco", "sin sacafranco")}
             </span>
-          )}{" "}
-          <button
-            className="cg-btn-glass cg-focus ml-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
-            title={t(
-              "ui.Planificador.cambiarCobertura",
-              "Cambiar lo que pide el puesto",
-            )}
-            onClick={() => setHoja({ tipo: "cobertura", puesto: pu.id })}
-          >
-            {cob
-              ? cob.nombre
-              : pu.franjas.map((f) => plan.franjas[f]?.nombre || f).join(" + ")}
-          </button>
-          <span
-            className="ml-2 font-normal"
-            style={{ color: "var(--ink-soft)" }}
-          >
-            {fijos.length
-              ? `↔ ${fijos.map((s) => corto(s.nombre)).join(", ")}`
-              : t("ui.Planificador.sinSacafranco", "sin sacafranco")}
-          </span>
+          </div>
         </td>
       </tr>
       <tr>
@@ -962,8 +1051,8 @@ function FilasDePuesto({
             {t("ui.Planificador.cobertura", "Cobertura")}
           </span>
         </td>
-        {Array.from({ length: 7 }, (_, i) => {
-          const d = d0 + i;
+        {Array.from({ length: dias.length }, (_, i) => {
+          const d = dias[i];
           const celdas: React.ReactNode[] = [];
 
           for (const f of pu.franjas) {
@@ -1105,8 +1194,8 @@ function FilasDePuesto({
               </button>
             </span>
           </td>
-          {Array.from({ length: 7 }, (_, i) => {
-            const d = d0 + i;
+          {Array.from({ length: dias.length }, (_, i) => {
+            const d = dias[i];
             const aus = (p.ausencias || []).find(
               (a) => d >= a.desde && d <= a.hasta,
             );
@@ -1173,14 +1262,16 @@ function FilasDePuesto({
       {!gente.length && (
         <tr>
           <td
-            className="border-b px-3 py-1.5 text-xs italic"
-            colSpan={8}
+            className="border-b p-0 text-xs italic"
+            colSpan={dias.length + 1}
             style={{ borderColor: "var(--hairline)", color: "var(--ink-soft)" }}
           >
-            {t(
-              "ui.Planificador.nadieAsignado",
-              "Nadie asignado a este puesto.",
-            )}
+            <div className="sticky left-0 w-max px-3 py-1.5">
+              {t(
+                "ui.Planificador.nadieAsignado",
+                "Nadie asignado a este puesto.",
+              )}
+            </div>
           </td>
         </tr>
       )}
@@ -1206,17 +1297,19 @@ function FilaDeSacafranco({
   plan,
   s,
   d0,
+  dias,
   cambiar,
   setHoja,
 }: {
   plan: Plan;
   s: Persona;
   d0: number;
+  dias: number[];
   cambiar: Cambiar;
   setHoja: (h: Hoja) => void;
 }) {
   const { t } = useTranslation();
-  const dias = diasTrabajados(plan, s, d0, d0 + 7);
+  const trabajados = diasTrabajados(plan, s, d0, d0 + 7);
   const horas = horasSemana(plan, s, d0);
   let max = 0;
 
@@ -1278,10 +1371,10 @@ function FilaDeSacafranco({
           )}
           {t("ui.Planificador.diasYHoras", {
             defaultValue: "{{d}} días · {{h}} h",
-            d: dias,
+            d: trabajados,
             h: horas,
           })}
-          {dias < 4 && (
+          {trabajados < 4 && (
             <span className="rounded-full px-1.5 font-semibold" style={AMBAR}>
               {t("ui.Planificador.leSobranDias", "le sobran días")}
             </span>
@@ -1293,8 +1386,8 @@ function FilaDeSacafranco({
           )}
         </span>
       </td>
-      {Array.from({ length: 7 }, (_, i) => {
-        const d = d0 + i;
+      {Array.from({ length: dias.length }, (_, i) => {
+        const d = dias[i];
         const aus = (s.ausencias || []).find(
           (a) => d >= a.desde && d <= a.hasta,
         );
