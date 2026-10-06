@@ -24,6 +24,11 @@ const TIMEOUT_MS = 1500;
 
 export interface DeviceSignals {
   deviceId?: string;
+  /**
+   * La identificación de Prynt de ESTA petición. El servidor la verifica con su
+   * llave secreta y saca de ahí el dispositivo: lo que diga la página no cuenta.
+   */
+  pryntRequestId?: string;
   clientTimezone?: string;
   clientLocale?: string;
 }
@@ -85,6 +90,36 @@ async function resolveDeviceId(): Promise<string | null> {
 }
 
 /**
+ * PRYNT (pryntid.com, producto de la casa): una identificación por cada alta o
+ * ingreso. Se pide la llave pública al servidor una vez y el agente se carga
+ * sólo en estas pantallas (va en su propio trozo del build). Igual que la
+ * huella de arriba: si tarda o falla, el ingreso sigue sin ella.
+ */
+let configPrynt: Promise<{ publicKey: string | null; endpoint: string } | null> | null = null;
+
+async function pryntRequestId(): Promise<string | null> {
+  try {
+    if (!configPrynt) {
+      const { resolveApiBase } = await import("@/lib/apiBase");
+      const base = String(resolveApiBase() || "/api").replace(/\/+$/, "");
+      configPrynt = fetch(`${base}/public/prynt`)
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null);
+    }
+    const cfg = await configPrynt;
+
+    if (!cfg || !cfg.publicKey) return null;
+    const { default: Prynt } = await import("@/vendor/prynt.mjs");
+    const agente = await Prynt.load({ apiKey: cfg.publicKey, endpoint: cfg.endpoint, timeout: TIMEOUT_MS });
+    const r = await agente.identify({ tag: { app: "crm" } });
+
+    return r?.requestId || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Device signals to merge into an auth payload. Resolves within TIMEOUT_MS no
  * matter what — on timeout you still get the timezone/locale, just no id.
  */
@@ -92,14 +127,16 @@ export async function deviceSignals(): Promise<DeviceSignals> {
   const base = localeSignals();
 
   try {
-    const deviceId = await Promise.race<string | null>([
-      resolveDeviceId(),
-      new Promise<null>((resolve) =>
-        setTimeout(() => resolve(null), TIMEOUT_MS),
-      ),
-    ]);
+    const plazo = <T,>(p: Promise<T | null>) =>
+      Promise.race<T | null>([p, new Promise<null>((resolve) => setTimeout(() => resolve(null), TIMEOUT_MS))]);
+    // Las dos a la vez: el ingreso espera, como mucho, lo mismo que antes.
+    const [deviceId, prynt] = await Promise.all([plazo(resolveDeviceId()), plazo(pryntRequestId())]);
 
-    return deviceId ? { ...base, deviceId } : base;
+    return {
+      ...base,
+      ...(deviceId ? { deviceId } : {}),
+      ...(prynt ? { pryntRequestId: prynt } : {}),
+    };
   } catch {
     return base;
   }
