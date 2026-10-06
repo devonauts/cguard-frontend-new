@@ -70,6 +70,12 @@ export interface Persona {
   fijos?: string[];
   ausencias?: Ausencia[];
   aptitudes?: string[];
+  /**
+   * Si el franco cae en domingo, el lunes también descansa (el rol peruano).
+   * El ciclo se corre un día cada vez que pasa: por eso «el libre se va
+   * moviendo» y la vuelta completa no es el largo de la rotación.
+   */
+  francoDobleDomingo?: boolean;
 }
 
 export interface Reglas {
@@ -222,16 +228,79 @@ export function ausencia(p: Persona, d: number): Ausencia | null {
   return null;
 }
 
-/** Lo que dice su rotación ese día (o el cambio suelto que la pisa). */
-export function propio(p: Persona, d: number): Codigo {
-  const m = p.manual[d];
-
-  if (m) return m;
+const ciclico = (p: Persona, d: number): Codigo => {
   const n = p.patron.length;
 
   if (!n) return FRANCO;
 
   return p.patron[(((d + p.desfase) % n) + n) % n];
+};
+
+/**
+ * Con franco doble en domingo la rotación deja de ser una cuenta cerrada: hay
+ * que CAMINAR los días acumulando cada domingo de franco. Se camina una vez
+ * por persona (dos años atrás, cuatro adelante) y se guarda; si cambia su
+ * rotación o su arranque, se vuelve a caminar.
+ */
+const TIRAS = new WeakMap<Persona, { firma: string; ancla: number; estados: Codigo[] }>();
+const TIRA_HASTA = 1460;
+
+function conDomingo(p: Persona, d: number): Codigo {
+  const n = p.patron.length;
+
+  if (!n) return FRANCO;
+  // El ancla es el día 0 de la rotación (su fecha de inicio): antes de él no
+  // hay domingos que contar, igual que en el horario real. Si queda muy atrás
+  // se toma el día 0 equivalente más cercano a dos años atrás.
+  let ancla = -p.desfase;
+
+  if (ancla < -730) ancla += Math.ceil((-730 - ancla) / n) * n;
+  if (d < ancla || d >= TIRA_HASTA) return ciclico(p, d);
+  const firma = `${p.patron.join(",")}|${p.desfase}`;
+  let t = TIRAS.get(p);
+
+  if (!t || t.firma !== firma) {
+    const estados: Codigo[] = new Array(TIRA_HASTA - ancla);
+    let corrimiento = 0;
+
+    for (let i = ancla; i < TIRA_HASTA; i++) {
+      const c = p.patron[(((i - corrimiento + p.desfase) % n) + n) % n];
+
+      // Un franco en domingo se estira: el lunes repite el mismo día del ciclo.
+      if (c === FRANCO && diaDeSemana(i) === 6) corrimiento++;
+      estados[i - ancla] = c;
+    }
+    t = { firma, ancla, estados };
+    TIRAS.set(p, t);
+  }
+
+  return t.estados[d - ancla];
+}
+
+/** Lo que dice su rotación ese día (o el cambio suelto que la pisa). */
+export function propio(p: Persona, d: number): Codigo {
+  const m = p.manual[d];
+
+  if (m) return m;
+
+  return p.francoDobleDomingo ? conDomingo(p, d) : ciclico(p, d);
+}
+
+/**
+ * El primer día desde `desde` en que la rotación está en su día 0 (empieza el
+ * primer bloque). Es la fecha de inicio que entiende el horario real.
+ */
+export function proximoArranque(p: Persona, desde: number): number {
+  const n = p.patron.length;
+
+  if (n < 2) return desde;
+  for (let d = desde; d < desde + n * 3 + 7; d++) {
+    if (p.francoDobleDomingo) {
+      if (propio(p, d) === p.patron[0] && propio(p, d - 1) === p.patron[n - 1] && p.patron[n - 1] !== p.patron[0]) return d;
+    } else if ((((d + p.desfase) % n) + n) % n === 0) return d;
+  }
+
+  return desde;
 }
 
 /** El turno que hace esa persona ese día, propio o cubriendo; `null` si no trabaja. */
@@ -556,6 +625,7 @@ export function sanear(plan: Plan): void {
       })
       .filter((a) => Number.isFinite(a.desde) && Number.isFinite(a.hasta));
     p.aptitudes = Array.isArray(p.aptitudes) ? p.aptitudes.filter((x) => typeof x === "string" && x) : undefined;
+    p.francoDobleDomingo = p.francoDobleDomingo ? true : undefined;
   }
   const personas = new Set(plan.personas.map((p) => p.id));
   const claveBuena = (k: string) => {

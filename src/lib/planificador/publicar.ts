@@ -20,6 +20,7 @@ import {
   FRANCO,
   duracion,
   propio,
+  proximoArranque,
   esSacafranco,
   type Persona,
   type Plan,
@@ -63,11 +64,35 @@ export interface Contexto {
 
 const CODIGO_NOVEDAD: Record<string, string> = { vacaciones: "V", permiso: "PM", incapacidad: "PM" };
 
-/** [a×x, b×y, F×z] con a el primer trabajo: lo único que el motor real sabe generar. */
-export function formaDeCiclo(patron: string[]): { a: string; b: string | null; x: number; y: number; z: number; giro: number } | null {
+/**
+ * Lo que el motor real sabe generar: [a×x, b×y, F×z] (tantos de día, tantos de
+ * noche, tantos de franco), o el que ALTERNA: [a×x, F×z, b×x, F×z] — el mismo
+ * bloque de día y de noche, con su franco en medio, como el 7-1 peruano.
+ */
+export function formaDeCiclo(patron: string[]): { a: string; b: string | null; x: number; y: number; z: number; giro: number; alterna?: boolean } | null {
   const n = patron.length;
 
   if (!n || patron.every((c) => c === FRANCO)) return null;
+  // ¿Alterna? Dos mitades iguales salvo el código de trabajo.
+  if (n % 2 === 0) {
+    for (let giro = 0; giro < n; giro++) {
+      const p = patron.map((_, i) => patron[(i + giro) % n]);
+      const m = n / 2;
+      const a = p[0];
+      const b = p[m];
+
+      if (a === FRANCO || b === FRANCO || a === b) continue;
+      let x = 0;
+
+      while (x < m && p[x] === a) x++;
+      const z = m - x;
+
+      if (z < 1) continue;
+      const vale = p.slice(x, m).every((c) => c === FRANCO) && p.slice(m, m + x).every((c) => c === b) && p.slice(m + x).every((c) => c === FRANCO);
+
+      if (vale) return { a, b, x, y: 0, z, giro, alterna: true };
+    }
+  }
   for (let giro = 0; giro < n; giro++) {
     const p = patron.map((_, i) => patron[(i + giro) % n]);
 
@@ -157,9 +182,12 @@ export function planificarPublicacion(original: Plan, plan: Plan, enlace: Enlace
     const pu = plan.puestos.find((x) => x.id === p.puesto);
 
     // 2a) Rotación.
-    if (antes.patron.join() !== p.patron.join() || antes.desfase !== p.desfase) {
+    if (antes.patron.join() !== p.patron.join() || antes.desfase !== p.desfase || !!antes.francoDobleDomingo !== !!p.francoDobleDomingo) {
       if (esSacafranco(p)) no.push(`${nombreDe(p)}: la disponibilidad del sacafranco no se guarda en el horario real; sus coberturas sí.`);
       else if (!pu) no.push(`${nombreDe(p)}: su puesto ya no existe en el borrador.`);
+      // Sin plaza el generador real no rota: le escribiría un ciclo que nunca
+      // usa y lo dejaría con un turno suelto (pasó en local). Mejor decirlo.
+      else if (en.conPlaza === false) no.push(`${nombreDe(p)}: está en el puesto sin plaza (horario fijo de ${pu.nombre}). Para darle una rotación hay que asignarlo a una plaza desde Horario.`);
       else {
         const f = formaDeCiclo(p.patron);
         const franjas = pu.franjas;
@@ -168,19 +196,20 @@ export function planificarPublicacion(original: Plan, plan: Plan, enlace: Enlace
         if (!f) no.push(`${nombreDe(p)}: su rotación no es «tantos de día, tantos de noche, tantos de franco», y el horario real sólo genera ésas. Se queda en el borrador.`);
         else {
           // El motor real cuenta «día» como la primera franja del puesto y «noche» como la segunda.
-          const dia = esDia(f.a) ? f.x : f.b && esDia(f.b) ? f.y : 0;
-          const noche = esDia(f.a) ? f.y : f.x;
-          // Si empieza por noches, se gira para que el día 0 del ciclo sea el primer día de día.
-          const giro = esDia(f.a) || !f.b ? f.giro : (f.giro + f.x) % p.patron.length;
+          // En el que alterna, los dos bloques son el mismo número: van como «día» y la alternancia los invierte.
+          const dia = f.alterna ? f.x : esDia(f.a) ? f.x : f.b && esDia(f.b) ? f.y : 0;
+          const noche = f.alterna ? 0 : esDia(f.a) ? f.y : f.x;
+          // El día 0 del ciclo es el primer día del bloque de DÍA: si el patrón
+          // empieza por noches se gira media vuelta (o el bloque de noche).
           const n = p.patron.length;
-          let inicio = d0;
-
-          while ((((inicio + p.desfase + giro) % n) + n) % n !== 0) inicio++;
-          const nombre = `${dia}-${noche ? `${noche}-` : ""}${f.z}`;
+          const giro = f.alterna ? (esDia(f.a) ? f.giro : (f.giro + n / 2) % n) : esDia(f.a) || !f.b ? f.giro : (f.giro + f.x) % n;
+          const girada = { ...p, patron: p.patron.map((_, i) => p.patron[(i + giro) % n]), desfase: p.desfase - giro, manual: {} };
+          const inicio = proximoArranque(girada, d0);
+          const nombre = `${dia}-${noche ? `${noche}-` : ""}${f.z}${f.alterna ? " · D/N" : ""}${p.francoDobleDomingo ? " · dom" : ""}`;
 
           cambios.push(
             llamada("rotacion", `${nombreDe(p)}: rotación ${nombre} desde el ${ctx.fechaDe(inicio)}`, [
-              { metodo: "post", ruta: `${t}/rotation-style`, cuerpo: { data: { name: nombre, dayShifts: dia, nightShifts: noche, restDays: f.z, reuseIfExists: true } } },
+              { metodo: "post", ruta: `${t}/rotation-style`, cuerpo: { data: { name: nombre, dayShifts: dia, nightShifts: noche, restDays: f.z, alternatesDayNight: !!f.alterna, sundayDoubleRest: !!p.francoDobleDomingo, reuseIfExists: true } } },
               { metodo: "put", ruta: `${t}/guard-assignment/${en.assignmentId}`, cuerpo: { data: { rotationStyleId: "$ROTACION", startDate: ctx.fechaDe(inicio) } } },
             ]),
           );

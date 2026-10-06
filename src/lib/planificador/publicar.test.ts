@@ -119,6 +119,18 @@ describe("Publicar · del borrador a llamadas", () => {
     expect(hechas[1][2].data).toMatchObject({ rotationStyleId: "rot-nuevo", startDate: "2026-10-11" });
   });
 
+  it("a quien está sin plaza (ad hoc) no se le publica una rotación: el generador no la usaría", () => {
+    const { plan, enlace } = base();
+    const b = copiar(plan);
+
+    enlace.personas.a1.conPlaza = false;
+    b.personas[0].patron = ["D", "D", "N", "N", F, F];
+    const pub = planificarPublicacion(plan, b, enlace, ctx);
+
+    expect(pub.cambios.filter((c) => c.tipo === "rotacion")).toEqual([]);
+    expect(pub.noPublicables.join("\n")).toMatch(/sin plaza/);
+  });
+
   it("lo que el horario real no sabe hacer se dice, no se escribe", () => {
     const { plan, enlace } = base();
     const b = copiar(plan);

@@ -626,7 +626,7 @@ function etiquetaDe(plan: Plan, p: Persona): string {
 
   for (const id of Object.keys(plan.franjas)) nombres[id] = letra(plan.franjas[id]);
 
-  return etiqueta(p.patron, nombres) || "Sin rotación";
+  return (etiqueta(p.patron, nombres) || "Sin rotación") + (p.francoDobleDomingo ? " · dom" : "");
 }
 
 function FilaDeSacafranco({ plan, s, d0, cambiar, setHoja }: { plan: Plan; s: Persona; d0: number; cambiar: Cambiar; setHoja: (h: Hoja) => void }) {
@@ -837,6 +837,7 @@ function HojaRotacion({ plan, personaId, cambiar, cerrar }: { plan: Plan; person
   const { t } = useTranslation();
   const p = plan.personas.find((x) => x.id === personaId);
   const [pat, setPat] = useState<string[]>(() => (p ? [...p.patron] : []));
+  const [dobleDomingo, setDobleDomingo] = useState(!!p?.francoDobleDomingo);
 
   if (!p) return null;
   const saca = esSacafranco(p);
@@ -854,6 +855,8 @@ function HojaRotacion({ plan, personaId, cambiar, cerrar }: { plan: Plan; person
       ? [
           { n: t("ui.Planificador.rot222", "2-2-2 rotativo"), p: [a, a, b, b, FRANCO, FRANCO] },
           { n: t("ui.Planificador.rot442", "4-4-2 rotativo"), p: [...rep(a, 4), ...rep(b, 4), FRANCO, FRANCO] },
+          { n: t("ui.Planificador.rot71dn", "7-1 que alterna día y noche (rol peruano)"), p: [...rep(a, 7), FRANCO, ...rep(b, 7), FRANCO] },
+          { n: t("ui.Planificador.rot771", "7 de día, 7 de noche, 1 de franco"), p: [...rep(a, 7), ...rep(b, 7), FRANCO] },
         ]
       : []),
   ];
@@ -894,11 +897,20 @@ function HojaRotacion({ plan, personaId, cambiar, cerrar }: { plan: Plan; person
           );
         })}
       </div>
+      {!saca && (
+        <label className="flex cursor-pointer items-start gap-2 text-sm">
+          <input checked={dobleDomingo} className="mt-1" type="checkbox" onChange={(e) => setDobleDomingo(e.target.checked)} />
+          <span>
+            <b>{t("ui.Planificador.dobleDomingo", "Si el franco cae en domingo, el lunes también descansa")}</b>
+            <span className="block text-xs" style={{ color: "var(--ink-soft)" }}>{t("ui.Planificador.dobleDomingoDetalle", "La regla del rol peruano: el libre se va corriendo y la vuelta completa de un 7-1 son 49 días.")}</span>
+          </span>
+        </label>
+      )}
       <div className="flex flex-wrap gap-2">
         <Button disabled={pat.length < 2} size="sm" variant="outline" onClick={() => setPat((x) => x.slice(0, -1))}>{t("ui.Planificador.quitarDia", "− quitar día")}</Button>
         <Button disabled={pat.length > 27} size="sm" variant="outline" onClick={() => setPat((x) => [...x, FRANCO])}>{t("ui.Planificador.anadirDia", "+ añadir día")}</Button>
         <span className="flex-1" />
-        <Button size="sm" variant="brand" onClick={() => { cambiar((x) => { const q = x.personas.find((y) => y.id === personaId)!; q.patron = [...pat]; q.desfase = 0; q.manual = {}; }); cerrar(); }}>
+        <Button size="sm" variant="brand" onClick={() => { cambiar((x) => { const q = x.personas.find((y) => y.id === personaId)!; q.patron = [...pat]; q.desfase = 0; q.manual = {}; q.francoDobleDomingo = dobleDomingo || undefined; }); cerrar(); }}>
           {t("ui.Planificador.usarRotacion", "Usar esta rotación")}
         </Button>
       </div>

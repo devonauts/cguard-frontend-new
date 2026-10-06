@@ -44,7 +44,7 @@ export interface HorarioReal {
  * volver a escribir en el servidor por los mismos caminos que usa el Horario.
  */
 export interface Enlace {
-  personas: Record<string, { guardId: string; stationId: string; assignmentId: string; relevo: boolean; rotationStyleId: string | null }>;
+  personas: Record<string, { guardId: string; stationId: string; assignmentId: string; relevo: boolean; rotationStyleId: string | null; /** Tiene plaza: el generador real sólo rota a quien la tiene. */ conPlaza?: boolean }>;
   puestos: Record<string, { postSiteId: string | null; scheduleType: string | null }>;
   /** Turnos reales de cada asignación por día: id del turno y estación. */
   turnos: Record<string, Record<number, { id: string; stationId: string }>>;
@@ -358,7 +358,7 @@ export function planDesdeHorarioReal(
 
     const pid = idLimpio(a.id);
 
-    enlace.personas[pid] = { guardId, stationId: pu.id, assignmentId: String(a.id ?? ""), relevo, rotationStyleId: a.rotationStyleId ? String(a.rotationStyleId) : null };
+    enlace.personas[pid] = { guardId, stationId: pu.id, assignmentId: String(a.id ?? ""), relevo, rotationStyleId: a.rotationStyleId ? String(a.rotationStyleId) : null, conPlaza: !!a.positionId && a.kind !== "adhoc" };
     enlace.turnos[pid] = {};
     for (const s of ov.shifts || []) {
       if (String(s.guardId) !== guardId || !s.id) continue;
