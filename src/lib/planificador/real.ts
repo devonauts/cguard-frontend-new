@@ -72,6 +72,24 @@ const hhmm = (min: number) =>
   `${String(Math.floor(min / 60)).padStart(2, "0")}:${String(min % 60).padStart(2, "0")}`;
 
 /** Una franja por ventana horaria; las dos de siempre conservan su nombre. */
+const TODOS = [1, 1, 1, 1, 1, 1, 1];
+const DIA_IDX: Record<string, number> = { lun: 0, mon: 0, mar: 1, tue: 1, mie: 2, "mié": 2, wed: 2, jue: 3, thu: 3, vie: 4, fri: 4, sab: 5, "sáb": 5, sat: 5, dom: 6, sun: 6 };
+
+/** Días (lunes = 0) en que opera una plaza; sin `days` = todos. */
+function diasDePlaza(days: unknown): number[] {
+  if (!Array.isArray(days) || !days.length) return [0, 1, 2, 3, 4, 5, 6];
+  const out = new Set<number>();
+
+  for (const d of days) {
+    const k = DIA_IDX[String(d).toLowerCase().slice(0, 3)];
+
+    if (k !== undefined) out.add(k);
+  }
+
+  return out.size ? [...out] : [0, 1, 2, 3, 4, 5, 6];
+}
+const unoDonde = (dias: number[]) => dias.map((x) => (x > 0 ? 1 : 0));
+
 function franjaDe(ini: number, fin: number): Franja {
   if (ini === 420 && fin === 1140) return { id: "D", nombre: "Diurna", ini, fin };
   if (ini === 1140 && fin === 420) return { id: "N", nombre: "Nocturna", ini, fin };
@@ -179,13 +197,16 @@ export function planDesdeHorarioReal(
 
   for (const st of ov.stations || []) {
     const plazas = (plazasDe.get(idLimpio(st.id)) || []).filter((p) => p.type !== "sacafranco");
-    const ventanas = new Map<string, { f: Franja; n: number }>();
+    // `dias`: cuántas plazas operan cada día de la semana (lunes = 0). Una
+    // plaza sin `days` opera todos; con `days` (['lun','mar',…]) sólo esos.
+    const ventanas = new Map<string, { f: Franja; n: number; dias: number[] }>();
 
     for (const p of plazas) {
       const f = franjaDe(minutos(p.startTime), minutos(p.endTime));
-      const v = ventanas.get(f.id) || { f, n: 0 };
+      const v = ventanas.get(f.id) || { f, n: 0, dias: [0, 0, 0, 0, 0, 0, 0] };
 
       v.n++;
+      for (const d of diasDePlaza(p.days)) v.dias[d]++;
       ventanas.set(f.id, v);
     }
     let lista = [...ventanas.values()];
@@ -196,11 +217,11 @@ export function planDesdeHorarioReal(
     if (st.scheduleType === "24h" && lista.length === 1 && lista[0].f.ini !== lista[0].f.fin) {
       const d = lista[0].f;
 
-      lista = [{ f: d, n: 1 }, { f: franjaDe(d.fin, d.ini), n: 1 }];
+      lista = [{ f: d, n: 1, dias: TODOS }, { f: franjaDe(d.fin, d.ini), n: 1, dias: TODOS }];
     }
     // Turno de día entero (24×24): las plazas son las personas que se ALTERNAN,
     // no gente a la vez. El puesto pide a uno, aunque tenga dos plazas.
-    lista = lista.map((v) => (v.f.ini === v.f.fin ? { f: v.f, n: 1 } : v));
+    lista = lista.map((v) => (v.f.ini === v.f.fin ? { ...v, n: 1, dias: unoDonde(v.dias) } : v));
     // Y lo mismo en un 12×36: dos plazas en la MISMA franja con un ciclo «uno
     // sí, uno no» son dos personas que se turnan, no dos a la vez. La señal es
     // que el ciclo reparte justo entre las plazas (largo ÷ días de trabajo).
@@ -209,14 +230,14 @@ export function planDesdeHorarioReal(
     const largo = trabajo + (rotSt ? diasDeCiclo(rotSt.restDays) : 0);
 
     if (st.scheduleType !== "24h" && trabajo > 0)
-      lista = lista.map((v) => (v.n > 1 && largo / trabajo === v.n ? { f: v.f, n: 1 } : v));
+      lista = lista.map((v) => (v.n > 1 && largo / trabajo === v.n ? { ...v, n: 1, dias: unoDonde(v.dias) } : v));
     if (!lista.length) {
       const d = franjaDe(420, 1140);
 
       lista =
-        st.scheduleType === "24h" ? [{ f: d, n: 1 }, { f: franjaDe(1140, 420), n: 1 }]
-        : st.scheduleType === "12h-night" ? [{ f: franjaDe(1140, 420), n: 1 }]
-        : [{ f: d, n: 1 }];
+        st.scheduleType === "24h" ? [{ f: d, n: 1, dias: TODOS }, { f: franjaDe(1140, 420), n: 1, dias: TODOS }]
+        : st.scheduleType === "12h-night" ? [{ f: franjaDe(1140, 420), n: 1, dias: TODOS }]
+        : [{ f: d, n: 1, dias: TODOS }];
     }
     const pu: Puesto = {
       id: idLimpio(st.id),
@@ -228,7 +249,11 @@ export function planDesdeHorarioReal(
 
     for (const v of lista) {
       franjas[v.f.id] = v.f;
-      pu.pide[v.f.id] = [v.n, v.n, v.n, v.n, v.n, v.n, v.n];
+      // Lo que pide cada día: las plazas que operan ese día (todas, si ninguna
+      // tiene días; si no, tope en `n` por si una plaza quedó mal contada).
+      pu.pide[v.f.id] = v.dias.some((x) => x > 0)
+        ? v.dias.map((x) => Math.min(x, v.n))
+        : [v.n, v.n, v.n, v.n, v.n, v.n, v.n];
     }
     puestos.push(pu);
     puestoPorId.set(pu.id, pu);

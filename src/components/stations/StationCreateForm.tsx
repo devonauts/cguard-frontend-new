@@ -1,14 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import {
-  Loader2,
-  Sun,
-  Moon,
-  Clock,
-  SlidersHorizontal,
-  ChevronDown,
-} from "lucide-react";
+import { Loader2, Plus, X, Sun, Moon, Clock } from "lucide-react";
 
 import { invalidateEntity } from "@/lib/queryClient";
 import { ApiService } from "@/services/api/apiService";
@@ -16,153 +9,127 @@ import { Button } from "@/components/ui/button";
 import StationGeofencePolygon, {
   type PolyPoint,
 } from "@/components/GoogleMap/StationGeofencePolygon";
-import RotacionDeLaEstacion from "@/components/schedule/RotacionDeLaEstacion";
-import {
-  etiquetaPrimerTramo,
-  etiquetaSegundoTramo,
-} from "@/components/schedule/tramos";
 import { FIELD_CLS_LG } from "@/pages/admin/clientes/components/_shared/tab-kit";
 
-// Mirrors the staffing model used in the Stations tab: one jornada = 1 fijo.
-function jornadaType(
-  start?: string,
-  end?: string,
-): "diurno" | "nocturno" | null {
-  const hour = (s?: string) => {
-    if (!s) return null;
-    const m = String(s).match(/(\d{1,2}):(\d{2})/);
+/* ════════════════════════════════════════════════════════════════════════════
+   LA COBERTURA DEL PUESTO, CON NÚMEROS.
 
-    return m ? parseInt(m[1], 10) : null;
-  };
-  const sh = hour(start);
-  const eh = hour(end);
+   Lo que contrata el cliente es «de qué hora a qué hora, cuántos vigilantes a
+   la vez y qué días». Eso es del PUESTO y es lo único que se pregunta aquí.
+   Quién lo cubre y con qué ciclo (4-4-2, 7-1, sacafranco…) es de la GENTE y
+   se decide al asignar y en el Planificador — el formulario viejo lo mezclaba
+   (ciclo, bloques, «sacafranco o alternancia») y confundía.
 
-  if (sh == null) return null;
-  if (eh != null && eh <= sh) return "nocturno";
-  /* La noche acaba a las SEIS, no a las cinco. Este 5 era el único del sistema:
-     el resto —servidor y CRM— usa `FIN_DE_LA_NOCHE = 6`, así que una estación
-     que empieza a las 05:30 salía «diurna» aquí y nocturna en todas las demás
-     pantallas. */
-  if (sh >= UMBRAL_DE_NOCHE || sh < FIN_DE_LA_NOCHE) return "nocturno";
+   Cada franja × vigilantes a la vez se convierte en una plaza en el servidor
+   (`auto-positions` con `franjas`), que es lo que leen el generador de turnos
+   y el Planificador.
+   ════════════════════════════════════════════════════════════════════════ */
 
-  return "diurno";
-}
-/* El corte día/noche. Vive también en `lib/jornadasDePlazas` y, configurable
-   por empresa, en el servidor (`schedulingSettingsService`). Medido 2026-09-12:
-   ninguna empresa lo ha cambiado del 18 por defecto, así que aquí se deja fijo;
-   el día que alguna lo mueva hay que leerlo de sus ajustes, como ya hace el
-   planificador. */
-const UMBRAL_DE_NOCHE = 18;
-const FIN_DE_LA_NOCHE = 6;
-
-function requiredFijos(_schedule?: string): number {
-  return 1;
-}
-
-// The station's "horario" maps to the scheduling engine's scheduleType, which
-// drives positions + shift generation (the SAME field Programador › Horario
-// sets via /auto-positions). This keeps a single source of truth so any guard
-// assigned to the station abides by its horario.
-function turnoToScheduleType(
-  turno: "diurno" | "nocturno" | "24h" | "custom",
-): "12h-day" | "12h-night" | "24h" | "custom" {
-  switch (turno) {
-    case "diurno":
-      return "12h-day";
-    case "nocturno":
-      return "12h-night";
-    case "24h":
-      return "24h";
-    default:
-      return "custom";
-  }
-}
-
-// A turno (horario) is one of four types — the same way it's set up in the
-// station's horario. Each type presets the jornada window(s); "custom" lets the
-// user define the hours. A 24h post is two 12h jornadas (diurno + nocturno),
-// hence 2 fijos.
-type TurnoType = "diurno" | "nocturno" | "24h" | "custom";
-const ALL_DAYS = ["lun", "mar", "mie", "jue", "vie", "sab", "dom"];
-
-const TURNO_OPTIONS: {
-  key: TurnoType;
-  label: string;
-  labelKey: string;
-  sub: string;
-  subKey?: string;
+export interface Franja {
+  id: string;
   start: string;
   end: string;
   guards: number;
-  Icon: React.ComponentType<{
-    className?: string;
-    style?: React.CSSProperties;
-  }>;
+  /** Días que opera ('lun'…'dom'); vacío = todos. */
+  days: string[];
+}
+
+export const DIAS = ["lun", "mar", "mie", "jue", "vie", "sab", "dom"] as const;
+const DIAS_CORTO: Record<string, string> = {
+  lun: "L",
+  mar: "M",
+  mie: "X",
+  jue: "J",
+  vie: "V",
+  sab: "S",
+  dom: "D",
+};
+
+const nuevaFranja = (start: string, end: string, guards = 1): Franja => ({
+  id: Math.random().toString(36).slice(2),
+  start,
+  end,
+  guards,
+  days: [],
+});
+
+/** Atajos: lo más común, para no escribir horas. */
+const PRESETS: {
+  key: string;
+  label: string;
+  icon: React.ReactNode;
+  franjas: () => Franja[];
 }[] = [
   {
-    key: "diurno",
-    label: "12h Diurno",
-    labelKey: "ui.StationOverview.turno.diurno",
-    sub: "07:00 – 19:00",
-    start: "07:00",
-    end: "19:00",
-    guards: 1,
-    Icon: Sun,
-  },
-  {
-    key: "nocturno",
-    label: "12h Nocturno",
-    labelKey: "ui.StationOverview.turno.nocturno",
-    sub: "19:00 – 07:00",
-    start: "19:00",
-    end: "07:00",
-    guards: 1,
-    Icon: Moon,
-  },
-  {
     key: "24h",
-    label: "24 Horas",
-    labelKey: "ui.StationOverview.turno.24h",
-    sub: "Diurno + Nocturno",
-    subKey: "ui.AddStationPage.turnoSub24h",
-    start: "00:00",
-    end: "23:59",
-    guards: 2,
-    Icon: Clock,
+    label: "24 horas",
+    icon: <Clock className="h-4 w-4" />,
+    franjas: () => [
+      nuevaFranja("07:00", "19:00"),
+      nuevaFranja("19:00", "07:00"),
+    ],
   },
   {
-    key: "custom",
-    label: "Personalizado",
-    labelKey: "ui.StationOverview.turno.custom",
-    sub: "Define tus horas",
-    subKey: "ui.AddStationPage.turnoSubCustom",
-    start: "",
-    end: "",
-    guards: 1,
-    Icon: SlidersHorizontal,
+    key: "dia",
+    label: "Sólo de día",
+    icon: <Sun className="h-4 w-4" />,
+    franjas: () => [nuevaFranja("07:00", "19:00")],
+  },
+  {
+    key: "noche",
+    label: "Sólo de noche",
+    icon: <Moon className="h-4 w-4" />,
+    franjas: () => [nuevaFranja("19:00", "07:00")],
+  },
+  {
+    key: "3x8",
+    label: "3 turnos de 8",
+    icon: <Clock className="h-4 w-4" />,
+    franjas: () => [
+      nuevaFranja("06:00", "14:00"),
+      nuevaFranja("14:00", "22:00"),
+      nuevaFranja("22:00", "06:00"),
+    ],
   },
 ];
 
-// Time helpers for the custom multi-block window (wraps midnight).
 const toMin = (hhmm: string) => {
-  const [h, m] = String(hhmm || "")
-    .split(":")
-    .map((n) => parseInt(n, 10) || 0);
+  const m = String(hhmm || "").match(/^(\d{1,2}):(\d{2})$/);
 
-  return ((h % 24) * 60 + (m % 60) + 1440) % 1440;
-};
-const toHHMM = (min: number) => {
-  const mm = ((min % 1440) + 1440) % 1440;
+  if (!m) return NaN;
 
-  return `${String(Math.floor(mm / 60)).padStart(2, "0")}:${String(mm % 60).padStart(2, "0")}`;
+  return (
+    ((parseInt(m[1], 10) % 24) * 60 + (parseInt(m[2], 10) % 60) + 1440) % 1440
+  );
 };
 
-/** Coverage window length in minutes; '' inputs → 0. 00:00→00:00 = 24h. */
-function windowMinutes(start: string, end: string): number {
-  if (!start || !end) return 0;
-  const w = (toMin(end) - toMin(start) + 1440) % 1440;
+/** Minutos que dura una franja; 00:00→00:00 = 24 h. */
+export function duracion(f: Pick<Franja, "start" | "end">): number {
+  const a = toMin(f.start);
+  const b = toMin(f.end);
+
+  if (Number.isNaN(a) || Number.isNaN(b)) return 0;
+  const w = (b - a + 1440) % 1440;
 
   return w === 0 ? 1440 : w;
+}
+
+/** El tipo que guarda el servidor, derivado de las franjas (sólo para rótulos). */
+export function tipoDeFranjas(
+  fr: Franja[],
+): "24h" | "12h-day" | "12h-night" | "custom" {
+  const total = fr.reduce((acc, f) => acc + duracion(f), 0);
+
+  if (fr.length <= 2 && total === 1440) return "24h";
+  if (fr.length === 1) {
+    const h = Math.floor(toMin(fr[0].start) / 60);
+
+    return toMin(fr[0].end) <= toMin(fr[0].start) || h >= 18
+      ? "12h-night"
+      : "12h-day";
+  }
+
+  return "custom";
 }
 
 export interface StationCreada {
@@ -180,10 +147,10 @@ interface Props {
 }
 
 /**
- * EL FORMULARIO COMPLETO DE CREAR ESTACIÓN — nombre, nominativo, horario con
- * su ciclo y plazas, geocerca, tolerancias — como componente, para que lo
- * use igual la página /post-sites/:id/stations/new y el paso «Estaciones»
- * del asistente de la sede. Un solo formulario, un solo comportamiento.
+ * EL FORMULARIO COMPLETO DE CREAR ESTACIÓN — nombre, nominativo, cobertura
+ * con números, geocerca, tolerancias — como componente, para que lo use igual
+ * la página /post-sites/:id/stations/new y el paso «Estaciones» del asistente
+ * de la sede. Un solo formulario, un solo comportamiento.
  */
 export default function StationCreateForm({
   site,
@@ -196,95 +163,41 @@ export default function StationCreateForm({
   const { t } = useTranslation();
   const [saving, setSaving] = useState(false);
 
-  // Form state (same fields as the previous modal).
+  // Datos del puesto
   const [newName, setNewName] = useState("");
   const [nickname, setNickname] = useState("");
   const [newDescription, setNewDescription] = useState("");
-  const [turnoType, setTurnoType] = useState<TurnoType | "">("");
-  const [rotationStyleId, setRotationStyleId] = useState("");
-  /* Los ajustes de rotación nacen plegados: al crear un puesto la única
-     pregunta que hace falta es cuántas horas cubre. */
-  const [avanzado, setAvanzado] = useState(false);
-  const [startingTimeInDay, setStartingTimeInDay] = useState("");
-  const [finishTimeInDay, setFinishTimeInDay] = useState("");
-  // Custom: hours each fijo works per day ('' = one fijo covers the whole window).
-  const [blockHours, setBlockHours] = useState("");
-  // Custom: how rest days are covered — 'sacafranco' (staggered rests + relief
-  // guard) or 'alternate' (fijos share each block phased so one always works,
-  // e.g. 24x24 = trabaja 1 / descansa 1 con 2 fijos, sin sacafranco).
-  const [restCoverage, setRestCoverage] = useState<"sacafranco" | "alternate">(
-    "sacafranco",
-  );
-  const [rotStyle, setRotStyle] = useState<{
-    dayShifts: number;
-    nightShifts: number;
-    restDays: number;
-  } | null>(null);
-  /* El ciclo de CADA plaza cuando la rotación es individual. `null` = compartida
-     (un solo ciclo para todo el puesto), que es el caso normal y el defecto. */
-  const [estilosPorPlaza, setEstilosPorPlaza] = useState<string[] | null>(null);
+  // La cobertura: franjas con cuántos a la vez. Nace vacía: se elige un atajo
+  // o se escriben las horas.
+  const [franjas, setFranjas] = useState<Franja[]>([]);
+  const seats = franjas.reduce((acc, f) => acc + Math.max(1, f.guards), 0);
+  const franjasOk =
+    franjas.length > 0 &&
+    franjas.every((f) => duracion(f) > 0 && f.guards >= 1 && f.guards <= 20);
+  const cambiarFranja = (fid: string, delta: Partial<Franja>) =>
+    setFranjas((fs) => fs.map((f) => (f.id === fid ? { ...f, ...delta } : f)));
+  const quitarFranja = (fid: string) =>
+    setFranjas((fs) => fs.filter((f) => f.id !== fid));
+  const anadirFranja = () =>
+    setFranjas((fs) => {
+      const ultima = fs[fs.length - 1];
 
-  const customWindowMin =
-    turnoType === "custom"
-      ? windowMinutes(startingTimeInDay, finishTimeInDay)
-      : 0;
-  const customBlockMin = Number(blockHours) > 0 ? Number(blockHours) * 60 : 0;
-  const customBlocksOk =
-    customBlockMin > 0 &&
-    customWindowMin > 0 &&
-    customWindowMin % customBlockMin === 0;
-  const customBlockCount = customBlocksOk
-    ? customWindowMin / customBlockMin
-    : 1;
-  // El segundo tramo del ciclo, por su nombre: en 07:00–15:00 + 15:00–23:00 es la TARDE.
-  const primerTramo = etiquetaPrimerTramo(
-    startingTimeInDay,
-    customBlockMin,
-    customBlockCount,
-  );
-  const segundoTramo = etiquetaSegundoTramo(
-    startingTimeInDay,
-    customBlockMin,
-    customBlockCount,
-  );
-  // Alternation: fijos per block = cycle / workDays (must divide evenly).
-  const rotCycle = rotStyle
-    ? (rotStyle.dayShifts || 0) +
-      (rotStyle.nightShifts || 0) +
-      (rotStyle.restDays || 0)
-    : 0;
-  const rotWork = rotStyle
-    ? (rotStyle.dayShifts || 0) + (rotStyle.nightShifts || 0)
-    : 0;
-  const alternateOk =
-    restCoverage !== "alternate" || (rotWork > 0 && rotCycle % rotWork === 0);
-  const guardsPerBlock =
-    turnoType === "custom" &&
-    restCoverage === "alternate" &&
-    alternateOk &&
-    rotWork > 0
-      ? rotCycle / rotWork
-      : 1;
-  const requiredGuards =
-    turnoType === "24h"
-      ? 2
-      : turnoType === "custom"
-        ? customBlockCount * guardsPerBlock
-        : 1;
+      return [
+        ...fs,
+        nuevaFranja(ultima?.end || "07:00", ultima ? ultima.start : "19:00"),
+      ];
+    });
+  const presetActivo = PRESETS.find((p) => {
+    const q = p.franjas();
 
-  // Selecting a turno type presets its window; "custom" keeps the manual times.
-  const selectTurno = (key: TurnoType) => {
-    setTurnoType(key);
-    const opt = TURNO_OPTIONS.find((o) => o.key === key);
+    return (
+      q.length === franjas.length &&
+      q.every(
+        (x, i) => x.start === franjas[i].start && x.end === franjas[i].end,
+      )
+    );
+  })?.key;
 
-    if (opt && key !== "custom") {
-      setStartingTimeInDay(opt.start);
-      setFinishTimeInDay(opt.end);
-    } else if (key === "custom") {
-      setStartingTimeInDay("");
-      setFinishTimeInDay("");
-    }
-  };
   const [geofenceRadius, setGeofenceRadius] = useState("100");
   const [geofencePolygon, setGeofencePolygon] = useState<PolyPoint[]>([]);
   // Per-station clock-in tolerance windows (minutes). Empty = use tenant default.
@@ -307,42 +220,11 @@ export default function StationCreateForm({
 
       return;
     }
-    if (!turnoType) {
-      toast.error(
-        t("postSites.stations.provideSchedule", "Selecciona un turno"),
-      );
-
-      return;
-    }
-    if (turnoType === "custom" && (!startingTimeInDay || !finishTimeInDay)) {
+    if (!franjasOk) {
       toast.error(
         t(
-          "postSites.stations.provideCustomTimes",
-          "Define la hora de inicio y fin",
-        ),
-      );
-
-      return;
-    }
-    if (turnoType === "custom" && blockHours && !customBlocksOk) {
-      toast.error(
-        t(
-          "postSites.stations.blockMismatch",
-          "La duración del turno debe dividir exactamente la cobertura del puesto.",
-        ),
-      );
-
-      return;
-    }
-    if (
-      turnoType === "custom" &&
-      restCoverage === "alternate" &&
-      !alternateOk
-    ) {
-      toast.error(
-        t(
-          "postSites.stations.alternateMismatch",
-          "Para alternar sin sacafranco, el ciclo del patrón debe ser múltiplo de sus días de trabajo (ej. 1-1, 2-2).",
+          "ui.StationCreateForm.faltaCobertura",
+          "Di qué horas se cubre: al menos una franja con sus horas y cuántos vigilantes a la vez.",
         ),
       );
 
@@ -352,25 +234,26 @@ export default function StationCreateForm({
     try {
       const latitud = site?.latitud || site?.latitude || "";
       const longitud = site?.longitud || site?.longitude || "";
-      const stationStart = turnoType === "24h" ? "00:00" : startingTimeInDay;
-      const stationEnd = turnoType === "24h" ? "23:59" : finishTimeInDay;
+      const tipo = tipoDeFranjas(franjas);
+      const ordenadas = [...franjas].sort(
+        (x, y) => toMin(x.start) - toMin(y.start),
+      );
+      const primera = ordenadas[0];
+      const ultima = ordenadas[ordenadas.length - 1];
       const payload = {
         stationName: newName,
         nickname: nickname.trim() || null,
         postSiteId,
         latitud,
         longitud,
-        /* El horario ya no se escribe aquí como JSON. Lo describen las PLAZAS,
-           que las crea `auto-positions` con este mismo `turnoType`, y son lo
-           único que el generador de turnos lee. El JSON era una tercera
-           versión del mismo dato — y en un formato distinto del que escribía
-           el asistente de la sede, que es lo que hacía que un puesto se viera
-           de una forma o de otra según por dónde lo abrieras. */
-        turnoType,
-        is24h: turnoType === "24h",
-        numberOfGuardsInStation: String(requiredGuards),
-        startingTimeInDay: stationStart,
-        finishTimeInDay: stationEnd,
+        /* El horario lo describen las PLAZAS, que las crea `auto-positions`
+           a partir de estas mismas franjas. Lo que va en la fila del puesto es
+           el rótulo: la ventana total y cuántos vigilantes caben a la vez. */
+        turnoType: tipo,
+        is24h: tipo === "24h",
+        numberOfGuardsInStation: String(seats),
+        startingTimeInDay: primera.start,
+        finishTimeInDay: tipo === "24h" ? primera.start : ultima.end,
         geofenceRadius: Number(geofenceRadius) || 100,
         geofencePolygon: geofencePolygon.length >= 3 ? geofencePolygon : null,
         // Empty input → null so the tenant Nómina default applies.
@@ -404,28 +287,21 @@ export default function StationCreateForm({
       invalidateEntity("stations");
       const newStationId = createdSt?.id || createdSt?.data?.id || null;
 
-      // Configure the station's horario through the scheduling engine (the same
-      // endpoint Programador › Horario uses): this sets scheduleType, creates the
-      // turno positions and regenerates shifts, so assigned guards abide by it.
-      // Rotation pattern auto-defaults (4-4-2 for 24h, 5-2 for 12h).
+      // Las plazas: una por vigilante a la vez en cada franja. Sin ciclo: el
+      // ciclo lo pone la primera persona que se asigne (o el Planificador).
       if (newStationId) {
         try {
           await ApiService.post(
             `/tenant/${tenantId}/station/${newStationId}/auto-positions`,
             {
               data: {
-                scheduleType: turnoToScheduleType(turnoType),
-                rotationStyleId: rotationStyleId || undefined,
-                startTime: startingTimeInDay || undefined,
-                endTime: finishTimeInDay || undefined,
-                blockHours:
-                  turnoType === "custom" && blockHours
-                    ? Number(blockHours)
-                    : undefined,
-                restCoverage: turnoType === "custom" ? restCoverage : undefined,
-                // Rotación individual: un ciclo por plaza, en orden de plaza.
-                // Ausente = compartida, que es como se comportaba siempre.
-                positionRotationStyleIds: estilosPorPlaza || undefined,
+                scheduleType: tipo,
+                franjas: ordenadas.map((f) => ({
+                  start: f.start,
+                  end: f.end,
+                  guards: Math.max(1, f.guards),
+                  days: f.days.length && f.days.length < 7 ? f.days : [],
+                })),
               },
             },
           );
@@ -506,442 +382,239 @@ export default function StationCreateForm({
             </p>
           </div>
 
-          {/* Turno (horario) — same setup as the station's horario */}
+          {/* ¿Qué horas se cubre? — la cobertura con números */}
           <div>
-            <label className="mb-2 block text-sm font-medium">
-              {t("postSites.stations.form.schedule", "Turno (horario) *")}
+            <label className="mb-1 block text-sm font-medium">
+              {t(
+                "ui.StationCreateForm.queHorasSeCubre",
+                "¿Qué horas se cubre? *",
+              )}
             </label>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {TURNO_OPTIONS.map(
-                ({ key, label, labelKey, sub, subKey, Icon }) => {
-                  const selected = turnoType === key;
+            <p className="mb-3 text-xs" style={{ color: "var(--ink-soft)" }}>
+              {t(
+                "ui.StationCreateForm.coberturaExplica",
+                "De qué hora a qué hora y cuántos vigilantes a la vez. Quién lo cubre y con qué ciclo se decide al asignar, en el Planificador.",
+              )}
+            </p>
+            <div className="mb-3 flex flex-wrap gap-2">
+              {PRESETS.map((p) => {
+                const activo = presetActivo === p.key;
+
+                return (
+                  <button
+                    key={p.key}
+                    className="cg-focus inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-opacity hover:opacity-80"
+                    style={
+                      activo
+                        ? {
+                            background: "var(--brand)",
+                            color: "var(--brand-ink)",
+                            borderColor: "var(--brand)",
+                          }
+                        : {
+                            background: "var(--glass)",
+                            color: "var(--ink)",
+                            borderColor: "var(--hairline)",
+                          }
+                    }
+                    type="button"
+                    onClick={() => setFranjas(p.franjas())}
+                  >
+                    {p.icon}
+                    {t(`ui.StationCreateForm.preset.${p.key}`, p.label)}
+                  </button>
+                );
+              })}
+            </div>
+
+            {franjas.length === 0 ? (
+              <p
+                className="rounded-lg border border-dashed px-4 py-5 text-center text-xs"
+                style={{
+                  borderColor: "var(--hairline)",
+                  color: "var(--ink-faint)",
+                }}
+              >
+                {t(
+                  "ui.StationCreateForm.sinFranjas",
+                  "Elige un atajo o añade una franja con sus horas.",
+                )}
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {franjas.map((f, i) => {
+                  const min = duracion(f);
+                  const mal = min === 0 || f.guards < 1;
 
                   return (
-                    <button
-                      key={key}
-                      aria-pressed={selected}
-                      className="cg-focus flex flex-col items-start gap-2 rounded-xl border p-3 text-left transition-all"
-                      style={
-                        selected
-                          ? {
-                              background: "var(--brand-wash)",
-                              borderColor: "var(--brand-line)",
-                              boxShadow: "0 0 22px -10px var(--brand-glow)",
-                            }
-                          : {
-                              background: "var(--glass-sunken)",
-                              borderColor: "var(--hairline)",
-                            }
-                      }
-                      type="button"
-                      onClick={() => selectTurno(key)}
+                    <div
+                      key={f.id}
+                      className="glass-flat flex flex-wrap items-center gap-2 px-3 py-2"
+                      style={mal ? { borderColor: "var(--bad)" } : undefined}
                     >
-                      <Icon
-                        className="h-5 w-5"
-                        style={{
-                          color: selected
-                            ? "var(--brand-text)"
-                            : "var(--ink-faint)",
-                        }}
+                      <span
+                        className="w-6 text-center text-xs font-bold tabular-nums"
+                        style={{ color: "var(--ink-faint)" }}
+                      >
+                        {i + 1}
+                      </span>
+                      <span
+                        className="text-xs"
+                        style={{ color: "var(--ink-soft)" }}
+                      >
+                        {t("ui.StationCreateForm.de", "de")}
+                      </span>
+                      <input
+                        className="cg-input cg-focus h-8 w-24 px-2 text-center font-mono text-sm"
+                        type="time"
+                        value={f.start}
+                        onChange={(e) =>
+                          cambiarFranja(f.id, { start: e.target.value })
+                        }
                       />
-                      <div>
-                        <p
-                          className="text-sm font-semibold"
-                          style={
-                            selected
-                              ? { color: "var(--brand-text)" }
-                              : undefined
-                          }
-                        >
-                          {t(labelKey, label)}
-                        </p>
-                        <p
-                          className="text-[11px]"
-                          style={{ color: "var(--ink-soft)" }}
-                        >
-                          {subKey ? t(subKey, sub) : sub}
-                        </p>
+                      <span
+                        className="text-xs"
+                        style={{ color: "var(--ink-soft)" }}
+                      >
+                        {t("ui.StationCreateForm.a", "a")}
+                      </span>
+                      <input
+                        className="cg-input cg-focus h-8 w-24 px-2 text-center font-mono text-sm"
+                        type="time"
+                        value={f.end}
+                        onChange={(e) =>
+                          cambiarFranja(f.id, { end: e.target.value })
+                        }
+                      />
+                      <span
+                        className="text-xs tabular-nums"
+                        style={{ color: "var(--ink-faint)" }}
+                      >
+                        {min > 0
+                          ? `${Math.round((min / 60) * 10) / 10} h`
+                          : "—"}
+                      </span>
+                      <span
+                        className="mx-1 h-5 w-px"
+                        style={{ background: "var(--hairline)" }}
+                      />
+                      <input
+                        className="cg-input cg-focus h-8 w-14 px-2 text-center text-sm"
+                        max={20}
+                        min={1}
+                        type="number"
+                        value={f.guards}
+                        onChange={(e) =>
+                          cambiarFranja(f.id, {
+                            guards: Math.max(
+                              1,
+                              Math.min(20, Number(e.target.value) || 1),
+                            ),
+                          })
+                        }
+                      />
+                      <span
+                        className="text-xs"
+                        style={{ color: "var(--ink-soft)" }}
+                      >
+                        {t(
+                          "ui.StationCreateForm.aLaVez",
+                          "vigilante(s) a la vez",
+                        )}
+                      </span>
+                      <span
+                        className="mx-1 h-5 w-px"
+                        style={{ background: "var(--hairline)" }}
+                      />
+                      <div className="flex gap-0.5">
+                        {DIAS.map((d) => {
+                          const todos = f.days.length === 0;
+                          const on = todos || f.days.includes(d);
+
+                          return (
+                            <button
+                              key={d}
+                              aria-pressed={on}
+                              className="cg-focus h-6 w-6 rounded text-[10px] font-bold"
+                              style={
+                                on
+                                  ? {
+                                      background:
+                                        "color-mix(in oklab, var(--brand) 22%, transparent)",
+                                      color: "var(--brand-text)",
+                                    }
+                                  : {
+                                      background: "var(--glass-sunken)",
+                                      color: "var(--ink-faint)",
+                                    }
+                              }
+                              title={d}
+                              type="button"
+                              onClick={() => {
+                                const actuales: string[] = todos
+                                  ? [...DIAS]
+                                  : f.days;
+                                const sig = on
+                                  ? actuales.filter((x) => x !== d)
+                                  : [...actuales, d];
+
+                                cambiarFranja(f.id, {
+                                  days: sig.length === 7 ? [] : sig,
+                                });
+                              }}
+                            >
+                              {DIAS_CORTO[d]}
+                            </button>
+                          );
+                        })}
                       </div>
-                    </button>
+                      <button
+                        aria-label={t(
+                          "ui.StationCreateForm.quitarFranja",
+                          "Quitar franja",
+                        )}
+                        className="cg-focus ml-auto rounded-md"
+                        style={{ color: "var(--bad-text)" }}
+                        type="button"
+                        onClick={() => quitarFranja(f.id)}
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
                   );
-                },
+                })}
+              </div>
+            )}
+            <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+              <button
+                className="cg-focus inline-flex items-center gap-1 text-xs font-semibold"
+                style={{ color: "var(--brand-text)" }}
+                type="button"
+                onClick={anadirFranja}
+              >
+                <Plus className="h-3.5 w-3.5" />
+                {t("ui.StationCreateForm.anadirFranja", "Añadir franja")}
+              </button>
+              {franjas.length > 0 && (
+                <span className="text-xs" style={{ color: "var(--ink-soft)" }}>
+                  {t("ui.StationCreateForm.resumenCobertura", {
+                    defaultValue:
+                      "{{horas}} h-vigilante al día · {{plazas}} plaza(s)",
+                    horas:
+                      Math.round(
+                        (franjas.reduce(
+                          (acc, f) => acc + duracion(f) * Math.max(1, f.guards),
+                          0,
+                        ) /
+                          60) *
+                          10,
+                      ) / 10,
+                    plazas: seats,
+                  })}
+                </span>
               )}
             </div>
           </div>
-
-          {/* ── UNA PREGUNTA ARRIBA, EL RESTO PLEGADO ───────────────────
-                    Mismo criterio que la ficha del puesto: al crear, la única
-                    pregunta que hace falta es cuántas horas cubre. El ciclo de
-                    descansos ya no se elige aquí por defecto —se pregunta al
-                    asignar al primer vigilante, que es cuando significa algo—
-                    pero quien quiera fijarlo de entrada lo tiene a un clic. */}
-          {turnoType && (
-            <div
-              className="rounded-xl border"
-              style={{ borderColor: "var(--hairline)" }}
-            >
-              <button
-                aria-expanded={avanzado}
-                className="cg-focus flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left"
-                type="button"
-                onClick={() => setAvanzado((v) => !v)}
-              >
-                <span className="min-w-0">
-                  <span className="block text-xs font-semibold text-foreground">
-                    {t(
-                      "ui.StationOverview.ajustesAvanzados",
-                      "Ajustes avanzados",
-                    )}
-                  </span>
-                  <span
-                    className="mt-0.5 block truncate text-[11px]"
-                    style={{ color: "var(--ink-soft)" }}
-                  >
-                    {rotationStyleId
-                      ? t(
-                          "ui.AddStationPage.cicloDeDescansosElegido",
-                          "Ciclo de descansos elegido",
-                        )
-                      : t(
-                          "ui.AddStationPage.cicloSeEligeAlAsignar",
-                          "El ciclo de descansos se elige al asignar al primer vigilante",
-                        )}
-                  </span>
-                </span>
-                <ChevronDown
-                  className="shrink-0 transition-transform"
-                  size={16}
-                  style={{
-                    color: "var(--ink-soft)",
-                    transform: avanzado ? "rotate(180deg)" : undefined,
-                  }}
-                />
-              </button>
-              {avanzado && (
-                <div
-                  className="border-t p-3"
-                  style={{ borderColor: "var(--hairline)" }}
-                >
-                  <RotacionDeLaEstacion
-                    entrada={{
-                      scheduleType: turnoToScheduleType(turnoType),
-                      inicio: startingTimeInDay,
-                      fin: finishTimeInDay,
-                      ciclo: rotStyle,
-                      blockHours:
-                        turnoType === "custom" && blockHours
-                          ? Number(blockHours)
-                          : undefined,
-                      restCoverage:
-                        turnoType === "custom" ? restCoverage : undefined,
-                    }}
-                    etiquetaPrimerBloque={primerTramo}
-                    etiquetaSegundoBloque={segundoTramo}
-                    porPlaza={estilosPorPlaza}
-                    tenantId={
-                      site?.tenantId || localStorage.getItem("tenantId") || ""
-                    }
-                    value={rotationStyleId}
-                    onChange={setRotationStyleId}
-                    onPorPlazaChange={setEstilosPorPlaza}
-                    onStyleChange={setRotStyle}
-                  />
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Times: editable for diurno / nocturno / custom */}
-          {turnoType && turnoType !== "24h" && (
-            <div
-              className={`grid grid-cols-1 gap-4 ${turnoType === "custom" ? "sm:grid-cols-2 lg:grid-cols-4" : "sm:grid-cols-3"}`}
-            >
-              <div>
-                <label className="mb-2 block text-sm font-medium">
-                  {t("postSites.stations.form.startTime", "Inicio")}
-                </label>
-                <input
-                  className={FIELD_CLS_LG}
-                  type="time"
-                  value={startingTimeInDay}
-                  onChange={(e) => setStartingTimeInDay(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="mb-2 block text-sm font-medium">
-                  {t("postSites.stations.form.endTime", "Fin")}
-                </label>
-                <input
-                  className={FIELD_CLS_LG}
-                  type="time"
-                  value={finishTimeInDay}
-                  onChange={(e) => setFinishTimeInDay(e.target.value)}
-                />
-              </div>
-              {turnoType === "custom" && (
-                <div>
-                  <label className="mb-2 block text-sm font-medium">
-                    {t(
-                      "postSites.stations.form.blockHours",
-                      "Turno por vigilante",
-                    )}
-                  </label>
-                  <select
-                    className={FIELD_CLS_LG}
-                    value={blockHours}
-                    onChange={(e) => setBlockHours(e.target.value)}
-                  >
-                    <option value="">
-                      {t(
-                        "postSites.stations.form.wholeWindow",
-                        "Toda la jornada",
-                      )}
-                    </option>
-                    {[4, 6, 8, 12, 24].map((h) => {
-                      const fits =
-                        customWindowMin > 0 && customWindowMin % (h * 60) === 0;
-                      const k = fits ? customWindowMin / (h * 60) : 0;
-
-                      return (
-                        <option key={h} disabled={!fits} value={String(h)}>
-                          {fits
-                            ? t("ui.AddStationPage.horasBloques", {
-                                count: k,
-                                h,
-                                defaultValue: "{{h}}h → {{count}} bloques",
-                              })
-                            : t("ui.AddStationPage.horasNoDivide", {
-                                h,
-                                defaultValue: "{{h}}h (no divide la cobertura)",
-                              })}
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div>
-              )}
-              {turnoType === "custom" && (
-                <div>
-                  <label className="mb-2 block text-sm font-medium">
-                    {t(
-                      "postSites.stations.form.restCoverage",
-                      "Cobertura de descansos",
-                    )}
-                  </label>
-                  <select
-                    className={FIELD_CLS_LG}
-                    value={restCoverage}
-                    onChange={(e) => setRestCoverage(e.target.value as any)}
-                  >
-                    <option value="sacafranco">
-                      {t(
-                        "postSites.stations.form.withSf",
-                        "Sacafranco cubre los descansos",
-                      )}
-                    </option>
-                    <option value="alternate">
-                      {t(
-                        "postSites.stations.form.alternate",
-                        "Alternancia entre fijos (sin sacafranco)",
-                      )}
-                    </option>
-                  </select>
-                </div>
-              )}
-              <div>
-                <label className="mb-2 block text-sm font-medium">
-                  {t("postSites.stations.form.guards", "Vigilantes")}
-                </label>
-                <div className="glass-sunken flex h-[42px] items-center px-3 text-sm">
-                  <span className="font-semibold">
-                    {t("ui.AddStationPage.fijosCount", {
-                      count: requiredGuards,
-                      defaultValue: "{{count}} fijos",
-                    })}
-                  </span>
-                  {turnoType === "custom" && customWindowMin > 0 ? (
-                    <span
-                      className="ml-auto text-[11px]"
-                      style={{ color: "var(--ink-soft)" }}
-                    >
-                      {t("ui.AddStationPage.horasDeCobertura", {
-                        hours: customWindowMin / 60,
-                        defaultValue: "{{hours}}h de cobertura",
-                      })}
-                    </span>
-                  ) : jornadaType(startingTimeInDay, finishTimeInDay) ? (
-                    <span
-                      className="ml-auto text-[11px] capitalize"
-                      style={{ color: "var(--ink-soft)" }}
-                    >
-                      {jornadaType(startingTimeInDay, finishTimeInDay) ===
-                      "nocturno"
-                        ? t("ui.AddStationPage.jornadaNocturno", "Nocturno")
-                        : t("ui.AddStationPage.jornadaDiurno", "Diurno")}
-                    </span>
-                  ) : null}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Custom breakdown: blocks × alternation */}
-          {turnoType === "custom" &&
-            restCoverage === "alternate" &&
-            rotStyle && (
-              <p
-                className="rounded-md p-3 text-xs"
-                style={
-                  alternateOk
-                    ? {
-                        background: "var(--glass-sunken)",
-                        color: "var(--ink-soft)",
-                      }
-                    : {
-                        background:
-                          "color-mix(in oklab, var(--bad) 12%, transparent)",
-                        color: "var(--bad-text)",
-                      }
-                }
-              >
-                {alternateOk ? (
-                  <>
-                    {t("ui.AddStation.patron", "Patrón")}{" "}
-                    <strong>
-                      {rotWork}-{rotCycle - rotWork}
-                    </strong>
-                    {t("ui.AddStationPage.cadaBloqueLoComparten")}{" "}
-                    <strong>
-                      {t("ui.AddStationPage.fijosAlternando", {
-                        count: guardsPerBlock,
-                        defaultValue: "{{count}} fijos alternando",
-                      })}
-                    </strong>{" "}
-                    {t("ui.AddStationPage.unoTrabajaMientrasElOtro")}{" "}
-                    <strong>{t("ui.AddStationPage.sinSacafranco")}</strong>
-                    {t("ui.AddStationPage.totalFijos", {
-                      count: requiredGuards,
-                      defaultValue: ". Total: {{count}} fijos.",
-                    })}
-                  </>
-                ) : (
-                  <>
-                    {t("ui.AddStationPage.patronNoPermiteAlternancia", {
-                      pattern: `${rotWork}-${rotCycle - rotWork}`,
-                      cycle: rotCycle,
-                      work: rotWork,
-                      defaultValue:
-                        "El patrón {{pattern}} no permite alternancia exacta: el ciclo ({{cycle}}) debe ser múltiplo de los días de trabajo ({{work}}). Usa 1-1, 2-2, 3-3…",
-                    })}
-                  </>
-                )}
-              </p>
-            )}
-          {turnoType === "custom" && customBlocksOk && customBlockCount > 1 && (
-            <div className="glass-sunken p-4 text-sm">
-              <p className="mb-2 font-medium">
-                {t("ui.AddStationPage.coberturaBloques", {
-                  hours: customWindowMin / 60,
-                  count: customBlockCount,
-                  block: Number(blockHours),
-                  defaultValue:
-                    "Cobertura {{hours}}h — {{count}} bloques de {{block}}h",
-                })}
-                {guardsPerBlock > 1
-                  ? ` × ${t("ui.AddStationPage.fijosAlternando", {
-                      count: guardsPerBlock,
-                      defaultValue: "{{count}} fijos alternando",
-                    })}`
-                  : ""}
-              </p>
-              <div
-                className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs"
-                style={{ color: "var(--ink-soft)" }}
-              >
-                {Array.from({ length: customBlockCount }, (_, i) => (
-                  <span key={i} className="inline-flex items-center gap-1.5">
-                    <Clock
-                      className="h-3.5 w-3.5"
-                      style={{ color: "var(--brand-text)" }}
-                    />
-                    {t("ui.AddStationPage.fijoN", {
-                      n: i + 1,
-                      defaultValue: "Fijo {{n}}",
-                    })}{" "}
-                    · {toHHMM(toMin(startingTimeInDay) + i * customBlockMin)} –{" "}
-                    {toHHMM(
-                      toMin(startingTimeInDay) + (i + 1) * customBlockMin,
-                    )}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* 24h is a fixed split into two jornadas */}
-          {turnoType === "24h" && (
-            <div className="glass-sunken p-4 text-sm">
-              <p className="mb-2 font-medium">
-                {t(
-                  "ui.AddStationPage.cobertura24hDosJornadas",
-                  "Cobertura 24 horas — dos jornadas",
-                )}
-              </p>
-              <div
-                className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs"
-                style={{ color: "var(--ink-soft)" }}
-              >
-                <span className="inline-flex items-center gap-1.5">
-                  <Sun
-                    className="h-3.5 w-3.5"
-                    style={{ color: "var(--warn-text)" }}
-                  />{" "}
-                  {t("ui.AddStationPage.jornadaDiurno", "Diurno")} · 07:00 –
-                  19:00
-                </span>
-                <span className="inline-flex items-center gap-1.5">
-                  <Moon
-                    className="h-3.5 w-3.5"
-                    style={{ color: "var(--info-text)" }}
-                  />{" "}
-                  {t("ui.AddStationPage.jornadaNocturno", "Nocturno")} · 19:00 –
-                  07:00
-                </span>
-                <span className="ml-auto font-semibold">
-                  {t("ui.AddStationPage.fijosCount", {
-                    count: 2,
-                    defaultValue: "{{count}} fijos",
-                  })}
-                </span>
-              </div>
-            </div>
-          )}
-
-          {turnoType &&
-            (turnoType !== "custom" || restCoverage !== "alternate") && (
-              <p
-                className="rounded-md p-3 text-xs"
-                style={{
-                  background: "var(--glass-sunken)",
-                  color: "var(--ink-soft)",
-                }}
-              >
-                <strong style={{ color: "var(--ink)" }}>
-                  {t("ui.AddStationPage.vigilantesFijos", {
-                    count: requiredGuards,
-                    defaultValue: "{{count}} vigilantes fijos",
-                  })}
-                </strong>{" "}
-                {t("ui.AddStationPage.enElPuestoMas", "en el puesto +")}{" "}
-                <strong style={{ color: "var(--ink)" }}>
-                  {t("ui.AddStationPage.unSacafranco", "1 sacafranco")}
-                </strong>{" "}
-                {t(
-                  "ui.AddStationPage.sacafrancoCubreDescansos",
-                  "que cubre los días de descanso. El sacafranco salta entre puestos — no pertenece a un solo puesto, por eso no se cuenta en las vigilantes requeridas.",
-                )}
-              </p>
-            )}
 
           {/* Geofence radius */}
           <div>
@@ -1064,7 +737,7 @@ export default function StationCreateForm({
         )}
         <Button
           className="gap-2"
-          disabled={!newName.trim() || !turnoType || saving}
+          disabled={!newName.trim() || !franjasOk || saving}
           variant="brand"
           onClick={createStation}
         >
