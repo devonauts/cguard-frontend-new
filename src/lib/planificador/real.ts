@@ -219,18 +219,21 @@ export function planDesdeHorarioReal(
 
       lista = [{ f: d, n: 1, dias: TODOS }, { f: franjaDe(d.fin, d.ini), n: 1, dias: TODOS }];
     }
-    // Turno de día entero (24×24): las plazas son las personas que se ALTERNAN,
-    // no gente a la vez. El puesto pide a uno, aunque tenga dos plazas.
-    lista = lista.map((v) => (v.f.ini === v.f.fin ? { ...v, n: 1, dias: unoDonde(v.dias) } : v));
-    // Y lo mismo en un 12×36: dos plazas en la MISMA franja con un ciclo «uno
-    // sí, uno no» son dos personas que se turnan, no dos a la vez. La señal es
-    // que el ciclo reparte justo entre las plazas (largo ÷ días de trabajo).
+    // Los que SE TURNAN no son gente a la vez. Un 24×24 (1 trabaja, 1 libra),
+    // un 12×36 o un 2-2 TESELAN: los días de trabajo dividen exacto el ciclo y
+    // cada asiento lo cubren k = largo ÷ trabajo plazas que se alternan. El
+    // puesto pide n ÷ k, no n.
     const rotSt = rotPorId.get(String(st.rotationStyleId || ""));
     const trabajo = rotSt ? diasDeCiclo(rotSt.dayShifts) + diasDeCiclo(rotSt.nightShifts) : 0;
     const largo = trabajo + (rotSt ? diasDeCiclo(rotSt.restDays) : 0);
+    const k = trabajo > 0 && largo % trabajo === 0 ? largo / trabajo : 1;
 
-    if (st.scheduleType !== "24h" && trabajo > 0)
-      lista = lista.map((v) => (v.n > 1 && largo / trabajo === v.n ? { ...v, n: 1, dias: unoDonde(v.dias) } : v));
+    if (k > 1)
+      lista = lista.map((v) => (v.n % k === 0 ? { ...v, n: v.n / k, dias: v.dias.map((x) => Math.ceil(x / k)) } : v));
+    // Turno de día entero sin ciclo que lo explique (los 24×24 de antes, con
+    // dos plazas y sin patrón): las plazas son las personas que se alternan.
+    if (k === 1)
+      lista = lista.map((v) => (v.f.ini === v.f.fin ? { ...v, n: 1, dias: unoDonde(v.dias) } : v));
     if (!lista.length) {
       const d = franjaDe(420, 1140);
 

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Loader2, Plus, X, Sun, Moon, Clock } from "lucide-react";
+import { Loader2, Plus, X } from "lucide-react";
 
 import { invalidateEntity } from "@/lib/queryClient";
 import { ApiService } from "@/services/api/apiService";
@@ -10,7 +10,6 @@ import StationGeofencePolygon, {
   type PolyPoint,
 } from "@/components/GoogleMap/StationGeofencePolygon";
 import { FIELD_CLS_LG } from "@/pages/admin/clientes/components/_shared/tab-kit";
-import RotationStyleSelect from "@/components/schedule/RotationStyleSelect";
 
 /* ════════════════════════════════════════════════════════════════════════════
    LA COBERTURA DEL PUESTO, CON NÚMEROS.
@@ -54,46 +53,6 @@ const nuevaFranja = (start: string, end: string, guards = 1): Franja => ({
   days: [],
 });
 
-/** Atajos: lo más común, para no escribir horas. */
-const PRESETS: {
-  key: string;
-  label: string;
-  icon: React.ReactNode;
-  franjas: () => Franja[];
-}[] = [
-  {
-    key: "24h",
-    label: "24 horas",
-    icon: <Clock className="h-4 w-4" />,
-    franjas: () => [
-      nuevaFranja("07:00", "19:00"),
-      nuevaFranja("19:00", "07:00"),
-    ],
-  },
-  {
-    key: "dia",
-    label: "Sólo de día",
-    icon: <Sun className="h-4 w-4" />,
-    franjas: () => [nuevaFranja("07:00", "19:00")],
-  },
-  {
-    key: "noche",
-    label: "Sólo de noche",
-    icon: <Moon className="h-4 w-4" />,
-    franjas: () => [nuevaFranja("19:00", "07:00")],
-  },
-  {
-    key: "3x8",
-    label: "3 turnos de 8",
-    icon: <Clock className="h-4 w-4" />,
-    franjas: () => [
-      nuevaFranja("06:00", "14:00"),
-      nuevaFranja("14:00", "22:00"),
-      nuevaFranja("22:00", "06:00"),
-    ],
-  },
-];
-
 const toMin = (hhmm: string) => {
   const m = String(hhmm || "").match(/^(\d{1,2}):(\d{2})$/);
 
@@ -133,6 +92,123 @@ export function tipoDeFranjas(
   return "custom";
 }
 
+const toHHMM = (min: number) => {
+  const mm = ((min % 1440) + 1440) % 1440;
+
+  return `${String(Math.floor(mm / 60)).padStart(2, "0")}:${String(mm % 60).padStart(2, "0")}`;
+};
+
+/** Parte una ventana (de–a, o 24 h) en `turnos` franjas iguales. */
+export function partir(
+  desde: string,
+  hasta: string,
+  turnos: number,
+  guards: number,
+  days: string[],
+): Franja[] {
+  const ini = toMin(desde);
+  const total = duracion({ start: desde, end: hasta });
+
+  if (Number.isNaN(ini) || total <= 0) return [];
+  const n = Math.max(1, Math.min(6, Math.round(turnos) || 1));
+  const largo = total / n;
+
+  return Array.from({ length: n }, (_, i) => ({
+    ...nuevaFranja(
+      toHHMM(ini + i * largo),
+      toHHMM(ini + (i + 1) * largo),
+      guards,
+    ),
+    days: [...days],
+  }));
+}
+
+/* ── EL TRAMO DE CADA FRANJA, POR LA HORA A LA QUE EMPIEZA ──────────────────
+   D si arranca entre las 5 y las 12, T entre las 12 y las 18, N el resto. La
+   rotación se escribe con un contador por tramo («3 D · 3 N · 2 L») y el
+   servidor la guarda como patrón (primer tramo / segundo tramo / libres). */
+export const NOMBRE_TRAMO: Record<string, string> = {
+  D: "día",
+  T: "tarde",
+  N: "noche",
+};
+export function letraDeFranja(f: Pick<Franja, "start">): "D" | "T" | "N" {
+  const h = Math.floor(toMin(f.start) / 60);
+
+  if (Number.isNaN(h)) return "D";
+  if (h >= 5 && h < 12) return "D";
+  if (h >= 12 && h < 18) return "T";
+
+  return "N";
+}
+
+export type Ciclo = { D: number; T: number; N: number; L: number };
+export const CICLO_VACIO: Ciclo = { D: 0, T: 0, N: 0, L: 0 };
+
+export interface Rotacion {
+  dayShifts: number;
+  nightShifts: number;
+  restDays: number;
+  alterna: boolean;
+  dominical: boolean;
+  nombre: string;
+  largo: number;
+  /** Tres tramos con días: el servidor sólo guarda dos. */
+  noRepresentable: boolean;
+}
+
+/** Un ciclo de contadores → lo que entiende el servidor (o null si está vacío). */
+export function rotacionDe(
+  c: Ciclo,
+  tramos: string[],
+  alterna: boolean,
+  dominical: boolean,
+): Rotacion | null {
+  const conDias = tramos.filter((l) => (c[l as keyof Ciclo] || 0) > 0);
+
+  if (!conDias.length) return null;
+  const partes = [
+    ...conDias.map((l) => `${c[l as keyof Ciclo]}${l}`),
+    `${c.L}L`,
+  ];
+  const marcas = [
+    alterna && tramos.length >= 2 ? "alterna" : "",
+    dominical ? "dom" : "",
+  ].filter(Boolean);
+  const largo =
+    conDias.reduce((acc, l) => acc + (c[l as keyof Ciclo] || 0), 0) + c.L;
+
+  return {
+    dayShifts: c[conDias[0] as keyof Ciclo] || 0,
+    nightShifts: conDias[1] ? c[conDias[1] as keyof Ciclo] || 0 : 0,
+    restDays: c.L,
+    alterna: alterna && tramos.length >= 2,
+    dominical,
+    nombre: [partes.join(" "), ...marcas].join(" · "),
+    largo,
+    noRepresentable: conDias.length > 2,
+  };
+}
+
+/** Cuántas personas cubren UN asiento con este ciclo. Si los días de trabajo
+    dividen exacto el ciclo (1 y 1 = 24×24, 2 y 2, 3 y 3…) son k = largo ÷
+    trabajo que se turnan, sin sacafranco; si no, es un fijo y el sacafranco
+    tapa sus libres. El servidor crea una plaza por persona (teselado). */
+export function personasQueSeTurnan(r: Rotacion | null): number {
+  if (!r) return 1;
+  const trabajo = r.dayShifts + r.nightShifts;
+
+  return trabajo > 0 && r.largo % trabajo === 0 ? Math.min(4, r.largo / trabajo) : 1;
+}
+
+/** Rótulo del tramo: «24 h» si su franja es el día entero; si no, su nombre. */
+export function rotuloDeTramo(l: string, franjas: Pick<Franja, "start" | "end">[]): string {
+  if (l === "L") return "";
+  const f = franjas.find((x) => letraDeFranja(x) === l);
+
+  return f && duracion(f) === 1440 ? "24 h" : NOMBRE_TRAMO[l] || l;
+}
+
 export interface StationCreada {
   id: string;
   name: string;
@@ -168,41 +244,124 @@ export default function StationCreateForm({
   const [newName, setNewName] = useState("");
   const [nickname, setNickname] = useState("");
   const [newDescription, setNewDescription] = useState("");
-  // La cobertura: franjas con cuántos a la vez. Nace vacía: se elige un atajo
-  // o se escriben las horas.
-  const [franjas, setFranjas] = useState<Franja[]>([]);
-  /* LA ROTACIÓN POR DEFECTO DEL PUESTO (opcional). Es una plantilla: «aquí
-     se rota 3 D · 3 N · 2 L». Cada vigilante la hereda al asignarlo, con su
-     propio desfase, y en el Planificador se puede cambiar persona a persona.
-     Vacía = se decide al asignar al primero. */
-  const [rotationStyleId, setRotationStyleId] = useState("");
+  /* LA COBERTURA: se dice como se contrata —«24 horas» o «de tal hora a tal
+     hora»—, en cuántos turnos se parte y cuántos a la vez. De eso salen las
+     franjas; quien quiera retocarlas a mano puede. */
+  const [modo, setModo] = useState<"" | "24h" | "horario">("");
+  const [desde, setDesde] = useState("07:00");
+  const [hasta, setHasta] = useState("19:00");
+  const [turnos, setTurnos] = useState(1);
+  const [aLaVez, setALaVez] = useState(1);
+  const [diasGlobal, setDiasGlobal] = useState<string[]>([]);
+  const [ajustar, setAjustar] = useState(false);
+  const [manuales, setManuales] = useState<Franja[]>([]);
+  const ventana = modo === "24h" ? { desde, hasta: desde } : { desde, hasta };
+  const horasVentana = modo
+    ? duracion({ start: ventana.desde, end: ventana.hasta }) / 60
+    : 0;
+  const calculadas = useMemo(
+    () =>
+      modo
+        ? partir(ventana.desde, ventana.hasta, turnos, aLaVez, diasGlobal)
+        : [],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [modo, desde, hasta, turnos, aLaVez, diasGlobal],
+  );
+  const franjas = ajustar ? manuales : calculadas;
   const seats = franjas.reduce((acc, f) => acc + Math.max(1, f.guards), 0);
   const franjasOk =
     franjas.length > 0 &&
     franjas.every((f) => duracion(f) > 0 && f.guards >= 1 && f.guards <= 20);
+  const elegirModo = (m: "24h" | "horario") => {
+    setModo(m);
+    setAjustar(false);
+    if (m === "24h") {
+      setDesde("07:00");
+      setTurnos(2);
+    } else {
+      setTurnos(1);
+    }
+  };
   const cambiarFranja = (fid: string, delta: Partial<Franja>) =>
-    setFranjas((fs) => fs.map((f) => (f.id === fid ? { ...f, ...delta } : f)));
+    setManuales((fs) => fs.map((f) => (f.id === fid ? { ...f, ...delta } : f)));
   const quitarFranja = (fid: string) =>
-    setFranjas((fs) => fs.filter((f) => f.id !== fid));
+    setManuales((fs) => fs.filter((f) => f.id !== fid));
   const anadirFranja = () =>
-    setFranjas((fs) => {
+    setManuales((fs) => {
       const ultima = fs[fs.length - 1];
 
       return [
         ...fs,
-        nuevaFranja(ultima?.end || "07:00", ultima ? ultima.start : "19:00"),
+        nuevaFranja(
+          ultima?.end || "07:00",
+          ultima ? ultima.start : "19:00",
+          aLaVez,
+        ),
       ];
     });
-  const presetActivo = PRESETS.find((p) => {
-    const q = p.franjas();
-
-    return (
-      q.length === franjas.length &&
-      q.every(
-        (x, i) => x.start === franjas[i].start && x.end === franjas[i].end,
-      )
+  const abrirAjuste = () => {
+    setManuales(
+      calculadas.map((f) => ({
+        ...f,
+        id: Math.random().toString(36).slice(2),
+      })),
     );
-  })?.key;
+    setAjustar(true);
+  };
+  /* LA ROTACIÓN (opcional): un contador por tramo (D/T/N según la hora de
+     cada franja) y otro de libres. Para el puesto entero, o PLAZA POR PLAZA
+     cuando cada vigilante lleva un ciclo distinto (BIOMAR: la mañana 2-3-2,
+     la tarde 3-2-2). */
+  const tramos = useMemo(() => {
+    const vistos: string[] = [];
+
+    for (const f of franjas) {
+      const l = letraDeFranja(f);
+
+      if (!vistos.includes(l)) vistos.push(l);
+    }
+
+    return vistos;
+  }, [franjas]);
+  const plazas = useMemo(
+    () =>
+      [...franjas]
+        .sort((x, y) => toMin(x.start) - toMin(y.start))
+        .flatMap((f) => Array.from({ length: Math.max(1, f.guards) }, () => f)),
+    [franjas],
+  );
+  const [porPlaza, setPorPlaza] = useState(false);
+  const [ciclos, setCiclos] = useState<Record<string, Ciclo>>({});
+  const [alterna, setAlterna] = useState(false);
+  const [dominical, setDominical] = useState(false);
+  const cicloDe = (k: string): Ciclo => ciclos[k] || CICLO_VACIO;
+  const ponerCiclo = (k: string, l: keyof Ciclo, v: number) =>
+    setCiclos((cs) => ({
+      ...cs,
+      [k]: { ...cicloDe(k), [l]: Math.max(0, Math.min(30, v)) },
+    }));
+  const rotacion = useMemo(
+    () => rotacionDe(cicloDe("*"), tramos, alterna, dominical),
+    [ciclos, tramos, alterna, dominical],
+  ); // eslint-disable-line react-hooks/exhaustive-deps
+  const rotacionesPorPlaza = useMemo(
+    () =>
+      plazas.map((_, i) =>
+        rotacionDe(cicloDe(String(i)), tramos, alterna, dominical),
+      ),
+    [plazas, ciclos, tramos, alterna, dominical], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+  /* Cuánta gente fija pide el puesto con estos ciclos: por asiento, k que se
+     turnan (ciclo que cierra exacto) o 1 fijo cuyos libres tapa el sacafranco. */
+  const rotacionesEfectivas = porPlaza
+    ? rotacionesPorPlaza
+    : plazas.map(() => rotacion);
+  const necesarios = rotacionesEfectivas.some(Boolean)
+    ? rotacionesEfectivas.reduce((acc, r) => acc + personasQueSeTurnan(r), 0)
+    : 0;
+  const conSacafranco = rotacionesEfectivas.some(
+    (r) => r && !r.noRepresentable && personasQueSeTurnan(r) === 1,
+  );
 
   /* EL RADIO EN LA UNIDAD DE LA EMPRESA. En EE. UU. se piensa en pies; el
      servidor sigue guardando metros. Y el PUNTO EXACTO del puesto: nace en
@@ -246,7 +405,7 @@ export default function StationCreateForm({
       toast.error(
         t(
           "ui.StationCreateForm.faltaCobertura",
-          "Di qué horas se cubre: al menos una franja con sus horas y cuántos vigilantes a la vez.",
+          "Di qué horas se cubre: 24 horas o de qué hora a qué hora, y cuántos vigilantes a la vez.",
         ),
       );
 
@@ -254,10 +413,10 @@ export default function StationCreateForm({
     }
     setSaving(true);
     try {
-      const latitud =
-        puntoFinal?.lat ?? (site?.latitud || site?.latitude || "");
-      const longitud =
-        puntoFinal?.lng ?? (site?.longitud || site?.longitude || "");
+      /* Sin pin ni sede geolocalizada va `null`: la columna es DECIMAL y
+         una cadena vacía la rompe («Data truncated for column 'latitud'»). */
+      const latitud = puntoFinal?.lat ?? null;
+      const longitud = puntoFinal?.lng ?? null;
       const tipo = tipoDeFranjas(franjas);
       const ordenadas = [...franjas].sort(
         (x, y) => toMin(x.start) - toMin(y.start),
@@ -311,8 +470,49 @@ export default function StationCreateForm({
       invalidateEntity("stations");
       const newStationId = createdSt?.id || createdSt?.data?.id || null;
 
-      // Las plazas: una por vigilante a la vez en cada franja. Sin ciclo: el
-      // ciclo lo pone la primera persona que se asigne (o el Planificador).
+      // La rotación se vuelve patrón del servidor (reutilizado si ya existía
+      // uno igual): uno para el puesto, o uno por plaza. Si falla, la
+      // estación queda sin plantilla y el ciclo se decide al asignar.
+      const crearPatron = async (r: Rotacion | null): Promise<string> => {
+        if (!r || r.noRepresentable || !newStationId) return "";
+        try {
+          const res: any = await ApiService.post(
+            `/tenant/${tenantId}/rotation-style`,
+            {
+              data: {
+                name: r.nombre,
+                dayShifts: r.dayShifts,
+                nightShifts: r.nightShifts,
+                restDays: r.restDays,
+                alternatesDayNight: r.alterna,
+                sundayDoubleRest: r.dominical,
+                reuseIfExists: true,
+              },
+            },
+          );
+
+          return res?.id || res?.data?.id || "";
+        } catch (e) {
+          console.error("rotation-style failed", e);
+
+          return "";
+        }
+      };
+      let rotationStyleId = "";
+      let positionRotationStyleIds: string[] | undefined;
+
+      if (porPlaza) {
+        positionRotationStyleIds = [];
+        for (const r of rotacionesPorPlaza)
+          positionRotationStyleIds.push(await crearPatron(r));
+        rotationStyleId = positionRotationStyleIds.find(Boolean) || "";
+        if (!positionRotationStyleIds.some(Boolean))
+          positionRotationStyleIds = undefined;
+      } else {
+        rotationStyleId = await crearPatron(rotacion);
+      }
+
+      // Las plazas: una por vigilante a la vez en cada franja.
       if (newStationId) {
         try {
           await ApiService.post(
@@ -321,6 +521,7 @@ export default function StationCreateForm({
               data: {
                 scheduleType: tipo,
                 rotationStyleId: rotationStyleId || undefined,
+                positionRotationStyleIds,
                 franjas: ordenadas.map((f) => ({
                   start: f.start,
                   end: f.end,
@@ -407,7 +608,7 @@ export default function StationCreateForm({
             </p>
           </div>
 
-          {/* ¿Qué horas se cubre? — la cobertura con números */}
+          {/* ¿Qué horas se cubre? — como se contrata: 24 h o de tal a tal hora */}
           <div>
             <label className="mb-1 block text-sm font-medium">
               {t(
@@ -415,20 +616,14 @@ export default function StationCreateForm({
                 "¿Qué horas se cubre? *",
               )}
             </label>
-            <p className="mb-3 text-xs" style={{ color: "var(--ink-soft)" }}>
-              {t(
-                "ui.StationCreateForm.coberturaExplica",
-                "De qué hora a qué hora y cuántos vigilantes a la vez. Quién lo cubre y con qué ciclo se decide al asignar, en el Planificador.",
-              )}
-            </p>
-            <div className="mb-3 flex flex-wrap gap-2">
-              {PRESETS.map((p) => {
-                const activo = presetActivo === p.key;
+            <div className="flex flex-wrap items-center gap-2">
+              {(["24h", "horario"] as const).map((m) => {
+                const activo = modo === m;
 
                 return (
                   <button
-                    key={p.key}
-                    className="cg-focus inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-opacity hover:opacity-80"
+                    key={m}
+                    className="cg-focus rounded-full border px-3 py-1.5 text-xs font-semibold transition-opacity hover:opacity-80"
                     style={
                       activo
                         ? {
@@ -443,185 +638,382 @@ export default function StationCreateForm({
                           }
                     }
                     type="button"
-                    onClick={() => setFranjas(p.franjas())}
+                    onClick={() => elegirModo(m)}
                   >
-                    {p.icon}
-                    {t(`ui.StationCreateForm.preset.${p.key}`, p.label)}
+                    {m === "24h"
+                      ? t("ui.StationCreateForm.preset.24h", "24 horas")
+                      : t(
+                          "ui.StationCreateForm.unHorario",
+                          "Un horario (hora de entrada y de salida)",
+                        )}
                   </button>
                 );
               })}
             </div>
 
-            {franjas.length === 0 ? (
-              <p
-                className="rounded-lg border border-dashed px-4 py-5 text-center text-xs"
-                style={{
-                  borderColor: "var(--hairline)",
-                  color: "var(--ink-faint)",
-                }}
-              >
-                {t(
-                  "ui.StationCreateForm.sinFranjas",
-                  "Elige un atajo o añade una franja con sus horas.",
-                )}
-              </p>
-            ) : (
-              <div className="space-y-2">
-                {franjas.map((f, i) => {
-                  const min = duracion(f);
-                  const mal = min === 0 || f.guards < 1;
-
-                  return (
-                    <div
-                      key={f.id}
-                      className="glass-flat flex flex-wrap items-center gap-2 px-3 py-2"
-                      style={mal ? { borderColor: "var(--bad)" } : undefined}
-                    >
-                      <span
-                        className="w-6 text-center text-xs font-bold tabular-nums"
-                        style={{ color: "var(--ink-faint)" }}
-                      >
-                        {i + 1}
-                      </span>
-                      <span
-                        className="text-xs"
-                        style={{ color: "var(--ink-soft)" }}
-                      >
+            {modo && (
+              <div className="glass-flat mt-3 space-y-3 p-3">
+                {/* Fila 1: la ventana y en cuántos turnos se parte */}
+                <div className="flex flex-wrap items-center gap-2 text-sm">
+                  {modo === "horario" ? (
+                    <>
+                      <span style={{ color: "var(--ink-soft)" }}>
                         {t("ui.StationCreateForm.de", "de")}
                       </span>
                       <input
-                        className="cg-input cg-focus h-8 w-24 px-2 text-center font-mono text-sm"
+                        className="cg-input cg-focus h-8 w-28 px-2 text-center font-mono text-sm"
                         type="time"
-                        value={f.start}
-                        onChange={(e) =>
-                          cambiarFranja(f.id, { start: e.target.value })
-                        }
+                        value={desde}
+                        onChange={(e) => setDesde(e.target.value)}
                       />
-                      <span
-                        className="text-xs"
-                        style={{ color: "var(--ink-soft)" }}
-                      >
+                      <span style={{ color: "var(--ink-soft)" }}>
                         {t("ui.StationCreateForm.a", "a")}
                       </span>
                       <input
-                        className="cg-input cg-focus h-8 w-24 px-2 text-center font-mono text-sm"
+                        className="cg-input cg-focus h-8 w-28 px-2 text-center font-mono text-sm"
                         type="time"
-                        value={f.end}
-                        onChange={(e) =>
-                          cambiarFranja(f.id, { end: e.target.value })
-                        }
+                        value={hasta}
+                        onChange={(e) => setHasta(e.target.value)}
                       />
-                      <span
-                        className="text-xs tabular-nums"
-                        style={{ color: "var(--ink-faint)" }}
-                      >
-                        {min > 0
-                          ? `${Math.round((min / 60) * 10) / 10} h`
-                          : "—"}
+                    </>
+                  ) : (
+                    <>
+                      <span style={{ color: "var(--ink-soft)" }}>
+                        {t("ui.StationCreateForm.relevoALas", "relevo a las")}
                       </span>
-                      <span
-                        className="mx-1 h-5 w-px"
-                        style={{ background: "var(--hairline)" }}
-                      />
                       <input
-                        className="cg-input cg-focus h-8 w-14 px-2 text-center text-sm"
-                        max={20}
-                        min={1}
-                        type="number"
-                        value={f.guards}
-                        onChange={(e) =>
-                          cambiarFranja(f.id, {
-                            guards: Math.max(
-                              1,
-                              Math.min(20, Number(e.target.value) || 1),
-                            ),
-                          })
-                        }
+                        className="cg-input cg-focus h-8 w-28 px-2 text-center font-mono text-sm"
+                        type="time"
+                        value={desde}
+                        onChange={(e) => setDesde(e.target.value)}
                       />
-                      <span
-                        className="text-xs"
-                        style={{ color: "var(--ink-soft)" }}
+                    </>
+                  )}
+                  <span className="font-semibold tabular-nums">
+                    {Math.round(horasVentana * 10) / 10} h
+                  </span>
+                  <span
+                    className="mx-1 h-5 w-px"
+                    style={{ background: "var(--hairline)" }}
+                  />
+                  <span style={{ color: "var(--ink-soft)" }}>
+                    {t("ui.StationCreateForm.enTurnosDe", "en")}
+                  </span>
+                  <input
+                    className="cg-input cg-focus h-8 w-14 px-2 text-center text-sm"
+                    max={6}
+                    min={1}
+                    type="number"
+                    value={turnos}
+                    onChange={(e) =>
+                      setTurnos(
+                        Math.max(1, Math.min(6, Number(e.target.value) || 1)),
+                      )
+                    }
+                  />
+                  <span style={{ color: "var(--ink-soft)" }}>
+                    {t("ui.StationCreateForm.turnosDeNh", {
+                      defaultValue: "turno(s) de {{h}} h",
+                      h: horasVentana
+                        ? Math.round(
+                            (horasVentana / Math.max(1, turnos)) * 10,
+                          ) / 10
+                        : 0,
+                    })}
+                  </span>
+                </div>
+                {/* Fila 2: cuántos a la vez y qué días — juntos, para que el número no se pierda */}
+                <div className="flex flex-wrap items-center gap-3 text-sm">
+                  <span className="inline-flex items-center gap-2">
+                    <input
+                      className="cg-input cg-focus h-8 w-14 px-2 text-center text-sm"
+                      max={20}
+                      min={1}
+                      type="number"
+                      value={aLaVez}
+                      onChange={(e) =>
+                        setALaVez(
+                          Math.max(
+                            1,
+                            Math.min(20, Number(e.target.value) || 1),
+                          ),
+                        )
+                      }
+                    />
+                    <span style={{ color: "var(--ink-soft)" }}>
+                      {t(
+                        "ui.StationCreateForm.aLaVez",
+                        "vigilante(s) a la vez",
+                      )}
+                    </span>
+                  </span>
+                  <span
+                    className="h-5 w-px"
+                    style={{ background: "var(--hairline)" }}
+                  />
+                  <span className="inline-flex items-center gap-1.5">
+                    <span
+                      className="text-xs"
+                      style={{ color: "var(--ink-soft)" }}
+                    >
+                      {t("ui.StationCreateForm.dias", "días")}
+                    </span>
+                    <span className="flex gap-0.5">
+                      {DIAS.map((d) => {
+                        const todos = diasGlobal.length === 0;
+                        const on = todos || diasGlobal.includes(d);
+
+                        return (
+                          <button
+                            key={d}
+                            aria-pressed={on}
+                            className="cg-focus h-6 w-6 rounded text-[10px] font-bold"
+                            style={
+                              on
+                                ? {
+                                    background:
+                                      "color-mix(in oklab, var(--brand) 22%, transparent)",
+                                    color: "var(--brand-text)",
+                                  }
+                                : {
+                                    background: "var(--glass-sunken)",
+                                    color: "var(--ink-faint)",
+                                  }
+                            }
+                            title={d}
+                            type="button"
+                            onClick={() => {
+                              const actuales: string[] = todos
+                                ? [...DIAS]
+                                : diasGlobal;
+                              const sig = on
+                                ? actuales.filter((x) => x !== d)
+                                : [...actuales, d];
+
+                              setDiasGlobal(sig.length === 7 ? [] : sig);
+                            }}
+                          >
+                            {DIAS_CORTO[d]}
+                          </button>
+                        );
+                      })}
+                    </span>
+                  </span>
+                </div>
+
+                {/* Las franjas que salen de eso */}
+                <div>
+                  <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
+                    <span className="cg-eyebrow">
+                      {ajustar
+                        ? t(
+                            "ui.StationCreateForm.franjasAjustadas",
+                            "Franjas (ajustadas a mano)",
+                          )
+                        : t(
+                            "ui.StationCreateForm.franjasResultantes",
+                            "Franjas que se cubren",
+                          )}
+                    </span>
+                    {!ajustar ? (
+                      <button
+                        className="cg-focus text-xs font-semibold"
+                        style={{ color: "var(--brand-text)" }}
+                        type="button"
+                        onClick={abrirAjuste}
                       >
                         {t(
-                          "ui.StationCreateForm.aLaVez",
-                          "vigilante(s) a la vez",
+                          "ui.StationCreateForm.ajustarAMano",
+                          "Ajustar a mano",
                         )}
-                      </span>
-                      <span
-                        className="mx-1 h-5 w-px"
-                        style={{ background: "var(--hairline)" }}
-                      />
-                      <div className="flex gap-0.5">
-                        {DIAS.map((d) => {
-                          const todos = f.days.length === 0;
-                          const on = todos || f.days.includes(d);
-
-                          return (
-                            <button
-                              key={d}
-                              aria-pressed={on}
-                              className="cg-focus h-6 w-6 rounded text-[10px] font-bold"
-                              style={
-                                on
-                                  ? {
-                                      background:
-                                        "color-mix(in oklab, var(--brand) 22%, transparent)",
-                                      color: "var(--brand-text)",
-                                    }
-                                  : {
-                                      background: "var(--glass-sunken)",
-                                      color: "var(--ink-faint)",
-                                    }
-                              }
-                              title={d}
-                              type="button"
-                              onClick={() => {
-                                const actuales: string[] = todos
-                                  ? [...DIAS]
-                                  : f.days;
-                                const sig = on
-                                  ? actuales.filter((x) => x !== d)
-                                  : [...actuales, d];
-
-                                cambiarFranja(f.id, {
-                                  days: sig.length === 7 ? [] : sig,
-                                });
-                              }}
-                            >
-                              {DIAS_CORTO[d]}
-                            </button>
-                          );
-                        })}
-                      </div>
+                      </button>
+                    ) : (
                       <button
-                        aria-label={t(
-                          "ui.StationCreateForm.quitarFranja",
-                          "Quitar franja",
-                        )}
-                        className="cg-focus ml-auto rounded-md"
-                        style={{ color: "var(--bad-text)" }}
+                        className="cg-focus text-xs font-semibold"
+                        style={{ color: "var(--brand-text)" }}
                         type="button"
-                        onClick={() => quitarFranja(f.id)}
+                        onClick={() => setAjustar(false)}
                       >
-                        <X className="h-3.5 w-3.5" />
+                        {t(
+                          "ui.StationCreateForm.volverAutomatico",
+                          "Volver a lo automático",
+                        )}
+                      </button>
+                    )}
+                  </div>
+                  {!ajustar ? (
+                    <div className="flex flex-wrap gap-1.5">
+                      {calculadas.map((f, i) => (
+                        <span
+                          key={f.id}
+                          className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-xs"
+                          style={{ borderColor: "var(--hairline)" }}
+                        >
+                          <span
+                            className="grid h-4 w-4 place-items-center rounded-full text-[10px] font-bold"
+                            style={{
+                              background:
+                                "color-mix(in oklab, var(--brand) 22%, transparent)",
+                              color: "var(--brand-text)",
+                            }}
+                          >
+                            {letraDeFranja(f)}
+                          </span>
+                          {i + 1} · {f.start}–{f.end} · ×{f.guards}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {manuales.map((f, i) => {
+                        const min = duracion(f);
+                        const mal = min === 0 || f.guards < 1;
+
+                        return (
+                          <div
+                            key={f.id}
+                            className="flex flex-wrap items-center gap-2 rounded-lg border px-3 py-2"
+                            style={{
+                              borderColor: mal
+                                ? "var(--bad)"
+                                : "var(--hairline)",
+                            }}
+                          >
+                            <span
+                              className="w-6 text-center text-xs font-bold tabular-nums"
+                              style={{ color: "var(--ink-faint)" }}
+                            >
+                              {i + 1}
+                            </span>
+                            <input
+                              className="cg-input cg-focus h-8 w-28 px-2 text-center font-mono text-sm"
+                              type="time"
+                              value={f.start}
+                              onChange={(e) =>
+                                cambiarFranja(f.id, { start: e.target.value })
+                              }
+                            />
+                            <span
+                              className="text-xs"
+                              style={{ color: "var(--ink-soft)" }}
+                            >
+                              {t("ui.StationCreateForm.a", "a")}
+                            </span>
+                            <input
+                              className="cg-input cg-focus h-8 w-28 px-2 text-center font-mono text-sm"
+                              type="time"
+                              value={f.end}
+                              onChange={(e) =>
+                                cambiarFranja(f.id, { end: e.target.value })
+                              }
+                            />
+                            <span
+                              className="text-xs tabular-nums"
+                              style={{ color: "var(--ink-faint)" }}
+                            >
+                              {min > 0
+                                ? `${Math.round((min / 60) * 10) / 10} h`
+                                : "—"}
+                            </span>
+                            <span className="inline-flex items-center gap-1.5">
+                              <input
+                                className="cg-input cg-focus h-8 w-14 px-2 text-center text-sm"
+                                max={20}
+                                min={1}
+                                type="number"
+                                value={f.guards}
+                                onChange={(e) =>
+                                  cambiarFranja(f.id, {
+                                    guards: Math.max(
+                                      1,
+                                      Math.min(20, Number(e.target.value) || 1),
+                                    ),
+                                  })
+                                }
+                              />
+                              <span
+                                className="text-xs"
+                                style={{ color: "var(--ink-soft)" }}
+                              >
+                                {t(
+                                  "ui.StationCreateForm.aLaVez",
+                                  "vigilante(s) a la vez",
+                                )}
+                              </span>
+                            </span>
+                            <div className="flex gap-0.5">
+                              {DIAS.map((d) => {
+                                const todos = f.days.length === 0;
+                                const on = todos || f.days.includes(d);
+
+                                return (
+                                  <button
+                                    key={d}
+                                    aria-pressed={on}
+                                    className="cg-focus h-6 w-6 rounded text-[10px] font-bold"
+                                    style={
+                                      on
+                                        ? {
+                                            background:
+                                              "color-mix(in oklab, var(--brand) 22%, transparent)",
+                                            color: "var(--brand-text)",
+                                          }
+                                        : {
+                                            background: "var(--glass-sunken)",
+                                            color: "var(--ink-faint)",
+                                          }
+                                    }
+                                    title={d}
+                                    type="button"
+                                    onClick={() => {
+                                      const actuales: string[] = todos
+                                        ? [...DIAS]
+                                        : f.days;
+                                      const sig = on
+                                        ? actuales.filter((x) => x !== d)
+                                        : [...actuales, d];
+
+                                      cambiarFranja(f.id, {
+                                        days: sig.length === 7 ? [] : sig,
+                                      });
+                                    }}
+                                  >
+                                    {DIAS_CORTO[d]}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                            <button
+                              aria-label={t(
+                                "ui.StationCreateForm.quitarFranja",
+                                "Quitar franja",
+                              )}
+                              className="cg-focus ml-auto rounded-md"
+                              style={{ color: "var(--bad-text)" }}
+                              type="button"
+                              onClick={() => quitarFranja(f.id)}
+                            >
+                              <X className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        );
+                      })}
+                      <button
+                        className="cg-focus inline-flex items-center gap-1 text-xs font-semibold"
+                        style={{ color: "var(--brand-text)" }}
+                        type="button"
+                        onClick={anadirFranja}
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                        {t(
+                          "ui.StationCreateForm.anadirFranja",
+                          "Añadir franja",
+                        )}
                       </button>
                     </div>
-                  );
-                })}
-              </div>
-            )}
-            <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-              <button
-                className="cg-focus inline-flex items-center gap-1 text-xs font-semibold"
-                style={{ color: "var(--brand-text)" }}
-                type="button"
-                onClick={anadirFranja}
-              >
-                <Plus className="h-3.5 w-3.5" />
-                {t("ui.StationCreateForm.anadirFranja", "Añadir franja")}
-              </button>
-              {franjas.length > 0 && (
-                <span className="text-xs" style={{ color: "var(--ink-soft)" }}>
+                  )}
+                </div>
+                <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
                   {t("ui.StationCreateForm.resumenCobertura", {
                     defaultValue:
                       "{{horas}} h-vigilante al día · {{plazas}} plaza(s)",
@@ -636,18 +1028,19 @@ export default function StationCreateForm({
                       ) / 10,
                     plazas: seats,
                   })}
-                </span>
-              )}
-            </div>
+                </p>
+              </div>
+            )}
           </div>
 
-          {/* ¿Cómo rotan? — la plantilla del puesto, opcional */}
+          {/* ¿Cómo trabajan? — un contador por tramo (D / T / N según la hora) y otro de libres;
+              para el puesto entero o plaza por plaza */}
           {franjasOk && (
             <div>
               <label className="mb-1 block text-sm font-medium">
                 {t(
-                  "ui.StationCreateForm.comoRotan",
-                  "¿Cómo rotan los vigilantes de este puesto?",
+                  "ui.StationCreateForm.comoTrabajan",
+                  "¿Cómo trabajan los vigilantes de este puesto?",
                 )}
                 <span
                   className="ml-2 text-xs font-normal"
@@ -658,15 +1051,205 @@ export default function StationCreateForm({
               </label>
               <p className="mb-3 text-xs" style={{ color: "var(--ink-soft)" }}>
                 {t(
-                  "ui.StationCreateForm.comoRotanExplica",
-                  "El ciclo que siguen quienes cubren este puesto (por ejemplo 3 de día, 3 de noche, 2 de descanso). Cada vigilante lo hereda al asignarlo, con su propio desfase para que entre ellos se cubran; los descansos los tapa el sacafranco. Si lo dejas vacío, se decide al asignar al primero.",
+                  "ui.StationCreateForm.comoTrabajanExplica",
+                  "Cuántos días seguidos hace cada vigilante en cada tramo y cuántos libra. Cada uno lo hereda al asignarlo, con su desfase para que entre ellos se cubran. Si el ciclo cierra exacto (1 y 1 = 24×24, 2 y 2…) los compañeros se turnan sin sacafranco; si no, el sacafranco tapa los libres. En el Planificador se cambia persona a persona.",
                 )}
               </p>
-              <RotationStyleSelect
-                scheduleType={tipoDeFranjas(franjas)}
-                value={rotationStyleId}
-                onChange={setRotationStyleId}
-              />
+              <div className="mb-3 flex flex-wrap gap-2">
+                {[false, true].map((pp) => (
+                  <button
+                    key={String(pp)}
+                    className="cg-focus rounded-full border px-3 py-1 text-xs font-semibold"
+                    style={
+                      porPlaza === pp
+                        ? {
+                            background: "var(--brand)",
+                            color: "var(--brand-ink)",
+                            borderColor: "var(--brand)",
+                          }
+                        : {
+                            background: "var(--glass)",
+                            color: "var(--ink)",
+                            borderColor: "var(--hairline)",
+                          }
+                    }
+                    type="button"
+                    onClick={() => setPorPlaza(pp)}
+                  >
+                    {pp
+                      ? t(
+                          "ui.StationCreateForm.cadaPlazaSuCiclo",
+                          "Cada plaza con su propio ciclo",
+                        )
+                      : t(
+                          "ui.StationCreateForm.mismoCicloTodos",
+                          "El mismo ciclo para todos",
+                        )}
+                  </button>
+                ))}
+              </div>
+              {(porPlaza
+                ? plazas.map((f, i) => ({ k: String(i), f, i }))
+                : [{ k: "*", f: null, i: -1 }]
+              ).map(({ k, f, i }) => {
+                const c = cicloDe(k);
+                const r = porPlaza ? rotacionesPorPlaza[i] : rotacion;
+
+                return (
+                  <div
+                    key={k}
+                    className="mb-2 flex flex-wrap items-center gap-2"
+                  >
+                    {f && (
+                      <span className="w-40 shrink-0 text-xs">
+                        <span className="font-semibold">
+                          {t("ui.StationCreateForm.plazaN", {
+                            defaultValue: "Plaza {{n}}",
+                            n: i + 1,
+                          })}
+                        </span>
+                        <span
+                          className="block font-mono text-[10px]"
+                          style={{ color: "var(--ink-faint)" }}
+                        >
+                          {letraDeFranja(f)} · {f.start}–{f.end}
+                        </span>
+                      </span>
+                    )}
+                    {[...tramos, "L"].map((l) => {
+                      const esLibre = l === "L";
+                      const n = c[l as keyof Ciclo] || 0;
+                      const fr = esLibre
+                        ? null
+                        : franjas.find((x) => letraDeFranja(x) === l);
+
+                      return (
+                        <div
+                          key={l}
+                          className="glass-flat flex min-w-[8.5rem] flex-col items-center gap-1 rounded-xl px-3 py-2"
+                        >
+                          <span
+                            className="text-xs font-bold"
+                            style={{
+                              color: esLibre
+                                ? "var(--ink-soft)"
+                                : "var(--brand-text)",
+                            }}
+                          >
+                            {esLibre
+                              ? t("ui.StationCreateForm.libres", "L · libres")
+                              : `${l} · ${rotuloDeTramo(l, franjas) === "24 h" ? "24 h" : t(`ui.StationCreateForm.tramo.${l}`, NOMBRE_TRAMO[l])}`}
+                          </span>
+                          {fr && !f && (
+                            <span
+                              className="font-mono text-[10px]"
+                              style={{ color: "var(--ink-faint)" }}
+                            >
+                              {fr.start}–{fr.end}
+                            </span>
+                          )}
+                          <span className="flex items-center gap-1">
+                            <button
+                              aria-label="−"
+                              className="cg-focus glass h-8 w-8 rounded-md text-base"
+                              type="button"
+                              onClick={() =>
+                                ponerCiclo(k, l as keyof Ciclo, n - 1)
+                              }
+                            >
+                              −
+                            </button>
+                            <input
+                              className="cg-input cg-focus h-8 w-12 px-1 text-center text-sm font-semibold"
+                              min={0}
+                              type="number"
+                              value={n}
+                              onChange={(e) =>
+                                ponerCiclo(
+                                  k,
+                                  l as keyof Ciclo,
+                                  Number(e.target.value) || 0,
+                                )
+                              }
+                            />
+                            <button
+                              aria-label="+"
+                              className="cg-focus glass h-8 w-8 rounded-md text-base"
+                              type="button"
+                              onClick={() =>
+                                ponerCiclo(k, l as keyof Ciclo, n + 1)
+                              }
+                            >
+                              +
+                            </button>
+                          </span>
+                        </div>
+                      );
+                    })}
+                    {r && (
+                      <span
+                        className="text-xs"
+                        style={{ color: "var(--ink-soft)" }}
+                      >
+                        = {r.nombre} ·{" "}
+                        {t("ui.StationCreateForm.cicloDeN", {
+                          defaultValue: "ciclo de {{n}} días",
+                          n: r.largo,
+                        })}
+                        {r.noRepresentable
+                          ? ` · ${t("ui.StationCreateForm.tresTramosEnPlanificador", "con tres tramos se cuadra al asignar / en el Planificador")}`
+                          : personasQueSeTurnan(r) > 1
+                            ? ` · ${t("ui.StationCreateForm.seTurnan", {
+                                defaultValue:
+                                  "{{k}} vigilantes que se turnan, sin sacafranco",
+                                k: personasQueSeTurnan(r),
+                              })}`
+                            : ` · ${t("ui.StationCreateForm.fijoMasSacafranco", "un fijo; el sacafranco tapa sus libres")}`}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+              {necesarios > 0 && (
+                <p
+                  className="mb-2 text-xs font-semibold"
+                  style={{ color: "var(--brand-text)" }}
+                >
+                  {t("ui.StationCreateForm.hacenFalta", {
+                    defaultValue: "Hacen falta {{n}} vigilante(s) fijos",
+                    n: necesarios,
+                  })}
+                  {conSacafranco
+                    ? ` ${t("ui.StationCreateForm.masSacafranco", "+ sacafranco para los libres")}`
+                    : ""}
+                </p>
+              )}
+              <div className="mt-1 flex flex-wrap items-center gap-4 text-xs">
+                {tramos.length >= 2 && (
+                  <label className="inline-flex items-center gap-1.5">
+                    <input
+                      checked={alterna}
+                      type="checkbox"
+                      onChange={(e) => setAlterna(e.target.checked)}
+                    />
+                    {t(
+                      "ui.StationCreateForm.seAlternan",
+                      "se alternan entre tramos (día y noche)",
+                    )}
+                  </label>
+                )}
+                <label className="inline-flex items-center gap-1.5">
+                  <input
+                    checked={dominical}
+                    type="checkbox"
+                    onChange={(e) => setDominical(e.target.checked)}
+                  />
+                  {t(
+                    "ui.StationCreateForm.francoDobleDomingo",
+                    "franco doble en domingo",
+                  )}
+                </label>
+              </div>
             </div>
           )}
 
