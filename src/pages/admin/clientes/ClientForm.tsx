@@ -1190,6 +1190,63 @@ export default function ClientForm({
               </div>
 
               {/* Logo & Place Picture uploads */}
+              {/* Teléfono fijo y sitio web son datos de la empresa: van aquí, no
+                  escondidos al final en un «Más información». */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField<ClientInput>
+                  control={form.control}
+                  name="faxNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">
+                        {t("clients.form.fax", "Teléfono fijo")}
+                      </FormLabel>
+                      <FormControl>
+                        <PhoneInput
+                          value={
+                            typeof field.value === "string" ? field.value : ""
+                          }
+                          onChange={(val) => {
+                            const digitsOnly = val.replace(/[^\d+]/g, "");
+                            const match = digitsOnly.match(/^(\+\d+)(\d*)$/);
+                            if (match) {
+                              const prefix = match[1];
+                              const local = match[2].slice(0, 10);
+                              field.onChange(prefix + local);
+                            } else {
+                              field.onChange(val.slice(0, 1 + 3 + 10));
+                            }
+                          }}
+                          maxLocalDigits={10}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField<ClientInput>
+                  control={form.control}
+                  name="website"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">
+                        {t("clients.form.website", "Sitio web")}
+                      </FormLabel>
+                      <FormControl>
+                        <input
+                          className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm disabled:opacity-50"
+                          placeholder="https://"
+                          {...field}
+                          value={
+                            typeof field.value === "string" ? field.value : ""
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                 {/* Logo upload */}
                 <div className="space-y-2">
@@ -1857,98 +1914,6 @@ export default function ClientForm({
               </div>
             </Section>
             {/* end address card */}
-
-            {/* ── Section 5: More Info ──────────────────────────────── */}
-            <div className="cg-card cg-card-hover overflow-hidden">
-              <Accordion type="single" collapsible defaultValue="more">
-                <AccordionItem value="more" className="border-0">
-                  <AccordionTrigger
-                    className="rounded-none border-b px-5 py-3.5 hover:no-underline [&[data-state=closed]]:border-b-0 [&[data-state=open]]:border-b"
-                    style={{
-                      borderColor: "var(--hairline)",
-                      background: "var(--glass-sunken)",
-                    }}
-                  >
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="flex h-7 w-7 items-center justify-center rounded-lg border"
-                        style={{
-                          background: "var(--brand-wash)",
-                          borderColor: "var(--brand-line)",
-                        }}
-                      >
-                        <Globe className="h-4 w-4 brand-text" />
-                      </div>
-                      <span className="text-sm font-semibold text-foreground">
-                        {t("clients.form.moreInfo", "Más información")}
-                      </span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="p-5">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField<ClientInput>
-                        control={form.control}
-                        name="faxNumber"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">
-                              {t("clients.form.fax", "Teléfono fijo")}
-                            </FormLabel>
-                            <FormControl>
-                              <PhoneInput
-                                value={
-                                  typeof field.value === "string"
-                                    ? field.value
-                                    : ""
-                                }
-                                onChange={(val) => {
-                                  const digitsOnly = val.replace(/[^\d+]/g, "");
-                                  const match =
-                                    digitsOnly.match(/^(\+\d+)(\d*)$/);
-                                  if (match) {
-                                    const prefix = match[1];
-                                    const local = match[2].slice(0, 10);
-                                    field.onChange(prefix + local);
-                                  } else {
-                                    field.onChange(val.slice(0, 1 + 3 + 10));
-                                  }
-                                }}
-                                maxLocalDigits={10}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField<ClientInput>
-                        control={form.control}
-                        name="website"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">
-                              {t("clients.form.website", "Sitio web")}
-                            </FormLabel>
-                            <FormControl>
-                              <input
-                                className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm disabled:opacity-50"
-                                placeholder="https://"
-                                {...field}
-                                value={
-                                  typeof field.value === "string"
-                                    ? field.value
-                                    : ""
-                                }
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </div>
 
             {/* ── Actions ──────────────────────────────────────────── */}
             <div className="flex justify-end gap-3 pt-1">
