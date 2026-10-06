@@ -21,6 +21,9 @@ import {
   FRANCO,
   LIBRE,
   REGLAS_POR_DEFECTO,
+  clave,
+  falta,
+  poner,
   sanear,
   type Franja,
   type Persona,
@@ -36,8 +39,24 @@ export interface HorarioReal {
   overrides?: any[];
 }
 
+/**
+ * De qué fila real sale cada pieza del plan. Lo necesita «Publicar» para
+ * volver a escribir en el servidor por los mismos caminos que usa el Horario.
+ */
+export interface Enlace {
+  personas: Record<string, { guardId: string; stationId: string; assignmentId: string; relevo: boolean; rotationStyleId: string | null }>;
+  puestos: Record<string, { postSiteId: string | null; scheduleType: string | null }>;
+  /** Turnos reales de cada asignación por día: id del turno y estación. */
+  turnos: Record<string, Record<number, { id: string; stationId: string }>>;
+  /** Coberturas del plan que vienen de un turno real (`persona|día`): sólo ésas se pueden retirar. */
+  cargadas: Record<string, string>;
+  /** Novedades reales por persona y día. */
+  novedades: Record<string, Record<number, { id: string; type: string }>>;
+}
+
 export interface PlanReal {
   plan: Plan;
+  enlace: Enlace;
   /** De 0 a 1: cuántos días de titular coinciden con los turnos reales. */
   coincidencia: number;
   /** Días comparados para esa cuenta. */
@@ -250,6 +269,9 @@ export function planDesdeHorarioReal(
   horizonte = Math.min(dias, horizonte || dias);
 
   const personas: Persona[] = [];
+  const enlace: Enlace = { personas: {}, puestos: {}, turnos: {}, cargadas: {}, novedades: {} };
+
+  for (const st of ov.stations || []) enlace.puestos[idLimpio(st.id)] = { postSiteId: st.postSiteId ? String(st.postSiteId) : null, scheduleType: st.scheduleType ?? null };
   let aciertos = 0;
   let comparados = 0;
 
@@ -334,8 +356,18 @@ export function planDesdeHorarioReal(
     }
     if (!relevo && hechos.size) { aciertos += horizonte - errores; comparados += horizonte; }
 
+    const pid = idLimpio(a.id);
+
+    enlace.personas[pid] = { guardId, stationId: pu.id, assignmentId: String(a.id ?? ""), relevo, rotationStyleId: a.rotationStyleId ? String(a.rotationStyleId) : null };
+    enlace.turnos[pid] = {};
+    for (const s of ov.shifts || []) {
+      if (String(s.guardId) !== guardId || !s.id) continue;
+      const dm = diaYMinuto(s.startTime, base, tz);
+
+      if (dm) enlace.turnos[pid][dm.d] = { id: String(s.id), stationId: idLimpio(s.stationId) };
+    }
     const persona: Persona = {
-      id: idLimpio(a.id),
+      id: pid,
       nombre,
       puesto: relevo ? null : pu.id,
       patron,
@@ -357,7 +389,10 @@ export function planDesdeHorarioReal(
       if (String(o.guardId) !== guardId) continue;
       const d = diasEntre(base, o.date);
 
-      persona.ausencias!.push({ desde: d, hasta: d, tipo: TIPOS[String(o.type)] || "permiso" });
+      if (!Number.isFinite(d)) continue;
+      (enlace.novedades[pid] = enlace.novedades[pid] || {})[d] = { id: String(o.id ?? ""), type: String(o.type ?? "") };
+      // Sólo las ausencias: un «F» o un «D/N» suelto son cambios de un día, no una ausencia.
+      if (TIPOS[String(o.type)]) persona.ausencias!.push({ desde: d, hasta: d, tipo: TIPOS[String(o.type)] });
     }
     personas.push(persona);
   }
@@ -365,9 +400,29 @@ export function planDesdeHorarioReal(
   const plan: Plan = { franjas, puestos, personas, cubre: {}, auto: {}, no: {}, reglas: { ...REGLAS_POR_DEFECTO } };
 
   sanear(plan);
+  // Lo que los sacafrancos YA cubren de verdad entra como cobertura puesta a
+  // mano (no automática): así el borrador abre igual que el horario y
+  // «Publicar» sabe qué turnos existen ya y cuáles son nuevos.
+  for (const p of plan.personas) {
+    if (p.puesto !== null) continue;
+    for (const [ds, t] of Object.entries(enlace.turnos[p.id] || {})) {
+      const d = Number(ds);
+      const pu = puestoPorId.get(t.stationId);
+
+      if (!pu || d < 0 || d >= dias) continue;
+      const h = real.get(enlace.personas[p.id].guardId)?.get(d);
+      const fr = h ? franjaMasCercana(pu, h.min) : pu.franjas[0];
+
+      if (fr && falta(plan, pu, fr, d) > 0) {
+        poner(plan, clave(pu.id, fr, d), p.id, false);
+        enlace.cargadas[`${p.id}|${d}`] = t.id;
+      }
+    }
+  }
 
   return {
     plan,
+    enlace,
     coincidencia: comparados ? Math.min(1, Math.max(0, aciertos / comparados)) : 1,
     comparados,
   };

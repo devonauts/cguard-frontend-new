@@ -7,6 +7,7 @@ import {
   Loader2,
   RotateCcw,
   Search,
+  Send,
   SlidersHorizontal,
   UserPlus,
   Undo2,
@@ -25,7 +26,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ApiService } from "@/services/api/apiService";
-import { hoyEnLaEmpresa, sumaDias, zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { hoyEnLaEmpresa, instanteEnLaEmpresa, sumaDias, zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { localeActual } from "@/lib/localeActual";
 import {
   FRANCO,
@@ -57,7 +58,8 @@ import {
   type Plan,
   type Puesto,
 } from "@/lib/planificador/motor";
-import { planDesdeHorarioReal } from "@/lib/planificador/real";
+import { planDesdeHorarioReal, type PlanReal } from "@/lib/planificador/real";
+import { planificarPublicacion, publicar, type Publicacion } from "@/lib/planificador/publicar";
 
 /**
  * PROGRAMADOR › PLANIFICADOR
@@ -78,6 +80,7 @@ type Hoja =
   | { tipo: "fijos"; persona: string }
   | { tipo: "ausencia"; persona: string }
   | { tipo: "reglas" }
+  | { tipo: "publicar" }
   | null;
 
 const FRANJAS_EXTRA: Record<string, Franja> = {
@@ -151,6 +154,8 @@ export default function Planificador() {
     setPlanEstado(p);
   };
   const [parecido, setParecido] = useState<number | null>(null);
+  /** Lo leído del servidor, tal cual: contra esto se calcula qué publicar. */
+  const [leido, setLeido] = useState<PlanReal | null>(null);
   const [cargando, setCargando] = useState(true);
   const [semana, setSemana] = useState(0);
   const [cambios, setCambios] = useState(0);
@@ -173,6 +178,7 @@ export default function Planificador() {
 
       limpiar(r.plan, -7, 14);
       pila.current = [];
+      setLeido({ ...r, plan: copiar(r.plan) });
       setPlan(r.plan);
       setParecido(r.comparados ? r.coincidencia : null);
       setCambios(0);
@@ -225,6 +231,19 @@ export default function Planificador() {
   };
 
   const r = useMemo(() => (plan ? resumen(plan, d0, d0 + 7) : null), [plan, d0]);
+  // Qué habría que publicar AHORA. No es el contador de toques: lo que los
+  // sacafrancos fijos cubren solos al cargar también es nuevo para el horario.
+  const publicacion = useMemo(
+    () =>
+      plan && leido
+        ? planificarPublicacion(leido.plan, plan, leido.enlace, {
+            tenantId, base, hoy: hoyIdx, dias: 28,
+            fechaDe: (d) => sumaDias(base, d),
+            instanteDe: (d, min) => instanteEnLaEmpresa(sumaDias(base, d + Math.floor(min / 1440)), Math.floor((min % 1440) / 60), min % 60).toISOString(),
+          })
+        : null,
+    [plan, leido, tenantId, base, hoyIdx],
+  );
   const fechas = useMemo(
     () =>
       Array.from({ length: 7 }, (_, i) => {
@@ -308,11 +327,14 @@ export default function Planificador() {
               <Button disabled={cargando} variant="outline" onClick={cargar}>
                 <RotateCcw size={15} /> {t("ui.Planificador.volverAlReal", "Volver al horario real")}
               </Button>
+              <Button disabled={!publicacion?.cambios.length} variant="brand" onClick={() => setHoja({ tipo: "publicar" })}>
+                <Send size={15} /> {publicacion?.cambios.length ? t("ui.Planificador.publicarN", { defaultValue: "Publicar {{n}}", n: publicacion.cambios.length }) : t("ui.Planificador.publicar", "Publicar")}
+              </Button>
             </>
           }
           badges={
             <>
-              <StatusBadge tone="amber">{t("ui.Planificador.borrador", "Borrador: no cambia el horario real")}</StatusBadge>
+              <StatusBadge tone="amber">{t("ui.Planificador.borrador", "Borrador hasta que publiques")}</StatusBadge>
               {parecido != null && (
                 <StatusBadge tone={parecido >= 0.9 ? "green" : "slate"}>
                   {t("ui.Planificador.parecido", { defaultValue: "Se parece al horario real en un {{n}} %", n: Math.round(parecido * 100) })}
@@ -454,6 +476,13 @@ export default function Planificador() {
         {plan && hoja?.tipo === "fijos" && <HojaFijos personaId={hoja.persona} plan={plan} cambiar={cambiar} cerrar={() => setHoja(null)} />}
         {plan && hoja?.tipo === "ausencia" && <HojaAusencia d0={d0} fechaDe={(d) => sumaDias(base, d)} personaId={hoja.persona} plan={plan} cambiar={cambiar} cerrar={() => setHoja(null)} />}
         {plan && hoja?.tipo === "reglas" && <HojaReglas plan={plan} cambiar={cambiar} cerrar={() => setHoja(null)} />}
+        {publicacion && hoja?.tipo === "publicar" && (
+          <HojaPublicar
+            publicacion={publicacion}
+            cerrar={() => setHoja(null)}
+            publicado={() => { setHoja(null); void cargar(); }}
+          />
+        )}
       </PageContainer>
     </AppLayout>
   );
@@ -996,6 +1025,62 @@ function HojaReglas({ plan, cambiar, cerrar }: { plan: Plan; cambiar: Cambiar; c
       <div className="flex justify-end">
         <Button size="sm" variant="brand" onClick={cerrar}>{t("ui.Planificador.listo", "Listo")}</Button>
       </div>
+    </Marco>
+  );
+}
+
+function HojaPublicar({ publicacion, cerrar, publicado }: { publicacion: Publicacion; cerrar: () => void; publicado: () => void }) {
+  const { t } = useTranslation();
+  const [enCurso, setEnCurso] = useState<[number, number] | null>(null);
+  const [fallos, setFallos] = useState<string[] | null>(null);
+  const { cambios, noPublicables } = publicacion;
+  const api = {
+    post: (r: string, c: any) => ApiService.post(r, c),
+    put: (r: string, c: any) => ApiService.put(r, c),
+    del: (r: string) => ApiService.delete(r),
+  };
+  const ir = async () => {
+    setEnCurso([0, cambios.length]);
+    const f = await publicar(publicacion, api, (h, n) => setEnCurso([h, n]));
+
+    setEnCurso(null);
+    if (f.length) { setFallos(f); toast.error(t("ui.Planificador.publicadoConFallos", { defaultValue: "Publicado con {{n}} fallos. El resto ya está en el horario.", n: f.length })); }
+    else { toast.success(t("ui.Planificador.publicadoOk", { defaultValue: "Publicado: {{n}} cambios ya están en el horario.", n: cambios.length })); publicado(); }
+  };
+
+  return (
+    <Marco cerrar={cerrar} detalle={t("ui.Planificador.publicarDetalle", "Esto escribe en el horario real: lo verán la central, el Horario y los vigilantes en su app.")} titulo={t("ui.Planificador.publicarTitulo", "Publicar el borrador")}>
+      {fallos ? (
+        <div className="flex flex-col gap-2">
+          <p className="rounded-lg p-2.5 text-sm" style={ROJO}>{t("ui.Planificador.noSePudieron", { defaultValue: "{{n}} cambios no se pudieron publicar:", n: fallos.length })}</p>
+          <ul className="max-h-[40dvh] overflow-y-auto pl-5 text-sm" style={{ listStyle: "disc" }}>{fallos.map((f, i) => <li key={i}>{f}</li>)}</ul>
+          <div className="flex justify-end"><Button size="sm" variant="brand" onClick={publicado}>{t("ui.Planificador.verHorario", "Ver cómo quedó")}</Button></div>
+        </div>
+      ) : (
+        <>
+          {cambios.length ? (
+            <div>
+              <p className="mb-1.5 text-sm font-semibold">{t("ui.Planificador.seVaAPublicar", { defaultValue: "Se va a publicar ({{n}})", n: cambios.length })}</p>
+              <ul className="max-h-[36dvh] overflow-y-auto pl-5 text-sm" style={{ listStyle: "disc" }}>{cambios.map((c, i) => <li key={i}>{c.texto}</li>)}</ul>
+            </div>
+          ) : (
+            <p className="text-sm" style={{ color: "var(--ink-soft)" }}>{t("ui.Planificador.nadaQuePublicar", "No hay nada que el horario real pueda recibir de este borrador.")}</p>
+          )}
+          {noPublicables.length > 0 && (
+            <div>
+              <p className="mb-1.5 text-sm font-semibold" style={{ color: "var(--warn-text, var(--ink))" }}>{t("ui.Planificador.seQuedaEnBorrador", { defaultValue: "Se queda en el borrador ({{n}})", n: noPublicables.length })}</p>
+              <ul className="max-h-[24dvh] overflow-y-auto pl-5 text-sm" style={{ listStyle: "disc", color: "var(--ink-soft)" }}>{noPublicables.map((x, i) => <li key={i}>{x}</li>)}</ul>
+            </div>
+          )}
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            {enCurso && <span className="text-sm tabular-nums" style={{ color: "var(--ink-soft)" }}>{enCurso[0]} / {enCurso[1]}</span>}
+            <Button disabled={!!enCurso} size="sm" variant="outline" onClick={cerrar}>{t("ui.Planificador.cancelar", "Cancelar")}</Button>
+            <Button disabled={!cambios.length || !!enCurso} size="sm" variant="brand" onClick={ir}>
+              {enCurso ? <Loader2 className="animate-spin" size={14} /> : <Send size={14} />} {t("ui.Planificador.publicarN", { defaultValue: "Publicar {{n}}", n: cambios.length })}
+            </Button>
+          </div>
+        </>
+      )}
     </Marco>
   );
 }
