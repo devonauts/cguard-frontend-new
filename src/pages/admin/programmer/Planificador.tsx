@@ -1278,128 +1278,111 @@ function FilasDePuesto({
             </span>
           </span>
         </td>
-        {dias.map((d, i) => (
-          <td
-            key={i}
-            className={TD}
-            style={{
-              borderColor: "var(--hairline)",
-              background: "var(--glass-sunken)",
-            }}
-          >
-            <ResumenDia d={d} plan={plan} puestos={[pu]} onClick={onToggle} />
-          </td>
-        ))}
+        {/* La cobertura va EN la fila de la estación (pedido del dueño): por
+            día, cada franja con quién la cubre o cuánto falta. */}
+        {Array.from({ length: dias.length }, (_, i) => {
+          const d = dias[i];
+          const celdas: React.ReactNode[] = [];
+
+          for (const f of pu.franjas) {
+            const n = pide(pu, f, d);
+            const pr = propios(plan, pu, f, d);
+            const k = clave(pu.id, f, d);
+            const cu = plan.cubre[k] || [];
+            const fa = n - pr - cu.length;
+            const fr = plan.franjas[f];
+
+            if (!n && !pr) continue;
+            if (fa > 0)
+              celdas.push(
+                <button
+                  key={f}
+                  className={BTN}
+                  style={ROJO}
+                  title={horario(fr)}
+                  onClick={() => setHoja({ tipo: "hueco", k })}
+                >
+                  {letra(fr)}{" "}
+                  {t("ui.Planificador.faltaN", {
+                    defaultValue: "falta {{n}}",
+                    n: fa,
+                  })}
+                </button>,
+              );
+            else if (cu.length) {
+              const q = plan.personas.find((p) => p.id === cu[0]);
+
+              celdas.push(
+                <button
+                  key={f}
+                  className={BTN}
+                  style={q && !esSacafranco(q) ? AMBAR : VERDE}
+                  title={horario(fr)}
+                  onClick={() => setHoja({ tipo: "hueco", k })}
+                >
+                  {letra(fr)} · {plan.auto[`${k}|${cu[0]}`] ? "● " : ""}
+                  {q ? corto(q.nombre) : "?"}
+                  {cu.length > 1 ? ` +${cu.length - 1}` : ""}
+                </button>,
+              );
+            } else if (pr > n)
+              celdas.push(
+                <span
+                  key={f}
+                  className={`${BTN} block text-center`}
+                  style={AMBAR}
+                  title={horario(fr)}
+                >
+                  {letra(fr)}{" "}
+                  {t("ui.Planificador.sobraN", {
+                    defaultValue: "sobra {{n}}",
+                    n: pr - n,
+                  })}
+                </span>,
+              );
+            else
+              celdas.push(
+                <span
+                  key={f}
+                  className={`${BTN} block text-center font-semibold`}
+                  style={GRIS}
+                  title={horario(fr)}
+                >
+                  {letra(fr)} ✓
+                </span>,
+              );
+          }
+
+          return (
+            <td
+              key={i}
+              className={TD}
+              style={{
+                borderColor: "var(--hairline)",
+                background: "var(--glass-sunken)",
+              }}
+            >
+              <div className={CELDA}>
+                {celdas.length ? (
+                  celdas
+                ) : (
+                  <span
+                    className={`${BTN} block border border-dashed text-center font-medium`}
+                    style={{
+                      borderColor: "var(--hairline)",
+                      color: "var(--ink-soft)",
+                    }}
+                  >
+                    {t("ui.Planificador.cerrado", "cerrado")}
+                  </span>
+                )}
+              </div>
+            </td>
+          );
+        })}
       </tr>
       {abierto && (
         <>
-          <tr>
-            <td className={QUIEN} style={fondo}>
-              <span
-                className="text-xs font-semibold"
-                style={{ color: "var(--ink-soft)" }}
-              >
-                {t("ui.Planificador.cobertura", "Cobertura")}
-              </span>
-            </td>
-            {Array.from({ length: dias.length }, (_, i) => {
-              const d = dias[i];
-              const celdas: React.ReactNode[] = [];
-
-              for (const f of pu.franjas) {
-                const n = pide(pu, f, d);
-                const pr = propios(plan, pu, f, d);
-                const k = clave(pu.id, f, d);
-                const cu = plan.cubre[k] || [];
-                const fa = n - pr - cu.length;
-                const fr = plan.franjas[f];
-
-                if (!n && !pr) continue;
-                if (fa > 0)
-                  celdas.push(
-                    <button
-                      key={f}
-                      className={BTN}
-                      style={ROJO}
-                      title={horario(fr)}
-                      onClick={() => setHoja({ tipo: "hueco", k })}
-                    >
-                      {letra(fr)}{" "}
-                      {t("ui.Planificador.faltaN", {
-                        defaultValue: "falta {{n}}",
-                        n: fa,
-                      })}
-                    </button>,
-                  );
-                else if (cu.length) {
-                  const q = plan.personas.find((p) => p.id === cu[0]);
-
-                  celdas.push(
-                    <button
-                      key={f}
-                      className={BTN}
-                      style={q && !esSacafranco(q) ? AMBAR : VERDE}
-                      title={horario(fr)}
-                      onClick={() => setHoja({ tipo: "hueco", k })}
-                    >
-                      {letra(fr)} · {plan.auto[`${k}|${cu[0]}`] ? "● " : ""}
-                      {q ? corto(q.nombre) : "?"}
-                      {cu.length > 1 ? ` +${cu.length - 1}` : ""}
-                    </button>,
-                  );
-                } else if (pr > n)
-                  celdas.push(
-                    <span
-                      key={f}
-                      className={`${BTN} block text-center`}
-                      style={AMBAR}
-                      title={horario(fr)}
-                    >
-                      {letra(fr)}{" "}
-                      {t("ui.Planificador.sobraN", {
-                        defaultValue: "sobra {{n}}",
-                        n: pr - n,
-                      })}
-                    </span>,
-                  );
-                else
-                  celdas.push(
-                    <span
-                      key={f}
-                      className={`${BTN} block text-center font-semibold`}
-                      style={GRIS}
-                      title={horario(fr)}
-                    >
-                      {letra(fr)} ✓
-                    </span>,
-                  );
-              }
-
-              return (
-                <td
-                  key={i}
-                  className={TD}
-                  style={{ borderColor: "var(--hairline)" }}
-                >
-                  <div className={CELDA}>
-                    {celdas.length ? (
-                      celdas
-                    ) : (
-                      <span
-                        className={`${BTN} block border border-dashed text-center font-medium`}
-                        style={{
-                          borderColor: "var(--hairline)",
-                          color: "var(--ink-soft)",
-                        }}
-                      >
-                        {t("ui.Planificador.cerrado", "cerrado")}
-                      </span>
-                    )}
-                  </div>
-                </td>
-              );
-            })}
-          </tr>
           {gente.map((p) => (
             <tr key={p.id}>
               <td className={QUIEN} style={fondo}>

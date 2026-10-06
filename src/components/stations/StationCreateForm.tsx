@@ -163,8 +163,18 @@ export function rotacionDe(
   tramos: string[],
   alterna: boolean,
   dominical: boolean,
+  /** El tramo PROPIO de la plaza (ciclo por plaza): va primero, ver abajo. */
+  propio?: string,
 ): Rotacion | null {
-  const conDias = tramos.filter((l) => (c[l as keyof Ciclo] || 0) > 0);
+  /* El motor cuenta `dayShifts` como turnos en la ventana PROPIA de la plaza y
+     `nightShifts` en la ventana espejo (así dos plazas con el mismo patrón se
+     cubren entre sí). Para una plaza nocturna «2 D · 3 N» son 3 en la suya y 2
+     en la espejo: su tramo se pone primero. Medido 2026-10-06: sin esto, la
+     plaza N de BIOMAR salía 2 N · 3 D. */
+  const orden = propio
+    ? [propio, ...tramos.filter((l) => l !== propio)]
+    : tramos;
+  const conDias = orden.filter((l) => (c[l as keyof Ciclo] || 0) > 0);
 
   if (!conDias.length) return null;
   const partes = [
@@ -198,11 +208,16 @@ export function personasQueSeTurnan(r: Rotacion | null): number {
   if (!r) return 1;
   const trabajo = r.dayShifts + r.nightShifts;
 
-  return trabajo > 0 && r.largo % trabajo === 0 ? Math.min(4, r.largo / trabajo) : 1;
+  return trabajo > 0 && r.largo % trabajo === 0
+    ? Math.min(4, r.largo / trabajo)
+    : 1;
 }
 
 /** Rótulo del tramo: «24 h» si su franja es el día entero; si no, su nombre. */
-export function rotuloDeTramo(l: string, franjas: Pick<Franja, "start" | "end">[]): string {
+export function rotuloDeTramo(
+  l: string,
+  franjas: Pick<Franja, "start" | "end">[],
+): string {
   if (l === "L") return "";
   const f = franjas.find((x) => letraDeFranja(x) === l);
 
@@ -346,8 +361,14 @@ export default function StationCreateForm({
   ); // eslint-disable-line react-hooks/exhaustive-deps
   const rotacionesPorPlaza = useMemo(
     () =>
-      plazas.map((_, i) =>
-        rotacionDe(cicloDe(String(i)), tramos, alterna, dominical),
+      plazas.map((f, i) =>
+        rotacionDe(
+          cicloDe(String(i)),
+          tramos,
+          alterna,
+          dominical,
+          letraDeFranja(f),
+        ),
       ),
     [plazas, ciclos, tramos, alterna, dominical], // eslint-disable-line react-hooks/exhaustive-deps
   );
