@@ -48,6 +48,11 @@ export interface Puesto {
   pide: Record<string, number[]>;
   /** Lo que hay que tener para trabajar aquí (arma, curso, licencia…). */
   requiere?: string[];
+  /** De quién es: sede y cliente (sólo para agrupar en pantalla; el motor no los mira). */
+  sedeId?: string;
+  sede?: string;
+  clienteId?: string;
+  cliente?: string;
 }
 
 export interface Ausencia {
@@ -147,7 +152,10 @@ export function duracion(f: Franja): number {
 }
 
 /** «5D 2F»: la rotación dicha en corto, para el botón. */
-export function etiqueta(patron: Codigo[], nombres?: Record<string, string>): string {
+export function etiqueta(
+  patron: Codigo[],
+  nombres?: Record<string, string>,
+): string {
   const partes: string[] = [];
   let i = 0;
 
@@ -156,8 +164,7 @@ export function etiqueta(patron: Codigo[], nombres?: Record<string, string>): st
 
     while (j < patron.length && patron[j] === patron[i]) j++;
     const c = patron[i];
-    const n =
-      c === FRANCO ? "F" : c === LIBRE ? " disp." : (nombres?.[c] ?? c);
+    const n = c === FRANCO ? "F" : c === LIBRE ? " disp." : (nombres?.[c] ?? c);
 
     partes.push(`${j - i}${n}`);
     i = j;
@@ -166,8 +173,10 @@ export function etiqueta(patron: Codigo[], nombres?: Record<string, string>): st
   return partes.join(" ");
 }
 
-const puestoDe = (plan: Plan, id: string) => plan.puestos.find((p) => p.id === id);
-const personaDe = (plan: Plan, id: string) => plan.personas.find((p) => p.id === id);
+const puestoDe = (plan: Plan, id: string) =>
+  plan.puestos.find((p) => p.id === id);
+const personaDe = (plan: Plan, id: string) =>
+  plan.personas.find((p) => p.id === id);
 
 export { puestoDe, personaDe };
 
@@ -191,7 +200,8 @@ function indice(plan: Plan): Record<string, Turno> {
     for (const k of Object.keys(plan.cubre)) {
       const { puesto, franja, d } = partir(k);
 
-      for (const id of plan.cubre[k]) idx[`${id}|${d}`] = { puesto, franja, tipo: "cubre", k };
+      for (const id of plan.cubre[k])
+        idx[`${id}|${d}`] = { puesto, franja, tipo: "cubre", k };
     }
     INDICES.set(plan, idx);
   }
@@ -242,7 +252,10 @@ const ciclico = (p: Persona, d: number): Codigo => {
  * por persona (dos años atrás, cuatro adelante) y se guarda; si cambia su
  * rotación o su arranque, se vuelve a caminar.
  */
-const TIRAS = new WeakMap<Persona, { firma: string; ancla: number; estados: Codigo[] }>();
+const TIRAS = new WeakMap<
+  Persona,
+  { firma: string; ancla: number; estados: Codigo[] }
+>();
 const TIRA_HASTA = 1460;
 
 function conDomingo(p: Persona, d: number): Codigo {
@@ -296,7 +309,12 @@ export function proximoArranque(p: Persona, desde: number): number {
   if (n < 2) return desde;
   for (let d = desde; d < desde + n * 3 + 7; d++) {
     if (p.francoDobleDomingo) {
-      if (propio(p, d) === p.patron[0] && propio(p, d - 1) === p.patron[n - 1] && p.patron[n - 1] !== p.patron[0]) return d;
+      if (
+        propio(p, d) === p.patron[0] &&
+        propio(p, d - 1) === p.patron[n - 1] &&
+        p.patron[n - 1] !== p.patron[0]
+      )
+        return d;
     } else if ((((d + p.desfase) % n) + n) % n === 0) return d;
   }
 
@@ -339,7 +357,12 @@ export function pide(pu: Puesto, franja: string, d: number): number {
 }
 
 /** Cuántos titulares del puesto trabajan esa franja ese día. */
-export function propios(plan: Plan, pu: Puesto, franja: string, d: number): number {
+export function propios(
+  plan: Plan,
+  pu: Puesto,
+  franja: string,
+  d: number,
+): number {
   let n = 0;
 
   for (const p of plan.personas)
@@ -349,7 +372,12 @@ export function propios(plan: Plan, pu: Puesto, franja: string, d: number): numb
 }
 
 /** Positivo: falta gente. Cero: completo. Negativo: sobra. */
-export function falta(plan: Plan, pu: Puesto, franja: string, d: number): number {
+export function falta(
+  plan: Plan,
+  pu: Puesto,
+  franja: string,
+  d: number,
+): number {
   return (
     pide(pu, franja, d) -
     propios(plan, pu, franja, d) -
@@ -386,7 +414,12 @@ export function horasSemana(plan: Plan, p: Persona, d: number): number {
   return h;
 }
 
-export function diasTrabajados(plan: Plan, p: Persona, d0: number, d1: number): number {
+export function diasTrabajados(
+  plan: Plan,
+  p: Persona,
+  d0: number,
+  d1: number,
+): number {
   let n = 0;
 
   for (let i = d0; i < d1; i++) if (turnoDe(plan, p, i)) n++;
@@ -409,7 +442,9 @@ export function impedimento(
   const a = ausencia(p, d);
 
   if (a) return `Está de ${a.tipo}`;
-  const leFalta = (pu.requiere || []).filter((r) => !(p.aptitudes || []).includes(r));
+  const leFalta = (pu.requiere || []).filter(
+    (r) => !(p.aptitudes || []).includes(r),
+  );
 
   if (leFalta.length) return `No tiene: ${leFalta.join(", ")}`;
   if (turnoDe(plan, p, d)) return "Ya trabaja ese día";
@@ -427,19 +462,30 @@ export function impedimento(
     if (!t) continue;
     const [i2, f2] = intervalo(plan, t.franja, dd);
 
-    if (dd < d && ini - f2 < min) return "Sale de otro turno sin descanso suficiente";
-    if (dd > d && i2 - fin < min) return "Entra a otro turno sin descanso suficiente";
+    if (dd < d && ini - f2 < min)
+      return "Sale de otro turno sin descanso suficiente";
+    if (dd > d && i2 - fin < min)
+      return "Entra a otro turno sin descanso suficiente";
   }
   if (seguidos(plan, p, d) > plan.reglas.maxSeguidos)
     return `Serían ${plan.reglas.maxSeguidos + 1} días seguidos`;
-  if (horasSemana(plan, p, d) + horasDe(plan, franja) > plan.reglas.maxHorasSemana)
+  if (
+    horasSemana(plan, p, d) + horasDe(plan, franja) >
+    plan.reglas.maxHorasSemana
+  )
     return `Pasaría de ${plan.reglas.maxHorasSemana} h esa semana`;
 
   return null;
 }
 
 /** Lo mismo, para alguien que YA cubre ese turno: se juzga sin contar esa cobertura. */
-export function impedimentoSinContar(plan: Plan, p: Persona, pu: Puesto, franja: string, d: number): string | null {
+export function impedimentoSinContar(
+  plan: Plan,
+  p: Persona,
+  pu: Puesto,
+  franja: string,
+  d: number,
+): string | null {
   const idx = indice(plan);
   const ik = `${p.id}|${d}`;
   const suya = idx[ik];
@@ -454,7 +500,9 @@ export function impedimentoSinContar(plan: Plan, p: Persona, pu: Puesto, franja:
 
 /** Los sacafrancos que tienen ese puesto como fijo. */
 export function fijosDe(plan: Plan, puestoId: string): Persona[] {
-  return plan.personas.filter((p) => esSacafranco(p) && (p.fijos || []).includes(puestoId));
+  return plan.personas.filter(
+    (p) => esSacafranco(p) && (p.fijos || []).includes(puestoId),
+  );
 }
 
 /**
@@ -494,7 +542,9 @@ export function candidatos(
   }
 
   // El orden tiene que ser el MISMO siempre: a igualdad de puntos, por id.
-  return lista.sort((a, b) => b.puntos - a.puntos || a.persona.id.localeCompare(b.persona.id));
+  return lista.sort(
+    (a, b) => b.puntos - a.puntos || a.persona.id.localeCompare(b.persona.id),
+  );
 }
 
 /* ------------------------------------------------------------------ */
@@ -532,7 +582,12 @@ export function aplicarFijos(plan: Plan, d0: number, d1: number): void {
     }
 }
 
-const entero = (x: unknown, min: number, max: number, defecto: number): number => {
+const entero = (
+  x: unknown,
+  min: number,
+  max: number,
+  defecto: number,
+): number => {
   const n = Math.round(Number(x));
 
   return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : defecto;
@@ -549,11 +604,20 @@ const entero = (x: unknown, min: number, max: number, defecto: number): number =
  * defenderse una por una. Nunca lanza.
  */
 export function sanear(plan: Plan): void {
-  const obj = (x: any) => (x && typeof x === "object" && !Array.isArray(x) ? x : {});
+  const obj = (x: any) =>
+    x && typeof x === "object" && !Array.isArray(x) ? x : {};
 
   plan.franjas = obj(plan.franjas);
-  plan.puestos = Array.isArray(plan.puestos) ? plan.puestos.filter((p) => p && typeof p.id === "string" && p.id && !p.id.includes("|")) : [];
-  plan.personas = Array.isArray(plan.personas) ? plan.personas.filter((p) => p && typeof p.id === "string" && p.id && !p.id.includes("|")) : [];
+  plan.puestos = Array.isArray(plan.puestos)
+    ? plan.puestos.filter(
+        (p) => p && typeof p.id === "string" && p.id && !p.id.includes("|"),
+      )
+    : [];
+  plan.personas = Array.isArray(plan.personas)
+    ? plan.personas.filter(
+        (p) => p && typeof p.id === "string" && p.id && !p.id.includes("|"),
+      )
+    : [];
   plan.cubre = obj(plan.cubre);
   plan.auto = obj(plan.auto);
   plan.no = obj(plan.no);
@@ -562,7 +626,12 @@ export function sanear(plan: Plan): void {
   plan.reglas = {
     descansoMin: entero(r.descansoMin, 0, 2880, REGLAS_POR_DEFECTO.descansoMin),
     maxSeguidos: entero(r.maxSeguidos, 1, 60, REGLAS_POR_DEFECTO.maxSeguidos),
-    maxHorasSemana: entero(r.maxHorasSemana, 1, 168, REGLAS_POR_DEFECTO.maxHorasSemana),
+    maxHorasSemana: entero(
+      r.maxHorasSemana,
+      1,
+      168,
+      REGLAS_POR_DEFECTO.maxHorasSemana,
+    ),
   };
   for (const id of Object.keys(plan.franjas)) {
     const f = plan.franjas[id];
@@ -580,15 +649,26 @@ export function sanear(plan: Plan): void {
   // misma para el índice de coberturas, y una taparía a la otra.
   const vistos = new Set<string>();
 
-  plan.puestos = plan.puestos.filter((p) => (vistos.has(p.id) ? false : (vistos.add(p.id), true)));
+  plan.puestos = plan.puestos.filter((p) =>
+    vistos.has(p.id) ? false : (vistos.add(p.id), true),
+  );
   vistos.clear();
-  plan.personas = plan.personas.filter((p) => (vistos.has(p.id) ? false : (vistos.add(p.id), true)));
+  plan.personas = plan.personas.filter((p) =>
+    vistos.has(p.id) ? false : (vistos.add(p.id), true),
+  );
 
   const puestos = new Map<string, Puesto>();
 
   for (const pu of plan.puestos) {
-    pu.nombre = typeof pu.nombre === "string" && pu.nombre ? pu.nombre : "Puesto";
-    pu.franjas = [...new Set((Array.isArray(pu.franjas) ? pu.franjas : []).filter((f) => typeof f === "string" && plan.franjas[f]))];
+    pu.nombre =
+      typeof pu.nombre === "string" && pu.nombre ? pu.nombre : "Puesto";
+    pu.franjas = [
+      ...new Set(
+        (Array.isArray(pu.franjas) ? pu.franjas : []).filter(
+          (f) => typeof f === "string" && plan.franjas[f],
+        ),
+      ),
+    ];
     const pedido = obj(pu.pide);
 
     pu.pide = {};
@@ -597,34 +677,59 @@ export function sanear(plan: Plan): void {
 
       pu.pide[f] = [0, 1, 2, 3, 4, 5, 6].map((i) => entero(v[i], 0, 20, 0));
     }
-    pu.requiere = Array.isArray(pu.requiere) ? pu.requiere.filter((x) => typeof x === "string" && x) : undefined;
+    pu.requiere = Array.isArray(pu.requiere)
+      ? pu.requiere.filter((x) => typeof x === "string" && x)
+      : undefined;
     puestos.set(pu.id, pu);
   }
   for (const p of plan.personas) {
-    p.nombre = typeof p.nombre === "string" && p.nombre ? p.nombre : "Vigilante";
+    p.nombre =
+      typeof p.nombre === "string" && p.nombre ? p.nombre : "Vigilante";
     if (p.puesto !== null && typeof p.puesto !== "string") p.puesto = null;
     const pu = p.puesto ? puestos.get(p.puesto) : undefined;
     // Sin puesto que exista, no puede trabajar en él: se queda sin turnos (no se
     // convierte en sacafranco por su cuenta, que sería inventarle un papel).
     const vale = (c: unknown) =>
-      c === FRANCO || (p.puesto === null ? c === LIBRE : !!pu && typeof c === "string" && pu.franjas.includes(c));
+      c === FRANCO ||
+      (p.puesto === null
+        ? c === LIBRE
+        : !!pu && typeof c === "string" && pu.franjas.includes(c));
 
-    p.patron = (Array.isArray(p.patron) ? p.patron : []).slice(0, 366).map((c) => (vale(c) ? c : FRANCO));
+    p.patron = (Array.isArray(p.patron) ? p.patron : [])
+      .slice(0, 366)
+      .map((c) => (vale(c) ? c : FRANCO));
     p.desfase = entero(p.desfase, -1e6, 1e6, 0);
     const manual = obj(p.manual);
 
     p.manual = {};
-    for (const k of Object.keys(manual)) if (Number.isInteger(Number(k)) && vale(manual[k])) p.manual[Number(k)] = manual[k];
-    p.fijos = p.puesto === null ? [...new Set((Array.isArray(p.fijos) ? p.fijos : []).filter((f) => puestos.has(f)))] : undefined;
+    for (const k of Object.keys(manual))
+      if (Number.isInteger(Number(k)) && vale(manual[k]))
+        p.manual[Number(k)] = manual[k];
+    p.fijos =
+      p.puesto === null
+        ? [
+            ...new Set(
+              (Array.isArray(p.fijos) ? p.fijos : []).filter((f) =>
+                puestos.has(f),
+              ),
+            ),
+          ]
+        : undefined;
     p.ausencias = (Array.isArray(p.ausencias) ? p.ausencias : [])
       .map((a) => {
         const x = Number(a?.desde);
         const y = Number(a?.hasta);
 
-        return { desde: Math.round(Math.min(x, y)), hasta: Math.round(Math.max(x, y)), tipo: typeof a?.tipo === "string" && a.tipo ? a.tipo : "permiso" };
+        return {
+          desde: Math.round(Math.min(x, y)),
+          hasta: Math.round(Math.max(x, y)),
+          tipo: typeof a?.tipo === "string" && a.tipo ? a.tipo : "permiso",
+        };
       })
       .filter((a) => Number.isFinite(a.desde) && Number.isFinite(a.hasta));
-    p.aptitudes = Array.isArray(p.aptitudes) ? p.aptitudes.filter((x) => typeof x === "string" && x) : undefined;
+    p.aptitudes = Array.isArray(p.aptitudes)
+      ? p.aptitudes.filter((x) => typeof x === "string" && x)
+      : undefined;
     p.francoDobleDomingo = p.francoDobleDomingo ? true : undefined;
   }
   const personas = new Set(plan.personas.map((p) => p.id));
@@ -632,11 +737,18 @@ export function sanear(plan: Plan): void {
     const a = k.split("|");
     const pu = puestos.get(a[0]);
 
-    return a.length === 3 && !!pu && pu.franjas.includes(a[1]) && /^-?\d+$/.test(a[2]);
+    return (
+      a.length === 3 &&
+      !!pu &&
+      pu.franjas.includes(a[1]) &&
+      /^-?\d+$/.test(a[2])
+    );
   };
 
   for (const k of Object.keys(plan.cubre)) {
-    const lista = Array.isArray(plan.cubre[k]) ? [...new Set(plan.cubre[k].filter((id) => personas.has(id)))] : [];
+    const lista = Array.isArray(plan.cubre[k])
+      ? [...new Set(plan.cubre[k].filter((id) => personas.has(id)))]
+      : [];
 
     if (!claveBuena(k) || !lista.length) delete plan.cubre[k];
     else plan.cubre[k] = lista;
@@ -645,7 +757,8 @@ export function sanear(plan: Plan): void {
     const i = x.lastIndexOf("|");
     const k = x.slice(0, i);
 
-    if (i < 0 || !(plan.cubre[k] || []).includes(x.slice(i + 1))) delete plan.auto[x];
+    if (i < 0 || !(plan.cubre[k] || []).includes(x.slice(i + 1)))
+      delete plan.auto[x];
   }
   for (const k of Object.keys(plan.no)) if (!claveBuena(k)) delete plan.no[k];
   // Las coberturas pudieron cambiar por debajo: el índice se rehace.
@@ -678,7 +791,12 @@ export function limpiar(plan: Plan, d0: number, d1: number): void {
     for (const id of [...(plan.cubre[k] || [])].reverse()) {
       const p = personaDe(plan, id);
 
-      if (!pu || !p || !pu.franjas.includes(franja) || falta(plan, pu, franja, d) < 0) {
+      if (
+        !pu ||
+        !p ||
+        !pu.franjas.includes(franja) ||
+        falta(plan, pu, franja, d) < 0
+      ) {
         quitar(plan, k, id);
         continue;
       }
@@ -693,7 +811,11 @@ export function limpiar(plan: Plan, d0: number, d1: number): void {
 }
 
 /** Llena lo que falte con sacafrancos libres. No usa hora extra: eso se decide a mano. */
-export function cubrirTodo(plan: Plan, d0: number, d1: number): { hechos: number; quedan: number } {
+export function cubrirTodo(
+  plan: Plan,
+  d0: number,
+  d1: number,
+): { hechos: number; quedan: number } {
   let hechos = 0;
   let quedan = 0;
 
@@ -703,7 +825,9 @@ export function cubrirTodo(plan: Plan, d0: number, d1: number): { hechos: number
         const k = clave(pu.id, franja, d);
 
         while (falta(plan, pu, franja, d) > 0) {
-          const c = candidatos(plan, pu, franja, d).find((x) => !x.impedimento && !x.extra);
+          const c = candidatos(plan, pu, franja, d).find(
+            (x) => !x.impedimento && !x.extra,
+          );
 
           if (!c) {
             quedan += falta(plan, pu, franja, d);
@@ -783,7 +907,8 @@ export function acomodar(
 ): { antes: number; despues: number } {
   const conFijo = new Set<string>();
 
-  for (const p of plan.personas) if (esSacafranco(p)) for (const f of p.fijos || []) conFijo.add(f);
+  for (const p of plan.personas)
+    if (esSacafranco(p)) for (const f of p.fijos || []) conFijo.add(f);
   const mover = plan.personas.filter((p) =>
     ids
       ? ids.includes(p.id)
@@ -827,14 +952,18 @@ export function acomodar(
    * solo empeora). Sólo con grupos pequeños: son n² arranques por pareja.
    */
   const porParejas = (): boolean => {
-    const g = mover.filter((p) => p.patron.length >= 2 && p.patron.length <= 14);
+    const g = mover.filter(
+      (p) => p.patron.length >= 2 && p.patron.length <= 14,
+    );
 
     // Tope de trabajo: cada pareja prueba (largo × largo) arranques, y cada
     // prueba recalcula el plan. Pasado el tope no se intenta — el botón tiene
     // que contestar en un par de segundos, no «pensar» medio minuto.
     let pruebas = 0;
 
-    for (let i = 0; i < g.length; i++) for (let j = i + 1; j < g.length; j++) pruebas += g[i].patron.length * g[j].patron.length;
+    for (let i = 0; i < g.length; i++)
+      for (let j = i + 1; j < g.length; j++)
+        pruebas += g[i].patron.length * g[j].patron.length;
     if (g.length > 8 || pruebas > 1500) return false;
     for (let i = 0; i < g.length; i++)
       for (let j = i + 1; j < g.length; j++) {
@@ -891,9 +1020,12 @@ export function incoherencias(plan: Plan): string[] {
       mal.push(`${k}: el puesto no existe`);
       continue;
     }
-    if (!pu.franjas.includes(franja)) mal.push(`${k}: el puesto no tiene esa franja`);
-    if (falta(plan, pu, franja, d) < 0) mal.push(`${k}: cubre más de lo que el puesto pide`);
-    if (new Set(lista).size !== lista.length) mal.push(`${k}: la misma persona dos veces`);
+    if (!pu.franjas.includes(franja))
+      mal.push(`${k}: el puesto no tiene esa franja`);
+    if (falta(plan, pu, franja, d) < 0)
+      mal.push(`${k}: cubre más de lo que el puesto pide`);
+    if (new Set(lista).size !== lista.length)
+      mal.push(`${k}: la misma persona dos veces`);
     for (const id of lista) {
       const p = personaDe(plan, id);
 

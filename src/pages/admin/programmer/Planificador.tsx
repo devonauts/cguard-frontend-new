@@ -1,7 +1,15 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import {
   CalendarRange,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Loader2,
@@ -446,6 +454,49 @@ export default function Planificador() {
     });
   }, [plan, busca, soloHuecos, d0]);
 
+  /* ── ACORDEÓN CLIENTE → SEDE → ESTACIÓN ──────────────────────────────────
+     Pedido del dueño: «sale el cliente, se da click y abre la sede, se da
+     click y abre la estación, se da click y muestra los turnos». Cada fila
+     cerrada resume por día lo que falta en todo lo que cuelga de ella, así
+     la hoja cerrada ya dice dónde hay huecos. Buscando o filtrando se abre
+     todo; con dos puestos o menos, también. */
+  const [abiertos, setAbiertos] = useState<Record<string, boolean>>({});
+  const abrirTodo =
+    busca.trim() !== "" || soloHuecos || puestosVisibles.length <= 2;
+  const estaAbierto = (k: string) => abiertos[k] ?? abrirTodo;
+  const alternar = (k: string) =>
+    setAbiertos((a) => ({ ...a, [k]: !(a[k] ?? abrirTodo) }));
+  const grupos = useMemo(() => {
+    type Sede = { id: string; nombre: string; puestos: Puesto[] };
+    type Cliente = { id: string; nombre: string; sedes: Map<string, Sede> };
+    const cs = new Map<string, Cliente>();
+
+    for (const pu of puestosVisibles) {
+      const cid = pu.clienteId || "";
+      const sid = pu.sedeId || "";
+      const c = cs.get(cid) || {
+        id: cid,
+        nombre: pu.cliente || t("ui.Planificador.sinCliente", "Sin cliente"),
+        sedes: new Map<string, Sede>(),
+      };
+      const s = c.sedes.get(sid) || {
+        id: sid,
+        nombre: pu.sede || t("ui.Planificador.sinSede", "Sin sede"),
+        puestos: [],
+      };
+
+      s.puestos.push(pu);
+      c.sedes.set(sid, s);
+      cs.set(cid, c);
+    }
+    const orden = (a: { nombre: string }, b: { nombre: string }) =>
+      a.nombre.localeCompare(b.nombre);
+
+    return [...cs.values()]
+      .sort(orden)
+      .map((c) => ({ ...c, sedes: [...c.sedes.values()].sort(orden) }));
+  }, [puestosVisibles, t]);
+
   const hacerAcomodo = () => {
     if (!plan) return;
     setPensando(true);
@@ -803,17 +854,64 @@ export default function Planificador() {
                   </tr>
                 </thead>
                 <tbody>
-                  {puestosVisibles.map((pu) => (
-                    <FilasDePuesto
-                      key={pu.id}
-                      d0={d0}
-                      dias={diasVista}
-                      plan={plan}
-                      pu={pu}
-                      cambiar={cambiar}
-                      setHoja={setHoja}
-                    />
-                  ))}
+                  {grupos.map((c) => {
+                    const kc = `c:${c.id}`;
+                    const puestosC = c.sedes.flatMap((s) => s.puestos);
+
+                    return (
+                      <Fragment key={kc}>
+                        <FilaGrupo
+                          abierto={estaAbierto(kc)}
+                          detalle={t("ui.Planificador.nPuestos", {
+                            defaultValue: "{{n}} puesto(s)",
+                            n: puestosC.length,
+                          })}
+                          dias={diasVista}
+                          nivel={1}
+                          nombre={c.nombre}
+                          plan={plan}
+                          puestos={puestosC}
+                          onToggle={() => alternar(kc)}
+                        />
+                        {estaAbierto(kc) &&
+                          c.sedes.map((s) => {
+                            const ks = `s:${c.id}|${s.id}`;
+
+                            return (
+                              <Fragment key={ks}>
+                                <FilaGrupo
+                                  abierto={estaAbierto(ks)}
+                                  detalle={t("ui.Planificador.nPuestos", {
+                                    defaultValue: "{{n}} puesto(s)",
+                                    n: s.puestos.length,
+                                  })}
+                                  dias={diasVista}
+                                  nivel={2}
+                                  nombre={s.nombre}
+                                  plan={plan}
+                                  puestos={s.puestos}
+                                  onToggle={() => alternar(ks)}
+                                />
+                                {estaAbierto(ks) &&
+                                  s.puestos.map((pu) => (
+                                    <FilasDePuesto
+                                      key={pu.id}
+                                      abierto={estaAbierto(`p:${pu.id}`)}
+                                      d0={d0}
+                                      dias={diasVista}
+                                      plan={plan}
+                                      pu={pu}
+                                      cambiar={cambiar}
+                                      setHoja={setHoja}
+                                      onToggle={() => alternar(`p:${pu.id}`)}
+                                    />
+                                  ))}
+                              </Fragment>
+                            );
+                          })}
+                      </Fragment>
+                    );
+                  })}
                   <tr>
                     <td
                       className="p-0 text-xs font-bold"
@@ -976,6 +1074,124 @@ const BTN =
 const TD = "border-b px-1 py-1 align-top";
 const QUIEN = "sticky left-0 z-[1] border-b border-r px-3 py-1.5 text-left";
 
+/** Cuánta gente falta en el puesto ese día, sumando sus franjas. */
+function faltaDia(plan: Plan, pu: Puesto, d: number): number {
+  let n = 0;
+
+  for (const f of pu.franjas) n += Math.max(0, falta(plan, pu, f, d));
+
+  return n;
+}
+
+/** La celda-resumen de una fila cerrada: lo que falta ese día, o ✓. */
+function ResumenDia({
+  plan,
+  puestos,
+  d,
+  onClick,
+}: {
+  plan: Plan;
+  puestos: Puesto[];
+  d: number;
+  onClick: () => void;
+}) {
+  const { t } = useTranslation();
+  let n = 0;
+  let hay = false;
+
+  for (const pu of puestos) {
+    n += faltaDia(plan, pu, d);
+    if (!hay && pu.franjas.some((f) => pide(pu, f, d) > 0)) hay = true;
+  }
+  if (n > 0)
+    return (
+      <button className={BTN} style={ROJO} onClick={onClick}>
+        {t("ui.Planificador.faltaN", { defaultValue: "falta {{n}}", n })}
+      </button>
+    );
+
+  return (
+    <span
+      className={`${BTN} block text-center font-semibold`}
+      style={hay ? GRIS : { color: "var(--ink-faint)" }}
+    >
+      {hay ? "✓" : "—"}
+    </span>
+  );
+}
+
+const SANGRIA = ["0.75rem", "0.75rem", "1.5rem", "2.25rem"];
+
+/** Fila de cliente (nivel 1) o de sede (nivel 2) del acordeón. */
+function FilaGrupo({
+  nivel,
+  nombre,
+  detalle,
+  abierto,
+  onToggle,
+  plan,
+  puestos,
+  dias,
+}: {
+  nivel: 1 | 2;
+  nombre: string;
+  detalle?: string;
+  abierto: boolean;
+  onToggle: () => void;
+  plan: Plan;
+  puestos: Puesto[];
+  dias: number[];
+}) {
+  const Flecha = abierto ? ChevronDown : ChevronRight;
+  const fondo =
+    nivel === 1
+      ? "color-mix(in oklab, var(--background) 86%, var(--ink) 14%)"
+      : "color-mix(in oklab, var(--background) 93%, var(--ink) 7%)";
+
+  return (
+    <tr>
+      <td
+        className={QUIEN}
+        style={{
+          borderColor: "var(--hairline)",
+          background: fondo,
+          paddingLeft: SANGRIA[nivel],
+        }}
+      >
+        <button
+          className="cg-focus flex w-full items-center gap-1.5 text-left"
+          type="button"
+          onClick={onToggle}
+        >
+          <Flecha className="h-3.5 w-3.5 shrink-0" />
+          <span
+            className={`block min-w-0 truncate ${nivel === 1 ? "text-sm font-bold" : "text-xs font-semibold"}`}
+          >
+            {nombre}
+          </span>
+          {detalle && (
+            <span
+              className="shrink-0 text-[11px] font-normal"
+              style={{ color: "var(--ink-soft)" }}
+            >
+              {detalle}
+            </span>
+          )}
+        </button>
+      </td>
+      {dias.map((d, i) => (
+        <td
+          key={i}
+          className={TD}
+          style={{ borderColor: "var(--hairline)", background: fondo }}
+        >
+          <ResumenDia d={d} plan={plan} puestos={puestos} onClick={onToggle} />
+        </td>
+      ))}
+    </tr>
+  );
+}
+
 function FilasDePuesto({
   plan,
   pu,
@@ -983,6 +1199,8 @@ function FilasDePuesto({
   dias,
   cambiar,
   setHoja,
+  abierto,
+  onToggle,
 }: {
   plan: Plan;
   pu: Puesto;
@@ -990,6 +1208,8 @@ function FilasDePuesto({
   dias: number[];
   cambiar: Cambiar;
   setHoja: (h: Hoja) => void;
+  abierto: boolean;
+  onToggle: () => void;
 }) {
   const { t } = useTranslation();
   const fijos = fijosDe(plan, pu.id);
@@ -1004,33 +1224,41 @@ function FilasDePuesto({
     background: "var(--background)",
   };
 
+  const Flecha = abierto ? ChevronDown : ChevronRight;
+
   return (
     <>
       <tr>
         <td
-          className="p-0 text-xs font-bold"
-          colSpan={dias.length + 1}
-          style={{ background: "var(--glass-sunken)" }}
+          className={QUIEN}
+          style={{
+            ...fondo,
+            background: "var(--glass-sunken)",
+            paddingLeft: SANGRIA[3],
+          }}
         >
-          <div
-            className="sticky left-0 w-max max-w-[min(60rem,calc(100vw-22rem))] rounded-r-md px-3 py-2"
-            style={{
-              background:
-                "color-mix(in oklab, var(--background) 88%, var(--ink) 12%)",
-            }}
+          <button
+            className="cg-focus flex w-full items-center gap-1.5 text-left"
+            type="button"
+            onClick={onToggle}
           >
-            {pu.nombre}
-            {pu.detalle && (
-              <span
-                className="font-normal"
-                style={{ color: "var(--ink-soft)" }}
-              >
-                {" "}
-                · {pu.detalle}
-              </span>
-            )}{" "}
+            <Flecha className="h-3.5 w-3.5 shrink-0" />
+            <span className="block min-w-0 truncate text-xs font-bold">
+              {pu.nombre}
+              {pu.detalle && (
+                <span
+                  className="font-normal"
+                  style={{ color: "var(--ink-soft)" }}
+                >
+                  {" "}
+                  · {pu.detalle}
+                </span>
+              )}
+            </span>
+          </button>
+          <span className="mt-0.5 flex flex-wrap items-center gap-1 pl-5 text-xs">
             <button
-              className="cg-btn-glass cg-focus ml-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
+              className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"
               title={t(
                 "ui.Planificador.cambiarCobertura",
                 "Cambiar lo que pide el puesto",
@@ -1043,252 +1271,269 @@ function FilasDePuesto({
                     .map((f) => plan.franjas[f]?.nombre || f)
                     .join(" + ")}
             </button>
-            <span
-              className="ml-2 font-normal"
-              style={{ color: "var(--ink-soft)" }}
-            >
+            <span className="font-normal" style={{ color: "var(--ink-soft)" }}>
               {fijos.length
                 ? `↔ ${fijos.map((s) => corto(s.nombre)).join(", ")}`
                 : t("ui.Planificador.sinSacafranco", "sin sacafranco")}
             </span>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td className={QUIEN} style={fondo}>
-          <span
-            className="text-xs font-semibold"
-            style={{ color: "var(--ink-soft)" }}
-          >
-            {t("ui.Planificador.cobertura", "Cobertura")}
           </span>
         </td>
-        {Array.from({ length: dias.length }, (_, i) => {
-          const d = dias[i];
-          const celdas: React.ReactNode[] = [];
-
-          for (const f of pu.franjas) {
-            const n = pide(pu, f, d);
-            const pr = propios(plan, pu, f, d);
-            const k = clave(pu.id, f, d);
-            const cu = plan.cubre[k] || [];
-            const fa = n - pr - cu.length;
-            const fr = plan.franjas[f];
-
-            if (!n && !pr) continue;
-            if (fa > 0)
-              celdas.push(
-                <button
-                  key={f}
-                  className={BTN}
-                  style={ROJO}
-                  title={horario(fr)}
-                  onClick={() => setHoja({ tipo: "hueco", k })}
-                >
-                  {letra(fr)}{" "}
-                  {t("ui.Planificador.faltaN", {
-                    defaultValue: "falta {{n}}",
-                    n: fa,
-                  })}
-                </button>,
-              );
-            else if (cu.length) {
-              const q = plan.personas.find((p) => p.id === cu[0]);
-
-              celdas.push(
-                <button
-                  key={f}
-                  className={BTN}
-                  style={q && !esSacafranco(q) ? AMBAR : VERDE}
-                  title={horario(fr)}
-                  onClick={() => setHoja({ tipo: "hueco", k })}
-                >
-                  {letra(fr)} · {plan.auto[`${k}|${cu[0]}`] ? "● " : ""}
-                  {q ? corto(q.nombre) : "?"}
-                  {cu.length > 1 ? ` +${cu.length - 1}` : ""}
-                </button>,
-              );
-            } else if (pr > n)
-              celdas.push(
-                <span
-                  key={f}
-                  className={`${BTN} block text-center`}
-                  style={AMBAR}
-                  title={horario(fr)}
-                >
-                  {letra(fr)}{" "}
-                  {t("ui.Planificador.sobraN", {
-                    defaultValue: "sobra {{n}}",
-                    n: pr - n,
-                  })}
-                </span>,
-              );
-            else
-              celdas.push(
-                <span
-                  key={f}
-                  className={`${BTN} block text-center font-semibold`}
-                  style={GRIS}
-                  title={horario(fr)}
-                >
-                  {letra(fr)} ✓
-                </span>,
-              );
-          }
-
-          return (
-            <td
-              key={i}
-              className={TD}
-              style={{ borderColor: "var(--hairline)" }}
-            >
-              <div className={CELDA}>
-                {celdas.length ? (
-                  celdas
-                ) : (
-                  <span
-                    className={`${BTN} block border border-dashed text-center font-medium`}
-                    style={{
-                      borderColor: "var(--hairline)",
-                      color: "var(--ink-soft)",
-                    }}
-                  >
-                    {t("ui.Planificador.cerrado", "cerrado")}
-                  </span>
-                )}
-              </div>
-            </td>
-          );
-        })}
-      </tr>
-      {gente.map((p) => (
-        <tr key={p.id}>
-          <td className={QUIEN} style={fondo}>
-            <span className="block truncate font-semibold">{p.nombre}</span>
-            <span className="mt-0.5 flex flex-wrap items-center gap-1">
-              <button
-                className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"
-                title={t(
-                  "ui.Planificador.cambiarRotacion",
-                  "Cambiar su rotación",
-                )}
-                onClick={() => setHoja({ tipo: "rotacion", persona: p.id })}
-              >
-                {etiquetaDe(plan, p)}
-              </button>
-              {p.patron.length > 1 && (
-                <button
-                  className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"
-                  title={t(
-                    "ui.Planificador.correrTitulo",
-                    "Empezar la rotación un día después",
-                  )}
-                  onClick={() =>
-                    cambiar((x) => {
-                      const q = x.personas.find((y) => y.id === p.id)!;
-                      q.desfase -= 1;
-                      q.manual = {};
-                    })
-                  }
-                >
-                  {t("ui.Planificador.correr", "correr →")}
-                </button>
-              )}
-              <button
-                className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"
-                title={t(
-                  "ui.Planificador.ausenciaTitulo",
-                  "Vacaciones, permiso o incapacidad",
-                )}
-                onClick={() => setHoja({ tipo: "ausencia", persona: p.id })}
-              >
-                {t("ui.Planificador.ausencia", "ausencia")}
-              </button>
-            </span>
+        {dias.map((d, i) => (
+          <td
+            key={i}
+            className={TD}
+            style={{
+              borderColor: "var(--hairline)",
+              background: "var(--glass-sunken)",
+            }}
+          >
+            <ResumenDia d={d} plan={plan} puestos={[pu]} onClick={onToggle} />
           </td>
-          {Array.from({ length: dias.length }, (_, i) => {
-            const d = dias[i];
-            const aus = (p.ausencias || []).find(
-              (a) => d >= a.desde && d <= a.hasta,
-            );
-            const c = propio(p, d);
-            const fr = plan.franjas[c];
-            const extra = c === FRANCO ? turnoDe(plan, p, d) : null;
-            const orden = [...pu.franjas, FRANCO];
-            const sig = () =>
-              cambiar((x) => {
-                const q = x.personas.find((y) => y.id === p.id)!;
-                q.manual[d] =
-                  orden[(orden.indexOf(propio(q, d)) + 1) % orden.length];
-              });
-
-            return (
-              <td
-                key={i}
-                className={TD}
-                style={{ borderColor: "var(--hairline)" }}
+        ))}
+      </tr>
+      {abierto && (
+        <>
+          <tr>
+            <td className={QUIEN} style={fondo}>
+              <span
+                className="text-xs font-semibold"
+                style={{ color: "var(--ink-soft)" }}
               >
-                <div className={CELDA}>
-                  {aus ? (
-                    <span
-                      className={`${BTN} block text-center font-medium capitalize`}
-                      style={GRIS}
-                    >
-                      {aus.tipo}
-                    </span>
-                  ) : c === FRANCO || !fr ? (
+                {t("ui.Planificador.cobertura", "Cobertura")}
+              </span>
+            </td>
+            {Array.from({ length: dias.length }, (_, i) => {
+              const d = dias[i];
+              const celdas: React.ReactNode[] = [];
+
+              for (const f of pu.franjas) {
+                const n = pide(pu, f, d);
+                const pr = propios(plan, pu, f, d);
+                const k = clave(pu.id, f, d);
+                const cu = plan.cubre[k] || [];
+                const fa = n - pr - cu.length;
+                const fr = plan.franjas[f];
+
+                if (!n && !pr) continue;
+                if (fa > 0)
+                  celdas.push(
                     <button
-                      className={`${BTN} border border-dashed font-medium`}
-                      style={{
-                        borderColor: "var(--hairline)",
-                        color: "var(--ink-soft)",
-                      }}
-                      onClick={sig}
+                      key={f}
+                      className={BTN}
+                      style={ROJO}
+                      title={horario(fr)}
+                      onClick={() => setHoja({ tipo: "hueco", k })}
                     >
-                      {t("ui.Planificador.franco", "Franco")}
-                      {extra && (
-                        <small className="block font-normal">
-                          {t("ui.Planificador.extraEn", {
-                            defaultValue: "extra en {{puesto}}",
-                            puesto:
-                              plan.puestos.find((x) => x.id === extra.puesto)
-                                ?.nombre || "",
-                          })}
-                        </small>
+                      {letra(fr)}{" "}
+                      {t("ui.Planificador.faltaN", {
+                        defaultValue: "falta {{n}}",
+                        n: fa,
+                      })}
+                    </button>,
+                  );
+                else if (cu.length) {
+                  const q = plan.personas.find((p) => p.id === cu[0]);
+
+                  celdas.push(
+                    <button
+                      key={f}
+                      className={BTN}
+                      style={q && !esSacafranco(q) ? AMBAR : VERDE}
+                      title={horario(fr)}
+                      onClick={() => setHoja({ tipo: "hueco", k })}
+                    >
+                      {letra(fr)} · {plan.auto[`${k}|${cu[0]}`] ? "● " : ""}
+                      {q ? corto(q.nombre) : "?"}
+                      {cu.length > 1 ? ` +${cu.length - 1}` : ""}
+                    </button>,
+                  );
+                } else if (pr > n)
+                  celdas.push(
+                    <span
+                      key={f}
+                      className={`${BTN} block text-center`}
+                      style={AMBAR}
+                      title={horario(fr)}
+                    >
+                      {letra(fr)}{" "}
+                      {t("ui.Planificador.sobraN", {
+                        defaultValue: "sobra {{n}}",
+                        n: pr - n,
+                      })}
+                    </span>,
+                  );
+                else
+                  celdas.push(
+                    <span
+                      key={f}
+                      className={`${BTN} block text-center font-semibold`}
+                      style={GRIS}
+                      title={horario(fr)}
+                    >
+                      {letra(fr)} ✓
+                    </span>,
+                  );
+              }
+
+              return (
+                <td
+                  key={i}
+                  className={TD}
+                  style={{ borderColor: "var(--hairline)" }}
+                >
+                  <div className={CELDA}>
+                    {celdas.length ? (
+                      celdas
+                    ) : (
+                      <span
+                        className={`${BTN} block border border-dashed text-center font-medium`}
+                        style={{
+                          borderColor: "var(--hairline)",
+                          color: "var(--ink-soft)",
+                        }}
+                      >
+                        {t("ui.Planificador.cerrado", "cerrado")}
+                      </span>
+                    )}
+                  </div>
+                </td>
+              );
+            })}
+          </tr>
+          {gente.map((p) => (
+            <tr key={p.id}>
+              <td className={QUIEN} style={fondo}>
+                <span className="block truncate font-semibold">{p.nombre}</span>
+                <span className="mt-0.5 flex flex-wrap items-center gap-1">
+                  <button
+                    className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                    title={t(
+                      "ui.Planificador.cambiarRotacion",
+                      "Cambiar su rotación",
+                    )}
+                    onClick={() => setHoja({ tipo: "rotacion", persona: p.id })}
+                  >
+                    {etiquetaDe(plan, p)}
+                  </button>
+                  {p.patron.length > 1 && (
+                    <button
+                      className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                      title={t(
+                        "ui.Planificador.correrTitulo",
+                        "Empezar la rotación un día después",
                       )}
+                      onClick={() =>
+                        cambiar((x) => {
+                          const q = x.personas.find((y) => y.id === p.id)!;
+                          q.desfase -= 1;
+                          q.manual = {};
+                        })
+                      }
+                    >
+                      {t("ui.Planificador.correr", "correr →")}
                     </button>
-                  ) : (
-                    <button className={BTN} style={tono(fr)} onClick={sig}>
-                      {letra(fr)}
-                      <small className="block font-normal opacity-80">
-                        {horario(fr)}
-                      </small>
-                    </button>
+                  )}
+                  <button
+                    className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                    title={t(
+                      "ui.Planificador.ausenciaTitulo",
+                      "Vacaciones, permiso o incapacidad",
+                    )}
+                    onClick={() => setHoja({ tipo: "ausencia", persona: p.id })}
+                  >
+                    {t("ui.Planificador.ausencia", "ausencia")}
+                  </button>
+                </span>
+              </td>
+              {Array.from({ length: dias.length }, (_, i) => {
+                const d = dias[i];
+                const aus = (p.ausencias || []).find(
+                  (a) => d >= a.desde && d <= a.hasta,
+                );
+                const c = propio(p, d);
+                const fr = plan.franjas[c];
+                const extra = c === FRANCO ? turnoDe(plan, p, d) : null;
+                const orden = [...pu.franjas, FRANCO];
+                const sig = () =>
+                  cambiar((x) => {
+                    const q = x.personas.find((y) => y.id === p.id)!;
+                    q.manual[d] =
+                      orden[(orden.indexOf(propio(q, d)) + 1) % orden.length];
+                  });
+
+                return (
+                  <td
+                    key={i}
+                    className={TD}
+                    style={{ borderColor: "var(--hairline)" }}
+                  >
+                    <div className={CELDA}>
+                      {aus ? (
+                        <span
+                          className={`${BTN} block text-center font-medium capitalize`}
+                          style={GRIS}
+                        >
+                          {aus.tipo}
+                        </span>
+                      ) : c === FRANCO || !fr ? (
+                        <button
+                          className={`${BTN} border border-dashed font-medium`}
+                          style={{
+                            borderColor: "var(--hairline)",
+                            color: "var(--ink-soft)",
+                          }}
+                          onClick={sig}
+                        >
+                          {t("ui.Planificador.franco", "Franco")}
+                          {extra && (
+                            <small className="block font-normal">
+                              {t("ui.Planificador.extraEn", {
+                                defaultValue: "extra en {{puesto}}",
+                                puesto:
+                                  plan.puestos.find(
+                                    (x) => x.id === extra.puesto,
+                                  )?.nombre || "",
+                              })}
+                            </small>
+                          )}
+                        </button>
+                      ) : (
+                        <button className={BTN} style={tono(fr)} onClick={sig}>
+                          {letra(fr)}
+                          <small className="block font-normal opacity-80">
+                            {horario(fr)}
+                          </small>
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+          {!gente.length && (
+            <tr>
+              <td
+                className="border-b p-0 text-xs italic"
+                colSpan={dias.length + 1}
+                style={{
+                  borderColor: "var(--hairline)",
+                  color: "var(--ink-soft)",
+                }}
+              >
+                <div
+                  className="sticky left-0 w-max px-3 py-1.5"
+                  style={{ background: "var(--background)" }}
+                >
+                  {t(
+                    "ui.Planificador.nadieAsignado",
+                    "Nadie asignado a este puesto.",
                   )}
                 </div>
               </td>
-            );
-          })}
-        </tr>
-      ))}
-      {!gente.length && (
-        <tr>
-          <td
-            className="border-b p-0 text-xs italic"
-            colSpan={dias.length + 1}
-            style={{ borderColor: "var(--hairline)", color: "var(--ink-soft)" }}
-          >
-            <div
-              className="sticky left-0 w-max px-3 py-1.5"
-              style={{ background: "var(--background)" }}
-            >
-              {t(
-                "ui.Planificador.nadieAsignado",
-                "Nadie asignado a este puesto.",
-              )}
-            </div>
-          </td>
-        </tr>
+            </tr>
+          )}
+        </>
       )}
     </>
   );
