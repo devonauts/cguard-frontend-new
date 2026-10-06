@@ -195,15 +195,13 @@ export default function ClientForm({
   });
 
   const personType = form.watch("personType") || "PN";
-  const esPersonaNatural = personType !== "PJ";
 
-  /* Persona natural: los datos personales SON el contacto del cliente. Se
-     copian a email/phoneNumber (que es lo que valida el esquema y lee el
-     servidor) y la sección «Contacto» no se enseña: era la misma pregunta
-     dos veces. Al cargar un cliente viejo sin personales, se rellenan con
-     el contacto que ya tenía. */
+  /* El teléfono y el correo del representante legal SON el contacto del
+     cliente (persona natural o jurídica). Se copian a email/phoneNumber (que
+     es lo que valida el esquema y lee el servidor) y la sección «Contacto»
+     ya no existe: era la misma pregunta dos veces. Al cargar un cliente
+     viejo sin esos datos, se rellenan con el contacto que ya tenía. */
   useEffect(() => {
-    if (!esPersonaNatural) return;
     const v = form.getValues() as any;
 
     if (!v.legalRepEmail && v.email)
@@ -217,7 +215,7 @@ export default function ClientForm({
     if (w.legalRepPhone && w.phoneNumber !== w.legalRepPhone)
       form.setValue("phoneNumber", w.legalRepPhone);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [esPersonaNatural]);
+  }, [mode]);
 
   // ── El país con el que se mide la identificación ─────────────────────────
   // El del propio cliente en cuanto lo escribe; hasta entonces, el de la
@@ -925,13 +923,8 @@ export default function ClientForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">
-                        {t("clients.legalRep.phone", "Teléfono personal")}
-                        {esPersonaNatural && (
-                          <>
-                            {" "}
-                            <span className="brand-text">*</span>
-                          </>
-                        )}
+                        {t("clients.legalRep.phone", "Teléfono personal")}{" "}
+                        <span className="brand-text">*</span>
                       </FormLabel>
                       <FormControl>
                         <input
@@ -943,8 +936,7 @@ export default function ClientForm({
                           }
                           onChange={(e) => {
                             field.onChange(e);
-                            if (esPersonaNatural)
-                              form.setValue("phoneNumber", e.target.value);
+                            form.setValue("phoneNumber", e.target.value);
                           }}
                         />
                       </FormControl>
@@ -961,13 +953,8 @@ export default function ClientForm({
                         {t(
                           "clients.legalRep.email",
                           "Correo electrónico personal",
-                        )}
-                        {esPersonaNatural && (
-                          <>
-                            {" "}
-                            <span className="brand-text">*</span>
-                          </>
-                        )}
+                        )}{" "}
+                        <span className="brand-text">*</span>
                       </FormLabel>
                       <FormControl>
                         <input
@@ -979,8 +966,7 @@ export default function ClientForm({
                           }
                           onChange={(e) => {
                             field.onChange(e);
-                            if (esPersonaNatural)
-                              form.setValue("email", e.target.value);
+                            form.setValue("email", e.target.value);
                           }}
                         />
                       </FormControl>
@@ -1407,76 +1393,8 @@ export default function ClientForm({
               </div>
             </Section>
 
-            {/* ── Section 3: Contact ────────────────────────────────── */}
-            {/* Sólo para persona jurídica: en persona natural el contacto son
-                sus datos personales (arriba) y esto sería la misma pregunta
-                dos veces. */}
-            {!esPersonaNatural && (
-              <Section
-                icon={<Mail />}
-                title={t("clients.form.contactInfo", "Contacto")}
-                contentClassName="space-y-4"
-              >
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField<ClientInput>
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">
-                          {t("clients.form.email", "Correo electrónico")}{" "}
-                          <span className="brand-text">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <input
-                            type="email"
-                            className="cg-input cg-focus flex h-10 w-full px-3 py-2 text-sm disabled:opacity-50"
-                            {...field}
-                            value={
-                              typeof field.value === "string" ? field.value : ""
-                            }
-                            maxLength={50}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField<ClientInput>
-                    control={form.control}
-                    name="phoneNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">
-                          {t("clients.form.phone", "Teléfono")}{" "}
-                          <span className="brand-text">*</span>
-                        </FormLabel>
-                        <FormControl>
-                          <PhoneInput
-                            value={
-                              typeof field.value === "string" ? field.value : ""
-                            }
-                            onChange={(val) => {
-                              const digitsOnly = val.replace(/[^\d+]/g, "");
-                              const match = digitsOnly.match(/^(\+\d+)(\d*)$/);
-                              if (match) {
-                                const prefix = match[1];
-                                const local = match[2].slice(0, 10);
-                                field.onChange(prefix + local);
-                              } else {
-                                field.onChange(val.slice(0, 1 + 3 + 10));
-                              }
-                            }}
-                            maxLocalDigits={10}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </Section>
-            )}
+            {/* La sección «Contacto» se fue: el contacto es el representante
+                legal (teléfono y correo, arriba), en natural y en jurídica. */}
 
             {/* ── Personas con acceso adicionales (optional) ──────────── */}
             {mode === "create" && (

@@ -225,10 +225,11 @@ export const crearEsquemaCliente = (paisDeLaEmpresa?: string) =>
       const personType = data.personType || "PN";
       const doc = (data.documentNumber || "").toString().trim();
 
-      /* PERSONA NATURAL: el contacto ES la persona. Su teléfono y su correo
-         personales son obligatorios y son los del cliente (el formulario los
-         copia a email/phoneNumber), así que no se pregunta dos veces. */
-      if (personType === "PN") {
+      /* EL CONTACTO ES EL REPRESENTANTE LEGAL, sea persona natural o
+         jurídica. Su teléfono y su correo son obligatorios y son los del
+         cliente (el formulario los copia a email/phoneNumber), así que no se
+         pregunta dos veces. */
+      {
         // «+52» solo es el prefijo que deja el selector de país, no un teléfono.
         if (
           (data.legalRepPhone || "").toString().replace(/\D/g, "").length < 7
