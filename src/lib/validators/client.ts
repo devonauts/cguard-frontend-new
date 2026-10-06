@@ -229,7 +229,10 @@ export const crearEsquemaCliente = (paisDeLaEmpresa?: string) =>
          personales son obligatorios y son los del cliente (el formulario los
          copia a email/phoneNumber), así que no se pregunta dos veces. */
       if (personType === "PN") {
-        if (!(data.legalRepPhone || "").toString().trim()) {
+        // «+52» solo es el prefijo que deja el selector de país, no un teléfono.
+        if (
+          (data.legalRepPhone || "").toString().replace(/\D/g, "").length < 7
+        ) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: ["legalRepPhone"],

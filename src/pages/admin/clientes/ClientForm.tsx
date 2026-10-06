@@ -208,7 +208,7 @@ export default function ClientForm({
 
     if (!v.legalRepEmail && v.email)
       form.setValue("legalRepEmail" as any, v.email);
-    if (!v.legalRepPhone && v.phoneNumber)
+    if (!v.legalRepPhone && /\d{7,}/.test(String(v.phoneNumber || "")))
       form.setValue("legalRepPhone" as any, v.phoneNumber);
     const w = form.getValues() as any;
 
