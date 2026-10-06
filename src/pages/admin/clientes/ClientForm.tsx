@@ -1519,65 +1519,11 @@ export default function ClientForm({
               </Section>
             )}
 
-            {/* ── Section 3: Sector ─────────────────────────────────── */}
-            <Section
-              icon={<Tag />}
-              title={t("clients.form.categoryLabel", "Sector de seguridad")}
-            >
-              <FormField<ClientInput>
-                control={form.control}
-                name="categoryIds"
-                render={({ field }) => {
-                  const currentValue: string[] = Array.isArray(field.value)
-                    ? field.value
-                    : typeof field.value === "string"
-                      ? [field.value]
-                      : [];
-                  return (
-                    <FormItem>
-                      <div className="flex items-center gap-2 mb-2">
-                        <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">
-                          {t(
-                            "clients.form.categoryLabel",
-                            "Sector de seguridad",
-                          )}
-                        </FormLabel>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span className="text-muted-foreground cursor-help">
-                                <Info size={14} />
-                              </span>
-                            </TooltipTrigger>
-                            <TooltipContent side="top">
-                              {t(
-                                "clients.form.categoryTooltip",
-                                "Selecciona el sector de seguridad asociado al cliente",
-                              )}
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
-                      <FormControl>
-                        <CategorySelect
-                          options={cats}
-                          value={currentValue}
-                          onChange={(v) => field.onChange(v as any)}
-                          module="clientAccount"
-                          onCategoryCreated={handleCategoryCreated}
-                          multiple={true}
-                          placeholder={t(
-                            "clients.selectCategories",
-                            "Selecciona Sectores",
-                          )}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-            </Section>
+            {/* «Sector de seguridad» ya no se pregunta: era una etiqueta libre
+                (en la demo convivían «Hotelería» y «Uniformes y equipo») que
+                nada usa para operar. El sector que sí cuenta es el tipo de
+                servicio de cada sede. El dato y el filtro de la lista siguen
+                existiendo para quien ya lo tenía puesto. */}
 
             {/* ── Section 4: Address ────────────────────────────────── */}
             <Section
