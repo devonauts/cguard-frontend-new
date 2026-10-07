@@ -25,6 +25,8 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import ShiftAssignModal from "@/pages/admin/post-sites/station-detail/components/ShiftAssignModal";
+import AgregarSacafrancoModal from "@/components/schedule/AgregarSacafrancoModal";
+import CambiarVigilanteModal from "@/components/schedule/CambiarVigilanteModal";
 import { toast } from "sonner";
 
 import AppLayout from "@/layouts/app-layout";
@@ -480,6 +482,20 @@ export default function Planificador() {
   const [abiertos, setAbiertos] = useState<Record<string, boolean>>({});
   /** El puesto al que se le está asignando gente (popup de la ficha). */
   const [asignando, setAsignando] = useState<Puesto | null>(null);
+  /** La persona a la que se sustituye en su plaza («cambiar»). */
+  const [sustituyendo, setSustituyendo] = useState<Persona | null>(null);
+  /** «Agregar sacafranco»: abierto con los puestos de este cliente marcados. */
+  const [agregandoSf, setAgregandoSf] = useState<string[] | null>(null);
+  const estacionesParaSf = useMemo(
+    () =>
+      (plan?.puestos || []).map((pu) => ({
+        id: pu.id,
+        nombre: pu.nombre,
+        sede: pu.sede,
+        cliente: pu.cliente,
+      })),
+    [plan],
+  );
   /* «Quitar» a alguien de su puesto cierra su asignación en el servidor. Se
      pide dos veces (sin diálogo del navegador) y se relee el horario. */
   const [confirmarQuitar, setConfirmarQuitar] = useState<string | null>(null);
@@ -982,6 +998,7 @@ export default function Planificador() {
                                       asignar={setAsignando}
                                       confirmando={confirmarQuitar}
                                       quitar={quitarVigilante}
+                                      sustituir={setSustituyendo}
                                       onToggle={() => alternar(`p:${pu.id}`)}
                                     />
                                   ))}
@@ -1055,6 +1072,20 @@ export default function Planificador() {
                             "Probar con uno más",
                           )}
                         </button>
+                        <button
+                          className="cg-btn-glass cg-focus ml-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                          style={{ color: "var(--brand-text)" }}
+                          type="button"
+                          onClick={() =>
+                            setAgregandoSf(puestosVisibles.map((x) => x.id))
+                          }
+                        >
+                          <UserPlus size={12} />{" "}
+                          {t(
+                            "ui.Planificador.agregarSacafranco",
+                            "Agregar sacafranco",
+                          )}
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -1099,6 +1130,38 @@ export default function Planificador() {
             onClose={() => setAsignando(null)}
             onSaved={() => {
               setAsignando(null);
+              void cargar();
+            }}
+          />
+        )}
+        {sustituyendo &&
+          leido?.enlace.personas[sustituyendo.id]?.assignmentId && (
+            <CambiarVigilanteModal
+              open
+              assignmentId={leido.enlace.personas[sustituyendo.id].assignmentId}
+              guardIdActual={leido.enlace.personas[sustituyendo.id].guardId}
+              nombreActual={sustituyendo.nombre}
+              puesto={
+                plan?.puestos.find((x) => x.id === sustituyendo.puesto)
+                  ?.nombre || ""
+              }
+              tenantId={tenantId}
+              onClose={() => setSustituyendo(null)}
+              onSaved={() => {
+                setSustituyendo(null);
+                void cargar();
+              }}
+            />
+          )}
+        {agregandoSf && (
+          <AgregarSacafrancoModal
+            open
+            estaciones={estacionesParaSf}
+            preseleccion={agregandoSf}
+            tenantId={tenantId}
+            onClose={() => setAgregandoSf(null)}
+            onSaved={() => {
+              setAgregandoSf(null);
               void cargar();
             }}
           />
@@ -1309,6 +1372,7 @@ function FilasDePuesto({
   asignar,
   quitar,
   confirmando,
+  sustituir,
 }: {
   plan: Plan;
   pu: Puesto;
@@ -1321,6 +1385,7 @@ function FilasDePuesto({
   asignar: (pu: Puesto) => void;
   quitar: (p: Persona, confirmando: boolean) => void;
   confirmando: string | null;
+  sustituir: (p: Persona) => void;
 }) {
   const { t } = useTranslation();
   const fijos = fijosDe(plan, pu.id);
@@ -1578,6 +1643,16 @@ function FilasDePuesto({
                     onClick={() => setHoja({ tipo: "ausencia", persona: p.id })}
                   >
                     {t("ui.Planificador.ausencia", "ausencia")}
+                  </button>
+                  <button
+                    className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                    title={t(
+                      "ui.Planificador.cambiarTitulo",
+                      "Poner a otra persona en esta plaza desde una fecha",
+                    )}
+                    onClick={() => sustituir(p)}
+                  >
+                    {t("ui.Planificador.cambiar", "cambiar")}
                   </button>
                   <button
                     className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"
