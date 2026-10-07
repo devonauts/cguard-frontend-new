@@ -532,15 +532,37 @@ export default function Coverage() {
                     <span
                       className="font-semibold"
                       style={{
-                        color: here ? "var(--ok-text)" : "var(--bad-text)",
+                        color: here
+                          ? "var(--ok-text)"
+                          : e.enCamino
+                            ? "var(--warn-text, var(--ink))"
+                            : "var(--bad-text)",
                       }}
                     >
+                      {/* El reemplazo que se acaba de mandar «va en camino»:
+                          no es un «sin marcar entrada» hasta que pase su
+                          gracia (lo decide el servidor). */}
                       {here
                         ? t("ui.Coverage.enElPuesto", "En el puesto")
-                        : t(
-                            "ui.Coverage.sinMarcarEntrada",
-                            "Sin marcar entrada",
-                          )}
+                        : e.enCamino
+                          ? t("ui.Coverage.vaEnCamino", {
+                              defaultValue:
+                                "Va en camino · enviado hace {{min}} min",
+                              min: e.enCaminoDesde
+                                ? Math.max(
+                                    0,
+                                    Math.round(
+                                      (Date.now() -
+                                        new Date(e.enCaminoDesde).getTime()) /
+                                        60000,
+                                    ),
+                                  )
+                                : 0,
+                            })
+                          : t(
+                              "ui.Coverage.sinMarcarEntrada",
+                              "Sin marcar entrada",
+                            )}
                     </span>
                   </p>
                 </div>

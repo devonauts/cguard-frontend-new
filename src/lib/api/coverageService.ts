@@ -60,6 +60,10 @@ export interface StationCoverage {
     startTime: string;
     endTime: string;
     shiftId: string;
+    /** Reemplazo recién mandado, sin fichar y dentro de su gracia: «va en camino». */
+    enCamino?: boolean;
+    /** Cuándo se le mandó (ISO), o null si no es una cobertura. */
+    enCaminoDesde?: string | null;
   }>;
   present: Array<{
     guardId: string;
