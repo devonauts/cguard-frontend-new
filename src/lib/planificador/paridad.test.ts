@@ -15,7 +15,12 @@
  * Sin el fichero (no se montaron los casos) la suite se salta sola. El
  * informe queda en `scratchpad/paridad/informe.md`.
  */
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  readdirSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs";
 import path from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -25,7 +30,14 @@ import { planDesdeHorarioReal, tramoDeHora } from "./real";
 
 const CARPETA =
   process.env.PARIDAD_DIR || path.resolve(__dirname, "../../../../paridad");
-const FICHERO = path.join(CARPETA, "casos.jsonl");
+/* `casos.jsonl` de una tirada de un solo trabajador, o `casos-0.jsonl`,
+   `casos-1.jsonl`… de una tirada repartida en varios (3000 casos). */
+const FICHEROS = existsSync(CARPETA)
+  ? readdirSync(CARPETA)
+      .filter((f) => /^casos(-\d+)?\.jsonl$/.test(f))
+      .sort()
+      .map((f) => path.join(CARPETA, f))
+  : [];
 
 const diasEntre = (base: string, fecha: string) => {
   const [by, bm, bd] = base.split("-").map(Number);
@@ -42,14 +54,16 @@ const minutosDe = (hhmm: string) => {
 };
 const DIAS = ["lun", "mar", "mie", "jue", "vie", "sab", "dom"];
 
-const hay = existsSync(FICHERO);
+const hay = FICHEROS.length > 0;
 
-describe.skipIf(!hay)("paridad Planificador ↔ Horario (200 casos)", () => {
+describe.skipIf(!hay)("paridad Planificador ↔ Horario (casos reales)", () => {
   it("lee cada caso igual que el horario real", () => {
-    const lineas = readFileSync(FICHERO, "utf8")
-      .split("\n")
-      .filter(Boolean)
-      .map((l) => JSON.parse(l));
+    const lineas = FICHEROS.flatMap((f) =>
+      readFileSync(f, "utf8")
+        .split("\n")
+        .filter(Boolean)
+        .map((l) => JSON.parse(l)),
+    ).sort((a, b) => (a.caso?.n ?? 0) - (b.caso?.n ?? 0));
     const filas: string[] = [];
     const fallos: string[] = [];
     let sumaCoincidencia = 0;
@@ -77,6 +91,25 @@ describe.skipIf(!hay)("paridad Planificador ↔ Horario (200 casos)", () => {
         coincidencia = r.coincidencia;
         if (!pu) problemas.push("el lector no vio el puesto");
         else {
+          // 0) La ausencia planificada (vacaciones V de 2 días del primer fijo,
+          //    pasado mañana) se lee como ausencia, no como falta ni como turno.
+          if (reg.caso?.ausencia && reg.asignaciones?.length) {
+            const hoyIdx = diasEntre(reg.base, reg.hoy);
+            const guardId = String(reg.asignaciones[0].guard.id);
+            const pid = Object.keys(r.enlace.personas).find(
+              (k) => r.enlace.personas[k].guardId === guardId,
+            );
+            const p = plan.personas.find((x) => x.id === pid);
+            const vac = (p?.ausencias || []).filter(
+              (a) => a.tipo === "vacaciones",
+            );
+
+            for (const d of [hoyIdx + 2, hoyIdx + 3])
+              if (!vac.some((a) => d >= a.desde && d <= a.hasta))
+                problemas.push(`día ${d}: no se leyó la ausencia (vacaciones)`);
+            if ((p?.ausencias || []).some((a) => a.tipo === "falta"))
+              problemas.push("la ausencia planificada se leyó como falta");
+          }
           // 1) Tramos por hora de entrada.
           for (const fid of pu.franjas) {
             const fr = plan.franjas[fid];
