@@ -14,6 +14,7 @@ import {
   ChevronRight,
   Loader2,
   Pencil,
+  Plus,
   RotateCcw,
   Search,
   Send,
@@ -950,6 +951,21 @@ export default function Planificador() {
                                   nombre={s.nombre}
                                   plan={plan}
                                   puestos={s.puestos}
+                                  accion={
+                                    s.id ? (
+                                      <Link
+                                        className="cg-btn-glass cg-focus inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                                        style={{ color: "var(--brand-text)" }}
+                                        to={`/post-sites/${s.id}/stations/new`}
+                                      >
+                                        <Plus className="h-3 w-3" />
+                                        {t(
+                                          "ui.Planificador.nuevaEstacion",
+                                          "Nueva estación",
+                                        )}
+                                      </Link>
+                                    ) : null
+                                  }
                                   onToggle={() => alternar(ks)}
                                 />
                                 {estaAbierto(ks) &&
@@ -1217,6 +1233,7 @@ function FilaGrupo({
   plan,
   puestos,
   dias,
+  accion,
 }: {
   nivel: 1 | 2;
   nombre: string;
@@ -1226,6 +1243,8 @@ function FilaGrupo({
   plan: Plan;
   puestos: Puesto[];
   dias: number[];
+  /** Algo que hacer sobre el grupo (crear una estación en la sede…). */
+  accion?: React.ReactNode;
 }) {
   const Flecha = abierto ? ChevronDown : ChevronRight;
   const fondo =
@@ -1263,6 +1282,7 @@ function FilaGrupo({
             </span>
           )}
         </button>
+        {accion && <span className="mt-0.5 block pl-5">{accion}</span>}
       </td>
       {dias.map((d, i) => (
         <td
