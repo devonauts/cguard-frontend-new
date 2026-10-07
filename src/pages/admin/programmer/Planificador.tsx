@@ -2414,7 +2414,7 @@ function HojaHueco({
     <Marco
       cerrar={cerrar}
       detalle={`${dia} · ${t("ui.Planificador.pideN", { defaultValue: "pide {{n}}", n: pide(pu, franja, d) })}, ${fa > 0 ? t("ui.Planificador.faltaN", { defaultValue: "falta {{n}}", n: fa }) : t("ui.Planificador.completo", "completo")}`}
-      titulo={`${pu.nombre} · ${fr && fr.nombre !== horario(fr) ? `${fr.nombre} ` : ""}${horario(fr)}`}
+      titulo={`${pu.nombre} · ${fr ? (fr.nombre.includes(horario(fr)) ? fr.nombre : `${fr.nombre} ${horario(fr)}`) : ""}`}
     >
       {porque && (
         <p className="rounded-lg p-2.5 text-sm" style={AMBAR}>

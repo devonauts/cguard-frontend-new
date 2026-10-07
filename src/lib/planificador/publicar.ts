@@ -84,9 +84,7 @@ const CODIGO_NOVEDAD: Record<string, string> = {
  * noche, tantos de franco), o el que ALTERNA: [a×x, F×z, b×x, F×z] — el mismo
  * bloque de día y de noche, con su franco en medio, como el 7-1 peruano.
  */
-export function formaDeCiclo(
-  patron: string[],
-): {
+export function formaDeCiclo(patron: string[]): {
   a: string;
   b: string | null;
   x: number;
@@ -573,8 +571,12 @@ export function planificarPublicacion(
         continue;
       }
       const real = enlace.turnos[id]?.[d];
+      // Ya existe un turno real suyo en ese puesto ese día (aunque además tenga otro en otro puesto).
+      const yaReal = (
+        enlace.turnosTodos?.[id]?.[d] || (real ? [real] : [])
+      ).some((x) => x.stationId === pu.id);
 
-      if (real && real.stationId === pu.id) continue; // ya existe
+      if (yaReal) continue;
       /* Si el hueco viene de una FALTA con novedad abierta, cubrirlo por la
          novedad (como en Cobertura en vivo): crea el turno de cobertura y
          cierra la novedad a la vez, en vez de dejar la alerta viva. */

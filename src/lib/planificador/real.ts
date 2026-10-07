@@ -69,6 +69,12 @@ export interface Enlace {
   turnos: Record<string, Record<number, { id: string; stationId: string }>>;
   /** Novedad de cobertura abierta por `puesto|día`: cubrirla cierra la novedad. */
   eventos: Record<string, string>;
+  /** TODOS los turnos reales de cada persona por día (puede haber dos: su
+      puesto de día y una cobertura de noche); `turnos` guarda uno solo. */
+  turnosTodos: Record<
+    string,
+    Record<number, { id: string; stationId: string; min: number }[]>
+  >;
   /** Coberturas del plan que vienen de un turno real (`persona|día`): sólo ésas se pueden retirar. */
   cargadas: Record<string, string>;
   /** Novedades reales por persona y día. */
@@ -455,6 +461,35 @@ export function planDesdeHorarioReal(
     cargadas: {},
     novedades: {},
     eventos: {},
+    turnosTodos: {},
+  };
+  /** Los turnos reales de un vigilante, uno por día y todos por día. */
+  const turnosDe = (guardId: string, pid: string) => {
+    enlace.turnos[pid] = {};
+    enlace.turnosTodos[pid] = {};
+    for (const s of ov.shifts || []) {
+      if (String(s.guardId) !== guardId || !s.id) continue;
+      const dm = diaYMinuto(s.startTime, base, tz);
+
+      if (!dm) continue;
+      const estado = String(s.status || "").toLowerCase();
+
+      if (
+        ES_FALTA.has(estado) ||
+        estado === "cancelled" ||
+        estado === "canceled"
+      )
+        continue;
+      const t = {
+        id: String(s.id),
+        stationId: idLimpio(s.stationId),
+        min: dm.min,
+      };
+
+      enlace.turnos[pid][dm.d] = { id: t.id, stationId: t.stationId };
+      (enlace.turnosTodos[pid][dm.d] =
+        enlace.turnosTodos[pid][dm.d] || []).push(t);
+    }
   };
 
   for (const st of ov.stations || [])
@@ -634,17 +669,7 @@ export function planDesdeHorarioReal(
       rotationStyleId: a.rotationStyleId ? String(a.rotationStyleId) : null,
       conPlaza: !!a.positionId && a.kind !== "adhoc",
     };
-    enlace.turnos[pid] = {};
-    for (const s of ov.shifts || []) {
-      if (String(s.guardId) !== guardId || !s.id) continue;
-      const dm = diaYMinuto(s.startTime, base, tz);
-
-      if (dm)
-        enlace.turnos[pid][dm.d] = {
-          id: String(s.id),
-          stationId: idLimpio(s.stationId),
-        };
-    }
+    turnosDe(guardId, pid);
     const persona: Persona = {
       id: pid,
       nombre,
@@ -726,6 +751,7 @@ export function planDesdeHorarioReal(
       rotationStyleId: null,
       conPlaza: false,
     };
+    turnosDe(guardId, pid);
     const persona: Persona = {
       id: pid,
       nombre,
@@ -763,22 +789,27 @@ export function planDesdeHorarioReal(
   };
 
   sanear(plan);
-  // Lo que los sacafrancos YA cubren de verdad entra como cobertura puesta a
-  // mano (no automática): así el borrador abre igual que el horario y
-  // «Publicar» sabe qué turnos existen ya y cuáles son nuevos.
+  // Lo que YA se cubre de verdad entra como cobertura puesta a mano (no
+  // automática): así el borrador abre igual que el horario y «Publicar» sabe
+  // qué turnos existen ya y cuáles son nuevos. Cuentan TODOS los turnos del
+  // día (un sacafranco puede hacer el día en una caseta y cubrir la noche en
+  // otra) y también los de un titular fuera de su puesto (cubrió en su franco).
   for (const p of plan.personas) {
-    if (p.puesto !== null) continue;
-    for (const [ds, t] of Object.entries(enlace.turnos[p.id] || {})) {
+    for (const [ds, lista] of Object.entries(enlace.turnosTodos[p.id] || {})) {
       const d = Number(ds);
-      const pu = puestoPorId.get(t.stationId);
 
-      if (!pu || d < 0 || d >= dias) continue;
-      const h = real.get(enlace.personas[p.id].guardId)?.get(d);
-      const fr = h ? franjaMasCercana(pu, h.min) : pu.franjas[0];
+      if (d < 0 || d >= dias) continue;
+      for (const t of lista) {
+        if (p.puesto !== null && t.stationId === p.puesto) continue; // su propio turno
+        const pu = puestoPorId.get(t.stationId);
 
-      if (fr && falta(plan, pu, fr, d) > 0) {
-        poner(plan, clave(pu.id, fr, d), p.id, false);
-        enlace.cargadas[`${p.id}|${d}`] = t.id;
+        if (!pu) continue;
+        const fr = franjaMasCercana(pu, t.min);
+
+        if (fr && falta(plan, pu, fr, d) > 0) {
+          poner(plan, clave(pu.id, fr, d), p.id, false);
+          enlace.cargadas[`${p.id}|${d}`] = t.id;
+        }
       }
     }
   }
