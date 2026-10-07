@@ -1,0 +1,154 @@
+/*
+ * CÓMO FUNCIONA {{agente}} PRO — la escena de la tienda.
+ *
+ * Todo sale de los tokens del CRM. Lo único fijo es el marco del teléfono:
+ * es un objeto físico y es negro en los dos temas.
+ * Con «reducir movimiento» se quitan deslizamientos y latidos; la historia
+ * sigue avanzando paso a paso (lo decide el componente, no el CSS).
+ */
+.cfv {
+  --cfv-frame: oklch(0.17 0 0);
+  --cfv-block: color-mix(in oklab, var(--ink) 7%, var(--canvas));
+  --cfv-road: color-mix(in oklab, var(--float) 85%, var(--canvas));
+  --cfv-park: color-mix(in oklab, var(--ok) 16%, var(--canvas));
+  --cfv-water: color-mix(in oklab, var(--info) 20%, var(--canvas));
+  --cfv-wall: color-mix(in oklab, var(--ink) 4%, var(--float));
+  --cfv-in: var(--float);
+  --cfv-out: color-mix(in oklab, var(--ok) 24%, var(--float));
+  --cfv-tick: var(--info);
+  --cfv-shadow: 0 1px 2px oklch(0 0 0 / 0.08), 0 12px 32px -12px oklch(0 0 0 / 0.28);
+}
+
+.cfv-stage {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid var(--hairline);
+  border-radius: 20px;
+  background: var(--canvas);
+}
+.cfv-mapa { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
+.cfv-cuadro {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 210px) minmax(0, 1fr) minmax(0, 210px);
+  gap: 14px;
+  padding: 18px;
+  min-height: 470px;
+}
+.cfv-centro { position: relative; min-height: 420px; }
+.cfv-hilos { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; overflow: visible; }
+
+/* ── El asistente ───────────────────────────────────────────────── */
+.cfv-nucleo { position: absolute; left: 50%; top: 10px; transform: translateX(-50%); display: grid; justify-items: center; gap: 6px; max-width: 100%; }
+.cfv-orbe {
+  position: relative;
+  width: 58px; height: 58px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--brand); color: var(--brand-ink);
+  font-weight: 700; font-size: 14px;
+  box-shadow: 0 0 0 6px color-mix(in oklab, var(--brand) 20%, transparent), var(--cfv-shadow);
+}
+.cfv-orbe::after { content: ""; position: absolute; inset: -6px; border-radius: 50%; border: 2px solid var(--brand); opacity: 0; }
+.cfv-orbe[data-late]::after { animation: cfv-onda 0.9s ease-out; }
+@keyframes cfv-onda { from { opacity: 0.8; transform: scale(1); } to { opacity: 0; transform: scale(1.7); } }
+.cfv-nombre { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); background: var(--float); border: 1px solid var(--hairline); border-radius: 999px; padding: 4px 9px; }
+.cfv-pensando { font-size: 12px; color: var(--brand-text); min-height: 18px; text-align: center; max-width: 260px; }
+
+/* ── El puesto en el mapa ───────────────────────────────────────── */
+.cfv-puesto { position: absolute; left: 50%; top: 68%; transform: translate(-50%, -100%); display: grid; justify-items: center; gap: 6px; }
+.cfv-chincheta { position: relative; width: 22px; height: 22px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: var(--ink-faint); border: 3px solid var(--float); box-shadow: var(--cfv-shadow); transition: background 0.5s; }
+.cfv-halo { position: absolute; left: 50%; bottom: -8px; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; opacity: 0; }
+.cfv-etiqueta { background: var(--float); border: 1px solid var(--hairline); border-radius: 10px; padding: 6px 10px; box-shadow: var(--cfv-shadow); text-align: center; white-space: nowrap; }
+.cfv-lugar { font-weight: 600; font-size: 13px; line-height: 1.2; }
+.cfv-estado { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11px; color: var(--ink-soft); }
+.cfv-punto { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-faint); transition: background 0.5s; }
+.cfv-puesto[data-tono="bad"] .cfv-chincheta, .cfv-puesto[data-tono="bad"] .cfv-punto, .cfv-puesto[data-tono="bad"] .cfv-halo { background: var(--bad); }
+.cfv-puesto[data-tono="warn"] .cfv-chincheta, .cfv-puesto[data-tono="warn"] .cfv-punto, .cfv-puesto[data-tono="warn"] .cfv-halo { background: var(--warn); }
+.cfv-puesto[data-tono="ok"] .cfv-chincheta, .cfv-puesto[data-tono="ok"] .cfv-punto { background: var(--ok); }
+.cfv-puesto[data-tono="bad"] .cfv-halo, .cfv-puesto[data-tono="warn"] .cfv-halo { animation: cfv-latido 1.4s ease-out infinite; }
+@keyframes cfv-latido { from { opacity: 0.55; transform: scale(1); } to { opacity: 0; transform: scale(3.2); } }
+
+/* vigilantes libres */
+.cfv-libre { position: absolute; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: var(--float); border: 3px solid var(--ink-faint); opacity: 0; transform: scale(0.4); transition: opacity 0.4s, transform 0.4s, border-color 0.4s, left 2.4s cubic-bezier(.45,0,.25,1), top 2.4s cubic-bezier(.45,0,.25,1); }
+.cfv-libre[data-ve] { opacity: 1; transform: scale(1); }
+.cfv-libre[data-elegido] { border-color: var(--ok); }
+.cfv-ini { position: absolute; left: 50%; top: -22px; transform: translateX(-50%); font-size: 10px; font-weight: 600; background: var(--float); border: 1px solid var(--hairline); border-radius: 6px; padding: 3px 5px; white-space: nowrap; opacity: 0; transition: opacity 0.3s; }
+.cfv-libre[data-elegido] .cfv-ini { opacity: 1; }
+
+/* resultado */
+.cfv-resultado { position: absolute; left: 50%; bottom: 4px; transform: translate(-50%, 10px); opacity: 0; transition: opacity 0.5s, transform 0.5s; background: var(--ink); color: var(--canvas); border-radius: 14px; padding: 9px 16px; text-align: center; width: max-content; max-width: 100%; box-shadow: var(--cfv-shadow); }
+.cfv-resultado[data-ve] { opacity: 1; transform: translate(-50%, 0); }
+.cfv-resultado b { display: block; font-size: 16px; line-height: 1.25; }
+.cfv-resultado span { font-size: 12px; opacity: 0.8; }
+
+/* ── Teléfonos ──────────────────────────────────────────────────── */
+/* minmax(0, 1fr): sin él la columna mide lo que pide el teléfono y a 400 px se sale de la escena. */
+.cfv-lado { margin: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; min-width: 0; align-content: start; }
+.cfv-lado figcaption { text-align: center; font-size: 12px; font-weight: 600; color: var(--ink-soft); min-height: 16px; }
+.cfv-tel { position: relative; width: 100%; aspect-ratio: 236 / 460; background: var(--cfv-frame); border-radius: 30px; padding: 7px; box-shadow: var(--cfv-shadow); }
+.cfv-tel::before { content: ""; position: absolute; left: 35%; top: 12px; width: 30%; height: 16px; background: var(--cfv-frame); border-radius: 0 0 11px 11px; z-index: 3; }
+.cfv-pantalla { width: 100%; height: 100%; border-radius: 24px; overflow: hidden; background: var(--float); display: flex; flex-direction: column; }
+.cfv-cab { display: flex; align-items: center; gap: 8px; padding: 28px 11px 8px; border-bottom: 1px solid var(--hairline); background: var(--float); }
+.cfv-av { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 600; background: var(--brand); color: var(--brand-ink); flex: none; }
+.cfv-cab .n { font-weight: 600; font-size: 13px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cfv-cab .s { font-size: 11px; color: var(--ink-faint); line-height: 1.2; }
+.cfv-chat { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; padding: 9px 7px; background: var(--cfv-wall); overflow: hidden; }
+.cfv-msg { max-width: 88%; padding: 6px 9px 5px; border-radius: 12px; font-size: 12px; line-height: 1.35; box-shadow: 0 1px 1px oklch(0 0 0 / 0.08); animation: cfv-entra 0.35s cubic-bezier(.2,.8,.2,1) both; }
+.cfv-msg[data-lado="in"] { align-self: flex-start; background: var(--cfv-in); border-top-left-radius: 4px; }
+.cfv-msg[data-lado="out"] { align-self: flex-end; background: var(--cfv-out); border-top-right-radius: 4px; }
+.cfv-meta { display: block; text-align: right; font-size: 10px; color: var(--ink-faint); margin-top: 2px; font-variant-numeric: tabular-nums; }
+.cfv-ticks { color: var(--cfv-tick); margin-left: 3px; letter-spacing: -2px; }
+.cfv-voz { display: flex; align-items: center; gap: 2px; height: 18px; }
+.cfv-voz i { display: block; width: 2px; border-radius: 2px; background: var(--ink-soft); }
+.cfv-escribe { align-self: flex-start; display: flex; gap: 4px; padding: 9px 11px; border-radius: 12px; border-top-left-radius: 4px; background: var(--cfv-in); animation: cfv-entra 0.25s both; }
+.cfv-escribe i { width: 6px; height: 6px; border-radius: 50%; background: var(--ink-faint); animation: cfv-punto 1s infinite; }
+.cfv-escribe i:nth-child(2) { animation-delay: 0.15s; }
+.cfv-escribe i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes cfv-punto { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+@keyframes cfv-entra { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
+
+/* pantallas de app (parte, portal del cliente, supervisor) */
+.cfv-app { flex: 1; display: flex; flex-direction: column; gap: 10px; padding: 11px; background: var(--cfv-wall); overflow: hidden; }
+.cfv-campo { min-height: 110px; padding: 10px; border: 1px solid var(--hairline); border-radius: 12px; background: var(--cfv-in); font-size: 12px; line-height: 1.45; }
+.cfv-cursor { display: inline-block; width: 1px; height: 13px; background: var(--ink); vertical-align: -2px; animation: cfv-punto 0.9s infinite; }
+.cfv-enviar { align-self: flex-end; padding: 8px 13px; border-radius: 10px; font-size: 12px; font-weight: 600; background: var(--cfv-block); color: var(--ink-soft); transition: background 0.3s, color 0.3s; }
+.cfv-enviar[data-on] { background: var(--brand); color: var(--brand-ink); }
+.cfv-ficha { padding: 11px; border: 1px solid var(--hairline); border-radius: 14px; background: var(--cfv-in); font-size: 12px; line-height: 1.45; animation: cfv-entra 0.4s both; }
+.cfv-ficha .t { font-weight: 600; font-size: 13px; line-height: 1.25; margin-bottom: 4px; }
+.cfv-chip { display: inline-block; margin-bottom: 6px; padding: 3px 7px; border-radius: 999px; font-size: 10.5px; font-weight: 600; background: var(--cfv-block); color: var(--ink-soft); }
+.cfv-chip[data-brand] { background: var(--brand); color: var(--brand-ink); }
+.cfv-acciones { display: flex; gap: 6px; margin-top: 8px; }
+.cfv-acciones span { flex: 1; padding: 7px 0; border-radius: 9px; text-align: center; font-size: 11.5px; font-weight: 600; background: var(--cfv-block); }
+.cfv-acciones span:first-child { background: var(--ok); color: oklch(0.99 0 0); }
+.cfv-vacio { margin: auto; text-align: center; font-size: 12px; color: var(--ink-faint); }
+
+/* ── Bitácora ───────────────────────────────────────────────────── */
+.cfv-bitacora { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.cfv-bitacora li { display: grid; grid-template-columns: 44px 10px minmax(0, 1fr); gap: 10px; align-items: baseline; padding: 7px 12px; border: 1px solid var(--hairline); border-radius: 12px; font-size: 13px; animation: cfv-entra 0.35s both; }
+.cfv-bitacora .h { font-size: 12px; font-weight: 600; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+.cfv-bitacora .p { width: 8px; height: 8px; border-radius: 50%; align-self: center; background: var(--ink-faint); }
+.cfv-bitacora .p[data-tono="bad"] { background: var(--bad); }
+.cfv-bitacora .p[data-tono="warn"] { background: var(--warn); }
+.cfv-bitacora .p[data-tono="ok"] { background: var(--ok); }
+.cfv-bitacora .p[data-tono="brand"] { background: var(--brand); }
+
+/* ── Teléfono y tableta: el centro arriba, los dos teléfonos debajo ─ */
+@media (max-width: 760px) {
+  .cfv-cuadro { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); padding: 12px; gap: 10px; }
+  .cfv-centro { grid-column: 1 / -1; grid-row: 1; min-height: 250px; }
+  .cfv-nucleo { left: 4px; top: 2px; transform: none; grid-template-columns: auto minmax(0, 1fr); justify-items: start; align-items: center; column-gap: 10px; row-gap: 3px; max-width: 64%; }
+  .cfv-orbe { width: 42px; height: 42px; font-size: 12px; grid-row: span 2; }
+  .cfv-pensando { text-align: left; font-size: 11px; }
+  .cfv-tel { border-radius: 24px; padding: 5px; }
+  .cfv-pantalla { border-radius: 20px; }
+  .cfv-cab { padding-top: 22px; }
+  .cfv-av { width: 22px; height: 22px; font-size: 9px; }
+  .cfv-msg { font-size: 10.5px; padding: 5px 7px 4px; }
+  .cfv-campo, .cfv-ficha { font-size: 10.5px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cfv *, .cfv *::before, .cfv *::after { animation: none !important; transition: none !important; }
+}

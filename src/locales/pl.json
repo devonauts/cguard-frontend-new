@@ -18212,7 +18212,8 @@
       "cancelarPrueba": "Nic nie zostanie pobrane. Próba trwa do {{fecha}}.",
       "cancelarActivo": "Nic więcej nie pobierzemy. {{nombre}} działa do {{fecha}}.",
       "noSeRenovara": "Gotowe: nie zostanie odnowiony.",
-      "paraSeguir": "Aby zachować {{nombre}} po próbie, najpierw opłać wdrożenie."
+      "paraSeguir": "Aby zachować {{nombre}} po próbie, najpierw opłać wdrożenie.",
+      "masDeVigilantes": "Ponad {{n}} pracowników"
     }
   },
   "sucursales": {
@@ -18376,7 +18377,8 @@
     "sinModulo": {
       "titulo": "Włącz {{agente}} Pro, aby uruchomić monitorowanie",
       "desc": "Możesz przejrzeć i przygotować ustawienia; aby {{agente}} zaczął pisać do pracowników, potrzebny jest moduł.",
-      "enlace": "Zobacz Moduły dodatkowe"
+      "enlace": "Zobacz Moduły dodatkowe",
+      "probar": "Wypróbuj {{n}} dni za darmo"
     },
     "apagado": {
       "titulo": "Monitorowanie jest wyłączone",
@@ -18629,6 +18631,142 @@
       "escribePor": "Teraz {{agente}} pisze przez: {{canales}}",
       "sinCanales": "Teraz {{agente}} nie ma jak pisać: włącz aplikację lub SMS w ustawieniach.",
       "hoy": "Dziś: {{enviados}} z {{tope}} wiadomości"
+    },
+    "demo": {
+      "titulo": "Tak pracuje {{agente}} Pro",
+      "horaDelPuesto": "Godzina na posterunku",
+      "enTuCrm": "Co zostaje w twoim panelu",
+      "enLinea": "online",
+      "mes": "Miesiąc",
+      "nota": "Przykład fikcyjny: imiona, miejsca i godziny są zmyślone.",
+      "escenas": {
+        "faltas": "Nieobecności i zastępstwa",
+        "partes": "Raporty",
+        "vigilantes": "WhatsApp pracownika"
+      },
+      "faltas": {
+        "lugar": "Plaza Północ",
+        "telA": "Telefon Łukasza · nie przyszedł",
+        "telB": "Telefon Piotra · dziś wolny",
+        "estado": {
+          "inicio": "Zmiana 06:00 · Łukasz Piątek",
+          "sinMarcar": "Brak odbicia",
+          "buscando": "Szukam zastępstwa",
+          "cubierto": "Obsadzone · Piotr Górski"
+        },
+        "pensar": {
+          "escribe": "Piszę do Łukasza…",
+          "noViene": "Nie przyjdzie: rejestruję nieobecność i szukam zastępstwa"
+        },
+        "libres": {
+          "a": "Anna",
+          "b": "Piotr",
+          "c": "Jakub"
+        },
+        "chat": {
+          "luis1": "Cześć Łukasz, tu {{agente}}. Twoja zmiana w Plaza Północ zaczęła się o 06:00, a nie odbiłeś się. Jesteś w drodze?",
+          "luis2": "Jestem chory, dziś nie dam rady przyjść 🤒",
+          "pedro1": "Cześć Piotr, możesz dziś przejąć Plaza Północ od 07:00 do 18:00?",
+          "pedro2": "Tak, już jadę 👍",
+          "gracias": "Dzięki, Piotr. Masz to już w grafiku ✅"
+        },
+        "pasos": {
+          "noFicho": "Łukasz Piątek nie odbił się w Plaza Północ",
+          "escribe": "{{agente}} pisze do niego na WhatsAppie",
+          "falta": "Nieobecność zarejestrowana · powód: choroba",
+          "buscaRelevo": "Szuka wśród 3 wolnych pracowników w pobliżu",
+          "relevo": "Piotr przyjmuje i jest w grafiku",
+          "supervisor": "Przełożony powiadomiony, rozmowa zapisana"
+        },
+        "resultado": "Załatwione w 6 minut, bez ani jednego telefonu."
+      },
+      "partes": {
+        "lugar": "Magazyny Vallejo · Hala 2",
+        "telA": "Aplikacja pracownika",
+        "telB": "Portal twojego klienta",
+        "estado": {
+          "abierta": "Drzwi zastane otwarte",
+          "enviado": "Raport wysłany do klienta"
+        },
+        "pensar": {
+          "corrige": "Poprawiam tekst, niczego nie wymyślając",
+          "traduce": "Żadna dana nie zginęła · tłumaczę na angielski"
+        },
+        "app": {
+          "nuevo": "Nowy raport",
+          "ronda": "Obchód · Magazyny Vallejo · 03:12",
+          "enviar": "Wyślij raport",
+          "portal": "Moje Bezpieczeństwo",
+          "cliente": "Comercial Pacífico · raporty",
+          "vacio": "Dziś brak nowych raportów",
+          "traducido": "Translated from Polish"
+        },
+        "parte": {
+          "antes": "obchod 3 w nocy drzwi magazyn 2 otwarte zamknolem nikogo nie bylo ok",
+          "tituloTraducido": "Patrol report · 03:12",
+          "traducido": "At 03:00, during the patrol, I found the door to warehouse 2 open. I checked the area, no one was there, and I locked it. Nothing else to report."
+        },
+        "pasos": {
+          "sube": "Pracownik wysyła raport z aplikacji, tak jak umie",
+          "corrige": "Poprawia tekst; zachowuje godzinę, miejsce i to, co zrobiono",
+          "faltaDato": "Gdyby przy poprawianiu zginęła jakaś dana, da ci znać",
+          "traduce": "Tłumaczy go na język klienta i publikuje w jego portalu",
+          "resumen": "A co miesiąc podsumowanie dla klienta z policzonymi, nie wymyślonymi liczbami"
+        },
+        "resultado": "Raporty gotowe dla klienta, bez przepisywania w biurze."
+      },
+      "vigilantes": {
+        "lugar": "Reforma Tower · Recepcja",
+        "telA": "Telefon Anny · pracownica",
+        "telB": "Telefon przełożonego",
+        "estado": {
+          "manana": "Zmiana Anny jutro 18:00",
+          "ok": "Jutro 18:00 · Anna Nowak"
+        },
+        "pensar": {
+          "horario": "Sprawdzam JEJ grafik, tylko jej",
+          "voz": "Wiadomość głosowa: „chcę wolną sobotę”"
+        },
+        "app": {
+          "supervisor": "Przełożony",
+          "quien": "Ricardo Beltrán · Strefa Północ",
+          "vacio": "Brak oczekujących wniosków",
+          "chip": "Wniosek o wolne",
+          "solicitud": "Anna Nowak prosi o wolną sobotę",
+          "via": "Wysłane przez WhatsApp za pośrednictwem {{agente}} · 21:42",
+          "aprobar": "Zatwierdź",
+          "rechazar": "Odrzuć"
+        },
+        "chat": {
+          "ana1": "O której jutro zaczynam?",
+          "ana2": "Jutro zaczynasz o 18:00 w Reforma Tower, posterunek Recepcja.",
+          "ana4": "Jasne: poproszę przełożonego o wolną sobotę. Wysłać? Odpowiedz TAK.",
+          "ana5": "TAK",
+          "ana6": "Wysłane ✅ Dam znać, gdy tylko odpowiedzą."
+        },
+        "pasos": {
+          "suHorario": "Odpowiada jej własnym grafikiem i danymi, nigdy cudzymi",
+          "voz": "Rozumie wiadomości głosowe",
+          "pideSi": "Czeka na jej „TAK”, zanim o coś poprosi lub coś zmieni",
+          "enviada": "Wniosek trafia do przełożonego, jakby złożono go w aplikacji"
+        },
+        "resultado": "Twoi pracownicy radzą sobie sami, a biuro przestaje odpowiadać na te same pytania."
+      }
+    },
+    "guiaWhatsApp": {
+      "titulo": "Jak podłączyć WhatsApp twojej firmy",
+      "necesitas": "Czego potrzebujesz",
+      "req1": "Konta na Facebooku, które zarządza (lub może utworzyć) portfolio biznesowe twojej firmy w Meta.",
+      "req2": "Firmowego numeru telefonu, który może odebrać SMS lub połączenie z kodem weryfikacyjnym.",
+      "req3": "Ten numer nie może być używany w aplikacji WhatsApp ani WhatsApp Business. Jeśli jest, najpierw usuń to konto z aplikacji (albo użyj innego numeru): po podłączeniu numer przechodzi na platformę Meta.",
+      "pasos": "Kroki",
+      "paso1": "W Ustawienia › Komunikacja kliknij „Połącz WhatsApp”.",
+      "paso2": "Otworzy się okno Meta: zaloguj się przez Facebooka i wybierz (lub utwórz) portfolio biznesowe firmy.",
+      "paso3": "Wybierz lub utwórz konto WhatsApp Business, dodaj numer i wpisz nazwę, którą zobaczą twoi pracownicy.",
+      "paso4": "Potwierdź numer kodem z SMS-a lub połączenia.",
+      "paso5": "Po zamknięciu okna wszystko jest podłączone. {{agente}} wysyła do Meta swoją wiadomość powiadomienia do zatwierdzenia; status widać w {{agente}} Pro › Podłącz swój WhatsApp, z przyciskiem „Sprawdź ponownie”.",
+      "pago": "Jeśli Meta poprosi o metodę płatności dla konta WhatsApp Business, dodaj ją w swoim menedżerze Meta: wiadomości rozpoczynane przez firmę Meta rozlicza na tym koncie.",
+      "boton": "Przejdź do Komunikacji"
     }
   }
 }

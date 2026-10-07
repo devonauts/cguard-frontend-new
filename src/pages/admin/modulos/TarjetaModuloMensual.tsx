@@ -8,6 +8,7 @@ import { Sparkles, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { Section, StatusBadge } from "@/components/kit";
+import ComoFuncionaVigiaPro from "@/components/vigia/ComoFuncionaVigiaPro";
 import { useAuth } from "@/contexts/AuthContext";
 import { soloFecha } from "@/lib/horaDeLaEmpresa";
 import {
@@ -18,9 +19,14 @@ import {
 /**
  * UN MÓDULO MENSUAL EN LA TIENDA (VigIA Pro).
  *
- * Precio FIJO al mes según el tamaño de la empresa — se enseñan los tres
- * tramos y se resalta el suyo («tienes 37 vigilantes activos»). Decisión del
- * dueño: un fijo se compara con el costo de un turno perdido, no con el asiento.
+ * Precio FIJO al mes según el tamaño de la empresa — $50 hasta 50 vigilantes,
+ * $100 por encima (2026-10-07) — y se resalta el suyo («tienes 37 vigilantes
+ * activos»). Decisión del dueño: un fijo se compara con el costo de un turno
+ * perdido, no con el asiento. El tramo de arriba no tiene techo (`SIN_TOPE`
+ * en el servidor) y se pinta «Más de N».
+ *
+ * Mientras no lo tenga pagado, la tarjeta ENSEÑA cómo trabaja con la
+ * demostración animada (`ComoFuncionaVigiaPro`): se decide viendo, no leyendo.
  *
  * Lo que se ofrece depende del momento:
  *   · sin probar        → «Probar 30 días gratis» (sin tarjeta)
@@ -30,6 +36,9 @@ import {
  *   · vencido / sin prueba → «Activar»
  * Nunca se cobra a mitad de prueba: elegir sólo deja dicho cómo seguir.
  */
+/** El tramo sin techo, como lo guarda el servidor (`SIN_TOPE` en lib/moduloMensual). */
+const SIN_TOPE = 999_999;
+
 function dinero(cents: number | null | undefined, currency: string, lang: string) {
   if (cents == null) return "—";
   try {
@@ -138,7 +147,7 @@ export default function TarjetaModuloMensual({
     ) : undefined;
 
   const selectorDePeriodo = (
-    <div className="inline-flex rounded-xl border p-0.5 text-xs" role="group" style={{ borderColor: "var(--line)" }}>
+    <div className="inline-flex rounded-xl border p-0.5 text-xs" role="group" style={{ borderColor: "var(--hairline)" }}>
       {(["month", "year"] as const).map((x) => (
         <button
           key={x}
@@ -160,21 +169,28 @@ export default function TarjetaModuloMensual({
     <Section action={insignia} icon={<Sparkles />} title={m.name}>
       <p className="text-sm" style={{ color: "var(--ink-soft)" }}>{m.description}</p>
 
-      {/* Los tres tamaños, con el suyo resaltado. */}
-      <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
-        {(m.tiers || []).map((tr) => {
+      {m.key === "vigia_pro" && estado !== "active" && estado !== "comp" && (
+        <ComoFuncionaVigiaPro className="mt-4" />
+      )}
+
+      {/* Los tamaños, con el suyo resaltado. */}
+      <div className={`mt-4 grid grid-cols-1 gap-2 ${(m.tiers || []).length >= 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
+        {(m.tiers || []).map((tr, i, todos) => {
           const suyo = m.currentTier?.maxGuards === tr.maxGuards;
+          const sinTecho = i > 0 && i === todos.length - 1 && tr.maxGuards >= SIN_TOPE;
           return (
             <div
               key={tr.maxGuards}
               className="rounded-2xl border px-3 py-3"
               style={{
-                borderColor: suyo ? "var(--brand)" : "var(--line)",
+                borderColor: suyo ? "var(--brand)" : "var(--hairline)",
                 background: suyo ? "color-mix(in oklab, var(--brand) 8%, transparent)" : undefined,
               }}
             >
               <div className="text-xs" style={{ color: "var(--ink-faint)" }}>
-                {t("modulosAdicionales.mensual.hastaVigilantes", { defaultValue: "Hasta {{n}} vigilantes", n: tr.maxGuards })}
+                {sinTecho
+                  ? t("modulosAdicionales.mensual.masDeVigilantes", { n: todos[i - 1].maxGuards })
+                  : t("modulosAdicionales.mensual.hastaVigilantes", { defaultValue: "Hasta {{n}} vigilantes", n: tr.maxGuards })}
               </div>
               <div className="mt-0.5 text-lg font-semibold">
                 {dinero(intervalo === "year" ? tr.priceCents * (12 - (m.annualMonthsFree || 0)) : tr.priceCents, m.currency, L)}

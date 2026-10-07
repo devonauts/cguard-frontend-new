@@ -18020,7 +18020,8 @@
       "cancelarPrueba": "Er wordt niets afgeschreven. De proef loopt tot {{fecha}}.",
       "cancelarActivo": "Er wordt niets meer afgeschreven. U houdt {{nombre}} tot {{fecha}}.",
       "noSeRenovara": "Klaar: wordt niet verlengd.",
-      "paraSeguir": "Om {{nombre}} na de proef te houden, rond eerst de betaling van de implementatie af."
+      "paraSeguir": "Om {{nombre}} na de proef te houden, rond eerst de betaling van de implementatie af.",
+      "masDeVigilantes": "Meer dan {{n}} beveiligers"
     }
   },
   "sucursales": {
@@ -18182,7 +18183,8 @@
     "sinModulo": {
       "titulo": "Activeer {{agente}} Pro om de opvolging aan te zetten",
       "desc": "Je kunt de instellingen bekijken en voorbereiden; om {{agente}} je beveiligers te laten schrijven is de module nodig.",
-      "enlace": "Bekijk Extra modules"
+      "enlace": "Bekijk Extra modules",
+      "probar": "{{n}} dagen gratis proberen"
     },
     "apagado": {
       "titulo": "De opvolging staat uit",
@@ -18435,6 +18437,142 @@
       "escribePor": "Op dit moment schrijft {{agente}} via: {{canales}}",
       "sinCanales": "Op dit moment heeft {{agente}} geen kanaal: zet de app of sms aan in de instellingen.",
       "hoy": "Vandaag: {{enviados}} van {{tope}} berichten"
+    },
+    "demo": {
+      "titulo": "Zo werkt {{agente}} Pro",
+      "horaDelPuesto": "Tijd op de post",
+      "enTuCrm": "Wat er in uw dashboard staat",
+      "enLinea": "online",
+      "mes": "Maand",
+      "nota": "Fictief voorbeeld: namen, plaatsen en tijden zijn verzonnen.",
+      "escenas": {
+        "faltas": "Afwezigheid & vervanging",
+        "partes": "Rapporten",
+        "vigilantes": "WhatsApp van de beveiliger"
+      },
+      "faltas": {
+        "lugar": "Plaza Noord",
+        "telA": "Telefoon van Lucas · niet gekomen",
+        "telB": "Telefoon van Pieter · vandaag vrij",
+        "estado": {
+          "inicio": "Dienst 06:00 · Lucas Peters",
+          "sinMarcar": "Niet ingeklokt",
+          "buscando": "Vervanging gezocht",
+          "cubierto": "Bezet · Pieter de Graaf"
+        },
+        "pensar": {
+          "escribe": "Ik stuur Lucas een bericht…",
+          "noViene": "Hij komt niet: afwezigheid registreren en vervanging zoeken"
+        },
+        "libres": {
+          "a": "Anna",
+          "b": "Pieter",
+          "c": "Daan"
+        },
+        "chat": {
+          "luis1": "Hoi Lucas, met {{agente}}. Je dienst bij Plaza Noord begon om 06:00 en je hebt niet ingeklokt. Ben je onderweg?",
+          "luis2": "Ik ben ziek, ik kan vandaag niet komen 🤒",
+          "pedro1": "Hoi Pieter, kun jij vandaag Plaza Noord van 07:00 tot 18:00 overnemen?",
+          "pedro2": "Ja, ik kom eraan 👍",
+          "gracias": "Bedankt, Pieter. Het staat in je rooster ✅"
+        },
+        "pasos": {
+          "noFicho": "Lucas Peters heeft niet ingeklokt bij Plaza Noord",
+          "escribe": "{{agente}} stuurt hem een WhatsApp",
+          "falta": "Afwezigheid geregistreerd · reden: ziek",
+          "buscaRelevo": "Zoekt onder 3 vrije beveiligers in de buurt",
+          "relevo": "Pieter neemt aan en staat in het rooster",
+          "supervisor": "Leidinggevende gewaarschuwd, gesprek bewaard"
+        },
+        "resultado": "Opgelost in 6 minuten, zonder dat iemand hoefde te bellen."
+      },
+      "partes": {
+        "lugar": "Magazijnen Vallejo · Hal 2",
+        "telA": "App van de beveiliger",
+        "telB": "Portaal van uw klant",
+        "estado": {
+          "abierta": "Deur open aangetroffen",
+          "enviado": "Rapport naar de klant gestuurd"
+        },
+        "pensar": {
+          "corrige": "Ik verbeter de tekst zonder iets te verzinnen",
+          "traduce": "Geen gegeven verloren · ik vertaal naar het Engels"
+        },
+        "app": {
+          "nuevo": "Nieuw rapport",
+          "ronda": "Ronde · Magazijnen Vallejo · 03:12",
+          "enviar": "Rapport versturen",
+          "portal": "Mijn Beveiliging",
+          "cliente": "Comercial Pacífico · rapporten",
+          "vacio": "Vandaag geen nieuwe rapporten",
+          "traducido": "Translated from Dutch"
+        },
+        "parte": {
+          "antes": "ronde 3u deur magazijn 2 open dicht gedaan niemand alles ok",
+          "tituloTraducido": "Patrol report · 03:12",
+          "traducido": "At 03:00, during the patrol, I found the door to warehouse 2 open. I checked the area, no one was there, and I locked it. Nothing else to report."
+        },
+        "pasos": {
+          "sube": "De beveiliger stuurt zijn rapport vanuit de app, hoe het ook uitvalt",
+          "corrige": "Verbetert de tekst; houdt tijd, plaats en wat er gedaan is",
+          "faltaDato": "Zou er bij het verbeteren een gegeven wegvallen, dan meldt het dat",
+          "traduce": "Vertaalt het naar de taal van de klant en zet het in zijn portaal",
+          "resumen": "En elke maand een overzicht voor de klant met getelde, niet verzonnen cijfers"
+        },
+        "resultado": "Rapporten klaar voor de klant, zonder herschrijven op kantoor."
+      },
+      "vigilantes": {
+        "lugar": "Reforma Tower · Lobby",
+        "telA": "Telefoon van Anna · beveiliger",
+        "telB": "Telefoon van de leidinggevende",
+        "estado": {
+          "manana": "Dienst van Anna morgen 18:00",
+          "ok": "Morgen 18:00 · Anna de Vries"
+        },
+        "pensar": {
+          "horario": "Ik kijk naar HAAR rooster, alleen het hare",
+          "voz": "Spraakbericht: „ik wil zaterdag vrij vragen”"
+        },
+        "app": {
+          "supervisor": "Leidinggevende",
+          "quien": "Ricardo Beltrán · Zone Noord",
+          "vacio": "Geen openstaande aanvragen",
+          "chip": "Verlofaanvraag",
+          "solicitud": "Anna de Vries vraagt zaterdag vrij",
+          "via": "Via WhatsApp verstuurd door {{agente}} · 21:42",
+          "aprobar": "Goedkeuren",
+          "rechazar": "Afwijzen"
+        },
+        "chat": {
+          "ana1": "Hoe laat begin ik morgen?",
+          "ana2": "Morgen begin je om 18:00 bij Reforma Tower, post Lobby.",
+          "ana4": "Begrepen: ik vraag je leidinggevende om zaterdag vrij. Versturen? Antwoord JA.",
+          "ana5": "JA",
+          "ana6": "Verstuurd ✅ Ik laat het je weten zodra er antwoord is."
+        },
+        "pasos": {
+          "suHorario": "Antwoordt met haar eigen rooster en gegevens, nooit die van een ander",
+          "voz": "Begrijpt spraakberichten",
+          "pideSi": "Wacht op haar „JA” voordat er iets wordt aangevraagd of gewijzigd",
+          "enviada": "De aanvraag komt bij de leidinggevende alsof hij in de app is gedaan"
+        },
+        "resultado": "Uw beveiligers redden zichzelf en het kantoor hoeft niet steeds dezelfde vragen te beantwoorden."
+      }
+    },
+    "guiaWhatsApp": {
+      "titulo": "Zo koppelt u de WhatsApp van uw bedrijf",
+      "necesitas": "Wat u nodig hebt",
+      "req1": "Een Facebook-account dat het bedrijfsportfolio van uw bedrijf bij Meta beheert (of kan aanmaken).",
+      "req2": "Een telefoonnummer van het bedrijf dat een sms of oproep met de verificatiecode kan ontvangen.",
+      "req3": "Dat nummer mag niet in gebruik zijn in de WhatsApp- of WhatsApp Business-app. Is het dat wel, verwijder dat account dan eerst uit de app (of gebruik een ander nummer): na het koppelen gaat het nummer over naar het platform van Meta.",
+      "pasos": "Stappen",
+      "paso1": "Klik in Instellingen › Communicatie op „WhatsApp koppelen”.",
+      "paso2": "Het venster van Meta opent: log in met Facebook en kies (of maak) het bedrijfsportfolio van uw bedrijf.",
+      "paso3": "Kies of maak het WhatsApp Business-account, voeg het nummer toe en typ de naam die uw beveiligers zien.",
+      "paso4": "Bevestig het nummer met de code die u per sms of oproep krijgt.",
+      "paso5": "Als het venster sluit, is het gekoppeld. {{agente}} stuurt zijn meldingsbericht ter goedkeuring naar Meta; de status ziet u in {{agente}} Pro › Koppel uw WhatsApp, met „Opnieuw controleren”.",
+      "pago": "Vraagt Meta om een betaalmethode voor het WhatsApp Business-account, voeg die dan toe in uw Meta-beheer: berichten die het bedrijf begint, rekent Meta af via dat account.",
+      "boton": "Naar Communicatie"
     }
   }
 }

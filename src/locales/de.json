@@ -18020,7 +18020,8 @@
       "cancelarPrueba": "Es wird nichts abgebucht. Der Test läuft bis {{fecha}}.",
       "cancelarActivo": "Es wird nichts mehr abgebucht. Sie behalten {{nombre}} bis {{fecha}}.",
       "noSeRenovara": "Erledigt: wird nicht verlängert.",
-      "paraSeguir": "Um {{nombre}} nach dem Test zu behalten, schließen Sie zuerst die Zahlung der Einrichtung ab."
+      "paraSeguir": "Um {{nombre}} nach dem Test zu behalten, schließen Sie zuerst die Zahlung der Einrichtung ab.",
+      "masDeVigilantes": "Mehr als {{n}} Wachpersonen"
     }
   },
   "sucursales": {
@@ -18182,7 +18183,8 @@
     "sinModulo": {
       "titulo": "Aktivieren Sie {{agente}} Pro, um die Nachverfolgung einzuschalten",
       "desc": "Sie können die Einstellungen ansehen und vorbereiten; damit {{agente}} Ihren Sicherheitskräften schreibt, wird das Modul benötigt.",
-      "enlace": "Zusatzmodule ansehen"
+      "enlace": "Zusatzmodule ansehen",
+      "probar": "{{n}} Tage kostenlos testen"
     },
     "apagado": {
       "titulo": "Die Nachverfolgung ist ausgeschaltet",
@@ -18435,6 +18437,142 @@
       "escribePor": "Derzeit schreibt {{agente}} über: {{canales}}",
       "sinCanales": "Derzeit hat {{agente}} keinen Kanal: Schalten Sie in den Einstellungen die App oder SMS ein.",
       "hoy": "Heute: {{enviados}} von {{tope}} Nachrichten"
+    },
+    "demo": {
+      "titulo": "So arbeitet {{agente}} Pro",
+      "horaDelPuesto": "Uhrzeit am Objekt",
+      "enTuCrm": "Was in Ihrem Dashboard steht",
+      "enLinea": "online",
+      "mes": "Monat",
+      "nota": "Fiktives Beispiel: Namen, Orte und Uhrzeiten sind erfunden.",
+      "escenas": {
+        "faltas": "Ausfälle & Ersatz",
+        "partes": "Berichte",
+        "vigilantes": "WhatsApp der Wachperson"
+      },
+      "faltas": {
+        "lugar": "Plaza Nord",
+        "telA": "Handy von Lukas · nicht erschienen",
+        "telB": "Handy von Peter · heute frei",
+        "estado": {
+          "inicio": "Schicht 06:00 · Lukas Peters",
+          "sinMarcar": "Nicht eingestempelt",
+          "buscando": "Ersatz wird gesucht",
+          "cubierto": "Besetzt · Peter Graf"
+        },
+        "pensar": {
+          "escribe": "Ich schreibe Lukas…",
+          "noViene": "Er kommt nicht: Abwesenheit erfassen und Ersatz suchen"
+        },
+        "libres": {
+          "a": "Anna",
+          "b": "Peter",
+          "c": "Jonas"
+        },
+        "chat": {
+          "luis1": "Hallo Lukas, hier ist {{agente}}. Ihre Schicht an der Plaza Nord hat um 06:00 begonnen und Sie haben nicht eingestempelt. Sind Sie unterwegs?",
+          "luis2": "Ich bin krank, ich kann heute nicht kommen 🤒",
+          "pedro1": "Hallo Peter, können Sie heute die Plaza Nord von 07:00 bis 18:00 übernehmen?",
+          "pedro2": "Ja, bin unterwegs 👍",
+          "gracias": "Danke, Peter. Es steht jetzt in Ihrem Dienstplan ✅"
+        },
+        "pasos": {
+          "noFicho": "Lukas Peters hat an der Plaza Nord nicht eingestempelt",
+          "escribe": "{{agente}} schreibt ihm per WhatsApp",
+          "falta": "Abwesenheit erfasst · Grund: krank",
+          "buscaRelevo": "Prüft 3 freie Wachpersonen in der Nähe",
+          "relevo": "Peter sagt zu und steht im Dienstplan",
+          "supervisor": "Schichtleitung informiert, Gespräch gespeichert"
+        },
+        "resultado": "In 6 Minuten gelöst, ohne dass jemand telefonieren musste."
+      },
+      "partes": {
+        "lugar": "Lager Vallejo · Halle 2",
+        "telA": "App der Wachperson",
+        "telB": "Portal Ihres Kunden",
+        "estado": {
+          "abierta": "Tür offen vorgefunden",
+          "enviado": "Bericht an den Kunden gesendet"
+        },
+        "pensar": {
+          "corrige": "Ich verbessere den Text, ohne etwas zu erfinden",
+          "traduce": "Keine Angabe verloren · ich übersetze ins Englische"
+        },
+        "app": {
+          "nuevo": "Neuer Bericht",
+          "ronda": "Rundgang · Lager Vallejo · 03:12",
+          "enviar": "Bericht senden",
+          "portal": "Meine Sicherheit",
+          "cliente": "Comercial Pacífico · Berichte",
+          "vacio": "Heute keine neuen Berichte",
+          "traducido": "Translated from German"
+        },
+        "parte": {
+          "antes": "rundgang 3uhr tür lager 2 offen zugemacht niemand da alles ok",
+          "tituloTraducido": "Patrol report · 03:12",
+          "traducido": "At 03:00, during the patrol, I found the door to warehouse 2 open. I checked the area, no one was there, and I locked it. Nothing else to report."
+        },
+        "pasos": {
+          "sube": "Die Wachperson schickt den Bericht aus der App, so wie er eben kommt",
+          "corrige": "Verbessert den Text; behält Uhrzeit, Ort und das Getane",
+          "faltaDato": "Ginge beim Verbessern eine Angabe verloren, würde es Bescheid sagen",
+          "traduce": "Übersetzt ihn in die Sprache des Kunden und stellt ihn in sein Portal",
+          "resumen": "Und jeden Monat eine Kundenzusammenfassung mit gezählten, nicht erfundenen Zahlen"
+        },
+        "resultado": "Berichte bereit für den Kunden, ohne Umschreiben im Büro."
+      },
+      "vigilantes": {
+        "lugar": "Reforma Tower · Lobby",
+        "telA": "Handy von Anna · Wachperson",
+        "telB": "Handy der Schichtleitung",
+        "estado": {
+          "manana": "Annas Schicht morgen 18:00",
+          "ok": "Morgen 18:00 · Anna Schmidt"
+        },
+        "pensar": {
+          "horario": "Ich prüfe IHREN Dienstplan, nur ihren",
+          "voz": "Sprachnachricht: „Ich möchte Samstag frei“"
+        },
+        "app": {
+          "supervisor": "Schichtleitung",
+          "quien": "Ricardo Beltrán · Zone Nord",
+          "vacio": "Keine offenen Anträge",
+          "chip": "Urlaubsantrag",
+          "solicitud": "Anna Schmidt möchte Samstag frei",
+          "via": "Per WhatsApp über {{agente}} gesendet · 21:42",
+          "aprobar": "Genehmigen",
+          "rechazar": "Ablehnen"
+        },
+        "chat": {
+          "ana1": "Wann fange ich morgen an?",
+          "ana2": "Morgen beginnen Sie um 18:00 im Reforma Tower, Posten Lobby.",
+          "ana4": "Verstanden: Ich frage Ihre Schichtleitung nach Samstag frei. Senden? Antworten Sie JA.",
+          "ana5": "JA",
+          "ana6": "Gesendet ✅ Ich melde mich, sobald geantwortet wird."
+        },
+        "pasos": {
+          "suHorario": "Antwortet mit ihrem eigenen Dienstplan und ihren Daten, nie mit denen anderer",
+          "voz": "Versteht Sprachnachrichten",
+          "pideSi": "Wartet auf ihr „JA“, bevor etwas beantragt oder geändert wird",
+          "enviada": "Der Antrag landet bei der Schichtleitung, als käme er aus der App"
+        },
+        "resultado": "Ihre Wachpersonen helfen sich selbst, und das Büro beantwortet nicht mehr dieselben Fragen."
+      }
+    },
+    "guiaWhatsApp": {
+      "titulo": "So verbinden Sie das WhatsApp Ihres Unternehmens",
+      "necesitas": "Was Sie brauchen",
+      "req1": "Ein Facebook-Konto, das das Business-Portfolio Ihres Unternehmens bei Meta verwaltet (oder anlegen kann).",
+      "req2": "Eine Telefonnummer des Unternehmens, die eine SMS oder einen Anruf mit dem Bestätigungscode empfangen kann.",
+      "req3": "Die Nummer darf nicht in der WhatsApp- oder WhatsApp-Business-App genutzt werden. Falls doch, löschen Sie dieses Konto zuerst in der App (oder nehmen Sie eine andere Nummer): Nach dem Verbinden läuft die Nummer über die Meta-Plattform.",
+      "pasos": "Schritte",
+      "paso1": "Klicken Sie unter Einstellungen › Kommunikation auf „WhatsApp verbinden“.",
+      "paso2": "Das Meta-Fenster öffnet sich: Melden Sie sich mit Facebook an und wählen (oder erstellen) Sie das Business-Portfolio Ihres Unternehmens.",
+      "paso3": "Wählen oder erstellen Sie das WhatsApp-Business-Konto, fügen Sie die Nummer hinzu und geben Sie den Namen ein, den Ihre Wachpersonen sehen.",
+      "paso4": "Bestätigen Sie die Nummer mit dem Code per SMS oder Anruf.",
+      "paso5": "Beim Schließen des Fensters ist alles verbunden. {{agente}} reicht seine Hinweisnachricht bei Meta zur Freigabe ein; den Status sehen Sie unter {{agente}} Pro › WhatsApp verbinden, mit „Erneut prüfen“.",
+      "pago": "Falls Meta eine Zahlungsmethode für das WhatsApp-Business-Konto verlangt, hinterlegen Sie sie in Ihrer Meta-Verwaltung: Nachrichten, die das Unternehmen beginnt, rechnet Meta über dieses Konto ab.",
+      "boton": "Zu Kommunikation"
     }
   }
 }

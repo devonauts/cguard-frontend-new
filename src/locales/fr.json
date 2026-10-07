@@ -18020,7 +18020,8 @@
       "cancelarPrueba": "Rien ne sera prélevé. L’essai continue jusqu’au {{fecha}}.",
       "cancelarActivo": "Plus rien ne sera prélevé. Vous gardez {{nombre}} jusqu’au {{fecha}}.",
       "noSeRenovara": "C’est fait : il ne sera pas renouvelé.",
-      "paraSeguir": "Pour garder {{nombre}} après l’essai, réglez d’abord votre mise en service."
+      "paraSeguir": "Pour garder {{nombre}} après l’essai, réglez d’abord votre mise en service.",
+      "masDeVigilantes": "Plus de {{n}} agents"
     }
   },
   "sucursales": {
@@ -18182,7 +18183,8 @@
     "sinModulo": {
       "titulo": "Activez {{agente}} Pro pour lancer le suivi",
       "desc": "Vous pouvez consulter et préparer les réglages ; pour que {{agente}} commence à écrire à vos agents, il faut le module.",
-      "enlace": "Voir les Modules complémentaires"
+      "enlace": "Voir les Modules complémentaires",
+      "probar": "Essayer {{n}} jours gratuits"
     },
     "apagado": {
       "titulo": "Le suivi est désactivé",
@@ -18435,6 +18437,142 @@
       "escribePor": "En ce moment, {{agente}} écrit via : {{canales}}",
       "sinCanales": "En ce moment, {{agente}} n'a aucun canal : activez l'application ou le SMS dans les réglages.",
       "hoy": "Aujourd'hui : {{enviados}} sur {{tope}} messages"
+    },
+    "demo": {
+      "titulo": "Comment travaille {{agente}} Pro",
+      "horaDelPuesto": "Heure du poste",
+      "enTuCrm": "Ce qui reste dans votre tableau de bord",
+      "enLinea": "en ligne",
+      "mes": "Mois",
+      "nota": "Exemple fictif : noms, lieux et horaires sont inventés.",
+      "escenas": {
+        "faltas": "Absences et remplacements",
+        "partes": "Rapports",
+        "vigilantes": "WhatsApp de l’agent"
+      },
+      "faltas": {
+        "lugar": "Plaza Nord",
+        "telA": "Téléphone de Louis · absent",
+        "telB": "Téléphone de Pierre · libre aujourd’hui",
+        "estado": {
+          "inicio": "Service 06:00 · Louis Petit",
+          "sinMarcar": "Pas pointé",
+          "buscando": "Recherche d’un remplaçant",
+          "cubierto": "Couvert · Pierre Garnier"
+        },
+        "pensar": {
+          "escribe": "J’écris à Louis…",
+          "noViene": "Il ne vient pas : j’enregistre l’absence et je cherche un remplaçant"
+        },
+        "libres": {
+          "a": "Anne",
+          "b": "Pierre",
+          "c": "Julien"
+        },
+        "chat": {
+          "luis1": "Bonjour Louis, ici {{agente}}. Votre service à Plaza Nord a commencé à 06:00 et vous n’avez pas pointé. Êtes-vous en route ?",
+          "luis2": "Je suis malade, je ne peux pas venir aujourd’hui 🤒",
+          "pedro1": "Bonjour Pierre, pouvez-vous couvrir Plaza Nord aujourd’hui de 07:00 à 18:00 ?",
+          "pedro2": "Oui, j’arrive 👍",
+          "gracias": "Merci, Pierre. C’est dans votre planning ✅"
+        },
+        "pasos": {
+          "noFicho": "Louis Petit n’a pas pointé à Plaza Nord",
+          "escribe": "{{agente}} lui écrit sur WhatsApp",
+          "falta": "Absence enregistrée · motif : maladie",
+          "buscaRelevo": "Cherche parmi 3 agents libres et proches",
+          "relevo": "Pierre accepte et apparaît au planning",
+          "supervisor": "Superviseur prévenu, conversation conservée"
+        },
+        "resultado": "Réglé en 6 minutes, sans que personne ne décroche le téléphone."
+      },
+      "partes": {
+        "lugar": "Entrepôts Vallejo · Entrepôt 2",
+        "telA": "App de l’agent",
+        "telB": "Portail de votre client",
+        "estado": {
+          "abierta": "Porte trouvée ouverte",
+          "enviado": "Rapport envoyé au client"
+        },
+        "pensar": {
+          "corrige": "Je corrige la rédaction sans rien inventer",
+          "traduce": "Aucune donnée perdue · je traduis en anglais"
+        },
+        "app": {
+          "nuevo": "Nouveau rapport",
+          "ronda": "Ronde · Entrepôts Vallejo · 03:12",
+          "enviar": "Envoyer le rapport",
+          "portal": "Ma Sécurité",
+          "cliente": "Comercial Pacífico · rapports",
+          "vacio": "Aucun nouveau rapport aujourd’hui",
+          "traducido": "Translated from French"
+        },
+        "parte": {
+          "antes": "ronde 3h porte entrepot 2 ouverte je lai fermer personne tout normal",
+          "tituloTraducido": "Patrol report · 03:12",
+          "traducido": "At 03:00, during the patrol, I found the door to warehouse 2 open. I checked the area, no one was there, and I locked it. Nothing else to report."
+        },
+        "pasos": {
+          "sube": "L’agent envoie son rapport depuis l’app, comme il peut",
+          "corrige": "Corrige la rédaction ; garde l’heure, le lieu et ce qui a été fait",
+          "faltaDato": "Si une donnée devait se perdre en corrigeant, il vous préviendrait",
+          "traduce": "Le traduit dans la langue du client et le publie sur son portail",
+          "resumen": "Et chaque mois, un résumé pour le client avec des chiffres comptés, pas inventés"
+        },
+        "resultado": "Des rapports prêts pour le client, sans les réécrire au bureau."
+      },
+      "vigilantes": {
+        "lugar": "Tour Reforma · Accueil",
+        "telA": "Téléphone d’Anne · agente",
+        "telB": "Téléphone du superviseur",
+        "estado": {
+          "manana": "Service d’Anne demain 18:00",
+          "ok": "Demain 18:00 · Anne Thomas"
+        },
+        "pensar": {
+          "horario": "Je regarde SON planning, seulement le sien",
+          "voz": "Message vocal : « je voudrais poser samedi »"
+        },
+        "app": {
+          "supervisor": "Superviseur",
+          "quien": "Ricardo Beltrán · Zone Nord",
+          "vacio": "Aucune demande en attente",
+          "chip": "Demande de congé",
+          "solicitud": "Anne Thomas demande samedi",
+          "via": "Envoyée sur WhatsApp via {{agente}} · 21:42",
+          "aprobar": "Approuver",
+          "rechazar": "Refuser"
+        },
+        "chat": {
+          "ana1": "À quelle heure je commence demain ?",
+          "ana2": "Demain vous commencez à 18:00 à la Tour Reforma, poste Accueil.",
+          "ana4": "Compris : je demande samedi à votre superviseur. Je l’envoie ? Répondez OUI.",
+          "ana5": "OUI",
+          "ana6": "Envoyé ✅ Je vous préviens dès qu’on vous répond."
+        },
+        "pasos": {
+          "suHorario": "Répond avec son planning et ses données, jamais ceux d’un autre",
+          "voz": "Comprend les messages vocaux",
+          "pideSi": "Attend son « OUI » avant de demander ou modifier quoi que ce soit",
+          "enviada": "La demande arrive au superviseur comme si elle venait de l’app"
+        },
+        "resultado": "Vos agents se débrouillent seuls et le bureau cesse de répondre aux mêmes questions."
+      }
+    },
+    "guiaWhatsApp": {
+      "titulo": "Comment connecter le WhatsApp de votre entreprise",
+      "necesitas": "Ce qu’il vous faut",
+      "req1": "Un compte Facebook qui gère (ou peut créer) le portefeuille business de votre entreprise chez Meta.",
+      "req2": "Un numéro de téléphone de l’entreprise qui peut recevoir un SMS ou un appel avec le code de vérification.",
+      "req3": "Ce numéro ne doit pas être utilisé dans l’app WhatsApp ni dans WhatsApp Business. Si c’est le cas, supprimez d’abord ce compte de l’app (ou utilisez un autre numéro) : une fois connecté, le numéro passe sur la plateforme de Meta.",
+      "pasos": "Étapes",
+      "paso1": "Dans Paramètres › Communications, cliquez sur « Connecter WhatsApp ».",
+      "paso2": "La fenêtre de Meta s’ouvre : connectez-vous avec Facebook et choisissez (ou créez) le portefeuille business de votre entreprise.",
+      "paso3": "Choisissez ou créez le compte WhatsApp Business, ajoutez le numéro et saisissez le nom que verront vos agents.",
+      "paso4": "Vérifiez le numéro avec le code reçu par SMS ou appel.",
+      "paso5": "À la fermeture de la fenêtre, c’est connecté. {{agente}} envoie son message d’alerte à Meta pour approbation ; l’état s’affiche dans {{agente}} Pro › Connectez votre WhatsApp, avec « Vérifier à nouveau ».",
+      "pago": "Si Meta demande un moyen de paiement pour le compte WhatsApp Business, ajoutez-le dans votre gestionnaire Meta : Meta facture à ce compte les messages que l’entreprise initie.",
+      "boton": "Aller à Communications"
     }
   }
 }

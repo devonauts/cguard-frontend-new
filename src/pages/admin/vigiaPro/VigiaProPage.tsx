@@ -46,6 +46,9 @@ import {
   SaveBar,
 } from "@/pages/admin/Configuration/components/SettingsForm";
 import { useAgente } from "@/lib/agenteDeMarca";
+import ComoFuncionaVigiaPro from "@/components/vigia/ComoFuncionaVigiaPro";
+import GuiaConectarWhatsApp from "@/components/vigia/GuiaConectarWhatsApp";
+import { useTiendaDeModulos } from "@/hooks/useTiendaDeModulos";
 import { fechaYHora, soloHora } from "@/lib/horaDeLaEmpresa";
 import {
   vigiaProService,
@@ -100,6 +103,8 @@ export default function VigiaProPage() {
   const [comprobando, setComprobando] = useState(false);
   const [cerrando, setCerrando] = useState<string | null>(null);
   const a = { agente: agente.nombre };
+  const tienda = useTiendaDeModulos();
+  const moduloEnTienda = tienda.data?.modules.find((m) => m.key === "vigia_pro");
 
   const info = useQuery({
     queryKey: ["vigia-pro", "estado"],
@@ -217,16 +222,23 @@ export default function VigiaProPage() {
           />
         ) : (
           <div className="space-y-4">
+            {/* Sin el módulo: se ENSEÑA cómo trabaja, y el botón lleva a probarlo. */}
             {!info.data.tieneModulo && (
-              <InfoNote
-                title={t("vigiaPro.sinModulo.titulo", a)}
-                tone="brand"
-              >
-                {t("vigiaPro.sinModulo.desc", a)}{" "}
-                <Link className="underline" to="/modulos-adicionales">
-                  {t("vigiaPro.sinModulo.enlace")}
-                </Link>
-              </InfoNote>
+              <Section icon={<Sparkles />} title={t("vigiaPro.sinModulo.titulo", a)}>
+                <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+                  {t("vigiaPro.sinModulo.desc", a)}
+                </p>
+                <ComoFuncionaVigiaPro className="mt-4" />
+                <div className="cg-acciones mt-4 justify-end">
+                  <Button asChild variant="brand">
+                    <Link to="/modulos-adicionales">
+                      {moduloEnTienda?.canStartTrial
+                        ? t("vigiaPro.sinModulo.probar", { n: moduloEnTienda.trialDays || 30 })
+                        : t("vigiaPro.sinModulo.enlace")}
+                    </Link>
+                  </Button>
+                </div>
+              </Section>
             )}
 
             {info.data.tieneModulo && !info.data.ajustes.activo && (
@@ -569,11 +581,7 @@ function Canales({
           <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
             {escribePor} · {hoy}
           </p>
-          <div className="cg-acciones">
-            <Button asChild>
-              <Link to="/setting/comunicaciones">{t("vigiaPro.canales.noConectado.boton")}</Link>
-            </Button>
-          </div>
+          <GuiaConectarWhatsApp conBoton />
         </div>
       </Section>
     );

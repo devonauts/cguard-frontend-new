@@ -18020,7 +18020,8 @@
       "cancelarPrueba": "No se cobrará nada. Seguirás con la prueba hasta el {{fecha}}.",
       "cancelarActivo": "No se cobra nada más. Seguirás con {{nombre}} hasta el {{fecha}}.",
       "noSeRenovara": "Listo: no se renovará.",
-      "paraSeguir": "Para seguir con {{nombre}} al terminar la prueba, primero completa el pago de tu implementación."
+      "paraSeguir": "Para seguir con {{nombre}} al terminar la prueba, primero completa el pago de tu implementación.",
+      "masDeVigilantes": "Más de {{n}} vigilantes"
     }
   },
   "sucursales": {
@@ -18182,7 +18183,8 @@
     "sinModulo": {
       "titulo": "Activa {{agente}} Pro para encender el seguimiento",
       "desc": "Puedes ver y preparar los ajustes; para que {{agente}} empiece a escribir a tus vigilantes hace falta el módulo.",
-      "enlace": "Ver Módulos adicionales"
+      "enlace": "Ver Módulos adicionales",
+      "probar": "Probar {{n}} días gratis"
     },
     "apagado": {
       "titulo": "El seguimiento está apagado",
@@ -18435,6 +18437,142 @@
       "escribePor": "Ahora mismo {{agente}} escribe por: {{canales}}",
       "sinCanales": "Ahora mismo {{agente}} no tiene por dónde escribir: enciende la app o el SMS en los ajustes.",
       "hoy": "Hoy: {{enviados}} de {{tope}} mensajes"
+    },
+    "demo": {
+      "titulo": "Así trabaja {{agente}} Pro",
+      "horaDelPuesto": "Hora del puesto",
+      "enTuCrm": "Lo que queda en tu panel",
+      "enLinea": "en línea",
+      "mes": "Mes",
+      "nota": "Ejemplo ficticio: nombres, lugares y horas son inventados.",
+      "escenas": {
+        "faltas": "Faltas y relevos",
+        "partes": "Partes",
+        "vigilantes": "WhatsApp del vigilante"
+      },
+      "faltas": {
+        "lugar": "Plaza Norte",
+        "telA": "Teléfono de Luis · no llegó",
+        "telB": "Teléfono de Pedro · libre hoy",
+        "estado": {
+          "inicio": "Turno 06:00 · Luis Pérez",
+          "sinMarcar": "Sin marcar entrada",
+          "buscando": "Buscando relevo",
+          "cubierto": "Cubierto · Pedro Gómez"
+        },
+        "pensar": {
+          "escribe": "Le escribo a Luis…",
+          "noViene": "No viene: registro la falta y busco relevo"
+        },
+        "libres": {
+          "a": "Ana",
+          "b": "Pedro",
+          "c": "Jorge"
+        },
+        "chat": {
+          "luis1": "Hola Luis, soy {{agente}}. Tu turno en Plaza Norte empezó a las 06:00 y no has marcado entrada. ¿Vas en camino?",
+          "luis2": "Estoy enfermo, hoy no puedo ir 🤒",
+          "pedro1": "Hola Pedro, ¿puedes cubrir hoy Plaza Norte de 07:00 a 18:00?",
+          "pedro2": "Sí, voy para allá 👍",
+          "gracias": "Gracias, Pedro. Ya quedó en tu horario ✅"
+        },
+        "pasos": {
+          "noFicho": "Luis Pérez no ha marcado entrada en Plaza Norte",
+          "escribe": "{{agente}} le escribe por WhatsApp",
+          "falta": "Falta registrada · motivo: enfermedad",
+          "buscaRelevo": "Busca entre 3 vigilantes libres y cercanos",
+          "relevo": "Pedro acepta y queda en el horario",
+          "supervisor": "Aviso al supervisor con la conversación guardada"
+        },
+        "resultado": "Resuelto en 6 minutos, sin que nadie tuviera que llamar."
+      },
+      "partes": {
+        "lugar": "Bodegas Vallejo · Bodega 2",
+        "telA": "App del vigilante",
+        "telB": "Portal de su cliente",
+        "estado": {
+          "abierta": "Puerta encontrada abierta",
+          "enviado": "Parte enviado al cliente"
+        },
+        "pensar": {
+          "corrige": "Corrijo la redacción sin inventar nada",
+          "traduce": "Ningún dato se perdió · lo traduzco al inglés"
+        },
+        "app": {
+          "nuevo": "Nuevo parte",
+          "ronda": "Ronda · Bodegas Vallejo · 03:12",
+          "enviar": "Enviar parte",
+          "portal": "Mi Seguridad",
+          "cliente": "Comercial Pacífico · partes",
+          "vacio": "Sin partes nuevos hoy",
+          "traducido": "Translated from Spanish"
+        },
+        "parte": {
+          "antes": "ronda 3am puerta bodega 2 abierta la cerre no avia nadie todo normal",
+          "tituloTraducido": "Patrol report · 03:12",
+          "traducido": "At 03:00, during the patrol, I found the door to warehouse 2 open. I checked the area, no one was there, and I locked it. Nothing else to report."
+        },
+        "pasos": {
+          "sube": "El vigilante sube el parte desde la app, como le salió",
+          "corrige": "Corrige la redacción; conserva hora, lugar y lo que hizo",
+          "faltaDato": "Si al corregir se perdiera un dato, te lo avisaría",
+          "traduce": "Lo traduce al idioma del cliente y lo publica en su portal",
+          "resumen": "Y cada mes, un resumen para el cliente con cifras contadas, no inventadas"
+        },
+        "resultado": "Partes listos para el cliente, sin reescribirlos en la oficina."
+      },
+      "vigilantes": {
+        "lugar": "Torre Reforma · Lobby",
+        "telA": "Teléfono de Ana · vigilante",
+        "telB": "Teléfono del supervisor",
+        "estado": {
+          "manana": "Turno de Ana mañana 18:00",
+          "ok": "Mañana 18:00 · Ana Torres"
+        },
+        "pensar": {
+          "horario": "Miro SU horario, sólo el suyo",
+          "voz": "Nota de voz: «quiero pedir libre el sábado»"
+        },
+        "app": {
+          "supervisor": "Supervisor",
+          "quien": "Ricardo Beltrán · Zona Norte",
+          "vacio": "Sin solicitudes pendientes",
+          "chip": "Solicitud de permiso",
+          "solicitud": "Ana Torres pide el sábado libre",
+          "via": "Enviada por WhatsApp a través de {{agente}} · 21:42",
+          "aprobar": "Aprobar",
+          "rechazar": "Rechazar"
+        },
+        "chat": {
+          "ana1": "¿A qué hora entro mañana?",
+          "ana2": "Mañana entras a las 18:00 en Torre Reforma, puesto Lobby.",
+          "ana4": "Entendido: le pido a tu supervisor el sábado libre. ¿Lo envío? Responde SÍ.",
+          "ana5": "SÍ",
+          "ana6": "Enviado ✅ Te aviso en cuanto te respondan."
+        },
+        "pasos": {
+          "suHorario": "Responde con su horario y sus datos, nunca los de otro",
+          "voz": "Entiende notas de voz",
+          "pideSi": "Antes de pedir o cambiar algo, espera su «SÍ»",
+          "enviada": "La solicitud llega al supervisor como si la hubiera hecho en la app"
+        },
+        "resultado": "Tus vigilantes se resuelven solos y la oficina deja de contestar lo mismo."
+      }
+    },
+    "guiaWhatsApp": {
+      "titulo": "Cómo se conecta el WhatsApp de tu empresa",
+      "necesitas": "Qué necesitas",
+      "req1": "Una cuenta de Facebook que administre (o pueda crear) el portafolio comercial de tu empresa en Meta.",
+      "req2": "Un número de teléfono de la empresa que pueda recibir un SMS o una llamada con el código de verificación.",
+      "req3": "Que ese número no esté en uso en la app de WhatsApp ni en la de WhatsApp Business. Si lo está, primero elimina esa cuenta de la app (o usa otro número): al conectarlo, el número pasa a la plataforma de Meta.",
+      "pasos": "Pasos",
+      "paso1": "En Configuración › Comunicaciones, pulsa «Conectar WhatsApp».",
+      "paso2": "Se abre la ventana de Meta: inicia sesión con Facebook y elige (o crea) el portafolio comercial de tu empresa.",
+      "paso3": "Elige o crea la cuenta de WhatsApp Business, añade el número y escribe el nombre que verán tus vigilantes.",
+      "paso4": "Verifica el número con el código que te llega por SMS o llamada.",
+      "paso5": "Al cerrar la ventana queda conectado. {{agente}} envía a Meta su mensaje de aviso para que lo apruebe; el estado aparece en {{agente}} Pro › Conecta tu WhatsApp, con «Volver a comprobar».",
+      "pago": "Si Meta te pide un método de pago para la cuenta de WhatsApp Business, añádelo en tu administrador de Meta: los mensajes que inicia la empresa los cobra Meta a esa cuenta.",
+      "boton": "Ir a Comunicaciones"
     }
   }
 }

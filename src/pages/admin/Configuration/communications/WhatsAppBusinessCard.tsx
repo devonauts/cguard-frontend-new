@@ -12,6 +12,7 @@ import {
   SkeletonBlock,
 } from "@/components/kit";
 import i18n from "@/i18n";
+import GuiaConectarWhatsApp from "@/components/vigia/GuiaConectarWhatsApp";
 import { localeActual } from "@/lib/localeActual";
 import {
   communicationService,
@@ -370,6 +371,15 @@ export default function WhatsAppBusinessCard() {
                   </p>
                 )}
               </div>
+              {/* Qué hace falta y qué pasa al pulsar: los requisitos y los pasos de Meta. */}
+              <details className="glass-flat rounded-xl p-3">
+                <summary className="cursor-pointer text-sm font-semibold">
+                  {t("vigiaPro.guiaWhatsApp.titulo")}
+                </summary>
+                <div className="mt-3">
+                  <GuiaConectarWhatsApp />
+                </div>
+              </details>
             </div>
           ) : (
             <div className="space-y-5">

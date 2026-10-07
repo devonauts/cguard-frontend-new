@@ -18020,7 +18020,8 @@
       "cancelarPrueba": "Nothing will be charged. Your trial continues until {{fecha}}.",
       "cancelarActivo": "Nothing more will be charged. You keep {{nombre}} until {{fecha}}.",
       "noSeRenovara": "Done: it won’t renew.",
-      "paraSeguir": "To keep {{nombre}} after the trial, first complete your implementation payment."
+      "paraSeguir": "To keep {{nombre}} after the trial, first complete your implementation payment.",
+      "masDeVigilantes": "More than {{n}} officers"
     }
   },
   "sucursales": {
@@ -18182,7 +18183,8 @@
     "sinModulo": {
       "titulo": "Turn on {{agente}} Pro to start follow-ups",
       "desc": "You can review and prepare the settings; for {{agente}} to start messaging your officers you need the module.",
-      "enlace": "See Add-on modules"
+      "enlace": "See Add-on modules",
+      "probar": "Try {{n}} days free"
     },
     "apagado": {
       "titulo": "Follow-ups are off",
@@ -18435,6 +18437,142 @@
       "escribePor": "Right now {{agente}} writes through: {{canales}}",
       "sinCanales": "Right now {{agente}} has no way to write: turn on the app or SMS in the settings.",
       "hoy": "Today: {{enviados}} of {{tope}} messages"
+    },
+    "demo": {
+      "titulo": "How {{agente}} Pro works",
+      "horaDelPuesto": "Post time",
+      "enTuCrm": "What you see in your dashboard",
+      "enLinea": "online",
+      "mes": "Month",
+      "nota": "Fictional example: names, places and times are made up.",
+      "escenas": {
+        "faltas": "No-shows & cover",
+        "partes": "Reports",
+        "vigilantes": "Officer WhatsApp"
+      },
+      "faltas": {
+        "lugar": "North Plaza",
+        "telA": "Luis's phone · didn't show",
+        "telB": "Pedro's phone · off today",
+        "estado": {
+          "inicio": "06:00 shift · Luis Pérez",
+          "sinMarcar": "Not clocked in",
+          "buscando": "Finding cover",
+          "cubierto": "Covered · Pedro Gómez"
+        },
+        "pensar": {
+          "escribe": "Texting Luis…",
+          "noViene": "He's not coming: logging the absence and finding cover"
+        },
+        "libres": {
+          "a": "Ana",
+          "b": "Pedro",
+          "c": "Jorge"
+        },
+        "chat": {
+          "luis1": "Hi Luis, this is {{agente}}. Your shift at North Plaza started at 06:00 and you haven't clocked in. Are you on your way?",
+          "luis2": "I'm sick, I can't make it today 🤒",
+          "pedro1": "Hi Pedro, can you cover North Plaza today from 07:00 to 18:00?",
+          "pedro2": "Yes, on my way 👍",
+          "gracias": "Thanks, Pedro. It's on your schedule now ✅"
+        },
+        "pasos": {
+          "noFicho": "Luis Pérez hasn't clocked in at North Plaza",
+          "escribe": "{{agente}} texts him on WhatsApp",
+          "falta": "Absence logged · reason: sick",
+          "buscaRelevo": "Checks 3 available officers nearby",
+          "relevo": "Pedro accepts and is added to the schedule",
+          "supervisor": "Supervisor notified, conversation saved"
+        },
+        "resultado": "Solved in 6 minutes, without anyone picking up the phone."
+      },
+      "partes": {
+        "lugar": "Vallejo Warehouses · Unit 2",
+        "telA": "Officer app",
+        "telB": "Your client's portal",
+        "estado": {
+          "abierta": "Door found open",
+          "enviado": "Report sent to the client"
+        },
+        "pensar": {
+          "corrige": "Polishing the wording without making anything up",
+          "traduce": "No detail lost · translating to Spanish"
+        },
+        "app": {
+          "nuevo": "New report",
+          "ronda": "Patrol · Vallejo Warehouses · 03:12",
+          "enviar": "Send report",
+          "portal": "My Security",
+          "cliente": "Pacific Retail · reports",
+          "vacio": "No new reports today",
+          "traducido": "Traducido del inglés"
+        },
+        "parte": {
+          "antes": "patrol 3am warehouse 2 door open closed it nobody there all good",
+          "tituloTraducido": "Parte de ronda · 03:12",
+          "traducido": "A las 03:00, durante la ronda, encontré abierta la puerta de la bodega 2. Revisé el área, no había nadie y la cerré. Sin más novedades."
+        },
+        "pasos": {
+          "sube": "The officer files the report from the app, however it comes out",
+          "corrige": "Polishes the wording; keeps time, place and what was done",
+          "faltaDato": "If a detail would be lost while polishing, it tells you",
+          "traduce": "Translates it into the client's language and posts it to their portal",
+          "resumen": "And every month, a client summary with counted figures, not invented ones"
+        },
+        "resultado": "Reports ready for the client, no rewriting at the office."
+      },
+      "vigilantes": {
+        "lugar": "Reforma Tower · Lobby",
+        "telA": "Ana's phone · officer",
+        "telB": "Supervisor's phone",
+        "estado": {
+          "manana": "Ana's shift tomorrow 18:00",
+          "ok": "Tomorrow 18:00 · Ana Torres"
+        },
+        "pensar": {
+          "horario": "Checking HER schedule, only hers",
+          "voz": "Voice note: “I'd like Saturday off”"
+        },
+        "app": {
+          "supervisor": "Supervisor",
+          "quien": "Ricardo Beltrán · North Zone",
+          "vacio": "No pending requests",
+          "chip": "Time-off request",
+          "solicitud": "Ana Torres asks for Saturday off",
+          "via": "Sent on WhatsApp through {{agente}} · 21:42",
+          "aprobar": "Approve",
+          "rechazar": "Decline"
+        },
+        "chat": {
+          "ana1": "What time do I start tomorrow?",
+          "ana2": "Tomorrow you start at 18:00 at Reforma Tower, Lobby post.",
+          "ana4": "Got it: I'll ask your supervisor for Saturday off. Send it? Reply YES.",
+          "ana5": "YES",
+          "ana6": "Sent ✅ I'll let you know as soon as they answer."
+        },
+        "pasos": {
+          "suHorario": "Answers with their own schedule and data, never someone else's",
+          "voz": "Understands voice notes",
+          "pideSi": "Waits for their “YES” before requesting or changing anything",
+          "enviada": "The request reaches the supervisor as if made in the app"
+        },
+        "resultado": "Your officers help themselves and the office stops answering the same questions."
+      }
+    },
+    "guiaWhatsApp": {
+      "titulo": "How to connect your company's WhatsApp",
+      "necesitas": "What you need",
+      "req1": "A Facebook account that manages (or can create) your company's business portfolio on Meta.",
+      "req2": "A company phone number that can receive a text or a call with the verification code.",
+      "req3": "That number can't be in use in the WhatsApp or WhatsApp Business app. If it is, delete that account from the app first (or use another number): once connected, the number moves to Meta's platform.",
+      "pasos": "Steps",
+      "paso1": "In Settings › Communications, click “Connect WhatsApp”.",
+      "paso2": "Meta's window opens: log in with Facebook and choose (or create) your company's business portfolio.",
+      "paso3": "Choose or create the WhatsApp Business account, add the number and type the name your officers will see.",
+      "paso4": "Verify the number with the code you get by text or call.",
+      "paso5": "When the window closes you're connected. {{agente}} sends its alert message to Meta for approval; the status shows in {{agente}} Pro › Connect your WhatsApp, with “Check again”.",
+      "pago": "If Meta asks for a payment method for the WhatsApp Business account, add it in your Meta business settings: Meta bills the messages your company starts to that account.",
+      "boton": "Go to Communications"
     }
   }
 }
