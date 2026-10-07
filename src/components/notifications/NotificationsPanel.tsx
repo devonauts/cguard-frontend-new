@@ -521,7 +521,9 @@ function CabeceraDeSeccion({
 
 /**
  * Una pila de avisos de la misma familia, como las de iOS: cerrada enseña el
- * último y deja ver que hay más debajo; al pulsar se despliega entera.
+ * último y deja ver que hay más debajo; al pulsarla —en cualquier parte, también
+ * la tarjeta de arriba— se despliega entera, y sólo entonces cada fila abre su
+ * aviso.
  * Con un solo aviso es una fila normal.
  */
 function PilaDeAvisos({
@@ -606,9 +608,14 @@ function PilaDeAvisos({
           </Deslizable>
         ))
       ) : (
-        /* Cerrada, se desliza la pila ENTERA, como en iOS. */
+        /* Cerrada, se desliza la pila ENTERA y pulsarla la DESPLIEGA, como en
+           iOS: no abre el aviso de arriba. Ya desplegada, cada fila abre el suyo. */
         <Deslizable onQuitar={() => onQuitar(pila.avisos.map((n) => n.id))}>
-          <NotificationItem ahora={ahora} notification={primero} onOpen={onOpen} />
+          <NotificationItem
+            ahora={ahora}
+            notification={primero}
+            onOpen={onAlternar}
+          />
         </Deslizable>
       )}
       {!desplegada && (
