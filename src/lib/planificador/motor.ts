@@ -521,6 +521,26 @@ export function impedimento(
   return bloqueo(plan, p, pu, franja, d) ?? aviso(plan, p, pu, franja, d);
 }
 
+/** Sólo los bloqueos, para alguien que YA cubre: lo que de verdad lo saca. */
+export function bloqueoSinContar(
+  plan: Plan,
+  p: Persona,
+  pu: Puesto,
+  franja: string,
+  d: number,
+): string | null {
+  const idx = indice(plan);
+  const ik = `${p.id}|${d}`;
+  const suya = idx[ik];
+
+  delete idx[ik];
+  try {
+    return bloqueo(plan, p, pu, franja, d);
+  } finally {
+    if (suya) idx[ik] = suya;
+  }
+}
+
 /** Lo mismo, para alguien que YA cubre ese turno: se juzga sin contar esa cobertura. */
 export function impedimentoSinContar(
   plan: Plan,
@@ -859,7 +879,12 @@ export function limpiar(plan: Plan, d0: number, d1: number): void {
       // diría «ya trabaja ese día». Sólo se aparta del índice un momento: quitarla
       // y volverla a poner la cambiaría de sitio, y limpiar dos veces dejaría de
       // dar lo mismo que limpiar una.
-      if (impedimentoSinContar(plan, p, pu, franja, d)) quitar(plan, k, id);
+      //
+      // Sólo los BLOQUEOS podan. Un aviso (descanso corto, días seguidos…) no
+      // borra una cobertura que ya existe en el horario real o que alguien puso
+      // a mano: aquí se podaba la noche real de un sacafranco porque al día
+      // siguiente tenía su día en otra caseta, y la hoja proponía a otro.
+      if (bloqueoSinContar(plan, p, pu, franja, d)) quitar(plan, k, id);
     }
   }
   aplicarFijos(plan, d0, d1);
