@@ -214,7 +214,7 @@ export default function EditarAsignacionModal({
                 relevo
                   ? t(
                       "ui.Sacafranco.siempreDisponible",
-                      "Siempre disponible (libra lo que el Planificador decida)",
+                      "El ciclo de su estación base (si no tiene, siempre disponible)",
                     )
                   : undefined
               }
