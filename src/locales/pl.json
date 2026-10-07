@@ -17869,7 +17869,7 @@
       "cancelarPrueba": "Nic nie zostanie pobrane. Próba trwa do {{fecha}}.",
       "cancelarActivo": "Nic więcej nie pobierzemy. {{nombre}} działa do {{fecha}}.",
       "noSeRenovara": "Gotowe: nie zostanie odnowiony.",
-      "paraSeguir": "Aby zachować VigIA Pro po próbie, najpierw opłać wdrożenie."
+      "paraSeguir": "Aby zachować {{nombre}} po próbie, najpierw opłać wdrożenie."
     }
   },
   "sucursales": {
@@ -18102,7 +18102,9 @@
       "llamada": "{{agente}} zadzwonił",
       "tecla": "Nacisnął {{tecla}} podczas rozmowy",
       "llamadaFin": "Rozmowa zakończona",
-      "llamadaFallida": "Nie udało się zadzwonić"
+      "llamadaFallida": "Nie udało się zadzwonić",
+      "topeDiario": "Osiągnięto dzienny limit wiadomości: {{agente}} spróbuje jutro",
+      "topePorCaso": "Pisał już mniej niż godzinę temu: {{agente}} czeka, zanim przypomni"
     },
     "motivoFalta": {
       "enfermedad": "choroba",
@@ -18193,7 +18195,10 @@
       "vigilantes": "Pracownicy ochrony mogą pisać do {{agente}} na WhatsAppie",
       "vigilantesHint": "Pytają o grafik i godziny, składają wnioski o urlop, zgłaszają zdarzenia (także wiadomością głosową) i zgłaszają się na zmiany. Widzą tylko swoje dane, a każde wysłanie potwierdzają słowem TAK.",
       "llamada": "Połączenie głosowe",
-      "llamadaHint": "Jeśli nie odpowie na piśmie, dzwoni głos, a pracownik naciska 1, 2 lub 3. Rozliczane za minutę z salda komunikacji firmy; bez salda nie dzwonimy."
+      "llamadaHint": "Jeśli nie odpowie na piśmie, dzwoni głos, a pracownik naciska 1, 2 lub 3. Rozliczane za minutę z salda komunikacji firmy; bez salda nie dzwonimy.",
+      "tope": "Dzienny limit wiadomości",
+      "topeHint": "Wiadomości, które {{agente}} może wysłać Twoim ochroniarzom w ciągu dnia, wszystkie kanały razem. Po osiągnięciu sprawy pozostają otwarte do jutra, a Ty dostajesz jedno powiadomienie. Dziś: {{enviados}}.",
+      "whatsappHintSinCuenta": "Tylko z połączonym WhatsAppem Twojej firmy. Do tego czasu {{agente}} pisze przez aplikację i SMS-em."
     },
     "partes": {
       "traducirTitulo": "Przetłumacz ten raport",
@@ -18242,6 +18247,45 @@
       "enviando": "Wysyłanie…",
       "enviado": "Podsumowanie wysłane na {{correo}}.",
       "copiado": "Skopiowano."
+    },
+    "canales": {
+      "titulo": "Połącz swój WhatsApp",
+      "noConectado": {
+        "titulo": "Połącz WhatsApp swojej firmy",
+        "desc": "Z połączonym WhatsApp Business {{agente}} pisze do Twoich ochroniarzy z numeru Twojej firmy, a oni mogą odpowiadać od razu. Te wiadomości rozlicza z Tobą Meta. Bez niego {{agente}} pisze przez aplikację i SMS-em.",
+        "boton": "Połącz WhatsApp"
+      },
+      "pendiente": {
+        "titulo": "WhatsApp połączony · szablon w weryfikacji",
+        "desc": "Aby napisać do kogoś, kto nie pisał do Ciebie przez ostatnie 24 godziny, Meta wymaga zatwierdzonego szablonu. {{agente}} przesłał go do weryfikacji na koncie Twojej firmy; zwykle trwa to od kilku minut do doby. Tymczasem pisze przez aplikację i SMS-em."
+      },
+      "listo": {
+        "titulo": "Gotowe: {{agente}} pisze przez WhatsApp Twojej firmy",
+        "desc": "{{telefono}}. W ciągu 24 godzin od rozmowy pisze dowolnym tekstem; poza tym oknem — zatwierdzonym szablonem."
+      },
+      "rechazada": "Meta go odrzuciła ({{motivo}}). Napisz do nas, sprawdzimy to.",
+      "plantilla": "Szablon „{{nombre}}”",
+      "idioma": {
+        "es": "hiszpański",
+        "en": "angielski",
+        "pt_BR": "portugalski"
+      },
+      "estado": {
+        "NO_CREADA": "Nieutworzony",
+        "PENDING": "W weryfikacji",
+        "IN_APPEAL": "W odwołaniu",
+        "APPROVED": "Zatwierdzony",
+        "REJECTED": "Odrzucony",
+        "PAUSED": "Wstrzymany",
+        "DISABLED": "Wyłączony"
+      },
+      "comprobar": "Sprawdź ponownie",
+      "comprobando": "Sprawdzanie…",
+      "comprobado": "Stan zaktualizowany.",
+      "errorComprobar": "Nie udało się sprawdzić w Meta. Spróbuj za chwilę.",
+      "escribePor": "Teraz {{agente}} pisze przez: {{canales}}",
+      "sinCanales": "Teraz {{agente}} nie ma jak pisać: włącz aplikację lub SMS w ustawieniach.",
+      "hoy": "Dziś: {{enviados}} z {{tope}} wiadomości"
     }
   }
 }

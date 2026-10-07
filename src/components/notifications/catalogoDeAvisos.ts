@@ -761,6 +761,14 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
     catalogado: true,
   },
   {
+    // VigIA Pro llegó al tope de mensajes del día: un comunicado al
+    // administrador (una vez al día), no una incidencia de asistencia.
+    evento: "vigia.tope_diario",
+    familia: "announcement",
+    prioridad: "important",
+    catalogado: true,
+  },
+  {
     evento: "vigia.nightly",
     familia: "announcement",
     prioridad: "low",

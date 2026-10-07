@@ -12,6 +12,9 @@ import {
   Repeat2,
   Settings2,
   ChevronDown,
+  MessageCircle,
+  RefreshCw,
+  Smartphone,
 } from "lucide-react";
 
 import AppLayout from "@/layouts/app-layout";
@@ -48,6 +51,7 @@ import {
   vigiaProService,
   TIPOS_DE_CASO,
   type AjustesDelSeguimiento,
+  type CanalesDeLaEmpresa,
   type CasoDelSeguimiento,
   type FiltroDeCasos,
   type TipoDeCaso,
@@ -91,7 +95,9 @@ export default function VigiaProPage() {
   const [abierto, setAbierto] = useState<string | null>(casoPedido);
   const [borrador, setBorrador] = useState<AjustesDelSeguimiento | null>(null);
   const [vigilantes, setVigilantes] = useState<boolean | null>(null);
+  const [tope, setTope] = useState<number | null>(null);
   const [guardando, setGuardando] = useState(false);
+  const [comprobando, setComprobando] = useState(false);
   const [cerrando, setCerrando] = useState<string | null>(null);
   const a = { agente: agente.nombre };
 
@@ -105,18 +111,27 @@ export default function VigiaProPage() {
     queryFn: () => vigiaProService.casos(filtro),
     refetchInterval: 30_000,
   });
+  const canales = useQuery({
+    queryKey: ["vigia-pro", "canales"],
+    queryFn: () => vigiaProService.canales(),
+    // La plantilla la aprueba Meta cuando quiere: se vuelve a mirar sola.
+    refetchInterval: 60_000,
+  });
 
   useEffect(() => {
     if (info.data && !borrador) setBorrador(info.data.ajustes);
     if (info.data && vigilantes === null) setVigilantes(!!info.data.vigilantes?.activo);
-  }, [info.data, borrador, vigilantes]);
+    if (info.data && tope === null) setTope(info.data.topeMensajesDia);
+  }, [info.data, borrador, vigilantes, tope]);
 
   const sinGuardar = useMemo(
     () =>
       !!borrador &&
       !!info.data &&
-      (JSON.stringify(borrador) !== JSON.stringify(info.data.ajustes) || !!vigilantes !== !!info.data.vigilantes?.activo),
-    [borrador, info.data, vigilantes],
+      (JSON.stringify(borrador) !== JSON.stringify(info.data.ajustes) ||
+        !!vigilantes !== !!info.data.vigilantes?.activo ||
+        (tope !== null && tope !== info.data.topeMensajesDia)),
+    [borrador, info.data, vigilantes, tope],
   );
 
   const tipoDe = (tipo: string) => t(`vigiaPro.tipo.${tipo}`, { defaultValue: tipo });
@@ -125,12 +140,13 @@ export default function VigiaProPage() {
     if (!borrador) return;
     setGuardando(true);
     try {
-      const r = await vigiaProService.guardar(borrador, { activo: !!vigilantes });
+      const r = await vigiaProService.guardar(borrador, { activo: !!vigilantes }, tope ?? undefined);
 
       setBorrador(r.ajustes);
       setVigilantes(!!r.vigilantes?.activo);
+      setTope(r.topeMensajesDia);
       toast.success(t("vigiaPro.ajustes.guardado"));
-      await qc.invalidateQueries({ queryKey: ["vigia-pro", "estado"] });
+      await qc.invalidateQueries({ queryKey: ["vigia-pro"] });
     } catch (e: any) {
       toast.error(e?.data?.message || e?.message || t("vigiaPro.ajustes.error"));
     } finally {
@@ -157,6 +173,21 @@ export default function VigiaProPage() {
     if (casoPedido && siguiente !== casoPedido) {
       params.delete("caso");
       setParams(params, { replace: true });
+    }
+  };
+
+  const comprobar = async () => {
+    setComprobando(true);
+    try {
+      const r = await vigiaProService.comprobarCanales();
+
+      qc.setQueryData(["vigia-pro", "canales"], r);
+      toast.success(t("vigiaPro.canales.comprobado"));
+      await qc.invalidateQueries({ queryKey: ["vigia-pro", "estado"] });
+    } catch (e: any) {
+      toast.error(e?.data?.message || e?.message || t("vigiaPro.canales.errorComprobar"));
+    } finally {
+      setComprobando(false);
     }
   };
 
@@ -202,6 +233,16 @@ export default function VigiaProPage() {
               <InfoNote tone="warn" title={t("vigiaPro.apagado.titulo")}>
                 {t("vigiaPro.apagado.desc", a)}
               </InfoNote>
+            )}
+
+            {/* ── 0. Por dónde escribe: el WhatsApp de la empresa ────── */}
+            {canales.data && (
+              <Canales
+                agente={agente.nombre}
+                canales={canales.data}
+                comprobando={comprobando}
+                onComprobar={comprobar}
+              />
             )}
 
             {/* ── 1. Lo que resolvió ─────────────────────────────────── */}
@@ -421,9 +462,26 @@ export default function VigiaProPage() {
                 })}
                 label={t("vigiaPro.ajustes.responsable", a)}
               />
+              <NumberRow
+                hint={t("vigiaPro.ajustes.topeHint", {
+                  ...a,
+                  enviados: canales.data?.hoy.enviados ?? 0,
+                })}
+                label={t("vigiaPro.ajustes.tope")}
+                max={5000}
+                min={20}
+                value={tope}
+                onChange={(n) => setTope(n ?? 200)}
+              />
               <ToggleRow
                 checked={borrador.canales.whatsapp}
-                hint={info.data.plantillaWhatsApp ? t("vigiaPro.ajustes.whatsappHint") : t("vigiaPro.ajustes.whatsappHintSinPlantilla")}
+                hint={
+                  !canales.data?.whatsapp.conectado
+                    ? t("vigiaPro.ajustes.whatsappHintSinCuenta", a)
+                    : info.data.plantillaWhatsApp
+                      ? t("vigiaPro.ajustes.whatsappHint")
+                      : t("vigiaPro.ajustes.whatsappHintSinPlantilla")
+                }
                 label={t("vigiaPro.ajustes.whatsapp")}
                 onCheckedChange={(v) => cambiar({ canales: { ...borrador.canales, whatsapp: v } })}
               />
@@ -456,6 +514,121 @@ export default function VigiaProPage() {
         )}
       </PageContainer>
     </AppLayout>
+  );
+}
+
+/** Tono de la etiqueta por estado de la plantilla en Meta. */
+const TONO_PLANTILLA: Record<string, string> = {
+  APPROVED: "ok",
+  PENDING: "info",
+  IN_APPEAL: "info",
+  REJECTED: "bad",
+  PAUSED: "warn",
+  DISABLED: "bad",
+  NO_CREADA: "slate",
+};
+
+/**
+ * «Conecta tu WhatsApp»: tres estados, de peor a mejor.
+ *   1. Sin conectar → qué gana y el botón a Configuración › Comunicaciones.
+ *   2. Conectado, plantilla en revisión (o rechazada) → estado por idioma y
+ *      «Volver a comprobar».
+ *   3. Listo → por dónde escribe, y nada más.
+ * Mientras no esté listo, dice claro por dónde escribe el asistente hoy.
+ */
+function Canales({
+  canales,
+  agente,
+  comprobando,
+  onComprobar,
+}: {
+  canales: CanalesDeLaEmpresa;
+  agente: string;
+  comprobando: boolean;
+  onComprobar: () => void;
+}) {
+  const { t } = useTranslation();
+  const a = { agente };
+  const wa = canales.whatsapp;
+  const porDonde = canales.escribePor
+    .filter((c) => c !== "whatsapp" || wa.listo)
+    .map((c) => t(`vigiaPro.canal.${c}`))
+    .join(", ");
+  const escribePor = porDonde
+    ? t("vigiaPro.canales.escribePor", { ...a, canales: porDonde })
+    : t("vigiaPro.canales.sinCanales", a);
+  const hoy = t("vigiaPro.canales.hoy", { enviados: canales.hoy.enviados, tope: canales.hoy.tope });
+
+  if (!wa.conectado) {
+    return (
+      <Section icon={<MessageCircle />} title={t("vigiaPro.canales.titulo")}>
+        <div className="space-y-3">
+          <InfoNote icon={<Smartphone />} title={t("vigiaPro.canales.noConectado.titulo")} tone="brand">
+            {t("vigiaPro.canales.noConectado.desc", a)}
+          </InfoNote>
+          <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+            {escribePor} · {hoy}
+          </p>
+          <div className="cg-acciones">
+            <Button asChild>
+              <Link to="/setting/comunicaciones">{t("vigiaPro.canales.noConectado.boton")}</Link>
+            </Button>
+          </div>
+        </div>
+      </Section>
+    );
+  }
+
+  const idiomas = wa.plantillas.idiomas.map((p) => (
+    <li key={p.idioma} className="flex flex-wrap items-center gap-2 text-sm">
+      <span className="min-w-24">{t(`vigiaPro.canales.idioma.${p.idioma}`)}</span>
+      <StatusBadge tone={TONO_PLANTILLA[p.estado] ?? "slate"}>
+        {t(`vigiaPro.canales.estado.${p.estado}`, { defaultValue: p.estado })}
+      </StatusBadge>
+      {p.estado === "REJECTED" && p.motivo && (
+        <span style={{ color: "var(--bad-text)" }}>{t("vigiaPro.canales.rechazada", { motivo: p.motivo })}</span>
+      )}
+    </li>
+  ));
+
+  const comprobarBoton = (
+    <Button disabled={comprobando} size="sm" type="button" variant="outline" onClick={onComprobar}>
+      <RefreshCw className={comprobando ? "animate-spin" : undefined} />
+      {comprobando ? t("vigiaPro.canales.comprobando") : t("vigiaPro.canales.comprobar")}
+    </Button>
+  );
+
+  if (!wa.listo) {
+    return (
+      <Section action={comprobarBoton} icon={<MessageCircle />} title={t("vigiaPro.canales.titulo")}>
+        <div className="space-y-3">
+          <InfoNote title={t("vigiaPro.canales.pendiente.titulo", { telefono: wa.telefono || "" })} tone="warn">
+            {t("vigiaPro.canales.pendiente.desc", a)}
+          </InfoNote>
+          <p className="text-xs font-medium uppercase tracking-wide" style={{ color: "var(--ink-faint)" }}>
+            {t("vigiaPro.canales.plantilla", { nombre: wa.plantillas.nombre })}
+          </p>
+          <ul className="space-y-1.5">{idiomas}</ul>
+          <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+            {escribePor} · {hoy}
+          </p>
+        </div>
+      </Section>
+    );
+  }
+
+  return (
+    <Section action={comprobarBoton} icon={<MessageCircle />} title={t("vigiaPro.canales.titulo")}>
+      <div className="space-y-3">
+        <InfoNote icon={<CheckCircle2 />} title={t("vigiaPro.canales.listo.titulo", a)} tone="ok">
+          {t("vigiaPro.canales.listo.desc", { ...a, telefono: wa.telefono || "" })}
+        </InfoNote>
+        <ul className="flex flex-wrap gap-x-5 gap-y-1.5">{idiomas}</ul>
+        <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+          {escribePor} · {hoy}
+        </p>
+      </div>
+    </Section>
   );
 }
 
@@ -559,6 +732,10 @@ function textoDeEvento(t: (k: string, o?: any) => string, l: CasoDelSeguimiento[
       return t("vigiaPro.evento.llamadaFallida");
     case "error":
       return t("vigiaPro.evento.error");
+    case "tope_diario":
+      return t("vigiaPro.evento.topeDiario", a);
+    case "tope_por_caso":
+      return t("vigiaPro.evento.topePorCaso", a);
     default:
       return null;
   }

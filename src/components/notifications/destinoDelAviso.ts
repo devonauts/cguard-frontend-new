@@ -64,6 +64,8 @@ export function targetForNotification(n: PlatformNotification): string {
   if (type === "vigia.caso_escalado") {
     return p.casoId ? `/vigia-pro?caso=${p.casoId}` : "/vigia-pro";
   }
+  // ── VigIA Pro: el tope de mensajes del día se cambia en su pantalla.
+  if (type === "vigia.tope_diario") return "/vigia-pro";
 
   // ── Gusto (fase 4): la conexión, a Ajustes; el resto, a Nómina › Gusto.
   if (type === "gusto.disconnected") return "/setting/integraciones";

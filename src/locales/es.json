@@ -17677,7 +17677,7 @@
       "cancelarPrueba": "No se cobrará nada. Seguirás con la prueba hasta el {{fecha}}.",
       "cancelarActivo": "No se cobra nada más. Seguirás con {{nombre}} hasta el {{fecha}}.",
       "noSeRenovara": "Listo: no se renovará.",
-      "paraSeguir": "Para seguir con VigIA Pro al terminar la prueba, primero completa el pago de tu implementación."
+      "paraSeguir": "Para seguir con {{nombre}} al terminar la prueba, primero completa el pago de tu implementación."
     }
   },
   "sucursales": {
@@ -17908,7 +17908,9 @@
       "llamada": "{{agente}} le llamó",
       "tecla": "Marcó {{tecla}} en la llamada",
       "llamadaFin": "Terminó la llamada",
-      "llamadaFallida": "No se pudo llamar"
+      "llamadaFallida": "No se pudo llamar",
+      "topeDiario": "Tope de mensajes del día alcanzado: {{agente}} vuelve a intentarlo mañana",
+      "topePorCaso": "Ya le escribió hace menos de una hora: {{agente}} espera antes de insistir"
     },
     "motivoFalta": {
       "enfermedad": "enfermedad",
@@ -17999,7 +18001,10 @@
       "vigilantes": "Los vigilantes pueden escribirle a {{agente}} por WhatsApp",
       "vigilantesHint": "Preguntan su horario y sus horas, piden permisos, reportan novedades (también con nota de voz) y se ofrecen para turnos. Sólo ven lo suyo, y lo que envían lo confirman con un SÍ.",
       "llamada": "Llamada de voz",
-      "llamadaHint": "Si no contesta por escrito, una voz le llama y él marca 1, 2 o 3. Se cobra por minuto del saldo de comunicaciones de la empresa; sin saldo, no se llama."
+      "llamadaHint": "Si no contesta por escrito, una voz le llama y él marca 1, 2 o 3. Se cobra por minuto del saldo de comunicaciones de la empresa; sin saldo, no se llama.",
+      "tope": "Tope de mensajes por día",
+      "topeHint": "Mensajes que {{agente}} puede enviar a tus vigilantes en un día, por todos los canales juntos. Al llegar, los casos quedan abiertos hasta mañana y te avisa una vez. Hoy lleva {{enviados}}.",
+      "whatsappHintSinCuenta": "Sólo con el WhatsApp de tu empresa conectado. Hasta entonces, {{agente}} escribe por la app y por SMS."
     },
     "partes": {
       "traducirTitulo": "Traducir este parte",
@@ -18048,6 +18053,45 @@
       "enviando": "Enviando…",
       "enviado": "Resumen enviado a {{correo}}.",
       "copiado": "Copiado."
+    },
+    "canales": {
+      "titulo": "Conecta tu WhatsApp",
+      "noConectado": {
+        "titulo": "Conecta el WhatsApp de tu empresa",
+        "desc": "Con tu WhatsApp Business conectado, {{agente}} escribe a tus vigilantes desde el número de tu empresa y ellos pueden contestarle ahí mismo. Esos mensajes te los factura Meta a ti. Sin él, {{agente}} escribe por la app y por SMS.",
+        "boton": "Conectar WhatsApp"
+      },
+      "pendiente": {
+        "titulo": "WhatsApp conectado · plantilla en revisión",
+        "desc": "Para escribir a quien no te ha escrito en las últimas 24 horas, Meta exige una plantilla aprobada. {{agente}} la envió a revisión en la cuenta de tu empresa; suele tardar de minutos a un día. Mientras tanto, escribe por la app y por SMS."
+      },
+      "listo": {
+        "titulo": "Listo: {{agente}} escribe por el WhatsApp de tu empresa",
+        "desc": "{{telefono}}. Dentro de las 24 horas de una conversación escribe en texto libre; fuera de ellas, con tu plantilla aprobada."
+      },
+      "rechazada": "Meta la rechazó ({{motivo}}). Escríbenos y la revisamos.",
+      "plantilla": "Plantilla «{{nombre}}»",
+      "idioma": {
+        "es": "Español",
+        "en": "Inglés",
+        "pt_BR": "Portugués"
+      },
+      "estado": {
+        "NO_CREADA": "Sin crear",
+        "PENDING": "En revisión",
+        "IN_APPEAL": "En apelación",
+        "APPROVED": "Aprobada",
+        "REJECTED": "Rechazada",
+        "PAUSED": "Pausada",
+        "DISABLED": "Desactivada"
+      },
+      "comprobar": "Volver a comprobar",
+      "comprobando": "Comprobando…",
+      "comprobado": "Estado actualizado.",
+      "errorComprobar": "No se pudo comprobar con Meta. Inténtalo en un momento.",
+      "escribePor": "Ahora mismo {{agente}} escribe por: {{canales}}",
+      "sinCanales": "Ahora mismo {{agente}} no tiene por dónde escribir: enciende la app o el SMS en los ajustes.",
+      "hoy": "Hoy: {{enviados}} de {{tope}} mensajes"
     }
   }
 }

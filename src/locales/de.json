@@ -17677,7 +17677,7 @@
       "cancelarPrueba": "Es wird nichts abgebucht. Der Test läuft bis {{fecha}}.",
       "cancelarActivo": "Es wird nichts mehr abgebucht. Sie behalten {{nombre}} bis {{fecha}}.",
       "noSeRenovara": "Erledigt: wird nicht verlängert.",
-      "paraSeguir": "Um VigIA Pro nach dem Test zu behalten, schließen Sie zuerst die Zahlung der Einrichtung ab."
+      "paraSeguir": "Um {{nombre}} nach dem Test zu behalten, schließen Sie zuerst die Zahlung der Einrichtung ab."
     }
   },
   "sucursales": {
@@ -17908,7 +17908,9 @@
       "llamada": "{{agente}} hat angerufen",
       "tecla": "Hat im Anruf {{tecla}} gedrückt",
       "llamadaFin": "Der Anruf ist beendet",
-      "llamadaFallida": "Der Anruf war nicht möglich"
+      "llamadaFallida": "Der Anruf war nicht möglich",
+      "topeDiario": "Tageslimit erreicht: {{agente}} versucht es morgen wieder",
+      "topePorCaso": "Hat vor weniger als einer Stunde geschrieben: {{agente}} wartet, bevor er nachhakt"
     },
     "motivoFalta": {
       "enfermedad": "Krankheit",
@@ -17999,7 +18001,10 @@
       "vigilantes": "Sicherheitskräfte können {{agente}} per WhatsApp schreiben",
       "vigilantesHint": "Sie fragen nach Dienstplan und Stunden, beantragen Urlaub, melden Vorfälle (auch per Sprachnachricht) und bieten sich für Schichten an. Sie sehen nur ihre eigenen Daten und bestätigen alles, was gesendet wird, mit JA.",
       "llamada": "Sprachanruf",
-      "llamadaHint": "Antwortet die Person nicht schriftlich, ruft eine Stimme an und sie drückt 1, 2 oder 3. Abgerechnet pro Minute vom Kommunikationsguthaben des Unternehmens; ohne Guthaben wird nicht angerufen."
+      "llamadaHint": "Antwortet die Person nicht schriftlich, ruft eine Stimme an und sie drückt 1, 2 oder 3. Abgerechnet pro Minute vom Kommunikationsguthaben des Unternehmens; ohne Guthaben wird nicht angerufen.",
+      "tope": "Nachrichtenlimit pro Tag",
+      "topeHint": "Nachrichten, die {{agente}} Ihren Wachleuten an einem Tag senden darf, alle Kanäle zusammen. Bei Erreichen bleiben die Fälle bis morgen offen und Sie erhalten einen Hinweis. Heute: {{enviados}}.",
+      "whatsappHintSinCuenta": "Nur mit verbundenem WhatsApp Ihres Unternehmens. Bis dahin schreibt {{agente}} über die App und per SMS."
     },
     "partes": {
       "traducirTitulo": "Diesen Bericht übersetzen",
@@ -18048,6 +18053,45 @@
       "enviando": "Wird gesendet…",
       "enviado": "Zusammenfassung an {{correo}} gesendet.",
       "copiado": "Kopiert."
+    },
+    "canales": {
+      "titulo": "WhatsApp verbinden",
+      "noConectado": {
+        "titulo": "Verbinden Sie das WhatsApp Ihres Unternehmens",
+        "desc": "Mit verbundenem WhatsApp Business schreibt {{agente}} Ihren Wachleuten von der Nummer Ihres Unternehmens, und sie können direkt dort antworten. Diese Nachrichten stellt Meta Ihnen in Rechnung. Ohne WhatsApp schreibt {{agente}} über die App und per SMS.",
+        "boton": "WhatsApp verbinden"
+      },
+      "pendiente": {
+        "titulo": "WhatsApp verbunden · Vorlage in Prüfung",
+        "desc": "Um jemandem zu schreiben, der Ihnen in den letzten 24 Stunden nicht geschrieben hat, verlangt Meta eine genehmigte Vorlage. {{agente}} hat sie im Konto Ihres Unternehmens zur Prüfung eingereicht; das dauert meist Minuten bis einen Tag. Bis dahin schreibt er über die App und per SMS."
+      },
+      "listo": {
+        "titulo": "Bereit: {{agente}} schreibt über das WhatsApp Ihres Unternehmens",
+        "desc": "{{telefono}}. Innerhalb von 24 Stunden nach einer Unterhaltung schreibt er frei; außerhalb mit Ihrer genehmigten Vorlage."
+      },
+      "rechazada": "Meta hat sie abgelehnt ({{motivo}}). Schreiben Sie uns, wir prüfen das.",
+      "plantilla": "Vorlage „{{nombre}}“",
+      "idioma": {
+        "es": "Spanisch",
+        "en": "Englisch",
+        "pt_BR": "Portugiesisch"
+      },
+      "estado": {
+        "NO_CREADA": "Nicht erstellt",
+        "PENDING": "In Prüfung",
+        "IN_APPEAL": "Im Einspruch",
+        "APPROVED": "Genehmigt",
+        "REJECTED": "Abgelehnt",
+        "PAUSED": "Pausiert",
+        "DISABLED": "Deaktiviert"
+      },
+      "comprobar": "Erneut prüfen",
+      "comprobando": "Wird geprüft…",
+      "comprobado": "Status aktualisiert.",
+      "errorComprobar": "Prüfung bei Meta nicht möglich. Versuchen Sie es gleich noch einmal.",
+      "escribePor": "Derzeit schreibt {{agente}} über: {{canales}}",
+      "sinCanales": "Derzeit hat {{agente}} keinen Kanal: Schalten Sie in den Einstellungen die App oder SMS ein.",
+      "hoy": "Heute: {{enviados}} von {{tope}} Nachrichten"
     }
   }
 }

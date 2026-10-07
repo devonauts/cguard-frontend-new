@@ -17677,7 +17677,7 @@
       "cancelarPrueba": "Nothing will be charged. Your trial continues until {{fecha}}.",
       "cancelarActivo": "Nothing more will be charged. You keep {{nombre}} until {{fecha}}.",
       "noSeRenovara": "Done: it won’t renew.",
-      "paraSeguir": "To keep VigIA Pro after the trial, first complete your implementation payment."
+      "paraSeguir": "To keep {{nombre}} after the trial, first complete your implementation payment."
     }
   },
   "sucursales": {
@@ -17908,7 +17908,9 @@
       "llamada": "{{agente}} called them",
       "tecla": "Pressed {{tecla}} on the call",
       "llamadaFin": "The call ended",
-      "llamadaFallida": "The call could not be made"
+      "llamadaFallida": "The call could not be made",
+      "topeDiario": "Daily message limit reached: {{agente}} will try again tomorrow",
+      "topePorCaso": "Already wrote less than an hour ago: {{agente}} waits before insisting"
     },
     "motivoFalta": {
       "enfermedad": "illness",
@@ -17999,7 +18001,10 @@
       "vigilantes": "Officers can message {{agente}} on WhatsApp",
       "vigilantesHint": "They ask about their schedule and hours, request leave, report incidents (also by voice note) and volunteer for shifts. They only see their own information, and they confirm anything they send with a YES.",
       "llamada": "Voice call",
-      "llamadaHint": "If they do not reply in writing, a voice calls them and they press 1, 2 or 3. Billed per minute from the company’s messaging balance; without balance, no call is made."
+      "llamadaHint": "If they do not reply in writing, a voice calls them and they press 1, 2 or 3. Billed per minute from the company’s messaging balance; without balance, no call is made.",
+      "tope": "Daily message limit",
+      "topeHint": "Messages {{agente}} can send to your guards in a day, all channels together. When reached, cases stay open until tomorrow and you get one notice. Today: {{enviados}}.",
+      "whatsappHintSinCuenta": "Only with your company's WhatsApp connected. Until then, {{agente}} writes through the app and by SMS."
     },
     "partes": {
       "traducirTitulo": "Translate this report",
@@ -18048,6 +18053,45 @@
       "enviando": "Sending…",
       "enviado": "Summary sent to {{correo}}.",
       "copiado": "Copied."
+    },
+    "canales": {
+      "titulo": "Connect your WhatsApp",
+      "noConectado": {
+        "titulo": "Connect your company's WhatsApp",
+        "desc": "With your WhatsApp Business connected, {{agente}} writes to your guards from your company's number and they can reply right there. Meta bills those messages to you. Without it, {{agente}} writes through the app and by SMS.",
+        "boton": "Connect WhatsApp"
+      },
+      "pendiente": {
+        "titulo": "WhatsApp connected · template under review",
+        "desc": "To write to someone who has not written to you in the last 24 hours, Meta requires an approved template. {{agente}} submitted it for review on your company's account; it usually takes minutes to a day. Meanwhile, it writes through the app and by SMS."
+      },
+      "listo": {
+        "titulo": "Ready: {{agente}} writes through your company's WhatsApp",
+        "desc": "{{telefono}}. Within 24 hours of a conversation it writes free text; outside that window, with your approved template."
+      },
+      "rechazada": "Meta rejected it ({{motivo}}). Write to us and we will look into it.",
+      "plantilla": "Template “{{nombre}}”",
+      "idioma": {
+        "es": "Spanish",
+        "en": "English",
+        "pt_BR": "Portuguese"
+      },
+      "estado": {
+        "NO_CREADA": "Not created",
+        "PENDING": "Under review",
+        "IN_APPEAL": "Under appeal",
+        "APPROVED": "Approved",
+        "REJECTED": "Rejected",
+        "PAUSED": "Paused",
+        "DISABLED": "Disabled"
+      },
+      "comprobar": "Check again",
+      "comprobando": "Checking…",
+      "comprobado": "Status updated.",
+      "errorComprobar": "Could not check with Meta. Try again in a moment.",
+      "escribePor": "Right now {{agente}} writes through: {{canales}}",
+      "sinCanales": "Right now {{agente}} has no way to write: turn on the app or SMS in the settings.",
+      "hoy": "Today: {{enviados}} of {{tope}} messages"
     }
   }
 }

@@ -17677,7 +17677,7 @@
       "cancelarPrueba": "Non verrà addebitato nulla. La prova continua fino al {{fecha}}.",
       "cancelarActivo": "Non si addebita altro. Mantieni {{nombre}} fino al {{fecha}}.",
       "noSeRenovara": "Fatto: non si rinnoverà.",
-      "paraSeguir": "Per mantenere VigIA Pro dopo la prova, completa prima il pagamento dell’implementazione."
+      "paraSeguir": "Per mantenere {{nombre}} dopo la prova, completa prima il pagamento dell’implementazione."
     }
   },
   "sucursales": {
@@ -17908,7 +17908,9 @@
       "llamada": "{{agente}} lo ha chiamato",
       "tecla": "Ha premuto {{tecla}} nella chiamata",
       "llamadaFin": "La chiamata è terminata",
-      "llamadaFallida": "Non è stato possibile chiamare"
+      "llamadaFallida": "Non è stato possibile chiamare",
+      "topeDiario": "Limite di messaggi del giorno raggiunto: {{agente}} riprova domani",
+      "topePorCaso": "Ha già scritto meno di un'ora fa: {{agente}} aspetta prima di insistere"
     },
     "motivoFalta": {
       "enfermedad": "malattia",
@@ -17999,7 +18001,10 @@
       "vigilantes": "Le guardie possono scrivere a {{agente}} su WhatsApp",
       "vigilantesHint": "Chiedono turni e ore, richiedono permessi, segnalano eventi (anche con un vocale) e si propongono per i turni. Vedono solo i propri dati e confermano ogni invio con un SÌ.",
       "llamada": "Chiamata vocale",
-      "llamadaHint": "Se non risponde per iscritto, una voce lo chiama e lui preme 1, 2 o 3. Addebitata al minuto dal credito comunicazioni dell’azienda; senza credito non si chiama."
+      "llamadaHint": "Se non risponde per iscritto, una voce lo chiama e lui preme 1, 2 o 3. Addebitata al minuto dal credito comunicazioni dell’azienda; senza credito non si chiama.",
+      "tope": "Limite di messaggi al giorno",
+      "topeHint": "Messaggi che {{agente}} può inviare ai tuoi vigilanti in un giorno, tutti i canali insieme. Al raggiungimento, i casi restano aperti fino a domani e ricevi un avviso. Oggi: {{enviados}}.",
+      "whatsappHintSinCuenta": "Solo con il WhatsApp della tua azienda collegato. Fino ad allora, {{agente}} scrive tramite l'app e via SMS."
     },
     "partes": {
       "traducirTitulo": "Traduci questo rapporto",
@@ -18048,6 +18053,45 @@
       "enviando": "Invio…",
       "enviado": "Riepilogo inviato a {{correo}}.",
       "copiado": "Copiato."
+    },
+    "canales": {
+      "titulo": "Collega il tuo WhatsApp",
+      "noConectado": {
+        "titulo": "Collega il WhatsApp della tua azienda",
+        "desc": "Con il WhatsApp Business collegato, {{agente}} scrive ai tuoi vigilanti dal numero della tua azienda e loro possono rispondere lì. Quei messaggi te li fattura Meta. Senza, {{agente}} scrive tramite l'app e via SMS.",
+        "boton": "Collega WhatsApp"
+      },
+      "pendiente": {
+        "titulo": "WhatsApp collegato · modello in revisione",
+        "desc": "Per scrivere a chi non ti ha scritto nelle ultime 24 ore, Meta richiede un modello approvato. {{agente}} lo ha inviato in revisione sull'account della tua azienda; di solito servono da pochi minuti a un giorno. Nel frattempo scrive tramite l'app e via SMS."
+      },
+      "listo": {
+        "titulo": "Pronto: {{agente}} scrive tramite il WhatsApp della tua azienda",
+        "desc": "{{telefono}}. Entro 24 ore da una conversazione scrive testo libero; oltre, con il tuo modello approvato."
+      },
+      "rechazada": "Meta lo ha rifiutato ({{motivo}}). Scrivici e lo rivediamo.",
+      "plantilla": "Modello «{{nombre}}»",
+      "idioma": {
+        "es": "Spagnolo",
+        "en": "Inglese",
+        "pt_BR": "Portoghese"
+      },
+      "estado": {
+        "NO_CREADA": "Non creato",
+        "PENDING": "In revisione",
+        "IN_APPEAL": "In appello",
+        "APPROVED": "Approvato",
+        "REJECTED": "Rifiutato",
+        "PAUSED": "In pausa",
+        "DISABLED": "Disattivato"
+      },
+      "comprobar": "Ricontrolla",
+      "comprobando": "Controllo in corso…",
+      "comprobado": "Stato aggiornato.",
+      "errorComprobar": "Impossibile verificare con Meta. Riprova tra un momento.",
+      "escribePor": "In questo momento {{agente}} scrive tramite: {{canales}}",
+      "sinCanales": "In questo momento {{agente}} non ha canali: attiva l'app o gli SMS nelle impostazioni.",
+      "hoy": "Oggi: {{enviados}} di {{tope}} messaggi"
     }
   }
 }

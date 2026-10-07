@@ -250,7 +250,7 @@ export default function TarjetaModuloMensual({
       {/* En prueba y sin poder cobrar todavía: que lo sepa ANTES de que venza. */}
       {estado === "trial" && m.hasAccess && !canPurchase && reason && !esDeSocio && (
         <p className="mt-3 text-xs" style={{ color: "var(--ink-soft)" }}>
-          {t("modulosAdicionales.mensual.paraSeguir", "Para seguir con VigIA Pro al terminar la prueba, primero completa el pago de tu implementación.")}{" "}
+          {t("modulosAdicionales.mensual.paraSeguir", { defaultValue: "Para seguir con {{nombre}} al terminar la prueba, primero completa el pago de tu implementación.", nombre: m.name })}{" "}
           <Link className="underline" to="/setting/billing">{t("modulosAdicionales.irAFacturacion")}</Link>
         </p>
       )}

@@ -56,10 +56,57 @@ export interface EstadoDelSeguimiento {
   ajustes: AjustesDelSeguimiento;
   /** Los vigilantes pueden escribirle al asistente por WhatsApp. */
   vigilantes: { activo: boolean };
+  /** Mensajes salientes por día, todos los canales juntos (200 por defecto). */
+  topeMensajesDia: number;
   responsables: Array<{ id: string; nombre: string }>;
   responsableEfectivo: { id: string; nombre: string } | null;
+  /** El WhatsApp de la empresa está conectado y su plantilla aprobada. */
   plantillaWhatsApp: boolean;
   resumen: ResumenDelSeguimiento;
+}
+
+export type IdiomaDePlantilla = "es" | "en" | "pt_BR";
+
+export interface PlantillaPorIdioma {
+  idioma: IdiomaDePlantilla;
+  /** NO_CREADA · PENDING · APPROVED · REJECTED (u otro estado de Meta). */
+  estado: string;
+  motivo: string | null;
+  id: string | null;
+}
+
+/**
+ * Por dónde escribe el asistente a los vigilantes de ESTA empresa. Decisión
+ * de producto: nosotros ponemos la IA, cada empresa pone su WhatsApp. Sin su
+ * WhatsApp conectado (o sin la plantilla aprobada), escribe por la app y el
+ * SMS. Backend: `services/ai/vigiaProCanales`.
+ */
+export interface CanalesDeLaEmpresa {
+  tieneModulo: boolean;
+  whatsapp: {
+    conectado: boolean;
+    estado: string;
+    telefono: string | null;
+    nombre: string | null;
+    calidad: string | null;
+    plantillas: {
+      nombre: string;
+      conectada: boolean;
+      idiomas: PlantillaPorIdioma[];
+      aprobada: boolean;
+      aprobadas: IdiomaDePlantilla[];
+      actualizadoAt: string | null;
+    };
+    /** Conectado y con la plantilla aprobada en algún idioma. */
+    listo: boolean;
+  };
+  push: boolean;
+  sms: boolean;
+  topeMensajesDia: number;
+  escribePor: Array<"whatsapp" | "push" | "sms">;
+  hoy: { enviados: number; tope: number };
+  /** Sólo al comprobar: qué se hizo con cada idioma. */
+  resultado?: Record<string, string>;
 }
 
 export interface LineaDelCaso {
@@ -134,8 +181,21 @@ export const vigiaProService = {
   guardar(
     ajustes: AjustesDelSeguimiento,
     vigilantes?: { activo: boolean },
-  ): Promise<{ ajustes: AjustesDelSeguimiento; vigilantes: { activo: boolean } }> {
-    return ApiService.put(`/tenant/${tenantId()}/vigia-pro/despachador`, { ...ajustes, ...(vigilantes ? { vigilantes } : {}) });
+    topeMensajesDia?: number,
+  ): Promise<{ ajustes: AjustesDelSeguimiento; vigilantes: { activo: boolean }; topeMensajesDia: number }> {
+    return ApiService.put(`/tenant/${tenantId()}/vigia-pro/despachador`, {
+      ...ajustes,
+      ...(vigilantes ? { vigilantes } : {}),
+      ...(topeMensajesDia != null ? { topeMensajesDia } : {}),
+    });
+  },
+  /** Por dónde escribe el asistente hoy (lo guardado; no toca a Meta). */
+  canales(): Promise<CanalesDeLaEmpresa> {
+    return ApiService.get(`/tenant/${tenantId()}/vigia-pro/canales`);
+  },
+  /** «Volver a comprobar»: pregunta a Meta y crea la plantilla si falta. */
+  comprobarCanales(): Promise<CanalesDeLaEmpresa> {
+    return ApiService.post(`/tenant/${tenantId()}/vigia-pro/canales/comprobar`, {});
   },
   casos(filtro: FiltroDeCasos): Promise<{ rows: CasoDelSeguimiento[] }> {
     const estado = filtro === "todos" ? "" : filtro;

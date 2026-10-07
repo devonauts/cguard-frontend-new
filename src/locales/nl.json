@@ -17677,7 +17677,7 @@
       "cancelarPrueba": "Er wordt niets afgeschreven. De proef loopt tot {{fecha}}.",
       "cancelarActivo": "Er wordt niets meer afgeschreven. U houdt {{nombre}} tot {{fecha}}.",
       "noSeRenovara": "Klaar: wordt niet verlengd.",
-      "paraSeguir": "Om VigIA Pro na de proef te houden, rond eerst de betaling van de implementatie af."
+      "paraSeguir": "Om {{nombre}} na de proef te houden, rond eerst de betaling van de implementatie af."
     }
   },
   "sucursales": {
@@ -17908,7 +17908,9 @@
       "llamada": "{{agente}} heeft gebeld",
       "tecla": "Drukte {{tecla}} tijdens het gesprek",
       "llamadaFin": "Het gesprek is beëindigd",
-      "llamadaFallida": "Bellen lukte niet"
+      "llamadaFallida": "Bellen lukte niet",
+      "topeDiario": "Daglimiet bereikt: {{agente}} probeert het morgen opnieuw",
+      "topePorCaso": "Heeft minder dan een uur geleden al geschreven: {{agente}} wacht voor hij aandringt"
     },
     "motivoFalta": {
       "enfermedad": "ziekte",
@@ -17999,7 +18001,10 @@
       "vigilantes": "Beveiligers kunnen {{agente}} via WhatsApp berichten",
       "vigilantesHint": "Ze vragen naar hun rooster en uren, vragen verlof aan, melden voorvallen (ook met een spraakbericht) en bieden zich aan voor diensten. Ze zien alleen hun eigen gegevens en bevestigen alles wat ze versturen met JA.",
       "llamada": "Spraakoproep",
-      "llamadaHint": "Antwoordt de persoon niet schriftelijk, dan belt een stem en drukt hij/zij 1, 2 of 3. Per minuut afgerekend van het communicatietegoed van het bedrijf; zonder tegoed wordt niet gebeld."
+      "llamadaHint": "Antwoordt de persoon niet schriftelijk, dan belt een stem en drukt hij/zij 1, 2 of 3. Per minuut afgerekend van het communicatietegoed van het bedrijf; zonder tegoed wordt niet gebeld.",
+      "tope": "Berichtenlimiet per dag",
+      "topeHint": "Berichten die {{agente}} op een dag naar je bewakers mag sturen, alle kanalen samen. Bij het bereiken blijven zaken open tot morgen en krijg je één melding. Vandaag: {{enviados}}.",
+      "whatsappHintSinCuenta": "Alleen met de WhatsApp van je bedrijf gekoppeld. Tot dan schrijft {{agente}} via de app en per sms."
     },
     "partes": {
       "traducirTitulo": "Dit rapport vertalen",
@@ -18048,6 +18053,45 @@
       "enviando": "Bezig met versturen…",
       "enviado": "Overzicht verstuurd naar {{correo}}.",
       "copiado": "Gekopieerd."
+    },
+    "canales": {
+      "titulo": "Koppel je WhatsApp",
+      "noConectado": {
+        "titulo": "Koppel de WhatsApp van je bedrijf",
+        "desc": "Met je WhatsApp Business gekoppeld schrijft {{agente}} je bewakers vanaf het nummer van je bedrijf en kunnen ze daar meteen antwoorden. Die berichten factureert Meta aan jou. Zonder schrijft {{agente}} via de app en per sms.",
+        "boton": "WhatsApp koppelen"
+      },
+      "pendiente": {
+        "titulo": "WhatsApp gekoppeld · sjabloon in beoordeling",
+        "desc": "Om iemand te schrijven die je de afgelopen 24 uur niet heeft geschreven, eist Meta een goedgekeurd sjabloon. {{agente}} heeft het ter beoordeling ingediend op het account van je bedrijf; dat duurt meestal minuten tot een dag. Intussen schrijft hij via de app en per sms."
+      },
+      "listo": {
+        "titulo": "Klaar: {{agente}} schrijft via de WhatsApp van je bedrijf",
+        "desc": "{{telefono}}. Binnen 24 uur na een gesprek schrijft hij vrije tekst; daarbuiten met je goedgekeurde sjabloon."
+      },
+      "rechazada": "Meta heeft het afgewezen ({{motivo}}). Schrijf ons en we bekijken het.",
+      "plantilla": "Sjabloon „{{nombre}}”",
+      "idioma": {
+        "es": "Spaans",
+        "en": "Engels",
+        "pt_BR": "Portugees"
+      },
+      "estado": {
+        "NO_CREADA": "Niet aangemaakt",
+        "PENDING": "In beoordeling",
+        "IN_APPEAL": "In beroep",
+        "APPROVED": "Goedgekeurd",
+        "REJECTED": "Afgewezen",
+        "PAUSED": "Gepauzeerd",
+        "DISABLED": "Uitgeschakeld"
+      },
+      "comprobar": "Opnieuw controleren",
+      "comprobando": "Controleren…",
+      "comprobado": "Status bijgewerkt.",
+      "errorComprobar": "Kon niet bij Meta controleren. Probeer het zo opnieuw.",
+      "escribePor": "Op dit moment schrijft {{agente}} via: {{canales}}",
+      "sinCanales": "Op dit moment heeft {{agente}} geen kanaal: zet de app of sms aan in de instellingen.",
+      "hoy": "Vandaag: {{enviados}} van {{tope}} berichten"
     }
   }
 }
