@@ -1,0 +1,265 @@
+/*
+ * «Acceso bloqueado» — la página a la que llega quien la plataforma echó.
+ *
+ * Siempre oscura, con independencia del tema elegido: es un momento serio y la
+ * sesión (y con ella la apariencia de la cuenta) ya se borró. Los colores son
+ * locales a la página; el rojo es el semántico `--bad` del tema oscuro, fijo,
+ * no el acento.
+ *
+ * Movimiento que INFORMA: el escudo se traza, el candado se cierra una sola
+ * vez y el texto aparece después. Sin bucles ni rebotes. Con
+ * `prefers-reduced-motion` se ve directamente el estado final.
+ */
+.cg-bloqueo {
+  --bq-fondo: oklch(0.16 0.006 260);
+  --bq-fondo-2: oklch(0.12 0.004 260);
+  --bq-panel: oklch(0.2 0.006 260 / 0.72);
+  --bq-filo: oklch(1 0 0 / 0.09);
+  --bq-tinta: oklch(0.96 0 0);
+  --bq-suave: oklch(0.78 0.005 260);
+  --bq-tenue: oklch(0.62 0.005 260);
+  --bq-rojo: oklch(0.7 0.19 25);
+  --bq-rojo-tenue: oklch(0.7 0.19 25 / 0.14);
+
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  color: var(--bq-tinta);
+  background:
+    radial-gradient(120% 70% at 50% -10%, oklch(0.7 0.19 25 / 0.08), transparent 60%),
+    linear-gradient(180deg, var(--bq-fondo), var(--bq-fondo-2));
+  color-scheme: dark;
+  overflow-x: hidden;
+}
+
+.cg-bloqueo__panel {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  padding: 36px 28px 28px;
+  border-radius: 20px;
+  background: var(--bq-panel);
+  border: 1px solid var(--bq-filo);
+  box-shadow: 0 30px 80px -30px oklch(0 0 0 / 0.7);
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  .cg-bloqueo__panel { padding: 44px 40px 32px; }
+}
+
+.cg-bloqueo__vista {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  color: var(--bq-suave);
+  border: 1px dashed oklch(1 0 0 / 0.2);
+}
+
+.cg-bloqueo__vista a { color: var(--bq-tinta); text-decoration: underline; text-underline-offset: 3px; }
+
+/* ── El emblema ─────────────────────────────────────────────────────────── */
+.cg-bloqueo__emblema {
+  position: relative;
+  width: 104px;
+  height: 104px;
+  margin: 0 auto 24px;
+}
+
+.cg-bloqueo__emblema svg { width: 100%; height: 100%; overflow: visible; }
+
+.cg-bloqueo__aro {
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.cg-bloqueo__escudo { stroke: var(--bq-rojo); }
+.cg-bloqueo__escudo-fondo { fill: var(--bq-rojo-tenue); }
+.cg-bloqueo__cuerpo { fill: var(--bq-tinta); }
+.cg-bloqueo__ojo { fill: var(--bq-fondo); }
+.cg-bloqueo__arco { stroke: var(--bq-tinta); }
+
+/* ── El texto ───────────────────────────────────────────────────────────── */
+.cg-bloqueo__ceja {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bq-rojo);
+}
+
+.cg-bloqueo__titulo {
+  margin-top: 8px;
+  font-family: var(--font-display);
+  font-size: clamp(22px, 5.6vw, 28px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--bq-tinta);
+}
+
+.cg-bloqueo__texto {
+  margin-top: 12px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--bq-suave);
+}
+
+.cg-bloqueo__ficha {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--bq-filo);
+  background: var(--bq-filo);
+  text-align: left;
+}
+
+@media (min-width: 420px) {
+  .cg-bloqueo__ficha { grid-template-columns: 1fr 1fr; }
+}
+
+.cg-bloqueo__dato {
+  padding: 12px 14px;
+  background: oklch(0.14 0.005 260 / 0.9);
+  min-width: 0;
+}
+
+.cg-bloqueo__dato dt {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--bq-tenue);
+}
+
+.cg-bloqueo__dato dd {
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  color: var(--bq-tinta);
+  overflow-wrap: anywhere;
+}
+
+.cg-bloqueo__ref {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.cg-bloqueo__copiar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: -12px -12px -12px auto;
+  border-radius: 10px;
+  color: var(--bq-suave);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.cg-bloqueo__copiar:hover { color: var(--bq-tinta); background: oklch(1 0 0 / 0.06); }
+.cg-bloqueo__copiar:focus-visible { outline: 2px solid var(--bq-tinta); outline-offset: 2px; }
+
+.cg-bloqueo__soporte {
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: oklch(0.14 0 0);
+  background: var(--bq-tinta);
+  text-decoration: none;
+  transition: background-color 150ms ease;
+}
+
+.cg-bloqueo__soporte:hover { background: oklch(0.88 0 0); }
+.cg-bloqueo__soporte:focus-visible { outline: 2px solid var(--bq-tinta); outline-offset: 3px; }
+
+.cg-bloqueo__correo {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--bq-tenue);
+  overflow-wrap: anywhere;
+}
+
+.cg-bloqueo__nota {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--bq-filo);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--bq-tenue);
+}
+
+/* ── Movimiento (sólo si la persona no pidió menos) ─────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .cg-bloqueo__escudo {
+    stroke-dasharray: 260;
+    stroke-dashoffset: 260;
+    animation: cg-bq-trazo 700ms cubic-bezier(0.4, 0, 0.2, 1) 100ms forwards;
+  }
+
+  .cg-bloqueo__escudo-fondo {
+    opacity: 0;
+    animation: cg-bq-aparece 500ms ease-out 500ms forwards;
+  }
+
+  .cg-bloqueo__candado {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: cg-bq-aparece 300ms ease-out 450ms forwards;
+  }
+
+  /* El arco baja y encaja: se cierra UNA vez. */
+  .cg-bloqueo__arco {
+    transform: translateY(-7px);
+    animation: cg-bq-cierra 360ms cubic-bezier(0.5, 0, 0.75, 0) 800ms forwards;
+  }
+
+  /* Al cerrar, un solo pulso: «quedó cerrado». */
+  .cg-bloqueo__aro {
+    animation: cg-bq-pulso 900ms ease-out 1150ms 1 both;
+  }
+
+  .cg-bloqueo__sube {
+    opacity: 0;
+    animation: cg-fade-up 520ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  }
+}
+
+@keyframes cg-bq-trazo { to { stroke-dashoffset: 0; } }
+@keyframes cg-bq-aparece { to { opacity: 1; } }
+@keyframes cg-bq-cierra { to { transform: translateY(0); } }
+@keyframes cg-bq-pulso {
+  0% { box-shadow: 0 0 0 0 oklch(0.7 0.19 25 / 0.45); }
+  100% { box-shadow: 0 0 0 22px oklch(0.7 0.19 25 / 0); }
+}

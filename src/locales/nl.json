@@ -312,6 +312,25 @@
       "teLlevamos": "Je gaat over {{s}} s naar inloggen",
       "revisaSpam": "Zie je hem niet? Kijk in je spam- of promotiemap.",
       "diasGratis": "{{dias}} dagen gratis"
+    },
+    "accesoBloqueado": {
+      "ceja": "Accountbeveiliging",
+      "titulo": "Uw toegang is geblokkeerd",
+      "texto": "Voor uw veiligheid hebben we u afgemeld. We hebben ongebruikelijke activiteit op uw account vastgesteld en het platform heeft de toegang uit voorzorg geblokkeerd. Denkt u dat dit een vergissing is, neem dan contact op met support.",
+      "tituloSesion": "We hebben u om veiligheidsredenen afgemeld",
+      "textoSesion": "Uit voorzorg hebben we u op al uw apparaten afgemeld. Herkent u niet wat er is gebeurd of denkt u dat het een vergissing is, neem dan contact op met support.",
+      "referencia": "Referentie",
+      "fechaYHora": "Datum en tijd",
+      "copiar": "Referentie kopiëren",
+      "copiada": "Referentie gekopieerd",
+      "escribirASoporte": "Contact opnemen met support",
+      "asunto": "Toegang geblokkeerd — referentie {{codigo}}",
+      "asuntoSesion": "Afgemeld om veiligheidsredenen — referentie {{codigo}}",
+      "cuerpoDelCorreo": "Referentie: {{codigo}}\nDatum en tijd: {{fecha}}\n\nVertel ons wat u aan het doen was toen u werd afgemeld:\n",
+      "sinCorreo": "Neem voor herstel van de toegang contact op met de beheerder van uw bedrijf en geef deze referentie door.",
+      "nota": "Houd de referentie bij de hand: daarmee vindt support uw zaak sneller.",
+      "vistaPrevia": "Voorbeeld: u bent nog steeds aangemeld.",
+      "volverAlPanel": "Terug naar het dashboard"
     }
   },
   "client": {

@@ -9,6 +9,11 @@ import { anotarPeticion } from "@/lib/diagnosticoDeRed";
 import { manejarPagoRequerido } from "@/lib/pagoRequerido";
 import { cabeceraDeSucursal } from "@/lib/sucursalElegida";
 import { resolveApiBase } from "@/lib/apiBase";
+import {
+  esAccesoBloqueado,
+  RUTA_ACCESO_BLOQUEADO,
+  sacarDeLaSesion,
+} from "@/lib/accesoBloqueado";
 const API_BASE_URL = (
   resolveApiBase() ?? "http://localhost:3001/api"
 ).replace(/\/+$/, "");
@@ -201,10 +206,20 @@ export class ApiService {
       // An authenticated request rejected with 401 → the token is no longer valid
       // (e.g. this session was ended by a login on another device — single active
       // session). Clear it and return to the login screen.
+      // BLOQUEADO (401 auth.accessBlocked): no al login, a «Acceso bloqueado»,
+      // con el cierre de sesión normal (ver lib/accesoBloqueado).
       if (
         response.status === 401 &&
         token &&
-        !window.location.pathname.startsWith("/login")
+        esAccesoBloqueado(data) &&
+        !window.location.pathname.startsWith(RUTA_ACCESO_BLOQUEADO)
+      ) {
+        void sacarDeLaSesion({ motivo: "bloqueo" });
+      } else if (
+        response.status === 401 &&
+        token &&
+        !window.location.pathname.startsWith("/login") &&
+        !window.location.pathname.startsWith(RUTA_ACCESO_BLOQUEADO)
       ) {
         // POR QUÉ se cerró la sesión. Sin esto, al centralista que ficha salida
         // le aparecía la pantalla de login sin explicación y parecía una avería.

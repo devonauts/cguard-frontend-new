@@ -442,6 +442,25 @@
       "teLlevamos": "Taking you to sign in in {{s}} s",
       "revisaSpam": "Don’t see it? Check your spam or promotions folder.",
       "diasGratis": "{{dias}} days free"
+    },
+    "accesoBloqueado": {
+      "ceja": "Account security",
+      "titulo": "Your access has been blocked",
+      "texto": "For your security, we signed you out. We noticed unusual activity on your account and, as a precaution, the platform blocked access. If you think this is a mistake, contact support.",
+      "tituloSesion": "We signed you out for security",
+      "textoSesion": "As a precaution, we signed you out on all your devices. If you don't recognize what happened or think it's a mistake, contact support.",
+      "referencia": "Reference",
+      "fechaYHora": "Date and time",
+      "copiar": "Copy the reference",
+      "copiada": "Reference copied",
+      "escribirASoporte": "Contact support",
+      "asunto": "Access blocked — reference {{codigo}}",
+      "asuntoSesion": "Signed out for security — reference {{codigo}}",
+      "cuerpoDelCorreo": "Reference: {{codigo}}\nDate and time: {{fecha}}\n\nTell us what you were doing when you were signed out:\n",
+      "sinCorreo": "To regain access, contact your company's administrator and give them this reference.",
+      "nota": "Keep the reference handy: it helps support find your case faster.",
+      "vistaPrevia": "Preview: you are still signed in.",
+      "volverAlPanel": "Back to the dashboard"
     }
   },
   "billing": {

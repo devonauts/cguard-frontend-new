@@ -312,6 +312,25 @@
       "teLlevamos": "Redirection vers la connexion dans {{s}} s",
       "revisaSpam": "Vous ne le voyez pas ? Vérifiez vos spams ou promotions.",
       "diasGratis": "{{dias}} jours gratuits"
+    },
+    "accesoBloqueado": {
+      "ceja": "Sécurité du compte",
+      "titulo": "Votre accès a été bloqué",
+      "texto": "Par sécurité, nous avons fermé votre session. Nous avons détecté une activité inhabituelle sur votre compte et, par précaution, la plateforme a bloqué l'accès. Si vous pensez qu'il s'agit d'une erreur, contactez le support.",
+      "tituloSesion": "Nous avons fermé votre session par sécurité",
+      "textoSesion": "Par précaution, nous avons fermé votre session sur tous vos appareils. Si vous ne reconnaissez pas ce qui s'est passé ou pensez qu'il s'agit d'une erreur, contactez le support.",
+      "referencia": "Référence",
+      "fechaYHora": "Date et heure",
+      "copiar": "Copier la référence",
+      "copiada": "Référence copiée",
+      "escribirASoporte": "Écrire au support",
+      "asunto": "Accès bloqué — référence {{codigo}}",
+      "asuntoSesion": "Session fermée par sécurité — référence {{codigo}}",
+      "cuerpoDelCorreo": "Référence : {{codigo}}\nDate et heure : {{fecha}}\n\nDites-nous ce que vous faisiez lorsque votre session a été fermée :\n",
+      "sinCorreo": "Pour récupérer l'accès, contactez l'administrateur de votre entreprise et donnez-lui cette référence.",
+      "nota": "Gardez la référence à portée de main : elle aide le support à retrouver votre dossier plus vite.",
+      "vistaPrevia": "Aperçu : votre session reste ouverte.",
+      "volverAlPanel": "Retour au tableau de bord"
     }
   },
   "client": {

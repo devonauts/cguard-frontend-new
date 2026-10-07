@@ -442,6 +442,25 @@
       "teLlevamos": "Te llevamos al inicio de sesión en {{s}} s",
       "revisaSpam": "¿No lo ves? Revisa la carpeta de spam o promociones.",
       "diasGratis": "{{dias}} días gratis"
+    },
+    "accesoBloqueado": {
+      "ceja": "Seguridad de la cuenta",
+      "titulo": "Tu acceso fue bloqueado",
+      "texto": "Por seguridad cerramos tu sesión. Detectamos actividad inusual en tu cuenta y, como precaución, la plataforma bloqueó el acceso. Si crees que es un error, escribe a soporte.",
+      "tituloSesion": "Cerramos tu sesión por seguridad",
+      "textoSesion": "Por precaución cerramos tu sesión en todos tus dispositivos. Si no reconoces lo ocurrido o crees que es un error, escribe a soporte.",
+      "referencia": "Referencia",
+      "fechaYHora": "Fecha y hora",
+      "copiar": "Copiar la referencia",
+      "copiada": "Referencia copiada",
+      "escribirASoporte": "Escribir a soporte",
+      "asunto": "Acceso bloqueado — referencia {{codigo}}",
+      "asuntoSesion": "Sesión cerrada por seguridad — referencia {{codigo}}",
+      "cuerpoDelCorreo": "Referencia: {{codigo}}\nFecha y hora: {{fecha}}\n\nCuéntanos qué estabas haciendo cuando se cerró tu sesión:\n",
+      "sinCorreo": "Para recuperar el acceso, comunícate con el administrador de tu empresa y dale esta referencia.",
+      "nota": "Ten a mano la referencia: con ella soporte encuentra tu caso más rápido.",
+      "vistaPrevia": "Vista previa: tu sesión sigue abierta.",
+      "volverAlPanel": "Volver al panel"
     }
   },
   "billing": {

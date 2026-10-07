@@ -312,6 +312,25 @@
       "teLlevamos": "Ti portiamo all’accesso tra {{s}} s",
       "revisaSpam": "Non lo vedi? Controlla la cartella spam o promozioni.",
       "diasGratis": "{{dias}} giorni gratis"
+    },
+    "accesoBloqueado": {
+      "ceja": "Sicurezza dell'account",
+      "titulo": "Il tuo accesso è stato bloccato",
+      "texto": "Per sicurezza abbiamo chiuso la tua sessione. Abbiamo rilevato attività insolite sul tuo account e, per precauzione, la piattaforma ha bloccato l'accesso. Se pensi che sia un errore, scrivi al supporto.",
+      "tituloSesion": "Abbiamo chiuso la tua sessione per sicurezza",
+      "textoSesion": "Per precauzione abbiamo chiuso la tua sessione su tutti i tuoi dispositivi. Se non riconosci quanto accaduto o pensi che sia un errore, scrivi al supporto.",
+      "referencia": "Riferimento",
+      "fechaYHora": "Data e ora",
+      "copiar": "Copia il riferimento",
+      "copiada": "Riferimento copiato",
+      "escribirASoporte": "Scrivi al supporto",
+      "asunto": "Accesso bloccato — riferimento {{codigo}}",
+      "asuntoSesion": "Sessione chiusa per sicurezza — riferimento {{codigo}}",
+      "cuerpoDelCorreo": "Riferimento: {{codigo}}\nData e ora: {{fecha}}\n\nRaccontaci cosa stavi facendo quando la sessione è stata chiusa:\n",
+      "sinCorreo": "Per recuperare l'accesso, contatta l'amministratore della tua azienda e comunicagli questo riferimento.",
+      "nota": "Tieni a portata di mano il riferimento: aiuta il supporto a trovare il tuo caso più in fretta.",
+      "vistaPrevia": "Anteprima: la tua sessione è ancora aperta.",
+      "volverAlPanel": "Torna al pannello"
     }
   },
   "client": {

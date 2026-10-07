@@ -6893,6 +6893,25 @@
       "teLlevamos": "Levando você ao login em {{s}} s",
       "revisaSpam": "Não encontrou? Verifique a pasta de spam ou promoções.",
       "diasGratis": "{{dias}} dias grátis"
+    },
+    "accesoBloqueado": {
+      "ceja": "Segurança da conta",
+      "titulo": "Seu acesso foi bloqueado",
+      "texto": "Por segurança, encerramos sua sessão. Detectamos atividade incomum na sua conta e, por precaução, a plataforma bloqueou o acesso. Se você acha que é um erro, escreva para o suporte.",
+      "tituloSesion": "Encerramos sua sessão por segurança",
+      "textoSesion": "Por precaução, encerramos sua sessão em todos os seus dispositivos. Se você não reconhece o que aconteceu ou acha que é um erro, escreva para o suporte.",
+      "referencia": "Referência",
+      "fechaYHora": "Data e hora",
+      "copiar": "Copiar a referência",
+      "copiada": "Referência copiada",
+      "escribirASoporte": "Escrever para o suporte",
+      "asunto": "Acesso bloqueado — referência {{codigo}}",
+      "asuntoSesion": "Sessão encerrada por segurança — referência {{codigo}}",
+      "cuerpoDelCorreo": "Referência: {{codigo}}\nData e hora: {{fecha}}\n\nConte o que você estava fazendo quando sua sessão foi encerrada:\n",
+      "sinCorreo": "Para recuperar o acesso, fale com o administrador da sua empresa e informe esta referência.",
+      "nota": "Tenha a referência em mãos: com ela o suporte encontra seu caso mais rápido.",
+      "vistaPrevia": "Pré-visualização: sua sessão continua aberta.",
+      "volverAlPanel": "Voltar ao painel"
     }
   },
   "billing": {

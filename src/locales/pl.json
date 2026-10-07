@@ -312,6 +312,25 @@
       "teLlevamos": "Przejście do logowania za {{s}} s",
       "revisaSpam": "Nie widzisz? Sprawdź folder spam lub oferty.",
       "diasGratis": "{{dias}} dni za darmo"
+    },
+    "accesoBloqueado": {
+      "ceja": "Bezpieczeństwo konta",
+      "titulo": "Twój dostęp został zablokowany",
+      "texto": "Ze względów bezpieczeństwa wylogowaliśmy Cię. Wykryliśmy nietypową aktywność na Twoim koncie i platforma zapobiegawczo zablokowała dostęp. Jeśli uważasz, że to błąd, napisz do pomocy technicznej.",
+      "tituloSesion": "Wylogowaliśmy Cię ze względów bezpieczeństwa",
+      "textoSesion": "Zapobiegawczo wylogowaliśmy Cię na wszystkich Twoich urządzeniach. Jeśli nie rozpoznajesz tego, co się stało, lub uważasz, że to błąd, napisz do pomocy technicznej.",
+      "referencia": "Numer referencyjny",
+      "fechaYHora": "Data i godzina",
+      "copiar": "Skopiuj numer referencyjny",
+      "copiada": "Skopiowano numer referencyjny",
+      "escribirASoporte": "Napisz do pomocy technicznej",
+      "asunto": "Dostęp zablokowany — numer {{codigo}}",
+      "asuntoSesion": "Wylogowanie ze względów bezpieczeństwa — numer {{codigo}}",
+      "cuerpoDelCorreo": "Numer referencyjny: {{codigo}}\nData i godzina: {{fecha}}\n\nNapisz, co robiłeś, gdy zostałeś wylogowany:\n",
+      "sinCorreo": "Aby odzyskać dostęp, skontaktuj się z administratorem swojej firmy i podaj ten numer referencyjny.",
+      "nota": "Miej numer referencyjny pod ręką: dzięki niemu pomoc techniczna szybciej znajdzie Twoją sprawę.",
+      "vistaPrevia": "Podgląd: nadal jesteś zalogowany.",
+      "volverAlPanel": "Wróć do panelu"
     }
   },
   "client": {

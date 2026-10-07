@@ -27,6 +27,7 @@ import {
   type LectorCompartido,
 } from "@/lib/lecturaCompartida";
 import { resolveApiBase } from "@/lib/apiBase";
+import { alRecibirSesionBloqueada } from "@/lib/accesoBloqueado";
 import { prioridadDe } from "@/components/notifications/catalogoDeAvisos";
 import { crearRafaga, type Rafaga } from "@/lib/rafaga";
 import i18n from "@/i18n";
@@ -468,6 +469,15 @@ export function useNotificationStream(
         .catch(() => {
           /* transient network error — the 401-on-next-request path still applies */
         });
+    });
+
+    // BLOQUEO: el servidor ya invalidó el token y avisa a TODAS las pantallas
+    // de esta persona. No hace falta preguntarle a /auth/me —sólo el servidor
+    // emite a esta sala—: se cierra la sesión con el cierre NORMAL y se va a
+    // «Acceso bloqueado». El servidor corta el socket un instante después.
+    socket.on("session:blocked", (p: { codigo?: string; referencia?: string } | undefined) => {
+      if (destroyed) return;
+      void alRecibirSesionBloqueada(p);
     });
 
     socket.on("notification", (entrante: PlatformNotification) => {

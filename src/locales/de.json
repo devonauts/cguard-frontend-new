@@ -312,6 +312,25 @@
       "teLlevamos": "Weiter zur Anmeldung in {{s}} s",
       "revisaSpam": "Nicht gefunden? Prüfen Sie den Spam- oder Werbeordner.",
       "diasGratis": "{{dias}} Tage kostenlos"
+    },
+    "accesoBloqueado": {
+      "ceja": "Kontosicherheit",
+      "titulo": "Ihr Zugang wurde gesperrt",
+      "texto": "Aus Sicherheitsgründen haben wir Sie abgemeldet. Wir haben ungewöhnliche Aktivitäten in Ihrem Konto festgestellt, und die Plattform hat den Zugang vorsorglich gesperrt. Wenn Sie glauben, dass es sich um einen Fehler handelt, wenden Sie sich an den Support.",
+      "tituloSesion": "Wir haben Sie aus Sicherheitsgründen abgemeldet",
+      "textoSesion": "Vorsorglich haben wir Sie auf allen Ihren Geräten abgemeldet. Wenn Sie den Vorgang nicht erkennen oder einen Fehler vermuten, wenden Sie sich an den Support.",
+      "referencia": "Referenz",
+      "fechaYHora": "Datum und Uhrzeit",
+      "copiar": "Referenz kopieren",
+      "copiada": "Referenz kopiert",
+      "escribirASoporte": "Support kontaktieren",
+      "asunto": "Zugang gesperrt — Referenz {{codigo}}",
+      "asuntoSesion": "Aus Sicherheitsgründen abgemeldet — Referenz {{codigo}}",
+      "cuerpoDelCorreo": "Referenz: {{codigo}}\nDatum und Uhrzeit: {{fecha}}\n\nBeschreiben Sie uns, was Sie gerade getan haben, als Sie abgemeldet wurden:\n",
+      "sinCorreo": "Um den Zugang wiederzuerlangen, wenden Sie sich an den Administrator Ihres Unternehmens und nennen Sie diese Referenz.",
+      "nota": "Halten Sie die Referenz bereit: Damit findet der Support Ihren Fall schneller.",
+      "vistaPrevia": "Vorschau: Sie sind weiterhin angemeldet.",
+      "volverAlPanel": "Zurück zum Dashboard"
     }
   },
   "client": {

@@ -43,6 +43,7 @@ import "./i18n";
 const ForgotPassword = lazy(() => import("./pages/auth/forgot-password"));
 const ResetPassword = lazy(() => import("./pages/auth/reset-password"));
 const AccesoSoporte = lazy(() => import("./pages/auth/AccesoSoporte"));
+const AccesoBloqueado = lazy(() => import("./pages/auth/AccesoBloqueado"));
 const Register = lazy(() => import("./pages/auth/register"));
 const VerifyEmail = lazy(() => import("./pages/auth/verify-email"));
 const AcceptInvitation = lazy(() => import("./pages/auth/accept-invitation"));
@@ -627,6 +628,8 @@ const NO_CHROME_PREFIXES = [
   "/forgot-password",
   "/reset-password",
   "/acceso-soporte",
+  // Adonde llega quien la plataforma echó: ya sin sesión, a pantalla completa.
+  "/acceso-bloqueado",
   "/guard_registration",
   "/auth/",
   "/client/registration",
@@ -862,6 +865,13 @@ export default function App() {
                               <Route
                                 element={<AccesoSoporte />}
                                 path="/acceso-soporte"
+                              />
+                              {/* Acceso bloqueado / sesión cerrada por seguridad.
+                                  Sin PublicOnlyRoute: con `?vista=1` la abre el
+                                  dueño estando dentro, y la página no borra nada. */}
+                              <Route
+                                element={<AccesoBloqueado />}
+                                path="/acceso-bloqueado"
                               />
                               <Route
                                 element={<ResetPassword />}

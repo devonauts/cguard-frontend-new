@@ -5,6 +5,7 @@ import {
   useState,
   useEffect,
   useMemo,
+  useRef,
   ReactNode,
 } from "react";
 
@@ -34,6 +35,7 @@ import { isNetworkFailure } from "@/lib/offline/networkStatus";
 import { setAppBadge } from "@/lib/desktop";
 import { resolveActiveTenantId, clearTenants } from "@/lib/activeTenant";
 import { olvidarAgente } from "@/lib/agenteDeMarca";
+import { registrarCierreDeSesion } from "@/lib/accesoBloqueado";
 
 /**
  * Lo ÚNICO que sobrevive a un cierre de sesión. No es preferencia de nadie: es
@@ -208,6 +210,12 @@ interface AuthResult {
   needVerification?: boolean;
   /** Same email in several realms: the accounts to choose from. */
   chooseAccount?: Array<{ realm: string; companies: string[] }>;
+  /** El servidor respondió `auth.accessBlocked`: va a «Acceso bloqueado». */
+  accessBlocked?: boolean;
+}
+export interface OpcionesDeCierre {
+  destino?: string;
+  avisarAlServidor?: boolean;
 }
 interface AuthContextType {
   user: User | null;
@@ -215,7 +223,13 @@ interface AuthContextType {
   error: string | null;
   signIn: (c: LoginCredentials) => Promise<AuthResult>;
   signUp: (d: SignUpData) => Promise<AuthResult>;
-  signOut: () => Promise<void>;
+  /**
+   * Cierra la sesión. Por defecto avisa al servidor y termina en `/login`;
+   * `destino` lo cambia (p. ej. «Acceso bloqueado») y `avisarAlServidor:false`
+   * se salta la llamada cuando el token ya no vale. Se tolera que llegue un
+   * evento de clic como argumento (`onClick={signOut}`).
+   */
+  signOut: (o?: OpcionesDeCierre) => Promise<void>;
   // permite iniciar sesión usando un token (por ejemplo OAuth callback)
   signInWithToken: (token: string, user?: any) => Promise<AuthResult>;
   // Re-fetch the profile from /auth/me and re-hydrate auth state.
@@ -765,6 +779,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (codigo === "auth.emailNotVerified") {
         return { success: false, error: message, needVerification: true };
       }
+      if (codigo === "auth.accessBlocked") {
+        return { success: false, error: message, accessBlocked: true };
+      }
       if (
         codigo === "auth.chooseAccount" &&
         Array.isArray(err?.data?.accounts)
@@ -800,9 +817,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const signOut = async () => {
+  const signOut = async (o?: OpcionesDeCierre) => {
+    // `onClick={signOut}` pasa el evento: sólo se leen opciones de verdad.
+    const destino =
+      o && typeof o.destino === "string" && o.destino.startsWith("/")
+        ? o.destino
+        : "/login";
+    const avisar = !(o && o.avisarAlServidor === false);
+
     try {
-      await AuthService.signOut();
+      if (avisar) await AuthService.signOut();
     } catch {
     } finally {
       // Remove the token FIRST so the persist effect (guarded on authToken) can't
@@ -910,12 +934,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         /* best-effort: la recarga de abajo sigue */
       }
       try {
-        window.location.replace("/login");
+        window.location.replace(destino);
       } catch {
         /* sin window (pruebas): el estado ya quedó limpio */
       }
     }
   };
+
+  // «Acceso bloqueado» (socket, 401 o inicio de sesión) cierra con ESTE mismo
+  // cierre — sin avisar al servidor, porque el token ya no vale — y termina en
+  // la página. Ver lib/accesoBloqueado.
+  const signOutRef = useRef(signOut);
+
+  signOutRef.current = signOut;
+  useEffect(
+    () =>
+      registrarCierreDeSesion((destino) =>
+        signOutRef.current({ destino, avisarAlServidor: false }),
+      ),
+    [],
+  );
 
   const signInWithToken = async (token: string, userData?: any) => {
     try {

@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { rutaDeAccesoBloqueado } from "@/lib/accesoBloqueado";
 import Boveda, {
   BotonDeAccion,
   BotonVer,
@@ -143,6 +144,9 @@ export default function Login() {
     if (result.success) {
       setCuentas(null);
       entrar();
+    } else if (result.accessBlocked) {
+      cancelarEntradaAlCrm();
+      navigate(rutaDeAccesoBloqueado({ motivo: "bloqueo" }), { replace: true });
     } else {
       cancelarEntradaAlCrm();
       toast.error(result.error || t("auth.login_failed"));
@@ -174,6 +178,13 @@ export default function Login() {
         // Same email and password in several worlds: ask, never pick blindly.
         cancelarEntradaAlCrm();
         setCuentas(result.chooseAccount);
+
+        return false;
+      }
+      if (result.accessBlocked) {
+        // Bloqueado: la página seria, no un aviso que se va solo.
+        cancelarEntradaAlCrm();
+        navigate(rutaDeAccesoBloqueado({ motivo: "bloqueo" }), { replace: true });
 
         return false;
       }
