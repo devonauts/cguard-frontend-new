@@ -75,6 +75,8 @@ export interface Persona {
   manual: Record<number, Codigo>;
   /** Sacafranco: los puestos cuyos huecos cubre solo. */
   fijos?: string[];
+  /** Sin asignación en ningún puesto: la bolsa de disponibles. Nunca se coloca sola. */
+  sinPuesto?: boolean;
   ausencias?: Ausencia[];
   aptitudes?: string[];
   /**
@@ -123,8 +125,14 @@ export interface Turno {
 
 export interface Candidato {
   persona: Persona;
-  /** Por qué no puede, o `null` si puede. */
+  /** Por qué no puede, o `null` si puede (bloqueo o aviso, lo primero que haya). */
   impedimento: string | null;
+  /** Lo que de verdad lo impide: ausente, ya trabaja, le falta aptitud. */
+  bloqueo: string | null;
+  /** Lo que sólo avisa (descanso corto, días seguidos, horas): la empresa decide. */
+  aviso: string | null;
+  /** Sin puesto: está en la bolsa de disponibles. */
+  sinPuesto: boolean;
   /** Es un titular en franco: cubrir le cuenta como hora extra. */
   extra: boolean;
   /** Es el sacafranco fijo de ese puesto. */
@@ -434,11 +442,16 @@ export function diasTrabajados(
  * Devuelve el motivo si NO puede, en palabras de quien arma el horario, o
  * `null` si puede. El orden importa: se dice lo más evidente primero.
  */
-export function impedimento(
+/**
+ * LO QUE DE VERDAD IMPIDE cubrir: está ausente, ya trabaja ese día, no tiene
+ * la aptitud que pide el puesto, o es un sacafranco en su franco. Esto no se
+ * negocia.
+ */
+export function bloqueo(
   plan: Plan,
   p: Persona,
   pu: Puesto,
-  franja: string,
+  _franja: string,
   d: number,
 ): string | null {
   const a = ausencia(p, d);
@@ -450,8 +463,25 @@ export function impedimento(
 
   if (leFalta.length) return `No tiene: ${leFalta.join(", ")}`;
   if (turnoDe(plan, p, d)) return "Ya trabaja ese día";
-  if (esSacafranco(p) && propio(p, d) === FRANCO) return "Es su franco";
+  if (esSacafranco(p) && !p.sinPuesto && propio(p, d) === FRANCO)
+    return "Es su franco";
 
+  return null;
+}
+
+/**
+ * LO QUE SÓLO AVISA: descanso corto entre turnos, días seguidos, horas de la
+ * semana. Son las «reglas» de la hoja, y la hoja no se las impone a nadie: la
+ * empresa tiene su horario y decide. Sirven para que el ACOMODO AUTOMÁTICO no
+ * haga barbaridades y para avisar a quien coloca a mano; nunca para prohibir.
+ */
+export function aviso(
+  plan: Plan,
+  p: Persona,
+  _pu: Puesto,
+  franja: string,
+  d: number,
+): string | null {
   const [ini, fin] = intervalo(plan, franja, d);
   const min = plan.reglas.descansoMin;
 
@@ -478,6 +508,17 @@ export function impedimento(
     return `Pasaría de ${plan.reglas.maxHorasSemana} h esa semana`;
 
   return null;
+}
+
+/** Bloqueo o aviso, lo primero que haya: lo que mira el acomodo automático. */
+export function impedimento(
+  plan: Plan,
+  p: Persona,
+  pu: Puesto,
+  franja: string,
+  d: number,
+): string | null {
+  return bloqueo(plan, p, pu, franja, d) ?? aviso(plan, p, pu, franja, d);
 }
 
 /** Lo mismo, para alguien que YA cubre ese turno: se juzga sin contar esa cobertura. */
@@ -529,17 +570,29 @@ export function candidatos(
 
     // Un titular sólo es candidato en su franco; si trabaja, ya está ocupado.
     if (!saca && propio(p, d) !== FRANCO) continue;
-    const imp = impedimento(plan, p, pu, franja, d);
+    const blo = bloqueo(plan, p, pu, franja, d);
+    const avi = blo ? null : aviso(plan, p, pu, franja, d);
     const dias = diasTrabajados(plan, p, lunes, lunes + 7);
     const suyo = saca && (p.fijos || []).includes(pu.id);
+    const bolsa = !!p.sinPuesto;
 
     lista.push({
       persona: p,
-      impedimento: imp,
+      impedimento: blo ?? avi,
+      bloqueo: blo,
+      aviso: avi,
+      sinPuesto: bolsa,
       extra: !saca,
       suyo,
       dias,
-      puntos: (imp ? -1000 : 0) + (saca ? 0 : -100) + (suyo ? 30 : 0) - dias,
+      // Orden: quien puede sin pegas, luego con aviso, luego bloqueados; dentro
+      // de cada grupo, el sacafranco fijo del puesto, los sacafrancos, la
+      // bolsa de disponibles y por último los titulares en franco (hora extra).
+      puntos:
+        (blo ? -1000 : avi ? -300 : 0) +
+        (saca && !bolsa ? 0 : bolsa ? -50 : -100) +
+        (suyo ? 30 : 0) -
+        dias,
     });
   }
 

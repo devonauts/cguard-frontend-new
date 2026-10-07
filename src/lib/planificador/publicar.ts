@@ -35,11 +35,22 @@ export interface Api {
 }
 
 export interface Cambio {
-  tipo: "turno" | "quitarTurno" | "novedad" | "quitarNovedad" | "rotacion" | "puestosFijos" | "cobertura";
+  tipo:
+    | "turno"
+    | "quitarTurno"
+    | "novedad"
+    | "quitarNovedad"
+    | "rotacion"
+    | "puestosFijos"
+    | "cobertura";
   /** Lo que se le dice a quien publica, en sus palabras. */
   texto: string;
   /** Para probarlo sin red: qué llamada(s) hará. */
-  llamadas: Array<{ metodo: "post" | "put" | "delete"; ruta: string; cuerpo?: any }>;
+  llamadas: Array<{
+    metodo: "post" | "put" | "delete";
+    ruta: string;
+    cuerpo?: any;
+  }>;
   ejecutar(api: Api): Promise<void>;
 }
 
@@ -62,14 +73,28 @@ export interface Contexto {
   instanteDe(d: number, minuto: number): string;
 }
 
-const CODIGO_NOVEDAD: Record<string, string> = { vacaciones: "V", permiso: "PM", incapacidad: "PM" };
+const CODIGO_NOVEDAD: Record<string, string> = {
+  vacaciones: "V",
+  permiso: "PM",
+  incapacidad: "PM",
+};
 
 /**
  * Lo que el motor real sabe generar: [a×x, b×y, F×z] (tantos de día, tantos de
  * noche, tantos de franco), o el que ALTERNA: [a×x, F×z, b×x, F×z] — el mismo
  * bloque de día y de noche, con su franco en medio, como el 7-1 peruano.
  */
-export function formaDeCiclo(patron: string[]): { a: string; b: string | null; x: number; y: number; z: number; giro: number; alterna?: boolean } | null {
+export function formaDeCiclo(
+  patron: string[],
+): {
+  a: string;
+  b: string | null;
+  x: number;
+  y: number;
+  z: number;
+  giro: number;
+  alterna?: boolean;
+} | null {
   const n = patron.length;
 
   if (!n || patron.every((c) => c === FRANCO)) return null;
@@ -88,7 +113,10 @@ export function formaDeCiclo(patron: string[]): { a: string; b: string | null; x
       const z = m - x;
 
       if (z < 1) continue;
-      const vale = p.slice(x, m).every((c) => c === FRANCO) && p.slice(m, m + x).every((c) => c === b) && p.slice(m + x).every((c) => c === FRANCO);
+      const vale =
+        p.slice(x, m).every((c) => c === FRANCO) &&
+        p.slice(m, m + x).every((c) => c === b) &&
+        p.slice(m + x).every((c) => c === FRANCO);
 
       if (vale) return { a, b, x, y: 0, z, giro, alterna: true };
     }
@@ -112,20 +140,27 @@ export function formaDeCiclo(patron: string[]): { a: string; b: string | null; x
     }
     const z = n - i;
 
-    if (p.slice(i).every((c) => c === FRANCO) && (b === null || b !== a)) return { a, b, x, y, z, giro };
+    if (p.slice(i).every((c) => c === FRANCO) && (b === null || b !== a))
+      return { a, b, x, y, z, giro };
   }
 
   return null;
 }
 
-const franjaBase = (plan: Plan, pu: Puesto, codigo: string) => plan.franjas[codigo] || plan.franjas[pu.franjas[0]];
+const franjaBase = (plan: Plan, pu: Puesto, codigo: string) =>
+  plan.franjas[codigo] || plan.franjas[pu.franjas[0]];
 const nombreDe = (p: Persona) => p.nombre.trim();
 
 /**
  * Qué cambió entre lo leído y el borrador, y cómo se publica cada cosa.
  * Sólo mira de hoy en adelante: el pasado no se reescribe desde aquí.
  */
-export function planificarPublicacion(original: Plan, plan: Plan, enlace: Enlace, ctx: Contexto): Publicacion {
+export function planificarPublicacion(
+  original: Plan,
+  plan: Plan,
+  enlace: Enlace,
+  ctx: Contexto,
+): Publicacion {
   const cambios: Cambio[] = [];
   const no: string[] = [];
   const t = `/tenant/${ctx.tenantId}`;
@@ -133,7 +168,11 @@ export function planificarPublicacion(original: Plan, plan: Plan, enlace: Enlace
   const d1 = ctx.hoy + (ctx.dias ?? 28);
   const ori = new Map(original.personas.map((p) => [p.id, p]));
   const puestoOri = new Map(original.puestos.map((p) => [p.id, p]));
-  const llamada = (tipo: Cambio["tipo"], texto: string, llamadas: Cambio["llamadas"]): Cambio => ({
+  const llamada = (
+    tipo: Cambio["tipo"],
+    texto: string,
+    llamadas: Cambio["llamadas"],
+  ): Cambio => ({
     tipo,
     texto,
     llamadas,
@@ -151,22 +190,52 @@ export function planificarPublicacion(original: Plan, plan: Plan, enlace: Enlace
     const antes = puestoOri.get(pu.id);
 
     if (!antes) {
-      no.push(`${pu.nombre}: es un puesto nuevo del borrador. Los puestos se crean en Estaciones.`);
+      no.push(
+        `${pu.nombre}: es un puesto nuevo del borrador. Los puestos se crean en Estaciones.`,
+      );
       continue;
     }
-    if (antes.franjas.join() === pu.franjas.join() && JSON.stringify(antes.pide) === JSON.stringify(pu.pide)) continue;
+    if (
+      antes.franjas.join() === pu.franjas.join() &&
+      JSON.stringify(antes.pide) === JSON.stringify(pu.pide)
+    )
+      continue;
     const todoUno = pu.franjas.every((f) => pu.pide[f].every((n) => n === 1));
     const forma = pu.franjas.join();
-    const tipo = todoUno ? (forma === "D" ? "12h-day" : forma === "N" ? "12h-night" : forma === "D,N" ? "24h" : null) : null;
+    const tipo = todoUno
+      ? forma === "D"
+        ? "12h-day"
+        : forma === "N"
+          ? "12h-night"
+          : forma === "D,N"
+            ? "24h"
+            : null
+      : null;
 
     if (!tipo) {
-      no.push(`${pu.nombre}: el horario real sólo sabe de puestos de 24 horas, sólo de día o sólo de noche, con una persona por turno. Esta cobertura se queda en el borrador.`);
+      no.push(
+        `${pu.nombre}: el horario real sólo sabe de puestos de 24 horas, sólo de día o sólo de noche, con una persona por turno. Esta cobertura se queda en el borrador.`,
+      );
       continue;
     }
     cambios.push(
-      llamada("cobertura", `${pu.nombre} pasa a ${tipo === "24h" ? "24 horas" : tipo === "12h-day" ? "sólo de día" : "sólo de noche"}`, [
-        { metodo: "post", ruta: `${t}/station/${pu.id}/auto-positions`, cuerpo: { data: { scheduleType: tipo, startTime: tipo === "12h-night" ? "19:00" : "07:00", endTime: tipo === "12h-night" ? "07:00" : "19:00" } } },
-      ]),
+      llamada(
+        "cobertura",
+        `${pu.nombre} pasa a ${tipo === "24h" ? "24 horas" : tipo === "12h-day" ? "sólo de día" : "sólo de noche"}`,
+        [
+          {
+            metodo: "post",
+            ruta: `${t}/station/${pu.id}/auto-positions`,
+            cuerpo: {
+              data: {
+                scheduleType: tipo,
+                startTime: tipo === "12h-night" ? "19:00" : "07:00",
+                endTime: tipo === "12h-night" ? "07:00" : "19:00",
+              },
+            },
+          },
+        ],
+      ),
     );
   }
 
@@ -176,71 +245,230 @@ export function planificarPublicacion(original: Plan, plan: Plan, enlace: Enlace
     const en = enlace.personas[p.id];
 
     if (!antes || !en) {
-      no.push(`${nombreDe(p)}: es una persona nueva del borrador. Las personas se dan de alta en Equipo de seguridad y se asignan desde Horario.`);
+      no.push(
+        `${nombreDe(p)}: es una persona nueva del borrador. Las personas se dan de alta en Equipo de seguridad y se asignan desde Horario.`,
+      );
       continue;
     }
     const pu = plan.puestos.find((x) => x.id === p.puesto);
 
     // 2a) Rotación.
-    if (antes.patron.join() !== p.patron.join() || antes.desfase !== p.desfase || !!antes.francoDobleDomingo !== !!p.francoDobleDomingo) {
-      if (esSacafranco(p)) no.push(`${nombreDe(p)}: la disponibilidad del sacafranco no se guarda en el horario real; sus coberturas sí.`);
-      else if (!pu) no.push(`${nombreDe(p)}: su puesto ya no existe en el borrador.`);
+    if (
+      antes.patron.join() !== p.patron.join() ||
+      antes.desfase !== p.desfase ||
+      !!antes.francoDobleDomingo !== !!p.francoDobleDomingo
+    ) {
+      if (esSacafranco(p))
+        no.push(
+          `${nombreDe(p)}: la disponibilidad del sacafranco no se guarda en el horario real; sus coberturas sí.`,
+        );
+      else if (!pu)
+        no.push(`${nombreDe(p)}: su puesto ya no existe en el borrador.`);
       // Sin plaza el generador real no rota: le escribiría un ciclo que nunca
       // usa y lo dejaría con un turno suelto (pasó en local). Mejor decirlo.
-      else if (en.conPlaza === false) no.push(`${nombreDe(p)}: está en el puesto sin plaza (horario fijo de ${pu.nombre}). Para darle una rotación hay que asignarlo a una plaza desde Horario.`);
+      else if (en.conPlaza === false)
+        no.push(
+          `${nombreDe(p)}: está en el puesto sin plaza (horario fijo de ${pu.nombre}). Para darle una rotación hay que asignarlo a una plaza desde Horario.`,
+        );
       else {
         const f = formaDeCiclo(p.patron);
         const franjas = pu.franjas;
         const esDia = (c: string) => franjas.indexOf(c) === 0;
 
-        if (!f) no.push(`${nombreDe(p)}: su rotación no es «tantos de día, tantos de noche, tantos de franco», y el horario real sólo genera ésas. Se queda en el borrador.`);
+        if (!f)
+          no.push(
+            `${nombreDe(p)}: su rotación no es «tantos de día, tantos de noche, tantos de franco», y el horario real sólo genera ésas. Se queda en el borrador.`,
+          );
         else {
           // El motor real cuenta «día» como la primera franja del puesto y «noche» como la segunda.
           // En el que alterna, los dos bloques son el mismo número: van como «día» y la alternancia los invierte.
-          const dia = f.alterna ? f.x : esDia(f.a) ? f.x : f.b && esDia(f.b) ? f.y : 0;
+          const dia = f.alterna
+            ? f.x
+            : esDia(f.a)
+              ? f.x
+              : f.b && esDia(f.b)
+                ? f.y
+                : 0;
           const noche = f.alterna ? 0 : esDia(f.a) ? f.y : f.x;
           // El día 0 del ciclo es el primer día del bloque de DÍA: si el patrón
           // empieza por noches se gira media vuelta (o el bloque de noche).
           const n = p.patron.length;
-          const giro = f.alterna ? (esDia(f.a) ? f.giro : (f.giro + n / 2) % n) : esDia(f.a) || !f.b ? f.giro : (f.giro + f.x) % n;
-          const girada = { ...p, patron: p.patron.map((_, i) => p.patron[(i + giro) % n]), desfase: p.desfase - giro, manual: {} };
+          const giro = f.alterna
+            ? esDia(f.a)
+              ? f.giro
+              : (f.giro + n / 2) % n
+            : esDia(f.a) || !f.b
+              ? f.giro
+              : (f.giro + f.x) % n;
+          const girada = {
+            ...p,
+            patron: p.patron.map((_, i) => p.patron[(i + giro) % n]),
+            desfase: p.desfase - giro,
+            manual: {},
+          };
           const inicio = proximoArranque(girada, d0);
           const nombre = `${dia}-${noche ? `${noche}-` : ""}${f.z}${f.alterna ? " · D/N" : ""}${p.francoDobleDomingo ? " · dom" : ""}`;
 
           cambios.push(
-            llamada("rotacion", `${nombreDe(p)}: rotación ${nombre} desde el ${ctx.fechaDe(inicio)}`, [
-              { metodo: "post", ruta: `${t}/rotation-style`, cuerpo: { data: { name: nombre, dayShifts: dia, nightShifts: noche, restDays: f.z, alternatesDayNight: !!f.alterna, sundayDoubleRest: !!p.francoDobleDomingo, reuseIfExists: true } } },
-              { metodo: "put", ruta: `${t}/guard-assignment/${en.assignmentId}`, cuerpo: { data: { rotationStyleId: "$ROTACION", startDate: ctx.fechaDe(inicio) } } },
-            ]),
+            llamada(
+              "rotacion",
+              `${nombreDe(p)}: rotación ${nombre} desde el ${ctx.fechaDe(inicio)}`,
+              [
+                {
+                  metodo: "post",
+                  ruta: `${t}/rotation-style`,
+                  cuerpo: {
+                    data: {
+                      name: nombre,
+                      dayShifts: dia,
+                      nightShifts: noche,
+                      restDays: f.z,
+                      alternatesDayNight: !!f.alterna,
+                      sundayDoubleRest: !!p.francoDobleDomingo,
+                      reuseIfExists: true,
+                    },
+                  },
+                },
+                {
+                  metodo: "put",
+                  ruta: `${t}/guard-assignment/${en.assignmentId}`,
+                  cuerpo: {
+                    data: {
+                      rotationStyleId: "$ROTACION",
+                      startDate: ctx.fechaDe(inicio),
+                    },
+                  },
+                },
+              ],
+            ),
           );
         }
       }
     }
 
     // 2b) Puestos fijos del sacafranco.
-    if (esSacafranco(p) && (antes.fijos || []).slice().sort().join() !== (p.fijos || []).slice().sort().join())
+    if (
+      esSacafranco(p) &&
+      (antes.fijos || []).slice().sort().join() !==
+        (p.fijos || []).slice().sort().join()
+    )
       cambios.push(
-        llamada("puestosFijos", `${nombreDe(p)}: cubre ${p.fijos?.length || 0} puestos fijos`, [
-          { metodo: "put", ruta: `${t}/guard-assignment/${en.assignmentId}`, cuerpo: { data: { coveredStationIds: p.fijos || [] } } },
-        ]),
+        llamada(
+          "puestosFijos",
+          `${nombreDe(p)}: cubre ${p.fijos?.length || 0} puestos fijos`,
+          [
+            {
+              metodo: "put",
+              ruta: `${t}/guard-assignment/${en.assignmentId}`,
+              cuerpo: { data: { coveredStationIds: p.fijos || [] } },
+            },
+          ],
+        ),
       );
 
     // 2c) Ausencias y días sueltos, día a día.
     for (let d = Math.max(d0, ctx.hoy - 7); d < d1; d++) {
-      const aAhora = (p.ausencias || []).find((a) => d >= a.desde && d <= a.hasta);
-      const aAntes = (antes.ausencias || []).find((a) => d >= a.desde && d <= a.hasta);
+      const aAhora = (p.ausencias || []).find(
+        (a) => d >= a.desde && d <= a.hasta,
+      );
+      const aAntes = (antes.ausencias || []).find(
+        (a) => d >= a.desde && d <= a.hasta,
+      );
       const novedad = enlace.novedades[p.id]?.[d];
 
       if (aAhora && !aAntes) {
+        if (aAhora.tipo === "falta") {
+          /* Una FALTA no es una ausencia planificada: es la novedad de Cobertura
+             en vivo (turno `absent`, evento de cobertura, récord del vigilante).
+             Va por el mismo camino que allí, para que asistencia y nómina la
+             vean igual. Sin turno real ese día no hay nada que marcar. */
+          const turno = enlace.turnos[p.id]?.[d];
+
+          if (turno && pu)
+            cambios.push(
+              llamada(
+                "novedad",
+                `${nombreDe(p)}: falta (no se presentó) el ${ctx.fechaDe(d)}`,
+                [
+                  {
+                    metodo: "post",
+                    ruta: `${t}/coverage/absence`,
+                    cuerpo: {
+                      guardId: en.guardId,
+                      shiftId: turno.id,
+                      stationId: pu.id,
+                      reason: "no_call_no_show",
+                    },
+                  },
+                ],
+              ),
+            );
+          else
+            no.push(
+              `${nombreDe(p)}: el ${ctx.fechaDe(d)} no tiene turno real que marcar como falta.`,
+            );
+          continue;
+        }
         cambios.push(
-          llamada("novedad", `${nombreDe(p)}: ${aAhora.tipo} el ${ctx.fechaDe(d)}`, [
-            { metodo: "post", ruta: `${t}/schedule-overrides`, cuerpo: { data: { guardId: en.guardId, assignmentId: en.assignmentId, date: ctx.fechaDe(d), type: CODIGO_NOVEDAD[aAhora.tipo] || "PM", note: aAhora.tipo } } },
-          ]),
+          llamada(
+            "novedad",
+            `${nombreDe(p)}: ${aAhora.tipo} el ${ctx.fechaDe(d)}`,
+            [
+              {
+                metodo: "post",
+                ruta: `${t}/schedule-overrides`,
+                cuerpo: {
+                  data: {
+                    guardId: en.guardId,
+                    assignmentId: en.assignmentId,
+                    date: ctx.fechaDe(d),
+                    type: CODIGO_NOVEDAD[aAhora.tipo] || "PM",
+                    note: aAhora.tipo,
+                  },
+                },
+              },
+            ],
+          ),
         );
         continue;
       }
       if (!aAhora && aAntes) {
-        if (novedad?.id) cambios.push(llamada("quitarNovedad", `${nombreDe(p)}: ya no está de ${aAntes.tipo} el ${ctx.fechaDe(d)}`, [{ metodo: "delete", ruta: `${t}/schedule-overrides/${novedad.id}` }]));
+        if (aAntes.tipo === "falta") {
+          const ev = pu ? enlace.eventos[`${pu.id}|${d}`] : undefined;
+
+          if (ev)
+            cambios.push(
+              llamada(
+                "quitarNovedad",
+                `${nombreDe(p)}: se anula la falta del ${ctx.fechaDe(d)}`,
+                [
+                  {
+                    metodo: "post",
+                    ruta: `${t}/coverage/events/${ev}/cancel`,
+                    cuerpo: {},
+                  },
+                ],
+              ),
+            );
+          else
+            no.push(
+              `${nombreDe(p)}: la falta del ${ctx.fechaDe(d)} ya está cerrada; se anula desde Cobertura en vivo.`,
+            );
+          continue;
+        }
+        if (novedad?.id)
+          cambios.push(
+            llamada(
+              "quitarNovedad",
+              `${nombreDe(p)}: ya no está de ${aAntes.tipo} el ${ctx.fechaDe(d)}`,
+              [
+                {
+                  metodo: "delete",
+                  ruta: `${t}/schedule-overrides/${novedad.id}`,
+                },
+              ],
+            ),
+          );
         continue;
       }
       if (esSacafranco(p) || !pu || aAhora) continue;
@@ -251,15 +479,41 @@ export function planificarPublicacion(original: Plan, plan: Plan, enlace: Enlace
       const previo = propio(antes, d);
 
       if (ahora === previo) continue;
-      if (previo === FRANCO && antes.manual[d] === FRANCO && novedad?.type === "F") {
+      if (
+        previo === FRANCO &&
+        antes.manual[d] === FRANCO &&
+        novedad?.type === "F"
+      ) {
         // Se deshace un franco suelto: la novedad se borra y el generador repone el turno.
-        cambios.push(llamada("quitarNovedad", `${nombreDe(p)}: vuelve a trabajar el ${ctx.fechaDe(d)}`, [{ metodo: "delete", ruta: `${t}/schedule-overrides/${novedad.id}` }]));
+        cambios.push(
+          llamada(
+            "quitarNovedad",
+            `${nombreDe(p)}: vuelve a trabajar el ${ctx.fechaDe(d)}`,
+            [
+              {
+                metodo: "delete",
+                ruta: `${t}/schedule-overrides/${novedad.id}`,
+              },
+            ],
+          ),
+        );
         continue;
       }
       if (ahora === FRANCO) {
         cambios.push(
           llamada("novedad", `${nombreDe(p)}: franco el ${ctx.fechaDe(d)}`, [
-            { metodo: "post", ruta: `${t}/schedule-overrides`, cuerpo: { data: { guardId: en.guardId, assignmentId: en.assignmentId, date: ctx.fechaDe(d), type: "F" } } },
+            {
+              metodo: "post",
+              ruta: `${t}/schedule-overrides`,
+              cuerpo: {
+                data: {
+                  guardId: en.guardId,
+                  assignmentId: en.assignmentId,
+                  date: ctx.fechaDe(d),
+                  type: "F",
+                },
+              },
+            },
           ]),
         );
       } else if (previo === FRANCO) {
@@ -267,11 +521,30 @@ export function planificarPublicacion(original: Plan, plan: Plan, enlace: Enlace
 
         if (!fr) continue;
         cambios.push(
-          llamada("turno", `${nombreDe(p)}: trabaja el ${ctx.fechaDe(d)} (${fr.nombre})`, [
-            { metodo: "post", ruta: `${t}/shift`, cuerpo: { data: { startTime: ctx.instanteDe(d, fr.ini), endTime: ctx.instanteDe(d, fr.ini + duracion(fr)), station: pu.id, guard: en.guardId, postSiteId: enlace.puestos[pu.id]?.postSiteId || undefined } } },
-          ]),
+          llamada(
+            "turno",
+            `${nombreDe(p)}: trabaja el ${ctx.fechaDe(d)} (${fr.nombre})`,
+            [
+              {
+                metodo: "post",
+                ruta: `${t}/shift`,
+                cuerpo: {
+                  data: {
+                    startTime: ctx.instanteDe(d, fr.ini),
+                    endTime: ctx.instanteDe(d, fr.ini + duracion(fr)),
+                    station: pu.id,
+                    guard: en.guardId,
+                    postSiteId: enlace.puestos[pu.id]?.postSiteId || undefined,
+                  },
+                },
+              },
+            ],
+          ),
         );
-      } else no.push(`${nombreDe(p)}: el ${ctx.fechaDe(d)} cambia de un turno a otro; eso se hace desde Horario moviendo el turno.`);
+      } else
+        no.push(
+          `${nombreDe(p)}: el ${ctx.fechaDe(d)} cambia de un turno a otro; eso se hace desde Horario moviendo el turno.`,
+        );
     }
   }
 
@@ -293,17 +566,50 @@ export function planificarPublicacion(original: Plan, plan: Plan, enlace: Enlace
 
       cubiertos.add(`${id}|${d}`);
       if (!p || !en) {
-        if (p) no.push(`${nombreDe(p)} cubriendo ${pu.nombre} el ${ctx.fechaDe(d)}: es una persona nueva del borrador; hay que darla de alta antes.`);
+        if (p)
+          no.push(
+            `${nombreDe(p)} cubriendo ${pu.nombre} el ${ctx.fechaDe(d)}: es una persona nueva del borrador; hay que darla de alta antes.`,
+          );
         continue;
       }
       const real = enlace.turnos[id]?.[d];
 
       if (real && real.stationId === pu.id) continue; // ya existe
+      /* Si el hueco viene de una FALTA con novedad abierta, cubrirlo por la
+         novedad (como en Cobertura en vivo): crea el turno de cobertura y
+         cierra la novedad a la vez, en vez de dejar la alerta viva. */
+      const ev = enlace.eventos[`${pu.id}|${d}`];
+
       cambios.push(
-        llamada("turno", `${nombreDe(p)} cubre ${pu.nombre} el ${ctx.fechaDe(d)} (${fr.nombre})`, [
-          ...(real ? [{ metodo: "delete" as const, ruta: `${t}/shift/${real.id}` }] : []),
-          { metodo: "post", ruta: `${t}/shift`, cuerpo: { data: { startTime: ctx.instanteDe(d, fr.ini), endTime: ctx.instanteDe(d, fr.ini + duracion(fr)), station: pu.id, guard: en.guardId, postSiteId: enlace.puestos[pu.id]?.postSiteId || undefined } } },
-        ]),
+        llamada(
+          "turno",
+          `${nombreDe(p)} cubre ${pu.nombre} el ${ctx.fechaDe(d)} (${fr.nombre})`,
+          [
+            ...(real
+              ? [{ metodo: "delete" as const, ruta: `${t}/shift/${real.id}` }]
+              : []),
+            ev
+              ? {
+                  metodo: "post",
+                  ruta: `${t}/coverage/events/${ev}/cover`,
+                  cuerpo: { coveringGuardId: en.guardId },
+                }
+              : {
+                  metodo: "post",
+                  ruta: `${t}/shift`,
+                  cuerpo: {
+                    data: {
+                      startTime: ctx.instanteDe(d, fr.ini),
+                      endTime: ctx.instanteDe(d, fr.ini + duracion(fr)),
+                      station: pu.id,
+                      guard: en.guardId,
+                      postSiteId:
+                        enlace.puestos[pu.id]?.postSiteId || undefined,
+                    },
+                  },
+                },
+          ],
+        ),
       );
     }
   }
@@ -315,13 +621,27 @@ export function planificarPublicacion(original: Plan, plan: Plan, enlace: Enlace
     const p = plan.personas.find((x) => x.id === id);
 
     if (!p) continue;
-    cambios.push(llamada("quitarTurno", `${nombreDe(p)}: ya no cubre el ${ctx.fechaDe(d)}`, [{ metodo: "delete", ruta: `${t}/shift/${shiftId}` }]));
+    cambios.push(
+      llamada(
+        "quitarTurno",
+        `${nombreDe(p)}: ya no cubre el ${ctx.fechaDe(d)}`,
+        [{ metodo: "delete", ruta: `${t}/shift/${shiftId}` }],
+      ),
+    );
   }
 
   // Orden: primero lo estructural (cobertura, rotación, puestos fijos), luego
   // novedades, luego retirar turnos y por último crear turnos — un turno nuevo
   // sobre una plaza que se está reconfigurando se perdería.
-  const peso: Record<Cambio["tipo"], number> = { cobertura: 0, rotacion: 1, puestosFijos: 2, quitarNovedad: 3, novedad: 4, quitarTurno: 5, turno: 6 };
+  const peso: Record<Cambio["tipo"], number> = {
+    cobertura: 0,
+    rotacion: 1,
+    puestosFijos: 2,
+    quitarNovedad: 3,
+    novedad: 4,
+    quitarTurno: 5,
+    turno: 6,
+  };
 
   cambios.sort((a, b) => peso[a.tipo] - peso[b.tipo]);
 
@@ -333,7 +653,11 @@ export function planificarPublicacion(original: Plan, plan: Plan, enlace: Enlace
  * asignación que lo necesita (`$ROTACION`). Devuelve lo que falló, con el
  * texto del cambio, para que la pantalla lo diga; lo demás ya quedó escrito.
  */
-export async function publicar(pub: Publicacion, api: Api, avisar?: (hecho: number, total: number) => void): Promise<string[]> {
+export async function publicar(
+  pub: Publicacion,
+  api: Api,
+  avisar?: (hecho: number, total: number) => void,
+): Promise<string[]> {
   const fallos: string[] = [];
   let hecho = 0;
 
@@ -342,17 +666,30 @@ export async function publicar(pub: Publicacion, api: Api, avisar?: (hecho: numb
       let rotacionId: string | null = null;
 
       for (const l of c.llamadas) {
-        const cuerpo = l.cuerpo && rotacionId ? JSON.parse(JSON.stringify(l.cuerpo).replace(/"\$ROTACION"/g, JSON.stringify(rotacionId))) : l.cuerpo;
+        const cuerpo =
+          l.cuerpo && rotacionId
+            ? JSON.parse(
+                JSON.stringify(l.cuerpo).replace(
+                  /"\$ROTACION"/g,
+                  JSON.stringify(rotacionId),
+                ),
+              )
+            : l.cuerpo;
 
         if (l.metodo === "post") {
           const r = await api.post(l.ruta, cuerpo);
 
-          if (l.ruta.endsWith("/rotation-style")) rotacionId = String(r?.id || r?.data?.id || r?.rotationStyle?.id || "");
+          if (l.ruta.endsWith("/rotation-style"))
+            rotacionId = String(
+              r?.id || r?.data?.id || r?.rotationStyle?.id || "",
+            );
         } else if (l.metodo === "put") await api.put(l.ruta, cuerpo);
         else await api.del(l.ruta);
       }
     } catch (e: any) {
-      fallos.push(`${c.texto}: ${e?.data?.message || e?.message || "no se pudo"}`);
+      fallos.push(
+        `${c.texto}: ${e?.data?.message || e?.message || "no se pudo"}`,
+      );
     }
     avisar?.(++hecho, pub.cambios.length);
   }

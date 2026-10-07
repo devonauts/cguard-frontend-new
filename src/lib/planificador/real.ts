@@ -34,6 +34,10 @@ import {
 export interface HorarioReal {
   /** Sedes vivas con su cliente: `{ id, nombre, clienteId, cliente }`. */
   postSites?: any[];
+  /** Vigilantes activos SIN asignación: la bolsa de disponibles `{ id, fullName }`. */
+  guards?: any[];
+  /** Novedades de cobertura abiertas (faltas sin cubrir) en la ventana. */
+  coverageEvents?: any[];
   stations?: any[];
   positions?: any[];
   assignments?: any[];
@@ -63,6 +67,8 @@ export interface Enlace {
   >;
   /** Turnos reales de cada asignación por día: id del turno y estación. */
   turnos: Record<string, Record<number, { id: string; stationId: string }>>;
+  /** Novedad de cobertura abierta por `puesto|día`: cubrirla cierra la novedad. */
+  eventos: Record<string, string>;
   /** Coberturas del plan que vienen de un turno real (`persona|día`): sólo ésas se pueden retirar. */
   cargadas: Record<string, string>;
   /** Novedades reales por persona y día. */
@@ -263,6 +269,8 @@ export function planDesdeHorarioReal(
 
   ov = {
     postSites: lista(ov?.postSites),
+    guards: lista(ov?.guards),
+    coverageEvents: lista(ov?.coverageEvents),
     stations: lista(ov?.stations),
     positions: lista(ov?.positions),
     assignments: lista(ov?.assignments),
@@ -391,13 +399,25 @@ export function planDesdeHorarioReal(
 
   // Lo que cada vigilante hizo de verdad: guardId → día → { estación, minuto de entrada }.
   const real = new Map<string, Map<number, { st: string; min: number }>>();
+  /* Un turno en `absent`/`no_show` NO es un día trabajado: es una FALTA. Se
+     aparta para marcarla como ausencia de ese día (el hueco queda abierto y
+     la hoja ofrece reemplazo), en vez de leerla como si hubiera ido. */
+  const faltas = new Map<string, Map<number, string>>();
+  const ES_FALTA = new Set(["absent", "no_show", "no_call_no_show"]);
 
   for (const s of ov.shifts || []) {
     const dm = diaYMinuto(s.startTime, base, tz);
 
     if (!dm || dm.d < 0 || dm.d >= dias) continue;
     const g = String(s.guardId);
+    const estado = String(s.status || "").toLowerCase();
 
+    if (ES_FALTA.has(estado)) {
+      if (!faltas.has(g)) faltas.set(g, new Map());
+      faltas.get(g)!.set(dm.d, String(s.id ?? ""));
+      continue;
+    }
+    if (estado === "cancelled" || estado === "canceled") continue;
     if (!real.has(g)) real.set(g, new Map());
     real.get(g)!.set(dm.d, { st: idLimpio(s.stationId), min: dm.min });
   }
@@ -434,6 +454,7 @@ export function planDesdeHorarioReal(
     turnos: {},
     cargadas: {},
     novedades: {},
+    eventos: {},
   };
 
   for (const st of ov.stations || [])
@@ -666,7 +687,69 @@ export function planDesdeHorarioReal(
           tipo: TIPOS[String(o.type)],
         });
     }
+    // Las faltas del horario real (turno `absent`): ausencia de un día.
+    for (const [d, shiftId] of faltas.get(guardId) || []) {
+      if (persona.ausencias!.some((x) => d >= x.desde && d <= x.hasta))
+        continue;
+      persona.ausencias!.push({ desde: d, hasta: d, tipo: "falta" });
+      (enlace.novedades[pid] = enlace.novedades[pid] || {})[d] = {
+        id: shiftId,
+        type: "FALTA",
+      };
+    }
     personas.push(persona);
+  }
+
+  /* ── LA BOLSA DE DISPONIBLES ───────────────────────────────────────────
+     Quien está activo y sin asignación también puede cubrir: TrackTik lo
+     llama «available staff». Entra como persona sin puesto, siempre libre,
+     y NUNCA se coloca sola (el acomodo automático sólo usa sacafrancos). */
+  const asignados = new Set(
+    Object.values(enlace.personas).map((e) => e.guardId),
+  );
+
+  for (const g of ov.guards || []) {
+    const guardId = String(g.id ?? g.guardId ?? "");
+
+    if (!guardId || asignados.has(guardId)) continue;
+    const pid = `bolsa-${idLimpio(guardId)}`;
+    const nombre =
+      g.fullName ||
+      [g.firstName, g.lastName].filter(Boolean).join(" ") ||
+      "Vigilante";
+
+    enlace.personas[pid] = {
+      guardId,
+      stationId: "",
+      assignmentId: "",
+      relevo: true,
+      rotationStyleId: null,
+      conPlaza: false,
+    };
+    const persona: Persona = {
+      id: pid,
+      nombre,
+      puesto: null,
+      patron: [LIBRE],
+      desfase: 0,
+      manual: {},
+      fijos: [],
+      ausencias: [],
+      sinPuesto: true,
+    };
+
+    for (const [d] of faltas.get(guardId) || [])
+      persona.ausencias!.push({ desde: d, hasta: d, tipo: "falta" });
+    personas.push(persona);
+  }
+
+  // Novedades de cobertura abiertas: cubrir ese hueco cierra la novedad.
+  for (const ev of ov.coverageEvents || []) {
+    const st = ev.originStationId ? idLimpio(ev.originStationId) : "";
+    const d = ev.date ? diasEntre(base, String(ev.date).slice(0, 10)) : NaN;
+
+    if (st && Number.isFinite(d) && ev.id)
+      enlace.eventos[`${st}|${d}`] = String(ev.id);
   }
 
   const plan: Plan = {

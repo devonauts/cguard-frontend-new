@@ -652,7 +652,12 @@ export default function Planificador() {
     );
   };
 
-  const sacas = plan ? plan.personas.filter(esSacafranco) : [];
+  const sacas = plan
+    ? plan.personas.filter((p) => esSacafranco(p) && !p.sinPuesto)
+    : [];
+  /** Activos sin asignación: pueden cubrir, nunca se colocan solos. */
+  const bolsa = plan ? plan.personas.filter((p) => !!p.sinPuesto) : [];
+  const [verBolsa, setVerBolsa] = useState(false);
 
   return (
     <AppLayout>
@@ -1139,6 +1144,66 @@ export default function Planificador() {
                       setHoja={setHoja}
                     />
                   ))}
+                  {/* LA BOLSA: activos sin asignación. Pueden cubrir (salen
+                      como candidatos al tocar un hueco), nunca se colocan
+                      solos. Plegada por defecto: suele ser larga. */}
+                  {bolsa.length > 0 && (
+                    <tr>
+                      <td
+                        className="p-0 text-xs font-bold"
+                        colSpan={diasVista.length + 1}
+                        style={{ background: "var(--glass-sunken)" }}
+                      >
+                        <div
+                          className="sticky left-0 flex w-max max-w-[min(60rem,calc(100vw-22rem))] items-center gap-2 rounded-r-md px-3 py-2"
+                          style={{
+                            background:
+                              "color-mix(in oklab, var(--background) 88%, var(--ink) 12%)",
+                          }}
+                        >
+                          <button
+                            className="cg-focus inline-flex items-center gap-1"
+                            type="button"
+                            onClick={() => setVerBolsa((v) => !v)}
+                          >
+                            {verBolsa ? (
+                              <ChevronDown className="h-3.5 w-3.5" />
+                            ) : (
+                              <ChevronRight className="h-3.5 w-3.5" />
+                            )}
+                            {t("ui.Planificador.sinPuesto", "Sin puesto")}{" "}
+                            <span
+                              className="font-normal"
+                              style={{ color: "var(--ink-soft)" }}
+                            >
+                              ·{" "}
+                              {t("ui.Planificador.sinPuestoDetalle", {
+                                defaultValue:
+                                  "{{n}} disponible(s) para cubrir; toca un hueco para elegirlos",
+                                n: bolsa.length,
+                              })}
+                            </span>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                  {verBolsa &&
+                    bolsa.map((s) => (
+                      <FilaDeSacafranco
+                        key={s.id}
+                        d0={d0}
+                        dias={diasVista}
+                        plan={plan}
+                        s={s}
+                        cambiar={cambiar}
+                        confirmando={confirmarQuitar}
+                        editar={setEditando}
+                        retirar={quitarVigilante}
+                        desistir={() => setConfirmarQuitar(null)}
+                        setHoja={setHoja}
+                      />
+                    ))}
                 </tbody>
               </table>
             </div>
@@ -1921,7 +1986,7 @@ function FilasDePuesto({
                       {aus ? (
                         <span
                           className={`${BTN} block text-center font-medium capitalize`}
-                          style={GRIS}
+                          style={aus.tipo === "falta" ? ROJO : GRIS}
                         >
                           {aus.tipo}
                         </span>
@@ -2218,7 +2283,7 @@ function FilaDeSacafranco({
               {aus ? (
                 <span
                   className={`${BTN} block text-center font-medium capitalize`}
-                  style={GRIS}
+                  style={aus.tipo === "falta" ? ROJO : GRIS}
                 >
                   {aus.tipo}
                 </span>
@@ -2403,10 +2468,10 @@ function HojaHueco({
             <button
               key={c.persona.id}
               className={OPCION}
-              disabled={!!c.impedimento}
+              disabled={!!c.bloqueo}
               style={{
                 ...estiloOpcion(false),
-                opacity: c.impedimento ? 0.55 : 1,
+                opacity: c.bloqueo ? 0.55 : 1,
               }}
               onClick={() => {
                 cambiar((x) => {
@@ -2435,13 +2500,30 @@ function HojaHueco({
                   className="block text-xs"
                   style={{ color: "var(--ink-soft)" }}
                 >
-                  {c.impedimento ||
-                    (c.extra
+                  {c.bloqueo ||
+                    (c.sinPuesto
                       ? t(
-                          "ui.Planificador.horaExtra",
-                          "Está en franco: se paga como hora extra",
+                          "ui.Planificador.sinPuestoDisponible",
+                          "Sin puesto: disponible",
                         )
-                      : `${c.suyo ? t("ui.Planificador.esSuPuesto", "Es su puesto fijo") + " · " : t("ui.Planificador.sacafranco", "Sacafranco") + " · "}${c.dias === 1 ? t("ui.Planificador.unDiaSemana", "1 día esta semana") : t("ui.Planificador.nDiasSemana", { defaultValue: "{{n}} días esta semana", n: c.dias })}`)}
+                      : c.extra
+                        ? t(
+                            "ui.Planificador.horaExtra",
+                            "Está en franco: se paga como hora extra",
+                          )
+                        : `${c.suyo ? t("ui.Planificador.esSuPuesto", "Es su puesto fijo") + " · " : t("ui.Planificador.sacafranco", "Sacafranco") + " · "}${c.dias === 1 ? t("ui.Planificador.unDiaSemana", "1 día esta semana") : t("ui.Planificador.nDiasSemana", { defaultValue: "{{n}} días esta semana", n: c.dias })}`)}
+                  {!c.bloqueo && c.aviso && (
+                    <span
+                      className="ml-1 rounded-full px-1.5 py-0.5 text-[10px] font-semibold"
+                      style={AMBAR}
+                      title={t(
+                        "ui.Planificador.avisoNoBloquea",
+                        "Es un aviso, no una regla: la empresa decide.",
+                      )}
+                    >
+                      {c.aviso}
+                    </span>
+                  )}
                 </span>
               </span>
               {mejor && (
@@ -2893,6 +2975,7 @@ function HojaAusencia({
     );
   };
   const TIPOS = [
+    ["falta", t("ui.Planificador.falta", "Falta (no se presentó)")],
     ["vacaciones", t("ui.Planificador.vacaciones", "Vacaciones")],
     ["permiso", t("ui.Planificador.permiso", "Permiso")],
     ["incapacidad", t("ui.Planificador.incapacidad", "Incapacidad")],
@@ -2945,7 +3028,11 @@ function HojaAusencia({
             key={id}
             className="cg-focus rounded-full border px-3 py-1 text-sm font-semibold"
             style={estiloOpcion(tipo === id)}
-            onClick={() => setTipo(id)}
+            onClick={() => {
+              setTipo(id);
+              // Una falta es de un día; lo demás arranca en una semana.
+              setDias(id === "falta" ? 1 : 7);
+            }}
           >
             {nombre}
           </button>
