@@ -3,10 +3,11 @@
  *
  * `motor.test.ts` afirma que el motor no deja nada imposible… preguntándoselo
  * al propio motor. Aquí la comprobación es INDEPENDIENTE: se vuelve a contar a
- * mano, sin llamar a `impedimento` ni a `resumen`, que nadie descansa de menos,
- * que nadie pasa de sus días seguidos ni de sus horas, y que las cuentas de
- * turnos cubiertos son las que son. Si el motor y esta cuenta discrepan, uno de
- * los dos está mal.
+ * mano, sin llamar a `impedimento` ni a `resumen`, que nadie cubre ausente, en
+ * su franco o sin aptitud, que lo que el motor colocó solo respeta los límites
+ * de la empresa (descanso, días seguidos, horas), y que las cuentas de turnos
+ * cubiertos son las que son. Si el motor y esta cuenta discrepan, uno de los
+ * dos está mal.
  *
  * Cuatro familias, cada una ataca una cosa:
  *   A · 2000 secuencias sobre la operación REAL de la demo, ahora moviéndose
@@ -174,6 +175,10 @@ function independiente(pl: Plan, d0: number, d1: number, donde: string) {
       else expect(propio, `${quien} en su propio franco`).not.toBe(F);
       for (const req of pu.requiere || []) expect((p.aptitudes || []).includes(req), `${quien} sin ${req}`).toBe(true);
 
+      // Los límites de la empresa (descanso, días seguidos, horas) sólo atan a
+      // lo que el motor puso solo; lo que viene del horario real o puso alguien
+      // a mano es decisión suya y sólo lo saca un bloqueo (lo de arriba).
+      if (!(pl.auto && typeof pl.auto === "object" && pl.auto[`${c.puesto}|${c.franja}|${d}|${id}`])) continue;
       const [ini, fin] = tramo(c.franja, d);
 
       for (const dd of [d - 2, d - 1, d + 1, d + 2]) {

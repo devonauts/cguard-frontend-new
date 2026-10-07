@@ -3157,7 +3157,7 @@ function HojaReglas({
       cerrar={cerrar}
       detalle={t(
         "ui.Planificador.reglasDetalle",
-        "Lo que el Planificador no deja hacer al cubrir un turno. Al cambiarlas se retira la cobertura que ya no las cumpla.",
+        "Los límites de tu empresa. El Planificador los respeta cuando coloca solo a los sacafrancos; si tú eliges a alguien que los pasa, te avisa y te deja. Al cambiarlos se recoloca lo que el Planificador había puesto solo.",
       )}
       titulo={t("ui.Planificador.reglasDeCobertura", "Reglas para cubrir")}
     >

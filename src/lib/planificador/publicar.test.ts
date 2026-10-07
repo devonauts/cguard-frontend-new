@@ -27,6 +27,8 @@ function base(): { plan: Plan; enlace: Enlace } {
     turnos: { a1: {}, a2: {}, s1: { 5: { id: "sh-real", stationId: "st1" } } },
     cargadas: { "s1|5": "sh-real" },
     novedades: {},
+    eventos: {},
+    turnosTodos: { s1: { 5: [{ id: "sh-real", stationId: "st1", min: 420 }] } },
   };
 
   poner(plan, clave("st1", "D", 5), "s1", false);

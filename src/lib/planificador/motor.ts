@@ -880,11 +880,17 @@ export function limpiar(plan: Plan, d0: number, d1: number): void {
       // y volverla a poner la cambiaría de sitio, y limpiar dos veces dejaría de
       // dar lo mismo que limpiar una.
       //
-      // Sólo los BLOQUEOS podan. Un aviso (descanso corto, días seguidos…) no
-      // borra una cobertura que ya existe en el horario real o que alguien puso
-      // a mano: aquí se podaba la noche real de un sacafranco porque al día
-      // siguiente tenía su día en otra caseta, y la hoja proponía a otro.
-      if (bloqueoSinContar(plan, p, pu, franja, d)) quitar(plan, k, id);
+      // Lo que el motor puso solo (automático) responde a los límites de la
+      // empresa: si ya no los cumple se retira y el motor lo recoloca. Lo que
+      // viene del horario real o puso alguien a mano sólo lo saca un BLOQUEO;
+      // un aviso (descanso corto, días seguidos…) es decisión suya: aquí se
+      // podaba la noche real de un sacafranco porque al día siguiente tenía
+      // su día en otra caseta, y la hoja proponía a otro.
+      const juez = plan.auto[`${k}|${id}`]
+        ? impedimentoSinContar
+        : bloqueoSinContar;
+
+      if (juez(plan, p, pu, franja, d)) quitar(plan, k, id);
     }
   }
   aplicarFijos(plan, d0, d1);
@@ -1085,7 +1091,10 @@ export function acomodar(
 /**
  * Lo que NUNCA debería ser cierto en un plan ya limpio. La pantalla no lo usa
  * para pintar: existe para que las pruebas puedan afirmar, tras cualquier
- * secuencia de cambios, que el motor no dejó nada imposible.
+ * secuencia de cambios, que el motor no dejó nada imposible. «Imposible» es
+ * un bloqueo (ausente, ya trabaja, sin aptitud, su franco de sacafranco); un
+ * aviso (descanso corto, días seguidos, horas) es decisión de la empresa y
+ * una cobertura con aviso es válida.
  */
 export function incoherencias(plan: Plan): string[] {
   const mal: string[] = [];
@@ -1113,7 +1122,7 @@ export function incoherencias(plan: Plan): string[] {
         mal.push(`${k}: cubre alguien que no existe (${id})`);
         continue;
       }
-      const imp = impedimentoSinContar(plan, p, pu, franja, d);
+      const imp = bloqueoSinContar(plan, p, pu, franja, d);
 
       if (imp) mal.push(`${k}: ${p.nombre} no puede (${imp})`);
     }
