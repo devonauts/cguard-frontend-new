@@ -9,9 +9,15 @@ import {
 import { useTranslation } from "react-i18next";
 import {
   CalendarRange,
+  CalendarX,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  ExternalLink,
+  MoreHorizontal,
+  Repeat,
+  SlidersHorizontal as Ajustes,
+  UserMinus,
   Loader2,
   Pencil,
   Plus,
@@ -40,6 +46,13 @@ import {
   EmptyState,
 } from "@/components/kit";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -984,15 +997,18 @@ export default function Planificador() {
                                   accion={
                                     s.id ? (
                                       <Link
-                                        className="cg-btn-glass cg-focus inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
-                                        style={{ color: "var(--brand-text)" }}
-                                        to={`/post-sites/${s.id}/stations/new`}
-                                      >
-                                        <Plus className="h-3 w-3" />
-                                        {t(
+                                        aria-label={t(
                                           "ui.Planificador.nuevaEstacion",
                                           "Nueva estación",
                                         )}
+                                        className={ICONO}
+                                        title={t(
+                                          "ui.Planificador.nuevaEstacion",
+                                          "Nueva estación",
+                                        )}
+                                        to={`/post-sites/${s.id}/stations/new`}
+                                      >
+                                        <Plus className="h-3.5 w-3.5" />
                                       </Link>
                                     ) : null
                                   }
@@ -1014,6 +1030,7 @@ export default function Planificador() {
                                       quitar={quitarVigilante}
                                       sustituir={setSustituyendo}
                                       editar={setEditando}
+                                      desistir={() => setConfirmarQuitar(null)}
                                       onToggle={() => alternar(`p:${pu.id}`)}
                                     />
                                   ))}
@@ -1088,8 +1105,11 @@ export default function Planificador() {
                           )}
                         </button>
                         <button
-                          className="cg-btn-glass cg-focus ml-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
-                          style={{ color: "var(--brand-text)" }}
+                          className="cg-focus ml-1 inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
+                          style={{
+                            background: "var(--brand)",
+                            color: "var(--brand-ink)",
+                          }}
                           type="button"
                           onClick={() =>
                             setAgregandoSf(puestosVisibles.map((x) => x.id))
@@ -1115,6 +1135,7 @@ export default function Planificador() {
                       confirmando={confirmarQuitar}
                       editar={setEditando}
                       retirar={quitarVigilante}
+                      desistir={() => setConfirmarQuitar(null)}
                       setHoja={setHoja}
                     />
                   ))}
@@ -1273,6 +1294,137 @@ const BTN =
 const TD = "border-b px-1 py-1 align-top";
 const QUIEN = "sticky left-0 z-[1] border-b border-r px-3 py-1.5 text-left";
 
+/* ── LAS ACCIONES DE UNA FILA ──────────────────────────────────────────────
+   Una fila no puede ser una hilera de pastillas (así quedó al ir añadiendo
+   «asignar», «cambiar», «quitar», «editar»…). Regla: a la vista sólo lo de uso
+   diario (el ciclo y mover un día); todo lo demás en un menú «⋯». Mismo patrón
+   en cliente, sede, estación y persona. */
+const ICONO =
+  "cg-btn-glass cg-focus inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full";
+
+function Icono({
+  title,
+  onClick,
+  children,
+}: {
+  title: string;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      aria-label={title}
+      className={ICONO}
+      title={title}
+      type="button"
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  );
+}
+
+interface AccionDeMenu {
+  label: string;
+  icon?: React.ReactNode;
+  onClick?: () => void;
+  /** Un enlace (sale de la hoja): se dice con el icono de «abrir». */
+  to?: string;
+  peligro?: boolean;
+  separador?: boolean;
+}
+
+function MenuAcciones({
+  title,
+  items,
+}: {
+  title: string;
+  items: AccionDeMenu[];
+}) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          aria-label={title}
+          className={ICONO}
+          title={title}
+          type="button"
+        >
+          <MoreHorizontal className="h-3.5 w-3.5" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-64">
+        {items.map((it, i) => (
+          <Fragment key={i}>
+            {it.separador && <DropdownMenuSeparator />}
+            {it.to ? (
+              <DropdownMenuItem asChild>
+                <Link className="flex items-center gap-2" to={it.to}>
+                  {it.icon}
+                  <span>{it.label}</span>
+                  <ExternalLink className="ml-auto h-3 w-3 opacity-60" />
+                </Link>
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem
+                className="flex items-center gap-2"
+                style={
+                  it.peligro
+                    ? { color: "var(--danger-text, #e5484d)" }
+                    : undefined
+                }
+                onSelect={() => it.onClick?.()}
+              >
+                {it.icon}
+                <span>{it.label}</span>
+              </DropdownMenuItem>
+            )}
+          </Fragment>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+/** «¿Quitar a X?» en la propia fila, en vez de una pastilla roja permanente. */
+function ConfirmarQuitar({
+  nombre,
+  si,
+  no,
+}: {
+  nombre: string;
+  si: () => void;
+  no: () => void;
+}) {
+  const { t } = useTranslation();
+
+  return (
+    <span
+      className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
+      style={{
+        background:
+          "color-mix(in oklab, var(--danger, #e5484d) 14%, transparent)",
+        color: "var(--danger-text, #e5484d)",
+      }}
+    >
+      {t("ui.Planificador.quitarA", {
+        defaultValue: "¿Quitar a {{nombre}}?",
+        nombre: corto(nombre),
+      })}
+      <button className="cg-focus ml-1 underline" type="button" onClick={si}>
+        {t("ui.Planificador.si", "Sí")}
+      </button>
+      <button
+        className="cg-focus underline opacity-70"
+        type="button"
+        onClick={no}
+      >
+        {t("ui.Planificador.no", "No")}
+      </button>
+    </span>
+  );
+}
+
 /** Cuánta gente falta en el puesto ese día, sumando sus franjas. */
 function faltaDia(plan: Plan, pu: Puesto, d: number): number {
   let n = 0;
@@ -1409,6 +1561,7 @@ function FilasDePuesto({
   confirmando,
   sustituir,
   editar,
+  desistir,
 }: {
   plan: Plan;
   pu: Puesto;
@@ -1423,6 +1576,7 @@ function FilasDePuesto({
   confirmando: string | null;
   sustituir: (p: Persona) => void;
   editar: (p: Persona) => void;
+  desistir: () => void;
 }) {
   const { t } = useTranslation();
   const fijos = fijosDe(plan, pu.id);
@@ -1490,26 +1644,48 @@ function FilasDePuesto({
                 ? `↔ ${fijos.map((s) => corto(s.nombre)).join(", ")}`
                 : t("ui.Planificador.sinSacafranco", "sin sacafranco")}
             </span>
-            {/* Desde aquí se actúa sobre el puesto: asignarle gente o editarlo
-                (pedido del dueño: «no hay cómo hacer nada dentro del Planificador»). */}
             {pu.sedeId && (
               <>
-                <button
-                  className="cg-btn-glass cg-focus inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
-                  style={{ color: "var(--brand-text)" }}
-                  type="button"
+                <Icono
+                  title={t(
+                    "ui.Planificador.asignarVigilante",
+                    "Asignar vigilante",
+                  )}
                   onClick={() => asignar(pu)}
                 >
-                  <UserPlus className="h-3 w-3" />
-                  {t("ui.Planificador.asignarVigilante", "Asignar vigilante")}
-                </button>
-                <Link
-                  className="cg-btn-glass cg-focus inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
-                  to={`/post-sites/${pu.sedeId}/stations/${pu.id}/overview`}
-                >
-                  <Pencil className="h-3 w-3" />
-                  {t("ui.Planificador.editarEstacion", "Editar")}
-                </Link>
+                  <UserPlus className="h-3.5 w-3.5" />
+                </Icono>
+                <MenuAcciones
+                  items={[
+                    {
+                      label: t(
+                        "ui.Planificador.asignarVigilante",
+                        "Asignar vigilante",
+                      ),
+                      icon: <UserPlus className="h-4 w-4" />,
+                      onClick: () => asignar(pu),
+                    },
+                    {
+                      label: t(
+                        "ui.Planificador.cambiarCobertura",
+                        "Cambiar lo que pide el puesto",
+                      ),
+                      icon: <Ajustes className="h-4 w-4" />,
+                      onClick: () =>
+                        setHoja({ tipo: "cobertura", puesto: pu.id }),
+                    },
+                    {
+                      label: t(
+                        "ui.Planificador.abrirFichaEstacion",
+                        "Abrir la ficha de la estación",
+                      ),
+                      icon: <Pencil className="h-4 w-4" />,
+                      to: `/post-sites/${pu.sedeId}/stations/${pu.id}/overview`,
+                      separador: true,
+                    },
+                  ]}
+                  title={t("ui.Planificador.masAcciones", "Más acciones")}
+                />
               </>
             )}
           </span>
@@ -1637,8 +1813,7 @@ function FilasDePuesto({
                   </button>
                   {p.patron.length > 1 && (
                     <>
-                      <button
-                        className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                      <Icono
                         title={t(
                           "ui.Planificador.regresarTitulo",
                           "Empezar la rotación un día antes",
@@ -1651,10 +1826,9 @@ function FilasDePuesto({
                           })
                         }
                       >
-                        {t("ui.Planificador.regresar", "← regresar")}
-                      </button>
-                      <button
-                        className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                        <ChevronLeft className="h-3.5 w-3.5" />
+                      </Icono>
+                      <Icono
                         title={t(
                           "ui.Planificador.correrTitulo",
                           "Empezar la rotación un día después",
@@ -1667,53 +1841,58 @@ function FilasDePuesto({
                           })
                         }
                       >
-                        {t("ui.Planificador.correr", "correr →")}
-                      </button>
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </Icono>
                     </>
                   )}
-                  <button
-                    className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"
-                    title={t(
-                      "ui.Planificador.ausenciaTitulo",
-                      "Vacaciones, permiso o incapacidad",
-                    )}
-                    onClick={() => setHoja({ tipo: "ausencia", persona: p.id })}
-                  >
-                    {t("ui.Planificador.ausencia", "ausencia")}
-                  </button>
-                  <button
-                    className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"
-                    title={t(
-                      "ui.Planificador.editarTitulo",
-                      "Desde cuándo, hasta cuándo, su ciclo, su próximo libre",
-                    )}
-                    onClick={() => editar(p)}
-                  >
-                    {t("ui.Planificador.editar", "editar")}
-                  </button>
-                  <button
-                    className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"
-                    title={t(
-                      "ui.Planificador.cambiarTitulo",
-                      "Poner a otra persona en esta plaza desde una fecha",
-                    )}
-                    onClick={() => sustituir(p)}
-                  >
-                    {t("ui.Planificador.cambiar", "cambiar")}
-                  </button>
-                  <button
-                    className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"
-                    style={{ color: "var(--danger-text, #e5484d)" }}
-                    title={t(
-                      "ui.Planificador.quitarTitulo",
-                      "Sacar a esta persona del puesto (cierra su asignación)",
-                    )}
-                    onClick={() => quitar(p, confirmando === p.id)}
-                  >
-                    {confirmando === p.id
-                      ? t("ui.Planificador.quitarSeguro", "¿seguro? quitar")
-                      : t("ui.Planificador.quitar", "quitar")}
-                  </button>
+                  {confirmando === p.id ? (
+                    <ConfirmarQuitar
+                      nombre={p.nombre}
+                      no={desistir}
+                      si={() => quitar(p, true)}
+                    />
+                  ) : (
+                    <MenuAcciones
+                      items={[
+                        {
+                          label: t(
+                            "ui.Planificador.ausenciaTitulo",
+                            "Vacaciones, permiso o incapacidad",
+                          ),
+                          icon: <CalendarX className="h-4 w-4" />,
+                          onClick: () =>
+                            setHoja({ tipo: "ausencia", persona: p.id }),
+                        },
+                        {
+                          label: t(
+                            "ui.Planificador.editarMenu",
+                            "Editar su asignación (fechas, ciclo, próximo libre)",
+                          ),
+                          icon: <Pencil className="h-4 w-4" />,
+                          onClick: () => editar(p),
+                        },
+                        {
+                          label: t(
+                            "ui.Planificador.cambiarMenu",
+                            "Cambiar por otra persona",
+                          ),
+                          icon: <Repeat className="h-4 w-4" />,
+                          onClick: () => sustituir(p),
+                        },
+                        {
+                          label: t(
+                            "ui.Planificador.quitarMenu",
+                            "Quitar del puesto",
+                          ),
+                          icon: <UserMinus className="h-4 w-4" />,
+                          onClick: () => quitar(p, false),
+                          peligro: true,
+                          separador: true,
+                        },
+                      ]}
+                      title={t("ui.Planificador.masAcciones", "Más acciones")}
+                    />
+                  )}
                 </span>
               </td>
               {Array.from({ length: dias.length }, (_, i) => {
@@ -1848,6 +2027,7 @@ function FilaDeSacafranco({
   editar,
   retirar,
   confirmando,
+  desistir,
 }: {
   plan: Plan;
   s: Persona;
@@ -1859,6 +2039,7 @@ function FilaDeSacafranco({
   /** Cerrar su asignación («quitar» en pantalla; `quitar` es del motor aquí). */
   retirar: (p: Persona, confirmando: boolean) => void;
   confirmando: string | null;
+  desistir: () => void;
 }) {
   const { t } = useTranslation();
   const trabajados = diasTrabajados(plan, s, d0, d0 + 7);
@@ -1905,9 +2086,7 @@ function FilaDeSacafranco({
               lo que cuadra sus libres con los huecos de los fijos. */}
           {s.patron.length > 1 && (
             <>
-              <button
-                className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 font-semibold"
-                style={{ color: "var(--ink)" }}
+              <Icono
                 title={t(
                   "ui.Planificador.regresarTitulo",
                   "Empezar la rotación un día antes",
@@ -1920,11 +2099,9 @@ function FilaDeSacafranco({
                   })
                 }
               >
-                {t("ui.Planificador.regresar", "← regresar")}
-              </button>
-              <button
-                className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 font-semibold"
-                style={{ color: "var(--ink)" }}
+                <ChevronLeft className="h-3.5 w-3.5" />
+              </Icono>
+              <Icono
                 title={t(
                   "ui.Planificador.correrTitulo",
                   "Empezar la rotación un día después",
@@ -1937,53 +2114,78 @@ function FilaDeSacafranco({
                   })
                 }
               >
-                {t("ui.Planificador.correr", "correr →")}
-              </button>
+                <ChevronRight className="h-3.5 w-3.5" />
+              </Icono>
             </>
           )}
-          <button
-            className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 font-semibold"
-            style={{ color: "var(--ink)" }}
-            onClick={() => setHoja({ tipo: "ausencia", persona: s.id })}
-          >
-            {t("ui.Planificador.ausencia", "ausencia")}
-          </button>
-          {!s.id.startsWith("nuevo-") && (
-            <>
-              <button
-                className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 font-semibold"
-                style={{ color: "var(--ink)" }}
-                title={t(
-                  "ui.Planificador.editarSfTitulo",
-                  "Desde cuándo, su ciclo y qué estaciones cubre",
-                )}
-                onClick={() => editar(s)}
-              >
-                {t("ui.Planificador.editar", "editar")}
-              </button>
-              <button
-                className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 font-semibold"
-                style={{ color: "var(--danger-text, #e5484d)" }}
-                onClick={() => retirar(s, confirmando === s.id)}
-              >
-                {confirmando === s.id
-                  ? t("ui.Planificador.quitarSeguro", "¿seguro? quitar")
-                  : t("ui.Planificador.quitar", "quitar")}
-              </button>
-            </>
-          )}
-          {s.id.startsWith("nuevo-") && (
-            <button
-              className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 font-semibold"
-              style={{ color: "var(--bad-text)" }}
-              onClick={() =>
-                cambiar((x) => {
-                  x.personas = x.personas.filter((y) => y.id !== s.id);
-                })
+          {confirmando === s.id ? (
+            <ConfirmarQuitar
+              nombre={s.nombre}
+              no={desistir}
+              si={() => retirar(s, true)}
+            />
+          ) : (
+            <MenuAcciones
+              items={
+                s.id.startsWith("nuevo-")
+                  ? [
+                      {
+                        label: t(
+                          "ui.Planificador.ausenciaTitulo",
+                          "Vacaciones, permiso o incapacidad",
+                        ),
+                        icon: <CalendarX className="h-4 w-4" />,
+                        onClick: () =>
+                          setHoja({ tipo: "ausencia", persona: s.id }),
+                      },
+                      {
+                        label: t(
+                          "ui.Planificador.quitarDeLaPrueba",
+                          "Quitar de la prueba",
+                        ),
+                        icon: <UserMinus className="h-4 w-4" />,
+                        onClick: () =>
+                          cambiar((x) => {
+                            x.personas = x.personas.filter(
+                              (y) => y.id !== s.id,
+                            );
+                          }),
+                        peligro: true,
+                        separador: true,
+                      },
+                    ]
+                  : [
+                      {
+                        label: t(
+                          "ui.Planificador.ausenciaTitulo",
+                          "Vacaciones, permiso o incapacidad",
+                        ),
+                        icon: <CalendarX className="h-4 w-4" />,
+                        onClick: () =>
+                          setHoja({ tipo: "ausencia", persona: s.id }),
+                      },
+                      {
+                        label: t(
+                          "ui.Planificador.editarSfMenu",
+                          "Editar (fechas, ciclo, estaciones que cubre)",
+                        ),
+                        icon: <Pencil className="h-4 w-4" />,
+                        onClick: () => editar(s),
+                      },
+                      {
+                        label: t(
+                          "ui.Planificador.quitarSfMenu",
+                          "Quitar de sacafranco",
+                        ),
+                        icon: <UserMinus className="h-4 w-4" />,
+                        onClick: () => retirar(s, false),
+                        peligro: true,
+                        separador: true,
+                      },
+                    ]
               }
-            >
-              {t("ui.Planificador.quitar", "quitar")}
-            </button>
+              title={t("ui.Planificador.masAcciones", "Más acciones")}
+            />
           )}
           {t("ui.Planificador.diasYHoras", {
             defaultValue: "{{d}} días · {{h}} h",
