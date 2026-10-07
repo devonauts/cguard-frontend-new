@@ -16941,6 +16941,12 @@
       "nadaQuePublicar": "Rien dans ce brouillon ne peut passer dans le planning réel.",
       "seQuedaEnBorrador": "Reste dans le brouillon ({{n}})",
       "cancelar": "Annuler"
+    },
+    "AvisoRetiradaHorario": {
+      "titulo": "Cet écran va disparaître : le Planificateur est le nouveau",
+      "cuerpo": "Le Planificateur fait la même chose et plus : rotations sur mesure, absences avec leur remplaçant, agents de relève et un brouillon que vous publiez quand vous voulez. Habituez-vous : l’Horaire sera retiré.",
+      "abrir": "Ouvrir le Planificateur",
+      "entendido": "Compris"
     }
   },
   "visitantes": {

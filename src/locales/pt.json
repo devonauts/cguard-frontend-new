@@ -16406,6 +16406,12 @@
       "nadaQuePublicar": "Não há nada neste rascunho que a escala real possa receber.",
       "seQuedaEnBorrador": "Fica no rascunho ({{n}})",
       "cancelar": "Cancelar"
+    },
+    "AvisoRetiradaHorario": {
+      "titulo": "Esta tela vai sair: o Planejador é a nova",
+      "cuerpo": "No Planejador você faz o mesmo e mais: escalas sob medida, faltas com substituto, folguistas e um rascunho que você publica quando quiser. Vá se acostumando: o Horário deixará de existir.",
+      "abrir": "Abrir o Planejador",
+      "entendido": "Entendi"
     }
   },
   "map": {

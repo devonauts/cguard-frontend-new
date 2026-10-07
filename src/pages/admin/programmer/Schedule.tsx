@@ -102,6 +102,8 @@ import {
   EmptyState,
   NumberStepper,
 } from "@/components/kit";
+
+import AvisoRetiradaHorario from "./AvisoRetiradaHorario";
 import { MeterBar } from "@/components/charts";
 import { ApiService } from "@/services/api/apiService";
 import { confirmDialog } from "@/components/ui/confirmDialog";
@@ -6214,6 +6216,8 @@ export default function Schedule() {
   return (
     <AppLayout>
       <div className="px-3 lg:px-4 pt-2 pb-2 flex flex-col">
+        {/* El Horario se va: el Planificador es la pantalla nueva. */}
+        <AvisoRetiradaHorario className="mb-2" />
         {/* ─── Compact toolbar ─── */}
         <div className="flex items-center gap-2 flex-wrap pb-2">
           <div className="flex items-center gap-2 mr-1">

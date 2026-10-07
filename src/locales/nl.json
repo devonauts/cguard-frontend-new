@@ -16941,6 +16941,12 @@
       "nadaQuePublicar": "Er is niets in dit concept dat het echte rooster kan overnemen.",
       "seQuedaEnBorrador": "Blijft in het concept ({{n}})",
       "cancelar": "Annuleren"
+    },
+    "AvisoRetiradaHorario": {
+      "titulo": "Dit scherm verdwijnt: de Planner is het nieuwe",
+      "cuerpo": "In de Planner doe je hetzelfde en meer: eigen roosters, afwezigheden met vervanger, invallers en een concept dat je publiceert wanneer je wilt. Wen er alvast aan: het Rooster gaat weg.",
+      "abrir": "Planner openen",
+      "entendido": "Begrepen"
     }
   },
   "visitantes": {

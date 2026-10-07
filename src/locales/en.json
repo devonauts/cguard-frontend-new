@@ -16406,6 +16406,12 @@
       "nadaQuePublicar": "There's nothing in this draft the real schedule can take.",
       "seQuedaEnBorrador": "Stays in the draft ({{n}})",
       "cancelar": "Cancel"
+    },
+    "AvisoRetiradaHorario": {
+      "titulo": "This screen is going away: the Planner is the new one",
+      "cuerpo": "The Planner does everything this does and more: custom rotations, absences with their replacement, relief guards and a draft you publish when you are ready. Start getting used to it: the Schedule will be removed.",
+      "abrir": "Open the Planner",
+      "entendido": "Got it"
     }
   },
   "map": {

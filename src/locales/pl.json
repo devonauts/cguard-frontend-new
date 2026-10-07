@@ -17129,6 +17129,12 @@
       "nadaQuePublicar": "W tym szkicu nie ma nic, co rzeczywisty grafik mógłby przyjąć.",
       "seQuedaEnBorrador": "Zostaje w szkicu ({{n}})",
       "cancelar": "Anuluj"
+    },
+    "AvisoRetiradaHorario": {
+      "titulo": "Ten ekran zostanie wycofany: nowy jest Planer",
+      "cuerpo": "W Planerze zrobisz to samo i więcej: własne rotacje, nieobecności z zastępstwem, rezerwowi i szkic, który publikujesz, kiedy chcesz. Przyzwyczajaj się: Grafik zniknie.",
+      "abrir": "Otwórz Planer",
+      "entendido": "Rozumiem"
     }
   },
   "visitantes": {

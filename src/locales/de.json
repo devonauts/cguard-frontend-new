@@ -16941,6 +16941,12 @@
       "nadaQuePublicar": "Nichts in diesem Entwurf kann in den echten Dienstplan.",
       "seQuedaEnBorrador": "Bleibt im Entwurf ({{n}})",
       "cancelar": "Abbrechen"
+    },
+    "AvisoRetiradaHorario": {
+      "titulo": "Diese Seite wird abgeschafft: der Planer ist die neue",
+      "cuerpo": "Im Planer geht alles hier und mehr: eigene Rotationen, Fehlzeiten mit Vertretung, Springer und ein Entwurf, den Sie veröffentlichen, wann Sie wollen. Gewöhnen Sie sich daran: der Dienstplan verschwindet.",
+      "abrir": "Planer öffnen",
+      "entendido": "Verstanden"
     }
   },
   "visitantes": {

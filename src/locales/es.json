@@ -16406,6 +16406,12 @@
       "nadaQuePublicar": "No hay nada que el horario real pueda recibir de este borrador.",
       "seQuedaEnBorrador": "Se queda en el borrador ({{n}})",
       "cancelar": "Cancelar"
+    },
+    "AvisoRetiradaHorario": {
+      "titulo": "Esta pantalla se va a retirar: el Planificador es la nueva",
+      "cuerpo": "En el Planificador haces lo mismo y más: rotaciones a tu medida, faltas con su reemplazo, sacafrancos y un borrador que publicas cuando quieras. Ve acostumbrándote: el Horario dejará de estar.",
+      "abrir": "Abrir el Planificador",
+      "entendido": "Entendido"
     }
   },
   "map": {

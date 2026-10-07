@@ -16941,6 +16941,12 @@
       "nadaQuePublicar": "Non c'è nulla in questa bozza che l'orario reale possa ricevere.",
       "seQuedaEnBorrador": "Resta nella bozza ({{n}})",
       "cancelar": "Annulla"
+    },
+    "AvisoRetiradaHorario": {
+      "titulo": "Questa schermata sarà rimossa: il Pianificatore è la nuova",
+      "cuerpo": "Nel Pianificatore fai lo stesso e di più: turnazioni su misura, assenze con il sostituto, jolly e una bozza che pubblichi quando vuoi. Abituati: l’Orario sparirà.",
+      "abrir": "Apri il Pianificatore",
+      "entendido": "Capito"
     }
   },
   "visitantes": {
