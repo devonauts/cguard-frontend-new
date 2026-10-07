@@ -27,6 +27,9 @@ import { Link } from "react-router-dom";
 import ShiftAssignModal from "@/pages/admin/post-sites/station-detail/components/ShiftAssignModal";
 import AgregarSacafrancoModal from "@/components/schedule/AgregarSacafrancoModal";
 import CambiarVigilanteModal from "@/components/schedule/CambiarVigilanteModal";
+import EditarAsignacionModal, {
+  type AsignacionCruda,
+} from "@/components/schedule/EditarAsignacionModal";
 import { toast } from "sonner";
 
 import AppLayout from "@/layouts/app-layout";
@@ -339,6 +342,13 @@ export default function Planificador() {
       limpiar(r.plan, -ANTES, DESPUES);
       pila.current = [];
       setLeido({ ...r, plan: copiar(r.plan) });
+      {
+        const lista: any[] = (ov?.data || ov || {}).assignments || [];
+        const m: Record<string, AsignacionCruda> = {};
+
+        for (const a of lista) if (a?.id) m[String(a.id)] = a;
+        setCrudas(m);
+      }
       setPlan(r.plan);
       setParecido(r.comparados ? r.coincidencia : null);
       setCambios(0);
@@ -482,6 +492,10 @@ export default function Planificador() {
   const [abiertos, setAbiertos] = useState<Record<string, boolean>>({});
   /** El puesto al que se le está asignando gente (popup de la ficha). */
   const [asignando, setAsignando] = useState<Puesto | null>(null);
+  /** Las asignaciones tal como llegan del overview, por id (para «editar»). */
+  const [crudas, setCrudas] = useState<Record<string, AsignacionCruda>>({});
+  /** La persona cuya asignación se edita en la hoja. */
+  const [editando, setEditando] = useState<Persona | null>(null);
   /** La persona a la que se sustituye en su plaza («cambiar»). */
   const [sustituyendo, setSustituyendo] = useState<Persona | null>(null);
   /** «Agregar sacafranco»: abierto con los puestos de este cliente marcados. */
@@ -999,6 +1013,7 @@ export default function Planificador() {
                                       confirmando={confirmarQuitar}
                                       quitar={quitarVigilante}
                                       sustituir={setSustituyendo}
+                                      editar={setEditando}
                                       onToggle={() => alternar(`p:${pu.id}`)}
                                     />
                                   ))}
@@ -1097,6 +1112,9 @@ export default function Planificador() {
                       plan={plan}
                       s={s}
                       cambiar={cambiar}
+                      confirmando={confirmarQuitar}
+                      editar={setEditando}
+                      retirar={quitarVigilante}
                       setHoja={setHoja}
                     />
                   ))}
@@ -1149,6 +1167,23 @@ export default function Planificador() {
               onClose={() => setSustituyendo(null)}
               onSaved={() => {
                 setSustituyendo(null);
+                void cargar();
+              }}
+            />
+          )}
+        {editando &&
+          crudas[leido?.enlace.personas[editando.id]?.assignmentId || ""] && (
+            <EditarAsignacionModal
+              open
+              asignacion={
+                crudas[leido!.enlace.personas[editando.id].assignmentId]
+              }
+              estaciones={estacionesParaSf}
+              nombre={editando.nombre}
+              tenantId={tenantId}
+              onClose={() => setEditando(null)}
+              onSaved={() => {
+                setEditando(null);
                 void cargar();
               }}
             />
@@ -1373,6 +1408,7 @@ function FilasDePuesto({
   quitar,
   confirmando,
   sustituir,
+  editar,
 }: {
   plan: Plan;
   pu: Puesto;
@@ -1386,6 +1422,7 @@ function FilasDePuesto({
   quitar: (p: Persona, confirmando: boolean) => void;
   confirmando: string | null;
   sustituir: (p: Persona) => void;
+  editar: (p: Persona) => void;
 }) {
   const { t } = useTranslation();
   const fijos = fijosDe(plan, pu.id);
@@ -1647,6 +1684,16 @@ function FilasDePuesto({
                   <button
                     className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"
                     title={t(
+                      "ui.Planificador.editarTitulo",
+                      "Desde cuándo, hasta cuándo, su ciclo, su próximo libre",
+                    )}
+                    onClick={() => editar(p)}
+                  >
+                    {t("ui.Planificador.editar", "editar")}
+                  </button>
+                  <button
+                    className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                    title={t(
                       "ui.Planificador.cambiarTitulo",
                       "Poner a otra persona en esta plaza desde una fecha",
                     )}
@@ -1798,6 +1845,9 @@ function FilaDeSacafranco({
   dias,
   cambiar,
   setHoja,
+  editar,
+  retirar,
+  confirmando,
 }: {
   plan: Plan;
   s: Persona;
@@ -1805,6 +1855,10 @@ function FilaDeSacafranco({
   dias: number[];
   cambiar: Cambiar;
   setHoja: (h: Hoja) => void;
+  editar: (p: Persona) => void;
+  /** Cerrar su asignación («quitar» en pantalla; `quitar` es del motor aquí). */
+  retirar: (p: Persona, confirmando: boolean) => void;
+  confirmando: string | null;
 }) {
   const { t } = useTranslation();
   const trabajados = diasTrabajados(plan, s, d0, d0 + 7);
@@ -1894,6 +1948,30 @@ function FilaDeSacafranco({
           >
             {t("ui.Planificador.ausencia", "ausencia")}
           </button>
+          {!s.id.startsWith("nuevo-") && (
+            <>
+              <button
+                className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 font-semibold"
+                style={{ color: "var(--ink)" }}
+                title={t(
+                  "ui.Planificador.editarSfTitulo",
+                  "Desde cuándo, su ciclo y qué estaciones cubre",
+                )}
+                onClick={() => editar(s)}
+              >
+                {t("ui.Planificador.editar", "editar")}
+              </button>
+              <button
+                className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 font-semibold"
+                style={{ color: "var(--danger-text, #e5484d)" }}
+                onClick={() => retirar(s, confirmando === s.id)}
+              >
+                {confirmando === s.id
+                  ? t("ui.Planificador.quitarSeguro", "¿seguro? quitar")
+                  : t("ui.Planificador.quitar", "quitar")}
+              </button>
+            </>
+          )}
           {s.id.startsWith("nuevo-") && (
             <button
               className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 font-semibold"
