@@ -1752,6 +1752,46 @@ function FilaDeSacafranco({
           >
             {etiquetaDe(plan, s)}
           </button>
+          {/* El sacafranco también corre su ciclo: moverlo uno o dos días es
+              lo que cuadra sus libres con los huecos de los fijos. */}
+          {s.patron.length > 1 && (
+            <>
+              <button
+                className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 font-semibold"
+                style={{ color: "var(--ink)" }}
+                title={t(
+                  "ui.Planificador.regresarTitulo",
+                  "Empezar la rotación un día antes",
+                )}
+                onClick={() =>
+                  cambiar((x) => {
+                    const q = x.personas.find((y) => y.id === s.id)!;
+                    q.desfase += 1;
+                    q.manual = {};
+                  })
+                }
+              >
+                {t("ui.Planificador.regresar", "← regresar")}
+              </button>
+              <button
+                className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 font-semibold"
+                style={{ color: "var(--ink)" }}
+                title={t(
+                  "ui.Planificador.correrTitulo",
+                  "Empezar la rotación un día después",
+                )}
+                onClick={() =>
+                  cambiar((x) => {
+                    const q = x.personas.find((y) => y.id === s.id)!;
+                    q.desfase -= 1;
+                    q.manual = {};
+                  })
+                }
+              >
+                {t("ui.Planificador.correr", "correr →")}
+              </button>
+            </>
+          )}
           <button
             className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 font-semibold"
             style={{ color: "var(--ink)" }}
