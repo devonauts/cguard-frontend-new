@@ -93,7 +93,8 @@ describe("Publicar · del borrador a llamadas", () => {
     b.personas[0].manual[5] = "D";
     const pub = planificarPublicacion(plan, b, enlace, ctx);
 
-    expect(pub.cambios.find((c) => c.tipo === "novedad")?.llamadas[0].cuerpo.data).toMatchObject({ date: "2026-10-08", type: "F" });
+    // «L» es libre; «F» en el Horario es FALTA (y abría una novedad disciplinaria).
+    expect(pub.cambios.find((c) => c.tipo === "novedad")?.llamadas[0].cuerpo.data).toMatchObject({ date: "2026-10-08", type: "L" });
     expect(pub.cambios.find((c) => c.tipo === "turno" && c.texto.startsWith("Ana"))?.llamadas[0].cuerpo.data).toMatchObject({ guard: "g1", startTime: "2026-10-10T07:00:00.000Z" });
   });
 
@@ -147,6 +148,81 @@ describe("Publicar · del borrador a llamadas", () => {
     expect(pub.noPublicables.join("\n")).toMatch(/rotación no es/);
     expect(pub.noPublicables.join("\n")).toMatch(/una persona por turno/);
     expect(pub.noPublicables.join("\n")).toMatch(/persona nueva/);
+  });
+
+  it("una falta con reemplazo en el borrador viaja en UNA llamada, sin turno aparte", () => {
+    const { plan, enlace } = base();
+
+    enlace.turnos.a1 = { 2: { id: "sh-a1-2", stationId: "st1" } };
+    enlace.turnosTodos.a1 = { 2: [{ id: "sh-a1-2", stationId: "st1", min: 420 }] };
+    const b = copiar(plan);
+
+    b.personas[0].ausencias = [{ desde: 2, hasta: 2, tipo: "falta" }];
+    poner(b, clave("st1", "D", 2), "s1", false);
+    const pub = planificarPublicacion(plan, b, enlace, ctx);
+    const novedad = pub.cambios.find((c) => c.tipo === "novedad")!;
+
+    expect(novedad.llamadas[0].cuerpo).toMatchObject({ guardId: "g1", shiftId: "sh-a1-2", reason: "no_call_no_show", coveringGuardId: "g3", allowRestDay: true });
+    expect(novedad.texto).toMatch(/cubre Saca/);
+    expect(novedad.quien).toBe("Ana Pérez");
+    // El turno de cobertura NO va aparte: lo abre el servidor con la falta.
+    expect(pub.cambios.filter((c) => c.tipo === "turno")).toHaveLength(0);
+  });
+
+  it("unas vacaciones con turno real llevan el reemplazo; sin turno real, la cobertura va como turno", () => {
+    const { plan, enlace } = base();
+
+    enlace.turnos.a1 = { 2: { id: "sh-a1-2", stationId: "st1" } };
+    const b = copiar(plan);
+
+    b.personas[0].ausencias = [{ desde: 2, hasta: 3, tipo: "vacaciones" }];
+    poner(b, clave("st1", "D", 2), "s1", false);
+    poner(b, clave("st1", "D", 3), "s1", false);
+    const pub = planificarPublicacion(plan, b, enlace, ctx);
+    const novedades = pub.cambios.filter((c) => c.tipo === "novedad");
+
+    expect(novedades[0].llamadas[0].cuerpo.data).toMatchObject({ date: "2026-10-07", type: "V", coveringGuardId: "g3" });
+    expect(novedades[1].llamadas[0].cuerpo.data).not.toHaveProperty("coveringGuardId");
+    const turnos = pub.cambios.filter((c) => c.tipo === "turno");
+
+    expect(turnos).toHaveLength(1);
+    expect(turnos[0].llamadas[0].cuerpo.data).toMatchObject({ guard: "g3", startTime: "2026-10-08T07:00:00.000Z" });
+  });
+
+  it("cubrir una falta con novedad abierta va por la novedad y deja pasar el franco", () => {
+    const { plan, enlace } = base();
+
+    enlace.eventos["st1|2"] = "ev-1";
+    const b = copiar(plan);
+
+    poner(b, clave("st1", "D", 2), "s1", false);
+    const pub = planificarPublicacion(plan, b, enlace, ctx);
+    const turno = pub.cambios.find((c) => c.tipo === "turno")!;
+
+    expect(turno.llamadas[0]).toEqual({ metodo: "post", ruta: "/tenant/T/coverage/events/ev-1/cover", cuerpo: { coveringGuardId: "g3", allowRestDay: true } });
+  });
+
+  it("publica las tandas independientes de a varios y lo estructural de uno en uno", async () => {
+    const { plan, enlace } = base();
+    const b = copiar(plan);
+
+    for (let d = 6; d < 13; d++) poner(b, clave("st1", "D", d), "s1", false);
+    const pub = planificarPublicacion(plan, b, enlace, ctx);
+    let enVuelo = 0;
+    let pico = 0;
+    const api: Api = {
+      post: async () => { pico = Math.max(pico, ++enVuelo); await new Promise((r) => setTimeout(r, 2)); enVuelo--; return {}; },
+      put: async () => {},
+      del: async () => {},
+    };
+    const avisos: number[] = [];
+    const fallos = await publicar(pub, api, (h) => avisos.push(h));
+
+    expect(fallos).toEqual([]);
+    expect(pub.cambios.length).toBeGreaterThanOrEqual(7);
+    expect(pico).toBeGreaterThan(1);
+    expect(pico).toBeLessThanOrEqual(4);
+    expect(avisos.at(-1)).toBe(pub.cambios.length);
   });
 
   it("un fallo del servidor no para el resto y se cuenta", async () => {

@@ -1324,6 +1324,7 @@ export default function Planificador() {
           <HojaAusencia
             d0={d0}
             fechaDe={(d) => sumaDias(base, d)}
+            hoy={hoyIdx}
             personaId={hoja.persona}
             plan={plan}
             cambiar={cambiar}
@@ -1922,7 +1923,7 @@ function FilasDePuesto({
                         {
                           label: t(
                             "ui.Planificador.ausenciaTitulo",
-                            "Vacaciones, permiso o incapacidad",
+                            "Falta, vacaciones, permiso o incapacidad",
                           ),
                           icon: <CalendarX className="h-4 w-4" />,
                           onClick: () =>
@@ -2197,7 +2198,7 @@ function FilaDeSacafranco({
                       {
                         label: t(
                           "ui.Planificador.ausenciaTitulo",
-                          "Vacaciones, permiso o incapacidad",
+                          "Falta, vacaciones, permiso o incapacidad",
                         ),
                         icon: <CalendarX className="h-4 w-4" />,
                         onClick: () =>
@@ -2223,7 +2224,7 @@ function FilaDeSacafranco({
                       {
                         label: t(
                           "ui.Planificador.ausenciaTitulo",
-                          "Vacaciones, permiso o incapacidad",
+                          "Falta, vacaciones, permiso o incapacidad",
                         ),
                         icon: <CalendarX className="h-4 w-4" />,
                         onClick: () =>
@@ -2946,6 +2947,7 @@ function HojaAusencia({
   plan,
   personaId,
   d0,
+  hoy,
   fechaDe,
   cambiar,
   cerrar,
@@ -2953,6 +2955,7 @@ function HojaAusencia({
   plan: Plan;
   personaId: string;
   d0: number;
+  hoy: number;
   fechaDe: (d: number) => string;
   cambiar: Cambiar;
   cerrar: () => void;
@@ -2960,8 +2963,21 @@ function HojaAusencia({
   const { t } = useTranslation();
   const p = plan.personas.find((x) => x.id === personaId);
   const [tipo, setTipo] = useState("vacaciones");
-  const [desde, setDesde] = useState(d0);
+  // Arranca hoy si la semana en pantalla es la de hoy; si no, en su lunes.
+  const [desde, setDesde] = useState(
+    hoy >= d0 && hoy < d0 + 7 ? hoy : d0,
+  );
   const [dias, setDias] = useState(7);
+  /** El índice de un `YYYY-MM-DD`: la inversa de `fechaDe`. */
+  const indiceDe = (fecha: string) => {
+    const utc = (s: string) => {
+      const [y, m, dd] = s.split("-").map(Number);
+
+      return Date.UTC(y, m - 1, dd);
+    };
+
+    return Math.round((utc(fecha) - utc(fechaDe(0))) / 86400000);
+  };
 
   if (!p) return null;
   const dia = (d: number, largo = false) => {
@@ -3041,6 +3057,8 @@ function HojaAusencia({
       <p className="text-sm font-semibold">
         {t("ui.Planificador.empieza", "Empieza el")}
       </p>
+      {/* La semana en pantalla a un toque, y cualquier otra fecha en el campo:
+          unas vacaciones del mes que viene no obligan a cambiar de semana. */}
       <div className="grid grid-cols-7 gap-1.5">
         {Array.from({ length: 7 }, (_, i) => (
           <button
@@ -3052,6 +3070,28 @@ function HojaAusencia({
             {dia(d0 + i)}
           </button>
         ))}
+      </div>
+      <div className="flex flex-wrap items-center gap-2 text-sm">
+        <span style={{ color: "var(--ink-soft)" }}>
+          {t("ui.Planificador.uOtraFecha", "u otra fecha")}
+        </span>
+        <input
+          className="cg-input cg-focus h-8 px-2 text-sm"
+          min={fechaDe(hoy - 7)}
+          type="date"
+          value={fechaDe(desde)}
+          onChange={(e) => {
+            if (e.target.value) setDesde(indiceDe(e.target.value));
+          }}
+        />
+        <span className="tabular-nums" style={{ color: "var(--ink-soft)" }}>
+          {dias > 1
+            ? t("ui.Planificador.hastaEl", {
+                defaultValue: "hasta el {{fecha}}",
+                fecha: dia(desde + dias - 1, true),
+              })
+            : dia(desde, true)}
+        </span>
       </div>
       <div className="flex flex-wrap items-center gap-2 text-sm">
         <span className="font-semibold">
@@ -3234,6 +3274,27 @@ function HojaPublicar({
   const [enCurso, setEnCurso] = useState<[number, number] | null>(null);
   const [fallos, setFallos] = useState<string[] | null>(null);
   const { cambios, noPublicables } = publicacion;
+  /* La lista por persona (o puesto), no un muro de 87 renglones: «Guardia
+     Demo: cubre Caseta 1 el 7, Caseta 3 el 10…». El texto de cada cambio
+     empieza por el nombre; aquí se le quita para no repetirlo. */
+  const grupos = useMemo(() => {
+    const m = new Map<string, string[]>();
+
+    for (const c of cambios) {
+      const quien = c.quien || "";
+      const que = quien
+        ? c.texto.startsWith(`${quien}: `)
+          ? c.texto.slice(quien.length + 2)
+          : c.texto.startsWith(`${quien} `)
+            ? c.texto.slice(quien.length + 1)
+            : c.texto
+        : c.texto;
+
+      m.set(quien, [...(m.get(quien) || []), que]);
+    }
+
+    return [...m.entries()];
+  }, [cambios]);
   const api = {
     post: (r: string, c: any) => ApiService.post(r, c),
     put: (r: string, c: any) => ApiService.put(r, c),
@@ -3305,14 +3366,28 @@ function HojaPublicar({
                   n: cambios.length,
                 })}
               </p>
-              <ul
-                className="max-h-[36dvh] overflow-y-auto pl-5 text-sm"
-                style={{ listStyle: "disc" }}
-              >
-                {cambios.map((c, i) => (
-                  <li key={i}>{c.texto}</li>
+              <div className="max-h-[36dvh] space-y-2 overflow-y-auto text-sm">
+                {grupos.map(([quien, lista]) => (
+                  <div key={quien || "—"}>
+                    {quien && (
+                      <div className="font-semibold">
+                        {quien}
+                        <span
+                          className="ml-1.5 font-normal tabular-nums"
+                          style={{ color: "var(--ink-soft)" }}
+                        >
+                          {lista.length}
+                        </span>
+                      </div>
+                    )}
+                    <ul className="pl-5" style={{ listStyle: "disc" }}>
+                      {lista.map((x, i) => (
+                        <li key={i}>{x}</li>
+                      ))}
+                    </ul>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
           ) : (
             <p className="text-sm" style={{ color: "var(--ink-soft)" }}>

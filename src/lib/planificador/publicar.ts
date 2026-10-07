@@ -18,6 +18,7 @@
  */
 import {
   FRANCO,
+  clave,
   duracion,
   propio,
   proximoArranque,
@@ -45,6 +46,8 @@ export interface Cambio {
     | "cobertura";
   /** Lo que se le dice a quien publica, en sus palabras. */
   texto: string;
+  /** De quién es el cambio (persona o puesto), para agrupar la lista. */
+  quien?: string;
   /** Para probarlo sin red: qué llamada(s) hará. */
   llamadas: Array<{
     metodo: "post" | "put" | "delete";
@@ -170,9 +173,11 @@ export function planificarPublicacion(
     tipo: Cambio["tipo"],
     texto: string,
     llamadas: Cambio["llamadas"],
+    quien?: string,
   ): Cambio => ({
     tipo,
     texto,
+    quien,
     llamadas,
     async ejecutar(api) {
       for (const l of llamadas) {
@@ -182,6 +187,35 @@ export function planificarPublicacion(
       }
     },
   });
+  /* Coberturas que ya viajan DENTRO de otra llamada (la ausencia con su
+     reemplazo): `puesto|franja|día|persona`, para no crearlas dos veces. */
+  const encadenadas = new Set<string>();
+  /** Quién cubre en el borrador el turno propio de `p` el día `d`, si hay alguien publicable. */
+  const reemplazoDe = (
+    p: Persona,
+    pu: Puesto,
+    d: number,
+  ): { persona: Persona; guardId: string; franja: string } | null => {
+    const antes = ori.get(p.id);
+    const franja = antes ? propio(antes, d) : null;
+
+    if (!franja || !pu.franjas.includes(franja)) return null;
+    for (const id of plan.cubre[clave(pu.id, franja, d)] || []) {
+      const q = plan.personas.find((x) => x.id === id);
+      const en = enlace.personas[id];
+
+      if (!q || !en || id === p.id) continue;
+      const yaReal = (enlace.turnosTodos?.[id]?.[d] || []).some(
+        (x) => x.stationId === pu.id,
+      );
+
+      if (yaReal) continue;
+
+      return { persona: q, guardId: en.guardId, franja };
+    }
+
+    return null;
+  };
 
   // 1) Puestos: la cobertura.
   for (const pu of plan.puestos) {
@@ -233,6 +267,7 @@ export function planificarPublicacion(
             },
           },
         ],
+        pu.nombre,
       ),
     );
   }
@@ -338,6 +373,7 @@ export function planificarPublicacion(
                   },
                 },
               ],
+              nombreDe(p),
             ),
           );
         }
@@ -361,6 +397,7 @@ export function planificarPublicacion(
               cuerpo: { data: { coveredStationIds: p.fijos || [] } },
             },
           ],
+          nombreDe(p),
         ),
       );
 
@@ -382,11 +419,17 @@ export function planificarPublicacion(
              vean igual. Sin turno real ese día no hay nada que marcar. */
           const turno = enlace.turnos[p.id]?.[d];
 
-          if (turno && pu)
+          if (turno && pu) {
+            /* La falta y su reemplazo van en UNA llamada: el servidor abre la
+               novedad y la cubre sin gritar «puesto sin cubrir» en medio. */
+            const r = reemplazoDe(p, pu, d);
+
+            if (r)
+              encadenadas.add(`${pu.id}|${r.franja}|${d}|${r.persona.id}`);
             cambios.push(
               llamada(
                 "novedad",
-                `${nombreDe(p)}: falta (no se presentó) el ${ctx.fechaDe(d)}`,
+                `${nombreDe(p)}: falta (no se presentó) el ${ctx.fechaDe(d)}${r ? ` · cubre ${nombreDe(r.persona)}` : ""}`,
                 [
                   {
                     metodo: "post",
@@ -396,21 +439,32 @@ export function planificarPublicacion(
                       shiftId: turno.id,
                       stationId: pu.id,
                       reason: "no_call_no_show",
+                      ...(r
+                        ? { coveringGuardId: r.guardId, allowRestDay: true }
+                        : {}),
                     },
                   },
                 ],
+                nombreDe(p),
               ),
             );
-          else
+          } else
             no.push(
               `${nombreDe(p)}: el ${ctx.fechaDe(d)} no tiene turno real que marcar como falta.`,
             );
           continue;
         }
+        // Con turno real ese día el servidor abre una novedad de cobertura; el
+        // reemplazo del borrador viaja con ella. Sin turno real no hay novedad
+        // que cubrir y la cobertura va aparte, como un turno más.
+        const r = enlace.turnos[p.id]?.[d] && pu ? reemplazoDe(p, pu, d) : null;
+
+        if (r && pu)
+          encadenadas.add(`${pu.id}|${r.franja}|${d}|${r.persona.id}`);
         cambios.push(
           llamada(
             "novedad",
-            `${nombreDe(p)}: ${aAhora.tipo} el ${ctx.fechaDe(d)}`,
+            `${nombreDe(p)}: ${aAhora.tipo} el ${ctx.fechaDe(d)}${r ? ` · cubre ${nombreDe(r.persona)}` : ""}`,
             [
               {
                 metodo: "post",
@@ -422,10 +476,14 @@ export function planificarPublicacion(
                     date: ctx.fechaDe(d),
                     type: CODIGO_NOVEDAD[aAhora.tipo] || "PM",
                     note: aAhora.tipo,
+                    ...(r
+                      ? { coveringGuardId: r.guardId, allowRestDay: true }
+                      : {}),
                   },
                 },
               },
             ],
+            nombreDe(p),
           ),
         );
         continue;
@@ -446,6 +504,7 @@ export function planificarPublicacion(
                     cuerpo: {},
                   },
                 ],
+                nombreDe(p),
               ),
             );
           else
@@ -465,6 +524,7 @@ export function planificarPublicacion(
                   ruta: `${t}/schedule-overrides/${novedad.id}`,
                 },
               ],
+              nombreDe(p),
             ),
           );
         continue;
@@ -480,7 +540,7 @@ export function planificarPublicacion(
       if (
         previo === FRANCO &&
         antes.manual[d] === FRANCO &&
-        novedad?.type === "F"
+        novedad?.type === "L"
       ) {
         // Se deshace un franco suelto: la novedad se borra y el generador repone el turno.
         cambios.push(
@@ -493,26 +553,35 @@ export function planificarPublicacion(
                 ruta: `${t}/schedule-overrides/${novedad.id}`,
               },
             ],
+            nombreDe(p),
           ),
         );
         continue;
       }
       if (ahora === FRANCO) {
+        /* En el Horario un franco suelto es «L» (libre). «F» es FALTA: iba así
+           y cada franco publicado nacía como falta disciplinaria con novedad
+           «no se presentó ni avisó». */
         cambios.push(
-          llamada("novedad", `${nombreDe(p)}: franco el ${ctx.fechaDe(d)}`, [
-            {
-              metodo: "post",
-              ruta: `${t}/schedule-overrides`,
-              cuerpo: {
-                data: {
-                  guardId: en.guardId,
-                  assignmentId: en.assignmentId,
-                  date: ctx.fechaDe(d),
-                  type: "F",
+          llamada(
+            "novedad",
+            `${nombreDe(p)}: franco el ${ctx.fechaDe(d)}`,
+            [
+              {
+                metodo: "post",
+                ruta: `${t}/schedule-overrides`,
+                cuerpo: {
+                  data: {
+                    guardId: en.guardId,
+                    assignmentId: en.assignmentId,
+                    date: ctx.fechaDe(d),
+                    type: "L",
+                  },
                 },
               },
-            },
-          ]),
+            ],
+            nombreDe(p),
+          ),
         );
       } else if (previo === FRANCO) {
         const fr = franjaBase(plan, pu, ahora);
@@ -537,6 +606,7 @@ export function planificarPublicacion(
                 },
               },
             ],
+            nombreDe(p),
           ),
         );
       } else
@@ -576,10 +646,11 @@ export function planificarPublicacion(
         enlace.turnosTodos?.[id]?.[d] || (real ? [real] : [])
       ).some((x) => x.stationId === pu.id);
 
-      if (yaReal) continue;
+      if (yaReal || encadenadas.has(`${pu.id}|${franja}|${d}|${id}`)) continue;
       /* Si el hueco viene de una FALTA con novedad abierta, cubrirlo por la
          novedad (como en Cobertura en vivo): crea el turno de cobertura y
-         cierra la novedad a la vez, en vez de dejar la alerta viva. */
+         cierra la novedad a la vez, en vez de dejar la alerta viva. Quien lo
+         eligió ya vio que ese día está libre: `allowRestDay`. */
       const ev = enlace.eventos[`${pu.id}|${d}`];
 
       cambios.push(
@@ -594,7 +665,7 @@ export function planificarPublicacion(
               ? {
                   metodo: "post",
                   ruta: `${t}/coverage/events/${ev}/cover`,
-                  cuerpo: { coveringGuardId: en.guardId },
+                  cuerpo: { coveringGuardId: en.guardId, allowRestDay: true },
                 }
               : {
                   metodo: "post",
@@ -611,6 +682,7 @@ export function planificarPublicacion(
                   },
                 },
           ],
+          nombreDe(p),
         ),
       );
     }
@@ -628,6 +700,7 @@ export function planificarPublicacion(
         "quitarTurno",
         `${nombreDe(p)}: ya no cubre el ${ctx.fechaDe(d)}`,
         [{ metodo: "delete", ruta: `${t}/shift/${shiftId}` }],
+        nombreDe(p),
       ),
     );
   }
@@ -662,8 +735,7 @@ export async function publicar(
 ): Promise<string[]> {
   const fallos: string[] = [];
   let hecho = 0;
-
-  for (const c of pub.cambios) {
+  const uno = async (c: Cambio) => {
     try {
       let rotacionId: string | null = null;
 
@@ -694,6 +766,41 @@ export async function publicar(
       );
     }
     avisar?.(++hecho, pub.cambios.length);
+  };
+
+  /* Los cambios van por tandas en el orden en que `planificarPublicacion` los
+     dejó (lo estructural primero). Lo estructural, uno a uno: un ciclo nuevo
+     se enlaza a la asignación que lo pidió. Las novedades y los turnos son
+     independientes entre sí —cada uno es un día de alguien— y van de a
+     varios a la vez: 87 cambios tardaban 40 s de uno en uno. */
+  const A_LA_VEZ = 4;
+  const paralelos = new Set<Cambio["tipo"]>([
+    "novedad",
+    "quitarNovedad",
+    "quitarTurno",
+    "turno",
+  ]);
+  let i = 0;
+
+  while (i < pub.cambios.length) {
+    const tipo = pub.cambios[i].tipo;
+    let j = i;
+
+    while (j < pub.cambios.length && pub.cambios[j].tipo === tipo) j++;
+    const tanda = pub.cambios.slice(i, j);
+
+    if (!paralelos.has(tipo)) for (const c of tanda) await uno(c);
+    else {
+      let k = 0;
+      const obrero = async () => {
+        while (k < tanda.length) await uno(tanda[k++]);
+      };
+
+      await Promise.all(
+        Array.from({ length: Math.min(A_LA_VEZ, tanda.length) }, obrero),
+      );
+    }
+    i = j;
   }
 
   return fallos;

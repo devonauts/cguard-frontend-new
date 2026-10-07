@@ -252,6 +252,7 @@ const idLimpio = (x: unknown): string => String(x ?? "").replace(/\|/g, "¦");
 
 const TIPOS: Record<string, string> = {
   V: "vacaciones",
+  PM: "permiso",
   P: "permiso",
   I: "incapacidad",
   M: "incapacidad",
@@ -704,17 +705,23 @@ export function planDesdeHorarioReal(
         id: String(o.id ?? ""),
         type: String(o.type ?? ""),
       };
-      // Sólo las ausencias: un «F» o un «D/N» suelto son cambios de un día, no una ausencia.
+      // Sólo las ausencias: un «L» o un «D/N» suelto son cambios de un día, no una ausencia.
       if (TIPOS[String(o.type)])
         persona.ausencias!.push({
           desde: d,
           hasta: d,
           tipo: TIPOS[String(o.type)],
         });
+      // «L» (libre) es un franco suelto: el servidor aparta su turno ese día
+      // (queda `absent`), pero no es una falta; en la hoja es su franco.
+      if (String(o.type) === "L") persona.manual[d] = FRANCO;
     }
     // Las faltas del horario real (turno `absent`): ausencia de un día.
     for (const [d, shiftId] of faltas.get(guardId) || []) {
-      if (persona.ausencias!.some((x) => d >= x.desde && d <= x.hasta))
+      if (
+        persona.manual[d] === FRANCO ||
+        persona.ausencias!.some((x) => d >= x.desde && d <= x.hasta)
+      )
         continue;
       persona.ausencias!.push({ desde: d, hasta: d, tipo: "falta" });
       (enlace.novedades[pid] = enlace.novedades[pid] || {})[d] = {
