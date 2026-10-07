@@ -200,6 +200,10 @@ describe.skipIf(!hay)("paridad Planificador ↔ Horario (casos reales)", () => {
             const ejemplos: string[] = [];
 
             for (let d = desde; d < hasta; d++) {
+              // Un día de ausencia (vacaciones) no dice nada del ciclo: el
+              // generador no escribe turno y la hoja lo pinta como ausencia.
+              if ((p.ausencias || []).some((a) => d >= a.desde && d <= a.hasta))
+                continue;
               const real = hechos.has(d)
                 ? franjaCercana(hechos.get(d)!)
                 : FRANCO;

@@ -554,14 +554,45 @@ export function planDesdeHorarioReal(
     const desde = hechos.size
       ? Math.min(horizonte, Math.max(desdeInicio, Math.min(...hechos.keys())))
       : desdeInicio;
-    const comparables = horizonte - desde;
+    // Los días en que está AUSENTE (vacaciones, permiso, incapacidad, falta)
+    // no dicen nada de su ciclo: el generador no escribe turno esos días, y
+    // leerlos como «franco» corría la fase (un 4-4-2 con dos días de
+    // vacaciones se leía con los francos del ciclo justo en las vacaciones).
+    // Quedan fuera de la comparación, ni turno ni franco.
+    const ausente = new Set<number>();
+
+    for (const o of ov.overrides || []) {
+      if (String(o.guardId) !== guardId || !TIPOS[String(o.type)]) continue;
+      const d = diasEntre(base, o.date);
+
+      if (Number.isFinite(d)) ausente.add(d);
+    }
+    for (const d of (faltas.get(guardId) || new Map()).keys()) ausente.add(d);
+    let comparables = 0;
+
+    for (let d = desde; d < horizonte; d++) if (!ausente.has(d)) comparables++;
     const fallos = (pat: string[], o: number) => {
       let n = 0;
 
       for (let d = desde; d < horizonte; d++)
-        if (pat[(d + o) % pat.length] !== visto[d]) n++;
+        if (!ausente.has(d) && pat[(d + o) % pat.length] !== visto[d]) n++;
 
       return n;
+    };
+    /** El tramo de `n` días desde `desde`, tomando cada posición del primer día no ausente que la ocupa. */
+    const tramo = (n: number): string[] | null => {
+      const pat: string[] = [];
+
+      for (let i = 0; i < n; i++) {
+        let c: string | null = null;
+
+        for (let d = desde + i; d < horizonte && c === null; d += n)
+          if (!ausente.has(d)) c = visto[d];
+        if (c === null) return null;
+        pat.push(c);
+      }
+
+      return pat;
     };
     let patron: string[] | null = null;
     let desfase = 0;
@@ -573,7 +604,9 @@ export function planDesdeHorarioReal(
     //    es lo que pasa en el puesto.
     if (hechos.size)
       for (let n = 1; n <= 14 && !patron; n++) {
-        const pat = visto.slice(desde, desde + n);
+        const pat = tramo(n);
+
+        if (!pat) continue;
         const o = (n - (desde % n)) % n;
         const e = fallos(pat, o);
 
@@ -638,7 +671,8 @@ export function planDesdeHorarioReal(
           const cuenta: Record<string, number> = {};
 
           for (let d = w; d < horizonte; d += 7)
-            if (d >= desde) cuenta[visto[d]] = (cuenta[visto[d]] || 0) + 1;
+            if (d >= desde && !ausente.has(d))
+              cuenta[visto[d]] = (cuenta[visto[d]] || 0) + 1;
 
           return (
             Object.keys(cuenta).sort(
