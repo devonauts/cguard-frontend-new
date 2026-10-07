@@ -122,24 +122,45 @@ function diasDePlaza(days: unknown): number[] {
 }
 const unoDonde = (dias: number[]) => dias.map((x) => (x > 0 ? 1 : 0));
 
+/** El tramo de una franja por su hora de entrada, como en el formulario del
+    puesto: D entre las 5 y las 12, T entre las 12 y las 18, N el resto. */
+export function tramoDeHora(ini: number): "D" | "T" | "N" {
+  const h = Math.floor(ini / 60);
+
+  if (h >= 5 && h < 12) return "D";
+  if (h >= 12 && h < 18) return "T";
+
+  return "N";
+}
+const NOMBRE_TRAMO: Record<string, string> = {
+  D: "Mañana",
+  T: "Tarde",
+  N: "Noche",
+};
+
 function franjaDe(ini: number, fin: number): Franja {
   if (ini === 420 && fin === 1140)
-    return { id: "D", nombre: "Diurna", ini, fin };
+    return { id: "D", nombre: "Diurna", ini, fin, tramo: "D" };
   if (ini === 1140 && fin === 420)
-    return { id: "N", nombre: "Nocturna", ini, fin };
+    return { id: "N", nombre: "Nocturna", ini, fin, tramo: "N" };
   if (ini === fin)
     return {
       id: `24-${hhmm(ini)}`.replace(/:/g, ""),
       nombre: "24 horas",
       ini,
       fin,
+      tramo: "24",
     };
+  // Cualquier otra ventana (BIOMAR: 07–15 y 15–23) lleva su tramo por la hora
+  // de entrada; antes la hoja la rotulaba con la primera letra de «07:00», un «0».
+  const tramo = tramoDeHora(ini);
 
   return {
     id: `${hhmm(ini)}-${hhmm(fin)}`.replace(/:/g, ""),
-    nombre: `${hhmm(ini)}–${hhmm(fin)}`,
+    nombre: `${NOMBRE_TRAMO[tramo]} ${hhmm(ini)}–${hhmm(fin)}`,
     ini,
     fin,
+    tramo,
   };
 }
 

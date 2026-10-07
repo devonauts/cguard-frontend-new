@@ -178,18 +178,26 @@ const COBERTURAS: Array<{
 const hhmm = (min: number) =>
   `${String(Math.floor(min / 60)).padStart(2, "0")}:${String(min % 60).padStart(2, "0")}`;
 const horario = (f?: Franja) => (f ? `${hhmm(f.ini)}–${hhmm(f.fin)}` : "");
+/* La letra de una franja es su TRAMO por la hora de entrada (D / T / N, «24»
+   si es el día entero), igual que en el formulario del puesto. */
 const letra = (f?: Franja) =>
   !f
     ? "?"
-    : f.id === "D"
-      ? "D"
-      : f.id === "N"
-        ? "N"
-        : f.ini === f.fin
-          ? "24"
-          : f.nombre.slice(0, 1).toUpperCase();
-const esNoche = (f?: Franja) =>
-  !!f && f.ini !== f.fin && (f.ini >= 1080 || f.ini < 300);
+    : f.tramo
+      ? f.tramo
+      : f.id === "D"
+        ? "D"
+        : f.id === "N"
+          ? "N"
+          : f.ini === f.fin
+            ? "24"
+            : f.ini >= 1080 || f.ini < 300
+              ? "N"
+              : f.ini >= 720
+                ? "T"
+                : "D";
+const esNoche = (f?: Franja) => letra(f) === "N";
+const esTarde = (f?: Franja) => letra(f) === "T";
 const corto = (n: string) => {
   const a = n.trim().split(/\s+/);
 
@@ -203,10 +211,15 @@ function tono(f?: Franja): React.CSSProperties {
         background: "color-mix(in oklab, var(--brand) 18%, transparent)",
         color: "var(--brand-text)",
       }
-    : {
-        background: "color-mix(in oklab, var(--warn) 22%, transparent)",
-        color: "var(--warn-text, var(--ink))",
-      };
+    : esTarde(f)
+      ? {
+          background: "color-mix(in oklab, var(--warn) 40%, var(--brand) 12%)",
+          color: "var(--ink)",
+        }
+      : {
+          background: "color-mix(in oklab, var(--warn) 22%, transparent)",
+          color: "var(--warn-text, var(--ink))",
+        };
 }
 const ROJO: React.CSSProperties = {
   background: "color-mix(in oklab, var(--bad) 14%, transparent)",
@@ -1501,22 +1514,40 @@ function FilasDePuesto({
                     {etiquetaDe(plan, p)}
                   </button>
                   {p.patron.length > 1 && (
-                    <button
-                      className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"
-                      title={t(
-                        "ui.Planificador.correrTitulo",
-                        "Empezar la rotación un día después",
-                      )}
-                      onClick={() =>
-                        cambiar((x) => {
-                          const q = x.personas.find((y) => y.id === p.id)!;
-                          q.desfase -= 1;
-                          q.manual = {};
-                        })
-                      }
-                    >
-                      {t("ui.Planificador.correr", "correr →")}
-                    </button>
+                    <>
+                      <button
+                        className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                        title={t(
+                          "ui.Planificador.regresarTitulo",
+                          "Empezar la rotación un día antes",
+                        )}
+                        onClick={() =>
+                          cambiar((x) => {
+                            const q = x.personas.find((y) => y.id === p.id)!;
+                            q.desfase += 1;
+                            q.manual = {};
+                          })
+                        }
+                      >
+                        {t("ui.Planificador.regresar", "← regresar")}
+                      </button>
+                      <button
+                        className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                        title={t(
+                          "ui.Planificador.correrTitulo",
+                          "Empezar la rotación un día después",
+                        )}
+                        onClick={() =>
+                          cambiar((x) => {
+                            const q = x.personas.find((y) => y.id === p.id)!;
+                            q.desfase -= 1;
+                            q.manual = {};
+                          })
+                        }
+                      >
+                        {t("ui.Planificador.correr", "correr →")}
+                      </button>
+                    </>
                   )}
                   <button
                     className="cg-btn-glass cg-focus rounded-full px-2 py-0.5 text-[11px] font-semibold"

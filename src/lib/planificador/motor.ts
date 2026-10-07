@@ -36,6 +36,8 @@ export interface Franja {
   /** Minutos desde medianoche. Si `fin <= ini` la franja cruza la medianoche. */
   ini: number;
   fin: number;
+  /** El tramo por la hora de entrada: D (5–12 h), T (12–18 h), N el resto; «24» día entero. */
+  tramo?: "D" | "T" | "N" | "24";
 }
 
 export interface Puesto {
