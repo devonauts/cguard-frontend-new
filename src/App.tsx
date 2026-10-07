@@ -396,6 +396,9 @@ const Planificador = lazy(
   () => import("./pages/admin/programmer/Planificador"),
 );
 const CheckInOut = lazy(() => import("./pages/admin/Reports/CheckInOut"));
+const CoverageAbsences = lazy(
+  () => import("./pages/admin/Reports/CoverageAbsences"),
+);
 const SiteTour = lazy(() => import("./pages/admin/Reports/SiteTour"));
 const Task = lazy(() => import("./pages/admin/Reports/Task"));
 const Dar = lazy(() => import("./pages/admin/Reports/Dar"));
@@ -1703,6 +1706,14 @@ export default function App() {
                                   </ProtectedRoute>
                                 }
                                 path="/reports/check-in-out"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <CoverageAbsences />
+                                  </ProtectedRoute>
+                                }
+                                path="/reports/coverage-absences"
                               />
                               <Route
                                 element={

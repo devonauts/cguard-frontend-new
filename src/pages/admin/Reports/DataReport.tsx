@@ -57,6 +57,11 @@ interface DataReportProps<T> {
    * acaban con uno aplicado y el otro no.
    */
   extraFilters?: ReactNode;
+  /**
+   * Resumen que va ENCIMA de la tabla (cifras, fichas, una lista corta). Se
+   * pinta con cada carga y no viaja al CSV: la tabla es lo que se exporta.
+   */
+  summary?: ReactNode;
   /** Days back the default range spans (default 30). */
   defaultDays?: number;
   emptyMessage?: string;
@@ -117,6 +122,7 @@ export default function DataReport<T>({
   load,
   searchable = true,
   extraFilters,
+  summary,
   defaultDays = 30,
   emptyMessage,
   rowTone,
@@ -410,6 +416,9 @@ export default function DataReport<T>({
       onPrint={() => openPrint(true)}
       onSearchChange={searchable ? setSearch : undefined}
     >
+      {/* Con filas; sin ellas el armazón pinta su «sin datos», que es lo que
+          hay que ver. */}
+      {!loading && filtered.length > 0 && summary}
       {loading || filtered.length === 0 ? null : esTelefono ? (
         /* ── EL INFORME, PLEGADO EN FICHAS ─────────────────────────────────
            Diez informes comparten este componente y todos pintaban de siete a

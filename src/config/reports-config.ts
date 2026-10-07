@@ -40,6 +40,15 @@ export const REPORT_SECTIONS: ReportSection[] = [
         href: "/reports/check-in-out",
       },
       {
+        id: "coverage-absences",
+        title: "Cobertura y ausencias",
+        titleKey: "ui.CoverageAbsences.titulo",
+        description:
+          "Quién faltó y por qué, si el puesto quedó cubierto y por quién, y cuánto trabajan los sacafrancos",
+        descriptionKey: "ui.CoverageAbsences.tarjeta",
+        href: "/reports/coverage-absences",
+      },
+      {
         id: "site-tours",
         title: "Informe de Recorridos del Sitio",
         titleKey: "ui.SiteTour.informeDeRecorridosDelSitio",

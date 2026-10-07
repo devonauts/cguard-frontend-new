@@ -30,6 +30,7 @@ import {
 // instead of navigating to an empty page. Add an href here as each report ships.
 const READY_REPORT_HREFS = new Set<string>([
   "/reports/check-in-out",
+  "/reports/coverage-absences",
   "/reports/site-tour",
   "/reports/tasks",
   "/reports/passdown",

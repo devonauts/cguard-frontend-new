@@ -29,6 +29,7 @@ import {
   Eye,
   Building2,
   Users,
+  UserX,
   Wrench,
   Boxes,
 } from "lucide-react";
@@ -66,6 +67,7 @@ const DANGER_ID =
   /panic|pánico|panico|fire|incendio|break-in|robo|vandalism|trespass|police|fall|caída|caida|suspicious|incident/;
 
 const ID_ICON: Array<[RegExp, LucideIcon]> = [
+  [/coverage-absences|ausencia|cobertura/, UserX],
   [/entry-exit|check.?in|check.?out/, LogIn],
   [/site-tour|tour|checkpoint|recorrido/, Route],
   [/task|tarea/, CheckSquare],
