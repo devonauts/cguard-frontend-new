@@ -8868,6 +8868,18 @@
     },
     "stats": {
       "withVehicle": "Met voertuig"
+    },
+    "new": {
+      "subtitle": "Nodig hem per e-mail uit zodat hij zijn account in de supervisor-app aanmaakt, of maak zijn volledige profiel aan.",
+      "tabInvite": "Uitnodigen per e-mail",
+      "inviteDescription": "Hij ontvangt een e-mail met de link om zijn account aan te maken en in te loggen in de supervisor-app.",
+      "createDescription": "Vul het profiel van de supervisor in. Na het aanmaken sturen we hem de uitnodiging voor de app per e-mail.",
+      "emailPlaceholder": "supervisor@voorbeeld.nl",
+      "emailHint": "Hier ontvangt hij de uitnodiging voor de supervisor-app.",
+      "addressPlaceholder": "Adres van de supervisor zoeken...",
+      "operacion": "Operatie",
+      "invitesSent": "Uitnodigingen verzonden",
+      "inviteFailed": "Kon niet uitnodigen: {{emails}}"
     }
   },
   "suscripcion": {

@@ -16360,6 +16360,18 @@
     },
     "stats": {
       "withVehicle": "Com veículo"
+    },
+    "new": {
+      "subtitle": "Convide-o por e-mail para que crie a conta no app de supervisor, ou crie o perfil completo.",
+      "tabInvite": "Convidar por e-mail",
+      "inviteDescription": "Ele receberá um e-mail com o link para criar a conta e entrar no app de supervisor.",
+      "createDescription": "Preencha a ficha do supervisor. Ao criá-la, enviaremos o convite para o e-mail dele entrar no app.",
+      "emailPlaceholder": "supervisor@exemplo.com",
+      "emailHint": "É aqui que ele receberá o convite para o app de supervisor.",
+      "addressPlaceholder": "Buscar endereço do supervisor...",
+      "operacion": "Operação",
+      "invitesSent": "Convites enviados",
+      "inviteFailed": "Não foi possível convidar: {{emails}}"
     }
   },
   "coverage": {

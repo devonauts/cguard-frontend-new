@@ -16360,6 +16360,18 @@
     },
     "stats": {
       "withVehicle": "With a vehicle"
+    },
+    "new": {
+      "subtitle": "Invite them by email so they can create their account in the supervisor app, or create their full profile.",
+      "tabInvite": "Invite by email",
+      "inviteDescription": "They will receive an email with a link to create their account and sign in to the supervisor app.",
+      "createDescription": "Fill in the supervisor's profile. Once it's created, we'll email them the invitation to sign in to the app.",
+      "emailPlaceholder": "supervisor@example.com",
+      "emailHint": "This is where they'll receive the invitation to the supervisor app.",
+      "addressPlaceholder": "Search the supervisor's address...",
+      "operacion": "Operations",
+      "invitesSent": "Invitations sent",
+      "inviteFailed": "Could not invite: {{emails}}"
     }
   },
   "coverage": {

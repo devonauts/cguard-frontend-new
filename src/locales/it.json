@@ -8868,6 +8868,18 @@
     },
     "stats": {
       "withVehicle": "Con veicolo"
+    },
+    "new": {
+      "subtitle": "Invitalo via e-mail perché crei il suo account nell'app supervisore, oppure crea il suo profilo completo.",
+      "tabInvite": "Invita via e-mail",
+      "inviteDescription": "Riceverà un'e-mail con il link per creare l'account e accedere all'app supervisore.",
+      "createDescription": "Compila la scheda del supervisore. Una volta creata, gli invieremo l'invito via e-mail per accedere all'app.",
+      "emailPlaceholder": "supervisore@esempio.com",
+      "emailHint": "Qui riceverà l'invito all'app supervisore.",
+      "addressPlaceholder": "Cerca l'indirizzo del supervisore...",
+      "operacion": "Operatività",
+      "invitesSent": "Inviti inviati",
+      "inviteFailed": "Impossibile invitare: {{emails}}"
     }
   },
   "suscripcion": {

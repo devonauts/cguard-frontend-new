@@ -219,6 +219,9 @@ const NewSecurityGuardPage = lazy(
 const SupervisorsPage = lazy(
   () => import("./pages/admin/supervisors/SupervisorsPage"),
 );
+const NewSupervisorPage = lazy(
+  () => import("./pages/admin/supervisors/NewSupervisorPage"),
+);
 const SupervisorDetailPage = lazy(
   () => import("./pages/admin/supervisors/SupervisorDetailPage"),
 );
@@ -1928,6 +1931,14 @@ export default function App() {
                                   </ProtectedRoute>
                                 }
                                 path="/supervisors"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <NewSupervisorPage />
+                                  </ProtectedRoute>
+                                }
+                                path="/supervisors/new"
                               />
                               <Route
                                 element={

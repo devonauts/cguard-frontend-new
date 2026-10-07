@@ -8868,6 +8868,18 @@
     },
     "stats": {
       "withVehicle": "Avec véhicule"
+    },
+    "new": {
+      "subtitle": "Invitez-le par e-mail pour qu'il crée son compte dans l'application superviseur, ou créez son profil complet.",
+      "tabInvite": "Inviter par e-mail",
+      "inviteDescription": "Il recevra un e-mail avec le lien pour créer son compte et accéder à l'application superviseur.",
+      "createDescription": "Complétez la fiche du superviseur. Une fois créée, nous lui enverrons l'invitation par e-mail pour accéder à l'application.",
+      "emailPlaceholder": "superviseur@exemple.com",
+      "emailHint": "C'est ici qu'il recevra l'invitation à l'application superviseur.",
+      "addressPlaceholder": "Rechercher l'adresse du superviseur...",
+      "operacion": "Opérations",
+      "invitesSent": "Invitations envoyées",
+      "inviteFailed": "Impossible d'inviter : {{emails}}"
     }
   },
   "suscripcion": {

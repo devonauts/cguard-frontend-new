@@ -6,7 +6,6 @@ import {
   ShieldCheck,
   Plus,
   Radar,
-  UserPlus,
   Car,
   MapPin,
   Users,
@@ -40,7 +39,6 @@ import {
   SkeletonCards,
   StatCard,
   StatusBadge,
-  Modal,
   Stagger,
   GlassPanel,
   EmptyState,
@@ -53,45 +51,16 @@ import {
 } from "@/lib/api/supervisorService";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { useVistaGuardada } from "@/hooks/useVistaGuardada";
-import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
 
 type StatFilter = "todos" | "enTurno" | "fuera" | "conVehiculo";
 
-// Weekday labels are translated where they are painted (see WEEKDAYS.map below):
-// this array is module-level, so a t() call here would freeze the boot language.
-const WEEKDAYS = [
-  { n: 1, labelKey: "comun.weekday.short.mon", label: "Lun" },
-  { n: 2, labelKey: "comun.weekday.short.tue", label: "Mar" },
-  { n: 3, labelKey: "comun.weekday.short.wed", label: "Mié" },
-  { n: 4, labelKey: "comun.weekday.short.thu", label: "Jue" },
-  { n: 5, labelKey: "comun.weekday.short.fri", label: "Vie" },
-  { n: 6, labelKey: "comun.weekday.short.sat", label: "Sáb" },
-  { n: 0, labelKey: "comun.weekday.short.sun", label: "Dom" },
-];
 
 export default function SupervisorsPage() {
   const { t } = useTranslation();
-  /* El nombre del anfitrión: «C-Guard Pro» en el de la plataforma, el del
-     socio en el suyo. Por eso estos textos ya no lo llevan escrito. */
-  const { platformName: nombreDeMarca } = useWhiteLabel();
   const navigate = useNavigate();
   const [rows, setRows] = useState<Supervisor[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({
-    email: "",
-    firstName: "",
-    lastName: "",
-    governmentId: "",
-    phoneNumber: "",
-    zone: "",
-    assignedVehicle: "",
-    turnoStart: "",
-    turnoEnd: "",
-  });
-  const [turnoDays, setTurnoDays] = useState<number[]>([]);
-  const [saving, setSaving] = useState(false);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -150,64 +119,6 @@ export default function SupervisorsPage() {
       .map((w) => w[0] || "")
       .join("")
       .toUpperCase();
-
-  const submit = async () => {
-    if (!form.email.trim()) {
-      toast.error(t("ui.SupervisorsPage.elCorreoEsObligatorio"));
-
-      return;
-    }
-    setSaving(true);
-    try {
-      const sup = await supervisorService.create({
-        email: form.email.trim(),
-        firstName: form.firstName.trim() || undefined,
-        lastName: form.lastName.trim() || undefined,
-        governmentId: form.governmentId.trim() || undefined,
-        phoneNumber: form.phoneNumber.trim() || undefined,
-        zone: form.zone.trim() || undefined,
-        assignedVehicle: form.assignedVehicle.trim() || undefined,
-        turnoDays: turnoDays.length ? turnoDays : undefined,
-        turnoStart: form.turnoStart || undefined,
-        turnoEnd: form.turnoEnd || undefined,
-      });
-
-      // Cuenta que ya existía (trabaja con otra empresa en CGuardPro): se ENLAZÓ,
-      // no se creó — decir "invitación enviada" haría esperar un correo de
-      // registro que no va a llegar (recibe uno de "te dieron acceso").
-      if ((sup as any)?.linkedExistingAccount) {
-        toast.success(t("ui.SupervisorsPage.esteCorreoYaTeniaCuenta", { marca: nombreDeMarca }), {
-          duration: 8000,
-        });
-      } else {
-        toast.success(t("ui.SupervisorsPage.supervisorCreadoYEnviadaLa"));
-      }
-      setOpen(false);
-      setForm({
-        email: "",
-        firstName: "",
-        lastName: "",
-        governmentId: "",
-        phoneNumber: "",
-        zone: "",
-        assignedVehicle: "",
-        turnoStart: "",
-        turnoEnd: "",
-      });
-      setTurnoDays([]);
-      navigate(`/supervisors/${sup.id}`);
-    } catch (e: any) {
-      toast.error(
-        e?.message ||
-          t(
-            "supervisors.errors.createFailed",
-            "No se pudo crear el supervisor",
-          ),
-      );
-    } finally {
-      setSaving(false);
-    }
-  };
 
   // (Re)send the supervisor app-access invitation so they can create their account.
   const resendInvite = async (s: Supervisor) => {
@@ -412,7 +323,7 @@ export default function SupervisorsPage() {
                 <MapPin className="mr-2 h-4 w-4" />{" "}
                 {t("ui.SupervisorPositionsPage.puestos", "Puestos")}
               </Button>
-              <Button variant="brand" onClick={() => setOpen(true)}>
+              <Button variant="brand" onClick={() => navigate("/supervisors/new")}>
                 <Plus className="mr-2 h-4 w-4" />{" "}
                 {t("ui.SupervisorsPage.nuevoSupervisor")}{" "}
               </Button>
@@ -541,7 +452,7 @@ export default function SupervisorsPage() {
                     <Button
                       size="sm"
                       variant="brand"
-                      onClick={() => setOpen(true)}
+                      onClick={() => navigate("/supervisors/new")}
                     >
                       <Plus className="mr-2 h-4 w-4" />{" "}
                       {t("ui.SupervisorsPage.nuevoSupervisor")}
@@ -678,157 +589,6 @@ export default function SupervisorsPage() {
         </PageContainer>
       </div>
 
-      <Modal
-        description={t("ui.SupervisorsPage.creaElUsuarioConRol")}
-        footer={
-          <>
-            <Button
-              disabled={saving}
-              variant="outline"
-              onClick={() => setOpen(false)}
-            >
-              {t("actions.cancel")}
-            </Button>
-            <Button disabled={saving} variant="brand" onClick={submit}>
-              {saving
-                ? t("ui.SupervisorPositionsPage.creando", "Creando…")
-                : t("ui.SupervisorsPage.crearSupervisor", "Crear supervisor")}
-            </Button>
-          </>
-        }
-        icon={<UserPlus className="h-5 w-5" />}
-        open={open}
-        title={t("ui.SupervisorsPage.nuevoSupervisor")}
-        onOpenChange={setOpen}
-      >
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Input
-            className="sm:col-span-2"
-            placeholder={t("comun.correoReq")}
-            type="email"
-            value={form.email}
-            onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-          />
-          <Input
-            placeholder={t("ui.SupervisorDetail.nombres", "Nombres")}
-            value={form.firstName}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, firstName: e.target.value }))
-            }
-          />
-          <Input
-            placeholder={t("guards.list.details.fields.lastName", "Apellidos")}
-            value={form.lastName}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, lastName: e.target.value }))
-            }
-          />
-          <Input
-            placeholder={t("ui.Supervisors.cedulaId", "Cédula / ID")}
-            value={form.governmentId}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, governmentId: e.target.value }))
-            }
-          />
-          <Input
-            placeholder={t("ui.Supervisors.telefono", "Teléfono")}
-            value={form.phoneNumber}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, phoneNumber: e.target.value }))
-            }
-          />
-          <Input
-            placeholder={t(
-              "ui.Supervisors.zonaPosicionPEjAguila2",
-              "Zona / posición (p. ej. Aguila2)",
-            )}
-            value={form.zone}
-            onChange={(e) => setForm((f) => ({ ...f, zone: e.target.value }))}
-          />
-          <Input
-            placeholder={t(
-              "ui.Supervisors.vehiculoAsignado",
-              "Vehículo asignado",
-            )}
-            value={form.assignedVehicle}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, assignedVehicle: e.target.value }))
-            }
-          />
-        </div>
-
-        <div className="glass-sunken mt-4 p-3">
-          <p className="mb-2 text-sm font-semibold text-foreground">
-            {t("ui.SupervisorsPage.turnoDelSupervisor")}
-          </p>
-          <p className="mb-2 text-xs" style={{ color: "var(--ink-soft)" }}>
-            {t(
-              "ui.Supervisors.diasYHorarioQueEl",
-              "Días y horario que el supervisor debe cumplir (opcional; también editable luego).",
-            )}
-          </p>
-          <div className="mb-3 flex flex-wrap gap-1.5">
-            {WEEKDAYS.map((d) => {
-              const on = turnoDays.includes(d.n);
-
-              return (
-                <button
-                  key={d.n}
-                  className="cg-focus rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition-all"
-                  style={
-                    on
-                      ? {
-                          background: "var(--brand)",
-                          color: "var(--brand-ink)",
-                          borderColor: "transparent",
-                          boxShadow: "0 0 18px -6px var(--brand-glow)",
-                        }
-                      : {
-                          background: "transparent",
-                          color: "var(--ink-soft)",
-                          borderColor: "var(--hairline)",
-                        }
-                  }
-                  type="button"
-                  onClick={() =>
-                    setTurnoDays((prev) =>
-                      prev.includes(d.n)
-                        ? prev.filter((x) => x !== d.n)
-                        : [...prev, d.n],
-                    )
-                  }
-                >
-                  {t(d.labelKey, d.label)}
-                </button>
-              );
-            })}
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <label className="cg-eyebrow">
-              {t("ui.SupervisorsPage.entrada", "Entrada")}
-              <Input
-                className="mt-1"
-                type="time"
-                value={form.turnoStart}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, turnoStart: e.target.value }))
-                }
-              />
-            </label>
-            <label className="cg-eyebrow">
-              {t("ui.SupervisorsPage.salida", "Salida")}
-              <Input
-                className="mt-1"
-                type="time"
-                value={form.turnoEnd}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, turnoEnd: e.target.value }))
-                }
-              />
-            </label>
-          </div>
-        </div>
-      </Modal>
     </AppLayout>
   );
 }

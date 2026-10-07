@@ -67,6 +67,18 @@ export interface CreateSupervisorBody {
   phoneNumber?: string;
   zone?: string;
   assignedVehicle?: string;
+  // Ficha completa (pestaña «Crear perfil» de Nuevo supervisor).
+  gender?: string;
+  bloodType?: string;
+  birthDate?: string;
+  birthPlace?: string;
+  maritalStatus?: string;
+  academicInstruction?: string;
+  address?: string;
+  latitude?: number;
+  longitude?: number;
+  hiringContractDate?: string;
+  guardCredentials?: string;
   // Turno (recurring shift) set at creation — same fields the detail page edits.
   turnoDays?: number[];
   turnoStart?: string;

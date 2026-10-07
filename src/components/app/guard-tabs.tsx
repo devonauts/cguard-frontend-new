@@ -8,9 +8,17 @@ type Props = {
   value: string;
   onValueChange: (v: string) => void;
   children: React.ReactNode;
+  /** Texto de la pestaña de invitar. El del vigilante dice «SMS o correo»; el
+   *  supervisor sólo se invita por correo. */
+  inviteLabel?: string;
 };
 
-export function GuardTabsHeader({ value, onValueChange, children }: Props) {
+export function GuardTabsHeader({
+  value,
+  onValueChange,
+  children,
+  inviteLabel,
+}: Props) {
   const { t } = useTranslation();
 
   return (
@@ -21,7 +29,7 @@ export function GuardTabsHeader({ value, onValueChange, children }: Props) {
             className=" px-4 py-3 data-[state=active]:border-b-2 data-[state=active]:border-primary"
             value="invite"
           >
-            {t("guards.tabs.invite")}
+            {inviteLabel ?? t("guards.tabs.invite")}
           </TabsTrigger>
           {/* <TabsTrigger value="join_code" className=" px-4 py-3 data-[state=active]:border-b-2 data-[state=active]:border-primary">
             Unirse por Código

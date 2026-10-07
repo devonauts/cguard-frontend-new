@@ -8868,6 +8868,18 @@
     },
     "stats": {
       "withVehicle": "Mit Fahrzeug"
+    },
+    "new": {
+      "subtitle": "Laden Sie ihn per E-Mail ein, damit er sein Konto in der Supervisor-App erstellt, oder legen Sie sein vollständiges Profil an.",
+      "tabInvite": "Per E-Mail einladen",
+      "inviteDescription": "Er erhält eine E-Mail mit dem Link, um sein Konto zu erstellen und sich in der Supervisor-App anzumelden.",
+      "createDescription": "Füllen Sie das Profil des Supervisors aus. Nach dem Anlegen senden wir ihm die Einladung zur App per E-Mail.",
+      "emailPlaceholder": "supervisor@beispiel.de",
+      "emailHint": "Hierhin wird die Einladung zur Supervisor-App gesendet.",
+      "addressPlaceholder": "Adresse des Supervisors suchen...",
+      "operacion": "Einsatz",
+      "invitesSent": "Einladungen gesendet",
+      "inviteFailed": "Einladung fehlgeschlagen: {{emails}}"
     }
   },
   "suscripcion": {

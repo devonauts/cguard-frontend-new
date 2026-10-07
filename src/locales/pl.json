@@ -8870,6 +8870,18 @@
     },
     "stats": {
       "withVehicle": "Z pojazdem"
+    },
+    "new": {
+      "subtitle": "Zaproś go e-mailem, aby założył konto w aplikacji supervisora, albo utwórz jego pełny profil.",
+      "tabInvite": "Zaproś e-mailem",
+      "inviteDescription": "Otrzyma e-mail z linkiem do założenia konta i logowania w aplikacji supervisora.",
+      "createDescription": "Uzupełnij kartę supervisora. Po jej utworzeniu wyślemy mu zaproszenie do aplikacji e-mailem.",
+      "emailPlaceholder": "supervisor@przyklad.pl",
+      "emailHint": "Na ten adres otrzyma zaproszenie do aplikacji supervisora.",
+      "addressPlaceholder": "Szukaj adresu supervisora...",
+      "operacion": "Operacje",
+      "invitesSent": "Zaproszenia wysłane",
+      "inviteFailed": "Nie udało się zaprosić: {{emails}}"
     }
   },
   "suscripcion": {
