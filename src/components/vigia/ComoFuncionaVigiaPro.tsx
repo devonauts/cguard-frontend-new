@@ -199,6 +199,15 @@ const ESCENAS: Record<Escena, { dur: number; inicio: () => Estado; pasos: [numbe
 };
 
 const ORDEN: Escena[] = ["faltas", "partes", "vigilantes"];
+
+/* La placa del asistente: «IA» para VigIA, «AI» para Vigia AI; con el nombre
+   de un socio, la del idioma de quien mira. */
+function placaDe(agente: string, idioma: string): string {
+  if (/\bAI$/.test(agente.trim())) return "AI";
+  if (agente.trim() === "VigIA") return "IA";
+
+  return /^(es|pt|fr|it)/i.test(idioma) ? "IA" : "AI";
+}
 const TIC = 100;
 
 /** El estado de la escena con sus `k` primeros pasos aplicados. */
@@ -251,8 +260,9 @@ function Plano() {
 }
 
 export default function ComoFuncionaVigiaPro({ className }: { className?: string }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const agente = useAgente().nombre;
+  const placa = placaDe(agente, i18n.language || "");
   const quieto = !!useReducedMotion();
 
   const [escena, setEscena] = useState<Escena>("faltas");
@@ -391,7 +401,7 @@ export default function ComoFuncionaVigiaPro({ className }: { className?: string
         <div className="cfv-cuadro">
           <figure className="cfv-lado">
             <div ref={telA} className="cfv-tel">
-              <Telefono T={T} agente={agente} enLinea={t("vigiaPro.demo.enLinea")} ms={ms} p={s.a} />
+              <Telefono T={T} agente={agente} enLinea={t("vigiaPro.demo.enLinea")} ms={ms} p={s.a} placa={placa} />
             </div>
             <figcaption>{T("telA")}</figcaption>
           </figure>
@@ -399,7 +409,7 @@ export default function ComoFuncionaVigiaPro({ className }: { className?: string
           <div className="cfv-centro">
             <div className="cfv-nucleo">
               <div key={s.late ?? "quieto"} ref={orbe} className="cfv-orbe" data-late={s.late && !quieto ? "" : undefined}>
-                IA
+                {placa}
               </div>
               <div className="cfv-nombre">{agente}</div>
               <div className="cfv-pensando">{s.pensar ? T(s.pensar) : ""}</div>
@@ -436,7 +446,7 @@ export default function ComoFuncionaVigiaPro({ className }: { className?: string
 
           <figure className="cfv-lado">
             <div ref={telB} className="cfv-tel">
-              <Telefono T={T} agente={agente} enLinea={t("vigiaPro.demo.enLinea")} ms={ms} p={s.b} />
+              <Telefono T={T} agente={agente} enLinea={t("vigiaPro.demo.enLinea")} ms={ms} p={s.b} placa={placa} />
             </div>
             <figcaption>{T("telB")}</figcaption>
           </figure>
@@ -472,18 +482,20 @@ function Telefono({
   agente,
   enLinea,
   ms,
+  placa,
 }: {
   p: Pantalla;
   T: (k: string) => string;
   agente: string;
   enLinea: string;
   ms: number;
+  placa: string;
 }) {
   if (p.tipo === "chat") {
     return (
       <div className="cfv-pantalla">
         <div className="cfv-cab">
-          <div className="cfv-av">IA</div>
+          <div className="cfv-av">{placa}</div>
           <div className="min-w-0">
             <div className="n">{agente}</div>
             <div className="s">{enLinea}</div>
