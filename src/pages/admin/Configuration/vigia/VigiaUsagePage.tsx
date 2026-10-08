@@ -67,23 +67,13 @@ export default function VigiaUsagePage() {
       .slice(0, 10);
     const v: any = usoPorDia.get(dia);
 
-    return {
-      dia,
-      mensajes: v?.mensajes || 0,
-      costCentiCents: Number(v?.costCentiCents) || 0,
-    };
+    return { dia, mensajes: v?.mensajes || 0 };
   });
   const hayUso = serieCruda.some((d) => d.mensajes > 0);
   const moneda: { codigo: string; tasa: number; aproximada: boolean } =
     datos?.moneda || { codigo: "USD", tasa: 1, aproximada: false };
   const dinero = (cents: number, dec = 2) =>
     formatearDinero(moneda, Math.max(0, cents) / 100, dec);
-  const dineroDesdeCenti = (centi: number) =>
-    formatearDinero(moneda, Math.max(0, centi) / 10000, 3);
-  const costo30dCenti = serieCruda.reduce(
-    (acc, d: any) => acc + (Number(d.costCentiCents) || 0),
-    0,
-  );
   const maxMensajes = Math.max(1, ...serie.map((d) => d.mensajes));
   const etiqueta = (dia: string) =>
     new Date(`${dia}T12:00:00Z`).toLocaleDateString(localeActual(), {
@@ -198,7 +188,7 @@ export default function VigiaUsagePage() {
                       title={`${etiqueta(d.dia)}: ${t("ui.VigiaUsagePage.nMensajes", {
                         defaultValue: "{{count}} mensajes",
                         count: d.mensajes,
-                      })}${d.costCentiCents > 0 ? ` · ≈ ${dineroDesdeCenti(d.costCentiCents)}` : ""}`}
+                      })}`}
                     />
                   ))}
                 </div>
@@ -211,16 +201,6 @@ export default function VigiaUsagePage() {
                   <span>{etiqueta(serie[29].dia)}</span>
                 </div>
               </>
-            )}
-            {typeof datos.tokens30d === "number" && datos.tokens30d > 0 && (
-              <p className="mt-2 text-xs" style={{ color: "var(--ink-faint)" }}>
-                {t("ui.VigiaUsagePage.tokensProcesadosEn30Dias", {
-                  defaultValue:
-                    "{{tokens}} tokens procesados en 30 días · gasto ≈ {{gasto}}.",
-                  tokens: datos.tokens30d.toLocaleString(localeActual()),
-                  gasto: dineroDesdeCenti(costo30dCenti),
-                })}
-              </p>
             )}
           </section>
 
@@ -260,11 +240,12 @@ export default function VigiaUsagePage() {
           </section>
 
           <p className="text-[11px]" style={{ color: "var(--ink-faint)" }}>
-            {t("ui.VigiaUsagePage.costoRealDelMes", {
-              defaultValue:
-                "Costo real del mes: {{costo}} en el proveedor de IA. La cuota gratis se renueva cada mes.",
-              costo: dineroDesdeCenti(datos.mes?.costCentiCents ?? 0),
-            })}
+            {/* Nunca el costo nuestro ni que hay un proveedor detrás: esto lo lee
+                la empresa, y en la de un socio, sus clientes. */}
+            {t(
+              "ui.VigiaUsagePage.cuotaGratisSeRenueva",
+              "La cuota gratis se renueva cada mes.",
+            )}
             {moneda.aproximada &&
               ` ${t(
                 "ui.VigiaUsagePage.montosConvertidosDeUsd",

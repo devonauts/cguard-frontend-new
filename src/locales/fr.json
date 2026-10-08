@@ -14087,14 +14087,13 @@
       "cobradoDelSaldoMes": "Débité du solde (mois)",
       "accionesEjecutadas": "Actions exécutées",
       "comparteElMonederoDeComunicaciones": "{{agente}} partage le portefeuille Communications : la même recharge sert pour les SMS, WhatsApp et l'assistant.",
-      "costoRealDelMes": "Coût réel du mois : {{costo}} chez le fournisseur d'IA. Le quota gratuit est renouvelé chaque mois.",
       "mensajesGratisRestantesAprox": "Messages gratuits restants (env.)",
       "montosConvertidosDeUsd": "Montants convertis depuis l'USD au taux de change du jour.",
       "saldoDisponible": "Solde disponible",
-      "tokensProcesadosEn30Dias": "{{tokens}} jetons traités en 30 jours · dépense ≈ {{gasto}}.",
       "nMensajes": "{{count}} messages",
       "nMensajes_one": "{{count}} message",
-      "nMensajes_other": "{{count}} messages"
+      "nMensajes_other": "{{count}} messages",
+      "cuotaGratisSeRenueva": "Le quota gratuit est renouvelé chaque mois."
     },
     "AdminUserDetailPage": {
       "usuarioNoEncontrado": "Utilisateur introuvable",

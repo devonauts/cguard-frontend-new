@@ -14087,14 +14087,13 @@
       "cobradoDelSaldoMes": "Van het saldo afgeschreven (maand)",
       "accionesEjecutadas": "Uitgevoerde acties",
       "comparteElMonederoDeComunicaciones": "{{agente}} deelt het tegoed van Communicatie: dezelfde opwaardering geldt voor sms, WhatsApp en de assistent.",
-      "costoRealDelMes": "Werkelijke kosten deze maand: {{costo}} bij de AI-aanbieder. Het gratis tegoed wordt elke maand vernieuwd.",
       "mensajesGratisRestantesAprox": "Resterende gratis berichten (ca.)",
       "montosConvertidosDeUsd": "Bedragen omgerekend vanuit USD tegen de dagkoers.",
       "saldoDisponible": "Beschikbaar saldo",
-      "tokensProcesadosEn30Dias": "{{tokens}} tokens verwerkt in 30 dagen · uitgaven ≈ {{gasto}}.",
       "nMensajes": "{{count}} berichten",
       "nMensajes_one": "{{count}} bericht",
-      "nMensajes_other": "{{count}} berichten"
+      "nMensajes_other": "{{count}} berichten",
+      "cuotaGratisSeRenueva": "Het gratis tegoed wordt elke maand vernieuwd."
     },
     "AdminUserDetailPage": {
       "usuarioNoEncontrado": "Gebruiker niet gevonden",

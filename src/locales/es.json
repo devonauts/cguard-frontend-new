@@ -13552,14 +13552,13 @@
       "cobradoDelSaldoMes": "Cobrado del saldo (mes)",
       "accionesEjecutadas": "Acciones ejecutadas",
       "comparteElMonederoDeComunicaciones": "{{agente}} comparte el monedero de Comunicaciones: la misma recarga sirve para SMS, WhatsApp y el asistente.",
-      "costoRealDelMes": "Costo real del mes: {{costo}} en el proveedor de IA. La cuota gratis se renueva cada mes.",
       "mensajesGratisRestantesAprox": "Mensajes gratis restantes (aprox.)",
       "montosConvertidosDeUsd": "Montos convertidos de USD al tipo de cambio del día.",
       "saldoDisponible": "Saldo disponible",
-      "tokensProcesadosEn30Dias": "{{tokens}} tokens procesados en 30 días · gasto ≈ {{gasto}}.",
       "nMensajes": "{{count}} mensajes",
       "nMensajes_one": "{{count}} mensaje",
-      "nMensajes_other": "{{count}} mensajes"
+      "nMensajes_other": "{{count}} mensajes",
+      "cuotaGratisSeRenueva": "La cuota gratis se renueva cada mes."
     },
     "AdminUserDetailPage": {
       "usuarioNoEncontrado": "Usuario no encontrado",

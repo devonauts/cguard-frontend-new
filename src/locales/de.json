@@ -14087,14 +14087,13 @@
       "cobradoDelSaldoMes": "Vom Guthaben abgebucht (Monat)",
       "accionesEjecutadas": "Ausgeführte Aktionen",
       "comparteElMonederoDeComunicaciones": "{{agente}} nutzt das Guthaben aus Kommunikation: Dieselbe Aufladung gilt für SMS, WhatsApp und den Assistenten.",
-      "costoRealDelMes": "Tatsächliche Kosten diesen Monat: {{costo}} beim KI-Anbieter. Das Freikontingent erneuert sich jeden Monat.",
       "mensajesGratisRestantesAprox": "Verbleibende Gratisnachrichten (ca.)",
       "montosConvertidosDeUsd": "Beträge zum Tageskurs aus USD umgerechnet.",
       "saldoDisponible": "Verfügbares Guthaben",
-      "tokensProcesadosEn30Dias": "{{tokens}} Tokens in 30 Tagen verarbeitet · Ausgaben ≈ {{gasto}}.",
       "nMensajes": "{{count}} Nachrichten",
       "nMensajes_one": "{{count}} Nachricht",
-      "nMensajes_other": "{{count}} Nachrichten"
+      "nMensajes_other": "{{count}} Nachrichten",
+      "cuotaGratisSeRenueva": "Das Freikontingent erneuert sich jeden Monat."
     },
     "AdminUserDetailPage": {
       "usuarioNoEncontrado": "Benutzer nicht gefunden",

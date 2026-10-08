@@ -14197,16 +14197,15 @@
       "cobradoDelSaldoMes": "Pobrane z salda (miesiąc)",
       "accionesEjecutadas": "Wykonane działania",
       "comparteElMonederoDeComunicaciones": "{{agente}} korzysta z portfela Komunikacji: to samo doładowanie działa dla SMS, WhatsApp i asystenta.",
-      "costoRealDelMes": "Rzeczywisty koszt w tym miesiącu: {{costo}} u dostawcy AI. Darmowy limit odnawia się co miesiąc.",
       "mensajesGratisRestantesAprox": "Pozostałe darmowe wiadomości (ok.)",
       "montosConvertidosDeUsd": "Kwoty przeliczone z USD po kursie z dnia.",
       "saldoDisponible": "Dostępne saldo",
-      "tokensProcesadosEn30Dias": "{{tokens}} tokenów przetworzonych w 30 dni · koszt ≈ {{gasto}}.",
       "nMensajes": "{{count}} wiadomości",
       "nMensajes_one": "{{count}} wiadomość",
       "nMensajes_other": "{{count}} wiadomości",
       "nMensajes_few": "{{count}} wiadomości",
-      "nMensajes_many": "{{count}} wiadomości"
+      "nMensajes_many": "{{count}} wiadomości",
+      "cuotaGratisSeRenueva": "Darmowy limit odnawia się co miesiąc."
     },
     "AdminUserDetailPage": {
       "usuarioNoEncontrado": "Nie znaleziono użytkownika",

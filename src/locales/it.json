@@ -14087,14 +14087,13 @@
       "cobradoDelSaldoMes": "Addebitato sul credito (mese)",
       "accionesEjecutadas": "Azioni eseguite",
       "comparteElMonederoDeComunicaciones": "{{agente}} condivide il credito di Comunicazioni: la stessa ricarica vale per SMS, WhatsApp e l'assistente.",
-      "costoRealDelMes": "Costo reale del mese: {{costo}} presso il fornitore di IA. La quota gratuita si rinnova ogni mese.",
       "mensajesGratisRestantesAprox": "Messaggi gratuiti rimanenti (circa)",
       "montosConvertidosDeUsd": "Importi convertiti da USD al tasso di cambio del giorno.",
       "saldoDisponible": "Saldo disponibile",
-      "tokensProcesadosEn30Dias": "{{tokens}} token elaborati in 30 giorni · spesa ≈ {{gasto}}.",
       "nMensajes": "{{count}} messaggi",
       "nMensajes_one": "{{count}} messaggio",
-      "nMensajes_other": "{{count}} messaggi"
+      "nMensajes_other": "{{count}} messaggi",
+      "cuotaGratisSeRenueva": "La quota gratuita si rinnova ogni mese."
     },
     "AdminUserDetailPage": {
       "usuarioNoEncontrado": "Utente non trovato",

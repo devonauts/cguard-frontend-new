@@ -13552,14 +13552,13 @@
       "cobradoDelSaldoMes": "Charged to the balance (month)",
       "accionesEjecutadas": "Actions performed",
       "comparteElMonederoDeComunicaciones": "{{agente}} shares the Communications wallet: the same top-up covers SMS, WhatsApp and the assistant.",
-      "costoRealDelMes": "Actual cost this month: {{costo}} at the AI provider. The free allowance renews every month.",
       "mensajesGratisRestantesAprox": "Free messages left (approx.)",
       "montosConvertidosDeUsd": "Amounts converted from USD at today's exchange rate.",
       "saldoDisponible": "Available balance",
-      "tokensProcesadosEn30Dias": "{{tokens}} tokens processed in 30 days · spend ≈ {{gasto}}.",
       "nMensajes": "{{count}} messages",
       "nMensajes_one": "{{count}} message",
-      "nMensajes_other": "{{count}} messages"
+      "nMensajes_other": "{{count}} messages",
+      "cuotaGratisSeRenueva": "The free allowance renews every month."
     },
     "AdminUserDetailPage": {
       "usuarioNoEncontrado": "User not found",
