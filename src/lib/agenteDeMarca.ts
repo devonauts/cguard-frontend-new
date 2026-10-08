@@ -55,9 +55,26 @@ function formaInicial(): string {
   }
 }
 
+/**
+ * El nombre por mercado (decisión del dueño, 2026-10-08): «VigIA» en los
+ * países hispanohablantes y «Vigia AI» en el resto. Lo decide el SERVIDOR por
+ * el país de la empresa; aquí sólo se adivina para el primer pintado, por el
+ * idioma del navegador, y la respuesta lo corrige enseguida.
+ */
+export const NOMBRE_HISPANO = "VigIA";
+export const NOMBRE_GLOBAL = "Vigia AI";
+
+function nombreInicial(): string {
+  try {
+    return /^es\b/i.test(navigator.language || "") ? NOMBRE_HISPANO : NOMBRE_GLOBAL;
+  } catch {
+    return NOMBRE_HISPANO;
+  }
+}
+
 /** Lo nuestro, y lo que se pinta mientras llega la respuesta. */
 export const AGENTE_POR_DEFECTO: AgenteDeMarca = {
-  nombre: "VigIA",
+  nombre: nombreInicial(),
   saludo: null,
   avatarUrl: null,
   forma: formaInicial(),
@@ -165,6 +182,11 @@ export function siglaDelAgente(nombre: string): string {
   const limpio = (nombre || "").trim().replace(/\s+/g, " ");
   if (!limpio) return AGENTE_POR_DEFECTO.nombre;
   if (limpio.length <= 6) return limpio;
+
+  /* «Vigia AI» se lee «Vigia», no «VA»: la coletilla AI/IA se cae cuando lo
+     que queda cabe entero. «Sentinel IA» sigue siendo «SI». */
+  const sinCola = limpio.replace(/\s+(AI|IA)$/i, "");
+  if (sinCola !== limpio && sinCola.length <= 6) return sinCola;
 
   const palabras = limpio.split(" ").filter(Boolean);
   if (palabras.length > 1) {

@@ -81,6 +81,8 @@ describe("la sigla del escudo", () => {
   it("uno largo de varias palabras se hace siglas", () => {
     expect(siglaDelAgente("Sentinel Inteligencia Operativa")).toBe("SIO");
     expect(siglaDelAgente("Sentinel IA")).toBe("SI");
+    // El nombre global: la coletilla se cae si lo que queda cabe entero.
+    expect(siglaDelAgente("Vigia AI")).toBe("Vigia");
   });
 
   it("uno largo de una sola palabra se queda en tres letras, con su caja", () => {
