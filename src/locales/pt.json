@@ -13134,7 +13134,6 @@
       "confirmarEliminar": "Remover {{name}}? Perderá o acesso a esta empresa. Esta ação não pode ser desfeita.",
       "crearSupervisor": "Criar supervisor",
       "eliminarSupervisor": "Remover supervisor",
-      "enlaceDeInvitacionCopiado": "Link de convite copiado para a área de transferência",
       "enlaceDeRestablecimientoCopiado": "Link de redefinição copiado para a área de transferência",
       "enlaceDeRestablecimientoEnviado": "Link de redefinição enviado por {{via}} e copiado para a área de transferência",
       "entrada": "Entrada",
@@ -13142,7 +13141,6 @@
       "filtrarLaLista": "Filtrar a lista",
       "fuera": "Fora",
       "fueraDeTurno": "Fora de turno",
-      "invitacionReenviadaPorCorreo": "Convite reenviado por e-mail e link copiado",
       "losSupervisoresQueDesDeAlta": "Os supervisores que você cadastrar aparecerão aqui com zona, veículo e status de turno.",
       "ningunSupervisorCoincide": "Nenhum supervisor corresponde ao filtro",
       "pruebaConOtroTextoDeBusqueda": "Tente outro texto de busca ou remova o filtro dos cartões acima.",
@@ -13153,7 +13151,10 @@
       "vehiculo": "Veículo",
       "verDetalles": "Ver detalhes",
       "viaCorreo": "e-mail",
-      "viaPush": "push"
+      "viaPush": "push",
+      "invitacionReenviadaA": "Convite reenviado para {{email}}.",
+      "invitacionYaEnviada": "O convite já foi enviado para {{email}} há poucos minutos. Peça que verifique a caixa de entrada e a pasta de spam. Você poderá reenviá-lo em {{faltan}} min.",
+      "invitacionNoSalio": "Não conseguimos enviar o e-mail para {{email}}. Tente de novo em alguns minutos."
     },
     "Visitors": {
       "ajustaLaBusquedaORegistra": "Ajuste a busca ou registre um novo visitante.",

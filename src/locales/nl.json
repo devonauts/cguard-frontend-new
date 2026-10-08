@@ -13669,7 +13669,6 @@
       "confirmarEliminar": "{{name}} verwijderen? Deze persoon verliest de toegang tot dit bedrijf. Deze actie kan niet ongedaan worden gemaakt.",
       "crearSupervisor": "Supervisor aanmaken",
       "eliminarSupervisor": "Supervisor verwijderen",
-      "enlaceDeInvitacionCopiado": "Uitnodigingslink naar klembord gekopieerd",
       "enlaceDeRestablecimientoCopiado": "Resetlink naar klembord gekopieerd",
       "enlaceDeRestablecimientoEnviado": "Resetlink verzonden via {{via}} en naar klembord gekopieerd",
       "entrada": "Begin",
@@ -13677,7 +13676,6 @@
       "filtrarLaLista": "Lijst filteren",
       "fuera": "Buiten dienst",
       "fueraDeTurno": "Buiten dienst",
-      "invitacionReenviadaPorCorreo": "Uitnodiging opnieuw per e-mail verzonden en link gekopieerd",
       "losSupervisoresQueDesDeAlta": "Supervisors die je toevoegt verschijnen hier met hun zone, voertuig en dienststatus.",
       "ningunSupervisorCoincide": "Geen supervisor komt overeen met het filter",
       "pruebaConOtroTextoDeBusqueda": "Probeer een andere zoekopdracht of wis het filter van de kaarten hierboven.",
@@ -13688,7 +13686,10 @@
       "vehiculo": "Voertuig",
       "verDetalles": "Details bekijken",
       "viaCorreo": "e-mail",
-      "viaPush": "push"
+      "viaPush": "push",
+      "invitacionReenviadaA": "Uitnodiging opnieuw verzonden naar {{email}}.",
+      "invitacionYaEnviada": "De uitnodiging is een paar minuten geleden al naar {{email}} verzonden. Vraag om de inbox en de spammap te controleren. Je kunt haar over {{faltan}} min. opnieuw verzenden.",
+      "invitacionNoSalio": "We konden de e-mail naar {{email}} niet verzenden. Probeer het over een paar minuten opnieuw."
     },
     "Visitors": {
       "ajustaLaBusquedaORegistra": "Pas uw zoekopdracht aan of registreer een nieuwe bezoeker.",

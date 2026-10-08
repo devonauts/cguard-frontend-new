@@ -124,17 +124,43 @@ export default function SupervisorsPage() {
   const resendInvite = async (s: Supervisor) => {
     try {
       const r = await supervisorService.resendInvite(s.id);
+      const email = r?.email || s.email || "";
 
-      try {
-        if (r?.link) await navigator.clipboard.writeText(r.link);
-      } catch {
-        /* clipboard optional */
+      /* Se dice lo que PASÓ con el correo, sin copiar nada al portapapeles:
+         «enlace copiado» al pedir un reenvío no tenía sentido (2026-10-08). */
+      if (r?.emailed) {
+        toast.success(
+          t("ui.SupervisorsPage.invitacionReenviadaA", {
+            email,
+            defaultValue: "Invitación reenviada a {{email}}.",
+          }),
+        );
+      } else if (r?.recentlySentAt) {
+        /* El servidor no reenvía la misma invitación en 10 minutos: justo
+           después de crearla, el correo ya salió y sólo hay que esperarlo. */
+        const pasaron = Math.floor(
+          (Date.now() - new Date(r.recentlySentAt).getTime()) / 60_000,
+        );
+        const faltan = Math.min(10, Math.max(1, 10 - pasaron));
+
+        toast.info(
+          t("ui.SupervisorsPage.invitacionYaEnviada", {
+            email,
+            faltan,
+            defaultValue:
+              "La invitación ya se envió a {{email}} hace unos minutos. Pídele que revise su bandeja de entrada y la carpeta de spam. Podrás reenviarla en {{faltan}} min.",
+          }),
+          { duration: 8000 },
+        );
+      } else {
+        toast.error(
+          t("ui.SupervisorsPage.invitacionNoSalio", {
+            email,
+            defaultValue:
+              "No pudimos enviar el correo a {{email}}. Inténtalo de nuevo en unos minutos.",
+          }),
+        );
       }
-      toast.success(
-        r?.emailed
-          ? t("ui.SupervisorsPage.invitacionReenviadaPorCorreo", "Invitación reenviada por correo y enlace copiado")
-          : t("ui.SupervisorsPage.enlaceDeInvitacionCopiado", "Enlace de invitación copiado al portapapeles"),
-      );
     } catch (e: any) {
       toast.error(
         e?.message ||

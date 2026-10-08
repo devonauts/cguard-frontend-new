@@ -13134,7 +13134,6 @@
       "confirmarEliminar": "Remove {{name}}? They'll lose access to this business. This action can't be undone.",
       "crearSupervisor": "Create supervisor",
       "eliminarSupervisor": "Remove supervisor",
-      "enlaceDeInvitacionCopiado": "Invitation link copied to clipboard",
       "enlaceDeRestablecimientoCopiado": "Reset link copied to clipboard",
       "enlaceDeRestablecimientoEnviado": "Reset link sent by {{via}} and copied to clipboard",
       "entrada": "Start",
@@ -13142,7 +13141,6 @@
       "filtrarLaLista": "Filter the list",
       "fuera": "Off duty",
       "fueraDeTurno": "Off shift",
-      "invitacionReenviadaPorCorreo": "Invitation resent by email and link copied",
       "losSupervisoresQueDesDeAlta": "Supervisors you add will appear here with their zone, vehicle and on-shift status.",
       "ningunSupervisorCoincide": "No supervisor matches the filter",
       "pruebaConOtroTextoDeBusqueda": "Try another search or clear the filter from the cards above.",
@@ -13153,7 +13151,10 @@
       "vehiculo": "Vehicle",
       "verDetalles": "View details",
       "viaCorreo": "email",
-      "viaPush": "push"
+      "viaPush": "push",
+      "invitacionReenviadaA": "Invitation resent to {{email}}.",
+      "invitacionYaEnviada": "The invitation was already sent to {{email}} a few minutes ago. Ask them to check their inbox and spam folder. You can resend it in {{faltan}} min.",
+      "invitacionNoSalio": "We couldn't send the email to {{email}}. Please try again in a few minutes."
     },
     "Visitors": {
       "ajustaLaBusquedaORegistra": "Adjust your search, or register a new visitor.",

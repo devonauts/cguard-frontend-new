@@ -13669,7 +13669,6 @@
       "confirmarEliminar": "{{name}} entfernen? Der Zugang zu diesem Unternehmen geht verloren. Diese Aktion kann nicht rückgängig gemacht werden.",
       "crearSupervisor": "Vorgesetzten anlegen",
       "eliminarSupervisor": "Vorgesetzten entfernen",
-      "enlaceDeInvitacionCopiado": "Einladungslink in die Zwischenablage kopiert",
       "enlaceDeRestablecimientoCopiado": "Link zum Zurücksetzen in die Zwischenablage kopiert",
       "enlaceDeRestablecimientoEnviado": "Link zum Zurücksetzen per {{via}} gesendet und in die Zwischenablage kopiert",
       "entrada": "Beginn",
@@ -13677,7 +13676,6 @@
       "filtrarLaLista": "Liste filtern",
       "fuera": "Außer Dienst",
       "fueraDeTurno": "Nicht im Dienst",
-      "invitacionReenviadaPorCorreo": "Einladung per E-Mail erneut gesendet und Link kopiert",
       "losSupervisoresQueDesDeAlta": "Von Ihnen angelegte Vorgesetzte erscheinen hier mit Zone, Fahrzeug und Dienststatus.",
       "ningunSupervisorCoincide": "Kein Vorgesetzter entspricht dem Filter",
       "pruebaConOtroTextoDeBusqueda": "Versuchen Sie eine andere Suche oder entfernen Sie den Filter der Karten oben.",
@@ -13688,7 +13686,10 @@
       "vehiculo": "Fahrzeug",
       "verDetalles": "Details anzeigen",
       "viaCorreo": "E-Mail",
-      "viaPush": "Push"
+      "viaPush": "Push",
+      "invitacionReenviadaA": "Einladung erneut an {{email}} gesendet.",
+      "invitacionYaEnviada": "Die Einladung wurde vor wenigen Minuten bereits an {{email}} gesendet. Bitten Sie die Person, Posteingang und Spam-Ordner zu prüfen. Sie können sie in {{faltan}} Min. erneut senden.",
+      "invitacionNoSalio": "Die E-Mail an {{email}} konnte nicht gesendet werden. Bitte versuchen Sie es in ein paar Minuten erneut."
     },
     "Visitors": {
       "ajustaLaBusquedaORegistra": "Passen Sie die Suche an oder erfassen Sie einen neuen Besucher.",

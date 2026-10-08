@@ -136,6 +136,8 @@ export const supervisorService = {
     emailed: boolean;
     email: string;
     link: string;
+    /** Si el freno de 10 min lo paró: cuándo salió la anterior. */
+    recentlySentAt?: string | null;
   }> =>
     ApiService.post(`/tenant/${tid()}/supervisors/${userId}/resend-invite`, {}),
   // Admin-triggered password reset (emails a reset link + pushes to devices).

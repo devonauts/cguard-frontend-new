@@ -13765,7 +13765,6 @@
       "confirmarEliminar": "Usunąć {{name}}? Utraci dostęp do tej firmy. Tej czynności nie można cofnąć.",
       "crearSupervisor": "Utwórz przełożonego",
       "eliminarSupervisor": "Usuń przełożonego",
-      "enlaceDeInvitacionCopiado": "Link z zaproszeniem skopiowany do schowka",
       "enlaceDeRestablecimientoCopiado": "Link resetujący skopiowany do schowka",
       "enlaceDeRestablecimientoEnviado": "Link resetujący wysłany przez {{via}} i skopiowany do schowka",
       "entrada": "Początek",
@@ -13773,7 +13772,6 @@
       "filtrarLaLista": "Filtruj listę",
       "fuera": "Poza służbą",
       "fueraDeTurno": "Poza zmianą",
-      "invitacionReenviadaPorCorreo": "Zaproszenie wysłane ponownie e-mailem, a link skopiowany",
       "losSupervisoresQueDesDeAlta": "Dodani przełożeni pojawią się tutaj ze swoją strefą, pojazdem i statusem zmiany.",
       "ningunSupervisorCoincide": "Żaden przełożony nie pasuje do filtra",
       "pruebaConOtroTextoDeBusqueda": "Spróbuj innego wyszukiwania lub usuń filtr z kart powyżej.",
@@ -13784,7 +13782,10 @@
       "vehiculo": "Pojazd",
       "verDetalles": "Zobacz szczegóły",
       "viaCorreo": "e-mail",
-      "viaPush": "push"
+      "viaPush": "push",
+      "invitacionReenviadaA": "Zaproszenie wysłane ponownie na {{email}}.",
+      "invitacionYaEnviada": "Zaproszenie zostało już wysłane na {{email}} kilka minut temu. Poproś o sprawdzenie skrzynki odbiorczej i folderu spam. Ponownie wyślesz je za {{faltan}} min.",
+      "invitacionNoSalio": "Nie udało się wysłać e-maila na {{email}}. Spróbuj ponownie za kilka minut."
     },
     "Visitors": {
       "ajustaLaBusquedaORegistra": "Prosimy zmienić wyszukiwanie lub zarejestrować nowego gościa.",
