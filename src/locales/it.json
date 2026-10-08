@@ -1842,7 +1842,10 @@
         "viewDetails": "Vedi dettagli",
         "assignStation": "Assegna a una postazione",
         "resetPassword": "Reimposta password",
-        "resendInviteExpired": "Invia di nuovo l'invito (scaduto)"
+        "resendInviteExpired": "Invia di nuovo l'invito (scaduto)",
+        "archiveInstead": "Archivia invece",
+        "freeScheduleAndDelete": "Annulla i turni ed elimina",
+        "freeScheduleAndDeleteMany": "Annulla i turni ed eliminale"
       },
       "aria": {
         "closeModal": "Chiudi finestra"
@@ -1964,7 +1967,10 @@
         "assignError": "Impossibile assegnare la guardia",
         "assigned": "Guardia assegnata correttamente",
         "resetError": "Impossibile reimpostare la password",
-        "inviteNoContact": "Questa guardia non ha un'email: aggiungine una per poterla invitare."
+        "inviteNoContact": "Questa guardia non ha un'email: aggiungine una per poterla invitare.",
+        "deletedWithShifts_one": "Eliminata. {{count}} turno è stato annullato e resta nel Calendario come buco.",
+        "deletedWithShifts_other": "Eliminata. {{count}} turni sono stati annullati e restano nel Calendario come buchi.",
+        "bulkActionError": "Impossibile completare l'azione: {{msg}}"
       },
       "dialog": {
         "archive": {
@@ -1984,14 +1990,18 @@
           "deleteDescription": "L'operazione eliminerà definitivamente {{count}} guardia/e. Vuoi continuare?",
           "deleteTitle": "Elimina guardie",
           "restoreDescription": "Vuoi ripristinare {{count}} guardia/e? Torneranno allo stato attivo.",
-          "restoreTitle": "Ripristina guardie"
+          "restoreTitle": "Ripristina guardie",
+          "blockedTitle": "Queste guardie non sono state eliminate"
         },
         "delete": {
           "title": "Elimina definitivamente la guardia",
           "description": {
             "default": "L'operazione eliminerà definitivamente la guardia. Assicurati che sia archiviata e non in servizio.",
             "pending": "L'operazione eliminerà definitivamente la guardia in attesa. Non sarà più recuperabile."
-          }
+          },
+          "blockedTitle": "Non è ancora possibile eliminarla",
+          "freeScheduleHint": "Se è una guardia di prova o qualcuno che non lavorerà più qui, puoi annullare i suoi turni e le ronde in sospeso ed eliminarla ora. I turni annullati restano nel Calendario come buchi da coprire.",
+          "archiveHint": "Archiviala prima: così si chiude il suo turno e si conserva lo storico. Dopo potrai eliminarla."
         },
         "restore": {
           "description": "Vuoi ripristinare questa guardia? L'operazione la riporterà allo stato attivo.",

@@ -1842,7 +1842,10 @@
         "viewDetails": "Zobacz szczegóły",
         "assignStation": "Przypisz do posterunku",
         "resetPassword": "Zresetuj hasło",
-        "resendInviteExpired": "Wyślij zaproszenie ponownie (wygasło)"
+        "resendInviteExpired": "Wyślij zaproszenie ponownie (wygasło)",
+        "archiveInstead": "Zamiast tego zarchiwizuj",
+        "freeScheduleAndDelete": "Anuluj zmiany i usuń",
+        "freeScheduleAndDeleteMany": "Anuluj zmiany i usuń ich"
       },
       "aria": {
         "closeModal": "Zamknij okno"
@@ -1964,7 +1967,12 @@
         "assignError": "Nie udało się przypisać pracownika ochrony",
         "assigned": "Pracownik ochrony przypisany",
         "resetError": "Nie udało się zresetować hasła",
-        "inviteNoContact": "Ten pracownik ochrony nie ma adresu e-mail: proszę go dodać, aby móc wysłać zaproszenie."
+        "inviteNoContact": "Ten pracownik ochrony nie ma adresu e-mail: proszę go dodać, aby móc wysłać zaproszenie.",
+        "deletedWithShifts_one": "Usunięto. Anulowano {{count}} zmianę: zostaje w Grafiku jako luka.",
+        "deletedWithShifts_few": "Usunięto. Anulowano {{count}} zmiany: zostają w Grafiku jako luki.",
+        "deletedWithShifts_many": "Usunięto. Anulowano {{count}} zmian: zostają w Grafiku jako luki.",
+        "deletedWithShifts_other": "Usunięto. Anulowano {{count}} zmiany: zostają w Grafiku jako luki.",
+        "bulkActionError": "Nie udało się wykonać operacji: {{msg}}"
       },
       "dialog": {
         "archive": {
@@ -1984,14 +1992,18 @@
           "deleteDescription": "Ta operacja trwale usunie {{count}} pracowników ochrony. Kontynuować?",
           "deleteTitle": "Usuń pracowników ochrony",
           "restoreDescription": "Czy przywrócić {{count}} pracowników ochrony? Wrócą do statusu aktywnego.",
-          "restoreTitle": "Przywróć pracowników ochrony"
+          "restoreTitle": "Przywróć pracowników ochrony",
+          "blockedTitle": "Tych pracowników ochrony nie udało się usunąć"
         },
         "delete": {
           "title": "Trwale usuń pracownika ochrony",
           "description": {
             "default": "Ta operacja trwale usunie pracownika ochrony. Proszę upewnić się, że jest zarchiwizowany i nie jest na służbie.",
             "pending": "Ta operacja trwale usunie oczekującego pracownika ochrony. Po usunięciu nie będzie można go odzyskać."
-          }
+          },
+          "blockedTitle": "Jeszcze nie można usunąć",
+          "freeScheduleHint": "Jeśli to testowy pracownik ochrony albo ktoś, kto nie będzie już tu pracować, możesz anulować jego zmiany i oczekujące obchody i usunąć go teraz. Anulowane zmiany zostaną w Grafiku jako luki do obsadzenia.",
+          "archiveHint": "Najpierw go zarchiwizuj: to zamyka jego zmianę i zachowuje historię. Potem będzie można go usunąć."
         },
         "restore": {
           "description": "Czy przywrócić tego pracownika ochrony? Wróci do statusu aktywnego.",

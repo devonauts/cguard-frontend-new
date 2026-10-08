@@ -101,10 +101,15 @@ export const securityGuardService = {
     return resp && resp.data !== undefined ? resp.data : resp;
   },
 
-  async destroy(ids: string[]) {
+  /**
+   * → `{ deleted, alreadyDeleted, items[] }`. `freeSchedule` only after the
+   * person confirmed «cancel their shifts and delete» (see
+   * pages/admin/security-guards/eliminarVigilantes.ts).
+   */
+  async destroy(ids: string[], options?: { freeSchedule?: boolean }) {
     const tenantId = getTenantId();
     const resp = await api.delete(`/tenant/${tenantId}/security-guard`, {
-      data: { ids },
+      data: options?.freeSchedule ? { ids, freeSchedule: true } : { ids },
       toast: { silentError: true },
     });
 

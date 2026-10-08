@@ -1842,7 +1842,10 @@
         "viewDetails": "Details ansehen",
         "assignStation": "Objekt zuweisen",
         "resetPassword": "Passwort zurücksetzen",
-        "resendInviteExpired": "Einladung erneut senden (abgelaufen)"
+        "resendInviteExpired": "Einladung erneut senden (abgelaufen)",
+        "archiveInstead": "Stattdessen archivieren",
+        "freeScheduleAndDelete": "Schichten stornieren und löschen",
+        "freeScheduleAndDeleteMany": "Schichten stornieren und sie löschen"
       },
       "aria": {
         "closeModal": "Dialog schließen"
@@ -1964,7 +1967,10 @@
         "assignError": "Die Sicherheitskraft konnte nicht zugewiesen werden",
         "assigned": "Sicherheitskraft erfolgreich zugewiesen",
         "resetError": "Das Passwort konnte nicht zurückgesetzt werden",
-        "inviteNoContact": "Diese Sicherheitskraft hat keine E-Mail-Adresse. Hinterlegen Sie eine, um sie einladen zu können."
+        "inviteNoContact": "Diese Sicherheitskraft hat keine E-Mail-Adresse. Hinterlegen Sie eine, um sie einladen zu können.",
+        "deletedWithShifts_one": "Gelöscht. {{count}} Schicht wurde storniert und bleibt im Dienstplan als Lücke.",
+        "deletedWithShifts_other": "Gelöscht. {{count}} Schichten wurden storniert und bleiben im Dienstplan als Lücken.",
+        "bulkActionError": "Die Aktion konnte nicht abgeschlossen werden: {{msg}}"
       },
       "dialog": {
         "archive": {
@@ -1984,14 +1990,18 @@
           "deleteDescription": "Mit dieser Aktion werden {{count}} Wachkraft/Wachkräfte endgültig gelöscht. Möchten Sie fortfahren?",
           "deleteTitle": "Wachkräfte löschen",
           "restoreDescription": "Möchten Sie {{count}} Wachkraft/Wachkräfte wiederherstellen? Diese Wachkräfte kehren in den aktiven Status zurück.",
-          "restoreTitle": "Wachkräfte wiederherstellen"
+          "restoreTitle": "Wachkräfte wiederherstellen",
+          "blockedTitle": "Diese Wachkräfte konnten nicht gelöscht werden"
         },
         "delete": {
           "title": "Wachkraft endgültig löschen",
           "description": {
             "default": "Mit dieser Aktion wird die Wachkraft endgültig gelöscht. Stellen Sie sicher, dass die Wachkraft archiviert und nicht im Dienst ist.",
             "pending": "Mit dieser Aktion wird die ausstehende Wachkraft endgültig gelöscht. Nach dem Löschen lässt sie sich nicht wiederherstellen."
-          }
+          },
+          "blockedTitle": "Kann noch nicht gelöscht werden",
+          "freeScheduleHint": "Wenn es sich um eine Test-Wachkraft handelt oder um jemanden, der hier nicht mehr arbeitet, kannst du ihre Schichten und offenen Rundgänge stornieren und sie jetzt löschen. Die stornierten Schichten bleiben im Dienstplan als Lücken, die du besetzen kannst.",
+          "archiveHint": "Archiviere sie zuerst: Das schließt ihre Schicht und bewahrt ihren Verlauf. Danach kannst du sie löschen."
         },
         "restore": {
           "description": "Möchten Sie diese Wachkraft wiederherstellen? Sie kehrt damit in den aktiven Status zurück.",

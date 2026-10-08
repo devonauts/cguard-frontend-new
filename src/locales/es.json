@@ -2039,7 +2039,10 @@
         "viewDetails": "Ver Detalles",
         "assignStation": "Asignar a estación",
         "resetPassword": "Restablecer contraseña",
-        "resendInviteExpired": "Reenviar invitación (caducada)"
+        "resendInviteExpired": "Reenviar invitación (caducada)",
+        "archiveInstead": "Archivar en su lugar",
+        "freeScheduleAndDelete": "Cancelar sus turnos y eliminar",
+        "freeScheduleAndDeleteMany": "Cancelar sus turnos y eliminarlos"
       },
       "aria": {
         "closeModal": "Cerrar modal"
@@ -2161,7 +2164,10 @@
         "assignError": "Error al asignar vigilante",
         "assigned": "Vigilante asignado exitosamente",
         "resetError": "No se pudo restablecer la contraseña",
-        "inviteNoContact": "Este vigilante no tiene correo: añádele uno para poder invitarlo."
+        "inviteNoContact": "Este vigilante no tiene correo: añádele uno para poder invitarlo.",
+        "deletedWithShifts_one": "Eliminado. Se canceló {{count}} turno: queda como hueco en el Horario.",
+        "deletedWithShifts_other": "Eliminado. Se cancelaron {{count}} turnos: quedan como huecos en el Horario.",
+        "bulkActionError": "No se pudo completar la acción: {{msg}}"
       },
       "dialog": {
         "archive": {
@@ -2181,14 +2187,18 @@
           "deleteDescription": "Esta acción eliminará permanentemente {{count}} vigilante(s). ¿Deseas continuar?",
           "deleteTitle": "Eliminar vigilantes",
           "restoreDescription": "¿Deseas restaurar {{count}} vigilante(s)? Estos vigilantes volverán al estado activo.",
-          "restoreTitle": "Restaurar vigilantes"
+          "restoreTitle": "Restaurar vigilantes",
+          "blockedTitle": "Estos vigilantes no se pudieron eliminar"
         },
         "delete": {
           "title": "Eliminar vigilante permanentemente",
           "description": {
             "default": "Esta acción eliminará permanentemente al vigilante. Asegúrate de que el vigilante esté archivado y no esté en servicio.",
             "pending": "Esta acción eliminará permanentemente al vigilante pendiente. No podrá recuperarse después de eliminarlo."
-          }
+          },
+          "blockedTitle": "Todavía no se puede eliminar",
+          "freeScheduleHint": "Si es un vigilante de prueba o ya no va a trabajar aquí, puedes cancelar sus turnos y rondas pendientes y eliminarlo ahora. Los turnos cancelados quedan como huecos en el Horario para que los cubras.",
+          "archiveHint": "Archívalo primero: eso le cierra el turno y conserva su historial. Después podrás eliminarlo."
         },
         "restore": {
           "description": "¿Deseas restaurar este vigilante? La acción lo devolverá al estado activo.",

@@ -1842,7 +1842,10 @@
         "viewDetails": "Voir le détail",
         "assignStation": "Affecter à un poste",
         "resetPassword": "Réinitialiser le mot de passe",
-        "resendInviteExpired": "Renvoyer l'invitation (expirée)"
+        "resendInviteExpired": "Renvoyer l'invitation (expirée)",
+        "archiveInstead": "Archiver à la place",
+        "freeScheduleAndDelete": "Annuler ses services et supprimer",
+        "freeScheduleAndDeleteMany": "Annuler leurs services et les supprimer"
       },
       "aria": {
         "closeModal": "Fermer la fenêtre"
@@ -1964,7 +1967,10 @@
         "assignError": "Impossible d'affecter l'agent",
         "assigned": "Agent affecté avec succès",
         "resetError": "Impossible de réinitialiser le mot de passe",
-        "inviteNoContact": "Cet agent n'a pas d'adresse e-mail : ajoutez-en une pour pouvoir l'inviter."
+        "inviteNoContact": "Cet agent n'a pas d'adresse e-mail : ajoutez-en une pour pouvoir l'inviter.",
+        "deletedWithShifts_one": "Supprimé. {{count}} service a été annulé et reste dans le Planning comme un trou.",
+        "deletedWithShifts_other": "Supprimé. {{count}} services ont été annulés et restent dans le Planning comme des trous.",
+        "bulkActionError": "Impossible de terminer l'action : {{msg}}"
       },
       "dialog": {
         "archive": {
@@ -1984,14 +1990,18 @@
           "deleteDescription": "Cette action supprimera définitivement {{count}} agent(s). Voulez-vous continuer ?",
           "deleteTitle": "Supprimer les agents",
           "restoreDescription": "Voulez-vous restaurer {{count}} agent(s) ? Ils repasseront au statut actif.",
-          "restoreTitle": "Restaurer les agents"
+          "restoreTitle": "Restaurer les agents",
+          "blockedTitle": "Ces agents n'ont pas pu être supprimés"
         },
         "delete": {
           "title": "Supprimer définitivement l'agent",
           "description": {
             "default": "Cette action supprimera définitivement l'agent. Vérifiez qu'il est archivé et qu'il n'est pas en service.",
             "pending": "Cette action supprimera définitivement l'agent en attente. Il ne pourra pas être récupéré ensuite."
-          }
+          },
+          "blockedTitle": "Impossible de le supprimer pour l'instant",
+          "freeScheduleHint": "S'il s'agit d'un agent de test ou de quelqu'un qui ne travaillera plus ici, vous pouvez annuler ses services et rondes en attente et le supprimer maintenant. Les services annulés restent dans le Planning comme des trous à couvrir.",
+          "archiveHint": "Archivez-le d'abord : cela clôture son service et conserve son historique. Vous pourrez ensuite le supprimer."
         },
         "restore": {
           "description": "Voulez-vous restaurer cet agent ? Il repassera au statut actif.",

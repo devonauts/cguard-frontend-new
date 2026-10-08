@@ -23,6 +23,7 @@ import {
   SkeletonCards,
   Field,
   SearchInput,
+  InfoNote,
 } from "@/components/kit";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import AppLayout from "@/layouts/app-layout";
@@ -93,6 +94,12 @@ import { clientService } from "@/lib/api/clientService";
 import { postSiteService } from "@/lib/api/postSiteService";
 import { hoyEnLaEmpresa } from "@/lib/horaDeLaEmpresa";
 import { useVistaGuardada } from "@/hooks/useVistaGuardada";
+import {
+  eliminarVigilantes,
+  type FalloAlEliminar,
+  type ResultadoEliminar,
+  type VigilanteAEliminar,
+} from "./eliminarVigilantes";
 // Fallback local Breadcrumb component (avoid missing module error)
 interface BreadcrumbItem {
   label: string;
@@ -289,6 +296,57 @@ export default function SecurityGuardsPage() {
     null,
   );
   const [deleteLoading, setDeleteLoading] = useState(false);
+  /* Why the last delete attempt was refused, shown INSIDE the dialog with the
+     way out. `porAgenda` = future shifts / pending rounds, which the person can
+     resolve here («cancel their shifts and delete»); otherwise (punched in
+     right now) the only way is to archive. Reset every time the dialog opens. */
+  const [deleteBlocked, setDeleteBlocked] = useState<{
+    message: string;
+    porAgenda: boolean;
+  } | null>(null);
+  useEffect(() => {
+    if (deleteDialogOpen) setDeleteBlocked(null);
+  }, [deleteDialogOpen, guardToDelete]);
+  /* Same for the bulk delete: who could not be deleted and why. */
+  const [bulkDeleteBlocked, setBulkDeleteBlocked] = useState<{
+    blockedBySchedule: FalloAlEliminar[];
+    failed: FalloAlEliminar[];
+  } | null>(null);
+
+  /** Rows the API confirmed as gone leave the list (and only those). */
+  const quitarEliminados = (r: ResultadoEliminar) => {
+    if (!r.removed.length) return;
+    const fuera = new Set(r.removed);
+    setGuards((prev) => prev.filter((g) => !fuera.has(g.id)));
+    setSelectedGuards((prev) => prev.filter((id) => !fuera.has(id)));
+    toast.success(
+      r.shiftsCancelled > 0
+        ? t("guards.list.toasts.deletedWithShifts", {
+            count: r.shiftsCancelled,
+            defaultValue:
+              "Eliminado. Se cancelaron {{count}} turnos: quedan como huecos en el Horario.",
+          })
+        : r.removed.length > 1
+          ? t(
+              "guards.list.toasts.bulkDeleted",
+              "Vigilantes eliminados permanentemente",
+            )
+          : t(
+              "guards.list.toasts.deleteSuccess",
+              "Vigilante eliminado permanentemente",
+            ),
+    );
+  };
+
+  const aEliminar = (rowIds: string[]): VigilanteAEliminar[] =>
+    rowIds.map((rowId) => {
+      const g = guards.find((x) => x.id === rowId);
+      return {
+        id: rowId,
+        realId: g?.raw?.id || rowId,
+        name: g?.name || rowId,
+      };
+    });
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [guardToRestore, setGuardToRestore] = useState<SecurityGuard | null>(
     null,
@@ -297,6 +355,9 @@ export default function SecurityGuardsPage() {
   const [bulkActionLoading, setBulkActionLoading] = useState(false);
 
   const [bulkActionDialogOpen, setBulkActionDialogOpen] = useState(false);
+  useEffect(() => {
+    if (bulkActionDialogOpen) setBulkDeleteBlocked(null);
+  }, [bulkActionDialogOpen]);
   const [bulkActionType, setBulkActionType] = useState<string | null>(null);
   const [bulkActionTargetIds, setBulkActionTargetIds] = useState<string[]>([]);
   const [bulkActionValue, setBulkActionValue] = useState<string>("");
@@ -2141,7 +2202,7 @@ export default function SecurityGuardsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      {/* Diálogo para eliminar permanentemente (solo si está archivado) */}
+      {/* Diálogo para eliminar permanentemente */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -2167,7 +2228,30 @@ export default function SecurityGuardsPage() {
               {guardToDelete?.email ?? ""}
             </div>
           </div>
-          <DialogFooter>
+          {deleteBlocked && (
+            <InfoNote
+              tone="warn"
+              className="mt-4"
+              title={t(
+                "guards.list.dialog.delete.blockedTitle",
+                "Todavía no se puede eliminar",
+              )}
+            >
+              <p>{deleteBlocked.message}</p>
+              <p className="mt-2">
+                {deleteBlocked.porAgenda
+                  ? t(
+                      "guards.list.dialog.delete.freeScheduleHint",
+                      "Si es un vigilante de prueba o ya no va a trabajar aquí, puedes cancelar sus turnos y rondas pendientes y eliminarlo ahora. Los turnos cancelados quedan como huecos en el Horario para que los cubras.",
+                    )
+                  : t(
+                      "guards.list.dialog.delete.archiveHint",
+                      "Archívalo primero: eso le cierra el turno y conserva su historial. Después podrás eliminarlo.",
+                    )}
+              </p>
+            </InfoNote>
+          )}
+          <DialogFooter className="gap-2">
             <Button
               variant="outline"
               onClick={() => setDeleteDialogOpen(false)}
@@ -2175,43 +2259,76 @@ export default function SecurityGuardsPage() {
             >
               {t("actions.cancel", "Cancelar")}
             </Button>
-            <Button
-              variant="destructive"
-              onClick={async () => {
-                if (!guardToDelete) return;
-                setDeleteLoading(true);
-                try {
-                  const realId = guardToDelete.raw?.id || guardToDelete.id;
-                  await securityGuardService.destroy([realId]);
-                  setGuards((prev) =>
-                    prev.filter((g) => g.id !== guardToDelete.id),
-                  );
-                  toast.success(
-                    t(
-                      "guards.list.toasts.deleteSuccess",
-                      "Vigilante eliminado permanentemente",
-                    ),
-                  );
+            {deleteBlocked && hasPermission("securityGuardEdit") && (
+              <Button
+                variant="outline"
+                disabled={deleteLoading}
+                onClick={() => {
+                  if (!guardToDelete) return;
                   setDeleteDialogOpen(false);
-                } catch (err: any) {
-                  console.error("Error eliminando vigilante:", err);
-                  toast.error(
-                    t(
-                      "guards.list.toasts.deleteError",
-                      "No se pudo eliminar el vigilante: {{msg}}",
-                      { msg: err?.message || String(err) },
-                    ),
-                  );
-                } finally {
-                  setDeleteLoading(false);
-                }
-              }}
-              disabled={deleteLoading}
-            >
-              {deleteLoading
-                ? t("guards.list.buttons.deleting", "Eliminando…")
-                : t("actions.delete", "Eliminar")}
-            </Button>
+                  setGuardToArchive(guardToDelete);
+                  abrirDialogoDeBaja();
+                  setArchiveDialogOpen(true);
+                }}
+              >
+                {t("guards.list.actions.archiveInstead", "Archivar en su lugar")}
+              </Button>
+            )}
+            {(!deleteBlocked || deleteBlocked.porAgenda) && (
+              <Button
+                variant="destructive"
+                onClick={async () => {
+                  if (!guardToDelete) return;
+                  setDeleteLoading(true);
+                  try {
+                    const freeSchedule = deleteBlocked?.porAgenda === true;
+                    const r = await eliminarVigilantes(
+                      [
+                        {
+                          id: guardToDelete.id,
+                          realId: guardToDelete.raw?.id || guardToDelete.id,
+                          name: guardToDelete.name,
+                        },
+                      ],
+                      securityGuardService.destroy,
+                      { freeSchedule },
+                    );
+                    if (r.removed.length) {
+                      quitarEliminados(r);
+                      setDeleteDialogOpen(false);
+                      return;
+                    }
+                    // Refused: the row STAYS, and the dialog says why and what to do.
+                    const fallo = r.blockedBySchedule[0] || r.failed[0];
+                    if (r.blockedBySchedule.length) {
+                      setDeleteBlocked({ message: fallo.message, porAgenda: true });
+                    } else if (fallo && fallo.openShift) {
+                      setDeleteBlocked({ message: fallo.message, porAgenda: false });
+                    } else {
+                      toast.error(
+                        t(
+                          "guards.list.toasts.deleteError",
+                          "No se pudo eliminar el vigilante: {{msg}}",
+                          { msg: fallo?.message || "" },
+                        ),
+                      );
+                    }
+                  } finally {
+                    setDeleteLoading(false);
+                  }
+                }}
+                disabled={deleteLoading}
+              >
+                {deleteLoading
+                  ? t("guards.list.buttons.deleting", "Eliminando…")
+                  : deleteBlocked?.porAgenda
+                    ? t(
+                        "guards.list.actions.freeScheduleAndDelete",
+                        "Cancelar sus turnos y eliminar",
+                      )
+                    : t("actions.delete", "Eliminar")}
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -2365,18 +2482,57 @@ export default function SecurityGuardsPage() {
               {selectedGuards.length}
             </div>
           </div>
+          {bulkActionType === "eliminar" && bulkDeleteBlocked && (
+            <InfoNote
+              tone="warn"
+              className="mt-4"
+              title={t(
+                "guards.list.dialog.bulk.blockedTitle",
+                "Estos vigilantes no se pudieron eliminar",
+              )}
+            >
+              <ul className="list-disc space-y-1 pl-4">
+                {[
+                  ...bulkDeleteBlocked.blockedBySchedule,
+                  ...bulkDeleteBlocked.failed,
+                ].map((f) => (
+                  <li key={f.guard.id}>
+                    <strong>{f.guard.name}</strong>: {f.message}
+                  </li>
+                ))}
+              </ul>
+              {bulkDeleteBlocked.blockedBySchedule.length > 0 && (
+                <p className="mt-2">
+                  {t(
+                    "guards.list.dialog.delete.freeScheduleHint",
+                    "Si es un vigilante de prueba o ya no va a trabajar aquí, puedes cancelar sus turnos y rondas pendientes y eliminarlo ahora. Los turnos cancelados quedan como huecos en el Horario para que los cubras.",
+                  )}
+                </p>
+              )}
+            </InfoNote>
+          )}
           <DialogFooter>
             <Button
               variant="outline"
               onClick={() => setBulkActionDialogOpen(false)}
               disabled={bulkActionLoading}
             >
-              {t("actions.cancel", "Cancelar")}
+              {bulkDeleteBlocked
+                ? t("actions.close", "Cerrar")
+                : t("actions.cancel", "Cancelar")}
             </Button>
+            {!(
+              bulkActionType === "eliminar" &&
+              bulkDeleteBlocked &&
+              bulkDeleteBlocked.blockedBySchedule.length === 0
+            ) && (
             <Button
               variant={bulkActionType === "eliminar" ? "destructive" : "brand"}
               onClick={async () => {
                 setBulkActionLoading(true);
+                /* Some guards could not be deleted: keep the dialog (and its
+                   action) open so the list of who and why stays on screen. */
+                let mantenerAbierto = false;
                 try {
                   const ids = bulkActionTargetIds;
                   if (bulkActionType === "archivar") {
@@ -2418,25 +2574,46 @@ export default function SecurityGuardsPage() {
                       ),
                     );
                   } else if (bulkActionType === "eliminar") {
-                    await securityGuardService.destroy(ids);
-                    setGuards((prev) =>
-                      prev.filter((g) => !selectedGuards.includes(g.id)),
+                    // Second pass = the person chose «cancel their shifts and
+                    // delete them» for the ones the agenda blocked.
+                    const reintento = !!bulkDeleteBlocked;
+                    const objetivo = reintento
+                      ? bulkDeleteBlocked!.blockedBySchedule.map((f) => f.guard)
+                      : aEliminar(selectedGuards);
+                    const r = await eliminarVigilantes(
+                      objetivo,
+                      securityGuardService.destroy,
+                      { freeSchedule: reintento },
                     );
-                    toast.success(
-                      t(
-                        "guards.list.toasts.bulkDeleted",
-                        "Vigilantes eliminados permanentemente",
-                      ),
-                    );
+                    quitarEliminados(r);
+                    if (r.blockedBySchedule.length || r.failed.length) {
+                      setBulkDeleteBlocked({
+                        blockedBySchedule: r.blockedBySchedule,
+                        failed: r.failed,
+                      });
+                      mantenerAbierto = true;
+                      return;
+                    }
                   }
                   setSelectedGuards([]);
                   setBulkActionDialogOpen(false);
-                } catch (err) {
+                } catch (err: any) {
                   console.error("Error ejecutando acción masiva:", err);
+                  // The request is `silentError`: if this does not say it,
+                  // nothing does (it used to fail without a word).
+                  toast.error(
+                    t(
+                      "guards.list.toasts.bulkActionError",
+                      "No se pudo completar la acción: {{msg}}",
+                      { msg: err?.message || String(err) },
+                    ),
+                  );
                 } finally {
                   setBulkActionLoading(false);
-                  setBulkActionType(null);
-                  setBulkActionTargetIds([]);
+                  if (!mantenerAbierto) {
+                    setBulkActionType(null);
+                    setBulkActionTargetIds([]);
+                  }
                   setBulkActionValue("");
                 }
               }}
@@ -2445,9 +2622,15 @@ export default function SecurityGuardsPage() {
               {bulkActionLoading
                 ? t("guards.list.buttons.processing", "Procesando…")
                 : bulkActionType === "eliminar"
-                  ? t("actions.delete", "Eliminar")
+                  ? bulkDeleteBlocked
+                    ? t(
+                        "guards.list.actions.freeScheduleAndDeleteMany",
+                        "Cancelar sus turnos y eliminarlos",
+                      )
+                    : t("actions.delete", "Eliminar")
                   : t("actions.confirm", "Confirmar")}
             </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>

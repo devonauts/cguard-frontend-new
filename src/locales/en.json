@@ -2039,7 +2039,10 @@
         "viewDetails": "View details",
         "assignStation": "Assign to a station",
         "resetPassword": "Reset password",
-        "resendInviteExpired": "Resend invitation (expired)"
+        "resendInviteExpired": "Resend invitation (expired)",
+        "archiveInstead": "Archive instead",
+        "freeScheduleAndDelete": "Cancel their shifts and delete",
+        "freeScheduleAndDeleteMany": "Cancel their shifts and delete them"
       },
       "aria": {
         "closeModal": "Close modal"
@@ -2161,7 +2164,10 @@
         "assignError": "The guard could not be assigned",
         "assigned": "Guard assigned successfully",
         "resetError": "The password could not be reset",
-        "inviteNoContact": "This guard has no email: add one before inviting them."
+        "inviteNoContact": "This guard has no email: add one before inviting them.",
+        "deletedWithShifts_one": "Deleted. {{count}} shift was cancelled and stays in the Schedule as a gap.",
+        "deletedWithShifts_other": "Deleted. {{count}} shifts were cancelled and stay in the Schedule as gaps.",
+        "bulkActionError": "Couldn't complete the action: {{msg}}"
       },
       "dialog": {
         "archive": {
@@ -2181,14 +2187,18 @@
           "deleteDescription": "This will permanently delete {{count}} guard(s). Continue?",
           "deleteTitle": "Delete guards",
           "restoreDescription": "Do you want to restore {{count}} guard(s)? They will return to active state.",
-          "restoreTitle": "Restore guards"
+          "restoreTitle": "Restore guards",
+          "blockedTitle": "These guards couldn't be deleted"
         },
         "delete": {
           "title": "Delete guard permanently",
           "description": {
             "default": "This will permanently delete the guard. Ensure it's archived and not on duty.",
             "pending": "This will permanently delete the pending guard. It cannot be recovered."
-          }
+          },
+          "blockedTitle": "This guard can't be deleted yet",
+          "freeScheduleHint": "If this is a test guard or someone who won't work here any more, you can cancel their shifts and pending rounds and delete them now. The cancelled shifts stay in the Schedule as gaps for you to cover.",
+          "archiveHint": "Archive them first: that closes their shift and keeps their history. Then you can delete them."
         },
         "restore": {
           "description": "Do you want to restore this guard? This will return it to active state.",

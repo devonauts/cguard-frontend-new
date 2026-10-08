@@ -4324,7 +4324,10 @@
         "viewDetails": "Ver Detalhes",
         "assignStation": "Atribuir a uma estação",
         "resetPassword": "Redefinir senha",
-        "resendInviteExpired": "Reenviar convite (caducado)"
+        "resendInviteExpired": "Reenviar convite (caducado)",
+        "archiveInstead": "Arquivar em vez disso",
+        "freeScheduleAndDelete": "Cancelar os turnos e excluir",
+        "freeScheduleAndDeleteMany": "Cancelar os turnos e excluí-los"
       },
       "applyFilters": "Aplicar filtros",
       "aria": {
@@ -4375,14 +4378,18 @@
           "deleteDescription": "Esta ação excluirá permanentemente {{count}} vigilante(s). Deseja continuar?",
           "deleteTitle": "Excluir vigilantes",
           "restoreDescription": "Deseja restaurar {{count}} vigilante(s)? Esses vigilantes voltarão ao estado ativo.",
-          "restoreTitle": "Restaurar vigilantes"
+          "restoreTitle": "Restaurar vigilantes",
+          "blockedTitle": "Estes vigilantes não puderam ser excluídos"
         },
         "delete": {
           "description": {
             "default": "Esta ação excluirá permanentemente o vigilante. Certifique-se de que o vigilante esteja arquivado e não esteja em serviço.",
             "pending": "Esta ação excluirá permanentemente o vigilante pendente. Não será possível recuperá-lo após a exclusão."
           },
-          "title": "Excluir vigilante permanentemente"
+          "title": "Excluir vigilante permanentemente",
+          "blockedTitle": "Ainda não é possível excluir",
+          "freeScheduleHint": "Se for um vigilante de teste ou alguém que não vai mais trabalhar aqui, você pode cancelar os turnos e rondas pendentes dele e excluí-lo agora. Os turnos cancelados ficam como vagas na Escala para você cobrir.",
+          "archiveHint": "Arquive-o primeiro: isso encerra o turno dele e preserva o histórico. Depois você poderá excluí-lo."
         },
         "restore": {
           "description": "Deseja restaurar este vigilante? A ação o retornará ao estado ativo.",
@@ -4488,7 +4495,10 @@
         "assignError": "Erro ao atribuir o vigilante",
         "assigned": "Vigilante atribuído com sucesso",
         "resetError": "Não foi possível redefinir a senha",
-        "inviteNoContact": "Este vigilante não tem e-mail: adicione um para o poder convidar."
+        "inviteNoContact": "Este vigilante não tem e-mail: adicione um para o poder convidar.",
+        "deletedWithShifts_one": "Excluído. {{count}} turno foi cancelado e fica como vaga na Escala.",
+        "deletedWithShifts_other": "Excluído. {{count}} turnos foram cancelados e ficam como vagas na Escala.",
+        "bulkActionError": "Não foi possível concluir a ação: {{msg}}"
       },
       "noData": "Nenhum vigilante encontrado",
       "subtitle": "Gerencie a equipe de segurança da sua organização",

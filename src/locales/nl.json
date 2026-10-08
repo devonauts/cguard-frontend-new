@@ -1842,7 +1842,10 @@
         "viewDetails": "Details bekijken",
         "assignStation": "Aan een post toewijzen",
         "resetPassword": "Wachtwoord herstellen",
-        "resendInviteExpired": "Uitnodiging opnieuw sturen (verlopen)"
+        "resendInviteExpired": "Uitnodiging opnieuw sturen (verlopen)",
+        "archiveInstead": "In plaats daarvan archiveren",
+        "freeScheduleAndDelete": "Diensten annuleren en verwijderen",
+        "freeScheduleAndDeleteMany": "Diensten annuleren en ze verwijderen"
       },
       "aria": {
         "closeModal": "Venster sluiten"
@@ -1964,7 +1967,10 @@
         "assignError": "Beveiliger toewijzen mislukt",
         "assigned": "Beveiliger toegewezen",
         "resetError": "Het wachtwoord kon niet worden hersteld",
-        "inviteNoContact": "Deze beveiliger heeft geen e-mailadres: voeg er een toe om hem te kunnen uitnodigen."
+        "inviteNoContact": "Deze beveiliger heeft geen e-mailadres: voeg er een toe om hem te kunnen uitnodigen.",
+        "deletedWithShifts_one": "Verwijderd. {{count}} dienst is geannuleerd en blijft als gat in het Rooster staan.",
+        "deletedWithShifts_other": "Verwijderd. {{count}} diensten zijn geannuleerd en blijven als gaten in het Rooster staan.",
+        "bulkActionError": "De actie kon niet worden voltooid: {{msg}}"
       },
       "dialog": {
         "archive": {
@@ -1984,14 +1990,18 @@
           "deleteDescription": "Hiermee verwijder je {{count}} beveiliger(s) definitief. Wil je doorgaan?",
           "deleteTitle": "Beveiligers verwijderen",
           "restoreDescription": "Wil je {{count}} beveiliger(s) herstellen? Ze krijgen weer de status actief.",
-          "restoreTitle": "Beveiligers herstellen"
+          "restoreTitle": "Beveiligers herstellen",
+          "blockedTitle": "Deze beveiligers konden niet worden verwijderd"
         },
         "delete": {
           "title": "Beveiliger definitief verwijderen",
           "description": {
             "default": "Hiermee verwijder je de beveiliger definitief. Zorg dat hij gearchiveerd is en niet in dienst staat.",
             "pending": "Hiermee verwijder je de beveiliger die nog in behandeling is definitief. Herstellen is daarna niet meer mogelijk."
-          }
+          },
+          "blockedTitle": "Kan nog niet worden verwijderd",
+          "freeScheduleHint": "Is het een testbeveiliger of iemand die hier niet meer gaat werken, dan kun je zijn diensten en openstaande rondes annuleren en hem nu verwijderen. De geannuleerde diensten blijven in het Rooster staan als gaten om te vullen.",
+          "archiveHint": "Archiveer hem eerst: dat sluit zijn dienst af en bewaart zijn geschiedenis. Daarna kun je hem verwijderen."
         },
         "restore": {
           "description": "Wil je deze beveiliger herstellen? Hij krijgt weer de status actief.",
