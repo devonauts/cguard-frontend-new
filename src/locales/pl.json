@@ -18362,7 +18362,10 @@
     "plataforma": "Aktualizujemy {{marca}}.",
     "enX": "Strona odświeży się za {{t}}. Zapisz to, co piszesz.",
     "ahora": "Odśwież teraz",
-    "esperar": "Poczekaj 5 min"
+    "esperar": "Poczekaj 5 min",
+    "versionSinMarca": "Dostępna jest nowa wersja.",
+    "plataformaSinMarca": "Aktualizujemy platformę.",
+    "laPlataforma": "platforma"
   },
   "anuncios": {
     "eyebrow": "Nowości od {{marca}}",

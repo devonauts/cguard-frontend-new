@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
 import { RefreshCw } from "lucide-react";
 
@@ -9,6 +9,11 @@ import {
   recargarAhora,
   type PeticionDeRecarga,
 } from "@/lib/recarga/recarga";
+import {
+  leerMarcaDeLaSesion,
+  personalizar,
+  suscribirMarcaDeLaSesion,
+} from "@/lib/recarga/marcaDelAviso";
 
 /**
  * El aviso de arriba: «La página se recargará en 0:42» con «Recargar ahora» y,
@@ -29,8 +34,12 @@ interface Aviso {
 
 export default function AvisoDeRecarga() {
   const { t } = useTranslation();
-  // La marca del ANFITRIÓN: en el dominio de un socio, su nombre, nunca el nuestro.
-  const marca = useWhiteLabel()?.platformName || "";
+  /* Quién firma: con sesión, la plataforma de la EMPRESA («CGuard Pro» o el
+     nombre de su socio, entre por donde entre); sin sesión, la del anfitrión.
+     Ver `lib/recarga/marcaDelAviso`. */
+  const deLaSesion = useSyncExternalStore(suscribirMarcaDeLaSesion, leerMarcaDeLaSesion);
+  const delAnfitrion = useWhiteLabel()?.platformName || "";
+  const marca = (deLaSesion === undefined ? delAnfitrion : deLaSesion).trim();
   const [aviso, setAviso] = useState<Aviso | null>(null);
   const [ahora, setAhora] = useState(() => Date.now());
   const vistos = useRef(new Set<string>());
@@ -86,10 +95,17 @@ export default function AvisoDeRecarga() {
     >
       <RefreshCw aria-hidden className="size-4 shrink-0 animate-spin [animation-duration:3s]" />
       <span className="text-center">
+        {/* Sin nombre que decir, la frase sin nombre: nunca «de .» ni el nuestro. */}
         {aviso.motivo === "version"
-          ? t("avisoDeRecarga.version", { marca, defaultValue: "Hay una versión nueva de {{marca}}." })
-          : t("avisoDeRecarga.plataforma", { marca, defaultValue: "Estamos actualizando {{marca}}." })}
-        {aviso.mensaje ? ` ${aviso.mensaje}` : ""}{" "}
+          ? marca
+            ? t("avisoDeRecarga.version", { marca, defaultValue: "Hay una versión nueva de {{marca}}." })
+            : t("avisoDeRecarga.versionSinMarca", "Hay una versión nueva.")
+          : marca
+            ? t("avisoDeRecarga.plataforma", { marca, defaultValue: "Estamos actualizando {{marca}}." })
+            : t("avisoDeRecarga.plataformaSinMarca", "Estamos actualizando la plataforma.")}
+        {aviso.mensaje
+          ? ` ${personalizar(aviso.mensaje, marca || t("avisoDeRecarga.laPlataforma", "la plataforma"))}`
+          : ""}{" "}
         {t("avisoDeRecarga.enX", "La página se recargará en {{t}}. Guarda lo que estés escribiendo.", {
           t: formatoCuentaAtras(queda),
         })}

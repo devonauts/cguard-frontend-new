@@ -18168,7 +18168,10 @@
     "plataforma": "We werken {{marca}} bij.",
     "enX": "De pagina wordt over {{t}} opnieuw geladen. Sla op wat je aan het typen bent.",
     "ahora": "Nu herladen",
-    "esperar": "5 min wachten"
+    "esperar": "5 min wachten",
+    "versionSinMarca": "Er is een nieuwe versie beschikbaar.",
+    "plataformaSinMarca": "We werken het platform bij.",
+    "laPlataforma": "het platform"
   },
   "anuncios": {
     "eyebrow": "Nieuws van {{marca}}",

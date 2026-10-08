@@ -18168,7 +18168,10 @@
     "plataforma": "Wir aktualisieren {{marca}}.",
     "enX": "Die Seite wird in {{t}} neu geladen. Speichere, was du gerade eingibst.",
     "ahora": "Jetzt neu laden",
-    "esperar": "5 Min. warten"
+    "esperar": "5 Min. warten",
+    "versionSinMarca": "Eine neue Version ist verfügbar.",
+    "plataformaSinMarca": "Wir aktualisieren die Plattform.",
+    "laPlataforma": "die Plattform"
   },
   "anuncios": {
     "eyebrow": "Neuigkeiten von {{marca}}",

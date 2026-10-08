@@ -12,6 +12,7 @@ import {
 } from "./WhiteLabelContext";
 import { compatibilidad } from "./compatibilidadDeAnfitrion";
 import { getActiveTenantId, subscribeActiveTenant } from "@/lib/activeTenant";
+import { marcaDeLaEmpresa, publicarMarcaDeLaSesion } from "@/lib/recarga/marcaDelAviso";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -73,6 +74,7 @@ function empresaActiva(user: any, tenantId: string | null) {
   return {
     billingOwnership: t.billingOwnership,
     resellerPublicId: t.resellerPublicId ?? null,
+    resellerBrandName: t.resellerBrandName ?? null,
   };
 }
 
@@ -114,6 +116,18 @@ export function IdentidadEfectivaProvider({ children }: { children: ReactNode })
 
     return v.identidad === "socio" ? anfitrion : MARCA_DE_PLATAFORMA;
   }, [anfitrionEsDeSocio, anfitrion, estado, user, tenantId]);
+
+  /* El nombre que firma el aviso de recarga (vive fuera de la sesión, en
+     `main.tsx`). Va por la EMPRESA y no por el anfitrión: la de un socio ve a su
+     socio también en nuestro dominio. Ver `lib/recarga/marcaDelAviso`. */
+  useEffect(() => {
+    if (estado === "sin-sesion") publicarMarcaDeLaSesion(undefined);
+    else if (estado === "sin-resolver") publicarMarcaDeLaSesion("");
+    else
+      publicarMarcaDeLaSesion(
+        marcaDeLaEmpresa(empresaActiva(user, tenantId), MARCA_DE_PLATAFORMA.platformName),
+      );
+  }, [estado, user, tenantId]);
 
   /* Pintar el documento: título, favicon, tono y croma. `aplicarMarca` sabe
      deshacerse, así que pasar de socio a plataforma REPONE lo de plataforma en

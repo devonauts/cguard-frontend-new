@@ -18168,7 +18168,10 @@
     "plataforma": "Estamos actualizando {{marca}}.",
     "enX": "La página se recargará en {{t}}. Guarda lo que estés escribiendo.",
     "ahora": "Recargar ahora",
-    "esperar": "Esperar 5 min"
+    "esperar": "Esperar 5 min",
+    "versionSinMarca": "Hay una versión nueva.",
+    "plataformaSinMarca": "Estamos actualizando la plataforma.",
+    "laPlataforma": "la plataforma"
   },
   "anuncios": {
     "eyebrow": "Novedades de {{marca}}",
