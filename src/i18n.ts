@@ -137,4 +137,14 @@ export async function setAppLanguage(code: string): Promise<void> {
   await i18n.changeLanguage(lang);
 }
 
+// `<html lang>` sigue al idioma de la interfaz. Si se queda en «es» con la pantalla en
+// inglés, el navegador cree que el texto está en otro idioma y ofrece traducirlo.
+if (typeof document !== "undefined") {
+  const marcarIdioma = (lng: string) => {
+    if (lng) document.documentElement.lang = String(lng).slice(0, 2).toLowerCase();
+  };
+  if (i18n.language) marcarIdioma(i18n.language);
+  i18n.on("languageChanged", marcarIdioma);
+}
+
 export default i18n;

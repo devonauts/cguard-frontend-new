@@ -6,6 +6,10 @@ import App from "./App.tsx";
 import { iniciarCentinela } from "./lib/centinela";
 import { atenderVueltaDeGusto } from "./lib/vueltaDeGusto";
 import { instalarIdiomaEnFetch } from "./lib/idiomaElegido";
+import { instalarBlindajeDom } from "./lib/blindajeDom";
+
+// Antes de pintar nada: un traductor del navegador no debe poder tumbar la app.
+instalarBlindajeDom();
 
 // import { Provider } from "./provider.tsx";
 // Tipografía AUTOALOJADA (empaquetada — sin depender del CDN de Google, que puede

@@ -1,7 +1,13 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" translate="no" class="notranslate">
   <head>
     <meta charset="UTF-8" />
+    <!-- El CRM ya viene en 8 idiomas. Si Chrome/Safari/Edge lo traducen encima,
+         reescriben el texto del DOM por su cuenta y React se cae al reconciliar
+         («Failed to execute 'insertBefore' on 'Node'…»): le pasó a un prospecto
+         creando su cuenta (2026-10-08). Se pide a los navegadores que no lo traduzcan;
+         el idioma se elige en la propia app. -->
+    <meta name="google" content="notranslate" />
     <!-- SIN `maximum-scale` NI `user-scalable=0`. Bloquear el pellizco es una
          barrera de accesibilidad, y aquí pesa el doble: esto se usa en la calle,
          con guantes, a contraluz y con gente que necesita agrandar una placa o
