@@ -221,12 +221,14 @@ const storedChoice = (): LanguageChoice => {
 };
 
 /**
- * El automático, con lo que se sabe SIN red: IP (cacheada) → navegador →
- * INGLÉS. Regla del dueño (2026-10-03): un cliente nuevo ve el CRM en el
- * idioma de su IP; si no, el de su navegador; y si ninguno es de los nuestros,
- * inglés. El `?lang=` de la web ya no manda por encima de la IP.
+ * El automático, con lo que se sabe SIN red: NAVEGADOR → IP (cacheada) →
+ * INGLÉS. Regla del dueño (2026-10-08, sustituye a la del 2026-10-03 que ponía
+ * la IP primero): manda el idioma que la persona configuró en su navegador.
+ * Un hispanohablante en EE. UU. veía el registro en inglés, su navegador lo
+ * traducía encima y React se caía (le pasó a un prospecto creando su cuenta).
+ * La IP sólo decide cuando el navegador no está en ninguno de nuestros idiomas.
  */
-const autoSinRed = (): Language => ipCacheado() || detectBrowser() || "en";
+const autoSinRed = (): Language => detectBrowser() || ipCacheado() || "en";
 
 /** Cuánto se espera a la IP antes del primer pintado, como mucho. */
 const ESPERA_IP_MS = 1500;
@@ -308,7 +310,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     // acceso es justo donde más importa (es lo primero que ve un prospecto)
     // y este endpoint es público.
     // La IP no se pisa con el idioma de la URL de la web: manda la IP.
-    if (local === "auto" && cacheIp() === null) {
+    if (local === "auto" && cacheIp() === null && !detectBrowser()) {
       void Promise.race([
         idiomaPorIp(),
         new Promise<null>((ok) => setTimeout(() => ok(null), ESPERA_IP_MS)),
