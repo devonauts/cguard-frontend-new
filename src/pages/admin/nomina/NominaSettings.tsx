@@ -289,37 +289,14 @@ export default function NominaSettings() {
                 path="general.timeClockEnabled"
               />
               <Toggle
-                label={t("ui.NominaSettings.requerirSelfieAlMarcar", "Requerir selfie al marcar")}
-                path="general.requireSelfie"
-              />
-              <Toggle
                 label={t("ui.NominaSettings.requerirNotasEnExcepciones")}
                 path="general.requireNotesOnException"
               />
-              {/* ¿Se ve la cara en la selfie? El servidor sólo DETECTA que haya
-                  una cara (no la pared, el techo o un dedo): no reconoce a nadie. */}
-              <label className="glass-flat flex flex-col gap-1.5 px-3 py-2.5 sm:col-span-2">
-                <span className="text-sm">
-                  {t("ui.NominaSettings.comprobarCaraEnSelfie", "Comprobar que se vea la cara en la selfie")}
-                </span>
-                <select
-                  className="cg-focus rounded-lg border border-[var(--border)] bg-transparent px-2 py-1.5 text-sm"
-                  value={s.general?.selfieFaceCheck || "off"}
-                  onChange={(e) =>
-                    setS((prev) => set(prev as NominaSettings, "general.selfieFaceCheck", e.target.value))
-                  }
-                >
-                  <option value="off">{t("ui.NominaSettings.caraOff", "No comprobar")}</option>
-                  <option value="flag">{t("ui.NominaSettings.caraFlag", "Avisar al supervisor (deja marcar)")}</option>
-                  <option value="enforce">{t("ui.NominaSettings.caraEnforce", "Exigir: pedir que repita la selfie")}</option>
-                </select>
-                <span className="text-xs text-[var(--text-secondary)]">
-                  {t(
-                    "ui.NominaSettings.caraAyuda",
-                    "Revisa que en la foto haya una cara y no la pared, el techo o un dedo sobre la cámara. No reconoce a la persona. Con «Exigir», al tercer intento deja marcar y queda para revisión.",
-                  )}
-                </span>
-              </label>
+              {/* Selfie y rostro: se configuran en las apps (Mike 2026-10-09). */}
+              <p className="glass-flat px-3 py-2.5 text-sm sm:col-span-2">
+                {t("ui.NominaSettings.selfieMovido", "La selfie y el rostro al fichar ahora se configuran en Ajustes › App del equipo o App del supervisor.")}{" "}
+                <a className="underline" href="/setting/mobile-hub">{t("ui.SelfieRostro.titulo", "Selfie y rostro al fichar")} →</a>
+              </p>
             </SettingsSection>
 
             <SettingsSection

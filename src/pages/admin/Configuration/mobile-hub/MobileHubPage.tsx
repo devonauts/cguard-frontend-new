@@ -50,6 +50,7 @@ import { useTranslation } from "react-i18next";
 
 import api from "@/lib/api";
 import AppLayout from "@/layouts/app-layout";
+import SelfieRostroAjustes from "@/components/settings/SelfieRostroAjustes";
 import SettingsLayout from "@/layouts/SettingsLayout";
 import {
   PageContainer,
@@ -369,6 +370,8 @@ export default function MobileHubPage() {
           ) : (
             <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_400px]">
               <div className="space-y-6">
+                {/* ── Selfie y rostro al fichar (mismo ajuste que la app del supervisor) ── */}
+                <SelfieRostroAjustes />
                 {/* ── Marca ─────────────────────────────────────────────── */}
                 <Section
                   icon={<Palette size={18} />}

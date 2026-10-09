@@ -10550,7 +10550,8 @@
       "segunLaLey": "Según la ley",
       "losDiasDeVacacionesSon": "Los días de vacaciones son",
       "diasNaturales": "Días naturales (de calendario)",
-      "diasLaborables": "Días laborables"
+      "diasLaborables": "Días laborables",
+      "selfieMovido": "La selfie y el rostro al fichar ahora se configuran en Ajustes › App del equipo o App del supervisor."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "¿Dónde vas a trabajar?",
@@ -16441,6 +16442,10 @@
       "cuerpo": "En el Planificador haces lo mismo y más: rotaciones a tu medida, faltas con su reemplazo, sacafrancos y un borrador que publicas cuando quieras. Ve acostumbrándote: el Horario dejará de estar.",
       "abrir": "Abrir el Planificador",
       "entendido": "Entendido"
+    },
+    "SelfieRostro": {
+      "titulo": "Selfie y rostro al fichar",
+      "ambasApps": "Vale para la app del equipo (vigilantes) y la del supervisor: es el mismo ajuste en las dos."
     }
   },
   "map": {

@@ -11121,7 +11121,8 @@
       "segunLaLey": "Wg przepisów",
       "losDiasDeVacacionesSon": "Dni urlopu to",
       "diasNaturales": "Dni kalendarzowe",
-      "diasLaborables": "Dni robocze"
+      "diasLaborables": "Dni robocze",
+      "selfieMovido": "Selfie i twarz przy rejestracji czasu ustawia się teraz w Ustawieniach › Aplikacja zespołu lub Aplikacja przełożonego."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Gdzie odbędzie się służba?",
@@ -17166,6 +17167,10 @@
       "cuerpo": "W Planerze zrobisz to samo i więcej: własne rotacje, nieobecności z zastępstwem, rezerwowi i szkic, który publikujesz, kiedy chcesz. Przyzwyczajaj się: Grafik zniknie.",
       "abrir": "Otwórz Planer",
       "entendido": "Rozumiem"
+    },
+    "SelfieRostro": {
+      "titulo": "Selfie i twarz przy rejestracji czasu",
+      "ambasApps": "Dotyczy aplikacji zespołu (ochroniarzy) i aplikacji przełożonego: to samo ustawienie w obu."
     }
   },
   "visitantes": {

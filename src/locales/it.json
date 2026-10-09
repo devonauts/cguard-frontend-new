@@ -11085,7 +11085,8 @@
       "segunLaLey": "Secondo la legge",
       "losDiasDeVacacionesSon": "I giorni di ferie sono",
       "diasNaturales": "Giorni di calendario",
-      "diasLaborables": "Giorni lavorativi"
+      "diasLaborables": "Giorni lavorativi",
+      "selfieMovido": "Selfie e volto alla timbratura ora si impostano in Impostazioni › App del team o App del supervisore."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Dove vai a lavorare?",
@@ -16976,6 +16977,10 @@
       "cuerpo": "Nel Pianificatore fai lo stesso e di più: turnazioni su misura, assenze con il sostituto, jolly e una bozza che pubblichi quando vuoi. Abituati: l’Orario sparirà.",
       "abrir": "Apri il Pianificatore",
       "entendido": "Capito"
+    },
+    "SelfieRostro": {
+      "titulo": "Selfie e volto alla timbratura",
+      "ambasApps": "Vale per l'app del team (guardie) e quella del supervisore: è la stessa impostazione in entrambe."
     }
   },
   "visitantes": {

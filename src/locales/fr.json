@@ -11085,7 +11085,8 @@
       "segunLaLey": "Selon la loi",
       "losDiasDeVacacionesSon": "Les jours de congés sont",
       "diasNaturales": "Jours calendaires",
-      "diasLaborables": "Jours ouvrables"
+      "diasLaborables": "Jours ouvrables",
+      "selfieMovido": "Le selfie et le visage au pointage se règlent désormais dans Paramètres › App de l'équipe ou App du superviseur."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Où allez-vous travailler ?",
@@ -16976,6 +16977,10 @@
       "cuerpo": "Le Planificateur fait la même chose et plus : rotations sur mesure, absences avec leur remplaçant, agents de relève et un brouillon que vous publiez quand vous voulez. Habituez-vous : l’Horaire sera retiré.",
       "abrir": "Ouvrir le Planificateur",
       "entendido": "Compris"
+    },
+    "SelfieRostro": {
+      "titulo": "Selfie et visage au pointage",
+      "ambasApps": "S'applique à l'app de l'équipe (agents) et à celle du superviseur : c'est le même réglage dans les deux."
     }
   },
   "visitantes": {

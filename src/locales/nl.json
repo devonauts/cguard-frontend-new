@@ -11085,7 +11085,8 @@
       "segunLaLey": "Volgens de wet",
       "losDiasDeVacacionesSon": "Vakantiedagen zijn",
       "diasNaturales": "Kalenderdagen",
-      "diasLaborables": "Werkdagen"
+      "diasLaborables": "Werkdagen",
+      "selfieMovido": "Selfie en gezicht bij inklokken stel je nu in via Instellingen › Team-app of Supervisor-app."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Waar gaat u werken?",
@@ -16976,6 +16977,10 @@
       "cuerpo": "In de Planner doe je hetzelfde en meer: eigen roosters, afwezigheden met vervanger, invallers en een concept dat je publiceert wanneer je wilt. Wen er alvast aan: het Rooster gaat weg.",
       "abrir": "Planner openen",
       "entendido": "Begrepen"
+    },
+    "SelfieRostro": {
+      "titulo": "Selfie en gezicht bij inklokken",
+      "ambasApps": "Geldt voor de team-app (bewakers) en de supervisor-app: het is in beide dezelfde instelling."
     }
   },
   "visitantes": {

@@ -13,6 +13,7 @@ import {
 
 import api from "@/lib/api";
 import AppLayout from "@/layouts/app-layout";
+import SelfieRostroAjustes from "@/components/settings/SelfieRostroAjustes";
 import SettingsLayout from "@/layouts/SettingsLayout";
 import {
   PageContainer,
@@ -249,6 +250,8 @@ export default function SupervisorAppPage() {
           ) : (
             <div className="grid grid-cols-[minmax(0,1fr)] gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
               <div className="space-y-6">
+                {/* ── Selfie y rostro al fichar (mismo ajuste que la app del equipo) ── */}
+                <SelfieRostroAjustes />
                 {/* ── COLOR DE LOS BOTONES ─────────────────────────────── */}
                 <Section
                   icon={<Palette className="size-4" />}

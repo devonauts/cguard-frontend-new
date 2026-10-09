@@ -10550,7 +10550,8 @@
       "segunLaLey": "Per the law",
       "losDiasDeVacacionesSon": "Vacation days are",
       "diasNaturales": "Calendar days",
-      "diasLaborables": "Working days"
+      "diasLaborables": "Working days",
+      "selfieMovido": "Selfie and face at clock-in are now set in Settings › Team app or Supervisor app."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Where will you be working?",
@@ -16441,6 +16442,10 @@
       "cuerpo": "The Planner does everything this does and more: custom rotations, absences with their replacement, relief guards and a draft you publish when you are ready. Start getting used to it: the Schedule will be removed.",
       "abrir": "Open the Planner",
       "entendido": "Got it"
+    },
+    "SelfieRostro": {
+      "titulo": "Selfie and face at clock-in",
+      "ambasApps": "Applies to the team app (guards) and the supervisor app: it is the same setting in both."
     }
   },
   "map": {

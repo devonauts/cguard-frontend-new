@@ -11085,7 +11085,8 @@
       "segunLaLey": "Laut Gesetz",
       "losDiasDeVacacionesSon": "Urlaubstage sind",
       "diasNaturales": "Kalendertage",
-      "diasLaborables": "Arbeitstage"
+      "diasLaborables": "Arbeitstage",
+      "selfieMovido": "Selfie und Gesicht beim Stempeln werden jetzt unter Einstellungen › Team-App oder Supervisor-App eingestellt."
     },
     "NominaTimeClock": {
       "dondeVasATrabajar": "Wo werden Sie arbeiten?",
@@ -16976,6 +16977,10 @@
       "cuerpo": "Im Planer geht alles hier und mehr: eigene Rotationen, Fehlzeiten mit Vertretung, Springer und ein Entwurf, den Sie veröffentlichen, wann Sie wollen. Gewöhnen Sie sich daran: der Dienstplan verschwindet.",
       "abrir": "Planer öffnen",
       "entendido": "Verstanden"
+    },
+    "SelfieRostro": {
+      "titulo": "Selfie und Gesicht beim Stempeln",
+      "ambasApps": "Gilt für die Team-App (Wachleute) und die Supervisor-App: in beiden dieselbe Einstellung."
     }
   },
   "visitantes": {
