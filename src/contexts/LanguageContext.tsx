@@ -250,8 +250,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
      de idioma debajo en cuanto contestaba la red. Ahora se espera a la IP —con
      techo de ESPERA_IP_MS, nunca sin límite: React ya está montado y, pase lo
      que pase, a los 1,5 s se pinta con el navegador o en inglés—. */
+  // Con idioma de navegador conocido no hay nada que esperar: se pinta ya.
+  // (50c0df90 dejó de consultar la IP en ese caso pero el telón sólo se abría
+  // en esa rama: todo visitante nuevo veía la pantalla en blanco para siempre.)
   const [listo, setListo] = useState<boolean>(
-    () => storedChoice() !== "auto" || cacheIp() !== null,
+    () => storedChoice() !== "auto" || cacheIp() !== null || !!detectBrowser(),
   );
   const [choice, setChoiceState] = useState<LanguageChoice>(storedChoice);
   const detected = autoSinRed();
@@ -310,6 +313,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     // acceso es justo donde más importa (es lo primero que ve un prospecto)
     // y este endpoint es público.
     // La IP no se pisa con el idioma de la URL de la web: manda la IP.
+    if (!(local === "auto" && cacheIp() === null && !detectBrowser())) setListo(true);
     if (local === "auto" && cacheIp() === null && !detectBrowser()) {
       void Promise.race([
         idiomaPorIp(),
