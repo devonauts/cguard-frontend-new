@@ -993,7 +993,11 @@ export default function PostSiteWizard({
      y viajan como instantes ISO (`vigenteDesde` / `vigenteHasta`). */
   const [eventoInicio, setEventoInicio] = useState("");
   const [eventoFin, setEventoFin] = useState("");
+  /* El NOMBRE del evento («Concierto Estadio Norte»): es lo que ve el vigilante
+     en su app. Una sede normal se sigue llamando por su dirección. */
+  const [nombreEvento, setNombreEvento] = useState("");
   const esEventoSel = esEvento({ serviceType });
+  const faltaNombreEvento = esEventoSel && !nombreEvento.trim();
   const vigenciaISO = {
     desde: eventoInicio ? desdeInputFechaHora(eventoInicio) : "",
     hasta: eventoFin ? desdeInputFechaHora(eventoFin) : "",
@@ -1122,6 +1126,11 @@ export default function PostSiteWizard({
           d.vigenteDesde ? paraInputFechaHora(d.vigenteDesde) : "",
         );
         setEventoFin(d.vigenteHasta ? paraInputFechaHora(d.vigenteHasta) : "");
+        // Sólo un evento tiene nombre propio; el de una sede normal es su
+        // dirección y no se trae aquí (si pasa a evento, se le pide uno).
+        setNombreEvento(
+          esEvento(d) ? String(d.companyName ?? d.name ?? "") : "",
+        );
         setClientId(d.clientAccountId ?? d.clientId ?? "");
         setAddress(d.address ?? "");
         setAddressLine2(d.secondAddress ?? d.addressLine2 ?? "");
@@ -1268,7 +1277,8 @@ export default function PostSiteWizard({
 
   // ── step validation ──────────────────────────────────────────────────────────
   const canGoNext = () => {
-    if (step === 2) return !!address.trim() && !errorVigencia;
+    if (step === 2)
+      return !!address.trim() && !errorVigencia && !faltaNombreEvento;
 
     return true; // other steps are optional-ish
   };
@@ -1295,10 +1305,12 @@ export default function PostSiteWizard({
   // ── build payload ────────────────────────────────────────────────────────────
   const buildPayload = () => {
     const autoName =
-      address.trim() ||
-      (resolvedClientName
-        ? `Sitio de ${resolvedClientName}`
-        : "Sitio sin nombre");
+      esEventoSel && nombreEvento.trim()
+        ? nombreEvento.trim()
+        : address.trim() ||
+          (resolvedClientName
+            ? `Sitio de ${resolvedClientName}`
+            : "Sitio sin nombre");
 
     const finalConfig = {
       ...serviceConfig,
@@ -1513,7 +1525,23 @@ export default function PostSiteWizard({
       try {
         setSedeGuardada(await stationService.get(sedeId));
       } catch {
-        setSedeGuardada({ id: sedeId, latitud, longitud });
+        /* Si la relectura falla, lo que se acaba de guardar se sabe igual: el
+           tipo y la vigencia van también, para que el paso 3 abra el
+           formulario de estación en modo evento y no en modo normal. */
+        setSedeGuardada({
+          id: sedeId,
+          latitud,
+          longitud,
+          serviceType,
+          name: payload.name,
+          companyName: payload.companyName,
+          ...(esEventoSel
+            ? {
+                vigenteDesde: vigenciaISO.desde,
+                vigenteHasta: vigenciaISO.hasta,
+              }
+            : {}),
+        });
       }
       toast.success(
         isEdit
@@ -1629,6 +1657,37 @@ export default function PostSiteWizard({
                 </span>
               </div>
               <div className="space-y-2 px-4 py-3">
+                <div>
+                  <label
+                    className="mb-1 block text-xs font-medium text-foreground/70"
+                    htmlFor="evento-nombre"
+                  >
+                    {t("ui.PostSiteWizard.evento.nombre", "Nombre del evento")}{" "}
+                    <span style={{ color: "var(--bad-text)" }}>*</span>
+                  </label>
+                  <input
+                    aria-invalid={faltaNombreEvento}
+                    autoComplete="off"
+                    className="cg-input cg-focus w-full px-3 py-2 text-sm"
+                    id="evento-nombre"
+                    maxLength={200}
+                    placeholder={t(
+                      "ui.PostSiteWizard.evento.nombreEj",
+                      "Ej.: Concierto Estadio Norte",
+                    )}
+                    value={nombreEvento}
+                    onChange={(e) => setNombreEvento(e.target.value)}
+                  />
+                  <p
+                    className="mt-1 text-[11px]"
+                    style={{ color: "var(--ink-soft)" }}
+                  >
+                    {t(
+                      "ui.PostSiteWizard.evento.nombreAyuda",
+                      "Es el nombre que verán los vigilantes en su app.",
+                    )}
+                  </p>
+                </div>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div>
                     <label
@@ -2553,7 +2612,12 @@ export default function PostSiteWizard({
               {step === 2 ? (
                 <Button
                   className="gap-2 min-w-36"
-                  disabled={submitting || !address.trim() || !!errorVigencia}
+                  disabled={
+                    submitting ||
+                    !address.trim() ||
+                    !!errorVigencia ||
+                    faltaNombreEvento
+                  }
                   type="button"
                   variant="brand"
                   onClick={handleCreateSite}

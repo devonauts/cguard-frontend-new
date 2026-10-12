@@ -11515,7 +11515,10 @@
         "instrucciones": "Istruzioni",
         "instruccionesEj": "Cosa controllare, da dove entra il pubblico, chi avvisare in caso di incidente…",
         "salieron": "Date aggiornate. {{count}} guardia/e sono uscite dall'evento perché hanno già un turno: {{lista}}. Assegna altre persone alle loro stazioni.",
-        "movidas": "{{count}} guardia/e spostate alle nuove date."
+        "movidas": "{{count}} guardia/e spostate alle nuove date.",
+        "nombre": "Nome dell'evento",
+        "nombreEj": "Es.: Concerto Stadio Nord",
+        "nombreAyuda": "È il nome che le guardie vedranno nella loro app."
       },
       "creaCadaEstacionEvento": "Crea ogni stazione dell'evento: nome, da che ora a che ora è coperta, quante guardie contemporaneamente e geofence. Senza rotazione: l'evento ha le sue date. Quando sono tutte pronte, premi «Termina».",
       "eventoConEstaciones": "{{count}} stazione/i. Prossimo passo: assegna le guardie; date e orari li stabilisce l'evento."
@@ -12512,7 +12515,9 @@
       "seReemplazaron": "Sostituiti: {{lista}}",
       "siReemplazar": "Sì, sostituisci e crea",
       "reemplazarTitulo": "Questa guardia ha già {{count}} turno/i in quelle ore",
-      "reemplazarExplica": "Se continui, vengono rimossi e si crea il nuovo. Se uno era della sua postazione abituale, quella postazione resta scoperta: cerca un sostituto in Copertura."
+      "reemplazarExplica": "Se continui, vengono rimossi e si crea il nuovo. Se uno era della sua postazione abituale, quella postazione resta scoperta: cerca un sostituto in Copertura.",
+      "reemplazosCambiaron": "I turni sovrapposti sono cambiati mentre decidevi. Controlla l'elenco e conferma di nuovo.",
+      "quitadosSinCrear": "{{lista}} sono stati rimossi, ma non è stato possibile creare il nuovo turno: {{motivo}}"
     },
     "Scheduling": {
       "planificacionDeTurnos": "Pianificazione dei turni",
@@ -18645,6 +18650,11 @@
     "buscandoLibres": "Controllo chi è libero in quelle ore…",
     "nLibres": "{{n}} liberi in quelle ore, in cima · chi ha un turno che si sovrappone è segnalato",
     "sinListaDeLibres": "Non è stato possibile sapere chi è libero: se scegli qualcuno con un turno che si sovrappone, verrai avvisato al salvataggio.",
-    "plaza": "Postazione"
+    "plaza": "Postazione",
+    "eligeOtroVigilante": "Scegli un'altra guardia: questa è già in questa postazione.",
+    "relevoSinQuitar": "{{nuevo}} è ora assegnato, ma non è stato possibile rimuovere {{anterior}}: {{motivo}}. Rimuovilo con il cestino nella sua riga.",
+    "plazaCubiertaPor": "Coperta: {{nombre}}",
+    "todasLasPlazasCubiertas": "Tutte le postazioni di questo posto sono già coperte. Per sostituire qualcuno, usa «Cambia» nella sua riga.",
+    "plazasCubiertas": "{{n}} postazioni coperte su {{total}}"
   }
 }

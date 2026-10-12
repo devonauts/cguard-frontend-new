@@ -10983,7 +10983,10 @@
         "instrucciones": "Instruções",
         "instruccionesEj": "O que controlar, por onde entra o público, quem avisar em caso de incidente…",
         "salieron": "Datas atualizadas. {{count}} vigilante(s) saíram do evento porque já têm turno: {{lista}}. Designe outros nas estações deles.",
-        "movidas": "{{count}} vigilante(s) foram movidos para as novas datas."
+        "movidas": "{{count}} vigilante(s) foram movidos para as novas datas.",
+        "nombre": "Nome do evento",
+        "nombreEj": "Ex.: Show no Estádio Norte",
+        "nombreAyuda": "É o nome que os vigilantes verão no app."
       },
       "creaCadaEstacionEvento": "Crie cada estação do evento: nome, de que hora a que hora é coberta, quantos vigilantes ao mesmo tempo e cerca virtual. Sem rodízio: o evento tem suas datas. Quando estiverem todas, clique em «Terminar».",
       "eventoConEstaciones": "{{count}} estação(ões). Próximo: designe os vigilantes; as datas e horas vêm do evento."
@@ -11980,7 +11983,9 @@
       "seReemplazaron": "Foram substituídos: {{lista}}",
       "siReemplazar": "Sim, substituir e criar",
       "reemplazarTitulo": "Este vigilante já tem {{count}} turno(s) nesse horário",
-      "reemplazarExplica": "Se continuar, eles são removidos e o novo é criado. Se algum era do posto habitual, esse posto fica descoberto: procure um substituto em Cobertura."
+      "reemplazarExplica": "Se continuar, eles são removidos e o novo é criado. Se algum era do posto habitual, esse posto fica descoberto: procure um substituto em Cobertura.",
+      "reemplazosCambiaron": "Os turnos sobrepostos mudaram enquanto você decidia. Revise a lista e confirme novamente.",
+      "quitadosSinCrear": "{{lista}} foram removidos, mas não foi possível criar o novo turno: {{motivo}}"
     },
     "Scheduling": {
       "planificacionDeTurnos": "Planejamento de turnos",
@@ -18645,6 +18650,11 @@
     "buscandoLibres": "Verificando quem está livre nesse horário…",
     "nLibres": "{{n}} livre(s) nesse horário, no topo · quem tem um turno que se sobrepõe aparece marcado",
     "sinListaDeLibres": "Não foi possível saber quem está livre: se escolher alguém com um turno que se sobrepõe, será avisado ao salvar.",
-    "plaza": "Vaga"
+    "plaza": "Vaga",
+    "eligeOtroVigilante": "Escolha outro vigilante: esse já está nesta vaga.",
+    "relevoSinQuitar": "{{nuevo}} já está atribuído, mas não foi possível remover {{anterior}}: {{motivo}}. Remova-o com a lixeira da linha dele.",
+    "plazaCubiertaPor": "Coberta: {{nombre}}",
+    "todasLasPlazasCubiertas": "Todas as vagas deste posto já estão cobertas. Para trocar alguém, use «Alterar» na linha dele.",
+    "plazasCubiertas": "{{n}} de {{total}} vagas cobertas"
   }
 }

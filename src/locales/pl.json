@@ -11551,7 +11551,10 @@
         "instrucciones": "Instrukcje",
         "instruccionesEj": "Co kontrolować, którędy wchodzi publiczność, kogo powiadomić w razie incydentu…",
         "salieron": "Daty zaktualizowane. Ochroniarze, którzy opuścili wydarzenie, bo mają już zmianę ({{count}}): {{lista}}. Przydziel innych na ich stanowiska.",
-        "movidas": "Przeniesiono ochroniarzy na nowe daty: {{count}}."
+        "movidas": "Przeniesiono ochroniarzy na nowe daty: {{count}}.",
+        "nombre": "Nazwa wydarzenia",
+        "nombreEj": "Np.: Koncert na Stadionie Północnym",
+        "nombreAyuda": "Tę nazwę ochroniarze zobaczą w swojej aplikacji."
       },
       "creaCadaEstacionEvento": "Utwórz każde stanowisko wydarzenia: nazwa, od której do której godziny jest obsadzone, ilu ochroniarzy jednocześnie i geofencing. Bez rotacji: wydarzenie ma swoje daty. Gdy wszystkie będą gotowe, kliknij „Zakończ”.",
       "eventoConEstaciones": "Stanowiska: {{count}}. Dalej: przydziel ochroniarzy; daty i godziny wynikają z wydarzenia."
@@ -12582,7 +12585,9 @@
       "seReemplazaron": "Zastąpiono: {{lista}}",
       "siReemplazar": "Tak, zastąp i utwórz",
       "reemplazarTitulo": "Ten ochroniarz ma już {{count}} zmian(y) w tych godzinach",
-      "reemplazarExplica": "Jeśli kontynuujesz, zostaną usunięte i powstanie nowa. Jeśli któraś była na jego stałym stanowisku, to stanowisko zostanie nieobsadzone: znajdź zastępstwo w Obsadzie."
+      "reemplazarExplica": "Jeśli kontynuujesz, zostaną usunięte i powstanie nowa. Jeśli któraś była na jego stałym stanowisku, to stanowisko zostanie nieobsadzone: znajdź zastępstwo w Obsadzie.",
+      "reemplazosCambiaron": "Nakładające się zmiany zmieniły się, gdy podejmowałeś decyzję. Sprawdź listę i potwierdź ponownie.",
+      "quitadosSinCrear": "Usunięto {{lista}}, ale nie udało się utworzyć nowej zmiany: {{motivo}}"
     },
     "Scheduling": {
       "planificacionDeTurnos": "Planowanie zmian",
@@ -18841,6 +18846,11 @@
     "buscandoLibres": "Sprawdzam, kto jest wolny w tych godzinach…",
     "nLibres": "{{n}} wolnych w tych godzinach, na górze · osoby z nakładającą się zmianą są oznaczone",
     "sinListaDeLibres": "Nie udało się sprawdzić, kto jest wolny: jeśli wybierzesz kogoś z nakładającą się zmianą, zobaczysz komunikat przy zapisie.",
-    "plaza": "Miejsce"
+    "plaza": "Miejsce",
+    "eligeOtroVigilante": "Wybierz innego ochroniarza: ten jest już na tym miejscu.",
+    "relevoSinQuitar": "{{nuevo}} jest już przypisany, ale nie udało się usunąć {{anterior}}: {{motivo}}. Usuń go ikoną kosza w jego wierszu.",
+    "plazaCubiertaPor": "Obsadzone: {{nombre}}",
+    "todasLasPlazasCubiertas": "Wszystkie miejsca na tym posterunku są już obsadzone. Aby kogoś zmienić, użyj „Zmień” w jego wierszu.",
+    "plazasCubiertas": "Obsadzono {{n}} z {{total}} miejsc"
   }
 }

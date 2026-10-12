@@ -21,7 +21,6 @@ import { toast } from "sonner";
 
 import { ApiService } from "@/services/api/apiService";
 import { Modal, Segmented } from "@/components/kit";
-import { postSiteService } from "@/lib/api/postSiteService";
 import OperationSetupAlert, {
   needsOperationSetup,
 } from "@/pages/admin/post-sites/components/OperationSetup/OperationSetupAlert";
@@ -41,8 +40,16 @@ import { esEvento, eventoTerminado, ventanaDeLaPlaza } from "@/lib/eventos";
 import {
   AvisoFechasDelEvento,
   useCandidatosLibres,
+  useSede,
   useVigilantesOrdenados,
 } from "@/components/post-sites/EventoDeLaSede";
+/** «19:00|07:00» a partir de dos horas («19:00:00»); vacío si falta alguna. */
+const claveVentana = (ini?: string | null, fin?: string | null) => {
+  const a = String(ini || "").slice(0, 5);
+  const b = String(fin || "").slice(0, 5);
+
+  return /^\d{2}:\d{2}$/.test(a) && /^\d{2}:\d{2}$/.test(b) ? `${a}|${b}` : "";
+};
 // Local YYYY-MM-DD (avoid toISOString — it shifts day in negative-UTC zones).
 const dateKey = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -129,26 +136,13 @@ export default function ShiftAssignModal({
   /* La sede del puesto. Si no dice qué servicio presta, aquí no se asigna a
      nadie: se enseña el aviso con el camino y el botón queda cerrado. Es el
      mismo candado que pone el servidor (`exigirSedeConfigurada`). */
-  const [sede, setSede] = useState<any | null>(null);
+  /* Por el caché compartido (`useSede`): la ficha del puesto ya la leyó. */
+  const sede = useSede(postSiteId, open);
   const sedeSinConfigurar = !!sede && needsOperationSetup(sede);
   /* Sede-EVENTO: no hay rotación, ni fecha de inicio, ni fin, ni ciclo. Se
      elige plaza y vigilante; el servidor pone las fechas con la vigencia. */
   const evento = esEvento(sede);
   const eventoAcabado = evento && eventoTerminado(sede);
-
-  useEffect(() => {
-    if (!open || !postSiteId) return;
-    let viva = true;
-
-    postSiteService
-      .get(String(postSiteId))
-      .then((d) => viva && setSede(d))
-      .catch(() => viva && setSede(null));
-
-    return () => {
-      viva = false;
-    };
-  }, [open, postSiteId]);
   const [shiftGuard, setShiftGuard] = useState("");
   const [guardsOptions, setGuardsOptions] = useState<
     { id: string; label: string }[]
@@ -192,6 +186,11 @@ export default function ShiftAssignModal({
   const [occupiedPositionIds, setOccupiedPositionIds] = useState<Set<string>>(
     new Set(),
   );
+  /* Evento: asignaciones puntuales de ESTA estación agrupadas por su ventana
+     («19:00|07:00» → nombres). Ver `positionOptions`. */
+  const [puntualesPorVentana, setPuntualesPorVentana] = useState<
+    Record<string, string[]>
+  >({});
 
   // Assignable positions (puestos). Fijos shown as "Vigilante 1/2…" (they rotate
   // through day AND night, staggered by the engine); sacafranco shown separately.
@@ -215,12 +214,32 @@ export default function ShiftAssignModal({
     const variasVentanas =
       new Set(fijos.map((p) => `${hhmm(p.startTime)}|${hhmm(p.endTime)}`))
         .size > 1;
+    /* ── EVENTO: LA OCUPACIÓN VA POR VENTANA, NO POR PLAZA ───────────────────
+       La asignación de un evento se guarda sin plaza y con las horas de la
+       elegida, así que `occupiedPositionIds` nunca se llenaba y todas las
+       plazas salían libres. Si hay 2 asignaciones de 19:00–07:00 y 3 plazas
+       con esa ventana, las 2 primeras (por orden) se dan por cubiertas. */
+    const usadasPorVentana: Record<string, number> = {};
+    const cubiertaPor = (p: PositionRow): string | null => {
+      if (!evento) return null;
+      const k = claveVentana(p.startTime, p.endTime);
+
+      if (!k) return null;
+      const quienes = puntualesPorVentana[k] || [];
+      const n = usadasPorVentana[k] || 0;
+
+      if (n >= quienes.length) return null;
+      usadasPorVentana[k] = n + 1;
+
+      return quienes[n] || "—";
+    };
 
     return [
       ...fijos.map((p: PositionRow, i: number) => {
         const ini = hhmm(p.startTime);
         const fin = hhmm(p.endTime);
         const horas = ini && fin ? `${ini}–${fin}` : "";
+        const cubierta = cubiertaPor(p);
 
         return {
           id: p.id,
@@ -231,7 +250,9 @@ export default function ShiftAssignModal({
           horas,
           tramo: variasVentanas && ini ? nombreDeTramo(ini) : "",
           type: "fijo" as const,
-          occupied: occupiedPositionIds.has(String(p.id)),
+          occupied: occupiedPositionIds.has(String(p.id)) || cubierta !== null,
+          /** Evento: quién cubre ya esta plaza (por su ventana). */
+          cubiertaPor: cubierta,
         };
       }),
       ...sacas.map((p: PositionRow, i: number) => ({
@@ -247,9 +268,10 @@ export default function ShiftAssignModal({
         tramo: "",
         type: "sacafranco" as const,
         occupied: occupiedPositionIds.has(String(p.id)),
+        cubiertaPor: null as string | null,
       })),
     ];
-  }, [positions, occupiedPositionIds, t]);
+  }, [positions, occupiedPositionIds, evento, puntualesPorVentana, t]);
 
   // Vigilantes free to assign (drop anyone with an active rotation anywhere).
   const availableGuards = useMemo(
@@ -558,6 +580,7 @@ export default function ShiftAssignModal({
         const rows = Array.isArray(r) ? r : (r?.rows ?? []);
         const og = new Set<string>();
         const op = new Set<string>();
+        const pv: Record<string, string[]> = {};
 
         for (const a of rows) {
           /* Quien tiene CUALQUIER asignación activa —fijo o sacafranco— no se
@@ -569,9 +592,27 @@ export default function ShiftAssignModal({
           if (gid) og.add(gid);
           if (String(a.stationId) === String(stationId) && a.positionId)
             op.add(String(a.positionId));
+          /* Evento: la asignación se guarda SIN plaza (puntual) y con las
+             horas de la plaza elegida. La ocupación sólo se puede leer por la
+             ventana: «¿cuántos hay ya de 19:00 a 07:00?». */
+          if (String(a.stationId) === String(stationId) && !a.positionId) {
+            const k = claveVentana(a.startTime, a.endTime);
+
+            if (k) {
+              const g = a.guard || a.user || {};
+              const nombre =
+                g.fullName ||
+                `${g.firstName || ""} ${g.lastName || ""}`.trim() ||
+                g.email ||
+                "";
+
+              (pv[k] ||= []).push(nombre);
+            }
+          }
         }
         setOccupiedGuardIds(og);
         setOccupiedPositionIds(op);
+        setPuntualesPorVentana(pv);
       })
       .catch(() => {});
   }, [open]);
@@ -595,16 +636,22 @@ export default function ShiftAssignModal({
   // Default the puesto to the first FREE one once positions/occupancy load.
   useEffect(() => {
     if (!open) return;
-    const free = positionOptions.find((p) => !p.occupied);
+    // En un evento sólo se ofrecen las plazas fijas (no hay sacafranco).
+    const candidatas = evento
+      ? positionOptions.filter((p) => p.type === "fijo")
+      : positionOptions;
+    const free = candidatas.find((p) => !p.occupied);
+    const elegidaOcupada = !!positionOptions.find(
+      (p) => p.id === selectedPositionId,
+    )?.occupied;
 
-    if (
-      free &&
-      (!selectedPositionId ||
-        positionOptions.find((p) => p.id === selectedPositionId)?.occupied)
-    ) {
+    if (free && (!selectedPositionId || elegidaOcupada)) {
       setSelectedPositionId(free.id);
+    } else if (evento && !free && elegidaOcupada) {
+      // Evento con todas las plazas cubiertas: no se deja una elegida a escondidas.
+      setSelectedPositionId("");
     }
-  }, [open, positionOptions]);
+  }, [open, positionOptions, evento]);
 
   // A slot already taken by THIS guard is the desired end state, not an error.
   const isBenignSlotConflict = (e: any) => {
@@ -1049,7 +1096,7 @@ export default function ShiftAssignModal({
                       <span className={p.occupied ? "line-through" : undefined}>
                         {p.label}
                       </span>
-                      {p.occupied
+                      {p.occupied && !p.cubiertaPor
                         ? ` · ${t("ui.AsignacionEditModal.ocupado", "ocupado")}`
                         : ""}
                       {p.horas && (
@@ -1057,9 +1104,44 @@ export default function ShiftAssignModal({
                           {p.horas}
                         </span>
                       )}
+                      {p.cubiertaPor && (
+                        <span className="mt-0.5 block truncate text-[10px] font-normal">
+                          {t("eventos.plazaCubiertaPor", {
+                            defaultValue: "Cubierta: {{nombre}}",
+                            nombre: p.cubiertaPor,
+                          })}
+                        </span>
+                      )}
                     </button>
                   ))}
               </div>
+              {(() => {
+                const fijas = positionOptions.filter((p) => p.type === "fijo");
+                const cubiertas = fijas.filter((p) => p.occupied).length;
+
+                return (
+                  <p
+                    className="mt-1.5 text-[11px]"
+                    style={{
+                      color:
+                        cubiertas >= fijas.length
+                          ? "var(--warn-text)"
+                          : "var(--ink-soft)",
+                    }}
+                  >
+                    {cubiertas >= fijas.length
+                      ? t(
+                          "eventos.todasLasPlazasCubiertas",
+                          "Todas las plazas de este puesto ya están cubiertas. Para cambiar a alguien, usa «Cambiar» en su fila.",
+                        )
+                      : t("eventos.plazasCubiertas", {
+                          defaultValue: "{{n}} de {{total}} plazas cubiertas",
+                          n: cubiertas,
+                          total: fijas.length,
+                        })}
+                  </p>
+                );
+              })()}
             </LabeledField>
           ) : null
         ) : assignMode === "rotation" ? (

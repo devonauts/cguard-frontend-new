@@ -516,14 +516,34 @@ export default function ScheduleTimeline({
 
           return;
         }
-        if (overlapping.length) {
+        /* Se borra EXACTAMENTE lo que se enseñó y se aceptó, no una lista
+           recalculada: si el Horario se refrescó entre medias (otro operador,
+           una regeneración) y los turnos que se cruzan ya no son esos, se
+           vuelve a preguntar con la lista nueva. */
+        const aceptados = confirmado ? (reemplazos ?? []) : [];
+        const mismaLista =
+          aceptados.length === overlapping.length &&
+          overlapping.every((o) => aceptados.some((a) => a.id === o.id));
+
+        if (confirmado && !mismaLista) {
+          setReemplazos(overlapping.length ? overlapping : null);
+          toast.info(
+            t(
+              "ui.ScheduleTimeline.reemplazosCambiaron",
+              "Los turnos que se cruzan cambiaron mientras decidías. Revisa la lista y confirma otra vez.",
+            ),
+          );
+
+          return;
+        }
+        if (aceptados.length) {
           // Sin `.catch` mudo: si no se pueden quitar, no se crea nada y el
           // error sale en pantalla (el `catch` de abajo).
           await ApiService.delete(
-            `/tenant/${tenantId}/shift?ids=${overlapping.map((s) => s.id).join(",")}`,
+            `/tenant/${tenantId}/shift?ids=${aceptados.map((s) => s.id).join(",")}`,
           );
         }
-        const reemplazados = overlapping.map(describeTurno).join(" · ");
+        const reemplazados = aceptados.map(describeTurno).join(" · ");
         const cuerpo = {
           startTime: start.toISOString(),
           endTime: end.toISOString(),
@@ -532,51 +552,80 @@ export default function ScheduleTimeline({
           postSiteId: station?.postSiteId,
         };
 
-        if (rep.tipo === "unica") {
-          await ApiService.post(`/tenant/${tenantId}/shift`, { data: cuerpo });
-          toast.success(
-            overlapping.length
-              ? t("ui.ScheduleTimeline.turnoCreadoReemplazando", {
-                  defaultValue: "Turno creado. Reemplazó a: {{lista}}",
-                  lista: reemplazados,
-                })
-              : t("ui.ShiftAssignModal.turnoCreado", "Turno creado"),
-          );
-        } else {
-          // La serie la expande el servidor: un día que choque se omite y se
-          // informa, en vez de tumbar la temporada entera.
-          const r: any = await ApiService.post(
-            `/tenant/${tenantId}/shift/series`,
-            {
-              data: {
-                ...cuerpo,
-                repeticion: { ...rep, hasta: rep.hasta || null },
-              },
-            },
-          );
-          const d = r?.data ?? r;
-          const om = d?.omitidos?.length || 0;
-
-          toast.success(
-            om
-              ? t("ui.ScheduleTimeline.turnosCreadosConOmitidos", {
-                  defaultValue:
-                    "{{creados}} turno(s) creados · {{omitidos}} día(s) omitido(s) por choque",
-                  creados: d.creados,
-                  omitidos: om,
-                })
-              : t("ui.ScheduleTimeline.turnosCreados", {
-                  defaultValue: "{{count}} turno(s) creados",
-                  count: d.creados,
-                }),
-          );
-          if (overlapping.length)
-            toast.info(
-              t("ui.ScheduleTimeline.seReemplazaron", {
-                defaultValue: "Se reemplazaron: {{lista}}",
-                lista: reemplazados,
-              }),
+        try {
+          if (rep.tipo === "unica") {
+            await ApiService.post(`/tenant/${tenantId}/shift`, {
+              data: cuerpo,
+            });
+            toast.success(
+              aceptados.length
+                ? t("ui.ScheduleTimeline.turnoCreadoReemplazando", {
+                    defaultValue: "Turno creado. Reemplazó a: {{lista}}",
+                    lista: reemplazados,
+                  })
+                : t("ui.ShiftAssignModal.turnoCreado", "Turno creado"),
             );
+          } else {
+            // La serie la expande el servidor: un día que choque se omite y se
+            // informa, en vez de tumbar la temporada entera.
+            const r: any = await ApiService.post(
+              `/tenant/${tenantId}/shift/series`,
+              {
+                data: {
+                  ...cuerpo,
+                  repeticion: { ...rep, hasta: rep.hasta || null },
+                },
+              },
+            );
+            const d = r?.data ?? r;
+            const om = d?.omitidos?.length || 0;
+
+            toast.success(
+              om
+                ? t("ui.ScheduleTimeline.turnosCreadosConOmitidos", {
+                    defaultValue:
+                      "{{creados}} turno(s) creados · {{omitidos}} día(s) omitido(s) por choque",
+                    creados: d.creados,
+                    omitidos: om,
+                  })
+                : t("ui.ScheduleTimeline.turnosCreados", {
+                    defaultValue: "{{count}} turno(s) creados",
+                    count: d.creados,
+                  }),
+            );
+            if (aceptados.length)
+              toast.info(
+                t("ui.ScheduleTimeline.seReemplazaron", {
+                  defaultValue: "Se reemplazaron: {{lista}}",
+                  lista: reemplazados,
+                }),
+              );
+          }
+        } catch (e: any) {
+          if (!aceptados.length) throw e;
+          /* Lo peor que puede pasar aquí: los turnos de antes YA se quitaron y
+             el nuevo no se creó. No se traga: se dice qué se quitó para que el
+             operador lo vuelva a poner o reintente, y el Horario se refresca
+             para que lo vea. El diálogo se queda abierto para reintentar. */
+          toast.error(
+            t("ui.ScheduleTimeline.quitadosSinCrear", {
+              defaultValue:
+                "Se quitaron {{lista}}, pero no se pudo crear el nuevo turno: {{motivo}}",
+              lista: reemplazados,
+              motivo:
+                e?.data?.message ||
+                e?.message ||
+                t(
+                  "ui.ScheduleTimeline.errorAlGuardarElTurno",
+                  "Error al guardar el turno",
+                ),
+            }),
+            { duration: 20000 },
+          );
+          setReemplazos(null);
+          onChanged();
+
+          return;
         }
       }
       setReemplazos(null);

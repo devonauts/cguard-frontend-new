@@ -10983,7 +10983,10 @@
         "instrucciones": "Instructions",
         "instruccionesEj": "What to check, where the public comes in, who to call if something happens…",
         "salieron": "Dates updated. {{count}} guard(s) left the event because they already have a shift: {{lista}}. Assign others at their stations.",
-        "movidas": "{{count}} guard(s) moved to the new dates."
+        "movidas": "{{count}} guard(s) moved to the new dates.",
+        "nombre": "Event name",
+        "nombreEj": "E.g.: North Stadium Concert",
+        "nombreAyuda": "This is the name guards will see in their app."
       },
       "creaCadaEstacionEvento": "Create each station for the event: name, from what time to what time it is covered, how many guards at once and geofence. No rotation: the event has its own dates. When they're all done, press “Finish”.",
       "eventoConEstaciones": "{{count}} station(s). Next: assign the guards; the event sets the dates and hours."
@@ -11980,7 +11983,9 @@
       "seReemplazaron": "Replaced: {{lista}}",
       "siReemplazar": "Yes, replace and create",
       "reemplazarTitulo": "This guard already has {{count}} shift(s) at those hours",
-      "reemplazarExplica": "If you continue, they are removed and the new one is created. If any was at their usual post, that post is left uncovered: find a replacement in Coverage."
+      "reemplazarExplica": "If you continue, they are removed and the new one is created. If any was at their usual post, that post is left uncovered: find a replacement in Coverage.",
+      "reemplazosCambiaron": "The overlapping shifts changed while you were deciding. Check the list and confirm again.",
+      "quitadosSinCrear": "{{lista}} were removed, but the new shift could not be created: {{motivo}}"
     },
     "Scheduling": {
       "planificacionDeTurnos": "Shift planning",
@@ -18645,6 +18650,11 @@
     "buscandoLibres": "Checking who is free at those hours…",
     "nLibres": "{{n}} free at those hours, listed first · anyone with an overlapping shift is flagged",
     "sinListaDeLibres": "Couldn't check who is free: if you pick someone with an overlapping shift, you'll be told when saving.",
-    "plaza": "Slot"
+    "plaza": "Slot",
+    "eligeOtroVigilante": "Choose a different guard: that one is already in this slot.",
+    "relevoSinQuitar": "{{nuevo}} is now assigned, but {{anterior}} could not be removed: {{motivo}}. Remove them with the trash icon on their row.",
+    "plazaCubiertaPor": "Covered: {{nombre}}",
+    "todasLasPlazasCubiertas": "All slots at this post are already covered. To swap someone, use “Change” on their row.",
+    "plazasCubiertas": "{{n}} of {{total}} slots covered"
   }
 }

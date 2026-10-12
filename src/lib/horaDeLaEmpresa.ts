@@ -219,12 +219,49 @@ export function sumaDias(dia: string, n: number): string {
 
 // ── 3. DE UNA HORA DE PARED A UN INSTANTE ───────────────────────────────────
 
-/** Desfase de una zona IANA respecto a UTC, en minutos, para un instante dado. */
-function desfaseZona(fecha: Date, zona: string): number {
-  const enZona = new Date(fecha.toLocaleString("en-US", { timeZone: zona }));
-  const enUtc = new Date(fecha.toLocaleString("en-US", { timeZone: "UTC" }));
+/* Un formateador por zona: crearlos es lo caro, usarlos no. */
+const formateadoresDeZona = new Map<string, Intl.DateTimeFormat>();
 
-  return (enZona.getTime() - enUtc.getTime()) / 60000;
+/**
+ * Desfase de una zona IANA respecto a UTC, en minutos, para un instante dado.
+ *
+ * Se lee con `formatToParts` y `Date.UTC`, sin pasar NUNCA por la zona del
+ * navegador. Antes se hacía `new Date(toLocaleString(…))`, que interpreta la
+ * cadena en la zona del portátil: si ESA zona cambiaba de hora entre los dos
+ * instantes comparados, el desfase salía con una hora de más o de menos.
+ */
+function desfaseZona(fecha: Date, zona: string): number {
+  let fmt = formateadoresDeZona.get(zona);
+
+  if (!fmt) {
+    fmt = new Intl.DateTimeFormat("en-US", {
+      timeZone: zona,
+      hourCycle: "h23",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+    formateadoresDeZona.set(zona, fmt);
+  }
+  const p: Record<string, number> = {};
+
+  for (const x of fmt.formatToParts(fecha))
+    if (x.type !== "literal") p[x.type] = Number(x.value);
+  const comoUtc = Date.UTC(
+    p.year,
+    p.month - 1,
+    p.day,
+    p.hour === 24 ? 0 : p.hour,
+    p.minute,
+    p.second,
+  );
+  const ms = fecha.getTime();
+  const alSegundo = ms - (((ms % 1000) + 1000) % 1000);
+
+  return Math.round((comoUtc - alSegundo) / 60000);
 }
 
 /**
@@ -233,8 +270,17 @@ function desfaseZona(fecha: Date, zona: string): number {
  * las 18:00» y eso tiene que significar las 18:00 del puesto, no las del
  * portátil de quien lo escribe.
  *
- * El desfase se calcula sobre el instante tentativo y no sobre hoy, para que el
- * horario de verano se aplique con la regla del día consultado.
+ * ── EL CAMBIO DE HORA ────────────────────────────────────────────────────────
+ * Antes el desfase se medía UNA vez, sobre la hora de pared leída como si fuera
+ * UTC. Cerca del cambio de hora ese instante tentativo cae al otro lado de la
+ * frontera: en Chicago, las 03:00 del 1-nov-2026 salían como las 02:00 (una
+ * hora menos) y cada «editar → guardar» corría el turno otra hora más.
+ *
+ * Ahora se prueban los dos desfases que rodean la fecha (el de la víspera y el
+ * del día siguiente) y se queda el que, aplicado, devuelve EXACTAMENTE esa hora
+ * de pared. Con dos válidos (la hora que se repite al atrasar el reloj) gana la
+ * primera; con ninguno (la hora que no existe al adelantarlo, p. ej. 02:30) se
+ * corre hacia delante, a las 03:30. Igual que `Temporal` con «compatible».
  */
 export function instanteEnLaEmpresa(
   dia: string,
@@ -245,10 +291,22 @@ export function instanteEnLaEmpresa(
   zona = zonaDeLaEmpresa(),
 ): Date {
   const [a, mes, d] = String(dia).slice(0, 10).split("-").map(Number);
-  const tentativo = new Date(Date.UTC(a, (mes || 1) - 1, d || 1, h, m, s, ms));
-  const off = desfaseZona(tentativo, zona);
+  const pared = Date.UTC(a, (mes || 1) - 1, d || 1, h, m, s, ms);
+  const DIA = 86_400_000;
+  const desfases = Array.from(
+    new Set([
+      desfaseZona(new Date(pared - DIA), zona),
+      desfaseZona(new Date(pared + DIA), zona),
+    ]),
+  );
+  const candidatos = desfases.map((off) => pared - off * 60000);
+  const validos = candidatos.filter(
+    (t) => pared - desfaseZona(new Date(t), zona) * 60000 === t,
+  );
 
-  return new Date(tentativo.getTime() - off * 60000);
+  return new Date(
+    validos.length ? Math.min(...validos) : Math.max(...candidatos),
+  );
 }
 
 /** Las dos cotas ISO de un día completo de la empresa. */

@@ -10983,7 +10983,10 @@
         "instrucciones": "Instrucciones",
         "instruccionesEj": "Qué controlar, por dónde entra el público, a quién avisar ante un incidente…",
         "salieron": "Fechas actualizadas. {{count}} vigilante(s) salieron del evento porque ya tienen turno: {{lista}}. Asigna a otros en sus estaciones.",
-        "movidas": "Se movieron {{count}} vigilante(s) a las nuevas fechas."
+        "movidas": "Se movieron {{count}} vigilante(s) a las nuevas fechas.",
+        "nombre": "Nombre del evento",
+        "nombreEj": "Ej.: Concierto Estadio Norte",
+        "nombreAyuda": "Es el nombre que verán los vigilantes en su app."
       },
       "creaCadaEstacionEvento": "Crea cada estación del evento: nombre, de qué hora a qué hora se cubre, cuántos vigilantes a la vez y geocerca. Sin rotación: el evento tiene sus fechas. Cuando estén todas, pulsa «Terminar».",
       "eventoConEstaciones": "{{count}} estación(es). Siguiente: asigna a los vigilantes; las fechas y horas las pone el evento."
@@ -11980,7 +11983,9 @@
       "seReemplazaron": "Se reemplazaron: {{lista}}",
       "siReemplazar": "Sí, reemplazar y crear",
       "reemplazarTitulo": "Este vigilante ya tiene {{count}} turno(s) en esas horas",
-      "reemplazarExplica": "Si sigues, se quitan y se crea el nuevo. Si alguno era de su puesto habitual, ese puesto se queda sin cubrir: búscale relevo en Cobertura."
+      "reemplazarExplica": "Si sigues, se quitan y se crea el nuevo. Si alguno era de su puesto habitual, ese puesto se queda sin cubrir: búscale relevo en Cobertura.",
+      "reemplazosCambiaron": "Los turnos que se cruzan cambiaron mientras decidías. Revisa la lista y confirma otra vez.",
+      "quitadosSinCrear": "Se quitaron {{lista}}, pero no se pudo crear el nuevo turno: {{motivo}}"
     },
     "Scheduling": {
       "planificacionDeTurnos": "Planificación de Turnos",
@@ -18645,6 +18650,11 @@
     "buscandoLibres": "Mirando quién está libre en esas horas…",
     "nLibres": "{{n}} libre(s) en esas horas, arriba · los que tienen un turno que se cruza salen marcados",
     "sinListaDeLibres": "No se pudo saber quién está libre: si eliges a alguien con un turno que se cruza, se avisará al guardar.",
-    "plaza": "Plaza"
+    "plaza": "Plaza",
+    "eligeOtroVigilante": "Elige a otro vigilante: ese ya está en esta plaza.",
+    "relevoSinQuitar": "{{nuevo}} ya está asignado, pero no se pudo quitar a {{anterior}}: {{motivo}}. Quítalo con la papelera de su fila.",
+    "plazaCubiertaPor": "Cubierta: {{nombre}}",
+    "todasLasPlazasCubiertas": "Todas las plazas de este puesto ya están cubiertas. Para cambiar a alguien, usa «Cambiar» en su fila.",
+    "plazasCubiertas": "{{n}} de {{total}} plazas cubiertas"
   }
 }

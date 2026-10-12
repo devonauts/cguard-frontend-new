@@ -11515,7 +11515,10 @@
         "instrucciones": "Anweisungen",
         "instruccionesEj": "Was zu kontrollieren ist, wo das Publikum hereinkommt, wen man bei einem Vorfall verständigt…",
         "salieron": "Termine aktualisiert. {{count}} Sicherheitskraft/-kräfte haben die Veranstaltung verlassen, weil sie bereits eine Schicht haben: {{lista}}. Weisen Sie an ihren Stationen andere zu.",
-        "movidas": "{{count}} Sicherheitskraft/-kräfte auf die neuen Termine verschoben."
+        "movidas": "{{count}} Sicherheitskraft/-kräfte auf die neuen Termine verschoben.",
+        "nombre": "Name der Veranstaltung",
+        "nombreEj": "Z. B.: Konzert Nordstadion",
+        "nombreAyuda": "Diesen Namen sehen die Sicherheitskräfte in ihrer App."
       },
       "creaCadaEstacionEvento": "Legen Sie jede Station der Veranstaltung an: Name, von wann bis wann sie besetzt ist, wie viele Sicherheitskräfte gleichzeitig und Geofence. Ohne Rotation: Die Veranstaltung hat ihre eigenen Termine. Wenn alle fertig sind, klicken Sie auf „Fertig“.",
       "eventoConEstaciones": "{{count}} Station(en). Als Nächstes: Sicherheitskräfte zuweisen; Termine und Uhrzeiten gibt die Veranstaltung vor."
@@ -12512,7 +12515,9 @@
       "seReemplazaron": "Ersetzt: {{lista}}",
       "siReemplazar": "Ja, ersetzen und erstellen",
       "reemplazarTitulo": "Diese Sicherheitskraft hat zu diesen Zeiten bereits {{count}} Schicht(en)",
-      "reemplazarExplica": "Wenn Sie fortfahren, werden sie entfernt und die neue wird erstellt. War eine davon auf dem üblichen Posten, bleibt dieser unbesetzt: Suchen Sie unter Abdeckung eine Vertretung."
+      "reemplazarExplica": "Wenn Sie fortfahren, werden sie entfernt und die neue wird erstellt. War eine davon auf dem üblichen Posten, bleibt dieser unbesetzt: Suchen Sie unter Abdeckung eine Vertretung.",
+      "reemplazosCambiaron": "Die überlappenden Schichten haben sich geändert, während du entschieden hast. Prüfe die Liste und bestätige erneut.",
+      "quitadosSinCrear": "{{lista}} wurden entfernt, aber die neue Schicht konnte nicht erstellt werden: {{motivo}}"
     },
     "Scheduling": {
       "planificacionDeTurnos": "Schichtplanung",
@@ -18645,6 +18650,11 @@
     "buscandoLibres": "Prüfe, wer zu diesen Zeiten frei ist…",
     "nLibres": "{{n}} zu diesen Zeiten frei, oben · wer eine überschneidende Schicht hat, ist markiert",
     "sinListaDeLibres": "Es ließ sich nicht prüfen, wer frei ist: Wählen Sie jemanden mit überschneidender Schicht, erscheint beim Speichern ein Hinweis.",
-    "plaza": "Stelle"
+    "plaza": "Stelle",
+    "eligeOtroVigilante": "Wähle eine andere Sicherheitskraft: Diese ist bereits auf dieser Stelle.",
+    "relevoSinQuitar": "{{nuevo}} ist jetzt zugewiesen, aber {{anterior}} konnte nicht entfernt werden: {{motivo}}. Entferne die Person über den Papierkorb in ihrer Zeile.",
+    "plazaCubiertaPor": "Besetzt: {{nombre}}",
+    "todasLasPlazasCubiertas": "Alle Stellen dieses Postens sind bereits besetzt. Um jemanden zu tauschen, nutze „Ändern“ in der Zeile.",
+    "plazasCubiertas": "{{n}} von {{total}} Stellen besetzt"
   }
 }

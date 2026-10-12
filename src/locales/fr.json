@@ -11515,7 +11515,10 @@
         "instrucciones": "Consignes",
         "instruccionesEj": "Quoi contrôler, par où entre le public, qui prévenir en cas d'incident…",
         "salieron": "Dates mises à jour. {{count}} agent(s) ont quitté l'événement car ils ont déjà une vacation : {{lista}}. Affectez-en d'autres sur leurs stations.",
-        "movidas": "{{count}} agent(s) déplacé(s) aux nouvelles dates."
+        "movidas": "{{count}} agent(s) déplacé(s) aux nouvelles dates.",
+        "nombre": "Nom de l'événement",
+        "nombreEj": "Ex. : Concert Stade Nord",
+        "nombreAyuda": "C'est le nom que les agents verront dans leur application."
       },
       "creaCadaEstacionEvento": "Créez chaque station de l'événement : nom, de quelle heure à quelle heure il est couvert, combien d'agents à la fois et géorepérage. Sans rotation : l'événement a ses propres dates. Quand ils sont tous prêts, cliquez sur « Terminer ».",
       "eventoConEstaciones": "{{count}} station(s). Ensuite : affectez les agents ; les dates et heures viennent de l'événement."
@@ -12512,7 +12515,9 @@
       "seReemplazaron": "Remplacées : {{lista}}",
       "siReemplazar": "Oui, remplacer et créer",
       "reemplazarTitulo": "Cet agent a déjà {{count}} vacation(s) sur ces horaires",
-      "reemplazarExplica": "Si vous continuez, elles sont supprimées et la nouvelle est créée. Si l'une d'elles était sur son poste habituel, ce poste reste non couvert : trouvez un remplaçant dans Couverture."
+      "reemplazarExplica": "Si vous continuez, elles sont supprimées et la nouvelle est créée. Si l'une d'elles était sur son poste habituel, ce poste reste non couvert : trouvez un remplaçant dans Couverture.",
+      "reemplazosCambiaron": "Les services qui se chevauchent ont changé pendant que vous décidiez. Vérifiez la liste et confirmez à nouveau.",
+      "quitadosSinCrear": "{{lista}} ont été retirés, mais le nouveau service n'a pas pu être créé : {{motivo}}"
     },
     "Scheduling": {
       "planificacionDeTurnos": "Planification des vacations",
@@ -18645,6 +18650,11 @@
     "buscandoLibres": "Recherche des agents libres sur ces horaires…",
     "nLibres": "{{n}} libre(s) sur ces horaires, en tête · ceux qui ont une vacation qui se chevauche sont signalés",
     "sinListaDeLibres": "Impossible de savoir qui est libre : si vous choisissez quelqu'un dont la vacation se chevauche, vous serez prévenu à l'enregistrement.",
-    "plaza": "Place"
+    "plaza": "Place",
+    "eligeOtroVigilante": "Choisissez un autre agent : celui-ci occupe déjà cette place.",
+    "relevoSinQuitar": "{{nuevo}} est maintenant affecté, mais {{anterior}} n'a pas pu être retiré : {{motivo}}. Retirez-le avec la corbeille de sa ligne.",
+    "plazaCubiertaPor": "Couverte : {{nombre}}",
+    "todasLasPlazasCubiertas": "Toutes les places de ce poste sont déjà couvertes. Pour remplacer quelqu'un, utilisez « Changer » sur sa ligne.",
+    "plazasCubiertas": "{{n}} places couvertes sur {{total}}"
   }
 }

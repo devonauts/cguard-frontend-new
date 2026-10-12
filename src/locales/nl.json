@@ -11515,7 +11515,10 @@
         "instrucciones": "Instructies",
         "instruccionesEj": "Wat te controleren, waar het publiek binnenkomt, wie te waarschuwen bij een incident…",
         "salieron": "Data bijgewerkt. {{count}} beveiliger(s) zijn uit het evenement gehaald omdat ze al een dienst hebben: {{lista}}. Deel anderen in op hun stations.",
-        "movidas": "{{count}} beveiliger(s) verplaatst naar de nieuwe data."
+        "movidas": "{{count}} beveiliger(s) verplaatst naar de nieuwe data.",
+        "nombre": "Naam van het evenement",
+        "nombreEj": "Bijv.: Concert Noordstadion",
+        "nombreAyuda": "Dit is de naam die beveiligers in hun app zien."
       },
       "creaCadaEstacionEvento": "Maak elk station van het evenement aan: naam, van hoe laat tot hoe laat het bezet is, hoeveel beveiligers tegelijk en geofence. Geen rotatie: het evenement heeft zijn eigen data. Als ze allemaal klaar zijn, klik op ‘Afronden’.",
       "eventoConEstaciones": "{{count}} station(s). Volgende stap: deel de beveiligers in; de data en uren komen van het evenement."
@@ -12512,7 +12515,9 @@
       "seReemplazaron": "Vervangen: {{lista}}",
       "siReemplazar": "Ja, vervangen en aanmaken",
       "reemplazarTitulo": "Deze beveiliger heeft op die uren al {{count}} dienst(en)",
-      "reemplazarExplica": "Als je doorgaat, worden ze verwijderd en wordt de nieuwe aangemaakt. Was er een op zijn vaste post, dan blijft die post onbezet: zoek een vervanger in Dekking."
+      "reemplazarExplica": "Als je doorgaat, worden ze verwijderd en wordt de nieuwe aangemaakt. Was er een op zijn vaste post, dan blijft die post onbezet: zoek een vervanger in Dekking.",
+      "reemplazosCambiaron": "De overlappende diensten zijn veranderd terwijl je besliste. Controleer de lijst en bevestig opnieuw.",
+      "quitadosSinCrear": "{{lista}} zijn verwijderd, maar de nieuwe dienst kon niet worden aangemaakt: {{motivo}}"
     },
     "Scheduling": {
       "planificacionDeTurnos": "Dienstplanning",
@@ -18645,6 +18650,11 @@
     "buscandoLibres": "Kijken wie er op die uren vrij is…",
     "nLibres": "{{n}} vrij op die uren, bovenaan · wie een overlappende dienst heeft, is gemarkeerd",
     "sinListaDeLibres": "Kon niet nagaan wie vrij is: kies je iemand met een overlappende dienst, dan krijg je een melding bij het opslaan.",
-    "plaza": "Plaats"
+    "plaza": "Plaats",
+    "eligeOtroVigilante": "Kies een andere beveiliger: deze staat al op deze plaats.",
+    "relevoSinQuitar": "{{nuevo}} is nu toegewezen, maar {{anterior}} kon niet worden verwijderd: {{motivo}}. Verwijder diegene met het prullenbakje in de rij.",
+    "plazaCubiertaPor": "Bezet: {{nombre}}",
+    "todasLasPlazasCubiertas": "Alle plaatsen op deze post zijn al bezet. Om iemand te wisselen, gebruik „Wijzigen” in de rij.",
+    "plazasCubiertas": "{{n}} van {{total}} plaatsen bezet"
   }
 }

@@ -4,6 +4,7 @@
  * La aritmética vive en `lib/eventos` (sin React).
  */
 import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { CalendarClock } from "lucide-react";
 
@@ -18,25 +19,44 @@ import {
   type SedeConVigencia,
 } from "@/lib/eventos";
 
-/** La sede de un puesto, leída aparte (los diálogos sólo conocen su id). */
-export function useSede(postSiteId?: string | null, activo = true) {
-  const [sede, setSede] = useState<any | null>(null);
+/** La clave de la ficha de UNA sede en el caché compartido. Cuelga de
+ *  `["stations", tenant, "business-info", …]` —la familia de `postSiteService.list`—
+ *  para que cualquier escritura en `/business-info` o `/station` la invalide sola
+ *  (`autoInvalidateForMutation`), sin llamadas sueltas por pantalla. */
+export const claveDeLaSede = (postSiteId: string) =>
+  [
+    "stations",
+    localStorage.getItem("tenantId") || "",
+    "business-info",
+    "detalle",
+    String(postSiteId),
+  ] as const;
 
-  useEffect(() => {
-    if (!activo || !postSiteId) return;
-    let viva = true;
+/**
+ * La sede de un puesto, leída aparte (los diálogos sólo conocen su id). Va por
+ * el caché de react-query: la ficha del puesto y el diálogo de asignar la
+ * comparten y ya no se pide una vez por cada estación que se abre.
+ *
+ * `conocida`: si quien llama ya tiene la sede con su `serviceType` (p. ej. venía
+ * en el propio puesto), se usa esa y no se pide nada.
+ */
+export function useSede(
+  postSiteId?: string | null,
+  activo = true,
+  conocida?: (SedeConVigencia & Record<string, any>) | null,
+) {
+  const yaLaTengo = !!conocida && conocida.serviceType !== undefined;
+  const q = useQuery({
+    queryKey: claveDeLaSede(String(postSiteId || "")),
+    queryFn: () => postSiteService.get(String(postSiteId)),
+    enabled: activo && !!postSiteId && !yaLaTengo,
+    staleTime: 30_000,
+    retry: false,
+  });
 
-    postSiteService
-      .get(String(postSiteId))
-      .then((d) => viva && setSede(d))
-      .catch(() => viva && setSede(null));
+  if (yaLaTengo) return conocida as any;
 
-    return () => {
-      viva = false;
-    };
-  }, [postSiteId, activo]);
-
-  return sede;
+  return (q.data as any) ?? null;
 }
 
 /**
