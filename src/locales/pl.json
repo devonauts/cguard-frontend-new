@@ -11528,7 +11528,33 @@
       "abrirPlanificador": "Otwórz w Planerze",
       "crearEstacion": "Utwórz posterunek",
       "guardarSedeYSeguir": "Zapisz lokalizację i kontynuuj",
-      "terminar": "Zakończ"
+      "terminar": "Zakończ",
+      "evento": {
+        "cuando": "Kiedy jest wydarzenie?",
+        "inicio": "Początek",
+        "fin": "Koniec",
+        "finAntesDeInicio": "Koniec musi być po początku. Jeśli wydarzenie kończy się po północy, ustaw następny dzień.",
+        "demasiadoLargo": "Wydarzenie może trwać maksymalnie {{n}} dni. Dla dłuższej usługi wybierz inny rodzaj usługi.",
+        "faltanFechas": "Podaj, kiedy wydarzenie się zaczyna i kończy, w strefie czasowej firmy.",
+        "duraDias": "Trwa {{n}} dni.",
+        "duraHoras": "Trwa {{n}} godz.",
+        "alTerminar": "Dzień po zakończeniu obiekt archiwizuje się sam, a ochroniarze są zwalniani.",
+        "briefing": "Instrukcje dla ochroniarzy",
+        "briefingAyuda": "Opcjonalnie. Widzą to w aplikacji przy swojej zmianie.",
+        "encuentro": "Miejsce zbiórki",
+        "encuentroEj": "Np. Wejście 3, obok kas",
+        "uniforme": "Umundurowanie",
+        "uniformeEj": "Np. Kamizelka i czarne spodnie",
+        "responsable": "Osoba odpowiedzialna na miejscu",
+        "responsableEj": "Imię i nazwisko osoby, która przyjmuje zespół",
+        "telefonoResponsable": "Telefon osoby odpowiedzialnej",
+        "instrucciones": "Instrukcje",
+        "instruccionesEj": "Co kontrolować, którędy wchodzi publiczność, kogo powiadomić w razie incydentu…",
+        "salieron": "Daty zaktualizowane. Ochroniarze, którzy opuścili wydarzenie, bo mają już zmianę ({{count}}): {{lista}}. Przydziel innych na ich stanowiska.",
+        "movidas": "Przeniesiono ochroniarzy na nowe daty: {{count}}."
+      },
+      "creaCadaEstacionEvento": "Utwórz każde stanowisko wydarzenia: nazwa, od której do której godziny jest obsadzone, ilu ochroniarzy jednocześnie i geofencing. Bez rotacji: wydarzenie ma swoje daty. Gdy wszystkie będą gotowe, kliknij „Zakończ”.",
+      "eventoConEstaciones": "Stanowiska: {{count}}. Dalej: przydziel ochroniarzy; daty i godziny wynikają z wydarzenia."
     },
     "ProfilePhotoCapture": {
       "buenaIluminacionEviteSombrasY": "Dobre oświetlenie — prosimy unikać cieni i światła pod słońce",
@@ -12551,7 +12577,12 @@
       "turnosEliminados_one": "Usunięto {{count}} zmianę",
       "turnosEliminados_other": "Usunięto {{count}} zmiany",
       "unTurnoNoPuedeDurarMenosDe30": "Zmiana nie może trwać krócej niż 30 minut",
-      "unoDeCada": "Jeden na"
+      "unoDeCada": "Jeden na",
+      "turnoCreadoReemplazando": "Zmiana utworzona. Zastąpiono: {{lista}}",
+      "seReemplazaron": "Zastąpiono: {{lista}}",
+      "siReemplazar": "Tak, zastąp i utwórz",
+      "reemplazarTitulo": "Ten ochroniarz ma już {{count}} zmian(y) w tych godzinach",
+      "reemplazarExplica": "Jeśli kontynuujesz, zostaną usunięte i powstanie nowa. Jeśli któraś była na jego stałym stanowisku, to stanowisko zostanie nieobsadzone: znajdź zastępstwo w Obsadzie."
     },
     "Scheduling": {
       "planificacionDeTurnos": "Planowanie zmian",
@@ -16950,7 +16981,9 @@
       "radioPies": "Promień geofence (stopy)",
       "radioMetros": "Promień geofence (metry)",
       "ubicacionYGeocerca": "Dokładna lokalizacja i geofence",
-      "ubicacionYGeocercaExplica": "Przeciągnij pinezkę w dokładne miejsce posterunku. Linia przerywana to promień powyżej: wewnątrz ochroniarz może się odbić. Jeśli narysujesz wielokąt (3+ punkty), liczy się wielokąt."
+      "ubicacionYGeocercaExplica": "Przeciągnij pinezkę w dokładne miejsce posterunku. Linia przerywana to promień powyżej: wewnątrz ochroniarz może się odbić. Jeśli narysujesz wielokąt (3+ punkty), liczy się wielokąt.",
+      "eventoNota": "Wydarzenie: {{rango}}. Określ, w jakich godzinach to stanowisko jest obsadzone podczas wydarzenia i ilu ochroniarzy jednocześnie. Bez rotacji: przydzielona osoba pracuje w tych godzinach przez cały czas trwania wydarzenia.",
+      "eventoNotaSinFechas": "Określ, w jakich godzinach to stanowisko jest obsadzone podczas wydarzenia i ilu ochroniarzy jednocześnie. Bez rotacji: przydzielona osoba pracuje w tych godzinach przez cały czas trwania wydarzenia."
     },
     "Planificador": {
       "noSePudoCargar": "Nie udało się wczytać grafiku.",
@@ -17804,7 +17837,9 @@
     "cctv_desc": "Zdalny monitoring przy użyciu kamer i telewizji przemysłowej.",
     "custody_desc": "Ochrona osobista lub konwojowanie mienia o dużej wartości.",
     "manned_desc": "Pracownicy ochrony przypisani do posterunku na stałe lub zmianowo.",
-    "patrol_desc": "Nadzorcy wykonujący cykliczne obchody w jednym lub kilku obiektach."
+    "patrol_desc": "Nadzorcy wykonujący cykliczne obchody w jednym lub kilku obiektach.",
+    "event": "Wydarzenie",
+    "event_desc": "Ochrona wydarzenia z datą rozpoczęcia i zakończenia: koncerty, targi, wesela."
   },
   "supervisorPositions": {
     "assignError": "Nie udało się przypisać",
@@ -18789,5 +18824,23 @@
       "resolved": "Rozwiązane",
       "closed": "Zamknięte"
     }
+  },
+  "eventos": {
+    "terminado": "Wydarzenie zakończone",
+    "enCurso": "W toku",
+    "yaTermino": "To wydarzenie już się zakończyło",
+    "yaTerminoExplica": "Nie można już nikogo przydzielić. Jeśli daty się zmieniły, popraw je w obiekcie.",
+    "fechasDelEvento": "Daty wydarzenia: {{rango}}",
+    "sinFechas": "To wydarzenie nie ma dat",
+    "fechasLasPoneElEvento": "Ochroniarz pracuje w godzinach swojego miejsca w tych datach. Nie trzeba wybierać początku, końca ani cyklu.",
+    "vigilanteAsignado": "Ochroniarz przydzielony do wydarzenia",
+    "vigilanteRelevado": "Ochroniarz zmieniony na wydarzeniu",
+    "asignarAlEvento": "Przydziel do wydarzenia",
+    "ocupadoEseHorario": "Zajęty w tych godzinach",
+    "nadieConEseNombre": "Brak ochroniarza o tym nazwisku.",
+    "buscandoLibres": "Sprawdzam, kto jest wolny w tych godzinach…",
+    "nLibres": "{{n}} wolnych w tych godzinach, na górze · osoby z nakładającą się zmianą są oznaczone",
+    "sinListaDeLibres": "Nie udało się sprawdzić, kto jest wolny: jeśli wybierzesz kogoś z nakładającą się zmianą, zobaczysz komunikat przy zapisie.",
+    "plaza": "Miejsce"
   }
 }

@@ -10960,7 +10960,33 @@
       "abrirPlanificador": "Abrir en el Planificador",
       "crearEstacion": "Crear estación",
       "guardarSedeYSeguir": "Guardar sede y seguir",
-      "terminar": "Terminar"
+      "terminar": "Terminar",
+      "evento": {
+        "cuando": "¿Cuándo es el evento?",
+        "inicio": "Inicio",
+        "fin": "Fin",
+        "finAntesDeInicio": "El fin tiene que ser después del inicio. Si el evento acaba de madrugada, pon el día siguiente.",
+        "demasiadoLargo": "Un evento puede durar como máximo {{n}} días. Para un servicio más largo, elige otro tipo de servicio.",
+        "faltanFechas": "Indica cuándo empieza y cuándo termina el evento, en la hora de la empresa.",
+        "duraDias": "Dura {{n}} días.",
+        "duraHoras": "Dura {{n}} h.",
+        "alTerminar": "Al día siguiente de terminar, la sede se archiva sola y los vigilantes quedan libres.",
+        "briefing": "Instrucciones para los vigilantes",
+        "briefingAyuda": "Opcional. Lo ven en la app con su turno.",
+        "encuentro": "Punto de encuentro",
+        "encuentroEj": "Ej. Acceso 3, junto a taquillas",
+        "uniforme": "Uniforme",
+        "uniformeEj": "Ej. Chaleco y pantalón negro",
+        "responsable": "Responsable en el lugar",
+        "responsableEj": "Nombre de quien recibe al equipo",
+        "telefonoResponsable": "Teléfono del responsable",
+        "instrucciones": "Instrucciones",
+        "instruccionesEj": "Qué controlar, por dónde entra el público, a quién avisar ante un incidente…",
+        "salieron": "Fechas actualizadas. {{count}} vigilante(s) salieron del evento porque ya tienen turno: {{lista}}. Asigna a otros en sus estaciones.",
+        "movidas": "Se movieron {{count}} vigilante(s) a las nuevas fechas."
+      },
+      "creaCadaEstacionEvento": "Crea cada estación del evento: nombre, de qué hora a qué hora se cubre, cuántos vigilantes a la vez y geocerca. Sin rotación: el evento tiene sus fechas. Cuando estén todas, pulsa «Terminar».",
+      "eventoConEstaciones": "{{count}} estación(es). Siguiente: asigna a los vigilantes; las fechas y horas las pone el evento."
     },
     "ProfilePhotoCapture": {
       "buenaIluminacionEviteSombrasY": "Buena iluminación — evite sombras y contraluz",
@@ -11949,7 +11975,12 @@
       "turnosEliminados_one": "{{count}} turno eliminado",
       "turnosEliminados_other": "{{count}} turnos eliminados",
       "unTurnoNoPuedeDurarMenosDe30": "Un turno no puede durar menos de 30 minutos",
-      "unoDeCada": "Uno de cada"
+      "unoDeCada": "Uno de cada",
+      "turnoCreadoReemplazando": "Turno creado. Reemplazó a: {{lista}}",
+      "seReemplazaron": "Se reemplazaron: {{lista}}",
+      "siReemplazar": "Sí, reemplazar y crear",
+      "reemplazarTitulo": "Este vigilante ya tiene {{count}} turno(s) en esas horas",
+      "reemplazarExplica": "Si sigues, se quitan y se crea el nuevo. Si alguno era de su puesto habitual, ese puesto se queda sin cubrir: búscale relevo en Cobertura."
     },
     "Scheduling": {
       "planificacionDeTurnos": "Planificación de Turnos",
@@ -16228,7 +16259,9 @@
       "radioPies": "Radio de la geocerca (pies)",
       "radioMetros": "Radio de la geocerca (metros)",
       "ubicacionYGeocerca": "Ubicación exacta y geocerca",
-      "ubicacionYGeocercaExplica": "Arrastra el pin al punto exacto del puesto. La línea punteada es el radio de arriba: dentro de ella el vigilante puede marcar entrada. Si dibujas un polígono (3+ puntos), manda el polígono."
+      "ubicacionYGeocercaExplica": "Arrastra el pin al punto exacto del puesto. La línea punteada es el radio de arriba: dentro de ella el vigilante puede marcar entrada. Si dibujas un polígono (3+ puntos), manda el polígono.",
+      "eventoNota": "Evento: {{rango}}. Di qué horas cubre esta estación dentro del evento y cuántos vigilantes a la vez. Sin rotación: quien asignes trabaja esas horas mientras dure el evento.",
+      "eventoNotaSinFechas": "Di qué horas cubre esta estación dentro del evento y cuántos vigilantes a la vez. Sin rotación: quien asignes trabaja esas horas mientras dure el evento."
     },
     "Planificador": {
       "noSePudoCargar": "No se pudo cargar el horario.",
@@ -17610,7 +17643,9 @@
     "alarm_desc": "Monitoreo de alarmas y respuesta rápida ante eventos de seguridad.",
     "cctv_desc": "Monitoreo remoto mediante cámaras y circuito cerrado de televisión.",
     "patrol_desc": "Supervisores que realizan rondas periódicas en una o varias instalaciones.",
-    "custody_desc": "Protección personal o custodia de bienes de alto valor."
+    "custody_desc": "Protección personal o custodia de bienes de alto valor.",
+    "event": "Evento",
+    "event_desc": "Seguridad para un evento con fecha de inicio y fin: conciertos, ferias, bodas."
   },
   "supervisorPositions": {
     "assignError": "No se pudo asignar",
@@ -18593,5 +18628,23 @@
       "resolved": "Resuelto",
       "closed": "Cerrado"
     }
+  },
+  "eventos": {
+    "terminado": "Evento terminado",
+    "enCurso": "En curso",
+    "yaTermino": "Este evento ya terminó",
+    "yaTerminoExplica": "Ya no se puede asignar a nadie. Si las fechas cambiaron, corrígelas en la sede.",
+    "fechasDelEvento": "Fechas del evento: {{rango}}",
+    "sinFechas": "Este evento no tiene fechas",
+    "fechasLasPoneElEvento": "El vigilante trabaja las horas de su plaza dentro de esas fechas. No hace falta elegir inicio, fin ni ciclo.",
+    "vigilanteAsignado": "Vigilante asignado al evento",
+    "vigilanteRelevado": "Vigilante cambiado en el evento",
+    "asignarAlEvento": "Asignar al evento",
+    "ocupadoEseHorario": "Ocupado en ese horario",
+    "nadieConEseNombre": "Ningún vigilante con ese nombre.",
+    "buscandoLibres": "Mirando quién está libre en esas horas…",
+    "nLibres": "{{n}} libre(s) en esas horas, arriba · los que tienen un turno que se cruza salen marcados",
+    "sinListaDeLibres": "No se pudo saber quién está libre: si eliges a alguien con un turno que se cruza, se avisará al guardar.",
+    "plaza": "Plaza"
   }
 }

@@ -11492,7 +11492,33 @@
       "abrirPlanificador": "Openen in de Planner",
       "crearEstacion": "Post aanmaken",
       "guardarSedeYSeguir": "Locatie opslaan en doorgaan",
-      "terminar": "Afronden"
+      "terminar": "Afronden",
+      "evento": {
+        "cuando": "Wanneer is het evenement?",
+        "inicio": "Begin",
+        "fin": "Einde",
+        "finAntesDeInicio": "Het einde moet na het begin liggen. Eindigt het evenement na middernacht, kies dan de volgende dag.",
+        "demasiadoLargo": "Een evenement mag maximaal {{n}} dagen duren. Kies voor een langere dienst een ander diensttype.",
+        "faltanFechas": "Geef aan wanneer het evenement begint en eindigt, in de tijdzone van het bedrijf.",
+        "duraDias": "Duurt {{n}} dagen.",
+        "duraHoras": "Duurt {{n}} u.",
+        "alTerminar": "De dag na afloop wordt de locatie automatisch gearchiveerd en komen de beveiligers vrij.",
+        "briefing": "Instructies voor de beveiligers",
+        "briefingAyuda": "Optioneel. Ze zien het in de app bij hun dienst.",
+        "encuentro": "Verzamelpunt",
+        "encuentroEj": "Bijv. Ingang 3, naast de kassa",
+        "uniforme": "Uniform",
+        "uniformeEj": "Bijv. Hesje en zwarte broek",
+        "responsable": "Contactpersoon ter plaatse",
+        "responsableEj": "Naam van wie het team ontvangt",
+        "telefonoResponsable": "Telefoon contactpersoon",
+        "instrucciones": "Instructies",
+        "instruccionesEj": "Wat te controleren, waar het publiek binnenkomt, wie te waarschuwen bij een incident…",
+        "salieron": "Data bijgewerkt. {{count}} beveiliger(s) zijn uit het evenement gehaald omdat ze al een dienst hebben: {{lista}}. Deel anderen in op hun stations.",
+        "movidas": "{{count}} beveiliger(s) verplaatst naar de nieuwe data."
+      },
+      "creaCadaEstacionEvento": "Maak elk station van het evenement aan: naam, van hoe laat tot hoe laat het bezet is, hoeveel beveiligers tegelijk en geofence. Geen rotatie: het evenement heeft zijn eigen data. Als ze allemaal klaar zijn, klik op ‘Afronden’.",
+      "eventoConEstaciones": "{{count}} station(s). Volgende stap: deel de beveiligers in; de data en uren komen van het evenement."
     },
     "ProfilePhotoCapture": {
       "buenaIluminacionEviteSombrasY": "Goed licht — vermijd schaduw en tegenlicht",
@@ -12481,7 +12507,12 @@
       "turnosEliminados_one": "{{count}} dienst verwijderd",
       "turnosEliminados_other": "{{count}} diensten verwijderd",
       "unTurnoNoPuedeDurarMenosDe30": "Een dienst mag niet korter zijn dan 30 minuten",
-      "unoDeCada": "Eén op de"
+      "unoDeCada": "Eén op de",
+      "turnoCreadoReemplazando": "Dienst aangemaakt. Vervangen: {{lista}}",
+      "seReemplazaron": "Vervangen: {{lista}}",
+      "siReemplazar": "Ja, vervangen en aanmaken",
+      "reemplazarTitulo": "Deze beveiliger heeft op die uren al {{count}} dienst(en)",
+      "reemplazarExplica": "Als je doorgaat, worden ze verwijderd en wordt de nieuwe aangemaakt. Was er een op zijn vaste post, dan blijft die post onbezet: zoek een vervanger in Dekking."
     },
     "Scheduling": {
       "planificacionDeTurnos": "Dienstplanning",
@@ -16760,7 +16791,9 @@
       "radioPies": "Geofence-straal (voet)",
       "radioMetros": "Geofence-straal (meter)",
       "ubicacionYGeocerca": "Exacte locatie en geofence",
-      "ubicacionYGeocercaExplica": "Sleep de pin naar de exacte plek van de post. De stippellijn is de straal hierboven: daarbinnen kan de beveiliger inklokken. Teken je een polygoon (3+ punten), dan geldt de polygoon."
+      "ubicacionYGeocercaExplica": "Sleep de pin naar de exacte plek van de post. De stippellijn is de straal hierboven: daarbinnen kan de beveiliger inklokken. Teken je een polygoon (3+ punten), dan geldt de polygoon.",
+      "eventoNota": "Evenement: {{rango}}. Geef aan welke uren dit station tijdens het evenement dekt en hoeveel beveiligers tegelijk. Geen rotatie: wie je indeelt, werkt die uren zolang het evenement duurt.",
+      "eventoNotaSinFechas": "Geef aan welke uren dit station tijdens het evenement dekt en hoeveel beveiligers tegelijk. Geen rotatie: wie je indeelt, werkt die uren zolang het evenement duurt."
     },
     "Planificador": {
       "noSePudoCargar": "Het rooster kon niet worden geladen.",
@@ -17610,7 +17643,9 @@
     "cctv_desc": "Toezicht op afstand met camera's en gesloten televisiecircuit.",
     "custody_desc": "Persoonsbeveiliging of begeleiding van goederen met hoge waarde.",
     "manned_desc": "Beveiligers die permanent of per dienst aan de post zijn toegewezen.",
-    "patrol_desc": "Supervisors die periodieke rondes lopen op één of meerdere locaties."
+    "patrol_desc": "Supervisors die periodieke rondes lopen op één of meerdere locaties.",
+    "event": "Evenement",
+    "event_desc": "Beveiliging voor een evenement met een begin- en einddatum: concerten, beurzen, bruiloften."
   },
   "supervisorPositions": {
     "assignError": "Toewijzen mislukt",
@@ -18593,5 +18628,23 @@
       "resolved": "Opgelost",
       "closed": "Gesloten"
     }
+  },
+  "eventos": {
+    "terminado": "Evenement afgelopen",
+    "enCurso": "Bezig",
+    "yaTermino": "Dit evenement is al afgelopen",
+    "yaTerminoExplica": "Er kan niemand meer worden ingedeeld. Zijn de data gewijzigd, pas ze dan aan bij de locatie.",
+    "fechasDelEvento": "Data van het evenement: {{rango}}",
+    "sinFechas": "Dit evenement heeft geen data",
+    "fechasLasPoneElEvento": "De beveiliger werkt de uren van zijn plaats binnen die data. Begin, einde of cyclus kiezen is niet nodig.",
+    "vigilanteAsignado": "Beveiliger ingedeeld bij het evenement",
+    "vigilanteRelevado": "Beveiliger vervangen bij het evenement",
+    "asignarAlEvento": "Indelen bij evenement",
+    "ocupadoEseHorario": "Bezet op dat tijdstip",
+    "nadieConEseNombre": "Geen beveiliger met die naam.",
+    "buscandoLibres": "Kijken wie er op die uren vrij is…",
+    "nLibres": "{{n}} vrij op die uren, bovenaan · wie een overlappende dienst heeft, is gemarkeerd",
+    "sinListaDeLibres": "Kon niet nagaan wie vrij is: kies je iemand met een overlappende dienst, dan krijg je een melding bij het opslaan.",
+    "plaza": "Plaats"
   }
 }

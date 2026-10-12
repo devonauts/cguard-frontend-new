@@ -9,7 +9,16 @@ import {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { Clock, Loader2, MapPin, Pencil, Trash2, User, X } from "lucide-react";
+import {
+  AlertTriangle,
+  Clock,
+  Loader2,
+  MapPin,
+  Pencil,
+  Trash2,
+  User,
+  X,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -373,6 +382,32 @@ export default function ScheduleTimeline({
     hasta: "",
   });
   const [blockSaving, setBlockSaving] = useState(false);
+  /* ── LOS TURNOS QUE SE VAN A REEMPLAZAR, A LA VISTA ────────────────────────
+     Dibujar un bloque encima de otro turno del mismo vigilante BORRABA ese
+     turno sin decir nada (y con el error tragado): si era el de su puesto
+     habitual, ese puesto se quedaba sin cubrir y sin rastro. Ahora se enseñan
+     los que se cruzan y sólo se borran tras un «sí» explícito. */
+  const [reemplazos, setReemplazos] = useState<ShiftRecord[] | null>(null);
+
+  useEffect(() => {
+    setReemplazos(null);
+  }, [
+    blockModal?.guardId,
+    blockModal?.stationId,
+    blockModal?.startStr,
+    blockModal?.endStr,
+    blockModal?.editingId,
+    !!blockModal,
+  ]);
+
+  /** «Puesto Norte · 2026-11-15 07:00→19:00», en la hora de la empresa. */
+  const describeTurno = (s: ShiftRecord): string => {
+    const st = stationById.get(s.stationId);
+    const sw = dateToWall(new Date(s.startTime), tz);
+    const ew = dateToWall(new Date(s.endTime), tz);
+
+    return `${st ? stationLabel(st) : t("comun.puesto", "Puesto")} · ${sw.dateStr} ${minLabel(sw.minutes)}→${sw.dateStr === ew.dateStr ? "" : `${ew.dateStr} `}${minLabel(ew.minutes)}`;
+  };
 
   const absToWallStr = useCallback(
     (abs: number): string => {
@@ -418,7 +453,7 @@ export default function ScheduleTimeline({
     });
   };
 
-  const saveBlock = async () => {
+  const saveBlock = async (confirmado = false) => {
     if (!blockModal) return;
     if (!blockModal.stationId) {
       toast.error(t("comun.eligeUnPuesto"));
@@ -467,8 +502,8 @@ export default function ScheduleTimeline({
         );
         toast.success(t("ui.ScheduleTimeline.turnoActualizado"));
       } else {
-        // Same semantics as the station "Turno único": clear this guard's
-        // overlapping shifts first so the drawn block replaces, not duplicates.
+        // The drawn block REPLACES this guard's overlapping shifts — but only
+        // after the operator has seen which ones and said yes.
         const overlapping = shifts.filter(
           (s) =>
             s.guardId === blockModal.guardId &&
@@ -476,11 +511,19 @@ export default function ScheduleTimeline({
             new Date(s.endTime) > start,
         );
 
+        if (overlapping.length && !confirmado) {
+          setReemplazos(overlapping);
+
+          return;
+        }
         if (overlapping.length) {
+          // Sin `.catch` mudo: si no se pueden quitar, no se crea nada y el
+          // error sale en pantalla (el `catch` de abajo).
           await ApiService.delete(
             `/tenant/${tenantId}/shift?ids=${overlapping.map((s) => s.id).join(",")}`,
-          ).catch(() => {});
+          );
         }
+        const reemplazados = overlapping.map(describeTurno).join(" · ");
         const cuerpo = {
           startTime: start.toISOString(),
           endTime: end.toISOString(),
@@ -493,10 +536,10 @@ export default function ScheduleTimeline({
           await ApiService.post(`/tenant/${tenantId}/shift`, { data: cuerpo });
           toast.success(
             overlapping.length
-              ? t(
-                  "ui.ScheduleTimeline.turnoCreadoReemplazo",
-                  "Turno creado (reemplazó turnos solapados)",
-                )
+              ? t("ui.ScheduleTimeline.turnoCreadoReemplazando", {
+                  defaultValue: "Turno creado. Reemplazó a: {{lista}}",
+                  lista: reemplazados,
+                })
               : t("ui.ShiftAssignModal.turnoCreado", "Turno creado"),
           );
         } else {
@@ -527,8 +570,16 @@ export default function ScheduleTimeline({
                   count: d.creados,
                 }),
           );
+          if (overlapping.length)
+            toast.info(
+              t("ui.ScheduleTimeline.seReemplazaron", {
+                defaultValue: "Se reemplazaron: {{lista}}",
+                lista: reemplazados,
+              }),
+            );
         }
       }
+      setReemplazos(null);
       setBlockModal(null);
       onChanged();
     } catch (e: any) {
@@ -1804,6 +1855,42 @@ export default function ScheduleTimeline({
                     </div>
                   )}
                 </div>
+                {reemplazos && reemplazos.length > 0 && (
+                  <div
+                    className="mx-5 mb-4 rounded-xl border px-4 py-3 text-sm"
+                    role="alert"
+                    style={{
+                      background:
+                        "color-mix(in oklab, var(--warn) 12%, transparent)",
+                      borderColor:
+                        "color-mix(in oklab, var(--warn) 30%, transparent)",
+                      color: "var(--warn-text)",
+                    }}
+                  >
+                    <p className="flex items-center gap-2 font-semibold">
+                      <AlertTriangle size={15} />
+                      {t("ui.ScheduleTimeline.reemplazarTitulo", {
+                        defaultValue:
+                          "Este vigilante ya tiene {{count}} turno(s) en esas horas",
+                        count: reemplazos.length,
+                      })}
+                    </p>
+                    <ul className="mt-2 space-y-1 tabular-nums">
+                      {reemplazos.map((r) => (
+                        <li key={r.id} className="flex items-start gap-1.5">
+                          <MapPin className="mt-0.5 shrink-0" size={13} />
+                          {describeTurno(r)}
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="mt-2 text-xs leading-relaxed">
+                      {t(
+                        "ui.ScheduleTimeline.reemplazarExplica",
+                        "Si sigues, se quitan y se crea el nuevo. Si alguno era de su puesto habitual, ese puesto se queda sin cubrir: búscale relevo en Cobertura.",
+                      )}
+                    </p>
+                  </div>
+                )}
                 <div
                   className="flex items-center justify-end gap-2 px-5 py-3"
                   style={{
@@ -1813,9 +1900,15 @@ export default function ScheduleTimeline({
                 >
                   <button
                     className="cg-btn-ghost cg-focus rounded-full px-4 py-2 text-sm font-semibold transition-all"
-                    onClick={() => setBlockModal(null)}
+                    onClick={() =>
+                      reemplazos?.length
+                        ? setReemplazos(null)
+                        : setBlockModal(null)
+                    }
                   >
-                    {t("actions.cancel")}
+                    {reemplazos?.length
+                      ? t("actions.back", "Atrás")
+                      : t("actions.cancel")}
                   </button>
                   <button
                     className="cg-btn-brand cg-focus rounded-full px-5 py-2 text-sm font-semibold transition-all disabled:opacity-40"
@@ -1826,10 +1919,15 @@ export default function ScheduleTimeline({
                       hours <= 0 ||
                       hours > 24
                     }
-                    onClick={saveBlock}
+                    onClick={() => saveBlock(!!reemplazos?.length)}
                   >
                     {blockSaving ? (
                       <Loader2 className="animate-spin" size={14} />
+                    ) : reemplazos?.length ? (
+                      t(
+                        "ui.ScheduleTimeline.siReemplazar",
+                        "Sí, reemplazar y crear",
+                      )
                     ) : editing ? (
                       t("settings.mobileHub.saveChanges", "Guardar cambios")
                     ) : rep.tipo === "unica" || !rep.hasta ? (

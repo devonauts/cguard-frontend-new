@@ -43,7 +43,7 @@ import {
   Edit3,
   ArrowRight,
 } from "lucide-react";
-import { ImagePlus, Upload, CalendarRange } from "lucide-react";
+import { ImagePlus, Upload, CalendarRange, CalendarClock } from "lucide-react";
 
 import { invalidateEntity } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
@@ -58,7 +58,13 @@ import AddressAutocomplete, {
   AddressComponents,
 } from "@/components/maps/AddressAutocomplete";
 import { useClientSelection } from "@/contexts/ClientSelectionContext";
-import { getServiceType } from "@/lib/serviceTypes";
+import { getServiceType, esEvento } from "@/lib/serviceTypes";
+import {
+  EVENTO_MAX_DIAS,
+  validarVigencia,
+  type ErrorVigencia,
+} from "@/lib/eventos";
+import { desdeInputFechaHora, paraInputFechaHora } from "@/lib/horaDeLaEmpresa";
 import { Section, EmptyState, IconTile } from "@/components/kit";
 import CampoSucursalDeSede from "@/components/post-sites/CampoSucursalDeSede";
 import { HiloDePuesta } from "@/components/onboarding/PuestaEnMarcha";
@@ -323,6 +329,7 @@ const SERVICE_ICONS: Record<
   Camera,
   Car,
   Lock,
+  CalendarClock,
 };
 
 // ─── CheckboxGroup with custom-item support ───────────────────────────────────
@@ -982,6 +989,18 @@ export default function PostSiteWizard({
 
   // Step 1
   const [serviceType, setServiceType] = useState<string | undefined>(undefined);
+  /* Sede-EVENTO: las fechas son hora de pared de la EMPRESA (`datetime-local`)
+     y viajan como instantes ISO (`vigenteDesde` / `vigenteHasta`). */
+  const [eventoInicio, setEventoInicio] = useState("");
+  const [eventoFin, setEventoFin] = useState("");
+  const esEventoSel = esEvento({ serviceType });
+  const vigenciaISO = {
+    desde: eventoInicio ? desdeInputFechaHora(eventoInicio) : "",
+    hasta: eventoFin ? desdeInputFechaHora(eventoFin) : "",
+  };
+  const errorVigencia: ErrorVigencia = esEventoSel
+    ? validarVigencia(vigenciaISO.desde, vigenciaISO.hasta)
+    : null;
 
   // Step 2
   const [clientId, setClientId] = useState(
@@ -1099,6 +1118,10 @@ export default function PostSiteWizard({
         setSedeGuardada(d);
 
         setServiceType(d.serviceType ?? undefined);
+        setEventoInicio(
+          d.vigenteDesde ? paraInputFechaHora(d.vigenteDesde) : "",
+        );
+        setEventoFin(d.vigenteHasta ? paraInputFechaHora(d.vigenteHasta) : "");
         setClientId(d.clientAccountId ?? d.clientId ?? "");
         setAddress(d.address ?? "");
         setAddressLine2(d.secondAddress ?? d.addressLine2 ?? "");
@@ -1245,7 +1268,7 @@ export default function PostSiteWizard({
 
   // ── step validation ──────────────────────────────────────────────────────────
   const canGoNext = () => {
-    if (step === 2) return !!address.trim();
+    if (step === 2) return !!address.trim() && !errorVigencia;
 
     return true; // other steps are optional-ish
   };
@@ -1305,6 +1328,14 @@ export default function PostSiteWizard({
           : null,
       serviceType,
       serviceConfig: finalConfig,
+      /* La vigencia sólo la pide un EVENTO. Si una sede que ERA evento pasa a
+         otro tipo, se borra: si no, al pasar la fecha la sede dejaría de exigir
+         cobertura sin que nadie supiera por qué. */
+      ...(esEventoSel
+        ? { vigenteDesde: vigenciaISO.desde, vigenteHasta: vigenciaISO.hasta }
+        : isEdit && esEvento(sedeGuardada)
+          ? { vigenteDesde: null, vigenteHasta: null }
+          : {}),
       status,
       // Sólo si se eligió una: «automática» deja que el servidor la coloque.
       ...(branchId ? { branchId } : {}),
@@ -1412,6 +1443,46 @@ export default function PostSiteWizard({
     }
   };
 
+  /* ── CAMBIAR LAS FECHAS DE UN EVENTO MUEVE A SU GENTE ────────────────────
+     El servidor lleva a los vigilantes a las fechas nuevas; quien ya tiene
+     otro turno en ellas SALE del evento. Eso no puede pasar en silencio: se
+     dice quién y de qué estación, para que se busque a otro. */
+  const avisarResincronizado = (
+    rs?: {
+      movidas?: number;
+      cerradas?: number;
+      choques?: Array<{ guardId?: string; nombre?: string; puesto?: string }>;
+    } | null,
+  ) => {
+    if (!rs) return;
+    const choques = Array.isArray(rs.choques) ? rs.choques : [];
+
+    if (choques.length) {
+      toast.warning(
+        t("ui.PostSiteWizard.evento.salieron", {
+          defaultValue:
+            "Fechas actualizadas. {{count}} vigilante(s) salieron del evento porque ya tienen turno: {{lista}}. Asigna a otros en sus estaciones.",
+          count: choques.length,
+          lista: choques
+            .map((c) =>
+              c.puesto ? `${c.nombre || "—"} (${c.puesto})` : c.nombre || "—",
+            )
+            .join(", "),
+        }),
+        { duration: 15000 },
+      );
+    }
+    if ((rs.movidas || 0) > 0) {
+      toast.info(
+        t("ui.PostSiteWizard.evento.movidas", {
+          defaultValue:
+            "Se movieron {{count}} vigilante(s) a las nuevas fechas.",
+          count: rs.movidas,
+        }),
+      );
+    }
+  };
+
   const handleCreateSite = async () => {
     setSubmitting(true);
     try {
@@ -1422,7 +1493,11 @@ export default function PostSiteWizard({
          con el formulario completo (nominativo, geocerca, plazas, ciclo…),
          una vez que la sede existe. */
       if (isEdit) {
-        await stationService.update(id!, payload as any);
+        const r: any = await stationService.update(id!, payload as any);
+
+        avisarResincronizado(
+          r?.eventoResincronizado ?? r?.data?.eventoResincronizado,
+        );
       } else {
         const data = await stationService.create(payload as any);
 
@@ -1534,6 +1609,122 @@ export default function PostSiteWizard({
                   )}
             </p>
           </div>
+
+          {/* ── Sede-EVENTO: cuándo es. Lo primero que se pregunta, porque
+                 es lo que lo distingue de un servicio normal. ──────────── */}
+          {esEventoSel && (
+            <div className="glass overflow-hidden">
+              <div
+                className="flex items-center gap-3 border-b px-4 py-2.5"
+                style={{ borderColor: "var(--hairline)" }}
+              >
+                <IconTile size="sm">
+                  <CalendarClock />
+                </IconTile>
+                <span className="cg-eyebrow">
+                  {t(
+                    "ui.PostSiteWizard.evento.cuando",
+                    "¿Cuándo es el evento?",
+                  )}
+                </span>
+              </div>
+              <div className="space-y-2 px-4 py-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div>
+                    <label
+                      className="mb-1 block text-xs font-medium text-foreground/70"
+                      htmlFor="evento-inicio"
+                    >
+                      {t("ui.PostSiteWizard.evento.inicio", "Inicio")}{" "}
+                      <span style={{ color: "var(--bad-text)" }}>*</span>
+                    </label>
+                    <input
+                      className="cg-input cg-focus w-full px-3 py-2 text-sm"
+                      id="evento-inicio"
+                      type="datetime-local"
+                      value={eventoInicio}
+                      onChange={(e) => setEventoInicio(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      className="mb-1 block text-xs font-medium text-foreground/70"
+                      htmlFor="evento-fin"
+                    >
+                      {t("ui.PostSiteWizard.evento.fin", "Fin")}{" "}
+                      <span style={{ color: "var(--bad-text)" }}>*</span>
+                    </label>
+                    <input
+                      aria-invalid={
+                        errorVigencia === "finAntesDeInicio" ||
+                        errorVigencia === "demasiadoLargo"
+                      }
+                      className="cg-input cg-focus w-full px-3 py-2 text-sm"
+                      id="evento-fin"
+                      min={eventoInicio || undefined}
+                      type="datetime-local"
+                      value={eventoFin}
+                      onChange={(e) => setEventoFin(e.target.value)}
+                    />
+                  </div>
+                </div>
+                {errorVigencia === "finAntesDeInicio" ? (
+                  <p
+                    className="text-xs font-medium"
+                    role="alert"
+                    style={{ color: "var(--bad-text)" }}
+                  >
+                    {t(
+                      "ui.PostSiteWizard.evento.finAntesDeInicio",
+                      "El fin tiene que ser después del inicio. Si el evento acaba de madrugada, pon el día siguiente.",
+                    )}
+                  </p>
+                ) : errorVigencia === "demasiadoLargo" ? (
+                  <p
+                    className="text-xs font-medium"
+                    role="alert"
+                    style={{ color: "var(--bad-text)" }}
+                  >
+                    {t("ui.PostSiteWizard.evento.demasiadoLargo", {
+                      defaultValue:
+                        "Un evento puede durar como máximo {{n}} días. Para un servicio más largo, elige otro tipo de servicio.",
+                      n: EVENTO_MAX_DIAS,
+                    })}
+                  </p>
+                ) : errorVigencia ? (
+                  <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
+                    {t(
+                      "ui.PostSiteWizard.evento.faltanFechas",
+                      "Indica cuándo empieza y cuándo termina el evento, en la hora de la empresa.",
+                    )}
+                  </p>
+                ) : (
+                  <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
+                    {(() => {
+                      const horas =
+                        (new Date(vigenciaISO.hasta).getTime() -
+                          new Date(vigenciaISO.desde).getTime()) /
+                        3600000;
+
+                      return horas >= 48
+                        ? t("ui.PostSiteWizard.evento.duraDias", {
+                            defaultValue: "Dura {{n}} días.",
+                            n: Math.round((horas / 24) * 10) / 10,
+                          })
+                        : t("ui.PostSiteWizard.evento.duraHoras", {
+                            defaultValue: "Dura {{n}} h.",
+                            n: Math.round(horas * 10) / 10,
+                          });
+                    })()}{" "}
+                    {t(
+                      "ui.PostSiteWizard.evento.alTerminar",
+                      "Al día siguiente de terminar, la sede se archiva sola y los vigilantes quedan libres.",
+                    )}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* ── Client selector — card style ─────────────────────────── */}
           <div className="glass overflow-hidden">
@@ -1860,6 +2051,112 @@ export default function PostSiteWizard({
             </>
           )}
 
+          {/* ── Briefing del evento: lo que el vigilante necesita saber al
+                 llegar. Todo opcional y PLANO en `serviceConfig`; la app se lo
+                 enseña en su turno. ─────────────────────────────────────── */}
+          {esEventoSel && (
+            <div className="glass overflow-hidden">
+              <div
+                className="flex items-center gap-3 border-b px-4 py-2.5"
+                style={{ borderColor: "var(--hairline)" }}
+              >
+                <IconTile size="sm">
+                  <Users />
+                </IconTile>
+                <div className="min-w-0">
+                  <span className="cg-eyebrow block">
+                    {t(
+                      "ui.PostSiteWizard.evento.briefing",
+                      "Instrucciones para los vigilantes",
+                    )}
+                  </span>
+                  <span
+                    className="text-[11px]"
+                    style={{ color: "var(--ink-soft)" }}
+                  >
+                    {t(
+                      "ui.PostSiteWizard.evento.briefingAyuda",
+                      "Opcional. Lo ven en la app con su turno.",
+                    )}
+                  </span>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 gap-3 px-4 py-3 sm:grid-cols-2">
+                {(
+                  [
+                    [
+                      "encuentro",
+                      "ui.PostSiteWizard.evento.encuentro",
+                      "Punto de encuentro",
+                      "ui.PostSiteWizard.evento.encuentroEj",
+                      "Ej. Acceso 3, junto a taquillas",
+                    ],
+                    [
+                      "uniforme",
+                      "ui.PostSiteWizard.evento.uniforme",
+                      "Uniforme",
+                      "ui.PostSiteWizard.evento.uniformeEj",
+                      "Ej. Chaleco y pantalón negro",
+                    ],
+                    [
+                      "responsable",
+                      "ui.PostSiteWizard.evento.responsable",
+                      "Responsable en el lugar",
+                      "ui.PostSiteWizard.evento.responsableEj",
+                      "Nombre de quien recibe al equipo",
+                    ],
+                    [
+                      "telefonoResponsable",
+                      "ui.PostSiteWizard.evento.telefonoResponsable",
+                      "Teléfono del responsable",
+                      "",
+                      "",
+                    ],
+                  ] as const
+                ).map(([k, lk, l, pk, pl]) => (
+                  <div key={k}>
+                    <label
+                      className="mb-1 block text-xs font-medium text-foreground/70"
+                      htmlFor={`evento-${k}`}
+                    >
+                      {t(lk, l)}
+                    </label>
+                    <Input
+                      id={`evento-${k}`}
+                      maxLength={200}
+                      placeholder={pk ? t(pk, pl) : undefined}
+                      type={k === "telefonoResponsable" ? "tel" : "text"}
+                      value={String(cfgGet(k) ?? "")}
+                      onChange={(e) => cfgSet(k, e.target.value)}
+                    />
+                  </div>
+                ))}
+                <div className="sm:col-span-2">
+                  <label
+                    className="mb-1 block text-xs font-medium text-foreground/70"
+                    htmlFor="evento-instrucciones"
+                  >
+                    {t(
+                      "ui.PostSiteWizard.evento.instrucciones",
+                      "Instrucciones",
+                    )}
+                  </label>
+                  <Textarea
+                    id="evento-instrucciones"
+                    maxLength={4000}
+                    placeholder={t(
+                      "ui.PostSiteWizard.evento.instruccionesEj",
+                      "Qué controlar, por dónde entra el público, a quién avisar ante un incidente…",
+                    )}
+                    rows={4}
+                    value={String(cfgGet("instrucciones") ?? "")}
+                    onChange={(e) => cfgSet("instrucciones", e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* ── Nivel de riesgo de la sede (el del cliente es el promedio) ── */}
           <div className="glass p-4">
             <label className="cg-eyebrow mb-1 block">
@@ -2016,10 +2313,15 @@ export default function PostSiteWizard({
               )}
             </h2>
             <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-              {t(
-                "ui.PostSiteWizard.creaCadaEstacion",
-                "Crea cada estación con su nombre, nominativo, horario y geocerca. Cuando estén todas, pulsa «Terminar».",
-              )}
+              {esEventoSel
+                ? t(
+                    "ui.PostSiteWizard.creaCadaEstacionEvento",
+                    "Crea cada estación del evento: nombre, de qué hora a qué hora se cubre, cuántos vigilantes a la vez y geocerca. Sin rotación: el evento tiene sus fechas. Cuando estén todas, pulsa «Terminar».",
+                  )
+                : t(
+                    "ui.PostSiteWizard.creaCadaEstacion",
+                    "Crea cada estación con su nombre, nominativo, horario y geocerca. Cuando estén todas, pulsa «Terminar».",
+                  )}
             </p>
           </div>
 
@@ -2042,6 +2344,7 @@ export default function PostSiteWizard({
                siguiente estación sin que el componente sepa nada de esto. */
             <StationCreateForm
               key={creadas.length}
+              modo={esEvento(sedeGuardada) ? "evento" : "normal"}
               site={sedeGuardada}
               siteId={sedeId}
               submitLabel={t(
@@ -2091,16 +2394,22 @@ export default function PostSiteWizard({
               className="mx-auto mt-2 max-w-sm text-sm"
               style={{ color: "var(--ink-soft)" }}
             >
-              {n > 0
-                ? t("ui.PostSiteWizard.sedeConEstaciones", {
+              {n > 0 && esEventoSel
+                ? t("ui.PostSiteWizard.eventoConEstaciones", {
                     defaultValue:
-                      "{{count}} estación(es). Siguiente: pon a cada una su vigilante; con eso el horario se arma solo y lo cuadras en el Planificador.",
+                      "{{count}} estación(es). Siguiente: asigna a los vigilantes; las fechas y horas las pone el evento.",
                     count: n,
                   })
-                : t(
-                    "ui.PostSiteWizard.sedeSinEstacionesAun",
-                    "Sin estaciones todavía. Puedes crearlas desde la sede cuando quieras.",
-                  )}
+                : n > 0
+                  ? t("ui.PostSiteWizard.sedeConEstaciones", {
+                      defaultValue:
+                        "{{count}} estación(es). Siguiente: pon a cada una su vigilante; con eso el horario se arma solo y lo cuadras en el Planificador.",
+                      count: n,
+                    })
+                  : t(
+                      "ui.PostSiteWizard.sedeSinEstacionesAun",
+                      "Sin estaciones todavía. Puedes crearlas desde la sede cuando quieras.",
+                    )}
             </p>
           </div>
           <div className="flex flex-wrap justify-center gap-3">
@@ -2118,22 +2427,25 @@ export default function PostSiteWizard({
                     "Asignar vigilantes",
                   )}
                 </Button>
-                <Button
-                  className="gap-2"
-                  type="button"
-                  variant="outline"
-                  onClick={() =>
-                    navigate(
-                      `/planificador?busca=${encodeURIComponent(nombreParaPlan)}`,
-                    )
-                  }
-                >
-                  <CalendarRange className="h-4 w-4" />
-                  {t(
-                    "ui.PostSiteWizard.abrirPlanificador",
-                    "Abrir en el Planificador",
-                  )}
-                </Button>
+                {/* Un evento no tiene rotación que cuadrar. */}
+                {!esEventoSel && (
+                  <Button
+                    className="gap-2"
+                    type="button"
+                    variant="outline"
+                    onClick={() =>
+                      navigate(
+                        `/planificador?busca=${encodeURIComponent(nombreParaPlan)}`,
+                      )
+                    }
+                  >
+                    <CalendarRange className="h-4 w-4" />
+                    {t(
+                      "ui.PostSiteWizard.abrirPlanificador",
+                      "Abrir en el Planificador",
+                    )}
+                  </Button>
+                )}
               </>
             ) : (
               <Button
@@ -2241,7 +2553,7 @@ export default function PostSiteWizard({
               {step === 2 ? (
                 <Button
                   className="gap-2 min-w-36"
-                  disabled={submitting || !address.trim()}
+                  disabled={submitting || !address.trim() || !!errorVigencia}
                   type="button"
                   variant="brand"
                   onClick={handleCreateSite}

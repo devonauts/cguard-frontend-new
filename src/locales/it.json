@@ -11492,7 +11492,33 @@
       "abrirPlanificador": "Apri nel Pianificatore",
       "crearEstacion": "Crea postazione",
       "guardarSedeYSeguir": "Salva la sede e continua",
-      "terminar": "Termina"
+      "terminar": "Termina",
+      "evento": {
+        "cuando": "Quando si tiene l'evento?",
+        "inicio": "Inizio",
+        "fin": "Fine",
+        "finAntesDeInicio": "La fine deve essere dopo l'inizio. Se l'evento finisce dopo mezzanotte, imposta il giorno successivo.",
+        "demasiadoLargo": "Un evento può durare al massimo {{n}} giorni. Per un servizio più lungo, scegli un altro tipo di servizio.",
+        "faltanFechas": "Indica quando inizia e quando finisce l'evento, nell'orario dell'azienda.",
+        "duraDias": "Dura {{n}} giorni.",
+        "duraHoras": "Dura {{n}} h.",
+        "alTerminar": "Il giorno dopo la fine, la sede viene archiviata da sola e le guardie tornano libere.",
+        "briefing": "Istruzioni per le guardie",
+        "briefingAyuda": "Facoltativo. Lo vedono nell'app con il loro turno.",
+        "encuentro": "Punto di ritrovo",
+        "encuentroEj": "Es. Ingresso 3, accanto alla biglietteria",
+        "uniforme": "Divisa",
+        "uniformeEj": "Es. Gilet e pantaloni neri",
+        "responsable": "Responsabile sul posto",
+        "responsableEj": "Nome di chi accoglie la squadra",
+        "telefonoResponsable": "Telefono del responsabile",
+        "instrucciones": "Istruzioni",
+        "instruccionesEj": "Cosa controllare, da dove entra il pubblico, chi avvisare in caso di incidente…",
+        "salieron": "Date aggiornate. {{count}} guardia/e sono uscite dall'evento perché hanno già un turno: {{lista}}. Assegna altre persone alle loro stazioni.",
+        "movidas": "{{count}} guardia/e spostate alle nuove date."
+      },
+      "creaCadaEstacionEvento": "Crea ogni stazione dell'evento: nome, da che ora a che ora è coperta, quante guardie contemporaneamente e geofence. Senza rotazione: l'evento ha le sue date. Quando sono tutte pronte, premi «Termina».",
+      "eventoConEstaciones": "{{count}} stazione/i. Prossimo passo: assegna le guardie; date e orari li stabilisce l'evento."
     },
     "ProfilePhotoCapture": {
       "buenaIluminacionEviteSombrasY": "Buona illuminazione — evita ombre e controluce",
@@ -12481,7 +12507,12 @@
       "turnosEliminados_one": "{{count}} turno eliminato",
       "turnosEliminados_other": "{{count}} turni eliminati",
       "unTurnoNoPuedeDurarMenosDe30": "Un turno non può durare meno di 30 minuti",
-      "unoDeCada": "Uno ogni"
+      "unoDeCada": "Uno ogni",
+      "turnoCreadoReemplazando": "Turno creato. Ha sostituito: {{lista}}",
+      "seReemplazaron": "Sostituiti: {{lista}}",
+      "siReemplazar": "Sì, sostituisci e crea",
+      "reemplazarTitulo": "Questa guardia ha già {{count}} turno/i in quelle ore",
+      "reemplazarExplica": "Se continui, vengono rimossi e si crea il nuovo. Se uno era della sua postazione abituale, quella postazione resta scoperta: cerca un sostituto in Copertura."
     },
     "Scheduling": {
       "planificacionDeTurnos": "Pianificazione dei turni",
@@ -16760,7 +16791,9 @@
       "radioPies": "Raggio del geofence (piedi)",
       "radioMetros": "Raggio del geofence (metri)",
       "ubicacionYGeocerca": "Posizione esatta e geofence",
-      "ubicacionYGeocercaExplica": "Trascina il segnaposto sul punto esatto della postazione. La linea tratteggiata è il raggio sopra: al suo interno la guardia può timbrare. Se disegni un poligono (3+ punti), vale il poligono."
+      "ubicacionYGeocercaExplica": "Trascina il segnaposto sul punto esatto della postazione. La linea tratteggiata è il raggio sopra: al suo interno la guardia può timbrare. Se disegni un poligono (3+ punti), vale il poligono.",
+      "eventoNota": "Evento: {{rango}}. Indica quali ore copre questa stazione durante l'evento e quante guardie contemporaneamente. Senza rotazione: chi assegni lavora quelle ore per tutta la durata dell'evento.",
+      "eventoNotaSinFechas": "Indica quali ore copre questa stazione durante l'evento e quante guardie contemporaneamente. Senza rotazione: chi assegni lavora quelle ore per tutta la durata dell'evento."
     },
     "Planificador": {
       "noSePudoCargar": "Impossibile caricare l'orario.",
@@ -17610,7 +17643,9 @@
     "cctv_desc": "Monitoraggio da remoto tramite telecamere e circuito chiuso.",
     "custody_desc": "Protezione delle persone o custodia di beni di alto valore.",
     "manned_desc": "Guardie assegnate al posto di servizio in modo permanente o a turno.",
-    "patrol_desc": "Supervisori che effettuano ronde periodiche in una o più sedi."
+    "patrol_desc": "Supervisori che effettuano ronde periodiche in una o più sedi.",
+    "event": "Evento",
+    "event_desc": "Sicurezza per un evento con data di inizio e fine: concerti, fiere, matrimoni."
   },
   "supervisorPositions": {
     "assignError": "Impossibile assegnare",
@@ -18593,5 +18628,23 @@
       "resolved": "Risolto",
       "closed": "Chiuso"
     }
+  },
+  "eventos": {
+    "terminado": "Evento concluso",
+    "enCurso": "In corso",
+    "yaTermino": "Questo evento è già terminato",
+    "yaTerminoExplica": "Non si può più assegnare nessuno. Se le date sono cambiate, correggile nella sede.",
+    "fechasDelEvento": "Date dell'evento: {{rango}}",
+    "sinFechas": "Questo evento non ha date",
+    "fechasLasPoneElEvento": "La guardia lavora le ore della sua postazione entro quelle date. Non serve scegliere inizio, fine né ciclo.",
+    "vigilanteAsignado": "Guardia assegnata all'evento",
+    "vigilanteRelevado": "Guardia sostituita nell'evento",
+    "asignarAlEvento": "Assegna all'evento",
+    "ocupadoEseHorario": "Occupato in quell'orario",
+    "nadieConEseNombre": "Nessuna guardia con quel nome.",
+    "buscandoLibres": "Controllo chi è libero in quelle ore…",
+    "nLibres": "{{n}} liberi in quelle ore, in cima · chi ha un turno che si sovrappone è segnalato",
+    "sinListaDeLibres": "Non è stato possibile sapere chi è libero: se scegli qualcuno con un turno che si sovrappone, verrai avvisato al salvataggio.",
+    "plaza": "Postazione"
   }
 }

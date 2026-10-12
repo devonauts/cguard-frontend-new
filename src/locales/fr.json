@@ -11492,7 +11492,33 @@
       "abrirPlanificador": "Ouvrir dans le Planificateur",
       "crearEstacion": "Créer un poste",
       "guardarSedeYSeguir": "Enregistrer le site et continuer",
-      "terminar": "Terminer"
+      "terminar": "Terminer",
+      "evento": {
+        "cuando": "Quand a lieu l'événement ?",
+        "inicio": "Début",
+        "fin": "Fin",
+        "finAntesDeInicio": "La fin doit être après le début. Si l'événement se termine après minuit, indiquez le lendemain.",
+        "demasiadoLargo": "Un événement peut durer au maximum {{n}} jours. Pour un service plus long, choisissez un autre type de service.",
+        "faltanFechas": "Indiquez quand l'événement commence et se termine, à l'heure de l'entreprise.",
+        "duraDias": "Dure {{n}} jours.",
+        "duraHoras": "Dure {{n}} h.",
+        "alTerminar": "Le lendemain de la fin, le site est archivé automatiquement et les agents sont libérés.",
+        "briefing": "Consignes pour les agents",
+        "briefingAyuda": "Facultatif. Ils le voient dans l'application avec leur vacation.",
+        "encuentro": "Point de rendez-vous",
+        "encuentroEj": "Ex. : Accès 3, à côté de la billetterie",
+        "uniforme": "Tenue",
+        "uniformeEj": "Ex. : Gilet et pantalon noir",
+        "responsable": "Responsable sur place",
+        "responsableEj": "Nom de la personne qui accueille l'équipe",
+        "telefonoResponsable": "Téléphone du responsable",
+        "instrucciones": "Consignes",
+        "instruccionesEj": "Quoi contrôler, par où entre le public, qui prévenir en cas d'incident…",
+        "salieron": "Dates mises à jour. {{count}} agent(s) ont quitté l'événement car ils ont déjà une vacation : {{lista}}. Affectez-en d'autres sur leurs stations.",
+        "movidas": "{{count}} agent(s) déplacé(s) aux nouvelles dates."
+      },
+      "creaCadaEstacionEvento": "Créez chaque station de l'événement : nom, de quelle heure à quelle heure il est couvert, combien d'agents à la fois et géorepérage. Sans rotation : l'événement a ses propres dates. Quand ils sont tous prêts, cliquez sur « Terminer ».",
+      "eventoConEstaciones": "{{count}} station(s). Ensuite : affectez les agents ; les dates et heures viennent de l'événement."
     },
     "ProfilePhotoCapture": {
       "buenaIluminacionEviteSombrasY": "Bon éclairage — évitez les ombres et le contre-jour",
@@ -12481,7 +12507,12 @@
       "turnosEliminados_one": "{{count}} poste supprimé",
       "turnosEliminados_other": "{{count}} postes supprimés",
       "unTurnoNoPuedeDurarMenosDe30": "Un poste ne peut pas durer moins de 30 minutes",
-      "unoDeCada": "Un tous les"
+      "unoDeCada": "Un tous les",
+      "turnoCreadoReemplazando": "Vacation créée. Elle a remplacé : {{lista}}",
+      "seReemplazaron": "Remplacées : {{lista}}",
+      "siReemplazar": "Oui, remplacer et créer",
+      "reemplazarTitulo": "Cet agent a déjà {{count}} vacation(s) sur ces horaires",
+      "reemplazarExplica": "Si vous continuez, elles sont supprimées et la nouvelle est créée. Si l'une d'elles était sur son poste habituel, ce poste reste non couvert : trouvez un remplaçant dans Couverture."
     },
     "Scheduling": {
       "planificacionDeTurnos": "Planification des vacations",
@@ -16760,7 +16791,9 @@
       "radioPies": "Rayon du géorepérage (pieds)",
       "radioMetros": "Rayon du géorepérage (mètres)",
       "ubicacionYGeocerca": "Emplacement exact et géorepérage",
-      "ubicacionYGeocercaExplica": "Glissez le repère à l'endroit exact du poste. La ligne pointillée est le rayon ci-dessus : à l'intérieur, l'agent peut pointer. Si vous dessinez un polygone (3 points ou plus), c'est lui qui compte."
+      "ubicacionYGeocercaExplica": "Glissez le repère à l'endroit exact du poste. La ligne pointillée est le rayon ci-dessus : à l'intérieur, l'agent peut pointer. Si vous dessinez un polygone (3 points ou plus), c'est lui qui compte.",
+      "eventoNota": "Événement : {{rango}}. Indiquez les heures couvertes par cette station pendant l'événement et combien d'agents à la fois. Sans rotation : la personne affectée travaille ces heures pendant toute la durée de l'événement.",
+      "eventoNotaSinFechas": "Indiquez les heures couvertes par cette station pendant l'événement et combien d'agents à la fois. Sans rotation : la personne affectée travaille ces heures pendant toute la durée de l'événement."
     },
     "Planificador": {
       "noSePudoCargar": "Impossible de charger le planning.",
@@ -17610,7 +17643,9 @@
     "cctv_desc": "Surveillance à distance par caméras et vidéosurveillance en circuit fermé.",
     "custody_desc": "Protection rapprochée des personnes ou garde de biens de grande valeur.",
     "manned_desc": "Agents de sécurité affectés au poste en permanence ou par vacation.",
-    "patrol_desc": "Superviseurs effectuant des rondes régulières sur un ou plusieurs sites."
+    "patrol_desc": "Superviseurs effectuant des rondes régulières sur un ou plusieurs sites.",
+    "event": "Événement",
+    "event_desc": "Sécurité pour un événement avec une date de début et de fin : concerts, salons, mariages."
   },
   "supervisorPositions": {
     "assignError": "Impossible d'affecter",
@@ -18593,5 +18628,23 @@
       "resolved": "Résolu",
       "closed": "Fermé"
     }
+  },
+  "eventos": {
+    "terminado": "Événement terminé",
+    "enCurso": "En cours",
+    "yaTermino": "Cet événement est déjà terminé",
+    "yaTerminoExplica": "Plus personne ne peut être affecté. Si les dates ont changé, corrigez-les sur le site.",
+    "fechasDelEvento": "Dates de l'événement : {{rango}}",
+    "sinFechas": "Cet événement n'a pas de dates",
+    "fechasLasPoneElEvento": "L'agent travaille les heures de sa place entre ces dates. Pas besoin de choisir un début, une fin ni un cycle.",
+    "vigilanteAsignado": "Agent affecté à l'événement",
+    "vigilanteRelevado": "Agent remplacé sur l'événement",
+    "asignarAlEvento": "Affecter à l'événement",
+    "ocupadoEseHorario": "Occupé à cet horaire",
+    "nadieConEseNombre": "Aucun agent avec ce nom.",
+    "buscandoLibres": "Recherche des agents libres sur ces horaires…",
+    "nLibres": "{{n}} libre(s) sur ces horaires, en tête · ceux qui ont une vacation qui se chevauche sont signalés",
+    "sinListaDeLibres": "Impossible de savoir qui est libre : si vous choisissez quelqu'un dont la vacation se chevauche, vous serez prévenu à l'enregistrement.",
+    "plaza": "Place"
   }
 }

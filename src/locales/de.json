@@ -11492,7 +11492,33 @@
       "abrirPlanificador": "Im Planer öffnen",
       "crearEstacion": "Posten anlegen",
       "guardarSedeYSeguir": "Standort speichern und weiter",
-      "terminar": "Fertig"
+      "terminar": "Fertig",
+      "evento": {
+        "cuando": "Wann ist die Veranstaltung?",
+        "inicio": "Beginn",
+        "fin": "Ende",
+        "finAntesDeInicio": "Das Ende muss nach dem Beginn liegen. Endet die Veranstaltung nach Mitternacht, wählen Sie den Folgetag.",
+        "demasiadoLargo": "Eine Veranstaltung darf höchstens {{n}} Tage dauern. Für einen längeren Dienst wählen Sie eine andere Dienstart.",
+        "faltanFechas": "Geben Sie an, wann die Veranstaltung beginnt und endet, in der Zeitzone des Unternehmens.",
+        "duraDias": "Dauert {{n}} Tage.",
+        "duraHoras": "Dauert {{n}} Std.",
+        "alTerminar": "Am Tag nach dem Ende wird der Standort automatisch archiviert und die Sicherheitskräfte werden freigegeben.",
+        "briefing": "Anweisungen für die Sicherheitskräfte",
+        "briefingAyuda": "Optional. Sie sehen es in der App bei ihrer Schicht.",
+        "encuentro": "Treffpunkt",
+        "encuentroEj": "Z. B. Eingang 3, neben der Kasse",
+        "uniforme": "Uniform",
+        "uniformeEj": "Z. B. Weste und schwarze Hose",
+        "responsable": "Ansprechpartner vor Ort",
+        "responsableEj": "Name der Person, die das Team empfängt",
+        "telefonoResponsable": "Telefon des Ansprechpartners",
+        "instrucciones": "Anweisungen",
+        "instruccionesEj": "Was zu kontrollieren ist, wo das Publikum hereinkommt, wen man bei einem Vorfall verständigt…",
+        "salieron": "Termine aktualisiert. {{count}} Sicherheitskraft/-kräfte haben die Veranstaltung verlassen, weil sie bereits eine Schicht haben: {{lista}}. Weisen Sie an ihren Stationen andere zu.",
+        "movidas": "{{count}} Sicherheitskraft/-kräfte auf die neuen Termine verschoben."
+      },
+      "creaCadaEstacionEvento": "Legen Sie jede Station der Veranstaltung an: Name, von wann bis wann sie besetzt ist, wie viele Sicherheitskräfte gleichzeitig und Geofence. Ohne Rotation: Die Veranstaltung hat ihre eigenen Termine. Wenn alle fertig sind, klicken Sie auf „Fertig“.",
+      "eventoConEstaciones": "{{count}} Station(en). Als Nächstes: Sicherheitskräfte zuweisen; Termine und Uhrzeiten gibt die Veranstaltung vor."
     },
     "ProfilePhotoCapture": {
       "buenaIluminacionEviteSombrasY": "Gute Beleuchtung — vermeiden Sie Schatten und Gegenlicht",
@@ -12481,7 +12507,12 @@
       "turnosEliminados_one": "{{count}} Schicht gelöscht",
       "turnosEliminados_other": "{{count}} Schichten gelöscht",
       "unTurnoNoPuedeDurarMenosDe30": "Eine Schicht darf nicht kürzer als 30 Minuten sein",
-      "unoDeCada": "Einer von je"
+      "unoDeCada": "Einer von je",
+      "turnoCreadoReemplazando": "Schicht erstellt. Ersetzt wurde: {{lista}}",
+      "seReemplazaron": "Ersetzt: {{lista}}",
+      "siReemplazar": "Ja, ersetzen und erstellen",
+      "reemplazarTitulo": "Diese Sicherheitskraft hat zu diesen Zeiten bereits {{count}} Schicht(en)",
+      "reemplazarExplica": "Wenn Sie fortfahren, werden sie entfernt und die neue wird erstellt. War eine davon auf dem üblichen Posten, bleibt dieser unbesetzt: Suchen Sie unter Abdeckung eine Vertretung."
     },
     "Scheduling": {
       "planificacionDeTurnos": "Schichtplanung",
@@ -16760,7 +16791,9 @@
       "radioPies": "Geofence-Radius (Fuß)",
       "radioMetros": "Geofence-Radius (Meter)",
       "ubicacionYGeocerca": "Genauer Standort und Geofence",
-      "ubicacionYGeocercaExplica": "Ziehen Sie die Markierung auf den genauen Punkt des Postens. Die gepunktete Linie ist der Radius oben: darin kann der Wachmann einstempeln. Zeichnen Sie ein Polygon (3+ Punkte), gilt das Polygon."
+      "ubicacionYGeocercaExplica": "Ziehen Sie die Markierung auf den genauen Punkt des Postens. Die gepunktete Linie ist der Radius oben: darin kann der Wachmann einstempeln. Zeichnen Sie ein Polygon (3+ Punkte), gilt das Polygon.",
+      "eventoNota": "Veranstaltung: {{rango}}. Geben Sie an, welche Stunden diese Station während der Veranstaltung abdeckt und wie viele Sicherheitskräfte gleichzeitig. Ohne Rotation: Wer zugewiesen wird, arbeitet diese Stunden, solange die Veranstaltung dauert.",
+      "eventoNotaSinFechas": "Geben Sie an, welche Stunden diese Station während der Veranstaltung abdeckt und wie viele Sicherheitskräfte gleichzeitig. Ohne Rotation: Wer zugewiesen wird, arbeitet diese Stunden, solange die Veranstaltung dauert."
     },
     "Planificador": {
       "noSePudoCargar": "Der Dienstplan konnte nicht geladen werden.",
@@ -17610,7 +17643,9 @@
     "cctv_desc": "Fernüberwachung über Kameras und geschlossene Videoanlagen.",
     "custody_desc": "Personenschutz oder Bewachung hochwertiger Güter.",
     "manned_desc": "Sicherheitskräfte, die einem Objekt dauerhaft oder im Schichtdienst zugeteilt sind.",
-    "patrol_desc": "Einsatzleiter, die in einem oder mehreren Objekten regelmäßige Rundgänge durchführen."
+    "patrol_desc": "Einsatzleiter, die in einem oder mehreren Objekten regelmäßige Rundgänge durchführen.",
+    "event": "Veranstaltung",
+    "event_desc": "Sicherheit für eine Veranstaltung mit Start- und Enddatum: Konzerte, Messen, Hochzeiten."
   },
   "supervisorPositions": {
     "assignError": "Zuweisung nicht möglich",
@@ -18593,5 +18628,23 @@
       "resolved": "Gelöst",
       "closed": "Geschlossen"
     }
+  },
+  "eventos": {
+    "terminado": "Veranstaltung beendet",
+    "enCurso": "Läuft",
+    "yaTermino": "Diese Veranstaltung ist bereits beendet",
+    "yaTerminoExplica": "Es kann niemand mehr zugewiesen werden. Wenn sich die Termine geändert haben, korrigieren Sie sie am Standort.",
+    "fechasDelEvento": "Veranstaltungstermine: {{rango}}",
+    "sinFechas": "Diese Veranstaltung hat keine Termine",
+    "fechasLasPoneElEvento": "Die Sicherheitskraft arbeitet die Stunden ihrer Stelle innerhalb dieser Termine. Beginn, Ende oder Zyklus müssen nicht gewählt werden.",
+    "vigilanteAsignado": "Sicherheitskraft der Veranstaltung zugewiesen",
+    "vigilanteRelevado": "Sicherheitskraft bei der Veranstaltung ersetzt",
+    "asignarAlEvento": "Der Veranstaltung zuweisen",
+    "ocupadoEseHorario": "Zu dieser Zeit belegt",
+    "nadieConEseNombre": "Keine Sicherheitskraft mit diesem Namen.",
+    "buscandoLibres": "Prüfe, wer zu diesen Zeiten frei ist…",
+    "nLibres": "{{n}} zu diesen Zeiten frei, oben · wer eine überschneidende Schicht hat, ist markiert",
+    "sinListaDeLibres": "Es ließ sich nicht prüfen, wer frei ist: Wählen Sie jemanden mit überschneidender Schicht, erscheint beim Speichern ein Hinweis.",
+    "plaza": "Stelle"
   }
 }

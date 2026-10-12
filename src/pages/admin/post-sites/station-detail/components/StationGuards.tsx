@@ -34,6 +34,13 @@ import {
 } from "@/pages/admin/clientes/components/_shared/tab-kit";
 import { Button } from "@/components/ui/button";
 import { localToday } from "@/lib/utils";
+import { esEvento, ventanaDeLaPlaza } from "@/lib/eventos";
+import {
+  AvisoFechasDelEvento,
+  useCandidatosLibres,
+  useSede,
+  useVigilantesOrdenados,
+} from "@/components/post-sites/EventoDeLaSede";
 
 interface StationDetail extends Station {
   startingTimeInDay?: string | null;
@@ -167,6 +174,10 @@ export default function StationGuards({
   const [pickGuard, setPickGuard] = useState("");
   const [assignStart, setAssignStart] = useState(() => localToday());
   const [saving, setSaving] = useState(false);
+  /* Sede-EVENTO: al relevar no se pide «primer día» (las fechas las pone el
+     evento) y se ofrecen todos, con los libres en esas horas primero. */
+  const sede = useSede(postSiteId);
+  const evento = esEvento(sede);
 
   const load = useCallback(async () => {
     if (!stationId) return;
@@ -426,10 +437,12 @@ export default function StationGuards({
           },
         );
         toast.success(
-          t(
-            "station.guards.changed",
-            "Vigilante relevado — el puesto conserva su rotación",
-          ),
+          evento
+            ? t("eventos.vigilanteRelevado", "Vigilante cambiado en el evento")
+            : t(
+                "station.guards.changed",
+                "Vigilante relevado — el puesto conserva su rotación",
+              ),
         );
       } else if (assignType) {
         await doAssign(pickGuard, assignType, undefined, assignStart);
@@ -541,6 +554,25 @@ export default function StationGuards({
   }, [positions]);
 
   const modalOpen = !!assignType || !!changeTarget;
+  const ventanaRelevo = useMemo(
+    () =>
+      evento && changeTarget
+        ? ventanaDeLaPlaza(
+            sede,
+            positions.find((p) => p.id === changeTarget.positionId) ?? null,
+          )
+        : null,
+    [evento, changeTarget, sede, positions],
+  );
+  const { libres: libresRelevo } = useCandidatosLibres(
+    stationId,
+    ventanaRelevo,
+    modalOpen && evento,
+  );
+  const vigilantesRelevo = useVigilantesOrdenados(
+    guards,
+    evento ? libresRelevo : null,
+  );
   const modalIsSaca =
     assignType === "sacafranco" || changeTarget?.type === "sacafranco";
 
@@ -799,32 +831,43 @@ export default function StationGuards({
               <option value="">
                 {t("station.guards.selectGuard", "Seleccionar vigilante…")}
               </option>
-              {guards
-                .filter((g) => !occupiedGuardIds.has(g.id))
-                .map((g) => (
-                  <option key={g.id} value={g.id}>
-                    {g.label}
-                  </option>
-                ))}
+              {evento
+                ? vigilantesRelevo.map((g) => (
+                    <option key={g.id} value={g.id}>
+                      {g.libre === false
+                        ? `${g.label} · ${t("eventos.ocupadoEseHorario", "Ocupado en ese horario")}`
+                        : g.label}
+                    </option>
+                  ))
+                : guards
+                    .filter((g) => !occupiedGuardIds.has(g.id))
+                    .map((g) => (
+                      <option key={g.id} value={g.id}>
+                        {g.label}
+                      </option>
+                    ))}
             </select>
-            {guards.filter((g) => !occupiedGuardIds.has(g.id)).length === 0 && (
-              <p
-                className="mt-1.5 text-[11px]"
-                style={{ color: "var(--warn-text)" }}
-              >
-                {t(
-                  "station.guards.allBusy",
-                  "Todos los vigilantes ya tienen una asignación activa.",
-                )}
-              </p>
-            )}
+            {!evento &&
+              guards.filter((g) => !occupiedGuardIds.has(g.id)).length ===
+                0 && (
+                <p
+                  className="mt-1.5 text-[11px]"
+                  style={{ color: "var(--warn-text)" }}
+                >
+                  {t(
+                    "station.guards.allBusy",
+                    "Todos los vigilantes ya tienen una asignación activa.",
+                  )}
+                </p>
+              )}
           </LabeledField>
 
           {/* Alternation (24x24 etc.): the operator picks the day this guard
                   starts working. The backend phases the rotation to it, so
                   "empieza hoy" = trabaja hoy. Assign the partner starting the
                   next day and they alternate automatically. */}
-          {!modalIsSaca && isAlternation && (
+          {evento && <AvisoFechasDelEvento sede={sede} />}
+          {!modalIsSaca && isAlternation && !evento && (
             <LabeledField
               label={t("station.guards.startDay", "Primer día de turno")}
             >

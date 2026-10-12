@@ -2,7 +2,15 @@ import type { ServiceTypeValue } from "@/lib/serviceTypes";
 
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Shield, BellElectric, Camera, Car, Lock, Tag } from "lucide-react";
+import {
+  Shield,
+  BellElectric,
+  Camera,
+  Car,
+  Lock,
+  Tag,
+  CalendarClock,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { getServiceType, SERVICE_TYPES } from "@/lib/serviceTypes";
@@ -14,6 +22,7 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   Camera,
   Car,
   Lock,
+  CalendarClock,
 };
 
 interface ServiceTypeBadgeProps {

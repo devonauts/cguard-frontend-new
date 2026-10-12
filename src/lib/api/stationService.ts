@@ -27,6 +27,9 @@ export interface PostSite {
   guardsCount?: number;
   numberOfGuardsInStation?: string | number | null;
   serviceType?: string;
+  /** Vigencia de la sede (ISO). Obligatoria en una sede-evento. */
+  vigenteDesde?: string | null;
+  vigenteHasta?: string | null;
   positions?: StationPositionRow[];
 }
 
@@ -105,6 +108,8 @@ export interface RawStationRow {
   numberOfGuardsInStation?: string | number | null;
   serviceType?: string;
   serviceConfig?: unknown;
+  vigenteDesde?: string | null;
+  vigenteHasta?: string | null;
   positions?: StationPositionRow[];
 }
 
@@ -336,6 +341,8 @@ const stationService = {
               : undefined,
         numberOfGuardsInStation: r.numberOfGuardsInStation ?? undefined,
         serviceType: r.serviceType ?? undefined,
+        vigenteDesde: r.vigenteDesde ?? null,
+        vigenteHasta: r.vigenteHasta ?? null,
         // Las plazas viajan con la lista (una consulta agrupada en el servidor):
         // son la fuente de las jornadas que pintan las pantallas.
         positions: Array.isArray(r.positions) ? r.positions : undefined,
@@ -387,6 +394,9 @@ const stationService = {
       finishTimeInDay: p.finishTimeInDay ?? undefined,
       serviceType: p.serviceType ?? undefined,
       serviceConfig: p.serviceConfig ?? undefined,
+      // Vigencia (ISO): obligatoria en una sede-evento, opcional en el resto.
+      vigenteDesde: p.vigenteDesde ?? undefined,
+      vigenteHasta: p.vigenteHasta ?? undefined,
       // Módulo Sucursales: sin elegir, el servidor la coloca por su ciudad.
       branchId: (p as { branchId?: string | null }).branchId ?? undefined,
     };
@@ -463,6 +473,17 @@ const stationService = {
       finishTimeInDay: p.finishTimeInDay ?? existing.finishTimeInDay,
       serviceType: p.serviceType ?? existing.serviceType ?? undefined,
       serviceConfig: p.serviceConfig ?? existing.serviceConfig ?? undefined,
+      /* Vigencia: `null` la BORRA (un evento que pasa a ser servicio normal);
+         sin la clave se reenvía la que había, para que el servidor —que exige
+         las dos fechas a un evento— no la eche en falta. */
+      vigenteDesde:
+        p.vigenteDesde !== undefined
+          ? p.vigenteDesde
+          : (existing.vigenteDesde ?? undefined),
+      vigenteHasta:
+        p.vigenteHasta !== undefined
+          ? p.vigenteHasta
+          : (existing.vigenteHasta ?? undefined),
       // Módulo Sucursales: sólo si se eligió una; si no, no se toca.
       ...((p as { branchId?: string | null }).branchId
         ? { branchId: (p as { branchId?: string | null }).branchId }

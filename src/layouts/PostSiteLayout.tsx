@@ -21,6 +21,7 @@ import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { StatusBadge, SmartImage } from "@/components/kit";
+import { FechasDelEvento } from "@/components/post-sites/EventoDeLaSede";
 import { needsOperationSetup } from "@/pages/admin/post-sites/components/OperationSetup/OperationSetupAlert";
 import AppLayout from "@/layouts/app-layout";
 import i18n from "@/i18n";
@@ -247,6 +248,8 @@ export default function PostSiteLayout({ title, children, site }: Props) {
                       {categoryName}
                     </StatusBadge>
                   )}
+                  {/* Sede-EVENTO: sus fechas, y si ya terminó. */}
+                  <FechasDelEvento sede={site} />
                   {clientName && (
                     <span style={{ color: "var(--ink-soft)" }}>
                       {t("postSites.client", "Cliente")}:{" "}

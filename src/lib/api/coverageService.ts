@@ -194,6 +194,7 @@ export const coverageService = {
     windowStart?: string;
     windowEnd?: string;
     excludeGuardId?: string;
+    limit?: number;
   }) =>
     api
       .get(`/tenant/${getTenantId()}/coverage/candidates${buildQuery(params)}`)

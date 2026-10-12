@@ -25,6 +25,7 @@ import IncidentMap from "@/components/IncidentMap/IncidentMap";
 import { categoryService } from "@/lib/api/categoryService";
 import useScrollToTopOnMount from "@/hooks/useScrollToTopOnMount";
 import { ServiceTypeBadge } from "@/components/post-sites/ServiceTypeBadge";
+import { FechasDelEvento } from "@/components/post-sites/EventoDeLaSede";
 import { postSiteService } from "@/lib/api/postSiteService";
 import { stationService } from "@/lib/api/stationService";
 import {
@@ -416,6 +417,7 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                   {siteName}
                 </h2>
                 <ServiceTypeBadge size="md" value={site?.serviceType} />
+                <FechasDelEvento sede={site as any} />
               </div>
               <p
                 className="mt-0.5 text-sm"
@@ -474,7 +476,21 @@ export default function PostSiteProfile({ site }: { site?: any }) {
             const despliegueActivo = DESPLIEGUE.filter(
               ([k]) => cfg[k] === true,
             );
+            /* El briefing del EVENTO (plano en serviceConfig): lo que se
+               le dice al vigilante al llegar. */
+            const BRIEFING: Array<[string, string]> = [
+              ["encuentro", t("ui.PostSiteWizard.evento.encuentro", "Punto de encuentro")],
+              ["uniforme", t("ui.PostSiteWizard.evento.uniforme", "Uniforme")],
+              ["responsable", t("ui.PostSiteWizard.evento.responsable", "Responsable en el lugar")],
+              ["telefonoResponsable", t("ui.PostSiteWizard.evento.telefonoResponsable", "Teléfono del responsable")],
+            ];
+            const briefing = BRIEFING.filter(
+              ([k]) => typeof cfg[k] === "string" && cfg[k].trim(),
+            );
             const hayAlgo =
+              briefing.length ||
+              (typeof cfg.instrucciones === "string" &&
+                cfg.instrucciones.trim()) ||
               cfg.postInstructions ||
               cfg.riskLevel ||
               cfg.stationsRequired ||
@@ -489,6 +505,26 @@ export default function PostSiteProfile({ site }: { site?: any }) {
                 <h4 className="cg-eyebrow">
                   {t("ui.Profile.condicionesDelServicio")}
                 </h4>
+                {briefing.map(([k, label]) => (
+                  <InfoRow key={k} label={label} value={String(cfg[k])} />
+                ))}
+                {typeof cfg.instrucciones === "string" &&
+                  cfg.instrucciones.trim() && (
+                    <div>
+                      <p className="cg-eyebrow mb-1">
+                        {t(
+                          "ui.PostSiteWizard.evento.instrucciones",
+                          "Instrucciones",
+                        )}
+                      </p>
+                      <p
+                        className="whitespace-pre-line text-sm leading-relaxed"
+                        style={{ color: "var(--ink-soft)" }}
+                      >
+                        {cfg.instrucciones}
+                      </p>
+                    </div>
+                  )}
                 {cfg.riskLevel && (
                   <InfoRow
                     label={t("clients.form.riskLevel", "Nivel de riesgo")}

@@ -33,6 +33,8 @@ import { clientDisplayName } from "@/lib/clientName";
 import { Button } from "@/components/ui/button";
 import { localeActual } from "@/lib/localeActual";
 import { paraInputFechaHora, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
+import { esEvento } from "@/lib/eventos";
+import { AvisoFechasDelEvento } from "@/components/post-sites/EventoDeLaSede";
 // ── Safe label extraction ────────────────────────────────────────────────────
 // The backend may return raw association OBJECTS (full Sequelize models) for
 // client / postSite / station. Rendering an object directly as a JSX child
@@ -234,7 +236,13 @@ export default function GuardAsignarSitiosPage() {
     [],
   );
   const [postSites, setPostSites] = useState<
-    Array<{ id: string; name: string }>
+    Array<{
+      id: string;
+      name: string;
+      serviceType?: string | null;
+      vigenteDesde?: string | null;
+      vigenteHasta?: string | null;
+    }>
   >([]);
   const [stationsForPostSite, setStationsForPostSite] = useState<
     Array<{ id: string; name: string }>
@@ -309,6 +317,9 @@ export default function GuardAsignarSitiosPage() {
     else setSelectedKeys([]);
   };
 
+  const sedeElegida = postSites.find((p) => p.id === selectedPostSite) || null;
+  const sedeEsEvento = esEvento(sedeElegida);
+
   // ── Assign (keeps the working assign-guard adapter flow) ────────────────────
   const assignSite = () => {
     if (!selectedClient || !selectedPostSite) {
@@ -337,7 +348,7 @@ export default function GuardAsignarSitiosPage() {
 
       return;
     }
-    if (!selectedStart || !selectedEnd) {
+    if (!sedeEsEvento && (!selectedStart || !selectedEnd)) {
       toast.error(
         t("guards.assignSites.errors.selectTimes", {
           defaultValue: "Selecciona hora de inicio y fin",
@@ -350,9 +361,10 @@ export default function GuardAsignarSitiosPage() {
     const e = new Date(selectedEnd);
 
     if (
-      isNaN(s.getTime()) ||
-      isNaN(e.getTime()) ||
-      s.getTime() >= e.getTime()
+      !sedeEsEvento &&
+      (isNaN(s.getTime()) ||
+        isNaN(e.getTime()) ||
+        s.getTime() >= e.getTime())
     ) {
       toast.error(
         t("guards.assignSites.errors.timeOrder", {
@@ -401,9 +413,8 @@ export default function GuardAsignarSitiosPage() {
           ...(selectedStationAssign
             ? { stationId: selectedStationAssign }
             : {}),
-          startDate,
-          startTime,
-          endTime,
+          // En un evento el servidor pone fechas y horas con su vigencia.
+          ...(sedeEsEvento ? {} : { startDate, startTime, endTime }),
         } as any;
         const routeStationOrSite = selectedStationAssign || selectedPostSite;
 
@@ -598,6 +609,10 @@ export default function GuardAsignarSitiosPage() {
             ) ??
             labelOf(r) ??
             String(r.id ?? ""),
+          // Una sede-EVENTO no pide horas: las pone el evento.
+          serviceType: r.serviceType ?? null,
+          vigenteDesde: r.vigenteDesde ?? null,
+          vigenteHasta: r.vigenteHasta ?? null,
         }));
 
         if (!mounted) return;
@@ -1049,7 +1064,16 @@ export default function GuardAsignarSitiosPage() {
                     </div>
                   )}
 
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  {sedeEsEvento && (
+                    <AvisoFechasDelEvento sede={sedeElegida} />
+                  )}
+                  <div
+                    className={
+                      sedeEsEvento
+                        ? "hidden"
+                        : "grid grid-cols-1 gap-3 sm:grid-cols-2"
+                    }
+                  >
                     <div>
                       <label className="cg-eyebrow mb-1.5 block">
                         {t("guards.assignSites.form.start", {

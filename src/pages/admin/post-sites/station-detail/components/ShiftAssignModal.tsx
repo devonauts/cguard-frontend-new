@@ -37,6 +37,12 @@ import type { Station } from "@/types";
 
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { esEvento, eventoTerminado, ventanaDeLaPlaza } from "@/lib/eventos";
+import {
+  AvisoFechasDelEvento,
+  useCandidatosLibres,
+  useVigilantesOrdenados,
+} from "@/components/post-sites/EventoDeLaSede";
 // Local YYYY-MM-DD (avoid toISOString — it shifts day in negative-UTC zones).
 const dateKey = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -125,6 +131,10 @@ export default function ShiftAssignModal({
      mismo candado que pone el servidor (`exigirSedeConfigurada`). */
   const [sede, setSede] = useState<any | null>(null);
   const sedeSinConfigurar = !!sede && needsOperationSetup(sede);
+  /* Sede-EVENTO: no hay rotación, ni fecha de inicio, ni fin, ni ciclo. Se
+     elige plaza y vigilante; el servidor pone las fechas con la vigencia. */
+  const evento = esEvento(sede);
+  const eventoAcabado = evento && eventoTerminado(sede);
 
   useEffect(() => {
     if (!open || !postSiteId) return;
@@ -245,6 +255,41 @@ export default function ShiftAssignModal({
   const availableGuards = useMemo(
     () => guardsOptions.filter((g) => !occupiedGuardIds.has(String(g.id))),
     [guardsOptions, occupiedGuardIds],
+  );
+
+  /* ── EVENTO: QUIÉN ESTÁ LIBRE EN ESAS HORAS ──────────────────────────────
+     Tener puesto fijo no descarta a nadie: el de 07–19 puede ir a un evento
+     de 20–02. Lo que cuenta es si sus turnos se CRUZAN con la plaza del
+     evento, y eso lo contesta el servidor (`/coverage/candidates`). Los libres
+     van primero; los ocupados se marcan pero se pueden elegir —si el choque
+     es real, el servidor lo rechaza con un mensaje que se enseña tal cual—. */
+  const ventanaEvento = useMemo(
+    () =>
+      evento
+        ? ventanaDeLaPlaza(
+            sede,
+            positions.find((p) => p.id === selectedPositionId) ?? null,
+          )
+        : null,
+    [evento, sede, positions, selectedPositionId],
+  );
+  const { libres, cargando: cargandoLibres } = useCandidatosLibres(
+    stationId,
+    ventanaEvento,
+    open && evento && !eventoAcabado,
+  );
+  const vigilantesDelEvento = useVigilantesOrdenados(
+    guardsOptions,
+    evento ? libres : null,
+  );
+  const ocupadoEnEvento = useMemo(
+    () =>
+      new Set(
+        vigilantesDelEvento
+          .filter((g) => g.libre === false)
+          .map((g) => String(g.id)),
+      ),
+    [vigilantesDelEvento],
   );
 
   // Live rest-day preview for the selected fijo puesto. THE PHASE IS THE START DATE:
@@ -373,15 +418,25 @@ export default function ShiftAssignModal({
   ]);
 
   // Lo que se enseña en el desplegable: los disponibles que casen con lo escrito.
+  // En un evento, TODOS: los libres primero y los ocupados marcados.
   const vigilantesFiltrados = useMemo(() => {
+    const base: { id: string; label: string }[] = evento
+      ? vigilantesDelEvento
+      : availableGuards;
     const q = filtroVigilante.trim().toLowerCase();
     const elegido = guardsOptions.find((g) => g.id === shiftGuard);
 
-    if (!q || (elegido && q === elegido.label.toLowerCase()))
-      return availableGuards;
+    if (!q || (elegido && q === elegido.label.toLowerCase())) return base;
 
-    return availableGuards.filter((g) => g.label.toLowerCase().includes(q));
-  }, [availableGuards, filtroVigilante, guardsOptions, shiftGuard]);
+    return base.filter((g) => g.label.toLowerCase().includes(q));
+  }, [
+    evento,
+    vigilantesDelEvento,
+    availableGuards,
+    filtroVigilante,
+    guardsOptions,
+    shiftGuard,
+  ]);
 
   /* ── CÓMO SE LLAMA EL SEGUNDO TRAMO DEL CICLO EN ESTA ESTACIÓN ────────────
      En un puesto de 24 h es la NOCHE. En una estación partida en dos tramos
@@ -610,6 +665,46 @@ export default function ShiftAssignModal({
       return;
     }
 
+    // ── Evento → asignación PUNTUAL; las fechas y horas las pone el servidor ──
+    if (evento) {
+      if (eventoAcabado) {
+        toast.error(t("eventos.yaTermino", "Este evento ya terminó"));
+        return;
+      }
+      if (positionOptions.length > 0 && !selectedPositionId) {
+        toast.error(t("ui.ShiftAssignModal.seleccioneElPuestoVigilante"));
+        return;
+      }
+      setSaving(true);
+      try {
+        await ApiService.post(`/tenant/${tenantId}/guard-assignment`, {
+          data: {
+            guardId: shiftGuard,
+            stationId,
+            positionId: selectedPositionId || null,
+            isRelief: false,
+          },
+        });
+        toast.success(
+          t("eventos.vigilanteAsignado", "Vigilante asignado al evento"),
+        );
+        const desde = sede?.vigenteDesde ? new Date(sede.vigenteDesde) : null;
+
+        onSaved(desde && !Number.isNaN(desde.getTime()) ? desde : undefined);
+      } catch (e: any) {
+        // El choque de horario lo explica el servidor: se enseña tal cual.
+        toast.error(
+          e?.data?.message ||
+            e?.message ||
+            t("ui.ShiftAssignModal.errorAlAsignar", "Error al asignar"),
+        );
+      } finally {
+        setSaving(false);
+      }
+
+      return;
+    }
+
     // ── Turno único (one-off ad-hoc shift) ────────────────────────────────────
     if (assignMode === "single") {
       if (!shiftStart || !shiftEnd) {
@@ -720,8 +815,12 @@ export default function ShiftAssignModal({
               saving ||
               sedeSinConfigurar ||
               !shiftGuard ||
-              (assignMode === "rotation" &&
-                (!selectedPositionId || (estacionSinCiclo && !secuenciaPropia)))
+              (evento
+                ? eventoAcabado ||
+                  (positionOptions.length > 0 && !selectedPositionId)
+                : assignMode === "rotation" &&
+                  (!selectedPositionId ||
+                    (estacionSinCiclo && !secuenciaPropia)))
             }
           >
             {saving ? (
@@ -729,9 +828,11 @@ export default function ShiftAssignModal({
             ) : (
               <UserPlus size={14} />
             )}
-            {assignMode === "rotation"
-              ? t("ui.ShiftAssignModal.asignarRotacion", "Asignar rotación")
-              : t("ui.ShiftAssignModal.crearTurno", "Crear turno")}
+            {evento
+              ? t("eventos.asignarAlEvento", "Asignar al evento")
+              : assignMode === "rotation"
+                ? t("ui.ShiftAssignModal.asignarRotacion", "Asignar rotación")
+                : t("ui.ShiftAssignModal.crearTurno", "Crear turno")}
           </Button>
         </>
       }
@@ -747,31 +848,34 @@ export default function ShiftAssignModal({
         <OperationSetupAlert context="guard" site={sede} siteId={postSiteId} />
       )}
       <div className="space-y-4" hidden={sedeSinConfigurar}>
-        <Segmented
-          className="w-full [&>button]:flex-1"
-          options={[
-            {
-              value: "rotation",
-              label: (
-                <span className="inline-flex items-center gap-1.5">
-                  <Repeat size={13} />{" "}
-                  {t("ui.ShiftAssignModal.rotacion", "Rotación")}
-                </span>
-              ),
-            },
-            {
-              value: "single",
-              label: (
-                <span className="inline-flex items-center gap-1.5">
-                  <CalendarRange size={13} />{" "}
-                  {t("ui.ShiftAssignModal.turnoUnico", "Turno único")}
-                </span>
-              ),
-            },
-          ]}
-          value={assignMode}
-          onChange={setAssignMode}
-        />
+        {evento && <AvisoFechasDelEvento sede={sede} />}
+        {!evento && (
+          <Segmented
+            className="w-full [&>button]:flex-1"
+            options={[
+              {
+                value: "rotation",
+                label: (
+                  <span className="inline-flex items-center gap-1.5">
+                    <Repeat size={13} />{" "}
+                    {t("ui.ShiftAssignModal.rotacion", "Rotación")}
+                  </span>
+                ),
+              },
+              {
+                value: "single",
+                label: (
+                  <span className="inline-flex items-center gap-1.5">
+                    <CalendarRange size={13} />{" "}
+                    {t("ui.ShiftAssignModal.turnoUnico", "Turno único")}
+                  </span>
+                ),
+              },
+            ]}
+            value={assignMode}
+            onChange={setAssignMode}
+          />
+        )}
 
         <LabeledField label={t("comun.vigilante")}>
           {loadingGuards ? (
@@ -823,10 +927,27 @@ export default function ShiftAssignModal({
                         setListaAbierta(false);
                       }}
                     >
-                      <span className="truncate">{g.label}</span>
-                      {g.id === shiftGuard && (
-                        <Check className="h-4 w-4 shrink-0 brand-text" />
-                      )}
+                      <span className="min-w-0 truncate">{g.label}</span>
+                      <span className="flex shrink-0 items-center gap-1.5">
+                        {evento && ocupadoEnEvento.has(String(g.id)) && (
+                          <span
+                            className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
+                            style={{
+                              background:
+                                "color-mix(in oklab, var(--warn) 14%, transparent)",
+                              color: "var(--warn-text)",
+                            }}
+                          >
+                            {t(
+                              "eventos.ocupadoEseHorario",
+                              "Ocupado en ese horario",
+                            )}
+                          </span>
+                        )}
+                        {g.id === shiftGuard && (
+                          <Check className="h-4 w-4 shrink-0 brand-text" />
+                        )}
+                      </span>
                     </button>
                   ))}
                   {!vigilantesFiltrados.length && (
@@ -834,10 +955,15 @@ export default function ShiftAssignModal({
                       className="px-3 py-2 text-xs"
                       style={{ color: "var(--ink-soft)" }}
                     >
-                      {t(
-                        "ui.ShiftAssignModal.nadieDisponibleConEseNombre",
-                        "Ningún vigilante disponible con ese nombre.",
-                      )}
+                      {evento
+                        ? t(
+                            "eventos.nadieConEseNombre",
+                            "Ningún vigilante con ese nombre.",
+                          )
+                        : t(
+                            "ui.ShiftAssignModal.nadieDisponibleConEseNombre",
+                            "Ningún vigilante disponible con ese nombre.",
+                          )}
                     </p>
                   )}
                 </div>
@@ -846,15 +972,31 @@ export default function ShiftAssignModal({
                 className="mt-1 text-[11px]"
                 style={{ color: "var(--ink-soft)" }}
               >
-                {t("ui.ShiftAssignModal.nDisponibles", {
-                  defaultValue:
-                    "{{n}} disponible(s) · sólo quienes no tienen ya una asignación activa",
-                  n: availableGuards.length,
-                })}
+                {evento
+                  ? cargandoLibres
+                    ? t(
+                        "eventos.buscandoLibres",
+                        "Mirando quién está libre en esas horas…",
+                      )
+                    : libres
+                      ? t("eventos.nLibres", {
+                          defaultValue:
+                            "{{n}} libre(s) en esas horas, arriba · los que tienen un turno que se cruza salen marcados",
+                          n: vigilantesDelEvento.filter((g) => g.libre).length,
+                        })
+                      : t(
+                          "eventos.sinListaDeLibres",
+                          "No se pudo saber quién está libre: si eliges a alguien con un turno que se cruza, se avisará al guardar.",
+                        )
+                  : t("ui.ShiftAssignModal.nDisponibles", {
+                      defaultValue:
+                        "{{n}} disponible(s) · sólo quienes no tienen ya una asignación activa",
+                      n: availableGuards.length,
+                    })}
               </p>
             </div>
           )}
-          {!loadingGuards && availableGuards.length === 0 && (
+          {!loadingGuards && !evento && availableGuards.length === 0 && (
             <p
               className="mt-1.5 text-[11px]"
               style={{ color: "var(--warn-text)" }}
@@ -864,7 +1006,63 @@ export default function ShiftAssignModal({
           )}
         </LabeledField>
 
-        {assignMode === "rotation" ? (
+        {evento ? (
+          positionOptions.length > 0 ? (
+            <LabeledField label={t("eventos.plaza", "Plaza")}>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                {positionOptions
+                  .filter((p) => p.type === "fijo")
+                  .map((p) => (
+                    <button
+                      key={p.id}
+                      className="cg-focus rounded-xl border px-3 py-2 text-left text-sm font-medium transition-all disabled:cursor-not-allowed"
+                      disabled={p.occupied}
+                      style={
+                        p.occupied
+                          ? {
+                              borderColor: "var(--hairline)",
+                              color: "var(--ink-faint)",
+                              opacity: 0.5,
+                            }
+                          : selectedPositionId === p.id
+                            ? {
+                                borderColor: "var(--brand-line)",
+                                background: "var(--brand-wash)",
+                                color: "var(--brand-text)",
+                              }
+                            : {
+                                borderColor: "var(--hairline)",
+                                color: "var(--ink-soft)",
+                              }
+                      }
+                      title={
+                        p.occupied
+                          ? t(
+                              "ui.ShiftAssignModal.puestoOcupado",
+                              "Puesto ocupado",
+                            )
+                          : p.horas || undefined
+                      }
+                      type="button"
+                      onClick={() => setSelectedPositionId(p.id)}
+                    >
+                      <span className={p.occupied ? "line-through" : undefined}>
+                        {p.label}
+                      </span>
+                      {p.occupied
+                        ? ` · ${t("ui.AsignacionEditModal.ocupado", "ocupado")}`
+                        : ""}
+                      {p.horas && (
+                        <span className="mt-0.5 block text-[10px] font-normal tabular-nums opacity-80">
+                          {p.horas}
+                        </span>
+                      )}
+                    </button>
+                  ))}
+              </div>
+            </LabeledField>
+          ) : null
+        ) : assignMode === "rotation" ? (
           <>
             {/* Puesto (Vigilante): assign to a position — the engine staggers day/night. */}
             <LabeledField label={t("comun.puesto")}>

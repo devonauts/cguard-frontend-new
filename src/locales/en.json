@@ -10960,7 +10960,33 @@
       "abrirPlanificador": "Open in the Planner",
       "crearEstacion": "Create station",
       "guardarSedeYSeguir": "Save site and continue",
-      "terminar": "Finish"
+      "terminar": "Finish",
+      "evento": {
+        "cuando": "When is the event?",
+        "inicio": "Start",
+        "fin": "End",
+        "finAntesDeInicio": "The end must be after the start. If the event ends after midnight, set the next day.",
+        "demasiadoLargo": "An event can last at most {{n}} days. For a longer service, choose another service type.",
+        "faltanFechas": "Enter when the event starts and ends, in the company's time zone.",
+        "duraDias": "Lasts {{n}} days.",
+        "duraHoras": "Lasts {{n}} h.",
+        "alTerminar": "The day after it ends, the site is archived automatically and the guards are released.",
+        "briefing": "Briefing for the guards",
+        "briefingAyuda": "Optional. They see it in the app with their shift.",
+        "encuentro": "Meeting point",
+        "encuentroEj": "E.g. Gate 3, next to the box office",
+        "uniforme": "Uniform",
+        "uniformeEj": "E.g. Vest and black trousers",
+        "responsable": "On-site contact",
+        "responsableEj": "Name of the person who meets the team",
+        "telefonoResponsable": "Contact phone",
+        "instrucciones": "Instructions",
+        "instruccionesEj": "What to check, where the public comes in, who to call if something happens…",
+        "salieron": "Dates updated. {{count}} guard(s) left the event because they already have a shift: {{lista}}. Assign others at their stations.",
+        "movidas": "{{count}} guard(s) moved to the new dates."
+      },
+      "creaCadaEstacionEvento": "Create each station for the event: name, from what time to what time it is covered, how many guards at once and geofence. No rotation: the event has its own dates. When they're all done, press “Finish”.",
+      "eventoConEstaciones": "{{count}} station(s). Next: assign the guards; the event sets the dates and hours."
     },
     "ProfilePhotoCapture": {
       "buenaIluminacionEviteSombrasY": "Good lighting — avoid shadows and backlight",
@@ -11949,7 +11975,12 @@
       "turnosEliminados_one": "{{count}} shift deleted",
       "turnosEliminados_other": "{{count}} shifts deleted",
       "unTurnoNoPuedeDurarMenosDe30": "A shift cannot be shorter than 30 minutes",
-      "unoDeCada": "One out of every"
+      "unoDeCada": "One out of every",
+      "turnoCreadoReemplazando": "Shift created. It replaced: {{lista}}",
+      "seReemplazaron": "Replaced: {{lista}}",
+      "siReemplazar": "Yes, replace and create",
+      "reemplazarTitulo": "This guard already has {{count}} shift(s) at those hours",
+      "reemplazarExplica": "If you continue, they are removed and the new one is created. If any was at their usual post, that post is left uncovered: find a replacement in Coverage."
     },
     "Scheduling": {
       "planificacionDeTurnos": "Shift planning",
@@ -16228,7 +16259,9 @@
       "radioPies": "Geofence radius (feet)",
       "radioMetros": "Geofence radius (meters)",
       "ubicacionYGeocerca": "Exact location and geofence",
-      "ubicacionYGeocercaExplica": "Drag the pin to the exact spot of the post. The dotted line is the radius above: inside it the guard can clock in. If you draw a polygon (3+ points), the polygon rules."
+      "ubicacionYGeocercaExplica": "Drag the pin to the exact spot of the post. The dotted line is the radius above: inside it the guard can clock in. If you draw a polygon (3+ points), the polygon rules.",
+      "eventoNota": "Event: {{rango}}. Say which hours this station covers during the event and how many guards at once. No rotation: whoever you assign works those hours for as long as the event lasts.",
+      "eventoNotaSinFechas": "Say which hours this station covers during the event and how many guards at once. No rotation: whoever you assign works those hours for as long as the event lasts."
     },
     "Planificador": {
       "noSePudoCargar": "The schedule couldn't be loaded.",
@@ -17610,7 +17643,9 @@
     "cctv_desc": "Remote monitoring through cameras and closed-circuit television.",
     "custody_desc": "Close protection or custody of high-value assets.",
     "manned_desc": "Security guards assigned to the post permanently or by shift.",
-    "patrol_desc": "Supervisors running regular patrols at one or several sites."
+    "patrol_desc": "Supervisors running regular patrols at one or several sites.",
+    "event": "Event Security",
+    "event_desc": "Security for an event with a start and end date: concerts, fairs, weddings."
   },
   "supervisorPositions": {
     "assignError": "It could not be assigned",
@@ -18593,5 +18628,23 @@
       "resolved": "Resolved",
       "closed": "Closed"
     }
+  },
+  "eventos": {
+    "terminado": "Event ended",
+    "enCurso": "In progress",
+    "yaTermino": "This event has already ended",
+    "yaTerminoExplica": "No one can be assigned anymore. If the dates changed, fix them on the site.",
+    "fechasDelEvento": "Event dates: {{rango}}",
+    "sinFechas": "This event has no dates",
+    "fechasLasPoneElEvento": "The guard works their slot's hours within those dates. No need to pick a start, end or cycle.",
+    "vigilanteAsignado": "Guard assigned to the event",
+    "vigilanteRelevado": "Guard replaced at the event",
+    "asignarAlEvento": "Assign to event",
+    "ocupadoEseHorario": "Busy at that time",
+    "nadieConEseNombre": "No guard with that name.",
+    "buscandoLibres": "Checking who is free at those hours…",
+    "nLibres": "{{n}} free at those hours, listed first · anyone with an overlapping shift is flagged",
+    "sinListaDeLibres": "Couldn't check who is free: if you pick someone with an overlapping shift, you'll be told when saving.",
+    "plaza": "Slot"
   }
 }

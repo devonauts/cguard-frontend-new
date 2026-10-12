@@ -10,6 +10,10 @@ import StationGeofencePolygon, {
   type PolyPoint,
 } from "@/components/GoogleMap/StationGeofencePolygon";
 import { FIELD_CLS_LG } from "@/pages/admin/clientes/components/_shared/tab-kit";
+import { InfoNote } from "@/components/kit";
+import { esEvento } from "@/lib/serviceTypes";
+import { rangoDelEvento, vigenciaDe } from "@/lib/eventos";
+import { horaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
 /* ════════════════════════════════════════════════════════════════════════════
    LA COBERTURA DEL PUESTO, CON NÚMEROS.
@@ -236,6 +240,37 @@ interface Props {
   onCreated?: (st: StationCreada) => void;
   onCancel?: () => void;
   submitLabel?: string;
+  /**
+   * «evento»: la sede es un EVENTO. No hay rotación ni días de la semana —el
+   * servidor crea asignaciones puntuales dentro de las fechas del evento—; se
+   * pregunta la ventana, cuántos a la vez y la geocerca. Sin decirlo, se deduce
+   * del tipo de servicio de la sede.
+   */
+  modo?: "normal" | "evento";
+  /** Fechas del evento (ISO). Sin decirlo, las de la sede. */
+  vigencia?: { desde?: string | null; hasta?: string | null };
+}
+
+/** La cobertura con la que nace el formulario de un evento: sus propias horas. */
+function coberturaInicialDelEvento(vig: {
+  desde?: string | null;
+  hasta?: string | null;
+}): { modo: "" | "24h" | "horario"; desde: string; hasta: string } | null {
+  const { desde, hasta } = vigenciaDe({
+    vigenteDesde: vig.desde,
+    vigenteHasta: vig.hasta,
+  });
+
+  if (!desde || !hasta || hasta.getTime() <= desde.getTime()) return null;
+  const ini = horaDeLaEmpresa(desde);
+  const fin = horaDeLaEmpresa(hasta);
+
+  // Un evento de un día o más se cubre las 24 h, con el relevo a la hora en
+  // que arranca; uno más corto, de su hora de inicio a la de fin.
+  if (hasta.getTime() - desde.getTime() >= 24 * 3600 * 1000 || ini === fin)
+    return { modo: "24h", desde: ini, hasta: ini };
+
+  return { modo: "horario", desde: ini, hasta: fin };
 }
 
 /**
@@ -250,10 +285,22 @@ export default function StationCreateForm({
   onCreated,
   onCancel,
   submitLabel,
+  modo: modoProp,
+  vigencia: vigenciaProp,
 }: Props) {
   const id = siteId;
   const { t } = useTranslation();
   const [saving, setSaving] = useState(false);
+  const esModoEvento =
+    (modoProp ?? (esEvento(site) ? "evento" : "normal")) === "evento";
+  const vigencia = vigenciaProp ?? {
+    desde: site?.vigenteDesde ?? null,
+    hasta: site?.vigenteHasta ?? null,
+  };
+  // Sólo para el evento: arranca con sus horas ya puestas.
+  const [inicialEvento] = useState(() =>
+    esModoEvento ? coberturaInicialDelEvento(vigencia) : null,
+  );
 
   // Datos del puesto
   const [newName, setNewName] = useState("");
@@ -262,10 +309,12 @@ export default function StationCreateForm({
   /* LA COBERTURA: se dice como se contrata —«24 horas» o «de tal hora a tal
      hora»—, en cuántos turnos se parte y cuántos a la vez. De eso salen las
      franjas; quien quiera retocarlas a mano puede. */
-  const [modo, setModo] = useState<"" | "24h" | "horario">("");
-  const [desde, setDesde] = useState("07:00");
-  const [hasta, setHasta] = useState("19:00");
-  const [turnos, setTurnos] = useState(1);
+  const [modo, setModo] = useState<"" | "24h" | "horario">(
+    inicialEvento?.modo ?? "",
+  );
+  const [desde, setDesde] = useState(inicialEvento?.desde ?? "07:00");
+  const [hasta, setHasta] = useState(inicialEvento?.hasta ?? "19:00");
+  const [turnos, setTurnos] = useState(inicialEvento?.modo === "24h" ? 2 : 1);
   const [aLaVez, setALaVez] = useState(1);
   const [diasGlobal, setDiasGlobal] = useState<string[]>([]);
   const [ajustar, setAjustar] = useState(false);
@@ -291,9 +340,13 @@ export default function StationCreateForm({
     setModo(m);
     setAjustar(false);
     if (m === "24h") {
-      setDesde("07:00");
+      setDesde(esModoEvento && inicialEvento ? inicialEvento.desde : "07:00");
       setTurnos(2);
     } else {
+      if (esModoEvento && inicialEvento) {
+        setDesde(inicialEvento.desde);
+        if (inicialEvento.modo === "horario") setHasta(inicialEvento.hasta);
+      }
       setTurnos(1);
     }
   };
@@ -631,6 +684,24 @@ export default function StationCreateForm({
 
           {/* ¿Qué horas se cubre? — como se contrata: 24 h o de tal a tal hora */}
           <div>
+            {esModoEvento && (
+              <InfoNote className="mb-3" tone="brand">
+                {(() => {
+                  const rango = rangoDelEvento(vigencia.desde, vigencia.hasta);
+
+                  return rango
+                    ? t("ui.StationCreateForm.eventoNota", {
+                        defaultValue:
+                          "Evento: {{rango}}. Di qué horas cubre esta estación dentro del evento y cuántos vigilantes a la vez. Sin rotación: quien asignes trabaja esas horas mientras dure el evento.",
+                        rango,
+                      })
+                    : t(
+                        "ui.StationCreateForm.eventoNotaSinFechas",
+                        "Di qué horas cubre esta estación dentro del evento y cuántos vigilantes a la vez. Sin rotación: quien asignes trabaja esas horas mientras dure el evento.",
+                      );
+                })()}
+              </InfoNote>
+            )}
             <label className="mb-1 block text-sm font-medium">
               {t(
                 "ui.StationCreateForm.queHorasSeCubre",
@@ -768,58 +839,63 @@ export default function StationCreateForm({
                       )}
                     </span>
                   </span>
-                  <span
-                    className="h-5 w-px"
-                    style={{ background: "var(--hairline)" }}
-                  />
-                  <span className="inline-flex items-center gap-1.5">
-                    <span
-                      className="text-xs"
-                      style={{ color: "var(--ink-soft)" }}
-                    >
-                      {t("ui.StationCreateForm.dias", "días")}
-                    </span>
-                    <span className="flex gap-0.5">
-                      {DIAS.map((d) => {
-                        const todos = diasGlobal.length === 0;
-                        const on = todos || diasGlobal.includes(d);
+                  {/* Un evento no tiene «días de la semana»: tiene sus fechas. */}
+                  {!esModoEvento && (
+                    <>
+                      <span
+                        className="h-5 w-px"
+                        style={{ background: "var(--hairline)" }}
+                      />
+                      <span className="inline-flex items-center gap-1.5">
+                        <span
+                          className="text-xs"
+                          style={{ color: "var(--ink-soft)" }}
+                        >
+                          {t("ui.StationCreateForm.dias", "días")}
+                        </span>
+                        <span className="flex gap-0.5">
+                          {DIAS.map((d) => {
+                            const todos = diasGlobal.length === 0;
+                            const on = todos || diasGlobal.includes(d);
 
-                        return (
-                          <button
-                            key={d}
-                            aria-pressed={on}
-                            className="cg-focus h-6 w-6 rounded text-[10px] font-bold"
-                            style={
-                              on
-                                ? {
-                                    background:
-                                      "color-mix(in oklab, var(--brand) 22%, transparent)",
-                                    color: "var(--brand-text)",
-                                  }
-                                : {
-                                    background: "var(--glass-sunken)",
-                                    color: "var(--ink-faint)",
-                                  }
-                            }
-                            title={d}
-                            type="button"
-                            onClick={() => {
-                              const actuales: string[] = todos
-                                ? [...DIAS]
-                                : diasGlobal;
-                              const sig = on
-                                ? actuales.filter((x) => x !== d)
-                                : [...actuales, d];
+                            return (
+                              <button
+                                key={d}
+                                aria-pressed={on}
+                                className="cg-focus h-6 w-6 rounded text-[10px] font-bold"
+                                style={
+                                  on
+                                    ? {
+                                        background:
+                                          "color-mix(in oklab, var(--brand) 22%, transparent)",
+                                        color: "var(--brand-text)",
+                                      }
+                                    : {
+                                        background: "var(--glass-sunken)",
+                                        color: "var(--ink-faint)",
+                                      }
+                                }
+                                title={d}
+                                type="button"
+                                onClick={() => {
+                                  const actuales: string[] = todos
+                                    ? [...DIAS]
+                                    : diasGlobal;
+                                  const sig = on
+                                    ? actuales.filter((x) => x !== d)
+                                    : [...actuales, d];
 
-                              setDiasGlobal(sig.length === 7 ? [] : sig);
-                            }}
-                          >
-                            {DIAS_CORTO[d]}
-                          </button>
-                        );
-                      })}
-                    </span>
-                  </span>
+                                  setDiasGlobal(sig.length === 7 ? [] : sig);
+                                }}
+                              >
+                                {DIAS_CORTO[d]}
+                              </button>
+                            );
+                          })}
+                        </span>
+                      </span>
+                    </>
+                  )}
                 </div>
 
                 {/* Las franjas que salen de eso */}
@@ -962,7 +1038,11 @@ export default function StationCreateForm({
                                 )}
                               </span>
                             </span>
-                            <div className="flex gap-0.5">
+                            <div
+                              className={
+                                esModoEvento ? "hidden" : "flex gap-0.5"
+                              }
+                            >
                               {DIAS.map((d) => {
                                 const todos = f.days.length === 0;
                                 const on = todos || f.days.includes(d);
@@ -1056,7 +1136,7 @@ export default function StationCreateForm({
 
           {/* ¿Cómo trabajan? — un contador por tramo (D / T / N según la hora) y otro de libres;
               para el puesto entero o plaza por plaza */}
-          {franjasOk && (
+          {franjasOk && !esModoEvento && (
             <div>
               <label className="mb-1 block text-sm font-medium">
                 {t(
