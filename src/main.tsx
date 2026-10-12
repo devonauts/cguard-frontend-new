@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
 
 import App from "./App.tsx";
 import { iniciarCentinela } from "./lib/centinela";
+import { iniciarConsumoGoogle } from "./lib/consumoGoogle";
 import { atenderVueltaDeGusto } from "./lib/vueltaDeGusto";
 import { instalarIdiomaEnFetch } from "./lib/idiomaElegido";
 import { instalarBlindajeDom } from "./lib/blindajeDom";
@@ -140,6 +141,10 @@ window.addEventListener("vite:preloadError", (event) => {
    usuario y no manda nada si todo está en orden. Ver `lib/centinela`. */
 instalarIdiomaEnFetch();
 iniciarCentinela();
+/* El contador del consumo de Google Maps: escucha los avisos de la capa de
+   mapas y los manda al servidor cada minuto. Antes del render para no perder
+   las primeras cargas. Ver `lib/consumoGoogle`. */
+iniciarConsumoGoogle();
 
 /* La vuelta de Gusto dentro de su ventanita: se cierra sin montar el CRM. */
 /* MONTAR ESPERA AL IDIOMA — CON LÍMITE.
