@@ -686,6 +686,12 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
     catalogado: true,
   },
   {
+    evento: "support.ticket_replied",
+    familia: "announcement",
+    prioridad: "normal",
+    catalogado: true,
+  },
+  {
     evento: "task.approved",
     familia: "task",
     prioridad: "normal",

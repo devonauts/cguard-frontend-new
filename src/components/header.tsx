@@ -34,6 +34,7 @@ import {
   Settings2,
   X,
   Check,
+  Inbox,
 } from "lucide-react";
 import { useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
@@ -1246,9 +1247,24 @@ export default function Header({
                     <Check />
                   </IconTile>
                 </div>
-                <Button className="w-full" onClick={() => cerrarAyuda(false)}>
-                  {t("actions.close", "Cerrar")}
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    className="flex-1"
+                    variant="outline"
+                    onClick={() => {
+                      cerrarAyuda(false);
+                      navigate("/mis-tickets");
+                    }}
+                  >
+                    {t("header.support.myTickets", "Mis tickets")}
+                  </Button>
+                  <Button
+                    className="flex-1"
+                    onClick={() => cerrarAyuda(false)}
+                  >
+                    {t("actions.close", "Cerrar")}
+                  </Button>
+                </div>
               </>
             ) : ticketAbierto ? (
               <>
@@ -1424,6 +1440,14 @@ export default function Header({
                       listo: true,
                     },
                     {
+                      // Las respuestas de soporte a los tickets de la empresa.
+                      id: "mis",
+                      icono: <Inbox />,
+                      titulo: t("header.support.myTickets"),
+                      pie: t("header.support.myTicketsSub"),
+                      listo: true,
+                    },
+                    {
                       id: "chat",
                       icono: <MessageSquare />,
                       titulo: t("header.support.chat"),
@@ -1452,7 +1476,14 @@ export default function Header({
                       style={c.listo ? undefined : { opacity: 0.55 }}
                       type="button"
                       onClick={
-                        c.listo ? () => setTicketAbierto(true) : undefined
+                        !c.listo
+                          ? undefined
+                          : c.id === "mis"
+                            ? () => {
+                                cerrarAyuda(false);
+                                navigate("/mis-tickets");
+                              }
+                            : () => setTicketAbierto(true)
                       }
                     >
                       <IconTile size="lg">{c.icono}</IconTile>

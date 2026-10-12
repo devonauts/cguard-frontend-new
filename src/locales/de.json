@@ -6693,7 +6693,9 @@
         "baja": "Kann warten",
         "normal": "Normal",
         "alta": "Blockiert uns"
-      }
+      },
+      "myTickets": "Meine Tickets",
+      "myTicketsSub": "Antworten des Supports"
     }
   },
   "kit": {
@@ -18591,6 +18593,32 @@
       "paso5": "Beim Schließen des Fensters ist alles verbunden. {{agente}} reicht seine Hinweisnachricht bei Meta zur Freigabe ein; den Status sehen Sie unter {{agente}} Pro › WhatsApp verbinden, mit „Erneut prüfen“.",
       "pago": "Falls Meta eine Zahlungsmethode für das WhatsApp-Business-Konto verlangt, hinterlegen Sie sie in Ihrer Meta-Verwaltung: Nachrichten, die das Unternehmen beginnt, rechnet Meta über dieses Konto ab.",
       "boton": "Zu Kommunikation"
+    }
+  },
+  "misTickets": {
+    "titulo": "Meine Tickets",
+    "subtitulo": "Die Support-Tickets deines Unternehmens und unsere Antworten.",
+    "actualizar": "Aktualisieren",
+    "reintentar": "Erneut versuchen",
+    "error": "Die Tickets konnten nicht geladen werden.",
+    "vacio": "Noch keine Tickets",
+    "vacioDetalle": "Wenn du über die Hilfe ein Ticket sendest, siehst du hier den Status und die Antwort des Supports.",
+    "enviado": "Gesendet am",
+    "conRespuesta": "beantwortet",
+    "tuMensaje": "Deine Nachricht",
+    "respuesta": "Antwort des Supports",
+    "sinRespuesta": "Noch keine Antwort. Wir melden uns in der Glocke, sobald es eine gibt.",
+    "resuelto": "Gelöst am",
+    "filtro": {
+      "todos": "Alle",
+      "abiertos": "Offen",
+      "cerrados": "Geschlossen"
+    },
+    "estado": {
+      "open": "Offen",
+      "in_progress": "In Bearbeitung",
+      "resolved": "Gelöst",
+      "closed": "Geschlossen"
     }
   }
 }

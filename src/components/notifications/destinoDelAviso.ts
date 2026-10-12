@@ -228,6 +228,16 @@ export function targetForNotification(n: PlatformNotification): string {
   if (type.startsWith("dispatch"))
     return id ? `/dispatch-tickets/${id}` : "/dispatch-tickets";
 
+  // ── Soporte: la respuesta a un ticket de la empresa → «Mis tickets», con ese
+  // ticket abierto (el id del ticket viaja como sourceEntityId).
+  if (type.startsWith("support.")) {
+    const ticket = p.ticketId || id;
+
+    return ticket
+      ? `/mis-tickets?ticket=${encodeURIComponent(String(ticket))}`
+      : "/mis-tickets";
+  }
+
   // ── Tasks (non-approval) → the tracking list, focused.
   if (type.startsWith("task")) return id ? `/tasks?focus=${id}` : "/tasks";
 

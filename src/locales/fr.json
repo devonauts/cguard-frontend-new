@@ -6693,7 +6693,9 @@
         "baja": "Peut attendre",
         "normal": "Normal",
         "alta": "Nous sommes bloqués"
-      }
+      },
+      "myTickets": "Mes tickets",
+      "myTicketsSub": "Réponses du support"
     }
   },
   "kit": {
@@ -18591,6 +18593,32 @@
       "paso5": "À la fermeture de la fenêtre, c’est connecté. {{agente}} envoie son message d’alerte à Meta pour approbation ; l’état s’affiche dans {{agente}} Pro › Connectez votre WhatsApp, avec « Vérifier à nouveau ».",
       "pago": "Si Meta demande un moyen de paiement pour le compte WhatsApp Business, ajoutez-le dans votre gestionnaire Meta : Meta facture à ce compte les messages que l’entreprise initie.",
       "boton": "Aller à Communications"
+    }
+  },
+  "misTickets": {
+    "titulo": "Mes tickets",
+    "subtitulo": "Les tickets de support de votre entreprise et nos réponses.",
+    "actualizar": "Actualiser",
+    "reintentar": "Réessayer",
+    "error": "Impossible de charger les tickets.",
+    "vacio": "Aucun ticket pour l’instant",
+    "vacioDetalle": "Quand vous enverrez un ticket depuis l’Aide, vous verrez ici son statut et la réponse du support.",
+    "enviado": "Envoyé le",
+    "conRespuesta": "avec réponse",
+    "tuMensaje": "Votre message",
+    "respuesta": "Réponse du support",
+    "sinRespuesta": "Pas encore de réponse. Nous vous préviendrons dans la cloche dès qu’il y en aura une.",
+    "resuelto": "Résolu le",
+    "filtro": {
+      "todos": "Tous",
+      "abiertos": "Ouverts",
+      "cerrados": "Fermés"
+    },
+    "estado": {
+      "open": "Ouvert",
+      "in_progress": "En cours",
+      "resolved": "Résolu",
+      "closed": "Fermé"
     }
   }
 }

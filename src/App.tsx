@@ -173,6 +173,9 @@ const BillingPage = lazy(
 const VigiaProPage = lazy(
   () => import("./pages/admin/vigiaPro/VigiaProPage"),
 );
+const MisTicketsPage = lazy(
+  () => import("./pages/admin/soporte/MisTicketsPage"),
+);
 const ModulosAdicionalesPage = lazy(
   () => import("./pages/admin/modulos/ModulosAdicionalesPage"),
 );
@@ -2656,6 +2659,14 @@ export default function App() {
                                   </ProtectedRoute>
                                 }
                                 path="/vigia-pro"
+                              />
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <MisTicketsPage />
+                                  </ProtectedRoute>
+                                }
+                                path="/mis-tickets"
                               />
                               <Route
                                 element={

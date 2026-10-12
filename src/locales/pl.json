@@ -6697,7 +6697,9 @@
         "baja": "Może poczekać",
         "normal": "Normalna",
         "alta": "Blokuje nam pracę"
-      }
+      },
+      "myTickets": "Moje zgłoszenia",
+      "myTicketsSub": "Odpowiedzi wsparcia"
     }
   },
   "kit": {
@@ -18787,6 +18789,32 @@
       "paso5": "Po zamknięciu okna wszystko jest podłączone. {{agente}} wysyła do Meta swoją wiadomość powiadomienia do zatwierdzenia; status widać w {{agente}} Pro › Podłącz swój WhatsApp, z przyciskiem „Sprawdź ponownie”.",
       "pago": "Jeśli Meta poprosi o metodę płatności dla konta WhatsApp Business, dodaj ją w swoim menedżerze Meta: wiadomości rozpoczynane przez firmę Meta rozlicza na tym koncie.",
       "boton": "Przejdź do Komunikacji"
+    }
+  },
+  "misTickets": {
+    "titulo": "Moje zgłoszenia",
+    "subtitulo": "Zgłoszenia do wsparcia Twojej firmy i nasze odpowiedzi.",
+    "actualizar": "Odśwież",
+    "reintentar": "Spróbuj ponownie",
+    "error": "Nie udało się wczytać zgłoszeń.",
+    "vacio": "Brak zgłoszeń",
+    "vacioDetalle": "Gdy wyślesz zgłoszenie z Pomocy, zobaczysz tu jego status i odpowiedź wsparcia.",
+    "enviado": "Wysłano",
+    "conRespuesta": "z odpowiedzią",
+    "tuMensaje": "Twoja wiadomość",
+    "respuesta": "Odpowiedź wsparcia",
+    "sinRespuesta": "Brak odpowiedzi. Powiadomimy Cię w dzwonku, gdy tylko się pojawi.",
+    "resuelto": "Rozwiązano",
+    "filtro": {
+      "todos": "Wszystkie",
+      "abiertos": "Otwarte",
+      "cerrados": "Zamknięte"
+    },
+    "estado": {
+      "open": "Otwarte",
+      "in_progress": "W toku",
+      "resolved": "Rozwiązane",
+      "closed": "Zamknięte"
     }
   }
 }

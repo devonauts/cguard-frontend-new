@@ -6693,7 +6693,9 @@
         "baja": "Kan wachten",
         "normal": "Normaal",
         "alta": "We liggen stil"
-      }
+      },
+      "myTickets": "Mijn tickets",
+      "myTicketsSub": "Antwoorden van support"
     }
   },
   "kit": {
@@ -18591,6 +18593,32 @@
       "paso5": "Als het venster sluit, is het gekoppeld. {{agente}} stuurt zijn meldingsbericht ter goedkeuring naar Meta; de status ziet u in {{agente}} Pro › Koppel uw WhatsApp, met „Opnieuw controleren”.",
       "pago": "Vraagt Meta om een betaalmethode voor het WhatsApp Business-account, voeg die dan toe in uw Meta-beheer: berichten die het bedrijf begint, rekent Meta af via dat account.",
       "boton": "Naar Communicatie"
+    }
+  },
+  "misTickets": {
+    "titulo": "Mijn tickets",
+    "subtitulo": "De supporttickets van je bedrijf en onze antwoorden.",
+    "actualizar": "Vernieuwen",
+    "reintentar": "Opnieuw proberen",
+    "error": "De tickets konden niet worden geladen.",
+    "vacio": "Nog geen tickets",
+    "vacioDetalle": "Als je een ticket verstuurt via Help, zie je hier de status en het antwoord van support.",
+    "enviado": "Verstuurd op",
+    "conRespuesta": "beantwoord",
+    "tuMensaje": "Je bericht",
+    "respuesta": "Antwoord van support",
+    "sinRespuesta": "Nog geen antwoord. We laten het je weten in de bel zodra er een is.",
+    "resuelto": "Opgelost op",
+    "filtro": {
+      "todos": "Alle",
+      "abiertos": "Open",
+      "cerrados": "Gesloten"
+    },
+    "estado": {
+      "open": "Open",
+      "in_progress": "In behandeling",
+      "resolved": "Opgelost",
+      "closed": "Gesloten"
     }
   }
 }

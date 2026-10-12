@@ -2835,7 +2835,9 @@
         "baja": "Puede esperar",
         "normal": "Normal",
         "alta": "Nos tiene parados"
-      }
+      },
+      "myTickets": "Mis tickets",
+      "myTicketsSub": "Respuestas de soporte"
     }
   },
   "incidents": {
@@ -18591,6 +18593,32 @@
       "paso5": "Al cerrar la ventana queda conectado. {{agente}} envía a Meta su mensaje de aviso para que lo apruebe; el estado aparece en {{agente}} Pro › Conecta tu WhatsApp, con «Volver a comprobar».",
       "pago": "Si Meta te pide un método de pago para la cuenta de WhatsApp Business, añádelo en tu administrador de Meta: los mensajes que inicia la empresa los cobra Meta a esa cuenta.",
       "boton": "Ir a Comunicaciones"
+    }
+  },
+  "misTickets": {
+    "titulo": "Mis tickets",
+    "subtitulo": "Los tickets de soporte de tu empresa y lo que te respondimos.",
+    "actualizar": "Actualizar",
+    "reintentar": "Reintentar",
+    "error": "No se pudieron cargar los tickets.",
+    "vacio": "Aún no hay tickets",
+    "vacioDetalle": "Cuando envíes un ticket desde Ayuda, aquí verás su estado y la respuesta de soporte.",
+    "enviado": "Enviado el",
+    "conRespuesta": "con respuesta",
+    "tuMensaje": "Tu mensaje",
+    "respuesta": "Respuesta de soporte",
+    "sinRespuesta": "Todavía no hay respuesta. Te avisaremos en la campana en cuanto la haya.",
+    "resuelto": "Resuelto el",
+    "filtro": {
+      "todos": "Todos",
+      "abiertos": "Abiertos",
+      "cerrados": "Cerrados"
+    },
+    "estado": {
+      "open": "Abierto",
+      "in_progress": "En curso",
+      "resolved": "Resuelto",
+      "closed": "Cerrado"
     }
   }
 }
