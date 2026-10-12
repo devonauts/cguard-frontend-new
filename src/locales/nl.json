@@ -8689,7 +8689,8 @@
       "sacaAdded": "Invaller toegewezen",
       "sacaTitle": "Invaller toevoegen",
       "title": "Toegewezen beveiligers",
-      "editShift": "Dienst bewerken"
+      "editShift": "Dienst bewerken",
+      "eventoSub": "Beveiliger voor de data van het evenement"
     },
     "incidents": {
       "col": {

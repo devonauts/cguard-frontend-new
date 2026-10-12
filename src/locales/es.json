@@ -6580,7 +6580,8 @@
       "sacaAdded": "Sacafranco asignado",
       "sacaTitle": "Agregar sacafranco",
       "title": "Vigilantes Asignados",
-      "editShift": "Editar turno"
+      "editShift": "Editar turno",
+      "eventoSub": "Vigilante para las fechas del evento"
     },
     "incidents": {
       "col": {

@@ -8689,7 +8689,8 @@
       "sacaAdded": "Sostituto assegnato",
       "sacaTitle": "Aggiungi sostituto",
       "title": "Guardie assegnate",
-      "editShift": "Modifica turno"
+      "editShift": "Modifica turno",
+      "eventoSub": "Guardia per le date dell’evento"
     },
     "incidents": {
       "col": {

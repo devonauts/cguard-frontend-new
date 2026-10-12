@@ -6580,7 +6580,8 @@
       "sacaAdded": "Relief guard assigned",
       "sacaTitle": "Add relief guard",
       "title": "Assigned guards",
-      "editShift": "Edit shift"
+      "editShift": "Edit shift",
+      "eventoSub": "Guard for the event dates"
     },
     "incidents": {
       "col": {

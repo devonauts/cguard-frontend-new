@@ -869,10 +869,15 @@ export default function StationGuards({
                 "station.guards.sacaSub",
                 "Cubre los días de descanso del vigilante fijo",
               )
-            : t(
-                "station.guards.assignSub",
-                "Vigilante fijo de la rotación del puesto",
-              )
+            : evento
+              ? t(
+                  "station.guards.eventoSub",
+                  "Vigilante para las fechas del evento",
+                )
+              : t(
+                  "station.guards.assignSub",
+                  "Vigilante fijo de la rotación del puesto",
+                )
         }
         footer={
           <>

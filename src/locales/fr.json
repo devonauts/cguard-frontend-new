@@ -8689,7 +8689,8 @@
       "sacaAdded": "Agent volant affecté",
       "sacaTitle": "Ajouter un agent volant",
       "title": "Agents affectés",
-      "editShift": "Modifier la vacation"
+      "editShift": "Modifier la vacation",
+      "eventoSub": "Agent pour les dates de l’événement"
     },
     "incidents": {
       "col": {

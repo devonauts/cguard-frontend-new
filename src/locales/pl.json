@@ -8693,7 +8693,8 @@
       "sacaAdded": "Zmiennik przypisany",
       "sacaTitle": "Dodaj zmiennika",
       "title": "Przypisani pracownicy ochrony",
-      "editShift": "Edytuj zmianę"
+      "editShift": "Edytuj zmianę",
+      "eventoSub": "Pracownik ochrony na daty wydarzenia"
     },
     "incidents": {
       "col": {

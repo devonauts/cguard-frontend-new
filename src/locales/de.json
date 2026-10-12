@@ -8689,7 +8689,8 @@
       "sacaAdded": "Springer zugewiesen",
       "sacaTitle": "Springer hinzufügen",
       "title": "Zugewiesene Sicherheitskräfte",
-      "editShift": "Schicht bearbeiten"
+      "editShift": "Schicht bearbeiten",
+      "eventoSub": "Wachperson für die Veranstaltungstermine"
     },
     "incidents": {
       "col": {

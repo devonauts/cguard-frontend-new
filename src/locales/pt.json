@@ -7393,7 +7393,8 @@
       "sacaAdded": "Folguista atribuído",
       "sacaTitle": "Adicionar folguista",
       "title": "Vigilantes atribuídos",
-      "editShift": "Editar turno"
+      "editShift": "Editar turno",
+      "eventoSub": "Vigilante para as datas do evento"
     },
     "incidents": {
       "col": {
