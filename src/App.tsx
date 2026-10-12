@@ -16,6 +16,7 @@ import AppErrorBoundary from "./components/AppErrorBoundary";
 import Login from "./pages/auth/login";
 import BarraDeSoporte from "./components/soporte/BarraDeSoporte";
 import SoporteEnVivo from "./components/soporte/SoporteEnVivo";
+import SoloConGusto from "./components/SoloConGusto";
 const DashboardPage = lazy(
   () => import("./pages/admin/dashboard/control-center/ControlCenter"),
 );
@@ -1930,7 +1931,9 @@ export default function App() {
                               <Route
                                 element={
                                   <ProtectedRoute>
-                                    <NominaGusto />
+                                    <SoloConGusto fuera="/nomina/records">
+                                      <NominaGusto />
+                                    </SoloConGusto>
                                   </ProtectedRoute>
                                 }
                                 path="/nomina/gusto"
@@ -2463,7 +2466,9 @@ export default function App() {
                               <Route
                                 element={
                                   <ProtectedRoute>
-                                    <EmpleadosGusto />
+                                    <SoloConGusto fuera="/setting/integraciones">
+                                      <EmpleadosGusto />
+                                    </SoloConGusto>
                                   </ProtectedRoute>
                                 }
                                 path="/setting/integraciones/gusto"
