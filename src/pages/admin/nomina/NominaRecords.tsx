@@ -11,7 +11,6 @@ import departmentService, {
   type Department,
 } from "@/lib/api/departmentService";
 import GoogleMapEmbed from "@/components/GoogleMap/GoogleMapEmbed";
-import StaticMapImage from "@/components/maps/StaticMapImage";
 import { useFileUrl } from "@/lib/fileUrl";
 import {
   StatusBadge,

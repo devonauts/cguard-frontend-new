@@ -8,6 +8,8 @@ import { Route as RouteIcon } from "lucide-react";
 import { fechaHora, haceCuanto, kmh } from "./trackGeometry";
 
 import { loadGoogleMaps } from "@/utils/loadGoogleMaps";
+import { acquireMap, type PooledMap } from "@/utils/mapPool";
+import { useCercaDeLaVista } from "@/hooks/useCercaDeLaVista";
 import {
   estiloMapa,
   huella,
@@ -94,9 +96,10 @@ type MapType = "roadmap" | "satellite" | "hybrid" | "terrain";
  * tirones que parecen «el GPS va mal».
  *
  * ── COSTE ───────────────────────────────────────────────────────────────────
- * `new google.maps.Map()` es una carga FACTURABLE. Aquí hay UNA instancia y vive
- * lo que vive el componente: cambiar el tipo de mapa, el tema o el acento
- * reconfigura la que ya existe (`setOptions`), nunca crea otra.
+ * `new google.maps.Map()` es una carga FACTURABLE. La instancia sale prestada del
+ * mapa compartido de la plataforma (`utils/mapPool.ts`) y vuelve a él al
+ * desmontar, con su vista recordada: cambiar el tipo de mapa, el tema o el
+ * acento la reconfigura (`setOptions`), nunca crea otra.
  *
  * ── COLOR ───────────────────────────────────────────────────────────────────
  * Ni un color escrito a mano: verde/ámbar/tinta semánticos y el acento del CRM,
@@ -224,6 +227,16 @@ export default function RouteTrackingMap({
   const navigate = useNavigate();
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
+  const prestadoRef = useRef<PooledMap | null>(null);
+  /** Si se restauró la vista guardada, el primer encuadre automático se salta:
+   *  volver a la pantalla deja el mapa donde el operador lo dejó. */
+  const respetarVistaRef = useRef(false);
+  const cerca = useCercaDeLaVista(ref);
+  /** Lo dibujado va registrado en el préstamo y se quita al devolver el mapa. */
+  const trackear = useCallback(
+    <T,>(o: T): T => (prestadoRef.current ? prestadoRef.current.track(o) : o),
+    [],
+  );
   const markersRef = useRef<any[]>([]);
   const linesRef = useRef<any[]>([]);
   const circlesRef = useRef<any[]>([]);
@@ -267,7 +280,8 @@ export default function RouteTrackingMap({
   useEffect(() => {
     let cancelled = false;
 
-    loadGoogleMaps()
+    if (!cerca) return;
+    loadGoogleMaps({ soloMapa: true })
       .then(() => {
         if (cancelled || !ref.current) return;
         const g = (window as any).google;
@@ -278,17 +292,27 @@ export default function RouteTrackingMap({
             ? { lat: first.lat, lng: first.lng }
             : { ...CENTRO_DE_RESPALDO };
 
-        mapRef.current = new g.maps.Map(ref.current, {
-          center: initCenter,
-          zoom: defaultCenter?.zoom ?? 12,
-          disableDefaultUI: true,
-          zoomControl: true,
-          gestureHandling: "greedy",
-          clickableIcons: false,
-          mapTypeId: mapType,
-          styles: estiloPara(pal, mapType),
-          backgroundColor: pal.tierra,
-        });
+        // El mapa compartido de la plataforma (ver `utils/mapPool.ts`).
+        const prestado = acquireMap(
+          ref.current,
+          {
+            center: initCenter,
+            zoom: defaultCenter?.zoom ?? 12,
+            disableDefaultUI: true,
+            zoomControl: true,
+            gestureHandling: "greedy",
+            clickableIcons: false,
+            mapTypeId: mapType,
+            styles: estiloPara(pal, mapType),
+            backgroundColor: pal.tierra,
+          },
+          { area: "route-tracking", vista: "route-tracking" },
+        );
+
+        prestadoRef.current = prestado;
+        respetarVistaRef.current = prestado.vistaRestaurada;
+        encuadradoRef.current = prestado.vistaRestaurada;
+        mapRef.current = prestado.map;
 
         const revisarZoom = () => {
           const z = mapRef.current?.getZoom?.() ?? 12;
@@ -318,8 +342,12 @@ export default function RouteTrackingMap({
 
     return () => {
       cancelled = true;
+      prestadoRef.current?.release();
+      prestadoRef.current = null;
+      mapRef.current = null;
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cerca]);
 
   // react to map-type + theme/accent changes
   useEffect(() => {
@@ -373,13 +401,15 @@ export default function RouteTrackingMap({
             })
           : orbPin({ color, insignia: numero, piel, version });
 
-        const marker = new g.maps.Marker({
-          map: mapRef.current,
-          position: pos,
-          icon: iconoDe(g, asset),
-          title: s.siteName,
-          zIndex: 400 + idx,
-        });
+        const marker = trackear(
+          new g.maps.Marker({
+            map: mapRef.current,
+            position: pos,
+            icon: iconoDe(g, asset),
+            title: s.siteName,
+            zIndex: 400 + idx,
+          }),
+        );
 
         marker.addListener("click", () => {
           const datos: MapPopupData = {
@@ -426,7 +456,7 @@ export default function RouteTrackingMap({
 
         if (showGeofence) {
           circlesRef.current.push(
-            new g.maps.Circle({
+            trackear(new g.maps.Circle({
               map: mapRef.current,
               center: pos,
               radius: geofenceRadius,
@@ -436,7 +466,7 @@ export default function RouteTrackingMap({
               fillColor: color,
               fillOpacity: 0.08,
               clickable: false,
-            }),
+            })),
           );
         }
 
@@ -453,7 +483,7 @@ export default function RouteTrackingMap({
         const color = done ? pal.ok : pal.brand;
 
         linesRef.current.push(
-          new g.maps.Polyline({
+          trackear(new g.maps.Polyline({
             map: mapRef.current,
             path,
             geodesic: true,
@@ -462,8 +492,8 @@ export default function RouteTrackingMap({
             strokeOpacity: 0.18,
             strokeWeight: 11,
             zIndex: 1,
-          }),
-          new g.maps.Polyline({
+          })),
+          trackear(new g.maps.Polyline({
             map: mapRef.current,
             path,
             geodesic: true,
@@ -472,12 +502,15 @@ export default function RouteTrackingMap({
             strokeOpacity: 0.95,
             strokeWeight: 2.5,
             zIndex: 2,
-          }),
+          })),
         );
       }
     });
 
-    if (any && !defaultCenter) {
+    if (any && respetarVistaRef.current) {
+      // Primera pintura tras volver: se respeta la vista guardada.
+      respetarVistaRef.current = false;
+    } else if (any && !defaultCenter) {
       if (stops.length > 1) mapRef.current.fitBounds(bounds, 64);
       else mapRef.current.setCenter({ lat: stops[0].lat, lng: stops[0].lng });
     }
@@ -612,12 +645,14 @@ export default function RouteTrackingMap({
       let rec = registro.get(u.id);
 
       if (!rec) {
-        const marker = new g.maps.Marker({
-          map: mapRef.current,
-          position: { lat: u.lat, lng: u.lng },
-          title: u.nombre,
-          zIndex: 800,
-        });
+        const marker = trackear(
+          new g.maps.Marker({
+            map: mapRef.current,
+            position: { lat: u.lat, lng: u.lng },
+            title: u.nombre,
+            zIndex: 800,
+          }),
+        );
 
         // El oyente se registra UNA vez y lee del registro, no del cierre: así
         // el globo enseña siempre el último dato y no el de cuando se creó.

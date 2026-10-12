@@ -1,6 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { loadGoogleMaps } from "@/utils/loadGoogleMaps";
+import {
+  acquireMap,
+  medirAutocompletado,
+  type PooledMap,
+} from "@/utils/mapPool";
+import { useCercaDeLaVista } from "@/hooks/useCercaDeLaVista";
 import { getTenantLocation, CENTRO_DE_RESPALDO } from "@/utils/tenantLocation";
 import { useMapPalette } from "@/utils/mapTheme";
 import {
@@ -86,6 +92,13 @@ export default function StationGeofencePolygon({
   const pts = value || [];
 
   const mapDivRef = useRef<HTMLDivElement | null>(null);
+  const prestadoRef = useRef<PooledMap | null>(null);
+  const cerca = useCercaDeLaVista(mapDivRef);
+  /** Lo dibujado va registrado en el préstamo y se quita al devolver el mapa. */
+  const trackear = useCallback(
+    <T,>(o: T): T => (prestadoRef.current ? prestadoRef.current.track(o) : o),
+    [],
+  );
   const mapRef = useRef<any>(null);
   const polyRef = useRef<any>(null);
   const lineRef = useRef<any>(null);
@@ -137,6 +150,7 @@ export default function StationGeofencePolygon({
   // ── Init map once ──────────────────────────────────────────────────────────
   useEffect(() => {
     let mounted = true;
+    if (!cerca) return;
     (async () => {
       try {
         await loadGoogleMaps();
@@ -153,17 +167,24 @@ export default function StationGeofencePolygon({
               ? { lat: biz.lat, lng: biz.lng }
               : FALLBACK;
 
-        const map = new g.maps.Map(mapDivRef.current, {
-          center,
-          zoom: 18,
-          mapTypeId: "satellite", // best for tracing a building outline
-          mapTypeControl: true, // native Map/Satellite toggle
-          streetViewControl: false,
-          fullscreenControl: true,
-          tilt: 0,
-          draggableCursor: "crosshair",
-          // No mapId on purpose — keeps classic Markers/Polygon rendering.
-        });
+        // El mapa compartido de la plataforma (grupo ráster, ver
+        // `utils/mapPool.ts`). Sin `mapId`: aquí todo son overlays clásicos.
+        const prestado = acquireMap(
+          mapDivRef.current,
+          {
+            center,
+            zoom: 18,
+            mapTypeId: "satellite", // best for tracing a building outline
+            mapTypeControl: true, // native Map/Satellite toggle
+            streetViewControl: false,
+            fullscreenControl: true,
+            tilt: 0,
+            draggableCursor: "crosshair",
+          },
+          { area: "geofence" },
+        );
+        prestadoRef.current = prestado;
+        const map = prestado.map;
         mapRef.current = map;
 
         map.addListener("click", (e: any) => {
@@ -176,16 +197,18 @@ export default function StationGeofencePolygon({
         // Location editing: a draggable CENTER pin (the station point, distinct
         // from the numbered geofence vertices) + Google Places address search.
         if (showLocation) {
-          centerMarkerRef.current = new g.maps.Marker({
-            position: center,
-            map,
-            draggable: true,
-            title: t(
-              "station.geofence.centerPinTitle",
-              "Ubicación del puesto (arrastra para ajustar)",
-            ),
-            zIndex: 5000,
-          });
+          centerMarkerRef.current = prestado.track(
+            new g.maps.Marker({
+              position: center,
+              map,
+              draggable: true,
+              title: t(
+                "station.geofence.centerPinTitle",
+                "Ubicación del puesto (arrastra para ajustar)",
+              ),
+              zIndex: 5000,
+            }),
+          );
           // Retorno visual del agarre: el marcador salta al cogerlo y vuelve a
           // posarse al soltar, que es la señal de «lo tengo» en una pantalla táctil.
           centerMarkerRef.current.addListener("dragstart", () => {
@@ -216,6 +239,22 @@ export default function StationGeofencePolygon({
               fields: ["geometry"],
             });
             ac.bindTo("bounds", map);
+            const dejarDeMedir = medirAutocompletado(
+              searchRef.current,
+              ac,
+              "geofence",
+            );
+            // El buscador sigue al mapa por `bindTo`: al devolver el mapa se
+            // suelta, o el siguiente préstamo arrastraría este enlace.
+            prestado.onRelease(() => {
+              dejarDeMedir();
+              try {
+                ac.unbindAll();
+                g.maps.event.clearInstanceListeners(ac);
+              } catch {
+                /* ignorar */
+              }
+            });
             ac.addListener("place_changed", () => {
               const place = ac.getPlace();
               const loc = place?.geometry?.location;
@@ -250,9 +289,11 @@ export default function StationGeofencePolygon({
       } catch {
         /* ignore */
       }
+      prestadoRef.current?.release();
+      prestadoRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [cerca]);
 
   // ── El radio punteado ──────────────────────────────────────────────────────
   // Se redibuja cuando cambia el radio o el centro, y mientras se arrastra el
@@ -283,7 +324,7 @@ export default function StationGeofencePolygon({
         lng: lng + kLng * Math.sin(a),
       });
     }
-    circleRef.current = new g.maps.Circle({
+    circleRef.current = trackear(new g.maps.Circle({
       map,
       center: { lat, lng },
       radius: r,
@@ -292,8 +333,8 @@ export default function StationGeofencePolygon({
       fillColor: pal.brand,
       fillOpacity: 0.07,
       zIndex: 1,
-    });
-    dashRef.current = new g.maps.Polyline({
+    }));
+    dashRef.current = trackear(new g.maps.Polyline({
       map,
       path: puntos,
       clickable: false,
@@ -311,7 +352,7 @@ export default function StationGeofencePolygon({
           repeat: "12px",
         },
       ],
-    });
+    }));
   };
 
   pintarRadioRef.current = pintarRadio;
@@ -384,7 +425,7 @@ export default function StationGeofencePolygon({
     let arrastrando = false;
 
     if (path.length >= 3) {
-      polyRef.current = new g.maps.Polygon({
+      polyRef.current = trackear(new g.maps.Polygon({
         paths: path,
         map,
         editable: true,
@@ -393,7 +434,7 @@ export default function StationGeofencePolygon({
         strokeWeight: 2,
         fillColor: pal.brand,
         fillOpacity: 0.18,
-      });
+      }));
       // Sync back when the user drags a vertex or inserts/removes one.
       const p = polyRef.current.getPath();
       const leer = () =>
@@ -405,13 +446,13 @@ export default function StationGeofencePolygon({
       g.maps.event.addListener(p, "insert_at", sync);
       g.maps.event.addListener(p, "remove_at", sync);
     } else if (path.length === 2) {
-      lineRef.current = new g.maps.Polyline({
+      lineRef.current = trackear(new g.maps.Polyline({
         path,
         map,
         strokeColor: pal.brand,
         strokeOpacity: 0.95,
         strokeWeight: 2,
-      });
+      }));
     }
 
     /**
@@ -441,7 +482,7 @@ export default function StationGeofencePolygon({
 
     // Numbered vertex markers (classic Marker = always visible, no mapId needed).
     pts.forEach((pt, i) => {
-      const marker = new g.maps.Marker({
+      const marker = trackear(new g.maps.Marker({
         position: { lat: pt.lat, lng: pt.lng },
         map,
         draggable: true,
@@ -468,7 +509,7 @@ export default function StationGeofencePolygon({
         }),
         zIndex: 1000 + i,
         cursor: "grab",
-      });
+      }));
 
       marker.addListener("dragstart", () => {
         arrastrando = true;

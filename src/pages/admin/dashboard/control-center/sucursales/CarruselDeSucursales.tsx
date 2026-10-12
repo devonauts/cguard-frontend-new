@@ -389,8 +389,10 @@ function TarjetaDeSucursal({
           {mini.length || centro ? (
             <div className="pointer-events-none h-full [&>div]:!h-full">
               <OperationsMap
+                area="sucursales"
                 defaultCenter={centro}
                 entities={mini}
+                vista={`sucursal:${sucursal.id}`}
                 height={150}
                 hud={false}
                 prefs={prefs}

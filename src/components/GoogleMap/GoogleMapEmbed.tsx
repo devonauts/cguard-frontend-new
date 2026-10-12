@@ -24,7 +24,7 @@ import {
 } from "@/components/maps/MapPopup";
 import { useMotorMapa } from "@/utils/mapMotion";
 import { formatearCoord } from "@/utils/geoMedidas";
-import { geocodeRaw } from "@/utils/geocodeAddress";
+import { geocodeRaw, geocodificarEnNavegador } from "@/utils/geocodeAddress";
 import { reverseGeocode } from "@/lib/geocodeClient";
 import { acquireMap, type PooledMap } from "@/utils/mapPool";
 import "@/styles/map.css";
@@ -366,6 +366,7 @@ export default function GoogleMapEmbed({
   focusMarker,
   fitMarkers = false,
   hud,
+  area = "map-embed",
 }: {
   lat?: number;
   lng?: number;
@@ -405,11 +406,23 @@ export default function GoogleMapEmbed({
   fitMarkers?: boolean;
   /** Panel de cristal libre sobre el mapa (lo coloca quien lo pasa). */
   hud?: ReactNode;
+  /** Id corto del consumidor para la telemetría del mapa compartido
+   *  ("incident", "scan", "timesheet"…). Ver `utils/mapPool.ts`. */
+  area?: string;
 }) {
   const { t } = useTranslation();
   const mapRef = useRef<HTMLDivElement | null>(null);
   const mapInstance = useRef<any>(null);
   const pooledRef = useRef<PooledMap | null>(null);
+  /** Lo dibujado va registrado en el préstamo: al devolver el mapa se quita
+   *  solo y no reaparece en la pantalla siguiente. */
+  const trackear = useCallback(
+    <T,>(o: T): T => (pooledRef.current ? pooledRef.current.track(o) : o),
+    [],
+  );
+  const areaRef = useRef(area);
+
+  areaRef.current = area;
   const markerRef = useRef<any>(null);
   const markersRef = useRef<Record<string, any>>({});
   const circleRef = useRef<any>(null);
@@ -527,7 +540,7 @@ export default function GoogleMapEmbed({
     );
 
     if (pts.length >= 3) {
-      polygonRef.current = new google.maps.Polygon({
+      polygonRef.current = trackear(new google.maps.Polygon({
         paths: pts,
         strokeColor: pal.brand,
         strokeOpacity: 0.9,
@@ -535,7 +548,7 @@ export default function GoogleMapEmbed({
         fillColor: pal.brand,
         fillOpacity: 0.12,
         map: mapInstance.current,
-      });
+      }));
     }
   }, [ready, pal, JSON.stringify(polygon || [])]);
 
@@ -574,7 +587,7 @@ export default function GoogleMapEmbed({
    * pagaba un mapa que jamás llegó a verse. Con el observador, quien no baja no
    * gasta; quien baja lo tiene ya montado antes de llegar (250 px de margen).
    *
-   * Mismo patrón que `components/maps/StaticMapImage.tsx`. Sin
+   * Mismo patrón que `hooks/useCercaDeLaVista.ts`. Sin
    * `IntersectionObserver` (navegadores viejos, pruebas) se monta de inmediato:
    * esto no puede dejar una pantalla sin mapa.
    */
@@ -734,7 +747,7 @@ export default function GoogleMapEmbed({
         // AHORRO · La reserva de `mapPool`: al desmontar, el mapa se DEVUELVE en
         // vez de tirarse, así que cambiar de pestaña, cerrar un modal o volver
         // atrás en un asistente no vuelve a construir —ni a cobrar— nada. La
-        // reserva se agrupa por `mapId`, y este mapa siempre usa el mismo.
+        // reserva se agrupa por `mapId` + `colorScheme` (inmutables al crear).
         pooledRef.current = acquireMap(mapRef.current, {
           center,
           zoom: initialZoom,
@@ -744,7 +757,7 @@ export default function GoogleMapEmbed({
           fullscreenControl: false,
           mapId: "d94ad875743639fb1933bbd4",
           colorScheme: isDark ? ColorScheme.DARK : ColorScheme.LIGHT,
-        });
+        }, { area });
         mapInstance.current = pooledRef.current.map;
 
         // «Toca el mapa para fijar la ubicación».
@@ -768,11 +781,11 @@ export default function GoogleMapEmbed({
             } else {
               try {
                 markerRef.current =
-                  new google.maps.marker.AdvancedMarkerElement({
+                  trackear(new google.maps.marker.AdvancedMarkerElement({
                     position: { lat, lng },
                     map: mapInstance.current,
                     content: pinPrincipal(google, palRef.current),
-                  });
+                  }));
               } catch {}
             }
             // El punto elegido se anuncia igual que uno arrastrado: misma
@@ -790,13 +803,13 @@ export default function GoogleMapEmbed({
         // Create marker for single-location mode only when no markers list is provided
         try {
           if (!Array.isArray(markers) || markers.length === 0) {
-            markerRef.current = new google.maps.marker.AdvancedMarkerElement({
+            markerRef.current = trackear(new google.maps.marker.AdvancedMarkerElement({
               position: center,
               map: mapInstance.current,
               title: address || i18n.t("ui.PanicAlertOverlay.ubicacion", "Ubicación"),
               gmpDraggable: draggable,
               content: pinPrincipal(google, palRef.current),
-            });
+            }));
             // Pulsar la chincheta principal cuenta lo que se sabe del punto.
             alPulsarMarcador(markerRef.current, () => abrirGloboPrincipal());
           } else {
@@ -864,7 +877,7 @@ export default function GoogleMapEmbed({
         }
 
         if (showGeofence) {
-          circleRef.current = new google.maps.Circle({
+          circleRef.current = trackear(new google.maps.Circle({
             strokeColor: palRef.current.brand,
             strokeOpacity: 0.7,
             strokeWeight: 2,
@@ -874,7 +887,7 @@ export default function GoogleMapEmbed({
             center,
             radius: geofenceRadius,
             clickable: false,
-          });
+          }));
         }
 
         setReady(true);
@@ -1049,21 +1062,23 @@ export default function GoogleMapEmbed({
           return;
         }
         try {
-          new google.maps.Geocoder().geocode(
+          // Pasa por la memoria de la pestaña (`geocodificarEnNavegador`): el
+          // mismo punto no se vuelve a pagar.
+          void geocodificarEnNavegador(
             { location: { lat: la, lng: ln } },
-            (results: any[], status: string) => {
-              const primero =
-                status === "OK" && results && results[0] ? results[0] : null;
+            areaRef.current,
+          ).then(({ results, status }) => {
+            const primero =
+              status === "OK" && results && results[0] ? results[0] : null;
 
-              publicar(
-                primero?.formatted_address || "",
-                parsePlaceAddress(primero),
-                primero?.geometry?.location_type
-                  ? PRECISION[primero.geometry.location_type as string]
-                  : undefined,
-              );
-            },
-          );
+            publicar(
+              primero?.formatted_address || "",
+              parsePlaceAddress(primero),
+              primero?.geometry?.location_type
+                ? PRECISION[primero.geometry.location_type as string]
+                : undefined,
+            );
+          });
         } catch {
           setPin((p) => (p ? { ...p, resolviendo: false } : p));
         }
@@ -1179,12 +1194,12 @@ export default function GoogleMapEmbed({
       } else {
         // create marker
         try {
-          const mk = new google.maps.marker.AdvancedMarkerElement({
+          const mk = trackear(new google.maps.marker.AdvancedMarkerElement({
             position: { lat: m.lat, lng: m.lng },
             map: mapInstance.current,
             title: m.label || m.id,
             content: contenidoPin(color, m.label),
-          });
+          }));
 
           alPulsarMarcador(mk, () => {
             const dato = markersDatos.current[m.id];
@@ -1362,13 +1377,13 @@ export default function GoogleMapEmbed({
       // Only create a main marker if no explicit markers list was provided
       if (!Array.isArray(markers) || markers.length === 0) {
         try {
-          markerRef.current = new google.maps.marker.AdvancedMarkerElement({
+          markerRef.current = trackear(new google.maps.marker.AdvancedMarkerElement({
             position: center,
             map,
             gmpDraggable: draggable,
             title: address || i18n.t("ui.PanicAlertOverlay.ubicacion", "Ubicación"),
             content: pinPrincipal(google, palRef.current),
-          });
+          }));
           alPulsarMarcador(markerRef.current, () => abrirGloboPrincipal());
         } catch (e) {
           console.warn("Failed to create fallback main marker", e);
@@ -1383,7 +1398,7 @@ export default function GoogleMapEmbed({
         circleRef.current.setRadius(geofenceRadius);
         circleRef.current.setMap(map);
       } else {
-        circleRef.current = new google.maps.Circle({
+        circleRef.current = trackear(new google.maps.Circle({
           strokeColor: palRef.current.brand,
           strokeOpacity: 0.7,
           strokeWeight: 2,
@@ -1393,7 +1408,7 @@ export default function GoogleMapEmbed({
           center,
           radius: geofenceRadius,
           clickable: false,
-        });
+        }));
       }
     } else if (circleRef.current) {
       circleRef.current.setMap(null);

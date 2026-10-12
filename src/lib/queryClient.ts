@@ -82,6 +82,8 @@ const URL_ENTITY_MAP: Array<[RegExp, string[]]> = [
   [/\/security-guard(s)?(\/|\?|$)/, ["security-guards"]],
   [/\/client-account(s)?(\/|\?|$)/, ["clients"]],
   [/\/category(\/|\?|$)/, ["categories"]],
+  // Rutas y sus ejecuciones del día (lo que pintan los mapas de rutas).
+  [/\/(route|routes|route-runs?)(\/|\?|$)/, ["routes"]],
 ];
 const MUTATING = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 

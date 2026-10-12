@@ -12,7 +12,6 @@ import {
 } from "@/components/kit";
 import { Button } from "@/components/ui/button";
 import GoogleMapEmbed from "@/components/GoogleMap/GoogleMapEmbed";
-import StaticMapImage from "@/components/maps/StaticMapImage";
 import { useFileUrl } from "@/lib/fileUrl";
 import attendanceService, {
   type AttendanceRecord,
@@ -733,26 +732,8 @@ export default function TimesheetModal({
                               {fmtTime(record.punchInTime)}
                             </span>
                           </div>
-                          <StaticMapImage
-                            lat={Number(record.punchInLatitude)}
-                            lng={Number(record.punchInLongitude)}
-                            zoom={16}
-                            height="170px"
-                            alt={t(
-                              "ui.TimesheetModal.ubicacionDeLaMarcacionDeEntrada",
-                              "Ubicación de la marcación de entrada",
-                            )}
-                            polygon={
-                              record.stationName?.geofencePolygon || undefined
-                            }
-                            radiusMeters={
-                              !record.stationName?.geofencePolygon &&
-                              record.stationName?.geofenceRadius
-                                ? Number(record.stationName.geofenceRadius)
-                                : null
-                            }
-                          >
-                            <GoogleMapEmbed
+                          <GoogleMapEmbed
+                              area="timesheet"
                               lat={Number(record.punchInLatitude)}
                               lng={Number(record.punchInLongitude)}
                               zoom={16}
@@ -776,7 +757,6 @@ export default function TimesheetModal({
                                 },
                               ]}
                             />
-                          </StaticMapImage>
                           {record.punchInOutsideGeofence && (
                             <p
                               className="px-3 py-2 text-xs font-medium"
@@ -816,26 +796,8 @@ export default function TimesheetModal({
                               {fmtTime(record.punchOutTime)}
                             </span>
                           </div>
-                          <StaticMapImage
-                            lat={Number(record.punchOutLatitude)}
-                            lng={Number(record.punchOutLongitude)}
-                            zoom={16}
-                            height="170px"
-                            alt={t(
-                              "ui.TimesheetModal.ubicacionDeLaMarcacionDeSalida",
-                              "Ubicación de la marcación de salida",
-                            )}
-                            polygon={
-                              record.stationName?.geofencePolygon || undefined
-                            }
-                            radiusMeters={
-                              !record.stationName?.geofencePolygon &&
-                              record.stationName?.geofenceRadius
-                                ? Number(record.stationName.geofenceRadius)
-                                : null
-                            }
-                          >
-                            <GoogleMapEmbed
+                          <GoogleMapEmbed
+                              area="timesheet"
                               lat={Number(record.punchOutLatitude)}
                               lng={Number(record.punchOutLongitude)}
                               zoom={16}
@@ -859,7 +821,6 @@ export default function TimesheetModal({
                                 },
                               ]}
                             />
-                          </StaticMapImage>
                         </div>
                       )}
                   </div>

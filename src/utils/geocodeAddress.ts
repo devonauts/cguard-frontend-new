@@ -1,4 +1,5 @@
 import { resolveApiBase } from "@/lib/apiBase";
+import { avisarUsoGoogle } from "@/utils/mapPool";
 /**
  * Dirección → coordenadas, por el backend en vez de por el navegador.
  *
@@ -28,6 +29,8 @@ const API_BASE = (
   resolveApiBase() ?? "http://localhost:3001/api"
 ).replace(/\/+$/, "");
 const SS_PREFIX = "geocache:";
+/** Caché en memoria de la pestaña (se pierde al recargar, como debe). */
+const MEM_DIRECCIONES = new Map<string, any[]>();
 /** Vigencia en la pestaña. Corta a propósito: el servidor ya guarda el largo. */
 const SS_TTL_MS = 60 * 60 * 1000;
 
@@ -116,17 +119,97 @@ export function parseGeocodeResult(result: any): GeocodedAddress | null {
 }
 
 async function viaBrowser(query: string, opts: GeocodeOptions): Promise<any[]> {
+  const { results } = await geocodificarEnNavegador(
+    { address: query, ...(opts.region ? { region: opts.region } : {}) },
+    "geocode-fallback",
+  );
+
+  return results;
+}
+
+/* ── EL GEOCODIFICADOR DEL NAVEGADOR, CON MEMORIA ────────────────────────────
+   Todo `google.maps.Geocoder().geocode` del CRM pasa por aquí. La misma
+   petición dentro de la pestaña sale de la memoria (o de `sessionStorage`, con
+   la misma vigencia corta que arriba) y no vuelve a Google. Nada se guarda más
+   allá de la sesión: las condiciones de Google sólo permiten una caché temporal
+   de su contenido. Cada petición que SÍ sale se anuncia como `cg:google-uso`
+   (sku `geocoding`) para la telemetría de consumo; un acierto de caché no. */
+const MEM_GEO = new Map<string, any[]>();
+const SS_GEO = "geocache-sdk:";
+
+/** Devuelve a los resultados guardados en JSON sus `LatLng`/`LatLngBounds`. */
+function rehidratar(results: any[]): any[] {
+  const g = (window as any).google?.maps;
+
+  if (!g) return results;
+
+  return results.map((r) => {
+    const geo = r?.geometry;
+
+    if (!geo) return r;
+    const loc = geo.location;
+    const vp = geo.viewport;
+
+    return {
+      ...r,
+      geometry: {
+        ...geo,
+        location:
+          loc && typeof loc.lat !== "function"
+            ? new g.LatLng(Number(loc.lat), Number(loc.lng))
+            : loc,
+        viewport:
+          vp && typeof vp.getCenter !== "function" && vp.south != null
+            ? new g.LatLngBounds(
+                { lat: vp.south, lng: vp.west },
+                { lat: vp.north, lng: vp.east },
+              )
+            : vp,
+      },
+    };
+  });
+}
+
+export async function geocodificarEnNavegador(
+  request: Record<string, unknown>,
+  area: string,
+): Promise<{ results: any[]; status: string }> {
   const google = (window as any).google;
 
-  if (!google?.maps?.Geocoder) return [];
-  const geocoder = new google.maps.Geocoder();
+  if (!google?.maps?.Geocoder) return { results: [], status: "UNAVAILABLE" };
+  const clave = JSON.stringify(request);
+  const enMemoria = MEM_GEO.get(clave);
 
-  return new Promise<any[]>((resolve) => {
-    geocoder.geocode(
-      { address: query, ...(opts.region ? { region: opts.region } : {}) },
-      (res: any[] | null, status: string) =>
-        resolve(status === "OK" ? res || [] : []),
-    );
+  if (enMemoria) return { results: enMemoria, status: "OK" };
+  const guardado = readSession(SS_GEO + clave);
+
+  if (Array.isArray(guardado) && guardado.length) {
+    const vivos = rehidratar(guardado);
+
+    MEM_GEO.set(clave, vivos);
+
+    return { results: vivos, status: "OK" };
+  }
+
+  avisarUsoGoogle("geocoding", area);
+
+  return new Promise((resolve) => {
+    try {
+      new google.maps.Geocoder().geocode(
+        request,
+        (res: any[] | null, status: string) => {
+          const results = status === "OK" ? res || [] : [];
+
+          if (results.length) {
+            MEM_GEO.set(clave, results);
+            writeSession(SS_GEO + clave, results);
+          }
+          resolve({ results, status });
+        },
+      );
+    } catch {
+      resolve({ results: [], status: "ERROR" });
+    }
   });
 }
 
@@ -143,9 +226,18 @@ export async function geocodeRaw(
   if (!q) return [];
 
   const key = ssKey(q, opts);
+  // Memoria primero (la misma dirección en la misma pestaña no toca ni el
+  // `sessionStorage` ni la red), luego la pestaña, luego el servidor.
+  const enMemoria = MEM_DIRECCIONES.get(key);
+
+  if (enMemoria) return enMemoria;
   const hot = readSession(key);
 
-  if (hot) return hot;
+  if (hot) {
+    MEM_DIRECCIONES.set(key, hot);
+
+    return hot;
+  }
 
   const params = new URLSearchParams({ q });
 
@@ -166,7 +258,10 @@ export async function geocodeRaw(
       const body = await res.json();
       const results = Array.isArray(body?.results) ? body.results : [];
 
-      if (results.length) writeSession(key, results);
+      if (results.length) {
+        writeSession(key, results);
+        MEM_DIRECCIONES.set(key, results);
+      }
 
       return results;
     }
@@ -181,7 +276,10 @@ export async function geocodeRaw(
 
   const results = await viaBrowser(q, opts);
 
-  if (results.length) writeSession(key, results);
+  if (results.length) {
+    writeSession(key, results);
+    MEM_DIRECCIONES.set(key, results);
+  }
 
   return results;
 }

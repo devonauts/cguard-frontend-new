@@ -2827,9 +2827,6 @@
     },
     "sites": {
       "noLocation": "Geen positie vastgelegd"
-    },
-    "static": {
-      "altDefault": "Kaart van de locatie"
     }
   },
   "nomina": {
@@ -14555,10 +14552,6 @@
       "distanciaM": "Afstand (m)",
       "descripcion": "Rondescans: klik op een rij om de foto, de opmerking en de locatie te zien en het punt te accepteren of af te wijzen."
     },
-    "StaticMapImage": {
-      "abrirElMapaInteractivo": "De interactieve kaart openen",
-      "explorarElMapa": "De kaart verkennen"
-    },
     "SupervisionSection": {
       "configurarPuestosDeSupervision": "Toezichtposten instellen",
       "puestosDeSupervisionSinCubrir": "Onbezette toezichtposten",
@@ -15440,8 +15433,6 @@
       "sinSelfie": "Geen selfie",
       "sistema": "Systeem",
       "tarde": "Te laat",
-      "ubicacionDeLaMarcacionDeEntrada": "Locatie van het inklokken",
-      "ubicacionDeLaMarcacionDeSalida": "Locatie van het uitklokken",
       "unDiaSinFichajeNoSeAprueba": "Een dag zonder klokregistratie wordt hier niet goedgekeurd of betaald: hij wordt gemeld. Hij verschijnt in rapporten en exports samen met de rest van de periode.",
       "unDiaSinFichajeSeInforma": "Een dag zonder klokregistratie wordt gemeld; hij doorloopt de betalingscyclus niet.",
       "vacaciones": "Vakantie",
@@ -15697,9 +15688,7 @@
       "cargandoDetalle": "Details laden"
     },
     "SitesMap": {
-      "mapaDelCliente": "Kaart van de klant",
       "direccionDelClienteSinSedes": "Adres van de klant · de locaties hebben nog geen positie",
-      "mapaDeLasSedesDelCliente": "Kaart van de locaties van de klant",
       "estaciones": "Stations",
       "vigilantes": "Bewakers",
       "verSede": "Locatie bekijken"
@@ -16184,10 +16173,6 @@
       "arrastraLaChinchetaParaAjustarla": "Sleep de speld om deze aan te passen",
       "resolviendoDireccion": "Adres zoeken…",
       "puntoFijado": "Punt vastgezet"
-    },
-    "IncidentMap": {
-      "mapaDe": "Kaart van {{label}}",
-      "mapaDeLaUbicacion": "Locatiekaart"
     },
     "MultiSelectDeSedes": {
       "buscar": "{{que}} zoeken…"

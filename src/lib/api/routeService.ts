@@ -1,5 +1,6 @@
 import i18n from "@/i18n";
 import api from "@/lib/api";
+import { cachedFetch } from "@/lib/queryClient";
 
 const getTenantId = (): string => {
   const t = localStorage.getItem("tenantId");
@@ -19,11 +20,16 @@ const routeService = {
   /** Daily run records for a given date (which routes were completed). */
   async runs(date: string) {
     const tenantId = getTenantId();
-    const { data: resp } = await api.get<any>(
-      `/tenant/${tenantId}/route-runs?date=${encodeURIComponent(date)}`,
-    );
 
-    return Array.isArray(resp) ? resp : (resp?.rows ?? []);
+    // Caché compartida (react-query): volver al mapa de rutas dentro de la
+    // vigencia no repite la petición. Marcar/desmarcar invalida (`queryClient`).
+    return cachedFetch(["routes", "runs", tenantId, date], async () => {
+      const { data: resp } = await api.get<any>(
+        `/tenant/${tenantId}/route-runs?date=${encodeURIComponent(date)}`,
+      );
+
+      return Array.isArray(resp) ? resp : (resp?.rows ?? []);
+    });
   },
   /** Mark a route completed for a date (upsert). */
   async markRun(routeId: string, date: string, note?: string) {
@@ -48,7 +54,10 @@ const routeService = {
     const qs = params
       ? `?${new URLSearchParams(params as Record<string, string>).toString()}`
       : "";
-    const { data: resp } = await api.get<any>(`/tenant/${tenantId}/route${qs}`);
+    const resp = await cachedFetch(
+      ["routes", "list", tenantId, qs],
+      async () => (await api.get<any>(`/tenant/${tenantId}/route${qs}`)).data,
+    );
 
     if (!resp) return { rows: [], count: 0 };
     if (Array.isArray(resp)) return { rows: resp, count: resp.length };

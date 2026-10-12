@@ -36,6 +36,8 @@ import {
 
 import i18n from "@/i18n";
 import { loadGoogleMaps } from "@/utils/loadGoogleMaps";
+import { acquireMap, type PooledMap } from "@/utils/mapPool";
+import { useCercaDeLaVista } from "@/hooks/useCercaDeLaVista";
 import {
   estiloMapa,
   huella,
@@ -271,6 +273,8 @@ export function OperationsMap({
   onSelect,
   defaultCenter,
   hud = true,
+  area = "control-center",
+  vista,
 }: {
   entities: MapEntity[];
   prefs: DashboardPrefs;
@@ -279,10 +283,26 @@ export function OperationsMap({
   defaultCenter?: { lat: number; lng: number; zoom?: number };
   /** Paneles de cristal flotantes (estado en vivo + leyenda). */
   hud?: boolean;
+  /** Id del consumidor para la telemetría del mapa compartido. */
+  area?: string;
+  /** Clave de la caché de vista; por defecto, `area`. */
+  vista?: string;
 }) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
+  const prestadoRef = useRef<PooledMap | null>(null);
+  /** El encuadre automático se hace UNA vez por préstamo (o ninguna, si se
+   *  restauró la vista guardada de esta área). Antes era `map.__fitted`, que
+   *  con el mapa compartido viajaría a la pantalla siguiente. */
+  const encuadradoRef = useRef(false);
+  const cerca = useCercaDeLaVista(ref);
+  /** Todo lo que se dibuja va registrado en el préstamo: al devolver el mapa
+   *  se quita solo y no aparece en la pantalla siguiente. */
+  const trackear = useCallback(
+    <T,>(o: T): T => (prestadoRef.current ? prestadoRef.current.track(o) : o),
+    [],
+  );
   const markersRef = useRef<Record<string, any>>({});
   const cercasRef = useRef<Record<string, any>>({});
   const motorRef = useRef<MotorMapa | null>(null);
@@ -479,7 +499,7 @@ export function OperationsMap({
 
             return;
           }
-          rastroLineaRef.current = new g.maps.Polyline({
+          rastroLineaRef.current = trackear(new g.maps.Polyline({
             map: mapRef.current,
             path: puntos,
             // El rastro es una RUTA, no un estado: va en el acento, que es el color
@@ -488,7 +508,7 @@ export function OperationsMap({
             strokeOpacity: 0.9,
             strokeWeight: 3,
             zIndex: 50,
-          });
+          }));
           setRastroDe(e.id);
           motorRef.current?.camara.encuadrar(puntos, {
             padding: 72,
@@ -534,6 +554,7 @@ export function OperationsMap({
   useEffect(() => {
     let cancelled = false;
 
+    if (!cerca) return;
     loadGoogleMaps({ soloMapa: true })
       .then(() => {
         if (cancelled || !ref.current) return;
@@ -548,15 +569,24 @@ export function OperationsMap({
 
         if (defaultCenter)
           appliedCenterRef.current = `${defaultCenter.lat},${defaultCenter.lng},${defaultCenter.zoom ?? 12}`;
-        mapRef.current = new g.maps.Map(ref.current, {
-          center: initCenter,
-          zoom: defaultCenter?.zoom ?? 12,
-          disableDefaultUI: true,
-          gestureHandling: "greedy",
-          clickableIcons: false,
-          styles: estiloPara(pal, prefs.mapTheme),
-          backgroundColor: pal.tierra,
-        });
+        // El mapa compartido de la plataforma (ver `utils/mapPool.ts`).
+        const prestado = acquireMap(
+          ref.current,
+          {
+            center: initCenter,
+            zoom: defaultCenter?.zoom ?? 12,
+            disableDefaultUI: true,
+            gestureHandling: "greedy",
+            clickableIcons: false,
+            styles: estiloPara(pal, prefs.mapTheme),
+            backgroundColor: pal.tierra,
+          },
+          { area, vista: vista ?? area },
+        );
+
+        prestadoRef.current = prestado;
+        encuadradoRef.current = prestado.vistaRestaurada;
+        mapRef.current = prestado.map;
         motorRef.current = crearMotorMapa(mapRef.current);
 
         // El zoom SÓLO se publica a React cuando cambia de entero: con el valor
@@ -586,8 +616,12 @@ export function OperationsMap({
 
     return () => {
       cancelled = true;
+      prestadoRef.current?.release();
+      prestadoRef.current = null;
+      mapRef.current = null;
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cerca]);
 
   // Al desmontar: el motor baja sus animaciones y sus capas con él.
   useEffect(
@@ -616,7 +650,7 @@ export function OperationsMap({
   // entities, so it never fights the operations auto-frame.
   useEffect(() => {
     if (!ready || !mapRef.current || !defaultCenter) return;
-    if ((mapRef.current as any).__fitted) return;
+    if (encuadradoRef.current) return;
     const sig = `${defaultCenter.lat},${defaultCenter.lng},${defaultCenter.zoom ?? 12}`;
 
     if (appliedCenterRef.current === sig) return;
@@ -700,13 +734,15 @@ export function OperationsMap({
       const nuevo = !m;
 
       if (!m) {
-        m = new g.maps.Marker({
-          map: mapRef.current,
-          position: { lat: e.lat, lng: e.lng },
-          icon,
-          title: e.label,
-          zIndex,
-        });
+        m = trackear(
+          new g.maps.Marker({
+            map: mapRef.current,
+            position: { lat: e.lat, lng: e.lng },
+            icon,
+            title: e.label,
+            zIndex,
+          }),
+        );
         markersRef.current[e.id] = m;
       } else {
         m.setIcon(icon);
@@ -819,7 +855,7 @@ export function OperationsMap({
       let m = markersRef.current[r.id];
 
       if (!m) {
-        m = new g.maps.Marker({
+        m = trackear(new g.maps.Marker({
           map: mapRef.current,
           position: { lat: r.lat, lng: r.lng },
           icon: iconoDe(g, asset),
@@ -828,7 +864,7 @@ export function OperationsMap({
             defaultValue: "{{count}} sedes",
           }),
           zIndex: 180,
-        });
+        }));
         markersRef.current[r.id] = m;
       } else {
         m.setPosition({ lat: r.lat, lng: r.lng });
@@ -868,7 +904,7 @@ export function OperationsMap({
           };
 
           if (!c) {
-            c = poly
+            c = trackear(poly
               ? new g.maps.Polygon({
                   ...opciones,
                   map: mapRef.current,
@@ -879,7 +915,7 @@ export function OperationsMap({
                   map: mapRef.current,
                   center: { lat: e.lat, lng: e.lng },
                   radius: radioDe(e),
-                });
+                }));
             cercasRef.current[clave] = c;
           } else {
             c.setOptions(opciones);
@@ -916,7 +952,7 @@ export function OperationsMap({
     // center. A single point can't be fit-bounded (it zooms to max), so center +
     // a street-level zoom; multiple points fit their bounds with a max-zoom clamp
     // so a tight cluster doesn't zoom in absurdly.
-    if (any && !(mapRef.current as any).__fitted) {
+    if (any && !encuadradoRef.current) {
       if (visibles.length > 1) {
         motor
           ? motor.camara.encuadrar(
@@ -928,7 +964,7 @@ export function OperationsMap({
         mapRef.current.setCenter(bounds.getCenter());
         mapRef.current.setZoom(15);
       }
-      (mapRef.current as any).__fitted = true;
+      encuadradoRef.current = true;
     }
   }, [
     visibles,

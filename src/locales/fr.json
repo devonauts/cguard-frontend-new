@@ -2827,9 +2827,6 @@
     },
     "sites": {
       "noLocation": "Aucune position enregistrée"
-    },
-    "static": {
-      "altDefault": "Carte de la position"
     }
   },
   "nomina": {
@@ -14555,10 +14552,6 @@
       "distanciaM": "Distance (m)",
       "descripcion": "Scans de rondes : cliquez sur une ligne pour voir la photo, l'observation, l'emplacement et accepter ou rejeter le point."
     },
-    "StaticMapImage": {
-      "abrirElMapaInteractivo": "Ouvrir la carte interactive",
-      "explorarElMapa": "Explorer la carte"
-    },
     "SupervisionSection": {
       "configurarPuestosDeSupervision": "Configurer les postes de supervision",
       "puestosDeSupervisionSinCubrir": "Postes de supervision non pourvus",
@@ -15440,8 +15433,6 @@
       "sinSelfie": "Pas de selfie",
       "sistema": "Système",
       "tarde": "Retard",
-      "ubicacionDeLaMarcacionDeEntrada": "Lieu du pointage d'entrée",
-      "ubicacionDeLaMarcacionDeSalida": "Lieu du pointage de sortie",
       "unDiaSinFichajeNoSeAprueba": "Un jour sans pointage ne s'approuve ni ne se paie ici : il est signalé. Il apparaît dans les rapports et les exports avec le reste de la période.",
       "unDiaSinFichajeSeInforma": "Un jour sans pointage est signalé ; il ne passe pas par le cycle de paie.",
       "vacaciones": "Congés",
@@ -15697,9 +15688,7 @@
       "cargandoDetalle": "Chargement des détails"
     },
     "SitesMap": {
-      "mapaDelCliente": "Carte du client",
       "direccionDelClienteSinSedes": "Adresse du client · les sites n'ont pas encore d'emplacement",
-      "mapaDeLasSedesDelCliente": "Carte des sites du client",
       "estaciones": "Stations",
       "vigilantes": "Agents",
       "verSede": "Voir le site"
@@ -16184,10 +16173,6 @@
       "arrastraLaChinchetaParaAjustarla": "Faites glisser l'épingle pour l'ajuster",
       "resolviendoDireccion": "Recherche de l'adresse…",
       "puntoFijado": "Point défini"
-    },
-    "IncidentMap": {
-      "mapaDe": "Carte de {{label}}",
-      "mapaDeLaUbicacion": "Carte de l'emplacement"
     },
     "MultiSelectDeSedes": {
       "buscar": "Rechercher {{que}}…"

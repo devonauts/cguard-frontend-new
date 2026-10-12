@@ -9,7 +9,12 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getTenantLocation,
   CENTRO_DE_RESPALDO,
 } from "@/utils/tenantLocation";
-import { acquireMap, type PooledMap } from "@/utils/mapPool";
+import {
+  acquireMap,
+  medirAutocompletado,
+  type PooledMap,
+} from "@/utils/mapPool";
+import { geocodificarEnNavegador } from "@/utils/geocodeAddress";
 import { useMapPalette } from "@/utils/mapTheme";
 import { useMapPopup, mapPopupActions } from "@/components/maps/MapPopup";
 import { metrosEntre, useMotorMapa } from "@/utils/mapMotion";
@@ -47,6 +52,9 @@ export interface AddressAutocompleteProps {
   paisPorDefecto?: string;
   /** Centro del país recién encuadrado, para quien quiera deducir la zona. */
   onCentroDelPais?: (lat: number, lng: number) => void;
+  /** Id corto del consumidor para la telemetría de Google ("company-address"…).
+   *  Ver `utils/mapPool.ts`. */
+  area?: string;
 }
 
 /**
@@ -95,6 +103,7 @@ export default function AddressAutocomplete({
   countryCodes,
   paisPorDefecto,
   onCentroDelPais,
+  area = "address-autocomplete",
 }: AddressAutocompleteProps) {
   const { t } = useTranslation();
   const { isLoaded, loadError, google } = useGoogleMaps();
@@ -257,8 +266,13 @@ export default function AddressAutocomplete({
     };
 
     ac.addListener("place_changed", handler);
+    // Telemetría de consumo: sesión de autocompletado + Place Details.
+    const dejarDeMedir = inputRef.current
+      ? medirAutocompletado(inputRef.current, ac, area)
+      : () => {};
 
     return () => {
+      dejarDeMedir();
       try {
         google.maps.event.clearInstanceListeners(ac);
       } catch {
@@ -343,7 +357,7 @@ export default function AddressAutocomplete({
       // resto de pantallas se presten instancias entre sí.
       mapId: "d94ad875743639fb1933bbd4",
       colorScheme: oscuro ? "DARK" : "LIGHT",
-    });
+    }, { area });
 
     pooledRef.current = pooled;
     mapInstanceRef.current = pooled.map;
@@ -373,7 +387,7 @@ export default function AddressAutocomplete({
       contenido = undefined;
     }
 
-    markerRef.current = new google.maps.marker.AdvancedMarkerElement({
+    markerRef.current = pooled.track(new google.maps.marker.AdvancedMarkerElement({
       map: mapInstanceRef.current,
       position: center,
       gmpDraggable: true,
@@ -382,7 +396,7 @@ export default function AddressAutocomplete({
         "Arrastra para ajustar la ubicación exacta",
       ),
       ...(contenido ? { content: contenido } : {}),
-    });
+    }));
 
     anclaRef.current = { lat, lng };
     if (Number.isFinite(iLat) && Number.isFinite(iLng)) {
@@ -564,9 +578,11 @@ export default function AddressAutocomplete({
     let vivo = true;
 
     try {
-      new google.maps.Geocoder().geocode(
+      // El centro de un país no cambia: memoria de la pestaña, no otra petición.
+      void geocodificarEnNavegador(
         { componentRestrictions: { country: paisPorDefecto } },
-        (res: any, estado: string) => {
+        area,
+      ).then(({ results: res, status: estado }) => {
           if (!vivo || estado !== "OK" || !res?.[0]?.geometry) return;
           if (lastAddressRef.current) return;
           const g = res[0].geometry;
@@ -580,8 +596,7 @@ export default function AddressAutocomplete({
           if (markerRef.current) markerRef.current.position = centro;
           anclaRef.current = { lat: centro.lat(), lng: centro.lng() };
           centroDelPaisRef.current?.(centro.lat(), centro.lng());
-        },
-      );
+      });
     } catch {
       /* sin geocodificador: el mapa se queda donde estaba */
     }

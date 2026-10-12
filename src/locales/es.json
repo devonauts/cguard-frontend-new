@@ -14020,10 +14020,6 @@
       "distanciaM": "Distancia (m)",
       "descripcion": "Escaneos de rondas: pulsa una fila para ver la foto, la observación, la ubicación y aceptar o rechazar el punto."
     },
-    "StaticMapImage": {
-      "abrirElMapaInteractivo": "Abrir el mapa interactivo",
-      "explorarElMapa": "Explorar el mapa"
-    },
     "SupervisionSection": {
       "configurarPuestosDeSupervision": "Configurar puestos de supervisión",
       "puestosDeSupervisionSinCubrir": "Puestos de supervisión sin cubrir",
@@ -14905,8 +14901,6 @@
       "sinSelfie": "Sin selfie",
       "sistema": "Sistema",
       "tarde": "Tarde",
-      "ubicacionDeLaMarcacionDeEntrada": "Ubicación de la marcación de entrada",
-      "ubicacionDeLaMarcacionDeSalida": "Ubicación de la marcación de salida",
       "unDiaSinFichajeNoSeAprueba": "Un día sin fichaje no se aprueba ni se paga desde aquí: se informa. Sale en los reportes y en las exportaciones junto al resto del periodo.",
       "unDiaSinFichajeSeInforma": "Un día sin fichaje se informa; no pasa por el ciclo de pago.",
       "vacaciones": "Vacaciones",
@@ -15162,9 +15156,7 @@
       "cargandoDetalle": "Cargando detalle"
     },
     "SitesMap": {
-      "mapaDelCliente": "Mapa del cliente",
       "direccionDelClienteSinSedes": "Dirección del cliente · las sedes aún no tienen ubicación",
-      "mapaDeLasSedesDelCliente": "Mapa de las sedes del cliente",
       "estaciones": "Estaciones",
       "vigilantes": "Vigilantes",
       "verSede": "Ver sede"
@@ -15649,10 +15641,6 @@
       "arrastraLaChinchetaParaAjustarla": "Arrastra la chincheta para ajustarla",
       "resolviendoDireccion": "Resolviendo dirección…",
       "puntoFijado": "Punto fijado"
-    },
-    "IncidentMap": {
-      "mapaDe": "Mapa de {{label}}",
-      "mapaDeLaUbicacion": "Mapa de la ubicación"
     },
     "MultiSelectDeSedes": {
       "buscar": "Buscar {{que}}…"
@@ -16671,9 +16659,6 @@
     },
     "sites": {
       "noLocation": "Sin ubicación registrada"
-    },
-    "static": {
-      "altDefault": "Mapa de la ubicación"
     }
   },
   "supervisors": {

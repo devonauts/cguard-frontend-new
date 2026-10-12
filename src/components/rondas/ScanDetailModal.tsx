@@ -31,7 +31,6 @@ import {
 } from "@/components/kit";
 import { Button } from "@/components/ui/button";
 import GoogleMapEmbed from "@/components/GoogleMap/GoogleMapEmbed";
-import StaticMapImage from "@/components/maps/StaticMapImage";
 import { ApiService } from "@/services/api/apiService";
 import { getTenantTimezone } from "@/utils/tenantLocation";
 import { localeActual } from "@/lib/localeActual";
@@ -481,19 +480,8 @@ export default function ScanDetailModal({
               </div>
               {hayCoords ? (
                 <div className="space-y-2">
-                  <StaticMapImage
-                    alt={t("revision.ubicacion", {
-                      defaultValue: "Dónde se escaneó",
-                    })}
-                    height="220px"
-                    lat={d.latitude!}
-                    lng={d.longitude!}
-                    radiusMeters={
-                      d.radiusM || d.station?.geofenceRadius || undefined
-                    }
-                    zoom={17}
-                  >
-                    <GoogleMapEmbed
+                  <GoogleMapEmbed
+                      area="scan"
                       geofenceRadius={
                         d.radiusM || d.station?.geofenceRadius || 100
                       }
@@ -527,7 +515,6 @@ export default function ScanDetailModal({
                       showGeofence={!!(d.radiusM || d.station?.geofenceRadius)}
                       zoom={17}
                     />
-                  </StaticMapImage>
                   {d.address && <p className="text-sm">{d.address}</p>}
                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                     <Field

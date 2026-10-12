@@ -2829,9 +2829,6 @@
     },
     "sites": {
       "noLocation": "Brak zapisanej lokalizacji"
-    },
-    "static": {
-      "altDefault": "Mapa lokalizacji"
     }
   },
   "nomina": {
@@ -14679,10 +14676,6 @@
       "distanciaM": "Odległość (m)",
       "descripcion": "Skany obchodów: kliknij wiersz, aby zobaczyć zdjęcie, uwagę, lokalizację oraz zaakceptować lub odrzucić punkt."
     },
-    "StaticMapImage": {
-      "abrirElMapaInteractivo": "Otwórz mapę interaktywną",
-      "explorarElMapa": "Przeglądaj mapę"
-    },
     "SupervisionSection": {
       "configurarPuestosDeSupervision": "Skonfiguruj posterunki nadzoru",
       "puestosDeSupervisionSinCubrir": "Nieobsadzone posterunki nadzoru",
@@ -15596,8 +15589,6 @@
       "sinSelfie": "Brak selfie",
       "sistema": "System",
       "tarde": "Spóźnienie",
-      "ubicacionDeLaMarcacionDeEntrada": "Lokalizacja odbicia wejścia",
-      "ubicacionDeLaMarcacionDeSalida": "Lokalizacja odbicia wyjścia",
       "unDiaSinFichajeNoSeAprueba": "Dzień bez odbić nie jest tu zatwierdzany ani opłacany: jest raportowany. Pojawia się w raportach i eksportach razem z resztą okresu.",
       "unDiaSinFichajeSeInforma": "Dzień bez odbić jest raportowany; nie przechodzi przez cykl płatności.",
       "vacaciones": "Urlop",
@@ -15875,9 +15866,7 @@
       "cargandoDetalle": "Wczytywanie szczegółów"
     },
     "SitesMap": {
-      "mapaDelCliente": "Mapa klienta",
       "direccionDelClienteSinSedes": "Adres klienta · lokalizacje nie mają jeszcze położenia",
-      "mapaDeLasSedesDelCliente": "Mapa lokalizacji klienta",
       "estaciones": "Stacje",
       "vigilantes": "Pracownicy ochrony",
       "verSede": "Zobacz lokalizację"
@@ -16370,10 +16359,6 @@
       "arrastraLaChinchetaParaAjustarla": "Przeciągnij pinezkę, aby ją dopasować",
       "resolviendoDireccion": "Ustalanie adresu…",
       "puntoFijado": "Punkt ustawiony"
-    },
-    "IncidentMap": {
-      "mapaDe": "Mapa: {{label}}",
-      "mapaDeLaUbicacion": "Mapa lokalizacji"
     },
     "MultiSelectDeSedes": {
       "buscar": "Szukaj: {{que}}…"

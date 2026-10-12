@@ -18,6 +18,8 @@ import {
 } from "./trackGeometry";
 
 import { loadGoogleMaps } from "@/utils/loadGoogleMaps";
+import { acquireMap, type PooledMap } from "@/utils/mapPool";
+import { useCercaDeLaVista } from "@/hooks/useCercaDeLaVista";
 import {
   estiloMapa,
   huella,
@@ -108,6 +110,14 @@ export default function TrailMap({
   const { t: tr } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
+  const prestadoRef = useRef<PooledMap | null>(null);
+  const cerca = useCercaDeLaVista(ref);
+  /** Lo dibujado va registrado en el préstamo y se quita al devolver el mapa.
+   *  Sin vista guardada a propósito: la cámara la manda el recorrido elegido. */
+  const trackear = useCallback(
+    <T,>(o: T): T => (prestadoRef.current ? prestadoRef.current.track(o) : o),
+    [],
+  );
   const [ready, setReady] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
@@ -189,25 +199,32 @@ export default function TrailMap({
   useEffect(() => {
     let cancelled = false;
 
-    loadGoogleMaps()
+    if (!cerca) return;
+    loadGoogleMaps({ soloMapa: true })
       .then(() => {
         if (cancelled || !ref.current) return;
         const g = (window as any).google;
         const first = points[0];
 
-        mapRef.current = new g.maps.Map(ref.current, {
-          center: first
-            ? { lat: first.lat, lng: first.lng }
-            : { ...CENTRO_DE_RESPALDO },
-          zoom: 14,
-          disableDefaultUI: true,
-          zoomControl: true,
-          gestureHandling: "greedy",
-          clickableIcons: false,
-          mapTypeId: mapType,
-          styles: geometria(mapType, pal),
-          backgroundColor: pal.tierra,
-        });
+        // El mapa compartido de la plataforma (ver `utils/mapPool.ts`).
+        prestadoRef.current = acquireMap(
+          ref.current,
+          {
+            center: first
+              ? { lat: first.lat, lng: first.lng }
+              : { ...CENTRO_DE_RESPALDO },
+            zoom: 14,
+            disableDefaultUI: true,
+            zoomControl: true,
+            gestureHandling: "greedy",
+            clickableIcons: false,
+            mapTypeId: mapType,
+            styles: geometria(mapType, pal),
+            backgroundColor: pal.tierra,
+          },
+          { area: "trail" },
+        );
+        mapRef.current = prestadoRef.current.map;
         // Si el usuario agarra el mapa, manda él: el seguimiento se suelta.
         mapRef.current.addListener("dragstart", () => setSeguir(false));
         setReady(true);
@@ -221,8 +238,12 @@ export default function TrailMap({
 
     return () => {
       cancelled = true;
+      prestadoRef.current?.release();
+      prestadoRef.current = null;
+      mapRef.current = null;
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cerca]);
 
   useEffect(() => {
     if (!ready || !mapRef.current) return;
@@ -412,7 +433,7 @@ export default function TrailMap({
     // El trazo va en TRES pasadas: halo ancho y tenue debajo (es lo que lo hace
     // «encenderse» sobre teselas casi negras), la línea completa apagada, y
     // encima la parte ya recorrida, viva y con flechas.
-    const halo = new g.maps.Polyline({
+    const halo = trackear(new g.maps.Polyline({
       path: camino,
       map: mapRef.current,
       zIndex: 1,
@@ -422,7 +443,7 @@ export default function TrailMap({
       // El halo es el blanco de los clics: es ancho y perdona el pulso. La línea
       // fina de encima no escucha, para no robarle la pulsación.
       clickable: true,
-    });
+    }));
 
     halo.addListener("click", (e: any) => {
       const ll = e?.latLng;
@@ -432,7 +453,7 @@ export default function TrailMap({
 
       if (i >= 0) globoDePunto(i);
     });
-    const linea = new g.maps.Polyline({
+    const linea = trackear(new g.maps.Polyline({
       path: camino,
       map: mapRef.current,
       clickable: false,
@@ -440,10 +461,10 @@ export default function TrailMap({
       strokeColor: pal.brand,
       strokeOpacity: 0.34,
       strokeWeight: 3,
-    });
+    }));
     // La parte recorrida. Las FLECHAS van sólo aquí: repetidas en las dos líneas
     // se solaparían y se leerían como puntas dobles.
-    const avance = new g.maps.Polyline({
+    const avance = trackear(new g.maps.Polyline({
       path: camino,
       map: mapRef.current,
       clickable: false,
@@ -465,7 +486,7 @@ export default function TrailMap({
           offset: "40px",
         },
       ],
-    });
+    }));
 
     avanceRef.current = avance;
     overlaysRef.current.push(
@@ -483,7 +504,7 @@ export default function TrailMap({
       alPulsar: () => void,
       vivo = false,
     ) => {
-      const marker = new g.maps.Marker({
+      const marker = trackear(new g.maps.Marker({
         map: mapRef.current,
         position: { lat: p.lat, lng: p.lng },
         icon: iconoDe(
@@ -492,7 +513,7 @@ export default function TrailMap({
         ),
         title: titulo,
         zIndex: 500,
-      });
+      }));
 
       marker.addListener("click", alPulsar);
       overlaysRef.current.push(() => marker.setMap(null));
@@ -525,7 +546,7 @@ export default function TrailMap({
     });
 
     /* ── La cabeza del recorrido ───────────────────────────────────────── */
-    const puck = new g.maps.Marker({
+    const puck = trackear(new g.maps.Marker({
       map: mapRef.current,
       position: camino[camino.length - 1],
       icon: iconoDe(
@@ -537,7 +558,7 @@ export default function TrailMap({
         "ui.TrailMap.posicionEnElInstanteMostrado",
         "Posición en el instante mostrado",
       ),
-    });
+    }));
 
     puckRef.current = puck;
     overlaysRef.current.push(() => puck.setMap(null));

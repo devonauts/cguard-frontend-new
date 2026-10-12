@@ -5,7 +5,6 @@ import { MapPin } from "lucide-react";
 import GoogleMapEmbed, {
   type MapEmbedMarker,
 } from "@/components/GoogleMap/GoogleMapEmbed";
-import StaticMapImage from "@/components/maps/StaticMapImage";
 import { mapPopupActions, mapPopupItems } from "@/components/maps/MapPopup";
 
 /**
@@ -19,14 +18,13 @@ import { mapPopupActions, mapPopupItems } from "@/components/maps/MapPopup";
  * dejaba fuera las sedes que sí importan.
  *
  * ── EL ENCUADRE ES LA PIEZA CLAVE ───────────────────────────────────────────
- * Con varias chinchetas no hay "centro" que valga. La miniatura estática se pide
- * SIN `center` ni `zoom` (la API encuadra sola) y el mapa interactivo usa
- * `fitMarkers`, que calcula el rectángulo que las contiene. Centrar en la
- * primera dejaría al resto fuera de la pantalla.
+ * Con varias chinchetas no hay "centro" que valga: el mapa usa `fitMarkers`,
+ * que calcula el rectángulo que las contiene. Centrar en la primera dejaría al
+ * resto fuera de la pantalla.
  *
- * Se mantiene la disciplina de coste de `StaticMapImage`: imagen estática
- * ($2/1.000) hasta que alguien pulsa; sólo entonces se construye el mapa
- * dinámico ($7/1.000).
+ * Coste: mapa dinámico directo (la Maps Static API no está habilitada en
+ * producción), pedido sólo cuando el hueco se acerca a la pantalla y prestado
+ * por el mapa compartido de la plataforma (`utils/mapPool.ts`).
  */
 
 export interface SedeEnMapa {
@@ -112,11 +110,6 @@ export default function SitesMap({
     [conCoords, t],
   );
 
-  const puntos = useMemo(
-    () => conCoords.map(({ lat, lng }) => ({ lat, lng })),
-    [conCoords],
-  );
-
   const porId = useMemo(() => {
     const m = new Map<string, SedeEnMapa>();
 
@@ -153,16 +146,9 @@ export default function SitesMap({
         className="relative overflow-hidden rounded-xl border"
         style={{ borderColor: "var(--hairline)" }}
       >
-        <StaticMapImage
-          alt={t("ui.SitesMap.mapaDelCliente", "Mapa del cliente")}
-          className="w-full"
-          height={height}
-          lat={fbLat}
-          lng={fbLng}
-          zoom={14}
-        >
-          <div style={{ height }}>
+        <div style={{ height }}>
             <GoogleMapEmbed
+              area="client-sites"
               draggable={false}
               lat={fbLat!}
               lng={fbLng!}
@@ -170,7 +156,6 @@ export default function SitesMap({
               zoom={14}
             />
           </div>
-        </StaticMapImage>
         <span
           className="pointer-events-none absolute left-2 top-2 rounded-md px-2 py-1 text-[11px] font-medium"
           style={{
@@ -194,14 +179,9 @@ export default function SitesMap({
       className="overflow-hidden rounded-xl border"
       style={{ borderColor: "var(--hairline)" }}
     >
-      <StaticMapImage
-        alt={t("ui.SitesMap.mapaDeLasSedesDelCliente", "Mapa de las sedes del cliente")}
-        className="w-full"
-        height={height}
-        points={puntos}
-      >
         <div style={{ height }}>
           <GoogleMapEmbed
+            area="client-sites"
             fitMarkers
             draggable={false}
             mapType="roadmap"
@@ -245,7 +225,6 @@ export default function SitesMap({
             zoom={14}
           />
         </div>
-      </StaticMapImage>
     </div>
   );
 }

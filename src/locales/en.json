@@ -14020,10 +14020,6 @@
       "distanciaM": "Distance (m)",
       "descripcion": "Patrol scans: click a row to see the photo, the note, the location and accept or reject the checkpoint."
     },
-    "StaticMapImage": {
-      "abrirElMapaInteractivo": "Open the interactive map",
-      "explorarElMapa": "Explore the map"
-    },
     "SupervisionSection": {
       "configurarPuestosDeSupervision": "Set up supervision posts",
       "puestosDeSupervisionSinCubrir": "Uncovered supervision posts",
@@ -14905,8 +14901,6 @@
       "sinSelfie": "No selfie",
       "sistema": "System",
       "tarde": "Late",
-      "ubicacionDeLaMarcacionDeEntrada": "Clock-in location",
-      "ubicacionDeLaMarcacionDeSalida": "Clock-out location",
       "unDiaSinFichajeNoSeAprueba": "A day without punches isn't approved or paid from here: it's reported. It appears in reports and exports along with the rest of the period.",
       "unDiaSinFichajeSeInforma": "A day without punches is reported; it doesn't go through the payment cycle.",
       "vacaciones": "Vacation",
@@ -15162,9 +15156,7 @@
       "cargandoDetalle": "Loading details"
     },
     "SitesMap": {
-      "mapaDelCliente": "Client map",
       "direccionDelClienteSinSedes": "Client address · sites don't have a location yet",
-      "mapaDeLasSedesDelCliente": "Map of the client's sites",
       "estaciones": "Stations",
       "vigilantes": "Guards",
       "verSede": "View site"
@@ -15649,10 +15641,6 @@
       "arrastraLaChinchetaParaAjustarla": "Drag the pin to adjust it",
       "resolviendoDireccion": "Finding address…",
       "puntoFijado": "Point set"
-    },
-    "IncidentMap": {
-      "mapaDe": "Map of {{label}}",
-      "mapaDeLaUbicacion": "Location map"
     },
     "MultiSelectDeSedes": {
       "buscar": "Search {{que}}…"
@@ -16671,9 +16659,6 @@
     },
     "sites": {
       "noLocation": "No location on record"
-    },
-    "static": {
-      "altDefault": "Location map"
     }
   },
   "supervisors": {

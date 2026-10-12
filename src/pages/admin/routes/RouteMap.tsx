@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { iconInnerSvg } from "../dashboard/control-center/iconRegistry";
@@ -6,6 +6,8 @@ import { iconInnerSvg } from "../dashboard/control-center/iconRegistry";
 import { leerTrazado, type Coord, type ExtremoRuta } from "./routeOptimizacion";
 
 import { loadGoogleMaps } from "@/utils/loadGoogleMaps";
+import { acquireMap, type PooledMap } from "@/utils/mapPool";
+import { useCercaDeLaVista } from "@/hooks/useCercaDeLaVista";
 import { estiloMapa, huella, pielDe, useMapPalette } from "@/utils/mapTheme";
 import { chipPin, iconoDe, orbPin } from "@/utils/mapPins";
 import { metrosEntre, useMotorMapa } from "@/utils/mapMotion";
@@ -46,9 +48,9 @@ import { CENTRO_DE_RESPALDO } from "@/utils/tenantLocation";
  * calles»— se dibuja el trazado real y el rótulo cambia a «por calles».
  *
  * ── COSTE ───────────────────────────────────────────────────────────────────
- * `new google.maps.Map()` es una carga facturable: UNA instancia por montaje.
- * Cambiar tema o acento reconfigura la que existe (`setOptions`), nunca crea
- * otra.
+ * `new google.maps.Map()` es una carga facturable. El mapa sale prestado del
+ * mapa compartido de la plataforma (`utils/mapPool.ts`) y vuelve a él al
+ * desmontar. Cambiar tema o acento reconfigura la instancia (`setOptions`).
  * ════════════════════════════════════════════════════════════════════════════
  */
 
@@ -110,6 +112,14 @@ export default function RouteMap({
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
+  const prestadoRef = useRef<PooledMap | null>(null);
+  const cerca = useCercaDeLaVista(ref);
+  /** Lo dibujado va registrado en el préstamo y se quita al devolver el mapa.
+   *  Sin vista guardada a propósito: la cámara la manda la ruta (`encuadrar`). */
+  const trackear = useCallback(
+    <T,>(o: T): T => (prestadoRef.current ? prestadoRef.current.track(o) : o),
+    [],
+  );
   const markersRef = useRef<any[]>([]);
   const linesRef = useRef<any[]>([]);
   const [listo, setListo] = useState(false);
@@ -166,22 +176,29 @@ export default function RouteMap({
   useEffect(() => {
     let cancelado = false;
 
-    loadGoogleMaps()
+    if (!cerca) return;
+    loadGoogleMaps({ soloMapa: true })
       .then(() => {
         if (cancelado || !ref.current) return;
         const g = (window as any).google;
         const centro = secuencia[0] ?? { ...CENTRO_DE_RESPALDO };
 
-        mapRef.current = new g.maps.Map(ref.current, {
-          center: centro,
-          zoom: 13,
-          disableDefaultUI: true,
-          zoomControl: true,
-          gestureHandling: "greedy",
-          clickableIcons: false,
-          styles: estiloMapa(pal),
-          backgroundColor: pal.tierra,
-        });
+        // El mapa compartido de la plataforma (ver `utils/mapPool.ts`).
+        prestadoRef.current = acquireMap(
+          ref.current,
+          {
+            center: centro,
+            zoom: 13,
+            disableDefaultUI: true,
+            zoomControl: true,
+            gestureHandling: "greedy",
+            clickableIcons: false,
+            styles: estiloMapa(pal),
+            backgroundColor: pal.tierra,
+          },
+          { area: "route-map" },
+        );
+        mapRef.current = prestadoRef.current.map;
 
         const revisarZoom = () => {
           const z = mapRef.current?.getZoom?.() ?? 13;
@@ -201,8 +218,12 @@ export default function RouteMap({
 
     return () => {
       cancelado = true;
+      prestadoRef.current?.release();
+      prestadoRef.current = null;
+      mapRef.current = null;
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cerca]);
 
   // Tema y acento: se reconfigura la instancia que ya existe.
   useEffect(() => {
@@ -229,7 +250,7 @@ export default function RouteMap({
       // Halo ancho y tenue debajo, línea viva encima: sobre teselas casi negras
       // una sola polilínea se pierde. Las flechas van SÓLO en la de arriba.
       linesRef.current.push(
-        new g.maps.Polyline({
+        trackear(new g.maps.Polyline({
           map: mapRef.current,
           path: camino,
           geodesic: !trazado,
@@ -238,8 +259,8 @@ export default function RouteMap({
           strokeOpacity: 0.18,
           strokeWeight: 11,
           zIndex: 1,
-        }),
-        new g.maps.Polyline({
+        })),
+        trackear(new g.maps.Polyline({
           map: mapRef.current,
           path: camino,
           geodesic: !trazado,
@@ -265,7 +286,7 @@ export default function RouteMap({
               repeat: "96px",
             },
           ],
-        }),
+        })),
       );
     }
 
@@ -278,13 +299,13 @@ export default function RouteMap({
       const asset = ficha
         ? chipPin({ etiqueta, color, glifo, piel, version })
         : orbPin({ color, glifo, piel, version, tamano: "md" });
-      const marker = new g.maps.Marker({
+      const marker = trackear(new g.maps.Marker({
         map: mapRef.current,
         position: { lat: e.lat, lng: e.lng },
         icon: iconoDe(g, asset),
         title: `${etiqueta}: ${e.label}`,
         zIndex: esOrigen ? 900 : 890,
-      });
+      }));
 
       marker.addListener("click", () => {
         const datos: MapPopupData = {
@@ -332,13 +353,13 @@ export default function RouteMap({
           })
         : orbPin({ color, insignia: numero, piel, version, tamano: "sm" });
 
-      const marker = new g.maps.Marker({
+      const marker = trackear(new g.maps.Marker({
         map: mapRef.current,
         position: pos,
         icon: iconoDe(g, asset),
         title: `${numero}. ${s.nombre}`,
         zIndex: 400 + idx,
-      });
+      }));
 
       marker.addListener("click", () => {
         const datos: MapPopupData = {

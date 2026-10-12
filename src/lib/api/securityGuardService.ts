@@ -235,10 +235,21 @@ export const securityGuardService = {
     if (params?.to) qs.set("to", params.to);
     if (params?.limit) qs.set("limit", String(params.limit));
     const q = qs.toString();
-    const resp = await api.get(
-      `/tenant/${tenantId}/security-guard/${guardId}/trail${q ? `?${q}` : ""}`,
+    // Caché compartida: volver al historial con el mismo vigilante y rango no
+    // vuelve a pedir miles de puntos. Un rango ya cerrado no cambia (10 min);
+    // uno que llega a «ahora» sigue creciendo (30 s).
+    const cerrado = params?.to ? new Date(params.to).getTime() < Date.now() : false;
+    const data: any = await cachedFetch(
+      ["trail", tenantId, guardId, q],
+      async () => {
+        const resp = await api.get(
+          `/tenant/${tenantId}/security-guard/${guardId}/trail${q ? `?${q}` : ""}`,
+        );
+
+        return resp && resp.data !== undefined ? resp.data : resp;
+      },
+      cerrado ? 10 * 60_000 : 30_000,
     );
-    const data = resp && resp.data !== undefined ? resp.data : resp;
     return (data?.points || []) as Array<{
       lat: number;
       lng: number;

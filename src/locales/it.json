@@ -2827,9 +2827,6 @@
     },
     "sites": {
       "noLocation": "Nessuna posizione registrata"
-    },
-    "static": {
-      "altDefault": "Mappa della posizione"
     }
   },
   "nomina": {
@@ -14555,10 +14552,6 @@
       "distanciaM": "Distanza (m)",
       "descripcion": "Scansioni delle ronde: fai clic su una riga per vedere la foto, l'osservazione, la posizione e accettare o rifiutare il punto."
     },
-    "StaticMapImage": {
-      "abrirElMapaInteractivo": "Apri la mappa interattiva",
-      "explorarElMapa": "Esplora la mappa"
-    },
     "SupervisionSection": {
       "configurarPuestosDeSupervision": "Configura i posti di supervisione",
       "puestosDeSupervisionSinCubrir": "Posti di supervisione scoperti",
@@ -15440,8 +15433,6 @@
       "sinSelfie": "Nessun selfie",
       "sistema": "Sistema",
       "tarde": "Ritardo",
-      "ubicacionDeLaMarcacionDeEntrada": "Posizione della timbratura di entrata",
-      "ubicacionDeLaMarcacionDeSalida": "Posizione della timbratura di uscita",
       "unDiaSinFichajeNoSeAprueba": "Un giorno senza timbrature non si approva né si paga da qui: si segnala. Compare nei report e nelle esportazioni insieme al resto del periodo.",
       "unDiaSinFichajeSeInforma": "Un giorno senza timbrature si segnala; non passa per il ciclo di pagamento.",
       "vacaciones": "Ferie",
@@ -15697,9 +15688,7 @@
       "cargandoDetalle": "Caricamento dettagli"
     },
     "SitesMap": {
-      "mapaDelCliente": "Mappa del cliente",
       "direccionDelClienteSinSedes": "Indirizzo del cliente · le sedi non hanno ancora una posizione",
-      "mapaDeLasSedesDelCliente": "Mappa delle sedi del cliente",
       "estaciones": "Stazioni",
       "vigilantes": "Guardie",
       "verSede": "Vedi sede"
@@ -16184,10 +16173,6 @@
       "arrastraLaChinchetaParaAjustarla": "Trascina il segnaposto per regolarlo",
       "resolviendoDireccion": "Ricerca indirizzo…",
       "puntoFijado": "Punto fissato"
-    },
-    "IncidentMap": {
-      "mapaDe": "Mappa di {{label}}",
-      "mapaDeLaUbicacion": "Mappa della posizione"
     },
     "MultiSelectDeSedes": {
       "buscar": "Cerca {{que}}…"

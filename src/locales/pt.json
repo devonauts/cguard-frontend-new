@@ -14020,10 +14020,6 @@
       "distanciaM": "Distância (m)",
       "descripcion": "Leituras de rondas: clique em uma linha para ver a foto, a observação, a localização e aceitar ou rejeitar o ponto."
     },
-    "StaticMapImage": {
-      "abrirElMapaInteractivo": "Abrir o mapa interativo",
-      "explorarElMapa": "Explorar o mapa"
-    },
     "SupervisionSection": {
       "configurarPuestosDeSupervision": "Configurar postos de supervisão",
       "puestosDeSupervisionSinCubrir": "Postos de supervisão sem cobertura",
@@ -14905,8 +14901,6 @@
       "sinSelfie": "Sem selfie",
       "sistema": "Sistema",
       "tarde": "Atraso",
-      "ubicacionDeLaMarcacionDeEntrada": "Localização do registro de entrada",
-      "ubicacionDeLaMarcacionDeSalida": "Localização do registro de saída",
       "unDiaSinFichajeNoSeAprueba": "Um dia sem registro não é aprovado nem pago aqui: é informado. Aparece nos relatórios e nas exportações junto com o resto do período.",
       "unDiaSinFichajeSeInforma": "Um dia sem registro é informado; não passa pelo ciclo de pagamento.",
       "vacaciones": "Férias",
@@ -15162,9 +15156,7 @@
       "cargandoDetalle": "Carregando detalhes"
     },
     "SitesMap": {
-      "mapaDelCliente": "Mapa do cliente",
       "direccionDelClienteSinSedes": "Endereço do cliente · as unidades ainda não têm localização",
-      "mapaDeLasSedesDelCliente": "Mapa das unidades do cliente",
       "estaciones": "Estações",
       "vigilantes": "Vigilantes",
       "verSede": "Ver unidade"
@@ -15649,10 +15641,6 @@
       "arrastraLaChinchetaParaAjustarla": "Arraste o marcador para ajustá-lo",
       "resolviendoDireccion": "Buscando endereço…",
       "puntoFijado": "Ponto definido"
-    },
-    "IncidentMap": {
-      "mapaDe": "Mapa de {{label}}",
-      "mapaDeLaUbicacion": "Mapa do local"
     },
     "MultiSelectDeSedes": {
       "buscar": "Buscar {{que}}…"
@@ -16671,9 +16659,6 @@
     },
     "sites": {
       "noLocation": "Sem localização registrada"
-    },
-    "static": {
-      "altDefault": "Mapa da localização"
     }
   },
   "supervisors": {
