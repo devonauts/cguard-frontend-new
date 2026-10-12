@@ -16438,7 +16438,19 @@
       "seVaAPublicar": "About to publish ({{n}})",
       "nadaQuePublicar": "There's nothing in this draft the real schedule can take.",
       "seQuedaEnBorrador": "Stays in the draft ({{n}})",
-      "cancelar": "Cancel"
+      "cancelar": "Cancel",
+      "borradorRecuperado": "Your unpublished draft was recovered. Publish it or discard it.",
+      "borradorCaducado": "You had an unpublished draft, but the live schedule has changed since then, so it was discarded.",
+      "salirTitulo": "You have unpublished changes",
+      "salirMensaje": "{{n}} Planner changes are not in the live schedule. If you leave, they stay as a draft in this browser: dispatch, the Schedule and the guards won't see them until you press «Publish».",
+      "salirSinPublicar": "Leave without publishing",
+      "seguirAqui": "Stay here",
+      "descartarTitulo": "Discard the draft",
+      "descartarMensaje": "The {{n}} unpublished changes will be lost and the Planner will show the live schedule again.",
+      "descartar": "Discard draft",
+      "franjaUnCambio": "Unpublished draft · 1 change",
+      "franjaCambios": "Unpublished draft · {{n}} changes",
+      "franjaNadaEnElReal": "none of this is in the live schedule yet"
     },
     "AvisoRetiradaHorario": {
       "titulo": "This screen is going away: the Planner is the new one",

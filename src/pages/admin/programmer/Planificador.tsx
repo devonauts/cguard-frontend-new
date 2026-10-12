@@ -8,6 +8,7 @@ import {
 } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  AlertTriangle,
   CalendarRange,
   CalendarX,
   ChevronDown,
@@ -104,6 +105,15 @@ import {
   publicar,
   type Publicacion,
 } from "@/lib/planificador/publicar";
+import {
+  estadoDelBorrador,
+  firmaDe,
+  guardarBorrador,
+  leerBorrador,
+  olvidarBorrador,
+} from "@/lib/planificador/borrador";
+import { useFrenoAlSalir } from "@/lib/useFrenoAlSalir";
+import { confirmDialog } from "@/components/ui/confirmDialog";
 
 /**
  * PROGRAMADOR › PLANIFICADOR
@@ -116,6 +126,15 @@ import {
  * Toda la lógica vive en `lib/planificador/motor` (con sus mil casos); este
  * archivo sólo pinta y traduce toques en llamadas al motor.
  */
+
+/** `localStorage`, o nada si el navegador lo bloquea. */
+const almacen = (): Storage | null => {
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+};
 
 type Hoja =
   | { tipo: "hueco"; k: string }
@@ -315,6 +334,12 @@ export default function Planificador() {
   const [hoja, setHoja] = useState<Hoja>(null);
   const [pensando, setPensando] = useState(false);
   const pila = useRef<string[]>([]);
+  /* El borrador se guarda en el navegador para no perderlo al cerrar la
+     pestaña. Sólo la PRIMERA carga lo recupera; «Volver al horario real»,
+     «Descartar» y publicar lo tiran. La firma es la del horario real leído:
+     un borrador hecho contra otro horario no se devuelve. */
+  const recuperarRef = useRef(true);
+  const firmaRef = useRef("");
   const d0 = semana * 7;
   /* LA REJILLA ES UNA HOJA QUE SE DESPLAZA: se pintan tres semanas seguidas
      (la anterior, la de la vista y la siguiente) y se mueve a izquierda y
@@ -362,9 +387,37 @@ export default function Planificador() {
         for (const a of lista) if (a?.id) m[String(a.id)] = a;
         setCrudas(m);
       }
-      setPlan(r.plan);
+      const firma = firmaDe(r.plan);
+      let plan = r.plan;
+      let toques = 0;
+
+      firmaRef.current = firma;
+      if (recuperarRef.current) {
+        recuperarRef.current = false;
+        const g = leerBorrador(almacen(), tenantId, base, firma);
+
+        if (g.tipo === "ok") {
+          plan = g.plan;
+          toques = g.toques;
+          toast.message(
+            t(
+              "ui.Planificador.borradorRecuperado",
+              "Se recuperó tu borrador sin publicar. Publícalo o descártalo.",
+            ),
+          );
+        } else if (g.tipo === "caducado") {
+          olvidarBorrador(almacen(), tenantId);
+          toast.message(
+            t(
+              "ui.Planificador.borradorCaducado",
+              "Tenías un borrador sin publicar, pero el horario real cambió desde entonces y se descartó.",
+            ),
+          );
+        }
+      } else olvidarBorrador(almacen(), tenantId);
+      setPlan(plan);
       setParecido(r.comparados ? r.coincidencia : null);
-      setCambios(0);
+      setCambios(toques);
       setSemana(0);
     } catch {
       toast.error(
@@ -445,6 +498,62 @@ export default function Planificador() {
         : null,
     [plan, leido, tenantId, base, hoyIdx],
   );
+  const borrador = estadoDelBorrador(publicacion?.cambios.length, cambios);
+
+  // Guardar el borrador tocado (con un respiro: un arrastre son muchos toques).
+  useEffect(() => {
+    if (!plan || !leido || !firmaRef.current) return;
+    if (!borrador.avisarAlSalir) {
+      if (!cambios) return;
+      olvidarBorrador(almacen(), tenantId);
+
+      return;
+    }
+    const id = window.setTimeout(
+      () =>
+        guardarBorrador(almacen(), tenantId, {
+          base,
+          firma: firmaRef.current,
+          toques: cambios,
+          plan,
+        }),
+      600,
+    );
+
+    return () => window.clearTimeout(id);
+  }, [plan, leido, cambios, borrador.avisarAlSalir, tenantId, base]);
+
+  useFrenoAlSalir(borrador.avisarAlSalir, () =>
+    confirmDialog({
+      title: t("ui.Planificador.salirTitulo", "Hay cambios sin publicar"),
+      message: t("ui.Planificador.salirMensaje", {
+        defaultValue:
+          "{{n}} cambios del Planificador no están en el horario real. Si sales, se quedan como borrador en este navegador: no los verán la central, el Horario ni los vigilantes hasta que pulses «Publicar».",
+        n: borrador.pendientes,
+      }),
+      confirmText: t("ui.Planificador.salirSinPublicar", "Salir sin publicar"),
+      cancelText: t("ui.Planificador.seguirAqui", "Seguir aquí"),
+      tone: "danger",
+    }),
+  );
+
+  const descartar = async () => {
+    if (
+      !(await confirmDialog({
+        title: t("ui.Planificador.descartarTitulo", "Descartar el borrador"),
+        message: t("ui.Planificador.descartarMensaje", {
+          defaultValue:
+            "Se pierden los {{n}} cambios sin publicar y el Planificador vuelve a mostrar el horario real.",
+          n: borrador.pendientes,
+        }),
+        confirmText: t("ui.Planificador.descartar", "Descartar borrador"),
+        tone: "danger",
+      }))
+    )
+      return;
+    olvidarBorrador(almacen(), tenantId);
+    void cargar();
+  };
   const fechas = useMemo(
     () =>
       Array.from({ length: ANTES + DESPUES }, (_, i) => {
@@ -723,6 +832,55 @@ export default function Planificador() {
           )}
           title={t("ui.Planificador.titulo", "Planificador")}
         />
+
+        {/* LA FRANJA DEL BORRADOR. Una pastilla en la cabecera no bastó: se
+            corrió el ciclo de un vigilante, no se publicó, y la pantalla lo
+            daba libre mientras el horario real y VigIA lo tenían trabajando.
+            Mientras haya algo sin publicar, esto se queda pegado arriba. */}
+        {!cargando && borrador.sinPublicar && (
+          <div
+            className="sticky top-0 z-30 mb-4 flex flex-wrap items-center gap-3 rounded-xl border border-amber-400/60 bg-amber-50 px-4 py-3 text-amber-950 shadow-sm dark:border-amber-500/40 dark:bg-amber-950/80 dark:text-amber-100"
+            role="status"
+          >
+            <AlertTriangle
+              className="shrink-0 text-amber-600 dark:text-amber-400"
+              size={18}
+            />
+            <div className="min-w-0 flex-1 text-sm">
+              <span className="font-semibold">
+                {borrador.pendientes === 1
+                  ? t(
+                      "ui.Planificador.franjaUnCambio",
+                      "Borrador sin publicar · 1 cambio",
+                    )
+                  : t("ui.Planificador.franjaCambios", {
+                      defaultValue: "Borrador sin publicar · {{n}} cambios",
+                      n: borrador.pendientes,
+                    })}
+              </span>
+              <span className="text-amber-900/80 dark:text-amber-100/80">
+                {" — "}
+                {t(
+                  "ui.Planificador.franjaNadaEnElReal",
+                  "nada de esto está en el horario real todavía",
+                )}
+              </span>
+            </div>
+            {cambios > 0 && (
+              <Button size="sm" variant="outline" onClick={descartar}>
+                <RotateCcw size={14} />{" "}
+                {t("ui.Planificador.descartar", "Descartar borrador")}
+              </Button>
+            )}
+            <Button
+              size="sm"
+              variant="brand"
+              onClick={() => setHoja({ tipo: "publicar" })}
+            >
+              <Send size={14} /> {t("ui.Planificador.publicar", "Publicar")}
+            </Button>
+          </div>
+        )}
 
         {cargando || !plan || !r ? (
           <div className="flex justify-center py-20">

@@ -16973,7 +16973,19 @@
       "seVaAPublicar": "Wird veröffentlicht ({{n}})",
       "nadaQuePublicar": "Nichts in diesem Entwurf kann in den echten Dienstplan.",
       "seQuedaEnBorrador": "Bleibt im Entwurf ({{n}})",
-      "cancelar": "Abbrechen"
+      "cancelar": "Abbrechen",
+      "borradorRecuperado": "Dein unveröffentlichter Entwurf wurde wiederhergestellt. Veröffentliche oder verwirf ihn.",
+      "borradorCaducado": "Du hattest einen unveröffentlichten Entwurf, aber der echte Dienstplan hat sich seitdem geändert; er wurde verworfen.",
+      "salirTitulo": "Es gibt unveröffentlichte Änderungen",
+      "salirMensaje": "{{n}} Änderungen im Planer sind nicht im echten Dienstplan. Wenn du gehst, bleiben sie als Entwurf in diesem Browser: Leitstelle, Dienstplan und die Wachleute sehen sie erst, wenn du auf „Veröffentlichen“ klickst.",
+      "salirSinPublicar": "Ohne Veröffentlichen verlassen",
+      "seguirAqui": "Hier bleiben",
+      "descartarTitulo": "Entwurf verwerfen",
+      "descartarMensaje": "Die {{n}} unveröffentlichten Änderungen gehen verloren und der Planer zeigt wieder den echten Dienstplan.",
+      "descartar": "Entwurf verwerfen",
+      "franjaUnCambio": "Unveröffentlichter Entwurf · 1 Änderung",
+      "franjaCambios": "Unveröffentlichter Entwurf · {{n}} Änderungen",
+      "franjaNadaEnElReal": "nichts davon ist schon im echten Dienstplan"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Diese Seite wird abgeschafft: der Planer ist die neue",

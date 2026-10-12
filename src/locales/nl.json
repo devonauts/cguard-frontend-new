@@ -16973,7 +16973,19 @@
       "seVaAPublicar": "Wordt gepubliceerd ({{n}})",
       "nadaQuePublicar": "Er is niets in dit concept dat het echte rooster kan overnemen.",
       "seQuedaEnBorrador": "Blijft in het concept ({{n}})",
-      "cancelar": "Annuleren"
+      "cancelar": "Annuleren",
+      "borradorRecuperado": "Je niet-gepubliceerde concept is hersteld. Publiceer of verwijder het.",
+      "borradorCaducado": "Je had een niet-gepubliceerd concept, maar het echte rooster is sindsdien gewijzigd; het is verwijderd.",
+      "salirTitulo": "Er zijn niet-gepubliceerde wijzigingen",
+      "salirMensaje": "{{n}} wijzigingen in de Planner staan niet in het echte rooster. Als je weggaat, blijven ze als concept in deze browser: de meldkamer, het Rooster en de bewakers zien ze pas als je op „Publiceren” klikt.",
+      "salirSinPublicar": "Weggaan zonder publiceren",
+      "seguirAqui": "Hier blijven",
+      "descartarTitulo": "Concept verwijderen",
+      "descartarMensaje": "De {{n}} niet-gepubliceerde wijzigingen gaan verloren en de Planner toont weer het echte rooster.",
+      "descartar": "Concept verwijderen",
+      "franjaUnCambio": "Niet-gepubliceerd concept · 1 wijziging",
+      "franjaCambios": "Niet-gepubliceerd concept · {{n}} wijzigingen",
+      "franjaNadaEnElReal": "niets hiervan staat al in het echte rooster"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Dit scherm verdwijnt: de Planner is het nieuwe",

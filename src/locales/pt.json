@@ -16438,7 +16438,19 @@
       "seVaAPublicar": "Vai ser publicado ({{n}})",
       "nadaQuePublicar": "Não há nada neste rascunho que a escala real possa receber.",
       "seQuedaEnBorrador": "Fica no rascunho ({{n}})",
-      "cancelar": "Cancelar"
+      "cancelar": "Cancelar",
+      "borradorRecuperado": "Seu rascunho não publicado foi recuperado. Publique-o ou descarte-o.",
+      "borradorCaducado": "Você tinha um rascunho não publicado, mas a escala real mudou desde então e ele foi descartado.",
+      "salirTitulo": "Há alterações não publicadas",
+      "salirMensaje": "{{n}} alterações do Planejador não estão na escala real. Se sair, ficam como rascunho neste navegador: a central, a Escala e os vigilantes não as verão até você clicar em «Publicar».",
+      "salirSinPublicar": "Sair sem publicar",
+      "seguirAqui": "Ficar aqui",
+      "descartarTitulo": "Descartar o rascunho",
+      "descartarMensaje": "As {{n}} alterações não publicadas serão perdidas e o Planejador voltará a mostrar a escala real.",
+      "descartar": "Descartar rascunho",
+      "franjaUnCambio": "Rascunho não publicado · 1 alteração",
+      "franjaCambios": "Rascunho não publicado · {{n}} alterações",
+      "franjaNadaEnElReal": "nada disto está na escala real ainda"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Esta tela vai sair: o Planejador é a nova",

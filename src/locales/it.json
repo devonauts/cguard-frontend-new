@@ -16973,7 +16973,19 @@
       "seVaAPublicar": "Si pubblicherà ({{n}})",
       "nadaQuePublicar": "Non c'è nulla in questa bozza che l'orario reale possa ricevere.",
       "seQuedaEnBorrador": "Resta nella bozza ({{n}})",
-      "cancelar": "Annulla"
+      "cancelar": "Annulla",
+      "borradorRecuperado": "La tua bozza non pubblicata è stata recuperata. Pubblicala o scartala.",
+      "borradorCaducado": "Avevi una bozza non pubblicata, ma da allora l'orario reale è cambiato ed è stata scartata.",
+      "salirTitulo": "Ci sono modifiche non pubblicate",
+      "salirMensaje": "{{n}} modifiche del Pianificatore non sono nell'orario reale. Se esci, restano come bozza in questo browser: la centrale, l'Orario e le guardie non le vedranno finché non premi «Pubblica».",
+      "salirSinPublicar": "Esci senza pubblicare",
+      "seguirAqui": "Resta qui",
+      "descartarTitulo": "Scarta la bozza",
+      "descartarMensaje": "Le {{n}} modifiche non pubblicate andranno perse e il Pianificatore tornerà a mostrare l'orario reale.",
+      "descartar": "Scarta bozza",
+      "franjaUnCambio": "Bozza non pubblicata · 1 modifica",
+      "franjaCambios": "Bozza non pubblicata · {{n}} modifiche",
+      "franjaNadaEnElReal": "niente di questo è ancora nell'orario reale"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Questa schermata sarà rimossa: il Pianificatore è la nuova",

@@ -16973,7 +16973,19 @@
       "seVaAPublicar": "À publier ({{n}})",
       "nadaQuePublicar": "Rien dans ce brouillon ne peut passer dans le planning réel.",
       "seQuedaEnBorrador": "Reste dans le brouillon ({{n}})",
-      "cancelar": "Annuler"
+      "cancelar": "Annuler",
+      "borradorRecuperado": "Votre brouillon non publié a été récupéré. Publiez-le ou supprimez-le.",
+      "borradorCaducado": "Vous aviez un brouillon non publié, mais le planning réel a changé depuis ; il a été supprimé.",
+      "salirTitulo": "Des modifications ne sont pas publiées",
+      "salirMensaje": "{{n}} modifications du Planificateur ne sont pas dans le planning réel. Si vous partez, elles restent en brouillon dans ce navigateur : le central, le Planning et les agents ne les verront pas tant que vous n'aurez pas cliqué sur « Publier ».",
+      "salirSinPublicar": "Partir sans publier",
+      "seguirAqui": "Rester ici",
+      "descartarTitulo": "Supprimer le brouillon",
+      "descartarMensaje": "Les {{n}} modifications non publiées seront perdues et le Planificateur affichera de nouveau le planning réel.",
+      "descartar": "Supprimer le brouillon",
+      "franjaUnCambio": "Brouillon non publié · 1 modification",
+      "franjaCambios": "Brouillon non publié · {{n}} modifications",
+      "franjaNadaEnElReal": "rien de tout cela n'est encore dans le planning réel"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Cet écran va disparaître : le Planificateur est le nouveau",

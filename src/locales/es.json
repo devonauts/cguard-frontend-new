@@ -16438,7 +16438,19 @@
       "seVaAPublicar": "Se va a publicar ({{n}})",
       "nadaQuePublicar": "No hay nada que el horario real pueda recibir de este borrador.",
       "seQuedaEnBorrador": "Se queda en el borrador ({{n}})",
-      "cancelar": "Cancelar"
+      "cancelar": "Cancelar",
+      "borradorRecuperado": "Se recuperó tu borrador sin publicar. Publícalo o descártalo.",
+      "borradorCaducado": "Tenías un borrador sin publicar, pero el horario real cambió desde entonces y se descartó.",
+      "salirTitulo": "Hay cambios sin publicar",
+      "salirMensaje": "{{n}} cambios del Planificador no están en el horario real. Si sales, se quedan como borrador en este navegador: no los verán la central, el Horario ni los vigilantes hasta que pulses «Publicar».",
+      "salirSinPublicar": "Salir sin publicar",
+      "seguirAqui": "Seguir aquí",
+      "descartarTitulo": "Descartar el borrador",
+      "descartarMensaje": "Se pierden los {{n}} cambios sin publicar y el Planificador vuelve a mostrar el horario real.",
+      "descartar": "Descartar borrador",
+      "franjaUnCambio": "Borrador sin publicar · 1 cambio",
+      "franjaCambios": "Borrador sin publicar · {{n}} cambios",
+      "franjaNadaEnElReal": "nada de esto está en el horario real todavía"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Esta pantalla se va a retirar: el Planificador es la nueva",

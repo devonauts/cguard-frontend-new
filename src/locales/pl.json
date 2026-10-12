@@ -17163,7 +17163,19 @@
       "seVaAPublicar": "Do publikacji ({{n}})",
       "nadaQuePublicar": "W tym szkicu nie ma nic, co rzeczywisty grafik mógłby przyjąć.",
       "seQuedaEnBorrador": "Zostaje w szkicu ({{n}})",
-      "cancelar": "Anuluj"
+      "cancelar": "Anuluj",
+      "borradorRecuperado": "Odzyskano Twój nieopublikowany szkic. Opublikuj go lub odrzuć.",
+      "borradorCaducado": "Miałeś nieopublikowany szkic, ale rzeczywisty grafik od tego czasu się zmienił, więc został odrzucony.",
+      "salirTitulo": "Są nieopublikowane zmiany",
+      "salirMensaje": "{{n}} zmian w Planerze nie ma w rzeczywistym grafiku. Jeśli wyjdziesz, zostaną jako szkic w tej przeglądarce: centrala, Grafik i pracownicy ochrony nie zobaczą ich, dopóki nie klikniesz „Opublikuj”.",
+      "salirSinPublicar": "Wyjdź bez publikowania",
+      "seguirAqui": "Zostań tutaj",
+      "descartarTitulo": "Odrzuć szkic",
+      "descartarMensaje": "{{n}} nieopublikowanych zmian zostanie utraconych, a Planer znów pokaże rzeczywisty grafik.",
+      "descartar": "Odrzuć szkic",
+      "franjaUnCambio": "Nieopublikowany szkic · 1 zmiana",
+      "franjaCambios": "Nieopublikowany szkic · zmiany: {{n}}",
+      "franjaNadaEnElReal": "nic z tego nie ma jeszcze w rzeczywistym grafiku"
     },
     "AvisoRetiradaHorario": {
       "titulo": "Ten ekran zostanie wycofany: nowy jest Planer",
