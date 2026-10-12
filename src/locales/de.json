@@ -16858,6 +16858,7 @@
       "buscar": "Posten oder Wachmann suchen",
       "soloConHuecos": "Nur Posten mit Lücken",
       "nPuestos": "{{n}} von {{total}} Posten",
+      "nPuestosGrupo": "{{n}} Posten",
       "puestoYVigilante": "Posten und Wachmann",
       "hoy": "heute",
       "nSinCubrir": "{{n}} unbesetzt",

@@ -16858,6 +16858,7 @@
       "buscar": "Rechercher un poste ou un agent",
       "soloConHuecos": "Seulement les postes avec un trou",
       "nPuestos": "{{n}} postes sur {{total}}",
+      "nPuestosGrupo": "{{n}} postes",
       "puestoYVigilante": "Poste et agent",
       "hoy": "aujourd'hui",
       "nSinCubrir": "{{n}} non couvert(s)",

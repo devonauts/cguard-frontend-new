@@ -16858,6 +16858,7 @@
       "buscar": "Cerca postazione o guardia",
       "soloConHuecos": "Solo postazioni con buchi",
       "nPuestos": "{{n}} di {{total}} postazioni",
+      "nPuestosGrupo": "{{n}} postazioni",
       "puestoYVigilante": "Postazione e guardia",
       "hoy": "oggi",
       "nSinCubrir": "{{n}} scoperti",

@@ -971,8 +971,10 @@ export default function Planificador() {
                       <Fragment key={kc}>
                         <FilaGrupo
                           abierto={estaAbierto(kc)}
-                          detalle={t("ui.Planificador.nPuestos", {
-                            defaultValue: "{{n}} puesto(s)",
+                          /* Clave propia: `nPuestos` es la de la barra («n de
+                             total») y aquí no hay total — salía «{{total}}». */
+                          detalle={t("ui.Planificador.nPuestosGrupo", {
+                            defaultValue: "{{n}} puestos",
                             n: puestosC.length,
                           })}
                           dias={diasVista}
@@ -990,8 +992,8 @@ export default function Planificador() {
                               <Fragment key={ks}>
                                 <FilaGrupo
                                   abierto={estaAbierto(ks)}
-                                  detalle={t("ui.Planificador.nPuestos", {
-                                    defaultValue: "{{n}} puesto(s)",
+                                  detalle={t("ui.Planificador.nPuestosGrupo", {
+                                    defaultValue: "{{n}} puestos",
                                     n: s.puestos.length,
                                   })}
                                   dias={diasVista}

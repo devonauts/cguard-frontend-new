@@ -16858,6 +16858,7 @@
       "buscar": "Zoek post of beveiliger",
       "soloConHuecos": "Alleen posten met gaten",
       "nPuestos": "{{n}} van {{total}} posten",
+      "nPuestosGrupo": "{{n}} posten",
       "puestoYVigilante": "Post en beveiliger",
       "hoy": "vandaag",
       "nSinCubrir": "{{n}} ongedekt",

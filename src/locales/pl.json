@@ -17048,6 +17048,7 @@
       "buscar": "Szukaj posterunku lub ochroniarza",
       "soloConHuecos": "Tylko posterunki z brakami",
       "nPuestos": "{{n}} z {{total}} posterunków",
+      "nPuestosGrupo": "{{n}} posterunków",
       "puestoYVigilante": "Posterunek i ochroniarz",
       "hoy": "dziś",
       "nSinCubrir": "{{n}} nieobsadzonych",

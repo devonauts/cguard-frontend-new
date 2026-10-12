@@ -16323,6 +16323,7 @@
       "buscar": "Buscar posto ou vigilante",
       "soloConHuecos": "Só postos com algo sem cobrir",
       "nPuestos": "{{n}} de {{total}} postos",
+      "nPuestosGrupo": "{{n}} postos",
       "puestoYVigilante": "Posto e vigilante",
       "hoy": "hoje",
       "nSinCubrir": "{{n}} sem cobrir",

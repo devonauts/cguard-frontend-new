@@ -16323,6 +16323,7 @@
       "buscar": "Search post or guard",
       "soloConHuecos": "Only posts with something uncovered",
       "nPuestos": "{{n}} of {{total}} posts",
+      "nPuestosGrupo": "{{n}} posts",
       "puestoYVigilante": "Post and guard",
       "hoy": "today",
       "nSinCubrir": "{{n}} uncovered",
