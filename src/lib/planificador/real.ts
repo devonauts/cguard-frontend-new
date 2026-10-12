@@ -24,6 +24,7 @@ import {
   clave,
   falta,
   poner,
+  propio,
   sanear,
   type Franja,
   type Persona,
@@ -841,11 +842,18 @@ export function planDesdeHorarioReal(
 
       if (d < 0 || d >= dias) continue;
       for (const t of lista) {
-        if (p.puesto !== null && t.stationId === p.puesto) continue; // su propio turno
         const pu = puestoPorId.get(t.stationId);
 
         if (!pu) continue;
         const fr = franjaMasCercana(pu, t.min);
+
+        /* Su propio turno ya lo cuenta su rotación. Pero un SEGUNDO turno en
+           su mismo puesto ese día —la extensión de quien dobla porque el
+           compañero faltó— sí es cobertura: saltarlo entero dejaba la noche
+           «falta 1» con el relevo fichado dentro (B.A.S., EDIFICIO IMPERIA
+           HORIZONTE, 11 oct 2026: faltó Israel, dobló Mathias). */
+        if (p.puesto !== null && t.stationId === p.puesto && propio(p, d) === fr)
+          continue;
 
         if (fr && falta(plan, pu, fr, d) > 0) {
           poner(plan, clave(pu.id, fr, d), p.id, false);
