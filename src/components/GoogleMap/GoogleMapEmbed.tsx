@@ -152,13 +152,15 @@ function alPulsarMarcador(mk: any, cb: () => void): void {
   } catch {
     /* versión sin la propiedad */
   }
+  /* El avanzado es un elemento del DOM: su pulsación se escucha como DOM
+     (`addEventListener("gmp-click")`). Colgarle `addListener` funciona pero
+     Google lo marca en consola en cada marcador. `addListener("click")` queda
+     sólo para el `Marker` clásico, que no tiene `addEventListener`. */
+  const esAvanzado = typeof mk?.addEventListener === "function";
+
   try {
-    mk.addListener("gmp-click", disparar);
-  } catch {
-    /* versión sin el evento */
-  }
-  try {
-    mk.addListener("click", disparar);
+    if (esAvanzado) mk.addEventListener("gmp-click", disparar);
+    else mk.addListener("click", disparar);
   } catch {
     /* versión sin el evento */
   }
@@ -820,7 +822,7 @@ export default function GoogleMapEmbed({
             };
           };
 
-          markerRef.current.addListener("gmp-dragstart", () => {
+          markerRef.current.addEventListener("gmp-dragstart", () => {
             popRef.current.close();
             marcarNodo(markerRef.current, true);
             setPin((p) => (p ? { ...p, arrastrando: true } : p));
@@ -831,7 +833,7 @@ export default function GoogleMapEmbed({
           // lectura de coordenadas se refresca a ritmo de pantalla.
           let pendiente = 0;
 
-          markerRef.current.addListener("gmp-drag", () => {
+          markerRef.current.addEventListener("gmp-drag", () => {
             const ll = leerPos();
 
             if (!ll) return;
@@ -850,7 +852,7 @@ export default function GoogleMapEmbed({
             });
           });
 
-          markerRef.current.addListener("gmp-dragend", () => {
+          markerRef.current.addEventListener("gmp-dragend", () => {
             cancelAnimationFrame(pendiente);
             marcarNodo(markerRef.current, false);
             const latLng = leerPos();
