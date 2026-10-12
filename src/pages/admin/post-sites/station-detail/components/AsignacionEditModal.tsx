@@ -1,7 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { CalendarRange, Loader2, Moon, Pencil, Trash2 } from "lucide-react";
+import {
+  CalendarRange,
+  Loader2,
+  Moon,
+  MoveHorizontal,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 
 import { ApiService } from "@/services/api/apiService";
 import { Modal } from "@/components/kit";
@@ -12,6 +19,7 @@ import {
   LabeledField,
 } from "@/pages/admin/clientes/components/_shared/tab-kit";
 import SecuenciaPropiaSelect from "@/components/schedule/SecuenciaPropiaSelect";
+import CorrerCicloModal from "@/components/schedule/CorrerCicloModal";
 import { nombreDeTramo } from "@/components/schedule/tramos";
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
@@ -80,6 +88,7 @@ export default function AsignacionEditModal({
   const [secuencia, setSecuencia] = useState("");
   const [inicio, setInicio] = useState("");
   const [fin, setFin] = useState("");
+  const [corriendo, setCorriendo] = useState(false);
 
   useEffect(() => {
     if (!open || !assignmentId) return;
@@ -529,9 +538,22 @@ export default function AsignacionEditModal({
           </LabeledField>
 
           <div
-            className="flex justify-end border-t pt-3"
+            className="flex flex-wrap items-center justify-end gap-2 border-t pt-3"
             style={{ borderColor: "var(--hairline)" }}
           >
+            {!esRelevo && (secuencia || stationRotationStyleId) && (
+              <Button
+                className="mr-auto"
+                disabled={guardando}
+                size="sm"
+                type="button"
+                variant="outline"
+                onClick={() => setCorriendo(true)}
+              >
+                <MoveHorizontal size={13} />{" "}
+                {t("ui.CorrerCiclo.boton", "Correr ciclo…")}
+              </Button>
+            )}
             <button
               className="cg-focus inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold disabled:opacity-50"
               disabled={guardando}
@@ -547,6 +569,18 @@ export default function AsignacionEditModal({
             </button>
           </div>
         </div>
+      )}
+      {corriendo && asignacion && (
+        <CorrerCicloModal
+          open
+          assignmentId={String(asignacion.id)}
+          nombre={nombre}
+          onClose={() => setCorriendo(false)}
+          onDone={() => {
+            setCorriendo(false);
+            onSaved();
+          }}
+        />
       )}
     </Modal>
   );

@@ -56,6 +56,7 @@ import ScheduleTimeline, {
 } from "./ScheduleTimeline";
 import ContextMenu, { CtxItem, CtxMenuState } from "./ContextMenu";
 import TransferShiftModal, { TransferTarget } from "./TransferShiftModal";
+import CorrerCicloModal from "@/components/schedule/CorrerCicloModal";
 import {
   handlersDePulsacionLarga,
   type PuntoDePulsacion,
@@ -2590,6 +2591,11 @@ export default function Schedule() {
   const [transferTarget, setTransferTarget] = useState<TransferTarget | null>(
     null,
   );
+  // "Correr ciclo…" de una asignación rotativa (escribe en el horario real).
+  const [correrCiclo, setCorrerCiclo] = useState<{
+    assignmentId: string;
+    nombre: string;
+  } | null>(null);
 
   const duplicateShiftNextDay = async (s: ShiftRecord) => {
     try {
@@ -2858,6 +2864,44 @@ export default function Schedule() {
             dateStr,
           }),
       });
+      // ── CORRER EL CICLO ───────────────────────────────────────────────
+      // Un ciclo que quedó un día adelantado (o atrasado) se corrige aquí, en
+      // el horario real. En el Planificador sólo era un borrador: B.A.S. lo
+      // corrió allí el 11/10, no lo publicó y el vigilante siguió trabajando.
+      // Una entrada por cada titular con rotación de la casilla.
+      for (const c of posAssignments) {
+        const pz = positionsById.get(c.positionId);
+        const rota =
+          (station.rotationStyleId &&
+            rotationStylesById.get(station.rotationStyleId)) ||
+          c.rotationStyle ||
+          (c.rotationStyleId && rotationStylesById.get(c.rotationStyleId));
+
+        if (
+          !rota ||
+          c.isRelief ||
+          pz?.type === "sacafranco" ||
+          c.role === "shadow"
+        )
+          continue;
+        items.push({
+          label: t("ui.Schedule.menuCorrerCiclo", {
+            defaultValue: "Correr ciclo de {{nombre}}…",
+            nombre: primerNombre(
+              c.guard,
+              t("ui.Schedule.vigilanteMinus", "vigilante"),
+            ),
+          }),
+          onClick: () =>
+            setCorrerCiclo({
+              assignmentId: c.id,
+              nombre: nombreDeVigilante(
+                c.guard,
+                t("comun.vigilante", "Vigilante"),
+              ),
+            }),
+        });
+      }
       // ── APRENDIZ EN ACOMPAÑAMIENTO ────────────────────────────────────
       // El vigilante nuevo hace unas semanas junto al titular antes de tomar su
       // propio puesto. Sigue SUS días —no una rotación propia, que caería en
@@ -7981,6 +8025,18 @@ export default function Schedule() {
         onClose={() => setTransferTarget(null)}
         onDone={() => fetchAll({ silent: true })}
       />
+      {correrCiclo && (
+        <CorrerCicloModal
+          open
+          assignmentId={correrCiclo.assignmentId}
+          nombre={correrCiclo.nombre}
+          onClose={() => setCorrerCiclo(null)}
+          onDone={() => {
+            setCorrerCiclo(null);
+            fetchAll({ silent: true });
+          }}
+        />
+      )}
 
       {/* ─── Aprendiz en acompañamiento ──────────────────────────────────────── */}
       {shadowFor &&

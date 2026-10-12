@@ -11891,7 +11891,8 @@
       "yaTieneTurnoEseDiaAviso": "Já tem turno nesse dia: o novo substituirá o que se sobrepuser.",
       "yaTieneTurnoEseDiaSufijo": " · já tem turno nesse dia",
       "yseRepite": "· e se repete",
-      "eliminarTurnosYNovedades": "Excluir os turnos e ocorrências da seleção (Del)"
+      "eliminarTurnosYNovedades": "Excluir os turnos e ocorrências da seleção (Del)",
+      "menuCorrerCiclo": "Deslocar ciclo de {{nombre}}…"
     },
     "ScheduleTimeline": {
       "duracion": "Duração:",
@@ -16461,6 +16462,27 @@
     "SelfieRostro": {
       "titulo": "Selfie e rosto ao bater o ponto",
       "ambasApps": "Vale para o app da equipe (vigilantes) e o do supervisor: é o mesmo ajuste nos dois."
+    },
+    "CorrerCiclo": {
+      "boton": "Deslocar ciclo…",
+      "titulo": "Deslocar o ciclo de {{nombre}}",
+      "descripcion": "Move toda a rotação de {{nombre}} na escala real: um número positivo a atrasa, um negativo a adianta. Primeiro mostra como fica; nada muda até você confirmar.",
+      "unDiaAntes": "−1 dia (antes)",
+      "unDiaDespues": "+1 dia (depois)",
+      "dias": "Dias",
+      "verComoQueda": "Ver como fica",
+      "aplicar": "Aplicar",
+      "aplicarPregunta": "Aplicar?",
+      "despues": "Depois:",
+      "noSePudo": "Não foi possível deslocar o ciclo",
+      "hecho": "Ciclo de {{nombre}} deslocado. {{creados}} turnos novos, {{quitados}} retirados de hoje.",
+      "vuelveElALas": "volta na {{dia}} às {{hora}}",
+      "vuelveEl": "volta na {{dia}}",
+      "descansaraYVuelve": "{{nombre}} descansará de {{desde}} a {{hasta}} e {{vuelve}}.",
+      "descansara": "{{nombre}} descansará de {{desde}} a {{hasta}}.",
+      "sinDescansoVuelve": "{{nombre}} não tem folgas próximas; {{vuelve}}.",
+      "sinDescanso": "{{nombre}} não tem folgas nos próximos dias.",
+      "resumen": "{{n}} dias · fase {{antes}} → {{despues}} · {{creados}} turnos novos, {{quitados}} retirados de hoje."
     }
   },
   "map": {

@@ -12426,7 +12426,8 @@
       "yaTieneTurnoEseDiaAviso": "Ha già un turno quel giorno: il nuovo sostituirà quello sovrapposto.",
       "yaTieneTurnoEseDiaSufijo": " · ha già un turno quel giorno",
       "yseRepite": "· e si ripete",
-      "eliminarTurnosYNovedades": "Elimina i turni e le segnalazioni selezionati (Canc)"
+      "eliminarTurnosYNovedades": "Elimina i turni e le segnalazioni selezionati (Canc)",
+      "menuCorrerCiclo": "Sposta il ciclo di {{nombre}}…"
     },
     "ScheduleTimeline": {
       "duracion": "Durata:",
@@ -16996,6 +16997,27 @@
     "SelfieRostro": {
       "titulo": "Selfie e volto alla timbratura",
       "ambasApps": "Vale per l'app del team (guardie) e quella del supervisore: è la stessa impostazione in entrambe."
+    },
+    "CorrerCiclo": {
+      "boton": "Sposta ciclo…",
+      "titulo": "Sposta il ciclo di {{nombre}}",
+      "descripcion": "Sposta tutta la rotazione di {{nombre}} nell'orario reale: un numero positivo la ritarda, uno negativo la anticipa. Prima vedi il risultato; nulla cambia finché non confermi.",
+      "unDiaAntes": "−1 giorno (prima)",
+      "unDiaDespues": "+1 giorno (dopo)",
+      "dias": "Giorni",
+      "verComoQueda": "Anteprima",
+      "aplicar": "Applica",
+      "aplicarPregunta": "Applicare?",
+      "despues": "Poi:",
+      "noSePudo": "Impossibile spostare il ciclo",
+      "hecho": "Ciclo di {{nombre}} spostato. {{creados}} turni nuovi, {{quitados}} rimossi da oggi.",
+      "vuelveElALas": "rientra {{dia}} alle {{hora}}",
+      "vuelveEl": "rientra {{dia}}",
+      "descansaraYVuelve": "{{nombre}} riposerà dal {{desde}} al {{hasta}} e {{vuelve}}.",
+      "descansara": "{{nombre}} riposerà dal {{desde}} al {{hasta}}.",
+      "sinDescansoVuelve": "{{nombre}} non ha riposi in vista; {{vuelve}}.",
+      "sinDescanso": "{{nombre}} non ha riposi nei prossimi giorni.",
+      "resumen": "{{n}} giorni · fase {{antes}} → {{despues}} · {{creados}} turni nuovi, {{quitados}} rimossi da oggi."
     }
   },
   "visitantes": {

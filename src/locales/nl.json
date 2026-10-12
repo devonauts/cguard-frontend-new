@@ -12426,7 +12426,8 @@
       "yaTieneTurnoEseDiaAviso": "Heeft die dag al een dienst: de nieuwe vervangt de overlappende.",
       "yaTieneTurnoEseDiaSufijo": " · heeft die dag al een dienst",
       "yseRepite": "· en herhaalt zich",
-      "eliminarTurnosYNovedades": "Geselecteerde diensten en bijzonderheden verwijderen (Del)"
+      "eliminarTurnosYNovedades": "Geselecteerde diensten en bijzonderheden verwijderen (Del)",
+      "menuCorrerCiclo": "Cyclus van {{nombre}} verschuiven…"
     },
     "ScheduleTimeline": {
       "duracion": "Duur:",
@@ -16996,6 +16997,27 @@
     "SelfieRostro": {
       "titulo": "Selfie en gezicht bij inklokken",
       "ambasApps": "Geldt voor de team-app (bewakers) en de supervisor-app: het is in beide dezelfde instelling."
+    },
+    "CorrerCiclo": {
+      "boton": "Cyclus verschuiven…",
+      "titulo": "Cyclus van {{nombre}} verschuiven",
+      "descripcion": "Verschuift de hele rotatie van {{nombre}} in het echte rooster: een positief getal stelt hem uit, een negatief vervroegt hem. Je ziet eerst het resultaat; er verandert niets tot je bevestigt.",
+      "unDiaAntes": "−1 dag (eerder)",
+      "unDiaDespues": "+1 dag (later)",
+      "dias": "Dagen",
+      "verComoQueda": "Voorbeeld",
+      "aplicar": "Toepassen",
+      "aplicarPregunta": "Toepassen?",
+      "despues": "Daarna:",
+      "noSePudo": "De cyclus kon niet worden verschoven",
+      "hecho": "Cyclus van {{nombre}} verschoven. {{creados}} nieuwe diensten, {{quitados}} van vandaag verwijderd.",
+      "vuelveElALas": "komt terug op {{dia}} om {{hora}}",
+      "vuelveEl": "komt terug op {{dia}}",
+      "descansaraYVuelve": "{{nombre}} is vrij van {{desde}} tot {{hasta}} en {{vuelve}}.",
+      "descansara": "{{nombre}} is vrij van {{desde}} tot {{hasta}}.",
+      "sinDescansoVuelve": "{{nombre}} heeft binnenkort geen vrije dagen; {{vuelve}}.",
+      "sinDescanso": "{{nombre}} heeft de komende dagen geen vrije dagen.",
+      "resumen": "{{n}} dagen · fase {{antes}} → {{despues}} · {{creados}} nieuwe diensten, {{quitados}} van vandaag verwijderd."
     }
   },
   "visitantes": {

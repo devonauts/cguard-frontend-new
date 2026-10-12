@@ -12426,7 +12426,8 @@
       "yaTieneTurnoEseDiaAviso": "Hat an diesem Tag bereits eine Schicht: Die neue ersetzt die überlappende.",
       "yaTieneTurnoEseDiaSufijo": " · hat an diesem Tag bereits eine Schicht",
       "yseRepite": "· und wiederholt sich",
-      "eliminarTurnosYNovedades": "Ausgewählte Schichten und Vorkommnisse löschen (Entf)"
+      "eliminarTurnosYNovedades": "Ausgewählte Schichten und Vorkommnisse löschen (Entf)",
+      "menuCorrerCiclo": "Zyklus von {{nombre}} verschieben…"
     },
     "ScheduleTimeline": {
       "duracion": "Dauer:",
@@ -16996,6 +16997,27 @@
     "SelfieRostro": {
       "titulo": "Selfie und Gesicht beim Stempeln",
       "ambasApps": "Gilt für die Team-App (Wachleute) und die Supervisor-App: in beiden dieselbe Einstellung."
+    },
+    "CorrerCiclo": {
+      "boton": "Zyklus verschieben…",
+      "titulo": "Zyklus von {{nombre}} verschieben",
+      "descripcion": "Verschiebt die gesamte Rotation von {{nombre}} im echten Dienstplan: eine positive Zahl verzögert sie, eine negative zieht sie vor. Zuerst siehst du das Ergebnis; nichts ändert sich, bevor du bestätigst.",
+      "unDiaAntes": "−1 Tag (früher)",
+      "unDiaDespues": "+1 Tag (später)",
+      "dias": "Tage",
+      "verComoQueda": "Vorschau",
+      "aplicar": "Anwenden",
+      "aplicarPregunta": "Anwenden?",
+      "despues": "Danach:",
+      "noSePudo": "Zyklus konnte nicht verschoben werden",
+      "hecho": "Zyklus von {{nombre}} verschoben. {{creados}} neue Schichten, {{quitados}} heute entfernt.",
+      "vuelveElALas": "kommt am {{dia}} um {{hora}} zurück",
+      "vuelveEl": "kommt am {{dia}} zurück",
+      "descansaraYVuelve": "{{nombre}} hat frei vom {{desde}} bis {{hasta}} und {{vuelve}}.",
+      "descansara": "{{nombre}} hat frei vom {{desde}} bis {{hasta}}.",
+      "sinDescansoVuelve": "{{nombre}} hat demnächst keine freien Tage; {{vuelve}}.",
+      "sinDescanso": "{{nombre}} hat in den nächsten Tagen keine freien Tage.",
+      "resumen": "{{n}} Tage · Phase {{antes}} → {{despues}} · {{creados}} neue Schichten, {{quitados}} heute entfernt."
     }
   },
   "visitantes": {

@@ -11891,7 +11891,8 @@
       "yaTieneTurnoEseDiaAviso": "Already has a shift that day: the new one will replace the overlapping one.",
       "yaTieneTurnoEseDiaSufijo": " · already has a shift that day",
       "yseRepite": "· and repeats",
-      "eliminarTurnosYNovedades": "Delete the selected shifts and reports (Del)"
+      "eliminarTurnosYNovedades": "Delete the selected shifts and reports (Del)",
+      "menuCorrerCiclo": "Shift {{nombre}}'s cycle…"
     },
     "ScheduleTimeline": {
       "duracion": "Duration:",
@@ -16461,6 +16462,27 @@
     "SelfieRostro": {
       "titulo": "Selfie and face at clock-in",
       "ambasApps": "Applies to the team app (guards) and the supervisor app: it is the same setting in both."
+    },
+    "CorrerCiclo": {
+      "boton": "Shift cycle…",
+      "titulo": "Shift {{nombre}}'s cycle",
+      "descripcion": "Moves {{nombre}}'s whole rotation in the live schedule: a positive number delays it, a negative one brings it forward. You'll see the result first; nothing changes until you confirm.",
+      "unDiaAntes": "−1 day (earlier)",
+      "unDiaDespues": "+1 day (later)",
+      "dias": "Days",
+      "verComoQueda": "Preview",
+      "aplicar": "Apply",
+      "aplicarPregunta": "Apply?",
+      "despues": "Then:",
+      "noSePudo": "Could not shift the cycle",
+      "hecho": "{{nombre}}'s cycle shifted. {{creados}} new shifts, {{quitados}} removed from today.",
+      "vuelveElALas": "returns on {{dia}} at {{hora}}",
+      "vuelveEl": "returns on {{dia}}",
+      "descansaraYVuelve": "{{nombre}} will rest from {{desde}} to {{hasta}} and {{vuelve}}.",
+      "descansara": "{{nombre}} will rest from {{desde}} to {{hasta}}.",
+      "sinDescansoVuelve": "{{nombre}} has no rest days coming up; {{vuelve}}.",
+      "sinDescanso": "{{nombre}} has no rest days in the coming days.",
+      "resumen": "{{n}} days · phase {{antes}} → {{despues}} · {{creados}} new shifts, {{quitados}} removed from today."
     }
   },
   "map": {

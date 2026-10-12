@@ -12492,7 +12492,8 @@
       "yaTieneTurnoEseDiaAviso": "Ma już zmianę tego dnia: nowa zastąpi tę, która się nakłada.",
       "yaTieneTurnoEseDiaSufijo": " · ma już zmianę tego dnia",
       "yseRepite": "· i się powtarza",
-      "eliminarTurnosYNovedades": "Usuń zaznaczone zmiany i zdarzenia (Del)"
+      "eliminarTurnosYNovedades": "Usuń zaznaczone zmiany i zdarzenia (Del)",
+      "menuCorrerCiclo": "Przesuń cykl: {{nombre}}…"
     },
     "ScheduleTimeline": {
       "duracion": "Czas trwania:",
@@ -17186,6 +17187,27 @@
     "SelfieRostro": {
       "titulo": "Selfie i twarz przy rejestracji czasu",
       "ambasApps": "Dotyczy aplikacji zespołu (ochroniarzy) i aplikacji przełożonego: to samo ustawienie w obu."
+    },
+    "CorrerCiclo": {
+      "boton": "Przesuń cykl…",
+      "titulo": "Przesuń cykl: {{nombre}}",
+      "descripcion": "Przesuwa całą rotację {{nombre}} w rzeczywistym grafiku: liczba dodatnia ją opóźnia, ujemna przyspiesza. Najpierw zobaczysz wynik; nic się nie zmieni, dopóki nie potwierdzisz.",
+      "unDiaAntes": "−1 dzień (wcześniej)",
+      "unDiaDespues": "+1 dzień (później)",
+      "dias": "Dni",
+      "verComoQueda": "Podgląd",
+      "aplicar": "Zastosuj",
+      "aplicarPregunta": "Zastosować?",
+      "despues": "Potem:",
+      "noSePudo": "Nie udało się przesunąć cyklu",
+      "hecho": "Cykl {{nombre}} przesunięty. Nowe zmiany: {{creados}}, usunięte z dziś: {{quitados}}.",
+      "vuelveElALas": "wraca {{dia}} o {{hora}}",
+      "vuelveEl": "wraca {{dia}}",
+      "descansaraYVuelve": "{{nombre}} będzie mieć wolne od {{desde}} do {{hasta}} i {{vuelve}}.",
+      "descansara": "{{nombre}} będzie mieć wolne od {{desde}} do {{hasta}}.",
+      "sinDescansoVuelve": "{{nombre}} nie ma wkrótce wolnych dni; {{vuelve}}.",
+      "sinDescanso": "{{nombre}} nie ma wolnych dni w najbliższym czasie.",
+      "resumen": "Dni: {{n}} · faza {{antes}} → {{despues}} · nowe zmiany: {{creados}}, usunięte z dziś: {{quitados}}."
     }
   },
   "visitantes": {

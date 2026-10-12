@@ -12426,7 +12426,8 @@
       "yaTieneTurnoEseDiaAviso": "A déjà un poste ce jour-là : le nouveau remplacera celui qui chevauche.",
       "yaTieneTurnoEseDiaSufijo": " · a déjà un poste ce jour-là",
       "yseRepite": "· et se répète",
-      "eliminarTurnosYNovedades": "Supprimer les vacations et événements sélectionnés (Suppr)"
+      "eliminarTurnosYNovedades": "Supprimer les vacations et événements sélectionnés (Suppr)",
+      "menuCorrerCiclo": "Décaler le cycle de {{nombre}}…"
     },
     "ScheduleTimeline": {
       "duracion": "Durée :",
@@ -16996,6 +16997,27 @@
     "SelfieRostro": {
       "titulo": "Selfie et visage au pointage",
       "ambasApps": "S'applique à l'app de l'équipe (agents) et à celle du superviseur : c'est le même réglage dans les deux."
+    },
+    "CorrerCiclo": {
+      "boton": "Décaler le cycle…",
+      "titulo": "Décaler le cycle de {{nombre}}",
+      "descripcion": "Déplace toute la rotation de {{nombre}} dans le planning réel : un nombre positif la retarde, un négatif l'avance. Le résultat s'affiche d'abord ; rien ne change avant votre confirmation.",
+      "unDiaAntes": "−1 jour (plus tôt)",
+      "unDiaDespues": "+1 jour (plus tard)",
+      "dias": "Jours",
+      "verComoQueda": "Aperçu",
+      "aplicar": "Appliquer",
+      "aplicarPregunta": "Appliquer ?",
+      "despues": "Ensuite :",
+      "noSePudo": "Impossible de décaler le cycle",
+      "hecho": "Cycle de {{nombre}} décalé. {{creados}} nouveaux postes, {{quitados}} retirés aujourd'hui.",
+      "vuelveElALas": "reprend le {{dia}} à {{hora}}",
+      "vuelveEl": "reprend le {{dia}}",
+      "descansaraYVuelve": "{{nombre}} sera en repos du {{desde}} au {{hasta}} et {{vuelve}}.",
+      "descansara": "{{nombre}} sera en repos du {{desde}} au {{hasta}}.",
+      "sinDescansoVuelve": "{{nombre}} n'a pas de repos prochainement ; {{vuelve}}.",
+      "sinDescanso": "{{nombre}} n'a pas de repos dans les prochains jours.",
+      "resumen": "{{n}} jours · phase {{antes}} → {{despues}} · {{creados}} nouveaux postes, {{quitados}} retirés aujourd'hui."
     }
   },
   "visitantes": {

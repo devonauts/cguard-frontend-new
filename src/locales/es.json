@@ -11891,7 +11891,8 @@
       "yaTieneTurnoEseDiaAviso": "Ya tiene turno ese día: el nuevo reemplazará al que se solape.",
       "yaTieneTurnoEseDiaSufijo": " · ya tiene turno ese día",
       "yseRepite": "· y se repite",
-      "eliminarTurnosYNovedades": "Eliminar los turnos y novedades de la selección (Supr)"
+      "eliminarTurnosYNovedades": "Eliminar los turnos y novedades de la selección (Supr)",
+      "menuCorrerCiclo": "Correr ciclo de {{nombre}}…"
     },
     "ScheduleTimeline": {
       "duracion": "Duración:",
@@ -16461,6 +16462,27 @@
     "SelfieRostro": {
       "titulo": "Selfie y rostro al fichar",
       "ambasApps": "Vale para la app del equipo (vigilantes) y la del supervisor: es el mismo ajuste en las dos."
+    },
+    "CorrerCiclo": {
+      "boton": "Correr ciclo…",
+      "titulo": "Correr el ciclo de {{nombre}}",
+      "descripcion": "Mueve toda la rotación de {{nombre}} en el horario real: un número positivo la retrasa, uno negativo la adelanta. Primero se enseña cómo queda; nada cambia hasta que confirmes.",
+      "unDiaAntes": "−1 día (antes)",
+      "unDiaDespues": "+1 día (después)",
+      "dias": "Días",
+      "verComoQueda": "Ver cómo queda",
+      "aplicar": "Aplicar",
+      "aplicarPregunta": "¿Aplicar?",
+      "despues": "Después:",
+      "noSePudo": "No se pudo correr el ciclo",
+      "hecho": "Ciclo de {{nombre}} corrido. {{creados}} turnos nuevos, {{quitados}} retirados de hoy.",
+      "vuelveElALas": "vuelve el {{dia}} a las {{hora}}",
+      "vuelveEl": "vuelve el {{dia}}",
+      "descansaraYVuelve": "{{nombre}} descansará del {{desde}} al {{hasta}} y {{vuelve}}.",
+      "descansara": "{{nombre}} descansará del {{desde}} al {{hasta}}.",
+      "sinDescansoVuelve": "{{nombre}} no tiene descansos cerca; {{vuelve}}.",
+      "sinDescanso": "{{nombre}} no tiene descansos en los próximos días.",
+      "resumen": "{{n}} días · fase {{antes}} → {{despues}} · {{creados}} turnos nuevos, {{quitados}} retirados de hoy."
     }
   },
   "map": {
