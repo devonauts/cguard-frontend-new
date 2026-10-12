@@ -16798,7 +16798,7 @@
       "radioMetros": "Rayon du géorepérage (mètres)",
       "ubicacionYGeocerca": "Emplacement exact et géorepérage",
       "ubicacionYGeocercaExplica": "Glissez le repère à l'endroit exact du poste. La ligne pointillée est le rayon ci-dessus : à l'intérieur, l'agent peut pointer. Si vous dessinez un polygone (3 points ou plus), c'est lui qui compte.",
-      "eventoNota": "Événement : {{rango}}. Indiquez les heures couvertes par cette station pendant l'événement et combien d'agents à la fois. Sans rotation : la personne affectée travaille ces heures pendant toute la durée de l'événement.",
+      "eventoNota": "Événement : {{rango}} · Indiquez les heures couvertes par cette station pendant l'événement et combien d'agents à la fois. Sans rotation : la personne affectée travaille ces heures pendant toute la durée de l'événement.",
       "eventoNotaSinFechas": "Indiquez les heures couvertes par cette station pendant l'événement et combien d'agents à la fois. Sans rotation : la personne affectée travaille ces heures pendant toute la durée de l'événement."
     },
     "Planificador": {

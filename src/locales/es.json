@@ -16266,7 +16266,7 @@
       "radioMetros": "Radio de la geocerca (metros)",
       "ubicacionYGeocerca": "Ubicación exacta y geocerca",
       "ubicacionYGeocercaExplica": "Arrastra el pin al punto exacto del puesto. La línea punteada es el radio de arriba: dentro de ella el vigilante puede marcar entrada. Si dibujas un polígono (3+ puntos), manda el polígono.",
-      "eventoNota": "Evento: {{rango}}. Di qué horas cubre esta estación dentro del evento y cuántos vigilantes a la vez. Sin rotación: quien asignes trabaja esas horas mientras dure el evento.",
+      "eventoNota": "Evento: {{rango}} · Di qué horas cubre esta estación dentro del evento y cuántos vigilantes a la vez. Sin rotación: quien asignes trabaja esas horas mientras dure el evento.",
       "eventoNotaSinFechas": "Di qué horas cubre esta estación dentro del evento y cuántos vigilantes a la vez. Sin rotación: quien asignes trabaja esas horas mientras dure el evento."
     },
     "Planificador": {

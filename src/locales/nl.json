@@ -16798,7 +16798,7 @@
       "radioMetros": "Geofence-straal (meter)",
       "ubicacionYGeocerca": "Exacte locatie en geofence",
       "ubicacionYGeocercaExplica": "Sleep de pin naar de exacte plek van de post. De stippellijn is de straal hierboven: daarbinnen kan de beveiliger inklokken. Teken je een polygoon (3+ punten), dan geldt de polygoon.",
-      "eventoNota": "Evenement: {{rango}}. Geef aan welke uren dit station tijdens het evenement dekt en hoeveel beveiligers tegelijk. Geen rotatie: wie je indeelt, werkt die uren zolang het evenement duurt.",
+      "eventoNota": "Evenement: {{rango}} · Geef aan welke uren dit station tijdens het evenement dekt en hoeveel beveiligers tegelijk. Geen rotatie: wie je indeelt, werkt die uren zolang het evenement duurt.",
       "eventoNotaSinFechas": "Geef aan welke uren dit station tijdens het evenement dekt en hoeveel beveiligers tegelijk. Geen rotatie: wie je indeelt, werkt die uren zolang het evenement duurt."
     },
     "Planificador": {

@@ -16798,7 +16798,7 @@
       "radioMetros": "Geofence-Radius (Meter)",
       "ubicacionYGeocerca": "Genauer Standort und Geofence",
       "ubicacionYGeocercaExplica": "Ziehen Sie die Markierung auf den genauen Punkt des Postens. Die gepunktete Linie ist der Radius oben: darin kann der Wachmann einstempeln. Zeichnen Sie ein Polygon (3+ Punkte), gilt das Polygon.",
-      "eventoNota": "Veranstaltung: {{rango}}. Geben Sie an, welche Stunden diese Station während der Veranstaltung abdeckt und wie viele Sicherheitskräfte gleichzeitig. Ohne Rotation: Wer zugewiesen wird, arbeitet diese Stunden, solange die Veranstaltung dauert.",
+      "eventoNota": "Veranstaltung: {{rango}} · Geben Sie an, welche Stunden diese Station während der Veranstaltung abdeckt und wie viele Sicherheitskräfte gleichzeitig. Ohne Rotation: Wer zugewiesen wird, arbeitet diese Stunden, solange die Veranstaltung dauert.",
       "eventoNotaSinFechas": "Geben Sie an, welche Stunden diese Station während der Veranstaltung abdeckt und wie viele Sicherheitskräfte gleichzeitig. Ohne Rotation: Wer zugewiesen wird, arbeitet diese Stunden, solange die Veranstaltung dauert."
     },
     "Planificador": {

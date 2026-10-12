@@ -16266,7 +16266,7 @@
       "radioMetros": "Raio da cerca virtual (metros)",
       "ubicacionYGeocerca": "Localização exata e cerca virtual",
       "ubicacionYGeocercaExplica": "Arraste o pino até o ponto exato do posto. A linha pontilhada é o raio acima: dentro dela o vigilante pode marcar entrada. Se desenhar um polígono (3+ pontos), vale o polígono.",
-      "eventoNota": "Evento: {{rango}}. Diga que horas esta estação cobre durante o evento e quantos vigilantes ao mesmo tempo. Sem rodízio: quem você designar trabalha essas horas enquanto durar o evento.",
+      "eventoNota": "Evento: {{rango}} · Diga que horas esta estação cobre durante o evento e quantos vigilantes ao mesmo tempo. Sem rodízio: quem você designar trabalha essas horas enquanto durar o evento.",
       "eventoNotaSinFechas": "Diga que horas esta estação cobre durante o evento e quantos vigilantes ao mesmo tempo. Sem rodízio: quem você designar trabalha essas horas enquanto durar o evento."
     },
     "Planificador": {

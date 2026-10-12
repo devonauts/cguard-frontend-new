@@ -16798,7 +16798,7 @@
       "radioMetros": "Raggio del geofence (metri)",
       "ubicacionYGeocerca": "Posizione esatta e geofence",
       "ubicacionYGeocercaExplica": "Trascina il segnaposto sul punto esatto della postazione. La linea tratteggiata è il raggio sopra: al suo interno la guardia può timbrare. Se disegni un poligono (3+ punti), vale il poligono.",
-      "eventoNota": "Evento: {{rango}}. Indica quali ore copre questa stazione durante l'evento e quante guardie contemporaneamente. Senza rotazione: chi assegni lavora quelle ore per tutta la durata dell'evento.",
+      "eventoNota": "Evento: {{rango}} · Indica quali ore copre questa stazione durante l'evento e quante guardie contemporaneamente. Senza rotazione: chi assegni lavora quelle ore per tutta la durata dell'evento.",
       "eventoNotaSinFechas": "Indica quali ore copre questa stazione durante l'evento e quante guardie contemporaneamente. Senza rotazione: chi assegni lavora quelle ore per tutta la durata dell'evento."
     },
     "Planificador": {

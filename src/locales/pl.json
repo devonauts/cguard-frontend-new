@@ -16988,7 +16988,7 @@
       "radioMetros": "Promień geofence (metry)",
       "ubicacionYGeocerca": "Dokładna lokalizacja i geofence",
       "ubicacionYGeocercaExplica": "Przeciągnij pinezkę w dokładne miejsce posterunku. Linia przerywana to promień powyżej: wewnątrz ochroniarz może się odbić. Jeśli narysujesz wielokąt (3+ punkty), liczy się wielokąt.",
-      "eventoNota": "Wydarzenie: {{rango}}. Określ, w jakich godzinach to stanowisko jest obsadzone podczas wydarzenia i ilu ochroniarzy jednocześnie. Bez rotacji: przydzielona osoba pracuje w tych godzinach przez cały czas trwania wydarzenia.",
+      "eventoNota": "Wydarzenie: {{rango}} · Określ, w jakich godzinach to stanowisko jest obsadzone podczas wydarzenia i ilu ochroniarzy jednocześnie. Bez rotacji: przydzielona osoba pracuje w tych godzinach przez cały czas trwania wydarzenia.",
       "eventoNotaSinFechas": "Określ, w jakich godzinach to stanowisko jest obsadzone podczas wydarzenia i ilu ochroniarzy jednocześnie. Bez rotacji: przydzielona osoba pracuje w tych godzinach przez cały czas trwania wydarzenia."
     },
     "Planificador": {

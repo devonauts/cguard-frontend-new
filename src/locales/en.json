@@ -16266,7 +16266,7 @@
       "radioMetros": "Geofence radius (meters)",
       "ubicacionYGeocerca": "Exact location and geofence",
       "ubicacionYGeocercaExplica": "Drag the pin to the exact spot of the post. The dotted line is the radius above: inside it the guard can clock in. If you draw a polygon (3+ points), the polygon rules.",
-      "eventoNota": "Event: {{rango}}. Say which hours this station covers during the event and how many guards at once. No rotation: whoever you assign works those hours for as long as the event lasts.",
+      "eventoNota": "Event: {{rango}} · Say which hours this station covers during the event and how many guards at once. No rotation: whoever you assign works those hours for as long as the event lasts.",
       "eventoNotaSinFechas": "Say which hours this station covers during the event and how many guards at once. No rotation: whoever you assign works those hours for as long as the event lasts."
     },
     "Planificador": {

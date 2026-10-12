@@ -692,7 +692,7 @@ export default function StationCreateForm({
                   return rango
                     ? t("ui.StationCreateForm.eventoNota", {
                         defaultValue:
-                          "Evento: {{rango}}. Di qué horas cubre esta estación dentro del evento y cuántos vigilantes a la vez. Sin rotación: quien asignes trabaja esas horas mientras dure el evento.",
+                          "Evento: {{rango}} · Di qué horas cubre esta estación dentro del evento y cuántos vigilantes a la vez. Sin rotación: quien asignes trabaja esas horas mientras dure el evento.",
                         rango,
                       })
                     : t(
