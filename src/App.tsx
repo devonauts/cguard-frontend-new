@@ -374,9 +374,6 @@ const TaskTracking = lazy(() => import("./pages/admin/tasks/TaskTracking"));
 const PassdownsPage = lazy(
   () => import("./pages/admin/passdown/PassdownsPage"),
 );
-const NominaHoursSummary = lazy(
-  () => import("./pages/admin/nomina/NominaHoursSummary"),
-);
 const NominaTimecards = lazy(
   () => import("./pages/admin/nomina/NominaTimecards"),
 );
@@ -2061,14 +2058,6 @@ export default function App() {
                               <Route
                                 element={
                                   <ProtectedRoute>
-                                    <NominaHoursSummary />
-                                  </ProtectedRoute>
-                                }
-                                path="/nomina/payroll-summary"
-                              />
-                              <Route
-                                element={
-                                  <ProtectedRoute>
                                     <NominaTimecards />
                                   </ProtectedRoute>
                                 }
@@ -2077,10 +2066,7 @@ export default function App() {
                               {/* Bookmarks and old notification links must not land on a 404. */}
                               <Route
                                 element={
-                                  <Navigate
-                                    replace
-                                    to="/nomina/payroll-summary"
-                                  />
+                                  <Navigate replace to="/nomina/timecards" />
                                 }
                                 path="/nomina/rol-de-pagos"
                               />

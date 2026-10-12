@@ -470,16 +470,6 @@ const attendanceService = {
     return unwrap(await api.get(`/tenant/${t}/attendance/current-period`));
   },
 
-  async payrollSummary(params?: Record<string, unknown>) {
-    const t = getTenantId();
-
-    return unwrap(
-      await api.get(
-        `/tenant/${t}/attendance/payroll-summary${buildQuery(params)}`,
-      ),
-    );
-  },
-
   async closePeriod(cutoff: string) {
     const t = getTenantId();
 

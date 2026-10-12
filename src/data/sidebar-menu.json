@@ -330,11 +330,6 @@
         "path": "/nomina/approvals"
       },
       {
-        "id": "nomina-payroll-summary",
-        "name": "Resumen de Horas",
-        "path": "/nomina/payroll-summary"
-      },
-      {
         "id": "nomina-timecards",
         "name": "Tarjetas de Nómina",
         "path": "/nomina/timecards"

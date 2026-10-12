@@ -351,7 +351,7 @@ export default function NominaRecords() {
           )}
           {r.role === "administrative" && (
             <ToneBadge tone="info" dot={false}>
-              {t("ui.NominaHoursSummary.administrativo", "Administrativo")}
+              {t("ui.NominaShared.administrativo", "Administrativo")}
             </ToneBadge>
           )}
         </span>
@@ -596,7 +596,7 @@ export default function NominaRecords() {
     } catch (e: any) {
       toast.error(
         e?.message ||
-          t("ui.NominaHoursSummary.noSePudoGenerarElArchivo", "No se pudo generar el archivo"),
+          t("ui.NominaShared.noSePudoGenerarElArchivo", "No se pudo generar el archivo"),
       );
     } finally {
       setBusy(false);

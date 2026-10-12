@@ -89,7 +89,7 @@ const TONO: Record<EstadoTarjeta, "info" | "ok" | "neutral"> = {
 const ETIQUETA_ROL: Record<string, [string, string]> = {
   vigilante: ["comun.vigilante", "Vigilante"],
   supervisor: ["comun.supervisor", "Supervisor"],
-  oficina: ["ui.NominaHoursSummary.administrativo", "Administrativo"],
+  oficina: ["ui.NominaShared.administrativo", "Administrativo"],
 };
 
 const ETIQUETA_ESTADO: Record<EstadoTarjeta, [string, string]> = {
