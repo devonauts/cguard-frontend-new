@@ -76,7 +76,7 @@ export default function SelfieRostroAjustes() {
         <span className="text-xs text-[var(--text-secondary)]">
           {t(
             "ui.NominaSettings.caraAyuda",
-            "Revisa que en la foto haya una cara y no la pared, el techo o un dedo sobre la cámara. No reconoce a la persona. Con «Exigir», al tercer intento deja marcar y queda para revisión.",
+            "Revisa que en la foto se vea la cara y no la pared, el techo o un dedo sobre la cámara. No reconoce a la persona. Con «Exigir», la app pide verificación facial: la cara entera, de frente y dentro del marco, y no deja marcar sin ella. Con «No comprobar» o «Avisar», la app solo toma la foto.",
           )}
         </span>
       </label>

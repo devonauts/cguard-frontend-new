@@ -11078,7 +11078,7 @@
       "caraOff": "Niet controleren",
       "caraFlag": "Leidinggevende waarschuwen (klokt toch in)",
       "caraEnforce": "Vereisen: selfie opnieuw laten maken",
-      "caraAyuda": "Controleert of de foto een gezicht toont en niet de muur, het plafond of een vinger op de camera. Herkent de persoon niet. Bij „Vereisen” klokt de derde poging in en blijft ter controle.",
+      "caraAyuda": "Controleert of de foto een gezicht toont en niet de muur, het plafond of een vinger op de camera. Herkent de persoon niet. Bij „Vereisen” vraagt de app om gezichtsverificatie: het hele gezicht, recht van voren en in het kader, en zonder kan er niet worden ingeklokt. Bij „Niet controleren” of „Melden” maakt de app alleen de foto.",
       "vacacionesYDescanso": "Verlof en rust",
       "vacacionesYDescansoAyuda": "Laat leeg om de wet van uw land te gebruiken (op basis van dienstjaren). Vul een getal in als uw bedrijf iets anders toekent via cao of contract.",
       "diasDeVacacionesPorAnio": "Vakantiedagen per jaar",

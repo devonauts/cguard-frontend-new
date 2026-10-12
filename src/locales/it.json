@@ -11078,7 +11078,7 @@
       "caraOff": "Non verificare",
       "caraFlag": "Avvisare il supervisore (timbra comunque)",
       "caraEnforce": "Richiedere: far ripetere il selfie",
-      "caraAyuda": "Verifica che la foto mostri un viso e non il muro, il soffitto o un dito sulla fotocamera. Non riconosce la persona. Con «Richiedere», al terzo tentativo timbra e resta da verificare.",
+      "caraAyuda": "Verifica che la foto mostri il viso e non il muro, il soffitto o un dito sulla fotocamera. Non riconosce la persona. Con «Richiedere», l'app chiede la verifica del volto: viso intero, di fronte e dentro la cornice, e senza non lascia timbrare. Con «Non verificare» o «Avvisare», l'app scatta solo la foto.",
       "vacacionesYDescanso": "Ferie e riposo",
       "vacacionesYDescansoAyuda": "Lascia vuoto per usare la legge del tuo paese (per anzianità). Inserisci un numero se la tua azienda concede altro per contratto o accordo.",
       "diasDeVacacionesPorAnio": "Giorni di ferie all’anno",

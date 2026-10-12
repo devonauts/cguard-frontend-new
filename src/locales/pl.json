@@ -11114,7 +11114,7 @@
       "caraOff": "Nie sprawdzaj",
       "caraFlag": "Powiadom przełożonego (i tak odbija)",
       "caraEnforce": "Wymagaj: poproś o ponowne selfie",
-      "caraAyuda": "Sprawdza, czy zdjęcie pokazuje twarz, a nie ścianę, sufit lub palec na aparacie. Nie rozpoznaje osoby. Przy „Wymagaj” trzecia próba odbija wejście i trafia do weryfikacji.",
+      "caraAyuda": "Sprawdza, czy zdjęcie pokazuje twarz, a nie ścianę, sufit lub palec na aparacie. Nie rozpoznaje osoby. Przy „Wymagaj” aplikacja prosi o weryfikację twarzy: cała twarz, przodem i w ramce — bez niej nie można odbić wejścia. Przy „Nie sprawdzaj” lub „Powiadom” aplikacja tylko robi zdjęcie.",
       "vacacionesYDescanso": "Urlop i odpoczynek",
       "vacacionesYDescansoAyuda": "Zostaw puste, aby stosować prawo Twojego kraju (wg stażu). Wpisz liczbę, jeśli firma przyznaje coś innego z układu lub umowy.",
       "diasDeVacacionesPorAnio": "Dni urlopu rocznie",

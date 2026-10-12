@@ -10543,7 +10543,7 @@
       "caraOff": "No comprobar",
       "caraFlag": "Avisar al supervisor (deja marcar)",
       "caraEnforce": "Exigir: pedir que repita la selfie",
-      "caraAyuda": "Revisa que en la foto haya una cara y no la pared, el techo o un dedo sobre la cámara. No reconoce a la persona. Con «Exigir», al tercer intento deja marcar y queda para revisión.",
+      "caraAyuda": "Revisa que en la foto se vea la cara y no la pared, el techo o un dedo sobre la cámara. No reconoce a la persona. Con «Exigir», la app pide verificación facial: la cara entera, de frente y dentro del marco, y no deja marcar sin ella. Con «No comprobar» o «Avisar», la app solo toma la foto.",
       "vacacionesYDescanso": "Vacaciones y descanso",
       "vacacionesYDescansoAyuda": "Déjalo vacío para usar lo que dice la ley de tu país (por antigüedad). Escribe un número si tu empresa da otra cosa por convenio o contrato.",
       "diasDeVacacionesPorAnio": "Días de vacaciones por año",

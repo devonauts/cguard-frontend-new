@@ -11078,7 +11078,7 @@
       "caraOff": "Nicht prüfen",
       "caraFlag": "Vorgesetzten benachrichtigen (stempelt trotzdem)",
       "caraEnforce": "Verlangen: Selfie wiederholen lassen",
-      "caraAyuda": "Prüft, ob das Foto ein Gesicht zeigt und nicht die Wand, die Decke oder einen Finger auf der Kamera. Erkennt die Person nicht. Bei „Verlangen“ wird beim dritten Versuch gestempelt und zur Prüfung markiert.",
+      "caraAyuda": "Prüft, ob das Foto ein Gesicht zeigt und nicht die Wand, die Decke oder einen Finger auf der Kamera. Erkennt die Person nicht. Bei „Verlangen“ fordert die App eine Gesichtsprüfung: das ganze Gesicht, von vorn und im Rahmen – ohne sie kein Einstempeln. Bei „Nicht prüfen“ oder „Benachrichtigen“ macht die App nur das Foto.",
       "vacacionesYDescanso": "Urlaub und Ruhezeit",
       "vacacionesYDescansoAyuda": "Leer lassen, um das Gesetz Ihres Landes (nach Betriebszugehörigkeit) anzuwenden. Tragen Sie eine Zahl ein, wenn Ihr Unternehmen per Tarif oder Vertrag etwas anderes gewährt.",
       "diasDeVacacionesPorAnio": "Urlaubstage pro Jahr",

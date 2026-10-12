@@ -11078,7 +11078,7 @@
       "caraOff": "Ne pas vérifier",
       "caraFlag": "Prévenir le superviseur (pointe quand même)",
       "caraEnforce": "Exiger : demander de refaire le selfie",
-      "caraAyuda": "Vérifie que la photo montre un visage et non le mur, le plafond ou un doigt sur la caméra. Ne reconnaît pas la personne. Avec « Exiger », la troisième tentative pointe et reste à vérifier.",
+      "caraAyuda": "Vérifie que la photo montre un visage et non le mur, le plafond ou un doigt sur la caméra. Ne reconnaît pas la personne. Avec « Exiger », l'app demande une vérification faciale : le visage entier, de face et dans le cadre, et ne permet pas de pointer sans elle. Avec « Ne pas vérifier » ou « Avertir », l'app prend seulement la photo.",
       "vacacionesYDescanso": "Congés et repos",
       "vacacionesYDescansoAyuda": "Laissez vide pour appliquer la loi de votre pays (selon l’ancienneté). Saisissez un nombre si votre entreprise accorde autre chose par accord ou contrat.",
       "diasDeVacacionesPorAnio": "Jours de congés par an",

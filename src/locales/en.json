@@ -10543,7 +10543,7 @@
       "caraOff": "Don't check",
       "caraFlag": "Notify the supervisor (still clocks in)",
       "caraEnforce": "Require: ask to retake the selfie",
-      "caraAyuda": "Checks that the photo shows a face, not the wall, the ceiling or a finger over the camera. It doesn't recognize the person. With “Require”, the third attempt clocks in and is left for review.",
+      "caraAyuda": "Checks that the photo shows a face, not the wall, the ceiling or a finger over the camera. It doesn't recognize the person. With “Require”, the app asks for face verification: the whole face, facing forward and inside the frame, and won't clock in without it. With “Don't check” or “Notify”, the app just takes the photo.",
       "vacacionesYDescanso": "Time off and rest",
       "vacacionesYDescansoAyuda": "Leave it empty to use your country’s law (by seniority). Enter a number if your company grants something different by agreement or contract.",
       "diasDeVacacionesPorAnio": "Vacation days per year",
