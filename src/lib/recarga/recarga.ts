@@ -65,15 +65,22 @@ export async function recargarAhora(opciones: { forzar?: boolean } = {}): Promis
     }, 3000);
     return;
   }
-  try {
-    if (hayVersionNueva && actualizarSW) {
+  if (hayVersionNueva && actualizarSW) {
+    /* La red de seguridad se arma ANTES de esperar al SW. Antes iba detrás del
+       `await`: si la activación no contestaba nunca, el aviso se quedaba en
+       0:00 y la página no recargaba jamás. Si en 3 s el SW no recargó (otra
+       pestaña ya lo activó, por ejemplo), se recarga a mano; y si a los 10 s
+       seguimos aquí, se suelta la versión vieja y se recarga desde la red. */
+    setTimeout(() => window.location.reload(), 3000);
+    setTimeout(() => {
+      void soltarVersionVieja().finally(() => window.location.reload());
+    }, 10000);
+    try {
       await actualizarSW(true);
-      // Si en 3 s el SW no recargó (otra pestaña ya lo activó, por ejemplo), se recarga a mano.
-      setTimeout(() => window.location.reload(), 3000);
-      return;
+    } catch {
+      /* las recargas de arriba siguen armadas */
     }
-  } catch {
-    /* sin SW utilizable: recarga normal */
+    return;
   }
   window.location.reload();
 }
