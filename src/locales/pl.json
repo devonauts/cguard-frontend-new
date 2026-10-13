@@ -18795,12 +18795,14 @@
     "sinConexion": "Brak połączenia",
     "sinConexionDesde": "Brak połączenia od {{hora}}",
     "conectadoDesde": "Połączono od {{hora}}",
-    "episodioSinSenal": "Bez zasięgu {{desde}}–{{hasta}} · wysłano działań: {{n}}",
     "episodioSinConexion": "Brak połączenia {{desde}}–{{hasta}}",
     "ultimas24h": "Ostatnie 24 godziny",
     "minutos": "{{n}} min",
     "sinCortes": "Bez przerw w połączeniu",
     "marca": "Zapisano bez zasięgu · dotarło {{hora}}",
-    "marcaDetalle": "Wykonano o {{hecho}} bez zasięgu · dotarło o {{llego}}"
+    "marcaDetalle": "Wykonano o {{hecho}} bez zasięgu · dotarło o {{llego}}",
+    "conConexion": "Połączono",
+    "episodioSinSenal_one": "Bez zasięgu {{desde}}–{{hasta}} · wysłano działań: {{count}}",
+    "episodioSinSenal_other": "Bez zasięgu {{desde}}–{{hasta}} · wysłano działań: {{count}}"
   }
 }

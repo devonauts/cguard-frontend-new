@@ -20,10 +20,10 @@ export function textoDeEpisodio(
     e.tipo === "sin_senal"
       ? t(
           "conexionApp.episodioSinSenal",
-          "Estuvo sin señal {{desde}}–{{hasta}} · {{n}} acciones enviadas",
+          "Estuvo sin señal {{desde}}–{{hasta}} · {{count}} acciones enviadas",
           {
             ...rango,
-            n: e.accionesSinSenal,
+            count: e.accionesSinSenal,
           },
         )
       : t(
@@ -73,7 +73,8 @@ export function EstadoDeConexionApp({
         className={`inline-flex items-center gap-1 text-xs text-[color:var(--ink-soft)] ${className}`}
       >
         <Wifi className="size-3" />
-        {textoDeEpisodio(t, e)}
+        {/* Primero lo que pasa AHORA (tiene conexión); el corte, detrás. */}
+        {t("conexionApp.conConexion", "Con conexión")} · {textoDeEpisodio(t, e)}
       </span>
     );
   }

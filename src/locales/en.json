@@ -18599,12 +18599,14 @@
     "sinConexion": "No connection",
     "sinConexionDesde": "No connection since {{hora}}",
     "conectadoDesde": "Connected since {{hora}}",
-    "episodioSinSenal": "No signal {{desde}}–{{hasta}} · {{n}} actions sent",
     "episodioSinConexion": "No connection {{desde}}–{{hasta}}",
     "ultimas24h": "Last 24 hours",
     "minutos": "{{n}} min",
     "sinCortes": "No connection drops",
     "marca": "Recorded without signal · arrived {{hora}}",
-    "marcaDetalle": "Done at {{hecho}} without signal · arrived at {{llego}}"
+    "marcaDetalle": "Done at {{hecho}} without signal · arrived at {{llego}}",
+    "conConexion": "Connected",
+    "episodioSinSenal_one": "No signal {{desde}}–{{hasta}} · {{count}} action sent",
+    "episodioSinSenal_other": "No signal {{desde}}–{{hasta}} · {{count}} actions sent"
   }
 }

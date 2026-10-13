@@ -18599,12 +18599,14 @@
     "sinConexion": "Sem conexão",
     "sinConexionDesde": "Sem conexão desde {{hora}}",
     "conectadoDesde": "Com conexão desde {{hora}}",
-    "episodioSinSenal": "Ficou sem sinal {{desde}}–{{hasta}} · {{n}} ações enviadas",
     "episodioSinConexion": "Sem conexão {{desde}}–{{hasta}}",
     "ultimas24h": "Últimas 24 horas",
     "minutos": "{{n}} min",
     "sinCortes": "Sem quedas de conexão",
     "marca": "Registrado sem sinal · chegou {{hora}}",
-    "marcaDetalle": "Feito às {{hecho}} sem sinal · chegou às {{llego}}"
+    "marcaDetalle": "Feito às {{hecho}} sem sinal · chegou às {{llego}}",
+    "conConexion": "Com conexão",
+    "episodioSinSenal_one": "Ficou sem sinal {{desde}}–{{hasta}} · {{count}} ação enviada",
+    "episodioSinSenal_other": "Ficou sem sinal {{desde}}–{{hasta}} · {{count}} ações enviadas"
   }
 }

@@ -18599,12 +18599,14 @@
     "sinConexion": "Geen verbinding",
     "sinConexionDesde": "Geen verbinding sinds {{hora}}",
     "conectadoDesde": "Verbonden sinds {{hora}}",
-    "episodioSinSenal": "Geen bereik {{desde}}–{{hasta}} · {{n}} acties verzonden",
     "episodioSinConexion": "Geen verbinding {{desde}}–{{hasta}}",
     "ultimas24h": "Laatste 24 uur",
     "minutos": "{{n}} min",
     "sinCortes": "Geen verbindingsonderbrekingen",
     "marca": "Zonder bereik vastgelegd · aangekomen {{hora}}",
-    "marcaDetalle": "Gedaan om {{hecho}} zonder bereik · aangekomen om {{llego}}"
+    "marcaDetalle": "Gedaan om {{hecho}} zonder bereik · aangekomen om {{llego}}",
+    "conConexion": "Verbonden",
+    "episodioSinSenal_one": "Geen bereik {{desde}}–{{hasta}} · {{count}} acties verzonden",
+    "episodioSinSenal_other": "Geen bereik {{desde}}–{{hasta}} · {{count}} acties verzonden"
   }
 }
