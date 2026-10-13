@@ -15,6 +15,8 @@ import { esEvento } from "@/lib/serviceTypes";
 import { rangoDelEvento, vigenciaDe } from "@/lib/eventos";
 import { horaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
+import { AvisosDeRelevos } from "./AvisosDeRelevos";
+
 /* ════════════════════════════════════════════════════════════════════════════
    LA COBERTURA DEL PUESTO, CON NÚMEROS.
 
@@ -285,7 +287,7 @@ interface Props {
 }
 
 /** La cobertura con la que nace el formulario de un evento: sus propias horas. */
-function coberturaInicialDelEvento(vig: {
+export function coberturaInicialDelEvento(vig: {
   desde?: string | null;
   hasta?: string | null;
 }): { modo: "" | "24h" | "horario"; desde: string; hasta: string } | null {
@@ -584,7 +586,7 @@ export default function StationCreateForm({
           t("ui.AddStationPage.rondasRecuperadas", {
             count: adopted,
             defaultValue:
-              "{{count}} ronda(s) del puesto anterior recuperada(s) en este puesto",
+              "{{count}} rondas del puesto anterior recuperadas en este puesto",
           }),
         );
       invalidateEntity("stations");
@@ -856,7 +858,8 @@ export default function StationCreateForm({
                       />
                       <span style={{ color: "var(--ink-soft)" }}>
                         {t("ui.StationCreateForm.turnosDeNh", {
-                          defaultValue: "turno(s) de {{h}} h",
+                          defaultValue: "turnos de {{h}} h",
+                          count: turnos,
                           h: horasVentana
                             ? Math.round(
                                 (horasVentana / Math.max(1, turnos)) * 10,
@@ -962,10 +965,10 @@ export default function StationCreateForm({
                       }
                     />
                     <span style={{ color: "var(--ink-soft)" }}>
-                      {t(
-                        "ui.StationCreateForm.aLaVez",
-                        "vigilante(s) a la vez",
-                      )}
+                      {t("ui.StationCreateForm.aLaVez", {
+                        defaultValue: "vigilantes a la vez",
+                        count: aLaVez,
+                      })}
                     </span>
                   </span>
                   {/* Un evento no tiene «días de la semana»: tiene sus fechas. */}
@@ -1161,10 +1164,10 @@ export default function StationCreateForm({
                                 className="text-xs"
                                 style={{ color: "var(--ink-soft)" }}
                               >
-                                {t(
-                                  "ui.StationCreateForm.aLaVez",
-                                  "vigilante(s) a la vez",
-                                )}
+                                {t("ui.StationCreateForm.aLaVez", {
+                                  defaultValue: "vigilantes a la vez",
+                                  count: f.guards,
+                                })}
                               </span>
                             </span>
                             <div
@@ -1246,7 +1249,7 @@ export default function StationCreateForm({
                 <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
                   {t("ui.StationCreateForm.resumenCobertura", {
                     defaultValue:
-                      "{{horas}} h-vigilante al día · {{plazas}} plaza(s)",
+                      "{{horas}} h-vigilante al día · {{plazas}}",
                     horas:
                       Math.round(
                         (franjas.reduce(
@@ -1256,9 +1259,22 @@ export default function StationCreateForm({
                           60) *
                           10,
                       ) / 10,
-                    plazas: seats,
+                    plazas: t("ui.eventos.nPlazas", {
+                      defaultValue: "{{count}} plazas",
+                      count: seats,
+                    }),
                   })}
                 </p>
+                {/* Un relevo que se sale del evento se recorta: se avisa aquí. */}
+                {esModoEvento && (
+                  <AvisosDeRelevos
+                    franjas={franjas}
+                    sede={{
+                      vigenteDesde: vigencia.desde ?? null,
+                      vigenteHasta: vigencia.hasta ?? null,
+                    }}
+                  />
+                )}
               </div>
             )}
           </div>
@@ -1446,8 +1462,8 @@ export default function StationCreateForm({
                   style={{ color: "var(--brand-text)" }}
                 >
                   {t("ui.StationCreateForm.hacenFalta", {
-                    defaultValue: "Hacen falta {{n}} vigilante(s) fijos",
-                    n: necesarios,
+                    defaultValue: "Hacen falta {{count}} vigilantes fijos",
+                    count: necesarios,
                   })}
                   {conSacafranco
                     ? ` ${t("ui.StationCreateForm.masSacafranco", "+ sacafranco para los libres")}`

@@ -1,7 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Check, Clock, Loader2, Trash2, UserPlus, Users } from "lucide-react";
+import {
+  Check,
+  Clock,
+  Loader2,
+  Pencil,
+  Trash2,
+  UserPlus,
+  Users,
+} from "lucide-react";
 
 import {
   Avatar,
@@ -32,6 +40,7 @@ import {
 import { fechaYHora, soloHora as soloHoraLarga } from "@/lib/horaDeLaEmpresa";
 import { ApiService } from "@/services/api/apiService";
 import { coverageService } from "@/lib/api/coverageService";
+import { EditorDeRelevos } from "@/components/stations/RelevosDelEvento";
 
 /* ════════════════════════════════════════════════════════════════════════════
    LA ESTACIÓN DE UN EVENTO: QUIÉN VA Y A QUÉ HORA. NADA MÁS.
@@ -117,7 +126,9 @@ function useEstacionDelEvento(stationId: string, station: any) {
 
     (async () => {
       const [pz, asg, tur, fic] = await Promise.all([
-        plazas
+        // Las plazas que trae la estación sirven para la PRIMERA lectura; al
+        // recargar (p. ej. tras cambiar los relevos) se vuelven a pedir.
+        vuelta === 0 && plazas
           ? Promise.resolve(plazas)
           : ApiService.get(`/tenant/${tenantId}/station/${stationId}/positions`)
               .then(filas)
@@ -223,6 +234,9 @@ export function EventoVigilantes({ station, stationId, postSiteId }: Props) {
   const { relevos, asignaciones, turnos, recargar, cargando } =
     useEstacionDelEvento(stationId, station);
   const [asignando, setAsignando] = useState<RelevoDeEvento | null>(null);
+  /* Cambiar los relevos (horario, duración, cuántos a la vez) sin recrear la
+     estación. Va en línea encima de los relevos: ver `EditorDeRelevos`. */
+  const [editandoRelevos, setEditandoRelevos] = useState(false);
   const tenantId = localStorage.getItem("tenantId") || "";
 
   const plazasTotales = relevos.reduce((n, r) => n + r.plazas, 0);
@@ -269,21 +283,49 @@ export function EventoVigilantes({ station, stationId, postSiteId }: Props) {
 
   if (cargando) return <SkeletonCards count={2} />;
 
+  const editor = editandoRelevos && (
+    <EditorDeRelevos
+      relevos={relevos}
+      sede={sede}
+      stationId={stationId}
+      onCancel={() => setEditandoRelevos(false)}
+      onSaved={() => {
+        setEditandoRelevos(false);
+        recargar();
+      }}
+    />
+  );
+  const botonRelevos = !terminado && !editandoRelevos && (
+    <Button
+      size="sm"
+      variant="outline"
+      onClick={() => setEditandoRelevos(true)}
+    >
+      <Pencil className="mr-1.5 h-4 w-4" />
+      {t("ui.RelevosDelEvento.cambiar", "Cambiar relevos")}
+    </Button>
+  );
+
   if (!relevos.length) {
     return (
-      <EmptyState
-        description={t(
-          "ui.EventoDeLaEstacion.sinPlazasTexto",
-          "Esta estación no tiene plazas. Créala de nuevo desde el evento diciendo cuántos vigilantes a la vez.",
-        )}
-        icon={<Users />}
-        title={t("ui.EventoDeLaEstacion.sinPlazas", "Sin plazas")}
-      />
+      editor || (
+        <EmptyState
+          action={botonRelevos || undefined}
+          description={t(
+            "ui.EventoDeLaEstacion.sinPlazasTexto",
+            "Esta estación no tiene plazas. Usa «Cambiar relevos» para decir su horario y cuántos vigilantes van a la vez.",
+          )}
+          icon={<Users />}
+          title={t("ui.EventoDeLaEstacion.sinPlazas", "Sin plazas")}
+        />
+      )
     );
   }
 
   return (
     <div className="space-y-4">
+      {botonRelevos && <div className="flex justify-end">{botonRelevos}</div>}
+      {editor}
       <InfoNote tone="brand">
         <span className="font-semibold">
           {rangoDelEvento(sede?.vigenteDesde, sede?.vigenteHasta)}
@@ -400,7 +442,7 @@ export function EventoVigilantes({ station, stationId, postSiteId }: Props) {
                   >
                     <UserPlus className="h-4 w-4" />
                     {t("ui.EventoDeLaEstacion.plazasLibres", {
-                      defaultValue: "{{count}} plaza(s) libre(s)",
+                      defaultValue: "{{count}} plazas libres",
                       count: vacantes,
                     })}
                   </button>
@@ -458,21 +500,48 @@ function AsignarVarios({
   const [filtro, setFiltro] = useState("");
   const [elegidos, setElegidos] = useState<string[]>([]);
   const [guardando, setGuardando] = useState(false);
+  /* Los archivados AL TERMINAR OTRO EVENTO (id → nombre del evento): no salen
+     en el buscador (sólo activos), y asignarlos los reactiva solos. Van al
+     final: un activo libre ya paga su asiento; reactivar suma uno. */
+  const [archivadosTras, setArchivadosTras] = useState<Map<string, string>>(
+    new Map(),
+  );
 
   useEffect(() => {
     let vivo = true;
 
-    ApiService.get(`/tenant/${tenantId}/security-guard/autocomplete?limit=500`)
-      .then((res: any) => {
+    Promise.all([
+      ApiService.get(`/tenant/${tenantId}/security-guard/autocomplete?limit=500`),
+      ApiService.get(`/tenant/${tenantId}/eventos/vigilantes-archivados`)
+        .then(filas)
+        .catch(() => [] as any[]),
+    ])
+      .then(([res, arch]: [any, any[]]) => {
         if (!vivo) return;
-        setTodos(
-          filas(res)
-            .map((r: any) => ({
-              id: String(r.guardId || r.id || r.value || ""),
-              label: String(r.fullName || r.name || r.label || r.email || ""),
-            }))
-            .filter((g: { id: string }) => g.id),
-        );
+        const activos = filas(res)
+          .map((r: any) => ({
+            id: String(r.guardId || r.id || r.value || ""),
+            label: String(r.fullName || r.name || r.label || r.email || ""),
+          }))
+          .filter((g: { id: string }) => g.id);
+        const ya = new Set(activos.map((g: { id: string }) => g.id));
+        const tras = new Map<string, string>();
+
+        for (const a of arch) {
+          const id = String(a?.guardId || "");
+
+          if (id && !ya.has(id)) tras.set(id, String(a?.evento || ""));
+        }
+        setArchivadosTras(tras);
+        setTodos([
+          ...activos,
+          ...arch
+            .filter((a: any) => tras.has(String(a?.guardId || "")))
+            .map((a: any) => ({
+              id: String(a.guardId),
+              label: String(a.nombre || ""),
+            })),
+        ]);
       })
       .catch(() => vivo && setTodos([]))
       .finally(() => vivo && setCargandoTodos(false));
@@ -549,7 +618,12 @@ function AsignarVarios({
             orden: i,
           });
       });
+      // Los archivados tras un evento no tienen turnos: libres, al final.
+      [...archivadosTras.keys()].forEach((id, i) =>
+        m.set(id, { guardId: id, orden: 100000 + i }),
+      );
       for (const g of todos) {
+        if (archivadosTras.has(g.id)) continue;
         const dia = sets.findIndex((st) => !st.has(g.id));
 
         if (dia >= 0)
@@ -573,7 +647,7 @@ function AsignarVarios({
     return () => {
       vivo = false;
     };
-  }, [stationId, ventanas, todos]);
+  }, [stationId, ventanas, todos, archivadosTras]);
   const ordenados = useVigilantesOrdenados(
     useMemo(() => todos.filter((g) => !ocupados.has(g.id)), [todos, ocupados]),
     libres,
@@ -628,7 +702,7 @@ function AsignarVarios({
     if (bien)
       toast.success(
         t("ui.EventoDeLaEstacion.asignados", {
-          defaultValue: "{{count}} vigilante(s) asignado(s)",
+          defaultValue: "{{count}} vigilantes asignados",
           count: bien,
         }),
       );
@@ -645,7 +719,7 @@ function AsignarVarios({
     <Modal
       description={t("ui.EventoDeLaEstacion.asignarTexto", {
         defaultValue:
-          "{{tramo}} · quedan {{count}} plaza(s). Salen primero los libres a esas horas.",
+          "{{tramo}} · quedan {{count}} plazas. Salen primero los libres a esas horas.",
         tramo: ventana
           ? tramoLegible(ventana.start, ventana.end)
           : `${relevo.inicio}–${relevo.fin}`,
@@ -742,7 +816,24 @@ function AsignarVarios({
                       {on && <Check className="h-3 w-3" />}
                     </span>
                     <Avatar name={g.label} size="sm" />
-                    <span className="min-w-0 flex-1 truncate">{g.label}</span>
+                    {/* El archivado tras un evento lleva el aviso DEBAJO del
+                       nombre: como insignia a la derecha, con el nombre del
+                       evento, se comía el nombre de la persona. */}
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate">{g.label}</span>
+                      {archivadosTras.has(g.id) && (
+                        <span
+                          className="block text-xs"
+                          style={{ color: "var(--ink-soft)" }}
+                        >
+                          {t("ui.EventoDeLaEstacion.archivadoTras", {
+                            defaultValue:
+                              "Archivado tras {{evento}} — se reactiva al asignar",
+                            evento: archivadosTras.get(g.id),
+                          })}
+                        </span>
+                      )}
+                    </span>
                     {ocupado ? (
                       <StatusBadge tone="warn">
                         {ocupadoEl.get(g.id)
@@ -754,6 +845,10 @@ function AsignarVarios({
                               "ui.EventoDeLaEstacion.ocupado",
                               "Ocupado a esa hora",
                             )}
+                      </StatusBadge>
+                    ) : archivadosTras.has(g.id) ? (
+                      <StatusBadge tone="info">
+                        {t("ui.EventoDeLaEstacion.archivado", "Archivado")}
                       </StatusBadge>
                     ) : g.libre ? (
                       <StatusBadge tone="ok">
@@ -973,7 +1068,7 @@ export function EventoTurnos({ station, stationId, postSiteId }: Props) {
         </span>
         {" · "}
         {t("ui.EventoDeLaEstacion.nTurnos", {
-          defaultValue: "{{count}} turno(s)",
+          defaultValue: "{{count}} turnos",
           count: delEvento.length,
         })}
       </InfoNote>

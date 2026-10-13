@@ -869,13 +869,13 @@ function StationRow({
             {cobertura === "24h"
               ? t("ui.PostSiteWizard.cobertura.explica24h", {
                   defaultValue:
-                    "Dos turnos de 12 h (día y noche) con {{n}} vigilante(s) cada uno. Las rotaciones y los francos se cuadran en el Planificador.",
-                  n: aLaVez,
+                    "Dos turnos de 12 h (día y noche) con {{count}} vigilantes cada uno. Las rotaciones y los francos se cuadran en el Planificador.",
+                  count: aLaVez,
                 })
               : t("ui.PostSiteWizard.cobertura.explica12h", {
                   defaultValue:
-                    "Un turno de 12 h con {{n}} vigilante(s). Las rotaciones y los francos se cuadran en el Planificador.",
-                  n: aLaVez,
+                    "Un turno de 12 h con {{count}} vigilantes. Las rotaciones y los francos se cuadran en el Planificador.",
+                  count: aLaVez,
                 })}
           </p>
         )}
@@ -1498,7 +1498,7 @@ export default function PostSiteWizard({
       toast.warning(
         t("ui.PostSiteWizard.evento.salieron", {
           defaultValue:
-            "Fechas actualizadas. {{count}} vigilante(s) salieron del evento porque ya tienen turno: {{lista}}. Asigna a otros en sus estaciones.",
+            "Fechas actualizadas. {{count}} vigilantes salieron del evento porque ya tienen turno: {{lista}}. Asigna a otros en sus estaciones.",
           count: chocan.length,
           lista: lista(chocan),
         }),
@@ -1509,7 +1509,7 @@ export default function PostSiteWizard({
       toast.warning(
         t("ui.PostSiteWizard.evento.fueraDelEvento", {
           defaultValue:
-            "{{count}} vigilante(s) salieron porque su relevo ya no cae dentro del evento: {{lista}}.",
+            "{{count}} vigilantes salieron porque su relevo ya no cae dentro del evento: {{lista}}.",
           count: fuera.length,
           lista: lista(fuera),
         }),
@@ -1523,14 +1523,21 @@ export default function PostSiteWizard({
         min
           ? t("ui.PostSiteWizard.evento.desplazados", {
               defaultValue:
-                "Los relevos se movieron {{horas}} h con el evento: {{plazas}} plaza(s) y {{count}} vigilante(s).",
+                "Los relevos se movieron {{horas}} h con el evento: {{plazas}} y {{vigilantes}}.",
               horas: `${min > 0 ? "+" : "−"}${Math.round((Math.abs(min) / 60) * 100) / 100}`,
-              plazas: rs.plazasMovidas || 0,
-              count: rs.movidas || 0,
+              // Dos cantidades en una frase: cada pieza lleva su plural.
+              plazas: t("ui.eventos.nPlazas", {
+                defaultValue: "{{count}} plazas",
+                count: rs.plazasMovidas || 0,
+              }),
+              vigilantes: t("ui.eventos.nVigilantes", {
+                defaultValue: "{{count}} vigilantes",
+                count: rs.movidas || 0,
+              }),
             })
           : t("ui.PostSiteWizard.evento.movidas", {
               defaultValue:
-                "Se movieron {{count}} vigilante(s) a las nuevas fechas.",
+                "Se movieron {{count}} vigilantes a las nuevas fechas.",
               count: rs.movidas,
             }),
       );
@@ -1838,6 +1845,37 @@ export default function PostSiteWizard({
                     )}
                   </p>
                 )}
+                {/* Al terminar, su gente libera el asiento (por defecto sí). El
+                   servidor lo lee de `serviceConfig.archivarAlTerminar`; sin
+                   la clave, archiva. */}
+                <label className="mt-3 flex cursor-pointer select-none items-start gap-2.5">
+                  <input
+                    checked={cfgGet("archivarAlTerminar", true) !== false}
+                    className="cg-focus mt-0.5 h-4 w-4 rounded"
+                    style={{ accentColor: "var(--brand)" }}
+                    type="checkbox"
+                    onChange={(e) =>
+                      cfgSet("archivarAlTerminar", e.target.checked)
+                    }
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span className="text-xs font-medium">
+                      {t(
+                        "ui.PostSiteWizard.evento.archivarAlTerminar",
+                        "Al terminar, archivar a los vigilantes que no tengan otro puesto — liberan su asiento",
+                      )}
+                    </span>
+                    <span
+                      className="block text-[11px]"
+                      style={{ color: "var(--ink-soft)" }}
+                    >
+                      {t(
+                        "ui.PostSiteWizard.evento.archivarAlTerminarAyuda",
+                        "Siguen cobrando sus horas del evento, y si los vuelves a asignar se reactivan solos.",
+                      )}
+                    </span>
+                  </span>
+                </label>
               </div>
             </div>
           )}
@@ -2513,13 +2551,13 @@ export default function PostSiteWizard({
               {n > 0 && esEventoSel
                 ? t("ui.PostSiteWizard.eventoConEstaciones", {
                     defaultValue:
-                      "{{count}} estación(es). Siguiente: asigna a los vigilantes; las fechas y horas las pone el evento.",
+                      "{{count}} estaciones. Siguiente: asigna a los vigilantes; las fechas y horas las pone el evento.",
                     count: n,
                   })
                 : n > 0
                   ? t("ui.PostSiteWizard.sedeConEstaciones", {
                       defaultValue:
-                        "{{count}} estación(es). Siguiente: pon a cada una su vigilante; con eso el horario se arma solo y lo cuadras en el Planificador.",
+                        "{{count}} estaciones. Siguiente: pon a cada una su vigilante; con eso el horario se arma solo y lo cuadras en el Planificador.",
                       count: n,
                     })
                   : t(

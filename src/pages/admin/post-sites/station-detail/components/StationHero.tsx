@@ -205,14 +205,25 @@ export default function StationHero({
             opacity: 0.16,
           }}
         />
-        {/* El contexto cliente → sede vive ahora en el breadcrumb del layout. */}
-        <div className="relative flex flex-wrap items-start gap-4">
-          <IconTile size="lg">
-            {station?.isMobile ? <Smartphone /> : <Shield />}
-          </IconTile>
+        {/* El contexto cliente → sede vive ahora en el breadcrumb del layout.
+            EN EL TELÉFONO, POR PISOS. Antes todo iba en UNA fila —icono, nombre,
+            nominativo, insignias y los dos botones— y a 390 px el nombre se
+            quedaba en «E.» y el horario se partía en tres renglones. Ahora:
+            icono + nombre (que puede ocupar dos líneas), insignias debajo, los
+            datos, y las acciones en su propia fila a todo lo ancho. Desde `md`
+            las acciones vuelven a la derecha, como antes. */}
+        <div className="relative flex flex-col gap-4 md:flex-row md:items-start">
+          <div className="flex min-w-0 flex-1 items-start gap-3 sm:gap-4">
+            {/* Un poco más pequeño en el teléfono: cada píxel del icono se lo
+                quita al nombre. */}
+            <IconTile
+              className="h-11 w-11 rounded-xl [&_svg]:size-5 sm:h-14 sm:w-14 sm:rounded-2xl sm:[&_svg]:size-7"
+              size="lg"
+            >
+              {station?.isMobile ? <Smartphone /> : <Shield />}
+            </IconTile>
 
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="min-w-0 flex-1">
               {editing ? (
                 <div className="flex w-full min-w-0 items-center gap-1.5">
                   <Input
@@ -247,16 +258,21 @@ export default function StationHero({
                   </Button>
                 </div>
               ) : (
-                <>
-                  {/* `min-w-0`: sin él un hijo flex no baja de su
-                                        contenido y el `truncate` no llega a actuar. */}
-                  <h2 className="font-display min-w-0 truncate text-xl font-bold leading-tight">
+                <div className="flex min-w-0 items-start gap-1">
+                  {/* El nombre se PARTE en vez de cortarse: «Estacionamientos y
+                      control vehicular» no cabe en una línea de teléfono y con
+                      `truncate` sólo se leía la primera letra. Dos líneas como
+                      mucho; `break-words` por si llega una palabra larguísima. */}
+                  <h2
+                    className="font-display line-clamp-2 min-w-0 break-words text-lg font-bold leading-tight sm:text-xl"
+                    title={name}
+                  >
                     {name}
                   </h2>
                   {canEdit && (
                     <button
                       aria-label={t("ui.StationHero.renombrarPuesto")}
-                      className="cg-btn-ghost cg-focus rounded-md p-1"
+                      className="cg-btn-ghost cg-focus -mt-0.5 shrink-0 rounded-md p-1"
                       onClick={() => {
                         setDraft(name);
                         setEditing(true);
@@ -265,185 +281,197 @@ export default function StationHero({
                       <Pencil className="h-4 w-4" />
                     </button>
                   )}
-                </>
-              )}
-              {editingNick ? (
-                <div className="flex w-full min-w-0 items-center gap-1.5">
-                  <Input
-                    value={nickDraft}
-                    onChange={(e) => setNickDraft(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") saveNickname();
-                      if (e.key === "Escape") setEditingNick(false);
-                    }}
-                    autoFocus
-                    aria-label={t(
-                      "postSites.stations.form.nickname",
-                      "Nominativo",
-                    )}
-                    placeholder={t(
-                      "postSites.stations.form.nickname",
-                      "Nominativo",
-                    )}
-                    className="h-9 w-full min-w-0 sm:w-44 sm:flex-none"
-                  />
-                  <Button
-                    className="h-9 w-9"
-                    disabled={savingNick}
-                    size="icon"
-                    variant="brand"
-                    onClick={saveNickname}
-                  >
-                    <Check className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    className="h-9 w-9"
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => setEditingNick(false)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
                 </div>
-              ) : (
-                <>
-                  {station?.nickname && (
-                    <StatusBadge tone="neutral">{station.nickname}</StatusBadge>
-                  )}
-                  {/* Sin nominativo la etiqueta no se pintaba, así que no había
-                      ni pista de que el dato existiera: de ahí el «+». */}
-                  {canEdit &&
-                    (station?.nickname ? (
-                      <button
-                        aria-label={t("ui.StationHero.editarNominativo")}
-                        className="cg-btn-ghost cg-focus rounded-md p-1"
-                        onClick={() => {
-                          setNickDraft(station.nickname || "");
-                          setEditingNick(true);
+              )}
+
+              {/* Insignias: su propio renglón, debajo del nombre. */}
+              {(editingNick || station?.nickname || canEdit || station?.isMobile) && (
+                <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                  {editingNick ? (
+                    <div className="flex w-full min-w-0 items-center gap-1.5">
+                      <Input
+                        value={nickDraft}
+                        onChange={(e) => setNickDraft(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") saveNickname();
+                          if (e.key === "Escape") setEditingNick(false);
                         }}
+                        autoFocus
+                        aria-label={t(
+                          "postSites.stations.form.nickname",
+                          "Nominativo",
+                        )}
+                        placeholder={t(
+                          "postSites.stations.form.nickname",
+                          "Nominativo",
+                        )}
+                        className="h-9 w-full min-w-0 sm:w-44 sm:flex-none"
+                      />
+                      <Button
+                        className="h-9 w-9"
+                        disabled={savingNick}
+                        size="icon"
+                        variant="brand"
+                        onClick={saveNickname}
                       >
-                        <Pencil className="h-3.5 w-3.5" />
-                      </button>
-                    ) : (
-                      <button
-                        className="cg-btn-ghost cg-focus text-muted rounded-md px-2 py-1 text-xs"
-                        onClick={() => {
-                          setNickDraft("");
-                          setEditingNick(true);
-                        }}
+                        <Check className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        className="h-9 w-9"
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => setEditingNick(false)}
                       >
-                        {"+ "}
-                        {t("postSites.stations.form.nickname", "Nominativo")}
-                      </button>
-                    ))}
-                </>
-              )}
-              {station?.isMobile && (
-                <StatusBadge tone="warn">
-                  {t("ui.StationHero.puestoMovil", "Puesto móvil")}
-                </StatusBadge>
-              )}
-            </div>
-
-            <div
-              className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm"
-              style={{ color: "var(--ink-soft)" }}
-            >
-              <span className="flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5" />
-                {station?.startingTimeInDay || station?.finishTimeInDay
-                  ? `${station?.startingTimeInDay || "?"} – ${station?.finishTimeInDay || "?"}`
-                  : (() => {
-                      const h = SCHEDULE_LABEL[station?.scheduleType || ""];
-
-                      return h
-                        ? t(h.labelKey, h.label)
-                        : t(
-                            "station.schedule.undefined",
-                            "Horario sin definir",
-                          );
-                    })()}
-              </span>
-              {!station?.isMobile && (
-                <span className="flex items-center gap-1.5">
-                  <MapPin className="h-3.5 w-3.5" />
-                  {t("ui.StationHero.geocerca", "Geocerca:")}{" "}
-                  {Array.isArray(station?.geofencePolygon) &&
-                  station.geofencePolygon.length >= 3
-                    ? t("ui.StationHero.poligono", "polígono")
-                    : `${station?.geofenceRadius || 100} m`}
-                </span>
-              )}
-            </div>
-
-            {/* De turno AHORA */}
-            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm">
-              {onDuty === null ? null : onDuty.length ? (
-                <span
-                  className="flex items-center gap-1.5 font-medium"
-                  style={{ color: "var(--ok-text)" }}
-                >
-                  <span
-                    className="cc-dot"
-                    style={{ background: "var(--ok)" }}
-                  />
-                  {t("ui.StationHero.deTurnoAhora", {
-                    defaultValue: "De turno ahora: {{nombres}}",
-                    nombres: onDuty.map((g) => g.name).join(", "),
-                  })}
-                </span>
-              ) : (
-                <span
-                  className="flex items-center gap-1.5"
-                  style={{ color: "var(--ink-soft)" }}
-                >
-                  <span
-                    className="inline-flex h-2.5 w-2.5 rounded-full"
-                    style={{ background: "var(--ink-faint)" }}
-                  />
-                  {t(
-                    "ui.StationHero.nadieDeTurnoEnEsteMomento",
-                    "Nadie de turno en este momento",
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      {station?.nickname && (
+                        <StatusBadge tone="neutral">{station.nickname}</StatusBadge>
+                      )}
+                      {/* Sin nominativo la etiqueta no se pintaba, así que no había
+                          ni pista de que el dato existiera: de ahí el «+». */}
+                      {canEdit &&
+                        (station?.nickname ? (
+                          <button
+                            aria-label={t("ui.StationHero.editarNominativo")}
+                            className="cg-btn-ghost cg-focus rounded-md p-1"
+                            onClick={() => {
+                              setNickDraft(station.nickname || "");
+                              setEditingNick(true);
+                            }}
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </button>
+                        ) : (
+                          <button
+                            className="cg-btn-ghost cg-focus text-muted rounded-md px-2 py-1 text-xs"
+                            onClick={() => {
+                              setNickDraft("");
+                              setEditingNick(true);
+                            }}
+                          >
+                            {"+ "}
+                            {t("postSites.stations.form.nickname", "Nominativo")}
+                          </button>
+                        ))}
+                    </>
                   )}
-                </span>
+                  {station?.isMobile && (
+                    <StatusBadge tone="warn">
+                      {t("ui.StationHero.puestoMovil", "Puesto móvil")}
+                    </StatusBadge>
+                  )}
+                </div>
               )}
 
-              {guards.length > 0 && (
-                <span
-                  className="flex items-center gap-2"
-                  style={{ color: "var(--ink-soft)" }}
-                >
-                  <span className="flex -space-x-1.5">
-                    {guards.slice(0, 6).map((g) => {
-                      const paso = hueStepFor(g.name);
+              <div
+                className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm"
+                style={{ color: "var(--ink-soft)" }}
+              >
+                {/* `whitespace-nowrap`: «06:00 – 22:00» se lee de un golpe; partido
+                    en tres renglones parecía tres datos. */}
+                <span className="flex items-center gap-1.5 whitespace-nowrap">
+                  <Clock className="h-3.5 w-3.5 shrink-0" />
+                  {station?.startingTimeInDay || station?.finishTimeInDay
+                    ? `${station?.startingTimeInDay || "?"} – ${station?.finishTimeInDay || "?"}`
+                    : (() => {
+                        const h = SCHEDULE_LABEL[station?.scheduleType || ""];
 
-                      return (
-                        <span
-                          key={g.id}
-                          className="flex h-6 w-6 items-center justify-center rounded-full border-2 text-[10px] font-bold"
-                          style={{
-                            borderColor: "var(--glass-solid)",
-                            backgroundColor: `color-mix(in oklab, oklch(from var(--brand) l c calc(h + ${paso})) 22%, transparent)`,
-                            color: `oklch(from var(--brand-text) l c calc(h + ${paso}))`,
-                          }}
-                          title={g.name}
-                        >
-                          {g.name.charAt(0).toUpperCase()}
-                        </span>
-                      );
+                        return h
+                          ? t(h.labelKey, h.label)
+                          : t(
+                              "station.schedule.undefined",
+                              "Horario sin definir",
+                            );
+                      })()}
+                </span>
+                {!station?.isMobile && (
+                  <span className="flex items-center gap-1.5 whitespace-nowrap">
+                    <MapPin className="h-3.5 w-3.5 shrink-0" />
+                    {t("ui.StationHero.geocerca", "Geocerca:")}{" "}
+                    {Array.isArray(station?.geofencePolygon) &&
+                    station.geofencePolygon.length >= 3
+                      ? t("ui.StationHero.poligono", "polígono")
+                      : `${station?.geofenceRadius || 100} m`}
+                  </span>
+                )}
+              </div>
+
+              {/* De turno AHORA */}
+              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm">
+                {onDuty === null ? null : onDuty.length ? (
+                  <span
+                    className="flex min-w-0 items-start gap-1.5 font-medium"
+                    style={{ color: "var(--ok-text)" }}
+                  >
+                    <span
+                      className="cc-dot mt-1.5 shrink-0"
+                      style={{ background: "var(--ok)" }}
+                    />
+                    <span className="min-w-0 break-words">
+                      {t("ui.StationHero.deTurnoAhora", {
+                        defaultValue: "De turno ahora: {{nombres}}",
+                        nombres: onDuty.map((g) => g.name).join(", "),
+                      })}
+                    </span>
+                  </span>
+                ) : (
+                  <span
+                    className="flex items-center gap-1.5"
+                    style={{ color: "var(--ink-soft)" }}
+                  >
+                    <span
+                      className="inline-flex h-2.5 w-2.5 shrink-0 rounded-full"
+                      style={{ background: "var(--ink-faint)" }}
+                    />
+                    {t(
+                      "ui.StationHero.nadieDeTurnoEnEsteMomento",
+                      "Nadie de turno en este momento",
+                    )}
+                  </span>
+                )}
+
+                {guards.length > 0 && (
+                  <span
+                    className="flex items-center gap-2 whitespace-nowrap"
+                    style={{ color: "var(--ink-soft)" }}
+                  >
+                    <span className="flex -space-x-1.5">
+                      {guards.slice(0, 6).map((g) => {
+                        const paso = hueStepFor(g.name);
+
+                        return (
+                          <span
+                            key={g.id}
+                            className="flex h-6 w-6 items-center justify-center rounded-full border-2 text-[10px] font-bold"
+                            style={{
+                              borderColor: "var(--glass-solid)",
+                              backgroundColor: `color-mix(in oklab, oklch(from var(--brand) l c calc(h + ${paso})) 22%, transparent)`,
+                              color: `oklch(from var(--brand-text) l c calc(h + ${paso}))`,
+                            }}
+                            title={g.name}
+                          >
+                            {g.name.charAt(0).toUpperCase()}
+                          </span>
+                        );
+                      })}
+                    </span>
+                    {t("ui.StationHero.nAsignados", {
+                      defaultValue: "{{count}} asignados",
+                      count: guards.length,
                     })}
                   </span>
-                  {t("ui.StationHero.nAsignados", {
-                    defaultValue: "{{count}} asignados",
-                    count: guards.length,
-                  })}
-                </span>
-              )}
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="flex shrink-0 items-center gap-2">
-            <Button asChild size="sm" variant="outline">
+          {/* Acciones: en el teléfono, fila propia a todo lo ancho (dos mitades,
+              dedo cómodo); desde `md`, a la derecha del nombre. */}
+          <div className="grid grid-cols-2 gap-2 md:flex md:shrink-0 md:items-center">
+            <Button asChild className="w-full md:w-auto" size="sm" variant="outline">
               <Link
                 to={`/post-sites/${postSiteId}/stations/${stationId}/site-tours`}
               >
@@ -451,7 +479,7 @@ export default function StationHero({
                 {t("postSites.tabs.tours", "Rondas")}
               </Link>
             </Button>
-            <Button asChild size="sm" variant="brand">
+            <Button asChild className="w-full md:w-auto" size="sm" variant="brand">
               <Link
                 to={`/post-sites/${postSiteId}/stations/${stationId}/guards`}
               >

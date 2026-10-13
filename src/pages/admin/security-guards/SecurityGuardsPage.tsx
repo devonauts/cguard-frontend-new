@@ -1556,6 +1556,21 @@ export default function SecurityGuardsPage() {
                                 </td>
                                 <td className="px-4 py-3">
                                   {renderStatus(guard.status)}
+                                  {/* Archivado AL TERMINAR UN EVENTO (no es una
+                                     baja): se reactiva solo al asignarlo. */}
+                                  {guard.status === "Archivado" &&
+                                    guard.raw?.archivadoTrasEvento && (
+                                      <div
+                                        className="mt-1 text-xs"
+                                        style={{ color: "var(--ink-soft)" }}
+                                      >
+                                        {t("guards.list.archivadoTras", {
+                                          defaultValue: "Archivado tras {{evento}}",
+                                          evento:
+                                            guard.raw.archivadoTrasEvento.nombre,
+                                        })}
+                                      </div>
+                                    )}
                                 </td>
                                 <td className="px-4 py-3 text-right">
                                   <DropdownMenu>

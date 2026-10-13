@@ -77,6 +77,8 @@ interface GuardCardRaw {
   // Dynamic: may be a string URL, a single {downloadUrl,publicUrl} object, or an array of them.
   profileImage?: string | ImgFile | ImgFile[];
   photoUrl?: string;
+  /** Archivado AL TERMINAR UN EVENTO (no una baja): de cuál. */
+  archivadoTrasEvento?: { id: string; nombre: string } | null;
   [key: string]: unknown;
 }
 
@@ -210,6 +212,18 @@ export default function GuardCardsGrid({
                           ? t("comun.pendiente", "Pendiente")
                           : g.status}
                   </StatusBadge>
+                  {g.status === "Archivado" &&
+                    g.raw?.archivadoTrasEvento && (
+                      <span
+                        className="text-xs"
+                        style={{ color: "var(--ink-soft)" }}
+                      >
+                        {t("guards.list.archivadoTras", {
+                          defaultValue: "Archivado tras {{evento}}",
+                          evento: g.raw.archivadoTrasEvento.nombre,
+                        })}
+                      </span>
+                    )}
                   {rating && (
                     <GuardRatingLevel
                       average={rating.average}

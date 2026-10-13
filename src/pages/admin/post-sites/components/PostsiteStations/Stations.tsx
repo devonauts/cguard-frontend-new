@@ -2006,13 +2006,22 @@ export default function Stations({ site }: { site?: SiteProp }) {
                         <li key={d.id}>
                           {d.name}:{" "}
                           {d.guards
-                            ? `${d.guards} ${t("postSites.stations.guards", "guards")}`
+                            ? t("postSites.stations.nGuards", {
+                                defaultValue: "{{count}} vigilantes",
+                                count: d.guards,
+                              })
                             : ""}
                           {d.siteTours
-                            ? ` ${d.siteTours} ${t("postSites.stations.siteTours", "site tours")}`
+                            ? ` ${t("postSites.stations.nSiteTours", {
+                                defaultValue: "{{count}} rondas",
+                                count: d.siteTours,
+                              })}`
                             : ""}
                           {d.tags
-                            ? ` ${d.tags} ${t("postSites.stations.tags", "tags")}`
+                            ? ` ${t("postSites.stations.nTags", {
+                                defaultValue: "{{count}} etiquetas",
+                                count: d.tags,
+                              })}`
                             : ""}
                         </li>
                       ))}

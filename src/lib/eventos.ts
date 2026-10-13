@@ -19,6 +19,7 @@ import { esEvento } from "@/lib/serviceTypes";
 import {
   diaDeLaEmpresa,
   fechaYHora,
+  horaDeLaEmpresa,
   instanteEnLaEmpresa,
   sumaDias,
 } from "@/lib/horaDeLaEmpresa";
@@ -332,6 +333,99 @@ export function ventanasDeLaPlaza(
     const e = new Date(Math.min(end.getTime(), hasta.getTime()));
 
     if (e.getTime() > s.getTime()) out.push({ start: s, end: e });
+  }
+
+  return out;
+}
+
+/** Un relevo que no cabe entero en el evento, para avisarlo en el formulario. */
+export interface AvisoDeRelevo {
+  /** «15:00–19:00». */
+  relevo: string;
+  /**
+   * `empiezaAntes`: arranca antes de que abra el evento; `terminaDespues`:
+   * acaba después de que cierre; `fuera`: no toca el evento en ningún día.
+   */
+  tipo: "empiezaAntes" | "terminaDespues" | "fuera";
+  /** La hora de apertura (o de cierre) del evento, «HH:mm». */
+  hora: string;
+  /** El evento dura más de un día: el recorte sólo afecta al primero (o al último). */
+  variosDias: boolean;
+}
+
+/**
+ * RELEVOS QUE SE SALEN DEL EVENTO (aviso, no error).
+ *
+ * El servidor recorta cada turno al evento (nadie trabaja fuera de él), así
+ * que un relevo 13:00–17:00 en un concierto que abre a las 15:00 se queda en
+ * dos horas — y quien lo configuró cree que son cuatro. Aquí se dice antes de
+ * guardar: qué relevo, y desde (o hasta) qué hora se trabaja de verdad. Un
+ * relevo que no toca el evento ningún día no tendría turnos: también se dice.
+ *
+ * Mismo criterio que el servidor (`bloqueDelEvento`): el bloque de cada día
+ * que se cruza con el evento, en la hora de la EMPRESA.
+ */
+export function avisosDeRelevos(
+  sede: SedeConVigencia | null | undefined,
+  relevos: Array<{ start: string; end: string }>,
+  zona?: string,
+): AvisoDeRelevo[] {
+  const { desde, hasta } = vigenciaDe(sede);
+
+  if (!desde || !hasta || hasta.getTime() <= desde.getTime()) return [];
+  const hm = (v?: string | null) => {
+    const m = String(v || "").match(/^(\d{1,2}):(\d{2})/);
+
+    return m ? [Number(m[1]), Number(m[2])] : null;
+  };
+  // `zona` sin decir = la de la empresa (el valor por defecto de cada función).
+  const hora = (d: Date) => horaDeLaEmpresa(d, zona);
+  const dia = (d: Date) => diaDeLaEmpresa(d, zona);
+  const instante = (d: string, h: number, m: number) =>
+    instanteEnLaEmpresa(d, h, m, 0, 0, zona);
+  const variosDias = dia(desde) !== dia(hasta);
+  const out: AvisoDeRelevo[] = [];
+  const vistos = new Set<string>();
+
+  for (const r of relevos) {
+    const ini = hm(r.start);
+    const fin = hm(r.end);
+
+    if (!ini || !fin) continue;
+    const relevo = `${r.start.slice(0, 5)}–${r.end.slice(0, 5)}`;
+
+    if (vistos.has(relevo)) continue;
+    vistos.add(relevo);
+    let toca = false;
+    let antes = false;
+    let despues = false;
+
+    for (
+      let d = sumaDias(dia(desde), -1), i = 0;
+      d <= dia(hasta) && i < EVENTO_MAX_DIAS + 3;
+      d = sumaDias(d, 1), i++
+    ) {
+      const s = instante(d, ini[0], ini[1]);
+      let e = instante(d, fin[0], fin[1]);
+
+      // Misma hora de entrada y salida = 24 h; si no, cruza la medianoche.
+      if (e.getTime() <= s.getTime()) e = instante(sumaDias(d, 1), fin[0], fin[1]);
+      if (e.getTime() <= desde.getTime() || s.getTime() >= hasta.getTime())
+        continue;
+      toca = true;
+      if (s.getTime() < desde.getTime()) antes = true;
+      if (e.getTime() > hasta.getTime()) despues = true;
+    }
+    if (!toca) out.push({ relevo, tipo: "fuera", hora: "", variosDias });
+    if (antes)
+      out.push({ relevo, tipo: "empiezaAntes", hora: hora(desde), variosDias });
+    if (despues)
+      out.push({
+        relevo,
+        tipo: "terminaDespues",
+        hora: hora(hasta),
+        variosDias,
+      });
   }
 
   return out;

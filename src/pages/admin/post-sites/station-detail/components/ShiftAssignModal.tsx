@@ -1028,8 +1028,8 @@ export default function ShiftAssignModal({
                     : libres
                       ? t("eventos.nLibres", {
                           defaultValue:
-                            "{{n}} libre(s) en esas horas, arriba · los que tienen un turno que se cruza salen marcados",
-                          n: vigilantesDelEvento.filter((g) => g.libre).length,
+                            "{{count}} libres en esas horas, arriba · los que tienen un turno que se cruza salen marcados",
+                          count: vigilantesDelEvento.filter((g) => g.libre).length,
                         })
                       : t(
                           "eventos.sinListaDeLibres",
@@ -1037,8 +1037,8 @@ export default function ShiftAssignModal({
                         )
                   : t("ui.ShiftAssignModal.nDisponibles", {
                       defaultValue:
-                        "{{n}} disponible(s) · sólo quienes no tienen ya una asignación activa",
-                      n: availableGuards.length,
+                        "{{count}} disponibles · sólo quienes no tienen ya una asignación activa",
+                      count: availableGuards.length,
                     })}
               </p>
             </div>

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import {
   AlertTriangle,
+  Archive,
   Banknote,
   CheckCheck,
   Clock,
@@ -21,6 +22,7 @@ import {
   StatusBadge,
 } from "@/components/kit";
 import { Button } from "@/components/ui/button";
+import { confirmDialog } from "@/components/ui/confirmDialog";
 import { useGusto } from "@/hooks/useGusto";
 import { gustoService } from "@/lib/api/gustoService";
 import { rangoDelEvento } from "@/lib/eventos";
@@ -73,7 +75,17 @@ interface Fila {
   presupuestoCentavos: number | null;
   aprobadas: number;
   porAprobar: number;
+  /** Archivado (al terminar este u otro evento, o de baja): sigue cobrando. */
+  archivado?: boolean;
 }
+
+/** Por qué alguien del evento no se archiva (ver `archivadoDeEvento` en el servidor). */
+type MotivoDeQuedarse =
+  | "otroPuesto"
+  | "turnoPendiente"
+  | "turnoDelEvento"
+  | "fichajeAbierto"
+  | "otroRol";
 
 interface Nomina {
   evento: {
@@ -102,6 +114,13 @@ interface Nomina {
     aprobadas: number;
     porAprobar: number;
   };
+  /** Al terminar, quien no tiene otro puesto se archiva y libera su asiento. */
+  archivado?: {
+    archivados: number;
+    asientosLiberados: number;
+    archivarAlTerminar: boolean;
+    hecho: boolean;
+  };
 }
 
 const MOSTRAR = 40;
@@ -120,7 +139,7 @@ export default function NominaDelEvento({
   const [vuelta, setVuelta] = useState(0);
   const [tarifa, setTarifa] = useState("");
   const [ocupado, setOcupado] = useState<
-    null | "tarifa" | "aprobar" | "gusto" | ExportFormat | "detalle"
+    null | "tarifa" | "aprobar" | "gusto" | "archivar" | ExportFormat | "detalle"
   >(null);
   const [todos, setTodos] = useState(false);
 
@@ -215,7 +234,7 @@ export default function NominaDelEvento({
     if (!silencioso)
       toast.success(
         t("ui.NominaDelEvento.aprobadas", {
-          defaultValue: "{{count}} turno(s) aprobado(s)",
+          defaultValue: "{{count}} turnos aprobados",
           count: n,
         }),
       );
@@ -253,6 +272,100 @@ export default function NominaDelEvento({
         ),
       );
       setVuelta((n) => n + 1);
+    } catch (e: any) {
+      toast.error(e?.data?.message || e?.message || "error");
+    } finally {
+      setOcupado(null);
+    }
+  };
+
+  /* ── ARCHIVAR AHORA ───────────────────────────────────────────────────
+     Lo hace solo el sistema 12 h después del fin; esto es para no esperar.
+     Primero se pregunta cuántos y quiénes NO (y por qué), luego se archiva. */
+  const motivoLegible = (x: {
+    nombre: string;
+    motivo: MotivoDeQuedarse;
+    donde: string | null;
+  }) => {
+    const por = t(`ui.NominaDelEvento.motivo.${x.motivo}`, {
+      defaultValue: {
+        otroPuesto: "tiene otro puesto",
+        turnoPendiente: "tiene turnos por delante",
+        turnoDelEvento: "su turno del evento sigue en curso",
+        fichajeAbierto: "está fichado ahora",
+        otroRol: "no es sólo vigilante",
+      }[x.motivo],
+    });
+
+    return `${x.nombre} — ${por}${x.donde ? ` (${x.donde})` : ""}`;
+  };
+
+  const archivarAhora = async () => {
+    setOcupado("archivar");
+    try {
+      const r: any = await ApiService.get(`${base}/archivar`);
+      const plan = (r?.data ?? r) as {
+        archivar: Array<{ userId: string; nombre: string }>;
+        seQuedan: Array<{
+          userId: string;
+          nombre: string;
+          motivo: MotivoDeQuedarse;
+          donde: string | null;
+        }>;
+      };
+      const quedan = (plan?.seQuedan || []).map(motivoLegible);
+      const seQuedan = quedan.length
+        ? t("ui.NominaDelEvento.confirmarSeQuedan", {
+            defaultValue: "No se archivan:\n{{lista}}",
+            lista: quedan.join("\n"),
+          })
+        : "";
+
+      if (!plan?.archivar?.length) {
+        toast.info(
+          [
+            t(
+              "ui.NominaDelEvento.nadieQueArchivar",
+              "No hay nadie que archivar: todos tienen otro puesto o ya están archivados.",
+            ),
+            seQuedan,
+          ]
+            .filter(Boolean)
+            .join("\n"),
+        );
+
+        return;
+      }
+      const ok = await confirmDialog({
+        title: t(
+          "ui.NominaDelEvento.confirmarTitulo",
+          "¿Archivar a la gente del evento?",
+        ),
+        message: [
+          t("ui.NominaDelEvento.confirmarTexto", {
+            defaultValue:
+              "Se archivan {{count}} vigilantes sin otro puesto: {{lista}}. Liberan su asiento y siguen cobrando este evento. Si los vuelves a asignar, se reactivan solos.",
+            count: plan.archivar.length,
+            lista: plan.archivar.map((x) => x.nombre).join(", "),
+          }),
+          seQuedan,
+        ]
+          .filter(Boolean)
+          .join("\n\n"),
+        confirmText: t("ui.NominaDelEvento.archivarAhora", "Archivar ahora"),
+      });
+
+      if (!ok) return;
+      const h: any = await ApiService.post(`${base}/archivar`, {});
+      const n = Number((h?.data ?? h)?.archivados?.length || 0);
+
+      toast.success(
+        t("ui.NominaDelEvento.archivadosOk", {
+          defaultValue: "{{count}} vigilantes archivados",
+          count: n,
+        }),
+      );
+      setVuelta((v) => v + 1);
     } catch (e: any) {
       toast.error(e?.data?.message || e?.message || "error");
     } finally {
@@ -466,14 +579,14 @@ export default function NominaDelEvento({
                   totales.noFicho
                     ? t("ui.NominaDelEvento.noFichoValeCero", {
                         defaultValue:
-                          "{{count}} turno(s) sin fichar valen cero.",
+                          "{{count}} turnos sin fichar valen cero.",
                         count: totales.noFicho,
                       })
                     : "",
                   totales.sinSalida
                     ? t("ui.NominaDelEvento.sinSalidaNoSePaga", {
                         defaultValue:
-                          "{{count}} turno(s) sin salida no se pagan hasta cerrarlos en Registros de asistencia.",
+                          "{{count}} turnos sin salida no se pagan hasta cerrarlos en Registros de asistencia.",
                         count: totales.sinSalida,
                       })
                     : "",
@@ -653,6 +766,57 @@ export default function NominaDelEvento({
           ) : null}
         </div>
 
+        {/* Al terminar: quién liberó su asiento (y archivar sin esperar). */}
+        {datos.archivado &&
+          (terminado ? (
+            <div className="flex flex-wrap items-center gap-2 text-sm">
+              <Archive
+                aria-hidden
+                className="h-4 w-4 shrink-0"
+                style={{ color: "var(--ink-soft)" }}
+              />
+              <span className="min-w-0 flex-1">
+                {datos.archivado.archivados > 0
+                  ? t("ui.NominaDelEvento.archivadosResumen", {
+                      defaultValue:
+                        "{{count}} vigilantes archivados al terminar · liberaron {{count}} asientos",
+                      count: datos.archivado.archivados,
+                    })
+                  : datos.archivado.archivarAlTerminar
+                    ? t(
+                        "ui.NominaDelEvento.archivarAyuda",
+                        "Los vigilantes sin otro puesto se archivan solos 12 h después del fin y liberan su asiento. Siguen cobrando: sus horas se quedan en esta hoja.",
+                      )
+                    : t(
+                        "ui.NominaDelEvento.archivarApagado",
+                        "Este evento no archiva a su gente al terminar (se cambia al editar el evento).",
+                      )}
+              </span>
+              {filas.some((f) => !f.archivado) && (
+                <Button
+                  disabled={ocupado !== null}
+                  size="sm"
+                  variant="outline"
+                  onClick={archivarAhora}
+                >
+                  {ocupado === "archivar" ? (
+                    <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Archive className="mr-1.5 h-4 w-4" />
+                  )}
+                  {t("ui.NominaDelEvento.archivarAhora", "Archivar ahora")}
+                </Button>
+              )}
+            </div>
+          ) : datos.archivado.archivarAlTerminar ? (
+            <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
+              {t(
+                "ui.NominaDelEvento.archivarAyuda",
+                "Los vigilantes sin otro puesto se archivan solos 12 h después del fin y liberan su asiento. Siguen cobrando: sus horas se quedan en esta hoja.",
+              )}
+            </p>
+          ) : null)}
+
         {/* La hoja */}
         {filas.length ? (
           <div
@@ -700,7 +864,14 @@ export default function NominaDelEvento({
                       style={{ borderColor: "var(--hairline)" }}
                     >
                       <td className="px-3 py-2">
-                        <div className="font-medium">{f.nombre}</div>
+                        <div className="font-medium">
+                          {f.nombre}
+                          {f.archivado && (
+                            <StatusBadge className="ml-2" tone="neutral">
+                              {t("ui.NominaDelEvento.archivado", "Archivado")}
+                            </StatusBadge>
+                          )}
+                        </div>
                         {f.documento && (
                           <div
                             className="text-xs"
