@@ -266,15 +266,16 @@ export default function NominaTimecards() {
               "No había cambios desde el último cálculo: las tarjetas ya estaban al día.",
             )
           : t("ui.NominaTimecards.periodoGenerado", "Periodo generado"),
-      );
-      toast.info(
-        t("ui.NominaTimecards.resultadoGenerar", {
-          creadas: d.creadas ?? 0,
-          actualizadas: d.actualizadas ?? 0,
-          intactas: d.intactas ?? 0,
-          defaultValue:
-            "{{creadas}} creadas · {{actualizadas}} actualizadas · {{intactas}} intactas",
-        }),
+        // Un solo aviso: el resultado va debajo del título, no en otro aparte.
+        {
+          description: t("ui.NominaTimecards.resultadoGenerar", {
+            creadas: d.creadas ?? 0,
+            actualizadas: d.actualizadas ?? 0,
+            intactas: d.intactas ?? 0,
+            defaultValue:
+              "{{creadas}} creadas · {{actualizadas}} actualizadas · {{intactas}} intactas",
+          }),
+        },
       );
       setCalculo(null);
       cargar();
