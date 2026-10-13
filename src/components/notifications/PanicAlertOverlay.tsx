@@ -16,6 +16,7 @@ import { startPanicAlarm, stopPanicAlarm } from "@/lib/notificationSound";
 import { ApiService } from "@/services/api/apiService";
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { AvisoLlegoTarde, llegadaDe } from "@/components/conexion/AvisoLlegoTarde";
 /**
  * AHORRO · El mapa llega SÓLO cuando hay un pánico en pantalla.
  *
@@ -217,7 +218,8 @@ export function PanicAlertOverlay({
   const hasCoords = !isNaN(lat) && !isNaN(lng) && (lat !== 0 || lng !== 0);
   const when = (() => {
     try {
-      return new Date(p.at || latest.createdAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa(),
+      // Llegó tarde (sin señal): la hora es la de CUANDO PASÓ, no la de llegada.
+      return new Date(p.sinSenal?.ocurridoEn || p.at || latest.createdAt).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa(),
         hour: "2-digit",
         minute: "2-digit",
         day: "2-digit",
@@ -355,6 +357,9 @@ export function PanicAlertOverlay({
 
         {/* Body (scrollable) */}
         <div className="space-y-4 overflow-y-auto p-5">
+          {/* SOS GUARDADO SIN SEÑAL: llega cuando vuelve la cobertura. Si no se
+              dice, el operador despacha creyendo que pasa AHORA. */}
+          <AvisoLlegoTarde datos={llegadaDe(p)} />
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-3">
               <Row

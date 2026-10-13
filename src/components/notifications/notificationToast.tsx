@@ -18,6 +18,8 @@ import {
   X,
   MessageSquare,
   ClipboardList,
+  Wifi,
+  WifiOff,
 } from "lucide-react";
 
 import { targetForNotification } from "./destinoDelAviso";
@@ -78,6 +80,9 @@ export function iconFor(eventType: string): {
   if (t === "guard.checkout") return { Icon: LogOut, tone: "neutral" };
   if (t === "attendance.clockout_requested")
     return { Icon: LogOut, tone: "warn" };
+  // La conexión del teléfono: perderla en turno es un problema; recuperarla, no.
+  if (t === "app.sin_conexion") return { Icon: WifiOff, tone: "bad" };
+  if (t === "app.conexion_recuperada") return { Icon: Wifi, tone: "ok" };
 
   switch (familiaDe(t)) {
     // Rojo fijo: `--bad` no depende del acento de la empresa justamente para

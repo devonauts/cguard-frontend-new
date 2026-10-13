@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
-import { History, Map as MapIcon, Loader2, MapPin } from "lucide-react";
+import { History, Map as MapIcon, Loader2, MapPin, WifiOff } from "lucide-react";
 
 import TrailMap, { type TrailPoint } from "./TrailMap";
 import { hora, kmh } from "./trackGeometry";
@@ -28,6 +28,10 @@ import {
 import { securityGuardService } from "@/lib/api/securityGuardService";
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import {
+  conexionAppService,
+  type TramoDeRastroSinSenal,
+} from "@/lib/api/conexionAppService";
 type MapType = "roadmap" | "satellite" | "hybrid" | "terrain";
 
 interface GuardOpt {
@@ -66,6 +70,8 @@ export default function TrackingHistoryPage() {
   );
   const [mapType, setMapType] = useState<MapType>("roadmap");
   const [points, setPoints] = useState<TrailPoint[]>([]);
+  // Tramos del recorrido grabados SIN SEÑAL (llegaron en tanda, después).
+  const [tramosSinSenal, setTramosSinSenal] = useState<TramoDeRastroSinSenal[]>([]);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [focus, setFocus] = useState<number | null>(null);
@@ -96,6 +102,7 @@ export default function TrackingHistoryPage() {
   // a previous guard's route under a new guard's name (the fetch is manual).
   useEffect(() => {
     setPoints([]);
+    setTramosSinSenal([]);
     setLoaded(false);
     setFocus(null);
   }, [guardId, from, to]);
@@ -121,6 +128,11 @@ export default function TrackingHistoryPage() {
 
       setPoints(pts);
       setLoaded(true);
+      // Sin el endpoint (servidor anterior) queda vacío: el recorrido se ve igual.
+      conexionAppService
+        .rastro({ securityGuardId: guardId }, new Date(start), new Date(end))
+        .then(setTramosSinSenal)
+        .catch(() => setTramosSinSenal([]));
       if (!pts.length)
         toast.info(t("ui.TrackingHistory.sinRecorridoRegistradoEnEse"));
     } catch {
@@ -219,6 +231,12 @@ export default function TrackingHistoryPage() {
     Math.ceil((desplazamiento + altoVista) / ALTO_FILA) + MARGEN_FILAS,
   );
   const visibles = points.slice(primera, ultima);
+  /** ¿Este punto cae en un tramo que llegó en tanda (grabado sin señal)? */
+  const grabadoSinSenal = (at: string) => {
+    const x = new Date(at).getTime();
+
+    return tramosSinSenal.some((tr) => x >= new Date(tr.desde).getTime() && x <= new Date(tr.hasta).getTime());
+  };
 
   // Cuando el foco llega DESDE el mapa (pulsando el trazo o una parada), la fila
   // correspondiente tiene que aparecer sola: si no, el resaltado queda fuera de
@@ -428,6 +446,13 @@ export default function TrackingHistoryPage() {
                           </span>
                           <span className="flex-1 tabular-nums text-foreground">
                             {hora(p.at)}
+                            {grabadoSinSenal(p.at) && (
+                              <WifiOff
+                                aria-label={t("conexionApp.puntoSinSenal", "Grabado sin señal; llegó después")}
+                                className="ml-1 inline size-3"
+                                style={{ color: "var(--warn-text)" }}
+                              />
+                            )}
                           </span>
                           <span className="w-20 text-right tabular-nums text-muted-foreground">
                             {kmh(p.speed)}

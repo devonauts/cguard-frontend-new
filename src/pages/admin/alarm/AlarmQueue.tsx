@@ -53,6 +53,8 @@ import {
 } from "@/lib/api/alarmService";
 import { openEventStream } from "@/lib/api/eventStream";
 import { useEventoEnVivo } from "@/hooks/useEventoEnVivo";
+import { AvisoLlegoTarde, llegadaDe } from "@/components/conexion/AvisoLlegoTarde";
+import { useMarcasSinSenal } from "@/hooks/useMarcasSinSenal";
 
 /* ------------------------------------------------------------------ */
 /* Metadata (labels via i18n)                                          */
@@ -204,6 +206,8 @@ export default function AlarmQueue() {
   }, [load]);
 
   // Sort by priority (asc, 1=critical first) then by time (newest first)
+  // ¿Algún caso viene de un SOS guardado sin señal? Una consulta por la cola.
+  const marcasSinSenal = useMarcasSinSenal(cases.map((c: any) => c.incidentId || c.id));
   const sorted = React.useMemo(() => {
     return [...cases].sort((a, b) => {
       const pa = a.priority ?? 3;
@@ -482,6 +486,12 @@ export default function AlarmQueue() {
                         <p className="truncate font-medium">
                           {c.title || cat.label}
                         </p>
+                        {/* SOS guardado sin señal: no está pasando AHORA. */}
+                        <AvisoLlegoTarde
+                          compacto
+                          className="mt-1"
+                          datos={llegadaDe(c, (c as any).payload, marcasSinSenal[String((c as any).incidentId || c.id)])}
+                        />
 
                         <div
                           className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs"

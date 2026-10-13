@@ -39,6 +39,8 @@ import taskService, {
 } from "@/lib/api/taskService";
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa, desdeInputFechaHora } from "@/lib/horaDeLaEmpresa";
+import { MarcaSinSenal } from "@/components/conexion/MarcaSinSenal";
+import { useMarcasSinSenal } from "@/hooks/useMarcasSinSenal";
 function fmtDate(s?: string | null): string {
   if (!s) return "—";
   const d = new Date(s);
@@ -130,6 +132,8 @@ const FILTERS: Array<{
 export default function TaskTracking() {
   const { t } = useTranslation();
   const [rows, setRows] = useState<TaskRow[]>([]);
+  // Tareas completadas sin señal: una consulta por lista.
+  const marcasSinSenal = useMarcasSinSenal(rows.map((r) => r.id));
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<TaskStatus | "all">("all");
 
@@ -315,6 +319,8 @@ export default function TaskTracking() {
           style={{ color: "var(--ink-soft)" }}
         >
           {fmtDate(r.dateCompletedTask)}
+          {/* Completada sin señal: la hora es la real; llegó después. */}
+          <MarcaSinSenal className="ml-1" marca={marcasSinSenal[String(r.id)]} />
         </span>
       ),
     },
@@ -528,6 +534,7 @@ export default function TaskTracking() {
                   label={t("ui.TaskTracking.estado.completed", "Completada")}
                 >
                   {fmtDate(selected.dateCompletedTask)}
+                  <MarcaSinSenal className="ml-1" marca={marcasSinSenal[String(selected.id)]} />
                 </DetailField>
               </div>
               {selected.approvalNotes && (

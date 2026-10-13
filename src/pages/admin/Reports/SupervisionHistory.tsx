@@ -273,6 +273,8 @@ export default function SupervisionHistory() {
             : undefined
       }
       title={t("ui.SupervisionHistory.titulo", "Historial de supervisión por puesto")}
+      // Paradas e inspecciones hechas sin señal que llegaron después.
+      idSinSenal={(r) => r.id}
       onRowClick={(r) => {
         if (r.runId) navigate(`/vehicle-patrol/runs/${r.runId}`);
       }}

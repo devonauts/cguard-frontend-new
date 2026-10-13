@@ -156,6 +156,17 @@ export function targetForNotification(n: PlatformNotification): string {
     return `/nomina/records?${params.toString()}`;
   }
 
+  // ── Sin señal → la ficha de la persona, donde está su conexión, sus cortes
+  // y lo que no entró. Vigilante: su pestaña Dispositivo; supervisor: su ficha.
+  if (type === "app.sin_conexion" || type === "app.conexion_recuperada") {
+    const gid = p.securityGuardId || p.guardId;
+
+    if (gid) return `/guards/${gid}/dispositivo`;
+    if (p.canal === "supervisor" && p.userId) return `/supervisors/${p.userId}`;
+
+    return "/dashboard";
+  }
+
   // ── Messages → the conversation.
   if (type.startsWith("message")) {
     return p.conversationId

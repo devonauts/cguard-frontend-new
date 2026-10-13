@@ -35,6 +35,22 @@ export function textoDeEpisodio(
 }
 
 /**
+ * «3 acciones pendientes en el teléfono»: lo que la persona hizo y todavía no
+ * llegó. Lo cuenta la propia app cuando tiene conexión; sin conexión es el
+ * último dato que mandó. Vacío si no hay nada pendiente.
+ */
+export function textoDePendientes(
+  t: (k: string, d: string, o?: any) => unknown,
+  n?: number | null,
+): string {
+  if (!n || n <= 0) return "";
+
+  return String(
+    t("conexionApp.pendientesEnTelefono", "{{count}} acciones pendientes en el teléfono", { count: n }),
+  );
+}
+
+/**
  * Una línea con el estado de conexión de una persona de las apps de campo:
  *  · sin conexión ahora → «Sin conexión desde 02:10» (en rojo suave);
  *  · conectada tras un hueco reciente → «Estuvo sin señal 02:10–03:40 · 5
@@ -53,6 +69,11 @@ export function EstadoDeConexionApp({
   const { t } = useTranslation();
 
   if (!estado) return null;
+  const pendientes = textoDePendientes(t, estado.pendientes);
+  const conPendientes = pendientes ? (
+    <span className="font-semibold text-[color:var(--warn-text)]"> · {pendientes}</span>
+  ) : null;
+
   if (!estado.conectado) {
     return (
       <span
@@ -62,6 +83,7 @@ export function EstadoDeConexionApp({
         {t("conexionApp.sinConexionDesde", "Sin conexión desde {{hora}}", {
           hora: soloHora(estado.desde),
         })}
+        {conPendientes}
       </span>
     );
   }
@@ -75,10 +97,11 @@ export function EstadoDeConexionApp({
         <Wifi className="size-3" />
         {/* Primero lo que pasa AHORA (tiene conexión); el corte, detrás. */}
         {t("conexionApp.conConexion", "Con conexión")} · {textoDeEpisodio(t, e)}
+        {conPendientes}
       </span>
     );
   }
-  if (!mostrarConectado) return null;
+  if (!mostrarConectado && !pendientes) return null;
 
   return (
     <span
@@ -88,6 +111,7 @@ export function EstadoDeConexionApp({
       {t("conexionApp.conectadoDesde", "Con conexión desde {{hora}}", {
         hora: soloHora(estado.desde),
       })}
+      {conPendientes}
     </span>
   );
 }

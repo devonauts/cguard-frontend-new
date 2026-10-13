@@ -5,6 +5,8 @@ import {
   textoDeEpisodio,
 } from "@/components/conexion/EstadoDeConexionApp";
 import { useConexionApp, useEpisodiosDeConexion } from "@/hooks/useConexionApp";
+import { useAccionesRechazadas } from "@/hooks/useAccionesRechazadas";
+import { ListaDeRechazadas } from "@/components/conexion/ListaDeRechazadas";
 
 /**
  * Ficha del vigilante / supervisor: su conexión ahora y los huecos sin
@@ -23,8 +25,9 @@ export function SeccionConexion({
   const { porUsuario } = useConexionApp(ids);
   const { episodios } = useEpisodiosDeConexion(userId);
   const estado = userId ? porUsuario.get(String(userId)) : undefined;
+  const { rechazadas } = useAccionesRechazadas(userId, { activo: !!userId });
 
-  if (!userId || (!estado && !episodios.length)) return null;
+  if (!userId || (!estado && !episodios.length && !rechazadas.length)) return null;
 
   return (
     <section
@@ -55,6 +58,18 @@ export function SeccionConexion({
           {t("conexionApp.sinCortes", "Sin cortes de conexión")}
         </div>
       )}
+      {/* Lo que hizo sin señal y NO entró: con su motivo, para corregirlo a
+          mano (una entrada fuera de horario, una visita tras la salida…). */}
+      {rechazadas.length ? (
+        <>
+          <div className="mt-3 text-xs text-[color:var(--ink-soft)]">
+            {t("conexionApp.rechazadasTitulo", "Acciones que no entraron · últimos 7 días")}
+          </div>
+          <div className="mt-1">
+            <ListaDeRechazadas filas={rechazadas} />
+          </div>
+        </>
+      ) : null}
     </section>
   );
 }

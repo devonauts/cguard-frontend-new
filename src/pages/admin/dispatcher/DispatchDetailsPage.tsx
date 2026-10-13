@@ -30,6 +30,9 @@ import { useTranslation } from 'react-i18next';
 import i18n from "@/i18n";
 import { localeActual } from "@/lib/localeActual";
 import { diaDeLaEmpresa, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
+import { AvisoLlegoTarde, llegadaDe } from "@/components/conexion/AvisoLlegoTarde";
+import { MarcaSinSenal } from "@/components/conexion/MarcaSinSenal";
+import { useMarcasSinSenal } from "@/hooks/useMarcasSinSenal";
 
 type ResourceType = "request" | "incident";
 
@@ -52,6 +55,9 @@ export function DispatchDetailsContent({
   );
   const [includeArchived, setIncludeArchived] = useState<boolean>(false);
   const [requestPayload, setRequestPayload] = useState<any | null>(null);
+  // ¿Se registró sin señal y llegó después? Una consulta, por el id del incidente.
+  const marcasDetalle = useMarcasSinSenal([requestPayload?.id || requestId]);
+  const marcaDetalle = marcasDetalle[String(requestPayload?.id || requestId || "")];
   const [comments, setComments] = useState<DispatchComment[]>([]);
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [newComment, setNewComment] = useState("");
@@ -707,6 +713,14 @@ export function DispatchDetailsContent({
                               requestPayload.dateTime,
                           ).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
                         : "-"}
+                      {/* Hecho sin señal: cuándo pasó de verdad y cuándo llegó. */}
+                      <div className="mt-1 flex flex-wrap gap-1">
+                        {llegadaDe(requestPayload, marcaDetalle) ? (
+                          <AvisoLlegoTarde compacto datos={llegadaDe(requestPayload, marcaDetalle)} />
+                        ) : (
+                          <MarcaSinSenal marca={marcaDetalle} />
+                        )}
+                      </div>
                     </td>
                   </tr>
 

@@ -306,6 +306,20 @@ export const EVENTOS_DE_AVISO: EventoDeAviso[] = [
     prioridad: "urgent",
     catalogado: true,
   },
+  // Sin señal: alguien EN TURNO se quedó sin conexión, y cuando la recupera
+  // (con lo que traía guardado). Ver backend services/presenciaApp.
+  {
+    evento: "app.sin_conexion",
+    familia: "attendance",
+    prioridad: "urgent",
+    catalogado: true,
+  },
+  {
+    evento: "app.conexion_recuperada",
+    familia: "attendance",
+    prioridad: "normal",
+    catalogado: true,
+  },
   {
     evento: "guard.license_expiring",
     familia: "announcement",

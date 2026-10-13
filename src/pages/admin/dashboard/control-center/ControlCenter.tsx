@@ -70,6 +70,7 @@ import { CommandBar } from "./components/CommandBar";
 import { MetricHero } from "./components/MetricHero";
 import { MapPanel } from "./components/MapPanel";
 import { Panel, PanelLink } from "./components/Panel";
+import { PanelSinSenal } from "./components/PanelSinSenal";
 import { CoverageGauge } from "./components/CoverageGauge";
 import { StatRail, type RailItem } from "./components/StatRail";
 import { TrendPanel } from "./components/TrendPanel";
@@ -322,6 +323,10 @@ export default function ControlCenter() {
                       onDuty={c.onDuty ?? 0}
                     />
                   </Panel>
+
+                  {/* Teléfonos sin conexión y lo que llegó tarde y no entró.
+                      No pinta nada si no hay nada que decir. */}
+                  <PanelSinSenal entities={data.entities} />
 
                   <StatRail
                     icon={<Boxes />}

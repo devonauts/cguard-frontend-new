@@ -61,6 +61,9 @@ import { FIELD_CLS_LG } from "@/pages/admin/clientes/components/_shared/tab-kit"
 import type { PostSite } from "@/types";
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { AvisoLlegoTarde, llegadaDe } from "@/components/conexion/AvisoLlegoTarde";
+import { MarcaSinSenal } from "@/components/conexion/MarcaSinSenal";
+import { useMarcasSinSenal } from "@/hooks/useMarcasSinSenal";
 
 interface SiteProp extends PostSite {
   tenantId?: string;
@@ -70,6 +73,8 @@ interface SiteProp extends PostSite {
 export default function Incidents({ site }: { site?: SiteProp }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [incidents, setIncidents] = useState<any[]>([]);
+  // Cuáles se hicieron sin señal y llegaron después: UNA consulta por lista.
+  const marcasSinSenal = useMarcasSinSenal(incidents.map((x: any) => x?.id));
   const [loading, setLoading] = useState(false);
 
   const [dispatches, setDispatches] = useState<any[]>([]);
@@ -1438,6 +1443,13 @@ export default function Incidents({ site }: { site?: SiteProp }) {
                                     it.created_at,
                                 ).toLocaleString(localeActual(), { timeZone: zonaDeLaEmpresa() })
                               : "-"}
+                            {/* Hecho sin señal: llegó tarde (y cuánto). */}
+                            <div className="mt-1 flex flex-wrap gap-1">
+                              <AvisoLlegoTarde compacto datos={llegadaDe(it, marcasSinSenal[String(it.id)])} />
+                              {!llegadaDe(it, marcasSinSenal[String(it.id)]) ? (
+                                <MarcaSinSenal marca={marcasSinSenal[String(it.id)]} />
+                              ) : null}
+                            </div>
                           </td>
 
                           <td className="px-2 py-2.5 text-sm text-foreground">

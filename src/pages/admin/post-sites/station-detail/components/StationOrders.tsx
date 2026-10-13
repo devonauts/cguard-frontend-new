@@ -38,6 +38,8 @@ import type { Station } from "@/types";
 
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { MarcaSinSenal } from "@/components/conexion/MarcaSinSenal";
+import { useMarcasSinSenal } from "@/hooks/useMarcasSinSenal";
 import { resolveApiBase } from "@/lib/apiBase";
 type Props = { station: Station; stationId: string; postSiteId: string };
 
@@ -130,7 +132,7 @@ export default function StationOrders({ stationId }: Props) {
   const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState<Order | null>(null);
   const [saving, setSaving] = useState(false);
-  const [view, setView] = useState<"list" | "log">("list");
+  const [view, setView] = useState<"list" | "log" | "bitacora">("list");
 
   const load = async () => {
     if (!stationId) return;
@@ -247,6 +249,10 @@ export default function StationOrders({ stationId }: Props) {
                   value: "log",
                   label: t("station.orders.tabLog", "Registro de actividad"),
                 },
+                {
+                  value: "bitacora",
+                  label: t("station.orders.tabBitacora", "Bitácora"),
+                },
               ]}
             />
             {view === "list" && (
@@ -269,7 +275,9 @@ export default function StationOrders({ stationId }: Props) {
         </p>
       </Section>
 
-      {view === "log" ? (
+      {view === "bitacora" ? (
+        <Bitacora stationId={stationId} />
+      ) : view === "log" ? (
         <ActivityLog
           stationId={stationId}
           t={t as unknown as (key: string, def?: string) => string}
@@ -699,6 +707,82 @@ function OrderModal({
   );
 }
 
+/** Una novedad de la bitácora del puesto (la deja el vigilante desde la app). */
+interface NovedadRow {
+  id: string;
+  title?: string;
+  detail?: string | null;
+  priority?: string | null;
+  guardName?: string | null;
+  status?: string | null;
+  createdAt: string;
+  closedAt?: string | null;
+  closedByName?: string | null;
+}
+
+/**
+ * BITÁCORA DEL PUESTO — las novedades del turno que dejan los vigilantes.
+ * El servidor las servía y ninguna pantalla del CRM las pedía. Cada una lleva
+ * «Registrado sin señal» si se anotó sin cobertura y llegó después.
+ */
+function Bitacora({ stationId }: { stationId: string }) {
+  const { t } = useTranslation();
+  const [rows, setRows] = useState<NovedadRow[]>([]);
+  const [loading, setLoading] = useState(false);
+  const marcasSinSenal = useMarcasSinSenal(rows.map((n) => n.id));
+
+  useEffect(() => {
+    if (!stationId) return;
+    setLoading(true);
+    stationOrderService
+      .shiftNotes(stationId)
+      .then((res: any) => setRows(Array.isArray(res) ? res : (res?.rows ?? [])))
+      .catch(() => setRows([]))
+      .finally(() => setLoading(false));
+  }, [stationId]);
+
+  if (loading) return <SkeletonCards count={3} className="sm:grid-cols-1" />;
+  if (!rows.length)
+    return (
+      <EmptyState
+        icon={<FileText />}
+        title={t("station.orders.bitacoraEmpty", "Sin novedades en la bitácora")}
+        description={t(
+          "station.orders.bitacoraEmptyHint",
+          "Las novedades que anoten los vigilantes desde la app aparecerán aquí.",
+        )}
+      />
+    );
+
+  return (
+    <div className="space-y-3">
+      {rows.map((n) => (
+        <div key={n.id} className="glass-flat p-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm font-semibold text-foreground">{n.title || "—"}</p>
+            <span className="text-xs text-muted-foreground">
+              {n.status === "cerrada"
+                ? t("station.orders.novedadCerrada", "Cerrada")
+                : t("station.orders.novedadAbierta", "Abierta")}
+            </span>
+          </div>
+          {n.detail ? <p className="mt-1 text-sm text-foreground">{n.detail}</p> : null}
+          <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+            <User size={11} />
+            {n.guardName || "—"} ·{" "}
+            {new Date(n.createdAt).toLocaleString(localeActual(), {
+              timeZone: zonaDeLaEmpresa(),
+              dateStyle: "short",
+              timeStyle: "short",
+            })}
+          </p>
+          <MarcaSinSenal className="mt-1" marca={marcasSinSenal[String(n.id)]} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /** A guard's completion of a station consigna, with captured evidence. */
 interface CompletionPhoto {
   downloadUrl?: string | null;
@@ -724,6 +808,8 @@ function ActivityLog({
 }) {
   const [rows, setRows] = useState<CompletionRow[]>([]);
   const [loading, setLoading] = useState(false);
+  // Consignas completadas sin señal: una consulta por lista.
+  const marcasSinSenal = useMarcasSinSenal(rows.map((c) => c.id));
   useEffect(() => {
     if (!stationId) return;
     setLoading(true);
@@ -776,6 +862,7 @@ function ActivityLog({
                     timeStyle: "short",
                   })}
                 </p>
+                <MarcaSinSenal className="mt-1" marca={c.id ? marcasSinSenal[String(c.id)] : null} />
               </div>
             </div>
             {c.order?.time && (

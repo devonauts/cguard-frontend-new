@@ -17,6 +17,12 @@ export const stationOrderService = {
   /** Activity log: guard completions of this station's consignas (with evidence). */
   completions: (stationId: string) =>
     ApiService.get(`/tenant/${tid()}/station/${stationId}/order-completions`),
+  /**
+   * Bitácora: las novedades que dejan los vigilantes desde la app (abiertas,
+   * cerradas o todas). El servidor ya la tenía; ninguna pantalla la pedía.
+   */
+  shiftNotes: (stationId: string, status: "abierta" | "cerrada" | "todas" = "todas") =>
+    ApiService.get(`/tenant/${tid()}/station/${stationId}/shift-notes?status=${status}&limit=200`),
 };
 
 export default stationOrderService;

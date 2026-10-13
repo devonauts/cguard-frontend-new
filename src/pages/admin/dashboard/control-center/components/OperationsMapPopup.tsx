@@ -48,7 +48,7 @@ import {
 import i18n from "@/i18n";
 import securityGuardService from "@/lib/api/securityGuardService";
 import type { EstadoDeConexion } from "@/lib/api/conexionAppService";
-import { textoDeEpisodio } from "@/components/conexion/EstadoDeConexionApp";
+import { textoDeEpisodio, textoDePendientes } from "@/components/conexion/EstadoDeConexionApp";
 import { soloHora } from "@/lib/horaDeLaEmpresa";
 
 /* ── Lo que el mapa deja hacer desde un globo ─────────────────────────────── */
@@ -564,9 +564,11 @@ export function conConexion(data: MapPopupData, estado?: EstadoDeConexion): MapP
     : reciente
       ? textoDeEpisodio(t, reciente)
       : t("conexionApp.conectadoDesde", "Con conexión desde {{hora}}", { hora: soloHora(estado.desde) });
+  // Lo hecho y aún no enviado: la central tiene que saber que HAY algo en camino.
+  const pendientes = textoDePendientes(t, estado.pendientes);
   const campo: MapPopupField = {
     label: t("conexionApp.titulo", "Conexión"),
-    value: valor,
+    value: pendientes ? `${valor} · ${pendientes}` : valor,
     tone: estado.conectado ? (reciente ? "warn" : "ok") : "bad",
     wide: true,
   };

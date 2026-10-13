@@ -131,6 +131,8 @@ export default function PanicButtonLog() {
         return cerrado ? "warn" : "bad";
       }}
       columns={columns}
+      // SOS guardado sin señal: llegó tarde (por el incidente del caso).
+      idSinSenal={(r: any) => r.incidentId || r.id}
       // Crítica/Alta sin cerrar → regla roja en el canto de la fila. Una vez
       // resuelto deja de ser una emergencia y baja a aviso.
       title={t("ui.PanicButtonLog.registrosDelBotonDePanico", "Registros del Botón de Pánico")}

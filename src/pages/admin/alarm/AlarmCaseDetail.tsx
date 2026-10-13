@@ -61,6 +61,7 @@ import {
   formatWhenFull as formatWhen,
   sourceTone,
 } from "./shared";
+import { AvisoLlegoTarde, llegadaDe } from "@/components/conexion/AvisoLlegoTarde";
 
 /* ------------------------------------------------------------------ */
 /* Metadata                                                            */
@@ -420,6 +421,18 @@ export default function AlarmCaseDetail() {
             }
           />
         </div>
+
+        {/* Un SOS guardado sin señal: llegó tarde. Va antes de las acciones
+            porque cambia QUÉ hacer (la emergencia empezó hace rato). */}
+        <AvisoLlegoTarde
+          datos={llegadaDe(
+            data,
+            (data as any).payload,
+            (data as any).metadata,
+            (data as any).incident,
+            events[0] ? (events[0] as any).payload : null,
+          )}
+        />
 
         {/* Acciones del caso */}
         <GlassPanel

@@ -52,6 +52,16 @@ import type { ExportFormat } from "@/lib/export/reportExport";
 
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { MarcaSinSenal } from "@/components/conexion/MarcaSinSenal";
+import { useMarcasSinSenal } from "@/hooks/useMarcasSinSenal";
+
+/** ¿La marca sin señal de este turno fue la entrada o la salida? */
+function ladoDeLaMarca(m?: { accion?: string | null } | null): "entrada" | "salida" | null {
+  if (!m) return null;
+  const a = String(m.accion || "").toLowerCase();
+
+  return a.includes("salida") || a.includes("clock-out") || a === "out" ? "salida" : "entrada";
+}
 /**
  * La marca que NO puso el vigilante con su dedo. Sólo se señalan las que
  * cambian cómo leer la hora: la que registró el teléfono al llegar o irse del
@@ -177,6 +187,8 @@ export default function NominaRecords() {
   const [focusHandled, setFocusHandled] = useState(false);
 
   const [rows, setRows] = useState<AttendanceRecord[]>([]);
+  // Entradas/salidas marcadas sin señal: una consulta por página.
+  const marcasSinSenal = useMarcasSinSenal(rows.map((r: any) => r.id));
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState("");
   const [departmentId, setDepartmentId] = useState("");
@@ -380,6 +392,10 @@ export default function NominaRecords() {
         <span>
           {fmtTime(r.punchInTime)}
           <MetodoDeMarcaje lado="entrada" metodo={r.punchInMethod} />
+          {/* Marcada sin señal: la hora es la real; llegó después. */}
+          {ladoDeLaMarca(marcasSinSenal[String(r.id)]) !== "salida" && (
+            <MarcaSinSenal className="ml-1" marca={marcasSinSenal[String(r.id)]} />
+          )}
           {Array.isArray(r.sessions) && r.sessions.length > 1 && (
             <span
               className="ml-1 text-[10px] font-medium tabular-nums"
@@ -404,6 +420,9 @@ export default function NominaRecords() {
           {fmtTime(r.punchOutTime)}
           {r.punchOutTime && (
             <MetodoDeMarcaje lado="salida" metodo={r.punchOutMethod} />
+          )}
+          {ladoDeLaMarca(marcasSinSenal[String(r.id)]) === "salida" && (
+            <MarcaSinSenal className="ml-1" marca={marcasSinSenal[String(r.id)]} />
           )}
         </span>
       ),

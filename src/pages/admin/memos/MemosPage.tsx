@@ -75,6 +75,8 @@ import { userService } from "@/lib/api/userService";
 import { useAuth } from "@/contexts/AuthContext";
 import { localeActual } from "@/lib/localeActual";
 import { hoyEnLaEmpresa, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
+import { MarcaSinSenal } from "@/components/conexion/MarcaSinSenal";
+import { useMarcasSinSenal } from "@/hooks/useMarcasSinSenal";
 
 type MemoItem = {
   id: string;
@@ -93,6 +95,8 @@ export default function MemosPage() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [memos, setMemos] = useState<MemoItem[]>([]);
+  // Memos confirmados sin señal: una consulta por lista.
+  const marcasSinSenal = useMarcasSinSenal(memos.filter((m: any) => m.wasAccepted).map((m: any) => m.id));
   const [query, setQuery] = useState("");
 
   const normalizePerson = (person: any) => {
@@ -507,11 +511,15 @@ export default function MemosPage() {
       sortable: true,
       // El acuse de lectura es un semántico, nunca el acento: aceptado = ok,
       // pendiente de acuse = warn.
-      render: (value) =>
+      render: (value, row: any) =>
         value ? (
-          <StatusBadge tone="ok">
-            {t("guards.memos.accepted", "Aceptado")}
-          </StatusBadge>
+          <span className="inline-flex flex-wrap items-center gap-1">
+            <StatusBadge tone="ok">
+              {t("guards.memos.accepted", "Aceptado")}
+            </StatusBadge>
+            {/* Confirmado sin señal: llegó después. */}
+            <MarcaSinSenal marca={marcasSinSenal[String(row?.id)]} />
+          </span>
         ) : (
           <StatusBadge tone="warn">{t("comun.pendiente")}</StatusBadge>
         ),

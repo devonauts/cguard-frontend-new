@@ -12,6 +12,7 @@ import MobileCardList from "@/components/responsive/MobileCardList";
 import { useEsTelefono } from "@/hooks/useEsTelefono";
 import { exportColumns, pieDeInforme, type ExportFormat } from "@/lib/export/reportExport";
 import { MarcaSinSenal } from "@/components/conexion/MarcaSinSenal";
+import { AvisoLlegoTarde, llegadaDe } from "@/components/conexion/AvisoLlegoTarde";
 import { useMarcasSinSenal } from "@/hooks/useMarcasSinSenal";
 
 /** «13/09/2026, 10:50 a. m.», «2026-09-13 10:50», «10:50». Sólo marcas de
@@ -91,6 +92,20 @@ interface DataReportProps<T> {
    * «Registrado sin señal · llegó 03:40». Una consulta por página visible.
    */
   idSinSenal?: (row: T) => string | null | undefined;
+}
+
+/**
+ * Un SOS o incidente que llegó tarde lleva la franja roja («ocurrió hace N
+ * min»); el resto de lo hecho sin señal, la etiqueta discreta.
+ */
+function EtiquetaSinSenal({ fila, marca }: { fila: any; marca?: any }) {
+  const tarde = llegadaDe(fila, marca);
+
+  return tarde ? (
+    <AvisoLlegoTarde compacto className="ml-2" datos={tarde} />
+  ) : (
+    <MarcaSinSenal className="ml-2" marca={marca} />
+  );
 }
 
 function ymd(d: Date): string {
@@ -472,7 +487,7 @@ export default function DataReport<T>({
                 <div className="text-sm font-semibold">
                   {primera ? primera.value(row) : ""}
                   {idSinSenal && (
-                    <MarcaSinSenal className="ml-2" marca={marcasSinSenal[String(idSinSenal(row) ?? "")]} />
+                    <EtiquetaSinSenal fila={row} marca={marcasSinSenal[String(idSinSenal(row) ?? "")]} />
                   )}
                 </div>
                 {resto.length > 0 && (
@@ -578,7 +593,7 @@ export default function DataReport<T>({
                         )}
                         {c.value(row)}
                         {ci === 0 && idSinSenal && (
-                          <MarcaSinSenal className="ml-2" marca={marcasSinSenal[String(idSinSenal(row) ?? "")]} />
+                          <EtiquetaSinSenal fila={row} marca={marcasSinSenal[String(idSinSenal(row) ?? "")]} />
                         )}
                       </td>
                     ))}
