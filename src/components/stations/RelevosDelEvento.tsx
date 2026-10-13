@@ -467,7 +467,7 @@ export function EditorDeRelevos({
             : t("ui.RelevosDelEvento.de", "de")}
         </span>
         <input
-          className="cg-input cg-focus h-8 w-28 px-2 text-center font-mono text-sm"
+          className="cg-input cg-focus h-8 w-32 px-2 text-center font-mono text-sm"
           disabled={ajustar}
           type="time"
           value={desde}
@@ -479,7 +479,7 @@ export function EditorDeRelevos({
               {t("ui.RelevosDelEvento.a", "a")}
             </span>
             <input
-              className="cg-input cg-focus h-8 w-28 px-2 text-center font-mono text-sm"
+              className="cg-input cg-focus h-8 w-32 px-2 text-center font-mono text-sm"
               disabled={ajustar}
               type="time"
               value={hasta}
@@ -606,7 +606,7 @@ export function EditorDeRelevos({
                     {i + 1}
                   </span>
                   <input
-                    className="cg-input cg-focus h-8 w-28 px-2 text-center font-mono text-sm"
+                    className="cg-input cg-focus h-8 w-32 px-2 text-center font-mono text-sm"
                     type="time"
                     value={f.start}
                     onChange={(e) => cambiarFranja(f.id, { start: e.target.value })}
@@ -615,7 +615,7 @@ export function EditorDeRelevos({
                     {t("ui.RelevosDelEvento.a", "a")}
                   </span>
                   <input
-                    className="cg-input cg-focus h-8 w-28 px-2 text-center font-mono text-sm"
+                    className="cg-input cg-focus h-8 w-32 px-2 text-center font-mono text-sm"
                     type="time"
                     value={f.end}
                     onChange={(e) => cambiarFranja(f.id, { end: e.target.value })}

@@ -16548,8 +16548,10 @@
       "nTurnos_one": "{{count}} shift",
       "nTurnos_other": "{{count}} shifts",
       "ocupadoEl": "Busy on {{dia}}",
-      "archivadoTras": "Archived after {{evento}} — reactivated when assigned",
-      "archivado": "Archived"
+      "archivadoTras": "Archived after “{{evento}}” · reactivated when assigned",
+      "archivado": "Archived",
+      "reactivados_one": "{{count}} was archived: reactivated, so they take up a seat again.",
+      "reactivados_other": "{{count}} were archived: reactivated, so they take up seats again."
     },
     "ZonasDelEventoMap": {
       "alt": "Event zones on the map",
@@ -16632,7 +16634,7 @@
       "confirmarTexto_one": "{{count}} guard with no other post will be archived: {{lista}}. Their seat is freed and they still get paid for this event. If you assign them again, they're reactivated automatically.",
       "confirmarTexto_other": "{{count}} guards with no other post will be archived: {{lista}}. Their seats are freed and they still get paid for this event. If you assign them again, they're reactivated automatically.",
       "confirmarSeQuedan": "Not archived:\n{{lista}}",
-      "nadieQueArchivar": "Nobody to archive: everyone has another post or is already archived.",
+      "nadieQueArchivar": "Nobody to archive right now.",
       "archivadosOk_one": "{{count}} guard archived",
       "archivadosOk_other": "{{count}} guards archived",
       "archivado": "Archived",
@@ -16642,7 +16644,10 @@
         "turnoDelEvento": "their event shift is still running",
         "fichajeAbierto": "is clocked in right now",
         "otroRol": "isn't only a guard"
-      }
+      },
+      "yMas_one": "… and {{count}} more",
+      "yMas_other": "… and {{count}} more",
+      "terminadoSinTurnos": "Event finished with no shifts: there are no hours to pay."
     },
     "RelevosDelEvento": {
       "titulo": "Event shifts",

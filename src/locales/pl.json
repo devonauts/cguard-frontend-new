@@ -17317,8 +17317,12 @@
       "nTurnos_many": "{{count}} zmian",
       "nTurnos_other": "{{count}} zmiany",
       "ocupadoEl": "Zajęty {{dia}}",
-      "archivadoTras": "Zarchiwizowany po {{evento}} — reaktywuje się przy przypisaniu",
-      "archivado": "Zarchiwizowany"
+      "archivadoTras": "Zarchiwizowany po „{{evento}}” · reaktywuje się przy przypisaniu",
+      "archivado": "Zarchiwizowany",
+      "reactivados_one": "{{count}} był zarchiwizowany: reaktywowany, znów zajmuje miejsce.",
+      "reactivados_few": "{{count}} było zarchiwizowanych: reaktywowani, znów zajmują miejsca.",
+      "reactivados_many": "{{count}} było zarchiwizowanych: reaktywowani, znów zajmują miejsca.",
+      "reactivados_other": "{{count}} było zarchiwizowanych: reaktywowani, znów zajmują miejsca."
     },
     "ZonasDelEventoMap": {
       "alt": "Strefy wydarzenia na mapie",
@@ -17411,7 +17415,7 @@
       "confirmarTexto_many": "Zostanie zarchiwizowanych {{count}} pracowników ochrony bez innego posterunku: {{lista}}. Zwalniają miejsca i nadal dostają zapłatę za to wydarzenie. Jeśli przypiszesz ich ponownie, zostaną automatycznie reaktywowani.",
       "confirmarTexto_other": "Zostanie zarchiwizowanych {{count}} pracowników ochrony bez innego posterunku: {{lista}}. Zwalniają miejsca i nadal dostają zapłatę za to wydarzenie. Jeśli przypiszesz ich ponownie, zostaną automatycznie reaktywowani.",
       "confirmarSeQuedan": "Nie zostaną zarchiwizowani:\n{{lista}}",
-      "nadieQueArchivar": "Nie ma kogo archiwizować: wszyscy mają inny posterunek albo są już zarchiwizowani.",
+      "nadieQueArchivar": "Teraz nie ma kogo archiwizować.",
       "archivadosOk_one": "Zarchiwizowano {{count}} pracownika ochrony",
       "archivadosOk_few": "Zarchiwizowano {{count}} pracowników ochrony",
       "archivadosOk_many": "Zarchiwizowano {{count}} pracowników ochrony",
@@ -17423,7 +17427,12 @@
         "turnoDelEvento": "jego zmiana w wydarzeniu wciąż trwa",
         "fichajeAbierto": "jest teraz zalogowany na zmianie",
         "otroRol": "nie jest tylko pracownikiem ochrony"
-      }
+      },
+      "yMas_one": "… i {{count}} więcej",
+      "yMas_few": "… i {{count}} więcej",
+      "yMas_many": "… i {{count}} więcej",
+      "yMas_other": "… i {{count}} więcej",
+      "terminadoSinTurnos": "Wydarzenie zakończone bez zmian: nie ma godzin do zapłaty."
     },
     "RelevosDelEvento": {
       "titulo": "Zmiany wydarzenia",

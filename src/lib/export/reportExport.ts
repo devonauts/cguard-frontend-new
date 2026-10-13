@@ -306,12 +306,31 @@ async function buildXlsxBlob(
  * columnas caben en vertical y se leen mejor así; de siete en adelante, apaisado
  * o las celdas se parten en tres líneas cada una.
  */
+/**
+ * Las fuentes estándar de jsPDF son cp1252: un solo carácter de fuera (la
+ * flecha de «sáb 24 oct 14:00 → 02:00», el espacio fino con el que `Intl`
+ * separa los miles en francés) hace que jsPDF escriba la línea ENTERA en
+ * UTF-16 y el visor la pinta como basura. Se cambian por su par cp1252.
+ */
+const paraPdf = (s: string): string =>
+  s
+    .replace(/→/g, "–")
+    .replace(/[  ]/g, " ")
+    .replace(/−/g, "-");
+
 async function buildPdfBlob(
   headers: string[],
   body: (string | number | null | undefined)[][],
   meta: ExportMeta,
   aligns: ("left" | "right" | "center")[],
 ): Promise<Blob> {
+  meta = {
+    ...meta,
+    title: paraPdf(meta.title),
+    subtitle: meta.subtitle ? paraPdf(meta.subtitle) : meta.subtitle,
+  };
+  headers = headers.map(paraPdf);
+  body = body.map((f) => f.map((v) => paraPdf(texto(v))));
   const { jsPDF, autoTable } = await loadPdf();
   const apaisado = headers.length > 6;
   const doc = new jsPDF({

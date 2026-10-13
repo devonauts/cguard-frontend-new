@@ -21,8 +21,10 @@ import {
   StatsStrip,
   StatusBadge,
 } from "@/components/kit";
+import MobileCardList from "@/components/responsive/MobileCardList";
 import { Button } from "@/components/ui/button";
 import { confirmDialog } from "@/components/ui/confirmDialog";
+import { useEsTelefono } from "@/hooks/useEsTelefono";
 import { useGusto } from "@/hooks/useGusto";
 import { gustoService } from "@/lib/api/gustoService";
 import { rangoDelEvento } from "@/lib/eventos";
@@ -134,6 +136,9 @@ export default function NominaDelEvento({
   const tenantId = localStorage.getItem("tenantId") || "";
   const base = `/tenant/${tenantId}/post-site/${postSiteId}/nomina-evento`;
   const gusto = useGusto();
+  // En el teléfono la hoja va en tarjetas: la tabla de cinco columnas
+  // obligaba a deslizar de lado para ver lo que se paga y el estado.
+  const esTelefono = useEsTelefono();
   const [datos, setDatos] = useState<Nomina | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [vuelta, setVuelta] = useState(0);
@@ -313,7 +318,18 @@ export default function NominaDelEvento({
           donde: string | null;
         }>;
       };
-      const quedan = (plan?.seQuedan || []).map(motivoLegible);
+      // En un evento grande la lista de quienes se quedan puede ser larga:
+      // se enseñan los primeros y el resto se cuenta.
+      const todosQuedan = (plan?.seQuedan || []).map(motivoLegible);
+      const quedan = todosQuedan.slice(0, 10);
+
+      if (todosQuedan.length > quedan.length)
+        quedan.push(
+          t("ui.NominaDelEvento.yMas", {
+            defaultValue: "… y {{count}} más",
+            count: todosQuedan.length - quedan.length,
+          }),
+        );
       const seQuedan = quedan.length
         ? t("ui.NominaDelEvento.confirmarSeQuedan", {
             defaultValue: "No se archivan:\n{{lista}}",
@@ -322,16 +338,19 @@ export default function NominaDelEvento({
         : "";
 
       if (!plan?.archivar?.length) {
+        // El aviso respeta los saltos de línea (uno por persona) y dura lo
+        // bastante para leer la lista.
         toast.info(
-          [
-            t(
-              "ui.NominaDelEvento.nadieQueArchivar",
-              "No hay nadie que archivar: todos tienen otro puesto o ya están archivados.",
-            ),
-            seQuedan,
-          ]
-            .filter(Boolean)
-            .join("\n"),
+          t(
+            "ui.NominaDelEvento.nadieQueArchivar",
+            "No hay nadie que archivar ahora.",
+          ),
+          {
+            description: seQuedan ? (
+              <span className="whitespace-pre-line">{seQuedan}</span>
+            ) : undefined,
+            duration: seQuedan ? 15000 : undefined,
+          },
         );
 
         return;
@@ -547,7 +566,70 @@ export default function NominaDelEvento({
           : t("ui.NominaDelEvento.estado.pendiente", "Pendiente");
   }
 
-  const visibles = todos ? filas : filas.slice(0, MOSTRAR);
+  // Quien no fichó o no cerró la salida va arriba: en un evento de 120 personas
+  // es lo único que la oficina tiene que revisar antes de pagar, y por orden
+  // alfabético podía quedar escondido detrás de «Ver los 120».
+  const conIncidencia = (f: Fila) =>
+    f.turnos.some((x) => x.estado === "noFicho" || x.estado === "sinSalida");
+  const ordenadas = [
+    ...filas.filter(conIncidencia),
+    ...filas.filter((f) => !conIncidencia(f)),
+  ];
+  const visibles = todos ? ordenadas : ordenadas.slice(0, MOSTRAR);
+
+  /** La insignia de estado de una persona (la misma en tabla y tarjeta). */
+  const estadoDeFila = (f: Fila) => {
+    const noFicho = f.turnos.filter((x) => x.estado === "noFicho").length;
+    const sinSalida = f.turnos.filter((x) => x.estado === "sinSalida").length;
+
+    return noFicho ? (
+      <StatusBadge tone="bad">
+        {t("ui.NominaDelEvento.nNoFicho", {
+          defaultValue: "{{count}} sin fichar",
+          count: noFicho,
+        })}
+      </StatusBadge>
+    ) : sinSalida ? (
+      <StatusBadge tone="warn">
+        {t("ui.NominaDelEvento.nSinSalida", {
+          defaultValue: "{{count}} sin salida",
+          count: sinSalida,
+        })}
+      </StatusBadge>
+    ) : f.porAprobar === 0 && f.aprobadas > 0 ? (
+      <StatusBadge tone="ok">
+        {t("ui.NominaDelEvento.aprobada", "Aprobada")}
+      </StatusBadge>
+    ) : f.turnos.every((x) => x.estado === "pendiente") ? (
+      <StatusBadge tone="neutral">
+        {t("ui.NominaDelEvento.estado.pendiente", "Pendiente")}
+      </StatusBadge>
+    ) : (
+      <StatusBadge tone="info">
+        {t("ui.NominaDelEvento.porAprobar", "Por aprobar")}
+      </StatusBadge>
+    );
+  };
+
+  const verTodosBoton =
+    filas.length > MOSTRAR ? (
+      <button
+        className="cg-focus w-full border-t px-3 py-2 text-sm"
+        style={{
+          borderColor: "var(--hairline)",
+          color: "var(--brand-text)",
+        }}
+        type="button"
+        onClick={() => setTodos((v) => !v)}
+      >
+        {todos
+          ? t("ui.NominaDelEvento.verMenos", "Ver menos")
+          : t("ui.NominaDelEvento.verTodos", {
+              defaultValue: "Ver los {{count}}",
+              count: filas.length,
+            })}
+      </button>
+    ) : null;
 
   return (
     <Section
@@ -570,6 +652,15 @@ export default function NominaDelEvento({
                 hourCycle: "h23",
               }).replace(/,/g, ""),
             })}
+          </InfoNote>
+        ) : !totales.turnos ? (
+          // Sin turnos no hay nada fichado: decir «todos fichados, lista
+          // para pagar» con cero vigilantes engañaba.
+          <InfoNote tone="info">
+            {t(
+              "ui.NominaDelEvento.terminadoSinTurnos",
+              "Evento terminado sin turnos: no hay horas que pagar.",
+            )}
           </InfoNote>
         ) : (
           <InfoNote tone={totales.noFicho || totales.sinSalida ? "warn" : "ok"}>
@@ -600,7 +691,12 @@ export default function NominaDelEvento({
           </InfoNote>
         )}
 
-        <StatsStrip className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {/* Una cifra por página en el teléfono: dentro de la sección, dos
+            tarjetas por página cortaban el importe («MXN 1.3…»). */}
+        <StatsStrip
+          className="grid grid-cols-2 gap-3 lg:grid-cols-4"
+          porPagina={1}
+        >
           <StatCard
             accent="info"
             icon={<Users />}
@@ -808,17 +904,71 @@ export default function NominaDelEvento({
                 </Button>
               )}
             </div>
-          ) : datos.archivado.archivarAlTerminar ? (
+          ) : (
+            // Antes de terminar también se dice si el evento NO archiva:
+            // si no, quien lo apagó no tenía dónde comprobarlo.
             <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
-              {t(
-                "ui.NominaDelEvento.archivarAyuda",
-                "Los vigilantes sin otro puesto se archivan solos 12 h después del fin y liberan su asiento. Siguen cobrando: sus horas se quedan en esta hoja.",
-              )}
+              {datos.archivado.archivarAlTerminar
+                ? t(
+                    "ui.NominaDelEvento.archivarAyuda",
+                    "Los vigilantes sin otro puesto se archivan solos 12 h después del fin y liberan su asiento. Siguen cobrando: sus horas se quedan en esta hoja.",
+                  )
+                : t(
+                    "ui.NominaDelEvento.archivarApagado",
+                    "Este evento no archiva a su gente al terminar (se cambia al editar el evento).",
+                  )}
             </p>
-          ) : null)}
+          ))}
 
         {/* La hoja */}
-        {filas.length ? (
+        {filas.length && esTelefono ? (
+          <div className="space-y-3">
+            <MobileCardList
+              items={visibles.map((f) => ({ ...f, id: f.userId }))}
+              renderCard={(f: Fila) => (
+                <div className="space-y-1.5 text-sm">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="font-medium">{f.nombre}</div>
+                      <div
+                        className="text-xs"
+                        style={{ color: "var(--ink-soft)" }}
+                      >
+                        {[f.documento, f.zonas.join(" · ")]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </div>
+                    </div>
+                    {f.archivado && (
+                      <StatusBadge className="shrink-0" tone="neutral">
+                        {t("ui.NominaDelEvento.archivado", "Archivado")}
+                      </StatusBadge>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="tabular-nums">
+                      {horas(f.horasTrabajadas)}
+                      <span
+                        className="text-xs"
+                        style={{ color: "var(--ink-soft)" }}
+                      >
+                        {" "}
+                        / {horas(f.horasProgramadas)} h
+                      </span>
+                    </span>
+                    <span className="font-semibold tabular-nums">
+                      {dinero(
+                        terminado ? f.importeCentavos : f.presupuestoCentavos,
+                      )}
+                    </span>
+                    {estadoDeFila(f)}
+                  </div>
+                </div>
+              )}
+            />
+            {verTodosBoton}
+          </div>
+        ) : filas.length ? (
           <div
             className="overflow-x-auto rounded-xl border"
             style={{ borderColor: "var(--hairline)" }}
@@ -850,13 +1000,6 @@ export default function NominaDelEvento({
               </thead>
               <tbody>
                 {visibles.map((f) => {
-                  const noFicho = f.turnos.filter(
-                    (x) => x.estado === "noFicho",
-                  ).length;
-                  const sinSalida = f.turnos.filter(
-                    (x) => x.estado === "sinSalida",
-                  ).length;
-
                   return (
                     <tr
                       key={f.userId}
@@ -902,61 +1045,13 @@ export default function NominaDelEvento({
                           terminado ? f.importeCentavos : f.presupuestoCentavos,
                         )}
                       </td>
-                      <td className="px-3 py-2">
-                        {noFicho ? (
-                          <StatusBadge tone="bad">
-                            {t("ui.NominaDelEvento.nNoFicho", {
-                              defaultValue: "{{count}} sin fichar",
-                              count: noFicho,
-                            })}
-                          </StatusBadge>
-                        ) : sinSalida ? (
-                          <StatusBadge tone="warn">
-                            {t("ui.NominaDelEvento.nSinSalida", {
-                              defaultValue: "{{count}} sin salida",
-                              count: sinSalida,
-                            })}
-                          </StatusBadge>
-                        ) : f.porAprobar === 0 && f.aprobadas > 0 ? (
-                          <StatusBadge tone="ok">
-                            {t("ui.NominaDelEvento.aprobada", "Aprobada")}
-                          </StatusBadge>
-                        ) : f.turnos.every((x) => x.estado === "pendiente") ? (
-                          <StatusBadge tone="neutral">
-                            {t(
-                              "ui.NominaDelEvento.estado.pendiente",
-                              "Pendiente",
-                            )}
-                          </StatusBadge>
-                        ) : (
-                          <StatusBadge tone="info">
-                            {t("ui.NominaDelEvento.porAprobar", "Por aprobar")}
-                          </StatusBadge>
-                        )}
-                      </td>
+                      <td className="px-3 py-2">{estadoDeFila(f)}</td>
                     </tr>
                   );
                 })}
               </tbody>
             </table>
-            {filas.length > MOSTRAR && (
-              <button
-                className="cg-focus w-full border-t px-3 py-2 text-sm"
-                style={{
-                  borderColor: "var(--hairline)",
-                  color: "var(--brand-text)",
-                }}
-                type="button"
-                onClick={() => setTodos((v) => !v)}
-              >
-                {todos
-                  ? t("ui.NominaDelEvento.verMenos", "Ver menos")
-                  : t("ui.NominaDelEvento.verTodos", {
-                      defaultValue: "Ver los {{count}}",
-                      count: filas.length,
-                    })}
-              </button>
-            )}
+            {verTodosBoton}
           </div>
         ) : (
           <p className="text-sm" style={{ color: "var(--ink-soft)" }}>

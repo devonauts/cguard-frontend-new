@@ -403,9 +403,23 @@ export function EventoVigilantes({ station, stationId, postSiteId }: Props) {
                           {a.telefono}
                         </p>
                       )}
+                      {/* En el teléfono el horario va debajo del nombre: a
+                          la derecha dejaba el nombre en «Aaron Coll…». */}
+                      <div
+                        className="text-xs tabular-nums sm:hidden"
+                        style={{ color: "var(--ink-soft)" }}
+                      >
+                        {susTurnos.length
+                          ? susTurnos.map((s) => (
+                              <div key={s.id}>
+                                {tramoLegible(s.start, s.end)}
+                              </div>
+                            ))
+                          : `${a.inicio}–${a.fin}`}
+                      </div>
                     </div>
                     <div
-                      className="text-right text-xs tabular-nums"
+                      className="hidden text-right text-xs tabular-nums sm:block"
                       style={{ color: "var(--ink-soft)" }}
                     >
                       {susTurnos.length
@@ -676,6 +690,7 @@ function AsignarVarios({
     setGuardando(true);
     const fallos: string[] = [];
     let bien = 0;
+    let reactivados = 0;
 
     // Uno detrás de otro: el servidor mira la ocupación de las plazas por
     // horario, y en paralelo dos peticiones verían la misma plaza libre.
@@ -690,6 +705,7 @@ function AsignarVarios({
           },
         });
         bien += 1;
+        if (archivadosTras.has(id)) reactivados += 1;
       } catch (e: any) {
         const g = todos.find((x) => x.id === id);
 
@@ -699,14 +715,30 @@ function AsignarVarios({
       }
     }
     setGuardando(false);
+    // Reactivar a un archivado vuelve a ocupar su asiento: se dice, porque
+    // es justo lo que la oficina vigila al reutilizar gente entre eventos.
     if (bien)
       toast.success(
         t("ui.EventoDeLaEstacion.asignados", {
           defaultValue: "{{count}} vigilantes asignados",
           count: bien,
         }),
+        reactivados
+          ? {
+              description: t("ui.EventoDeLaEstacion.reactivados", {
+                defaultValue:
+                  "{{count}} estaban archivados: se reactivaron y vuelven a ocupar su asiento.",
+                count: reactivados,
+              }),
+            }
+          : undefined,
       );
-    if (fallos.length) toast.error(fallos.join("\n"));
+    // Un renglón por persona que no se pudo asignar (el aviso no respeta
+    // los saltos de línea si no se le pide).
+    if (fallos.length)
+      toast.error(
+        <span className="whitespace-pre-line">{fallos.join("\n")}</span>,
+      );
     try {
       window.dispatchEvent(new CustomEvent("assignments:changed"));
     } catch {
@@ -828,7 +860,7 @@ function AsignarVarios({
                         >
                           {t("ui.EventoDeLaEstacion.archivadoTras", {
                             defaultValue:
-                              "Archivado tras {{evento}} — se reactiva al asignar",
+                              "Archivado tras «{{evento}}» · se reactiva al asignar",
                             evento: archivadosTras.get(g.id),
                           })}
                         </span>
@@ -847,9 +879,13 @@ function AsignarVarios({
                             )}
                       </StatusBadge>
                     ) : archivadosTras.has(g.id) ? (
-                      <StatusBadge tone="info">
-                        {t("ui.EventoDeLaEstacion.archivado", "Archivado")}
-                      </StatusBadge>
+                      // En el teléfono la línea de debajo del nombre ya lo
+                      // dice; la insignia le quitaba media fila.
+                      <span className="hidden shrink-0 sm:inline-flex">
+                        <StatusBadge tone="info">
+                          {t("ui.EventoDeLaEstacion.archivado", "Archivado")}
+                        </StatusBadge>
+                      </span>
                     ) : g.libre ? (
                       <StatusBadge tone="ok">
                         {t("ui.EventoDeLaEstacion.libre", "Libre")}

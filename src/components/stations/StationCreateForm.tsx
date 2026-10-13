@@ -801,7 +801,7 @@ export default function StationCreateForm({
                         {t("ui.StationCreateForm.de", "de")}
                       </span>
                       <input
-                        className="cg-input cg-focus h-8 w-28 px-2 text-center font-mono text-sm"
+                        className="cg-input cg-focus h-8 w-32 px-2 text-center font-mono text-sm"
                         type="time"
                         value={desde}
                         onChange={(e) => setDesde(e.target.value)}
@@ -810,7 +810,7 @@ export default function StationCreateForm({
                         {t("ui.StationCreateForm.a", "a")}
                       </span>
                       <input
-                        className="cg-input cg-focus h-8 w-28 px-2 text-center font-mono text-sm"
+                        className="cg-input cg-focus h-8 w-32 px-2 text-center font-mono text-sm"
                         type="time"
                         value={hasta}
                         onChange={(e) => setHasta(e.target.value)}
@@ -822,7 +822,7 @@ export default function StationCreateForm({
                         {t("ui.StationCreateForm.relevoALas", "relevo a las")}
                       </span>
                       <input
-                        className="cg-input cg-focus h-8 w-28 px-2 text-center font-mono text-sm"
+                        className="cg-input cg-focus h-8 w-32 px-2 text-center font-mono text-sm"
                         type="time"
                         value={desde}
                         onChange={(e) => setDesde(e.target.value)}
@@ -1115,7 +1115,7 @@ export default function StationCreateForm({
                               {i + 1}
                             </span>
                             <input
-                              className="cg-input cg-focus h-8 w-28 px-2 text-center font-mono text-sm"
+                              className="cg-input cg-focus h-8 w-32 px-2 text-center font-mono text-sm"
                               type="time"
                               value={f.start}
                               onChange={(e) =>
@@ -1129,7 +1129,7 @@ export default function StationCreateForm({
                               {t("ui.StationCreateForm.a", "a")}
                             </span>
                             <input
-                              className="cg-input cg-focus h-8 w-28 px-2 text-center font-mono text-sm"
+                              className="cg-input cg-focus h-8 w-32 px-2 text-center font-mono text-sm"
                               type="time"
                               value={f.end}
                               onChange={(e) =>

@@ -16548,8 +16548,10 @@
       "nTurnos_one": "{{count}} turno",
       "nTurnos_other": "{{count}} turnos",
       "ocupadoEl": "Ocupado em {{dia}}",
-      "archivadoTras": "Arquivado após {{evento}} — reativa-se ao atribuir",
-      "archivado": "Arquivado"
+      "archivadoTras": "Arquivado após «{{evento}}» · reativa-se ao atribuir",
+      "archivado": "Arquivado",
+      "reactivados_one": "{{count}} estava arquivado: reativado, volta a ocupar um lugar.",
+      "reactivados_other": "{{count}} estavam arquivados: reativados, voltam a ocupar um lugar."
     },
     "ZonasDelEventoMap": {
       "alt": "Zonas do evento no mapa",
@@ -16632,7 +16634,7 @@
       "confirmarTexto_one": "Será arquivado {{count}} vigilante sem outro posto: {{lista}}. Libera o seu lugar e continua a receber por este evento. Se voltar a atribuí-lo, é reativado sozinho.",
       "confirmarTexto_other": "Serão arquivados {{count}} vigilantes sem outro posto: {{lista}}. Liberam o seu lugar e continuam a receber por este evento. Se voltar a atribuí-los, são reativados sozinhos.",
       "confirmarSeQuedan": "Não são arquivados:\n{{lista}}",
-      "nadieQueArchivar": "Não há ninguém para arquivar: todos têm outro posto ou já estão arquivados.",
+      "nadieQueArchivar": "Não há ninguém para arquivar agora.",
       "archivadosOk_one": "{{count}} vigilante arquivado",
       "archivadosOk_other": "{{count}} vigilantes arquivados",
       "archivado": "Arquivado",
@@ -16642,7 +16644,10 @@
         "turnoDelEvento": "o turno do evento ainda está em curso",
         "fichajeAbierto": "está com ponto aberto agora",
         "otroRol": "não é só vigilante"
-      }
+      },
+      "yMas_one": "… e mais {{count}}",
+      "yMas_other": "… e mais {{count}}",
+      "terminadoSinTurnos": "Evento terminado sem turnos: não há horas a pagar."
     },
     "RelevosDelEvento": {
       "titulo": "Turnos do evento",

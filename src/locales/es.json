@@ -16548,8 +16548,10 @@
       "nTurnos_one": "{{count}} turno",
       "nTurnos_other": "{{count}} turnos",
       "ocupadoEl": "Ocupado el {{dia}}",
-      "archivadoTras": "Archivado tras {{evento}} — se reactiva al asignar",
-      "archivado": "Archivado"
+      "archivadoTras": "Archivado tras «{{evento}}» · se reactiva al asignar",
+      "archivado": "Archivado",
+      "reactivados_one": "{{count}} estaba archivado: se reactivó y vuelve a ocupar su asiento.",
+      "reactivados_other": "{{count}} estaban archivados: se reactivaron y vuelven a ocupar su asiento."
     },
     "ZonasDelEventoMap": {
       "alt": "Zonas del evento sobre el mapa",
@@ -16632,7 +16634,7 @@
       "confirmarTexto_one": "Se archiva {{count}} vigilante sin otro puesto: {{lista}}. Libera su asiento y sigue cobrando este evento. Si lo vuelves a asignar, se reactiva solo.",
       "confirmarTexto_other": "Se archivan {{count}} vigilantes sin otro puesto: {{lista}}. Liberan su asiento y siguen cobrando este evento. Si los vuelves a asignar, se reactivan solos.",
       "confirmarSeQuedan": "No se archivan:\n{{lista}}",
-      "nadieQueArchivar": "No hay nadie que archivar: todos tienen otro puesto o ya están archivados.",
+      "nadieQueArchivar": "No hay nadie que archivar ahora.",
       "archivadosOk_one": "{{count}} vigilante archivado",
       "archivadosOk_other": "{{count}} vigilantes archivados",
       "archivado": "Archivado",
@@ -16642,7 +16644,10 @@
         "turnoDelEvento": "su turno del evento sigue en curso",
         "fichajeAbierto": "está fichado ahora",
         "otroRol": "no es sólo vigilante"
-      }
+      },
+      "yMas_one": "… y {{count}} más",
+      "yMas_other": "… y {{count}} más",
+      "terminadoSinTurnos": "Evento terminado sin turnos: no hay horas que pagar."
     },
     "RelevosDelEvento": {
       "titulo": "Relevos del evento",

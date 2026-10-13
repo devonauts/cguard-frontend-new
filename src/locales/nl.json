@@ -17081,8 +17081,10 @@
       "nTurnos_one": "{{count}} dienst",
       "nTurnos_other": "{{count}} diensten",
       "ocupadoEl": "Bezet op {{dia}}",
-      "archivadoTras": "Gearchiveerd na {{evento}} — wordt heractiveerd bij toewijzen",
-      "archivado": "Gearchiveerd"
+      "archivadoTras": "Gearchiveerd na ‘{{evento}}’ · wordt heractiveerd bij toewijzen",
+      "archivado": "Gearchiveerd",
+      "reactivados_one": "{{count}} was gearchiveerd: heractiveerd, neemt weer een plek in.",
+      "reactivados_other": "{{count}} waren gearchiveerd: heractiveerd, nemen weer een plek in."
     },
     "ZonasDelEventoMap": {
       "alt": "Zones van het evenement op de kaart",
@@ -17165,7 +17167,7 @@
       "confirmarTexto_one": "{{count}} beveiliger zonder andere post wordt gearchiveerd: {{lista}}. Die plek komt vrij en dit evenement wordt nog steeds betaald. Wijs je hem opnieuw toe, dan wordt hij vanzelf heractiveerd.",
       "confirmarTexto_other": "{{count}} beveiligers zonder andere post worden gearchiveerd: {{lista}}. Hun plekken komen vrij en dit evenement wordt nog steeds betaald. Wijs je ze opnieuw toe, dan worden ze vanzelf heractiveerd.",
       "confirmarSeQuedan": "Niet gearchiveerd:\n{{lista}}",
-      "nadieQueArchivar": "Niemand om te archiveren: iedereen heeft een andere post of is al gearchiveerd.",
+      "nadieQueArchivar": "Er is nu niemand om te archiveren.",
       "archivadosOk_one": "{{count}} beveiliger gearchiveerd",
       "archivadosOk_other": "{{count}} beveiligers gearchiveerd",
       "archivado": "Gearchiveerd",
@@ -17175,7 +17177,10 @@
         "turnoDelEvento": "zijn dienst van het evenement loopt nog",
         "fichajeAbierto": "is nu ingeklokt",
         "otroRol": "is niet alleen beveiliger"
-      }
+      },
+      "yMas_one": "… en nog {{count}}",
+      "yMas_other": "… en nog {{count}}",
+      "terminadoSinTurnos": "Evenement afgelopen zonder diensten: er zijn geen uren te betalen."
     },
     "RelevosDelEvento": {
       "titulo": "Diensten van het evenement",

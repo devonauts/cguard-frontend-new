@@ -17081,8 +17081,10 @@
       "nTurnos_one": "{{count}} turno",
       "nTurnos_other": "{{count}} turni",
       "ocupadoEl": "Occupata il {{dia}}",
-      "archivadoTras": "Archiviata dopo {{evento}} — si riattiva all’assegnazione",
-      "archivado": "Archiviato"
+      "archivadoTras": "Archiviata dopo «{{evento}}» · si riattiva all’assegnazione",
+      "archivado": "Archiviato",
+      "reactivados_one": "{{count}} era archiviata: riattivata, torna a occupare un posto.",
+      "reactivados_other": "{{count}} erano archiviate: riattivate, tornano a occupare un posto."
     },
     "ZonasDelEventoMap": {
       "alt": "Zone dell’evento sulla mappa",
@@ -17165,7 +17167,7 @@
       "confirmarTexto_one": "Verrà archiviata {{count}} guardia senza altro posto: {{lista}}. Libera il suo posto e continua a essere pagata per questo evento. Se la riassegni, si riattiva da sola.",
       "confirmarTexto_other": "Verranno archiviate {{count}} guardie senza altro posto: {{lista}}. Liberano il loro posto e continuano a essere pagate per questo evento. Se le riassegni, si riattivano da sole.",
       "confirmarSeQuedan": "Non vengono archiviate:\n{{lista}}",
-      "nadieQueArchivar": "Nessuno da archiviare: tutti hanno un altro posto o sono già archiviati.",
+      "nadieQueArchivar": "Al momento non c’è nessuno da archiviare.",
       "archivadosOk_one": "{{count}} guardia archiviata",
       "archivadosOk_other": "{{count}} guardie archiviate",
       "archivado": "Archiviata",
@@ -17175,7 +17177,10 @@
         "turnoDelEvento": "il suo turno dell’evento è ancora in corso",
         "fichajeAbierto": "ha la timbratura aperta ora",
         "otroRol": "non è solo guardia"
-      }
+      },
+      "yMas_one": "… e {{count}} altro",
+      "yMas_other": "… e altri {{count}}",
+      "terminadoSinTurnos": "Evento terminato senza turni: nessuna ora da pagare."
     },
     "RelevosDelEvento": {
       "titulo": "Turni dell’evento",

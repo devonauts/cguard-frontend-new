@@ -17081,8 +17081,10 @@
       "nTurnos_one": "{{count}} service",
       "nTurnos_other": "{{count}} services",
       "ocupadoEl": "Occupé le {{dia}}",
-      "archivadoTras": "Archivé après {{evento}} — réactivé à l’affectation",
-      "archivado": "Archivé"
+      "archivadoTras": "Archivé après « {{evento}} » · réactivé à l’affectation",
+      "archivado": "Archivé",
+      "reactivados_one": "{{count}} était archivé : réactivé, il occupe de nouveau une place.",
+      "reactivados_other": "{{count}} étaient archivés : réactivés, ils occupent de nouveau une place."
     },
     "ZonasDelEventoMap": {
       "alt": "Zones de l’événement sur la carte",
@@ -17165,7 +17167,7 @@
       "confirmarTexto_one": "{{count}} agent sans autre poste sera archivé : {{lista}}. Sa place est libérée et il est toujours payé pour cet événement. Si vous le réaffectez, il est réactivé automatiquement.",
       "confirmarTexto_other": "{{count}} agents sans autre poste seront archivés : {{lista}}. Leurs places sont libérées et ils sont toujours payés pour cet événement. Si vous les réaffectez, ils sont réactivés automatiquement.",
       "confirmarSeQuedan": "Ne sont pas archivés :\n{{lista}}",
-      "nadieQueArchivar": "Personne à archiver : tous ont un autre poste ou sont déjà archivés.",
+      "nadieQueArchivar": "Personne à archiver pour le moment.",
       "archivadosOk_one": "{{count}} agent archivé",
       "archivadosOk_other": "{{count}} agents archivés",
       "archivado": "Archivé",
@@ -17175,7 +17177,10 @@
         "turnoDelEvento": "son service de l’événement est encore en cours",
         "fichajeAbierto": "est pointé en ce moment",
         "otroRol": "n’est pas seulement agent"
-      }
+      },
+      "yMas_one": "… et {{count}} autre",
+      "yMas_other": "… et {{count}} autres",
+      "terminadoSinTurnos": "Événement terminé sans services : aucune heure à payer."
     },
     "RelevosDelEvento": {
       "titulo": "Relèves de l’événement",

@@ -17081,8 +17081,10 @@
       "nTurnos_one": "{{count}} Schicht",
       "nTurnos_other": "{{count}} Schichten",
       "ocupadoEl": "Belegt am {{dia}}",
-      "archivadoTras": "Archiviert nach {{evento}} — wird beim Zuweisen reaktiviert",
-      "archivado": "Archiviert"
+      "archivadoTras": "Archiviert nach „{{evento}}“ · wird beim Zuweisen reaktiviert",
+      "archivado": "Archiviert",
+      "reactivados_one": "{{count}} war archiviert: reaktiviert, belegt wieder einen Platz.",
+      "reactivados_other": "{{count}} waren archiviert: reaktiviert, belegen wieder einen Platz."
     },
     "ZonasDelEventoMap": {
       "alt": "Zonen der Veranstaltung auf der Karte",
@@ -17165,7 +17167,7 @@
       "confirmarTexto_one": "{{count}} Wachmann ohne anderen Posten wird archiviert: {{lista}}. Der Platz wird frei und diese Veranstaltung wird weiter bezahlt. Wenn du ihn wieder zuweist, wird er automatisch reaktiviert.",
       "confirmarTexto_other": "{{count}} Wachleute ohne anderen Posten werden archiviert: {{lista}}. Ihre Plätze werden frei und diese Veranstaltung wird weiter bezahlt. Wenn du sie wieder zuweist, werden sie automatisch reaktiviert.",
       "confirmarSeQuedan": "Nicht archiviert:\n{{lista}}",
-      "nadieQueArchivar": "Niemand zu archivieren: alle haben einen anderen Posten oder sind schon archiviert.",
+      "nadieQueArchivar": "Im Moment ist niemand zu archivieren.",
       "archivadosOk_one": "{{count}} Wachmann archiviert",
       "archivadosOk_other": "{{count}} Wachleute archiviert",
       "archivado": "Archiviert",
@@ -17175,7 +17177,10 @@
         "turnoDelEvento": "seine Schicht der Veranstaltung läuft noch",
         "fichajeAbierto": "ist gerade eingestempelt",
         "otroRol": "ist nicht nur Wachmann"
-      }
+      },
+      "yMas_one": "… und {{count}} weitere",
+      "yMas_other": "… und {{count}} weitere",
+      "terminadoSinTurnos": "Veranstaltung ohne Schichten beendet: keine Stunden zu bezahlen."
     },
     "RelevosDelEvento": {
       "titulo": "Schichten der Veranstaltung",
