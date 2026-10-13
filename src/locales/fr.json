@@ -1311,7 +1311,8 @@
     "editar": "Modifier",
     "eliminar": "Supprimer",
     "guardando": "Enregistrement…",
-    "guardar": "Enregistrer"
+    "guardar": "Enregistrer",
+    "tarjetas": "Cartes"
   },
   "customer": {
     "registration_title": "Inscription client"
@@ -11520,7 +11521,10 @@
         "movidas": "{{count}} agent(s) déplacé(s) aux nouvelles dates.",
         "nombre": "Nom de l'événement",
         "nombreEj": "Ex. : Concert Stade Nord",
-        "nombreAyuda": "C'est le nom que les agents verront dans leur application."
+        "nombreAyuda": "C'est le nom que les agents verront dans leur application.",
+        "fueraDelEvento": "{{count}} agent(s) sont sortis car leur relève ne tombe plus dans l’événement : {{lista}}.",
+        "desplazados": "Les relèves ont bougé de {{horas}} h avec l’événement : {{plazas}} place(s) et {{count}} agent(s).",
+        "duraDiasYHoras": "Dure {{dias}} jours et {{horas}} h."
       },
       "creaCadaEstacionEvento": "Créez chaque station de l'événement : nom, de quelle heure à quelle heure il est couvert, combien d'agents à la fois et géorepérage. Sans rotation : l'événement a ses propres dates. Quand ils sont tous prêts, cliquez sur « Terminer ».",
       "eventoConEstaciones": "{{count}} station(s). Ensuite : affectez les agents ; les dates et heures viennent de l'événement."
@@ -14371,7 +14375,9 @@
     },
     "ClientCardsGrid": {
       "sinClientes": "Aucun client",
-      "daDeAltaAlPrimerCliente": "Ajoutez le premier client avec « Ajouter un client »."
+      "daDeAltaAlPrimerCliente": "Ajoutez le premier client avec « Ajouter un client ».",
+      "sedes": "site(s)",
+      "puestos": "poste(s)"
     },
     "CompanyDocumentsSection": {
       "documentosLegalesDeLaEmpresa": "Documents légaux de l'entreprise",
@@ -17038,7 +17044,8 @@
       "sinTurnosTexto": "Quand vous affectez des agents dans l’onglet Agents, le service de chacun pendant l’événement apparaît ici.",
       "sinTurnos": "Pas encore de services",
       "otros": "Autres services",
-      "nTurnos": "{{count}} service(s)"
+      "nTurnos": "{{count}} service(s)",
+      "ocupadoEl": "Occupé le {{dia}}"
     },
     "ZonasDelEventoMap": {
       "alt": "Zones de l’événement sur la carte",
@@ -17046,7 +17053,68 @@
       "asignados": "Affectés",
       "cupo": "Places",
       "verVigilantes": "Voir les agents",
-      "resumen": "{{cubiertas}} places sur {{cupo}} couvertes"
+      "resumen": "{{cubiertas}} places sur {{cupo}} couvertes",
+      "sinUbicacion": "Les zones de cet événement n’ont pas d’emplacement : modifiez chaque poste et déplacez son repère pour les voir sur le site."
+    },
+    "NominaDelEvento": {
+      "titulo": "Paie de l’événement",
+      "antes": "L’événement se termine le {{fin}}. Ensuite, les heures pointées de chaque agent apparaîtront ici pour la paie ; pour l’instant vous voyez le prévu, utile pour le budget.",
+      "listo": "Événement terminé et tous les services pointés : la paie est prête.",
+      "vigilantes": "Agents",
+      "deProgramadas": "sur {{h}} h prévues",
+      "horasTrabajadas": "Heures travaillées",
+      "sinTarifa": "{{count}} sans taux",
+      "aPagar": "À payer",
+      "desglose": "{{noFicho}} sans pointage · {{sinSalida}} sans sortie",
+      "cumplidos": "Services effectués",
+      "tarifaDelEvento": "Taux horaire de l’événement ({{moneda}})",
+      "tarifaPlaceholder": "Ex. 22.50",
+      "tarifaAyuda": "Vide, on utilise le taux de la fiche de chaque agent.",
+      "tarifaInvalida": "Saisissez un taux supérieur à zéro, ou laissez vide.",
+      "tarifaGuardada": "Taux enregistré",
+      "aprobar": "Approuver les heures ({{count}})",
+      "aprobadas": "{{count}} service(s) approuvé(s)",
+      "gustoEnCamino": "Les heures partent vers Gusto. Suivez l’envoi dans Paie › Gusto.",
+      "detalle": "Détail par service (CSV)",
+      "enviarGusto": "Envoyer à Gusto",
+      "gustoAlTerminar": "Envoi à la fin de l’événement",
+      "conectarGusto": "Connecter Gusto pour envoyer les heures",
+      "aprobada": "Approuvée",
+      "porAprobar": "À approuver",
+      "nNoFicho": "{{count}} sans pointage",
+      "nSinSalida": "{{count}} sans sortie",
+      "resumenExport": "{{vigilantes}} agents · {{horas}} h · {{importe}}",
+      "vacia": "Aucun agent affecté à cet événement pour l’instant.",
+      "verMenos": "Voir moins",
+      "verTodos": "Voir les {{count}}",
+      "estado": {
+        "cumplido": "Effectué",
+        "sinSalida": "Sans sortie",
+        "noFicho": "Pas pointé",
+        "pendiente": "À venir"
+      },
+      "col": {
+        "vigilante": "Agent",
+        "documento": "Pièce d’identité",
+        "correo": "E-mail",
+        "zonas": "Zones",
+        "zona": "Zone",
+        "turnos": "Services",
+        "programadas": "Heures prévues",
+        "trabajadas": "Heures travaillées",
+        "tarifa": "Taux ({{moneda}}/h)",
+        "importe": "À payer ({{moneda}})",
+        "incidencias": "Anomalies",
+        "dia": "Jour",
+        "programado": "Prévu",
+        "entrada": "Entrée",
+        "salida": "Sortie",
+        "horas": "Heures",
+        "estado": "Statut"
+      },
+      "terminado": "Événement terminé.",
+      "noFichoValeCero": "{{count}} service(s) sans pointage valent zéro.",
+      "sinSalidaNoSePaga": "{{count}} service(s) sans sortie ne sont pas payés tant qu’ils ne sont pas clôturés dans les Registres de présence."
     }
   },
   "visitantes": {

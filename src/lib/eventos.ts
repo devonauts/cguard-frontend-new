@@ -120,6 +120,9 @@ const FMT_DIA_HORA: Intl.DateTimeFormatOptions = {
   year: undefined,
   hour: "2-digit",
   minute: "2-digit",
+  // 24 h, como los relevos y las plazas: «06:00 p. m.» al lado de
+  // «15:00–19:00» obligaba a convertir de cabeza.
+  hourCycle: "h23",
 };
 
 /** Sin las comas que mete el formateador («sáb, 15 nov, 14:00»). */
@@ -147,6 +150,7 @@ export function rangoDelEvento(
           year: undefined,
           hour: "2-digit",
           minute: "2-digit",
+          hourCycle: "h23",
         }),
       )
     : limpio(fechaYHora(b, FMT_DIA_HORA));
@@ -252,9 +256,13 @@ export function relevosDeLaEstacion(
 function enOrdenDeReloj(rs: RelevoDeEvento[]): RelevoDeEvento[] {
   if (rs.length < 2) return rs;
   const porHora = [...rs].sort((a, b) => a.inicio.localeCompare(b.inicio));
+  /* En un CICLO (24 h: 18→06→18) todos tienen predecesor: manda el orden en
+     que se crearon las plazas (`rs` viene por sortOrder), que empieza por el
+     relevo con el que arranca el puesto. Por hora suelta saldría 06:00 primero
+     en un evento que abre a las 18:00. */
   const primero =
     porHora.find((r) => !rs.some((x) => x !== r && x.fin === r.inicio)) ||
-    porHora[0];
+    rs[0];
   const out: RelevoDeEvento[] = [primero];
 
   while (out.length < rs.length) {
@@ -283,4 +291,48 @@ export function ventanaDeRelevos(
   const b = String(station?.finishTimeInDay || "").slice(0, 5);
 
   return a && b ? `${a}–${b}` : "";
+}
+
+/**
+ * TODAS las ventanas que trabaja una plaza durante el evento —una por día—,
+ * recortadas a la vigencia. `ventanaDeLaPlaza` sólo da la primera; para saber
+ * si alguien está libre en un evento de dos días hay que mirar los dos (el que
+ * está libre el viernes puede tener turno el sábado).
+ */
+export function ventanasDeLaPlaza(
+  sede: SedeConVigencia | null | undefined,
+  plaza?: { startTime?: string | null; endTime?: string | null } | null,
+): Array<{ start: Date; end: Date }> {
+  const { desde, hasta } = vigenciaDe(sede);
+
+  if (!desde || !hasta) return [];
+  const hm = (v?: string | null) => {
+    const m = String(v || "").match(/^(\d{1,2}):(\d{2})/);
+
+    return m ? [Number(m[1]), Number(m[2])] : null;
+  };
+  const ini = hm(plaza?.startTime);
+  const fin = hm(plaza?.endTime);
+
+  if (!ini || !fin) return [{ start: desde, end: hasta }];
+  const out: Array<{ start: Date; end: Date }> = [];
+  const ultimo = diaDeLaEmpresa(hasta);
+
+  for (
+    let dia = sumaDias(diaDeLaEmpresa(desde), -1), i = 0;
+    dia <= ultimo && i < EVENTO_MAX_DIAS + 3;
+    dia = sumaDias(dia, 1), i++
+  ) {
+    const start = instanteEnLaEmpresa(dia, ini[0], ini[1]);
+    let end = instanteEnLaEmpresa(dia, fin[0], fin[1]);
+
+    if (end.getTime() <= start.getTime())
+      end = instanteEnLaEmpresa(sumaDias(dia, 1), fin[0], fin[1]);
+    const s = new Date(Math.max(start.getTime(), desde.getTime()));
+    const e = new Date(Math.min(end.getTime(), hasta.getTime()));
+
+    if (e.getTime() > s.getTime()) out.push({ start: s, end: e });
+  }
+
+  return out;
 }

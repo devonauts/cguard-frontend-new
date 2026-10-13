@@ -1031,7 +1031,8 @@ export default function Stations({ site }: { site?: SiteProp }) {
                       value: "cards",
                       label: (
                         <span className="flex items-center gap-1.5">
-                          <LayoutGrid className="h-3.5 w-3.5" /> Tarjetas
+                          <LayoutGrid className="h-3.5 w-3.5" />{" "}
+                          {t("comun.tarjetas", "Tarjetas")}
                         </span>
                       ),
                     },

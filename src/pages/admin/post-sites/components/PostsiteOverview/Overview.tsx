@@ -3,6 +3,7 @@ import { clientDisplayName } from "@/lib/clientName";
 import { useTranslation } from "react-i18next";
 import IncidentMap from "@/components/IncidentMap/IncidentMap";
 import ZonasDelEventoMap from "@/components/maps/ZonasDelEventoMap";
+import NominaDelEvento from "@/components/post-sites/NominaDelEvento";
 import { esEvento } from "@/lib/serviceTypes";
 import { useState } from "react";
 import { ApiService } from "@/services/api/apiService";
@@ -476,6 +477,11 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
           />
         )}
       </Section>
+
+      {/* ── La nómina del evento: horas fichadas, tarifa, archivo y Gusto ── */}
+      {esEvento(site) && site?.id ? (
+        <NominaDelEvento postSiteId={String(site.id)} />
+      ) : null}
 
       {/* ── Latest activity ──────────────────────────────────────────────── */}
       <Section

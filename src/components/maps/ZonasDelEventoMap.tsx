@@ -30,8 +30,9 @@ import { relevosDeLaEstacion, ventanaDeRelevos } from "@/lib/eventos";
 interface Zona {
   id: string;
   nombre: string;
-  lat: number;
-  lng: number;
+  /** Sin pin (la sede se creó sin ubicación): sale en la lista, no en el mapa. */
+  lat: number | null;
+  lng: number | null;
   cupo: number;
   horario: string;
   vigilantes: string[];
@@ -44,7 +45,13 @@ const num = (v: unknown): number | null => {
 };
 
 const filas = (r: any): any[] =>
-  Array.isArray(r) ? r : Array.isArray(r?.rows) ? r.rows : Array.isArray(r?.data) ? r.data : [];
+  Array.isArray(r)
+    ? r
+    : Array.isArray(r?.rows)
+      ? r.rows
+      : Array.isArray(r?.data)
+        ? r.data
+        : [];
 
 export default function ZonasDelEventoMap({
   tenantId,
@@ -68,9 +75,11 @@ export default function ZonasDelEventoMap({
           `/tenant/${tenantId}/station?filter[postSite]=${encodeURIComponent(postSiteId)}&limit=999`,
         ).catch(() => []),
       );
-      const conPunto = est
-        .map((s: any) => ({ s, lat: num(s.latitud ?? s.latitude), lng: num(s.longitud ?? s.longitude) }))
-        .filter((x) => x.lat !== null && x.lng !== null);
+      const conPunto = est.map((s: any) => ({
+        s,
+        lat: num(s.latitud ?? s.latitude),
+        lng: num(s.longitud ?? s.longitude),
+      }));
       const asignaciones = await Promise.all(
         conPunto.map(({ s }) =>
           ApiService.get(
@@ -86,8 +95,8 @@ export default function ZonasDelEventoMap({
         conPunto.map(({ s, lat, lng }, i) => ({
           id: String(s.id),
           nombre: String(s.stationName || ""),
-          lat: lat!,
-          lng: lng!,
+          lat,
+          lng,
           // El cupo son las PLAZAS (con relevos, plazas × relevos); la cifra
           // de la fila del puesto sólo es el respaldo si no vinieron.
           cupo:
@@ -105,8 +114,17 @@ export default function ZonasDelEventoMap({
                 })
               : ventanaDeRelevos(r, s);
           })(),
+          // Los relevos de cobertura (`isRelief`) no ocupan plaza del evento:
+          // la pestaña Vigilantes tampoco los cuenta.
           vigilantes: asignaciones[i]
-            .map((a: any) => a.guard?.fullName || [a.guard?.firstName, a.guard?.lastName].filter(Boolean).join(" "))
+            .filter((a: any) => !a.isRelief)
+            .map(
+              (a: any) =>
+                a.guard?.fullName ||
+                [a.guard?.firstName, a.guard?.lastName]
+                  .filter(Boolean)
+                  .join(" "),
+            )
             .filter(Boolean),
         })),
       );
@@ -118,28 +136,38 @@ export default function ZonasDelEventoMap({
   }, [tenantId, postSiteId]);
 
   const tono = (z: Zona): MapPopupTone =>
-    z.vigilantes.length >= z.cupo && z.cupo > 0 ? "ok" : z.vigilantes.length > 0 ? "warn" : "bad";
+    z.vigilantes.length >= z.cupo && z.cupo > 0
+      ? "ok"
+      : z.vigilantes.length > 0
+        ? "warn"
+        : "bad";
 
   const markers = useMemo<MapEmbedMarker[]>(
     () =>
-      (zonas || []).map((z) => ({
-        id: z.id,
-        lat: z.lat,
-        lng: z.lng,
-        label: z.nombre,
-        kind: "station" as const,
-        subtitle: z.horario || undefined,
-        role: z.vigilantes.length ? undefined : "muted",
-        status: {
-          label: `${z.vigilantes.length}/${z.cupo}`,
-          tone: tono(z),
-        },
-      })),
+      (zonas || [])
+        .filter((z) => z.lat !== null && z.lng !== null)
+        .map((z) => ({
+          id: z.id,
+          lat: z.lat as number,
+          lng: z.lng as number,
+          label: z.nombre,
+          kind: "station" as const,
+          subtitle: z.horario || undefined,
+          role: z.vigilantes.length ? undefined : "muted",
+          status: {
+            label: `${z.vigilantes.length}/${z.cupo}`,
+            tone: tono(z),
+          },
+        })),
     [zonas],
   );
 
-  const porId = useMemo(() => new Map((zonas || []).map((z) => [z.id, z])), [zonas]);
-  const irAZona = (id: string) => navigate(`/post-sites/${postSiteId}/stations/${id}/guards`);
+  const porId = useMemo(
+    () => new Map((zonas || []).map((z) => [z.id, z])),
+    [zonas],
+  );
+  const irAZona = (id: string) =>
+    navigate(`/post-sites/${postSiteId}/stations/${id}/guards`);
 
   if (!zonas) {
     return (
@@ -152,58 +180,89 @@ export default function ZonasDelEventoMap({
   if (!zonas.length) return null;
 
   const cupo = zonas.reduce((n, z) => n + z.cupo, 0);
-  const cubiertas = zonas.reduce((n, z) => n + Math.min(z.vigilantes.length, z.cupo), 0);
+  const cubiertas = zonas.reduce(
+    (n, z) => n + Math.min(z.vigilantes.length, z.cupo),
+    0,
+  );
 
   return (
     <div className="flex flex-col gap-3">
-      <div
-        className="overflow-hidden rounded-xl border"
-        style={{ borderColor: "var(--hairline)" }}
-      >
-        <StaticMapImage
-          alt={t("ui.ZonasDelEventoMap.alt", "Zonas del evento sobre el mapa")}
-          className="w-full"
-          height={height}
-          points={zonas.map((z) => ({ lat: z.lat, lng: z.lng }))}
+      {markers.length ? (
+        <div
+          className="overflow-hidden rounded-xl border"
+          style={{ borderColor: "var(--hairline)" }}
         >
-          <div style={{ height }}>
-            <GoogleMapEmbed
-              fitMarkers
-              draggable={false}
-              mapType="satellite"
-              markerPopup={(m) => {
-                const z = porId.get(m.id);
+          <StaticMapImage
+            alt={t(
+              "ui.ZonasDelEventoMap.alt",
+              "Zonas del evento sobre el mapa",
+            )}
+            className="w-full"
+            height={height}
+            points={markers.map((m) => ({ lat: m.lat, lng: m.lng }))}
+          >
+            <div style={{ height }}>
+              <GoogleMapEmbed
+                fitMarkers
+                draggable={false}
+                mapType="satellite"
+                markerPopup={(m) => {
+                  const z = porId.get(m.id);
 
-                if (!z) return null;
+                  if (!z) return null;
 
-                return {
-                  fields: mapPopupItems(
-                    z.vigilantes.length
-                      ? {
-                          label: t("ui.ZonasDelEventoMap.quienes", "Vigilantes"),
-                          value: z.vigilantes.join(", "),
-                          wide: true,
-                        }
-                      : null,
-                  ),
-                  metrics: [
-                    { label: t("ui.ZonasDelEventoMap.asignados", "Asignados"), value: z.vigilantes.length, tone: tono(z) },
-                    { label: t("ui.ZonasDelEventoMap.cupo", "Cupo"), value: z.cupo },
-                  ],
-                  actions: mapPopupItems(
-                    mapPopupActions.detail(
-                      () => irAZona(z.id),
-                      t("ui.ZonasDelEventoMap.verVigilantes", "Ver vigilantes"),
+                  return {
+                    fields: mapPopupItems(
+                      z.vigilantes.length
+                        ? {
+                            label: t(
+                              "ui.ZonasDelEventoMap.quienes",
+                              "Vigilantes",
+                            ),
+                            value: z.vigilantes.join(", "),
+                            wide: true,
+                          }
+                        : null,
                     ),
-                  ),
-                };
-              }}
-              markers={markers}
-              zoom={17}
-            />
-          </div>
-        </StaticMapImage>
-      </div>
+                    metrics: [
+                      {
+                        label: t("ui.ZonasDelEventoMap.asignados", "Asignados"),
+                        value: z.vigilantes.length,
+                        tone: tono(z),
+                      },
+                      {
+                        label: t("ui.ZonasDelEventoMap.cupo", "Cupo"),
+                        value: z.cupo,
+                      },
+                    ],
+                    actions: mapPopupItems(
+                      mapPopupActions.detail(
+                        () => irAZona(z.id),
+                        t(
+                          "ui.ZonasDelEventoMap.verVigilantes",
+                          "Ver vigilantes",
+                        ),
+                      ),
+                    ),
+                  };
+                }}
+                markers={markers}
+                zoom={17}
+              />
+            </div>
+          </StaticMapImage>
+        </div>
+      ) : (
+        <div
+          className="rounded-xl border border-dashed p-4 text-sm"
+          style={{ borderColor: "var(--hairline)", color: "var(--ink-soft)" }}
+        >
+          {t(
+            "ui.ZonasDelEventoMap.sinUbicacion",
+            "Las zonas de este evento no tienen ubicación: edita cada estación y arrastra su pin para verlas sobre el recinto.",
+          )}
+        </div>
+      )}
 
       {/* La misma lectura en lista: en el teléfono el mapa es pequeño y aquí
           se ve de un golpe qué zona falta. */}
@@ -221,7 +280,10 @@ export default function ZonasDelEventoMap({
             type="button"
             onClick={() => irAZona(z.id)}
             className="cg-focus inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1"
-            style={{ borderColor: "var(--hairline)", background: "var(--glass-flat)" }}
+            style={{
+              borderColor: "var(--hairline)",
+              background: "var(--glass-flat)",
+            }}
           >
             <span
               aria-hidden

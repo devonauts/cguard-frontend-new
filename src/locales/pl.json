@@ -1311,7 +1311,8 @@
     "editar": "Edytuj",
     "eliminar": "Usuń",
     "guardando": "Zapisywanie…",
-    "guardar": "Zapisz"
+    "guardar": "Zapisz",
+    "tarjetas": "Karty"
   },
   "customer": {
     "registration_title": "Rejestracja zleceniodawcy"
@@ -11556,7 +11557,10 @@
         "movidas": "Przeniesiono ochroniarzy na nowe daty: {{count}}.",
         "nombre": "Nazwa wydarzenia",
         "nombreEj": "Np.: Koncert na Stadionie Północnym",
-        "nombreAyuda": "Tę nazwę ochroniarze zobaczą w swojej aplikacji."
+        "nombreAyuda": "Tę nazwę ochroniarze zobaczą w swojej aplikacji.",
+        "fueraDelEvento": "{{count}} pracownik(ów) ochrony usunięto, bo ich zmiana nie mieści się już w wydarzeniu: {{lista}}.",
+        "desplazados": "Zmiany przesunięto o {{horas}} h razem z wydarzeniem: {{plazas}} miejsc(a) i {{count}} pracownik(ów).",
+        "duraDiasYHoras": "Trwa {{dias}} dni i {{horas}} h."
       },
       "creaCadaEstacionEvento": "Utwórz każde stanowisko wydarzenia: nazwa, od której do której godziny jest obsadzone, ilu ochroniarzy jednocześnie i geofencing. Bez rotacji: wydarzenie ma swoje daty. Gdy wszystkie będą gotowe, kliknij „Zakończ”.",
       "eventoConEstaciones": "Stanowiska: {{count}}. Dalej: przydziel ochroniarzy; daty i godziny wynikają z wydarzenia."
@@ -14495,7 +14499,9 @@
     },
     "ClientCardsGrid": {
       "sinClientes": "Brak zleceniodawców",
-      "daDeAltaAlPrimerCliente": "Dodaj pierwszego klienta przyciskiem „Dodaj klienta”."
+      "daDeAltaAlPrimerCliente": "Dodaj pierwszego klienta przyciskiem „Dodaj klienta”.",
+      "sedes": "obiekt(y)",
+      "puestos": "stanowisko/a"
     },
     "CompanyDocumentsSection": {
       "documentosLegalesDeLaEmpresa": "Dokumenty prawne firmy",
@@ -17228,7 +17234,8 @@
       "sinTurnosTexto": "Gdy przypiszesz pracowników w zakładce Pracownicy ochrony, tutaj pojawi się zmiana każdego z nich w trakcie wydarzenia.",
       "sinTurnos": "Brak zmian",
       "otros": "Inne zmiany",
-      "nTurnos": "{{count}} zmian(a)"
+      "nTurnos": "{{count}} zmian(a)",
+      "ocupadoEl": "Zajęty {{dia}}"
     },
     "ZonasDelEventoMap": {
       "alt": "Strefy wydarzenia na mapie",
@@ -17236,7 +17243,68 @@
       "asignados": "Przypisani",
       "cupo": "Miejsca",
       "verVigilantes": "Zobacz pracowników",
-      "resumen": "{{cubiertas}} z {{cupo}} miejsc obsadzonych"
+      "resumen": "{{cubiertas}} z {{cupo}} miejsc obsadzonych",
+      "sinUbicacion": "Strefy tego wydarzenia nie mają lokalizacji: edytuj każde stanowisko i przeciągnij pinezkę, aby zobaczyć je na terenie."
+    },
+    "NominaDelEvento": {
+      "titulo": "Lista płac wydarzenia",
+      "antes": "Wydarzenie kończy się {{fin}}. Po nim pojawią się tu przepracowane godziny każdego pracownika do wypłaty; teraz widzisz plan, przydatny do budżetu.",
+      "listo": "Wydarzenie zakończone, wszystkie zmiany zarejestrowane: lista płac gotowa.",
+      "vigilantes": "Pracownicy ochrony",
+      "deProgramadas": "z {{h}} h zaplanowanych",
+      "horasTrabajadas": "Przepracowane godziny",
+      "sinTarifa": "{{count}} bez stawki",
+      "aPagar": "Do wypłaty",
+      "desglose": "{{noFicho}} bez wejścia · {{sinSalida}} bez wyjścia",
+      "cumplidos": "Wykonane zmiany",
+      "tarifaDelEvento": "Stawka godzinowa wydarzenia ({{moneda}})",
+      "tarifaPlaceholder": "Np. 22.50",
+      "tarifaAyuda": "Puste — używana jest stawka z karty każdego pracownika.",
+      "tarifaInvalida": "Wpisz stawkę większą od zera albo zostaw puste.",
+      "tarifaGuardada": "Stawka zapisana",
+      "aprobar": "Zatwierdź godziny ({{count}})",
+      "aprobadas": "Zatwierdzono {{count}} zmian(y)",
+      "gustoEnCamino": "Godziny są wysyłane do Gusto. Śledź wysyłkę w Płace › Gusto.",
+      "detalle": "Szczegóły zmian (CSV)",
+      "enviarGusto": "Wyślij do Gusto",
+      "gustoAlTerminar": "Wysyłane po zakończeniu wydarzenia",
+      "conectarGusto": "Połącz Gusto, aby wysłać godziny",
+      "aprobada": "Zatwierdzona",
+      "porAprobar": "Do zatwierdzenia",
+      "nNoFicho": "{{count}} bez wejścia",
+      "nSinSalida": "{{count}} bez wyjścia",
+      "resumenExport": "{{vigilantes}} pracowników · {{horas}} h · {{importe}}",
+      "vacia": "Do tego wydarzenia nie przypisano jeszcze pracowników.",
+      "verMenos": "Pokaż mniej",
+      "verTodos": "Pokaż wszystkie {{count}}",
+      "estado": {
+        "cumplido": "Wykonana",
+        "sinSalida": "Bez wyjścia",
+        "noFicho": "Brak wejścia",
+        "pendiente": "Oczekuje"
+      },
+      "col": {
+        "vigilante": "Pracownik ochrony",
+        "documento": "Dokument",
+        "correo": "E-mail",
+        "zonas": "Strefy",
+        "zona": "Strefa",
+        "turnos": "Zmiany",
+        "programadas": "Godziny zaplanowane",
+        "trabajadas": "Przepracowane godziny",
+        "tarifa": "Stawka ({{moneda}}/h)",
+        "importe": "Do wypłaty ({{moneda}})",
+        "incidencias": "Nieprawidłowości",
+        "dia": "Dzień",
+        "programado": "Zaplanowano",
+        "entrada": "Wejście",
+        "salida": "Wyjście",
+        "horas": "Godziny",
+        "estado": "Status"
+      },
+      "terminado": "Wydarzenie zakończone.",
+      "noFichoValeCero": "{{count}} zmian(a) bez wejścia liczy się jako zero.",
+      "sinSalidaNoSePaga": "{{count}} zmian(a) bez wyjścia nie zostanie wypłacona, dopóki nie zamkniesz jej w Rejestrach obecności."
     }
   },
   "visitantes": {

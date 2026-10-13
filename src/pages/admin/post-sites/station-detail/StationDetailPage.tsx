@@ -90,6 +90,22 @@ export default function StationDetailPage() {
     };
   }, [stationId]);
 
+  /* Asignar o quitar a alguien (pestaña Vigilantes del evento, diálogos) cambia
+     «N asignados» de la cabecera: se relee el puesto EN SILENCIO, sin el giro
+     de carga, que desmontaría la pestaña en la que se está trabajando. */
+  useEffect(() => {
+    if (!stationId) return;
+    const tenantId = localStorage.getItem("tenantId") || "";
+    const releer = () =>
+      ApiService.get(`/tenant/${tenantId}/station/${encodeURIComponent(stationId)}`)
+        .then((res: any) => setStation((res && (res.data || res)) || res))
+        .catch(() => undefined);
+
+    window.addEventListener("assignments:changed", releer);
+
+    return () => window.removeEventListener("assignments:changed", releer);
+  }, [stationId]);
+
   // Marcaciones recientes del puesto: una sola lectura para la cabecera y el
   // resumen, que antes pedían esto mismo por separado.
   useEffect(() => {

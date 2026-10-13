@@ -9,6 +9,7 @@
  *  5  Resumen & Crear       — review → POST → inline station builder
  */
 
+import { localeActual } from "@/lib/localeActual";
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -1463,34 +1464,75 @@ export default function PostSiteWizard({
     rs?: {
       movidas?: number;
       cerradas?: number;
+      plazasMovidas?: number;
+      desplazamientoMin?: number;
       choques?: Array<{ guardId?: string; nombre?: string; puesto?: string }>;
+      salidas?: Array<{
+        guardId?: string;
+        nombre?: string;
+        puesto?: string;
+        motivo?: "fueraDelEvento" | "choque";
+        chocaCon?: string;
+      }>;
     } | null,
   ) => {
     if (!rs) return;
-    const choques = Array.isArray(rs.choques) ? rs.choques : [];
+    /* `salidas` trae a TODOS los que salieron y por qué; `choques` es el
+       formato viejo (sólo los que chocaban) y queda de respaldo. */
+    const salidas = Array.isArray(rs.salidas)
+      ? rs.salidas
+      : (Array.isArray(rs.choques) ? rs.choques : []).map((c) => ({
+          ...c,
+          motivo: "choque" as const,
+        }));
+    const lista = (xs: typeof salidas) =>
+      xs
+        .map((c) =>
+          c.puesto ? `${c.nombre || "—"} (${c.puesto})` : c.nombre || "—",
+        )
+        .join(", ");
+    const chocan = salidas.filter((x) => x.motivo !== "fueraDelEvento");
+    const fuera = salidas.filter((x) => x.motivo === "fueraDelEvento");
 
-    if (choques.length) {
+    if (chocan.length) {
       toast.warning(
         t("ui.PostSiteWizard.evento.salieron", {
           defaultValue:
             "Fechas actualizadas. {{count}} vigilante(s) salieron del evento porque ya tienen turno: {{lista}}. Asigna a otros en sus estaciones.",
-          count: choques.length,
-          lista: choques
-            .map((c) =>
-              c.puesto ? `${c.nombre || "—"} (${c.puesto})` : c.nombre || "—",
-            )
-            .join(", "),
+          count: chocan.length,
+          lista: lista(chocan),
         }),
         { duration: 15000 },
       );
     }
-    if ((rs.movidas || 0) > 0) {
-      toast.info(
-        t("ui.PostSiteWizard.evento.movidas", {
+    if (fuera.length) {
+      toast.warning(
+        t("ui.PostSiteWizard.evento.fueraDelEvento", {
           defaultValue:
-            "Se movieron {{count}} vigilante(s) a las nuevas fechas.",
-          count: rs.movidas,
+            "{{count}} vigilante(s) salieron porque su relevo ya no cae dentro del evento: {{lista}}.",
+          count: fuera.length,
+          lista: lista(fuera),
         }),
+        { duration: 15000 },
+      );
+    }
+    if ((rs.movidas || 0) > 0 || (rs.plazasMovidas || 0) > 0) {
+      const min = Number(rs.desplazamientoMin || 0);
+
+      toast.info(
+        min
+          ? t("ui.PostSiteWizard.evento.desplazados", {
+              defaultValue:
+                "Los relevos se movieron {{horas}} h con el evento: {{plazas}} plaza(s) y {{count}} vigilante(s).",
+              horas: `${min > 0 ? "+" : "−"}${Math.round((Math.abs(min) / 60) * 100) / 100}`,
+              plazas: rs.plazasMovidas || 0,
+              count: rs.movidas || 0,
+            })
+          : t("ui.PostSiteWizard.evento.movidas", {
+              defaultValue:
+                "Se movieron {{count}} vigilante(s) a las nuevas fechas.",
+              count: rs.movidas,
+            }),
       );
     }
   };
@@ -1765,14 +1807,29 @@ export default function PostSiteWizard({
                           new Date(vigenciaISO.desde).getTime()) /
                         3600000;
 
+                      // «2 días y 5 h», no «2.2 días»: los decimales de un
+                      // día no se leen, y el punto ni siquiera es el del idioma.
+                      const num = (x: number) =>
+                        new Intl.NumberFormat(localeActual(), {
+                          maximumFractionDigits: 1,
+                        }).format(x);
+                      const dias = Math.floor(horas / 24);
+                      const resto = Math.round(horas - dias * 24);
+
                       return horas >= 48
-                        ? t("ui.PostSiteWizard.evento.duraDias", {
-                            defaultValue: "Dura {{n}} días.",
-                            n: Math.round((horas / 24) * 10) / 10,
-                          })
+                        ? resto
+                          ? t("ui.PostSiteWizard.evento.duraDiasYHoras", {
+                              defaultValue: "Dura {{dias}} días y {{horas}} h.",
+                              dias,
+                              horas: resto,
+                            })
+                          : t("ui.PostSiteWizard.evento.duraDias", {
+                              defaultValue: "Dura {{n}} días.",
+                              n: dias,
+                            })
                         : t("ui.PostSiteWizard.evento.duraHoras", {
                             defaultValue: "Dura {{n}} h.",
-                            n: Math.round(horas * 10) / 10,
+                            n: num(Math.round(horas * 10) / 10),
                           });
                     })()}{" "}
                     {t(

@@ -146,7 +146,11 @@ export default function StationCardsGrid({
                 ) : null}
                 {sched && (
                   <div className="mt-1">
-                    <StatusBadge dot={false} tone="info">
+                    <StatusBadge
+                      className="max-w-full whitespace-nowrap"
+                      dot={false}
+                      tone="info"
+                    >
                       {sched}
                     </StatusBadge>
                   </div>

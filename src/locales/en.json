@@ -3335,7 +3335,7 @@
       },
       "table": {
         "description": "Description",
-        "guards": "Guardias",
+        "guards": "Guards",
         "name": "Name"
       },
       "alternateMismatch": "To alternate without a relief guard, the pattern cycle must be a multiple of its working days (e.g. 1-1, 2-2).",
@@ -10988,7 +10988,10 @@
         "movidas": "{{count}} guard(s) moved to the new dates.",
         "nombre": "Event name",
         "nombreEj": "E.g.: North Stadium Concert",
-        "nombreAyuda": "This is the name guards will see in their app."
+        "nombreAyuda": "This is the name guards will see in their app.",
+        "fueraDelEvento": "{{count}} guard(s) were removed because their shift no longer falls inside the event: {{lista}}.",
+        "desplazados": "Shifts moved {{horas}} h with the event: {{plazas}} slot(s) and {{count}} guard(s).",
+        "duraDiasYHoras": "Lasts {{dias}} days and {{horas}} h."
       },
       "creaCadaEstacionEvento": "Create each station for the event: name, from what time to what time it is covered, how many guards at once and geofence. No rotation: the event has its own dates. When they're all done, press “Finish”.",
       "eventoConEstaciones": "{{count}} station(s). Next: assign the guards; the event sets the dates and hours."
@@ -13839,7 +13842,9 @@
     },
     "ClientCardsGrid": {
       "sinClientes": "No clients",
-      "daDeAltaAlPrimerCliente": "Add your first client with “Add client”."
+      "daDeAltaAlPrimerCliente": "Add your first client with “Add client”.",
+      "sedes": "site(s)",
+      "puestos": "post(s)"
     },
     "CompanyDocumentsSection": {
       "documentosLegalesDeLaEmpresa": "Company legal documents",
@@ -16506,7 +16511,8 @@
       "sinTurnosTexto": "Once you assign guards in the Guards tab, each one’s shift within the event shows up here.",
       "sinTurnos": "No shifts yet",
       "otros": "Other shifts",
-      "nTurnos": "{{count}} shift(s)"
+      "nTurnos": "{{count}} shift(s)",
+      "ocupadoEl": "Busy on {{dia}}"
     },
     "ZonasDelEventoMap": {
       "alt": "Event zones on the map",
@@ -16514,7 +16520,68 @@
       "asignados": "Assigned",
       "cupo": "Slots",
       "verVigilantes": "See guards",
-      "resumen": "{{cubiertas}} of {{cupo}} slots filled"
+      "resumen": "{{cubiertas}} of {{cupo}} slots filled",
+      "sinUbicacion": "This event’s zones have no location: edit each station and drag its pin to see them on the venue."
+    },
+    "NominaDelEvento": {
+      "titulo": "Event payroll",
+      "antes": "The event ends on {{fin}}. When it ends, each guard’s clocked hours show here for payment; for now you see what’s scheduled, useful for budgeting.",
+      "listo": "Event finished and every shift clocked: payroll is ready to pay.",
+      "vigilantes": "Guards",
+      "deProgramadas": "of {{h}} h scheduled",
+      "horasTrabajadas": "Hours worked",
+      "sinTarifa": "{{count}} without a rate",
+      "aPagar": "To pay",
+      "desglose": "{{noFicho}} no clock-in · {{sinSalida}} no clock-out",
+      "cumplidos": "Shifts completed",
+      "tarifaDelEvento": "Event hourly rate ({{moneda}})",
+      "tarifaPlaceholder": "e.g. 22.50",
+      "tarifaAyuda": "If empty, each guard’s own pay rate is used.",
+      "tarifaInvalida": "Enter a rate greater than zero, or leave it empty.",
+      "tarifaGuardada": "Rate saved",
+      "aprobar": "Approve hours ({{count}})",
+      "aprobadas": "{{count}} shift(s) approved",
+      "gustoEnCamino": "Hours are on their way to Gusto. Follow the sync in Payroll › Gusto.",
+      "detalle": "Per-shift detail (CSV)",
+      "enviarGusto": "Send to Gusto",
+      "gustoAlTerminar": "Sent once the event ends",
+      "conectarGusto": "Connect Gusto to send the hours",
+      "aprobada": "Approved",
+      "porAprobar": "To approve",
+      "nNoFicho": "{{count}} no clock-in",
+      "nSinSalida": "{{count}} no clock-out",
+      "resumenExport": "{{vigilantes}} guards · {{horas}} h · {{importe}}",
+      "vacia": "No guards assigned to this event yet.",
+      "verMenos": "Show less",
+      "verTodos": "Show all {{count}}",
+      "estado": {
+        "cumplido": "Completed",
+        "sinSalida": "No clock-out",
+        "noFicho": "No clock-in",
+        "pendiente": "Upcoming"
+      },
+      "col": {
+        "vigilante": "Guard",
+        "documento": "ID number",
+        "correo": "Email",
+        "zonas": "Zones",
+        "zona": "Zone",
+        "turnos": "Shifts",
+        "programadas": "Scheduled hours",
+        "trabajadas": "Hours worked",
+        "tarifa": "Rate ({{moneda}}/h)",
+        "importe": "To pay ({{moneda}})",
+        "incidencias": "Issues",
+        "dia": "Day",
+        "programado": "Scheduled",
+        "entrada": "Clock-in",
+        "salida": "Clock-out",
+        "horas": "Hours",
+        "estado": "Status"
+      },
+      "terminado": "Event finished.",
+      "noFichoValeCero": "{{count}} shift(s) with no clock-in count as zero.",
+      "sinSalidaNoSePaga": "{{count}} shift(s) with no clock-out aren’t paid until closed in Attendance records."
     }
   },
   "map": {
@@ -16986,7 +17053,8 @@
     "editar": "Edit",
     "eliminar": "Delete",
     "guardando": "Saving…",
-    "guardar": "Save"
+    "guardar": "Save",
+    "tarjetas": "Cards"
   },
   "roles": {
     "securityGuard": "Guard",

@@ -251,7 +251,7 @@ export default function ClientCardsGrid({
                 <span className="font-semibold text-foreground">
                   {m ? m.sites : "…"}
                 </span>{" "}
-                sitio(s)
+                {t("ui.ClientCardsGrid.sedes", "sede(s)")}
               </span>
               <span className="flex items-center gap-1.5">
                 <Shield
@@ -261,7 +261,7 @@ export default function ClientCardsGrid({
                 <span className="font-semibold text-foreground">
                   {m ? m.stations : "…"}
                 </span>{" "}
-                puesto(s)
+                {t("ui.ClientCardsGrid.puestos", "puesto(s)")}
               </span>
             </div>
           </GlassPanel>

@@ -10988,7 +10988,10 @@
         "movidas": "Se movieron {{count}} vigilante(s) a las nuevas fechas.",
         "nombre": "Nombre del evento",
         "nombreEj": "Ej.: Concierto Estadio Norte",
-        "nombreAyuda": "Es el nombre que verán los vigilantes en su app."
+        "nombreAyuda": "Es el nombre que verán los vigilantes en su app.",
+        "fueraDelEvento": "{{count}} vigilante(s) salieron porque su relevo ya no cae dentro del evento: {{lista}}.",
+        "desplazados": "Los relevos se movieron {{horas}} h con el evento: {{plazas}} plaza(s) y {{count}} vigilante(s).",
+        "duraDiasYHoras": "Dura {{dias}} días y {{horas}} h."
       },
       "creaCadaEstacionEvento": "Crea cada estación del evento: nombre, de qué hora a qué hora se cubre, cuántos vigilantes a la vez y geocerca. Sin rotación: el evento tiene sus fechas. Cuando estén todas, pulsa «Terminar».",
       "eventoConEstaciones": "{{count}} estación(es). Siguiente: asigna a los vigilantes; las fechas y horas las pone el evento."
@@ -13839,7 +13842,9 @@
     },
     "ClientCardsGrid": {
       "sinClientes": "Sin clientes",
-      "daDeAltaAlPrimerCliente": "Da de alta al primer cliente con «Agregar cliente»."
+      "daDeAltaAlPrimerCliente": "Da de alta al primer cliente con «Agregar cliente».",
+      "sedes": "sede(s)",
+      "puestos": "puesto(s)"
     },
     "CompanyDocumentsSection": {
       "documentosLegalesDeLaEmpresa": "Documentos legales de la empresa",
@@ -16506,7 +16511,8 @@
       "sinTurnosTexto": "Cuando asignes vigilantes en la pestaña Vigilantes, aquí sale el turno de cada uno dentro del evento.",
       "sinTurnos": "Todavía sin turnos",
       "otros": "Otros turnos",
-      "nTurnos": "{{count}} turno(s)"
+      "nTurnos": "{{count}} turno(s)",
+      "ocupadoEl": "Ocupado el {{dia}}"
     },
     "ZonasDelEventoMap": {
       "alt": "Zonas del evento sobre el mapa",
@@ -16514,7 +16520,68 @@
       "asignados": "Asignados",
       "cupo": "Cupo",
       "verVigilantes": "Ver vigilantes",
-      "resumen": "{{cubiertas}} de {{cupo}} plazas cubiertas"
+      "resumen": "{{cubiertas}} de {{cupo}} plazas cubiertas",
+      "sinUbicacion": "Las zonas de este evento no tienen ubicación: edita cada estación y arrastra su pin para verlas sobre el recinto."
+    },
+    "NominaDelEvento": {
+      "titulo": "Nómina del evento",
+      "antes": "El evento termina el {{fin}}. Al terminar, aquí salen las horas fichadas de cada vigilante para pagar; ahora ves lo programado, que sirve para presupuestar.",
+      "listo": "Evento terminado y todos los turnos fichados: la nómina está lista para pagar.",
+      "vigilantes": "Vigilantes",
+      "deProgramadas": "de {{h}} h programadas",
+      "horasTrabajadas": "Horas trabajadas",
+      "sinTarifa": "{{count}} sin tarifa",
+      "aPagar": "A pagar",
+      "desglose": "{{noFicho}} sin fichar · {{sinSalida}} sin salida",
+      "cumplidos": "Turnos cumplidos",
+      "tarifaDelEvento": "Tarifa por hora del evento ({{moneda}})",
+      "tarifaPlaceholder": "Ej. 22.50",
+      "tarifaAyuda": "Vacía, se usa la tarifa de la ficha de empleo de cada vigilante.",
+      "tarifaInvalida": "Escribe una tarifa mayor que cero, o déjala vacía.",
+      "tarifaGuardada": "Tarifa guardada",
+      "aprobar": "Aprobar horas ({{count}})",
+      "aprobadas": "{{count}} turno(s) aprobado(s)",
+      "gustoEnCamino": "Las horas van camino de Gusto. Sigue el envío en Nómina › Gusto.",
+      "detalle": "Detalle por turno (CSV)",
+      "enviarGusto": "Enviar a Gusto",
+      "gustoAlTerminar": "Se envía al terminar el evento",
+      "conectarGusto": "Conectar Gusto para enviar las horas",
+      "aprobada": "Aprobada",
+      "porAprobar": "Por aprobar",
+      "nNoFicho": "{{count}} sin fichar",
+      "nSinSalida": "{{count}} sin salida",
+      "resumenExport": "{{vigilantes}} vigilantes · {{horas}} h · {{importe}}",
+      "vacia": "Todavía no hay vigilantes asignados a este evento.",
+      "verMenos": "Ver menos",
+      "verTodos": "Ver los {{count}}",
+      "estado": {
+        "cumplido": "Cumplido",
+        "sinSalida": "Sin salida",
+        "noFicho": "No fichó",
+        "pendiente": "Pendiente"
+      },
+      "col": {
+        "vigilante": "Vigilante",
+        "documento": "Documento",
+        "correo": "Correo",
+        "zonas": "Zonas",
+        "zona": "Zona",
+        "turnos": "Turnos",
+        "programadas": "Horas programadas",
+        "trabajadas": "Horas trabajadas",
+        "tarifa": "Tarifa ({{moneda}}/h)",
+        "importe": "A pagar ({{moneda}})",
+        "incidencias": "Incidencias",
+        "dia": "Día",
+        "programado": "Programado",
+        "entrada": "Entrada",
+        "salida": "Salida",
+        "horas": "Horas",
+        "estado": "Estado"
+      },
+      "terminado": "Evento terminado.",
+      "noFichoValeCero": "{{count}} turno(s) sin fichar valen cero.",
+      "sinSalidaNoSePaga": "{{count}} turno(s) sin salida no se pagan hasta cerrarlos en Registros de asistencia."
     }
   },
   "map": {
@@ -16986,7 +17053,8 @@
     "editar": "Editar",
     "eliminar": "Eliminar",
     "guardando": "Guardando…",
-    "guardar": "Guardar"
+    "guardar": "Guardar",
+    "tarjetas": "Tarjetas"
   },
   "roles": {
     "securityGuard": "Vigilante",

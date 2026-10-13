@@ -1311,7 +1311,8 @@
     "editar": "Modifica",
     "eliminar": "Elimina",
     "guardando": "Salvataggio…",
-    "guardar": "Salva"
+    "guardar": "Salva",
+    "tarjetas": "Schede"
   },
   "customer": {
     "registration_title": "Registrazione committente"
@@ -11520,7 +11521,10 @@
         "movidas": "{{count}} guardia/e spostate alle nuove date.",
         "nombre": "Nome dell'evento",
         "nombreEj": "Es.: Concerto Stadio Nord",
-        "nombreAyuda": "È il nome che le guardie vedranno nella loro app."
+        "nombreAyuda": "È il nome che le guardie vedranno nella loro app.",
+        "fueraDelEvento": "{{count}} guardia/e sono uscite perché il loro turno non rientra più nell’evento: {{lista}}.",
+        "desplazados": "I turni si sono spostati di {{horas}} h con l’evento: {{plazas}} posto/i e {{count}} guardia/e.",
+        "duraDiasYHoras": "Dura {{dias}} giorni e {{horas}} h."
       },
       "creaCadaEstacionEvento": "Crea ogni stazione dell'evento: nome, da che ora a che ora è coperta, quante guardie contemporaneamente e geofence. Senza rotazione: l'evento ha le sue date. Quando sono tutte pronte, premi «Termina».",
       "eventoConEstaciones": "{{count}} stazione/i. Prossimo passo: assegna le guardie; date e orari li stabilisce l'evento."
@@ -14371,7 +14375,9 @@
     },
     "ClientCardsGrid": {
       "sinClientes": "Nessun committente",
-      "daDeAltaAlPrimerCliente": "Aggiungi il primo cliente con «Aggiungi cliente»."
+      "daDeAltaAlPrimerCliente": "Aggiungi il primo cliente con «Aggiungi cliente».",
+      "sedes": "sede/i",
+      "puestos": "postazione/i"
     },
     "CompanyDocumentsSection": {
       "documentosLegalesDeLaEmpresa": "Documenti legali dell'azienda",
@@ -17038,7 +17044,8 @@
       "sinTurnosTexto": "Quando assegni guardie nella scheda Guardie, qui compare il turno di ognuna durante l’evento.",
       "sinTurnos": "Ancora nessun turno",
       "otros": "Altri turni",
-      "nTurnos": "{{count}} turno/i"
+      "nTurnos": "{{count}} turno/i",
+      "ocupadoEl": "Occupata il {{dia}}"
     },
     "ZonasDelEventoMap": {
       "alt": "Zone dell’evento sulla mappa",
@@ -17046,7 +17053,68 @@
       "asignados": "Assegnati",
       "cupo": "Posti",
       "verVigilantes": "Vedi guardie",
-      "resumen": "{{cubiertas}} posti su {{cupo}} coperti"
+      "resumen": "{{cubiertas}} posti su {{cupo}} coperti",
+      "sinUbicacion": "Le zone di questo evento non hanno una posizione: modifica ogni postazione e trascina il suo segnaposto per vederle sul luogo."
+    },
+    "NominaDelEvento": {
+      "titulo": "Paghe dell’evento",
+      "antes": "L’evento termina il {{fin}}. Alla fine qui compaiono le ore timbrate di ogni guardia da pagare; ora vedi il programmato, utile per il budget.",
+      "listo": "Evento terminato e tutti i turni timbrati: le paghe sono pronte.",
+      "vigilantes": "Guardie",
+      "deProgramadas": "su {{h}} h programmate",
+      "horasTrabajadas": "Ore lavorate",
+      "sinTarifa": "{{count}} senza tariffa",
+      "aPagar": "Da pagare",
+      "desglose": "{{noFicho}} senza timbratura · {{sinSalida}} senza uscita",
+      "cumplidos": "Turni completati",
+      "tarifaDelEvento": "Tariffa oraria dell’evento ({{moneda}})",
+      "tarifaPlaceholder": "Es. 22.50",
+      "tarifaAyuda": "Se vuota, si usa la tariffa della scheda di ogni guardia.",
+      "tarifaInvalida": "Inserisci una tariffa maggiore di zero, o lasciala vuota.",
+      "tarifaGuardada": "Tariffa salvata",
+      "aprobar": "Approva ore ({{count}})",
+      "aprobadas": "{{count}} turno/i approvato/i",
+      "gustoEnCamino": "Le ore stanno andando a Gusto. Segui l’invio in Paghe › Gusto.",
+      "detalle": "Dettaglio per turno (CSV)",
+      "enviarGusto": "Invia a Gusto",
+      "gustoAlTerminar": "Si invia al termine dell’evento",
+      "conectarGusto": "Collega Gusto per inviare le ore",
+      "aprobada": "Approvata",
+      "porAprobar": "Da approvare",
+      "nNoFicho": "{{count}} senza timbratura",
+      "nSinSalida": "{{count}} senza uscita",
+      "resumenExport": "{{vigilantes}} guardie · {{horas}} h · {{importe}}",
+      "vacia": "Ancora nessuna guardia assegnata a questo evento.",
+      "verMenos": "Mostra meno",
+      "verTodos": "Mostra tutti i {{count}}",
+      "estado": {
+        "cumplido": "Completato",
+        "sinSalida": "Senza uscita",
+        "noFicho": "Non timbrato",
+        "pendiente": "In attesa"
+      },
+      "col": {
+        "vigilante": "Guardia",
+        "documento": "Documento",
+        "correo": "E-mail",
+        "zonas": "Zone",
+        "zona": "Zona",
+        "turnos": "Turni",
+        "programadas": "Ore programmate",
+        "trabajadas": "Ore lavorate",
+        "tarifa": "Tariffa ({{moneda}}/h)",
+        "importe": "Da pagare ({{moneda}})",
+        "incidencias": "Anomalie",
+        "dia": "Giorno",
+        "programado": "Programmato",
+        "entrada": "Entrata",
+        "salida": "Uscita",
+        "horas": "Ore",
+        "estado": "Stato"
+      },
+      "terminado": "Evento terminato.",
+      "noFichoValeCero": "{{count}} turno/i senza timbratura valgono zero.",
+      "sinSalidaNoSePaga": "{{count}} turno/i senza uscita non si pagano finché non vengono chiusi nei Registri presenze."
     }
   },
   "visitantes": {

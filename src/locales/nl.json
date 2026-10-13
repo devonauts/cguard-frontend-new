@@ -1311,7 +1311,8 @@
     "editar": "Bewerken",
     "eliminar": "Verwijderen",
     "guardando": "Opslaan…",
-    "guardar": "Opslaan"
+    "guardar": "Opslaan",
+    "tarjetas": "Kaarten"
   },
   "customer": {
     "registration_title": "Registratie opdrachtgever"
@@ -11520,7 +11521,10 @@
         "movidas": "{{count}} beveiliger(s) verplaatst naar de nieuwe data.",
         "nombre": "Naam van het evenement",
         "nombreEj": "Bijv.: Concert Noordstadion",
-        "nombreAyuda": "Dit is de naam die beveiligers in hun app zien."
+        "nombreAyuda": "Dit is de naam die beveiligers in hun app zien.",
+        "fueraDelEvento": "{{count}} beveiliger(s) zijn eruit gehaald omdat hun dienst niet meer binnen het evenement valt: {{lista}}.",
+        "desplazados": "De diensten zijn {{horas}} u met het evenement verschoven: {{plazas}} plaats(en) en {{count}} beveiliger(s).",
+        "duraDiasYHoras": "Duurt {{dias}} dagen en {{horas}} u."
       },
       "creaCadaEstacionEvento": "Maak elk station van het evenement aan: naam, van hoe laat tot hoe laat het bezet is, hoeveel beveiligers tegelijk en geofence. Geen rotatie: het evenement heeft zijn eigen data. Als ze allemaal klaar zijn, klik op ‘Afronden’.",
       "eventoConEstaciones": "{{count}} station(s). Volgende stap: deel de beveiligers in; de data en uren komen van het evenement."
@@ -14371,7 +14375,9 @@
     },
     "ClientCardsGrid": {
       "sinClientes": "Geen opdrachtgevers",
-      "daDeAltaAlPrimerCliente": "Voeg de eerste klant toe met ‘Klant toevoegen’."
+      "daDeAltaAlPrimerCliente": "Voeg de eerste klant toe met ‘Klant toevoegen’.",
+      "sedes": "locatie(s)",
+      "puestos": "post(en)"
     },
     "CompanyDocumentsSection": {
       "documentosLegalesDeLaEmpresa": "Juridische documenten van het bedrijf",
@@ -17038,7 +17044,8 @@
       "sinTurnosTexto": "Zodra je beveiligers toewijst op het tabblad Beveiligers, verschijnt hier ieders dienst binnen het evenement.",
       "sinTurnos": "Nog geen diensten",
       "otros": "Andere diensten",
-      "nTurnos": "{{count}} dienst(en)"
+      "nTurnos": "{{count}} dienst(en)",
+      "ocupadoEl": "Bezet op {{dia}}"
     },
     "ZonasDelEventoMap": {
       "alt": "Zones van het evenement op de kaart",
@@ -17046,7 +17053,68 @@
       "asignados": "Toegewezen",
       "cupo": "Plaatsen",
       "verVigilantes": "Beveiligers bekijken",
-      "resumen": "{{cubiertas}} van {{cupo}} plaatsen bezet"
+      "resumen": "{{cubiertas}} van {{cupo}} plaatsen bezet",
+      "sinUbicacion": "De zones van dit evenement hebben geen locatie: bewerk elke post en sleep de speld om ze op het terrein te zien."
+    },
+    "NominaDelEvento": {
+      "titulo": "Loonlijst van het evenement",
+      "antes": "Het evenement eindigt op {{fin}}. Daarna staan hier de geklokte uren van elke beveiliger om te betalen; nu zie je de planning, handig voor het budget.",
+      "listo": "Evenement afgelopen en alle diensten geklokt: de loonlijst is klaar.",
+      "vigilantes": "Beveiligers",
+      "deProgramadas": "van {{h}} u gepland",
+      "horasTrabajadas": "Gewerkte uren",
+      "sinTarifa": "{{count}} zonder tarief",
+      "aPagar": "Te betalen",
+      "desglose": "{{noFicho}} niet ingeklokt · {{sinSalida}} niet uitgeklokt",
+      "cumplidos": "Voltooide diensten",
+      "tarifaDelEvento": "Uurtarief van het evenement ({{moneda}})",
+      "tarifaPlaceholder": "Bijv. 22.50",
+      "tarifaAyuda": "Leeg, dan geldt het tarief uit het profiel van elke beveiliger.",
+      "tarifaInvalida": "Vul een tarief groter dan nul in, of laat het leeg.",
+      "tarifaGuardada": "Tarief opgeslagen",
+      "aprobar": "Uren goedkeuren ({{count}})",
+      "aprobadas": "{{count}} dienst(en) goedgekeurd",
+      "gustoEnCamino": "De uren gaan naar Gusto. Volg de verzending in Loon › Gusto.",
+      "detalle": "Detail per dienst (CSV)",
+      "enviarGusto": "Naar Gusto sturen",
+      "gustoAlTerminar": "Wordt verzonden na afloop van het evenement",
+      "conectarGusto": "Koppel Gusto om de uren te sturen",
+      "aprobada": "Goedgekeurd",
+      "porAprobar": "Goed te keuren",
+      "nNoFicho": "{{count}} niet ingeklokt",
+      "nSinSalida": "{{count}} niet uitgeklokt",
+      "resumenExport": "{{vigilantes}} beveiligers · {{horas}} u · {{importe}}",
+      "vacia": "Nog geen beveiligers toegewezen aan dit evenement.",
+      "verMenos": "Minder tonen",
+      "verTodos": "Alle {{count}} tonen",
+      "estado": {
+        "cumplido": "Voltooid",
+        "sinSalida": "Niet uitgeklokt",
+        "noFicho": "Niet ingeklokt",
+        "pendiente": "Gepland"
+      },
+      "col": {
+        "vigilante": "Beveiliger",
+        "documento": "Identiteitsnummer",
+        "correo": "E-mail",
+        "zonas": "Zones",
+        "zona": "Zone",
+        "turnos": "Diensten",
+        "programadas": "Geplande uren",
+        "trabajadas": "Gewerkte uren",
+        "tarifa": "Tarief ({{moneda}}/u)",
+        "importe": "Te betalen ({{moneda}})",
+        "incidencias": "Afwijkingen",
+        "dia": "Dag",
+        "programado": "Gepland",
+        "entrada": "Ingeklokt",
+        "salida": "Uitgeklokt",
+        "horas": "Uren",
+        "estado": "Status"
+      },
+      "terminado": "Evenement afgelopen.",
+      "noFichoValeCero": "{{count}} dienst(en) zonder inklokken tellen als nul.",
+      "sinSalidaNoSePaga": "{{count}} dienst(en) zonder uitklokken worden pas betaald na afsluiten in Aanwezigheidsregistratie."
     }
   },
   "visitantes": {

@@ -16,7 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import {
-  useCandidatosLibres,
+  type CandidatoLibre,
   useSede,
   useVigilantesOrdenados,
 } from "@/components/post-sites/EventoDeLaSede";
@@ -26,10 +26,12 @@ import {
   type RelevoDeEvento,
   relevosDeLaEstacion,
   ventanaDeLaPlaza,
+  ventanasDeLaPlaza,
   vigenciaDe,
 } from "@/lib/eventos";
 import { fechaYHora, soloHora as soloHoraLarga } from "@/lib/horaDeLaEmpresa";
 import { ApiService } from "@/services/api/apiService";
+import { coverageService } from "@/lib/api/coverageService";
 
 /* ════════════════════════════════════════════════════════════════════════════
    LA ESTACIÓN DE UN EVENTO: QUIÉN VA Y A QUÉ HORA. NADA MÁS.
@@ -485,7 +487,93 @@ function AsignarVarios({
       ventanaDeLaPlaza(sede, { startTime: relevo.inicio, endTime: relevo.fin }),
     [sede, relevo.inicio, relevo.fin],
   );
-  const { libres, cargando } = useCandidatosLibres(stationId, ventana, true);
+  /* LIBRE = libre TODOS los días del evento. Mirar sólo el primero dejaba
+     elegir a quien tiene turno el sábado y el servidor lo rechazaba después
+     (medido en la QA). Se pregunta día por día y se cruza; de quien choca se
+     guarda QUÉ día, para decírselo a quien asigna. */
+  const ventanas = useMemo(
+    () =>
+      ventanasDeLaPlaza(sede, { startTime: relevo.inicio, endTime: relevo.fin }),
+    [sede, relevo.inicio, relevo.fin],
+  );
+  const [libres, setLibres] = useState<Map<string, CandidatoLibre> | null>(null);
+  const [ocupadoEl, setOcupadoEl] = useState<Map<string, string>>(new Map());
+  const [cargando, setCargando] = useState(true);
+
+  useEffect(() => {
+    let vivo = true;
+
+    if (!ventanas.length) {
+      setLibres(null);
+      setCargando(false);
+
+      return;
+    }
+    setCargando(true);
+    Promise.all(
+      ventanas.map((v) =>
+        coverageService
+          .candidates({
+            stationId,
+            windowStart: v.start.toISOString(),
+            windowEnd: v.end.toISOString(),
+            limit: 500,
+          })
+          .then((rows: any) => (Array.isArray(rows) ? rows : []))
+          .catch(() => null),
+      ),
+    ).then((porDia) => {
+      if (!vivo) return;
+      // Si algún día no se pudo leer, no se marca a nadie: mejor sin marca
+      // que con una marca falsa (el servidor rechaza el choque real igual).
+      if (porDia.some((x) => x === null)) {
+        setLibres(null);
+        setCargando(false);
+
+        return;
+      }
+      const sets = (porDia as any[][]).map(
+        (rows) => new Set(rows.map((r: any) => String(r.guardId))),
+      );
+      const m = new Map<string, CandidatoLibre>();
+      const ocupado = new Map<string, string>();
+
+      (porDia[0] as any[]).forEach((r: any, i: number) => {
+        const id = String(r.guardId);
+
+        if (sets.every((st) => st.has(id)))
+          m.set(id, {
+            guardId: id,
+            reason: r.reason ?? null,
+            warning: r.warning ?? null,
+            orden: i,
+          });
+      });
+      for (const g of todos) {
+        const dia = sets.findIndex((st) => !st.has(g.id));
+
+        if (dia >= 0)
+          ocupado.set(
+            g.id,
+            fechaYHora(ventanas[dia].start, {
+              weekday: "short",
+              day: "numeric",
+              month: "short",
+              year: undefined,
+              hour: undefined,
+              minute: undefined,
+            }).replace(/,/g, ""),
+          );
+      }
+      setLibres(m);
+      setOcupadoEl(ocupado);
+      setCargando(false);
+    });
+
+    return () => {
+      vivo = false;
+    };
+  }, [stationId, ventanas, todos]);
   const ordenados = useVigilantesOrdenados(
     useMemo(() => todos.filter((g) => !ocupados.has(g.id)), [todos, ocupados]),
     libres,
@@ -657,10 +745,15 @@ function AsignarVarios({
                     <span className="min-w-0 flex-1 truncate">{g.label}</span>
                     {ocupado ? (
                       <StatusBadge tone="warn">
-                        {t(
-                          "ui.EventoDeLaEstacion.ocupado",
-                          "Ocupado a esa hora",
-                        )}
+                        {ocupadoEl.get(g.id)
+                          ? t("ui.EventoDeLaEstacion.ocupadoEl", {
+                              defaultValue: "Ocupado el {{dia}}",
+                              dia: ocupadoEl.get(g.id),
+                            })
+                          : t(
+                              "ui.EventoDeLaEstacion.ocupado",
+                              "Ocupado a esa hora",
+                            )}
                       </StatusBadge>
                     ) : g.libre ? (
                       <StatusBadge tone="ok">
@@ -830,8 +923,10 @@ export function EventoTurnos({ station, stationId, postSiteId }: Props) {
     );
   }
 
-  // Marcas de hora: cada hora (cada dos si el evento pasa de 16 h).
-  const paso = span > 16 * 3600_000 ? 2 : 1;
+  /* Marcas de hora: unas doce como mucho. Con «cada 2 h» un evento de 48 h
+     metía 24 rótulos en 720 px y se pisaban («06:0008:00»). */
+  const paso =
+    [1, 2, 3, 4, 6, 12].find((h) => span / (h * 3600_000) <= 12) || 12;
   const marcas: Date[] = [];
   const primera = new Date(desde);
 

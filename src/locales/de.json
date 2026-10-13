@@ -1311,7 +1311,8 @@
     "editar": "Bearbeiten",
     "eliminar": "Löschen",
     "guardando": "Wird gespeichert…",
-    "guardar": "Speichern"
+    "guardar": "Speichern",
+    "tarjetas": "Karten"
   },
   "customer": {
     "registration_title": "Registrierung des Auftraggebers"
@@ -11520,7 +11521,10 @@
         "movidas": "{{count}} Sicherheitskraft/-kräfte auf die neuen Termine verschoben.",
         "nombre": "Name der Veranstaltung",
         "nombreEj": "Z. B.: Konzert Nordstadion",
-        "nombreAyuda": "Diesen Namen sehen die Sicherheitskräfte in ihrer App."
+        "nombreAyuda": "Diesen Namen sehen die Sicherheitskräfte in ihrer App.",
+        "fueraDelEvento": "{{count}} Wachperson(en) wurden entfernt, weil ihre Schicht nicht mehr in die Veranstaltung fällt: {{lista}}.",
+        "desplazados": "Die Schichten wurden mit der Veranstaltung um {{horas}} h verschoben: {{plazas}} Platz/Plätze und {{count}} Wachperson(en).",
+        "duraDiasYHoras": "Dauert {{dias}} Tage und {{horas}} h."
       },
       "creaCadaEstacionEvento": "Legen Sie jede Station der Veranstaltung an: Name, von wann bis wann sie besetzt ist, wie viele Sicherheitskräfte gleichzeitig und Geofence. Ohne Rotation: Die Veranstaltung hat ihre eigenen Termine. Wenn alle fertig sind, klicken Sie auf „Fertig“.",
       "eventoConEstaciones": "{{count}} Station(en). Als Nächstes: Sicherheitskräfte zuweisen; Termine und Uhrzeiten gibt die Veranstaltung vor."
@@ -14371,7 +14375,9 @@
     },
     "ClientCardsGrid": {
       "sinClientes": "Keine Auftraggeber",
-      "daDeAltaAlPrimerCliente": "Legen Sie den ersten Kunden über „Kunde hinzufügen“ an."
+      "daDeAltaAlPrimerCliente": "Legen Sie den ersten Kunden über „Kunde hinzufügen“ an.",
+      "sedes": "Standort(e)",
+      "puestos": "Posten"
     },
     "CompanyDocumentsSection": {
       "documentosLegalesDeLaEmpresa": "Rechtsdokumente des Unternehmens",
@@ -17038,7 +17044,8 @@
       "sinTurnosTexto": "Sobald du im Reiter Wachpersonen jemanden zuweist, erscheint hier die Schicht jeder Person in der Veranstaltung.",
       "sinTurnos": "Noch keine Schichten",
       "otros": "Weitere Schichten",
-      "nTurnos": "{{count}} Schicht(en)"
+      "nTurnos": "{{count}} Schicht(en)",
+      "ocupadoEl": "Belegt am {{dia}}"
     },
     "ZonasDelEventoMap": {
       "alt": "Zonen der Veranstaltung auf der Karte",
@@ -17046,7 +17053,68 @@
       "asignados": "Zugewiesen",
       "cupo": "Plätze",
       "verVigilantes": "Wachpersonen ansehen",
-      "resumen": "{{cubiertas}} von {{cupo}} Plätzen besetzt"
+      "resumen": "{{cubiertas}} von {{cupo}} Plätzen besetzt",
+      "sinUbicacion": "Die Zonen dieser Veranstaltung haben keinen Standort: Bearbeite jede Station und ziehe ihre Markierung, um sie auf dem Gelände zu sehen."
+    },
+    "NominaDelEvento": {
+      "titulo": "Lohnabrechnung der Veranstaltung",
+      "antes": "Die Veranstaltung endet am {{fin}}. Danach erscheinen hier die gestempelten Stunden jeder Wachperson zur Bezahlung; jetzt siehst du die Planung, nützlich fürs Budget.",
+      "listo": "Veranstaltung beendet, alle Schichten gestempelt: die Abrechnung ist bereit.",
+      "vigilantes": "Wachpersonen",
+      "deProgramadas": "von {{h}} h geplant",
+      "horasTrabajadas": "Gearbeitete Stunden",
+      "sinTarifa": "{{count}} ohne Satz",
+      "aPagar": "Zu zahlen",
+      "desglose": "{{noFicho}} ohne Einstempeln · {{sinSalida}} ohne Ausstempeln",
+      "cumplidos": "Erledigte Schichten",
+      "tarifaDelEvento": "Stundensatz der Veranstaltung ({{moneda}})",
+      "tarifaPlaceholder": "z. B. 22.50",
+      "tarifaAyuda": "Leer wird der Satz aus dem Profil jeder Wachperson verwendet.",
+      "tarifaInvalida": "Gib einen Satz größer als null ein oder lass es leer.",
+      "tarifaGuardada": "Satz gespeichert",
+      "aprobar": "Stunden freigeben ({{count}})",
+      "aprobadas": "{{count}} Schicht(en) freigegeben",
+      "gustoEnCamino": "Die Stunden gehen an Gusto. Verfolge den Versand unter Lohn › Gusto.",
+      "detalle": "Detail je Schicht (CSV)",
+      "enviarGusto": "An Gusto senden",
+      "gustoAlTerminar": "Wird nach Ende der Veranstaltung gesendet",
+      "conectarGusto": "Gusto verbinden, um die Stunden zu senden",
+      "aprobada": "Freigegeben",
+      "porAprobar": "Freizugeben",
+      "nNoFicho": "{{count}} ohne Einstempeln",
+      "nSinSalida": "{{count}} ohne Ausstempeln",
+      "resumenExport": "{{vigilantes}} Wachpersonen · {{horas}} h · {{importe}}",
+      "vacia": "Dieser Veranstaltung sind noch keine Wachpersonen zugewiesen.",
+      "verMenos": "Weniger anzeigen",
+      "verTodos": "Alle {{count}} anzeigen",
+      "estado": {
+        "cumplido": "Erledigt",
+        "sinSalida": "Ohne Ausstempeln",
+        "noFicho": "Nicht eingestempelt",
+        "pendiente": "Ausstehend"
+      },
+      "col": {
+        "vigilante": "Wachperson",
+        "documento": "Ausweisnummer",
+        "correo": "E-Mail",
+        "zonas": "Zonen",
+        "zona": "Zone",
+        "turnos": "Schichten",
+        "programadas": "Geplante Stunden",
+        "trabajadas": "Gearbeitete Stunden",
+        "tarifa": "Satz ({{moneda}}/h)",
+        "importe": "Zu zahlen ({{moneda}})",
+        "incidencias": "Auffälligkeiten",
+        "dia": "Tag",
+        "programado": "Geplant",
+        "entrada": "Einstempeln",
+        "salida": "Ausstempeln",
+        "horas": "Stunden",
+        "estado": "Status"
+      },
+      "terminado": "Veranstaltung beendet.",
+      "noFichoValeCero": "{{count}} Schicht(en) ohne Einstempeln zählen null.",
+      "sinSalidaNoSePaga": "{{count}} Schicht(en) ohne Ausstempeln werden erst bezahlt, wenn sie in den Anwesenheitsprotokollen geschlossen sind."
     }
   },
   "visitantes": {
