@@ -47,6 +47,9 @@ import {
 // Precedente: src/components/AppErrorBoundary.tsx
 import i18n from "@/i18n";
 import securityGuardService from "@/lib/api/securityGuardService";
+import type { EstadoDeConexion } from "@/lib/api/conexionAppService";
+import { textoDeEpisodio } from "@/components/conexion/EstadoDeConexionApp";
+import { soloHora } from "@/lib/horaDeLaEmpresa";
 
 /* ── Lo que el mapa deja hacer desde un globo ─────────────────────────────── */
 
@@ -542,6 +545,41 @@ export function globoDe(
 }
 
 /** El globo de un racimo de sedes: qué hay dentro y cómo abrirlo. */
+/**
+ * ── LA CONEXIÓN DEL TELÉFONO, EN EL GLOBO ─────────────────────────────────
+ * «Última señal» dice cuándo llegó la última POSICIÓN; esto dice si el teléfono
+ * tiene conexión ahora (socket vivo o cualquier petición de la app) y, si
+ * acaba de volver, cuánto estuvo sin ella y si mandó lo que hizo sin señal.
+ * Ver hooks/useConexionApp.
+ */
+export function conConexion(data: MapPopupData, estado?: EstadoDeConexion): MapPopupData {
+  if (!estado) return data;
+  const t = (k: string, d: string, o?: any) => String(i18n.t(k, d, o));
+  const reciente =
+    estado.ultimoEpisodio && Date.now() - new Date(estado.ultimoEpisodio.hasta).getTime() < 2 * 3600 * 1000
+      ? estado.ultimoEpisodio
+      : null;
+  const valor = !estado.conectado
+    ? t("conexionApp.sinConexionDesde", "Sin conexión desde {{hora}}", { hora: soloHora(estado.desde) })
+    : reciente
+      ? textoDeEpisodio(t, reciente)
+      : t("conexionApp.conectadoDesde", "Con conexión desde {{hora}}", { hora: soloHora(estado.desde) });
+  const campo: MapPopupField = {
+    label: t("conexionApp.titulo", "Conexión"),
+    value: valor,
+    tone: estado.conectado ? (reciente ? "warn" : "ok") : "bad",
+    wide: true,
+  };
+
+  return {
+    ...data,
+    fields: [...(data.fields || []), campo],
+    tags: estado.conectado
+      ? data.tags
+      : [...(data.tags || []), t("conexionApp.sinConexion", "Sin conexión")],
+  };
+}
+
 export function globoDeRacimo(r: Racimo, mando: MandoGlobo): MapPopupData {
   const nombres = r.miembros.slice(0, 6).map((m) => m.label);
   const resto = r.miembros.length - nombres.length;

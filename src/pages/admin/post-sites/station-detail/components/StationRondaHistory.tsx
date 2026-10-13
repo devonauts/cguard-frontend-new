@@ -21,6 +21,8 @@ import {
 
 import { ApiService } from "@/services/api/apiService";
 import ScanDetailModal from "@/components/rondas/ScanDetailModal";
+import { MarcaSinSenal } from "@/components/conexion/MarcaSinSenal";
+import { useMarcasSinSenal } from "@/hooks/useMarcasSinSenal";
 import {
   Section,
   EmptyState,
@@ -256,6 +258,11 @@ function RondaDetailModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [detail, setDetail] = useState<RondaDetail | null>(null);
+  // Escaneos hechos sin señal que llegaron después: una consulta por detalle.
+  const marcas = useMarcasSinSenal([
+    ...(detail?.checkpoints || []).map((c) => c.scan?.id),
+    ...(detail?.orphanScans || []).map((o) => o.id),
+  ]);
   const [photo, setPhoto] = useState<string | null>(null); // lightbox
   // El detalle de UN punto: foto, observación, mapa, dirección, coordenadas y
   // el visto bueno. Es el mismo componente que abre el informe de recorridos —
@@ -419,6 +426,7 @@ function RondaDetailModal({
                                 style={{ color: "var(--ink-soft)" }}
                               >
                                 {fmt(c.scan?.scannedAt)}
+                                <MarcaSinSenal className="ml-2" marca={c.scan ? marcas[String(c.scan.id)] : null} />
                               </span>
                             ) : (
                               <StatusBadge dot={false} tone="bad">
@@ -529,6 +537,7 @@ function RondaDetailModal({
                                 style={{ color: "var(--ink-soft)" }}
                               >
                                 {fmt(o.scannedAt)}
+                                <MarcaSinSenal className="ml-2" marca={marcas[String(o.id)]} />
                               </span>
                               {geoBadge(o.validLocation, o.distanceMeters)}
                             </div>

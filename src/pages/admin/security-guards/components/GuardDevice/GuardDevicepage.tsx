@@ -32,6 +32,8 @@ import {
   SkeletonCards,
 } from "@/components/kit";
 import { Button } from "@/components/ui/button";
+import { SeccionConexion } from "@/components/conexion/SeccionConexion";
+import { useFichaPersona } from "@/layouts/FichaPersona";
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
 
@@ -57,6 +59,15 @@ export default function GuardDevicePage({
   const { id } = useParams();
   const { t } = useTranslation();
   const userId = guard?.userId || guard?.user?.id || (id as string);
+  // El usuario REAL de la app (la ficha llega por contexto, no por props).
+  const ficha = useFichaPersona();
+  const usuarioDeApp: string | null =
+    guard?.userId ||
+    guard?.user?.id ||
+    ficha?.entity?.userId ||
+    ficha?.bruto?.guardId ||
+    ficha?.bruto?.guard?.id ||
+    null;
 
   const [devices, setDevices] = useState<GuardDevice[]>([]);
   const [loading, setLoading] = useState(false);
@@ -163,6 +174,12 @@ export default function GuardDevicePage({
               defaultValue: "Dispositivo del vigilante",
             })}
           />
+
+          {/* ── ¿TIENE CONEXIÓN? ─────────────────────────────────────────────
+              Ahora y en las últimas 24 h: cuándo se quedó sin conexión y, si
+              trabajó sin señal, cuántas acciones mandó al volver. Sólo con el
+              usuario real de la app (no el id de la ficha). */}
+          {usuarioDeApp && <SeccionConexion className="mb-4" userId={String(usuarioDeApp)} />}
 
           {/* ── ¿ESTE TELÉFONO DA UBICACIÓN? ────────────────────────────────
               El vigilante FICHA IGUAL sin GPS — no se le deja en la calle por

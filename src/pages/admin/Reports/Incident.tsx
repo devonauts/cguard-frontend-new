@@ -112,6 +112,8 @@ export default function Incident() {
         return undefined;
       }}
       columns={columns}
+      // Incidentes reportados sin señal desde la app.
+      idSinSenal={(r) => r.id}
       /* ── LA FILA TIENE QUE LLEVAR A ALGUNA PARTE ────────────────────────────
          Un pánico aparece aquí y la fila no se podía ni tocar: sin acción, sin
          ficha y —hasta el arreglo del espejo en el servidor— mostrando

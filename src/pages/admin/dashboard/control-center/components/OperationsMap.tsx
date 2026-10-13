@@ -26,6 +26,7 @@ import {
   type Racimo,
 } from "./OperationsMapCoverage";
 import {
+  conConexion,
   globoDe,
   globoDeRacimo,
   pedirRastro,
@@ -38,6 +39,7 @@ import i18n from "@/i18n";
 import { loadGoogleMaps } from "@/utils/loadGoogleMaps";
 import { acquireMap, type PooledMap } from "@/utils/mapPool";
 import { useCercaDeLaVista } from "@/hooks/useCercaDeLaVista";
+import { useConexionApp } from "@/hooks/useConexionApp";
 import {
   estiloMapa,
   huella,
@@ -266,6 +268,14 @@ function senalViva(e: MapEntity, umbralMin: number): boolean {
   return Number.isFinite(min) && min <= Math.max(2, umbralMin);
 }
 
+/** El usuario de la app de una entidad del mapa (vigilante o supervisor). */
+function usuarioDeEntidad(e: MapEntity): string | null {
+  if (e.kind === "guard") return e.meta?.userId ? String(e.meta.userId) : null;
+  if (e.kind === "supervisor") return e.id.startsWith("sup-") ? e.id.slice(4) : null;
+
+  return null;
+}
+
 export function OperationsMap({
   entities,
   prefs,
@@ -373,9 +383,31 @@ export function OperationsMap({
     return m;
   }, [entities]);
 
+  /* ── ¿TIENEN CONEXIÓN? ──────────────────────────────────────────────────
+     Una lectura al montar y otra cada vez que el servidor avisa por el socket
+     (`presencia:update`); perderla se calcula aquí al cruzar el umbral. Quien
+     no tiene conexión se pinta como «sin conexión» (marcador apagado) y su
+     globo dice desde cuándo. Ver hooks/useConexionApp. */
+  // Toda la empresa en una lectura: con cientos en el mapa, pasar sus ids en la
+  // URL la haría más larga de lo que aceptan los proxys.
+  const { porUsuario: conexion } = useConexionApp();
+  const conexionRef = useRef(conexion);
+
+  conexionRef.current = conexion;
+
   const visibles = useMemo(
-    () => entities.filter((e) => capas[e.kind] !== false),
-    [entities, capas],
+    () =>
+      entities
+        .filter((e) => capas[e.kind] !== false)
+        .map((e) => {
+          const u = usuarioDeEntidad(e);
+          const c = u ? conexion.get(u) : undefined;
+
+          return c && !c.conectado && e.status !== "emergency" && e.status !== "incident"
+            ? { ...e, status: "offline" as const }
+            : e;
+        }),
+    [entities, capas, conexion],
   );
 
   /** Las sedes de cliente se agrupan cuando se pisan; el resto va suelto. */
@@ -528,7 +560,8 @@ export function OperationsMap({
 
   const abrirGlobo = useCallback(
     (e: MapEntity, marcador: any, cob?: PuestoEstado) => {
-      const base = globoDe(e, cob, mando);
+      const u = usuarioDeEntidad(e);
+      const base = conConexion(globoDe(e, cob, mando), u ? conexionRef.current.get(u) : undefined);
       // El detalle de un vigilante (batería, velocidad, precisión reales) se pide
       // AL PULSAR, nunca en el sondeo: es una consulta por clic, no por segundo.
       // Nada de esto se le pide al servidor en modo demostración: sus

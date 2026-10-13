@@ -31,6 +31,8 @@ import ExportMenu from "@/components/reports/ExportMenu";
 import { exportMatrix, type ExportFormat } from "@/lib/export/reportExport";
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import { MarcaSinSenal } from "@/components/conexion/MarcaSinSenal";
+import { useMarcasSinSenal } from "@/hooks/useMarcasSinSenal";
 type Period = "week" | "month";
 
 /** [start, end] bounds for the period containing `anchor` (local time). */
@@ -93,6 +95,8 @@ export default function GuardAsistenciaPage() {
   const { t } = useTranslation();
   const { id = "" } = useParams();
   const [rows, setRows] = useState<AttendanceRecord[]>([]);
+  // Turnos marcados sin señal que llegaron después: una consulta por lista.
+  const marcas = useMarcasSinSenal(rows.map((r) => r.id));
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState<Period>("month");
   const [anchor, setAnchor] = useState<Date>(() => new Date());
@@ -377,6 +381,7 @@ export default function GuardAsistenciaPage() {
                       </td>
                       <td className="px-3 py-2.5 tabular-nums">
                         {fmtDateTime(r.punchInTime)}
+                        <MarcaSinSenal className="ml-2" marca={marcas[String(r.id)]} />
                       </td>
                       <td className="px-3 py-2.5 tabular-nums">
                         {r.punchOutTime ? (

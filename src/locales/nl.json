@@ -18593,5 +18593,18 @@
       "resolved": "Opgelost",
       "closed": "Gesloten"
     }
+  },
+  "conexionApp": {
+    "titulo": "Verbinding",
+    "sinConexion": "Geen verbinding",
+    "sinConexionDesde": "Geen verbinding sinds {{hora}}",
+    "conectadoDesde": "Verbonden sinds {{hora}}",
+    "episodioSinSenal": "Geen bereik {{desde}}–{{hasta}} · {{n}} acties verzonden",
+    "episodioSinConexion": "Geen verbinding {{desde}}–{{hasta}}",
+    "ultimas24h": "Laatste 24 uur",
+    "minutos": "{{n}} min",
+    "sinCortes": "Geen verbindingsonderbrekingen",
+    "marca": "Zonder bereik vastgelegd · aangekomen {{hora}}",
+    "marcaDetalle": "Gedaan om {{hecho}} zonder bereik · aangekomen om {{llego}}"
   }
 }

@@ -18593,5 +18593,18 @@
       "resolved": "Resuelto",
       "closed": "Cerrado"
     }
+  },
+  "conexionApp": {
+    "titulo": "Conexión",
+    "sinConexion": "Sin conexión",
+    "sinConexionDesde": "Sin conexión desde {{hora}}",
+    "conectadoDesde": "Con conexión desde {{hora}}",
+    "episodioSinSenal": "Estuvo sin señal {{desde}}–{{hasta}} · {{n}} acciones enviadas",
+    "episodioSinConexion": "Sin conexión {{desde}}–{{hasta}}",
+    "ultimas24h": "Últimas 24 horas",
+    "minutos": "{{n}} min",
+    "sinCortes": "Sin cortes de conexión",
+    "marca": "Registrado sin señal · llegó {{hora}}",
+    "marcaDetalle": "Hecho a las {{hecho}} sin señal · llegó a las {{llego}}"
   }
 }

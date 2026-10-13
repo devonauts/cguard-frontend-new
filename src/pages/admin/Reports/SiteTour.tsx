@@ -130,6 +130,8 @@ export default function SiteTour() {
         icon={Route}
         load={cargar}
         columns={columns}
+        // Escaneos hechos sin señal que llegaron después.
+        idSinSenal={(r) => r.id}
         // Un punto marcado fuera de rango es una anomalía, no un dato más; uno
         // rechazado por una persona pesa más todavía.
         reloadRef={recargar}

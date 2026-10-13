@@ -12,6 +12,7 @@ import {
 import attendanceService from "@/lib/api/attendanceService";
 
 interface Rec {
+  id?: string;
   guardName?: { fullName?: string } | string | null;
   stationName?: { stationName?: string } | string | null;
   punchInTime?: string | null;
@@ -85,6 +86,8 @@ export default function CheckInOut() {
   return (
     <DataReport<Rec>
       columns={columns}
+      // Entradas/salidas marcadas sin señal que llegaron después.
+      idSinSenal={(r) => r.id}
       description={t("ui.CheckInOut.descripcion", "Marcajes de asistencia (entrada, salida, horas y atrasos) por vigilante.")}
       icon={LogIn}
       load={async ({ from, to }) => {

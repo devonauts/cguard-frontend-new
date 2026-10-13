@@ -11,6 +11,8 @@ import { Segmented } from "@/components/kit";
 import MobileCardList from "@/components/responsive/MobileCardList";
 import { useEsTelefono } from "@/hooks/useEsTelefono";
 import { exportColumns, pieDeInforme, type ExportFormat } from "@/lib/export/reportExport";
+import { MarcaSinSenal } from "@/components/conexion/MarcaSinSenal";
+import { useMarcasSinSenal } from "@/hooks/useMarcasSinSenal";
 
 /** «13/09/2026, 10:50 a. m.», «2026-09-13 10:50», «10:50». Sólo marcas de
  *  tiempo: un valor que EMPIEZA por una fecha pero sigue con texto no lo es. */
@@ -83,6 +85,12 @@ interface DataReportProps<T> {
    * punto de ronda) sin recargar la página ni perder el rango elegido.
    */
   reloadRef?: React.MutableRefObject<(() => void) | null>;
+  /**
+   * El id del registro que se puede haber hecho SIN SEÑAL en el teléfono
+   * (turno, escaneo, incidente…). Con él, las filas que llegaron tarde llevan
+   * «Registrado sin señal · llegó 03:40». Una consulta por página visible.
+   */
+  idSinSenal?: (row: T) => string | null | undefined;
 }
 
 function ymd(d: Date): string {
@@ -128,6 +136,7 @@ export default function DataReport<T>({
   rowTone,
   onRowClick,
   reloadRef,
+  idSinSenal,
 }: DataReportProps<T>) {
   const { t } = useTranslation();
   const rotulo = (c: ReportColumn<T>) =>
@@ -229,6 +238,7 @@ export default function DataReport<T>({
     () => filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize),
     [filtered, currentPage, pageSize],
   );
+  const marcasSinSenal = useMarcasSinSenal(idSinSenal ? pageRows.map((r) => idSinSenal(r)) : []);
 
   // Qué atajo está activo se DEDUCE del rango: si el usuario escribe fechas a
   // mano en el cajón de filtros, ninguno queda marcado y no hay estado que se
@@ -461,6 +471,9 @@ export default function DataReport<T>({
               >
                 <div className="text-sm font-semibold">
                   {primera ? primera.value(row) : ""}
+                  {idSinSenal && (
+                    <MarcaSinSenal className="ml-2" marca={marcasSinSenal[String(idSinSenal(row) ?? "")]} />
+                  )}
                 </div>
                 {resto.length > 0 && (
                   <dl className="mt-1.5 grid gap-1.5 text-xs">
@@ -564,6 +577,9 @@ export default function DataReport<T>({
                           />
                         )}
                         {c.value(row)}
+                        {ci === 0 && idSinSenal && (
+                          <MarcaSinSenal className="ml-2" marca={marcasSinSenal[String(idSinSenal(row) ?? "")]} />
+                        )}
                       </td>
                     ))}
                   </tr>

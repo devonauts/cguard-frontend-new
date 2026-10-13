@@ -69,6 +69,8 @@ import { confirmDialog } from '@/components/ui/confirmDialog';
 import { VisitorLogFilters } from "@/lib/api/visitorLogService";
 import { localeActual } from "@/lib/localeActual";
 import { hoyEnLaEmpresa, zonaDeLaEmpresa} from "@/lib/horaDeLaEmpresa";
+import { MarcaSinSenal } from "@/components/conexion/MarcaSinSenal";
+import { useMarcasSinSenal } from "@/hooks/useMarcasSinSenal";
 
 // Loose client shape covering the various name/id fields the association may carry.
 type ClientLike = {
@@ -773,6 +775,8 @@ export default function Visitors() {
     },
   );
   const logs: VisitLogRow[] = logsData?.rows || [];
+  // Registros de la garita hechos sin señal que llegaron después.
+  const marcasSinSenal = useMarcasSinSenal(logs.map((r) => r.id));
   const logsCount = logsData?.count || 0;
   // Recuento sobre los registros mostrados: quién sigue dentro y quién ya salió.
   const dentro = logs.filter((l) => !salidaDe(l)).length;
@@ -1495,6 +1499,7 @@ export default function Visitors() {
                             </td>
                             <td className="px-2 py-2.5">
                               {formatDateTime(r.visitDate)}
+                              <MarcaSinSenal className="ml-2" marca={marcasSinSenal[String(r.id)]} />
                             </td>
                             <td className="px-2 py-2.5">
                               {salidaDe(r) ? (
@@ -1589,6 +1594,7 @@ export default function Visitors() {
                           style={{ color: "var(--ink-faint)" }}
                         >
                           {formatDateTime(r.visitDate)}
+                          <MarcaSinSenal className="ml-2" marca={marcasSinSenal[String(r.id)]} />
                         </div>
                       </div>
                       <div>

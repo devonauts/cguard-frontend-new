@@ -18593,5 +18593,18 @@
       "resolved": "Gelöst",
       "closed": "Geschlossen"
     }
+  },
+  "conexionApp": {
+    "titulo": "Verbindung",
+    "sinConexion": "Keine Verbindung",
+    "sinConexionDesde": "Keine Verbindung seit {{hora}}",
+    "conectadoDesde": "Verbunden seit {{hora}}",
+    "episodioSinSenal": "Ohne Empfang {{desde}}–{{hasta}} · {{n}} Aktionen gesendet",
+    "episodioSinConexion": "Keine Verbindung {{desde}}–{{hasta}}",
+    "ultimas24h": "Letzte 24 Stunden",
+    "minutos": "{{n}} Min.",
+    "sinCortes": "Keine Verbindungsabbrüche",
+    "marca": "Ohne Empfang erfasst · eingegangen {{hora}}",
+    "marcaDetalle": "Erfasst um {{hecho}} ohne Empfang · eingegangen um {{llego}}"
   }
 }

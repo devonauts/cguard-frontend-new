@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
+
 import { toast } from "sonner";
 import {
   CalendarClock,
@@ -36,6 +37,7 @@ import i18n from "@/i18n";
 import { localeActual } from "@/lib/localeActual";
 import { soloFechaCivil } from "@/lib/horaDeLaEmpresa";
 import { nombreDelProducto } from "@/hooks/usePageTitle";
+import { SeccionConexion } from "@/components/conexion/SeccionConexion";
 const WEEKDAYS = [
   { n: 1, label: "Lun" },
   { n: 2, label: "Mar" },
@@ -755,6 +757,8 @@ export default function SupervisorDetailPage() {
                   </Section>
 
                   <SedesAsignadas userId={String(id)} />
+                  {/* Su conexión desde la app: ahora y últimas 24 h. */}
+                  <SeccionConexion userId={String(id)} />
                 </div>
 
                 {/* SIDEBAR (1/3) */}
