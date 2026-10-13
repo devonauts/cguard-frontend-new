@@ -12,6 +12,7 @@ import {
   type MapPopupTone,
 } from "@/components/maps/MapPopup";
 import { ApiService } from "@/services/api/apiService";
+import { relevosDeLaEstacion, ventanaDeRelevos } from "@/lib/eventos";
 
 /**
  * LAS ZONAS DE UN EVENTO SOBRE EL RECINTO.
@@ -87,8 +88,23 @@ export default function ZonasDelEventoMap({
           nombre: String(s.stationName || ""),
           lat: lat!,
           lng: lng!,
-          cupo: Number(s.numberOfGuardsInStation) || 0,
-          horario: [s.startingTimeInDay, s.finishTimeInDay].filter(Boolean).join("–"),
+          // El cupo son las PLAZAS (con relevos, plazas × relevos); la cifra
+          // de la fila del puesto sólo es el respaldo si no vinieron.
+          cupo:
+            (Array.isArray(s.positions) && s.positions.length) ||
+            Number(s.numberOfGuardsInStation) ||
+            0,
+          horario: (() => {
+            const r = relevosDeLaEstacion(s.positions);
+
+            return r.length > 1
+              ? t("ui.eventos.rotuloRelevos", {
+                  defaultValue: "{{ventana}} · {{count}} relevos",
+                  ventana: ventanaDeRelevos(r, s),
+                  count: r.length,
+                })
+              : ventanaDeRelevos(r, s);
+          })(),
           vigilantes: asignaciones[i]
             .map((a: any) => a.guard?.fullName || [a.guard?.firstName, a.guard?.lastName].filter(Boolean).join(" "))
             .filter(Boolean),

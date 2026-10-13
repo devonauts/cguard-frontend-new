@@ -127,6 +127,39 @@ export function partir(
   }));
 }
 
+/**
+ * EVENTOS: la ventana partida en RELEVOS de `horas` horas, uno detrás de otro
+ * («16:00–00:30 en relevos de 4 h» → 16:00–20:00 y 20:00–00:30). Un sobrante de
+ * menos de una hora no hace un relevo propio: se lo lleva el último (nadie
+ * contrata a un vigilante para media hora).
+ */
+export function partirPorHoras(
+  desde: string,
+  hasta: string,
+  horas: number,
+  guards: number,
+): Franja[] {
+  const ini = toMin(desde);
+  const total = duracion({ start: desde, end: hasta });
+  const largo = Math.round(Math.max(1, Math.min(24, horas)) * 60);
+
+  if (Number.isNaN(ini) || total <= 0) return [];
+  const cortes: number[] = [];
+
+  for (let m = 0; m < total; m += largo) cortes.push(m);
+  if (cortes.length > 1 && total - cortes[cortes.length - 1] < 60) cortes.pop();
+
+  return cortes
+    .slice(0, 12)
+    .map((m, i, xs) =>
+      nuevaFranja(
+        toHHMM(ini + m),
+        toHHMM(ini + (i === xs.length - 1 ? total : xs[i + 1])),
+        guards,
+      ),
+    );
+}
+
 /* ── EL TRAMO DE CADA FRANJA, POR LA HORA A LA QUE EMPIEZA ──────────────────
    D si arranca entre las 5 y las 12, T entre las 12 y las 18, N el resto. La
    rotación se escribe con un contador por tramo («3 D · 3 N · 2 L») y el
@@ -323,13 +356,23 @@ export default function StationCreateForm({
   const horasVentana = modo
     ? duracion({ start: ventana.desde, end: ventana.hasta }) / 60
     : 0;
+  /* EVENTOS: el turno se dice en HORAS. `null` = todo el horario (quien vaya
+     cubre la ventana entera, cada día del evento); un número = relevos de
+     tantas horas, y cada relevo tiene sus propias plazas. */
+  const [relevo, setRelevo] = useState<number | null>(
+    inicialEvento?.modo === "24h" ? 12 : null,
+  );
   const calculadas = useMemo(
     () =>
-      modo
-        ? partir(ventana.desde, ventana.hasta, turnos, aLaVez, diasGlobal)
-        : [],
+      !modo
+        ? []
+        : esModoEvento
+          ? relevo
+            ? partirPorHoras(ventana.desde, ventana.hasta, relevo, aLaVez)
+            : partir(ventana.desde, ventana.hasta, 1, aLaVez, [])
+          : partir(ventana.desde, ventana.hasta, turnos, aLaVez, diasGlobal),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [modo, desde, hasta, turnos, aLaVez, diasGlobal],
+    [modo, desde, hasta, turnos, aLaVez, diasGlobal, relevo, esModoEvento],
   );
   const franjas = ajustar ? manuales : calculadas;
   const seats = franjas.reduce((acc, f) => acc + Math.max(1, f.guards), 0);
@@ -339,6 +382,7 @@ export default function StationCreateForm({
   const elegirModo = (m: "24h" | "horario") => {
     setModo(m);
     setAjustar(false);
+    if (esModoEvento) setRelevo(m === "24h" ? 12 : null);
     if (m === "24h") {
       setDesde(esModoEvento && inicialEvento ? inicialEvento.desde : "07:00");
       setTurnos(2);
@@ -492,9 +536,11 @@ export default function StationCreateForm({
       const latitud = puntoFinal?.lat ?? null;
       const longitud = puntoFinal?.lng ?? null;
       const tipo = tipoDeFranjas(franjas);
-      const ordenadas = [...franjas].sort(
-        (x, y) => toMin(x.start) - toMin(y.start),
-      );
+      // Los relevos de un evento ya vienen en orden de reloj y pueden cruzar la
+      // medianoche (22:00, 02:00): ordenarlos por minuto daría 02:00 primero.
+      const ordenadas = esModoEvento
+        ? [...franjas]
+        : [...franjas].sort((x, y) => toMin(x.start) - toMin(y.start));
       const primera = ordenadas[0];
       const ultima = ordenadas[ordenadas.length - 1];
       const payload = {
@@ -784,36 +830,119 @@ export default function StationCreateForm({
                   <span className="font-semibold tabular-nums">
                     {Math.round(horasVentana * 10) / 10} h
                   </span>
-                  <span
-                    className="mx-1 h-5 w-px"
-                    style={{ background: "var(--hairline)" }}
-                  />
-                  <span style={{ color: "var(--ink-soft)" }}>
-                    {t("ui.StationCreateForm.enTurnosDe", "en")}
-                  </span>
-                  <input
-                    className="cg-input cg-focus h-8 w-14 px-2 text-center text-sm"
-                    max={6}
-                    min={1}
-                    type="number"
-                    value={turnos}
-                    onChange={(e) =>
-                      setTurnos(
-                        Math.max(1, Math.min(6, Number(e.target.value) || 1)),
-                      )
-                    }
-                  />
-                  <span style={{ color: "var(--ink-soft)" }}>
-                    {t("ui.StationCreateForm.turnosDeNh", {
-                      defaultValue: "turno(s) de {{h}} h",
-                      h: horasVentana
-                        ? Math.round(
-                            (horasVentana / Math.max(1, turnos)) * 10,
-                          ) / 10
-                        : 0,
-                    })}
-                  </span>
+                  {!esModoEvento && (
+                    <>
+                      <span
+                        className="mx-1 h-5 w-px"
+                        style={{ background: "var(--hairline)" }}
+                      />
+                      <span style={{ color: "var(--ink-soft)" }}>
+                        {t("ui.StationCreateForm.enTurnosDe", "en")}
+                      </span>
+                      <input
+                        className="cg-input cg-focus h-8 w-14 px-2 text-center text-sm"
+                        max={6}
+                        min={1}
+                        type="number"
+                        value={turnos}
+                        onChange={(e) =>
+                          setTurnos(
+                            Math.max(
+                              1,
+                              Math.min(6, Number(e.target.value) || 1),
+                            ),
+                          )
+                        }
+                      />
+                      <span style={{ color: "var(--ink-soft)" }}>
+                        {t("ui.StationCreateForm.turnosDeNh", {
+                          defaultValue: "turno(s) de {{h}} h",
+                          h: horasVentana
+                            ? Math.round(
+                                (horasVentana / Math.max(1, turnos)) * 10,
+                              ) / 10
+                            : 0,
+                        })}
+                      </span>
+                    </>
+                  )}
                 </div>
+                {/* EVENTOS: cuánto dura el turno de cada vigilante. En un
+                    concierto es normal que nadie haga las 8 h: entran en
+                    relevos de 4. Cada relevo lleva sus propias plazas. */}
+                {esModoEvento && (
+                  <div className="space-y-2 text-sm">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span style={{ color: "var(--ink-soft)" }}>
+                        {t(
+                          "ui.StationCreateForm.evento.turnoDeCadaUno",
+                          "Turno de cada vigilante",
+                        )}
+                      </span>
+                      {[null, 2, 4, 6, 8, 12]
+                        .filter(
+                          (h) => h === null || (h < horasVentana && h <= 12),
+                        )
+                        .map((h) => {
+                          const activo = relevo === h;
+
+                          return (
+                            <button
+                              key={String(h)}
+                              aria-pressed={activo}
+                              className="cg-focus rounded-full border px-3 py-1 text-xs font-semibold transition-opacity hover:opacity-80"
+                              style={
+                                activo
+                                  ? {
+                                      background: "var(--brand)",
+                                      color: "var(--brand-ink)",
+                                      borderColor: "var(--brand)",
+                                    }
+                                  : {
+                                      background: "var(--glass)",
+                                      color: "var(--ink)",
+                                      borderColor: "var(--hairline)",
+                                    }
+                              }
+                              type="button"
+                              onClick={() => {
+                                setRelevo(h);
+                                setAjustar(false);
+                              }}
+                            >
+                              {h === null
+                                ? t(
+                                    "ui.StationCreateForm.evento.todoElHorario",
+                                    {
+                                      defaultValue: "Todo el horario ({{h}} h)",
+                                      h: Math.round(horasVentana * 10) / 10,
+                                    },
+                                  )
+                                : t("ui.StationCreateForm.evento.relevosDe", {
+                                    defaultValue: "Relevos de {{h}} h",
+                                    h,
+                                  })}
+                            </button>
+                          );
+                        })}
+                    </div>
+                    {calculadas.length > 1 && (
+                      <p
+                        className="text-xs"
+                        style={{ color: "var(--ink-soft)" }}
+                      >
+                        {t("ui.StationCreateForm.evento.relevosResumen", {
+                          defaultValue:
+                            "{{n}} relevos: {{tramos}}. Cada vigilante cubre sólo su relevo.",
+                          n: calculadas.length,
+                          tramos: calculadas
+                            .map((f) => `${f.start}–${f.end}`)
+                            .join(" · "),
+                        })}
+                      </p>
+                    )}
+                  </div>
+                )}
                 {/* Fila 2: cuántos a la vez y qué días — juntos, para que el número no se pierda */}
                 <div className="flex flex-wrap items-center gap-3 text-sm">
                   <span className="inline-flex items-center gap-2">

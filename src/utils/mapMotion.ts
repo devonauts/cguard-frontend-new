@@ -1066,7 +1066,13 @@ export function crearMotorMapa(map: any): MotorMapa {
     const zDestino = acotar(opts.zoom ?? zActual, 2, 21);
     const centro = centroActual();
 
-    if (!centro || calma()) {
+    /* Con la pestaña oculta `requestAnimationFrame` no dispara: el vuelo se
+       quedaba congelado en el origen (una dirección de Texas elegida con el
+       mapa aún sobre Ciudad de México). Sin nadie mirando, se salta al destino. */
+    const oculta =
+      typeof document !== "undefined" && document.visibilityState === "hidden";
+
+    if (!centro || calma() || oculta) {
       try {
         map.setCenter(destino);
         if (opts.zoom != null) map.setZoom(zDestino);

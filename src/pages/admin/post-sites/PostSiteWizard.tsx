@@ -1777,7 +1777,7 @@ export default function PostSiteWizard({
                     })()}{" "}
                     {t(
                       "ui.PostSiteWizard.evento.alTerminar",
-                      "Al día siguiente de terminar, la sede se archiva sola y los vigilantes quedan libres.",
+                      "Al terminar, los vigilantes quedan libres y el evento se queda con su historial (fichajes, incidentes e informe).",
                     )}
                   </p>
                 )}

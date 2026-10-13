@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { esEvento, relevosDeLaEstacion } from "@/lib/eventos";
 import { invalidateEntity } from "@/lib/queryClient";
 import { useNavigate } from "react-router-dom";
 import { ApiService } from "@/services/api/apiService";
@@ -55,6 +56,7 @@ const ETIQUETA_JORNADA: Record<string, string> = {
   "24 horas": "24 horas",
   sacafranco: "Relevo",
   personalizada: "Personalizada",
+  evento: "Evento",
 };
 // Translation keys for ETIQUETA_JORNADA (the Spanish text is the fallback).
 const ETIQUETA_JORNADA_KEY: Record<string, string> = {
@@ -63,6 +65,7 @@ const ETIQUETA_JORNADA_KEY: Record<string, string> = {
   "24 horas": "stations.scheduleType.24h",
   sacafranco: "settings.jornada.relevo",
   personalizada: "ui.PostSiteWizard.jornada.personalizada",
+  evento: "ui.eventos.jornada",
 };
 
 // El tinte de la jornada sale de los semánticos del sistema: día = warn,
@@ -78,6 +81,7 @@ const JORNADA_TONE: Record<string, "warn" | "info" | "ok" | "neutral"> = {
   "24 horas": "warn",
   sacafranco: "ok",
   personalizada: "neutral",
+  evento: "info",
 };
 
 /* Las jornadas salen de las PLAZAS, que es lo único que el generador de turnos
@@ -86,6 +90,15 @@ const JORNADA_TONE: Record<string, "warn" | "info" | "ok" | "neutral"> = {
    pantalla que miente. Sin plazas se enseña la cobertura prevista según el tipo
    de horario. */
 function jornadasDeEstacion(r: any): any[] {
+  // Un evento no tiene jornadas «diurna/nocturna»: tiene sus relevos.
+  if (esEvento(r?.postSite))
+    return relevosDeLaEstacion(r?.positions).map((x) => ({
+      tipo: "evento",
+      nombre: "Evento",
+      startTime: x.inicio,
+      endTime: x.fin,
+      guardsCount: String(x.plazas),
+    }));
   const desdePlazas = jornadasDePlazas(r?.positions, r?.scheduleType);
   const base = desdePlazas.length
     ? desdePlazas
@@ -224,6 +237,9 @@ export default function Stations({ site }: { site?: SiteProp }) {
             numberOfGuardsInStation: r.numberOfGuardsInStation,
             assignedGuards: r.assignedGuards,
             scheduleType: r.scheduleType || null,
+            relevos: esEvento(r?.postSite)
+              ? relevosDeLaEstacion(r?.positions)
+              : null,
             lat: toNum(r.latitud ?? r.latitude),
             lng: toNum(r.longitud ?? r.longitude),
             geofenceRadius: toNum(r.geofenceRadius),

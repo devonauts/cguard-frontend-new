@@ -198,3 +198,89 @@ export function ventanaDeLaPlaza(
     ? { start: s, end: e }
     : { start: desde, end: hasta };
 }
+
+/** Un RELEVO de una estación de evento: una ventana y sus plazas. */
+export interface RelevoDeEvento {
+  inicio: string;
+  fin: string;
+  plazas: number;
+  positionIds: string[];
+}
+
+/**
+ * Las plazas de una estación de evento agrupadas en RELEVOS (misma hora de
+ * entrada y de salida), en orden de reloj. Un evento «todo el horario» tiene un
+ * relevo; uno partido en turnos de 4 h, dos o más. Es la única lectura que
+ * necesitan las pantallas del evento: nada de rotación ni de «12h diurno».
+ */
+export function relevosDeLaEstacion(
+  positions?: Array<{
+    id?: string;
+    startTime?: string | null;
+    endTime?: string | null;
+    sortOrder?: number | null;
+    type?: string | null;
+  }> | null,
+): RelevoDeEvento[] {
+  const out: RelevoDeEvento[] = [];
+  const hm = (v?: string | null) => String(v || "").slice(0, 5);
+  const orden = [...(positions || [])]
+    .filter((p) => hm(p.startTime) && hm(p.endTime))
+    .sort((a, b) => (Number(a.sortOrder) || 0) - (Number(b.sortOrder) || 0));
+
+  for (const p of orden) {
+    const inicio = hm(p.startTime);
+    const fin = hm(p.endTime);
+    let r = out.find((x) => x.inicio === inicio && x.fin === fin);
+
+    if (!r) {
+      r = { inicio, fin, plazas: 0, positionIds: [] };
+      out.push(r);
+    }
+    r.plazas += 1;
+    if (p.id) r.positionIds.push(String(p.id));
+  }
+
+  return enOrdenDeReloj(out);
+}
+
+/* Los relevos en el orden en que se suceden. Las plazas no siempre vienen en
+   ese orden (las que crea el asistente pueden llegar del segundo relevo
+   primero) y ordenar por la hora suelta pondría «02:00» antes de «22:00» en un
+   evento que cruza la medianoche: se encadenan (el que empieza cuando otro
+   termina va detrás) y lo que no encadena, por hora. */
+function enOrdenDeReloj(rs: RelevoDeEvento[]): RelevoDeEvento[] {
+  if (rs.length < 2) return rs;
+  const porHora = [...rs].sort((a, b) => a.inicio.localeCompare(b.inicio));
+  const primero =
+    porHora.find((r) => !rs.some((x) => x !== r && x.fin === r.inicio)) ||
+    porHora[0];
+  const out: RelevoDeEvento[] = [primero];
+
+  while (out.length < rs.length) {
+    const ultimo = out[out.length - 1];
+    const sig =
+      rs.find((x) => !out.includes(x) && x.inicio === ultimo.fin) ||
+      porHora.find((x) => !out.includes(x))!;
+
+    out.push(sig);
+  }
+
+  return out;
+}
+
+/** La ventana entera de la estación del evento: del primer relevo al último. */
+export function ventanaDeRelevos(
+  relevos: RelevoDeEvento[],
+  station?: {
+    startingTimeInDay?: string | null;
+    finishTimeInDay?: string | null;
+  } | null,
+): string {
+  if (relevos.length)
+    return `${relevos[0].inicio}–${relevos[relevos.length - 1].fin}`;
+  const a = String(station?.startingTimeInDay || "").slice(0, 5);
+  const b = String(station?.finishTimeInDay || "").slice(0, 5);
+
+  return a && b ? `${a}–${b}` : "";
+}

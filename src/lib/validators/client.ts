@@ -76,13 +76,15 @@ export const crearEsquemaCliente = (paisDeLaEmpresa?: string) =>
         .max(150, maxChars(150))
         .optional()
         .or(z.literal("")),
+      /* OPCIONAL, como en el servidor (sólo exige nombre y dirección). Un
+         cliente de un solo evento —«Moody Center»— se da de alta con el nombre
+         y la dirección; el resto se completa si se tiene. */
       phoneNumber: z
         .string()
         .trim()
-        .min(1, {
-          error: msj("validation.client.phoneRequired", "Teléfono requerido"),
-        })
-        .max(20, maxChars(20)),
+        .max(20, maxChars(20))
+        .optional()
+        .or(z.literal("")),
       address: z
         .string()
         .trim()
@@ -102,13 +104,9 @@ export const crearEsquemaCliente = (paisDeLaEmpresa?: string) =>
       postalCode: z
         .string()
         .trim()
-        .min(1, {
-          error: msj(
-            "validation.client.postalCodeRequired",
-            "Código postal requerido",
-          ),
-        })
-        .max(20, maxChars(20)),
+        .max(20, maxChars(20))
+        .optional()
+        .or(z.literal("")),
       city: z
         .string()
         .trim()
@@ -228,21 +226,24 @@ export const crearEsquemaCliente = (paisDeLaEmpresa?: string) =>
       const doc = (data.documentNumber || "").toString().trim();
 
       /* EL CONTACTO ES EL REPRESENTANTE LEGAL, sea persona natural o
-         jurídica. Su teléfono es obligatorio y es el del cliente (el
-         formulario lo copia a phoneNumber). El correo, OPCIONAL: sin él no se
-         invita al cliente a la app — un evento de una sola vez no la necesita.
-         Si se escribe, tiene que ser un correo. */
+         jurídica. Su teléfono es el del cliente (el formulario lo copia a
+         phoneNumber). Teléfono y correo son OPCIONALES —el servidor sólo exige
+         nombre y dirección—: sin correo no se invita al cliente a la app, y un
+         evento de una sola vez no la necesita. Si se escriben, tienen que
+         tener forma de teléfono y de correo. */
       {
-        // «+52» solo es el prefijo que deja el selector de país, no un teléfono.
-        if (
-          (data.legalRepPhone || "").toString().replace(/\D/g, "").length < 7
-        ) {
+        // «+52» solo es el prefijo del país, no un teléfono: cuenta como vacío.
+        const digitos = (data.legalRepPhone || "")
+          .toString()
+          .replace(/\D/g, "").length;
+
+        if (digitos > 3 && digitos < 7) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: ["legalRepPhone"],
             message: i18n.t(
-              "validation.client.phoneRequired",
-              "Teléfono requerido",
+              "sidebar.contacts.errors.invalidPhone",
+              "Número de teléfono inválido",
             ),
           });
         }
@@ -263,20 +264,9 @@ export const crearEsquemaCliente = (paisDeLaEmpresa?: string) =>
       const pais =
         (data.country || "").toString().trim() || paisDeLaEmpresa || "";
 
-      if (!doc) {
-        // Aquí ya estamos DENTRO de la validación: i18n.t() directo es correcto,
-        // se resuelve con el idioma vivo.
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["documentNumber"],
-          message: i18n.t(
-            "validation.client.documentRequired",
-            "Identificación requerida",
-          ),
-        });
-
-        return;
-      }
+      // El documento es OPCIONAL (el servidor lo acepta vacío: «vacío = no se
+      // declara»). Sólo se valida su forma si se escribió.
+      if (!doc) return;
 
       // El nombre del documento en ESE país entra en el mensaje: «NIP inválido»
       // le dice algo a un polaco; «RUC inválido», nada.

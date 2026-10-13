@@ -543,7 +543,7 @@
       "country": "Land",
       "email": "E-Mail-Adresse",
       "fax": "Festnetz",
-      "lastName": "Nachname *",
+      "lastName": "Nachname",
       "latitude": "Breitengrad *",
       "locationSet": "Standort festgelegt",
       "longitude": "Längengrad *",
@@ -11427,7 +11427,8 @@
         "sitio": "Standort",
         "config": "Konfig.",
         "estaciones": "Stationen",
-        "crear": "Erstellen"
+        "crear": "Erstellen",
+        "listo": "Fertig"
       },
       "quitarItem": "{{item}} entfernen",
       "abrev": {
@@ -11503,7 +11504,7 @@
         "faltanFechas": "Geben Sie an, wann die Veranstaltung beginnt und endet, in der Zeitzone des Unternehmens.",
         "duraDias": "Dauert {{n}} Tage.",
         "duraHoras": "Dauert {{n}} Std.",
-        "alTerminar": "Am Tag nach dem Ende wird der Standort automatisch archiviert und die Sicherheitskräfte werden freigegeben.",
+        "alTerminar": "Nach dem Ende werden die Sicherheitskräfte freigegeben und die Veranstaltung behält ihren Verlauf (Stempelzeiten, Vorfälle und Bericht).",
         "briefing": "Anweisungen für die Sicherheitskräfte",
         "briefingAyuda": "Optional. Sie sehen es in der App bei ihrer Schicht.",
         "encuentro": "Treffpunkt",
@@ -16799,7 +16800,13 @@
       "ubicacionYGeocerca": "Genauer Standort und Geofence",
       "ubicacionYGeocercaExplica": "Ziehen Sie die Markierung auf den genauen Punkt des Postens. Die gepunktete Linie ist der Radius oben: darin kann der Wachmann einstempeln. Zeichnen Sie ein Polygon (3+ Punkte), gilt das Polygon.",
       "eventoNota": "Veranstaltung: {{rango}} · Geben Sie an, welche Stunden diese Station während der Veranstaltung abdeckt und wie viele Sicherheitskräfte gleichzeitig. Ohne Rotation: Wer zugewiesen wird, arbeitet diese Stunden, solange die Veranstaltung dauert.",
-      "eventoNotaSinFechas": "Geben Sie an, welche Stunden diese Station während der Veranstaltung abdeckt und wie viele Sicherheitskräfte gleichzeitig. Ohne Rotation: Wer zugewiesen wird, arbeitet diese Stunden, solange die Veranstaltung dauert."
+      "eventoNotaSinFechas": "Geben Sie an, welche Stunden diese Station während der Veranstaltung abdeckt und wie viele Sicherheitskräfte gleichzeitig. Ohne Rotation: Wer zugewiesen wird, arbeitet diese Stunden, solange die Veranstaltung dauert.",
+      "evento": {
+        "turnoDeCadaUno": "Schicht pro Wachperson",
+        "todoElHorario": "Die ganze Zeit ({{h}} h)",
+        "relevosDe": "{{h}}-h-Schichten",
+        "relevosResumen": "{{n}} Schichten: {{tramos}}. Jede Wachperson deckt nur ihre Schicht ab."
+      }
     },
     "Planificador": {
       "noSePudoCargar": "Der Dienstplan konnte nicht geladen werden.",
@@ -16995,6 +17002,51 @@
       "sinDescansoVuelve": "{{nombre}} hat demnächst keine freien Tage; {{vuelve}}.",
       "sinDescanso": "{{nombre}} hat in den nächsten Tagen keine freien Tage.",
       "resumen": "{{n}} Tage · Phase {{antes}} → {{despues}} · {{creados}} neue Schichten, {{quitados}} heute entfernt."
+    },
+    "eventos": {
+      "jornada": "Veranstaltung",
+      "rotuloRelevos": "{{ventana}} · {{count}} Schichten",
+      "rotuloEvento": "Veranstaltung · {{ventana}}",
+      "nRelevos": "{{count}} Schichten",
+      "plazas": "Plätze"
+    },
+    "EventoDeLaEstacion": {
+      "quitarTitulo": "{{nombre}} aus der Veranstaltung entfernen?",
+      "quitarTexto": "Der Platz wird frei und die Schicht der Veranstaltung gelöscht.",
+      "noSePudoQuitar": "Konnte nicht entfernt werden",
+      "sinPlazas": "Keine Plätze",
+      "sinPlazasTexto": "Diese Station hat keine Plätze. Lege sie in der Veranstaltung neu an und gib an, wie viele Wachpersonen gleichzeitig.",
+      "cubiertas": "{{cubiertas}} von {{plazas}} Plätzen besetzt",
+      "cadaUnoSuRelevo": "jede Wachperson deckt nur ihre Schicht ab",
+      "asignar": "Wachpersonen zuweisen",
+      "relevoN": "Schicht {{n}} · {{inicio}}–{{fin}}",
+      "horarioUnico": "Von {{inicio}} bis {{fin}}",
+      "plazasLibres": "{{count}} freie(r) Platz/Plätze",
+      "asignados": "{{count}} Wachperson(en) zugewiesen",
+      "asignarTexto": "{{tramo}} · {{count}} Platz/Plätze frei. Wer zu dieser Zeit frei ist, steht oben.",
+      "rellenar": "Die ersten {{count}} Freien wählen",
+      "asignarN": "{{count}} zuweisen",
+      "buscar": "Wachperson suchen",
+      "elegidos": "{{n}} von {{count}} gewählt",
+      "ocupado": "Zu dieser Zeit belegt",
+      "libre": "Frei",
+      "sinFechas": "Die Veranstaltung hat keine Daten",
+      "programado": "Geplant",
+      "enTurno": "Im Dienst",
+      "cumplido": "Erledigt",
+      "noFicho": "Nicht eingestempelt",
+      "sinTurnosTexto": "Sobald du im Reiter Wachpersonen jemanden zuweist, erscheint hier die Schicht jeder Person in der Veranstaltung.",
+      "sinTurnos": "Noch keine Schichten",
+      "otros": "Weitere Schichten",
+      "nTurnos": "{{count}} Schicht(en)"
+    },
+    "ZonasDelEventoMap": {
+      "alt": "Zonen der Veranstaltung auf der Karte",
+      "quienes": "Wachpersonen",
+      "asignados": "Zugewiesen",
+      "cupo": "Plätze",
+      "verVigilantes": "Wachpersonen ansehen",
+      "resumen": "{{cubiertas}} von {{cupo}} Plätzen besetzt"
     }
   },
   "visitantes": {

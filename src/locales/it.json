@@ -543,7 +543,7 @@
       "country": "Paese",
       "email": "Email",
       "fax": "Telefono fisso",
-      "lastName": "Cognome *",
+      "lastName": "Cognome",
       "latitude": "Latitudine *",
       "locationSet": "Posizione impostata",
       "longitude": "Longitudine *",
@@ -11427,7 +11427,8 @@
         "sitio": "Sito",
         "config": "Config.",
         "estaciones": "Stazioni",
-        "crear": "Crea"
+        "crear": "Crea",
+        "listo": "Fatto"
       },
       "quitarItem": "Rimuovi {{item}}",
       "abrev": {
@@ -11503,7 +11504,7 @@
         "faltanFechas": "Indica quando inizia e quando finisce l'evento, nell'orario dell'azienda.",
         "duraDias": "Dura {{n}} giorni.",
         "duraHoras": "Dura {{n}} h.",
-        "alTerminar": "Il giorno dopo la fine, la sede viene archiviata da sola e le guardie tornano libere.",
+        "alTerminar": "Al termine, le guardie tornano libere e l'evento conserva il suo storico (timbrature, incidenti e rapporto).",
         "briefing": "Istruzioni per le guardie",
         "briefingAyuda": "Facoltativo. Lo vedono nell'app con il loro turno.",
         "encuentro": "Punto di ritrovo",
@@ -16799,7 +16800,13 @@
       "ubicacionYGeocerca": "Posizione esatta e geofence",
       "ubicacionYGeocercaExplica": "Trascina il segnaposto sul punto esatto della postazione. La linea tratteggiata è il raggio sopra: al suo interno la guardia può timbrare. Se disegni un poligono (3+ punti), vale il poligono.",
       "eventoNota": "Evento: {{rango}} · Indica quali ore copre questa stazione durante l'evento e quante guardie contemporaneamente. Senza rotazione: chi assegni lavora quelle ore per tutta la durata dell'evento.",
-      "eventoNotaSinFechas": "Indica quali ore copre questa stazione durante l'evento e quante guardie contemporaneamente. Senza rotazione: chi assegni lavora quelle ore per tutta la durata dell'evento."
+      "eventoNotaSinFechas": "Indica quali ore copre questa stazione durante l'evento e quante guardie contemporaneamente. Senza rotazione: chi assegni lavora quelle ore per tutta la durata dell'evento.",
+      "evento": {
+        "turnoDeCadaUno": "Turno di ogni guardia",
+        "todoElHorario": "Tutto l’orario ({{h}} h)",
+        "relevosDe": "Turni di {{h}} h",
+        "relevosResumen": "{{n}} turni: {{tramos}}. Ogni guardia copre solo il suo turno."
+      }
     },
     "Planificador": {
       "noSePudoCargar": "Impossibile caricare l'orario.",
@@ -16995,6 +17002,51 @@
       "sinDescansoVuelve": "{{nombre}} non ha riposi in vista; {{vuelve}}.",
       "sinDescanso": "{{nombre}} non ha riposi nei prossimi giorni.",
       "resumen": "{{n}} giorni · fase {{antes}} → {{despues}} · {{creados}} turni nuovi, {{quitados}} rimossi da oggi."
+    },
+    "eventos": {
+      "jornada": "Evento",
+      "rotuloRelevos": "{{ventana}} · {{count}} turni",
+      "rotuloEvento": "Evento · {{ventana}}",
+      "nRelevos": "{{count}} turni",
+      "plazas": "Posti"
+    },
+    "EventoDeLaEstacion": {
+      "quitarTitulo": "Togliere {{nombre}} dall’evento?",
+      "quitarTexto": "Il posto si libera e il turno dell’evento viene cancellato.",
+      "noSePudoQuitar": "Impossibile togliere",
+      "sinPlazas": "Nessun posto",
+      "sinPlazasTexto": "Questa postazione non ha posti. Ricreala dall’evento indicando quante guardie alla volta.",
+      "cubiertas": "{{cubiertas}} posti su {{plazas}} coperti",
+      "cadaUnoSuRelevo": "ogni guardia copre solo il suo turno",
+      "asignar": "Assegna guardie",
+      "relevoN": "Turno {{n}} · {{inicio}}–{{fin}}",
+      "horarioUnico": "Dalle {{inicio}} alle {{fin}}",
+      "plazasLibres": "{{count}} posto/i libero/i",
+      "asignados": "{{count}} guardia/e assegnata/e",
+      "asignarTexto": "{{tramo}} · restano {{count}} posto/i. Prima le guardie libere a quell’ora.",
+      "rellenar": "Scegli le prime {{count}} libere",
+      "asignarN": "Assegna {{count}}",
+      "buscar": "Cerca guardia",
+      "elegidos": "{{n}} di {{count}} scelte",
+      "ocupado": "Occupata a quell’ora",
+      "libre": "Libera",
+      "sinFechas": "L’evento non ha date",
+      "programado": "Programmato",
+      "enTurno": "In turno",
+      "cumplido": "Completato",
+      "noFicho": "Non ha timbrato",
+      "sinTurnosTexto": "Quando assegni guardie nella scheda Guardie, qui compare il turno di ognuna durante l’evento.",
+      "sinTurnos": "Ancora nessun turno",
+      "otros": "Altri turni",
+      "nTurnos": "{{count}} turno/i"
+    },
+    "ZonasDelEventoMap": {
+      "alt": "Zone dell’evento sulla mappa",
+      "quienes": "Guardie",
+      "asignados": "Assegnati",
+      "cupo": "Posti",
+      "verVigilantes": "Vedi guardie",
+      "resumen": "{{cubiertas}} posti su {{cupo}} coperti"
     }
   },
   "visitantes": {

@@ -891,7 +891,7 @@
       "country": "Country",
       "email": "Email Address",
       "fax": "Landline",
-      "lastName": "Last name *",
+      "lastName": "Last name",
       "latitude": "Latitude *",
       "locationSet": "Location set",
       "longitude": "Longitude *",
@@ -10895,7 +10895,8 @@
         "sitio": "Site",
         "config": "Setup",
         "estaciones": "Stations",
-        "crear": "Create"
+        "crear": "Create",
+        "listo": "Done"
       },
       "quitarItem": "Remove {{item}}",
       "abrev": {
@@ -10971,7 +10972,7 @@
         "faltanFechas": "Enter when the event starts and ends, in the company's time zone.",
         "duraDias": "Lasts {{n}} days.",
         "duraHoras": "Lasts {{n}} h.",
-        "alTerminar": "The day after it ends, the site is archived automatically and the guards are released.",
+        "alTerminar": "When it ends, the guards are released and the event keeps its history (clock-ins, incidents and report).",
         "briefing": "Briefing for the guards",
         "briefingAyuda": "Optional. They see it in the app with their shift.",
         "encuentro": "Meeting point",
@@ -16267,7 +16268,13 @@
       "ubicacionYGeocerca": "Exact location and geofence",
       "ubicacionYGeocercaExplica": "Drag the pin to the exact spot of the post. The dotted line is the radius above: inside it the guard can clock in. If you draw a polygon (3+ points), the polygon rules.",
       "eventoNota": "Event: {{rango}} · Say which hours this station covers during the event and how many guards at once. No rotation: whoever you assign works those hours for as long as the event lasts.",
-      "eventoNotaSinFechas": "Say which hours this station covers during the event and how many guards at once. No rotation: whoever you assign works those hours for as long as the event lasts."
+      "eventoNotaSinFechas": "Say which hours this station covers during the event and how many guards at once. No rotation: whoever you assign works those hours for as long as the event lasts.",
+      "evento": {
+        "turnoDeCadaUno": "Each guard’s shift",
+        "todoElHorario": "The whole time ({{h}} h)",
+        "relevosDe": "{{h}} h shifts",
+        "relevosResumen": "{{n}} shifts: {{tramos}}. Each guard covers only their shift."
+      }
     },
     "Planificador": {
       "noSePudoCargar": "The schedule couldn't be loaded.",
@@ -16463,6 +16470,51 @@
       "sinDescansoVuelve": "{{nombre}} has no rest days coming up; {{vuelve}}.",
       "sinDescanso": "{{nombre}} has no rest days in the coming days.",
       "resumen": "{{n}} days · phase {{antes}} → {{despues}} · {{creados}} new shifts, {{quitados}} removed from today."
+    },
+    "eventos": {
+      "jornada": "Event",
+      "rotuloRelevos": "{{ventana}} · {{count}} shifts",
+      "rotuloEvento": "Event · {{ventana}}",
+      "nRelevos": "{{count}} shifts",
+      "plazas": "Slots"
+    },
+    "EventoDeLaEstacion": {
+      "quitarTitulo": "Remove {{nombre}} from the event?",
+      "quitarTexto": "Their slot is freed and their event shift is deleted.",
+      "noSePudoQuitar": "Could not remove",
+      "sinPlazas": "No slots",
+      "sinPlazasTexto": "This station has no slots. Create it again from the event, saying how many guards at a time.",
+      "cubiertas": "{{cubiertas}} of {{plazas}} slots filled",
+      "cadaUnoSuRelevo": "each guard covers only their shift",
+      "asignar": "Assign guards",
+      "relevoN": "Shift {{n}} · {{inicio}}–{{fin}}",
+      "horarioUnico": "From {{inicio}} to {{fin}}",
+      "plazasLibres": "{{count}} open slot(s)",
+      "asignados": "{{count}} guard(s) assigned",
+      "asignarTexto": "{{tramo}} · {{count}} slot(s) left. Guards free at that time come first.",
+      "rellenar": "Pick the first {{count}} free",
+      "asignarN": "Assign {{count}}",
+      "buscar": "Search guard",
+      "elegidos": "{{n}} of {{count}} selected",
+      "ocupado": "Busy at that time",
+      "libre": "Free",
+      "sinFechas": "The event has no dates",
+      "programado": "Scheduled",
+      "enTurno": "On shift",
+      "cumplido": "Completed",
+      "noFicho": "Not clocked in",
+      "sinTurnosTexto": "Once you assign guards in the Guards tab, each one’s shift within the event shows up here.",
+      "sinTurnos": "No shifts yet",
+      "otros": "Other shifts",
+      "nTurnos": "{{count}} shift(s)"
+    },
+    "ZonasDelEventoMap": {
+      "alt": "Event zones on the map",
+      "quienes": "Guards",
+      "asignados": "Assigned",
+      "cupo": "Slots",
+      "verVigilantes": "See guards",
+      "resumen": "{{cubiertas}} of {{cupo}} slots filled"
     }
   },
   "map": {

@@ -18,10 +18,12 @@ import StationPatrolQR from "./components/StationPatrolQR";
 import StationParking from "./components/StationParking";
 import StationOrders from "./components/StationOrders";
 import StationPassdowns from "./components/StationPassdowns";
+import { EventoTurnos, EventoVigilantes } from "./components/EventoDeLaEstacion";
 
 import { EmptyState, FadeIn } from "@/components/kit";
 import { ApiService } from "@/services/api/apiService";
 import StationLayout from "@/layouts/StationLayout";
+import { esEvento } from "@/lib/eventos";
 
 export default function StationDetailPage() {
   const { t } = useTranslation();
@@ -127,16 +129,28 @@ export default function StationDetailPage() {
     postSiteId: postSiteId || "",
   };
 
+  const evento = esEvento(station?.postSite);
+
   const renderTab = () => {
     switch (currentTab) {
       case "overview":
         return <StationOverview {...tabProps} recentShifts={recentShifts} />;
       case "visitors":
         return <StationVisitors {...tabProps} />;
+      /* En un EVENTO, Vigilantes y Turnos sólo hablan del evento: quién cubre
+         qué relevo y a qué hora. Sin rotación, sacafranco ni semanas. */
       case "guards":
-        return <StationGuards {...tabProps} />;
+        return evento ? (
+          <EventoVigilantes {...tabProps} />
+        ) : (
+          <StationGuards {...tabProps} />
+        );
       case "shifts":
-        return <StationShifts {...tabProps} />;
+        return evento ? (
+          <EventoTurnos {...tabProps} />
+        ) : (
+          <StationShifts {...tabProps} />
+        );
       case "orders":
         return <StationOrders {...tabProps} />;
       case "site-tours":

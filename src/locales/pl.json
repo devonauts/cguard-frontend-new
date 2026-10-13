@@ -543,7 +543,7 @@
       "country": "Kraj",
       "email": "Adres e-mail",
       "fax": "Telefon stacjonarny",
-      "lastName": "Nazwisko *",
+      "lastName": "Nazwisko",
       "latitude": "Szerokość geogr. *",
       "locationSet": "Lokalizacja ustawiona",
       "longitude": "Długość geogr. *",
@@ -11463,7 +11463,8 @@
         "sitio": "Obiekt",
         "config": "Konfig.",
         "estaciones": "Stanowiska",
-        "crear": "Utwórz"
+        "crear": "Utwórz",
+        "listo": "Gotowe"
       },
       "quitarItem": "Usuń {{item}}",
       "abrev": {
@@ -11539,7 +11540,7 @@
         "faltanFechas": "Podaj, kiedy wydarzenie się zaczyna i kończy, w strefie czasowej firmy.",
         "duraDias": "Trwa {{n}} dni.",
         "duraHoras": "Trwa {{n}} godz.",
-        "alTerminar": "Dzień po zakończeniu obiekt archiwizuje się sam, a ochroniarze są zwalniani.",
+        "alTerminar": "Po zakończeniu ochroniarze są zwalniani, a wydarzenie zachowuje swoją historię (odbicia, incydenty i raport).",
         "briefing": "Instrukcje dla ochroniarzy",
         "briefingAyuda": "Opcjonalnie. Widzą to w aplikacji przy swojej zmianie.",
         "encuentro": "Miejsce zbiórki",
@@ -16989,7 +16990,13 @@
       "ubicacionYGeocerca": "Dokładna lokalizacja i geofence",
       "ubicacionYGeocercaExplica": "Przeciągnij pinezkę w dokładne miejsce posterunku. Linia przerywana to promień powyżej: wewnątrz ochroniarz może się odbić. Jeśli narysujesz wielokąt (3+ punkty), liczy się wielokąt.",
       "eventoNota": "Wydarzenie: {{rango}} · Określ, w jakich godzinach to stanowisko jest obsadzone podczas wydarzenia i ilu ochroniarzy jednocześnie. Bez rotacji: przydzielona osoba pracuje w tych godzinach przez cały czas trwania wydarzenia.",
-      "eventoNotaSinFechas": "Określ, w jakich godzinach to stanowisko jest obsadzone podczas wydarzenia i ilu ochroniarzy jednocześnie. Bez rotacji: przydzielona osoba pracuje w tych godzinach przez cały czas trwania wydarzenia."
+      "eventoNotaSinFechas": "Określ, w jakich godzinach to stanowisko jest obsadzone podczas wydarzenia i ilu ochroniarzy jednocześnie. Bez rotacji: przydzielona osoba pracuje w tych godzinach przez cały czas trwania wydarzenia.",
+      "evento": {
+        "turnoDeCadaUno": "Zmiana każdego pracownika ochrony",
+        "todoElHorario": "Cały czas ({{h}} h)",
+        "relevosDe": "Zmiany po {{h}} h",
+        "relevosResumen": "{{n}} zmian: {{tramos}}. Każdy pracownik ochrony obejmuje tylko swoją zmianę."
+      }
     },
     "Planificador": {
       "noSePudoCargar": "Nie udało się wczytać grafiku.",
@@ -17185,6 +17192,51 @@
       "sinDescansoVuelve": "{{nombre}} nie ma wkrótce wolnych dni; {{vuelve}}.",
       "sinDescanso": "{{nombre}} nie ma wolnych dni w najbliższym czasie.",
       "resumen": "Dni: {{n}} · faza {{antes}} → {{despues}} · nowe zmiany: {{creados}}, usunięte z dziś: {{quitados}}."
+    },
+    "eventos": {
+      "jornada": "Wydarzenie",
+      "rotuloRelevos": "{{ventana}} · {{count}} zmian",
+      "rotuloEvento": "Wydarzenie · {{ventana}}",
+      "nRelevos": "{{count}} zmian",
+      "plazas": "Miejsca"
+    },
+    "EventoDeLaEstacion": {
+      "quitarTitulo": "Usunąć {{nombre}} z wydarzenia?",
+      "quitarTexto": "Miejsce się zwalnia, a zmiana na wydarzeniu zostaje usunięta.",
+      "noSePudoQuitar": "Nie udało się usunąć",
+      "sinPlazas": "Brak miejsc",
+      "sinPlazasTexto": "To stanowisko nie ma miejsc. Utwórz je ponownie z poziomu wydarzenia, podając, ilu pracowników ochrony naraz.",
+      "cubiertas": "{{cubiertas}} z {{plazas}} miejsc obsadzonych",
+      "cadaUnoSuRelevo": "każdy pracownik ochrony obejmuje tylko swoją zmianę",
+      "asignar": "Przypisz pracowników ochrony",
+      "relevoN": "Zmiana {{n}} · {{inicio}}–{{fin}}",
+      "horarioUnico": "Od {{inicio}} do {{fin}}",
+      "plazasLibres": "{{count}} wolne miejsce/a",
+      "asignados": "Przypisano {{count}} pracownika(ów) ochrony",
+      "asignarTexto": "{{tramo}} · zostało {{count}} miejsc(e). Najpierw wolni w tych godzinach.",
+      "rellenar": "Wybierz {{count}} pierwszych wolnych",
+      "asignarN": "Przypisz {{count}}",
+      "buscar": "Szukaj pracownika ochrony",
+      "elegidos": "Wybrano {{n}} z {{count}}",
+      "ocupado": "Zajęty w tych godzinach",
+      "libre": "Wolny",
+      "sinFechas": "Wydarzenie nie ma dat",
+      "programado": "Zaplanowana",
+      "enTurno": "Na zmianie",
+      "cumplido": "Wykonana",
+      "noFicho": "Nie zarejestrował wejścia",
+      "sinTurnosTexto": "Gdy przypiszesz pracowników w zakładce Pracownicy ochrony, tutaj pojawi się zmiana każdego z nich w trakcie wydarzenia.",
+      "sinTurnos": "Brak zmian",
+      "otros": "Inne zmiany",
+      "nTurnos": "{{count}} zmian(a)"
+    },
+    "ZonasDelEventoMap": {
+      "alt": "Strefy wydarzenia na mapie",
+      "quienes": "Pracownicy ochrony",
+      "asignados": "Przypisani",
+      "cupo": "Miejsca",
+      "verVigilantes": "Zobacz pracowników",
+      "resumen": "{{cubiertas}} z {{cupo}} miejsc obsadzonych"
     }
   },
   "visitantes": {

@@ -543,7 +543,7 @@
       "country": "Pays",
       "email": "Adresse e-mail",
       "fax": "Téléphone fixe",
-      "lastName": "Nom *",
+      "lastName": "Nom",
       "latitude": "Latitude *",
       "locationSet": "Emplacement défini",
       "longitude": "Longitude *",
@@ -11427,7 +11427,8 @@
         "sitio": "Site",
         "config": "Config.",
         "estaciones": "Stations",
-        "crear": "Créer"
+        "crear": "Créer",
+        "listo": "Terminé"
       },
       "quitarItem": "Retirer {{item}}",
       "abrev": {
@@ -11503,7 +11504,7 @@
         "faltanFechas": "Indiquez quand l'événement commence et se termine, à l'heure de l'entreprise.",
         "duraDias": "Dure {{n}} jours.",
         "duraHoras": "Dure {{n}} h.",
-        "alTerminar": "Le lendemain de la fin, le site est archivé automatiquement et les agents sont libérés.",
+        "alTerminar": "À la fin, les agents sont libérés et l'événement conserve son historique (pointages, incidents et rapport).",
         "briefing": "Consignes pour les agents",
         "briefingAyuda": "Facultatif. Ils le voient dans l'application avec leur vacation.",
         "encuentro": "Point de rendez-vous",
@@ -16799,7 +16800,13 @@
       "ubicacionYGeocerca": "Emplacement exact et géorepérage",
       "ubicacionYGeocercaExplica": "Glissez le repère à l'endroit exact du poste. La ligne pointillée est le rayon ci-dessus : à l'intérieur, l'agent peut pointer. Si vous dessinez un polygone (3 points ou plus), c'est lui qui compte.",
       "eventoNota": "Événement : {{rango}} · Indiquez les heures couvertes par cette station pendant l'événement et combien d'agents à la fois. Sans rotation : la personne affectée travaille ces heures pendant toute la durée de l'événement.",
-      "eventoNotaSinFechas": "Indiquez les heures couvertes par cette station pendant l'événement et combien d'agents à la fois. Sans rotation : la personne affectée travaille ces heures pendant toute la durée de l'événement."
+      "eventoNotaSinFechas": "Indiquez les heures couvertes par cette station pendant l'événement et combien d'agents à la fois. Sans rotation : la personne affectée travaille ces heures pendant toute la durée de l'événement.",
+      "evento": {
+        "turnoDeCadaUno": "Service de chaque agent",
+        "todoElHorario": "Toute la plage ({{h}} h)",
+        "relevosDe": "Relèves de {{h}} h",
+        "relevosResumen": "{{n}} relèves : {{tramos}}. Chaque agent ne couvre que sa relève."
+      }
     },
     "Planificador": {
       "noSePudoCargar": "Impossible de charger le planning.",
@@ -16995,6 +17002,51 @@
       "sinDescansoVuelve": "{{nombre}} n'a pas de repos prochainement ; {{vuelve}}.",
       "sinDescanso": "{{nombre}} n'a pas de repos dans les prochains jours.",
       "resumen": "{{n}} jours · phase {{antes}} → {{despues}} · {{creados}} nouveaux postes, {{quitados}} retirés aujourd'hui."
+    },
+    "eventos": {
+      "jornada": "Événement",
+      "rotuloRelevos": "{{ventana}} · {{count}} relèves",
+      "rotuloEvento": "Événement · {{ventana}}",
+      "nRelevos": "{{count}} relèves",
+      "plazas": "Places"
+    },
+    "EventoDeLaEstacion": {
+      "quitarTitulo": "Retirer {{nombre}} de l’événement ?",
+      "quitarTexto": "Sa place se libère et son service de l’événement est supprimé.",
+      "noSePudoQuitar": "Impossible de retirer",
+      "sinPlazas": "Aucune place",
+      "sinPlazasTexto": "Ce poste n’a aucune place. Recréez-le depuis l’événement en indiquant combien d’agents à la fois.",
+      "cubiertas": "{{cubiertas}} places sur {{plazas}} couvertes",
+      "cadaUnoSuRelevo": "chaque agent ne couvre que sa relève",
+      "asignar": "Affecter des agents",
+      "relevoN": "Relève {{n}} · {{inicio}}–{{fin}}",
+      "horarioUnico": "De {{inicio}} à {{fin}}",
+      "plazasLibres": "{{count}} place(s) libre(s)",
+      "asignados": "{{count}} agent(s) affecté(s)",
+      "asignarTexto": "{{tramo}} · il reste {{count}} place(s). Les agents libres à ces heures apparaissent d’abord.",
+      "rellenar": "Choisir les {{count}} premiers libres",
+      "asignarN": "Affecter {{count}}",
+      "buscar": "Rechercher un agent",
+      "elegidos": "{{n}} sur {{count}} choisis",
+      "ocupado": "Occupé à cette heure",
+      "libre": "Libre",
+      "sinFechas": "L’événement n’a pas de dates",
+      "programado": "Prévu",
+      "enTurno": "En service",
+      "cumplido": "Effectué",
+      "noFicho": "Pas pointé",
+      "sinTurnosTexto": "Quand vous affectez des agents dans l’onglet Agents, le service de chacun pendant l’événement apparaît ici.",
+      "sinTurnos": "Pas encore de services",
+      "otros": "Autres services",
+      "nTurnos": "{{count}} service(s)"
+    },
+    "ZonasDelEventoMap": {
+      "alt": "Zones de l’événement sur la carte",
+      "quienes": "Agents",
+      "asignados": "Affectés",
+      "cupo": "Places",
+      "verVigilantes": "Voir les agents",
+      "resumen": "{{cubiertas}} places sur {{cupo}} couvertes"
     }
   },
   "visitantes": {

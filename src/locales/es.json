@@ -891,7 +891,7 @@
       "country": "País",
       "email": "Correo electrónico",
       "fax": "Teléfono fijo",
-      "lastName": "Apellidos *",
+      "lastName": "Apellidos",
       "latitude": "Latitud *",
       "locationSet": "Ubicación establecida",
       "longitude": "Longitud *",
@@ -10895,7 +10895,8 @@
         "sitio": "Sitio",
         "config": "Config.",
         "estaciones": "Estaciones",
-        "crear": "Crear"
+        "crear": "Crear",
+        "listo": "Listo"
       },
       "quitarItem": "Quitar {{item}}",
       "abrev": {
@@ -10971,7 +10972,7 @@
         "faltanFechas": "Indica cuándo empieza y cuándo termina el evento, en la hora de la empresa.",
         "duraDias": "Dura {{n}} días.",
         "duraHoras": "Dura {{n}} h.",
-        "alTerminar": "Al día siguiente de terminar, la sede se archiva sola y los vigilantes quedan libres.",
+        "alTerminar": "Al terminar, los vigilantes quedan libres y el evento se queda con su historial (fichajes, incidentes e informe).",
         "briefing": "Instrucciones para los vigilantes",
         "briefingAyuda": "Opcional. Lo ven en la app con su turno.",
         "encuentro": "Punto de encuentro",
@@ -16267,7 +16268,13 @@
       "ubicacionYGeocerca": "Ubicación exacta y geocerca",
       "ubicacionYGeocercaExplica": "Arrastra el pin al punto exacto del puesto. La línea punteada es el radio de arriba: dentro de ella el vigilante puede marcar entrada. Si dibujas un polígono (3+ puntos), manda el polígono.",
       "eventoNota": "Evento: {{rango}} · Di qué horas cubre esta estación dentro del evento y cuántos vigilantes a la vez. Sin rotación: quien asignes trabaja esas horas mientras dure el evento.",
-      "eventoNotaSinFechas": "Di qué horas cubre esta estación dentro del evento y cuántos vigilantes a la vez. Sin rotación: quien asignes trabaja esas horas mientras dure el evento."
+      "eventoNotaSinFechas": "Di qué horas cubre esta estación dentro del evento y cuántos vigilantes a la vez. Sin rotación: quien asignes trabaja esas horas mientras dure el evento.",
+      "evento": {
+        "turnoDeCadaUno": "Turno de cada vigilante",
+        "todoElHorario": "Todo el horario ({{h}} h)",
+        "relevosDe": "Relevos de {{h}} h",
+        "relevosResumen": "{{n}} relevos: {{tramos}}. Cada vigilante cubre sólo su relevo."
+      }
     },
     "Planificador": {
       "noSePudoCargar": "No se pudo cargar el horario.",
@@ -16463,6 +16470,51 @@
       "sinDescansoVuelve": "{{nombre}} no tiene descansos cerca; {{vuelve}}.",
       "sinDescanso": "{{nombre}} no tiene descansos en los próximos días.",
       "resumen": "{{n}} días · fase {{antes}} → {{despues}} · {{creados}} turnos nuevos, {{quitados}} retirados de hoy."
+    },
+    "eventos": {
+      "jornada": "Evento",
+      "rotuloRelevos": "{{ventana}} · {{count}} relevos",
+      "rotuloEvento": "Evento · {{ventana}}",
+      "nRelevos": "{{count}} relevos",
+      "plazas": "Plazas"
+    },
+    "EventoDeLaEstacion": {
+      "quitarTitulo": "¿Quitar a {{nombre}} del evento?",
+      "quitarTexto": "Su plaza queda libre y su turno del evento se borra.",
+      "noSePudoQuitar": "No se pudo quitar",
+      "sinPlazas": "Sin plazas",
+      "sinPlazasTexto": "Esta estación no tiene plazas. Créala de nuevo desde el evento diciendo cuántos vigilantes a la vez.",
+      "cubiertas": "{{cubiertas}} de {{plazas}} plazas cubiertas",
+      "cadaUnoSuRelevo": "cada vigilante cubre sólo su relevo",
+      "asignar": "Asignar vigilantes",
+      "relevoN": "Relevo {{n}} · {{inicio}}–{{fin}}",
+      "horarioUnico": "De {{inicio}} a {{fin}}",
+      "plazasLibres": "{{count}} plaza(s) libre(s)",
+      "asignados": "{{count}} vigilante(s) asignado(s)",
+      "asignarTexto": "{{tramo}} · quedan {{count}} plaza(s). Salen primero los libres a esas horas.",
+      "rellenar": "Elegir los {{count}} primeros libres",
+      "asignarN": "Asignar {{count}}",
+      "buscar": "Buscar vigilante",
+      "elegidos": "{{n}} de {{count}} elegidos",
+      "ocupado": "Ocupado a esa hora",
+      "libre": "Libre",
+      "sinFechas": "El evento no tiene fechas",
+      "programado": "Programado",
+      "enTurno": "En turno",
+      "cumplido": "Cumplido",
+      "noFicho": "No ha fichado",
+      "sinTurnosTexto": "Cuando asignes vigilantes en la pestaña Vigilantes, aquí sale el turno de cada uno dentro del evento.",
+      "sinTurnos": "Todavía sin turnos",
+      "otros": "Otros turnos",
+      "nTurnos": "{{count}} turno(s)"
+    },
+    "ZonasDelEventoMap": {
+      "alt": "Zonas del evento sobre el mapa",
+      "quienes": "Vigilantes",
+      "asignados": "Asignados",
+      "cupo": "Cupo",
+      "verVigilantes": "Ver vigilantes",
+      "resumen": "{{cubiertas}} de {{cupo}} plazas cubiertas"
     }
   },
   "map": {

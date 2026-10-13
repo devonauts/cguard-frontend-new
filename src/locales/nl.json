@@ -543,7 +543,7 @@
       "country": "Land",
       "email": "E-mailadres",
       "fax": "Vast nummer",
-      "lastName": "Achternaam *",
+      "lastName": "Achternaam",
       "latitude": "Breedtegraad *",
       "locationSet": "Locatie ingesteld",
       "longitude": "Lengtegraad *",
@@ -11427,7 +11427,8 @@
         "sitio": "Locatie",
         "config": "Config.",
         "estaciones": "Stations",
-        "crear": "Aanmaken"
+        "crear": "Aanmaken",
+        "listo": "Klaar"
       },
       "quitarItem": "{{item}} verwijderen",
       "abrev": {
@@ -11503,7 +11504,7 @@
         "faltanFechas": "Geef aan wanneer het evenement begint en eindigt, in de tijdzone van het bedrijf.",
         "duraDias": "Duurt {{n}} dagen.",
         "duraHoras": "Duurt {{n}} u.",
-        "alTerminar": "De dag na afloop wordt de locatie automatisch gearchiveerd en komen de beveiligers vrij.",
+        "alTerminar": "Na afloop komen de beveiligers vrij en behoudt het evenement zijn geschiedenis (inkloktijden, incidenten en rapport).",
         "briefing": "Instructies voor de beveiligers",
         "briefingAyuda": "Optioneel. Ze zien het in de app bij hun dienst.",
         "encuentro": "Verzamelpunt",
@@ -16799,7 +16800,13 @@
       "ubicacionYGeocerca": "Exacte locatie en geofence",
       "ubicacionYGeocercaExplica": "Sleep de pin naar de exacte plek van de post. De stippellijn is de straal hierboven: daarbinnen kan de beveiliger inklokken. Teken je een polygoon (3+ punten), dan geldt de polygoon.",
       "eventoNota": "Evenement: {{rango}} · Geef aan welke uren dit station tijdens het evenement dekt en hoeveel beveiligers tegelijk. Geen rotatie: wie je indeelt, werkt die uren zolang het evenement duurt.",
-      "eventoNotaSinFechas": "Geef aan welke uren dit station tijdens het evenement dekt en hoeveel beveiligers tegelijk. Geen rotatie: wie je indeelt, werkt die uren zolang het evenement duurt."
+      "eventoNotaSinFechas": "Geef aan welke uren dit station tijdens het evenement dekt en hoeveel beveiligers tegelijk. Geen rotatie: wie je indeelt, werkt die uren zolang het evenement duurt.",
+      "evento": {
+        "turnoDeCadaUno": "Dienst per beveiliger",
+        "todoElHorario": "De hele tijd ({{h}} u)",
+        "relevosDe": "Diensten van {{h}} u",
+        "relevosResumen": "{{n}} diensten: {{tramos}}. Elke beveiliger dekt alleen zijn eigen dienst."
+      }
     },
     "Planificador": {
       "noSePudoCargar": "Het rooster kon niet worden geladen.",
@@ -16995,6 +17002,51 @@
       "sinDescansoVuelve": "{{nombre}} heeft binnenkort geen vrije dagen; {{vuelve}}.",
       "sinDescanso": "{{nombre}} heeft de komende dagen geen vrije dagen.",
       "resumen": "{{n}} dagen · fase {{antes}} → {{despues}} · {{creados}} nieuwe diensten, {{quitados}} van vandaag verwijderd."
+    },
+    "eventos": {
+      "jornada": "Evenement",
+      "rotuloRelevos": "{{ventana}} · {{count}} diensten",
+      "rotuloEvento": "Evenement · {{ventana}}",
+      "nRelevos": "{{count}} diensten",
+      "plazas": "Plaatsen"
+    },
+    "EventoDeLaEstacion": {
+      "quitarTitulo": "{{nombre}} uit het evenement halen?",
+      "quitarTexto": "De plaats komt vrij en de dienst van het evenement wordt verwijderd.",
+      "noSePudoQuitar": "Kon niet worden verwijderd",
+      "sinPlazas": "Geen plaatsen",
+      "sinPlazasTexto": "Deze post heeft geen plaatsen. Maak hem opnieuw aan vanuit het evenement en zeg hoeveel beveiligers tegelijk.",
+      "cubiertas": "{{cubiertas}} van {{plazas}} plaatsen bezet",
+      "cadaUnoSuRelevo": "elke beveiliger dekt alleen zijn eigen dienst",
+      "asignar": "Beveiligers toewijzen",
+      "relevoN": "Dienst {{n}} · {{inicio}}–{{fin}}",
+      "horarioUnico": "Van {{inicio}} tot {{fin}}",
+      "plazasLibres": "{{count}} vrije plaats(en)",
+      "asignados": "{{count}} beveiliger(s) toegewezen",
+      "asignarTexto": "{{tramo}} · nog {{count}} plaats(en). Wie dan vrij is, staat bovenaan.",
+      "rellenar": "Kies de eerste {{count}} vrije",
+      "asignarN": "{{count}} toewijzen",
+      "buscar": "Beveiliger zoeken",
+      "elegidos": "{{n}} van {{count}} gekozen",
+      "ocupado": "Bezet op dat moment",
+      "libre": "Vrij",
+      "sinFechas": "Het evenement heeft geen data",
+      "programado": "Gepland",
+      "enTurno": "In dienst",
+      "cumplido": "Voltooid",
+      "noFicho": "Niet ingeklokt",
+      "sinTurnosTexto": "Zodra je beveiligers toewijst op het tabblad Beveiligers, verschijnt hier ieders dienst binnen het evenement.",
+      "sinTurnos": "Nog geen diensten",
+      "otros": "Andere diensten",
+      "nTurnos": "{{count}} dienst(en)"
+    },
+    "ZonasDelEventoMap": {
+      "alt": "Zones van het evenement op de kaart",
+      "quienes": "Beveiligers",
+      "asignados": "Toegewezen",
+      "cupo": "Plaatsen",
+      "verVigilantes": "Beveiligers bekijken",
+      "resumen": "{{cubiertas}} van {{cupo}} plaatsen bezet"
     }
   },
   "visitantes": {
