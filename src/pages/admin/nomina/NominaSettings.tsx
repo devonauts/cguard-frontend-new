@@ -69,7 +69,6 @@ interface NominaSettings {
     nightStartHour?: number;
     nightEndHour?: number;
     overtimeThresholdHours?: number;
-    roundingMinutes?: number;
     /** Vacío = lo de la ley del país, por antigüedad. */
     vacaciones?: { diasPorAnio: number | null; unidad: "naturales" | "laborables" };
     /** Vacío = lo del país (UE 11 h de descanso; resto 8 h) y 16 h seguidas. */
@@ -492,54 +491,6 @@ export default function NominaSettings() {
                 label={t("ui.NominaSettings.umbralDeHorasExtraH")}
                 path="payroll.overtimeThresholdHours"
               />
-              {/* No existía: se acumulaban segundos exactos y un informe de
-                  quince días daba cifras como 172,37 h, que hay que redondear a
-                  mano en una hoja de cálculo — donde se pierde el rastro de
-                  quién ajustó qué. */}
-              <label className="block">
-                <span className="text-sm font-medium">
-                  {t("ui.NominaSettings.redondearLasHorasDelInforme")}
-                </span>
-                <p
-                  className="mt-0.5 text-xs"
-                  style={{ color: "var(--ink-faint)" }}
-                >
-                  {t(
-                    "ui.NominaSettings.seAplicaAlTotalDeCadaPersona",
-                    "Se aplica al total de cada persona, no a cada marcación: así el redondeo no se acumula turno a turno. Déjalo en «Sin redondear» para conservar los minutos exactos.",
-                  )}
-                </p>
-                <select
-                  className="cg-input cg-focus mt-1.5 w-56 px-3 py-2 text-sm"
-                  value={String(s.payroll?.roundingMinutes ?? 0)}
-                  onChange={(e) =>
-                    setS((p) =>
-                      set(
-                        p as NominaSettings,
-                        "payroll.roundingMinutes",
-                        Number(e.target.value),
-                      ),
-                    )
-                  }
-                >
-                  <option value="0">
-                    {t("ui.NominaSettings.sinRedondear")}
-                  </option>
-                  <option value="5">
-                    {t(
-                      "ui.NominaSettings.alMultiploDe5Minutos",
-                      "Al múltiplo de 5 minutos",
-                    )}
-                  </option>
-                  <option value="15">
-                    {t("ui.NominaSettings.alCuartoDeHora")}
-                  </option>
-                  <option value="30">
-                    {t("ui.NominaSettings.aLaMediaHora")}
-                  </option>
-                  <option value="60">{t("ui.NominaSettings.aLaHora")}</option>
-                </select>
-              </label>
             </SettingsSection>
 
             {/* ── POLÍTICA DE PAGO ──────────────────────────────────────────────

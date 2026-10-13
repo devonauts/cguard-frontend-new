@@ -53,6 +53,21 @@ export interface TarjetaDeNomina {
   aprobadaPor?: { fullName?: string; firstName?: string; lastName?: string } | null;
 }
 
+export type EstadoGeneracion = "en_cola" | "calculando" | "listo" | "fallo";
+
+export interface GeneracionDeTarjetas {
+  id: string;
+  estado: EstadoGeneracion;
+  periodo: Periodo;
+  creadas: number | null;
+  actualizadas: number | null;
+  intactas: number | null;
+  /** `true` = no había cambios desde la última vez y no se recalculó. */
+  sinCambios: boolean;
+  /** Ya traducido, en el idioma de quien pregunta. Sólo cuando falló. */
+  error: string | null;
+}
+
 export interface Periodo {
   desde: string;
   hasta: string;
@@ -103,16 +118,31 @@ const payrollService = {
     );
   },
 
-  /** Calcula el periodo. No toca lo aprobado ni lo exportado. */
-  async generar(
-    periodo: Periodo,
-  ): Promise<{ creadas: number; actualizadas: number; intactas: number }> {
+  /**
+   * Pide calcular el periodo. No toca lo aprobado ni lo exportado.
+   *
+   * YA NO DEVUELVE EL RESULTADO: el cálculo es pesado y lo hace el servidor en
+   * segundo plano. Devuelve el id del trabajo; `estadoGeneracion` dice cómo va.
+   * Un periodo cerrado se rechaza aquí mismo, sin esperar a nada.
+   */
+  async generar(periodo: Periodo): Promise<{ id: string; estado: EstadoGeneracion }> {
     const t = getTenantId();
 
     return unwrap(
       await api.post(`/tenant/${t}/payroll/timecards/generate`, {
         data: periodo,
       }),
+    );
+  },
+
+  /** Cómo va un cálculo pedido con `generar`. */
+  async estadoGeneracion(id: string): Promise<GeneracionDeTarjetas> {
+    const t = getTenantId();
+
+    return unwrap(
+      await api.get(
+        `/tenant/${t}/payroll/timecards/generate/${encodeURIComponent(id)}`,
+      ),
     );
   },
 

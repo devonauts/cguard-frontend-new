@@ -17,14 +17,17 @@
  *     va vacío. Es lo que permite detectarlo antes de emitir el pago y no
  *     después.
  */
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   CalendarDays,
   CheckCircle2,
   Download,
   FileSpreadsheet,
+  Loader2,
+  Lock,
   RefreshCw,
   RotateCcw,
   Wallet,
@@ -39,7 +42,12 @@ import payrollService, {
   type TarjetaDeNomina,
 } from "@/lib/api/payrollService";
 import attendanceService from "@/lib/api/attendanceService";
-import { diaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import {
+  diaDeLaEmpresa,
+  instanteEnLaEmpresa,
+  soloFechaCivil,
+} from "@/lib/horaDeLaEmpresa";
+import { usePermissions } from "@/hooks/usePermissions";
 import {
   PageContainer,
   PageHeader,
@@ -98,14 +106,32 @@ const ETIQUETA_ESTADO: Record<EstadoTarjeta, [string, string]> = {
   exportada: ["ui.NominaTimecards.estado.exportada", "exportada"],
 };
 
+/* Cada cuánto se pregunta por un cálculo en curso, y hasta cuándo. El servidor
+   tarda segundos; si en cinco minutos no ha contestado, algo se rompió y la
+   pantalla deja de esperar en vez de quedarse «calculando» para siempre. */
+const SONDEO_MS = 1500;
+const ESPERA_MAXIMA_MS = 5 * 60 * 1000;
+
+/** El último cierre se guarda como instante o, en datos viejos, como fecha a secas. */
+const diaDelCierre = (v: string) =>
+  soloFechaCivil(/^\d{4}-\d{2}-\d{2}$/.test(v) ? v : new Date(v));
+
 export default function NominaTimecards() {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  const { hasPermission } = usePermissions();
+  const puedeCerrar = hasPermission("attendanceSettingsEdit");
+  const puedeVerAjustes = hasPermission("attendanceSettingsRead");
   const [desde, setDesde] = useState(isoDay(new Date(Date.now() - 14 * 864e5)));
   const [hasta, setHasta] = useState(isoDay(new Date()));
   const [rows, setRows] = useState<TarjetaDeNomina[]>([]);
   const [sel, setSel] = useState<string[]>([]);
   const [cargando, setCargando] = useState(false);
   const [trabajando, setTrabajando] = useState(false);
+  /* El cálculo del periodo corre en el servidor en segundo plano: aquí se
+     guarda su id mientras se espera, y cuándo se pidió (para el tope). */
+  const [calculo, setCalculo] = useState<string | null>(null);
+  const pedidoEl = useRef(0);
 
   const cargar = useCallback(() => {
     setCargando(true);
@@ -201,22 +227,144 @@ export default function NominaTimecards() {
     }
   };
 
-  const generar = () =>
-    conAviso(async () => {
-      const out = await payrollService.generar({ desde, hasta });
+  /* El último cierre de periodo. Lo guarda «Cerrar periodo» en los ajustes de
+     asistencia; sin permiso para leerlos simplemente no se enseña. */
+  const ajustes = useQuery({
+    queryKey: ["attendance", "settings"],
+    queryFn: () => attendanceService.getSettings(),
+    enabled: puedeVerAjustes,
+    staleTime: 60_000,
+  });
+  const ultimoCierre: string | null =
+    (ajustes.data as { payroll?: { lastPeriodClose?: string | null } } | undefined)
+      ?.payroll?.lastPeriodClose || null;
 
+  const estadoCalculo = useQuery({
+    queryKey: ["payroll", "generacion", calculo],
+    queryFn: () => payrollService.estadoGeneracion(calculo as string),
+    enabled: !!calculo,
+    refetchInterval: (q) => {
+      const e = q.state.data?.estado;
+
+      if (e === "listo" || e === "fallo") return false;
+      if (Date.now() - pedidoEl.current > ESPERA_MAXIMA_MS) return false;
+
+      return SONDEO_MS;
+    },
+  });
+
+  /* Cuando el cálculo termina —bien o mal— se dice y se suelta. */
+  useEffect(() => {
+    const d = estadoCalculo.data;
+
+    if (!calculo) return;
+    if (d?.estado === "listo") {
+      toast.success(
+        d.sinCambios
+          ? t(
+              "ui.NominaTimecards.periodoSinCambios",
+              "No había cambios desde el último cálculo: las tarjetas ya estaban al día.",
+            )
+          : t("ui.NominaTimecards.periodoGenerado", "Periodo generado"),
+      );
       toast.info(
         t("ui.NominaTimecards.resultadoGenerar", {
-          creadas: out.creadas,
-          actualizadas: out.actualizadas,
-          intactas: out.intactas,
+          creadas: d.creadas ?? 0,
+          actualizadas: d.actualizadas ?? 0,
+          intactas: d.intactas ?? 0,
           defaultValue:
             "{{creadas}} creadas · {{actualizadas}} actualizadas · {{intactas}} intactas",
         }),
       );
+      setCalculo(null);
+      cargar();
+    } else if (d?.estado === "fallo" || estadoCalculo.isError) {
+      toast.error(
+        d?.error ||
+          t(
+            "ui.NominaTimecards.noSePudoCalcular",
+            "No se pudieron calcular las tarjetas. Vuelve a intentarlo en unos minutos.",
+          ),
+      );
+      setCalculo(null);
+    } else if (Date.now() - pedidoEl.current > ESPERA_MAXIMA_MS) {
+      toast.error(
+        t(
+          "ui.NominaTimecards.calculoTardaDemasiado",
+          "El cálculo está tardando más de lo normal. Vuelve a esta pantalla en unos minutos.",
+        ),
+      );
+      setCalculo(null);
+    }
+  }, [estadoCalculo.data, estadoCalculo.isError, estadoCalculo.dataUpdatedAt]);
 
-      return {};
-    }, t("ui.NominaTimecards.periodoGenerado", "Periodo generado"));
+  const calculando = !!calculo;
+
+  const generar = async () => {
+    setTrabajando(true);
+    try {
+      // Un periodo cerrado o mal escrito se rechaza aquí mismo; lo demás se
+      // calcula en segundo plano y la pantalla pregunta hasta que esté.
+      const out = await payrollService.generar({ desde, hasta });
+
+      pedidoEl.current = Date.now();
+      setCalculo(out.id);
+    } catch (e) {
+      toast.error(
+        (e as Error)?.message ||
+          t("ui.NominaTimecards.noSePudoCompletarLaAccion", "No se pudo completar la acción"),
+      );
+    } finally {
+      setTrabajando(false);
+    }
+  };
+
+  /* CERRAR EL PERIODO. Los fichajes hasta el final del último día que se ve
+     quedan de sólo lectura, y las tarjetas de ese periodo ya no se pueden volver
+     a generar. El corte es el final de ESE día en la hora de la empresa, no en
+     la de quien pulsa. */
+  const cerrarPeriodo = async () => {
+    const ok = await confirmDialog({
+      title: t("ui.NominaTimecards.cerrarElPeriodoTitulo", {
+        hasta: soloFechaCivil(hasta),
+        defaultValue: "¿Cerrar el periodo hasta el {{hasta}}?",
+      }),
+      message: t("ui.NominaTimecards.cerrarElPeriodoMensaje", {
+        hasta: soloFechaCivil(hasta),
+        defaultValue:
+          "Los fichajes hasta el final del {{hasta}} quedarán en sólo lectura: nadie podrá corregirlos. Y las tarjetas de este periodo ya no se podrán volver a calcular. Hazlo cuando ya hayas revisado y aprobado el periodo.",
+      }),
+      confirmText: t("ui.NominaTimecards.cerrarPeriodo", "Cerrar periodo"),
+      tone: "danger",
+    });
+
+    if (!ok) return;
+    setTrabajando(true);
+    try {
+      const corte = instanteEnLaEmpresa(hasta, 23, 59, 59, 999).toISOString();
+      const out = (await attendanceService.closePeriod(corte)) as {
+        lockedCount?: number;
+      };
+
+      toast.success(
+        t("ui.NominaTimecards.periodoCerrado", {
+          count: Number(out?.lockedCount ?? 0),
+          hasta: soloFechaCivil(hasta),
+          defaultValue:
+            "Periodo cerrado hasta el {{hasta}}. {{count}} fichaje(s) quedaron en sólo lectura.",
+        }),
+      );
+      await queryClient.invalidateQueries({ queryKey: ["attendance"] });
+      cargar();
+    } catch (e) {
+      toast.error(
+        (e as Error)?.message ||
+          t("ui.NominaTimecards.noSePudoCerrarElPeriodo", "No se pudo cerrar el periodo"),
+      );
+    } finally {
+      setTrabajando(false);
+    }
+  };
 
   const aprobar = async () => {
     if (!sel.length) return;
@@ -481,6 +629,17 @@ export default function NominaTimecards() {
             "ui.NominaTimecards.revisaElPeriodo",
             "Revisa el periodo, apruébalo y expórtalo para pagar.",
           )}
+          badges={
+            ultimoCierre ? (
+              <StatusBadge dot={false} tone="neutral">
+                <Lock size={12} />{" "}
+                {t("ui.NominaTimecards.ultimoCierre", {
+                  fecha: diaDelCierre(ultimoCierre),
+                  defaultValue: "Último cierre: {{fecha}}",
+                })}
+              </StatusBadge>
+            ) : undefined
+          }
         />
 
         <Toolbar>
@@ -505,8 +664,17 @@ export default function NominaTimecards() {
             />
           </label>
 
-          <Button onClick={generar} disabled={trabajando}>
-            <RefreshCw size={15} /> {t("ui.NominaTimecards.generarPeriodo", "Generar periodo")}
+          <Button onClick={generar} disabled={trabajando || calculando}>
+            {calculando ? (
+              <>
+                <Loader2 size={15} className="animate-spin" />{" "}
+                {t("ui.NominaTimecards.calculando", "Calculando…")}
+              </>
+            ) : (
+              <>
+                <RefreshCw size={15} /> {t("ui.NominaTimecards.generarPeriodo", "Generar periodo")}
+              </>
+            )}
           </Button>
           <Button
             variant="outline"
@@ -536,6 +704,15 @@ export default function NominaTimecards() {
           >
             <FileSpreadsheet size={15} /> {t("ui.NominaTimecards.detalleDiaADia", "Detalle día a día")}
           </Button>
+          {puedeCerrar && (
+            <Button
+              variant="outline"
+              onClick={cerrarPeriodo}
+              disabled={trabajando || calculando}
+            >
+              <Lock size={15} /> {t("ui.NominaTimecards.cerrarPeriodo", "Cerrar periodo")}
+            </Button>
+          )}
         </Toolbar>
 
         <Stagger>
