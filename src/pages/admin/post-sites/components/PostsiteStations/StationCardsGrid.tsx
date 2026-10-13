@@ -4,6 +4,7 @@
  * cristal, nombre → detalle de la estación, horario, vigilantes requeridos y
  * geocerca. Menú Ver/Eliminar inyectado desde la página.
  */
+import { type RelevoDeEvento, ventanaDeRelevos } from "@/lib/eventos";
 import { useTranslation } from "react-i18next";
 import {
   EllipsisVertical,
@@ -48,6 +49,8 @@ export interface StationCard {
   jornadas?: unknown[];
   hasPolygon?: boolean;
   geofenceRadius?: number | null;
+  /** Sólo en un evento: sus relevos (en vez de «12h Día/Noche»). */
+  relevos?: RelevoDeEvento[] | null;
 }
 
 export default function StationCardsGrid({
@@ -85,16 +88,27 @@ export default function StationCardsGrid({
         const schedEntry = st.scheduleType
           ? SCHEDULE_LABEL[st.scheduleType]
           : undefined;
-        const sched = st.scheduleType
-          ? schedEntry
-            ? t(schedEntry.labelKey, schedEntry.label)
-            : st.scheduleType
-          : Array.isArray(st.jornadas) && st.jornadas.length
-            ? t("ui.StationCardsGrid.nJornadas", {
-                defaultValue: "{{count}} jornadas",
-                count: st.jornadas.length,
+        const sched = st.relevos
+          ? st.relevos.length > 1
+            ? t("ui.eventos.rotuloRelevos", {
+                defaultValue: "{{ventana}} · {{count}} relevos",
+                ventana: ventanaDeRelevos(st.relevos),
+                count: st.relevos.length,
               })
-            : null;
+            : t("ui.eventos.rotuloEvento", {
+                defaultValue: "Evento · {{ventana}}",
+                ventana: ventanaDeRelevos(st.relevos),
+              })
+          : st.scheduleType
+            ? schedEntry
+              ? t(schedEntry.labelKey, schedEntry.label)
+              : st.scheduleType
+            : Array.isArray(st.jornadas) && st.jornadas.length
+              ? t("ui.StationCardsGrid.nJornadas", {
+                  defaultValue: "{{count}} jornadas",
+                  count: st.jornadas.length,
+                })
+              : null;
         const geo = st.hasPolygon
           ? t("ui.StationCardsGrid.poligono", "Polígono")
           : st.geofenceRadius
@@ -132,7 +146,11 @@ export default function StationCardsGrid({
                 ) : null}
                 {sched && (
                   <div className="mt-1">
-                    <StatusBadge dot={false} tone="info">
+                    <StatusBadge
+                      className="max-w-full whitespace-nowrap"
+                      dot={false}
+                      tone="info"
+                    >
                       {sched}
                     </StatusBadge>
                   </div>

@@ -291,7 +291,7 @@ export default function EditSecurityGuardPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">
-                    {t("clients.form.lastName", "Apellidos *")}
+                    {t("clients.form.lastName", "Apellidos")} *
                   </label>
                   <Input
                     name="lastName"

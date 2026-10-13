@@ -1,7 +1,7 @@
 import type { Station } from "@/types";
 import type { RecentShiftRow } from "../stationDetailTypes";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   MapPin,
@@ -35,6 +35,14 @@ import { reverseGeocode } from "@/lib/geocodeClient";
 import { Section, StatCard, Stagger } from "@/components/kit";
 import { localeActual } from "@/lib/localeActual";
 import { zonaDeLaEmpresa } from "@/lib/horaDeLaEmpresa";
+import {
+  esEvento,
+  eventoTerminado,
+  rangoDelEvento,
+  relevosDeLaEstacion,
+  ventanaDeRelevos,
+} from "@/lib/eventos";
+import { EditorDeRelevos } from "@/components/stations/RelevosDelEvento";
 interface StationDetail extends Station {
   name?: string;
   latitude?: number | string | null;
@@ -134,8 +142,17 @@ export default function StationOverview({
   recentShifts,
 }: Props) {
   const { t } = useTranslation();
+  // Una estación de EVENTO: sin rotación ni «fijos», sus relevos y la ventana.
+  const estAny = station as any;
+  const evento = esEvento(estAny?.postSite);
+  const relevos = useMemo(
+    () => (evento ? relevosDeLaEstacion(estAny?.positions) : []),
+    [evento, estAny?.positions],
+  );
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  // Evento: el editor de relevos, plegado hasta que se pide.
+  const [editandoRelevos, setEditandoRelevos] = useState(false);
 
   // Per-station clock-in tolerance windows (minutes). Empty = use tenant default.
   const [clockInEarlyBufferMin, setClockInEarlyBufferMin] = useState("");
@@ -677,17 +694,50 @@ export default function StationOverview({
             label={t("ui.StationOverview.deTurnoAhora")}
             value={recentShifts === null ? "…" : openNow.length}
           />
+          {evento ? (
+            <StatCard
+              accent="info"
+              hint={
+                relevos.length > 1
+                  ? t("ui.eventos.nRelevos", {
+                      defaultValue: "{{count}} relevos",
+                      count: relevos.length,
+                    })
+                  : undefined
+              }
+              icon={<Users />}
+              label={t("ui.eventos.plazas", "Plazas")}
+              value={
+                relevos.reduce((n, r) => n + r.plazas, 0) ||
+                Number(estAny?.numberOfGuardsInStation) ||
+                "—"
+              }
+            />
+          ) : (
           <StatCard
             accent="info"
             icon={<Users />}
             label={t("ui.StationOverview.fijosRequeridos", "Fijos requeridos")}
             value={fijos || "—"}
           />
+          )}
           <StatCard
             icon={<Activity />}
             label={t("ui.StationOverview.marcacionesHoy", "Marcaciones hoy")}
             value={recentShifts === null ? "…" : todayCount}
           />
+          {evento ? (
+            <StatCard
+              accent="brand"
+              hint={rangoDelEvento(
+                estAny?.postSite?.vigenteDesde,
+                estAny?.postSite?.vigenteHasta,
+              )}
+              icon={<Clock />}
+              label={t("comun.horario")}
+              value={ventanaDeRelevos(relevos, estAny) || "—"}
+            />
+          ) : (
           <StatCard
             accent="brand"
             hint={
@@ -708,6 +758,7 @@ export default function StationOverview({
                 : t("station.overview.notConfigured", "Sin configurar")
             }
           />
+          )}
         </StatsStrip>
 
         <div className="grid gap-4 lg:grid-cols-2">
@@ -966,7 +1017,58 @@ export default function StationOverview({
           </div>
         </div>
 
-        {/* Horario del turno — drives scheduleType + positions (engine source of truth) */}
+        {/* EVENTO: sus relevos (horario dentro del evento, turno de cada
+            vigilante, cuántos a la vez) se cambian aquí, con su propio
+            «Guardar» porque puede sacar a gente y pide confirmación. */}
+        {evento && (
+          <div
+            className="space-y-3 border-t p-6"
+            style={{ borderColor: "var(--hairline)" }}
+          >
+            {editandoRelevos ? (
+              <EditorDeRelevos
+                relevos={relevos}
+                sede={estAny?.postSite}
+                stationId={stationId}
+                onCancel={() => setEditandoRelevos(false)}
+                onSaved={() => setEditandoRelevos(false)}
+              />
+            ) : (
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <Clock size={16} style={{ color: "var(--brand-text)" }} />
+                    <h3 className="text-sm font-semibold text-foreground">
+                      {t("ui.RelevosDelEvento.titulo", "Relevos del evento")}
+                    </h3>
+                  </div>
+                  <p className="mt-1 font-mono text-xs text-muted-foreground">
+                    {relevos.length
+                      ? relevos
+                          .map((r) => `${r.inicio}–${r.fin} ×${r.plazas}`)
+                          .join(" · ")
+                      : t("ui.EventoDeLaEstacion.sinPlazas", "Sin plazas")}
+                  </p>
+                </div>
+                {!eventoTerminado(estAny?.postSite) && (
+                  <button
+                    className="cg-btn-glass cg-focus inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-all"
+                    type="button"
+                    onClick={() => setEditandoRelevos(true)}
+                  >
+                    <Pencil size={14} />
+                    {t("ui.RelevosDelEvento.cambiar", "Cambiar relevos")}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Horario del turno — drives scheduleType + positions (engine source of truth).
+            En un EVENTO no: sus horas y relevos los puso el asistente del evento, y
+            «12h / 24h / rotación» los rehacía como un puesto fijo. */}
+        {!evento && (
         <div
           className="space-y-3 border-t p-6"
           style={{ borderColor: "var(--hairline)" }}
@@ -1240,6 +1342,7 @@ export default function StationOverview({
             </button>
           </div>
         </div>
+        )}
 
         {/* Ubicación y geocerca — ONE map: search the address / "igual que el sitio"
             to set where the guard clocks in, then draw the geofence on the same map. */}

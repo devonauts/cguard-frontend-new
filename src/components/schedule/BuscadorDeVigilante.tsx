@@ -167,8 +167,8 @@ export default function BuscadorDeVigilante({
       <p className="mt-1 text-[11px]" style={{ color: "var(--ink-soft)" }}>
         {t("ui.ShiftAssignModal.nDisponibles", {
           defaultValue:
-            "{{n}} disponible(s) · sólo quienes no tienen ya una asignación activa",
-          n: opciones.length,
+            "{{count}} disponibles · sólo quienes no tienen ya una asignación activa",
+          count: opciones.length,
         })}
       </p>
     </div>

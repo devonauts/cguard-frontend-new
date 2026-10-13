@@ -11,6 +11,7 @@ export type ServiceTypeValue =
   | "cctv"
   | "patrol"
   | "custody"
+  | "event"
   | (string & {});
 
 export interface ServiceTypeDefinition {
@@ -105,6 +106,25 @@ export const SERVICE_TYPES: ServiceTypeDefinition[] = [
     badgeText: "text-slate-800",
     icon: "Lock",
   },
+  /* ── EL EVENTO ES UNA SEDE CON FECHA DE CADUCIDAD ───────────────────────────
+     No es un módulo aparte: es una sede de tipo «Evento», creada con el mismo
+     asistente, que además lleva `vigenteDesde` / `vigenteHasta`. Sin rotación:
+     el servidor crea asignaciones puntuales dentro de esas fechas. */
+  {
+    value: "event",
+    label: "Evento",
+    labelKey: "serviceTypes.event",
+    descriptionKey: "serviceTypes.event_desc",
+    labelEn: "Event Security",
+    description:
+      "Seguridad para un evento con fecha de inicio y fin: conciertos, ferias, bodas.",
+    color: "bg-orange-50",
+    textColor: "text-orange-700",
+    borderColor: "border-orange-300",
+    badgeBg: "bg-orange-100",
+    badgeText: "text-orange-800",
+    icon: "CalendarClock",
+  },
 ];
 
 export const SERVICE_TYPE_MAP = new Map<
@@ -118,4 +138,18 @@ export function getServiceType(
   if (!value) return undefined;
 
   return SERVICE_TYPE_MAP.get(value as ServiceTypeValue);
+}
+
+/** El valor del tipo «Evento». */
+export const SERVICE_TYPE_EVENT = "event";
+
+/**
+ * ¿Esta sede es un evento? Es la ÚNICA pregunta que se hace en el CRM para
+ * cambiar qué se pide: fechas del evento en el asistente, sin rotación en los
+ * puestos y sin fechas al asignar (las pone el servidor).
+ */
+export function esEvento(
+  sede?: { serviceType?: string | null } | null,
+): boolean {
+  return String(sede?.serviceType ?? "").trim() === SERVICE_TYPE_EVENT;
 }

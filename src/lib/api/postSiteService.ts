@@ -31,6 +31,10 @@ export interface PostSite {
   assignedGuards?: any[];
   guardsCount?: number;
   numberOfGuardsInStation?: string | number | null;
+  serviceType?: string;
+  /** Vigencia de la sede (ISO). Obligatoria en una sede-evento. */
+  vigenteDesde?: string | null;
+  vigenteHasta?: string | null;
 }
 
 /**
@@ -82,6 +86,9 @@ export interface RawBusinessInfoRow {
   tenant?: { id?: string; name?: string; tenantId?: string } | string;
   businessName?: string;
   serviceType?: string;
+  serviceConfig?: Record<string, unknown> | null;
+  vigenteDesde?: string | null;
+  vigenteHasta?: string | null;
   companyAddress?: string;
   location?: { lat?: number | string; lng?: number | string };
 }
@@ -322,6 +329,9 @@ const postSiteService = {
             : Array.isArray(r.assignedGuards)
               ? r.assignedGuards.length
               : undefined,
+        serviceType: r.serviceType ?? undefined,
+        vigenteDesde: r.vigenteDesde ?? null,
+        vigenteHasta: r.vigenteHasta ?? null,
       }));
 
       return { rows: mappedRows as unknown as PostSite[], count: data.count };
@@ -382,6 +392,9 @@ const postSiteService = {
         active: typeof p.status === "string" ? p.status === "active" : true,
         latitud: p.latitud ?? p.latitude ?? undefined,
         longitud: p.longitud ?? p.longitude ?? undefined,
+        // Vigencia (ISO): obligatoria en una sede-evento.
+        vigenteDesde: p.vigenteDesde ?? undefined,
+        vigenteHasta: p.vigenteHasta ?? undefined,
         /* El horario NO vive en la sede (ver el alta más abajo): son columnas
            de `stations` y el backend las descartaba en silencio. */
       };
@@ -461,6 +474,15 @@ const postSiteService = {
             : (existing.chargeRate ?? undefined),
         payRate:
           p.payRate !== undefined ? p.payRate : (existing.payRate ?? undefined),
+        // Vigencia: `null` la borra; sin la clave se conserva la que había.
+        vigenteDesde:
+          p.vigenteDesde !== undefined
+            ? p.vigenteDesde
+            : (existing.vigenteDesde ?? undefined),
+        vigenteHasta:
+          p.vigenteHasta !== undefined
+            ? p.vigenteHasta
+            : (existing.vigenteHasta ?? undefined),
       };
 
       const { data } = await api.patch(

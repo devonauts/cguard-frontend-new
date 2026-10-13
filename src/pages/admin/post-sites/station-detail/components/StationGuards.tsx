@@ -34,6 +34,13 @@ import {
 } from "@/pages/admin/clientes/components/_shared/tab-kit";
 import { Button } from "@/components/ui/button";
 import { localToday } from "@/lib/utils";
+import { esEvento, ventanaDeLaPlaza } from "@/lib/eventos";
+import {
+  AvisoFechasDelEvento,
+  useCandidatosLibres,
+  useSede,
+  useVigilantesOrdenados,
+} from "@/components/post-sites/EventoDeLaSede";
 
 interface StationDetail extends Station {
   startingTimeInDay?: string | null;
@@ -64,7 +71,19 @@ interface Assignment {
   rotation: string;
   workDays: Set<string>;
   shiftIds: string[]; // all of this guard's shift ids at the station
+  /** Horas de la asignación («19:00:00»). En un evento es lo único que dice
+   *  qué plaza ocupa: se guarda sin `positionId`. */
+  startTime: string | null;
+  endTime: string | null;
 }
+
+/** «19:00|07:00» a partir de dos horas; vacío si falta alguna. */
+const claveVentana = (ini?: string | null, fin?: string | null) => {
+  const a = String(ini || "").slice(0, 5);
+  const b = String(fin || "").slice(0, 5);
+
+  return /^\d{2}:\d{2}$/.test(a) && /^\d{2}:\d{2}$/.test(b) ? `${a}|${b}` : "";
+};
 
 // LOCAL calendar date (not UTC): toISOString() rolls to the next day for
 // evening assignments in negative-UTC zones (Ecuador UTC-5 after 19:00), which
@@ -167,6 +186,12 @@ export default function StationGuards({
   const [pickGuard, setPickGuard] = useState("");
   const [assignStart, setAssignStart] = useState(() => localToday());
   const [saving, setSaving] = useState(false);
+  /* Sede-EVENTO: al relevar no se pide «primer día» (las fechas las pone el
+     evento) y se ofrecen todos, con los libres en esas horas primero. */
+  /* Si el puesto ya trae su sede con el tipo de servicio se usa esa; si no, se
+     lee por el caché compartido (una vez, no una por estación). */
+  const sede = useSede(postSiteId, true, (station as any)?.postSite);
+  const evento = esEvento(sede);
 
   const load = useCallback(async () => {
     if (!stationId) return;
@@ -304,6 +329,8 @@ export default function StationGuards({
           rotation: a.rotationStyle?.name || a.rotationStyle?.pattern || "",
           workDays: workByGuard[uid] || new Set(),
           shiftIds: Array.from(new Set(shiftIdsByGuard[uid] || [])),
+          startTime: a.startTime ?? null,
+          endTime: a.endTime ?? null,
         });
       }
       setRows(out);
@@ -396,6 +423,22 @@ export default function StationGuards({
     });
   };
 
+  /** La plaza de una fila. En un evento la asignación no guarda `positionId`:
+   *  se reconoce por sus horas (la primera plaza con esa misma ventana). */
+  const plazaDe = (a: Assignment): PositionRow | null => {
+    if (a.positionId)
+      return positions.find((p) => p.id === a.positionId) ?? null;
+    const fijas = positions.filter(
+      (p) => (p.type || "fijo") !== "sacafranco",
+    );
+    const k = claveVentana(a.startTime, a.endTime);
+    const misma = k
+      ? fijas.find((p) => claveVentana(p.startTime, p.endTime) === k)
+      : null;
+
+    return misma ?? (fijas.length === 1 ? fijas[0] : null);
+  };
+
   const submitAssign = async () => {
     if (!pickGuard) {
       toast.error(t("station.guards.pickGuard", "Selecciona un vigilante"));
@@ -404,7 +447,74 @@ export default function StationGuards({
     }
     setSaving(true);
     try {
-      if (changeTarget && changeTarget.assignmentId) {
+      if (evento && changeTarget && changeTarget.assignmentId) {
+        // ── CAMBIAR EN UN EVENTO: ALTA DEL ENTRANTE Y LUEGO BAJA DEL SALIENTE ──
+        // La sucesión (`/replace`) sólo existe para puestos con rotación: la
+        // asignación de un evento es puntual y el servidor la rechaza. Aquí se
+        // hace en dos pasos y en ESTE orden, para que un fallo nunca deje la
+        // plaza vacía: primero entra el nuevo (con la plaza, que en un evento de
+        // más de un día es obligatoria), y sólo si entró se quita al anterior
+        // por el mismo camino que «Quitar» (cierra y anula lo futuro).
+        if (pickGuard === changeTarget.guardUserId) {
+          toast.error(
+            t(
+              "eventos.eligeOtroVigilante",
+              "Elige a otro vigilante: ese ya está en esta plaza.",
+            ),
+          );
+
+          return;
+        }
+        const plaza = plazaDe(changeTarget);
+        const creada: any = await ApiService.post(
+          `/tenant/${tenantId}/guard-assignment`,
+          {
+            data: {
+              guardId: pickGuard,
+              stationId,
+              positionId: plaza?.id || undefined,
+              isRelief: false,
+            },
+          },
+        );
+        const idNueva = String(creada?.id || creada?.data?.id || "");
+
+        if (idNueva !== changeTarget.assignmentId) {
+          try {
+            await ApiService.delete(
+              `/tenant/${tenantId}/guard-assignment/${encodeURIComponent(changeTarget.assignmentId)}`,
+            );
+          } catch (e: any) {
+            // El entrante YA está asignado: se dice tal cual y se recarga para
+            // que el operador vea a los dos y quite al saliente a mano.
+            toast.error(
+              t("eventos.relevoSinQuitar", {
+                defaultValue:
+                  "{{nuevo}} ya está asignado, pero no se pudo quitar a {{anterior}}: {{motivo}}. Quítalo con la papelera de su fila.",
+                nuevo:
+                  guards.find((g) => g.id === pickGuard)?.label ||
+                  t("station.guards.guard", "Vigilante"),
+                anterior: changeTarget.guardName,
+                motivo:
+                  e?.message ||
+                  t("station.guards.removeFailed", "No se pudo quitar"),
+              }),
+            );
+            closeModal();
+            load();
+            try {
+              window.dispatchEvent(new CustomEvent("assignments:changed"));
+            } catch {
+              /* noop */
+            }
+
+            return;
+          }
+        }
+        toast.success(
+          t("eventos.vigilanteRelevado", "Vigilante cambiado en el evento"),
+        );
+      } else if (changeTarget && changeTarget.assignmentId) {
         // ── RELEVO, NO BORRADO Y ALTA ───────────────────────────────────────
         // Esto era: borrar la asignación + borrar SUS TURNOS (una lista sin
         // filtro de fecha, o sea también los ya trabajados) + crear otra. Dos
@@ -541,6 +651,23 @@ export default function StationGuards({
   }, [positions]);
 
   const modalOpen = !!assignType || !!changeTarget;
+  const ventanaRelevo = useMemo(
+    () =>
+      evento && changeTarget
+        ? ventanaDeLaPlaza(sede, plazaDe(changeTarget))
+        : null,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [evento, changeTarget, sede, positions],
+  );
+  const { libres: libresRelevo } = useCandidatosLibres(
+    stationId,
+    ventanaRelevo,
+    modalOpen && evento,
+  );
+  const vigilantesRelevo = useVigilantesOrdenados(
+    guards,
+    evento ? libresRelevo : null,
+  );
   const modalIsSaca =
     assignType === "sacafranco" || changeTarget?.type === "sacafranco";
 
@@ -559,15 +686,19 @@ export default function StationGuards({
               <UserPlus size={15} />{" "}
               {t("station.guards.assign", "Asignar vigilante")}
             </Button>
-            <Button
-              className="rounded-full"
-              size="sm"
-              variant="outline"
-              onClick={() => openAssign("sacafranco")}
-            >
-              <Repeat size={15} />{" "}
-              {t("station.guards.addSaca", "Agregar sacafranco")}
-            </Button>
+            {/* En un evento no hay descansos que cubrir: la plaza de
+                sacafranco que esto crea quedaría huérfana. */}
+            {!evento && (
+              <Button
+                className="rounded-full"
+                size="sm"
+                variant="outline"
+                onClick={() => openAssign("sacafranco")}
+              >
+                <Repeat size={15} />{" "}
+                {t("station.guards.addSaca", "Agregar sacafranco")}
+              </Button>
+            )}
           </div>
         }
         contentClassName="-mx-5 -mb-5"
@@ -738,10 +869,15 @@ export default function StationGuards({
                 "station.guards.sacaSub",
                 "Cubre los días de descanso del vigilante fijo",
               )
-            : t(
-                "station.guards.assignSub",
-                "Vigilante fijo de la rotación del puesto",
-              )
+            : evento
+              ? t(
+                  "station.guards.eventoSub",
+                  "Vigilante para las fechas del evento",
+                )
+              : t(
+                  "station.guards.assignSub",
+                  "Vigilante fijo de la rotación del puesto",
+                )
         }
         footer={
           <>
@@ -799,32 +935,43 @@ export default function StationGuards({
               <option value="">
                 {t("station.guards.selectGuard", "Seleccionar vigilante…")}
               </option>
-              {guards
-                .filter((g) => !occupiedGuardIds.has(g.id))
-                .map((g) => (
-                  <option key={g.id} value={g.id}>
-                    {g.label}
-                  </option>
-                ))}
+              {evento
+                ? vigilantesRelevo.map((g) => (
+                    <option key={g.id} value={g.id}>
+                      {g.libre === false
+                        ? `${g.label} · ${t("eventos.ocupadoEseHorario", "Ocupado en ese horario")}`
+                        : g.label}
+                    </option>
+                  ))
+                : guards
+                    .filter((g) => !occupiedGuardIds.has(g.id))
+                    .map((g) => (
+                      <option key={g.id} value={g.id}>
+                        {g.label}
+                      </option>
+                    ))}
             </select>
-            {guards.filter((g) => !occupiedGuardIds.has(g.id)).length === 0 && (
-              <p
-                className="mt-1.5 text-[11px]"
-                style={{ color: "var(--warn-text)" }}
-              >
-                {t(
-                  "station.guards.allBusy",
-                  "Todos los vigilantes ya tienen una asignación activa.",
-                )}
-              </p>
-            )}
+            {!evento &&
+              guards.filter((g) => !occupiedGuardIds.has(g.id)).length ===
+                0 && (
+                <p
+                  className="mt-1.5 text-[11px]"
+                  style={{ color: "var(--warn-text)" }}
+                >
+                  {t(
+                    "station.guards.allBusy",
+                    "Todos los vigilantes ya tienen una asignación activa.",
+                  )}
+                </p>
+              )}
           </LabeledField>
 
           {/* Alternation (24x24 etc.): the operator picks the day this guard
                   starts working. The backend phases the rotation to it, so
                   "empieza hoy" = trabaja hoy. Assign the partner starting the
                   next day and they alternate automatically. */}
-          {!modalIsSaca && isAlternation && (
+          {evento && <AvisoFechasDelEvento sede={sede} />}
+          {!modalIsSaca && isAlternation && !evento && (
             <LabeledField
               label={t("station.guards.startDay", "Primer día de turno")}
             >

@@ -159,25 +159,28 @@ export default function StationLayout({ title, children, station }: Props) {
         {/* Barra de navegación: breadcrumb + cards de sección (scroll horizontal) */}
         <div className="shrink-0 px-4 pt-3">
           {/* Breadcrumb: Clientes › Cliente › Sede › Estación › Pestaña */}
+          {/* En el teléfono la miga empieza en la SEDE: con «Clientes › Cliente ›»
+              delante, cada eslabón se quedaba en cinco letras («Freem…», «Tesla
+              S…») y no se leía ninguno. El cliente sigue a un toque, desde la sede. */}
           <div className="mb-2 flex min-w-0 items-center gap-1.5 text-sm text-muted-foreground">
-            <Link className="shrink-0 hover:text-primary" to="/clients">
+            <Link className="hidden shrink-0 hover:text-primary sm:inline" to="/clients">
               {t("clients.nav.title", "Clientes")}
             </Link>
-            <ChevronRight className="h-3.5 w-3.5 shrink-0" />
+            <ChevronRight className="hidden h-3.5 w-3.5 shrink-0 sm:block" />
             {clientId && clientName && (
               <>
                 <Link
-                  className="max-w-[130px] truncate hover:text-primary sm:max-w-[190px]"
+                  className="hidden max-w-[190px] truncate hover:text-primary sm:inline"
                   title={clientName}
                   to={`/clients/${clientId}/overview`}
                 >
                   {clientName}
                 </Link>
-                <ChevronRight className="h-3.5 w-3.5 shrink-0" />
+                <ChevronRight className="hidden h-3.5 w-3.5 shrink-0 sm:block" />
               </>
             )}
             <Link
-              className="max-w-[130px] truncate hover:text-primary sm:max-w-[190px]"
+              className="min-w-0 max-w-[45%] truncate hover:text-primary sm:max-w-[190px]"
               title={siteName}
               to={`/post-sites/${postSiteId}/overview`}
             >
@@ -200,7 +203,7 @@ export default function StationLayout({ title, children, station }: Props) {
               </>
             ) : (
               <span
-                className="max-w-[160px] truncate font-medium text-foreground sm:max-w-[220px]"
+                className="min-w-0 flex-1 truncate font-medium text-foreground sm:max-w-[220px] sm:flex-none"
                 title={stationName}
               >
                 {stationName}

@@ -456,10 +456,14 @@ export default function ClientForm({
   async function onSubmit(values: FormValues) {
     // Crear payload solo con los campos que el backend actual soporta
     // En modo edición enviaremos únicamente los campos modificados (diff)
+    // El teléfono es opcional: si sólo quedó el prefijo del país («+52»), no
+    // hay teléfono, y no se guarda un «+52» suelto como si lo fuera.
+    const telefonoDeVerdad = (v: unknown) =>
+      String(v ?? "").replace(/\D/g, "").length > 3 ? String(v) : "";
     const basePayload: any = {
       name: values.name,
       email: values.email,
-      phoneNumber: values.phoneNumber,
+      phoneNumber: telefonoDeVerdad(values.phoneNumber),
       address: values.address,
       categoryIds: Array.isArray(values.categoryIds)
         ? values.categoryIds
@@ -489,7 +493,8 @@ export default function ClientForm({
     if (values.legalRepEmail !== undefined)
       basePayload.legalRepEmail = values.legalRepEmail || null;
     if (values.legalRepPhone !== undefined)
-      basePayload.legalRepPhone = values.legalRepPhone || null;
+      basePayload.legalRepPhone =
+        telefonoDeVerdad(values.legalRepPhone) || null;
     // Persona natural: the rep's cédula IS the client documentNumber; persona
     // jurídica has a separate rep cédula field.
     basePayload.legalRepDocument =
@@ -801,8 +806,10 @@ export default function ClientForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">
-                        {etiquetaDocumento}{" "}
-                        <span className="brand-text">*</span>
+                        {etiquetaDocumento}
+                        <span className="ml-2 text-[10px] font-normal text-muted-foreground normal-case tracking-normal">
+                          {t("clients.form.optional", "Opcional")}
+                        </span>
                       </FormLabel>
                       <FormControl>
                         <input
@@ -884,6 +891,9 @@ export default function ClientForm({
                     <FormItem>
                       <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">
                         {t("clients.form.lastName", "Apellidos")}
+                        <span className="ml-2 text-[10px] font-normal text-muted-foreground normal-case tracking-normal">
+                          {t("clients.form.optional", "Opcional")}
+                        </span>
                       </FormLabel>
                       <FormControl>
                         <input
@@ -915,7 +925,8 @@ export default function ClientForm({
                 />
               </div>
 
-              {/* Contacto personal del representante (requerido) */}
+              {/* Contacto personal del representante (opcional: sin correo no
+                  se invita al cliente a la app) */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField<ClientInput>
                   control={form.control}
@@ -923,8 +934,10 @@ export default function ClientForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">
-                        {t("clients.legalRep.phone", "Teléfono personal")}{" "}
-                        <span className="brand-text">*</span>
+                        {t("clients.legalRep.phone", "Teléfono personal")}
+                        <span className="ml-2 text-[10px] font-normal text-muted-foreground normal-case tracking-normal">
+                          {t("clients.form.optional", "Opcional")}
+                        </span>
                       </FormLabel>
                       <FormControl>
                         <input
@@ -953,8 +966,10 @@ export default function ClientForm({
                         {t(
                           "clients.legalRep.email",
                           "Correo electrónico personal",
-                        )}{" "}
-                        <span className="brand-text">*</span>
+                        )}
+                        <span className="ml-2 text-[10px] font-normal text-muted-foreground normal-case tracking-normal">
+                          {t("clients.form.optional", "Opcional")}
+                        </span>
                       </FormLabel>
                       <FormControl>
                         <input
@@ -1690,8 +1705,10 @@ export default function ClientForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-xs font-medium text-foreground/70 uppercase tracking-wide">
-                          {t("clients.form.postalCode", "Código postal")}{" "}
-                          <span className="brand-text">*</span>
+                          {t("clients.form.postalCode", "Código postal")}
+                          <span className="ml-2 text-[10px] font-normal text-muted-foreground normal-case tracking-normal">
+                            {t("clients.form.optional", "Opcional")}
+                          </span>
                         </FormLabel>
                         <FormControl>
                           <input

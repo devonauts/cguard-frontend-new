@@ -12,6 +12,7 @@ export const SERVICE_TYPE_VALUES = [
   "cctv",
   "patrol",
   "custody",
+  "event",
 ] as const;
 
 /** Mensaje de longitud máxima. Es una FUNCIÓN: zod la ejecuta al validar, ya con
@@ -33,6 +34,11 @@ export const postSiteSchema = z.object({
     .optional()
     .or(z.literal("")),
   serviceConfig: z.any().optional(),
+  /* Vigencia de la sede (instantes ISO). Obligatoria para un EVENTO —lo exige
+     el servidor— y opcional para el resto (un contrato que vence). `null` la
+     borra. */
+  vigenteDesde: z.string().trim().nullable().optional(),
+  vigenteHasta: z.string().trim().nullable().optional(),
   clientId: z.string().trim().optional().or(z.literal("")),
   description: z
     .string()

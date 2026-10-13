@@ -55,8 +55,9 @@ export interface Client {
 export interface ClientInput {
   name: string;
   lastName?: string;
-  email: string;
-  phoneNumber: string;
+  // Opcionales al dar de alta: sin correo no se invita al cliente a la app.
+  email?: string;
+  phoneNumber?: string;
   address: string;
   addressLine2?: string;
   postalCode?: string;

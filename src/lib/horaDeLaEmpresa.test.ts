@@ -25,6 +25,7 @@ import {
 const MEX = "America/Mexico_City"; // UTC-6
 const QUITO = "America/Guayaquil"; // UTC-5, sin horario de verano
 const MADRID = "Europe/Madrid"; // UTC+1 / +2
+const CHICAGO = "America/Chicago"; // UTC-6 / -5
 
 afterEach(() => vi.useRealTimers());
 
@@ -92,6 +93,67 @@ describe("instanteEnLaEmpresa", () => {
     expect(instanteEnLaEmpresa("2026-01-15", 12, 0, 0, 0, MADRID).toISOString()).toBe(
       "2026-01-15T11:00:00.000Z",
     );
+  });
+
+  /* El día del cambio de hora. Antes el desfase se medía sobre la hora de
+     pared leída como UTC, que cae al otro lado de la frontera: las 03:00 de
+     Chicago del 1-nov salían como las 02:00 y cada editar→guardar corría el
+     turno otra hora. */
+  it("Chicago al atrasar el reloj (1-nov-2026): las 03:00 son las 09:00Z", () => {
+    expect(instanteEnLaEmpresa("2026-11-01", 3, 0, 0, 0, CHICAGO).toISOString()).toBe(
+      "2026-11-01T09:00:00.000Z",
+    );
+    // 01:30 existe dos veces: gana la primera (todavía en horario de verano).
+    expect(instanteEnLaEmpresa("2026-11-01", 1, 30, 0, 0, CHICAGO).toISOString()).toBe(
+      "2026-11-01T06:30:00.000Z",
+    );
+  });
+
+  it("Chicago al adelantar el reloj (8-mar-2026): 02:30 no existe y pasa a las 03:30", () => {
+    expect(instanteEnLaEmpresa("2026-03-08", 2, 30, 0, 0, CHICAGO).toISOString()).toBe(
+      "2026-03-08T08:30:00.000Z",
+    );
+    expect(instanteEnLaEmpresa("2026-03-08", 3, 30, 0, 0, CHICAGO).toISOString()).toBe(
+      "2026-03-08T08:30:00.000Z",
+    );
+    expect(instanteEnLaEmpresa("2026-03-08", 4, 0, 0, 0, CHICAGO).toISOString()).toBe(
+      "2026-03-08T09:00:00.000Z",
+    );
+  });
+
+  it("Madrid el día del cambio (29-mar y 25-oct-2026)", () => {
+    expect(instanteEnLaEmpresa("2026-03-29", 3, 0, 0, 0, MADRID).toISOString()).toBe(
+      "2026-03-29T01:00:00.000Z",
+    );
+    expect(instanteEnLaEmpresa("2026-03-29", 2, 30, 0, 0, MADRID).toISOString()).toBe(
+      "2026-03-29T01:30:00.000Z",
+    );
+    expect(instanteEnLaEmpresa("2026-10-25", 2, 30, 0, 0, MADRID).toISOString()).toBe(
+      "2026-10-25T00:30:00.000Z",
+    );
+    expect(instanteEnLaEmpresa("2026-10-25", 3, 0, 0, 0, MADRID).toISOString()).toBe(
+      "2026-10-25T02:00:00.000Z",
+    );
+  });
+
+  it("zonas sin cambio de hora no se mueven esos días", () => {
+    expect(instanteEnLaEmpresa("2026-11-01", 3, 0, 0, 0, QUITO).toISOString()).toBe(
+      "2026-11-01T08:00:00.000Z",
+    );
+    expect(instanteEnLaEmpresa("2026-10-25", 3, 0, 0, 0, MEX).toISOString()).toBe(
+      "2026-10-25T09:00:00.000Z",
+    );
+  });
+
+  it("editar → guardar en el día del cambio no corre la hora", () => {
+    for (const iso of [
+      "2026-11-01T09:00:00.000Z",
+      "2026-11-01T06:30:00.000Z",
+      "2026-11-01T08:00:00.000Z",
+      "2026-03-08T09:00:00.000Z",
+    ]) {
+      expect(desdeInputFechaHora(paraInputFechaHora(iso, CHICAGO), CHICAGO)).toBe(iso);
+    }
   });
 });
 

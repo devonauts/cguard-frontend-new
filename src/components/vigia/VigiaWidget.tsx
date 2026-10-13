@@ -676,6 +676,8 @@ export default function VigiaWidget() {
       {
         const nuevo = mensajeDeRespuesta(d);
         if (nuevo) setMsgs((m) => [...m, nuevo]);
+        // Antes de navegar: ver `confirmar`.
+        if (d?.navigate) guardarHilo(nuevo ? [...historia, nuevo] : historia, hiloId);
       }
       if (d?.proposal) setPropuesta(d.proposal);
       if (d?.navigate) {
@@ -735,6 +737,13 @@ export default function VigiaWidget() {
       {
         const nuevo = mensajeDeRespuesta(d);
         if (nuevo) setMsgs((m) => [...m, nuevo]);
+        /* GUARDAR ANTES DE NAVEGAR. Tras confirmar, VigIA lleva a la pantalla
+           de lo que acaba de hacer; si esa pantalla monta otro armazón, este
+           chat se desmonta en el MISMO render y el efecto que guarda el hilo
+           no llega a correr. Al volver se recuperaba un hilo que acababa en la
+           propuesta, sin el «hecho»: el siguiente «sí, ahora llénalo» volvía a
+           proponer lo ya hecho. */
+        if (d?.navigate) guardarHilo(nuevo ? [...msgs, nuevo] : msgs, hiloId);
       }
       if (d?.navigate) navigate(d.navigate);
     } catch (e: any) {

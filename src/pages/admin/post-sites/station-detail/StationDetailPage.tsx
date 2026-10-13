@@ -18,10 +18,12 @@ import StationPatrolQR from "./components/StationPatrolQR";
 import StationParking from "./components/StationParking";
 import StationOrders from "./components/StationOrders";
 import StationPassdowns from "./components/StationPassdowns";
+import { EventoTurnos, EventoVigilantes } from "./components/EventoDeLaEstacion";
 
 import { EmptyState, FadeIn } from "@/components/kit";
 import { ApiService } from "@/services/api/apiService";
 import StationLayout from "@/layouts/StationLayout";
+import { esEvento } from "@/lib/eventos";
 
 export default function StationDetailPage() {
   const { t } = useTranslation();
@@ -88,6 +90,22 @@ export default function StationDetailPage() {
     };
   }, [stationId]);
 
+  /* Asignar o quitar a alguien (pestaña Vigilantes del evento, diálogos) cambia
+     «N asignados» de la cabecera: se relee el puesto EN SILENCIO, sin el giro
+     de carga, que desmontaría la pestaña en la que se está trabajando. */
+  useEffect(() => {
+    if (!stationId) return;
+    const tenantId = localStorage.getItem("tenantId") || "";
+    const releer = () =>
+      ApiService.get(`/tenant/${tenantId}/station/${encodeURIComponent(stationId)}`)
+        .then((res: any) => setStation((res && (res.data || res)) || res))
+        .catch(() => undefined);
+
+    window.addEventListener("assignments:changed", releer);
+
+    return () => window.removeEventListener("assignments:changed", releer);
+  }, [stationId]);
+
   // Marcaciones recientes del puesto: una sola lectura para la cabecera y el
   // resumen, que antes pedían esto mismo por separado.
   useEffect(() => {
@@ -127,16 +145,28 @@ export default function StationDetailPage() {
     postSiteId: postSiteId || "",
   };
 
+  const evento = esEvento(station?.postSite);
+
   const renderTab = () => {
     switch (currentTab) {
       case "overview":
         return <StationOverview {...tabProps} recentShifts={recentShifts} />;
       case "visitors":
         return <StationVisitors {...tabProps} />;
+      /* En un EVENTO, Vigilantes y Turnos sólo hablan del evento: quién cubre
+         qué relevo y a qué hora. Sin rotación, sacafranco ni semanas. */
       case "guards":
-        return <StationGuards {...tabProps} />;
+        return evento ? (
+          <EventoVigilantes {...tabProps} />
+        ) : (
+          <StationGuards {...tabProps} />
+        );
       case "shifts":
-        return <StationShifts {...tabProps} />;
+        return evento ? (
+          <EventoTurnos {...tabProps} />
+        ) : (
+          <StationShifts {...tabProps} />
+        );
       case "orders":
         return <StationOrders {...tabProps} />;
       case "site-tours":
