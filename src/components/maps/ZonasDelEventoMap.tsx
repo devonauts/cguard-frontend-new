@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import GoogleMapEmbed, {
   type MapEmbedMarker,
 } from "@/components/GoogleMap/GoogleMapEmbed";
-import StaticMapImage from "@/components/maps/StaticMapImage";
 import {
   mapPopupActions,
   mapPopupItems,
@@ -192,15 +191,6 @@ export default function ZonasDelEventoMap({
           className="overflow-hidden rounded-xl border"
           style={{ borderColor: "var(--hairline)" }}
         >
-          <StaticMapImage
-            alt={t(
-              "ui.ZonasDelEventoMap.alt",
-              "Zonas del evento sobre el mapa",
-            )}
-            className="w-full"
-            height={height}
-            points={markers.map((m) => ({ lat: m.lat, lng: m.lng }))}
-          >
             <div style={{ height }}>
               <GoogleMapEmbed
                 fitMarkers
@@ -250,7 +240,6 @@ export default function ZonasDelEventoMap({
                 zoom={17}
               />
             </div>
-          </StaticMapImage>
         </div>
       ) : (
         <div
