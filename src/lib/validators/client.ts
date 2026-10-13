@@ -64,16 +64,18 @@ export const crearEsquemaCliente = (paisDeLaEmpresa?: string) =>
         .max(200, maxChars(200))
         .optional()
         .or(z.literal("")),
+      /* OPCIONAL: sin correo no hay invitación a la app (el servidor sólo
+         invita si lo hay). Un evento de una sola vez no tiene por qué darle
+         acceso al cliente. Si se escribe, tiene que ser un correo. */
       email: z
         .string()
         .trim()
-        .min(1, {
-          error: msj("validation.client.emailRequired", "Email requerido"),
-        })
         .email({
           error: msj("clients.contacts.errors.invalidEmail", "Correo inválido"),
         })
-        .max(150, maxChars(150)),
+        .max(150, maxChars(150))
+        .optional()
+        .or(z.literal("")),
       phoneNumber: z
         .string()
         .trim()
@@ -226,9 +228,10 @@ export const crearEsquemaCliente = (paisDeLaEmpresa?: string) =>
       const doc = (data.documentNumber || "").toString().trim();
 
       /* EL CONTACTO ES EL REPRESENTANTE LEGAL, sea persona natural o
-         jurídica. Su teléfono y su correo son obligatorios y son los del
-         cliente (el formulario los copia a email/phoneNumber), así que no se
-         pregunta dos veces. */
+         jurídica. Su teléfono es obligatorio y es el del cliente (el
+         formulario lo copia a phoneNumber). El correo, OPCIONAL: sin él no se
+         invita al cliente a la app — un evento de una sola vez no la necesita.
+         Si se escribe, tiene que ser un correo. */
       {
         // «+52» solo es el prefijo que deja el selector de país, no un teléfono.
         if (
@@ -245,16 +248,7 @@ export const crearEsquemaCliente = (paisDeLaEmpresa?: string) =>
         }
         const correo = (data.legalRepEmail || "").toString().trim();
 
-        if (!correo) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ["legalRepEmail"],
-            message: i18n.t(
-              "validation.client.emailRequired",
-              "Email requerido",
-            ),
-          });
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+        if (correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: ["legalRepEmail"],
