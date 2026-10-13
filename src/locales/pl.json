@@ -17304,7 +17304,8 @@
       },
       "terminado": "Wydarzenie zakończone.",
       "noFichoValeCero": "{{count}} zmian(a) bez wejścia liczy się jako zero.",
-      "sinSalidaNoSePaga": "{{count}} zmian(a) bez wyjścia nie zostanie wypłacona, dopóki nie zamkniesz jej w Rejestrach obecności."
+      "sinSalidaNoSePaga": "{{count}} zmian(a) bez wyjścia nie zostanie wypłacona, dopóki nie zamkniesz jej w Rejestrach obecności.",
+      "presupuesto": "Budżet"
     }
   },
   "visitantes": {

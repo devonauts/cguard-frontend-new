@@ -17114,7 +17114,8 @@
       },
       "terminado": "Evenement afgelopen.",
       "noFichoValeCero": "{{count}} dienst(en) zonder inklokken tellen als nul.",
-      "sinSalidaNoSePaga": "{{count}} dienst(en) zonder uitklokken worden pas betaald na afsluiten in Aanwezigheidsregistratie."
+      "sinSalidaNoSePaga": "{{count}} dienst(en) zonder uitklokken worden pas betaald na afsluiten in Aanwezigheidsregistratie.",
+      "presupuesto": "Begroting"
     }
   },
   "visitantes": {

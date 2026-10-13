@@ -70,6 +70,7 @@ interface Fila {
   tarifaCentavos: number | null;
   origenTarifa: "evento" | "persona" | null;
   importeCentavos: number | null;
+  presupuestoCentavos: number | null;
   aprobadas: number;
   porAprobar: number;
 }
@@ -96,6 +97,7 @@ interface Nomina {
     horasProgramadas: number;
     horasTrabajadas: number;
     importeCentavos: number;
+    presupuestoCentavos: number;
     sinTarifa: number;
     aprobadas: number;
     porAprobar: number;
@@ -513,8 +515,14 @@ export default function NominaDelEvento({
                 : undefined
             }
             icon={<Banknote />}
-            label={t("ui.NominaDelEvento.aPagar", "A pagar")}
-            value={dinero(totales.importeCentavos)}
+            label={
+              terminado
+                ? t("ui.NominaDelEvento.aPagar", "A pagar")
+                : t("ui.NominaDelEvento.presupuesto", "Presupuesto")
+            }
+            value={dinero(
+              terminado ? totales.importeCentavos : totales.presupuestoCentavos,
+            )}
           />
           <StatCard
             accent={totales.noFicho || totales.sinSalida ? "warn" : "ok"}
@@ -667,7 +675,9 @@ export default function NominaDelEvento({
                     {t("ui.NominaDelEvento.col.horas", "Horas")}
                   </th>
                   <th className="px-3 py-2 text-right font-medium">
-                    {t("ui.NominaDelEvento.aPagar", "A pagar")}
+                    {terminado
+                      ? t("ui.NominaDelEvento.aPagar", "A pagar")
+                      : t("ui.NominaDelEvento.presupuesto", "Presupuesto")}
                   </th>
                   <th className="px-3 py-2 font-medium">
                     {t("ui.NominaDelEvento.col.estado", "Estado")}
@@ -717,7 +727,9 @@ export default function NominaDelEvento({
                         </span>
                       </td>
                       <td className="px-3 py-2 text-right tabular-nums">
-                        {dinero(f.importeCentavos)}
+                        {dinero(
+                          terminado ? f.importeCentavos : f.presupuestoCentavos,
+                        )}
                       </td>
                       <td className="px-3 py-2">
                         {noFicho ? (

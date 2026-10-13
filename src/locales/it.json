@@ -17114,7 +17114,8 @@
       },
       "terminado": "Evento terminato.",
       "noFichoValeCero": "{{count}} turno/i senza timbratura valgono zero.",
-      "sinSalidaNoSePaga": "{{count}} turno/i senza uscita non si pagano finché non vengono chiusi nei Registri presenze."
+      "sinSalidaNoSePaga": "{{count}} turno/i senza uscita non si pagano finché non vengono chiusi nei Registri presenze.",
+      "presupuesto": "Budget"
     }
   },
   "visitantes": {

@@ -17114,7 +17114,8 @@
       },
       "terminado": "Événement terminé.",
       "noFichoValeCero": "{{count}} service(s) sans pointage valent zéro.",
-      "sinSalidaNoSePaga": "{{count}} service(s) sans sortie ne sont pas payés tant qu’ils ne sont pas clôturés dans les Registres de présence."
+      "sinSalidaNoSePaga": "{{count}} service(s) sans sortie ne sont pas payés tant qu’ils ne sont pas clôturés dans les Registres de présence.",
+      "presupuesto": "Budget"
     }
   },
   "visitantes": {

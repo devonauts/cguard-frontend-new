@@ -17114,7 +17114,8 @@
       },
       "terminado": "Veranstaltung beendet.",
       "noFichoValeCero": "{{count}} Schicht(en) ohne Einstempeln zählen null.",
-      "sinSalidaNoSePaga": "{{count}} Schicht(en) ohne Ausstempeln werden erst bezahlt, wenn sie in den Anwesenheitsprotokollen geschlossen sind."
+      "sinSalidaNoSePaga": "{{count}} Schicht(en) ohne Ausstempeln werden erst bezahlt, wenn sie in den Anwesenheitsprotokollen geschlossen sind.",
+      "presupuesto": "Budget"
     }
   },
   "visitantes": {

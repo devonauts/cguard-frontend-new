@@ -16581,7 +16581,8 @@
       },
       "terminado": "Evento terminado.",
       "noFichoValeCero": "{{count}} turno(s) sin fichar valen cero.",
-      "sinSalidaNoSePaga": "{{count}} turno(s) sin salida no se pagan hasta cerrarlos en Registros de asistencia."
+      "sinSalidaNoSePaga": "{{count}} turno(s) sin salida no se pagan hasta cerrarlos en Registros de asistencia.",
+      "presupuesto": "Presupuesto"
     }
   },
   "map": {

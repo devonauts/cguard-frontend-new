@@ -16581,7 +16581,8 @@
       },
       "terminado": "Event finished.",
       "noFichoValeCero": "{{count}} shift(s) with no clock-in count as zero.",
-      "sinSalidaNoSePaga": "{{count}} shift(s) with no clock-out aren’t paid until closed in Attendance records."
+      "sinSalidaNoSePaga": "{{count}} shift(s) with no clock-out aren’t paid until closed in Attendance records.",
+      "presupuesto": "Budget"
     }
   },
   "map": {
