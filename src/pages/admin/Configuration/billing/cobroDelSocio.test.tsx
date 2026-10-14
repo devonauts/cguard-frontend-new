@@ -9,6 +9,7 @@ import {
   esDiaCivil,
   puedePagarAhora,
   resumenDelCobro,
+  desafioDeMercadoPago,
 } from "./cobroDelSocio";
 
 /**
@@ -103,6 +104,44 @@ describe("decisiones de la vista", () => {
       motivos: ["R-2: Fondos insuficientes"],
       requiereAccion: false,
     });
+  });
+});
+
+describe("Mercado Pago 3-D Secure", () => {
+  const conReto = (challenge: any, extra: any = {}) => ({
+    estado: "past_due",
+    cobradas: [],
+    fallidas: [{ number: "R-1", motivo: "pending_challenge" }],
+    requiereAccion: {
+      provider: "mercadopago", invoiceId: "f1", publicKey: "TEST-pk",
+      chargeRef: "888", challenge, ...extra,
+    },
+  });
+
+  it("returns the challenge to render and the payment to confirm afterwards", () => {
+    const r = conReto({ url: "https://acs.issuer.test/c", creq: "abc" });
+
+    expect(desafioDeMercadoPago(r as any)).toEqual({
+      invoiceId: "f1", chargeRef: "888", url: "https://acs.issuer.test/c", creq: "abc",
+    });
+    expect(resumenDelCobro(r as any).requiereAccion).toBe(true);
+  });
+
+  it("never frames a non-https page, and needs creq and the payment id", () => {
+    expect(desafioDeMercadoPago(conReto({ url: "http://acs.issuer.test/c", creq: "abc" }) as any)).toBeNull();
+    expect(desafioDeMercadoPago(conReto({ url: "javascript:alert(1)", creq: "abc" }) as any)).toBeNull();
+    expect(desafioDeMercadoPago(conReto({ url: "https://acs.issuer.test/c", creq: "" }) as any)).toBeNull();
+    expect(desafioDeMercadoPago(conReto({ url: "https://acs.issuer.test/c", creq: "a" }, { chargeRef: undefined }) as any)).toBeNull();
+  });
+
+  it("a Stripe action is not a Mercado Pago challenge", () => {
+    const r = {
+      estado: "past_due", cobradas: [], fallidas: [],
+      requiereAccion: { invoiceId: "f1", publicKey: "pk", clientSecret: "pi_secret" },
+    };
+
+    expect(desafioDeMercadoPago(r as any)).toBeNull();
+    expect(resumenDelCobro(r as any).requiereAccion).toBe(true);
   });
 });
 

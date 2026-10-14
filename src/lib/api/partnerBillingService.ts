@@ -113,11 +113,19 @@ export interface ResultadoDelCobro {
   estado: string;
   cobradas: string[];
   fallidas: Array<{ number: string | null; motivo: string }>;
-  /** 3-D Secure: el banco pide que el titular confirme el cargo. */
+  /**
+   * 3-D Secure: el banco pide que el titular confirme el cargo.
+   *  · Stripe        `clientSecret` → `stripe.confirmCardPayment`.
+   *  · Mercado Pago  `challenge { url, creq }` → the issuer's page in an
+   *                  iframe; then `confirmarPago(invoiceId, chargeRef)`.
+   */
   requiereAccion: null | {
+    provider?: string;
     invoiceId: string;
-    clientSecret: string;
     publicKey: string;
+    clientSecret?: string;
+    chargeRef?: string;
+    challenge?: { url: string; creq: string };
   };
 }
 
@@ -165,11 +173,15 @@ export const partnerBillingService = {
   pagar(): Promise<ResultadoDelCobro> {
     return ApiService.post(`/tenant/${tenantId()}/partner-billing/pay`, {});
   },
-  /** Tras `confirmCardPayment`: `cargo` es el id del PaymentIntent. */
+  /**
+   * Tras `confirmCardPayment` (`cargo` = el id del PaymentIntent) o tras el
+   * reto 3-D Secure de Mercado Pago (`cargo` = el id del pago). «pendiente»:
+   * la pasarela aún decide; se asienta solo (aviso o siguiente barrido).
+   */
   confirmarPago(
     invoiceId: string,
     cargo: string,
-  ): Promise<{ estado: "pagada" | "rechazada"; companyStatus?: string }> {
+  ): Promise<{ estado: "pagada" | "rechazada" | "pendiente"; companyStatus?: string }> {
     return ApiService.post(
       `/tenant/${tenantId()}/partner-billing/pay/confirm`,
       { invoiceId, cargo },
