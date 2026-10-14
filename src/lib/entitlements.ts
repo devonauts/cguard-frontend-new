@@ -111,7 +111,40 @@ export function esPruebaSinAprobar(user: any): boolean {
   if (!user || user.isSuperadmin === true) return false;
   const { billingStatus } = getBillingState(user);
 
-  return billingStatus === "trial_pending" || billingStatus === "trial_rejected";
+  return (
+    billingStatus === "trial_pending" || billingStatus === "trial_rejected"
+  );
+}
+
+/**
+ * ¿`ProtectedRoute` va a pintar la pantalla de bloqueo (suspendida, o
+ * cancelada fuera de Facturación)? Entonces tampoco se monta el armazón: el
+ * menú y la barra se pintaban alrededor del aviso y pedían datos que el
+ * servidor niega. Misma regla que ProtectedRoute; superadmins nunca.
+ */
+export function esEmpresaBloqueada(user: any, pathname: string): boolean {
+  if (!user || user.isSuperadmin === true) return false;
+  // Como `isPlatformSuperadmin` de ProtectedRoute: también por el rol.
+  const roles = Array.isArray(user.roles ?? user.role)
+    ? (user.roles ?? user.role)
+    : [user.roles ?? user.role];
+
+  if (
+    roles.some((r: any) =>
+      String(typeof r === "string" ? r : r?.name || r?.key || r?.slug || "")
+        .toLowerCase()
+        .includes("superadmin"),
+    )
+  )
+    return false;
+  const { billingStatus, suspendedAt } = getBillingState(user);
+
+  if (suspendedAt) return true;
+  if (billingStatus !== "canceled") return false;
+
+  return !(
+    pathname.startsWith("/setting/billing") || pathname.startsWith("/billing")
+  );
 }
 
 /** The current tenant's billing/suspension state for the lockout gate. */

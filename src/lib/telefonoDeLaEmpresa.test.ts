@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 /**
  * El ejemplo de teléfono sale del país de la EMPRESA, no de Ecuador escrito a
@@ -15,6 +15,13 @@ beforeEach(() => {
   });
 });
 afterEach(() => vi.unstubAllGlobals());
+
+// La primera importación carga los datos de zonas horarias (tz-lookup) y, con
+// la máquina cargada, pasaba de los 5 s por defecto de la prueba. Se carga una
+// vez aquí, con margen; las funciones leen el país al llamarlas, no al importar.
+beforeAll(async () => {
+  await import("./telefonoDeLaEmpresa");
+}, 60_000);
 
 describe("teléfono de la empresa", () => {
   it("una empresa de México escribe con +52", async () => {

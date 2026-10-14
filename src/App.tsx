@@ -547,7 +547,7 @@ const StyleGuide = lazy(() => import("./pages/StyleGuide"));
 
 import AppLayout from "@/layouts/app-layout";
 import ProtectedRoute, { PublicOnlyRoute } from "@/components/ProtectedRoute";
-import { esPruebaSinAprobar } from "@/lib/entitlements";
+import { esEmpresaBloqueada, esPruebaSinAprobar } from "@/lib/entitlements";
 import i18n from "@/i18n";
 
 function normalizeInviteToken(value: string | null | undefined) {
@@ -674,6 +674,8 @@ function PersistentChrome({ children }: { children: React.ReactNode }) {
   // barra y el asistente de bienvenida pedirían datos que el servidor niega;
   // `ProtectedRoute` pinta a pantalla completa «tu prueba está en revisión».
   if (esPruebaSinAprobar(user)) return <>{children}</>;
+  // Empresa suspendida o cancelada: lo mismo, la pantalla de bloqueo sola.
+  if (esEmpresaBloqueada(user, location.pathname)) return <>{children}</>;
 
   // La cabecera persistente (topbar + menú + overlay de pánico) se monta FUERA
   // del AppErrorBoundary de las rutas. Este boundary de respaldo evita que un

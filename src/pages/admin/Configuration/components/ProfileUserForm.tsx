@@ -22,6 +22,7 @@ import {
   SkeletonCards,
 } from "@/components/kit";
 import { ejemploDeTelefono } from "@/lib/telefonoDeLaEmpresa";
+import { reducirFoto } from "@/lib/reducirFoto";
 
 type MeTenantSetting = { theme?: string; logoUrl?: string | null };
 type MeTenant = { name?: string; phone?: string; settings?: MeTenantSetting[] };
@@ -333,26 +334,19 @@ export default function ProfileUserForm() {
       }
       if (avatarFile && currentTenantId && currentUserId) {
         try {
-          // Convert file to data URL and send as avatars payload so backend
-          // can handle base64 upload the same way as settings logos.
-          const toDataUrl = (file: File) =>
-            new Promise<string>((resolve, reject) => {
-              const reader = new FileReader();
-
-              reader.onload = () => resolve(String(reader.result));
-              reader.onerror = (e) => reject(e);
-              reader.readAsDataURL(file);
-            });
-
-          const dataUrl = await toDataUrl(avatarFile);
+          // La foto viaja en base64 dentro del PUT y el servidor corta a
+          // 2 MB: una de móvil (3-5 MB) fallaba siempre. Se reduce antes
+          // (lib/reducirFoto) a 1024 px y JPEG.
+          const foto = await reducirFoto(avatarFile);
+          const nombre = foto.mimeType === "image/jpeg" ? avatarFile.name.replace(/\.[^.]+$/, "") + ".jpg" : avatarFile.name;
 
           await AccountService.updateProfile({
             avatars: [
               {
-                data: dataUrl,
-                name: avatarFile.name,
-                sizeInBytes: avatarFile.size,
-                mimeType: avatarFile.type,
+                data: foto.dataUrl,
+                name: nombre,
+                sizeInBytes: foto.sizeInBytes,
+                mimeType: foto.mimeType,
               },
             ],
           });
