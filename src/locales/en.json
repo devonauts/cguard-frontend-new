@@ -587,7 +587,16 @@
       "cardError": "The card could not be saved. Check the details.",
       "loadingForm": "Loading the secure form…",
       "saveCard": "Save card",
-      "pausedNoData": "Your subscription is paused due to non-payment and we could not load the details. Reload the page or contact your provider."
+      "pausedNoData": "Your subscription is paused due to non-payment and we could not load the details. Reload the page or contact your provider.",
+      "mp3ds": {
+        "title": "Confirm the payment with your bank",
+        "intro": "Your bank asks you to confirm this payment. Follow the steps in the box.",
+        "frameTitle": "Your bank confirmation",
+        "cancel": "Cancel",
+        "done": "I already confirmed with my bank",
+        "pending": "Your bank is finishing confirming the payment. It will show up in a few minutes.",
+        "cancelled": "The payment was not confirmed. You can try again with “Pay now”."
+      }
     },
     "lockedSuspendedMsgPartner": "Access to this account has been suspended. Contact your provider to reactivate it.",
     "lockedCanceledMsgPartner": "Your subscription was canceled. Contact your provider to reactivate it.",
@@ -18562,6 +18571,7 @@
     "enVivo": "{{quien}} support is connected live",
     "enVivoTicket": "{{quien}} support is connected live working on your ticket {{ticket}}",
     "barraPlataforma": "You are inside {{empresa}} as {{marca}} support",
+    "barraPlataformaPorSocio": "You are inside {{empresa}} as {{plataforma}} Support (through {{socio}})",
     "ticket": "Ticket {{ticket}}"
   },
   "avisoDeRecarga": {

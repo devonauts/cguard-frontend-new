@@ -88,6 +88,21 @@ export function resumenDelCobro(r: ResultadoDelCobro | null | undefined): {
     motivos: (r?.fallidas || [])
       .map((f) => [f.number, f.motivo].filter(Boolean).join(": "))
       .filter(Boolean),
-    requiereAccion: !!r?.requiereAccion?.clientSecret,
+    requiereAccion:
+      !!r?.requiereAccion?.clientSecret || !!desafioDeMercadoPago(r),
   };
+}
+
+/** The Mercado Pago 3-D Secure challenge to render, or null. Only an https page is ever framed. */
+export function desafioDeMercadoPago(
+  r: ResultadoDelCobro | null | undefined,
+): { invoiceId: string; chargeRef: string; url: string; creq: string } | null {
+  const a = r?.requiereAccion;
+
+  if (!a?.challenge || !a.chargeRef || !a.invoiceId) return null;
+  const { url, creq } = a.challenge;
+
+  if (!/^https:\/\//.test(String(url || "")) || !creq) return null;
+
+  return { invoiceId: a.invoiceId, chargeRef: a.chargeRef, url, creq };
 }

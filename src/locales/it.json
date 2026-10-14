@@ -6155,7 +6155,16 @@
       "title": "Il tuo abbonamento con il tuo fornitore",
       "trial": "Sei nel periodo di prova.",
       "trialAddCard": "Aggiungi una carta prima di quella data perché il servizio continui senza interruzioni.",
-      "trialUntil": "Il tuo periodo di prova termina il {{fecha}}."
+      "trialUntil": "Il tuo periodo di prova termina il {{fecha}}.",
+      "mp3ds": {
+        "title": "Conferma il pagamento con la tua banca",
+        "intro": "La tua banca chiede di confermare questo pagamento. Segui i passaggi nel riquadro.",
+        "frameTitle": "Conferma della tua banca",
+        "cancel": "Annulla",
+        "done": "Ho già confermato con la mia banca",
+        "pending": "La tua banca sta completando la conferma del pagamento. Lo vedrai tra pochi minuti.",
+        "cancelled": "Il pagamento non è stato confermato. Puoi riprovare con «Paga ora»."
+      }
     },
     "plan": "Piano",
     "removeUser": "Smetti di pagare per questa persona",
@@ -18562,6 +18571,7 @@
     "enVivo": "Il supporto di {{quien}} è collegato in diretta",
     "enVivoTicket": "Il supporto di {{quien}} è collegato in diretta per il tuo ticket {{ticket}}",
     "barraPlataforma": "Sei dentro {{empresa}} come supporto di {{marca}}",
+    "barraPlataformaPorSocio": "Sei dentro {{empresa}} come supporto di {{plataforma}} (tramite {{socio}})",
     "ticket": "Ticket {{ticket}}"
   },
   "avisoDeRecarga": {

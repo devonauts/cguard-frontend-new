@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useAuth } from "@/contexts/AuthContext";
-import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
+import { MARCA_DE_PLATAFORMA, useWhiteLabel } from "@/contexts/WhiteLabelContext";
 import {
   CLAVE_SESION_DE_SOPORTE,
   esSoporteDeLaPlataforma,
+  esSoportePlataformaPorSocio,
   finDeSoporte,
   latidoDeSoporte,
   leerSesionDeSoporte,
@@ -71,10 +72,19 @@ export default function BarraDeSoporte() {
 
   // El soporte de la plataforma se nombra como el anfitrión: en el de un socio
   // no se escribe nuestro nombre.
+  // Platform support that came in through the partner panel acts as the
+  // partner's admin, but it is CGuard Pro support: the bar says who really is
+  // inside, not «<partner> support».
   const plataforma = esSoporteDeLaPlataforma(sesion);
-  const texto = plataforma
-    ? t("soporte.barraPlataforma", { empresa: sesion.tenantName, marca: marca || sesion.resellerName })
-    : t("soporte.barra", { empresa: sesion.tenantName, socio: sesion.resellerName });
+  const texto = esSoportePlataformaPorSocio(sesion)
+    ? t("soporte.barraPlataformaPorSocio", {
+        empresa: sesion.tenantName,
+        plataforma: MARCA_DE_PLATAFORMA.platformName,
+        socio: sesion.resellerName,
+      })
+    : plataforma
+      ? t("soporte.barraPlataforma", { empresa: sesion.tenantName, marca: marca || sesion.resellerName })
+      : t("soporte.barra", { empresa: sesion.tenantName, socio: sesion.resellerName });
 
   return (
     <div

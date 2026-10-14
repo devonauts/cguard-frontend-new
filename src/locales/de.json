@@ -6155,7 +6155,16 @@
       "title": "Ihr Abonnement bei Ihrem Anbieter",
       "trial": "Sie befinden sich im Testzeitraum.",
       "trialAddCard": "Fügen Sie vor diesem Datum eine Karte hinzu, damit der Dienst ohne Unterbrechung weiterläuft.",
-      "trialUntil": "Ihr Testzeitraum endet am {{fecha}}."
+      "trialUntil": "Ihr Testzeitraum endet am {{fecha}}.",
+      "mp3ds": {
+        "title": "Zahlung bei Ihrer Bank bestätigen",
+        "intro": "Ihre Bank bittet Sie, diese Zahlung zu bestätigen. Folgen Sie den Schritten im Feld.",
+        "frameTitle": "Bestätigung Ihrer Bank",
+        "cancel": "Abbrechen",
+        "done": "Ich habe bei meiner Bank bestätigt",
+        "pending": "Ihre Bank schließt die Bestätigung der Zahlung ab. Sie erscheint in wenigen Minuten.",
+        "cancelled": "Die Zahlung wurde nicht bestätigt. Sie können es mit „Jetzt bezahlen“ erneut versuchen."
+      }
     },
     "plan": "Tarif",
     "removeUser": "Für diese Person nicht mehr bezahlen",
@@ -18562,6 +18571,7 @@
     "enVivo": "Der Support von {{quien}} ist live verbunden",
     "enVivoTicket": "Der Support von {{quien}} ist live verbunden und bearbeitet Ihr Ticket {{ticket}}",
     "barraPlataforma": "Sie sind in {{empresa}} als Support von {{marca}}",
+    "barraPlataformaPorSocio": "Sie sind in {{empresa}} als Support von {{plataforma}} (über {{socio}})",
     "ticket": "Ticket {{ticket}}"
   },
   "avisoDeRecarga": {

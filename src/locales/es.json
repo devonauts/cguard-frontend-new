@@ -587,7 +587,16 @@
       "cardError": "No se pudo guardar la tarjeta. Revisa los datos.",
       "loadingForm": "Cargando el formulario seguro…",
       "saveCard": "Guardar tarjeta",
-      "pausedNoData": "Tu suscripción está pausada por falta de pago y no pudimos cargar el detalle. Recarga la página o contacta a tu proveedor."
+      "pausedNoData": "Tu suscripción está pausada por falta de pago y no pudimos cargar el detalle. Recarga la página o contacta a tu proveedor.",
+      "mp3ds": {
+        "title": "Confirma el pago con tu banco",
+        "intro": "Tu banco pide confirmar este pago. Sigue los pasos en el recuadro.",
+        "frameTitle": "Confirmación de tu banco",
+        "cancel": "Cancelar",
+        "done": "Ya confirmé con mi banco",
+        "pending": "Tu banco está terminando de confirmar el pago. Lo verás reflejado en unos minutos.",
+        "cancelled": "No se confirmó el pago. Puedes volver a intentarlo con «Pagar ahora»."
+      }
     },
     "lockedSuspendedMsgPartner": "El acceso a esta cuenta fue suspendido. Contacta a tu proveedor para reactivarla.",
     "lockedCanceledMsgPartner": "Tu suscripción fue cancelada. Contacta a tu proveedor para reactivarla.",
@@ -18562,6 +18571,7 @@
     "enVivo": "Soporte de {{quien}} está conectado en vivo",
     "enVivoTicket": "Soporte de {{quien}} está conectado en vivo atendiendo tu ticket {{ticket}}",
     "barraPlataforma": "Estás dentro de {{empresa}} como soporte de {{marca}}",
+    "barraPlataformaPorSocio": "Estás dentro de {{empresa}} como Soporte de {{plataforma}} (a través de {{socio}})",
     "ticket": "Ticket {{ticket}}"
   },
   "avisoDeRecarga": {

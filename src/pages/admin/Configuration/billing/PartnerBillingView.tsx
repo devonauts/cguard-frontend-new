@@ -21,6 +21,7 @@ import {
   TONO_DEL_ESTADO,
   TONO_DEL_RECIBO,
   accionDeTarjeta,
+  desafioDeMercadoPago,
   desgloseDelPlan,
   esDiaCivil,
   puedePagarAhora,
@@ -44,6 +45,7 @@ import {
 import { formatMoney } from "@/lib/formatMoney";
 import type { PreparacionDeTarjeta } from "@/lib/api/partnerBillingService";
 import FormularioMercadoPago from "./FormularioMercadoPago";
+import Desafio3dsMercadoPago from "./Desafio3dsMercadoPago";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -134,6 +136,8 @@ export default function PartnerBillingView({
   const { t } = useTranslation();
   const [formularioAbierto, setFormularioAbierto] = useState(false);
   const [pagando, setPagando] = useState(false);
+  /** Mercado Pago 3-D Secure waiting for the holder (only ever with the owner on screen). */
+  const [desafio, setDesafio] = useState<ReturnType<typeof desafioDeMercadoPago>>(null);
 
   const moneda = data.price?.currency || "USD";
   const plan = desgloseDelPlan(data);
@@ -186,6 +190,16 @@ export default function PartnerBillingView({
           defaultValue: "Pago realizado. ¡Gracias!",
         }),
       );
+
+    const retoMp = desafioDeMercadoPago(r);
+
+    if (retoMp) {
+      // The bank's page is shown in a modal; `confirmarDesafio` re-reads the
+      // payment when the holder is done. Nothing else to say yet.
+      setDesafio(retoMp);
+
+      return;
+    }
 
     if (r.requiereAccion?.clientSecret) {
       try {
@@ -250,6 +264,45 @@ export default function PartnerBillingView({
       );
     }
 
+    await onRefresh();
+  };
+
+  /** After the Mercado Pago challenge: the server re-reads the payment. */
+  const confirmarDesafio = async () => {
+    const reto = desafio;
+
+    setDesafio(null);
+    if (!reto) return;
+    try {
+      const c = await partnerBillingService.confirmarPago(
+        reto.invoiceId,
+        reto.chargeRef,
+      );
+
+      if (c.estado === "pagada")
+        toast.success(
+          t("billing.partner.paidOk", { defaultValue: "Pago realizado. ¡Gracias!" }),
+        );
+      else if (c.estado === "pendiente")
+        toast.info(
+          t("billing.partner.mp3ds.pending", {
+            defaultValue:
+              "Tu banco está terminando de confirmar el pago. Lo verás reflejado en unos minutos.",
+          }),
+        );
+      else
+        toast.error(
+          t("billing.partner.authFailed", {
+            defaultValue:
+              "Tu banco no confirmó el pago. Inténtalo de nuevo o usa otra tarjeta.",
+          }),
+        );
+    } catch (e: any) {
+      toast.error(
+        e?.message ||
+          t("billing.partner.payError", { defaultValue: "No se pudo completar el pago." }),
+      );
+    }
     await onRefresh();
   };
 
@@ -661,6 +714,44 @@ export default function PartnerBillingView({
               setFormularioAbierto(false);
               await atenderResultado(r);
             }}
+          />
+        )}
+      </Modal>
+
+      <Modal
+        icon={<ShieldCheck />}
+        open={!!desafio}
+        title={t("billing.partner.mp3ds.title", {
+          defaultValue: "Confirma el pago con tu banco",
+        })}
+        onOpenChange={(abierto) => {
+          if (!abierto && desafio) {
+            setDesafio(null);
+            toast.info(
+              t("billing.partner.mp3ds.cancelled", {
+                defaultValue:
+                  "No se confirmó el pago. Puedes volver a intentarlo con «Pagar ahora».",
+              }),
+            );
+            void onRefresh();
+          }
+        }}
+      >
+        {desafio && (
+          <Desafio3dsMercadoPago
+            creq={desafio.creq}
+            url={desafio.url}
+            onCancel={() => {
+              setDesafio(null);
+              toast.info(
+                t("billing.partner.mp3ds.cancelled", {
+                  defaultValue:
+                    "No se confirmó el pago. Puedes volver a intentarlo con «Pagar ahora».",
+                }),
+              );
+              void onRefresh();
+            }}
+            onDone={confirmarDesafio}
           />
         )}
       </Modal>
