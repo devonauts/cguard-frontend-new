@@ -30,6 +30,7 @@ import SplashScreen from "@/components/SplashScreen";
 import BrandLockup from "@/components/BrandLockup";
 import { esMarcaDeSocio, useWhiteLabel } from "@/contexts/WhiteLabelContext";
 import { FadeIn } from "@/components/kit";
+import { abrirPuertaDeEntrada } from "@/lib/seguridad/puertaEnVivo";
 
 interface AuthShellProps {
   children: ReactNode;
@@ -95,6 +96,9 @@ export default function AuthShell({
 }: AuthShellProps) {
   const { t } = useTranslation();
   const [cargando, setCargando] = useState(splash);
+
+  // La puerta anti-copia también vigila la entrada (socket anónimo).
+  useEffect(() => abrirPuertaDeEntrada(), []);
 
   useEffect(() => {
     if (!splash) return;

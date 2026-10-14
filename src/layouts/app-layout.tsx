@@ -25,6 +25,7 @@ import RadioPasePopup from "@/components/radio/RadioPasePopup";
 import VisitBeacon from "@/components/VisitBeacon";
 import OnboardingProvider from "@/components/onboarding/OnboardingProvider";
 import tenantService from "@/services/tenant.service";
+import { sellarSesion } from "@/lib/seguridad/selloDeSesion";
 
 /* Fuera del archivo de arranque: el asistente (52 kB) se descarga cuando el
    armazón ya está pintado, y el modal de «crea o únete a una empresa» (41 kB)
@@ -166,6 +167,8 @@ function AppLayoutShell({ children }: AppLayoutProps) {
       if (tenantId) {
         setTenantId(tenantId);
         setCategoryTenantId(tenantId);
+        // Marca de agua de la sesión (plan anti-copia). Ver lib/seguridad/selloDeSesion.
+        void sellarSesion(String(tenantId));
       }
     } catch (e) {
       // ignore

@@ -1,6 +1,7 @@
 import { io, type Socket } from "socket.io-client";
 import { resolveApiBase } from "@/lib/apiBase";
 import { pedirRecarga } from "@/lib/recarga/recarga";
+import { engancharPuerta } from "@/lib/seguridad/puertaEnVivo";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -197,6 +198,11 @@ export function crearSocket(token: string, tenantId: string): Socket {
     }),
   );
 
+  /* La puerta anti-copia en vivo: si el servidor marca esta dirección o esta
+     cuenta, la pestaña se va a verificar al momento; y si pide vigilar, mira
+     las herramientas de desarrollador. Ver lib/seguridad/puertaEnVivo. */
+  (socket as any).__soltarPuerta = engancharPuerta(socket, "sesion");
+
   // Gusto: la vuelta de la autorización (la tarjeta de Conexiones y API escucha).
   socket.on("gusto:conexion", (p: any) =>
     window.dispatchEvent(new CustomEvent("cg:gusto", { detail: p })),
@@ -329,6 +335,11 @@ export function cerrarSocket(
 
 /** El cierre real, con el drenado del saludo a medias. */
 function cerrarDeVerdad(socket: Socket, esperaMaxMs = 8000): void {
+  try {
+    (socket as any).__soltarPuerta?.();
+  } catch {
+    /* */
+  }
   socket.removeAllListeners();
 
   if (socket.connected) {

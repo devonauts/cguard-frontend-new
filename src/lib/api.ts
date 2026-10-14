@@ -1,4 +1,6 @@
 import { idiomaElegido } from "@/lib/idiomaElegido";
+import { irAVerificacion } from "@/lib/seguridad/puertaEnVivo";
+import { quizaDiagnosticoInterno } from "@/lib/seguridad/rutasInternas";
 import i18n from "@/i18n";
 import axios, { AxiosError, AxiosInstance } from "axios";
 import { toast } from "sonner";
@@ -216,6 +218,13 @@ api.interceptors.response.use(
       /* ignore */
     }
 
+    // La puerta anti-copia: esta dirección o esta cuenta tiene que verificarse.
+    if (apiError.status === 403 && apiError.code === "verificacionRequerida") {
+      irAVerificacion();
+
+      return Promise.reject(apiError);
+    }
+
     // Subscription paywall: a blocked tenant gets a 402. Nudge them to billing.
     if (apiError.status === 402 && apiError.code === "subscription_required") {
       const now = Date.now();
@@ -296,5 +305,13 @@ api.interceptors.response.use(
     return Promise.reject(apiError);
   },
 );
+
+// Trampas del código (plan anti-copia): no hace nada salvo que alguien las
+// active a mano leyendo el código. Ver lib/seguridad/rutasInternas.
+try {
+  quizaDiagnosticoInterno(api, localStorage.getItem("tenantId"));
+} catch {
+  /* nunca rompe el arranque */
+}
 
 export default api;
