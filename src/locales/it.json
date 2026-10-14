@@ -6168,7 +6168,19 @@
     "restoreUserOk": "Concedi l'accesso",
     "restoreUserShort": "Concedi l'accesso",
     "restoredUser": "Accesso ripristinato; torna in fattura",
-    "invStatusRefunded": "Rimborsata"
+    "invStatusRefunded": "Rimborsata",
+    "pruebaEnRevision": {
+      "pendingTitle": "La tua prova è in fase di revisione",
+      "pendingMsg": "Grazie per esserti registrato. Controlliamo a mano ogni nuovo account prima di attivare la prova gratuita; di solito ci vuole meno di un giorno lavorativo. Appena sarà pronta ti avviseremo via e-mail e potrai accedere.",
+      "pendingEmail": "Ti scriveremo a {{email}}.",
+      "stillPending": "È ancora in revisione. Ti avviseremo via e-mail appena sarà pronta.",
+      "check": "Controlla di nuovo",
+      "checking": "Controllo in corso…",
+      "rejectedTitle": "Non è stato possibile attivare la tua prova",
+      "rejectedMsg": "Abbiamo esaminato la tua richiesta e non possiamo attivare la prova gratuita per questo account. Se pensi che sia un errore, scrivici e la riesamineremo.",
+      "reasonLabel": "Motivo",
+      "contact": "Scrivi all'assistenza"
+    }
   },
   "brand": {
     "tagline": "Sicurezza Intelligente"

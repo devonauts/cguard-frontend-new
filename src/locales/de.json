@@ -6168,7 +6168,19 @@
     "restoreUserOk": "Zugang gewähren",
     "restoreUserShort": "Zugang gewähren",
     "restoredUser": "Zugang wiederhergestellt; wird wieder abgerechnet",
-    "invStatusRefunded": "Erstattet"
+    "invStatusRefunded": "Erstattet",
+    "pruebaEnRevision": {
+      "pendingTitle": "Ihre Testphase wird geprüft",
+      "pendingMsg": "Danke für Ihre Registrierung. Wir prüfen jedes neue Konto von Hand, bevor wir die kostenlose Testphase freischalten; das dauert meist weniger als einen Werktag. Sobald alles bereit ist, benachrichtigen wir Sie per E-Mail und Sie können sich anmelden.",
+      "pendingEmail": "Wir schreiben an {{email}}.",
+      "stillPending": "Die Prüfung läuft noch. Wir benachrichtigen Sie per E-Mail, sobald alles bereit ist.",
+      "check": "Erneut prüfen",
+      "checking": "Wird geprüft…",
+      "rejectedTitle": "Wir konnten Ihre Testphase nicht freischalten",
+      "rejectedMsg": "Wir haben Ihre Anfrage geprüft und können die kostenlose Testphase für dieses Konto nicht freischalten. Wenn Sie glauben, dass es sich um einen Fehler handelt, schreiben Sie uns und wir sehen es uns noch einmal an.",
+      "reasonLabel": "Grund",
+      "contact": "Support kontaktieren"
+    }
   },
   "brand": {
     "tagline": "Intelligente Sicherheit"

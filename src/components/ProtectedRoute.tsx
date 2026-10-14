@@ -6,6 +6,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import NoWorkspaceAccess from "./NoWorkspaceAccess";
 import VerifyEmailGate from "./VerifyEmailGate";
 import SubscriptionLockedScreen from "./SubscriptionLockedScreen";
+import PruebaEnRevisionScreen from "./PruebaEnRevisionScreen";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { getBillingState } from "@/lib/entitlements";
@@ -176,6 +177,15 @@ export default function ProtectedRoute({
 
     if (suspendedAt) {
       return <SubscriptionLockedScreen variant="suspended" />;
+    }
+    // Prueba gratuita pendiente de aprobación a mano (plan anti-copia): el
+    // servidor no le da datos al CRM hasta que se apruebe, así que en vez del
+    // panel —que sólo pintaría errores— se explica qué pasa y qué esperar.
+    if (billingStatus === "trial_pending") {
+      return <PruebaEnRevisionScreen variant="pending" />;
+    }
+    if (billingStatus === "trial_rejected") {
+      return <PruebaEnRevisionScreen variant="rejected" />;
     }
     if (billingStatus === "canceled") {
       const onBilling =

@@ -7088,7 +7088,19 @@
     "restoreUserOk": "Dar acesso",
     "restoreUserShort": "Dar acesso",
     "restoredUser": "Acesso devolvido; volta à fatura",
-    "invStatusRefunded": "Reembolsada"
+    "invStatusRefunded": "Reembolsada",
+    "pruebaEnRevision": {
+      "pendingTitle": "Seu teste está em análise",
+      "pendingMsg": "Obrigado por se cadastrar. Revisamos manualmente cada conta nova antes de ativar o teste gratuito; normalmente leva menos de um dia útil. Assim que estiver pronto, avisaremos por e-mail e você poderá entrar.",
+      "pendingEmail": "Escreveremos para {{email}}.",
+      "stillPending": "Ainda está em análise. Avisaremos por e-mail assim que estiver pronto.",
+      "check": "Verificar novamente",
+      "checking": "Verificando…",
+      "rejectedTitle": "Não foi possível ativar seu teste",
+      "rejectedMsg": "Analisamos sua solicitação e não podemos ativar o teste gratuito desta conta. Se você acha que é um erro, escreva para nós e analisaremos novamente.",
+      "reasonLabel": "Motivo",
+      "contact": "Falar com o suporte"
+    }
   },
   "suscripcion": {
     "detalle": "Detalhes da assinatura",

@@ -619,7 +619,19 @@
     "restoreUserOk": "Dar acceso",
     "restoreUserShort": "Dar acceso",
     "restoredUser": "Acceso devuelto; vuelve a la factura",
-    "invStatusRefunded": "Reembolsada"
+    "invStatusRefunded": "Reembolsada",
+    "pruebaEnRevision": {
+      "pendingTitle": "Tu prueba está en revisión",
+      "pendingMsg": "Gracias por registrarte. Revisamos a mano cada cuenta nueva antes de activar la prueba gratuita; suele llevarnos menos de un día hábil. En cuanto esté lista te avisaremos por correo y podrás entrar.",
+      "pendingEmail": "Te escribiremos a {{email}}.",
+      "stillPending": "Todavía está en revisión. Te avisaremos por correo en cuanto esté lista.",
+      "check": "Comprobar de nuevo",
+      "checking": "Comprobando…",
+      "rejectedTitle": "No pudimos activar tu prueba",
+      "rejectedMsg": "Revisamos tu solicitud y no podemos activar la prueba gratuita de esta cuenta. Si crees que es un error, escríbenos y la revisamos de nuevo.",
+      "reasonLabel": "Motivo",
+      "contact": "Escribir a soporte"
+    }
   },
   "categories": {
     "Understood": "Entendido",

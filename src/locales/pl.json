@@ -6170,7 +6170,19 @@
     "restoreUserOk": "Nadaj dostęp",
     "restoreUserShort": "Nadaj dostęp",
     "restoredUser": "Dostęp przywrócony; ponownie na fakturze",
-    "invStatusRefunded": "Zwrócona"
+    "invStatusRefunded": "Zwrócona",
+    "pruebaEnRevision": {
+      "pendingTitle": "Twój okres próbny jest weryfikowany",
+      "pendingMsg": "Dziękujemy za rejestrację. Każde nowe konto sprawdzamy ręcznie przed uruchomieniem bezpłatnego okresu próbnego; zwykle zajmuje to mniej niż jeden dzień roboczy. Gdy wszystko będzie gotowe, damy Ci znać e-mailem i będziesz mógł się zalogować.",
+      "pendingEmail": "Napiszemy na adres {{email}}.",
+      "stillPending": "Weryfikacja wciąż trwa. Napiszemy do Ciebie, gdy tylko wszystko będzie gotowe.",
+      "check": "Sprawdź ponownie",
+      "checking": "Sprawdzanie…",
+      "rejectedTitle": "Nie udało się uruchomić okresu próbnego",
+      "rejectedMsg": "Przejrzeliśmy Twoje zgłoszenie i nie możemy uruchomić bezpłatnego okresu próbnego dla tego konta. Jeśli uważasz, że to pomyłka, napisz do nas, a sprawdzimy je ponownie.",
+      "reasonLabel": "Powód",
+      "contact": "Napisz do wsparcia"
+    }
   },
   "brand": {
     "tagline": "Inteligentna ochrona"

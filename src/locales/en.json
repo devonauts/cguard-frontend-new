@@ -619,7 +619,19 @@
     "restoreUserOk": "Grant access",
     "restoreUserShort": "Grant access",
     "restoredUser": "Access restored; back on the invoice",
-    "invStatusRefunded": "Refunded"
+    "invStatusRefunded": "Refunded",
+    "pruebaEnRevision": {
+      "pendingTitle": "Your trial is under review",
+      "pendingMsg": "Thanks for signing up. We review every new account by hand before starting the free trial; it usually takes less than one business day. As soon as it's ready we'll let you know by email and you'll be able to sign in.",
+      "pendingEmail": "We'll write to {{email}}.",
+      "stillPending": "It's still under review. We'll email you as soon as it's ready.",
+      "check": "Check again",
+      "checking": "Checking…",
+      "rejectedTitle": "We couldn't start your trial",
+      "rejectedMsg": "We reviewed your request and can't start the free trial for this account. If you think this is a mistake, write to us and we'll take another look.",
+      "reasonLabel": "Reason",
+      "contact": "Contact support"
+    }
   },
   "categories": {
     "Understood": "Understood",

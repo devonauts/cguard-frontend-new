@@ -6168,7 +6168,19 @@
     "restoreUserOk": "Toegang geven",
     "restoreUserShort": "Toegang geven",
     "restoredUser": "Toegang hersteld; weer op de factuur",
-    "invStatusRefunded": "Terugbetaald"
+    "invStatusRefunded": "Terugbetaald",
+    "pruebaEnRevision": {
+      "pendingTitle": "Je proefperiode wordt beoordeeld",
+      "pendingMsg": "Bedankt voor je aanmelding. We controleren elk nieuw account met de hand voordat we de gratis proefperiode starten; meestal duurt dat minder dan één werkdag. Zodra alles klaar is, laten we het je per e-mail weten en kun je inloggen.",
+      "pendingEmail": "We schrijven naar {{email}}.",
+      "stillPending": "De beoordeling loopt nog. We mailen je zodra alles klaar is.",
+      "check": "Opnieuw controleren",
+      "checking": "Bezig met controleren…",
+      "rejectedTitle": "We konden je proefperiode niet starten",
+      "rejectedMsg": "We hebben je aanvraag bekeken en kunnen de gratis proefperiode voor dit account niet starten. Denk je dat dit een vergissing is, schrijf ons dan en we kijken er opnieuw naar.",
+      "reasonLabel": "Reden",
+      "contact": "Contact opnemen met support"
+    }
   },
   "brand": {
     "tagline": "Intelligente beveiliging"

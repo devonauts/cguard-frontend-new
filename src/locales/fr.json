@@ -6168,7 +6168,19 @@
     "restoreUserOk": "Donner l'accès",
     "restoreUserShort": "Donner l'accès",
     "restoredUser": "Accès rétabli ; de retour sur la facture",
-    "invStatusRefunded": "Remboursée"
+    "invStatusRefunded": "Remboursée",
+    "pruebaEnRevision": {
+      "pendingTitle": "Votre essai est en cours de vérification",
+      "pendingMsg": "Merci pour votre inscription. Nous vérifions chaque nouveau compte à la main avant d'activer l'essai gratuit ; cela prend généralement moins d'un jour ouvré. Dès qu'il sera prêt, nous vous préviendrons par e-mail et vous pourrez vous connecter.",
+      "pendingEmail": "Nous vous écrirons à {{email}}.",
+      "stillPending": "La vérification est toujours en cours. Nous vous préviendrons par e-mail dès que ce sera prêt.",
+      "check": "Vérifier à nouveau",
+      "checking": "Vérification…",
+      "rejectedTitle": "Nous n'avons pas pu activer votre essai",
+      "rejectedMsg": "Nous avons examiné votre demande et ne pouvons pas activer l'essai gratuit pour ce compte. Si vous pensez qu'il s'agit d'une erreur, écrivez-nous et nous la réexaminerons.",
+      "reasonLabel": "Motif",
+      "contact": "Contacter le support"
+    }
   },
   "brand": {
     "tagline": "Sécurité intelligente"

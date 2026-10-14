@@ -101,6 +101,19 @@ export interface BillingState {
   suspendedAt: string | null;
 }
 
+/**
+ * ¿La prueba gratuita de la empresa actual espera aprobación a mano, o se
+ * rechazó? (plan anti-copia). Mientras sea así el servidor no da datos, así
+ * que ni el armazón (menú, barra, asistente de bienvenida) se monta: sólo la
+ * pantalla «en revisión». Superadmins nunca (no tienen empresa en el CRM).
+ */
+export function esPruebaSinAprobar(user: any): boolean {
+  if (!user || user.isSuperadmin === true) return false;
+  const { billingStatus } = getBillingState(user);
+
+  return billingStatus === "trial_pending" || billingStatus === "trial_rejected";
+}
+
 /** The current tenant's billing/suspension state for the lockout gate. */
 export function getBillingState(user: any): BillingState {
   const entry = currentTenantEntry(user);
