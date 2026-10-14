@@ -176,11 +176,6 @@ export default function SupervisorsPage() {
     try {
       const r = await supervisorService.sendPasswordReset(s.id);
 
-      try {
-        if (r?.link) await navigator.clipboard.writeText(r.link);
-      } catch {
-        /* clipboard optional */
-      }
       const via = [
         r?.emailed && t("ui.SupervisorsPage.viaCorreo", "correo"),
         r?.pushed && t("ui.SupervisorsPage.viaPush", "push"),
@@ -193,11 +188,11 @@ export default function SupervisorsPage() {
           ? t("ui.SupervisorsPage.enlaceDeRestablecimientoEnviado", {
               via,
               defaultValue:
-                "Enlace de restablecimiento enviado por {{via}} y copiado al portapapeles",
+                "Enlace de restablecimiento enviado por {{via}}",
             })
           : t(
               "ui.SupervisorsPage.enlaceDeRestablecimientoCopiado",
-              "Enlace de restablecimiento copiado al portapapeles",
+              "No se pudo enviar el enlace: esta persona no tiene correo ni la app instalada",
             ),
       );
     } catch (e: any) {
