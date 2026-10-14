@@ -19,6 +19,7 @@ import { useTranslation } from "react-i18next";
 import type { GuardDetail } from "../../guardDetailTypes";
 
 import { useRegistroDeFicha } from "@/layouts/FichaPersona";
+import TarjetaReconocimientoFacial from "@/components/rostro/TarjetaReconocimientoFacial";
 
 // The loaded guard record, flattened with the derived photo URL. The linked app
 // `user` (under `guard`) may carry live duty/account fields.
@@ -191,6 +192,17 @@ export default function GuardResumenPage() {
 
               {/* ── REAL STATION / PERFORMANCE / SCHEDULE / ACTIVITY ───────── */}
               <GuardSummary guard={guard} />
+
+              {/* ── RECONOCIMIENTO FACIAL (sólo con el módulo) ───────────────
+                  Va por el id de USUARIO (`guardId`), no por el de la ficha. */}
+              <TarjetaReconocimientoFacial
+                nombre={guard.fullName}
+                userId={
+                  (registro as any)?.guardId ||
+                  (registro as any)?.guard?.id ||
+                  null
+                }
+              />
 
               {/* ── EXPEDIENTE LABORAL ─────────────────────────────────────── */}
               {expediente?.seniority && (

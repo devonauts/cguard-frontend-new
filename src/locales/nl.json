@@ -2885,7 +2885,8 @@
       "overtime": "Overuren",
       "correction_pending": "Correctie in behandeling",
       "missing_location": "Zonder locatie",
-      "selfie_no_face": "Selfie zonder gezicht"
+      "selfie_no_face": "Selfie zonder gezicht",
+      "face_mismatch": "Gezicht komt niet overeen"
     },
     "excEstado": {
       "open": "Open",
@@ -3918,7 +3919,8 @@
       "guardias": "Beveiligers",
       "supervisores": "Supervisors",
       "label": "Beveiligingsteam",
-      "usuarios": "Kantoorgebruikers"
+      "usuarios": "Kantoorgebruikers",
+      "caras-registradas": "Geregistreerde gezichten"
     },
     "facturador": {
       "elementos": "Diensten",
@@ -5545,7 +5547,8 @@
     "emergencias": "Noodcentrale",
     "pases-de-turno": "Dienstoverdrachten",
     "modulos-adicionales": "Extra modules",
-    "vigia-pro": "{{agente}} Pro"
+    "vigia-pro": "{{agente}} Pro",
+    "rostrosPorAprobar": "Gezichten te keuren: {{count}}"
   },
   "siteTour": {
     "newTour": "Nieuwe ronde",
@@ -17078,7 +17081,15 @@
     },
     "SelfieRostro": {
       "titulo": "Selfie en gezicht bij inklokken",
-      "ambasApps": "Geldt voor de team-app (bewakers) en de supervisor-app: het is in beide dezelfde instelling."
+      "ambasApps": "Geldt voor de team-app (bewakers) en de supervisor-app: het is in beide dezelfde instelling.",
+      "reconocimiento": "Controleren of het de juiste beveiliger is (gezichtsherkenning)",
+      "reconocimientoOff": "Uit",
+      "reconocimientoFlag": "Melden (klokt in en blijft ter controle)",
+      "reconocimientoEnforce": "Vereisen (als het niet het eigen gezicht is, kan er niet worden ingeklokt)",
+      "reconocimientoAyuda": "Bij de start van de dienst vergelijkt de app het gezicht met het gezicht dat de beveiliger registreerde en jij goedkeurde bij Geregistreerde gezichten. Is er nog geen goedgekeurd gezicht, dan wordt toch ingeklokt en blijft het ter controle.",
+      "verCaras": "Geregistreerde gezichten bekijken",
+      "disponibleComoModulo": "Beschikbaar als extra module",
+      "verModulo": "Bekijk de module"
     },
     "CorrerCiclo": {
       "boton": "Cyclus verschuiven…",
@@ -18274,7 +18285,11 @@
       "time_clock_disabled": "De prikklok stond uit",
       "too_early": "Te vroeg",
       "selfie_no_face": "Selfie zonder gezicht (opnieuw gevraagd)",
-      "selfie_no_face_allowed": "Selfie zonder gezicht (inklokken toegestaan)"
+      "selfie_no_face_allowed": "Selfie zonder gezicht (inklokken toegestaan)",
+      "rostro_no_coincide": "Gezicht kwam niet overeen",
+      "rostro_reto_fallido": "Gevraagd gebaar niet gemaakt",
+      "rostro_sin_cara": "Gezicht was niet zichtbaar",
+      "rostro_no_verificado": "Gezicht niet gecontroleerd"
     },
     "scheduled": "Zijn dienst: {{h}}",
     "title": "Geweigerde klokpogingen",
@@ -19092,6 +19107,97 @@
       "ruta": "Toezichtroute",
       "cobertura": "Dekking",
       "otra": "Actie"
+    }
+  },
+  "rostros": {
+    "resultado": {
+      "coincide": "Komt overeen",
+      "dudoso": "Twijfelachtig",
+      "no_coincide": "Komt niet overeen",
+      "reto_fallido": "Geen gebaar",
+      "sin_cara": "Geen gezicht",
+      "sin_registro": "Niet geregistreerd",
+      "no_verificado": "Niet gecontroleerd"
+    },
+    "estado": {
+      "pendiente": "Wacht op goedkeuring",
+      "aprobado": "Goedgekeurd",
+      "rechazado": "Afgewezen",
+      "sin_registro": "Niet geregistreerd"
+    },
+    "chip": {
+      "titulo": "Gezichtsherkenning: {{resultado}}",
+      "tituloConParecido": "Gezichtsherkenning: {{resultado}} ({{pct}}% gelijkenis)"
+    },
+    "acciones": {
+      "aprobar": "Goedkeuren",
+      "rechazar": "Afwijzen",
+      "reiniciar": "Opnieuw instellen",
+      "aprobada": "Gezicht goedgekeurd: {{nombre}} kan er nu mee inklokken.",
+      "rechazada": "Gezicht afgewezen. {{nombre}} moet het opnieuw registreren.",
+      "reiniciada": "Gezicht verwijderd. {{nombre}} registreert het opnieuw in de app.",
+      "error": "De wijziging kon niet worden opgeslagen. Controleer je verbinding en probeer het opnieuw."
+    },
+    "rechazar": {
+      "titulo": "Gezicht afwijzen",
+      "desc": "De app vraagt om het gezicht opnieuw te registreren. Als je zegt waarom, ziet de persoon dat bij de nieuwe poging.",
+      "motivo": "Reden (optioneel)",
+      "pista": "Bijvoorbeeld: „De foto is tegen het licht in” of „Het is niet de juiste persoon”."
+    },
+    "reiniciar": {
+      "titulo": "Geregistreerd gezicht opnieuw instellen?",
+      "confirmar": "Verwijderen en opnieuw instellen",
+      "desc": "Het gezicht van {{nombre}} wordt verwijderd. De volgende keer dat de app opent, moet het opnieuw worden geregistreerd en tot je het goedkeurt, kan het gezicht bij het inklokken niet worden gecontroleerd."
+    },
+    "pagina": {
+      "titulo": "Geregistreerde gezichten",
+      "subtitulo": "Elke beveiliger registreert het eigen gezicht in de app. Tot je het goedkeurt, wordt het niet gebruikt om te controleren wie inklokt."
+    },
+    "apagado": {
+      "titulo": "De controle bij het inklokken staat uit",
+      "desc": "Je kunt al gezichten goedkeuren, maar ze worden pas bij het inklokken vergeleken als je het aanzet in Instellingen › Team-app › Selfie en gezicht bij inklokken.",
+      "enlace": "Naar de instellingen"
+    },
+    "tabs": {
+      "pendientes": "In afwachting",
+      "aprobadas": "Goedgekeurd",
+      "rechazadas": "Afgewezen"
+    },
+    "error": {
+      "titulo": "De gezichten konden niet worden geladen",
+      "desc": "De lijst kon niet worden geladen. Controleer je verbinding en probeer het opnieuw.",
+      "reintentar": "Opnieuw proberen"
+    },
+    "datos": {
+      "registrada": "Geregistreerd op {{fecha}}",
+      "revisada": "Beoordeeld op {{fecha}}",
+      "calidad": "Kwaliteit: {{usables}} van {{cuadros}} foto's bruikbaar",
+      "motivo": "Reden: {{motivo}}"
+    },
+    "foto": {
+      "alt": "Referentiefoto van {{nombre}}"
+    },
+    "vacio": {
+      "pendientes": "Geen gezichten die wachten op goedkeuring",
+      "pendientesDesc": "Wanneer een beveiliger het gezicht in de app registreert, verschijnt het hier om goed te keuren.",
+      "aprobadas": "Je hebt nog geen gezichten goedgekeurd",
+      "aprobadasDesc": "Goedgekeurde gezichten staan hier. Je kunt er een opnieuw instellen als het opnieuw moet worden geregistreerd.",
+      "rechazadas": "Geen afgewezen gezichten",
+      "rechazadasDesc": "Als je een gezicht afwijst, moet de beveiliger het opnieuw registreren en zie je het hier."
+    },
+    "modulo": {
+      "titulo": "Wie moet inklokken, klokt in",
+      "desc": "Met de module „Gezichtsherkenning” wordt bij het begin van de dienst gecontroleerd of het gezicht op de selfie van de beveiliger zelf is. Geen inklokken meer door een collega.",
+      "paso1": "De beveiliger registreert het gezicht één keer in de app.",
+      "paso2": "Jij keurt het hier goed, met de foto voor je.",
+      "paso3": "Bij elke dienststart controleert de app of het echt die persoon is. Komt het niet overeen, dan kies je of het alleen wordt gemeld of inklokken wordt geblokkeerd.",
+      "enlace": "Bekijk bij Extra modules"
+    },
+    "ficha": {
+      "titulo": "Gezichtsherkenning",
+      "verTodas": "Alle gezichten bekijken",
+      "sinRegistro": "Het gezicht is nog niet geregistreerd. De app vraagt erom bij de volgende keer inklokken.",
+      "error": "Het geregistreerde gezicht kon niet worden opgehaald. Open het profiel zo meteen opnieuw."
     }
   }
 }

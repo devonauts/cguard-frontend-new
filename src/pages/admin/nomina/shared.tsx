@@ -142,6 +142,7 @@ export const EXCEPTION_LABEL: Record<string, string> = tablaDeEtiquetas({
   outside_geofence: "nomina.excepcion.outside_geofence",
   missing_location: "nomina.excepcion.missing_location",
   selfie_no_face: "nomina.excepcion.selfie_no_face",
+  face_mismatch: "nomina.excepcion.face_mismatch",
   overtime: "nomina.excepcion.overtime",
   correction_pending: "nomina.excepcion.correction_pending",
 });

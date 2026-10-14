@@ -2887,7 +2887,8 @@
       "overtime": "Nadgodziny",
       "correction_pending": "Korekta w toku",
       "missing_location": "Bez lokalizacji",
-      "selfie_no_face": "Selfie bez twarzy"
+      "selfie_no_face": "Selfie bez twarzy",
+      "face_mismatch": "Niezgodna twarz"
     },
     "excEstado": {
       "open": "Otwarta",
@@ -3920,7 +3921,8 @@
       "guardias": "Pracownicy ochrony",
       "supervisores": "Nadzorcy",
       "label": "Zespół ochrony",
-      "usuarios": "Użytkownicy biura"
+      "usuarios": "Użytkownicy biura",
+      "caras-registradas": "Zarejestrowane twarze"
     },
     "facturador": {
       "elementos": "Usługi",
@@ -5547,7 +5549,8 @@
     "emergencias": "Centrum alarmowe",
     "pases-de-turno": "Zdania służby",
     "modulos-adicionales": "Moduły dodatkowe",
-    "vigia-pro": "{{agente}} Pro"
+    "vigia-pro": "{{agente}} Pro",
+    "rostrosPorAprobar": "Twarze do zatwierdzenia: {{count}}"
   },
   "siteTour": {
     "newTour": "Nowy obchód",
@@ -17304,7 +17307,15 @@
     },
     "SelfieRostro": {
       "titulo": "Selfie i twarz przy rejestracji czasu",
-      "ambasApps": "Dotyczy aplikacji zespołu (ochroniarzy) i aplikacji przełożonego: to samo ustawienie w obu."
+      "ambasApps": "Dotyczy aplikacji zespołu (ochroniarzy) i aplikacji przełożonego: to samo ustawienie w obu.",
+      "reconocimiento": "Sprawdzać, czy to właściwy pracownik (rozpoznawanie twarzy)",
+      "reconocimientoOff": "Wyłączone",
+      "reconocimientoFlag": "Zgłaszać (odbija się i czeka na sprawdzenie)",
+      "reconocimientoEnforce": "Wymagać (jeśli to nie jego twarz, nie może się odbić)",
+      "reconocimientoAyuda": "Przy rozpoczęciu zmiany aplikacja porównuje twarz z tą, którą pracownik zarejestrował, a ty zatwierdziłeś w Zarejestrowanych twarzach. Jeśli nie ma jeszcze zatwierdzonej, odbija się mimo to i czeka na sprawdzenie.",
+      "verCaras": "Zobacz zarejestrowane twarze",
+      "disponibleComoModulo": "Dostępne jako moduł dodatkowy",
+      "verModulo": "Zobacz moduł"
     },
     "CorrerCiclo": {
       "boton": "Przesuń cykl…",
@@ -18558,7 +18569,11 @@
       "time_clock_disabled": "Zegar był wyłączony",
       "too_early": "Za wcześnie",
       "selfie_no_face": "Selfie bez twarzy (poproszono o powtórzenie)",
-      "selfie_no_face_allowed": "Selfie bez twarzy (pozwolono odbić)"
+      "selfie_no_face_allowed": "Selfie bez twarzy (pozwolono odbić)",
+      "rostro_no_coincide": "Twarz się nie zgadzała",
+      "rostro_reto_fallido": "Nie wykonano wymaganego gestu",
+      "rostro_sin_cara": "Twarz nie była widoczna",
+      "rostro_no_verificado": "Twarz niesprawdzona"
     },
     "scheduled": "Jego zmiana: {{h}}",
     "title": "Odrzucone próby rejestracji",
@@ -19380,6 +19395,97 @@
       "ruta": "Trasa nadzoru",
       "cobertura": "Obsada",
       "otra": "Czynność"
+    }
+  },
+  "rostros": {
+    "resultado": {
+      "coincide": "Zgodna",
+      "dudoso": "Niepewna",
+      "no_coincide": "Niezgodna",
+      "reto_fallido": "Bez gestu",
+      "sin_cara": "Brak twarzy",
+      "sin_registro": "Niezarejestrowana",
+      "no_verificado": "Niezweryfikowana"
+    },
+    "estado": {
+      "pendiente": "Do zatwierdzenia",
+      "aprobado": "Zatwierdzona",
+      "rechazado": "Odrzucona",
+      "sin_registro": "Niezarejestrowana"
+    },
+    "chip": {
+      "titulo": "Rozpoznawanie twarzy: {{resultado}}",
+      "tituloConParecido": "Rozpoznawanie twarzy: {{resultado}} (podobieństwo {{pct}}%)"
+    },
+    "acciones": {
+      "aprobar": "Zatwierdź",
+      "rechazar": "Odrzuć",
+      "reiniciar": "Zresetuj",
+      "aprobada": "Twarz zatwierdzona: {{nombre}} może już się nią odbijać.",
+      "rechazada": "Twarz odrzucona. {{nombre}} musi zarejestrować ją ponownie.",
+      "reiniciada": "Twarz usunięta. {{nombre}} zarejestruje ją ponownie w aplikacji.",
+      "error": "Nie udało się zapisać zmiany. Sprawdź połączenie i spróbuj ponownie."
+    },
+    "rechazar": {
+      "titulo": "Odrzuć twarz",
+      "desc": "Aplikacja poprosi o ponowne zarejestrowanie twarzy. Jeśli podasz powód, pracownik zobaczy go przy kolejnej próbie.",
+      "motivo": "Powód (opcjonalnie)",
+      "pista": "Na przykład: „Zdjęcie jest pod światło” albo „To nie ta osoba”."
+    },
+    "reiniciar": {
+      "titulo": "Zresetować zarejestrowaną twarz?",
+      "confirmar": "Usuń i zresetuj",
+      "desc": "Twarz osoby {{nombre}} zostanie usunięta. Przy następnym otwarciu aplikacji trzeba będzie zarejestrować ją ponownie, a dopóki jej nie zatwierdzisz, twarz nie będzie sprawdzana przy odbiciu."
+    },
+    "pagina": {
+      "titulo": "Zarejestrowane twarze",
+      "subtitulo": "Każdy pracownik ochrony rejestruje twarz w aplikacji. Dopóki jej nie zatwierdzisz, nie służy do sprawdzania, kto się odbija."
+    },
+    "apagado": {
+      "titulo": "Sprawdzanie przy odbiciu jest wyłączone",
+      "desc": "Możesz już zatwierdzać twarze, ale nie będą porównywane przy odbiciu, dopóki nie włączysz tego w Ustawienia › Aplikacja zespołu › Selfie i twarz przy odbiciu.",
+      "enlace": "Przejdź do ustawień"
+    },
+    "tabs": {
+      "pendientes": "Oczekujące",
+      "aprobadas": "Zatwierdzone",
+      "rechazadas": "Odrzucone"
+    },
+    "error": {
+      "titulo": "Nie udało się wczytać twarzy",
+      "desc": "Nie udało się wczytać listy. Sprawdź połączenie i spróbuj ponownie.",
+      "reintentar": "Spróbuj ponownie"
+    },
+    "datos": {
+      "registrada": "Zarejestrowana {{fecha}}",
+      "revisada": "Sprawdzona {{fecha}}",
+      "calidad": "Jakość: {{usables}} z {{cuadros}} zdjęć przydatnych",
+      "motivo": "Powód: {{motivo}}"
+    },
+    "foto": {
+      "alt": "Zdjęcie referencyjne: {{nombre}}"
+    },
+    "vacio": {
+      "pendientes": "Brak twarzy do zatwierdzenia",
+      "pendientesDesc": "Gdy pracownik ochrony zarejestruje twarz w aplikacji, pojawi się tutaj do zatwierdzenia.",
+      "aprobadas": "Nie zatwierdzono jeszcze żadnej twarzy",
+      "aprobadasDesc": "Zatwierdzone twarze są tutaj. Możesz zresetować dowolną, jeśli trzeba ją zarejestrować ponownie.",
+      "rechazadas": "Brak odrzuconych twarzy",
+      "rechazadasDesc": "Jeśli odrzucisz twarz, pracownik ochrony musi ją zarejestrować ponownie, a zobaczysz ją tutaj."
+    },
+    "modulo": {
+      "titulo": "Odbija się ten, kto powinien",
+      "desc": "Z modułem „Rozpoznawanie twarzy” przy rozpoczęciu zmiany sprawdzane jest, czy twarz na selfie należy do pracownika. Koniec z odbijaniem za kolegę.",
+      "paso1": "Pracownik ochrony raz rejestruje twarz w aplikacji.",
+      "paso2": "Ty zatwierdzasz ją tutaj, mając zdjęcie przed sobą.",
+      "paso3": "Przy każdym rozpoczęciu zmiany aplikacja sprawdza, czy to naprawdę ta osoba. Jeśli się nie zgadza, decydujesz, czy tylko zgłosić, czy zablokować odbicie.",
+      "enlace": "Zobacz w Modułach dodatkowych"
+    },
+    "ficha": {
+      "titulo": "Rozpoznawanie twarzy",
+      "verTodas": "Zobacz wszystkie twarze",
+      "sinRegistro": "Twarz nie jest jeszcze zarejestrowana. Aplikacja poprosi o to przy następnym odbiciu.",
+      "error": "Nie udało się pobrać zarejestrowanej twarzy. Otwórz kartę ponownie za chwilę."
     }
   }
 }

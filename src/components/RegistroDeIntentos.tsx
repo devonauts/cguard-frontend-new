@@ -57,6 +57,11 @@ const TONO: Record<string, string> = {
   license_expired: "bad",
   guard_profile_not_found: "bad",
   station_not_found: "bad",
+  // Reconocimiento facial en modo «exigir»: la cara no dejó fichar.
+  rostro_no_coincide: "bad",
+  rostro_reto_fallido: "bad",
+  rostro_sin_cara: "bad",
+  rostro_no_verificado: "bad",
 };
 
 /** El texto por defecto de cada motivo, en el idioma del CRM. */
@@ -76,6 +81,10 @@ const ETIQUETA: Record<string, string> = {
   license_expired: "Credencial vencida",
   guard_profile_not_found: "Sin ficha de vigilante",
   station_not_found: "El puesto no existe",
+  rostro_no_coincide: "La cara no coincide",
+  rostro_reto_fallido: "No hizo el gesto pedido",
+  rostro_sin_cara: "No se veía la cara",
+  rostro_no_verificado: "Sin comprobar la cara",
 };
 
 const RELOJ: Record<string, string> = {

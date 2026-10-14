@@ -29,6 +29,15 @@ describe("entitlements · módulos adicionales", () => {
     expect(hasFeature(conFunciones(["rondas"]), "sucursales")).toBe(false);
   });
 
+  it("reconocimiento facial también falla cerrado", () => {
+    expect(MODULE_KEYS).toContain("reconocimiento_facial");
+    expect(hasFeature(conFunciones(undefined), "reconocimiento_facial")).toBe(false);
+    expect(hasFeature(conFunciones(["rondas"]), "reconocimiento_facial")).toBe(false);
+    expect(
+      hasFeature(conFunciones(["reconocimiento_facial"]), "reconocimiento_facial"),
+    ).toBe(true);
+  });
+
   it("las funciones de siempre siguen fallando abierto", () => {
     expect(hasFeature(conFunciones(undefined), "rondas")).toBe(true);
     expect(hasFeature(conFunciones([]), "radio")).toBe(true);

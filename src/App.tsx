@@ -174,6 +174,9 @@ const BillingPage = lazy(
 const VigiaProPage = lazy(
   () => import("./pages/admin/vigiaPro/VigiaProPage"),
 );
+const CarasRegistradasPage = lazy(
+  () => import("./pages/admin/rostros/CarasRegistradasPage"),
+);
 const MisTicketsPage = lazy(
   () => import("./pages/admin/soporte/MisTicketsPage"),
 );
@@ -1335,6 +1338,16 @@ export default function App() {
                                   </ProtectedRoute>
                                 }
                                 path="/security-guards/edit/:id"
+                              />
+                              {/* Reconocimiento facial (módulo): las caras que
+                                registran los vigilantes, para aprobarlas. */}
+                              <Route
+                                element={
+                                  <ProtectedRoute>
+                                    <CarasRegistradasPage />
+                                  </ProtectedRoute>
+                                }
+                                path="/security-guards/rostros"
                               />
                               {/* ── LA FICHA DEL VIGILANTE, BAJO UNA SOLA RUTA PADRE ────────────
                                 Las 13 pestañas eran 16 rutas HERMANAS, cada una montando su propio

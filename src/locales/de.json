@@ -2885,7 +2885,8 @@
       "overtime": "Überstunden",
       "correction_pending": "Korrektur offen",
       "missing_location": "Ohne Standort",
-      "selfie_no_face": "Selfie ohne Gesicht"
+      "selfie_no_face": "Selfie ohne Gesicht",
+      "face_mismatch": "Gesicht stimmt nicht überein"
     },
     "excEstado": {
       "open": "Offen",
@@ -3918,7 +3919,8 @@
       "guardias": "Sicherheitskräfte",
       "supervisores": "Einsatzleiter",
       "label": "Sicherheitsteam",
-      "usuarios": "Büropersonal"
+      "usuarios": "Büropersonal",
+      "caras-registradas": "Registrierte Gesichter"
     },
     "facturador": {
       "elementos": "Leistungen",
@@ -5545,7 +5547,8 @@
     "emergencias": "Notfallzentrale",
     "pases-de-turno": "Schichtübergaben",
     "modulos-adicionales": "Zusatzmodule",
-    "vigia-pro": "{{agente}} Pro"
+    "vigia-pro": "{{agente}} Pro",
+    "rostrosPorAprobar": "Gesichter zur Freigabe: {{count}}"
   },
   "siteTour": {
     "newTour": "Neuer Rundgang",
@@ -17078,7 +17081,15 @@
     },
     "SelfieRostro": {
       "titulo": "Selfie und Gesicht beim Stempeln",
-      "ambasApps": "Gilt für die Team-App (Wachleute) und die Supervisor-App: in beiden dieselbe Einstellung."
+      "ambasApps": "Gilt für die Team-App (Wachleute) und die Supervisor-App: in beiden dieselbe Einstellung.",
+      "reconocimiento": "Prüfen, ob es die richtige Sicherheitskraft ist (Gesichtserkennung)",
+      "reconocimientoOff": "Aus",
+      "reconocimientoFlag": "Melden (stempelt und bleibt zur Prüfung)",
+      "reconocimientoEnforce": "Verlangen (ohne das eigene Gesicht kein Stempeln)",
+      "reconocimientoAyuda": "Bei Schichtbeginn vergleicht die App das Gesicht mit dem, das die Sicherheitskraft registriert und du unter Registrierte Gesichter freigegeben hast. Gibt es noch keins, wird trotzdem gestempelt und zur Prüfung markiert.",
+      "verCaras": "Registrierte Gesichter ansehen",
+      "disponibleComoModulo": "Als Zusatzmodul erhältlich",
+      "verModulo": "Modul ansehen"
     },
     "CorrerCiclo": {
       "boton": "Zyklus verschieben…",
@@ -18274,7 +18285,11 @@
       "time_clock_disabled": "Die Stechuhr war deaktiviert",
       "too_early": "Zu früh",
       "selfie_no_face": "Selfie ohne Gesicht (Wiederholung verlangt)",
-      "selfie_no_face_allowed": "Selfie ohne Gesicht (Stempeln erlaubt)"
+      "selfie_no_face_allowed": "Selfie ohne Gesicht (Stempeln erlaubt)",
+      "rostro_no_coincide": "Gesicht stimmte nicht überein",
+      "rostro_reto_fallido": "Geforderte Geste fehlte",
+      "rostro_sin_cara": "Gesicht war nicht zu sehen",
+      "rostro_no_verificado": "Gesicht nicht geprüft"
     },
     "scheduled": "Seine Schicht: {{h}}",
     "title": "Abgelehnte Stempelversuche",
@@ -19092,6 +19107,97 @@
       "ruta": "Kontrollroute",
       "cobertura": "Abdeckung",
       "otra": "Aktion"
+    }
+  },
+  "rostros": {
+    "resultado": {
+      "coincide": "Stimmt überein",
+      "dudoso": "Unsicher",
+      "no_coincide": "Stimmt nicht überein",
+      "reto_fallido": "Keine Geste",
+      "sin_cara": "Kein Gesicht",
+      "sin_registro": "Nicht registriert",
+      "no_verificado": "Nicht geprüft"
+    },
+    "estado": {
+      "pendiente": "Wartet auf Freigabe",
+      "aprobado": "Freigegeben",
+      "rechazado": "Abgelehnt",
+      "sin_registro": "Nicht registriert"
+    },
+    "chip": {
+      "titulo": "Gesichtserkennung: {{resultado}}",
+      "tituloConParecido": "Gesichtserkennung: {{resultado}} (Ähnlichkeit {{pct}} %)"
+    },
+    "acciones": {
+      "aprobar": "Freigeben",
+      "rechazar": "Ablehnen",
+      "reiniciar": "Zurücksetzen",
+      "aprobada": "Gesicht freigegeben: {{nombre}} kann jetzt damit stempeln.",
+      "rechazada": "Gesicht abgelehnt. {{nombre}} muss es erneut registrieren.",
+      "reiniciada": "Gesicht gelöscht. {{nombre}} registriert es erneut in der App.",
+      "error": "Die Änderung konnte nicht gespeichert werden. Prüfe deine Verbindung und versuche es erneut."
+    },
+    "rechazar": {
+      "titulo": "Gesicht ablehnen",
+      "desc": "Die App bittet die Person, ihr Gesicht erneut zu registrieren. Wenn du den Grund angibst, sieht sie ihn dabei.",
+      "motivo": "Grund (optional)",
+      "pista": "Zum Beispiel: „Das Foto ist im Gegenlicht“ oder „Das ist nicht die Person“."
+    },
+    "reiniciar": {
+      "titulo": "Registriertes Gesicht zurücksetzen?",
+      "confirmar": "Löschen und zurücksetzen",
+      "desc": "Das Gesicht von {{nombre}} wird gelöscht. Beim nächsten Öffnen der App muss es neu registriert werden, und bis du es freigibst, kann das Gesicht beim Stempeln nicht geprüft werden."
+    },
+    "pagina": {
+      "titulo": "Registrierte Gesichter",
+      "subtitulo": "Jede Sicherheitskraft registriert ihr Gesicht in der App. Bis du es freigibst, wird es nicht zur Prüfung beim Stempeln verwendet."
+    },
+    "apagado": {
+      "titulo": "Die Prüfung beim Stempeln ist aus",
+      "desc": "Du kannst schon Gesichter freigeben, aber sie werden beim Stempeln erst verglichen, wenn du es unter Einstellungen › Team-App › Selfie und Gesicht beim Stempeln einschaltest.",
+      "enlace": "Zu den Einstellungen"
+    },
+    "tabs": {
+      "pendientes": "Ausstehend",
+      "aprobadas": "Freigegeben",
+      "rechazadas": "Abgelehnt"
+    },
+    "error": {
+      "titulo": "Die Gesichter konnten nicht geladen werden",
+      "desc": "Die Liste konnte nicht geladen werden. Prüfe deine Verbindung und versuche es erneut.",
+      "reintentar": "Erneut versuchen"
+    },
+    "datos": {
+      "registrada": "Registriert am {{fecha}}",
+      "revisada": "Geprüft am {{fecha}}",
+      "calidad": "Qualität: {{usables}} von {{cuadros}} Fotos brauchbar",
+      "motivo": "Grund: {{motivo}}"
+    },
+    "foto": {
+      "alt": "Referenzfoto von {{nombre}}"
+    },
+    "vacio": {
+      "pendientes": "Keine Gesichter warten auf Freigabe",
+      "pendientesDesc": "Wenn eine Sicherheitskraft ihr Gesicht in der App registriert, erscheint es hier zur Freigabe.",
+      "aprobadas": "Du hast noch kein Gesicht freigegeben",
+      "aprobadasDesc": "Freigegebene Gesichter stehen hier. Du kannst jedes zurücksetzen, wenn es neu registriert werden muss.",
+      "rechazadas": "Keine abgelehnten Gesichter",
+      "rechazadasDesc": "Wenn du ein Gesicht ablehnst, muss die Sicherheitskraft es neu registrieren, und du siehst es hier."
+    },
+    "modulo": {
+      "titulo": "Es stempelt, wer stempeln soll",
+      "desc": "Mit dem Modul „Gesichtserkennung“ wird bei Schichtbeginn geprüft, ob das Gesicht im Selfie das der Sicherheitskraft ist. Schluss mit dem Stempeln durch Kollegen.",
+      "paso1": "Die Sicherheitskraft registriert ihr Gesicht einmal in der App.",
+      "paso2": "Du gibst es hier frei, mit dem Foto vor Augen.",
+      "paso3": "Bei jedem Schichtbeginn prüft die App, ob es wirklich die Person ist. Passt es nicht, entscheidest du, ob nur gemeldet oder das Stempeln gesperrt wird.",
+      "enlace": "In Zusatzmodulen ansehen"
+    },
+    "ficha": {
+      "titulo": "Gesichtserkennung",
+      "verTodas": "Alle Gesichter ansehen",
+      "sinRegistro": "Das Gesicht ist noch nicht registriert. Die App fragt beim nächsten Stempeln danach.",
+      "error": "Das registrierte Gesicht konnte nicht abgerufen werden. Öffne das Profil gleich noch einmal."
     }
   }
 }

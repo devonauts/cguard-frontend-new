@@ -2885,7 +2885,8 @@
       "overtime": "Straordinario",
       "correction_pending": "Correzione in sospeso",
       "missing_location": "Senza posizione",
-      "selfie_no_face": "Selfie senza viso"
+      "selfie_no_face": "Selfie senza viso",
+      "face_mismatch": "Volto non corrispondente"
     },
     "excEstado": {
       "open": "Aperta",
@@ -3918,7 +3919,8 @@
       "guardias": "Guardie giurate",
       "supervisores": "Supervisori",
       "label": "Squadra di sicurezza",
-      "usuarios": "Utenti amministrativi"
+      "usuarios": "Utenti amministrativi",
+      "caras-registradas": "Volti registrati"
     },
     "facturador": {
       "elementos": "Servizi",
@@ -5545,7 +5547,8 @@
     "emergencias": "Centrale emergenze",
     "pases-de-turno": "Consegne di turno",
     "modulos-adicionales": "Moduli aggiuntivi",
-    "vigia-pro": "{{agente}} Pro"
+    "vigia-pro": "{{agente}} Pro",
+    "rostrosPorAprobar": "Volti da approvare: {{count}}"
   },
   "siteTour": {
     "newTour": "Nuovo percorso",
@@ -17078,7 +17081,15 @@
     },
     "SelfieRostro": {
       "titulo": "Selfie e volto alla timbratura",
-      "ambasApps": "Vale per l'app del team (guardie) e quella del supervisore: è la stessa impostazione in entrambe."
+      "ambasApps": "Vale per l'app del team (guardie) e quella del supervisore: è la stessa impostazione in entrambe.",
+      "reconocimiento": "Verificare che sia la guardia giusta (riconoscimento facciale)",
+      "reconocimientoOff": "Disattivato",
+      "reconocimientoFlag": "Avvisare (timbra e resta da rivedere)",
+      "reconocimientoEnforce": "Richiedere (se non è il suo volto non può timbrare)",
+      "reconocimientoAyuda": "A inizio turno l'app confronta il volto con quello che la guardia ha registrato e tu hai approvato in Volti registrati. Se non ne ha ancora uno approvato, timbra comunque e resta da rivedere.",
+      "verCaras": "Vedi volti registrati",
+      "disponibleComoModulo": "Disponibile come modulo aggiuntivo",
+      "verModulo": "Vedi il modulo"
     },
     "CorrerCiclo": {
       "boton": "Sposta ciclo…",
@@ -18274,7 +18285,11 @@
       "time_clock_disabled": "Il timbratore era disattivato",
       "too_early": "Troppo presto",
       "selfie_no_face": "Selfie senza viso (chiesto di ripeterlo)",
-      "selfie_no_face_allowed": "Selfie senza viso (timbratura consentita)"
+      "selfie_no_face_allowed": "Selfie senza viso (timbratura consentita)",
+      "rostro_no_coincide": "Il volto non corrisponde",
+      "rostro_reto_fallido": "Non ha fatto il gesto richiesto",
+      "rostro_sin_cara": "Il volto non si vedeva",
+      "rostro_no_verificado": "Volto non verificato"
     },
     "scheduled": "Il suo turno: {{h}}",
     "title": "Tentativi di timbratura rifiutati",
@@ -19092,6 +19107,97 @@
       "ruta": "Percorso di supervisione",
       "cobertura": "Copertura",
       "otra": "Azione"
+    }
+  },
+  "rostros": {
+    "resultado": {
+      "coincide": "Corrisponde",
+      "dudoso": "Incerto",
+      "no_coincide": "Non corrisponde",
+      "reto_fallido": "Senza gesto",
+      "sin_cara": "Senza viso",
+      "sin_registro": "Non registrato",
+      "no_verificado": "Non verificato"
+    },
+    "estado": {
+      "pendiente": "Da approvare",
+      "aprobado": "Approvato",
+      "rechazado": "Rifiutato",
+      "sin_registro": "Non registrato"
+    },
+    "chip": {
+      "titulo": "Riconoscimento facciale: {{resultado}}",
+      "tituloConParecido": "Riconoscimento facciale: {{resultado}} (somiglianza {{pct}}%)"
+    },
+    "acciones": {
+      "aprobar": "Approva",
+      "rechazar": "Rifiuta",
+      "reiniciar": "Reimposta",
+      "aprobada": "Volto approvato: {{nombre}} ora può timbrare con esso.",
+      "rechazada": "Volto rifiutato. {{nombre}} dovrà registrarlo di nuovo.",
+      "reiniciada": "Volto eliminato. {{nombre}} lo registrerà di nuovo dall'app.",
+      "error": "Impossibile salvare la modifica. Controlla la connessione e riprova."
+    },
+    "rechazar": {
+      "titulo": "Rifiuta il volto",
+      "desc": "L'app gli chiederà di registrare di nuovo il volto. Se indichi il motivo, lo vedrà quando ci riprova.",
+      "motivo": "Motivo (facoltativo)",
+      "pista": "Per esempio: «La foto è in controluce» o «Non è la persona»."
+    },
+    "reiniciar": {
+      "titulo": "Reimpostare il volto registrato?",
+      "confirmar": "Elimina e reimposta",
+      "desc": "Il volto di {{nombre}} verrà eliminato. Alla prossima apertura dell'app dovrà registrarlo di nuovo e, finché non lo approvi, alla timbratura non si potrà verificare il volto."
+    },
+    "pagina": {
+      "titulo": "Volti registrati",
+      "subtitulo": "Ogni guardia registra il proprio volto dall'app. Finché non lo approvi, non viene usato per verificare chi timbra."
+    },
+    "apagado": {
+      "titulo": "La verifica alla timbratura è disattivata",
+      "desc": "Puoi già approvare i volti, ma non vengono confrontati alla timbratura finché non lo attivi in Impostazioni › App del team › Selfie e volto alla timbratura.",
+      "enlace": "Vai alle impostazioni"
+    },
+    "tabs": {
+      "pendientes": "In attesa",
+      "aprobadas": "Approvati",
+      "rechazadas": "Rifiutati"
+    },
+    "error": {
+      "titulo": "Impossibile caricare i volti",
+      "desc": "Impossibile caricare l'elenco. Controlla la connessione e riprova.",
+      "reintentar": "Riprova"
+    },
+    "datos": {
+      "registrada": "Registrato il {{fecha}}",
+      "revisada": "Esaminato il {{fecha}}",
+      "calidad": "Qualità: {{usables}} foto utili su {{cuadros}}",
+      "motivo": "Motivo: {{motivo}}"
+    },
+    "foto": {
+      "alt": "Foto di riferimento di {{nombre}}"
+    },
+    "vacio": {
+      "pendientes": "Nessun volto da approvare",
+      "pendientesDesc": "Quando una guardia registra il volto dall'app, compare qui perché tu lo approvi.",
+      "aprobadas": "Non hai ancora approvato nessun volto",
+      "aprobadasDesc": "I volti che approvi sono elencati qui. Puoi reimpostarne uno se va registrato di nuovo.",
+      "rechazadas": "Nessun volto rifiutato",
+      "rechazadasDesc": "Se rifiuti un volto, la guardia dovrà registrarlo di nuovo e lo vedrai qui."
+    },
+    "modulo": {
+      "titulo": "Timbra chi deve timbrare",
+      "desc": "Con il modulo «Riconoscimento facciale», a inizio turno si verifica che il volto del selfie sia quello della guardia. Basta timbrature fatte da un collega.",
+      "paso1": "La guardia registra il volto una volta dall'app.",
+      "paso2": "Tu lo approvi qui, con la foto davanti.",
+      "paso3": "A ogni inizio turno l'app verifica che sia proprio lui. Se non corrisponde, decidi se solo segnalarlo o bloccare la timbratura.",
+      "enlace": "Vedi in Moduli aggiuntivi"
+    },
+    "ficha": {
+      "titulo": "Riconoscimento facciale",
+      "verTodas": "Vedi tutti i volti",
+      "sinRegistro": "Non ha ancora registrato il volto. L'app glielo chiederà alla prossima timbratura.",
+      "error": "Impossibile consultare il volto registrato. Riapri la scheda tra un momento."
     }
   }
 }

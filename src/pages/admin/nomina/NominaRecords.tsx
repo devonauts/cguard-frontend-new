@@ -45,6 +45,7 @@ import {
 } from "lucide-react";
 import { BulkActionsSelect } from "@/components/table/BulkActionsSelect";
 import TimesheetModal from "./TimesheetModal";
+import ChipRostro from "@/components/rostro/ChipRostro";
 import { usePermissions } from "@/hooks/usePermissions";
 import { useGusto } from "@/hooks/useGusto";
 import { Button } from "@/components/ui/button";
@@ -367,6 +368,10 @@ export default function NominaRecords() {
               {t("ui.NominaShared.administrativo", "Administrativo")}
             </ToneBadge>
           )}
+          <ChipRostro
+            puntuacion={r.rostroPuntuacion}
+            resultado={r.rostroResultado}
+          />
         </span>
       ),
     },

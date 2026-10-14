@@ -77,6 +77,7 @@ import TrialDaysBadge from "@/components/TrialDaysBadge";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { IconTile, FIELD_CLS, FIELD_CLS_LG } from "@/components/kit";
 import MENU from "@/data/sidebar-menu.json";
+import { hasFeature } from "@/lib/entitlements";
 import { useTiendaDeModulos } from "@/hooks/useTiendaDeModulos";
 import NAVS from "@/data/settings-nav.json";
 import TenantSwitcher from "@/components/TenantSwitcher";
@@ -434,6 +435,8 @@ export default function Header({
 
     for (const item of MENU as any[]) {
       if (item.tienda && !hayTienda) continue;
+      // Un módulo de pago que la empresa no tiene: el menú lo esconde, aquí tampoco.
+      if (item.modulo && !hasFeature(user, item.modulo)) continue;
       const nombre =
         etiqueta(`sidebar.${item.id}.label`, `sidebar.${item.id}`) || item.name;
 
@@ -445,6 +448,7 @@ export default function Header({
           grupo: "menu",
         });
       for (const sub of (item.subItems ?? []) as any[]) {
+        if (sub.modulo && !hasFeature(user, sub.modulo)) continue;
         const subNombre =
           etiqueta(`sidebar.${item.id}.${sub.id}`, `sidebar.${sub.id}`) ||
           sub.name;
@@ -491,7 +495,7 @@ export default function Header({
     /* `agente.nombre` en las dependencias: sin él, el índice del buscador se
        calcula una vez con «VigIA» y se queda así aunque luego llegue el nombre
        del socio — y buscarlo por su nombre no encontraría su propia pantalla. */
-  }, [t, agente.nombre, hayTienda]);
+  }, [t, agente.nombre, hayTienda, user]);
 
   const resultados = useMemo(() => {
     const q = plano(consulta.trim());

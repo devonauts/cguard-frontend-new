@@ -72,6 +72,12 @@
         "path": "/security-guards"
       },
       {
+        "id": "caras-registradas",
+        "name": "Caras registradas",
+        "path": "/security-guards/rostros",
+        "modulo": "reconocimiento_facial"
+      },
+      {
         "id": "supervisores",
         "name": "Supervisores",
         "path": "/supervisors"

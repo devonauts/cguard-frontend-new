@@ -60,6 +60,21 @@ export interface AttendanceRecord {
   punchInDistanceM: number | null;
   punchOutDistanceM: number | null;
   punchInOutsideGeofence: boolean;
+  /**
+   * Reconocimiento facial al fichar la entrada (módulo de pago). `null` cuando
+   * la empresa no lo usa o el turno es anterior.
+   */
+  rostroResultado?:
+    | "coincide"
+    | "dudoso"
+    | "no_coincide"
+    | "reto_fallido"
+    | "sin_cara"
+    | "sin_registro"
+    | "no_verificado"
+    | null;
+  /** 0-1: cuánto se parece la cara de la selfie a la registrada. */
+  rostroPuntuacion?: number | null;
   punchInLatitude: number | null;
   punchInLongitude: number | null;
   /**

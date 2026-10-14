@@ -35,7 +35,8 @@
       "label": "Equipe de Segurança",
       "guardias": "Seguranças",
       "usuarios": "Usuários do Escritório Administrativo",
-      "supervisores": "Supervisores"
+      "supervisores": "Supervisores",
+      "caras-registradas": "Rostos registrados"
     },
     "analiticas": {
       "label": "Análises",
@@ -2491,7 +2492,8 @@
     },
     "pases-de-turno": "Passagens de turno",
     "modulos-adicionales": "Módulos adicionais",
-    "vigia-pro": "{{agente}} Pro"
+    "vigia-pro": "{{agente}} Pro",
+    "rostrosPorAprobar": "Rostos aguardando aprovação: {{count}}"
   },
   "settings": {
     "configuracion": {
@@ -16545,7 +16547,15 @@
     },
     "SelfieRostro": {
       "titulo": "Selfie e rosto ao bater o ponto",
-      "ambasApps": "Vale para o app da equipe (vigilantes) e o do supervisor: é o mesmo ajuste nos dois."
+      "ambasApps": "Vale para o app da equipe (vigilantes) e o do supervisor: é o mesmo ajuste nos dois.",
+      "reconocimiento": "Verificar que seja o vigilante (reconhecimento facial)",
+      "reconocimientoOff": "Desligado",
+      "reconocimientoFlag": "Avisar (registra o ponto e fica para revisar)",
+      "reconocimientoEnforce": "Exigir (se não for o rosto dele, não pode registrar o ponto)",
+      "reconocimientoAyuda": "Ao iniciar o turno, o app compara o rosto com o que o vigilante registrou e você aprovou em Rostos registrados. Se ainda não tiver um aprovado, registra o ponto mesmo assim e fica para revisar.",
+      "verCaras": "Ver rostos registrados",
+      "disponibleComoModulo": "Disponível como módulo adicional",
+      "verModulo": "Ver o módulo"
     },
     "CorrerCiclo": {
       "boton": "Deslocar ciclo…",
@@ -17004,7 +17014,8 @@
       "overtime": "Hora extra",
       "correction_pending": "Correção pendente",
       "missing_location": "Sem localização",
-      "selfie_no_face": "Selfie sem rosto"
+      "selfie_no_face": "Selfie sem rosto",
+      "face_mismatch": "Rosto que não coincide"
     },
     "excEstado": {
       "open": "Aberta",
@@ -18351,7 +18362,11 @@
       "guard_profile_not_found": "Sem ficha de vigilante",
       "station_not_found": "O posto não existe",
       "selfie_no_face": "Selfie sem rosto (pediu-se repetir)",
-      "selfie_no_face_allowed": "Selfie sem rosto (deixou-se registrar)"
+      "selfie_no_face_allowed": "Selfie sem rosto (deixou-se registrar)",
+      "rostro_no_coincide": "O rosto não coincide",
+      "rostro_reto_fallido": "Não fez o gesto pedido",
+      "rostro_sin_cara": "O rosto não aparecia",
+      "rostro_no_verificado": "Rosto não verificado"
     },
     "scheduled": "O seu turno: {{h}}",
     "tab": "Registos",
@@ -19092,6 +19107,97 @@
       "ruta": "Rota de supervisão",
       "cobertura": "Cobertura",
       "otra": "Ação"
+    }
+  },
+  "rostros": {
+    "resultado": {
+      "coincide": "Coincide",
+      "dudoso": "Duvidoso",
+      "no_coincide": "Não coincide",
+      "reto_fallido": "Sem gesto",
+      "sin_cara": "Sem rosto",
+      "sin_registro": "Sem registro",
+      "no_verificado": "Sem verificar"
+    },
+    "estado": {
+      "pendiente": "Aguardando aprovação",
+      "aprobado": "Aprovado",
+      "rechazado": "Rejeitado",
+      "sin_registro": "Sem registro"
+    },
+    "chip": {
+      "titulo": "Reconhecimento facial: {{resultado}}",
+      "tituloConParecido": "Reconhecimento facial: {{resultado}} (semelhança {{pct}} %)"
+    },
+    "acciones": {
+      "aprobar": "Aprovar",
+      "rechazar": "Rejeitar",
+      "reiniciar": "Reiniciar",
+      "aprobada": "Rosto aprovado: {{nombre}} já pode registrar o ponto com ele.",
+      "rechazada": "Rosto rejeitado. {{nombre}} terá de registrá-lo de novo.",
+      "reiniciada": "Rosto apagado. {{nombre}} vai registrá-lo de novo pelo app.",
+      "error": "Não foi possível salvar a alteração. Verifique sua conexão e tente de novo."
+    },
+    "rechazar": {
+      "titulo": "Rejeitar o rosto",
+      "desc": "O app vai pedir que registre o rosto de novo. Se você disser o motivo, ele verá ao tentar.",
+      "motivo": "Motivo (opcional)",
+      "pista": "Por exemplo: «A foto está contra a luz» ou «Não é a pessoa»."
+    },
+    "reiniciar": {
+      "titulo": "Reiniciar o rosto registrado?",
+      "confirmar": "Apagar e reiniciar",
+      "desc": "O rosto de {{nombre}} será apagado. Na próxima vez que abrir o app terá de registrá-lo de novo e, até você aprovar, o rosto não poderá ser verificado ao registrar o ponto."
+    },
+    "pagina": {
+      "titulo": "Rostos registrados",
+      "subtitulo": "Cada vigilante registra o rosto pelo app. Até você aprovar, ele não é usado para verificar quem registra o ponto."
+    },
+    "apagado": {
+      "titulo": "A verificação ao registrar o ponto está desligada",
+      "desc": "Você já pode aprovar rostos, mas eles não são comparados ao registrar o ponto até você ativar em Configurações › App da equipe › Selfie e rosto ao registrar o ponto.",
+      "enlace": "Ir às configurações"
+    },
+    "tabs": {
+      "pendientes": "Pendentes",
+      "aprobadas": "Aprovados",
+      "rechazadas": "Rejeitados"
+    },
+    "error": {
+      "titulo": "Não foi possível carregar os rostos",
+      "desc": "Não foi possível carregar a lista. Verifique sua conexão e tente de novo.",
+      "reintentar": "Tentar de novo"
+    },
+    "datos": {
+      "registrada": "Registrado em {{fecha}}",
+      "revisada": "Revisado em {{fecha}}",
+      "calidad": "Qualidade: {{usables}} de {{cuadros}} fotos úteis",
+      "motivo": "Motivo: {{motivo}}"
+    },
+    "foto": {
+      "alt": "Foto de referência de {{nombre}}"
+    },
+    "vacio": {
+      "pendientes": "Nenhum rosto aguardando aprovação",
+      "pendientesDesc": "Quando um vigilante registrar o rosto pelo app, ele aparecerá aqui para você aprovar.",
+      "aprobadas": "Você ainda não aprovou nenhum rosto",
+      "aprobadasDesc": "Os rostos que você aprovar aparecem aqui. Você pode reiniciar qualquer um se precisar registrá-lo de novo.",
+      "rechazadas": "Nenhum rosto rejeitado",
+      "rechazadasDesc": "Se você rejeitar um rosto, o vigilante terá de registrá-lo de novo e você o verá aqui."
+    },
+    "modulo": {
+      "titulo": "Que registre o ponto quem deve registrar",
+      "desc": "Com o módulo «Reconhecimento facial», ao iniciar o turno verifica-se que o rosto da selfie é o do vigilante. Acaba o registro de ponto por um colega.",
+      "paso1": "O vigilante registra o rosto uma vez pelo app.",
+      "paso2": "Você aprova aqui, com a foto à vista.",
+      "paso3": "Sempre que inicia o turno, o app verifica que é ele. Se não coincidir, você decide se só avisa ou se não pode registrar o ponto.",
+      "enlace": "Ver em Módulos adicionais"
+    },
+    "ficha": {
+      "titulo": "Reconhecimento facial",
+      "verTodas": "Ver todos os rostos",
+      "sinRegistro": "Ainda não registrou o rosto. O app vai pedir na próxima vez que registrar o ponto.",
+      "error": "Não foi possível consultar o rosto registrado. Abra a ficha de novo em instantes."
     }
   }
 }

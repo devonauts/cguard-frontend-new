@@ -77,6 +77,7 @@ import sidebarMenuData from "../data/sidebar-menu.json";
 import { useAuth } from "@/contexts/AuthContext";
 import { useThemeContext } from "@/contexts/ThemeContext";
 import { useMessagesUnread } from "@/hooks/useMessagesUnread";
+import { useRostrosPendientes } from "@/hooks/useRostrosPendientes";
 import { useTiendaDeModulos } from "@/hooks/useTiendaDeModulos";
 import { useGusto } from "@/hooks/useGusto";
 import tenantService from "@/services/tenant.service";
@@ -92,6 +93,8 @@ type SubMenuItem = {
   path: string;
   /** Nómina › Gusto: sólo si la empresa tiene Gusto disponible (ver useGusto). */
   gusto?: boolean;
+  /** Sólo si la empresa tiene este módulo de pago (Reconocimiento facial…). Falla cerrado. */
+  modulo?: string;
 };
 type MenuItem = {
   id: string;
@@ -406,6 +409,8 @@ const CGSB_CSS = `
   font-size: 12px; color: var(--ink-faint);
   transition: color .16s var(--ease), background-color .16s var(--ease), transform .16s var(--ease);
 }
+/* Un subelemento con cifra (caras por aprobar) la lleva a la derecha. */
+.cgsb-sub:has(.cgsb-count) { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
 /* Muesca de conexión: une el subelemento con la guía. */
 .cgsb-sub::before {
   content: ""; position: absolute; left: -13px; top: 50%; width: 8px; height: 1px;
@@ -726,8 +731,15 @@ export default function Sidebar({
         );
       })
         .map((item) =>
-          item.subItems?.some((s) => s.gusto)
-            ? { ...item, subItems: item.subItems.filter((s) => !s.gusto || hayGusto) }
+          item.subItems?.some((s) => s.gusto || s.modulo)
+            ? {
+                ...item,
+                subItems: item.subItems.filter(
+                  (s) =>
+                    (!s.gusto || hayGusto) &&
+                    (!s.modulo || hasFeature(user, s.modulo)),
+                ),
+              }
             : item,
         ),
     [menuItems, user, isGlobalAdmin, hayTienda, hayGusto],
@@ -914,8 +926,46 @@ export default function Sidebar({
   /* Mensajes sin leer del buzón del CRM → punto en «Mensajería». Se refresca
      solo cuando entra un mensaje (la campana lo avisa) o al leer un hilo. */
   const mensajesSinLeer = useMessagesUnread(hasTenant);
+  /* Caras por aprobar (módulo «Reconocimiento facial»): la cifra va en el
+     subelemento y también en «Equipo», que es lo que se ve con el menú
+     plegado. Sin el módulo es 0 y no se pregunta nada. */
+  const rostrosPendientes = useRostrosPendientes();
   const insigniaDe = (itemId: string) =>
-    itemId === "mensajeria" ? mensajesSinLeer : 0;
+    itemId === "mensajeria"
+      ? mensajesSinLeer
+      : itemId === "equipo"
+        ? rostrosPendientes
+        : 0;
+  const etiquetaDeInsignia = (itemId: string, count: number) =>
+    itemId === "mensajeria"
+      ? t("sidebar.unreadMessages", {
+          count,
+          defaultValue: "{{count}} mensajes sin leer",
+        })
+      : t("sidebar.rostrosPorAprobar", {
+          count,
+          defaultValue: "Caras por aprobar: {{count}}",
+        });
+  const insigniaDeSub = (subId: string) =>
+    subId === "caras-registradas" ? rostrosPendientes : 0;
+  /** La cifra de un subelemento, a la derecha de su nombre. */
+  const cifraDeSub = (subId: string) => {
+    const n = insigniaDeSub(subId);
+
+    if (n <= 0) return null;
+
+    return (
+      <span
+        aria-label={t("sidebar.rostrosPorAprobar", {
+          count: n,
+          defaultValue: "Caras por aprobar: {{count}}",
+        })}
+        className="cgsb-count"
+      >
+        {n > 99 ? "99+" : n}
+      </span>
+    );
+  };
 
   /* ── Un destino del menú (hoja o desplegable) ───────────────────────────── */
   const renderItem = (
@@ -937,10 +987,7 @@ export default function Sidebar({
         <span className="cgsb-item-label">{label}</span>
         {sinLeer > 0 && (
           <span
-            aria-label={t("sidebar.unreadMessages", {
-              count: sinLeer,
-              defaultValue: "{{count}} mensajes sin leer",
-            })}
+            aria-label={etiquetaDeInsignia(item.id, sinLeer)}
             className="cgsb-count"
           >
             {sinLeer > 99 ? "99+" : sinLeer}
@@ -1011,6 +1058,7 @@ export default function Sidebar({
                     }}
                   >
                     {subLabelOf(item, sub)}
+                    {cifraDeSub(sub.id)}
                   </NavLink>
                 ))}
               </div>
@@ -1032,10 +1080,7 @@ export default function Sidebar({
         <item.icon className="h-[18px] w-[18px]" />
         {sinLeer > 0 && (
           <span
-            aria-label={t("sidebar.unreadMessages", {
-              count: sinLeer,
-              defaultValue: "{{count}} mensajes sin leer",
-            })}
+            aria-label={etiquetaDeInsignia(item.id, sinLeer)}
             className="cgsb-orb-dot"
           />
         )}
@@ -1400,6 +1445,7 @@ export default function Sidebar({
                   }}
                 >
                   {subLabelOf(flyoutItem, sub)}
+                  {cifraDeSub(sub.id)}
                 </NavLink>
               ))}
             </div>

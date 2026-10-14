@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import GoogleMapEmbed from "@/components/GoogleMap/GoogleMapEmbed";
 import { useFileUrl } from "@/lib/fileUrl";
+import ChipRostro from "@/components/rostro/ChipRostro";
 import attendanceService, {
   type AttendanceRecord,
   type TimesheetEvent,
@@ -867,6 +868,12 @@ export default function TimesheetModal({
                 <p className="cg-eyebrow mb-1">
                   {t("ui.TimesheetModal.selfieDeEntrada", "Selfie de entrada")}
                 </p>
+                {/* Reconocimiento facial: ¿la cara de la selfie es la suya? */}
+                <ChipRostro
+                  className="mb-2 inline-block"
+                  puntuacion={record.rostroPuntuacion}
+                  resultado={record.rostroResultado}
+                />
                 {selfieUrl ? (
                   <a
                     href={selfieUrl}

@@ -4376,7 +4376,8 @@
       "guardias": "Security Guards",
       "supervisores": "Supervisors",
       "label": "Security Team",
-      "usuarios": "Admin Office Users"
+      "usuarios": "Admin Office Users",
+      "caras-registradas": "Registered faces"
     },
     "facturador": {
       "elementos": "Items",
@@ -6004,7 +6005,8 @@
     "emergencias": "Emergency Center",
     "pases-de-turno": "Shift handovers",
     "modulos-adicionales": "Add-on modules",
-    "vigia-pro": "{{agente}} Pro"
+    "vigia-pro": "{{agente}} Pro",
+    "rostrosPorAprobar": "Faces awaiting approval: {{count}}"
   },
   "siteTour": {
     "newTour": "New Tour",
@@ -16545,7 +16547,15 @@
     },
     "SelfieRostro": {
       "titulo": "Selfie and face at clock-in",
-      "ambasApps": "Applies to the team app (guards) and the supervisor app: it is the same setting in both."
+      "ambasApps": "Applies to the team app (guards) and the supervisor app: it is the same setting in both.",
+      "reconocimiento": "Check it's the right guard (facial recognition)",
+      "reconocimientoOff": "Off",
+      "reconocimientoFlag": "Flag (clocks in and is left for review)",
+      "reconocimientoEnforce": "Require (if it's not their face, they can't clock in)",
+      "reconocimientoAyuda": "At shift start, the app compares the face with the one the guard registered and you approved in Registered faces. If they don't have an approved one yet, they clock in anyway and it's left for review.",
+      "verCaras": "See registered faces",
+      "disponibleComoModulo": "Available as an add-on module",
+      "verModulo": "See the module"
     },
     "CorrerCiclo": {
       "boton": "Shift cycle…",
@@ -17004,7 +17014,8 @@
       "overtime": "Overtime",
       "correction_pending": "Correction pending",
       "missing_location": "No location",
-      "selfie_no_face": "Selfie without a face"
+      "selfie_no_face": "Selfie without a face",
+      "face_mismatch": "Face doesn't match"
     },
     "excEstado": {
       "open": "Open",
@@ -18351,7 +18362,11 @@
       "guard_profile_not_found": "No guard profile",
       "station_not_found": "Post does not exist",
       "selfie_no_face": "Selfie without a face (asked to retake)",
-      "selfie_no_face_allowed": "Selfie without a face (allowed to clock in)"
+      "selfie_no_face_allowed": "Selfie without a face (allowed to clock in)",
+      "rostro_no_coincide": "Face didn't match",
+      "rostro_reto_fallido": "Didn't make the requested gesture",
+      "rostro_sin_cara": "Face wasn't visible",
+      "rostro_no_verificado": "Face not checked"
     },
     "scheduled": "Their shift: {{h}}",
     "tab": "Logs",
@@ -19092,6 +19107,97 @@
       "ruta": "Supervision route",
       "cobertura": "Coverage",
       "otra": "Action"
+    }
+  },
+  "rostros": {
+    "resultado": {
+      "coincide": "Match",
+      "dudoso": "Unsure",
+      "no_coincide": "No match",
+      "reto_fallido": "No gesture",
+      "sin_cara": "No face",
+      "sin_registro": "Not registered",
+      "no_verificado": "Not verified"
+    },
+    "estado": {
+      "pendiente": "Awaiting approval",
+      "aprobado": "Approved",
+      "rechazado": "Rejected",
+      "sin_registro": "Not registered"
+    },
+    "chip": {
+      "titulo": "Facial recognition: {{resultado}}",
+      "tituloConParecido": "Facial recognition: {{resultado}} ({{pct}}% similar)"
+    },
+    "acciones": {
+      "aprobar": "Approve",
+      "rechazar": "Reject",
+      "reiniciar": "Reset",
+      "aprobada": "Face approved: {{nombre}} can now clock in with it.",
+      "rechazada": "Face rejected. {{nombre}} will have to register it again.",
+      "reiniciada": "Face deleted. {{nombre}} will register it again from the app.",
+      "error": "The change could not be saved. Check your connection and try again."
+    },
+    "rechazar": {
+      "titulo": "Reject the face",
+      "desc": "The app will ask them to register their face again. If you say why, they will see it when they try.",
+      "motivo": "Reason (optional)",
+      "pista": "For example: \"The photo is backlit\" or \"It's not the right person\"."
+    },
+    "reiniciar": {
+      "titulo": "Reset the registered face?",
+      "confirmar": "Delete and reset",
+      "desc": "{{nombre}}'s face will be deleted. Next time they open the app they will have to register it again and, until you approve it, their face can't be checked at clock-in."
+    },
+    "pagina": {
+      "titulo": "Registered faces",
+      "subtitulo": "Each guard registers their face from the app. Until you approve it, it isn't used to check who clocks in."
+    },
+    "apagado": {
+      "titulo": "The clock-in check is off",
+      "desc": "You can approve faces now, but they aren't compared at clock-in until you turn it on in Settings › Team app › Selfie and face at clock-in.",
+      "enlace": "Go to settings"
+    },
+    "tabs": {
+      "pendientes": "Pending",
+      "aprobadas": "Approved",
+      "rechazadas": "Rejected"
+    },
+    "error": {
+      "titulo": "The faces could not be loaded",
+      "desc": "The list could not be loaded. Check your connection and try again.",
+      "reintentar": "Try again"
+    },
+    "datos": {
+      "registrada": "Registered on {{fecha}}",
+      "revisada": "Reviewed on {{fecha}}",
+      "calidad": "Quality: {{usables}} of {{cuadros}} photos usable",
+      "motivo": "Reason: {{motivo}}"
+    },
+    "foto": {
+      "alt": "Reference photo of {{nombre}}"
+    },
+    "vacio": {
+      "pendientes": "No faces awaiting approval",
+      "pendientesDesc": "When a guard registers their face from the app, it will show up here for you to approve.",
+      "aprobadas": "You haven't approved any faces yet",
+      "aprobadasDesc": "Faces you approve are listed here. You can reset any of them if it needs to be registered again.",
+      "rechazadas": "No rejected faces",
+      "rechazadasDesc": "If you reject a face, the guard will have to register it again and you'll see it here."
+    },
+    "modulo": {
+      "titulo": "Make sure the right person clocks in",
+      "desc": "With the Facial recognition module, each shift start checks that the face in the selfie is the guard's own. No more clocking in for a coworker.",
+      "paso1": "The guard registers their face once from the app.",
+      "paso2": "You approve it here, with their photo in front of you.",
+      "paso3": "Every time they start a shift, the app checks it's really them. If it doesn't match, you decide whether to just flag it or block the clock-in.",
+      "enlace": "See in Add-on modules"
+    },
+    "ficha": {
+      "titulo": "Facial recognition",
+      "verTodas": "See all faces",
+      "sinRegistro": "They haven't registered their face yet. The app will ask them next time they clock in.",
+      "error": "Their registered face could not be loaded. Open the profile again in a moment."
     }
   }
 }

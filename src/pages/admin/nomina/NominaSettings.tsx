@@ -25,6 +25,8 @@ interface NominaSettings {
     requireNotesOnException?: boolean;
     /** ¿Comprobar que en la selfie se vea una cara? (el servidor sólo DETECTA una cara, no reconoce). */
     selfieFaceCheck?: "off" | "flag" | "enforce";
+    /** Reconocimiento facial (módulo de pago): ¿es la cara REGISTRADA del vigilante? Sin el módulo cuenta como off. */
+    faceRecognition?: "off" | "flag" | "enforce";
   };
   windows?: {
     earlyClockInMin?: number;

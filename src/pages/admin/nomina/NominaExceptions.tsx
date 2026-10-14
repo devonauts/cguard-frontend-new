@@ -27,6 +27,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import attendanceService from "@/lib/api/attendanceService";
+import ChipRostro from "@/components/rostro/ChipRostro";
 import {
   PageContainer,
   PageHeader,
@@ -62,6 +63,7 @@ const TYPE_OPTIONS = [
   "outside_geofence",
   "missing_location",
   "selfie_no_face",
+  "face_mismatch",
   "early_departure",
   "overtime",
 ];
@@ -522,6 +524,13 @@ export default function NominaExceptions() {
                 <div className="flex flex-wrap items-center gap-2">
                   <SeverityPill severity={selected.severity} />
                   <StatusPill status={selected.status} />
+                  {/* Reconocimiento facial: qué dio la comparación de la cara. */}
+                  {selected.type === "face_mismatch" && (
+                    <ChipRostro
+                      puntuacion={(selected.meta as any)?.puntuacion}
+                      resultado={(selected.meta as any)?.motivo}
+                    />
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">

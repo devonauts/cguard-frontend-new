@@ -4377,7 +4377,8 @@
       "guardias": "Vigilantes de seguridad",
       "supervisores": "Supervisores",
       "label": "Equipo de seguridad",
-      "usuarios": "Usuarios administrativos"
+      "usuarios": "Usuarios administrativos",
+      "caras-registradas": "Caras registradas"
     },
     "facturador": {
       "elementos": "Servicios",
@@ -6004,7 +6005,8 @@
     "emergencias": "Centro de Emergencias",
     "pases-de-turno": "Pases de turno",
     "modulos-adicionales": "Módulos adicionales",
-    "vigia-pro": "{{agente}} Pro"
+    "vigia-pro": "{{agente}} Pro",
+    "rostrosPorAprobar": "Caras por aprobar: {{count}}"
   },
   "siteTour": {
     "newTour": "Nuevo Recorrido",
@@ -16545,7 +16547,15 @@
     },
     "SelfieRostro": {
       "titulo": "Selfie y rostro al fichar",
-      "ambasApps": "Vale para la app del equipo (vigilantes) y la del supervisor: es el mismo ajuste en las dos."
+      "ambasApps": "Vale para la app del equipo (vigilantes) y la del supervisor: es el mismo ajuste en las dos.",
+      "reconocimiento": "Verificar que sea el vigilante (reconocimiento facial)",
+      "reconocimientoOff": "Apagado",
+      "reconocimientoFlag": "Avisar (ficha y queda para revisar)",
+      "reconocimientoEnforce": "Exigir (si no es su cara no puede fichar)",
+      "reconocimientoAyuda": "Al iniciar turno, la app compara la cara con la que el vigilante registró y tú aprobaste en Caras registradas. Si aún no tiene una aprobada, ficha igual y queda para revisar.",
+      "verCaras": "Ver caras registradas",
+      "disponibleComoModulo": "Disponible como módulo adicional",
+      "verModulo": "Ver el módulo"
     },
     "CorrerCiclo": {
       "boton": "Correr ciclo…",
@@ -17004,7 +17014,8 @@
       "overtime": "Tiempo extra",
       "correction_pending": "Corrección pendiente",
       "missing_location": "Sin ubicación",
-      "selfie_no_face": "Selfie sin cara"
+      "selfie_no_face": "Selfie sin cara",
+      "face_mismatch": "Cara que no coincide"
     },
     "excEstado": {
       "open": "Abierta",
@@ -18351,7 +18362,11 @@
       "guard_profile_not_found": "Sin ficha de vigilante",
       "station_not_found": "El puesto no existe",
       "selfie_no_face": "Selfie sin cara (se pidió repetirla)",
-      "selfie_no_face_allowed": "Selfie sin cara (se dejó marcar)"
+      "selfie_no_face_allowed": "Selfie sin cara (se dejó marcar)",
+      "rostro_no_coincide": "La cara no coincide",
+      "rostro_reto_fallido": "No hizo el gesto pedido",
+      "rostro_sin_cara": "No se veía la cara",
+      "rostro_no_verificado": "Sin comprobar la cara"
     },
     "scheduled": "Su turno: {{h}}",
     "tab": "Registros",
@@ -19092,6 +19107,97 @@
       "ruta": "Ruta de supervisión",
       "cobertura": "Cobertura",
       "otra": "Acción"
+    }
+  },
+  "rostros": {
+    "resultado": {
+      "coincide": "Coincide",
+      "dudoso": "Dudoso",
+      "no_coincide": "No coincide",
+      "reto_fallido": "Sin gesto",
+      "sin_cara": "Sin cara",
+      "sin_registro": "Sin registro",
+      "no_verificado": "Sin verificar"
+    },
+    "estado": {
+      "pendiente": "Por aprobar",
+      "aprobado": "Aprobada",
+      "rechazado": "Rechazada",
+      "sin_registro": "Sin registrar"
+    },
+    "chip": {
+      "titulo": "Reconocimiento facial: {{resultado}}",
+      "tituloConParecido": "Reconocimiento facial: {{resultado}} (parecido {{pct}} %)"
+    },
+    "acciones": {
+      "aprobar": "Aprobar",
+      "rechazar": "Rechazar",
+      "reiniciar": "Reiniciar",
+      "aprobada": "Cara aprobada: {{nombre}} ya puede fichar con ella.",
+      "rechazada": "Cara rechazada. {{nombre}} tendrá que registrarla de nuevo.",
+      "reiniciada": "Cara borrada. {{nombre}} la registrará otra vez desde la app.",
+      "error": "No se pudo guardar el cambio. Revisa tu conexión e inténtalo de nuevo."
+    },
+    "rechazar": {
+      "titulo": "Rechazar la cara",
+      "desc": "La app le pedirá que registre su cara otra vez. Si le dices por qué, lo verá al intentarlo.",
+      "motivo": "Motivo (opcional)",
+      "pista": "Por ejemplo: «La foto está a contraluz» o «No es la persona»."
+    },
+    "reiniciar": {
+      "titulo": "¿Reiniciar la cara registrada?",
+      "confirmar": "Borrar y reiniciar",
+      "desc": "Se borra la cara de {{nombre}}. La próxima vez que abra la app tendrá que registrarla de nuevo y, hasta que la apruebes, al fichar no se podrá comprobar su cara."
+    },
+    "pagina": {
+      "titulo": "Caras registradas",
+      "subtitulo": "Cada vigilante registra su cara desde la app. Hasta que la apruebes, no se usa para comprobar quién ficha."
+    },
+    "apagado": {
+      "titulo": "La comprobación al fichar está apagada",
+      "desc": "Puedes ir aprobando caras, pero no se comparan al fichar hasta que la enciendas en Ajustes › App del equipo › Selfie y rostro al fichar.",
+      "enlace": "Ir a los ajustes"
+    },
+    "tabs": {
+      "pendientes": "Pendientes",
+      "aprobadas": "Aprobadas",
+      "rechazadas": "Rechazadas"
+    },
+    "error": {
+      "titulo": "No se pudieron cargar las caras",
+      "desc": "No se pudo cargar la lista. Revisa tu conexión y vuelve a intentarlo.",
+      "reintentar": "Reintentar"
+    },
+    "datos": {
+      "registrada": "Registrada el {{fecha}}",
+      "revisada": "Revisada el {{fecha}}",
+      "calidad": "Calidad: {{usables}} de {{cuadros}} fotos útiles",
+      "motivo": "Motivo: {{motivo}}"
+    },
+    "foto": {
+      "alt": "Foto de referencia de {{nombre}}"
+    },
+    "vacio": {
+      "pendientes": "No hay caras por aprobar",
+      "pendientesDesc": "Cuando un vigilante registre su cara desde la app, aparecerá aquí para que la apruebes.",
+      "aprobadas": "Todavía no has aprobado ninguna cara",
+      "aprobadasDesc": "Las caras que apruebes se listan aquí. Puedes reiniciar cualquiera si hay que registrarla de nuevo.",
+      "rechazadas": "No hay caras rechazadas",
+      "rechazadasDesc": "Si rechazas una cara, el vigilante tendrá que registrarla otra vez y la verás aquí."
+    },
+    "modulo": {
+      "titulo": "Que ficha quien tiene que fichar",
+      "desc": "Con el módulo «Reconocimiento facial», al iniciar turno se comprueba que la cara de la selfie sea la del vigilante. Se acaba el fichar por un compañero.",
+      "paso1": "El vigilante registra su cara una vez desde la app.",
+      "paso2": "Tú la apruebas aquí, con su foto delante.",
+      "paso3": "Cada vez que inicia turno, la app comprueba que sea él. Si no coincide, decides si solo se avisa o si no puede fichar.",
+      "enlace": "Ver en Módulos adicionales"
+    },
+    "ficha": {
+      "titulo": "Reconocimiento facial",
+      "verTodas": "Ver todas las caras",
+      "sinRegistro": "Todavía no ha registrado su cara. La app se lo pedirá la próxima vez que fiche.",
+      "error": "No se pudo consultar su cara registrada. Vuelve a abrir la ficha en un momento."
     }
   }
 }

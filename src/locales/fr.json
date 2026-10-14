@@ -2885,7 +2885,8 @@
       "overtime": "Heures supplémentaires",
       "correction_pending": "Correction en attente",
       "missing_location": "Sans localisation",
-      "selfie_no_face": "Selfie sans visage"
+      "selfie_no_face": "Selfie sans visage",
+      "face_mismatch": "Visage qui ne correspond pas"
     },
     "excEstado": {
       "open": "Ouverte",
@@ -3918,7 +3919,8 @@
       "guardias": "Agents de sécurité",
       "supervisores": "Superviseurs",
       "label": "Équipe de sécurité",
-      "usuarios": "Utilisateurs administratifs"
+      "usuarios": "Utilisateurs administratifs",
+      "caras-registradas": "Visages enregistrés"
     },
     "facturador": {
       "elementos": "Prestations",
@@ -5545,7 +5547,8 @@
     "emergencias": "Centre des urgences",
     "pases-de-turno": "Relèves",
     "modulos-adicionales": "Modules complémentaires",
-    "vigia-pro": "{{agente}} Pro"
+    "vigia-pro": "{{agente}} Pro",
+    "rostrosPorAprobar": "Visages à approuver : {{count}}"
   },
   "siteTour": {
     "newTour": "Nouvelle ronde",
@@ -17078,7 +17081,15 @@
     },
     "SelfieRostro": {
       "titulo": "Selfie et visage au pointage",
-      "ambasApps": "S'applique à l'app de l'équipe (agents) et à celle du superviseur : c'est le même réglage dans les deux."
+      "ambasApps": "S'applique à l'app de l'équipe (agents) et à celle du superviseur : c'est le même réglage dans les deux.",
+      "reconocimiento": "Vérifier que c'est bien l'agent (reconnaissance faciale)",
+      "reconocimientoOff": "Désactivé",
+      "reconocimientoFlag": "Signaler (pointe et reste à examiner)",
+      "reconocimientoEnforce": "Exiger (si ce n'est pas son visage, il ne peut pas pointer)",
+      "reconocimientoAyuda": "À la prise de service, l'app compare le visage avec celui que l'agent a enregistré et que vous avez approuvé dans Visages enregistrés. S'il n'en a pas encore d'approuvé, il pointe quand même et c'est laissé à examiner.",
+      "verCaras": "Voir les visages enregistrés",
+      "disponibleComoModulo": "Disponible en module complémentaire",
+      "verModulo": "Voir le module"
     },
     "CorrerCiclo": {
       "boton": "Décaler le cycle…",
@@ -18274,7 +18285,11 @@
       "time_clock_disabled": "La pointeuse était désactivée",
       "too_early": "Trop tôt",
       "selfie_no_face": "Selfie sans visage (à refaire)",
-      "selfie_no_face_allowed": "Selfie sans visage (pointage accepté)"
+      "selfie_no_face_allowed": "Selfie sans visage (pointage accepté)",
+      "rostro_no_coincide": "Le visage ne correspond pas",
+      "rostro_reto_fallido": "N'a pas fait le geste demandé",
+      "rostro_sin_cara": "Le visage n'était pas visible",
+      "rostro_no_verificado": "Visage non vérifié"
     },
     "scheduled": "Son service : {{h}}",
     "title": "Tentatives de pointage refusées",
@@ -19092,6 +19107,97 @@
       "ruta": "Itinéraire de supervision",
       "cobertura": "Couverture",
       "otra": "Action"
+    }
+  },
+  "rostros": {
+    "resultado": {
+      "coincide": "Correspond",
+      "dudoso": "Douteux",
+      "no_coincide": "Ne correspond pas",
+      "reto_fallido": "Sans geste",
+      "sin_cara": "Sans visage",
+      "sin_registro": "Non enregistré",
+      "no_verificado": "Non vérifié"
+    },
+    "estado": {
+      "pendiente": "À approuver",
+      "aprobado": "Approuvé",
+      "rechazado": "Refusé",
+      "sin_registro": "Non enregistré"
+    },
+    "chip": {
+      "titulo": "Reconnaissance faciale : {{resultado}}",
+      "tituloConParecido": "Reconnaissance faciale : {{resultado}} (ressemblance {{pct}} %)"
+    },
+    "acciones": {
+      "aprobar": "Approuver",
+      "rechazar": "Refuser",
+      "reiniciar": "Réinitialiser",
+      "aprobada": "Visage approuvé : {{nombre}} peut maintenant pointer avec.",
+      "rechazada": "Visage refusé. {{nombre}} devra l'enregistrer à nouveau.",
+      "reiniciada": "Visage supprimé. {{nombre}} l'enregistrera à nouveau depuis l'app.",
+      "error": "La modification n'a pas pu être enregistrée. Vérifiez votre connexion et réessayez."
+    },
+    "rechazar": {
+      "titulo": "Refuser le visage",
+      "desc": "L'app lui demandera d'enregistrer à nouveau son visage. Si vous indiquez pourquoi, il le verra en réessayant.",
+      "motivo": "Motif (facultatif)",
+      "pista": "Par exemple : « La photo est à contre-jour » ou « Ce n'est pas la bonne personne »."
+    },
+    "reiniciar": {
+      "titulo": "Réinitialiser le visage enregistré ?",
+      "confirmar": "Supprimer et réinitialiser",
+      "desc": "Le visage de {{nombre}} sera supprimé. À sa prochaine ouverture de l'app, il devra l'enregistrer à nouveau et, tant que vous ne l'aurez pas approuvé, son visage ne pourra pas être vérifié au pointage."
+    },
+    "pagina": {
+      "titulo": "Visages enregistrés",
+      "subtitulo": "Chaque agent enregistre son visage depuis l'app. Tant que vous ne l'avez pas approuvé, il ne sert pas à vérifier qui pointe."
+    },
+    "apagado": {
+      "titulo": "La vérification au pointage est désactivée",
+      "desc": "Vous pouvez déjà approuver des visages, mais ils ne sont pas comparés au pointage tant que vous ne l'activez pas dans Paramètres › App de l'équipe › Selfie et visage au pointage.",
+      "enlace": "Aller aux paramètres"
+    },
+    "tabs": {
+      "pendientes": "En attente",
+      "aprobadas": "Approuvés",
+      "rechazadas": "Refusés"
+    },
+    "error": {
+      "titulo": "Impossible de charger les visages",
+      "desc": "La liste n'a pas pu être chargée. Vérifiez votre connexion et réessayez.",
+      "reintentar": "Réessayer"
+    },
+    "datos": {
+      "registrada": "Enregistré le {{fecha}}",
+      "revisada": "Examiné le {{fecha}}",
+      "calidad": "Qualité : {{usables}} photos utilisables sur {{cuadros}}",
+      "motivo": "Motif : {{motivo}}"
+    },
+    "foto": {
+      "alt": "Photo de référence de {{nombre}}"
+    },
+    "vacio": {
+      "pendientes": "Aucun visage à approuver",
+      "pendientesDesc": "Quand un agent enregistre son visage depuis l'app, il apparaît ici pour que vous l'approuviez.",
+      "aprobadas": "Vous n'avez encore approuvé aucun visage",
+      "aprobadasDesc": "Les visages approuvés s'affichent ici. Vous pouvez en réinitialiser un s'il faut l'enregistrer à nouveau.",
+      "rechazadas": "Aucun visage refusé",
+      "rechazadasDesc": "Si vous refusez un visage, l'agent devra l'enregistrer à nouveau et vous le verrez ici."
+    },
+    "modulo": {
+      "titulo": "Que pointe celui qui doit pointer",
+      "desc": "Avec le module « Reconnaissance faciale », chaque prise de service vérifie que le visage du selfie est bien celui de l'agent. Fini le pointage par un collègue.",
+      "paso1": "L'agent enregistre son visage une fois depuis l'app.",
+      "paso2": "Vous l'approuvez ici, sa photo sous les yeux.",
+      "paso3": "À chaque prise de service, l'app vérifie que c'est bien lui. Si ça ne correspond pas, vous décidez de simplement signaler ou de bloquer le pointage.",
+      "enlace": "Voir dans Modules complémentaires"
+    },
+    "ficha": {
+      "titulo": "Reconnaissance faciale",
+      "verTodas": "Voir tous les visages",
+      "sinRegistro": "Visage pas encore enregistré. L'app le lui demandera au prochain pointage.",
+      "error": "Impossible de consulter le visage enregistré. Rouvrez la fiche dans un instant."
     }
   }
 }
