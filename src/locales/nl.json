@@ -6155,7 +6155,16 @@
       "title": "Je abonnement bij je leverancier",
       "trial": "Je zit in de proefperiode.",
       "trialAddCard": "Voeg vóór die datum een kaart toe, zodat de dienst zonder onderbreking doorloopt.",
-      "trialUntil": "Je proefperiode eindigt op {{fecha}}."
+      "trialUntil": "Je proefperiode eindigt op {{fecha}}.",
+      "mp3ds": {
+        "title": "Bevestig de betaling bij je bank",
+        "intro": "Je bank vraagt je deze betaling te bevestigen. Volg de stappen in het kader.",
+        "frameTitle": "Bevestiging van je bank",
+        "cancel": "Annuleren",
+        "done": "Ik heb al bevestigd bij mijn bank",
+        "pending": "Je bank rondt de bevestiging van de betaling af. Je ziet het over een paar minuten.",
+        "cancelled": "De betaling is niet bevestigd. Probeer het opnieuw met „Nu betalen”."
+      }
     },
     "plan": "Abonnement",
     "removeUser": "Niet meer betalen voor deze persoon",
@@ -18562,6 +18571,7 @@
     "enVivo": "Support van {{quien}} is live verbonden",
     "enVivoTicket": "Support van {{quien}} is live verbonden en werkt aan je ticket {{ticket}}",
     "barraPlataforma": "Je bent in {{empresa}} als support van {{marca}}",
+    "barraPlataformaPorSocio": "Je bent in {{empresa}} als support van {{plataforma}} (via {{socio}})",
     "ticket": "Ticket {{ticket}}"
   },
   "avisoDeRecarga": {

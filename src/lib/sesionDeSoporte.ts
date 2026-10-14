@@ -8,7 +8,8 @@ import { ApiService } from "@/services/api/apiService";
  * inside, for which ticket and until when.
  *
  * Who writes it:
- *   · `AccesoSoporte.tsx` (partner pass) → `{ resellerName, tenantName, expiresAt }`
+ *   · `AccesoSoporte.tsx` (partner pass) → `{ resellerName, tenantName, expiresAt,
+ *     soportePlataforma, impersonatedByEmail }`
  *   · the SuperAdmin, before loading the CRM in its frame →
  *     `{ resellerName, nombreDelSoporte, tenantName, ticketAsunto, expiresAt }`
  */
@@ -22,6 +23,13 @@ export interface SesionDeSoporte {
   nombreDelSoporte?: string | null;
   /** «#A1B2C3 · Subject» of the ticket being handled, if any. */
   ticketAsunto?: string | null;
+  /**
+   * CGuard platform support that entered through the partner panel (the pass
+   * says so: backend `canjearPase` → `soportePlataforma`). The bar then says
+   * «CGuard Pro support», not «<partner> support».
+   */
+  soportePlataforma?: boolean;
+  impersonatedByEmail?: string | null;
 }
 
 /** What the company's people see while support is inside (backend `vistaPublica`). */
@@ -32,6 +40,8 @@ export interface SoporteEnVivo {
   ticketAsunto: string | null;
   desde: string;
   venceSesion: string;
+  /** Platform support that came in through the partner panel: named as the platform, never the host brand. */
+  viaSocio?: boolean;
 }
 
 export function leerSesionDeSoporte(): SesionDeSoporte | null {
@@ -47,6 +57,11 @@ export function leerSesionDeSoporte(): SesionDeSoporte | null {
   } catch {
     return null;
   }
+}
+
+/** Platform support that entered through a partner's panel (not the SuperAdmin frame). */
+export function esSoportePlataformaPorSocio(s: SesionDeSoporte | null): boolean {
+  return !!s && s.soportePlataforma === true;
 }
 
 /** The SuperAdmin marks its own sessions with the platform as `nombreDelSoporte`. */

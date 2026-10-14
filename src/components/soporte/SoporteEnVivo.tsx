@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { useWhiteLabel } from "@/contexts/WhiteLabelContext";
+import { MARCA_DE_PLATAFORMA, useWhiteLabel } from "@/contexts/WhiteLabelContext";
 import { getAuthToken } from "@/lib/api";
 import { cerrarSocket, crearSocket } from "@/lib/socket";
 import {
@@ -110,8 +110,14 @@ export default function SoporteEnVivo() {
 
   // En el anfitrión de un socio no se escribe nuestro nombre: la plataforma
   // se llama como el anfitrión. El soporte DEL SOCIO va con su nombre.
-  const quien =
-    soporte?.quien === "plataforma" ? marca || soporte.nombreDelSoporte : soporte?.nombreDelSoporte || "";
+  // Except platform support that came in through the partner panel: it acted
+  // as the partner's admin, so the company is told it was the platform's
+  // support (the server sends that name), not the partner's nor the host's.
+  const quien = soporte?.viaSocio
+    ? soporte.nombreDelSoporte || MARCA_DE_PLATAFORMA.platformName
+    : soporte?.quien === "plataforma"
+      ? marca || soporte.nombreDelSoporte
+      : soporte?.nombreDelSoporte || "";
 
   return (
     <>

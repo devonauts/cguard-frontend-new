@@ -7056,7 +7056,16 @@
       "cardError": "Não foi possível salvar o cartão. Verifique os dados.",
       "loadingForm": "Carregando o formulário seguro…",
       "saveCard": "Salvar cartão",
-      "pausedNoData": "Sua assinatura está pausada por falta de pagamento e não conseguimos carregar os detalhes. Recarregue a página ou fale com seu provedor."
+      "pausedNoData": "Sua assinatura está pausada por falta de pagamento e não conseguimos carregar os detalhes. Recarregue a página ou fale com seu provedor.",
+      "mp3ds": {
+        "title": "Confirme o pagamento com seu banco",
+        "intro": "Seu banco pede para confirmar este pagamento. Siga os passos no quadro.",
+        "frameTitle": "Confirmação do seu banco",
+        "cancel": "Cancelar",
+        "done": "Já confirmei com meu banco",
+        "pending": "Seu banco está terminando de confirmar o pagamento. Ele aparecerá em alguns minutos.",
+        "cancelled": "O pagamento não foi confirmado. Você pode tentar novamente com “Pagar agora”."
+      }
     },
     "lockedSuspendedMsgPartner": "O acesso a esta conta foi suspenso. Entre em contato com seu fornecedor para reativá-la.",
     "lockedCanceledMsgPartner": "Sua assinatura foi cancelada. Entre em contato com seu fornecedor para reativá-la.",
@@ -18562,6 +18571,7 @@
     "enVivo": "O suporte de {{quien}} está conectado ao vivo",
     "enVivoTicket": "O suporte de {{quien}} está conectado ao vivo atendendo seu ticket {{ticket}}",
     "barraPlataforma": "Você está dentro de {{empresa}} como suporte de {{marca}}",
+    "barraPlataformaPorSocio": "Você está dentro de {{empresa}} como Suporte da {{plataforma}} (por meio de {{socio}})",
     "ticket": "Ticket {{ticket}}"
   },
   "avisoDeRecarga": {

@@ -49,6 +49,8 @@ export default function AccesoSoporte() {
             resellerName: s.resellerName || "",
             tenantName: s.tenantName || "",
             expiresAt: s.expiresAt,
+            soportePlataforma: s.soportePlataforma === true,
+            impersonatedByEmail: s.soportePlataforma === true ? s.impersonatedByEmail || null : null,
           }),
         );
         window.location.replace("/dashboard");

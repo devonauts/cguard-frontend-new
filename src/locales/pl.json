@@ -6157,7 +6157,16 @@
       "title": "Twoja subskrypcja u dostawcy",
       "trial": "Korzystasz z okresu próbnego.",
       "trialAddCard": "Dodaj kartę przed tą datą, aby usługa działała bez przerw.",
-      "trialUntil": "Twój okres próbny kończy się {{fecha}}."
+      "trialUntil": "Twój okres próbny kończy się {{fecha}}.",
+      "mp3ds": {
+        "title": "Potwierdź płatność w swoim banku",
+        "intro": "Twój bank prosi o potwierdzenie tej płatności. Wykonaj kroki w ramce.",
+        "frameTitle": "Potwierdzenie Twojego banku",
+        "cancel": "Anuluj",
+        "done": "Już potwierdziłem w banku",
+        "pending": "Twój bank kończy potwierdzanie płatności. Pojawi się za kilka minut.",
+        "cancelled": "Płatność nie została potwierdzona. Możesz spróbować ponownie przyciskiem „Zapłać teraz”."
+      }
     },
     "plan": "Plan",
     "removeUser": "Przestań płacić za tę osobę",
@@ -18848,6 +18857,7 @@
     "enVivo": "Wsparcie {{quien}} jest połączone na żywo",
     "enVivoTicket": "Wsparcie {{quien}} jest połączone na żywo i zajmuje się Twoim zgłoszeniem {{ticket}}",
     "barraPlataforma": "Jesteś w {{empresa}} jako wsparcie {{marca}}",
+    "barraPlataformaPorSocio": "Jesteś w {{empresa}} jako wsparcie {{plataforma}} (przez {{socio}})",
     "ticket": "Zgłoszenie {{ticket}}"
   },
   "avisoDeRecarga": {
