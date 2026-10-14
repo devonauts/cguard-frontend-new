@@ -10474,7 +10474,9 @@
       "descanso": "Intervalo",
       "horasNetas": "Horas líquidas",
       "deEnElPuesto": "de {{horas}} no posto",
-      "horasNetasTotales": "Horas líquidas:"
+      "horasNetasTotales": "Horas líquidas:",
+      "sinResolver": "Sem resolver",
+      "descansoCubreElTurnoAyuda": "O intervalo cobre todo o turno: corrija o intervalo para que seja pago."
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Avisar também estes e-mails",
@@ -11025,7 +11027,16 @@
         "historialConfirmar": "Salvar como histórico",
         "historialTitulo": "Com estas datas o evento já terminou: ficará apenas como histórico",
         "historialAviso": "Ao salvar não se criam turnos nem folha de pagamento para trás. As escalas são encerradas e os vigilantes sem outro posto são arquivados. Se alguém estiver com o ponto aberto no evento agora, não será possível salvar.",
-        "historialAvisoSinArchivar": "Ao salvar não se criam turnos nem folha de pagamento para trás e as escalas são encerradas (este evento não arquiva sua equipe). Se alguém estiver com o ponto aberto no evento agora, não será possível salvar."
+        "historialAvisoSinArchivar": "Ao salvar não se criam turnos nem folha de pagamento para trás e as escalas são encerradas (este evento não arquiva sua equipe). Se alguém estiver com o ponto aberto no evento agora, não será possível salvar.",
+        "vueltaActivo": "O evento voltou a estar ativo.",
+        "vueltaReabiertasYVolvieron": "O evento voltou a estar ativo: {{reabiertas}} e {{volvieron}} ({{lista}}).",
+        "vueltaReabiertas_one": "O evento voltou a estar ativo: {{count}} escala foi reaberta.",
+        "vueltaReabiertas_other": "O evento voltou a estar ativo: {{count}} escalas foram reabertas.",
+        "vueltaSinRecuperar_one": "{{count}} escala não pôde ser recuperada: atribua-a de novo.",
+        "vueltaSinRecuperar_other": "{{count}} escalas não puderam ser recuperadas: atribua-as de novo.",
+        "vuelveAlFuturoAviso": "Este evento já tinha terminado: ao salvar, as escalas serão reabertas e os vigilantes voltarão.",
+        "terminadoSinZonasTitulo": "Evento encerrado",
+        "terminadoSinZonas": "Este evento já terminou: fica como histórico. Para adicionar zonas, altere primeiro as datas."
       },
       "creaCadaEstacionEvento": "Crie cada estação do evento: nome, de que hora a que hora é coberta, quantos vigilantes ao mesmo tempo e cerca virtual. Sem rodízio: o evento tem suas datas. Quando estiverem todas, clique em «Terminar».",
       "eventoConEstaciones_one": "{{count}} estação. Próximo: designe os vigilantes; as datas e horas vêm do evento.",
@@ -14990,7 +15001,9 @@
       "unDiaSinFichajeSeInforma": "Um dia sem registro é informado; não passa pelo ciclo de pagamento.",
       "vacaciones": "Férias",
       "yLasHorasSeRecalculanSolas": "e as horas são recalculadas automaticamente — não se digitam à mão. Fica registrado quem corrigiu e por quê.",
-      "netasSePagan": "Líquidas (pagas)"
+      "netasSePagan": "Líquidas (pagas)",
+      "descansoAnotadoSinHorario": "{{min}} min de intervalo anotados, sem horário. São mantidos ao salvar; se você adicionar intervalos aqui, valem os que adicionar.",
+      "descansoCubreElTurno": "O intervalo cobre todo o turno, então não sobra nada a pagar. Não é pago nem aprovado até corrigir o intervalo em «Corrigir»."
     },
     "AssignGuards": {
       "fijo": "Fixo",
@@ -16526,7 +16539,11 @@
       "nPlazas_other": "{{count}} vagas",
       "nVigilantes_one": "{{count}} vigilante",
       "nVigilantes_other": "{{count}} vigilantes",
-      "plazas": "Vagas"
+      "plazas": "Vagas",
+      "seReabrieron_one": "{{count}} escala foi reaberta",
+      "seReabrieron_other": "{{count}} escalas foram reabertas",
+      "volvieronVigilantes_one": "{{count}} vigilante voltou",
+      "volvieronVigilantes_other": "{{count}} vigilantes voltaram"
     },
     "EventoDeLaEstacion": {
       "quitarTitulo": "Tirar {{nombre}} do evento?",
@@ -16603,7 +16620,8 @@
         "nSinSalida_other": "{{count}} sem saída",
         "totalHoras": "{{horas}} h trabalhadas",
         "chip": "{{personas}} · {{horas}} h",
-        "sinHorasCorto": "sem horas registradas"
+        "sinHorasCorto": "sem horas registradas",
+        "sinResolver": "{{entrada}} → {{salida}} · sem resolver (o intervalo cobre o turno)"
       }
     },
     "NominaDelEvento": {
@@ -16642,7 +16660,8 @@
         "cumplido": "Cumprido",
         "sinSalida": "Sem saída",
         "noFicho": "Não registrou",
-        "pendiente": "Pendente"
+        "pendiente": "Pendente",
+        "sinResolver": "Sem resolver"
       },
       "col": {
         "vigilante": "Vigilante",
@@ -16664,7 +16683,8 @@
         "estado": "Estado",
         "descansoMin": "Intervalo (min)",
         "enElPuesto": "No posto (h)",
-        "horasNetas": "Horas líquidas"
+        "horasNetas": "Horas líquidas",
+        "presupuesto": "Orçamento ({{moneda}})"
       },
       "terminado": "Evento terminado.",
       "noFichoValeCero_one": "{{count}} turno sem registro vale zero.",
@@ -16699,7 +16719,16 @@
       "historialSinHoras": "Não há horas registradas neste evento: ninguém bateu o ponto e não há nada a pagar. Um evento com datas passadas não cria turnos para trás.",
       "historialAsignados_one": "Esteve escalado ({{count}}), sem horas:",
       "historialAsignados_other": "Estiveram escalados ({{count}}), sem horas:",
-      "descansoDescontado": "−{{min}} min de intervalo"
+      "descansoDescontado": "−{{min}} min de intervalo",
+      "nSinResolver_one": "{{count}} sem resolver",
+      "nSinResolver_other": "{{count}} sem resolver",
+      "resumenExportNetas": "{{vigilantes}} vigilantes · {{horas}} h líquidas · a pagar {{importe}}",
+      "enCurso": "O evento termina em {{fin}}. «A pagar» usa as horas registradas até agora; o programado fica como orçamento.",
+      "sinResolverAviso_one": "{{count}} turno com um intervalo que cobre todo o turno: corrija o intervalo em Registros de presença.",
+      "sinResolverAviso_other": "{{count}} turnos com um intervalo que cobre todo o turno: corrija o intervalo em Registros de presença.",
+      "descansoTotal": "intervalo {{tiempo}}",
+      "horasNetas": "Horas líquidas",
+      "dePresupuesto": "de {{importe}} orçados"
     },
     "RelevosDelEvento": {
       "titulo": "Turnos do evento",
@@ -16768,7 +16797,9 @@
         "sin_marcar": "Sem resolver",
         "no_planificado": "Sem turno",
         "programado": "Programado"
-      }
+      },
+      "sinDesgloseExportada": "Este cartão já foi exportado e fica como está: foi gerado antes de mostrar o intervalo por dia, então esse detalhamento não está disponível para ele. O total é o que foi exportado.",
+      "sinDesgloseAprobada": "Este cartão já está aprovado e fica como está: foi gerado antes de mostrar o intervalo por dia, então esse detalhamento não está disponível para ele. O total é o que foi aprovado."
     }
   },
   "map": {
@@ -18965,7 +18996,8 @@
     "plazaCubiertaPor": "Coberta: {{nombre}}",
     "todasLasPlazasCubiertas": "Todas as vagas deste posto já estão cobertas. Para trocar alguém, use «Alterar» na linha dele.",
     "plazasCubiertas": "{{n}} de {{total}} vagas cobertas",
-    "pasadoHistorial": "Evento passado · histórico"
+    "pasadoHistorial": "Evento passado · histórico",
+    "estadoTerminado": "Encerrado"
   },
   "conexionApp": {
     "titulo": "Conexão",

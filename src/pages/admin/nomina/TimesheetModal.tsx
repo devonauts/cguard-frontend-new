@@ -314,6 +314,15 @@ export default function TimesheetModal({
   const [descansos, setDescansos] = useState<
     { kind: string; start: string; end: string }[]
   >([]);
+  /* ¿Se tocaron los descansos en el borrador? Si no, la corrección NO los
+     manda: un fichaje con minutos de descanso anotados pero sin horario
+     (`breakMinutes` sin `breaks`) se quedaba sin descanso al corregir sólo la
+     salida —se mandaba `breaks: []`— y las horas netas subían solas. */
+  const [descansosTocados, setDescansosTocados] = useState(false);
+  const editarDescansos: typeof setDescansos = (v) => {
+    setDescansosTocados(true);
+    setDescansos(v);
+  };
   const [motivo, setMotivo] = useState("");
   const [obs, setObs] = useState("");
 
@@ -324,6 +333,7 @@ export default function TimesheetModal({
     setEntrada(aLocalInput(record.punchInTime));
     setSalida(aLocalInput(record.punchOutTime));
     setObs(record.observations || "");
+    setDescansosTocados(false);
     setDescansos(
       (record.breaks || []).map((b) => ({
         kind: b.kind || "break",
@@ -367,13 +377,17 @@ export default function TimesheetModal({
       await attendanceService.editTimes(record.id, {
         punchInTime: deLocalInput(entrada),
         punchOutTime: deLocalInput(salida),
-        breaks: descansos
-          .filter((d) => d.start)
-          .map((d) => ({
-            kind: d.kind,
-            start: deLocalInput(d.start)!,
-            end: deLocalInput(d.end),
-          })),
+        ...(descansosTocados
+          ? {
+              breaks: descansos
+                .filter((d) => d.start)
+                .map((d) => ({
+                  kind: d.kind,
+                  start: deLocalInput(d.start)!,
+                  end: deLocalInput(d.end),
+                })),
+            }
+          : {}),
         observations: obs || null,
         reason: motivo.trim(),
       });
@@ -390,7 +404,18 @@ export default function TimesheetModal({
     } finally {
       setBusy(false);
     }
-  }, [record, entrada, salida, descansos, obs, motivo, onChanged, onClose, t]);
+  }, [
+    record,
+    entrada,
+    salida,
+    descansos,
+    descansosTocados,
+    obs,
+    motivo,
+    onChanged,
+    onClose,
+    t,
+  ]);
 
   const mover = useCallback(
     async (destino: string) => {
@@ -586,9 +611,15 @@ export default function TimesheetModal({
                   <Field
                     label={t("ui.TimesheetModal.netasSePagan", "Netas (se pagan)")}
                     value={
-                      <span className="tabular-nums">
-                        {fmtHours(desglose.netas)}
-                      </span>
+                      desglose.cubreElTurno ? (
+                        <ToneBadge tone="warn">
+                          {t("ui.NominaRecords.sinResolver", "Sin resolver")}
+                        </ToneBadge>
+                      ) : (
+                        <span className="tabular-nums">
+                          {fmtHours(desglose.netas)}
+                        </span>
+                      )
                     }
                     numeric
                   />
@@ -629,6 +660,15 @@ export default function TimesheetModal({
                     numeric
                   />
                 </div>
+
+                {desglose.cubreElTurno && (
+                  <InfoNote tone="warn">
+                    {t(
+                      "ui.TimesheetModal.descansoCubreElTurno",
+                      "El descanso cubre todo el turno, así que no queda nada que pagar. No se paga ni se aprueba hasta corregir el descanso en «Corregir».",
+                    )}
+                  </InfoNote>
+                )}
 
                 {Array.isArray(record.breaks) && record.breaks.length > 0 && (
                   <div>
@@ -912,7 +952,7 @@ export default function TimesheetModal({
                     variant="outline"
                     className="rounded-full"
                     onClick={() =>
-                      setDescansos((p) => [
+                      editarDescansos((p) => [
                         ...p,
                         { kind: "break", start: entrada, end: "" },
                       ])
@@ -923,7 +963,16 @@ export default function TimesheetModal({
                 </div>
                 {descansos.length === 0 && (
                   <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
-                    {esOtroReloj
+                    {/* Minutos anotados sin horario (los pone el reloj o una
+                        importación): se dicen y se conservan, no «sin
+                        descansos». Sólo cambian si se agregan aquí. */}
+                    {!descansosTocados && Number(record.breakMinutes) > 0
+                      ? t("ui.TimesheetModal.descansoAnotadoSinHorario", {
+                          min: Math.round(Number(record.breakMinutes)),
+                          defaultValue:
+                            "{{min}} min de descanso anotados, sin horario. Se conservan al guardar; si agregas descansos aquí, mandan los que agregues.",
+                        })
+                      : esOtroReloj
                       ? t(
                           "ui.TimesheetModal.sinDescansosRegistradosRecalcular",
                           "Sin descansos registrados. Se descuentan de las horas al recalcular.",
@@ -945,7 +994,7 @@ export default function TimesheetModal({
                         className="cg-input cg-focus px-2 py-2 text-sm"
                         value={d.kind}
                         onChange={(e) =>
-                          setDescansos((p) =>
+                          editarDescansos((p) =>
                             p.map((x, j) =>
                               j === i ? { ...x, kind: e.target.value } : x,
                             ),
@@ -960,7 +1009,7 @@ export default function TimesheetModal({
                         className="cg-input cg-focus px-2 py-2 text-sm tabular-nums"
                         value={d.start}
                         onChange={(e) =>
-                          setDescansos((p) =>
+                          editarDescansos((p) =>
                             p.map((x, j) =>
                               j === i ? { ...x, start: e.target.value } : x,
                             ),
@@ -972,7 +1021,7 @@ export default function TimesheetModal({
                         className="cg-input cg-focus px-2 py-2 text-sm tabular-nums"
                         value={d.end}
                         onChange={(e) =>
-                          setDescansos((p) =>
+                          editarDescansos((p) =>
                             p.map((x, j) =>
                               j === i ? { ...x, end: e.target.value } : x,
                             ),
@@ -983,7 +1032,7 @@ export default function TimesheetModal({
                         size="sm"
                         variant="ghost"
                         onClick={() =>
-                          setDescansos((p) => p.filter((_, j) => j !== i))
+                          editarDescansos((p) => p.filter((_, j) => j !== i))
                         }
                       >
                         <Trash2 size={14} />

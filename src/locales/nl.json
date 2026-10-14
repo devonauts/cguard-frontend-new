@@ -11007,7 +11007,9 @@
       "descanso": "Pauze",
       "horasNetas": "Netto-uren",
       "deEnElPuesto": "van {{horas}} op de post",
-      "horasNetasTotales": "Netto-uren:"
+      "horasNetasTotales": "Netto-uren:",
+      "sinResolver": "Onopgelost",
+      "descansoCubreElTurnoAyuda": "De pauze beslaat de hele dienst: corrigeer de pauze zodat die betaald wordt."
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Ook deze e-mailadressen informeren",
@@ -11558,7 +11560,16 @@
         "historialConfirmar": "Opslaan als geschiedenis",
         "historialTitulo": "Met deze datums is het evenement al voorbij: het blijft alleen als geschiedenis bewaard",
         "historialAviso": "Bij opslaan worden geen diensten of loonadministratie met terugwerkende kracht aangemaakt. De indelingen worden afgesloten en beveiligers zonder andere post worden gearchiveerd. Is er nu iemand ingeklokt bij het evenement, dan kan er niet worden opgeslagen.",
-        "historialAvisoSinArchivar": "Bij opslaan worden geen diensten of loonadministratie met terugwerkende kracht aangemaakt en worden de indelingen afgesloten (dit evenement archiveert zijn team niet). Is er nu iemand ingeklokt, dan kan er niet worden opgeslagen."
+        "historialAvisoSinArchivar": "Bij opslaan worden geen diensten of loonadministratie met terugwerkende kracht aangemaakt en worden de indelingen afgesloten (dit evenement archiveert zijn team niet). Is er nu iemand ingeklokt, dan kan er niet worden opgeslagen.",
+        "vueltaActivo": "Het evenement is weer actief.",
+        "vueltaReabiertasYVolvieron": "Het evenement is weer actief: {{reabiertas}} en {{volvieron}} ({{lista}}).",
+        "vueltaReabiertas_one": "Het evenement is weer actief: {{count}} indeling is heropend.",
+        "vueltaReabiertas_other": "Het evenement is weer actief: {{count}} indelingen zijn heropend.",
+        "vueltaSinRecuperar_one": "{{count}} indeling kon niet worden hersteld: deel opnieuw in.",
+        "vueltaSinRecuperar_other": "{{count}} indelingen konden niet worden hersteld: deel opnieuw in.",
+        "vuelveAlFuturoAviso": "Dit evenement was al voorbij: bij opslaan worden de indelingen heropend en komen de beveiligers terug.",
+        "terminadoSinZonasTitulo": "Evenement afgelopen",
+        "terminadoSinZonas": "Dit evenement is al voorbij: het blijft als geschiedenis. Wijzig eerst de datums om zones toe te voegen."
       },
       "creaCadaEstacionEvento": "Maak elk station van het evenement aan: naam, van hoe laat tot hoe laat het bezet is, hoeveel beveiligers tegelijk en geofence. Geen rotatie: het evenement heeft zijn eigen data. Als ze allemaal klaar zijn, klik op ‘Afronden’.",
       "eventoConEstaciones_one": "{{count}} station. Volgende stap: deel de beveiligers in; de data en uren komen van het evenement.",
@@ -15523,7 +15534,9 @@
       "unDiaSinFichajeSeInforma": "Een dag zonder klokregistratie wordt gemeld; hij doorloopt de betalingscyclus niet.",
       "vacaciones": "Vakantie",
       "yLasHorasSeRecalculanSolas": "en de uren worden automatisch herberekend — ze worden niet met de hand ingevoerd. Wie corrigeerde en waarom wordt vastgelegd.",
-      "netasSePagan": "Netto (betaald)"
+      "netasSePagan": "Netto (betaald)",
+      "descansoAnotadoSinHorario": "{{min}} min pauze genoteerd, zonder tijden. Die blijven behouden bij opslaan; voeg je hier pauzes toe, dan gelden die.",
+      "descansoCubreElTurno": "De pauze beslaat de hele dienst, dus er blijft niets te betalen over. De dienst wordt pas betaald of goedgekeurd als de pauze is gecorrigeerd onder ‘Corrigeren’."
     },
     "AssignGuards": {
       "fijo": "Vast",
@@ -17059,7 +17072,11 @@
       "nPlazas_other": "{{count}} plaatsen",
       "nVigilantes_one": "{{count}} beveiliger",
       "nVigilantes_other": "{{count}} beveiligers",
-      "plazas": "Plaatsen"
+      "plazas": "Plaatsen",
+      "seReabrieron_one": "{{count}} indeling is heropend",
+      "seReabrieron_other": "{{count}} indelingen zijn heropend",
+      "volvieronVigilantes_one": "{{count}} beveiliger is terug",
+      "volvieronVigilantes_other": "{{count}} beveiligers zijn terug"
     },
     "EventoDeLaEstacion": {
       "quitarTitulo": "{{nombre}} uit het evenement halen?",
@@ -17136,7 +17153,8 @@
         "nSinSalida_other": "{{count}} niet uitgeklokt",
         "totalHoras": "{{horas}} u gewerkt",
         "chip": "{{personas}} · {{horas}} u",
-        "sinHorasCorto": "geen uren geregistreerd"
+        "sinHorasCorto": "geen uren geregistreerd",
+        "sinResolver": "{{entrada}} → {{salida}} · onopgelost (de pauze beslaat de dienst)"
       }
     },
     "NominaDelEvento": {
@@ -17175,7 +17193,8 @@
         "cumplido": "Voltooid",
         "sinSalida": "Niet uitgeklokt",
         "noFicho": "Niet ingeklokt",
-        "pendiente": "Gepland"
+        "pendiente": "Gepland",
+        "sinResolver": "Onopgelost"
       },
       "col": {
         "vigilante": "Beveiliger",
@@ -17197,7 +17216,8 @@
         "estado": "Status",
         "descansoMin": "Pauze (min)",
         "enElPuesto": "Op de post (u)",
-        "horasNetas": "Netto-uren"
+        "horasNetas": "Netto-uren",
+        "presupuesto": "Begroting ({{moneda}})"
       },
       "terminado": "Evenement afgelopen.",
       "noFichoValeCero_one": "{{count}} dienst zonder inklokken telt als nul.",
@@ -17232,7 +17252,16 @@
       "historialSinHoras": "Er zijn geen uren geregistreerd voor dit evenement: niemand heeft ingeklokt en er valt niets te betalen. Een evenement met datums in het verleden maakt geen diensten met terugwerkende kracht aan.",
       "historialAsignados_one": "Ingedeeld ({{count}}), zonder uren:",
       "historialAsignados_other": "Ingedeeld ({{count}}), zonder uren:",
-      "descansoDescontado": "−{{min}} min pauze"
+      "descansoDescontado": "−{{min}} min pauze",
+      "nSinResolver_one": "{{count}} onopgelost",
+      "nSinResolver_other": "{{count}} onopgelost",
+      "resumenExportNetas": "{{vigilantes}} beveiligers · {{horas}} netto-u · te betalen {{importe}}",
+      "enCurso": "Het evenement eindigt op {{fin}}. ‘Te betalen’ rekent met de tot nu toe geklokte uren; de planning blijft de begroting.",
+      "sinResolverAviso_one": "{{count}} dienst met een pauze die de hele dienst beslaat: corrigeer de pauze in Aanwezigheidsregistratie.",
+      "sinResolverAviso_other": "{{count}} diensten met een pauze die de hele dienst beslaat: corrigeer de pauze in Aanwezigheidsregistratie.",
+      "descansoTotal": "pauze {{tiempo}}",
+      "horasNetas": "Netto-uren",
+      "dePresupuesto": "van {{importe}} begroot"
     },
     "RelevosDelEvento": {
       "titulo": "Diensten van het evenement",
@@ -17301,7 +17330,9 @@
         "sin_marcar": "Onopgelost",
         "no_planificado": "Zonder dienst",
         "programado": "Gepland"
-      }
+      },
+      "sinDesgloseExportada": "Deze urenkaart is al geëxporteerd en blijft zoals hij is: hij is gemaakt voordat de pauze per dag werd getoond, dus die uitsplitsing is er niet voor. Het totaal is wat is geëxporteerd.",
+      "sinDesgloseAprobada": "Deze urenkaart is al goedgekeurd en blijft zoals hij is: hij is gemaakt voordat de pauze per dag werd getoond, dus die uitsplitsing is er niet voor. Het totaal is wat is goedgekeurd."
     }
   },
   "visitantes": {
@@ -18965,7 +18996,8 @@
     "plazaCubiertaPor": "Bezet: {{nombre}}",
     "todasLasPlazasCubiertas": "Alle plaatsen op deze post zijn al bezet. Om iemand te wisselen, gebruik „Wijzigen” in de rij.",
     "plazasCubiertas": "{{n}} van {{total}} plaatsen bezet",
-    "pasadoHistorial": "Afgelopen evenement · geschiedenis"
+    "pasadoHistorial": "Afgelopen evenement · geschiedenis",
+    "estadoTerminado": "Afgelopen"
   },
   "conexionApp": {
     "titulo": "Verbinding",

@@ -62,9 +62,14 @@ import { useClientSelection } from "@/contexts/ClientSelectionContext";
 import { getServiceType, esEvento } from "@/lib/serviceTypes";
 import {
   EVENTO_MAX_DIAS,
+  avisosDeVueltaAlFuturo,
+  configParaGuardar,
+  eventoTerminado,
   pasaAlPasado,
   validarVigencia,
+  vuelveAlFuturo,
   type ErrorVigencia,
+  type VueltaAlFuturo,
 } from "@/lib/eventos";
 import { confirmDialog } from "@/components/ui/confirmDialog";
 import { desdeInputFechaHora, paraInputFechaHora } from "@/lib/horaDeLaEmpresa";
@@ -1016,6 +1021,13 @@ export default function PostSiteWizard({
     esEventoSel &&
     !errorVigencia &&
     pasaAlPasado(sedeGuardada?.vigenteHasta, vigenciaISO.hasta);
+  /* Y al revés: uno que ya había terminado vuelve al futuro. El servidor
+     reabre lo que cerró el paso a historial; se dice antes de guardar. */
+  const vuelveDelHistorial =
+    isEdit &&
+    esEventoSel &&
+    !errorVigencia &&
+    vuelveAlFuturo(sedeGuardada?.vigenteHasta, vigenciaISO.hasta);
 
   // Step 2
   const [clientId, setClientId] = useState(
@@ -1323,11 +1335,15 @@ export default function PostSiteWizard({
             ? `Sitio de ${resolvedClientName}`
             : "Sitio sin nombre");
 
-    const finalConfig = {
+    /* Lo del formulario va ENCIMA de lo último que tiene el servidor, nunca
+       solo: el servidor guarda `serviceConfig` entero, y las claves que
+       apunta él (paso a historial, archivado, tarifa del evento…) se perdían
+       o volvían viejas al guardar otra vez (ver `configParaGuardar`). */
+    const finalConfig = configParaGuardar(sedeGuardada?.serviceConfig, {
       ...serviceConfig,
       specialEquipment: [...equipment, ...customEquipment],
       trainingRequired: [...training, ...customTraining],
-    };
+    });
 
     return {
       name: autoName,
@@ -1490,9 +1506,21 @@ export default function PostSiteWizard({
         seQuedan?: number;
         archivarAlTerminar?: boolean;
       };
+      vueltaAlFuturo?: VueltaAlFuturo;
     } | null,
   ) => {
     if (!rs) return;
+    /* El evento había terminado y vuelve al futuro: se dice qué se reabrió y
+       quién volvió, y lo que no se pudo recuperar, para reasignarlo. Lo demás
+       (quién no cabe en las fechas nuevas) se avisa después, como siempre. */
+    const vuelta = avisosDeVueltaAlFuturo(rs.vueltaAlFuturo, (k, o) =>
+      String(t(k, o as any)),
+    );
+
+    if (vuelta) {
+      toast.info(vuelta.info, { duration: 12000 });
+      if (vuelta.aviso) toast.warning(vuelta.aviso, { duration: 15000 });
+    }
     /* Con las fechas nuevas el evento ya terminó: nadie se «movió» a fechas
        pasadas (antes decía «Se movieron N vigilantes» sin un solo turno). Se
        dice lo que pasó de verdad: asignaciones cerradas y quién se archivó. */
@@ -1928,6 +1956,21 @@ export default function PostSiteWizard({
                           "Al guardar no se crean turnos ni nómina hacia atrás y sus asignaciones se cierran (este evento no archiva a su gente). Si alguien está fichado ahora mismo en el evento, no se podrá guardar.",
                         )}
                   </InfoNote>
+                )}
+                {vuelveDelHistorial && (
+                  <p
+                    className="mt-3 flex items-start gap-1.5 text-xs"
+                    style={{ color: "var(--info-text)" }}
+                  >
+                    <CalendarClock
+                      aria-hidden
+                      className="mt-px h-3.5 w-3.5 shrink-0"
+                    />
+                    {t(
+                      "ui.PostSiteWizard.evento.vuelveAlFuturoAviso",
+                      "Este evento ya había terminado: al guardar se reabrirán sus asignaciones y volverán sus vigilantes.",
+                    )}
+                  </p>
                 )}
                 {/* Al terminar, su gente libera el asiento (por defecto sí). El
                    servidor lo lee de `serviceConfig.archivarAlTerminar`; sin
@@ -2540,6 +2583,10 @@ export default function PostSiteWizard({
         .filter((x) => x.existingId)
         .map((x) => ({ id: x.existingId!, name: x.name }));
       const todas = [...existentes, ...creadas];
+      /* Un evento que YA TERMINÓ es historial: crearle zonas ahora no tiene
+         turnos que generar ni nadie a quien asignar. Se dice y se cierra la
+         puerta; para añadir zonas, primero se le cambian las fechas. */
+      const terminadoYa = !!sedeGuardada && eventoTerminado(sedeGuardada);
 
       return (
         <div className="space-y-5">
@@ -2550,17 +2597,20 @@ export default function PostSiteWizard({
                 "Estaciones de la sede",
               )}
             </h2>
-            <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-              {esEventoSel
-                ? t(
-                    "ui.PostSiteWizard.creaCadaEstacionEvento",
-                    "Crea cada estación del evento: nombre, de qué hora a qué hora se cubre, cuántos vigilantes a la vez y geocerca. Sin rotación: el evento tiene sus fechas. Cuando estén todas, pulsa «Terminar».",
-                  )
-                : t(
-                    "ui.PostSiteWizard.creaCadaEstacion",
-                    "Crea cada estación con su nombre, nominativo, horario y geocerca. Cuando estén todas, pulsa «Terminar».",
-                  )}
-            </p>
+            {/* Terminado, la invitación a crear no aplica: lo dice la nota. */}
+            {!terminadoYa && (
+              <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+                {esEventoSel
+                  ? t(
+                      "ui.PostSiteWizard.creaCadaEstacionEvento",
+                      "Crea cada estación del evento: nombre, de qué hora a qué hora se cubre, cuántos vigilantes a la vez y geocerca. Sin rotación: el evento tiene sus fechas. Cuando estén todas, pulsa «Terminar».",
+                    )
+                  : t(
+                      "ui.PostSiteWizard.creaCadaEstacion",
+                      "Crea cada estación con su nombre, nominativo, horario y geocerca. Cuando estén todas, pulsa «Terminar».",
+                    )}
+              </p>
+            )}
           </div>
 
           {todas.length > 0 && (
@@ -2577,7 +2627,21 @@ export default function PostSiteWizard({
             </div>
           )}
 
-          {sedeGuardada && sedeId ? (
+          {terminadoYa ? (
+            <InfoNote
+              icon={<CalendarClock />}
+              title={t(
+                "ui.PostSiteWizard.evento.terminadoSinZonasTitulo",
+                "Evento terminado",
+              )}
+              tone="info"
+            >
+              {t(
+                "ui.PostSiteWizard.evento.terminadoSinZonas",
+                "Este evento ya terminó: queda como historial. Para añadir zonas, cambia primero sus fechas.",
+              )}
+            </InfoNote>
+          ) : sedeGuardada && sedeId ? (
             /* `key` remonta el formulario tras cada alta: queda limpio para la
                siguiente estación sin que el componente sepa nada de esto. */
             <StationCreateForm

@@ -10474,7 +10474,9 @@
       "descanso": "Break",
       "horasNetas": "Net hours",
       "deEnElPuesto": "of {{horas}} on post",
-      "horasNetasTotales": "Net hours:"
+      "horasNetasTotales": "Net hours:",
+      "sinResolver": "Unresolved",
+      "descansoCubreElTurnoAyuda": "The break covers the whole shift: correct the break so it gets paid."
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Also notify these email addresses",
@@ -11025,7 +11027,16 @@
         "historialConfirmar": "Save as history",
         "historialTitulo": "With these dates the event is already over: it will be kept as history only",
         "historialAviso": "Saving does not create shifts or payroll backwards. Its assignments are closed and guards with no other post are archived. If someone is clocked in at the event right now, it cannot be saved.",
-        "historialAvisoSinArchivar": "Saving does not create shifts or payroll backwards, and its assignments are closed (this event does not archive its people). If someone is clocked in at the event right now, it cannot be saved."
+        "historialAvisoSinArchivar": "Saving does not create shifts or payroll backwards, and its assignments are closed (this event does not archive its people). If someone is clocked in at the event right now, it cannot be saved.",
+        "vueltaActivo": "The event is active again.",
+        "vueltaReabiertasYVolvieron": "The event is active again: {{reabiertas}} and {{volvieron}} ({{lista}}).",
+        "vueltaReabiertas_one": "The event is active again: {{count}} assignment was reopened.",
+        "vueltaReabiertas_other": "The event is active again: {{count}} assignments were reopened.",
+        "vueltaSinRecuperar_one": "{{count}} assignment couldn’t be recovered: assign it again.",
+        "vueltaSinRecuperar_other": "{{count}} assignments couldn’t be recovered: assign them again.",
+        "vuelveAlFuturoAviso": "This event had already ended: when you save, its assignments will be reopened and its guards will come back.",
+        "terminadoSinZonasTitulo": "Event ended",
+        "terminadoSinZonas": "This event has already ended: it’s kept as history. To add zones, change its dates first."
       },
       "creaCadaEstacionEvento": "Create each station for the event: name, from what time to what time it is covered, how many guards at once and geofence. No rotation: the event has its own dates. When they're all done, press “Finish”.",
       "eventoConEstaciones_one": "{{count}} station. Next: assign the guards; the event sets the dates and hours.",
@@ -14990,7 +15001,9 @@
       "unDiaSinFichajeSeInforma": "A day without punches is reported; it doesn't go through the payment cycle.",
       "vacaciones": "Vacation",
       "yLasHorasSeRecalculanSolas": "and the hours are recalculated automatically — they're not entered by hand. Who corrected it and why is recorded.",
-      "netasSePagan": "Net (paid)"
+      "netasSePagan": "Net (paid)",
+      "descansoAnotadoSinHorario": "{{min}} min of break recorded, with no times. They are kept when you save; if you add breaks here, the ones you add take over.",
+      "descansoCubreElTurno": "The break covers the whole shift, so there is nothing left to pay. It isn’t paid or approved until the break is fixed in “Correct”."
     },
     "AssignGuards": {
       "fijo": "Fixed",
@@ -16526,7 +16539,11 @@
       "nPlazas_other": "{{count}} slots",
       "nVigilantes_one": "{{count}} guard",
       "nVigilantes_other": "{{count}} guards",
-      "plazas": "Slots"
+      "plazas": "Slots",
+      "seReabrieron_one": "{{count}} assignment was reopened",
+      "seReabrieron_other": "{{count}} assignments were reopened",
+      "volvieronVigilantes_one": "{{count}} guard is back",
+      "volvieronVigilantes_other": "{{count}} guards are back"
     },
     "EventoDeLaEstacion": {
       "quitarTitulo": "Remove {{nombre}} from the event?",
@@ -16603,7 +16620,8 @@
         "nSinSalida_other": "{{count}} with no clock-out",
         "totalHoras": "{{horas}} h worked",
         "chip": "{{personas}} · {{horas}} h",
-        "sinHorasCorto": "no hours recorded"
+        "sinHorasCorto": "no hours recorded",
+        "sinResolver": "{{entrada}} → {{salida}} · unresolved (the break covers the shift)"
       }
     },
     "NominaDelEvento": {
@@ -16642,7 +16660,8 @@
         "cumplido": "Completed",
         "sinSalida": "No clock-out",
         "noFicho": "No clock-in",
-        "pendiente": "Upcoming"
+        "pendiente": "Upcoming",
+        "sinResolver": "Unresolved"
       },
       "col": {
         "vigilante": "Guard",
@@ -16664,7 +16683,8 @@
         "estado": "Status",
         "descansoMin": "Break (min)",
         "enElPuesto": "On post (h)",
-        "horasNetas": "Net hours"
+        "horasNetas": "Net hours",
+        "presupuesto": "Budget ({{moneda}})"
       },
       "terminado": "Event finished.",
       "noFichoValeCero_one": "{{count}} shift with no clock-in counts as zero.",
@@ -16699,7 +16719,16 @@
       "historialSinHoras": "There are no hours recorded for this event: nobody clocked in and there is nothing to pay. An event with past dates does not create shifts backwards.",
       "historialAsignados_one": "Assigned ({{count}}), with no hours:",
       "historialAsignados_other": "Assigned ({{count}}), with no hours:",
-      "descansoDescontado": "−{{min}} min break"
+      "descansoDescontado": "−{{min}} min break",
+      "nSinResolver_one": "{{count}} unresolved",
+      "nSinResolver_other": "{{count}} unresolved",
+      "resumenExportNetas": "{{vigilantes}} guards · {{horas}} net h · to pay {{importe}}",
+      "enCurso": "The event ends on {{fin}}. “To pay” uses the hours clocked so far; what’s scheduled stays as the budget.",
+      "sinResolverAviso_one": "{{count}} shift has a break covering the whole shift: fix the break in Attendance records.",
+      "sinResolverAviso_other": "{{count}} shifts have a break covering the whole shift: fix the break in Attendance records.",
+      "descansoTotal": "break {{tiempo}}",
+      "horasNetas": "Net hours",
+      "dePresupuesto": "of {{importe}} budgeted"
     },
     "RelevosDelEvento": {
       "titulo": "Event shifts",
@@ -16768,7 +16797,9 @@
         "sin_marcar": "Unresolved",
         "no_planificado": "No shift",
         "programado": "Scheduled"
-      }
+      },
+      "sinDesgloseExportada": "This timecard was already exported and stays as it is: it was generated before breaks were shown per day, so that breakdown isn’t available for it. The total is what was exported.",
+      "sinDesgloseAprobada": "This timecard is already approved and stays as it is: it was generated before breaks were shown per day, so that breakdown isn’t available for it. The total is what was approved."
     }
   },
   "map": {
@@ -18965,7 +18996,8 @@
     "plazaCubiertaPor": "Covered: {{nombre}}",
     "todasLasPlazasCubiertas": "All slots at this post are already covered. To swap someone, use “Change” on their row.",
     "plazasCubiertas": "{{n}} of {{total}} slots covered",
-    "pasadoHistorial": "Past event · history"
+    "pasadoHistorial": "Past event · history",
+    "estadoTerminado": "Ended"
   },
   "conexionApp": {
     "titulo": "Connection",

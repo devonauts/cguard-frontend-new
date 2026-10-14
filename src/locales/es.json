@@ -10474,7 +10474,9 @@
       "descanso": "Descanso",
       "horasNetas": "Horas netas",
       "deEnElPuesto": "de {{horas}} en el puesto",
-      "horasNetasTotales": "Horas netas:"
+      "horasNetasTotales": "Horas netas:",
+      "sinResolver": "Sin resolver",
+      "descansoCubreElTurnoAyuda": "El descanso cubre todo el turno: corrige el descanso para que se pague."
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Avisar además a estos correos",
@@ -11025,7 +11027,16 @@
         "historialConfirmar": "Guardar como historial",
         "historialTitulo": "Con estas fechas el evento ya terminó: quedará sólo como historial",
         "historialAviso": "Al guardar no se crean turnos ni nómina hacia atrás. Sus asignaciones se cierran y los vigilantes sin otro puesto se archivan. Si alguien está fichado ahora mismo en el evento, no se podrá guardar.",
-        "historialAvisoSinArchivar": "Al guardar no se crean turnos ni nómina hacia atrás y sus asignaciones se cierran (este evento no archiva a su gente). Si alguien está fichado ahora mismo en el evento, no se podrá guardar."
+        "historialAvisoSinArchivar": "Al guardar no se crean turnos ni nómina hacia atrás y sus asignaciones se cierran (este evento no archiva a su gente). Si alguien está fichado ahora mismo en el evento, no se podrá guardar.",
+        "vueltaActivo": "El evento vuelve a estar activo.",
+        "vueltaReabiertasYVolvieron": "El evento vuelve a estar activo: {{reabiertas}} y {{volvieron}} ({{lista}}).",
+        "vueltaReabiertas_one": "El evento vuelve a estar activo: se reabrió {{count}} asignación.",
+        "vueltaReabiertas_other": "El evento vuelve a estar activo: se reabrieron {{count}} asignaciones.",
+        "vueltaSinRecuperar_one": "{{count}} asignación no se pudo recuperar: vuelve a asignarla.",
+        "vueltaSinRecuperar_other": "{{count}} asignaciones no se pudieron recuperar: vuelve a asignarlas.",
+        "vuelveAlFuturoAviso": "Este evento ya había terminado: al guardar se reabrirán sus asignaciones y volverán sus vigilantes.",
+        "terminadoSinZonasTitulo": "Evento terminado",
+        "terminadoSinZonas": "Este evento ya terminó: queda como historial. Para añadir zonas, cambia primero sus fechas."
       },
       "creaCadaEstacionEvento": "Crea cada estación del evento: nombre, de qué hora a qué hora se cubre, cuántos vigilantes a la vez y geocerca. Sin rotación: el evento tiene sus fechas. Cuando estén todas, pulsa «Terminar».",
       "eventoConEstaciones_one": "{{count}} estación. Siguiente: asigna a los vigilantes; las fechas y horas las pone el evento.",
@@ -14990,7 +15001,9 @@
       "unDiaSinFichajeSeInforma": "Un día sin fichaje se informa; no pasa por el ciclo de pago.",
       "vacaciones": "Vacaciones",
       "yLasHorasSeRecalculanSolas": "y las horas se recalculan solas — no se escriben a mano. Queda registrado quién corrigió y por qué.",
-      "netasSePagan": "Netas (se pagan)"
+      "netasSePagan": "Netas (se pagan)",
+      "descansoAnotadoSinHorario": "{{min}} min de descanso anotados, sin horario. Se conservan al guardar; si agregas descansos aquí, mandan los que agregues.",
+      "descansoCubreElTurno": "El descanso cubre todo el turno, así que no queda nada que pagar. No se paga ni se aprueba hasta corregir el descanso en «Corregir»."
     },
     "AssignGuards": {
       "fijo": "Fijo",
@@ -16526,7 +16539,11 @@
       "nPlazas_other": "{{count}} plazas",
       "nVigilantes_one": "{{count}} vigilante",
       "nVigilantes_other": "{{count}} vigilantes",
-      "plazas": "Plazas"
+      "plazas": "Plazas",
+      "seReabrieron_one": "se reabrió {{count}} asignación",
+      "seReabrieron_other": "se reabrieron {{count}} asignaciones",
+      "volvieronVigilantes_one": "volvió {{count}} vigilante",
+      "volvieronVigilantes_other": "volvieron {{count}} vigilantes"
     },
     "EventoDeLaEstacion": {
       "quitarTitulo": "¿Quitar a {{nombre}} del evento?",
@@ -16603,7 +16620,8 @@
         "nSinSalida_other": "{{count}} sin salida",
         "totalHoras": "{{horas}} h trabajadas",
         "chip": "{{personas}} · {{horas}} h",
-        "sinHorasCorto": "sin horas registradas"
+        "sinHorasCorto": "sin horas registradas",
+        "sinResolver": "{{entrada}} → {{salida}} · sin resolver (el descanso cubre el turno)"
       }
     },
     "NominaDelEvento": {
@@ -16642,7 +16660,8 @@
         "cumplido": "Cumplido",
         "sinSalida": "Sin salida",
         "noFicho": "No fichó",
-        "pendiente": "Pendiente"
+        "pendiente": "Pendiente",
+        "sinResolver": "Sin resolver"
       },
       "col": {
         "vigilante": "Vigilante",
@@ -16664,7 +16683,8 @@
         "estado": "Estado",
         "descansoMin": "Descanso (min)",
         "enElPuesto": "En el puesto (h)",
-        "horasNetas": "Horas netas"
+        "horasNetas": "Horas netas",
+        "presupuesto": "Presupuesto ({{moneda}})"
       },
       "terminado": "Evento terminado.",
       "noFichoValeCero_one": "{{count}} turno sin fichar vale cero.",
@@ -16699,7 +16719,16 @@
       "historialSinHoras": "No hay horas registradas en este evento: nadie fichó y no hay nada que pagar. Un evento con fechas pasadas no crea turnos hacia atrás.",
       "historialAsignados_one": "Estuvo asignado ({{count}}), sin horas:",
       "historialAsignados_other": "Estuvieron asignados ({{count}}), sin horas:",
-      "descansoDescontado": "−{{min}} min de descanso"
+      "descansoDescontado": "−{{min}} min de descanso",
+      "nSinResolver_one": "{{count}} sin resolver",
+      "nSinResolver_other": "{{count}} sin resolver",
+      "resumenExportNetas": "{{vigilantes}} vigilantes · {{horas}} h netas · a pagar {{importe}}",
+      "enCurso": "El evento termina el {{fin}}. «A pagar» lleva las horas fichadas hasta ahora; lo programado queda como presupuesto.",
+      "sinResolverAviso_one": "{{count}} turno con un descanso que cubre todo el turno: corrige el descanso en Registros de asistencia.",
+      "sinResolverAviso_other": "{{count}} turnos con un descanso que cubre todo el turno: corrige el descanso en Registros de asistencia.",
+      "descansoTotal": "descanso {{tiempo}}",
+      "horasNetas": "Horas netas",
+      "dePresupuesto": "de {{importe}} presupuestados"
     },
     "RelevosDelEvento": {
       "titulo": "Relevos del evento",
@@ -16768,7 +16797,9 @@
         "sin_marcar": "Sin resolver",
         "no_planificado": "Sin turno",
         "programado": "Programado"
-      }
+      },
+      "sinDesgloseExportada": "Esta tarjeta ya se exportó y queda como está: se generó antes de mostrar el descanso por día, así que ese desglose no está disponible para ella. El total es el que se exportó.",
+      "sinDesgloseAprobada": "Esta tarjeta ya está aprobada y queda como está: se generó antes de mostrar el descanso por día, así que ese desglose no está disponible para ella. El total es el que se aprobó."
     }
   },
   "map": {
@@ -18965,7 +18996,8 @@
     "plazaCubiertaPor": "Cubierta: {{nombre}}",
     "todasLasPlazasCubiertas": "Todas las plazas de este puesto ya están cubiertas. Para cambiar a alguien, usa «Cambiar» en su fila.",
     "plazasCubiertas": "{{n}} de {{total}} plazas cubiertas",
-    "pasadoHistorial": "Evento pasado · historial"
+    "pasadoHistorial": "Evento pasado · historial",
+    "estadoTerminado": "Terminado"
   },
   "conexionApp": {
     "titulo": "Conexión",

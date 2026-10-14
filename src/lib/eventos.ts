@@ -117,6 +117,182 @@ export function pasaAlPasado(
   return !antes || antes.getTime() > ahora.getTime();
 }
 
+/**
+ * ¿Guardar estas fechas DEVUELVE AL FUTURO un evento que ya había terminado?
+ * («me equivoqué de fecha»). El servidor reabre lo que cerró el paso a
+ * historial y reactiva a quien se archivó por él (`devolverAlFuturo` en
+ * `eventosDeSede`); el asistente lo avisa antes de guardar y lo cuenta después.
+ */
+export function vuelveAlFuturo(
+  antesHasta?: string | Date | null,
+  nuevoHasta?: string | Date | null,
+  ahora: Date = new Date(),
+): boolean {
+  const antes = aFecha(antesHasta);
+  const nuevo = aFecha(nuevoHasta);
+
+  return (
+    !!antes &&
+    !!nuevo &&
+    antes.getTime() <= ahora.getTime() &&
+    nuevo.getTime() > ahora.getTime()
+  );
+}
+
+/**
+ * Claves de `serviceConfig` que escribe SÓLO el servidor: el rastro del paso a
+ * historial y del archivado, y la tarifa del evento (se fija desde su nómina).
+ * El servidor guarda `serviceConfig` ENTERO con lo que manda el asistente, así
+ * que una copia vieja de estas claves —la que se cargó al abrirlo— borraría lo
+ * que el servidor apuntó después (p. ej. pasar a historial y, en la misma
+ * sesión, devolverlo al futuro: sin `cerradasAlPasarAHistorial` no se reabría
+ * nada).
+ */
+export const CLAVES_DEL_SERVIDOR = [
+  "archivadoAlTerminarEn",
+  "archivadosAlTerminar",
+  "cerradasAlPasarAHistorial",
+  "devueltoAlFuturoEn",
+  "tarifaHora",
+] as const;
+
+const comoObjeto = (v: unknown): Record<string, unknown> | null => {
+  if (typeof v === "string") {
+    try {
+      v = JSON.parse(v);
+    } catch {
+      return null;
+    }
+  }
+
+  return v && typeof v === "object" && !Array.isArray(v)
+    ? (v as Record<string, unknown>)
+    : null;
+};
+
+/**
+ * El `serviceConfig` que se guarda: lo último que tiene el servidor, con lo
+ * del formulario encima — nunca SÓLO lo del formulario, para no perder claves
+ * que el asistente no conoce—. Las claves del servidor (`CLAVES_DEL_SERVIDOR`)
+ * mandan siempre desde su copia: si el servidor ya no la tiene, tampoco viaja.
+ * Sin copia del servidor (sede nueva), lo del formulario tal cual.
+ */
+export function configParaGuardar(
+  delServidor: unknown,
+  delFormulario: Record<string, unknown>,
+): Record<string, unknown> {
+  const base = comoObjeto(delServidor);
+
+  if (!base) return { ...delFormulario };
+  const out: Record<string, unknown> = { ...base, ...delFormulario };
+
+  for (const k of CLAVES_DEL_SERVIDOR) {
+    if (k in base) out[k] = base[k];
+    else delete out[k];
+  }
+
+  return out;
+}
+
+/** Lo que devuelve el servidor cuando un evento pasado vuelve al futuro. */
+export interface VueltaAlFuturo {
+  reabiertas?: number;
+  reactivados?: Array<{ userId?: string; nombre?: string }>;
+  sinRecuperar?: number;
+}
+
+type Traductor = (clave: string, opciones: Record<string, unknown>) => string;
+
+/**
+ * Los avisos tras devolver un evento al futuro: qué se recuperó (info) y, si
+ * algo no se pudo, qué hay que reasignar (aviso). Recibe `t` para poder
+ * probarse sin i18n.
+ */
+export function avisosDeVueltaAlFuturo(
+  v: VueltaAlFuturo | null | undefined,
+  t: Traductor,
+): { info: string; aviso: string | null } | null {
+  if (!v) return null;
+  const reabiertas = Math.max(0, Number(v.reabiertas) || 0);
+  const reactivados = (v.reactivados || []).filter(Boolean);
+  const sinRecuperar = Math.max(0, Number(v.sinRecuperar) || 0);
+  const lista = reactivados.map((r) => r.nombre || "—").join(", ");
+
+  const info = !reabiertas
+    ? t("ui.PostSiteWizard.evento.vueltaActivo", {
+        defaultValue: "El evento vuelve a estar activo.",
+      })
+    : reactivados.length
+      ? t("ui.PostSiteWizard.evento.vueltaReabiertasYVolvieron", {
+          defaultValue:
+            "El evento vuelve a estar activo: {{reabiertas}} y {{volvieron}} ({{lista}}).",
+          // Dos cantidades en una frase: cada pieza lleva su plural (y su
+          // verbo, que también concuerda).
+          reabiertas: t("ui.eventos.seReabrieron", {
+            defaultValue: "se reabrieron {{count}} asignaciones",
+            count: reabiertas,
+          }),
+          volvieron: t("ui.eventos.volvieronVigilantes", {
+            defaultValue: "volvieron {{count}} vigilantes",
+            count: reactivados.length,
+          }),
+          lista,
+        })
+      : t("ui.PostSiteWizard.evento.vueltaReabiertas", {
+          defaultValue:
+            "El evento vuelve a estar activo: se reabrieron {{count}} asignaciones.",
+          count: reabiertas,
+        });
+  const aviso = sinRecuperar
+    ? t("ui.PostSiteWizard.evento.vueltaSinRecuperar", {
+        defaultValue:
+          "{{count}} asignaciones no se pudieron recuperar: vuelve a asignarlas.",
+        count: sinRecuperar,
+      })
+    : null;
+
+  return { info, aviso };
+}
+
+/**
+ * Zonas con EXACTAMENTE el mismo punto (se crearon sin mover el pin): en el
+ * mapa una tapaba a la otra y sólo se podía pulsar la de arriba. Las que
+ * coinciden se reparten en un círculo pequeño (≈ 9 m) alrededor del punto,
+ * siempre igual para el mismo orden: las dos se ven y se pueden pulsar. Las
+ * que no coinciden no se tocan.
+ */
+export function separarCoincidentes<T extends { lat: number; lng: number }>(
+  xs: T[],
+  radio = 0.00008,
+): T[] {
+  const grupos = new Map<string, number[]>();
+
+  xs.forEach((x, i) => {
+    const k = `${x.lat.toFixed(6)},${x.lng.toFixed(6)}`;
+
+    grupos.set(k, [...(grupos.get(k) || []), i]);
+  });
+  const out = xs.slice();
+
+  for (const idx of grupos.values()) {
+    if (idx.length < 2) continue;
+    idx.forEach((i, k) => {
+      const a = (2 * Math.PI * k) / idx.length - Math.PI / 2;
+      const x = xs[i];
+      // Un grado de longitud se encoge con la latitud: se compensa.
+      const cos = Math.max(0.2, Math.cos((x.lat * Math.PI) / 180));
+
+      out[i] = {
+        ...x,
+        lat: x.lat + radio * Math.sin(-a),
+        lng: x.lng + (radio * Math.cos(a)) / cos,
+      };
+    });
+  }
+
+  return out;
+}
+
 /** Una zona del historial de un evento terminado (`GET …/historial-del-evento`). */
 export interface ZonaDelHistorial {
   estacionId: string;
@@ -132,7 +308,7 @@ export interface ZonaDelHistorial {
       entrada: string | null;
       salida: string | null;
       horas: number;
-      estado: "cumplido" | "sinSalida" | "noFicho" | "pendiente";
+      estado: "cumplido" | "sinSalida" | "noFicho" | "pendiente" | "sinResolver";
     }>;
     horas: number;
   }>;

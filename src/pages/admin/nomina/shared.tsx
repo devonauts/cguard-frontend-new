@@ -280,21 +280,43 @@ export function horasDeLaFila(r: {
   horasEnElPuesto?: number | null;
   descansoMinutos?: number | null;
   horasNetas?: number | null;
-}): { enElPuesto: number | null; descansoMinutos: number; netas: number | null } {
+  descansoCubreElTurno?: boolean | null;
+}): {
+  enElPuesto: number | null;
+  descansoMinutos: number;
+  netas: number | null;
+  /** El descanso cubre TODO el tiempo en el puesto: netas 0 que no se paga ni
+      se aprueba hasta corregir el descanso. Se avisa, no se pinta «0.00 h». */
+  cubreElTurno: boolean;
+} {
+  /* Un fichaje cerrado con tiempo en el puesto y descanso, que se queda en
+     cero: el descanso lo cubre todo (casi siempre un descanso mal anotado). */
+  const cubre = (e: number | null, d: number, n: number | null) =>
+    e != null && e > 0 && d > 0 && n != null && n <= 0;
+
   if (r.horasNetas !== undefined) {
+    const enElPuesto = r.horasEnElPuesto ?? null;
+    const descansoMinutos = Number(r.descansoMinutos || 0);
+
     return {
-      enElPuesto: r.horasEnElPuesto ?? null,
-      descansoMinutos: Number(r.descansoMinutos || 0),
+      enElPuesto,
+      descansoMinutos,
       netas: r.horasNetas,
+      cubreElTurno:
+        r.descansoCubreElTurno != null
+          ? !!r.descansoCubreElTurno
+          : cubre(enElPuesto, descansoMinutos, r.horasNetas),
     };
   }
   const h = r.hoursWorked == null ? null : Number(r.hoursWorked);
   const otroReloj = r.role === "supervisor" || r.role === "administrative";
   const d = otroReloj ? 0 : Number(r.breakMinutes || 0);
+  const netas = h == null ? null : Math.max(0, h - d / 60);
 
   return {
     enElPuesto: h,
     descansoMinutos: d,
-    netas: h == null ? null : Math.max(0, h - d / 60),
+    netas,
+    cubreElTurno: cubre(h, d, netas),
   };
 }

@@ -22,6 +22,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { StatusBadge, SmartImage } from "@/components/kit";
 import { FechasDelEvento } from "@/components/post-sites/EventoDeLaSede";
+import { eventoTerminado } from "@/lib/eventos";
 import { needsOperationSetup } from "@/pages/admin/post-sites/components/OperationSetup/OperationSetupAlert";
 import AppLayout from "@/layouts/app-layout";
 import i18n from "@/i18n";
@@ -238,11 +239,20 @@ export default function PostSiteLayout({ title, children, site }: Props) {
                   {displayName}
                 </h1>
                 <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
-                  <StatusBadge tone={isActive ? "ok" : "bad"}>
-                    {isActive
-                      ? t("common.active", "Activa")
-                      : t("common.archived", "Inactiva")}
-                  </StatusBadge>
+                  {/* Un evento que ya terminó sigue «activo» en la base (no se
+                      archivó), pero un «Activa» verde al lado de «Evento
+                      pasado · historial» se contradecía: se dice «Terminado». */}
+                  {isActive && eventoTerminado(site) ? (
+                    <StatusBadge tone="neutral">
+                      {t("eventos.estadoTerminado", "Terminado")}
+                    </StatusBadge>
+                  ) : (
+                    <StatusBadge tone={isActive ? "ok" : "bad"}>
+                      {isActive
+                        ? t("common.active", "Activa")
+                        : t("common.archived", "Inactiva")}
+                    </StatusBadge>
+                  )}
                   {categoryName && (
                     <StatusBadge dot={false} tone="neutral">
                       {categoryName}

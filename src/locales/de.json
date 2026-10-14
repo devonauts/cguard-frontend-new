@@ -11007,7 +11007,9 @@
       "descanso": "Pause",
       "horasNetas": "Nettostunden",
       "deEnElPuesto": "von {{horas}} am Posten",
-      "horasNetasTotales": "Nettostunden:"
+      "horasNetasTotales": "Nettostunden:",
+      "sinResolver": "Ungeklärt",
+      "descansoCubreElTurnoAyuda": "Die Pause deckt die ganze Schicht ab: Korrigiere die Pause, damit sie bezahlt wird."
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Zusätzlich diese E-Mail-Adressen benachrichtigen",
@@ -11558,7 +11560,16 @@
         "historialConfirmar": "Als Verlauf speichern",
         "historialTitulo": "Mit diesen Daten ist die Veranstaltung vorbei: Sie bleibt nur als Verlauf erhalten",
         "historialAviso": "Beim Speichern werden keine Schichten und keine Lohnabrechnung rückwirkend erstellt. Die Einteilungen werden beendet und Wachpersonen ohne anderen Posten archiviert. Ist gerade jemand bei der Veranstaltung eingestempelt, kann nicht gespeichert werden.",
-        "historialAvisoSinArchivar": "Beim Speichern werden keine Schichten und keine Lohnabrechnung rückwirkend erstellt, und die Einteilungen werden beendet (diese Veranstaltung archiviert ihr Team nicht). Ist gerade jemand eingestempelt, kann nicht gespeichert werden."
+        "historialAvisoSinArchivar": "Beim Speichern werden keine Schichten und keine Lohnabrechnung rückwirkend erstellt, und die Einteilungen werden beendet (diese Veranstaltung archiviert ihr Team nicht). Ist gerade jemand eingestempelt, kann nicht gespeichert werden.",
+        "vueltaActivo": "Die Veranstaltung ist wieder aktiv.",
+        "vueltaReabiertasYVolvieron": "Die Veranstaltung ist wieder aktiv: {{reabiertas}} und {{volvieron}} ({{lista}}).",
+        "vueltaReabiertas_one": "Die Veranstaltung ist wieder aktiv: {{count}} Einteilung wurde wieder geöffnet.",
+        "vueltaReabiertas_other": "Die Veranstaltung ist wieder aktiv: {{count}} Einteilungen wurden wieder geöffnet.",
+        "vueltaSinRecuperar_one": "{{count}} Einteilung konnte nicht wiederhergestellt werden: Teile sie neu ein.",
+        "vueltaSinRecuperar_other": "{{count}} Einteilungen konnten nicht wiederhergestellt werden: Teile sie neu ein.",
+        "vuelveAlFuturoAviso": "Diese Veranstaltung war bereits vorbei: Beim Speichern werden ihre Einteilungen wieder geöffnet und ihre Wachpersonen kommen zurück.",
+        "terminadoSinZonasTitulo": "Veranstaltung beendet",
+        "terminadoSinZonas": "Diese Veranstaltung ist bereits vorbei: Sie bleibt als Verlauf. Um Zonen hinzuzufügen, ändere zuerst ihre Daten."
       },
       "creaCadaEstacionEvento": "Legen Sie jede Station der Veranstaltung an: Name, von wann bis wann sie besetzt ist, wie viele Sicherheitskräfte gleichzeitig und Geofence. Ohne Rotation: Die Veranstaltung hat ihre eigenen Termine. Wenn alle fertig sind, klicken Sie auf „Fertig“.",
       "eventoConEstaciones_one": "{{count}} Station. Als Nächstes: Sicherheitskräfte zuweisen; Termine und Uhrzeiten gibt die Veranstaltung vor.",
@@ -15523,7 +15534,9 @@
       "unDiaSinFichajeSeInforma": "Ein Tag ohne Stempelung wird gemeldet; er durchläuft nicht den Zahlungszyklus.",
       "vacaciones": "Urlaub",
       "yLasHorasSeRecalculanSolas": "und die Stunden werden automatisch neu berechnet — sie werden nicht von Hand eingegeben. Wer korrigiert hat und warum, wird protokolliert.",
-      "netasSePagan": "Netto (bezahlt)"
+      "netasSePagan": "Netto (bezahlt)",
+      "descansoAnotadoSinHorario": "{{min}} Min. Pause erfasst, ohne Uhrzeiten. Sie bleiben beim Speichern erhalten; fügst du hier Pausen hinzu, gelten die hinzugefügten.",
+      "descansoCubreElTurno": "Die Pause deckt die ganze Schicht ab, es bleibt also nichts zu bezahlen. Sie wird erst bezahlt oder genehmigt, wenn die Pause unter „Korrigieren“ berichtigt ist."
     },
     "AssignGuards": {
       "fijo": "Fest",
@@ -17059,7 +17072,11 @@
       "nPlazas_other": "{{count}} Plätze",
       "nVigilantes_one": "{{count}} Wachperson",
       "nVigilantes_other": "{{count}} Wachpersonen",
-      "plazas": "Plätze"
+      "plazas": "Plätze",
+      "seReabrieron_one": "{{count}} Einteilung wurde wieder geöffnet",
+      "seReabrieron_other": "{{count}} Einteilungen wurden wieder geöffnet",
+      "volvieronVigilantes_one": "{{count}} Wachperson ist zurück",
+      "volvieronVigilantes_other": "{{count}} Wachpersonen sind zurück"
     },
     "EventoDeLaEstacion": {
       "quitarTitulo": "{{nombre}} aus der Veranstaltung entfernen?",
@@ -17136,7 +17153,8 @@
         "nSinSalida_other": "{{count}} ohne Ausstempeln",
         "totalHoras": "{{horas}} Std. gearbeitet",
         "chip": "{{personas}} · {{horas}} Std.",
-        "sinHorasCorto": "keine Stunden erfasst"
+        "sinHorasCorto": "keine Stunden erfasst",
+        "sinResolver": "{{entrada}} → {{salida}} · ungeklärt (die Pause deckt die Schicht ab)"
       }
     },
     "NominaDelEvento": {
@@ -17175,7 +17193,8 @@
         "cumplido": "Erledigt",
         "sinSalida": "Ohne Ausstempeln",
         "noFicho": "Nicht eingestempelt",
-        "pendiente": "Ausstehend"
+        "pendiente": "Ausstehend",
+        "sinResolver": "Ungeklärt"
       },
       "col": {
         "vigilante": "Wachperson",
@@ -17197,7 +17216,8 @@
         "estado": "Status",
         "descansoMin": "Pause (Min.)",
         "enElPuesto": "Am Posten (Std.)",
-        "horasNetas": "Nettostunden"
+        "horasNetas": "Nettostunden",
+        "presupuesto": "Budget ({{moneda}})"
       },
       "terminado": "Veranstaltung beendet.",
       "noFichoValeCero_one": "{{count}} Schicht ohne Einstempeln zählt null.",
@@ -17232,7 +17252,16 @@
       "historialSinHoras": "Für diese Veranstaltung sind keine Stunden erfasst: Niemand hat eingestempelt, es gibt nichts zu bezahlen. Eine Veranstaltung mit vergangenen Daten erzeugt keine Schichten rückwirkend.",
       "historialAsignados_one": "Eingeteilt ({{count}}), ohne Stunden:",
       "historialAsignados_other": "Eingeteilt ({{count}}), ohne Stunden:",
-      "descansoDescontado": "−{{min}} Min. Pause"
+      "descansoDescontado": "−{{min}} Min. Pause",
+      "nSinResolver_one": "{{count}} ungeklärt",
+      "nSinResolver_other": "{{count}} ungeklärt",
+      "resumenExportNetas": "{{vigilantes}} Wachpersonen · {{horas}} Netto-h · zu zahlen {{importe}}",
+      "enCurso": "Die Veranstaltung endet am {{fin}}. „Zu zahlen“ rechnet mit den bisher gestempelten Stunden; die Planung bleibt das Budget.",
+      "sinResolverAviso_one": "{{count}} Schicht mit einer Pause, die die ganze Schicht abdeckt: Korrigiere die Pause in den Anwesenheitsprotokollen.",
+      "sinResolverAviso_other": "{{count}} Schichten mit einer Pause, die die ganze Schicht abdeckt: Korrigiere die Pause in den Anwesenheitsprotokollen.",
+      "descansoTotal": "Pause {{tiempo}}",
+      "horasNetas": "Nettostunden",
+      "dePresupuesto": "von {{importe}} budgetiert"
     },
     "RelevosDelEvento": {
       "titulo": "Schichten der Veranstaltung",
@@ -17301,7 +17330,9 @@
         "sin_marcar": "Ungeklärt",
         "no_planificado": "Ohne Schicht",
         "programado": "Geplant"
-      }
+      },
+      "sinDesgloseExportada": "Diese Zeitkarte wurde bereits exportiert und bleibt, wie sie ist: Sie wurde erstellt, bevor die Pause pro Tag angezeigt wurde, daher ist diese Aufschlüsselung für sie nicht verfügbar. Die Summe ist die exportierte.",
+      "sinDesgloseAprobada": "Diese Zeitkarte ist bereits genehmigt und bleibt, wie sie ist: Sie wurde erstellt, bevor die Pause pro Tag angezeigt wurde, daher ist diese Aufschlüsselung für sie nicht verfügbar. Die Summe ist die genehmigte."
     }
   },
   "visitantes": {
@@ -18965,7 +18996,8 @@
     "plazaCubiertaPor": "Besetzt: {{nombre}}",
     "todasLasPlazasCubiertas": "Alle Stellen dieses Postens sind bereits besetzt. Um jemanden zu tauschen, nutze „Ändern“ in der Zeile.",
     "plazasCubiertas": "{{n}} von {{total}} Stellen besetzt",
-    "pasadoHistorial": "Vergangene Veranstaltung · Verlauf"
+    "pasadoHistorial": "Vergangene Veranstaltung · Verlauf",
+    "estadoTerminado": "Beendet"
   },
   "conexionApp": {
     "titulo": "Verbindung",

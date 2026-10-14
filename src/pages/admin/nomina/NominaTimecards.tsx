@@ -526,8 +526,11 @@ export default function NominaTimecards() {
     },
     /* Se pagan las NETAS: en el puesto menos descanso (dueño, 2026-10-14). El
        descanso del periodo va al lado; el de cada día, al abrir la tarjeta. */
+    /* La clave es `detalle`, que la fila SÍ tiene: en la ficha del teléfono
+       DataTable juzga una celda pintada como nodo por su dato crudo, y con
+       `descanso` —que no existe en la fila— la columna no salía nunca. */
     {
-      key: "descanso",
+      key: "detalle",
       header: t("ui.NominaRecords.descanso", "Descanso"),
       render: (_v, r) => {
         const m = r.detalle?.totales?.descansoMinutos;

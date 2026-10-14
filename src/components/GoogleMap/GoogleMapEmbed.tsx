@@ -368,6 +368,7 @@ export default function GoogleMapEmbed({
   hud,
   area = "map-embed",
   apagado = false,
+  controlTipoAbajo = false,
 }: {
   lat?: number;
   lng?: number;
@@ -416,6 +417,10 @@ export default function GoogleMapEmbed({
    *  reserva sale de este hueco y el siguiente que lo pide lo recibe a color,
    *  sin nada que restablecer. */
   apagado?: boolean;
+  /** El selector «Mapa / Satélite» abajo a la izquierda en vez de arriba: en
+   *  un mapa cuyos globos son altos (las zonas de un evento), arriba tapaba la
+   *  cabecera del globo. La reserva lo restablece al prestar el mapa. */
+  controlTipoAbajo?: boolean;
 }) {
   const { t } = useTranslation();
   const mapRef = useRef<HTMLDivElement | null>(null);
@@ -760,6 +765,14 @@ export default function GoogleMapEmbed({
           zoom: initialZoom,
           mapTypeId: mapType === "satellite" ? "satellite" : "roadmap",
           mapTypeControl: true,
+          ...(controlTipoAbajo
+            ? {
+                mapTypeControlOptions: {
+                  position: (window as any).google?.maps?.ControlPosition
+                    ?.LEFT_BOTTOM,
+                },
+              }
+            : {}),
           streetViewControl: false,
           fullscreenControl: false,
           mapId: "d94ad875743639fb1933bbd4",

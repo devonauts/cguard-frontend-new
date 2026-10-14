@@ -7,7 +7,15 @@
  */
 import { describe, it, expect } from "vitest";
 
-import { avisosDeRelevos, pasaAlPasado, tonoDeZonaPasada } from "./eventos";
+import {
+  avisosDeRelevos,
+  avisosDeVueltaAlFuturo,
+  configParaGuardar,
+  pasaAlPasado,
+  separarCoincidentes,
+  tonoDeZonaPasada,
+  vuelveAlFuturo,
+} from "./eventos";
 
 const MEX = "America/Mexico_City"; // UTC-6, sin horario de verano
 // Concierto sáb 21 nov 2026, 15:00 → 23:00 en México.
@@ -129,5 +137,99 @@ describe("pasaAlPasado / tonoDeZonaPasada", () => {
     expect(tonoDeZonaPasada({ personas: uno, noFicho: 0, sinSalida: 0 })).toBe("neutral");
     expect(tonoDeZonaPasada({ personas: uno, noFicho: 1, sinSalida: 0 })).toBe("warn");
     expect(tonoDeZonaPasada({ personas: uno, noFicho: 0, sinSalida: 2 })).toBe("warn");
+  });
+});
+
+/* Un evento pasado que vuelve al futuro («me equivoqué de fecha»): el servidor
+   reabre lo que cerró el paso a historial; el asistente lo cuenta. */
+describe("vuelveAlFuturo / avisosDeVueltaAlFuturo", () => {
+  const ahora = new Date("2026-10-14T18:00:00Z");
+  // Un `t` de mentira: interpola el texto por defecto, como i18next sin claves.
+  const t = (_k: string, o: Record<string, unknown>) =>
+    String(o.defaultValue).replace(/{{(\w+)}}/g, (_, n) => String(o[n]));
+
+  it("sólo de terminado a futuro", () => {
+    expect(vuelveAlFuturo("2026-09-20T04:00:00Z", "2026-11-22T05:00:00Z", ahora)).toBe(true);
+    expect(vuelveAlFuturo("2026-10-14T18:00:00Z", "2026-10-14T19:00:00Z", ahora)).toBe(true);
+    expect(vuelveAlFuturo("2026-11-01T04:00:00Z", "2026-11-22T05:00:00Z", ahora)).toBe(false);
+    expect(vuelveAlFuturo("2026-09-20T04:00:00Z", "2026-09-21T04:00:00Z", ahora)).toBe(false);
+    expect(vuelveAlFuturo(null, "2026-11-22T05:00:00Z", ahora)).toBe(false);
+  });
+
+  it("cuenta lo que se reabrió, quién volvió y lo que hay que reasignar", () => {
+    expect(
+      avisosDeVueltaAlFuturo(
+        { reabiertas: 3, reactivados: [{ userId: "a", nombre: "Ana" }, { userId: "b", nombre: "Luis" }], sinRecuperar: 1 },
+        t,
+      ),
+    ).toEqual({
+      info: "El evento vuelve a estar activo: se reabrieron 3 asignaciones y volvieron 2 vigilantes (Ana, Luis).",
+      aviso: "1 asignaciones no se pudieron recuperar: vuelve a asignarlas.",
+    });
+    expect(avisosDeVueltaAlFuturo({ reabiertas: 2, reactivados: [], sinRecuperar: 0 }, t)).toEqual({
+      info: "El evento vuelve a estar activo: se reabrieron 2 asignaciones.",
+      aviso: null,
+    });
+    expect(avisosDeVueltaAlFuturo({ reabiertas: 0, reactivados: [], sinRecuperar: 4 }, t)?.info).toBe(
+      "El evento vuelve a estar activo.",
+    );
+    expect(avisosDeVueltaAlFuturo(undefined, t)).toBeNull();
+  });
+});
+
+/* El servidor guarda `serviceConfig` entero: el asistente no puede mandar sólo
+   lo de su formulario ni una copia vieja de lo que apunta el servidor. */
+describe("configParaGuardar", () => {
+  it("conserva las claves que el formulario no conoce y pone encima lo editado", () => {
+    expect(
+      configParaGuardar(
+        { riskLevel: "alto", claveRara: 7, archivarAlTerminar: true },
+        { riskLevel: "bajo", archivarAlTerminar: false, uniforme: "negro" },
+      ),
+    ).toEqual({ riskLevel: "bajo", claveRara: 7, archivarAlTerminar: false, uniforme: "negro" });
+  });
+
+  it("las claves del servidor mandan desde su copia, aunque el formulario traiga otra", () => {
+    const servidor = {
+      cerradasAlPasarAHistorial: ["a1", "a2"],
+      archivadoAlTerminarEn: "2026-10-14T18:00:00Z",
+      tarifaHora: 22.5,
+    };
+    // El formulario se cargó antes de pasar a historial: no traía el rastro,
+    // y sí una marca de vuelta al futuro que el servidor ya no tiene.
+    const formulario = { devueltoAlFuturoEn: "2026-10-01T00:00:00Z", tarifaHora: 18, instrucciones: "x" };
+
+    expect(configParaGuardar(servidor, formulario)).toEqual({
+      cerradasAlPasarAHistorial: ["a1", "a2"],
+      archivadoAlTerminarEn: "2026-10-14T18:00:00Z",
+      tarifaHora: 22.5,
+      instrucciones: "x",
+    });
+  });
+
+  it("sin copia del servidor (sede nueva) va lo del formulario; acepta JSON en texto", () => {
+    expect(configParaGuardar(null, { a: 1 })).toEqual({ a: 1 });
+    expect(configParaGuardar('{"b":2,"tarifaHora":10}', { a: 1 })).toEqual({ a: 1, b: 2, tarifaHora: 10 });
+  });
+});
+
+describe("separarCoincidentes", () => {
+  it("separa las zonas en el mismo punto y deja las demás donde están", () => {
+    const zs = [
+      { id: "a", lat: 19.4, lng: -99.1 },
+      { id: "b", lat: 19.4, lng: -99.1 },
+      { id: "c", lat: 19.5, lng: -99.2 },
+    ];
+    const r = separarCoincidentes(zs);
+
+    expect(r[2]).toEqual(zs[2]);
+    expect(r[0].id).toBe("a");
+    expect(`${r[0].lat},${r[0].lng}`).not.toBe(`${r[1].lat},${r[1].lng}`);
+    // Cerca del punto original (menos de ~15 m) y siempre igual.
+    for (const x of r.slice(0, 2)) {
+      expect(Math.abs(x.lat - 19.4)).toBeLessThan(0.00015);
+      expect(Math.abs(x.lng + 99.1)).toBeLessThan(0.00015);
+    }
+    expect(separarCoincidentes(zs)).toEqual(r);
   });
 });

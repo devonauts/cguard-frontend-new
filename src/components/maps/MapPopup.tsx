@@ -767,6 +767,53 @@ export function useMapPopup(
     [],
   );
 
+  /* QUE LA CABECERA DEL GLOBO SE VEA. Google desplaza el mapa para que quepa
+     el globo, pero un globo alto (las zonas de un evento con su gente) podía
+     quedar cortado por arriba —el título y el botón de cerrar fuera del
+     mapa—. Cuando Google termina de moverse (o no se movió), si la parte de
+     arriba asoma fuera del mapa se baja lo que falte. Sólo actúa si está
+     cortado: en los demás globos no cambia nada. */
+  const asomarCabecera = useCallback(
+    (mapa: any) => {
+      if (!mapa || !contenedor) return;
+      let hecho = false;
+      let escucha: any = null;
+      const soltar = () => {
+        try {
+          escucha?.remove?.();
+        } catch {
+          /* ya no está */
+        }
+      };
+      const intentar = () => {
+        if (hecho || !abiertoRef.current) return;
+        const div = mapa.getDiv?.();
+
+        // Recién abierto, el globo aún no está colgado del mapa (mide 0):
+        // se espera al siguiente intento en vez de darlo por bueno.
+        if (!div || !contenedor.isConnected) return;
+        const m = div.getBoundingClientRect();
+        const c = contenedor.getBoundingClientRect();
+
+        if (!c.height) return;
+        hecho = true;
+        soltar();
+        const falta = m.top + 8 - c.top;
+
+        if (falta > 0) mapa.panBy?.(0, -Math.round(falta));
+      };
+
+      // Tras el desplazamiento de Google (`idle`); si no se movió, `idle` no
+      // llega y lo hace el plazo. Medir a mitad de su animación bajaría de más.
+      escucha = mapa.addListener?.("idle", intentar);
+      setTimeout(() => {
+        intentar();
+        soltar();
+      }, 900);
+    },
+    [contenedor],
+  );
+
   const abrirVentana = useCallback(
     (mapa: any, ancla: MapPopupAnchor, foco: boolean) => {
       const v = ventanaRef.current;
@@ -778,8 +825,9 @@ export function useMapPopup(
       else o.anchor = ancla;
       if (!foco) o.shouldFocus = false;
       v.open(o);
+      asomarCabecera(mapa);
     },
-    [],
+    [asomarCabecera],
   );
 
   const close = useCallback(() => {

@@ -14,6 +14,7 @@ import { ApiService } from "@/services/api/apiService";
 import {
   eventoTerminado,
   relevosDeLaEstacion,
+  separarCoincidentes,
   tonoDeZonaPasada,
   ventanaDeRelevos,
   type SedeConVigencia,
@@ -63,8 +64,10 @@ const H24: Intl.DateTimeFormatOptions = {
   hourCycle: "h23",
 };
 
-/** Cuántas personas del historial se nombran en el globo antes de «y N más». */
-const EN_EL_GLOBO = 12;
+/** Cuántas personas del historial se nombran en el globo antes de «y N más».
+ *  Eran 12 y el globo salía más alto que el mapa: se cortaba por arriba. El
+ *  resto está a un clic, en «Ver vigilantes». */
+const EN_EL_GLOBO = 6;
 
 const num = (v: unknown): number | null => {
   const n = Number(v);
@@ -212,7 +215,15 @@ export default function ZonasDelEventoMap({
               inicio: soloHora(x.programadoInicio, H24),
               fin: soloHora(x.programadoFin, H24),
             })
-          : x.salida
+          : x.salida && x.estado === "sinResolver"
+            ? // El descanso cubre todo el turno: 0 h que hay que corregir.
+              t("ui.ZonasDelEventoMap.h.sinResolver", {
+                defaultValue:
+                  "{{entrada}} → {{salida}} · sin resolver (el descanso cubre el turno)",
+                entrada: soloHora(x.entrada, H24),
+                salida: soloHora(x.salida, H24),
+              })
+            : x.salida
             ? t("ui.ZonasDelEventoMap.h.fichado", {
                 defaultValue: "{{entrada}} → {{salida}} · {{horas}} h",
                 entrada: soloHora(x.entrada, H24),
@@ -229,27 +240,30 @@ export default function ZonasDelEventoMap({
 
   const markers = useMemo<MapEmbedMarker[]>(
     () =>
-      (zonas || [])
-        .filter((z) => z.lat !== null && z.lng !== null)
-        .map((z) => ({
-          id: z.id,
-          lat: z.lat as number,
-          lng: z.lng as number,
-          label: z.nombre,
-          kind: "station" as const,
-          subtitle: z.horario || undefined,
-          // Terminado: todas apagadas; el gris del mapa ya dice «esto pasó».
-          role: terminado ? "muted" : z.vigilantes.length ? undefined : "muted",
-          status: terminado
-            ? {
-                label: t("ui.ZonasDelEventoMap.h.historial", "Historial"),
-                tone: tono(z),
-              }
-            : {
-                label: `${z.vigilantes.length}/${z.cupo}`,
-                tone: tono(z),
-              },
-        })),
+      // Dos zonas en el mismo punto: se separan un poco para poder pulsar las dos.
+      separarCoincidentes(
+        (zonas || [])
+          .filter((z) => z.lat !== null && z.lng !== null)
+          .map((z) => ({ z, lat: z.lat as number, lng: z.lng as number })),
+      ).map(({ z, lat, lng }) => ({
+        id: z.id,
+        lat,
+        lng,
+        label: z.nombre,
+        kind: "station" as const,
+        subtitle: z.horario || undefined,
+        // Terminado: todas apagadas; el gris del mapa ya dice «esto pasó».
+        role: terminado ? "muted" : z.vigilantes.length ? undefined : "muted",
+        status: terminado
+          ? {
+              label: t("ui.ZonasDelEventoMap.h.historial", "Historial"),
+              tone: tono(z),
+            }
+          : {
+              label: `${z.vigilantes.length}/${z.cupo}`,
+              tone: tono(z),
+            },
+      })),
     [zonas, terminado],
   );
 
@@ -325,7 +339,12 @@ export default function ZonasDelEventoMap({
           value: lineaDePersona(p),
           wide: true,
           tone:
-            p.turnos.some((x) => x.estado === "noFicho" || !x.salida) &&
+            p.turnos.some(
+              (x) =>
+                x.estado === "noFicho" ||
+                x.estado === "sinResolver" ||
+                !x.salida,
+            ) &&
             p.turnos.length
               ? ("warn" as const)
               : undefined,
@@ -402,6 +421,7 @@ export default function ZonasDelEventoMap({
         >
             <div style={{ height }}>
               <GoogleMapEmbed
+                controlTipoAbajo
                 fitMarkers
                 apagado={terminado}
                 draggable={false}

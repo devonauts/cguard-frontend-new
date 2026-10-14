@@ -11049,7 +11049,9 @@
       "descanso": "Przerwa",
       "horasNetas": "Godziny netto",
       "deEnElPuesto": "z {{horas}} na posterunku",
-      "horasNetasTotales": "Godziny netto:"
+      "horasNetasTotales": "Godziny netto:",
+      "sinResolver": "Nierozstrzygnięte",
+      "descansoCubreElTurnoAyuda": "Przerwa obejmuje całą zmianę: popraw przerwę, aby zmiana została wypłacona."
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Powiadamiaj dodatkowo te adresy e-mail",
@@ -11616,7 +11618,20 @@
         "historialConfirmar": "Zapisz jako historię",
         "historialTitulo": "Przy tych datach wydarzenie już się zakończyło: zostanie tylko jako historia",
         "historialAviso": "Zapis nie tworzy zmian ani listy płac wstecz. Przydziały zostają zamknięte, a pracownicy ochrony bez innego stanowiska zarchiwizowani. Jeśli ktoś jest teraz odbity w tym wydarzeniu, nie da się zapisać.",
-        "historialAvisoSinArchivar": "Zapis nie tworzy zmian ani listy płac wstecz, a przydziały zostają zamknięte (to wydarzenie nie archiwizuje swojego zespołu). Jeśli ktoś jest teraz odbity w tym wydarzeniu, nie da się zapisać."
+        "historialAvisoSinArchivar": "Zapis nie tworzy zmian ani listy płac wstecz, a przydziały zostają zamknięte (to wydarzenie nie archiwizuje swojego zespołu). Jeśli ktoś jest teraz odbity w tym wydarzeniu, nie da się zapisać.",
+        "vueltaActivo": "Wydarzenie znów jest aktywne.",
+        "vueltaReabiertasYVolvieron": "Wydarzenie znów jest aktywne: {{reabiertas}} i {{volvieron}} ({{lista}}).",
+        "vueltaReabiertas_one": "Wydarzenie znów jest aktywne: ponownie otwarto {{count}} przydział.",
+        "vueltaReabiertas_few": "Wydarzenie znów jest aktywne: ponownie otwarto {{count}} przydziały.",
+        "vueltaReabiertas_many": "Wydarzenie znów jest aktywne: ponownie otwarto {{count}} przydziałów.",
+        "vueltaReabiertas_other": "Wydarzenie znów jest aktywne: ponownie otwarto {{count}} przydziału.",
+        "vueltaSinRecuperar_one": "Nie udało się odzyskać {{count}} przydziału: przydziel go ponownie.",
+        "vueltaSinRecuperar_few": "Nie udało się odzyskać przydziałów: {{count}}. Przydziel je ponownie.",
+        "vueltaSinRecuperar_many": "Nie udało się odzyskać przydziałów: {{count}}. Przydziel je ponownie.",
+        "vueltaSinRecuperar_other": "Nie udało się odzyskać przydziałów: {{count}}. Przydziel je ponownie.",
+        "vuelveAlFuturoAviso": "To wydarzenie już się zakończyło: po zapisaniu jego przydziały zostaną ponownie otwarte, a pracownicy ochrony wrócą.",
+        "terminadoSinZonasTitulo": "Wydarzenie zakończone",
+        "terminadoSinZonas": "To wydarzenie już się zakończyło: zostaje jako historia. Aby dodać strefy, najpierw zmień jego daty."
       },
       "creaCadaEstacionEvento": "Utwórz każde stanowisko wydarzenia: nazwa, od której do której godziny jest obsadzone, ilu ochroniarzy jednocześnie i geofencing. Bez rotacji: wydarzenie ma swoje daty. Gdy wszystkie będą gotowe, kliknij „Zakończ”.",
       "eventoConEstaciones_one": "{{count}} stanowisko. Dalej: przydziel ochroniarzy; daty i godziny wynikają z wydarzenia.",
@@ -15705,7 +15720,9 @@
       "unDiaSinFichajeSeInforma": "Dzień bez odbić jest raportowany; nie przechodzi przez cykl płatności.",
       "vacaciones": "Urlop",
       "yLasHorasSeRecalculanSolas": "a godziny przeliczają się same — nie wpisuje się ich ręcznie. Zapisuje się, kto poprawił i dlaczego.",
-      "netasSePagan": "Netto (płatne)"
+      "netasSePagan": "Netto (płatne)",
+      "descansoAnotadoSinHorario": "{{min}} min przerwy zapisanych bez godzin. Zostają po zapisaniu; jeśli dodasz tu przerwy, liczą się te dodane.",
+      "descansoCubreElTurno": "Przerwa obejmuje całą zmianę, więc nie ma nic do wypłaty. Zmiana nie zostanie wypłacona ani zatwierdzona, dopóki nie poprawisz przerwy w „Popraw”."
     },
     "AssignGuards": {
       "fijo": "Stały",
@@ -17289,7 +17306,15 @@
       "nVigilantes_few": "{{count}} pracowników ochrony",
       "nVigilantes_many": "{{count}} pracowników ochrony",
       "nVigilantes_other": "{{count}} pracowników ochrony",
-      "plazas": "Miejsca"
+      "plazas": "Miejsca",
+      "seReabrieron_one": "ponownie otwarto {{count}} przydział",
+      "seReabrieron_few": "ponownie otwarto {{count}} przydziały",
+      "seReabrieron_many": "ponownie otwarto {{count}} przydziałów",
+      "seReabrieron_other": "ponownie otwarto {{count}} przydziału",
+      "volvieronVigilantes_one": "wrócił {{count}} pracownik ochrony",
+      "volvieronVigilantes_few": "wrócili {{count}} pracownicy ochrony",
+      "volvieronVigilantes_many": "wróciło {{count}} pracowników ochrony",
+      "volvieronVigilantes_other": "wróciło {{count}} pracowników ochrony"
     },
     "EventoDeLaEstacion": {
       "quitarTitulo": "Usunąć {{nombre}} z wydarzenia?",
@@ -17388,7 +17413,8 @@
         "nSinSalida_other": "{{count}} bez wyjścia",
         "totalHoras": "{{horas}} godz. przepracowanych",
         "chip": "{{personas}} · {{horas}} godz.",
-        "sinHorasCorto": "brak zarejestrowanych godzin"
+        "sinHorasCorto": "brak zarejestrowanych godzin",
+        "sinResolver": "{{entrada}} → {{salida}} · nierozstrzygnięte (przerwa obejmuje zmianę)"
       }
     },
     "NominaDelEvento": {
@@ -17429,7 +17455,8 @@
         "cumplido": "Wykonana",
         "sinSalida": "Bez wyjścia",
         "noFicho": "Brak wejścia",
-        "pendiente": "Oczekuje"
+        "pendiente": "Oczekuje",
+        "sinResolver": "Nierozstrzygnięte"
       },
       "col": {
         "vigilante": "Pracownik ochrony",
@@ -17451,7 +17478,8 @@
         "estado": "Status",
         "descansoMin": "Przerwa (min)",
         "enElPuesto": "Na posterunku (h)",
-        "horasNetas": "Godziny netto"
+        "horasNetas": "Godziny netto",
+        "presupuesto": "Budżet ({{moneda}})"
       },
       "terminado": "Wydarzenie zakończone.",
       "noFichoValeCero_one": "{{count}} zmiana bez wejścia liczy się jako zero.",
@@ -17500,7 +17528,20 @@
       "historialAsignados_few": "Przypisani ({{count}}), bez godzin:",
       "historialAsignados_many": "Przypisani ({{count}}), bez godzin:",
       "historialAsignados_other": "Przypisani ({{count}}), bez godzin:",
-      "descansoDescontado": "−{{min}} min przerwy"
+      "descansoDescontado": "−{{min}} min przerwy",
+      "nSinResolver_one": "{{count}} nierozstrzygnięta",
+      "nSinResolver_few": "{{count}} nierozstrzygnięte",
+      "nSinResolver_many": "{{count}} nierozstrzygniętych",
+      "nSinResolver_other": "{{count}} nierozstrzygniętej",
+      "resumenExportNetas": "{{vigilantes}} pracowników · {{horas}} h netto · do wypłaty {{importe}}",
+      "enCurso": "Wydarzenie kończy się {{fin}}. „Do wypłaty” liczy godziny zarejestrowane do tej pory; plan pozostaje budżetem.",
+      "sinResolverAviso_one": "{{count}} zmiana z przerwą obejmującą całą zmianę: popraw przerwę w Rejestrach obecności.",
+      "sinResolverAviso_few": "{{count}} zmiany z przerwą obejmującą całą zmianę: popraw przerwę w Rejestrach obecności.",
+      "sinResolverAviso_many": "{{count}} zmian z przerwą obejmującą całą zmianę: popraw przerwę w Rejestrach obecności.",
+      "sinResolverAviso_other": "{{count}} zmiany z przerwą obejmującą całą zmianę: popraw przerwę w Rejestrach obecności.",
+      "descansoTotal": "przerwa {{tiempo}}",
+      "horasNetas": "Godziny netto",
+      "dePresupuesto": "z {{importe}} w budżecie"
     },
     "RelevosDelEvento": {
       "titulo": "Zmiany wydarzenia",
@@ -17569,7 +17610,9 @@
         "sin_marcar": "Nierozstrzygnięty",
         "no_planificado": "Bez zmiany",
         "programado": "Zaplanowany"
-      }
+      },
+      "sinDesgloseExportada": "Ta karta czasu pracy została już wyeksportowana i pozostaje bez zmian: powstała, zanim pokazywano przerwę dla każdego dnia, więc ten podział nie jest dla niej dostępny. Suma to ta, która została wyeksportowana.",
+      "sinDesgloseAprobada": "Ta karta czasu pracy jest już zatwierdzona i pozostaje bez zmian: powstała, zanim pokazywano przerwę dla każdego dnia, więc ten podział nie jest dla niej dostępny. Suma to ta, która została zatwierdzona."
     }
   },
   "visitantes": {
@@ -19241,7 +19284,8 @@
     "plazaCubiertaPor": "Obsadzone: {{nombre}}",
     "todasLasPlazasCubiertas": "Wszystkie miejsca na tym posterunku są już obsadzone. Aby kogoś zmienić, użyj „Zmień” w jego wierszu.",
     "plazasCubiertas": "Obsadzono {{n}} z {{total}} miejsc",
-    "pasadoHistorial": "Wydarzenie minione · historia"
+    "pasadoHistorial": "Wydarzenie minione · historia",
+    "estadoTerminado": "Zakończone"
   },
   "conexionApp": {
     "titulo": "Połączenie",

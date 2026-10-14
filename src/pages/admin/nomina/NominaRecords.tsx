@@ -450,6 +450,22 @@ export default function NominaRecords() {
       render: (_v, r) => {
         const h = horasDeLaFila(r);
 
+        /* El descanso cubre todo el turno: un «0.00 h» callado parecía un
+           turno sin trabajo. No se paga ni se aprueba hasta corregirlo. */
+        if (h.cubreElTurno)
+          return (
+            <span
+              title={t(
+                "ui.NominaRecords.descansoCubreElTurnoAyuda",
+                "El descanso cubre todo el turno: corrige el descanso para que se pague.",
+              )}
+            >
+              <ToneBadge tone="warn">
+                {t("ui.NominaRecords.sinResolver", "Sin resolver")}
+              </ToneBadge>
+            </span>
+          );
+
         return (
           <span>
             {fmtHours(h.netas)}

@@ -114,6 +114,11 @@ export interface AttendanceRecord {
   horasEnElPuesto?: number | null;
   descansoMinutos?: number | null;
   horasNetas?: number | null;
+  /**
+   * El descanso cubre todo el tiempo en el puesto (netas 0): no se paga ni se
+   * aprueba hasta corregir el descanso. La pantalla lo enseña «Sin resolver».
+   */
+  descansoCubreElTurno?: boolean;
   /** Fila sintética de vacaciones/permiso/falta (no vive en guardShifts). */
   esJornadaSinFichaje?: boolean;
 }

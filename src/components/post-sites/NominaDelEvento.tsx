@@ -35,6 +35,7 @@ import {
 } from "@/lib/export/reportExport";
 import { fechaYHora, soloHora } from "@/lib/horaDeLaEmpresa";
 import { localeActual } from "@/lib/localeActual";
+import { fmtDescanso } from "@/pages/admin/nomina/shared";
 import { ApiService } from "@/services/api/apiService";
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -61,7 +62,9 @@ interface Turno {
   horas: number;
   horasEnElPuesto?: number;
   descansoMinutos?: number;
-  estado: "cumplido" | "sinSalida" | "noFicho" | "pendiente";
+  /** `sinResolver`: fichaje cerrado cuyo descanso cubre todo el tiempo en el
+      puesto — netas 0, no se paga y «Aprobar» no lo aprueba hasta corregirlo. */
+  estado: "cumplido" | "sinSalida" | "noFicho" | "pendiente" | "sinResolver";
   estadoNomina: string | null;
 }
 
@@ -113,8 +116,12 @@ interface Nomina {
     sinSalida: number;
     noFicho: number;
     pendientes: number;
+    /** Turnos con un descanso que cubre todo el turno (ver `Turno.estado`). */
+    sinResolver?: number;
     horasProgramadas: number;
     horasTrabajadas: number;
+    /** Descanso descontado en todo el evento, en minutos. */
+    descansoMinutos?: number;
     importeCentavos: number;
     presupuestoCentavos: number;
     sinTarifa: number;
@@ -218,6 +225,31 @@ export default function NominaDelEvento({
 
   const { evento, totales, filas } = datos;
   const terminado = evento.terminado;
+  const sinResolverTotal = totales.sinResolver ?? 0;
+  const hayIncidencias = !!(
+    totales.noFicho ||
+    totales.sinSalida ||
+    sinResolverTotal
+  );
+  /* «A pagar» = horas FICHADAS × tarifa, en cuanto hay alguna (también con el
+     evento en curso); antes del primer fichaje se enseña el presupuesto (lo
+     programado). Es la misma regla en la pantalla y en el archivo, que lleva
+     las dos columnas con su nombre. */
+  const conFichajes = terminado || totales.horasTrabajadas > 0;
+  const importeDe = (f: Fila) =>
+    conFichajes ? f.importeCentavos : f.presupuestoCentavos;
+  const finDelEvento = fechaYHora(evento.hasta, {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: undefined,
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).replace(/,/g, "");
+  const rotuloImporte = conFichajes
+    ? t("ui.NominaDelEvento.aPagar", "A pagar")
+    : t("ui.NominaDelEvento.presupuesto", "Presupuesto");
 
   const guardarTarifa = async () => {
     const v = tarifa.trim() === "" ? null : Number(tarifa.replace(",", "."));
@@ -437,7 +469,9 @@ export default function NominaDelEvento({
       align: "right",
     },
     {
-      label: t("ui.NominaDelEvento.col.trabajadas", "Horas trabajadas"),
+      /* «Horas netas», como el detalle por turno: lo que se paga (en el
+         puesto − descanso). «Horas trabajadas» hacía pensar en otra cifra. */
+      label: t("ui.NominaDelEvento.col.horasNetas", "Horas netas"),
       value: (f) => f.horasTrabajadas,
       align: "right",
     },
@@ -447,6 +481,19 @@ export default function NominaDelEvento({
         moneda: evento.moneda,
       }),
       value: (f) => (f.tarifaCentavos != null ? f.tarifaCentavos / 100 : ""),
+      align: "right",
+    },
+    /* Las dos cifras, cada una con su nombre: «A pagar» son las horas
+       fichadas (la misma cifra que la pantalla llama «A pagar») y
+       «Presupuesto», lo programado. Antes salía sólo «A pagar» y, antes de
+       que hubiera fichajes, no cuadraba con lo que se veía en pantalla. */
+    {
+      label: t("ui.NominaDelEvento.col.presupuesto", {
+        defaultValue: "Presupuesto ({{moneda}})",
+        moneda: evento.moneda,
+      }),
+      value: (f) =>
+        f.presupuestoCentavos != null ? f.presupuestoCentavos / 100 : "",
       align: "right",
     },
     {
@@ -473,6 +520,13 @@ export default function NominaDelEvento({
                 count: f.turnos.filter((x) => x.estado === "sinSalida").length,
               })
             : "",
+          f.turnos.filter((x) => x.estado === "sinResolver").length
+            ? t("ui.NominaDelEvento.nSinResolver", {
+                defaultValue: "{{count}} sin resolver",
+                count: f.turnos.filter((x) => x.estado === "sinResolver")
+                  .length,
+              })
+            : "",
         ]
           .filter(Boolean)
           .join(" · "),
@@ -481,9 +535,10 @@ export default function NominaDelEvento({
   const meta = (sufijo = "") => ({
     title: `${t("ui.NominaDelEvento.titulo", "Nómina del evento")} — ${evento.nombre}`,
     subtitle: `${rangoDelEvento(evento.desde, evento.hasta)} · ${t(
-      "ui.NominaDelEvento.resumenExport",
+      "ui.NominaDelEvento.resumenExportNetas",
       {
-        defaultValue: "{{vigilantes}} vigilantes · {{horas}} h · {{importe}}",
+        defaultValue:
+          "{{vigilantes}} vigilantes · {{horas}} h netas · a pagar {{importe}}",
         vigilantes: totales.vigilantes,
         horas: horas(totales.horasTrabajadas),
         importe: dinero(totales.importeCentavos),
@@ -590,14 +645,21 @@ export default function NominaDelEvento({
         ? t("ui.NominaDelEvento.estado.sinSalida", "Sin salida")
         : e === "noFicho"
           ? t("ui.NominaDelEvento.estado.noFicho", "No fichó")
-          : t("ui.NominaDelEvento.estado.pendiente", "Pendiente");
+          : e === "sinResolver"
+            ? t("ui.NominaDelEvento.estado.sinResolver", "Sin resolver")
+            : t("ui.NominaDelEvento.estado.pendiente", "Pendiente");
   }
 
   // Quien no fichó o no cerró la salida va arriba: en un evento de 120 personas
   // es lo único que la oficina tiene que revisar antes de pagar, y por orden
   // alfabético podía quedar escondido detrás de «Ver los 120».
   const conIncidencia = (f: Fila) =>
-    f.turnos.some((x) => x.estado === "noFicho" || x.estado === "sinSalida");
+    f.turnos.some(
+      (x) =>
+        x.estado === "noFicho" ||
+        x.estado === "sinSalida" ||
+        x.estado === "sinResolver",
+    );
   const ordenadas = [
     ...filas.filter(conIncidencia),
     ...filas.filter((f) => !conIncidencia(f)),
@@ -608,6 +670,9 @@ export default function NominaDelEvento({
   const estadoDeFila = (f: Fila) => {
     const noFicho = f.turnos.filter((x) => x.estado === "noFicho").length;
     const sinSalida = f.turnos.filter((x) => x.estado === "sinSalida").length;
+    const sinResolver = f.turnos.filter(
+      (x) => x.estado === "sinResolver",
+    ).length;
 
     return noFicho ? (
       <StatusBadge tone="bad">
@@ -621,6 +686,13 @@ export default function NominaDelEvento({
         {t("ui.NominaDelEvento.nSinSalida", {
           defaultValue: "{{count}} sin salida",
           count: sinSalida,
+        })}
+      </StatusBadge>
+    ) : sinResolver ? (
+      <StatusBadge tone="warn">
+        {t("ui.NominaDelEvento.nSinResolver", {
+          defaultValue: "{{count}} sin resolver",
+          count: sinResolver,
         })}
       </StatusBadge>
     ) : f.porAprobar === 0 && f.aprobadas > 0 ? (
@@ -736,19 +808,17 @@ export default function NominaDelEvento({
       <div className="space-y-4">
         {!terminado ? (
           <InfoNote tone="info">
-            {t("ui.NominaDelEvento.antes", {
-              defaultValue:
-                "El evento termina el {{fin}}. Al terminar, aquí salen las horas fichadas de cada vigilante para pagar; ahora ves lo programado, que sirve para presupuestar.",
-              fin: fechaYHora(evento.hasta, {
-                weekday: "short",
-                day: "numeric",
-                month: "short",
-                year: undefined,
-                hour: "2-digit",
-                minute: "2-digit",
-                hourCycle: "h23",
-              }).replace(/,/g, ""),
-            })}
+            {conFichajes
+              ? t("ui.NominaDelEvento.enCurso", {
+                  defaultValue:
+                    "El evento termina el {{fin}}. «A pagar» lleva las horas fichadas hasta ahora; lo programado queda como presupuesto.",
+                  fin: finDelEvento,
+                })
+              : t("ui.NominaDelEvento.antes", {
+                  defaultValue:
+                    "El evento termina el {{fin}}. Al terminar, aquí salen las horas fichadas de cada vigilante para pagar; ahora ves lo programado, que sirve para presupuestar.",
+                  fin: finDelEvento,
+                })}
           </InfoNote>
         ) : !totales.turnos ? (
           // Sin turnos no hay nada fichado: decir «todos fichados, lista
@@ -771,9 +841,9 @@ export default function NominaDelEvento({
               "ui.NominaDelEvento.historialTitulo",
               "Evento pasado · historial",
             )}
-            tone={totales.noFicho || totales.sinSalida ? "warn" : "ok"}
+            tone={hayIncidencias ? "warn" : "ok"}
           >
-            {totales.noFicho || totales.sinSalida
+            {hayIncidencias
               ? [
                   // «Evento terminado» ya lo dice el título de la nota.
                   totales.noFicho
@@ -788,6 +858,13 @@ export default function NominaDelEvento({
                         defaultValue:
                           "{{count}} turnos sin salida no se pagan hasta cerrarlos en Registros de asistencia.",
                         count: totales.sinSalida,
+                      })
+                    : "",
+                  sinResolverTotal
+                    ? t("ui.NominaDelEvento.sinResolverAviso", {
+                        defaultValue:
+                          "{{count}} turnos con un descanso que cubre todo el turno: corrige el descanso en Registros de asistencia.",
+                        count: sinResolverTotal,
                       })
                     : "",
                 ]
@@ -812,43 +889,75 @@ export default function NominaDelEvento({
             label={t("ui.NominaDelEvento.vigilantes", "Vigilantes")}
             value={totales.vigilantes}
           />
+          {/* Netas: lo que se paga (en el puesto − descanso). El descanso
+              de todo el evento va debajo, para que la resta se vea. */}
           <StatCard
             accent="brand"
-            hint={t("ui.NominaDelEvento.deProgramadas", {
-              defaultValue: "de {{h}} h programadas",
-              h: horas(totales.horasProgramadas),
-            })}
+            hint={[
+              t("ui.NominaDelEvento.deProgramadas", {
+                defaultValue: "de {{h}} h programadas",
+                h: horas(totales.horasProgramadas),
+              }),
+              (totales.descansoMinutos ?? 0) > 0
+                ? t("ui.NominaDelEvento.descansoTotal", {
+                    defaultValue: "descanso {{tiempo}}",
+                    tiempo: fmtDescanso(totales.descansoMinutos),
+                  })
+                : "",
+            ]
+              .filter(Boolean)
+              .join(" · ")}
             icon={<Clock />}
-            label={t("ui.NominaDelEvento.horasTrabajadas", "Horas trabajadas")}
+            label={t("ui.NominaDelEvento.horasNetas", "Horas netas")}
             value={horas(totales.horasTrabajadas)}
           />
           <StatCard
             accent="ok"
             hint={
-              totales.sinTarifa
-                ? t("ui.NominaDelEvento.sinTarifa", {
-                    defaultValue: "{{count}} sin tarifa",
-                    count: totales.sinTarifa,
-                  })
-                : undefined
+              [
+                totales.sinTarifa
+                  ? t("ui.NominaDelEvento.sinTarifa", {
+                      defaultValue: "{{count}} sin tarifa",
+                      count: totales.sinTarifa,
+                    })
+                  : "",
+                // En curso y con fichajes: el presupuesto no se pierde de vista.
+                !terminado && conFichajes
+                  ? t("ui.NominaDelEvento.dePresupuesto", {
+                      defaultValue: "de {{importe}} presupuestados",
+                      importe: dinero(totales.presupuestoCentavos),
+                    })
+                  : "",
+              ]
+                .filter(Boolean)
+                .join(" · ") || undefined
             }
             icon={<Banknote />}
-            label={
-              terminado
-                ? t("ui.NominaDelEvento.aPagar", "A pagar")
-                : t("ui.NominaDelEvento.presupuesto", "Presupuesto")
-            }
+            label={rotuloImporte}
             value={dinero(
-              terminado ? totales.importeCentavos : totales.presupuestoCentavos,
+              conFichajes
+                ? totales.importeCentavos
+                : totales.presupuestoCentavos,
             )}
           />
           <StatCard
-            accent={totales.noFicho || totales.sinSalida ? "warn" : "ok"}
-            hint={t("ui.NominaDelEvento.desglose", {
-              defaultValue: "{{noFicho}} sin fichar · {{sinSalida}} sin salida",
-              noFicho: totales.noFicho,
-              sinSalida: totales.sinSalida,
-            })}
+            accent={hayIncidencias ? "warn" : "ok"}
+            hint={[
+              t("ui.NominaDelEvento.desglose", {
+                defaultValue:
+                  "{{noFicho}} sin fichar · {{sinSalida}} sin salida",
+                noFicho: totales.noFicho,
+                sinSalida: totales.sinSalida,
+              }),
+              sinResolverTotal
+                ? t("ui.NominaDelEvento.nSinResolver", {
+                    defaultValue: "{{count}} sin resolver",
+                    count: sinResolverTotal,
+                  })
+                : "",
+            ]
+              .filter(Boolean)
+              .join(" · ")}
             icon={<AlertTriangle />}
             label={t("ui.NominaDelEvento.cumplidos", "Turnos cumplidos")}
             value={`${totales.cumplidos}/${totales.turnos}`}
@@ -1064,11 +1173,28 @@ export default function NominaDelEvento({
                         {" "}
                         / {horas(f.horasProgramadas)} h
                       </span>
+                      {/* El descanso, como en la tabla: sin él, las netas
+                          del teléfono no cuadraban con lo fichado. */}
+                      {(f.descansoMinutos ?? 0) > 0 && (
+                        <span
+                          className="block text-[11px]"
+                          style={{ color: "var(--ink-faint)" }}
+                        >
+                          {t("ui.NominaDelEvento.descansoDescontado", {
+                            min: f.descansoMinutos,
+                            defaultValue: "−{{min}} min de descanso",
+                          })}
+                        </span>
+                      )}
                     </span>
                     <span className="font-semibold tabular-nums">
-                      {dinero(
-                        terminado ? f.importeCentavos : f.presupuestoCentavos,
-                      )}
+                      <span
+                        className="mr-1 text-[11px] font-normal"
+                        style={{ color: "var(--ink-soft)" }}
+                      >
+                        {rotuloImporte}
+                      </span>
+                      {dinero(importeDe(f))}
                     </span>
                     {estadoDeFila(f)}
                   </div>
@@ -1098,9 +1224,7 @@ export default function NominaDelEvento({
                     {t("ui.NominaDelEvento.col.horas", "Horas")}
                   </th>
                   <th className="px-3 py-2 text-right font-medium">
-                    {terminado
-                      ? t("ui.NominaDelEvento.aPagar", "A pagar")
-                      : t("ui.NominaDelEvento.presupuesto", "Presupuesto")}
+                    {rotuloImporte}
                   </th>
                   <th className="px-3 py-2 font-medium">
                     {t("ui.NominaDelEvento.col.estado", "Estado")}
@@ -1161,9 +1285,7 @@ export default function NominaDelEvento({
                         )}
                       </td>
                       <td className="px-3 py-2 text-right tabular-nums">
-                        {dinero(
-                          terminado ? f.importeCentavos : f.presupuestoCentavos,
-                        )}
+                        {dinero(importeDe(f))}
                       </td>
                       <td className="px-3 py-2">{estadoDeFila(f)}</td>
                     </tr>
