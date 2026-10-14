@@ -11003,7 +11003,11 @@
       "tarjetasEnEstado_other": "{{count}} Zeitkarten in „{{etiqueta}}“",
       "todosLosTrabajadores": "Alle Mitarbeiter",
       "trabajador": "Mitarbeiter",
-      "enviarAGusto": "An Gusto senden"
+      "enviarAGusto": "An Gusto senden",
+      "descanso": "Pause",
+      "horasNetas": "Nettostunden",
+      "deEnElPuesto": "von {{horas}} am Posten",
+      "horasNetasTotales": "Nettostunden:"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Zusätzlich diese E-Mail-Adressen benachrichtigen",
@@ -11544,7 +11548,17 @@
         "desplazados": "Die Schichten wurden mit der Veranstaltung um {{horas}} h verschoben: {{plazas}} und {{vigilantes}}.",
         "duraDiasYHoras": "Dauert {{dias}} Tage und {{horas}} h.",
         "archivarAlTerminar": "Am Ende die Wachleute ohne anderen Posten archivieren — sie geben ihren Platz frei",
-        "archivarAlTerminarAyuda": "Ihre Stunden der Veranstaltung werden weiter bezahlt, und wenn du sie wieder zuweist, werden sie automatisch reaktiviert."
+        "archivarAlTerminarAyuda": "Ihre Stunden der Veranstaltung werden weiter bezahlt, und wenn du sie wieder zuweist, werden sie automatisch reaktiviert.",
+        "historialHecho_one": "Die Veranstaltung ist jetzt Verlauf: {{count}} Einteilung wurde beendet.",
+        "historialHecho_other": "Die Veranstaltung ist jetzt Verlauf: {{count}} Einteilungen wurden beendet.",
+        "historialArchivados_one": "{{count}} Wachperson ohne anderen Posten wurde archiviert: {{lista}}.",
+        "historialArchivados_other": "{{count}} Wachpersonen ohne anderen Posten wurden archiviert: {{lista}}.",
+        "historialConfirmarTitulo": "Veranstaltung nur als Verlauf behalten?",
+        "historialConfirmarTexto": "Mit diesen Daten ist die Veranstaltung bereits vorbei. Es werden keine Schichten und keine Lohnabrechnung rückwirkend erstellt: Ihre Einteilungen werden beendet und Wachpersonen ohne anderen Posten archiviert, wie bei jeder beendeten Veranstaltung. Bereits Gestempeltes bleibt erhalten.",
+        "historialConfirmar": "Als Verlauf speichern",
+        "historialTitulo": "Mit diesen Daten ist die Veranstaltung vorbei: Sie bleibt nur als Verlauf erhalten",
+        "historialAviso": "Beim Speichern werden keine Schichten und keine Lohnabrechnung rückwirkend erstellt. Die Einteilungen werden beendet und Wachpersonen ohne anderen Posten archiviert. Ist gerade jemand bei der Veranstaltung eingestempelt, kann nicht gespeichert werden.",
+        "historialAvisoSinArchivar": "Beim Speichern werden keine Schichten und keine Lohnabrechnung rückwirkend erstellt, und die Einteilungen werden beendet (diese Veranstaltung archiviert ihr Team nicht). Ist gerade jemand eingestempelt, kann nicht gespeichert werden."
       },
       "creaCadaEstacionEvento": "Legen Sie jede Station der Veranstaltung an: Name, von wann bis wann sie besetzt ist, wie viele Sicherheitskräfte gleichzeitig und Geofence. Ohne Rotation: Die Veranstaltung hat ihre eigenen Termine. Wenn alle fertig sind, klicken Sie auf „Fertig“.",
       "eventoConEstaciones_one": "{{count}} Station. Als Nächstes: Sicherheitskräfte zuweisen; Termine und Uhrzeiten gibt die Veranstaltung vor.",
@@ -15508,7 +15522,8 @@
       "unDiaSinFichajeNoSeAprueba": "Ein Tag ohne Stempelung wird hier weder genehmigt noch bezahlt: Er wird gemeldet. Er erscheint in Berichten und Exporten zusammen mit dem Rest des Zeitraums.",
       "unDiaSinFichajeSeInforma": "Ein Tag ohne Stempelung wird gemeldet; er durchläuft nicht den Zahlungszyklus.",
       "vacaciones": "Urlaub",
-      "yLasHorasSeRecalculanSolas": "und die Stunden werden automatisch neu berechnet — sie werden nicht von Hand eingegeben. Wer korrigiert hat und warum, wird protokolliert."
+      "yLasHorasSeRecalculanSolas": "und die Stunden werden automatisch neu berechnet — sie werden nicht von Hand eingegeben. Wer korrigiert hat und warum, wird protokolliert.",
+      "netasSePagan": "Netto (bezahlt)"
     },
     "AssignGuards": {
       "fijo": "Fest",
@@ -17093,7 +17108,36 @@
       "cupo": "Plätze",
       "verVigilantes": "Wachpersonen ansehen",
       "resumen": "{{cubiertas}} von {{cupo}} Plätzen besetzt",
-      "sinUbicacion": "Die Zonen dieser Veranstaltung haben keinen Standort: Bearbeite jede Station und ziehe ihre Markierung, um sie auf dem Gelände zu sehen."
+      "sinUbicacion": "Die Zonen dieser Veranstaltung haben keinen Standort: Bearbeite jede Station und ziehe ihre Markierung, um sie auf dem Gelände zu sehen.",
+      "h": {
+        "historial": "Verlauf",
+        "sinTurno": "keine Schicht, kein Stempel",
+        "noFicho": "nicht eingestempelt (Schicht {{inicio}}–{{fin}})",
+        "fichado": "{{entrada}} → {{salida}} · {{horas}} Std.",
+        "sinSalida": "ein um {{entrada}} · ohne Ausstempeln",
+        "archivado": "{{nombre}} (archiviert)",
+        "yMas_one": "und {{count}} weitere",
+        "yMas_other": "und {{count}} weitere",
+        "plazas": "Plätze",
+        "fichados": "Eingestempelt",
+        "sinFichar": "Ohne Stempel",
+        "horas": "Stunden",
+        "sinPermiso": "Um zu sehen, wer in dieser Zone eingestempelt hat, brauchst du die Berechtigung zum Anzeigen der Anwesenheit.",
+        "nadie": "Niemand hat diese Zone abgedeckt: keine Schichten oder Stempel erfasst.",
+        "notaSinSalida_one": "{{count}} Schicht ohne Ausstempeln: wird erst bezahlt, wenn sie in den Anwesenheitsprotokollen geschlossen ist.",
+        "notaSinSalida_other": "{{count}} Schichten ohne Ausstempeln: werden erst bezahlt, wenn sie in den Anwesenheitsprotokollen geschlossen sind.",
+        "sinHoras": "Es waren Personen eingeteilt, aber keine Stunden erfasst: Die Veranstaltung hatte nie Schichten.",
+        "rotulo": "Veranstaltung beendet am {{fecha}} · Verlauf",
+        "nFichados_one": "{{count}} Schicht gestempelt",
+        "nFichados_other": "{{count}} Schichten gestempelt",
+        "nSinFichar_one": "{{count}} ohne Stempel",
+        "nSinFichar_other": "{{count}} ohne Stempel",
+        "nSinSalida_one": "{{count}} ohne Ausstempeln",
+        "nSinSalida_other": "{{count}} ohne Ausstempeln",
+        "totalHoras": "{{horas}} Std. gearbeitet",
+        "chip": "{{personas}} · {{horas}} Std.",
+        "sinHorasCorto": "keine Stunden erfasst"
+      }
     },
     "NominaDelEvento": {
       "titulo": "Lohnabrechnung der Veranstaltung",
@@ -17150,7 +17194,10 @@
         "entrada": "Einstempeln",
         "salida": "Ausstempeln",
         "horas": "Stunden",
-        "estado": "Status"
+        "estado": "Status",
+        "descansoMin": "Pause (Min.)",
+        "enElPuesto": "Am Posten (Std.)",
+        "horasNetas": "Nettostunden"
       },
       "terminado": "Veranstaltung beendet.",
       "noFichoValeCero_one": "{{count}} Schicht ohne Einstempeln zählt null.",
@@ -17180,7 +17227,12 @@
       },
       "yMas_one": "… und {{count}} weitere",
       "yMas_other": "… und {{count}} weitere",
-      "terminadoSinTurnos": "Veranstaltung ohne Schichten beendet: keine Stunden zu bezahlen."
+      "terminadoSinTurnos": "Veranstaltung ohne Schichten beendet: keine Stunden zu bezahlen.",
+      "historialTitulo": "Vergangene Veranstaltung · Verlauf",
+      "historialSinHoras": "Für diese Veranstaltung sind keine Stunden erfasst: Niemand hat eingestempelt, es gibt nichts zu bezahlen. Eine Veranstaltung mit vergangenen Daten erzeugt keine Schichten rückwirkend.",
+      "historialAsignados_one": "Eingeteilt ({{count}}), ohne Stunden:",
+      "historialAsignados_other": "Eingeteilt ({{count}}), ohne Stunden:",
+      "descansoDescontado": "−{{min}} Min. Pause"
     },
     "RelevosDelEvento": {
       "titulo": "Schichten der Veranstaltung",
@@ -17228,6 +17280,27 @@
         "empiezaAntesPrimerDia": "Die Schicht {{relevo}} beginnt, bevor die Veranstaltung öffnet (um {{hora}}). Am ersten Tag beginnt die Wachperson um {{hora}}.",
         "terminaDespues": "Die Schicht {{relevo}} endet, nachdem die Veranstaltung schließt (um {{hora}}). Die Wachperson geht um {{hora}}.",
         "terminaDespuesUltimoDia": "Die Schicht {{relevo}} endet, nachdem die Veranstaltung schließt (um {{hora}}). Am letzten Tag geht die Wachperson um {{hora}}."
+      }
+    },
+    "DiasDeLaTarjeta": {
+      "subtitulo": "Tag für Tag, vom {{desde}} bis {{hasta}}",
+      "sinDesglose": "Diese Zeitkarte wurde erstellt, bevor die Pause pro Tag angezeigt wurde. Erstelle den Zeitraum erneut, um sie zu sehen (genehmigte Zeitkarten ändern sich nicht).",
+      "dia": "Tag",
+      "enElPuesto": "Am Posten",
+      "totalDelPeriodo": "Summe des Zeitraums",
+      "estado": {
+        "trabajado": "Gearbeitet",
+        "atraso": "Verspätung",
+        "salida_antes": "Früher gegangen",
+        "extra": "Länger geblieben",
+        "falta": "Fehlzeit",
+        "justificado": "Entschuldigt",
+        "cubierto": "Von jemand anderem abgedeckt",
+        "cubriendo": "Vertretung",
+        "trasladado": "Auf anderem Posten",
+        "sin_marcar": "Ungeklärt",
+        "no_planificado": "Ohne Schicht",
+        "programado": "Geplant"
       }
     }
   },
@@ -18891,7 +18964,8 @@
     "relevoSinQuitar": "{{nuevo}} ist jetzt zugewiesen, aber {{anterior}} konnte nicht entfernt werden: {{motivo}}. Entferne die Person über den Papierkorb in ihrer Zeile.",
     "plazaCubiertaPor": "Besetzt: {{nombre}}",
     "todasLasPlazasCubiertas": "Alle Stellen dieses Postens sind bereits besetzt. Um jemanden zu tauschen, nutze „Ändern“ in der Zeile.",
-    "plazasCubiertas": "{{n}} von {{total}} Stellen besetzt"
+    "plazasCubiertas": "{{n}} von {{total}} Stellen besetzt",
+    "pasadoHistorial": "Vergangene Veranstaltung · Verlauf"
   },
   "conexionApp": {
     "titulo": "Verbindung",

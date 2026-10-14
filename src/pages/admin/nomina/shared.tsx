@@ -247,3 +247,54 @@ export function fmtHours(h: number | null | undefined): string {
 
   return `${Number(h).toFixed(2)} h`;
 }
+
+/**
+ * «45 min», «1 h 30 min»: el descanso de un día. «—» si no hubo.
+ * Espejo de `textoDeDescanso` en el servidor (`lib/horasPagables`).
+ */
+export function fmtDescanso(min: number | null | undefined): string {
+  const m = Math.max(0, Math.round(Number(min) || 0));
+
+  if (!m) return "—";
+  if (m < 60) return `${m} min`;
+  const h = Math.floor(m / 60);
+  const r = m % 60;
+
+  return r ? `${h} h ${r} min` : `${h} h`;
+}
+
+/**
+ * Las tres cifras de lo pagable de una fila de asistencia: en el puesto,
+ * descanso y netas. Las calcula el SERVIDOR con la misma regla que la nómina,
+ * el evento y Gusto (`horasEnElPuesto` / `descansoMinutos` / `horasNetas`).
+ *
+ * El respaldo es sólo para una respuesta vieja que aún no las traiga (una
+ * pestaña abierta durante un despliegue): en un vigilante `hoursWorked` es
+ * tiempo en el puesto y el descanso se resta; en supervisión y oficina ya
+ * viene neto.
+ */
+export function horasDeLaFila(r: {
+  hoursWorked?: number | null;
+  breakMinutes?: number | null;
+  role?: string;
+  horasEnElPuesto?: number | null;
+  descansoMinutos?: number | null;
+  horasNetas?: number | null;
+}): { enElPuesto: number | null; descansoMinutos: number; netas: number | null } {
+  if (r.horasNetas !== undefined) {
+    return {
+      enElPuesto: r.horasEnElPuesto ?? null,
+      descansoMinutos: Number(r.descansoMinutos || 0),
+      netas: r.horasNetas,
+    };
+  }
+  const h = r.hoursWorked == null ? null : Number(r.hoursWorked);
+  const otroReloj = r.role === "supervisor" || r.role === "administrative";
+  const d = otroReloj ? 0 : Number(r.breakMinutes || 0);
+
+  return {
+    enElPuesto: h,
+    descansoMinutos: d,
+    netas: h == null ? null : Math.max(0, h - d / 60),
+  };
+}

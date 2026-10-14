@@ -11003,7 +11003,11 @@
       "tarjetasEnEstado_other": "{{count}} schede in «{{etiqueta}}»",
       "todosLosTrabajadores": "Tutti i lavoratori",
       "trabajador": "Lavoratore",
-      "enviarAGusto": "Invia a Gusto"
+      "enviarAGusto": "Invia a Gusto",
+      "descanso": "Pausa",
+      "horasNetas": "Ore nette",
+      "deEnElPuesto": "su {{horas}} in postazione",
+      "horasNetasTotales": "Ore nette:"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Avvisa anche questi indirizzi email",
@@ -11544,7 +11548,17 @@
         "desplazados": "I turni si sono spostati di {{horas}} h con l’evento: {{plazas}} e {{vigilantes}}.",
         "duraDiasYHoras": "Dura {{dias}} giorni e {{horas}} h.",
         "archivarAlTerminar": "Alla fine, archivia le guardie che non hanno un altro posto — liberano il loro posto",
-        "archivarAlTerminarAyuda": "Continuano a essere pagate per le ore dell’evento e, se le riassegni, si riattivano da sole."
+        "archivarAlTerminarAyuda": "Continuano a essere pagate per le ore dell’evento e, se le riassegni, si riattivano da sole.",
+        "historialHecho_one": "L'evento è ora storico: è stata chiusa {{count}} assegnazione.",
+        "historialHecho_other": "L'evento è ora storico: sono state chiuse {{count}} assegnazioni.",
+        "historialArchivados_one": "{{count}} guardia senza altro posto è stata archiviata: {{lista}}.",
+        "historialArchivados_other": "{{count}} guardie senza altro posto sono state archiviate: {{lista}}.",
+        "historialConfirmarTitulo": "Lasciare l'evento come storico?",
+        "historialConfirmarTexto": "Con queste date l'evento è già terminato. Non si creano turni né paghe all'indietro: le sue assegnazioni si chiudono e le guardie senza altro posto vengono archiviate, come per qualsiasi evento terminato. Le timbrature già fatte restano.",
+        "historialConfirmar": "Salva come storico",
+        "historialTitulo": "Con queste date l'evento è già terminato: resterà solo come storico",
+        "historialAviso": "Salvando non si creano turni né paghe all'indietro. Le assegnazioni si chiudono e le guardie senza altro posto vengono archiviate. Se qualcuno ha la timbratura aperta nell'evento in questo momento, non si potrà salvare.",
+        "historialAvisoSinArchivar": "Salvando non si creano turni né paghe all'indietro e le assegnazioni si chiudono (questo evento non archivia il suo personale). Se qualcuno ha la timbratura aperta nell'evento in questo momento, non si potrà salvare."
       },
       "creaCadaEstacionEvento": "Crea ogni stazione dell'evento: nome, da che ora a che ora è coperta, quante guardie contemporaneamente e geofence. Senza rotazione: l'evento ha le sue date. Quando sono tutte pronte, premi «Termina».",
       "eventoConEstaciones_one": "{{count}} stazione. Prossimo passo: assegna le guardie; date e orari li stabilisce l’evento.",
@@ -15508,7 +15522,8 @@
       "unDiaSinFichajeNoSeAprueba": "Un giorno senza timbrature non si approva né si paga da qui: si segnala. Compare nei report e nelle esportazioni insieme al resto del periodo.",
       "unDiaSinFichajeSeInforma": "Un giorno senza timbrature si segnala; non passa per il ciclo di pagamento.",
       "vacaciones": "Ferie",
-      "yLasHorasSeRecalculanSolas": "e le ore si ricalcolano da sole — non si scrivono a mano. Resta registrato chi ha corretto e perché."
+      "yLasHorasSeRecalculanSolas": "e le ore si ricalcolano da sole — non si scrivono a mano. Resta registrato chi ha corretto e perché.",
+      "netasSePagan": "Nette (pagate)"
     },
     "AssignGuards": {
       "fijo": "Fisso",
@@ -17093,7 +17108,36 @@
       "cupo": "Posti",
       "verVigilantes": "Vedi guardie",
       "resumen": "{{cubiertas}} posti su {{cupo}} coperti",
-      "sinUbicacion": "Le zone di questo evento non hanno una posizione: modifica ogni postazione e trascina il suo segnaposto per vederle sul luogo."
+      "sinUbicacion": "Le zone di questo evento non hanno una posizione: modifica ogni postazione e trascina il suo segnaposto per vederle sul luogo.",
+      "h": {
+        "historial": "Storico",
+        "sinTurno": "nessun turno né timbratura",
+        "noFicho": "non ha timbrato (turno {{inicio}}–{{fin}})",
+        "fichado": "{{entrada}} → {{salida}} · {{horas}} h",
+        "sinSalida": "entrato {{entrada}} · senza uscita",
+        "archivado": "{{nombre}} (archiviato)",
+        "yMas_one": "e altri {{count}}",
+        "yMas_other": "e altri {{count}}",
+        "plazas": "Posti",
+        "fichados": "Timbrati",
+        "sinFichar": "Non timbrati",
+        "horas": "Ore",
+        "sinPermiso": "Per vedere chi ha timbrato in questa zona serve il permesso di vedere le presenze.",
+        "nadie": "Nessuno ha coperto questa zona: non ci sono turni né timbrature registrati.",
+        "notaSinSalida_one": "{{count}} turno senza uscita: non si paga finché non viene chiuso in Registri presenze.",
+        "notaSinSalida_other": "{{count}} turni senza uscita: non si pagano finché non vengono chiusi in Registri presenze.",
+        "sinHoras": "C'erano persone assegnate, ma nessuna ora registrata: l'evento non ha mai avuto turni.",
+        "rotulo": "Evento terminato il {{fecha}} · storico",
+        "nFichados_one": "{{count}} turno timbrato",
+        "nFichados_other": "{{count}} turni timbrati",
+        "nSinFichar_one": "{{count}} non timbrato",
+        "nSinFichar_other": "{{count}} non timbrati",
+        "nSinSalida_one": "{{count}} senza uscita",
+        "nSinSalida_other": "{{count}} senza uscita",
+        "totalHoras": "{{horas}} h lavorate",
+        "chip": "{{personas}} · {{horas}} h",
+        "sinHorasCorto": "nessuna ora registrata"
+      }
     },
     "NominaDelEvento": {
       "titulo": "Paghe dell’evento",
@@ -17150,7 +17194,10 @@
         "entrada": "Entrata",
         "salida": "Uscita",
         "horas": "Ore",
-        "estado": "Stato"
+        "estado": "Stato",
+        "descansoMin": "Pausa (min)",
+        "enElPuesto": "In postazione (h)",
+        "horasNetas": "Ore nette"
       },
       "terminado": "Evento terminato.",
       "noFichoValeCero_one": "{{count}} turno senza timbratura vale zero.",
@@ -17180,7 +17227,12 @@
       },
       "yMas_one": "… e {{count}} altro",
       "yMas_other": "… e altri {{count}}",
-      "terminadoSinTurnos": "Evento terminato senza turni: nessuna ora da pagare."
+      "terminadoSinTurnos": "Evento terminato senza turni: nessuna ora da pagare.",
+      "historialTitulo": "Evento passato · storico",
+      "historialSinHoras": "Nessuna ora registrata per questo evento: nessuno ha timbrato e non c'è nulla da pagare. Un evento con date passate non crea turni all'indietro.",
+      "historialAsignados_one": "Assegnato ({{count}}), senza ore:",
+      "historialAsignados_other": "Assegnati ({{count}}), senza ore:",
+      "descansoDescontado": "−{{min}} min di pausa"
     },
     "RelevosDelEvento": {
       "titulo": "Turni dell’evento",
@@ -17228,6 +17280,27 @@
         "empiezaAntesPrimerDia": "Il turno {{relevo}} inizia prima che apra l’evento (alle {{hora}}). Il primo giorno la guardia entra alle {{hora}}.",
         "terminaDespues": "Il turno {{relevo}} finisce dopo che chiude l’evento (alle {{hora}}). La guardia esce alle {{hora}}.",
         "terminaDespuesUltimoDia": "Il turno {{relevo}} finisce dopo che chiude l’evento (alle {{hora}}). L’ultimo giorno la guardia esce alle {{hora}}."
+      }
+    },
+    "DiasDeLaTarjeta": {
+      "subtitulo": "Giorno per giorno, dal {{desde}} al {{hasta}}",
+      "sinDesglose": "Questa scheda è stata generata prima di mostrare la pausa per giorno. Genera di nuovo il periodo per vederla (le schede approvate non cambiano).",
+      "dia": "Giorno",
+      "enElPuesto": "In postazione",
+      "totalDelPeriodo": "Totale del periodo",
+      "estado": {
+        "trabajado": "Lavorato",
+        "atraso": "Ritardo",
+        "salida_antes": "Uscito prima",
+        "extra": "Rimasto di più",
+        "falta": "Assenza",
+        "justificado": "Giustificato",
+        "cubierto": "Coperto da un altro",
+        "cubriendo": "In sostituzione",
+        "trasladado": "In un’altra postazione",
+        "sin_marcar": "Da risolvere",
+        "no_planificado": "Senza turno",
+        "programado": "Programmato"
       }
     }
   },
@@ -18891,7 +18964,8 @@
     "relevoSinQuitar": "{{nuevo}} è ora assegnato, ma non è stato possibile rimuovere {{anterior}}: {{motivo}}. Rimuovilo con il cestino nella sua riga.",
     "plazaCubiertaPor": "Coperta: {{nombre}}",
     "todasLasPlazasCubiertas": "Tutte le postazioni di questo posto sono già coperte. Per sostituire qualcuno, usa «Cambia» nella sua riga.",
-    "plazasCubiertas": "{{n}} postazioni coperte su {{total}}"
+    "plazasCubiertas": "{{n}} postazioni coperte su {{total}}",
+    "pasadoHistorial": "Evento passato · storico"
   },
   "conexionApp": {
     "titulo": "Connessione",

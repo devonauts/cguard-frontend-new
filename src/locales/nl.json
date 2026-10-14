@@ -11003,7 +11003,11 @@
       "tarjetasEnEstado_other": "{{count}} tijdkaarten in ‘{{etiqueta}}’",
       "todosLosTrabajadores": "Alle medewerkers",
       "trabajador": "Medewerker",
-      "enviarAGusto": "Naar Gusto verzenden"
+      "enviarAGusto": "Naar Gusto verzenden",
+      "descanso": "Pauze",
+      "horasNetas": "Netto-uren",
+      "deEnElPuesto": "van {{horas}} op de post",
+      "horasNetasTotales": "Netto-uren:"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Ook deze e-mailadressen informeren",
@@ -11544,7 +11548,17 @@
         "desplazados": "De diensten zijn {{horas}} u met het evenement verschoven: {{plazas}} en {{vigilantes}}.",
         "duraDiasYHoras": "Duurt {{dias}} dagen en {{horas}} u.",
         "archivarAlTerminar": "Aan het eind de beveiligers zonder andere post archiveren — ze maken hun plek vrij",
-        "archivarAlTerminarAyuda": "Ze krijgen hun uren van het evenement nog steeds betaald, en als je ze opnieuw toewijst worden ze vanzelf heractiveerd."
+        "archivarAlTerminarAyuda": "Ze krijgen hun uren van het evenement nog steeds betaald, en als je ze opnieuw toewijst worden ze vanzelf heractiveerd.",
+        "historialHecho_one": "Het evenement is nu geschiedenis: {{count}} indeling is afgesloten.",
+        "historialHecho_other": "Het evenement is nu geschiedenis: {{count}} indelingen zijn afgesloten.",
+        "historialArchivados_one": "{{count}} beveiliger zonder andere post is gearchiveerd: {{lista}}.",
+        "historialArchivados_other": "{{count}} beveiligers zonder andere post zijn gearchiveerd: {{lista}}.",
+        "historialConfirmarTitulo": "Het evenement alleen als geschiedenis bewaren?",
+        "historialConfirmarTexto": "Met deze datums is het evenement al voorbij. Er worden geen diensten of loonadministratie met terugwerkende kracht aangemaakt: de indelingen worden afgesloten en beveiligers zonder andere post worden gearchiveerd, zoals bij elk afgelopen evenement. Wat al is ingeklokt blijft bewaard.",
+        "historialConfirmar": "Opslaan als geschiedenis",
+        "historialTitulo": "Met deze datums is het evenement al voorbij: het blijft alleen als geschiedenis bewaard",
+        "historialAviso": "Bij opslaan worden geen diensten of loonadministratie met terugwerkende kracht aangemaakt. De indelingen worden afgesloten en beveiligers zonder andere post worden gearchiveerd. Is er nu iemand ingeklokt bij het evenement, dan kan er niet worden opgeslagen.",
+        "historialAvisoSinArchivar": "Bij opslaan worden geen diensten of loonadministratie met terugwerkende kracht aangemaakt en worden de indelingen afgesloten (dit evenement archiveert zijn team niet). Is er nu iemand ingeklokt, dan kan er niet worden opgeslagen."
       },
       "creaCadaEstacionEvento": "Maak elk station van het evenement aan: naam, van hoe laat tot hoe laat het bezet is, hoeveel beveiligers tegelijk en geofence. Geen rotatie: het evenement heeft zijn eigen data. Als ze allemaal klaar zijn, klik op ‘Afronden’.",
       "eventoConEstaciones_one": "{{count}} station. Volgende stap: deel de beveiligers in; de data en uren komen van het evenement.",
@@ -15508,7 +15522,8 @@
       "unDiaSinFichajeNoSeAprueba": "Een dag zonder klokregistratie wordt hier niet goedgekeurd of betaald: hij wordt gemeld. Hij verschijnt in rapporten en exports samen met de rest van de periode.",
       "unDiaSinFichajeSeInforma": "Een dag zonder klokregistratie wordt gemeld; hij doorloopt de betalingscyclus niet.",
       "vacaciones": "Vakantie",
-      "yLasHorasSeRecalculanSolas": "en de uren worden automatisch herberekend — ze worden niet met de hand ingevoerd. Wie corrigeerde en waarom wordt vastgelegd."
+      "yLasHorasSeRecalculanSolas": "en de uren worden automatisch herberekend — ze worden niet met de hand ingevoerd. Wie corrigeerde en waarom wordt vastgelegd.",
+      "netasSePagan": "Netto (betaald)"
     },
     "AssignGuards": {
       "fijo": "Vast",
@@ -17093,7 +17108,36 @@
       "cupo": "Plaatsen",
       "verVigilantes": "Beveiligers bekijken",
       "resumen": "{{cubiertas}} van {{cupo}} plaatsen bezet",
-      "sinUbicacion": "De zones van dit evenement hebben geen locatie: bewerk elke post en sleep de speld om ze op het terrein te zien."
+      "sinUbicacion": "De zones van dit evenement hebben geen locatie: bewerk elke post en sleep de speld om ze op het terrein te zien.",
+      "h": {
+        "historial": "Geschiedenis",
+        "sinTurno": "geen dienst of inklokken",
+        "noFicho": "niet ingeklokt (dienst {{inicio}}–{{fin}})",
+        "fichado": "{{entrada}} → {{salida}} · {{horas}} u",
+        "sinSalida": "in om {{entrada}} · niet uitgeklokt",
+        "archivado": "{{nombre}} (gearchiveerd)",
+        "yMas_one": "en nog {{count}}",
+        "yMas_other": "en nog {{count}}",
+        "plazas": "Plaatsen",
+        "fichados": "Ingeklokt",
+        "sinFichar": "Niet ingeklokt",
+        "horas": "Uren",
+        "sinPermiso": "Om te zien wie in deze zone heeft ingeklokt, heb je toestemming nodig om aanwezigheid te bekijken.",
+        "nadie": "Niemand heeft deze zone gedekt: er zijn geen diensten of inklokregistraties.",
+        "notaSinSalida_one": "{{count}} dienst zonder uitklokken: wordt pas betaald na afsluiten in Aanwezigheidsregistratie.",
+        "notaSinSalida_other": "{{count}} diensten zonder uitklokken: worden pas betaald na afsluiten in Aanwezigheidsregistratie.",
+        "sinHoras": "Er waren mensen ingedeeld, maar er zijn geen uren geregistreerd: het evenement heeft nooit diensten gehad.",
+        "rotulo": "Evenement afgelopen op {{fecha}} · geschiedenis",
+        "nFichados_one": "{{count}} dienst ingeklokt",
+        "nFichados_other": "{{count}} diensten ingeklokt",
+        "nSinFichar_one": "{{count}} niet ingeklokt",
+        "nSinFichar_other": "{{count}} niet ingeklokt",
+        "nSinSalida_one": "{{count}} niet uitgeklokt",
+        "nSinSalida_other": "{{count}} niet uitgeklokt",
+        "totalHoras": "{{horas}} u gewerkt",
+        "chip": "{{personas}} · {{horas}} u",
+        "sinHorasCorto": "geen uren geregistreerd"
+      }
     },
     "NominaDelEvento": {
       "titulo": "Loonlijst van het evenement",
@@ -17150,7 +17194,10 @@
         "entrada": "Ingeklokt",
         "salida": "Uitgeklokt",
         "horas": "Uren",
-        "estado": "Status"
+        "estado": "Status",
+        "descansoMin": "Pauze (min)",
+        "enElPuesto": "Op de post (u)",
+        "horasNetas": "Netto-uren"
       },
       "terminado": "Evenement afgelopen.",
       "noFichoValeCero_one": "{{count}} dienst zonder inklokken telt als nul.",
@@ -17180,7 +17227,12 @@
       },
       "yMas_one": "… en nog {{count}}",
       "yMas_other": "… en nog {{count}}",
-      "terminadoSinTurnos": "Evenement afgelopen zonder diensten: er zijn geen uren te betalen."
+      "terminadoSinTurnos": "Evenement afgelopen zonder diensten: er zijn geen uren te betalen.",
+      "historialTitulo": "Afgelopen evenement · geschiedenis",
+      "historialSinHoras": "Er zijn geen uren geregistreerd voor dit evenement: niemand heeft ingeklokt en er valt niets te betalen. Een evenement met datums in het verleden maakt geen diensten met terugwerkende kracht aan.",
+      "historialAsignados_one": "Ingedeeld ({{count}}), zonder uren:",
+      "historialAsignados_other": "Ingedeeld ({{count}}), zonder uren:",
+      "descansoDescontado": "−{{min}} min pauze"
     },
     "RelevosDelEvento": {
       "titulo": "Diensten van het evenement",
@@ -17228,6 +17280,27 @@
         "empiezaAntesPrimerDia": "De dienst {{relevo}} begint voordat het evenement opent (om {{hora}}). Op de eerste dag begint de beveiliger om {{hora}}.",
         "terminaDespues": "De dienst {{relevo}} eindigt nadat het evenement sluit (om {{hora}}). De beveiliger vertrekt om {{hora}}.",
         "terminaDespuesUltimoDia": "De dienst {{relevo}} eindigt nadat het evenement sluit (om {{hora}}). Op de laatste dag vertrekt de beveiliger om {{hora}}."
+      }
+    },
+    "DiasDeLaTarjeta": {
+      "subtitulo": "Dag voor dag, van {{desde}} tot {{hasta}}",
+      "sinDesglose": "Deze urenkaart is gemaakt voordat de pauze per dag werd getoond. Maak de periode opnieuw aan om die te zien (goedgekeurde urenkaarten veranderen niet).",
+      "dia": "Dag",
+      "enElPuesto": "Op de post",
+      "totalDelPeriodo": "Totaal van de periode",
+      "estado": {
+        "trabajado": "Gewerkt",
+        "atraso": "Te laat",
+        "salida_antes": "Eerder vertrokken",
+        "extra": "Langer gebleven",
+        "falta": "Afwezig",
+        "justificado": "Verantwoord",
+        "cubierto": "Door iemand anders gedekt",
+        "cubriendo": "Vervangt",
+        "trasladado": "Op een andere post",
+        "sin_marcar": "Onopgelost",
+        "no_planificado": "Zonder dienst",
+        "programado": "Gepland"
       }
     }
   },
@@ -18891,7 +18964,8 @@
     "relevoSinQuitar": "{{nuevo}} is nu toegewezen, maar {{anterior}} kon niet worden verwijderd: {{motivo}}. Verwijder diegene met het prullenbakje in de rij.",
     "plazaCubiertaPor": "Bezet: {{nombre}}",
     "todasLasPlazasCubiertas": "Alle plaatsen op deze post zijn al bezet. Om iemand te wisselen, gebruik „Wijzigen” in de rij.",
-    "plazasCubiertas": "{{n}} van {{total}} plaatsen bezet"
+    "plazasCubiertas": "{{n}} van {{total}} plaatsen bezet",
+    "pasadoHistorial": "Afgelopen evenement · geschiedenis"
   },
   "conexionApp": {
     "titulo": "Verbinding",

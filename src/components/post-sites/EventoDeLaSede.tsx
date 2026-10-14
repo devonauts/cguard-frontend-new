@@ -61,7 +61,9 @@ export function useSede(
 
 /**
  * Píldora con las fechas del evento: «sáb 15 nov 14:00 → dom 16 nov 03:00».
- * Si ya pasó, «Evento terminado». No pinta nada si la sede no es un evento.
+ * Si ya pasó, «Evento pasado · historial»: un evento terminado (o movido al
+ * pasado) sólo sirve de referencia —sin turnos ni nómina nuevos—, y así se
+ * dice en la cabecera. No pinta nada si la sede no es un evento.
  */
 export function FechasDelEvento({
   sede,
@@ -92,7 +94,7 @@ export function FechasDelEvento({
       )}
       {terminado ? (
         <StatusBadge dot={false} tone="neutral">
-          {t("eventos.terminado", "Evento terminado")}
+          {t("eventos.pasadoHistorial", "Evento pasado · historial")}
         </StatusBadge>
       ) : enCurso ? (
         <StatusBadge tone="ok">{t("eventos.enCurso", "En curso")}</StatusBadge>

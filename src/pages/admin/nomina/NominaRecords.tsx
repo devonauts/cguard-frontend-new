@@ -20,6 +20,8 @@ import {
   STATUS_META,
   fmtTime,
   fmtHours,
+  fmtDescanso,
+  horasDeLaFila,
 } from "./shared";
 import {
   PageContainer,
@@ -430,11 +432,41 @@ export default function NominaRecords() {
     /* `numeric` no es decoración: alinea la columna Y su cabecera a la derecha
        con `tabular-nums`, que es lo que deja las horas unas debajo de otras.
        Con `render` propio, DataTable ya no lo deduce solo. */
+    /* «Los descansos en días» (dueño, 2026-10-14): el descanso de CADA día, y
+       las horas que se pagan —en el puesto menos descanso—, que son las mismas
+       que salen en las tarjetas de nómina, el evento y Gusto. Debajo, en
+       pequeño, el tiempo en el puesto cuando hubo descanso. */
+    {
+      key: "descansoMinutos",
+      header: t("ui.NominaRecords.descanso", "Descanso"),
+      numeric: true,
+      render: (_v, r) =>
+        r.esJornadaSinFichaje ? "—" : fmtDescanso(horasDeLaFila(r).descansoMinutos),
+    },
     {
       key: "hoursWorked",
-      header: t("ui.NominaRecords.horas", "Horas"),
+      header: t("ui.NominaRecords.horasNetas", "Horas netas"),
       numeric: true,
-      render: (_v, r) => fmtHours(r.hoursWorked),
+      render: (_v, r) => {
+        const h = horasDeLaFila(r);
+
+        return (
+          <span>
+            {fmtHours(h.netas)}
+            {h.descansoMinutos > 0 && h.enElPuesto != null && (
+              <span
+                className="block text-[10px] tabular-nums"
+                style={{ color: "var(--ink-faint)" }}
+              >
+                {t("ui.NominaRecords.deEnElPuesto", {
+                  horas: fmtHours(h.enElPuesto),
+                  defaultValue: "de {{horas}} en el puesto",
+                })}
+              </span>
+            )}
+          </span>
+        );
+      },
     },
     {
       key: "patrols",
@@ -804,14 +836,14 @@ export default function NominaRecords() {
                 })}
               </span>
               <span>
-                {t("ui.NominaRecords.horasTotales", "Horas totales:")}{" "}
+                {t("ui.NominaRecords.horasNetasTotales", "Horas netas:")}{" "}
                 <span
                   className="font-semibold tabular-nums"
                   style={{ color: "var(--ink)" }}
                 >
                   {fmtHours(
                     rows.reduce(
-                      (sum, r) => sum + (Number(r.hoursWorked) || 0),
+                      (sum, r) => sum + (Number(horasDeLaFila(r).netas) || 0),
                       0,
                     ),
                   )}

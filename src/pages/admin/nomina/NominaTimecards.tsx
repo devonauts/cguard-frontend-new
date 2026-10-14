@@ -42,6 +42,8 @@ import payrollService, {
   type TarjetaDeNomina,
 } from "@/lib/api/payrollService";
 import attendanceService from "@/lib/api/attendanceService";
+import DiasDeLaTarjeta from "./DiasDeLaTarjeta";
+import { fmtDescanso } from "./shared";
 import {
   diaDeLaEmpresa,
   instanteEnLaEmpresa,
@@ -126,6 +128,8 @@ export default function NominaTimecards() {
   const [hasta, setHasta] = useState(isoDay(new Date()));
   const [rows, setRows] = useState<TarjetaDeNomina[]>([]);
   const [sel, setSel] = useState<string[]>([]);
+  /* La tarjeta abierta día por día —con su descanso de cada día—. */
+  const [abierta, setAbierta] = useState<TarjetaDeNomina | null>(null);
   const [cargando, setCargando] = useState(false);
   const [trabajando, setTrabajando] = useState(false);
   /* El cálculo del periodo corre en el servidor en segundo plano: aquí se
@@ -520,9 +524,20 @@ export default function NominaTimecards() {
       header: t("ui.NominaTimecards.diasTrab", "Días trab."),
       render: (_v, r) => <Num strong v={r.diasTrabajados} />,
     },
+    /* Se pagan las NETAS: en el puesto menos descanso (dueño, 2026-10-14). El
+       descanso del periodo va al lado; el de cada día, al abrir la tarjeta. */
+    {
+      key: "descanso",
+      header: t("ui.NominaRecords.descanso", "Descanso"),
+      render: (_v, r) => {
+        const m = r.detalle?.totales?.descansoMinutos;
+
+        return <Num v={m == null ? "—" : fmtDescanso(Number(m))} />;
+      },
+    },
     {
       key: "horas",
-      header: t("ui.NominaRecords.horas", "Horas"),
+      header: t("ui.NominaRecords.horasNetas", "Horas netas"),
       render: (_v, r) => <Num strong v={num(r.horas).toFixed(2)} />,
     },
     {
@@ -568,6 +583,9 @@ export default function NominaTimecards() {
           step="0.01"
           placeholder="—"
           defaultValue={r.tarifaCentavos != null ? r.tarifaCentavos / 100 : ""}
+          // La fila abre los días: escribir la tarifa no debe abrirlos.
+          onClick={(e) => e.stopPropagation()}
+          onKeyDown={(e) => e.stopPropagation()}
           disabled={r.estado !== "borrador"}
           title={
             r.estado !== "borrador"
@@ -757,6 +775,7 @@ export default function NominaTimecards() {
             data={rows}
             loading={cargando}
             selectedIds={sel}
+            onRowClick={(r) => setAbierta(r)}
             onSelectOne={(id, checked) =>
               setSel((s) => (checked ? [...s, id] : s.filter((x) => x !== id)))
             }
@@ -773,6 +792,7 @@ export default function NominaTimecards() {
             }
           />
         </Section>
+        <DiasDeLaTarjeta tarjeta={abierta} onClose={() => setAbierta(null)} />
       </PageContainer>
     </AppLayout>
   );

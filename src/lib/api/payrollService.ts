@@ -48,9 +48,25 @@ export interface TarjetaDeNomina {
   faltas: number;
   sinResolver: number;
   importeCentavos: string | number;
-  detalle?: { dias?: unknown[]; totales?: Record<string, unknown> } | null;
+  detalle?: { dias?: DiaDeTarjetaDeNomina[]; totales?: Record<string, unknown> } | null;
   aprobadaEl?: string | null;
   aprobadaPor?: { fullName?: string; firstName?: string; lastName?: string } | null;
+}
+
+/**
+ * Un día de la tarjeta, tal como lo guarda el servidor (`DiaDeTarjeta`). Sólo
+ * lo que la pantalla lee. `horasEnElPuesto` y `descansoMinutos` faltan en las
+ * tarjetas generadas antes de pagar netas (2026-10-14): su foto es la que se
+ * aprobó y no se inventa.
+ */
+export interface DiaDeTarjetaDeNomina {
+  fecha: string;
+  estado: string;
+  puesto: string | null;
+  real: { entrada: string | null; salida: string | null; horas: number } | null;
+  horasEnElPuesto?: number;
+  descansoMinutos?: number;
+  motivo?: string | null;
 }
 
 export type EstadoGeneracion = "en_cola" | "calculando" | "listo" | "fallo";

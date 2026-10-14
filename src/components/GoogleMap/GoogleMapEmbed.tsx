@@ -367,6 +367,7 @@ export default function GoogleMapEmbed({
   fitMarkers = false,
   hud,
   area = "map-embed",
+  apagado = false,
 }: {
   lat?: number;
   lng?: number;
@@ -409,6 +410,12 @@ export default function GoogleMapEmbed({
   /** Id corto del consumidor para la telemetría del mapa compartido
    *  ("incident", "scan", "timesheet"…). Ver `utils/mapPool.ts`. */
   area?: string;
+  /** Mapa de REFERENCIA (p. ej. un evento que ya terminó): teselas y
+   *  chinchetas en gris, el globo sigue a color. Va en una clase de NUESTRO
+   *  hueco (`.cc-map-canvas`), no en el mapa prestado: al devolverlo a la
+   *  reserva sale de este hueco y el siguiente que lo pide lo recibe a color,
+   *  sin nada que restablecer. */
+  apagado?: boolean;
 }) {
   const { t } = useTranslation();
   const mapRef = useRef<HTMLDivElement | null>(null);
@@ -1482,7 +1489,10 @@ export default function GoogleMapEmbed({
           height="100%"
           loading="lazy"
           src={src}
-          style={{ border: 0 }}
+          style={{
+            border: 0,
+            filter: apagado ? "grayscale(0.85) brightness(0.97)" : undefined,
+          }}
           title="Google Maps"
           width="100%"
         />
@@ -1495,7 +1505,10 @@ export default function GoogleMapEmbed({
       className={`cc-map-frame ${className}`}
       style={{ height: height ?? "100%" }}
     >
-      <div ref={mapRef} className="cc-map-canvas" />
+      <div
+        ref={mapRef}
+        className={apagado ? "cc-map-canvas is-apagado" : "cc-map-canvas"}
+      />
 
       {lectura && (
         <div className="cc-map-hud" style={{ left: 10, right: 10, bottom: 10 }}>

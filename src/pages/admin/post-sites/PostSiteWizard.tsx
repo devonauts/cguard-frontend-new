@@ -62,11 +62,13 @@ import { useClientSelection } from "@/contexts/ClientSelectionContext";
 import { getServiceType, esEvento } from "@/lib/serviceTypes";
 import {
   EVENTO_MAX_DIAS,
+  pasaAlPasado,
   validarVigencia,
   type ErrorVigencia,
 } from "@/lib/eventos";
+import { confirmDialog } from "@/components/ui/confirmDialog";
 import { desdeInputFechaHora, paraInputFechaHora } from "@/lib/horaDeLaEmpresa";
-import { Section, EmptyState, IconTile } from "@/components/kit";
+import { Section, EmptyState, IconTile, InfoNote } from "@/components/kit";
 import CampoSucursalDeSede from "@/components/post-sites/CampoSucursalDeSede";
 import { HiloDePuesta } from "@/components/onboarding/PuestaEnMarcha";
 import StationCreateForm, {
@@ -1006,6 +1008,14 @@ export default function PostSiteWizard({
   const errorVigencia: ErrorVigencia = esEventoSel
     ? validarVigencia(vigenciaISO.desde, vigenciaISO.hasta)
     : null;
+  /* Evento MOVIDO AL PASADO = sólo historial (decisión del dueño): se avisa
+     antes de guardar, no después. Corregir la hora de uno que ya había
+     terminado no cuenta (ver `pasaAlPasado`). */
+  const pasaAHistorial =
+    isEdit &&
+    esEventoSel &&
+    !errorVigencia &&
+    pasaAlPasado(sedeGuardada?.vigenteHasta, vigenciaISO.hasta);
 
   // Step 2
   const [clientId, setClientId] = useState(
@@ -1474,9 +1484,44 @@ export default function PostSiteWizard({
         motivo?: "fueraDelEvento" | "choque";
         chocaCon?: string;
       }>;
+      historial?: {
+        cerradas?: number;
+        archivados?: Array<{ userId?: string; nombre?: string }>;
+        seQuedan?: number;
+        archivarAlTerminar?: boolean;
+      };
     } | null,
   ) => {
     if (!rs) return;
+    /* Con las fechas nuevas el evento ya terminó: nadie se «movió» a fechas
+       pasadas (antes decía «Se movieron N vigilantes» sin un solo turno). Se
+       dice lo que pasó de verdad: asignaciones cerradas y quién se archivó. */
+    if (rs.historial) {
+      const archivados = rs.historial.archivados || [];
+
+      toast.info(
+        [
+          t("ui.PostSiteWizard.evento.historialHecho", {
+            defaultValue:
+              "El evento quedó como historial: se cerraron {{count}} asignaciones.",
+            count: Number(rs.historial.cerradas || 0),
+          }),
+          archivados.length
+            ? t("ui.PostSiteWizard.evento.historialArchivados", {
+                defaultValue:
+                  "{{count}} vigilantes sin otro puesto se archivaron: {{lista}}.",
+                count: archivados.length,
+                lista: archivados.map((a) => a.nombre || "—").join(", "),
+              })
+            : "",
+        ]
+          .filter(Boolean)
+          .join(" "),
+        { duration: 12000 },
+      );
+
+      return;
+    }
     /* `salidas` trae a TODOS los que salieron y por qué; `choques` es el
        formato viejo (sólo los que chocaban) y queda de respaldo. */
     const salidas = Array.isArray(rs.salidas)
@@ -1545,6 +1590,24 @@ export default function PostSiteWizard({
   };
 
   const handleCreateSite = async () => {
+    if (
+      pasaAHistorial &&
+      !(await confirmDialog({
+        title: t(
+          "ui.PostSiteWizard.evento.historialConfirmarTitulo",
+          "¿Dejar el evento como historial?",
+        ),
+        message: t(
+          "ui.PostSiteWizard.evento.historialConfirmarTexto",
+          "Con estas fechas el evento ya terminó. No se crean turnos ni nómina hacia atrás: sus asignaciones se cierran y los vigilantes sin otro puesto se archivan, como en cualquier evento terminado. Lo que ya se fichó se conserva.",
+        ),
+        confirmText: t(
+          "ui.PostSiteWizard.evento.historialConfirmar",
+          "Guardar como historial",
+        ),
+      }))
+    )
+      return;
     setSubmitting(true);
     try {
       const payload = buildPayload();
@@ -1844,6 +1907,27 @@ export default function PostSiteWizard({
                       "Al terminar, los vigilantes quedan libres y el evento se queda con su historial (fichajes, incidentes e informe).",
                     )}
                   </p>
+                )}
+                {pasaAHistorial && (
+                  <InfoNote
+                    className="mt-3"
+                    icon={<CalendarClock />}
+                    title={t(
+                      "ui.PostSiteWizard.evento.historialTitulo",
+                      "Con estas fechas el evento ya terminó: quedará sólo como historial",
+                    )}
+                    tone="warn"
+                  >
+                    {cfgGet("archivarAlTerminar", true) !== false
+                      ? t(
+                          "ui.PostSiteWizard.evento.historialAviso",
+                          "Al guardar no se crean turnos ni nómina hacia atrás. Sus asignaciones se cierran y los vigilantes sin otro puesto se archivan. Si alguien está fichado ahora mismo en el evento, no se podrá guardar.",
+                        )
+                      : t(
+                          "ui.PostSiteWizard.evento.historialAvisoSinArchivar",
+                          "Al guardar no se crean turnos ni nómina hacia atrás y sus asignaciones se cierran (este evento no archiva a su gente). Si alguien está fichado ahora mismo en el evento, no se podrá guardar.",
+                        )}
+                  </InfoNote>
                 )}
                 {/* Al terminar, su gente libera el asiento (por defecto sí). El
                    servidor lo lee de `serviceConfig.archivarAlTerminar`; sin

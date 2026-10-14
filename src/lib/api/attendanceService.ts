@@ -105,6 +105,15 @@ export interface AttendanceRecord {
   /** Descansos y almuerzo: `[{start,end,kind}]`. El último sin `end` = en curso. */
   breaks?: Array<{ start: string; end?: string | null; kind?: string }> | null;
   breakMinutes?: number | null;
+  /**
+   * LA regla de lo pagable, calculada en el servidor (`lib/horasPagables`):
+   * tiempo en el puesto, descanso descontado y netas (lo que se paga). `null`
+   * mientras el fichaje sigue abierto. La pantalla las lee de aquí en vez de
+   * restar por su cuenta.
+   */
+  horasEnElPuesto?: number | null;
+  descansoMinutos?: number | null;
+  horasNetas?: number | null;
   /** Fila sintética de vacaciones/permiso/falta (no vive en guardShifts). */
   esJornadaSinFichaje?: boolean;
 }

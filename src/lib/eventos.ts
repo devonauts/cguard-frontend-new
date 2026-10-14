@@ -98,6 +98,65 @@ export function eventoTerminado(
   return !!hasta && hasta.getTime() < ahora.getTime();
 }
 
+/**
+ * ¿Guardar estas fechas MUEVE el evento al pasado? Sí si antes no había
+ * terminado (o no tenía fin) y con el fin nuevo ya terminó. Corregir la hora
+ * de un evento que ya había acabado no lo es. Mismo criterio que el servidor
+ * (`pasaAlPasado` en `eventosDeSede`): un evento así queda sólo como historial.
+ */
+export function pasaAlPasado(
+  antesHasta?: string | Date | null,
+  nuevoHasta?: string | Date | null,
+  ahora: Date = new Date(),
+): boolean {
+  const nuevo = aFecha(nuevoHasta);
+
+  if (!nuevo || nuevo.getTime() > ahora.getTime()) return false;
+  const antes = aFecha(antesHasta);
+
+  return !antes || antes.getTime() > ahora.getTime();
+}
+
+/** Una zona del historial de un evento terminado (`GET …/historial-del-evento`). */
+export interface ZonaDelHistorial {
+  estacionId: string;
+  nombre: string;
+  plazas: number;
+  personas: Array<{
+    userId: string;
+    nombre: string;
+    archivado: boolean;
+    turnos: Array<{
+      programadoInicio: string | null;
+      programadoFin: string | null;
+      entrada: string | null;
+      salida: string | null;
+      horas: number;
+      estado: "cumplido" | "sinSalida" | "noFicho" | "pendiente";
+    }>;
+    horas: number;
+  }>;
+  turnos: number;
+  cumplidos: number;
+  sinSalida: number;
+  noFicho: number;
+  horas: number;
+}
+
+/**
+ * El tono de una zona en el mapa de un evento TERMINADO: ya no se mide contra
+ * el cupo (las asignaciones se cerraron y todo saldría «0 de N» en rojo). Sin
+ * gente, apagada; con gente sin fichar o sin salida, aviso; si no, neutro —el
+ * mapa entero va en gris: es referencia, no alarma—.
+ */
+export function tonoDeZonaPasada(
+  z?: Pick<ZonaDelHistorial, "personas" | "noFicho" | "sinSalida"> | null,
+): "neutral" | "warn" {
+  if (!z || !z.personas.length) return "neutral";
+
+  return z.noFicho > 0 || z.sinSalida > 0 ? "warn" : "neutral";
+}
+
 /** ¿El evento está en marcha ahora mismo? */
 export function eventoEnCurso(
   sede?: SedeConVigencia | null,

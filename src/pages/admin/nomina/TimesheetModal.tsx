@@ -25,6 +25,8 @@ import {
   fmtDateTime,
   fmtTime,
   fmtHours,
+  fmtDescanso,
+  horasDeLaFila,
 } from "./shared";
 import {
   ImageOff,
@@ -417,8 +419,10 @@ export default function TimesheetModal({
 
   if (!record) return null;
 
-  const horas = record.hoursWorked == null ? null : Number(record.hoursWorked);
-  const desc = Number(record.breakMinutes || 0);
+  /* Las tres cifras salen del SERVIDOR con la regla de la nómina: en el
+     puesto, descanso y netas (lo que se paga). Así esta hoja dice lo mismo que
+     las tarjetas de nómina, el evento y Gusto. */
+  const desglose = horasDeLaFila(record);
   const siguientes =
     PAYROLL_FLOW_NEXT[String(record.payrollStatus || "pending_review")] || [];
 
@@ -545,13 +549,9 @@ export default function TimesheetModal({
                     }
                   />
                   <Field
-                    label={
-                      esOtroReloj
-                        ? t("ui.TimesheetModal.horasNetas", "Horas (netas)")
-                        : t("ui.TimesheetModal.horasEnElPuesto", "Horas en el puesto")
-                    }
+                    label={t("ui.TimesheetModal.horasEnElPuesto", "Horas en el puesto")}
                     value={
-                      <span className="tabular-nums">{fmtHours(horas)}</span>
+                      <span className="tabular-nums">{fmtHours(desglose.enElPuesto)}</span>
                     }
                     numeric
                   />
@@ -575,28 +575,23 @@ export default function TimesheetModal({
                     label={t("ui.TimesheetModal.descanso", "Descanso")}
                     value={
                       <span className="tabular-nums">
-                        {desc ? `${desc} min` : "—"}
+                        {fmtDescanso(desglose.descansoMinutos)}
                       </span>
                     }
                     numeric
                   />
-                  {/* En un vigilante `hoursWorked` es tiempo EN EL PUESTO y el
-                      descanso va aparte; en supervisión y oficina el propio
-                      reloj ya lo descontó al cerrar. Restarlo otra vez aquí le
-                      quitaría el almuerzo dos veces. */}
-                  {!esOtroReloj && (
-                    <Field
-                      label={t("ui.TimesheetModal.netas", "Netas")}
-                      value={
-                        <span className="tabular-nums">
-                          {horas == null
-                            ? "—"
-                            : fmtHours(Math.max(0, horas - desc / 60))}
-                        </span>
-                      }
-                      numeric
-                    />
-                  )}
+                  {/* Lo que se paga: en el puesto menos descanso. En supervisión
+                      y oficina el reloj ya lo descontó al cerrar; el servidor lo
+                      sabe y no lo resta dos veces. */}
+                  <Field
+                    label={t("ui.TimesheetModal.netasSePagan", "Netas (se pagan)")}
+                    value={
+                      <span className="tabular-nums">
+                        {fmtHours(desglose.netas)}
+                      </span>
+                    }
+                    numeric
+                  />
                   <Field
                     label={t("ui.TimesheetModal.tarde", "Tarde")}
                     value={

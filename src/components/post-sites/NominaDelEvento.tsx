@@ -57,7 +57,10 @@ interface Turno {
   programadoFin: string | null;
   entrada: string | null;
   salida: string | null;
+  /** Pagables: en el puesto − descanso (misma regla que nómina y Gusto). */
   horas: number;
+  horasEnElPuesto?: number;
+  descansoMinutos?: number;
   estado: "cumplido" | "sinSalida" | "noFicho" | "pendiente";
   estadoNomina: string | null;
 }
@@ -71,6 +74,8 @@ interface Fila {
   turnos: Turno[];
   horasProgramadas: number;
   horasTrabajadas: number;
+  /** Descanso descontado en el evento, en minutos. */
+  descansoMinutos?: number;
   tarifaCentavos: number | null;
   origenTarifa: "evento" | "persona" | null;
   importeCentavos: number | null;
@@ -123,6 +128,13 @@ interface Nomina {
     archivarAlTerminar: boolean;
     hecho: boolean;
   };
+  /** Evento pasado sin una sola hora: quién estuvo asignado (y a qué zonas). */
+  asignadosSinHoras?: Array<{
+    userId: string;
+    nombre: string;
+    zonas: string[];
+    archivado: boolean;
+  }>;
 }
 
 const MOSTRAR = 40;
@@ -420,6 +432,11 @@ export default function NominaDelEvento({
       align: "right",
     },
     {
+      label: t("ui.NominaDelEvento.col.descansoMin", "Descanso (min)"),
+      value: (f) => f.descansoMinutos ?? 0,
+      align: "right",
+    },
+    {
       label: t("ui.NominaDelEvento.col.trabajadas", "Horas trabajadas"),
       value: (f) => f.horasTrabajadas,
       align: "right",
@@ -540,7 +557,17 @@ export default function NominaDelEvento({
             value: (x: any) => hm(x.tu.salida),
           },
           {
-            label: t("ui.NominaDelEvento.col.horas", "Horas"),
+            /* El descanso de CADA turno (dueño, 2026-10-14): en el puesto −
+               descanso = horas que se pagan. */
+            label: t("ui.NominaDelEvento.col.enElPuesto", "En el puesto (h)"),
+            value: (x: any) => x.tu.horasEnElPuesto ?? "",
+          },
+          {
+            label: t("ui.NominaDelEvento.col.descansoMin", "Descanso (min)"),
+            value: (x: any) => x.tu.descansoMinutos ?? "",
+          },
+          {
+            label: t("ui.NominaDelEvento.col.horasNetas", "Horas netas"),
             value: (x: any) => x.tu.horas,
           },
           {
@@ -631,6 +658,76 @@ export default function NominaDelEvento({
       </button>
     ) : null;
 
+  /* ── EVENTO PASADO SIN HORAS: SÓLO HISTORIAL ─────────────────────────────
+     Un evento movido al pasado no crea turnos hacia atrás (serían «no fichó»
+     falsos), así que la hoja salía como un evento vacío —«Todavía no hay
+     vigilantes asignados»— con tarifa, presupuesto y botones a cero. Se dice lo
+     que es: historial, sin horas registradas, y quién estuvo asignado. */
+  if (terminado && !filas.length) {
+    const asignados = datos.asignadosSinHoras || [];
+
+    return (
+      <Section
+        icon={<Banknote />}
+        title={t("ui.NominaDelEvento.titulo", "Nómina del evento")}
+      >
+        <div className="space-y-3">
+          <InfoNote
+            title={t(
+              "ui.NominaDelEvento.historialTitulo",
+              "Evento pasado · historial",
+            )}
+            tone="info"
+          >
+            {t(
+              "ui.NominaDelEvento.historialSinHoras",
+              "No hay horas registradas en este evento: nadie fichó y no hay nada que pagar. Un evento con fechas pasadas no crea turnos hacia atrás.",
+            )}
+          </InfoNote>
+          {asignados.length ? (
+            <div className="space-y-1.5 text-sm">
+              <p className="text-xs font-medium" style={{ color: "var(--ink-soft)" }}>
+                {t("ui.NominaDelEvento.historialAsignados", {
+                  defaultValue: "Estuvieron asignados ({{count}}), sin horas:",
+                  count: asignados.length,
+                })}
+              </p>
+              <ul className="flex flex-wrap gap-1.5">
+                {asignados.map((a) => (
+                  <li
+                    key={a.userId}
+                    className="glass-flat inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs"
+                  >
+                    <span className="font-medium">{a.nombre}</span>
+                    {a.zonas.length ? (
+                      <span style={{ color: "var(--ink-soft)" }}>
+                        {a.zonas.join(" · ")}
+                      </span>
+                    ) : null}
+                    {a.archivado && (
+                      <StatusBadge dot={false} tone="neutral">
+                        {t("ui.NominaDelEvento.archivado", "Archivado")}
+                      </StatusBadge>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          {datos.archivado && datos.archivado.archivados > 0 ? (
+            <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
+              {t("ui.NominaDelEvento.archivadosResumen", {
+                defaultValue:
+                  "{{count}} vigilantes archivados al terminar · liberaron {{count}} asientos",
+                count: datos.archivado.archivados,
+              })}
+            </p>
+          ) : null}
+        </div>
+      </Section>
+    );
+  }
+
   return (
     <Section
       icon={<Banknote />}
@@ -656,17 +753,29 @@ export default function NominaDelEvento({
         ) : !totales.turnos ? (
           // Sin turnos no hay nada fichado: decir «todos fichados, lista
           // para pagar» con cero vigilantes engañaba.
-          <InfoNote tone="info">
+          <InfoNote
+            title={t(
+              "ui.NominaDelEvento.historialTitulo",
+              "Evento pasado · historial",
+            )}
+            tone="info"
+          >
             {t(
               "ui.NominaDelEvento.terminadoSinTurnos",
               "Evento terminado sin turnos: no hay horas que pagar.",
             )}
           </InfoNote>
         ) : (
-          <InfoNote tone={totales.noFicho || totales.sinSalida ? "warn" : "ok"}>
+          <InfoNote
+            title={t(
+              "ui.NominaDelEvento.historialTitulo",
+              "Evento pasado · historial",
+            )}
+            tone={totales.noFicho || totales.sinSalida ? "warn" : "ok"}
+          >
             {totales.noFicho || totales.sinSalida
               ? [
-                  t("ui.NominaDelEvento.terminado", "Evento terminado."),
+                  // «Evento terminado» ya lo dice el título de la nota.
                   totales.noFicho
                     ? t("ui.NominaDelEvento.noFichoValeCero", {
                         defaultValue:
@@ -1039,6 +1148,17 @@ export default function NominaDelEvento({
                           {" "}
                           / {horas(f.horasProgramadas)}
                         </span>
+                        {(f.descansoMinutos ?? 0) > 0 && (
+                          <span
+                            className="block text-[10px]"
+                            style={{ color: "var(--ink-faint)" }}
+                          >
+                            {t("ui.NominaDelEvento.descansoDescontado", {
+                              min: f.descansoMinutos,
+                              defaultValue: "−{{min}} min de descanso",
+                            })}
+                          </span>
+                        )}
                       </td>
                       <td className="px-3 py-2 text-right tabular-nums">
                         {dinero(

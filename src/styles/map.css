@@ -22,6 +22,21 @@
 }
 .cc-map-frame > .cc-map-canvas { position: absolute; inset: 0; }
 
+/* ── MAPA APAGADO ──────────────────────────────────────────────────────────
+   Un mapa de REFERENCIA (el de un evento que ya terminó): lo que hubo, no lo
+   que pasa. Teselas (el lienzo vectorial y las imágenes del satélite) y
+   chinchetas en gris; el globo NO —vive dentro del mapa (`InfoWindow`), por eso
+   el filtro va pieza a pieza y no sobre el hueco entero—. La clase es de
+   NUESTRO hueco: el mapa prestado de `mapPool` sale de él al devolverse. */
+.cc-map-canvas.is-apagado canvas,
+.cc-map-canvas.is-apagado img:not(.gm-style-iw *):not(.gm-style-iw) {
+  filter: grayscale(0.85) brightness(0.97);
+}
+.cc-map-canvas.is-apagado .cc-map-pin {
+  filter: grayscale(1);
+  opacity: 0.88;
+}
+
 .cc-map-frame::after {
   content: "";
   position: absolute;

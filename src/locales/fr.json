@@ -11003,7 +11003,11 @@
       "tarjetasEnEstado_other": "{{count}} fiches en « {{etiqueta}} »",
       "todosLosTrabajadores": "Tous les employés",
       "trabajador": "Employé",
-      "enviarAGusto": "Envoyer à Gusto"
+      "enviarAGusto": "Envoyer à Gusto",
+      "descanso": "Pause",
+      "horasNetas": "Heures nettes",
+      "deEnElPuesto": "sur {{horas}} au poste",
+      "horasNetasTotales": "Heures nettes :"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Prévenir aussi ces adresses e-mail",
@@ -11544,7 +11548,17 @@
         "desplazados": "Les relèves ont bougé de {{horas}} h avec l’événement : {{plazas}} et {{vigilantes}}.",
         "duraDiasYHoras": "Dure {{dias}} jours et {{horas}} h.",
         "archivarAlTerminar": "À la fin, archiver les agents qui n’ont pas d’autre poste — ils libèrent leur place",
-        "archivarAlTerminarAyuda": "Ils sont toujours payés pour leurs heures de l’événement et, si vous les réaffectez, ils sont réactivés automatiquement."
+        "archivarAlTerminarAyuda": "Ils sont toujours payés pour leurs heures de l’événement et, si vous les réaffectez, ils sont réactivés automatiquement.",
+        "historialHecho_one": "L'événement est désormais un historique : {{count}} affectation a été clôturée.",
+        "historialHecho_other": "L'événement est désormais un historique : {{count}} affectations ont été clôturées.",
+        "historialArchivados_one": "{{count}} agent sans autre poste a été archivé : {{lista}}.",
+        "historialArchivados_other": "{{count}} agents sans autre poste ont été archivés : {{lista}}.",
+        "historialConfirmarTitulo": "Garder l'événement comme historique ?",
+        "historialConfirmarTexto": "Avec ces dates, l'événement est déjà terminé. Aucun service ni paie n'est créé rétroactivement : ses affectations sont clôturées et les agents sans autre poste sont archivés, comme pour tout événement terminé. Les pointages déjà faits sont conservés.",
+        "historialConfirmar": "Enregistrer comme historique",
+        "historialTitulo": "Avec ces dates, l'événement est déjà terminé : il restera seulement comme historique",
+        "historialAviso": "L'enregistrement ne crée ni services ni paie rétroactifs. Ses affectations sont clôturées et les agents sans autre poste sont archivés. Si quelqu'un est pointé en ce moment sur l'événement, l'enregistrement sera impossible.",
+        "historialAvisoSinArchivar": "L'enregistrement ne crée ni services ni paie rétroactifs, et ses affectations sont clôturées (cet événement n'archive pas son équipe). Si quelqu'un est pointé en ce moment sur l'événement, l'enregistrement sera impossible."
       },
       "creaCadaEstacionEvento": "Créez chaque station de l'événement : nom, de quelle heure à quelle heure il est couvert, combien d'agents à la fois et géorepérage. Sans rotation : l'événement a ses propres dates. Quand ils sont tous prêts, cliquez sur « Terminer ».",
       "eventoConEstaciones_one": "{{count}} station. Ensuite : affectez les agents ; les dates et heures viennent de l’événement.",
@@ -15508,7 +15522,8 @@
       "unDiaSinFichajeNoSeAprueba": "Un jour sans pointage ne s'approuve ni ne se paie ici : il est signalé. Il apparaît dans les rapports et les exports avec le reste de la période.",
       "unDiaSinFichajeSeInforma": "Un jour sans pointage est signalé ; il ne passe pas par le cycle de paie.",
       "vacaciones": "Congés",
-      "yLasHorasSeRecalculanSolas": "et les heures sont recalculées automatiquement — elles ne se saisissent pas à la main. Qui a corrigé et pourquoi est consigné."
+      "yLasHorasSeRecalculanSolas": "et les heures sont recalculées automatiquement — elles ne se saisissent pas à la main. Qui a corrigé et pourquoi est consigné.",
+      "netasSePagan": "Nettes (payées)"
     },
     "AssignGuards": {
       "fijo": "Fixe",
@@ -17093,7 +17108,36 @@
       "cupo": "Places",
       "verVigilantes": "Voir les agents",
       "resumen": "{{cubiertas}} places sur {{cupo}} couvertes",
-      "sinUbicacion": "Les zones de cet événement n’ont pas d’emplacement : modifiez chaque poste et déplacez son repère pour les voir sur le site."
+      "sinUbicacion": "Les zones de cet événement n’ont pas d’emplacement : modifiez chaque poste et déplacez son repère pour les voir sur le site.",
+      "h": {
+        "historial": "Historique",
+        "sinTurno": "ni service ni pointage",
+        "noFicho": "n'a pas pointé (service {{inicio}}–{{fin}})",
+        "fichado": "{{entrada}} → {{salida}} · {{horas}} h",
+        "sinSalida": "entré à {{entrada}} · sans sortie",
+        "archivado": "{{nombre}} (archivé)",
+        "yMas_one": "et {{count}} autre",
+        "yMas_other": "et {{count}} autres",
+        "plazas": "Places",
+        "fichados": "Pointés",
+        "sinFichar": "Non pointés",
+        "horas": "Heures",
+        "sinPermiso": "Pour voir qui a pointé dans cette zone, il faut l'autorisation de consulter les présences.",
+        "nadie": "Personne n'a couvert cette zone : aucun service ni pointage enregistré.",
+        "notaSinSalida_one": "{{count}} service sans sortie : il n'est pas payé tant qu'il n'est pas clôturé dans Registres de présence.",
+        "notaSinSalida_other": "{{count}} services sans sortie : ils ne sont pas payés tant qu'ils ne sont pas clôturés dans Registres de présence.",
+        "sinHoras": "Des personnes étaient affectées, mais aucune heure n'est enregistrée : l'événement n'a jamais eu de services.",
+        "rotulo": "Événement terminé le {{fecha}} · historique",
+        "nFichados_one": "{{count}} service pointé",
+        "nFichados_other": "{{count}} services pointés",
+        "nSinFichar_one": "{{count}} non pointé",
+        "nSinFichar_other": "{{count}} non pointés",
+        "nSinSalida_one": "{{count}} sans sortie",
+        "nSinSalida_other": "{{count}} sans sortie",
+        "totalHoras": "{{horas}} h travaillées",
+        "chip": "{{personas}} · {{horas}} h",
+        "sinHorasCorto": "aucune heure enregistrée"
+      }
     },
     "NominaDelEvento": {
       "titulo": "Paie de l’événement",
@@ -17150,7 +17194,10 @@
         "entrada": "Entrée",
         "salida": "Sortie",
         "horas": "Heures",
-        "estado": "Statut"
+        "estado": "Statut",
+        "descansoMin": "Pause (min)",
+        "enElPuesto": "Au poste (h)",
+        "horasNetas": "Heures nettes"
       },
       "terminado": "Événement terminé.",
       "noFichoValeCero_one": "{{count}} service sans pointage vaut zéro.",
@@ -17180,7 +17227,12 @@
       },
       "yMas_one": "… et {{count}} autre",
       "yMas_other": "… et {{count}} autres",
-      "terminadoSinTurnos": "Événement terminé sans services : aucune heure à payer."
+      "terminadoSinTurnos": "Événement terminé sans services : aucune heure à payer.",
+      "historialTitulo": "Événement passé · historique",
+      "historialSinHoras": "Aucune heure enregistrée pour cet événement : personne n'a pointé et il n'y a rien à payer. Un événement aux dates passées ne crée pas de services rétroactifs.",
+      "historialAsignados_one": "Affecté ({{count}}), sans heures :",
+      "historialAsignados_other": "Affectés ({{count}}), sans heures :",
+      "descansoDescontado": "−{{min}} min de pause"
     },
     "RelevosDelEvento": {
       "titulo": "Relèves de l’événement",
@@ -17228,6 +17280,27 @@
         "empiezaAntesPrimerDia": "La relève {{relevo}} commence avant l’ouverture de l’événement (à {{hora}}). Le premier jour, l’agent commence à {{hora}}.",
         "terminaDespues": "La relève {{relevo}} se termine après la fermeture de l’événement (à {{hora}}). L’agent part à {{hora}}.",
         "terminaDespuesUltimoDia": "La relève {{relevo}} se termine après la fermeture de l’événement (à {{hora}}). Le dernier jour, l’agent part à {{hora}}."
+      }
+    },
+    "DiasDeLaTarjeta": {
+      "subtitulo": "Jour par jour, du {{desde}} au {{hasta}}",
+      "sinDesglose": "Cette fiche a été générée avant l’affichage de la pause par jour. Générez à nouveau la période pour la voir (les fiches approuvées ne changent pas).",
+      "dia": "Jour",
+      "enElPuesto": "Au poste",
+      "totalDelPeriodo": "Total de la période",
+      "estado": {
+        "trabajado": "Travaillé",
+        "atraso": "Retard",
+        "salida_antes": "Parti plus tôt",
+        "extra": "Resté plus longtemps",
+        "falta": "Absence",
+        "justificado": "Justifié",
+        "cubierto": "Couvert par un autre",
+        "cubriendo": "En remplacement",
+        "trasladado": "À un autre poste",
+        "sin_marcar": "Non résolu",
+        "no_planificado": "Sans service",
+        "programado": "Planifié"
       }
     }
   },
@@ -18891,7 +18964,8 @@
     "relevoSinQuitar": "{{nuevo}} est maintenant affecté, mais {{anterior}} n'a pas pu être retiré : {{motivo}}. Retirez-le avec la corbeille de sa ligne.",
     "plazaCubiertaPor": "Couverte : {{nombre}}",
     "todasLasPlazasCubiertas": "Toutes les places de ce poste sont déjà couvertes. Pour remplacer quelqu'un, utilisez « Changer » sur sa ligne.",
-    "plazasCubiertas": "{{n}} places couvertes sur {{total}}"
+    "plazasCubiertas": "{{n}} places couvertes sur {{total}}",
+    "pasadoHistorial": "Événement passé · historique"
   },
   "conexionApp": {
     "titulo": "Connexion",

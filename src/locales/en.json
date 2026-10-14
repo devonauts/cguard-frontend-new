@@ -10470,7 +10470,11 @@
       "tarjetasEnEstado_other": "{{count}} timecards in “{{etiqueta}}”",
       "todosLosTrabajadores": "All workers",
       "trabajador": "Worker",
-      "enviarAGusto": "Send to Gusto"
+      "enviarAGusto": "Send to Gusto",
+      "descanso": "Break",
+      "horasNetas": "Net hours",
+      "deEnElPuesto": "of {{horas}} on post",
+      "horasNetasTotales": "Net hours:"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Also notify these email addresses",
@@ -11011,7 +11015,17 @@
         "desplazados": "Shifts moved {{horas}} h with the event: {{plazas}} and {{vigilantes}}.",
         "duraDiasYHoras": "Lasts {{dias}} days and {{horas}} h.",
         "archivarAlTerminar": "When it ends, archive the guards who have no other post — they free up their seat",
-        "archivarAlTerminarAyuda": "They still get paid for their event hours, and if you assign them again they're reactivated automatically."
+        "archivarAlTerminarAyuda": "They still get paid for their event hours, and if you assign them again they're reactivated automatically.",
+        "historialHecho_one": "The event is now history: {{count}} assignment was closed.",
+        "historialHecho_other": "The event is now history: {{count}} assignments were closed.",
+        "historialArchivados_one": "{{count}} guard with no other post was archived: {{lista}}.",
+        "historialArchivados_other": "{{count}} guards with no other post were archived: {{lista}}.",
+        "historialConfirmarTitulo": "Keep the event as history only?",
+        "historialConfirmarTexto": "With these dates the event is already over. No shifts or payroll are created backwards: its assignments are closed and guards with no other post are archived, as with any finished event. Anything already clocked is kept.",
+        "historialConfirmar": "Save as history",
+        "historialTitulo": "With these dates the event is already over: it will be kept as history only",
+        "historialAviso": "Saving does not create shifts or payroll backwards. Its assignments are closed and guards with no other post are archived. If someone is clocked in at the event right now, it cannot be saved.",
+        "historialAvisoSinArchivar": "Saving does not create shifts or payroll backwards, and its assignments are closed (this event does not archive its people). If someone is clocked in at the event right now, it cannot be saved."
       },
       "creaCadaEstacionEvento": "Create each station for the event: name, from what time to what time it is covered, how many guards at once and geofence. No rotation: the event has its own dates. When they're all done, press “Finish”.",
       "eventoConEstaciones_one": "{{count}} station. Next: assign the guards; the event sets the dates and hours.",
@@ -14975,7 +14989,8 @@
       "unDiaSinFichajeNoSeAprueba": "A day without punches isn't approved or paid from here: it's reported. It appears in reports and exports along with the rest of the period.",
       "unDiaSinFichajeSeInforma": "A day without punches is reported; it doesn't go through the payment cycle.",
       "vacaciones": "Vacation",
-      "yLasHorasSeRecalculanSolas": "and the hours are recalculated automatically — they're not entered by hand. Who corrected it and why is recorded."
+      "yLasHorasSeRecalculanSolas": "and the hours are recalculated automatically — they're not entered by hand. Who corrected it and why is recorded.",
+      "netasSePagan": "Net (paid)"
     },
     "AssignGuards": {
       "fijo": "Fixed",
@@ -16560,7 +16575,36 @@
       "cupo": "Slots",
       "verVigilantes": "See guards",
       "resumen": "{{cubiertas}} of {{cupo}} slots filled",
-      "sinUbicacion": "This event’s zones have no location: edit each station and drag its pin to see them on the venue."
+      "sinUbicacion": "This event’s zones have no location: edit each station and drag its pin to see them on the venue.",
+      "h": {
+        "historial": "History",
+        "sinTurno": "no shift or clock-in",
+        "noFicho": "did not clock in (shift {{inicio}}–{{fin}})",
+        "fichado": "{{entrada}} → {{salida}} · {{horas}} h",
+        "sinSalida": "in at {{entrada}} · no clock-out",
+        "archivado": "{{nombre}} (archived)",
+        "yMas_one": "and {{count}} more",
+        "yMas_other": "and {{count}} more",
+        "plazas": "Slots",
+        "fichados": "Clocked in",
+        "sinFichar": "No clock-in",
+        "horas": "Hours",
+        "sinPermiso": "You need permission to view attendance to see who clocked in at this zone.",
+        "nadie": "Nobody covered this zone: there are no shifts or clock-ins recorded.",
+        "notaSinSalida_one": "{{count}} shift with no clock-out: it is not paid until closed in Attendance records.",
+        "notaSinSalida_other": "{{count}} shifts with no clock-out: they are not paid until closed in Attendance records.",
+        "sinHoras": "People were assigned, but no hours are recorded: the event never had shifts.",
+        "rotulo": "Event ended on {{fecha}} · history",
+        "nFichados_one": "{{count}} shift clocked",
+        "nFichados_other": "{{count}} shifts clocked",
+        "nSinFichar_one": "{{count}} not clocked",
+        "nSinFichar_other": "{{count}} not clocked",
+        "nSinSalida_one": "{{count}} with no clock-out",
+        "nSinSalida_other": "{{count}} with no clock-out",
+        "totalHoras": "{{horas}} h worked",
+        "chip": "{{personas}} · {{horas}} h",
+        "sinHorasCorto": "no hours recorded"
+      }
     },
     "NominaDelEvento": {
       "titulo": "Event payroll",
@@ -16617,7 +16661,10 @@
         "entrada": "Clock-in",
         "salida": "Clock-out",
         "horas": "Hours",
-        "estado": "Status"
+        "estado": "Status",
+        "descansoMin": "Break (min)",
+        "enElPuesto": "On post (h)",
+        "horasNetas": "Net hours"
       },
       "terminado": "Event finished.",
       "noFichoValeCero_one": "{{count}} shift with no clock-in counts as zero.",
@@ -16647,7 +16694,12 @@
       },
       "yMas_one": "… and {{count}} more",
       "yMas_other": "… and {{count}} more",
-      "terminadoSinTurnos": "Event finished with no shifts: there are no hours to pay."
+      "terminadoSinTurnos": "Event finished with no shifts: there are no hours to pay.",
+      "historialTitulo": "Past event · history",
+      "historialSinHoras": "There are no hours recorded for this event: nobody clocked in and there is nothing to pay. An event with past dates does not create shifts backwards.",
+      "historialAsignados_one": "Assigned ({{count}}), with no hours:",
+      "historialAsignados_other": "Assigned ({{count}}), with no hours:",
+      "descansoDescontado": "−{{min}} min break"
     },
     "RelevosDelEvento": {
       "titulo": "Event shifts",
@@ -16695,6 +16747,27 @@
         "empiezaAntesPrimerDia": "The {{relevo}} shift starts before the event opens (at {{hora}}). On the first day the guard starts at {{hora}}.",
         "terminaDespues": "The {{relevo}} shift ends after the event closes (at {{hora}}). The guard leaves at {{hora}}.",
         "terminaDespuesUltimoDia": "The {{relevo}} shift ends after the event closes (at {{hora}}). On the last day the guard leaves at {{hora}}."
+      }
+    },
+    "DiasDeLaTarjeta": {
+      "subtitulo": "Day by day, from {{desde}} to {{hasta}}",
+      "sinDesglose": "This timecard was generated before breaks were shown per day. Generate the period again to see them (approved timecards do not change).",
+      "dia": "Day",
+      "enElPuesto": "On post",
+      "totalDelPeriodo": "Period total",
+      "estado": {
+        "trabajado": "Worked",
+        "atraso": "Late",
+        "salida_antes": "Left early",
+        "extra": "Stayed longer",
+        "falta": "Absence",
+        "justificado": "Excused",
+        "cubierto": "Covered by someone else",
+        "cubriendo": "Covering",
+        "trasladado": "At another post",
+        "sin_marcar": "Unresolved",
+        "no_planificado": "No shift",
+        "programado": "Scheduled"
       }
     }
   },
@@ -18891,7 +18964,8 @@
     "relevoSinQuitar": "{{nuevo}} is now assigned, but {{anterior}} could not be removed: {{motivo}}. Remove them with the trash icon on their row.",
     "plazaCubiertaPor": "Covered: {{nombre}}",
     "todasLasPlazasCubiertas": "All slots at this post are already covered. To swap someone, use “Change” on their row.",
-    "plazasCubiertas": "{{n}} of {{total}} slots covered"
+    "plazasCubiertas": "{{n}} of {{total}} slots covered",
+    "pasadoHistorial": "Past event · history"
   },
   "conexionApp": {
     "titulo": "Connection",

@@ -7,7 +7,7 @@
  */
 import { describe, it, expect } from "vitest";
 
-import { avisosDeRelevos } from "./eventos";
+import { avisosDeRelevos, pasaAlPasado, tonoDeZonaPasada } from "./eventos";
 
 const MEX = "America/Mexico_City"; // UTC-6, sin horario de verano
 // Concierto sáb 21 nov 2026, 15:00 → 23:00 en México.
@@ -104,5 +104,30 @@ describe("avisosDeRelevos", () => {
     expect(avisosDeRelevos({ serviceType: "event" }, [r("13:00", "17:00")])).toEqual(
       [],
     );
+  });
+});
+
+/* Evento movido al pasado = historial (decisión del dueño, 2026-10-14): el
+   asistente lo avisa antes de guardar con el mismo criterio que el servidor. */
+describe("pasaAlPasado / tonoDeZonaPasada", () => {
+  const ahora = new Date("2026-10-14T18:00:00Z");
+
+  it("de futuro (o en curso) a terminado avisa; corregir uno ya terminado no", () => {
+    expect(pasaAlPasado(concierto.vigenteHasta, "2026-09-20T04:00:00Z", ahora)).toBe(true);
+    expect(pasaAlPasado(null, "2026-09-20T04:00:00Z", ahora)).toBe(true);
+    expect(pasaAlPasado("2026-10-14T20:00:00Z", "2026-10-14T17:00:00Z", ahora)).toBe(true);
+    expect(pasaAlPasado("2026-09-20T04:00:00Z", "2026-09-20T06:00:00Z", ahora)).toBe(false);
+    expect(pasaAlPasado(concierto.vigenteHasta, feria.vigenteHasta, ahora)).toBe(false);
+    expect(pasaAlPasado(concierto.vigenteHasta, "", ahora)).toBe(false);
+  });
+
+  it("una zona pasada no sale en rojo: sin gente o en orden, neutra; con faltas, aviso", () => {
+    expect(tonoDeZonaPasada(null)).toBe("neutral");
+    expect(tonoDeZonaPasada({ personas: [], noFicho: 0, sinSalida: 0 })).toBe("neutral");
+    const uno = [{ userId: "a", nombre: "Ana", archivado: false, turnos: [], horas: 0 }];
+
+    expect(tonoDeZonaPasada({ personas: uno, noFicho: 0, sinSalida: 0 })).toBe("neutral");
+    expect(tonoDeZonaPasada({ personas: uno, noFicho: 1, sinSalida: 0 })).toBe("warn");
+    expect(tonoDeZonaPasada({ personas: uno, noFicho: 0, sinSalida: 2 })).toBe("warn");
   });
 });

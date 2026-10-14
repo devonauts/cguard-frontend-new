@@ -10470,7 +10470,11 @@
       "tarjetasEnEstado_other": "{{count}} tarjetas en «{{etiqueta}}»",
       "todosLosTrabajadores": "Todos los trabajadores",
       "trabajador": "Trabajador",
-      "enviarAGusto": "Enviar a Gusto"
+      "enviarAGusto": "Enviar a Gusto",
+      "descanso": "Descanso",
+      "horasNetas": "Horas netas",
+      "deEnElPuesto": "de {{horas}} en el puesto",
+      "horasNetasTotales": "Horas netas:"
     },
     "NominaSettings": {
       "avisarAdemasAEstosCorreos": "Avisar además a estos correos",
@@ -11011,7 +11015,17 @@
         "desplazados": "Los relevos se movieron {{horas}} h con el evento: {{plazas}} y {{vigilantes}}.",
         "duraDiasYHoras": "Dura {{dias}} días y {{horas}} h.",
         "archivarAlTerminar": "Al terminar, archivar a los vigilantes que no tengan otro puesto — liberan su asiento",
-        "archivarAlTerminarAyuda": "Siguen cobrando sus horas del evento, y si los vuelves a asignar se reactivan solos."
+        "archivarAlTerminarAyuda": "Siguen cobrando sus horas del evento, y si los vuelves a asignar se reactivan solos.",
+        "historialHecho_one": "El evento quedó como historial: se cerró {{count}} asignación.",
+        "historialHecho_other": "El evento quedó como historial: se cerraron {{count}} asignaciones.",
+        "historialArchivados_one": "{{count}} vigilante sin otro puesto se archivó: {{lista}}.",
+        "historialArchivados_other": "{{count}} vigilantes sin otro puesto se archivaron: {{lista}}.",
+        "historialConfirmarTitulo": "¿Dejar el evento como historial?",
+        "historialConfirmarTexto": "Con estas fechas el evento ya terminó. No se crean turnos ni nómina hacia atrás: sus asignaciones se cierran y los vigilantes sin otro puesto se archivan, como en cualquier evento terminado. Lo que ya se fichó se conserva.",
+        "historialConfirmar": "Guardar como historial",
+        "historialTitulo": "Con estas fechas el evento ya terminó: quedará sólo como historial",
+        "historialAviso": "Al guardar no se crean turnos ni nómina hacia atrás. Sus asignaciones se cierran y los vigilantes sin otro puesto se archivan. Si alguien está fichado ahora mismo en el evento, no se podrá guardar.",
+        "historialAvisoSinArchivar": "Al guardar no se crean turnos ni nómina hacia atrás y sus asignaciones se cierran (este evento no archiva a su gente). Si alguien está fichado ahora mismo en el evento, no se podrá guardar."
       },
       "creaCadaEstacionEvento": "Crea cada estación del evento: nombre, de qué hora a qué hora se cubre, cuántos vigilantes a la vez y geocerca. Sin rotación: el evento tiene sus fechas. Cuando estén todas, pulsa «Terminar».",
       "eventoConEstaciones_one": "{{count}} estación. Siguiente: asigna a los vigilantes; las fechas y horas las pone el evento.",
@@ -14975,7 +14989,8 @@
       "unDiaSinFichajeNoSeAprueba": "Un día sin fichaje no se aprueba ni se paga desde aquí: se informa. Sale en los reportes y en las exportaciones junto al resto del periodo.",
       "unDiaSinFichajeSeInforma": "Un día sin fichaje se informa; no pasa por el ciclo de pago.",
       "vacaciones": "Vacaciones",
-      "yLasHorasSeRecalculanSolas": "y las horas se recalculan solas — no se escriben a mano. Queda registrado quién corrigió y por qué."
+      "yLasHorasSeRecalculanSolas": "y las horas se recalculan solas — no se escriben a mano. Queda registrado quién corrigió y por qué.",
+      "netasSePagan": "Netas (se pagan)"
     },
     "AssignGuards": {
       "fijo": "Fijo",
@@ -16560,7 +16575,36 @@
       "cupo": "Cupo",
       "verVigilantes": "Ver vigilantes",
       "resumen": "{{cubiertas}} de {{cupo}} plazas cubiertas",
-      "sinUbicacion": "Las zonas de este evento no tienen ubicación: edita cada estación y arrastra su pin para verlas sobre el recinto."
+      "sinUbicacion": "Las zonas de este evento no tienen ubicación: edita cada estación y arrastra su pin para verlas sobre el recinto.",
+      "h": {
+        "historial": "Historial",
+        "sinTurno": "sin turno ni fichaje",
+        "noFicho": "no fichó (turno {{inicio}}–{{fin}})",
+        "fichado": "{{entrada}} → {{salida}} · {{horas}} h",
+        "sinSalida": "entró {{entrada}} · sin salida",
+        "archivado": "{{nombre}} (archivado)",
+        "yMas_one": "y {{count}} más",
+        "yMas_other": "y {{count}} más",
+        "plazas": "Plazas",
+        "fichados": "Fichados",
+        "sinFichar": "Sin fichar",
+        "horas": "Horas",
+        "sinPermiso": "Para ver quién fichó en esta zona hace falta el permiso de ver asistencia.",
+        "nadie": "Nadie cubrió esta zona: no hay turnos ni fichajes registrados.",
+        "notaSinSalida_one": "{{count}} turno sin salida: no se paga hasta cerrarlo en Registros de asistencia.",
+        "notaSinSalida_other": "{{count}} turnos sin salida: no se pagan hasta cerrarlos en Registros de asistencia.",
+        "sinHoras": "Estuvieron asignados, pero no hay horas registradas: el evento no llegó a tener turnos.",
+        "rotulo": "Evento terminado el {{fecha}} · historial",
+        "nFichados_one": "{{count}} turno fichado",
+        "nFichados_other": "{{count}} turnos fichados",
+        "nSinFichar_one": "{{count}} sin fichar",
+        "nSinFichar_other": "{{count}} sin fichar",
+        "nSinSalida_one": "{{count}} sin salida",
+        "nSinSalida_other": "{{count}} sin salida",
+        "totalHoras": "{{horas}} h trabajadas",
+        "chip": "{{personas}} · {{horas}} h",
+        "sinHorasCorto": "sin horas registradas"
+      }
     },
     "NominaDelEvento": {
       "titulo": "Nómina del evento",
@@ -16617,7 +16661,10 @@
         "entrada": "Entrada",
         "salida": "Salida",
         "horas": "Horas",
-        "estado": "Estado"
+        "estado": "Estado",
+        "descansoMin": "Descanso (min)",
+        "enElPuesto": "En el puesto (h)",
+        "horasNetas": "Horas netas"
       },
       "terminado": "Evento terminado.",
       "noFichoValeCero_one": "{{count}} turno sin fichar vale cero.",
@@ -16647,7 +16694,12 @@
       },
       "yMas_one": "… y {{count}} más",
       "yMas_other": "… y {{count}} más",
-      "terminadoSinTurnos": "Evento terminado sin turnos: no hay horas que pagar."
+      "terminadoSinTurnos": "Evento terminado sin turnos: no hay horas que pagar.",
+      "historialTitulo": "Evento pasado · historial",
+      "historialSinHoras": "No hay horas registradas en este evento: nadie fichó y no hay nada que pagar. Un evento con fechas pasadas no crea turnos hacia atrás.",
+      "historialAsignados_one": "Estuvo asignado ({{count}}), sin horas:",
+      "historialAsignados_other": "Estuvieron asignados ({{count}}), sin horas:",
+      "descansoDescontado": "−{{min}} min de descanso"
     },
     "RelevosDelEvento": {
       "titulo": "Relevos del evento",
@@ -16695,6 +16747,27 @@
         "empiezaAntesPrimerDia": "El relevo {{relevo}} empieza antes de que abra el evento (a las {{hora}}). El primer día el vigilante entra a las {{hora}}.",
         "terminaDespues": "El relevo {{relevo}} termina después de que cierre el evento (a las {{hora}}). El vigilante sale a las {{hora}}.",
         "terminaDespuesUltimoDia": "El relevo {{relevo}} termina después de que cierre el evento (a las {{hora}}). El último día el vigilante sale a las {{hora}}."
+      }
+    },
+    "DiasDeLaTarjeta": {
+      "subtitulo": "Día por día, del {{desde}} al {{hasta}}",
+      "sinDesglose": "Esta tarjeta se generó antes de mostrar el descanso por día. Vuelve a generar el periodo para verlo (las tarjetas aprobadas no cambian).",
+      "dia": "Día",
+      "enElPuesto": "En el puesto",
+      "totalDelPeriodo": "Total del periodo",
+      "estado": {
+        "trabajado": "Trabajado",
+        "atraso": "Atraso",
+        "salida_antes": "Salió antes",
+        "extra": "Se quedó más",
+        "falta": "Falta",
+        "justificado": "Justificado",
+        "cubierto": "Cubierto por otro",
+        "cubriendo": "Cubriendo",
+        "trasladado": "En otro puesto",
+        "sin_marcar": "Sin resolver",
+        "no_planificado": "Sin turno",
+        "programado": "Programado"
       }
     }
   },
@@ -18891,7 +18964,8 @@
     "relevoSinQuitar": "{{nuevo}} ya está asignado, pero no se pudo quitar a {{anterior}}: {{motivo}}. Quítalo con la papelera de su fila.",
     "plazaCubiertaPor": "Cubierta: {{nombre}}",
     "todasLasPlazasCubiertas": "Todas las plazas de este puesto ya están cubiertas. Para cambiar a alguien, usa «Cambiar» en su fila.",
-    "plazasCubiertas": "{{n}} de {{total}} plazas cubiertas"
+    "plazasCubiertas": "{{n}} de {{total}} plazas cubiertas",
+    "pasadoHistorial": "Evento pasado · historial"
   },
   "conexionApp": {
     "titulo": "Conexión",

@@ -443,6 +443,7 @@ export default function PostSiteOverview({ site }: { site?: SiteProp }) {
              cuántos vigilantes tiene cada una. */
           <ZonasDelEventoMap
             postSiteId={String(site.id)}
+            sede={site as any}
             tenantId={String(site?.tenantId || localStorage.getItem("tenantId") || "")}
           />
         ) : hasCoords ? (
