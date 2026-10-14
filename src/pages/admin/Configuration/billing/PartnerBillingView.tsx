@@ -42,6 +42,8 @@ import {
   type ResultadoDelCobro,
 } from "@/lib/api/partnerBillingService";
 import { formatMoney } from "@/lib/formatMoney";
+import type { PreparacionDeTarjeta } from "@/lib/api/partnerBillingService";
+import FormularioMercadoPago from "./FormularioMercadoPago";
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
@@ -687,6 +689,8 @@ function FormularioDeTarjeta({
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [guardando, setGuardando] = useState(false);
+  // El socio cobra con Mercado Pago: otro formulario, mismo camino al servidor.
+  const [mp, setMp] = useState<PreparacionDeTarjeta | null>(null);
 
   useEffect(() => {
     let vivo = true;
@@ -695,6 +699,12 @@ function FormularioDeTarjeta({
     (async () => {
       try {
         const prep = await partnerBillingService.prepararTarjeta();
+
+        if (prep.provider === "mercadopago") {
+          if (vivo) setMp(prep);
+
+          return;
+        }
         const stripe = await cargarStripe(prep.publicKey);
 
         if (!vivo || !hueco.current) return;
@@ -777,6 +787,9 @@ function FormularioDeTarjeta({
       setGuardando(false);
     }
   };
+
+  if (mp)
+    return <FormularioMercadoPago prep={mp} onCancel={onCancel} onSaved={onSaved} />;
 
   return (
     <div className="space-y-4">
