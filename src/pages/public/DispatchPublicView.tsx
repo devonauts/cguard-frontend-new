@@ -464,12 +464,7 @@ export default function DispatchPublicView() {
             </div>
           </Section>
 
-          <Section icon={<FileText />} title={t("comun.notasInternas", "Notas internas")}>
-            <div className="text-sm text-foreground whitespace-pre-wrap">
-              {payload?.internalNotes || payload?.notes || "-"}
-            </div>
-          </Section>
-
+          {/* Internal notes never go out on a public link (the API no longer sends them). */}
           <Section icon={<FileText />} title={t("dispatcher.files", "Archivos")}>
             <div className="text-sm">
               {payload?.requestDocumentPDF &&
