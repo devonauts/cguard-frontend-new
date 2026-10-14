@@ -144,6 +144,22 @@ export interface WhatsAppStatus {
   lastSyncAt: string | null;
   tokenLast4: string | null;
   embedded: WhatsAppEmbeddedConfig;
+  /** El número está conectado pero Meta aún no lo tiene activo: falta el PIN. */
+  needsRegistration?: boolean;
+  /** Estado del número según Meta (CONNECTED, PENDING…), si contestó. */
+  estadoDelNumero?: string | null;
+  /** Las plantillas de la cuenta de la empresa, con su estado en Meta. */
+  plantillas?: WhatsAppPlantilla[];
+  /** Las que usa la plataforma y aún no están creadas en su cuenta. */
+  plantillasQueFaltan?: string[];
+}
+
+export interface WhatsAppPlantilla {
+  nombre: string;
+  idioma: string;
+  /** APPROVED · PENDING · REJECTED · PAUSED · DISABLED (de Meta). */
+  estado: string | null;
+  categoria: string | null;
 }
 
 export interface WhatsAppCallbackPayload {
@@ -237,6 +253,22 @@ export const communicationService = {
   whatsappDisconnect(): Promise<WhatsAppStatus> {
     return ApiService.post(
       `/tenant/${tenantId()}/communications/whatsapp/disconnect`,
+      {},
+    );
+  },
+
+  whatsappRegister(pin: string): Promise<{ registered: boolean }> {
+    return ApiService.post(
+      `/tenant/${tenantId()}/communications/whatsapp/register`,
+      { data: { pin } },
+    );
+  },
+
+  whatsappDefaultTemplates(): Promise<{
+    creadas: Array<{ nombre: string; ok: boolean; estado?: string | null; error?: string }>;
+  }> {
+    return ApiService.post(
+      `/tenant/${tenantId()}/communications/whatsapp/default-templates`,
       {},
     );
   },

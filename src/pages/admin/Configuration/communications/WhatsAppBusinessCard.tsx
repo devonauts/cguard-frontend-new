@@ -1,9 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Loader2, MessageCircle, Unplug, RefreshCw } from "lucide-react";
+import {
+  Loader2,
+  MessageCircle,
+  Unplug,
+  RefreshCw,
+  KeyRound,
+  FileText,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Section,
   StatusBadge,
@@ -147,6 +155,11 @@ export default function WhatsAppBusinessCard() {
   const [connecting, setConnecting] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pin, setPin] = useState("");
+  const [activando, setActivando] = useState(false);
+  const [plantillasOcupado, setPlantillasOcupado] = useState<
+    "" | "crear" | "actualizar"
+  >("");
 
   // waba/phone ids captured from the Embedded Signup postMessage session info.
   const sessionInfoRef = useRef<{ wabaId?: string; phoneNumberId?: string }>(
@@ -295,7 +308,137 @@ export default function WhatsAppBusinessCard() {
     }
   };
 
+  const recargarEstado = async () => {
+    const fresh = await communicationService.whatsappStatus();
+
+    if (mountedRef.current) setStatus(fresh);
+
+    return fresh;
+  };
+
+  /* Último paso de Meta: registrar el número con el PIN de la verificación en
+     dos pasos. Sin él, el número sale «conectado» pero ni envía ni recibe. */
+  const onActivar = async () => {
+    const limpio = pin.replace(/\D/g, "");
+
+    if (limpio.length !== 6) {
+      toast.error(
+        t("comms.wa.pinSeisDigitos", {
+          defaultValue: "El PIN tiene 6 dígitos.",
+        }),
+      );
+
+      return;
+    }
+    setActivando(true);
+    try {
+      await communicationService.whatsappRegister(limpio);
+      setPin("");
+      await recargarEstado();
+      toast.success(
+        t("comms.wa.numeroActivado", {
+          defaultValue: "Número activado: ya envía y recibe mensajes.",
+        }),
+      );
+    } catch (e: any) {
+      toast.error(
+        e?.data?.message ||
+          e?.message ||
+          t("comms.wa.activarError", {
+            defaultValue:
+              "No se pudo activar el número. Revisa el PIN en el Administrador de WhatsApp de Meta.",
+          }),
+      );
+    } finally {
+      if (mountedRef.current) setActivando(false);
+    }
+  };
+
+  const onCrearPlantillas = async () => {
+    setPlantillasOcupado("crear");
+    try {
+      const r = await communicationService.whatsappDefaultTemplates();
+      const fallidas = (r?.creadas || []).filter((x) => !x.ok);
+
+      await recargarEstado();
+      if (fallidas.length) {
+        toast.warning(
+          t("comms.wa.plantillasConFallos", {
+            count: fallidas.length,
+            nombres: fallidas.map((x) => x.nombre).join(", "),
+            defaultValue:
+              "Meta no dejó crear {{count}} plantilla(s): {{nombres}}. Las demás quedaron en revisión.",
+          }),
+        );
+      } else {
+        toast.success(
+          t("comms.wa.plantillasCreadas", {
+            defaultValue:
+              "Plantillas enviadas a Meta. Suelen aprobarse en minutos; a veces tarda hasta un día.",
+          }),
+        );
+      }
+    } catch (e: any) {
+      toast.error(
+        e?.data?.message ||
+          e?.message ||
+          t("comms.wa.plantillasError", {
+            defaultValue: "No se pudieron crear las plantillas.",
+          }),
+      );
+    } finally {
+      if (mountedRef.current) setPlantillasOcupado("");
+    }
+  };
+
+  const onActualizarPlantillas = async () => {
+    setPlantillasOcupado("actualizar");
+    try {
+      await communicationService.whatsappSyncTemplates();
+      await recargarEstado();
+    } catch (e: any) {
+      toast.error(
+        e?.data?.message ||
+          e?.message ||
+          t("comms.wa.plantillasError", {
+            defaultValue: "No se pudieron crear las plantillas.",
+          }),
+      );
+    } finally {
+      if (mountedRef.current) setPlantillasOcupado("");
+    }
+  };
+
+  const etiquetaPlantilla = (estado: string | null) => {
+    const e = String(estado || "").toUpperCase();
+
+    if (e === "APPROVED")
+      return {
+        tono: "ok" as const,
+        texto: t("comms.wa.plantillaAprobada", { defaultValue: "Aprobada" }),
+      };
+    if (e === "PENDING" || e === "IN_APPEAL")
+      return {
+        tono: "warn" as const,
+        texto: t("comms.wa.plantillaEnRevision", {
+          defaultValue: "En revisión",
+        }),
+      };
+    if (e === "REJECTED" || e === "DISABLED" || e === "PAUSED")
+      return {
+        tono: "bad" as const,
+        texto: t("comms.wa.plantillaRechazada", {
+          defaultValue: "No aprobada",
+        }),
+      };
+
+    return { tono: "neutral" as const, texto: e || "—" };
+  };
+
   const configured = !!status?.embedded?.configured;
+  const faltaActivar = !!status?.connected && !!status?.needsRegistration;
+  const plantillas = status?.plantillas || [];
+  const plantillasQueFaltan = status?.plantillasQueFaltan || [];
   const connected = !!status?.connected;
   const qTone = qualityTone(status?.qualityRating);
 
@@ -304,10 +447,18 @@ export default function WhatsAppBusinessCard() {
       <Section
         action={
           connected ? (
-            <StatusBadge tone={status?.status === "error" ? "bad" : "ok"}>
+            <StatusBadge
+              tone={
+                status?.status === "error" ? "bad" : faltaActivar ? "warn" : "ok"
+              }
+            >
               {status?.status === "error"
                 ? t("comms.wa.error", { defaultValue: "Con problemas" })
-                : t("comms.wa.connectedBadge", { defaultValue: "Conectado" })}
+                : faltaActivar
+                  ? t("comms.wa.faltaActivar", {
+                      defaultValue: "Falta activar el número",
+                    })
+                  : t("comms.wa.connectedBadge", { defaultValue: "Conectado" })}
             </StatusBadge>
           ) : (
             <StatusBadge tone={configured ? "neutral" : "warn"}>
@@ -383,17 +534,79 @@ export default function WhatsAppBusinessCard() {
             </div>
           ) : (
             <div className="space-y-5">
+              {faltaActivar && (
+                <div
+                  className="glass-flat space-y-3 rounded-xl p-4"
+                  style={{ borderLeft: "3px solid var(--warn)" }}
+                >
+                  <div className="flex items-center gap-2 text-sm font-semibold">
+                    <KeyRound size={16} />
+                    {t("comms.wa.activarTitulo", {
+                      defaultValue: "Falta un paso: activar el número",
+                    })}
+                  </div>
+                  <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
+                    {t("comms.wa.activarTexto", {
+                      defaultValue:
+                        "Meta tiene el número conectado pero todavía no activo: hasta activarlo no envía ni recibe mensajes. Escribe el PIN de 6 dígitos de la verificación en dos pasos (si el número no tenía uno, este quedará como su PIN). Al activarlo, el número deja de funcionar en la app de WhatsApp del teléfono.",
+                    })}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Input
+                      aria-label={t("comms.wa.pin", { defaultValue: "PIN" })}
+                      autoComplete="one-time-code"
+                      className="w-36 tracking-[0.3em]"
+                      inputMode="numeric"
+                      maxLength={6}
+                      placeholder="••••••"
+                      type="password"
+                      value={pin}
+                      onChange={(e) =>
+                        setPin(e.target.value.replace(/\D/g, "").slice(0, 6))
+                      }
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") onActivar();
+                      }}
+                    />
+                    <Button
+                      disabled={activando || pin.length !== 6}
+                      size="sm"
+                      variant="brand"
+                      onClick={onActivar}
+                    >
+                      {activando ? (
+                        <Loader2 className="mr-1.5 animate-spin" size={14} />
+                      ) : (
+                        <KeyRound className="mr-1.5" size={14} />
+                      )}
+                      {t("comms.wa.activar", { defaultValue: "Activar número" })}
+                    </Button>
+                  </div>
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 <div className="glass-flat min-w-0 p-3">
                   <div className="cg-eyebrow mb-1.5">
                     {t("comms.wa.state", { defaultValue: "Estado" })}
                   </div>
-                  <StatusBadge tone={status?.status === "error" ? "bad" : "ok"}>
+                  <StatusBadge
+                    tone={
+                      status?.status === "error"
+                        ? "bad"
+                        : faltaActivar
+                          ? "warn"
+                          : "ok"
+                    }
+                  >
                     {status?.status === "error"
                       ? t("comms.wa.error", { defaultValue: "Con problemas" })
-                      : t("comms.wa.connectedBadge", {
-                          defaultValue: "Conectado",
-                        })}
+                      : faltaActivar
+                        ? t("comms.wa.faltaActivar", {
+                            defaultValue: "Falta activar el número",
+                          })
+                        : t("comms.wa.connectedBadge", {
+                            defaultValue: "Conectado",
+                          })}
                   </StatusBadge>
                 </div>
                 <Field
@@ -428,6 +641,88 @@ export default function WhatsAppBusinessCard() {
                   })}
                   value={fmtDate(status?.connectedAt)}
                 />
+              </div>
+
+              {/* Las plantillas: sin ellas aprobadas en SU cuenta, Meta no deja
+                  que la plataforma inicie una conversación (avisos, alertas). */}
+              <div className="space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 text-sm font-semibold">
+                    <FileText size={16} />
+                    {t("comms.wa.plantillasTitulo", {
+                      defaultValue: "Plantillas de mensajes",
+                    })}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {plantillasQueFaltan.length > 0 && (
+                      <Button
+                        disabled={!!plantillasOcupado}
+                        size="sm"
+                        variant="brand"
+                        onClick={onCrearPlantillas}
+                      >
+                        {plantillasOcupado === "crear" && (
+                          <Loader2 className="mr-1.5 animate-spin" size={14} />
+                        )}
+                        {t("comms.wa.crearPlantillas", {
+                          count: plantillasQueFaltan.length,
+                          defaultValue: "Crear plantillas ({{count}})",
+                        })}
+                      </Button>
+                    )}
+                    <Button
+                      disabled={!!plantillasOcupado}
+                      size="sm"
+                      variant="outline"
+                      onClick={onActualizarPlantillas}
+                    >
+                      {plantillasOcupado === "actualizar" ? (
+                        <Loader2 className="mr-1.5 animate-spin" size={14} />
+                      ) : (
+                        <RefreshCw className="mr-1.5" size={14} />
+                      )}
+                      {t("comms.wa.actualizarPlantillas", {
+                        defaultValue: "Actualizar estado",
+                      })}
+                    </Button>
+                  </div>
+                </div>
+                <p className="text-xs" style={{ color: "var(--ink-soft)" }}>
+                  {t("comms.wa.plantillasTexto", {
+                    defaultValue:
+                      "Meta sólo deja que la plataforma inicie una conversación (alertas de incidente, pánico, rondas, recordatorios) con plantillas aprobadas en tu cuenta. Las respuestas a quien te escribe no las necesitan durante 24 horas.",
+                  })}
+                </p>
+                {plantillas.length ? (
+                  <ul className="glass-flat divide-y rounded-xl" style={{ borderColor: "var(--hairline)" }}>
+                    {plantillas.map((p) => {
+                      const e = etiquetaPlantilla(p.estado);
+
+                      return (
+                        <li
+                          key={`${p.nombre}-${p.idioma}`}
+                          className="flex items-center justify-between gap-3 px-3 py-2 text-sm"
+                        >
+                          <span className="min-w-0 truncate font-mono text-xs">
+                            {p.nombre}
+                            <span style={{ color: "var(--ink-soft)" }}>
+                              {" "}
+                              · {p.idioma}
+                            </span>
+                          </span>
+                          <StatusBadge tone={e.tono}>{e.texto}</StatusBadge>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ) : (
+                  <p className="text-sm" style={{ color: "var(--warn-text)" }}>
+                    {t("comms.wa.sinPlantillas", {
+                      defaultValue:
+                        "Tu cuenta aún no tiene plantillas: la plataforma no puede enviar avisos por WhatsApp hasta crearlas.",
+                    })}
+                  </p>
+                )}
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
