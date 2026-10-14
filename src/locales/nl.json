@@ -18897,6 +18897,7 @@
     "titulo": "Verbinding",
     "sinConexion": "Geen verbinding",
     "sinConexionDesde": "Geen verbinding sinds {{hora}}",
+    "ultimaSenalDesde": "Laatste signaal van de app {{hora}}",
     "conectadoDesde": "Verbonden sinds {{hora}}",
     "episodioSinConexion": "Geen verbinding {{desde}}–{{hasta}}",
     "ultimas24h": "Laatste 24 uur",

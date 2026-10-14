@@ -23,6 +23,14 @@ export interface EstadoDeConexion {
   userId: string;
   canal: string | null;
   conectado: boolean;
+  /**
+   * Sin conexión Y el silencio significa algo: el teléfono venía mandando GPS
+   * solo y calló. Sin conexión sin esto = app cerrada o en el bolsillo, lo
+   * normal: no es para alarmar a la central. Lo calcula useConexionApp.
+   */
+  perdioConexion?: boolean;
+  /** El servidor: venía mandando GPS solo hasta su última señal. */
+  conRastro?: boolean;
   ultimaSenal: string;
   /** Conectado: desde cuándo. Sin conexión: desde cuándo no. */
   desde: string;

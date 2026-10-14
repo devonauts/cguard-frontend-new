@@ -386,8 +386,9 @@ export function OperationsMap({
   /* ── ¿TIENEN CONEXIÓN? ──────────────────────────────────────────────────
      Una lectura al montar y otra cada vez que el servidor avisa por el socket
      (`presencia:update`); perderla se calcula aquí al cruzar el umbral. Quien
-     no tiene conexión se pinta como «sin conexión» (marcador apagado) y su
-     globo dice desde cuándo. Ver hooks/useConexionApp. */
+     PERDIÓ la conexión (venía mandando GPS y calló) se pinta como «sin
+     conexión» (marcador apagado); la app cerrada, no: es lo normal. Ver
+     hooks/useConexionApp. */
   // Toda la empresa en una lectura: con cientos en el mapa, pasar sus ids en la
   // URL la haría más larga de lo que aceptan los proxys.
   const { porUsuario: conexion } = useConexionApp();
@@ -403,7 +404,7 @@ export function OperationsMap({
           const u = usuarioDeEntidad(e);
           const c = u ? conexion.get(u) : undefined;
 
-          return c && !c.conectado && e.status !== "emergency" && e.status !== "incident"
+          return c && c.perdioConexion && e.status !== "emergency" && e.status !== "incident"
             ? { ...e, status: "offline" as const }
             : e;
         }),

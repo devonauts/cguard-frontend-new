@@ -19,6 +19,10 @@ import { useEventoEnVivo } from "@/hooks/useEventoEnVivo";
  * umbral del servidor se pone un reloj al instante exacto en que alguien
  * cruza el umbral, y en ese momento pasa a «sin conexión». Un temporizador al
  * cruce, no un intervalo.
+ *
+ * «Sin conexión» (`conectado: false`) no es «perdió la conexión»
+ * (`perdioConexion`): callar es lo normal con la app cerrada. Sólo lo segundo
+ * se pinta en rojo o se lista como problema (caso B.A.S., 2026-10-14).
  */
 export function useConexionApp(userIds?: string[]) {
   const [filas, setFilas] = useState<EstadoDeConexion[]>([]);
@@ -59,6 +63,9 @@ export function useConexionApp(userIds?: string[]) {
       m.set(String(f.userId), {
         ...f,
         conectado,
+        // Callar sólo es «perdió la conexión» si venía mandando GPS solo:
+        // con la app cerrada todos callan, y eso es lo normal.
+        perdioConexion: !conectado && !!f.conRastro,
         desde: conectado ? f.desde : f.ultimaSenal,
       });
     }

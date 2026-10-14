@@ -19157,6 +19157,7 @@
     "titulo": "Połączenie",
     "sinConexion": "Brak połączenia",
     "sinConexionDesde": "Brak połączenia od {{hora}}",
+    "ultimaSenalDesde": "Ostatni sygnał aplikacji {{hora}}",
     "conectadoDesde": "Połączono od {{hora}}",
     "episodioSinConexion": "Brak połączenia {{desde}}–{{hasta}}",
     "ultimas24h": "Ostatnie 24 godziny",

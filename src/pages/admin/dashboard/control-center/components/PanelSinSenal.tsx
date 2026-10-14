@@ -35,8 +35,9 @@ function personasDelMapa(entities: MapEntity[]): Map<string, { nombre: string; r
  * ════════════════════════════════════════════════════════════════════════════
  * SIN SEÑAL — lo que la central tiene que saber de los teléfonos sin cobertura
  *
- *  · Quién de los que están EN EL MAPA (en turno) no tiene conexión ahora,
- *    desde cuándo, y cuántas acciones lleva guardadas en el teléfono.
+ *  · Quién de los que están EN EL MAPA (en turno) perdió la conexión (venía
+ *    mandando GPS y calló; la app cerrada no cuenta), desde cuándo, y cuántas
+ *    acciones lleva guardadas en el teléfono.
  *  · Lo que llegó tarde y NO entró (rechazado por el servidor, con su motivo)
  *    o que la persona quitó del teléfono sin enviar. Antes se perdía sin
  *    rastro; ahora operaciones lo ve y lo corrige a mano.
@@ -54,7 +55,7 @@ export function PanelSinSenal({ entities }: { entities: MapEntity[] }) {
   const sinConexion = useMemo(
     () =>
       Array.from(porUsuario.values())
-        .filter((e) => !e.conectado && personas.has(String(e.userId)))
+        .filter((e) => e.perdioConexion && personas.has(String(e.userId)))
         .sort((a, b) => new Date(a.desde).getTime() - new Date(b.desde).getTime()),
     [porUsuario, personas],
   );

@@ -52,7 +52,9 @@ export function textoDePendientes(
 
 /**
  * Una línea con el estado de conexión de una persona de las apps de campo:
- *  · sin conexión ahora → «Sin conexión desde 02:10» (en rojo suave);
+ *  · perdió la conexión → «Sin conexión desde 02:10» (en rojo suave);
+ *  · callada sin más (app cerrada o en el bolsillo, lo normal) → «Última
+ *    señal de la app 02:10», en gris: no se sabe si tiene señal;
  *  · conectada tras un hueco reciente → «Estuvo sin señal 02:10–03:40 · 5
  *    acciones enviadas» o «Sin conexión 02:10–03:40»;
  *  · conectada sin novedad → nada (`mostrarConectado` para enseñarlo igual).
@@ -74,6 +76,18 @@ export function EstadoDeConexionApp({
     <span className="font-semibold text-[color:var(--warn-text)]"> · {pendientes}</span>
   ) : null;
 
+  if (!estado.conectado && !estado.perdioConexion) {
+    return (
+      <span
+        className={`inline-flex items-center gap-1 text-xs text-[color:var(--ink-soft)] ${className}`}
+      >
+        {t("conexionApp.ultimaSenalDesde", "Última señal de la app {{hora}}", {
+          hora: soloHora(estado.ultimaSenal),
+        })}
+        {conPendientes}
+      </span>
+    );
+  }
   if (!estado.conectado) {
     return (
       <span

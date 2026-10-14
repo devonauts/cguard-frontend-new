@@ -18897,6 +18897,7 @@
     "titulo": "Connessione",
     "sinConexion": "Senza connessione",
     "sinConexionDesde": "Senza connessione dalle {{hora}}",
+    "ultimaSenalDesde": "Ultimo segnale dell’app {{hora}}",
     "conectadoDesde": "Connesso dalle {{hora}}",
     "episodioSinConexion": "Senza connessione {{desde}}–{{hasta}}",
     "ultimas24h": "Ultime 24 ore",
