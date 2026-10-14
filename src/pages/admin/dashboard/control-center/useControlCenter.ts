@@ -24,7 +24,7 @@ import {
 import i18n from "@/i18n";
 import api, { getAuthToken } from "@/lib/api";
 import { crearSocket, cerrarSocket, entrarEnSalaDelMapa } from "@/lib/socket";
-import { openEventStream } from "@/lib/api/eventStream";
+import { openEventStream, type StreamDeEventos } from "@/lib/api/eventStream";
 import securityGuardService from "@/lib/api/securityGuardService";
 import { useAuth } from "@/contexts/AuthContext";
 import { hasMinAuthority, AUTHORITY } from "@/lib/access";
@@ -371,7 +371,7 @@ export function useControlCenter(
   // language switch has to re-run the load or the cards keep the old language.
   const { i18n: i18nVivo } = useTranslation();
   const idioma = i18nVivo.language;
-  const sseRef = useRef<EventSource | null>(null);
+  const sseRef = useRef<StreamDeEventos | null>(null);
   const locSeqRef = useRef(0);
   const [tick, setTick] = useState(0);
   const refresh = useCallback(() => setTick((t) => t + 1), []);
@@ -1167,7 +1167,7 @@ export function useControlCenter(
   // ── SSE live event feed (real-time layer the backend already exposes) ────
   useEffect(() => {
     if (!tenantId()) return;
-    // Shared helper centralizes the token-in-URL setup (see eventStream.ts security note).
+    // One-time ticket per connection, reconnects on its own (see eventStream.ts).
     const es = openEventStream(tenantId());
 
     if (!es) return; // SSE unsupported — polling above still drives the map

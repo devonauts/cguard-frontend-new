@@ -169,7 +169,7 @@ export default function AlarmQueue() {
       if (temporizador) clearTimeout(temporizador);
       temporizador = setTimeout(() => load({ silent: true }), 600);
     };
-    // Shared helper centralizes the token-in-URL setup (see eventStream.ts security note).
+    // One-time ticket per connection, reconnects on its own (see eventStream.ts).
     const es = openEventStream(tid);
 
     if (es) {
