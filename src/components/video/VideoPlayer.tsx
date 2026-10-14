@@ -111,6 +111,25 @@ const hlsConfig = (Hls: any) => ({
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+/**
+ * When to re-fetch the stream info so the playback token never runs out.
+ * The backend signs `url`/`webrtcUrl` with a ≤10-minute token that the media
+ * server checks only when a session STARTS (an open HLS/WebRTC session keeps
+ * playing), but every reconnect — HLS re-attach, WebRTC upgrade, fallback from
+ * WebRTC to HLS — starts a new session and needs a valid one. Refresh at ~75%
+ * of the lifetime, never sooner than 20 s.
+ */
+function tokenRefreshDelayMs(info: StreamInfo | null): number | null {
+  if (!info?.tokenExpiresAt) return null;
+  const exp = Date.parse(info.tokenExpiresAt);
+
+  if (!Number.isFinite(exp)) return null;
+  const ttlMs = info.tokenTtlSec ? info.tokenTtlSec * 1000 : exp - Date.now();
+  const at = exp - Math.max(30_000, ttlMs * 0.25);
+
+  return Math.max(20_000, at - Date.now());
+}
+
 /* ------------------------------------------------------------------ */
 /* WebRTC (WHEP) — sub-second latency on the LAN. We POST an SDP offer  */
 /* to MediaMTX's WHEP endpoint and pipe the returned track into the     */
@@ -202,6 +221,10 @@ export function VideoPlayer({
   const hlsRef = React.useRef<any>(null);
   const pcRef = React.useRef<RTCPeerConnection | null>(null);
   const recoverRef = React.useRef(0);
+  // Current (token-bearing) URLs. Refreshed in place before the token expires,
+  // WITHOUT touching `stream` state — that would tear down a playing video.
+  const urlRef = React.useRef<string | null>(null);
+  const webrtcUrlRef = React.useRef<string | null>(null);
   const netRetryRef = React.useRef(0);
   const [transport, setTransport] = React.useState<"webrtc" | "hls" | null>(
     null,
@@ -233,12 +256,41 @@ export function VideoPlayer({
 
       return;
     }
+    let refreshTimer: ReturnType<typeof setTimeout> | null = null;
+    const scheduleRefresh = (info: StreamInfo | null) => {
+      const ms = tokenRefreshDelayMs(info);
+
+      if (ms === null) return;
+      refreshTimer = setTimeout(() => {
+        videoService
+          .stream(camera.id)
+          .then((fresh) => {
+            if (cancelled) return;
+            if (fresh?.url) urlRef.current = fresh.url;
+            webrtcUrlRef.current = fresh?.webrtcUrl || null;
+            scheduleRefresh(fresh);
+          })
+          .catch(() => {
+            // Keep playing on the open session; try again shortly.
+            if (!cancelled)
+              scheduleRefresh({
+                ...(info as StreamInfo),
+                tokenExpiresAt: new Date(Date.now() + 90_000).toISOString(),
+                tokenTtlSec: 120,
+              });
+          });
+      }, ms);
+    };
+
     setState("loading");
     setErrorMsg(null);
     videoService
       .stream(camera.id)
       .then((info) => {
         if (cancelled) return;
+        urlRef.current = info?.url || null;
+        webrtcUrlRef.current = info?.webrtcUrl || null;
+        scheduleRefresh(info);
         setStream(info);
         onStream?.(info);
         setState(!info || info.type === "none" || !info.url ? "none" : "ready");
@@ -248,6 +300,8 @@ export function VideoPlayer({
         if (camera.streamUrl) {
           const fb: StreamInfo = { type: "hls", url: camera.streamUrl };
 
+          urlRef.current = fb.url;
+          webrtcUrlRef.current = null;
           setStream(fb);
           onStream?.(fb);
           setState("ready");
@@ -269,13 +323,16 @@ export function VideoPlayer({
 
     return () => {
       cancelled = true;
+      if (refreshTimer) clearTimeout(refreshTimer);
     };
   }, [camera.id, camera.status, reloadKey]);
 
   // 2) Play: try WebRTC (sub-second on LAN) first, fall back to buffered HLS.
   React.useEffect(() => {
     if (state !== "ready" || !stream?.url) return;
-    const url = stream.url;
+    // Always read the latest token-bearing URL at (re)connect time.
+    const initialUrl = stream.url;
+    const currentUrl = () => urlRef.current || initialUrl;
     const video = videoElRef.current;
 
     if (!video) return;
@@ -323,7 +380,7 @@ export function VideoPlayer({
       }
       // Safari / iOS — native buffered HLS.
       if (video.canPlayType("application/vnd.apple.mpegurl") !== "") {
-        video.src = url;
+        video.src = currentUrl();
         if (autoPlay) video.play().catch(() => {});
 
         return;
@@ -342,7 +399,7 @@ export function VideoPlayer({
             const hls = new Hls(hlsConfig(Hls));
 
             hlsRef.current = hls;
-            hls.loadSource(url);
+            hls.loadSource(currentUrl());
             hls.attachMedia(video);
             hls.on(Hls.Events.MANIFEST_PARSED, () => {
               if (autoPlay) video.play().catch(() => {});
@@ -350,6 +407,20 @@ export function VideoPlayer({
             hls.on(Hls.Events.ERROR, (_e: any, d: any) => {
               if (!d?.fatal) return; // non-fatal: hls.js self-heals (key to no-spinner)
               if (d.type === Hls.ErrorTypes.NETWORK_ERROR) {
+                // 401/403: the media server refused the session (token expired
+                // or the HLS session was reaped). Retrying the same URLs cannot
+                // succeed — re-attach from scratch with the freshest token.
+                const code = Number(d?.response?.code) || 0;
+
+                if ((code === 401 || code === 403) && recoverRef.current < 4) {
+                  recoverRef.current++;
+                  destroyHls();
+                  setTimeout(() => {
+                    if (!cancelled) attach();
+                  }, 1000);
+
+                  return;
+                }
                 // The on-demand stream needs ~20s to warm (ffmpeg pulling the camera RTSP),
                 // so the manifest legitimately 500s at first. Retry a FEW times WITH a delay
                 // (no tight hammer loop). If it keeps failing, the camera source is
@@ -419,13 +490,16 @@ export function VideoPlayer({
     startHls();
 
     const upgradeToWebRTC = async () => {
-      if (!stream?.webrtcUrl || typeof RTCPeerConnection === "undefined")
+      if (!webrtcUrlRef.current || typeof RTCPeerConnection === "undefined")
         return;
       for (let attempt = 0; attempt < 3 && !cancelled; attempt++) {
         await delay(attempt === 0 ? 2000 : 2500); // let HLS warm the stream first
         if (cancelled) return;
         try {
-          const res = await whepConnect(stream.webrtcUrl);
+          const whepUrl = webrtcUrlRef.current;
+
+          if (!whepUrl) return;
+          const res = await whepConnect(whepUrl);
 
           if (cancelled || !res) {
             res?.pc.close();

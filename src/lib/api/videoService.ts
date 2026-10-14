@@ -144,6 +144,14 @@ export interface StreamInfo {
   url: string | null;
   /** MediaMTX WHEP endpoint (same-origin) — sub-second WebRTC, tried before HLS. */
   webrtcUrl?: string;
+  /**
+   * When the playback token in `url`/`webrtcUrl` expires (ISO). The media server
+   * only checks it when a session starts, so the player re-fetches the stream
+   * info before this to keep reconnects working on long viewing sessions.
+   */
+  tokenExpiresAt?: string;
+  /** Token lifetime in seconds (≤ 600). */
+  tokenTtlSec?: number;
   /** go2rtc WebSocket url (MSE/WebRTC signaling) — same-origin through the proxy. */
   ws?: string;
   /** go2rtc player engine transport priority, e.g. "webrtc,mse,hls". */
