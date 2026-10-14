@@ -947,9 +947,6 @@ export default function SecurityGuardsPage() {
             try {
               const r: any =
                 await securityGuardService.sendPasswordReset(realId);
-              try {
-                if (r?.link) await navigator.clipboard.writeText(r.link);
-              } catch {}
               const via = [r?.emailed && t("ui.SecurityGuardsPage.viaCorreo", "correo"), r?.pushed && "push"]
                 .filter(Boolean)
                 .join(" + ");
@@ -957,12 +954,12 @@ export default function SecurityGuardsPage() {
                 via
                   ? t("ui.SecurityGuardsPage.enlaceEnviadoYCopiado", {
                       defaultValue:
-                        "Enlace de restablecimiento enviado por {{via}} y copiado al portapapeles",
+                        "Enlace de restablecimiento enviado por {{via}}",
                       via,
                     })
                   : t(
                       "ui.SecurityGuardsPage.enlaceCopiado",
-                      "Enlace de restablecimiento copiado al portapapeles",
+                      "No se pudo enviar el enlace: esta persona no tiene correo ni la app instalada",
                     ),
               );
             } catch (err: any) {
@@ -1611,12 +1608,6 @@ export default function SecurityGuardsPage() {
                                                   await securityGuardService.sendPasswordReset(
                                                     realId,
                                                   );
-                                                try {
-                                                  if (r?.link)
-                                                    await navigator.clipboard.writeText(
-                                                      r.link,
-                                                    );
-                                                } catch {}
                                                 const via = [
                                                   r?.emailed && t("ui.SecurityGuardsPage.viaCorreo", "correo"),
                                                   r?.pushed && "push",
@@ -1627,12 +1618,12 @@ export default function SecurityGuardsPage() {
                                                   via
                   ? t("ui.SecurityGuardsPage.enlaceEnviadoYCopiado", {
                       defaultValue:
-                        "Enlace de restablecimiento enviado por {{via}} y copiado al portapapeles",
+                        "Enlace de restablecimiento enviado por {{via}}",
                       via,
                     })
                   : t(
                       "ui.SecurityGuardsPage.enlaceCopiado",
-                      "Enlace de restablecimiento copiado al portapapeles",
+                      "No se pudo enviar el enlace: esta persona no tiene correo ni la app instalada",
                     ),
                                                 );
                                               } catch (err: any) {
@@ -1767,12 +1758,6 @@ export default function SecurityGuardsPage() {
                                                     await securityGuardService.sendPasswordReset(
                                                       realId,
                                                     );
-                                                  try {
-                                                    if (r?.link)
-                                                      await navigator.clipboard.writeText(
-                                                        r.link,
-                                                      );
-                                                  } catch {}
                                                   const via = [
                                                     r?.emailed && t("ui.SecurityGuardsPage.viaCorreo", "correo"),
                                                     r?.pushed && "push",
@@ -1783,12 +1768,12 @@ export default function SecurityGuardsPage() {
                                                     via
                   ? t("ui.SecurityGuardsPage.enlaceEnviadoYCopiado", {
                       defaultValue:
-                        "Enlace de restablecimiento enviado por {{via}} y copiado al portapapeles",
+                        "Enlace de restablecimiento enviado por {{via}}",
                       via,
                     })
                   : t(
                       "ui.SecurityGuardsPage.enlaceCopiado",
-                      "Enlace de restablecimiento copiado al portapapeles",
+                      "No se pudo enviar el enlace: esta persona no tiene correo ni la app instalada",
                     ),
                                                   );
                                                 } catch (err: any) {
