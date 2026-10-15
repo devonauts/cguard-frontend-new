@@ -8,9 +8,14 @@ import { iniciarConsumoGoogle } from "./lib/consumoGoogle";
 import { atenderVueltaDeGusto } from "./lib/vueltaDeGusto";
 import { instalarIdiomaEnFetch } from "./lib/idiomaElegido";
 import { instalarBlindajeDom } from "./lib/blindajeDom";
+import { guardarAtribucionWeb } from "./lib/atribucionWeb";
 
 // Antes de pintar nada: un traductor del navegador no debe poder tumbar la app.
 instalarBlindajeDom();
+
+// La atribución del sitio (?cg=&lp=&lang=) se guarda al llegar, por la ruta
+// que sea (la raíz, /login, /register): navegar dentro de la app la perdía.
+guardarAtribucionWeb();
 
 // import { Provider } from "./provider.tsx";
 // Tipografía AUTOALOJADA (empaquetada — sin depender del CDN de Google, que puede

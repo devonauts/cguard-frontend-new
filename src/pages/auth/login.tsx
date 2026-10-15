@@ -21,6 +21,7 @@ import {
 } from "@/lib/entradaAlCrm";
 import { tituloConMarca } from "@/hooks/usePageTitle";
 import { esVistaPrevia } from "@/lib/vistaPrevia";
+import { consultaDeAtribucion } from "@/lib/atribucionWeb";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAuthForm } from "@/hooks/useAuthForm";
 import { ApiService } from "@/services/api/apiService";
@@ -334,7 +335,7 @@ export default function Login() {
             {t("auth.no_account_text")}{" "}
             <NavLink
               className="cg-reg-enlace -my-2 inline-block py-2"
-              to="/register"
+              to={`/register${consultaDeAtribucion()}`}
             >
               {t("auth.create_account")}
             </NavLink>

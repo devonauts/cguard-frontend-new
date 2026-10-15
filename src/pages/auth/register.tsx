@@ -30,6 +30,11 @@ import Captcha from "@/components/auth/Captcha";
 import { ApiService } from "@/services/api/apiService";
 import { EVENTOS, medir } from "@/lib/analiticaDeMarca";
 import { resolveApiBase } from "@/lib/apiBase";
+import {
+  consultaDeAtribucion,
+  guardarAtribucionWeb,
+  marcarAltaIniciada,
+} from "@/lib/atribucionWeb";
 import { Combobox } from "@/components/app/combobox";
 import { listaDePaises } from "@/lib/paisDeLaEmpresa";
 import { paisConocido } from "@/lib/paisDelVisitante";
@@ -145,22 +150,28 @@ export default function Register() {
 
   // ATRIBUCIÓN ENTRE DOMINIOS. El sitio vive en cguardpro.com y el alta aquí,
   // en app.cguardpro.com: son orígenes distintos, así que la sesión del sitio
-  // no cruza sola. La traemos colgando del enlace (?cg=…&lp=…) y avisamos al
-  // panel de que un visitante del sitio EMPEZÓ un alta.
+  // no cruza sola. La traemos colgando del enlace (?cg=…&lp=…&lang=…); main.tsx
+  // ya la guardó al arrancar, esto cubre llegar aquí navegando dentro de la app.
   useEffect(() => {
-    try {
-      const q = new URLSearchParams(window.location.search);
-      const cg = q.get("cg");
-
-      if (cg) {
-        sessionStorage.setItem("cg_web", cg);
-        if (q.get("lp")) sessionStorage.setItem("cg_lp", q.get("lp") as string);
-        pistaDeAlta("signup_started");
-      }
-    } catch {
-      /* la atribución nunca estorba el registro */
-    }
+    guardarAtribucionWeb();
   }, []);
+
+  // «EMPEZÓ UN ALTA» = la primera vez que alguien TOCA el formulario (foco o
+  // escritura en un campo, o intentar enviarlo), una sola vez por sesión del
+  // sitio en esta pestaña. Antes se avisaba al CARGAR la página: los robots
+  // que repiten los enlaces decorados y cada recarga inflaban la cifra.
+  const altaAvisada = useRef(false);
+  const alTocarElFormulario = (e?: React.SyntheticEvent) => {
+    if (altaAvisada.current) return;
+    if (e) {
+      const el = e.target as HTMLElement | null;
+
+      if (!el || !el.matches?.("input, select, textarea, [role='combobox']"))
+        return;
+    }
+    altaAvisada.current = true;
+    if (marcarAltaIniciada()) pistaDeAlta("signup_started");
+  };
 
   // ¿Hay captcha configurado? Lo dice el servidor. Si no responde, el
   // formulario sigue siendo usable: el servidor decide igual del otro lado.
@@ -195,6 +206,7 @@ export default function Register() {
   /** Paso 1 → 2. Los errores se dicen junto al campo, no en un aviso suelto. */
   const avanzar = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    alTocarElFormulario();
     setCorreoTocado(true);
     if (!paso1Listo) {
       toast.error(t("auth.fill_all_fields"));
@@ -206,6 +218,7 @@ export default function Register() {
 
   const handleRegister = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    alTocarElFormulario();
     if (paso === 1) return avanzar();
 
     if (!paso1Listo) {
@@ -420,6 +433,8 @@ export default function Register() {
       <form
         noValidate
         className="space-y-4"
+        onFocus={alTocarElFormulario}
+        onInput={alTocarElFormulario}
         onSubmit={paso === 1 ? avanzar : handleRegister}
       >
         {paso === 1 ? (
@@ -744,7 +759,7 @@ export default function Register() {
           {t("auth.already_have_account")}{" "}
           <NavLink
             className="cg-reg-enlace -my-2 inline-block py-2"
-            to="/login"
+            to={`/login${consultaDeAtribucion()}`}
           >
             {t("auth.login")}
           </NavLink>

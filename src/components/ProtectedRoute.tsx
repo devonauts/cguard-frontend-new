@@ -10,6 +10,7 @@ import PruebaEnRevisionScreen from "./PruebaEnRevisionScreen";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { getBillingState } from "@/lib/entitlements";
+import { consultaDeAtribucion } from "@/lib/atribucionWeb";
 import { canAccessCrm } from "@/lib/access";
 import AppAccessPending from "@/pages/auth/AppAccessPending";
 import { useEntradaEnCurso } from "@/lib/entradaAlCrm";
@@ -132,7 +133,15 @@ export default function ProtectedRoute({
 
   // Si no está autenticado, redirigir a login
   if (!isAuthenticated) {
-    return <Navigate replace state={{ from: location }} to="/login" />;
+    // Sólo la atribución del sitio (cg/lp/lang) viaja a /login, nunca el resto
+    // de la consulta: un `token` ahí dispararía el desvío de invitaciones.
+    return (
+      <Navigate
+        replace
+        state={{ from: location }}
+        to={`/login${consultaDeAtribucion()}`}
+      />
+    );
   }
 
   // Sin espacio de trabajo: el usuario está autenticado pero no pertenece a
