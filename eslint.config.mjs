@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { defineConfig, globalIgnores } from "eslint/config";
 import { fixupConfigRules, fixupPluginRules } from "@eslint/compat";
 import react from "eslint-plugin-react";
+import reactHooks from "eslint-plugin-react-hooks";
 import unusedImports from "eslint-plugin-unused-imports";
 import _import from "eslint-plugin-import";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
@@ -50,13 +51,13 @@ export default defineConfig([
       compat.extends(
         "plugin:react/recommended",
         "plugin:prettier/recommended",
-        "plugin:react-hooks/recommended",
         "plugin:jsx-a11y/recommended",
       ),
     ),
 
     plugins: {
       react: fixupPluginRules(react),
+      "react-hooks": reactHooks,
       "unused-imports": unusedImports,
       import: fixupPluginRules(_import),
       "@typescript-eslint": typescriptEslint,
@@ -97,6 +98,11 @@ export default defineConfig([
       "react/prop-types": "off",
       "react/jsx-uses-react": "off",
       "react/react-in-jsx-scope": "off",
+      // eslint-plugin-react-hooks 7 folds the React Compiler rules into its
+      // `recommended` preset (purity, refs, set-state-in-effect...). They are a
+      // new lint level, not regressions, and on this codebase they exhaust the
+      // heap. Only the classic rules stay enabled, as with the v5 preset.
+      "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "off",
       "jsx-a11y/click-events-have-key-events": "warn",
       "jsx-a11y/interactive-supports-focus": "warn",
