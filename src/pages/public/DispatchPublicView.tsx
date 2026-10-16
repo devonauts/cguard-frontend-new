@@ -216,7 +216,7 @@ export default function DispatchPublicView() {
     );
 
   // prepare guard rows for display
-  const guardRows: JSX.Element[] = [];
+  const guardRows: React.JSX.Element[] = [];
 
   if (payload) {
     if (payload.guardName) {

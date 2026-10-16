@@ -74,7 +74,7 @@ const RateRow = ({
   value: string;
   editing: boolean;
   saving: boolean;
-  inputRef: RefObject<HTMLInputElement>;
+  inputRef: RefObject<HTMLInputElement | null>;
   onChange: (v: string) => void;
   onEdit: () => void;
   onSave: () => void;

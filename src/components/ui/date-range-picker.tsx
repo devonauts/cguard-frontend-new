@@ -190,7 +190,6 @@ export function DateRangePicker({
             {/* Calendar */}
             <div className="p-2">
               <Calendar
-                initialFocus
                 className="[--cell-size:1.75rem]"
                 defaultMonth={dateRange?.from}
                 locale={localeCalendario()}

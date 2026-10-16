@@ -4,6 +4,7 @@
  * del puesto, el cliente y cuántos vigilantes tiene asignados — con clic directo
  * al detalle de la estación. Los datos llegan en lote desde /station/cards.
  */
+import type { JSX } from "react";
 import { useTranslation } from "react-i18next";
 import {
   RadioTower,

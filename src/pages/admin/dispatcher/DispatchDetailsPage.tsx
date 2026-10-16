@@ -357,7 +357,7 @@ export function DispatchDetailsContent({
   }, [requestId]);
 
   // prepare guard rows to avoid complex nested JSX/ternary
-  const guardRows: JSX.Element[] = [];
+  const guardRows: React.JSX.Element[] = [];
 
   if (requestPayload) {
     if (requestPayload.guardName) {

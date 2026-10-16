@@ -547,7 +547,9 @@ export default function EditDispatchPage() {
                         <SelectContent>
                           <div className="px-2 py-2">
                             <Input
-                              ref={(el) => (clienteInputRef.current = el)}
+                              ref={(el) => {
+                                clienteInputRef.current = el;
+                              }}
                               placeholder={t("comun.buscarCliente")}
                               value={clienteFilter}
                               onChange={(e) => setClienteFilter(e.target.value)}
@@ -599,7 +601,9 @@ export default function EditDispatchPage() {
                         <SelectContent>
                           <div className="px-2 py-2">
                             <Input
-                              ref={(el) => (sitioInputRef.current = el)}
+                              ref={(el) => {
+                                sitioInputRef.current = el;
+                              }}
                               placeholder={t("comun.buscarSitio")}
                               value={sitioFilter}
                               onChange={(e) => setSitioFilter(e.target.value)}
@@ -653,7 +657,9 @@ export default function EditDispatchPage() {
                         <SelectContent>
                           <div className="px-2 py-2">
                             <Input
-                              ref={(el) => (guardInputRef.current = el)}
+                              ref={(el) => {
+                                guardInputRef.current = el;
+                              }}
                               placeholder={t("comun.buscarVigilante")}
                               value={guardFilter}
                               onChange={(e) => setGuardFilter(e.target.value)}
@@ -800,7 +806,9 @@ export default function EditDispatchPage() {
                         <SelectContent>
                           <div className="px-2 py-2">
                             <Input
-                              ref={(el) => (tipoInputRef.current = el)}
+                              ref={(el) => {
+                                tipoInputRef.current = el;
+                              }}
                               placeholder={t("comun.buscarTipo")}
                               value={tipoFilter}
                               onChange={(e) => setTipoFilter(e.target.value)}

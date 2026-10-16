@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 import { useCallback, useEffect, useState } from "react";
 import MeterBar from "@/components/charts/MeterBar";
 import { useTranslation } from "react-i18next";

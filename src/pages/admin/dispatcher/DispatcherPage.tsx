@@ -1580,7 +1580,9 @@ export default function DispatcherPage() {
                       <SelectContent>
                         <div className="px-2 py-2">
                           <Input
-                            ref={(el) => (stationInputRef.current = el)}
+                            ref={(el) => {
+                              stationInputRef.current = el;
+                            }}
                             placeholder={
                               t("dispatcher.search_station") ||
                               "Buscar estación..."

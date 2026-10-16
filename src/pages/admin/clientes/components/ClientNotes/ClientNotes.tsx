@@ -622,8 +622,6 @@ export default function ClientNotes({ client }: Props) {
                       }));
                     }
                   }}
-                  initialFocus
-                  toDate={new Date()}
                 />
               </PopoverContent>
             </Popover>
