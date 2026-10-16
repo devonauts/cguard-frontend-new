@@ -16548,7 +16548,7 @@
     "SelfieRostro": {
       "titulo": "Selfie e rosto ao bater o ponto",
       "ambasApps": "Vale para o app da equipe (vigilantes) e o do supervisor: é o mesmo ajuste nos dois.",
-      "reconocimiento": "Verificar que seja o vigilante (reconhecimento facial)",
+      "reconocimiento": "Verificar que seja a pessoa (reconhecimento facial)",
       "reconocimientoOff": "Desligado",
       "reconocimientoFlag": "Avisar (registra o ponto e fica para revisar)",
       "reconocimientoEnforce": "Exigir (se não for o rosto dele, não pode registrar o ponto)",

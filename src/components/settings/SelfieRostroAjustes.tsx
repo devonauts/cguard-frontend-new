@@ -95,7 +95,7 @@ export default function SelfieRostroAjustes() {
           Sin el módulo se ve, apagado, con el camino para conseguirlo. */}
       <label className="glass-flat mt-3 flex flex-col gap-1.5 px-3 py-2.5">
         <span className="text-sm">
-          {t("ui.SelfieRostro.reconocimiento", "Verificar que sea el vigilante (reconocimiento facial)")}
+          {t("ui.SelfieRostro.reconocimiento", "Verificar que sea la persona (reconocimiento facial)")}
         </span>
         <select
           className="cg-focus rounded-lg border border-[var(--border)] bg-transparent px-2 py-1.5 text-sm disabled:opacity-60"

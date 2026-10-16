@@ -17082,7 +17082,7 @@
     "SelfieRostro": {
       "titulo": "Selfie en gezicht bij inklokken",
       "ambasApps": "Geldt voor de team-app (bewakers) en de supervisor-app: het is in beide dezelfde instelling.",
-      "reconocimiento": "Controleren of het de juiste beveiliger is (gezichtsherkenning)",
+      "reconocimiento": "Controleren of het de juiste persoon is (gezichtsherkenning)",
       "reconocimientoOff": "Uit",
       "reconocimientoFlag": "Melden (klokt in en blijft ter controle)",
       "reconocimientoEnforce": "Vereisen (als het niet het eigen gezicht is, kan er niet worden ingeklokt)",

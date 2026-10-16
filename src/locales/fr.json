@@ -17082,7 +17082,7 @@
     "SelfieRostro": {
       "titulo": "Selfie et visage au pointage",
       "ambasApps": "S'applique à l'app de l'équipe (agents) et à celle du superviseur : c'est le même réglage dans les deux.",
-      "reconocimiento": "Vérifier que c'est bien l'agent (reconnaissance faciale)",
+      "reconocimiento": "Vérifier que c'est bien la personne (reconnaissance faciale)",
       "reconocimientoOff": "Désactivé",
       "reconocimientoFlag": "Signaler (pointe et reste à examiner)",
       "reconocimientoEnforce": "Exiger (si ce n'est pas son visage, il ne peut pas pointer)",

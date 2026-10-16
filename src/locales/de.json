@@ -17082,7 +17082,7 @@
     "SelfieRostro": {
       "titulo": "Selfie und Gesicht beim Stempeln",
       "ambasApps": "Gilt für die Team-App (Wachleute) und die Supervisor-App: in beiden dieselbe Einstellung.",
-      "reconocimiento": "Prüfen, ob es die richtige Sicherheitskraft ist (Gesichtserkennung)",
+      "reconocimiento": "Prüfen, ob es die richtige Person ist (Gesichtserkennung)",
       "reconocimientoOff": "Aus",
       "reconocimientoFlag": "Melden (stempelt und bleibt zur Prüfung)",
       "reconocimientoEnforce": "Verlangen (ohne das eigene Gesicht kein Stempeln)",

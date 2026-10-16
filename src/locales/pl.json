@@ -17308,7 +17308,7 @@
     "SelfieRostro": {
       "titulo": "Selfie i twarz przy rejestracji czasu",
       "ambasApps": "Dotyczy aplikacji zespołu (ochroniarzy) i aplikacji przełożonego: to samo ustawienie w obu.",
-      "reconocimiento": "Sprawdzać, czy to właściwy pracownik (rozpoznawanie twarzy)",
+      "reconocimiento": "Sprawdzać, czy to właściwa osoba (rozpoznawanie twarzy)",
       "reconocimientoOff": "Wyłączone",
       "reconocimientoFlag": "Zgłaszać (odbija się i czeka na sprawdzenie)",
       "reconocimientoEnforce": "Wymagać (jeśli to nie jego twarz, nie może się odbić)",

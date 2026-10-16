@@ -17082,7 +17082,7 @@
     "SelfieRostro": {
       "titulo": "Selfie e volto alla timbratura",
       "ambasApps": "Vale per l'app del team (guardie) e quella del supervisore: è la stessa impostazione in entrambe.",
-      "reconocimiento": "Verificare che sia la guardia giusta (riconoscimento facciale)",
+      "reconocimiento": "Verificare che sia la persona giusta (riconoscimento facciale)",
       "reconocimientoOff": "Disattivato",
       "reconocimientoFlag": "Avvisare (timbra e resta da rivedere)",
       "reconocimientoEnforce": "Richiedere (se non è il suo volto non può timbrare)",

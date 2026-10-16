@@ -16548,7 +16548,7 @@
     "SelfieRostro": {
       "titulo": "Selfie and face at clock-in",
       "ambasApps": "Applies to the team app (guards) and the supervisor app: it is the same setting in both.",
-      "reconocimiento": "Check it's the right guard (facial recognition)",
+      "reconocimiento": "Check it's the right person (facial recognition)",
       "reconocimientoOff": "Off",
       "reconocimientoFlag": "Flag (clocks in and is left for review)",
       "reconocimientoEnforce": "Require (if it's not their face, they can't clock in)",

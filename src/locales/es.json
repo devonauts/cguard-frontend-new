@@ -16548,7 +16548,7 @@
     "SelfieRostro": {
       "titulo": "Selfie y rostro al fichar",
       "ambasApps": "Vale para la app del equipo (vigilantes) y la del supervisor: es el mismo ajuste en las dos.",
-      "reconocimiento": "Verificar que sea el vigilante (reconocimiento facial)",
+      "reconocimiento": "Verificar que sea la persona (reconocimiento facial)",
       "reconocimientoOff": "Apagado",
       "reconocimientoFlag": "Avisar (ficha y queda para revisar)",
       "reconocimientoEnforce": "Exigir (si no es su cara no puede fichar)",
