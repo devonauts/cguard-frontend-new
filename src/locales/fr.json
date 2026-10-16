@@ -6167,7 +6167,9 @@
         "done": "J’ai déjà confirmé avec ma banque",
         "pending": "Votre banque termine la confirmation du paiement. Il apparaîtra dans quelques minutes.",
         "cancelled": "Le paiement n’a pas été confirmé. Vous pouvez réessayer avec « Payer maintenant »."
-      }
+      },
+      "awaitingActivationTitle": "Votre période d'essai est terminée",
+      "awaitingActivationMsg": "Votre fournisseur doit activer votre compte pour que vous puissiez continuer à utiliser le système. Contactez-le pour l'activer ; vos données sont conservées et les applications de terrain continuent de fonctionner normalement."
     },
     "plan": "Forfait",
     "removeUser": "Ne plus payer pour cette personne",

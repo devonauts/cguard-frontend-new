@@ -6169,7 +6169,9 @@
         "done": "Już potwierdziłem w banku",
         "pending": "Twój bank kończy potwierdzanie płatności. Pojawi się za kilka minut.",
         "cancelled": "Płatność nie została potwierdzona. Możesz spróbować ponownie przyciskiem „Zapłać teraz”."
-      }
+      },
+      "awaitingActivationTitle": "Twój okres próbny dobiegł końca",
+      "awaitingActivationMsg": "Twój dostawca musi aktywować Twoje konto, abyś mógł dalej korzystać z systemu. Skontaktuj się z nim, aby je aktywować; Twoje dane są zachowane, a aplikacje terenowe działają normalnie."
     },
     "plan": "Plan",
     "removeUser": "Przestań płacić za tę osobę",

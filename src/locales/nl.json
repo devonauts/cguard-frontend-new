@@ -6167,7 +6167,9 @@
         "done": "Ik heb al bevestigd bij mijn bank",
         "pending": "Je bank rondt de bevestiging van de betaling af. Je ziet het over een paar minuten.",
         "cancelled": "De betaling is niet bevestigd. Probeer het opnieuw met „Nu betalen”."
-      }
+      },
+      "awaitingActivationTitle": "Je proefperiode is afgelopen",
+      "awaitingActivationMsg": "Je leverancier moet je account activeren zodat je het systeem kunt blijven gebruiken. Neem contact met hem op om het te activeren; je gegevens blijven bewaard en de veld-apps blijven gewoon werken."
     },
     "plan": "Abonnement",
     "removeUser": "Niet meer betalen voor deze persoon",

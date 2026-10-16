@@ -104,8 +104,14 @@ export interface CobroDelSocioActivo {
   invoices: ReciboDelSocio[];
 }
 
-/** `enabled: false` → el socio no cobra en línea: se queda la pantalla de «tu proveedor gestiona la facturación». */
-export type CobroDelSocio = { enabled: false } | CobroDelSocioActivo;
+/**
+ * `enabled: false` → el socio no cobra en línea: se queda la pantalla de «tu
+ * proveedor gestiona la facturación». After the trial such a company is
+ * `paused` until its provider activates it (`activationByPartner`).
+ */
+export type CobroDelSocio =
+  | { enabled: false; status?: string | null; trialEndsAt?: string | null; activationByPartner?: boolean }
+  | CobroDelSocioActivo;
 
 /** Lo que contesta el servidor al guardar la tarjeta o al pagar: intenta cobrar lo pendiente en el acto. */
 export interface ResultadoDelCobro {

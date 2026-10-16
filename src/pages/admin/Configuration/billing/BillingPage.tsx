@@ -403,6 +403,12 @@ export default function BillingPage() {
     data?.billingOwnership === "reseller" ||
     status === "reseller_managed";
   const cobroEnLinea = cobroDelSocio?.enabled ? cobroDelSocio : null;
+  /* Paused after the trial, and its provider does not charge online: only the
+     provider can activate it (Mike, 2026-10-16). */
+  const esperaActivacion =
+    !!cobroDelSocio &&
+    !cobroDelSocio.enabled &&
+    cobroDelSocio.status === "paused";
   const visibleInvoices = invoices.filter((inv) => inv.status !== "draft");
 
   return (
@@ -435,6 +441,17 @@ export default function BillingPage() {
           <PartnerBillingView
             data={cobroEnLinea}
             onRefresh={() => load(true)}
+          />
+        ) : esperaActivacion ? (
+          <EmptyState
+            description={t("billing.partner.awaitingActivationMsg", {
+              defaultValue:
+                "Tu proveedor debe activar tu cuenta para que puedas seguir usando el sistema. Contáctalo para activarla; tus datos se conservan y las apps de campo siguen funcionando con normalidad.",
+            })}
+            icon={<AlertTriangle />}
+            title={t("billing.partner.awaitingActivationTitle", {
+              defaultValue: "Tu periodo de prueba terminó",
+            })}
           />
         ) : pausadaSinResumen ? (
           <EmptyState

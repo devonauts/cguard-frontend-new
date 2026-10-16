@@ -596,7 +596,9 @@
         "done": "I already confirmed with my bank",
         "pending": "Your bank is finishing confirming the payment. It will show up in a few minutes.",
         "cancelled": "The payment was not confirmed. You can try again with “Pay now”."
-      }
+      },
+      "awaitingActivationTitle": "Your trial period has ended",
+      "awaitingActivationMsg": "Your provider needs to activate your account so you can keep using the system. Contact them to activate it; your data is kept and the field apps keep working as usual."
     },
     "lockedSuspendedMsgPartner": "Access to this account has been suspended. Contact your provider to reactivate it.",
     "lockedCanceledMsgPartner": "Your subscription was canceled. Contact your provider to reactivate it.",

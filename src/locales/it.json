@@ -6167,7 +6167,9 @@
         "done": "Ho già confermato con la mia banca",
         "pending": "La tua banca sta completando la conferma del pagamento. Lo vedrai tra pochi minuti.",
         "cancelled": "Il pagamento non è stato confermato. Puoi riprovare con «Paga ora»."
-      }
+      },
+      "awaitingActivationTitle": "Il tuo periodo di prova è terminato",
+      "awaitingActivationMsg": "Il tuo fornitore deve attivare il tuo account perché tu possa continuare a usare il sistema. Contattalo per attivarlo; i tuoi dati vengono conservati e le app sul campo continuano a funzionare normalmente."
     },
     "plan": "Piano",
     "removeUser": "Smetti di pagare per questa persona",

@@ -596,7 +596,9 @@
         "done": "Ya confirmé con mi banco",
         "pending": "Tu banco está terminando de confirmar el pago. Lo verás reflejado en unos minutos.",
         "cancelled": "No se confirmó el pago. Puedes volver a intentarlo con «Pagar ahora»."
-      }
+      },
+      "awaitingActivationTitle": "Tu periodo de prueba terminó",
+      "awaitingActivationMsg": "Tu proveedor debe activar tu cuenta para que puedas seguir usando el sistema. Contáctalo para activarla; tus datos se conservan y las apps de campo siguen funcionando con normalidad."
     },
     "lockedSuspendedMsgPartner": "El acceso a esta cuenta fue suspendido. Contacta a tu proveedor para reactivarla.",
     "lockedCanceledMsgPartner": "Tu suscripción fue cancelada. Contacta a tu proveedor para reactivarla.",

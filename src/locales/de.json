@@ -6167,7 +6167,9 @@
         "done": "Ich habe bei meiner Bank bestätigt",
         "pending": "Ihre Bank schließt die Bestätigung der Zahlung ab. Sie erscheint in wenigen Minuten.",
         "cancelled": "Die Zahlung wurde nicht bestätigt. Sie können es mit „Jetzt bezahlen“ erneut versuchen."
-      }
+      },
+      "awaitingActivationTitle": "Ihr Testzeitraum ist abgelaufen",
+      "awaitingActivationMsg": "Ihr Anbieter muss Ihr Konto aktivieren, damit Sie das System weiter nutzen können. Kontaktieren Sie ihn zur Aktivierung; Ihre Daten bleiben erhalten und die Außendienst-Apps funktionieren weiterhin normal."
     },
     "plan": "Tarif",
     "removeUser": "Für diese Person nicht mehr bezahlen",
