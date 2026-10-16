@@ -19207,5 +19207,13 @@
       "sinRegistro": "Das Gesicht ist noch nicht registriert. Die App fragt beim nächsten Stempeln danach.",
       "error": "Das registrierte Gesicht konnte nicht abgerufen werden. Öffne das Profil gleich noch einmal."
     }
+  },
+  "notFound": {
+    "eyebrow": "Fehler 404",
+    "title": "Diese Seite wurde nicht gefunden",
+    "body": "Die Adresse ist vielleicht falsch geschrieben, oder die Seite wurde verschoben oder existiert nicht mehr.",
+    "back": "Zurück",
+    "goDashboard": "Zum Dashboard",
+    "goLogin": "Anmelden"
   }
 }

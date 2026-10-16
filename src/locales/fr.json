@@ -19207,5 +19207,13 @@
       "sinRegistro": "Visage pas encore enregistré. L'app le lui demandera au prochain pointage.",
       "error": "Impossible de consulter le visage enregistré. Rouvrez la fiche dans un instant."
     }
+  },
+  "notFound": {
+    "eyebrow": "Erreur 404",
+    "title": "Nous ne trouvons pas cette page",
+    "body": "L'adresse est peut-être mal saisie, ou la page a été déplacée ou n'existe plus.",
+    "back": "Retour",
+    "goDashboard": "Aller au tableau de bord",
+    "goLogin": "Se connecter"
   }
 }

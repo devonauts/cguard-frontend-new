@@ -10,9 +10,9 @@ import {
 import { useEffect, lazy, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { ArrowLeftCircle } from "lucide-react";
 
 import AppErrorBoundary from "./components/AppErrorBoundary";
+import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/login";
 import BarraDeSoporte from "./components/soporte/BarraDeSoporte";
 import SoporteEnVivo from "./components/soporte/SoporteEnVivo";
@@ -2748,24 +2748,3 @@ export default function App() {
   );
 }
 
-function NotFound() {
-  const { t } = useTranslation();
-
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/30 px-6">
-      <div className="text-center">
-        <ArrowLeftCircle className="mx-auto h-16 w-16 text-emerald-500 mb-4" />
-        <h1 className="text-6xl font-extrabold text-emerald-600">404</h1>
-        <p className="mt-4 text-lg text-foreground/70">
-          {t("ui.App.paginaNoEncontrada", "Página no encontrada")}
-        </p>
-        <a
-          className="mt-6 inline-block rounded-lg bg-emerald-600 px-6 py-2 text-white font-semibold shadow hover:bg-emerald-700 transition-all"
-          href="/dashboard"
-        >
-          {t("ui.App.irAlDashboard", "Ir al Dashboard")}
-        </a>
-      </div>
-    </div>
-  );
-}

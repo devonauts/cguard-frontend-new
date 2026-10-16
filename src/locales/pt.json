@@ -19207,5 +19207,13 @@
       "sinRegistro": "Ainda não registrou o rosto. O app vai pedir na próxima vez que registrar o ponto.",
       "error": "Não foi possível consultar o rosto registrado. Abra a ficha de novo em instantes."
     }
+  },
+  "notFound": {
+    "eyebrow": "Erro 404",
+    "title": "Não encontramos esta página",
+    "body": "O endereço pode estar digitado errado, ou a página mudou de lugar ou não existe mais.",
+    "back": "Voltar",
+    "goDashboard": "Ir para o painel",
+    "goLogin": "Entrar"
   }
 }

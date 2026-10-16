@@ -19207,5 +19207,13 @@
       "sinRegistro": "Non ha ancora registrato il volto. L'app glielo chiederà alla prossima timbratura.",
       "error": "Impossibile consultare il volto registrato. Riapri la scheda tra un momento."
     }
+  },
+  "notFound": {
+    "eyebrow": "Errore 404",
+    "title": "Non troviamo questa pagina",
+    "body": "L'indirizzo potrebbe essere scritto male, oppure la pagina è stata spostata o non esiste più.",
+    "back": "Indietro",
+    "goDashboard": "Vai al pannello",
+    "goLogin": "Accedi"
   }
 }

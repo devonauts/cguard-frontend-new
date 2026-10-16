@@ -19207,5 +19207,13 @@
       "sinRegistro": "Todavía no ha registrado su cara. La app se lo pedirá la próxima vez que fiche.",
       "error": "No se pudo consultar su cara registrada. Vuelve a abrir la ficha en un momento."
     }
+  },
+  "notFound": {
+    "eyebrow": "Error 404",
+    "title": "No encontramos esta página",
+    "body": "La dirección puede estar mal escrita, o la página se movió o ya no existe.",
+    "back": "Volver",
+    "goDashboard": "Ir al panel",
+    "goLogin": "Iniciar sesión"
   }
 }

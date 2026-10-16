@@ -19207,5 +19207,13 @@
       "sinRegistro": "Het gezicht is nog niet geregistreerd. De app vraagt erom bij de volgende keer inklokken.",
       "error": "Het geregistreerde gezicht kon niet worden opgehaald. Open het profiel zo meteen opnieuw."
     }
+  },
+  "notFound": {
+    "eyebrow": "Fout 404",
+    "title": "We kunnen deze pagina niet vinden",
+    "body": "Het adres is misschien verkeerd getypt, of de pagina is verplaatst of bestaat niet meer.",
+    "back": "Terug",
+    "goDashboard": "Naar het dashboard",
+    "goLogin": "Inloggen"
   }
 }

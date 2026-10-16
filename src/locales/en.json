@@ -19207,5 +19207,13 @@
       "sinRegistro": "They haven't registered their face yet. The app will ask them next time they clock in.",
       "error": "Their registered face could not be loaded. Open the profile again in a moment."
     }
+  },
+  "notFound": {
+    "eyebrow": "Error 404",
+    "title": "We couldn't find this page",
+    "body": "The address may be mistyped, or the page moved or no longer exists.",
+    "back": "Go back",
+    "goDashboard": "Go to dashboard",
+    "goLogin": "Sign in"
   }
 }

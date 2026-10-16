@@ -19495,5 +19495,13 @@
       "sinRegistro": "Twarz nie jest jeszcze zarejestrowana. Aplikacja poprosi o to przy następnym odbiciu.",
       "error": "Nie udało się pobrać zarejestrowanej twarzy. Otwórz kartę ponownie za chwilę."
     }
+  },
+  "notFound": {
+    "eyebrow": "Błąd 404",
+    "title": "Nie znaleźliśmy tej strony",
+    "body": "Adres może być błędnie wpisany albo strona została przeniesiona lub już nie istnieje.",
+    "back": "Wróć",
+    "goDashboard": "Przejdź do panelu",
+    "goLogin": "Zaloguj się"
   }
 }
